@@ -917,6 +917,23 @@ ALL_MATERIALS: tuple[Material, ...] = (
         "precisely predict application rates is with a trial application'), not a "
         "precaution added here",
     ),
+    # The SAME PRODUCT a third time, on laid face brick (the fireplace surround). Split off for
+    # the SRW variant's reason: the brick module and its tooled joints telegraph through a
+    # non-film-forming wash, so the flat concrete mottle made the surround read as a pour.
+    # "brick" in the tag makes `family_of` MASONRY, which opens the coursing path.
+    Material(
+        tag="silicate-wash-white-brick",
+        name="Mineral silicate wash, untinted white (2 coats) on face brick",
+        r_per_inch=0.0,
+        vapor_permeance_perms=80.0,
+        color="#e9e6df",
+        finish="silicate-wash-brick",
+        hatch="concrete",
+        coating=True,
+        source="BEECK Beeckosil C-102 White, 2 coats, no primer on raw absorbent clay brick. "
+        "Identical in product, vapour permeance, colour and rate to `silicate-wash-white`, "
+        "whose record carries the full citation; this tag differs in appearance only",
+    ),
     # --- floor finishes -------------------------------------------------------------------
     #
     # `Room.floor_finish` was a free-form string with nothing behind it: the viewer could not

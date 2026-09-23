@@ -2509,7 +2509,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          0.2499999999999998,
+          0.25,
           -13.437499999999998
         ],
         "name": ""
@@ -2519,10 +2519,10 @@
         15.640015310586179
       ],
       "to": [
-        0.2499999999999998,
+        0.25,
         -13.437499999999998
       ],
-      "text": "air continuity \u2014 sheathing-ext \u2192\nsheathing-ext",
+      "text": "air continuity — sheathing-ext →\nsheathing-ext",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2547,7 +2547,7 @@
         -1.9999999999999996,
         -13.437499999999998
       ],
-      "text": "water continuity \u2014 spray-foam-ext \u2192\nspray-foam-ext",
+      "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2572,7 +2572,7 @@
         -1.9999999999999996,
         -13.437499999999998
       ],
-      "text": "thermal continuity \u2014 spray-foam-ext \u2192\nspray-foam-ext",
+      "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2585,7 +2585,7 @@
         -25.838543307086614,
         -68.61860236220473
       ],
-      "content": "TR-CATLIN-FOUNDATION  \u00b7  basement-framed-wall",
+      "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -3079,7 +3079,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-FOUNDATION  \u00b7  basement-framed-wall",
+      "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -3111,7 +3111,7 @@
         0.5,
         7.298611111111112
       ],
-      "content": "Type:Haus \u2014 derived transition detail",
+      "content": "Type:Haus — derived transition detail",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -4003,14 +4003,14 @@
   ],
   "notes": [
     "NOTES:",
-    "\u2022 Framed wall: 2x6 at 16\" o.c., R-19 bays, 4\" continuous exterior.",
-    "\u2022 Basement wall: 8\" pour, #5 at 41\" o.c., aligned on the concrete face.",
-    "\u2022 Waterproofed per Minn. R. 1309.0406, not dampproofed: 60 mil self-adhered asphalt, footing to grade.",
-    "\u2022 Basement CI: 4\" XPS in two layers, seams staggered, outer layer taped.",
-    "\u2022 Exposed XPS band: 1/8\" acrylic over mesh, 276.3 SF, grade-6\" to wall top.",
-    "\u2022 Bearing seat: pour tops at -13 7/16\", then gasket, mudsill and 11 7/8\" rim.",
-    "\u2022 Sill: one shared 2x6 PT mudsill, 370.0 LF, on 1/16\" compressed EPDM.",
-    "\u2022 Slab: 3-1/2\" at 3,500 psi on 3\" XPS, 10 mil poly, 4\" gravel. Drain: 4\" pipe.",
+    "• Framed wall: 2x6 at 16\" o.c., R-19 bays, 4\" continuous exterior.",
+    "• Basement wall: 8\" pour, #5 at 41\" o.c., aligned on the concrete face.",
+    "• Waterproofed per Minn. R. 1309.0406, not dampproofed: 60 mil self-adhered asphalt, footing to grade.",
+    "• Basement CI: 4\" XPS in two layers, seams staggered, outer layer taped.",
+    "• Exposed XPS band: 1/8\" acrylic over mesh, 276.3 SF, grade-6\" to wall top.",
+    "• Bearing seat: pour tops at -13 7/16\", then gasket, mudsill and 11 7/8\" rim.",
+    "• Sill: one shared 2x6 PT mudsill, 370.0 LF, on 1/16\" compressed EPDM.",
+    "• Slab: 3-1/2\" at 3,500 psi on 3\" XPS, 10 mil poly, 4\" gravel. Drain: 4\" pipe.",
     "",
     "KEYED NOTES:",
     "K1  Bituthene 3000 or equal on concrete and sheathing. 2\" laps; 2-ply corners; insulation over it; backfill in 30 days.",

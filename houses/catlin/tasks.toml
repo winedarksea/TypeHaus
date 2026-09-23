@@ -230,6 +230,7 @@ constraints = [
 [visits."task/paint/building/mineral-wash"]
 label = "Mineral silicate wash — the court, the columns, the garden blocks and the firebox"
 rows = ["envelope_layers:silicate-wash-white", "envelope_layers:silicate-wash-white-block",
+        "envelope_layers:silicate-wash-white-brick",
         "allowances:paint-court-mineral-wash-columns"]
 element_tags = ["W-SG-*", "PT-SG-*", "W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST", "W-M-FIRE-*"]
 depends_on = ["task/masonry/building/masonry", "insp/foundation_backfill"]

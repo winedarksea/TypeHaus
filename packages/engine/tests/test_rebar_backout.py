@@ -36,7 +36,7 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: BLACK pour because DECK_CAP_MIX says so — a new scope, not a second coating in an old one.
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): (114, 139.8),
-    ("column", "#5", "hdg-a767"): (80, 549.5),
+    ("column", "#5", "hdg-a767"): (80, 545.3),
     ("footing", "#4", "hdg-a767"): (31, 270.1),
     ("footing", "#5", "hdg-a767"): (156, 1051.0),
     ("foundation wall", "#3", "hdg-a767"): (44, 70.6),
@@ -71,7 +71,8 @@ _SCHEDULE = {
 # (−5 ties, 8 bars x −24", −23.2); W-B-S1/-S4 1' longer each (+4.0).
 # +94.7 lb, +7 pieces the same day: FT-SG-S's 4'-4" toe (100", bottom-x #5 @ 9"), less
 # what W2/E2 give up where FT-SG-S's larger pour now keeps 16" more of their overlap.
-_TOTAL_LB = 6570.5
+# −4.2 lb on 2026-09-23: the balcony 3" lower, 4 columns x 4 #5 x 3" (note addendum).
+_TOTAL_LB = 6566.3
 _TOTAL_PIECES = 1172
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:

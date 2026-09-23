@@ -373,3 +373,23 @@ The balcony is back within 2% of §4's own P_u and δ. The landing rows stay his
 Worked, BF1 at 0.25": `R = 7.2833e7 × 105.125 / 1.1941e9 = 6.412`, `Pc,rigid = π² × 1.1941e9 /
 (2.1 × 105.125)² = 241,820`, `Pc,flex = 241,820 / (1 + 3/6.412) = 164,742`, `δ = 1 / (1 −
 4,820.0 / 123,556) = 1.0406`. A shorter column is stiffer; δ falls ~0.3%.
+
+## Addendum 2026-09-23c — the landing seat beams 2.75" shorter
+
+The seat beams start at the column's east face: 3.5833 → 3.3542'. Each beam's strip is
+unchanged (3.28125' house, 3.09375' garage), so its deck share falls to `3.28125 × 3.3542 =
+11.006` / `3.09375 × 3.3542 = 10.377` ft², half to each pier; the floor beams' `2 × 12.165 / 6
+= 4.055` is unchanged. Tributary **9.558** (W/E), **9.243** (GW/GE). k_θ and L unchanged.
+
+| column | D | P_u | β | EI | R 0.25" / 1.0" | δ 0.25" | δ 1.0" |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `PT-BW-W` | 1,553.0 | 7,192.1 | 0.2591 | 1.3033e9 | 1.299 / 0.325 | 1.1013 | 1.3975 |
+| `PT-BW-E` | 998.2 | 1,809.5 | 0.6619 | 9.8741e8 | 1.715 / 0.429 | 1.0260 | 1.0797 |
+| `PT-BW-GW` | 1,241.2 | 6,797.8 | 0.2191 | 1.3461e9 | 0.119 / 0.030 | 1.4052 | mechanism |
+| `PT-BW-GE` | 686.4 | 1,415.3 | 0.5820 | 1.0373e9 | 0.146 / 0.037 | 1.0684 | 1.3280 |
+
+Worked, `PT-BW-W`: `D = 9.558 × 10 + 400 + 902.6 + 56.5 + 98.3 = 1,553.0`, `L = 9.558 × 40 +
+40 × 73.7 = 3,330.3`, `P_u = 1.2 D + 1.6 L = 7,192.1`, `EI = 1.6410e9 / 1.2591 = 1.3033e9`,
+`Pc,rigid = π² × 1.3033e9 / (2.1 × 91.94)² = 345,084`; at 1.0", `R = 4.6047e6 × 91.94 /
+1.3033e9 = 0.3248`, `Pc,flex = 345,084 / (1 + 3/0.3248) = 33,713`, `δ = 1 / (1 − 7,192.1 /
+25,285) = 1.3975`. No verdict moves: GW is still over 1.4 at the stiff end (rows history).

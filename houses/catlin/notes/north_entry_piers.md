@@ -1196,3 +1196,21 @@ HGAM's Titen Turbo screws from exterior exposure (C-C-2021 p. 252). Retired 2026
 - ACI 318-19 §17.6.2, §17.7.2, §17.7.3, §17.8; AWC NDS 2018 §11.3.3 and Table 11.3.3 (C_M),
   §11.3.6 (γ); NDS Commentary C4.1.4 (covered porches "generally considered dry" —
   secondhand, via a search excerpt of the commentary; not read from the primary).
+
+## Addendum 2026-09-23 — the seat beams start at the column's east face (§10b/§10c)
+
+`BM-BW-HOUSE-SEAT`/`-GARAGE-SEAT` now start 2.75" east of the column line
+(`structural.post_base_interference`): 3.5833' → **3.3542'**. Their 7.25" faces are §10b's
+second N-S band, `2 × 3.3542 × 0.6042 = 4.0530` ft² (was 4.3299), so N-S deck wind is
+`(2.4635 + 4.0530) × 15.183 = ` **98.94 lb** (was 103.14); it still acts at (7.7917, 39.9323).
+E-W is unchanged (68.61). §10c's N-S line: `M = 980.74 (6.0 − 7.5937) + 98.94 (7.7917 −
+7.5937) = −1,543.5 lb-ft`, `ΣFy = 1,079.68`:
+
+| joint | X | Y | ratio |
+|---|---:|---:|---|
+| W | −110.56 | 724.19 | 724.19/1,480 + 110.56/740 = 0.489 + 0.149 = **0.639** |
+| FC | 55.28 | 482.23 | 0.107 + 0.526 = 0.633 |
+| FE | 55.28 | −126.74 | 0.107 + 0.138 = 0.245 |
+
+E-W (0.966, governing), guard (0.815) and the stem anchors (0.750) do not read the deck's
+N-S wind and are unchanged. Every row still passes.

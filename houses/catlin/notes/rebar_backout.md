@@ -626,3 +626,9 @@ y = −22.5 instead of −23.833 (3 × 16" × 0.668 = −2.67 lb), and the one t
 y = −23.11 in each face drops from 78" to its 39" outboard stub (−39.1" × 1.043 = −3.40 lb a
 face). Rows: footing #5 150 → 156 pieces, 962.7 → **1,051.0** lb
 (+101.86 − 4 × 3.40); footing #4 30 → 31, 263.7 → **270.1** lb (+11.69 − 2 × 2.67).
+
+## Addendum 2026-09-23 — the balcony 3" lower
+
+Total **6,566.3 lb / 1,172 pieces** (was 6,570.5). `balcony_level_ft` 10.0 → 9.75' shortens
+the four corner columns 3": 4 columns × 4 #5 verticals × 3" = 48" = 4.0 LF × 1.043 plf =
+−4.2 lb. Column #5 **545.3** lb, 80 pieces (was 549.5); no tie is lost (column #3 unchanged).

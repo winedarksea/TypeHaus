@@ -1347,7 +1347,7 @@ FIREPLACE_BRICK_WYTHE = Assembly(
     layers=(
         Layer(name="brick", material_ref="brown-brick", thickness=_FIREPLACE_WYTHE,
               function=LayerFunction.STRUCTURE),
-        Layer(name="wash", material_ref="silicate-wash-white", thickness=_WASH_FILM,
+        Layer(name="wash", material_ref="silicate-wash-white-brick", thickness=_WASH_FILM,
               function=LayerFunction.FINISH),
     ),
     source="RM-M-LIVING fireplace surround (2026-09-06) — one 3 5/8\" wythe of face brick with grey mortar, ASTM C216, running modular coursing (2 2/3\" per course) off W-B-E1's pour at -1'-1 7/16\" and stopping at 5'-4\" under the walnut mantel. Full brick, not slips (owner's call). Ties back to W-M-E1's studs through the 1 7/8\" behind the wythe; the load path is brick to concrete and is worked in notes/east_breast_bearing.md. Laid BARE in the court's own brown blend 2026-09-13 (one blend house-wide) and washed white by the coating trade on a later arrival — the brick is not a white brick and must not be substituted with one",

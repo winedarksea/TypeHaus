@@ -752,8 +752,8 @@
 "conduits/CD-B-GARAGE/z_m": [
 -1.2192,
 -0.34925,
-5,
-"df3ad63b0c9d"
+7,
+"62eb1c78fcd0"
 ],
 "conduits/CD-B-GARAGE/z_start_m": -0.34925,
 "conduits/CD-B-INV-BACKUP/z_end_m": -1.2192,
@@ -808,8 +808,8 @@
 "conduits/CD-M-DATA-KITCH/z_m": [
 2.80035,
 2.80035,
-4,
-"e51240d95e29"
+5,
+"5bb9ec93c522"
 ],
 "conduits/CD-M-DATA-KITCH/z_start_m": 2.80035,
 "conduits/CD-M-DATA-PORCH/z_end_m": 2.6416,
@@ -12435,8 +12435,8 @@
 "geometry/CDT010AAAA-run/body": [
 2.790825,
 2.809875,
-72,
-"b3a284b5405d"
+96,
+"4138a9301a5e"
 ],
 "geometry/CDT011AAAA-run/body": [
 2.6416,
@@ -28122,29 +28122,11 @@
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-026-cheek-hi": [
-2.784475,
-3.0099,
-8,
-"8445039a1102"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-026-cheek-lo": [
-2.784475,
-3.0099,
-8,
-"8445039a1102"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-026-rail-bottom": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-026": [
 2.746375,
-2.784475,
-8,
-"c4d4967e8585"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-026-rail-top": [
-3.0099,
 3.048,
 8,
-"a10a5d0008e8"
+"3c4d41a19688"
 ],
 "geometry/CSF603AAAA::framing/member:joist-0-000-0": [
 2.746375,
@@ -68340,29 +68322,11 @@
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-026-cheek-hi": [
-2.784475,
-3.0099,
-2,
-"7033f5ae779f"
-],
-"member/CSF603AAAA/bearing-block-0-026-cheek-lo": [
-2.784475,
-3.0099,
-2,
-"7033f5ae779f"
-],
-"member/CSF603AAAA/bearing-block-0-026-rail-bottom": [
+"member/CSF603AAAA/bearing-block-0-026": [
 2.746375,
-2.784475,
-2,
-"a34fd765ec76"
-],
-"member/CSF603AAAA/bearing-block-0-026-rail-top": [
-3.0099,
 3.048,
 2,
-"4f5bebcd882e"
+"e76b7cb538bf"
 ],
 "member/CSF603AAAA/joist-0-000-0": [
 2.746375,
@@ -81212,8 +81176,8 @@
 "pipe_runs/PR-B-KITCH-DRAIN/z_m": [
 -0.7191375,
 0.0238125,
-7,
-"bf9651553cd4"
+9,
+"aef033712ff6"
 ],
 "pipe_runs/PR-B-KITCH-DRAIN/z_start_m": 0.0238125,
 "pipe_runs/PR-B-LAV1-DRAIN/z_end_m": -0.40132,

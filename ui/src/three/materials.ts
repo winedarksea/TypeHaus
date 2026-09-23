@@ -317,8 +317,8 @@ export function disposeStandingSeamTextures(): void {
 //
 // NEGATIVE (toward the camera) and small: the wash must win against the substrate directly behind
 // it and nothing else. Back faces are culled, so the wash box's rear face — which IS coincident
-// with the pour — never draws and never competes. Applied to the flat wash and to
-// `SILICATE_WASH_BLOCK_STYLE`, and to nothing else.
+// with the pour — never draws and never competes. Applied to the flat wash and to every
+// `MasonryStyle` declaring `coating: true`, and to nothing else.
 const WASH_POLYGON_OFFSET = { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 };
 
 /** Nominal running-bond module including joints: modular brick is 8" × 2⅔" with ⅜" joints. */
@@ -353,6 +353,7 @@ export interface MasonryStyle {
   readonly mortar: string; // CSS hex
   readonly base: string | null; // fixed unit hex, or null to take the palette family colour
   readonly jitterHSL: readonly [number, number, number]; // [hue, sat, light] jitter magnitude
+  readonly coating?: true; // a film FOLLOWING a module, not a wythe: takes WASH_POLYGON_OFFSET
 }
 
 const BRICK_STYLE: MasonryStyle = {
@@ -478,7 +479,15 @@ const CMU_STYLE: MasonryStyle = {
 const SILICATE_WASH_BLOCK_STYLE: MasonryStyle = {
   key: "silicate-wash-block", unitM: SRW_UNIT_M, unitsPerTile: 2, coursesPerTile: 4,
   jointFraction: 0.018, halfLap: 0.5, mortar: "#c9c5bc", base: "#e9e6df",
-  jitterHSL: [0.006, 0.02, 0.075],
+  jitterHSL: [0.006, 0.02, 0.075], coating: true,
+};
+// The same wash on the fireplace's laid face brick: SILICATE_WASH_BLOCK_STYLE's colour and
+// lapping jitter on the modular brick module. Real ⅜" tooled joints sit recessed, so the joint
+// is WHITE_BRICK_STYLE's width and a deeper shadow than the dry stack's hairline, still washed.
+const SILICATE_WASH_BRICK_STYLE: MasonryStyle = {
+  key: "silicate-wash-brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
+  jointFraction: 0.06, halfLap: 0.5, mortar: "#bab6ad", base: "#e9e6df",
+  jitterHSL: [0.006, 0.02, 0.075], coating: true,
 };
 
 /** True when a wall layer's cladding should be finished as brick/block/stone masonry. */
@@ -514,6 +523,7 @@ export const MASONRY_STYLES: Readonly<Record<string, MasonryStyle>> = {
   "roman-maximus-soldier": ROMAN_MAXIMUS_SOLDIER_STYLE,
   cmu: CMU_STYLE,
   "silicate-wash-block": SILICATE_WASH_BLOCK_STYLE,
+  "silicate-wash-brick": SILICATE_WASH_BRICK_STYLE,
 };
 
 /**
@@ -628,12 +638,11 @@ export function createMasonryMaterial(
   authoredColor?: string | null,
 ): THREE.Material {
   const unitColor = authoredColor ?? style.base ?? color;
-  // `SILICATE_WASH_BLOCK_STYLE` is a COATING that happens to follow a unit module, not a wythe:
-  // it is a 1/8" film standing in front of a 12" block wall, so it needs the same depth offset
-  // the flat wash gets or it shimmers against the block at distance. Every other style here is a
-  // real wythe with real thickness and must NOT be offset — pushing a brick veneer toward the
-  // camera would let it win against things that legitimately stand in front of it.
-  const offset = style.key === "silicate-wash-block" ? WASH_POLYGON_OFFSET : {};
+  // A `coating` style is a 1/8" film that happens to follow a unit module, standing in front
+  // of the block or brick it coats, so it needs the flat wash's depth offset or it shimmers at
+  // distance. Every other style is a real wythe and must NOT be offset — pushing a veneer toward
+  // the camera would let it win against things that legitimately stand in front of it.
+  const offset = style.coating ? WASH_POLYGON_OFFSET : {};
   if (mode === "schematic") {
     return new THREE.MeshStandardMaterial({
       color: unitColor, roughness: 1, metalness: 0, flatShading: true, ...offset,
@@ -713,9 +722,9 @@ export function applyMasonryWallUv(
 // themselves warn about and what the owner accepted rather than paid to avoid: a silicate wash
 // is non-film-forming and does not level, so it flash-dries, laps under a roller and pools
 // slightly in bugholes. It reads as cloud, not as grain or as coursing — deliberately no bond
-// pattern here, because this variant goes on CAST CONCRETE and brick, where there is no unit
-// module for it to follow. (The SRW legs take `SILICATE_WASH_BLOCK_STYLE` instead, where the
-// dry-stacked module genuinely does telegraph.)
+// pattern here, because this variant goes on CAST CONCRETE, where there is no unit module for
+// it to follow. (The SRW legs and the fireplace brick take `SILICATE_WASH_BLOCK_STYLE` /
+// `SILICATE_WASH_BRICK_STYLE` instead, where the module genuinely does telegraph.)
 const WASH_TILE_M = 1.2192; // 4 ft — the scale of a roller lap, not of a unit
 let washMaps: { colorMap: THREE.Texture; roughnessMap: THREE.Texture } | null = null;
 
@@ -792,7 +801,7 @@ function buildWashMaps(): { colorMap: THREE.Texture; roughnessMap: THREE.Texture
 }
 
 /**
- * The mineral silicate wash on cast concrete or brick: the authored near-white, mottled by a
+ * The mineral silicate wash on cast concrete: the authored near-white, mottled by a
  * shared procedural tile, dead matte, and depth-offset so it never fights the substrate behind
  * it. `schematic` mode keeps the flat fill — a schematic is a diagram, not a surface.
  */

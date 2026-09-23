@@ -127,13 +127,11 @@ export function buildWall(
     // jitter) comes from the material's authored `finish`, so CMU reads as 16"×8" grey block
     // and white brick as whitewash over grey mortar; only a material that declares nothing
     // falls back to guessing from its tag.
-    // The court's mineral silicate wash on cast concrete or brick. Declared by `Material.finish`
-    // rather than guessed from the ref, for the reason `metalPanelProfileFor` above is: a
-    // substring test cannot tell a coating from what it coats. It is checked BEFORE the masonry
-    // branch because the fireplace surround's wash sits on a wall whose other layer is brick, and
-    // the wash is not masonry — it has no unit module to course. (The SRW legs are the other
-    // case: their wash DOES follow a module, declares `silicate-wash-block`, and so goes down the
-    // masonry path to `SILICATE_WASH_BLOCK_STYLE`.)
+    // The court's mineral silicate wash on cast concrete. Declared by `Material.finish` rather
+    // than guessed from the ref, for the reason `metalPanelProfileFor` above is: a substring test
+    // cannot tell a coating from what it coats. Checked BEFORE the masonry branch. The washes on
+    // SRW block and on the fireplace brick DO follow a module, declare `silicate-wash-block` /
+    // `silicate-wash-brick`, and so go down the masonry path instead.
     const wash = !seam && isMineralWashFinish(appearance?.finish);
     const masonryStyle = !seam && !wash && isMasonry(ly.material)
       ? masonryStyleFor(ly.material, appearance?.finish) : null;

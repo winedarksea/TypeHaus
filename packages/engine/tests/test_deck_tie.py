@@ -48,7 +48,8 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
     assert _input(record, "x:FS-BW-FLOOR deck wind") == pytest.approx(68.61, abs=0.01)
     assert _input(record, "x:W-BW-SCREEN face") == pytest.approx(407.50, abs=0.01)
     assert _input(record, "x:W-BW-SCREEN-SKIRT face") == pytest.approx(112.27, abs=0.01)
-    assert _input(record, "y:FS-BW-FLOOR deck wind") == pytest.approx(103.14, abs=0.01)
+    # Seat beams 3.3542' from the column's east face (§10b addendum 2026-09-23).
+    assert _input(record, "y:FS-BW-FLOOR deck wind") == pytest.approx(98.94, abs=0.01)
     assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(980.74, abs=0.01)
 
 
@@ -56,7 +57,7 @@ def test_the_verdicts_reproduce_section_10c(catlin_ctx):
     """§10c/§10d: every row passes; E-W wind at BM-BW-FE governs at 0.966."""
     record = catlin_ctx.engineering[_ITEM]
     assert record.status is Status.OK
-    assert _state(record, "tie interaction, N-S wind").ratio == pytest.approx(0.6395, abs=5e-4)
+    assert _state(record, "tie interaction, N-S wind").ratio == pytest.approx(0.6387, abs=5e-4)
     ew = _state(record, "tie interaction, E-W wind")
     assert ew.ratio == pytest.approx(0.9665, abs=5e-4)
     assert record.governing.name == ew.name

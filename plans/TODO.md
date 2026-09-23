@@ -24,17 +24,16 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `mep.wet_wall_occupancy` x3 on the basement and suite risers). Answering it means moving
   `W-S-SS2`'s guard coverage and re-authoring three riser extents — a design pass.
 
-- **Open `haus check` FAILs (17 on 2026-09-23), each needing a structural, fabricator or owner call:**
-  - `structural.post_base_interference`: `BM-BW-HOUSE-SEAT`/`-GARAGE-SEAT` sit in the ABU66SS
-    standoff of `PT-BW-CW`/`-CNW`. Author a real pedestal (the retired one had no post geometry).
-  - `structural.member_in_masonry`: `ST-B2M`'s lower stringer and landing rim stand inside
-    `W-B-CN`'s concrete; the stair is laid out to the wall centreline, not its face.
-  - `code.R311_3_exterior_landing`: `FS-SG-DECK` now resolves tilted and stands 3.92" above
-    `D-S-DECK-E`'s threshold (2.42" above `RM-S-STUDY2`'s floor). Lower the balcony datum
-    ~2 3/8" or step the deck at the door.
-  - `CD-M-DATA-KITCH` runs inside `FO-S-STAIR`'s truss trimmer; no routable bay north of the well.
-  - `mep.run_through_plate`: `PR-A-STUBATH-DRAIN` (W-S-DC2) and `DU-M-ERV-R-LAUNDRY` (W-M-CLN2)
-    each want an owner-authored `PlateTie` (R602.6.1).
+- **Follow-ups from the 2026-09-23 FAIL sweep (catlin at 0 FAIL, permit print opens):**
+  - `resolve/stairs/u_split.py` (and `straight`/`winder`) centre an outer stringer ON the lane
+    edge, so `Stair.width` is stringer-centre to centre. ST-B2M was narrowed 3/4" to suit; the
+    principled fix sets outer stringers in by half their thickness (moves all six stairs).
+  - `pier_basis`'s guard lever is column + 42", missing the ~24.6" of beam/joist/plank between
+    a balcony column top and the walking surface (true lever 13.375', d/c ~0.18 — still fine).
+  - `CD-B-GARAGE` bends total 321.6° between pull points (NEC 358.26 allows 360°); no check
+    grades conduit bend totals.
+  - `SM-B-RADON` still sits at (1', 34'-6"), ~5" off the moved radon riser at y=421.3".
+  - `notes/vent_grade_basis.md` §3 is a 2026-09-19 snapshot (BATH1 0.054, WC 0.085 now 0.052/0.080).
 
 - **Concrete spec UNKNOWNs (8) wait on the mix submittal and a soil test:** cement standard/type,
   chloride per ASTM C1218, the aggregate's C1293/C1260 result plus a C1778 structure class, and
