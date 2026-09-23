@@ -45,10 +45,17 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 - **Concrete spec UNKNOWNs (8) wait on the mix submittal and a soil test:** cement standard/type,
   chloride per ASTM C1218, the aggregate's C1293/C1260 result plus a C1778 structure class, and
-  a soil sulfate test (ASTM C1580). Also an owner call: the balcony columns' built 2" cover is
-  under ACI R20.5.1.4.1's 2 1/2" recommendation (strength is unaffected; the cage would change).
-  Galvashield XPX anodes for the salt-splash court walls are undecided. Curing, cold-weather
-  placement and slab joint layout exist only in prose.
+  a soil sulfate test (ASTM C1580). Galvashield XPX anodes for the salt-splash court walls are
+  undecided. Curing, cold-weather placement and slab joint layout exist only in prose.
+
+- **Column cover is 2", not the 3" wanted.** 2 1/2" and 3" pull the north-entry pad dowels
+  under ACI 25.4.3.2's 6db spacing (ψ_r 1.6, ℓdh 11.38" in a 12" pad): 6 FAILs. The way back
+  to 3" is 15" moment-pier pads, or hook ties through the pad (`BarSpec.hook_ties` can't sit
+  on a `dowels` row yet). `balcony_moment_columns.md` §14.
+
+- **No bar crosses the court's W1|W2 / E1|E2 joint at y −132".** Winter tension (§11m.2,
+  0.571 on 6 #4) holds only if it is one pour; a construction joint there needs bars lapped
+  through.
 
 - **No sheet-layout engine**, so nothing checks a sheathing break landing on a stud. L corners
   now carry `ResolvedJunction.sheathing_through`, which a layout pass would read. Cladding, WRB,
