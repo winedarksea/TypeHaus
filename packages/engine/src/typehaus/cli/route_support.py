@@ -75,11 +75,14 @@ class Endpoints:
     #: against the authored one, a terminal snapped to an exact port. Advice, never a
     #: change: an authored size wins, and saying why it is arguable is the whole service.
     advice: tuple[str, ...] = ()
+    #: What pasting obliges next — the children to re-route once this run moves.
+    after_paste: tuple[str, ...] = ()
 
 
 from typehaus.cli.route_roots import (  # noqa: E402
     _discharge,
     _nearest_main,
+    _supply_children,
     _supply_trunk,
     _vent_siblings,
 )
@@ -236,6 +239,10 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
         if supply is None:
             return None
         root, chain, paths = supply
+        # Children tee ON this run, so they may be touched — and their tees move with it.
+        children = _supply_children(model, run)
+        after = (f"{', '.join(children)} tee on {run.tag} and their tees move with it: "
+                 "re-route each with `haus route --run <tag>`",) if children else ()
         return Endpoints(
             origin=(run.path[-1][0], run.path[-1][1], run.z_m[-1]), root=root, kind="pipe",
             radius_m=(run.diameter_m or 0.0) / 2.0,
@@ -243,7 +250,8 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
             # about a water branch, whose size comes off WSFU and pressure.
             diameter_m=run.diameter_m,
             serves=run.serves, storey=run.storey, system=run.system, falls=False,
-            touch=frozenset({run.tag, *chain}), root_paths=paths, tie_is_the_goal=True)
+            touch=frozenset({run.tag, *chain, *children}), root_paths=paths,
+            tie_is_the_goal=True, after_paste=after)
     found = _discharge(model, run, problems if falls else [])
     if found is None and falls:
         return None
@@ -382,7 +390,7 @@ def _nearest(graph: Graph, point: tuple[float, float, float]) -> int | None:
 
 
 def _root_nodes(graph: Graph, root: tuple[float, float, float],
-                *, with_z: bool = False) -> set[int]:
+                *, with_z: bool = False, exact: bool = False) -> set[int]:
     """Every lattice node on the root's own plan point — a vertical, not a point.
 
     See :func:`~typehaus.routing.search.shortest_route`: a stack accepts arrivals over a
@@ -395,11 +403,21 @@ def _root_nodes(graph: Graph, root: tuple[float, float, float],
     raceway case: their search IS three-dimensional and their far end is one point at one
     height, so accepting any elevation on that plan point would land the run a storey away
     and call it arrival.
+
+    ``exact`` is a supply trunk rooted on an equipment port: the port is a point, so a node
+    standing ON it is the only goal, when the lattice has one — otherwise the search takes
+    whichever neighbour 1 1/2" off is cheaper.
     """
     tolerance = 0.05
-    return {node.index for node in graph.nodes
+    near = {node.index for node in graph.nodes
             if abs(node.x - root[0]) < tolerance and abs(node.y - root[1]) < tolerance
             and (not with_z or abs(node.z - root[2]) < tolerance)}
+    if exact:
+        on = {i for i in near if max(abs(graph.nodes[i].x - root[0]),
+                                     abs(graph.nodes[i].y - root[1]),
+                                     abs(graph.nodes[i].z - root[2])) < 1e-4}
+        return on or near
+    return near
 
 
 def _port_terminal(model: ResolvedModel, duct: Any, index: int) -> tuple[float, float, float]:

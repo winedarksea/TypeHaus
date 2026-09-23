@@ -54,7 +54,8 @@ def counterfactual_lines(model: ResolvedModel, ends: Any, refused: Any, *,
         levels = [ends.root[2]] if ends.falls else None
         graph = build_graph(space, terminals, levels)
         start = _nearest(graph, ends.origin)
-        goals = _root_nodes(graph, ends.root, with_z=not ends.falls)
+        goals = _root_nodes(graph, ends.root, with_z=not ends.falls,
+                            exact=ends.tie_is_the_goal)
         if start is None or not goals:
             return None
         run, _report = search_for(model, graph, ends, slope)
