@@ -169,3 +169,16 @@ def test_a_beam_read_as_spanning_is_bought_and_tied_as_one_piece(catlin_model_ro
                  if row["category"] == "ridge_beam")
     assert ridge["spliceable"]
     assert [(b["length_ft"], b["count"]) for b in ridge["stock"]] == [(12, 3)]
+
+
+def test_ridge_bearing_walls_stop_at_the_beam_soffit(catlin_model_ro) -> None:
+    """RB-HOUSE bears ON its walls' top plates, so they stop flat at its soffit rather than
+    raking to the deck plane through the beam (``roof_geometry.ridge_beam_soffits``)."""
+    beam = next(m for roof in catlin_model_ro.roofs for m in roof.members
+                if m.category == "ridge_beam")
+    for tag in ("W-A-C1", "W-A-C1B", "W-A-C2", "W-A-C2M", "W-A-C2B"):
+        wall = catlin_model_ro.wall(tag)
+        assert wall.top_z0_m is None and wall.top_z1_m is None
+        assert math.isclose(wall.z1_m, beam.z0_m, abs_tol=1e-9)
+        plates = [m for m in wall.members if m.child_key.startswith("plate-top")]
+        assert plates and max(m.z1_m for m in plates) <= beam.z0_m + 1e-9
