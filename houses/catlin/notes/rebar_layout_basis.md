@@ -157,3 +157,11 @@ steps: FT-SG-S 19 + 19 #5 at 78" (128.81 lb a face) and 6 #4 at 210" (70.14 lb);
 verticals (340.54 lb), horizontals 214.25"/204.5" totalling 4,406" (245.27 lb). §4's PT-SG-COL
 is RETIRED from the model; its cage stays the oracle for `lay_column`, rebuilt in the test from
 this note's own inputs.
+
+## Addendum 2026-09-22 — FT-SG-S's toe grows 1'-4"
+
+FT-SG-S is 100" wide (4'-4" toe, `sunken_garden_court_free_body.md` §12a), so §2's bar region
+is 94" x 210" and bottom-x tightens to `#5 @ 9"`. Same steps: bottom-x
+`ceil((210 - 0.625)/9) + 1 = 25` #5 at 94" (2,350" = 195.83' = 204.25 lb); top-x 19 #5 at 94"
+(1,786" = 148.83' = 155.23 lb); bottom-y `ceil((94 - 0.5)/18) + 1 = 7` #4 at 210" (1,470" =
+122.5' = 81.83 lb). Heights in the mat are unchanged.

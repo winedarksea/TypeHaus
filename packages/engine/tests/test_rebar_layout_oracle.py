@@ -34,13 +34,15 @@ def _lb(bars) -> float:
 
 
 def test_ft_sg_s_mat(catlin_model_ro) -> None:
-    """§2 at 216": bar region 78" x 210". x: ceil((210 - 0.625)/12) + 1 = 19 #5 at 78"
-    (1,482" = 123.5' = 128.81 lb each face); y: ceil((78 - 0.5)/18) + 1 = 6 #4 at 210"
-    (1,260" = 105' = 70.14 lb). No laps or hooks."""
+    """§2 at 216" x 100" (the 4'-4" toe, 2026-09-22): bar region 94" x 210".
+    bottom-x @ 9": ceil((210 - 0.625)/9) + 1 = 25 #5 at 94" (2,350" = 195.83' = 204.25 lb);
+    top-x @ 12": ceil((210 - 0.625)/12) + 1 = 19 #5 at 94" (1,786" = 148.83' = 155.23 lb);
+    y: ceil((94 - 0.5)/18) + 1 = 7 #4 at 210" (1,470" = 122.5' = 81.83 lb). No laps or
+    hooks."""
     m = catlin_model_ro
-    for role, count, length_in, lb in (("bottom-x", 19, 78.0, 128.81),
-                                       ("top-x", 19, 78.0, 128.81),
-                                       ("bottom-y", 6, 210.0, 70.14)):
+    for role, count, length_in, lb in (("bottom-x", 25, 94.0, 204.25),
+                                       ("top-x", 19, 94.0, 155.23),
+                                       ("bottom-y", 7, 210.0, 81.83)):
         bars = _role(m, "FT-SG-S", role)
         assert len(bars) == count, role
         for b in bars:

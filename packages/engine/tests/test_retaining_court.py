@@ -56,9 +56,9 @@ _M_PER_FT = 0.3048
 # 18.0'. The side legs, the thrust per foot and the weight per foot are untouched, so the
 # cancelled share, the strut's Pu and the side-wall shortfalls do not move.
 _NOTE_RESULTANT_LB = 56_210.0          # §12; §4d 62,456
-_NOTE_CAPACITY_LB = 96_248.0           # §12, 0.35 x 5,427.5 x 50.667'; §4d 100,047
+_NOTE_CAPACITY_LB = 97_508.0           # §12a, FT-SG-S 5,627.5 plf; §12 96,248
 _NOTE_CANCELLED_LB = 102_011.0         # §4c 102,617; §4 100,362
-_NOTE_SYSTEM_FS = 1.712                # §12; §4d 1.60
+_NOTE_SYSTEM_FS = 1.735                # §12a; §12 1.712
 # §8: the **derived reaction** at the strut, factored, against phi-Pn on a 12" x 17.5"
 # section over an 18'-0" span (20'-0" until §12). phi-Pn moves with the span, not the
 # wall height; Pu does.
@@ -91,17 +91,17 @@ _NOTE_STRUT_PINNED_CORNER_P_LB = 25_503.0     # §4c 25,654; §4 25,090
 # WALL — every one is short against its own thrust, and the shortfall travels through the
 # corners as in-plane shear. The south wall governs at 23,454 lb service; graded as one-way
 # shear on its own 12" x 0.8-lw section, concrete alone, it clears by better than two to one.
-#: §12: the south wall's own 56,210 less its own 0.35 x 5,427.5 x 18.0' = 34,193.
-_NOTE_CORNER_SHORTFALL_LB = 22_017.0   # §4d 24,464; §4c 24,834; §4 23,454
-_NOTE_CORNER_VU_LB = 35_227.0          # 1.6 x 22,017 (§4d 39,142)
+#: §12a: the south wall's own 56,210 less its own 0.35 x 5,627.5 x 18.0' = 35,453.
+_NOTE_CORNER_SHORTFALL_LB = 20_757.0   # §12 22,017; §4d 24,464; §4 23,454
+_NOTE_CORNER_VU_LB = 33_211.0          # 1.6 x 20,757 (§12 35,227)
 _NOTE_CORNER_PHI_VN_LB = 86_322.0
 #: Every member's own-thrust-less-own-friction, §5a's table. Asserted in full because the
 #: headline of that subsection is that the list has NO zero in it.
 _NOTE_SHORTFALL_BY_TAG = {
-    "W-SG-W2": 19_979.0, "W-SG-E2": 19_979.0, "W-SG-S": 22_017.0,   # §12 (S was 24,464)
+    "W-SG-W2": 19_979.0, "W-SG-E2": 19_979.0, "W-SG-S": 20_757.0,   # §12a (§12 22,017)
 }
-#: §5 at §12's court: 0.25 x 5,427.5 x 50.667' = 68,748 against 56,210.
-_NOTE_NO_STONE_FS = 1.22               # §4d 1.14; §4 1.16
+#: §5 at §12a's court: 0.25 x (5,427.5 x 32.667' + 5,627.5 x 18.0') = 69,648 against 56,210.
+_NOTE_NO_STONE_FS = 1.24               # §12a; §12 1.22
 # §4c/§4d, by hand: the apron as a doubled Boussinesq strip, a = 0, b = 1.0', 4.0' down, at
 # AB Classic's 520 psf gross. At 130 pcf the unit weighs no more than the soil it displaces.
 _NOTE_APRON_NET_PSF = {110.0: 80.0, 130.0: 0.0}
@@ -374,11 +374,20 @@ def test_the_footings_narrowed_inboard_only_and_the_outboard_reach_held(catlin_m
     # Inboard edges, 3.5' into the court.
     assert edges["FT-SG-W2"][1] - x_w == pytest.approx(3.5, abs=1e-6)
     assert x_e - edges["FT-SG-E2"][0] == pytest.approx(3.5, abs=1e-6)
-    assert edges["FT-SG-S"][3] == pytest.approx(-23.8333, abs=1e-3)
-    # 7'-0" overall on all three, and the heel still 3'-0".
+    # FT-SG-S's toe is 16" longer (2026-09-22, free body §12a): 4.8333' into the court.
+    assert edges["FT-SG-S"][3] == pytest.approx(-22.5, abs=1e-3)
+    # 7'-0" overall on W2/E2, 8'-4" on S; the heel still 3'-0" on all three.
     for tag, (x0, x1, y0, y1) in edges.items():
         span = (x1 - x0) if tag != "FT-SG-S" else (y1 - y0)
-        assert span == pytest.approx(7.0, abs=1e-6), tag
+        assert span == pytest.approx(7.0 if tag != "FT-SG-S" else 100 / 12, abs=1e-6), tag
+
+    # The field is what the three toes leave: 11'-0" square.
+    field = next(s for s in catlin_model.solids if s.tag == "SL-SG-FIELD")
+    fx = [x / _M_PER_FT for x, _ in field.outline]
+    fy = [y / _M_PER_FT for _, y in field.outline]
+    assert max(fx) - min(fx) == pytest.approx(11.0, abs=1e-6)
+    assert max(fy) - min(fy) == pytest.approx(11.0, abs=1e-6)
+    assert min(fy) == pytest.approx(edges["FT-SG-S"][3], abs=1e-6)
 
 
 def test_the_net_rim_laps_no_footing(catlin_model) -> None:

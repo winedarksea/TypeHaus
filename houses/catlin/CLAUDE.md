@@ -2252,17 +2252,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `Dowel` z is derived off the shared 8" footing-to-footing joint face (mid-way through it);
   the foam block matches that 8". **Nothing in the engine grades a `Dowel` against the two
   footings it names** — check both footing tops/bottoms by hand after any elevation change.
-- **The court is 26'-0" x 17'-0" clear (19'-0" until 2026-09-22) and there is a structural floor at 22'-10".**
+- **The court is 26'-0" x 17'-0" clear (19'-0" until 2026-09-22) and there is a structural floor at 22'-6 3/8".**
   Shortening it removes base friction from the capacity and **nothing** from the demand: the
   E-W thrusts cancel identically, so the resultant is the south wall's alone and the south
   wall is the court's WIDTH. Court length is not the cheap lever it looks like — about $700
-  to $1,300 a foot, against ~0.07 of system FS per foot, and **3'-2"** of it is left.
+  to $1,300 a foot, against ~0.07 of system FS per foot, and **3'-5"** of it is left.
   **Re-derive that floor, never quote it**: it is `run = 56,210 x 1.50 / F` with
   `run = 2(L - 9.6667) + 18` (free body §12), so it moves with the strip width, the apron's
-  surcharge and the court's width. It was 24'-6" at the 19'-0" court, 23'-3" at 8'-0", and
-  23'-11" before the surcharge (2026-09-20).
-- Current stem/toe state: system FS **1.712** (d/c 0.876), stem flexure **0.61**, toe
-  flexure **0.72**, heel flexure **0.70**, stem length **9.1198'**. **The raised-garden
+  surcharge and the court's width. It was 22'-10" before FT-SG-S's toe grew (§12a), 24'-6"
+  at the 19'-0" court, 23'-3" at 8'-0", and 23'-11" before the surcharge (2026-09-20).
+- Current stem/toe state: system FS **1.735** (d/c 0.865), stem flexure **0.61**, toe
+  flexure **0.72** on W2/E2 and **0.74** on S (§12a), heel flexure **0.70**, stem length **9.1198'**. **The raised-garden
   apron's bearing is in every one of those** (2026-09-20, `engineering/tier_surcharge.py`,
   free body §4c): +69 plf of thrust per wall, NET of the soil the block displaces — taken
   gross the loop read **1.46 and did not clear** at the 19'-0" court, so netting is a
@@ -2271,7 +2271,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   is held on that 2% margin and on §5's stone-bed dependence. **It is `#5 @ 7"`, not `#6 @ 10"` (2026-09-17)**:
   the vertical runs continuous on a 90° foot on the footing mat, 7.875" is available, and
   ACI 318-19 §25.4.3.1(a) ldh is 9.35" for a #6, 7.11" for a #5 (free body §6b).
-- **ALL FIVE court strips are 7'-0" x 1'-0" CENTRED on the wall axis, zero offset, with a
+- **FT-SG-S is 8'-4" with a 4'-4" toe and a `#5 @ 9"` bottom-x mat (2026-09-22,
+  `SPEC.south_toe_extension_in`, free body §12a)**: it squares the planted field to 11'-0"
+  (121 sf) and paves the strip W-SG-S shades; outboard edge and heel unmoved; at `#5 @ 12"`
+  the toe read 0.98. Its closure board needs none of this: `TB-SG-*` sit on W1/E1 only.
+- **The other four court strips are 7'-0" x 1'-0" CENTRED on the wall axis, zero offset, with a
   `#5 @ 12"` mat (2026-09-10).** They were 96" with a 6" court-side offset for one revision
   and the 96" was a fossil: §3 widened the strip because the resultant fell outside the
   kern, which was true at `H` 11.3698' and is not at 10.1198' (e 0.800' against a kern of

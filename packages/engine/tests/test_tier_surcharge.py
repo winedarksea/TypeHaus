@@ -89,19 +89,26 @@ def test_each_court_wall_carries_its_own_apron(catlin_plan, pcf) -> None:
 
 
 def test_the_wall_records_restate_section_4d(catlin_plan) -> None:
-    """Overturning 2.35, e 0.851', q 1,341 psf, stem Mu 12,277 — and the citation."""
+    """Overturning 2.35, e 0.851', q 1,341 psf, stem Mu 12,277 — and the citation.
+
+    W-SG-S reads §12a's row instead: its 4'-4" toe gives 3.044, 0.3022', 822.2 psf and a
+    toe Mu of 11,587; the stem is the same wall and does not move.
+    """
     from typehaus.engineering import EngineeringResults
 
+    rows = {"overturning": 2.35, "e": 0.8511, "q": 1_341.0, "toe": 8_491.0}
+    south = {"overturning": 3.044, "e": 0.3022, "q": 822.2, "toe": 11_587.0}
     results = EngineeringResults(_ctx(catlin_plan))
     for wall, apron in _NOTE_APRON_SOURCE.items():
         record = results[f"retaining_wall/{wall}"]
         assert record.status is Status.OK, record.summary
         states = {s.name: s for s in record.limit_states}
-        assert states["overturning"].capacity == pytest.approx(2.35, abs=0.005)
-        assert states["eccentricity"].demand == pytest.approx(0.8511, abs=1e-3)
-        assert states["bearing"].demand == pytest.approx(1_341.0, abs=0.5)
+        row = south if wall == "W-SG-S" else rows
+        assert states["overturning"].capacity == pytest.approx(row["overturning"], abs=0.005)
+        assert states["eccentricity"].demand == pytest.approx(row["e"], abs=1e-3)
+        assert states["bearing"].demand == pytest.approx(row["q"], abs=0.5)
         assert states["stem flexure"].demand == pytest.approx(12_277.0, abs=2.0)
-        assert states["toe flexure"].demand == pytest.approx(8_491.0, abs=2.0)
+        assert states["toe flexure"].demand == pytest.approx(row["toe"], abs=2.0)
         note = next(n for n in record.notes if n.startswith("APRON SURCHARGE"))
         assert f"via tiered_retaining/{apron}" in note
         assert "328 plf" in note          # the gross sensitivity is printed, not hidden

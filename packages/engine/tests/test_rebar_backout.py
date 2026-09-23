@@ -37,8 +37,8 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): (114, 139.8),
     ("column", "#5", "hdg-a767"): (80, 549.5),
-    ("footing", "#4", "hdg-a767"): (30, 263.7),
-    ("footing", "#5", "hdg-a767"): (150, 962.7),
+    ("footing", "#4", "hdg-a767"): (31, 270.1),
+    ("footing", "#5", "hdg-a767"): (156, 1051.0),
     ("foundation wall", "#3", "hdg-a767"): (44, 70.6),
     ("foundation wall", "#4", "hdg-a767"): (311, 1715.4),
     ("foundation wall", "#5", "hdg-a767"): (141, 1420.3),
@@ -69,8 +69,10 @@ _SCHEDULE = {
 # (−1 tie and 4 x 4" of #5 each, −10.5); FT-SG-S 216" not 240" (−4 #5 x 78", 6 #4 x −24",
 # −35.1); W-SG-S the same (−4 verticals, 16 rows x −24", −63.9); W-SG-BRKBM 2' shorter
 # (−5 ties, 8 bars x −24", −23.2); W-B-S1/-S4 1' longer each (+4.0).
-_TOTAL_LB = 6475.8
-_TOTAL_PIECES = 1165
+# +94.7 lb, +7 pieces the same day: FT-SG-S's 4'-4" toe (100", bottom-x #5 @ 9"), less
+# what W2/E2 give up where FT-SG-S's larger pour now keeps 16" more of their overlap.
+_TOTAL_LB = 6570.5
+_TOTAL_PIECES = 1172
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
 #: authoring steel may lift the tonnage into the register's band without opening it. Opening

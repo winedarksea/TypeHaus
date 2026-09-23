@@ -251,8 +251,8 @@ def test_every_retaining_wall_in_the_court_carries_the_mat(catlin_plan) -> None:
     96" -> 84" centred, which took 22% off the toe moment and brought `#5 @ 12"` from 0.90
     to 0.70, so the schedule is `#5 @ 12"` now rather than the stem's `#6 @ 10"`. `#4 @ 12"`
     is not available below it: 0.200 in2/ft fails flexure and falls under ACI 318-19
-    §7.6.1.1's `0.0018 Ag = 0.259`. All five strips are still one width, one offset (zero),
-    one mat and one continuous form line.
+    §7.6.1.1's `0.0018 Ag = 0.259`. Since 2026-09-22 FT-SG-S alone is 8'-4" with a 4'-4"
+    toe and `#5 @ 9"` bottom-x (§12a); the other four share one width, offset and mat.
     """
     from typehaus.model.structure import Footing
 
@@ -262,7 +262,9 @@ def test_every_retaining_wall_in_the_court_carries_the_mat(catlin_plan) -> None:
         assert spec is not None, f"FT-{wall[2:]} lost its mat"
         roles = {b.role: b for b in spec.bars}
         assert roles["bottom-x"].bar == 5
-        assert roles["bottom-x"].spacing.inches == pytest.approx(12.0)
+        # FT-SG-S's 4'-4" toe takes #5 @ 9" bottom-x (free body §12a); the rest keep 12".
+        bottom = 9.0 if wall == "W-SG-S" else 12.0
+        assert roles["bottom-x"].spacing.inches == pytest.approx(bottom)
         assert roles["top-x"].bar == 5
         assert roles["top-x"].spacing.inches == pytest.approx(12.0)
         assert spec.cover.inches == pytest.approx(3.0)

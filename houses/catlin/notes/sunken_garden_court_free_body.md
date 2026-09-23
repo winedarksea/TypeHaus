@@ -2353,6 +2353,64 @@ friction; uncapped x 184.89", T 42,124.6 lb, the beam's lock-in 37,046 lb. The u
 slab edge now reads OK capped (0.977) and still OVER uncapped (1.788).
 `tests/test_thermal_break.py` carries these.
 
+### 12a. FT-SG-S's toe grows 1'-4" (2026-09-22) — the south strip row
+
+The owner squared the planted field (11'-0" x 11'-0") by paving its shaded south 16" with
+footing top. **FT-SG-S alone** goes 7'-0" → **8'-4"**: toe 3'-0" → **4'-4"**, heel held at
+3'-0", outboard edge unmoved (offset +8" into the court). W-SG-W2/E2 keep 7'-0", so every
+7'-0" figure above stands for them; this is the south wall's row beside them. Same case as
+§4d (at-rest 60, 110 pcf, apron surcharge): `P = 3,122.79 plf`, `M_ot = 10,638.1 ft-lb/ft`.
+
+```
+W_stem   = 1.0 × 9.1198 × 150                     = 1,368.0 plf   unchanged
+W_ftg    = 8.3333 × 1.0 × 150                     = 1,250.0 plf   (7'-0": 1,050.0)
+W_heel   = 3.0 × 9.1198 × 110                     = 3,009.5 plf   unchanged — heel held
+W                                                 = 5,627.5 plf
+
+M_r      = 1,250.0 × 4.1667 + 1,368.0 × 4.8333 + 3,009.5 × 6.8333
+         = 5,208.3 + 6,611.8 + 20,565.1           = 32,385.3 ft-lb/ft
+FS_ot    = 32,385.3 / 10,638.1                    = 3.044      d/c 0.493  (was 0.638)
+x̄        = (32,385.3 − 10,638.1)/5,627.5          = 3.8645 ft
+e        = 4.1667 − 3.8645                        = 0.3022 ft  kern 1.3889  d/c 0.218 (0.729)
+q_max    = 675.30 × (1 + 0.21759)                 = 822.2 psf  /3,000       d/c 0.274 (0.447)
+```
+
+The resultant walks 16" toward centre because the toe adds concrete at the far end of the
+base, where the kern also grows. **Toe flexure is the row that pays** (§7a/§7b steps):
+
+```
+q_toe 822.2   q_heel 528.4   slope 35.266 psf/ft   q at the stem face (4.333') 669.4
+toe M = 669.4 × 4.333²/2 + ½(822.2 − 669.4) × 4.333 × (2/3 × 4.333)
+      = 6,285.1 + 956.5                          = 7,241.7 ft-lb/ft
+Mu    = 1.6 × 7,241.7                            = 11,587 ft-lb/ft
+#5 @ 12" (§7e, 11,865)                                        d/c 0.977   — too thin a margin
+#5 @ 9":  As 0.4133, a 0.4863, φMn = 0.9 × 0.4133 × 60,000 × (8.688 − 0.243)/12
+                                                 = 15,707 ft-lb/ft   d/c 0.738  ✓
+shear at d (cut 3.609'): q 695.0, Vu = 1.6 × ½(822.2 + 695.0) × 3.609 = 4,381 / 11,057  0.396
+```
+
+`#5 @ 9"` bottom-x on FT-SG-S only: the same bar on the pour, toe back at the court's ~0.7.
+Heel flexure (0.70) is the soil column alone and does not move. **System sliding**:
+
+```
+capacity = 0.35 × (5,427.5 × 2 × 16.333 + 5,627.5 × 18.0) = 97,507.5 lb
+FS       = 97,507.5 / 56,210.2                            = 1.735   d/c 0.865  (was 0.876)
+length floor: 2(L − 9.6667) × 5,427.5 = 1.5 × 56,210.2/0.35 − 5,627.5 × 18
+                                                   →  L ≥ 22'-6 3/8"  (was 22'-10")
+no stone (§5, μ 0.25): 0.25 × 278,593 / 56,210.2         = 1.24  ✗   (was 1.22)
+§5a south shortfall: 56,210.2 − 0.35 × 5,627.5 × 18.0     = 20,757 lb (was 22,017; still governs
+                     over W2/E2's 19,979), Vu = 1.6 × 20,757 = 33,211 lb vs 86,322  d/c 0.38
+```
+
+§11 reads the same friction, so two of its figures move (the capped basis-9 rows do not):
+
+```
+court friction at 130 pcf = 0.35 × (5,974.8 × 32.667 + 6,174.8 × 18.0) / 1.5  = 71,474 lb (70,634)
+uncapped spring: μΣwL 97,508 over 322.565" (μw 302.29)
+  x = (97,508 + 56,210) / (227.84 + 604.58) = 184.66"  T = 227.84 × 184.66 = 42,074 lb (42,125)
+  line = 42,074.2 − 2 × 788.5 = 40,497 lb; unstated-grade slab edge 40,497 / 22,680 = 1.786 OVER
+```
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

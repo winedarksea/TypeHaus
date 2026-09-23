@@ -162,8 +162,9 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         # 1.59 since 2026-09-20: the raised-garden apron's surcharge joined the thrust (§4c);
         # 1.60 since 2026-09-21, the apron on AB Classic's 130 pcf (§4d); 1.712 since
         # 2026-09-22, when the court narrowed to 17'-0" and the south wall — which IS the
-        # resultant — shortened 20'-0" -> 18'-0" on axes (§12, d/c 0.876).
-        assert record.ratio == pytest.approx(1.5 / 1.712, abs=0.005)
+        # resultant — shortened 20'-0" -> 18'-0" on axes (§12, d/c 0.876); 1.735 when
+        # FT-SG-S's toe grew 16" and its strip got heavier (§12a, d/c 0.865).
+        assert record.ratio == pytest.approx(1.5 / 1.735, abs=0.005)
         by_name = {state.name: state for state in record.limit_states}
         # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
         # gone rather than reported alongside a contradicting one.

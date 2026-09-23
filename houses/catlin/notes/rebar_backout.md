@@ -615,3 +615,14 @@ out of it.
 Total **6,475.8 lb / 1,165 pieces** (was 6,717.9 / 1,216). The −241.7 lb, host by host: the two
 retired porch columns −113.2; the four corner columns 4" shorter −10.5; FT-SG-S −35.1; W-SG-S
 −63.9; W-SG-BRKBM 2' shorter −23.2; W-B-S1/-S4 1' longer each +4.0.
+
+## Addendum 2026-09-22 — FT-SG-S's toe grows 1'-4"
+
+Total **6,570.5 lb / 1,172 pieces** (was 6,475.8 / 1,165). FT-SG-S's own mat
+(`rebar_layout_basis.md`, its addendum) adds 6 #5 / +101.86 lb and 1 #4 / +11.69 lb. The
+larger pour keeps an overlap's mat (`resolve/rebar/build.py`), and FT-SG-S now laps 16" more
+of each leg strip, so FT-SG-W2/E2 give some back: per leg, the 3 inboard bottom-y #4 stop at
+y = −22.5 instead of −23.833 (3 × 16" × 0.668 = −2.67 lb), and the one transverse #5 at
+y = −23.11 in each face drops from 78" to its 39" outboard stub (−39.1" × 1.043 = −3.40 lb a
+face). Rows: footing #5 150 → 156 pieces, 962.7 → **1,051.0** lb
+(+101.86 − 4 × 3.40); footing #4 30 → 31, 263.7 → **270.1** lb (+11.69 − 2 × 2.67).
