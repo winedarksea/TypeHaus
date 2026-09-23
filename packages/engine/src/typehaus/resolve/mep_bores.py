@@ -478,3 +478,21 @@ def flat_header_cut(profile: str, cut_in: float) -> BoreVerdict:
         f'IRC R602.7.4: a flat {profile} nonbearing header carries no load, so no rule '
         f'limits a cut in it; {cut_in:.2f}" off it leaves '
         f'{thickness_in - cut_in:.2f}" of the {thickness_in:.2f}" nailer at the head')
+
+
+#: Every I-joist maker (TJI, LPI, BCI, AJS) forbids cutting, notching or boring a FLANGE, at
+#: any station and any size: the one I-joist rule that needs no chart.
+I_JOIST_FLANGE_CUT_IN = 0.0
+
+
+def i_joist_flange_cut(profile: str, cut_in: float) -> BoreVerdict:
+    """A run's surface ``cut_in`` into an I-joist flange: FAIL for anything above zero."""
+    if cut_in <= I_JOIST_FLANGE_CUT_IN + 1e-9:
+        return BoreVerdict(True, "notch", cut_in, I_JOIST_FLANGE_CUT_IN,
+                           f"clear of both flanges of the {profile}")
+    return BoreVerdict(
+        False, "notch", cut_in, I_JOIST_FLANGE_CUT_IN,
+        f'{cut_in:.3f}" into a flange of a {profile}: I-joist makers forbid cutting, '
+        "notching or boring a flange at any size or station, so no chart permits it",
+        remedy="move the run clear of the flange, or through the web inside the maker's "
+               "hole zone")

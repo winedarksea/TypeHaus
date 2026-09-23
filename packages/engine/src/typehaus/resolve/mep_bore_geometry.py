@@ -102,10 +102,18 @@ def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, fl
         # envelope clipped by the member's END drags its own centroid inward.
         axis_in = axis.intersection(shape)
         centre = (overlap if axis_in.is_empty else axis_in).centroid
-        z = _z_at(a, b, za, zb, (centre.x, centre.y))
         top = member.z1_m if member.z1_m is not None else wall.z1_m
-        if not (member.z0_m - radius_m <= z <= top + radius_m):
-            continue
+        if a == b:
+            # A riser occupies its whole z range at one plan point; its midpoint is not
+            # where it meets anything (DU-ERV-RISER-EXH's fell 0.9" above W-M-MECH-S).
+            low, high = min(za, zb), max(za, zb)
+            if high + radius_m < member.z0_m or low - radius_m > top:
+                continue
+            z = min(max((member.z0_m + top) / 2.0, low), high)
+        else:
+            z = _z_at(a, b, za, zb, (centre.x, centre.y))
+            if not (member.z0_m - radius_m <= z <= top + radius_m):
+                continue
         length_m = ((member.p1[0] - member.p0[0]) ** 2
                     + (member.p1[1] - member.p0[1]) ** 2) ** 0.5
         from_end_m = min(

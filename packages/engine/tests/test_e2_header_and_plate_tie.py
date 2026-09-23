@@ -419,7 +419,7 @@ def test_an_empty_covers_ties_every_cut_in_that_wall() -> None:
     assert ties == {"W-A": frozenset({"*"}), "W-B": frozenset({"PR-B-KITCH-DRAIN"})}
 
 
-def test_catlin_s_one_real_plate_cut_fails_for_want_of_a_tie(catlin_model_ro) -> None:
+def test_catlin_s_real_plate_cuts_fail_for_want_of_a_tie(catlin_model_ro) -> None:
     """The other nine are framed openings, which is a different question (§6).
 
     It was four until the wet-wall retype on 2026-09-20. Three of those cuts were legal
@@ -430,10 +430,15 @@ def test_catlin_s_one_real_plate_cut_fails_for_want_of_a_tie(catlin_model_ro) ->
 
     Ten UNKNOWNs since 2026-09-22: the tenth is that same vent SEVERING `W-B-ESS-W`'s 2x6
     plate — under the width line, but across the plate through its whole 1.50" thickness.
+
+    2026-09-23: a riser is read over its whole height, not at its midpoint. That adds
+    `PR-A-STUBATH-DRAIN`'s 3.50" out of `W-S-DC2`'s 2x6 top plates (a second FAIL) and
+    `PR-M-S-BATH1-DRAIN` interrupting `W-M-STOS`'s (an UNKNOWN), and drops the two ERV risers
+    standing BESIDE `W-M-MECH-S` — `mep.run_through_stud` reports those, once.
     """
     from typehaus.checks.mep.routing_bores import run_through_plate
 
     findings = run_through_plate(_ctx(catlin_model_ro))
     results = [f.result.value for f in findings]
-    assert results.count("fail") == 1
-    assert results.count("unknown") == 10
+    assert results.count("fail") == 2
+    assert results.count("unknown") == 9
