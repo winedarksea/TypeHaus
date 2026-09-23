@@ -20,6 +20,7 @@ from typehaus import (
     MasonrySpec,
     Material,
     PublishedCladdingLoad,
+    ScmFractions,
     Substitution,
     inch,
     inside_of,
@@ -90,8 +91,14 @@ BURIED_MIX = ConcreteSpec(
     # never see it fail and never get to fix it. Recorded as a decision, not as a code
     # requirement, so nobody later reads it as one and "corrects" a pour that omits it.
     bar_coating="hdg-a767",
+    # A767 class 1, chromate-passivated: the 2026-09-02 house-wide HDG call (see the
+    # SUNKEN_GARDEN_COLUMN_12 comment). Not waived.
+    chromate_treatment="passivated",
     fiber=FiberSpec(kind="macro-synthetic", dose_pcy=4.0),
     scm="25% class F fly ash",
+    # The `scm` line read as a whole statement: fly ash only. The cement is still unnamed,
+    # so the F3 cap grade on EXPOSED_MIX stays UNKNOWN until the mix design names it.
+    scm_fractions=ScmFractions(fly_ash_pct=25.0, slag_pct=0.0, silica_fume_pct=0.0),
     max_aggregate=inch(0.75),
     source="strip footings and buried stems below frost depth: MN Rules 1309.0402's 5,000 psi FOOTINGS amendment to IRC Table R402.2, ACI 318-19 Table 19.3.2.1 for F0/W1/C1, and 3\" cover per Table 20.5.1.3.1(a) cast against and permanently in contact with ground",
 )
@@ -105,8 +112,11 @@ EXPOSED_MIX = ConcreteSpec(
     exposure_w="W1",
     exposure_c="C2",
     bar_coating="hdg-a767",
+    chromate_treatment="passivated",
     fiber=FiberSpec(kind="macro-synthetic", dose_pcy=4.0),
     scm="25% class F fly ash",
+    # At Table 26.4.2.2(b)'s 25% fly ash cap exactly, not under it.
+    scm_fractions=ScmFractions(fly_ash_pct=25.0, slag_pct=0.0, silica_fume_pct=0.0),
     max_aggregate=inch(0.75),
     source="every exterior and salt-splash pour: ACI 318-19 Table 19.3.2.1 class F3 + C2 — w/cm 0.40, f'c 5,000, 6%+/-1.5 air — with ASTM A767 class 1 galvanized bar. Cover is authored per pour, because on a 12\" round column it costs moment and on a footing it is free",
 )

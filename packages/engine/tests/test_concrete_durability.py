@@ -77,7 +77,7 @@ def test_too_little_air_is_caught_only_at_a_known_aggregate() -> None:
 def test_the_strictest_of_several_classes_governs() -> None:
     """A pour is simultaneously some F, some S, some W and some C — that is why they are four
     fields and not one. The mix has to satisfy all of them, so the tightest cap wins."""
-    # C2 wants 5,000/0.40; W1 alone would be happy at 4,000/0.50.
+    # C2 wants 5,000/0.40; W1 alone imposes neither.
     problems = _mix_problems(_spec(fc_psi=4000.0, w_cm_max=0.50,
                                    exposure_w="W1", exposure_c="C2"))
     assert len(problems) == 2
@@ -152,7 +152,9 @@ def test_the_table_is_aci_318_19_table_19_3_2_1() -> None:
 
     assert _TABLE_19_3_2_1["F3"] == (0.40, 5000.0)
     assert _TABLE_19_3_2_1["C2"] == (0.40, 5000.0)
-    assert _TABLE_19_3_2_1["W1"] == (0.50, 4000.0)
+    # 318-19 moved the W rows: W1 has no w/cm limit, W2 is 0.50/4,000.
+    assert _TABLE_19_3_2_1["W1"] == (None, 2500.0)
+    assert _TABLE_19_3_2_1["W2"] == (0.50, 4000.0)
     assert _TABLE_19_3_2_1["S1"] == (0.50, 4000.0)
     # The four "0" classes impose no w/cm cap and only §19.2.1.1's 2,500 psi floor.
     for cls in ("F0", "S0", "W0", "C0"):

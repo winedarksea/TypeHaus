@@ -1095,6 +1095,57 @@ A lighter column is not the safe side of every state, which is why each is re-wo
 **2,142 lb at BR1, 1,628 at BF1** (solve 2,142.5 / 1,628.3); dead 97.5 plf → 536 / 407 lb.
 The pair sums to the records' 2 × 1,885 = 3,770; each column is 14% off the equal split.
 
+## 14. Cover: 2" as built, 2 1/2" and 3" as alternatives (2026-09-23)
+
+The authored cover stays **2"** (`_MOMENT_COLUMN_CAGE`). This asks what 2 1/2" or 3" costs
+in bending, run through `deck_post._pm_point`. Worked by hand at §13's loads, the same
+method as §13b. Only the bar circle moves:
+
+```
+bar offset = (6 − cover − 0.375 − 0.3125) × cos 45°
+  2"   2.342"      2 1/2"   1.989"      3"   1.635"
+```
+
+At P_u 4,855.3 (front row, 1.2D + 1.6L):
+
+```
+cover   c        a        A_seg    ȳ        C_c       T (pair)   eps_t     Cs (pair)          phi     phi·Mn
+2"      2.750"   2.200"   14.21    4.696"   60,403    −37,200    0.00610   −17,808 (−0.00099)   0.900   24,678
+2 1/2"  2.867"   2.294"   15.09    4.641"   64,127    −37,200    0.00536   −21,532 (−0.00120)   0.900   24,657
+3"      2.981"   2.385"   15.96    4.587"   67,826    −37,200    0.00468   −25,032 (−0.00139)   0.868   23,941
+```
+
+At 3", phi = 0.65 + 0.25 × (0.00468 − 0.00207)/0.003 = 0.868 (Table 21.2.2). The §2.3.1
+envelope, 1.2D + 1.0W + L at P_u 3,724 and M_u 4,501 lb-ft:
+
+| cover | φM_n (front) | d/c | φM_n (rear, M_u 4,569) | d/c |
+|---|---:|---:|---:|---:|
+| 2" (built) | 24,382 | 0.185 | 24,388 | 0.187 |
+| 2 1/2" | 24,381 | 0.185 | 24,386 | 0.187 |
+| 3" | 23,812 | 0.189 | 23,814 | 0.192 |
+
+**Cover costs almost nothing in bending here**, which is not the usual result. At this low
+axial load both bar pairs are in tension (the "compression-side" pair is at −0.001). Pulling
+the cage inward shortens the tension pair's lever arm, and it also reduces the far pair's
+negative moment. The two effects nearly cancel: M_n actually rises (27,421 → 27,587 lb-ft
+at 3"). What 3" does cost is phi. ε_t drops below ε_ty + 0.003 = 0.00507, the section enters
+the transition band, and φM_n falls 3%. At 2 1/2", ε_t 0.00536 still clears the band.
+
+**What decides between them is the cage, not the capacity.** ACI 318-19 Table 20.5.1.3.1
+asks 1 1/2" for a #5 exposed to weather, and 3" only for concrete *cast against and
+permanently in contact with ground*. A Sonotube-formed column on a wall top is not cast
+against ground, so the 3" row does not apply. Commentary R20.5.1.4.1, under §20.5.1.4.1's
+"increased as deemed necessary" in corrosive environments, **recommends ≥2 1/2" for
+members other than walls and slabs**. The built 2" is under that recommendation. It meets
+the Code minimum, and the galvanized bar is the margin (§7). 2 1/2" is free in capacity. It
+would make a **7"** ring instead of §7's stock 8" unit, and the column would stop matching
+the north entry's identical `ENTRY_PIER_CAGE`. 3" makes a 6" ring and costs 3% of φM_n.
+Every alternative passes. The choice is a durability and procurement call, not a strength one.
+Not re-worked here: §13c's dowel tension (one bar on-axis) scales with the same lever arm
+and would need re-running if the cover changed.
+
+`tests/test_balcony_column_cover.py` reproduces the three rows.
+
 ---
 
 ## Sources
@@ -1104,7 +1155,8 @@ Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
 section form after. A document is listed here only if a number in this note came
 out of it.
 
-- **ACI 318-19** — §19.3.3.4, §20.5.1.3, §22.8.3, §22.9.4.2, §22.9.4.4, §25.4.2.4
+- **ACI 318-19** — §19.3.3.4, §20.5.1.3, Table 20.5.1.3.1, §20.5.1.4.1 and R20.5.1.4.1,
+  Table 21.2.2, §22.8.3, §22.9.4.2, §22.9.4.4, §25.4.2.4
 - **ASCE 7-16** — Fig. 29.3-1, §2.3.1, §2.4.1, §29.3
 - ASTM A767
 - **AWC NDS 2018** — Table 5.3.1
