@@ -12,6 +12,8 @@
 from typehaus import (
     PipeRun,
     PipeSystem,
+    Service,
+    SleevePenetration,
     Sump,
     SumpPump,
     ft,
@@ -725,8 +727,14 @@ RADON_SUMP = [
          # CKT-SUMP was already on the panel schedule but the pit only implied a pump;
          # declaring it here puts an IfcPump/SUMPPUMP in the export and gives the
          # discharge something to check against.
+         # ** IT PUMPS INTO THE WEST LEADER'S EXTENSION (2026-09-22). ** "daylight" had no
+         # pipe behind it. PR-B-SUMP-DISCH (below) wyes into TR-RF-LEADER-W's extension
+         # riser, so pumped water shares the buried line to RG-W-BASIN. That line is 6-10"
+         # down and freezes; the ice guard spills at the foundation foot when it does.
          pump=SumpPump(model="1/3 hp cast-iron submersible", horsepower=0.33,
-                       discharge="daylight", circuit_ref="CKT-SUMP"),
+                       discharge="TR-RF-LEADER-W", circuit_ref="CKT-SUMP",
+                       discharge_line_ref="PR-B-SUMP-DISCH", check_valve=True,
+                       freeze_relief=True),
          # ** WHAT FEEDS IT, NAMED FROM THE PIT'S SIDE (2026-09-14). ** Nineteen perimeter
          # rings and the court's overflow leg all named this pit and nothing on the pit
          # named them back, so there was no way to tell an authored connection from an
@@ -756,20 +764,39 @@ RADON_SUMP = [
          # pump that stops and an inflow past the pump's rate, and until now nothing said
          # where the water went in either case.
          #
-         # It goes to the court's soakaway, and **the path is downhill and needs no pump**:
-         # DRW-SG-MAIN's top of stone is -13'-7 7/16", **36" below this tie and 26 1/2"
-         # below this pit's own floor**. That elevation is why `foundations.py`'s "the only
-         # collector below this invert" reasoning for sending the house tile to the sump is
-         # a false premise — the well was never considered.
+         # It goes to the court's soakaway course, and **the path is downhill and needs no
+         # pump**: FB-SG-ARCH's stone runs down to -14'-7 7/16", its course's top is
+         # -13'-7 7/16", **36" below this tie and 26 1/2" below this pit's own floor**.
          #
          # The tie is at -10'-7 7/16", **the same invert `FD-SG-OVERFLOW` arrives at**: one
          # penetration level, no valves, no high-water device, no directional control.
          # Deliberately 4" BELOW the inlet invert above, so the pit relieves to the court
          # before it backs up into the house footing tile — which is the only ordering this
-         # design asks for. Water finding its way to the drywell instead of the pump is
-         # acceptable; so is the reverse.
-         overflow_ref="DRW-SG-MAIN",
+         # design asks for. Water finding its way to the court's stone instead of the pump is
+         # acceptable; so is the reverse (FB-SG-ARCH relieves back here at the same invert).
+         overflow_ref="FB-SG-ARCH",
          overflow_invert=inch(-127.4375)),
+]
+
+# --- the sump's pumped discharge (2026-09-22) -------------------------------------------
+# 1 1/2" PVC Sch 40 out of the sealed lid through a gasketed grommet at (1'-4", 34'-6"), 4"
+# east of the radon/vent bundle at (1'-0", 34'-6"), up to -1'-9" (above grade -2'-10",
+# below the pour top), west through W-B-W1 6" south of W-B-N4's inner face, and down at
+# >= 1/4"/ft to a wye on TR-RF-LEADER-W-EXT-RISER at -1'-10". Elevations are basement-
+# relative (datum -109 7/16"). Check valve and ice guard are on the pump (SM-B-RADON).
+SUMP_DISCHARGE = [
+    PipeRun(uid="23NF4WJS89", tag="PR-B-SUMP-DISCH", system=PipeSystem.SUMP_DISCHARGE,
+            path=(pt(ft(1, 4), ft(34, 6)), pt(ft(1, 4), ft(34, 6)),
+                  pt(inch(-10.5), ft(34, 6)), pt(inch(-10.5), ft(35, 6))),
+            diameter=inch(1.5), material="pvc",
+            # Starts at the lid (the slab top): the pump's own riser in the pit is the pump's.
+            elevations=(inch(0), inch(88.4375), inch(87.8375), inch(87.4375))),
+    # The wall crossing, sleeved like SP-SG-ARCH-OVERFLOW, on the 8" pour's centreline 4" in
+    # from the axis; centre = invert at the wall + 3/4".
+    SleevePenetration(uid="DS557CEW46", tag="SP-B-W1-SUMP-DISCH", host_ref="W-B-W1",
+                      position=pt(inch(4), ft(34, 6)), pipe_diameter=inch(1.5),
+                      sleeve_diameter=inch(3), purpose=Service.DRAIN, axis="horizontal",
+                      center_elevation=inch(-20.5)),
 ]
 
 

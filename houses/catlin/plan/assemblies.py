@@ -970,7 +970,7 @@ _WASH_FILM = inch(0.125)
 # silane/siloxane repellent makes concrete hydrophobic and non-absorbent, which is the one
 # condition a potassium silicate cannot bond to. They are alternatives, never a stack.
 # ** THE OUTBOARD FACE IS DRAINED, NOT WATERPROOFED (2026-09-16). ** A standard 5/16" dimpleboard
-# (DELTA-MS class, dimples to the wall) gives soil water a path down to `FD-SG-LEAD-W`/`-E`
+# (DELTA-MS class, dimples to the wall) gives soil water a path down to the footing beds' tile
 # at the footing, and it is the element `engineering/retaining_wall`'s "the drainage behind the
 # wall works perfectly" names. The 60-mil membrane that sat under it is gone: both faces of every
 # court wall are exterior, there is no occupied space to keep dry, the steel is galvanized, and
@@ -2134,7 +2134,7 @@ GARDEN_PUTTING_GREEN = Assembly(
         Layer(name="subgrade-separation", material_ref="geotextile-separation", thickness=inch(0.02),
               function=LayerFunction.MEMBRANE),
     ),
-    source="sunken-garden court field: USGA Recommendations for a Method of Putting Green Construction (2018), Steps 3-5 — 12\" rootzone over a 2\" intermediate choker sand over 4\" bridging gravel, on a subgrade separation fabric, underdrained by FD-SG-FIELD to DRW-SG-MAIN. 18\" is USGA's depth for the intermediate-layer build-up",
+    source="sunken-garden court field: USGA Recommendations for a Method of Putting Green Construction (2018), Steps 3-5 — 12\" rootzone over a 2\" intermediate choker sand over 4\" bridging gravel, on a subgrade separation fabric, underdrained by FD-SG-FIELD into FB-SG-ARCH's soakaway course. 18\" is USGA's depth for the intermediate-layer build-up",
 )
 
 # D-B-PATIO's landing: the piece of the old flush garden floor the door still stands on,

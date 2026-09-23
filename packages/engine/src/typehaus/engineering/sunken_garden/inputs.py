@@ -154,7 +154,8 @@ def default_design_input(*, stem_thickness_in: float = 12.0,
             balcony_reactions_lb=BasedValue(None, "coupled gravity/lateral analysis required"),
         ),
         drainage=DrainageInputs(
-            wall_drain_outlet=BasedValue("drywell with overflow to SM-B-RADON", "modelled network"),
+            wall_drain_outlet=BasedValue(
+                "soakaway course under the beds, overflow to SM-B-RADON", "modelled network"),
             bearing_stone_outlet=BasedValue(
                 "shared storage; invert survey required", "modelled section"),
             sump_available=BasedValue(None, "owner/MEP decision required"),

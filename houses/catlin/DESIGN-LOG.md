@@ -2635,6 +2635,63 @@ contradicts the note. It costs 0.3 SF of brick.
 
 ## Sunken garden court
 
+### Soakaway beds, a court area drain, the sump into the rain garden (2026-09-22)
+
+The court's drainage was awkward to build and bought little: a 5'x6' fabric-wrapped shaft
+(`DRW-SG-MAIN`) sunk to -19'-7 7/16", two leads trenched through clay under the field, and a
+field lateral diving 28" in 10' to the well's top, drawn as 28 stepped trench pieces. About
+47 cf of voids and 20 sf of infiltrating bottom — against ~500 sf of bed stone already in
+the hole. Snowmelt onto a frozen field had no way into the stone at all, and the sump's
+"daylight" discharge had no pipe behind it. Owner decisions:
+
+1. **Delete** `DRW-SG-MAIN` and `FD-SG-LEAD-W`/`-E` (uids spent, listed in `params/sunken_garden.py`).
+2. **A 12" "allowed to flood" soakaway course** of the same #57 below the 42" drained ASCE 32
+   section, under `FB-SG-W2`/`E2`/`S`/`ARCH` only, all bottoming at -14'-7 7/16". W1/E1 abut
+   the house footings and stay 42" drained-only, which keeps flood water ~10'+ from the
+   basement; the dig steps 12" at y = -11'-0". The course is **never frost section**
+   (`FootingBedding.soakaway_depth`; `z0_m` keeps meaning the drained bottom).
+3. **Snowmelt governs, with 48 h of infiltration credited** because a melt is slow:
+
+   | line | working | cf |
+   |---|---|---|
+   | course voids | 388 sf (union of the four beds) x 1.0 ft x 0.40 | 155 |
+   | infiltration | 388 sf x 0.06 in/hr x 48 h / 12 (MPCA HSG D, presumed) | 93 |
+   | **held** | | **249** |
+   | design melt | 50 psf / 62.4 pcf x 278 sf of open court (17' x 16'-4") | 222 |
+
+   `drainage.soakaway_storage` PASSES it (`notes/court_soakaway_storage.md`). 18" only if the
+   credit turns out unrealistic.
+4. **`AD-SG-COURT`**: a 12" grate in the rim slab just north of `W-SG-ARCH`, under the balcony,
+   1" clear of the beam and 2' off the x=18' overflow line; a solid 4" riser into
+   `FB-SG-ARCH`'s stone (bed widened 24" -> 36" for a 12" strip north of the beam), letting go
+   at -163 7/16", 12" below frost. Passive, no heat trace.
+5. **`drainage.soakaway_storage`**, advisory, new in the engine.
+6. **The sump pumps into `RG-W-BASIN`** through `PR-B-SUMP-DISCH` (1 1/2" PVC Sch 40,
+   `PipeSystem.SUMP_DISCHARGE`), sleeved through `W-B-W1`, wyed into `TR-RF-LEADER-W`'s
+   extension riser at -1'-10"; check valve and ice guard on the pump. The daylight-outlet
+   allowance was re-scoped the same day so the line is not billed twice.
+
+Unchanged: the one-tie, one-invert bridge (decision 6, -127 7/16") — it now spills to
+`FB-SG-ARCH` — and the frost claim. #57 bedding +17.9 cy (78.6 -> 96.4); net of the well's
+4.4 cy the house buys ~13.5 cy more stone.
+
+**Residual risks, recorded rather than solved:**
+- **The drained frost section floods before relief.** The -127 7/16" lip sits 36" inside the
+  42" section; it cannot go lower by gravity, and it is pre-existing. `soakaway_storage`'s
+  second finding states it as an UNKNOWN.
+- **Winter.** The shared leader extension is 6-10" down; it freezes, the ice guard spills at
+  the foundation foot, and that water can recirculate to the perimeter tile and the pump.
+- **`RG-W-BASIN`**: 2.6 cf of margin on roof water alone, and it now takes pumped groundwater
+  (including the court's relief through the bridge). It overflows to daylight.
+- **Presumed soil.** The rate is presumed, like the soil class; a soils report closes it, and
+  so does the 18" fallback.
+- **Flat court.** No fall to the grate is modelled, and the basin can ice.
+- **Chlorides** now pool under the reinforced footings rather than in a separate well — the
+  F3/C2 argument gets stronger (free-body note, updated).
+- **Deeper excavation** to ~-15' under four beds: shoring grows.
+- **Pre-existing, verify:** `SM-B-RADON`'s pit laps `W-B-W1`/`W-B-N4`'s footprint in plan,
+  which nothing grades.
+
 ### The court went 17'-0" so both decks span wall to wall, and the centre line went (2026-09-22)
 
 The court was 19'-0" clear only so the balcony's centre pillars could sit on a 10' grid. At

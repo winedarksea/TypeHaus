@@ -137,7 +137,13 @@ def test_takeoff_trade_and_ifc(drained):
     rows = {r["category"]: r for r in drainage_takeoff(drained[1])
             if "AD-TEST" in r["tags"]}
     assert rows["area_drain"]["count"] == 1 and rows["area_drain"]["product"] == "NDS 1200"
-    riser_ft = (PAD_BOTTOM_FT + 1.5 - 1.0) - (PAD_BOTTOM_FT - 2.5)
-    assert rows["area_drain_riser"]["length_ft"] == pytest.approx(riser_ft, abs=0.05)
+    # Off each drain's RESOLVED riser (catlin's AD-SG-COURT shares the row).
+    risers = {s.tag: s for s in drained[1].solids if s.category == "area_drain_riser"}
+    assert (risers["AD-TEST-RISER"].z1_m - risers["AD-TEST-RISER"].z0_m) / 0.3048 == \
+        pytest.approx((PAD_BOTTOM_FT + 1.5 - 1.0) - (PAD_BOTTOM_FT - 2.5))
+    row = rows["area_drain_riser"]
+    assert row["length_ft"] == pytest.approx(sum(
+        (risers[f"{t}-RISER"].z1_m - risers[f"{t}-RISER"].z0_m) / 0.3048
+        for t in row["tags"]), abs=0.1)
     assert {"area_drain", "area_drain_riser"} <= set(DRAINAGE_CATEGORIES)
     assert _SOLID_IFC_CLASS["area_drain"] == ("IfcWasteTerminal", "GULLYSUMP")

@@ -464,8 +464,10 @@ def sewer_exit_invert(ctx: CheckContext) -> list[Finding]:
     # Drain crossings only. ``concrete_crossings`` walks raceways too, and a dict keyed on
     # sleeve tag lets whichever crossing comes last win — so a power conduit passing near a
     # sewer sleeve could replace the drain that actually threads it and be graded as one.
+    # A sump's pressure line is set to its sleeve the same way, so it is graded here too.
     crossings_by_sleeve = {c["sleeve"]: c for c in concrete_crossings(ctx.model)
-                           if c["sleeve"] is not None and c["system"] == "drain"}
+                           if c["sleeve"] is not None
+                           and c["system"] in ("drain", "sump_discharge")}
     for sleeve in exits:
         if sleeve.center_z_m is None:
             out.append(_unknown(cid, f"horizontal sleeve {sleeve.tag} authors no "

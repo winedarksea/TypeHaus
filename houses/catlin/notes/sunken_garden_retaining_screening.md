@@ -194,8 +194,8 @@ they need is a base.
 
 - **No drainage or hydrostatic design.** Every number above presumes the drainage behind
   these walls works perfectly and no water pressure ever develops. A saturated backfill
-  roughly doubles the thrust and would take sliding under 0.35. `DRW-SG-MAIN` and the
-  fabric-wrapped stone exist; nothing here verifies they are adequate, and drainage is
+  roughly doubles the thrust and would take sliding under 0.35. The beds' soakaway course
+  and the fabric-wrapped stone exist; nothing here verifies they are adequate, and drainage is
   usually the first thing a retaining-wall design nails down.
 - **No seismic.** Minnesota is SDC A/B and wind and soil govern, but that is asserted, not
   demonstrated, and no Mononobe-Okabe increment is applied.

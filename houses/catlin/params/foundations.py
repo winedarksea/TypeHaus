@@ -284,8 +284,8 @@ HOUSE_FOOTINGS = [
 # infiltration, and it draws well under the 20 A CKT-SUMP already carries for it. The pump
 # was always the thing doing this work; the model just said otherwise.
 #
-# The sunken garden's own FT-SG-* beds are NOT changed: they keep DRW-SG-MAIN, which is
-# 4'-0" below them and takes their water by gravity with no pump in the path.
+# The sunken garden's own FT-SG-* beds are NOT changed: their tile lets go into the court's
+# own soakaway course below them, by gravity with no pump in the path.
 HOUSE_FOOTING_BEDDING = [
     FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{t[2:]}", host_ref=f"FT-{t[2:]}",
                    undercut=inch(7), perimeter_insulation=inch(4),
@@ -608,16 +608,16 @@ _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
 # beds all five W-RG-*. `FOOTING_20`'s own `source` string even says the strip is "poured
 # against the bedding prep" — and for these nine there is none. Left open rather than
 # authored here for one honest reason: a bed's drain tile needs a collector below it, and the
-# garage has none. The house's falls to SM-B-RADON and the court's to DRW-SG-MAIN; there is
+# garage has none. The house's falls to SM-B-RADON and the court's to its soakaway course; there is
 # no sump in the garage and no gravity outlet below -7'-0" on this lot. An undrained bed is a
 # defensible thing to specify (the raised garden's are `drain_tile=False`) but it is an
 # excavation and a stone order nobody has costed, and it is a decision, not a correction.
 #
 # ** ⚠ THAT PREMISE IS FALSE, AND IT HAS BEEN SINCE THE COURT WAS DUG (noted 2026-09-14). **
 # "No gravity outlet below -7'-0" on this lot" is the load-bearing sentence above, and
-# `DRW-SG-MAIN`'s top of stone is at **-13'-7 7/16"** — six and a half feet below the level
+# the court's soakaway stone runs down to **-14'-7 7/16"** — over seven feet below the level
 # this paragraph says nothing gets under. The same claim appears above for the house tile;
-# `drainage.network_fallback` and the sump's own overflow to the well now say otherwise, and
+# `drainage.network_fallback` and the sump's own overflow to FB-SG-ARCH now say otherwise, and
 # the gravity path from the house side to the court's soakaway needs no pump at all.
 #
 # ** THE DECISION IS STILL OPEN AND THIS IS NOT AN INSTRUCTION TO AUTHOR IT. ** Whether the

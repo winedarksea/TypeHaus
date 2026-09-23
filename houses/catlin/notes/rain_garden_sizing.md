@@ -74,10 +74,19 @@ Both exceed IRC Table P3005.3's 1/8 in/ft (1.04%). Billed length = 14.55 + 4.33 
 1.92 = **28.5 LF**. Both end in a pop-up emitter on the basin floor; a frozen line
 backs up and overflows at the leader's own boot, which is the winter fallback.
 
+**The west line is shared (2026-09-22).** `SM-B-RADON`'s pumped discharge, `PR-B-SUMP-DISCH`
+(1 1/2" PVC Sch 40), wyes into `TR-RF-LEADER-W`'s riser at −22", 18" above the extension's
+−40" inlet. So the basin also takes pumped groundwater — the house perimeter tile and, through
+the one-tie bridge, the court's relief — which is **not in §2's design volume**:
+`drainage.rain_garden_capacity` reports it as an UNKNOWN beside the 88.5 vs 85.9 cf PASS. The
+basin's margin against roof water alone is 2.6 cf, and it overflows to daylight. In winter the
+buried line freezes; the pump's ice guard spills at the foundation foot, where the water can
+recirculate to the perimeter tile and the pit.
+
 ## 7. What is NOT graded here
 
-Pipe capacity (two 4" lines carry a 3" and a 4" leader), frost depth of the extensions,
-and the neighbour's grade. The media mix's own infiltration rate is the supplier's.
+Pipe capacity (two 4" lines carry a 3" and a 4" leader, one also the pump), frost depth of
+the extensions, the pumped volume, and the neighbour's grade. The media mix's own infiltration rate is the supplier's.
 
 ## Sources
 

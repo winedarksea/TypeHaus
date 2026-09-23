@@ -220,7 +220,7 @@ def _svg(layout: str, raised_in: float, width_in: float, setback_in: float) -> s
         f'<text x="{wall_x + 12}" y="82">setback {setback_in:.0f}</text>',
         '<text x="20" y="115">ordinary yard</text>',
         '<text x="275" y="165">drained stone + filter</text>',
-        '<text x="340" y="203">collector to drywell/overflow</text>',
+        '<text x="340" y="203">collector to soakaway/overflow</text>',
         '<text x="450" y="35">plan</text>',
         '<path d="M470 65 V215 H650 V65" fill="none" stroke="#777" stroke-width="10"/>',
         planter_plan,
@@ -320,7 +320,8 @@ def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
         "be quoted. Pocket restraint and development remain open.", "",
         "## Drainage and water envelope", "",
         "| Scenario | Model action | Required disposition |", "|---|---|---|",
-        "| Normal infiltration | Wall drain to drywell and overflow | Survey every invert |",
+        "| Normal infiltration | Wall drain to soakaway course and overflow | "
+        "Survey every invert |",
         "| Failed infiltration | Storage fills to overflow | Prove overflow capacity and "
         "freeboard |",
         "| Blocked collector | Add hydrostatic pressure to five-foot head | Wet case governs "
@@ -353,7 +354,7 @@ def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
     lines.extend(f"- {item}" for item in design.unresolved_requirements())
     lines.extend([
         "- site stratigraphy, strength, settlement, interface resistance and global stability",
-        "- drain/overflow invert survey and drywell infiltration test",
+        "- drain/overflow invert survey and soakaway-course infiltration test",
         "- GFRP dowel stiffness, shear transfer and development across the thermal break",
         "- veneer/structural tie connection design and local balcony support reinforcement",
         "- fiber-cement manufacturer clearances and verified walkout-wall attachment backing",

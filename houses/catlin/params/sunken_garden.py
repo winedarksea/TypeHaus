@@ -51,7 +51,6 @@ from typehaus import (
     IsolationBoard,
     Downspout,
     DrainTile,
-    Drywell,
     EndRestraint,
     face,
     Fascia,
@@ -62,7 +61,6 @@ from typehaus import (
     Footing,
     FootingBedding,
     FoundationWall,
-    FrenchDrain,
     from_node,
     ft,
     Gutter,
@@ -202,6 +200,17 @@ class SunkenGardenSpec:
     # (a 42" augered shaft, see _pier_bell_bottom_ft).
     frost_depth_in: float = 42.0
     aggregate_bedding_depth_in: float = 42.0
+    # ** THE SOAKAWAY COURSE (owner, 2026-09-22): 12" of the same #57 stone BELOW the 42"
+    # drained section, under FB-SG-W2/E2/S/ARCH only, "allowed to flood" and never counted
+    # as frost section. Snowmelt governs, not the 100-yr rain, and a melt is slow, so 48 h of
+    # infiltration is credited (`drainage.soakaway_storage`, notes/court_soakaway_storage.md):
+    #   voids   388 sf x 1.0 ft x 0.40              = 155 cf
+    #   soil    388 sf x 0.06 in/hr x 48 h / 12     =  93 cf   (MPCA HSG D, presumed)
+    #   melt    50 psf / 62.4 pcf x 278 sf of court = 223 cf   against 248 cf held
+    # Go to 18" only if the infiltration credit proves unrealistic (a soils report).
+    soakaway_depth_in: float = 12.0
+    soakaway_void_ratio: float = 0.40   # #57 washed stone
+    soakaway_infiltration_in_per_hr: float = 0.06   # MPCA HSG D design rate, presumed
     # The nominal levelling / drainage course under a footing that already bears where it
     # is meant to bear. 7" is the house's own bearing-prep depth (``params/foundations.py``,
     # every FT-B-* bedding) and is what the two belled piers take now that their bells
@@ -232,14 +241,13 @@ class SunkenGardenSpec:
     # D-B-PATIO, instead of a 23.7 sf landing perched a riser above 508 sf of floor.
     #
     # **What it costs is half the freeboard, and that is the whole cost.** Water in the
-    # court now climbs 7 1/4" to the threshold instead of 14 1/2". Over the court's 494 sf
-    # that is 298 cf of ponding rather than 597 cf — against roughly 177 cf of direct
-    # 100-year/24-hour rainfall (NOAA Atlas 14, ~4.3" for the Twin Cities), so the margin
-    # with the drywell assumed FULLY FAILED goes from about 3.4x to about 1.7x. Still over
-    # unity, and the curb is still a dam; but the case to watch is not summer rain, it is
-    # **snowmelt onto a frozen court over a frozen grate**, where the drywell contributes
-    # nothing by definition. DRW-SG-MAIN's grate is now the single line of defence it was
-    # only half of before. Do not let anything raise the court above this plane.
+    # court climbs 7 1/4" to the threshold instead of 14 1/2". Over the court's 442 sf (17'-0"
+    # x 26'-0") that is 267 cf of ponding — against roughly 158 cf of direct 100-year/24-hour
+    # rainfall (NOAA Atlas 14, ~4.3" for the Twin Cities), about 1.7x with every outlet
+    # assumed FAILED. The case to watch is **snowmelt onto a frozen court over a frozen
+    # grate**: AD-SG-COURT's riser lets go 12" below frost into the soakaway course, and
+    # `drainage.soakaway_storage` grades that course against the melt. Do not let anything
+    # raise the court above this plane.
     #
     # The threshold does NOT move: it is W-B-S2/W-B-S3's 7 1/4" curb top at -102 3/16" and
     # always was. What moved is the ground in front of it, from -7 1/4" back up to 0".
@@ -643,9 +651,9 @@ _ret_unbalanced_fill = _ret_top - _wall_bottom
 # were. Plus: 2% is the margin at 8 1/2" on the one member with no redundancy, and the
 # whole saving is ~1.1 CY. Read §8's three-reason block before shrinking this beam.
 #
-# Holding 17 1/2" by lowering the bottom instead lands its 42" bed 7 1/4" below
-# `_SG_DRYWELL_TOP`, so the bed and the soakaway swap places. 17 1/2" at this elevation is
-# the version of this beam that gets built.
+# Holding 17 1/2" by lowering the bottom instead lands its 42" bed 7 1/4" below the wall
+# beds' plane, a second dig floor. 17 1/2" at this elevation is the version of this beam
+# that gets built.
 _grade_beam_top = ft(-SPEC.basement_depth_ft) - inch(SPEC.slab_thickness_in)
 # ** DECOUPLED FROM `_wall_bottom` AND HELD AT -130 7/16" (2026-09-05). ** It used to read
 # `_wall_bottom - footing_thickness`, and when the retaining footings rose 9" to become the
@@ -810,9 +818,10 @@ _RET_STEM_STEEL = ReinforcementSpec(
     # What is true is worse, and it is why the class does not change: salt reaches this
     # court on boots, on a shovel and on the dog, from the north walk and the entry tiers —
     # and once here it **cannot leave**. There is no grade to daylight. The only outlet is
-    # DRW-SG-MAIN, a soakaway inside the excavation, so every chloride that arrives stays
-    # in the stone against these faces and cycles through them with each thaw. A drive
-    # sheds its salt to a ditch; a sunken court concentrates it.
+    # the soakaway course UNDER THESE FOOTINGS' OWN BEDS (2026-09-22; it was a separate
+    # well), so every chloride that arrives pools in the stone beneath the reinforced
+    # footings and cycles against them with each thaw. A drive sheds its salt to a ditch; a
+    # sunken court concentrates it — which makes the F3/C2 argument stronger, not weaker.
     #
     # Cover is the only term in the whole chloride problem that buys DISTANCE; every other
     # lever (w/cm 0.40, the galvanizing, the fly ash) buys time.
@@ -1361,6 +1370,13 @@ _HOUSE_ADJACENT = {"FT-SG-W1", "FT-SG-E1"}
 _BEDDING_UID = {"FT-SG-W1": "SGB002AAAA", "FT-SG-E1": "SGB003AAAA",
                 "FT-SG-W2": "SGB004AAAA", "FT-SG-E2": "SGB005AAAA",
                 "FT-SG-S": "SGB006AAAA"}
+# W1/E1 hand their tile water to the retaining bed they abut at the grade-beam line.
+_TILE_TO = {"FT-SG-W1": "FB-SG-W2", "FT-SG-E1": "FB-SG-E2"}
+_TILE_FROM = {"FT-SG-W2": "FB-SG-W1", "FT-SG-E2": "FB-SG-E1"}
+_SOAKAWAY = dict(soakaway_depth=inch(SPEC.soakaway_depth_in),
+                 void_ratio=SPEC.soakaway_void_ratio,
+                 infiltration_in_per_hr=SPEC.soakaway_infiltration_in_per_hr,
+                 infiltration_basis="presumed")
 FOOTING_BEDDING = [
     FootingBedding(
         uid=_BEDDING_UID[f.tag],
@@ -1383,42 +1399,48 @@ FOOTING_BEDDING = [
         # counts a *well-drained* NFS layer's thickness toward the design frost depth —
         # soil replacement — and IRC R403.1.4.1 admits a foundation built to ASCE 32 as one
         # of its listed frost-protection methods, which MN Rules 1309.0403 keeps. The
-        # drainage half of "well-drained" is the tile below and the DRW-SG-MAIN discharge
-        # it runs to; drop either and the claim is not ASCE 32's and
-        # ``structural.frost_depth`` stops counting the section.
+        # drainage half of "well-drained" is the tile below and the soakaway course it lets
+        # go into; drop either and the claim is not ASCE 32's and
+        # ``structural.frost_depth`` stops counting the section. The course hangs BELOW the
+        # 42" and is never counted: stone that floods is not a drained layer.
         #
         # Scoped deliberately to this structure. The house's own beddings
         # (params/foundations.py) are the same order of stone but have not been reasoned
         # about here, and an unstated section is worth nothing rather than being assumed.
         non_frost_susceptible=True,
         cast_foam_in_aggregate=f.tag in _HOUSE_ADJACENT,
-        # Same 4" sock-wrapped tile as the house footings (params/foundations.py). Unlike
-        # the house's, this tile cannot daylight — the garden floor is 9' down with no grade
-        # to run out to — so it discharges to DRW-SG-MAIN instead.
-        drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
+        # Same 4" sock-wrapped tile as the house footings (params/foundations.py). It cannot
+        # daylight — the court is 9' down — so it lets go into the soakaway course: its own
+        # (keyword "soakaway") on W2/E2/S, the retaining bed it abuts on W1/E1, which stay
+        # 42" drained-only so flood water keeps ~10' off the basement. Same body of stone.
+        drain_tile_spec=DrainTile(diameter=inch(4), sock=True,
+                                  discharge=_TILE_TO.get(f.tag, "soakaway")),
+        **({} if f.tag in _HOUSE_ADJACENT else _SOAKAWAY),
+        **({"inlet_refs": (_TILE_FROM[f.tag],)} if f.tag in _TILE_FROM else {}),
     )
     for f in FOOTINGS
 ]
-# ** THE ONE EXCAVATION PLANE — THE COURT'S BEDS ALL BOTTOM HERE. **
-# Every wall bed in this court bottoms at `_SG_WALL_BED_BOTTOM`, the footing underside less
-# the 42" ASCE 32 section. The grade beam's bed is derived to land on the SAME plane rather
-# than carrying its own 42" undercut below a beam that hangs 9" lower than the footings do.
+# ** TWO EXCAVATION PLANES, STEPPING 12" AT THE GRADE-BEAM LINE (2026-09-22). **
+# Every bed's DRAINED section bottoms at `_SG_WALL_BED_BOTTOM`, the footing underside less
+# the 42" ASCE 32 section, and the grade beam's bed is derived to land on it too. Under
+# FB-SG-W2/E2/S/ARCH the soakaway course carries the dig 12" further, to
+# `_SG_SOAKAWAY_BOTTOM` (-14'-7 7/16"); FB-SG-W1/E1 stop on the upper plane, so the dig
+# steps at y = -11'-0", where W1 meets W2.
 _SG_WALL_BED_BOTTOM = (_wall_bottom
                        - inch(SPEC.footing_thickness_in)
                        - inch(SPEC.aggregate_bedding_depth_in))
+_SG_SOAKAWAY_BOTTOM = _SG_WALL_BED_BOTTOM - inch(SPEC.soakaway_depth_in)
 
 # W-SG-ARCH's bed, appended rather than swept up by the comprehension above because it is
 # hosted on the Beam and not on a Footing — the grade beam has none (see GRADE_BEAMS). Same NFS
-# claim about the same stone, same 4" sock-wrapped tile to DRW-SG-MAIN, so it joins the
-# existing takeoff group rather than starting a second one.
+# claim about the same stone and the same soakaway course.
 #
 # ** THE UNDERCUT IS 33", NOT 42", SINCE 2026-09-10, AND THAT CLOSES THE 9" STEP IN THE
 # DIG. ** It read `aggregate_bedding_depth_in` — the footings' 42" — copied because every
 # bed in this court once shared one plane. When `_grade_beam_bottom` was decoupled and HELD
 # 9" below the footings (the section §8 will not give up), the copied 42" went down with it
 # and the excavation grew a second floor along the beam line: one more laser setting, one
-# more compaction schedule, one more tile plane, and the side-feed detail into the drywell
-# that existed only because this bed reached below the well's top.
+# more compaction schedule, one more tile plane.
 #
 # **The 42" is not required here and never was.** It is an ASCE 32 soil-replacement section
 # and this beam is not in the frost population at all: it has no `Footing`, so
@@ -1435,88 +1457,28 @@ _SG_WALL_BED_BOTTOM = (_wall_bottom
 # `cast_foam_in_aggregate`: that is for the house-adjacent footings' thermal break, and this
 # beam is 11'-0" south of the house with unconditioned court on both faces.
 #
-# `width` is authored because a beam-hosted bed defaults to the beam's own width, and a
-# 12" trench is not something anyone can dig, compact or lay tile in. 24" is the beam plus 6"
-# of working room each side.
+# ** 36" WIDE, AND OFF-CENTRE IN PURPOSE ONLY. ** The bed stays on the beam's axis; 36" is the
+# beam plus 12" each side, and the north 12" (-10'-6" to -9'-6") is the strip AD-SG-COURT's
+# riser drops into (params/sunken_garden_drainage.py). 24" had no room north of the beam.
 #
-# `GARDEN_DRYWELL.inlet_refs` derives from FOOTING_BEDDING wholesale, so the well picks this
-# bed up with nothing authored for it, and the well's top already sits on the wall beds'
-# underside — which is this bed's underside too, the beam being flush with them.
+# ** THE COURT'S RELIEF IS HERE. ** Its overflow lip is FD-SG-OVERFLOW's invert, -127 7/16"
+# (the profile underside), the same one-tie invert SM-B-RADON's bridge spills back at
+# (decision 6). That lip sits 36" INSIDE the 42" drained section, so the drained frost
+# section floods before relief — pre-existing, not reachable by gravity, and stated by
+# `drainage.soakaway_storage`'s second finding rather than hidden.
+ARCH_BED_WIDTH_IN = 36.0
 FOOTING_BEDDING.append(
     FootingBedding(
         uid="SGB009AAAA", tag="FB-SG-ARCH", host_ref="W-SG-ARCH",
-        width=inch(24),
+        width=inch(ARCH_BED_WIDTH_IN),
         undercut=_grade_beam_bottom - _SG_WALL_BED_BOTTOM,
         non_frost_susceptible=True,
-        drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
+        drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="soakaway"),
+        **_SOAKAWAY,
+        inlet_refs=("FD-SG-FIELD", "AD-SG-COURT", "SM-B-RADON"),
+        overflow_ref="FD-SG-OVERFLOW",
+        overflow_invert=_court_top - inch(SPEC.field_depth_in),
     )
-)
-
-# The sunken garden's own soakaway — a hole dug to take water and give it to the soil,
-# below (not part of) the 42" bearing bed. The garden floor sits 9' down with no downhill
-# side, so everything landing here (perimeter tile, the slab itself) has nowhere to go but
-# down. The balcony leader hangs outside the east wall and discharges to the terrace, so
-# the well is left carrying only the water it cannot avoid.
-# Top of stone sits at the DEEPEST wall bed's underside so the two stack rather than
-# intersect. ``SPEC.aggregate_bedding_depth_in`` is their number: the two column bells take
-# a 7" levelling course and their beds stop well short of this plane, which is clearance,
-# not a gap to close.
-#
-# ** IT SITS ON THE SIX BEDS, AND THE ONE-PLANE PROPERTY IS BACK. ** Until the retaining
-# footings rose, every bed in this court shared one underside and the well's top of stone
-# WAS that plane: the whole bearing system stood on the soakaway and drained into it by
-# falling into it. Lifting the wall footings 9" left their beds at -13'-7 7/16" with the
-# well still pinned to the beam's at -14'-4 7/16", so the five tiles that feed this well
-# ended 9" above the top of it, discharging into undisturbed clay.
-# `drainage.discharge_consistency` resolves the NAME and never asks where the pipe goes, so
-# it passed; the plan drawings are where it shows, and it showed.
-#
-# The well was moved onto the WALL beds, which are the ones that feed it, and FB-SG-ARCH
-# was left as the one bed reaching 9" BELOW it, feeding the stone column through its side.
-# **On 2026-09-10 that last step closed from the other end**: the beam's bed undercut went
-# 42" -> 33" so it bottoms on this same plane. All six beds, the well's top and the two
-# lead runs are now one elevation, which is one laser setting and one compaction schedule,
-# and the side-feed detail is gone. The beam itself still hangs 9" lower — that is §8's
-# held section and it does not move — but its bed no longer hangs with it.
-#
-# 6' of fabric-wrapped stone below (unwrapped, this clay silts its voids shut in a
-# season). Tagged DRW-, not DW-, because DW- is the dowel prefix and the two collided.
-_SG_DRYWELL_TOP = _SG_WALL_BED_BOTTOM
-# ** PINNED OFF THE GRADE BEAM, NOT OFF THE COURT'S MIDPOINT (2026-09-10). ** It was
-# `(_y_in_s + _y_in_n) / 2`, written out twice, and the 2'-0" court shortening walked it
-# 1'-0" north — putting the north edge of the 5'-0" shaft at -11.3333, INSIDE FB-SG-ARCH's
-# 24" bed band and 1'-8" from the beam's south face. Nothing grades that:
-# `structural.concrete_interference` sees isolated pours and every court footing is
-# `under=`-hosted, and `drainage.discharge_consistency` resolves tags and never asks where
-# the pipe goes. So the well now measures a STATED clearance south of the beam's axis and
-# cannot drift on any future length change. 3'-10" holds the well exactly where it is
-# today, 3'-4" south of the beam's south face, with the shaft's north edge 10" clear of it.
-_WELL_SOUTH_OF_ARCH_FT = 3.0 + 10.0 / 12.0
-_sg_well_y = _y_ax_mid - _WELL_SOUTH_OF_ARCH_FT  # -14.8333
-GARDEN_DRYWELL = Drywell(
-    uid="SGDR01AAAA", tag="DRW-SG-MAIN",
-    position=pt(ft(_cx), ft(_sg_well_y)),
-    diameter=ft(5), depth=ft(6), geotextile=True,
-    top_elevation=_SG_DRYWELL_TOP,
-    # Every FT-SG-* bearing bed, plus the field's own underdrain. FD-SG-FIELD is named as a
-    # string rather than swept up, because the field's plan coordinates are derived below
-    # this point and the well is what they are derived towards.
-    inlet_refs=tuple(b.tag for b in FOOTING_BEDDING)
-    + ("FD-SG-FIELD", "FD-SG-LEAD-W", "FD-SG-LEAD-E"),
-    # ** THE WELL'S OWN WAY OUT, WHICH IT DID NOT HAVE (2026-09-14). ** `FD-SG-OVERFLOW` is
-    # the PLANTING FIELD's overflow, not the well's: it tees off the field at -127 7/16" and
-    # runs north to the sump. When the WELL filled past its own top of stone there was no
-    # modelled route at all — the water backed up into the connected wall-bed stone and left,
-    # if it left, implicitly through that stone into the field lateral. Nothing drew it and
-    # nothing checked it.
-    #
-    # Naming it makes the implicit route the authored one and puts a level on it. The well
-    # spills at -127 7/16" — `FD-SG-OVERFLOW`'s own invert, the profile underside, which is
-    # the elevation the overflow note already argues for: storage in a soakaway is only the
-    # volume BENEATH its inlet, so the well must fill and spill rather than back up into the
-    # rootzone gravel. One number, stated once, on the run that already carries it.
-    overflow_ref="FD-SG-OVERFLOW",
-    overflow_invert=_court_top - inch(SPEC.field_depth_in),
 )
 
 # --- garden floor: a concrete RIM around an open gravel field ---------------------
@@ -1569,52 +1531,11 @@ FIELD_X_MID_FT = _field_x_mid
 FIELD_Y_S_FT = _field_y_s
 FIELD_Y_N_FT = _field_y_n
 ARCH_AXIS_Y_FT = _y_ax_mid
-COURT_MID_Y_FT = (_y_in_s + _y_in_n) / 2.0
-SOAKAWAY_TOP = _SG_WALL_BED_BOTTOM
+SOAKAWAY_TOP = _SG_WALL_BED_BOTTOM        # the drained section's floor = the course's top
+BALCONY_FRONT_Y_FT = _y_balcony_front
+COURT_X_FT = (_x_in_w, _x_in_e)
+COURT_Y_S_FT = _y_in_s
 
-# ** THE TWO LEADS THAT MAKE "discharges to DRW-SG-MAIN" A RUN AND NOT A STRING. **
-# Seven `FootingBedding` tiles in this court name DRW-SG-MAIN, the well names all seven
-# back in `inlet_refs`, and until now not one inch of pipe ran between them: the check
-# resolves tags, `resolve/drain_tile.py` derives a ring per bed and never a lead, and the
-# well is a bare cylinder 3'-0" away from the nearest ring in plan. Six named connections
-# with no geometry is the same defect as the field's "draining to DRW-SG-MAIN" prose, one
-# level up.
-#
-# ** TWO, NOT SEVEN. ** The five wall beds are ONE excavation: FB-SG-W1's stone abuts
-# FB-SG-W2's at y = -11.0' where the footings meet, and W2's abuts FB-SG-S's through a
-# 4'-10" square corner lap — measured, not assumed — so the west ring, the south ring and
-# the porch ring are a single connected body of washed stone at one invert, and the east
-# side mirrors it. One lead per side takes the lot. FB-SG-ARCH takes none: its bed bottoms
-# 9" BELOW the well's top and stops 2" from the shaft in plan, so it feeds the column
-# through its side and a lead would be a pipe running uphill.
-#
-# Each run is 6'-6" of trench from the strips' court face at `_field_x_*` to the well's own
-# centre — 4'-0" of it in open ground and the last 2'-6" inside the shaft. Drawn to the
-# CENTRE rather than to the face for the same reason FD-SG-FIELD is: a band that stops on
-# the cylinder's edge reads in section as a pipe that does not arrive.
-#
-# The invert IS `_SG_WALL_BED_BOTTOM`, the same expression the well's top is, so the two
-# cannot drift apart into a lead that runs uphill — which is exactly what happened to the
-# well itself when the footings rose.
-_WELL_LEAD = dict(invert=_SG_WALL_BED_BOTTOM, trench_width=inch(12), trench_depth=inch(8),
-                  discharge_ref="DRW-SG-MAIN")
-GARDEN_LEAD_W = FrenchDrain(
-    uid="SGFD03AAAA", tag="FD-SG-LEAD-W",
-    # The retaining strips' court-side face out to the well's own centre — the same two
-    # names FD-SG-FIELD is drawn between, so all three runs share one geometry.
-    path=(pt(ft(_field_x_w), ft(_sg_well_y)), pt(ft(_cx), ft(_sg_well_y))),
-    # `sock=True`, unlike the field's. This lead leaves a bearing bed in clay and the sock
-    # is what keeps the clay out of the pipe; the field's run is filtered by the graded
-    # sand above it and USGA says a sleeve there seals the line.
-    tile=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
-    **_WELL_LEAD,
-)
-GARDEN_LEAD_E = FrenchDrain(
-    uid="SGFD04AAAA", tag="FD-SG-LEAD-E",
-    path=(pt(ft(_field_x_e), ft(_sg_well_y)), pt(ft(_cx), ft(_sg_well_y))),
-    tile=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
-    **_WELL_LEAD,
-)
 
 GARDEN_SLAB = Slab(
     uid="SGS501AAAA", tag="SL-SG-FLOOR", assembly="GARDEN_COURT_SLAB",
@@ -3171,10 +3092,9 @@ BALCONY_GUTTER = Gutter(
 # 3" round, not the roof's 4": catches only the balcony deck (~200 sf) vs. 648 sf per house
 # eave. It no longer drops into the sunken garden — hanging outboard of the east wall there
 # is no garden underneath it — so it discharges 6" above the raised terrace, whose surface
-# is level with that wall top at +0'-2" (raised_garden.TOP). DRW-SG-MAIN stops naming it as
-# an inlet for the same reason, and that is the better half of the trade: the soakaway
-# serves a 9'-deep pit with no outlet of its own, and 200 sf of balcony runoff is the one
-# contribution it does not have to swallow.
+# is level with that wall top at +0'-2" (raised_garden.TOP). That is the better half of the
+# trade: the court's soakaway course serves a 9'-deep pit with no outlet of its own, and
+# 200 sf of balcony runoff is the one contribution it does not have to swallow.
 _SG_LEADER_BOTTOM = _ret_top + inch(6)
 BALCONY_LEADER = Downspout(
     uid="SGDS01AAAA", tag="TR-SG-LEADER-SE",
@@ -3241,9 +3161,10 @@ SEQUENCE_NOTES = [
 # SGCHCREAAA, SGCHCFWAAA, SGCHCFEAAA; CN-SG-CAP-R2/-F2 SGCC2RAAAA/SGCC2FAAAA;
 # CN-SG-HGR-W/-E/-FW/-FE SGCH01AAAA..SGCH04AAAA; CN-SG-STDF-COL/-FCOL SGSDCLAAAA/SGSDFCAAAA;
 # TR-SG-CAP-BKW/-BKE/-FRW/-FRE SGCP01AAAA..SGCP04AAAA. N-SGM-NW/-NE/-FW/-FE keep theirs.
+# ** And with the soakaway course (2026-09-22): DRW-SG-MAIN SGDR01AAAA, FD-SG-LEAD-W/-E
+# SGFD03AAAA/SGFD04AAAA. **
 BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS,
-                     *FOOTING_BEDDING, GARDEN_DRYWELL,
-                     GARDEN_LEAD_W, GARDEN_LEAD_E, *SEQUENCE_NOTES,
+                     *FOOTING_BEDDING, *SEQUENCE_NOTES,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
                      GARDEN_FIELD, *FROST_WINGS, *ISOLATION_BOARDS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------

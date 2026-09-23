@@ -190,7 +190,7 @@ class RaisedGardenSpec:
     # wider than the block so the base course can be shifted into line without ending up
     # bearing on the pad's own edge, and it is bearing prep, not drainage, so it carries no
     # tile. It does carry the geotextile: unwrapped stone in this clay silts shut, the same
-    # reasoning DRW-SG-MAIN is fabric-wrapped for.
+    # reasoning the court's footing beds are fabric-lined for.
     base_pad_depth_in: float = 6.0
     base_pad_overhang_in: float = 6.0
 

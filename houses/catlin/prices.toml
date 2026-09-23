@@ -1350,12 +1350,12 @@
 # is the only way they reach the estimate. Each is converted from its real trade unit:
 #   drain_tile  4" perforated corrugated HDPE with sock at $1.00-1.60/LF. The solid is
 #               modeled as a 4x4 section = 0.111 cf/LF, so $/cy = $/LF x 243. The 744.4 LF
-#               `footing_bedding` reports independently (296.0 to DRW-SG-MAIN + 448.4 to
-#               daylight, re-measured 2026-08-30) is what the $/cy is carrying; the "804 LF
-#               matches 803 LF" reconciliation this line used to quote had gone stale on
-#               both sides.
-#   drywell     the `drainage` rows say the drywells ARE #57 washed stone (4.83 cy of it),
-#               so this is the [footing_bedding] stone rate plus the chamber and fabric.
+#               `footing_bedding` reports independently is what the $/cy is carrying (the
+#               2026-08-30 split it quoted, "to DRW-SG-MAIN" and "to daylight", is gone —
+#               the court's rings now let go into their own soakaway course).
+#   drywell     the `drainage` rows say the drywell IS #57 washed stone, so this is the
+#               [footing_bedding] stone rate plus the chamber and fabric. One left: the
+#               garage hydrant's DRW-G-HYDRANT (DRW-SG-MAIN retired 2026-09-22).
 #   sump        one radon sump pit at 0.19 cy. $/cy looks absurd because the unit is
 #               absurd for a single moulded basin: $150-400 for the pit and cover, over
 #               0.19 cy. The line total, ~$130-400, is the number that matters.
@@ -1552,32 +1552,33 @@
 # At $6-14/LF installed that is $18-42/SF. The money is within 3% of the $/cy rate it replaces;
 # what changes is that the multiplier is now 3, not ~230, so the rate is one an estimator can
 # check against a quote. See plans/cost-options.md on whether 761 LF is the right LENGTH.
-"drain_tile" = { low = 18, high = 42, unit = "SF" }  # 254.0 SF = 762.0 LF @ $6-14/LF (-2.9 SF on 2026-09-10: the court shortened 28' -> 26', so the south wall's bed ring and the two side rings lost 4'-0" of run between them, and the narrower strips shortened every ring's cross-run)
-# The stone itself is only $88-110/cy at this size: 4.71 cy is 6.6 tons, a third of a tandem,
-# so a light-load haul charge ($150-250) roughly doubles the truckload rate. The rest of this
-# range is the excavation, the geotextile wrap and the placement, which no other line carries.
-# WORTH DOING: have the driver spot the drywell stone off the 97 cy #57 order and this drops
-# to about $275 for the aggregate.
-"drywell" = { low = 150, high = 350 }  # 4.71 cy — was $70-180
+"drain_tile" = { low = 18, high = 42, unit = "SF" }  # 240.7 SF = 722 LF @ $6-14/LF (2026-09-22: was 254.0 SF; the court's two well leads and the field lateral's 28" dive went with DRW-SG-MAIN) (-2.9 SF on 2026-09-10: the court shortened 28' -> 26', so the south wall's bed ring and the two side rings lost 4'-0" of run between them, and the narrower strips shortened every ring's cross-run)
+# ** THE HYDRANT PIT ONLY SINCE 2026-09-22. ** DRW-SG-MAIN (4.36 cy) is retired: the court's
+# soakaway is now a 12" course under four of its beds, bought in [footing_bedding] by the
+# yard. What is left is DRW-G-HYDRANT's 0.10 cy, spotted off the #57 order; the $/cy stays
+# the small-pit rate (excavation, wrap and placement dominate a few bags of stone).
+"drywell" = { low = 150, high = 350 }  # 0.10 cy — DRW-G-HYDRANT only
 # The west rain garden RG-W-BASIN (params/landscape_gardens.py). Media and stone bill here
 # by the yard, like the drywell's stone; the excavation is in the earthwork allowance.
 "rain_garden_media" = { material = { low = 50, high = 90 }, labour = { low = 40, high = 110 } }  # 6.48 cy, MnDOT 3877.2 Type G mix, placed by hand
 "rain_garden_stone" = { material = { low = 40, high = 70 }, labour = { low = 30, high = 90 } }  # 3.24 cy, washed filter aggregate under the media
 # ZERO on purpose: the pipe is billed by the foot in [drainage] `leader_extension:pvc-sdr35`.
 "leader_extension" = { low = 0, high = 0 }  # 0.12 cy — bills in [drainage]
-# The four sunken-garden trenches, 2026-09-05: FD-SG-FIELD and FD-SG-OVERFLOW in the field,
-# plus FD-SG-LEAD-W/E, the two 3'-0" leads that carry the footing beds' tile into
-# DRW-SG-MAIN. Same washed stone as the drywell and the same $88-110/cy at the pit, but half
-# a yard is a hand-barrowed quantity 9' down a court with no truck access, so the placement
-# dominates the material by a wide margin and the range is wider than the drywell's for it.
+# ZERO on purpose, like `leader_extension`: AD-SG-COURT bills by the piece and its riser by
+# the foot in [drainage].
+"area_drain" = { low = 0, high = 0 }  # 0.04 cy — bills in [drainage]
+"area_drain_riser" = { low = 0, high = 0 }  # 0.01 cy — bills in [drainage]
+# The two sunken-garden trenches: FD-SG-FIELD and FD-SG-OVERFLOW in the field. FD-SG-LEAD-W/E
+# retired with DRW-SG-MAIN on 2026-09-22 (4 -> 2 trenches). Same washed stone as the drywell,
+# but a quarter yard is a hand-barrowed quantity 9' down a court with no truck access, so the
+# placement dominates the material by a wide margin.
 # The 4" pipe inside each trench is NOT here — it bills as `drain_tile` above, by the foot,
 # like every other run in the house.
 #
-# The rate is a LUMP for the set, not a $/cy, which is why it did not move when the two
-# leads doubled the yardage: the money in a hand-dug trench 9' down is the access and the
-# barrow, and two more short runs in the same hole share both. If a fifth run is ever
-# authored somewhere the barrow does not already reach, this number has to be re-opened.
-"french_drain" = { low = 400, high = 1100 }  # 0.51 cy in four hand-dug trenches
+# $/cy, and a steep one: the money in a hand-dug trench 9' down is the access and the barrow.
+# (It is NOT a lump — this table bills by the yard — so the retired leads took their share
+# with them: $204-561 for four trenches became $104-286 for two.)
+"french_drain" = { low = 400, high = 1100 }  # 0.26 cy in two hand-dug trenches
 # "dowel" =    # 0 cy
 # A 16"x8" footing is 0.0329 cy/LF, so this is $9.20-14.80/LF. Inch Calculator's dimension
 # table back-solves to a consistent $256-267/cy but on a $137/cy ready-mix basis; Twin Cities
@@ -2130,6 +2131,7 @@
 # "flashing" =    # 0.16 cy
 # "glazing_trim" =    # 0.03 cy    # "gutter" =    # 0.17 cy
 # "pipe_drain" =    # 0.29 cy      # "pipe_sleeve" =    # 0.09 cy
+# "pipe_sump_discharge" =    # 0.11 cy — bills in [pipe_runs]
 # "pipe_vent" =    # 0.14 cy       # "pipe_water_cold" =    # 0.05 cy
 # "pipe_water_hot" =    # 0.02 cy  # "railing" =    # 0.14 cy
 # "shutoff" =    # 0.01 cy
@@ -3435,7 +3437,7 @@
 # lands below 40 F. The high end carries it.
 "waterproofing" = { material = { low = 1.10, high = 1.55 }, labour = { low = 1.70, high = 3.80 } }  # the below-grade face
 # ** DIMPLEBOARD ON THE COURT WALLS' OUTBOARD FACE (2026-09-16). ** A plain 5/16" DELTA-MS-class
-# HDPE sheet, dimples to the wall, carrying soil water down to FD-SG-LEAD-W/-E at the footing.
+# HDPE sheet, dimples to the wall, carrying soil water down to the footing beds' tile.
 # Full height on W-SG-W2/E2/S, below grade only on W-SG-W1/E1. It replaced a bonded-fabric
 # drainage composite hung over a 60-mil membrane; both faces of these walls are exterior.
 #
@@ -5060,14 +5062,14 @@
 
 # --- windows ------------------------------------------------------------------------------
 # The five small units. All were 65-85% low; all sit in the 0-71 UI band with WT-2736.
-"WT-1424" = { material = { low = 520, high = 1000 }, labour = { low = 115, high = 235 } }  # 7 ea — 38 UI; 14" is under the awning minimum, see above
+"WT-1424" = { material = { low = 520, high = 1000 }, labour = { low = 115, high = 235 } }  # 9 ea — 38 UI; 14" is under the awning minimum, see above
 "WT-1424-FIX" = { material = { low = 400, high = 780 }, labour = { low = 105, high = 215 } }  # 1 ea — fixed runs 75-80% of an operable casement
 "WT-1424-T" = { material = { low = 670, high = 1250 }, labour = { low = 115, high = 240 } }  # 5 ea — +$150/250 flat tempered
 # 14x36, the south gable's flanker size since 2026-08-29 (WT-1448 shortened for the 6:12
 # rake). 50 UI, INSIDE the 0-71 UI band, so it prices between WT-1424's 38 UI and WT-1448's
 # 62 UI on the same glass-and-frame curve — a third height in a width family whose buck,
 # header (none — a 14" RO lands inside a bay) and flashing are already bought.
-"WT-1436" = { material = { low = 535, high = 1025 }, labour = { low = 125, high = 255 } }  # 2 ea — 50 UI
+"WT-1436" = { material = { low = 535, high = 1025 }, labour = { low = 125, high = 255 } }  # 0 ea — CATALOG-ONLY since 2026-09-22 (flankers moved out a bay to WT-1424); 50 UI
 "WT-1448" = { material = { low = 550, high = 1050 }, labour = { low = 135, high = 275 } }  # 0 ea — CATALOG-ONLY since 2026-08-29, when both gable flankers shortened to WT-1436 for the 6:12 rake. Kept priced, like WT-2464 below, so the retired size stays an orderable option
 "WT-2464" = { material = { low = 760, high = 1430 }, labour = { low = 170, high = 370 } }  # 0 ea — 88 UI, over the band. CATALOG-ONLY since 2026-08-27, when both juliets retyped to WT-2764; kept priced so the retired size stays an orderable option. Was WT-1864 (18x64, 82 UI) until 2026-08-24; +6" of width is ~8% of material here, and 24" clears Andersen 400's 20-11/16" casement minimum, so this row is no longer an availability risk
 # 27x64, the juliet size since 2026-08-27 (WT-2464 + 3" of width). 91 UI, the widest unit
@@ -5217,7 +5219,10 @@
 # bed is new), so the pre-existing figure was overstated by ~20 cy. **The full-truckload
 # argument above still holds at 90 cy / 126 tons**; it would stop holding somewhere under
 # ~40 cy, which nothing here approaches.
-"ASTM C33 #57 washed crushed stone" = { low = 50, high = 75 }  # 89.82 cy = ~126 tons
+# QUANTITY, 2026-09-22: 96.43 cy, +17.9 cy on the pre-change 78.57 — the court's 12" soakaway
+# course under FB-SG-W2/E2/S/ARCH and FB-SG-ARCH widened 24" -> 36". Net of DRW-SG-MAIN's
+# retired 4.36 cy the house buys ~13.5 cy more #57. Still full-truckload (~135 tons).
+"ASTM C33 #57 washed crushed stone" = { low = 50, high = 75 }  # 96.43 cy = ~135 tons
 # 2026-08-20 — the placeholder is RESEARCHED NOW, and it was right. MnDOT 2025 Average Bid
 # Prices: Aggregate Base (CV) Class 5 = $32.01/CY across 37 contracts and 236,174 CY, in place.
 # The multi-year series is flat: 2022 $32.46, 2023 $33.46, 2024 $44.63 (a mix-of-projects
@@ -5273,6 +5278,10 @@
 # $/LF, by system
 "drain" = { material = { low = 1.3, high = 2.6 }, labour = { low = 6.5, high = 15 } }  # 232.3 LF, bare pipe
 "vent" = { material = { low = 1, high = 2 }, labour = { low = 4.25, high = 10 } }  # 209.6 LF, bare pipe
+# SM-B-RADON's pumped line, 1 1/2" PVC Sch 40 (pressure, solvent-welded): the DWV bare-pipe
+# rate plus a little for the heavier wall, and a full joint's labour at every turn of a short
+# run. The check valve and ice guard are in [allowances] site-drain-tile-daylight-outlet.
+"sump_discharge" = { material = { low = 1.5, high = 3 }, labour = { low = 7, high = 16 } }  # 10.6 LF
 "water_cold" = { material = { low = 0.9, high = 2.2 }, labour = { low = 3.25, high = 7.5 } }  # 319.4 LF
 "water_hot" = { material = { low = 0.9, high = 2.2 }, labour = { low = 3.25, high = 7.5 } }  # 194.3 LF
 
@@ -5803,12 +5812,16 @@
 # 4" pipe inside it as [concrete] `drain_tile` ($/LF, open-trench installed) and the stone
 # around it as [concrete] `french_drain` ($/cy). A $/LF rate here would bill the same trench a
 # third time. The zero says "priced, elsewhere, on purpose".
-"french_drain" = { low = 0, high = 0 }  # 30.7 LF — bills in [concrete], twice over already
+"french_drain" = { low = 0, high = 0 }  # 20.2 LF — bills in [concrete], twice over already
+# AD-SG-COURT, 2026-09-22: a 12" square PE catch basin with a cast-iron-look grate (NDS 1200
+# class, $60-140 retail) set in the rim pour, and its solid 4" PVC riser by the foot at the
+# [pipe_runs] 4" DWV rate plus the coupling into the basin outlet.
+"area_drain:NDS 1200 12in square catch basin" = { material = { low = 60, high = 140 }, labour = { low = 60, high = 150 }, unit = "ea" }  # 1 ea
+"area_drain_riser:pvc" = { material = { low = 2.6, high = 5 }, labour = { low = 6.5, high = 15 } }  # 3.5 LF
 # `drywell` is deliberately absent, and STILL should be: those rows carry length_ft 0, and a
 # [drainage] rate would join to that zero and price nothing at all — silently, because a
-# zero-quantity row is not reported as unpriced either. The 4.35 cy of washed stone bills in
-# [concrete] instead ($652-1,522), which was verified against the takeoff on 2026-08-20 rather
-# than assumed. If it is ever wanted here, [drainage] now offers `unit = "cy"`, which reads
+# zero-quantity row is not reported as unpriced either. The hydrant pit's 0.10 cy of washed
+# stone bills in [concrete] instead (DRW-SG-MAIN's 4.35 cy retired 2026-09-22). If it is ever wanted here, [drainage] now offers `unit = "cy"`, which reads
 # `aggregate_cubic_yards` — but then it must be deleted from [concrete] the same day.
 # Sources: homeguide.com 2026 aluminum gutter installation cost, angi.com gutter
 # replacement 2026, modernize.com gutter cost calculator.
@@ -6208,12 +6221,12 @@ concrete-driveway-apron-and-walks = { material = { low = 7200, high = 17600 }, l
 #                    says in as many words.
 #   sump pit       — [concrete] `sump`, 1 ea at $400-1,200: basin, sealed lid, riser, patch.
 # The DAYLIGHT OUTLET is the residual and is still real, but it is a DIFFERENT OUTLET as of
-# 2026-09-05. It used to be described as "the solid run out to daylight on the sunken garden's
-# low side" — and the sunken garden has no low side, which is the whole reason the perimeter
-# tile now falls to SM-B-RADON instead of claiming a daylight it could never reach. What this
-# buys is the pump's PRESSURE discharge: the solid line up out of the pit, its check valve, the
-# run to grade, the rodent grate, the headwall and the splash pad. Nothing else buys it.
-site-drain-tile-daylight-outlet = { low = 1500, high = 4000 }
+# 2026-09-05: the pump's PRESSURE discharge. ** RE-SCOPED 2026-09-22 the same day the line was
+# modelled: ** PR-B-SUMP-DISCH now bills its pipe in [pipe_runs] and its wall sleeve in
+# [sleeves], and it wyes into TR-RF-LEADER-W's extension, so there is no run to grade, no
+# headwall and no splash pad. What is left, and nothing else buys: the check valve, the ice
+# guard (freeze relief at the foundation), the wye into the leader riser and the lid seal.
+site-drain-tile-daylight-outlet = { low = 250, high = 650 }
 # ** THE SINGLE MOST-FORGOTTEN LINE IN RESIDENTIAL CONCRETE. ** Ready-mix suppliers never
 # include it and flatwork subs quote "pump by others". Two live 2026 rate sheets agree at
 # $200-225/hr + $4/cy on a 4-hour minimum.
@@ -6298,8 +6311,8 @@ foundation-free-draining-backfill = { low = 1.50, high = 2.80, unit = "SF", driv
 # up 7'-0", geotextile between the stone and the retained soil and turned down over the bed.
 #   52.6 LF x 1.0 ft x 7.0 ft = 368 cf = 13.6 cy at $70-125/cy -> $952-1,700
 #   geotextile 52.6 LF x ~9 ft = 473 SF at $0.30-0.70/SF installed -> $142-331
-# NO TILE IN THIS ROW: the court's footing beddings already carry 4" sock-wrapped tile to
-# DRW-SG-MAIN (params/sunken_garden.py), and buying it again here is the double-count the
+# NO TILE IN THIS ROW: the court's footing beddings already carry 4" sock-wrapped tile into
+# their soakaway course (params/sunken_garden.py), and buying it again here is the double-count the
 # row above warns about. What is bought here is the column that gets water DOWN to it.
 # A LUMP and not driven, because the only driver the BOM offers for these walls is
 # wall_structure's cubic yards of concrete, and $/cy of stem is a meaningless unit for
@@ -7437,6 +7450,7 @@ wall_structure = true
 "envelope_layers:white-brick" = "the fireplace surround's blend until 2026-09-13; brown-brick washed white replaced it"
 "envelope_layers:zip-r" = "named alternate to the CDX + ccSPF garage wall; never specified here"
 "openings:WT-1448" = "catalog-only: superseded by WT-1436 under the 6:12 south rake"
+"openings:WT-1436" = "catalog-only: the south flankers moved out a bay to WT-1424 on 2026-09-22"
 "openings:WT-2464" = "catalog-only window size, kept per the retired-sizes-stay-priced convention"
 "openings:WT-2764" = "catalog-only: the Juliet pair grew to WT-2754 on 2026-09-10"
 "concrete:glazing:BREEZEWAY_ROOF_GLAZING" = "the breezeway's polycarbonate canopy, retired 2026-09-10 for RF-BW-CANOPY"

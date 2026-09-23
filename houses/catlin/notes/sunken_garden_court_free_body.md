@@ -700,7 +700,8 @@ FS       = 71,462 / 61,446          =  1.16     ✗
 That is not a rounding. **0.35 versus 0.25 is the whole margin**, and it rides entirely on
 `FootingBedding.non_frost_susceptible=True` — an authored claim that the 42" section under
 these three footings is clean, open-graded, **washed** ASTM C33 #57 crushed stone, placed and
-compacted, drained by the 4" sock-wrapped tile to `DRW-SG-MAIN`.
+compacted, drained by the 4" sock-wrapped tile into the soakaway course below it (a 12"
+flood course under W2/E2/S/ARCH since 2026-09-22, never counted as frost or bearing section).
 
 The claim is legitimate: eleven footings in this structure already stake their **frost**
 design on the same sentence, and it was reasoned about there. But it must be said out loud
@@ -901,16 +902,19 @@ feet away; nothing washes off it to here.
 The real argument is the one that made the class necessary in the first place: salt reaches
 this court on boots, a shovel and the dog, from the north walk and the entry tiers, and
 once here it **cannot leave**. There is no grade to daylight. The bearing stone's only
-gravity outlet is `DRW-SG-MAIN`, a soakaway inside the excavation, so every chloride that
-arrives stays in the stone against these faces and cycles through them with each thaw. A
-drive sheds its salt to a ditch. A sunken court concentrates it. **Keep the class; the
-correction is to the sentence.**
+gravity outlet is the soakaway course **directly under these reinforced footings' own beds**
+(since 2026-09-22; it was a separate well, `DRW-SG-MAIN`), so every chloride that arrives
+pools in the stone beneath and against these faces and cycles through them with each thaw.
+That makes the F3/C2 argument stronger than it was with the well. A drive sheds its salt to
+a ditch. A sunken court concentrates it. **Keep the class; the correction is to the
+sentence.**
 
 ⚠ **Read "the only outlet" narrowly, and do not carry it further than this paragraph.** It
 is a statement about where the water against these FACES goes, and it is still true. It is
 not a statement about the court's network: `FD-SG-OVERFLOW` has always named `SM-B-RADON`,
-and since 2026-09-14 the well has an authored overflow to it and the sump has a gravity tie
-back (owner decision 6). Those are relief paths above the stone, engaging at -10'-7 7/16"
+and FB-SG-ARCH's soakaway course has an authored overflow to it (the well's, 2026-09-14,
+until the well was retired on 2026-09-22) and the sump has a gravity tie back (owner
+decision 6). Those are relief paths above the stone, engaging at -10'-7 7/16"
 and above; nothing drains the bearing bed itself anywhere but here. A 2026-09-14 outside
 review read the sentence as a claim about the network and proposed retiring the F3/C2 class
 on the strength of it — **the class stays**, and the reason is the sentence's own: chloride
@@ -1405,19 +1409,16 @@ precedent), and `structural.frost_depth` iterates footing and pad *solids*, so a
 `FT-SG-ARCH` would land inside the excavation and reopen the frost question ASCE 32 soil
 replacement closed on 2026-08-29.
 
-`FB-SG-ARCH` therefore carries the same 42" undercut, the same NFS claim about the same
-stone, and the same 4" sock-wrapped tile to `DRW-SG-MAIN`.
+`FB-SG-ARCH` therefore carries the same NFS claim about the same stone and the same 4"
+sock-wrapped tile, letting go into its own 12" soakaway course (2026-09-22).
 
-**The excavation no longer has one bottom, and that is the price of §8's held section.** The
-beam's underside stays at −10'-10 7/16" while all five wall footings rose to −10'-1 7/16";
-`FB-SG-ARCH` therefore bottoms at −14'-4 7/16" and every wall bed at −13'-7 7/16", a 9" step
-in the dig along the beam line. **The well follows the WALL beds, not the deepest one.** It
-was pinned to the deepest for as long as they were all one plane, and staying pinned there
-through the lift left the five tiles that actually feed it discharging 9" above its top of
-stone — a gravity break that `drainage.discharge_consistency` cannot see, because it resolves
-the tag and never asks where the pipe goes. `_SG_DRYWELL_TOP` is `_SG_WALL_BED_BOTTOM` now,
-the two lead runs `FD-SG-LEAD-W/E` carry the ring into it at that invert, and `FB-SG-ARCH`
-feeds the column through its side 9" further down instead of standing on it.
+**The excavation has two bottoms, and neither is §8's held section (2026-09-22).** The beam's
+underside stays at −10'-10 7/16", but `FB-SG-ARCH`'s undercut went 42" → 33" on 2026-09-10 so
+every bed's DRAINED section bottoms on one plane, −13'-7 7/16". Under `FB-SG-W2/E2/S/ARCH` the
+12" soakaway course carries the dig to −14'-7 7/16"; `FB-SG-W1/E1`, which abut the house
+footings, stop on the upper plane, so the dig steps 12" at y = −11'-0". `DRW-SG-MAIN`, the
+5'x6' well sunk below the bed plane, and its two leads `FD-SG-LEAD-W/E` are retired: ~47 cf
+of voids and ~20 sf of infiltrating bottom, against the ~388 sf course that replaces them.
 
 ### W-SG-ARCH stays plain, by design (2026-09-17)
 
@@ -1448,7 +1449,8 @@ added:
   on **2026-09-16**, when the court's retaining U moved onto `SUNKEN_GARDEN_WALL_DRAINED`:
   the outboard face carries a 5/16" DELTA-MS-class **dimpleboard** full height
   (`LayerFunction.DRAINAGE`, `ControlLayer.DRAINAGE`), giving soil water a path down to
-  `FD-SG-LEAD-W`/`-E`. It is modelled, it is priced, and it is drawn. Leaving the old
+  the footing beds' tile and their soakaway course. It is modelled, it is priced, and it is
+  drawn. Leaving the old
   sentence standing meant the gap register's largest single entry described a condition the
   building no longer had.
 
@@ -1457,9 +1459,9 @@ added:
   - **The groundwater basis.** Nobody has established a design water table, a perched-water
     condition or an infiltration rate for this parcel. A drained wall presumes water can
     leave faster than it arrives, and nothing here measures either side of that.
-  - **Discharge continuity.** The dimpleboard delivers to `FD-SG-LEAD-W`/`-E` and those lead
-    somewhere; the path from there to daylight or to a drywell of adequate capacity, and its
-    slope, are not graded by anything in this engine.
+  - **Discharge continuity.** The dimpleboard delivers to the beds' tile, which lets go into
+    the soakaway course; `drainage.soakaway_storage` grades the course against a snowmelt,
+    but on a PRESUMED soil rate, and the wall-face inflow itself is graded by nothing.
   - **The blocked-drain design case.** Every drained retaining wall is designed for the day
     the drain does not work — a partial or full hydrostatic case at some stated height — and
     that case is not run here. It is the case that decides whether the drainage is a comfort
@@ -2272,7 +2274,7 @@ force P acts on the court's moving part as the boards do, so `x = (N − P)/(S +
 
 Not independent of E, not independent of the presumed soil, and it adds a torsion on the veneer
 beam below its bars (§25.4 hook row 0.790) and its α 0.25 fixity credit. The drywell (by
-W-SG-ARCH) and frost do not bind. **Rejected.**
+W-SG-ARCH, retired 2026-09-22) and frost do not bind. **Rejected.**
 
 **Decision: a compliant layer with a published MAXIMUM.** 1/2" of each 2.5" closure board, and
 of the beam's 2" layer, is closed-cell EPDM sponge (Hanna Rubber 4014-E: ASTM D1056 2A0/2A1,

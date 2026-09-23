@@ -340,14 +340,14 @@ def _drainage_note(model: ResolvedModel) -> str:
     beddings = [bedding for bedding in model.footing_beddings if bedding.drain_tile]
     if not beddings:
         return ""
-    discharges = sorted({bedding.drain_tile_spec.discharge.strip().upper()
-                         for bedding in beddings
-                         if bedding.drain_tile_spec is not None
-                         and bedding.drain_tile_spec.discharge})
-    if not discharges:
-        destination = "TO AN APPROVED OUTLET (NOT MODELLED)"
-    else:
-        destination = f"TO {', '.join(discharges)}"
+    # A bed handing its water to the bed it abuts is internal to one body of stone.
+    beds = {bedding.tag for bedding in beddings}
+    discharges = sorted({"THEIR SOAKAWAY COURSE" if d.lower() == "soakaway" else d.upper()
+                         for bedding in beddings if bedding.drain_tile_spec is not None
+                         and (d := (bedding.drain_tile_spec.discharge or "").strip())
+                         and d not in beds})
+    destination = (f"TO {', '.join(discharges)}" if discharges
+                   else "TO AN APPROVED OUTLET (NOT MODELLED)")
     flood = sum(1 for bedding in beddings if bedding.stone_z0_m < bedding.z0_m)
     course = (f" {flood} BEDS CARRY A SOAKAWAY COURSE BELOW THE DRAINED SECTION; IT FLOODS"
               f" AND IS NOT FROST SECTION." if flood else "")

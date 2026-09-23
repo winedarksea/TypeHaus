@@ -285,6 +285,8 @@ def _leader(side: str, index: int, eave_x, outward: float):
 # The WEST leader alone goes somewhere: 4" solid PVC buried north, west of SL-M-HP3PAD, to a
 # pop-up emitter in RG-W-BASIN (params/landscape_gardens.py). _LEADER_BOTTOM stays: the riser
 # from +1'-0" down to the inlet bills with the extension. notes/rain_garden_sizing.md.
+# The extension also carries SM-B-RADON's pumped water: PR-B-SUMP-DISCH wyes into the riser
+# at -1'-10" (plan/mep_drainage.py), so this line and the basin take groundwater too.
 _WEST_DISCHARGE = dict(
     discharge_ref="RG-W-BASIN",
     extension=DischargeExtension(

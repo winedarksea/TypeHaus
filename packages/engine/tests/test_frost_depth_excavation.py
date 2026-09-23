@@ -245,6 +245,9 @@ def test_the_retaining_wall_footings_pass_on_the_aggregate_section(frost_by_tag)
         assert "ASCE 32" in finding.message, tag
         assert "IRC R403.1.4.1" in finding.message, tag
         assert any(name.startswith("FB-SG-") for name in finding.element_tags), tag
+        # The DRAINED section is what counts: W2/E2/S carry a 12" soakaway course below it
+        # (2026-09-22), and the cited depth must not grow by it — 54", never 66".
+        assert 'excavated to 54"' in finding.message, (tag, finding.message)
 
 
 def test_a_pier_augered_to_frost_depth_passes_on_cover_and_not_on_the_section(court_pads):

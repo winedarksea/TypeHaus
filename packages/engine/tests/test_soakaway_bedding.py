@@ -76,8 +76,10 @@ def test_the_error_reaches_the_resolver(catlin_plan):
 def test_the_course_is_billed_as_stone(soak_model):
     from typehaus.takeoff.sitework import footing_bedding_takeoff
 
-    row = next(r for r in footing_bedding_takeoff(soak_model) if "FB-TEST-SOAK" in r["tags"])
-    assert row["tags"] == ["FB-TEST-SOAK"], "a 'soakaway' tile is its own delivery row"
+    alone = copy.copy(soak_model)
+    alone.footing_beddings = [_bed(soak_model, "FB-TEST-SOAK")]
+    row, = footing_bedding_takeoff(alone)
+    assert row["drain_tile_discharge"] == "soakaway"
     area_sf = 16.0
     assert row["volume_cubic_yards"] == pytest.approx(area_sf * 3.0 / 27.0, abs=0.01)
     # Fabric lines the bottom and the full 36" of cut face.

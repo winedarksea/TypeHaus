@@ -1,4 +1,5 @@
-"""Sunken garden court drainage — the field's underdrain and the court's overflow leg.
+"""Sunken garden court drainage — the field's underdrain, the court's area drain and its
+overflow leg. All three let go into (or relieve) FB-SG-ARCH's soakaway course.
 
 Split out of ``params/sunken_garden.py``, which publishes the court geometry these runs are
 drawn against. Everything here is generated; uids are minted by hand (``haus fmt`` does not
@@ -8,6 +9,7 @@ visit ``params/*.py``).
 from __future__ import annotations
 
 from typehaus import (
+    AreaDrain,
     DrainTile,
     FrenchDrain,
     ft,
@@ -21,8 +23,11 @@ from typehaus import (
 
 from params.sunken_garden import (
     ARCH_AXIS_Y_FT,
-    COURT_MID_Y_FT,
+    ARCH_BED_WIDTH_IN,
+    BALCONY_FRONT_Y_FT,
     COURT_TOP,
+    COURT_X_FT,
+    COURT_Y_S_FT,
     FIELD_BOTTOM,
     FIELD_X_MID_FT,
     FIELD_Y_N_FT,
@@ -42,8 +47,7 @@ from params.sunken_garden import (
 #
 # ** ONE LATERAL, AND THAT IS THE CHEAPEST ANSWER THAT IS ALSO THE RIGHT ONE. ** USGA caps
 # lateral spacing at 15'-0". The field is 11'-0" square, so a single centre lateral leaves
-# 5'-6" of reach each side, well inside the cap. USGA's >=0.5% fall over the lateral is
-# trivial against the drop into the well. A second lateral would be owed only past 15'-0"
+# 5'-6" of reach each side, well inside the cap. A second lateral would be owed only past 15'-0"
 # of E-W width, which this field cannot reach inside a 17'-0" court.
 #
 # ** NO PERIMETER "SMILE" DRAIN, DELIBERATELY. ** USGA's trench is 6" wide x 8" deep cut
@@ -66,46 +70,60 @@ from params.sunken_garden import (
 # uid minted by hand, deliberately: `haus fmt` does not visit `params/*.py`.
 GARDEN_UNDERDRAIN = FrenchDrain(
     uid="SGFD01AAAA", tag="FD-SG-FIELD",
-    # South end of the field to the well, on the field's own centreline, derived off the
-    # `_field_*` names so it cannot drift from the field it drains.
+    # South end of the field to FB-SG-ARCH's south face, on the field's own centreline,
+    # derived so it cannot drift from the field or the bed it drains into.
     path=(pt(ft(FIELD_X_MID_FT), ft(FIELD_Y_S_FT)),
-          pt(ft(FIELD_X_MID_FT), ft(COURT_MID_Y_FT))),
+          pt(ft(FIELD_X_MID_FT), ft(ARCH_AXIS_Y_FT - ARCH_BED_WIDTH_IN / 24.0))),
     # The trench floor AT THE SOUTH END: 8" into the subgrade below the profile's underside,
     # derived from the court plane and the profile depth. NEVER a literal —
     # `SPEC.field_depth_in` moves.
     invert=FIELD_BOTTOM - inch(8),
-    # ** IT FALLS INTO THE WELL, AND UNTIL 2026-09-14 IT DID NOT. ** `FrenchDrain` carried
-    # ONE invert and the resolver extruded the whole trench dead level, so this run ended at
-    # -135 7/16" — **28" above `_SG_DRYWELL_TOP`**, discharging into undisturbed clay above
-    # the stone it is drawn to feed. `drainage.discharge_consistency` resolved the name and
-    # never asked where the pipe went, exactly as it did for the five wall-bed tiles that
-    # ended 9" over this same well before it was moved onto their plane. The precedent for
-    # the fix is `_WELL_LEAD` below: write the far end as **the same expression the well's
-    # top is**, so the two cannot drift into a run that ends in the air.
-    #
-    # 28" over the run's 10'-0" is 2.3 in/ft. Steep against USGA's 0.5% minimum and that is
-    # the right direction — a lateral outfall dropping into a soakaway wants fall, and only
-    # too flat is a defect. `drainage.trench_fall` refuses the reverse.
-    end_invert=SOAKAWAY_TOP,
+    # ** IT ARRIVES IN THE STONE, NOT OVER IT (2026-09-22). ** It used to dive 28" in 10' to
+    # the old well's top and resolved as 28 stepped trench pieces. It now falls 1" over the
+    # same 10' (0.83%, over USGA's 0.5%) and ends in FB-SG-ARCH's bed, whose stone runs from
+    # the beam's underside (-130 7/16") down through the soakaway course — the -136 7/16"
+    # outlet is inside that band, which is what `drainage.outfall_connection` grades.
+    end_invert=FIELD_BOTTOM - inch(9),
     trench_width=inch(6), trench_depth=inch(8),
-    tile=DrainTile(diameter=inch(4), sock=False, discharge="DRW-SG-MAIN"),
-    discharge_ref="DRW-SG-MAIN",
+    tile=DrainTile(diameter=inch(4), sock=False, discharge="FB-SG-ARCH"),
+    discharge_ref="FB-SG-ARCH",
 )
 
-# ** THE OVERFLOW LEG: THE COURT'S SECOND WAY OUT. ** DRW-SG-MAIN is a soakaway in glacial
-# till, and MPCA's own numbers say that is a detention structure rather than an infiltration
-# one (HSG D, 0.06 in/hr design rate). The case the freeboard note names as the one to watch
-# is snowmelt onto a frozen court over a frozen grate, where the well contributes nothing by
-# definition — and that note currently answers it by assuming the well FULLY FAILED. This
-# leg raises that margin instead of restating it.
+# ** THE COURT'S AREA DRAIN (2026-09-22). ** A frozen putting-green field takes no snowmelt,
+# so the paved rim needs its own way into the stone. A 12" grate in SL-SG-FLOOR just north of
+# W-SG-ARCH, under the balcony overhang (the spot that ices last), 2'-0" west of the x=18'
+# overflow line and 1" clear of the beam's north face; a solid 4" riser drops through the
+# 12" strip of FB-SG-ARCH's bed north of the beam and lets go at SOAKAWAY_TOP, -163 7/16",
+# 12" below the frost line. Passive: no heat trace. The court has no modelled fall to it,
+# and the basin can ice — both recorded in DESIGN-LOG, not solved.
 #
-# ** Its invert is ABOVE FD-SG-FIELD's tee and AT the profile underside. ** -127 7/16": 8"
-# above the underdrain's trench floor. Storage in a
-# soakaway is only the volume beneath its inlet, so the well must fill and SPILL — never
-# back up into the gravel, which would drown the rootzone from below.
+# `catchment` is the open court south of the balcony's front edge — the surface a melt
+# reaches that the balcony does not roof; `drainage.soakaway_storage` reads it.
+_GRATE_IN = 12.0
+_AD_Y_FT = ARCH_AXIS_Y_FT + 0.5 + (1.0 + _GRATE_IN / 2.0) / 12.0   # beam face + 1" + half
+COURT_AREA_DRAIN = AreaDrain(
+    uid="SGAD01AAAA", tag="AD-SG-COURT",
+    position=pt(ft(FIELD_X_MID_FT - 2.0), ft(_AD_Y_FT)),
+    grate_size=inch(_GRATE_IN), basin_depth=inch(12),
+    outlet_diameter=inch(4), outlet_invert=SOAKAWAY_TOP,
+    host_ref="SL-SG-FLOOR", discharge_ref="FB-SG-ARCH",
+    product="NDS 1200 12in square catch basin", outlet_material="pvc",
+    catchment=(pt(ft(COURT_X_FT[0]), ft(COURT_Y_S_FT)), pt(ft(COURT_X_FT[1]), ft(COURT_Y_S_FT)),
+               pt(ft(COURT_X_FT[1]), ft(BALCONY_FRONT_Y_FT)),
+               pt(ft(COURT_X_FT[0]), ft(BALCONY_FRONT_Y_FT))),
+)
+
+# ** THE OVERFLOW LEG: THE COURT'S SECOND WAY OUT. ** The soakaway course is in glacial
+# till, and MPCA's own numbers say that is a detention structure rather than an infiltration
+# one (HSG D, 0.06 in/hr design rate). This leg is FB-SG-ARCH's `overflow_ref`: when the
+# course and the drained section above it fill to -127 7/16", the water goes to the sump.
+#
+# ** Its invert is AT the profile underside. ** -127 7/16", 8" above the underdrain's trench
+# floor. Storage in a soakaway is only the volume beneath its inlet, so the stone must fill
+# and SPILL — never back up into the gravel, which would drown the rootzone from below.
 #
 # ** THE TRENCH STOPS AT THE GRADE BEAM'S NORTH FACE, AND THAT IS THE POINT. ** The leg from
-# the well north to here is a 4" pipe SLEEVED through W-SG-ARCH at mid-depth, not an
+# the field north to here is a 4" pipe SLEEVED through W-SG-ARCH at mid-depth, not an
 # excavation: a stone trench crossing the beam at this invert would undermine the strut the
 # free-body note holds the whole court together with. `FrenchDrain` has no way to say
 # "sleeve", so the modelled trench is only the part that really is one; the cast opening is
@@ -154,5 +172,5 @@ GARDEN_OVERFLOW_BEAM_PIPE = PipeRun(
     serves=(),
 )
 
-BASEMENT_ELEMENTS = [GARDEN_UNDERDRAIN, GARDEN_OVERFLOW, GARDEN_OVERFLOW_SLEEVE,
-                     GARDEN_OVERFLOW_BEAM_PIPE]
+BASEMENT_ELEMENTS = [GARDEN_UNDERDRAIN, COURT_AREA_DRAIN, GARDEN_OVERFLOW,
+                     GARDEN_OVERFLOW_SLEEVE, GARDEN_OVERFLOW_BEAM_PIPE]

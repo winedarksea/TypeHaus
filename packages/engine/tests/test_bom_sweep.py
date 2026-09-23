@@ -354,7 +354,8 @@ def test_pipe_runs_bill_by_system_and_diameter(catlin_model, bom):
     # water_hot joined the other three when the plumbing pass authored the hot trunks and
     # branches off the water heaters — before that the only supply modelled was the cold
     # feed to the hydrant.
-    assert {row["system"] for row in rows} == {"drain", "vent", "water_cold", "water_hot"}
+    assert {row["system"] for row in rows} == {"drain", "vent", "water_cold", "water_hot",
+                                               "sump_discharge"}
     billed = {tag for row in rows for tag in row["tags"]}
     assert billed == {run.tag for run in catlin_model.pipe_runs}
     total = sum(float(row["length_ft"]) for row in rows)
@@ -394,11 +395,13 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
     # And where a run discharges is part of the key, not a note. NEITHER run daylights, and
     # that was the correction of 2026-09-05: the house tile's invert is -124 7/16", which is
     # 7'-6 1/2" BELOW site grade, so it falls to the SM-B-RADON pit and is pumped up; the
-    # sunken garden's floor is 9' down, so it falls to DRW-SG-MAIN by gravity. Those are two
-    # different runs of the same pipe and the take-off has to keep them apart.
-    assert {r["drain_tile_discharge"] for r in tile_rows} == {"SM-B-RADON", "DRW-SG-MAIN"}
-    garden = next(r for r in tile_rows if r["drain_tile_discharge"] == "DRW-SG-MAIN")
-    assert all(tag.startswith("FB-SG-") for tag in garden["tags"]), garden["tags"]
+    # sunken garden's floor is 9' down, so its rings let go by gravity into their own
+    # soakaway course (W1/E1 via the retaining bed they abut). Different runs of the same pipe,
+    # and the take-off has to keep them apart.
+    assert {r["drain_tile_discharge"] for r in tile_rows} == {
+        "SM-B-RADON", "soakaway", "FB-SG-W2", "FB-SG-E2"}
+    for garden in (r for r in tile_rows if r["drain_tile_discharge"] != "SM-B-RADON"):
+        assert all(tag.startswith("FB-SG-") for tag in garden["tags"]), garden["tags"]
 
 
 def test_drainage_bills_the_whole_storm_run_by_the_foot(catlin_model, bom):
@@ -417,6 +420,9 @@ def test_drainage_bills_the_whole_storm_run_by_the_foot(catlin_model, bom):
         "the garage's derived eave gutter is aluminium somebody has to buy"
 
     for row in rows:
+        if row["category"] == "area_drain":   # a basin is bought by the piece
+            assert int(row["count"]) > 0, row
+            continue
         assert float(row["length_ft"]) > 0 or float(row["aggregate_cubic_yards"]) > 0, row
     leaders = [row for row in rows if row["category"] == "downspout"]
     assert leaders

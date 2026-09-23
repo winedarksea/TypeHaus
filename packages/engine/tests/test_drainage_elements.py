@@ -122,42 +122,33 @@ def test_the_hydrant_pit_is_a_drywell_and_no_longer_bills_phantom_tile(catlin_mo
                 if s.category == "drain_tile" and "HYDRANT" in s.tag]
 
 
-def test_the_garden_drywell_sits_below_the_bearing_bed_it_is_not_part_of(catlin_model):
-    """The 42" of aggregate under the garden's five WALL footings is a *bearing* course
-    that happens to drain. The soakaway is a separate, deeper hole beneath it — and the
-    garden needs one, because its floor is 9' down with no downhill side for anything to
-    daylight to.
+def test_the_soakaway_is_a_course_below_the_drained_section(catlin_model):
+    """The 42" under the court's footings is a *bearing* course that happens to drain; the
+    soakaway is a 12" course of the same stone BELOW it, under W2/E2/S/ARCH only — it floods,
+    and it is never frost section. There is no separate well any more (retired 2026-09-22).
 
-    ``min`` over the beds is what pins the well: the two porch piers' bells are augered
-    to frost depth and take a 7" levelling course instead, so their beds (``FB-SG-COL`` /
-    ``FB-SG-FCOL``, z0 -158 7/16") stop **5"** above this plane, not the 2'-9" this
-    docstring claimed until 2026-09-14. They still drain here, which is the other half of
-    the assertion below — every FT-SG-* bed discharges to DRW-SG-MAIN, deep section or not.
-
-    Five inches is the real margin and it is worth reading as one: the pier beds and the
-    soakaway very nearly swap places, and ``_SG_DRYWELL_TOP = _SG_WALL_BED_BOTTOM`` is what
-    holds them apart. See ``params/sunken_garden.py`` around ``_SG_DRYWELL_TOP``.
-
-    (History since 2026-09-22: the pier beds retired with the court's centre columns, so only
-    the wall beds remain and the 5" margin above is moot.)"""
-    well = next(s for s in catlin_model.solids if s.tag == "DRW-SG-MAIN")
-    assert well.category == "drywell"
-    beds = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-SG-")]
-    assert beds
-    bed_bottom = min(bed.z0_m for bed in beds)
-    assert well.z1_m == pytest.approx(bed_bottom, abs=0.01), \
-        "the well's top of stone meets the underside of the bearing bed — they stack"
-    assert well.z0_m < bed_bottom, "and the well itself is below it, not part of it"
-    assert (well.z1_m - well.z0_m) * _M_TO_FT == pytest.approx(6.0, abs=0.01)
-
-    # The garden's tile falls to the well, not to a daylight outlet it does not have.
-    assert {bed.drain_tile_spec.discharge for bed in beds} == {"DRW-SG-MAIN"}
-    # The balcony leader is NOT an inlet: it hangs outside the east wall and discharges to
-    # the terrace, so the only water this well is asked to take is the water with no other
-    # way out. See test_the_balcony_leader_hangs_outside_the_east_retaining_wall.
-    plan_well = catlin_model.plan.by_tag("DRW-SG-MAIN")
-    assert "TR-SG-LEADER-SE" not in plan_well.inlet_refs
-    assert plan_well.inlet_refs, "the perimeter bedding still drains here"
+    W1/E1 abut the house footings and stop on the drained plane, so the dig steps 12" at the
+    grade-beam line and flood water stays ~10' off the basement."""
+    assert catlin_model.plan.by_tag("DRW-SG-MAIN") is None
+    beds = {b.tag: b for b in catlin_model.footing_beddings if b.tag.startswith("FB-SG-")}
+    drained = {round(b.z0_m / 0.0254, 4) for b in beds.values()}
+    assert drained == {-163.4375}, "every drained section bottoms on one plane"
+    soak = {t for t, b in beds.items() if b.soakaway_z0_m is not None}
+    assert soak == {"FB-SG-W2", "FB-SG-E2", "FB-SG-S", "FB-SG-ARCH"}
+    for tag in soak:
+        assert beds[tag].stone_z0_m / 0.0254 == pytest.approx(-175.4375)
+        assert beds[tag].void_ratio == 0.40 and beds[tag].infiltration_in_per_hr == 0.06
+    for tag in ("FB-SG-W1", "FB-SG-E1"):
+        assert beds[tag].stone_z0_m == beds[tag].z0_m, "the house-side beds stay drained-only"
+    # The garden's tile lets go into the course, never to a daylight it does not have.
+    discharges = {b.tag: b.drain_tile_spec.discharge for b in beds.values()}
+    assert discharges == {"FB-SG-W1": "FB-SG-W2", "FB-SG-E1": "FB-SG-E2",
+                          "FB-SG-W2": "soakaway", "FB-SG-E2": "soakaway",
+                          "FB-SG-S": "soakaway", "FB-SG-ARCH": "soakaway"}
+    # The balcony leader is NOT an inlet: it hangs outside the east wall.
+    arch = catlin_model.plan.by_tag("FB-SG-ARCH")
+    assert "TR-SG-LEADER-SE" not in arch.inlet_refs
+    assert set(arch.inlet_refs) == {"FD-SG-FIELD", "AD-SG-COURT", "SM-B-RADON"}
 
 
 def test_the_garden_field_has_a_real_underdrain_and_not_a_prose_one(catlin_model):
@@ -167,7 +158,7 @@ def test_the_garden_field_has_a_real_underdrain_and_not_a_prose_one(catlin_model
     reverting to prose."""
     plan_drain = catlin_model.plan.by_tag("FD-SG-FIELD")
     assert plan_drain is not None, "the field's underdrain is an element, not a sentence"
-    assert plan_drain.discharge_ref == "DRW-SG-MAIN"
+    assert plan_drain.discharge_ref == "FB-SG-ARCH"
 
     # It lies in the blanket the field is built on: the trench floor is 8" below the
     # profile's underside, which is `field_depth_in` below the court plane.
@@ -194,8 +185,8 @@ def test_the_garden_field_has_a_real_underdrain_and_not_a_prose_one(catlin_model
     beds = [b for b in catlin_model.footing_beddings if b.drain_tile_spec is not None]
     assert beds and all(b.drain_tile_spec.sock for b in beds)
 
-    # The well knows about it, so `drainage.discharge_consistency` grades both ends.
-    assert "FD-SG-FIELD" in catlin_model.plan.by_tag("DRW-SG-MAIN").inlet_refs
+    # The bed knows about it, so `drainage.discharge_consistency` grades both ends.
+    assert "FD-SG-FIELD" in catlin_model.plan.by_tag("FB-SG-ARCH").inlet_refs
 
 
 def test_the_house_perimeter_tile_falls_to_the_sump_it_can_actually_reach(catlin_model):
@@ -206,19 +197,24 @@ def test_the_house_perimeter_tile_falls_to_the_sump_it_can_actually_reach(catlin
     assert house
     assert {b.drain_tile_spec.discharge for b in house} == {"SM-B-RADON"}
     assert catlin_model.plan.by_tag("SM-B-RADON") is not None
-    # The garden's own beds are NOT redirected: DRW-SG-MAIN is below them and takes their
-    # water with no pump in the path.
+    # The garden's own beds are NOT redirected: their soakaway course is below them and takes
+    # their water with no pump in the path.
     garden = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-SG-")]
-    assert {b.drain_tile_spec.discharge for b in garden} == {"DRW-SG-MAIN"}
+    assert {b.drain_tile_spec.discharge for b in garden} == {
+        "soakaway", "FB-SG-W2", "FB-SG-E2"}
 
 
 def test_the_radon_sump_carries_its_pump(catlin_plan):
     sump = catlin_plan.by_tag("SM-B-RADON")
     assert sump.pump is not None
     assert sump.pump.circuit_ref == "CKT-SUMP"
-    # The PUMP still daylights — it lifts to grade, which is the one leg on this lot that
-    # can. What changed in 2026-09-05 is what feeds the pit, not what leaves it.
-    assert sump.pump.discharge == "daylight"
+    # The pump lifts into the west leader's extension (2026-09-22) by a modelled line with a
+    # check valve and an ice guard; "daylight" had no pipe behind it.
+    assert sump.pump.discharge == "TR-RF-LEADER-W"
+    assert sump.pump.discharge_line_ref == "PR-B-SUMP-DISCH"
+    assert sump.pump.check_valve and sump.pump.freeze_relief
+    line = catlin_plan.by_tag("PR-B-SUMP-DISCH")
+    assert line.system.value == "sump_discharge"
 
 
 # --- the resolver, on elements the Catlin house does not author yet ------------------------
@@ -383,9 +379,14 @@ def test_every_drainage_source_reaches_something_that_disposes_of_water(catlin_m
 
     network = _network(catlin_model)
     assert network.unresolved == [], network.unresolved
-    sources = network.sources()
-    assert len(sources) >= 30, sources
-    for source in sources:
+    sources = set(network.sources())
+    house_rings = {b.tag for b in catlin_model.footing_beddings if b.tag.startswith("FB-B-")}
+    assert len(house_rings) == 19 and house_rings <= sources
+    assert {"FD-SG-FIELD", "FD-SG-OVERFLOW", "AD-SG-COURT", "FB-SG-W1", "FB-SG-E1",
+            "TR-RF-LEADER-W", "TR-G-LEADER-W"} <= sources
+    # A soakaway bed DISPOSES; it is not a source.
+    assert not {"FB-SG-W2", "FB-SG-E2", "FB-SG-S", "FB-SG-ARCH"} & sources
+    for source in sorted(sources):
         reached, path, problem = network.reaches_disposal(
             source, first_hop=EdgeKind.PRIMARY)
         assert reached, f"{source}: {problem} (followed {path})"
@@ -396,12 +397,11 @@ def test_the_bridge_runs_both_ways_and_it_is_one_tie(catlin_model):
 
     The sump and the court's soakaway each fall back to the other. That is deliberately a
     CYCLE — one tie at a common invert, no valves, no high-water device, no directional
-    control — and the walk has to tolerate it rather than call it a fault, because the
-    design is what it is checking.
+    control — and the walk has to tolerate it rather than call it a fault.
 
-    Gravity runs sump -> drywell and it comes free: ``DRW-SG-MAIN``'s top of stone is
-    -13'-7 7/16", 26 1/2" below the pit's own floor. That is the power-loss fallback, and it
-    needs no pump.
+    Since 2026-09-22 the court's end of the tie is FB-SG-ARCH's soakaway course (the well is
+    retired). Gravity runs sump -> course and it comes free: the course's top is
+    -13'-7 7/16", below the pit's own floor.
     """
     from typehaus.resolve.drainage_network import EdgeKind
 
@@ -409,43 +409,37 @@ def test_the_bridge_runs_both_ways_and_it_is_one_tie(catlin_model):
     reached, path, problem = network.reaches_disposal(
         "SM-B-RADON", first_hop=EdgeKind.OVERFLOW, not_being="SM-B-RADON")
     assert reached, problem
-    assert path[-1] == "DRW-SG-MAIN", path
+    assert path[-1] == "FB-SG-ARCH", path
 
     reached, path, problem = network.reaches_disposal(
-        "DRW-SG-MAIN", first_hop=EdgeKind.OVERFLOW, not_being="DRW-SG-MAIN")
+        "FB-SG-ARCH", first_hop=EdgeKind.OVERFLOW, not_being="FB-SG-ARCH")
     assert reached, problem
-    assert path[-1] == "SM-B-RADON", path
-    # The court's own overflow leg is the route, not a second tie invented for the occasion.
-    assert "FD-SG-OVERFLOW" in path, path
+    assert path == ["FB-SG-ARCH", "FD-SG-OVERFLOW", "SM-B-RADON"], path
 
-    sump = catlin_model.plan.by_tag("SM-B-RADON")
-    well = catlin_model.plan.by_tag("DRW-SG-MAIN")
-    # One invert, and it is the one FD-SG-OVERFLOW already arrives at.
-    assert sump.overflow_invert.inches == pytest.approx(-127.4375)
-    assert (catlin_model.plan.by_tag("FD-SG-OVERFLOW").invert.inches
-            == pytest.approx(-127.4375))
-    # Downhill without a pump: the well's stone top is below the pit's floor.
+    # One invert, three ways of saying it.
+    plan = catlin_model.plan
+    for invert in (plan.by_tag("SM-B-RADON").overflow_invert,
+                   plan.by_tag("FB-SG-ARCH").overflow_invert,
+                   plan.by_tag("FD-SG-OVERFLOW").invert):
+        assert invert.inches == pytest.approx(-127.4375)
+    # Downhill without a pump: the course's top is below the pit's floor.
     pit_floor = next(s.z0_m for s in catlin_model.solids if s.tag == "SM-B-RADON")
-    assert well.top_elevation.meters < pit_floor
+    arch = next(b for b in catlin_model.footing_beddings if b.tag == "FB-SG-ARCH")
+    assert arch.z0_m < pit_floor
 
 
-def test_the_field_lateral_falls_into_the_well_it_feeds(catlin_model):
-    """**D1.** It discharged 28" above the stone, and nothing could see it.
-
-    ``FrenchDrain`` carried one scalar invert; the resolver extruded every trench dead level.
-    The far end is now written as the same expression the well's top is — the precedent
-    ``_WELL_LEAD`` set — so the two cannot drift into a run that ends in the air.
-    """
+def test_the_field_lateral_falls_into_the_stone_it_feeds(catlin_model):
+    """**D1.** It once discharged 28" above the stone. It now falls 1" over 10' and ends on
+    FB-SG-ARCH's south face with its invert inside that bed's stone band — and resolves as
+    two bands, not the 28-step staircase its dive to the old well needed."""
     run = catlin_model.plan.by_tag("FD-SG-FIELD")
-    well = catlin_model.plan.by_tag("DRW-SG-MAIN")
-    assert run.end_invert is not None, "the field lateral is authored level again"
-    assert run.end_invert.meters == pytest.approx(well.top_elevation.meters)
-    assert run.end_invert.meters < run.invert.meters, "it must fall toward the well"
-    # And the resolved trench follows it, rather than being drawn level.
-    bands = sorted((s for s in catlin_model.solids
-                    if s.tag.startswith("FD-SG-FIELD-") and s.category == "french_drain"),
-                   key=lambda s: s.z0_m)
-    assert bands and bands[0].z0_m < bands[-1].z0_m - 0.01, [b.z0_m for b in bands]
+    arch = next(b for b in catlin_model.footing_beddings if b.tag == "FB-SG-ARCH")
+    assert run.end_invert is not None and run.end_invert.meters < run.invert.meters
+    assert arch.stone_z0_m < run.end_invert.meters < arch.z1_m, "it arrives in the stone"
+    assert run.path[-1].y.meters == pytest.approx(min(p[1] for p in arch.outline))
+    bands = [s for s in catlin_model.solids
+             if s.tag.startswith("FD-SG-FIELD-") and s.category == "french_drain"]
+    assert 1 <= len(bands) <= 2, len(bands)
 
 
 def test_every_bedding_that_names_a_receiver_has_a_way_to_reach_it(catlin_model):

@@ -371,13 +371,18 @@ OPENINGS = [
     # The west→east sequence is S2, JUL-W, JUL-E, S3 — a gap at S1/S4 rather than a
     # renumbering, because renumbering would break the GlobalIds of the two that survive.
     #
-    # WIN-A-S2 stands in RM-A-STUDIO and WIN-A-S3 in RM-A-STUDY. The study is the one that
-    # NEEDS them: at 165 sf R303.1 asks 13.2 sf and the single WT-1436 gives 13.625 sf, which
-    # is why the flanker is 36" and not WT-1424's 24" (see WT-1436's own note in main.py).
-    Window(uid="CAX302AAAA", tag="WIN-A-S2", host="W-A-S2", type_ref="WT-1436",
-           position=from_node("N-A-S1", ft(3, 5)), sill_height=ft(2, 8)),   # ctr x 12'-8"
-    Window(uid="CAX303AAAA", tag="WIN-A-S3", host="W-A-S3", type_ref="WT-1436",
-           position=from_node("N-A-S2", ft(4, 9)), sill_height=ft(2, 8)),   # ctr x 23'-4"
+    # ** MOVED OUT ONE BAY AND RETYPED WT-1436 -> WT-1424 (2026-09-22). ** Stations
+    # 12'-8"/23'-4" -> 11'-4"/24'-8" (136"/296", still bay centres, still a mirror). Outer
+    # jambs now 129" from each eave, which allows a 62 1/2" head; the 36" unit's 68" would
+    # hit the rake, the 24" unit's 56" clears it by 6 1/2" (13" of jamb run).
+    #
+    # WIN-A-S2 stands in RM-A-STUDIO and WIN-A-S3 in RM-A-STUDY. The old "the study needs
+    # 36"" reason read R303.1 off the whole 165 sf; R304.3 nets it to 79 sf (6.3 sf asked),
+    # and with its juliet the study has 12.5 sf at WT-1424.
+    Window(uid="CAX302AAAA", tag="WIN-A-S2", host="W-A-S2", type_ref="WT-1424",
+           position=from_node("N-A-S1", ft(2, 1)), sill_height=ft(2, 8)),   # ctr x 11'-4"
+    Window(uid="CAX303AAAA", tag="WIN-A-S3", host="W-A-S3", type_ref="WT-1424",
+           position=from_node("N-A-S2", ft(6, 1)), sill_height=ft(2, 8)),   # ctr x 24'-8"
     # The blank middle of the same gable: a pair of 27x64 casements straddling the ridge,
     # reading like a juliet balcony without being one (no door/guard/walking surface — the
     # 2'-8" sill clears R312.2's 24" fall-protection trigger by 8"). Shrank from an initial

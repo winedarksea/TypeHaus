@@ -52,9 +52,11 @@ not instruction: when it disagrees with this file or the model, it is the one th
   where a merge silently keeps both halves of a constant. It is a real debt and the split is
   a pass of its own, on a quiet tree. The seams are already visible and the file's own
   section banners name them — the court's structure, its drainage, the thermal-break dowels,
-  the porch enclosure, the leader and gutter run. Take the DRAINAGE half first: it is the
-  most self-contained (`GARDEN_DRYWELL`, the four `FrenchDrain`s, the sleeve and the beam
-  pipe) and the only one with no derived-elevation constants shared across the seam.
+  the porch enclosure, the leader and gutter run. The DRAINAGE half went first (2026-09-22):
+  `params/sunken_garden_drainage.py` holds the field lateral, `AD-SG-COURT`, the overflow leg,
+  its sleeve and beam pipe, built on names `sunken_garden.py` publishes (`COURT_TOP`,
+  `FIELD_*`, `ARCH_*`, `SOAKAWAY_TOP`). The beds and their soakaway course stay with the
+  footings they sit under.
 - `plan/mep*.py` — MEP *instances*, split by system so no file runs past ~400 lines:
   `mep_sleeves` (cast penetrations), `mep_drainage`, `mep_venting`, `mep_supply` +
   `mep_supply_devices`, `mep_hvac` (System 1's conditioned-air chase, equipment, terminal
@@ -765,8 +767,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 - **Width/height families.** Five widths carry the house: WT-1424, WT-2736, WT-3036 (north
   gables/hall), WT-3048 (south glazing, head 6'-8"). The 27" family carries FOUR heights
-  (36/48/54/64"); the 14" family THREE (24/36/48"). **WT-2764 and WT-1448 are
-  CATALOG-ONLY** (superseded by WT-2754, WT-1436 under the 6:12 rake); WT-2464 is also
+  (36/48/54/64"); the 14" family THREE (24/36/48"). **WT-2764, WT-1448 and WT-1436
+  are CATALOG-ONLY** (superseded by WT-2754, then WT-1436, then WT-1424 on 2026-09-22 when
+  the flankers moved out a bay); WT-2464 is also
   catalog-only. Retired sizes stay priced (same convention as `glazed-green-brick`,
   `EXT_2X6_SWINBURNE`). The bearing cap bounds width, so when an opening needs more
   area/head-line/composition, **height** is the only dimension left to spend — hence the
@@ -778,7 +781,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **Six height exceptions** (an extra height on an existing family, cheaper than a new one):
     - **WT-1448** (south flankers, catalog-only): 14" takes no header, so only the glass
       answers to the rake; any wider unit's header is what the rake won't take.
-    - **WT-1436** (south flankers): third height on the 14" family — 5'-8" head fits the
+    - **WT-1436** (south flankers, catalog-only since the 2026-09-22 move out to
+      11'-4"/24'-8", where only WT-1424's 4'-8" head clears the rake): third height on the 14" family — 5'-8" head fits the
       6:12 rake's clearance (`2 x (head+2")`) at 12'-8"/23'-4" with 4" to spare, where
       WT-1448's 6'-8" head does not fit anywhere a mirrored pair could use. Also keeps
       `RM-A-STUDY` on R303.1 daylight (165 sf needs 13.2 sf; gives 13.625) without
@@ -1110,7 +1114,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
   | station | tag | type | head | outer jamb | allowed | margin |
   |---|---|---|---|---|---|---|
-  | 12'-8" / 23'-4" | `WIN-A-S2` / `WIN-A-S3` | **WT-1436** (14x36) | 5'-8" | 145" / 144" | 140" | ✓ 4" |
+  | 11'-4" / 24'-8" | `WIN-A-S2` / `WIN-A-S3` | **WT-1424** (14x24) | 4'-8" | 129" / 128" | 116" | ✓ 12" |
   | 16'-0" / 20'-0" | `WIN-A-S-JUL-W` / `-E` | **WT-2754** (27x54) | 7'-2" | 178 1/2" | 176" | ✓ 2 1/2" |
 
   One 2'-8" sill under all four, heads stepping with the rake. Juliets hold a 21" clear
@@ -1124,7 +1128,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   has survived every position tried here.
 
 - WT-1424 is still used wherever a bigger unit won't fit — chiefly the mudroom. Under the
-  south rake it handed off to WT-1448, then WT-1436 (→ DESIGN-LOG.md).
+  south rake it handed off to WT-1448, then WT-1436, and is back on WT-1424 (→ DESIGN-LOG.md).
 
 - **Tempered twins.** `WT-1424-T`, `WT-2736-T`, `WT-3036-T`, `WT-3048-T` match their parents
   in every dimension, differing only in glass, for the ten R308.4 units (wet room, within
@@ -2142,18 +2146,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   calculations, and there is no calculation here — no check reads reflectance — so a note would
   name no oracle and the lint would have nothing to bind. Do not add one.
 - **The court is one surface, one riser.** `SPEC.court_step_down_in = 0`; `SL-SG-FLOOR` is
-  flush with the basement floor plane and the 494 sf court reads as one floor. The only step
+  flush with the basement floor plane and the 442 sf court reads as one floor. The only step
   is the 7 1/4" riser at `D-B-PATIO`. `SL-SG-STOOP` is retired — never reuse uid `SGS503AAAA`.
   `code.R311_3_exterior_landing` reads "D-B-PATIO lands on SL-SG-FLOOR, 7.3" below threshold".
 - **Do not lower the court below the flush plane** — 7 1/4" is the legal ceiling, not a
   preference: R311.3.2 caps a non-required, inward-swinging door's riser at 7 3/4"
   (`_MAX_NONREQUIRED_STEP_DOWN`), and any lower step needs its own landing (→ DESIGN-LOG.md,
   "Sunken garden court").
-- Ponding over the court is ~298 cf against ~177 cf of 100-yr/24-hr rain (~1.7x); the
-  two cubic-foot figures scale with the court's area and moved when it shortened to 26'-0"
-  — **the 1.7x ratio does not**, because both terms scale by the same 494/532. Cite the
-  ratio, not the volumes, unless the volumes are what is being asked for. The
-  governing case is snowmelt over a frozen grate, where `DRW-SG-MAIN` contributes nothing.
+- Ponding over the court is ~267 cf (7 1/4" over 442 sf) against ~158 cf of 100-yr/24-hr
+  rain (~1.7x); the volumes scale with the court's area, **the 1.7x ratio does not**. Cite the
+  ratio, not the volumes, unless the volumes are what is being asked for. The governing case
+  is **snowmelt over a frozen field**, and `drainage.soakaway_storage` grades it: 155 cf of
+  course voids + 93 cf of 48 h infiltration (presumed HSG D) = 249 cf against 222 cf of melt
+  off 278 sf (`notes/court_soakaway_storage.md`). Go to an 18" course only if the credit fails.
 - **`W-SG-ARCH` must not move, and since 2026-09-10 the reason is no longer the ratio.**
   Dropping its top to the rim underside gives a 10 1/4" section at phi-Pn 60,712 lb, which
   FAILED at Pu 62,051 (d/c 1.02) and **passes at today's Pu 40,145 (d/c 0.66)**; the 8 1/2"
@@ -2238,17 +2243,24 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `FO-SG-TOE-W`/`-E` are cut to `_y_ax_mid`. **The invariant to hold**: the net rim polygon's
   intersection with every `FT-SG-*` footprint must be 0.000 sf — `structural.concrete_
   interference` only grades ISOLATED pours and will not catch a re-lap.
-- `DRW-SG-MAIN` sits on the wall beds: `_SG_DRYWELL_TOP = _SG_WALL_BED_BOTTOM`.
-  `FD-SG-LEAD-W`/`-E` are the only two leads — the five wall beds form one connected stone
-  body (W1↔W2 at y=-11.0', W2↔S via the corner lap, mirrored east). `FB-SG-ARCH` gets no
-  lead: its bed bottoms 9" below the well and stops 2" from the shaft, feeding the column
-  through its side. Note: `drainage.discharge_consistency` resolves the tag but never checks
-  where the pipe actually terminates — verify inverts by hand.
-- **The well is pinned off `_y_ax_mid`, NOT off the court's midpoint.** `_WELL_SOUTH_OF_ARCH_FT`
-  = 3'-10" holds it at y = -14.8333. It was `(_y_in_s + _y_in_n) / 2`, written out twice, and
-  the 2'-0" shortening would have walked it 1'-0" north — putting the shaft's north edge
-  inside `FB-SG-ARCH`'s bed band, which nothing grades. The leads are 6'-6" each now, not
-  5'-6": they run from `_field_x_*` to the well centre and the toe reach fell 12".
+- **No drywell (2026-09-22).** `DRW-SG-MAIN` and `FD-SG-LEAD-W`/`-E` are retired (uids
+  SGDR01AAAA, SGFD03AAAA, SGFD04AAAA spent). The court's soakaway is a 12" flood course of
+  the same #57 under the drained 42" of `FB-SG-W2`/`E2`/`S`/`ARCH`
+  (`FootingBedding.soakaway_depth`); `z0_m` stays the drained bottom frost reads and the
+  course is never frost section. W1/E1 stay 42"-only and hand their tile to W2/E2 — one body
+  of six beds, flood water ~10' off the basement.
+- **The dig has two planes:** drained sections all bottom at `_SG_WALL_BED_BOTTOM`
+  (-13'-7 7/16" = `SOAKAWAY_TOP`), the four soakaway beds at `_SG_SOAKAWAY_BOTTOM`
+  (-14'-7 7/16"); the step is at y = -11'-0". `FB-SG-ARCH` is 36" wide so `AD-SG-COURT`'s
+  riser drops into the 12" strip north of the beam.
+- **Relief is one invert, -127 7/16".** `FB-SG-ARCH` overflows to `FD-SG-OVERFLOW` → SM-B-RADON
+  and the sump's bridge spills back to `FB-SG-ARCH` at the same level. That lip is 36" inside
+  the drained section — the frost section floods before relief; `drainage.soakaway_storage`
+  says so as an UNKNOWN. Don't try to fix it by gravity; there is no lower outlet.
+- `SM-B-RADON` pumps through `PR-B-SUMP-DISCH` (`PipeSystem.SUMP_DISCHARGE`, sleeved through
+  `W-B-W1`) into `TR-RF-LEADER-W`'s extension riser, so `RG-W-BASIN` also takes pumped water
+  (a `rain_garden_capacity` UNKNOWN). The pump's `check_valve`/`freeze_relief` are graded by
+  `drainage.pump_discharge`.
 - `Dowel` z is derived off the shared 8" footing-to-footing joint face (mid-way through it);
   the foam block matches that 8". **Nothing in the engine grades a `Dowel` against the two
   footings it names** — check both footing tops/bottoms by hand after any elevation change.

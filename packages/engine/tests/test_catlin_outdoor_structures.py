@@ -30,6 +30,8 @@ RETIRED_CENTRE_LINE = (
     "FO-SG-BF2", "FO-SG-BR2", "CN-SG-BASE-R2", "CN-SG-BASE-F2", "CN-SG-CAP-R2",
     "CN-SG-CAP-F2", "CN-SG-STDF-COL", "CN-SG-STDF-FCOL",
 )
+#: The court's well and its two leads retired on 2026-09-22 for a soakaway course under the beds.
+RETIRED_COURT_DRYWELL = ("DRW-SG-MAIN", "FD-SG-LEAD-W", "FD-SG-LEAD-E")
 #: The four CORNER pillars became 12" round cast concrete columns on 2026-09-03, fixed at
 #: their bases and doweled into the wall tops they stand on. They are the balcony's entire
 #: lateral system, and they take no post base at all — concrete on concrete is a lapped
@@ -656,17 +658,23 @@ def test_every_court_bed_is_a_wall_bed_on_the_soakaway(catlin_model) -> None:
     ``-FCOL``); ``structural.frost_depth``'s augered-pier case is kept on a fixture in
     ``test_frost_depth_excavation.py``.
 
-    What is left under the court is the five wall footings' own section, and every one of
-    those beds drains to ``DRW-SG-MAIN`` and bottoms on its top of stone.
+    What is left under the court is the five wall footings' own section. Since 2026-09-22 the
+    dig has TWO planes: every drained section bottoms on one, and the soakaway course under
+    W2/E2/S (and FB-SG-ARCH) carries the dig 12" lower; W1/E1 stop on the upper plane.
     """
     beds = [b for b in catlin_model.footing_beddings if b.host.startswith(("FT-SG-", "PD-SG-"))]
     assert sorted(b.host for b in beds) == ["FT-SG-E1", "FT-SG-E2", "FT-SG-S", "FT-SG-W1",
                                             "FT-SG-W2"]
-    well_top = _solid(catlin_model, "DRW-SG-MAIN").z1_m
+    court = [b for b in catlin_model.footing_beddings if b.tag.startswith("FB-SG-")]
+    assert {round(b.z0_m / INCH, 4) for b in court} == {-163.4375}
+    assert {round(b.stone_z0_m / INCH, 4) for b in court} == {-163.4375, -175.4375}
     for bed in beds:
-        assert bed.z0_m == pytest.approx(well_top, abs=0.01), bed.host
         assert bed.non_frost_susceptible is True, bed.host
-        assert bed.drain_tile_spec.discharge == "DRW-SG-MAIN", bed.host
+        deep = bed.host not in ("FT-SG-W1", "FT-SG-E1")
+        assert (bed.soakaway_z0_m is not None) is deep, bed.host
+    # The retired well stays retired.
+    assert not [catlin_model.plan.by_tag(t) for t in RETIRED_COURT_DRYWELL
+                if catlin_model.plan.by_tag(t) is not None]
 
 
 def test_porch_joists_run_ledger_to_ledger_with_no_oversail(catlin_model) -> None:

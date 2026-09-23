@@ -96,11 +96,14 @@ def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
                        lineweight=PROFILE, linetype=linetype, uid=run.uid, tag=run.tag))
         mid = run.path[len(run.path) // 2]
         diameter_in = run.diameter_m / M_PER_IN
-        if run.z_start_m is not None and run.z_end_m is not None and run.length_m > 1e-9:
+        label = "SUMP DISCHARGE" if run.system == "sump_discharge" else run.system.upper()
+        # A pump's pressure line rises out of its pit: it carries no slope label.
+        if (run.system != "sump_discharge" and run.z_start_m is not None
+                and run.z_end_m is not None and run.length_m > 1e-9):
             slope = (run.z_start_m - run.z_end_m) / M_PER_IN / (run.length_m * 3.280839895)
-            text = f'{diameter_in:.0f}" {run.system.upper()} @ {slope:.2f}"/FT'
+            text = f'{diameter_in:.0f}" {label} @ {slope:.2f}"/FT'
         else:
-            text = f'{diameter_in:.0f}" {run.system.upper()}'
+            text = f'{diameter_in:.0f}" {label}'
         b.add(Leader(anchor=NamedPoint(xy=_in(mid), name=run.tag), at=_in(mid),
                      to=_in((mid[0], mid[1] + 1.0)), text=text, layer=layer))
 

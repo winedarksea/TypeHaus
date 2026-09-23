@@ -158,8 +158,8 @@ def test_a_window_and_a_door_are_told_apart(catlin_model):
 
 
 def test_the_south_gable_carries_four_openings_mirrored_about_the_ridge(catlin_model):
-    """``houses/catlin/CLAUDE.md`` §Gables: WIN-A-S2/JUL-W/JUL-E/S3 at 12'-8", 16'-0",
-    20'-0", 23'-4" — every pair summing to 36'-0". If the drawing disagrees, one of the
+    """``houses/catlin/CLAUDE.md`` §Gables: WIN-A-S2/JUL-W/JUL-E/S3 at 11'-4", 16'-0",
+    20'-0", 24'-8" — every pair summing to 36'-0". If the drawing disagrees, one of the
     two is wrong."""
     scene = build_elevation(catlin_model, "south")
     centres = {}
@@ -168,10 +168,10 @@ def test_the_south_gable_carries_four_openings_mirrored_about_the_ridge(catlin_m
         assert nodes, f"{tag} missing from the south gable"
         us = [point[0] for node in nodes for point in node.points]
         centres[tag] = (min(us) + max(us)) / 2.0
-    assert centres["WIN-A-S2"] == pytest.approx(12 * FT + 8, abs=1.0)
+    assert centres["WIN-A-S2"] == pytest.approx(11 * FT + 4, abs=1.0)
     assert centres["WIN-A-S-JUL-W"] == pytest.approx(16 * FT, abs=1.0)
     assert centres["WIN-A-S-JUL-E"] == pytest.approx(20 * FT, abs=1.0)
-    assert centres["WIN-A-S3"] == pytest.approx(23 * FT + 4, abs=1.0)
+    assert centres["WIN-A-S3"] == pytest.approx(24 * FT + 8, abs=1.0)
 
 
 def test_the_north_gable_pair_stacks_on_the_second_storey_pair(catlin_model):
