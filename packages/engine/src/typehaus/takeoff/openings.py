@@ -138,6 +138,8 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                                            width_in, height_in, bool(entry["arched"])),
             "known": product is not None,
             "operation": operation,
+            # DoorType.function, so an [allowances] driver can count by it; None when unstated.
+            "function": getattr(product, "function", None) if kind == "door" else None,
             "qualifier": qualifier,
             "width_in": width_in,
             "height_in": height_in,

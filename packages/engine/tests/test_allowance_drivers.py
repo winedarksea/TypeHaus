@@ -87,6 +87,19 @@ def test_a_filter_narrows_the_sum(tmp_path) -> None:
     assert row["quantity"] == 13.0
 
 
+def test_a_door_function_filter_counts_one_hardware_set_per_leaf(tmp_path) -> None:
+    """``DoorType.function`` is what a lockset is bought by; the openings row carries it."""
+    bom = {"openings": [
+        {"kind": "door", "type": "DT-A", "function": "privacy", "count": 3},
+        {"kind": "door", "type": "DT-B", "function": "passage", "count": 5},
+        {"kind": "door", "type": "DT-C", "function": None, "count": 2},
+    ]}
+    row = _allowance(tmp_path, 'x = { low = 1, high = 1, unit = "ea", '
+                     'driver = "openings.count[function=privacy]" }', bom=bom
+                     )["sections"]["allowances"]["rows"][0]
+    assert row["quantity"] == 3.0
+
+
 def test_filters_are_anded_because_one_is_not_enough(tmp_path) -> None:
     """The row this mechanism was built for. ``envelope_layers`` reports a LAYER, not a
     plane, so ``[scope=roof]`` alone sums the cladding and the sheathing into 2,000 SF of a

@@ -33,6 +33,7 @@ from typehaus.resolve.model import (
 )
 from typehaus.resolve.orientation import resolve_storey_windings, wall_outward_sign
 from typehaus.resolve.rooms import wall_lining_overrides
+from typehaus.resolve.sheathing_lap import lap_sheathing
 
 _EPS = 1e-4  # meters — cavity-insulation coincidence tolerance
 _DIRECTION_EPS = 1e-9
@@ -608,6 +609,7 @@ def _classify_tier(plan: PlanModel, node_tag: str, storey_tag: str,
         framing_owner=framing_owner,
         supported=supported,
         diagnostic=diagnostic,
+        sheathing_lap=framing_owner if kind == "l" else None,
     )
 
 
@@ -763,10 +765,12 @@ def _with_layer_polygons(wall: ResolvedWall,
 
 def _clip_l_corner(walls: dict[str, ResolvedWall], junction: ResolvedJunction) -> None:
     first, second = junction.incidents
+    unclipped: dict[str, dict[int, list[tuple[float, float]]]] = {}
     for own, other in ((first, second), (second, first)):
         if own.wall_tag not in walls:
             continue
         wall = walls[own.wall_tag]
+        unclipped[own.wall_tag] = {i: layer.polygon for i, layer in enumerate(wall.layers)}
         clipped_rings: dict[int, list[tuple[float, float]]] = {}
         for index, layer in enumerate(wall.layers):
             clipped = _clip_to_incident_sector(
@@ -774,6 +778,7 @@ def _clip_l_corner(walls: dict[str, ResolvedWall], junction: ResolvedJunction) -
             )
             clipped_rings[index] = _normalized_ring(Polygon(clipped), layer.polygon)
         walls[own.wall_tag] = _with_layer_polygons(wall, clipped_rings)
+    lap_sheathing(walls, junction, unclipped, _normalized_ring)
 
 
 def _through_envelope(walls: dict[str, ResolvedWall], wall_tags: tuple[str, ...]):

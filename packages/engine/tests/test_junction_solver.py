@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
@@ -255,3 +257,66 @@ def test_junction_solved_polygons_round_trip_through_dxf(project, tmp_path) -> N
     for polyline in wall_polylines:
         polygon = Polygon([(point[0], point[1]) for point in polyline.get_points()])
         assert polygon.is_valid and polygon.area > 0
+
+
+def test_l_corner_sheathing_laps_rather_than_mitres(project) -> None:
+    """The lapping wall's panel runs to its neighbour's outer sheathing face; the other
+    wall's panel butts the lapper's inner face. Every other layer keeps its mitre."""
+    plan = _plan(
+        project,
+        {"C": (0, 0), "E": (10, 0), "NE": (10, 10), "N": (0, 10)},
+        [
+            ("W-E", "C", "E", "EXT"), ("W-NE", "E", "NE", "EXT"),
+            ("W-N", "N", "C", "EXT"), ("W-NW", "NE", "N", "EXT"),
+        ],
+    )
+    model, _ = resolve(plan)
+    junction = next(item for item in model.junctions if item.node_tag == "C")
+    assert junction.sheathing_lap == junction.framing_owner is not None
+    lap_inc = next(i for i in junction.incidents if i.wall_tag == junction.sheathing_lap)
+    butt_inc = next(i for i in junction.incidents if i.wall_tag != junction.sheathing_lap)
+
+    def ring(tag, name):
+        wall = model.wall(tag)
+        assert wall is not None
+        return next(layer for layer in wall.layers if layer.name == name).polygon
+
+    def reach(points, direction):
+        return [(x - junction.point[0]) * direction[0] + (y - junction.point[1]) * direction[1]
+                for x, y in points]
+
+    lap, butt = ring(lap_inc.wall_tag, "sheathing"), ring(butt_inc.wall_tag, "sheathing")
+    assert Polygon(lap).intersection(Polygon(butt)).area < 1e-10
+    assert len(lap) == 4 and len(butt) == 4  # rectangles, no mitre vertex left behind
+    assert abs(min(reach(lap, lap_inc.direction)) - min(reach(butt, lap_inc.direction))) < 1e-6
+    assert abs(min(reach(butt, butt_inc.direction)) - max(reach(lap, butt_inc.direction))) < 1e-6
+    # The foam over it still mitres: only sheathing laps.
+    foam = ring(lap_inc.wall_tag, "foam")
+    assert len({round(value, 6) for value in reach(foam, lap_inc.direction)}) > 2
+
+
+def test_sheathing_bills_off_its_polygon_not_the_node_axis(project) -> None:
+    """Both take-offs bill the panel the 3D draws: its plan area over its thickness."""
+    from typehaus.takeoff.envelope import envelope_layer_takeoff
+    from typehaus.takeoff.sheet_goods import sheet_goods_takeoff
+
+    plan = _plan(
+        project,
+        {"C": (0, 0), "E": (10, 0), "NE": (10, 10), "N": (0, 10)},
+        [
+            ("W-E", "C", "E", "EXT"), ("W-NE", "E", "NE", "EXT"),
+            ("W-N", "N", "C", "EXT"), ("W-NW", "NE", "N", "EXT"),
+        ],
+    )
+    model, _ = resolve(plan)
+    drawn_m2 = sum(Polygon(layer.polygon).area / layer.thickness_m * (wall.z1_m - wall.z0_m)
+                   for wall in model.walls for layer in wall.layers
+                   if layer.name == "sheathing")
+    axis_m2 = sum(math.dist(*wall.axis) * (wall.z1_m - wall.z0_m) for wall in model.walls)
+    assert abs(drawn_m2 - axis_m2) > 0.01  # the corners are real, one way or the other
+    sheet = next(row for row in sheet_goods_takeoff(model)
+                 if row["scope"] == "exterior wall" and row["material"] == "osb")
+    area = next(row for row in envelope_layer_takeoff(model)
+                if row["function"] == "sheathing" and row["material"] == "osb")
+    assert abs(float(sheet["net_area_sqft"]) - drawn_m2 * 10.7639) < 0.1
+    assert sheet["net_area_sqft"] == area["net_area_sqft"]
