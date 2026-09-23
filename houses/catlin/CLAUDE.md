@@ -2553,7 +2553,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   fall is on the `walk *` impervious surfaces, merged into the site by `plan/manifest.py`
   — never hand-copy them into `plan/site.py`. Leg C is notched round `PT-BW-RNE`.
   `notes/sidewalk_layout.md`.
-- **Bluestem grid `PB-S-GRID`** south of `W-RG-BLOCK`: 198 cells at 15", 24 accents on the
+- **Bluestem grid `PB-S-GRID`** south of `W-RG-BLOCK`, 1' inside the W/E/rear lot lines: 380 cells at 15", 44 accents on the
   `(i + 3j) mod 9` lattice. The basin reuses the same grid code for its slope and floor
   beds. `notes/grid_garden.md`.
 - **Espaliers**: three dwarf apples in `plan/landscape.py` (editable) on `TRL-W-S`/`-N` at

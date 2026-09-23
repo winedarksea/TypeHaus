@@ -20,17 +20,19 @@ Cell (i, j) is an accent when (a·i + b·j) mod `every` = 0; its type is
 
 ## 2. PB-S-GRID — south of W-RG-BLOCK
 
-x 4'..32' (W 28'), y −46'..−34'-6" (H 11.5'), s = 15" = 1.25', ground −3'-4".
-Columns ⌊26.75/1.25⌋ + 1 = 22; rows ⌊10.25/1.25⌋ + 1 = 9; **198 cells**.
+x −6'..42' (W 48'), y −47'-6"..−34'-6" (H 13'), s = 15" = 1.25', ground −3'-4". The bed
+stops 1'-0" inside the west, east and rear lot lines.
+Columns ⌊46.75/1.25⌋ + 1 = 38; rows ⌊11.75/1.25⌋ + 1 = 10; **380 cells**.
 
-Accents: (i + 3j) mod 9 = 0, i in 0..21. Per row the residue −3j mod 9 cycles 0, 6, 3, so
-rows take 3, 2, 3, 3, 2, 3, 3, 2, 3 = **24 accents** (one in 8.25).
+Accents: (i + 3j) mod 9 = 0, i in 0..37. Per row the residue −3j mod 9 cycles 0, 6, 3:
+residue 0 takes i = 0, 9, 18, 27, 36 (5), residues 6 and 3 take 4 each. Rows j = 0..9 take
+5, 4, 4, 5, 4, 4, 5, 4, 4, 5 = **44 accents** (one in 8.6).
 
 Types `(M, M, M, A, M, M, M, C)[(i + j) mod 8]`:
-- Angelina (index 3): (0,3), (15,4), (3,8) → **3**
-- Caramel (index 7): (6,1), (21,2), (9,6) → **3**
-- Moonbeam: 24 − 6 = **18**
-- 'Jazz': 198 − 24 = **174**
+- Angelina (index 3): (27,0), (0,3), (15,4), (30,5), (3,8), (18,9) → **6**
+- Caramel (index 7): (6,1), (21,2), (36,3), (9,6), (24,7) → **5**
+- Moonbeam: 44 − 11 = **33**
+- 'Jazz': 380 − 44 = **336**
 
 ## 3. The basin beds (15" grid)
 
@@ -47,8 +49,8 @@ other 20 cells take the field mix `(OCTOBER SKY, NORTHWIND)[j mod 2]`: even j (2
 
 ## 4. Totals
 
-'Jazz' 174 + 56 = **230**; Moonbeam 18; Angelina 3; Caramel 3; 'October Sky' 10;
-'Northwind' 10; iris 3; milkweed 2. With 28 pockets and 3 apples: **310 plants**.
+'Jazz' 336 + 56 = **392**; Moonbeam 33; Angelina 6; Caramel 5; 'October Sky' 10;
+'Northwind' 10; iris 3; milkweed 2. With 27 pockets and 3 apples: **491 plants**.
 
 ## 5. What is NOT graded here
 

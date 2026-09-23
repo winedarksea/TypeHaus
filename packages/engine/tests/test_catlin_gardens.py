@@ -129,11 +129,11 @@ def test_the_walk_turns_the_corner_under_open_concrete(catlin_model_ro) -> None:
 def test_planting_counts(catlin_model_ro) -> None:
     rows = {r["item"]: r["quantity"] for r in planting_takeoff(catlin_model_ro)}
     assert rows == {
-        "PT-SCH-JAZZ": 230, "PT-COR-MOONBEAM": 18, "PT-SED-ANGELINA": 3,
-        "PT-HEU-CARAMEL": 3, "PT-PAN-OCTSKY": 10,
+        "PT-SCH-JAZZ": 392, "PT-COR-MOONBEAM": 33, "PT-SED-ANGELINA": 6,
+        "PT-HEU-CARAMEL": 5, "PT-PAN-OCTSKY": 10,
         "PT-PAN-NORTHWIND": 10, "PT-IRI-VERS": 3, "PT-ASC-INCA": 2,
         "PT-CAL-NEPETA": 7, "PT-ALL-MILLENIUM": 7, "PT-SPO-TARA": 7, "PT-SAL-PURP": 6,
         "PT-MAL-HONEYCRISP": 1, "PT-MAL-ZESTAR": 1, "PT-MAL-HARALSON": 1,
         "trellis-post:4x4:kdat": 5, "trellis-wire:12.5 ga high-tensile galvanized": 76.0,
     }
-    assert len(catlin_model_ro.plants) == 309
+    assert len(catlin_model_ro.plants) == 491
