@@ -806,8 +806,8 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
     the two plan directions is taken.
 
     **GUARD** is IRC R301.5 / Table R301.5 note f: a 200 lb concentrated load in any
-    direction at the top of the guard. Its lever to a column base is the whole column plus
-    the guard height. It is taken WHOLLY on one column — the two columns at a guard's end
+    direction at the top of the guard. Its lever runs from the guard top down to the
+    column's RESOLVED base: column, beam, joists, plank and guard. It is taken WHOLLY on one column — the two columns at a guard's end
     bay would share it in any real distribution, and halving it is a diaphragm claim this
     module has no standing to make.
 
@@ -868,14 +868,20 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
             column_ft = column.height.inches / 12.0
             per_column = worst_shear / len(columns)
             wind_moment = per_column * column_ft
-            guard_moment = 200.0 * (column_ft + _bw_ft(guard.height))
+            # Guard top down to the RESOLVED column base: beam, joists and plank stand
+            # between the column top and the walking surface, and all of it is lever.
+            solid = ctx.model.by_tag(tag)
+            base_m = getattr(solid, "z0_m", None)
+            guard_arm_ft = (top_ft - base_m / 0.3048 if base_m is not None
+                            else column_ft + _bw_ft(guard.height))
+            guard_moment = 200.0 * guard_arm_ft
             # The force and the arm behind that moment, for `engineering/column_base.py`.
             # IBC 1807.3.2.1 takes a FORCE and the height it acts at, and `P x h` has
             # infinitely many factorisations — this is the one the demand was built from.
             # The GUARD's 200 lb rides its own arm and is carried as the worse of the two
             # equivalent forces, because the embedment has to turn whichever arrives.
             if guard_moment > wind_moment:
-                record_base_shear(tag, 200.0, column_ft + _bw_ft(guard.height))
+                record_base_shear(tag, 200.0, guard_arm_ft)
             else:
                 record_base_shear(tag, per_column, column_ft)
             out[tag] = (wind_moment, guard_moment, (
@@ -886,8 +892,8 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
                 f"because the figure's own cell is not a value this repository holds), "
                 f"split over {len(columns)} fixed column(s) = {per_column:,.0f} lb each at "
                 f"the deck plane, {column_ft:.2f}' above this column's base. "
-                f"GUARD: IRC R301.5's 200 lb at the top of {guard.tag}, taken wholly on one "
-                f"column rather than shared"))
+                f"GUARD: IRC R301.5's 200 lb at the top of {guard.tag}, {guard_arm_ft:.2f}' "
+                f"above this column's base, taken wholly on one column rather than shared"))
     from typehaus.engineering.roof_moment import roof_base_moments
 
     # ** THE WORSE OF THE TWO, NOT THE LAST ONE WRITTEN. ** A column can carry a deck AND

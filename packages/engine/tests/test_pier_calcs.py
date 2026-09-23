@@ -208,17 +208,21 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 #
 # ** 3" LOWER ON 2026-09-23 (note §15). ** The balcony came down for R311.3 at D-S-DECK-E:
 # columns 108.125/109.958 -> 105.125/106.958", q_h 18.63 -> 18.57 psf at the lower guard top.
+#
+# ** GUARD 2,452 -> 2,675 LATER ON 2026-09-23 (note §16). ** Its lever is guard top to the
+# resolved column base, 13.375', not column + 42": beam, joists and plank were missing. One
+# guard top, one base elevation, so both rows read the same.
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 105.125, "wind_lb_ft": 1105.2, "guard_lb_ft": 2452.1},
-    "PT-SG-BF3": {"height_in": 105.125, "wind_lb_ft": 1105.2, "guard_lb_ft": 2452.1},
+    "PT-SG-BF1": {"height_in": 105.125, "wind_lb_ft": 1105.2, "guard_lb_ft": 2675.0},
+    "PT-SG-BF3": {"height_in": 105.125, "wind_lb_ft": 1105.2, "guard_lb_ft": 2675.0},
     # The rear row runs 2" proud for the deck's drainage crown.
     # ** THE REAR PAIR LOST 1/6" ON 2026-09-14. ** ``SPEC.rear_pillar_rise_in = 2.0`` became
     # ``SPEC.balcony_fall_in_per_ft = 0.25``: the FALL is the authored number now and the rise
     # follows the run between the bearing rows, which over 7'-4" is 1.833" rather than 2.000".
     # Both base moments are ``shear x height``, so they follow it exactly and by the same
     # 0.15%. Nothing else about the rear row moved.
-    "PT-SG-BR1": {"height_in": 106.958, "wind_lb_ft": 1124.5, "guard_lb_ft": 2482.6},
-    "PT-SG-BR3": {"height_in": 106.958, "wind_lb_ft": 1124.5, "guard_lb_ft": 2482.6},
+    "PT-SG-BR1": {"height_in": 106.958, "wind_lb_ft": 1124.5, "guard_lb_ft": 2675.0},
+    "PT-SG-BR3": {"height_in": 106.958, "wind_lb_ft": 1124.5, "guard_lb_ft": 2675.0},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 #:
@@ -832,10 +836,11 @@ def test_the_base_moments_reproduce_the_note(tag, piers) -> None:
     pier = piers[tag]
     assert pier.wind_base_moment_lb_ft == pytest.approx(want["wind_lb_ft"], abs=1.0)
     assert pier.guard_base_moment_lb_ft == pytest.approx(want["guard_lb_ft"], abs=1.0)
-    # 200 lb x (the column + the 3'-6" guard). If this ever stops being an exact multiple
-    # of 200, the lever arm has silently changed.
+    # 200 lb x guard top to column base: the column, then the glulam, the joists the
+    # resolver drops out of the authored height, the plank, and the 3'-6" guard (note §16).
     lever_ft = want["guard_lb_ft"] / 200.0
-    assert lever_ft == pytest.approx(want["height_in"] / 12.0 + 3.5, abs=0.01)
+    assert lever_ft == pytest.approx(13.375, abs=0.01)
+    assert lever_ft > want["height_in"] / 12.0 + 3.5, "the deck build-up is lever too"
     # The guard governs, which is the whole reason it is computed at all.
     assert pier.guard_base_moment_lb_ft > pier.wind_base_moment_lb_ft
 
@@ -866,7 +871,8 @@ def test_the_corner_column_is_graded_in_bending_and_it_checks_out(tag, results) 
     # ASCE 7-16 §2.3.1's 1.6L and wind goes from 0.6W back to 1.0W. Nothing about the
     # structure moved and no column is re-sized: a sixth of phi*Mn is still a section
     # nowhere near spent. See deck_post.STRENGTH_FROM_ASD_WIND.
-    assert guard.demand / guard.capacity == pytest.approx(0.16, abs=0.01)
+    # 0.16 -> 0.17 on 2026-09-23: the guard's lever gained the 13 3/8" of deck (note §16).
+    assert guard.demand / guard.capacity == pytest.approx(0.17, abs=0.01)
     assert guard.demand == pytest.approx(
         _CORNER_ORACLE[tag]["guard_lb_ft"] * 1.6, abs=2.0), "1.6L, not the service load"
     assert states["bending at base, wind"].demand == pytest.approx(

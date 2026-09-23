@@ -270,3 +270,9 @@ column:
 
 Both still inside the test's 6 %, and on the safe side. Gravity (§3c) does not move: the deck
 line loads and the beam's bearings are the same; only the column self weight fell 29 lb.
+
+## Addendum 2026-09-23c — the guard's lever
+
+The record's guard lever is guard top to the resolved column base, 13.375' (balcony note §16),
+not column + 42": **200 × 13.375 = 2,675 lb-ft** at every balcony column. The solve reads
+2,589 lb-ft at both rows, so the record is long by 3.3 %, inside the 6 % and on the safe side.

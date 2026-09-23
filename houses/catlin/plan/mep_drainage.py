@@ -735,7 +735,8 @@ TPR_DISCHARGE = [
 # roof surface, resolve/vent_termination.py), not authored — an authored absolute can't
 # follow a rake.
 RADON_SUMP = [
-    Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(ft(1), ft(34, 6)),
+    # Centred under VR-M-RADON-VENT's chase (1'-0", 35'-1.3"), which moved there 2026-09-23.
+    Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(ft(1), inch(421.3)),
          diameter=inch(18), depth=inch(24), host_ref="SL-B-FLOOR",
          sealed_cover=True, radon_vent=True, vent_ref="VR-M-RADON-VENT",
          # CKT-SUMP was already on the panel schedule but the pit only implied a pump;
@@ -804,6 +805,7 @@ SUMP_DISCHARGE = [
                   pt(inch(-10.5), ft(34, 6)), pt(inch(-10.5), ft(35, 6))),
             diameter=inch(1.5), material="pvc",
             # Starts at the lid (the slab top): the pump's own riser in the pit is the pump's.
+            # 8.3" off the pit's centre since it moved to the chase, inside its 9" radius.
             elevations=(inch(0), inch(88.4375), inch(87.8375), inch(87.4375))),
     # The wall crossing, sleeved like SP-SG-ARCH-OVERFLOW, on the 8" pour's centreline 4" in
     # from the axis; centre = invert at the wall + 3/4".

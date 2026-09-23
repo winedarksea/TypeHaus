@@ -215,7 +215,8 @@ Two columns bound each end bay of the guard and would share this in any real dis
 this note has no standing to make, and the margin is there to spend.
 
 **The two are not summed.** ASCE 7-16 §2.4.1 pairs W with L at 0.75, and a guard load is not
-a storey live load in the first place. The guard case governs at **2,502 lb-ft**.
+a storey live load in the first place. The guard case governs at **2,502 lb-ft**. (**2,675** since §16:
+the lever runs guard top to column base.)
 
 ---
 
@@ -1271,6 +1272,29 @@ cover   c (P_u 4,820.0)  phi     φM_n     envelope φM_n (P_u 3,689)   BR1 join
 
 Same shape as §14 — the dowel's tension rises 19% at 3" — and the pad-dowel row still decides
 it: **2" stays.**
+
+## 16. The guard's lever, corrected (2026-09-23)
+
+§2c and every re-work since took the guard's lever as column + 42". The guard stands on the
+walking surface, and the 11 7/8" glulam, 11 1/4" joists and 1 1/2" plank stand between that
+and the built column top (24 5/8" — the authored 105.125" already carries the joist depth,
+§15). The record now measures guard top to the RESOLVED column base:
+
+```
+guard top            13.375'  = walking surface 9.875' + 3.5'
+column base           0.000'  = W-SG-W1/E1 top (the porch top)
+M_g = 200 × 13.375            = 2,675 lb-ft, every balcony column (was 2,452 front, 2,483 rear)
+guard, 1.6L = 1.6 × 2,675     = 4,280 lb-ft   / 24,669 = 0.173
+magnified, δ 1.0273           = 4,397 lb-ft   / 24,669 = 0.178
+envelope (1,842 + 2,675) × 1.021 = 4,612 lb-ft / 24,373 = 0.189 front
+         (1,874 + 2,675) × 1.022 = 4,649 lb-ft / 24,379 = 0.191 rear
+```
+
+P_u, δ and φM_n do not move: the axial load is the same. §15c's joint takes the larger M_u
+and the engine now reads, front / rear: bearing C 9,436 / 9,510 lb against φB_n 38,803 /
+38,811 (0.243 / 0.245), one-bar dowel tension 5,136 / 5,182 lb against 16,740 (0.307 /
+0.310). Those two are engine readings, not re-hand-worked; development (0.884) still
+governs and is untouched by M_u.
 
 ---
 

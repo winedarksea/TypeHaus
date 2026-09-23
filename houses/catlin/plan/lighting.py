@@ -539,9 +539,9 @@ MAIN_LIGHTING = [
     #
     # ONE RULE NOW, so the next move has something to be checked against: **a counter can's
     # centre is on its run's counter front edge** — 2" of the 4" body over the counter's
-    # outer 2", 2" over the aisle. A 24" base under a 13" upper leaves 11" of counter, so
-    # every body clears every upper by 9" — measured, not assumed (see below) — and the tape
-    # under the upper lights the 11" the upper shades. It also keeps the can off the standing
+    # outer 2", 2" over the aisle. A 24" base under a 15" upper leaves 9" of counter, so
+    # every body clears every upper by 7" — measured, not assumed (see below) — and the tape
+    # under the upper lights the 9" the upper shades. It also keeps the can off the standing
     # zone, which is in FRONT of the edge, not behind it.
     #
     # ~9,600 lm of panel down to 3,600 lm of can, and the whole room on one colour
@@ -590,7 +590,7 @@ MAIN_LIGHTING = [
     # x=25'-2 1/2" follows FURN-M-KIT-E1's centre — the north counter run's west end, at the
     # pantry wall. It is NOT retagged into RM-M-PANTRY: its `controlled_by` is ED-M-KITCH-SW
     # and the kitchen needs the can. y=33'-5 3/8" is the north run's counter front edge
-    # (FURN-M-KIT-E1/SINKBASE/E2 all front on it); the body clears FURN-M-KIT-WE1 by 9".
+    # (FURN-M-KIT-E1/SINKBASE/E2 all front on it); the body clears FURN-M-KIT-WE1 by 7".
     # CAN2 shares that line. Its body laps FX-M-KITCH-SINK's plan footprint by an inch,
     # which is the point and not a clash: the sink is a counter-height basin and this is a
     # ceiling can over it.

@@ -240,7 +240,7 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
   **No catalog metal moment base survived the search**, which is why the answer is concrete
   and not steel. The only stock base with a published base moment is Simpson's MPB66Z, for a
   WOOD post; it needs 5" of side cover — about 16" of concrete, cast in — and its
-  wet-service cap of 2,610 lb-ft (ESR-3050 Table A) is **below** the 2,502 lb-ft guard case
+  wet-service cap of 2,610 lb-ft (ESR-3050 Table A) is **below** the 2,675 lb-ft guard case
   §2c of that note computes, before any wind. It cannot go in a 12" round or on a 12" wall
   top as published, and the four pillars that used to be the candidates for one are now the
   columns themselves.

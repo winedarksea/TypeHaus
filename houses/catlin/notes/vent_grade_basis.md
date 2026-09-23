@@ -93,7 +93,7 @@ segment of 19.1150 ft rising 1.000" — **0.052"/ft, the identical number**. Tha
 of the two branches being written from one profile: a legacy run with two inverts and a
 routed run with six must not be graded against different arithmetic.
 
-## 3. The whole house, 2026-09-19
+## 3. The whole house, 2026-09-23
 
 Eight vent runs, and the flattest horizontal leg of each:
 
@@ -101,10 +101,10 @@ Eight vent runs, and the flattest horizontal leg of each:
 |---|---|---|---|---|
 | `PR-B-BATH-VENT` | per-vertex | 4 (1 riser) | 0.073"/ft | PASS / advisory |
 | `PR-B-SAUNA-VENT` | per-vertex | 6 (1 riser) | 0.044"/ft | PASS / advisory |
-| `PR-M-WC-VENT` | per-vertex | 5 | 0.085"/ft | PASS / advisory |
+| `PR-M-WC-VENT` | per-vertex | 6 | 0.080"/ft | PASS / advisory |
 | `PR-M-KITCH-VENT` | per-vertex | 5 | 0.018"/ft | PASS / advisory |
-| `PR-S-BATH1-VENT` | two inverts | 3 | 0.054"/ft | PASS / advisory |
-| `PR-S-SUITEBATH-VENT` | two inverts | 6 | 0.068"/ft | PASS / advisory |
+| `PR-S-BATH1-VENT` | two inverts | 3 | 0.052"/ft | PASS / advisory |
+| `PR-S-SUITEBATH-VENT` | two inverts | 6 | 0.066"/ft | PASS / advisory |
 | `PR-A-STUBATH-VENT` | per-vertex | 2 | 0.152"/ft | PASS / PASS |
 | `PR-A-BAR-VENT` | per-vertex | 3 (1 riser) | 0.300"/ft | PASS / PASS |
 

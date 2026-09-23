@@ -2425,8 +2425,10 @@ joint, plain        the footing alone, 84" x (12 − 2)" = 840 in² (§14.5.1.7)
 The joint row reads §14.5.2.1's stress limit for a direct tension (Chapter 14 publishes no
 axial-tension strength — flagged); the stem, a later placement, and the base friction's
 eccentricity are not credited. 44 psi is also far under the rupture stress 7.5√f'c = 530 psi:
-base restraint alone does not crack the court. **A construction joint at y −132" would leave
-that section with nothing**; lapping the 6 #4 through reads 0.571.
+base restraint alone does not crack the court. **Each side is one placement, and no cold
+joint is permitted at y −132"** (`AN-SG-PLACEMENTS`; owner-confirmed 2026-09-23), so the plain
+section's 0.208 governs there. A joint would leave that section with nothing; lapping the
+6 #4 through would read 0.571, and no bar is lapped because none is needed.
 
 **Sensitivity on μ** — the one estimated input. 0.35 is IBC Table 1806.2's sliding value, a
 lower bound where sliding is the question and the wrong side of this one; T grows with μ. The
