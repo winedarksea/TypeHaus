@@ -117,16 +117,24 @@ def run_through_stud(ctx: CheckContext) -> list[Finding]:
     model authors a notch, ``mep_bores.stud_notch`` is the predicate and it is reached the
     same way.
     """
+    from typehaus.checks.mep.wall_cavity import stud_plane_verdicts
     from typehaus.quantities import M_PER_IN
     from typehaus.resolve.mep_bores import stud_bore
 
     bearing = bearing_wall_tags(ctx)
+    # Per WALL first (``wall_cavity``): a run standing beside or too big for the cavity is
+    # that, whichever studs it happens to clip; one standing between studs is still graded.
+    cavity = stud_plane_verdicts(ctx)
     out: list[Finding] = []
     seen = 0
     for tag, wall, cuts in _crossings(ctx):
         studs = [cut for cut in cuts if cut.category in STUD_CATEGORIES]
+        standing = cavity.get((tag, wall.tag))
+        if standing is not None and not standing.ok:
+            continue  # reported below, once
         if not studs:
             continue
+        cavity.pop((tag, wall.tag), None)
         seen += 1
         verdicts = [(cut, stud_bore(cut.profile, cut.diameter_in,
                                     bearing=wall.tag in bearing,
@@ -155,10 +163,22 @@ def run_through_stud(ctx: CheckContext) -> list[Finding]:
                         - item[1].actual_in)
             out.append(_pass(_STUD, f"{where}: the tightest is {worst[0].member_key} — "
                                     f"{worst[1].basis}", (tag, wall.tag)))
+    for (tag, wall_tag), verdict in sorted(cavity.items()):
+        seen += 1
+        out.append(_pass(_STUD, verdict.message, (tag, wall_tag)) if verdict.ok
+                   else _fail(_STUD, verdict.message, (tag, wall_tag), fix=verdict.fix))
     if not seen:
         return [_na(_STUD, "no run's leg meets a stud of any resolved wall, so nothing in "
                            "this model is bored through framing", ())]
     return out
+
+
+def standing_beside(ctx: CheckContext) -> frozenset[tuple[str, str]]:
+    """(run, wall) pairs whose run is not IN the wall but against it (``wall_cavity``)."""
+    from typehaus.checks.mep.wall_cavity import stud_plane_verdicts
+
+    return frozenset(key for key, verdict in stud_plane_verdicts(ctx).items()
+                     if verdict.kind == "beside")
 
 
 def plate_ties(ctx: CheckContext) -> dict[str, frozenset[str]]:
@@ -196,9 +216,12 @@ def run_through_plate(ctx: CheckContext) -> list[Finding]:
     from typehaus.resolve.mep_bores import top_plate_cut
 
     ties = plate_ties(ctx)
+    beside = standing_beside(ctx)
     out: list[Finding] = []
     seen = 0
     for tag, wall, cuts in _crossings(ctx):
+        if (tag, wall.tag) in beside:
+            continue  # not in the wall at all: ``mep.run_through_stud`` says so, once
         # TOP plates only. R602.6.1 is about the plate that ties the wall together at its
         # head; a bottom plate bored for a riser is a hole in a board on a deck and the
         # section has nothing to say about it.
@@ -389,7 +412,8 @@ def run_through_header(ctx: CheckContext) -> list[Finding]:
 
     charts = _hole_charts(ctx)
     flat = flat_nonbearing_openings(ctx)
-    crossings = list(_crossings(ctx))
+    beside = standing_beside(ctx)
+    crossings = [c for c in _crossings(ctx) if (c[0], c[1].tag) not in beside]
     holes = _holes_per_member(crossings)
     out: list[Finding] = []
     seen = 0
