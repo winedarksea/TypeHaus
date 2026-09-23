@@ -22,7 +22,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
-from typehaus.resolve.sheathing_lap import layer_run_m
+from typehaus.resolve.sheathing_corner import layer_run_m
 from typehaus.resolve.sheet_stock import (
     layer_sheet_length_in,
     order_sheet_length_in,
@@ -64,8 +64,8 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         for layer in wall.layers:
             if layer.function != "sheathing":
                 continue
-            # Run off the layer's own polygon, not the node axis: a lapping corner panel is
-            # longer than the axis, a butting one shorter (``resolve/sheathing_lap.py``).
+            # Run off the layer's own polygon, not the node axis: a through corner panel is
+            # longer than the axis, a butting one shorter (``resolve/sheathing_corner.py``).
             gross = layer_run_m(layer, axis_run) * height
             # A BLIND recess deducts a sheet only where it reaches the sheathing: a hydrant
             # bore from the yard does, a firebox pocket from the living room does not.

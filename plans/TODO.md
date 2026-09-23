@@ -51,7 +51,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   placement and slab joint layout exist only in prose.
 
 - **No sheet-layout engine**, so nothing checks a sheathing break landing on a stud. L corners
-  now carry `ResolvedJunction.sheathing_lap`, which a layout pass would read. Cladding, WRB,
+  now carry `ResolvedJunction.sheathing_through`, which a layout pass would read. Cladding, WRB,
   foam and finish layers still bill off the node axis.
 
 - **New checks sit on no inspection:** `mep.run_through_floor_member`, `mep.run_in_joist_flange`,

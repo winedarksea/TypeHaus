@@ -487,8 +487,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - The corner box is RETIRED for the girt band (courses butt at the corner, nothing
     full-height to cap); `FramingSpec.corner_cap`/`TrussFrame.corner_box` still fire for any
     band that asks (`EXT_2X6_SWINBURNE` still does).
-  - The 1/2" sheathing lap at the corner is still undeclared (all layers mitre 45° today) —
-    logged in `plans/TODO.md`, not built.
+  - Sheathing meets edge to face at an L, never overlapping: the `framing_owner` wall's panel
+    runs through the corner and the other's edge butts its back
+    (`ResolvedJunction.sheathing_through`); every other layer mitres 45°.
 
 ### Bearing lines and floor decks
 
