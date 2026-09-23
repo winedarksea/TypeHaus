@@ -105,6 +105,33 @@ def test_a_ledger_naming_no_wall_fails():
     assert "not a wall" in finding.message
 
 
-def test_no_ledger_is_earned_not_applicable(catlin_ctx):
-    (finding,) = deck_ledger(catlin_ctx)
+def test_catlin_porch_ledgers_wait_on_the_anchor_maker(catlin_ctx):
+    """Both porch ledgers sit on the court walls' faces, treated and anchored; on concrete the
+    spacing is the anchor maker's, so the verdict is UNKNOWN naming that, never a FAIL."""
+    findings = {f.element_tags[0]: f for f in deck_ledger(catlin_ctx)}
+    assert set(findings) == {"BM-SG-LDGW", "BM-SG-LDGE"}
+    for finding in findings.values():
+        assert finding.result is Result.UNKNOWN, finding.message
+        assert "manufacturer's recommendations" in finding.message
+        assert "anchors" in finding.message and "off W-SG-" in finding.message
+
+
+def test_a_plan_with_no_ledger_is_not_applicable():
+    from typehaus.checks.structural import deck_ledger as module
+
+    ctx = check_context(plan())
+    original = module._ledgers
+    module._ledgers = lambda _ctx: []
+    try:
+        (finding,) = deck_ledger(ctx)
+    finally:
+        module._ledgers = original
     assert finding.result is Result.NOT_APPLICABLE
+
+
+def test_ledger_anchors_are_not_sill_anchorage(ctx):
+    """S-100's sill schedule takes authored cast-in bolts first and derived mudsill anchors
+    otherwise; a ledger's anchors are neither, and must not displace the mudsill rows."""
+    from typehaus.emit.draw.foundation_schedule import _anchor_bolt_rows
+
+    assert _anchor_bolt_rows(ctx.model) == []

@@ -394,12 +394,20 @@ def anchorage_schedule(model: ResolvedModel) -> ScheduleTable:
 
 
 def _anchor_bolt_rows(model: ResolvedModel) -> list[tuple[str, ...]]:
-    """Authored cast-in bolts by product. ``Connector`` holds no diameter or embedment."""
+    """Authored cast-in bolts by product. ``Connector`` holds no diameter or embedment.
+
+    A bolt that fastens a deck LEDGER (``Beam.ledger_on``) is not sill anchorage and is left
+    out: it is the deck's attachment, graded by ``structural.deck_ledger``. Letting one in
+    would also displace every derived mudsill anchor below.
+    """
     from typehaus.model.enums import ConnectorKind
+    from typehaus.model.structure import is_ledger
 
     bolts = [e for e in model.plan.all_elements()
              if e.element_kind == "Connector"
-             and getattr(e, "kind", None) is ConnectorKind.ANCHOR_BOLT]
+             and getattr(e, "kind", None) is ConnectorKind.ANCHOR_BOLT
+             and not any(is_ledger(model.plan.by_tag(tag))
+                         for tag in getattr(e, "connects", ()))]
     grouped: dict[str, list[Any]] = {}
     for bolt in sorted(bolts, key=lambda e: e.tag):
         grouped.setdefault(str(getattr(bolt, "size", "") or ""), []).append(bolt)
