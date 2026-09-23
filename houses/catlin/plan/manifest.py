@@ -28,7 +28,7 @@ from library import (
 
 from params import (breezeway, foundations, hp1_north_pad, hp3_pad, landscape_gardens,
                     landscape_walk, main_deck, raised_garden, roof_trim, second_deck, solar,
-                    sunken_garden)
+                    sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, braced_walls,
                   circuits, countertops,
                   electrical, electrical_attic, equipment_types,
@@ -386,7 +386,8 @@ PLAN = (
                               *braced_walls.GARAGE_BRACED_CONNECTORS])
     .with_elements("g-deck", [*mep.GARAGE_DECK_ELEMENTS])
     # --- court (sunken garden / porch / balcony) --------------------------------------------
-    .with_elements("court-low", [*sunken_garden.BASEMENT_ELEMENTS])
+    .with_elements("court-low", [*sunken_garden.BASEMENT_ELEMENTS,
+                                 *sunken_garden_drainage.BASEMENT_ELEMENTS])
     .with_elements("court-main", [*sunken_garden.MAIN_ELEMENTS])
     .with_elements("court-upper", [*sunken_garden.SECOND_ELEMENTS])
     # --- entry (north bridge) --------------------------------------------------------------
