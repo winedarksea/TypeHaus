@@ -16,10 +16,13 @@ birdsmouth", which is why catlin's attic partitions stood 11 7/8" inside their r
   pocket in a gable wall). A ridge passing through a wall, or sunk into a partition that
   runs along under it, has no seat at all.
 
-A rafter running ALONG a wall (a gable's end rafter over its raked plates) takes the same
-seat rule: a raked wall top it bears on shares no volume with it, so one that does is inside
-it. There is no "runs against" exemption any more; a face contact has zero plan area and
-never reaches this module.
+* **gable end rafter** — a rafter running ALONG a wall (under 30° in plan) whose framed
+  top is raked to the SAME deck plane as the rafter's top. That is the resolver's gable
+  convention, not a clash: ``roof_geometry.apply_to_roof_wall_tops`` rakes a gable to the
+  deck its sheathing reaches, and ``framing/roof.py`` sets the end rafter "fully inside the
+  gable wall plane". What it stands for is the end rafter bearing on the gable's raked top
+  plate (IRC Table R602.3(1), rafter to top plate). A rafter along a wall at any other
+  height, or across one, still takes the seat rule.
 """
 
 from __future__ import annotations
@@ -31,7 +34,7 @@ from typehaus.checks.structural._interference_geom import _Candidate, plan_angle
 ROOF_KINDS = frozenset({"rafter", "ridge_beam"})
 #: IRC R802.7.1 / NDS 4.4.3: an end notch is at most one-quarter of the member depth.
 SEAT_DEPTH_LIMIT = 0.25
-#: Below this plan angle a ridge runs ALONG a wall and cannot be pocketed in it.
+#: Below this plan angle a roof member runs ALONG a wall rather than across it.
 _PARALLEL_DEG = 30.0
 CODE_REF = "IRC R802.7.1; NDS 4.4.3"
 
@@ -67,20 +70,35 @@ def _sample_points(inter) -> list[tuple[float, float]]:
     return pts
 
 
-def grade_seat(roof: _Candidate, wall: _Candidate, inter, wall_axes: dict,
-               wall_polys: dict, tol_z: float) -> SeatVerdict:
+def _raked_top_at(top, pt) -> float:
+    """A raked wall's framed top at plan ``pt``, interpolated along its axis."""
+    (a, b), z0, z1 = top
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    run2 = dx * dx + dy * dy
+    t = 0.0 if run2 < 1e-18 else max(0.0, min(1.0, (
+        (pt[0] - a[0]) * dx + (pt[1] - a[1]) * dy) / run2))
+    return z0 + (z1 - z0) * t
+
+
+def grade_seat(roof: _Candidate, wall: _Candidate, inter, walls: WallReadings,
+               tol_z: float) -> SeatVerdict:
     """Grade one roof-member vs wall-top contact that shares volume."""
     from shapely.geometry import Point
 
+    angle = plan_angle_deg(roof.seg, walls.axes.get(wall.parent, wall.seg))
+    crosses = angle is None or angle >= _PARALLEL_DEG
     if roof.kind == "ridge_beam":
-        angle = plan_angle_deg(roof.seg, wall_axes.get(wall.parent, wall.seg))
-        crosses = angle is None or angle >= _PARALLEL_DEG
-        body = wall_polys.get(wall.parent, wall.poly).buffer(tol_z)
+        body = walls.polys.get(wall.parent, wall.poly).buffer(tol_z)
         if crosses and any(body.covers(Point(pt)) for pt in roof.seg):
             return SeatVerdict(True, roof, wall, reason="pocketed")
         return SeatVerdict(False, roof, wall, reason=(
             "the ridge beam has no end pocketed in this wall, and a beam sunk into a wall "
             "top has no seat"))
+    top = walls.raked_tops.get(wall.parent)
+    if not crosses and top is not None and all(
+            abs(_raked_top_at(top, pt) - roof.zband_at(pt)[1]) <= tol_z
+            for pt in _sample_points(inter)):
+        return SeatVerdict(True, roof, wall, reason="gable end rafter on its raked plate")
     depth, roof_depth, bears = 0.0, float("inf"), True
     for pt in _sample_points(inter):
         r_lo, r_hi = roof.zband_at(pt)
@@ -99,21 +117,31 @@ def grade_seat(roof: _Candidate, wall: _Candidate, inter, wall_axes: dict,
     return SeatVerdict(True, roof, wall, depth, roof_depth, reason="birdsmouth")
 
 
-def wall_readings(model) -> tuple[dict, dict]:
-    """``(uid -> plan axis, uid -> plan footprint)`` for every resolved wall."""
+@dataclass(frozen=True)
+class WallReadings:
+    axes: dict  # uid -> plan axis
+    polys: dict  # uid -> plan footprint
+    raked_tops: dict  # uid -> (axis, top z at start, top z at end), raked walls only
+
+
+def wall_readings(model) -> WallReadings:
+    """What the seat rule reads off every resolved wall."""
     from shapely.geometry import Polygon
 
     from typehaus.resolve.overlay import union_all
 
-    axes, polys = {}, {}
+    axes, polys, tops = {}, {}, {}
     for wall in getattr(model, "walls", ()) or ():
         axes[wall.uid] = wall.axis
+        z0, z1 = getattr(wall, "top_z0_m", None), getattr(wall, "top_z1_m", None)
+        if z0 is not None and z1 is not None and abs(z0 - z1) > 1e-6:
+            tops[wall.uid] = (wall.axis, z0, z1)
         rings = [Polygon(ly.polygon) for ly in wall.layers
                  if not ly.is_cavity and len(ly.polygon) >= 3]
         rings = [r for r in rings if r.is_valid and r.area > 0]
         if rings:
             polys[wall.uid] = union_all(rings)
-    return axes, polys
+    return WallReadings(axes, polys, tops)
 
 
 def record_failed_seat(seats: dict, verdict: SeatVerdict) -> None:

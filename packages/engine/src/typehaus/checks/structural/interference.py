@@ -406,7 +406,7 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
     hung_pairs = _hung_pairs(getattr(ctx, "plan", None))
 
     candidates = framing_candidates(ctx.model)
-    wall_axes, wall_polys = wall_readings(ctx.model)
+    walls = wall_readings(ctx.model)
     seats: dict = {}  # failed roof seats, worst per (roof, wall) — see _rafter_seat
 
     if len(candidates) < 2:
@@ -451,7 +451,7 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
             # whole verdict — no later clause may clear it (see _rafter_seat.py).
             roof_pair = roof_and_wall_top(a, b, _WALL_TOP_KINDS)
             if roof_pair is not None:
-                verdict = grade_seat(*roof_pair, inter, wall_axes, wall_polys, tol_z)
+                verdict = grade_seat(*roof_pair, inter, walls, tol_z)
                 record_failed_seat(seats, verdict)
                 continue
             # Correct-by-design bearings/laps the box IR cannot express as clean geometry

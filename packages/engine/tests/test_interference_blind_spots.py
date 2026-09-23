@@ -108,6 +108,32 @@ def test_a_ridge_sunk_into_a_partition_under_it_fails():
     assert "no end pocketed" in finding.message
 
 
+def _gable(plate_top_offset: float):
+    """An end rafter running along a gable wall whose top rakes ``plate_top_offset`` above
+    the rafter's top (0 = the same deck plane)."""
+    rafter = FramedMember("RF-1", "rafter-000", "rafter", "11.875 TJI 230", (0.0, 0.03),
+                          (3.0, 0.03), z0_m=2.4, z1_m=2.4 + 11.875 * IN, length_m=3.2,
+                          z0_end_m=3.9, z1_end_m=3.9 + 11.875 * IN)
+    top0, top1 = 2.4 + 11.875 * IN + plate_top_offset, 3.9 + 11.875 * IN + plate_top_offset
+    plate = FramedMember("W-G-uid", "plate-raked-0", "raked_plate", "2x6", (0.0, 0.07),
+                         (3.0, 0.07), z0_m=top0 - 1.5 * IN, z1_m=top0, length_m=3.2,
+                         z0_end_m=top1 - 1.5 * IN, z1_end_m=top1)
+    wall = ResolvedWall(uid="W-G-uid", tag="W-G", storey="S", assembly="EXT",
+                        axis=((0.0, 0.0), (3.0, 0.0)), layers=(), z0_m=0.0, z1_m=top1,
+                        top_z0_m=top0, top_z1_m=top1)
+    return _ctx(members=[rafter, plate], walls=[wall])
+
+
+def test_a_gable_end_rafter_on_its_raked_plate_is_the_gable_convention():
+    """Plate raked to the rafter's own deck plane: the end rafter bearing on the gable."""
+    assert not _fails(member_interference(_gable(0.0)))
+
+
+def test_a_gable_plate_raked_off_the_deck_plane_still_fails():
+    """The same pair with the plate 3" down inside the rafter is not the convention."""
+    assert _fails(member_interference(_gable(-3.0 * IN)))
+
+
 # ------------------------------------------------------ 2. framing in masonry/concrete
 _BRICK = Material(tag="brick", name="Face brick", hatch="concrete")
 _WASH = Material(tag="wash", name="Silicate wash", hatch="concrete", coating=True)
@@ -222,21 +248,20 @@ def test_a_beam_stopped_at_the_post_face_passes():
 
 
 # ------------------------------------------------------------------ catlin, pinned
-def test_catlin_roof_seat_fails_are_the_attic_partitions_and_gable_end_rafters(catlin_ctx):
-    """Sixteen (roof element, wall) pairs, all real at the time of writing:
+def test_catlin_roof_seat_fails_are_the_ridge_line_bearing_walls(catlin_ctx):
+    """Ten (roof element, wall) pairs, all one real defect: the five ridge-line bearing walls
+    W-A-C1/-C1B/-C2/-C2B/-C2M carry RB-HOUSE (its bearing_refs) but rake to the roof DECK
+    plane, 363", so their plates and top studs stand 16" inside the 347"-363" ridge beam, and
+    the rafter ends hung on the beam's face overlap the 2x6 wall's extra inch at 350"-362".
+    The fix is the wall top at the beam soffit, not a clearance here.
 
-    * RF-HOUSE's rafters and RB-HOUSE's ridge beam stand 11"-16" INTO the five attic
-      partitions W-A-C1/-C1B/-C2/-C2B/-C2M (walls too tall; TODO "plate inside a rafter");
-    * the gable end rafters lap 1.81" of their 2.31" flange into the six gable walls
-      W-A-S1/-S2/-S3/-N1/-N2/-N2B with the raked plates inside the rafter depth.
-
-    A count moving is information about the attic, not a threshold to raise."""
+    The six gables (W-A-S1/-S2/-S3/-N1/-N2/-N2B) are NOT here: their end rafters run along
+    a plate raked to the same deck plane, the resolver's gable convention."""
     seats = [f for f in member_interference(catlin_ctx) if f.code_ref is not None]
     pairs = sorted(f.element_tags[:2] for f in seats)
     partitions = ("W-A-C1", "W-A-C1B", "W-A-C2", "W-A-C2B", "W-A-C2M")
-    gables = ("W-A-N1", "W-A-N2", "W-A-N2B", "W-A-S1", "W-A-S2", "W-A-S3")
-    assert pairs == sorted([("RB-HOUSE", w) for w in partitions]
-                           + [("RF-HOUSE", w) for w in (*partitions, *gables)])
+    assert pairs == sorted([(roof, w) for w in partitions
+                            for roof in ("RB-HOUSE", "RF-HOUSE")])
 
 
 def test_catlin_framing_in_concrete_is_the_walkout_end_studs_and_one_stair(catlin_ctx):
