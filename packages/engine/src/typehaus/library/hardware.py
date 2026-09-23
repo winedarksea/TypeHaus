@@ -58,6 +58,7 @@ from typehaus.hardware.catalog import (
     ROLE_KNEE_BRACE,
     ROLE_LAPPED_BRACE_BOLT,
     ROLE_LATERAL_TIE_PLATE,
+    ROLE_LEDGER_ANCHOR,
     ROLE_MASONRY_GUSSET_ANGLE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_NAIL_STRIP_SEAM_CLAMP,
@@ -2122,6 +2123,23 @@ EQUIPMENT_PAD_ANCHOR = StructuralHardware(
            "set and an over-torqued one has spun its cone",
 )
 
+# A deck ledger into a cast wall: the porch ledgers on catlin's court walls (2026-09-22).
+# Generic like the wedge above; spacing and embedment are the adhesive system's own table
+# (AWC DCA6), which is why ``structural.deck_ledger`` reads UNKNOWN until one is quoted.
+SS316_ADHESIVE_LEDGER_ANCHOR = StructuralHardware(
+    tag="generic-ss316-adhesive-ledger-anchor",
+    name="1/2 in x 5 in 316 stainless adhesive anchor with washer, deck ledger to concrete",
+    role=ROLE_LEDGER_ANCHOR,
+    manufacturer="generic",
+    model="SS316-ADH-12x5",
+    source="generic 1/2 in 316 stainless threaded rod, nut and washer set in a code-listed "
+           "adhesive system (e.g. Simpson SET-3G, Hilti HIT-HY 200) — AWC DCA6 \"Expansion "
+           "and Adhesive Anchors\": 1/2 in diameter, washers, minimum spacing and embedment "
+           "per the manufacturer's recommendations. INSTALLATION: drill, brush and blow the "
+           "hole clean, fill from the bottom, set the rod and do not load it before the "
+           "system's cure time; stagger top and bottom rows along the ledger",
+)
+
 # PV module mounting on the standing seam: the S-5! PVKIT clamp+bracket assembly grips a
 # panel rib without penetration and takes the module frame directly (no rails). Distinct
 # model string so ``Connector(size="S-5-PVKIT")`` bills this kit, not the plain clamp.
@@ -2254,6 +2272,7 @@ CAPACITY_ONLY_RECORDS: tuple = (
     STHD14_STRAP_HOLDOWN,
     H25ASS_HURRICANE_TIE,
     H10ASS_HURRICANE_TIE,
+    SS316_ADHESIVE_LEDGER_ANCHOR,
     APVKB_KNEE_BRACE,
     HUCQ_CONCRETE_HANGER,
     HUC212_3_CONCRETE_HANGER,

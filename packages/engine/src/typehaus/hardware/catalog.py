@@ -94,6 +94,9 @@ ROLE_DECK_EQUIPMENT_ANCHOR = "deck_equipment_anchor"
 #: selected for a SEAL through a waterproof plane, this one for embedment in concrete, and
 #: ``hardware_for_role`` holds exactly one product per role.
 ROLE_EQUIPMENT_PAD_ANCHOR = "equipment_pad_anchor"
+# A deck ledger's post-installed anchor into a concrete wall (``Beam.ledger_on``). AWC DCA6
+# asks 1/2" expansion or adhesive anchors with washers and leaves spacing to the maker.
+ROLE_LEDGER_ANCHOR = "ledger_anchor"
 ROLE_HURRICANE_TIE = "hurricane_tie"
 # A wood member held down to CONCRETE or masonry by a gusset angle — one leg screwed into
 # the wood, the other anchored with a concrete screw. Its own role and not a second product
