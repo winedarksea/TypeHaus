@@ -7,7 +7,8 @@ every board is set into a STRIPPED BLOCKOUT (no pour lock-in) and ``SL-B-FLOOR``
 break states its grade. Basis 8 makes that board FOAMULAR 1000 (Type V, 100 psi) and grades the
 sheet's 1/3 sustained-load rule. Basis 9 (§11l) puts a stress-capped EPDM sponge in series
 with every board and grades the thrust at its published 3.5 psi maximum: no verdict reads the
-estimated modulus. Every item is OK, the stems' floor line governing at 0.786. The ablations
+estimated modulus. Every item is OK, the stems' floor line governing at 0.786. §11m adds the
+house's near footing line in plan and the court's winter contraction, both OK. The ablations
 below are the proof that each decision is the lever: take one away and its numbers come back.
 """
 
@@ -44,20 +45,26 @@ _PATH = {
     "house far-wall soil bearing": (52_213.6, 130_534.1, 0.4000),
     "court sliding under break thrust": (0.0, 71_474.1, 0.0),
 }
+# §11m: the exact beam-on-bed solution (transfer matrices, not FE) and the winter bound.
+_WINTER = {"court winter tension, side run": (37_015.11, 64_800.0, 0.5712),
+           "court winter tension, unreinforced joint": (44.0656, 212.132, 0.2077)}
+_LINE = {"house near-line plan flexure": (46_396.3, 84_852.81, 0.5468),
+         "house near-line plan shear": (1_405.4, 6_788.23, 0.2070),
+         "house slab-edge peak sustained load": (22.6527, 33.33, 0.6796), **_WINTER}
 _CAP = {"compliant layer strain": (0.053223, 0.125, 0.4258),
         "board strain, pour + closing": (0.016667, 0.071429, 0.2333)}
 _NOTE = {
-    "foot": {**_CAP, **_PATH},
+    "foot": {**_CAP, **_PATH, **_LINE},
     "stem": {
         **_CAP,
         "house insulation bearing": (3.5, 15.0, 0.2333),
         "house wall flexure": (48_384.0, 307_578.0, 0.1573),
         "house wall shear": (2_016.0, 80_570.4, 0.0250),
         "house floor-line reaction": (2_580.375, 3_285.0, 0.7855),
-        **_PATH,
+        **_PATH, **_LINE,
     },
     "beam": {"compliant layer strain": (0.052635, 0.125, 0.4211),
-             "board strain, pour + closing": (0.013333, 0.057143, 0.2333), **_PATH},
+             "board strain, pour + closing": (0.013333, 0.057143, 0.2333), **_PATH, **_LINE},
 }
 _CAPPED_TOTAL_LB = 27_315.75
 # Basis 8 (§11j-§11k), the uncapped spring — what `compliant=None` must give back. At §12's
@@ -73,6 +80,11 @@ _PATH_8 = {
     "house far-wall soil bearing": (52_213.6, 130_534.1, 0.4000),
     # Net thrust less the retained soil is NEGATIVE, so the row is a force, not an FS.
     "court sliding under break thrust": (0.0, 71_474.1, 0.0),
+    # §11m.1 uncapped: the peak stress is OVER the 1/3 rule — the cap carries this row too.
+    "house near-line plan flexure": (58_241.1, 84_852.81, 0.6864),
+    "house near-line plan shear": (1_560.4, 6_788.23, 0.2299),
+    "house slab-edge peak sustained load": (46.137, 33.33, 1.3843),
+    **_WINTER,
 }
 # (demand, capacity, ratio) per row, hand-worked in §11j. No fresh-concrete pressure row on
 # any board: a blockout takes the pour and the board is set after it is stripped.
@@ -189,7 +201,7 @@ def test_basis_9_is_ok_with_nothing_open(records, tag) -> None:
     record = records[tag]
     assert record.status is Status.OK
     assert record.missing == ()
-    assert record.basis_version == "9"
+    assert record.basis_version == "10"
     notes = " ".join(record.notes)
     for flag in ("RETIRED WITH THE BARS", "RETIRED WITH THE STRIP", "ESTIMATED MODULUS",
                  "FORMED AND STRIPPED", "SENSITIVITY ON E", "STRESS-CAPPED"):
@@ -318,8 +330,8 @@ def _with_slab_break(ctx, **values):
 def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     """Strip the product off SL-B-FLOOR's break and the edge falls back to the C578 floor —
     15 psi, an unstated grade: 1.786 OVER uncapped, 0.977 at the cap since the 17'-0" court
-    (1.966 / 1.043 at 19'-0"). It never goes INCOMPLETE: an ungraded row can never read
-    over (how 4.14 stayed visible in basis 6)."""
+    (1.966 / 1.043 at 19'-0") — but since §11m the near line reads it OVER even capped. It
+    never goes INCOMPLETE: an ungraded row can never read over (how 4.14 stayed visible)."""
     from typehaus.engineering import thermal_break as tb
 
     slab, path = _with_slab_break(ctx, psi=None, modulus_psi=None, source=None,
@@ -332,8 +344,15 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     assert state.capacity == pytest.approx(15.0 * 3.5 * 432.0)
     assert state.ratio == pytest.approx(22_155.0 / 22_680.0, rel=1e-4)
     assert "grade unstated" in state.citation
-    assert record.status is Status.OK and record.missing == ()
     assert _state(record, "house slab-edge sustained load") is None  # no sheet, no rule
+    # §11m.1: the unstated break's E is ESTIMATED 35 x 15 = 525, a bed 7x softer, and the near
+    # line goes OVER even capped — both struts bear (147 / 176 lb) and still do not save it.
+    for name, (demand, ratio) in {"house near-line plan flexure": (99_103.3, 1.1679),
+                                  "house slab-edge peak bearing": (22.3759, 1.4917)}.items():
+        assert _state(record, name).demand == pytest.approx(demand, rel=5e-4), name
+        assert _state(record, name).ratio == pytest.approx(ratio, abs=6e-4), name
+    assert "ESTIMATED" in _state(record, "house near-line plan flexure").citation
+    assert record.status is Status.OVER and record.missing == ()
     # Uncapped, the same fallback reads OVER — the row is graded, not silently dropped.
     uncapped = _compute_with(ctx, monkeypatch, compliant=None)["TB-SG-W1"]
     edge = _state(uncapped, "house slab-edge bearing")
@@ -405,3 +424,36 @@ def test_site_inputs_carry_their_provenance() -> None:
                                        basis="published row", placement_min_f=50.0)
     assert ConcreteServiceTemperature.model_validate(temps.model_dump()) == temps
     assert temps.provenance == "published"
+
+
+def test_the_near_line_floats_on_the_slab_edge(records) -> None:
+    """§11m.1: the end chains are struts, the x = 18' line (gapped at D-B-GYM) is not, and at
+    the cap the line's ends lift off both struts — the slab edge carries it all."""
+    cite = _state(records["TB-SG-W1"], "house near-line plan flexure").citation
+    assert "FT-B-W2+FT-B-W1" in cite and "FT-B-E1+FT-B-E2" in cite
+    assert "FT-B-CS" not in cite
+    assert "none bear" in cite and "E 3,700 x 3.5\" / 1.5\"" in cite
+
+
+def test_the_line_solver_is_hetenyi_far_from_its_ends() -> None:
+    """An 800" beam, P at mid: M = P/(4λ), v = Pλ/(2k) (Hetényi's infinite beam)."""
+    from typehaus.engineering.thermal_break_line import solve
+
+    ei, k, p = 2.1496e10, 8_633.3, 2_000.0
+    lam = (k / (4.0 * ei)) ** 0.25
+    xs = sorted({i * 0.5 for i in range(1601)} - {400.0} | {399.999, 400.001})
+    mid = xs.index(399.999)
+    q = [p / 0.002 if e == mid else 0.0 for e in range(len(xs) - 1)]
+    v, moment, shear = solve(xs, ei, [k] * (len(xs) - 1), {}, q)
+    assert moment == pytest.approx(p / (4.0 * lam), rel=2e-3)
+    assert v[mid] == pytest.approx(p * lam / (2.0 * k), rel=2e-3)
+    # Never under; over by about the bed's load on half an element (4.5 lb here).
+    assert p / 2.0 <= shear <= p / 2.0 * 1.01
+
+
+def test_no_bar_crosses_the_court_side_joint(records) -> None:
+    """§11m.2: 6 #4 in each braced run, and none across W1|W2 / E1|E2 — graded plain there."""
+    record = records["TB-SG-W1"]
+    assert _input(record, "winter_tension_steel") == pytest.approx(1.20)
+    assert _input(record, "winter_joint_section") == pytest.approx(840.0)
+    assert any(n.startswith("WINTER JOINT") and "-132.0" in n for n in record.notes)

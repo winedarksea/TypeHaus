@@ -11,8 +11,10 @@ hand-worked first:
   neutral point; a board set into a stripped blockout (``formed_and_stripped``) takes no pour;
 * the thrust, ``k_i ε_i x`` at the neutral point plus any locked-in pour
   (:mod:`thermal_break_demand`), into the house wall (flexure, shear, the floor line, the
-  house's own insulation), along the house's lateral path (:mod:`thermal_break_path`), and
-  back into the court.
+  house's own insulation), along the house's near footing line in plan
+  (:mod:`thermal_break_line`) and lateral path (:mod:`thermal_break_path`), and back into
+  the court;
+* winter, the joint open: the court's own contraction on its base (:mod:`thermal_break_winter`).
 
 Temperatures come from ``Site.concrete_service_temperature`` (a cited concrete range and a
 specified set floor), never design air. A row over its capacity makes the item OVER even
@@ -25,7 +27,9 @@ from typehaus.engineering import thermal_break_board as brd
 from typehaus.engineering import thermal_break_demand as dem
 from typehaus.engineering import thermal_break_geometry as geo
 from typehaus.engineering import thermal_break_house as house
+from typehaus.engineering import thermal_break_line as line
 from typehaus.engineering import thermal_break_path as path
+from typehaus.engineering import thermal_break_winter as winter
 from typehaus.engineering.item import EngineeringRecord, Oracle, Quantity, Status, item_id
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.retaining_system import footing_shortfalls, loop_free_bodies
@@ -34,11 +38,11 @@ KIND = "thermal_break_transfer"
 BASIS = ("ACI 347R-14 (fresh-concrete pressure); ACI 209R-92 (stem shrinkage); ACI 318-19 "
          "(house wall, slab strut); IBC 1610.1/1806.2 (house sliding, soil); IRC R404.4 loop")
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "9"
+BASIS_VERSION = "10"
 #: Multiples of an ESTIMATED modulus the sensitivity note re-grades at (free body §11i).
 E_SENSITIVITY = (2.0 / 3.0, 1.5, 2.0)
 
-oracled_by(KIND, Oracle(note="sunken_garden_court_free_body.md", section="§11l",
+oracled_by(KIND, Oracle(note="sunken_garden_court_free_body.md", section="§11l, §11m",
                         test="tests/test_thermal_break.py"))
 
 _NOTES = (
@@ -140,6 +144,8 @@ def _grade(ctx, boards, products, bodies, e_scale) -> dict:
     sh = dict(boards=boards, temps=temps, products=products, sigma=sigma, thrust=thrust,
               closure=closure, npt=npt, patches=patches, free_bodies=bodies, e_scale=e_scale,
               lock=lock)
+    sh["lines"] = {ref: _near_line(ctx, [b for b in boards if b.loop_ref == ref], sh)
+                   for ref in {b.loop_ref for b in boards if b.tag in sigma}}
     return {b.tag: _one(ctx, b, sh) for b in boards}
 
 
@@ -208,6 +214,51 @@ def _thrust_rows(ctx, board, sh, pour, states, missing, inputs, notes) -> None:
     path.path_rows(ctx, mine, total, floor, states, missing, notes, inputs)
     if board.loop_ref is not None:
         house.court_sliding(ctx, board.loop_ref, total, sh["free_bodies"], states, missing)
+    found = sh["lines"].get(board.loop_ref)
+    if found is not None:
+        line.line_rows(*found, states=states, inputs=inputs)
+    from typehaus.engineering.soil import presumptive
+
+    soil = presumptive(getattr(ctx, "soil_class", None),
+                       basis=getattr(ctx, "soil_basis", None))
+    winter.winter_rows(ctx, board, sh["free_bodies"], soil, states, missing, inputs, notes)
+
+
+def _near_line(ctx, mine, sh):
+    """The loop's near footing line solved under its boards' loads (free body §11m.1):
+    each board's thrust along its own stretch, less what a house wall sends to its floor
+    line. ``(result, break, E, estimated, (cap psi, how))`` or None."""
+    mine = [b for b in mine if b.tag in sh["thrust"]]
+    if not mine:
+        return None
+    facing = sorted({t for b in mine for t in geo.facing_footings(ctx, b)})
+    found = line.near_line(ctx, facing, mine[0].ax, mine[0].toward_house) if facing else None
+    slab = path.house_slab(ctx, facing) if found else None
+    brk = slab[0].perimeter_thermal_break if slab else None
+    grade = brk and brk_rating(brk)
+    if found is None or grade is None:
+        return None
+    loads = []
+    for b in mine:
+        patch = sh["patches"].get(b.tag)
+        force = patch["bottom_reaction"] if patch else sh["thrust"][b.tag]
+        loads.append((*b.along, force / (b.along[1] - b.along[0])))
+    estimated = brk.modulus_psi is None
+    e = grade[0] * line.E_PER_PSI_ESTIMATE if estimated else brk.modulus_psi
+    depth = brk.depth.inches if brk.depth is not None else slab[0].thickness.inches
+    lo, hi = path._span(slab[1].outline, 1 - mine[0].ax)
+    result = line.share(ctx, found, loads, e * depth / brk.thickness.inches, (lo, hi))
+    result["edge_depth"] = depth
+    frac = brk.sustained_load_fraction
+    cap = ((frac * brk.psi, f"the sheet's sustained-load rule, {frac:.3g} x {brk.psi:.0f} psi")
+           if frac and brk.psi is not None else (grade[0], grade[1]))
+    return result, brk, e, estimated, cap
+
+
+def brk_rating(brk):
+    from typehaus.engineering.thermal_break_board import rated
+
+    return rated(brk.material_ref, brk.psi, brk.source)
 
 
 def _record(board, states, missing, inputs, notes) -> EngineeringRecord:

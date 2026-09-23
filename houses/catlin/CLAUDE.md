@@ -2336,6 +2336,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   at 1.12). Deepening W-SG-BRKBM into a soil key was weighed and rejected (§11l: soil ~8x softer
   than the boards at 0.05", its wedge is the house's own bearing soil).
   The five `preferences.toml` suppressions are deleted.
+  **§11m (2026-09-23) grades what basis 9 took rigid or left out**, on every item: `FT-B-S1..S4`
+  as a PLAIN beam in plan on the slab break's bed (flexure 0.547, shear 0.207, the break's PEAK
+  stress on the 1/3 rule 0.680 — governing on the footing and beam items; no strut bears, and the x = 18'
+  line is no strut while `D-B-GYM` gaps it), and the court's WINTER contraction (0.571 on the
+  6 #4 of `FT-SG-W1`/`E1`). **No bar crosses the W1|W2 or E1|E2 element joint** (each element's
+  bars stop at its own end cover): it holds as one pour, 0.208 plain; a construction joint
+  there needs bars lapped through. Uncapped, the peak row reads 1.384 — the cap carries it too.
   - The statement is a FIELD SEQUENCE the model cannot enforce: `AN-SG-BLOCKOUTS` is the
     drawing's copy, `tasks.toml` sets the boards on the WALLS visit's `boards` checkpoint
     (not the footings' forms), and `inspections.toml`'s owner hold

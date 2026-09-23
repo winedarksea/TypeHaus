@@ -1547,6 +1547,8 @@ Worked by hand before `engineering/thermal_break.py` was rewritten to it;
 > rule graded) with a stress-capped EPDM sponge in series with every board, the thrust graded at
 > its published 3.5 psi maximum. OK on all five items, the stems' floor line governing at 0.786,
 > and no verdict reads the estimated modulus. §11a-§11k below are the record of how it got there.
+> §11m (2026-09-23) grades the two cases basis 9 left out — the house's near footing line in
+> plan, and the court's winter contraction — both OK (0.680 and 0.571 at worst).
 
 **Basis 4 is the owner's decision of 2026-09-21:** the four closure boards go back to XPS —
 **Styrofoam Highload 40 at 2.5"** (`closure_break_in` 2 → 2.5) — with **#6 Aslan 100 @ 8"**
@@ -2317,6 +2319,133 @@ beam's alone gives T = 28,807 + 41,162 = 69,969, line 69,969 − 2 x 2,580.4 = 6
 estimated modulus read by nothing graded. D1056 values are new material at 23 °C; the joint
 closes warm, and a delivered-lot compression-deflection test is the cheap confirmation.
 
+### 11m. Basis 9's two ungraded cases (2026-09-23) — the near line in plan, and winter
+
+Hand-worked first; `tests/test_thermal_break.py` reproduces it (`engineering/thermal_break_line.py`,
+`thermal_break_winter.py`). **The design does not change.** Graded at §12's 17'-0" court: T =
+27,315.75 lb, the stems' floor lines 2 x 2,580.375, **line = 22,155 lb** into the house footing.
+The method (not the design) is from the abandoned basis-8 branch `worktree-agent-a8c14da304490f385`,
+whose §11k read the near line **8.93 OVER** at 127 kip.
+
+#### 11m.1 The near footing line, in plan
+
+§11l takes the house rigid. It is not: `FT-B-S1..S4` is one 432" x 20" x 8" **plain** strip
+(5,000 psi), loaded on its south face and handing the load to `SL-B-FLOOR` through the slab's
+1.5" FOAMULAR NGX 1000 break on its north face. It is a beam in plan on an elastic foundation
+(Hetényi 1946), bending about its vertical axis:
+
+```
+E_c  = 57,000 √5,000 = 4,030,509 psi (ACI 318-19 §19.2.2.1);  I = 8 x 20³/12 = 5,333.3 in⁴
+EI   = 2.14960e10 lb-in²
+bed  k = E t_slab / t_break = 3,700 x 3.5 / 1.5 = 8,633.3 lb/in per in   (E the published MINIMUM)
+λ    = (k / 4EI)^¼ = 0.017801 /in,  1/λ = 56.18"
+```
+
+Loads at the cap (lb/in along x), each board's own stretch: footing boards 3.5 x 8 = **28.0** over
+66-150" and 282-366"; the stems' wall BOTTOM reactions 2,016 / 12 = **168.0** over 102-114" and
+318-330" (tops and band go to the floor line, graded apart); the beam's board 3.5 x 17.75 =
+**62.125** over 108-324". Σ = 2 x 2,352 + 2 x 2,016 + 13,419 = **22,155 ✓**.
+
+Point springs where a N-S footing chain bears concrete to concrete on the inner face AND runs
+unbroken to the far line: `FT-B-W2`→`W1` and `FT-B-E1`→`E2`, at the centres of their contact
+patches on the line (x 5.95" and 425.05"), `E_c A/L` =
+4,030,509 x 160 / (420.093 − 16) = 1,595,874 lb/in. **No centre strut**: `FT-B-CS` stops at
+y 120" and `FT-B-CS2` starts at 166" (`D-B-GYM`), so the x = 18' line is a stub. The bed and the
+struts are both **compression only** — nothing is bonded across a break.
+
+Solved exactly (transfer matrices of `EI v'''' + k v = q` on each stretch, not FE):
+
+- First pass: both ends deflect negative — a free-ended line under a central load rotates away
+  from the slab at its ends — so the end struts would PULL (−412 / −401 lb) and the bed would pull
+  over 14". Both released; four passes converge with the bed off over **63.5"** (the two ends)
+  and **neither strut bearing**. The line floats on the slab edge alone.
+- **M_max 46,396 lb-in** at x 111.25" (under the W stem, at the beam board's west end);
+  **V_max 1,405 lb** at 330" (the E stem's east edge); **v_max 0.009184"** at 147.5", so the
+  break's largest stress is **3,700 x 0.009184 / 1.5 = 22.65 psi**.
+- Cross-check, infinite beam (no ends): M 40,310 at 111.25" and σ_max 22.0 psi; the free end
+  1.98/λ away adds 15% to M. The stem alone, P/(4λ) = 28,313 lb-in.
+
+Plain concrete, the 8" thickness taken 2" less (§14.5.1.7 — conservative: the strip is cast on
+2" of XPS, not soil):
+
+```
+flexure  φMn = 0.60 x 5√5,000 x 6 x 20²/6 = 84,853 lb-in   46,396 / 84,853   d/c 0.547 ✓  (§14.5.2.1)
+shear    φVn = 0.60 x (4/3)√5,000 x 6 x 20 = 6,788 lb      1,405 / 6,788     d/c 0.207 ✓  (§14.5.5.1)
+peak     the break's 1/3 rule, 33.33 psi                   22.65 / 33.33     d/c 0.680 ✓
+```
+
+The peak is 1.55x §11k's AVERAGE (22,155 / 1,512 = 14.65 psi, 0.440): the same sheet rule, read
+where the stress is. Left out, each on the safe side: the line's own base friction, the passive
+soil behind its ends, and the 8" `W-B-S1`/`S4` walls standing on it (a deep beam in plan).
+**The cap makes the boards' E drop out** (no row moves over E 350-1,050). The break's E is the
+sheet's minimum; above it the bed stiffens — x1.5: M 40,241 (0.474), σ 23.30 (0.699); x2: M
+36,199 (0.427), σ 23.91 (0.717). The peak moves only as ~E^¼. Ablations the test pins:
+uncapped (basis 8, line 40,497): M 58,241 **0.686**, σ 46.14 psi **1.384 OVER** — the cap was
+carrying this row too; form faces with the cap: M 119,966 **1.414 OVER**; an unstated break grade
+(15 psi, E ESTIMATED 35 x 15 = 525; k 1,225, and now both struts bear, 147 / 176 lb): M 99,103
+**1.168**, V 1,925 0.284, σ 22.38 / 15 **1.492**, both OVER — the stated grade is load-bearing twice.
+
+#### 11m.2 Winter — the court contracts, the joint open
+
+δ_open = 80 °F (§11). With the joint open no board carries anything, so the cap is irrelevant
+and §11l's "no neutral point, no shrinkage" reading does not reach this case. The court slides
+on its bed toward its own neutral point and base friction puts the side lines in tension.
+
+**The bound, rigid-plastic, no mobilisation length.** Cut a side line anywhere. The part south
+of the cut moves NORTH in winter; its friction resists at most F_S, and its retained soil pushes
+it north too — so `T ≤ F_S − H'`. Moving off the soil, the pressure relaxes toward active:
+`H' = 0.9 x (40/60) x H` (IBC Table 1610.1 GM, active 40 / at rest 60 psf/ft; 0.9 because it
+resists, ASCE 7-16 §2.3.1). The loop (W2, S, E2 + ARCH) is exactly the part south of the
+W1|W2 and E1|E2 joints at y −132", so there the bound is exact:
+
+```
+          F (loop, μ 0.35)   H          H' = 0.6 H   T = F − H'    per line (2)
+110 pcf    97,507.67         56,210.20  33,726.12    63,781.55     31,890.77
+130 pcf   107,211.13         55,301.50  33,180.90    74,030.23     37,015.11   governs
+```
+
+Inside W1/E1 it holds while the friction NORTH of y −132" is ≤ 74,030 lb: the two runs are
+0.35 x 2 x 10.443' x 5,974.8 plf = 43,676 lb, which leaves ~86,700 lb of normal load for what
+else stands on them — the veneer beam (~4.0 kip), its brick (~4.5 kip), four balcony columns
+(~4.9 kip), the balcony and porch dead + snow (20-30 kip, estimated). Held by ~2x.
+
+**What main actually has** (counted off the resolved bars, not the schedule text):
+`FT-SG-W1`/`E1` bottom-y **6 #4** (1.20 in²); the `W-SG-W1`/`E1` stems are `#6 @ 38"` verticals
+only, no horizontals. W2/E2: 6 #4 + the stem's 16 #4 = 4.40 in². **At the W1|W2 and E1|E2 joints
+no bar crosses at all** — each element's bars stop at their own 3" end cover (−129" / −135").
+The walls are one pour per side and the footings one placement (`AN-SG-PLACEMENTS`), so the
+concrete is continuous there; the steel is not.
+
+```
+side run, cracked   37,015 / (0.9 x 1.20 x 60,000 = 64,800)                          d/c 0.571 ✓
+joint, plain        the footing alone, 84" x (12 − 2)" = 840 in² (§14.5.1.7):
+                    37,015 / 840 = 44.07 psi vs φ5√f'c = 0.60 x 5 x 70.71 = 212.13 psi  d/c 0.208 ✓
+```
+
+The joint row reads §14.5.2.1's stress limit for a direct tension (Chapter 14 publishes no
+axial-tension strength — flagged); the stem, a later placement, and the base friction's
+eccentricity are not credited. 44 psi is also far under the rupture stress 7.5√f'c = 530 psi:
+base restraint alone does not crack the court. **A construction joint at y −132" would leave
+that section with nothing**; lapping the 6 #4 through reads 0.571.
+
+**Sensitivity on μ** — the one estimated input. 0.35 is IBC Table 1806.2's sliding value, a
+lower bound where sliding is the question and the wrong side of this one; T grows with μ. The
+run reaches 1.0 at **μ 0.531**, the joint at **μ 1.27**; at ACI 360R-92 §6.3's subgrade-drag F =
+1.5 the joint reads 1.196 and the run 3.29. That end needs full slip, which 440 με x ~200" ≈
+0.09" does not reach against API's 0.1-0.3" mobilisation (the branch's §11k) — the rigid-plastic
+bound is an upper bound on an upper bound there.
+
+Not graded by the engine: **E-W**, the court shrinking toward its centreline. The west half's
+friction, 0.35 x (5,974.8 x 26.776' + 6,174.8 x 9.0') = 75,443 lb, crosses x 216" through the S
+wall (23 bars, 4.60 in², φAsfy 248,400: **0.304** on it alone), the veneer beam and the ARCH beam.
+
+**Dead load, not changed:** the house take-down still omits floors and roof (the branch added
+15,128 + 4,450 lb); lighter is the conservative side for sliding, so it is left.
+
+**Verdict (basis 9 + §11m): OK on all five items**, the stems' floor line still governing at
+0.786; the new rows read peak edge 0.680, side run 0.571, line flexure 0.547, line shear 0.207,
+winter joint 0.208.
+
 
 ---
 
@@ -2440,6 +2569,7 @@ out of it.
 - Owens Corning FOAMULAR Tech Bulletin 10015702-C (07-2025, C578 Type X); DuPont UtilityFit PIS 43-D100997; ACI 360R-92 §6.3 (subgrade drag, neutral point); ACI 207.2R-07; ACI 231R-10; ACI 318-19 Table 21.2.1, §14.5.6; ASCE 7-16 Table C3.1-1a (8 psf partitions); IBC Table 1610.1 / 1806.2 — §11i (basis 6)
 - Owens Corning FOAMULAR 400/600/1000 Product Data Sheet (PDS 07 21 13.13.OCC: ASTM C578 Type VI/VII/V, 40/60/100 psi min, minimum compressive modulus 1,800/2,500/3,700 psi by ASTM D1621, sustained load ≤ 1/3 of rating); ASTM D1621 — §11j (basis 7)
 - Owens Corning FOAMULAR NGX 400/600/1000 Product Data Sheet, Pub. No. 58307-Q (06-2025: Type V 100 psi, 1000 made 1.5"/2"/3" only); Owens Corning Canada PDS 07 21 13.13.OCC (dead load ≤ 1/3, live load ≤ 1/5 of published compressive resistance; 1000 modulus 3,700 psi) — §11k (basis 8)
+- Hetényi (1946) *Beams on Elastic Foundation*; ACI 318-19 §14.5.1.7, §14.5.2.1, §14.5.5.1, §19.2.2.1, §21.2.2; IBC Table 1610.1 (GM active/at rest), Table 1806.2; ASCE 7-16 §2.3.1 (0.9H resisting); ACI 360R-92 §6.3 (subgrade drag F 1.5) — §11m
 - Hanna Rubber Co. 4014-E closed-cell EPDM sponge (ASTM D1056 2A0/2A1, 1.5-3.5 psi at 25%, <https://hannarubbercompany.com/p/sponge-rubber-closed-cell-4014-e>); ASTM D1056 grade ranges (<https://www.nedc.com/sponge-gaskets-astm-d1056-types-classes-grades/>); IBC Table 1806.2; Terzaghi (1955) n_h — §11l (basis 9)
 - W. R. Meadows CERAMAR PDS #323 (07-2026) and DECK-O-FOAM PDS #325 (04-2026); Owens Corning FOAMULAR Tech Bulletin 10015703; ROCKWOOL Comfortboard 110 data sheet; ASTM D1056 grade table (nedc.com); ACI 209R-92; ASCE 7-16 Table C3.1-1a — §11h (WIP)
 - Bowles, *Foundation Analysis and Design* 5th ed. (1997) Table 9-1 — presumed k_v, §11f
