@@ -20,9 +20,9 @@ def _polar(r: float, a: float, z: float) -> tuple[float, float, float]:
 
 
 def grass(mesh: MeshBuilder, *, has_bloom: bool) -> None:
-    """18-28 tapered blades arching out of a tight crown; seed wisps above when blooming."""
+    """14-20 tapered blades arching out of a tight crown; seed wisps above when blooming."""
     rng = mesh.rng
-    for _ in range(rng.randint(18, 24 if has_bloom else 28)):
+    for _ in range(rng.randint(14, 17 if has_bloom else 20)):
         a = rng.uniform(0.0, 2.0 * math.pi)
         root = rng.uniform(0.0, 0.08)
         lean = rng.uniform(0.15, 0.45)

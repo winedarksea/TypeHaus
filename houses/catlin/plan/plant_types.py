@@ -19,7 +19,8 @@ def _foliage(tag: str, name: str, color: str) -> Material:
 
 
 FOLIAGE_MATERIALS = (
-    _foliage("foliage-bluestem", "Little bluestem foliage, blue-green", "#7d9a8c"),
+    _foliage("foliage-jazz", "Little bluestem 'Jazz' foliage, blue-green", "#7d9a8c"),
+    _foliage("foliage-dropseed", "Prairie dropseed 'Tara' foliage, fine green", "#7d9a8c"),
     _foliage("foliage-moonbeam", "Coreopsis foliage with pale-yellow bloom", "#c9c96a"),
     _foliage("foliage-chartreuse", "Sedum 'Angelina' foliage, chartreuse", "#b8c93c"),
     _foliage("foliage-october-sky", "Switchgrass 'October Sky' foliage, blue-green", "#6f9486"),
@@ -35,7 +36,7 @@ FOLIAGE_MATERIALS = (
     _foliage("bloom-calamint", "Calamint bloom, white", "#eeeef0"),
     _foliage("bloom-iris", "Blue flag iris bloom, blue-violet", "#6c5fb0"),
     _foliage("bloom-milkweed", "Swamp milkweed bloom, pink", "#d77fa0"),
-    _foliage("seed-bluestem", "Little bluestem seed heads, bronze", "#a8744a"),
+    _foliage("seed-jazz", "Little bluestem 'Jazz' seed heads, bronze", "#a8744a"),
     _foliage("seed-october-sky", "Switchgrass 'October Sky' seed heads, rosy purple",
              "#a0668a"),
     _foliage("seed-northwind", "Switchgrass 'Northwind' seed heads, golden beige", "#c4a878"),
@@ -47,8 +48,8 @@ PLANT_TYPES = (
     # --- the grid field and its accents (params/landscape_gardens.py) ----------------------
     PlantType(tag="PT-SCH-JAZZ", botanical_name="Schizachyrium scoparium", cultivar="Jazz",
               common_name="little bluestem", form="grass", mature_height=inch(30),
-              mature_spread=inch(18), foliage_material="foliage-bluestem",
-              bloom_material="seed-bluestem",
+              mature_spread=inch(18), foliage_material="foliage-jazz",
+              bloom_material="seed-jazz",
               bloom="blue-green summer, burgundy-bronze autumn",
               source=("https://www.missouribotanicalgarden.org/PlantFinder/"
                       "PlantFinderDetails.aspx?taxonid=299967&isprofile=0&pt=11 "
@@ -108,7 +109,7 @@ PLANT_TYPES = (
               bloom="white, July-October", source=_TYPICAL),
     PlantType(tag="PT-SPO-TARA", botanical_name="Sporobolus heterolepis", cultivar="Tara",
               common_name="prairie dropseed", form="grass", mature_height=inch(24),
-              mature_spread=inch(18), foliage_material="foliage-bluestem",
+              mature_spread=inch(18), foliage_material="foliage-dropseed",
               bloom="airy seed heads, August", source=_TYPICAL),
     PlantType(tag="PT-SAL-PURP", botanical_name="Salvia officinalis", cultivar="Purpurascens",
               common_name="purple sage", form="shrub", mature_height=inch(18),

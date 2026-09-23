@@ -112,7 +112,7 @@ def test_catlin_prototypes_and_colours(catlin_model_ro) -> None:
     assert {types["PT-MAL-HONEYCRISP"].fruit_material,
             types["PT-COR-MOONBEAM"].bloom_material} <= set(materials)
     solids = {s.uid for s in model.solids if s.category == "plant"}
-    assert len(model.plants) == 309
+    assert len(model.plants) == 491
     assert {p.uid for p in model.plants} == solids
     assert all(p.model_ref in model.plant_models for p in model.plants)
     espaliers = [p for p in model.plants if p.training == "espalier"]
@@ -140,9 +140,13 @@ def test_model_json_plants_block_budget(catlin_model_ro) -> None:
     from typehaus.server.model_json_plants import plants_json
 
     block = plants_json(catlin_model_ro)
-    assert len(block["plants"]) == 309
+    assert len(block["plants"]) == 491
     assert len(block["plant_models"]) == len(catlin_model_ro.plant_models)
-    assert len(json.dumps(block, separators=(",", ":"))) < 300_000
+    # Budget the parts: prototypes are fixed per type, instances scale with the beds
+    # (~195 KB and ~247 B each at 491 plants).
+    size = lambda o: len(json.dumps(o, separators=(",", ":")))  # noqa: E731
+    assert size(block["plant_models"]) < 250_000
+    assert size(block["plants"]) / len(block["plants"]) < 300
 
 
 def test_glb_instances_share_meshes(catlin_model_ro) -> None:
@@ -151,7 +155,7 @@ def test_glb_instances_share_meshes(catlin_model_ro) -> None:
     gltf, _ = emit_gltf_dict(catlin_model_ro)
     plant_uids = {p.uid for p in catlin_model_ro.plants}
     instances = [n for n in gltf["nodes"] if "translation" in n]
-    assert len(instances) == 309
+    assert len(instances) == 491
     assert {n["extras"]["uid"] for n in instances} == plant_uids
     assert all(n["extras"]["kind"] == "solid" for n in instances)
     shared = {n["mesh"] for n in instances}
