@@ -234,6 +234,11 @@ class Footing(Element):
     #: ``resolve/orientation.wall_outward_sign``, and refuses (INCOMPLETE) rather than guess
     #: where an offset is authored and the storey's winding is unrecoverable.
     offset: Length | None = None
+    #: How far the strip runs on past its wall's ``start_node`` / ``end_node``, along the
+    #: axis (negative trims). For a bearing point beyond the host's own run — a jamb pack at
+    #: the end of a framed wall that has no footing of its own. Ignored under a post.
+    start_extension: Length | None = None
+    end_extension: Length | None = None
     # Where the underside bears, for a footing that does NOT hang off the thing above it.
     # A strip footing's top follows its wall's bottom and a post-hosted spread footing's
     # top was pinned to the storey datum, which is right for a pad poured in the same lift

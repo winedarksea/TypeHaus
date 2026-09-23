@@ -43,7 +43,8 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
     InspectionSpec(
         id="footing", label="Footing — forms and reinforcement, before the pour",
         authority="building", after=("erosion",),
-        check_ids=("structural.frost_depth", "structural.concrete_cover_meets_minimum",
+        check_ids=("structural.frost_depth", "structural.bearing_wall_footing",
+                   "structural.concrete_cover_meets_minimum",
                    "structural.concrete_mix_matches_exposure",
                    "integrity.reinforcement_spec_agrees"),
         on_site=("approved plan set", "footing forms set and braced",

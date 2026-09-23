@@ -250,6 +250,16 @@ def _toe_offset(tag: str) -> Length | None:
 _FRAMED_WALLS = {"W-B-CS", "W-B-STR", "W-B-STR3", "W-B-STR3B"}
 
 
+# ** W-B-CS3 (framed, y 10'-0"..13'-10") HAS NO FOOTING OF ITS OWN, AND NEEDS NONE. **
+# D-B-GYM's header carries its run to two jamb packs (king + jack, resolved at y
+# 124 7/16"..127 7/16" and 163 7/16"..166 7/16"), so the neighbouring strips run past each
+# pack by T = 8": the 45° spread through the footing depth, and R403.1.1's maximum
+# projection. They end at y 135 7/16" and 155 7/16"; the 20" under the opening stays slab.
+# Both walls START at the gap (W-B-CS at y=10'-0", W-B-CS2 at 13'-10").
+# `structural.bearing_wall_footing` FAILs if the door or its packs move off these.
+_START_EXTENSION = {"W-B-CS": inch(15.4375), "W-B-CS2": inch(10.5625)}
+
+
 def _center_on(tag: str) -> str:
     """``"wall"`` for the pours; ``"axis"`` where the node line is already the right line."""
     if tag in _GARDEN_END_TRIMMED or tag in _FRAMED_WALLS:
@@ -261,6 +271,7 @@ HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
             width=inch(20), depth=inch(8),
             center_on=_center_on(t), offset=_toe_offset(t),
+            start_extension=_START_EXTENSION.get(t),
             assembly="FOOTING_FPSF_20" if t in _FROST_FORMED else "FOOTING_20")
     for i, t in _HOUSE_WALL_TAGS
 ]
