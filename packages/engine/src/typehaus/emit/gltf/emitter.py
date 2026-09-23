@@ -209,6 +209,9 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         if bedding.outline and bedding.z1_m > bedding.z0_m:
             mb = _MeshBuilder()
             mb.add_prism(bedding.outline, bedding.z0_m, bedding.z1_m, _color("pad"))
+            if bedding.stone_z0_m < bedding.z0_m:  # the flood course, in soakaway colour
+                mb.add_prism(bedding.outline, bedding.stone_z0_m, bedding.z0_m,
+                             _color("drywell"))
             scene.add_object(mb, RECORD_FAMILY_TRADES["footing_bedding"],
                              kind="footing_bedding", uid=bedding.uid)
 

@@ -348,8 +348,11 @@ def _drainage_note(model: ResolvedModel) -> str:
         destination = "TO AN APPROVED OUTLET (NOT MODELLED)"
     else:
         destination = f"TO {', '.join(discharges)}"
+    flood = sum(1 for bedding in beddings if bedding.stone_z0_m < bedding.z0_m)
+    course = (f" {flood} BEDS CARRY A SOAKAWAY COURSE BELOW THE DRAINED SECTION; IT FLOODS"
+              f" AND IS NOT FROST SECTION." if flood else "")
     return (f"PERIMETER DRAIN TILE IN THE FOOTING BEDDING AT {len(beddings)} FOOTINGS,"
-            f" DRAINING {destination}.")
+            f" DRAINING {destination}.{course}")
 
 
 def _sill_anchorage_findings(model: ResolvedModel) -> list[Finding]:

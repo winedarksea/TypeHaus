@@ -125,6 +125,10 @@ export function FootingBeddingInspector({ bedding }: { bedding: FootingBedding }
       <span className="k">Plan extent</span><PlanExtent points={bedding.outline} />
       <span className="k">Depth</span><span>{formatFtIn(bedding.z1_m - bedding.z0_m)}</span>
       <span className="k">Elevation</span><span>{formatFtIn(bedding.z0_m)} → {formatFtIn(bedding.z1_m)}</span>
+      {bedding.stone_z0_m !== undefined && bedding.stone_z0_m < bedding.z0_m && <>
+        <span className="k">Soakaway course</span>
+        <span>{formatFtIn(bedding.z0_m - bedding.stone_z0_m)} below, to {formatFtIn(bedding.stone_z0_m)} (floods; not frost section)</span>
+      </>}
       <span className="k">Storey</span><span>{bedding.storey}</span>
       <span className="k">uid</span><span className="prov">{bedding.uid}</span>
     </div>

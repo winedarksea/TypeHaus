@@ -316,7 +316,7 @@ def _emit_footing_bedding_note(b: SceneBuilder, model: ResolvedModel) -> None:
     for bedding in sorted(model.footing_beddings, key=lambda item: item.tag):
         key = (bedding.aggregate, bedding.geotextile, bedding.drain_tile,
                bedding.perimeter_insulation_m, bedding.cast_foam_in_aggregate,
-               round(bedding.z1_m - bedding.z0_m, 3))
+               round(bedding.z1_m - bedding.z0_m, 3), round(bedding.z0_m - bedding.stone_z0_m, 3))
         if key in seen:
             continue
         seen.add(key)
@@ -330,6 +330,9 @@ def _emit_footing_bedding_note(b: SceneBuilder, model: ResolvedModel) -> None:
             parts.append("NON-WOVEN GEOTEXTILE LINER")
         if bedding.drain_tile:
             parts.append("DRAIN TILE IN BED")
+        if bedding.stone_z0_m < bedding.z0_m:
+            parts.append(f"+{inches(bedding.z0_m - bedding.stone_z0_m)} SOAKAWAY COURSE "
+                         "BELOW — NOT FROST SECTION")
         if bedding.perimeter_insulation_m is not None:
             parts.append(f"{inches(bedding.perimeter_insulation_m)} RIGID FOAM PERIMETER "
                          "INSULATION")

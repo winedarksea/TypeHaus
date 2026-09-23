@@ -20,6 +20,16 @@ from typehaus.model.landscape import RainGarden
 from typehaus.model.mep import Sump
 from typehaus.model.structure import Drywell, FootingBedding, FrenchDrain
 from typehaus.model.trim import Downspout, Gutter
+from typehaus.resolve.drainage_network import SOAKAWAY_KEYWORD
+
+
+def _is_receiver(element) -> bool:
+    """A soakaway bed, an area drain, or a leader that carries water on to somewhere."""
+    if isinstance(element, FootingBedding):
+        return element.soakaway_depth is not None
+    if isinstance(element, Downspout):
+        return bool(element.discharge_ref)
+    return type(element).__name__ == "AreaDrain"
 
 
 def _advisory_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
@@ -115,15 +125,22 @@ def discharge_consistency(ctx: CheckContext) -> list[Finding]:
     sumps = {element.tag: element for element in _elements(ctx) if isinstance(element, Sump)}
     receivers = dict(sumps)
     for element in _elements(ctx):
-        if isinstance(element, (Drywell, FrenchDrain, RainGarden)):
+        if isinstance(element, (Drywell, FrenchDrain, RainGarden)) or _is_receiver(element):
             receivers[element.tag] = element
     circuits = {circuit.tag for circuit in ctx.model.plan.library.circuits}
 
-    def _check_discharge(owner_tag: str, discharge: str | None) -> None:
+    def _check_discharge(owner_tag: str, discharge: str | None,
+                         soakaway_ok: bool = False) -> None:
         if not discharge:
             return
         text = discharge.strip()
         if text.lower() == "daylight":
+            return
+        if text.lower() == SOAKAWAY_KEYWORD:
+            if not soakaway_ok:
+                out.append(_advisory_fail(
+                    cid, f"{owner_tag} discharges to {SOAKAWAY_KEYWORD!r}, which only a "
+                         f"bed with its own soakaway course can say", (owner_tag,)))
             return
         if text.lower() == "sump":
             if not sumps:
@@ -138,8 +155,16 @@ def discharge_consistency(ctx: CheckContext) -> list[Finding]:
                 (owner_tag,)))
 
     for element in _elements(ctx):
-        if isinstance(element, FootingBedding) and element.drain_tile_spec is not None:
-            _check_discharge(element.tag, element.drain_tile_spec.discharge)
+        if isinstance(element, FootingBedding):
+            if element.drain_tile_spec is not None:
+                _check_discharge(element.tag, element.drain_tile_spec.discharge,
+                                 soakaway_ok=element.soakaway_depth is not None)
+            _check_discharge(element.tag, element.overflow_ref)
+            for inlet in element.inlet_refs:
+                if ctx.model.plan.by_tag(inlet) is None:
+                    out.append(_advisory_fail(
+                        cid, f"soakaway bed {element.tag} is fed by {inlet!r}, which no "
+                             f"element declares", (element.tag,)))
         elif isinstance(element, FrenchDrain):
             _check_discharge(element.tag, element.discharge_ref)
             if element.tile is not None:

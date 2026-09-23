@@ -227,6 +227,8 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "host": bedding.host,
              "outline": [list(point) for point in bedding.outline],
              "z0_m": bedding.z0_m, "z1_m": bedding.z1_m, "aggregate": bedding.aggregate,
+             # Bottom of the flood course below the drained section (== z0_m without one).
+             "stone_z0_m": bedding.stone_z0_m,
              "trades": list(RECORD_FAMILY_TRADES["footing_bedding"]),
              "geotextile": bedding.geotextile, "drain_tile": bedding.drain_tile,
              "provenance": _provenance(provenance, bedding.tag)}

@@ -49,6 +49,10 @@ DAYLIGHT = "daylight"
 #: where there are several, because picking one would be inventing a connection.
 SUMP_KEYWORD = "sump"
 
+#: ``discharge="soakaway"`` on a bedding's tile — "into this bed's own flood course". Adds no
+#: edge: the bed itself is the disposal node. Legal only on a bed with a ``soakaway_depth``.
+SOAKAWAY_KEYWORD = "soakaway"
+
 
 class EdgeKind(Enum):
     """Why this hop exists. See the module docstring on why one field could not carry both."""
@@ -75,7 +79,8 @@ class DrainNode:
     in_invert_m: float | None = None
     out_invert_m: float | None = None
     #: **This node gets rid of water in the ORDINARY case**, so a primary walk that reaches
-    #: it has succeeded. Three things do: daylight, a drywell (the soil takes it), and a pit
+    #: it has succeeded. Three things do: daylight, a soakaway (a drywell or a bed's flood
+    #: course: the soil takes it), and a pit
     #: with a pump (it leaves under power).
     #:
     #: Every one of those three can also stop working, which is the whole reason the graph
@@ -126,7 +131,7 @@ class DrainageNetwork:
                       if node.disposes and tag != DAYLIGHT)
 
     def reaches_disposal(self, start: str, *, first_hop: EdgeKind | None = None,
-                         not_being: str | None = None
+                         not_being: str | frozenset[str] | None = None
                          ) -> tuple[bool, list[str], str | None]:
         """``(reached, path, problem)`` — can water leaving ``start`` get rid of itself?
 
@@ -137,7 +142,8 @@ class DrainageNetwork:
 
         ``not_being`` excludes one node from counting as the answer, which is what makes the
         fallback rule mean anything: a drywell whose overflow leads back to itself has no
-        fallback, however many hops it takes to get there.
+        fallback, however many hops it takes to get there. A frozenset excludes a whole body
+        of stone — overflowing into a bed the water is already in is not a fallback.
 
         **Cycles are tolerated, not an error in themselves.** Decision 6's bridge is a
         deliberate two-way tie at one level — the sump falls back to the drywell and the
@@ -145,6 +151,8 @@ class DrainageNetwork:
         fault would be refusing the design it was built to check. A cycle is only reported
         when the walk exhausts itself inside one without ever reaching disposal.
         """
+        excluded = ({not_being} if isinstance(not_being, str)
+                    else set(not_being or ()))
         seen: set[str] = set()
         best_path: list[str] = []
 
@@ -156,7 +164,7 @@ class DrainageNetwork:
             node = self.nodes.get(tag)
             if node is None:
                 return False, f"{tag} is named as a discharge target but is not a node"
-            if node.disposes and tag != not_being and len(path) > 1:
+            if node.disposes and tag not in excluded and len(path) > 1:
                 return True, None
             if tag in seen:
                 return False, f"a cycle with no outfall in it: {' -> '.join(path)}"
@@ -242,12 +250,19 @@ def build_network(plan) -> DrainageNetwork:
             network.nodes[element.tag] = DrainNode(
                 tag=element.tag, kind="leader", in_invert_m=None,
                 out_invert_m=ext.outlet_invert.meters if ext is not None else None)
+        elif isinstance(element, FootingBedding) and element.soakaway_depth is not None:
+            # A bed with a flood course DISPOSES like a drywell. It has no single inlet
+            # level — arrival is graded against the resolved stone band — and it lets go
+            # over its lip, if it states one.
+            network.nodes[element.tag] = DrainNode(
+                tag=element.tag, kind="soakaway", in_invert_m=None,
+                out_invert_m=(element.overflow_invert.meters
+                              if element.overflow_invert is not None else None),
+                disposes=True, inlet_refs=tuple(element.inlet_refs))
         elif isinstance(element, FootingBedding) and element.drain_tile:
-            spec = element.drain_tile_spec
             network.nodes[element.tag] = DrainNode(
                 tag=element.tag, kind="footing_tile",
                 in_invert_m=None, out_invert_m=None)
-            del spec
 
     def add(source: str, target: str | None, kind: EdgeKind,
             out_invert_m: float | None) -> None:
@@ -276,6 +291,13 @@ def build_network(plan) -> DrainageNetwork:
         elif isinstance(element, Sump):
             if element.pump is not None:
                 add(element.tag, element.pump.discharge, EdgeKind.PRIMARY, None)
+            add(element.tag, element.overflow_ref, EdgeKind.OVERFLOW,
+                network.nodes[element.tag].out_invert_m)
+        elif isinstance(element, FootingBedding) and element.soakaway_depth is not None:
+            # Its tile lets go into its own course: the keyword adds no edge.
+            discharge = _tile_discharge(element.drain_tile_spec)
+            if discharge and discharge.strip().lower() != SOAKAWAY_KEYWORD:
+                add(element.tag, discharge, EdgeKind.PRIMARY, None)
             add(element.tag, element.overflow_ref, EdgeKind.OVERFLOW,
                 network.nodes[element.tag].out_invert_m)
         elif isinstance(element, FootingBedding) and element.drain_tile:
@@ -332,8 +354,8 @@ def _touching(first, second) -> bool:
 
     if len(first.outline) < 3 or len(second.outline) < 3:
         return False
-    if (first.z0_m >= second.z1_m + BODY_TOUCH_TOLERANCE_M
-            or second.z0_m >= first.z1_m + BODY_TOUCH_TOLERANCE_M):
+    if (first.stone_z0_m >= second.z1_m + BODY_TOUCH_TOLERANCE_M
+            or second.stone_z0_m >= first.z1_m + BODY_TOUCH_TOLERANCE_M):
         return False
     return (Polygon(first.outline).distance(Polygon(second.outline))
             <= BODY_TOUCH_TOLERANCE_M)

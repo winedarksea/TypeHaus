@@ -33,23 +33,18 @@ from typehaus.model.mep import Sump
 from typehaus.model.structure import Drywell, FrenchDrain
 from typehaus.resolve.drainage_network import DAYLIGHT, EdgeKind, build_network
 
+from typehaus.checks.mep.drainage_receivers import (  # isort: skip
+    ARRIVAL_TOLERANCE_M,
+    PLAN_ARRIVAL_SLACK_M,
+    body_touches,
+    reaches_through_stone,
+    receiver_footprints,
+    run_starts_in,
+    soakaway_arrival,
+)
 from typehaus.checks.mep.landscape_drainage import leader_arrivals  # isort: skip
 
 from typehaus.checks.registry import CheckContext, Tier, check  # isort: skip
-
-#: How far above a receiver's own inlet a discharging invert may sit and still be read as
-#: arriving in it. Two inches — a pipe let into the top course of stone, and a survey
-#: tolerance. Anything more and the run ends in undisturbed ground: catlin's field lateral
-#: hung **28 inches** over the well it fed, and five wall-bed tiles hung 9 inches over the
-#: same well before the well was moved onto their plane.
-ARRIVAL_TOLERANCE_M = 2.0 * 0.0254
-
-#: How far outside a receiver's own footprint a run's last vertex may land. The receiver's
-#: radius plus this: a run drawn to the edge of a cylinder reads in section as a pipe that
-#: does not arrive, so the house authors them to the CENTRE, and this is the slack around
-#: that convention. Six inches.
-PLAN_ARRIVAL_SLACK_M = 6.0 * 0.0254
-
 
 #: Discharge targets that have no geometry to reach, so "does the stone touch it" is not a
 #: question about them. Daylight is a direction, not a place.
@@ -119,7 +114,30 @@ def network_fallback(ctx: CheckContext) -> list[Finding]:
         return [not_applicable(cid, "this plan has no soakaway and no pumped pit")]
 
     out: list[Finding] = []
+    # Soakaway beds are graded per BODY of stone: water in one bed is in all of them, so
+    # the heads are the members with an overflow, and the whole body is excluded.
+    bodies = _soakaway_bodies(ctx, network)
+    for body in sorted(set(bodies.values()), key=sorted):
+        heads = sorted(t for t in body if network.out_edges(t, EdgeKind.OVERFLOW))
+        found = None
+        problem = f"no bed of {', '.join(sorted(body))} states an overflow"
+        for head in heads:
+            reached, path, problem = network.reaches_disposal(
+                head, first_hop=EdgeKind.OVERFLOW, not_being=body)
+            if reached:
+                found = path
+                break
+        tags = tuple(sorted(body))
+        if found is None:
+            out.append(advisory(
+                cid, f"stone body {', '.join(tags)} has no fallback outfall: {problem}",
+                tags, Result.FAIL))
+        else:
+            out.append(_pass(cid, f"stone body of {len(tags)} bed(s) falls back to "
+                                  f"{found[-1]} ({' -> '.join(found)})", tags))
     for tag in points:
+        if tag in bodies:
+            continue
         reached, path, problem = network.reaches_disposal(
             tag, first_hop=EdgeKind.OVERFLOW, not_being=tag)
         if not reached:
@@ -132,6 +150,15 @@ def network_fallback(ctx: CheckContext) -> list[Finding]:
             out.append(_pass(
                 cid, f"{tag} falls back to {path[-1]} ({' -> '.join(path)})", (tag,)))
     return out
+
+
+def _soakaway_bodies(ctx: CheckContext, network) -> dict[str, frozenset[str]]:
+    """``soakaway bed -> its whole body of stone`` (plain beds in it included)."""
+    from typehaus.resolve.drainage_network import stone_bodies
+
+    bodies = stone_bodies(ctx.model)
+    return {tag: bodies.get(tag, frozenset({tag})) for tag, node in network.nodes.items()
+            if node.kind == "soakaway"}
 
 
 @check(Tier.ADVISORY, "drainage.outfall_connection")
@@ -168,6 +195,12 @@ def outfall_connection(ctx: CheckContext) -> list[Finding]:
         node = network.nodes.get(edge.target)
         if node is None:
             continue
+        if node.kind == "soakaway":
+            why = soakaway_arrival(ctx, edge.target, run.path[-1].xy_m, edge.out_invert_m)
+            if why is not None:
+                out.append(advisory(cid, f"{run.tag} does not arrive in {edge.target}: {why}",
+                                    (run.tag, edge.target), Result.FAIL))
+            continue
         if node.in_invert_m is None:
             if edge.target in receivers:
                 out.append(advisory(
@@ -195,7 +228,7 @@ def outfall_connection(ctx: CheckContext) -> list[Finding]:
             # authoring makes it by hand for FB-SG-ARCH ("it feeds the column through its
             # side and a lead would be a pipe running uphill"). Demanding that every trench
             # terminate on the receiver would refuse the way this house is actually built.
-            if reach > radius + PLAN_ARRIVAL_SLACK_M and not _reaches_through_stone(
+            if reach > radius + PLAN_ARRIVAL_SLACK_M and not reaches_through_stone(
                     ctx, run, edge.target):
                 out.append(advisory(
                     cid, f"{run.tag} ends {reach / 0.0254:.0f}\" from {edge.target}'s "
@@ -265,7 +298,7 @@ def inlet_reciprocity(ctx: CheckContext) -> list[Finding]:
 
     for target, feeders in sorted(claimed.items()):
         node = network.nodes.get(target)
-        if node is None or node.kind not in {"drywell", "sump", "rain_garden"}:
+        if node is None or node.kind not in {"drywell", "sump", "rain_garden", "soakaway"}:
             continue
         if not node.inlet_refs:
             out.append(advisory(
@@ -316,7 +349,7 @@ def tile_lead(ctx: CheckContext) -> list[Finding]:
         return [not_applicable(cid, "no footing bedding names where its tile discharges")]
 
     bodies = stone_bodies(ctx.model)
-    footprints = _receiver_footprints(ctx)
+    footprints = receiver_footprints(ctx)
     runs = [e for e in _elements(ctx) if isinstance(e, FrenchDrain)]
     network = _network(ctx)
 
@@ -335,10 +368,10 @@ def tile_lead(ctx: CheckContext) -> list[Finding]:
                 (tag, target), Result.UNKNOWN))
             continue
         body = bodies.get(tag, frozenset({tag}))
-        if _body_touches(ctx, body, footprints[target], BODY_TOUCH_TOLERANCE_M):
+        if body_touches(ctx, body, footprints[target], BODY_TOUCH_TOLERANCE_M):
             served.add(tag)
             continue
-        if any(_run_starts_in(run, ctx, body)
+        if any(run_starts_in(run, ctx, body)
                and any(e.target == target for e in
                        network.out_edges(run.tag, EdgeKind.PRIMARY))
                for run in runs):
@@ -354,86 +387,3 @@ def tile_lead(ctx: CheckContext) -> list[Finding]:
         out.append(_pass(cid, f"every drained bedding reaches what it names "
                               f"({len(served)} of {len(claiming)})"))
     return out
-
-
-def _receiver_footprints(ctx: CheckContext) -> dict[str, tuple[object, float, float]]:
-    """``tag -> (plan polygon, z bottom, z top)`` for every drywell and sump.
-
-    Read off the **resolved solid**, not re-derived from the authored position and depth.
-    The resolver already places both — a soakaway from its top of stone down, a pit from the
-    slab it is cast into down — and a second derivation here would be a second opinion about
-    the same elevation, which is how a receiver ends up at a level nothing else agrees with.
-
-    ** IT ALSO HAS TO BE PRESENT. ** The first cut of this walked ``Sump.host_ref`` to the
-    slab, found it in neither ``model.floors`` nor ``model.solids`` under that name, returned
-    ``None``, and every rule downstream skipped the pit — so nineteen perimeter rings
-    "passed" by never being asked. A receiver whose solid does not resolve gets no footprint
-    and the rules that need one report it, rather than falling silently through.
-    """
-    from shapely.geometry import Polygon
-
-    wanted = {e.tag for e in _elements(ctx) if isinstance(e, (Drywell, Sump))}
-    out: dict[str, tuple[object, float, float]] = {}
-    for solid in ctx.model.solids:
-        if solid.tag in wanted and solid.tag not in out and len(solid.outline) >= 3:
-            out[solid.tag] = (Polygon(solid.outline), solid.z0_m, solid.z1_m)
-    return out
-
-
-def _body_touches(ctx: CheckContext, body: frozenset, footprint, tolerance_m: float) -> bool:
-    from shapely.geometry import Polygon
-
-    shape, bottom, top = footprint
-    for bed in ctx.model.footing_beddings:
-        if bed.tag not in body or len(bed.outline) < 3:
-            continue
-        if bed.z0_m >= top + tolerance_m or bottom >= bed.z1_m + tolerance_m:
-            continue
-        if Polygon(bed.outline).distance(shape) <= tolerance_m:
-            return True
-    return False
-
-
-def _run_starts_in(run: FrenchDrain, ctx: CheckContext, body: frozenset) -> bool:
-    """Does this run pick water up from that body of stone?
-
-    Any vertex inside a bed of the body, not only the first: a lead authored from the
-    strips' court face to a well's centre passes THROUGH the stone it drains, and which end
-    of the path was written first is an authoring habit rather than a hydraulic fact.
-    """
-    from shapely.geometry import Point as ShapelyPoint
-    from shapely.geometry import Polygon
-
-    points = [ShapelyPoint(p.x.meters, p.y.meters) for p in run.path]
-    for bed in ctx.model.footing_beddings:
-        if bed.tag not in body or len(bed.outline) < 3:
-            continue
-        shape = Polygon(bed.outline)
-        if any(shape.distance(point) <= 0.3048 for point in points):
-            return True
-    return False
-
-
-def _reaches_through_stone(ctx: CheckContext, run: FrenchDrain, target: str) -> bool:
-    """Does this run's trench end in a body of stone that reaches ``target``?
-
-    The connection a trench makes to a receiver it does not touch: it ends in a bedding, the
-    bedding's body is continuous with the receiver, and water is in the receiver. Both halves
-    are geometric — touching in plan, overlapping in section — so this claims nothing the
-    model cannot show.
-    """
-    from typehaus.resolve.drainage_network import BODY_TOUCH_TOLERANCE_M, stone_bodies
-
-    footprints = _receiver_footprints(ctx)
-    if target not in footprints:
-        return False
-    bodies = stone_bodies(ctx.model)
-    for bed in ctx.model.footing_beddings:
-        if bed.tag not in bodies:
-            continue
-        body = bodies[bed.tag]
-        if not _run_starts_in(run, ctx, frozenset({bed.tag})):
-            continue
-        if _body_touches(ctx, body, footprints[target], BODY_TOUCH_TOLERANCE_M):
-            return True
-    return False

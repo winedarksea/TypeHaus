@@ -91,7 +91,7 @@ def _emit_footing_bedding(f: Any, body: Any, bedding: Any, storeys: dict[str, An
     element = ll.create_entity(f, "IfcBuildingElementProxy", name=bedding.tag)
     element.GlobalId = derive_guid(project_uuid, bedding.uid)
     ll.assign_representation(f, element, ll.add_prism_from_profile(
-        f, body, bedding.outline, bedding.z1_m - bedding.z0_m, bedding.z0_m,
+        f, body, bedding.outline, bedding.z1_m - bedding.stone_z0_m, bedding.stone_z0_m,
     ))
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": bedding.uid, "tag": bedding.tag,
                                                "host": bedding.host})
@@ -103,6 +103,8 @@ def _emit_footing_bedding(f: Any, body: Any, bedding: Any, storeys: dict[str, An
         "perimeter_insulation_in": (bedding.perimeter_insulation_m / M_PER_IN
                                     if bedding.perimeter_insulation_m is not None else 0.0),
         "cast_foam_in_aggregate": bedding.cast_foam_in_aggregate,
+        # The flood course below the drained section; never frost section.
+        "soakaway_depth_in": ((bedding.z0_m - bedding.stone_z0_m) / M_PER_IN),
     })
     ll.assign_container(f, element, storeys[bedding.storey])
 

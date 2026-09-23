@@ -46,7 +46,7 @@ def footing_bedding_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     groups: dict[tuple[str, bool, tuple], dict[str, object]] = {}
     for bedding in model.footing_beddings:
         area = _ring_area(bedding.outline)
-        depth = max(bedding.z1_m - bedding.z0_m, 0.0)
+        depth = max(bedding.z1_m - bedding.stone_z0_m, 0.0)  # the flood course is stone too
         perimeter = _ring_perimeter(bedding.outline)
         key = (bedding.aggregate, bedding.geotextile, _tile_key(bedding))
         entry = groups.setdefault(key, {

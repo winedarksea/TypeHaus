@@ -14,6 +14,7 @@ from typehaus.model.refs import ToRoof
 from typehaus.model.spatial import Roof, Stair
 from typehaus.model.structure import Beam, Footing, FootingBedding, GlazingPanel, Pad, Post
 from typehaus.quantities.length import M_PER_IN
+from typehaus.resolve.bedding_soakaway import soakaway_findings
 from typehaus.resolve.ceiling_over import (
     ceiling_decks_over,
     deck_structure_underside_m,
@@ -326,9 +327,16 @@ def _resolve_footing_bedding(
     outline, z1, findings = _bedding_host_footprint(model, bedding)
     if outline is None or z1 is None:
         return None, findings
+    findings = soakaway_findings(bedding)
+    if findings:
+        return None, findings
     perimeter_m = (bedding.perimeter_insulation.meters
                   if bedding.perimeter_insulation is not None else None)
     z0 = z1 - bedding.undercut.meters
+    # The flood course hangs below the drained section; the tile stays at z0 + 1", where it
+    # physically is, and z0 keeps meaning the section frost reads.
+    soakaway_z0 = (z0 - bedding.soakaway_depth.meters
+                   if bedding.soakaway_depth is not None else None)
     spec = resolved_spec(bedding.drain_tile_spec)
     # The tile is derived, not authored: nobody draws a perimeter ring by hand, it follows
     # the excavation. Emitted here so the drainage toggle and the IFC stormwater system see
@@ -340,7 +348,8 @@ def _resolve_footing_bedding(
         bedding.uid, bedding.tag, storey, bedding.host_ref, outline,
         z0, z1, bedding.aggregate,
         bedding.geotextile, bedding.drain_tile, perimeter_m, bedding.cast_foam_in_aggregate,
-        spec, bedding.non_frost_susceptible,
+        spec, bedding.non_frost_susceptible, soakaway_z0, bedding.void_ratio,
+        bedding.infiltration_in_per_hr, bedding.infiltration_basis,
     ), []
 
 

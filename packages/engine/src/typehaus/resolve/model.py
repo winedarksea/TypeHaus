@@ -1177,7 +1177,10 @@ class ResolvedFootingBedding:
     storey: str
     host: str  # Footing tag, or the wall tag when the bed is what the wall stands on
     outline: Ring
-    z0_m: float  # bottom of excavation (compacted stone-bed underside)
+    # ``z0_m`` is the DRAINED section's bottom — what frost reads. A soakaway course hangs
+    # below it to ``soakaway_z0_m``; anything measuring stone (takeoff, stone bodies, the
+    # 3D and IFC) reads ``stone_z0_m``. A consumer that misses the course fails safe.
+    z0_m: float  # bottom of the drained, frost-counted section
     z1_m: float  # top of bedding == footing underside
     aggregate: str
     geotextile: bool
@@ -1189,6 +1192,16 @@ class ResolvedFootingBedding:
     # The authored non-frost-susceptible gradation claim — see FootingBedding. None = not
     # stated, which is not the same as False and never counts toward a frost depth.
     non_frost_susceptible: bool | None = None
+    # Bottom of the flood course under the drained section; None = no course.
+    soakaway_z0_m: float | None = None
+    void_ratio: float | None = None
+    infiltration_in_per_hr: float | None = None
+    infiltration_basis: str = "presumed"
+
+    @property
+    def stone_z0_m(self) -> float:
+        """The bottom of ALL the stone — the excavation floor."""
+        return self.soakaway_z0_m if self.soakaway_z0_m is not None else self.z0_m
 
 
 @dataclass(frozen=True)

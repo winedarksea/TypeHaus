@@ -115,6 +115,8 @@ export function buildSolarPanel(parent: THREE.Group, panel: SolarPanel, center: 
 // Compacted washed-stone footing bed: a below-grade gravel prism under a strip footing.
 // Rendered granular (flat-shaded, high roughness) so it reads as aggregate, not concrete.
 export const FOOTING_BEDDING_COLOR = 0x8b8478;
+// The flood course below the drained section: darker, the drywell's soakaway stone.
+export const SOAKAWAY_COURSE_COLOR = 0x857f78;
 
 export function buildFootingBedding(parent: THREE.Group, bedding: FootingBedding, center: PlanCenter,
   mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
@@ -127,6 +129,15 @@ export function buildFootingBedding(parent: THREE.Group, bedding: FootingBedding
     flatShading: true, // faceted normals read as loose aggregate in both shading modes
   });
   parent.add(makeSurfaceMesh(geo, mat));
+  const stoneZ0 = bedding.stone_z0_m ?? bedding.z0_m;
+  if (stoneZ0 < bedding.z0_m) {
+    const course = createPlanPrismGeometry(bedding.outline, stoneZ0, bedding.z0_m, [], center);
+    if (course) {
+      parent.add(makeSurfaceMesh(course, standardMaterial(SOAKAWAY_COURSE_COLOR, mode, {
+        roughness: 1, flatShading: true,
+      })));
+    }
+  }
   if (mode === "nordic") {
     parent.add(new THREE.LineSegments(
       new THREE.EdgesGeometry(geo, 20),

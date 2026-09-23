@@ -1507,6 +1507,8 @@ export interface FootingBedding {
   outline: Vec2[];
   z0_m: number;
   z1_m: number;
+  /** Bottom of the flood course under the drained section; == z0_m without one. */
+  stone_z0_m?: number;
   aggregate: string;
   geotextile: boolean;
   drain_tile: boolean;

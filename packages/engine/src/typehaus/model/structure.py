@@ -406,6 +406,21 @@ class FootingBedding(Element):
     drain_tile_spec: DrainTile | None = None
     perimeter_insulation: Length | None = None
     cast_foam_in_aggregate: bool = False
+    #: A flood course: more stone BELOW the drained section, "allowed to flood". It stores
+    #: water while the soil takes it and is NEVER counted as frost section — ``undercut``
+    #: stays the drained section ``structural.frost_depth`` reads. ``None`` = no course.
+    soakaway_depth: Length | None = None
+    #: Void fraction of the stone (#57 washed ~0.40). Storage is unknown without it.
+    void_ratio: float | None = None
+    #: Native soil's saturated infiltration rate under the course, in/hr (the RainGarden
+    #: precedent), and whether it was ``"presumed"`` from a soil class or ``"measured"``.
+    infiltration_in_per_hr: float | None = None
+    infiltration_basis: str = "presumed"
+    #: What feeds the course, and where it spills when full — Drywell's fields, legal only
+    #: with a ``soakaway_depth``. ``overflow_invert`` is the lip; ``None`` states none.
+    inlet_refs: tuple[str, ...] = ()
+    overflow_ref: str | None = None
+    overflow_invert: Length | None = None
 
 
 @register_element
