@@ -249,12 +249,19 @@ def apply_to_roof_wall_tops(model: ResolvedModel) -> None:
     plate would sit inside the full depth of the rafter above it. Those walls belong to
     ``partition_top.apply_partition_tops``, which runs straight after this and rakes them
     to the rafter *soffit* less a deflection gap — so they are handed over here rather
-    than raked twice to two different planes.
+    than raked twice to two different planes. A wall a ridge beam bears on stops flat at
+    the beam soffit (:func:`ridge_beam_soffits`) rather than standing inside the beam.
     """
+    from typehaus.resolve.layer_bands import reband
+    from typehaus.resolve.layout_lines import lines_by_wall
     from typehaus.resolve.partition import bearing_ref_tags, takes_a_deflection_gap
+    from typehaus.resolve.topology import site_grade_elevation_m_from_plan
 
     bearing_refs = bearing_ref_tags(model.plan)
     roofs = {roof.tag: roof for roof in model.roofs}
+    soffits = ridge_beam_soffits(model)
+    grade_m = site_grade_elevation_m_from_plan(model.plan)
+    lines = lines_by_wall(model.layout_lines)
     resolved: list[ResolvedWall] = []
     for wall in model.walls:
         authored = model.plan.by_tag(wall.tag)
@@ -264,6 +271,16 @@ def apply_to_roof_wall_tops(model: ResolvedModel) -> None:
             continue
         if takes_a_deflection_gap(model, wall, bearing_refs):
             resolved.append(wall)
+            continue
+        soffit = soffits.get((top.roof_ref, wall.tag))
+        if soffit is not None:
+            # The ridge beam bears ON this wall's top plate, so the wall stops at the beam
+            # soffit — framing and body both, since gypsum cannot pass through the beam.
+            # Flat: the wall runs under the ridge, where the plane does not rake.
+            resolved.append(replace(
+                wall, z1_m=soffit, top_z0_m=None, top_z1_m=None, plate_top_z_m=None,
+                layers=reband(wall, wall.z0_m, soffit, grade_m, lines.get(wall.tag)),
+            ))
             continue
         roof = roofs[top.roof_ref]
         start_top = roof_height_at(roof, wall.axis[0])
@@ -277,6 +294,30 @@ def apply_to_roof_wall_tops(model: ResolvedModel) -> None:
             top_z0_m=start_top, top_z1_m=end_top,
         ))
     model.walls = resolved
+
+
+def ridge_beam_soffits(model: ResolvedModel) -> dict[tuple[str, str], float]:
+    """``(roof tag, wall tag) -> ridge beam soffit`` for each wall a rafter roof's ridge
+    beam names in its ``bearing_refs``.
+
+    The beam's top is pinned to the ridge (``framing/roof._resolve_ridge_beam``), so its
+    soffit is known here, before framing. A truss roof carries its own ridge and has none.
+    """
+    from typehaus.resolve.framing.roof import _find_ridge_beam
+
+    out: dict[tuple[str, str], float] = {}
+    for roof in model.roofs:
+        spec = roof_structure_framing(model, roof)
+        if spec is not None and spec.roof_frame == "truss":
+            continue
+        found = _find_ridge_beam(model, roof)
+        if found is None:
+            continue
+        beam = found[0]
+        soffit = roof.ridge_z_m - cross_section(beam.size).depth_m
+        for ref in beam.bearing_refs:
+            out[(roof.tag, ref)] = soffit
+    return out
 
 
 def roof_headroom_region(roof: ResolvedRoof, elevation_m: float,

@@ -76,6 +76,20 @@ def test_no_corner_studs_when_wall_does_not_own_a_corner():
     assert not [m for m in members if m.category == "corner"]
 
 
+def test_open_end_stud_sits_flush_inside_the_plate():
+    """An ``open_end`` stud's outer face is the plate cut, not centred on the node with half
+    of it past the wall end (catlin's walkout studs stood 3/4" into W-B-S1's pour)."""
+    plan, rw = _wall_and_plan("3-stud")
+    half = inch(0.75).meters
+    studs = [m for m in frame_wall(plan, rw, openings=[], open_start=True, open_end=True)
+             if m.category == "stud"]
+    xs = sorted(m.p0[0] for m in studs)
+    assert abs(xs[0] - half) < 1e-9 and abs(xs[-1] - (4.0 - half)) < 1e-9
+    plates = [m for m in frame_wall(plan, rw, openings=[], open_start=True)
+              if m.category == "plate"]
+    assert all(min(m.p0[0], m.p1[0]) < 1e-9 for m in plates)
+
+
 def test_butting_wall_never_frames_studs_off_its_own_authored_override():
     """``butting_start=True`` + an authored ``corner_style_start`` on THIS wall: still zero
     corner studs on this end.

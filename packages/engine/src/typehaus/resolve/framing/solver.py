@@ -27,6 +27,7 @@ from typehaus.resolve.framing.carriers import (
 )
 from typehaus.resolve.framing.corners import (
     CORNER_ROLE_BUTTING,
+    CORNER_ROLE_OPEN,
     CORNER_ROLE_OWNER,
     corner_junctions,
     corner_pack_limit,
@@ -91,6 +92,7 @@ def frames_as_members(layer) -> bool:
 def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                corner_start: bool = False, corner_end: bool = False,
                butting_start: bool = False, butting_end: bool = False,
+               open_start: bool = False, open_end: bool = False,
                tee_stations: tuple[tuple[float, str], ...] = (),
                corner_style_start: str | None = None,
                corner_style_end: str | None = None,
@@ -181,9 +183,11 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     plate_h = 1.5 * 0.0254
 
     start_role = (CORNER_ROLE_OWNER if corner_start
-                  else CORNER_ROLE_BUTTING if butting_start else None)
+                  else CORNER_ROLE_BUTTING if butting_start
+                  else CORNER_ROLE_OPEN if open_start else None)
     end_role = (CORNER_ROLE_OWNER if corner_end
-                else CORNER_ROLE_BUTTING if butting_end else None)
+                else CORNER_ROLE_BUTTING if butting_end
+                else CORNER_ROLE_OPEN if open_end else None)
     structure_polygon = _structure_polygon(rw)
     start_end = wall_end_framing(structure_polygon, p0, d, axis_len, start_role,
                                  thickness, at_start=True,
@@ -731,7 +735,11 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     corner_style_overrides: dict[tuple[str, str], str] = {}
     tee_points: dict[str, list[tuple[tuple[float, float], str]]] = {}
     findings: list[Finding] = []
+    open_endpoints: dict[str, set[str]] = {}
     for junction in model.junctions:
+        if junction.kind == "open_end":
+            for item in junction.incidents:
+                open_endpoints.setdefault(item.wall_tag, set()).add(item.endpoint)
         if junction.kind == "l" and junction.framing_owner:
             owner_item = next(item for item in junction.incidents
                               if item.wall_tag == junction.framing_owner)
@@ -860,6 +868,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                              corner_end="end" in endpoints,
                              butting_start="start" in butting,
                              butting_end="end" in butting,
+                             open_start="start" in open_endpoints.get(rw.tag, ()),
+                             open_end="end" in open_endpoints.get(rw.tag, ()),
                              tee_stations=tee_stations,
                              corner_style_start=corner_style_overrides.get(
                                  (rw.tag, "start"),

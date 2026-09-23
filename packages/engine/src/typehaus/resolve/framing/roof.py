@@ -412,7 +412,9 @@ def _frame_trusses(
 
 # --- ridge beam (rafter roofs) -----------------------------------------------------------
 
-def _find_ridge_beam(model: ResolvedModel, roof: ResolvedRoof) -> Beam | None:
+def _find_ridge_beam(
+    model: ResolvedModel, roof: ResolvedRoof,
+) -> tuple[Beam, tuple[float, float], tuple[float, float]] | None:
     """An authored Beam whose node axis is coincident+parallel with the ridge line.
 
     Matches on the infinite line (constant x for a "y"-running ridge, constant y for

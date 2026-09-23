@@ -248,31 +248,23 @@ def test_a_beam_stopped_at_the_post_face_passes():
 
 
 # ------------------------------------------------------------------ catlin, pinned
-def test_catlin_roof_seat_fails_are_the_ridge_line_bearing_walls(catlin_ctx):
-    """Ten (roof element, wall) pairs, all one real defect: the five ridge-line bearing walls
-    W-A-C1/-C1B/-C2/-C2B/-C2M carry RB-HOUSE (its bearing_refs) but rake to the roof DECK
-    plane, 363", so their plates and top studs stand 16" inside the 347"-363" ridge beam, and
-    the rafter ends hung on the beam's face overlap the 2x6 wall's extra inch at 350"-362".
-    The fix is the wall top at the beam soffit, not a clearance here.
-
-    The six gables (W-A-S1/-S2/-S3/-N1/-N2/-N2B) are NOT here: their end rafters run along
-    a plate raked to the same deck plane, the resolver's gable convention."""
+def test_catlin_has_no_roof_seat_fails(catlin_ctx):
+    """The five ridge-line bearing walls (W-A-C1/-C1B/-C2/-C2B/-C2M) used to rake to the
+    deck plane, 363", standing 16" inside RB-HOUSE. They now stop at its 347" soffit
+    (``roof_geometry.ridge_beam_soffits``). The six gables stay out by the resolver's gable
+    convention: their end rafters run along a plate raked to the same deck plane."""
     seats = [f for f in member_interference(catlin_ctx) if f.code_ref is not None]
-    pairs = sorted(f.element_tags[:2] for f in seats)
-    partitions = ("W-A-C1", "W-A-C1B", "W-A-C2", "W-A-C2B", "W-A-C2M")
-    assert pairs == sorted([(roof, w) for w in partitions
-                            for roof in ("RB-HOUSE", "RF-HOUSE")])
+    assert [f.element_tags[:2] for f in seats] == []
 
 
-def test_catlin_framing_in_concrete_is_the_walkout_end_studs_and_one_stair(catlin_ctx):
-    """W-B-S2-FR/-S3-FR's end studs stand 2 3/4" inside W-B-S1/-S4 (their own node chain
-    meets the pour with no junction to mitre them), and ST-B2M's lower stringer and
-    landing rim sit in W-B-CN (the stair-to-wall-axis offset, TODO D3). The brick fireplace
-    lintel, the backing blocks at concrete tees and every pier are cleared."""
+def test_catlin_framing_in_concrete_is_one_stair(catlin_ctx):
+    """ST-B2M's lower stringer and landing rim sit in W-B-CN (the stair-to-wall-axis offset,
+    TODO D3). W-B-S2-FR/-S3-FR's open-end studs now sit flush inside their plates, clear
+    of W-B-S1/-S4. The brick fireplace lintel, the backing blocks at concrete tees and every
+    pier are cleared."""
     fails = _fails(member_in_masonry(catlin_ctx))
     assert sorted(f.element_tags[:2] for f in fails) == [
-        ("ST-B2M", "W-B-CN"), ("ST-B2M", "W-B-CN"),
-        ("W-B-S2-FR", "W-B-S1"), ("W-B-S3-FR", "W-B-S4")]
+        ("ST-B2M", "W-B-CN"), ("ST-B2M", "W-B-CN")]
 
 
 def test_catlin_post_base_clash_is_the_two_west_seat_beams(catlin_ctx):

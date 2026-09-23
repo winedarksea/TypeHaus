@@ -24,6 +24,9 @@ from typehaus.resolve.model import ResolvedModel, Ring
 CORNER_ROLE_OWNER = "owner"
 #: This wall's framing stops at the near face of the owner's band and butts it.
 CORNER_ROLE_BUTTING = "butting"
+#: A free (``open_end``) wall end: nothing to butt, so the end stud sits flush with the
+#: plate cut instead of centred on the node with half of it past the wall's own end.
+CORNER_ROLE_OPEN = "open"
 
 #: The one corner style whose supplemental stud is laid FLAT. Named rather than counted
 #: because it builds the same *number* of sticks as ``"3-stud"`` and differs only in how
@@ -118,9 +121,10 @@ def wall_end_framing(structure_polygon: Ring, axis_start, direction, axis_len_m:
                      neighbour_insets: tuple[float, float] | None = None) -> WallEndFraming:
     """Framing limit + end-stud station for one wall end under its corner ``role``.
 
-    ``role`` of ``None`` (an open end, a tee branch, a collinear run) keeps the historical
-    behaviour — framing runs to the datum endpoint — because only an L corner has a shared
-    square to divide.
+    ``role`` of ``None`` (a collinear run) keeps the historical behaviour — framing runs to
+    the datum endpoint — because only an L corner has a shared square to divide. An
+    ``open`` end keeps its plate there too but pulls the end stud flush inside it: a free
+    end often dies against something unmodelled as a junction (a concrete wall end).
 
     ``neighbour_insets`` is the (far, near) pair from :func:`neighbour_band_insets` when the
     caller could resolve the neighbouring wall; without it the mitre edge is read instead,
@@ -129,6 +133,10 @@ def wall_end_framing(structure_polygon: Ring, axis_start, direction, axis_len_m:
     if role is None:
         return WallEndFraming(0.0, 0.0) if at_start \
             else WallEndFraming(axis_len_m, axis_len_m)
+    if role == CORNER_ROLE_OPEN:
+        half = min(stud_thickness_m, axis_len_m) / 2.0
+        return WallEndFraming(0.0, half) if at_start \
+            else WallEndFraming(axis_len_m, axis_len_m - half)
 
     outer_inset, inner_inset = neighbour_insets if neighbour_insets is not None else (
         _neighbour_band_insets(
