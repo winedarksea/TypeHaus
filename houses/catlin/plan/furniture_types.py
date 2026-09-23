@@ -100,12 +100,12 @@ PORCH_TRACK_176 = FurnitureType(
     footprint=(inch(176), inch(2)), height=inch(1),
     plan_symbol=None, mount=Mount(kind=MountKind.CEILING), source=_TRACK_SOURCE,
 )
-# The two FLANK runs, x = 10'-0" and 26'-0", y -9'-0" to -0'-6". The north end runs 4" past
-# the porch deck edge on an outrigger off the balcony's north edge joist, so the panel's north
-# edge is over the house gap rather than short of it.
+# The two FLANK runs, x = 10'-0" and 26'-0", y -9'-0" to -0'-7 1/2": 2 1/2" past the porch
+# deck edge on an outrigger, stopping 1/4" off the -0'-7 1/4" cladding face. 100 1/2" long; the
+# tag keeps "102" because prices.toml keys the per-each row on it.
 PORCH_TRACK_102 = FurnitureType(
-    tag="FT-PORCH-TRACK-102", name='Porch enclosure track, 102"',
-    footprint=(inch(102), inch(2)), height=inch(1),
+    tag="FT-PORCH-TRACK-102", name='Porch enclosure track, 100 1/2"',
+    footprint=(inch(100.5), inch(2)), height=inch(1),
     plan_symbol=None, mount=Mount(kind=MountKind.CEILING), source=_TRACK_SOURCE,
 )
 

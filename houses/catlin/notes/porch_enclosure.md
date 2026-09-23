@@ -40,8 +40,8 @@ Four runs, ~35 lf, two 90° curves at (9'-0", −9'-2") and (27'-0", −9'-2"):
 |---|---|
 | `FURN-M-PORCH-TRACK-FW` | x 9'-0" → 17'-10", y −9'-2" |
 | `FURN-M-PORCH-TRACK-FE` | x 18'-2" → 27'-0", y −9'-2" |
-| `FURN-M-PORCH-TRACK-W` | y −9'-2" → −0'-6", x 9'-0" |
-| `FURN-M-PORCH-TRACK-E` | y −9'-2" → −0'-6", x 27'-0" |
+| `FURN-M-PORCH-TRACK-W` | y −9'-2" → −0'-7 1/2", x 9'-0" |
+| `FURN-M-PORCH-TRACK-E` | y −9'-2" → −0'-7 1/2", x 27'-0" |
 
 8' anodized sticks, splices, end caps and curves, screwed up through the stick's centre
 groove — **5 screws per 8', the vinyl spacing, not mesh's 3**, because one set of hardware
@@ -82,14 +82,15 @@ Construction, both sets:
 
 ## The north end, and the honest limit
 
-`_y_out_n` (−0'-10") is the porch deck edge; the house cladding face is at −0'-5". The 5"
-between them is a deliberate insulation gap, open down to grade for the full 17'. **No
+`_y_out_n` (−0'-10") is the porch deck edge; the house cladding face is at −0'-7 1/4"
+(`_WALL_OUTBOARD_IN`; −0'-5" here was stale). The 2 3/4" between them is a deliberate insulation gap, open down to grade for the full 17'. **No
 fastener in this whole assembly touches the house wall.** Two closures, both landing on the
 garden structure:
 
-1. **Track cantilever.** Each flank run goes past the deck edge to y −0'-6", the last 4"
+1. **Track cantilever.** Each flank run goes past the deck edge to y −0'-7 1/2" (1/4" off
+   the cladding; −0'-6" stood 1 1/4" inside the panel), the last 2 1/2"
    carried on a small aluminium outrigger screwed to the side of the rear beam. The beams
-   are *not* lengthened — 4" of unsupported aluminium track under a curtain header is
+   are *not* lengthened — 2 1/2" of unsupported aluminium track under a curtain header is
    nothing, and moving a beam re-opens `cantilever.py` and its tests for no gain. Extending
    the beam is the fallback only if the outrigger will not land.
 2. **`TR-SG-SLOT`**, ~17 lf of formed closure screwed to the porch deck's north rim,
