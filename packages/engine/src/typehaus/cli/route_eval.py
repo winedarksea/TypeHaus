@@ -317,10 +317,6 @@ def _coverage_gaps(proposal: RouteProposal, findings: list[Finding]) -> list[str
     if not any(proposal.tag in f.element_tags for f in findings):
         out.append(f"{proposal.tag}: no check named this run at all — it is either outside "
                    "every MEP check's scope or its geometry is not evaluable")
-    if proposal.kind == "conduit":
-        out.append(f"{proposal.tag}: only the first flat leg is in the candidate model — a "
-                   "ConduitRun rises at its last vertex, so a multi-plane route is several "
-                   "elements and this grades one of them")
     if proposal.kind == "duct" and proposal.routing == "exposed":
         out.append(f"{proposal.tag}: routed EXPOSED, so the bay and soffit occupancy checks "
                    "have nothing to grade it against — that is a real gap, not a pass")
