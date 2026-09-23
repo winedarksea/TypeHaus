@@ -1095,7 +1095,7 @@ _SPA_CHASE_X = ft(9, 5.875)
 
 CONDUIT_TRUNKS = [
     # Up the mechanical chase beside the radon vent to the PV junction box, at
-    # (1'-6", 34'-6") — inside the enclosure, not out on the open mudroom floor.
+    # (1'-6", 34'-2 3/8") — inside the enclosure, not out on the open mudroom floor.
     # ** THE RISER STOPS AT THE ATTIC DECK, AND CD-A-PV-EAST FINISHES IT. ** At 6:12 off a
     # 20'-11 3/8" eave the roof plane at x=1'-6" is 21'-8 3/8", so a riser continuing to
     # 25'-6" there would run outside the building. The chase does NOT move — moving it would
@@ -1104,7 +1104,7 @@ CONDUIT_TRUNKS = [
     # ConduitRun travels flat at `start_elevation` and rises only at its LAST point, so
     # "up, then over" is two runs, not one polyline.
     ConduitRun(uid="CDT001AAAA", tag="CD-B-ATTIC-RISER", trade_size=inch(1.5),
-               path=(pt(ft(2), ft(29)), pt(ft(1, 6), ft(34, 6)), pt(ft(1, 6), ft(34, 6))),
+               path=(pt(ft(2), ft(29)), pt(ft(1, 6), ft(34, 2.375)), pt(ft(1, 6), ft(34, 2.375))),
                start_elevation=ft(-4), end_elevation=ft(20, 6), elevations=(ft(-4), ft(-4), ft(20, 6)),
                from_ref="ED-B-PANEL", to_ref="ED-A-PV-JB"),
     # The over-and-up leg: east along the attic deck under the north rake, into the north
@@ -1123,8 +1123,8 @@ CONDUIT_TRUNKS = [
     # The riser follows ED-A-PV-JB west to x=10'-2" and down to 25'-0"; the box's own note
     # carries why that station.
     ConduitRun(uid="XJR4KE400J", tag="CD-A-PV-EAST", trade_size=inch(1.5),
-               path=(pt(ft(1, 6), ft(34, 6)), pt(ft(9, 6), ft(34, 6)), pt(ft(9, 6), ft(35, 10)), pt(ft(10, 2), ft(35, 10)), pt(ft(10, 2), ft(35, 10))),
-               start_elevation=ft(20, 6), end_elevation=ft(25), elevations=(ft(20, 6), ft(20, 6), ft(20, 6), ft(20, 6), ft(25)),
+               path=(pt(ft(1, 6), ft(34, 2.375)), pt(ft(1, 6), ft(34, 6)), pt(ft(9, 6), ft(34, 6)), pt(ft(9, 6), ft(35, 10)), pt(ft(10, 2), ft(35, 10)), pt(ft(10, 2), ft(35, 10))),
+               start_elevation=ft(20, 6), end_elevation=ft(25), elevations=(ft(20, 6), ft(20, 6), ft(20, 6), ft(20, 6), ft(20, 6), ft(25)),
                from_ref="CD-B-ATTIC-RISER", to_ref="ED-A-PV-JB"),
     # --- the backup microgrid's three raceways ----------------------------------------
     #
@@ -1133,7 +1133,7 @@ CONDUIT_TRUNKS = [
     # attic riser above feeds ED-A-PV-JB as before, and this run takes it the rest of the
     # way down the same chase to EQ-B-ESS-INV.
     ConduitRun(uid="CDT005AAAA", tag="CD-B-PV-INV", trade_size=inch(1),
-               path=(pt(ft(1, 6), ft(34, 6)), pt(ft(2), ft(24, 6))),
+               path=(pt(ft(1, 6), ft(34, 2.375)), pt(ft(2), ft(24, 6))),
                start_elevation=ft(-4), end_elevation=ft(-4), elevations=(ft(-4), ft(-4)),
                from_ref="ED-A-PV-JB", to_ref="EQ-B-ESS-INV"),
     # Grid port up to the service panel's CKT-ESS-GRID breaker: 4'-6" of wall, but it is
@@ -1244,10 +1244,13 @@ CONDUIT_TRUNKS = [
 
 # --- Structured cabling: the head end, three access points, and the spine trunk ---------
 # Rides the existing full-height radon/plumbing chase at (1', 34'-6") in its own raceways
-# (NEC 800.133/725 forbids comms sharing a raceway with power). Four risers 6" apart on the
-# y=34'-6" line (>=5" so mep.sleeve_coverage's matcher doesn't confuse sleeves through
-# SL-M-DECK): x=1'-0" radon/vent, x=1'-6" CD-B-ATTIC-RISER (PV DC), x=2'-0"
-# CD-B-DATA-CHASE, x=2'-6" CD-B-SPARE-CHASE (capped, pull string).
+# (NEC 800.133/725 forbids comms sharing a raceway with power). Four risers 6" apart
+# (>=5" so mep.sleeve_coverage's matcher doesn't confuse sleeves through SL-M-DECK):
+# x=1'-0" radon/vent, x=1'-6" CD-B-ATTIC-RISER (PV DC), x=2'-0" CD-B-DATA-CHASE, x=2'-6"
+# CD-B-SPARE-CHASE (capped, pull string). The three conduits stand on y=34'-2 3/8", not the
+# vent bundle's 34'-6" (2026-09-23): that line put them in FS-S-WEST's y=34'-8" truss and
+# in FO-M-ERV-OA's north trimmer pack (face 34'-3 5/8"). 34'-2 3/8" is mid-bay upstairs,
+# 1/8" clear of the pack and 1/4" clear of DU-ERV-RISER-EXH and DU-M-ERV-EXH-FEED.
 # Star topology, not daisy chain: every run is a home run from ED-B-NET-PATCH, which is
 # what `electrical.data_reachability`'s from_ref/to_ref graph walk needs to mean anything.
 DATA_HEAD_END = [
@@ -1265,7 +1268,7 @@ DATA_TRUNKS = [
     # radon/vent bundle. Every upstairs pull goes through this one pipe.
     ConduitRun(uid="CDT008AAAA", tag="CD-B-DATA-CHASE", trade_size=inch(1.25),
                service=Service.DATA,
-               path=(pt(ft(2), ft(31)), pt(ft(2), ft(34, 6)), pt(ft(2), ft(34, 6))),
+               path=(pt(ft(2), ft(31)), pt(ft(2), ft(34, 2.375)), pt(ft(2), ft(34, 2.375))),
                start_elevation=ft(-4), end_elevation=ft(20, 6), elevations=(ft(-4), ft(-4), ft(20, 6)),
                from_ref="ED-B-NET-PATCH"),
     # The capped spare, another 6" east. No service and no conductors — a pull string and
@@ -1273,7 +1276,7 @@ DATA_TRUNKS = [
     # easy to run new lines") asks for. It is where the PoE cameras go.
     ConduitRun(uid="CDT009AAAA", tag="CD-B-SPARE-CHASE", trade_size=inch(2),
                service=None,
-               path=(pt(ft(2), ft(31)), pt(ft(2, 6), ft(34, 6)), pt(ft(2, 6), ft(34, 6))),
+               path=(pt(ft(2), ft(31)), pt(ft(2, 6), ft(34, 2.375)), pt(ft(2, 6), ft(34, 2.375))),
                start_elevation=ft(-4), end_elevation=ft(20, 6), elevations=(ft(-4), ft(-4), ft(20, 6)),
                from_ref="ED-B-NET-PATCH"),
 ]
@@ -1300,7 +1303,7 @@ MAIN_DATA_TRUNKS = [
     # one radio covering all three, which is what put it there rather than over the counter.
     ConduitRun(uid="CDT010AAAA", tag="CD-M-DATA-KITCH", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(35, 6)), pt(ft(19), ft(35, 6)),
+               path=(pt(ft(2), ft(34, 2.375)), pt(ft(2), ft(35, 6)), pt(ft(19), ft(35, 6)),
                      pt(ft(19), ft(29))),
                start_elevation=ft(9, 2.25), end_elevation=ft(9, 2.25), elevations=(ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 2.25)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-KITCH-AP"),
@@ -1329,7 +1332,7 @@ MAIN_DATA_TRUNKS = [
     # it gets built.
     ConduitRun(uid="CDT011AAAA", tag="CD-M-DATA-PORCH", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(17, 6), inch(-2)), pt(ft(17, 6), inch(-6)), pt(ft(17, 6), inch(-6)), pt(ft(17, 6), ft(-4.833)), pt(ft(17, 6), ft(-4.833))),
+               path=(pt(ft(2), ft(34, 2.375)), pt(ft(2), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(17, 6), inch(-2)), pt(ft(17, 6), inch(-6)), pt(ft(17, 6), inch(-6)), pt(ft(17, 6), ft(-4.833)), pt(ft(17, 6), ft(-4.833))),
                start_elevation=ft(9, 2.25), end_elevation=ft(8, 8), elevations=(ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(8, 10.25), ft(8, 10.25), ft(8, 8)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-PORCH-AP"),
 ]
@@ -1344,10 +1347,12 @@ ATTIC_DATA_TRUNKS = [
     # DU-A-ERV-R-ATTIC and -STUBATH, which take x=1'-0" at +20'-4" — 1'-0" of plan separation
     # and 2" of elevation. A 3/4" EMT in a 2x4 stud is a 1" bore, 29% of depth, inside R602.6
     # either way, and the cavity is mineral wool with no other service in it.
+    # The deck leg runs at 22'-6 7/8", clear of the wall's pocket-side face (on 22'-6" it
+    # stood 0.21" in the stud plane), and steps 2 7/8" south into the cavity to rise.
     ConduitRun(uid="CDT012AAAA", tag="CD-A-DATA-NE", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(22, 6)), pt(ft(6, 6), ft(22, 6)), pt(ft(6, 6), ft(22, 6))),
-               start_elevation=ft(20, 6), end_elevation=ft(23), elevations=(ft(20, 6), ft(20, 6), ft(20, 6), ft(23)),
+               path=(pt(ft(2), ft(34, 2.375)), pt(ft(2), ft(22, 6.875)), pt(ft(6, 6), ft(22, 6.875)), pt(ft(6, 6), ft(22, 4)), pt(ft(6, 6), ft(22, 4))),
+               start_elevation=ft(20, 6), end_elevation=ft(23), elevations=(ft(20, 6), ft(20, 6), ft(20, 6), ft(20, 6), ft(23)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-A-STUDIO-AP"),
 ]
 

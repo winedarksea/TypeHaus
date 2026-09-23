@@ -127,6 +127,12 @@ DRAINS = [
     # 1" window, so it is the least movable of the three and every router proposal for it
     # trades the header for a slope, burial or footing-clearance FAIL. It travels with the
     # designed header, not away from it.
+    # ** STILL INSIDE FO-M-STAIR'S NORTH TRIMMER FOR 8 FT, AND NO LANE HERE FIXES IT. **
+    # 35'-0" IS that opening's north edge (`mep.run_through_floor_member`, 2026-09-23). South
+    # is the stair well; north, W-B-N2's pour reaches 35'-2 5/8" at this depth — tried, and
+    # `mep.run_in_slab` said so. The fix is framing: FO-M-STAIR's north edge, not this run.
+    # West of x=10'-0" it now hangs 1/16" clear of FS-M-MECH's joists (8'-0 5/16"), where
+    # its crown used to sit 1" in joist-0-010's bottom flange.
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(29, 4), ft(35)), pt(ft(29, 4), ft(35)),
                   pt(ft(18), ft(35)), pt(ft(10), ft(35)),
@@ -142,7 +148,7 @@ DRAINS = [
             # over 43'-4" would allow 0.235"/ft spread evenly — under the minimum — so the
             # head is spent where it is worth something instead. The theater leg takes the
             # least it legally can (3 1/16" over 11'-4", 0.270"/ft) to keep the pipe inside
-            # the foam for its whole length; the stair leg 0.273"/ft; and the last leg, once
+            # the foam for its whole length; the stair leg 0.297"/ft; and the last leg, once
             # the run is over RM-B-FURNACE and RM-B-WORKSHOP where nothing cares how low it
             # hangs, takes 13 5/8" over 19'-0" at 0.717"/ft.
             #
@@ -152,7 +158,7 @@ DRAINS = [
             # branch wants, and inside `drain_tie_ins`' 1" tolerance so the load still rolls
             # up. It ties on the main's y=16'-6" leg rather than at its (6'-0") head, which
             # is 1'-6" of 2" PVC saved and one fitting fewer.
-            elevations=(ft(9, 2.375), ft(8, 5.9375), ft(8, 2.6875), ft(8, 0.5),
+            elevations=(ft(9, 2.375), ft(8, 5.9375), ft(8, 2.6875), ft(8, 0.3125),
                         ft(7, 11.25), ft(7, 10.75), ft(6, 9.125)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its flange on the wet wall (→ SP-M-WC2), x 2'-6" y 20'-10 5/8" — the
@@ -187,8 +193,10 @@ DRAINS = [
             diameter=inch(3), material="pvc",
             elevations=(ft(9, 4.75), ft(7, 9.625), ft(7, 9.4375), ft(7, 8.4375)),
             serves=("FX-M-BATH1-WC",)),
+    # 22'-10 7/8", 1 1/16" south of the port station: at 22'-11 15/16" the 1.9" OD stood
+    # 0.77" in joist-0-001's bottom flange (FS-M-MECH, face 23'-0 1/8"). Clears it by 5/16".
     PipeRun(uid="CBPD02AAAA", tag="PR-B-LAV1-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(6), m(7.00891)), pt(ft(6), m(7.00891)), pt(ft(6), ft(22, 7))),
+            path=(pt(ft(6), ft(22, 10.875)), pt(ft(6), ft(22, 10.875)), pt(ft(6), ft(22, 7))),
             diameter=inch(1.5), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 9.6375)),
             serves=("FX-M-BATH1-LAV",)),
@@ -204,7 +212,8 @@ DRAINS = [
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 4.6375)),
             serves=("FX-M-BATH2-TUB",)),
     PipeRun(uid="CBPD04AAAA", tag="PR-B-SH2-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(1, 9), ft(17, 3)), pt(ft(1, 9), ft(17, 3)),
+            # y=17'-1 3/8", not the grate's 17'-3": that stood 1.44" in joist-0-013's flange.
+            path=(pt(ft(1, 9), ft(17, 1.375)), pt(ft(1, 9), ft(17, 1.375)),
                   pt(ft(3), ft(16, 6))),
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(6, 10.6375)),
@@ -216,7 +225,11 @@ DRAINS = [
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(6, 10.0375)),
             serves=("FX-M-BATH2-SINK",)),
     PipeRun(uid="CBPD06AAAA", tag="PR-B-WASH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(8, 2), ft(20)), pt(ft(8, 2), ft(20)), pt(ft(6), ft(20))),
+            # The drop is at 19'-4", mid-bay both ways: y=20'-0" is joist-0-015's line (and
+            # its sister at 20'-2 1/2"), and W-M-BA2E's staggered studs at 19'-8"/20'-4" leave
+            # no bay over the joist's clear side. The arm keeps its old tie-in on the collector.
+            path=(pt(ft(8, 2), ft(19, 4)), pt(ft(8, 2), ft(19, 4)),
+                  pt(ft(6), ft(19, 9.375))),
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 5.8375)),
             serves=("FX-M-LAUNDRY",)),
@@ -227,8 +240,9 @@ DRAINS = [
     # 1002.2 allows 60" on 2" vs. 42" on 1 1/2". Falls 1.32"/ft, arriving ~6" above the
     # collector's invert — a top tee-in, not a side one.
     PipeRun(uid="ZK49S63X8X", tag="PR-B-LSINK-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(11, 9), ft(18, 9)), pt(ft(11, 9), ft(18, 9)),
-                  pt(ft(6), ft(18, 9))),
+            # 18'-10 5/8", clear of joist-0-014's flange at 18'-9 1/4"; at 18'-9" it took 1.44".
+            path=(pt(ft(11, 9), ft(18, 10.625)), pt(ft(11, 9), ft(18, 10.625)),
+                  pt(ft(6), ft(18, 10.625))),
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 2.4375)),
             serves=("FX-M-LAUNDRY-SINK",)),
@@ -521,7 +535,7 @@ CONDENSATE_MAIN = [
 # the branch below it, and condensate isn't a drainage fixture at all.
 LAUNDRY_MAIN = [
     PipeRun(uid="P8A9ADNE6N", tag="PR-M-WASH-STANDPIPE", system=PipeSystem.DRAIN,
-            path=(pt(ft(8, 2), ft(20)), pt(ft(8, 2), ft(20))),
+            path=(pt(ft(8, 2), ft(19, 4)), pt(ft(8, 2), ft(19, 4))),
             diameter=inch(2), material="pvc",
             elevations=(ft(3), ft(0)),
             wall_refs=("W-M-BA2E",)),
@@ -632,8 +646,8 @@ ERV_CONDENSATE = [
             # inches higher and the basement raceway bundle is at -4'-0".
             path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 7), ft(30, 9)),
                   pt(ft(2, 7), ft(13, 3)),
-                  pt(ft(13), ft(13, 3)), pt(ft(13), ft(10)),
-                  pt(ft(13), ft(10)), pt(ft(13), inch(98.1875))),
+                  pt(ft(13), ft(13, 3)), pt(ft(13), ft(10, 1.4375)),
+                  pt(ft(13), ft(10, 1.4375)), pt(ft(13), inch(98.1875))),
             diameter=inch(0.75), material="pvc",
             # Starts at 4'-6": EQ-B-ERV's four ports are on top, with 3 5/16" of ceiling
             # above them (see plan/electrical.py). The pan is the run's high point; the fall
@@ -871,10 +885,14 @@ STUDIO_DRAINS = [
 # when the bare bowl became a 24" vanity (plan/fixtures.py), to the west leg's drop at (9'-7 1/2",
     # 19'-4"), where it lands exactly on that vertex at 19'-3 1/2".
     PipeRun(uid="FY6M0PTE7C", tag="PR-A-STUBATH-LAV-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(9, 7.5), inch(256.625)), pt(ft(9, 7.5), inch(256.625)),
+            # The drop is 3 1/4" south of the basin, at 21'-1 3/8": on 21'-4 5/8" it stood
+            # 1.81" in joist-0-016's top flange, and north of it is DU-A-ERV-R-STUBATH's riser.
+            path=(pt(ft(9, 7.5), ft(21, 1.375)), pt(ft(9, 7.5), ft(21, 1.375)),
                   pt(ft(9, 7.5), ft(19, 4))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(20, 0.75), ft(19, 4.25), ft(19, 3.5)),
+            # The drop bottom is 19'-4 1/8" so PR-A-STUBATH-SH-DRAIN still enters the upper
+            # half at 20'-7 5/8" on the shorter leg.
+            elevations=(ft(20, 0.75), ft(19, 4.125), ft(19, 3.5)),
             # No `wall_ref`, for the same reason as PR-M-S-BATH1-LAV-DRAIN: the leg runs
             # under W-A-STU-W's plan footprint but below its base, in the joist band, so a
             # claim that every segment is inside that wall's cavity would be false.

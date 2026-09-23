@@ -56,12 +56,15 @@ def test_a_riser_the_deck_was_opened_FOR_is_silent() -> None:
 
 
 def test_a_riser_ON_A_JOIST_fails_naming_the_member_and_the_station(catlin_ctx) -> None:
-    """The unambiguous half. That member is cut and nothing headed it."""
+    """The unambiguous half. That member is cut and nothing headed it.
+
+    PR-B-SH2-DRAIN was the example until 2026-09-23, when it moved off joist-0-013. DU-ERV-EA
+    through FS-S-WEST's y=34'-8" truss is one no run move fixes (it wants a truss opening)."""
     finding = next(f for f in _by_result(catlin_ctx, Result.FAIL)
-                   if "PR-B-SH2-DRAIN" in f.element_tags)
-    assert "FS-M-WEST" in finding.element_tags
+                   if "DU-ERV-EA" in f.element_tags)
+    assert "FS-S-WEST" in finding.element_tags
     assert "on joist joist-" in finding.message
-    assert "at (1'-9.0\", 17'-3.0\")" in finding.message
+    assert "at (2'-0.0\", 35'-0.0\")" in finding.message
     assert "nothing headed it" in finding.message
 
 
@@ -101,10 +104,14 @@ def test_catlin_is_pinned_so_a_campaign_can_see_itself(catlin_ctx) -> None:
     FS-ATTIC's deck in the open and now stands inside W-A-STU-W, between the 21'-4" and
     22'-0" studs, where the wall's own plate is the hole's frame. The on-member count is
     untouched, which is the point of pinning the two separately — D2 moved ducts, and not
-    one of them was landing on a joist."""
+    one of them was landing on a joist.
+
+    8/28 on 2026-09-23 (Stream G): risers stepped off their joists and flanges. Every one
+    that moved into a clear bay changed column rather than vanishing, which is the
+    DOCUMENTATION half again — a hole over 2" still wants drawing."""
     fails = _by_result(catlin_ctx, Result.FAIL)
     on_member = [f for f in fails if "lands on the member" in f.message]
     undrawn = [f for f in fails if "FRAMED, NOT DRILLED" in f.message]
-    assert len(on_member) == 29
-    assert len(undrawn) == 18
+    assert len(on_member) == 8
+    assert len(undrawn) == 28
     assert len(fails) == len(on_member) + len(undrawn)

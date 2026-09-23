@@ -319,10 +319,10 @@ DUCTS_ERV_MIX_FEED = [
             # stood 3/8" into FO-A-HALL's outboard trimmer ply (face at 22'-2 5/8") for the
             # whole 8' it runs beside the hole. `mep.run_through_blocking` found it where
             # the leg crosses x=18'; 1/8" clear now.
-            path=(pt(inch(9.625), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)),
-                  pt(ft(1), ft(21, 11.5)),
-                  pt(ft(1), ft(21, 11.5)), pt(ft(21), ft(21, 11.5)),
-                  pt(ft(21), ft(21, 11.5)), pt(ft(21), ft(28, 9)),
+            path=(pt(inch(9.625), ft(33, 10.25)), pt(ft(1), ft(33, 10.25)), pt(ft(1), ft(33, 10.25)),
+                  pt(ft(1), ft(21, 10.625)),
+                  pt(ft(1), ft(21, 10.625)), pt(ft(21), ft(21, 10.625)),
+                  pt(ft(21), ft(21, 10.625)), pt(ft(21), ft(28, 9)),
                   pt(ft(21), ft(28, 9))),
             elevations=(inch(-8.875), inch(-8.875), inch(4), inch(4),
                         inch(-8.875), inch(-8.875),

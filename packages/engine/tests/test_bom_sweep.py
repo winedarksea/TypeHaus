@@ -609,8 +609,9 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     # bathroom node line so the mechanical-room and stair bays could bear on the x=10' line.
     # FO-M-STAIR moved to FS-M-STAIR with the hole it cuts.
     # FS-M-MECH gained FO-M-ERV-OA and FO-M-ERV-EA on 2026-09-15 — the ERV risers' own
-    # holes, the first this deck has ever declared. 2.1 SF between them, and the board stops
-    # at each exactly as the deck does.
+    # holes, the first this deck has ever declared. FO-M-ERV-OA grew west over both chase
+    # risers on 2026-09-23: 4.2 SF between them now, and the board stops at each exactly as
+    # the deck does.
     others = (_gross_sqft("FS-M-WEST")
               + _gross_sqft("FS-M-MECH") - _opening_sqft("FO-M-ERV-OA")
               - _opening_sqft("FO-M-ERV-EA")
