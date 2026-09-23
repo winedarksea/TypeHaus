@@ -169,8 +169,10 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     # joist field above (it needs its line positions and its cantilevered axis extent), and
     # before the opening/rim framing so a reinforced line is already in ``members`` when the
     # rim is drawn to the same tips.
+    # Every laid line, extra ones included: a block cut against the regular lines alone
+    # would run straight through an authored extra joist.
     members.extend(_reinforcement_members(
-        system, spec, positions, along_x, ends.tip_lo, ends.tip_hi, z0, z1, lift))
+        system, spec, sorted(positions + extra), along_x, ends.tip_lo, ends.tip_hi, z0, z1, lift))
 
     # Opening framing after clipping: headers on edges with no declared bearing, trimmer
     # packs bearing to bearing (resolve/floor_openings.py).

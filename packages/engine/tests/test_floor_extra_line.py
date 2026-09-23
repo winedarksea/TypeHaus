@@ -40,7 +40,7 @@ _EXT = Assembly(tag="EXT", layers=(
           function=LayerFunction.STRUCTURE),))
 
 
-def _model(extra=()):
+def _model(extra=(), reinforcements=()):
     project = Project(name="XL", project_uuid="00000000-0000-4000-8000-0000000000e1",
                       site=Site(lat=44.9, lon=-93.2, elevation=ft(830),
                                 design_temp_heating=degF(-15), design_temp_cooling=degF(90)),
@@ -60,6 +60,7 @@ def _model(extra=()):
         uid="FS000000e1", tag="FS-X",
         joists=JoistSpec(member="2x8", spacing=inch(16), direction="y",
                          bearing_refs=("BM-S", "BM-N"), extra_lines=tuple(extra)),
+        reinforcements=tuple(reinforcements),
         subfloor=DeckLayer(material_ref="spf", thickness=inch(0.75)), service="deck")
     return resolve(plan.with_elements("main", (*nodes, *beams, floor)))
 
@@ -106,3 +107,17 @@ def test_a_line_outside_the_field_is_refused():
     _, findings = _model([ft(20)])
     assert any("outside the joist field" in f.message for f in findings
                if f.check_id == "integrity.floor_extra_line")
+
+
+def test_a_block_beside_an_extra_line_stops_at_it():
+    from typehaus.model import JoistReinforcement
+
+    block = JoistReinforcement(at=pt(inch(102), ft(5)), plies=1, blocking=True)
+    model, _ = _model([inch(102)], [block])
+    blocks = [m for m in model.floors[0].members if m.category == "blocking"]
+    assert blocks
+    # cut between the extra line (102") and its 96"/112" neighbours, never across it
+    for m in blocks:
+        lo, hi = sorted((m.p0[0], m.p1[0]))
+        assert hi <= inch(102).meters - inch(0.75).meters + 1e-9 or \
+            lo >= inch(102).meters + inch(0.75).meters - 1e-9
