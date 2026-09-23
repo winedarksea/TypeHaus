@@ -56,6 +56,7 @@ from typehaus.emit.draw.scene import (
 )
 from typehaus.emit.draw.typography import (
     CHAR_ASPECT,
+    TAG_PT,
     TEXT_PT,
     model_in_per_pt,
 )
@@ -84,6 +85,10 @@ ANNO_PT = TEXT_PT
 #: what ``pdf_writer._scene_bounds`` measures the sheet's fit with. Reserving at one size
 #: and printing at another is exactly the mismatch ``height_pt`` exists to close.
 ANNO_IN = ANNO_PT * model_in_per_pt(SECTION_RESERVATION_SCALE)
+
+#: Room name and its clear height, at the NCS 3/32" floor.
+ROOM_PT = TAG_PT
+ROOM_IN = ROOM_PT * model_in_per_pt(SECTION_RESERVATION_SCALE)
 
 #: Air above and below a datum label's reservation. ``dodge`` separates boxes that
 #: *overlap*, and two labels a hair apart do not overlap — they print as one smear.
@@ -362,7 +367,7 @@ def _emit_room_names(b: SceneBuilder, model: ResolvedModel, plane: CutPlane,
         # A room narrower at the cut than its own name gets none: the text would run
         # through the walls either side and read as the neighbour's. Nothing is lost — a
         # closet the cut clips the corner of is identified on its floor plan.
-        width_in = len(name) * ANNO_PT * CHAR_ASPECT * per_pt
+        width_in = len(name) * ROOM_PT * CHAR_ASPECT * per_pt
         if (u1 - u0) / M_PER_IN < width_in:
             continue
         # Off the FINISHED floor: the label rise is a clearance above the plane the
@@ -376,7 +381,7 @@ def _emit_room_names(b: SceneBuilder, model: ResolvedModel, plane: CutPlane,
                     and cz0 / M_PER_IN <= z_in <= cz1 / M_PER_IN):
                 continue
         b.add(Text(anchor=(centre_u, z_in), content=name,
-                   height=ANNO_IN, height_pt=ANNO_PT, layer="A-AREA-IDEN",
+                   height=ROOM_IN, height_pt=ROOM_PT, layer="A-AREA-IDEN",
                    align="center"))
         # Floor-to-ceiling under the name. A building section is where a reviewer looks for
         # headroom, and the datum ladder beside the drawing cannot answer it: that ladder
@@ -386,9 +391,9 @@ def _emit_room_names(b: SceneBuilder, model: ResolvedModel, plane: CutPlane,
         # grades, so the sheet and the check state one height.
         clear = getattr(room, "clear_height_m", None)
         if clear:
-            b.add(Text(anchor=(centre_u, z_in - ANNO_IN * 1.6),
+            b.add(Text(anchor=(centre_u, z_in - ROOM_IN * 1.5),
                        content=f"CLG {feet_inches(clear / M_PER_IN)}",
-                       height=ANNO_IN * 0.85, height_pt=ANNO_PT * 0.85,
+                       height=ROOM_IN, height_pt=ROOM_PT,
                        # A-ANNO-DIMS, not A-AREA-IDEN: this is a DIMENSION that happens to
                        # sit under a room name. On the identifier layer it reads as part of
                        # the name to anything walking the layer — which two annotation

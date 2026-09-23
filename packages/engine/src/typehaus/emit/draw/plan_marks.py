@@ -36,15 +36,15 @@ from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.lineweights import REFERENCE
 from typehaus.emit.draw.scene import Polyline, SceneBuilder, Text
-from typehaus.emit.draw.typography import CHAR_ASPECT, DIM_TEXT_PT, model_in_per_pt
+from typehaus.emit.draw.typography import CHAR_ASPECT, TAG_PT, model_in_per_pt
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 MARK_LAYER = "A-ANNO-SYMB"
 
 #: Radius of a mark bubble, model inches — sized to hold a three-character mark at
-#: ``DIM_TEXT_PT`` at the scale plan annotation reserves against.
-BUBBLE_RADIUS_IN = 3.0 * DIM_TEXT_PT * CHAR_ASPECT * model_in_per_pt(PLAN_RESERVATION_SCALE)
+#: ``TAG_PT`` at the scale plan annotation reserves against.
+BUBBLE_RADIUS_IN = 3.0 * TAG_PT * CHAR_ASPECT * model_in_per_pt(PLAN_RESERVATION_SCALE)
 
 #: How far off the wall a bubble's centre stands, meters — clear of the glazing bar and of
 #: the door leaf, on the wall's outward normal.
@@ -116,7 +116,7 @@ def emit_opening_mark(b: SceneBuilder, mark: str, center: tuple[float, float],
         for i in range(sides)
     )
     b.add(Polyline(points=points, layer=MARK_LAYER, closed=True, lineweight=REFERENCE, uid=uid))
-    b.add(Text(anchor=(ux, uz), content=mark, height_pt=DIM_TEXT_PT,
+    b.add(Text(anchor=(ux, uz), content=mark, height_pt=TAG_PT,
                layer=MARK_LAYER, align="center"))
     radius_m = BUBBLE_RADIUS_IN * M_PER_IN
     return (at[0] - radius_m, at[1] - radius_m, at[0] + radius_m, at[1] + radius_m)

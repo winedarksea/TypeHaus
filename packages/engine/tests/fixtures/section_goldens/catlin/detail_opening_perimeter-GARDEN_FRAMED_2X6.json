@@ -3015,7 +3015,7 @@
         0.2499999999999998,
         -62.18749999999999
       ],
-      "text": "air continuity — sheathing-ext →\nsheathing-ext",
+      "text": "air continuity \u2014 sheathing-ext \u2192\nsheathing-ext",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3028,7 +3028,7 @@
         11.625,
         -16.708464566929123
       ],
-      "content": "water continuity — spray-foam-ext →\nspray-foam-ext",
+      "content": "water continuity \u2014 spray-foam-ext \u2192\nspray-foam-ext",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -3044,7 +3044,7 @@
         11.625,
         -23.679297900262455
       ],
-      "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
+      "content": "thermal continuity \u2014 spray-foam-ext \u2192\nspray-foam-ext",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -3060,7 +3060,7 @@
         -15.902519685039373,
         -123.90403543307087
       ],
-      "content": "TR-CATLIN-GARDEN-FRAMED-OPENING  ·  window-head-jamb-sill",
+      "content": "TR-CATLIN-GARDEN-FRAMED-OPENING  \u00b7  window-head-jamb-sill",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -3074,68 +3074,68 @@
       "node": "polyline",
       "points": [
         [
-          12.866,
+          18.817999999999998,
           -51.09375
         ],
         [
-          12.559234516020485,
-          -49.55153576756869
+          18.369650446491477,
+          -48.83974458336962
         ],
         [
-          11.685640328181787,
-          -48.244109671818215
+          17.092858941188762,
+          -46.92889105881124
         ],
         [
-          10.378214232431311,
-          -47.37051548397952
+          15.182005416630378,
+          -45.65209955350852
         ],
         [
-          8.836,
-          -47.06375
+          12.927999999999999,
+          -45.20375
         ],
         [
-          7.293785767568689,
-          -47.37051548397952
+          10.673994583369621,
+          -45.65209955350852
         ],
         [
-          5.986359671818215,
-          -48.244109671818215
+          8.763141058811236,
+          -46.92889105881124
         ],
         [
-          5.112765483979516,
-          -49.55153576756869
+          7.486349553508521,
+          -48.83974458336962
         ],
         [
-          4.806000000000001,
+          7.038,
           -51.09375
         ],
         [
-          5.112765483979515,
-          -52.63596423243131
+          7.4863495535085205,
+          -53.34775541663038
         ],
         [
-          5.986359671818214,
-          -53.943390328181785
+          8.763141058811234,
+          -55.25860894118876
         ],
         [
-          7.293785767568687,
-          -54.81698451602048
+          10.673994583369618,
+          -56.53540044649148
         ],
         [
-          8.836,
-          -55.12375
+          12.927999999999997,
+          -56.98375
         ],
         [
-          10.378214232431313,
-          -54.81698451602048
+          15.182005416630378,
+          -56.53540044649148
         ],
         [
-          11.685640328181785,
-          -53.943390328181785
+          17.092858941188762,
+          -55.25860894118877
         ],
         [
-          12.559234516020485,
-          -52.63596423243131
+          18.369650446491477,
+          -53.347755416630385
         ]
       ],
       "layer": "A-ANNO-KEYN",
@@ -3149,12 +3149,12 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        8.836,
+        12.927999999999999,
         -51.09375
       ],
       "content": "K1",
       "height": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-KEYN",
@@ -3173,7 +3173,7 @@
         "name": ""
       },
       "at": [
-        8.836,
+        12.927999999999999,
         -51.09375
       ],
       "to": [
@@ -3191,68 +3191,68 @@
       "node": "polyline",
       "points": [
         [
-          9.835999999999999,
-          -59.55675
+          15.787999999999997,
+          -63.46275
         ],
         [
-          9.529234516020484,
-          -58.01453576756869
+          15.339650446491476,
+          -61.20874458336962
         ],
         [
-          8.655640328181786,
-          -56.707109671818216
+          14.062858941188761,
+          -59.29789105881124
         ],
         [
-          7.348214232431311,
-          -55.83351548397952
+          12.152005416630377,
+          -58.02109955350852
         ],
         [
-          5.805999999999999,
-          -55.52675
+          9.897999999999998,
+          -57.57275
         ],
         [
-          4.263785767568688,
-          -55.83351548397952
+          7.64399458336962,
+          -58.02109955350852
         ],
         [
-          2.9563596718182135,
-          -56.707109671818216
+          5.733141058811234,
+          -59.29789105881124
         ],
         [
-          2.082765483979514,
-          -58.01453576756869
+          4.45634955350852,
+          -61.20874458336962
         ],
         [
-          1.7759999999999998,
-          -59.55675
+          4.007999999999999,
+          -63.46275
         ],
         [
-          2.0827654839795136,
-          -61.098964232431314
+          4.456349553508519,
+          -65.71675541663038
         ],
         [
-          2.9563596718182126,
-          -62.406390328181786
+          5.733141058811233,
+          -67.62760894118877
         ],
         [
-          4.263785767568685,
-          -63.279984516020484
+          7.643994583369617,
+          -68.90440044649148
         ],
         [
-          5.805999999999998,
-          -63.58675
+          9.897999999999996,
+          -69.35275
         ],
         [
-          7.348214232431312,
-          -63.279984516020484
+          12.152005416630377,
+          -68.90440044649148
         ],
         [
-          8.655640328181784,
-          -62.406390328181786
+          14.062858941188761,
+          -67.62760894118877
         ],
         [
-          9.529234516020484,
-          -61.098964232431314
+          15.339650446491476,
+          -65.71675541663038
         ]
       ],
       "layer": "A-ANNO-KEYN",
@@ -3266,12 +3266,12 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        5.805999999999999,
-        -59.55675
+        9.897999999999998,
+        -63.46275
       ],
       "content": "K2",
       "height": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-KEYN",
@@ -3290,8 +3290,8 @@
         "name": ""
       },
       "at": [
-        5.805999999999999,
-        -59.55675
+        9.897999999999998,
+        -63.46275
       ],
       "to": [
         -3.060000000000001,
@@ -3363,7 +3363,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-GARDEN-FRAMED-OPENING  ·  window-head-jamb-sill",
+      "content": "TR-CATLIN-GARDEN-FRAMED-OPENING  \u00b7  window-head-jamb-sill",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -3395,7 +3395,7 @@
         0.5,
         7.298611111111112
       ],
-      "content": "Type:Haus — derived transition detail",
+      "content": "Type:Haus \u2014 derived transition detail",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3927,14 +3927,14 @@
   ],
   "notes": [
     "NOTES:",
-    "• Framed wall: 2x6 at 16\" o.c., R-19 bays, 4\" continuous exterior.",
-    "• Basement wall: 8\" pour, #5 at 41\" o.c., aligned on the concrete face.",
-    "• Waterproofed per Minn. R. 1309.0406, not dampproofed: 60 mil self-adhered asphalt, footing to grade.",
-    "• Basement CI: 4\" XPS in two layers, seams staggered, outer layer taped.",
-    "• Exposed XPS band: 1/8\" acrylic over mesh, 276.3 SF, grade-6\" to wall top.",
-    "• Bearing seat: pour tops at -13 7/16\", then gasket, mudsill and 11 7/8\" rim.",
-    "• Sill: one shared 2x6 PT mudsill, 370.0 LF, on 1/16\" compressed EPDM.",
-    "• Slab: 3-1/2\" at 3,500 psi on 3\" XPS, 10 mil poly, 4\" gravel. Drain: 4\" pipe.",
+    "\u2022 Framed wall: 2x6 at 16\" o.c., R-19 bays, 4\" continuous exterior.",
+    "\u2022 Basement wall: 8\" pour, #5 at 41\" o.c., aligned on the concrete face.",
+    "\u2022 Waterproofed per Minn. R. 1309.0406, not dampproofed: 60 mil self-adhered asphalt, footing to grade.",
+    "\u2022 Basement CI: 4\" XPS in two layers, seams staggered, outer layer taped.",
+    "\u2022 Exposed XPS band: 1/8\" acrylic over mesh, 276.3 SF, grade-6\" to wall top.",
+    "\u2022 Bearing seat: pour tops at -13 7/16\", then gasket, mudsill and 11 7/8\" rim.",
+    "\u2022 Sill: one shared 2x6 PT mudsill, 370.0 LF, on 1/16\" compressed EPDM.",
+    "\u2022 Slab: 3-1/2\" at 3,500 psi on 3\" XPS, 10 mil poly, 4\" gravel. Drain: 4\" pipe.",
     "",
     "KEYED NOTES:",
     "K1  Bituthene 3000 or equal on concrete and sheathing. 2\" laps; 2-ply corners; insulation over it; backfill in 30 days.",

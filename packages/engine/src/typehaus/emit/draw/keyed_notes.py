@@ -29,7 +29,7 @@ import math
 from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE
 from typehaus.emit.draw.lineweights import LIGHT
 from typehaus.emit.draw.scene import Polyline, Text
-from typehaus.emit.draw.typography import CHAR_ASPECT, DIM_TEXT_PT, model_in_per_pt
+from typehaus.emit.draw.typography import CHAR_ASPECT, TAG_PT, model_in_per_pt
 
 #: The bubbles' own layer, so a writer or a viewer can switch them independently of the
 #: leader text they sit beside.
@@ -45,7 +45,7 @@ _STANDOFF_RADII = 2.2
 
 
 def bubble_radius_in(scale: float | None = None) -> float:
-    """Bubble radius in **model** inches: three characters of ``DIM_TEXT_PT`` lettering.
+    """Bubble radius in **model** inches: three characters of ``TAG_PT`` lettering.
 
     Three because ``K10`` is the widest key a file's note budget allows. Derived the way
     ``plan_marks.BUBBLE_RADIUS_IN`` is, but taking the *drawing's* scale rather than
@@ -53,7 +53,7 @@ def bubble_radius_in(scale: float | None = None) -> float:
     sized off the plan reservation is eight times too big and swallows the junction it is
     pointing at. Falling back to the plan scale keeps a scaleless caller working.
     """
-    return 3.0 * DIM_TEXT_PT * CHAR_ASPECT * model_in_per_pt(scale or PLAN_RESERVATION_SCALE)
+    return 3.0 * TAG_PT * CHAR_ASPECT * model_in_per_pt(scale or PLAN_RESERVATION_SCALE)
 
 
 def bubble_nodes(key: str, at: tuple[float, float], scale: float | None = None) -> list:
@@ -67,7 +67,7 @@ def bubble_nodes(key: str, at: tuple[float, float], scale: float | None = None) 
     )
     return [
         Polyline(points=points, layer=KEY_LAYER, closed=True, lineweight=LIGHT),
-        Text(anchor=(ux, uz), content=key, height_pt=DIM_TEXT_PT, layer=KEY_LAYER,
+        Text(anchor=(ux, uz), content=key, height_pt=TAG_PT, layer=KEY_LAYER,
              align="center"),
     ]
 

@@ -2173,7 +2173,7 @@
         213.23000000000005,
         160.0
       ],
-      "text": "vapor continuity — humid-membrane →\nhumid-membrane",
+      "text": "vapor continuity \u2014 humid-membrane \u2192\nhumid-membrane",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2198,7 +2198,7 @@
         213.23000000000005,
         160.0
       ],
-      "text": "air continuity — humid-membrane → humid-\nmembrane",
+      "text": "air continuity \u2014 humid-membrane \u2192 humid-\nmembrane",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2211,7 +2211,7 @@
         202.11748031496066,
         98.28346456692913
       ],
-      "content": "TR-CATLIN-PLANT-OPENING  ·  humid-liner-opening",
+      "content": "TR-CATLIN-PLANT-OPENING  \u00b7  humid-liner-opening",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -2225,68 +2225,68 @@
       "node": "polyline",
       "points": [
         [
-          226.12600000000006,
+          232.07800000000003,
           180.0
         ],
         [
-          225.81923451602054,
-          181.54221423243132
+          231.62965044649152,
+          182.25400541663038
         ],
         [
-          224.94564032818184,
-          182.84964032818178
+          230.3528589411888,
+          184.16485894118875
         ],
         [
-          223.63821423243138,
-          183.72323451602048
+          228.44200541663042,
+          185.44165044649148
         ],
         [
-          222.09600000000006,
-          184.03
+          226.18800000000005,
+          185.89
         ],
         [
-          220.55378576756874,
-          183.72323451602048
+          223.93399458336967,
+          185.44165044649148
         ],
         [
-          219.24635967181828,
-          182.84964032818178
+          222.0231410588113,
+          184.16485894118875
         ],
         [
-          218.37276548397958,
-          181.54221423243132
+          220.74634955350857,
+          182.25400541663038
         ],
         [
-          218.06600000000006,
+          220.29800000000006,
           180.0
         ],
         [
-          218.37276548397958,
-          178.45778576756868
+          220.74634955350857,
+          177.74599458336962
         ],
         [
-          219.24635967181828,
-          177.15035967181822
+          222.0231410588113,
+          175.83514105881125
         ],
         [
-          220.55378576756874,
-          176.27676548397952
+          223.93399458336967,
+          174.55834955350852
         ],
         [
-          222.09600000000006,
-          175.97
+          226.18800000000005,
+          174.11
         ],
         [
-          223.63821423243138,
-          176.27676548397952
+          228.44200541663042,
+          174.55834955350852
         ],
         [
-          224.94564032818184,
-          177.15035967181822
+          230.3528589411888,
+          175.83514105881125
         ],
         [
-          225.81923451602054,
-          178.45778576756868
+          231.62965044649152,
+          177.74599458336962
         ]
       ],
       "layer": "A-ANNO-KEYN",
@@ -2300,12 +2300,12 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        222.09600000000006,
+        226.18800000000005,
         180.0
       ],
       "content": "K2",
       "height": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-KEYN",
@@ -2324,7 +2324,7 @@
         "name": ""
       },
       "at": [
-        222.09600000000006,
+        226.18800000000005,
         180.0
       ],
       "to": [
@@ -2342,68 +2342,68 @@
       "node": "polyline",
       "points": [
         [
-          225.73100000000002,
-          171.537
+          231.68300000000002,
+          167.63100000000003
         ],
         [
-          225.4242345160205,
-          173.07921423243133
+          231.23465044649151,
+          169.8850054166304
         ],
         [
-          224.5506403281818,
-          174.38664032818178
+          229.9578589411888,
+          171.79585894118878
         ],
         [
-          223.24321423243134,
-          175.2602345160205
+          228.0470054166304,
+          173.0726504464915
         ],
         [
-          221.70100000000002,
-          175.567
+          225.79300000000003,
+          173.52100000000002
         ],
         [
-          220.1587857675687,
-          175.2602345160205
+          223.53899458336966,
+          173.0726504464915
         ],
         [
-          218.85135967181824,
-          174.38664032818178
+          221.62814105881128,
+          171.79585894118878
         ],
         [
-          217.97776548397954,
-          173.07921423243133
+          220.35134955350856,
+          169.8850054166304
         ],
         [
-          217.67100000000002,
-          171.537
+          219.90300000000005,
+          167.63100000000003
         ],
         [
-          217.97776548397954,
-          169.9947857675687
+          220.35134955350856,
+          165.37699458336965
         ],
         [
-          218.85135967181824,
-          168.68735967181823
+          221.62814105881128,
+          163.46614105881127
         ],
         [
-          220.1587857675687,
-          167.81376548397952
+          223.53899458336966,
+          162.18934955350855
         ],
         [
-          221.70100000000002,
-          167.507
+          225.79300000000003,
+          161.74100000000004
         ],
         [
-          223.24321423243134,
-          167.81376548397952
+          228.0470054166304,
+          162.18934955350855
         ],
         [
-          224.5506403281818,
-          168.68735967181823
+          229.9578589411888,
+          163.46614105881127
         ],
         [
-          225.4242345160205,
-          169.9947857675687
+          231.23465044649151,
+          165.37699458336965
         ]
       ],
       "layer": "A-ANNO-KEYN",
@@ -2417,12 +2417,12 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        221.70100000000002,
-        171.537
+        225.79300000000003,
+        167.63100000000003
       ],
       "content": "K4",
       "height": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-KEYN",
@@ -2441,8 +2441,8 @@
         "name": ""
       },
       "at": [
-        221.70100000000002,
-        171.537
+        225.79300000000003,
+        167.63100000000003
       ],
       "to": [
         212.83500000000004,
@@ -2514,7 +2514,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-PLANT-OPENING  ·  humid-liner-opening",
+      "content": "TR-CATLIN-PLANT-OPENING  \u00b7  humid-liner-opening",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -2546,7 +2546,7 @@
         0.5,
         7.298611111111112
       ],
-      "content": "Type:Haus — derived transition detail",
+      "content": "Type:Haus \u2014 derived transition detail",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2862,14 +2862,14 @@
   ],
   "notes": [
     "NOTES:",
-    "• Room design condition: 75 F at 70% RH. Dew point 64.4 F.",
-    "• Liner, inside out: 1/2\" PVC panel, 3/4\" furring, membrane. Walls and ceiling.",
-    "• The membrane is the air and vapour barrier. Continuous on all six sides.",
-    "• Floor: heat-welded sheet vinyl, 6\" integral flash cove, sloped to a drain.",
-    "• Glazing: fixed units only, U-0.14, warm-edge spacer, thermally broken frame.",
-    "• No suspended ceiling. No roofing membrane under the vinyl.",
-    "• Ventilation: 25 cfm in, 25 cfm out, both dampered. Extract high, far end.",
-    "• Damp location throughout; wet location wherever misted or hosed.",
+    "\u2022 Room design condition: 75 F at 70% RH. Dew point 64.4 F.",
+    "\u2022 Liner, inside out: 1/2\" PVC panel, 3/4\" furring, membrane. Walls and ceiling.",
+    "\u2022 The membrane is the air and vapour barrier. Continuous on all six sides.",
+    "\u2022 Floor: heat-welded sheet vinyl, 6\" integral flash cove, sloped to a drain.",
+    "\u2022 Glazing: fixed units only, U-0.14, warm-edge spacer, thermally broken frame.",
+    "\u2022 No suspended ceiling. No roofing membrane under the vinyl.",
+    "\u2022 Ventilation: 25 cfm in, 25 cfm out, both dampered. Extract high, far end.",
+    "\u2022 Damp location throughout; wet location wherever misted or hosed.",
     "",
     "KEYED NOTES:",
     "K1  Lap the floor cove up the wall and terminate it behind the wall membrane.",
