@@ -12,6 +12,7 @@ from typehaus.resolve.model import FramedMember
 from typehaus.resolve.stairs.common import (
     _TREAD_THICKNESS_M,
     _notch_z,
+    _stringer_offsets,
     _tread_board_profile,
     _tread_thickness,
 )
@@ -121,7 +122,8 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     inside = P(width, 0.0)  # the turn's inside corner: where the straight flight springs
     outer_corner = P(0.0, width)  # the outer corner the turn sweeps around
     turn = P(width, width)  # the departing corner, where the box's outer rim takes over
-    for index, cross in enumerate((0.0, width)):
+    for index, cross in enumerate(_stringer_offsets(width, None,
+                                                    cross_section("2x12").width_m)):
         out.append(FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12",
                                 offset(inside, 0.0, cross),
                                 offset(inside, tread * straight_treads, cross),

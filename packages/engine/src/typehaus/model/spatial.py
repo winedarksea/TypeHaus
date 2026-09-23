@@ -151,6 +151,8 @@ class Stair(Element):
     tread_material: str | None = None
     # Straight flights only: manufacturer maximum support spacing, evenly divided
     # across the width, including both edge stringers. None retains two edge stringers.
+    # The outer stringers sit INSIDE ``width`` (inset half a ply), which stays the clear
+    # tread width.
     stringer_spacing: Length | None = None
     # How the flight is carried: ``stringer`` (raked, notched 2x12s running the whole run)
     # or ``box`` (one framed box per tread, stacked). Straight flights only.

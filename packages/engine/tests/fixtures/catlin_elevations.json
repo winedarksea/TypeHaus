@@ -16110,6 +16110,12 @@
 2,
 "8e3467ea0a69"
 ],
+"geometry/CM-b433173866c2/body": [
+-0.20955,
+0.0762,
+2,
+"78f2a81912ce"
+],
 "geometry/CM-b484f5dedb8c/body": [
 -0.4175125,
 -0.2651125,
@@ -82961,8 +82967,8 @@
 "solids/CN~LS30~W-A-S3~22/z1_m": 6.505702,
 "solids/CN~LSSR~BM-BW-FC~01/z0_m": -0.20955,
 "solids/CN~LSSR~BM-BW-FC~01/z1_m": 0.0762,
-"solids/CN~LSSR~CABM01AAAA:ridge-beam~02/z0_m": 8.8138,
-"solids/CN~LSSR~CABM01AAAA:ridge-beam~02/z1_m": 9.115425,
+"solids/CN~LSSR~BM-BW-FE~02/z0_m": -0.20955,
+"solids/CN~LSSR~BM-BW-FE~02/z1_m": 0.0762,
 "solids/CN~LSSR~CABM01AAAA:ridge-beam~03/z0_m": 8.8138,
 "solids/CN~LSSR~CABM01AAAA:ridge-beam~03/z1_m": 9.115425,
 "solids/CN~LSSR~CABM01AAAA:ridge-beam~04/z0_m": 8.8138,
@@ -82999,6 +83005,8 @@
 "solids/CN~LSSR~CABM01AAAA:ridge-beam~19/z1_m": 9.115425,
 "solids/CN~LSSR~CABM01AAAA:ridge-beam~20/z0_m": 8.8138,
 "solids/CN~LSSR~CABM01AAAA:ridge-beam~20/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~21/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~21/z1_m": 9.115425,
 "solids/CN~LSTA24~CABM01AAAA:ridge-beam~01/z0_m": 9.21385,
 "solids/CN~LSTA24~CABM01AAAA:ridge-beam~01/z1_m": 9.22655,
 "solids/CN~LSTA24~CABM01AAAA:ridge-beam~02/z0_m": 9.21385,

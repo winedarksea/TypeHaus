@@ -258,9 +258,10 @@ def test_catlin_has_no_roof_seat_fails(catlin_ctx):
 
 
 def test_catlin_has_no_framing_in_concrete(catlin_ctx):
-    """ST-B2M's outer stringers sat half in W-B-CN until its width became stringer centre to
-    centre (2026-09-23). W-B-S2-FR/-S3-FR's open-end studs sit flush inside their plates, and
-    the fireplace lintel, the backing blocks at concrete tees and every pier are cleared."""
+    """ST-B2M's outer stringers sat half in W-B-CN until they were inset inside the stair
+    width (``_stringer_offsets``). W-B-S2-FR/-S3-FR's open-end studs sit flush inside their
+    plates, and the fireplace lintel, the backing blocks at concrete tees and every pier are
+    cleared."""
     assert _fails(member_in_masonry(catlin_ctx)) == []
 
 
