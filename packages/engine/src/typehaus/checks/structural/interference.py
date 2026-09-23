@@ -17,94 +17,22 @@ from __future__ import annotations
 import math
 
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.structural._interference_geom import (
+    _TOL_AREA,
+    _Candidate,
+    _point_on_segment,
+    framing_candidates,
+)
+from typehaus.checks.structural._rafter_seat import (
+    grade_seat,
+    record_failed_seat,
+    roof_and_wall_top,
+    seat_findings,
+    wall_readings,
+)
 from typehaus.findings import Finding, Result, Severity
 from typehaus.quantities import inch
-from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.truss_wall import TRUSS_CATEGORIES
-from typehaus.resolve.sweep import straight_sweep_band
-
-# Minimum shared plan area (m²) for a real interference. A face/side abutment
-# intersects in a zero-area line; this clears it with margin.
-_TOL_AREA = 1e-4
-
-
-class _Candidate:
-    __slots__ = ("label", "poly", "z_lo", "z_hi", "seg", "kind", "parent",
-                 "zlo0", "zhi0", "zlo1", "zhi1")
-
-    def __init__(self, label, poly, z_lo, z_hi, seg, kind, parent=None,
-                 zends=None):
-        self.label = label
-        self.poly = poly
-        self.z_lo = z_lo  # min z over the whole member (bounding box)
-        self.z_hi = z_hi  # max z over the whole member (bounding box)
-        # (p0, p1) plan-frame axis (degenerate point for a vertical member/column).
-        self.seg = seg
-        self.kind = kind  # member/solid category: "rim", "column", "joist", "beam", …
-        # Owning element uid (wall/roof); distinguishes a same-element joint (a real
-        # elevation bug) from a cross-element lap/bearing (intended joinery).
-        self.parent = parent
-        # Per-endpoint z-band (bottom, top) at seg[0] and seg[1]. A sloped member (rafter,
-        # raked plate, ridge) rises along its axis; carrying both ends lets the check test
-        # the z-band *at the shared plan region* instead of the full-slope bounding box —
-        # otherwise a raked top plate reads as a wall-tall box and clips every stud below.
-        (self.zlo0, self.zhi0, self.zlo1, self.zhi1) = (
-            zends if zends is not None else (z_lo, z_hi, z_lo, z_hi))
-
-    def zband_at(self, point) -> tuple[float, float]:
-        """The member's (z_lo, z_hi) interpolated to the plan ``point`` along its axis."""
-        (ax, ay), (bx, by) = self.seg
-        dx, dy = bx - ax, by - ay
-        run2 = dx * dx + dy * dy
-        if run2 < 1e-18:
-            return self.zlo0, self.zhi0
-        t = max(0.0, min(1.0, ((point[0] - ax) * dx + (point[1] - ay) * dy) / run2))
-        return (self.zlo0 + (self.zlo1 - self.zlo0) * t,
-                self.zhi0 + (self.zhi1 - self.zhi0) * t)
-
-
-def _swept_axis(solid):
-    """A tilted member's plan axis and its z-band AT EACH END, or ``None``.
-
-    ``resolve/sweep.straight_sweep_band`` is the reader; this is the adaptation to
-    ``_Candidate.zends``, which is the same per-endpoint band a raked FRAMED member already
-    carries. Without it a 2" drainage tilt turns an 11 7/8" beam into a 14 1/2" box and
-    every joist bearing on it reads as an interpenetration.
-    """
-    band = straight_sweep_band(solid)
-    if band is None:
-        return None
-    seg, depth, soffit0, soffit1 = band
-    return seg, (soffit0, soffit0 + depth, soffit1, soffit1 + depth)
-
-
-def _point_on_segment(pt, a, b, tol: float) -> bool:
-    """True if plan point ``pt`` lies within ``tol`` of segment ``a``->``b``."""
-    px, py = pt
-    ax, ay = a
-    bx, by = b
-    dx, dy = bx - ax, by - ay
-    run2 = dx * dx + dy * dy
-    if run2 < 1e-18:
-        return math.hypot(px - ax, py - ay) <= tol
-    t = max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / run2))
-    return math.hypot(px - (ax + t * dx), py - (ay + t * dy)) <= tol
-
-
-def _solid_segment(solid):
-    """Plan-frame axis of a beam/column solid, so a post bearing at a beam end (or a
-    beam seated on a post) reads as a butt joint. A beam outline is the 4 corners
-    [p0+n, p1+n, p1-n, p0-n]; its centerline endpoints are the midpoints of the short
-    ends. A column is a point (its centroid)."""
-    o = solid.outline
-    if solid.category == "beam" and len(o) == 4:
-        p0 = ((o[0][0] + o[3][0]) / 2.0, (o[0][1] + o[3][1]) / 2.0)
-        p1 = ((o[1][0] + o[2][0]) / 2.0, (o[1][1] + o[2][1]) / 2.0)
-        return (p0, p1)
-    cx = sum(x for x, _ in o) / len(o)
-    cy = sum(y for _, y in o) / len(o)
-    return ((cx, cy), (cx, cy))
-
 
 # Horizontal plate categories: a wall's bottom/top/raked top plates.
 _PLATE_KINDS = frozenset({"plate", "raked_plate"})
@@ -192,6 +120,8 @@ _ENVELOPE_SKIN_KINDS = frozenset({"sheathing", "furring", "strapping", "cladding
 # Rake framing (resolve/framing/roof_gable.py): outlookers run *over* the dropped gable
 # truss and land on the barge rafter. Interpenetration there is the joint the drop creates.
 _RAKE_KINDS = frozenset({"outlooker", "barge_rafter"})
+# The wall-top members a roof member or a truss bears on.
+_WALL_TOP_KINDS = _PLATE_KINDS | _STUD_KINDS
 
 
 def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
@@ -202,11 +132,6 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     read as shared-volume because the IR carries no birdsmouth notch, no half-lap, and no
     glue line:
 
-    * **rafter bearing on a wall top plate** — a real rafter is birdsmouthed so it seats
-      *over* the plate; the box IR sinks the birdsmouth depth (~1.17", now that eave_z_m
-      is the deck plane and the rafter rises above the plate) into it, plus the raked
-      gable plates/studs the inset end rafters run against. The plate is the only
-      horizontal member under a rafter's plan span, so this never masks a stud bug.
     * **eave web stiffener bonded to its own rafter** — the ``bearing_stiffener`` is glued
       to the I-joist rafter's web (same ``parent_uid``); shared volume is the point.
     * **top/bottom plates lapping at a corner or tee** — plates of *different* walls lap
@@ -230,17 +155,9 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     # gable studs beneath it.
     if kinds & _RAKE_KINDS and kinds <= (_RAKE_KINDS | _TRUSS_KINDS | _STUD_KINDS):
         return True
-    # A roof member bearing on the wall top it lands on — the birdsmouthed rafter seat, or
-    # a ridge beam pocketed into a gable wall.
-    #
-    # The rafter's notch *is* real geometry now (``FramedMember.seat`` →
-    # ``geometry_members.member_solid``), but this check does not read it: it builds its
-    # candidates from ``FramedMember`` records rather than from the geometry IR, so it still
-    # sees a plain box dipping into the plate. Moving interference onto the IR is a separate
-    # and larger job; until then this clause stays, and it is the honest reason why.
-    wall_top_kinds = _PLATE_KINDS | _STUD_KINDS
-    if kinds & {"rafter", "ridge_beam"} and kinds & wall_top_kinds:
-        return True
+    # A rafter/ridge against a wall top is NOT cleared here: ``_rafter_seat.grade_seat``
+    # grades it in the caller (a birdsmouth only where the seat geometry holds).
+    wall_top_kinds = _WALL_TOP_KINDS
     # A fabricated truss bears down onto the wall top plate it lands on. The box IR carries
     # no gusset plate or heel seat, so that reads as shared volume — intended joinery, never
     # an elevation bug.
@@ -475,7 +392,6 @@ def _butt_joint(a: _Candidate, b: _Candidate, tol: float) -> bool:
 @check(Tier.STRUCTURAL, "structural.member_interference")
 def member_interference(ctx: CheckContext) -> list[Finding]:
     """No two wood framing members should occupy the same volume (advisory)."""
-    from shapely.geometry import Polygon
     from shapely.strtree import STRtree
 
     tol_z = inch(ctx.preferences.framing.interference_tolerance_in).meters
@@ -489,33 +405,9 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
     within_pairs = _within_wall_pairs(getattr(ctx, "plan", None))
     hung_pairs = _hung_pairs(getattr(ctx, "plan", None))
 
-    candidates: list[_Candidate] = []
-    for member in ctx.model.all_members():
-        ring, z_lo, z_hi = member_footprint(member)
-        poly = Polygon(ring)
-        if poly.is_valid and poly.area > _TOL_AREA:
-            z0e = member.z0_m if member.z0_end_m is None else member.z0_end_m
-            z1e = member.z1_m if member.z1_end_m is None else member.z1_end_m
-            zends = (min(member.z0_m, member.z1_m), max(member.z0_m, member.z1_m),
-                     min(z0e, z1e), max(z0e, z1e))
-            candidates.append(_Candidate(
-                f"{member.parent_uid}:{member.child_key}", poly, z_lo, z_hi,
-                seg=(member.p0, member.p1), kind=member.category,
-                parent=member.parent_uid, zends=zends))
-    # Column/beam solids are framing too; slabs/footings/pads are excluded because
-    # beams legitimately bear into concrete and joists frame under deck slabs.
-    for solid in ctx.model.solids:
-        if solid.category not in ("column", "beam"):
-            continue
-        poly = Polygon(solid.outline)
-        if poly.is_valid and poly.area > _TOL_AREA:
-            seg, zends = _solid_segment(solid), None
-            swept = _swept_axis(solid)
-            if swept is not None:
-                seg, zends = swept
-            candidates.append(_Candidate(solid.tag, poly, solid.z0_m, solid.z1_m,
-                                         seg=seg, kind=solid.category,
-                                         parent=solid.tag, zends=zends))
+    candidates = framing_candidates(ctx.model)
+    wall_axes, wall_polys = wall_readings(ctx.model)
+    seats: dict = {}  # failed roof seats, worst per (roof, wall) — see _rafter_seat
 
     if len(candidates) < 2:
         return []
@@ -555,8 +447,15 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
             # An endpoint landing on the other's axis: intended butt/T joinery.
             if _butt_joint(a, b, tol_z):
                 continue
+            # A rafter/ridge on a wall top: graded on its seat geometry, and that is the
+            # whole verdict — no later clause may clear it (see _rafter_seat.py).
+            roof_pair = roof_and_wall_top(a, b, _WALL_TOP_KINDS)
+            if roof_pair is not None:
+                verdict = grade_seat(*roof_pair, inter, wall_axes, wall_polys, tol_z)
+                record_failed_seat(seats, verdict)
+                continue
             # Correct-by-design bearings/laps the box IR cannot express as clean geometry
-            # (birdsmouth rafter seat, bonded web stiffener, cross-wall plate lap).
+            # (bonded web stiffener, cross-wall plate lap).
             if _intended_framing_joint(a, b):
                 continue
             # A joist hung *flush* into a beam it is authored to bear on — the same joint
@@ -595,4 +494,6 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
                           "resolve/framing/solver.py"),
                 result=Result.FAIL,
             ))
+    out.extend(seat_findings(ctx, seats, "structural.member_interference"))
     return out
+
