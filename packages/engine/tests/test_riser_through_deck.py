@@ -56,12 +56,15 @@ def test_a_riser_the_deck_was_opened_FOR_is_silent() -> None:
 
 
 def test_a_riser_ON_A_JOIST_fails_naming_the_member_and_the_station(catlin_ctx) -> None:
-    """The unambiguous half. That member is cut and nothing headed it."""
+    """The unambiguous half. That member is cut and nothing headed it.
+
+    PR-B-SH2-DRAIN was the example until 2026-09-23, when it moved off joist-0-013. DU-ERV-EA
+    through FS-S-WEST's y=34'-8" truss is one no run move fixes (it wants a truss opening)."""
     finding = next(f for f in _by_result(catlin_ctx, Result.FAIL)
-                   if "PR-B-SH2-DRAIN" in f.element_tags)
-    assert "FS-M-WEST" in finding.element_tags
+                   if "DU-ERV-EA" in f.element_tags)
+    assert "FS-S-WEST" in finding.element_tags
     assert "on joist joist-" in finding.message
-    assert "at (1'-9.0\", 17'-3.0\")" in finding.message
+    assert "at (2'-0.0\", 35'-0.0\")" in finding.message
     assert "nothing headed it" in finding.message
 
 
@@ -103,11 +106,13 @@ def test_catlin_is_pinned_so_a_campaign_can_see_itself(catlin_ctx) -> None:
     untouched, which is the point of pinning the two separately — D2 moved ducts, and not
     one of them was landing on a joist.
 
-    27/19 on 2026-09-23: PR-B-CW-SBATH's riser stepped off truss joist-0-020 (now a clear
-    drilled hole) and PR-B-HW-WASH's off joist-0-016 (now clear, but a 2.88" jacket)."""
+    6/29 on 2026-09-23: streams G and J stepped risers off their joists and flanges (the chase
+    risers, drains, and PR-B-CW-SBATH / PR-B-HW-WASH). Every one that moved into a clear bay
+    changed column rather than vanishing, which is the DOCUMENTATION half again — a hole over
+    2" still wants drawing."""
     fails = _by_result(catlin_ctx, Result.FAIL)
     on_member = [f for f in fails if "lands on the member" in f.message]
     undrawn = [f for f in fails if "FRAMED, NOT DRILLED" in f.message]
-    assert len(on_member) == 27
-    assert len(undrawn) == 19
+    assert len(on_member) == 6
+    assert len(undrawn) == 29
     assert len(fails) == len(on_member) + len(undrawn)

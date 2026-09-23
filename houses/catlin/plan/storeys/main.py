@@ -2056,8 +2056,8 @@ FLOOR_OPENINGS = [
     # ** THE OUTLINE IS THE DUCT PLUS THE FRAMING, NOT THE DUCT. ** `resolve/floors.py` puts
     # the first trimmer ply's AXIS on the y edges and the header's axis on the x edges, so a
     # hole drawn at the duct's own 8" would have 1 1/4" of trimmer and 1 3/4" of header
-    # standing inside it. x 2'-9"..3'-11" and y 33'-5 1/2"..34'-4 1/2" leave the 8" duct
-    # 1 1/4" of air on all four sides once both allowances are made.
+    # standing inside it. The east edge x=3'-11" and y 33'-5 1/2"..34'-4 1/2" leave the 8"
+    # duct 1 1/4" of air once both allowances are made (the west edge moved; see below).
     #
     # ** SALVAGED FROM FO-M-FIRE'S NOTE (retired 2026-09-19). ** Two live engine traps that
     # outlive that opening and belong on whichever opening is still authored:
@@ -2087,11 +2087,18 @@ FLOOR_OPENINGS = [
     # house: FO-M-FIRE carried the same caveat until 2026-09-19, when its joists went back to
     # running whole (the fireplace piers stand in pockets between them).
     #
-    # No `bearing_refs`: both y edges land mid-bay in FS-M-MECH's own joist field, so the
-    # trimmers carry the header and no wall is asked to receive a cut joist.
+    # ** IT ALSO CARRIES THE TWO CHASE RISERS SINCE 2026-09-23. ** DU-ERV-RISER-SUP/-EXH
+    # moved to y=33'-10 1/4" (off W-M-MECH-S, mid-bay in FS-S-WEST's trusses) and stand on
+    # the same cut joist, 33'-9 3/8". A second opening east-headed at x=2'-0" would leave a
+    # 5 1/2" I-joist tail between two headers, so this one grows WEST to W-M-W1B's stud
+    # face (x=6"), and that edge bears on W-B-W1: no header, and the south pack keeps 2" of
+    # seat on the 8" pour (it would have 1 3/8" at the gwb face). The south edge did
+    # not move: its pack face (33'-6 3/8") clears both risers by 7/8", and moving it south
+    # would put the hole under D-M-MECH's threshold. The y edges still land mid-bay.
     FloorOpening(uid="6KE3VP3HY1", tag="FO-M-ERV-OA", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(ft(2, 9), ft(33, 5.5)), pt(ft(3, 11), ft(33, 5.5)),
-                          pt(ft(3, 11), ft(34, 4.5)), pt(ft(2, 9), ft(34, 4.5)))),
+                 outline=(pt(inch(6), ft(33, 5.5)), pt(ft(3, 11), ft(33, 5.5)),
+                          pt(ft(3, 11), ft(34, 4.5)), pt(inch(6), ft(34, 4.5))),
+                 bearing_refs=("W-B-W1",)),
     # --- the ERV discharge riser's hole through FS-M-MECH -------------------------------
     #
     # The second of the chase risers to be drawn, and the same argument as FO-M-ERV-OA

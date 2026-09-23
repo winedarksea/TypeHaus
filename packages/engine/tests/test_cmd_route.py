@@ -191,12 +191,13 @@ def test_a_duct_run_is_routed_rather_than_called_not_a_run(runner) -> None:
 def test_a_congested_terminal_is_refused_with_the_tags_that_block_it(runner) -> None:
     """"Every lane is blocked" is true and useless.
 
-    `CD-B-PV-INV` leaves the basement NW chase, where 37 known interpenetrations sit and
-    five runs stand on the raceway's own terminal. The refusal names them and says how much
-    of the lattice was reachable at all, which is the difference between "move something"
-    and "give up".
+    `CD-M-DATA-KITCH` leaves the NW chase at the second floor, boxed in by the chase's own
+    conduit risers and `DU-ERV-EA`. The refusal names them and says how much of the lattice
+    was reachable at all, which is the difference between "move something" and "give up".
+    (`CD-B-PV-INV` was the example until 2026-09-23, when its start left the vent bundle's
+    line with the conduit risers and became routable.)
     """
-    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "CD-B-PV-INV",
+    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "CD-M-DATA-KITCH",
                                  "--margin", "2"])
     assert result.exit_code == 1, result.output
     assert "lattice nodes are reachable" in result.output

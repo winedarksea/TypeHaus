@@ -37,9 +37,11 @@ VENT_BRANCHES_MAIN = [
     # Bath2 takeoff on W-M-BA2E (x=8'-2", +2" east 2026-09-09's jog realignment) -> across
     # the hall -> bath1 takeoff on W-M-BAE (x=6') -> north through the storage-room ceiling
     # -> chase. 2" for two water closets.
+    # Its two east-west legs ride 23'-8" and 34'-4 7/8", off FS-S-WEST's 24'-0" and 34'-8"
+    # truss lines (2026-09-23): on them they ran inside a chord for their whole length.
     PipeRun(uid="CMP906AAAA", tag="PR-M-WC-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(2, 3.6), ft(17, 3.6)), pt(ft(8, 2), ft(18)), pt(ft(8, 2), ft(24)), pt(ft(6), ft(24)),
-                  pt(ft(6), ft(34, 6)), pt(ft(1), ft(34, 6))),
+            path=(pt(ft(2, 3.6), ft(17, 3.6)), pt(ft(8, 2), ft(18)), pt(ft(8, 2), ft(23, 8)), pt(ft(6), ft(23, 8)),
+                  pt(ft(6), ft(34, 4.875)), pt(ft(1), ft(34, 4.875))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5.5),
             # FX-M-BATH1-LAV: no new pipe needed — this run's x=6' leg is W-M-BAE's own stud
             # bay and it passes 1'-0" north of the lavatory's drain point at (6', 23'), so
@@ -267,10 +269,15 @@ VENT_BRANCHES_ATTIC = [
     # with it and this run has to climb too. The vertex on x 9'-7 1/2" is what `mep.vent_reachability` reads —
     # it wants a vertex on the served fixture's wet wall (W-A-STU-W's axis) — so keep it.
     PipeRun(uid="VK3C96KFRF", tag="PR-A-BAR-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(152.5), ft(17, 4)), pt(inch(152.5), ft(17, 4)),
+            # ** IT RISES CLEAR OF THE WALL, THEN STEPS IN (2026-09-23). ** W-A-BATH-S sits on
+            # joist-0-013 (y=17'-4"), so a riser in its cavity came up through that joist's
+            # top flange. It leaves the bay at 16'-11 3/8", behind the unit's back panel and
+            # clear of the wall's finished face, and enters the wall at the horizontal's 3'-4".
+            path=(pt(inch(152.5), inch(203.375)), pt(inch(152.5), inch(203.375)),
+                  pt(inch(152.5), ft(17, 4)),
                   pt(ft(9, 7.5), ft(17, 4)), pt(ft(9, 7.5), ft(20, 8))),
             diameter=inch(2),
-            elevations=(inch(-4.25), ft(3, 4), ft(3, 5), ft(3, 6)),
+            elevations=(inch(-4.25), ft(3, 3.875), ft(3, 4), ft(3, 5), ft(3, 6)),
             serves=("FX-A-STUDIO-BAR-SINK",)),
 ]
 

@@ -24,9 +24,9 @@ from typehaus import (
 # west end is not free space. Measured off the resolved model on 2026-09-15, what stands
 # there is:
 #
-#     DU-ERV-RISER-SUP    x  9 5/8"   y 33'-7 1/2"   full height
-#     DU-S-ERV-HP-FEED    x 12"       y 33'-7 1/2"   attic standpipe off SUP's head
-#     DU-ERV-RISER-EXH    x 18 5/8"   y 33'-7 1/2"   full height
+#     DU-ERV-RISER-SUP    x  9 5/8"   y 33'-10 1/4"  full height
+#     DU-S-ERV-HP-FEED    x 12"       y 33'-10 1/4"  attic standpipe off SUP's head
+#     DU-ERV-RISER-EXH    x 18 5/8"   y 33'-10 1/4"  full height
 #     DU-ERV-EA           x  2'-0"    y 35'-0"       full height, basement to +17'-0"
 #     VR-M-RADON-VENT     x  1'-0"    y 34'-6"       radon + plumbing vent together
 #     six plumbing vents  x  1'-0"    y 34'-6"       all landing on that one riser
@@ -261,7 +261,7 @@ DUCTS_ERV_LEVEL2 = [
     DuctRun(uid="ANSKB7EGDH", tag="DU-M-ERV-R-LAUNDRY", system=DuctSystem.RETURN,
             path=(pt(ft(3, 10.5), ft(20, 10)), pt(ft(10, 6), ft(20, 10)),
                   pt(ft(14, 5), ft(20, 10)), pt(ft(14, 5), ft(20, 10)),
-                  pt(ft(14, 5), ft(18, 4)), pt(ft(14, 5), ft(18, 4))),
+                  pt(ft(14, 5), ft(18)), pt(ft(14, 5), ft(18))),
             elevations=(_BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, inch(-108)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=8),

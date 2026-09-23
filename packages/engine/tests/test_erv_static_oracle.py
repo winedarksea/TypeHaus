@@ -237,9 +237,12 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     ** 2026-09-22: SUPPLY now, 0.3406. ** ``DU-B-ERV-R-PLAY`` 0.0141 -> 0.0347 (§3) puts the
     supply column at 0.3200 - 0.0141 + 0.0347 = 0.3406, ahead of extract's 0.3379.
     Delivered: 208 - 0.406 x 2 = 207.2 cfm, and it is the SUPPLY side to hood.
+
+    ** 2026-09-23: 0.3417. ** The chase risers moved 2 3/4" north: ``DU-ERV-RISER-SUP``
+    0.1356 and ``DU-S-ERV-HP-FEED`` 0.0634 (note §5's table). Still 207.2 cfm.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "0.341 in. w.g." in message
+    assert "0.342 in. w.g." in message
     assert "delivering 207 cfm" in message
 
 

@@ -1,7 +1,7 @@
 """Runs against framing: the per-wall stud plane, solid floor members, I-joist flanges.
 
-Synthetic geometry pins each rule; the catlin tests pin the three TODO cases they close
-(``DU-ERV-RISER-EXH``, the ``FO-M-ERV-OA`` trimmer packs, ``PR-B-LAV1-DRAIN``).
+Synthetic geometry pins each rule; the catlin tests pin the three TODO cases as closed
+(the chase risers off ``W-M-MECH-S``, the ``FO-M-ERV-OA`` packs, ``PR-B-LAV1-DRAIN``).
 """
 
 from __future__ import annotations
@@ -171,26 +171,30 @@ def test_bite_reads_a_clipped_end_as_the_clip() -> None:
 # --- catlin ---------------------------------------------------------------------------
 
 @pytest.mark.slow
-def test_catlin_the_exhaust_riser_is_reported_against_its_wall_like_its_twin(
-        catlin_ctx) -> None:
+def test_catlin_both_chase_risers_clear_w_m_mech_s_together(catlin_ctx) -> None:
+    """Moved to y=33'-10 1/4" (2026-09-23): neither riser stands beside the partition."""
     from typehaus.checks.mep.routing_bores import run_through_stud
 
-    by_pair = {f.element_tags: f for f in run_through_stud(catlin_ctx)}
+    failing = {f.element_tags for f in run_through_stud(catlin_ctx)
+               if f.result.value == "fail"}
     for riser in ("DU-ERV-RISER-SUP", "DU-ERV-RISER-EXH"):
-        finding = by_pair[(riser, "W-M-MECH-S")]
-        assert finding.result.value == "fail" and "stands beside" in finding.message
+        assert (riser, "W-M-MECH-S") not in failing
 
 
 @pytest.mark.slow
-def test_catlin_the_erv_trimmer_packs_stand_in_live_risers(catlin_ctx) -> None:
+def test_catlin_only_the_radon_pair_is_left_in_the_erv_trimmer_packs(catlin_ctx) -> None:
+    """The risers and conduits cleared FO-M-ERV-OA's packs; the radon pair has no lane."""
     fails = [f for f in floor_members.run_through_floor_member(catlin_ctx)
              if f.result.value == "fail" and f.element_tags[1] == "FS-M-MECH"]
     runs = {f.element_tags[0] for f in fails if "FO-M-ERV-OA" in f.message}
-    assert {"DU-ERV-RISER-SUP", "DU-ERV-RISER-EXH", "CD-B-ATTIC-RISER"} <= runs
+    assert not runs & {"DU-ERV-RISER-SUP", "DU-ERV-RISER-EXH", "CD-B-ATTIC-RISER",
+                       "CD-B-DATA-CHASE", "CD-B-SPARE-CHASE"}
+    assert all(run.startswith("VR-M-RADON-VENT") for run in runs)
 
 
 @pytest.mark.slow
-def test_catlin_pr_b_lav1_drain_is_in_a_flange(catlin_ctx) -> None:
-    [finding] = [f for f in joist_flange.run_in_joist_flange(catlin_ctx)
-                 if f.element_tags == ("PR-B-LAV1-DRAIN", "FS-M-MECH")]
-    assert finding.result.value == "fail" and "joist-0-001-0" in finding.message
+def test_catlin_pr_b_lav1_drain_clears_the_flange(catlin_ctx) -> None:
+    failing = [f for f in joist_flange.run_in_joist_flange(catlin_ctx)
+               if f.element_tags == ("PR-B-LAV1-DRAIN", "FS-M-MECH")
+               and f.result.value == "fail"]
+    assert failing == []

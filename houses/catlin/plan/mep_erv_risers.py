@@ -29,12 +29,17 @@ from typehaus import (
 # ** IT WAS FOUR RISERS THIS MORNING AND THE FOURTH IS WHY EVERYTHING ELSE MOVED. ** The
 # measured pack, envelope by envelope:
 #
-#     DU-ERV-RISER-SUP   x  9 5/8"    6 5/8" .. 12 5/8"   y 33'-7 1/2", flush to the west face
-#     DU-S-ERV-HP-FEED   x 12"        9"     .. 15"       y 33'-7 1/2", joins SUP's head
-#     DU-ERV-RISER-EXH   x 18 5/8"   15 5/8" .. 21 5/8"   y 33'-7 1/2", 5/8" clear of HP-FEED
+#     DU-ERV-RISER-SUP   x  9 5/8"    6 5/8" .. 12 5/8"   y 33'-10 1/4", flush to the west face
+#     DU-S-ERV-HP-FEED   x 12"        9"     .. 15"       y 33'-10 1/4", joins SUP's head
+#     DU-ERV-RISER-EXH   x 18 5/8"   15 5/8" .. 21 5/8"   y 33'-10 1/4", 5/8" clear of HP-FEED
 #     DU-ERV-EA          x  2'-0"    1'-8"  .. 2'-4"      y 35'-0", 8", basement to +17'-0"
 #
-# Three full-height risers on 9" centres fill the 24" exactly at y=33'-7 1/2", which is why
+# ** y=33'-10 1/4" SINCE 2026-09-23, NOT 33'-7 1/2". ** At 33'-7 1/2" both stood 1 1/4" in
+# W-M-MECH-S's stud plane, on FS-S-WEST's y=33'-4" truss and on FS-M-MECH's 33'-9 3/8"
+# joist. The legal band is 33'-9 3/8" (the partition's face) to 33'-11 1/8" (the radon
+# stack), mid-bay in both upper decks; the cut joist is FO-M-ERV-OA's (plan/storeys/main.py).
+#
+# Three full-height risers on 9" centres fill the 24" exactly on one line, which is why
 # a fourth could never join that row: HP-FEED is a 12 7/8" STANDPIPE between FS-ATTIC's
 # bottom chord and the deck, not a riser, so it overlaps SUP in plan only across the 3/4" of
 # z where the two are joined. That is a joint and not a clash, and it is the whole reason
@@ -139,8 +144,8 @@ DUCTS_ERV_RISERS = [
             # used to turn into. Four inches further west and four further south than
             # before, and still inside RM-B-ESS's x=6'-0" wall.
             path=(pt(ft(5, 6), ft(30, 10)), pt(ft(5, 6), ft(31, 8)),
-                  pt(inch(9.625), ft(31, 8)), pt(inch(9.625), ft(33, 7.5)),
-                  pt(inch(9.625), ft(33, 7.5))),
+                  pt(inch(9.625), ft(31, 8)), pt(inch(9.625), ft(33, 10.25)),
+                  pt(inch(9.625), ft(33, 10.25))),
             elevations=(inch(-19.4375), inch(-19.4375), inch(-19.4375),
                         inch(-19.4375), inch(231.875)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
@@ -169,7 +174,7 @@ DUCTS_ERV_RISERS = [
             # machine's own -33 27/32", keeps 6 3/8" between the two envelopes; 78 15/16" of
             # headroom under it, still over R305.1.1's 76" basement projection floor.
             path=(pt(ft(4, 2), ft(34, 6)), pt(inch(18.625), ft(34, 6)),
-                  pt(inch(18.625), ft(33, 7.5)), pt(inch(18.625), ft(33, 7.5)),
+                  pt(inch(18.625), ft(33, 10.25)), pt(inch(18.625), ft(33, 10.25)),
                   pt(inch(18.625), ft(28, 6)), pt(ft(6, 1.5), ft(28, 6)),
                   pt(ft(6, 1.5), ft(28, 6))),
             elevations=(inch(244), inch(244), inch(244), inch(-27.5),
@@ -336,8 +341,8 @@ DUCTS_ERV_RISERS = [
     #
     # What stands in it, floor to deck, at the port plane:
     #
-    #     DU-ERV-RISER-SUP        x  6 5/8".. 12 5/8"   y 402 3/8"..406 1/2"
-    #     DU-ERV-RISER-EXH        x 15 5/8".. 21 5/8"   y 402 3/8"..406 1/2"
+    #     DU-ERV-RISER-SUP        x  6 5/8".. 12 5/8"   y 403 1/4"..409 1/4"
+    #     DU-ERV-RISER-EXH        x 15 5/8".. 21 5/8"   y 403 1/4"..409 1/4"
     #     VR-M-RADON-VENT radon   x 10 1/2".. 13 1/2"   y 410 1/8"..413 1/8"
     #     VR-M-RADON-VENT vent    x 10 1/2".. 13 1/2"   y 414 7/8"..417 7/8"
     #     CD-B-ATTIC-RISER        x 17 1/8".. 18 7/8"   y 413 1/8"..414 7/8"
@@ -358,7 +363,7 @@ DUCTS_ERV_RISERS = [
     # there are exactly two gaps, and both are narrower than a 6" pipe:
     #
     #     west wall face 6 5/8"  ->  radon west face 10 1/2"    =  3 7/8"
-    #     exhaust riser top 406 1/2"  ->  radon south face 410 1/8"  =  3 5/8"
+    #     exhaust riser top 409 1/4"  ->  radon south face 410 1/8"  =    7/8"
     #
     # So the EXTRACT feed below is drawn and the SUPPLY feed is not; the block at the foot
     # of this list is why, measured rather than asserted.
@@ -390,13 +395,12 @@ DUCTS_ERV_RISERS = [
             # on a 6" return riser. It closes `mep.equipment_port_service`'s standing UNKNOWN
             # on this box.
             #
-            # The last vertex stops 2 1/2" short of the riser's axis, at its north face: that
+            # The last vertex stops 2 1/2" short of the riser's axis, at its face: that
             # is where a branch tee's spigot ends, and `mep.duct_connectivity` reads it as
-            # landing on the riser. Drawn to the axis instead, the 6" envelope would reach
-            # 1 7/8" into W-M-MECH-S and report a second framed opening in a partition that
-            # already has the riser's.
+            # landing on the riser. Since 2026-09-23 it tees into the riser's EAST face on
+            # y=33'-10", clear of the three conduit risers now standing on y=34'-2 3/8".
             path=(pt(ft(2, 11), ft(35)), pt(ft(2, 11), ft(35)),
-                  pt(ft(2, 11), ft(33, 10)), pt(inch(18.625), ft(33, 10))),
+                  pt(ft(2, 11), ft(33, 10)), pt(inch(21.125), ft(33, 10))),
             elevations=(inch(101.25), inch(93.5), inch(93.5), inch(93.5)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=114),
@@ -409,7 +413,7 @@ DUCTS_ERV_RISERS = [
     # measured off the resolved envelopes:
     #
     #     west wall inside face 6 5/8"   ->  radon stack west face 10 1/2"   =  3 7/8"
-    #     exhaust riser crown 406 1/2"   ->  radon stack south face 410 1/8" =  3 5/8"
+    #     exhaust riser crown 409 1/4"   ->  radon stack south face 410 1/8" =    7/8"
     #
     # Nothing at 4" or over passes either, and past the first gate the north band dead-ends
     # on DU-ERV-EA (x 20"..28", full height) with 1 3/8" to the wall beside it. Every
