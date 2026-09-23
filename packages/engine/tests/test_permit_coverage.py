@@ -133,7 +133,11 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 #
 # LOWERED 25 -> 24 on 2026-09-20: it measured 24 once the engineered lines were counted in
 # their own lane, and a ratchet with slack in it is a ratchet that can slide.
-MAX_NON_BLOCKING_ITEMS = {"mn-2020": 24}
+#
+# RAISED 24 -> 25 on 2026-09-23: "Concrete materials for the exposure class". The ACI 318
+# Table 19.3.2.1 / §26.4.2.2 material checks were on no line at all; catlin's mixes do not
+# yet state chloride, cement type or aggregate reactivity, so the line is staged.
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*
