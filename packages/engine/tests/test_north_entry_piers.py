@@ -217,3 +217,16 @@ def test_the_module_agrees_with_this_note(catlin_engineering):
         assert states["shear"].ratio == pytest.approx(0.51, abs=0.01)
         assert states["deflection"].ratio == pytest.approx(0.13, abs=0.01)
         assert max(s.ratio for s in states.values()) == states["bending"].ratio
+
+
+def test_the_pad_hook_is_graded_against_the_pads_own_cover(catlin_engineering):
+    """§6 2026-09-17: the foot rests on the PAD's 3" bottom cover, not the cage's 2"."""
+    db = 0.625
+    ldh = 60_000 * (5_000 / 15_000 + 0.6) / (55 * math.sqrt(5_000)) * db ** 1.5
+    available = 12.0 - 3.0 - db   # the engine also deducts one bar diameter
+    results = catlin_engineering.engineering
+    for tag in ("PT-BW-RE", "PT-BW-RNE"):
+        state = next(s for s in results[f"deck_post/{tag}"].limit_states
+                     if s.name == "dowel anchorage into the base")
+        assert state.demand == pytest.approx(ldh, abs=0.01)
+        assert state.capacity == pytest.approx(available, abs=0.01)

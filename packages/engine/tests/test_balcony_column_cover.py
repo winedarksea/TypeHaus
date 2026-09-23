@@ -1,7 +1,8 @@
 """The balcony corner columns' P-M point at 2", 2 1/2" and 3" cover.
 
 Oracle: ``houses/catlin/notes/balcony_moment_columns.md`` §14, worked by hand. 2" is what is
-built; the other two are the alternatives the durability question keeps asking about.
+built; 3" is the owner's aim and 2 1/2" the middle, both refused by the north-entry pad dowels'
+hooked development (§14), not by anything graded here.
 """
 
 from __future__ import annotations
@@ -15,6 +16,10 @@ _AT_PU = ((2.0, 2.750, 0.900, 24_678.0), (2.5, 2.867, 0.900, 24_657.0),
           (3.0, 2.981, 0.868, 23_941.0))
 #: note §14's envelope, 1.2D + 1.0W + L at P_u 3,724: (cover, phi*Mn).
 _ENVELOPE = ((2.0, 24_382.0), (2.5, 24_381.0), (3.0, 23_812.0))
+#: note §14's joint at 1.2D + 1.0W + L, PT-SG-BR1: (cover, bearing C, φBn, T per bar).
+#: The dowel ring shrinks with the cage, so T rises 19% at 3" — §13c at each cover.
+_JOINT = ((2.0, 9_378.0, 38_825.0, 5_032.0), (2.5, 9_782.0, 41_244.0, 5_471.0),
+          (3.0, 10_240.0, 43_622.0, 5_984.0))
 
 
 @pytest.fixture(scope="module")
@@ -56,3 +61,22 @@ def test_the_envelope_at_each_cover(corner, cover, phi_mn) -> None:
     envelope = next(s for s in record.limit_states if s.name.startswith("P-M envelope"))
     assert envelope.capacity == pytest.approx(phi_mn, rel=5e-4)
     assert envelope.demand / envelope.capacity < 0.20
+
+
+@pytest.mark.parametrize("cover,comp,phi_bn,pull", _JOINT)
+def test_the_wall_top_joint_at_each_cover(catlin_plan, cover, comp, phi_bn, pull) -> None:
+    from typehaus.engineering import column_support
+    from typehaus.engineering.pier_basis import cast_piers
+    from typehaus.engineering.registry import EngineeringContext
+    from typehaus.resolve import resolve
+
+    model, _ = resolve(catlin_plan)
+    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
+    pier = next(p for p in cast_piers(ctx) if p.tag == "PT-SG-BR1")
+    states = {s.name: s for s in column_support._column_states(
+        ctx, dataclasses.replace(pier, specified_cover_in=cover), "W-SG-W1", [], [])}
+    bearing = states["PT-SG-BR1: bearing on the wall top"]
+    tension = states["PT-SG-BR1: dowel tension across the joint"]
+    assert bearing.demand == pytest.approx(comp, rel=0.003)
+    assert bearing.capacity == pytest.approx(phi_bn, rel=0.003)
+    assert tension.demand == pytest.approx(pull, rel=0.003)

@@ -603,7 +603,9 @@ def _dowel_anchorage(pier: _Pier, cage: _Cage, fc_psi: float) -> LimitState | No
             + ". No hook at the foot is credited")
     ldh = hooked_development_length_in(cage.bar, fc_psi, enclosed_by_ties=True,
                                        confined=True)
-    cover_in = _cover_in(pier)
+    # The PAD's cover, not the column's: until 2026-09-23 this read the column cage's 2" and
+    # credited the hook 1" of the pad's 3" bottom cover.
+    cover_in = pier.base_cover_in if pier.base_cover_in is not None else _cover_in(pier)
     # The hook turns at the bottom mat's level, so what is available is the pour's depth
     # less the cover it is cast on and the bar's own bend. Taking the full thickness would
     # credit concrete outside the bar.

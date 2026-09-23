@@ -423,8 +423,8 @@ beam(10, "BM-BW-SCSILL", LANDING_WEST_FT, PIER_LINE_Y_FT + COLUMN_HALF_FT,
 # to this house and exactly no pounds of steel, which `notes/rebar_backout.md`'s lb/cy ratio
 # is what noticed. Both spellings, always, and keep them saying the same thing.
 #
-# ** THE SAME 8" CAGE THE COURT COLUMNS CARRY — ONE CROSS-SECTION, TWELVE POURS HOUSE-WIDE
-# (six here, six in `params/sunken_garden.py`), LENGTHS PER POUR. ** That is the procurement
+# ** THE SAME 8" CAGE THE COURT COLUMNS CARRY — ONE CROSS-SECTION, TEN POURS HOUSE-WIDE
+# (six here, four in `params/sunken_garden.py`), LENGTHS PER POUR. ** That is the procurement
 # fact: it is a fabricated part, not a field-bent detail.
 #
 # The durability goal is long-term performance in F3 + C2 — these stand up to 18 1/2" out of
@@ -438,9 +438,14 @@ ENTRY_PIER_CAGE = ReinforcementSpec(
         BarSpec(role="vertical", bar=5, count=4),
         BarSpec(role="ties", bar=3, spacing=inch(10.0)),
     ),
+    # ** 2", NOT THE OWNER'S 3" AIM (2026-09-23), AND THE PAD DOWELS ARE WHY. ** The dowels lap
+    # one bar inside the verticals; at 3" cover they stand 2.39" apart (2 1/2": 3.09"), under
+    # ACI 318-19 Table 25.4.3.2's 6 db = 3.75", so psi_r goes 1.0 -> 1.6 and ldh 7.11 -> 11.38"
+    # against the 9" a 12" pad holds. 2" gives 3.80". Back to 3" = 15" pads or hook ties
+    # through the pad (balcony_moment_columns.md §14, north_entry_piers.md §6).
     cover=inch(2.0),
     lap_class="B",
-    source='8" cage, (4) #5 + #3 rings @ 10", one of twelve house-wide; notes/north_entry_piers.md §6 — the ACI 318-19 §10.6.1.1 1% floor, four bars per §10.7.3.1(b)',
+    source='8" cage, (4) #5 + #3 rings @ 10", one of ten house-wide; notes/north_entry_piers.md §6 — the ACI 318-19 §10.6.1.1 1% floor, four bars per §10.7.3.1(b)',
 )
 
 #: The piers that are a lateral system (fixed-base moment columns, `deck_post`'s bending

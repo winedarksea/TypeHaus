@@ -455,9 +455,9 @@ cages carry. The coating is the margin on top, and since 2026-09-12 it is stated
   half (galvanized bar reads ψ_e = 1.0, §25.4.2.5); stainless was considered for this house
   and rejected.
 
-**These six cages are the same part as the court's six.** `ENTRY_PIER_CAGE` and the court's
+**These six cages are the same part as the court's four.** `ENTRY_PIER_CAGE` and the court's
 `_CAST_COLUMN_CAGE` are one cross-section — 8.0" out-to-out of ties, (4) #5, #3 rings @ 10",
-2" cover — so the house orders **one fabricated cage, twelve off**, lengths per pour, tied
+2" cover — so the house orders **one fabricated cage, ten off**, lengths per pour, tied
 not welded. Not the catalog stock 8" cage, which is (4) #4 at #3 @ 12": under §10.6.1.1's
 1% floor and over §25.7.2.1's 16d_b.
 
@@ -553,6 +553,18 @@ f'c 5,000 (√ = 70.71), λ 1.0, ψ_e 1.0 (galvanized), ψ_r 1.0 (bars ≥ 6 d_b
 | §25.4.3.1 floors | max(8 d_b = 5.00", 6") | 6.00" — ℓ_dh governs |
 | embedment, 10" / 8" pad | 10 − 3 / 8 − 3 | 7.00" / 5.00" — **short** |
 | embedment, 12" pad | 12 − 3 | **9.00"** (ℓ_dh / have = 0.79) |
+
+**The engine reads 8.375" (d/c 0.850) since 2026-09-23**: 12 − 3 − 0.625, one bar diameter
+more conservative than this table. Until then `deck_post` took the COLUMN cage's 2" cover for
+the pad's bottom cover and read 9.375" (0.759) — 3/8" of concrete under the foot that the
+pad's 3" does not leave. `test_north_entry_piers.py` pins the pad's own cover.
+
+**ψ_r = 1.0 is earned by SPACING, and that is why these cages stay at 2" cover** (owner asked
+for 3", 2026-09-23). The four dowels lap one bar inside the verticals, 3.80" apart at 2" cover
+against Table 25.4.3.2's 6 d_b = 3.75". At 2 1/2" they are 3.09" apart and at 3" 2.39", so
+ψ_r = 1.6 and ℓ_dh = 11.38" against the 9.00" above — `integrity.reinforcement_layout` FAILs
+all six pads. Back to 3" needs 15" pads or hook ties through the pad
+(`balcony_moment_columns.md` §14c).
 
 **The tops stay; the bottoms go down.** House side: top −8'-11 7/16", bottom −9'-9 7/16" →
 **−9'-11 7/16"**. Garage side: top −6'-4" (flush with the strip), bottom −7'-0" → **−7'-4"**.

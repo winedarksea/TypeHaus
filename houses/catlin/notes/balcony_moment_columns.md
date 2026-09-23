@@ -72,7 +72,8 @@ a #5 vertical inside a #3 tie puts the bar circle at
 bar-circle radius = 6" − 2" cover − 0.375" tie − 0.625"/2 bar = 3.3125"   (Ø 6 5/8")
 ```
 
-which needs a 12" round to hold. 12" also drops the slenderness ratio and gives the beam
+which needs a 12" round to hold. (3" was asked for on 2026-09-23 and is refused by the
+north-entry pad dowels' spacing, §14.) 12" also drops the slenderness ratio and gives the beam
 seat its edge distance for free: an HGAM10's Titen Turbo lands ~3-3/4" from the face where a
 10" round would leave 2-3/4", against Simpson's 1-1/2" minimum. And centred on the 12" wall
 axis the round is **flush with both wall faces** — no ledge to pond on, and BF3's 3" east
@@ -626,7 +627,7 @@ bar at 2" cover, they are a belt on braces and are not taken.
 **The cage is a PART, and the stock part does not fit.** Out-to-out of ties it is
 **8.0"** — 6.625" bar circle + 0.625" (one #5 diameter) + 2 × 0.375" (a #3 ring each side),
 which is also 12" less 2 × 2" cover. That is the trade's **"8-inch cage"**, and it is one
-cross-section repeated **twelve times house-wide** (the six court columns and the six
+cross-section repeated **ten times house-wide** (the four court columns and the six
 north-entry pours, which carry the identical `ENTRY_PIER_CAGE`), lengths per pour, **tied
 not welded**.
 
@@ -639,7 +640,7 @@ unit is **(4) #4 with #3 ties @ 12"**, 3–8 ft, $49–77 black, shipping Cascad
 | 4 #4 = **0.80 in²** | 4 #5 = **1.24 in²** | ACI 318-19 §10.6.1.1 floor is 0.01 A_g = **1.131 in²** on a 113.1 in² gross — the stock cage is **29% short** |
 | #3 ties @ **12"** | #3 ties @ **10"** | §25.7.2.1 caps tie spacing at 16d_b, which is **8.0"** for a #4 and **10.0"** for a #5 — the authored spacing is exactly the limit, the stock spacing is 50% over it |
 
-So the part to order is a **custom 8" cage in a stock format**, twelve off, from Rebarfab
+So the part to order is a **custom 8" cage in a stock format**, ten off, from Rebarfab
 Inc (720 First St SW, New Brighton MN, 651-633-3337 — in-house detailing and fabrication) or
 a Bolsinger custom. The **$49–77** stock row is the cost floor; budget roughly **$90–140
 each** at (4) #5 with galvanizing.
@@ -1087,6 +1088,7 @@ development              21.2" / 24"   0.884 — still governs
 ```
 
 **The dowel tension ROSE, 0.228 → 0.301**: less axial leaves more of the moment to the bar.
+(At 2" cover. §14b re-runs this joint at 2 1/2" and 3": the dowel ring shrinks and T rises 19%.)
 A lighter column is not the safe side of every state, which is why each is re-worked.
 
 ### 13d. Through the frame (`analytical_model_basis.md` addendum 2026-09-23)
@@ -1095,18 +1097,22 @@ A lighter column is not the safe side of every state, which is why each is re-wo
 **2,142 lb at BR1, 1,628 at BF1** (solve 2,142.5 / 1,628.3); dead 97.5 plf → 536 / 407 lb.
 The pair sums to the records' 2 × 1,885 = 3,770; each column is 14% off the equal split.
 
-## 14. Cover: 2" as built, 2 1/2" and 3" as alternatives (2026-09-23)
+## 14. Cover: 3" asked for, 2" kept (2026-09-23)
 
-The authored cover stays **2"** (`_MOMENT_COLUMN_CAGE`). This asks what 2 1/2" or 3" costs
-in bending, run through `deck_post._pm_point`. Worked by hand at §13's loads, the same
-method as §13b. Only the bar circle moves:
+**The owner asked for 3" of cover on every cast column (2026-09-23), with 2" or 2 1/2"
+acceptable if the numbers are clearly better there or the smaller cage is a more standard
+part.** 3" and 2 1/2" both fail one row — the north-entry pad dowels — so **2" stays**, on
+all ten columns, one cage. Worked by hand at §13's loads with §3/§4's method; only the bar
+circle moves:
 
 ```
-bar offset = (6 − cover − 0.375 − 0.3125) × cos 45°
-  2"   2.342"      2 1/2"   1.989"      3"   1.635"
+bar-circle radius  r = 6 − cover − 0.375 − 0.3125     2": 3.3125   2 1/2": 2.8125   3": 2.3125
+bar offset at ±45°  = r × cos 45°                          2.342          1.989         1.635
+dowel ring (one bar inside the verticals) = r − 0.625      2.6875         2.1875        1.6875
+cage out-to-out = 12 − 2 × cover                           8"             7"            6"
 ```
 
-At P_u 4,855.3 (front row, 1.2D + 1.6L):
+### 14a. The section at P_u 4,855.3 (front row, 1.2D + 1.6L)
 
 ```
 cover   c        a        A_seg    ȳ        C_c       T (pair)   eps_t     Cs (pair)          phi     phi·Mn
@@ -1115,36 +1121,79 @@ cover   c        a        A_seg    ȳ        C_c       T (pair)   eps_t     Cs (
 3"      2.981"   2.385"   15.96    4.587"   67,826    −37,200    0.00468   −25,032 (−0.00139)   0.868   23,941
 ```
 
-At 3", phi = 0.65 + 0.25 × (0.00468 − 0.00207)/0.003 = 0.868 (Table 21.2.2). The §2.3.1
-envelope, 1.2D + 1.0W + L at P_u 3,724 and M_u 4,501 lb-ft:
+At 3", phi = 0.65 + 0.25 × (0.00468 − 0.00207)/0.003 = 0.868 (Table 21.2.2). **Cover costs
+almost nothing in bending here.** Both bar pairs are in tension at this axial, so pulling the
+cage in shortens the tension pair's arm and trims the far pair's negative moment; M_n rises
+27,421 → 27,587 lb-ft. What 3" costs is phi: ε_t drops under ε_ty + 0.003 = 0.00507.
 
-| cover | φM_n (front) | d/c | φM_n (rear, M_u 4,569) | d/c |
+### 14b. §13c's joint at each cover (1.2D + 1.0W + L, the governing case)
+
+The couple's tension lever is the dowel ring, so the DOWEL takes more as the cage shrinks —
+the term §13c had not re-run. Same formulas as §11a-§11d:
+
+| PT-SG-BR1 (BF1 in brackets) | 2" | 2 1/2" | 3" |
+|---|---:|---:|---:|
+| c / a, in | 2.729 / 2.183 | 2.846 / 2.277 | 2.959 / 2.367 |
+| A₁ in², ȳ in | 14.05, 4.706 | 14.93, 4.651 | 15.79, 4.598 |
+| bearing C, lb | 9,378 | 9,782 | 10,240 |
+| φB_n, lb | 38,825 | 41,244 | 43,622 |
+| bearing d/c | 0.242 (0.238) | 0.237 (0.234) | 0.235 (0.231) |
+| T, one bar on-axis, lb | 5,032 | 5,471 | 5,984 |
+| dowel tension d/c (vs 16,740) | 0.301 (0.295) | 0.327 (0.321) | **0.357 (0.351)** |
+| φV_n = 55,800 − T(±45°), lb | 50,168 | 49,764 | 49,306 |
+| shear friction d/c (V_u 410.9) | 0.008 | 0.008 | 0.008 |
+| development into the stem | 0.884 | 0.884 | 0.884 |
+
+Dowel tension rises 19% at 3" and bearing falls slightly (a deeper block). Development
+still governs the joint at 0.884, untouched. Unroughened at 3": 0.6 × 49,306 = 29,584 lb.
+
+### 14c. Every governing number, three ways
+
+| state | 2" | 2 1/2" | 3" | 3" vs 2" |
 |---|---:|---:|---:|---:|
-| 2" (built) | 24,382 | 0.185 | 24,388 | 0.187 |
-| 2 1/2" | 24,381 | 0.185 | 24,386 | 0.187 |
-| 3" | 23,812 | 0.189 | 23,814 | 0.192 |
+| court corner, §2.3.1 envelope (front / rear) | 0.185 / 0.187 | 0.185 / 0.187 | 0.189 / 0.192 | +2.4% |
+| court corner φM_n at P_u 4,855 | 24,678 | 24,657 | 23,941 | −3.0% |
+| court corner, governing row (dowel development, §11c) | 0.884 | 0.884 | 0.884 | 0 |
+| wall-top joint, dowel tension (not governing) | 0.301 | 0.327 | 0.357 | +19% |
+| `PT-BW-RE`/`-RNE` §2.3.1 envelope | 0.546 | 0.546 | 0.561 | +2.7% |
+| `PT-BW-RE`/`-RNE` pad-dowel hook, engine (12 − 3 − 0.625) | 0.850 | 0.850 | 0.850 | 0 |
+| **north-entry pad dowels, hooked layout (`integrity.reinforcement_layout`)** | PASS | **FAIL ×6** | **FAIL ×6** | — |
 
-**Cover costs almost nothing in bending here**, which is not the usual result. At this low
-axial load both bar pairs are in tension (the "compression-side" pair is at −0.001). Pulling
-the cage inward shortens the tension pair's lever arm, and it also reduces the far pair's
-negative moment. The two effects nearly cancel: M_n actually rises (27,421 → 27,587 lb-ft
-at 3"). What 3" does cost is phi. ε_t drops below ε_ty + 0.003 = 0.00507, the section enters
-the transition band, and φM_n falls 3%. At 2 1/2", ε_t 0.00536 still clears the band.
+**The last row decides it.** The dowels lap one bar inside the verticals, so four of them sit
+on a ring of 2 × 1.6875 = 3.375" at 3" cover: adjacent centres 1.6875 × √2 = **2.39"** apart
+(2 1/2": 3.09"). ACI 318-19 Table 25.4.3.2 takes ψ_r 1.0 only for hooked bars ≥ 6 d_b =
+**3.75"** apart (or enclosed by Ath ≥ 0.4Ahs); otherwise 1.6. At 2" they are **3.80"** apart
+and clear it by 0.05". So at 2 1/2" and 3":
 
-**What decides between them is the cage, not the capacity.** ACI 318-19 Table 20.5.1.3.1
-asks 1 1/2" for a #5 exposed to weather, and 3" only for concrete *cast against and
-permanently in contact with ground*. A Sonotube-formed column on a wall top is not cast
-against ground, so the 3" row does not apply. Commentary R20.5.1.4.1, under §20.5.1.4.1's
-"increased as deemed necessary" in corrosive environments, **recommends ≥2 1/2" for
-members other than walls and slabs**. The built 2" is under that recommendation. It meets
-the Code minimum, and the galvanized bar is the margin (§7). 2 1/2" is free in capacity. It
-would make a **7"** ring instead of §7's stock 8" unit, and the column would stop matching
-the north entry's identical `ENTRY_PIER_CAGE`. 3" makes a 6" ring and costs 3% of φM_n.
-Every alternative passes. The choice is a durability and procurement call, not a strength one.
-Not re-worked here: §13c's dowel tension (one bar on-axis) scales with the same lever arm
-and would need re-running if the cover changed.
+```
+ℓ_dh = 7.11" × 1.6 = 11.38"    against 12" pad − 3" bottom cover = 9.00"     FAIL, all six pads
+```
 
-`tests/test_balcony_column_cover.py` reproduces the three rows.
+A 2" cage is the largest ring that keeps ψ_r = 1.0 by spacing (cover ≤ 2.03"). The court
+corners dowel STRAIGHT into the wall and do not see this row. Two ways back to 3", neither
+taken here — both are design changes the owner has not asked for:
+
+1. **15" pads** on the moment piers (12 − 3 → 11.38 needs ≥ 14.4"); the tops hold, bottoms
+   drop 3", so bearing, frost cover and the hydrant clearances move (north_entry_piers.md §6).
+2. **Hook ties through the pad** (Ath ≥ 0.4 × 4 × 0.31 = 0.50 in²), which `deck_post`'s
+   record already ASSUMES ("hook enclosed by the column's ties through the joint") but which
+   `BarSpec.hook_ties` cannot yet state on a `dowels` row, so the layout cannot credit it.
+
+The four landing piers' dowels are withdrawn as demand (north_entry_piers.md §6) and kept as
+built; dropping them would leave only `PT-BW-RE`/`-RNE` needing either fix.
+
+**Durability, restated.** Table 20.5.1.3.1 asks 1 1/2" of a #5 exposed to weather; 3" is for
+concrete cast against ground, which a formed column is not. R20.5.1.4.1 recommends ≥ 2 1/2"
+in corrosive exposure for members other than walls and slabs, so 2" is under the
+recommendation, meets the Code, and has galvanized bar as its margin (§7).
+
+**On "stock".** §7's catalog 8" cage is real — Bolsinger's PASC-8X5, (4) #4 + #3 @ 12", 5 ft,
+$56.99 — and was already rejected (under the 1% floor, ties over 16 d_b). The authored cage has
+always been a custom tie-up in that format, so no cover is "the standard size" and none was
+chosen for it. No catalog 6" cage was found.
+
+`tests/test_balcony_column_cover.py` reproduces §14a, the envelope and §14b's bearing and
+tension rows at all three covers.
 
 ---
 

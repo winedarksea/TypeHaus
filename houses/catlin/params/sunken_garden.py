@@ -726,9 +726,11 @@ _CAST_COLUMN_CAGE = ReinforcementSpec(
         BarSpec(role="vertical", bar=5, count=4),
         BarSpec(role="ties", bar=3, spacing=inch(10.0)),
     ),
+    # 2", not the owner's 3" aim (2026-09-23): one cage house-wide, and at 3" (or 2 1/2") the
+    # north-entry pad dowels fail hooked development (balcony_moment_columns.md §14).
     cover=inch(2.0),
     lap_class="B",
-    source='8" cage, (4) #5 + #3 rings @ 10", one of twelve house-wide; notes/sunken_garden_piers.md §4, balcony_moment_columns.md §7',
+    source='8" cage, (4) #5 + #3 rings @ 10", one of ten house-wide; notes/sunken_garden_piers.md §4, balcony_moment_columns.md §7',
 )
 # The four CORNER columns are fixed at the base, so the same cage plus the dowels that fix it:
 # a #5 L at each vertical, hooked into the W-SG-W1/E1 wall top and lapped class B above it
