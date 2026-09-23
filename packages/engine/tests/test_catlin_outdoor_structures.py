@@ -64,7 +64,8 @@ def _porch_deck_top(model):
 
 
 def _porch_outline(model):
-    return [p.xy_m for p in model.plan.by_tag("FS-SG-PORCH").outline]
+    porch = model.plan.by_tag("FS-SG-PORCH")
+    return [p.xy_m for p in (porch.subfloor_outline or porch.outline)]
 
 
 # --- porch 6x6 pillars and what they bear on ---------------------------------
@@ -279,9 +280,9 @@ def test_the_porch_deck_is_unbroken_and_blocks_only_its_guard_posts(catlin_model
     assert sorted(round(m.p0[0] / FT, 4) for m in blocks) == [13.75, 18.0, 22.25]
     edge = min(p.xy_m[1] for p in catlin_model.plan.by_tag("RL-SG-PORCH").path)
     for block in blocks:
-        # In the first bay behind the edge joist, across it, not on the edge itself.
+        # In the first bay behind the edge joist (inset 3/4"), not on the edge itself.
         assert min(block.p0[1], block.p1[1]) > edge, block.child_key
-        assert max(block.p0[1], block.p1[1]) < edge + 12 * INCH, block.child_key
+        assert max(block.p0[1], block.p1[1]) <= edge + 12 * INCH + 1e-6, block.child_key
 
 
 def test_the_front_pillar_tops_are_roofed_by_the_beams_that_land_on_them(
@@ -677,16 +678,17 @@ def test_porch_joists_run_ledger_to_ledger_with_no_oversail(catlin_model) -> Non
     deck's north edge — and a guard set back 4-1/4" from the sheet's south edge. All three
     were facts about the north-south joists and the centre beams, and all three retired.
 
-    The south edge member is a JOIST now, running with the guard's south leg, and the sheet's
-    edges are the framing's: y from that edge joist to the north edge over the brick, x from
-    ledger to ledger.
+    The south edge member is a JOIST now, running with the guard's south leg. The sheet keeps
+    the deck's edges; since 2026-09-22 (late) the end joists sit 3/4" inside them, so their
+    outer faces are flush with the sheet's edges and the ledger ends run 2" past.
     """
     outline = _porch_outline(catlin_model)
     north, south = max(y for _, y in outline), min(y for _, y in outline)
     joists = [m for m in _floor(catlin_model, "FS-SG-PORCH").members if m.category == "joist"]
     assert joists
     lines = sorted(m.p0[1] for m in joists)
-    assert lines[0] == pytest.approx(south) and lines[-1] == pytest.approx(north)
+    inset = 0.75 * INCH
+    assert lines[0] == pytest.approx(south + inset) and lines[-1] == pytest.approx(north - inset)
     sheet = [p for p in _floor(catlin_model, "FS-SG-PORCH").deck_outline]
     assert min(p[1] for p in sheet) == pytest.approx(south)
     assert max(p[1] for p in sheet) == pytest.approx(north)

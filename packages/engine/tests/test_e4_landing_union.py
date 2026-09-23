@@ -84,7 +84,7 @@ def test_catlin_porch_north_line_did_not_move(catlin_model):
     to a nominal 5" pushes the court 2.25" south and off D-B-PATIO's landing patch.
     """
     porch = catlin_model.plan.by_tag("FS-SG-PORCH")
-    north = max(p.xy_m[1] for p in porch.outline)
+    north = max(p.xy_m[1] for p in (porch.subfloor_outline or porch.outline))
     assert north == pytest.approx(-10 * INCH, abs=1e-6)
 
 

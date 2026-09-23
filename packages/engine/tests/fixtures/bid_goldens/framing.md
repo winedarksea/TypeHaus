@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 7edb25045188dc98  
+**Model hash:** 7389a35b28b5e306  
 **Lines:** 142
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -16,7 +16,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | 20 | LF ordered | 2 pcs, 19.3 LF cut | building |
+| 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | 20 | LF ordered | 2 pcs, 19.1 LF cut | building |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | 140 | LF ordered | 6 pcs, 135.0 LF cut | building |
 | 1.25x7.25 rim — rim board (1.25x7.25 rim) | 16 | LF ordered | 4 pcs, 13.7 LF cut | building |
 | 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 1 pcs, 1.9 LF cut | building |
@@ -39,7 +39,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 632 | LF ordered | 94 pcs, 511.5 LF cut | building |
 | 2x10 — hanger board (2x10) | 58 | LF ordered | 12 pcs, 45.9 LF cut | building |
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 114 | LF ordered | 23 pcs, 85.8 LF cut | building |
-| 2x12 — blocking, joist (2x12:kdat) | 464 | LF ordered | 48 pcs, 421.4 LF cut | building |
+| 2x12 — blocking, joist (2x12:kdat) | 464 | LF ordered | 48 pcs, 421.1 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.6 LF cut | building |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,664 | LF ordered | 632 pcs, 3933.9 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,830 | LF ordered | 462 pcs, 2441.4 LF cut | building |
@@ -116,8 +116,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS face-mount joist hanger | 1 | ea |  | building |
 | LUS face-mount joist hanger | 1 | ea |  | building |
 | LUS face-mount joist hanger | 12 | ea |  | building |
-| LUS ZMAX face-mount joist hanger (LUS210Z) | 10 | ea |  | building |
-| LUS ZMAX face-mount joist hanger (LUS210Z) | 10 | ea |  | building |
+| LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 10 | ea |  | building |
+| LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 10 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 7 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 7 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
@@ -127,9 +127,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 12 | ea |  | building |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 318 | ea |  | building |
-| 1/2 in x 5 in 316 stainless adhesive anchor with washer, deck ledger to concrete (SS316-ADH-12x5) | 14 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 10 | ea |  | building |
 | THA422 top-flange floor truss hanger | 3 | ea |  | building |
+| Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 1 | ea |  | building |
 | KDAT 4x4 tie block, 5" long, screwed to the tied member (TIE-BLOCK-4X4X5-KDAT) | 2 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,130 | ea |  | building |
@@ -140,7 +140,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 80.4 | bf | 2 placed, 5.6 SF plan; 0.25 cy in the takeoff | second |
-| Beam — BEAM_KDAT (beam:BEAM_KDAT) | 127.2 | bf | 9 placed, 14.0 SF plan; 0.39 cy in the takeoff | main |
+| Beam — BEAM_KDAT (beam:BEAM_KDAT) | 128.4 | bf | 9 placed, 14.1 SF plan; 0.4 cy in the takeoff | main |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 84 | bf | 3 placed, 7.1 SF plan; 0.26 cy in the takeoff | main, second |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | 111.6 | bf | 4 placed, 1.0 SF plan; 0.34 cy in the takeoff | second |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
@@ -152,9 +152,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| butyl-tape, 1 1/2" on beam (butyl-tape) | 17.3 | LF |  | main |
-| butyl-tape, 1 1/4" on deck (butyl-tape) | 33 | LF |  | main, second |
-| butyl-tape, 1 1/2" on deck (butyl-tape) | 458.5 | LF |  | main, second |
+| butyl-tape, 1 1/2" on beam (butyl-tape) | 18 | LF |  | main |
+| butyl-tape, 1 1/4" on deck (butyl-tape) | 32.8 | LF |  | main, second |
+| butyl-tape, 1 1/2" on deck (butyl-tape) | 458.3 | LF |  | main, second |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 4.5 | LF |  | main |
 | butyl-tape-beam, 3" on beam (butyl-tape-beam) | 28 | LF |  | main |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 19.3 | LF |  | second |
@@ -303,8 +303,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |
-| LUS ZMAX face-mount joist hanger (LUS210Z) | — |
-| LUS ZMAX face-mount joist hanger (LUS210Z) | — |
+| LUS210SS face-mount hanger, 2x10/2x12 (stainless) | — |
+| LUS210SS face-mount hanger, 2x10/2x12 (stainless) | — |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | — |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | — |
 | LUS ZMAX face-mount joist hanger (LUSZ) | — |
@@ -314,9 +314,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | SP4 stud plate tie (2x4) | — |
 | SP6 stud plate tie (2x6) | — |
-| 1/2 in x 5 in 316 stainless adhesive anchor with washer, deck ledger to concrete (SS316-ADH-12x5) | — |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | — |
 | THA422 top-flange floor truss hanger | — |
+| Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | — |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | — |
 | KDAT 4x4 tie block, 5" long, screwed to the tied member (TIE-BLOCK-4X4X5-KDAT) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |

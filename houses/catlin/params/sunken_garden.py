@@ -2169,7 +2169,7 @@ LEDGER_ANCHORS = [
 ]
 # Stainless hangers (owner, 2026-09-22): one spec per ledger sets every hung end on it.
 LEDGER_HANGERS = [
-    Connector(uid=f"SGLH{_side}1AAAA", tag=f"CN-SG-HGR-LDG{_side}",
+    Connector(uid=f"SGLH{_side}1AAAA", tag=f"CN-SG-LUS-LDG{_side}",
               kind=ConnectorKind.JOIST_HANGER, size="LUS210SS",
               position=pt(ft(_lx), ft(_porch_y0)), elevation=_porch_top,
               connects=(f"BM-SG-LDG{_side}", "FS-SG-PORCH"))
@@ -2203,6 +2203,12 @@ def _guard_post_stations(path_ft, spacing_ft):
 
 _PORCH_OUTLINE = (pt(ft(_x_in_w), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_y_ax_front)),
                   pt(ft(_x_in_e), ft(_y_porch_deck_n)), pt(ft(_x_in_w), ft(_y_porch_deck_n)))
+# The plank: the full N-S outline, and across the span to the wash faces the ledgers bear on.
+_x_wash_w = _x_in_w + _WASH_FILM_IN / 12.0
+_x_wash_e = _x_in_e - _WASH_FILM_IN / 12.0
+_PORCH_PLANK_OUTLINE = (pt(ft(_x_wash_w), ft(_y_ax_front)), pt(ft(_x_wash_e), ft(_y_ax_front)),
+                        pt(ft(_x_wash_e), ft(_y_porch_deck_n)),
+                        pt(ft(_x_wash_w), ft(_y_porch_deck_n)))
 _PORCH_JOIST_OUTLINE = (pt(ft(_x_in_w), ft(_porch_y0)), pt(ft(_x_in_e), ft(_porch_y0)),
                         pt(ft(_x_in_e), ft(_porch_y1)), pt(ft(_x_in_w), ft(_porch_y1)))
 
@@ -2850,7 +2856,7 @@ PORCH_JOISTS = FloorSystem(
     # ``outline`` scopes the PERPENDICULAR (y) extent: the porch's south edge (the guard line)
     # to the deck's north edge over the brick. Along the span it is ledger face to face.
     outline=_PORCH_JOIST_OUTLINE,
-    subfloor_outline=_PORCH_OUTLINE,
+    subfloor_outline=_PORCH_PLANK_OUTLINE,
     subfloor=DeckLayer(material_ref="composite-deck",
                        thickness=inch(SPEC.porch_deck_thickness_in)),
     # Butyl over every joist and block top: the composite plank above is GAPPED.

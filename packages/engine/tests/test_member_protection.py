@@ -92,8 +92,8 @@ def test_beam_length_is_the_axis_length(rows):
 
     ledgers = [r for r in rows if r["scope"] == "beam" and r["material"] == "butyl-tape"]
     assert len(ledgers) == 1
-    # Two porch ledgers, N-SGM-FW..NW at 8'-8" each (y -9'-6" to -10") = 17.3'
-    assert ledgers[0]["length_ft"] == pytest.approx(17.3, abs=0.1)
+    # Two porch ledgers, 2" past the deck's 8'-8" at each end: 9'-0" each = 18.0'
+    assert ledgers[0]["length_ft"] == pytest.approx(18.0, abs=0.1)
     assert ledgers[0]["count"] == 2
 
 

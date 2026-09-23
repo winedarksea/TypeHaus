@@ -136,7 +136,7 @@ def test_catlin_porch_ledgers_pass_on_simpsons_thdss_row(catlin_ctx):
     assert set(findings) == {"BM-SG-LDGW", "BM-SG-LDGE"}
     for finding in findings.values():
         assert finding.result is Result.PASS, finding.message
-        assert "L-A-THDSSLDGR23" in finding.message and "1.33' <= 1.58'" in finding.message
+        assert "L-A-THDSSLDGR23" in finding.message and "1.08' <= 1.58'" in finding.message
 
 
 def test_a_plan_with_no_ledger_is_not_applicable():

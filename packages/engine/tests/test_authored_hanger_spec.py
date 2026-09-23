@@ -13,7 +13,9 @@ from typehaus.takeoff.hardware import hardware_takeoff
 _SPECS = {("BM-M-HALL", "FS-S-EAST"): "IUS2.56/11.88",
           ("BM-M-HALL", "FS-S-WEST"): "THA422",
           ("BM-S-HALL", "FS-ATTIC"): "IUS2.56/11.88",
-          ("BM-S-BATH-E", "FS-ATTIC"): "IUS2.56/11.88"}
+          ("BM-S-BATH-E", "FS-ATTIC"): "IUS2.56/11.88",
+          ("BM-SG-LDGW", "FS-SG-PORCH"): "LUS210SS",
+          ("BM-SG-LDGE", "FS-SG-PORCH"): "LUS210SS"}
 
 
 def test_every_hung_end_of_a_spec_joint_takes_the_authored_part(catlin_model_ro) -> None:
