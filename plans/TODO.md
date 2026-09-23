@@ -18,55 +18,48 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   retypes through a centre-holding macro. Re-affirmed deferred 2026-08-07.
 ## Remaining Work
 
-- **Deck beam tributary is still the full joist span outside `glulam_beam`** (2026-09-22).
-  `engineering/glulam_beam._beam_tributary_ft` loads an edge beam with half a bay plus the
-  overhang; `pier_basis`, `post_bearing`, `analytical/loads.py` and `checks/structural/deck.py
-  _tributaries_ft2` still take the whole span. Safe-side; `checks` reads `pier_basis`' rule
-  (`test_pier_calcs.py::test_the_deck_tributary_rule_is_single_sourced`), so move them together.
-
 - **~220 sf of gypsum is still billed through the joist band** on every storey-line partition.
   `resolve/partition_top.py` deliberately moves only the FRAMING top: cutting the body at the
   joist soffit as well costs four FAILs (`code.R312_1_1_stair_open_side` on `ST-S2A`,
   `mep.wet_wall_occupancy` x3 on the basement and suite risers). Answering it means moving
   `W-S-SS2`'s guard coverage and re-authoring three riser extents — a design pass.
 
-- **`structural.member_interference` cannot see a plate inside a rafter.**
-  `checks/structural/interference.py` clears a plate-against-rafter contact unconditionally as
-  a birdsmouth seat, which is right for a bearing wall and is why the attic partitions stood
-  11-7/8" inside their rafters undetected for the life of the model. The clause's own comment
-  already calls moving interference onto the IR "a separate and larger job".
-- **`PT-BW-W`/`-GW` carry a beam end and a 6x6's `ABU66SS` base on the same 12" circle.** A
-  real volumetric overlap, ungraded at 0 FAIL. Same x=6'-0" congestion as the open
-  `W-BW-SCREEN` plate item below, and exactly the condition the dead pedestal existed for.
-  That pedestal is gone (retired 2026-09-13, unreferenced), so a fix now has to author its
-  own — which is the honest cost, since the dead one was a bare 12" concrete layer with no
-  post or bearing geometry and would not have solved the overlap on its own.
+- **Open `haus check` FAILs (17 on 2026-09-23), each needing a structural, fabricator or owner call:**
+  - `structural.post_base_interference`: `BM-BW-HOUSE-SEAT`/`-GARAGE-SEAT` sit in the ABU66SS
+    standoff of `PT-BW-CW`/`-CNW`. Author a real pedestal (the retired one had no post geometry).
+  - `structural.member_in_masonry`: `ST-B2M`'s lower stringer and landing rim stand inside
+    `W-B-CN`'s concrete; the stair is laid out to the wall centreline, not its face.
+  - `code.R311_3_exterior_landing`: `FS-SG-DECK` now resolves tilted and stands 3.92" above
+    `D-S-DECK-E`'s threshold (2.42" above `RM-S-STUDY2`'s floor). Lower the balcony datum
+    ~2 3/8" or step the deck at the door.
+  - `VR-M-RADON-VENT` (4): the radon/vent pair spreads 2.4" either side of its chase point and
+    no station fits between `FO-M-ERV-OA`'s north trimmer pack, the 34'-8" truss and the ERV
+    risers. Reframe the chase (one big opening), or give the engine a spread-direction option.
+  - Floor-truss conflicts in `FS-S-WEST` (fabricator): `PR-M-S-BATH1-DRAIN` and `PR-B-HW-SBATH`
+    on the 26'-8" truss; `DU-ERV-EA` and `DU-M-ERV-EXH-TRUNK` on the 34'-8" truss.
+    `PR-B-HW-SBATH` has no station in `W-M-STOS2`'s 2x4 cavity (retype 2x6 or move the truss).
+  - `PR-B-KITCH-DRAIN` runs inside `FO-M-STAIR`'s north trimmer; its lane is that opening's edge.
+  - `CD-M-DATA-KITCH` runs inside `FO-S-STAIR`'s truss trimmer; no routable bay north of the well.
+  - `mep.run_through_plate`: `PR-A-STUBATH-DRAIN` (W-S-DC2) and `DU-M-ERV-R-LAUNDRY` (W-M-CLN2)
+    each want an owner-authored `PlateTie` (R602.6.1).
 
-- **1/2" sheathing lap is undeclared.** `_clip_l_corner` mitres all layers on the angular
-  bisector with no per-layer thickness logic, so a 4' sheet can break at 48.5" on a stud
-  centred at 48" — 1/4" bearing, under APA's 1/2" minimum. Fixing it needs a lap-direction
-  field on `ResolvedJunction`; sheathing takeoff also bills from the node axis, not the
-  polygon, so the lapping wall's extra 1/2"/corner is unbilled too (a second, independent
-  gap). No sheet-layout engine exists to check a break landing on a stud at all.
+- **Concrete spec UNKNOWNs (8) wait on the mix submittal and a soil test:** cement standard/type,
+  chloride per ASTM C1218, the aggregate's C1293/C1260 result plus a C1778 structure class, and
+  a soil sulfate test (ASTM C1580). Also an owner call: the balcony columns' built 2" cover is
+  under ACI R20.5.1.4.1's 2 1/2" recommendation (strength is unaffected; the cage would change).
+  Galvashield XPX anodes for the salt-splash court walls are undecided. Curing, cold-weather
+  placement and slab joint layout exist only in prose.
 
-- **Deck post/footing and concrete-spec follow-ups**, each blocked on something specific:
-  - `SUNKEN_GARDEN_COLUMN_12` still reads the presumptive f'c (3,000 psi) vs
-    `PIER_CONCRETE_12`'s migrated 5,000 — blocked on re-oracling `notes/balcony_moment_columns.md`.
-  - Schema can't say the water-soluble chloride-ion limit, the class-S cementitious type, or
-    SCM caps for F3+deicing exposure. ASR/aggregate reactivity (ASTM C1778) unaddressed.
-  - `ConcreteSpec` says nothing about chromate passivation waivers (ASTM A767).
-  - Curing, cold-weather placement, slab joint layout aren't modelled — only in prose.
-  - 3" cover on the balcony's lateral-system columns needs re-running through
-    `deck_post._pm_point` (a moment question), not just asserted. Also a real argument for
-    staying at 2.5" — ACI's 3" earth-cast rule doesn't apply to Sonotube-formed columns.
-  - Galvashield XPX anodes for the salt-splash sunken-garden walls: undecided (columns already
-    declined them in favor of galvanized bar at 3" cover).
+- **No sheet-layout engine**, so nothing checks a sheathing break landing on a stud. L corners
+  now carry `ResolvedJunction.sheathing_lap`, which a layout pass would read. Cladding, WRB,
+  foam and finish layers still bill off the node axis.
 
-- **Breezeway piers' axial state is INCOMPLETE, demand not faked.** `BM-BW-RW/RE` bear on
-  piers with no plan area behind them (the breezeway roof is neither a `Roof` nor a
-  `FloorSystem`), so `deck_post._detailing_only` grades detailing in full but omits the
-  §22.4.2 comparison. Bounding estimate is d/c ≈ 0.007 even at 50 psf snow. Closing it needs
-  either a modelled roof area or an engineer-stated demand.
+- **New checks sit on no inspection:** `mep.run_through_floor_member`, `mep.run_in_joist_flange`,
+  `mep.erv_blower_interlock` and the five `structural.concrete_*` checks are not on any
+  `mn_residential/inspections.py` list (the concrete UNKNOWNs would block the footing one).
+
+- **The router cannot root a supply run on an equipment port.** `PR-B-HW-TRUNK` now reads its
+  tie-in from `EQ-B-WH.hot`, but `haus route` refuses and asks for `--via`.
 
 ### From the 2026-09-10 `plans/notes.md` triage
 
@@ -86,11 +79,9 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 - **Basement equipment sits on the storey datum, and the flood note wanted it on a plinth.
   MAYBE — needs research first.** `EQ-B-WH` (Rheem ProTerra, `plan/mep_hvac.py`) is authored
   as `MountKind.FLOOR` with `elevation=None`, and floor-mounted equipment with no elevation
-  bases on the storey datum. **The scope is smaller than it first looked:** the ESS is
-  already off the floor — `EQ-B-ESS-BATT` is wall-mounted at 18" and `EQ-B-ESS-INV` at 4'-0"
-  — so the water heater is the real case, with `EQ-B-SAUNA-HTR` the only other floor-based
-  unit and a sauna stove wanting to be at floor level anyway. The sump half of flood
-  protection IS done (`CKT-SUMP` on the backup panel, `ED-B-SUMP-RC`). **What to research
+  bases on the storey datum. The water heater is the real case, with `EQ-B-SAUNA-HTR` the only
+  other floor-based
+  unit and a sauna stove wanting to be at floor level anyway. **What to research
   before authoring anything:** (1) whether this basement has a flood exposure worth a plinth
   at all — it is a walk-out onto the sunken garden, which is itself a drained rain sump with
   a 7 1/4" threshold, so the honest answer may be that the risk is a burst pipe or a tank
@@ -111,11 +102,6 @@ class. This file used to restate it across ~290 lines and drifted to arguing abo
 pairs while the house said 67. Re-open the campaign with
 `haus check houses/catlin --no-suppress`, which is the score with every suppression lifted.
 
-- **The AH/ERV blower interlock is a controls fact with no model field.** With the ERV running
-  and the air handler off, 100 cfm enters a still return chamber and exits through
-  `REG-S-HP-RET` into `RM-S-STUDY2` — the only low-resistance path. Distribution to the rest of
-  the house needs the blower on. `code.N1103_6_whole_house_ventilation` is already tight at
-  210 cfm provided / 203 required.
 - **No `Equipment` field records a filter or access panel anywhere.** `REG-T-HP-RET` is the
   only serviceable face on System 1; the model knows it only as a rectangle with a port.
 - **ERV condensate shares `FX-B-SAUNA-FD`** rather than `PR-B-COND` — no gravity connection
@@ -132,30 +118,6 @@ pairs while the house said 67. Re-open the campaign with
 - **`REG-S-HP-PLANT` throw is 11'-7" across an 18'x9' room** (deliberate — see
   `plan/mep_registers.py`), leaving the west 14' unswept by the room's only moisture-removal
   extract. A middle station (~x 12'-6") would halve the duct run if the saving is wanted.
-- **`FS-M-MECH`'s chase cluster is undrawn, and it cannot be drawn where the runs stand.**
-  `FO-M-ERV-OA`/`-EA` cover the two ERV risers. Surveyed 2026-09-20: only two other crossings
-  cut a joist, and both are the chase risers themselves, which stand **1 7/8" inside
-  `W-M-MECH-S`** — an opening framed where they are puts a hole under a standing partition.
-  Everything else (three drains, seven supply risers, the whole y=34'-6" row) passes mid-bay
-  and is a drilled subfloor penetration, not a framed opening. **Order: move
-  `DU-ERV-RISER-SUP`/`-EXH` north to y >= 33'-9 3/8" first** (that also closes their
-  `mep.run_through_stud` UNKNOWN), then enlarge `FO-M-ERV-OA` south to y=33'-2 1/2" and add
-  one chase opening, then `params/main_deck.py:471`'s `openings=` tuple and
-  `tests/test_bom_sweep.py`'s per-name subfloor subtraction.
-- **Two floor-opening trimmer packs run through live risers at 0 FAIL.** `FO-M-ERV-OA`'s south
-  pack (a full-bay 1.75" LVL at y=401 1/2") passes through the 6" envelope of BOTH chase
-  risers; its north pack runs through the entire y=34'-6" riser row — the vent stack,
-  `VR-M-RADON-VENT` and three conduit risers. Both were created when that opening was framed
-  on 2026-09-15. **Nothing grades a framing member against a duct or a pipe**, which is why
-  they are silent. The north one has no in-file fix: the opening's edges are pinned by
-  `DU-ERV-OA` and `FO-M-ERV-EA` either side.
-- **`PR-B-LAV1-DRAIN` has 0.765" of a 1 1/2" DWV inside an I-joist flange.** At y=275.941"
-  against `joist-0-001`'s flange at 276 1/8". Unconditionally forbidden, ungraded, and it
-  wants moving ~1" south.
-- **A duct escapes the wall check by luck.** `mep.run_through_stud` reports
-  `DU-ERV-RISER-SUP` bores `W-M-MECH-S`; `DU-ERV-RISER-EXH` is 9" away in the same wall, in
-  the same condition, and is **not** reported because it happens to miss a stud. The check is
-  per-member, so a run between two studs says nothing about the wall it is standing in.
 - **The ERV SUPPLY manifold has no drawn feed and cannot have one where it stands.** Its
   extract twin got `DU-M-ERV-EXH-FEED` on 2026-09-20. RM-M-MECH's true inside faces are
   **63"x23"** (the prose's "39"x31"" reads off wall AXES), the supply riser sits west of the
@@ -192,37 +154,12 @@ pairs while the house said 67. Re-open the campaign with
 
 ### Schema gaps found during selections/fireplace passes
 
-- ~~**There is no lintel element type, and a `Beam` standing in for one still bills $0.**~~
-  **THE MONEY HALF IS CLOSED, 2026-09-20; the schema half stays open.** `[steel_members]`
-  (`takeoff/steel.py`, `cli/price_file.py`, `cli/prices.py`) bills a rolled steel member by the
-  LINEAL FOOT of its own AISC section, keyed on the `size` string — because an
-  L3-1/2x3-1/2x1/4 and an L3-1/2x3-1/2x3/8 share a bounding box and are different purchases,
-  which is exactly what a $/cy rate cannot say. Those members are taken OUT of
-  `structural_solids`, so a house that prices them here cannot also price them there.
-  `BM-M-FIRE-LINTEL` bills $128.86–$261.51 over 3.79 LF where it billed $0, and the trap this
-  entry correctly said was live for every steel member in the house is shut for all of them.
-  **Two corrections made in passing:** this entry claimed the dollars were "an `[allowances]`
-  lump instead" — there was NO such row, so they were nowhere; and `prices.toml`'s $8–16/SF
-  brick rate declared that it contained *"the lintel over the firebox opening"*, which beside a
-  real steel row would have been a double-count, so that clause is struck.
-  **Still open:** a `Lintel` element type, or a `MasonrySpec` opening carrying its own head. A
-  `Beam` remains the closest honest schema, and `size` is still a free string.
+- **No `Lintel` element type.** A `Beam` stands in, and its `size` is a free string.
 - **R502.10.1's single-member header allowance is sawn-lumber only, deliberately** — an
   I-joist/floor-truss deck would need a manufacturer's hung-header table this engine doesn't
   have, so catlin (all I-joist/floor-truss decks) sees no saving from it. **Still open:**
   nothing grades a single-member header against a span table at all —
   `structural.floor_opening_header` only reports past the prescriptive 8' ceiling.
-- ~~**`W-M-FIRE` is five stacked thin walls**~~ — **WON'T DO, and the count is SEVEN**
-  (recorded 2026-09-20). It became seven on 2026-09-19, when the buried stub split into three
-  piers, and that split is why collapsing the stack is now actively HARMFUL rather than merely
-  unnecessary: **the three stub piers must stay separate walls, because the joist pockets are
-  the gaps BETWEEN them**, and those gaps are what `structural.through_deck_clearance` grades
-  — six PASSes, clearance and bearing per pier. A `Wall.voids` field would say the firebox
-  opening in one element and would have nothing to say the pockets with. It would also churn
-  three pinned tests (`test_wall_stack.py`, `test_masonry_finish.py`,
-  `test_wall_structure_takeoff.py`) for no verdict gained. The continuity — the one thing the
-  stack was ever at risk of getting silently wrong — is already graded by
-  `checks/integrity/wall_stack.py`.
 - **Nothing grades pipe SUPPORT spacing, and the profile now says so out loud.** `PipeRun`
   carries no support, hanger or guide field, so there is no spacing to measure. The governing
   rule in Minnesota is **UPC Table 313.3 via Minn. R. 4714.0313**, which Minnesota reprints
@@ -253,12 +190,6 @@ the future.
 
 ## Questions
 
-- **Showers: one of four classified.** `FX-M-BATH2-SH` has a modelled surround
-  (`WP-M-BATH2-SURR`); `FX-A-STUBATH-SH` and two flanged inserts still don't, and the same
-  logic points at giving `FX-A-STUBATH-SH` the same panel.
-- **`FX-S-BALC-HYD`'s sleeve** — a freeze-proof wall hydrant through the plant room's liner
-  into a -15°F wall needs a sealed, insulated sleeve detail (`SleevePenetration` doesn't cover
-  this condition).
 - **Cavity "canary" RH sensors** wanted in a south and west stud bay (no liner redundancy
   otherwise); no sensor element kind exists. (desired but not as explicitly modeled)
 - **`RM-S-PLANT`'s clear face doesn't know about its liner** — `_lining_inset` uses one uniform
@@ -268,12 +199,9 @@ the future.
   `clear_face` at all. Fixing it moves every room's area at once, so it's its own change; until
   then, don't size millwork off `Room.clear_face` — use `out/model.json`'s wall layer polygons.
 - Make sure all desired access panels are in — deferred pending more design settling.
-- looks like the garage got switched back to concrete footings. The plan was for compacted aggregate footings (which last I checked are allowed per code as footings)
 - **`TR-SG-LEADER-SE`'s outlet needs a shoe.** Closing the apron's north notches on 2026-09-12 put `W-RG-EAST-BALCONY` under the leader, crest 6" below the outlet, so 200 sf of balcony discharge lands on the cap of a dry-stacked segmental wall unless the outlet turns south. A cast elbow and a 1'-0" shoe to y -11'-3" is the detail; `Downspout` is a vertical run with one outlet elevation, so the model cannot hold it and nothing in `haus check` grades a downspout against a landscape wall. It has to reach the drawings from `params/raised_garden.py`.
-- Make sure the plant room can be hooked up to an automatic watering system in the future. No, the hydrant doesn't count as it is on the exterior side.
 - Kitchen has lights stuck above cabinets. Might want to swap some cans for under counter lighting. **Still open, and the geometry under it moved 2026-09-11:** the uppers are 15" deep hung at 53", not 13" at 54", so their fronts are 2" further into the room and 1" lower than whatever this item was last looked at against. The five under-cabinet tape runs moved with them.
  - **`Material.product_ref` was NOT set, and it is not an oversight.** The plan called for a `Product` record naming the GCP datasheet so the BOM row reads "GCP Bituthene 3000". `Material.product_ref` can only be set where the material is authored; the material has to live in `library/materials.py` because a LIBRARY assembly (`FOUNDATION_WALL_XPS4_OUTBOARD`) references it; and a library material may not name a house-owned `Product` tag — `Library.products` is populated from `plan/products.py` and every other house would resolve it to `None`. There is no override path: `PlanModel.material()` returns the FIRST match, so a house appending a duplicate tag is shadowed for geometry while WINNING in `product_labels`, which is worse than not doing it. The identity lives in the material's `source` and in the `prices.toml` selection note instead. Closing it properly means either a house-level material-override mechanism or moving the foundation tail out of the library.
- - **Still open, small:** `FS-SG-DECK`'s joists are one flat plane on the now-tilted beams, so the model's deck is the deck's SOUTH (low) edge and the real north edge stands up to 2.45" higher. Closing it means teaching `resolve/floors.py` to take each joist's z from its tilted bearings, which reaches `ResolvedFloor.deck_z0_m`/`deck_z1_m` and every room, energy, section and guard consumer that reads them. (make sure the D-S-DECK-E door is aligned with the real height closely enough for easy entrance)
  - Model a rain garden to the west of the garage gathering water with drain tile from TR-G-LEADER-W and TR-RF-LEADER-W
  - **`SF-B-BATH` stays, and not for want of numbers** — its three runs clear the 6'-8"
    headroom line by ~7 1/2" and a declaration on `RM-B-BATH` would pass. Nobody has decided a
@@ -295,16 +223,6 @@ the future.
   `code.R311_3_exterior_landing` can now union two abutting surfaces into one landing. What
   remains is the datum question itself, and it is an owner decision rather than a nudge:
   widening the gap back to a nominal 5" pushes the court 2.25" south and FAILs D-B-PATIO.
-- **Stale and possibly a real collision:** `plan/placeables.py:1070-1074` still says the
-  cladding face is at -0'-5" with a 5" gap, and describes the exterior curtain track running
-  to y = -0'-6" — which is INSIDE the 7.25" cladding zone. Worth measuring against the PBR
-  panel before it is built.
-- **Nothing in the engine can catch a framing member buried in a wall layer.** A cantilevered
-  floor end is pure arithmetic on the authored value (`resolve/floor_ends.py`), and
-  `structural.member_interference` builds candidates from members and `column`/`beam` solids
-  only — wall layers and masonry wythes are not candidates. That is why 31 porch joists ran
-  through a brick wythe at 0 FAIL for as long as they did, and nothing will catch the next
-  one. Scope: framing-member vs. wall-structure-layer plan overlap.
 - Figure out a space for a cat litter box.
 - **A library catalog type cannot name a house-owned `Product`.** `ED-T-EV-1450` lives in
   `library/electrical.py` and the Leviton 1450R is authored in `houses/catlin/plan/products.py`,
@@ -312,33 +230,12 @@ the future.
   `integrity.unknown_product_ref` ERROR. Same seam as the Bituthene selection. Needs a
   house-level catalog-override mechanism, or the type retagged house-local (which moves the
   `[placeables]` price key and four tests).
-- **Door hardware still bills as one lump.** `DoorType.function` exists since 2026-09-20 but
-  `takeoff/openings.py` does not report it, so the `[allowances]` driver cannot filter on it.
-  One line in that row dict, plus a house decision: catlin hangs one commodity type
-  (`DT-INT-SWING32`) at both a bath and a study, so the type has to split before a per-function
-  count means anything.
-- ~~**`haus render` cannot reach a house-authored SECTION slice.**~~ **CLOSED 2026-09-20.**
-  `haus render --view section --slice SL-S-FIRE` (or `--slice all`) cuts an authored slice, and
-  `build_annotated_section` is ONE path serving both it and `haus print`'s A-301.x — so an
-  authored section now carries its datums, its ground line and the names of the volumes the cut
-  passes through, exactly as A-301 does. The annotation needed one thing it had never been
-  given: the slice's CROP. Everything else in it is bounded by the drawn geometry, but the room
-  names walk the model and the detail callouts walk every condition, so on the fireplace cut
-  they lettered eight rooms and hung four bubbles across forty feet of empty sheet. Both are
-  crop-bounded now.
-- **The TPR discharge ceiling is wrong for Minnesota.** `checks/mep/water_heater.py` enforces
-  6"-24"; Minn. R. 4714.0608 amends UPC 608.5 to "within 18 inches of the floor". Catlin
-  terminates at 6" and passes either way, so this is a correctness fix, not a finding.
-- **An equipment port is not a supply source.** `resolve/mep_tie_ins` reports `PR-B-HW-TRUNK`
-  as `no_candidate` because nothing passes under its first vertex — the WATER HEATER feeds it.
-  Honest, but the reader cannot yet see a port as a parent.
-- **`code.P2804_water_heater_relief`'s id still spells an IRC section** that Minnesota struck.
-  The citations moved to UPC on 2026-09-20; renaming the id touches `inspections.py`,
-  `profile.py` and `plan/mep_hvac.py`.
-- ~~Dimension labels overlap on the drawings~~ **CLOSED 2026-09-22.** The plan tiers were model inches spaced for 3/16", and the ledger A-101/A-102 print at 3/32". Tiers are now PAPER-constant to NCS (9/16" to the first line, 3/8" between; `emit/draw/dimension_rows.py`), respaced at the scale each sheet picks with the band reserved (`floorplan_sheet.py`). Dimension text is 9.5 pt (3/32" caps), vertical strings read from the right, and an overflowing string slides outside its extension lines instead of reusing a row. The 24x36 set is the submittal and holds its scales; the 11x17 set is stamped REDUCED CHECK PRINT.
-- Plan lettering other than dimensions (room blocks at 7/5.5 pt, tags and bubbles at 6.5 pt) is still below the NCS 3/32" minimum.
-- Openings in the basement's concrete walls are dimensioned to centrelines; masonry/concrete convention is to the opening edges.
-- The "OPEN TO BELOW" terrace labels on A-102 pile up on one another along the east side.
+- **Door hardware still bills as one lump in catlin.** Openings rows now carry
+  `DoorType.function`, but catlin hangs one commodity type (`DT-INT-SWING32`) at both a bath and
+  a study, so the type has to split before a per-function allowance means anything.
+- **Plan lettering residue:** at 1/4" a few small rooms still touch a tag (PANTRY/D8,
+  STUDY/D13, MECH's "CHASE TYP. OF 2"), and on the 11x17 reduced check print the 12 pt room
+  names spill past small rooms' walls.
 
 # Project Management
 
