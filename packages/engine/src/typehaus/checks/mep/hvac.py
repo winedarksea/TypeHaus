@@ -8,6 +8,7 @@ from typehaus.checks._authoring import advisory
 from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
+from typehaus.checks.mep.erv_interlock import blower_dependent_ducts
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN
@@ -69,12 +70,15 @@ _STALE_KINDS = frozenset({"return", "exhaust"})
 # reader should see it — it just satisfies nothing.
 
 
-def _registers_by_room(ctx: CheckContext, cid: str) -> tuple[dict, list, list[Finding]]:
-    """Map every authored Register to a room tag. Returns (room->kinds, registers, findings)."""
+def _registers_by_room(ctx: CheckContext, cid: str) -> tuple[dict, dict, list, list[Finding]]:
+    """Map every authored Register to a room tag.
+
+    Returns (room->kinds, room->supply duct_refs, registers, findings)."""
     from shapely.geometry import Point, Polygon
 
     out: list[Finding] = []
     by_room: dict[str, set] = {}
+    supply_refs: dict[str, set] = {}
     registers = []
     rooms = ctx.model.rooms
     for storey in ctx.model.plan.storeys:
@@ -96,7 +100,9 @@ def _registers_by_room(ctx: CheckContext, cid: str) -> tuple[dict, list, list[Fi
                 ))
                 continue
             by_room.setdefault(room_tag, set()).add(element.kind.value)
-    return by_room, registers, out
+            if element.kind.value == "supply":
+                supply_refs.setdefault(room_tag, set()).add(element.duct_ref)
+    return by_room, supply_refs, registers, out
 
 
 @check(Tier.ADVISORY, "mep.ventilation_distribution")
@@ -105,12 +111,23 @@ def ventilation_distribution(ctx: CheckContext) -> list[Finding]:
     rooms = ctx.model.rooms
     if not rooms:
         return [_unknown(cid, "no resolved rooms to distribute ventilation to")]
-    by_room, registers, out = _registers_by_room(ctx, cid)
+    by_room, supply_refs, registers, out = _registers_by_room(ctx, cid)
+    # Runs of an air handler an ERV feeds with no blower interlock: fresh air on them
+    # arrives only while that blower happens to turn (``mep.erv_blower_interlock``).
+    riding = blower_dependent_ducts(ctx)
 
     for room in rooms:
         kinds = by_room.get(room.tag, set())
         if room.occupancy in _SUPPLY_OCCUPANCIES and room.conditioned:
-            if "supply" in kinds:
+            refs = supply_refs.get(room.tag, set())
+            if "supply" in kinds and refs and refs <= riding.keys():
+                ervs = ", ".join(sorted({riding[r] for r in refs}))
+                out.append(_unknown(
+                    cid, f"{room.tag} ({room.occupancy}) gets fresh air only through "
+                    f"{', '.join(sorted(refs))}, an air handler's runs {ervs} feeds with no "
+                    "blower interlock recorded", (room.tag,),
+                ))
+            elif "supply" in kinds:
                 out.append(_pass(
                     cid, f"{room.tag} ({room.occupancy}) has a fresh-air supply register",
                     (room.tag,),

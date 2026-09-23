@@ -314,7 +314,12 @@ BASEMENT_EQUIPMENT = [
               # projection floor. PR-B-ERV-COND (plan/mep_drainage.py) falls 0.3"/ft from the
               # pan to FX-B-SAUNA-FD.
               mount=Mount(kind=MountKind.CEILING, elevation=ft(4, 6)),
-              pan_drain_ref="PR-B-ERV-COND"),
+              pan_drain_ref="PR-B-ERV-COND",
+              # Its fresh air reaches the second storey through EQ-S-ERV-MIX and this AH's
+              # ducts, so the ERV's furnace/air-handler interlock contacts (Broan
+              # B210E75RT installation manual, interlock wiring) call EQ-S-HP1-AH's fan
+              # whenever it runs. Design decision closing the TODO in plan/mep_erv_l3.py.
+              blower_interlock_ref="EQ-S-HP1-AH"),
     # Sauna heater: back to the SOUTH liner at x 8'-6"..10'-0", 2" off the face, diagonally
     # opposite the shower pan in the room's north-east corner and 2'-1" west of
     # WIN-B-SAUNA's west jamb. It moved onto the garden wall with the room on 2026-09-05.

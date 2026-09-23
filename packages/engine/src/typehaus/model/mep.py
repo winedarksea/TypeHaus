@@ -307,8 +307,8 @@ class Equipment(Element):
     # authored because it can be authored nowhere else: the mixing box's backdraft damper is
     # geometry, but "these two fans start together" is a control sequence, and it is the
     # sequence a commissioning agent balances the house against. Never inferred from a
-    # shared plenum: two machines can share a plenum and run on independent schedules, which
-    # is exactly what this house does.
+    # shared plenum: two machines can share a plenum and run on independent schedules.
+    # ``mep.erv_blower_interlock`` derives the coupling from the ducts and reads this.
     blower_interlock_ref: str | None = None
     # The modeled ``Soffit`` this unit is installed inside, mirroring ``DuctRun.soffit_ref``.
     # Two things follow from it and neither could be said before: the placeable hangs off the
