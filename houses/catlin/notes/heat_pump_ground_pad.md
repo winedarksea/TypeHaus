@@ -187,12 +187,13 @@ of the ~20" the 18" stands then add.
 | | extent | area | volume |
 |---|---|---|---|
 | `SL-SG-HPPAD` | x 29'-0"..32'-7", y -3'-4"..-0'-10" | 8.96 sf | 0.11 cy |
-| `SL-SG-STAIRPAD` | x 28'-6"..35'-3", y -9'-0"..-6'-0" | 20.3 sf | 0.25 cy |
+| `SL-SG-STAIRPAD` | x 27'-6"..36'-7 7/8", y -9'-0"..-6'-0" | 27.5 sf | 0.34 cy |
 | `SL-M-HP3PAD` | x 9'-9"..13'-1", y 36'-10 1/4"..38'-11" | 6.9 sf | 0.08 cy |
 | `SL-M-HP1PAD` | x 26'-3 1/4"..29'-11 3/4", y 36'-10"..39'-4" | 9.27 sf | 0.11 cy |
 
-**45.4 sf and 0.56 cy over the four**, against 46.7 sf / 0.58 cy over three earlier the same
-day: HP1's crossing traded 10.6 sf of pocket pad for 9.27 sf of north-face pad and a fourth
+**52.6 sf and 0.65 cy over the four** since 2026-09-23, when the stair pad ran east to walk
+leg D (`SL-WK-E` dropped). Before that, 45.4 sf / 0.56 cy, against 46.7 sf / 0.58 cy over three
+on 2026-09-04: HP1's crossing traded 10.6 sf of pocket pad for 9.27 sf of north-face pad and a fourth
 form. `prices.toml`'s labour band was re-solved for that form, because a $/cy rate that only
 follows the volume prices a whole extra pour at nothing. Each falls 2.5% away
 from the house, authored as an `ImperviousSurface` in `plan/site.py` where
@@ -205,8 +206,8 @@ form. At 20 sf apiece the second form is the cheaper half. The 2026-09-03 note a
 opposite and was right at the time, when the flight and the cabinets shared one band.
 
 **What decides each edge.** `SL-SG-STAIRPAD`'s west edge is `W-SG-E1`'s east face, where the
-stringers foot; the flight covers x 28'-6"..32'-2"; and the 3'-1" east of that is R311.7.6's
-bottom landing, which wants 36" in the direction of travel and gets 37".
+stringers foot; the flight covers x 27'-6"..31'-2"; everything east of that is R311.7.6's
+bottom landing, 5'-6" against its 36"; and the east edge is walk leg D's, less a 1/2" joint.
 `SL-SG-HPPAD`'s west edge is HP2's own cabinet face and its east edge runs 2 3/4" past that
 same cabinet — the rule is unchanged, the cabinet it measures from is not. Its **north**
 edge stops 3" short of the house cladding rather than butting it: a pad

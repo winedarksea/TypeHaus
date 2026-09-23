@@ -126,9 +126,9 @@ class ResolvedJunction:
     framing_owner: str | None = None
     supported: bool = True
     diagnostic: str | None = None
-    # At an L: the wall whose sheathing laps past the corner (the other's butts it). See
-    # ``resolve/sheathing_lap.py``; defaults to ``framing_owner``.
-    sheathing_lap: str | None = None
+    # At an L: the wall whose sheathing runs through the corner; the other's edge butts its
+    # back. See ``resolve/sheathing_corner.py``; defaults to ``framing_owner``.
+    sheathing_through: str | None = None
 
 
 @dataclass(frozen=True)

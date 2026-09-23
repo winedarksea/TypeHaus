@@ -259,9 +259,9 @@ def test_junction_solved_polygons_round_trip_through_dxf(project, tmp_path) -> N
         assert polygon.is_valid and polygon.area > 0
 
 
-def test_l_corner_sheathing_laps_rather_than_mitres(project) -> None:
-    """The lapping wall's panel runs to its neighbour's outer sheathing face; the other
-    wall's panel butts the lapper's inner face. Every other layer keeps its mitre."""
+def test_l_corner_sheathing_butts_edge_to_face_rather_than_mitres(project) -> None:
+    """The through wall's panel runs to its neighbour's outer sheathing face; the other
+    wall's panel edge butts its back, with no overlap. Every other layer keeps its mitre."""
     plan = _plan(
         project,
         {"C": (0, 0), "E": (10, 0), "NE": (10, 10), "N": (0, 10)},
@@ -272,9 +272,9 @@ def test_l_corner_sheathing_laps_rather_than_mitres(project) -> None:
     )
     model, _ = resolve(plan)
     junction = next(item for item in model.junctions if item.node_tag == "C")
-    assert junction.sheathing_lap == junction.framing_owner is not None
-    lap_inc = next(i for i in junction.incidents if i.wall_tag == junction.sheathing_lap)
-    butt_inc = next(i for i in junction.incidents if i.wall_tag != junction.sheathing_lap)
+    assert junction.sheathing_through == junction.framing_owner is not None
+    run_inc = next(i for i in junction.incidents if i.wall_tag == junction.sheathing_through)
+    butt_inc = next(i for i in junction.incidents if i.wall_tag != junction.sheathing_through)
 
     def ring(tag, name):
         wall = model.wall(tag)
@@ -285,14 +285,14 @@ def test_l_corner_sheathing_laps_rather_than_mitres(project) -> None:
         return [(x - junction.point[0]) * direction[0] + (y - junction.point[1]) * direction[1]
                 for x, y in points]
 
-    lap, butt = ring(lap_inc.wall_tag, "sheathing"), ring(butt_inc.wall_tag, "sheathing")
-    assert Polygon(lap).intersection(Polygon(butt)).area < 1e-10
-    assert len(lap) == 4 and len(butt) == 4  # rectangles, no mitre vertex left behind
-    assert abs(min(reach(lap, lap_inc.direction)) - min(reach(butt, lap_inc.direction))) < 1e-6
-    assert abs(min(reach(butt, butt_inc.direction)) - max(reach(lap, butt_inc.direction))) < 1e-6
-    # The foam over it still mitres: only sheathing laps.
-    foam = ring(lap_inc.wall_tag, "foam")
-    assert len({round(value, 6) for value in reach(foam, lap_inc.direction)}) > 2
+    run, butt = ring(run_inc.wall_tag, "sheathing"), ring(butt_inc.wall_tag, "sheathing")
+    assert Polygon(run).intersection(Polygon(butt)).area < 1e-10
+    assert len(run) == 4 and len(butt) == 4  # rectangles, no mitre vertex left behind
+    assert abs(min(reach(run, run_inc.direction)) - min(reach(butt, run_inc.direction))) < 1e-6
+    assert abs(min(reach(butt, butt_inc.direction)) - max(reach(run, butt_inc.direction))) < 1e-6
+    # The foam over it still mitres: only sheathing runs through.
+    foam = ring(run_inc.wall_tag, "foam")
+    assert len({round(value, 6) for value in reach(foam, run_inc.direction)}) > 2
 
 
 def test_sheathing_bills_off_its_polygon_not_the_node_axis(project) -> None:

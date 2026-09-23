@@ -487,8 +487,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - The corner box is RETIRED for the girt band (courses butt at the corner, nothing
     full-height to cap); `FramingSpec.corner_cap`/`TrussFrame.corner_box` still fire for any
     band that asks (`EXT_2X6_SWINBURNE` still does).
-  - The 1/2" sheathing lap at the corner is still undeclared (all layers mitre 45° today) —
-    logged in `plans/TODO.md`, not built.
+  - Sheathing meets edge to face at an L, never overlapping: the `framing_owner` wall's panel
+    runs through the corner and the other's edge butts its back
+    (`ResolvedJunction.sheathing_through`); every other layer mitres 45°.
 
 ### Bearing lines and floor decks
 
@@ -2552,7 +2553,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   fall is on the `walk *` impervious surfaces, merged into the site by `plan/manifest.py`
   — never hand-copy them into `plan/site.py`. Leg C is notched round `PT-BW-RNE`.
   `notes/sidewalk_layout.md`.
-- **Bluestem grid `PB-S-GRID`** south of `W-RG-BLOCK`: 198 cells at 15", 24 accents on the
+- **Bluestem grid `PB-S-GRID`** south of `W-RG-BLOCK`, 1' inside the W/E/rear lot lines: 380 cells at 15", 44 accents on the
   `(i + 3j) mod 9` lattice. The basin reuses the same grid code for its slope and floor
   beds. `notes/grid_garden.md`.
 - **Espaliers**: three dwarf apples in `plan/landscape.py` (editable) on `TRL-W-S`/`-N` at

@@ -62,12 +62,13 @@ south of it crowds the column.
 
 ### Its own pad
 
-`SL-SG-STAIRPAD`, x 28'-6"..35'-3" by y -9'-0"..-6'-0" — **20.3 sf, 0.25 cy** at 4", on the
+`SL-SG-STAIRPAD`, x 27'-6"..36'-7 7/8" by y -9'-0"..-6'-0" — **27.5 sf, 0.34 cy** at 4", on the
 same `HP_PAD_ON_GRADE` specification and topped at the same -2'-8" as the equipment pad, so
 the flight's authored base is the surface it actually lands on. The west edge is `W-SG-E1`'s
-east face where the stringers foot; the flight covers x 28'-6"..32'-2"; and the 3'-1" east of
-that is **R311.7.6's bottom landing**, which wants 36" in the direction of travel and gets
-37".
+east face where the stringers foot; the flight covers x 27'-6"..31'-2"; and everything east
+of that is **R311.7.6's bottom landing**, which wants 36" in the direction of travel and gets
+5'-6". The east edge is walk leg `SL-WK-D`'s west edge less a 1/2" isolation joint: since
+2026-09-23 the pad is the walk's south end, and the 1'-4" connector `SL-WK-E` is gone.
 
 It shared one 56.9 sf pour with the condensers for a day. They are 2'-8" apart in y now, and
 the smallest rectangle covering both is 94 sf — 54 sf of concrete to save one form, which at

@@ -64,11 +64,11 @@ def test_sidewalk_quantities(catlin_model_ro) -> None:
 
     bom = bill_of_materials(catlin_model_ro)
     walk = next(r for r in bom["structural_solids"] if r.get("assembly") == "SIDEWALK_FRC_CLASS5")
-    assert walk["count"] == 5
-    assert walk["plan_area_sqft"] == pytest.approx(558.8, abs=0.2)
-    assert walk["volume_cubic_yards"] == pytest.approx(6.90, abs=0.01)
+    assert walk["count"] == 4
+    assert walk["plan_area_sqft"] == pytest.approx(554.7, abs=0.2)
+    assert walk["volume_cubic_yards"] == pytest.approx(6.85, abs=0.01)
     base = next(r for r in bom["envelope_layers"] if r["material"] == "mndot-class-5-base")
-    assert base["net_area_sqft"] == pytest.approx(558.8, abs=0.2)
+    assert base["net_area_sqft"] == pytest.approx(554.7, abs=0.2)
     pockets = Counter(e.tag.split("-")[2][0] for e in catlin_model_ro.plan.all_elements()
                       if e.tag.startswith("FO-WK-"))
     assert pockets == {"A": 6, "B": 12, "D": 9}
@@ -129,11 +129,11 @@ def test_the_walk_turns_the_corner_under_open_concrete(catlin_model_ro) -> None:
 def test_planting_counts(catlin_model_ro) -> None:
     rows = {r["item"]: r["quantity"] for r in planting_takeoff(catlin_model_ro)}
     assert rows == {
-        "PT-SCH-JAZZ": 230, "PT-COR-MOONBEAM": 18, "PT-SED-ANGELINA": 3,
-        "PT-HEU-CARAMEL": 3, "PT-PAN-OCTSKY": 10,
+        "PT-SCH-JAZZ": 392, "PT-COR-MOONBEAM": 33, "PT-SED-ANGELINA": 6,
+        "PT-HEU-CARAMEL": 5, "PT-PAN-OCTSKY": 10,
         "PT-PAN-NORTHWIND": 10, "PT-IRI-VERS": 3, "PT-ASC-INCA": 2,
         "PT-CAL-NEPETA": 7, "PT-ALL-MILLENIUM": 7, "PT-SPO-TARA": 7, "PT-SAL-PURP": 6,
         "PT-MAL-HONEYCRISP": 1, "PT-MAL-ZESTAR": 1, "PT-MAL-HARALSON": 1,
         "trellis-post:4x4:kdat": 5, "trellis-wire:12.5 ga high-tensile galvanized": 76.0,
     }
-    assert len(catlin_model_ro.plants) == 309
+    assert len(catlin_model_ro.plants) == 491

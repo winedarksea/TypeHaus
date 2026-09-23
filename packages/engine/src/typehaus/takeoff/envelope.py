@@ -37,7 +37,7 @@ from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
-from typehaus.resolve.sheathing_lap import layer_run_m
+from typehaus.resolve.sheathing_corner import layer_run_m
 
 _M2_TO_FT2 = 10.7639104
 _M_TO_FT = 3.280839895
@@ -121,7 +121,7 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
     blind = _blind_deduction_m2(model, wall, layer)
     axis_run: float = length(sub(wall.axis[1], wall.axis[0]))
     mean_top = ((wall.top_z0_m or wall.z1_m) + (wall.top_z1_m or wall.z1_m)) / 2.0
-    # Sheathing runs off its own polygon (a lapping corner panel is longer than the axis);
+    # Sheathing runs off its own polygon (a through corner panel is longer than the axis);
     # ``sheet_goods_takeoff`` measures the same run, so the two sections agree.
     run = (layer_run_m(layer, axis_run)
            if layer.function == LayerFunction.SHEATHING.value else axis_run)

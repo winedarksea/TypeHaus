@@ -73,12 +73,13 @@ RG_BEDS = [
 ]
 
 # --- the Longwood grid ------------------------------------------------------------------
-# South of W-RG-BLOCK (south face -33'-10", levelling pad to about -34'-6"), 15" square.
+# South of W-RG-BLOCK (south face -33'-10", levelling pad to about -34'-6"), 15" square,
+# out to 1'-0" inside the west, east and rear lot lines.
 # One accent in nine on a diagonal lattice, mostly 'Moonbeam': from the house and the porch
 # the field still reads as one lawn-like texture.
 GRID_BED = PlantingBed(
     uid="GRDNPB0004", tag="PB-S-GRID", type_ref="PT-SCH-JAZZ",
-    outline=_rect(4.0, -46.0, 32.0, -34.5),
+    outline=_rect(-6.0, -47.5, 42.0, -34.5),
     grid=_GRID, ground_elevation=ft(-3, -4),
     accents=AccentRule(type_refs=("PT-COR-MOONBEAM", "PT-COR-MOONBEAM", "PT-COR-MOONBEAM",
                                   "PT-SED-ANGELINA", "PT-COR-MOONBEAM", "PT-COR-MOONBEAM",

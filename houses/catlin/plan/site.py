@@ -579,16 +579,16 @@ SITE = Site(
             far_elevation=ft(-2, -8.75),
             kind="pad",
         ),
-        # SL-SG-STAIRPAD, x 27'-6"..34'-3" by y -9'-0"..-6'-0" — 20.3 sf, the flight and its
-        # bottom landing. It is 5'-2" clear of the house so R401.3's within-10-feet rule is
-        # the only thing that reaches it at all; it falls 2" EAST over its 6'-9" run, 2.5%,
-        # carrying meltwater off the treads away from the porch wall rather than along it.
+        # SL-SG-STAIRPAD, x 27'-6"..36'-7 7/8" by y -9'-0"..-6'-0" — 27.5 sf, the flight, its
+        # bottom landing, and the walk's south end into leg D. It is 5'-2" clear of the house,
+        # inside R401.3's 10' band; it falls 3" away from the court wall and the house, toward
+        # the open SE corner, rather than back along the porch wall.
         ImperviousSurface(
             label="porch stair pad",
-            outline=(pt(ft(27, 6), ft(-9)), pt(ft(34, 3), ft(-9)),
-                     pt(ft(34, 3), ft(-6)), pt(ft(27, 6), ft(-6))),
+            outline=(pt(ft(27, 6), ft(-9)), pt(ft(36.66), ft(-9)),
+                     pt(ft(36.66), ft(-6)), pt(ft(27, 6), ft(-6))),
             near_elevation=ft(-2, -8),
-            far_elevation=ft(-2, -10),
+            far_elevation=ft(-2, -11),
             kind="stair",
         ),
         # ** THE DRIVEWAY, NEW 2026-09-09. ** The garage's overhead door faced a lot with no

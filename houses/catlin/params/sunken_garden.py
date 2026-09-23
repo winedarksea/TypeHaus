@@ -85,6 +85,8 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.model.structure import CompliantLayer
 from params.column_heads import HETA20Z_PAIR_HEAD
 from params.roof_trim import _WALL_OUTBOARD_IN
+from params.landscape_walk import D_X0 as WALK_D_X0
+from params.landscape_walk import GAP_FT as WALK_GAP_FT
 from params.sunken_garden_options import OPTION
 
 # ** THE POUR DOES NOT MOVE WHEN THE WASH IS ADDED, AND THIS IS WHAT HOLDS THAT. **
@@ -1793,8 +1795,9 @@ FROST_WINGS = [
 # shared a band; they are 2'-8" apart in y now, and a rectangle spanning both would be 94 sf
 # of concrete to serve 40. HP_PAD carries the row, STAIR_PAD (down with PORCH_STAIR) carries
 # the flight and its landing, and between them they are 39.8 sf / 0.49 cy against the one
-# pad's 56.9 / 0.70. Two forms for less concrete and less hardscape is the trade, and at
-# this size the forms are the cheaper half.
+# pad's 56.9 / 0.70 (STAIR_PAD has since grown east to meet the walk: see below). Two forms
+# for less concrete and less hardscape is the trade, and at this size the forms are the
+# cheaper half.
 #
 # ** HP_PAD: x 29'-0"..32'-7", y -3'-4"..-0'-10" — 8.96 sf, 0.11 cy at 4". ** The north
 # edge stops 3" short of the cladding rather than butting it: there is no isolation joint to
@@ -2215,13 +2218,14 @@ _y_porch_guard_block = _y_ax_front + 2.0 / 12.0
 # `bearing_refs`: the flight hosts itself between two solids, and a tag there that names no
 # wall on `from_storey` is an `integrity.stair_bearing` error rather than a permission.
 #
-# ** STAIR_PAD: x 28'-6"..35'-3", y -9'-0"..-6'-0" — 20.3 sf, 0.25 cy at 4". ** Its own pour,
-# poured to `_HP_PAD_TOP` so the flight's authored base is the pad it actually lands on. The
-# west edge is W-SG-E1's east face, where the stringers foot; the flight itself covers x
-# 28'-6"..32'-2"; and the 3'-1" east of that is R311.7.6's bottom landing, which wants 36"
-# in the direction of travel and gets 37". It is 2'-8" clear of HP_PAD in y, so the two are
-# separate rectangles and not one L — a single pour spanning both would be 94 sf to serve 40.
-_STAIR_PAD_X1 = _PORCH_STAIR_X1 + 37.0 / 12.0  # 35.25' — 37" of landing past the bottom riser
+# ** STAIR_PAD: x 27'-6"..36'-7 7/8", y -9'-0"..-6'-0" — 27.5 sf, 0.34 cy at 4". ** Its own
+# pour, poured to `_HP_PAD_TOP` so the flight's authored base is the pad it actually lands
+# on. The west edge is W-SG-E1's east face, where the stringers foot; the flight itself
+# covers x 27'-6"..31'-2"; and everything east of that is R311.7.6's bottom landing, 5'-6"
+# against its 36". The east edge runs to walk leg D (SL-WK-D) less its 1/2" isolation joint,
+# so the pad IS the walk's south end — no separate connector slab. It is 2'-8" clear of
+# HP_PAD in y, so the two are separate rectangles and not one L.
+_STAIR_PAD_X1 = WALK_D_X0 - WALK_GAP_FT  # 36.66' — the walk's west edge, less the joint
 
 STAIR_PAD = Slab(
     uid="SGSPADAAAA", tag="SL-SG-STAIRPAD", assembly="HP_PAD_ON_GRADE",

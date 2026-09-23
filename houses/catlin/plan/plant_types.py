@@ -22,7 +22,6 @@ FOLIAGE_MATERIALS = (
     _foliage("foliage-bluestem", "Little bluestem foliage, blue-green", "#7d9a8c"),
     _foliage("foliage-moonbeam", "Coreopsis foliage with pale-yellow bloom", "#c9c96a"),
     _foliage("foliage-chartreuse", "Sedum 'Angelina' foliage, chartreuse", "#b8c93c"),
-    _foliage("foliage-caramel", "Heuchera 'Caramel' foliage, apricot", "#c2804a"),
     _foliage("foliage-october-sky", "Switchgrass 'October Sky' foliage, blue-green", "#6f9486"),
     _foliage("foliage-northwind", "Switchgrass 'Northwind' foliage, olive to blue-green",
              "#62805a"),
@@ -69,7 +68,7 @@ PLANT_TYPES = (
               bloom="yellow, June; chartreuse foliage, orange in winter", source=_TYPICAL),
     PlantType(tag="PT-HEU-CARAMEL", botanical_name="Heuchera villosa", cultivar="Caramel",
               common_name="coral bells", form="perennial", mature_height=inch(12),
-              mature_spread=inch(18), foliage_material="foliage-caramel",
+              mature_spread=inch(18), foliage_material="foliage-perennial",
               bloom="apricot-caramel foliage all season", source=_TYPICAL),
     # --- the rain garden floor (zone 1); 'Jazz' takes the rim and slopes (zone 3) -----------
     PlantType(tag="PT-PAN-OCTSKY", botanical_name="Panicum virgatum",
@@ -113,7 +112,7 @@ PLANT_TYPES = (
               bloom="airy seed heads, August", source=_TYPICAL),
     PlantType(tag="PT-SAL-PURP", botanical_name="Salvia officinalis", cultivar="Purpurascens",
               common_name="purple sage", form="shrub", mature_height=inch(18),
-              mature_spread=inch(18), foliage_material="foliage-caramel",
+              mature_spread=inch(18), foliage_material="foliage-perennial",
               bloom="purple-grey foliage, sub-shrub", source=_TYPICAL),
     # --- the espaliers: three Minnesota cultivars that pollinate one another --------------
     PlantType(tag="PT-MAL-HONEYCRISP", botanical_name="Malus domestica", cultivar="Honeycrisp",

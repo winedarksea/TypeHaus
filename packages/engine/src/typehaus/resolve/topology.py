@@ -33,7 +33,7 @@ from typehaus.resolve.model import (
 )
 from typehaus.resolve.orientation import resolve_storey_windings, wall_outward_sign
 from typehaus.resolve.rooms import wall_lining_overrides
-from typehaus.resolve.sheathing_lap import lap_sheathing
+from typehaus.resolve.sheathing_corner import butt_sheathing
 
 _EPS = 1e-4  # meters — cavity-insulation coincidence tolerance
 _DIRECTION_EPS = 1e-9
@@ -609,7 +609,7 @@ def _classify_tier(plan: PlanModel, node_tag: str, storey_tag: str,
         framing_owner=framing_owner,
         supported=supported,
         diagnostic=diagnostic,
-        sheathing_lap=framing_owner if kind == "l" else None,
+        sheathing_through=framing_owner if kind == "l" else None,
     )
 
 
@@ -778,7 +778,7 @@ def _clip_l_corner(walls: dict[str, ResolvedWall], junction: ResolvedJunction) -
             )
             clipped_rings[index] = _normalized_ring(Polygon(clipped), layer.polygon)
         walls[own.wall_tag] = _with_layer_polygons(wall, clipped_rings)
-    lap_sheathing(walls, junction, unclipped, _normalized_ring)
+    butt_sheathing(walls, junction, unclipped, _normalized_ring)
 
 
 def _through_envelope(walls: dict[str, ResolvedWall], wall_tags: tuple[str, ...]):

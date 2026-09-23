@@ -36,7 +36,7 @@ POCKET_R_IN = 8.0
 POCKET_OC_FT = 4.0
 _END_INSET_FT = 2.0              # the minimum; the run's slack is split between both ends
 _FACETS = 16
-_GAP = 0.5 / 12.0
+GAP_FT = 0.5 / 12.0             # isolation joint
 
 # Pocket-zone centres across the section, from the leg's reference edge (feet).
 FULL = (20.0 / 12.0, 72.0 / 12.0)    # 12 + 8, and 92 - 20
@@ -61,15 +61,15 @@ def _rect(x0, y0, x1, y1):
 #    pad's north edge, clear of the unit's defrost.
 # D: the house east side, one-sided 64", off the NE/SE corner trims (x=36'-7 7/8") plus 1/2".
 #    It absorbs the old side patio; no pockets along the patio's 12' (y 10'..22').
-# E: the walk-only joint into SL-SG-STAIRPAD (east edge x=35'-3"), at the pad's own top.
-A = _rect(24.0 + _GAP, 67.29 + _GAP, 37.78, 67.29 + _GAP + 92.0 / 12.0)
-B = _rect(30.07 + _GAP, 42.98 + _GAP, 37.78, A[0][1])
-D_X0 = 36.66 + _GAP
+# No leg E: SL-SG-STAIRPAD (params/sunken_garden.py) runs east to D's west edge, less the
+#    1/2" joint, and is the walk's south end.
+A = _rect(24.0 + GAP_FT, 67.29 + GAP_FT, 37.78, 67.29 + GAP_FT + 92.0 / 12.0)
+B = _rect(30.07 + GAP_FT, 42.98 + GAP_FT, 37.78, A[0][1])
+D_X0 = 36.66 + GAP_FT
 D_X1 = D_X0 + 64.0 / 12.0
-C = ((30.0 + _GAP, 39.6), (D_X1, 39.6), (D_X1, B[0][1]), (30.5 + _GAP, B[0][1]),
-     (30.5 + _GAP, 41.98 - _GAP), (30.0 + _GAP, 41.98 - _GAP))
+C = ((30.0 + GAP_FT, 39.6), (D_X1, 39.6), (D_X1, B[0][1]), (30.5 + GAP_FT, B[0][1]),
+     (30.5 + GAP_FT, 41.98 - GAP_FT), (30.0 + GAP_FT, 41.98 - GAP_FT))
 D = _rect(D_X0, -9.0, D_X1, 39.6)
-E = _rect(35.25 + _GAP, -9.0, D_X0 - _GAP, -6.0)
 
 # NO POCKET SITS AT A LEADER'S FOOT, and neither east leader can have one: TR-RF-LEADER-E
 # stands at x=36'-10 9/16", over leg D's 36" walking band, where a 16" void would leave
@@ -148,9 +148,7 @@ def _slab(leg: str, ring, top=TOP) -> Slab:
                 openings=tuple(o.tag for o in OPENINGS.get(leg, ())))
 
 
-SLABS = [_slab("A", A), _slab("B", B), _slab("C", C), _slab("D", D),
-         # Flush with the stair pad it runs into.
-         _slab("E", E, top=ft(-2, -8))]
+SLABS = [_slab("A", A), _slab("B", B), _slab("C", C), _slab("D", D)]
 
 POCKET_BED = PlantingBed(
     uid="GRDNPB0005", tag="PB-WK-POCKETS", type_ref="PT-CAL-NEPETA",
@@ -171,8 +169,6 @@ IMPERVIOUS = (
                       near_elevation=TOP, far_elevation=ft(-3), kind="walk"),
     ImperviousSurface(label="walk D, house east", outline=_ring(D),
                       near_elevation=TOP, far_elevation=ft(-2, -11), kind="walk"),  # 2" over 7.2'
-    ImperviousSurface(label="walk E, into the porch stair pad", outline=_ring(E),
-                      near_elevation=ft(-2, -8), far_elevation=ft(-2, -8.75), kind="walk"),
 )
 
 MAIN_ELEMENTS = [*SLABS, *(o for leg in OPENINGS.values() for o in leg), POCKET_BED]
