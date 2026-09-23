@@ -101,10 +101,13 @@ def test_catlin_is_pinned_so_a_campaign_can_see_itself(catlin_ctx) -> None:
     FS-ATTIC's deck in the open and now stands inside W-A-STU-W, between the 21'-4" and
     22'-0" studs, where the wall's own plate is the hole's frame. The on-member count is
     untouched, which is the point of pinning the two separately — D2 moved ducts, and not
-    one of them was landing on a joist."""
+    one of them was landing on a joist.
+
+    27/19 on 2026-09-23: PR-B-CW-SBATH's riser stepped off truss joist-0-020 (now a clear
+    drilled hole) and PR-B-HW-WASH's off joist-0-016 (now clear, but a 2.88" jacket)."""
     fails = _by_result(catlin_ctx, Result.FAIL)
     on_member = [f for f in fails if "lands on the member" in f.message]
     undrawn = [f for f in fails if "FRAMED, NOT DRILLED" in f.message]
-    assert len(on_member) == 29
-    assert len(undrawn) == 18
+    assert len(on_member) == 27
+    assert len(undrawn) == 19
     assert len(fails) == len(on_member) + len(undrawn)

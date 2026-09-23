@@ -133,8 +133,9 @@ def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
     """
     row = next(r for r in bom["wood_surfaces"] if r["material"] == "marble-look-panel")
     assert row["kind"] == "override"
-    assert float(row["net_area_sqft"]) == pytest.approx(42.0, abs=0.05)
-    assert float(row["order_area_sqft"]) == 47.0
+    # + RM-A-STUBATH's WP-A-STUBATH-SURR (2026-09-23), the same two 3' x 7' bands.
+    assert float(row["net_area_sqft"]) == pytest.approx(84.0, abs=0.05)
+    assert float(row["order_area_sqft"]) == 93.0
     assert not row.get("species")
     # Billed here and nowhere else: the panel is in no assembly layer and no floor finish,
     # which is also why the Glaser walk never reaches it and it buys no new UNKNOWN.

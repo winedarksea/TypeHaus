@@ -284,9 +284,12 @@ Every hole is a hole in the only barrier.
   in that table was a lap of material some other table already bought, and foam in a rim
   cavity is in no assembly and no other table.
 - **`FX-S-BALC-HYD` pierces `W-S-S1`** — a wall hydrant whose escutcheon is outdoors, plus
-  `PA-S-BALC-HYD-SEAT` behind it. A freeze-proof hydrant body passing through the liner into
-  a −15 °F wall is both a vapour leak and a cold surface. Needs a sealed, insulated sleeve
-  detail (`plans/TODO.md`).
+  `PA-S-BALC-HYD-SEAT` behind it. Its bore (`AO-S-BALC-HYD`, blind 12" from outside) stops
+  1 1/4" short of the humid membrane, so the liner is not pierced; what the barrel crosses is
+  the ccSPF air/vapour plane into a −15 °F wall. **Closed 2026-09-23 by `SP-S-BALC-HYD`**
+  (`plan/mep_supply_plant.py`): a 2 1/2" PVC sleeve set in the sheathing, taped to it, foam
+  sprayed tight to it, the annulus foamed over the barrel's elastomeric sleeve, and the
+  escutcheon gasket at the cladding. `mep.exterior_hydrant_protection` grades both halves.
 - Electrical boxes, the `ED-S-PLANT-LT` fan-light, the grow-tube suspension points and the
   register boots are all vapour-tight or gasketed to the membrane.
 - **Cavity "canary" RH sensors** in a south and a west stud bay. The liner has no redundancy;
@@ -379,7 +382,13 @@ misted or hosed.
    CLOSED 2026-09-03: the door is deleted, `WIN-S-PLANT4` takes its station, and balcony
    access is `D-S-DECK-E` off the study. See Openings.
 2. ~~**Floor drain** — confirm.~~ CLOSED 2026-09-11, and the answer is **no drain and no
-   basin**. The stated need was never a sink: it is *watering that runs while the house is
+   basin**. **2026-09-23: an interior supply was added anyway** — the owner does not count
+   the hydrant, whose thread is outdoors. `PR-M-CW-PLANT-STUB` tees off the hydrant riser in
+   `W-S-S1`'s bay to `PA-S-PLANT-WATER-STUB`, a capped 1/2" stop in a recessed box 14" AFF,
+   gasketed to the membrane (`plan/mep_supply_plant.py`). The no-drain answer below stands
+   for it: bench trays take the drip, the cove holds a spill, and the controller it will
+   feed should be a valve that shuts on a floor leak sensor. Hard-piping irrigation off it
+   is P2902.5.3's case (PVB or RPZ). The stated need was never a sink: it is *watering that runs while the house is
    empty*. That is an irrigation question, and irrigation takes no fixture.
    - **The room is served by `FX-S-BALC-HYD`**, already modelled: `PR-M-CW-BALC-HYD` rises
      inside `W-S-S1` to the seat at 2'-0" over the balcony deck, with

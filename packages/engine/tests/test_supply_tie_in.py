@@ -34,7 +34,7 @@ def test_the_basement_branches_derive_their_trunk(catlin_model_ro) -> None:
 
 def test_every_supply_run_gets_a_record_and_most_get_a_parent(catlin_model_ro) -> None:
     records = list(_records(catlin_model_ro).values())
-    assert len(records) == 29
+    assert len(records) == 30  # + PR-M-CW-PLANT-STUB, 2026-09-23
     # 23 tee onto a run; the 24th is PR-B-HW-TRUNK, fed by the water heater's hot port.
     assert sum(rec.accepted for rec in records) == 24
     # Every basement branch, which is what a campaign needs to re-lane supply at all.

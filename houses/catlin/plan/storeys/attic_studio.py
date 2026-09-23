@@ -38,11 +38,13 @@ from typehaus import (
     FollowRoof,
     Node,
     Occupancy,
+    PanelingSpan,
     PublishedSpan,
     Room,
     StructuralRole,
     ToRoof,
     Wall,
+    WallPaneling,
     from_node,
     ft,
     inch,
@@ -476,4 +478,19 @@ ALARMS = [
 # and returns PASS — "walls close the well". No railing, no `Wall.guard`. THE ONE THING THE MODEL
 # CANNOT SAY: until these partitions are stood there is a ~109 sf hole with a 9'-0" drop in the
 # middle of the attic deck. That is a job-site guard and a sequencing note, not an element.
-ATTIC_ELEMENTS = [*NODES, *WALLS, *OPENINGS, *FLOOR_OPENINGS, *ROOMS, *ALARMS]
+# FX-A-STUBATH-SH's two closed sides, on WP-M-BATH2-SURR's pattern (plan/storeys/main.py): the
+# neo-angle's base and glass enclosure close the cut corner, not the walls. Stations are the pan's
+# 36" legs along each axis: W-A-HALL-S from x=10'-0" (pan x 14'-8 5/8"..17'-8 5/8") and W-A-C2M
+# from y=17'-4" (pan y 19'-1 5/8"..22'-1 5/8"); both end on the other wall's finish face.
+# `height=ft(7)` is the type's own. `spans` keeps the band off the bath's other walls.
+PANELING = [
+    WallPaneling(uid="FV9CBHVTNC", tag="WP-A-STUBATH-SURR", room="RM-A-STUBATH",
+                 material_ref="marble-look-panel", height=ft(7),
+                 replaces_wall_finish=True,
+                 spans=(PanelingSpan(wall_ref="W-A-HALL-S", start=ft(4, 8.625),
+                                     length=ft(3)),
+                        PanelingSpan(wall_ref="W-A-C2M", start=ft(1, 9.625),
+                                     length=ft(3)))),
+]
+
+ATTIC_ELEMENTS = [*NODES, *WALLS, *OPENINGS, *FLOOR_OPENINGS, *ROOMS, *ALARMS, *PANELING]
