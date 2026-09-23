@@ -25,6 +25,11 @@ class JoistSpec(HausModel):
     # Species group, for a deck: IRC Table R507.6 is species-split, and None reads its most
     # restrictive (redwood/cedar) row.
     species: Literal["southern_pine", "df_hf_spf", "redwood_cedar"] | None = None
+    # Extra full-span joist lines at these perpendicular coordinates (project frame), in the
+    # field's own member: continuous backing for an attachment that runs WITH the joists.
+    # Not a sister (``JoistReinforcement``). Must stand at least 6" off every regular line,
+    # or it would share that joist's derived tie (``joints/bearing.py``'s 6" grid).
+    extra_lines: tuple[Length, ...] = ()
     # Overhang past the two outermost bearing lines (a balcony/porch deck cantilevers its
     # joist tips beyond the beam so the decking covers them). None = flush ends.
     cantilever: Length | None = None

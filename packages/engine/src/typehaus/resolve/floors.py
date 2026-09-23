@@ -131,13 +131,16 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         position += spacing
     if positions and positions[-1] < perp1 - 1e-6:
         positions.append(perp1)
+    extra, findings = _extra_lines(system, positions, perp0, perp1)
 
     # Anything shorter than the joist's own depth is bearing seat, not span. An opening
     # drawn to a bearing wall's *near face* stops short of the bearing line the span is cut
     # at, and the remainder — 3 3/8" of deck over the top plate, where the trimmer actually
     # sits — is not a joist. Emitting it put stub members in the frame and the take-off.
     min_segment_m = _member_depth_m(spec.member)
-    for index, perp in enumerate(positions):
+    lines = [(f"{index:03d}", perp) for index, perp in enumerate(positions)]
+    lines += [(f"x{index:02d}", perp) for index, perp in enumerate(extra)]
+    for index, perp in lines:
         for span_index in range(len(boundaries) - 1):
             a, b = boundaries[span_index], boundaries[span_index + 1]
             # Cantilever only the two outer joist tips past the outermost bearing lines;
@@ -158,7 +161,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                     p0, p1 = (perp, segment_a), (perp, segment_b)
                 lifted = lift(perp)
                 members.append(FramedMember(
-                    system.uid, f"joist-{span_index}-{index:03d}-{segment_index}", "joist",
+                    system.uid, f"joist-{span_index}-{index}-{segment_index}", "joist",
                     spec.member, p0, p1, z0 + lifted, z1 + lifted, segment_b - segment_a,
                 ))
 
@@ -261,7 +264,34 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         deck_z0_m=deck_z0_m, deck_z1_m=deck_z1_m, ends=ends,
         through_walls=tuple(w.tag for w in through_walls),
         deck_material_ref=(system.subfloor.material_ref if system.subfloor else None),
-    ), []
+    ), findings
+
+
+#: An extra line closer than this to a regular one would share its derived tie.
+_EXTRA_LINE_MIN_M = inch(6).meters
+
+
+def _extra_lines(system: FloorSystem, positions: list[float], perp0: float,
+                 perp1: float) -> tuple[list[float], list[Finding]]:
+    """``JoistSpec.extra_lines`` inside the field and clear of every regular line."""
+    kept: list[float] = []
+    findings: list[Finding] = []
+    for length in system.joists.extra_lines:
+        perp = length.meters
+        nearest = min((abs(perp - p) for p in positions), default=float("inf"))
+        why = ("lies outside the joist field" if not perp0 < perp < perp1
+               else f"is {nearest / inch(1).meters:.2f}\" from a regular joist line, under "
+                    f"the 6\" that keeps its own tie" if nearest < _EXTRA_LINE_MIN_M - 1e-9
+               else None)
+        if why is None:
+            kept.append(perp)
+            continue
+        findings.append(Finding(
+            severity=Severity.ERROR, check_id="integrity.floor_extra_line",
+            message=f"floor {system.tag}: extra joist line at "
+                    f"{perp / inch(12).meters:.3f}' {why}; it is not laid",
+            element_tags=(system.tag,), result=Result.FAIL))
+    return sorted(kept), findings
 
 
 # --- concentrated-load reinforcement --------------------------------------------------
