@@ -155,18 +155,25 @@ SUPPLY = [
     # bearing line, and steps up to 8'-4 5/8" at x=9'-6" — the closest clear station, since
     # x=9'-9" is still inside the blocking. Two elbows, four inches west of the wall, and
     # the other 36 feet of the trunk is on the convention.
+    #
+    # ** NEITHER STEP MAY LAND ON A JOIST (2026-09-23). ** mep.run_in_joist_flange: at
+    # y=35'-0" the step took joist-0-010-1's bottom flange, and at (17'-6", 16'-0") the drop
+    # stood in joist-0-012 (the y=16' band is that joist's plane). The west leg rides
+    # y=34'-10", and the east drop is at (17'-5", 16'-2 1/4"), in the bay north of 012,
+    # clear of W-B-CS2's pour and PR-B-HW-KITCH's drop.
     PipeRun(uid="CBPW30AAAA", tag="PR-B-CW-TRUNK", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(35, 6)), pt(ft(11), ft(35)),
-                  pt(ft(9, 6), ft(35)), pt(ft(9, 6), ft(35)),
-                  pt(ft(4, 9), ft(35)), pt(ft(4, 9), ft(16)),
-                  pt(ft(8), ft(16)), pt(ft(17, 6), ft(16)), pt(ft(17, 6), ft(16)),
+            path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(35, 6)), pt(ft(11), ft(34, 10)),
+                  pt(ft(9, 6), ft(34, 10)), pt(ft(9, 6), ft(34, 10)),
+                  pt(ft(4, 9), ft(34, 10)), pt(ft(4, 9), ft(16)),
+                  pt(ft(8), ft(16)), pt(ft(17, 5), ft(16)), pt(ft(17, 5), ft(16, 2.25)),
+                  pt(ft(17, 5), ft(16, 2.25)), pt(ft(17, 5), ft(16)),
                   pt(ft(29, 9.6), ft(16)),
                   pt(ft(29, 9.6), ft(34, 1.2)), pt(ft(29, 9.6), ft(34, 1.2))),
             diameter=inch(1.25), material="copper", finish="lacquered",
             elevations=(inch(2), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
                         ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
-                        ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
-                        ft(7, 10.6375), ft(12, 7.4375)),
+                        ft(8, 4.6375), ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
+                        ft(7, 10.6375), ft(7, 10.6375), ft(12, 7.4375)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK",
                     "FX-M-LAUNDRY", "FX-M-KITCH-SINK",
@@ -187,10 +194,14 @@ SUPPLY = [
     # seven against `resolve/mep_ports.placed_ports` BY SERVICE: a hot run that lands on the
     # cold tap now fails, which the centroid test it replaced could not see.
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(5, 10), ft(24)), pt(ft(5, 10), ft(24)),
-                  pt(ft(6, 6), ft(19, 2.4)), pt(ft(6, 6), ft(15, 6))),
+            path=(pt(ft(5, 10), ft(24)), pt(ft(5, 10), ft(24)), pt(inch(73.6), inch(262)),
+                  pt(ft(6, 6), ft(19, 2.4)), pt(ft(6, 6), ft(19, 2.4)),
+                  pt(ft(6, 6), ft(15, 6))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(5, 8), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375)),
+            # The diagonal dips to 8'-0" from y=21'-10" to 19'-2.4": at the hot band its jacket
+            # took 1.31" of FS-M-WEST's sister-1 bottom flanges (mep.run_in_joist_flange).
+            elevations=(ft(5, 8), ft(8, 1.4375), ft(8), ft(8), ft(8, 1.4375),
+                        ft(8, 1.4375)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
                     "FX-M-KITCH-SINK",
@@ -369,11 +380,10 @@ SUPPLY = [
     #
     # FOUR THINGS KEEP THE PAIR APART AND OFF THE CORNER, AND EVERY ONE IS LOAD-BEARING:
     #   * the cold drops 36" -> 32" at its own riser head and travels the whole way at 32",
-    #     4" under the hot. Both share the y=18'-1" lane, so a shared elevation would be one
-    #     pipe inside the other; stacked is how the pair is actually run in a cavity.
-    #   * the hot jogs 2" west to x=7'-10" before turning south: the cold riser stands at
-    #     x=8'-0" and tops out at exactly the hot's 36" — same lane, same height, and the
-    #     hot leg would run straight through it on its way south from y=21'-2 2/5".
+    #     10" under the hot's 42". Both share the y=18'-1" lane, so a shared elevation would
+    #     be one pipe inside the other; stacked is how the pair is actually run in a cavity.
+    #   * the hot rides 42", over the cold riser's 36" head and the standpipe's 36" top, on
+    #     W-M-BA2E's axis (see PR-B-HW-WASH).
     #   * the cold stops 8" short of the hot (x=11'-6 1/2" against 12'-2 1/2", the bowl
     #     centre +/-4", hot on the LEFT of someone facing the faucet). So the hot's drop at
     #     12'-2 1/2" comes down past 32" east of where the cold's leg ends, and misses it.
@@ -406,16 +416,21 @@ SUPPLY = [
                        "W-M-CLN", "W-M-CLN"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW38AAAA", tag="PR-B-HW-WASH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(5, 10), ft(24)), pt(ft(8, 2), ft(21, 2.4)),
-                  pt(ft(8, 2), ft(21, 2.4)), pt(ft(8, 2), ft(21, 2.4)),
-                  pt(ft(8), ft(21, 2.4)), pt(ft(8), ft(18, 1)),
+            # ** ON W-M-BA2E's AXIS AND 6" OVER THE STANDPIPE (2026-09-23). ** At x=8'-0" the
+            # jacket stood 0.69" proud of the stud plane; on the axis (x=8'-2") it would run
+            # through PR-M-WASH-STANDPIPE, which tops out at 3'-0", so the leg rides 3'-6"
+            # (12'-7 7/16" basement-rel). The riser is at y=20'-9 1/4", the bay south of
+            # joist-0-016 — at 21'-2.4" the jacket took its flanges.
+            path=(pt(ft(5, 10), ft(24)), pt(ft(8, 2), ft(20, 9.25)),
+                  pt(ft(8, 2), ft(20, 9.25)), pt(ft(8, 2), ft(20, 9.25)),
+                  pt(ft(8, 2), ft(18, 1)),
                   pt(ft(8, 6.5), ft(18, 1)), pt(ft(12, 2.5), ft(18, 1)),
                   pt(ft(12, 2.5), ft(18, 1))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375), ft(12, 1.4375),
-                        ft(12, 1.4375), ft(12, 1.4375), ft(12, 1.4375), ft(12, 1.4375),
+            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375), ft(12, 7.4375),
+                        ft(12, 7.4375), ft(12, 7.4375), ft(12, 7.4375),
                         ft(10, 9.4375)),
-            wall_refs=(None, None, "W-M-BA2E", "W-M-BA2E", "W-M-BA2E", None,
+            wall_refs=(None, None, "W-M-BA2E", "W-M-BA2E", None,
                        "W-M-CLN", "W-M-CLN"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     # ** IT STEPS NORTH AND UP TO CROSS RM-B-STAIR (2026-09-09; the heights re-derived
@@ -466,9 +481,11 @@ SUPPLY = [
     # naming the host wall on each leg. Main-storey leg is in a 2x4 partition (3.5" cavity,
     # ample for 3/4" PEX); only the second-storey leg is in a staggered wet wall.
     PipeRun(uid="CBPW40AAAA", tag="PR-B-CW-SBATH", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(4, 9), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 6)),
-                  pt(ft(5, 7.2), ft(26, 6)), pt(ft(5, 7.2), ft(26, 6)),
-                  pt(ft(5, 7.2), ft(26, 6)), pt(ft(5, 7.2), ft(26, 6))),
+            # y=26'-5 1/4", not the wall axis: FS-S-WEST's truss joist-0-020 starts at
+            # 26'-6 1/4", and on the axis the riser took 3/16" of it.
+            path=(pt(ft(4, 9), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 5.25)),
+                  pt(ft(5, 7.2), ft(26, 5.25)), pt(ft(5, 7.2), ft(26, 5.25)),
+                  pt(ft(5, 7.2), ft(26, 5.25)), pt(ft(5, 7.2), ft(26, 5.25))),
             diameter=inch(0.75), material="copper", finish="lacquered",
             # Two inches OVER the band for the length of the branch: its y=26'-6" leg has to
             # cross the cold trunk's own north-south lane, and two 3/4" pipes on one
@@ -524,9 +541,10 @@ SUPPLY = [
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
     PipeRun(uid="CBPW43AAAA", tag="PR-B-HW-SUITE", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(14, 2.4), ft(16, 10.8)),
-                  pt(ft(14, 2.4), ft(16, 10.8)), pt(ft(14, 2.4), ft(22, 4)),
-                  pt(ft(14, 2.4), ft(22, 4)), pt(ft(14, 2.4), ft(22, 4))),
+            # x=14'-3.6": at 14'-2.4" the jacket stood 0.475" inside W-B-HALL-W's stud plane.
+            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(14, 3.6), ft(16, 10.8)),
+                  pt(ft(14, 3.6), ft(16, 10.8)), pt(ft(14, 3.6), ft(22, 4)),
+                  pt(ft(14, 3.6), ft(22, 4)), pt(ft(14, 3.6), ft(22, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(18, 11.4375),
                         ft(18, 11.4375), ft(19, 1.4375), ft(21, 7.4375)),
@@ -914,7 +932,7 @@ STUDIO_SUPPLY = [
             # stays where the wall wants it and the pair is itemised in preferences.toml
             # with this number. The fix is a 2x8 bay, a furred chase, or a thinner sleeve —
             # and the sleeve is an energy-code question (R403.5.3), not a clearance one.
-            path=(pt(ft(14, 2.4), ft(16, 10.8)), pt(ft(9, 7.5), ft(21)),
+            path=(pt(ft(14, 3.6), ft(16, 10.8)), pt(ft(9, 7.5), ft(21)),
                   pt(ft(9, 7.5), ft(21))),
             diameter=inch(0.75), material="copper",
             insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
