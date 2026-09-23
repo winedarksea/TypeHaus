@@ -473,4 +473,16 @@ def whole_house_ventilation(ctx: CheckContext) -> list[Finding]:
     if summary.provided_cfm + 1e-6 < summary.total_rate_cfm:
         return [_fail(cid, f"whole-house ventilation short: {detail}",
                       summary.unit_tags, code)]
+    # The rate is only delivered if a ventilator riding an air handler's ducts runs with
+    # that blower on — an authored control fact (``mep.erv_blower_interlock``).
+    from typehaus.checks.mep.erv_interlock import uninterlocked
+
+    loose = uninterlocked(ctx)
+    if loose:
+        pairs = "; ".join(f"{c.erv} -> {', '.join(c.missing)}" for c in loose)
+        return [_unknown(cid, f"{detail}, but it reaches the rooms through an air handler's "
+                         f"ducts with no blower interlock recorded ({pairs}; "
+                         "Equipment.blower_interlock_ref)",
+                         tuple(sorted({t for c in loose for t in (c.erv, *c.missing)})),
+                         code)]
     return [_pass(cid, f"whole-house ventilation ok: {detail}", code)]

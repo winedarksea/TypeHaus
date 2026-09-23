@@ -17,7 +17,7 @@ CID = "mep.ventilation_distribution"
 
 
 def _run(model):
-    ctx = SimpleNamespace(model=model)
+    ctx = SimpleNamespace(model=model, plan=model.plan)
     return ventilation_distribution(ctx)
 
 
@@ -34,8 +34,9 @@ def _fake_model(rooms, registers):
     plan = SimpleNamespace(
         storeys=[SimpleNamespace(tag="main")],
         storey_elements=lambda tag: registers if tag == "main" else [],
+        all_elements=lambda: registers,
     )
-    return SimpleNamespace(rooms=rooms, plan=plan)
+    return SimpleNamespace(rooms=rooms, plan=plan, ducts=[], canvas_objects=[])
 
 
 def _register(tag, kind, position, room=None):

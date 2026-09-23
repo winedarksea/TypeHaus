@@ -52,9 +52,9 @@ EQUIPMENT_ERV_ATTIC = [
 #     plus depressurisation of the ERV's own ductwork.
 #   * ERV RUNNING, AIR HANDLER OFF — 100 cfm enters a still chamber and leaves through
 #     REG-S-HP-RET into the study, the only low-resistance path. The house still ventilates;
-#     distribution to the other rooms depends on the AH fan turning. That was true of the old
-#     design too and it wants a CONTROLS INTERLOCK (blower continuous, or on ERV call), which
-#     the schema has no field for — so it is written here and in plans/TODO.md. It matters
+#     distribution to the other rooms depends on the AH fan turning. So the ERV calls the AH
+#     fan: EQ-B-ERV.blower_interlock_ref (plan/electrical.py), graded by
+#     mep.erv_blower_interlock. It matters
 #     because code.N1103_6_whole_house_ventilation is already tight, 210 cfm provided against
 #     205 required. (At the 206 cfm HVI actually certifies, tighter still: 206 against 205.
 #     That is the live verdict `ventilation_cfm` moves, and why the field is left at 210

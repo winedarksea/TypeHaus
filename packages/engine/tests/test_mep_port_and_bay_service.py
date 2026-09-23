@@ -248,14 +248,15 @@ def test_the_only_serviceable_face_on_system_1_states_its_filter(catlin_plan):
 
 
 def test_the_new_installation_fields_are_additive_and_default_off(catlin_plan):
-    """No catlin equipment declares any of them yet; the point of the batch is that they
-    have somewhere to live, not that anything changed."""
+    """Additive fields: only the ERV's interlock is authored (``mep.erv_blower_interlock``,
+    tests/test_erv_blower_interlock.py); the rest still default off."""
     equipment = [el for el in catlin_plan.all_elements() if el.element_kind == "Equipment"]
     assert equipment
     for unit in equipment:
         assert unit.behind_access_panel is False
         assert unit.access_panel_ref is None
-        assert unit.blower_interlock_ref is None
+        if unit.tag != "EQ-B-ERV":
+            assert unit.blower_interlock_ref is None
 
 
 def test_a_trap_primer_is_a_pipe_accessory_kind():

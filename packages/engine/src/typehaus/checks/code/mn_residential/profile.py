@@ -240,7 +240,8 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Bathroom and kitchen exhaust", ("code.R303_3_local_exhaust",),
                        ("IRC R303.3", "IRC M1507"), blocking=False),
         PermitItemSpec("Whole-house ventilation rate",
-                       ("code.N1103_6_whole_house_ventilation",),
+                       # The interlock is how an ERV riding an AH's ducts delivers the rate.
+                       ("code.N1103_6_whole_house_ventilation", "mep.erv_blower_interlock"),
                        # Minnesota's own arithmetic, not ASHRAE 62.2's and not the IRC's:
                        # 0.02 cfm/sf + 15 cfm per (bedroom + 1), half of it continuous.
                        ("MN 1322 R403.5",), blocking=False),
