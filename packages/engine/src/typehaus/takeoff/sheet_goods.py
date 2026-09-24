@@ -122,7 +122,7 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             under = deck_structure_underside_m(storey, system)
             voids = deck_void_face(model.plan, storey.tag, system, model.walls, under)
             ceiling = framed - (0.0 if voids is None else voids.area)
-            for layer in system.ceiling_below:
+            for layer in _sheets(model, system.ceiling_below):
                 areas[("ceiling", layer.material_ref, layer.thickness.meters,
                        layer_sheet_length_in(layer))] += ceiling
 
@@ -138,7 +138,7 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 abs(polygon_area([point.xy_m for point in opening.outline]))
                 for opening in model.plan.storey_elements(storey.tag)
                 if isinstance(opening, FloorOpening) and opening.tag in slab.openings))
-            for layer in slab.ceiling_below:
+            for layer in _sheets(model, slab.ceiling_below):
                 areas[("ceiling", layer.material_ref, layer.thickness.meters,
                        layer_sheet_length_in(layer))] += net
 
@@ -155,10 +155,10 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         # that deck never billed (catlin's RM-B-GYM is 234 SF of FS-M-EAST and 90 of
         # SL-M-DECK, not 324 of each).
         for region in ceiling_regions(model.plan, room.storey, face, model.walls):
-            for layer in region.deck.ceiling_below:
+            for layer in _sheets(model, region.deck.ceiling_below):
                 areas[("ceiling", layer.material_ref, layer.thickness.meters,
                        layer_sheet_length_in(layer))] -= region.face.area
-        for layer in plan_room.ceiling_lining:
+        for layer in _sheets(model, plan_room.ceiling_lining):
             areas[("ceiling", layer.material_ref, layer.thickness.meters,
                    layer_sheet_length_in(layer))] += room.area_m2
 
@@ -181,3 +181,13 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     return sorted(rows + rip_sheet_rows(rips),
                   key=lambda row: (str(row["scope"]), str(row["material"]),
                                    float(str(row["thickness_in"]))))
+
+
+def _sheets(model: ResolvedModel, layers) -> list:
+    """The layers of a ceiling stack that are hung as sheets.
+
+    A coating is not a sheet: ``takeoff/derived_paint.py`` bills an authored ceiling coat
+    by area instead of ordering it here as a stack of 4x8s.
+    """
+    return [layer for layer in layers
+            if not getattr(model.plan.library.material(layer.material_ref), "coating", False)]

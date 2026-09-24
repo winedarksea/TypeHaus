@@ -2503,13 +2503,14 @@ GARAGE_ROOF = Assembly(
     # board for a ceiling. It is also what GARAGE_WALL_2X6's lining already uses, so the
     # garage is one board thickness throughout.
     #
-    # NO PAINT LAYER, and that is a decision rather than an omission (owner):
-    # the ceiling is taped and primed, not finished. GARAGE_WALL_2X6 keeps its paint, so
-    # the garage is board-and-paint on the walls and board-and-primer overhead. A
-    # `latex-paint` layer here would bill a finish coat nobody is applying; the primer
-    # coat itself is not a modelled layer, so it rides in whatever the `gwb` row's
-    # hang-tape-finish labour is taken to cover — the one thing this stack under-bills.
+    # PRIMER, NOT PAINT, and that is a decision rather than an omission (owner): the
+    # ceiling is taped and primed, not finished. GARAGE_WALL_2X6 keeps its paint, so the
+    # garage is board-and-paint on the walls and board-and-primer overhead. The primer is
+    # authored so the board is not bare: bare gypsum facing a room is billed paint
+    # (takeoff/derived_paint.py).
     default_lining=(
+        Layer(name="primer", material_ref="gwb-primer", thickness=inch(0.01),
+              function=LayerFunction.FINISH),
         Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
@@ -2560,7 +2561,8 @@ CANOPY_ROOF = Assembly(
 # löyly room), INT_2X6_BRG_EXPOSED_PLY (exposed wood faces, already hardwax-oil
 # finished), the masonry/concrete/deck/glazing assemblies (no gypsum face), POST_WHITE_PAINT
 # (its own exterior-paint material), and INT_2X4_PARTITION (a tested STC assembly — see
-# library/assemblies.py for why it doesn't get layers added).
+# library/assemblies.py for why it doesn't get layers added). A gypsum face left bare and
+# facing a room is still billed paint, by takeoff/derived_paint.py.
 # LAYOUT_ORIGIN, INTERIOR. The five bearing assemblies below join the four
 # facades on ``layout_origin="line"``. The facades were done first because they are what you
 # look at; the centreline is the one that actually matters structurally. `W-M-C1..C5B`,

@@ -245,7 +245,8 @@ HOUSE_ROOF = Assembly(
 # core) rather than in ``default_lining`` (the finish tier a room may override). Adding a
 # layer to a stack whose whole value is that it matches a specific tested build is how the
 # cited STC stops describing what is drawn. These walls are painted in reality; the paint is
-# a finish-schedule fact about the rooms either side, not part of the rated assembly.
+# a finish-schedule fact about the rooms either side, not part of the rated assembly, and
+# ``takeoff/derived_paint.py`` bills it on every face that bounds a used room.
 # ** THE CAVITY IS EMPTY, AND THAT IS A DELIBERATE OWNER DECISION. **
 #
 # None of the walls this preset carries is somewhere sound isolation is worth paying for,

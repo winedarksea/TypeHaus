@@ -107,6 +107,7 @@ _SOLID_IFC_CLASS: dict[str, tuple[str, str | None]] = {
     "movement_joint": ("IfcCovering", None),
     "beam_cap": ("IfcCovering", None),
     "eave_soffit": ("IfcCovering", None),
+    "ceiling": ("IfcCovering", "CEILING"),
     "thermal_break": ("IfcBuildingElementProxy", None),
     # stormwater (→ emit/trades.py DRAINAGE_CATEGORIES)
     "gutter": ("IfcPipeSegment", "GUTTER"),
@@ -150,8 +151,21 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
         _assign_solid_material(f, element, solid, model)
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": solid.uid, "tag": solid.tag,
                                                "category": solid.category})
-    ll.assign_container(f, element, storeys[solid.storey])
+    ll.assign_container(f, element, storeys[_container_storey(solid, model)])
     return element
+
+
+def _container_storey(solid: Any, model: Any) -> str:
+    """The storey IFC contains ``solid`` in.
+
+    A ceiling is filed under the deck that hangs it so the viewer hides it with that level,
+    but IFC's convention is the room's storey, which its ``ResolvedCeiling`` still carries.
+    """
+    if solid.category == "ceiling" and model is not None:
+        ceiling = next((c for c in model.ceilings if c.tag == solid.tag), None)
+        if ceiling is not None:
+            return ceiling.storey
+    return solid.storey
 
 
 def _solid_body(f: Any, body: Any, solid: Any) -> Any:

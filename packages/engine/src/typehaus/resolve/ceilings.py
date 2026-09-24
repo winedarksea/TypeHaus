@@ -70,7 +70,7 @@ def resolve_ceilings(plan: PlanModel, model: ResolvedModel) -> None:
             if resolved_room is None or len(resolved_room.clear_face) < 3:
                 continue
             face = Polygon(resolved_room.clear_face)
-            for uid, tag, outline, layers, structure_z in _pieces(
+            for uid, tag, outline, layers, structure_z, host in _pieces(
                     plan, storey.tag, room, face, resolved_room.clear_face, model.walls):
                 z0 = None if structure_z is None else structure_z - sum(
                     layer.thickness.meters for layer in layers)
@@ -81,16 +81,23 @@ def resolve_ceilings(plan: PlanModel, model: ResolvedModel) -> None:
                 ))
                 if z0 is not None and z1 is not None:
                     finish = finish_layer(layers)
+                    # The solid is filed under the deck that hangs it, like the deck's joists
+                    # and its resilient channel (resolve/construction_ceiling.py): hiding a
+                    # level in 3D lifts the lid off the rooms below. The record keeps the
+                    # room's storey — MEP routing reads it as the room's floor.
                     model.solids.append(ResolvedSolid(
-                        uid, tag, storey.tag, "ceiling", outline, z0, z1,
+                        uid, tag, host, "ceiling", outline, z0, z1,
                         material=finish.material_ref if finish is not None else None,
                     ))
 
 
 def _pieces(plan: PlanModel, storey_tag: str, room: Any, face: Polygon,
             clear_face: Ring,
-            walls: Sequence[Any] = ()) -> Iterator[tuple[str, str, Ring, Stack, float | None]]:
-    """``(uid, tag, outline, layers, structure_z)`` per ceiling this room resolves.
+            walls: Sequence[Any] = ()) -> Iterator[tuple[str, str, Ring, Stack, float | None, str]]:
+    """``(uid, tag, outline, layers, structure_z, host)`` per ceiling this room resolves.
+
+    ``host`` is the storey the ceiling hangs from: the covering deck's, or the room's own
+    where a roof on its storey carries it.
 
     A room whose ceiling resolves to ONE plane — under a single deck, under none, or under
     two decks that hang the same board at the same elevation — keeps the plain
@@ -107,7 +114,8 @@ def _pieces(plan: PlanModel, storey_tag: str, room: Any, face: Polygon,
         layers, structure_z = _no_deck_stack(plan, storey_tag, room)
         if not layers:
             return
-        yield f"{room.uid}-ceiling", f"CEIL-{room.tag}", clear_face, layers, structure_z
+        yield (f"{room.uid}-ceiling", f"CEIL-{room.tag}", clear_face, layers, structure_z,
+               storey_tag)
         return
     planes: dict[tuple[float, StackKey], list[tuple[Any, Stack]]] = {}
     for region in regions:
@@ -121,7 +129,7 @@ def _pieces(plan: PlanModel, storey_tag: str, room: Any, face: Polygon,
         region, layers = group[0]
         if not any(part.voided for part, _ in group):
             yield (f"{room.uid}-ceiling", f"CEIL-{room.tag}", clear_face, layers,
-                   region.structure_z_m)
+                   region.structure_z_m, region.storey.tag)
             return
         # A deck opening took a bite out of the plane, so the room's clear face is no
         # longer the ceiling's outline — a stair well is open to the storey above and has
@@ -131,7 +139,7 @@ def _pieces(plan: PlanModel, storey_tag: str, room: Any, face: Polygon,
         for index, part in enumerate(_merged(group), start=1):
             nth = "" if index == 1 else f"-{index}"
             yield (f"{room.uid}-ceiling{nth}", f"CEIL-{room.tag}{nth}", part, layers,
-                   region.structure_z_m)
+                   region.structure_z_m, region.storey.tag)
         return
     for group in planes.values():
         region, layers = group[0]
@@ -143,7 +151,7 @@ def _pieces(plan: PlanModel, storey_tag: str, room: Any, face: Polygon,
         for index, part in enumerate(_merged(group), start=1):
             nth = "" if index == 1 else f"-{index}"
             yield (f"{room.uid}-{stem}{nth}", f"CEIL-{room.tag}-{region.deck.tag}{nth}",
-                   part, layers, region.structure_z_m)
+                   part, layers, region.structure_z_m, region.storey.tag)
 
 
 def _stack_key(layers: Stack) -> StackKey:

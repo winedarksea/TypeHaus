@@ -38,6 +38,7 @@ from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
 from typehaus.resolve.sheathing_corner import layer_run_m
+from typehaus.takeoff.derived_paint import derived_paint_rows
 
 _M2_TO_FT2 = 10.7639104
 _M_TO_FT = 3.280839895
@@ -268,7 +269,7 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 areas[(scope, lining_layer.function.value, lining_layer.material_ref,
                        lining_layer.thickness.meters)] += net_m2
 
-    return [
+    rows: list[dict[str, object]] = [
         {"scope": scope, "function": function, "material": material,
          "thickness_in": round(thickness / 0.0254, 3),
          "net_area_sqft": round(area * _M2_TO_FT2, 1),
@@ -281,6 +282,8 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                                  and scope != "slab")}
         for (scope, function, material, thickness), area in sorted(areas.items())
     ]
+    # The paint no assembly authors, on exposed gypsum facing a used room.
+    return rows + derived_paint_rows(model, net_areas)
 
 
 def bug_screen_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

@@ -744,6 +744,19 @@ ALL_MATERIALS: tuple[Material, ...] = (
         "is a mid-band value biased to the tight end of that spread, quoted as a "
         "band midpoint rather than as a single published test result",
     ),
+    # A board that is taped and primed but not finished. Authoring it is what says so: an
+    # exposed gypsum face with no coating is billed paint by ``takeoff/derived_paint.py``.
+    # No vapour fields: nobody has sourced one coat's permeance, so a conditioned assembly
+    # carrying it grades UNKNOWN rather than on an invented number.
+    Material(
+        tag="gwb-primer",
+        name="Drywall primer (1 coat)",
+        r_per_inch=0.0,
+        color="#efeae2",
+        coating=True,
+        source="one coat of drywall primer over taped gypsum board; a coating, so it "
+        "adds no plane of its own and bills by area",
+    ),
     # --- mineral silicate coatings -----------------------------------------------------------
     #
     # An untinted white potassium-silicate ("mineral") wash, for bare mineral substrates that

@@ -28,7 +28,8 @@ def test_the_sleeve_spans_the_sheathing_to_the_cladding_face(catlin_model_ro):
     # W-S-S1: cladding face -7 1/4", sheathing inner face +1/2". Studs and liner unsleeved.
     assert sleeve.length_m / M_PER_IN == pytest.approx(7.75, abs=0.01)
     ys = [y / M_PER_IN for solid in catlin_model_ro.solids
-          if solid.tag.startswith(f"{_TAG}-B") for _x, y in solid.outline]
+          if solid.tag == _TAG and solid.category == "pipe_sleeve"
+          for _x, y in solid.outline]
     assert min(ys) == pytest.approx(-7.25, abs=0.01)
     assert max(ys) == pytest.approx(0.5, abs=0.01)
 

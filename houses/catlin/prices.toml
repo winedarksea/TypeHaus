@@ -3868,7 +3868,13 @@
 # Re-quoted 2026-08-23 for the **10" beam** (8" base panel + 2" top hat), not the 8" panel
 # the old rate was taken from: 25% more EPS in the section, and one more piece per bay to set.
 "eps-deck-form" = { material = { low = 6.25, high = 8.75 }, labour = { low = 4.5, high = 8 } }  # 414 SF — 10" LiteDeck forms only; ready-mix is in [concrete]
-"latex-paint" = { material = { low = 0.35, high = 0.8 }, labour = { low = 1.2, high = 2.2 } }  # 7004.9 SF — ~75/25 LABOUR to material
+# Authored paint layers AND the derived rows (`wall (derived)` / `ceiling (derived)`,
+# takeoff/derived_paint.py: exposed gypsum facing a used room with no coat authored).
+"latex-paint" = { material = { low = 0.35, high = 0.8 }, labour = { low = 1.2, high = 2.2 } }  # 14,936 SF authored + derived — ~75/25 LABOUR to material
+# The garage ceiling's one coat (owner: taped and primed, not painted). Material only: a
+# 5-gal PVA primer at $60-100 covers ~1,500 SF, and the labour rides in the `gwb` row's
+# hang-tape-finish rate.
+"gwb-primer" = { material = { low = 0.04, high = 0.07 }, labour = { low = 0, high = 0 } }  # 576 SF
 # 2026-08-08: the accent colour, 80 SF. A deep/custom base runs above a builder white and
 # the coverage per gallon is worse, so it sits a step over the `latex-paint` row.
 # homeguide.com 2026: $15-50/gal at 350-400 SF per gallon per coat.

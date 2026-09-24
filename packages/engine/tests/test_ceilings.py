@@ -121,9 +121,24 @@ def test_no_deck_falls_back_to_the_storeys_own_roof(catlin_model) -> None:
     the bottom chord, so it still resolves a flat plane and a drawable solid."""
     ceiling = _ceiling(catlin_model, "RM-GARAGE")
     assert ceiling is not None
-    assert [layer.material_ref for layer in ceiling.layers] == ["gwb"]
+    assert [layer.material_ref for layer in ceiling.layers] == ["gwb-primer", "gwb"]
     assert ceiling.z0_m is not None and ceiling.z1_m is not None
-    assert _solid(catlin_model, ceiling.tag) is not None
+    solid = _solid(catlin_model, ceiling.tag)
+    assert solid is not None
+    assert solid.storey == ceiling.storey == "garage"  # its roof is on its own storey
+
+
+def test_a_ceiling_solid_is_filed_under_the_deck_that_hangs_it(catlin_model) -> None:
+    """Hiding a level in 3D must lift the lid off the rooms below, so the board goes with
+    the deck (the resilient channel's filing); the record keeps the room's storey, which is
+    the floor MEP routing measures from."""
+    for room_tag, deck_storey in (("RM-M-LIVING", "second"), ("RM-S-BED1", "attic"),
+                                  ("RM-B-PLAY-N", "main")):
+        ceiling = _ceiling(catlin_model, room_tag)
+        assert ceiling is not None
+        room = next(r for r in catlin_model.rooms if r.tag == room_tag)
+        assert ceiling.storey == room.storey
+        assert _solid(catlin_model, ceiling.tag).storey == deck_storey
 
 
 def test_a_room_straddling_two_decks_resolves_a_ceiling_per_plane(catlin_model) -> None:

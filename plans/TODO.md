@@ -199,7 +199,7 @@ the future.
   `code.R311_3_exterior_landing` can now union two abutting surfaces into one landing. What
   remains is the datum question itself, and it is an owner decision rather than a nudge:
   widening the gap back to a nominal 5" pushes the court 2.25" south and FAILs D-B-PATIO.
-- Figure out a space for a cat litter box.
+- Figure out a space for a cat litter box. Options: either a cat door on the current vanity planned (no change) or a wall mounted sink leaving space for a self emptying litter box.
 - **A library catalog type cannot name a house-owned `Product`.** `ED-T-EV-1450` lives in
   `library/electrical.py` and the Leviton 1450R is authored in `houses/catlin/plan/products.py`,
   so the `product_ref` cannot be made: `houses/starter` would resolve it to nothing and take an
