@@ -328,6 +328,10 @@ NODES = [
     # `resolve/topology.py` builds junctions from wall *endpoints* only, so the tee needs its
     # own segment here regardless of how short W-M-STRW2 south of it gets.
     Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 6))),
+    # W-M-WELL's ends: FO-M-STAIR's south edge (the stairhead) and ST-M2S's upper
+    # half-landing edge. Both free.
+    Node(uid="4YBM7GZBJZ", tag="N-M-WELL-S", position=pt(ft(14), ft(26, 0.375)), open_end=True),
+    Node(uid="0RW1TEC7JH", tag="N-M-WELL-N", position=pt(ft(14), ft(31, 0.375)), open_end=True),
     # W-M-BAE shifts 2' east; the mudroom door remains at its existing
     # 6" tee clearance.
     #
@@ -763,6 +767,16 @@ WALLS = [
     # level on the well's south edge, so the west lane is a flight to step onto rather than a
     # drop — the same argument already made for ST-M2S's lane in the STAIRS comment below.
     # Both lanes now read open to RM-M-LIVING.
+    # The well partition between ST-B2M's arriving lane (west) and ST-M2S's departing lane
+    # (east), brought down to the stairhead: 2x4 + 1/2" gwb each face, from the floor, so
+    # the 4 1/2" slot at the head of the stairs is wall rather than a guard
+    # (RL-M-STAIRHEAD, retired 2026-09-23). Same device as W-B-WELL: the stair generates
+    # the studs (inset 0.20 m from each end), this wall adds the faces and carries no
+    # FramingSpec — see STAIRWELL_PARTITION_4H. Top at 9'-0" like every main wall: higher
+    # runs into FO-S-STAIR's south trimmer (structural.through_deck_clearance).
+    Wall(uid="SNNBY9M3CE", tag="W-M-WELL", start_node="N-M-WELL-S", end_node="N-M-WELL-N",
+         assembly="STAIRWELL_PARTITION_4H", top=ft(9),
+         interior_room="RM-M-LIVING"),
     Wall(uid="CMW119AAAA", tag="W-M-STOS", start_node="N-M-W1",
          end_node="N-M-BA1", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW120AAAA", tag="W-M-STOS2", start_node="N-M-BA1",
@@ -2164,7 +2178,7 @@ SLABS = [
 # mirrored so the east lane carries the flight up to second. The head carries no guard across
 # either lane and does not need one: ST-B2M's top nosing is at floor level on the west and
 # ST-M2S's first tread is at floor level on the east, so both are a flight to step onto, not
-# a drop. Only the 4 1/2" of well partition between them is a real edge — see STAIR_GUARDS.
+# a drop. The 4 1/2" of well partition between them is W-M-WELL, down to the floor.
 # ** THE TWO ENDS ARE WALKING SURFACES, NOT STOREY DATA. ** A storey elevation on a wood
 # bay is the TOP OF JOISTS (params/main_deck.py) and the floor underfoot is 15/16" above it
 # — 3/4" subfloor plus the 6 mm plank. Left to derive its rise from the storey table this
@@ -2215,39 +2229,6 @@ STAIRS = [
 # STAIR_HANDRAILS): each rail sits 2" off its lane's wall face and runs the flight's span.
 # The west rail moved 2 5/8" west on 2026-08-24 with the wall face it is mounted to
 # (x=10'-3 3/8" now); the east one is on W-B-CN's concrete and did not move.
-# The well partition's south end, capped.
-#
-# W-M-STRS used to close the head of the stairs; when it and D-M-STAIR came out, both
-# lanes opened to RM-M-LIVING and `code.R312_1_guard` immediately named what the wall had
-# been covering by accident: FO-M-STAIR's south edge from 13'-9 3/4" to 14'-2 1/4". West of
-# that is ST-B2M's throat (you step onto the flight), east of it is ST-M2S's first tread at
-# floor level — but the 4 1/2" between them is the well partition's reservation, and that
-# strip is open from the basement slab to the second floor. Nothing can fall *through* 4 1/2",
-# but it is more than R312.1.3's 4" sphere and it is a foot-catcher at the top of a flight.
-#
-# So it gets closed the way its twin one storey up is: same family, same faces. This is
-# RL-S-STAIRHEAD's west end continued down a floor — that guard starts at x=13'-9 3/4", the
-# partition's west face, and this one runs the partition's own 4 1/2" width to 14'-2 1/4",
-# where ST-M2S's throat takes over. In the field it is a newel: a post either side of a
-# 4 1/2" infill panel, bolted to the trimmer closing FO-M-STAIR's south edge.
-STAIR_GUARDS = [
-    Railing(
-        uid="QXKXMWEX1W", tag="RL-M-STAIRHEAD", type_ref="RAILING-INT-STAIR-GUARD", path=(
-            pt(ft(13, 9.75), ft(26, 0.375)),
-            pt(ft(14, 2.25), ft(26, 0.375)),
-        ),
-        kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
-        base_elevation=ft(0), post_spacing=inch(60), post_size="2x2", rail_count=2,
-        mount="fascia", assembly="RAILING_DARK_METAL",
-        # `infill="panel"`, not the balusters its twin upstairs carries: 4 1/2" between two
-        # 2x2 posts leaves no bay to picket, and authoring balusters here made
-        # `code.R312_1_guard_opening` UNKNOWN — it holds a drawn gap against the authored one
-        # and there is no drawn gap to hold. A solid lite admits no sphere by construction,
-        # which is both what the rule wants and what gets built at this width.
-        infill="panel",
-    ),
-]
-
 STAIR_HANDRAILS = [
     Railing(
         uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", path=(
@@ -2554,5 +2535,5 @@ POSTS = [
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT,
-            *FLOOR_OPENINGS, *SLABS, *STAIRS, *STAIR_GUARDS, *STAIR_HANDRAILS, *BEAMS, *PANELING,
+            *FLOOR_OPENINGS, *SLABS, *STAIRS, *STAIR_HANDRAILS, *BEAMS, *PANELING,
             *POSTS, *CONNECTORS]

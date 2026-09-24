@@ -45,6 +45,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     routing_openings,
     run_in_slab,
     run_interference,
+    run_through_furnishing,
     soakaway_storage,
     sump_discharge,
     supply_protection,

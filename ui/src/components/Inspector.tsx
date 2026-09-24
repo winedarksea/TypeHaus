@@ -8,7 +8,7 @@ import { StairDesigner } from "./StairDesigner";
 import { Provenance } from "./Provenance";
 import { ProductRows } from "./ProductRows";
 import { productFor } from "../model/products";
-import { FloorInspector, FootingBeddingInspector, LightRunInspector, MemberUidInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
+import { FloorInspector, FootingBeddingInspector, LightRunInspector, MemberUidInspector, PanelingInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
 import { locateUid } from "../state/locate";
 import { useIsCompact } from "../hooks/useBreakpoint";
 import { Sheet } from "./ui/Sheet";
@@ -259,6 +259,10 @@ function SelectionInspector({
   }
   if (kind === "member") {
     return <MemberUidInspector model={model} uid={uid} />;
+  }
+  if (kind === "paneling") {
+    const bands = (model.panelings ?? []).filter((item) => item.uid === uid);
+    return bands.length ? <PanelingInspector bands={bands} /> : null;
   }
   return null;
 }

@@ -60,10 +60,9 @@ def test_the_rectangle_is_the_run_by_the_thickness(bands):
 def test_the_drawn_band_agrees_with_the_billed_area(bands, catlin_model):
     """run x band height, reconciled against ``area_m2`` plus the openings it subtracts.
 
-    ``area_m2`` is net of the openings punching the band and the outline deliberately is not
-    (a door reveal covers the punch), so the two reconcile through the openings rather than
-    being equal. Pinning it this way is what stops the polygon and the order drifting apart:
-    change either one alone and this fails.
+    ``area_m2`` is net of the openings punching the band and the gross outline is not, so the
+    two reconcile through the openings rather than being equal. Pinning it this way is what
+    stops the polygon and the order drifting apart: change either one alone and this fails.
     """
     for band in (b for b in bands if b.outline):
         height = band.z1_m - band.z0_m
@@ -83,6 +82,35 @@ def test_the_drawn_band_agrees_with_the_billed_area(bands, catlin_model):
                 punched += min(opening.width_m, band.run_m) * dz
         assert gross - band.area_m2 <= punched + 1e-6, \
             f"{band.tag} on {band.wall_tag}: more area subtracted than its openings punch"
+
+
+def test_the_drawn_pieces_are_the_billed_area(bands):
+    """``pieces`` is the band net of its openings: face area summed equals ``area_m2``."""
+    for band in (b for b in bands if b.outline):
+        drawn = sum(max(_edges(ring)) * (z1 - z0) for ring, z0, z1 in band.pieces)
+        assert drawn == pytest.approx(band.area_m2, abs=1e-6), \
+            f"{band.tag} on {band.wall_tag}: drawn pieces disagree with the billed area"
+
+
+def test_the_study_wainscot_stops_at_its_door(bands, catlin_model):
+    """No piece of the walnut may cross D-M-STUDY — the gross rectangle was drawn across it."""
+    door = next(o for o in catlin_model.openings if o.tag == "D-M-STUDY")
+    wall = catlin_model.wall(door.host_wall)
+    hole = Polygon(_band_outline_of(wall, door)).buffer(-1e-4)
+    host = [b for b in bands if b.tag == "WP-M-STUDY-WAINSCOT" and b.wall_tag == wall.tag]
+    assert host and len(host[0].pieces) == 2, "the door splits the band in two"
+    for ring, _, _ in host[0].pieces:
+        assert not Polygon(ring).intersects(hole), "a wainscot piece crosses D-M-STUDY"
+
+
+def _band_outline_of(wall, opening):
+    """The opening's plan footprint across the whole wall depth."""
+    from typehaus.resolve.geometry import add, rect_between, scale, sub, unit
+
+    d = unit(sub(wall.axis[1], wall.axis[0]))
+    a = add(wall.axis[0], scale(d, opening.center_along_m - opening.width_m / 2.0))
+    b = add(wall.axis[0], scale(d, opening.center_along_m + opening.width_m / 2.0))
+    return rect_between(a, b, -0.5, 0.5)
 
 
 def test_a_band_sits_on_its_room_side_of_the_wall(bands, catlin_model):

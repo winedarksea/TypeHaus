@@ -196,13 +196,14 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     # colour resolves through the catalog material, the same path the viewer's
     # `materialColor` takes, so the two agree (→ glb-emitter-parity).
     for band in sorted(model.panelings, key=lambda item: (item.uid, item.wall_tag)):
-        if not band.outline or band.z0_m is None or band.z1_m is None:
-            continue
-        if band.z1_m <= band.z0_m:
+        # ``pieces`` is the band net of its openings; the gross outline would cross a door.
+        pieces = [(ring, z0, z1) for ring, z0, z1 in band.pieces if z1 > z0]
+        if not pieces:
             continue
         mb = _MeshBuilder()
-        mb.add_prism(band.outline, band.z0_m, band.z1_m,
-                     _material_finish_color(band.material_ref, "finish", authored))
+        color = _material_finish_color(band.material_ref, "finish", authored)
+        for ring, z0, z1 in pieces:
+            mb.add_prism(ring, z0, z1, color)
         scene.add_object(mb, ("millwork",), kind="paneling", uid=band.uid)
 
     for bedding in sorted(model.footing_beddings, key=lambda item: item.uid):

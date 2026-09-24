@@ -857,15 +857,16 @@ class ResolvedPaneling:
     # (a wall whose axis is degenerate). Consumers must treat that as "no geometry", never as
     # a zero-area band: the area above is still right and still bills.
     #
-    # NOTE ``area_m2`` is net of the openings that punch the band; ``outline`` is NOT. A
-    # rectangle is what a band is, and the punches are already subtracted from the number
-    # that gets ordered — cutting them out of the polygon too would need the opening voids
-    # threaded through every downstream consumer for a hole you cannot see from inside the
-    # room anyway (a door reveal covers it).
+    # NOTE ``outline`` is the GROSS rectangle (run x thickness), the one ``area_m2`` was
+    # measured on before its openings were subtracted. What gets DRAWN is ``pieces``.
     outline: Ring = ()
     z0_m: float | None = None
     z1_m: float | None = None
     thickness_m: float = 0.0
+    # The drawable band net of its openings: ``(outline, z0_m, z1_m)`` per piece, absolute
+    # elevations. A band stands proud of the wall, so drawing the gross rectangle laid the
+    # study's walnut straight across D-M-STUDY.
+    pieces: tuple[tuple[Ring, float, float], ...] = ()
 
 
 @dataclass(frozen=True)

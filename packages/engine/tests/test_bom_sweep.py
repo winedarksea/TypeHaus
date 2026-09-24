@@ -37,9 +37,6 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     rows = [row for row in bom["railings"] if row["style"] != "masonry"]
     # RL-G-SERVICE is the handrail on the garage service stair, new because the *stair* is
     # new, and R311.7.8 asks for a handrail on any flight of four or more risers.
-    # RL-M-STAIRHEAD is 4 1/2" of panel guard closing the well partition's end; it bills as a
-    # railing row like any other — 0.4 LF on a real product, rather than leaving a hole off
-    # the BOM entirely.
     # RL-A-FLIGHT-GUARD is 6'-0" of raked guard on ST-S2A's own open south side, meeting
     # RL-A-STAIR (the attic deck edge, same y=5'-4" line) at a newel; RL-A-FLIGHT-SKIRT
     # (2026-09-16, the twenty-first) closes the band under the deck framing west of it.
@@ -54,7 +51,8 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # another. RL-BW-WEST stood 1 1/2" west of SC-BW-WEST — two elements an inch apart doing
     # one job — and the screen line took the guard over. RL-BW-GARAGE-W went with it: the
     # interior landing stands against W-G-W, and a wall is its own guard.
-    assert sum(int(row["count"]) for row in rows) == 21
+    # RL-M-STAIRHEAD left 2026-09-23: W-M-WELL closes the main stairhead instead.
+    assert sum(int(row["count"]) for row in rows) == 20
     masonry = [row for row in bom["railings"] if row["style"] == "masonry"]
     assert [row["tags"] for row in masonry] == [["W-BW-SCREEN"]]
     assert all(row["post_count"] == 0 and row["bracket_count"] == 0 for row in masonry), \
@@ -90,7 +88,7 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # RL-SG-PORCH's south leg 19'-0" -> 17'-0" (9'-6" to 26'-6"). No side leg moved.
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(38.8, abs=0.1)
     assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(40.7, abs=0.1)
-    # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run join the
+    # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run joined the
     # group, but the well's east leg is inside the roof past x=29'-4 1/2" (a 42" guard's top
     # at 282" meets the roof underside there) and carries nothing — a raked ToRoof partition,
     # W-A-GC-S, closes that stretch instead, since the east edge has no R312.1.1 walking
@@ -101,7 +99,8 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # 22.5 since 2026-09-16: the attic well's south edge moved to y=5'-4" and the two rails
     # stopped overlapping — RL-A-FLIGHT-GUARD ends at the 26'-5 3/8" newel (10'-0" -> 6'-0")
     # and RL-A-STAIR starts at the head (x 22'-5 3/8", plus a 5 5/8" return).
-    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(22.5, abs=0.1)
+    # 22.1 since 2026-09-23: RL-M-STAIRHEAD's 0.4 LF left with it.
+    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(22.1, abs=0.1)
     # 45.6 over four storey groups, and this is the catch-all: every guard or handrail that
     # names no `type_ref` lands here. RL-A-HANDRAIL's 13.0 runs beside ST-S2A's winder fan as
     # well as its straight flight (per R311.7.8.2, measured by `code.R311_7_8_handrail`
@@ -134,7 +133,7 @@ def test_railing_infill_counts_reconcile_against_the_models_own_solids(catlin_mo
     grouping.
 
     Scoped to the baluster guards: ``railing_infill`` is the category for
-    every style of infill solid, and RL-M-STAIRHEAD's is a single panel lite, billed as
+    every style of infill solid, and RL-A-FLIGHT-SKIRT's are panel lites, billed as
     ``panel_count``/``panel_area_sqft`` and never as a picket. Counting the raw category
     against ``baluster_count`` would report the panel as a missing picket, which is why the
     panel assertion below counts it on its own terms."""
@@ -150,13 +149,12 @@ def test_railing_infill_counts_reconcile_against_the_models_own_solids(catlin_mo
 
 
 def test_panel_infill_is_billed_by_its_lite_not_as_a_picket(catlin_model, bom):
-    """RL-M-STAIRHEAD is 4 1/2" closing the well partition's end at the head of the main
-    stairs, too narrow for a picket bay: one infill solid, one panel. RL-A-FLIGHT-SKIRT is the
-    raked skirt under the attic deck, two panels. Neither may land in the picket column."""
+    """RL-A-FLIGHT-SKIRT is the raked skirt under the attic deck, two panels, and may not land
+    in the picket column."""
     billed = sum(int(row.get("panel_count") or 0) for row in bom["railings"])
     drawn = len([s for s in catlin_model.solids if s.category == "railing_infill"
-                 and s.tag.startswith(("RL-M-STAIRHEAD-", "RL-A-FLIGHT-SKIRT-"))])
-    assert billed == drawn == 3
+                 and s.tag.startswith("RL-A-FLIGHT-SKIRT-")])
+    assert billed == drawn == 2
 
 
 def test_railing_post_counts_reconcile_against_the_models_own_posts(catlin_model, bom):

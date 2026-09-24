@@ -1349,8 +1349,8 @@ export interface Roof {
 // drawn where the wall's own face is, not where the room's clear face is (those differ on a
 // wall with an unusual liner; see resolve/paneling.py `_room_side_offset`).
 //
-// `area_m2` is net of the openings punching the band; `outline` is the plain rectangle and is
-// NOT. That is the engine's choice, not an oversight — see ResolvedPaneling.
+// `area_m2` is net of the openings punching the band; `outline` is the gross rectangle and is
+// NOT. `pieces` is what gets drawn: the band with its doors and windows cut out.
 export interface Paneling {
   uid: string;
   tag: string;
@@ -1369,6 +1369,9 @@ export interface Paneling {
   z0_m: number | null;
   z1_m: number | null;
   thickness_m: number;
+  // Absent on older model.json; the builder falls back to the gross outline.
+  pieces?: { outline: Vec2[]; z0_m: number; z1_m: number }[];
+  provenance?: Provenance | null;
 }
 
 // Slabs, pads, and footings — a resolved horizontal or below-grade solid with a plan

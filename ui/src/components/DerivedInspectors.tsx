@@ -5,8 +5,9 @@
 // where did it come from?" — none of them is editable in place; the edit lives on the element
 // or rule that produced it, which `Provenance` points at.
 import type {
-  FootingBedding, Floor, LightRun, Model, Roof, Solid, SolarPanel, Vec2,
+  FootingBedding, Floor, LightRun, Model, Paneling, Roof, Solid, SolarPanel, Vec2,
 } from "../model/types";
+import { Fragment } from "react";
 import { formatFtIn } from "../model/geometry";
 import { locateMember, type LocatedMember, type MemberOwnerKind } from "../model/memberIdentity";
 import { RebarInspector, rebarHostSelectionKind } from "./RebarInspector";
@@ -111,6 +112,45 @@ export function LightRunInspector({ run }: { run: LightRun }) {
     </div>
     <Provenance p={run.provenance} />
     <DerivedNote source="its authored LightRun element" />
+  </div>;
+}
+
+const SF_PER_M2 = 10.7639;
+
+// One paneling uid resolves to a record per wall it covers, so the panel shows the band whole
+// and then wall by wall. Area is net of openings; run is the gross stretch of each wall.
+export function PanelingInspector({ bands }: { bands: readonly Paneling[] }) {
+  const model = useStore((s) => s.model);
+  const band = bands[0];
+  const area = bands.reduce((total, one) => total + one.area_m2, 0);
+  const run = bands.reduce((total, one) => total + one.run_m, 0);
+  return <div>
+    <h3>Wall paneling · {band.tag}</h3>
+    <div className="kv">
+      <span className="k">Material</span><span>{band.material_ref}</span>
+      <ProductRows product={productForMaterial(model, band.material_ref)} />
+      <span className="k">{band.room ? "Room" : "Layout line"}</span>
+      <span>{band.room ?? band.layout_line ?? "—"}</span>
+      <span className="k">Mode</span>
+      <span>{band.replaces_wall_finish ? "replaces the wall finish" : "applied over the wall finish"}</span>
+      {band.z0_m !== null && band.z1_m !== null && <>
+        <span className="k">Band height</span><span>{formatFtIn(band.z1_m - band.z0_m)}</span>
+        <span className="k">Elevation</span><span>{formatFtIn(band.z0_m)} → {formatFtIn(band.z1_m)}</span>
+      </>}
+      <span className="k">Thickness</span><span>{formatFtIn(band.thickness_m)}</span>
+      <span className="k">Run</span><span>{formatFtIn(run)} on {bands.length} wall{bands.length === 1 ? "" : "s"}</span>
+      <span className="k">Area (net)</span><span>{(area * SF_PER_M2).toFixed(1)} sf</span>
+      {bands.map((one) => (
+        <Fragment key={one.wall_tag}>
+          <span className="k">↳ {one.wall_tag}</span>
+          <span>{formatFtIn(one.run_m)} · {(one.area_m2 * SF_PER_M2).toFixed(1)} sf</span>
+        </Fragment>
+      ))}
+      <span className="k">Storey</span><span>{band.storey}</span>
+      <span className="k">uid</span><span className="prov">{band.uid}</span>
+    </div>
+    <Provenance p={band.provenance ?? null} />
+    <DerivedNote source="its authored WallPaneling element" />
   </div>;
 }
 

@@ -125,6 +125,11 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     outline = ([] if toward is None else
                                _band_outline(wall, lo, hi, toward, thickness_m,
                                              el.replaces_wall_finish))
+                    pieces = () if not outline else tuple(
+                        (_band_outline(wall, a, b, toward, thickness_m,
+                                       el.replaces_wall_finish),
+                         wall.base_ref_z_m + z0, wall.base_ref_z_m + z1)
+                        for a, b, z0, z1 in _net_cells(lo, hi, band_z0, band_z1, openings))
                     model.panelings.append(ResolvedPaneling(
                         uid=el.uid, tag=el.tag, storey=wall.storey,
                         room=room.tag if room is not None else None,
@@ -138,8 +143,37 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                         z0_m=None if not outline else wall.base_ref_z_m + band_z0,
                         z1_m=None if not outline else wall.base_ref_z_m + band_z1,
                         thickness_m=thickness_m,
+                        pieces=pieces,
                     ))
     return findings
+
+
+def _net_cells(lo: float, hi: float, z0: float, z1: float, openings) -> list:
+    """The band's ``lo..hi`` x ``z0..z1`` rectangle minus its openings, as ``(u0, u1, z0, z1)``.
+
+    Split along the wall at every opening edge; in each stretch keep the band's height less
+    the openings covering it. The same openings the area subtracts, so drawing and billing
+    punch the same holes.
+    """
+    holes = []
+    for o in openings:
+        a, b = o.center_along_m - o.width_m / 2.0, o.center_along_m + o.width_m / 2.0
+        s0, s1 = o.sill_m, o.sill_m + o.height_m
+        if min(hi, b) - max(lo, a) > 1e-6 and min(z1, s1) - max(z0, s0) > 1e-6:
+            holes.append((a, b, s0, s1))
+    cuts = sorted({lo, hi, *(u for a, b, _, _ in holes for u in (a, b) if lo < u < hi)})
+    cells = []
+    for u0, u1 in zip(cuts, cuts[1:], strict=False):
+        mid = (u0 + u1) / 2.0
+        spans = [(z0, z1)]
+        for a, b, s0, s1 in holes:
+            if not a < mid < b:
+                continue
+            spans = [part for (p0, p1) in spans
+                     for part in ((p0, min(p1, s0)), (max(p0, s1), p1))
+                     if part[1] - part[0] > 1e-6]
+        cells.extend((u0, u1, p0, p1) for p0, p1 in spans)
+    return cells
 
 
 

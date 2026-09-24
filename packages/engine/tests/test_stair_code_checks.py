@@ -364,11 +364,8 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     admits no sphere); RL-SG-PORCH replaced all three and is measured like every other
     railing, off its drawn pickets.
 
-    RL-M-STAIRHEAD (2026-08-24) is the sixth, and the one that passes the way the parapets
-    used to: it is 4 1/2" of guard closing the well partition's end at the head of the main
-    stairs, too narrow for a picket bay, so it is ``infill="panel"`` and admits no sphere by
-    construction. It is deliberately absent from the drawn-gap census in the next test —
-    a panel has no gap to draw.
+    RL-M-STAIRHEAD (a 4 1/2" panel guard at the head of the main stairs) left on
+    2026-09-23: W-M-WELL carries the well partition down to the floor there instead.
 
     RL-A-FLIGHT-GUARD (2026-08-29) is the seventh and the first raked one: a guard on
     ST-S2A's open south side whose top bar is also that flight's second handrail. A
@@ -389,7 +386,7 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     # interior landing moved into the garage's SW corner and W-G-W closes that edge.
     # RL-A-FLIGHT-SKIRT since 2026-09-16: the panel skirt under the attic deck's edge.
     assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-FLIGHT-SKIRT", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",
-                    "RL-M-STAIRHEAD", "RL-S-STAIR",
+                    "RL-S-STAIR",
                     "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE",
                     "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N",
                     "RL-SG-PTHRESH-S", "W-BW-SCREEN"], \

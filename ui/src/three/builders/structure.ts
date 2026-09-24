@@ -304,26 +304,30 @@ export function buildPaneling(parent: THREE.Group, band: Paneling, center: PlanC
   // A band with no derivable side resolves area-only (see resolve/paneling.py). Nothing to
   // draw is the honest outcome, not a degenerate prism at the wall's centreline.
   if (band.outline.length < 3 || band.z0_m === null || band.z1_m === null) return;
-  const geometry = createPlanPrismGeometry(band.outline, band.z0_m, band.z1_m, [], center);
-  if (!geometry) return;
+  const bandZ0 = band.z0_m;
+  // `pieces` is the band net of its openings — the gross outline runs across a door.
+  const pieces = band.pieces ?? [{ outline: band.outline, z0_m: bandZ0, z1_m: band.z1_m }];
   const plankStyle = isWoodPlank(band.material_ref)
     ? plankStyleFor(band.material_ref, authoredAppearance(band.material_ref, materials)?.finish)
     : null;
-  if (plankStyle) {
-    // A wainscot's boards stand vertical unless its wall says otherwise. The band is applied
-    // OVER a finished wall rather than fastened to furring, so there is no furring layer for
-    // `board_run` to derive from — and vertical is what a board wainscot is.
-    applyPlankWallUv(geometry, bandAxis(band.outline), center,
-      plankTileSizeM(plankStyle), band.z0_m, "vertical");
-  }
+  const material = plankStyle
+    ? createPlankMaterial(mode, plankStyle, materialColor(band.material_ref, palette, materials))
+    : standardMaterial(
+      new THREE.Color(materialColor(band.material_ref, palette, materials)), mode);
+  // UVs off the GROSS band's axis and base, so the boards stay in phase across a door.
+  const axis = bandAxis(band.outline);
   const firstChildIndex = parent.children.length;
-  const mesh = makeSurfaceMesh(geometry,
-    plankStyle
-      ? createPlankMaterial(mode, plankStyle,
-        materialColor(band.material_ref, palette, materials))
-      : standardMaterial(
-        new THREE.Color(materialColor(band.material_ref, palette, materials)), mode));
-  parent.add(mesh);
+  for (const piece of pieces) {
+    const geometry = createPlanPrismGeometry(piece.outline, piece.z0_m, piece.z1_m, [], center);
+    if (!geometry) continue;
+    if (plankStyle) {
+      // A wainscot's boards stand vertical unless its wall says otherwise. The band is
+      // applied OVER a finished wall rather than fastened to furring, so there is no furring
+      // layer for `board_run` to derive from — and vertical is what a board wainscot is.
+      applyPlankWallUv(geometry, axis, center, plankTileSizeM(plankStyle), bandZ0, "vertical");
+    }
+    parent.add(makeSurfaceMesh(geometry, material));
+  }
   registerSelectable(parent, firstChildIndex, band.uid, "paneling", picks, byUid);
 }
 
