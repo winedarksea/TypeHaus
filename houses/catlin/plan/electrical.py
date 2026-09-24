@@ -718,6 +718,10 @@ MAIN_EQUIPMENT = [
     # W-M-STRW); rotation 0 (back north, blowing south down the well — contrast 180 on the
     # System 2 heads, -90 on EQ-M-FIREPLACE). Hangs over open well either way (FO-M-STAIR
     # stops at y=35').
+    # ** 3'-0" BASE, UNDER ST-M2S's UPPER LANDING (2026-09-24; was 7'-0"). ** At 7' it sat
+    # 15" above that landing's deck; lowered so it blows down ST-B2M's well to the basement
+    # corner. Top 3'-1 21/32" clears the landing joists (bottom 4'-11 3/4") by 10"; base is
+    # 7'-2 1/2" above ST-B2M's upper landing, over R311.7.2's 6'-8".
     # `room` is RM-M-LIVING, which the stair well is part of. `zone_rooms` is not — it's the
     # mudroom, the mech closet and the mudroom closet; the stair volume it blows into
     # belongs to EQ-M-HP2-LIVING's 768 sf claim, not counted twice here.
@@ -742,7 +746,7 @@ MAIN_EQUIPMENT = [
               position=pt(m(3.66415), m(10.6761)), footprint=(inch(33), inch(8)),
               room="RM-M-LIVING", type_ref="EQ-T-GREE-SAPPHIRE-9", rotation=deg(0),
               outdoor_ref="EQ-M-HP3-OD",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(3)),
               zone_rooms=("RM-M-MUDROOM", "RM-M-MECH", "RM-M-MUD-CLOSET")),
     # --- the fire, moved out of the SE corner 2026-09-06 --------------------------------
     #

@@ -539,12 +539,13 @@ REGISTERS_MAIN = [
     # Geometry: x=10'-3 7/8" backs onto W-M-STRW's stair face (10'-3 3/8"), facing east —
     # the mudroom side is bare 2x6 bay, no opening needed there. y=34'-0" is the only bay
     # wide enough (14 1/2" clear) on this BEARING wall; the bay north is 7 1/8", too narrow
-    # for the 12" face without cutting and heading a stud. z=7'-6" (top 8'-4") matches the
-    # head's 7'-0"..8'-0" band, clear of D-M-ENTRY's head.
+    # for the 12" face without cutting and heading a stud. z=3'-6" (top 4'-4") since
+    # 2026-09-24 (was 7'-6"), dropped with EQ-M-HP3-STAIR under ST-M2S's upper landing:
+    # the top clears that landing's 2x10 ledger on this wall (bottom 4'-9 3/4") by 5 3/4".
     Register(uid="MW7W7SBZ65", tag="REG-M-XFER-MUD", kind=DuctSystem.TRANSFER, room="RM-M-LIVING",
             position=pt(m(3.14904), m(10.5382)), type_ref="REG-T-TRANSFER-1210",
             rotation=deg(90),
-            mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6))),
+            mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
 ]
 
 # Basement terminals hang from the SL-M-DECK underside off the CHASE trunks — except the

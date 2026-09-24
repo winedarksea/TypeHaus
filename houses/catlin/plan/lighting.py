@@ -1047,7 +1047,7 @@ MAIN_LIGHTING = [
     # no north-wall station beside the door; the return wall W-M-STRW takes it, on its
     # mudroom face — x=9'-8 1/8" is ED-M-STORAGE-SW's own face convention on this wall — 7"
     # south of W-M-N2's gyp face and clear of the wall's top stud at 35'-4 5/8". REG-M-XFER-MUD
-    # shares this bay at 7'-6"..8'-4"; a box at 3'-10" is under it, not in it.
+    # (3'-6"..4'-4") is in the bay south, past the stud at 34'-8".
     ElectricalDevice(uid="1XT4G5S2XX", tag="ED-M-ENTRY-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(9, 8.125), ft(34, 10)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", rotation=deg(-90),
