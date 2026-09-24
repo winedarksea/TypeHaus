@@ -733,7 +733,7 @@ TPR_DISCHARGE = [
 # bearing and cut 9" into both (`mep.pit_footing_clearance`). The corner has no clean station:
 # the panels' 110.26 space, the hung ERV and the ESS clearance fill it. Here it clears every
 # footing, all three, and the water heater; its 3" radon leg (PR-B-RADON-LEG) climbs from the
-# sealed lid and crosses the ceiling to the chase, where the riser takes over. That riser
+# sealed pit and runs under the slab to the chase, where the riser takes over. That riser
 # shares the plumbing vent's chase up to 23'-10", then turns
 # out through the north gable siding and back up. ** IT JOGS EAST INSIDE THE ATTIC FIRST **
 # — at x=1'-0" the 6:12 roof underside is 20'-8 1/4" and the riser cannot stand up there at
@@ -801,29 +801,34 @@ RADON_SUMP = [
                 trench_width=inch(6), trench_depth=inch(8),
                 tile=DrainTile(diameter=inch(4), sock=True, discharge="SM-B-RADON"),
                 discharge_ref="SM-B-RADON"),
-    # The sealed lid to the chase: solid 3" PVC up to the ceiling band and across to the
-    # riser's foot, falling back to the pit so condensate drains to it. Basement-relative.
+    # The pit to the chase: solid 3" PVC out of the pit's wall above the water line, UNDER THE
+    # SLAB in the 4" capillary course (the ERV hub fills the ceiling here), west on y=28'-0"
+    # and north on x=1'-9", up through the slab clear of FT-B-W1/N4, and 3 7/16" over it to
+    # the riser's foot. It falls 1/2" back to the pit so condensate drains there.
     PipeRun(uid="90RG08DW5Y", tag="PR-B-RADON-LEG", system=PipeSystem.RADON,
-            path=(pt(ft(5, 9), ft(28)), pt(ft(5, 9), ft(28)), pt(ft(1, 6), ft(28)),
-                  pt(ft(1, 6), inch(421.3)), pt(ft(1), inch(421.3))),
+            path=(pt(ft(5, 9), ft(28)), pt(ft(1, 9), ft(28)), pt(ft(1, 9), ft(34, 7.2)),
+                  pt(ft(1, 9), ft(34, 7.2)), pt(ft(1, 9), inch(421.3)),
+                  pt(ft(1), inch(421.3))),
             diameter=inch(3), material="pvc",
-            elevations=(inch(0), inch(84), inch(84.5), inch(85.5), inch(85.5))),
+            elevations=(inch(-7.5), inch(-7.25), inch(-7), inch(3.4375), inch(3.4375),
+                        inch(3.4375))),
 ]
 
 # --- the sump's pumped discharge (2026-09-22) -------------------------------------------
-# 1 1/2" PVC Sch 40 out of the sealed lid through a gasketed grommet 5" east of the pit's
-# centre (5'-9", 28'-0"; moved 2026-09-23), up to -1'-9" (above grade -2'-10", below the pour
-# top), across the ceiling to W-B-W1, through it 6" south of W-B-N4's inner face, and down at
+# 1 1/2" PVC Sch 40 out of the pit (5'-9", 28'-0" since 2026-09-23) through a sealed wall
+# grommet, under the slab to (1'-4", 34'-6"), up to -1'-9" (above grade -2'-10", below the
+# pour top), west through W-B-W1 6" south of W-B-N4's inner face, and down at
 # >= 1/4"/ft to a wye on TR-RF-LEADER-W-EXT-RISER at -1'-10". Elevations are basement-
 # relative (datum -109 7/16"). Check valve and ice guard are on the pump (SM-B-RADON).
 SUMP_DISCHARGE = [
     PipeRun(uid="23NF4WJS89", tag="PR-B-SUMP-DISCH", system=PipeSystem.SUMP_DISCHARGE,
-            path=(pt(ft(6, 2), ft(28)), pt(ft(6, 2), ft(28)), pt(ft(1, 9), ft(28)),
-                  pt(ft(1, 9), ft(34, 6)),
+            path=(pt(ft(5, 9), ft(27, 7.2)), pt(ft(1, 4), ft(27, 7.2)),
+                  pt(ft(1, 4), ft(34, 6)), pt(ft(1, 4), ft(34, 6)),
                   pt(inch(-10.5), ft(34, 6)), pt(inch(-10.5), ft(35, 6))),
             diameter=inch(1.5), material="pvc",
-            # Starts at the lid (the slab top): the pump's own riser in the pit is the pump's.
-            elevations=(inch(0), inch(89.4375), inch(89.1375), inch(88.4375),
+            # Leaves the pit's wall under the slab, beside the radon leg, and rises at the old
+            # lid station; nothing after the rise climbs again.
+            elevations=(inch(-7.5), inch(-7.5), inch(-7.5), inch(88.4375),
                         inch(87.8375), inch(87.4375))),
     # The wall crossing, sleeved, on the 8" pour's centreline 4" in
     # from the axis; centre = invert at the wall + 3/4".
