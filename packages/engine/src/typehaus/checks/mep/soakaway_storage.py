@@ -139,7 +139,7 @@ def _lip_finding(ctx: CheckContext, body: frozenset[str], members) -> list[Findi
     authored = {e.tag: e for e in ctx.model.plan.all_elements()
                 if isinstance(e, FootingBedding) and e.tag in body}
     stated = sorted((e.overflow_invert.meters, tag) for tag, e in authored.items()
-                    if e.soakaway_depth is not None and e.overflow_invert is not None)
+                    if e.overflow_invert is not None)
     if not stated:
         return []
     lip, tag = stated[0]

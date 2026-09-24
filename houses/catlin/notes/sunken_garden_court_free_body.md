@@ -164,7 +164,7 @@ Section, one side wall, west (retained) to east (court):
                 |  heel |  stem   |  toe        CENTRED on the wall axis
   -10'-1 7/16"  +-------+---------+
                 |  42" of ASTM C33 #57 washed crushed stone  |
-                |  (FB-SG-*, non_frost_susceptible, tiled)   |
+                |  (FB-SG-*, non_frost_susceptible, no pipe)|
   -13'-7 7/16"  +--------------------------------------------+
 ```
 
@@ -700,15 +700,16 @@ FS       = 71,462 / 61,446          =  1.16     ✗
 That is not a rounding. **0.35 versus 0.25 is the whole margin**, and it rides entirely on
 `FootingBedding.non_frost_susceptible=True` — an authored claim that the 42" section under
 these three footings is clean, open-graded, **washed** ASTM C33 #57 crushed stone, placed and
-compacted, drained by the 4" sock-wrapped tile into the soakaway course below it (a 12"
-flood course under W2/E2/S/ARCH since 2026-09-22, never counted as frost or bearing section).
+compacted, draining through the open-graded stone into the soakaway course below it (a 12"
+flood course under W2/E2/S/ARCH since 2026-09-22, never counted as frost or bearing section;
+no pipe in the beds since 2026-09-23).
 
 The claim is legitimate: eleven footings in this structure already stake their **frost**
 design on the same sentence, and it was reasoned about there. But it must be said out loud
 rather than absorbed:
 
 > **This design depends on the stone bed being built as specified.** Unwashed stone, a fines-
-> contaminated section, a bed placed without compaction, or a tile that does not drain, and
+> contaminated section, a bed placed without compaction, or a section that does not drain, and
 > the court is at 1.29 and does not meet IRC R404.4. Inspect and document the bed at
 > placement. It is not an incidental levelling course; it is the reason the walls stand.
 >
@@ -1409,8 +1410,8 @@ precedent), and `structural.frost_depth` iterates footing and pad *solids*, so a
 `FT-SG-ARCH` would land inside the excavation and reopen the frost question ASCE 32 soil
 replacement closed on 2026-08-29.
 
-`FB-SG-ARCH` therefore carries the same NFS claim about the same stone and the same 4"
-sock-wrapped tile, letting go into its own 12" soakaway course (2026-09-22).
+`FB-SG-ARCH` therefore carries the same NFS claim about the same stone, draining into its own
+12" soakaway course (2026-09-22; no pipe since 2026-09-23).
 
 **The excavation has two bottoms, and neither is §8's held section (2026-09-22).** The beam's
 underside stays at −10'-10 7/16", but `FB-SG-ARCH`'s undercut went 42" → 33" on 2026-09-10 so
@@ -1449,7 +1450,7 @@ added:
   on **2026-09-16**, when the court's retaining U moved onto `SUNKEN_GARDEN_WALL_DRAINED`:
   the outboard face carries a 5/16" DELTA-MS-class **dimpleboard** full height
   (`LayerFunction.DRAINAGE`, `ControlLayer.DRAINAGE`), giving soil water a path down to
-  the footing beds' tile and their soakaway course. It is modelled, it is priced, and it is
+  the footing beds' stone and their soakaway course. It is modelled, it is priced, and it is
   drawn. Leaving the old
   sentence standing meant the gap register's largest single entry described a condition the
   building no longer had.
@@ -1459,7 +1460,7 @@ added:
   - **The groundwater basis.** Nobody has established a design water table, a perched-water
     condition or an infiltration rate for this parcel. A drained wall presumes water can
     leave faster than it arrives, and nothing here measures either side of that.
-  - **Discharge continuity.** The dimpleboard delivers to the beds' tile, which lets go into
+  - **Discharge continuity.** The dimpleboard delivers to the beds' stone, which drains into
     the soakaway course; `drainage.soakaway_storage` grades the course against a snowmelt,
     but on a PRESUMED soil rate, and the wall-face inflow itself is graded by nothing.
   - **The blocked-drain design case.** Every drained retaining wall is designed for the day

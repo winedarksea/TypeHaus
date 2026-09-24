@@ -22,6 +22,10 @@ from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
 
+from typehaus.emit.draw.foundation_frost_notes import (
+    drainage_note,
+    lowest_adjacent_grade_notes,
+)
 from typehaus.emit.draw.structural_common import elevation_feet, feet_inches
 
 
@@ -67,9 +71,9 @@ def foundation_general_notes(model: ResolvedModel,
         notes.append(f"ALL FOOTINGS TO BEAR {profile.frost_depth_in:.0f}\" MIN BELOW THE "
                      f"LOWEST ADJACENT FINISHED GRADE (IRC R403.1.4.1) PER "
                      f"{profile.name.upper()} ({profile.edition}).")
-        notes.extend(_lowest_adjacent_grade_notes(model, profile.frost_depth_in))
+        notes.extend(lowest_adjacent_grade_notes(model, profile.frost_depth_in))
     notes.extend(_bearing_tier_notes(model))
-    drainage = _drainage_note(model)
+    drainage = drainage_note(model)
     if drainage:
         notes.append(drainage)
     notes.append("SILL ANCHORS ARE SCHEDULED AT THEIR PITCH; NO PLATE RUN TAKES FEWER "
@@ -242,79 +246,6 @@ def _fan_power_notes(model: ResolvedModel, risers: list[Any],
             f"{_FAN_BOX_REACH.inches / 12:.0f} FT OF THE RISER FOR A FUTURE FAN."]
 
 
-def _lowest_adjacent_grade_notes(model: ResolvedModel, frost_depth_in: float) -> list[str]:
-    """Name the footings whose lowest adjacent grade is not the site grade plane.
-
-    "ALL FOOTINGS TO BEAR 42\" MIN BELOW FINISHED GRADE" printed on this sheet for as long
-    as it has existed, and on a site with an open sunken court beside the house it was
-    simply false: the strips along that court bear 8" below the court floor, and the note
-    told a reader — and an inspector — otherwise. The blanket claim is the thing that was
-    wrong, not the number, so the note keeps the number and states the exceptions the
-    geometry actually contains. Silent where there are none, which is most houses.
-    """
-    from typehaus.emit.draw.foundation_schedule import bearing_solids
-    from typehaus.resolve.site_earth import (
-        heated_floor_footprint,
-        local_grade_elevation_m,
-        open_excavation_floors,
-    )
-
-    reach_m = frost_depth_in * 0.0254
-    floors = open_excavation_floors(model)
-    if not floors:
-        return []
-    sheltered_by = heated_floor_footprint(model)
-    shallow: list[tuple[str, float, str]] = []
-    for solid in sorted(bearing_solids(model), key=lambda item: item.tag):
-        grade_m, source = local_grade_elevation_m(
-            model, solid.outline, reach_m, floors, sheltered_by)
-        if source is None:
-            continue
-        cover_in = (grade_m - solid.z0_m) / 0.0254
-        if cover_in < frost_depth_in - 1e-6:
-            shallow.append((solid.tag, cover_in, source))
-    if not shallow:
-        return []
-    sections = _declared_sections(model, frost_depth_in)
-    replaced = [row for row in shallow if row[0] in sections]
-    insulated = [row for row in shallow if row[0] not in sections]
-    notes = ["THE LOWEST ADJACENT GRADE FOR " + ", ".join(
-                f"{tag} ({cover:.0f}\" COVER)" for tag, cover, _ in shallow)
-             + " IS THE FLOOR OF "
-             + ", ".join(sorted({source for _, _, source in shallow}))
-             + ", NOT THE SITE GRADE PLANE."]
-    # Two different frost measures answer this condition and they carry different citations:
-    # R403.3 for the house strips' wing insulation, but the garden's protection is the graded
-    # stone section beneath it, not R403.3 — a blanket citation is wrong on the sheet an
-    # inspector reads off.
-    if insulated:
-        notes.append("FROST PROTECTION FOR "
-                     + ", ".join(tag for tag, _c, _s in insulated)
-                     + " IS PER IRC R403.3 AND THE FOUNDATION DETAILS, NOT BY DEPTH.")
-    if replaced:
-        notes.append("FROST PROTECTION FOR "
-                     + ", ".join(tag for tag, _c, _s in replaced)
-                     + " IS BY SOIL REPLACEMENT: EACH BEARS ON A DRAINED "
-                     "NON-FROST-SUSCEPTIBLE SECTION REACHING "
-                     f"{frost_depth_in:.0f}\" MIN BELOW THAT GRADE (ASCE 32, "
-                     "PER IRC R403.1.4.1). SECTION GRADATION PER THE FOUNDATION DETAILS.")
-    return notes
-
-
-def _declared_sections(model: ResolvedModel, frost_depth_in: float) -> set[str]:
-    """Footing tags protected by a declared, drained aggregate section reaching frost depth.
-
-    The three conditions are ``structural.frost_depth``'s, and that check is the authority —
-    this exists so the sheet can *name the right citation per footing*, which needs the same
-    split the check makes. Kept deliberately literal rather than clever so that a reader
-    comparing the two can see they ask the same question; if the check's rule changes, this
-    is the second place to change.
-    """
-    return {bed.host for bed in model.footing_beddings
-            if bed.non_frost_susceptible is True and bed.drain_tile
-            and (bed.z1_m - bed.z0_m) >= frost_depth_in * 0.0254 - 1e-9}
-
-
 def _bearing_tier_notes(model: ResolvedModel) -> list[str]:
     """Name each distinct footing bearing plane, then each measured step between two runs."""
     from typehaus.emit.draw.foundation_schedule import bearing_solids, footing_steps
@@ -329,30 +260,6 @@ def _bearing_tier_notes(model: ResolvedModel) -> list[str]:
                      f"{lower.tag} {elevation_feet(lower.z0_m)} UP TO "
                      f"{upper.tag} {elevation_feet(upper.z0_m)}.")
     return notes
-
-
-def _drainage_note(model: ResolvedModel) -> str:
-    """Where the perimeter tile discharges, read off the tile.
-
-    A sheet note is a statement about the building, so it reads the field that makes the
-    statement, and says so plainly when the tile does not.
-    """
-    beddings = [bedding for bedding in model.footing_beddings if bedding.drain_tile]
-    if not beddings:
-        return ""
-    # A bed handing its water to the bed it abuts is internal to one body of stone.
-    beds = {bedding.tag for bedding in beddings}
-    discharges = sorted({"THEIR SOAKAWAY COURSE" if d.lower() == "soakaway" else d.upper()
-                         for bedding in beddings if bedding.drain_tile_spec is not None
-                         and (d := (bedding.drain_tile_spec.discharge or "").strip())
-                         and d not in beds})
-    destination = (f"TO {', '.join(discharges)}" if discharges
-                   else "TO AN APPROVED OUTLET (NOT MODELLED)")
-    flood = sum(1 for bedding in beddings if bedding.stone_z0_m < bedding.z0_m)
-    course = (f" {flood} BEDS CARRY A SOAKAWAY COURSE BELOW THE DRAINED SECTION; IT FLOODS"
-              f" AND IS NOT FROST SECTION." if flood else "")
-    return (f"PERIMETER DRAIN TILE IN THE FOOTING BEDDING AT {len(beddings)} FOOTINGS,"
-            f" DRAINING {destination}.{course}")
 
 
 def _sill_anchorage_findings(model: ResolvedModel) -> list[Finding]:

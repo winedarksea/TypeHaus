@@ -1241,6 +1241,14 @@ class ResolvedFootingBedding:
     void_ratio: float | None = None
     infiltration_in_per_hr: float | None = None
     infiltration_basis: str = "presumed"
+    #: A pipeless bed's authored outlet: the soakaway bed its stone drains into.
+    discharge_ref: str | None = None
+
+    @property
+    def in_drainage(self) -> bool:
+        """Takes part in drainage: runs a tile, floods a course, or drains into one."""
+        return (self.drain_tile or self.soakaway_z0_m is not None
+                or self.discharge_ref is not None)
 
     @property
     def stone_z0_m(self) -> float:

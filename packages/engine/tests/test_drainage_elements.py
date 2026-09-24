@@ -177,11 +177,11 @@ def test_the_soakaway_is_a_course_below_the_drained_section(catlin_model):
         assert beds[tag].void_ratio == 0.40 and beds[tag].infiltration_in_per_hr == 0.06
     for tag in ("FB-SG-W1", "FB-SG-E1"):
         assert beds[tag].stone_z0_m == beds[tag].z0_m, "the house-side beds stay drained-only"
-    # The garden's tile lets go into the course, never to a daylight it does not have.
-    discharges = {b.tag: b.drain_tile_spec.discharge for b in beds.values()}
-    assert discharges == {"FB-SG-W1": "FB-SG-W2", "FB-SG-E1": "FB-SG-E2",
-                          "FB-SG-W2": "soakaway", "FB-SG-E2": "soakaway",
-                          "FB-SG-S": "soakaway", "FB-SG-ARCH": "soakaway"}
+    # No court bed runs a pipe (2026-09-23): the stone lets go into the course, never to a
+    # daylight it does not have. W1/E1, with no course, name the bed their stone abuts.
+    assert not any(b.drain_tile for b in beds.values())
+    assert {b.tag: b.discharge_ref for b in beds.values() if b.discharge_ref} == {
+        "FB-SG-W1": "FB-SG-W2", "FB-SG-E1": "FB-SG-E2"}
     # The balcony leader is NOT an inlet: it hangs outside the east wall.
     arch = catlin_model.plan.by_tag("FB-SG-ARCH")
     assert "TR-SG-LEADER-SE" not in arch.inlet_refs
@@ -235,10 +235,9 @@ def test_the_house_perimeter_tile_falls_to_the_sump_it_can_actually_reach(catlin
     assert {b.drain_tile_spec.discharge for b in house} == {"SM-B-RADON"}
     assert catlin_model.plan.by_tag("SM-B-RADON") is not None
     # The garden's own beds are NOT redirected: their soakaway course is below them and takes
-    # their water with no pump in the path.
+    # their water with no pump in the path — and since 2026-09-23 no pipe either.
     garden = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-SG-")]
-    assert {b.drain_tile_spec.discharge for b in garden} == {
-        "soakaway", "FB-SG-W2", "FB-SG-E2"}
+    assert garden and not any(b.drain_tile for b in garden)
 
 
 def test_the_radon_sump_carries_its_pump(catlin_plan):

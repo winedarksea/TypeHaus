@@ -399,7 +399,9 @@ class FootingBedding(Element):
     # frost-protection methods (MN Rules 1309.0403 keeps it). So a footing whose concrete
     # stops short of frost depth can still be protected, by the stone under it reaching
     # down instead. ``structural.frost_depth`` counts a section only where this is True
-    # *and* ``drain_tile`` runs one: an undrained NFS layer is not what ASCE 32 describes.
+    # *and* the bed drains — by its tile, into its own soakaway course, or through
+    # continuous stone into a soakaway bed it names (``discharge_ref``). An undrained NFS
+    # layer is not what ASCE 32 describes.
     non_frost_susceptible: bool | None = None
     #: Internal friction angle of the compacted section, degrees, from a named source. A
     #: segmental wall slides at tan φ of the weaker of this and the ground under it
@@ -409,6 +411,11 @@ class FootingBedding(Element):
     drain_tile: bool = True
     # Optional product spec for the tile above; None keeps the bool's bare annotation.
     drain_tile_spec: DrainTile | None = None
+    #: Where a PIPELESS bed's stone lets go (``drain_tile=False``): the tag of a soakaway bed
+    #: its stone is continuous with. Open-graded stone is its own drain; ``drainage.tile_lead``
+    #: checks the continuity, and it is the drainage ``structural.frost_depth`` reads for a
+    #: bed with no tile and no course. A tiled bed names its outlet on the tile instead.
+    discharge_ref: str | None = None
     perimeter_insulation: Length | None = None
     cast_foam_in_aggregate: bool = False
     #: A flood course: more stone BELOW the drained section, "allowed to flood". It stores
@@ -422,7 +429,8 @@ class FootingBedding(Element):
     infiltration_in_per_hr: float | None = None
     infiltration_basis: str = "presumed"
     #: What feeds the course, and where it spills when full — Drywell's fields, legal only
-    #: with a ``soakaway_depth``. ``overflow_invert`` is the lip; ``None`` states none.
+    #: with a ``soakaway_depth`` or on a pipeless bed draining into one (``discharge_ref``):
+    #: that bed's stone is the course's own body. ``overflow_invert`` is the lip.
     inlet_refs: tuple[str, ...] = ()
     overflow_ref: str | None = None
     overflow_invert: Length | None = None

@@ -161,6 +161,7 @@ def discharge_consistency(ctx: CheckContext) -> list[Finding]:
             if element.drain_tile_spec is not None:
                 _check_discharge(element.tag, element.drain_tile_spec.discharge,
                                  soakaway_ok=element.soakaway_depth is not None)
+            _check_discharge(element.tag, element.discharge_ref)
             _check_discharge(element.tag, element.overflow_ref)
             for inlet in element.inlet_refs:
                 if ctx.model.plan.by_tag(inlet) is None:

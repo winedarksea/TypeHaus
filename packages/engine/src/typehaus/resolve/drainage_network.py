@@ -119,7 +119,8 @@ class DrainageNetwork:
     def sources(self) -> list[str]:
         """Nodes that produce water — everything that is not purely a receiver."""
         return sorted(tag for tag, node in self.nodes.items()
-                      if node.kind in {"french_drain", "footing_tile", "leader", "area_drain"})
+                      if node.kind in {"french_drain", "footing_tile", "bed_stone", "leader",
+                                       "area_drain"})
 
     def disposal_points(self) -> list[str]:
         """Everything that gets rid of water, daylight excepted — the things that can fail.
@@ -269,6 +270,14 @@ def build_network(plan) -> DrainageNetwork:
             network.nodes[element.tag] = DrainNode(
                 tag=element.tag, kind="footing_tile",
                 in_invert_m=None, out_invert_m=None)
+        elif isinstance(element, FootingBedding) and element.discharge_ref:
+            # Pipeless: the open-graded stone is the drain. A source like a tiled bed, and it
+            # may carry its body's lip and inlets (``bedding_soakaway`` allows exactly that).
+            network.nodes[element.tag] = DrainNode(
+                tag=element.tag, kind="bed_stone", in_invert_m=None,
+                out_invert_m=(element.overflow_invert.meters
+                              if element.overflow_invert is not None else None),
+                inlet_refs=tuple(element.inlet_refs))
 
     def add(source: str, target: str | None, kind: EdgeKind,
             out_invert_m: float | None) -> None:
@@ -312,6 +321,10 @@ def build_network(plan) -> DrainageNetwork:
         elif isinstance(element, FootingBedding) and element.drain_tile:
             add(element.tag, _tile_discharge(element.drain_tile_spec),
                 EdgeKind.PRIMARY, None)
+        elif isinstance(element, FootingBedding) and element.discharge_ref:
+            add(element.tag, element.discharge_ref, EdgeKind.PRIMARY, None)
+            add(element.tag, element.overflow_ref, EdgeKind.OVERFLOW,
+                network.nodes[element.tag].out_invert_m)
 
     return network
 
@@ -376,7 +389,7 @@ def stone_bodies(model) -> dict[str, frozenset[str]]:
     Connected components over "touches in plan and overlaps in section". A bed is always in
     its own body, so a lone ring maps to a set of one — which is the answer, not a failure.
     """
-    beds = [b for b in model.footing_beddings if b.drain_tile]
+    beds = [b for b in model.footing_beddings if b.in_drainage]
     parent = {bed.tag: bed.tag for bed in beds}
 
     def find(tag: str) -> str:
@@ -395,3 +408,26 @@ def stone_bodies(model) -> dict[str, frozenset[str]]:
         bodies.setdefault(find(bed.tag), set()).add(bed.tag)
     return {tag: frozenset(members)
             for members in bodies.values() for tag in members}
+
+
+def drainage_evidence(model) -> dict[str, str]:
+    """``bed tag -> how its section drains``; a bed with no evidence is absent, never assumed.
+
+    Read off the RESOLVED beds, so what ``structural.frost_depth`` counts as a well-drained
+    ASCE 32 section is exactly what the model holds. A pipeless bed counts only where the
+    soakaway bed it names is really in its body of stone.
+    """
+    beds = {bed.tag: bed for bed in model.footing_beddings}
+    bodies = stone_bodies(model)
+    out: dict[str, str] = {}
+    for tag, bed in beds.items():
+        if bed.drain_tile:
+            out[tag] = "its drain tile"
+        elif bed.soakaway_z0_m is not None:
+            out[tag] = "down into its own soakaway course"
+        elif bed.discharge_ref is not None:
+            target = beds.get(bed.discharge_ref)
+            if (target is not None and target.soakaway_z0_m is not None
+                    and target.tag in bodies.get(tag, frozenset())):
+                out[tag] = f"through continuous stone into {target.tag}'s soakaway course"
+    return out

@@ -351,6 +351,7 @@ def _resolve_footing_bedding(
         bedding.geotextile, bedding.drain_tile, perimeter_m, bedding.cast_foam_in_aggregate,
         spec, bedding.non_frost_susceptible, soakaway_z0, bedding.void_ratio,
         bedding.infiltration_in_per_hr, bedding.infiltration_basis,
+        discharge_ref=bedding.discharge_ref,
     ), []
 
 

@@ -355,7 +355,8 @@ def test_the_aggregate_section_only_counts_when_drained_deep_and_declared(catlin
 
     undrained = _garden_beddings(
         catlin_model, lambda bed: dataclasses.replace(
-            bed, non_frost_susceptible=True, drain_tile=False))
+            bed, non_frost_susceptible=True, drain_tile=False, soakaway_z0_m=None,
+            discharge_ref=None))
     shallow = _garden_beddings(
         catlin_model, lambda bed: dataclasses.replace(
             bed, non_frost_susceptible=True, z0_m=bed.z1_m - 12 * 0.0254))
@@ -373,6 +374,32 @@ def test_the_aggregate_section_only_counts_when_drained_deep_and_declared(catlin
             # does not get to call an engineered wall non-compliant, only unevaluated.
             assert found[tag].result is Result.UNKNOWN, (label, tag)
             assert "R404.4" in found[tag].message, (label, tag)
+
+
+def test_a_pipeless_bed_drains_only_through_stone_it_really_touches(catlin_model):
+    """The court beds run no pipe: their drainage is read off the model, never assumed.
+
+    W2/E2/S drain into their own soakaway course; W1/E1 through continuous stone into the
+    course of the bed they name. Take W1's name away, or point it at a bed with no course
+    (the house strip it abuts across the closure foam), and FT-SG-W1 alone loses the ASCE 32
+    credit. Any court soakaway bed would do: the six are one body of stone.
+    """
+    import copy
+    import dataclasses
+
+    found = _frost_by_tag(catlin_model)
+    assert "its own soakaway course" in found["FT-SG-W2"].message
+    assert "continuous stone into FB-SG-W2" in found["FT-SG-W1"].message
+
+    for ref in (None, "FB-B-S1"):
+        model = copy.copy(catlin_model)
+        model.footing_beddings = [
+            dataclasses.replace(bed, discharge_ref=ref) if bed.tag == "FB-SG-W1" else bed
+            for bed in catlin_model.footing_beddings]
+        found = _frost_by_tag(model)
+        assert "ASCE 32" not in found["FT-SG-W1"].message, ref
+        assert found["FT-SG-W1"].result is Result.UNKNOWN, ref
+        assert "ASCE 32" in found["FT-SG-E1"].message, ref
 
 
 def test_the_declared_section_is_what_moves_the_verdict(catlin_model):

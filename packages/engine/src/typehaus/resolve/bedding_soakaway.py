@@ -2,7 +2,8 @@
 
 ``FootingBedding.soakaway_depth`` hangs a course of the same stone under the drained ASCE 32
 section. It stores water while the soil takes it, so it is never frost section; the fields
-that describe it (inlets, overflow, the ``"soakaway"`` tile keyword) mean nothing without it.
+that describe it (inlets, overflow, the ``"soakaway"`` tile keyword) mean nothing without it
+— except on a pipeless bed whose stone drains into a course (``discharge_ref``).
 """
 
 from __future__ import annotations
@@ -20,6 +21,8 @@ def soakaway_findings(bedding: FootingBedding) -> list[Finding]:
     discharge = ((spec.discharge if spec is not None else None) or "").strip()
     keyword = discharge.lower() == SOAKAWAY_KEYWORD
     depth = bedding.soakaway_depth
+    if bedding.discharge_ref is not None:
+        return _pipeless_findings(bedding, depth)
     if depth is None:
         stray = [name for name, value in (
             ("inlet_refs", bedding.inlet_refs), ("overflow_ref", bedding.overflow_ref),
@@ -41,3 +44,24 @@ def soakaway_findings(bedding: FootingBedding) -> list[Finding]:
                                     f"into its own course ({SOAKAWAY_KEYWORD!r}), not "
                                     f"{discharge!r}", bedding.tag)]
     return []
+
+
+def _pipeless_findings(bedding: FootingBedding, depth) -> list[Finding]:
+    """``discharge_ref`` is a pipeless bed's outlet: never beside a tile, a course or a keyword.
+
+    Such a bed's stone is part of the body it drains into, so it may carry that body's inlets
+    and overflow lip itself (the court's relief is at the bed its overflow run starts in).
+    """
+    ref = bedding.discharge_ref.strip()
+    if bedding.drain_tile:
+        why = "it runs a drain tile, which names its own outlet"
+    elif depth is not None:
+        why = "it has its own soakaway course"
+    elif ref.lower() == SOAKAWAY_KEYWORD:
+        why = f"{SOAKAWAY_KEYWORD!r} names a course, not a bed"
+    elif not ref:
+        why = "it is empty"
+    else:
+        return []
+    return [element_error(_CID, f"{bedding.tag} states discharge_ref={ref!r}, but {why}",
+                          bedding.tag)]

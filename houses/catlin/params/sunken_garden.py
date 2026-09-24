@@ -50,7 +50,6 @@ from typehaus import (
     DeckLayer,
     IsolationBoard,
     Downspout,
-    DrainTile,
     EndRestraint,
     face,
     Fascia,
@@ -1377,9 +1376,10 @@ _HOUSE_ADJACENT = {"FT-SG-W1", "FT-SG-E1"}
 _BEDDING_UID = {"FT-SG-W1": "SGB002AAAA", "FT-SG-E1": "SGB003AAAA",
                 "FT-SG-W2": "SGB004AAAA", "FT-SG-E2": "SGB005AAAA",
                 "FT-SG-S": "SGB006AAAA"}
-# W1/E1 hand their tile water to the retaining bed they abut at the grade-beam line.
-_TILE_TO = {"FT-SG-W1": "FB-SG-W2", "FT-SG-E1": "FB-SG-E2"}
-_TILE_FROM = {"FT-SG-W2": "FB-SG-W1", "FT-SG-E2": "FB-SG-E1"}
+# No court bed runs a pipe (2026-09-23): the stone is the drain. W1/E1 have no course of their
+# own, so their stone lets go into the retaining bed it abuts at the grade-beam line.
+_STONE_TO = {"FT-SG-W1": "FB-SG-W2", "FT-SG-E1": "FB-SG-E2"}
+_STONE_FROM = {"FT-SG-W2": "FB-SG-W1", "FT-SG-E2": "FB-SG-E1"}
 _SOAKAWAY = dict(soakaway_depth=inch(SPEC.soakaway_depth_in),
                  void_ratio=SPEC.soakaway_void_ratio,
                  infiltration_in_per_hr=SPEC.soakaway_infiltration_in_per_hr,
@@ -1406,24 +1406,25 @@ FOOTING_BEDDING = [
         # counts a *well-drained* NFS layer's thickness toward the design frost depth —
         # soil replacement — and IRC R403.1.4.1 admits a foundation built to ASCE 32 as one
         # of its listed frost-protection methods, which MN Rules 1309.0403 keeps. The
-        # drainage half of "well-drained" is the tile below and the soakaway course it lets
-        # go into; drop either and the claim is not ASCE 32's and
-        # ``structural.frost_depth`` stops counting the section. The course hangs BELOW the
-        # 42" and is never counted: stone that floods is not a drained layer.
+        # drainage half of "well-drained" is the open-graded stone draining down into the
+        # soakaway course — its own on W2/E2/S, the one it abuts on W1/E1 (`discharge_ref`);
+        # drop that and the claim is not ASCE 32's and ``structural.frost_depth`` stops
+        # counting the section. The course hangs BELOW the 42" and is never counted: stone
+        # that floods is not a drained layer.
         #
         # Scoped deliberately to this structure. The house's own beddings
         # (params/foundations.py) are the same order of stone but have not been reasoned
         # about here, and an unstated section is worth nothing rather than being assumed.
         non_frost_susceptible=True,
         cast_foam_in_aggregate=f.tag in _HOUSE_ADJACENT,
-        # Same 4" sock-wrapped tile as the house footings (params/foundations.py). It cannot
-        # daylight — the court is 9' down — so it lets go into the soakaway course: its own
-        # (keyword "soakaway") on W2/E2/S, the retaining bed it abuts on W1/E1, which stay
-        # 42" drained-only so flood water keeps ~10' off the basement. Same body of stone.
-        drain_tile_spec=DrainTile(diameter=inch(4), sock=True,
-                                  discharge=_TILE_TO.get(f.tag, "soakaway")),
+        # NO PIPE (2026-09-23, owner): a 4" tile inside 42" of open-graded #57 adds nothing
+        # the stone does not already do. W2/E2/S drain into their own soakaway course; W1/E1
+        # stay 42" drained-only, so flood water keeps ~10' off the basement, and their stone
+        # lets go into the retaining bed it abuts. One body of stone.
+        drain_tile=False,
+        **({"discharge_ref": _STONE_TO[f.tag]} if f.tag in _STONE_TO else {}),
         **({} if f.tag in _HOUSE_ADJACENT else _SOAKAWAY),
-        **({"inlet_refs": (_TILE_FROM[f.tag],)} if f.tag in _TILE_FROM else {}),
+        **({"inlet_refs": (_STONE_FROM[f.tag],)} if f.tag in _STONE_FROM else {}),
     )
     for f in FOOTINGS
 ]
@@ -1480,7 +1481,7 @@ FOOTING_BEDDING.append(
         width=inch(ARCH_BED_WIDTH_IN),
         undercut=_grade_beam_bottom - _SG_WALL_BED_BOTTOM,
         non_frost_susceptible=True,
-        drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="soakaway"),
+        drain_tile=False,
         **_SOAKAWAY,
         inlet_refs=("FD-SG-FIELD", "AD-SG-COURT", "SM-B-RADON"),
         overflow_ref="FD-SG-OVERFLOW",

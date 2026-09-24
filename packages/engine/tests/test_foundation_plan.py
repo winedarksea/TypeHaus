@@ -11,6 +11,7 @@ from typehaus.emit.draw.foundationplan import build_foundation_plan, has_foundat
 from typehaus.emit.draw.scene import Polyline, Text
 from typehaus.quantities import inch
 from typehaus.resolve import resolve
+from typehaus.resolve.drainage_network import drainage_evidence
 from typehaus.source import load_plan
 
 
@@ -128,11 +129,12 @@ def test_sunken_garden_t_wall_footings_bear_on_42_inches_of_aggregate(catlin_mod
         # design. Each stands inside the court it retains, so its cover is measured from
         # SL-SG-FLOOR and reaches only 21" in concrete against a 42" minimum. What reaches
         # the minimum is this section, and ``structural.frost_depth`` counts a section only
-        # where BOTH halves of ASCE 32's "well-drained non-frost-susceptible" are authored.
-        # Drop either and five findings go from PASS to UNKNOWN without a line of geometry
-        # moving.
+        # where BOTH halves of ASCE 32's "well-drained non-frost-susceptible" hold: the
+        # gradation authored, the drainage read off the model (no pipe since 2026-09-23 —
+        # the stone drains into the soakaway courses). Drop either and five findings go
+        # from PASS to UNKNOWN without a line of geometry moving.
         assert bedding.non_frost_susceptible is True
-        assert bedding.drain_tile
+        assert bedding.tag in drainage_evidence(catlin_model)
 
 
 def test_bedding_drain_tile_resolves_as_a_ring_of_solids(catlin_model):

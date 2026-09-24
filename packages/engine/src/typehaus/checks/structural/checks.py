@@ -343,10 +343,12 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
       susceptible section that reaches the required depth on its own. That is soil
       replacement: ASCE 32 counts a well-drained NFS layer's thickness toward the design
       frost depth, and IRC R403.1.4.1 lists a foundation built to ASCE 32 among its
-      frost-protection methods. The gradation and the drainage are the ``FootingBedding``'s
-      authored claim (``non_frost_susceptible`` + ``drain_tile``); what this check measures
-      is that the excavation actually bottoms out a frost depth below the same local grade
-      every other branch is measured from.
+      frost-protection methods. The gradation is the ``FootingBedding``'s authored claim
+      (``non_frost_susceptible``); the drainage is read off the model
+      (``resolve.drainage_network.drainage_evidence``: a tile, its own soakaway course, or
+      continuous stone into one). What this check measures is that the excavation actually
+      bottoms out a frost depth below the same local grade every other branch is measured
+      from.
     * **UNKNOWN** — the footing both stands *inside* the excavation that lowered its own
       grade and carries a ``FoundationWall``. That is a retaining structure holding up the
       hole it sits in, which IRC R404.4 sends to an engineered design rather than to any
@@ -361,6 +363,7 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
     """
     from shapely.geometry import Polygon
 
+    from typehaus.resolve.drainage_network import drainage_evidence
     from typehaus.resolve.site_earth import (
         heated_floor_footprint,
         local_grade_elevation_m,
@@ -394,6 +397,7 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
     retaining_hosts = {el.tag for el in ctx.plan.all_elements()
                        if isinstance(el, FoundationWall)}
     bedding_by_host = {bed.host: bed for bed in ctx.model.footing_beddings}
+    drained = drainage_evidence(ctx.model)
 
     out: list[Finding] = []
     covered = []
@@ -412,7 +416,7 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
         # grade every other branch here is measured from.
         bed = bedding_by_host.get(solid.tag)
         section_in = ((grade_m - bed.z0_m) / 0.0254) if bed is not None else 0.0
-        if (bed is not None and bed.non_frost_susceptible is True and bed.drain_tile
+        if (bed is not None and bed.non_frost_susceptible is True and bed.tag in drained
                 and section_in >= minimum_in - 1e-6):
             out.append(_advisory(
                 cid,
@@ -421,9 +425,8 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
                 f"drained non-frost-susceptible section excavated to {section_in:.0f}\" "
                 f"below that same grade — the required depth is reached by soil "
                 f"replacement (ASCE 32, listed as a frost-protection method by IRC "
-                f"R403.1.4.1). That the {bed.aggregate} is non-frost-susceptible and that "
-                f"the section drains are the bedding's own authored claim, not this "
-                f"check's finding",
+                f"R403.1.4.1). That the {bed.aggregate} is non-frost-susceptible is the "
+                f"bedding's own authored claim; it drains {drained[bed.tag]}",
                 (solid.tag, bed.tag), Result.PASS,
             ))
             continue

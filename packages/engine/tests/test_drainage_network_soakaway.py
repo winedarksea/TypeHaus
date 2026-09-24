@@ -120,3 +120,31 @@ def test_discharges_to_a_soakaway_bed_resolve(soak, catlin_plan):
     found = [f for f in discharge_consistency(_ctx(bad, soak[1]))
              if "FB-TEST-PLAIN" in f.element_tags]
     assert found and "only a bed with its own soakaway course" in found[0].message
+
+
+def test_a_pipeless_bed_drains_through_its_stone(catlin_plan):
+    """No tile: the plain bed's stone lets go into the soakaway it abuts, and that is both a
+    network edge and the drainage ``structural.frost_depth`` reads."""
+    from typehaus.checks.mep.drainage_network import tile_lead
+    from typehaus.resolve.drainage_network import drainage_evidence, stone_bodies
+
+    pipeless = plain_bed(drain_tile=False, drain_tile_spec=None, discharge_ref="FB-TEST-SOAK")
+    plan = soak_plan(catlin_plan, plain=pipeless)
+    model, findings = resolve(plan)
+    assert not [f for f in findings if f.severity.value == "error"]
+    assert not [s for s in model.solids if s.tag.startswith("FB-TEST-PLAIN-DT")]
+
+    network = build_network(plan)
+    assert network.nodes["FB-TEST-PLAIN"].kind == "bed_stone"
+    reached, path, _ = network.reaches_disposal("FB-TEST-PLAIN", first_hop=EdgeKind.PRIMARY)
+    assert reached and path == ["FB-TEST-PLAIN", "FB-TEST-SOAK"]
+    assert stone_bodies(model)["FB-TEST-PLAIN"] == {"FB-TEST-PLAIN", "FB-TEST-SOAK"}
+    assert "continuous stone into FB-TEST-SOAK" in drainage_evidence(model)["FB-TEST-PLAIN"]
+    assert all(f.result is Result.PASS for f in _mine(tile_lead(_ctx(plan, model))))
+
+    # Named at a bed its stone does not reach, it drains nothing.
+    stray = pipeless.model_copy(update={"discharge_ref": "FB-SG-W2"})
+    plan = soak_plan(catlin_plan, plain=stray)
+    model, _ = resolve(plan)
+    assert "FB-TEST-PLAIN" not in drainage_evidence(model)
+    assert any(f.result is Result.FAIL for f in _mine(tile_lead(_ctx(plan, model))))

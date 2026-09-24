@@ -2740,6 +2740,22 @@ Unchanged: the one-tie, one-invert bridge (decision 6, -127 7/16") — it now sp
 - **Pre-existing, verify:** `SM-B-RADON`'s pit laps `W-B-W1`/`W-B-N4`'s footprint in plan,
   which nothing grades.
 
+### The court beds run no pipe (2026-09-23)
+
+The six court beds each carried a derived 4" socked tile ring, 1" above a flat bed floor, in
+42" of washed #57 draining into a 12" soakaway course. Owner: a pipe inside open-graded stone
+adds nothing the stone does not already do, and the ring never had a fall, so the same head
+that drove the pipe drives the stone. All six went `drain_tile=False`; W1/E1, which have no
+course, name the bed they abut (`FootingBedding.discharge_ref`, new). About 258 LF of tile left
+the takeoff, and the field underdrain `FD-SG-FIELD` stayed.
+- **The frost credit had to learn it.** `structural.frost_depth` counted the ASCE 32 section
+  only where `drain_tile` was set, and `stone_bodies` only tiled beds; dropping the tiles alone
+  read five UNKNOWNs and three `network_fallback` FAILs. The "well-drained" half is now read
+  off the model (`drainage_network.drainage_evidence`): a tile, the bed's own course, or
+  continuous stone into a named soakaway bed.
+- **Rate, by hand**: `notes/court_soakaway_storage.md` §7 — Dupuit through W1 at FHWA's
+  1,000 ft/day floor carries ~2x a generous melt bound at a 6" mound.
+
 ### The court went 17'-0" so both decks span wall to wall, and the centre line went (2026-09-22)
 
 The court was 19'-0" clear only so the balcony's centre pillars could sit on a 10' grid. At

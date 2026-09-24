@@ -98,6 +98,14 @@ def footing_under(model, wall):
                  if s.category == "footing" and s.tag == f"FT-{suffix}"), None)
 
 
+def bedding_for(model, footing):
+    """The authored ``FootingBedding`` under this footing, or None."""
+    if footing is None:
+        return None
+    return next((element for element in model.plan.elements_of_kind("FootingBedding")
+                 if element.host_ref == footing.tag), None)
+
+
 def drain_tile_spec_for(model, footing):
     """The authored ``DrainTile`` spec on this footing's bedding, or None.
 
@@ -156,6 +164,9 @@ def build_below_grade_components(model, wall, crop, direction: str,
     # actually in frame — a wall-top junction cropped 4 ft down the basement wall does not
     # reach it, and a drain floating at the crop edge is worse than no drain.
     footing = footing_under(model, wall)
+    bedding = bedding_for(model, footing)
+    if bedding is not None and not bedding.drain_tile:
+        return nodes  # a pipeless bed: its stone is the drain, and there is no pipe to draw
     spec = drain_tile_spec_for(model, footing)
     diameter_in = _spec_inches(spec, "diameter")
     rock_width_in = _spec_inches(spec, "rock_width") or PERIMETER_DRAIN.rock_width_in

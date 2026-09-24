@@ -60,12 +60,21 @@ def test_the_tile_stays_in_the_drained_section(soak_model):
     (plain_bed(inlet_refs=("FD-X",)), "no soakaway_depth"),
     (plain_bed(drain_tile_spec=soak_bed().drain_tile_spec), "has no soakaway course"),
     (soak_bed(drain_tile_spec=plain_bed().drain_tile_spec), "its own course"),
+    (plain_bed(discharge_ref="FB-TEST-SOAK"), "runs a drain tile"),
+    (soak_bed(drain_tile=False, drain_tile_spec=None, discharge_ref="FB-X"),
+     "its own soakaway course"),
+    (plain_bed(drain_tile=False, drain_tile_spec=None, discharge_ref="soakaway"),
+     "names a course, not a bed"),
 ])
 def test_a_course_that_is_not_one_is_an_error(bed, fragment):
     found = soakaway_findings(bed)
     assert found and all(f.check_id == _CID for f in found)
     assert any(fragment in f.message for f in found), [f.message for f in found]
     assert not soakaway_findings(soak_bed()) and not soakaway_findings(plain_bed())
+    # A pipeless bed may carry its body's lip and inlets; its stone is the course's own.
+    assert not soakaway_findings(plain_bed(
+        drain_tile=False, drain_tile_spec=None, discharge_ref="FB-TEST-SOAK",
+        inlet_refs=("FD-X",), overflow_ref="daylight"))
 
 
 def test_the_error_reaches_the_resolver(catlin_plan):

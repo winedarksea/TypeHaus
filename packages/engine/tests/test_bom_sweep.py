@@ -381,7 +381,7 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
     # one out here (the veneer plinth's "bedding" claimed a 2" XPS sheet and billed stone
     # instead, which is the contradiction that retired it on 2026-09-05); every bedding left
     # is a genuine aggregate bed, so the filter simply picks the first with fabric.
-    row = next(r for r in rows if float(r["geotextile_sqft"]) > 0)
+    row = next(r for r in rows if float(r["geotextile_sqft"]) > 0 and r["drain_tile"])
     assert float(row["volume_cubic_yards"]) > 0
     assert float(row["drain_tile_ft"]) > 0
     # Tile rows group on the product, not just on "there is tile": a row that says only a
@@ -392,16 +392,15 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
         assert float(tile_row["drain_tile_diameter_in"]) == pytest.approx(4.0, abs=0.01)
         assert tile_row["drain_tile_sock"] is True
         assert "HDPE" in str(tile_row["drain_tile_material"])
-    # And where a run discharges is part of the key, not a note. NEITHER run daylights, and
-    # that was the correction of 2026-09-05: the house tile's invert is -124 7/16", which is
-    # 7'-6 1/2" BELOW site grade, so it falls to the SM-B-RADON pit and is pumped up; the
-    # sunken garden's floor is 9' down, so its rings let go by gravity into their own
-    # soakaway course (W1/E1 via the retaining bed they abut). Different runs of the same pipe,
-    # and the take-off has to keep them apart.
-    assert {r["drain_tile_discharge"] for r in tile_rows} == {
-        "SM-B-RADON", "soakaway", "FB-SG-W2", "FB-SG-E2"}
-    for garden in (r for r in tile_rows if r["drain_tile_discharge"] != "SM-B-RADON"):
-        assert all(tag.startswith("FB-SG-") for tag in garden["tags"]), garden["tags"]
+    # And where a run discharges is part of the key, not a note. The house tile does not
+    # daylight (corrected 2026-09-05): its invert is -124 7/16", 7'-6 1/2" BELOW site grade,
+    # so it falls to the SM-B-RADON pit and is pumped up. The court's beds run no pipe at all
+    # (2026-09-23) and bill stone and fabric with no tile footage.
+    assert {r["drain_tile_discharge"] for r in tile_rows} == {"SM-B-RADON"}
+    court = [r for r in rows if any(tag.startswith("FB-SG-") for tag in r["tags"])]
+    assert court and all(not r["drain_tile"] and float(r["drain_tile_ft"]) == 0 for r in court)
+    assert {tag for r in court for tag in r["tags"] if tag.startswith("FB-SG-")} == {
+        "FB-SG-W1", "FB-SG-E1", "FB-SG-W2", "FB-SG-E2", "FB-SG-S", "FB-SG-ARCH"}
 
 
 def test_drainage_bills_the_whole_storm_run_by_the_foot(catlin_model, bom):

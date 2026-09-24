@@ -346,9 +346,12 @@ def tile_lead(ctx: CheckContext) -> list[Finding]:
     cid = "drainage.tile_lead"
     from typehaus.resolve.drainage_network import BODY_TOUCH_TOLERANCE_M, stone_bodies
 
-    beds = {bed.tag: bed for bed in ctx.model.footing_beddings if bed.drain_tile}
-    claiming = {tag: bed.drain_tile_spec.discharge for tag, bed in beds.items()
-                if bed.drain_tile_spec is not None and bed.drain_tile_spec.discharge}
+    # A pipeless bed's ``discharge_ref`` is the same claim about its stone, and the same
+    # continuity is what makes it true.
+    claiming = {bed.tag: (bed.drain_tile_spec.discharge if bed.drain_tile
+                          and bed.drain_tile_spec is not None else bed.discharge_ref)
+                for bed in ctx.model.footing_beddings}
+    claiming = {tag: target for tag, target in claiming.items() if target}
     if not claiming:
         return [not_applicable(cid, "no footing bedding names where its tile discharges")]
 
@@ -367,7 +370,7 @@ def tile_lead(ctx: CheckContext) -> list[Finding]:
             continue  # daylight; drainage.network_outfall owns the unresolved case
         if target not in footprints:
             out.append(advisory(
-                cid, f"{tag}'s tile discharges to {target}, whose solid does not resolve — "
+                cid, f"{tag} discharges to {target}, whose solid does not resolve — "
                      f"nothing can say whether the stone reaches it",
                 (tag, target), Result.UNKNOWN))
             continue
@@ -382,7 +385,7 @@ def tile_lead(ctx: CheckContext) -> list[Finding]:
             served.add(tag)
             continue
         out.append(advisory(
-            cid, f"{tag}'s tile says it discharges to {discharge!r}, and nothing carries it "
+            cid, f"{tag} says it discharges to {discharge!r}, and nothing carries it "
                  f"there: its stone body ({len(body)} bed(s)) neither reaches {target} nor "
                  f"is served by a french drain that does. A derived ring is a CLOSED loop "
                  f"with no lead out of it",

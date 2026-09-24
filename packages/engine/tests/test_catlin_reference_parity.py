@@ -243,8 +243,14 @@ def test_footing_bedding_carries_the_reference_drainage_vocabulary(catlin_model)
     assert beddings, "every house footing should carry a bearing-prep record"
     for bedding in beddings:
         assert bedding.geotextile
-        assert bedding.drain_tile
         assert bedding.undercut.inches > 0
+        # The court's beds are the declared divergence: open-graded stone draining into a
+        # soakaway course runs no pipe (2026-09-23).
+        if bedding.tag.startswith("FB-SG-"):
+            assert not bedding.drain_tile
+            assert bedding.soakaway_depth is not None or bedding.discharge_ref
+        else:
+            assert bedding.drain_tile
 
 
 def _detail(catlin_model, key_prefix: str):

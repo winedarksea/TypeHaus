@@ -2260,8 +2260,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   SGDR01AAAA, SGFD03AAAA, SGFD04AAAA spent). The court's soakaway is a 12" flood course of
   the same #57 under the drained 42" of `FB-SG-W2`/`E2`/`S`/`ARCH`
   (`FootingBedding.soakaway_depth`); `z0_m` stays the drained bottom frost reads and the
-  course is never frost section. W1/E1 stay 42"-only and hand their tile to W2/E2 — one body
-  of six beds, flood water ~10' off the basement.
+  course is never frost section. W1/E1 stay 42"-only and hand their water to W2/E2 through
+  the stone (`FootingBedding.discharge_ref`) — one body of six beds, flood water ~10' off the
+  basement. **No court bed runs a pipe (2026-09-23)**: the open-graded stone is the drain, and
+  `structural.frost_depth` reads the ASCE 32 "well-drained" half off that continuity
+  (`drainage_evidence`), so a bed that loses it loses its frost credit.
 - **The dig has two planes:** drained sections all bottom at `_SG_WALL_BED_BOTTOM`
   (-13'-7 7/16" = `SOAKAWAY_TOP`), the four soakaway beds at `_SG_SOAKAWAY_BOTTOM`
   (-14'-7 7/16"); the step is at y = -11'-0". `FB-SG-ARCH` is 36" wide so `AD-SG-COURT`'s
