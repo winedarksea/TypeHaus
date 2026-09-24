@@ -19,6 +19,7 @@ vent chase that is not true of a trunk.
 
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -32,23 +33,48 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 _CHASE_TOLERANCE_M = 3 * 0.0254
 
 
+#: How far a branch vent's end may stand from its stack and still be tied to it. The two
+#: risers of catlin's bundle are 4.8" apart, so this reaches the station the chase point is
+#: authored at and not a stack in the next room.
+_STACK_REACH_M = 0.3048
+
+#: How far above a vent's highest vertex the stack is offered as a goal: room to rise over
+#: a duct bank at the chase and no more.
+_STACK_HEADROOM_M = 0.6096
+
+
 def _vent_siblings(model: ResolvedModel, run: Any, problems: list[str]
                    ) -> tuple[tuple[float, float, float], list[str],
-                              tuple[tuple[tuple[float, float], ...], ...]] | None:
-    """``(the chase station, the siblings, their polylines)`` for a branch vent.
+                              tuple[tuple[tuple[float, float, float], ...], ...]] | None:
+    """``(the tie point, the siblings, their polylines with z)`` for a branch vent.
 
-    The root is the run's own downstream end — the station it already lands on — and the
-    goal set is that station plus every OTHER vent of this model that lands on it too. A
+    **The root is the STACK** (2026-09-23): the ``VentRun`` riser of this run's own system
+    nearest its downstream end — see :func:`_stack_leg`. It used to be the run's own end,
+    which on catlin is the chase point between the radon and vent risers, inside both; a
+    vent routed there was a vent tied into the radon pipe. The riser of any other system
+    stays a hard prism. With no stack in reach, the run's own end is the root, as before.
+
+    The goal set is that tie plus every OTHER vent of this model that lands on it too. A
     branch vent may join any of them anywhere along its length; that is a common vent, and
     it is what ``--tree`` has always done for drains and no mode has ever done for vents.
+    The lines carry z, so a vent cannot "arrive" on a sibling's plan line a storey away.
 
-    The siblings go into ``touch`` as well as into the goals: a run the proposal is meant to
-    land ON may not also be a hard prism sitting exactly where the tie is.
+    The siblings and the stack go into ``touch`` as well as into the goals: a run the
+    proposal is meant to land ON may not also be a hard prism sitting exactly where the tie
+    is.
     """
     end = (run.path[-1][0], run.path[-1][1])
     root = (end[0], end[1], run.z_m[-1])
     siblings: list[str] = []
-    paths: list[tuple[tuple[float, float], ...]] = []
+    paths: list[tuple[tuple[float, float, float], ...]] = []
+    stack = _stack_leg(model, run)
+    if stack is not None:
+        tag, leg, root = stack
+        siblings.append(tag)
+        paths.append(leg)
+    # Only the sibling legs this vent can reach rising: every goal vertex is also a lattice
+    # level, and a sibling's whole profile made PR-S-BATH1-VENT's lattice ten levels deep.
+    low, high = min(run.z_m), max(run.z_m) + _STACK_HEADROOM_M
     for other in model.pipe_runs:
         if other.tag == run.tag or other.system != run.system or len(other.path) < 2:
             continue
@@ -56,7 +82,12 @@ def _vent_siblings(model: ResolvedModel, run: Any, problems: list[str]
                for p in (other.path[0], other.path[-1])) > _CHASE_TOLERANCE_M:
             continue
         siblings.append(other.tag)
-        paths.append(tuple((p[0], p[1]) for p in other.path))
+        if not other.z_m or len(other.z_m) != len(other.path):
+            paths.append(tuple((p[0], p[1]) for p in other.path))
+            continue
+        points = [(p[0], p[1], z) for p, z in zip(other.path, other.z_m, strict=False)]
+        paths.extend((a, b) for a, b in zip(points, points[1:], strict=False)
+                     if min(a[2], b[2]) <= high and max(a[2], b[2]) >= low)
     if not siblings:
         problems.append(
             f"{run.tag}: nothing downstream of it is derivable and no other {run.system} "
@@ -64,6 +95,45 @@ def _vent_siblings(model: ResolvedModel, run: Any, problems: list[str]
             "route the parent first")
         return None
     return root, siblings, tuple(paths)
+
+
+def _stack_leg(model: ResolvedModel, run: Any
+               ) -> tuple[str, tuple[tuple[float, float, float], ...],
+                          tuple[float, float, float]] | None:
+    """``(riser tag, the leg it is met on, the tie point)`` for the stack a vent ends at.
+
+    The ``VentRun`` riser whose system is this run's, and of its legs the one nearest the
+    run's end in plan that spans the end's elevation. The tie point is on that leg at the
+    end's elevation — on a vertical leg, the riser's own station.
+    """
+    from typehaus.resolve.mep_envelopes import vent_risers
+    from typehaus.resolve.mep_soffit import plan_distance_to_segment
+
+    end, z_end = (run.path[-1][0], run.path[-1][1]), run.z_m[-1]
+    best = None
+    for tag, path, z, _diameter in vent_risers(model):
+        if tag.rsplit("-", 1)[-1] != str(run.system):
+            continue
+        for i in range(len(path) - 1):
+            low, high = sorted((z[i], z[i + 1]))
+            if not low - _CHASE_TOLERANCE_M <= z_end <= high + _CHASE_TOLERANCE_M:
+                continue
+            distance, t = plan_distance_to_segment(end, path[i], path[i + 1])
+            if distance > _STACK_REACH_M or (best is not None and distance >= best[0]):
+                continue
+            x = path[i][0] + t * (path[i + 1][0] - path[i][0])
+            y = path[i][1] + t * (path[i + 1][1] - path[i][1])
+            tie_z = (min(max(z_end, low), high) if path[i] == path[i + 1]
+                     else z[i] + t * (z[i + 1] - z[i]))
+            leg = ((*path[i], z[i]), (*path[i + 1], z[i + 1]))
+            if path[i] == path[i + 1]:
+                # A stack runs three storeys; offering all of it seeds lattice levels in the
+                # basement and the attic. The vent may meet it from its own lowest point up
+                # to _STACK_HEADROOM_M over its current tie, to rise over something.
+                top = min(high, max(run.z_m) + _STACK_HEADROOM_M)
+                leg = ((*path[i], max(low, min(min(run.z_m), top))), (*path[i], top))
+            best = (distance, tag, leg, (x, y, tie_z))
+    return None if best is None else best[1:]
 
 
 def _discharge(model: ResolvedModel, run: Any, problems: list[str]
@@ -230,3 +300,80 @@ def _supply_refusal(run: Any, record: Any) -> str:
     return (head + "no run of any system passes under its first vertex, so the thing that "
             "feeds it is not a run in this model — a service lateral, or a riser nobody "
             "drew. Author it, or name a --via")
+
+
+def hold_upstream(model: ResolvedModel, ends: Any, target: str, count: int,
+                  problems: list[str]) -> Any:
+    """``ends`` with its origin moved to vertex ``count`` of the run, and the vertices
+    before it kept as authored — ``--hold-upstream``.
+
+    A vent is pinned at its fixture end by the wet-wall legs it ``serves`` through, and a
+    search from the fixture is free to drop them: on catlin one ``PR-M-WC-VENT`` alternative
+    did. ``--via`` cannot pin them — it only adds lattice lines at the root's elevation — so
+    this starts the search where the held legs end. None, with a reason, when it cannot.
+    """
+    from dataclasses import replace
+
+    run = next((r for r in model.pipe_runs if r.tag == target), None)
+    if run is None or ends.tie_is_the_goal:
+        problems.append(f"{target}: --hold-upstream holds the upstream legs of a drain or "
+                        "vent run, and this is not one")
+        return None
+    if not 0 < count < len(run.path) - 1:
+        problems.append(f"{target}: --hold-upstream {count} leaves nothing to route; it "
+                        f"has {len(run.path)} vertices")
+        return None
+    points = [(p[0], p[1], z) for p, z in zip(run.path, run.z_m, strict=False)]
+    return replace(ends, origin=points[count], held=tuple(points[:count]))
+
+
+def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None):
+    """``(search, refusal report)`` — the plain A* for a pressurised run, the sloped one for
+    a drain.
+
+    **This is where "search flat, slope after" ends.** A drain's invert is a function of
+    developed length alone, so putting the developed length in the search state makes every
+    constraint on its height testable where it can steer the lane rather than only refuse it
+    afterwards. See ``routing/gravity_search.py`` and the drain note's §8, where the cheap
+    lane passes a head budget taken at the goal and is a quarter of an inch under a truss
+    web at its third bend.
+
+    The returned callable has ``shortest_route``'s exact signature so
+    ``alternatives.alternative_routes`` takes either without knowing which. A vent or a
+    radon pipe gets ``shortest_route(rising=True)``: it may never lose elevation on the way
+    to its root (``routing/trades/pipe.rises``).
+
+    Moved here from ``cmd_route`` when that file passed the 500-line rule.
+    """
+    from typehaus.routing.gravity import minimum_slope
+    from typehaus.routing.gravity_search import (
+        GravityProblem,
+        GravityRefusal,
+        member_constraints,
+        sloped_route,
+    )
+    from typehaus.routing.search import shortest_route
+    from typehaus.routing.trades.pipe import rises
+
+    if not ends.falls:
+        if ends.kind == "pipe" and rises(str(ends.system)):
+            return partial(shortest_route, rising=True), None
+        return shortest_route, None
+
+    report = GravityRefusal()
+    # The band this run can possibly occupy: its tie at the bottom, its start ceiling at the
+    # top. Without it every floor in the model constrains every run — see
+    # ``member_constraints`` — and a second-floor branch is refused against a basement joist.
+    band = (min(ends.origin[2], ends.root[2]), max(ends.origin[2], ends.root[2]))
+    constraints = member_constraints(model, graph, band)
+    grade = slope if slope is not None else minimum_slope(ends.diameter_m)
+
+    def search(a_graph, a_space, start, goals):
+        problem = GravityProblem(
+            ceiling_m=ends.origin[2], grade_in_per_ft=grade,
+            diameter_m=ends.diameter_m,
+            required_m=dict.fromkeys(goals, ends.root[2]))
+        return sloped_route(a_graph, a_space, start, goals, problem,
+                            constraints=constraints, refusal=report)
+
+    return search, report

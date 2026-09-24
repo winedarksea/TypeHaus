@@ -30,6 +30,8 @@ import typer
 
 from typehaus.cli._shared import app, console
 from typehaus.cli.cmd_route_tree import _line_nodes, _propose_tree
+from typehaus.cli.route_roots import hold_upstream
+from typehaus.cli.route_roots import search_for as _search_for
 from typehaus.cli.route_support import (
     Endpoints,
     _endpoints,
@@ -180,6 +182,9 @@ def route(
     timing: bool = typer.Option(
         False, "--timing", help="Print build-space / build-graph / search ms and the "
                                 "lattice and expansion counts."),
+    hold_upstream: int = typer.Option(
+        0, "--hold-upstream", help="With --run: keep the first N legs as authored and "
+                                   "route from vertex N (a vent's wet-wall legs)."),
 ) -> None:
     """Propose MEP routes. Prints dialect source; writes nothing."""
     from typehaus.routing.proposal import render
@@ -193,6 +198,9 @@ def route(
         raise typer.Exit(2)
     if not 1 <= alternatives <= len(_LETTERS):
         console.print(f"[red]--alternatives wants 1..{len(_LETTERS)}[/red]")
+        raise typer.Exit(2)
+    if hold_upstream and not run:
+        console.print("[red]--hold-upstream holds an authored run's legs; it needs --run[/red]")
         raise typer.Exit(2)
     if alternatives > 1 and tree:
         console.print("[red]--alternatives is refused with --tree: the alternatives are "
@@ -271,7 +279,7 @@ def route(
             slope=slope, margin_ft=margin_ft, band=band,
             avoid=frozenset(avoid), via=_points(via), explain=explain, cost=cost,
             alternatives=alternatives, timing=clock,
-            counterfactual=counterfactual)
+            counterfactual=counterfactual, hold=hold_upstream)
 
     if explain:
         for line in cost.table():
@@ -333,7 +341,8 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
              slope: float | None, margin_ft: float, band: tuple[float, float] | None,
              avoid: frozenset[str], via: list[tuple[float, float]], explain: bool,
              cost: RouteCost, alternatives: int = 1, timing: list[str] | None = None,
-             counterfactual: bool = False, extra_prisms: list | None = None
+             counterfactual: bool = False, extra_prisms: list | None = None,
+             hold: int = 0
              ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str], list]:
     """The one place the router is driven. ``(proposals, problems, notices, refusals)``.
 
@@ -359,6 +368,8 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
 
     for target in targets:
         ends = _endpoints(model, target, mode, problems)
+        if ends is not None and hold:
+            ends = hold_upstream(model, ends, target, hold, problems)
         if ends is None:
             continue
         if explain:
@@ -499,51 +510,6 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
     return proposals, problems, notices, refusals
 
 
-def _search_for(model: ResolvedModel, graph: Any, ends: Endpoints, slope: float | None):
-    """``(search, refusal report)`` — the plain A* for a pressurised run, the sloped one for
-    a drain.
-
-    **This is where "search flat, slope after" ends.** A drain's invert is a function of
-    developed length alone, so putting the developed length in the search state makes every
-    constraint on its height testable where it can steer the lane rather than only refuse it
-    afterwards. See ``routing/gravity_search.py`` and the drain note's §8, where the cheap
-    lane passes a head budget taken at the goal and is a quarter of an inch under a truss
-    web at its third bend.
-
-    The returned callable has ``shortest_route``'s exact signature so
-    ``alternatives.alternative_routes`` takes either without knowing which.
-    """
-    from typehaus.routing.gravity import minimum_slope
-    from typehaus.routing.gravity_search import (
-        GravityProblem,
-        GravityRefusal,
-        member_constraints,
-        sloped_route,
-    )
-    from typehaus.routing.search import shortest_route
-
-    if not ends.falls:
-        return shortest_route, None
-
-    report = GravityRefusal()
-    # The band this run can possibly occupy: its tie at the bottom, its start ceiling at the
-    # top. Without it every floor in the model constrains every run — see
-    # ``member_constraints`` — and a second-floor branch is refused against a basement joist.
-    band = (min(ends.origin[2], ends.root[2]), max(ends.origin[2], ends.root[2]))
-    constraints = member_constraints(model, graph, band)
-    grade = slope if slope is not None else minimum_slope(ends.diameter_m)
-
-    def search(a_graph, a_space, start, goals):
-        problem = GravityProblem(
-            ceiling_m=ends.origin[2], grade_in_per_ft=grade,
-            diameter_m=ends.diameter_m,
-            required_m=dict.fromkeys(goals, ends.root[2]))
-        return sloped_route(a_graph, a_space, start, goals, problem,
-                            constraints=constraints, refusal=report)
-
-    return search, report
-
-
 def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
                   suffix: str, slope: float | None, explain: bool,
                   problems: list[str]) -> RouteProposal | None:
@@ -597,7 +563,7 @@ def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str
             notes.append(disclosed)
 
     return RouteProposal(
-        tag=f"{target}-PROPOSED{suffix}", kind=ends.kind, points=list(points),
+        tag=f"{target}-PROPOSED{suffix}", kind=ends.kind, points=[*ends.held, *points],
         diameter_m=ends.diameter_m, width_m=ends.width_m, depth_m=ends.depth_m,
         serves=ends.serves, system=ends.system, cost=found.cost, bends=found.bends,
         terms=dict(found.terms) if explain else {}, notes=notes, routing=routing,

@@ -426,8 +426,6 @@ suppress = [
   # unknowns: the one habit a report cannot survive.
   "mep.run_through_plate:DU-B-ERV-R-SAUNA-SUP",
   "mep.run_through_plate:DU-B-ERV-R-SAUNA-EXH",
-  "mep.run_through_plate:DU-ERV-RISER-SUP",
-  "mep.run_through_plate:DU-ERV-RISER-EXH",
   "mep.run_through_plate:DU-S-HP-SUP",
   "mep.run_through_plate:DU-S-HP-RET",
   "mep.run_through_plate:DU-S-HP-SUITE",
@@ -571,14 +569,6 @@ suppress = [
   # and a second open-web deck anywhere in the house would still report), and on the RUN for
   # run_member_crossing so a new crossing elsewhere still reports.
   "mep.open_web_panel:FS-S-WEST",
-  "mep.run_member_crossing:DU-M-ERV-R-BATH1",
-  "mep.run_member_crossing:DU-M-ERV-R-BED1",
-  "mep.run_member_crossing:DU-M-ERV-R-LAUNDRY",
-  "mep.run_member_crossing:DU-M-ERV-R-LIVING",
-  "mep.run_member_crossing:DU-M-ERV-R-MUD",
-  "mep.run_member_crossing:DU-M-ERV-R-PLANT",
-  "mep.run_member_crossing:DU-M-ERV-R-STUDY",
-  "mep.run_member_crossing:DU-M-ERV-R-VANITY",
   "mep.run_member_crossing:PR-A-CW-STUBATH",
   "mep.run_member_crossing:PR-A-HW-STUBATH",
   "mep.run_member_crossing:PR-A-STUBATH-DRAIN",

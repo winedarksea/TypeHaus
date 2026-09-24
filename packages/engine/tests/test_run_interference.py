@@ -170,32 +170,139 @@ def test_catlin_reports_the_suite_stack_head_crossing(catlin_ctx) -> None:
     assert "leg 2 of PR-M-S-SUITE-WC-DRAIN" in message
 
 
-def _findings_for(tracks, sections):
-    """Run the check over a hand-built pair of tracks, with nothing else in the model."""
+def _findings_for(tracks, sections, systems=None, floors=()):
+    """Run the check over hand-built tracks, with nothing else in the model.
+
+    ``systems`` is ``tag -> (kind, system)``; a track it does not name keeps the geometric
+    joint reading, which is what every test written before A1 relies on."""
     from types import SimpleNamespace
 
     from typehaus.checks.mep import run_interference as module
 
+    systems = systems or {}
     model = SimpleNamespace(plan=SimpleNamespace(all_elements=lambda: ()),
-                            walls=[], openings=[])
+                            walls=[], openings=[], floors=list(floors))
     ctx = SimpleNamespace(model=model)
-    envelopes = [run_envelope("pipe", tag, path, z, sections[tag])
+    envelopes = [run_envelope(systems.get(tag, ("pipe",))[0], tag, path, z, sections[tag])
                  for tag, (path, z) in tracks.items()]
     import typehaus.resolve.mep_envelopes as env
     import typehaus.resolve.mep_queries as queries
 
     old_env, old_sections, old_gaps = env.envelopes, env.run_sections, queries.schematic_conduits
-    old_lines = env.run_polylines
+    old_lines, old_systems = env.run_polylines, env.run_systems
     try:
         env.envelopes = lambda _model, **_kw: envelopes
         env.run_sections = lambda _model: sections
-        env.run_polylines = lambda _model: [("pipe", tag, path, z)
+        env.run_polylines = lambda _model: [(systems.get(tag, ("pipe",))[0], tag, path, z)
                                             for tag, (path, z) in tracks.items()]
+        env.run_systems = lambda _model: systems
         queries.schematic_conduits = lambda _model: ()
         return module.run_interference(ctx)
     finally:
         env.envelopes, env.run_sections, env.run_polylines = old_env, old_sections, old_lines
+        env.run_systems = old_systems
         queries.schematic_conduits = old_gaps
+
+
+def _fails(findings):
+    return [f for f in findings if f.result.value == "fail"]
+
+
+# --------------------------------------------------------------------------------------
+# A1-A3 (2026-09-23): a joint only between runs that can join; a sleeve only inside itself;
+# an envelope that could not be measured is said out loud.
+# --------------------------------------------------------------------------------------
+
+_PIPE = (0.05, 0.05, None)
+
+
+def test_systems_join_by_kind_and_system() -> None:
+    from typehaus.resolve.mep_envelopes import systems_join
+
+    assert systems_join(("pipe", "vent"), ("pipe", "drain"))
+    assert systems_join(("pipe", "radon"), ("pipe", "radon"))
+    assert not systems_join(("pipe", "vent"), ("pipe", "radon"))
+    assert not systems_join(("pipe", "water_cold"), ("pipe", "water_hot"))
+    assert systems_join(("duct", "return"), ("duct", "exhaust")), "one stale-air stream"
+    assert not systems_join(("duct", "supply"), ("duct", "exhaust"))
+    assert not systems_join(("conduit", None), ("duct", "supply"))
+    assert systems_join(("conduit", None), ("conduit", None))
+
+
+def test_a_vent_ending_on_the_RADON_riser_is_a_clash_and_on_the_vent_riser_a_fitting() -> None:
+    """Catlin's eight branch vents all ended at the chase point, between the two bundled
+    risers, and distance alone made every one of them a "joint" with the radon pipe."""
+    riser = _track([(0.0, 0.0), (0.0, 0.0)], [0.0, 6.0])
+    branch = _track([(2.0, 0.0), (0.0, 0.0)], [3.0, 3.0])
+    tracks = {"VR-radon": riser, "PR-VENT": branch}
+    sections = {"VR-radon": _PIPE, "PR-VENT": _PIPE}
+    radon = _fails(_findings_for(tracks, sections, {"VR-radon": ("pipe", "radon"),
+                                                    "PR-VENT": ("pipe", "vent")}))
+    assert len(radon) == 1
+    assert "No fitting joins a vent pipe to a radon pipe" in radon[0].message \
+        or "No fitting joins a radon pipe to a vent pipe" in radon[0].message
+    assert not _fails(_findings_for(tracks, sections, {"VR-radon": ("pipe", "vent"),
+                                                       "PR-VENT": ("pipe", "vent")}))
+
+
+def test_a_vent_or_conduit_ending_on_a_duct_is_a_clash() -> None:
+    duct = _track([(0.0, 0.0), (5.0, 0.0)], [2.5, 2.5])
+    end = _track([(2.5, 2.0), (2.5, 0.05)], [2.5, 2.5])
+    sections = {"DU-X": (0.1, 0.1, None), "OTHER": _PIPE}
+    for kind, system in (("pipe", "vent"), ("conduit", None)):
+        fails = _fails(_findings_for({"DU-X": duct, "OTHER": end}, sections,
+                                     {"DU-X": ("duct", "supply"), "OTHER": (kind, system)}))
+        assert len(fails) == 1, kind
+
+
+def test_a_supply_duct_ending_on_an_exhaust_trunk_is_a_clash() -> None:
+    trunk = _track([(0.0, 0.0), (5.0, 0.0)], [2.5, 2.5])
+    branch = _track([(2.5, 2.0), (2.5, 0.0)], [2.5, 2.5])
+    sections = {"DU-TRUNK": (0.1, 0.1, None), "DU-BRANCH": (0.05, 0.05, None)}
+    tracks = {"DU-TRUNK": trunk, "DU-BRANCH": branch}
+    assert len(_fails(_findings_for(tracks, sections, {"DU-TRUNK": ("duct", "exhaust"),
+                                                       "DU-BRANCH": ("duct", "supply")}))) == 1
+    assert not _fails(_findings_for(tracks, sections, {"DU-TRUNK": ("duct", "exhaust"),
+                                                       "DU-BRANCH": ("duct", "return")}))
+
+
+def test_a_shared_hole_pardons_a_contact_INSIDE_it_and_nowhere_else() -> None:
+    """A2. The pardon was for the pair, everywhere; one shared deck hole would have
+    laundered a clash a storey above it."""
+    from types import SimpleNamespace
+
+    def deck(ring):
+        return SimpleNamespace(penetrations=(("FO-X", ring, ("PR-A", "PR-B")),),
+                               members=[], deck_z0_m=2.9, deck_top_at=lambda x, y: 3.1)
+
+    # Two risers side by side, 5 cm apart, from 0 to 6 m: they touch over their whole rise.
+    a = _track([(0.0, 0.0), (0.0, 0.0)], [0.0, 6.0])
+    b = _track([(0.05, 0.0), (0.05, 0.0)], [0.0, 6.0])
+    tracks, sections = {"PR-A": a, "PR-B": b}, {"PR-A": _PIPE, "PR-B": _PIPE}
+    systems = {"PR-A": ("pipe", "vent"), "PR-B": ("pipe", "water_cold")}
+    hole = [(-0.2, -0.2), (0.3, -0.2), (0.3, 0.2), (-0.2, 0.2)]
+    assert _fails(_findings_for(tracks, sections, systems, floors=[deck(hole)])), \
+        "the deck band is 0.2 m of a 6 m contact"
+    # The same pair crossing only INSIDE the deck band is the hole's business.
+    short_a = _track([(0.0, 0.0), (0.0, 0.0)], [2.95, 3.05])
+    short_b = _track([(0.05, 0.0), (0.05, 0.0)], [2.95, 3.05])
+    assert not _fails(_findings_for({"PR-A": short_a, "PR-B": short_b}, sections, systems,
+                                    floors=[deck(hole)]))
+    elsewhere = [(5.0, 5.0), (5.5, 5.0), (5.5, 5.5), (5.0, 5.5)]
+    assert _fails(_findings_for({"PR-A": short_a, "PR-B": short_b}, sections, systems,
+                                floors=[deck(elsewhere)]))
+
+
+def test_a_lagging_spec_with_no_thickness_is_an_UNKNOWN_by_name() -> None:
+    """A3. ``run_envelope`` wrote the sentence and this check dropped it, so catlin's four
+    ERV risers were graded bare — two inches a side too small."""
+    a = _track([(0.0, 0.0), (2.0, 0.0)], [2.0, 2.0])
+    b = _track([(0.0, 3.0), (2.0, 3.0)], [2.0, 2.0])
+    findings = _findings_for({"DU-WRAPPED": a, "PR-B": b},
+                             {"DU-WRAPPED": (0.1, 0.1, "R-8 wrap"), "PR-B": _PIPE})
+    unknowns = [f for f in findings if f.result.value == "unknown"]
+    assert [f.element_tags for f in unknowns] == [("DU-WRAPPED",)]
+    assert "states no thickness" in unknowns[0].message
 
 
 # --------------------------------------------------------------------------------------

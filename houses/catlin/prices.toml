@@ -3710,7 +3710,7 @@
 # minimum call-out comes back and the high column is the number to believe.
 # Sources: superarbor.io Tuff II 5-gal list 2026; homedepot.com SM38 Sticky Mesh HD 38" x
 # 150 ft; Styro Industries "Applying TUFF II Over Rigid Foam & ICF" for coverage and coats.
-"foundation-coating-acrylic" = { material = { low = 1.78, high = 2.65 }, labour = { low = 4.5, high = 9 } }  # 276.3 SF — 2 coats + mesh over XPS; ~75/25 LABOUR to material
+"foundation-coating-acrylic-black" = { material = { low = 1.78, high = 2.65 }, labour = { low = 4.5, high = 9 } }  # 276.3 SF — 2 coats + mesh over XPS; ~75/25 LABOUR to material
 # --- THE MINERAL SILICATE WASH, NEW 2026-09-13 ---------------------------------------------
 # The sunken garden court's daylighting coat: two coats of untinted white potassium-silicate
 # mineral paint. Product of record BEECK Beeckosil Fine, White C-102 (LRV 90). The design
@@ -5484,8 +5484,8 @@
 # through conditioned space sweats all winter, and an insulated-but-unsealed one sweats
 # inside the insulation, which is worse because nobody sees it.
 # $/LF, by spec
-"R-8 wrap" = { material = { low = 2.2, high = 4.5 }, labour = { low = 2, high = 5 } }  # 43.9 LF
-"R-8 wrap, vapour-sealed" = { material = { low = 3.2, high = 6.5 }, labour = { low = 3.5, high = 8 } }  # 86.8 LF
+'2" R-8 wrap' = { material = { low = 2.2, high = 4.5 }, labour = { low = 2, high = 5 } }  # 43.9 LF
+'2" R-8 wrap, vapour-sealed' = { material = { low = 3.2, high = 6.5 }, labour = { low = 3.5, high = 8 } }  # 86.8 LF
 
 [sleeves]
 # RESEARCHED 2026-08-08 — [low, high] $ each, by sleeve diameter. Derived, not quoted: each
@@ -5697,8 +5697,8 @@
 # `Flashing.vertical` existed (params/roof_trim.py, takeoff/edge_trim.py) — a genuine gap in
 # the BOM, not a modelling nicety: the transition needs a real piece of formed metal.
 #
-# 8" of developed coil (a 4" leg onto each face, one bend either side) in 24 ga white PVDF, the
-# panel's own coil. Material is a shade under `corner_trim`'s because that row's blend carries
+# 8" of developed coil (a 4" leg onto each face, one bend either side) in 24 ga PVDF, black
+# (`metal-dark-exterior`) since 2026-09-23 to match the window trim. Material is a shade under `corner_trim`'s because that row's blend carries
 # the sloped rake pieces; Steeldash's published 24 ga outside corner is $5.24-6.82/LF for a
 # wider girth than this. Labour is the same easy trim `corner_trim` records — except that these
 # four are 22'-4" tall each, so they are a staging job rather than a ladder job, which is where

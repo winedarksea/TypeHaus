@@ -58,6 +58,24 @@ def graded(findings: list[Finding]) -> list[Finding]:
             if f.severity.value == "error" or f.check_id.startswith(GRADED_PREFIXES)]
 
 
+def _findings(plan: Any, directory: Path) -> list[Finding]:
+    """The graded findings of ``plan``, with ``[checks] suppress`` LIFTED.
+
+    A house working an open campaign blanket-suppresses exactly the checks a route can
+    break — catlin suppresses ``mep.run_interference`` and ``mep.riser_through_deck`` — and
+    ``run_checks`` drops a suppressed finding before this diff ever sees it. So a proposal
+    laned through a duct used to print "no new FAIL". Both sides of the diff are lifted,
+    so a clash the house already carries is still not this route's fault.
+    """
+    from dataclasses import replace
+
+    from typehaus.checks import build_context, run_checks
+
+    ctx, _ = build_context(plan, directory)
+    ctx.preferences = replace(ctx.preferences, suppressed=frozenset())
+    return graded(run_checks(ctx).findings)
+
+
 def _key(finding: Finding) -> tuple:
     """What makes two findings "the same finding" across two runs of the checks.
 
@@ -72,10 +90,7 @@ def _key(finding: Finding) -> tuple:
 def evaluate_proposals(directory: Path, model: ResolvedModel,
                        proposals: list[RouteProposal]) -> list[Evaluation]:
     """One :class:`Evaluation` per proposal, each against the house's own baseline."""
-    from typehaus.checks import build_context, run_checks
-
-    ctx, _ = build_context(model.plan, directory)
-    baseline = {_key(f): f for f in graded(run_checks(ctx).findings)}
+    baseline = {_key(f): f for f in _findings(model.plan, directory)}
 
     out = []
     for proposal in proposals:
@@ -85,8 +100,6 @@ def evaluate_proposals(directory: Path, model: ResolvedModel,
 
 def _evaluate_one(directory: Path, model: ResolvedModel, proposal: RouteProposal,
                   baseline: dict[tuple, Finding]) -> Evaluation:
-    from typehaus.checks import build_context, run_checks
-
     result = Evaluation(tag=proposal.tag)
     try:
         candidate = _candidate_plan(model, proposal)
@@ -94,8 +107,7 @@ def _evaluate_one(directory: Path, model: ResolvedModel, proposal: RouteProposal
         result.refused = f"the candidate elements would not build: {exc}"
         return result
     try:
-        ctx, _ = build_context(candidate, directory)
-        findings = graded(run_checks(ctx).findings)
+        findings = _findings(candidate, directory)
     except Exception as exc:  # noqa: BLE001 - a resolver refusal is the answer, not a crash
         result.refused = f"the candidate model would not resolve: {exc}"
         return result
@@ -212,22 +224,18 @@ def evaluate_network(directory: Path, model: ResolvedModel,
     runs the same registry over a candidate model holding the whole result rather than
     restating any of it here.
     """
-    from typehaus.checks import build_context, run_checks
-
     result = Evaluation(tag="campaign")
     if not proposals:
         result.refused = "nothing was laid, so there is no network to grade"
         return result
     try:
-        base_ctx, _ = build_context(model.plan, directory)
-        baseline = {_key(f): f for f in graded(run_checks(base_ctx).findings)}
+        baseline = {_key(f): f for f in _findings(model.plan, directory)}
         candidate = candidate_plan_for_all(model, proposals)
     except (ValueError, TypeError, KeyError) as exc:
         result.refused = f"the candidate elements would not build: {exc}"
         return result
     try:
-        ctx, _ = build_context(candidate, directory)
-        findings = graded(run_checks(ctx).findings)
+        findings = _findings(candidate, directory)
     except Exception as exc:  # noqa: BLE001 - a resolver refusal is the answer, not a crash
         result.refused = f"the candidate model would not resolve: {exc}"
         return result

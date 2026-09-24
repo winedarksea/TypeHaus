@@ -375,10 +375,13 @@ def _line_nodes(graph: Graph, path: Any, tolerance: float = 0.05,
             if ((ax + t * dx - node.x) ** 2
                     + (ay + t * dy - node.y) ** 2) > tolerance ** 2:
                 continue
-            if (z_tolerance is not None and len(start) > 2 and len(end) > 2
-                    and abs(start[2] + t * (end[2] - start[2])
-                            - node.z) > z_tolerance):
-                continue
+            if z_tolerance is not None and len(start) > 2 and len(end) > 2:
+                # A RISER — one plan point, two elevations — holds every z between its ends;
+                # interpolating at t=0 would put its whole rise at its foot.
+                low, high = ((min(start[2], end[2]), max(start[2], end[2])) if span <= 0
+                             else (start[2] + t * (end[2] - start[2]),) * 2)
+                if not low - z_tolerance <= node.z <= high + z_tolerance:
+                    continue
             out.add(node.index)
             break
     return out

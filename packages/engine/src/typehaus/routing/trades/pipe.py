@@ -23,6 +23,12 @@ from typehaus.routing.gravity import HeadBudget, apply, profile_for
 #: does not claim to solve.
 GRAVITY_SYSTEMS = frozenset({"drain"})
 
+#: Systems that may never fall from their origin to their root. A vent is graded to drain
+#: back to the drain it serves (MN 905.1, ``mep.vent_grade``) and a radon pipe back to its
+#: pit, so a lane that dips under one duct and climbs over the next traps water in both.
+#: ``notes/vent_grade_basis.md`` §"The router" is the oracle.
+RISING_SYSTEMS = frozenset({"vent", "radon"})
+
 
 def radius_m(diameter_m: float) -> float:
     """Half the outside dimension — a pipe is round, so this is the whole of it."""
@@ -46,6 +52,11 @@ def crossing_admissible(corridor: Corridor, diameter_m: float,
 
 def falls(system: str) -> bool:
     return system in GRAVITY_SYSTEMS
+
+
+def rises(system: str) -> bool:
+    """Whether every step from origin to root must hold or gain elevation."""
+    return system in RISING_SYSTEMS
 
 
 def elevate(points: Sequence[tuple[float, ...]], budget: HeadBudget | None, *,

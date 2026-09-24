@@ -394,6 +394,8 @@ def _wall_corner(name: str, index: int, x, y, x_sign: float, y_sign: float):
 
     8" of developed coil, one bend either side — the cheapest piece in either manufacturer's
     wall-trim kit, and the same 4" leg the derived roof corner uses (``_TRIM_LEG_IN``).
+    Black (``metal-dark-exterior``) since 2026-09-23, to match the window trim; it was the
+    board & batten's own coil before.
     """
     return Flashing(
         # `haus fmt` never visits `params/*.py`, so `uid=""` here would stay empty and
@@ -406,7 +408,7 @@ def _wall_corner(name: str, index: int, x, y, x_sign: float, y_sign: float):
               pt(x, y),
               pt(x, inch(y.inches + y_sign * _CORNER_LEG_IN))),
         top_elevation=_CORNER_TOP, depth=_CORNER_RUN, thickness=inch(_TRIM_FACE_IN),
-        material="board-batten-24")
+        material="metal-dark-exterior")
 
 
 #: Filed on ``main`` rather than ``attic``: the run starts below the main datum and the

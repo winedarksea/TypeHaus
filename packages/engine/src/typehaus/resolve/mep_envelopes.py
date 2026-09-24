@@ -148,15 +148,18 @@ def vent_risers(model: ResolvedModel
     ``resolve/accessories`` also reads to build the solids. One derivation, two readers.
     """
     from typehaus.model.mep import VentRun
+    from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
     from typehaus.resolve.vent_termination import riser_polylines
 
     out = []
     for element in model.plan.all_elements():
         if not isinstance(element, VentRun):
             continue
-        # A ``VentRun.diameter`` is the pipe as drawn — the solids are faceted circles of
-        # exactly that radius — so unlike a ``PipeRun`` there is no nominal to convert.
-        out.extend((tag, path, z, element.diameter.meters)
+        # The OUTSIDE diameter, as ``run_radii`` reads a ``PipeRun``: a 3" DWV riser is
+        # 3.50" of obstruction. The solids still draw the nominal; the envelope may not.
+        # A ``VentRun`` states no material, so this takes the IPS series.
+        diameter = pipe_outside_diameter_m(element.diameter.meters, None)
+        out.extend((tag, path, z, diameter)
                    for tag, path, z in riser_polylines(model, element))
     return out
 
@@ -200,6 +203,58 @@ def run_polylines(model: ResolvedModel
     for tag, path, z, _diameter_m in vent_risers(model):
         out.append(("pipe", tag, path, z))
     return out
+
+
+#: Systems that are one network and may tee into each other. DWV: a vent ties into a drain
+#: at its foot and into another vent anywhere; every other pipe system joins only itself —
+#: radon only radon. Stale air: an ERV extract trunk collects rooms' RETURN pickups and
+#: baths' EXHAUST takeoffs alike (catlin's DU-M-ERV-EXH-TRUNK), so those two are one stream.
+_FAMILIES = {"pipe": (frozenset({"drain", "vent"}),),
+             "duct": (frozenset({"return", "exhaust"}),)}
+
+
+def run_systems(model: ResolvedModel) -> dict[str, tuple[str, str | None]]:
+    """``tag -> (kind, system)`` for every routed thing — what :func:`systems_join` reads.
+
+    A ``VentRun`` riser carries its system as the ``{tag}-{system}`` suffix
+    ``riser_polylines`` gives it; a raceway has no system.
+    """
+    def value(system: Any) -> str | None:
+        return None if system is None else str(getattr(system, "value", system))
+
+    out: dict[str, tuple[str, str | None]] = {}
+    for run in model.pipe_runs:
+        out[run.tag] = ("pipe", value(run.system))
+    for duct in model.ducts:
+        out[duct.tag] = ("duct", value(duct.system))
+    for raceway in model.conduits:
+        out[raceway.tag] = ("conduit", None)
+    for tag, *_rest in vent_risers(model):
+        out[tag] = ("pipe", tag.rsplit("-", 1)[-1])
+    return out
+
+
+def systems_join(first: tuple[str, str | None], second: tuple[str, str | None]) -> bool:
+    """Whether a run of one ``(kind, system)`` may END ON a run of the other.
+
+    Distance alone used to decide it, so a vent "joined" the radon riser beside its own
+    stack and a supply branch could "tee" into an exhaust trunk. Kinds must match; a run
+    joins its own system or one in its :data:`_FAMILIES` group; any raceway joins any
+    raceway.
+    """
+    (kind_a, system_a), (kind_b, system_b) = first, second
+    if kind_a != kind_b:
+        return False
+    if kind_a == "conduit" or system_a == system_b:
+        return True
+    return any({system_a, system_b} <= family for family in _FAMILIES.get(kind_a, ()))
+
+
+def joinable(model: ResolvedModel, tag_a: str, tag_b: str) -> bool:
+    """:func:`systems_join` by tag. A tag this model does not route joins nothing."""
+    systems = run_systems(model)
+    first, second = systems.get(tag_a), systems.get(tag_b)
+    return first is not None and second is not None and systems_join(first, second)
 
 
 def run_sections(model: ResolvedModel) -> dict[str, tuple[float, float, str | None]]:

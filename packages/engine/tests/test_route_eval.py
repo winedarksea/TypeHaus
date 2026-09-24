@@ -139,3 +139,23 @@ def test_the_network_evaluation_grades_the_set_and_not_the_lanes(catlin_model_ro
     assert result.tag == "campaign"
     assert all(f.check_id.startswith(GRADED_PREFIXES) or f.severity.value == "error"
                for f in result.introduced)
+
+
+def test_a_clash_the_house_SUPPRESSES_is_still_a_new_fail_for_a_proposal(
+        catlin_model_ro) -> None:
+    """A5. Catlin blanket-suppresses ``mep.run_interference``, and ``run_checks`` dropped
+    the finding before the diff saw it — so a raceway laned straight through a duct printed
+    "no new FAIL". Both sides of the diff are graded with suppression lifted."""
+    duct = next(d for d in catlin_model_ro.ducts if d.tag == "DU-ERV-RISER-SUP")
+    (ax, ay), (bx, by) = duct.path[1], duct.path[2]
+    mx, my, z = (ax + bx) / 2.0, (ay + by) / 2.0, duct.z_m[1]
+    # Square across the duct's level leg, at its own centreline elevation.
+    dx, dy = (0.0, 0.5) if abs(ax - bx) > abs(ay - by) else (0.5, 0.0)
+    raceway = RouteProposal(tag="CD-X-CLASH-PROPOSED", kind="conduit",
+                            points=[(mx - dx, my - dy, z), (mx + dx, my + dy, z)],
+                            diameter_m=0.75 * 0.0254, system="")
+    report, = evaluate_proposals(_CATLIN, catlin_model_ro, [raceway])
+    assert report.refused is None, report.refused
+    assert any(f.check_id == "mep.run_interference" and f.result.value == "fail"
+               and set(f.element_tags) == {"CD-X-CLASH-PROPOSED", "DU-ERV-RISER-SUP"}
+               for f in report.introduced), [f.message for f in report.introduced]

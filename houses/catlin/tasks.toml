@@ -204,7 +204,7 @@ constraints = [
 
 [visits."task/paint/building/foundation-coating"]
 label = "Foundation coating — the above-grade XPS band, all four sides"
-rows = ["envelope_layers:foundation-coating-acrylic"]
+rows = ["envelope_layers:foundation-coating-acrylic-black"]
 element_tags = ["W-B-N*", "W-B-E*", "W-B-W*", "W-B-S*"]
 depends_on = ["task/insulation/building/foam-and-girts", "insp/foundation_backfill"]
 constraints = [

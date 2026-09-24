@@ -186,7 +186,7 @@ def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
     from typehaus.takeoff.envelope import envelope_layer_takeoff
 
     rows = {row["material"]: row for row in envelope_layer_takeoff(catlin_model)}
-    panel = rows["foundation-coating-acrylic"]
+    panel = rows["foundation-coating-acrylic-black"]
     assert panel["net_area_sqft"] == pytest.approx(282.6, abs=1.0)
     # The parge survives nowhere: `Material(tag="stucco")` is still in library/materials.py
     # — this house simply has no instance of it. Nor does the protection board, which is
@@ -242,7 +242,7 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     assert [p.Name for p in parents] == ["W-B-N1"]
     materials = [rel.RelatingMaterial for rel in model.by_type("IfcRelAssociatesMaterial")
                  if part in (rel.RelatedObjects or ())]
-    assert [m.Name for m in materials] == ["foundation-coating-acrylic"]
+    assert [m.Name for m in materials] == ["foundation-coating-acrylic-black"]
 
     # And it is *not* also a layer of the wall type's set, which would double-describe it
     # and make the set thicker than the geometry it belongs to.

@@ -77,6 +77,7 @@ class Endpoints:
     advice: tuple[str, ...] = ()
     #: What pasting obliges next — the children to re-route once this run moves.
     after_paste: tuple[str, ...] = ()
+    held: tuple[tuple[float, float, float], ...] = ()  #: kept ahead of origin, --hold-upstream
 
 
 from typehaus.cli.route_roots import (  # noqa: E402
@@ -286,8 +287,11 @@ def _duct_endpoints(model: ResolvedModel, duct: Any,
 
     What it may touch is what ``mep.duct_connectivity`` says it joins, read from
     ``resolve/mep_soffit.ducts_are_joined`` — the same predicate, so the router cannot
-    propose a lane the connectivity check would then call an orphan.
+    propose a lane the connectivity check would then call an orphan — **and only where the
+    two systems can join** (``mep_envelopes.joinable``). Distance alone let a supply
+    proposal pass through an exhaust trunk it happened to end beside.
     """
+    from typehaus.resolve.mep_envelopes import joinable
     from typehaus.resolve.mep_soffit import ducts_are_joined
     from typehaus.routing.trades import duct as duct_trade
 
@@ -296,7 +300,8 @@ def _duct_endpoints(model: ResolvedModel, duct: Any,
                         "so it has no two ends to route between")
         return None
     joined = {other.tag for other in model.ducts
-              if other.tag != duct.tag and ducts_are_joined(model, duct.tag, other.tag)}
+              if other.tag != duct.tag and ducts_are_joined(model, duct.tag, other.tag)
+              and joinable(model, duct.tag, other.tag)}
     width, depth = (0.0, 0.0) if duct.diameter_m else (duct.width_m, duct.depth_m)
     origin = _port_terminal(model, duct, 0)
     root = _port_terminal(model, duct, len(duct.path) - 1)

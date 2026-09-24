@@ -1516,8 +1516,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     would not. It does not change their R404.4 case either way — sliding is graded on the
     closed court loop at FS 1.71 (`retaining_system/W-SG-ARCH`), not on these walls
     individually (→ "Sunken garden court").
-  - Skin: `BASEMENT_12`/`_8` cover the XPS with a 1/8" `foundation-coating-acrylic` (troweled
-    over mesh) banded from 6" below grade to the wall top, `Layer.extent` off the `GRADE`
+  - Skin: `BASEMENT_12`/`_8` cover the XPS with a 1/8" `foundation-coating-acrylic-black`
+    (troweled over mesh; the library product in the house's exterior dark since 2026-09-23 —
+    black over foam runs hot, confirm the maker's LRV floor) banded from 6" below grade to the wall top, `Layer.extent` off the `GRADE`
     datum so a grade lift grows it with no edit. Do not revert to the old
     `foundation-protection-panel` alternate (kept, priced, as a named alternate only) — its
     joint permeance is unpublished and makes `building_science.condensation` report UNKNOWN,
@@ -1885,7 +1886,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 - One exterior dark, `#1c1f24`, on every dark metal element on the envelope:
   opening casings, roof rake/eave/ridge trim coil, eave water chain (drip edge,
-  box gutter, downspouts), and guards.
+  box gutter, downspouts), guards, and since 2026-09-23 the four wall corners
+  (`TR-H-CORNER-*`), the garage stem band + Z (`aluminum-flat-pvdf`, aluminium, never
+  retag it) and the basement's coated XPS band (`foundation-coating-acrylic-black`).
 - Windows/doors in a clad wall draw casing (resolve/geometry_openings.py
   `exterior_trim`) in this tone. Recolor only via `window_trim` in
   emit/gltf/palette.py + ui/src/three/members.ts `CATEGORY_COLOR.window_trim`.

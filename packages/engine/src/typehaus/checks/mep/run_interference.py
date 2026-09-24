@@ -26,11 +26,16 @@ all three are earned from the model rather than from a naming convention:
 
 * **a fitting** — either run *ending on* the other, which is a wye, a tee, an elbow or a
   riser into a trunk (``mep_envelopes.run_joints``, the generalisation of the rule
-  ``mep.duct_connectivity`` already uses). The exemption is **local to the joint**: a pair
-  jointed at one end is not thereby free to interpenetrate at the other, which is what a
-  single bool for the pair used to allow — on catlin it hid a 3" drain 2.21" inside another
-  3" drain two feet from the stack head they share;
-* **a sleeve** — a rough opening whose ``penetration_for`` names both;
+  ``mep.duct_connectivity`` already uses). **Only between runs that can join**
+  (``mep_envelopes.systems_join``): a vent ending on the radon riser beside its stack, or a
+  conduit ending against a duct, is two things in one hole however close the end is. The
+  exemption is **local to the joint**: a pair jointed at one end is not thereby free to
+  interpenetrate at the other, which is what a single bool for the pair used to allow — on
+  catlin it hid a 3" drain 2.21" inside another 3" drain two feet from the stack head they
+  share;
+* **a sleeve** — a rough opening or a deck ``FloorOpening`` whose ``penetration_for``
+  names both, and **only inside that hole's own prism**: a shared chase hole pardons the
+  crossing in the deck and nothing a foot above it;
 * **a run against itself**, which is not a pair — and, for the same reason, two bundled
   risers of one ``VentRun``, which are one authored element. Their side-by-side spread is a
   SINGLE axis (``vent_termination.riser_polylines``), and a riser that jogs one way and
@@ -73,6 +78,10 @@ TOUCH_TOLERANCE_M = 0.0015875
 #: the bigger of the pair. Contact further away than that is not the fitting.
 JOINT_REACH_FACTOR = 3.0
 
+#: How far a pair's overlap may stand proud of the shared hole that pardons it — a run's
+#: envelope is wider than the hole's edge by its own lagging. The joint band's 3" pad.
+SLEEVE_SLACK_M = 0.0762
+
 
 @check(Tier.STRUCTURAL, _CID)
 def run_interference(ctx: CheckContext) -> list[Finding]:
@@ -89,7 +98,13 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
     from shapely import STRtree
 
     from typehaus.resolve.mep_clearance import Contact, segment_clearance
-    from typehaus.resolve.mep_envelopes import envelopes, run_joints, run_sections
+    from typehaus.resolve.mep_envelopes import (
+        envelopes,
+        run_joints,
+        run_sections,
+        run_systems,
+        systems_join,
+    )
     from typehaus.resolve.mep_queries import schematic_conduits
 
     # **A schematic raceway is not graded, it is disclosed.** Two end elevations say where
@@ -98,7 +113,8 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
     # building, and on catlin it is 100-odd of them. The tags come back as a coverage gap
     # below, which is the honest half of the same sentence.
     gaps = schematic_conduits(ctx.model)
-    shells = [e for e in envelopes(ctx.model) if e.prisms and e.tag not in gaps]
+    every = envelopes(ctx.model)
+    shells = [e for e in every if e.prisms and e.tag not in gaps]
     if len(shells) < 2:
         return [_unknown(_CID, "fewer than two runs resolve an envelope in this model, so "
                                "no two of them can occupy one place")]
@@ -106,7 +122,9 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
     tracks = _tracks(ctx)
     sections = run_sections(ctx.model)
     legs = _legs(tracks, sections)
-    sleeved = _sleeved_pairs(ctx) | _bundled_pairs(ctx)
+    bundled = _bundled_pairs(ctx)
+    sleeves = _sleeves(ctx)
+    systems = run_systems(ctx.model)
     joints: dict[tuple[str, str], tuple[tuple, float]] = {}
 
     flat = [(shell.tag, prism) for shell in shells for prism in shell.prisms]
@@ -122,7 +140,7 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
             if other_tag == tag:
                 continue
             pair = (tag, other_tag) if tag < other_tag else (other_tag, tag)
-            if pair in sleeved:
+            if pair in bundled:
                 continue
             # The coarse filter: banded prisms that do not meet cannot have a contact, and
             # this is the test that keeps the pair loop cheap.
@@ -131,8 +149,9 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
             if not prism.footprint.intersects(other.footprint):
                 continue
             if pair not in joints:
-                joints[pair] = (run_joints(tracks.get(pair[0], ((), ())),
-                                           tracks.get(pair[1], ((), ()))),
+                joints[pair] = ((run_joints(tracks.get(pair[0], ((), ())),
+                                            tracks.get(pair[1], ((), ())))
+                                 if _may_join(systems, pair, systems_join) else ()),
                                 _joint_reach_m(legs, pair))
             near = legs.get((tag, prism.segment))
             far = legs.get((other_tag, other.segment))
@@ -141,6 +160,8 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
             contact = segment_clearance(near, far, joints=joints[pair][0],
                                         joint_reach_m=joints[pair][1])
             if contact is None or contact.score_m <= TOUCH_TOLERANCE_M:
+                continue
+            if _in_sleeve(sleeves.get(pair, ()), prism, other):
                 continue
             # In PAIR order, not iteration order: the message names the runs sorted and
             # would otherwise hang the first run's leg number — and its elevation — off the
@@ -159,9 +180,9 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
               f"{feet_inches(c.point[1])}) leg {sa + 1} of {a} runs at "
               f"{feet_inches(c.near_z_m)} and leg {sb + 1} of {b} at "
               f"{feet_inches(c.far_z_m)} — {c.plan_depth_m / M_PER_IN:.2f}\" inside each "
-              f"other in plan and {c.z_depth_m / M_PER_IN:.2f}\" in elevation. This contact "
-              "is not within a fitting's reach of any joint between them (so it is not a "
-              "fitting) and no rough opening names them both (so it is not a sleeve)",
+              f"other in plan and {c.z_depth_m / M_PER_IN:.2f}\" in elevation. "
+              + _why_not_a_fitting(systems, (a, b), systems_join)
+              + " and no hole naming them both contains it (so it is not a sleeve)",
               (a, b),
               fix="re-route one of the two — `haus route --run <tag> --avoid <the other>` "
                   "proposes a lane and `--evaluate` grades it — or give them a shared "
@@ -171,6 +192,7 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
     if not out:
         out.append(_pass(_CID, f"{len(shells)} runs resolve an envelope and no two of them "
                                "share a place they are not jointed or sleeved at", ()))
+    out.extend(_envelope_gaps(every, gaps))
     if gaps:
         out.append(_unknown(
             _CID, f"{len(gaps)} raceway(s) hold two end elevations and a drawing convention "
@@ -228,21 +250,92 @@ def _tracks(ctx: CheckContext) -> dict[str, tuple[tuple, tuple]]:
     return {tag: (path, z) for _kind, tag, path, z in run_polylines(ctx.model)}
 
 
-def _sleeved_pairs(ctx: CheckContext) -> set[tuple[str, str]]:
-    """Pairs of runs a single rough opening names as its reason for existing.
+def _may_join(systems: dict, pair: tuple[str, str], systems_join) -> bool:
+    """Whether this pair's systems can meet at a fitting. A tag with no system record —
+    a hand-built test track — keeps the geometric reading."""
+    first, second = systems.get(pair[0]), systems.get(pair[1])
+    return first is None or second is None or systems_join(first, second)
+
+
+def _why_not_a_fitting(systems: dict, pair: tuple[str, str], systems_join) -> str:
+    if _may_join(systems, pair, systems_join):
+        return ("This contact is not within a fitting's reach of any joint between them (so "
+                "it is not a fitting)")
+    first, second = (" ".join(v for v in systems[tag][::-1] if v) for tag in pair)
+    return (f"No fitting joins a {first} to a {second}, so an end touching the other is "
+            "not a joint")
+
+
+def _in_sleeve(holes, prism, other) -> bool:
+    """Whether the WHOLE overlap of these two prisms lies inside one of the pair's holes.
+
+    The overlap, not the contact's deepest station: two risers touching over three storeys
+    have their deepest point wherever the measure lands, and a deck hole containing that
+    one station would pardon the other two storeys. :data:`SLEEVE_SLACK_M` lets a run's
+    envelope stand proud of the hole it passes through.
+    """
+    if not holes:
+        return False
+    plan = prism.footprint.intersection(other.footprint)
+    z_low, z_high = max(prism.z0_m, other.z0_m), min(prism.z1_m, other.z1_m)
+    return any(low - SLEEVE_SLACK_M <= z_low and z_high <= high + SLEEVE_SLACK_M
+               and footprint.buffer(SLEEVE_SLACK_M).covers(plan)
+               for footprint, low, high in holes)
+
+
+def _sleeves(ctx: CheckContext) -> dict[tuple[str, str], list[tuple[object, float, float]]]:
+    """``pair -> [(hole footprint, z low, z high)]`` for every hole naming both runs.
 
     Two runs through one sleeve are two runs through one sleeve. The hole was authored for
     both of them, which is a statement somebody made on purpose, and it is the only place
-    this check takes the model's word rather than its geometry.
+    this check takes the model's word rather than its geometry. **The word covers the hole
+    and nothing else**: it used to pardon the pair everywhere, so one shared deck hole would
+    have laundered a clash a storey away.
+
+    A wall's rough opening is its band from sill to head; a deck's ``FloorOpening`` is its
+    ring over the deck's framing band.
     """
+    from shapely.geometry import Polygon
+
     from typehaus.resolve.mep_envelopes import opening_prisms
 
-    out: set[tuple[str, str]] = set()
-    for _tag, _door, _host, _prism, _low, _high, names in opening_prisms(ctx.model):
+    holes: list[tuple[tuple[str, ...], object, float, float]] = [
+        (names, prism, low, high)
+        for _tag, _door, _host, prism, low, high, names in opening_prisms(ctx.model)]
+    for deck in getattr(ctx.model, "floors", ()):
+        for _tag, ring, names in getattr(deck, "penetrations", ()):
+            if len(ring) < 3:
+                continue
+            placed = [m.z0_m for m in deck.members if m.z0_m is not None]
+            low = min([deck.deck_z0_m, *placed])
+            high = max(deck.deck_top_at(*ring[0][:2]), deck.deck_z0_m)
+            holes.append((names, Polygon(ring), low, high))
+    out: dict[tuple[str, str], list[tuple[object, float, float]]] = {}
+    for names, footprint, low, high in holes:
         tags = sorted(set(names))
         for i, first in enumerate(tags):
             for second in tags[i + 1:]:
-                out.add((first, second))
+                out.setdefault((first, second), []).append((footprint, low, high))
+    return out
+
+
+def _envelope_gaps(every, schematic) -> list[Finding]:
+    """One UNKNOWN per run whose envelope could not be measured whole.
+
+    ``run_envelope`` has always written these sentences and this check used to drop them,
+    so a riser wrapped in "R-8" was graded bare — an inch a side too small — in silence.
+    """
+    out: list[Finding] = []
+    for shell in every:
+        if shell.tag in schematic:
+            continue
+        if not shell.prisms and not shell.gaps:
+            out.append(_unknown(_CID, f"{shell.tag}: placed, but it resolves no occupied "
+                                      "volume, so nothing is graded against it",
+                                (shell.tag,)))
+        for gap in shell.gaps:
+            out.append(_unknown(_CID, f"{gap}. Its contacts are graded on what could be "
+                                      "measured, so a clash may be missing", (shell.tag,)))
     return out
 
 

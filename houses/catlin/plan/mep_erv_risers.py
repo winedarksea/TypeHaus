@@ -149,7 +149,7 @@ DUCTS_ERV_RISERS = [
             elevations=(inch(-19.4375), inch(-19.4375), inch(-19.4375),
                         inch(-19.4375), inch(231.875)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            insulation="R-8 wrap", design_cfm=210),
+            insulation='2" R-8 wrap', design_cfm=210),
     DuctRun(uid="GFTW5CBARX", tag="DU-ERV-RISER-EXH", system=DuctSystem.EXHAUST,
             # ** IT LEAVES THE PLENUM'S WEST END, NOT ITS CENTRE. ** The leg keeps the
             # box's own y=34'-6" centre line, and the station it starts from is what moved:
@@ -180,7 +180,7 @@ DUCTS_ERV_RISERS = [
             elevations=(inch(244), inch(244), inch(244), inch(-27.5),
                         inch(-27.5), inch(-27.5), inch(-23.4375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            insulation="R-8 wrap", design_cfm=210),
+            insulation='2" R-8 wrap', design_cfm=210),
     # The outdoor side, which did not exist at all before this pass. Both legs carry
     # outdoor-temperature air through conditioned space, so both are insulated AND vapour
     # sealed — an uninsulated intake duct sweats all winter and rains on whatever is under
@@ -256,7 +256,7 @@ DUCTS_ERV_RISERS = [
             # 0.0315, which took the governing side back to EXTRACT — so §7 is now spent and
             # the lever it named no longer exists.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation="R-8 wrap, vapour-sealed", design_cfm=210),
+            insulation='2" R-8 wrap, vapour-sealed', design_cfm=210),
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
             # Manifold first, hood last — the direction the air goes, and the direction
             # `erv_outdoor_terminals` reads an EXHAUST run.
@@ -303,7 +303,7 @@ DUCTS_ERV_RISERS = [
             # shaft was sized for THIS diameter months before it was bought.
             # `AO-S-ERV-EA` grows 7" -> 9" to match.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation="R-8 wrap, vapour-sealed", design_cfm=210),
+            insulation='2" R-8 wrap, vapour-sealed', design_cfm=210),
     # ================== THE TWO LEVEL-2 MANIFOLD FEEDS (2026-09-20) ==================
     #
     # ** THE TWO MAIN-STOREY PLENUMS HAD NO DRAWN FEED AT ALL, AND THAT WAS A HOLE IN THE

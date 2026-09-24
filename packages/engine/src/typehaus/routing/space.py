@@ -151,6 +151,9 @@ class RoutingSpace:
         default_factory=dict, repr=False, compare=False)
     _soft_memo: dict[tuple[int, int, int], list[SoftPrism]] = field(
         default_factory=dict, repr=False, compare=False)
+    #: Per hard prism: its footprint eroded by a sixteenth, prepared, when the midpoint
+    #: test cannot be trusted for it — see :meth:`edge_blocked`. None for a boxy prism.
+    _exact: list[Any] | None = field(default=None, repr=False, compare=False)
 
     def _index(self, which: str) -> Any:
         from shapely import STRtree
@@ -197,6 +200,76 @@ class RoutingSpace:
                 return prism.tag
         self._blocked_memo[key] = None
         return None
+
+    def blocked_all(self, point: tuple[float, float], z: float) -> frozenset[str]:
+        """Every hard prism's tag containing this point — what a terminal stands in."""
+        from shapely.geometry import Point
+
+        if not self.hard:
+            return frozenset()
+        probe = Point(point)
+        return frozenset(self.hard[int(i)].tag for i in self._index("hard").query(probe)
+                         if self.hard[int(i)].z0_m <= z <= self.hard[int(i)].z1_m
+                         and self.hard[int(i)].footprint.covers(probe))
+
+    def edge_blocked(self, a: tuple[float, float], b: tuple[float, float], za: float,
+                     zb: float, *, ignore: frozenset[str] = frozenset()) -> str | None:
+        """The first hard prism a lattice edge passes through, or None.
+
+        The midpoint is exact for a boxy prism on a horizontal edge: the lattice's lines are
+        its offset edges, so a step cannot enter and leave it between two nodes. It is not
+        exact for a RISER, whose midpoint misses a thin prism anywhere else on its rise, nor
+        for an OBLIQUE or round footprint, which a step can clip at a corner. Those two are
+        tested against the segment itself. ``ignore`` names what the step's own terminal
+        stands in — see ``graph.build_graph`` — and nothing else is pardoned.
+        """
+        from shapely.geometry import LineString, Point
+
+        if not self.hard:
+            return None
+        if not ignore:
+            hit = self.blocked(((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0), (za + zb) / 2.0)
+            if hit is not None:
+                return hit
+        riser = abs(a[0] - b[0]) + abs(a[1] - b[1]) < _GRID_M
+        low, high = sorted((za, zb))
+        probe = Point(a) if riser else LineString([a, b])
+        exact = self._exact_footprints()
+        for index in self._index("hard").query(probe):
+            prism = self.hard[int(index)]
+            if prism.tag in ignore:
+                continue
+            if riser:
+                # Open on both ends: a riser standing ON a prism's top is not inside it.
+                if (prism.z0_m < high - _GRID_M and prism.z1_m > low + _GRID_M
+                        and prism.footprint.covers(probe)):
+                    return prism.tag
+                continue
+            if not prism.z0_m <= (za + zb) / 2.0 <= prism.z1_m:
+                continue
+            shape = exact[int(index)]
+            if ignore and shape is None:
+                if prism.footprint.covers(Point(((a[0] + b[0]) / 2.0,
+                                                 (a[1] + b[1]) / 2.0))):
+                    return prism.tag
+            elif shape is not None and shape.intersects(probe):
+                return prism.tag
+        return None
+
+    def _exact_footprints(self) -> list[Any]:
+        """See :attr:`_exact`. A footprint filling under 90% of its bounding box is one the
+        midpoint can miss — a buffered riser is 79%, an oblique run far less."""
+        from shapely import prepared
+
+        if self._exact is None:
+            out: list[Any] = []
+            for prism in self.hard:
+                bounds = prism.footprint.envelope.area
+                boxy = bounds <= 0 or prism.footprint.area / bounds >= 0.9
+                out.append(None if boxy
+                           else prepared.prep(prism.footprint.buffer(-_GRID_M)))
+            self._exact = out
+        return self._exact
 
     def soft_at(self, point: tuple[float, float], z: float) -> list[SoftPrism]:
         from shapely.geometry import Point

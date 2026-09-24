@@ -34,6 +34,9 @@ from typehaus.routing.space import RoutingSpace
 #: cannot drift about which of two equal-cost routes wins.
 _AXIS_ORDER = {"x": 0, "y": 1, "z": 2}
 
+#: A step losing less than this is level: the 1/16" grid the repo authors on.
+_RISE_TOL_M = 0.0015875
+
 
 @dataclass
 class Route:
@@ -76,8 +79,12 @@ class Route:
 
 
 def shortest_route(graph: Graph, space: RoutingSpace, start: int,
-                   goals: set[int]) -> Route | None:
+                   goals: set[int], *, rising: bool = False) -> Route | None:
     """Cheapest route from ``start`` to any node in ``goals``, or None if none exists.
+
+    ``rising`` refuses every step that loses elevation (``trades.pipe.rises``): a vent
+    searched in 3-D otherwise dips under a duct and climbs back, and on catlin one
+    alternative for ``PR-M-WC-VENT`` fell about ten feet.
 
     ``goals`` is a **set**, not a node, and that is a domain decision rather than a
     convenience: a drain's root is a vertical, and a vertical is a range of legal arrivals.
@@ -121,6 +128,8 @@ def shortest_route(graph: Graph, space: RoutingSpace, start: int,
         for other, axis in graph.neighbours(index):
             step = graph.weights.get((index, other))
             if step is None:
+                continue
+            if rising and graph.nodes[other].z < graph.nodes[index].z - _RISE_TOL_M:
                 continue
             turn = (space.cost.bend_in
                     if incoming and axis != incoming else 0.0)

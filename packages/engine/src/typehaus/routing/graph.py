@@ -295,10 +295,10 @@ def build_graph(space: RoutingSpace,
     # can say so instead of the graph swallowing it.
     fixed = {(round(t[0], 6), round(t[1], 6)) for t in terminals}
     blocked_terminals: list[str] = []
-    #: Terminal nodes kept despite standing in a hard prism. The edges LEAVING one of them
-    #: are kept too — see below — because a node a route may not move off is a node it may
-    #: as well not have.
-    lenient: set[int] = set()
+    #: Terminal nodes kept despite standing in a hard prism, with every prism they stand
+    #: in. The edges LEAVING one of them may pass through THOSE — see below — because a
+    #: node a route may not move off is a node it may as well not have.
+    lenient: dict[int, frozenset[str]] = {}
     nodes: list[Node] = []
     lookup: dict[tuple[int, int, int], int] = {}
     #: Per level, the node at each rounded plan point. A riser connects two levels at the
@@ -314,7 +314,7 @@ def build_graph(space: RoutingSpace,
                     if (round(x, 6), round(y, 6)) not in fixed:
                         continue
                     blocked_terminals.append(offender)
-                    lenient.add(len(nodes))
+                    lenient[len(nodes)] = space.blocked_all((x, y), z)
                 lookup[(kx, ky, kz)] = len(nodes)
                 plan_index[(round(x, 6), round(y, 6))] = len(nodes)
                 nodes.append(Node(index=len(nodes), x=x, y=y, z=z))
@@ -330,9 +330,11 @@ def build_graph(space: RoutingSpace,
         # node and dropping every edge off it produces "no route in plan; every lane is
         # blocked" about a route whose only obstruction is the fitting at its own end. The
         # blockage is not hidden: it is already in `blocked_terminals` and the caller prints
-        # it as a detail somebody has to draw.
-        priced = _price(space, nodes[index], nodes[other], axis,
-                        lenient=index in lenient or other in lenient)
+        # it as a detail somebody has to draw. **Leniency is for what the terminal stands
+        # IN, and nothing else**: the step off catlin's chase point used to be free to pass
+        # through any prism at all, so a vent's first leg could cross the radon riser.
+        ignore = lenient.get(index, frozenset()) | lenient.get(other, frozenset())
+        priced = _price(space, nodes[index], nodes[other], axis, ignore=ignore)
         if priced is None:
             return
         weight, terms, corridor = priced
@@ -365,19 +367,20 @@ def build_graph(space: RoutingSpace,
 
 
 def _price(space: RoutingSpace, a: Node, b: Node, axis: str, *,
-           lenient: bool = False) -> tuple[float, dict[str, float], str | None] | None:
+           ignore: frozenset[str] = frozenset()
+           ) -> tuple[float, dict[str, float], str | None] | None:
     """``(cost, terms, corridor tag)`` for one edge, or None when a hard prism is between.
 
-    The midpoint test is the cheap approximation and it is honest here: the lattice's own
-    lines are the offset edges of every hard prism, so a segment between two adjacent nodes
-    cannot enter and leave one — if it touches a prism at all, its midpoint is inside it.
+    Blocking is :meth:`RoutingSpace.edge_blocked`: the midpoint for a boxy prism on a level
+    step, where the lattice's own lines make it exact, and the segment itself for a riser
+    and for an oblique or round prism, where the midpoint can miss.
 
-    ``lenient`` is set for the one step off a terminal that stands inside something. See
-    :func:`build_graph`; it buys one lattice step and never a lane.
+    ``ignore`` is set for the one step off a terminal that stands inside something: the
+    prisms it stands in. See :func:`build_graph`; it buys one lattice step and never a lane.
     """
     mid = ((a.x + b.x) / 2.0, (a.y + b.y) / 2.0)
     midz = (a.z + b.z) / 2.0
-    if not lenient and space.blocked(mid, midz) is not None:
+    if space.edge_blocked(a.plan, b.plan, a.z, b.z, ignore=ignore) is not None:
         return None
 
     length_m = abs(b.x - a.x) + abs(b.y - a.y) + abs(b.z - a.z)
