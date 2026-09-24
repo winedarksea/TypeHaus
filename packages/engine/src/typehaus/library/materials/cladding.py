@@ -5,7 +5,7 @@ from __future__ import annotations
 from typehaus.library.materials._common import _UAF
 from typehaus.model import Material
 
-MATERIALS: tuple[Material, ...] = (
+_BASE_ROWS: tuple[Material, ...] = (
     # Solid PVC tongue-and-groove wall/ceiling panel (Trusscore-class): concealed screw
     # flange, mounts direct to furring, no cellulose substrate anywhere in it, third-party
     # mould-tested to ISO 846. The lining of choice for a room that is deliberately wet.
@@ -252,3 +252,53 @@ MATERIALS: tuple[Material, ...] = (
         source="Face-brick thermal and vapour reference values.",
     ),
 )
+
+_BY_TAG = {m.tag: m for m in _BASE_ROWS}
+_SEAM = _BY_TAG["standing-seam"]
+_CORRUGATED = _BY_TAG["corrugated-panel-26"]
+_PBR = {
+    "finish": "ribbed-panel", "exposed_fastener": True,
+}
+
+# Profile and gauge variants of the two sheet-steel skins. Every building-science number is
+# the base row's — continuous sheet steel carries no R and no permeance whatever its seam or
+# gauge — so only the product (and the takeoff line it prices on) differs. The tags keep the
+# gauge because the gauge is what a supplier quotes.
+_VARIANTS: tuple[Material, ...] = (
+    _SEAM.model_copy(update={
+        "tag": "standing-seam-snaplock", "name": "Snap-lock standing-seam steel, 24 ga.",
+        "source": "24 ga. PVDF-coated steel, snap-lock seam (concealed floating clips, seam "
+                  "engaged by hand); building-science values as `standing-seam`"}),
+    _SEAM.model_copy(update={
+        "tag": "standing-seam-nailstrip", "name": "Nail-strip standing-seam steel, 24 ga.",
+        "source": "24 ga. PVDF-coated steel, nail-strip seam (integral face-fastened flange, no "
+                  "concealed clips; short runs only, face-fastening restricts thermal "
+                  "movement); building-science values as `standing-seam`"}),
+    _SEAM.model_copy(update={
+        "tag": "standing-seam-nailstrip-26", "name": "Nail-strip standing-seam steel, 26 ga.",
+        "source": "26 ga. PVDF-coated steel, nail-strip seam; building-science values as "
+                  "`standing-seam`"}),
+    _SEAM.model_copy(update={
+        "tag": "pbr-panel-26", "name": "PBR exposed-fastener steel panel, 26 ga.", **_PBR,
+        "source": "Metal Sales PBR-Panel Condensed Technical Reference (1/2026): 26 ga. "
+                  "PVDF-coated steel purlin-bearing-rib wall panel, 36\" net coverage, "
+                  "1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; "
+                  "236 psf outward at 2'-0\" (wall table)"}),
+    _SEAM.model_copy(update={
+        "tag": "pbr-panel-24", "name": "PBR exposed-fastener steel panel, 24 ga.", **_PBR,
+        "source": "Metal Sales PBR-Panel Condensed Technical Reference (1/2026): 24 ga. "
+                  "PVDF-coated steel purlin-bearing-rib wall panel, 36\" net coverage, "
+                  "1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; "
+                  "318 psf outward at 2'-0\" (wall table)"}),
+    _CORRUGATED.model_copy(update={
+        "tag": "corrugated-panel-24",
+        "name": "7/8\" corrugated exposed-fastener steel panel, 24 ga.",
+        "areal_density_kg_m2": 5.2,
+        "source": "Metal Sales 7/8\" Corrugated Wall CTR (1/2024): 24 ga. PVDF-coated steel, "
+                  "7/8\" corrugation on a 2-2/3\" pitch, 34-2/3\" net wall coverage, "
+                  "3'-45' lengths, over open framing or solid substrate, 412 psf outward at "
+                  "2'-0\"; face-fastened with gasketed screws through the crowns. 24 ga. is "
+                  "0.0239\" of steel, 4.7 kg/m2 flat, ~10% more developed length: 5.2"}),
+)
+
+MATERIALS: tuple[Material, ...] = _BASE_ROWS + _VARIANTS

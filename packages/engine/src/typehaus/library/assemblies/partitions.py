@@ -14,7 +14,9 @@ from typehaus.model import (
     Layer,
     LayerFunction,
     PartitionLayout,
+    Substitution,
     inch,
+    layers,
 )
 
 # STC-rated interior partition presets (#50).  STC is always a published test result,
@@ -265,4 +267,138 @@ INT_2X6_STAGGERED_PLUMBING = Assembly(
            "(16 in. o.c. per face, 8 in. combined), 3.5 in. fiberglass sound batt; the "
            "framing geometry is the tested one, the single-layer gypsum face is not, so "
            "no STC is claimed",
+)
+
+
+# --- bearing and deeper wet walls ---------------------------------------------------------
+#
+# The 2x6 bearing partition and its variants, and the wet-wall family grown past a 2x6. None
+# claims an STC rating: none is a tested build.
+INT_2X6_BRG = Assembly(
+    tag="INT_2X6_BRG",
+    layers=(
+        PAINT_FINISH_A,
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", layout_origin="line")),
+        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        PAINT_FINISH_B,
+    ),
+    interfaces=(STUD_BEARING,),
+    source="interior bearing partition, 2x6 SPF studs (IRC R602.3), 5/8 in. gypsum each face",
+)
+
+INT_2X6_BRG_RC = Assembly(
+    tag="INT_2X6_BRG_RC",
+    variant_of="INT_2X6_BRG",
+    substitute=(
+        Substitution(
+            span=layers("gwb-a", "stud"),
+            replacement=(
+                Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+                      function=LayerFunction.FINISH),
+                Layer(name="resilient-channel", material_ref="resilient-channel",
+                      thickness=inch(0.5), function=LayerFunction.FURRING,
+                      framing=FramingSpec(member="25 ga. resilient channel",
+                                          spacing=inch(24), direction="horizontal")),
+                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x6", layout_origin="line"),
+                      cavity=CavityFill(material_ref="fiberglass")),
+            ),
+        ),
+    ),
+    source="INT_2X6_BRG with 1/2 in. resilient channel at 24 in. o.c. on face a and a "
+           "fiberglass batt in the bay; decoupled, but not a tested build, so no STC",
+)
+
+INT_2X6_BRG_PLUMBING = Assembly(
+    tag="INT_2X6_BRG_PLUMBING",
+    variant_of="INT_2X6_BRG",
+    substitute=(
+        Substitution(
+            span=layers("stud", "stud"),
+            replacement=(
+                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x6"),
+                      cavity=CavityFill(material_ref="fiberglass", thickness=inch(5.5))),
+            ),
+        ),
+    ),
+    source="bearing wet wall: continuous 2x6 studs (a staggered bearing wall fails "
+           "structural.wet_wall_bearing) with a 5.5 in. fiberglass batt",
+)
+
+INT_2X6_PLUMBING_BATT = Assembly(
+    tag="INT_2X6_PLUMBING_BATT",
+    variant_of="INT_2X6_PLUMBING",
+    substitute=(
+        Substitution(
+            span=layers("stud", "stud"),
+            replacement=(
+                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x6"),
+                      cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
+            ),
+        ),
+    ),
+    source="INT_2X6_PLUMBING with the 3.5 in. fiberglass sound batt "
+           "INT_2X6_STAGGERED_PLUMBING carries",
+)
+
+INT_2X8_PLUMBING = Assembly(
+    tag="INT_2X8_PLUMBING",
+    variant_of="INT_2X6_PLUMBING",
+    substitute=(
+        Substitution(
+            span=layers("stud", "stud"),
+            replacement=(
+                Layer(name="stud", material_ref="spf", thickness=inch(7.25),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x8")),
+            ),
+        ),
+    ),
+    source="wet wall at 2x8 depth: a 3 in. drain (3.500 in. OD) clears IRC R602.6's 60% of "
+           "7.25 in. = 4.35 in., which a 2x6's 3.30 in. does not",
+)
+
+INT_ESS_CLOSET_STEEL = Assembly(
+    tag="INT_ESS_CLOSET_STEEL",
+    layers=(
+        PAINT_FINISH_A,
+        Layer(name="gwb-x-a", material_ref="gwb-x", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="steel-stud", material_ref="steel-stud", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(16))),
+        Layer(name="gwb-x-b", material_ref="gwb-x", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        PAINT_FINISH_B,
+    ),
+    source="non-combustible enclosure for a battery (ESS) room, NFPA 855 / IRC R328 intent: "
+           "25 ga. steel C-stud at 16 in. o.c., 5/8 in. Type X both faces. Not a rated "
+           "assembly and not claimed as one — no tested assembly number is cited",
+)
+
+INT_ESS_CLOSET_STEEL_6 = Assembly(
+    tag="INT_ESS_CLOSET_STEEL_6",
+    variant_of="INT_ESS_CLOSET_STEEL",
+    substitute=(
+        Substitution(
+            span=layers("steel-stud", "steel-stud"),
+            replacement=(
+                Layer(name="steel-stud", material_ref="steel-stud", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x6", spacing=inch(16))),
+            ),
+        ),
+    ),
+    source="INT_ESS_CLOSET_STEEL on a 6 in. 25 ga. steel C-stud, for a pipe the 3-5/8 in. "
+           "web cannot pass",
 )

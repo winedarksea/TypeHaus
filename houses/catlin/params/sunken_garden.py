@@ -1709,7 +1709,7 @@ GARDEN_FIELD = Slab(
 # IRC R403.3, Figure R403.3(3): the heated-building-adjoining-an-unheated-slab case, which is
 # what a heated basement beside an open sunken court is. Table R403.3(1) at design AFI 2500
 # (Minneapolis-St Paul) wants R-1.7 over B = 24" along the wall and R-4.9 over C = 40" at the
-# corners; SG_FROST_WING_XPS1/2 in plan/assemblies.py carry R-5 and R-10 and the citation.
+# corners; the library FROST_WING_XPS_1IN / _2IN (1" and 2" XPS at 40 psi) carry R-5 and R-10.
 #
 # WHY THIS EXISTS: measuring every footing against one global grade plane would pass FT-B-
 # S1/S2/S3 with only 8" of cover below the garden floor. (It also passed the veneer plinth
@@ -1747,20 +1747,20 @@ _WING_X_E = (_x_in_e + _half) - SPEC.footing_width_in / 24.0   # 24.5, FT-SG-E1'
 FROST_WINGS = [
     # The two re-entrant corners, where the garden's own east and west retaining walls meet
     # the house and frost drives in from two directions at once: C = 40" each way, 2" XPS.
-    Slab(uid="SGFW01AAAA", tag="SL-SG-FROST-W", assembly="SG_FROST_WING_XPS2",
+    Slab(uid="SGFW01AAAA", tag="SL-SG-FROST-W", assembly="FROST_WING_XPS_2IN",
          outline=(pt(ft(_WING_X_W), ft(_y_in_n - _WING_CORNER_FT)),
                   pt(ft(_WING_X_W + _WING_CORNER_FT), ft(_y_in_n - _WING_CORNER_FT)),
                   pt(ft(_WING_X_W + _WING_CORNER_FT), ft(_y_in_n)),
                   pt(ft(_WING_X_W), ft(_y_in_n))),
          thickness=inch(2.0), top_elevation=_WING_TOP),
-    Slab(uid="SGFW02AAAA", tag="SL-SG-FROST-E", assembly="SG_FROST_WING_XPS2",
+    Slab(uid="SGFW02AAAA", tag="SL-SG-FROST-E", assembly="FROST_WING_XPS_2IN",
          outline=(pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n - _WING_CORNER_FT)),
                   pt(ft(_WING_X_E), ft(_y_in_n - _WING_CORNER_FT)),
                   pt(ft(_WING_X_E), ft(_y_in_n)),
                   pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n))),
          thickness=inch(2.0), top_elevation=_WING_TOP),
     # The run between them, along the wall: B = 24", 1" XPS.
-    Slab(uid="SGFW03AAAA", tag="SL-SG-FROST-N", assembly="SG_FROST_WING_XPS1",
+    Slab(uid="SGFW03AAAA", tag="SL-SG-FROST-N", assembly="FROST_WING_XPS_1IN",
          outline=(pt(ft(_WING_X_W + _WING_CORNER_FT), ft(_y_in_n - _WING_ALONG_FT)),
                   pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n - _WING_ALONG_FT)),
                   pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n)),

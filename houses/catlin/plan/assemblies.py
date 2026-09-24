@@ -28,6 +28,21 @@ from typehaus import (
 )
 from typehaus.model import PartitionLayout
 from library import (
+    FOOTING_STONE_20,
+    BEAM_LVL,
+    BEAM_KDAT,
+    POST_KDAT,
+    BEAM_GLULAM_TREATED,
+    RETAINING_BLOCK_12,
+    FROST_WING_XPS_1IN,
+    FROST_WING_XPS_2IN,
+    INT_2X6_BRG,
+    INT_2X6_BRG_RC,
+    INT_2X6_BRG_PLUMBING,
+    INT_2X6_PLUMBING_BATT,
+    INT_2X8_PLUMBING,
+    INT_ESS_CLOSET_STEEL,
+    INT_ESS_CLOSET_STEEL_6,
     CONCRETE_BEARING,
     STUD_BEARING,
     PAINT_FINISH,
@@ -1340,16 +1355,6 @@ FIREPLACE_BRICK_WYTHE = Assembly(
 # gravity SRW is held by unit weight, setback and the drained backfill. The 12" layer is the
 # unit's nominal depth; the free body reads AB's design depth off `srw=` in
 # params/raised_garden.py. Tag kept (prices, trade rules, tests key on it).
-RETAINING_BLOCK_12 = Assembly(
-    tag="RETAINING_BLOCK_12",
-    layers=(
-        Layer(name="srw-block", material_ref="retaining-block", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE,
-              masonry=MasonrySpec(unit_size="AB Stones 8x12x18 SRW unit", coursing=inch(8.0),
-                                  core_fill=True)),
-    ),
-    source="raised garden (brief.md follow-up) — outer face, Allan Block AB Stones units dry-stacked on a 12 degree setback, cores filled with wall rock",
-)
 
 # The SAME wall, washed white on its OUTBOARD (yard) face — the three perimeter legs only.
 #
@@ -1554,14 +1559,6 @@ ELM_TIMBER = Assembly(
 # depths, and Weyerhaeuser forbids resawing it in depth, so the 11 1/4" the porch is derived
 # from was never buyable treated. All seven are 3-ply KDAT sawn stock on BEAM_KDAT now
 # (see params/sunken_garden.py).
-BEAM_LVL = Assembly(
-    tag="BEAM_LVL",
-    layers=(
-        Layer(name="lvl", material_ref="lvl", thickness=inch(1.75),
-              function=LayerFunction.STRUCTURE),
-    ),
-    source="catlin-house LVL beams — 1-3/4\" plies, built up 3 wide per Beam.size; interior only (the two dropped hall girders), so untreated LVL is the right product",
-)
 
 # Every treated sawn member in the house's outdoor frame: the breezeway (four 2-2x8 floor
 # and roof beams, three 2x6 rafters), the balcony's two E-W brace rails, and the sunken
@@ -1570,14 +1567,6 @@ BEAM_LVL = Assembly(
 # All of it stands in weather over open ground with no enclosure above it, so every stick is
 # treated — and KDAT rather than plain PT, because a wet-treated deck frame shrinks and cups
 # through its first season and backs its own fasteners out doing it.
-BEAM_KDAT = Assembly(
-    tag="BEAM_KDAT",
-    layers=(
-        Layer(name="kdat", material_ref="kdat", thickness=inch(1.5),
-              function=LayerFunction.STRUCTURE),
-    ),
-    source="catlin-house KDAT 2x framing — ply count per Beam.size: the breezeway frame (2-2x8 beams, single 2x6 rafters), the balcony's two E-W brace rails (2x8), and since 2026-08-23 the sunken garden's seven beams (3-2x12 porch, 3-2x10 balcony)",
-)
 
 # The four members of the garden's frame that read as trim rather than as structure: the
 # porch's front beam pair BM-SG-FRW/FRE and the balcony's west and east beams BM-SG-BLW/BLE.
@@ -1618,14 +1607,6 @@ BEAM_WHITE_PAINT = Assembly(
 # notes/balcony_moment_columns.md records both. Clear-finished, not white: these are the
 # one member in the garden frame bought as a manufactured product, and a glulam's laminations
 # are what it looks like.
-BEAM_GLULAM_TREATED = Assembly(
-    tag="BEAM_GLULAM_TREATED",
-    layers=(
-        Layer(name="glulam", material_ref="glulam-treated", thickness=inch(3.5),
-              function=LayerFunction.STRUCTURE),
-    ),
-    source="catlin-house balcony beams BM-SG-BLW/BLC/BLE — preservative-treated southern yellow pine structural glulam, 3-1/2\" x 11-7/8\" 24F-V5M1/SP (Anthony Power Preserved / Boise Cascade), wet-service factors applied; clear penetrating finish, not painted; bears on 12\" cast columns through an SS316-SHIM-35 standoff shim pack (CN-SG-STDF-*) with a cast-in HETA20Z pair, and carries the same butyl top tape and formed aluminium cap as the rest of the garden frame",
-)
 
 # The breezeway's four 6x6 posts. NOT POST_WHITE_PAINT: that assembly is white-painted and
 # is shared with the balcony pillars and the stairwell posts, which stay white (CLAUDE.md,
@@ -1716,14 +1697,6 @@ ENTRY_SCREEN_SKIRT = Assembly(
     source="north entry west screen, SKIRT — one 7/8\" 26ga corrugated sheet, the same panel and the same plane as ENTRY_SCREEN_WALL's west face, carried from the deck joist plane at -0'-1\" down to 1\" above the pier tops. Closes the sill/rim, the two seat beams and the column standoff bases. Self-supporting single skin: the one layer IS the element, per BASEMENT_BRICK_VENEER and RETAINING_BLOCK_12. Open at the bottom edge so the flutes drain",
 )
 
-POST_KDAT = Assembly(
-    tag="POST_KDAT",
-    layers=(
-        Layer(name="kdat-post", material_ref="kdat", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE),
-    ),
-    source="catlin-house breezeway 6x6 posts — ground-contact-rated KDAT, left unpainted with a clear water repellent",
-)
 
 # The 12" round pours at the NORTH ENTRY, and nothing else since 2026-09-10: PT-BW-W/-E on
 # the pier line, PT-BW-GW/-GE on the garage-side line, and PT-BW-RE/-RNE, which are the same
@@ -1954,25 +1927,7 @@ GARAGE_ICF_6 = Assembly(
 # excavation are identical at either thickness, and a band sitting exactly on a table minimum
 # has nothing left if the design AFI is revised upward. 40 psi, the same slab-bearing grade
 # as SLAB_FLOOR's, because the garden slab is cast on top of it.
-SG_FROST_WING_XPS1 = Assembly(
-    tag="SG_FROST_WING_XPS1",
-    role="band",
-    layers=(
-        Layer(name="xps-wing", material_ref="xps", thickness=inch(1.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-    ),
-    source="IRC R403.3 Figure R403.3(3) horizontal wing along the wall, Table R403.3(1) at AFI 2500: R-1.7 required over dimension B = 24\"; 1\" XPS at 40 psi is R-5",
-)
 
-SG_FROST_WING_XPS2 = Assembly(
-    tag="SG_FROST_WING_XPS2",
-    role="band",
-    layers=(
-        Layer(name="xps-wing", material_ref="xps", thickness=inch(2.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-    ),
-    source="IRC R403.3 Figure R403.3(3) horizontal wing at a corner, Table R403.3(1) at AFI 2500: R-4.9 required over dimension C = 40\"; 2\" XPS at 40 psi is R-10",
-)
 
 # The footings the wings protect are plain strips on their stone bedding (FOOTING_EXPOSED_20); no foam under a footing (owner: creep).
 # The 20x8 strip under every house and garage wall that is NOT one of the four
@@ -2196,14 +2151,6 @@ FOOTING_20 = Assembly(
 # about cement paste, and this pour has none. What replaces them is
 # `Footing.stone: CrushedStoneSpec`, which states R403.4.1's five requirements one field
 # each, and `code.R403_5_crushed_stone_footings`, which grades them.
-FOOTING_STONE_20 = Assembly(
-    tag="FOOTING_STONE_20",
-    layers=(
-        Layer(name="stone", material_ref="footing-crushed-stone", thickness=inch(8.0),
-              function=LayerFunction.STRUCTURE),
-    ),
-    source="the 20\" x 8\" consolidated crushed-stone strip under the garage's nine ICF stem runs (2024 IRC R403.5, stone per R403.4.1, sized against Table R403.4); nonretaining cast-in-place per R404.1.3, Seismic Design Category A",
-)
 
 # The 12" cast bases under this house's round piers: the sunken garden's two belled footings
 # (PD-SG-COL, PD-SG-FCOL) and the four breezeway pads (PD-BW-1..4). One assembly for both
@@ -2233,7 +2180,7 @@ FOOTING_EXPOSED_20 = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
-    source="the 20\" x 8\" plain strip under the four sunken-garden-face walls (FT-B-S1..S4), on the 7\" washed-stone bedding; frost-protected under IRC R403.3 by the horizontal wings SG_FROST_WING_XPS1/2 under the garden slab, EXPOSED_MIX because the strip is inside the frost zone",
+    source="the 20\" x 8\" plain strip under the four sunken-garden-face walls (FT-B-S1..S4), on the 7\" washed-stone bedding; frost-protected under IRC R403.3 by the horizontal wings FROST_WING_XPS_1IN/2 under the garden slab, EXPOSED_MIX because the strip is inside the frost zone",
 )
 
 GARAGE_WALL_2X6 = Assembly(
@@ -2327,7 +2274,7 @@ GARAGE_WALL_2X6 = Assembly(
 # **40 psi here, where the basement takes 25.** This is the one slab in the house that
 # carries VEHICLE wheel loads, and a loaded wheel is a small contact patch, not a
 # distributed floor load. 40 psi (ASTM C578 Type VI, e.g. Foamular 400) is the same
-# slab-bearing grade SG_FROST_WING_XPS1/2 carry, so it is a grade
+# slab-bearing grade FROST_WING_XPS_1IN/2 carry, so it is a grade
 # already on the order. See SLAB_FLOOR above for why the psi lives in `source=`:
 # there is one `xps` material tag with no compressive field, and prices.toml keys XPS on
 # THICKNESS alone — so a 40 psi board and a 25 psi board cost the same in this estimate and
@@ -2549,22 +2496,6 @@ CANOPY_ROOF = Assembly(
 # (~46 walls — bearing lines first), and the staggered assemblies, which have a live
 # rounding trap in `solver.py`'s face-parity rule that a non-zero phase would wake. See
 # plans/TODO.md.
-INT_2X6_BRG = Assembly(
-    tag="INT_2X6_BRG",
-    layers=(
-        PAINT_FINISH_A,
-        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", layout_origin="line")),
-        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        PAINT_FINISH_B,
-    ),
-    interfaces=(STUD_BEARING,),
-    source="catlin-house centerline bearing wall (2x6)",
-)
 
 
 # --- the bedroom half of the centreline -------------------------------------
@@ -2614,28 +2545,6 @@ INT_2X6_BRG = Assembly(
 # A VARIANT of INT_2X6_BRG (#70): the channel and the batt are the whole difference, and
 # the substitution says exactly that. The cold face, the paint, the interfaces and the
 # bearing stud's layout line track the base.
-INT_2X6_BRG_RC = Assembly(
-    tag="INT_2X6_BRG_RC",
-    variant_of="INT_2X6_BRG",
-    substitute=(
-        Substitution(
-            span=layers("gwb-a", "stud"),
-            replacement=(
-                Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
-                      function=LayerFunction.FINISH),
-                Layer(name="resilient-channel", material_ref="resilient-channel",
-                      thickness=inch(0.5), function=LayerFunction.FURRING,
-                      framing=FramingSpec(member="25 ga. resilient channel",
-                                          spacing=inch(24), direction="horizontal")),
-                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-                      function=LayerFunction.STRUCTURE,
-                      framing=FramingSpec(member="2x6", layout_origin="line"),
-                      cavity=CavityFill(material_ref="fiberglass")),
-            ),
-        ),
-    ),
-    source="catlin-house centreline bearing wall at RM-M-BED (W-M-C1), 2026-08-31: INT_2X6_BRG with 1/2 in. resilient channel at 24 in. o.c. on the bedroom face and 5-1/2 in. fibreglass in the bay; same 2x6 studs, same bearing role, same layout line",
-)
 
 # INT_2X6_PLUMBING and INT_2X6_STAGGERED_PLUMBING (generic wet-wall partitions, no
 # house-specific geometry or owner data) were promoted to library/assemblies/
@@ -2674,22 +2583,6 @@ INT_2X6_BRG_RC = Assembly(
 # thing that could put a stud where the drain has to go.
 # A VARIANT of INT_2X6_BRG (#70): only the stud differs, and it differs in exactly the two
 # ways the note above argues for — the batt, and no `layout_origin`.
-INT_2X6_BRG_PLUMBING = Assembly(
-    tag="INT_2X6_BRG_PLUMBING",
-    variant_of="INT_2X6_BRG",
-    substitute=(
-        Substitution(
-            span=layers("stud", "stud"),
-            replacement=(
-                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-                      function=LayerFunction.STRUCTURE,
-                      framing=FramingSpec(member="2x6"),
-                      cavity=CavityFill(material_ref="fiberglass", thickness=inch(5.5))),
-            ),
-        ),
-    ),
-    source="catlin-house bearing wet wall (2x6, continuous studs): the x=10 ft line on the second storey, which carries the cut ends of FO-A-HALL's attic joists. INT_2X6_PLUMBING plus a 5.5 in. fiberglass batt, to keep the batt the staggered assembly it replaces already had",
-)
 
 # --- wet walls that had to grow, 2026-09-20 --------------------------------------
 # Three walls in this house carried a 2" vent (2 3/8" outside) or a 3" drain (3 1/2")
@@ -2707,22 +2600,6 @@ INT_2X6_BRG_PLUMBING = Assembly(
 # would silently strip a bath/studio party wall's 3 1/2" sound batt on top of its
 # decoupling. Same 3 1/2" fiberglass the staggered assembly had — like for like, not an
 # upgrade, so the `fiberglass` price row's 3 1/2" band still governs.
-INT_2X6_PLUMBING_BATT = Assembly(
-    tag="INT_2X6_PLUMBING_BATT",
-    variant_of="INT_2X6_PLUMBING",
-    substitute=(
-        Substitution(
-            span=layers("stud", "stud"),
-            replacement=(
-                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-                      function=LayerFunction.STRUCTURE,
-                      framing=FramingSpec(member="2x6"),
-                      cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
-            ),
-        ),
-    ),
-    source="catlin-house non-bearing wet wall (2x6, continuous studs, 3.5 in. fiberglass): W-A-STU-W, the studio suite's stack wall. INT_2X6_PLUMBING plus the sound batt INT_2X6_STAGGERED_PLUMBING already carried",
-)
 
 # W-B-CW's replacement, and the one assembly here that is a real thickening. A 3" drain is
 # 3.500" outside and 60% of a 2x6's 5.50" is 3.300" — over by two tenths of an inch, which
@@ -2732,21 +2609,6 @@ INT_2X6_PLUMBING_BATT = Assembly(
 # routing. The furnace room's south face moves ~7/8" north and the corridor's ~7/8" south.
 # A VARIANT of INT_2X6_PLUMBING (#70): only the stud depth differs, so the paint/gypsum
 # leaves and the bearing interface track the base forever.
-INT_2X8_PLUMBING = Assembly(
-    tag="INT_2X8_PLUMBING",
-    variant_of="INT_2X6_PLUMBING",
-    substitute=(
-        Substitution(
-            span=layers("stud", "stud"),
-            replacement=(
-                Layer(name="stud", material_ref="spf", thickness=inch(7.25),
-                      function=LayerFunction.STRUCTURE,
-                      framing=FramingSpec(member="2x8")),
-            ),
-        ),
-    ),
-    source="catlin-house wet wall — 2x8 depth so a 3 in. drain (3.500 in. OD) clears IRC R602.6's 60% of 7.25 in. = 4.35 in., which a 2x6's 3.30 in. does not",
-)
 
 # --- energy storage closet -------------------------------------------------------
 # The ESS closet's partitions (notes/backup_power.md), an owner decision not a
@@ -2757,21 +2619,6 @@ INT_2X8_PLUMBING = Assembly(
 # purpose: heat should reach AL-B-ESS-HEAT outside, not be insulated away from it.
 # The "INT" tag token is load-bearing: `mn_energy._is_interior_assembly` and the IFC
 # emitter's IsExternal both key off it to keep this out of the R-21 exterior-wall table.
-INT_ESS_CLOSET_STEEL = Assembly(
-    tag="INT_ESS_CLOSET_STEEL",
-    layers=(
-        PAINT_FINISH_A,
-        Layer(name="gwb-x-a", material_ref="gwb-x", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        Layer(name="steel-stud", material_ref="steel-stud", thickness=inch(3.5),
-              function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x4", spacing=inch(16))),
-        Layer(name="gwb-x-b", material_ref="gwb-x", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        PAINT_FINISH_B,
-    ),
-    source="owner ESS-closet standard, 2026-08-02: 25 ga. steel C-stud at 16 in. o.c. with 5/8 in. Type X both faces (notes/backup_power.md). Not a code-required rated assembly and not claimed as one — no tested assembly number is cited.",
-)
 
 # The same closet standard on a 6 in. C-stud, for W-B-ESS-W — the one ESS partition a pipe
 # crosses. PR-B-SAUNA-VENT's 2" vent (2 3/8" outside) passes king-0-l0 beside D-B-ESS, and
@@ -2789,21 +2636,6 @@ INT_ESS_CLOSET_STEEL = Assembly(
 # W-B-ESS-S stays 3 1/2": nothing bores it. Only the plates are crossed, and
 # `mep.run_through_plate` is suppressed house-wide for a reason `preferences.toml` states
 # (no PlateTie vocabulary), not for anything this retype could fix.
-INT_ESS_CLOSET_STEEL_6 = Assembly(
-    tag="INT_ESS_CLOSET_STEEL_6",
-    variant_of="INT_ESS_CLOSET_STEEL",
-    substitute=(
-        Substitution(
-            span=layers("steel-stud", "steel-stud"),
-            replacement=(
-                Layer(name="steel-stud", material_ref="steel-stud", thickness=inch(5.5),
-                      function=LayerFunction.STRUCTURE,
-                      framing=FramingSpec(member="2x6", spacing=inch(16))),
-            ),
-        ),
-    ),
-    source="owner ESS-closet standard on a 6 in. 25 ga. steel C-stud at 16 in. o.c., 5/8 in. Type X both faces (notes/backup_power.md): the deeper web is what lets PR-B-SAUNA-VENT cross the jamb stud at D-B-ESS.",
-)
 
 # --- sauna ---------------------------------------------------------------------
 # The hot side of a sauna is its own wall type, not a lining override on a partition:
@@ -3670,21 +3502,6 @@ MATERIALS = [
     # house's walls as flat grey. The two PBR rows deliberately do NOT play that game — they
     # declare `finish="ribbed-panel"` and the renderers dispatch on the declaration, which
     # is what the substring fallback was always standing in for.
-    Material(tag="standing-seam-snaplock", name="Snap-lock standing-seam steel, 24 ga.",
-             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
-             color="#6b7076",
-             skin_family="standing-seam",
-             source="same 24 ga. PVDF-coated steel as library `standing-seam`, snap-lock seam profile (concealed floating clips, seam engaged by hand); continuous sheet steel is vapour-impermeable and is installed over a vented rainscreen"),
-    Material(tag="standing-seam-nailstrip", name="Nail-strip standing-seam steel, 24 ga.",
-             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
-             color="#6b7076",
-             skin_family="standing-seam",
-             source="same 24 ga. PVDF-coated steel, nail-strip seam profile (integral face-fastened flange, no concealed clips); short runs only, since face-fastening restricts thermal movement"),
-    Material(tag="standing-seam-nailstrip-26", name="Nail-strip standing-seam steel, 26 ga.",
-             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
-             color="#6b7076",
-             skin_family="standing-seam",
-             source="26 ga. PVDF-coated steel, nail-strip seam profile — the detached garage's wall spec; same white as the house, one gauge thinner"),
     # `standing-seam-nailstrip-26-green` — the same 26 ga. nail-strip panel as
     # the rest of the garage, in Western States Metal Roofing "Classic Green"
     # (westernstatesmetalroofing.com/classic-green) instead of white, on W-G-E only (the
@@ -3723,11 +3540,6 @@ MATERIALS = [
     # zero-overhang edge silently reverts to a fascia-and-drip-edge detail nobody drew.
     # This is precisely the case that field's docstring describes — one white steel skin,
     # several specifications.
-    Material(tag="pbr-panel-26", name="PBR exposed-fastener steel panel, 26 ga.",
-             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
-             color="#6b7076", finish="ribbed-panel",
-             skin_family="standing-seam", exposed_fastener=True,
-             source="26 ga. PVDF-coated steel PBR (purlin-bearing rib) wall panel, 36\" net coverage, 1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; same white paint and the same vapour-impermeable sheet steel as the four skins above"),
     # `pbr-panel-24` — the SAME PBR profile as `pbr-panel-26` above, one gauge heavier and
     # a named colour, on the house's EAST AND WEST walls (EXT_2X6 and PLANT_EXT_2X6_HUMID).
     # A new tag rather than an edit to the 26 ga row, because the tag reads the GAUGE: a row
@@ -3768,9 +3580,9 @@ MATERIALS = [
     # presentation triple and says nothing about the near-infrared, where most of the energy
     # is; only a published SR answers it.
     #
-    # HOUSE-LOCAL rather than an edit to `library/materials/`, for the same reason
-    # `pbr-panel-24` is: a colour is this house's choice and the library row is the shared,
-    # reviewed catalog entry (CONTRIBUTING section Promotion flow). Every other building-
+    # HOUSE-LOCAL rather than an edit to `library/materials/`: a colour is this house's
+    # choice and the library's `standing-seam-snaplock` is the shared, reviewed catalog
+    # entry (CONTRIBUTING section Promotion flow). Every other building-
     # science number is `standing-seam`'s verbatim — continuous sheet steel carries no R and
     # no vapour permeance whatever its colour — so nothing but the cooling load moves.
     Material(tag="standing-seam-linen-white",
@@ -3780,16 +3592,10 @@ MATERIALS = [
              skin_family="standing-seam",
              solar_absorptance=0.27,
              source="Metal Sales 24 ga. PVDF-coated steel standing seam, concealed-clip snap-lock profile, in PVDF Linen White (81) — the same colour as `pbr-panel-24` on the walls and `corrugated-panel-24` on the garage, on a different profile. SR 0.73 / TE 0.86 / SRI 89 from the Metal Sales PVDF colour guide, so solar_absorptance = 1 - 0.73 = 0.27. Caveat carried from the wall panel's own record: SRI is NIR-weighted, no visible LRV is published, and it is NOT a low-gloss colour."),
-    Material(tag="pbr-panel-24", name="Metal Sales PBR exposed-fastener steel panel, 24 ga., PVDF Linen White (81)",
-             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
-             color="#6b7076", finish="ribbed-panel",
-             skin_family="standing-seam", exposed_fastener=True,
-             source="Metal Sales PBR-Panel: 24 ga. PVDF-coated steel purlin-bearing-rib wall panel, 36\" net coverage, 1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; 318 psf outward at 2'-0\" (PBR Condensed Technical Reference 1/2026 wall table; the 26 ga row of the same table is 236 psf). PVDF Linen White (81), SR 0.73 / TE 0.86 / SRI 89; same vapour-impermeable sheet steel as the skins above, and the same colour as the board & batten and the garage corrugated"),
-    # `corrugated-panel-24` — the library's `corrugated-panel-26` one gauge heavier, in the
-    # same Linen White, on GARAGE_WALL_2X6 and both ENTRY_SCREEN faces. HOUSE-LOCAL and NOT
-    # an edit to `library/materials/`: the library row is the shared, reviewed catalog
-    # entry and a second house may still want 26 ga (CONTRIBUTING §Promotion flow). Same
-    # gauge reasoning as `pbr-panel-24` above, and the entry screen moves WITH the garage
+    # `corrugated-panel-24` (a library row since 2026-09-24, as are `pbr-panel-24/-26` and
+    # the three seam profiles) — `corrugated-panel-26` one gauge heavier, ordered here in
+    # Linen White, on GARAGE_WALL_2X6 and both ENTRY_SCREEN faces. Same gauge reasoning as
+    # `pbr-panel-24` above, and the entry screen moves WITH the garage
     # because CLAUDE.md records that its west face must stay in the same plane and the same
     # reading as the garage panel.
     #
@@ -3806,13 +3612,6 @@ MATERIALS = [
     # 0.0239" of steel = 4.7 kg/m2 flat, and the corrugation's developed length runs about
     # 10% over its coverage, so 5.2. The 7/8" layer `thickness` is the PROFILE DEPTH, not
     # the steel, which is why a dead load taken off it would read a sheet of solid steel.
-    Material(tag="corrugated-panel-24",
-             name="7/8\" corrugated exposed-fastener steel panel, 24 ga., PVDF Linen White (81)",
-             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
-             areal_density_kg_m2=5.2,
-             color="#6b7076", finish="corrugated",
-             skin_family="standing-seam", exposed_fastener=True,
-             source="Metal Sales 7/8\" Corrugated: 24 ga. PVDF-coated steel, 7/8\" corrugation depth on a 2-2/3\" pitch, 34-2/3\" net WALL coverage (Corrugated Wall CTR 1/2024; 32\" is the roof figure), 3'-45' lengths, \"applies over open framing or solid substrate\", 412 psf outward at 2'-0\"; face-fastened with gasketed screws through the crowns, and the CTR's own recommendation of stainless- or aluminium-head fasteners over Galvalume is met by the specified 316 T09150HWAM. PVDF Linen White (81), SR 0.73 / TE 0.86 / SRI 89 — the same colour as the house's board & batten and PBR. Continuous sheet steel is vapour-impermeable, as `standing-seam`. The takeoff's screw count still runs off takeoff/hardware_config.py's global PBR 12\"/36\" proxy, a known approximation that gauge does not touch"),
     # `board-batten-24` — Metal Sales BBD75-1212, 24 ga CONCEALED-FASTENER board & batten
     # at 12" net coverage, on the NORTH AND SOUTH elevations only. The sixth metal skin. The
     # east and west walls are `pbr-panel-24` above, a different profile in the same colour
@@ -4814,8 +4613,8 @@ ASSEMBLIES = [
     HP_PAD_ON_GRADE,
     SIDEWALK_FRC_CLASS5,
     DRIVEWAY_FRC_CLASS5,
-    SG_FROST_WING_XPS1,
-    SG_FROST_WING_XPS2,
+    FROST_WING_XPS_1IN,
+    FROST_WING_XPS_2IN,
     FOOTING_EXPOSED_20,
     FOOTING_20,
     FOOTING_STONE_20,

@@ -188,7 +188,7 @@ def test_a_laid_deck_in_a_slab_row_needs_its_material_to_say_so() -> None:
                      material="aluminum-deck").trade == "flooring"
     # And a slab that is neither a pour nor a deck files where its material says.
     # FPSF wing foam is the foundation contractor's (adjudicated 2026-09-12).
-    assert cost_code("concrete", "slab:SG_FROST_WING_XPS1", material="xps").trade == "concrete"
+    assert cost_code("concrete", "slab:FROST_WING_XPS_1IN", material="xps").trade == "concrete"
     assert cost_code("concrete", "slab:GARDEN_PUTTING_GREEN",
                      material="kbg-sod").trade == "landscaping"
     assert cost_code("concrete", "slab:DECK_EPS_INT",

@@ -2301,7 +2301,7 @@
    "sources": null
   },
   {
-   "row_id": "concrete:slab:SG_FROST_WING_XPS1",
+   "row_id": "concrete:slab:FROST_WING_XPS_1IN",
    "axis": "trade_fit",
    "status": "accepted",
    "rule": "adjudicated -> concrete: FPSF wing foam laid in the foundation sequence; adjudicated",
@@ -2314,26 +2314,26 @@
    "B": {
     "flag": true,
     "answer": "concrete",
-    "reason": "This is a cubic-yard concrete pour quantity (\"Slab \u2014 SG_FROST_WING_XPS1\", 0.04 cy, group \"Pours and solids, by the yard\") that landed in the insulation package, apparently swept in because the element's tag contains \"XPS\". Concrete volume belongs to the concrete trade regardless of an adjoining insulation layer's name.",
+    "reason": "This is a cubic-yard concrete pour quantity (\"Slab \u2014 FROST_WING_XPS_1IN\", 0.04 cy, group \"Pours and solids, by the yard\") that landed in the insulation package, apparently swept in because the element's tag contains \"XPS\". Concrete volume belongs to the concrete trade regardless of an adjoining insulation layer's name.",
     "confidence": 0.9
    },
    "sources": "concretenetwork.com, jlconline.com, nachi.org"
   },
   {
-   "row_id": "concrete:slab:SG_FROST_WING_XPS2",
+   "row_id": "concrete:slab:FROST_WING_XPS_2IN",
    "axis": "trade_fit",
    "status": "accepted",
    "rule": "adjudicated -> concrete: FPSF wing foam laid in the foundation sequence; adjudicated",
    "A": {
     "flag": true,
     "answer": "concrete",
-    "reason": "Same as SG_FROST_WING_XPS1: a cast-concrete quantity (cy), not insulation, despite the XPS-referencing key name.",
+    "reason": "Same as FROST_WING_XPS_1IN: a cast-concrete quantity (cy), not insulation, despite the XPS-referencing key name.",
     "confidence": 0.95
    },
    "B": {
     "flag": true,
     "answer": "concrete",
-    "reason": "Same issue as SG_FROST_WING_XPS1: a concrete pour quantity (cy) filed to insulation, evidently because the slab element's name embeds \"XPS\".",
+    "reason": "Same issue as FROST_WING_XPS_1IN: a concrete pour quantity (cy) filed to insulation, evidently because the slab element's name embeds \"XPS\".",
     "confidence": 0.9
    },
    "sources": "concretenetwork.com, jlconline.com, nachi.org"
