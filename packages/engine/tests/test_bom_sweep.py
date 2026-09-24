@@ -355,7 +355,7 @@ def test_pipe_runs_bill_by_system_and_diameter(catlin_model, bom):
     # branches off the water heaters — before that the only supply modelled was the cold
     # feed to the hydrant.
     assert {row["system"] for row in rows} == {"drain", "vent", "water_cold", "water_hot",
-                                               "sump_discharge"}
+                                               "sump_discharge", "radon"}
     billed = {tag for row in rows for tag in row["tags"]}
     assert billed == {run.tag for run in catlin_model.pipe_runs}
     total = sum(float(row["length_ft"]) for row in rows)

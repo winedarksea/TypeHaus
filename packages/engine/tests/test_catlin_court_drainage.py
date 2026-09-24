@@ -104,7 +104,8 @@ def test_the_sump_line_is_sleeved_and_clear(catlin_model_ro, ctx):
 
     crossings = [c for c in concrete_crossings(catlin_model_ro)
                  if c["run"] == "PR-B-SUMP-DISCH"]
-    assert [(c["host"], c["sleeve"]) for c in crossings] == [
-        ("W-B-W1", "SP-B-W1-SUMP-DISCH")]
+    # Up through the slab from under it since the pit left the corner (2026-09-23), then out.
+    assert sorted((c["host"], c["sleeve"]) for c in crossings) == [
+        ("SL-B-FLOOR", "SP-B-SLAB-SUMP-DISCH"), ("W-B-W1", "SP-B-W1-SUMP-DISCH")]
     assert not [f for f in run_interference(ctx)
                 if "PR-B-SUMP-DISCH" in f.element_tags and f.result is Result.FAIL]

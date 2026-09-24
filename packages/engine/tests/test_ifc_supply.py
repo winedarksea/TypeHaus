@@ -100,18 +100,17 @@ def test_the_waste_side_is_systems_now_sanitary_vent_and_radon(catlin_model_ro, 
             max(len(run.path) - 1, 0) for run in catlin_model_ro.pipe_runs if run.system == key)
         emitted = [m for m in members if m.is_a("IfcPipeSegment")]
         assert 0 < len(emitted) <= expected_segments
-    # A radon *pipe run* would get its own USERDEFINED/RADON system rather than being
-    # folded into VENT (a soil-gas riser must never read as connected to the plumbing
-    # vents). Catlin's radon is a VentRun riser — solids, not a PipeRun — so the mapping is
-    # asserted on the table and the absence of a hollow system is asserted on the file.
+    # A radon *pipe run* gets its own USERDEFINED/RADON system rather than being folded into
+    # VENT (a soil-gas riser must never read as connected to the plumbing vents). Catlin's
+    # first is PR-B-RADON-LEG, the pit-to-chase leg under the slab (2026-09-23).
     from typehaus.emit.ifc.emitter import _PIPE_SYSTEM_OBJECT_TYPES, _PIPE_SYSTEM_TYPES
 
     assert _PIPE_SYSTEM_TYPES["radon"] == ("RadonVent", "USERDEFINED")
     assert _PIPE_SYSTEM_OBJECT_TYPES["radon"] == "RADON"
-    assert not any(run.system == "radon" for run in catlin_model_ro.pipe_runs), \
-        "fixture drift: catlin now authors a radon PipeRun — assert its system here"
-    assert not [s for s in catlin_ifc.by_type("IfcDistributionSystem")
-                if s.Name == "RadonVent"], "an empty system must not be emitted"
+    assert any(run.tag == "PR-B-RADON-LEG" and run.system == "radon"
+               for run in catlin_model_ro.pipe_runs)
+    radon = [s for s in catlin_ifc.by_type("IfcDistributionSystem") if s.Name == "RadonVent"]
+    assert len(radon) == 1 and radon[0].ObjectType == "RADON"
     # Rainwater stays a non-system among the pipe runs on purpose: the stormwater solids
     # (gutter, leader, tile) already group under STORMWATER.
     assert not [s for s in catlin_ifc.by_type("IfcDistributionSystem")
