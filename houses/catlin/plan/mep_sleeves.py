@@ -81,7 +81,7 @@ SLAB_STUBS = [
     # SM-B-RADON's two lines come up out of the slab at the NW corner (2026-09-23): the pit
     # moved off the corner footings and both run under the slab from it.
     SleevePenetration(uid="1XKSCX8200", tag="SP-B-SLAB-RADON", host_ref="SL-B-FLOOR",
-                      position=pt(ft(1, 9), inch(412.4)), pipe_diameter=inch(3),
+                      position=pt(ft(1, 9), inch(419.1)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4)),
     SleevePenetration(uid="71B80PTTEZ", tag="SP-B-SLAB-SUMP-DISCH", host_ref="SL-B-FLOOR",
                       position=pt(inch(9.6), inch(401.5)), pipe_diameter=inch(1.5),

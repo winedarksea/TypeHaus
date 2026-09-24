@@ -820,9 +820,9 @@ RADON_SUMP = [
             # ** IT LANDS ON THE RADON RISER, NOT THE CHASE POINT (2026-09-23). ** It ended at
             # the bundle's centre, inside the plumbing vent riser beside it — a soil-gas pipe
             # tied into a plumbing vent. It comes up through the slab on its own lane and
-            # turns west onto the radon riser's foot at (10", 34'-4.4").
-            path=(pt(ft(5, 9), ft(28)), pt(ft(1, 9), ft(28)), pt(ft(1, 9), inch(412.4)),
-                  pt(ft(1, 9), inch(412.4)), pt(inch(10), inch(412.4))),
+            # turns west onto the radon riser's foot at (10", 34'-11.1").
+            path=(pt(ft(5, 9), ft(28)), pt(ft(1, 9), ft(28)), pt(ft(1, 9), inch(419.1)),
+                  pt(ft(1, 9), inch(419.1)), pt(inch(10), inch(419.1))),
             diameter=inch(3), material="pvc",
             elevations=(inch(-7.5), inch(-7.25), inch(-7), inch(3.4375), inch(3.4375))),
 ]

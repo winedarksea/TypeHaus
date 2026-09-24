@@ -337,17 +337,20 @@ VENT_BRANCHES_ATTIC = [
 #
 VENT_RISERS = [
     VentRun(uid="CMVR01AAAA", tag="VR-M-RADON-VENT",
-            # VENT first so it spreads SOUTH (y 33'-11.6"), the side seven branch vents
-            # arrive from; the radon riser is north (34'-4.4"). Centred at 34'-2" so both
-            # stay in FS-ATTIC's y 33'-4"..34'-8" joist bay the 19'-6" jog runs east in
-            # (2026-09-23): the old 35'-1.3" put the radon riser on the y=34'-8" I-joist.
+            # ** THE CHASE WAS RE-PACKED ON 2026-09-23. ** VENT first so it spreads SOUTH
+            # (y 34'-4.9"), the side the branch vents arrive from up the chase's west slot;
+            # the radon riser is north (34'-11.1"). 6.2" apart so the two STRADDLE FS-ATTIC's
+            # y=34'-8" I-joist the 19'-6" jog runs east beside — one riser in each bay —
+            # which frees the chase's south band for the ERV risers and conduits that climb
+            # past the jog, and leaves the north strip clear for DU-ERV-EA's exit.
             systems=(PipeSystem.VENT, PipeSystem.RADON), diameter=inch(3),
+            bundle_spacing=inch(6.2),
             # (1', 35'-1.3") since 2026-09-23, out of FO-M-ERV-OA's trimmers and into the
             # grown FO-M-ERV-EA; exit_offset shrank to keep the exterior riser at y=37'-0".
             # PR-B-RADON-LEG (mep_drainage.py) arrives at its foot from the pit since 2026-09-23.
-            chase_position=pt(inch(10), inch(410)), start_elevation=ft(-8, -10),
+            chase_position=pt(inch(10), inch(416)), start_elevation=ft(-8, -10),
             chase_offset=pt(ft(8, 9.5), ft(0)), chase_offset_elevation=ft(19, 6),
-            exit_elevation=ft(23, 10), exit_offset=pt(ft(0), inch(34)),
+            exit_elevation=ft(23, 10), exit_offset=pt(ft(0), inch(28.7)),
             wall_ref="W-A-N2", attachment="pipe_strap"),
 ]
 

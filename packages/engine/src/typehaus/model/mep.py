@@ -424,6 +424,9 @@ class VentRun(Element):
     roof_termination_elevation: Length | None = None  # optional; normally derived
     wall_ref: str | None = None  # exterior wall the riser penetrates / rides
     attachment: str = "standing_seam_clamp"  # how the exterior riser is fixed to the siding
+    # Centre-to-centre between adjacent bundled risers; None is 1.6 diameters. Set it where
+    # the bundle has to straddle a joist rather than share one bay.
+    bundle_spacing: Length | None = None
 
 
 @register_element

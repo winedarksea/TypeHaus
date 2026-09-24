@@ -121,7 +121,7 @@ EQUIPMENT_ERV_HOODS_MAIN = [
 ]
 EQUIPMENT_ERV_HOODS_SECOND = [
     Equipment(uid="38M0D2FNXH", tag="EQ-S-ERV-HOOD-EA", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(2), inch(445.25)), footprint=(inch(12), inch(12)),
+              position=pt(inch(24.625), inch(445.25)), footprint=(inch(12), inch(12)),
               # ** y=34'-0" IS A STUD BAY, AND 34'-8" WAS A STUD (2026-09-11). ** W-S-W1B
               # frames studs at y 400"/416"/430 3/4"; the hood and its duct sat at y=416"
               # dead on `stud-001`, so the 6" penetration bored the middle out of a bearing
@@ -212,8 +212,9 @@ PENETRATIONS_ERV_SECOND = [
     # is centred on +17'-0" either way, which is exactly why only the horizontal drifted.
     # Nothing grades a duct against the opening it is declared `penetration_for`, which is
     # why a 1" error survived a full verification run.
+    # x=2'-0 5/8" since the chase was re-packed (2026-09-23): near jamb 3 7/8" from N-S-CH2.
     RoughOpening(uid="SMGEY3KGXE", tag="AO-S-ERV-EA", host="W-S-N3B",
-                 position=from_node("N-S-CH2", inch(4.5)),
+                 position=from_node("N-S-CH2", inch(3.875)),
                  width=inch(9), height=inch(9), sill_height=inch(79.5),
                  penetration_for=("DU-ERV-EA",)),
 ]

@@ -729,12 +729,17 @@ FLOOR_OPENINGS = [
                  outline=(pt(inch(6), inch(397)), pt(inch(33), inch(397)),
                           pt(inch(33), inch(426)), pt(inch(6), inch(426))),
                  bearing_refs=("W-S-W1B",)),
-    # Where the radon/vent bundle rises again after its jog, at x=9'-7 1/2": between the
-    # y=33'-4" and 34'-8" joists (which are its trimmers), headed 3 1/2" either side.
+    # Where the radon/vent bundle rises again after its jog, at x=9'-7 1/2". The two risers
+    # straddle the y=34'-8" joist, so each takes its own hole in its own bay, the joists
+    # either side its trimmers and headed 3 1/2" either side.
     FloorOpening(uid="2BSGJXFM0G", tag="FO-A-VENT-STACK", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(112), inch(400)), pt(inch(119), inch(400)),
                           pt(inch(119), inch(416)), pt(inch(112), inch(416))),
-                 penetration_for=("VR-M-RADON-VENT-vent", "VR-M-RADON-VENT-radon")),
+                 penetration_for=("VR-M-RADON-VENT-vent",)),
+    FloorOpening(uid="FHM5PC8VZA", tag="FO-A-RADON-STACK", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(112), inch(416)), pt(inch(119), inch(416)),
+                          pt(inch(119), inch(424.5)), pt(inch(112), inch(424.5))),
+                 penetration_for=("VR-M-RADON-VENT-radon",)),
     FloorOpening(uid="CAF601AAAA", tag="FO-A-STAIR",
                  outline=(pt(ft(22, 5.375), ft(5, 4)),
                           pt(ft(35, 5.375), ft(5, 4)),
@@ -813,7 +818,7 @@ FLOOR = [
                 # roof now. Its outline, its four chosen edges and the reason x=10'-0" is
                 # NOT in `joists.bearing_refs` are all in plan/storeys/stair_hall_void.py.
                 openings=("FO-A-STAIR", "FO-A-HALL", "FO-A-ERV-CHASE",
-                          "FO-A-VENT-STACK")),
+                          "FO-A-VENT-STACK", "FO-A-RADON-STACK")),
 ]
 
 # The attic deck's edge along the well's south side, y=5'-4": 42" metal fascia guard from the

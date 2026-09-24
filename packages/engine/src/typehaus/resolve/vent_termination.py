@@ -151,8 +151,10 @@ def riser_polylines(model: ResolvedModel, vent: VentRun
     perp_x = abs(lead_y) >= abs(lead_x)
     count = max(len(vent.systems), 1)
     out = []
+    pitch = (vent.bundle_spacing.meters if vent.bundle_spacing is not None
+             else vent.diameter.meters * PIPE_BUNDLE_SPACING)
     for index, system in enumerate(vent.systems or (None,)):
-        spread = (index - (count - 1) / 2.0) * vent.diameter.meters * PIPE_BUNDLE_SPACING
+        spread = (index - (count - 1) / 2.0) * pitch
         dx, dy = (spread, 0.0) if perp_x else (0.0, spread)
         here, there, out_there = ((chase[0] + dx, chase[1] + dy),
                                   (top[0] + dx, top[1] + dy),
