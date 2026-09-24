@@ -98,10 +98,12 @@ the floor, in the media, with the emitter rising through it.
 | TR-RF-LEADER-W | 0.91 + 10.33 + 3.20 = 14.44 | −40" → −47" = 7" | 4.0% | +12" → −40" = 4.33 |
 | TR-G-LEADER-W | 4.73 → −3.00 = 7.73 | −41" → −47" = 6" | 6.5% | −18" → −41" = 1.92 |
 | TR-RF-LEADER-E | 14.44, the mirror | −48" → −50" = 2" | 1.2% | +12" → −48" = 5.00 |
-| TR-G-LEADER-E | 31.27 → 39.00 = 7.73 | −48" → −50" = 2" | 2.2% | −18" → −48" = 2.50 |
+| TR-G-LEADER-E | (29.58, 67.58) → (39.00, 68.49) = 9.46 | −48" → −50" = 2" | 1.8% | −18" → −48" = 2.50 |
 
 All four exceed IRC Table P3005.3's 1/8 in/ft (1.04%). Billed length = west 28.42 + east
-29.67 = **58.1 LF**. Each ends in a pop-up emitter on its basin floor; a frozen line backs up
+31.40 = **59.8 LF**. The garage east run starts at its drop on the garage north wall, not
+under the trough outlet (2026-09-23, `notes/sidewalk_layout.md` §3), and runs straight to
+the old outlet point. Each ends in a pop-up emitter on its basin floor; a frozen line backs up
 and overflows at the leader's own boot, which is the winter fallback.
 
 The house runs start at the leader's authored position (x = −0'-10 9/16" / 36'-10 9/16"),

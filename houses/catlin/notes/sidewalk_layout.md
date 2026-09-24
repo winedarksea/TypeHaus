@@ -71,11 +71,14 @@ of each end.
 - **A is anchored to the corner, not centred.** Its two rows (y = 69.00 and 73.33) run
   across the whole width of leg B, so its first station IS leg B's pocket column — x = 33.78
   (44" off the stem, 20" in from the shared east edge) — and the next is 29.45, one 52" step
-  west, the full section's own row pitch. → **4**. West inset 5.40', east inset
+  west, the full section's own row pitch. → **4**, less **A01** (x 29.45, south row),
+  struck 2026-09-23 beside `TR-G-LEADER-E`'s drop at the garage NE corner → **3**.
+  West inset 5.40', east inset
   1.67' × 12 = 20", the section inset, so 12" of concrete at the end like every side band.
   **This is what keeps the L walkable.** Leg B's 36" walk runs x 30.11..33.11 against the
-  stem; A's south-row pockets stop at 30.11 and start again at 33.11, tangent to both lane
-  edges, so the turn out of A into B crosses **36.0" of open concrete**.
+  stem; A's south-row pockets stop at 30.11 (A01, now struck) and start again at 33.11,
+  tangent to both lane edges, so the turn out of A into B crosses **36.0" of open
+  concrete** — more on the west side since A01 went.
 - **B** (run 24.31', n = 6, inset 2.16'): y = 45.18, 49.18, 53.18, 57.18, 61.18, 65.18 on
   its one column (x = 33.78) → **6**.
 - **D** (run 48.60', n = 12, inset 2.30', column x = 40.37): y = −6.7, −2.7, 1.3, 5.3, 9.3,
@@ -85,15 +88,22 @@ of each end.
 **NO POCKET SITS AT A LEADER'S FOOT, and neither east leader can have one.**
 `TR-RF-LEADER-E` stands at x = 36'-10 9/16", over leg D's 36" walking band: a 16" void
 centred there leaves **1.6"** of concrete at the slab's house-side edge, against the 12"
-every grid pocket keeps, and it is 2.9' off the pocket column. `TR-G-LEADER-E` at
-(31.27, 68.49) is 6" off leg A's near row. Both leaders' risers pass down through the walk
-to buried extensions into RG-E-BASIN (§5).
+every grid pocket keeps, and it is 2.9' off the pocket column. Both leaders' risers pass
+down through the walk to buried extensions into RG-E-BASIN (§5).
+
+**`TR-G-LEADER-E` drops on the garage north wall, not under its outlet** (2026-09-23).
+Straight down from the trough's north end (31.27, 68.49) it stood in the turn from A into
+B, inside B's 36" lane. A gooseneck under the soffit (1.96' of offset, two elbows) brings
+the drop to (29.58, 67.58): 2" off the north cladding face, 4 3/8" west of the NE corner,
+inside A's 12" edge band. Its riser crosses that band, not a walk.
 
 The D pocket at y = 9.3 stands **0.40"** north of the retired patio's north edge. That is
 a measurement, not a constraint — the skip is a centre test over y 10'..22', so the count
 does not turn on it — but it is the one station that would move if leg D's ends did.
 
-19 pockets cycle Calamintha, Allium, Sporobolus, Salvia in A-B-D order: **5 · 5 · 5 · 4**.
+18 pockets cycle Allium, Sporobolus, Salvia, Calamintha in A-B-D order: **5 · 5 · 4 · 4**.
+The cycle was Calamintha-first until A01 (a Calamintha) was struck; rotating it one place
+kept every surviving pocket's species.
 
 ## 4. Fall (R401.3: 2% within 10' of the foundation)
 

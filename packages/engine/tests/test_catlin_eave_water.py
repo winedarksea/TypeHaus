@@ -207,7 +207,11 @@ def test_each_eave_drains_to_a_leader_that_reaches_grade(catlin_model, eave) -> 
 
     leaders = {el.tag for el in catlin_model.plan.all_elements()
                if isinstance(el, Downspout)}
-    gutters = [el for el in catlin_model.plan.all_elements() if isinstance(el, Gutter)]
+    # TR-SG-RUNNEL is an open channel a LEADER discharges into; it lets go through a scupper
+    # into FURN-SG-SPLASH-BASIN, and test_drainage_elements.py pins that end instead.
+    spouted = {"TR-SG-RUNNEL"}
+    gutters = [el for el in catlin_model.plan.all_elements()
+               if isinstance(el, Gutter) and el.tag not in spouted]
     assert gutters
     for gutter in gutters:
         assert gutter.downspout_ref in leaders, \

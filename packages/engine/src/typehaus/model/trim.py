@@ -116,7 +116,11 @@ class Downspout(Element):
     """
 
     kind: TrimKind = TrimKind.DOWNSPOUT
-    position: Point2D                # plan-frame centre of the pipe
+    position: Point2D                # plan-frame centre of the drop
+    # The gutter outlet, when the drop does not hang straight under it: an elbow pair
+    # carries the water from here to ``position`` just under the trough floor (a gooseneck,
+    # to bring the leader back to the wall). Unset means the outlet is ``position``.
+    outlet: Point2D | None = None
     top_elevation: Length            # the outlet at the gutter floor
     bottom_elevation: Length         # discharge, normally just above grade
     diameter: Length

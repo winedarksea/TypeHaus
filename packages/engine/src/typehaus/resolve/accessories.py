@@ -751,10 +751,22 @@ def _resolve_downspout(model: ResolvedModel, el, storey: str) -> None:
     z0, z1 = el.bottom_elevation.meters, el.top_elevation.meters
     if z1 - z0 <= 0.0:
         return
+    radius = el.diameter.meters / 2.0
     model.solids.append(ResolvedSolid(
         uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="downspout",
-        outline=circle_outline(el.position.xy_m, el.diameter.meters / 2.0, _PIPE_FACETS),
+        outline=circle_outline(el.position.xy_m, radius, _PIPE_FACETS),
         z0_m=z0, z1_m=z1, material=el.material))
+    # The gooseneck: one pipe diameter under the trough floor, outlet to drop, run past
+    # both centres by a radius so it covers the two elbows.
+    if el.outlet is not None and el.outlet.xy_m != el.position.xy_m:
+        a, b = el.outlet.xy_m, el.position.xy_m
+        length = math.dist(a, b)
+        ux, uy = (b[0] - a[0]) / length, (b[1] - a[1]) / length
+        model.solids.append(ResolvedSolid(
+            uid=f"{el.uid}-01", tag=f"{el.tag}-OFFSET", storey=storey, category="downspout",
+            outline=rect_between((a[0] - ux * radius, a[1] - uy * radius),
+                                 (b[0] + ux * radius, b[1] + uy * radius), -radius, radius),
+            z0_m=z1 - 2.0 * radius, z1_m=z1, material=el.material))
 
 
 def _cross_span(half: float, offset: float, band_t: float,

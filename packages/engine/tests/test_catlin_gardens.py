@@ -38,7 +38,7 @@ def test_rain_garden_and_extension_quantities(catlin_model_ro) -> None:
             if r["category"] in ("leader_extension", "rain_garden_media", "rain_garden_stone")}
     assert rows["rain_garden_media"]["aggregate_cubic_yards"] == pytest.approx(12.96, abs=0.01)
     assert rows["rain_garden_stone"]["aggregate_cubic_yards"] == pytest.approx(6.48, abs=0.01)
-    assert rows["leader_extension"]["length_ft"] == pytest.approx(58.1, abs=0.1)
+    assert rows["leader_extension"]["length_ft"] == pytest.approx(59.8, abs=0.1)
 
 
 def test_garden_checks_read_as_the_note_says(catlin_model_ro) -> None:
@@ -70,14 +70,14 @@ def test_sidewalk_quantities(catlin_model_ro) -> None:
     bom = bill_of_materials(catlin_model_ro)
     walk = next(r for r in bom["structural_solids"] if r.get("assembly") == "SIDEWALK_FRC_CLASS5")
     assert walk["count"] == 4
-    assert walk["plan_area_sqft"] == pytest.approx(488.9, abs=0.2)
-    assert walk["volume_cubic_yards"] == pytest.approx(6.04, abs=0.01)
+    assert walk["plan_area_sqft"] == pytest.approx(490.3, abs=0.2)
+    assert walk["volume_cubic_yards"] == pytest.approx(6.05, abs=0.01)
     base = next(r for r in bom["envelope_layers"]
                 if r["material"] == "mndot-class-5-base" and r["thickness_in"] == 6.0)
-    assert base["net_area_sqft"] == pytest.approx(488.9, abs=0.2)
+    assert base["net_area_sqft"] == pytest.approx(490.3, abs=0.2)
     pockets = Counter(e.tag.split("-")[2][0] for e in catlin_model_ro.plan.all_elements()
                       if e.tag.startswith("FO-WK-"))
-    assert pockets == {"A": 4, "B": 6, "D": 9}
+    assert pockets == {"A": 3, "B": 6, "D": 9}   # FO-WK-A01 struck at the leader
 
 
 def test_driveway_quantities(catlin_model_ro) -> None:
@@ -157,14 +157,30 @@ def test_the_walk_turns_the_corner_under_open_concrete(catlin_model_ro) -> None:
     assert round(bx0 + 44.0 / 12, 3) in stations, "leg A's stations must carry B's column"
 
 
+def test_the_east_garage_leader_drops_clear_of_both_walks(catlin_model_ro) -> None:
+    """TR-G-LEADER-E goosenecks from the trough to the garage north wall, so its drop stands
+    in walk A's 12" edge band and out of the A-to-B turn (plan/storeys/garage.py)."""
+    from params import landscape_walk
+    from shapely.geometry import Polygon, box
+
+    drop = Polygon(next(s for s in catlin_model_ro.solids
+                        if s.tag == "TR-G-LEADER-E").outline)
+    x0, y0 = landscape_walk.B_X0, landscape_walk.A[0][1]
+    lane_b = box(x0 * 0.3048, 40 * 0.3048, (x0 + 3.0) * 0.3048, y0 * 0.3048 + 1.0)
+    lane_a = box(24 * 0.3048, (y0 + 28 / 12) * 0.3048, x0 * 0.3048 + 1.0, (y0 + 64 / 12) * 0.3048)
+    assert not drop.intersects(lane_b) and not drop.intersects(lane_a)
+    face_y = 67.2917 * 0.3048                 # W-G-N's cladding face
+    assert 1.5 <= (drop.bounds[1] - face_y) / 0.0254 <= 3.0, "hung 2in off the wall"
+
+
 def test_planting_counts(catlin_model_ro) -> None:
     rows = {r["item"]: r["quantity"] for r in planting_takeoff(catlin_model_ro)}
     assert rows == {
         "PT-SCH-JAZZ": 448, "PT-COR-MOONBEAM": 33, "PT-SED-ANGELINA": 6,
         "PT-HEU-CARAMEL": 5, "PT-PAN-OCTSKY": 20,
         "PT-PAN-NORTHWIND": 20, "PT-IRI-VERS": 6, "PT-ASC-INCA": 4,
-        "PT-CAL-NEPETA": 5, "PT-ALL-MILLENIUM": 5, "PT-SPO-TARA": 5, "PT-SAL-PURP": 4,
+        "PT-CAL-NEPETA": 4, "PT-ALL-MILLENIUM": 5, "PT-SPO-TARA": 5, "PT-SAL-PURP": 4,
         "PT-MAL-HONEYCRISP": 1, "PT-MAL-ZESTAR": 1, "PT-MAL-HARALSON": 1,
         "trellis-post:4x4:kdat": 5, "trellis-wire:12.5 ga high-tensile galvanized": 76.0,
     }
-    assert len(catlin_model_ro.plants) == 564
+    assert len(catlin_model_ro.plants) == 563

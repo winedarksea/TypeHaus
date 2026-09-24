@@ -1772,10 +1772,10 @@ FROST_WINGS = [
 # for the reasoning, because the balcony rule (decision #64) still governs any future deck.
 #
 # ** THE POCKET IS THE SITE, AND IT WAS ALREADY EMPTY. ** West is the porch's east wall
-# W-SG-E1 (faces x 27'-6"/28'-6", top 0'-0"); north is the house's south wall; south is the
+# W-SG-E1 (faces x 26'-6"/27'-6", top 0'-0"); north is the house's south wall; south is the
 # W-RG-EAST-BALCONY apron return at y = -10'-6"; east is open side yard. The house is
 # gable-ended here, so nothing sheds onto it, and the only neighbour is TR-SG-LEADER-SE at
-# (28'-9", -10'-6"), well south of the pad.
+# (28'-0", -10'-6"), well south of the pad.
 #
 # ** THE POCKET DOES NOT STOP AT THE HOUSE'S EAST FACE. ** The 2026-09-02 siting read the
 # yard as 90" of usable y bounded east by x 36'-0", and concluded a row facing SOUTH did not
@@ -3059,14 +3059,11 @@ _FRONT_PATH = (pt(ft(_deck_x_w), ft(_y_balcony_front)),
 # that axis, and W-SG-E1's 12" band (x 27.5-28.5) runs the whole drop below it. There is no
 # room inboard either — the front rail and the front beam both sit on the trough line, and
 # SL-SG-FLOOR stops at the wall's inner face. So the trough oversails the deck edge and the
-# pipe drops just clear of the wall's *outer* face at x = 29.0, on the balcony's front
+# pipe drops just clear of the wall's *outer* face at x = 28.0, on the balcony's front
 # plane. ** IT HANGS OVER W-RG-EAST-BALCONY SINCE 2026-09-12, NOT BESIDE IT. ** The return
 # used to stop 6" short and the pipe threaded that slot with 1.5" of strap clearance each
 # side; the notch that slot left in the retaining wall was closed instead, so the block now
-# runs under the pipe, 6" below its outlet. Nothing touches and no check grades the pair.
-# The outlet takes a cast elbow and a 1'-0" shoe south to discharge past the cap at
-# y = -11'-3", onto the same terrace stone — keeping a 200 sf deck's whole discharge off
-# the crest of a dry-stacked wall is the point, and the shoe is not modelled.
+# runs under the pipe. It discharges into TR-SG-RUNNEL on that wall's top (below).
 _SG_LEADER_OUTSET = 0.25   # ft outboard of the deck edge, which IS the east wall's face
 _SG_GUTTER_OVERSAIL = 0.5  # ft of trough past that edge, to carry the outlet
 _SG_LEADER_X = _deck_x_e + _SG_LEADER_OUTSET
@@ -3088,19 +3085,45 @@ BALCONY_GUTTER = Gutter(
     back_side="left")
 # 3" round, not the roof's 4": catches only the balcony deck (~200 sf) vs. 648 sf per house
 # eave. It no longer drops into the sunken garden — hanging outboard of the east wall there
-# is no garden underneath it — so it discharges 6" above the raised terrace, whose surface
-# is level with that wall top at +0'-2" (raised_garden.TOP). That is the better half of the
-# trade: the court's soakaway course serves a 9'-deep pit with no outlet of its own, and
-# 200 sf of balcony runoff is the one contribution it does not have to swallow.
-_SG_LEADER_BOTTOM = _ret_top + inch(6)
+# is no garden underneath it. The court's soakaway course serves a 9'-deep pit with no
+# outlet of its own, and 200 sf of balcony runoff is the one contribution it does not have
+# to swallow.
+#
+# ** SO IT DOES NOT DISCHARGE ONTO THE TERRACE EITHER (owner, 2026-09-23). ** The terrace
+# bed is W-SG-E2's retained fill, drained into that same soakaway, and its surface is the
+# court's rim (0'-0"): frozen, it sheds over W-SG-E2 straight into the court. The soakaway
+# holds 249 cf against 222 cf of the court's own melt (notes/court_soakaway_storage.md);
+# the balcony's melt is ~160 cf. The leader drops 1" over TR-SG-RUNNEL instead, which
+# carries it east to the yard at -3'-4", 40" below any surface that reaches the court.
+# "daylight" is the honest terminal: the runnel and the basin under its spout are surface
+# features, not drainage nodes.
+_SG_LEADER_BOTTOM = _ret_top + inch(4)
 BALCONY_LEADER = Downspout(
     uid="SGDS01AAAA", tag="TR-SG-LEADER-SE",
     position=pt(ft(_SG_LEADER_X), ft(_y_balcony_front)),
     top_elevation=_deck_top - inch(_drip_depth_in) - inch(4),  # the trough floor
     bottom_elevation=_SG_LEADER_BOTTOM,
     diameter=inch(_SG_LEADER_DIA_IN), material="metal-dark-kstyle",
-    gutter_ref="TR-SG-GUTTER",
+    gutter_ref="TR-SG-GUTTER", discharge_ref="daylight",
 )
+# ** TR-SG-RUNNEL: A 4" x 3" OPEN U-CHANNEL IN PLACE OF THE AB CAP ON W-RG-EAST-BALCONY. **
+# Seated on the top course (rim +3"), closed at its west end clear of PT-SG-BF3, falling
+# 1/4 in/ft east along the return to the corner block, south 1'-6" along W-RG-EAST's top,
+# then east through a bracketed 12" scupper past its yard face, so it lets go 3'-0" south of
+# SL-SG-STAIRPAD's edge rather than 1'-6" (St Paul DSI: no icy hazard on a walkway). Square
+# legs, not a diagonal: the open-channel resolver bands each leg on its own axis. ~17 gpm off 200 sf at 8 in/hr against
+# ~35 gpm at half depth. It lands in FURN-SG-SPLASH-BASIN (plan/landscape.py), which spills
+# south onto lawn. Winter icing is accepted; heat trace was refused for the leader already.
+# No host_ref: integrity.edge_run_host wants a hosted run's top within 1" of the wall top,
+# and this rim is 3" over it. Nothing grades the runnel or the basin; tests pin both
+# (test_drainage_elements.py).
+_RUNNEL_Y = _y_balcony_front
+_RUNNEL_PATH = (pt(ft(27, 7), ft(_RUNNEL_Y)), pt(ft(31), ft(_RUNNEL_Y)),
+                pt(ft(31), ft(-12)), pt(ft(32, 6), ft(-12)))
+BALCONY_RUNNEL = Gutter(
+    uid="41MPFYS8T8", tag="TR-SG-RUNNEL", kind=TrimKind.GUTTER, path=_RUNNEL_PATH,
+    top_elevation=_ret_top + inch(3), depth=inch(3), thickness=inch(4),
+    material="metal-dark-kstyle", slope="1/4 in/ft east to the spout")
 
 # ** THE SLOT IS GONE, AND SO IS ITS PUBLISHED CONTRACT (2026-09-12). ** For nine days the
 # raised garden's two returns were derived from a `BALCONY_LEADER_SLOT_FT` exported here, so
@@ -3108,8 +3131,8 @@ BALCONY_LEADER = Downspout(
 # moved the returns with the pipe. The returns close on the court wall's outer face now —
 # the notch the slot left in a retaining wall outranked the pipe's clearance — so there is
 # nothing left to publish and nothing left to keep in step. The leader's own numbers are
-# `_SG_LEADER_X`, `_SG_LEADER_DIA_IN` and `_SG_LEADER_BOTTOM`, above, and its outlet shoe is
-# a drawing note in `params/raised_garden.py`.
+# `_SG_LEADER_X`, `_SG_LEADER_DIA_IN` and `_SG_LEADER_BOTTOM`, above, and it discharges
+# into `TR-SG-RUNNEL`.
 
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
@@ -3218,4 +3241,5 @@ MAIN_ELEMENTS = [*MAIN_NODES, *LEDGERS, *LEDGER_ANCHORS, *LEDGER_HANGERS, PORCH_
                  *PORCH_STAIR_THRESHOLD_RAILS]
 SECOND_ELEMENTS = [*SECOND_NODES, *BALCONY_BEAMS, *PILLARS,
                    BALCONY_JOISTS, *BALCONY_TIES, BALCONY_GUARD, BALCONY_FASCIA,
-                   BALCONY_GUTTER, BALCONY_LEADER, BALCONY_DRIP, BALCONY_REAR_FLASH]
+                   BALCONY_GUTTER, BALCONY_LEADER, BALCONY_RUNNEL, BALCONY_DRIP,
+                   BALCONY_REAR_FLASH]

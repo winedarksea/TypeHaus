@@ -66,7 +66,9 @@ def test_the_garage_leaders_take_their_water_from_the_resolved_troughs(catlin_mo
     grade_m = catlin_model.plan.project.site.grade.meters
     for tag in ("TR-G-LEADER-E", "TR-G-LEADER-W"):
         leader = next(s for s in catlin_model.solids if s.tag == tag)
-        leader_x = sum(p[0] for p in leader.outline) / len(leader.outline)
+        # The OUTLET is what sits in the trough; the east drop goosenecks back to the wall.
+        element = catlin_model.plan.by_tag(tag)
+        leader_x = (element.outlet or element.position).xy_m[0]
         floor = min(floors, key=lambda m: abs(m.p0[0] - leader_x))
         assert abs(floor.p0[0] - leader_x) < 0.3, \
             f"{tag} must sit on its own eave's trough, not the one across the roof"
@@ -109,6 +111,42 @@ def test_the_balcony_leader_hangs_outside_the_east_retaining_wall(catlin_model):
     terrace_m = next(w for w in catlin_model.walls if w.tag == "W-SG-E2").z1_m
     assert terrace_m < leader.z0_m < terrace_m + 0.3, \
         "and it stops just above the terrace, whose surface is level with the retaining top"
+
+
+def test_the_balcony_leader_runs_east_to_a_basin_in_the_yard(catlin_model):
+    """TR-SG-LEADER-SE drops into TR-SG-RUNNEL on W-RG-EAST-BALCONY's top, whose spout lets
+    go past W-RG-EAST into FURN-SG-SPLASH-BASIN — never onto the terrace (the court's
+    soakaway) and clear of SL-SG-STAIRPAD (no icy walkway). Nothing in `haus check` grades a
+    runnel or a basin, so this is the guard."""
+    ft_m = 0.3048
+    plan_leader = catlin_model.plan.by_tag("TR-SG-LEADER-SE")
+    assert plan_leader.discharge_ref == "daylight"
+
+    leader = next(s for s in catlin_model.solids if s.tag == "TR-SG-LEADER-SE")
+    runnel = [s for s in catlin_model.solids
+              if s.tag.startswith("TR-SG-RUNNEL-") and s.category == "gutter"]
+    assert runnel
+    ret = next(w for w in catlin_model.walls if w.tag == "W-RG-EAST-BALCONY")
+    assert min(s.z0_m for s in runnel) == pytest.approx(ret.z1_m, abs=1e-6), \
+        "the channel sits on the return's top course, in place of its cap"
+    rim = max(s.z1_m for s in runnel)
+    assert rim < leader.z0_m <= rim + 0.05, "the leader lets go just over the channel"
+
+    spout = catlin_model.plan.by_tag("TR-SG-RUNNEL").path[-1].xy_m
+    east = next(w for w in catlin_model.walls if w.tag == "W-RG-EAST")
+    east_face = east.axis[0][0] + east.thickness_m / 2
+    assert spout[0] > east_face, "the spout clears W-RG-EAST's yard face"
+
+    basin = next(c for c in catlin_model.canvas_objects if c.tag == "FURN-SG-SPLASH-BASIN")
+    xs = [p[0] for p in basin.footprint]
+    ys = [p[1] for p in basin.footprint]
+    assert min(xs) <= spout[0] <= max(xs) and min(ys) <= spout[1] <= max(ys), \
+        "the spout lands in the basin"
+    assert min(xs) > east_face, "the basin stands clear of the SRW face"
+    pad = next(s for s in catlin_model.solids if s.tag == "SL-SG-STAIRPAD")
+    assert min(p[1] for p in pad.outline) - max(ys) >= 2.0 * ft_m - 1e-6, \
+        "the basin stays 2'-0\" off the stair pad"
+    assert basin.z_m == pytest.approx(-40 * 0.0254, abs=1e-6), "set on the yard at -3'-4\""
 
 
 def test_the_hydrant_pit_is_a_drywell_and_no_longer_bills_phantom_tile(catlin_model):

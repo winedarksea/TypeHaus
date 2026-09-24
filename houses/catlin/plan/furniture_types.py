@@ -823,6 +823,24 @@ PORCH_LOUNGE_27 = FurnitureType(
 )
 
 
+
+# --- the balcony leader's splash basin (2026-09-23) --------------------------------------
+#
+# TR-SG-RUNNEL's spout lands in it: splash stone first, bird bath in season. A shallow dish
+# (<= 2") with open, sloped sides so ice lifts rather than splits it — cast concrete basins
+# crack in a Minnesota winter. It spills through a south notch onto a river-rock apron and
+# lawn. Rain refills it but summer evaporation empties 2" in ~8-11 days, so it is rinsed and
+# topped up every 2-3 days while it holds water (MMCD's mosquito guidance).
+SPLASH_BASIN_GRANITE_24 = FurnitureType(
+    tag="FT-SPLASH-BASIN-GRANITE-24", name="Granite splash basin / bird bath, 24\"",
+    footprint=(inch(24), inch(24)), height=inch(14),
+    storage=False, plan_symbol=None,
+    source="Natural granite boulder basin, ~24\" x 24\" x 14\", dish <= 2\" deep with "
+           "sloped open sides and a notch spilling south; set on 4\" of compacted stone at "
+           "yard grade, with a 2' x 6' washed river-rock apron on fabric beyond the notch. "
+           "Stone yard selection; no product named.",
+)
+
 FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
                    CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_176,
                    PORCH_TRACK_102,
@@ -833,4 +851,4 @@ FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
                    CLOSET_SHELF_36, BATH2_CAB_4506, STUDIO_KITCHENETTE_4422,
-                   MANTEL_WALNUT_46, PORCH_LOUNGE_27)
+                   MANTEL_WALNUT_46, PORCH_LOUNGE_27, SPLASH_BASIN_GRANITE_24)

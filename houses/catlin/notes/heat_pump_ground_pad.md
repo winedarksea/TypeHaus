@@ -41,15 +41,16 @@ The yard pocket immediately east of the porch, bounded:
 
 | | |
 |---|---|
-| west | `W-SG-E1`, the porch's east wall — faces x 27'-6" / 28'-6", top 0'-0", y -11'-0"..-0'-10" |
+| west | `W-SG-E1`, the porch's east wall — faces x 26'-6" / 27'-6", top 0'-0", y -11'-0"..-0'-7" |
 | north | the house's south wall, cladding face y -0'-7 1/4" |
-| south | the `W-RG-EAST-BALCONY` apron return at y = -10'-6", top 0'-0", axis spanning **x 28'-6"..32'-0"** (12" block, so the band is x 28'-6"..32'-6", y -11'-0"..-10'-0") |
-| east | **open side yard**, out to the EAST (SIDE) setback line at x 58'-0" |
+| south | the `W-RG-EAST-BALCONY` apron return at y = -10'-6", top 0'-0", axis spanning **x 27'-6"..31'-0"** (12" block, so the band is x 27'-6"..31'-6", y -11'-0"..-10'-0") |
+| east | **open side yard**, out to the east lot line at x 43'-0" |
 
 The house is **gable-ended** here, so nothing sheds off the roof onto the units. The
 basement wall behind is `W-B-S4`, which has no windows. The only neighbour in the pocket is
-`TR-SG-LEADER-SE` at (29'-0", -10'-6"), discharging at +0'-6" over the apron return's cap
-and turned south on a 1'-0" shoe onto the terrace stone, well south of everything here. Nothing was authored in `plan/site.py` inside it.
+`TR-SG-LEADER-SE` at (28'-0", -10'-6"), dropping 1" over `TR-SG-RUNNEL` on the apron
+return's top, which carries it east past the corner to a basin at (33'-0", -12'-6"), 2'-6"
+south of the stair pad and well south of everything here (2026-09-23). Nothing was authored in `plan/site.py` inside it.
 
 **The pocket now holds two things and they are laid out around each other**: the condenser
 row against the house across the north strip, and `ST-SG-PORCH` — the porch's only way down

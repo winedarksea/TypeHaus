@@ -2846,6 +2846,10 @@
 # An hour of a carpenter at rough-in, but it has to exist BEFORE the brick goes up, so it is
 # priced with the mantel rather than in [framing] where the shelf's buyer would never see it.
 "FT-MANTEL-WALNUT-46" = { material = { low = 250, high = 550 }, labour = { low = 250, high = 600 } }  # 1 ea
+# TR-SG-LEADER-SE's splash basin (2026-09-23): a ~24" granite boulder basin from a stone yard,
+# set on 4" of compacted stone, plus the 2' x 6' river-rock apron on fabric beyond its notch.
+# Placement is two people and a dolly for a ~250-400 lb stone — the rate, not a machine.
+"FT-SPLASH-BASIN-GRANITE-24" = { material = { low = 250, high = 800 }, labour = { low = 150, high = 400 } }  # 1 ea
 # The fold-down leaf (2026-08-30). Only 18" of board against the desk's 29", and yet the row
 # is nearly the desk's, because on a leaf the BOARD is the cheap half. Material carries a pair
 # of Hafele/Hebgo 287.43.419 folding table brackets (~$100 the pair at street), a full-length
@@ -5873,7 +5877,10 @@
 # Premium over the $8-15 mill-finish rate this replaces: prefinished coil runs roughly a
 # dollar a foot over mill, and nothing else about the run changes — same truck, same former,
 # same hangers. $9-17, not the $22-47 below.
-"gutter:metal-dark-kstyle" = { low = 9, high = 17, basis = "installed" }  # 48.8 LF
+# TR-SG-RUNNEL (2026-09-23), the 4" x 3" open channel on W-RG-EAST-BALCONY's top course
+# that takes TR-SG-LEADER-SE east to its basin, bills here too: 6.4 LF of the same coil,
+# closed end, two corners and the scupper in the rate.
+"gutter:metal-dark-kstyle" = { low = 9, high = 17, basis = "installed" }  # 89.9 LF
 
 # Fabricated dark box gutter — 74.4 LF, the house's east and west eaves. Genuinely split,
 # because this one IS two purchases: heavier prefinished gauge brake-formed and mitred in a
@@ -5881,11 +5888,12 @@
 # because a box profile shows every wave along its face.
 "gutter:metal-dark-exterior" = { material = { low = 10, high = 25 }, labour = { low = 12, high = 22 } }  # 74.4 LF
 
-# 3" stock leaders in the same prefinished coil — 2 drops, 17.4 LF (TR-G-LEADER-E,
-# TR-SG-LEADER-SE). It was 26.4 LF until 2026-08-21: TR-SG-LEADER-SE used to drop the full
-# storey to the sunken garden floor, and now hangs outside the east retaining wall and stops at
-# the terrace. Material carries the same ~$1/LF prefinished premium; labour is unchanged.
-"downspout:metal-dark-kstyle" = { material = { low = 6, high = 10 }, labour = { low = 2, high = 4 } }  # 17.4 LF / 2 drops
+# 3" stock leaders in the same prefinished coil — 3 drops, 28.6 LF (TR-G-LEADER-E/-W,
+# TR-SG-LEADER-SE), including TR-G-LEADER-E's 2' gooseneck back to the garage wall
+# (2026-09-23; its two elbows are in the rate). TR-SG-LEADER-SE used to drop the full storey
+# to the sunken garden floor, and now hangs outside the east retaining wall and stops 1" over
+# TR-SG-RUNNEL. Material carries the same ~$1/LF prefinished premium; labour is unchanged.
+"downspout:metal-dark-kstyle" = { material = { low = 6, high = 10 }, labour = { low = 2, high = 4 } }  # 28.7 LF / 3 drops
 
 # 4" dark formed leaders — 2 drops, 38.6 LF (TR-RF-LEADER-E/W), so ~19 ft each.
 # The "downspouts are quoted PER DROP at $30-75" note that used to sit here has been WITHDRAWN,
@@ -5897,7 +5905,7 @@
 # The two west leader extensions (params/roof_trim.py, plan/storeys/garage.py): 4" solid PVC
 # buried at 6-10", hand-trenched, with the pop-up emitter at the basin and the boot at the
 # leader. The LF includes each riser from the leader foot down to the inlet. 2026-09-21.
-"leader_extension:pvc-sdr35" = { material = { low = 4, high = 8 }, labour = { low = 8, high = 16 } }  # 58.1 LF / 4 runs
+"leader_extension:pvc-sdr35" = { material = { low = 4, high = 8 }, labour = { low = 8, high = 16 } }  # 59.8 LF / 4 runs
 
 [construction_returns]
 # NEW SECTION 2026-08-18 — [low, high] $/LF of return, material only, keyed on the rule's

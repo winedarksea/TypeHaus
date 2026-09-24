@@ -3709,3 +3709,31 @@ area, and the 2018 IRC Table R507.4 that MN adopts is one height per size: 4x4 6
   left 0 ties on BLW/BLE and on the porch back beams, at 0 FAIL, and
   `uplift_path_coverage` now grades every declared bearing line.
 - A derived face-mount hanger into a treated carrier is ZMAX and sized (LUS28Z).
+
+## 2026-09-23 — TR-SG-LEADER-SE goes east: a runnel and a basin, not the terrace
+
+The open item was a cast elbow and a 1'-0" shoe turning the leader south onto the terrace bed.
+That keeps water off the SRW crest but puts it in the court: the bed is `W-SG-E2`'s retained,
+drained fill, and its surface is the court rim at 0'-0", so a frozen bed sheds straight over the
+wall. The court soakaway holds 249 cf against 222 cf of the court's own melt; the balcony's
+200 sf at 50 psf ground snow is ~160 cf. The yard east of the apron is 3'-4" lower than any
+surface that reaches the court, so the water goes there.
+
+- **Runnel, not pipe:** the owner's call — an open dark U-channel on the return's top, 4"x3",
+  1/4 in/ft. ~17 gpm off 200 sf at 8 in/hr against ~35 gpm at half depth. It sits under the
+  balcony gutter's line, which shelters it; winter icing is accepted (heat trace was refused).
+- **Why the spout bends:** straight east it would land 1'-6" from `SL-SG-STAIRPAD`. St Paul
+  DSI's roof-drain handout allows lawn discharge "without creating an icy hazard on a walkway",
+  so the channel turns 1'-6" south along `W-RG-EAST`'s top before its 12" scupper, and the
+  basin sits 2'-6" off the pad. Square legs, because the open-channel resolver bands each leg
+  on its own axis.
+- **Legal basis:** MN 4714.1101.2 lets a one- or two-family dwelling discharge onto lawn that
+  drains away from the building and the neighbour. IRC R801.3's 5 ft applies only on expansive
+  or collapsible soils.
+- **Rejected:** a buried 4" PVC run to `RG-E-BASIN` (~60 ft under the stair pad and walk D; the
+  basin has 7.7 cf of margin against the 16.7 cf this adds); a small SE rain garden (inside
+  every lot-line setback and near the court's excavation backfill).
+- **Deferred:** a 50-55 gal rain barrel on the terrace with a diverter (fills in ~0.4" of rain
+  off 200 sf). Water the soil, not the leaves (UMN/Rutgers); screen and lock the lid; off
+  mid-October to mid-April.
+

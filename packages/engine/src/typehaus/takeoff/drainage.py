@@ -79,12 +79,14 @@ def drainage_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                          element.depth.meters / M_PER_IN, tag=element.tag,
                          length_m=_path_length_m([p.xy_m for p in element.path]))
             elif isinstance(element, Downspout):
-                # A leader is billed by its drop, not by a plan run: it is one vertical
-                # length of pipe between the gutter outlet and the splash block.
+                # A leader is billed by its drop, plus the gooseneck's offset when its
+                # outlet is not over the drop (the elbows are in the rate).
+                offset = (_path_length_m([element.outlet.xy_m, element.position.xy_m])
+                          if element.outlet is not None else 0.0)
                 rows.add("downspout", element.material or "",
                          element.diameter.meters / M_PER_IN, tag=element.tag,
                          length_m=max(element.top_elevation.meters
-                                      - element.bottom_elevation.meters, 0.0))
+                                      - element.bottom_elevation.meters, 0.0) + offset)
                 if element.extension is not None:
                     ext = element.extension
                     # The buried run plus the riser from the leader's foot down to its inlet.

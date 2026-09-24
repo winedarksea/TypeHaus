@@ -2558,17 +2558,30 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   one planted row. The lot-line (1') and garage (6.5') setbacks are owner-accepted advisory
   UNKNOWNs on both; drawdown (0.25 in/hr needed) is UNKNOWN until a soil test authors
   `infiltration_in_per_hr`. `notes/rain_garden_sizing.md`.
+- **`TR-SG-LEADER-SE` discharges EAST, never onto the terrace** (owner, 2026-09-23). The
+  terrace bed is `W-SG-E2`'s drained fill and its surface is the court's rim, so balcony
+  water there reaches the court soakaway (27 cf of margin against ~160 cf of balcony melt).
+  The leader drops 1" over `TR-SG-RUNNEL`, a dark 4"x3" U-channel in place of the AB cap on
+  `W-RG-EAST-BALCONY`, turning 1'-6" south on `W-RG-EAST` to a 12" scupper into
+  `FURN-SG-SPLASH-BASIN` (granite, doubles as a bird bath), which spills south onto lawn:
+  `discharge_ref="daylight"`.
+  The basin stays 2'-6" off `SL-SG-STAIRPAD` (St Paul DSI: no icy walkway). Nothing grades
+  the runnel or the basin — `test_drainage_elements.py` pins both. A rain barrel was
+  deferred; a diverter can go on the leader later.
 - **Sidewalk** (`params/landscape_walk.py`): four `SIDEWALK_FRC_CLASS5` slabs, 92" full
   section in front of the garage (leg A), 64" one-sided down the garage's east side (leg B,
   since 2026-09-23 — its outer 28" is where `RG-E-BASIN` mirrors the west basin) and the
-  house's (leg D; the side patio is retired into it), 19 sonotube pockets as `FloorOpening(purpose=PLANTING)` — 4'-0" o.c. **centred in each
+  house's (leg D; the side patio is retired into it), 18 sonotube pockets as `FloorOpening(purpose=PLANTING)` — 4'-0" o.c. **centred in each
   leg**, on the section's own pocket line, always 12" clear of a slab edge. **Leg A is
   anchored to the L instead: its first station IS leg B's pocket column** and the next is
   the section's 52" row pitch west, tangent to B's 36" walk, so leg B's walk arrives under
   36.0" of open concrete. Centred at 4'-0" it dropped a void in that turn. **No pocket
   sits at a leader's foot and neither east leader can have one**: `TR-RF-LEADER-E` stands
-  over leg D's 36" walking band, where a 16" void leaves 1.6" of concrete at the edge. Both
-  east leaders' risers pass through the walk (D and A) to their extensions — a cast-in
+  over leg D's 36" walking band, where a 16" void leaves 1.6" of concrete at the edge.
+  **`TR-G-LEADER-E` goosenecks to the garage north wall** (`Downspout.outlet`, 2026-09-23):
+  its drop is 2" off the cladding by the NE corner, out of the A-to-B turn, and `FO-WK-A01`
+  beside it is struck (`landscape_walk.DROPPED`; the species cycle is rotated so no other
+  pocket changes). Both east leaders' risers pass through the walk (D and A) to their extensions — a cast-in
   sleeve each, which no element models. Slabs are FLAT at -2'-9"; the
   fall is on the `walk *` impervious surfaces, merged into the site by `plan/manifest.py`
   — never hand-copy them into `plan/site.py`. Leg C is notched round `PT-BW-RNE`.

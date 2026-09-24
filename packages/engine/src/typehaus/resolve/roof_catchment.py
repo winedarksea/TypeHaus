@@ -63,7 +63,8 @@ def roof_catchments(model) -> Catchment:
         for leader in leaders.values():
             ref = leader.gutter_ref
             if ref == roof.tag:
-                claims[_side_of(halves, leader.position.xy_m)].append(leader.tag)
+                claims[_side_of(halves, (leader.outlet or leader.position).xy_m)].append(
+                    leader.tag)
             elif ref in gutters and gutters[ref].host_ref == roof.tag:
                 path = [p.xy_m for p in gutters[ref].path]
                 mid = ((path[0][0] + path[-1][0]) / 2.0, (path[0][1] + path[-1][1]) / 2.0)
@@ -73,7 +74,9 @@ def roof_catchments(model) -> Catchment:
         if not any(claims.values()):
             for named in downspout_refs(eave):
                 if named in leaders:
-                    claims[_side_of(halves, leaders[named].position.xy_m)].append(named)
+                    leader = leaders[named]
+                    claims[_side_of(halves, (leader.outlet or leader.position).xy_m)].append(
+                        named)
         for side, polygon in halves.items():
             area = polygon.area
             if not claims[side]:

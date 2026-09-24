@@ -410,6 +410,7 @@ PLAN = (
     # --- yard (sitework) -------------------------------------------------------------------
     .with_elements("yard-grade", [*hp3_pad.MAIN_ELEMENTS, *hp1_north_pad.MAIN_ELEMENTS,
                                   *landscape_gardens.MAIN_ELEMENTS, *landscape.APPLES,
+                                  *landscape.SITE_FURNITURE,
                                   *landscape_walk.MAIN_ELEMENTS, *driveway.MAIN_ELEMENTS])
     .with_elements("yard-low", [*raised_garden.BASEMENT_ELEMENTS])
 )

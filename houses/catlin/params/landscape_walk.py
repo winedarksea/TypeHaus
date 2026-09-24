@@ -145,10 +145,14 @@ def _circle(x: float, y: float):
                   y + r * math.sin(2 * math.pi * k / _FACETS)) for k in range(_FACETS))
 
 
+# Struck after the grid is laid, so the others keep their tags. A01 is the garage NE
+# corner's, beside TR-G-LEADER-E's drop (plan/storeys/garage.py).
+DROPPED = frozenset({"FO-WK-A01"})
+
 OPENINGS: dict[str, list[FloorOpening]] = {
     leg: [FloorOpening(uid=f"WKP{leg}{n:03d}000", tag=f"FO-WK-{leg}{n + 1:02d}",
                        outline=_circle(x, y), purpose=FloorOpeningPurpose.PLANTING)
-          for n, (x, y) in enumerate(centres)]
+          for n, (x, y) in enumerate(centres) if f"FO-WK-{leg}{n + 1:02d}" not in DROPPED]
     for leg, centres in POCKET_CENTRES.items()
 }
 
@@ -163,9 +167,11 @@ SLABS = [_slab("A", A_RING), _slab("B", B), _slab("C", C), _slab("D", D)]
 
 POCKET_BED = PlantingBed(
     uid="GRDNPB0005", tag="PB-WK-POCKETS", type_ref="PT-CAL-NEPETA",
+    # The cycle starts at Allium, not Calamintha, because FO-WK-A01 (a Calamintha) was
+    # struck: rotated one place, every surviving pocket keeps its species.
     pockets=PocketLayout(slab_refs=("SL-WK-A", "SL-WK-B", "SL-WK-D"),
-                         type_refs=("PT-CAL-NEPETA", "PT-ALL-MILLENIUM", "PT-SPO-TARA",
-                                    "PT-SAL-PURP")),
+                         type_refs=("PT-ALL-MILLENIUM", "PT-SPO-TARA", "PT-SAL-PURP",
+                                    "PT-CAL-NEPETA")),
 )
 
 # The fall, 2% or more, away from whatever the leg abuts. Pocket voids are NOT subtracted

@@ -442,19 +442,26 @@ _CANOPY_EAVE_TRIM = EaveTrim(
 # The x/y here are the trough CENTRELINE, 3/4" inboard of each eave edge: the eave edge is
 # 16" of overhang off each node line (x = 31'-4" east, 4'-8" west), and the y is the
 # north trough end, 16" of overhang north of GARAGE_Y_NORTH plus the same 3/4".
+#
+# ** THE EAST DROP IS ON THE WALL, NOT UNDER THE OUTLET (2026-09-23). ** Straight down from
+# the trough it stood in the turn from walk A into walk B. A gooseneck under the soffit
+# brings it to the north wall's cladding face (y = 67'-3 1/2"), 2" off it and 4 1/2" west of
+# the NE corner, inside walk A's 12" edge band; pocket FO-WK-A01 beside it is gone.
 _GARAGE_LEADER_E = Downspout(
     uid="CGDS01AAAA", tag="TR-G-LEADER-E",
-    position=pt(ft(31, 3.25), ft(68, 5.875)),   # north end, clear of the entry tiers
+    position=pt(ft(29, 7), ft(67, 7)),          # the drop, on the north wall
+    outlet=pt(ft(31, 3.25), ft(68, 5.875)),     # the trough's north end
     # Both absolute. The trough they bracket is derived from the roof plane, so it moves on
     # its own if the roof does; these are the two numbers that have to follow it by hand.
     top_elevation=ft(7, 6),             # inside the trough floor
     bottom_elevation=ft(-1, -6),
     diameter=inch(3), material="metal-dark-kstyle", gutter_ref="RF-GARAGE",
     discharge_ref="RG-E-BASIN",
-    # The west run's mirror about x=18'-0", east into RG-E-BASIN. It passes under walk A,
-    # so the inlet sits 7" lower than the west's to keep the crown under the Class 5 base.
+    # East into RG-E-BASIN, straight from the drop to the west run's mirrored outlet. It
+    # passes under walk A, so the inlet sits 7" lower than the west's to keep the crown
+    # under the Class 5 base.
     extension=DischargeExtension(
-        path=(pt(ft(31, 3.25), ft(68, 5.875)), pt(ft(39), ft(68, 5.875))),
+        path=(pt(ft(29, 7), ft(67, 7)), pt(ft(39), ft(68, 5.875))),
         diameter=inch(4), material="pvc-sdr35",
         inlet_invert=ft(-4), outlet_invert=ft(-4, -2)),
 )

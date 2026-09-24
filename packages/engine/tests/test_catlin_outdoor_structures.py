@@ -491,12 +491,13 @@ def test_the_raised_garden_returns_close_on_the_court_walls(catlin_model) -> Non
         ends = [x for x, _ in return_wall.axis]
         assert min(abs(x - face) for x in ends) == pytest.approx(0.0, abs=1e-9), court_tag
 
-    # And the cost: the leader now hangs over the east return, 6" above its crest.
+    # And the cost: the leader now hangs over the east return, dropping into TR-SG-RUNNEL on
+    # its crest (test_drainage_elements.py grades the runnel).
     leader = next(s for s in catlin_model.solids if s.tag == "TR-SG-LEADER-SE")
     pipe_x = [point[0] for point in leader.outline]
     assert min(x for x, _ in east.axis) <= min(pipe_x)
     assert max(pipe_x) <= max(x for x, _ in east.axis)
-    assert east.z1_m < leader.z0_m, "the solids never touch, so no check reports this"
+    assert east.z1_m < leader.z0_m, "the pipe stops over the runnel, never on the block"
 
 
 def test_the_apron_north_limit_is_the_balcony_front_plane(catlin_model) -> None:
