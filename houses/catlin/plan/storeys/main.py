@@ -2198,13 +2198,20 @@ SLABS = [
 # treads AND both landing decks — one flight, one stock — and it is a takeoff fact only:
 # `_notch_z` drops each board by exactly this much, so no riser moves and the end risers
 # `code.R311_7_5_1_stair_end_risers` measures are the ones above.
+#
+# `landing_depth` is DERIVED, not R311.7.6's 36": it runs both half-landings to W-B-N2's
+# concrete face (y=35'-4"), less the start (26'-0 3/8"), the 60" lower flight and half the
+# far 2x8, which stands flush on the pour and hangs from it (bearing.py). At ft(3) the
+# landings stopped 15 5/8" short (until 2026-09-24). CD-B-GARAGE, PR-B-CW-TRUNK and
+# PR-B-KITCH-DRAIN cross that strip 32"-36" over the upper landing; it is depth past the
+# required 36", which `code.R311_7_2_stair_headroom` grades as advisory only.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
           from_storey="basement", to_storey="main", width=ft(3, 5.0625),
           base_elevation=inch(-109.4375), top_elevation=inch(0.9862),
           tread_thickness=inch(1),
           layout="u_split_landing", run_direction="y", turn_direction="left",
-          start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3)),
+          start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(4, 2.875)),
 ]
 
 # ST-B2M handrails (R311.7.8): one wall-mounted rail per flight, `serves_stair` rakes each
@@ -2433,7 +2440,7 @@ CONNECTORS = [
 # floor openings, as their bearing. Framing the shaft's ceiling in joists took the outline
 # away and the finding surfaced.
 #
-# These carry them properly: two 4x4 columns on the well-partition line, top at the main
+# These carry them properly: 4x4 columns on the well-partition line, top at the main
 # floor and standing the basement's full height to the slab, inside the 4 1/2" the shaft's
 # 7'-0" has always reserved between the two flights (see plan/storeys/basement.py's header
 # note). They are hidden in the partition and clear both 3'-3 3/4" walking lanes.
@@ -2442,11 +2449,11 @@ CONNECTORS = [
 # the stair's start point and going. Moving ST-B2M or ST-M2S moves those ends and these
 # have to move with them — `structural.landing_post_bearing` is what will say so.
 #
-# The north one is pulled 1 1/2" south of its rim end, to 34'-8.9": at the end itself its
-# 3 1/2" section runs into the trimmer closing FO-M-STAIR's north edge (y 34'-10 3/4" to
-# 35'-1 1/4"). Shifted, its north face clears that trimmer by 1/10" and the rim end is
-# still 1/4" inside the post — the column carries the corner and the trimmer stays a
-# separate member, which is what the framer would build.
+# ** THE NORTH ENDS NEED NO COLUMN SINCE 2026-09-24. ** Both stairs' landings now run to
+# the north wall and their far joists bear on it (ST-M2S ledgered to W-M-N2, ST-B2M hung
+# on W-B-N2), so the resolver stands no post there. P-M-STRWELL-N, which carried ST-M2S's
+# old NE rim end at 34'-8.9", was retired: it had nothing left to carry and stood on
+# ST-B2M's extended landing, on the step between its two halves.
 POSTS = [
     # ``supported_by`` authored 2026-08-28, and it corrected the CUT LENGTH as well. Both
     # stand the basement's full height, so the thing under them is SL-B-FLOOR — the note
@@ -2460,8 +2467,6 @@ POSTS = [
     # under each — the 4x4 rung of the same size ladder the ten ABU66SS outside sit on, ZMAX
     # rather than stainless because this is a dry interior slab.
     Post(uid="A9J80KK6AE", tag="P-M-STRWELL-S", position=pt(ft(14), ft(31, 10.374)), size="4x4",
-         height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
-    Post(uid="CZE3N5C14R", tag="P-M-STRWELL-N", position=pt(ft(14), ft(34, 8.9)), size="4x4",
          height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
     # A THIRD one on the well centreline, 2026-09-15, and it is the visible half of the
     # `resolve/stairs/u_split.py` arrival fix (notes/u_stair_split_landing.md). ST-M2S

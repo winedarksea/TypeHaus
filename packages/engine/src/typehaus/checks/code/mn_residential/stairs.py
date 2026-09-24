@@ -24,7 +24,7 @@ from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.overhead import OverheadIndex
 from typehaus.resolve.stair_headroom import STAIR_HEADROOM, run_clearances
-from typehaus.resolve.stairs.walkline import flight_stations
+from typehaus.resolve.stairs.walkline import flight_stations, headroom_stations
 
 _MAX_STAIR_RISER = inch(7.75)
 _MIN_STAIR_GOING = inch(10)
@@ -152,7 +152,7 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
     for stair in ctx.model.stairs:
         worst: tuple[float, tuple[float, float], str] | None = None
         covered = False  # anything at all standing over the walk in plan
-        for stations in _flight_stations(stair).values():
+        for stations in headroom_stations(stair).values():
             for x, y, z in _walk_samples(stations):
                 covered = covered or overhead.covers(x, y)
                 lowest = overhead.lowest_above(x, y, z)
@@ -181,8 +181,15 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
         where = (f"{clearance / .3048:.2f}' plumb under {tag} at "
                  f"({x / .3048:.1f}', {y / .3048:.1f}')")
         if clearance >= _MIN_STAIR_HEADROOM.meters - 1e-9:
+            # Runs over a landing's depth past R311.7.6's 36": not the required stairway.
+            excess = sorted((c, t) for t, (c, _) in run_clearances(
+                ctx.model, stair, whole_landings=True).items()
+                if c < _MIN_STAIR_HEADROOM.meters - 1e-9)
+            note = ("; ADVISORY — under 6'-8\" over landing depth beyond R311.7.6's 36\", "
+                    "which is not counted as landing: " + ", ".join(
+                        f"{t} {c / .0254:.1f}\"" for c, t in excess)) if excess else ""
             out.append(_pass(cid, f"{stair.tag} headroom {where} (>= 6'-8\"; structure "
-                             "and MEP runs; finishes unmodeled)", code))
+                             f"and MEP runs; finishes unmodeled){note}", code))
             continue
         # Every run below the line, not only the worst: a re-route fixes them one by one.
         low_runs = sorted((c, t) for t, (c, _) in runs.items()

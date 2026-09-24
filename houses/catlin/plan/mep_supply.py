@@ -135,6 +135,8 @@ WATER_SUPPLY = [
 SUPPLY = [
     # The service enters at (11', 35'-6") — SP-B-N3-HYD, under ST-B2M's upper landing — at
     # +0'-2" (-8'-10" absolute) and rises tight to the wall, where PA-B-MAIN-SHUTOFF sits.
+    # It passes through ST-B2M's upper landing at its north edge: that edge joist is hung
+    # on W-B-N2, so it is cut and headered off the next joist around the riser.
     # At the ceiling it runs west to x=5'-0" over RM-B-ESS (bored through W-B-STR and the
     # closet partition; firestop the ESS penetrations), then south down the RM-B-FURNACE
     # ceiling band to y=16', crossing W-B-CW with a bored hole.

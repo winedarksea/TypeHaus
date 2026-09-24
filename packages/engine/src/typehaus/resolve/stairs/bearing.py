@@ -67,9 +67,9 @@ def _best_host_wall(model: ResolvedModel, stair: Stair, p0: tuple[float, float],
     1. **Bearing intent** — the wall is foundation concrete, is authored
        ``StructuralRole.BEARING``, or is named in the stair's ``bearing_refs``. A
        non-bearing partition beside a flight carries nothing.
-    2. **Geometry** — the member sits within half the wall's own depth (plus a tread
-       board) of its axis. An axis is a *centreline*, so this is the wall's real reach;
-       the flat 0.20 m it replaces let a 4.75" partition 4" away read as a host.
+    2. **Geometry** — the member sits within a tread board of the wall's resolved faces
+       (``_depth_extent``). Not ``axis ± thickness/2``: a face-aligned wall's axis is a
+       face, and that read a joist flush on W-B-N2's inside face as 8" away.
     3. **Shared run** — they overlap by more than ``_MIN_SHARED_RUN_M``.
 
     Survivors rank by foundation first (concrete beats framing under the same member),
@@ -89,7 +89,9 @@ def _best_host_wall(model: ResolvedModel, stair: Stair, p0: tuple[float, float],
         if overlap is None:
             continue
         offset, shared_run, interval = overlap
-        if offset > wall.thickness_m / 2 + _TREAD_THICKNESS_M:
+        cross_axis = 1 if abs(p1[0] - p0[0]) > 1e-6 else 0
+        near, far = _depth_extent(wall, cross_axis)
+        if max(near - p0[cross_axis], p0[cross_axis] - far, 0.0) > _TREAD_THICKNESS_M:
             continue
         if shared_run <= _MIN_SHARED_RUN_M:
             continue
@@ -104,6 +106,16 @@ def _authored_is_bearing(model: ResolvedModel, tag: str) -> bool:
     """``ResolvedWall`` drops the authored structural role, so read it off the plan."""
     authored = model.plan.by_tag(tag)
     return getattr(authored, "structural_role", None) is StructuralRole.BEARING
+
+
+def _depth_extent(host, cross_axis: int) -> tuple[float, float]:
+    """The wall's resolved ``(near, far)`` faces on ``cross_axis``, off its layer polygons;
+    ``axis ± thickness/2`` only for a bare axis with no resolved depth."""
+    cross = [point[cross_axis] for layer in host.depth_layers() for point in layer.polygon]
+    if cross:
+        return min(cross), max(cross)
+    wall_cross = host.axis[0][cross_axis]
+    return wall_cross - host.thickness_m / 2.0, wall_cross + host.thickness_m / 2.0
 
 
 def _face_line(host, member: FramedMember, board_width: float, lo: float,
@@ -122,16 +134,9 @@ def _face_line(host, member: FramedMember, board_width: float, lo: float,
     # 0 → the member runs in x (cross coordinate is y); 1 → it runs in y (cross is x).
     run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
     cross_axis = 1 - run_axis
-    cross = [point[cross_axis] for layer in host.depth_layers() for point in layer.polygon]
-    if cross:
-        near, far = min(cross), max(cross)
-        face = (far + board_width / 2.0
-                if member.p0[cross_axis] >= (near + far) / 2.0
-                else near - board_width / 2.0)
-    else:  # no resolved depth (a bare axis): fall back to the authored line
-        wall_cross = host.axis[0][cross_axis]
-        side = 1.0 if member.p0[cross_axis] >= wall_cross else -1.0
-        face = wall_cross + side * (host.thickness_m / 2.0 + board_width / 2.0)
+    near, far = _depth_extent(host, cross_axis)
+    face = (far + board_width / 2.0 if member.p0[cross_axis] >= (near + far) / 2.0
+            else near - board_width / 2.0)
     if run_axis == 1:
         return (face, lo), (face, hi)
     return (lo, face), (hi, face)

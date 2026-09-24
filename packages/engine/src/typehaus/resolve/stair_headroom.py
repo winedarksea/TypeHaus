@@ -4,8 +4,8 @@
 to lane a run through it, following :func:`~typehaus.resolve.mep_envelopes.opening_prisms`:
 two readers of one derivation, so a router cannot propose what the check will then fail.
 
-One prism per going, off :func:`~typehaus.resolve.stairs.walkline.flight_stations` (a
-landing's two edges are a going too). The top is the higher nosing plus 6'-8" — conservative
+One prism per going, off :func:`~typehaus.resolve.stairs.walkline.headroom_stations` (a
+landing's two edges are a going too, cut to R311.7.6's 36" from its flight edge). The top is the higher nosing plus 6'-8" — conservative
 by at most one riser against the sloped line, which is right for a router, which chooses
 rather than reads. The bottom is the underside of the flight's own structure under that
 going, so a run can no more pass through a stringer than through the headroom above it.
@@ -81,11 +81,11 @@ def headroom_prisms(model: ResolvedModel,
     """Every going of every stair as the prism R311.7.2 keeps clear."""
     from shapely.geometry import Polygon
 
-    from typehaus.resolve.stairs.walkline import flight_stations
+    from typehaus.resolve.stairs.walkline import headroom_stations
 
     out: list[HeadroomPrism] = []
     for stair in model.stairs:
-        for key, stations in flight_stations(stair).items():
+        for key, stations in headroom_stations(stair).items():
             count = len(stations) - 1
             for index, ((a0, b0, z0), (a1, b1, z1)) in enumerate(
                     zip(stations, stations[1:], strict=False)):
@@ -121,7 +121,20 @@ def runs_over(model: ResolvedModel, stair_tag: str) -> list[Any]:
             if prism.z1_m > low and prism.z0_m < high and prism.footprint.intersects(area)]
 
 
-def run_clearances(model: ResolvedModel, stair: Any
+def _runs_over_whole(model: ResolvedModel, stair: Any) -> list[Any]:
+    """:func:`runs_over`'s pre-filter widened to each landing's full plan depth."""
+    from shapely.geometry import box
+
+    from typehaus.resolve.mep_envelopes import envelopes
+
+    xs = [c for m in stair.members for c in (m.p0[0], m.p1[0])]
+    ys = [c for m in stair.members for c in (m.p0[1], m.p1[1])]
+    area = box(min(xs) - 1.0, min(ys) - 1.0, max(xs) + 1.0, max(ys) + 1.0)
+    return [prism for envelope in envelopes(model) for prism in envelope.prisms
+            if prism.footprint.intersects(area)]
+
+
+def run_clearances(model: ResolvedModel, stair: Any, *, whole_landings: bool = False
                    ) -> dict[str, tuple[float, tuple[float, float]]]:
     """``run tag -> (worst plumb clearance over the nosing line, where)`` for one stair.
 
@@ -129,17 +142,21 @@ def run_clearances(model: ResolvedModel, stair: Any
     step worth paying for, so each run prism is intersected with each going and graded at
     the highest nosing z it overlaps. A prism wholly under that going's walking surface is
     under-stair storage and skipped; one through a tread reads negative.
+
+    ``whole_landings`` grades each landing's full depth instead of its R311.7.6 minimum —
+    the advisory reading of what hangs over the excess.
     """
     from shapely.geometry import Polygon
 
     from typehaus.resolve.overlay import intersection
-    from typehaus.resolve.stairs.walkline import flight_stations
+    from typehaus.resolve.stairs.walkline import flight_stations, headroom_stations
 
-    runs = runs_over(model, stair.tag)
+    stations_of = flight_stations if whole_landings else headroom_stations
+    runs = runs_over(model, stair.tag) if not whole_landings else _runs_over_whole(model, stair)
     out: dict[str, tuple[float, tuple[float, float]]] = {}
     if not runs:
         return out
-    for stations in flight_stations(stair).values():
+    for stations in stations_of(stair).values():
         for (a0, b0, z0), (a1, b1, z1) in zip(stations, stations[1:], strict=False):
             quad = Polygon([a0, b0, b1, a1])
             if not quad.is_valid or quad.area < 1e-6:

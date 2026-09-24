@@ -1512,7 +1512,7 @@ POST_WHITE_PAINT = Assembly(
               function=LayerFunction.STRUCTURE),
     ),
     # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house interior white-painted 6x6 posts — P-M-STRWELL-N and P-M-STRWELL-S, the two stairwell posts standing on SL-B-FLOOR. THE BALCONY PILLARS LEFT THIS ASSEMBLY on 2026-09-03 for POST_WHITE_PAINT_DF: they need Douglas Fir-Larch at specific gravity 0.50 to satisfy ESR-2604 §3.2.2 at their caps and bases, and these two interior posts carry no rated connector and no reason to change stock. Same 5.5\" body and the same white; standard SPF under the paint",
+    source="catlin-house interior white-painted 6x6 posts — P-M-STRWELL-S and P-M-STRWELL-SS, the two stairwell posts standing on SL-B-FLOOR. THE BALCONY PILLARS LEFT THIS ASSEMBLY on 2026-09-03 for POST_WHITE_PAINT_DF: they need Douglas Fir-Larch at specific gravity 0.50 to satisfy ESR-2604 §3.2.2 at their caps and bases, and these two interior posts carry no rated connector and no reason to change stock. Same 5.5\" body and the same white; standard SPF under the paint",
 )
 
 # The two heat-pump ground stands. Mill-finish extruded aluminium, and the alloy is a
@@ -1535,7 +1535,7 @@ EQUIP_STAND_ALUM = Assembly(
 
 
 # The two CENTRE pillars, split off POST_WHITE_PAINT on 2026-09-03 for one reason: species.
-# POST_WHITE_PAINT stays on the two interior stairwell posts (P-M-STRWELL-N/S), which carry
+# POST_WHITE_PAINT stays on the two interior stairwell posts (P-M-STRWELL-S/SS), which carry
 # no rated connector and have no reason to change stock. Same 5.5" body, same white, same
 # section — only the lumber under the paint differs. See post-df-paint-white above.
 # UNREFERENCED since 2026-09-22: kept as the named revert of the centre-pillar trial.

@@ -24,7 +24,9 @@ from typehaus import (
 SUPPLY_DEVICES_BASEMENT = [
     # P2903.9.1. The service (buried -8'-10", PR-G-HYDRANT-CW) enters at (11', 35'-6") —
     # SP-B-N3-HYD, under ST-B2M's upper landing — and rises to the basement ceiling; this
-    # valve sits on that riser at 3'-0", under the open landing (4'-2" clear beneath it).
+    # valve sits on that riser at 3'-0", under the landing (4'-2" clear beneath it). Since
+    # the landing reached the wall (2026-09-24) it is reached from the storage under it,
+    # open to the stair foot and D-B-CLOSET, not from the landing above.
     #
     # The garage hydrant is deliberately upstream, on the service itself: routing the yard
     # line up to an indoor valve and back down would put a high point above frost mid-run —

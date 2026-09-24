@@ -199,7 +199,7 @@ def test_the_stairwell_posts_are_graded_now_that_they_declare_a_bearing(findings
     a derived ABU44, the 13 7/16" block takes nothing because it is not a column.
     """
     graded = {f.element_tags[0]: f for f in findings}
-    for column in ("P-M-STRWELL-S", "P-M-STRWELL-N"):
+    for column in ("P-M-STRWELL-S", "P-M-STRWELL-SS"):  # -N retired 2026-09-24
         assert "derived standoff post base" in graded[column].message, column
         assert graded[column].result is Result.PASS
     block = graded["P-M-STRLAND-SE"]

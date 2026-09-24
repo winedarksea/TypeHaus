@@ -70,6 +70,34 @@ def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
     return flights
 
 
+#: R311.7.6's minimum landing dimension in the direction of travel.
+LANDING_MIN_DEPTH_M = 0.9144
+
+
+def headroom_stations(stair) -> dict[str, list[tuple[tuple[float, float],
+                                                     tuple[float, float], float]]]:
+    """:func:`flight_stations` with each landing cut to R311.7.6's 36" from its flight edge.
+
+    The only landings generated are U-turn half-landings (``u_split.py``), entered and left
+    across the edge their flight meets (the deck's ``p0``); depth past 36" from it is a
+    dead end the walk never crosses. R311.7.2 keeps the stairway's REQUIRED parts clear, so
+    a pipe over that excess does not shrink the landing below code — it just is not
+    counted. ``code.R311_7_2_stair_headroom`` and the router's headroom prism both read this.
+    """
+    flights = flight_stations(stair)
+    for key, stations in flights.items():
+        if not key.startswith("landing") or len(stations) != 2:
+            continue
+        (a0, b0, z0), (a1, b1, z1) = stations
+        depth = math.hypot(a1[0] - a0[0], a1[1] - a0[1])
+        if depth <= LANDING_MIN_DEPTH_M:
+            continue
+        t = LANDING_MIN_DEPTH_M / depth
+        stations[1] = ((a0[0] + (a1[0] - a0[0]) * t, a0[1] + (a1[1] - a0[1]) * t),
+                       (b0[0] + (b1[0] - b0[0]) * t, b0[1] + (b1[1] - b0[1]) * t), z1)
+    return flights
+
+
 def flight_walklines(stair, include_arrival: bool = True, flights_only: bool = False
                      ) -> list[list[tuple[float, float, float]]]:
     """Each flight's walking line as a 3D centreline: station midpoints, climb order.

@@ -69,10 +69,16 @@ makes the 180° crossing work, and it holds the opening budget fixed: the well s
 
 So the **upper** half-landing absorbs the slack, one going deeper per odd tread:
 
-| stair | landing-lower | landing-upper | far end |
-|---|---|---|---|
-| ST-B2M | s 60…96, 36" | s 60…96, 36" | s = 96 (y 408.375") |
-| ST-M2S | s 70…106, 36" | s 60…106, **46"** | s = 106 (y 418.375") |
+| stair | landing_depth | landing-lower | landing-upper | far end |
+|---|---|---|---|---|
+| ST-B2M | 50.875" | s 60…110.875 | s 60…110.875 | s = 110.875 (y 423.25") |
+| ST-M2S | 42.25" | s 70…112.25 | s 60…112.25, **52.25"** | s = 112.25 (y 424.625") |
+
+Since 2026-09-24 `landing_depth` is derived, not R311.7.6's 36": the far end is the far
+edge joist's centreline, 3/4" off the north wall's inside face (W-B-N2 concrete at y 424.0",
+W-M-N2 gypsum at y 425.375"), so the joist stands flush on the wall and bears on it. It
+fits the opening budget: 60 + 50.875 = 110.875" ≤ FO-M-STAIR's 112.5"; 70 + 42.25 =
+112.25" ≤ FO-S-STAIR's 113".
 
 Both ≥ 36", so `R311_7_6_landing_depth` — which reads each landing member's own `length_m`
 — passes on each independently. A landing may be deeper than the flight is wide; it may not
