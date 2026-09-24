@@ -1314,6 +1314,28 @@ pocket was possible there at all.
 
 ## Basement
 
+### The radon pit left the corner footings (2026-09-23)
+
+`SM-B-RADON` had just been centred under the radon chase at (1'-0", 35'-1.3"). Its 18" pit
+bottoms at -136 15/16", 19 1/2" below FT-B-W1/FT-B-N4's bearing, and it overlapped both
+footprints by ~9" — at its earlier (1'-0", 34'-6") it already cut FT-B-W1. Nothing graded a
+pit against a footing; `mep.pit_footing_clearance` (the 45° rule `mep.footing_clearance`
+applies to pipes) does now.
+- **No corner station clears everything.** Clearing both 45° lines needs x >= 3'-4 3/8" and
+  y <= 32'-7 5/8"; the four panels and the backup enclosure hold 36" of 110.26 working space
+  along the west wall (y 23'-9"..33'-9"), the ERV hangs over x 2.9..5.0' / y 29.6..31.4', and
+  the ESS clearance starts at x 4'-1", y 31'-6". Owner chose (5'-9", 28'-0"), over nudging
+  the pit and stepping the corner footing down.
+- **Both of its lines run under the slab.** The ceiling there is the ERV hub; a first draft
+  across it made eight real interpenetrations, all hidden by the campaign's
+  `mep.run_interference` suppression (`--no-suppress` shows them). `PR-B-RADON-LEG` (3",
+  falling back to the pit) and `PR-B-SUMP-DISCH` run in the capillary course and rise through
+  cast sleeves beside the chase. The router takes neither service (no tie-in to derive).
+- **The pit no longer abuts the house stone**, so `FD-B-SUMP-LEAD` carries it in from
+  FB-B-STR3; `reaches_through_stone` learned that a body's lead counts, and the radon check
+  grades MN 1303.2402 subp. 4.E (a sealed sump connected to interior drain tile) on it.
+- Open: no radon or sump-discharge elbow is catalogued (`mep.fitting_pattern` UNKNOWN).
+
 ### Form-A-Drain was reviewed and not adopted (2026-09-23)
 
 The question was whether a stay-in-place footing form that is also a footing drain could

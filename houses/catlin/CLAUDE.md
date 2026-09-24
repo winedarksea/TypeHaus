@@ -2277,6 +2277,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   36" inside the drained section — the frost section floods before relief;
   `drainage.soakaway_storage` says so as an UNKNOWN. A true one-invert tie is a dedicated
   pit-to-court pipe (plans/TODO.md).
+- **`SM-B-RADON` stands at (5'-9", 28'-0") in the furnace room, not on the chase (2026-09-23).**
+  On the chase it cut 9" into FT-B-W1/FT-B-N4 at 19 1/2" below their bearing;
+  `mep.pit_footing_clearance` grades that now. The NW corner has no clean station (panels'
+  110.26 space, the hung ERV, the ESS clearance). Its radon leg `PR-B-RADON-LEG` and pumped
+  line both run UNDER the slab (the ERV hub fills the ceiling) through cast slab sleeves, and
+  `FD-B-SUMP-LEAD` carries the house tile in from FB-B-STR3. Subp. 4.E is graded on it.
 - `SM-B-RADON` pumps through `PR-B-SUMP-DISCH` (`PipeSystem.SUMP_DISCHARGE`, sleeved through
   `W-B-W1`) into `TR-RF-LEADER-W`'s extension riser, so `RG-W-BASIN` also takes pumped water
   (a `rain_garden_capacity` UNKNOWN). The pump's `check_valve`/`freeze_relief` are graded by
