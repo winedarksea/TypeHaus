@@ -55,20 +55,19 @@ from typehaus import (
 )
 from typehaus.model import m
 
-# Terminals off the chase. Each bedroom grille sits just inside the bedroom at the hallway
-# wall (interior face x=22'-2 3/4"), fed by a short boot through that wall out of the
-# soffit — the boot carries no DuctRun of its own; `duct_ref` names the trunk it comes off.
+# Terminals off the chase. Each bedroom grille is a ceiling boot at the east end of its own
+# branch (plan/mep_hvac_branches.py): a riser out of the trunk inside SF-S-DUCT, then a
+# 6" leg east in one FS-ATTIC bay over the hall wall's plates. `duct_ref` names that leg.
+# Until 2026-09-23 they named the trunk and the boot "through W-S-BW1/2/3's stud bay" was
+# never drawn — nor buildable: each grille sat on or beside a joist and its 12" face ran
+# 1 3/8" into the hall wall. Each now sits on its bay centre at x=22'-9", 1 5/8" clear of
+# the bedroom face (22'-1 3/8").
 #
-# ** THEY ARE AT 9'-0", AND UNTIL 2026-09-04 THEY WERE AT 8'-0". ** The old comment read
-# "ceiling grilles in the soffit face at 8'-0" (9'-0" ceiling less the 12" drop)" and every
-# clause of it was wrong: SF-S-DUCT drops 14"; the box stops at x=21'-5 1/2" and these grilles
-# are at 22'-6", so they are not in its face at all; and RM-S-BED1/2/3 carry no soffit of
-# their own (`soffit_area` 0.0 sf), finishing at 8'-11 1/2". Three supply grilles were drawn
-# hanging a foot below the plane they are cut into. **NOTHING GRADES A REGISTER AGAINST ITS
-# HOST SURFACE** — a Register resolves no solid, so `Mount.elevation` is a number the schedule
-# and the sections print and no check reads. Author it off the room's own ceiling, every time.
-# The boot is unmodelled as every boot here is: out of the cavity (96 1/8"..107 3/8"), through
-# W-S-BW1/2/3's stud bay above the 80" head, then a 90 degree ceiling boot up to the gypsum.
+# ** 8'-10 1/4" IS THE ROOM'S RESOLVED CEILING. ** They were at 9'-0" until 2026-09-23 and
+# at 8'-0" before that; RM-S-BED1/2/3 carry no soffit and finish at 8'-10 1/4". NOTHING
+# GRADES A REGISTER AGAINST ITS HOST SURFACE — a Register resolves no solid, so
+# `Mount.elevation` is a number the schedule and the sections print and no check reads.
+# Author it off the room's own ceiling, every time.
 #
 # RM-S-SUITE's terminal (REG-S-HP-SUITE) sits at DU-S-HP-SUITE's west terminus (12'-6",
 # 14'-1 7/8"), throwing down the entry arm into the suite's main volume. This branch is what
@@ -77,21 +76,20 @@ from typehaus.model import m
 # face now — which is why its elevation is the duct's underside and not a ceiling plane.
 REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH01AAAA", tag="REG-S-HP-BED1", kind=DuctSystem.SUPPLY, room="RM-S-BED1",
-             position=pt(ft(22, 6), ft(13, 6)), duct_ref="DU-S-HP-SUP",
+             position=pt(ft(22, 9), ft(12, 8)), duct_ref="DU-S-HP-BED1",
              type_ref="REG-T-HP-SUP", design_cfm=80,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+             mount=Mount(kind=MountKind.CEILING, elevation=inch(106.25))),
     Register(uid="CSRH02AAAA", tag="REG-S-HP-BED2", kind=DuctSystem.SUPPLY, room="RM-S-BED2",
-             position=pt(ft(22, 6), ft(22, 6)), duct_ref="DU-S-HP-SUP",
+             position=pt(ft(22, 9), ft(20, 8)), duct_ref="DU-S-HP-BED2",
              type_ref="REG-T-HP-SUP", design_cfm=80,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # BED3's station moved on the 2026-09-04 HP1 reversal: (19'-6", 31'-6") is now five feet
-    # INSIDE SF-S-HP1 and directly over the machine, so its boot had nowhere to come out of.
-    # (22'-6", 29'-0") is 36" due east of the trunk and 2'-4" inside the room — the same
-    # just-inside-the-hallway-wall pattern as BED1 and BED2, whose x it shares.
+             mount=Mount(kind=MountKind.CEILING, elevation=inch(106.25))),
+    # BED3 is fed along its SOUTH edge: north of 27'-8" the trunk is in SF-S-HP1 beside the
+    # return plenum. The 27'-4" bay's joist 020 bears on W-S-BD2, so the grille lands ~6"
+    # north of that wall's face (26'-10 3/8"), its 6" face clear of the joists either side.
     Register(uid="CSRH03AAAA", tag="REG-S-HP-BED3", kind=DuctSystem.SUPPLY, room="RM-S-BED3",
-             position=pt(ft(22, 6), ft(29)), duct_ref="DU-S-HP-SUP",
+             position=pt(ft(22, 9), ft(27, 4)), duct_ref="DU-S-HP-BED3",
              type_ref="REG-T-HP-SUP", design_cfm=80,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+             mount=Mount(kind=MountKind.CEILING, elevation=inch(106.25))),
     # ** IT IS A SIDEWALL GRILLE IN THE SOFFIT'S WEST FACE, AND IT WAS A SHORT CIRCUIT. **
     # Until 2026-09-04 this was a ceiling diffuser at (17'-6", 24'-0"), 6'-2" in plan from
     # REG-S-HP-RET — 50 cfm blown straight DOWN, in the same room, at a 650 cfm return sitting

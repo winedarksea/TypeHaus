@@ -35,7 +35,7 @@ than from a naming convention:
 * **a register** at the end itself, but only one that already names this run in ``duct_ref``,
   and only within
   ``BOOT_REACH_M``. That is the boot: the flex tail and collar between the end of the hard
-  duct and the grille in the ceiling. This house authors four of them at 24"-36"
+  duct and the grille in the ceiling. This house authors them up to 34" off a run end
   (``plan/mep_registers.py``), so they are the design, not a defect, and a check that called
   them orphans would be reporting the drawing rather than the building.
 
@@ -75,9 +75,9 @@ JOINT_TOLERANCE_M = DUCT_JOINT_TOLERANCE_M
 
 #: How far a register may sit from the end of the run it names and still be its boot. The
 #: flex tail from a hard-duct take-off to a ceiling grille is a real, ordinary piece of the
-#: system — this house authors REG-S-HP-BED1/2/3 at 36" and REG-S-HP-STAIR at 24" and says so
-#: in ``plan/mep_registers.py``. 36" is that authored maximum, not a round number: past it
-#: the "boot" is a duct run that should be drawn as one.
+#: system — this house authors REG-A-HP-WEST 34" back from DU-S-HP-SUITE's end and
+#: REG-S-HP-STUDY2 28" from DU-S-HP-SOUTH's. Past 36" the "boot" is a duct run that should be
+#: drawn as one, which is what REG-S-HP-BED1/2/3's became (``plan/mep_hvac_branches.py``).
 BOOT_REACH_M = inch(36).meters
 
 
@@ -192,10 +192,11 @@ def _capped_past_a_takeoff(ctx: CheckContext, duct: ResolvedDuct,
                            point: tuple[float, float]) -> str | None:
     """A cap on a served trunk: the run's final leg carries a boot, and then it stops.
 
-    DU-S-HP-SUP is the case. It runs the hall soffit past REG-S-HP-BED1/2/3, each 36" east
-    through the bedroom wall, and then ends — a capped trunk, which is how a trunk ends. The
-    end itself lands on nothing and never will, so ``_boot`` cannot speak for it; what makes
-    it a cap rather than an orphan is that the leg it ends is the leg a grille comes off.
+    A trunk that runs past its last grille and stops is capped, which is how a trunk ends.
+    No catlin run ends this way today (DU-S-HP-SUP did until 2026-09-04; it hands off to
+    DU-S-HP-SOUTH-RISE now). The end lands on nothing and never will, so ``_boot`` cannot
+    speak for it; what makes it a cap rather than an orphan is that the leg it ends is the
+    leg a grille comes off.
 
     The leg, not the run: a register anywhere on a run would excuse both of its ends, and the
     ends this check exists to catch — a riser dangling in a chase — are at the far end of a

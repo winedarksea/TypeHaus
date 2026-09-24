@@ -59,9 +59,10 @@ not instruction: when it disagrees with this file or the model, it is the one th
   footings they sit under.
 - `plan/mep*.py` — MEP *instances*, split by system so no file runs past ~400 lines:
   `mep_sleeves` (cast penetrations), `mep_drainage`, `mep_venting`, `mep_supply` +
-  `mep_supply_devices`, `mep_hvac` (System 1's conditioned-air chase, equipment, terminal
-  types), `mep_registers`, `mep_electrical` (symbols), and the ERV in six files (below).
-  All fourteen are `# haus: editable`. `plan/mep.py` itself is now only the four storey
+  `mep_supply_devices`, `mep_supply_plant`, `mep_hvac` (System 1's conditioned-air chase,
+  equipment, terminal types), `mep_hvac_branches` (its three bedroom branches), `mep_registers`,
+  `mep_electrical` (symbols), and the ERV in six files (below). All sixteen are
+  `# haus: editable`. `plan/mep.py` itself is now only the four storey
   element lists the manifest consumes — NOT editable, because an aggregator needs
   `from plan import ...` and the dialect forbids it. **No `mep_erv_*.py` file can import
   `mep_erv_types.py`** for that same reason; the aggregator imports both and hands both to

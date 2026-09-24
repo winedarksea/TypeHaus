@@ -182,3 +182,21 @@ def test_a_machine_67_inches_above_the_end_is_not_a_joint(catlin_model):
         duct, z_m=(*duct.z_m[:-1], duct.z_m[-1] - 2.0))  # 6'-7" lower: below the case
     orphans = [f.message for f in _connectivity(catlin_model) if f.result.value == "fail"]
     assert any("DU-ERV-OA end" in message for message in orphans), orphans
+
+
+@pytest.mark.parametrize("n", (1, 2, 3))
+def test_each_bedroom_grille_is_fed_by_a_drawn_branch(catlin_plan, catlin_model, n):
+    """REG-S-HP-BED1/2/3 named the trunk until 2026-09-23 and nothing reached them: the check
+    tests run ENDS and `register_duct_ref` only that the tag exists. Each is now the boot at
+    the end of its own bay leg, and the leg's riser tees into DU-S-HP-SUP."""
+    from typehaus.checks.mep.duct_connectivity import BOOT_REACH_M
+
+    register = next(e for e in catlin_plan.all_elements() if e.tag == f"REG-S-HP-BED{n}")
+    assert register.duct_ref == f"DU-S-HP-BED{n}"
+    leg = next(d for d in catlin_model.ducts if d.tag == f"DU-S-HP-BED{n}")
+    at = next(o.position for o in catlin_model.canvas_objects if o.tag == register.tag)
+    end = leg.path[-1]
+    assert ((at[0] - end[0]) ** 2 + (at[1] - end[1]) ** 2) ** 0.5 <= BOOT_REACH_M
+    findings = {f.message for f in _connectivity(catlin_model) if f.result.value == "pass"}
+    assert f"duct DU-S-HP-BED{n}-RISE start lands on DU-S-HP-SUP" in findings
+    assert f"duct DU-S-HP-BED{n}-RISE end lands on DU-S-HP-BED{n}" in findings

@@ -9,6 +9,7 @@ The 2,515-line original was split by system (AGENTS.md §1.1 keeps files under 5
 - ``plan/mep_supply_devices.py`` — in-line valves, stops and arrestors
 - ``plan/mep_supply_plant.py``   — RM-S-PLANT's watering stub and the balcony hydrant sleeve
 - ``plan/mep_hvac.py``           — System 1's conditioned-air chase, equipment, terminal types
+- ``plan/mep_hvac_branches.py``  — System 1's bedroom branches: a riser and a bay leg each
 - ``plan/mep_erv_l1.py``         — the ERV system header (the machine, the home-run
   argument, the routing declarations), the basement plenums and their six radials
 - ``plan/mep_erv_l2.py``         — the two RM-M-MECH plenums and the thirteen FS-S-WEST radials
@@ -20,7 +21,7 @@ The 2,515-line original was split by system (AGENTS.md §1.1 keeps files under 5
 - ``plan/mep_registers.py``      — the air terminals themselves, storey by storey
 - ``plan/mep_electrical.py``     — panel, per-storey devices, exterior boxes and clamps
 
-Those twelve are ``# haus: editable``; this file is not, and must not become so — the dialect
+Those sixteen are ``# haus: editable``; this file is not, and must not become so — the dialect
 forbids ``from plan import ...``, which is exactly what an aggregator needs. It authors no
 element of its own, so the writeback rule (which binds files that *declare* UI-movable
 elements) does not reach it.
@@ -32,8 +33,8 @@ element order — and therefore model.json — is unchanged.
 from __future__ import annotations
 
 from plan import (mep_drainage, mep_electrical, mep_erv_l1, mep_erv_l2, mep_erv_l3,
-                  mep_erv_outdoor, mep_erv_risers, mep_erv_types, mep_hvac, mep_registers,
-                  mep_sleeves, mep_supply, mep_supply_devices, mep_supply_plant,
+                  mep_erv_outdoor, mep_erv_risers, mep_erv_types, mep_hvac, mep_hvac_branches,
+                  mep_registers, mep_sleeves, mep_supply, mep_supply_devices, mep_supply_plant,
                   mep_venting)
 
 # Catalogs, re-exported so ``manifest.py``'s Library(...) call is untouched by the split.
@@ -121,6 +122,7 @@ SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    # segment against sibling floors ON THE DUCT'S OWN STOREY.
                    *mep_erv_l2.DUCTS_ERV_LEVEL2,
                    *mep_hvac.DUCTS_HVAC_SECOND,
+                   *mep_hvac_branches.DUCTS_HVAC_BRANCHES_SECOND,
                    *mep_registers.REGISTERS,
                    *mep_registers.REGISTERS_SECOND,
                    *mep_registers.REGISTERS_HVAC_SECOND,

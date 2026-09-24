@@ -294,8 +294,8 @@ DUCTS_HVAC_SECOND = [
     # ** THE TRUNK CARRIES THE WHOLE 750 NOW, AND THAT IS THE POINT OF THE REVERSAL. **
     # It used to leave the machine as a 500 north / 250 east split at the discharge. With
     # the machine at the north end there is one discharge and one direction: 750 cfm goes
-    # south, sheds 80 + 80 + 80 + 50 + 175 + 35 along the way, and hands the last 250 to
-    # DU-S-HP-SOUTH-RISE at the cap. Tapered by intent, one section by construction.
+    # south, sheds 3 x 80 (plan/mep_hvac_branches.py) + 50 + 175 + 35 along the way, and hands
+    # the last 250 to DU-S-HP-SOUTH-RISE at the cap. Tapered by intent, one section by build.
     #
     # 750 cfm through 14x8 is 965 fpm, above Manual D's 900 fpm ceiling for a trunk in a
     # finished space; 18x8 is 750 fpm. 18" and not 20" because SF-S-DUCT's 30 3/4" clear
@@ -465,15 +465,15 @@ DUCTS_HVAC_SECOND = [
     # 99 1/8" is a 6"-deep duct on SF-S-DUCT's clear underside (the box's 14" drop, not
     # SF-S-HP1's 21"); 111 1/8" is the same duct's centreline on FS-ATTIC's bottom chord,
     # the elevation DU-S-HP-SOUTH derives for itself from the joists. Both storey-relative
-    # to `second`, whose datum is 10'-0 1/8" — the same convention every PipeRun here uses.
+    # to `second`, whose datum is 10'-0" — the same convention every PipeRun here uses.
     DuctRun(uid="27B8FKNDPB", tag="DU-S-HP-SOUTH-RISE", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 6), ft(9, 10)), pt(ft(19, 6), ft(3, 4)),
                   pt(ft(19, 6), ft(3, 4))),
             elevations=(inch(99.125), inch(99.125), inch(111.125)),
             width=inch(10), depth=inch(6), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=250),
-    # DU-S-ERV-HP-FEED is in plan/mep_erv_l3.py: it comes off the attic sub-manifold, drops
-    # into SF-S-DUCT, and lands on EQ-S-ERV-MIX. DU-S-PLANT-EXH is DU-M-ERV-R-PLANT there,
+    # DU-S-ERV-HP-FEED is in plan/mep_erv_l3.py: it comes off the attic sub-manifold and
+    # drops straight onto EQ-S-ERV-MIX in SF-S-HP1; it never enters SF-S-DUCT. DU-S-PLANT-EXH is DU-M-ERV-R-PLANT there,
     # on the LEVEL-2 manifold, running in FS-S-WEST's open-web trusses and rising inside
     # W-S-C1 to a high sidewall grille — it is not System 1's, it is the ERV's stale pull
     # out of RM-S-PLANT: 25 cfm against ~20 of makeup, extract-biased on purpose, and an ERV
