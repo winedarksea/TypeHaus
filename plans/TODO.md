@@ -128,9 +128,10 @@ with every suppression lifted.
 
 ### Structural/framing residuals
 
-- **French drains could be a form-a-drain product** (doubles as footing form). The maker
-  states it satisfies IRC R405 footing drainage and can double as the sub-slab radon loop;
-  not yet compared against the authored tile + stone.
+- **`FT-B-S1..S4` bear on 2" of 40 psi XPS (`FOOTING_FPSF_20`), and the owner rejects XPS
+  under a footing** (creep under permanent load, 2026-09-23 Form-A-Drain review). Decide
+  whether these four go to the stone bed like every other house strip, and what then holds
+  their R403.3 frost protection.
 - **Four matchers share one arithmetic but still answer at three tolerances.**
   `platform._collinear_overlap`, `stacking._axis_match`, `construction_geometry._stack_overlap`
   and `layout_lines._collinear` all route through `layout_lines.collinear_overlap` since

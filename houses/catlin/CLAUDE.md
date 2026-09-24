@@ -1507,6 +1507,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     off the waterproofed face — and **backfill in controlled lifts** is what protects the
     foam, which is why it is an `insp/foundation_backfill` item. Do **not** author a
     perimeter `FrenchDrain` for it: it would bill the footing bedding's stone twice.
+  - **No Form-A-Drain (2026-09-23).** Its inlet sits at the footing base, which here is the
+    TOP of the 7" stone bed; the bed-bottom tile is what keeps that bed dry, and a dry bed is
+    the point of it. No XPS under a footing either (creep). (→ DESIGN-LOG.md, "Basement")
   - **No membrane on the sunken-garden court walls (`W-SG-*`), and that is deliberate** —
     subp. 2 reaches only walls that also enclose below-grade interior space, and none of
     them does. They get drained backfill instead, which relieves the thrust that a coat

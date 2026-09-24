@@ -1314,6 +1314,28 @@ pocket was possible there at all.
 
 ## Basement
 
+### Form-A-Drain was reviewed and not adopted (2026-09-23)
+
+The question was whether a stay-in-place footing form that is also a footing drain could
+replace the lumber forms and the bedding tile, and serve as the sub-slab radon collector.
+- **Products.** Form-A-Drain (CertainTeed, now Westlake; ICC-ES ESR-3964, IRC R405 only — no
+  radon or structural evaluation): PVC lineals 4/6/8/10" x 12', slotted on the outer face at
+  the footing's base, 16/20/24" spacer straps. The 8" lineal on a 20" strap forms
+  `FOOTING_20` exactly. Prinsco PROFORM HD (Willmar MN, ESR-4078) is the only competitor,
+  6.5" only. Menards LN126 (6" x 12') runs ~$33; crossovers through a footing need a design
+  professional's statement (ESR-3964 §5.2).
+- **Why not.** The product assumes a footing cast on native soil with its inlet at the
+  footing base. Here the base is the TOP of the 7" #57 bed, which stays for its dry-stone
+  thermal break and its compaction. With the drain up there the bed would stand wet to the
+  invert in HSG D clay and conduct like the clay it is meant to break from. Keeping the bed
+  dry needs a pipe at its BOTTOM, which is the existing tile; FAD would then be a form plus
+  a redundant drain 7" too high, ~$1-1.6k over lumber for ~310 LF of lineal and fittings.
+- **Radon adds nothing.** MN 1303.2402 subp. 4.E already accepts "a sump connected to interior
+  drain tile" with a sealed cover as the vent's termination, which is `SM-B-RADON` today.
+- **XPS under the footing instead of stone is refused too** (owner): long-term creep and
+  compression under a permanent bearing load. `FT-B-S1..S4` already bear on 2" of 40 psi XPS
+  (`FOOTING_FPSF_20`), which is the open inconsistency, logged in `plans/TODO.md`.
+
 - **THE SAUNA'S FIBRE-OPTIC LIGHTING IS CUT; TWO 24V UNDER-BENCH RUNS REPLACE IT
   (2026-09-13).** The room's only light was `ED-B-SAUNA-LT`, a single point fixture on
   `ED-T-LT-SAUNA-VT` (mark V) — a Cariitti Premium Glass Fiber 8-spot kit with a remote
