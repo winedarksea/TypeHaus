@@ -138,6 +138,11 @@ DUCTS_ERV_RISERS = [
     # and rises back to the port level over the 46" of its east run, a 9 degree rake, rather
     # than jogging at the manifold. It reaches EQ-B-ERV-MAN-EXH from the NORTH at x=5'-10"
     # because the manifold's own west approach along y=28'-6" is DU-B-ERV-R-BENCH's.
+    # ** BOTH ROOM-SIDE RISERS ARE BARE SINCE 2026-09-23 (owner decision). ** They carry
+    # indoor-temperature air through conditioned space from end to end — basement, mech
+    # closet, the second-floor chase, the attic floor — so IECC R403.3 asks nothing of them,
+    # and 2" of R-8 wrap each made the NW chase unbuildable. DU-ERV-OA/-EA carry outdoor
+    # air and keep theirs, vapour-sealed.
     DuctRun(uid="1BMFGSMKJY", tag="DU-ERV-RISER-SUP", system=DuctSystem.SUPPLY,
             # It lands on the plenum's NORTH FACE at x=5'-6" since D3 widened that box to
             # 36" — the face the leg is already arriving at, rather than the west end it
@@ -149,7 +154,7 @@ DUCTS_ERV_RISERS = [
             elevations=(inch(-19.4375), inch(-19.4375), inch(-19.4375),
                         inch(-19.4375), inch(231.875)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='2" R-8 wrap', design_cfm=210),
+            design_cfm=210),
     DuctRun(uid="GFTW5CBARX", tag="DU-ERV-RISER-EXH", system=DuctSystem.EXHAUST,
             # ** IT LEAVES THE PLENUM'S WEST END, NOT ITS CENTRE. ** The leg keeps the
             # box's own y=34'-6" centre line, and the station it starts from is what moved:
@@ -180,7 +185,7 @@ DUCTS_ERV_RISERS = [
             elevations=(inch(244), inch(244), inch(244), inch(-27.5),
                         inch(-27.5), inch(-27.5), inch(-23.4375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='2" R-8 wrap', design_cfm=210),
+            design_cfm=210),
     # The outdoor side, which did not exist at all before this pass. Both legs carry
     # outdoor-temperature air through conditioned space, so both are insulated AND vapour
     # sealed — an uninsulated intake duct sweats all winter and rains on whatever is under

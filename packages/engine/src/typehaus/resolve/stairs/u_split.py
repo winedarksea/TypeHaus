@@ -22,7 +22,8 @@ from typehaus.resolve.stairs.common import (
 def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
                              risers: int, riser: float, tread: float,
                              tread_depth: float, nosing: float,
-                             landing_depth_m: float) -> tuple[FramedMember, ...]:
+                             landing_depth_m: float,
+                             head_z: float | None = None) -> tuple[FramedMember, ...]:
     """Generate two parallel flights joined by two half-width landings one riser apart.
 
     Riser budget (split-landing semantics): ``lower`` treads, the lower landing, the
@@ -152,13 +153,19 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # 0.20 m inset holds its ends off the opening perimeter framing.
     # It stops at the SHORTER flight's end: its studs run z0 → arrival, so carrying it to
     # the longer flight's line drives them straight through the upper landing's deck.
+    # At the stairhead (s=0) only the TOP is held off: ``head_z`` is the underside of the
+    # arrival deck's framing, and an end stud stands under it on a bottom plate run to the
+    # edge, so the well's end is framed rather than 0.20 m of bare board.
     inset = 0.20
     lo_s, hi_s = inset, min(flight_len, upper_flight_len) - inset
     if hi_s > lo_s:
         plate = 0.0381  # a 2x4 plate laid flat
+        head = head_z is not None and head_z > z0 + 2 * plate
+        base_s = 0.0 if head else lo_s
         pa, pb = at(lo_s, partition_centre), at(hi_s, partition_centre)
         out.append(FramedMember(stair.uid, "well-partition-plate-bottom", "partition",
-                                "2x4", pa, pb, z0, z0 + plate, hi_s - lo_s))
+                                "2x4", at(base_s, partition_centre), pb, z0, z0 + plate,
+                                hi_s - base_s))
         out.append(FramedMember(stair.uid, "well-partition-plate-top", "partition",
                                 "2x4", pa, pb, arrival - plate, arrival, hi_s - lo_s))
         orient = (float(sign), 0.0) if along_x else (0.0, float(sign))
@@ -168,6 +175,11 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
                                     "partition", "2x4", point, point,
                                     z0 + plate, arrival - plate,
                                     arrival - z0 - 2 * plate, orient=orient))
+        if head:
+            point = at(plate / 2.0, partition_centre)
+            out.append(FramedMember(stair.uid, "well-partition-stud-head", "partition",
+                                    "2x4", point, point, z0 + plate, head_z,
+                                    head_z - z0 - plate, orient=orient))
     return tuple(out)
 
 

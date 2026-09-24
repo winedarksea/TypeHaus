@@ -55,7 +55,7 @@ def evaluate_vent_path(model: ResolvedModel, fixture_tag: str, wall: ResolvedWal
         return VentPath(None, None, False)
     best = VentPath(runs[0].tag, None, False)
     for run in runs:
-        candidate = VentPath(run.tag, _chase_at_either_end(model, run.path),
+        candidate = VentPath(run.tag, _chase_through(model, run),
                              _touches_wall_axis(run.path, wall.axis))
         if candidate.is_connected:
             return candidate
@@ -67,6 +67,36 @@ def evaluate_vent_path(model: ResolvedModel, fixture_tag: str, wall: ResolvedWal
 
 def _connectedness(path: VentPath) -> int:
     return int(path.chase_tag is not None) + int(path.touches_wet_wall)
+
+
+#: How close a vent's end must be to another vent run to be tied into it — the joint
+#: tolerance every other trade reading uses (``resolve/mep_soffit.DUCT_JOINT_TOLERANCE_M``).
+COMMON_VENT_TOLERANCE_M = inch(3).meters
+
+
+def _chase_through(model: ResolvedModel, run, seen: frozenset[str] = frozenset()) -> str | None:
+    """The chase this run reaches, directly or through a vent it ties into.
+
+    A branch vent tied into a larger vent that reaches the stack is a common vent, which
+    the router proposes and the code allows; reading only this run's own ends said "ends at
+    no VentRun chase" about it.
+    """
+    direct = _chase_at_either_end(model, run.path)
+    if direct is not None:
+        return direct
+    ends = (run.path[0], run.path[-1])
+    seen = seen | {run.tag}
+    for other in model.pipe_runs:
+        if (other.system != PipeSystem.VENT.value or other.tag in seen
+                or len(other.path) < 2):
+            continue
+        if not any(_distance_to_segment(end, a, b) <= COMMON_VENT_TOLERANCE_M
+                   for end in ends for a, b in zip(other.path, other.path[1:], strict=False)):
+            continue
+        found = _chase_through(model, other, seen)
+        if found is not None:
+            return found
+    return None
 
 
 def _chase_at_either_end(model: ResolvedModel, path) -> str | None:

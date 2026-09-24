@@ -771,8 +771,8 @@ WALLS = [
     # (east), brought down to the stairhead: 2x4 + 1/2" gwb each face, from the floor, so
     # the 4 1/2" slot at the head of the stairs is wall rather than a guard
     # (RL-M-STAIRHEAD, retired 2026-09-23). Same device as W-B-WELL: the stair generates
-    # the studs (inset 0.20 m from each end), this wall adds the faces and carries no
-    # FramingSpec — see STAIRWELL_PARTITION_4H. Base at the stairs' 0.9862" walking surface,
+    # the studs (its stud-head stands at this south end, under the trimmer), this wall adds
+    # the faces and carries no FramingSpec — see STAIRWELL_PARTITION_4H. Base at the stairs' 0.9862" walking surface,
     # where ST-M2S's generated bottom plate sits and ST-B2M's partition top plate stops; top
     # at 9'-0" like every main wall — higher runs into FO-S-STAIR's south trimmer
     # (structural.through_deck_clearance).

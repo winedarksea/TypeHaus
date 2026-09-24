@@ -5480,7 +5480,6 @@
 # through conditioned space sweats all winter, and an insulated-but-unsealed one sweats
 # inside the insulation, which is worse because nobody sees it.
 # $/LF, by spec
-'2" R-8 wrap' = { material = { low = 2.2, high = 4.5 }, labour = { low = 2, high = 5 } }  # 43.9 LF
 '2" R-8 wrap, vapour-sealed' = { material = { low = 3.2, high = 6.5 }, labour = { low = 3.5, high = 8 } }  # 86.8 LF
 
 [sleeves]

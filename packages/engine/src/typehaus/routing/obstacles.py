@@ -49,7 +49,7 @@ class HardPrism:
     """A plan footprint and a z band the route may not enter. Already inflated."""
 
     tag: str
-    kind: str  # "opening" | "void" | "stair" | "member" | "concrete" | "run" | "avoid"
+    kind: str  # "opening" | "void" | "stair" | "member" | "beam" | "concrete" | "run" | "avoid"
     footprint: Any  # shapely Polygon
     z0_m: float
     z1_m: float
@@ -216,6 +216,14 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
                                      footprint=poly.buffer(inflate),
                                      z0_m=window.z0_m - inflate,
                                      z1_m=window.z1_m + inflate))
+
+    # Beams: a carrier is not bored for a run, and ``mep.run_through_beam`` reads the same
+    # sections (``resolve/beam_sections``).
+    from typehaus.resolve.beam_sections import beam_sections
+
+    for tag, footprint, z0, z1 in beam_sections(model):
+        out.append(HardPrism(tag=tag, kind="beam", footprint=footprint.buffer(inflate),
+                             z0_m=z0 - inflate, z1_m=z1 + inflate))
 
     # Concrete. Only the bands that are actually concrete — a stay-in-place foam deck form
     # is not a pour, and ``resolve/mep_queries.concrete_bands`` is the one place that

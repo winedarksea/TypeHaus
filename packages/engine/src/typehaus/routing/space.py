@@ -151,6 +151,11 @@ class RoutingSpace:
         default_factory=dict, repr=False, compare=False)
     _soft_memo: dict[tuple[int, int, int], list[SoftPrism]] = field(
         default_factory=dict, repr=False, compare=False)
+    #: Floor members a run may CROSS but not ride: ``(axis, station, lo, hi, half breadth,
+    #: z0, z1, tag)`` per level joist, rim, trimmer or header in the window — see
+    #: :func:`floor_rails`. Not hard prisms, so they add no lattice lines.
+    rails: list[tuple] = field(default_factory=list)
+    _rail_index: Any = field(default=None, repr=False, compare=False)
     #: Per hard prism: its footprint eroded by a sixteenth, prepared, when the midpoint
     #: test cannot be trusted for it — see :meth:`edge_blocked`. None for a boxy prism.
     _exact: list[Any] | None = field(default=None, repr=False, compare=False)
@@ -254,6 +259,33 @@ class RoutingSpace:
                     return prism.tag
             elif shape is not None and shape.intersects(probe):
                 return prism.tag
+        return None if riser else self._rail_blocked(a, b, (za + zb) / 2.0)
+
+    def _rail_blocked(self, a: tuple[float, float], b: tuple[float, float],
+                      z: float) -> str | None:
+        """A level step riding along inside a floor member: its removal, not a bore."""
+        from shapely import STRtree
+        from shapely.geometry import LineString, box
+
+        if not self.rails:
+            return None
+        if self._rail_index is None:
+            self._rail_index = STRtree([
+                box(lo, station - half, hi, station + half) if axis == "x"
+                else box(station - half, lo, station + half, hi)
+                for axis, station, lo, hi, half, _z0, _z1, _tag in self.rails])
+        axis = "x" if abs(b[0] - a[0]) > abs(b[1] - a[1]) else "y"
+        station = a[1] if axis == "x" else a[0]
+        grow = self.radius_m + self.clearance_m
+        for i in self._rail_index.query(LineString([a, b])):
+            rail_axis, rail_station, lo, hi, half, z0, z1, tag = self.rails[int(i)]
+            if rail_axis != axis or abs(station - rail_station) >= half + grow - _GRID_M:
+                continue
+            if not z0 - grow < z < z1 + grow:
+                continue
+            start, end = sorted((a[0], b[0]) if axis == "x" else (a[1], b[1]))
+            if min(end, hi) - max(start, lo) > _GRID_M:
+                return tag
         return None
 
     def _exact_footprints(self) -> list[Any]:
@@ -390,7 +422,41 @@ def build_space(model: ResolvedModel, *, radius_m: float,
     return RoutingSpace(radius_m=radius_m, clearance_m=clearance_m,
                         cost=cost or RouteCost(), hard=hard, soft=soft,
                         corridors=corridors, bbox=(minx, miny, maxx, maxy),
-                        storeys=storeys, crossings=crossings, z_band=z_band)
+                        storeys=storeys, crossings=crossings, z_band=z_band,
+                        rails=floor_rails(model, (minx, miny, maxx, maxy)))
+
+
+def floor_rails(model: ResolvedModel, bbox: tuple[float, float, float, float]) -> list:
+    """Every level, axis-aligned floor member in ``bbox``, as a rail — see ``rails``.
+
+    ``mep.run_through_floor_member`` FAILs a leg "running along inside" a member, and the
+    router laned catlin's kitchen vent along a truss line twice before this.
+    """
+    from typehaus.resolve.framing.profiles import cross_section
+
+    minx, miny, maxx, maxy = bbox
+    out = []
+    for floor in model.floors:
+        for member in floor.members:
+            if member.z0_m is None or member.p0 == member.p1:
+                continue
+            (ax, ay), (bx, by) = member.p0, member.p1
+            if abs(ax - bx) > 1e-6 and abs(ay - by) > 1e-6:
+                continue
+            section = cross_section(member.profile)
+            if section is None:
+                continue
+            axis = "x" if abs(bx - ax) > abs(by - ay) else "y"
+            station = ay if axis == "x" else ax
+            lo, hi = sorted((ax, bx) if axis == "x" else (ay, by))
+            if (axis == "x" and not (miny <= station <= maxy and hi >= minx and lo <= maxx)) \
+                    or (axis == "y" and not (minx <= station <= maxx
+                                            and hi >= miny and lo <= maxy)):
+                continue
+            z1 = member.z1_m if member.z1_m is not None else member.z0_m + section.depth_m
+            out.append((axis, station, lo, hi, section.width_m / 2.0, member.z0_m, z1,
+                        floor.tag))
+    return out
 
 
 def _corridor_in(corridor: Corridor, minx: float, miny: float,

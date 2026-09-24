@@ -75,6 +75,8 @@ _KIND_MOBILITY = {
     "member": Mobility.FIXED,
     # A flight's R311.7.2 headroom and its stringers: the stair does not move for a duct.
     "stair": Mobility.FIXED,
+    # A beam or girder: a carrier is not bored for a run and does not move for one.
+    "beam": Mobility.FIXED,
     "run": Mobility.MOVABLE,
     "avoid": Mobility.UNKNOWN,
 }

@@ -81,6 +81,10 @@ def _vent_siblings(model: ResolvedModel, run: Any, problems: list[str]
         if min(((p[0] - end[0]) ** 2 + (p[1] - end[1]) ** 2) ** 0.5
                for p in (other.path[0], other.path[-1])) > _CHASE_TOLERANCE_M:
             continue
+        # A common vent only into one at least this size: catlin's 2" bath-group vent was
+        # proposed into the 1 1/2" kitchen vent, which carries one sink.
+        if (other.diameter_m or 0.0) + 1e-9 < (run.diameter_m or 0.0):
+            continue
         siblings.append(other.tag)
         if not other.z_m or len(other.z_m) != len(other.path):
             paths.append(tuple((p[0], p[1]) for p in other.path))

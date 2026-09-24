@@ -15,6 +15,7 @@ from typehaus.findings import element_error as _error
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Stair
 from typehaus.quantities import inch
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedStair
 from typehaus.resolve.stairs.bearing import _bear_stair_on_walls, _clip_stair_to_subfloor
 from typehaus.resolve.stairs.common import (
@@ -201,7 +202,8 @@ def _resolve_stair(
         assert stair.start is not None
         origin_x, origin_y = stair.start.xy_m
     members = _stair_members(stair, origin_x, origin_y, z0, risers, riser,
-                             going_m, physical_tread_m, nosing_m, landing_depth_m)
+                             going_m, physical_tread_m, nosing_m, landing_depth_m,
+                             _deck_underside(model, stair, opening))
     if opening is None:
         outline = _flight_footprint(stair, going_m, risers)
     # Structural guards: the flight never drops below the subfloor it springs from (so a
@@ -268,16 +270,35 @@ def _element_storey(model: ResolvedModel, tag: str) -> str | None:
     return None
 
 
+def _deck_underside(model: ResolvedModel, stair: Stair,
+                    opening: FloorOpening | None) -> float | None:
+    """Underside of the framed deck that owns the stair's opening, or ``None``.
+
+    Stairs resolve before floors, so this reads the authored FloorSystem, exactly as
+    ``resolve/floors.py`` places its joists. A slab-owned opening returns ``None``.
+    """
+    if opening is None:
+        return None
+    for element in model.plan.storey_elements(stair.to_storey):
+        if isinstance(element, FloorSystem) and opening.tag in element.openings:
+            storey = model.plan.storey(stair.to_storey)
+            top = (element.top_elevation.meters if element.top_elevation is not None
+                   else storey.elevation.meters)
+            return top - cross_section(element.joists.member).depth_m
+    return None
+
+
 def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: int,
                    riser: float, going: float, tread_depth: float, nosing: float,
-                   landing_depth_m: float) -> tuple[FramedMember, ...]:
+                   landing_depth_m: float,
+                   head_z: float | None = None) -> tuple[FramedMember, ...]:
     if stair.layout == "right_angle_winder":
         return _winder_stair_members(stair, minx, miny, z0, risers, riser, going,
                                      tread_depth, nosing)
     if stair.layout == "u_split_landing":
         return _u_split_landing_members(stair, minx, miny, z0, risers, riser, going,
                                         tread_depth, nosing,
-                                        landing_depth_m)
+                                        landing_depth_m, head_z)
     return _straight_stair_members(stair, minx, miny, z0, risers, riser, going,
                                   tread_depth, nosing)
 

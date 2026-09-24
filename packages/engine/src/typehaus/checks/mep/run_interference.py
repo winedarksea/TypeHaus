@@ -262,8 +262,12 @@ def _why_not_a_fitting(systems: dict, pair: tuple[str, str], systems_join) -> st
         return ("This contact is not within a fitting's reach of any joint between them (so "
                 "it is not a fitting)")
     first, second = (" ".join(v for v in systems[tag][::-1] if v) for tag in pair)
-    return (f"No fitting joins a {first} to a {second}, so an end touching the other is "
-            "not a joint")
+
+    def article(word: str) -> str:
+        return "an" if word[:1] in "aeiou" else "a"
+
+    return (f"No fitting joins {article(first)} {first} to {article(second)} {second}, so an "
+            "end touching the other is not a joint")
 
 
 def _in_sleeve(holes, prism, other) -> bool:

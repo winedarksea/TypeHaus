@@ -21,40 +21,15 @@ from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN
 
 _CID = "mep.run_through_beam"
-#: Framed-member categories that are carriers rather than a floor's field.
-_BEAM_MEMBER_CATEGORIES = ("beam", "girder", "ridge_beam")
 #: Overlap below this is a drawing tangency, not a hole.
 _TOLERANCE_M = 0.125 * M_PER_IN
 
 
 def _beams(ctx: CheckContext) -> list[tuple[str, object, float, float]]:
-    """``(tag, plan polygon, z0, z1)`` for every beam solid and beam framed member.
+    """``(tag, plan polygon, z0, z1)`` per beam — :mod:`typehaus.resolve.beam_sections`."""
+    from typehaus.resolve.beam_sections import beam_sections
 
-    A cast beam is left out: a run through concrete is a sleeve question, graded by
-    ``mep.sleeve_coverage`` against ``concrete_crossings``."""
-    from shapely.geometry import MultiPoint, Polygon
-
-    from typehaus.resolve.assembly_material import is_cast_beam
-    from typehaus.resolve.geometry_members import member_box
-
-    out = []
-    for solid in ctx.model.solids:
-        if (solid.category == "beam" and len(solid.outline) >= 3
-                and not is_cast_beam(ctx.plan, ctx.plan.by_tag(solid.tag))):
-            out.append((solid.tag, Polygon(solid.outline), solid.z0_m, solid.z1_m))
-    for member in ctx.model.all_members():
-        if member.category not in _BEAM_MEMBER_CATEGORIES:
-            continue
-        box = member_box(member)
-        if box is None:
-            continue
-        corners = [*box.corners_bottom, *box.corners_top]
-        footprint = MultiPoint([(x, y) for x, y, _ in corners]).convex_hull
-        if footprint.area <= 0:
-            continue
-        out.append((f"{member.parent_uid}:{member.child_key}", footprint,
-                    min(c[2] for c in corners), max(c[2] for c in corners)))
-    return out
+    return beam_sections(ctx.model)
 
 
 def _leg_overlap(a, b, za: float, zb: float, radius: float, footprint,

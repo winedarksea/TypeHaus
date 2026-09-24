@@ -29059,6 +29059,12 @@
 8,
 "1f373df86477"
 ],
+"geometry/CST701AAAA::framing/member:well-partition-stud-head": [
+-2.7416125,
+-0.301625,
+8,
+"04fd60928860"
+],
 "geometry/CST702AAAA::framing/member:landing-joist-lower-000": [
 1.3267995,
 1.5109495,
@@ -29328,6 +29334,12 @@
 3.0349495,
 8,
 "6158557bd5a3"
+],
+"geometry/CST702AAAA::framing/member:well-partition-stud-head": [
+0.0631495,
+2.746375,
+8,
+"78162bdca9eb"
 ],
 "geometry/CST703AAAA::framing/member:landing-joist-winder0-0": [
 3.0988,
@@ -68831,6 +68843,12 @@
 2,
 "8119f44aeec0"
 ],
+"member/CST701AAAA/well-partition-stud-head": [
+-2.7416125,
+-0.301625,
+2,
+"8cbd3d32a734"
+],
 "member/CST702AAAA/landing-joist-lower-000": [
 1.3267995,
 1.5109495,
@@ -69100,6 +69118,12 @@
 3.0349495,
 2,
 "f8cf720f3b63"
+],
+"member/CST702AAAA/well-partition-stud-head": [
+0.0631495,
+2.746375,
+2,
+"68b854343157"
 ],
 "member/CST703AAAA/landing-joist-winder0-0": [
 3.0988,
