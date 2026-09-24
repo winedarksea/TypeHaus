@@ -212,8 +212,15 @@ the future.
 - **Plan lettering residue after 96b845f4 (3/32" lettering):** at 1/4" a few small rooms still
   touch a tag (PANTRY/D8, STUDY/D13, MECH's "CHASE TYP. OF 2"), and on the 11x17 reduced check
   print the 12 pt room names spill past small rooms' walls.
-- Paint is missing on a lot of interior drywall assemblies. This likely impacts pricing more than anything.
-- Ceiling drywall might be worth counting as the floor above (so when we remove layers in the 3d viewer, we can see into the room)
+- **Author interior paint at library level, then retire `takeoff/derived_paint.py` to a check.**
+  Today bare gypsum facing a used room is *billed* paint by derivation (≈7,000 SF on catlin:
+  the STC presets and every deck `ceiling_below`). Authoring would let the house say colour,
+  sheen and vapour class, and the derived predicate would become "exposed gypsum in used
+  space has no finish authored". Blockers: (1) a coating layer still adds depth —
+  `resolve/topology._added_thicknesses` counts it though `Material.coating` says readers treat
+  it as 0.0, and the 1/8" silicate wash / foundation coating alignments depend on that depth;
+  (2) a wall coating draws a plane (polygonOffset, see the wash); (3) whether paint belongs in
+  an STC preset's tested core; (4) authored paint makes gypsum Class III, which moves Glaser.
 - the dimple board of the sunken garden retaining wall should probably be moved under the concrete view toggle (because it's assembled in that lens, not because it is made of concrete).
 
 # Project Management

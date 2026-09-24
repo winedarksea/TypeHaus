@@ -165,6 +165,10 @@ actually paid), `tasks.toml` (work-package status). The engine ships no price da
   `emit/trades.CONSTRUCTION_SEQUENCE`. Task ids are stable GlobalIds, so re-exporting
   updates rather than duplicates. No durations, crew sizes or dates — the model cannot know
   them.
+- **Paint is derived where no assembly authors it** (`takeoff/derived_paint.py`): a gypsum
+  layer ending a stack and facing a non-UNCONDITIONED room bills `latex-paint` under scope
+  `wall (derived)` / `ceiling (derived)`. To leave a board unpainted, author the coat it
+  does get (catlin's garage ceiling carries `gwb-primer`).
 
 ## Building it: visits and inspections
 
