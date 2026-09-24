@@ -11,6 +11,7 @@ from typehaus import (
     DeckLayer,
     FloorOpening,
     FloorOpeningEdgeInterval,
+    FloorOpeningPurpose,
     FloorOpeningPocketClosure,
     FloorSystem,
     FollowRoof,
@@ -722,6 +723,18 @@ BEAMS = [
 # trimmer pack takes that joist's place instead of crowding it 5/8" away. East edge bears on
 # W-S-E1, the stair's own box wall, so no header stands 4 5/8" off the rim.
 FLOOR_OPENINGS = [
+    # The NW chase continues into FS-ATTIC's joist band (2026-09-23): the risers and conduits
+    # turn over the deck at 20'-4"..20'-6". Same outline as FO-S-ERV-CHASE below it.
+    FloorOpening(uid="TMNX0WK28P", tag="FO-A-ERV-CHASE", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(6), inch(397)), pt(inch(33), inch(397)),
+                          pt(inch(33), inch(426)), pt(inch(6), inch(426))),
+                 bearing_refs=("W-S-W1B",)),
+    # Where the radon/vent bundle rises again after its jog, at x=9'-7 1/2": between the
+    # y=33'-4" and 34'-8" joists (which are its trimmers), headed 3 1/2" either side.
+    FloorOpening(uid="2BSGJXFM0G", tag="FO-A-VENT-STACK", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(112), inch(400)), pt(inch(119), inch(400)),
+                          pt(inch(119), inch(416)), pt(inch(112), inch(416))),
+                 penetration_for=("VR-M-RADON-VENT-vent", "VR-M-RADON-VENT-radon")),
     FloorOpening(uid="CAF601AAAA", tag="FO-A-STAIR",
                  outline=(pt(ft(22, 5.375), ft(5, 4)),
                           pt(ft(35, 5.375), ft(5, 4)),
@@ -799,7 +812,8 @@ FLOOR = [
                 # FO-A-HALL joins FO-A-STAIR: the stair hall is open to the
                 # roof now. Its outline, its four chosen edges and the reason x=10'-0" is
                 # NOT in `joists.bearing_refs` are all in plan/storeys/stair_hall_void.py.
-                openings=("FO-A-STAIR", "FO-A-HALL")),
+                openings=("FO-A-STAIR", "FO-A-HALL", "FO-A-ERV-CHASE",
+                          "FO-A-VENT-STACK")),
 ]
 
 # The attic deck's edge along the well's south side, y=5'-4": 42" metal fascia guard from the

@@ -468,7 +468,7 @@ MECH_FLOOR = FloorSystem(
     # FO-M-ERV-EA is the discharge, which stayed in the chase but re-stationed. Each cuts one
     # joist. The vents, the radon riser and the conduits through this deck are still undrawn —
     # see the openings' own notes in plan/storeys/main.py.
-    openings=("FO-M-ERV-OA", "FO-M-ERV-EA"),
+    openings=("FO-M-ERV-OA",),
     source="catlin main floor, over the furnace room — same joists as FS-M-WEST, spanning "
            "10'-0\" east-west from the west wall to the x=10' bearing line",
 )

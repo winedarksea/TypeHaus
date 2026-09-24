@@ -30,6 +30,7 @@ from typehaus import (
     Door,
     FloorHeat,
     FloorOpening,
+    FloorOpeningPurpose,
     FramingSpec,
     HumidityClass,
     Layer,
@@ -1349,6 +1350,15 @@ SOFFITS = [
 # W-B-N2's sill): only the wall's outer 6" is under anything up here. Deliberately NOT moved onto the source: it's drawn to
 # the *main* storey's finished faces, so moving it means moving main.py.
 FLOOR_OPENINGS = [
+    # ** THE NW CHASE, FRAMED THROUGH FS-S-WEST (2026-09-23). ** Two ERV risers, DU-ERV-EA,
+    # the radon/vent bundle and three conduits stand in W-S-CH-W/-CH-S's 2'-0" x 2'-2"
+    # chase; the y=33'-4" and 34'-5.8" trusses were running straight through it. The
+    # fabricator shortens both onto a header under W-S-CH-W (x=2'-9"); the west edge is the
+    # exterior wall, the y edges sit under W-S-CH-S and W-S-N3B.
+    FloorOpening(uid="GV6JQNDH5D", tag="FO-S-ERV-CHASE", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(6), inch(397)), pt(inch(33), inch(397)),
+                          pt(inch(33), inch(426)), pt(inch(6), inch(426))),
+                 bearing_refs=("W-M-W1B",)),
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
                  outline=(pt(ft(10, 3.375), ft(26, 0.375)),
                           pt(ft(17, 8.625), ft(26, 0.375)),

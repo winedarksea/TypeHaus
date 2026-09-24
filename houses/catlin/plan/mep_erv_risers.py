@@ -148,11 +148,15 @@ DUCTS_ERV_RISERS = [
             # 36" — the face the leg is already arriving at, rather than the west end it
             # used to turn into. Four inches further west and four further south than
             # before, and still inside RM-B-ESS's x=6'-0" wall.
+            # ** THE CHASE WAS RE-PACKED ON 2026-09-23 ** (the 12"-wrapped DU-ERV-EA and the
+            # radon/vent bundle could not share it with the old stations). It climbs north on
+            # x=1'-3.2" between the bundle and DU-ERV-EA and stands at y=34'-11.2", in the
+            # chase's north strip, clear of the bundle's 19'-6" jog lane.
             path=(pt(ft(5, 6), ft(30, 10)), pt(ft(5, 6), ft(31, 8)),
-                  pt(inch(9.625), ft(31, 8)), pt(inch(9.625), ft(33, 10.25)),
-                  pt(inch(9.625), ft(33, 10.25))),
-            elevations=(inch(-19.4375), inch(-19.4375), inch(-19.4375),
-                        inch(-19.4375), inch(231.875)),
+                  pt(inch(15.2), ft(31, 8)), pt(inch(15.2), inch(419.2)),
+                  pt(inch(15.2), inch(419.2))),
+            elevations=(inch(-19.4375), inch(-17.9375), inch(-17.9375),
+                        inch(-17.9375), inch(231.875)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
     DuctRun(uid="GFTW5CBARX", tag="DU-ERV-RISER-EXH", system=DuctSystem.EXHAUST,
@@ -178,12 +182,16 @@ DUCTS_ERV_RISERS = [
             # old -27" so that the return trunk, which shares this y=28'-6" line at the
             # machine's own -33 27/32", keeps 6 3/8" between the two envelopes; 78 15/16" of
             # headroom under it, still over R305.1.1's 76" basement projection floor.
-            path=(pt(ft(4, 2), ft(34, 6)), pt(inch(18.625), ft(34, 6)),
-                  pt(inch(18.625), ft(33, 10.25)), pt(inch(18.625), ft(33, 10.25)),
-                  pt(inch(18.625), ft(28, 6)), pt(ft(6, 1.5), ft(28, 6)),
-                  pt(ft(6, 1.5), ft(28, 6))),
+            # Re-stationed at (2'-2.5", 34'-11.8") on 2026-09-23 — the chase's NE corner,
+            # east of the three conduits — and its basement leg leaves EAST along that line
+            # at -27 1/2", under the supply leg and north of DU-ERV-EA's, then south on
+            # x=5'-4 1/2" — west of RM-B-ESS's steel closet wall — and east to the plenum.
+            path=(pt(ft(4, 2), ft(34, 6)), pt(inch(26.5), ft(34, 6)),
+                  pt(inch(26.5), inch(419.8)), pt(inch(26.5), inch(419.8)),
+                  pt(inch(64.5), inch(419.8)), pt(inch(64.5), ft(28, 6)),
+                  pt(ft(6, 1.5), ft(28, 6)), pt(ft(6, 1.5), ft(28, 6))),
             elevations=(inch(244), inch(244), inch(244), inch(-27.5),
-                        inch(-27.5), inch(-27.5), inch(-23.4375)),
+                        inch(-27.5), inch(-27.5), inch(-27.5), inch(-23.4375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
     # The outdoor side, which did not exist at all before this pass. Both legs carry
@@ -247,8 +255,10 @@ DUCTS_ERV_RISERS = [
             # PR-M-S-BATH1-TUB-DRAIN looks like it is in this lane and is not: it drops at
             # (3'-3 1/4", 34'-1 1/2") but between +10'-0 3/4" and +9'-7 15/16", in the SECOND
             # storey's floor zone. It never reaches the main deck or this riser's +5'-0".
-            path=(pt(ft(3, 4), ft(36, 8)), pt(ft(3, 4), ft(33, 11)),
-                  pt(ft(3, 4), ft(33, 11)), pt(ft(3, 4), ft(31, 1)),
+            # y=34'-1" since 2026-09-23: with its 2" wrap the 33'-11" station stood 1/4"
+            # inside W-M-MECH-S's face.
+            path=(pt(ft(3, 4), ft(36, 8)), pt(ft(3, 4), ft(34, 1)),
+                  pt(ft(3, 4), ft(34, 1)), pt(ft(3, 4), ft(31, 1)),
                   pt(ft(3, 8), ft(31, 1)), pt(ft(3, 8), ft(31, 1))),
             elevations=(inch(60), inch(60), inch(-27), inch(-27),
                         inch(-27), inch(-33.8375)),
@@ -296,10 +306,13 @@ DUCTS_ERV_RISERS = [
             # RM-B-FURNACE, 17" below the 8'-0 15/16" ceiling. That is a mechanical room and
             # it is walkable, but it is lower than anything else down there and should be on
             # the drawing.
-            path=(pt(ft(4, 7), ft(31, 1)), pt(ft(5, 2), ft(31, 1)),
-                  pt(ft(5, 2), ft(35)), pt(ft(2), ft(35)),
-                  pt(ft(2), ft(35)), pt(ft(2), ft(36, 8))),
-            elevations=(inch(-33.8375), inch(-33.8375), inch(-33.8375), inch(-33.8375),
+            # (2'-0 5/8", 34'-2") since 2026-09-23: it tops out at 17'-0", below the radon/
+            # vent jog at 19'-6", so it is the one riser that may stand in the jog's lane.
+            # At 35'-0" its 12" wrapped section stood an inch inside W-B-N4.
+            path=(pt(ft(4, 7), ft(31, 1)), pt(ft(4, 7), ft(34, 2)),
+                  pt(inch(24.625), ft(34, 2)),
+                  pt(inch(24.625), ft(34, 2)), pt(inch(24.625), ft(36, 8))),
+            elevations=(inch(-33.8375), inch(-33.8375), inch(-33.8375),
                         inch(204), inch(204)),
             # ** 8", NOT 6" (owner, in the measured package). ** This is the single biggest
             # lever in the static budget and the note prices it: the discharge leg is the
@@ -405,8 +418,8 @@ DUCTS_ERV_RISERS = [
             # landing on the riser. Since 2026-09-23 it tees into the riser's EAST face on
             # y=33'-10", clear of the three conduit risers now standing on y=34'-2 3/8".
             path=(pt(ft(2, 11), ft(35)), pt(ft(2, 11), ft(35)),
-                  pt(ft(2, 11), ft(33, 10)), pt(inch(21.125), ft(33, 10))),
-            elevations=(inch(101.25), inch(93.5), inch(93.5), inch(93.5)),
+                  pt(inch(29), ft(35))),
+            elevations=(inch(101.25), inch(93.5), inch(93.5)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=114),
     # ===================== AND THE SUPPLY FEED IS NOT DRAWN, ON PURPOSE =====================

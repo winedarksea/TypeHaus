@@ -2113,33 +2113,14 @@ FLOOR_OPENINGS = [
     # seat on the 8" pour (it would have 1 3/8" at the gwb face). The south edge did
     # not move: its pack face (33'-6 3/8") clears both risers by 7/8", and moving it south
     # would put the hole under D-M-MECH's threshold. The y edges still land mid-bay.
+    # ** ONE CHASE HOLE SINCE 2026-09-23. ** FO-M-ERV-EA (the discharge's hole, y 34'-6 1/2"
+    # ..35'-6 1/4") merged into this one when the chase was re-packed: the plumbing vent
+    # riser now stands at y=33'-11.6", exactly where the two holes' trimmer packs met. It
+    # cuts both joists (33'-9 3/8" and 35'-1 3/8"); the header at x=4'-0 1/2" clears
+    # DU-ERV-OA's wrapped 12" by 1 1/2", and the span stays 1/2" under the 48" branch.
     FloorOpening(uid="6KE3VP3HY1", tag="FO-M-ERV-OA", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(inch(6), ft(33, 5.5)), pt(ft(3, 11), ft(33, 5.5)),
-                          pt(ft(3, 11), ft(34, 4.5)), pt(inch(6), ft(34, 4.5))),
-                 bearing_refs=("W-B-W1",)),
-    # --- the ERV discharge riser's hole through FS-M-MECH -------------------------------
-    #
-    # The second of the chase risers to be drawn, and the same argument as FO-M-ERV-OA
-    # above. DU-ERV-EA's riser is at (2'-0", 35'-0") and 8", occupying y 34'-8"..35'-4", and
-    # it straddles FS-M-MECH's 35'-1 3/8" joist line, 5 3/8" south of it and 2 5/8" north.
-    #
-    # ** THAT STATION IS PINNED FROM BOTH SIDES AND THE JOIST IS IN THE MIDDLE OF WHAT IS
-    # LEFT. ** South, the six-vent bundle crossed at y=34'-6" (the chase is at 35'-1.3" now,
-    # inside this hole — see below): an 8" riser must keep its
-    # face north of 34'-5", so y >= 34'-11". North, W-S-N3B's stud cavity starts at
-    # 35'-5 3/8" one storey up, so y <= 35'-1 3/8". The whole legal band is 2 3/8" wide and
-    # the joist line sits inside it — there is no station that avoids the cut.
-    #
-    # Outline is the duct plus the framing, as above: x 1'-5"..2'-7" and y 34'-6 1/2"..
-    # 35'-5 1/4" leave 1 1/4" of air round an 8" duct once the header's 1 3/4" and the
-    # trimmer's 1 1/4" are allowed for. The north trimmer lands 1/8" inside W-M-N3B's
-    # interior face, which is where a joist under a wall belongs.
-    # ** GROWN WEST AND 1" NORTH TO TAKE THE RADON CHASE TOO (2026-09-23). ** VR-M-RADON-VENT
-    # moved to (1'-0", 35'-1.3") and stood in FO-M-ERV-OA's trimmers; x from 6" and y to
-    # 35'-6 1/4" put its 3" riser inside this hole, bearing on W-B-W1 like FO-M-ERV-OA.
-    FloorOpening(uid="YXTAPJ7WFE", tag="FO-M-ERV-EA", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(inch(6), ft(34, 6.5)), pt(ft(2, 7), ft(34, 6.5)),
-                          pt(ft(2, 7), ft(35, 6.25)), pt(inch(6), ft(35, 6.25))),
+                 outline=(pt(inch(6), ft(33, 5.5)), pt(inch(48.5), ft(33, 5.5)),
+                          pt(inch(48.5), ft(35, 6.25)), pt(inch(6), ft(35, 6.25))),
                  bearing_refs=("W-B-W1",)),
 ]
 

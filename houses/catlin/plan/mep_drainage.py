@@ -817,12 +817,14 @@ RADON_SUMP = [
     # and north on x=1'-9", up through the slab clear of FT-B-W1/N4, and 3 7/16" over it to
     # the riser's foot. It falls 1/2" back to the pit so condensate drains there.
     PipeRun(uid="90RG08DW5Y", tag="PR-B-RADON-LEG", system=PipeSystem.RADON,
-            path=(pt(ft(5, 9), ft(28)), pt(ft(1, 9), ft(28)), pt(ft(1, 9), ft(34, 7.2)),
-                  pt(ft(1, 9), ft(34, 7.2)), pt(ft(1, 9), inch(421.3)),
-                  pt(ft(1), inch(421.3))),
+            # ** IT LANDS ON THE RADON RISER, NOT THE CHASE POINT (2026-09-23). ** It ended at
+            # the bundle's centre, inside the plumbing vent riser beside it — a soil-gas pipe
+            # tied into a plumbing vent. It comes up through the slab on its own lane and
+            # turns west onto the radon riser's foot at (10", 34'-4.4").
+            path=(pt(ft(5, 9), ft(28)), pt(ft(1, 9), ft(28)), pt(ft(1, 9), inch(412.4)),
+                  pt(ft(1, 9), inch(412.4)), pt(inch(10), inch(412.4))),
             diameter=inch(3), material="pvc",
-            elevations=(inch(-7.5), inch(-7.25), inch(-7), inch(3.4375), inch(3.4375),
-                        inch(3.4375))),
+            elevations=(inch(-7.5), inch(-7.25), inch(-7), inch(3.4375), inch(3.4375))),
 ]
 
 # --- the sump's pumped discharge (2026-09-22) -------------------------------------------
@@ -833,20 +835,23 @@ RADON_SUMP = [
 # relative (datum -109 7/16"). Check valve and ice guard are on the pump (SM-B-RADON).
 SUMP_DISCHARGE = [
     PipeRun(uid="23NF4WJS89", tag="PR-B-SUMP-DISCH", system=PipeSystem.SUMP_DISCHARGE,
-            path=(pt(ft(5, 9), ft(27, 7.2)), pt(ft(1, 4), ft(27, 7.2)),
-                  pt(ft(1, 4), ft(34, 6)), pt(ft(1, 4), ft(34, 6)),
-                  pt(inch(-10.5), ft(34, 6)), pt(inch(-10.5), ft(35, 6))),
+            # ** IT RISES SOUTH OF THE VENT RISER SINCE 2026-09-23 ** (9.6", 33'-5.5"): the
+            # chase was re-packed, and its west leg at -21" must cross neither the vent riser
+            # nor DU-ERV-RISER-SUP's basement leg.
+            path=(pt(ft(5, 9), ft(27, 7.2)), pt(inch(9.6), ft(27, 7.2)),
+                  pt(inch(9.6), inch(401.5)), pt(inch(9.6), inch(401.5)),
+                  pt(inch(-10.5), inch(401.5)), pt(inch(-10.5), ft(35, 6))),
             diameter=inch(1.5), material="pvc",
-            # Leaves the pit's wall under the slab, beside the radon leg, and rises at the old
-            # lid station; nothing after the rise climbs again.
+            # Leaves the pit's wall under the slab, beside the radon leg; nothing after the
+            # rise climbs again.
             elevations=(inch(-7.5), inch(-7.5), inch(-7.5), inch(88.4375),
-                        inch(87.8375), inch(87.4375))),
+                        inch(88.0), inch(87.4375))),
     # The wall crossing, sleeved, on the 8" pour's centreline 4" in
     # from the axis; centre = invert at the wall + 3/4".
     SleevePenetration(uid="DS557CEW46", tag="SP-B-W1-SUMP-DISCH", host_ref="W-B-W1",
-                      position=pt(inch(4), ft(34, 6)), pipe_diameter=inch(1.5),
+                      position=pt(inch(4), inch(401.5)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(3), purpose=Service.DRAIN, axis="horizontal",
-                      center_elevation=inch(-20.5)),
+                      center_elevation=inch(-20.375)),
 ]
 
 
