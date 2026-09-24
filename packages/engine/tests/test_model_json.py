@@ -387,10 +387,10 @@ def test_load_variant_catalog_degrades_gracefully(tmp_path):
 def test_stairs_payload_carries_landing_depth(catlin_payload):
     stairs = {stair["tag"]: stair for stair in catlin_payload["stairs"]}
     assert "landing_depth_m" in stairs["ST-B2M"]
-    # ST-B2M authors the IRC R311.7.6 minimum landing_depth=ft(3) — the payload carries
-    # the *authored* value, which the resolver then floors at the flight width. The winder
-    # stair authors none.
-    assert stairs["ST-B2M"]["landing_depth_m"] == pytest.approx(0.9144)  # 3'-0"
+    # ST-B2M authors landing_depth=ft(4, 2.875), run to W-B-N2 (2026-09-24; was the R311.7.6
+    # minimum ft(3)) — the payload carries the *authored* value, which the resolver then
+    # floors at the flight width. The winder stair authors none.
+    assert stairs["ST-B2M"]["landing_depth_m"] == pytest.approx(inch(50.875).meters)
     assert stairs["ST-S2A"]["landing_depth_m"] is None
     for tag, stair in stairs.items():
         if tag == "ST-BW-ENTRY":

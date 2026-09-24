@@ -1945,7 +1945,7 @@
 # screws $3-9/LF (hardware can exceed the post lumber on an elevated deck), setting $8-18/LF,
 # and primer + 2 coats at $2.00-4.50/SF over 1.833 SF of face per LF. Painting a 6x6 is ~85%
 # labour — four narrow faces with cut-in at cap and base.
-"column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.09 cy — the three interior stairwell posts (P-M-STRWELL-S/SS, P-M-STRLAND-SE) ONLY. Was 0.40 cy / 51.4 LF while all six pillars were wood, then 0.19 cy when four went to cast concrete, then 0.06 when the two centre pillars left for POST_WHITE_PAINT_DF below (all 2026-09-03)
+"column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.06 cy — the three interior stairwell posts (P-M-STRWELL-S/SS, P-M-STRLAND-SE) ONLY. Was 0.40 cy / 51.4 LF while all six pillars were wood, then 0.19 cy when four went to cast concrete, then 0.06 when the two centre pillars left for POST_WHITE_PAINT_DF below (all 2026-09-03)
 # The two CENTRE balcony pillars, split out of the row above when they were specified DF-L.
 # Same rate structure, same paint, same labour — it is the identical stick to hang and coat.
 # Material carries a 25% species premium over the SPF above: a DF-L 6x6 runs roughly a fifth

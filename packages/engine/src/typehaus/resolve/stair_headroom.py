@@ -5,9 +5,9 @@ to lane a run through it, following :func:`~typehaus.resolve.mep_envelopes.openi
 two readers of one derivation, so a router cannot propose what the check will then fail.
 
 One prism per going, off :func:`~typehaus.resolve.stairs.walkline.headroom_stations` (a
-landing's two edges are a going too, cut to R311.7.6's 36" from its flight edge). The top is the higher nosing plus 6'-8" — conservative
-by at most one riser against the sloped line, which is right for a router, which chooses
-rather than reads. The bottom is the underside of the flight's own structure under that
+landing's two edges are a going too, cut to R311.7.6's 36" from its flight edge). The top
+is the higher nosing plus 6'-8" — conservative by at most one riser against the sloped
+line, which is right for a router, which chooses rather than reads. The bottom is the underside of the flight's own structure under that
 going, so a run can no more pass through a stringer than through the headroom above it.
 """
 
