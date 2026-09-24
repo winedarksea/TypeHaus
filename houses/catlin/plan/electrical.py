@@ -1136,13 +1136,15 @@ CONDUIT_TRUNKS = [
     # The riser follows ED-A-PV-JB west to x=10'-2" and down to 25'-0"; the box's own note
     # carries why that station.
     ConduitRun(uid="XJR4KE400J", tag="CD-A-PV-EAST", trade_size=inch(1.5),
-               # Up 5" off the riser head first (2026-09-23): DU-ERV-RISER-EXH's top leg runs
-               # east at 20'-4" through the same strip, so this crosses it above.
+               # Up 7" off the riser head first (2026-09-23): DU-ERV-RISER-EXH's top leg runs
+               # east at 20'-4", and 21'-1" clears it and rides above FO-A-ERV-CHASE's deck band.
                path=(pt(inch(19.6), inch(404)), pt(inch(19.6), inch(404)),
                      pt(inch(110), inch(404)), pt(inch(110), ft(35, 10)),
                      pt(ft(10, 2), ft(35, 10)), pt(ft(10, 2), ft(35, 10))),
                start_elevation=ft(20, 6), end_elevation=ft(25),
-               elevations=(ft(20, 6), ft(20, 11), ft(20, 11), ft(20, 11), ft(20, 11), ft(25)),
+               elevations=(ft(20, 6), ft(21, 1), ft(21, 1), ft(21, 1), ft(21, 1), ft(25)),
+               # Pull box at 2 (9'-2", 33'-8"), attic deck in RM-A-POCKET: the riser chains in.
+               pull_points=(2,),
                from_ref="CD-B-ATTIC-RISER", to_ref="ED-A-PV-JB"),
     # --- the backup microgrid's three raceways ----------------------------------------
     #
@@ -1187,12 +1189,19 @@ CONDUIT_TRUNKS = [
     # -1'-3 5/8" at x=9'-6" and rises back to -1'-1 3/4" at x=16'-0", tracking 3/8" under
     # the drain's falling invert, and turns into its sleeve beneath it.
     ConduitRun(uid="CDT002AAAA", tag="CD-B-GARAGE", trade_size=inch(1.25),
-               path=(pt(ft(2), ft(29)), pt(ft(2), ft(35, 3)), pt(ft(9, 2), ft(35, 3)),
-                     pt(ft(9, 6), ft(35, 3)), pt(ft(16), ft(35, 3)),
+               # ** ITS OWN LANE AT x=4'-11 1/2" SINCE 2026-09-24. ** North on x=2'-0" it ran
+               # through the chase foot — DU-ERV-EA's and DU-ERV-RISER-EXH's risers and the
+               # sauna vent's last leg. Now south 1'-1" off the panel and down, east at
+               # 27'-11" (under the kitchen drain, which has fallen far enough there), north
+               # under CD-B-KITCHEN and the sauna vent, north between the cold trunk's dip and the supply plenum, and
+               # east along the north wall under the kitchen drain and the cold riser.
+               path=(pt(ft(2), ft(29)), pt(ft(2), ft(27, 11)), pt(ft(2), ft(27, 11)),
+                     pt(inch(59.5), ft(27, 11)), pt(inch(59.5), ft(35, 3)),
+                     pt(ft(16), ft(35, 3)),
                      pt(ft(16), ft(35, 5)), pt(ft(16), ft(35, 5))),
-               start_elevation=ft(-1, -1.75), end_elevation=ft(-4), elevations=(ft(-1, -1.75), ft(-1, -1.75), ft(-1, -1.75), ft(-1, -3.625), ft(-1, -1.75), ft(-1, -1.75), ft(-4)),
+               start_elevation=ft(-1, -1.75), end_elevation=ft(-4), elevations=(ft(-1, -1.75), ft(-1, -1.75), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), ft(-4)),
                # Low-profile LB at 4 (16'-0", 35'-3"), RM-B-STAIR ceiling: ~7/16" under the drain.
-               pull_points=(4,),
+               pull_points=(5,),
                from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
     # The buried leg: out through SP-B-N2-CD-GAR2 at -4'-0", north under the house/garage
     # gap, and up through the garage slab to ED-G-EV-1450. Same station the whole feeder
@@ -1333,12 +1342,30 @@ MAIN_DATA_TRUNKS = [
     # east of the FO-M-STAIR well, one radio for the kitchen, the stair and RM-M-STUDY.
     ConduitRun(uid="CDT010AAAA", tag="CD-M-DATA-KITCH", trade_size=inch(0.75),
                service=Service.DATA,
-               # Leaves the data riser straight south (2026-09-23), out of the re-packed
-               # chase's south band.
-               path=(pt(inch(22), inch(406.2)), pt(inch(22), ft(22)),
-                     pt(ft(19), ft(22)), pt(ft(19), ft(29))),
-               start_elevation=ft(9, 2.25), end_elevation=ft(9, 2.25),
-               elevations=(ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 2.25)),
+               # ** IT CROSSES DU-M-ERV-EXH-TRUNK'S LINE UNDER THE BAND SINCE 2026-09-24. ** The
+               # 8" trunk fills FS-S-WEST's web window from y=7'-4" to 35'-0", with the chase
+               # west of it and this AP east, so no raceway crosses it inside the field. Off the
+               # data riser at +8'-10 1/2" in RM-M-MECH's ceiling (exposed by design), north
+               # between the extract riser and DU-ERV-EA, east over the supply plenum, up inside
+               # W-M-MECH-E, south in the 5'-4 1/2" truss opening on the lower tier (under the
+               # BATH1 lav drain and the WC vent), east in the 23'-4" bay south of the stair
+               # well, up over the extract legs at x=14'-6 1/2" to the 21'-1.3" bay (BM-M-HALL
+               # fills x=18' from 22'-4" to 25'-10"), east over the suite's pipes and north at
+               # x=19'-0" in FS-S-EAST's I-joist webs. Every tier step is under half the deck.
+               path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(410.6)),
+                     pt(inch(32), inch(410.6)), pt(inch(32), inch(411.5)),
+                     pt(ft(6), inch(411.5)), pt(ft(6), inch(411.5)),
+                     pt(inch(78.9), inch(411.5)), pt(inch(78.9), inch(280)),
+                     pt(inch(174.5), inch(280)), pt(inch(174.5), inch(280)),
+                     pt(inch(174.5), inch(253.3)), pt(ft(19), inch(253.3)),
+                     pt(ft(19), ft(29)), pt(ft(19), ft(29))),
+               start_elevation=inch(106.5), end_elevation=ft(9, 2.25),
+               elevations=(inch(106.5), inch(106.5), inch(106.5), inch(106.5), inch(106.5),
+                           inch(110.5), inch(110.5), inch(110.5), inch(110.5), inch(115.5),
+                           inch(115.5), inch(115.5), inch(115.5), ft(9, 2.25)),
+               # Pull boxes at 4 (6'-0", 34'-3 1/2", in RM-M-MECH's open ceiling) and 8
+               # (14'-6 1/2", 23'-4", behind a ceiling access cover): 270/270/360 deg.
+               pull_points=(4, 8),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-KITCH-AP"),
     # PORCH goes SOUTH first and turns east at y=1'-0", well below the void, then out under
     # the balcony deck to the porch soffit — still sharing SP-SG-PORCH-ELEC with the ceiling
@@ -1365,17 +1392,24 @@ MAIN_DATA_TRUNKS = [
     # it gets built.
     ConduitRun(uid="CDT011AAAA", tag="CD-M-DATA-PORCH", trade_size=inch(0.75),
                service=Service.DATA,
-               # Beside CD-M-DATA-KITCH out of the chase, 1 1/2" above it (2026-09-23).
-               path=(pt(inch(22), inch(406.2)), pt(inch(22), ft(1)),
+               # Out of the chase along its south trimmer and south in the 1'-4 1/2" truss
+               # opening on the upper tier, over PR-M-S-BATH1-TUB-DRAIN and DU-M-ERV-R-BATH1, to
+               # the 1'-0" bay south of DU-M-ERV-EXH-TRUNK's end (2026-09-24).
+               path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(402.3)),
+                     pt(inch(29.5), inch(402.3)), pt(inch(29.5), ft(1)),
+                     pt(inch(29.5), ft(1)),
                      pt(ft(17, 6), ft(1)), pt(ft(17, 6), inch(-2)), pt(ft(17, 6), inch(-6)),
                      pt(ft(17, 6), inch(-6)), pt(ft(17, 6), ft(-4.833)),
                      pt(ft(17, 6), ft(-4.833))),
-               start_elevation=ft(9, 3.75), end_elevation=ft(8, 8),
-               elevations=(ft(9, 3.75), ft(9, 3.75), ft(9, 3.75), ft(9, 3.75), ft(9, 3.75),
-                           ft(8, 10.25), ft(8, 10.25), ft(8, 8)),
-               # Pull box at 6 (17'-6", -4'-10"), 6" east of ED-M-PORCH-AP under FS-SG-DECK's
-               # joists, access cover. Re-index it if the head is re-laid again.
-               pull_points=(6,),
+               start_elevation=inch(118), end_elevation=ft(8, 8),
+               elevations=(inch(118), inch(118), inch(118), inch(118), ft(9, 3.75),
+                           ft(9, 3.75), ft(9, 3.75), ft(9, 3.75), ft(8, 10.25), ft(8, 10.25),
+                           ft(8, 8)),
+               # Pull box at 4 (2'-5 1/2", 1'-0"), the foot of the drop to the south bay, behind
+               # a ceiling access cover: re-laid round the extract trunk 2026-09-24, the head's
+               # jog and tier drop put 630 deg before the old box under FS-SG-DECK. Re-index it
+               # if the head is re-laid again.
+               pull_points=(4,),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-PORCH-AP"),
 ]
 
@@ -1393,8 +1427,13 @@ ATTIC_DATA_TRUNKS = [
     # stood 0.21" in the stud plane), and steps 2 7/8" south into the cavity to rise.
     ConduitRun(uid="CDT012AAAA", tag="CD-A-DATA-NE", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(inch(22), inch(406.2)), pt(inch(22), ft(22, 6.875)), pt(ft(6, 6), ft(22, 6.875)), pt(ft(6, 6), ft(22, 4)), pt(ft(6, 6), ft(22, 4))),
-               start_elevation=ft(20, 6), end_elevation=ft(23), elevations=(ft(20, 6), ft(20, 6), ft(20, 6), ft(20, 6), ft(23)),
+               # Up 1" off the chase riser's head first: at +20'-6" the deck leg sat in the
+               # crowns of the three radials it crosses (2026-09-24).
+               path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(406.2)), pt(inch(22), ft(22, 6.875)), pt(ft(6, 6), ft(22, 6.875)), pt(ft(6, 6), ft(22, 4)), pt(ft(6, 6), ft(22, 4))),
+               start_elevation=ft(20, 6), end_elevation=ft(23), elevations=(ft(20, 6), ft(20, 7), ft(20, 7), ft(20, 7), ft(20, 7), ft(23)),
+               # Pull box at 3 (6'-6", 22'-6 7/8"), RM-A-POCKET deck at W-A-STU-N, before the
+               # wall. Not 2: DU-A-ERV-R-STUBATH's lane. DATA-CHASE chains in.
+               pull_points=(3,),
                from_ref="ED-B-NET-PATCH", to_ref="ED-A-STUDIO-AP"),
 ]
 

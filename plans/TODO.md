@@ -108,13 +108,18 @@ with every suppression lifted.
   `plan/mep_registers.py`) in an 18'x9' room, leaving the west end unswept by the room's only
   moisture-removal extract. A middle station (~x 12'-6") would shorten the duct run if the
   saving is wanted.
+- **`DU-A-ERV-R-STUBATH` x `PR-A-STUBATH-VENT` is the last ERV/vent pair** (catlin,
+  2026-09-24): both stand in `W-A-STU-W`'s one 5 1/2" cavity, and over the duct's elbow into
+  its 4'-4" grille the vent would be in the partition's plates. Lower `REG-A-STUBATH-EXH`
+  below 3'-2" (`plan/mep_registers.py`, held by another session during the reroute) and drop
+  the duct's top to match; `tests/test_catlin_erv_clearance.py` then empties its `_KNOWN`.
 - **The ERV SUPPLY manifold has no drawn feed and cannot have one where it stands.** Its
   extract twin got `DU-M-ERV-EXH-FEED` on 2026-09-20. RM-M-MECH's true inside faces are
   **63"x23"**, the supply riser sits west of the exhaust riser, and every gate to it measures
   4 3/4" or less against a 6" duct since the chase moved to 35'-1.3" — the conduit risers and
-  `DU-ERV-EA` bind now. A flat 3"x8" section threads, but `mep.erv_static_budget` matches on
-  `nominal_diameter` and would go blind. Two ways out: move the manifold, or teach the static
-  budget a rectangular duct (equivalent diameter) so the flat section can be graded.
+  `DU-ERV-EA` bind now. A flat 3"x8" does not thread either (2.87" pinch with EA's wrap), and
+  shop-made duct is a last resort anyway: revisit after the reroute with stock sizes, or move
+  the manifold.
 
 - **Router follow-ups from rooting `PR-B-HW-TRUNK` on `EQ-B-WH.hot` (2026-09-23):**
   - A pipe proposal leaves a port sideways at the port's height; `ServicePort.direction`

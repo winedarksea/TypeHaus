@@ -176,14 +176,14 @@ SUPPLY = [
             path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(35, 6)), pt(ft(11), ft(34, 10)),
                   pt(ft(9, 6), ft(34, 10)), pt(ft(9, 6), ft(34, 10)),
                   pt(ft(4, 9), ft(34, 10)), pt(ft(4, 9), ft(34, 10)),
-                  pt(ft(4, 9), ft(33)), pt(ft(4, 9), ft(33)), pt(ft(4, 9), ft(16)),
+                  pt(ft(4, 9), inch(386.5)), pt(ft(4, 9), inch(386.5)), pt(ft(4, 9), ft(16)),
                   pt(ft(8), ft(16)), pt(ft(17, 5), ft(16)), pt(ft(17, 5), ft(16, 2.25)),
                   pt(ft(17, 5), ft(16, 2.25)), pt(ft(17, 5), ft(16)),
                   pt(ft(29, 9.6), ft(16)),
                   pt(ft(29, 9.6), ft(34, 1.2)), pt(ft(29, 9.6), ft(34, 1.2))),
             diameter=inch(1.25), material="copper", finish="lacquered",
             elevations=(inch(2), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
-                        ft(8, 4.6375), ft(8, 4.6375), ft(8, 0.25), ft(8, 0.25),
+                        ft(8, 4.6375), ft(8, 4.6375), inch(93.44), inch(93.44),
                         ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
                         ft(8, 4.6375), ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
                         ft(7, 10.6375), ft(7, 10.6375), ft(12, 7.4375)),
@@ -496,15 +496,19 @@ SUPPLY = [
     PipeRun(uid="CBPW40AAAA", tag="PR-B-CW-SBATH", system=PipeSystem.WATER_COLD,
             # y=26'-5 1/4", not the wall axis: FS-S-WEST's truss joist-0-020 starts at
             # 26'-6 1/4", and on the axis the riser took 3/16" of it.
-            path=(pt(ft(4, 9), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 5.25)),
-                  pt(ft(5, 7.2), ft(26, 5.25)), pt(ft(5, 7.2), ft(26, 5.25)),
-                  pt(ft(5, 7.2), ft(26, 5.25)), pt(ft(5, 7.2), ft(26, 5.25))),
+            # x=5'-3" since 2026-09-24: at 5'-7.2" the riser stood in DU-M-ERV-R-LIVING's lane
+            # through FS-S-WEST. The basement leg passes the BATH1 stack on y=26'-2" and turns
+            # north onto the riser east of it (west of it, the vanity arm lands on the stack).
+            path=(pt(ft(4, 9), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 2)),
+                  pt(ft(5, 3), ft(26, 2)), pt(ft(5, 3), ft(26, 5.25)),
+                  pt(ft(5, 3), ft(26, 5.25)),
+                  pt(ft(5, 3), ft(26, 5.25)), pt(ft(5, 3), ft(26, 5.25))),
             diameter=inch(0.75), material="copper", finish="lacquered",
             # Two inches OVER the band for the length of the branch: its y=26'-6" leg has to
             # cross the cold trunk's own north-south lane, and two 3/4" pipes on one
             # elevation is a lap rather than a crossing.
-            elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
-            wall_refs=(None, None, None, None, "W-M-STOS", "W-S-BD-N"),
+            elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
+            wall_refs=(None, None, None, None, None, "W-M-STOS", "W-S-BD-N"),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # x=6'-4" is the first clean bay past N-M-BA1's tee (6 1/2" west of D-M-MUD's jamb pack,
@@ -707,9 +711,13 @@ HYDRANT_BRANCH_MAIN = [
     # dead leg on a cold line feeding nothing, stagnant water on a branch used a handful of
     # times a summer. Both tees sit ON this polyline: balcony at 7'-4", porch at 12'-0".
     PipeRun(uid="R9TC5VZ1WQ", tag="PR-M-CW-HYD-DIST", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(6), ft(13)), pt(ft(6), ft(0, 9)), pt(ft(12), ft(0, 9))),
+            # ** THE SOUTH LEG IS ON THE UPPER TIER AT x=6'-3" SINCE 2026-09-24. ** On x=6'-0"
+            # at +9'-3" it crossed DU-M-ERV-R-LIVING, -BED and -PLANT on their lower-tier bay
+            # legs; 3" east it clears DU-M-ERV-R-BED's upper-tier lane and rides over all three.
+            path=(pt(ft(6), ft(13)), pt(ft(6, 3), ft(13)), pt(ft(6, 3), ft(13)),
+                  pt(ft(6, 3), ft(0, 9)), pt(ft(6, 3), ft(0, 9)), pt(ft(12), ft(0, 9))),
             diameter=inch(0.75), material="pex",
-            elevations=(ft(9, 3), ft(9, 3), ft(9, 3)),
+            elevations=(ft(9, 3), ft(9, 3), inch(117.5), inch(117.5), ft(9, 3), ft(9, 3)),
             serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
     # Porch leg: south into the wall's own plane (y=3 1/4", the 2x6 cavity's centre line),
     # then straight down inside W-M-S1 to the hydrant's seat at 2'-0".

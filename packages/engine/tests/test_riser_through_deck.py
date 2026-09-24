@@ -25,14 +25,14 @@ def test_a_riser_in_a_CHASE_is_silent_ON_THAT_DECK(catlin_ctx) -> None:
     added on 2026-09-15 for exactly the two ERV risers. A chase is recognised by WHAT IT IS
     rather than by what it names, and ``DU-ERV-OA`` is silent because of it.
 
-    **Per deck, and that is the finding.** ``DU-ERV-EA`` carries on up through FS-S-WEST,
-    which has no opening at all — the other half of the TODO's sentence about the chase
-    cluster being undrawn, and an 8" duct landing on a truss chord."""
+    Since 2026-09-24 both ERV risers carry on up through FO-S-ERV-CHASE and FO-A-ERV-CHASE,
+    so they are silent on every deck. **Per deck is still the rule**: ``PR-M-S-BATH1-DRAIN``
+    stands beside them outside the chase and is reported on both decks it crosses."""
     reported = {(tag, deck) for f in riser_through_deck(catlin_ctx)
                 for tag in f.element_tags for deck in f.element_tags if deck.startswith("FS-")}
-    assert not any(tag == "DU-ERV-OA" for tag, _deck in reported)
-    assert ("DU-ERV-EA", "FS-S-WEST") in reported
-    assert ("DU-ERV-EA", "FS-M-MECH") not in reported
+    assert not any(tag in ("DU-ERV-OA", "DU-ERV-EA") for tag, _deck in reported)
+    assert {("PR-M-S-BATH1-DRAIN", "FS-M-MECH"),
+            ("PR-M-S-BATH1-DRAIN", "FS-S-WEST")} <= reported
 
 
 def test_a_riser_the_deck_was_opened_FOR_is_silent() -> None:
@@ -59,26 +59,27 @@ def test_a_riser_the_deck_was_opened_FOR_is_silent() -> None:
 def test_a_riser_ON_A_JOIST_fails_naming_the_member_and_the_station(catlin_plan) -> None:
     """The unambiguous half. That member is cut and nothing headed it.
 
-    Catlin has no example left since 2026-09-23, when FS-S-WEST's 34'-8" truss moved to
-    34'-5 3/4" (``JoistSpec.line_overrides``). Undo that one move and DU-ERV-EA lands on it."""
+    Catlin has no example left since 2026-09-23. Move FS-S-WEST's 17'-4" truss to 18'-0"
+    (``JoistSpec.line_overrides``) and PR-M-S-SUITE-DRAIN, clear in its bay, lands on it."""
     from typehaus.checks.run import build_context
+    from typehaus.model import inch
     from typehaus.model.floors import FloorSystem
 
     storey, items = next((s, items) for s, items in catlin_plan.elements.items()
                          if any(getattr(e, "tag", None) == "FS-S-WEST" for e in items))
 
-    def unmoved(e):
+    def moved(e):
         if not (isinstance(e, FloorSystem) and e.tag == "FS-S-WEST"):
             return e
-        moves = tuple(m for m in e.joists.line_overrides if abs(m[0].inches - 416) > 1e-6)
+        moves = (*e.joists.line_overrides, (inch(208), inch(216)))
         return e.model_copy(update={"joists": e.joists.model_copy(
             update={"line_overrides": moves})})
 
-    ctx, _ = build_context(catlin_plan.with_elements(storey, map(unmoved, items)), CATLIN)
-    finding = next(f for f in _by_result(ctx, Result.FAIL) if "DU-ERV-EA" in f.element_tags)
-    assert "FS-S-WEST" in finding.element_tags
+    ctx, _ = build_context(catlin_plan.with_elements(storey, map(moved, items)), CATLIN)
+    finding = next(f for f in _by_result(ctx, Result.FAIL)
+                   if "PR-M-S-SUITE-DRAIN" in f.element_tags and "FS-S-WEST" in f.element_tags)
     assert "on joist joist-" in finding.message
-    assert "at (2'-0.0\", 35'-0.0\")" in finding.message
+    assert "at (12'-6.0\", 18'-0.0\")" in finding.message
     assert "nothing headed it" in finding.message
 
 
@@ -126,10 +127,13 @@ def test_catlin_is_pinned_so_a_campaign_can_see_itself(catlin_ctx) -> None:
     2" still wants drawing.
 
     0/34 later that day: two FS-S-WEST trusses moved off five risers (each now undrawn in a
-    clear bay), and the radon riser's FS-M-MECH hole became FO-M-ERV-EA, a CHASE."""
+    clear bay), and the radon riser's FS-M-MECH hole became FO-M-ERV-EA, a CHASE.
+
+    0/20 on 2026-09-24: every ERV duct, vent and the radon riser now stands in a drawn hole
+    (``test_catlin_erv_clearance.py``); what is left is supply and drain, all undrawn."""
     fails = _by_result(catlin_ctx, Result.FAIL)
     on_member = [f for f in fails if "lands on the member" in f.message]
     undrawn = [f for f in fails if "FRAMED, NOT DRILLED" in f.message]
     assert len(on_member) == 0
-    assert len(undrawn) == 34
+    assert len(undrawn) == 20
     assert len(fails) == len(on_member) + len(undrawn)

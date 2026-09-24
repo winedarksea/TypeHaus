@@ -309,6 +309,19 @@ haus route houses/catlin --space PR-B-KITCH-DRAIN --json      # what is clear, p
   budget is the goal test, not a post-check (§8 of the drain note). `routing/tree.py` orders
   terminals **deepest first** — least head slack, not cheapest — because route length is not
   a proxy for slack.
+- **A vent RISES and ties into the VENT riser, never the radon one.** `search_for` runs a
+  `rises(system)` search with `shortest_route(..., rising=True)`, which refuses a falling
+  step (MN 905.1; `notes/vent_grade_basis.md` §5). `cli/route_roots._vent_siblings` offers
+  the VentRun's `-vent` leg and same-system siblings as goal lines carrying z — including a
+  parent whose leg this vent tees into mid-span; the `-radon` leg stays a hard prism. `--hold-upstream N` keeps a vent's wet-wall legs as authored.
+- **What a run may touch is `resolve/mep_envelopes.joinable`**, the same rule
+  `mep.run_interference` pardons joints by: ducts of one system (return/exhaust are one
+  family), drain with vent, radon with radon, a supply with its own system. Edges are blocked
+  by geometry (`RoutingSpace.edge_blocked`: exact for risers and oblique prisms, midpoint
+  for boxes), and a terminal step is pardoned only the prisms that terminal stands in.
+- **A floor hole inside one bay takes no framing** (`resolve/floor_openings.within_one_bay`):
+  the joists either side are its trimmers and the sheet still spans between them. Draw
+  riser holes to the duct, in a bay, and none cuts a joist.
 - **`resolve/mep_envelopes.py` and `resolve/mep_bores.py` are the shared readings.** What a
   run occupies (real OD + insulation, one prism per segment over that segment's own z range)
   and what a trade may cut out of a member (R502.8.1, R602.6, R602.6.1) live in `resolve`,

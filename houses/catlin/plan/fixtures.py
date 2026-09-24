@@ -383,7 +383,7 @@ MAIN_FIXTURES = (
     # SL-M-DECK (9" concrete) means every main-storey fixture drops straight down its own
     # sleeve rather than running a trap arm sideways — same as PR-B-SINK2/WASH-DRAIN. The
     # tub wet-vents off the laundry stack: a 45" 2" branch (MN Plumbing Table 1002.2 caps
-    # 1 1/2" at 42") ties into PR-M-WC-VENT's existing x=8' leg, no new pipe. y = 5.86920 m
+    # 1 1/2" at 42") ties into PR-M-BATH2-VENT's x=8'-2 1/2" leg, no new pipe. y = 5.86920 m
     # (was 5.82791) is the basin backed onto W-M-CLN, INT_2X4_STAGGERED_GWB's face;
     # `wall_ref`-relative, so it tracks the wall without a coordinate edit here.
     # ** `wall_ref` STILL SAYS W-M-BA2E AND THAT IS NOT THE WALL IT TOUCHES: **

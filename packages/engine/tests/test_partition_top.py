@@ -196,8 +196,9 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     """
     counts = {row["scope"]: row["count"] for row in sdpw_rows}
     # 2026-09-23: FS-S-WEST's 26'-8" truss moved to 26'-10", off W-M-STOS2 (2 -> 3 blocked).
+    # 2026-09-24: FO-S-ERV-CHASE's trimmer pack took two truss lines over the west wall (99).
     assert counts == {
-        "partition top plate, perpendicular framing above": 101,
+        "partition top plate, perpendicular framing above": 99,
         "partition top plate, under a parallel member": 10,
         "partition top plate, blocking between parallel members": 77,
     }

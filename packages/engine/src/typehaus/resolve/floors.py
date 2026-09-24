@@ -14,7 +14,12 @@ from typehaus.model.structure import Beam
 from typehaus.quantities import inch
 from typehaus.resolve.floor_ends import floor_ends
 from typehaus.resolve.floor_lines import extra_lines, move_lines
-from typehaus.resolve.floor_openings import _shift, opening_frames, opening_members
+from typehaus.resolve.floor_openings import (
+    _shift,
+    opening_frames,
+    opening_members,
+    within_one_bay,
+)
 from typehaus.resolve.floor_tilt import joist_lift, twisted
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
@@ -133,6 +138,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     findings = move_lines(system, positions, perp0, perp1)
     extra, extra_findings = extra_lines(system, positions, perp0, perp1)
     findings += extra_findings
+    opening_boxes = within_one_bay(opening_boxes, positions + extra)
 
     # Anything shorter than the joist's own depth is bearing seat, not span. An opening
     # drawn to a bearing wall's *near face* stops short of the bearing line the span is cut

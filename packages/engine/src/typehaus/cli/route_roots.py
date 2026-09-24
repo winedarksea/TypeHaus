@@ -22,6 +22,8 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING, Any
 
+from typehaus.hardware.plan_geometry import distance_point_to_segment
+
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
 
@@ -78,8 +80,13 @@ def _vent_siblings(model: ResolvedModel, run: Any, problems: list[str]
     for other in model.pipe_runs:
         if other.tag == run.tag or other.system != run.system or len(other.path) < 2:
             continue
+        # Either end on this run's tie, or this run's tie ON it: a branch vent tees into its
+        # parent mid-leg, which is what `mep.vent_reachability` accepts (2026-09-24).
         if min(((p[0] - end[0]) ** 2 + (p[1] - end[1]) ** 2) ** 0.5
-               for p in (other.path[0], other.path[-1])) > _CHASE_TOLERANCE_M:
+               for p in (other.path[0], other.path[-1])) > _CHASE_TOLERANCE_M and min(
+                distance_point_to_segment(end, a, b)
+                for a, b in zip(other.path, other.path[1:], strict=False)
+        ) > _CHASE_TOLERANCE_M:
             continue
         # A common vent only into one at least this size: catlin's 2" bath-group vent was
         # proposed into the 1 1/2" kitchen vent, which carries one sink.

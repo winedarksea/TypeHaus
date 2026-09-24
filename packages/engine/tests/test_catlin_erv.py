@@ -147,11 +147,18 @@ def test_every_riser_stands_INSIDE_the_chase_with_its_whole_envelope(catlin_mode
     bands: dict[str, tuple[float, float, float, float]] = {}
     for tag, duct in risers.items():
         radius = duct.diameter_m / M_PER_IN / 2.0
-        assert duct.insulation, tag  # outdoor-temperature air through conditioned space
-        for index in range(len(duct.path) - 1):
-            a, b = duct.path[index], duct.path[index + 1]
-            if abs(a[0] - b[0]) > 1e-9 or abs(a[1] - b[1]) > 1e-9:
-                continue  # not the vertical segment
+        # Only the outdoor leg is wrapped: the supply and extract risers carry house air in
+        # conditioned space and went bare on 2026-09-23 (owner; IECC R403.3).
+        assert bool(duct.insulation) == (tag == "DU-ERV-EA"), tag
+        # The riser is the TALLEST vertical: DU-ERV-RISER-SUP also steps up 1'-0" into a
+        # basement joist bay short of the shaft (2026-09-24).
+        verticals = sorted(
+            (index for index in range(len(duct.path) - 1)
+             if abs(duct.path[index][0] - duct.path[index + 1][0]) <= 1e-9
+             and abs(duct.path[index][1] - duct.path[index + 1][1]) <= 1e-9),
+            key=lambda i: -abs(duct.z_m[i + 1] - duct.z_m[i]))
+        for index in verticals[:1]:
+            a = duct.path[index]
             x, y = a[0] / M_PER_IN, a[1] / M_PER_IN
             if not (_SHAFT_Y[0] - 8 < y < _SHAFT_Y[1] + 8):
                 continue  # a vertical leg somewhere else in the house
@@ -212,7 +219,8 @@ def test_the_outdoor_pair_is_vapour_sealed_and_the_distribution_pair_is_not(catl
     by_tag = {d.tag: d for d in catlin_model.ducts}
     assert "vapour-sealed" in by_tag["DU-ERV-OA"].insulation
     assert "vapour-sealed" in by_tag["DU-ERV-EA"].insulation
-    assert "vapour-sealed" not in by_tag["DU-ERV-RISER-SUP"].insulation
+    assert not by_tag["DU-ERV-RISER-SUP"].insulation  # bare since 2026-09-23 (owner)
+    assert not by_tag["DU-ERV-RISER-EXH"].insulation
 
 
 def test_the_intake_is_its_own_duct_system(catlin_model) -> None:

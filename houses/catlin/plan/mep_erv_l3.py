@@ -208,8 +208,8 @@ DUCTS_ERV_ATTIC = [
     # the axis for the 20" it is inside this wall, or drop the grille below 3'-6"), and the
     # two BAR pairs this station DID clear are the measure of what the duct could do.
     DuctRun(uid="WCH6Z4DZX0", tag="DU-A-ERV-R-STUBATH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(4, 6), ft(34, 2)), pt(ft(4, 6), ft(33, 10)),
-                  pt(ft(2), ft(33, 10)), pt(ft(2), ft(21, 8.5)),
+            path=(pt(ft(4, 6), ft(34, 2)), pt(ft(4, 6), ft(33, 1)),
+                  pt(ft(2), ft(33, 1)), pt(ft(2), ft(21, 8.5)),
                   pt(ft(2), ft(21, 8.5)), pt(ft(9, 7.5), ft(21, 8.5)),
                   pt(ft(9, 7.5), ft(21, 8.5))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
@@ -217,8 +217,8 @@ DUCTS_ERV_ATTIC = [
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=20),
     DuctRun(uid="DYNQDC9ZMJ", tag="DU-A-ERV-R-ATTIC", system=DuctSystem.EXHAUST,
-            path=(pt(ft(4, 10.5), ft(34, 2)), pt(ft(4, 10.5), ft(33, 5.5)),
-                  pt(ft(2, 4.5), ft(33, 5.5)), pt(ft(2, 4.5), ft(20, 8)),
+            path=(pt(ft(4, 10.5), ft(34, 2)), pt(ft(4, 10.5), ft(32, 8)),
+                  pt(ft(2, 4.5), ft(32, 8)), pt(ft(2, 4.5), ft(20, 8)),
                   pt(ft(2, 4.5), ft(20, 8)), pt(ft(1), ft(20, 8))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
                         inch(-2), inch(-2)),
@@ -249,12 +249,14 @@ DUCTS_ERV_ATTIC = [
     # and a ratio of 2.26. REG-S-RET-BED3 is a CEILING grille in the storey below, so this
     # deck leg is over an unfinished floor from end to end.
     DuctRun(uid="73FJZH564X", tag="DU-A-ERV-R-BED3", system=DuctSystem.RETURN,
-            path=(pt(ft(5, 3), ft(34, 2)), pt(ft(5, 3), ft(33, 1)),
-                  pt(ft(3), ft(33, 1)), pt(ft(3), ft(18)),
+            path=(pt(ft(5, 3), ft(34, 2)), pt(ft(5, 3), ft(32, 3)),
+                  pt(ft(3), ft(32, 3)), pt(ft(3), ft(18)),
                   pt(ft(3), ft(18)), pt(ft(21), ft(18)),
                   pt(ft(21), ft(18)), pt(ft(29), ft(31, 4))),
+            # The bay leg rides 0.6" under _ATTIC_BAY_Z to pass beneath PR-A-BAR-DRAIN's
+            # x=9'-7 1/2" leg (2026-09-24); 3/4" still clear of the ceiling below.
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
-                        _ATTIC_BAY_Z, _ATTIC_BAY_Z,
+                        inch(-9.1), inch(-9.1),
                         _ATTIC_DECK_Z, _ATTIC_DECK_Z),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=5),

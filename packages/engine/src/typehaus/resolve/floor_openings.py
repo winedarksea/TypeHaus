@@ -13,7 +13,7 @@ Split out of ``resolve/floors.py``. Two rules the old inline block got wrong:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorOpening, FloorSystem
@@ -97,6 +97,7 @@ class OpeningFrame:
     #: The trimmer run: extended to the bearing line beyond each header edge.
     trim0: float
     trim1: float
+    #: 0 when the opening sits inside one bay: no framing, see :func:`within_one_bay`.
     plies: int
     trimmer_profile: str
     #: How far the trimmer pack reaches outboard of each parallel edge.
@@ -111,6 +112,8 @@ class OpeningFrame:
         """
         if self.perp0 + 1e-9 < perp < self.perp1 - 1e-9:
             return _subtract_interval(segments, self.axis0, self.axis1)
+        if not self.plies:
+            return segments
         if self.perp0 - self.trim_band - 1e-9 <= perp <= self.perp1 + self.trim_band + 1e-9:
             return _subtract_interval(segments, self.trim0, self.trim1)
         return segments
@@ -150,6 +153,20 @@ def opening_frames(model: ResolvedModel, system: FloorSystem, along_x: bool,
     return frames, []
 
 
+def within_one_bay(frames: list[OpeningFrame], lines: list[float]) -> list[OpeningFrame]:
+    """Frames with no framing at all where the opening cuts no joist line.
+
+    A hole between two neighbouring joists interrupts nothing: the joists either side are
+    whole and are its trimmers, and the sheet either side of it still spans joist to joist
+    in its strong axis, so a header would carry neither a tail nor a sheet edge. R502.10's
+    doubled trimmer is for an edge carrying a header's cut joists; here a pack only stepped a
+    second ply into the next bay, and a header blocked the bay a riser turns along.
+    """
+    return [replace(frame, plies=0, trim_band=0.0)
+            if not any(frame.perp0 + 1e-6 < line < frame.perp1 - 1e-6 for line in lines)
+            else frame for frame in frames]
+
+
 def _header_edges(box, along_x: bool):
     minx, maxx, miny, maxy = box
     if along_x:
@@ -179,6 +196,8 @@ def opening_members(system: FloorSystem, frames: list[OpeningFrame], along_x: bo
     #: [key, profile, perp centre, width, run lo, run hi]
     plies: list[list] = []
     for frame in frames:
+        if not frame.plies:
+            continue
         box = (frame.minx, frame.maxx, frame.miny, frame.maxy)
         for edge_index, (p0, p1) in enumerate(_header_edges(box, along_x)):
             if not frame.headers[edge_index]:

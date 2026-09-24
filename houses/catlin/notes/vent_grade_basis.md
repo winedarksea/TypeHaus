@@ -34,86 +34,82 @@ the same number on any datum, which is why the check reads the profile without t
 ## 1. `PR-M-KITCH-VENT` — per-vertex elevations (the `z_m` branch)
 
 Authored in `plan/mep_venting.py`: 1 1/2", serving `FX-M-KITCH-SINK`, six vertices with six
-authored elevations.
+authored elevations. Since 2026-09-24 it ties into `PR-M-BATH2-VENT` rather than the chase.
 
 | i | plan point (in) | elevation (in) |
 |---|---|---|
 | 0 | (392, 429) | `ft(9,3)` = 111 |
 | 1 | (392, 232) | `ft(9,4)` = 112 |
-| 2 | (180, 232) | `ft(9,6.375)` = 114.375 |
-| 3 | (180, 296) | `ft(9,8.75)` = 116.75 |
-| 4 | (12, 296) | `ft(9,9)` = 117 |
-| 5 | (12, 414) | `ft(9,9.25)` = 117.25 |
+| 2 | (187.3125, 232) | 112.5 |
+| 3 | (187.3125, 212.75) | 114.45 |
+| 4 | (98.5, 212.75) | 115.9 |
+| 5 | (98.5, 212.75) | 116 |
 
 Plan lengths (every leg is orthogonal, so each is one subtraction), and the rise across it:
 
-    seg 0  429 − 232 = 197" = 16.4167 ft    rise 112    − 111     = +1.000"
-    seg 1  392 − 180 = 212" = 17.6667 ft    rise 114.375 − 112    = +2.375"
-    seg 2  296 − 232 =  64" =  5.3333 ft    rise 116.75 − 114.375 = +2.375"
-    seg 3  180 −  12 = 168" = 14.0000 ft    rise 117    − 116.75  = +0.250"
-    seg 4  414 − 296 = 118" =  9.8333 ft    rise 117.25 − 117     = +0.250"
+    seg 0  429    − 232    = 197"      = 16.4167 ft    rise 112    − 111    = +1.000"
+    seg 1  392    − 187.3125 = 204.6875" = 17.0573 ft  rise 112.5  − 112    = +0.500"
+    seg 2  232    − 212.75 =  19.25"   =  1.6042 ft    rise 114.45 − 112.5  = +1.950"
+    seg 3  187.3125 − 98.5 =  88.8125" =  7.4010 ft    rise 115.9  − 114.45 = +1.450"
+    seg 4  riser at (98.5, 212.75)                     rise 116    − 115.9  = +0.100"
 
 **`mep.vent_grade`: PASS.** Five segments, five positive rises, no drop and therefore no
-sag. Five of five are horizontal, so the finding counts five.
+sag. Four of five are horizontal, so the finding counts four.
 
 Grades, rise ÷ plan:
 
     seg 0  1.000 / 16.4167 = 0.0609 "/ft
-    seg 1  2.375 / 17.6667 = 0.1344 "/ft
-    seg 2  2.375 /  5.3333 = 0.4453 "/ft
-    seg 3  0.250 / 14.0000 = 0.0179 "/ft   <- flattest
-    seg 4  0.250 /  9.8333 = 0.0254 "/ft
+    seg 1  0.500 / 17.0573 = 0.0293 "/ft   <- flattest
+    seg 2  1.950 /  1.6042 = 1.2156 "/ft
+    seg 3  1.450 /  7.4010 = 0.1959 "/ft
 
-**`mep.vent_grade_margin`: PASS with `ADVISORY — `.** The flattest leg is segment 3 at
-**0.018"/ft**, a seventh of the 1/8"/ft this house grades a vent to — 1/4" of fall spread
-over fourteen feet is level within the tolerance a hanger is set to. It does rise, so 905.1
-is satisfied and no FAIL is issued.
+**`mep.vent_grade_margin`: PASS with `ADVISORY — `.** The flattest leg is segment 1 at
+**0.029"/ft**, under a quarter of the 1/8"/ft this house grades a vent to. It is held low on
+purpose: it passes under `PR-B-CW-SUITE`, which is itself pinned under the suite tub's arm.
+It does rise, so 905.1 is satisfied and no FAIL is issued.
 
-## 2. `PR-S-BATH1-VENT` — two authored inverts (the interpolation, and the fallback)
+## 2. `PR-M-BATH2-VENT` — two authored inverts (the interpolation, and the fallback)
 
-2", `start_elevation=ft(9,3)` = 111, `end_elevation=ft(9,4)` = 112, four vertices and no
+2", `start_elevation=inch(115.9)`, `end_elevation=inch(116)`, three vertices and no
 per-vertex tuple. The resolver interpolates over developed plan length, so every segment
 comes out at the same grade and the check's two branches must agree on that number.
 
-    A (116.4, 372) → B (60, 318)   √(56.4² + 54²) = √(3180.96 + 2916) = √6096.96 = 78.08"
-    B (60, 318)    → C (12, 318)   48"
-    C (12, 318)    → D (12, 421.3) 103.3"
-    developed plan length           78.08 + 48 + 103.3 = 229.38" = 19.1150 ft
+    A (79, 204)   → B (98.5, 204)   19.5"
+    B (98.5, 204) → C (98.5, 266.5) 62.5"
+    developed plan length           19.5 + 62.5 = 82" = 6.8333 ft
 
-    grade = (112 − 111) / 19.1150 = 0.05231 "/ft, on every segment
+    grade = (116 − 115.9) / 6.8333 = 0.01463 "/ft, on every segment
 
-2026-09-23: the chase moved from (12, 414) to (12, 421.3), so leg C→D grew 96" → 103.3"
-(was 222.08" / 0.054"/ft).
-
-**`mep.vent_grade`: PASS** (three segments, each +0.052"/ft × its own length, all positive).
-**`mep.vent_grade_margin`: PASS with `ADVISORY — `** at 0.052"/ft, under 1/8"/ft.
+**`mep.vent_grade`: PASS** (two segments, each +0.015"/ft × its own length, both positive).
+**`mep.vent_grade_margin`: PASS with `ADVISORY — `** at 0.015"/ft, under 1/8"/ft.
 
 Strip the resolved per-vertex tuple and the check's second branch reads the same run as one
-segment of 19.1150 ft rising 1.000" — **0.052"/ft, the identical number**. That is the point
+segment of 6.8333 ft rising 0.100" — **0.015"/ft, the identical number**. That is the point
 of the two branches being written from one profile: a legacy run with two inverts and a
-routed run with six must not be graded against different arithmetic.
+routed run with six must not be graded against different arithmetic. (This section read
+`PR-S-BATH1-VENT` until 2026-09-24, when that run took per-vertex elevations.)
 
-## 3. The whole house, 2026-09-23
+## 3. The whole house, 2026-09-24
 
-Eight vent runs, and the flattest horizontal leg of each:
+Nine vent runs, and the flattest horizontal leg of each:
 
 | run | elevations | segments | flattest | verdict |
 |---|---|---|---|---|
-| `PR-B-BATH-VENT` | per-vertex | 4 (1 riser) | 0.073"/ft | PASS / advisory |
-| `PR-B-SAUNA-VENT` | per-vertex | 6 (1 riser) | 0.044"/ft | PASS / advisory |
-| `PR-M-WC-VENT` | per-vertex | 6 | 0.080"/ft | PASS / advisory |
-| `PR-M-KITCH-VENT` | per-vertex | 5 | 0.018"/ft | PASS / advisory |
-| `PR-S-BATH1-VENT` | two inverts | 3 | 0.052"/ft | PASS / advisory |
-| `PR-S-SUITEBATH-VENT` | two inverts | 6 | 0.066"/ft | PASS / advisory |
+| `PR-B-BATH-VENT` | per-vertex | 2 (1 riser) | 1.699"/ft | PASS / PASS |
+| `PR-B-SAUNA-VENT` | per-vertex | 9 (1 riser) | 0.093"/ft | PASS / advisory |
+| `PR-M-WC-VENT` | per-vertex | 4 (1 riser) | 0.014"/ft | PASS / advisory |
+| `PR-M-BATH2-VENT` | two inverts | 2 | 0.015"/ft | PASS / advisory |
+| `PR-M-KITCH-VENT` | per-vertex | 5 (1 riser) | 0.029"/ft | PASS / advisory |
+| `PR-S-BATH1-VENT` | per-vertex | 3 | 0.046"/ft | PASS / advisory |
+| `PR-S-SUITEBATH-VENT` | per-vertex | 2 | 0.032"/ft | PASS / advisory |
 | `PR-A-STUBATH-VENT` | per-vertex | 2 | 0.152"/ft | PASS / PASS |
-| `PR-A-BAR-VENT` | per-vertex | 3 (1 riser) | 0.300"/ft | PASS / PASS |
+| `PR-A-BAR-VENT` | per-vertex | 4 (1 riser) | 0.300"/ft | PASS / PASS |
 
-**8 of 8 PASS the CODE check** — nothing in this house drops or sags on its way to a
-terminal. Six of the eight hold less than 1/8"/ft and carry the advisory prefix, which is
-the fact the model could not state before: the two attic runs are the only vents in catlin
-built at a grade a plumber would recognise as a grade. The two-storey wet-wall runs are
-long, the head between a flood-level rim and the chase is thin, and 905.1 does not ask for
-more — but the house's own header does, and now the report says so out loud.
+**9 of 9 PASS the CODE check** — nothing in this house drops or sags on its way to a
+terminal. Six of the nine hold less than 1/8"/ft and carry the advisory prefix; the two
+attic runs and the basement bath vent are the only ones built at a grade a plumber would
+recognise as a grade. The long runs are held flat by what they pass under — the ERV bank in
+FS-S-WEST, the supply lines, the attic joists' flanges — and 905.1 does not ask for more.
 
 ## 4. What this does not claim
 

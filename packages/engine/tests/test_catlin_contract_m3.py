@@ -94,7 +94,8 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     east = next(f for f in catlin_model.floors if f.tag == "FS-S-EAST")
     west_joists = [m for m in west.members if m.category == "joist"]
     east_joists = [m for m in east.members if m.category == "joist"]
-    assert len(west_joists) == expected_positions
+    # Less two on the west: FO-S-ERV-CHASE's trimmer pack and header (2026-09-24).
+    assert len(west_joists) == expected_positions - 2
     assert len(east_joists) == expected_positions
     # Neither half is 18'-0" of stick, and they are not even the same length as each other:
     # the x=18' plate they share is split 3 1/2" to the trusses and 2" to the I-joists
@@ -110,9 +111,10 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     # I-joist's 2 1/2" flange at this depth) reaches past the opening into the next
     # regular joist line's own footprint, so that line is clipped too rather than left
     # to interpenetrate the trimmer (structural.member_interference).
+    # Five since 2026-09-24: FO-S-ERV-CHASE's trimmer pack and header took the other three.
     assert 10.135 in west_spans
     assert sum(1 for s in (round(m.length_m / ft(1).meters, 3) for m in west_joists)
-              if s == 10.135) == 8
+              if s == 10.135) == 5
 
 
 def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(

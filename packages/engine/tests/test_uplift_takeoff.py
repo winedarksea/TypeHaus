@@ -172,9 +172,9 @@ def test_a_truss_roof_is_tied_at_both_ends_of_every_truss(catlin_model_ro,
 def test_a_floor_is_tied_along_its_whole_bearing_line(catlin_model_ro) -> None:
     """``FS-S-WEST`` names one wall of a line the resolver split into six.
 
-    Its ``joists.bearing_refs`` is ``('W-M-W2', 'W-M-C2', 'BM-M-HALL')``, but its 28 floor
+    Its ``joists.bearing_refs`` is ``('W-M-W2', 'W-M-C2', 'BM-M-HALL')``, but its 26 floor
     trusses land across the whole west line. Billing only the named segment tied four of the
-    twenty-eight and reported the order complete — which is what ``_bearing_line`` exists to
+    twenty-six and reported the order complete — which is what ``_bearing_line`` exists to
     prevent, and this test is what would catch its removal.
     """
     # Floors on walls are untied by default, so the line rule is exercised with them on.
@@ -184,7 +184,8 @@ def test_a_floor_is_tied_along_its_whole_bearing_line(catlin_model_ro) -> None:
     floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-S-WEST")
     joists = [m for m in floor.members if m.category == "joist"]
     trussed = [c for c in wall_ties if c.member_profile == "11.875 floor truss"]
-    assert len(trussed) == len(joists) == 28
+    # Less one tie: the y=34'-5 3/4" truss's west end hangs on FO-S-ERV-CHASE's header.
+    assert len(trussed) == len(joists) - 1 == 25
     assert len({c.support_tag for c in trussed}) > 1, \
         "the west bearing line is more than one wall; a single support means _bearing_line died"
 

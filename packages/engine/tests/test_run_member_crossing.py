@@ -55,8 +55,9 @@ def test_the_web_verdict_is_a_SECOND_finding_and_not_a_changed_one(
     findings = _findings(catlin_plan, catlin_model_ro)
     web = [f for f in findings if "ON A WEB" in f.message]
     # Seventeen when the panel datum landed; nine since D1 took level 2's ducts off the
-    # webs. Every one that is left is a PIPE — the plumbing campaign's, not the air's.
-    assert len(web) == 9, [f.message for f in web]
+    # webs; six since the 2026-09-24 vent re-lane. Every one left is a PIPE — the plumbing
+    # campaign's, not the air's.
+    assert len(web) == 6, [f.message for f in web]
     assert all(tag.startswith("PR-") for f in web for tag in f.element_tags
                if not tag.startswith("FS-"))
     for finding in web:
@@ -77,11 +78,13 @@ def test_per_crossing_beats_the_envelope_on_the_bld05_run(
     envelope number at the nominal size; this is the number the pipe actually has.
 
     If anyone ever "simplifies" this check to band a whole leg, this fails.
+
+    +1.209" since 0db0c103 re-laned the suite stack out of the master closet.
     """
     findings = _findings(catlin_plan, catlin_model_ro)
     finding = _for(findings, "PR-M-S-SUITE-WC-DRAIN", "FS-S-WEST")
     assert finding.result is Result.PASS
-    assert _crown_in(finding.message) == pytest.approx(0.944, abs=0.001)
+    assert _crown_in(finding.message) == pytest.approx(1.209, abs=0.001)
     assert "joist-0-015-0" in finding.message
 
 
@@ -90,10 +93,11 @@ def test_the_envelope_would_have_failed_three_real_runs(
     """Two more that flip FAIL -> PASS for the same reason, so the choice is not a one-off.
 
     ``PR-M-S-BATH1-TUB-DRAIN`` reads -0.200" on the envelope and +0.148" per-crossing;
-    ``PR-M-S-SUITE-LAV-DRAIN`` -0.013" and +0.294".
+    ``PR-M-S-SUITE-LAV-DRAIN`` -0.013" and +0.294". The tub drain reads +0.465" since its
+    2026-09-24 re-lane west of the ERV trunk.
     """
     findings = _findings(catlin_plan, catlin_model_ro)
-    for tag, crown in (("PR-M-S-BATH1-TUB-DRAIN", 0.148),
+    for tag, crown in (("PR-M-S-BATH1-TUB-DRAIN", 0.465),
                        ("PR-M-S-SUITE-LAV-DRAIN", 0.294)):
         finding = _for(findings, tag, "FS-S-WEST")
         assert finding.result is Result.PASS, finding.message
@@ -122,14 +126,17 @@ def test_the_two_raceway_defects_are_fixed_and_stay_fixed(
     """``plan/electrical.py`` claimed 3/4" EMT "passes between the 8 7/8" chords without a
     hole in anything". At +9'-2" the real 0.922" OD put the invert 0.086" INTO the bottom
     chord; ``CD-M-DATA-PORCH``'s drop leg was 1.115" in. Both are +9'-2 1/4" now, and the
-    porch run holds that elevation through the rim before it turns down."""
+    porch run holds that elevation through the rim before it turns down.
+
+    2026-09-24: both re-laned around the ERV trunk. KITCH crosses at +9'-2 1/2" (invert
+    +0.414"); PORCH's north-south leg rides the top chord (crown +0.039")."""
     findings = _findings(catlin_plan, catlin_model_ro)
-    for tag in ("CD-M-DATA-KITCH", "CD-M-DATA-PORCH"):
+    for tag, side, gap in (("CD-M-DATA-KITCH", "invert", 0.414),
+                           ("CD-M-DATA-PORCH", "crown", 0.039)):
         finding = _for(findings, tag, "FS-S-WEST")
         assert finding.result is Result.PASS, finding.message
-        # +0.164" of invert is the whole margin the 1/4" nudge bought.
-        invert = float(finding.message.split("invert ")[1].split('"')[0])
-        assert invert == pytest.approx(0.164, abs=0.001), tag
+        measured = float(finding.message.split(f"{side} ")[1].split('"')[0])
+        assert measured == pytest.approx(gap, abs=0.001), tag
 
 
 def test_every_level_two_duct_rests_on_a_chord_and_none_is_inside_one(
@@ -147,14 +154,14 @@ def test_every_level_two_duct_rests_on_a_chord_and_none_is_inside_one(
     ducts = [f for f in findings
              if any(t.startswith("DU-M-ERV") for t in f.element_tags)
              and "FS-S-WEST" in f.element_tags]
-    # **FIVE of the fourteen, and the other nine are the design.** Because the trunk runs
-    # south, every extract takeoff is a pure BAY leg and crosses no truss at all; what is
-    # left to grade is the trunk itself, the three supply radials, and LAUNDRY's turn south
-    # to the standpipe boot.
+    # **SIX of the fourteen, and the other eight are the design.** Because the trunk runs
+    # south, most extract takeoffs are pure BAY legs and cross no truss; what is left to
+    # grade is the trunk itself, the three supply radials, LAUNDRY's turn south to the
+    # standpipe boot, and SUITEBATH's turn north to its grille (2026-09-24).
     assert sorted(tag for f in ducts for tag in f.element_tags
                   if tag.startswith("DU-M-ERV")) == [
         "DU-M-ERV-EXH-TRUNK", "DU-M-ERV-R-BED", "DU-M-ERV-R-LAUNDRY",
-        "DU-M-ERV-R-LIVING", "DU-M-ERV-R-STUDY"]
+        "DU-M-ERV-R-LIVING", "DU-M-ERV-R-STUDY", "DU-M-ERV-R-SUITEBATH"]
     for finding in ducts:
         assert finding.result is Result.PASS, finding.message
         crown = float(finding.message.split("crown ")[1].split('"')[0])

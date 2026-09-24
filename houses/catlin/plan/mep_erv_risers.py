@@ -151,11 +151,19 @@ DUCTS_ERV_RISERS = [
             # ** THE CHASE WAS RE-PACKED ON 2026-09-23. ** It stands at (1'-3.4", 33'-10.8")
             # in the chase's south band, between the branch-vent slot on the west and the
             # three conduits, south of the radon/vent bundle's 19'-6" jog lane.
-            path=(pt(ft(5, 6), ft(30, 10)), pt(ft(5, 6), ft(31, 8)),
-                  pt(inch(15.4), ft(31, 8)), pt(inch(15.4), inch(406.8)),
+            # ** WEST IN FS-M-MECH'S JOIST BAY SINCE 2026-09-24. ** At -1'-5 15/16" its
+            # y=31'-8" leg crossed DU-ERV-OA's wrapped north-south leg, PR-B-KITCH-DRAIN and
+            # PR-B-SAUNA-VENT, each at its own height; no single elevation cleared all three.
+            # North off the plenum (1" west of its collar, 5/8" off W-B-ESS-W's face) to the
+            # bay between the 32'-5.4" joist and FO-M-ERV-OA's trimmer pack, up into it (6",
+            # under half the deck), west over everything, and down again at x=1'-3.4" onto
+            # the riser's foot. Two more elbows: +0.033" w.g. (notes/erv_static_budget.md §6).
+            path=(pt(inch(65), ft(30, 10)), pt(inch(65), inch(394.8)),
+                  pt(inch(65), inch(394.8)), pt(inch(15.4), inch(394.8)),
+                  pt(inch(15.4), inch(394.8)), pt(inch(15.4), inch(406.8)),
                   pt(inch(15.4), inch(406.8))),
-            elevations=(inch(-19.4375), inch(-17.9375), inch(-17.9375),
-                        inch(-17.9375), inch(231.875)),
+            elevations=(inch(-19.4375), inch(-19.4375), inch(-7.4), inch(-7.4),
+                        inch(-17.9375), inch(-17.9375), inch(231.875)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
     DuctRun(uid="GFTW5CBARX", tag="DU-ERV-RISER-EXH", system=DuctSystem.EXHAUST,
@@ -305,13 +313,15 @@ DUCTS_ERV_RISERS = [
             # RM-B-FURNACE, 17" below the 8'-0 15/16" ceiling. That is a mechanical room and
             # it is walkable, but it is lower than anything else down there and should be on
             # the drawing.
-            # (2'-0 5/8", 34'-9.8") since 2026-09-23, the chase's NE corner: it tops out at
+            # (2'-0 5/8", 34'-9.5") since 2026-09-23, the chase's NE corner: it tops out at
             # 17'-0", below the radon/vent jog at 19'-6", so it is the one riser that may
             # stand in the jog's lane, and the north strip it exits through is empty. At
             # 35'-0" its 12" wrapped section stood an inch inside W-B-N4.
-            path=(pt(ft(4, 7), ft(31, 1)), pt(ft(4, 7), inch(417.8)),
-                  pt(inch(24.625), inch(417.8)),
-                  pt(inch(24.625), inch(417.8)), pt(inch(24.625), ft(36, 8))),
+            # Off the machine's port face at (4'-10 1/2", 31'-2 1/2") since 2026-09-24: at
+            # (4'-7", 31'-1") its 2" wrap touched DU-ERV-OA's, 11" away.
+            path=(pt(inch(58.5), inch(374.5)), pt(inch(58.5), inch(417.5)),
+                  pt(inch(24.625), inch(417.5)),
+                  pt(inch(24.625), inch(417.5)), pt(inch(24.625), ft(36, 8))),
             elevations=(inch(-33.8375), inch(-33.8375), inch(-33.8375),
                         inch(204), inch(204)),
             # ** 8", NOT 6" (owner, in the measured package). ** This is the single biggest

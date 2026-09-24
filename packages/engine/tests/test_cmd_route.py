@@ -102,23 +102,19 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
     3" / 1 1/2" / 1 1/4" and each size gets its own world — inflating one shared world at
     the widest walls the narrow branches out of lanes they fit perfectly well.
 
-    **One of three routes, and the other two are named with their size.** That is the
-    honest report of this bath as it stands, and two corrections made it so: branches are
-    sized from the fixture rather than assumed at 2", and every existing run is now
-    inflated by its REAL outside diameter plus its insulation rather than by its nominal
-    bore (3" DWV is 3.500" and `PR-A-HW-STUBATH` carries a 1/2" sleeve). The suite bath is
-    genuinely tight, the refusals name the runs standing in the way, and the roadmap's own
-    decision is that catlin is not to be forced green while its fixed design holds
-    unresolved conflicts.
+    **One of two routes, and the other is refused with its number.** The basement bath's
+    WC routes at 3" and its lav, on its own 1 1/4" lattice, is short of head. (This was the
+    suite bath until 2026-09-24, when DU-M-ERV-R-SUITEBATH's north leg closed the one lane
+    the router had found for its lav; the authored drain crosses over the duct.)
     """
     before = _plan_digest()
     result = runner.invoke(app, ["route", str(_CATLIN),
-                                 "--tree", "PR-M-S-SUITE-DRAIN", "--explain"])
+                                 "--tree", "PR-B-BATH-DRAIN", "--explain"])
     assert result.exit_code == 0, result.output
-    assert "FX-S-SUITEBATH-LAV-PROPOSED" in result.output
-    assert "diameter=inch(1.25)" in result.output
-    assert 'FX-S-SUITEBATH-WC: no route in plan' in result.output
-    assert 'at 3"' in result.output and 'at 1.5"' in result.output
+    assert '2 branch sizes (3", 1.25")' in result.output
+    assert "FX-B-BATH-WC-PROPOSED" in result.output
+    assert "diameter=inch(3)" in result.output
+    assert 'FX-B-BATH-LAV: short' in result.output
     assert "deepest first" in result.output
     assert _plan_digest() == before
 
@@ -126,21 +122,22 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
 def test_a_tree_branch_ties_at_the_stack_and_not_at_its_basement_leg(runner) -> None:
     """The tie band is `mep.fixture_drain_reach`'s, and it has to be.
 
-    `PR-M-S-SUITE-DRAIN` is a stack: its plan polyline passes the second-floor bath at
-    115.5" and then again, twelve feet lower, as the basement horizontal that leaves it.
-    In plan those are the same lines. Without the band a branch ties into the basement leg
-    and reports feet of head to spare, which is a true statement about a pipe nobody can
-    build.
+    `PR-M-S-BATH1-DRAIN` is a stack: its plan polyline passes the second-floor bath and
+    then again, a storey lower, as the basement horizontal that leaves it. In plan those
+    are the same lines. Without the band a branch ties into the basement leg and reports
+    feet of head to spare, which is a true statement about a pipe nobody can build. With
+    it, every one of the bath's five fixtures is inches SHORT at the second floor.
     """
     result = runner.invoke(app, ["route", str(_CATLIN),
-                                 "--tree", "PR-M-S-SUITE-DRAIN", "--explain"])
-    assert result.exit_code == 0, result.output
+                                 "--tree", "PR-M-S-BATH1-DRAIN", "--explain"])
     slacks = [float(line.split('"')[0].split()[-1])
               for line in result.output.splitlines() if "of head to spare" in line]
-    assert slacks, "a routed branch prints the head it holds"
-    # A second-floor bath on a 1 1/4" branch has inches of head, not feet. Ten is far past
-    # anything the geometry allows and far short of the 140" the basement leg reported.
-    assert max(slacks) < 10.0, slacks
+    shorts = [float(line.split("short ")[1].split('"')[0])
+              for line in result.output.splitlines() if "UNSERVED" in line and "short " in line]
+    assert shorts, result.output
+    # A second-floor bath has inches of head, not feet: nothing may claim the basement leg.
+    assert not slacks or max(slacks) < 10.0, slacks
+    assert max(shorts) < 10.0, shorts
 
 
 def test_a_tree_terminal_short_of_head_is_reported_with_the_number(runner) -> None:
@@ -382,11 +379,21 @@ def test_a_vent_may_be_proposed_into_a_SIBLING_and_not_only_its_own_chase(runner
     assert _plan_digest() == before
 
 
-def test_a_route_that_is_already_AT_its_goal_is_a_finding_and_not_a_paste(runner) -> None:
-    """catlin's PR-S-BATH1-VENT starts 0.9" off PR-S-SUITEBATH-VENT's north leg, so the
-    shortest route to a sibling is no route at all. A one-point polyline printed as dialect
-    is a 1-tuple that will not even parse — so it is reported, never proposed."""
-    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "PR-S-BATH1-VENT"])
+def test_a_route_that_is_already_AT_its_goal_is_a_finding_and_not_a_paste(
+        runner, tmp_path) -> None:
+    """Start PR-S-BATH1-VENT ON the vent riser it ties to and the shortest route is no route
+    at all. (Catlin's own origin sat 0.9" off a sibling until vents tied to the riser, not
+    a sibling, on 2026-09-24.) A one-point polyline printed as dialect is a 1-tuple that
+    will not even parse — so it is reported, never proposed."""
+    from _helpers import copy_house
+
+    house = copy_house(_CATLIN, tmp_path / "catlin")
+    venting = house / "plan" / "mep_venting.py"
+    text = venting.read_text()
+    assert text.count("pt(ft(9, 8.4), ft(31))") == 1
+    venting.write_text(text.replace("pt(ft(9, 8.4), ft(31))",
+                                    "pt(ft(8, 5.1875), ft(34, 3.3125))"))
+    result = runner.invoke(app, ["route", str(house), "--run", "PR-S-BATH1-VENT"])
     assert "already stands on what it is being routed to" in result.output
     assert "PR-S-BATH1-VENT-PROPOSED" not in result.output
 

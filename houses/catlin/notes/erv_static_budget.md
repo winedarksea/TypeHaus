@@ -296,9 +296,9 @@ because "at y=35'-6" an 8" envelope would stand 4 5/8" inside the stud cavity".
 | plenum `EQ-B-ERV-MAN-SUP` at 60 cfm | the curve's own point, 0.50 Pa / 249.089 | 0.0020 |
 | `DU-ERV-OA` | 210 cfm in **8"**, 13.74 ft + 4 x **6.5**, f 0.0234, P_v 0.02256 | 0.0315 |
 | `DU-B-ERV-SUP-TRUNK` | 210 cfm, 3.03 ft + **2** x 4.5 | 0.0387 |
-| `DU-ERV-RISER-SUP` | 210 cfm, **28.66** ft + 3 x 4.5 | **0.1356** |
-| `DU-S-ERV-HP-FEED` | 100 cfm, **44.66** ft + 7 x 4.5 | **0.0634** |
-| | | **0.3383** |
+| `DU-ERV-RISER-SUP` | 210 cfm, **29.90** ft + **5** x 4.5 | **0.1685** |
+| `DU-S-ERV-HP-FEED` | 100 cfm, **44.79** ft + 7 x 4.5 | **0.0635** |
+| | | **0.3713** |
 
 **2026-09-23: both chase risers moved 2 3/4" north** (off `W-M-MECH-S`, mid-bay in
 FS-S-WEST's trusses), and `DU-S-ERV-HP-FEED`'s south leg 7/8" further south, off
@@ -309,6 +309,13 @@ the riser's east face, 2 1/2" shorter, -0.0002 (0.3379 -> 0.3377). Delivered is 
 **Later on 2026-09-23: `REG-B-SUP2` moved 5' south** and `DU-B-ERV-R-PLAY` lost 5' of hall
 leg (§3), -0.0034: supply 0.3417 -> **0.3383**. Delivered 207.23 cfm.
 
+**2026-09-24: `DU-ERV-RISER-SUP` humps over the basement crossing, +0.0330.** Its y=31'-8"
+leg at -1'-5 15/16" crossed `DU-ERV-OA`, `PR-B-KITCH-DRAIN` and `PR-B-SAUNA-VENT`, each at its
+own height, and no one elevation cleared all three. It now leaves the plenum north, rises 12"
+into FS-M-MECH's joist bay at -7.4", runs west over everything and drops onto the riser's
+foot: 28.11 ft on 3 elbows becomes 29.90 on 5, 0.1338 -> 0.1685 (the 2026-09-23 chase re-pack
+had already taken 28.66 -> 28.11 and the column to 0.3365). Supply 0.3365 -> **0.3713**.
+
 **This column barely moved and the chase re-pack is why it barely moved.** All four risers
 were re-stationed onto the shaft's own clear width — `DU-ERV-RISER-SUP` 0'-5" -> 9 5/8",
 `DU-ERV-RISER-EXH` 1'-2" -> 18 5/8", `DU-ERV-OA` 1'-11" -> 27 5/8" — and the two supply legs
@@ -317,17 +324,17 @@ it, its basement leg shrank by it, and its developed length is identical to the 
 `DU-ERV-RISER-SUP`'s basement leg shrank 4 5/8" (-0.0015) and `DU-S-ERV-HP-FEED`'s attic jog
 shrank from 7" to 2 3/8" (-0.0003) because the riser head came out to meet it.
 
-**SUPPLY GOVERNS SINCE 2026-09-22, at 0.3383 in. w.g. against extract's 0.3377 — by
-six ten-thousandths** (0.3417 before `REG-B-SUP2` moved; 0.3406 / 0.3379 before the
-2026-09-23 riser move). The next supply-side saving hands the lead back to extract, and
-buys only that 0.0006. It was extract by eighteen (supply 0.3200) until `DU-B-ERV-R-PLAY`
-came off the basement stair (§3). Off the authored fan curve, between (0.3, 208) and
-(0.4, 206):
+**SUPPLY GOVERNS, at 0.3713 in. w.g. since 2026-09-24, against extract's 0.3269** (the
+extract table above predates the 2026-09-23 chase re-pack; the model's own legs now read
+`DU-ERV-RISER-EXH` 34.77 ft / 5 elbows 0.1842, `DU-M-ERV-EXH-FEED` 2.21 ft 0.0118,
+`DU-ERV-EA` 28.10 ft / 3 elbows 0.0374). Supply led by 0.0006 before the riser hump; it leads
+by 0.0444 now, so the next supply-side saving is worth its full size again. Off the
+authored fan curve, between (0.3, 208) and (0.4, 206):
 
-> 208 − (0.0383 / 0.1) x 2 = **207.2 cfm delivered** (207.23; extract's 0.3377 gives 207.25)
+> 208 − (0.0713 / 0.1) x 2 = **206.6 cfm delivered** (206.57; it was 207.2 before the hump)
 
 against 205 cfm required by MN 1322 R403.5 and 210 cfm of design intent. **The system clears
-the code rate by 1.1 % and falls 1.3 % short of the intent.**
+the code rate by 0.8 % and falls 1.6 % short of the intent.**
 
 > ⚠ **THE GOVERNING SIDE HAS NOW SWAPPED TWICE IN ONE DAY, AND THE SECOND SWAP IS THE ONE
 > THAT MATTERS.** The order was: extract governed at 0.4169; `DU-ERV-EA` 6" -> 8" took

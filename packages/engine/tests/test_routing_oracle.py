@@ -84,14 +84,14 @@ def test_the_collector_profile_is_the_note_s_arithmetic(catlin_model_ro) -> None
 
     south = math.dist(path[1], path[2])
     east = math.dist(path[2], path[3])
-    assert south == pytest.approx(47.825, abs=0.001)
-    assert east == pytest.approx(21.19, abs=0.001)
-    assert (z[1] - z[2]) / (south / 12.0) == pytest.approx(0.784, abs=0.001)
-    assert (z[2] - z[3]) / (east / 12.0) == pytest.approx(0.779, abs=0.001)
+    assert south == pytest.approx(34.625, abs=0.001)
+    assert east == pytest.approx(15.19, abs=0.001)
+    assert (z[1] - z[2]) / (south / 12.0) == pytest.approx(1.083, abs=0.001)
+    assert (z[2] - z[3]) / (east / 12.0) == pytest.approx(1.086, abs=0.001)
 
     developed_ft = (south + east) / 12.0
-    assert developed_ft == pytest.approx(5.7513, abs=0.001)
-    assert 0.25 * developed_ft == pytest.approx(1.4378, abs=0.001)
+    assert developed_ft == pytest.approx(4.1513, abs=0.001)
+    assert 0.25 * developed_ft == pytest.approx(1.0378, abs=0.001)
 
 
 def test_the_two_arms_arrive_above_the_collector_they_tie_into(catlin_model_ro) -> None:
@@ -100,12 +100,12 @@ def test_the_two_arms_arrive_above_the_collector_they_tie_into(catlin_model_ro) 
     `_TIE_IN_INVERT_TOL_M` so `drain_tie_ins` still links the load."""
     runs = {r.tag: r for r in catlin_model_ro.pipe_runs}
     collector = runs["PR-M-S-SUITE-WC-DRAIN"]
-    start, total_fall, developed = 116.5, 4.5, 69.015
+    start, south_fall, south = 116.5, 3.125, 34.625
 
-    for tag, station, expected in (("PR-M-S-SUITE-LAV-DRAIN", 246.0, 116.198),
-                                   ("PR-M-S-SUITE-TUB-DRAIN", 228.0, 115.025)):
+    for tag, station, expected in (("PR-M-S-SUITE-LAV-DRAIN", 246.0, 116.083),
+                                   ("PR-M-S-SUITE-TUB-DRAIN", 228.0, 114.458)):
         travelled = 250.625 - station
-        invert = start - total_fall * (travelled / developed)
+        invert = start - south_fall * (travelled / south)
         assert invert == pytest.approx(expected, abs=0.001)
         arrival = _in(runs[tag].z_m[-1])
         assert arrival > invert

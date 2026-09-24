@@ -195,15 +195,14 @@ def test_a_deck_opening_is_not_ceilinged_over(catlin_model) -> None:
     always right (`takeoff/framing.py` bills ``gross - openings``), but the geometry must
     show the well as open, or every section cut through a stair well shows a board across it.
 
-    `FO-M-ERV-OA` and `FO-M-ERV-EA` join the list on 2026-09-15 — the ERV risers' holes
-    through `FS-M-MECH`, over `RM-B-FURNACE`. They are 1 SF each rather than a stair well,
-    which is the point: the rule is about a hole, not about a big one, and a 12" duct
+    `FO-M-ERV-OA` joins the list on 2026-09-15 (`FO-M-ERV-EA` retired 2026-09-23) — the ERV
+    risers' hole through `FS-M-MECH`, over `RM-B-FURNACE`. It is 1 SF rather than a stair
+    well, which is the point: the rule is about a hole, not about a big one, and a 12" duct
     ceilinged over reads as a board across the duct in every basement RCP.
     """
     for room_tag, opening_tag in (("RM-S-STUDY2", "FO-A-STAIR"),
                                   ("RM-M-LIVING", "FO-S-STAIR"),
-                                  ("RM-B-FURNACE", "FO-M-ERV-OA"),
-                                  ("RM-B-FURNACE", "FO-M-ERV-EA")):
+                                  ("RM-B-FURNACE", "FO-M-ERV-OA")):
         opening = catlin_model.plan.by_tag(opening_tag)
         well = Polygon([point.xy_m for point in opening.outline])
         for ceiling in _ceilings(catlin_model, room_tag):

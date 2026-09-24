@@ -263,8 +263,15 @@ permit_drop = ["A-502", "A-506"]
 # element itself.
 [checks]
 suppress = [
-  # ** mep.run_interference: 65 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-23. NOT A
-  # DECISION — AN OPEN CAMPAIGN. **
+  # ** mep.run_interference: 17 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-24. NOT A
+  # DECISION — AN OPEN CAMPAIGN, AND WHAT IS LEFT OF IT IS PLUMBING AND RACEWAYS. **
+  #
+  # ** 65 -> 96 -> 17 (2026-09-23/24). ** The check's eyes improved first: a joint only
+  # between runs that can join, a sleeve only inside its own hole, a vent riser at its OD
+  # (96). The ERV/vent clearance campaign then took out every pair naming an ERV duct, a
+  # vent or the radon riser but one — DU-A-ERV-R-STUBATH x PR-A-STUBATH-VENT, both in
+  # W-A-STU-W's one 5 1/2" cavity; its fix is REG-A-STUBATH-EXH below 3'-2"
+  # (plan/mep_registers.py). `tests/test_catlin_erv_clearance.py` pins the rest at zero.
   #
   # ** 69 -> 65 BY 2026-09-23, AND THE TABLE BELOW SUMS TO IT AGAIN. ** The 69 headline sat
   # over a 67-row table. Re-classified off each run's own system (a VentRun's radon and vent
@@ -288,11 +295,11 @@ suppress = [
   # ** WHAT IS LEFT IS NOT ONE KIND OF THING, AND THAT IS THE USEFUL PART. ** 26 of the 65
   # are conduit, which is laid LAST in `routing/campaign.TRADE_ORDER` because a raceway
   # bends round a duct rather than the other way about — Phase 4 ran the campaign and its
-  # own `--evaluate` refused the result (plans/TODO.md). 14 more are one vent against the
-  # level-2 duct bank, pinned by a rule no check in this engine reads: a vent must be graded
-  # to drain back (P3104.1), so it cannot dip under one duct and climb over the next. The
-  # rest are individually argued in plans/TODO.md, several of them to a hundredth of an
-  # inch.
+  # own `--evaluate` refused the result (plans/TODO.md). 14 more were one vent against the
+  # level-2 duct bank: a vent is graded to drain back (MN 905.1, `mep.vent_grade`), so it
+  # cannot dip under one duct and climb over the next — and the router now refuses a
+  # falling step for the same reason. The rest are individually argued in plans/TODO.md,
+  # several of them to a hundredth of an inch.
   #
   # ** 146 -> 150, AND THE BUILDING DID NOT MOVE. ** Three mechanisms, each named, and two
   # of them are the engine seeing BETTER rather than worse:
@@ -321,24 +328,24 @@ suppress = [
   #
   # The class breakdown, and it is the line that goes stale first:
   #
-  #                        2026-09-18   Phase 1 exit   after D1-D3   after P1-P3   2026-09-23
-  #     duct <-> duct            37          37             0             0            0
-  #     duct <-> vent            28          22            14            14           14
-  #     conduit <-> vent          0          18            18            15            6
-  #     drain <-> duct           33          22             7             7            8
-  #     drain <-> supply         32          11            11             7            6
-  #     conduit <-> duct          0           3             6             6           11
-  #     duct <-> supply          12           7             7             5            5
-  #     conduit <-> conduit       0           4             4             4            4
-  #     conduit <-> supply        0           4             4             4            4
-  #     conduit <-> drain         -           -             -             -            1
-  #     drain <-> drain           -           4             4             3            4
-  #     supply <-> supply        18          10            10             1            1
-  #     drain <-> vent            -           5             5             1            1
-  #     supply <-> vent          12           2             2             0            0
-  #     vent <-> vent             -           1             1             0            0
-  #                             ---         ---           ---           ---          ---
-  #                             188         150            93            67           65
+  #                        09-18  Ph1 exit  D1-D3  P1-P3  09-23  09-23 A1-A4  09-24
+  #     duct <-> duct            37      37       0      0      0        9          0
+  #     duct <-> vent            28      22      14     14     14       20          1
+  #     conduit <-> vent          0      18      18     15      6        6          0
+  #     drain <-> duct           33      22       7      7      8        8          0
+  #     drain <-> supply         32      11      11      7      6        8          5
+  #     conduit <-> duct          0       3       6      6     11       17          0
+  #     duct <-> supply          12       7       7      5      5        5          0
+  #     conduit <-> conduit       0       4       4      4      4        4          3
+  #     conduit <-> supply        0       4       4      4      4        4          2
+  #     conduit <-> drain         -       -       -      -      1        1          1
+  #     drain <-> drain           -       4       4      3      4        4          4
+  #     supply <-> supply        18      10      10      1      1        1          1
+  #     drain <-> vent            -       5       5      1      1        1          0
+  #     supply <-> vent          12       2       2      0      0        0          0
+  #     vent <-> vent             -       1       1      0      0        8          0
+  #                             ---     ---     ---    ---    ---      ---        ---
+  #                             188     150      93     67     65       96         17
   # The rows sum to the headline; if they stop summing, one of them went stale. The four
   # rows that start blank were inside the older column's "everything else" (which held the
   # two radon pairs, drain<->vent 6, drain<->drain 3 and five singles) and are broken out
@@ -386,8 +393,8 @@ suppress = [
   # 2026-09-19, and which the entry has to say out loud when it does.
   "mep.run_interference",
 
-  # ** mep.run_through_plate: 9 UNKNOWNs AND ONE ERROR-SEVERITY **FAIL**, BY NAME.
-  # RE-MEASURED 2026-09-20; IT WAS A BLANKET ENTRY CLAIMING "15 UNKNOWNs" BEFORE. **
+  # ** mep.run_through_plate: 8 UNKNOWNs AND NO FAIL, BY NAME (2026-09-24; 9 and one
+  # ERROR-severity FAIL on 2026-09-20). IT WAS A BLANKET ENTRY CLAIMING "15 UNKNOWNs" BEFORE. **
   #
   # ** THE OLD ENTRY'S OWN ARGUMENT HAD STOPPED BEING TRUE, WHICH IS THE WHOLE REASON THIS
   # IS NOW NINE LINES INSTEAD OF ONE. ** It read "the check reports them UNKNOWN rather than
@@ -397,17 +404,8 @@ suppress = [
   # it is not a judgement a reader can check, it is a claim that is simply wrong. Every
   # finding is now named, so the list cannot drift away from its argument again.
   #
-  # ** THE FAIL — AND IT IS THE ORDINARY R602.6.1 DETAIL, WHICH IS WHY IT IS ACCEPTED. **
-  # `PR-B-SAUNA-VENT` takes 2.38" out of a 3.50" 2x4 top plate in `W-B-ESS-S` — 68%. IRC
-  # R602.6.1 PERMITS a top plate cut past 50% when a galvanized 16 ga x 1 1/2" tie is
-  # fastened across it, lapping 6" past the opening each way with eight 10d nails a side.
-  # A 2" vent through a 2x4 plate is over 50% at ANY station, so there is no move that fixes
-  # it: the alternatives are that strap or a 2x6 wall. The strap is the ordinary answer and
-  # it is the one taken. **Accepted on the drawings, not routed away.**
-  # The key is the RUN, so it also hides an UNKNOWN (2026-09-22, B2): at `W-B-ESS-W` the
-  # vent runs level through `plate-top-1`, all 1.50" of its thickness across its whole 5.50"
-  # width — a SEVERED plate, which no tie answers (notes/framing_bore_limits.md §7).
-  "mep.run_through_plate:PR-B-SAUNA-VENT",
+  # ** THE ONE FAIL IS GONE (2026-09-24). ** `PR-B-SAUNA-VENT` cut W-B-ESS-S's 2x4 top plate
+  # 68% and severed W-B-ESS-W's; re-lined to turn north at x=4'-3 1/2", it crosses neither.
   #
   # ** THE NINE UNKNOWNs ARE A DIFFERENT CONDITION FROM THE ONE ABOVE, AND THE OLD ENTRY
   # DESCRIBED NEITHER. ** It said "2" and 3" drains and vents through 2x4 and 2x6 plates".
@@ -498,8 +496,15 @@ suppress = [
   # sleeve is R403.5.3's question, not this check's.
   "mep.run_interference:PR-A-HW-STUBATH",
 
-  # ** mep.riser_through_deck: 47 RISERS THROUGH A DECK WITH NO HOLE DRAWN (35 on 2026-09-23: 6 on a member, 29 undrawn). NEW CHECK,
-  # 2026-09-19. AN OPEN CAMPAIGN, AND THE ONE plans/TODO.md HAS NAMED SINCE 2026-09-15. **
+  # ** mep.riser_through_deck: 20 RISERS THROUGH A DECK WITH NO HOLE DRAWN (2026-09-24; 47,
+  # then 35 on 2026-09-23). NEW CHECK, 2026-09-19. AN OPEN CAMPAIGN, AND THE ONE plans/TODO.md
+  # HAS NAMED SINCE 2026-09-15. **
+  #
+  # ** ALL 20 ARE UNDRAWN, NONE ON A MEMBER, AND NONE IS AN ERV DUCT OR A VENT (2026-09-24). **
+  # Every ERV riser and the stack now stands in a drawn hole (FO-*-ERV-*, FO-A-VENT-STACK,
+  # FO-A-RADON-STACK); a hole inside one bay takes no framing. What is left is drains and
+  # insulated hot risers, the second class below. The paragraph below is the 2026-09-19
+  # reading.
   #
   # TODO's words: "`FS-M-MECH` still carries the vents, the radon riser and nine conduits
   # through its joist field undrawn ... nothing grades a duct or a pipe against a floor

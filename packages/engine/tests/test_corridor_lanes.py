@@ -137,7 +137,8 @@ def test_the_lattice_cap_was_raised_rather_than_the_tiers_dropped() -> None:
     """The plan's rule, pinned: the cap exists to stop a lattice nobody can search, and
     dropping the tiers to fit under it would have bought a router that refuses a bay a
     fitter would use. Catlin's worst duct: 123,248 -> 203,518, and the constant's own
-    comment carries the three rows and the bug the middle one hid."""
+    comment carries the three rows and the bug the middle one hid. 350,000 since 2026-09-24
+    for house density, not a capability (308,441); the comment says so."""
     from typehaus.routing.space import MAX_LATTICE_NODES
 
-    assert MAX_LATTICE_NODES == 250_000
+    assert MAX_LATTICE_NODES == 350_000

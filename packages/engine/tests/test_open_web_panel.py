@@ -100,11 +100,8 @@ def test_the_level_two_NECK_IS_GONE(catlin_ctx) -> None:
                 if any(tag.startswith("DU-M-ERV") for tag in f.element_tags)]
 
 
-def test_catlin_still_reports_the_one_opening_that_is_over_subscribed(catlin_ctx) -> None:
-    """A conduit and a vent, 20.97" of a 15.00" opening. Neither is D1's to move — the
-    raceways are Phase 4's and the vent is Phase 3's — and the finding names both."""
+def test_catlin_has_no_over_subscribed_opening(catlin_ctx) -> None:
+    """The last one was a conduit and a vent, 20.97" of a 15.00" opening. On 2026-09-24
+    PR-M-WC-VENT rose through W-S-SN2 instead and CD-M-DATA-PORCH took the top chord."""
     fails = [f for f in open_web_panel(catlin_ctx) if f.result is Result.FAIL]
-    (only,) = fails
-    assert set(only.element_tags) == {"FS-S-WEST", "CD-M-DATA-PORCH", "PR-M-WC-VENT"}
-    assert '2 runs share one elevation there and want 20.97" of its 15.00" clear width' \
-        in only.message
+    assert not fails, [f.message for f in fails]

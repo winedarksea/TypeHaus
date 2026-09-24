@@ -105,13 +105,39 @@ def room_finished_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> f
     # job ``SLAB_MATCH_TOLERANCE_M`` already did, and the reason a main-storey room does not
     # fall through to the basement slab.
     centroid = Polygon(room.clear_face).centroid
+    best = _underfoot(model, (centroid.x, centroid.y), structural)
+    if best is None:
+        # The centroid can stand over a hole the room wraps — a stair well, a closet's chase
+        # — where no covering stands at all. Read it at a point of the room that has a floor.
+        floored = _floored_point(model, room, structural)
+        if floored is not None:
+            best = _underfoot(model, floored, structural)
+    if best is None:
+        return structural
+    return best.deck_top_m if best.surface_m is None else best.surface_m
+
+
+def _underfoot(model: ResolvedModel, point: tuple[float, float], structural: float):
+    """The surface at ``point`` nearest the structural anchor, within the slab tolerance."""
     best = None
-    for surface in surfaces_at(model, (centroid.x, centroid.y)):
+    for surface in surfaces_at(model, point):
         if abs(surface.deck_top_m - structural) >= SLAB_MATCH_TOLERANCE_M:
             continue
         if best is None or (abs(surface.deck_top_m - structural)
                             < abs(best.deck_top_m - structural)):
             best = surface
-    if best is None:
-        return structural
-    return best.deck_top_m if best.surface_m is None else best.surface_m
+    return best
+
+
+def _floored_point(model: ResolvedModel, room: ResolvedRoom, structural: float):
+    """A point of the room clear of every void in the decks at its own level, or None."""
+    from shapely.ops import unary_union
+
+    voids = [Polygon(ring) for floor in model.floors
+             if abs(floor.deck_z1_m - structural) < SLAB_MATCH_TOLERANCE_M
+             for ring in floor.deck_voids if len(ring) >= 3]
+    solid = Polygon(room.clear_face).difference(unary_union(voids)) if voids else None
+    if solid is None or solid.is_empty:
+        return None
+    point = solid.representative_point()
+    return point.x, point.y

@@ -723,22 +723,53 @@ BEAMS = [
 # trimmer pack takes that joist's place instead of crowding it 5/8" away. East edge bears on
 # W-S-E1, the stair's own box wall, so no header stands 4 5/8" off the rim.
 FLOOR_OPENINGS = [
-    # The NW chase continues into FS-ATTIC's joist band (2026-09-23): the risers and conduits
-    # turn over the deck at 20'-4"..20'-6". Same outline as FO-S-ERV-CHASE below it.
+    # The NW chase continues through FS-ATTIC's deck (2026-09-23): the ERV risers and the
+    # three conduits turn over it at 20'-4"..20'-6". The y=33'-4" and 34'-8" joists are its
+    # trimmers. The hole sits in one bay and cuts no joist, so each is a single ply; the vent
+    # jog rides the north one's face, strapped to it, and the radon riser beyond it never
+    # passes the deck (the bundle jogs east at 19'-6").
     FloorOpening(uid="TMNX0WK28P", tag="FO-A-ERV-CHASE", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(inch(6), inch(397)), pt(inch(33), inch(397)),
-                          pt(inch(33), inch(426)), pt(inch(6), inch(426))),
+                 outline=(pt(inch(6), inch(400)), pt(inch(33), inch(400)),
+                          pt(inch(33), inch(416)), pt(inch(6), inch(416))),
                  bearing_refs=("W-S-W1B",)),
+    # Three attic radials that leave the deck for a bay, each through its own hole sized to
+    # the duct and inside that bay, so none cuts a joist or takes framing (2026-09-24).
+    FloorOpening(uid="JFYH0MJA77", tag="FO-A-ERV-HPFEED", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(8.5), inch(259.5)), pt(inch(15.5), inch(259.5)),
+                          pt(inch(15.5), inch(265.7)), pt(inch(8.5), inch(265.7))),
+                 penetration_for=("DU-S-ERV-HP-FEED",)),
+    FloorOpening(uid="G4NT31ZSPF", tag="FO-A-ERV-BED3", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(33.5), inch(213.5)), pt(inch(38.5), inch(213.5)),
+                          pt(inch(38.5), inch(218.5)), pt(inch(33.5), inch(218.5))),
+                 penetration_for=("DU-A-ERV-R-BED3",)),
+    FloorOpening(uid="N86ZVB7HWZ", tag="FO-A-ERV-BATH1", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(65), inch(389.5)), pt(inch(70), inch(389.5)),
+                          pt(inch(70), inch(394.5)), pt(inch(65), inch(394.5))),
+                 penetration_for=("DU-A-ERV-R-BATH1",)),
+    # ...and where BED3 and HP-FEED climb back onto the deck at x=21'-0".
+    FloorOpening(uid="Y8G1FJ5SM8", tag="FO-A-ERV-BED3-E", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(249.5), inch(213.5)), pt(inch(254.5), inch(213.5)),
+                          pt(inch(254.5), inch(218.5)), pt(inch(249.5), inch(218.5))),
+                 penetration_for=("DU-A-ERV-R-BED3",)),
+    FloorOpening(uid="S2EY02EB8Q", tag="FO-A-ERV-HPFEED-E", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(248.5), inch(259.5)), pt(inch(255.5), inch(259.5)),
+                          pt(inch(255.5), inch(265.7)), pt(inch(248.5), inch(265.7))),
+                 penetration_for=("DU-S-ERV-HP-FEED",)),
+    # HP-FEED's drop through the deck into EQ-S-ERV-MIX.
+    FloorOpening(uid="WE96G7XJTG", tag="FO-A-ERV-MIX", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(248.5), inch(341.5)), pt(inch(255.5), inch(341.5)),
+                          pt(inch(255.5), inch(348.5)), pt(inch(248.5), inch(348.5))),
+                 penetration_for=("DU-S-ERV-HP-FEED",)),
     # Where the radon/vent bundle rises again after its jog, at x=9'-7 1/2". The two risers
     # straddle the y=34'-8" joist, so each takes its own hole in its own bay, the joists
-    # either side its trimmers and headed 3 1/2" either side.
+    # either side its single trimmers and headed 3 1/2" either side.
     FloorOpening(uid="2BSGJXFM0G", tag="FO-A-VENT-STACK", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(112), inch(400)), pt(inch(119), inch(400)),
                           pt(inch(119), inch(416)), pt(inch(112), inch(416))),
                  penetration_for=("VR-M-RADON-VENT-vent",)),
     FloorOpening(uid="FHM5PC8VZA", tag="FO-A-RADON-STACK", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(112), inch(416)), pt(inch(119), inch(416)),
-                          pt(inch(119), inch(424.5)), pt(inch(112), inch(424.5))),
+                          pt(inch(119), inch(432)), pt(inch(112), inch(432))),
                  penetration_for=("VR-M-RADON-VENT-radon",)),
     FloorOpening(uid="CAF601AAAA", tag="FO-A-STAIR",
                  outline=(pt(ft(22, 5.375), ft(5, 4)),
@@ -818,7 +849,9 @@ FLOOR = [
                 # roof now. Its outline, its four chosen edges and the reason x=10'-0" is
                 # NOT in `joists.bearing_refs` are all in plan/storeys/stair_hall_void.py.
                 openings=("FO-A-STAIR", "FO-A-HALL", "FO-A-ERV-CHASE",
-                          "FO-A-VENT-STACK", "FO-A-RADON-STACK")),
+                          "FO-A-VENT-STACK", "FO-A-RADON-STACK", "FO-A-ERV-HPFEED",
+                          "FO-A-ERV-BED3", "FO-A-ERV-BATH1", "FO-A-ERV-BED3-E",
+                          "FO-A-ERV-HPFEED-E", "FO-A-ERV-MIX")),
 ]
 
 # The attic deck's edge along the well's south side, y=5'-4": 42" metal fascia guard from the

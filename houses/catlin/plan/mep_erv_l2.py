@@ -178,7 +178,10 @@ DUCTS_ERV_LEVEL2 = [
     # 8" round, about 14 fpm) and that is the cheap direction: the alternative is two
     # reducing transitions to save a few feet of the commonest duct in the catalogue.
     DuctRun(uid="Y3G88SKSRG", tag="DU-M-ERV-EXH-TRUNK", system=DuctSystem.EXHAUST,
-            path=(pt(ft(3, 10.5), ft(35)), pt(ft(3, 10.5), ft(35)),
+            # The riser stands at 34'-11.6", 0.4" off the collar: the bay between the
+            # 34'-5 3/4" truss and FO-S-STAIR's trimmer is 8.15" clear, and on the collar's
+            # own line the duct stood 3/8" into the trimmer.
+            path=(pt(ft(3, 10.5), inch(419.6)), pt(ft(3, 10.5), inch(419.6)),
                   pt(ft(3, 10.5), ft(7, 4))),
             elevations=(_PORT_Z, _TRUNK_Z, _TRUNK_Z),
             diameter=inch(8), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
@@ -191,8 +194,9 @@ DUCTS_ERV_LEVEL2 = [
     #
     # STUDY leaves straight south in the trunk's own opening, 6 1/2" east of it. LIVING and
     # BED jog east along the 33'-8" and 34'-1" lanes to the NEXT opening (64 1/2"..79 1/2")
-    # and go south from there — two 4" lanes in it, tangent, 8" of its 15". Both lanes share
-    # the one bay since the 34'-8" truss moved to 34'-5 3/4" (2026-09-23), 1" apart.
+    # and go south from there — on the LOWER tier to y=28'-8", under PR-M-S-BATH1-LAV-DRAIN's
+    # 31'-0" arm, then up (2026-09-24) — two 4" lanes in it, tangent, 8" of its 15". Both
+    # lanes share the one bay since the 34'-8" truss moved to 34'-5 3/4" (2026-09-23), 1" apart.
     DuctRun(uid="2ZZ3MF5VAF", tag="DU-M-ERV-R-STUDY", system=DuctSystem.SUPPLY,
             path=(pt(ft(4, 5), ft(34)), pt(ft(4, 5), ft(34)), pt(ft(4, 5), ft(34)),
                   pt(ft(4, 5), ft(20, 6)), pt(ft(4, 5), ft(20, 6)),
@@ -202,18 +206,20 @@ DUCTS_ERV_LEVEL2 = [
             material="galvanized", design_cfm=15),
     DuctRun(uid="MRH0QZT6NN", tag="DU-M-ERV-R-LIVING", system=DuctSystem.SUPPLY,
             path=(pt(ft(4, 9), ft(33, 8)), pt(ft(4, 9), ft(33, 8)),
-                  pt(ft(5, 7), ft(33, 8)), pt(ft(5, 7), ft(33, 8)),
+                  pt(ft(5, 7), ft(33, 8)), pt(ft(5, 7), ft(28, 8)),
+                  pt(ft(5, 7), ft(28, 8)),
                   pt(ft(5, 7), ft(12, 8)), pt(ft(5, 7), ft(12, 8)),
                   pt(ft(27), ft(12, 8))),
-            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
+            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=20),
     DuctRun(uid="83MA15Q308", tag="DU-M-ERV-R-BED", system=DuctSystem.SUPPLY,
             path=(pt(ft(5, 1), ft(34, 1)), pt(ft(5, 1), ft(34, 1)),
-                  pt(ft(5, 11), ft(34, 1)), pt(ft(5, 11), ft(34, 1)),
+                  pt(ft(5, 11), ft(34, 1)), pt(ft(5, 11), ft(28, 8)),
+                  pt(ft(5, 11), ft(28, 8)),
                   pt(ft(5, 11), ft(6)), pt(ft(5, 11), ft(6)),
                   pt(ft(7), ft(6))),
-            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
+            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=15),
 
@@ -252,18 +258,26 @@ DUCTS_ERV_LEVEL2 = [
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),
     DuctRun(uid="DPAS57TPCG", tag="DU-M-ERV-R-SUITEBATH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(3, 10.5), ft(19, 4)), pt(ft(14), ft(19, 4))),
-            elevations=(_BAY_Z, _BAY_Z),
+            # ** OFF THE TRUNK AT y=16'-8" SINCE 2026-09-24, NOT IN ITS OWN 19'-4" BAY. ** That
+            # bay crossed PR-M-S-SUITE-WC-DRAIN's north-south leg, which falls through the
+            # middle of the window there, and PR-A-STUBATH-DRAIN's diagonal fills the band
+            # south of it. From the south on the lower tier the whole way: east, then north
+            # at x=14'-0" under PR-M-KITCH-VENT and the suite tub's arm to the grille.
+            path=(pt(ft(3, 10.5), ft(16, 8)), pt(ft(14), ft(16, 8)), pt(ft(14), ft(19, 4))),
+            elevations=(_BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=20),
     # LAUNDRY and KITCH are the two takeoffs that do cross a truss, and each crosses in its
     # own opening on the upper tier: LAUNDRY turns south at x=14'-5" (the 160 1/2"..175 1/2"
     # opening) to reach the standpipe boot, KITCH runs straight.
     DuctRun(uid="ANSKB7EGDH", tag="DU-M-ERV-R-LAUNDRY", system=DuctSystem.RETURN,
+            # Back to the lower tier in the 19'-4" bay (2026-09-24): on the upper tier the
+            # south leg met PR-M-S-SUITE-TUB-DRAIN's 19'-0" arm; under it there is 1" to spare.
             path=(pt(ft(3, 10.5), ft(20, 10)), pt(ft(10, 6), ft(20, 10)),
                   pt(ft(14, 5), ft(20, 10)), pt(ft(14, 5), ft(20, 10)),
+                  pt(ft(14, 5), ft(19, 8)), pt(ft(14, 5), ft(19, 8)),
                   pt(ft(14, 5), ft(18)), pt(ft(14, 5), ft(18))),
-            elevations=(_BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, inch(-108)),
+            elevations=(_BAY_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z, inch(-108)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=8),
     DuctRun(uid="YEXGZK2KW2", tag="DU-M-ERV-R-KITCH", system=DuctSystem.RETURN,

@@ -1352,13 +1352,25 @@ SOFFITS = [
 FLOOR_OPENINGS = [
     # ** THE NW CHASE, FRAMED THROUGH FS-S-WEST (2026-09-23). ** Two ERV risers, DU-ERV-EA,
     # the radon/vent bundle and three conduits stand in W-S-CH-W/-CH-S's 2'-0" x 2'-2"
-    # chase; the y=33'-4" and 34'-5.8" trusses were running straight through it. The
-    # fabricator shortens both onto a header under W-S-CH-W (x=2'-9"); the west edge is the
-    # exterior wall, the y edges sit under W-S-CH-S and W-S-N3B.
+    # chase; the y=34'-5.8" truss was running straight through it. The fabricator shortens
+    # it onto a header under W-S-CH-W (x=2'-9"); the west edge is the exterior wall. The y
+    # edges ARE the y=33'-4" truss and FO-S-STAIR's y=35'-5.4" trimmer line, because the
+    # resolver frames an opening's trimmers bearing to bearing across the whole deck.
     FloorOpening(uid="GV6JQNDH5D", tag="FO-S-ERV-CHASE", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(inch(6), inch(397)), pt(inch(33), inch(397)),
-                          pt(inch(33), inch(426)), pt(inch(6), inch(426))),
+                 outline=(pt(inch(6), inch(400)), pt(inch(33), inch(400)),
+                          pt(inch(33), inch(425.4)), pt(inch(6), inch(425.4))),
                  bearing_refs=("W-M-W1B",)),
+    # DU-M-ERV-R-LAUNDRY's drop to its standpipe boot, 5" square in the 18'-0" truss bay.
+    # Inside one bay it cuts no truss and takes no framing (2026-09-24).
+    FloorOpening(uid="D4G7BA75A5", tag="FO-S-ERV-LAUNDRY", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(170.5), inch(213.5)), pt(inch(175.5), inch(213.5)),
+                          pt(inch(175.5), inch(218.5)), pt(inch(170.5), inch(218.5))),
+                 penetration_for=("DU-M-ERV-R-LAUNDRY",)),
+    # PR-M-S-BATH1-WC-DRAIN's drop into the mudroom closet's ceiling, in the 28'-8" bay.
+    FloorOpening(uid="Y65XXEBD0G", tag="FO-S-BATH1-WC-DRAIN", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(19), inch(340.5)), pt(inch(25.2), inch(340.5)),
+                          pt(inch(25.2), inch(347.5)), pt(inch(19), inch(347.5))),
+                 penetration_for=("PR-M-S-BATH1-WC-DRAIN",)),
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
                  outline=(pt(ft(10, 3.375), ft(26, 0.375)),
                           pt(ft(17, 8.625), ft(26, 0.375)),

@@ -84,7 +84,7 @@ SLAB_STUBS = [
                       position=pt(ft(1, 9), inch(419.1)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4)),
     SleevePenetration(uid="71B80PTTEZ", tag="SP-B-SLAB-SUMP-DISCH", host_ref="SL-B-FLOOR",
-                      position=pt(inch(9.6), inch(401.5)), pipe_diameter=inch(1.5),
+                      position=pt(inch(12.5), inch(401.5)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2)),
 ]
 

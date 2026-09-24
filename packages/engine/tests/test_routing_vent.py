@@ -116,7 +116,7 @@ def test_a_catlin_vent_ties_into_the_VENT_riser_and_never_the_radon(catlin_model
     from typehaus.cli.route_roots import _vent_siblings
     from typehaus.resolve.mep_envelopes import vent_risers
 
-    run = next(r for r in catlin_model_ro.pipe_runs if r.tag == "PR-M-WC-VENT")
+    run = next(r for r in catlin_model_ro.pipe_runs if r.tag == "PR-B-SAUNA-VENT")
     root, touch, paths = _vent_siblings(catlin_model_ro, run, [])
     assert "VR-M-RADON-VENT-vent" in touch
     assert "VR-M-RADON-VENT-radon" not in touch
@@ -124,6 +124,18 @@ def test_a_catlin_vent_ties_into_the_VENT_riser_and_never_the_radon(catlin_model
                    if t == "VR-M-RADON-VENT-vent")
     assert root[:2] == pytest.approx(station, abs=1e-6)
     assert any(len(point) == 3 for path in paths for point in path), "goal lines carry z"
+
+
+def test_a_branch_vent_teed_into_its_parent_mid_leg_finds_the_parent(catlin_model_ro) -> None:
+    """PR-M-WC-VENT ends ON PR-S-BATH1-VENT's first leg, nowhere near either end of it.
+    ``mep.vent_reachability`` accepts that tie; the router has to be able to find it too."""
+    from typehaus.cli.route_roots import _vent_siblings
+
+    run = next(r for r in catlin_model_ro.pipe_runs if r.tag == "PR-M-WC-VENT")
+    problems: list[str] = []
+    found = _vent_siblings(catlin_model_ro, run, problems)
+    assert found is not None, problems
+    assert "PR-S-BATH1-VENT" in found[1]
 
 
 @pytest.mark.slow

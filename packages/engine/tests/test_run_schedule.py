@@ -156,9 +156,10 @@ def test_the_reroute_is_visible_in_the_schedule(by_tag):
     rough opening. The current route runs south down the pocket instead, to an AP
     wall-mounted on ``W-A-STU-N`` at 19.0 LF / 1.46 — shorter but a WORSE ratio than the
     route it replaced, which is exactly why this test asserts both numbers: if someone
-    optimises the ratio back down, they are on their way to the gable again."""
-    assert by_tag["CD-A-DATA-NE"]["developed_ft"] == pytest.approx(19.0, abs=0.2)
-    assert by_tag["CD-A-DATA-NE"]["ratio"] == pytest.approx(1.46, abs=0.03)
+    optimises the ratio back down, they are on their way to the gable again. (18.68 LF /
+    1.47 since 2026-09-24, when its pocket leg moved north to 20'-7" to clear a vent.)"""
+    assert by_tag["CD-A-DATA-NE"]["developed_ft"] == pytest.approx(18.68, abs=0.2)
+    assert by_tag["CD-A-DATA-NE"]["ratio"] == pytest.approx(1.47, abs=0.03)
 
 
 # --- the shared price join -----------------------------------------------------------------

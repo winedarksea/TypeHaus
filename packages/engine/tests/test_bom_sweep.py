@@ -598,8 +598,13 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
         room = next(item for item in catlin_model.rooms if item.tag == tag)
         return room.area_m2 * 10.7639
 
-    west_second_net = _gross_sqft("FS-S-WEST") - _opening_sqft("FO-S-STAIR")
-    east_second_net = _gross_sqft("FS-S-EAST")
+    def _net_sqft(tag: str) -> float:
+        """The deck less every hole it declares — stair wells, chases and riser holes."""
+        system = catlin_model.plan.by_tag(tag)
+        return _gross_sqft(tag) - sum(_opening_sqft(hole) for hole in system.openings)
+
+    west_second_net = _net_sqft("FS-S-WEST")
+    east_second_net = _net_sqft("FS-S-EAST")
     assert float(gwb["net_area_sqft"]) > west_second_net + east_second_net
 
     # The main storey's wood bays are four systems, not two: the west half split at the
@@ -609,11 +614,10 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     # holes, the first this deck has ever declared. FO-M-ERV-OA grew west over both chase
     # risers on 2026-09-23: 4.2 SF between them now, and the board stops at each exactly as
     # the deck does.
-    others = (_gross_sqft("FS-M-WEST")
-              + _gross_sqft("FS-M-MECH") - _opening_sqft("FO-M-ERV-OA")
-              - _opening_sqft("FO-M-ERV-EA")
-              + _gross_sqft("FS-M-STAIR") - _opening_sqft("FO-M-STAIR")
-              + _gross_sqft("FS-M-EAST"))
+    # FO-M-ERV-EA folded into FO-M-ERV-OA on 2026-09-23; `_net_sqft` reads whatever holes
+    # each deck declares, so a new riser hole cannot leave this arithmetic stale.
+    others = (_net_sqft("FS-M-WEST") + _net_sqft("FS-M-MECH") + _net_sqft("FS-M-STAIR")
+              + _net_sqft("FS-M-EAST"))
     # SL-M-DECK — the concrete band over the media room — bills the same board, and the two
     # room-level liner overrides carve their clear faces back out of the decks they hang
     # under (the sauna out of FS-M-WEST, the plant room out of FS-ATTIC).
@@ -624,8 +628,9 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     # `takeoff/framing.py` bills `gross - openings`; the GEOMETRY has to agree with it
     # (`resolve/ceilings.py`) — the geometric half is test_ceilings.py, this line is the
     # arithmetic half.
-    attic_net = (_gross_sqft("FS-ATTIC") - _opening_sqft("FO-A-STAIR")
-                 - _opening_sqft("FO-A-HALL"))
+    # ...less FO-A-RADON-STACK, which `deck_void_face` does not see from below: the gypsum
+    # is cut only where you can see up into a hole, and nothing below that one is ceilinged.
+    attic_net = _net_sqft("FS-ATTIC") + _opening_sqft("FO-A-RADON-STACK")
     sauna_net = _room_sqft("RM-B-SAUNA")
     plant_net = _room_sqft("RM-S-PLANT")
     total = (west_second_net + east_second_net + others + sl_m_deck_net + attic_net

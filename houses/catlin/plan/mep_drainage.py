@@ -238,8 +238,8 @@ DRAINS = [
     # The laundry tub: down its own cast sleeve, then 5'-9" west along the
     # ceiling to PR-B-MAIN-DRAIN's x=6' collector — same two-move shape as PR-B-SINK2-DRAIN/
     # PR-B-WASH-DRAIN, forced by the 9" concrete deck. This is the tub's trap arm too, sized
-    # 2" (not 1 1/2") since the vent (PR-M-WC-VENT's leg at x=8') sits 3'-9" away and Table
-    # 1002.2 allows 60" on 2" vs. 42" on 1 1/2". Falls 1.32"/ft, arriving ~6" above the
+    # 2" (not 1 1/2") since the vent (PR-M-BATH2-VENT's leg at x=8'-2 1/2") sits 3'-9" away
+    # and Table 1002.2 allows 60" on 2" vs. 42" on 1 1/2". Falls 1.32"/ft, arriving ~6" above the
     # collector's invert — a top tee-in, not a side one.
     PipeRun(uid="ZK49S63X8X", tag="PR-B-LSINK-DRAIN", system=PipeSystem.DRAIN,
             # 18'-10 5/8", clear of joist-0-014's flange at 18'-9 1/4"; at 18'-9" it took 1.44".
@@ -419,34 +419,45 @@ SECOND_BRANCH_DRAINS = [
     # flange at the floor plane and is on the y=360" bay centre 5 1/4" later, 3'-0" below.
     # That first leg falls 8.5"/ft, which is a bend and not a slant — `mep.drain_offset_
     # geometry` grades it on the conjunction and 3 3/4" of fall is nowhere near its 18".
-    # Then east on the bay to x=5'-0" and south across the trusses to the stack.
+    # ** SINCE 2026-09-24 IT DROPS INTO RM-M-MUD-CLOSET AND NEVER CROSSES THE TRUSS FIELD. **
+    # It used to run east on the 30'-0" bay to x=5'-0", and that line crossed the lane of
+    # DU-M-ERV-EXH-TRUNK and DU-M-ERV-R-STUDY: 3 1/2" of drain and an 8" trunk do not share an
+    # 8 7/8" web window, and the WC is west of the trunk while the stack is east of it, so no
+    # duct move could answer it. Now: south 1'-4" in the x=1'-10" opening, down through its own
+    # hole (FO-S-BATH1-WC-DRAIN) into the closet ceiling — STORAGE, where exposed pipe is by
+    # design — and east at 8'-4" onto the stack's side. Dropping early only gains head.
     PipeRun(uid="K28BQ29KCW", tag="PR-M-S-BATH1-WC-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(m(0.560313), m(9.2783)), pt(m(0.560313), ft(30)),
-                  pt(ft(5), ft(30)), pt(ft(5), ft(26, 6))),
+            path=(pt(m(0.560313), m(9.2783)), pt(m(0.560313), inch(361.61)),
+                  pt(m(0.560313), inch(344)), pt(m(0.560313), inch(344)),
+                  pt(ft(5), inch(344)), pt(ft(5), ft(26, 6))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(10, 0.75), ft(9, 9), ft(9, 6.625), ft(9, 4)),
+            elevations=(ft(10, 0.75), inch(116.9), inch(116.44), inch(100.5), inch(99.51),
+                        inch(98.83)),
             serves=("FX-S-BATH1-WC",)),
-    # The tub-shower's 1 1/2" waste: straight down in its own bay at the west end, then south
-    # across the trusses to the collector at (3'-3 1/4", 30'-0"). It arrives 1/16" over the
-    # collector's own invert there — a side entry, which is what `drain_tie_ins` wants and
-    # what a wye is. 1 1/2" because the tub's waste-and-overflow is 1 1/2" and that is the
-    # trap size the table gives a bathtub (cf. PR-B-TUB2-DRAIN).
+    # The tub-shower's 1 1/2" waste: straight down in its own bay at the west end, south
+    # across the trusses to y=30'-0", west on that bay to the x=2'-2" opening, south to the
+    # 28'-8" bay and onto the side of the water closet's drop — a wye on a vertical. 1 1/2"
+    # because the tub's waste-and-overflow is 1 1/2" and that is the trap size the table
+    # gives a bathtub (cf. PR-B-TUB2-DRAIN).
     PipeRun(uid="0W45BR6619", tag="PR-M-S-BATH1-TUB-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(39.25), inch(409.5)), pt(inch(39.25), inch(409.5)),
-                  pt(inch(39.25), ft(30))),
+                  pt(inch(39.25), ft(30)), pt(inch(26), ft(30)), pt(inch(26), inch(344)),
+                  pt(m(0.560313), inch(344))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(10, 0.75), ft(9, 9.75), ft(9, 7.9375)),
+            elevations=(ft(10, 0.75), ft(9, 9.75), inch(116.46), inch(116.11), inch(115.69),
+                        inch(115.58)),
             serves=("FX-S-BATH1-SH",)),
     # The 48" vanity's 1 1/2" arm. The drop is at y=31'-0" rather than on the bowl's own
     # 369.88" for the same reason as the water closet's: 369.88" is 0.13" off the 368" truss
     # line's south face. y=372" is the 369.75"..382.25" bay, 2 1/8" from the bowl and exactly
-    # where PR-S-BATH1-VENT already takes off. West on that bay to x=5'-0", then 1'-0" south
-    # onto the collector's corner.
+    # where PR-S-BATH1-VENT already takes off. West on that bay to x=5'-0", then south onto
+    # the stack — the leg the water closet's drain used to share (2026-09-24).
     PipeRun(uid="E9TA1G01B8", tag="PR-M-S-BATH1-LAV-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(10), ft(31)), pt(ft(10), ft(31)),
-                  pt(ft(5), ft(31)), pt(ft(5), ft(30))),
+                  pt(ft(5), ft(31)), pt(ft(5), ft(30)), pt(ft(5), ft(26, 6))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(10, 0.75), ft(9, 9.75), ft(9, 7.1875), ft(9, 6.6875)),
+            elevations=(ft(10, 0.75), ft(9, 9.75), ft(9, 7.1875), ft(9, 6.6875),
+                        inch(113.4)),
             # No `wall_ref`: only the first vertex is in W-S-BA-E1B, and the drop leaves
             # the wall's own z band the moment it passes the deck at 10'-0". `wall_ref`
             # claims EVERY segment is in that wall, which this run cannot honestly say.
@@ -835,23 +846,24 @@ RADON_SUMP = [
 # relative (datum -109 7/16"). Check valve and ice guard are on the pump (SM-B-RADON).
 SUMP_DISCHARGE = [
     PipeRun(uid="23NF4WJS89", tag="PR-B-SUMP-DISCH", system=PipeSystem.SUMP_DISCHARGE,
-            # ** IT RISES SOUTH OF THE VENT RISER SINCE 2026-09-23 ** (9.6", 33'-5.5"): the
-            # chase was re-packed, and its west leg at -21" must cross neither the vent riser
-            # nor DU-ERV-RISER-SUP's basement leg.
-            path=(pt(ft(5, 9), ft(27, 7.2)), pt(inch(9.6), ft(27, 7.2)),
-                  pt(inch(9.6), inch(401.5)), pt(inch(9.6), inch(401.5)),
+            # ** IT RISES SOUTH OF THE VENT RISER SINCE 2026-09-23 ** (1'-0 1/2", 33'-5.5"): the
+            # chase was re-packed. The under-slab lane is x=1'-0 1/2", inboard of FT-B-W1's
+            # toe, and the rise stops at -21.8" so its crown passes under DU-ERV-RISER-SUP's
+            # -17.9" basement leg; the wye on the leader riser drops to -23.3" to keep the fall.
+            path=(pt(ft(5, 9), ft(27, 7.2)), pt(inch(12.5), ft(27, 7.2)),
+                  pt(inch(12.5), inch(401.5)), pt(inch(12.5), inch(401.5)),
                   pt(inch(-10.5), inch(401.5)), pt(inch(-10.5), ft(35, 6))),
             diameter=inch(1.5), material="pvc",
             # Leaves the pit's wall under the slab, beside the radon leg; nothing after the
             # rise climbs again.
-            elevations=(inch(-7.5), inch(-7.5), inch(-7.5), inch(88.4375),
-                        inch(88.0), inch(87.4375))),
+            elevations=(inch(-7.5), inch(-7.5), inch(-7.5), inch(87.44),
+                        inch(87.1), inch(86.14))),
     # The wall crossing, sleeved, on the 8" pour's centreline 4" in
     # from the axis; centre = invert at the wall + 3/4".
     SleevePenetration(uid="DS557CEW46", tag="SP-B-W1-SUMP-DISCH", host_ref="W-B-W1",
                       position=pt(inch(4), inch(401.5)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(3), purpose=Service.DRAIN, axis="horizontal",
-                      center_elevation=inch(-20.375)),
+                      center_elevation=inch(-21.18)),
 ]
 
 

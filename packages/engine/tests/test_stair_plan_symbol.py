@@ -344,7 +344,11 @@ def test_a_floor_opening_says_what_is_over_it(catlin_model):
     assert captions.count("OPEN TO STAIR BELOW") == 2   # FO-A-STAIR and FO-A-HALL
     # The ring is drawn too, and on its own layer.
     rings = {node.tag for node in _polys(catlin_model, "attic", layer="A-FLOR-OPEN")}
-    assert rings == {"FO-A-STAIR", "FO-A-HALL"}
+    holes = {tag for tag in catlin_model.plan.by_tag("FS-ATTIC").openings
+             if tag not in ("FO-A-STAIR", "FO-A-HALL")}
+    assert holes, "the attic deck's chase and riser holes"
+    # The chase and riser holes (2026-09-24) draw their rings too; only the wells say BELOW.
+    assert rings == {"FO-A-STAIR", "FO-A-HALL"} | holes
     # A chase says so, and nothing says "OPEN TO ABOVE" on the storey below.
     main = [node.content for node in build_floorplan(catlin_model, "main").nodes
             if isinstance(node, Text) and node.layer == "A-ANNO-TEXT"]

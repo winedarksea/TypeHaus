@@ -83,7 +83,12 @@ MAX_CANDIDATE_LINES = 400
 #: is a router that refuses a bay a fitter would use. The cost is measured, not guessed —
 #: worst case builds its graph in 7.1 s and searches it in 0.7 s (`--timing`, measured),
 #: and the perf guard's own assertion is the number.
-MAX_LATTICE_NODES = 250_000
+#:
+#: **350,000 on 2026-09-24, and this time no capability moved: the house got denser.** The
+#: same duct measured 279,016 before the ERV/vent clearance campaign and 308,441 after it —
+#: new runs and humps are new prisms, and each prism's edges are lines on every level it
+#: cuts. It builds in 15.1 s, searches in 1.8 s and peaks at 680 MB (`--timing`, measured).
+MAX_LATTICE_NODES = 350_000
 
 #: Default margin round the terminals' bounding box, in feet. Eight is about the width of
 #: a room: enough for a route to step out of the direct line and back, and small enough

@@ -46,10 +46,10 @@ def _with_run(model, index, run):
     return clone
 
 
-def test_catlin_is_eight_for_eight_on_the_code_check(catlin_model_ro) -> None:
+def test_catlin_is_nine_for_nine_on_the_code_check(catlin_model_ro) -> None:
     """Note §3: nothing in this house drops or sags on its way to a terminal."""
     findings = _grade(catlin_model_ro)
-    assert len(findings) == 8
+    assert len(findings) == 9
     assert all(f.result is Result.PASS for f in findings)
     assert all(f.code_ref == "MN Plumbing Code (ch. 4714) 905.1" for f in findings)
 
@@ -68,47 +68,48 @@ def test_kitchen_vent_profile_is_the_note_section_1(catlin_model_ro) -> None:
     run = catlin_model_ro.pipe_runs[_vent_index(catlin_model_ro, "PR-M-KITCH-VENT")]
     elevations = [z / M_PER_IN for z in run.z_m]
     assert elevations == pytest.approx(
-        [111.0, 112.0, 114.375, 116.75, 117.0, 117.25], abs=1e-6)
+        [111.0, 112.0, 112.5, 114.45, 115.9, 116.0], abs=1e-6)
     rises = [b - a for a, b in zip(elevations, elevations[1:], strict=False)]
-    assert rises == pytest.approx([1.0, 2.375, 2.375, 0.25, 0.25], abs=1e-6)
+    assert rises == pytest.approx([1.0, 0.5, 1.95, 1.45, 0.1], abs=1e-6)
     assert _for(_grade(catlin_model_ro), "PR-M-KITCH-VENT").result is Result.PASS
 
 
 def test_the_kitchen_vents_flattest_leg_is_the_advisory(catlin_model_ro) -> None:
-    """0.250" over 14.0000 ft = 0.018"/ft — a seventh of the house's 1/8"/ft, and still a
-    PASS, because 905.1 states a direction and no figure."""
+    """0.500" over 17.0573 ft = 0.029"/ft — under a quarter of the house's 1/8"/ft, and
+    still a PASS, because 905.1 states a direction and no figure."""
     finding = _for(_margin(catlin_model_ro), "PR-M-KITCH-VENT")
     assert finding.result is Result.PASS
     assert finding.message.startswith("ADVISORY — ")
-    assert '0.018"/ft at its flattest (segment 3, 14.00 ft of plan)' in finding.message
+    assert '0.029"/ft at its flattest (segment 1, 17.06 ft of plan)' in finding.message
 
 
-def test_bath1_vent_is_the_interpolated_branch_and_both_branches_agree(
+def test_bath2_vent_is_the_interpolated_branch_and_both_branches_agree(
         catlin_model_ro) -> None:
-    """Note §2. Two authored inverts over 229.38" of developed plan = 0.052"/ft — and the
-    same run read through the start/end branch has to produce the identical number."""
-    index = _vent_index(catlin_model_ro, "PR-S-BATH1-VENT")
+    """Note §2. Two authored inverts over 82" of developed plan = 0.015"/ft — and the same
+    run read through the start/end branch has to produce the identical number."""
+    index = _vent_index(catlin_model_ro, "PR-M-BATH2-VENT")
     run = catlin_model_ro.pipe_runs[index]
-    assert run.length_m * 3.280839895 == pytest.approx(229.38 / 12.0, abs=2e-3)
-    resolved = _for(_margin(catlin_model_ro), "PR-S-BATH1-VENT")
-    assert '0.052"/ft' in resolved.message
+    assert run.length_m * 3.280839895 == pytest.approx(82.0 / 12.0, abs=2e-3)
+    resolved = _for(_margin(catlin_model_ro), "PR-M-BATH2-VENT")
+    assert '0.015"/ft' in resolved.message
 
     blind = copy.copy(run)
     object.__setattr__(blind, "z_m", None)
-    legacy = _for(_margin(_with_run(catlin_model_ro, index, blind)), "PR-S-BATH1-VENT")
-    assert '0.052"/ft' in legacy.message
+    legacy = _for(_margin(_with_run(catlin_model_ro, index, blind)), "PR-M-BATH2-VENT")
+    assert '0.015"/ft' in legacy.message
     assert _for(_grade(_with_run(catlin_model_ro, index, blind)),
-                "PR-S-BATH1-VENT").result is Result.PASS
+                "PR-M-BATH2-VENT").result is Result.PASS
 
 
-def test_the_two_attic_runs_clear_the_house_grade(catlin_model_ro) -> None:
-    """Note §3's last column: 0.152"/ft and 0.300"/ft are the only vents in catlin built at
-    a grade a plumber would recognise as one."""
+def test_three_runs_clear_the_house_grade(catlin_model_ro) -> None:
+    """Note §3's last column: 0.152"/ft, 0.300"/ft and 1.699"/ft are the only vents in
+    catlin built at a grade a plumber would recognise as one."""
     findings = _margin(catlin_model_ro)
     assert _MIN_VENT_GRADE_IN_PER_FT == 0.125
     plain = [f for f in findings if not f.message.startswith("ADVISORY — ")]
     assert {t for f in plain for t in f.element_tags} == {
-        "PR-A-STUBATH-VENT", "PR-A-BAR-VENT"}
+        "PR-A-STUBATH-VENT", "PR-A-BAR-VENT", "PR-B-BATH-VENT"}
+    assert '1.699"/ft' in _for(findings, "PR-B-BATH-VENT").message
     assert '0.152"/ft' in _for(findings, "PR-A-STUBATH-VENT").message
     assert '0.300"/ft' in _for(findings, "PR-A-BAR-VENT").message
     assert all(f.result is Result.PASS for f in findings), "advisory never FAILs"

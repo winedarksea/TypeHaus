@@ -54,18 +54,25 @@ routing engine aimed at the old number would have solved the wrong problem.
 This is the arithmetic `GravityProfile.invert_at` has to reproduce: an invert is a derived
 monotone potential, `invert = start − slope × developed plan length`, and nothing else.
 
-**The 3" collector, `PR-M-S-SUITE-WC-DRAIN`.** Flange at the finished floor, drop, south
-across the trusses, east onto the stack.
+**The 3" collector, `PR-M-S-SUITE-WC-DRAIN`, as authored.** Flange at the finished floor,
+drop, south across the trusses, east onto the stack.
 
 | leg | from → to | plan length | fall | slope |
 |---|---|---|---|---|
 | flange drop | (134.81, 250.625) 120.75 → 116.5 | 0 | 4.25" | vertical |
-| south | → (134.81, 202.8) 113.375 | 250.625 − 202.8 = 47.825" = 3.9854 ft | 3.125" | 0.784"/ft |
-| east | → (156, 202.8) 112.0 | 156 − 134.81 = 21.19" = 1.7658 ft | 1.375" | 0.779"/ft |
+| south | → (134.81, 216) 113.375 | 250.625 − 216 = 34.625" = 2.8854 ft | 3.125" | 1.083"/ft |
+| east | → (150, 216) 112.0 | 150 − 134.81 = 15.19" = 1.2658 ft | 1.375" | 1.086"/ft |
 
-Developed plan length 69.015" = 5.7513 ft; total fall 4.5"; **mean 0.782"/ft**, and the
-flattest segment is 0.779"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum. `mep.drain_slope` grades
-the flattest and reports it.
+Developed plan length 49.815" = 4.1513 ft; total fall 4.5"; **mean 1.084"/ft**, and the
+flattest segment is 1.083"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum, which asks
+1.0378" of it. `mep.drain_slope` grades the flattest and reports it.
+
+**The rest of this note is the 2026-09-07 geometry, and it stays that way on purpose.** The
+stack left the master closet on 2026-09-23 — head (156, 202.8) → (150, 216) — and the
+collector shortened with it. The router's oracle (§1, the slack arithmetic below, §4, §5)
+is a fixed world: the stack head at (156, 202.8) and 115.5, the collector 69.015" = 5.7513 ft
+over (134.81, 202.8) and (156, 202.8). Re-deriving it would change no search property it
+tests; `tests/test_routing_oracle.py` holds both.
 
 **Why the drop bottom is 116.5 and not higher.** The south leg crosses the trusses, so the
 pipe's crown has to stay inside the chord-to-chord window of §3, whose top is 118.5. A 3"
@@ -102,10 +109,10 @@ Each end elevation is checked against the collector's own **centreline** at that
 (`pipe_invert_at` interpolates the authored elevations, and an authored elevation is a
 centreline — see `model/mep.py`). An arm entering in the collector's upper half is an
 ordinary side entry; `mep.drain_tie_in` grades it. That station is
-the interpolation above: at y=246 the collector reads 116.5 − 4.5 × (4.625/69.015) = 116.198,
-and the arm arrives at 116.25 — **0.052" above it**, a side entry into the upper half of the
-3". At y=228 the collector reads 116.5 − 4.5 × (22.625/69.015) = 115.025 against the arm's
-115.0625, **0.0375" above**. Both are inside `_TIE_IN_INVERT_TOL_M` (1"), which is what keeps
+the interpolation along the south leg as authored: at y=246 the collector reads
+116.5 − 3.125 × (4.625/34.625) = 116.083, and the arm arrives at 116.25 — **0.167" above
+it**, a side entry into the upper half of the 3". At y=228 it reads
+116.5 − 3.125 × (22.625/34.625) = 114.458 against the arm's 115.0625, **0.604" above**. Both are inside `_TIE_IN_INVERT_TOL_M` (1"), which is what keeps
 `drain_tie_ins` linking them and `accumulated_serves` rolling the load up: 13 DFU on the
 stack, 48 still on `PR-B-MAIN-DRAIN`'s 4".
 

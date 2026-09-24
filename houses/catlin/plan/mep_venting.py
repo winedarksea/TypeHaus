@@ -34,23 +34,23 @@ from typehaus import (
 # the I-joist webs, and fall ~1/8"/ft back toward the fixtures so condensate returns to the
 # drainage system rather than pooling in the horizontal leg.
 VENT_BRANCHES_MAIN = [
-    # Bath2 takeoff on W-M-BA2E (x=8'-2", +2" east 2026-09-09's jog realignment) -> across
-    # the hall -> bath1 takeoff on W-M-BAE (x=6') -> north through the storage-room ceiling
-    # -> chase. 2" for two water closets.
-    # Its two east-west legs ride 23'-8", off FS-S-WEST's 24'-0" truss line, and 35'-7",
-    # north of the ERV risers in the last truss bay, then drop south onto the chase. The old
-    # 34'-4 7/8" leg sat in the truss moved to 34'-5 3/4" (2026-09-23), and the bay south of
-    # it is full with the LIVING and BED supply lanes.
+    # W-M-BAE (x=6') and W-M-BA2E (x=8'-2") -> UP W-S-SN2 -> the hall-bath vent. 2" for
+    # the two water closets' worth of fixtures, plus the kitchen sink tied in below.
+    # ** IT RISES THROUGH THE SECOND STOREY SINCE 2026-09-24. ** DU-M-ERV-EXH-TRUNK fills
+    # FS-S-WEST's truss window at x=3'-10 1/2", so nothing crosses to the chase in-band. Upper
+    # tier east on y=25'-0" to W-M-BA2E's line, south to 22'-4 7/8", up W-S-SN2's cavity, then
+    # north in FS-ATTIC's band onto PR-S-BATH1-VENT's first leg, rising all the way.
     PipeRun(uid="CMP906AAAA", tag="PR-M-WC-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(2, 3.6), ft(17, 3.6)), pt(ft(8, 2), ft(18)), pt(ft(8, 2), ft(23, 8)), pt(ft(6), ft(23, 8)),
-                  pt(ft(6), ft(35, 7)), pt(ft(1), ft(35, 7)), pt(ft(1), inch(421.3))),
-            diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5.5),
-            # FX-M-BATH1-LAV: no new pipe needed — this run's x=6' leg is W-M-BAE's own stud
-            # bay and it passes 1'-0" north of the lavatory's drain point at (6', 23'), so
-            # the trap arm ties into the leg already drawn there — well inside Table 1002.2's
-            # 42" for 1.5". FX-M-LAUNDRY-SINK, same terms: this run's x=8'-2" leg is
-            # W-M-BA2E's own stud bay and PR-B-LSINK-DRAIN arrives against that wall 3" south of the
-            # leg's start, so the tub wet-vents off the laundry stack with no new pipe. The
+            path=(pt(inch(74.5), inch(300)), pt(inch(98.5), inch(300)),
+                  pt(inch(98.5), inch(268.9)), pt(inch(98.5), inch(268.9)),
+                  pt(inch(98.5), inch(354.9))),
+            diameter=inch(2),
+            elevations=(inch(115.9), inch(116), inch(116.05), inch(231), inch(231.1)),
+            # FX-M-BATH1-LAV: no new pipe needed — this run starts over W-M-BAE, 2'-0" north
+            # of the lavatory's drain point at (6', 23'), so the trap arm rises into it —
+            # well inside Table 1002.2's 42" for 1.5". FX-M-LAUNDRY-SINK, same terms: the
+            # x=8'-2 1/2" leg runs over W-M-BA2E and PR-B-LSINK-DRAIN arrives against that
+            # wall, so the tub wet-vents off the laundry stack with no new pipe. The
             # trap arm is the 45" that branch runs below the deck, inside Table 1002.2's 60"
             # for 2". The washer itself needs no entry — an Appliance declares no
             # Service.VENT — but its standpipe (PR-M-WASH-STANDPIPE) is the physical riser
@@ -59,28 +59,29 @@ VENT_BRANCHES_MAIN = [
             # directly over that wall on the storey above, so the vent goes up in-wall for
             # two storeys instead of jogging into this chase. `mep.vent_reachability` says
             # so in as many words ("wall W-M-HS1 continues up for the vent").
-            serves=("FX-M-BATH1-WC", "FX-M-BATH2-SH",
-                    "FX-M-BATH2-TUB", "FX-M-BATH1-LAV", "FX-M-LAUNDRY-SINK")),
-    # Kitchen sink. W-M-N1 continues to the storey above at this x (W-S-N1 stacks on it,
-    # into RM-S-BED3's wall), so `mep.vent_reachability` is satisfied by the wet-wall path.
-    # x=32'-8" stays clear of WIN-M-KITCH's RO (28'-2 1/2".."30'-5 1/2") and WIN-M-KITCH-N's
-    # RO (33'-5".."34'-7") — rather than under the sink itself, which sits inside
-    # WIN-M-KITCH's. (WIN-S-HALL-N one storey up used to stack on it and be the second RO in
-    # this argument; it moved to 24'-0" on 2026-09-06 and is no longer anywhere near.) From there it turns
-    # south to y=19'-4", west across x=18', north at x=15' and west again on 24'-8" to the
-    # shared radon/vent chase at (1', 35'-1.3").
-    # ** SINCE 2026-09-16: THE OLD 24'-8" CROSSING RAN IT THROUGH BM-M-HALL ** (flush LVL, x=18',
-    # y 22'-4"..25'-10"). 19'-4" crosses x=18' over W-M-C3. x=15' is the north leg because it is
-    # clear of the suite lav (13'-9 1/2") and tub (16'-5 5/8") drains in plan. Elevations per
-    # vertex: LOW under the tub drain's 19'-4" crossing (centre <= 9'-6 1/2"), HIGH over the
-    # STUDY, KITCH and BED2 ducts at x=15' (invert >= 9'-5 5/8") and over the ERV lanes on
-    # 24'-8"; crown <= 9'-10 1/2", the truss web window. Rising all the way to the chase, so
-    # condensate still drains back to the fixture.
+            serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
+    # BATH2's shower and tub and the laundry sink: from 58" east of the shower's authored
+    # drain point (1'-9", 17'-3") along the 16'-8" bay, then up W-M-BA2E's line on the upper
+    # tier onto WC-VENT's riser foot. On one run with WC-VENT their trap arms were 99" and
+    # 61" against Table 1002.2's 60" (2026-09-24).
+    PipeRun(uid="YTKPDYS5YV", tag="PR-M-BATH2-VENT", system=PipeSystem.VENT,
+            path=(pt(inch(79), inch(204)), pt(inch(98.5), inch(204)),
+                  pt(inch(98.5), inch(266.5))),
+            diameter=inch(2), start_elevation=inch(115.9), end_elevation=inch(116),
+            serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-LAUNDRY-SINK")),
+    # Kitchen sink. The takeoff is on W-M-N1 at x=32'-8", clear of WIN-M-KITCH's RO
+    # (28'-2 1/2".."30'-5 1/2") and WIN-M-KITCH-N's (33'-5".."34'-7"); south to y=19'-4",
+    # which crosses x=18' over W-M-C3 (24'-8" ran through BM-M-HALL's flush LVL).
+    # ** INTO PR-M-BATH2-VENT SINCE 2026-09-24, NOT THE CHASE ** (`haus route --run
+    # PR-M-KITCH-VENT --hold-upstream 1`); the old way crossed ten things. West at 19'-4",
+    # held low (1/32"/ft) under PR-B-CW-SUITE, south in the 15'-4 1/2" opening, west at
+    # 17'-8 3/4" over DU-M-ERV-R-SUITEBATH, and up at x=8'-2 1/2".
     PipeRun(uid="ZTQRPPRATP", tag="PR-M-KITCH-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(32, 8), ft(35, 9)), pt(ft(32, 8), ft(19, 4)), pt(ft(15), ft(19, 4)),
-                  pt(ft(15), ft(24, 8)), pt(ft(1), ft(24, 8)), pt(ft(1), inch(421.3))),
+            path=(pt(ft(32, 8), ft(35, 9)), pt(ft(32, 8), ft(19, 4)),
+                  pt(ft(15, 7.3125), ft(19, 4)), pt(ft(15, 7.3125), ft(17, 8.75)),
+                  pt(inch(98.5), ft(17, 8.75)), pt(inch(98.5), ft(17, 8.75))),
             diameter=inch(1.5),
-            elevations=(ft(9, 3), ft(9, 4), ft(9, 6.375), ft(9, 8.75), ft(9, 9), ft(9, 9.25)),
+            elevations=(ft(9, 3), ft(9, 4), inch(112.5), inch(114.45), inch(115.9), inch(116)),
             serves=("FX-M-KITCH-SINK",)),
 ]
 
@@ -88,9 +89,13 @@ VENT_BRANCHES_SECOND = [
     # Hall-bath takeoff on W-S-BD-N (y=26'-4") -> west to the chase line -> north to the
     # chase.
     PipeRun(uid="CSP901AAAA", tag="PR-S-BATH1-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(9, 8.4), ft(31)), pt(ft(5), ft(26, 6)), pt(ft(1), ft(26, 6)),
-                  pt(ft(1), inch(421.3))),
-            diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 4),
+            # ** IT TIES INTO THE STACK'S JOG SINCE 2026-09-23, NOT THE CHASE. ** North on
+            # x=3'-4" in FS-ATTIC's joist band to the vent riser's 19'-6" jog, east of the
+            # chase hole — a run that spanned FO-A-ERV-CHASE had nothing to strap to.
+            path=(pt(ft(9, 8.4), ft(31)), pt(ft(5), ft(26, 6)), pt(ft(3, 4), ft(26, 6)),
+                  pt(ft(3, 4), inch(412.9))),
+            diameter=inch(2),
+            elevations=(ft(9, 3), ft(9, 3.3), ft(9, 3.5), ft(9, 6)),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # The suite bath's own vent. THE TAKEOFF IS ON W-S-SN3, THE NORTH WALL: all three of
@@ -182,14 +187,20 @@ VENT_BRANCHES_SECOND = [
     # The south stub is the only thing on x=1'-0" north of the chase, so it does not
     # touch PR-S-BATH1-VENT, which arrives on that same line from the SOUTH. -2 pairs, and
     # both of this run's remaining clashes are at its terminals, where a re-route cannot
-    # reach them. The header at y=21'-11" did not move: its three trap arms (39" to the
-    # tub-shower, 0" to the lav, 17" to the WC) are measured off it and are untouched.
+    # reach them. The header's three trap arms (39" to the tub-shower, 0" to the lav, 17" to
+    # the WC at y=21'-11") are measured off it; see the header note below for 2026-09-24.
     PipeRun(uid="CSP902AAAA", tag="PR-S-SUITEBATH-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(16, 4.5), ft(21, 11)), pt(ft(9, 7.5), ft(21, 11)),
-                  pt(ft(9, 7.5), ft(34)), pt(ft(9, 10.5), ft(34)),
-                  pt(ft(9, 10.5), ft(35, 7.5)), pt(ft(1), ft(35, 7.5)),
-                  pt(ft(1), inch(421.3))),
-            diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5),
+            # ** IT MEETS THE STACK AT ITS JOG CORNER SINCE 2026-09-23. ** It ran on to y=35'-7.5"
+            # — inside W-S-N3's framing — and back west to the chase. The stack now turns up at
+            # (9'-7 1/2", 34'-4.9") at +19'-6", so this rises into that corner from the south.
+            # North on x=9'-0" onto the jog's crown just west of FO-A-VENT-STACK (a run
+            # inside that hole has nothing to strap to).
+            # ** HEADER AT +19'-8", y=22'-1", SINCE 2026-09-24 **: over DU-S-ERV-HP-FEED
+            # rather than beside it, on W-S-SN3's cavity face; clears PR-S-BATH1-VENT by 3".
+            path=(pt(ft(16, 4.5), inch(265)), pt(ft(9), inch(265)),
+                  pt(ft(9), inch(412.9))),
+            diameter=inch(2),
+            elevations=(inch(116), inch(116.3), inch(116.7)),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
 ]
@@ -239,9 +250,15 @@ VENT_BRANCHES_ATTIC = [
     # and the lowest vertex here is 23'-5". It rises monotonically into the stack, so condensate
     # drains back to the fixtures and there is no pocket to hold water. The last vertex at
     # 23'-9" ties in 1" BELOW the riser's 23'-10" exit, on the vertical part of the stack.
+    # ** IT STILL CROSSES DU-A-ERV-R-STUBATH'S RISER (2026-09-24). ** Both stand in W-A-STU-W's
+    # one 5 1/2" cavity, which cannot hold them side by side, and over the duct's elbow into
+    # its 4'-4" grille the vent would be in the partition's top plates. The fix is the grille:
+    # REG-A-STUBATH-EXH below 3'-2" (plan/mep_registers.py) lets this pass over the duct.
     PipeRun(uid="STFQKR8Q95", tag="PR-A-STUBATH-VENT", system=PipeSystem.VENT,
+            # Ends ON the vent riser at the stack's upper station (2026-09-23), the south one
+            # of the pair; the radon riser 6.2" north is no longer in its way.
             path=(pt(ft(16, 2.625), ft(20, 8)), pt(ft(9, 7.5), ft(20, 8)),
-                  pt(ft(9, 7.5), inch(421.3))),
+                  pt(ft(9, 7.5), inch(412.9))),
             diameter=inch(2),
             elevations=(ft(3, 5), ft(3, 6), ft(3, 9)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
@@ -411,10 +428,13 @@ VENT_BRANCHES_BASEMENT = [
     # rather than at a node the wall tees into. Trap arms measured to it: 5'-3" from the
     # water closet's flange and 2'-1" from the lavatory's trap, against Table 1002.2's
     # 6'-0" for 3" and 3'-6" for 1 1/2".
+    # ** A COMMON VENT INTO PR-B-SAUNA-VENT SINCE 2026-09-23. ** It ran north on x=7'-0"
+    # and west on y=34'-6" to the chase; the re-packed chase leaves one lane in at the
+    # basement ceiling, which the 2" sauna vent takes, and this 1 1/2" ties into that 2" line
+    # at x=9'-0", rising all the way. The notes below describe the retired x=7' leg.
     PipeRun(uid="CBPV01AAAA", tag="PR-B-BATH-VENT", system=PipeSystem.VENT,
             path=(pt(inch(166.6875), ft(19, 3)), pt(inch(166.6875), ft(19, 3)),
-                  pt(ft(7), ft(19, 3)), pt(ft(7), ft(34, 6)),
-                  pt(ft(1), ft(34, 6)), pt(ft(1), inch(421.3))),
+                  pt(ft(9), ft(19, 3))),
             diameter=inch(1.5), material="pvc",
             # ** IT RUNS TWO AND A HALF INCHES LOWER THAN THE SAUNA VENT SINCE 2026-09-19
             # (P1), AND THAT IS THE WHOLE FIX. ** Both vents used to arrive at the chase on
@@ -435,8 +455,9 @@ VENT_BRANCHES_BASEMENT = [
             # flat inside SF-B-BATH (1 1/4" of air) instead of hopping over it on four
             # elbows; the north leg's grade steepens to 4" over 15'-3". GYM passes under it at
             # x=9' with 3/8" to spare, and the two drains above get 1 1/2" more air.
-            elevations=(ft(1, 3.4375), ft(7, 2.9375), ft(7, 3.4375), ft(7, 7.4375),
-                        ft(7, 7.9375), ft(7, 8)),
+            # Riser top 7'-0 15/16" since 2026-09-24, 2" lower: the straight rise west then
+            # passes 1/4" under DU-B-ERV-R-PLAY's x=12'-3" leg.
+            elevations=(ft(1, 3.4375), inch(84.94), ft(7, 9.25)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-4", 8'-2 3/16") — inside
     # W-B-CS's 3 1/2" liner build-up, in the pan's own east wall, on the pan-and-floor-drain
@@ -447,11 +468,17 @@ VENT_BRANCHES_BASEMENT = [
     # Trap arms as the check measures them, both well inside Table 1002.2's 5'-0" for a 2"
     # arm. Above the sauna's hung ceiling the run leaves the build-up north over W-B-SA-N,
     # crosses the workshop west at y=10'-6", and passes W-B-CW at x=9'.
+    # ** INTO THE RE-PACKED CHASE FROM THE SOUTH (2026-09-23). ** North on x=9'-0" only to
+    # y=29'-4", west to x=5'-1 1/2", north between the ERV cabinet (x<=5'-0") and
+    # DU-ERV-RISER-SUP's port, west on y=33'-4" just under FS-M-MECH's joists — 1" north of
+    # the backup enclosure's 110.26 dedicated space, over the supply duct's leg — and north
+    # onto the vent riser at x=10". PR-B-BATH-VENT ties into it at (9'-0", 19'-3").
     PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
             path=(pt(ft(17, 4), inch(98.1875)), pt(ft(17, 4), inch(98.1875)),
                   pt(ft(17, 4), ft(10, 6)), pt(ft(9), ft(10, 6)),
-                  pt(ft(9), ft(19)), pt(ft(9), ft(34, 6)), pt(ft(1), ft(34, 6)),
-                  pt(ft(1), inch(421.3))),
+                  pt(ft(9), ft(19)), pt(ft(9), ft(28, 8)), pt(inch(51.5), ft(28, 8)),
+                  pt(inch(51.5), inch(400)), pt(inch(10), inch(400)),
+                  pt(inch(10), inch(412.9))),
             diameter=inch(2), material="pvc",
             # ** THE NORTH LEG BREAKS AT y=19'-0" NOW (P1, 2026-09-19). ** It used to climb
             # 7'-1 7/16" to 7'-9 15/16" in one straight ramp over twenty-four feet, which
@@ -463,6 +490,7 @@ VENT_BRANCHES_BASEMENT = [
             # inch and — the part worth noting — buys back half an inch over
             # DU-B-ERV-R-PLAY at y=30'-6", where D3 left it 2 1/2 thousandths of an inch.
             elevations=(ft(0, 3.4375), ft(7, 1.4375), ft(7, 3.4375), ft(7, 5.4375),
-                        ft(7, 9.25), ft(7, 9.9375), ft(7, 10.4375), ft(7, 10.5)),
+                        ft(7, 9.25), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
+                        ft(8, 0.0375), ft(8, 0.1375)),
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
 ]

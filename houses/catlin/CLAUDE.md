@@ -1167,11 +1167,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     keep — no real duct system lands under 0.2" w.g. The number that governs is MN 1322
     R403.5's **205**.
   - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
-    over the whole system and reads the curve at it: **0.338" w.g. worst path, 207.2 cfm
-    delivered**, on the EXTRACT side (D3 took an elbow off the extract riser and another off
-    the return trunk; the level-2 extract manifold's feed put 0.0128 back on 2026-09-20, so
-    extract leads supply's 0.320 by eighteen thousandths, where it led by five and before
-    that by forty-one — there is no cheap one-sided lever left). It reports the 3 cfm against the 210 design rate as
+    over the whole system and reads the curve at it: **0.371" w.g. worst path, 206.6 cfm
+    delivered**, on the SUPPLY side since 2026-09-24, when `DU-ERV-RISER-SUP` humped over the
+    basement crossing (+2 elbows); extract is 0.327. The margin over 205 is 1.6 cfm. It reports the 3 cfm against the 210 design rate as
     UNKNOWN, never a FAIL — whether 207 is ENOUGH is
     `code.N1103_6_whole_house_ventilation`'s question, asked against MN's 205 and not against
     a designer's hope. **The extract side was authored at 265 cfm against a 210 cfm machine
@@ -1271,20 +1269,20 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `advisory.ess_clearance`; this station leaves 1 1/2" clear and also clears
     `ED-B-BACKUP-ENCL`'s 36" NEC 110.26 working space. Nothing downstream is anchored to the
     machine, so moving it back would cost a FAIL for no savings.
-  - **The radon/plumbing chase at (1', 35'-1.3") is the only riser and is full**: THREE ERV
-    risers (`DU-ERV-RISER-SUP` 9 5/8", `DU-S-ERV-HP-FEED` 12", `DU-ERV-RISER-EXH` 18 5/8",
-    all at y=33'-10 1/4"; `DU-ERV-EA` 8" at (2'-0", 35'-0")), six plumbing vents,
-    `VR-M-RADON-VENT` and nine conduits. The clear is **24" x 26 1/8"** measured off the wall
-    LAYERS — a room-polygon reading counts 6" of exterior stud as shaft on each
-    `face("sheathing-ext")` face, which is where the old "~25% fill of 30 1/8" x 32 3/8""
-    came from. Nothing else goes in that chase. `DU-ERV-OA` came OUT of it on 2026-09-15 and
-    now stands at (3'-4", 33'-11") in the open closet, which is what let it go to 8".
-  - **`FS-M-MECH` carries the risers through TWO drawn floor openings** (`FO-M-ERV-OA`,
-    `FO-M-ERV-EA`, both `purpose=CHASE`), added 2026-09-15. It declared NONE before that and
-    four risers passed through its joist field undrawn — nothing grades a duct against a floor
-    member, so it sat at 0 FAIL. Each cuts one 11 7/8" I-joist and gets a 2-ply LVL header and
-    doubled trimmers; the joist maker's header table governs, not R502.10.1, which is a
-    sawn-lumber rule. The remaining vents and conduits through that deck are still undrawn.
+  - **The NW chase is the only riser and is full** (re-packed 2026-09-23): `DU-ERV-RISER-SUP`
+    and `DU-ERV-RISER-EXH` (6", bare — house air, IECC R403.3) at y=33'-10.8", `DU-ERV-EA`
+    (8", 2" vapour-sealed wrap) at (2'-0.6", 34'-9.5"), `VR-M-RADON-VENT`'s pair at x=10"
+    (vent 34'-4.9", radon 34'-11.1", 6.2" apart so they straddle the attic's 34'-8" joist;
+    the bundle jogs east at +19'-6" to x=9'-7 1/2") and three conduits. **No branch vent
+    enters the chase any more** (2026-09-24): the main-floor vents rise up `W-S-SN2` into
+    `PR-S-BATH1-VENT`, and every other vent ties onto the stack's attic jog or its riser.
+    Nothing else goes in that chase.
+  - **Every ERV riser through a deck stands in a drawn hole**: `FO-M-ERV-OA` (FS-M-MECH, the
+    two ERV holes merged 2026-09-23), `FO-S-ERV-CHASE` and `FO-S-ERV-LAUNDRY` (FS-S-WEST),
+    and `FO-A-ERV-CHASE`, `-HPFEED`, `-HPFEED-E`, `-BED3`, `-BED3-E`, `-BATH1`, `-MIX`
+    (FS-ATTIC). A hole inside one joist bay takes no framing; one that cuts a joist gets a
+    header and trimmers bearing to bearing, and the joist maker's header table governs.
+    `tests/test_catlin_erv_clearance.py` pins it.
   - **The two outdoor hoods are STACKED on the NORTH face** (moved off the west facade
     2026-09-15): `EQ-M-ERV-HOOD-OA` intake (3'-4", 37'-1 1/4") +5'-0" on `W-M-N3B`;
     `EQ-S-ERV-HOOD-EA` discharge (2'-0", 37'-1 1/4") +17'-0" on `W-S-N3B`, 12'-0" apart,

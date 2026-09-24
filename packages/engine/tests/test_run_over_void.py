@@ -71,7 +71,8 @@ def test_it_catches_a_run_drawn_across_the_stairwell(catlin_model):
     # the authoring vocabulary and not what a resolved run holds.
     old_path = ((ft(2).meters, ft(34, 6).meters), (ft(19).meters, ft(34, 6).meters),
                 (ft(19).meters, ft(29).meters))
-    regressed = dataclasses.replace(original, path=old_path)
+    regressed = dataclasses.replace(original, path=old_path, z_m=(ft(9, 2).meters,) * 3,
+                                    pull_points=())
     model = dataclasses.replace(
         catlin_model,
         conduits=tuple(regressed if run.tag == original.tag else run

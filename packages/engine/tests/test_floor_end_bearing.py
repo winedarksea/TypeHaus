@@ -89,9 +89,9 @@ def test_the_fabrication_schedule_states_span_and_bearing(catlin):
     assert (full["bearing_low_in"], full["bearing_high_in"]) == (4.25, 3.5)
     assert full["chord_clear_opening_in"] == 8.875
     assert full["spacing_in"] == 16.0
-    # The stair-clipped pieces land on a header, not a plate, and claim no seat.
-    clipped = next(row for row in rows if row["pieces"] == 8)
-    assert clipped["clear_span_ft_in"] is None
+    # The stair- and chase-clipped pieces land on a header, not a plate, and claim no seat.
+    clipped = [row for row in rows if row is not full]
+    assert clipped and all(row["clear_span_ft_in"] is None for row in clipped)
 
 
 def test_end_bearing_is_graded_against_what_the_member_needs(tmp_path):

@@ -45,14 +45,14 @@ def test_a_plate_cut_past_half_names_the_tie_that_would_permit_it() -> None:
 
 def test_R602_6_1_reaches_exterior_and_bearing_walls_only(catlin_ctx) -> None:
     """"An exterior wall or interior load-bearing wall" — a non-bearing partition's plate
-    is not the section's business. ``W-B-ESS-S`` is one, and so is ``W-M-CLN``, which the
-    suite stack bores since it left the master closet."""
+    is not the section's business. ``W-M-CLN`` is one, which the suite stack bores since it
+    left the master closet."""
     from typehaus.resolve.mep_bores import top_plate_cut
 
     assert top_plate_cut("2x4", 2.375, tie=False, governed=False).ok is True
     findings = run_through_plate(catlin_ctx)
     assert not [f for f in findings if f.result.value == "fail"]
-    for pair in (("PR-B-SAUNA-VENT", "W-B-ESS-S"), ("PR-M-S-SUITE-DRAIN", "W-M-CLN")):
+    for pair in (("PR-M-S-SUITE-DRAIN", "W-M-CLN"),):
         passed = [f for f in findings if f.element_tags == pair]
         assert passed and passed[0].result.value == "pass", pair
         assert "non-bearing partition" in passed[0].message
@@ -119,10 +119,10 @@ def test_the_conduit_through_the_short_cripple_over_the_gym_door_is_unknown(
     assert '5.75"' in finding.message and "a block rather than a stud" in finding.message
 
 
-def test_the_sauna_vent_severs_W_B_ESS_W_s_top_plate_and_says_so(catlin_ctx) -> None:
-    """It crosses the 2x6 plate and takes its whole 1.50" thickness; under the 50% width line
-    it used to read PASS. Suppressed by name in preferences.toml with the run's other cuts."""
-    [finding] = [f for f in run_through_plate(catlin_ctx)
-                 if f.element_tags == ("PR-B-SAUNA-VENT", "W-B-ESS-W")]
-    assert finding.result.value == "unknown"
-    assert "severed" in finding.message and '1.50"' in finding.message
+def test_the_sauna_vent_cuts_no_plate_since_its_re_line(catlin_ctx) -> None:
+    """It severed W-B-ESS-W's 2x6 plate and cut W-B-ESS-S's 2x4 one 68% until 2026-09-24,
+    when it turned north at x=4'-3 1/2" and stopped crossing either wall. Its suppression
+    in preferences.toml went with it; this keeps the cut from coming back unseen."""
+    mine = [f for f in run_through_plate(catlin_ctx) if "PR-B-SAUNA-VENT" in f.element_tags]
+    assert not [f for f in mine if {"W-B-ESS-S", "W-B-ESS-W"} & set(f.element_tags)]
+    assert all(f.result.value == "pass" for f in mine), [f.message for f in mine]

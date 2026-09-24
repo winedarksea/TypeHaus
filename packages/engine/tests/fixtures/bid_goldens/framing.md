@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 876611ef5aae5572  
+**Model hash:** 7a3df58a86df3c87  
 **Lines:** 141
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -21,13 +21,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.25x7.25 rim — rim board (1.25x7.25 rim) | 16 | LF ordered | 4 pcs, 13.7 LF cut | building |
 | 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 1 pcs, 1.9 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
-| 1.75x11.875 LVL — trimmer (1.75x11.875 LVL) | 204 | LF ordered | 18 pcs, 187.7 LF cut | building |
-| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,388 | LF ordered | 218 pcs, 2145.7 LF cut | building |
+| 1.75x11.875 LVL — trimmer (1.75x11.875 LVL) | 184 | LF ordered | 16 pcs, 168.7 LF cut | building |
+| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,388 | LF ordered | 216 pcs, 2143.4 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
-| 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 45 | ea | 45 pcs, 482.7 LF cut; 506.0 LF in the takeoff | building |
+| 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 44 | ea | 44 pcs, 514.1 LF cut; 535.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | 414 | LF ordered | 56 pcs, 369.0 LF cut | building |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | 280 | LF ordered | 42 pcs, 231.4 LF cut | building |
-| 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 8 | LF ordered | 3 pcs, 5.4 LF cut | building |
+| 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 8 | LF ordered | 3 pcs, 7.6 LF cut | building |
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | 20 | LF ordered | 1 pcs, 16.7 LF cut | building |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | 36 | LF ordered | 1 pcs, 36.0 LF cut | building |
 | 2-1x4 — stud (2-1x4) | 24 | LF ordered | 3 pcs, 19.6 LF cut | building |
@@ -43,7 +43,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.6 LF cut | building |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,692 | LF ordered | 634 pcs, 3952.0 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,814 | LF ordered | 462 pcs, 2437.4 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,852 | LF ordered | 1364 pcs, 7644.3 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,860 | LF ordered | 1371 pcs, 7651.3 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | 88 | LF ordered | 9 pcs, 72.0 LF cut | building |
 | 2x8 — header, jack stud, joist, king stud, landing framing, plate, stud (2x8) | 240 | LF ordered | 45 pcs, 202.2 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 430 | LF ordered | 76 pcs, 357.3 LF cut | building |
@@ -59,7 +59,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.8 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 661.6 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
-| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 100 | sheets 4x8 | 100 sheets 4x8 over 3178.7 SF net | building |
+| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 99 | sheets 4x8 | 99 sheets 4x8 over 3165.3 SF net | building |
 | SPF framing lumber, 3/4" ceiling (spf:ceiling) | 5 | sheets 4x8 | 5 sheets 4x8 over 159.2 SF net | building |
 | SPF framing lumber, 11 1/4" ceiling (spf:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 81.7 SF net | building |
 | Structural 1 plywood, 5/7" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 50.1 SF net | building |
@@ -111,9 +111,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 7 | ea |  | building |
 | LTP4 lateral tie plate, gable-end truss to top plate | 2 | ea |  | building |
 | LTP4 lateral tie plate | 124 | ea |  | building |
+| LUS face-mount joist hanger | 1 | ea |  | building |
 | LUS face-mount joist hanger | 2 | ea |  | building |
-| LUS face-mount joist hanger | 1 | ea |  | building |
-| LUS face-mount joist hanger | 1 | ea |  | building |
+| LUS face-mount joist hanger | 2 | ea |  | building |
 | LUS face-mount joist hanger | 12 | ea |  | building |
 | LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 10 | ea |  | building |
 | LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 10 | ea |  | building |
@@ -122,7 +122,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUSZ) | 4 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 77 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 101 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 99 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 10 | ea |  | building |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 318 | ea |  | building |
@@ -186,7 +186,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | 154.8 | bf | 0.48 cy in the takeoff | basement |
+| STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | 307.2 | bf | 0.95 cy in the takeoff | basement, main |
 
 ## Windows and doors, by product
 
@@ -342,7 +342,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood sheathing, 5/8" — roof (struct-1-plywood:0.625) | — |
 | Structural 1 plywood sheathing, 3/4" — roof (struct-1-plywood:0.75) | — |
 | Structural 1 plywood sheathing, 3/4" — slab (struct-1-plywood:0.75) | — |
-| STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | W-B-WELL |
+| STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | W-B-WELL, W-M-WELL |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-M-PORCH-HYD |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-S-BALC-HYD |
 | rough opening, 9" x 9" (no type) (None) | AO-M-ERV-OA, AO-S-ERV-EA |
@@ -363,4 +363,4 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | allowance | quantity | unit |
 |---|---|---|
-| Framing subfloor adhesive (framing-subfloor-adhesive) | 100 | ea |
+| Framing subfloor adhesive (framing-subfloor-adhesive) | 99 | ea |
