@@ -135,7 +135,7 @@ def material_legend(model, derived, u_left: float, z_top: float,
     order.extend(m for m in seen if m not in order)
     if not order:
         return []
-    from typehaus.emit.draw.palette import detail_hatch
+    from typehaus.emit.draw.palette import library_fill, library_hatch
 
     nodes: list[IRNode] = [
         Text(anchor=(u_left, z_top + 3.0), content="MATERIALS", height=TEXT_HEIGHT_IN,
@@ -146,10 +146,10 @@ def material_legend(model, derived, u_left: float, z_top: float,
         y0 = y1 - LEGEND_SWATCH_IN
         # ``metal`` maps to a no-overlay fill in both writers (and the UI), so the swatch
         # reads as its material fill when the material has no hatch family of its own.
-        pattern = detail_hatch(material) or "metal"
+        pattern = library_hatch(model.plan.library, material) or "metal"
         boundary = rect_points(u_left, y0, u_left + LEGEND_SWATCH_IN, y1)
         nodes.append(Hatch(boundary=boundary, pattern=pattern, layer=LAYER,
-                           material=material))
+                           material=material, fill=library_fill(model.plan.library, material)))
         nodes.append(Polyline(points=boundary, layer=LAYER, closed=True, lineweight=LIGHT))
         nodes.append(Text(anchor=(u_left + LEGEND_SWATCH_IN + 1.5, (y0 + y1) / 2),
                           content=_legend_label(material, seen[material]),
@@ -168,7 +168,7 @@ _LEGEND_PT = 6.5
 
 
 def _paper_legend(model, derived, band, drawn=None) -> list[IRNode]:
-    from typehaus.emit.draw.palette import detail_hatch
+    from typehaus.emit.draw.palette import library_fill, library_hatch
 
     seen: dict[str, float | None] = {}
     for material, thickness, _function in _participating_layers(model, derived):
@@ -197,8 +197,10 @@ def _paper_legend(model, derived, band, drawn=None) -> list[IRNode]:
             break
         cy = y + h - _ROW_PITCH_IN * (row + 1.6)
         boundary = rect_points(cx, cy, cx + _SWATCH_IN, cy + _SWATCH_IN)
-        nodes.append(Hatch(boundary=boundary, pattern=detail_hatch(material) or "metal",
-                           layer=LAYER, material=material, space="paper"))
+        library = model.plan.library
+        nodes.append(Hatch(boundary=boundary, pattern=library_hatch(library, material) or "metal",
+                           layer=LAYER, material=material, space="paper",
+                           fill=library_fill(library, material)))
         nodes.append(Polyline(points=boundary, layer=LAYER, closed=True, lineweight=LIGHT,
                               space="paper"))
         nodes.append(Text(anchor=(cx + _SWATCH_IN + 0.06, cy + _SWATCH_IN / 2),

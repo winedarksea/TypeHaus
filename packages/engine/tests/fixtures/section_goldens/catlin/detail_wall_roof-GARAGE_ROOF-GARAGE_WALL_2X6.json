@@ -196,7 +196,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "cdx-plywood"
+      "material": "cdx-plywood",
+      "fill": "#c9a86a"
     },
     {
       "space": "model",
@@ -231,6 +232,35 @@
       "node": "hatch",
       "boundary": [
         [
+          360.0,
+          58.47244094488189
+        ],
+        [
+          360.87500000000006,
+          58.47244094488189
+        ],
+        [
+          360.87500000000006,
+          88.0
+        ],
+        [
+          360.0,
+          88.0
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "corrugated-panel-24",
+      "fill": "#2f2f2f"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
           353.875,
           58.47244094488189
         ],
@@ -252,7 +282,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -308,7 +339,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-primer"
+      "material": "gwb-primer",
+      "fill": "#efeae2"
     },
     {
       "space": "model",
@@ -476,7 +508,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CGRF01AAAA",
-      "material": "standing-seam-nailstrip"
+      "material": "standing-seam-nailstrip",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -819,12 +852,13 @@
           97.25
         ]
       ],
-      "pattern": "metal",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "cdx-plywood"
+      "material": "cdx-plywood",
+      "fill": "#c9a86a"
     },
     {
       "space": "model",
@@ -880,7 +914,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "corrugated-panel-24"
+      "material": "corrugated-panel-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -1922,12 +1957,13 @@
           1.1280000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "paper",
@@ -1994,12 +2030,13 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "cdx-plywood"
+      "material": "cdx-plywood",
+      "fill": "#c9a86a"
     },
     {
       "space": "paper",
@@ -2071,7 +2108,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "corrugated-panel-24"
+      "material": "corrugated-panel-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "paper",
@@ -2359,7 +2397,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "standing-seam-nailstrip"
+      "material": "standing-seam-nailstrip",
+      "fill": "#2f2f2f"
     },
     {
       "space": "paper",

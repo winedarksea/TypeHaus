@@ -3283,31 +3283,7 @@ STAIRWELL_PARTITION_4H = Assembly(
 
 MATERIALS = [
     *ALL_MATERIALS,
-    # The sidewalk's base course (SIDEWALK_FRC_CLASS5): dense-graded, WITH fines, compacted —
-    # the opposite of the capillary-break stone, and the right base for a walk.
-    Material(
-        tag="mndot-class-5-base",
-        name="MnDOT Class 5 aggregate base, compacted",
-        r_per_inch=0.0,
-        density=2100.0,
-        hatch="concrete",
-        color="#9a958a",
-        source="MnDOT Spec 3138 Class 5 aggregate base",
-    ),
-    # The sauna liner's foil polyiso, named (2026-09-24): the IRC has no sauna exemption from
-    # R316.4, so the pass is R316.6 specific approval — this board's own evaluation report.
-    # Numbers mirror the library's `polyiso-foil` (the published R-6.5/in is not claimed).
-    Material(
-        tag="polyiso-foil-thermax",
-        name="DuPont Thermax Sheathing, foil-faced polyiso",
-        r_per_inch=6.0,
-        perm_rating=0.03,
-        hatch="rigid",
-        color="#d9d2a8",
-        foam_plastic=True,
-        thermal_barrier_listing="Intertek CCRR-0435 (rev. 2026-06-19) §5.5: Thermax boards may be installed without the IRC R316.4 / IBC 2603.4 thermal barrier; §5.1: max 4 in., any wall or floor/ceiling assembly, any type of structure, interior fasteners max 24 in. o.c. across / 48 in. along the board (NFPA 286, UL 1715)",
-        source="DuPont Thermax Sheathing PIS 43-D100094 (2025-07-25): R-13 at 2 in., 0.03 perm, 1 mil aluminum both faces; max use temperature 250 F per Thermax Heavy Duty PIS 43-D100093",
-    ),
+    # `polyiso-foil-thermax` (the sauna liner's board) is a library row since 2026-09-24.
     # --- THE 2026-09-06 INTERIOR SELECTIONS PASS -----------------------------------------
     #
     # ** THE FIRST MATERIALS IN THIS REPO TO CARRY A ``product_ref``. ** The field has existed

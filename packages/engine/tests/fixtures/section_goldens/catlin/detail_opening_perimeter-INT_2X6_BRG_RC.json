@@ -284,6 +284,34 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          212.75000000000003,
+          80.0
+        ],
+        [
+          213.25,
+          80.0
+        ],
+        [
+          213.25,
+          97.71653543307087
+        ],
+        [
+          212.75000000000003,
+          97.71653543307087
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "resilient-channel"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -859,12 +887,13 @@
           -11.875
         ]
       ],
-      "pattern": "sauna-shiplap",
+      "pattern": "catlin-sauna-shiplap",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-shiplap"
+      "material": "catlin-sauna-shiplap",
+      "fill": "#e6d4ae"
     },
     {
       "space": "model",

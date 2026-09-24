@@ -22,8 +22,9 @@ from typehaus.library.materials import sheathing as _sheathing
 from typehaus.library.materials import site as _site
 from typehaus.model import Material
 
-# Each category keeps its rows in catalog order; the catalog order itself is restored
-# below so a first-match lookup and every emitted listing read as before the split.
+# Each category keeps its rows in catalog order. ``_ORDER`` is the catalog order as it stood
+# at the split, so every emitted listing reads as before; a row added since appends after
+# it, in category order.
 _ALL = (
     _framing.MATERIALS
     + _sheathing.MATERIALS
@@ -123,5 +124,8 @@ _ORDER = (
     "foundation-protection-panel",
 )
 _BY_TAG = {m.tag: m for m in _ALL}
-assert len(_BY_TAG) == len(_ALL) == len(_ORDER)
-ALL_MATERIALS: tuple[Material, ...] = tuple(_BY_TAG[t] for t in _ORDER)
+assert len(_BY_TAG) == len(_ALL) and set(_ORDER) <= set(_BY_TAG)
+ALL_MATERIALS: tuple[Material, ...] = (
+    tuple(_BY_TAG[t] for t in _ORDER)
+    + tuple(m for m in _ALL if m.tag not in set(_ORDER))
+)

@@ -256,6 +256,35 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.1225,
+          -40.0
+        ],
+        [
+          -3.1225000000000005,
+          -40.0
+        ],
+        [
+          -3.1225000000000005,
+          -13.437499999999998
+        ],
+        [
+          -5.1225,
+          -13.437499999999998
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "foundation-coating-acrylic-black",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -505,6 +534,35 @@
       "closed": true,
       "uid": "CBW110AAAA",
       "tag": "W-B-W2/foundation-coating"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.1225,
+          -40.0
+        ],
+        [
+          -3.1225000000000005,
+          -40.0
+        ],
+        [
+          -3.1225000000000005,
+          -13.437499999999998
+        ],
+        [
+          -5.1225,
+          -13.437499999999998
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "foundation-coating-acrylic-black",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -812,7 +870,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -980,7 +1039,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-24"
+      "material": "pbr-panel-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",

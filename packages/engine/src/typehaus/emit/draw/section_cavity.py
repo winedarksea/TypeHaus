@@ -18,7 +18,7 @@ this module is the honest statement of what the section knows that the IR does n
 
 from __future__ import annotations
 
-from typehaus.emit.draw.palette import aia_layer, detail_hatch
+from typehaus.emit.draw.palette import aia_layer, library_hatch
 from typehaus.emit.draw.scene import Hatch
 from typehaus.emit.draw.section_clip import clip_polygon, clip_rect, quad_nodes, rect_nodes
 from typehaus.emit.draw.section_labels import DrawnBand
@@ -47,7 +47,7 @@ def emit_wall_cavity(b, model, wall, plane: CutPlane, crop, is_detail, min_draw,
             continue
         term = joints.termination(wall.uid, layer.name) if joints is not None else None
         band_z0, band_z1 = layer.band(wall)
-        pattern = detail_hatch(layer.material_ref, layer.function)
+        pattern = library_hatch(model.plan.library, layer.material_ref, layer.function)
         aia = aia_layer(layer.function)
         tag = f"{wall.tag}/{layer.name}"
         for (u0, u1) in ring_intervals(layer.polygon, plane):
@@ -185,7 +185,8 @@ def roof_structure_band(asm):
             if layer.function is LayerFunction.STRUCTURE]
 
 
-def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop) -> list[DrawnBand]:
+def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop,
+                     library=None) -> list[DrawnBand]:
     """The bay fill, as a sloped band under the structure datum, clipped to the rafters.
 
     Returns what it drew, so the ladder can aim at the outlines rather than at a second
@@ -231,7 +232,8 @@ def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop) -> list[DrawnBand]:
             pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
             if fill:
                 b.add(Hatch(boundary=pts,
-                            pattern=detail_hatch(layer.material_ref, layer.function.value)
+                            pattern=library_hatch(library, layer.material_ref,
+                                                  layer.function.value)
                             or "batt",
                             layer="A-WALL-PATT", uid=roof.uid, material=layer.material_ref))
             drawn.append(DrawnBand(layer.name, (d1 - d0) / M_PER_IN, pts))

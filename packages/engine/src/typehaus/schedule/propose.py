@@ -92,7 +92,7 @@ FAMILY_ORDER: dict[str, tuple[str, ...]] = {
     "siding": ("furring", "cladding", "trim"),
     "insulation": ("insulation", "rim-spray-foam"),
     "drywall": ("gwb", "resilient-channel", "soffit"),
-    "paint": ("latex-paint", "latex-paint-accent"),
+    "paint": ("latex-paint",),
     "openings": ("window", "door", "flashing", "hardware"),
     "tile": ("tile-uncoupling-membrane", "tile"),
     "flooring": ("floor_finish", "carpet-pad", "carpet", "lvp"),
@@ -131,10 +131,15 @@ _validate()
 
 
 def family_rank(trade: str, family: str) -> tuple[int, str]:
-    """Sort key: declared order first, then the family's own name as a tie-break."""
+    """Sort key: declared order first, then the family's own name as a tie-break.
+
+    A house colourway named off a listed family (``latex-paint-accent``) ranks with it.
+    """
     key = family.split(":", 1)[-1]
     order = FAMILY_ORDER.get(trade, ())
-    return (order.index(key) if key in order else len(order), key)
+    rank = next((i for i, name in enumerate(order)
+                 if key == name or key.startswith(f"{name}-")), len(order))
+    return (rank, key)
 
 
 def _family(row: tuple[str, str]) -> str:

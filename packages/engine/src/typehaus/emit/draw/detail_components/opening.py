@@ -300,6 +300,6 @@ def humid_liner_opening_return(model, wall, opening, crop, direction,
                              lineweight=PROFILE)
         nodes += rect_region(lo, sill_z + SAUNA_MEMBRANE_IN, hi,
                              sill_z + SAUNA_MEMBRANE_IN + OPENING_DETAIL.sill_pan_lip_in,
-                             "humid-sill-pan", "metal-dark-exterior", "flashing",
+                             "humid-sill-pan", "metal-dark", "flashing",
                              lineweight=PROFILE)
     return nodes

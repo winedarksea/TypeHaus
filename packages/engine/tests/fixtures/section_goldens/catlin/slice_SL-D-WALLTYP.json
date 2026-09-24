@@ -56,7 +56,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-shiplap"
+      "material": "catlin-sauna-shiplap",
+      "fill": "#e6d4ae"
     },
     {
       "space": "model",
@@ -504,7 +505,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-shiplap"
+      "material": "catlin-sauna-shiplap",
+      "fill": "#e6d4ae"
     },
     {
       "space": "model",
@@ -1143,12 +1145,13 @@
           -13.332999999999998
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "concrete",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "brown-brick"
+      "material": "brown-brick",
+      "fill": "#a07c5c"
     },
     {
       "space": "model",
@@ -1512,7 +1515,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -1680,7 +1684,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -1740,6 +1745,35 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          7.415000000000001,
+          120.0
+        ],
+        [
+          7.915,
+          120.0
+        ],
+        [
+          7.915,
+          152.00000000000003
+        ],
+        [
+          7.415000000000001,
+          152.00000000000003
+        ]
+      ],
+      "pattern": "rigid",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "pvc-panel",
+      "fill": "#f2f4f3"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1768,6 +1802,35 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          7.415000000000001,
+          200.0
+        ],
+        [
+          7.915,
+          200.0
+        ],
+        [
+          7.915,
+          228.0
+        ],
+        [
+          7.415000000000001,
+          228.0
+        ]
+      ],
+      "pattern": "rigid",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "pvc-panel",
+      "fill": "#f2f4f3"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1932,7 +1995,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "humid-room-membrane"
+      "material": "humid-room-membrane",
+      "fill": "#3f4a52"
     },
     {
       "space": "model",
@@ -1988,7 +2052,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "humid-room-membrane"
+      "material": "humid-room-membrane",
+      "fill": "#3f4a52"
     },
     {
       "space": "model",
@@ -2380,7 +2445,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -2436,7 +2502,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -2716,7 +2783,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -2772,7 +2840,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -3280,7 +3349,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -3448,7 +3518,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -4679,12 +4750,13 @@
           -11.875
         ]
       ],
-      "pattern": "sauna-shiplap",
+      "pattern": "catlin-sauna-shiplap",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-shiplap"
+      "material": "catlin-sauna-shiplap",
+      "fill": "#e6d4ae"
     },
     {
       "space": "model",
@@ -4796,7 +4868,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pvc-panel"
+      "material": "pvc-panel",
+      "fill": "#f2f4f3"
     },
     {
       "space": "model",
@@ -4924,7 +4997,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "roof-adhered-butyl-ht"
+      "material": "roof-adhered-butyl-ht",
+      "fill": "#2f3134"
     },
     {
       "space": "model",
@@ -4988,7 +5062,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "standing-seam-linen-white"
+      "material": "standing-seam-linen-white",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -5011,12 +5086,13 @@
           303.12500000000006
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "fiberglass-r30c"
+      "material": "fiberglass-r30c",
+      "fill": "#f3c6d0"
     },
     {
       "space": "model",
@@ -5039,12 +5115,13 @@
           310.00000000000006
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -7100,7 +7177,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "SGFS02AAAA",
-      "material": "aluminum-deck"
+      "material": "aluminum-deck",
+      "fill": "#b9bcc0"
     },
     {
       "space": "model",
@@ -10223,12 +10301,13 @@
           315.7434926025187
         ]
       ],
-      "pattern": "metal",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -10396,7 +10475,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -10452,7 +10532,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -10508,7 +10589,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -10564,7 +10646,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",

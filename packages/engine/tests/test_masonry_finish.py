@@ -101,11 +101,18 @@ def test_gltf_colors_glazed_green_brick_green() -> None:
     # STRUCTURE, not "cladding": the veneer is a single self-supporting wythe, so its brick
     # is the assembly's structure layer (BASEMENT_BRICK_VENEER). The finish must win either
     # way — colour comes from the material, never from what the layer is doing.
-    green = _material_finish_color("glazed-green-brick", "structure")
+    from typehaus.model import Material
+
+    # A house colourway reaches the .glb through its authored ``color`` (decision #57: no
+    # engine table names a house tag).
+    authored = {m.tag: m for m in (
+        Material(tag="glazed-green-brick", name="g", hatch="concrete", color="#1b4332"),
+        Material(tag="white-brick", name="w", hatch="concrete", color="#e9e6df"))}
+    green = _material_finish_color("glazed-green-brick", "structure", authored)
     assert green == _hex_rgba("#1b4332")
-    assert green == _material_finish_color("glazed-green-brick", "cladding")
+    assert green == _material_finish_color("glazed-green-brick", "cladding", authored)
     assert green != _hex_rgba(material_family_color("brick")), "glazed brick must not read red"
-    assert green != _material_finish_color("white-brick", "cladding")
+    assert green != _material_finish_color("white-brick", "cladding", authored)
 
 
 def test_basement_veneer_brick_faces_the_garden(catlin_model_ro) -> None:

@@ -256,6 +256,35 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          436.06000000000006,
+          -17.716535433070867
+        ],
+        [
+          436.185,
+          -17.716535433070867
+        ],
+        [
+          436.185,
+          -13.437499999999998
+        ],
+        [
+          436.06000000000006,
+          -13.437499999999998
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "foundation-coating-acrylic-black",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -616,7 +645,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -672,7 +702,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -952,7 +983,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -1008,7 +1040,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -4268,12 +4301,13 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "paper",
@@ -4489,7 +4523,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "paper",

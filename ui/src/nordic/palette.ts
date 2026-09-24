@@ -149,17 +149,14 @@ export function familyOf(materialRef: string | null | undefined): string | null 
 // Material refs whose colour is fixed by their finish rather than inferred from their family.
 // Mirrors _FINISH_BASE in packages/engine/src/typehaus/emit/gltf/palette.py — the .glb and the
 // viewer must agree, and the family guess is wrong for finish variants (a charcoal trim coil
-// is "metal" by family, which would paint it the palette's blue-grey).
+// is "metal" by family, which would paint it the palette's blue-grey). Keyed by FINISH
+// vocabulary only: a house material's colourway is its authored `color`, which
+// `materialColor` reads from the catalog (decision #57 — no house tag here).
 // KNOWN GAP: NOTHING TESTS THAT THIS TABLE AND ITS PYTHON MIRROR AGREE.
 // `test_detail_fill_parity.py` does that job for DETAIL_FILL and there is no equivalent for
 // the finish bases, so the two are kept in step by this comment convention alone. A row
 // added here and forgotten there is a .glb that disagrees with the viewer, silently.
 const FINISH_BASE: Readonly<Record<string, string>> = {
-  "metal-dark-exterior": "#1c1f24",
-  // Prefinished K-style gutter coil: a separate tag only so prices.toml can bill it as
-  // colour-card stock, not fabrication. Same ink on purpose. Mirrors _FINISH_BASE in
-  // emit/gltf/palette.py.
-  "metal-dark-kstyle": "#1c1f24",
   // The exposed-fastener PBR panel: the same white as the seamed skin (0xE8E8E2), which is
   // what createStandingSeamMaterial paints it. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "ribbed-panel": "#e8e8e2",
@@ -176,23 +173,11 @@ const FINISH_BASE: Readonly<Record<string, string>> = {
   // Cellular PVC trim (the garage soffit) is factory-white, not the "siding" family's
   // blue-grey the substring guess falls to. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "pvc-cellular": "#f4f2ee",
-  // White-painted exterior lumber: POST_WHITE_PAINT's structure layer, the knee-brace
-  // diagonals (as a FramedMember material), the balcony rim band, and the garden's
-  // front-frame beams. No familyOf needle matches the ref, so without this row the member
-  // path paints a brace by its bare "brace" category lumber while the .glb draws it white —
-  // the two would disagree. Mirrors _FINISH_BASE in emit/gltf/palette.py.
-  "post-paint-white": "#f4f2ee",
   // A second coil colour of the same 26 ga. nail-strip panel: Western States "Classic Green"
   // on the garage's east (overhead-door) wall only. It keeps "seam" in its tag so it still
   // gets the seam normal map, and declares this finish so the coil-white default in
   // builders/walls.ts does not paint over it. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "classic-green-seam": "#2f5233",
-  // The garage's formed-trim accent coil: "Copper Penny" PVDF metallic on BOTH the vented
-  // ridge cap and the six fascia pieces. Not named "*seam*" — this is flat brake-formed
-  // stock, not ribbed panel. Mirrors _FINISH_BASE in emit/gltf/palette.py.
-  "metal-copper-penny": "#8a4f2a",
-  // Unreferenced by any current ref.
-  "metal-fascia-regal-blue": "#1e3a5c",
 };
 
 /** The paint a named finish states, for a caller that has the finish and not the ref. */
@@ -248,10 +233,8 @@ export function materialColor(
   palette?: ResolvedNordicPalette,
   materials?: readonly MaterialAppearance[],
 ): string {
-  // A material whose *finish* is named in FINISH_BASE resolves there first. Members carry a
-  // material ref but no catalog (memberColor passes only the palette), so an authored colour
-  // is invisible to them — and formed edge trim in a second coil colour is a member. Mirrors
-  // _FINISH_BASE in emit/gltf/palette.py; keep the two in step.
+  // A material whose *finish* is named in FINISH_BASE resolves there first, then the
+  // catalog's authored colour. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   const named = materialRef ? FINISH_BASE[materialRef.toLowerCase()] : undefined;
   if (named) return named;
   const authored = authoredAppearance(materialRef, materials)?.color;

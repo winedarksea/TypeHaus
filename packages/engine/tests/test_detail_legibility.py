@@ -335,13 +335,12 @@ def test_the_ridge_hanger_stays_metal_because_it_is_hardware(catlin_model):
 
 
 def test_the_dark_exterior_coil_is_dark(catlin_model):
-    """``metal-dark-exterior`` is the house's one exterior dark — the roof edge trim, the
-    drip edge, the box gutter, the downspouts and the guards all name it — and it had no
-    entry in either palette table. ``section.py`` hands a material tag straight through as
-    the hatch *pattern*, so an unknown one also picked up the fallback dotted stipple: the
-    box gutter printed as a pale speckled ghost beside the flashing it laps."""
-    assert detail_fill("metal-dark-exterior") == "#2f2f2f"
-    assert detail_hatch("metal-dark-exterior") == "metal"
+    """``metal-dark-exterior`` is catlin's one exterior dark — roof edge trim, drip edge, box
+    gutter, downspouts, guards. No engine table names it (decision #57): the palette reads
+    the resolved Material, so the coil draws as the dark metal it authors itself as."""
+    coil = catlin_model.plan.library.material("metal-dark-exterior")
+    assert detail_fill("metal-dark-exterior", None, coil) == "#1c1f24"
+    assert detail_hatch("metal-dark-exterior", None, coil) == "metal"
 
 
 def test_the_treated_half_of_the_truss_wall_is_told_from_the_untreated_half():

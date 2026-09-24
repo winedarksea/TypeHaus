@@ -35,11 +35,15 @@ therefore a leader from the margin into the drawing, and the writer maps ``to`` 
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_serializer
 
+from typehaus.emit.draw.palette import library_fill
 from typehaus.emit.draw.typography import DIM_STRING_PT
+
+if TYPE_CHECKING:
+    from typehaus.model.plan import Library
 
 Pt = tuple[float, float]
 
@@ -96,6 +100,17 @@ class Hatch(_Node):
     # concrete, XPS, EPS and polyiso must be distinguishable at a glance — so the writers
     # resolve fill colour through ``palette.detail_fill`` rather than the pattern alone.
     material: str | None = None
+    # The fill a house material authors for itself, resolved where the library is in hand
+    # (``SceneBuilder(library=...)``); a writer reads it before the tag table. Serialized
+    # only when set, so a library-tag hatch's JSON is unchanged.
+    fill: str | None = None
+
+    @model_serializer(mode="wrap")
+    def _omit_unset_fill(self, handler):  # noqa: ANN001, ANN202
+        data = handler(self)
+        if isinstance(data, dict) and data.get("fill") is None:
+            data.pop("fill", None)
+        return data
 
 
 class Text(_Node):
@@ -222,18 +237,28 @@ class Scene(_IRBase):
 class SceneBuilder:
     """Mutable accumulator that freezes into a :class:`Scene`."""
 
-    def __init__(self, name: str, units: Literal["in", "mm"] = "in") -> None:
+    def __init__(self, name: str, units: Literal["in", "mm"] = "in",
+                 library: Library | None = None) -> None:
         self.name = name
         self.units = units
+        self._library = library
         self._nodes: list[IRNode] = []
         self._annotation_requests: list[object] = []
 
+    def _resolved(self, node: IRNode) -> IRNode:
+        """Stamp a hatch's house-authored fill: a tag the detail table does not know."""
+        if not isinstance(node, Hatch) or node.fill is not None:
+            return node
+        fill = library_fill(self._library, node.material)
+        return node.model_copy(update={"fill": fill}) if fill else node
+
     def add(self, node: IRNode) -> IRNode:
+        node = self._resolved(node)
         self._nodes.append(node)
         return node
 
     def extend(self, nodes: list[IRNode]) -> None:
-        self._nodes.extend(nodes)
+        self._nodes.extend(self._resolved(n) for n in nodes)
 
     def add_annotation_request(self, request: object) -> None:
         self._annotation_requests.append(request)

@@ -130,33 +130,12 @@ const DETAIL_FILL: Record<string, string> = {
   // products (54 perm against 0.05). Mirrors emit/draw/palette.py DETAIL_FILL.
   waterproofing: "#2f2b2a",
   "standing-seam": "#2f2f2f",
-  // Same detail ink for all five metal skins — the section drawing shows metal, and
-  // snap-lock, nail strip, 26 ga nail strip and the exposed-fastener PBR panel all draw
-  // identically to a mechanically seamed pan. Mirrors emit/draw/palette.py DETAIL_FILL.
-  "standing-seam-snaplock": "#2f2f2f", "standing-seam-nailstrip": "#2f2f2f",
-  // catlin's roof panel — the library's generic standing seam in a stated colour, so that
-  // the roof's sol-air cooling term has a published solar reflectance to read. Same ink.
-  "standing-seam-linen-white": "#2f2f2f",
-  "standing-seam-nailstrip-26": "#2f2f2f", "pbr-panel-26": "#2f2f2f",
-  "pbr-panel-24": "#2f2f2f",
-  // Six metal skins now: the north/south board & batten panel (2026-08-31) draws the same
-  // detail ink again. Mirrors emit/draw/palette.py DETAIL_FILL — test_detail_fill_parity.py
-  // fails if this table and that one disagree.
-  "board-batten-24": "#2f2f2f",
   "fiber-cement": "#e6e6e6",
   "cedar-tg": "#c8a26a", "sauna-shiplap": "#e6d4ae", "resilient-channel": "#91979d",
   aggregate: "#7f7f7f", "river-rock": "#a9a9a9", soil: "#d2b48c",
   "spray-foam": "#ffd966", sealant: "#6e4f2a", flashing: "#7a0c0c",
   metal: "#ffffff", "metal-dark": "#2f2f2f", rubber: "#3a3a3a",
   glass: "#bee3f8", gutter: "#8b8b8b",
-  // The house's one exterior dark: the roof edge trim, the eave water chain (drip edge,
-  // box gutter, downspouts) and the guards all name it. With no entry it fell through to
-  // the near-white fallback and the box gutter drew as a pale ghost beside the apron
-  // flashing it laps. Same ink as the five metal skins above, for the reason stated there.
-  "metal-dark-exterior": "#2f2f2f",
-  // The same dark on prefinished K-style stock (a separate tag for pricing only).
-  // Mirrors emit/draw/palette.py DETAIL_FILL.
-  "metal-dark-kstyle": "#2f2f2f",
   // Pressure-treated: the catlin truss wall's outer girts and its block-2 course are KDAT,
   // and with no entry every one of them drew as a blank box — the wet-cycling half of a
   // wall whose whole point is which stick is treated. Greener and greyer than `spf` so the
@@ -166,9 +145,6 @@ const DETAIL_FILL: Record<string, string> = {
   // glulam is a manufactured member with visible laminations and a clear finish, not a
   // green-cast treated stick. Mirrors emit/draw/palette.py DETAIL_FILL.
   "glulam-treated": "#c8a877",
-  // White-painted PT lumber — the garden's pillars, knee braces and the two decks' rim
-  // bands. Mirrors emit/draw/palette.py DETAIL_FILL.
-  "post-paint-white": "#eeeae2",
   // The roof stack, which is the eave detail's whole subject and drew as four near-white
   // boxes in the app. The two membranes are DELIBERATELY different inks: the deck vapour
   // barrier is vapour-TIGHT and the field underlayment must stay vapour-OPEN, and a detail
@@ -180,7 +156,12 @@ const DETAIL_FILL: Record<string, string> = {
   "aluminum-extrusion": "#b6bac0", "polycarbonate-multiwall": "#cfe3e8",
 };
 
-function materialFill(material: string | null | undefined): string | null {
+// A house material's own fill arrives resolved on the node (`fill`, stamped by the
+// engine's SceneBuilder from the Material); this table answers the library's tags.
+function materialFill(node: Node): string | null {
+  const resolved = node.fill as string | undefined;
+  if (resolved) return resolved;
+  const material = node.material as string | undefined;
   return (material && DETAIL_FILL[material]) || null;
 }
 
@@ -526,7 +507,7 @@ function SceneNode({
     }
     case "hatch": {
       const pts = (node.boundary as Pt[]).map(([x, y]) => `${x},${fy(y, bounds)}`).join(" ");
-      const base = materialFill(node.material as string | undefined);
+      const base = materialFill(node);
       return (
         <>
           {base && <polygon points={pts} fill={base} stroke="none" />}

@@ -256,6 +256,35 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          436.06000000000006,
+          -40.0
+        ],
+        [
+          436.185,
+          -40.0
+        ],
+        [
+          436.185,
+          -13.437499999999998
+        ],
+        [
+          436.06000000000006,
+          -13.437499999999998
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "foundation-coating-acrylic-black",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -644,7 +673,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -812,7 +842,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-24"
+      "material": "pbr-panel-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -1079,12 +1110,13 @@
           0.9375000000000006
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "concrete",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "brown-brick"
+      "material": "brown-brick",
+      "fill": "#a07c5c"
     },
     {
       "space": "model",
@@ -1113,6 +1145,35 @@
       "closed": true,
       "uid": "ZG0Q6KGNXB",
       "tag": "W-M-FIRE-STUB-M/wash"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          419.75,
+          -13.437499999999998
+        ],
+        [
+          419.87500000000006,
+          -13.437499999999998
+        ],
+        [
+          419.87500000000006,
+          0.9375000000000006
+        ],
+        [
+          419.75,
+          0.9375000000000006
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "silicate-wash-white-brick",
+      "fill": "#e9e6df"
     },
     {
       "space": "model",
@@ -1163,12 +1224,13 @@
           24.9375
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "concrete",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "brown-brick"
+      "material": "brown-brick",
+      "fill": "#a07c5c"
     },
     {
       "space": "model",
@@ -1197,6 +1259,35 @@
       "closed": true,
       "uid": "4MHYR1HBC8",
       "tag": "W-M-FIRE-PLINTH/wash"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          419.75,
+          0.9375
+        ],
+        [
+          419.87500000000006,
+          0.9375
+        ],
+        [
+          419.87500000000006,
+          24.9375
+        ],
+        [
+          419.75,
+          24.9375
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "silicate-wash-white-brick",
+      "fill": "#e9e6df"
     },
     {
       "space": "model",
@@ -1247,12 +1338,13 @@
           64.9375
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "concrete",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "brown-brick"
+      "material": "brown-brick",
+      "fill": "#a07c5c"
     },
     {
       "space": "model",
@@ -1281,6 +1373,35 @@
       "closed": true,
       "uid": "Z5314GVSNX",
       "tag": "W-M-FIRE-HEAD/wash"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          419.75,
+          48.93749999999999
+        ],
+        [
+          419.87500000000006,
+          48.93749999999999
+        ],
+        [
+          419.87500000000006,
+          64.9375
+        ],
+        [
+          419.75,
+          64.9375
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "silicate-wash-white-brick",
+      "fill": "#e9e6df"
     },
     {
       "space": "model",

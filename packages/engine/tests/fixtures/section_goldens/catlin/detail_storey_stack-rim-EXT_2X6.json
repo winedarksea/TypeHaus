@@ -252,7 +252,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -420,7 +421,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -700,7 +702,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -868,7 +871,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -1592,7 +1596,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "SGFS02AAAA",
-      "material": "aluminum-deck"
+      "material": "aluminum-deck",
+      "fill": "#b9bcc0"
     },
     {
       "space": "model",
@@ -3108,12 +3113,13 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "paper",
@@ -3329,7 +3335,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "paper",

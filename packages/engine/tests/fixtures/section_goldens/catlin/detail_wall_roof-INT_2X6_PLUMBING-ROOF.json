@@ -336,7 +336,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "roof-adhered-butyl-ht"
+      "material": "roof-adhered-butyl-ht",
+      "fill": "#2f3134"
     },
     {
       "space": "model",
@@ -392,7 +393,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "standing-seam-linen-white"
+      "material": "standing-seam-linen-white",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -415,12 +417,13 @@
           326.0
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "fiberglass-r30c"
+      "material": "fiberglass-r30c",
+      "fill": "#f3c6d0"
     },
     {
       "space": "model",
@@ -443,12 +446,13 @@
           332.875
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -1471,12 +1475,13 @@
           1.1280000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "fiberglass-r30c"
+      "material": "fiberglass-r30c",
+      "fill": "#f3c6d0"
     },
     {
       "space": "paper",
@@ -1543,12 +1548,13 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "paper",
@@ -1687,12 +1693,13 @@
           1.468
         ]
       ],
-      "pattern": "metal",
+      "pattern": "membrane",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "roof-adhered-butyl-ht"
+      "material": "roof-adhered-butyl-ht",
+      "fill": "#2f3134"
     },
     {
       "space": "paper",
@@ -1764,7 +1771,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "standing-seam-linen-white"
+      "material": "standing-seam-linen-white",
+      "fill": "#2f2f2f"
     },
     {
       "space": "paper",

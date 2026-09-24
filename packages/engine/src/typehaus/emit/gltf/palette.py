@@ -116,7 +116,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # Exterior window casing (resolve/geometry_openings.py). This entry plus the mirrored
     # CATEGORY_COLOR.window_trim in ui/src/three/members.ts are the whole recolor. Rounds
     # exactly to 0x1c1f24 — the house's one exterior dark, shared with the roof-edge trim
-    # coil and the guards (metal-dark-exterior in _FINISH_BASE below). It reads as the
+    # coil and the guards (which author it as their Material.color). It reads as the
     # charcoal 0x3a3d40 was meant to be: the viewer's ambient lifts a dark albedo well above
     # itself, so the authored value has to sit under the tone you want on screen.
     "window_trim": (0.110, 0.122, 0.141, 1.0),
@@ -267,6 +267,8 @@ def _hex_rgba(hex_str: str) -> tuple[float, float, float, float]:
 # wall reads near-white, CMU reads grey block, white brick reads whitewashed, and any other
 # recognised material falls back to its material-family colour.
 #
+# A house material's own colourway (a brick blend, a trim coil) is its authored ``color``,
+# read through ``authored_colors``; no house tag is keyed here (decision #57).
 # ``_FINISH_BASE`` is keyed by the engine's finish vocabulary (model/materials.py
 # ``Material.finish``, mirrored by MASONRY_STYLES in ui/src/three/materials.ts). A resolved
 # layer carries only its material *ref*, not the authored Material, so the ref is matched
@@ -275,12 +277,6 @@ def _hex_rgba(hex_str: str) -> tuple[float, float, float, float]:
 _SEAM_BASE = "#e8e8e2"          # Panel3D.tsx createStandingSeamMaterial base (0xE8E8E2)
 _CMU_BASE = "#9c988f"           # materials.ts CMU_STYLE.base
 _WHITE_BRICK_BASE = "#e9e6df"   # materials.ts WHITE_BRICK_STYLE.base
-_GLAZED_GREEN_BRICK_BASE = "#1b4332"  # materials.ts GLAZED_GREEN_BRICK_STYLE.base
-# The Ishtar scheme on the sunken garden's veneer — materials.ts
-# GLAZED_LAPIS_BRICK_STYLE / GLAZED_GOLD_BRICK_STYLE / BROWN_BRICK_STYLE .base.
-_GLAZED_LAPIS_BRICK_BASE = "#10386a"
-_GLAZED_GOLD_BRICK_BASE = "#c08a12"
-_BROWN_BRICK_BASE = "#a07c5c"  # lightened + de-jittered; see materials.ts
 # Glen-Gery Columbia Roman Maximus brick — materials.ts
 # ROMAN_MAXIMUS_BRICK_STYLE.base and ROMAN_MAXIMUS_SOLDIER_STYLE.base. The off-white
 # colourway of the Roman Maximus unit; the `finish` key names the UNIT GEOMETRY, so a colour
@@ -291,15 +287,8 @@ _ROMAN_MAXIMUS_BRICK_BASE = "#e4ddc9"
 # Roofing "Classic Green", materials.ts CLASSIC_GREEN_SEAM_BASE. A second colourway of the
 # same 26 ga. nail-strip panel, so it keeps the seam profile and only the paint differs.
 _CLASSIC_GREEN_SEAM_BASE = "#2f5233"
-# The garage's formed-trim accent coil: "Copper Penny" PVDF metallic on BOTH the vented
-# ridge cap and the six fascia pieces. Mirrored by FINISH_BASE in ui/src/nordic/palette.ts.
-_COPPER_PENNY_METAL_BASE = "#8a4f2a"
-# Unreferenced — kept so the swap back is one word; see the Material comment in
-# houses/catlin/plan/assemblies.py.
-_REGAL_BLUE_METAL_BASE = "#1e3a5c"
 _DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
 
-_EXTERIOR_DARK = "#1c1f24"      # the house's one exterior dark; see window_trim above
 
 _FINISH_BASE: dict[str, str] = {
     "standing-seam": _SEAM_BASE,
@@ -315,30 +304,9 @@ _FINISH_BASE: dict[str, str] = {
     # on a fourth profile. Mirrors FINISH_BASE in ui/src/nordic/palette.ts.
     "board-and-batten": _SEAM_BASE,
     "cmu": _CMU_BASE,
-    "white-brick": _WHITE_BRICK_BASE,
-    "glazed-green-brick": _GLAZED_GREEN_BRICK_BASE,
-    "glazed-lapis-brick": _GLAZED_LAPIS_BRICK_BASE,
-    "glazed-gold-brick": _GLAZED_GOLD_BRICK_BASE,
-    "brown-brick": _BROWN_BRICK_BASE,
     "roman-maximus-brick": _ROMAN_MAXIMUS_BRICK_BASE,
     "roman-maximus-soldier": _ROMAN_MAXIMUS_BRICK_BASE,
     "classic-green-seam": _CLASSIC_GREEN_SEAM_BASE,
-    "metal-copper-penny": _COPPER_PENNY_METAL_BASE,
-    "metal-fascia-regal-blue": _REGAL_BLUE_METAL_BASE,
-    # Formed edge trim ordered in a second coil colour (Roof.edge_trim_material). Without an
-    # entry it falls to the "metal" family's blue-grey, and the accent that makes a
-    # zero-overhang rake legible would differ between the .glb and the viewer.
-    "metal-dark-exterior": _EXTERIOR_DARK,
-    # Prefinished K-style gutter coil: a separate tag only so [drainage] can price it as
-    # colour-card stock rather than shop fabrication. Same ink on purpose — the eave line
-    # has to read continuous. Mirrors FINISH_BASE in ui/src/nordic/palette.ts.
-    "metal-dark-kstyle": _EXTERIOR_DARK,
-    # The balcony 6x6 pillars' painted-lumber material (POST_WHITE_PAINT's structure
-    # layer), now also carried by the knee-brace diagonals as a FramedMember material.
-    # No family needle matches the ref, so without an entry the brace member path falls
-    # to the bare "brace" category lumber while the pillars it braces render white.
-    # Value = the material's authored colour in houses/catlin/plan/assemblies.py.
-    "post-paint-white": "#f4f2ee",
     # Cellular PVC trim (the garage SOFFIT; its fascia went to formed metal)
     # is factory-white, not the "siding" family's
     # blue-grey the substring guess falls to. Same white as post-paint-white — both are

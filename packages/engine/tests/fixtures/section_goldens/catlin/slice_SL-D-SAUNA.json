@@ -56,7 +56,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-shiplap"
+      "material": "catlin-sauna-shiplap",
+      "fill": "#e6d4ae"
     },
     {
       "space": "model",
@@ -392,7 +393,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-shiplap"
+      "material": "catlin-sauna-shiplap",
+      "fill": "#e6d4ae"
     },
     {
       "space": "model",
@@ -983,12 +985,13 @@
           -11.875
         ]
       ],
-      "pattern": "sauna-shiplap",
+      "pattern": "catlin-sauna-shiplap",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-shiplap"
+      "material": "catlin-sauna-shiplap",
+      "fill": "#e6d4ae"
     },
     {
       "space": "model",

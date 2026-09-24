@@ -436,7 +436,7 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
     const mat = seam
       ? createStandingSeamMaterial(mode, [1, 1],
         roofPaint ? new THREE.Color(roofPaint).getHex() : 0xE8E8E2, true, seamProfile)
-      : standardMaterial(new THREE.Color(materialColor(layer.material, palette)), mode, {
+      : standardMaterial(new THREE.Color(materialColor(layer.material, palette, catalog?.materials)), mode, {
         roughness: mode === "nordic" ? NORDIC_ROUGHNESS.matte : 1,
         side: THREE.DoubleSide,
       });

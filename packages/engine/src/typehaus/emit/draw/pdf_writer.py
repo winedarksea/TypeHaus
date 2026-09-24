@@ -150,6 +150,9 @@ _HATCH_MPL = {
     "batt": "....", "osb": "//", "lumber": "\\\\", "concrete": "..", "SOLID": None,
     "rigid": "xx", "gypsum": None, "membrane": None, "metal": None, "none": None,
     "gravel": "oo", "soil": "..", "foam": "**", "glass": None,
+    # ``Material.hatch`` families a house material can arrive with: siding is its fill
+    # alone, masonry the concrete stipple.
+    "siding": None, "masonry": "..",
     # The ventilated mat under the standing seam — an open mesh, hatched as a crosshatch
     # so it reads as the mostly-air layer it is rather than as another membrane.
     "airgap": "xxxx",
@@ -913,7 +916,7 @@ def _render_nodes(ax: object, scene: Scene, tagger: ArtistTagger | None = None) 
             # Fill by material, then overlay the hatch — an unfilled hatch alone makes
             # concrete, XPS, EPS and polyiso read as the same grey stipple.
             hatch = _HATCH_MPL.get(node.pattern, "..")
-            fill = detail_fill(node.material, None)
+            fill = node.fill or detail_fill(node.material, None)
             ax.add_patch(Polygon(list(node.boundary), closed=True, facecolor=fill,
                                  edgecolor="none", linewidth=0.0, zorder=0.5))
             if hatch:

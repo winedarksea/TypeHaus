@@ -312,6 +312,35 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          518.325,
+          -31.685039370078748
+        ],
+        [
+          518.375,
+          -31.685039370078748
+        ],
+        [
+          518.375,
+          -12.000000000000005
+        ],
+        [
+          518.325,
+          -12.000000000000005
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "aluminum-flat-pvdf",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -504,7 +533,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "cdx-plywood"
+      "material": "cdx-plywood",
+      "fill": "#c9a86a"
     },
     {
       "space": "model",
@@ -539,6 +569,35 @@
       "node": "hatch",
       "boundary": [
         [
+          517.75,
+          -12.000000000000005
+        ],
+        [
+          518.625,
+          -12.000000000000005
+        ],
+        [
+          518.625,
+          -4.370956789862821e-15
+        ],
+        [
+          517.75,
+          -4.370956789862821e-15
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "corrugated-panel-24",
+      "fill": "#2f2f2f"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
           519.25,
           -12.000000000000005
         ],
@@ -560,7 +619,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -828,7 +888,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "aluminum-flat-pvdf"
+      "material": "aluminum-flat-pvdf",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -884,7 +945,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "aluminum-flat-pvdf"
+      "material": "aluminum-flat-pvdf",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -2357,7 +2419,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "aluminum-flat-pvdf"
+      "material": "aluminum-flat-pvdf",
+      "fill": "#1c1f24"
     },
     {
       "space": "paper",
@@ -2496,12 +2559,13 @@
           1.298
         ]
       ],
-      "pattern": "metal",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "paper",
@@ -2568,12 +2632,13 @@
           1.1280000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "cdx-plywood"
+      "material": "cdx-plywood",
+      "fill": "#c9a86a"
     },
     {
       "space": "paper",
@@ -2645,7 +2710,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "flashing"
+      "material": "corrugated-panel-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "paper",
@@ -2681,6 +2747,78 @@
       "anchor": [
         2.85,
         0.8880000000000001
+      ],
+      "content": "corrugated-panel-24  0.875\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          2.65,
+          0.6480000000000001
+        ],
+        [
+          2.79,
+          0.6480000000000001
+        ],
+        [
+          2.79,
+          0.7880000000000001
+        ],
+        [
+          2.65,
+          0.7880000000000001
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "flashing"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          2.65,
+          0.6480000000000001
+        ],
+        [
+          2.79,
+          0.6480000000000001
+        ],
+        [
+          2.79,
+          0.7880000000000001
+        ],
+        [
+          2.65,
+          0.7880000000000001
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        2.85,
+        0.7180000000000002
       ],
       "content": "flashing",
       "height": 3.0,

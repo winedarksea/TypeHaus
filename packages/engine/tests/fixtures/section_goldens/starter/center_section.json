@@ -536,6 +536,34 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          291.91125,
+          0.0
+        ],
+        [
+          292.22375,
+          0.0
+        ],
+        [
+          292.22375,
+          24.000000000000004
+        ],
+        [
+          291.91125,
+          24.000000000000004
+        ]
+      ],
+      "pattern": "siding",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "fiber-cement"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -567,6 +595,34 @@
       "node": "hatch",
       "boundary": [
         [
+          291.91125,
+          84.0
+        ],
+        [
+          292.22375,
+          84.0
+        ],
+        [
+          292.22375,
+          108.00000000000001
+        ],
+        [
+          291.91125,
+          108.00000000000001
+        ]
+      ],
+      "pattern": "siding",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "fiber-cement"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
           284.41125000000005,
           0.0
         ],
@@ -1272,6 +1328,34 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -4.22375,
+          0.0
+        ],
+        [
+          -3.91125,
+          0.0
+        ],
+        [
+          -3.91125,
+          24.000000000000004
+        ],
+        [
+          -4.22375,
+          24.000000000000004
+        ]
+      ],
+      "pattern": "siding",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "fiber-cement"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1297,6 +1381,34 @@
       "closed": true,
       "uid": "W104AAAAAA",
       "tag": "W-104/cladding"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -4.22375,
+          84.0
+        ],
+        [
+          -3.91125,
+          84.0
+        ],
+        [
+          -3.91125,
+          108.00000000000001
+        ],
+        [
+          -4.22375,
+          108.00000000000001
+        ]
+      ],
+      "pattern": "siding",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "fiber-cement"
     },
     {
       "space": "model",
@@ -2008,6 +2120,34 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          291.91125,
+          108.00000000000001
+        ],
+        [
+          292.22375,
+          108.00000000000001
+        ],
+        [
+          292.22375,
+          138.00000000000003
+        ],
+        [
+          291.91125,
+          138.00000000000003
+        ]
+      ],
+      "pattern": "siding",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "fiber-cement"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2033,6 +2173,34 @@
       "closed": true,
       "uid": "W202AAAAAA",
       "tag": "W-202/cladding"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          291.91125,
+          198.00000000000003
+        ],
+        [
+          292.22375,
+          198.00000000000003
+        ],
+        [
+          292.22375,
+          216.00000000000003
+        ],
+        [
+          291.91125,
+          216.00000000000003
+        ]
+      ],
+      "pattern": "siding",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "fiber-cement"
     },
     {
       "space": "model",
@@ -2489,6 +2657,34 @@
       "closed": true,
       "uid": "W24BAAAAAA",
       "tag": "W-204B/cladding"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -4.22375,
+          108.00000000000001
+        ],
+        [
+          -3.91125,
+          108.00000000000001
+        ],
+        [
+          -3.91125,
+          216.00000000000003
+        ],
+        [
+          -4.22375,
+          216.00000000000003
+        ]
+      ],
+      "pattern": "siding",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "fiber-cement"
     },
     {
       "space": "model",

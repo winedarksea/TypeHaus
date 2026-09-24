@@ -32,6 +32,35 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          211.96000000000004,
+          218.3464566929134
+        ],
+        [
+          212.46,
+          218.3464566929134
+        ],
+        [
+          212.46,
+          228.0
+        ],
+        [
+          211.96000000000004,
+          228.0
+        ]
+      ],
+      "pattern": "rigid",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "pvc-panel",
+      "fill": "#f2f4f3"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -140,7 +169,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "humid-room-membrane"
+      "material": "humid-room-membrane",
+      "fill": "#3f4a52"
     },
     {
       "space": "model",
@@ -700,7 +730,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pvc-panel"
+      "material": "pvc-panel",
+      "fill": "#f2f4f3"
     },
     {
       "space": "model",
@@ -1667,12 +1698,13 @@
           1.468
         ]
       ],
-      "pattern": "metal",
+      "pattern": "rigid",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "pvc-panel"
+      "material": "pvc-panel",
+      "fill": "#f2f4f3"
     },
     {
       "space": "paper",
@@ -1811,12 +1843,13 @@
           1.1280000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "membrane",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "humid-room-membrane"
+      "material": "humid-room-membrane",
+      "fill": "#3f4a52"
     },
     {
       "space": "paper",

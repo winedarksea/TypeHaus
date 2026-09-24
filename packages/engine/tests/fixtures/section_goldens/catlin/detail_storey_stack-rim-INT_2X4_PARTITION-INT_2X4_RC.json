@@ -88,6 +88,34 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          109.75000000000001,
+          218.3464566929134
+        ],
+        [
+          110.25,
+          218.3464566929134
+        ],
+        [
+          110.25,
+          228.0
+        ],
+        [
+          109.75000000000001,
+          228.0
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "resilient-channel"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -448,7 +476,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -528,7 +557,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",

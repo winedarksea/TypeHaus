@@ -114,7 +114,7 @@ MATERIALS: tuple[Material, ...] = (
         finish="felted",
         source="Recycled-PET architectural acoustic panel technical data.",
     ),
-    Material(
+    _POLYISO_FOIL := Material(
         tag="polyiso-foil",
         name="Foil-faced polyisocyanurate",
         r_per_inch=6.0,
@@ -151,4 +151,21 @@ MATERIALS: tuple[Material, ...] = (
         color="#f3c6d0",
         source="Manufacturer compressed-batt R-value charts for R-30 cathedral batts.",
     ),
+    # Polyiso foil-faced on BOTH faces with its own interior-exposure listing: the one board
+    # here that may stand in a room without a thermal barrier (IRC R316.6 specific approval),
+    # which is why it is a separate row and not the generic ``polyiso-foil`` above. The
+    # thermal numbers are ``polyiso-foil``'s; the published R-6.5/in is not claimed.
+    _POLYISO_FOIL.model_copy(update={
+        "tag": "polyiso-foil-thermax",
+        "name": "DuPont Thermax Sheathing, foil-faced polyiso",
+        "thermal_barrier_listing": (
+            "Intertek CCRR-0435 (rev. 2026-06-19) §5.5: Thermax boards may be installed "
+            "without the IRC R316.4 / IBC 2603.4 thermal barrier; §5.1: max 4 in., any wall "
+            "or floor/ceiling assembly, any type of structure, interior fasteners max 24 in. "
+            "o.c. across / 48 in. along the board (NFPA 286, UL 1715)"),
+        "source": (
+            "DuPont Thermax Sheathing PIS 43-D100094 (2025-07-25): R-13 at 2 in., 0.03 perm, "
+            "1 mil aluminum both faces; max use temperature 250 F per Thermax Heavy Duty PIS "
+            "43-D100093"),
+    }),
 )

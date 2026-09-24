@@ -14,7 +14,7 @@ and opening voids. Thin layers honor ``ExaggerationSpec`` with true-dimension la
 from __future__ import annotations
 
 from typehaus.emit.draw.lineweights import REFERENCE
-from typehaus.emit.draw.palette import aia_layer, detail_hatch
+from typehaus.emit.draw.palette import aia_layer, library_hatch
 from typehaus.emit.draw.scene import Frame, Hatch, Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.draw.section_annotate import annotate_building_section
 from typehaus.emit.draw.section_cavity import (
@@ -81,7 +81,8 @@ def build_section(model: ResolvedModel, view: Slice, joints=None,
     min_draw = (view.exaggeration.min_draw_thickness.meters
                 if view.exaggeration is not None else 0.0)
 
-    b = SceneBuilder(name=f"{view.kind.value}-{view.tag}", units="in")
+    b = SceneBuilder(name=f"{view.kind.value}-{view.tag}", units="in",
+                     library=model.plan.library)
     scale = frame.scale if frame is not None else None
 
     # Layer-label ladders are collected per wall and emitted once, after every wall has
@@ -296,7 +297,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
         name, function = catalog.name, catalog.role
         term = joints.termination(wall.uid, name) if joints is not None else None
         aia = aia_layer(function)
-        pattern = detail_hatch(catalog.material_ref, function)
+        pattern = library_hatch(model.plan.library, catalog.material_ref, function)
         tag = f"{wall.tag}/{name}"
         for profile in slice_part(part, plane):
             band = profile_band(profile)
@@ -466,7 +467,7 @@ def _emit_roof_cut(b, model, roof, plane: CutPlane, crop, joints=None,
         catalog = part.catalog
         if catalog is None:
             continue
-        pattern = detail_hatch(catalog.material_ref, catalog.role) or "batt"
+        pattern = library_hatch(model.plan.library, catalog.material_ref, catalog.role) or "none"
         for profile in slice_part(part, plane):
             clipped = clip_polygon(profile.outline, crop)
             if len(clipped) < 3:
@@ -482,7 +483,7 @@ def _emit_roof_cut(b, model, roof, plane: CutPlane, crop, joints=None,
 
     if asm is None:
         return
-    bands += emit_roof_cavity(b, roof, asm, plane, crop)
+    bands += emit_roof_cavity(b, roof, asm, plane, crop, model.plan.library)
     # No band of this roof reached the sheet: naming its layers would point at nothing.
     # Half the derived details are cut at a wall a long way from any roof.
     if detail and bands:

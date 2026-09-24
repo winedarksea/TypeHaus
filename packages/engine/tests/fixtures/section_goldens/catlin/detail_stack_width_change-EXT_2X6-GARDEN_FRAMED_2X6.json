@@ -575,12 +575,13 @@
           -19.68503937007874
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "concrete",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "brown-brick"
+      "material": "brown-brick",
+      "fill": "#a07c5c"
     },
     {
       "space": "model",
@@ -748,7 +749,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -916,7 +918,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -3153,12 +3156,13 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "paper",
@@ -3374,7 +3378,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "board-batten-24"
+      "material": "board-batten-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "paper",

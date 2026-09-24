@@ -10,7 +10,7 @@ assembly ones.
 from __future__ import annotations
 
 from typehaus.emit.draw.lineweights import FAINT, PROFILE
-from typehaus.emit.draw.palette import detail_hatch
+from typehaus.emit.draw.palette import library_hatch
 from typehaus.emit.draw.scene import Hatch, Polyline
 from typehaus.emit.draw.section_clip import (
     clip_polygon,
@@ -55,7 +55,7 @@ def emit_framing_cuts(b, model, hosts, plane, crop, representative_roles=()) -> 
                 continue
             if profiles:
                 cut.add(catalog.role)
-            _emit_part_profiles(b, profiles, crop, host.uid, catalog)
+            _emit_part_profiles(b, profiles, crop, host.uid, catalog, model.plan.library)
         for role, parts in missed.items():
             if role in cut:
                 continue  # something of this role was cut; no stand-in needed
@@ -66,7 +66,7 @@ def emit_framing_cuts(b, model, hosts, plane, crop, representative_roles=()) -> 
             stand_in = CutPlane(axis=plane.axis, station_m=station)
             for part in parts:
                 _emit_part_profiles(b, slice_part(part, stand_in), crop, host.uid,
-                                    part.catalog)
+                                    part.catalog, model.plan.library)
 
 
 def emit_floor_deck_cuts(b, model, plane, crop) -> None:
@@ -89,7 +89,8 @@ def emit_floor_deck_cuts(b, model, plane, crop) -> None:
         for part in element.parts:
             if part.catalog is None:
                 continue
-            _emit_part_profiles(b, slice_part(part, plane), crop, floor.uid, part.catalog)
+            _emit_part_profiles(b, slice_part(part, plane), crop, floor.uid, part.catalog,
+                                model.plan.library)
 
 
 # How far a framing member may reach past its host's own plan outline: the wall→roof closure
@@ -149,9 +150,9 @@ def _u_span_overlaps_crop(part, plane, crop) -> bool:
     return bool(us) and min(us) <= hi and max(us) >= lo
 
 
-def _emit_part_profiles(b, profiles, crop, uid, catalog) -> None:
+def _emit_part_profiles(b, profiles, crop, uid, catalog, library=None) -> None:
     material = catalog.material_ref
-    pattern = (detail_hatch(material) or "metal") if material else "lumber"
+    pattern = (library_hatch(library, material) or "metal") if material else "lumber"
     for profile in profiles:
         _emit_member_profile(b, profile, crop, uid, catalog.name, catalog.profile,
                              pattern, material)

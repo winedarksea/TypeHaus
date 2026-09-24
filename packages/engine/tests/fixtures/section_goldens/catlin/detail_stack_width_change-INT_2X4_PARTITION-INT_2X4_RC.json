@@ -88,6 +88,34 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          109.75000000000001,
+          220.31496062992127
+        ],
+        [
+          110.25,
+          220.31496062992127
+        ],
+        [
+          110.25,
+          228.0
+        ],
+        [
+          109.75000000000001,
+          228.0
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "resilient-channel"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [

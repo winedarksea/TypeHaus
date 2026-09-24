@@ -252,7 +252,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -420,7 +421,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-24"
+      "material": "pbr-panel-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -560,7 +562,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -616,7 +619,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -672,7 +676,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -728,7 +733,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -784,7 +790,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -1024,7 +1031,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "roof-adhered-butyl-ht"
+      "material": "roof-adhered-butyl-ht",
+      "fill": "#2f3134"
     },
     {
       "space": "model",
@@ -1088,7 +1096,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "standing-seam-linen-white"
+      "material": "standing-seam-linen-white",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -1111,12 +1120,13 @@
           251.36375984251973
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "fiberglass-r30c"
+      "material": "fiberglass-r30c",
+      "fill": "#f3c6d0"
     },
     {
       "space": "model",
@@ -1143,12 +1153,13 @@
           258.2387598425197
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -1703,12 +1714,13 @@
           254.7434926025187
         ]
       ],
-      "pattern": "metal",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -1876,7 +1888,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-24"
+      "material": "pbr-panel-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -1988,7 +2001,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -2044,7 +2058,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -2100,7 +2115,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -3151,12 +3167,13 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "paper",
@@ -3372,7 +3389,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "pbr-panel-24"
+      "material": "pbr-panel-24",
+      "fill": "#2f2f2f"
     },
     {
       "space": "paper",

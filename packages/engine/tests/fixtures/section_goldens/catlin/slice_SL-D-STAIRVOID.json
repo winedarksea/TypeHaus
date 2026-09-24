@@ -280,7 +280,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "df-select-s4s"
+      "material": "df-select-s4s",
+      "fill": "#d9b077"
     },
     {
       "space": "model",
@@ -309,6 +310,35 @@
       "closed": true,
       "uid": "CMW117AAAA",
       "tag": "W-M-STRW/ply-stair"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          122.62500000000001,
+          96.00000000000001
+        ],
+        [
+          123.37500000000001,
+          96.00000000000001
+        ],
+        [
+          123.37500000000001,
+          108.00000000000001
+        ],
+        [
+          122.62500000000001,
+          108.00000000000001
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "cabinet-plywood",
+      "fill": "#c8a97a"
     },
     {
       "space": "model",
@@ -561,6 +591,34 @@
       "closed": true,
       "uid": "CSW124AAAA",
       "tag": "W-S-BW3/resilient-channel"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          260.75,
+          120.0
+        ],
+        [
+          261.25,
+          120.0
+        ],
+        [
+          261.25,
+          227.37500000000003
+        ],
+        [
+          260.75,
+          227.37500000000003
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "resilient-channel"
     },
     {
       "space": "model",
@@ -1400,7 +1458,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "lvl"
+      "material": "lvl",
+      "fill": "#c2ab7c"
     },
     {
       "space": "model",
@@ -2112,7 +2171,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -2168,7 +2228,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -2224,7 +2285,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -2312,7 +2374,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",
@@ -3160,7 +3223,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "roof-adhered-butyl-ht"
+      "material": "roof-adhered-butyl-ht",
+      "fill": "#2f3134"
     },
     {
       "space": "model",
@@ -3248,7 +3312,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "standing-seam-linen-white"
+      "material": "standing-seam-linen-white",
+      "fill": "#2f2f2f"
     },
     {
       "space": "model",
@@ -3279,12 +3344,13 @@
           279.125
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "fiberglass-r30c"
+      "material": "fiberglass-r30c",
+      "fill": "#f3c6d0"
     },
     {
       "space": "model",
@@ -3315,12 +3381,13 @@
           286.0
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "closed-cell-spray-foam"
+      "material": "closed-cell-spray-foam",
+      "fill": "#e8d9b5"
     },
     {
       "space": "model",
@@ -5640,7 +5707,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "metal-dark-exterior"
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",

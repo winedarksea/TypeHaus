@@ -3,6 +3,12 @@ viewer, the SVG editor, and 2D detail hatches (#24, → 21 §Nordic preset)."""
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typehaus.model import Material
+    from typehaus.model.plan import Library
+
 HATCH_FAMILY_COLOR: dict[str, str] = {
     "lumber": "#d8c9a6",
     "osb": "#c9a86a",
@@ -113,7 +119,7 @@ DETAIL_FILL: dict[str, str] = {
     "gwb": "#e6e6e6",
     "polyiso": "#f4e6b1",
     "polyiso-foil": "#efdf9e",
-    "polyiso-foil-thermax": "#efdf9e",  # catlin's sauna board (house-local)
+    "polyiso-foil-thermax": "#efdf9e",
     "eps": "#c8e0f8",
     "icf-eps": "#d8e8fa",
     "xps": "#a7d7c5",
@@ -125,21 +131,6 @@ DETAIL_FILL: dict[str, str] = {
     # as one product — one is 54 perm and the other 0.05.
     "waterproofing": "#2f2b2a",
     "standing-seam": "#2f2f2f",
-    "standing-seam-linen-white": "#2f2f2f",
-    "standing-seam-snaplock": "#2f2f2f",
-    "standing-seam-nailstrip": "#2f2f2f",
-    "standing-seam-nailstrip-26": "#2f2f2f",
-    # The exposed-fastener PBR panel draws as the same metal ink as the four seam profiles:
-    # a section shows a metal skin, and 1/2" of snap-lock pan and 1 1/4" of PBR rib differ
-    # in thickness (which the layer carries) and in nothing this table decides. It is listed
-    # explicitly because these tables match by TAG and never guess — `pbr-panel-26` hits no
-    # needle in `_FAMILY_NEEDLES` ("clad"/"metal"/"seam" are all absent from it), so without
-    # this row it would draw as the near-white fallback with no hatch. Which is also why the
-    # 24 ga row below is not optional: a NEW tag matched by TAG inherits nothing.
-    "pbr-panel-26": "#2f2f2f",
-    "pbr-panel-24": "#2f2f2f",
-    # Same reason as pbr-panel-26 above: matched by TAG, hits no `_FAMILY_NEEDLES` needle.
-    "board-batten-24": "#2f2f2f",
     "fiber-cement": "#e6e6e6",
     "cedar-tg": "#c8a26a",
     "sauna-shiplap": "#e6d4ae",
@@ -156,17 +147,6 @@ DETAIL_FILL: dict[str, str] = {
     "flashing": "#7a0c0c",
     "metal": "#ffffff",
     "metal-dark": "#2f2f2f",
-    # The house's one exterior dark (houses/catlin/CLAUDE.md) — the roof edge trim, the eave
-    # water chain (drip edge, box gutter, downspouts) and the guards all name it. It had no
-    # entry, so every one of them fell through to the near-white fallback AND, because
-    # ``section.py`` hands the raw material tag through as the hatch pattern, picked up the
-    # unknown-pattern dotted stipple: a box gutter drawn as a pale speckled ghost beside the
-    # apron flashing it laps. Same ink as the five seam profiles above, for the reason stated
-    # there — the drawing shows metal, and formed dark coil is metal.
-    "metal-dark-exterior": "#2f2f2f",
-    # Prefinished K-style gutter coil — the same dark on a different product (it is a
-    # separate tag so [drainage] can price it), so the same ink. Mirrors DetailCanvas.tsx.
-    "metal-dark-kstyle": "#2f2f2f",
     # Pressure-treated lumber: the catlin truss wall's outer girts and its block-2 course are
     # KDAT, and with no entry here (no ``_FAMILY_NEEDLES`` needle hits "kdat" either) every
     # one of them drew as a blank cream box with no hatch — the wet-cycling half of a wall
@@ -177,12 +157,6 @@ DETAIL_FILL: dict[str, str] = {
     # glulam is a manufactured member with visible laminations and a clear finish, not a
     # green-cast treated stick, and the two stand side by side in the garden's section.
     "glulam-treated": "#c8a877",
-    # White-painted PT lumber — the garden's pillars, knee braces and the two decks' rim
-    # bands (``JoistSpec.rim_material``). Without an entry here the member path below reads
-    # "has a material, and no hatch table row" as METAL: a painted 2x8 band hatched as steel
-    # in every detail that cuts it. It is lumber, and it is the one lumber in this house
-    # drawn near-white.
-    "post-paint-white": "#eeeae2",
     "rubber": "#3a3a3a",
     "glass": "#bee3f8",
     "gutter": "#8b8b8b",
@@ -246,30 +220,8 @@ DETAIL_HATCH: dict[str, str] = {
     # would draw the one layer in this roof that is mostly air as a solid sheet.
     "roof-vent-mat": "airgap",
     "standing-seam": "metal",
-    # ** THESE TWO TABLES CANNOT SEE A HOUSE-LOCAL MATERIAL, AND THAT IS A REAL SEAM. **
-    # They key on a material TAG and they duplicate two fields ``Material`` already carries
-    # (``hatch`` and ``color``), so a house that authors its own material — as catlin does
-    # for every panel it has picked a gauge or a colour for — falls through to the LAYER
-    # FUNCTION fallback and loses both. The failure is quiet and ugly: `section.py`'s roof
-    # path ends in ``or "batt"``, so a metal roof draws with the batt stipple.
-    #
-    # The right fix is for these to consult the resolved ``Material`` before the function
-    # fallback; what stops it today is that the six call sites hold a ``material_ref``
-    # string and no library. Until then a house-local tag has to be listed here beside its
-    # library sibling, which is what `pbr-panel-24`, `corrugated-panel-24`,
-    # `board-batten-24` and `standing-seam-nailstrip-26` already are.
-    "standing-seam-linen-white": "metal",
-    "standing-seam-snaplock": "metal",
-    "standing-seam-nailstrip": "metal",
-    "standing-seam-nailstrip-26": "metal",
-    "pbr-panel-26": "metal",
-    "pbr-panel-24": "metal",
-    "board-batten-24": "metal",
-    "metal-dark-exterior": "metal",
-    "metal-dark-kstyle": "metal",
     "kdat": "lumber",
     "glulam-treated": "lumber",
-    "post-paint-white": "lumber",
     "aggregate": "gravel",
     "river-rock": "gravel",
     "soil": "soil",
@@ -287,19 +239,54 @@ DETAIL_HATCH: dict[str, str] = {
 _FALLBACK_FILL = "#e8e4da"
 
 
-def detail_fill(material_ref: str | None, function: str | None = None) -> str:
-    """Fill colour for a cut layer, by material tag, falling back to its layer function."""
+# A skin family draws as its family, whatever tag or colourway a house names it by: the
+# section shows metal, and the gauge and paint are the takeoff's business.
+_SKIN_FAMILY_DETAIL: dict[str, tuple[str, str]] = {
+    "standing-seam": ("#2f2f2f", "metal"),
+}
+
+_FUNCTION_FILL = {
+    "structure": "#c8a26a", "sheathing": "#d9c8a0", "insulation": "#ddecc8",
+    "membrane": "#1e3a5f", "cladding": "#2f2f2f", "finish": "#e6e6e6",
+    "furring": "#c8a26a", "airgap": "#eef2f5",
+}
+_FUNCTION_HATCH = {
+    "structure": "lumber", "sheathing": "osb", "insulation": "batt",
+    "membrane": "membrane",
+}
+
+
+def material_fill(material: Material) -> str | None:
+    """The cut fill a material states for itself: its skin family, else its ``color``."""
+    skin = _SKIN_FAMILY_DETAIL.get(material.skin_family or "")
+    return skin[0] if skin is not None else material.color
+
+
+def material_hatch(material: Material) -> str | None:
+    """The cut hatch a material states for itself: its skin family, else its ``hatch``."""
+    skin = _SKIN_FAMILY_DETAIL.get(material.skin_family or "")
+    return skin[1] if skin is not None else material.hatch
+
+
+def detail_fill(material_ref: str | None, function: str | None = None,
+                material: Material | None = None) -> str:
+    """Fill colour for a cut layer.
+
+    The library's detail table by tag first, then the resolved ``material`` (its skin family,
+    then its own ``color``), then the layer function. A house material therefore draws as it
+    authors itself; no engine table names a house tag (decision #57).
+    """
     if material_ref and material_ref in DETAIL_FILL:
         return DETAIL_FILL[material_ref]
-    return {
-        "structure": "#c8a26a", "sheathing": "#d9c8a0", "insulation": "#ddecc8",
-        "membrane": "#1e3a5f", "cladding": "#2f2f2f", "finish": "#e6e6e6",
-        "furring": "#c8a26a", "airgap": "#eef2f5",
-    }.get(function or "", _FALLBACK_FILL)
+    fill = material_fill(material) if material is not None else None
+    if fill:
+        return fill
+    return _FUNCTION_FILL.get(function or "", _FALLBACK_FILL)
 
 
-def detail_hatch(material_ref: str | None, function: str | None = None) -> str | None:
-    """Hatch family for a cut layer, by material tag, falling back to its layer function.
+def detail_hatch(material_ref: str | None, function: str | None = None,
+                 material: Material | None = None) -> str | None:
+    """Hatch family for a cut layer: tag table, then the resolved ``material``, then function.
 
     An entry of ``"none"`` is a deliberate *no hatch*, not a missing one, and wins over the
     function fallback below — otherwise a bare-by-design rigid board would go straight back
@@ -307,10 +294,29 @@ def detail_hatch(material_ref: str | None, function: str | None = None) -> str |
     """
     if material_ref and material_ref in DETAIL_HATCH:
         return DETAIL_HATCH[material_ref]
-    return {
-        "structure": "lumber", "sheathing": "osb", "insulation": "batt",
-        "membrane": "membrane",
-    }.get(function or "")
+    hatch = material_hatch(material) if material is not None else None
+    if hatch:
+        return hatch
+    return _FUNCTION_HATCH.get(function or "")
+
+
+def library_hatch(library: Library | None, material_ref: str | None,
+                  function: str | None = None) -> str | None:
+    """:func:`detail_hatch` with the material resolved from ``library`` (when there is one)."""
+    material = library.material(material_ref) if library is not None and material_ref else None
+    return detail_hatch(material_ref, function, material)
+
+
+def library_fill(library: Library | None, material_ref: str | None) -> str | None:
+    """The fill a HOUSE material authors, for a tag the detail table does not know.
+
+    ``None`` when the table knows the tag or the library has no such material: the writer's
+    own :func:`detail_fill` then answers exactly as before.
+    """
+    if library is None or not material_ref or material_ref in DETAIL_FILL:
+        return None
+    material = library.material(material_ref)
+    return material_fill(material) if material is not None else None
 
 
 _FUNCTION_AIA = {

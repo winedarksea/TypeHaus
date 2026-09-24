@@ -331,7 +331,7 @@ def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model_ro):
         if node is None or "mesh" not in node:
             continue
         expected = {_layer_color(ly, authored) for ly in wall.body_layers() if ly.polygon}
-        expected |= {member_color(m) for m in closures.get(wall.uid, ())}
+        expected |= {member_color(m, authored) for m in closures.get(wall.uid, ())}
         actual = len(gltf["meshes"][node["mesh"]]["primitives"])
         if actual != len(expected):
             mismatches.append((wall.tag, len(expected), actual))

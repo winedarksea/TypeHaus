@@ -119,12 +119,12 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         body = _MeshBuilder()
         _add_wall_body(body, wall, lod, openings_by_wall.get(wall.tag, ()), authored)
         for member in closures.get(wall.uid, ()):
-            _add_member(body, member)
+            _add_member(body, member, authored)
         scene.add_object(body, wall_trades(wall), kind="wall", uid=wall.uid)
         if wall.members:
             framing = _MeshBuilder()
             for member in wall.members:
-                _add_member(framing, member)
+                _add_member(framing, member, authored)
             scene.add_object(framing, ("framing",), kind="wall", uid=wall.uid)
 
     door_types = {dt.tag: dt for dt in model.plan.library.door_types}
@@ -228,7 +228,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         framing = _MeshBuilder()
         for member in roof.members:
             if is_roof_framing_member(member):
-                _add_member(framing, member)
+                _add_member(framing, member, authored)
         scene.add_object(framing, ("framing",), kind="roof", uid=roof.uid)
 
     for panel in sorted(model.solar_panels, key=lambda item: item.uid):
@@ -246,7 +246,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         # building — not hidden behind the floors toggle. Same split roof/wall framing use.
         framing = _MeshBuilder()
         for member in floor.members:
-            _add_member(framing, member)
+            _add_member(framing, member, authored)
         scene.add_object(framing, ("framing",), kind="floor", uid=floor.uid)
         # The subfloor sheet over those joists — its own node, the way a wall's body is
         # separate from its studs, so the deck can be hidden without hiding the framing.
@@ -258,13 +258,13 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     for stair in sorted(model.stairs, key=lambda item: item.uid):
         mb = _MeshBuilder()
         for member in stair.members:
-            _add_member(mb, member)
+            _add_member(mb, member, authored)
         scene.add_object(mb, ("stairs",), kind="stair", uid=stair.uid)
 
     for brace in sorted(model.braces, key=lambda item: item.uid):
         mb = _MeshBuilder()
         for member in brace.members:
-            _add_member(mb, member)
+            _add_member(mb, member, authored)
         # ``brace.kind`` rather than the literal: ResolvedBrace hosts wedges too, and the
         # Inspector should not label six drainage shims as knee braces.
         scene.add_object(mb, ("framing",), kind=brace.kind, uid=brace.uid)
@@ -287,7 +287,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             continue
         mb = _MeshBuilder()
         for member in soffit.members:
-            _add_member(mb, member)
+            _add_member(mb, member, authored)
         scene.add_object(mb, ("framing",), kind="solid", uid=soffit.uid)
 
     add_plants(scene, model)

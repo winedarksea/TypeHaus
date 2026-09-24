@@ -80,4 +80,15 @@ MATERIALS: tuple[Material, ...] = (
         finish="planted",
         source="USGA sod requirement for sand-rootzone construction; UMN turf guidance.",
     ),
+    # Dense-graded aggregate base WITH fines, compacted: the opposite of the capillary-break
+    # stone, and the base a walk or drive slab is placed on.
+    Material(
+        tag="mndot-class-5-base",
+        name="MnDOT Class 5 aggregate base, compacted",
+        r_per_inch=0.0,
+        density=2100.0,
+        hatch="concrete",
+        color="#9a958a",
+        source="MnDOT Standard Specifications for Construction, Spec 3138, Class 5 aggregate base",
+    ),
 )
