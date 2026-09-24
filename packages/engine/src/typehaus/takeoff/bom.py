@@ -67,6 +67,7 @@ from typehaus.takeoff.plumbing_specialties import (
 )
 from typehaus.takeoff.railings import railing_takeoff
 from typehaus.takeoff.reinforcement import reinforcement_takeoff
+from typehaus.takeoff.shelving import shelving_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff
 from typehaus.takeoff.steel import steel_members_takeoff
@@ -127,6 +128,9 @@ def bill_of_materials(
         "glazing_trim": glazing_trim_takeoff(model),
         "hardware": hardware_takeoff(model, hardware_config),
         "placeables": placeables_takeoff(model),
+        # Separately purchased shelf panels, by material/product.  Host-included shelves
+        # bill in placeables and custom-milled shelves are a hardwood view.
+        "shelving": shelving_takeoff(model),
         "railings": railing_takeoff(model),
         "floor_heat": floor_heat_takeoff(model),
         "floor_finishes": floor_finish_rows(model),

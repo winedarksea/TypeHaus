@@ -37,6 +37,7 @@ an ``integrity.millwork_standard`` error rather than a silent precedence rule.
 from __future__ import annotations
 
 from typehaus.model.base import Element, HausModel
+from typehaus.model.enums import ShelfProcurement
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length
 
@@ -110,6 +111,9 @@ class ShelfBank(Element):
     # carcass footprint depth.
     depth: Length | None = None
     profile: str = "S4S"
+    # A factory shelf panel can be an independent material order or already included with
+    # its host cabinet/system.  Only an explicit custom-milled bank is sent to the sawyer.
+    procurement: ShelfProcurement = ShelfProcurement.PURCHASED_SEPARATELY
 
 
 @register_element

@@ -115,6 +115,7 @@ SHAPES: dict[str, Shape] = {
     "drainage": Shape("Stormwater runs", None, "LF"),
     "floor_finishes": Shape("Floor finishes, by area", None, "SF ordered"),
     "wood_surfaces": Shape("Wood surfaces", None, "SF ordered"),
+    "shelving": Shape("Purchased shelving", None, "SF ordered"),
     "countertops": Shape("Countertops", None, "SF"),
     "railings": Shape("Guards and handrails", _railing, "LF"),
     "allowances": Shape("Owner allowances"),
@@ -203,7 +204,7 @@ RECIPES: dict[str, Recipe] = {
                        ("floor_finishes", "allowances"), ("A-101",)),
     "millwork": Recipe("Millwork and casework", "Casework and built-ins by unit, tops by area, "
                        "paneling and interior trim.",
-                       ("placeables", "countertops", "wood_surfaces", "envelope_layers",
+                       ("placeables", "countertops", "shelving", "wood_surfaces", "envelope_layers",
                         "allowances"), ("A-101", "A-501")),
     "plumbing": Recipe("Plumbing", "Pipe by system and size in feet, fittings by the piece, "
                        "the sleeves that go in before the pour, every fixture by model, and "
@@ -249,4 +250,3 @@ def _validate(sections: tuple[str, ...] = ()) -> None:
     unknown += sorted(set(SHAPES) - set(sections))
     if unknown:
         raise ValueError(f"bid recipes name sections that do not exist: {unknown}")
-

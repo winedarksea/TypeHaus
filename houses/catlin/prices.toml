@@ -3263,7 +3263,7 @@
 # (557, not the 351 this note used to carry before the bay: the two studies' own clear faces
 # have drifted since that figure was blessed. Re-blessed from `haus takeoff`, like every
 # other quantity here — 506 sf net, 557 ordered at the 10% waste.)
-"oak" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 557 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00)
+"oak-floor-custom" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 557 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00)
 # RETIRED 2026-09-12 as the deck's finish, kept priced per the glazed-green-brick
 # convention — and kept for a second reason: the cream polish is the NAMED FALLBACK the
 # owner may revert to at pour time (notes/mixed_deck_movement_joint.md), so this is a live

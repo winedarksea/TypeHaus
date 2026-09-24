@@ -72,6 +72,28 @@ def test_a_panelling_band_with_no_species_stays_out(rows):
     assert "tile" not in {row["material"] for row in rows}
 
 
+def test_factory_oak_floor_stays_priced_and_visible_but_out_of_custom_milling(starter_dir):
+    """Species describes the surface; explicit sourcing decides whether a sawyer sees it."""
+    from typehaus.resolve import resolve
+    from typehaus.source import load_plan
+    from typehaus.takeoff.finishes import floor_finish_rows
+    from typehaus.takeoff.hardwood import hardwood_takeoff
+    from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
+
+    loaded = load_plan(starter_dir)
+    assert loaded.plan is not None
+    model, findings = resolve(loaded.plan)
+    assert not [finding for finding in findings if finding.severity.value == "error"]
+    floor = next(row for row in floor_finish_rows(model) if row["finish"] == "oak")
+    wood = next(row for row in wood_surfaces_takeoff(model) if row["material"] == "oak")
+    material = next(item for item in model.plan.library.materials if item.tag == "oak")
+    assert floor["order_area_sqft"] > floor["net_area_sqft"] > 0
+    assert wood["species"] == "oak" and wood["net_area_sqft"] == floor["net_area_sqft"]
+    assert material.finish == "strip-floor" and material.finish_thickness_in == 0.75
+    assert material.requires_custom_milling is False
+    assert hardwood_takeoff(model) == []
+
+
 # --- rough-stock yield ----------------------------------------------------------------------
 
 def test_rough_stock_always_exceeds_the_finished_piece(rows):

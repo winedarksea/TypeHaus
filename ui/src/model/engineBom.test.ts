@@ -97,6 +97,8 @@ export function runEngineBomTests() {
     "edge_trim (takeoff/edge_trim.py) must be claimed by the envelope group");
   assert(claimed.includes("wall_structure"),
     "wall_structure (takeoff/wall_structure.py) must be claimed by the structure group");
+  assert(claimed.includes("shelving"),
+    "shelving (takeoff/shelving.py) must be claimed by the casework group");
 
   // --- cells ------------------------------------------------------------------------------
 

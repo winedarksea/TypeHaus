@@ -960,6 +960,7 @@ class ResolvedShelfBank:
     thickness_m: float
     depth_m: float | None
     profile: str
+    procurement: str
     shelves: tuple[ResolvedShelf, ...]
 
 

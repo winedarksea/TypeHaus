@@ -165,6 +165,7 @@ def test_an_explicit_qualified_key_prices_a_non_concrete_solid(tmp_path) -> None
     ("sheet_goods", "sheets"),
     ("floor_finishes", "takeoff/finishes.py"),
     ("wood_surfaces", "takeoff/wood_surfaces.py"),
+    ("shelving", "takeoff/shelving.py"),
 ])
 def test_waste_on_an_order_quantity_section_is_a_hard_error(tmp_path, section, module_hint) -> None:
     """The exact double-count the whole design guards against — and the message has to name

@@ -227,7 +227,7 @@ def test_every_finish_row_resolved_a_real_material(bom):
                if not row["known"] and row["finish"] is not None]
     assert unknown == [], unknown
     assert {row["finish"] for row in bom["floor_finishes"] if "under" not in row} == {
-        "carpet", "lvp", "oak", "tile", "sealed-concrete", "coated-concrete", "rubber",
+        "carpet", "lvp", "oak-floor-custom", "tile", "sealed-concrete", "coated-concrete", "rubber",
         "vinyl-sheet", None}
 
 
@@ -291,7 +291,7 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
                                     "RM-S-BED1", "RM-S-BED2", "RM-S-BED3"}
     # The oak is now two storeys plus the attic study: the suite pair joined RM-S-STUDY2 and
     # RM-A-STUDY, which is what puts the second storey on one sand-and-finish set-up.
-    oak = next(row for row in bom["floor_finishes"] if row["finish"] == "oak")
+    oak = next(row for row in bom["floor_finishes"] if row["finish"] == "oak-floor-custom")
     assert set(oak["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2", "RM-S-SUITE", "RM-S-CLOSET"}
 
 
@@ -300,7 +300,7 @@ def test_a_finish_is_ordered_with_its_waste_not_at_bare_polygon_area(bom):
     the most — every perimeter cut is scrap — and sealed concrete carries none, because a
     sealer is measured by coverage rate rather than cut to fit."""
     rows = {row["finish"]: row for row in bom["floor_finishes"]}
-    assert float(rows["tile"]["waste_pct"]) > float(rows["oak"]["waste_pct"])
+    assert float(rows["tile"]["waste_pct"]) > float(rows["oak-floor-custom"]["waste_pct"])
     assert float(rows["sealed-concrete"]["waste_pct"]) == 0.0
     for row in bom["floor_finishes"]:
         if row["finish"] is None:
@@ -645,7 +645,7 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     # The sauna's own ceiling — T&G over foil-polyiso, over furring — bills under its own
     # materials at its clear-face area, not under the blanket gwb row it carved itself out
     # of.
-    sauna_tg = ceiling[("sauna-shiplap", 1.0)]
+    sauna_tg = ceiling[("catlin-sauna-shiplap", 1.0)]
     assert float(sauna_tg["net_area_sqft"]) == pytest.approx(sauna_net, abs=0.5)
 
 
@@ -736,7 +736,7 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         # frame no members and are not solids, so no other section could see them.
         "wall_structure",
         # Envelope & openings
-        "envelope_layers", "wood_surfaces",
+        "envelope_layers", "wood_surfaces", "shelving",
         # The milling schedule — the same wood as a rough-stock cut list.
         "hardwood",
         # The work surfaces, by the square foot a slab yard quotes. Not in

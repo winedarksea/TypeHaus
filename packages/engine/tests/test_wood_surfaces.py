@@ -36,7 +36,7 @@ def _wall_net_ft2(catlin_model, wall) -> float:
     return max(0.0, run * (mean_top - wall.z0_m) - openings) * _M2_TO_FT2
 
 
-def _liner_net_ft2(catlin_model, wall, material_ref="sauna-shiplap") -> float:
+def _liner_net_ft2(catlin_model, wall, material_ref="catlin-sauna-shiplap") -> float:
     """The same convention for a *banded* liner layer: run x band height, net of the
     openings inside the band. W-B-S2's liner stops at the sauna's 7'-6" ceiling while its
     host foundation wall runs 9'-0", so billing the wall's face would buy 13.7 sf of
@@ -63,10 +63,10 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     """Basswood = the three liner walls' envelope area minus the two 3' x 7'-6" tile
     bands; the tile bills beside it as an override. Recomputed, not hard-coded."""
     rows = bom["wood_surfaces"]
-    basswood = next(row for row in rows if row["material"] == "sauna-shiplap")
+    basswood = next(row for row in rows if row["material"] == "catlin-sauna-shiplap")
     liner_walls = [w for w in catlin_model.walls
                    if any(ly.function == LayerFunction.FINISH.value
-                          and ly.material_ref == "sauna-shiplap" for ly in w.layers)]
+                          and ly.material_ref == "catlin-sauna-shiplap" for ly in w.layers)]
     # W-B-S2, the sauna's south face, joined the set on 2026-08-18 — a liner variant of the
     # sunken-garden foundation wall, banded to the room's 7'-6" ceiling. **It became two
     # walls on 2026-08-28**: the south face is a framed wall (W-B-S2-FR) on a 7 1/4" curb
@@ -146,11 +146,11 @@ def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):
     """The overlap contract from the other side: ``envelope_layers`` keeps billing the
     liner at the full assembly-truth area, and only ``wood_surfaces`` nets the splash —
     the ``also_in_envelope_layers`` flag is what says the two rows overlap on purpose."""
-    liner_rows = [row for row in bom["envelope_layers"] if row["material"] == "sauna-shiplap"]
+    liner_rows = [row for row in bom["envelope_layers"] if row["material"] == "catlin-sauna-shiplap"]
     assert liner_rows, "the liner must keep its envelope_layers billing"
     liner_walls = [w for w in catlin_model.walls
                    if any(ly.function == LayerFunction.FINISH.value
-                          and ly.material_ref == "sauna-shiplap" for ly in w.layers)]
+                          and ly.material_ref == "catlin-sauna-shiplap" for ly in w.layers)]
     gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
     assert sum(float(r["net_area_sqft"]) for r in liner_rows) == pytest.approx(
         gross, abs=0.1)
@@ -248,11 +248,11 @@ def test_the_oak_floor_mirrors_floor_finishes_room_for_room(catlin_model, bom):
     about the two studies and nothing else. The bay is LVP again and no authored species zone
     is left in the house, so the fix is unexercised here; it is still the correct behaviour
     and the next species zone anyone authors will need it."""
-    oak = next(row for row in bom["wood_surfaces"] if row["material"] == "oak")
+    oak = next(row for row in bom["wood_surfaces"] if row["material"] == "oak-floor-custom")
     assert oak["kind"] == "floor"
     assert oak["tags"] == ["RM-A-STUDY", "RM-S-CLOSET", "RM-S-STUDY2", "RM-S-SUITE"]
     assert oak["also_in_floor_finishes"] is True
-    primary = next(row for row in bom["floor_finishes"] if row["finish"] == "oak")
+    primary = next(row for row in bom["floor_finishes"] if row["finish"] == "oak-floor-custom")
     assert set(primary["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2",
                                      "RM-S-SUITE", "RM-S-CLOSET"}
     assert float(oak["net_area_sqft"]) == pytest.approx(

@@ -57,6 +57,7 @@ from typehaus.takeoff.lighting import (
 from typehaus.takeoff.member_protection import member_protection_takeoff
 from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
 from typehaus.takeoff.railings import railing_takeoff
+from typehaus.takeoff.shelving import shelving_takeoff
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
 
 __all__ = [
@@ -77,6 +78,7 @@ __all__ = [
     "data_device_schedule", "data_raceway_takeoff", "poe_budget",
     "placeables_takeoff",
     "railing_takeoff",
+    "shelving_takeoff",
     "sheet_goods_takeoff",
     "structural_solids_takeoff",
     "wall_structure_takeoff",

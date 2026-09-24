@@ -543,7 +543,7 @@ ROOMS = [
          occupancy=Occupancy.STORAGE, floor_finish=None,
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     Room(uid="CAR404AAAA", tag="RM-A-STUDY", seed=pt(ft(27), ft(4)),
-         occupancy=Occupancy.OFFICE, floor_finish="oak",
+         occupancy=Occupancy.OFFICE, floor_finish="oak-floor-custom",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
 ]
 

@@ -45,6 +45,7 @@ from shapely.geometry import Polygon
 from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.enums import LayerFunction
 from typehaus.model.millwork import Countertop, MillworkStandard, ShelfBank, WindowStool
+from typehaus.model.enums import ShelfProcurement
 from typehaus.model.plan import PlanModel
 from typehaus.model.types import FurnitureType
 from typehaus.resolve.model import (
@@ -244,7 +245,7 @@ def interior_return_m(wall: ResolvedWall) -> float | None:
 
 def _resolve_shelf_banks(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     findings: list[Finding] = []
-    materials = {material.tag for material in plan.library.materials}
+    materials = {material.tag: material for material in plan.library.materials}
     walls = {wall.tag: wall for wall in model.walls}
     furniture_types = {ft.tag: ft for ft in plan.library.furniture_types}
     placeables = {obj.tag: obj for obj in model.canvas_objects}
@@ -253,11 +254,19 @@ def _resolve_shelf_banks(plan: PlanModel, model: ResolvedModel) -> list[Finding]
         for el in plan.storey_elements(storey.tag):
             if not isinstance(el, ShelfBank):
                 continue
-            if el.material_ref not in materials:
+            material = materials.get(el.material_ref)
+            if material is None:
                 findings.append(element_error(
                     "integrity.shelf_bank_ref",
                     f"shelf bank {el.tag} names no material {el.material_ref!r}", el.tag))
                 continue
+            if el.procurement is ShelfProcurement.CUSTOM_MILLED:
+                if material.nominal_quarters is None:
+                    findings.append(element_error(
+                        "integrity.shelf_bank_procurement",
+                        f"custom-milled shelf bank {el.tag} needs material "
+                        f"{el.material_ref!r} to declare nominal_quarters", el.tag))
+                    continue
             wall = walls.get(el.host)
             placeable = placeables.get(el.host)
             if wall is None and placeable is None:
@@ -266,6 +275,13 @@ def _resolve_shelf_banks(plan: PlanModel, model: ResolvedModel) -> list[Finding]
                     f"shelf bank {el.tag} names no wall or placeable {el.host!r}", el.tag))
                 continue
             host_kind = "wall" if wall is not None else "placeable"
+            if (el.procurement is ShelfProcurement.INCLUDED_IN_HOST
+                    and host_kind != "placeable"):
+                findings.append(element_error(
+                    "integrity.shelf_bank_procurement",
+                    f"shelf bank {el.tag} is included_in_host but {el.host!r} is a wall; "
+                    "only a placeable can carry its price", el.tag))
+                continue
             depth = el.depth.meters if el.depth is not None else (
                 _pocket_depth_m(wall) if wall is not None
                 else _carcass_depth_m(placeable, furniture_types))
@@ -285,6 +301,7 @@ def _resolve_shelf_banks(plan: PlanModel, model: ResolvedModel) -> list[Finding]
                 uid=el.uid, tag=el.tag, storey=storey.tag, host=el.host,
                 host_kind=host_kind, material_ref=el.material_ref,
                 thickness_m=el.thickness.meters, depth_m=depth, profile=el.profile,
+                procurement=el.procurement.value,
                 shelves=shelves))
     return findings
 

@@ -1,4 +1,4 @@
-"""The milling schedule — what to cut, at what finished size, from what rough stock.
+"""The explicit custom-milling schedule — what to cut from declared rough stock.
 
 A *view*, exactly like ``wood_surfaces``: every quantity here is already billed somewhere
 else, and every row says where (``also_in_framing`` / ``also_in_stair_finish`` /
@@ -291,6 +291,8 @@ def _shelf_rows(model: ResolvedModel, materials: Mapping[str, object],
     # (material, profile, thickness, depth, length) -> (board count, bank tags)
     groups: dict[tuple[str, str, float, float, float], tuple[int, list[str]]] = {}
     for bank in model.shelf_banks:
+        if bank.procurement != "custom_milled":
+            continue
         for shelf in bank.shelves:
             if shelf.depth_m is None:
                 continue
@@ -380,7 +382,9 @@ def _coverage_rows(model: ResolvedModel,
     rows = []
     for source in wood_surfaces_takeoff(model):
         entry = _COVERAGE_KINDS.get(str(source.get("kind")))
-        if entry is None or source.get("species") is None:
+        material = materials.get(str(source.get("material") or ""))
+        if (entry is None or source.get("species") is None
+                or not getattr(material, "requires_custom_milling", False)):
             # ``wood_surfaces`` carries every WallPaneling band, species or not, because a
             # tile splash is what it subtracts the liner behind. A milling schedule is only
             # about wood, and ``Material.species`` is the same admission test that section
@@ -406,6 +410,9 @@ def _timber_rows(model: ResolvedModel, materials: Mapping[str, object],
     rows = []
     for source in wood_surfaces_takeoff(model):
         if source.get("kind") != "timber":
+            continue
+        material = materials.get(str(source.get("material") or ""))
+        if not getattr(material, "requires_custom_milling", False):
             continue
         profile = str(source.get("profile") or "")
         try:

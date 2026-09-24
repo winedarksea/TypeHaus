@@ -41,6 +41,7 @@ PRODUCT_REF_SOURCES: dict[str, tuple[str, ...]] = {
     "envelope_layers": ("materials",),
     "sheet_goods": ("materials",),
     "wood_surfaces": ("materials",),
+    "shelving": ("materials",),
     "floor_finishes": ("materials",),
 }
 

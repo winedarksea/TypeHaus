@@ -32,6 +32,9 @@ electric = 12.0
 [placeables]     # $ each, keyed by catalog type tag
 wolf-range-36 = { low = 9500, high = 12500 }
 
+[shelving]       # $ per square foot of ordered factory shelf stock, keyed by material tag
+factory-oak-shelf = { material = 8.50 }
+
 [furnishings]    # $ each, keyed by catalog type tag — the same rows [placeables]
 ikea-sofa-84 = { low = 700, high = 2400 }   # reads, but reported beside the total
 

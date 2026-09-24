@@ -1391,7 +1391,7 @@ ROOMS = [
          occupancy=Occupancy.BATHROOM, humidity_class=HumidityClass.WET,
          floor_finish="sealed-concrete",
          ceiling_lining=(
-             Layer(name="shiplap-liner", material_ref="sauna-shiplap", thickness=inch(1.0),
+             Layer(name="shiplap-liner", material_ref="catlin-sauna-shiplap", thickness=inch(1.0),
                    function=LayerFunction.FINISH),
              Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
                    function=LayerFunction.FURRING,

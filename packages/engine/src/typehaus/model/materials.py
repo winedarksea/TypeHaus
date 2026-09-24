@@ -192,6 +192,10 @@ class Material(HausModel):
     # the species-split ``wood_surfaces`` takeoff; a wood-ish tag without it stays out —
     # species by tag-substring guessing is exactly what this field retires.
     species: str | None = None
+    # True only when this material is supplied as rough stock for a custom mill to run.
+    # Species says what a wood product IS; it must not also imply how it is procured.  A
+    # factory-made oak floor remains species="oak" while staying out of ``haus millwork``.
+    requires_custom_milling: bool = False
     # Board feet ordered per square foot of coverage, on nominal stock thickness: 1.0 for
     # 4/4 stock, 1.25 for 5/4. None means "no board-feet figure" — the takeoff omits the
     # column rather than inventing a thickness (#32).

@@ -97,6 +97,20 @@ class Occupancy(Enum):
     UNCONDITIONED = "unconditioned"
 
 
+class ShelfProcurement(str, Enum):
+    """How a :class:`ShelfBank`'s boards reach the project.
+
+    A shelf's material and its fabrication are separate facts.  A factory shelf panel may
+    be bought as a distinct order, included in a cabinet system, or a custom piece can go to
+    the mill.  Treating every species-bearing shelf as the last case is what made ordinary
+    builder shelving look like owner-milled stock.
+    """
+
+    PURCHASED_SEPARATELY = "purchased_separately"
+    INCLUDED_IN_HOST = "included_in_host"
+    CUSTOM_MILLED = "custom_milled"
+
+
 # Sleeping rooms for R310 egress applicability.
 SLEEPING_OCCUPANCIES = frozenset({Occupancy.BEDROOM})
 

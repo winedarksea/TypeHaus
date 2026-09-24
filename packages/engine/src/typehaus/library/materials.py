@@ -964,9 +964,9 @@ ALL_MATERIALS: tuple[Material, ...] = (
     # That inference is a TAG reading, so a profile change that renames the tag escapes it —
     # the sauna liner's T&G -> shiplap retag is why `sauna-shiplap` authors
     # `finish="shiplap"` outright rather than relying on it (ui/src/three/plankMaterial.ts).
-    # `stock_bf_per_sqft` 1.0: 3/4" finished strip flooring is 4/4 stock, so a square foot
-    # of floor is a board foot of order. `milling_profile` is T&G because strip flooring is:
-    # the tongue is face width the mill saws and the floor never sees.
+    # This is a factory-sourced floor product. Its species and strip-floor recipe remain
+    # useful for reporting and rendering, but it carries no rough-stock declaration: a
+    # house only sends flooring to the custom mill when it opts in locally.
     Material(
         tag="oak",
         name='3/4" white-oak strip flooring',
@@ -974,11 +974,8 @@ ALL_MATERIALS: tuple[Material, ...] = (
         color="#c69c6d",
         species="oak",
         finish="strip-floor",
-        stock_bf_per_sqft=1.0,
-        nominal_quarters=4,
-        milling_profile="T&G",
         finish_thickness_in=0.75,
-        source="finish covering, not an assembly layer: thermal/vapour fields unset "
+        source="factory-sourced finish covering, not an assembly layer: thermal/vapour fields unset "
         "(no published rating located, and nothing consumes them here). "
         "`finish_thickness_in` is the 3/4\" this product's own name states; "
         "the rosin paper or felt slip sheet under a nailed strip floor is not "
@@ -1283,10 +1280,8 @@ ALL_MATERIALS: tuple[Material, ...] = (
         color="#e6d4ae",
         finish="shiplap",
         species="basswood",
-        stock_bf_per_sqft=1.375,
-        nominal_quarters=5,
-        milling_profile="shiplap",
-        source="Sauna-liner species and 5/4 shiplap milling specification.",
+        source="Factory sauna-liner product specification; a house that site-mills it "
+        "declares a custom material locally.",
     ),
     Material(
         tag="pet-felt-panel",

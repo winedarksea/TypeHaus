@@ -1,4 +1,4 @@
-"""`haus millwork` — the hardwood milling schedule, for handing to a sawyer.
+"""`haus millwork` — the explicit custom-milling schedule, for handing to a sawyer.
 
 Its own command rather than a section of ``haus takeoff --csv`` because that writer flattens
 ``payload["cost_estimate"]["sections"]`` (``takeoff/estimate_csv.py``), so only *priced* rows
@@ -73,7 +73,7 @@ def _markdown(rows: list[dict[str, object]]) -> str:
             species = str(row.get("species") or "unknown")
             totals[species] = totals.get(species, 0.0) + float(rough)
     return document(
-        heading("Hardwood milling schedule"),
+        heading("Custom wood milling schedule"),
         "Sorted by use, then stock, then profile. Every quantity here is also billed "
         "in another section of the takeoff — this is a *view* for the mill, not an "
         "addition to the estimate.",
@@ -95,7 +95,7 @@ def millwork(
         None, "--md", help="Write the schedule as a Markdown table (emailable)."),
     as_json: bool = typer.Option(False, "--json"),
 ) -> None:
-    """Report the hardwood milling schedule: cut list, rough stock, and how each is laid up.
+    """Report the explicit custom-milling schedule: cut list, rough stock, and layup.
 
     Every quantity is a *view* of one already billed elsewhere — the rows carry their
     ``also_in_*`` mirror flags — so nothing here adds to the estimate. What it adds is the
@@ -134,8 +134,8 @@ def millwork(
         return
 
     if not rows:
-        console.print("[yellow]no hardwood scheduled — this house declares no "
-                      "MillworkStandard and no species wood surfaces[/yellow]",
+        console.print("[yellow]no custom milling scheduled — this house declares no "
+                      "custom millwork or custom-milled wood surfaces[/yellow]",
                       soft_wrap=True)
         return
 

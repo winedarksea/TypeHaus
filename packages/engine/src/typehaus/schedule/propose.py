@@ -96,7 +96,7 @@ FAMILY_ORDER: dict[str, tuple[str, ...]] = {
     "openings": ("window", "door", "flashing", "hardware"),
     "tile": ("tile-uncoupling-membrane", "tile"),
     "flooring": ("floor_finish", "carpet-pad", "carpet", "lvp"),
-    "millwork": ("placeables", "countertops", "wood_surfaces"),
+    "millwork": ("placeables", "countertops", "shelving", "wood_surfaces"),
     "plumbing": ("pipe_runs", "plumbing_specialties", "fixtures"),
     "electrical": ("conduit", "devices", "panel", "luminaires"),
     "mechanical": ("ducts", "duct_fittings", "equipment", "registers"),

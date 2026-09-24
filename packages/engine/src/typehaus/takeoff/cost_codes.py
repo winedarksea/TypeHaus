@@ -196,6 +196,7 @@ SECTION_CODES: dict[str, CostCode] = {
     "floor_finishes": CostCode("4000", "09 60 00", "flooring"),
     "envelope_layers": CostCode("2100", "07 46 00", "siding"),
     "wood_surfaces": CostCode("4100", "06 20 00", "millwork"),
+    "shelving": CostCode("4100", "06 41 00", "millwork"),
     # 12 36 00 Countertops: fabricated off site and set by the yard that cut it.
     "countertops": CostCode("4100", "12 36 00", "millwork"),
     "openings": CostCode("2400", "08 00 00", "openings"),

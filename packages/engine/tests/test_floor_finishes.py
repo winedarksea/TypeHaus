@@ -22,7 +22,7 @@ from typehaus.emit.draw.palette import material_color
 # authored on Rooms plus the zone finishes, which include one taken from a Slab
 # (SL-M-DECK's coated cap) rather than authored on a room at all. Kept explicit rather
 # than derived so that adding a finish to a storey without adding its material trips here.
-_CATLIN_FINISHES = {"oak", "lvp", "carpet", "tile", "sealed-concrete", "rubber",
+_CATLIN_FINISHES = {"oak-floor-custom", "lvp", "carpet", "tile", "sealed-concrete", "rubber",
                     "vinyl-sheet", "coated-concrete"}
 
 
@@ -115,14 +115,14 @@ def test_the_second_storey_circulation_and_baths_run_one_lvp_floor(catlin_model)
     # opens off the bedroom, so the floor continues in rather than changing species for
     # 27 SF. RM-S-NCLOSET is not a walk-in off a bedroom: it opens onto the hall, so it takes
     # the hall's plank.
-    assert finishes["RM-S-SUITE"] == "oak"
-    assert finishes["RM-S-CLOSET"] == "oak"
+    assert finishes["RM-S-SUITE"] == "oak-floor-custom"
+    assert finishes["RM-S-CLOSET"] == "oak-floor-custom"
     assert finishes["RM-S-NCLOSET"] == "lvp"
     # Everything else on the storey is untouched. RM-S-PLANT left tile for heat-welded
     # sheet vinyl — the plant room's floor and walls are one coved tray (notes/plant_room.md),
     # which tile cannot be.
     assert finishes["RM-S-PLANT"] == "vinyl-sheet"
-    assert finishes["RM-S-STUDY2"] == "oak"
+    assert finishes["RM-S-STUDY2"] == "oak-floor-custom"
 
 
 # --- 4. FinishZone reaches the IR ---------------------------------------------------------
@@ -356,9 +356,9 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # under; reverting the bay to LVP put that warning back at 324.2. RM-S-SUITE and
     # RM-S-CLOSET arriving later the same day (+181.7, off the reverted walnut floor) clears
     # it again on the merits, and the second storey alone now carries ~341 sf of it.
-    assert set(rows["oak"]["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2",
+    assert set(rows["oak-floor-custom"]["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2",
                                          "RM-S-SUITE", "RM-S-CLOSET"}
-    assert float(rows["oak"]["net_area_sqft"]) == pytest.approx(507.6, abs=0.5)
+    assert float(rows["oak-floor-custom"]["net_area_sqft"]) == pytest.approx(507.6, abs=0.5)
     # ** vinyl-sheet has left the main storey entirely. ** What is left is the rooms that are
     # genuinely wet or genuinely cheap-and-washable, on three different storeys: RM-S-PLANT
     # (the spec that started it), RM-A-STUBATH, RM-B-BATH — and, since 2026-09-09,

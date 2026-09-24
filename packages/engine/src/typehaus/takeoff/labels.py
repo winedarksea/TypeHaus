@@ -22,6 +22,7 @@ SECTION_LABELS: dict[str, str] = {
     "floor_heat": "Radiant floor heat", "placeables": "Fixtures, equipment and casework",
     "floor_finishes": "Floor finishes", "envelope_layers": "Assembly layers",
     "wood_surfaces": "Wood surfaces", "countertops": "Countertops",
+    "shelving": "Purchased shelving",
     "openings": "Windows and doors", "footing_bedding": "Footing bedding",
     "pipe_runs": "Pipe", "pipe_fittings": "Pipe fittings", "ducts": "Ducts",
     "duct_fittings": "Duct fittings", "duct_insulation": "Duct insulation",
@@ -311,6 +312,8 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         return KEY_GLOSSARY.get((section, bare))
     if section == "wood_surfaces":
         return f"{labels.material(g('material'))} ({g('kind')})" if g("kind") else None
+    if section == "shelving":
+        return f"{labels.material(g('material'))} shelf stock"
     if section == "allowances":
         return bare.replace("-", " ").capitalize()
     if section == "openings":

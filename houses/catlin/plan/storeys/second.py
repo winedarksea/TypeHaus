@@ -996,7 +996,7 @@ ROOMS = [
                    control={ControlLayer.VAPOR, ControlLayer.AIR}),
          )),
     Room(uid="CSR402AAAA", tag="RM-S-STUDY2", seed=pt(ft(27), ft(4)),
-         occupancy=Occupancy.OFFICE, floor_finish="oak"),
+         occupancy=Occupancy.OFFICE, floor_finish="oak-floor-custom"),
     # BED1's east wall is the house's one painted accent (spruce green-blue): swaps the
     # lining stack for assemblies.py's ACCENT_GWB_LINING (same film/gypsum/thickness, only
     # paint differs). Re-stated inline, not imported, because the editable dialect can't
@@ -1042,10 +1042,10 @@ ROOMS = [
     # sentence was written and is RETIRED as of 2026-09-13, which is what makes it true: the
     # branch hangs on the arm's ceiling now, and this room's PASS names it.
     Room(uid="CSR406AAAA", tag="RM-S-SUITE", seed=pt(ft(5), ft(16)),
-         occupancy=Occupancy.BEDROOM, floor_finish="oak",
+         occupancy=Occupancy.BEDROOM, floor_finish="oak-floor-custom",
          exposed_services="owner accepts exposed duct in the primary suite: the supply branch runs on the face of the ceiling rather than inside it"),
     Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(14), ft(10, 8)),
-         occupancy=Occupancy.STORAGE, floor_finish="oak"),
+         occupancy=Occupancy.STORAGE, floor_finish="oak-floor-custom"),
     # LVP through the unheated wet rooms and the circulation: one continuous plank floor
     # from the stair head through both hallways and into the two baths with no radiant in
     # them, so the traffic route has no thresholds in it and those baths get a waterproof

@@ -37,7 +37,7 @@ except ModuleNotFoundError:  # pragma: no cover - exercised on <3.11 only
 PRICES_FILENAME = "prices.toml"
 
 _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "placeables",
-             "floor_finishes", "envelope_layers", "wood_surfaces", "openings",
+             "floor_finishes", "envelope_layers", "wood_surfaces", "shelving", "openings",
              # Work surfaces by the square foot, keyed on material tag.
              "countertops",
              "footing_bedding",
@@ -242,6 +242,9 @@ class Prices:
     # billed primarily in envelope_layers / floor_finishes / structural_solids — price a
     # material here OR there, not in both tables.
     wood_surfaces: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Separately purchased shelf boards/panels, by material on ordered face area.  Shelves
+    # included with their cabinet never enter this table; custom-milled shelves are a view.
+    shelving: Mapping[str, PriceRange] = field(default_factory=dict)
     # Countertops by the square foot, keyed on material tag. Fabricated-and-installed rates:
     # a slab yard quotes the finished top, so the slab yield loss is inside the rate and the
     # takeoff applies no waste on top of it (→ takeoff/countertops.py).
@@ -756,6 +759,7 @@ WASTE_IN_QUANTITY = {
     "sheet_goods": "takeoff/sheet_goods.py + takeoff/glazing.py (`sheets` ceiling)",
     "floor_finishes": "takeoff/finishes.py::_WASTE",
     "wood_surfaces": "takeoff/wood_surfaces.py::_WASTE",
+    "shelving": "takeoff/shelving.py::_WASTE",
     "reinforcement": "resolve/rebar (cut length = placed + laps + hooks, by counted piece)",
 }
 

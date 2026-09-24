@@ -15,7 +15,7 @@
 # go wrong again the first time a foam lift or a girt depth moved.
 
 from typehaus import ft, inch
-from typehaus.model import MillworkStandard, ShelfBank, ShelfBay
+from typehaus.model import MillworkStandard, ShelfBank, ShelfBay, ShelfProcurement
 
 # The one declaration. Scope is EXT_2X6 alone — 39 of the 45 windows:
 #   * PLANT_EXT_2X6_HUMID (3) is the plant room, which runs at 70% RH by design. Oak in
@@ -57,6 +57,7 @@ ATTIC_SHELVES = [
     ShelfBank(
         uid="ZSR38F5C8F", tag="SB-A-STUDY", host="FURN-A-STUDY-BUILTIN",
         material_ref="oak-shelf-8q", thickness=inch(1.5), depth=inch(9.875), profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(
             ShelfBay(width=inch(31.25), clear_height=inch(60), shelf_count=5),
             ShelfBay(width=inch(31.25), clear_height=inch(42), shelf_count=4),
@@ -142,6 +143,7 @@ MAIN_SHELVES = [
         thickness=inch(0.75),
         depth=inch(15.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(22.5), clear_height=inch(29.25), shelf_count=2),),
     ),
     ShelfBank(
@@ -151,6 +153,7 @@ MAIN_SHELVES = [
         thickness=inch(0.75),
         depth=inch(18.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
     ),
     ShelfBank(
@@ -159,6 +162,7 @@ MAIN_SHELVES = [
         material_ref="oak-shelf-8q",
         thickness=inch(1.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(
             ShelfBay(width=inch(34.75), clear_height=ft(7), shelf_count=6),
             ShelfBay(width=inch(34.75), clear_height=ft(7), shelf_count=6),
@@ -194,6 +198,7 @@ MAIN_SHELVES = [
         material_ref="walnut-shelf-8q",
         thickness=inch(1.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(47), clear_height=inch(14.5), shelf_count=1),),
     ),
     ShelfBank(
@@ -202,6 +207,7 @@ MAIN_SHELVES = [
         material_ref="walnut-shelf-8q",
         thickness=inch(1.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(29), clear_height=inch(28), shelf_count=1),),
     ),
     # The fold-down leaf's board. Same stock, same thickness, same lay-up as the
@@ -240,6 +246,7 @@ MAIN_SHELVES = [
         material_ref="walnut-shelf-8q",
         thickness=inch(1.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(18), clear_height=inch(28), shelf_count=1),),
     ),
     # --- the mudroom bench's seat, FURN-M-MUD-BENCH -----------------------------------
@@ -366,6 +373,7 @@ MAIN_SHELVES = [
         material_ref="walnut-mantel-12q",
         thickness=inch(2.25),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(45.5), clear_height=inch(19.625), shelf_count=1),),
     ),
     ShelfBank(
@@ -374,6 +382,7 @@ MAIN_SHELVES = [
         material_ref="oak-shelf-8q",
         thickness=inch(1.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(36), clear_height=inch(16.5), shelf_count=1),),
     ),
 ]
@@ -392,6 +401,7 @@ BASEMENT_SHELVES = [
         thickness=inch(0.75),
         depth=inch(15.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(34.5), clear_height=inch(29.25), shelf_count=2),),
     ),
     ShelfBank(
@@ -400,6 +410,7 @@ BASEMENT_SHELVES = [
         material_ref="oak-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(30.5), clear_height=ft(7, 6), shelf_count=6),),
     ),
     ShelfBank(
@@ -408,6 +419,7 @@ BASEMENT_SHELVES = [
         material_ref="oak-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(30.5), clear_height=ft(7, 6), shelf_count=6),),
     ),
     ShelfBank(
@@ -416,6 +428,7 @@ BASEMENT_SHELVES = [
         material_ref="oak-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(30.5), clear_height=ft(7, 6), shelf_count=6),),
     ),
     ShelfBank(
@@ -424,6 +437,7 @@ BASEMENT_SHELVES = [
         material_ref="oak-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(30.5), clear_height=ft(7, 6), shelf_count=6),),
     ),
 ]
@@ -450,6 +464,7 @@ SECOND_SHELVES = [
         thickness=inch(0.75),
         depth=inch(18.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
     ),
     ShelfBank(
@@ -459,6 +474,7 @@ SECOND_SHELVES = [
         thickness=inch(0.75),
         depth=inch(18.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
     ),
     ShelfBank(
@@ -470,6 +486,7 @@ SECOND_SHELVES = [
         thickness=inch(0.75),
         depth=inch(15.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
     ),
     ShelfBank(
@@ -479,6 +496,7 @@ SECOND_SHELVES = [
         thickness=inch(0.75),
         depth=inch(15.5),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
     ),
     ShelfBank(
@@ -487,6 +505,7 @@ SECOND_SHELVES = [
         material_ref="oak-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(18.5), clear_height=ft(7), shelf_count=6),),
     ),
     # The suite bath's return tower (2026-09-06). Same oak, same 3/4" stock, same six
@@ -499,6 +518,7 @@ SECOND_SHELVES = [
         material_ref="oak-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(28.5), clear_height=ft(7), shelf_count=6),),
     ),
 ]

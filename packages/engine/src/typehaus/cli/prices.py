@@ -83,6 +83,9 @@ ESTIMATE_PLANS = (
     # Order quantity like floor_finishes (wood is bought with its waste). Timber rows
     # carry no order_area_sqft and price as 0 here — they bill via structural_solids.
     ("wood_surfaces", "wood_surfaces", "material", "order_area_sqft", "SF"),
+    # Factory shelf stock is an independent material order.  Host-included shelves bill in
+    # placeables and custom-milled shelves remain the unpriced sawyer view.
+    ("shelving", "shelving", "material", "order_area_sqft", "SF"),
     # Net area, not an order quantity: a countertop's slab yield is inside the fabricated
     # rate, so there is no waste to add (→ takeoff/countertops.py).
     ("countertops", "countertops", "material", "net_area_sqft", "SF"),

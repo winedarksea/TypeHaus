@@ -2872,7 +2872,7 @@ _SAUNA_CEILING = LayerExtent(
     top=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(90.0)))
 
 _SAUNA_LINER = (
-    Layer(name="shiplap-liner", material_ref="sauna-shiplap", thickness=inch(1.0),
+    Layer(name="shiplap-liner", material_ref="catlin-sauna-shiplap", thickness=inch(1.0),
           function=LayerFunction.FINISH, extent=_SAUNA_CEILING),
     Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
           function=LayerFunction.FURRING,
@@ -3579,7 +3579,7 @@ MATERIALS = [
     Material(tag="walnut-tg", name="Black walnut T&G wainscot (4/4)", r_per_inch=1.1,
              density=610.0, hatch="lumber", color="#5d4433",
              finish="clear-satin-hardwax-oil", species="walnut", stock_bf_per_sqft=1.0,
-             nominal_quarters=4, milling_profile="T&G",
+             nominal_quarters=4, milling_profile="T&G", requires_custom_milling=True,
              source="plans/TODO.md — first-floor study walnut paneling to 36\""),
     # ** TOMBSTONE: `walnut-floor` (added and removed 2026-09-05). ** For a few hours the
     # suite and its walk-in were a 181.7 SF field of site-milled walnut strip flooring under
@@ -3604,6 +3604,7 @@ MATERIALS = [
     Material(tag="walnut-shelf-8q", name="Black walnut shelving, 8/4 S4S", hatch="lumber",
              density=610.0, color="#5d4433", finish="clear-satin-hardwax-oil",
              species="walnut", nominal_quarters=8, milling_profile="S4S",
+             requires_custom_milling=True,
              source="plans/TODO.md — RM-M-STUDY call booth. 8/4 because both pieces are structural millwork on a 45-5/8\" and a 30-5/8\" span with no stiffener: a bench seat someone sits on and a fixed desk top someone leans on"),
     # RM-M-LIVING's fireplace mantel, SB-M-FIRE-MANTEL. Same species, same finish and same
     # bought-not-milled accounting as the walnut above; ** 12/4 AND NOT 8/4, WHICH IS THE
@@ -3621,6 +3622,7 @@ MATERIALS = [
     Material(tag="walnut-mantel-12q", name="Black walnut mantel shelf, 12/4 S4S", hatch="lumber",
              density=610.0, color="#5d4433", finish="clear-satin-hardwax-oil",
              species="walnut", nominal_quarters=12, milling_profile="S4S",
+             requires_custom_milling=True,
              source="RM-M-LIVING fireplace mantel (2026-09-06). 12/4 because the shelf finishes 2 1/4\" — one modular brick bed height, so it reads as a single course pulled proud of the wythe — and 8/4 dresses to 1 1/2\". Bought walnut, not the family's oak stock"),
     # The booth's acoustic felt, band 36" to 9'-0" on the south and north walls
     # of RM-M-STUDY. ** NO `species`. ** That one field is the gate on `haus millwork`
@@ -3643,7 +3645,7 @@ MATERIALS = [
              r_per_inch=1.1,
              density=560.0, hatch="lumber", color="#b08d5e",
              finish="clear-satin-hardwax-oil", species="elm",
-             milling_profile="S4S",
+             milling_profile="S4S", requires_custom_milling=True,
              source="plans/TODO.md — suite bedroom tudor posts, 10' sections cut to fit"),
     # --- owner-milled white-oak stock -------------------------------------------------
     #
@@ -3658,21 +3660,32 @@ MATERIALS = [
     # `stock_bf_per_sqft` (a coverage factor, which would be meaningless on a stool). They
     # appear in no assembly layer, no room finish and no paneling, so they enter no other
     # take-off section — `haus millwork` is where they are ordered from.
+    Material(tag="oak-floor-custom", name='3/4" white-oak strip flooring, site-milled',
+             hatch="lumber", color="#c69c6d", species="oak", finish="strip-floor",
+             stock_bf_per_sqft=1.0, nominal_quarters=4, milling_profile="T&G",
+             finish_thickness_in=0.75, requires_custom_milling=True,
+             source="Catlin owner-milled white oak floor; local rather than the factory library product so only this house enters the custom milling schedule."),
+    Material(tag="catlin-sauna-shiplap",
+             name="Basswood/aspen shiplap sauna liner (5/4), site-milled",
+             r_per_inch=1.3, perm_rating=20.0, hatch="lumber", color="#e6d4ae",
+             finish="shiplap", species="basswood", stock_bf_per_sqft=1.375,
+             nominal_quarters=5, milling_profile="shiplap", requires_custom_milling=True,
+             source="Catlin site-milled sauna liner; local rather than the factory library product so this coverage reaches the custom milling schedule."),
     Material(tag="oak-stool", name="White oak window stool, 8/4 S4S", hatch="lumber",
              color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
-             nominal_quarters=8, milling_profile="eased",
+             nominal_quarters=8, milling_profile="eased", requires_custom_milling=True,
              source="owner-milled white oak, ~$2/sf rough. 8/4 because the interior return on an outie window runs most of a 13 7/8\" wall and a 3/4\" board that wide will cup; the front edge is eased, not moulded (see the profile note above)"),
     Material(tag="oak-shelf-8q", name="White oak shelving, 8/4 S4S", hatch="lumber",
              color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
-             nominal_quarters=8, milling_profile="S4S",
+             nominal_quarters=8, milling_profile="S4S", requires_custom_milling=True,
              source="owner-milled white oak. 8/4 wherever the shelf is visible or LOADED: 1-1/2\" needs no stiffener and no edge banding at a 2'-6\" bay, and it is the thickness a climbable shelf wants (notes/pantry_climbable_shelving.md)"),
     Material(tag="oak-shelf-4q", name="White oak shelving, 4/4 S4S", hatch="lumber",
              color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
-             nominal_quarters=4, milling_profile="S4S",
+             nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="owner-milled white oak. 4/4 for the light-duty cases — a 12\"-deep bookcase shelf and a bath alcove shelf carry books and towels, not people"),
     Material(tag="oak-tread", name="White oak stair tread, 8/4 bullnose", hatch="lumber",
              color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
-             nominal_quarters=8, milling_profile="bullnose",
+             nominal_quarters=8, milling_profile="bullnose", requires_custom_milling=True,
              source="owner-milled white oak. The one place a profile IS worth a setup: a tread nosing is R311.7.5.3 geometry, not decoration, and 28 identical pieces amortise one bullnose grind"),
     # --- the metal skins --------------------------------------------------------
     # The house is clad in metal in FIVE specifications. They are all the same white PVDF
