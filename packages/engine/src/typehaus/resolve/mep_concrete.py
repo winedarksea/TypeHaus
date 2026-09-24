@@ -105,14 +105,23 @@ def concrete_hosts(model: ResolvedModel) -> list[tuple[str, str, object, float, 
 
     Three kinds of host, and the category names which: a slab or footing walked BAND BY
     BAND (so an EPS deck form's foam is not a pour), a cast beam as one prism, and a
-    foundation wall's ``structure`` layer. ``footprint`` is a shapely ``Polygon``; shapely
-    is imported here rather than at module scope for the same reason it always is in this
-    package — the import costs more than most calls save.
+    foundation wall's ``structure`` layer. ``footprint`` is a shapely ``Polygon`` net of the
+    solid's ``voids`` — a pipe rising out of a sump's lid is in the hole, not the pour.
+    Shapely is imported here rather than at module scope for the same reason it always is
+    in this package — the import costs more than most calls save.
     """
     from shapely.geometry import Polygon
 
+    from typehaus.resolve.overlay import difference, union_all
+
+    def net(s):
+        shell = Polygon(s.outline)
+        if not s.voids:
+            return shell
+        return difference(shell, union_all(Polygon(v) for v in s.voids if len(v) >= 3))
+
     hosts: list[tuple[str, str, object, float, float]] = [
-        (s.tag, s.category, Polygon(s.outline), z0, z1)
+        (s.tag, s.category, net(s), z0, z1)
         for s in model.solids
         if s.category in _CONCRETE_SOLID_CATEGORIES and len(s.outline) >= 3
         for z0, z1 in concrete_bands(model, s)]

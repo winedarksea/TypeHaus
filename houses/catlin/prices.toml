@@ -6249,8 +6249,8 @@ concrete-driveway-apron-and-walks = { material = { low = 1500, high = 3500 }, la
 #   sump pit       — [concrete] `sump`, 1 ea at $400-1,200: basin, sealed lid, riser, patch.
 # The DAYLIGHT OUTLET is the residual and is still real, but it is a DIFFERENT OUTLET as of
 # 2026-09-05: the pump's PRESSURE discharge. ** RE-SCOPED 2026-09-22 the same day the line was
-# modelled: ** PR-B-SUMP-DISCH now bills its pipe in [pipe_runs] and its wall sleeve in
-# [sleeves], and it wyes into TR-RF-LEADER-W's extension, so there is no run to grade, no
+# modelled: ** PR-B-SUMP-DISCH now bills its pipe in [pipe_runs] (no sleeve: since 2026-09-24
+# it leaves through the rim band, over the pour), and it wyes into TR-RF-LEADER-W's extension, so there is no run to grade, no
 # headwall and no splash pad. What is left, and nothing else buys: the check valve, the ice
 # guard (freeze relief at the foundation), the wye into the leader riser and the lid seal.
 site-drain-tile-daylight-outlet = { low = 250, high = 650 }

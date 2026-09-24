@@ -212,8 +212,9 @@ the future.
 - **Plan lettering residue after 96b845f4 (3/32" lettering):** at 1/4" a few small rooms still
   touch a tag (PANTRY/D8, STUDY/D13, MECH's "CHASE TYP. OF 2"), and on the 11x17 reduced check
   print the 12 pt room names spill past small rooms' walls.
-- Paint is missing on a lot of interior drywall assemblies.
+- Paint is missing on a lot of interior drywall assemblies. This likely impacts pricing more than anything.
 - Ceiling drywall might be worth counting as the floor above (so when we remove layers in the 3d viewer, we can see into the room)
+- the dimple board of the sunken garden retaining wall should probably be moved under the concrete view toggle (because it's assembled in that lens, not because it is made of concrete).
 
 # Project Management
 

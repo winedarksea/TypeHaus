@@ -2278,16 +2278,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   36" inside the drained section — the frost section floods before relief;
   `drainage.soakaway_storage` says so as an UNKNOWN. A true one-invert tie is a dedicated
   pit-to-court pipe (plans/TODO.md).
-- **`SM-B-RADON` stands at (5'-9", 28'-0") in the furnace room, not on the chase (2026-09-23).**
-  On the chase it cut 9" into FT-B-W1/FT-B-N4 at 19 1/2" below their bearing;
-  `mep.pit_footing_clearance` grades that now. The NW corner has no clean station (panels'
-  110.26 space, the hung ERV, the ESS clearance). Its radon leg `PR-B-RADON-LEG` and pumped
-  line both run UNDER the slab (the ERV hub fills the ceiling) through cast slab sleeves, and
-  `FD-B-SUMP-LEAD` carries the house tile in from FB-B-STR3. Subp. 4.E is graded on it.
-- `SM-B-RADON` pumps through `PR-B-SUMP-DISCH` (`PipeSystem.SUMP_DISCHARGE`, sleeved through
-  `W-B-W1`) into `TR-RF-LEADER-W`'s extension riser, so `RG-W-BASIN` also takes pumped water
-  (a `rain_garden_capacity` UNKNOWN). The pump's `check_valve`/`freeze_relief` are graded by
-  `drainage.pump_discharge`.
+- **`SM-B-RADON` is back in the NW corner at (1'-9", 34'-3") (2026-09-24)**, tangent to FT-B-W1
+  and FT-B-N4 and outside both pours. `mep.pit_footing_clearance` is an INTEGRITY clash (the pit
+  may not cut footing concrete), not UPC 314.1's trench line. The pit voids `SL-B-FLOOR` and
+  the W1/N4 tile runs into it (subp. 4.E). Both lines rise out of its lid and cross no
+  concrete: `PR-B-RADON-LEG` to the radon riser's foot, and `PR-B-SUMP-DISCH` up into
+  FS-M-MECH's joist band, west along FO-M-ERV-OA's north trimmer and out through the rim
+  into `TR-RF-LEADER-W`'s extension riser. The station is boxed in by the ERV supply riser
+  (y <= 409.8"), DU-ERV-EA's insulated riser (x >= 18.6") and the chase risers (x <= 11.5").
+  `RG-W-BASIN` also takes pumped water (a `rain_garden_capacity` UNKNOWN); the pump's
+  `check_valve`/`freeze_relief` are graded by `drainage.pump_discharge`.
 - `Dowel` z is derived off the shared 8" footing-to-footing joint face (mid-way through it);
   the foam block matches that 8". **Nothing in the engine grades a `Dowel` against the two
   footings it names** — check both footing tops/bottoms by hand after any elevation change.

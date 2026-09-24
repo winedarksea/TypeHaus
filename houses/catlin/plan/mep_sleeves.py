@@ -78,14 +78,6 @@ SLAB_STUBS = [
     SleevePenetration(uid="CBP902AAAA", tag="SP-B-SLAB-MAIN", host_ref="SL-B-FLOOR",
                       position=pt(ft(3), ft(15, 6)), pipe_diameter=inch(4),
                       sleeve_diameter=inch(6)),
-    # SM-B-RADON's two lines come up out of the slab at the NW corner (2026-09-23): the pit
-    # moved off the corner footings and both run under the slab from it.
-    SleevePenetration(uid="1XKSCX8200", tag="SP-B-SLAB-RADON", host_ref="SL-B-FLOOR",
-                      position=pt(ft(1, 9), inch(419.1)), pipe_diameter=inch(3),
-                      sleeve_diameter=inch(4)),
-    SleevePenetration(uid="71B80PTTEZ", tag="SP-B-SLAB-SUMP-DISCH", host_ref="SL-B-FLOOR",
-                      position=pt(inch(12.5), inch(401.5)), pipe_diameter=inch(1.5),
-                      sleeve_diameter=inch(2)),
 ]
 
 # Horizontal sleeves through the basement's cast concrete walls: every ceiling-level run

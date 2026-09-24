@@ -364,7 +364,7 @@ VENT_RISERS = [
             bundle_spacing=inch(6.2),
             # (1', 35'-1.3") since 2026-09-23, out of FO-M-ERV-OA's trimmers and into the
             # grown FO-M-ERV-EA; exit_offset shrank to keep the exterior riser at y=37'-0".
-            # PR-B-RADON-LEG (mep_drainage.py) arrives at its foot from the pit since 2026-09-23.
+            # PR-B-RADON-LEG (mep_drainage.py) arrives at its foot out of the pit's lid.
             chase_position=pt(inch(10), inch(416)), start_elevation=ft(-8, -10),
             chase_offset=pt(ft(8, 9.5), ft(0)), chase_offset_elevation=ft(19, 6),
             exit_elevation=ft(23, 10), exit_offset=pt(ft(0), inch(28.7)),

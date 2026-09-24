@@ -10,12 +10,8 @@
 # plan/mep_venting.py.
 
 from typehaus import (
-    DrainTile,
-    FrenchDrain,
     PipeRun,
     PipeSystem,
-    Service,
-    SleevePenetration,
     Sump,
     SumpPump,
     ft,
@@ -750,13 +746,15 @@ TPR_DISCHARGE = [
 ]
 
 # --- Radon sump + shared radon/plumbing vent riser ---------------------------------
-# A sealed radon sump in the basement furnace room. ** IT STANDS AT (5'-9", 28'-0"), OFF THE
-# NW CORNER, SINCE 2026-09-23. ** Centred on the chase it sat 19 1/2" below FT-B-W1/FT-B-N4's
-# bearing and cut 9" into both (`mep.pit_footing_clearance`). The corner has no clean station:
-# the panels' 110.26 space, the hung ERV and the ESS clearance fill it. Here it clears every
-# footing, all three, and the water heater; its 3" radon leg (PR-B-RADON-LEG) climbs from the
-# sealed pit and runs under the slab to the chase, where the riser takes over. That riser
-# shares the plumbing vent's chase up to 23'-10", then turns
+# A sealed radon sump in the basement furnace room. ** BACK IN THE NW CORNER SINCE 2026-09-24,
+# at (1'-9", 34'-3"), ** tangent to FT-B-W1's inner edge (11.9") and FT-B-N4's south edge
+# (420.1") and outside both pours. It left on 2026-09-23 because `mep.pit_footing_clearance`
+# read UPC 314.1's 45° trench line onto the pit; a lined pit is not a trench alongside a
+# footing, so that check now fails only a pit that cuts footing concrete. The pit is a round
+# hole in SL-B-FLOOR, and the W1/N4 tile runs into it. Both lines rise out of its lid, so
+# neither crosses the slab: the 3" radon leg (PR-B-RADON-LEG) to the riser's foot, and the
+# pump discharge (below) into the main-floor joist band. The riser shares the plumbing
+# vent's chase up to 23'-10", then turns
 # out through the north gable siding and back up. ** IT JOGS EAST INSIDE THE ATTIC FIRST **
 # — at x=1'-0" the 6:12 roof underside is 20'-8 1/4" and the riser cannot stand up there at
 # all, so `VentRun.chase_offset` steps it 12'-4" through the FS-ATTIC joist webs to
@@ -764,7 +762,7 @@ TPR_DISCHARGE = [
 # roof surface, resolve/vent_termination.py), not authored — an authored absolute can't
 # follow a rake.
 RADON_SUMP = [
-    Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(ft(5, 9), ft(28)),
+    Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(inch(21), inch(411)),
          diameter=inch(18), depth=inch(24), host_ref="SL-B-FLOOR",
          sealed_cover=True, radon_vent=True, vent_ref="VR-M-RADON-VENT",
          # CKT-SUMP was already on the panel schedule but the pit only implied a pump;
@@ -785,16 +783,15 @@ RADON_SUMP = [
          # arrives in it. `Drywell.inlet_refs` has always carried the mirror of this;
          # `Sump` did not.
          #
-         # The perimeter rings are ONE connected body of washed stone, and since the pit left
-         # the corner it no longer abuts them: FD-B-SUMP-LEAD carries that body in from
-         # FB-B-STR3, 2'-8" east, which is what `drainage.tile_lead` now finds.
+         # The perimeter rings are ONE connected body of washed stone, and the pit sits in
+         # it at the corner: FB-B-W1 and FB-B-N4's tile run into its wall.
          inlet_refs=("FB-B-S1", "FB-B-S2", "FB-B-S3", "FB-B-S4",
                      "FB-B-E1", "FB-B-E2",
                      "FB-B-N1", "FB-B-N2", "FB-B-N3", "FB-B-N4",
                      "FB-B-W1", "FB-B-W2",
                      "FB-B-CS", "FB-B-CS2", "FB-B-CN", "FB-B-CN2",
                      "FB-B-STR", "FB-B-STR3", "FB-B-STR3B",
-                     "FD-SG-OVERFLOW", "FD-B-SUMP-LEAD"),
+                     "FD-SG-OVERFLOW"),
          # The level water ARRIVES at, which is not the pit floor (-11'-4 15/16") and not
          # the slab. The perimeter beds bottom at -10'-4 7/16" and the derived tile floats
          # one course of bedding above that, so -10'-3 7/16" is the invert every ring
@@ -815,57 +812,35 @@ RADON_SUMP = [
          # it one invert (plans/TODO.md).
          overflow_ref="FB-SG-W1",
          overflow_invert=inch(-123.4375)),
-    # The house tile's lead into the pit: out of FB-B-STR3's stone (the nearest bed of the
-    # connected body), west along y=28'-0" under the slab, falling 1/2" to the pit's inlet.
-    FrenchDrain(uid="D5Q8234WSS", tag="FD-B-SUMP-LEAD",
-                path=(pt(ft(9, 6), ft(28)), pt(ft(5, 9), ft(28))),
-                invert=inch(-123.4375), end_invert=inch(-123.9375),
-                trench_width=inch(6), trench_depth=inch(8),
-                tile=DrainTile(diameter=inch(4), sock=True, discharge="SM-B-RADON"),
-                discharge_ref="SM-B-RADON"),
-    # The pit to the chase: solid 3" PVC out of the pit's wall above the water line, UNDER THE
-    # SLAB in the 4" capillary course (the ERV hub fills the ceiling here), west on y=28'-0"
-    # and north on x=1'-9", up through the slab clear of FT-B-W1/N4, and 3 7/16" over it to
-    # the riser's foot. It falls 1/2" back to the pit so condensate drains there.
+    # The pit to the riser: solid 3" PVC up out of the lid at (1'-2", 34'-3"), 3 7/16" over the
+    # slab, north on x=1'-2" and west onto the radon riser's foot at (10", 34'-11.1") — a
+    # soil-gas pipe on its own riser, never the plumbing vent beside it. It falls 1/4" back
+    # to the pit so condensate drains there.
     PipeRun(uid="90RG08DW5Y", tag="PR-B-RADON-LEG", system=PipeSystem.RADON,
-            # ** IT LANDS ON THE RADON RISER, NOT THE CHASE POINT (2026-09-23). ** It ended at
-            # the bundle's centre, inside the plumbing vent riser beside it — a soil-gas pipe
-            # tied into a plumbing vent. It comes up through the slab on its own lane and
-            # turns west onto the radon riser's foot at (10", 34'-11.1").
-            path=(pt(ft(5, 9), ft(28)), pt(ft(1, 9), ft(28)), pt(ft(1, 9), inch(419.1)),
-                  pt(ft(1, 9), inch(419.1)), pt(inch(10), inch(419.1))),
+            path=(pt(inch(14), inch(411)), pt(inch(14), inch(411)), pt(inch(14), inch(419.1)),
+                  pt(inch(10), inch(419.1))),
             diameter=inch(3), material="pvc",
-            elevations=(inch(-7.5), inch(-7.25), inch(-7), inch(3.4375), inch(3.4375))),
+            elevations=(inch(-4), inch(3.1875), inch(3.3125), inch(3.4375))),
 ]
 
-# --- the sump's pumped discharge (2026-09-22) -------------------------------------------
-# 1 1/2" PVC Sch 40 out of the pit (5'-9", 28'-0" since 2026-09-23) through a sealed wall
-# grommet, under the slab to (1'-4", 34'-6"), up to -1'-9" (above grade -2'-10", below the
-# pour top), west through W-B-W1 6" south of W-B-N4's inner face, and down at
-# >= 1/4"/ft to a wye on TR-RF-LEADER-W-EXT-RISER at -1'-10". Elevations are basement-
-# relative (datum -109 7/16"). Check valve and ice guard are on the pump (SM-B-RADON).
+# --- the sump's pumped discharge (2026-09-22; re-routed 2026-09-24) ----------------------
+# 1 1/2" PVC Sch 40 up out of the pit's lid at (1'-5 1/4", 34'-9.9"), into FS-M-MECH's
+# joist band at -5 15/16" (above the -11.9" sill, below the deck), north 6" to the face of
+# FO-M-ERV-OA's north trimmer pack, west along it (parallel to the joists) through the rim,
+# and out to a wye on TR-RF-LEADER-W-EXT-RISER (-40" to +12"). It crosses no concrete.
+# Elevations are basement-relative (datum -109 7/16"). Check valve and ice guard are on the
+# pump (SM-B-RADON).
 SUMP_DISCHARGE = [
     PipeRun(uid="23NF4WJS89", tag="PR-B-SUMP-DISCH", system=PipeSystem.SUMP_DISCHARGE,
-            # ** IT RISES SOUTH OF THE VENT RISER SINCE 2026-09-23 ** (1'-0 1/2", 33'-5.5"): the
-            # chase was re-packed. The under-slab lane is x=1'-0 1/2", inboard of FT-B-W1's
-            # toe, and the rise stops at -21.8" so its crown passes under DU-ERV-RISER-SUP's
-            # -17.9" basement leg; the wye on the leader riser drops to -23.3" to keep the fall.
-            path=(pt(ft(5, 9), ft(27, 7.2)), pt(inch(12.5), ft(27, 7.2)),
-                  pt(inch(12.5), inch(401.5)), pt(inch(12.5), inch(401.5)),
-                  pt(inch(-10.5), inch(401.5)), pt(inch(-10.5), ft(35, 6))),
+            # The rise stands between the ERV's supply riser (y <= 409.8") and DU-ERV-EA's
+            # insulated riser (x >= 18.6"), north of the panels' 110.26 space (ends y 33'-9"). The
+            # opening has no deck to hang from, so the leg west is strapped to the trimmer.
+            path=(pt(inch(17.25), inch(417.9)), pt(inch(17.25), inch(417.9)),
+                  pt(inch(17.25), inch(424.2)), pt(inch(-10.5), inch(424.2))),
             diameter=inch(1.5), material="pvc",
-            # Leaves the pit's wall under the slab, beside the radon leg; nothing after the
-            # rise climbs again.
-            elevations=(inch(-7.5), inch(-7.5), inch(-7.5), inch(87.44),
-                        inch(87.1), inch(86.14))),
-    # The wall crossing, sleeved, on the 8" pour's centreline 4" in
-    # from the axis; centre = invert at the wall + 3/4".
-    SleevePenetration(uid="DS557CEW46", tag="SP-B-W1-SUMP-DISCH", host_ref="W-B-W1",
-                      position=pt(inch(4), inch(401.5)), pipe_diameter=inch(1.5),
-                      sleeve_diameter=inch(3), purpose=Service.DRAIN, axis="horizontal",
-                      center_elevation=inch(-21.18)),
+            # From the pump in the pit; 1/4"/ft after the rise, nothing climbs again.
+            elevations=(inch(-18), inch(103.5), inch(103.375), inch(102.75))),
 ]
-
 
 # --- the guest studio ---------------------------------------------------------------------
 # ** THIS RUN IS WHY THE BATHROOM IS WHERE IT IS, NOT THE OTHER WAY ROUND. ** The attic bath was

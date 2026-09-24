@@ -1314,6 +1314,27 @@ pocket was possible there at all.
 
 ## Basement
 
+### The radon pit went back to the corner (2026-09-24)
+
+Supersedes the 2026-09-23 entry below. `SM-B-RADON` stands at (1'-9", 34'-3"), tangent to
+FT-B-W1's inner edge (11.9") and FT-B-N4's south edge (420.1").
+- **A sump is not a trench.** UPC 314.1's 45° line governs a trench left open alongside a
+  footing; a lined pit is a basin in a hole its own size. `mep.pit_footing_clearance` now
+  FAILs only a pit that cuts footing concrete (plan overlap past a sliver, z ranges
+  overlapping), moved to `Tier.INTEGRITY` and off the "Pipe below and beside concrete" permit
+  item. `mep.footing_clearance` skips a pipe segment standing inside a pit.
+- **The pit is a round hole in `SL-B-FLOOR`** (`resolve/accessories._resolve_sump` voids the
+  host; the sub-slab layers inherit it), and `concrete_hosts` reads slabs net of their voids,
+  so a pipe out of the lid is not a slab crossing. `SP-B-SLAB-RADON`, `SP-B-SLAB-SUMP-DISCH`,
+  `SP-B-W1-SUMP-DISCH` and `FD-B-SUMP-LEAD` are gone: the FB-B-W1/N4 tile meets the pit.
+- **The discharge leaves high.** Up out of the lid at (1'-5 1/4", 34'-9.9") to -5 15/16" in
+  FS-M-MECH's joist band, 6" north to FO-M-ERV-OA's north trimmer, west along it (the joists
+  run in x, so no bore but the rim) and out to the leader riser at -6 11/16". The plan's
+  (1'-2 1/2", 34'-0") rise stood inside `DU-ERV-RISER-SUP`, and the y=34'-8" lane between the
+  chase risers spanned the open ERV opening with nothing to strap to (`mep.run_over_void`).
+  The rise sits 0.43" off `DU-ERV-EA`'s insulated envelope.
+- **A horizontal cast sleeve is one solid**, a round `SolidSweep`, not six `-B*` chord bands.
+
 ### The radon pit left the corner footings (2026-09-23)
 
 `SM-B-RADON` had just been centred under the radon chase at (1'-0", 35'-1.3"). Its 18" pit

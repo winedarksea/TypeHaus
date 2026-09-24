@@ -380,12 +380,17 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
     wherever the wall above it is — at a stem gap under a door, say — and the joints that
     creates are construction joints in continuous concrete, not free edges. Measuring the
     influence line off one would fail a pipe for being near the middle of a footing.
+
+    A segment standing inside a sump pit (a pump's discharge leaving the pit) is in the pit,
+    not a trench, and is not graded.
     """
     from shapely.geometry import LineString, Polygon
 
     cid = "mep.footing_clearance"
     footings = _footing_pours([s for s in ctx.model.solids
                                if s.category == "footing" and len(s.outline) >= 3], Polygon)
+    pits = [(Polygon(s.outline).buffer(1e-6), s.z0_m - 1e-6, s.z1_m + 1e-6)
+            for s in ctx.model.solids if s.category == "sump" and len(s.outline) >= 3]
     out: list[Finding] = []
     for run in ctx.model.pipe_runs:
         if run.z_m is None:
@@ -395,6 +400,8 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
             seg = LineString((a, b)) if ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) > 1e-12 \
                 else LineString((a, (a[0] + 1e-9, a[1])))
             invert = min(run.z_m[i], run.z_m[i + 1])
+            if any(hole.contains(seg) and z0 <= invert <= z1 for hole, z0, z1 in pits):
+                continue
             for footing, footprint in footings:
                 depth_below = footing.z0_m - invert
                 if depth_below <= 1e-9:

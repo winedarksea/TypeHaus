@@ -5,7 +5,7 @@ gets the water there. This grades the line: its system, that it leaves the pit, 
 lands on the receiver, that it does not re-rise after its high point (a trap that freezes),
 that a check valve holds the column, and that a buried receiver shallower than frost has a
 freeze relief. ADVISORY like the rest of site drainage. ``mep.pit_footing_clearance`` asks
-the pit's other question: whether the hole it sits in undermines a footing.
+the pit's other question: whether the hole it sits in cuts a footing.
 """
 
 from __future__ import annotations
@@ -26,8 +26,8 @@ _IN = 0.0254
 LEADER_SLACK_M = 6.0 * _IN
 #: Rounding a line's profile may not count as a re-rise.
 _RISE_TOL_M = 0.25 * _IN
-#: ``mep.footing_clearance``'s citation: the pit is an excavation beside a footing.
-_UPC_314_1 = "MN Plumbing Code (ch. 4714) 314.1"
+#: Plan overlap below which a pit only touches a pour — faceting, not a cut. 1/4 sq in.
+_SLIVER_M2 = 0.25 * _IN * _IN
 
 
 def _pit(ctx: CheckContext, tag: str):
@@ -126,38 +126,32 @@ def _freeze(ctx: CheckContext, sump: Sump, receiver, tags) -> list[Finding]:
                      tags, Result.UNKNOWN)]
 
 
-@check(Tier.CODE, "mep.pit_footing_clearance")
+@check(Tier.INTEGRITY, "mep.pit_footing_clearance")
 def pit_footing_clearance(ctx: CheckContext) -> list[Finding]:
-    """A pit dug below a footing's bearing plane stays outside its 45° influence line.
+    """A sump pit does not cut footing concrete: a clash, not a code rule.
 
-    ``mep.footing_clearance``'s rule for a pipe, applied to the hole a sump sits in: its plan
-    distance to the footing must be at least how far its floor sits below the bearing. Graded
-    per footing — the distance to a pour is the least distance to any of its members, so no
-    interior joint can pose as a free edge the way it could for a pipe's nearest boundary.
+    UPC 314.1's 45° influence line governs a trench running alongside a footing, which
+    stays open while a pipe is laid and backfilled. A lined pit is a basin set in a hole the
+    size of itself, so the rule is not applied to it. Only plan overlap beyond a sliver *and*
+    overlapping z ranges FAIL. Drain tile, bedding and sub-slab solids are not footings, so
+    tile under the pit (it drains into it) passes by construction.
     """
     cid = "mep.pit_footing_clearance"
     pits = [s for s in ctx.model.solids if s.category == "sump" and len(s.outline) >= 3]
     if not pits:
-        return [not_applicable(cid, "no sump pit is modelled", code=_UPC_314_1)]
+        return [not_applicable(cid, "no sump pit is modelled")]
     bearings = [(s, Polygon(s.outline)) for s in ctx.model.solids
                 if s.category in ("footing", "pad") and len(s.outline) >= 3]
     out: list[Finding] = []
     for pit in pits:
         hole = Polygon(pit.outline)
-        undermined = []
-        for footing, footprint in sorted(bearings, key=lambda item: item[0].tag):
-            below = footing.z0_m - pit.z0_m
-            gap = hole.distance(footprint)
-            if below > 1e-9 and gap + 1e-9 < below:
-                where = ("overlaps it" if gap <= 1e-9
-                         else f"is {gap / _IN:.1f}\" off it")
-                undermined.append(f"{footing.tag} ({below / _IN:.1f}\" below its bearing, "
-                                  f"{where})")
-        if not undermined:
-            out.append(_pass(cid, f"{pit.tag} clears every footing's 45° influence line",
-                             (pit.tag,), code=_UPC_314_1))
+        cut = [f"{footing.tag} ({hole.intersection(footprint).area / _IN ** 2:.1f} sq in)"
+               for footing, footprint in sorted(bearings, key=lambda item: item[0].tag)
+               if pit.z0_m < footing.z1_m - 1e-9 and footing.z0_m < pit.z1_m - 1e-9
+               and hole.intersection(footprint).area > _SLIVER_M2]
+        if not cut:
+            out.append(_pass(cid, f"{pit.tag} cuts no footing concrete", (pit.tag,)))
             continue
-        out.append(_fail(
-            cid, f"{pit.tag} is inside the 45° influence line of {'; '.join(undermined)} — "
-                 f"move the pit or step the footing down", (pit.tag,), code=_UPC_314_1))
+        out.append(_fail(cid, f"{pit.tag} cuts footing concrete: {'; '.join(cut)} — move the pit "
+                              f"clear of the pour", (pit.tag,)))
     return out

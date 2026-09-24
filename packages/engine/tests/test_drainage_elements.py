@@ -530,8 +530,8 @@ def test_the_sump_names_what_feeds_it(catlin_model):
     the pit and nothing named them back.
     """
     sump = catlin_model.plan.by_tag("SM-B-RADON")
-    assert len(sump.inlet_refs) == 21, sump.inlet_refs
-    assert {"FD-SG-OVERFLOW", "FD-B-SUMP-LEAD"} <= set(sump.inlet_refs)
+    assert len(sump.inlet_refs) == 20, sump.inlet_refs
+    assert "FD-SG-OVERFLOW" in sump.inlet_refs and "FD-B-SUMP-LEAD" not in sump.inlet_refs
     assert sum(1 for tag in sump.inlet_refs if tag.startswith("FB-B-")) == 19
     for tag in sump.inlet_refs:
         assert catlin_model.plan.by_tag(tag) is not None, tag

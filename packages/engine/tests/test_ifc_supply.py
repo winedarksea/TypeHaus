@@ -102,7 +102,7 @@ def test_the_waste_side_is_systems_now_sanitary_vent_and_radon(catlin_model_ro, 
         assert 0 < len(emitted) <= expected_segments
     # A radon *pipe run* gets its own USERDEFINED/RADON system rather than being folded into
     # VENT (a soil-gas riser must never read as connected to the plumbing vents). Catlin's
-    # first is PR-B-RADON-LEG, the pit-to-chase leg under the slab (2026-09-23).
+    # first is PR-B-RADON-LEG, up out of the pit's lid to the radon riser's foot (2026-09-24).
     from typehaus.emit.ifc.emitter import _PIPE_SYSTEM_OBJECT_TYPES, _PIPE_SYSTEM_TYPES
 
     assert _PIPE_SYSTEM_TYPES["radon"] == ("RadonVent", "USERDEFINED")
@@ -211,9 +211,10 @@ def test_every_routed_run_category_is_declared(catlin_model_ro):
     # "railing" sweeps and is not a run. Neither is "beam": a member out of level is not a
     # prism either, so a TILTED beam (``Beam.top_rise_end`` — catlin's three balcony glulams
     # fall 2" south for drainage) resolves through the same ``SolidSweep``. The sweep is a
-    # GEOMETRY fact, not a trade one, and this assertion is about the trade vocabulary.
+    # GEOMETRY fact, not a trade one, and this assertion is about the trade vocabulary. A
+    # horizontal cast sleeve (one round sweep since 2026-09-24) is a hole, not a run, too.
     minted = {(s.category or "").lower() for s in catlin_model_ro.solids if s.sweep is not None}
-    assert minted - {"railing", "beam"} <= ROUTED_RUN_CATEGORIES
+    assert minted - {"railing", "beam", "pipe_sleeve"} <= ROUTED_RUN_CATEGORIES
 
 
 def test_the_runs_are_still_in_the_file_as_segments(catlin_model_ro, catlin_ifc):

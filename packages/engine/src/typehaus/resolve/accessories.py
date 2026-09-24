@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Sequence
+from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.enums import ConnectorKind, LayerFunction, TrimKind
@@ -632,20 +633,28 @@ def _resolve_wedge(model: ResolvedModel, el: Wedge, storey: str) -> None:
 
 
 def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:
+    """The pit, and the round hole it makes in its slab.
+
+    The basin voids its host the way an area drain does (``resolve/drainage.py``): what rises
+    out of the lid crosses no concrete, and the pour is billed net of the hole. Slab layers
+    resolve later and inherit the void."""
     cx, cy = el.position.xy_m
-    host = next((s for s in model.solids if s.tag == el.host_ref and s.category == "slab"),
-                None) if el.host_ref else None
+    index = next((i for i, s in enumerate(model.solids)
+                  if s.tag == el.host_ref and s.category == "slab"), None) if el.host_ref else None
+    host = model.solids[index] if index is not None else None
     z1 = host.z1_m if host is not None else storey.elevation.meters
     z0 = (host.z0_m if host is not None else z1) - el.depth.meters
-    half = el.diameter.meters / 2.0
+    ring = circle_outline((cx, cy), el.diameter.meters / 2.0, _PIPE_FACETS)
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-sump", tag=el.tag, storey=storey.tag,
-        category="sump", outline=square(cx, cy, half, half), z0_m=z0, z1_m=z1,
+        category="sump", outline=ring, z0_m=z0, z1_m=z1,
         # A radon sump is a moulded basin set in the slab, not a second pour inside it: the
         # solid is the pit, and without a ref it fell to ``solid_material_ref``'s concrete
         # default and hatched as the flatwork it interrupts.
         material="polyethylene",
     ))
+    if host is not None:
+        model.solids[index] = replace(host, voids=(*host.voids, tuple(tuple(p) for p in ring)))
 
 
 def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> list[Finding]:

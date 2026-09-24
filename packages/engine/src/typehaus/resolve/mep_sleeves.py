@@ -31,8 +31,10 @@ from typehaus.resolve.model import (
     ResolvedSleeve,
     ResolvedSolid,
     Ring,
+    SolidSweep,
 )
-from typehaus.resolve.round_solids import PIPE_FACETS, round_run_bands
+from typehaus.resolve.round_solids import PIPE_FACETS
+from typehaus.resolve.sweep import round_profile, sweep_plan_silhouette, sweep_z_extent
 
 
 def _sleeve_host(model: ResolvedModel, host_ref: str):
@@ -194,9 +196,9 @@ def _emit_sleeve_solid(model: ResolvedModel, sleeve: ResolvedSleeve,
     you can click, at the diameter that gets set, in the concrete it gets set in.
 
     Vertical (the slab drop) spans the host's full depth as a faceted cylinder. Horizontal
-    (a foundation-wall crossing, or the under-footing protection sleeves of UPC 314.1) is
-    swept in chord bands along the host's normal, exactly as a horizontal pipe segment is
-    (``_emit_run_solids``), so a run and the sleeve it threads read as the same round section.
+    (a foundation-wall crossing, or the under-footing protection sleeves of UPC 314.1) is one
+    round ``SolidSweep`` along the host's normal, as a run is (``_emit_run_solids``), so a
+    run and the sleeve it threads read as the same round section — and a sleeve is one piece.
     """
     # Suffixed, never the bare element uid: the IFC emitter derives a GlobalId from it, and
     # the ``SleevePenetration`` already exports under its own uid as an IfcBuildingElementProxy
@@ -215,12 +217,14 @@ def _emit_sleeve_solid(model: ResolvedModel, sleeve: ResolvedSleeve,
     bore = _sleeve_bore(model, sleeve, outline)
     if bore is None:
         return
-    start, end = bore
-    for band, (band_outline, band_z0, band_z1) in enumerate(
-            round_run_bands(start, end, radius, sleeve.center_z_m)):
-        model.solids.append(ResolvedSolid(
-            uid=f"{uid}-b{band:02d}", tag=f"{sleeve.tag}-B{band + 1}", storey=storey_tag,
-            category=_SLEEVE_CATEGORY, outline=band_outline, z0_m=band_z0, z1_m=band_z1))
+    (x0, y0), (x1, y1) = bore
+    z = sleeve.center_z_m
+    sweep = SolidSweep(path=((x0, y0, z), (x1, y1, z)),
+                       profile=round_profile(radius, PIPE_FACETS))
+    z0, z1 = sweep_z_extent(sweep)
+    model.solids.append(ResolvedSolid(
+        uid=uid, tag=sleeve.tag, storey=storey_tag, category=_SLEEVE_CATEGORY,
+        outline=sweep_plan_silhouette(sweep), z0_m=z0, z1_m=z1, sweep=sweep))
 
 
 def _sleeve_bore(model: ResolvedModel, sleeve: ResolvedSleeve,
