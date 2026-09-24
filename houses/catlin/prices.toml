@@ -1700,7 +1700,7 @@
 # The sidewalk, five legs (params/landscape_walk.py): 4" fibre-only EXPOSED_MIX. The labour
 # band carries the 28 sonotube pocket forms and the control joints on their 4' stations,
 # which is why it sits over the plain slab-on-grade rate. 2026-09-21.
-"slab:SIDEWALK_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 500, high = 950 } }  # 6.04 cy, 489 SF over four pours (SL-WK-E dropped 2026-09-23; leg A notched round the drive's flare; A and B one-sided 64" beside RG-E-BASIN)
+"slab:SIDEWALK_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 500, high = 950 } }  # 7.19 cy, 582 SF over four pours (SL-WK-E dropped 2026-09-23; leg A notched round the drive's flare; A and B one-sided 64" beside RG-E-BASIN; C run under the canopy to ST-BW-ENTRY, replacing the pavers)
 # The driveway, SL-DW-DRIVE (params/driveway.py): the walk's mix at the walk's material rate.
 # Labour sits under the sidewalk's (no pocket forms) and carries the K8 joint at the grade
 # beam, ~16 LF of 1" 40 psi XPS under traffic-rated PU sealant. PROPOSED 2026-09-23, owner's call.

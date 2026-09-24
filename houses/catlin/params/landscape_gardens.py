@@ -108,13 +108,14 @@ GRID_BED = PlantingBed(
 
 # --- the espalier frame -----------------------------------------------------------------
 # 2'-0" off the west lot line, in two runs that leave the power line (y=18', 3' deep) its
-# 24" locate tolerance zone and more: the posts nearest it stand at y=14' and y=25'.
+# 24" locate tolerance zone and more: the posts nearest it stand at y=14' and y=25'. The
+# two runs are 13' each, mirrored about y=19'-6", with two apples apiece.
 _TRELLIS = dict(post_spacing=ft(8), post="4x4", post_material="kdat", post_height=ft(7),
                 post_embed=ft(3), wire_heights=(inch(18), inch(36), inch(54), inch(72)))
 TRELLISES = [
     Trellis(uid="GRDNTR0001", tag="TRL-W-S", path=(pt(ft(-5), ft(1)), pt(ft(-5), ft(14))),
             **_TRELLIS),
-    Trellis(uid="GRDNTR0002", tag="TRL-W-N", path=(pt(ft(-5), ft(25)), pt(ft(-5), ft(31))),
+    Trellis(uid="GRDNTR0002", tag="TRL-W-N", path=(pt(ft(-5), ft(25)), pt(ft(-5), ft(38))),
             **_TRELLIS),
 ]
 

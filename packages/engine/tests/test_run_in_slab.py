@@ -91,3 +91,19 @@ def test_catlin_reports_exactly_the_one_it_has(catlin_ctx) -> None:
     assert sorted(tuple(f.element_tags) for f in _fails(catlin_ctx)) == [
         ("PR-SG-ARCH-OVERFLOW", "SL-SG-FIELD"),
     ]
+
+
+def test_a_run_lying_ALONG_a_face_is_not_a_crossing() -> None:
+    """CD-B-KITCHEN's 1" jog ran on W-B-E2's concrete face; overlap with the CLOSED polygon
+    read as 1" embedded and a wall sleeve was authored to a 12" bore that served nothing."""
+    from shapely.geometry import LineString, Point, Polygon
+
+    from typehaus.resolve.mep_concrete import _segment_concrete_hit
+
+    wall = Polygon([(0.0, 0.0), (0.3, 0.0), (0.3, 3.0), (0.0, 3.0)])
+    along = _segment_concrete_hit((0.0, 1.0), (0.0, 1.1), -0.4, -0.4, wall, -2.0, 0.0,
+                                  LineString, Point)
+    inside = _segment_concrete_hit((0.01, 1.0), (0.01, 1.1), -0.4, -0.4, wall, -2.0, 0.0,
+                                   LineString, Point)
+    assert along is None
+    assert inside is not None

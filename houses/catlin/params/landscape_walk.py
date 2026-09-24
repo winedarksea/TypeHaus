@@ -12,7 +12,8 @@ Control joints fall on the same stations.
 Each slab is modelled flat at its high edge, 1" over the -2'-10" grade so it never cuts the
 earth sheet; the fall lives on a matching `ImperviousSurface(kind="walk")`, merged into
 the site by `plan/manifest.py`. 1/2" isolation gaps at the garage stem flashing, the
-canopy column PT-BW-RNE, the HP1 pad and the stair pad. notes/sidewalk_layout.md.
+canopy columns PT-BW-RE/-RNE, the entry tiers, the HP1 pad and the stair pad.
+notes/sidewalk_layout.md.
 """
 
 from __future__ import annotations
@@ -31,7 +32,10 @@ from typehaus import (
     pt,
 )
 
+from params.breezeway import STAIR_FOOT_X_FT, STAIR_Y0_FT, STAIR_Y1_FT
 from params.driveway import DRIVE_X, FLARE, Y0 as DRIVE_Y0
+from params.hp1_north_pad import HP1_PAD
+from params.north_entry_frame import GARAGE_SEAT_Y_FT, PIER_LINE_Y_FT, ROOF_COLUMN_EAST_X_FT
 
 ASSEMBLY = "SIDEWALK_FRC_CLASS5"
 TOP = ft(-2, -9)                 # 1" over grade
@@ -62,9 +66,13 @@ def _rect(x0, y0, x1, y1):
 #    1/2", to clear of the canopy column PT-BW-RNE (y 41'-11 3/4"..42'-11 3/4"). It was the
 #    full 92" until 2026-09-23; its east 28" is where RG-E-BASIN (x 37'..42') mirrors the
 #    west basin, 1'-7" of lawn off the slab.
-# C: the landing connector, walk only, notched round PT-BW-RNE to reach the paver landing's
-#    east edge (x=30') south of it; its south edge leaves a 3" gravel drip strip on the HP1
-#    pad's north edge, clear of the unit's defrost.
+# C: the entry walk, walk only. Under the canopy it is the full passage width, 3" off both
+#    claddings, from ST-BW-ENTRY's foot (less the joint to SL-BW-TIER1) east to the two
+#    canopy columns; it passes between PT-BW-RE and PT-BW-RNE, notched round both. Just
+#    east of them it stays full width to the HP1 pad, wrapping PT-BW-RE, then narrows to run
+#    on east to leg D. Both pad edges it meets keep a 3" gravel drip strip, clear of the
+#    unit's defrost. It replaced the drained paver landing under the canopy on 2026-09-23;
+#    its top is the flight's springing (breezeway.py).
 # D: the house east side, one-sided 64", off the NE/SE corner trims (x=36'-7 7/8") plus 1/2".
 #    It absorbs the old side patio; no pockets along the patio's 12' (y 10'..22').
 # No leg E: SL-SG-STAIRPAD (params/sunken_garden.py) runs east to D's west edge, less the
@@ -75,8 +83,17 @@ A = _rect(24.0 + GAP_FT, 67.29 + GAP_FT, B_X1, 67.29 + GAP_FT + 92.0 / 12.0)
 B = _rect(B_X0, 42.98 + GAP_FT, B_X1, A[0][1])
 D_X0 = 36.66 + GAP_FT
 D_X1 = D_X0 + 64.0 / 12.0
-C = ((30.0 + GAP_FT, 39.6), (D_X1, 39.6), (D_X1, B[0][1]), (30.5 + GAP_FT, B[0][1]),
-     (30.5 + GAP_FT, 41.98 - GAP_FT), (30.0 + GAP_FT, 41.98 - GAP_FT))
+_COL_R_FT = 0.5                  # PT-BW-RE/-RNE are "12 round"
+_COL_W = ROOF_COLUMN_EAST_X_FT - _COL_R_FT - GAP_FT
+_COL_E = ROOF_COLUMN_EAST_X_FT + _COL_R_FT + GAP_FT
+_RE_N = PIER_LINE_Y_FT + _COL_R_FT + GAP_FT
+_RNE_S = GARAGE_SEAT_Y_FT - _COL_R_FT - GAP_FT
+_C_FOOT_X = STAIR_FOOT_X_FT + GAP_FT
+_DRIP_FT = 3.0 / 12.0
+_HP1_W = min(v.x.feet for v in HP1_PAD.outline) - _DRIP_FT
+C = ((_C_FOOT_X, STAIR_Y0_FT), (_COL_W, STAIR_Y0_FT), (_COL_W, _RE_N), (_COL_E, _RE_N),
+     (_COL_E, STAIR_Y0_FT), (_HP1_W, STAIR_Y0_FT), (_HP1_W, 39.6), (D_X1, 39.6), (D_X1, B[0][1]), (_COL_E, B[0][1]), (_COL_E, _RNE_S),
+     (_COL_W, _RNE_S), (_COL_W, STAIR_Y1_FT), (_C_FOOT_X, STAIR_Y1_FT))
 D = _rect(D_X0, -9.0, D_X1, 39.6)
 
 # The flare's east edge is the line x + y = K; offset 1/2" square to it, K grows by GAP*√2.
@@ -177,13 +194,14 @@ POCKET_BED = PlantingBed(
 # The fall, 2% or more, away from whatever the leg abuts. Pocket voids are NOT subtracted
 # from the impervious area, which is conservative.
 IMPERVIOUS = (
-    # R401.3 measures A and C over their long runs (10.9' and 12'), so each falls 3".
+    # R401.3 measures A over its long run (10.9'), so it falls 3". C falls east from the
+    # stair foot, its high edge, 3 1/2": R401.3 reads it 12.2' off the garage's SE corner.
     ImperviousSurface(label="walk A, garage north", outline=_ring(A_RING),
                       near_elevation=TOP, far_elevation=ft(-3), kind="walk"),
     ImperviousSurface(label="walk B, garage east", outline=_ring(B),
                       near_elevation=TOP, far_elevation=ft(-3), kind="walk"),
-    ImperviousSurface(label="walk C, landing connector", outline=_ring(C),
-                      near_elevation=TOP, far_elevation=ft(-3), kind="walk"),
+    ImperviousSurface(label="walk C, entry walk", outline=_ring(C),
+                      near_elevation=TOP, far_elevation=ft(-3, -0.5), kind="walk"),
     ImperviousSurface(label="walk D, house east", outline=_ring(D),
                       near_elevation=TOP, far_elevation=ft(-2, -11), kind="walk"),  # 2" over 7.2'
 )

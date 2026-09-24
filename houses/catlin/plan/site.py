@@ -445,36 +445,8 @@ SITE = Site(
     # outer edge, dropped enough to clear 2% over the run. Both ends of both surfaces dropped
     # with grade; the falls they encode are unchanged, and the falls are what R401.3 measures.
     impervious_surfaces=(
-        # Apron on the north wall (y=36'), east of the breezeway (which spans x 6'-9"..
-        # 11'-3") and east of SL-M-HP3PAD. Only 4' deep now that the garage stands at
-        # y=40.5': it floors the slot between the two structures, falls away from the house,
-        # and drains east rather than north into the garage stem. (It drained "east to the
-        # driveway" until 2026-09-07; the driveway premise is retired — see
-        # notes/garage_orientation_lot.md — and the 4.2% fall is unchanged and still legal,
-        # it simply no longer drains *to* anything named.)
-        #
-        # ** THE WEST EDGE MOVED 14'-0" -> 15'-9" ON 2026-09-09, AND IT WAS FORCED. **
-        # EQ-M-HP3-OD went 2'-4" east to get out of the widened breezeway's east glazing,
-        # taking SL-M-HP3PAD to x 12'-1"..15'-5" — 1'-5" of pad inside this walk. 15'-9"
-        # leaves the pad 4" clear, the same never-touch convention the pad uses against the
-        # house cladding, and there is no version of that move that does not reach this
-        # walk: even a zero-clearance cabinet puts the pad's east edge at 14'-4 11/16".
-        # The walk loses 7 sf (32 -> 25); the fall it is graded on is in y and unchanged.
-        ImperviousSurface(
-            label="north entry drained paver landing and east approach",
-            # ** THE WEST EDGE FOLLOWS THE STAIR, AND IT IS NOT DERIVED. ** This outline is
-            # authored on the site while `params/breezeway.py::STAIR_FOOT_X_FT` derives from
-            # TREAD_DEPTH_FT, so the two only agree because somebody keeps them agreeing.
-            # The 2026-09-10 going change (24" -> 18") moved the stair foot from x=19'-6" to
-            # x=17'-6", and the 2026-09-11 landing narrowing (LANDING_EAST_FT 11'-6" ->
-            # 9'-7", the service door's east jamb) moved it to x=15'-7"; this edge moved
-            # with it both times. Move it again if either moves again.
-            outline=(pt(ft(15, 7), ft(36, 10.25)), pt(ft(30), ft(36, 10.25)),
-                     pt(ft(30), ft(42, 10.75)), pt(ft(15, 7), ft(42, 10.75))),
-            near_elevation=ft(-2, -10),
-            far_elevation=ft(-3, -0.5),  # 2% eastward; first 36in is the lower landing
-            kind="walk",
-        ),
+        # The drained paver landing under the canopy (x 15'-7"..30') is RETIRED 2026-09-23:
+        # walk leg C runs to the stair foot and carries its own surface (landscape_walk.py).
         # The east side patio (x 36'..42', y 10'..22') is RETIRED 2026-09-21: walk leg D
         # (params/landscape_walk.py) runs the whole east side and absorbs it. The walk's
         # surfaces are merged in by plan/manifest.py, not hand-copied here.
@@ -533,13 +505,11 @@ SITE = Site(
         # solution — which is why the answer here is paving rather than a swale concept the
         # model has no word for.
         #
-        # The strategy already existed at the east end and simply stopped 13'-6" short: the
-        # drained paver landing above runs x 17'-6"..30' on the same y band and carries the
-        # passage's water east into the open approach. This piece is the rest of it, from
-        # x 4'-0" (2' outboard of the screen line, where the passage daylights into the west
-        # yard) east to the stair foot at x 17'-6", where the landing takes over. Same y
-        # band, same construction, one continuous surface in the field; two records only
-        # because an ImperviousSurface is a rectangle and the landing carries its own note.
+        # The strategy already existed at the east end: walk leg C (params/landscape_walk.py)
+        # runs x 15'-7"..30' on the same y band and carries the passage's water east into the
+        # open approach. This piece is the rest of it, from x 4'-0" (2' outboard of the screen
+        # line, where the passage daylights into the west yard) east to the stair foot at
+        # x 15'-7", where the walk takes over.
         #
         # 81.6 sf. **It does not touch the driveway/parking cap**: Ord. 23-43 bounds
         # `_PAVING_KINDS = ("driveway", "pad")` and this is a walk. Paving stands at 478 sf
@@ -554,11 +524,11 @@ SITE = Site(
         # from. See `_foundation_enclosures` for why that is the rule and not a dodge.
         ImperviousSurface(
             label="house-to-garage passage floor",
-            # East edge follows the paver landing's west edge above (the stair foot).
+            # East edge is the stair foot, where walk leg C begins.
             outline=(pt(ft(4), ft(36, 10.25)), pt(ft(15, 7), ft(36, 10.25)),
                      pt(ft(15, 7), ft(42, 10.75)), pt(ft(4), ft(42, 10.75))),
             near_elevation=ft(-2, -10),
-            far_elevation=ft(-3),  # 2.8% away from the house, draining east to the landing
+            far_elevation=ft(-3),  # 2.8% away from the house, draining east to walk C
             kind="walk",
         ),
         # SL-M-HP1PAD, the north-face pad under EQ-M-HP1-OD (params/hp1_north_pad.py),

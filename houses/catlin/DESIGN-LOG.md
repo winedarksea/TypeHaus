@@ -1147,6 +1147,12 @@ lifted, `mep.run_interference` and `mep.run_through_stud` report nothing new. Th
 `mep.erv_static_budget` worst path moved to the supply side through PLAY (0.344" vs the
 old extract 0.338"), still delivering 207 cfm.
 
+On 2026-09-23 `REG-B-SUP2` moved again, 5' south to (19', 20'), since the duct now arrives
+from the south: it turns east at y=20' through `W-B-CN2` (the sleeve followed, tag kept), 5' less
+hall duct. The register sits over the walk between the south bookcases and the sectional. Supply
+static 0.342" -> 0.338", still governing by 0.0006"; PLAY is no longer the worst
+`mep.run_route_efficiency` ratio (2.48 -> the coldstore stub's 2.41).
+
 ### The ERV hoods went to the north wall, and the chase was the wrong question (2026-09-15)
 
 `DU-ERV-OA` had been stuck at 6" for weeks. `notes/erv_static_budget.md` §7 priced the 8"

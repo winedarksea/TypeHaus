@@ -114,12 +114,19 @@ GARAGE_FLOOR = FloorSystem(
 STAIR_Y0_FT = HOUSE_CLADDING_Y_FT + 3 / 12
 STAIR_Y1_FT = GARAGE_CLADDING_Y_FT - 3 / 12
 STAIR_WIDTH_FT = STAIR_Y1_FT - STAIR_Y0_FT
-# The going is 18", down from 24". Five 6.8" risers are unchanged, so the run drops from
+# The going is 18", down from 24". Five risers were unchanged, so the run drops from
 # 8'-0" to 6'-0" and the stair foot moved west from x=19'-6" to x=17'-6" (2026-09-10), then
 # to x=15'-7" when the landing's east edge came in to the door jamb (2026-09-11). 2R + T is 31.6",
 # still outside the 24"-25" comfort rule -- which is inherent to a tiered terrace and is not
-# a code limit. If it reads wrong on site the lever is the going, and the paver landing in
-# plan/site.py follows it again.
+# a code limit. If it reads wrong on site the lever is the going; SL-WK-C's west edge
+# derives from the foot and follows it.
+#
+# ** IT SPRINGS FROM THE ENTRY WALK, 1" OVER GRADE (2026-09-23). ** SL-WK-C runs under the
+# canopy to the foot, poured at its high edge, -2'-9" (`params/landscape_walk.TOP`, which
+# imports this module, so the value is restated here and a test pins the two). Five risers
+# of 6.8" off the -2'-10" grade became five of 6.6" off the walk; left at grade, the first
+# riser off the concrete would have been 5.8", 1" outside R311.7.5.1's 3/8".
+STAIR_BASE_FT = SITE_GRADE.feet + 1 / 12
 TREAD_DEPTH_FT = 1.5
 TREAD_COUNT = 4
 STAIR_FOOT_X_FT = LANDING_EAST_FT + TREAD_COUNT * TREAD_DEPTH_FT
@@ -158,16 +165,16 @@ TREAD_SUPPORT_SPACING_IN = 9.0
 # ** THE ONE JOINT TO WATCH IS AT THE TOP, NOT THE BOTTOM. ** The fourth tier meets a deck
 # landing that stands on piers to -9'-9 7/16" and will not move; the tiers will. Riser
 # uniformity has 3/8" of tolerance (R311.7.5.1) and that joint is where it is spent. At the
-# bottom the pavers are a flexible field and no riser depends on them.
+# bottom the walk is on grade beside tier 1, across a 1/2" isolation joint, and moves with it.
 TIERS = Stair(
     uid="BWST01AAAA", tag="ST-BW-ENTRY", from_storey="main", to_storey="main",
-    base_elevation=SITE_GRADE, top_elevation=ft(DECK_FINISH_FT),
+    base_elevation=ft(STAIR_BASE_FT), top_elevation=ft(DECK_FINISH_FT),
     width=ft(STAIR_WIDTH_FT), start=pt(ft(STAIR_FOOT_X_FT), ft(STAIR_Y0_FT)),
     run_direction="x", run_reversed=True, tread_depth=ft(TREAD_DEPTH_FT),
     nosing_depth=inch(0), material="concrete", carriage="cast",
 )
 
-TIER_RISE_IN = 34.0 / 5.0   # five equal risers from SITE_GRADE to the deck; 6.8" each
+TIER_RISE_IN = (DECK_FINISH_FT - STAIR_BASE_FT) * 12 / 5   # five equal risers; 6.6" each
 # Wedding-caked, so every tier but the lowest is fully bedded on the one under it and
 # nothing spans: tier i runs from the LANDING edge east to the front of its own tread, and
 # only the strip past the tier above it is walked on. The flight runs west (run_reversed),
@@ -177,7 +184,7 @@ TIER_SLABS = [
          outline=rectangle(LANDING_EAST_FT, STAIR_Y0_FT,
                            STAIR_FOOT_X_FT - _i * TREAD_DEPTH_FT, STAIR_Y1_FT),
          thickness=inch(TIER_RISE_IN),
-         top_elevation=ft(SITE_GRADE.feet + (_i + 1) * TIER_RISE_IN / 12),
+         top_elevation=ft(STAIR_BASE_FT + (_i + 1) * TIER_RISE_IN / 12),
          assembly="ENTRY_STEP_TIER")
     for _i in range(TREAD_COUNT)
 ]
@@ -222,7 +229,7 @@ RAILINGS = [
             path=(pt(ft(STAIR_FOOT_X_FT), ft(STAIR_Y1_FT)),
                   pt(ft(LANDING_EAST_FT), ft(STAIR_Y1_FT))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
-            base_elevation=SITE_GRADE, post_spacing=inch(36), post_size="2x2",
+            base_elevation=ft(STAIR_BASE_FT), post_spacing=inch(36), post_size="2x2",
             rail_count=1, mount="surface", assembly="RAILING_DARK_METAL",
             role="guard_and_handrail", serves_stair="ST-BW-ENTRY", top_height=inch(36),
             graspable_profile="1.5in round — Type I", infill="balusters",
@@ -237,7 +244,7 @@ NOTES = [
                text="LANDING: ONE tier of beams. Two seat beams east-west on the piers at -0ft 8-1/4in; 2x8 joists @12in o.c. run NORTH-SOUTH straight on them, cantilevering 9-1/2in south and 7-1/4in north. BM-BW-FC/FE run north-south in the SAME plane (not a second tier) and exist only to reach the interior landing under D-G-SERVICE's sill, 3-3/4in over the continuous ICF stem; they are posted at their tips on PT-BW-IC and PT-BW-IE, 4x4 KDAT 25-3/4in tall on ABU44 standoff bases bearing on SL-G-FLOOR as cast: NO anchor bolt and NO slab thickening (~405 lb per post, about 5 psi on the 40 psi under-slab XPS; the bolt was what wanted the thickening). The bases claim no uplift and no lateral (north_entry_structure.md). The interior landing's west edge is closed by W-G-W; ST-G-SERVICE's handrail is wall-mounted on 2x blocking (BK-G-W-RAIL-*). No bearing on the house and none on the garage. TWO PIER DEPTHS ON PURPOSE: the three HOUSE-side piers (PT-BW-W/E/RE) bottom at -9ft 9-7/16in and must be cast WITH the basement excavation while it is open — casting them after backfill undermines the house footing, and the depth costs shaft only because the hole is already there. The three GARAGE-side piers (PT-BW-GW/GE/RNE) bottom at -7ft 0in, coplanar with the garage strip footings, and are cast with the garage foundation in the same pour. PT-BW-RE and PT-BW-RNE carry on ABOVE the bearing plane as full-height columns — one continuous pour each, footing to header soffit, no cold joint at the deck. Hold deck boards 1/2in off the house cladding and let the gap drain"),
 
     Annotation(uid="BWAN02AAAA", tag="AN-BW-TIERS", position=pt(ft(16), ft(39)),
-               text="TERRACE: 5 equal 6.8in rises; four CAST tiers (SL-BW-TIER1..4), 18in going, wedding-caked so each is fully bedded on the one below, on a compacted washed-rock base — NOT frost-founded, and that is a decision: a monolithic pour moves as one piece and the joint that matters is at the TOP, against a deck landing on piers that will not move (R311.7.5.1 allows 3/8in of riser variation and that joint is where it is spent). EXPOSED_MIX (ACI 318-19 F3+C2), broom finish, 1/4in per foot of cross-fall to the east. No wood, no stringers, no piers — the eight drilled piers this replaced stood east of the flight under open ground"),
+               text="TERRACE: 5 equal 6.6in rises off the SL-WK-C entry walk; four CAST tiers (SL-BW-TIER1..4), 18in going, wedding-caked so each is fully bedded on the one below, on a compacted washed-rock base — NOT frost-founded, and that is a decision: a monolithic pour moves as one piece and the joint that matters is at the TOP, against a deck landing on piers that will not move (R311.7.5.1 allows 3/8in of riser variation and that joint is where it is spent). EXPOSED_MIX (ACI 318-19 F3+C2), broom finish, 1/4in per foot of cross-fall to the east. No wood, no stringers, no piers — the eight drilled piers this replaced stood east of the flight under open ground"),
     Annotation(uid="BWAN04AAAA", tag="AN-BW-KDAT", position=pt(ft(9), ft(41)),
                text="ALL KDAT: 304 stainless fasteners (IRC R317.3.1); butyl joist tape over every beam/rim top; field-treat every cut end, notch and hole with 2% copper naphthenate per AWPA M4 (IRC R317.1.1 — required, not advisory); finish with a PIGMENTED penetrating oil on installation, recoat 2-3yr horizontal. NO silicate/'liquid glass' — it is a masonry densifier, leaches from wood and adds no UV protection. W-BW-SCREEN is KDAT 2x4 framing, CDX and corrugated on the WEST face and one 5/8in APA Rated Siding 303 MDO panel on the sheltered EAST face; every cut end inside that panel gets the same M4 treatment before it is closed up, because nothing reaches it afterwards. The east ply is a FINISH face: prime all six edges and both faces before hanging, then two coats of exterior acrylic. W-BW-SCREEN-SKIRT carries the west corrugated down over the sill, the seat beams and the two column standoff bases, stopping 1in ABOVE the pier tops — do not seal that edge to the concrete, it is how the flutes drain and the column bases dry"),
 ]

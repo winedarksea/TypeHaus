@@ -88,7 +88,7 @@ def test_a_duct_through_concrete_is_walked_and_sleeved(catlin_model):
 
     rows = [(c["host"], c["system"], c["sleeve"]) for c in concrete_crossings(catlin_model)
             if c["run"] == "DU-B-ERV-R-PLAY"]
-    assert rows == [("W-B-CN", "supply_air", "SP-B-CN-ERV-PLAY")]
+    assert rows == [("W-B-CN2", "supply_air", "SP-B-CN-ERV-PLAY")]
 
 
 def test_sleeve_coverage_and_alignment_are_clean(code_report):

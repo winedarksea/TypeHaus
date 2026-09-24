@@ -1756,8 +1756,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **`LANDING_EAST_FT = SERVICE_RO_EAST_FT` (9'-7") had to move in the SAME commit as the
     door**, not the separate one the plan asked for: `FS-BW-FLOOR`'s 12" o.c. joist grid puts
     a joist at 9'-3 3/4", inside the new east carrier, until the field's east edge follows the
-    deck edge in. Seat beams span 3'-7"; `STAIR_FOOT_X_FT` is 15'-7" and `plan/site.py`'s two
-    paver literals followed it by hand.
+    deck edge in. Seat beams span 3'-7"; `STAIR_FOOT_X_FT` is 15'-7", and walk leg C's
+    west edge derives from it.
   - **`ED-M-ENTRY-LT`/`-SW` exist because the narrowing exposed a false PASS**:
     `code.R303_8_exterior_stairway_illumination` had been satisfied for `ST-BW-ENTRY` by
     `ED-M-PANTRY-LT` — a wall light INSIDE the pantry, 3'-10" from the tiers in plan through a
@@ -2584,7 +2584,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   pocket changes). Both east leaders' risers pass through the walk (D and A) to their extensions — a cast-in
   sleeve each, which no element models. Slabs are FLAT at -2'-9"; the
   fall is on the `walk *` impervious surfaces, merged into the site by `plan/manifest.py`
-  — never hand-copy them into `plan/site.py`. Leg C is notched round `PT-BW-RNE`.
+  — never hand-copy them into `plan/site.py`. Leg C runs under the canopy to
+  `ST-BW-ENTRY`'s foot (the pavers are retired), notched round `PT-BW-RE`/`-RNE`, and the
+  flight springs from its -2'-9" top: 6.6" risers, not 6.8".
   `notes/sidewalk_layout.md`.
 - **Driveway `SL-DW-DRIVE`** (`params/driveway.py`, 2026-09-23): `DRIVEWAY_FRC_CLASS5`, 4"
   fibre-only concrete on 8" Class 5, no foam. 16' at the door (x 10'..26'), a 45° flare to the
@@ -2600,8 +2602,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Bluestem grid `PB-S-GRID`** south of `W-RG-BLOCK`, 1' inside the W/E/rear lot lines: 380 cells at 15", 44 accents on the
   `(i + 3j) mod 9` lattice. The basin reuses the same grid code for its slope and floor
   beds. `notes/grid_garden.md`.
-- **Espaliers**: three dwarf apples in `plan/landscape.py` (editable) on `TRL-W-S`/`-N` at
-  x=-5', split round the power service at y=18'. `site.utility_clearance` grades every post,
+- **Espaliers**: four dwarf apples in `plan/landscape.py` (editable), two on each of
+  `TRL-W-S`/`-N` (13' runs) at x=-5', mirrored round the power service at y=18'. `site.utility_clearance` grades every post,
   tree hole and basin against the 24" locate tolerance. The silt fence's west leg moved to
   x=-6' to clear the trellis line. `notes/espalier_trellis.md`.
 

@@ -143,7 +143,9 @@ which is where two independently founded structures actually meet (§5).
 ## 2. The landing
 
 `FS-BW-FLOOR` retains uid `BWFS01AAAA`. Finished surface 0" at both thresholds; framing one
-inch lower for the composite. Five exterior rises from −34" are exactly 6.8".
+inch lower for the composite. Five exterior rises from the entry walk `SL-WK-C` at −33" are
+exactly 6.6" (6.8" off the −34" grade until 2026-09-23, when the walk replaced the pavers at
+the foot).
 
 **The landing touches nothing on the house.** Grep `params/breezeway.py` for `W-B-` and
 expect nothing but comments. Its house-side bearing is two cast piers on the pier line at
@@ -225,7 +227,7 @@ guard (`RL-BW-GARAGE-W` is deleted) and `RL-G-SERVICE` is a wall-mounted handrai
 
 ## 3. The tiers — four cast pours on a compacted base
 
-`SL-BW-TIER1..4`, 18" going, one riser (6.8") thick each, **wedding-caked**: tier *i* runs
+`SL-BW-TIER1..4`, 18" going, one riser (6.6") thick each, **wedding-caked**: tier *i* runs
 from the landing edge east to the front of its own tread, so every tier above the first is
 fully bedded on the one below it and nothing here spans. EXPOSED_MIX (ACI 318-19 F3 + C2),
 broom finish, 1/4" per foot of cross-fall east. `ST-BW-ENTRY` carries the flight's *code*
@@ -250,8 +252,8 @@ because nothing grades whether a pier is under the thing it names.
 > 1303.1600 puts Zone II at 42"; these bear about 6" down on compacted washed rock. The
 > tiers will move with the ground. A monolithic pour moves **as one piece**, so what a
 > winter costs is the joints at the two ends, not the risers in between — and riser
-> uniformity has only 3/8" of tolerance (R311.7.5.1). At the bottom the pavers are a
-> flexible field and nothing depends on them. **The joint that matters is at the TOP**,
+> uniformity has only 3/8" of tolerance (R311.7.5.1). At the bottom the walk is on grade
+> beside tier 1, across a 1/2" joint, and moves with it. **The joint that matters is at the TOP**,
 > where the fourth tier meets a deck landing standing on piers that will not move. Draw it,
 > and expect to shim or re-pour that one riser once.
 >

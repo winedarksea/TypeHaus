@@ -2183,14 +2183,14 @@ GARAGE_STEP_6 = Assembly(
 # 1303.1600 puts Zone II at 42", and these bear about 6" down. The tiers will move with the
 # ground; a monolithic pour moves as one piece, so what a winter costs is the joint at the
 # TOP -- between the fourth tier and the deck landing, which is on piers and will not move --
-# and the joint at the bottom to the paver field, which is flexible. Riser uniformity
+# and the joint at the bottom to the SL-WK-C walk, which is on grade beside it. Riser uniformity
 # (R311.7.5.1, 3/8") is the thing to watch at the top joint. A framed tier on the same base
 # would have been worse: it settles into a cantilever off BM-BW-FE, which nothing in that
 # assembly can do.
 ENTRY_STEP_TIER = Assembly(
     tag="ENTRY_STEP_TIER",
     layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(6.8),
+        Layer(name="concrete", material_ref="concrete", thickness=inch(6.6),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     source="north entry terrace: one cast tier, 6.8\" = one riser of the 34\" rise in five. Sky-exposed and salted, F3+C2 mix; bears on a compacted washed-rock base that is not modelled (notes/north_entry_structure.md Sec 3)",

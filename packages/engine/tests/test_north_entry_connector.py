@@ -31,11 +31,12 @@ def test_finished_boards_and_both_stairs_meet_both_sills(catlin_model_ro):
         assert floor.deck_z1_m == pytest.approx(0)
         assert floor.deck_z0_m == pytest.approx(-inch(1).meters)
         assert all(m.z1_m == pytest.approx(-inch(1).meters) for m in floor.members)
-    for tag in ("ST-BW-ENTRY", "ST-G-SERVICE"):
+    # The garage flight rises 34" off the slab; the entry flight 33" off SL-WK-C, 1" over grade.
+    for tag, rise_in in (("ST-BW-ENTRY", 33), ("ST-G-SERVICE", 34)):
         stair = next(s for s in model.stairs if s.tag == tag)
         assert stair.arrival_elevation_m == pytest.approx(0)
         assert stair.riser_count == 5
-        assert stair.riser_height_m == pytest.approx(inch(34).meters / 5)
+        assert stair.riser_height_m == pytest.approx(inch(rise_in).meters / 5)
     for tag in ("D-M-ENTRY", "D-G-SERVICE"):
         door = next(o for o in model.openings if o.tag == tag)
         wall = next(w for w in model.walls if w.tag == door.host_wall)
@@ -118,7 +119,7 @@ def test_tiers_are_cast_pours_at_an_18in_going_over_a_clear_lower_landing(catlin
     # ending one going further east than the tier above it.
     tiers = [model.plan.by_tag(f"SL-BW-TIER{n}") for n in (1, 2, 3, 4)]
     assert all(t is not None for t in tiers)
-    assert {round(t.thickness.meters, 6) for t in tiers} == {round(inch(6.8).meters, 6)}
+    assert {round(t.thickness.meters, 6) for t in tiers} == {round(inch(6.6).meters, 6)}
     fronts = [max(p.x.meters for p in t.outline) for t in tiers]
     assert fronts == sorted(fronts, reverse=True), "the cake is not stepping west"
     for lower, upper in zip(fronts, fronts[1:], strict=False):
@@ -128,12 +129,14 @@ def test_tiers_are_cast_pours_at_an_18in_going_over_a_clear_lower_landing(catlin
     assert {round(min(p.x.meters for p in t.outline), 6) for t in tiers} == {
         round(ft(9, 7).meters, 6)}, "a tier that does not reach the landing is not bedded"
 
-    # No pier survives under the flight, and the paver landing still starts at its foot.
+    # No pier survives under the flight, and the entry walk starts at its foot, 1/2" off
+    # tier 1, at the very elevation the flight springs from.
     assert not [e for e in model.plan.all_elements()
                 if getattr(e, "tag", "").startswith("PT-BW-T")]
-    landing = next(s for s in model.plan.project.site.impervious_surfaces if "paver landing" in s.label)
-    assert min(p.x.meters for p in landing.outline) == pytest.approx(ft(15, 7).meters)
-    assert max(p.x.meters for p in landing.outline) >= ft(20, 7).meters
+    walk = model.plan.by_tag("SL-WK-C")
+    assert min(p.x.meters for p in walk.outline) == pytest.approx(ft(15, 7.5).meters)
+    assert max(p.x.meters for p in walk.outline) >= ft(20, 7).meters
+    assert walk.top_elevation.meters == pytest.approx(stair.base_elevation_m)
 
 
 def test_the_single_garage_slab_cannot_become_a_basement_ceiling(catlin_plan):

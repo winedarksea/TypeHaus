@@ -14,8 +14,9 @@
 > leg, carries the walk from D to the porch flight. The fall is on the impervious surfaces only. Two joints are therefore
 > not flush in the field and are set by the finisher: walk A's west edge stands 1 3/4" over
 > the driveway at the flare, falling to 1" at its north end (on the two impervious falls;
-> 2" in the flat model), a curb at the drive's edge that is ACCEPTED (§2a), and walk C meets the paver approach's -3'-0 1/2" east edge about 3" high.
-> Grade both by hand at the pour; neither is modelled.
+> 2" in the flat model), a curb at the drive's edge that is ACCEPTED (§2a). Grade it by hand
+> at the pour; it is not modelled. Walk C's high edge is the foot of `ST-BW-ENTRY`, which
+> springs from -2'-9" for exactly that reason (§2b).
 
 ---
 
@@ -26,7 +27,7 @@ One-sided: 36 walk | 16 pocket | 12 band = 64", walk against the building (legs 
 the house to lot line is 6'-4", so 92" does not fit east of the house anywhere, nor south of
 it, where the court and the porch stair own the ground; and east of the garage the strip
 beyond 64" is RG-E-BASIN's, the west basin's mirror (2026-09-23; B was 92" until then). C is
-walk only.
+walk only, and full passage width under the canopy (§2b).
 
 Pockets are 16" sonotube voids, drawn as 16-gons (1.3605 sf each), centred 20" in from
 each edge (44" off the house on D). Along the run they are 4'-0" o.c., **centred in the
@@ -40,13 +41,32 @@ joints fall on the same stations.
 |---|---|---|---|---|
 | A garage north | x 24.04..35.45 × y 67.33..75.00, less the 2.0 sf flare notch (§2a) | 11.40 × 7.67 = 87.4 − 2.0 = 85.4 | 4 | 80.0 |
 | B garage east | x 30.11..35.45 × y 43.02..67.33 | 5.33 × 24.31 = 129.7 | 6 | 121.5 |
-| C landing connector | x 30.04..42.04 × y 39.60..43.02, less the 0.50 × 1.08 notch at PT-BW-RNE | 41.04 − 0.54 = 40.5 | 0 | 40.5 |
+| C entry walk | three rectangles, §2b | 83.58 + 4.22 + 44.76 = 132.6 | 0 | 132.6 |
 | D house east | x 36.70..42.04 × y −9.00..39.60 | 5.33 × 48.60 = 259.2 | 9 | 247.0 |
-| **total** | | **514.8** | **19** | **488.9** |
+| **total** | | **606.9** | **18** | **582.4** |
 
-Concrete at 4": 488.9 / 3 / 27 = **6.04 cy**. Class 5 at 6" bills by the net slab area,
-**488.9 sf**. Impervious area counts the GROSS 514.8 sf — the pockets are not subtracted,
-which is conservative for the coverage table.
+18 pockets at 1.3605 sf = 24.5 sf. Concrete at 4": 582.4 / 3 / 27 = **7.19 cy**. Class 5 at
+6" bills by the net slab area, **582.4 sf**. Impervious area counts the GROSS 606.9 sf — the
+pockets are not subtracted, which is conservative for the coverage table.
+
+### 2b. Leg C under the canopy (2026-09-23)
+
+C replaced the drained paver landing. Under the canopy it is the passage's full width, 3" off
+both claddings (y 36.854..42.896, the flight's own width), from `SL-BW-TIER1`'s east face at
+x = 15.583 plus the 1/2" joint. The canopy's east columns `PT-BW-RE` (y 37.0..38.0) and
+`PT-BW-RNE` (y 41.98..42.98), both 12" round on x = 30.0, force the neck: 1/2" off each.
+
+- canopy: x 15.625..29.458 × y 36.854..42.896 = 13.833 × 6.042 = **83.58**
+- neck between the columns: x 29.458..30.542 × y 38.042..41.938 = 1.083 × 3.896 = **4.22**
+- east: x 30.542..42.035 × y 39.600..43.022 = 11.493 × 3.422 = 39.33, plus the widening
+  south to the HP1 pad, x 30.542..32.521 × y 36.854..39.600 = 1.979 × 2.746 = 5.43 → **44.76**
+
+The widening wraps `PT-BW-RE` on three sides and stops 3" short of `SL-M-HP1PAD`'s west edge,
+the same gravel drip strip the pad keeps on its north edge.
+
+The flight springs from the walk. Slabs are flat at -2'-9", so `ST-BW-ENTRY` starts there:
+five risers of 33/5 = **6.6"**, not 6.8" off the -2'-10" grade. At grade, the first riser off
+the walk would be 5.8", 1" out against R311.7.5.1's 3/8".
 
 ### 2a. Leg A against the driveway (2026-09-23)
 
@@ -111,7 +131,7 @@ kept every surviving pocket's species.
 |---|---|---|---|
 | walk A | −33" → −36" | 10.9' | 2.3% |
 | walk B | −33" → −36" | outside the 10' band | — |
-| walk C | −33" → −36" | 12.0' | 2.1% |
+| walk C | −33" → −36.5" | 12.2' (off the garage) | 2.4% |
 | walk D | −33" → −35" | 7.2' | 2.3% |
 
 ## 5. What is NOT graded here

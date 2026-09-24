@@ -221,8 +221,9 @@ def _segment_concrete_hit(a, b, za, zb, footprint, hz0, hz1, LineString, Point):
         if line.intersects(footprint):
             inter = line.intersection(footprint)
             # Grazing a face is not a crossing: a run laid tight against a wall touches
-            # its boundary with (near-)zero embedded length and casts no sleeve.
-            if getattr(inter, "length", 0.0) < 0.02:
+            # its boundary with (near-)zero embedded length and casts no sleeve. Measured
+            # against the INTERIOR, or a run lying along the face reads as embedded.
+            if line.intersection(footprint.buffer(-1e-6)).length < 0.02:
                 return None
             c = inter.centroid
             if not c.is_empty:

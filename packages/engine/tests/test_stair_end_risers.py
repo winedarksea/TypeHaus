@@ -160,7 +160,14 @@ def test_surfaces_are_found_across_storey_filing(catlin_model):
 
 
 def test_hardscape_counts_as_a_surface_a_flight_foots_on(catlin_model):
-    """ST-BW-ENTRY springs from a paver field, which is no deck and no slab."""
+    """An ImperviousSurface is a surface; the entry flight's foot picks SL-WK-C over it.
+
+    ST-BW-ENTRY sprang from a paver field until 2026-09-23. The walk now runs to its foot,
+    1" over the passage floor's grade, and the flight springs from the walk.
+    """
+    found = {surface.deck_tag: surface.deck_top_m
+             for surface in surfaces_at(catlin_model, (12.0 * _FT, 39.0 * _FT))}
+    assert found["'house-to-garage passage floor'"] == pytest.approx(inch(-34).meters)
     finding = _by_tag(stair_end_risers(check_context(model=catlin_model)), "ST-BW-ENTRY")
     assert finding.result is Result.PASS
-    assert "passage floor" in finding.message
+    assert "off SL-WK-C" in finding.message

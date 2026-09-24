@@ -77,12 +77,12 @@ def test_the_play_rooms_fresh_supply_survives_and_moved(catlin_plan) -> None:
     is 324 sf of windowless MEDIA space legal only under R303.1 Exception 1, whose second
     half requires a fresh-air supply *to that room*. It was re-sited, not dropped — the play
     room's whole ceiling is SL-M-DECK's solid concrete, so every foot of that run is
-    surface-mounted and the west edge is eight feet cheaper than (27', 27'). y=25' since
-    2026-09-22, a foot south, so its duct reaches W-B-CN without crossing ST-B2M."""
+    surface-mounted and the west edge is eight feet cheaper than (27', 27'). y=20' since
+    2026-09-23 (was 25'): its duct arrives from the south up the hall, so it turns east early."""
     reg = next(e for e in catlin_plan.all_elements() if e.tag == "REG-B-SUP2")
     x, y = reg.position.xy_m
     assert x / _FT == pytest.approx(19.0, abs=0.01)
-    assert y / _FT == pytest.approx(25.0, abs=0.01)
+    assert y / _FT == pytest.approx(20.0, abs=0.01)
     assert reg.duct_ref == "DU-B-ERV-R-PLAY"
 
 

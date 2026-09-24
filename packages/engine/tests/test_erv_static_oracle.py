@@ -240,9 +240,12 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
 
     ** 2026-09-23: 0.3417. ** The chase risers moved 2 3/4" north: ``DU-ERV-RISER-SUP``
     0.1356 and ``DU-S-ERV-HP-FEED`` 0.0634 (note §5's table). Still 207.2 cfm.
+
+    ** 2026-09-23 later: 0.3383. ** ``REG-B-SUP2`` moved 5' south and ``DU-B-ERV-R-PLAY``
+    lost 5' of hall leg, 0.0347 -> 0.0313 (§3). Supply still governs, by 0.0006. 207.2 cfm.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "0.342 in. w.g." in message
+    assert "0.338 in. w.g." in message
     assert "delivering 207 cfm" in message
 
 

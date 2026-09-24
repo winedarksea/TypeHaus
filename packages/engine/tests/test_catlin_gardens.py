@@ -70,11 +70,11 @@ def test_sidewalk_quantities(catlin_model_ro) -> None:
     bom = bill_of_materials(catlin_model_ro)
     walk = next(r for r in bom["structural_solids"] if r.get("assembly") == "SIDEWALK_FRC_CLASS5")
     assert walk["count"] == 4
-    assert walk["plan_area_sqft"] == pytest.approx(490.3, abs=0.2)
-    assert walk["volume_cubic_yards"] == pytest.approx(6.05, abs=0.01)
+    assert walk["plan_area_sqft"] == pytest.approx(582.3, abs=0.2)
+    assert walk["volume_cubic_yards"] == pytest.approx(7.19, abs=0.01)
     base = next(r for r in bom["envelope_layers"]
                 if r["material"] == "mndot-class-5-base" and r["thickness_in"] == 6.0)
-    assert base["net_area_sqft"] == pytest.approx(490.3, abs=0.2)
+    assert base["net_area_sqft"] == pytest.approx(582.3, abs=0.2)
     pockets = Counter(e.tag.split("-")[2][0] for e in catlin_model_ro.plan.all_elements()
                       if e.tag.startswith("FO-WK-"))
     assert pockets == {"A": 3, "B": 6, "D": 9}   # FO-WK-A01 struck at the leader
@@ -181,6 +181,7 @@ def test_planting_counts(catlin_model_ro) -> None:
         "PT-PAN-NORTHWIND": 20, "PT-IRI-VERS": 6, "PT-ASC-INCA": 4,
         "PT-CAL-NEPETA": 4, "PT-ALL-MILLENIUM": 5, "PT-SPO-TARA": 5, "PT-SAL-PURP": 4,
         "PT-MAL-HONEYCRISP": 1, "PT-MAL-ZESTAR": 1, "PT-MAL-HARALSON": 1,
-        "trellis-post:4x4:kdat": 5, "trellis-wire:12.5 ga high-tensile galvanized": 76.0,
+        "PT-MAL-SNOWSWEET": 1,
+        "trellis-post:4x4:kdat": 6, "trellis-wire:12.5 ga high-tensile galvanized": 104.0,
     }
-    assert len(catlin_model_ro.plants) == 563
+    assert len(catlin_model_ro.plants) == 564

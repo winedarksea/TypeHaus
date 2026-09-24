@@ -258,14 +258,14 @@ DUCTS_ERV_BASEMENT = [
     # soffit it jogs south over PR-B-BATH-VENT at x=12'-3" (east of LSINK's riser; the vent
     # dropped 1 1/2" for it), and leaves through W-B-BA-E at y=18'-6 3/4" — the one gap in that
     # staggered wall south of the bath's three risers (y 19'-3"..19'-10") wide enough for a
-    # 4" duct. Then north up the hall at x=16'-9" and east through W-B-CN at y=25'-0", a foot
-    # south of the stair's first riser, into REG-B-SUP2 on its last leg (the room's ceiling
-    # is SL-M-DECK's solid concrete; see the register).
+    # 4" duct. Then 1'-5" north up the hall at x=16'-9" and east through W-B-CN2 at y=20'-0"
+    # into REG-B-SUP2 on its last leg (the room's ceiling is SL-M-DECK's solid concrete; see
+    # the register). It turned east at y=25'-0" until 2026-09-23; 5' less hall duct.
     DuctRun(uid="DMEQ946YAX", tag="DU-B-ERV-R-PLAY", system=DuctSystem.SUPPLY,
             path=(pt(ft(8), ft(30, 6)), pt(ft(9, 6), ft(30, 6)), pt(ft(9, 6), ft(30, 6)),
                   pt(ft(9, 6), ft(19, 7.25)), pt(ft(9, 6), ft(19, 7.25)),
                   pt(ft(12, 3), ft(19, 7.25)), pt(ft(12, 3), ft(18, 6.75)),
-                  pt(ft(16, 9), ft(18, 6.75)), pt(ft(16, 9), ft(25)), pt(ft(19), ft(25))),
+                  pt(ft(16, 9), ft(18, 6.75)), pt(ft(16, 9), ft(20)), pt(ft(19), ft(20))),
             elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(91.25), inch(91.25),
                         inch(91.25), inch(91.25), inch(91.25), inch(91.25)),
             diameter=inch(4), routing=DuctRouting.SOFFIT, soffit_ref="SF-B-BATH",

@@ -156,10 +156,10 @@ WALL_SLEEVES = [
     # route to that register crosses this pour (preferences.toml, D3), so the hole is cast.
     # A 4" galvanized duct in a 6" sleeve: 1" annulus all round for the foam/sealant air
     # seal. Centred on the duct at 7'-7 1/4" over the basement datum (-1'-6 3/16" project).
-    # At y=25'-0" since 2026-09-22 (was 26'-0", on ST-B2M's first riser): a pre-pour item,
-    # so it moves on the drawings before the forms go up.
-    SleevePenetration(uid="72XHRECGF2", tag="SP-B-CN-ERV-PLAY", host_ref="W-B-CN",
-                      position=pt(ft(18), ft(25)), pipe_diameter=inch(4),
+    # In W-B-CN2 at y=20'-0" since 2026-09-23 (was W-B-CN at 25'-0", and 26'-0" before that);
+    # the tag is kept. A pre-pour item, so it moves on the drawings before the forms go up.
+    SleevePenetration(uid="72XHRECGF2", tag="SP-B-CN-ERV-PLAY", host_ref="W-B-CN2",
+                      position=pt(ft(18), ft(20)), pipe_diameter=inch(4),
                       sleeve_diameter=inch(6), axis="horizontal",
                       purpose=Service.SUPPLY_AIR, center_elevation=inch(-18.1875)),
 ]

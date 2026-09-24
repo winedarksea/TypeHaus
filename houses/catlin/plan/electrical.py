@@ -1200,8 +1200,8 @@ CONDUIT_TRUNKS = [
                      pt(ft(9, 6.625), ft(19, 11)), pt(ft(13, 3.5), ft(19, 11)),
                      pt(ft(13, 3.5), ft(18, 11.75)), pt(ft(16, 5.5), ft(18, 11.75)),
                      pt(ft(16, 5.5), ft(25, 6)), pt(ft(19, 9), ft(25, 6)),
-                     pt(ft(19, 9), ft(29)), pt(ft(35), ft(29)), pt(ft(35), ft(28, 11)),
-                     pt(ft(35), ft(28, 11))),
+                     pt(ft(19, 9), ft(29)), pt(ft(34, 11), ft(29)), pt(ft(34, 11), ft(28, 11)),
+                     pt(ft(34, 11), ft(28, 11))),
                # ** -1'-4", RAISED 2" ON 2026-09-09, AND THE OLD PROSE WAS THE TELL. ** This
                # block claimed 1 15/16" of clear under the deck board while the run was
                # authored at -1'-6", where the real gap is 3 9/16" and the raceway hangs 4.3"
@@ -1558,20 +1558,17 @@ CONDUIT_SLEEVES = [
                       position=pt(ft(16), ft(44, 3.375)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240),
     # CD-B-KITCHEN: east across the basement ceiling at -1' and up through SL-M-DECK to the
-    # kitchen's east counter wall. The wall and deck sleeves are 1/2" apart in plan but in
-    # different hosts, which is what the matcher keys on. W-B-STR3 (x=10', y=29') is framed
-    # now, so it has no sleeve here; its partner in W-B-CN stays, since that wall is still
-    # concrete.
+    # kitchen's east counter wall. W-B-STR3 (x=10', y=29') is framed now, so it has no
+    # sleeve here; its partner in W-B-CN stays, since that wall is still concrete.
+    # The riser is at 34'-11", 1" inside W-B-E2's concrete face (35'), so it crosses no wall.
+    # At 35' it lay on the face, and a wall sleeve was authored that bored 12" through the
+    # core to the membrane and served nothing.
     SleevePenetration(uid="CNS012AAAA", tag="SP-B-CN-CD-KITCH", host_ref="W-B-CN",
                       position=pt(ft(18), ft(25, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
                       axis="horizontal", center_elevation=ft(-1, -4.25)),
-    SleevePenetration(uid="CNS013AAAA", tag="SP-B-E2-CD-KITCH", host_ref="W-B-E2",
-                      position=pt(ft(35), ft(28, 11.5)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
-                      axis="horizontal", center_elevation=ft(-1, -6)),
     SleevePenetration(uid="CNS014AAAA", tag="SP-M-CD-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(35), ft(28, 11)), pipe_diameter=inch(0.75),
+                      position=pt(ft(34, 11), ft(28, 11)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120),
     # Host is W-B-S1 again since the sauna shrink undid the 2026-09-05 pour split: the leg's
     # x (9'-5 7/8") is in the one south segment. Same hole, same station.
