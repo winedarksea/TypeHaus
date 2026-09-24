@@ -226,6 +226,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # Foliage takes its PlantType's material colour; this is only the fallback.
     "plant": (0.42, 0.52, 0.30, 1.0),
     "trellis": (0.55, 0.47, 0.36, 1.0),            # KDAT post, weathered
+    "planting_soil": (0.24, 0.16, 0.10, 1.0),      # a bed's topsoil: rich dark brown
+    "planting_fill": (0.40, 0.31, 0.22, 1.0),      # the fill under it, a lighter earth
     "ridge_cap": (0.85, 0.86, 0.87, 1.0),  # vented standing-seam ridge cap
     "corner_trim": (0.85, 0.86, 0.87, 1.0),  # eave corner trim (continuous skin)
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing

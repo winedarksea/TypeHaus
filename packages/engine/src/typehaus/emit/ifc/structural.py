@@ -120,12 +120,16 @@ _SOLID_IFC_CLASS: dict[str, tuple[str, str | None]] = {
     "area_drain_riser": ("IfcPipeSegment", "RIGIDSEGMENT"),
     "rain_garden_media": ("IfcDistributionChamberElement", "USERDEFINED"),
     "rain_garden_stone": ("IfcDistributionChamberElement", "USERDEFINED"),
+    # a planting bed's own earth (resolve/landscape.py)
+    "planting_soil": ("IfcGeographicElement", "USERDEFINED"),
+    "planting_fill": ("IfcGeographicElement", "USERDEFINED"),
 }
 
 
 #: Where the IFC4 enum has no member for what the thing is, ``ObjectType`` carries the name.
 _SOLID_OBJECT_TYPE = {"drywell": "SOAKAWAY", "rain_garden_media": "BIORETENTION",
-                      "rain_garden_stone": "BIORETENTION"}
+                      "rain_garden_stone": "BIORETENTION", "planting_soil": "PLANTING_SOIL",
+                      "planting_fill": "TERRACE_FILL"}
 
 
 def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any,

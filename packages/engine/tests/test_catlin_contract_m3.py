@@ -1512,9 +1512,11 @@ def test_the_brick_reveals_are_concentric_with_the_openings_they_reveal(catlin_m
 
 def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     stem = [w for w in catlin_model.walls if w.tag.startswith("W-GF-")]
-    # 9, not 4. One split is a door gap, in a stem that carries one rather than running a
-    # continuous 22" band across it — the NORTH at the overhead door (W-GF-N2/W-GF-N-DR/
-    # W-GF-N): a car will not climb a 22" curb. The south split at W-GF-S1/W-GF-S-DR/W-GF-S2
+    # 8, not 4. One split is a door gap, in a stem that stops rather than running a
+    # continuous 22" band across it — the NORTH at the overhead door (W-GF-N2 | W-GF-N): a
+    # car will not climb a 22" curb. **IT WAS 9 UNTIL 2026-09-23**: the gap carried a grade
+    # beam, W-GF-N-DR, flush with the slab. Nothing bore on it — the header carries the roof
+    # to the piers — so it went, and SL-G-FLOOR runs out to the door line instead. The south split at W-GF-S1/W-GF-S-DR/W-GF-S2
     # WAS the service door's gap and is a second fossil since 2026-09-11: the door's sill has
     # been +1'-0" over the stem top since the north-entry landing, so nothing needed the stem
     # out of the way, and when the door moved into the SW corner (RO 6'-7"..9'-7") the two
@@ -1537,29 +1539,25 @@ def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     # ** W-GF-N2's TWIN IS NO LONGER A FOSSIL. ** Its shared node, once N-GF-N-BRICK, is
     # retagged N-GF-N-DRE in place: (20' off the west wall, GARAGE_Y_NORTH) turned out to be
     # exactly the rotated door's east jamb.
-    assert len(stem) == 9
+    assert len(stem) == 8
     assert {w.assembly for w in stem} == {"GARAGE_ICF_6"}
     ys = [p[1] for w in stem for p in w.axis]
     assert min(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT).meters)
     assert max(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT + GARAGE_SIZE_FT).meters)
-    # Stem runs 42" below grade to 22" above it — absolute elevations, walkout-style —
-    # except under the overhead door, where it becomes a grade beam topping out *flush with
-    # the slab* rather than at any reveal at all: a low curb across a 16' vehicle door is
-    # still a curb the car has to climb.
+    # Every stem runs 42" below grade to 22" above it — absolute elevations, walkout-style.
+    # Under the overhead door there is no stem at all: the slab runs out to the north node
+    # line between the two piers, flush with grade, so there is no curb to climb.
     #
     # Every one of those numbers is measured from **grade**, not from the project datum.
     # Reading them off ``site.grade`` is the assertion: the reveal, the bury and the slab
     # are properties of the ground, and the house datum is not the ground.
     grade_m = catlin_model.plan.project.site.grade.meters
-    grade_beams = {w.tag for w in stem if w.tag in ("W-GF-N-DR", "W-GF-S-DR")
-                   if w.z1_m < grade_m + inch(22.0).meters - 1e-6}
-    assert grade_beams == {"W-GF-N-DR"}, "W-GF-S-DR is full stem again; only the car's door gaps"
     slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
     assert slab.z1_m == pytest.approx(grade_m)
+    assert max(p[1] for p in slab.outline) == pytest.approx(max(ys))
     for wall in stem:
         assert wall.z0_m == pytest.approx(grade_m - inch(42.0).meters)
-        expected_top = slab.z1_m if wall.tag in grade_beams else grade_m + inch(22.0).meters
-        assert wall.z1_m == pytest.approx(expected_top)
+        assert wall.z1_m == pytest.approx(grade_m + inch(22.0).meters)
     # Garage roof: ridge N-S (PARALLEL to the house's since 2026-09-07 — it turned with the
     # overhead door), 16" overhangs. The footprint's x-extent is unchanged either way: the
     # garage is square and the overhang is uniform, so only the ridge assertion moves.
@@ -1611,9 +1609,9 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
     for cripple in cripples:
         assert cripple.z0_m == pytest.approx(backing.z1_m)
 
-    # And the sole plate stops at the jambs. The ICF stem is stepped down to a grade beam
-    # right here — N-GF-N-DRE/N-GF-N-DRW in params/foundations.py are the two stations where
-    # it drops — which is exactly why there is no floor for a plate to sit on.
+    # And the sole plate stops at the jambs. The ICF stem gaps right here —
+    # N-GF-N-DRE/N-GF-N-DRW in params/foundations.py are its two open ends — which is
+    # exactly why there is no floor for a plate to sit on.
     #
     # W-G-N runs EAST to WEST (N-G-NE -> N-G-NW), so the plates sort on descending x and the
     # first plate's far end is the door's EAST jamb. Sorting on -x rather than +y is the
@@ -1771,8 +1769,9 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
 
 def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
     """Wood members must follow studs rather than the exterior ZIP-R datum axis."""
-    # The NORTH side's stem splits into 3 segments at the overhead door (W-GF-N2/
-    # W-GF-N-DR/W-GF-N), so it no longer matches the (unsplit) wood wall 1:1 — group by
+    # The NORTH side's stem splits into 2 piers at the overhead door (W-GF-N2 | W-GF-N;
+    # the grade beam between them retired 2026-09-23), so it no longer matches the
+    # (unsplit) wood wall 1:1 — group by
     # side and check the wood wall's endpoints are among the group's stem corners instead.
     # (It was the EAST side until 2026-09-07; the grouping is by compass letter and does not
     # care which side carries the gap, which is why only this comment moved.)

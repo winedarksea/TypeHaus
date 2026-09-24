@@ -54,6 +54,8 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   area_drain_riser: "Area drain riser",
   plant: "Plant",
   trellis: "Trellis",
+  planting_soil: "Planting soil",
+  planting_fill: "Planting bed fill",
   downspout: "Downspout",
   sump: "Sump pit",
   thermal_break: "Thermal break",

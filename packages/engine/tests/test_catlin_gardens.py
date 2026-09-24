@@ -88,11 +88,11 @@ def test_driveway_quantities(catlin_model_ro) -> None:
     drive = next(r for r in bom["structural_solids"]
                  if r.get("assembly") == "DRIVEWAY_FRC_CLASS5")
     assert drive["tags"] == ["SL-DW-DRIVE"]
-    assert drive["plan_area_sqft"] == pytest.approx(210.07, abs=0.1)
-    assert drive["volume_cubic_yards"] == pytest.approx(2.59, abs=0.01)
+    assert drive["plan_area_sqft"] == pytest.approx(210.38, abs=0.1)
+    assert drive["volume_cubic_yards"] == pytest.approx(2.60, abs=0.01)
     base = next(r for r in bom["envelope_layers"]
                 if r["material"] == "mndot-class-5-base" and r["thickness_in"] == 8.0)
-    assert base["net_area_sqft"] == pytest.approx(210.1, abs=0.1)
+    assert base["net_area_sqft"] == pytest.approx(210.4, abs=0.1)
 
 
 def test_walk_a_clears_the_driveway_flare(catlin_plan) -> None:
@@ -103,7 +103,7 @@ def test_walk_a_clears_the_driveway_flare(catlin_plan) -> None:
     walk, drive = Polygon(landscape_walk.A_RING), Polygon(driveway.OUTLINE)
     assert walk.intersection(drive).area == 0.0
     assert walk.distance(drive) * 12 == pytest.approx(0.5, abs=1e-6)
-    assert Polygon(landscape_walk.A).area - walk.area == pytest.approx(2.02, abs=0.01)
+    assert Polygon(landscape_walk.A).area - walk.area == pytest.approx(1.98, abs=0.01)
 
 
 def test_every_pocket_is_on_the_grid(catlin_model_ro) -> None:
@@ -181,7 +181,36 @@ def test_planting_counts(catlin_model_ro) -> None:
         "PT-PAN-NORTHWIND": 20, "PT-IRI-VERS": 6, "PT-ASC-INCA": 4,
         "PT-CAL-NEPETA": 4, "PT-ALL-MILLENIUM": 5, "PT-SPO-TARA": 5, "PT-SAL-PURP": 4,
         "PT-MAL-HONEYCRISP": 1, "PT-MAL-ZESTAR": 1, "PT-MAL-HARALSON": 1,
-        "PT-MAL-SNOWSWEET": 1,
+        "PT-MAL-SNOWSWEET": 1, "PT-SOL-TOMATO": 18,
         "trellis-post:4x4:kdat": 6, "trellis-wire:12.5 ga high-tensile galvanized": 104.0,
     }
-    assert len(catlin_model_ro.plants) == 564
+    assert len(catlin_model_ro.plants) == 582
+
+
+def test_the_terrace_is_filled_and_planted(catlin_model_ro) -> None:
+    """PB-TER-*: 12" of soil over fill to the yard, one row of tomatoes, between the walls."""
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+
+    earth = [s for s in catlin_model_ro.solids
+             if s.category in ("planting_soil", "planting_fill")]
+    cy = {c: sum(Polygon(s.outline).area * (s.z1_m - s.z0_m) for s in earth
+                 if s.category == c) * _CF / 27.0
+          for c in ("planting_soil", "planting_fill")}
+    assert cy["planting_soil"] == pytest.approx(6.47, abs=0.01)
+    assert cy["planting_fill"] == pytest.approx(15.09, abs=0.01)
+    soil = [Polygon(s.outline) for s in earth if s.category == "planting_soil"]
+    assert unary_union(soil).area == pytest.approx(sum(p.area for p in soil), abs=1e-9)
+    assert unary_union(soil).area * _SF == pytest.approx(174.6, abs=0.1)
+    assert {round(s.z1_m / 0.3048 * 12, 3) for s in earth if s.category == "planting_soil"} \
+        == {0.0}
+    assert {round(s.z0_m / 0.3048 * 12, 3) for s in earth if s.category == "planting_fill"} \
+        == {-40.0}
+    walls = unary_union([Polygon(s.outline) for s in catlin_model_ro.solids
+                         if (s.tag or "").startswith(("W-RG-", "W-SG-"))
+                         and s.category not in ("planting_soil", "planting_fill")
+                         and len(s.outline) >= 3])
+    assert unary_union(soil).intersection(walls).area * _SF < 0.01
+    terrace = Counter(p.type_ref for p in catlin_model_ro.plants
+                      if p.source_ref.startswith("PB-TER-"))
+    assert terrace == {"PT-SOL-TOMATO": 18}

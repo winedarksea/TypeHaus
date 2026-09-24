@@ -91,5 +91,5 @@ def test_every_spaced_role_is_within_one_bar_per_layer_of_area_over_spacing(
                               f"{got * _M_TO_FT:.1f} LF, area/spacing "
                               f"{expected * _M_TO_FT:.1f} LF, tolerance "
                               f"{tolerance * _M_TO_FT:.1f} LF")
-    assert checked > 50
+    assert checked > 45  # a coverage floor: 49 spaced roles since W-GF-N-DR retired (2026-09-23)
     assert not misses, "\n".join(misses)

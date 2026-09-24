@@ -55,19 +55,20 @@ from typehaus import (
 )
 from typehaus.model import m
 
-# Terminals off the chase. Each bedroom grille is a ceiling boot at the east end of its own
-# branch (plan/mep_hvac_branches.py): a riser out of the trunk inside SF-S-DUCT, then a
-# 6" leg east in one FS-ATTIC bay over the hall wall's plates. `duct_ref` names that leg.
-# Until 2026-09-23 they named the trunk and the boot "through W-S-BW1/2/3's stud bay" was
-# never drawn — nor buildable: each grille sat on or beside a joist and its 12" face ran
-# 1 3/8" into the hall wall. Each now sits on its bay centre at x=22'-9", 1 5/8" clear of
-# the bedroom face (22'-1 3/8").
+# Terminals off the chase, each at the end of its own drawn branch (plan/mep_hvac_branches.py),
+# and `duct_ref` names that branch. Until 2026-09-23 they named the trunk through an unmodelled
+# boot that could not have been built: ceiling grilles on or beside a joist, 1 3/8" into the
+# hall wall.
 #
-# ** 8'-10 1/4" IS THE ROOM'S RESOLVED CEILING. ** They were at 9'-0" until 2026-09-23 and
-# at 8'-0" before that; RM-S-BED1/2/3 carry no soffit and finish at 8'-10 1/4". NOTHING
-# GRADES A REGISTER AGAINST ITS HOST SURFACE — a Register resolves no solid, so
+# BED1 and BED2 are HIGH SIDEWALL grilles on W-S-BW1/2's bedroom face (22'-1 3/8"), at the end
+# of a side collar straight off the trunk — REG-S-HP-STAIR's type, rotation and derivation:
+# x is the face plus half the 1" body. The face's bottom is 97 1/8" storey, a 6" face centred
+# on the trunk's 100 1/8"; a WALL mount is measured off the finished floor, so it is authored
+# 95 7/8" over the carpet's 1 1/4". They throw east across the room, over the desk below.
+#
+# BED3 is a ceiling boot at its bay leg's end, at the room's resolved ceiling, 8'-10 1/4".
+# NOTHING GRADES A REGISTER AGAINST ITS HOST SURFACE — a Register resolves no solid, so
 # `Mount.elevation` is a number the schedule and the sections print and no check reads.
-# Author it off the room's own ceiling, every time.
 #
 # RM-S-SUITE's terminal (REG-S-HP-SUITE) sits at DU-S-HP-SUITE's west terminus (12'-6",
 # 14'-1 7/8"), throwing down the entry arm into the suite's main volume. This branch is what
@@ -76,13 +77,13 @@ from typehaus.model import m
 # face now — which is why its elevation is the duct's underside and not a ceiling plane.
 REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH01AAAA", tag="REG-S-HP-BED1", kind=DuctSystem.SUPPLY, room="RM-S-BED1",
-             position=pt(ft(22, 9), ft(12, 8)), duct_ref="DU-S-HP-BED1",
-             type_ref="REG-T-HP-SUP", design_cfm=80,
-             mount=Mount(kind=MountKind.CEILING, elevation=inch(106.25))),
+             position=pt(inch(265.875), ft(12, 4)), duct_ref="DU-S-HP-BED1", rotation=deg(90),
+             type_ref="REG-T-HP-SUP-SIDE", design_cfm=80,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(95.875))),
     Register(uid="CSRH02AAAA", tag="REG-S-HP-BED2", kind=DuctSystem.SUPPLY, room="RM-S-BED2",
-             position=pt(ft(22, 9), ft(20, 8)), duct_ref="DU-S-HP-BED2",
-             type_ref="REG-T-HP-SUP", design_cfm=80,
-             mount=Mount(kind=MountKind.CEILING, elevation=inch(106.25))),
+             position=pt(inch(265.875), ft(19, 8)), duct_ref="DU-S-HP-BED2", rotation=deg(90),
+             type_ref="REG-T-HP-SUP-SIDE", design_cfm=80,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(95.875))),
     # BED3 is fed along its SOUTH edge: north of 27'-8" the trunk is in SF-S-HP1 beside the
     # return plenum. The 27'-4" bay's joist 020 bears on W-S-BD2, so the grille lands ~6"
     # north of that wall's face (26'-10 3/8"), its 6" face clear of the joists either side.
@@ -145,21 +146,18 @@ REGISTERS_HVAC_SECOND = [
              position=pt(ft(22, 8), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-SUP", design_cfm=75,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # RM-S-PLANT at (9'-4", 3'-4"): the branch's west terminus, and it MOVED 2'-8" EAST on
-    # 2026-09-04. The old station at 6'-8" was argued as "centred between the room's two south
-    # windows" — but the room has THREE, at x 4'-0" / 9'-4" / 14'-8", and 6'-8" left
-    # WIN-S-PLANT4 unwashed eight feet away. 9'-4" is WIN-S-PLANT2's own centreline and the
-    # centroid of all three, so one terminal washes the whole south wall that a humid plant
-    # room condenses on first. It is also the room's centreline and 2'-8" less duct.
+    # RM-S-PLANT at (12'-0", 3'-4"): the branch's west terminus, moved 2'-8" east on
+    # 2026-09-23 for that much less 10x6. The glass runs x 4'-0" / 9'-4" / 14'-8"; 9'-4" was
+    # its centroid (and 6'-8" before 2026-09-04, which left the east window unwashed). 12'-0",
+    # midway between the middle and east windows, is still over the glass band a humid room
+    # condenses on first. Further east is worse air, not just less duct: at 14'-8" it would
+    # be 5'-5" from REG-S-ERV-PLANT-EXH, at the room's only door.
     #
-    # It clears everything it has to: FURN-S-PLANT-POT2 spans x 7'-11"..9'-5" but only reaches
-    # y=2'-9", so this is 4" north of it in plan and blows past it rather than onto it; the
-    # grow tubes ED-S-PLANT-TUBE1/2 hang on the y=2'-0" line, 1'-4" south; the two chairs are
-    # at y 6'-2"/6'-4". The room's only opening is D-S-PLANT back into
-    # the study, at the far east end, so the supply is diagonally opposite it and the room's
-    # air crosses the glazing on the way out. (placeables.py still describes the chairs as
-    # straddling a floor register at (9', 4') — that was REG-S-SUP1, since retired; this
-    # terminal is in the ceiling, so nothing straddles it, and placeables.py says so itself.)
+    # It clears everything it has to: 1'-2" north of ED-S-PLANT-TUBE2 (which ends at 11'-8"),
+    # 3" south of ED-S-PLANT-LT's footprint, over no pot (POT2 ends at x=9'-5"), and 6'-10"
+    # from the extract, diagonally, so the room's air crosses the planting on the way out.
+    # (placeables.py still describes the chairs as straddling a floor register at (9', 4') —
+    # that was REG-S-SUP1, since retired.)
     # REG-T-HP-SUP-DAMPERED: same grille doing the same glass wash, with a motorised
     # isolation damper behind it. Two things it has to do that a plain terminal cannot — shut
     # System 1 out of a 70% RH room so the branch does not carry its moisture to every other
@@ -168,7 +166,7 @@ REGISTERS_HVAC_SECOND = [
     # pair balanced rather than merely present (mep.humid_room_pressure is the rule that
     # says so out loud).
     Register(uid="CXDCYN7YQ2", tag="REG-S-HP-PLANT", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
-             position=pt(ft(9, 4), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
+             position=pt(ft(12), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-SUP-DAMPERED", design_cfm=75,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # The plant room's extract. RM-S-PLANT was supply-only, so its own ventilation pushed
@@ -200,7 +198,7 @@ REGISTERS_HVAC_SECOND = [
     # carry that UNKNOWN and want the same treatment.) The duct's riser is still on the axis,
     # inside the stud cavity; the boot is the 5" of horizontal that crosses the liner.
     #
-    # It leaves 9'-2" between this grille and REG-S-HP-PLANT at (9'-4", 3'-4"), so conditioned
+    # It leaves 6'-10" between this grille and REG-S-HP-PLANT at (12'-0", 3'-4"), so conditioned
     # air still lands on the south glass and crosses the planting before it is pulled out,
     # rather than short-circuiting. (The old text here claimed 6'-9" against a supply at
     # (6'-8", 3'-4"), which was 11'-7" away — stale arithmetic from a y=4'-8" station.)

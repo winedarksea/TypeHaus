@@ -2286,6 +2286,26 @@ pocket was possible there at all.
     `test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab` (looks for the
     retired `SL-G-STEP-0`), `test_stairs_resolve_with_code_risers` (`ST-BW-ENTRY`'s 18"
     going), `test_ifc_emission_when_available` (duplicate GUIDs on `SC-BW-WEST` slats).
+- **The overhead door's grade beam is retired (owner, 2026-09-23).** `W-GF-N-DR` was a 16'
+  ICF segment under `D-G-OVERHEAD`, top flush with the slab, on its own stone strip
+  `FT-GF-N-DR`. Nothing bore on it: the 2-ply 14" LVL header carries the roof to jamb packs
+  on the two 4'-0" stem piers, and W-G-N's sole plate already stopped at the jambs. What it
+  did was a frost-stable threshold. The garage is unconditioned, so frost gets under the slab
+  anyway, and the slab plus the K8 joint (1" XPS + sealant) to the driveway is enough.
+  Accepted: the slab edge at the door may heave a little in a hard winter, and the door's
+  bottom seal takes it.
+  - `SL-G-FLOOR` gained a 16' x 11" tab out to the node line between the piers;
+    `params/driveway.py`'s `Y0` follows it (0.3" south, 210.07 -> 210.38 sf), and so does
+    walk A's flare notch.
+  - The stem is an open U now, so it has no winding: `_STEM` names `interior_room` or all
+    eight walls build inside out at +1. Layer polygons were diffed and are unchanged.
+  - `code.R401_3_*` polygonized the foundation walls alone and lost the garage the moment the
+    U opened (walk B then graded against the house at 1.0%, a false FAIL).
+    `_common._bridging_walls` lets a wall standing collinear on a foundation run close its
+    gap.
+  - Side effects: the east-jamb STHD derived at `CR-CONC-TO-FRAMED-SILL` had been embedded in
+    the grade beam, 22" below the pier top the jamb bears on. It now lands on the pier like
+    its west twin. Five MASA anchors on the beam's phantom 16 LF of sill went too.
 
 ## Exterior colour, balcony and veneer
 

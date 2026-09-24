@@ -396,7 +396,9 @@ DUCTS_HVAC_SECOND = [
     # downstream than a 14x8 would have allowed.
     #
     # ** BOTH ENDS CAME IN ON 2026-09-04, THE WEST END BY MOST. ** 19'-4" of 10x6 became
-    # 15'-8" — and both moves are better terminal placement, not only less duct:
+    # 15'-8" — and both moves are better terminal placement, not only less duct. The west end
+    # came in again on 2026-09-23, 9'-4" -> 12'-0", another 2'-8" (13'-0" now): see
+    # REG-S-HP-PLANT for why the room does not notice.
     #
     #  * WEST 6'-8" -> 9'-4", a 2'-8" saving. The old end was 2'-4" PAST the plant room's
     #    centreline, and its "centred between WIN-S-PLANT1/2" argument only ever counted two
@@ -421,7 +423,7 @@ DUCTS_HVAC_SECOND = [
     # centreline and 2'-4" from REG-S-HP-STUDY2's station at 22'-8"; the next foot west stacks
     # the storey's two study terminals on top of one another.
     DuctRun(uid="NYRX7TBEGH", tag="DU-S-HP-SOUTH", system=DuctSystem.SUPPLY,
-            path=(pt(ft(25), ft(3, 4)), pt(ft(9, 4), ft(3, 4))),
+            path=(pt(ft(25), ft(3, 4)), pt(ft(12), ft(3, 4))),
             width=inch(10), depth=inch(6), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-ATTIC", design_cfm=250),
     # THE RISER — a repeated plan point at two elevations is the vertical leg, the idiom

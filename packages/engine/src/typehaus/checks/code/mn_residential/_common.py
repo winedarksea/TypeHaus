@@ -86,6 +86,39 @@ def _wall_is_exterior(ctx: CheckContext, wall, rooms_by_storey_index=None) -> bo
 #: majority is the one that needs no tuning.
 _EXCAVATION_MAJORITY = 0.5
 
+#: Plan tolerances for "this wall stands on that foundation line" (metres).
+_ON_LINE_TOL_M = 0.0127      # 1/2" off the foundation run's line
+_MIN_BEARING_OVERLAP_M = 0.3048  # and sharing at least a foot of it
+
+
+def _bridging_walls(foundation: list, walls: list) -> list:
+    """Walls collinear with, and bearing on, a foundation run — the ones that span its gaps.
+
+    A stem gapped under a vehicle door is still a building: the wall above runs across the
+    opening on its header. Such a wall adds nothing where the foundation already is, and
+    closes the ring where it is not. Collinearity plus a real overlap keeps a freestanding
+    wall that merely touches a foundation line from inventing a ring.
+    """
+    from shapely.geometry import LineString
+
+    bridges = []
+    for wall in walls:
+        a, b = wall.axis[0], wall.axis[1]
+        line = LineString([a, b])
+        for run in foundation:
+            p, q = run.coords[0], run.coords[-1]
+            dx, dy = q[0] - p[0], q[1] - p[1]
+            span = (dx * dx + dy * dy) ** 0.5
+            if span < 1e-9:
+                continue
+            off = [abs((pt[0] - p[0]) * dy - (pt[1] - p[1]) * dx) / span for pt in (a, b)]
+            if max(off) <= _ON_LINE_TOL_M and \
+                    line.buffer(_ON_LINE_TOL_M).intersection(run).length >= \
+                    _MIN_BEARING_OVERLAP_M:
+                bridges.append(line)
+                break
+    return bridges
+
 
 def _foundation_enclosures(ctx: CheckContext) -> list:
     """Every foundation-wall enclosure a **building** stands in, largest first.
@@ -103,6 +136,10 @@ def _foundation_enclosures(ctx: CheckContext) -> list:
     already identifies a below-grade slab with no conditioned room over it, and an
     enclosure a majority floored by one is a hole.
 
+    A foundation run gapped under a door is closed by the wall standing on it
+    (``_bridging_walls``): catlin's garage stem is an open U under its overhead door since
+    2026-09-23, and read off the stem alone the garage stopped being graded at all.
+
     Empty when no foundation walls resolve, or when they close no ring at all. The caller
     distinguishes the two, because "no foundation" and "a foundation we could not
     reconstruct" are different UNKNOWNs.
@@ -116,6 +153,8 @@ def _foundation_enclosures(ctx: CheckContext) -> list:
                 for wall in ctx.model.walls if wall.is_foundation]
     if not segments:
         return []
+    segments += _bridging_walls(
+        segments, [wall for wall in ctx.model.walls if not wall.is_foundation])
     faces = list(polygonize(unary_union(segments)))
     if not faces:
         return []

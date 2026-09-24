@@ -119,6 +119,8 @@
     "pipe_water_cold": 3368639,
     "pipe_water_hot": 13385784,
     "plant": 7046476,
+    "planting_fill": 6704952,
+    "planting_soil": 4008218,
     "plate": 11041356,
     "rafter": 11370319,
     "railing": 13422548,
@@ -282,6 +284,8 @@
     "pipe_water_cold": 3368639,
     "pipe_water_hot": 13385784,
     "plant": 7046476,
+    "planting_fill": 6704952,
+    "planting_soil": 4008218,
     "plate": 11041356,
     "rafter": 11370319,
     "railing": 13422548,
@@ -468,6 +472,12 @@
     "plant": [
       "landscaping"
     ],
+    "planting_fill": [
+      "earth"
+    ],
+    "planting_soil": [
+      "landscaping"
+    ],
     "railing": [
       "stairs"
     ],
@@ -576,6 +586,8 @@
     "pipe_water_cold": "plumbing",
     "pipe_water_hot": "plumbing",
     "plant": "landscaping",
+    "planting_fill": "earth",
+    "planting_soil": "landscaping",
     "railing": "stairs",
     "railing_glass": "stairs",
     "railing_infill": "stairs",

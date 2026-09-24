@@ -52,6 +52,29 @@ def test_a_grid_mix_checkerboards_the_field() -> None:
     assert field_ref(plain, 1, 0) == "F"
 
 
+def test_a_bed_builds_its_own_soil_and_fill() -> None:
+    from typehaus.resolve.landscape import _resolve_bed_earth
+
+    class _Model:
+        solids: list = []
+
+    model = _Model()
+    model.solids = []
+    bed = PlantingBed(uid="TESTPB0002", tag="PB-T", type_ref="F", outline=_rect(4, 3),
+                      grid=GridLayout(spacing=inch(15)), ground_elevation=ft(1),
+                      soil_depth=inch(12), fill_depth=inch(18))
+    _resolve_bed_earth(model, bed, "yard", bed.ground_elevation.meters)
+    soil, fill = model.solids
+    assert (soil.category, fill.category) == ("planting_soil", "planting_fill")
+    assert abs(soil.z1_m - 1 * _M) < 1e-9 and abs(soil.z0_m) < 1e-9
+    assert abs(fill.z1_m) < 1e-9 and abs(fill.z0_m + 1.5 * _M) < 1e-9
+    assert not soil.derived and not fill.derived
+    model.solids = []
+    _resolve_bed_earth(model, bed.model_copy(update={"soil_depth": None, "fill_depth": None}),
+                       "yard", 0.0)
+    assert model.solids == []
+
+
 def test_trellis_posts_never_span_more_than_the_spacing() -> None:
     run = Trellis(uid="TSTTR00001", tag="TRL-T", path=(pt(ft(0), ft(1)), pt(ft(0), ft(14))),
                   post_spacing=ft(8), post_height=ft(7), post_embed=ft(3))
@@ -81,6 +104,13 @@ def test_an_espalier_is_a_thin_panel_in_its_trellis_plane(catlin_model_ro) -> No
     assert abs((max(xs) - min(xs)) - 6 * 0.0254) < 1e-6   # 6" thick, across the wires
     assert abs((max(ys) - min(ys)) - 6 * _M) < 1e-6       # 6' spread, along them
     assert abs(solid.z1_m - solid.z0_m - 7 * _M) < 1e-6   # held to the 7' post
+
+
+def test_the_terrace_soil_does_not_cut_the_earth_sheet(catlin_model_ro) -> None:
+    from shapely.geometry import Point, Polygon
+
+    centre = Point(18 * _M, -29.35 * _M)   # PB-TER-S, above grade
+    assert not any(Polygon(r).contains(centre) for r in earth_plane_void_rings(catlin_model_ro))
 
 
 def test_the_basin_cuts_the_earth_sheet(catlin_model_ro) -> None:

@@ -20,7 +20,7 @@ from typehaus.resolve.plant_models import (
 )
 from typehaus.resolve.rain_garden import floor_z_m, surface_z_m
 
-_FORMS = ("grass", "perennial", "groundcover", "shrub", "tree")
+_FORMS = ("grass", "perennial", "groundcover", "shrub", "tree", "vegetable")
 
 
 def _ptype(form: str, **extra) -> PlantType:
@@ -111,11 +111,11 @@ def test_catlin_prototypes_and_colours(catlin_model_ro) -> None:
     assert {types["PT-MAL-HONEYCRISP"].fruit_material,
             types["PT-COR-MOONBEAM"].bloom_material} <= set(materials)
     solids = {s.uid for s in model.solids if s.category == "plant"}
-    assert len(model.plants) == 563
+    assert len(model.plants) == 582
     assert {p.uid for p in model.plants} == solids
     assert all(p.model_ref in model.plant_models for p in model.plants)
     espaliers = [p for p in model.plants if p.training == "espalier"]
-    assert len(espaliers) == 3 and all(p.model_ref.startswith("espalier:") for p in espaliers)
+    assert len(espaliers) == 4 and all(p.model_ref.startswith("espalier:") for p in espaliers)
 
 
 def test_basin_plants_stand_on_the_basin(catlin_model_ro) -> None:
@@ -139,7 +139,7 @@ def test_model_json_plants_block_budget(catlin_model_ro) -> None:
     from typehaus.server.model_json_plants import plants_json
 
     block = plants_json(catlin_model_ro)
-    assert len(block["plants"]) == 563
+    assert len(block["plants"]) == 582
     assert len(block["plant_models"]) == len(catlin_model_ro.plant_models)
     # Budget the parts: prototypes are fixed per type, instances scale with the beds
     # (~195 KB and ~247 B each at 564 plants).
@@ -154,7 +154,7 @@ def test_glb_instances_share_meshes(catlin_model_ro) -> None:
     gltf, _ = emit_gltf_dict(catlin_model_ro)
     plant_uids = {p.uid for p in catlin_model_ro.plants}
     instances = [n for n in gltf["nodes"] if "translation" in n]
-    assert len(instances) == 563
+    assert len(instances) == 582
     assert {n["extras"]["uid"] for n in instances} == plant_uids
     assert all(n["extras"]["kind"] == "solid" for n in instances)
     shared = {n["mesh"] for n in instances}

@@ -52,7 +52,8 @@ _SUBJECT_CATEGORIES = frozenset({
 #: Buried and in-slab families share the plumbing prefixes but are never in occupied air.
 _NEVER_IN_AIR = frozenset({"drain_tile", "drywell", "sump", "pipe_sleeve",
                            "leader_extension", "rain_garden_media", "rain_garden_stone",
-                           "area_drain", "area_drain_riser"})
+                           "area_drain", "area_drain_riser", "planting_soil",
+                           "planting_fill"})
 
 #: The roof's structural underside is where a *wall* stops. A duct strapped tight to the
 #: underside, or a guard scribed to it, reads a hair over on rounding alone. One inch is

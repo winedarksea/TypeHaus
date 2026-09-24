@@ -609,7 +609,7 @@ suppress = [
   # on all four walls, and it does not care where the door sits.
   #
   # What is left is a COST OF MOVING, not a reason not to move: OVERHEAD_DOOR_OFFSET is not
-  # just the door's offset. params/foundations.py gaps the ICF stem into a grade beam on it,
+  # just the door's offset. params/foundations.py gaps the ICF stem on it,
   # so the gap nodes, two stem segments, their footings and the two STEM_TOP_Z_FLASHING
   # break stations all travel with the door, and plan/mep_sleeves.py's water-service sleeve
   # is pinned to the stem footing that happens to sit over it (integrity.sleeve_in_opening

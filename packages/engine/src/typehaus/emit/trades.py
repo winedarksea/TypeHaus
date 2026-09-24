@@ -121,6 +121,9 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     "leader_extension": "drainage", "area_drain": "drainage", "area_drain_riser": "drainage",
     # Illustrative planting and the espalier frame (resolve/landscape.py): derived, unpriced.
     "plant": "landscaping", "trellis": "landscaping",
+    # A planting bed's own earth (a raised terrace): the landscaper places the soil, the
+    # excavator the fill under it.
+    "planting_soil": "landscaping", "planting_fill": "earth",
     # A dropped soffit box and a room's ceiling plane are the drywaller's overhead surfaces.
     "soffit": "drywall", "ceiling": "drywall",
     # Pours, and what is cast into them. Equal to the fallback; named so the parity test's

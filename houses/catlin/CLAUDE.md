@@ -222,7 +222,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Basement storey is at -9'-1 7/16", independent of grade. Pour is exactly 8'-0"; clear height 8'-0 15/16" under joists / 7'-10 7/8" under the EPS band. `code.R305_ceiling_height` DERIVES this, not `Storey.default_ceiling_height` (still a fictional 9'-0") (→ DESIGN-LOG.md, "Site and the four structures").
 - Grade-dependent: garage + foundation, bridge's frost pads/piers, hydrant bury, sunken garden floor, nine perimeter spot elevations, both impervious surfaces. `SITE_GRADE` lives in `params/foundations.py`, repeated as a literal in `plan/site.py`; `plan/manifest.py` asserts the two agree.
 - **Garage storey datum is not the garage floor.** Walls bear on the ICF stem at `GARAGE_STEM_REVEAL` (1'-10") above grade → `garage` storey at -1'-0"; the slab pours at grade (1'-10" lower), absolute `Slab.top_elevation`.
-- Sitting on the garage floor must be explicit: `D-G-OVERHEAD` carries the plan's only negative `sill_height`; the ICF stem becomes a curb-free grade beam there.
+- Sitting on the garage floor must be explicit: `D-G-OVERHEAD` carries the plan's only negative `sill_height`; the ICF stem gaps there (open-ended `N-GF-N-DRE`/`-DRW`) and `SL-G-FLOOR` runs out to the door line. **No grade beam since 2026-09-23** — nothing bears on the opening, the header carries the roof to the piers. The open U is why every `W-GF-*` names `interior_room="RM-GARAGE"`: without a closed loop the winding falls to +1 and the stem builds inside out.
 - `D-G-SERVICE` threshold stays 0'-0" with the bridge deck (`+1'-0"` sill); the 2'-10" drop is five 6.8" risers inside (`ST-G-SERVICE` KDAT, flush to the stem's finished face at x=6'-11 5/8"; `RL-G-SERVICE` wall-mounted on `W-G-W`, one bracket on stud-010 and one on `BK-G-W-RAIL-FOOT`). `SL-G-STEP-0` is retired — `FS-BW-GARAGE` replaces it — though stray comments in `plan/assemblies.py` still name it. **The stem does NOT gap under this door** (since 2026-09-11): `W-GF-S-DR` is full stem with its nodes pinned at x 8'-3"/11'-9" as a fossil, so `SP-GF-S-HYD` keeps its host.
 - `Stair.floor_opening` is optional (a rise states directly via `base_elevation`/`top_elevation`) — but `structural.stair_riser_uniformity` and `code.R311_7_8_handrail` iterate `model.stairs`, so slabs instead of a `Stair` draw NO riser/handrail finding.
 - Garage plates are 8'-4", not 8'-0" — the door climbed 4" when the storey dropped; a shorter plate would push the 3-ply LVL header into the truss heels.
@@ -1448,8 +1448,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       `REG-A-HP-STUDY` floor boot sits at (25'-0", 3'-4") — every station on that bay line
       from x 21'-0" to 27'-3" is under furniture, so this is the best fit, not a clean one.
       **Nothing grades a placeable against a register** — check by hand when moving one.
-      `DU-S-HP-SOUTH`'s west terminal is at x=9'-4" (centroid of all three south windows, not
-      the middle two).
+      `DU-S-HP-SOUTH`'s west terminal is at x=12'-0" (2026-09-23, 2'-8" less duct; 9'-4", the
+      glass centroid, is the fallback). Not further east: the extract and the door are there.
     - **The riser cannot cut through `FS-ATTIC`'s joists** (they run in x); near x=19'-6"
       every hole lands inside `W-S-C1`'s no-hole zone, and no duct small enough to dodge it
       still moves 250 cfm.
@@ -1821,14 +1821,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (sealant/EPDM between) or let aluminium touch concrete/mortar. `aluminum-flat-pvdf` on
     the Z, not `metal-dark-exterior`, is the whole enforcement.
   - `OVERHEAD_DOOR_OFFSET`'s 4'-0" has lost its defence (the asymmetric-pier argument died
-    with the wainscot) and is now an open question — moving it drags stem/grade-beam gap,
+    with the wainscot) and is now an open question — moving it drags the stem gap,
     footings, Z break stations, and a water-service sleeve. Left suppressed while undecided;
     **do not quietly re-decide it either way**. (→ DESIGN-LOG.md, "Decks and the garage")
   - `W-GF-S3` / `W-GF-N2` are a kept fossil (plain `GARAGE_ICF_6`, nothing stands on them) —
     the wall/room census tests pin the count so a cleanup can't un-split them by accident.
     `W-GF-S-DR` joined them on 2026-09-11: the service door's grade beam is full stem now, its
     two nodes PINNED at x 8'-3"/11'-9" (`_FOSSIL_SERVICE_OFFSET`) so `FT-GF-S-DR` stays over
-    the hydrant crossing `SP-GF-S-HYD` names. Nine stem segments, one grade beam.
+    the hydrant crossing `SP-GF-S-HYD` names. Eight stem segments, no grade beam (`W-GF-N-DR`/`FT-GF-N-DR`, uids CGF105/CGF205, retired 2026-09-23).
 - **The garage is white again** (all four walls `GARAGE_WALL_2X6`, `corrugated-panel-24` —
   24 ga PVDF Linen White since 2026-09-14, the same colour and gauge as the house; 412 psf at
   2'-0", and the wall coverage is **34-2/3"**, not the 32" roof figure the drawings used).
@@ -2591,8 +2591,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `notes/sidewalk_layout.md`.
 - **Driveway `SL-DW-DRIVE`** (`params/driveway.py`, 2026-09-23): `DRIVEWAY_FRC_CLASS5`, 4"
   fibre-only concrete on 8" Class 5, no foam. 16' at the door (x 10'..26'), a 45° flare to the
-  12' ordinance width 2' out, to the lot line: 210 SF, 2.59 cy. It starts 1" off the grade
-  beam's coil face; that gap IS the K8 joint (1" 40 psi XPS + PU sealant), deliberately not an
+  12' ordinance width 2' out, to the lot line: 210 SF, 2.60 cy. It starts 1" off `SL-G-FLOOR`'s door
+  edge; that gap IS the K8 joint (1" 40 psi XPS + PU sealant), deliberately not an
   `IsolationBoard`, which would open a `thermal_break_transfer` item. Flat at -2'-11"; the 2.18%
   fall is on its impervious surface. Walk A is notched 1/2" off the flare and stands
   1"-1 3/4" proud of it, accepted (`notes/sidewalk_layout.md` §2a). Its uid was minted by
@@ -2603,6 +2603,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Bluestem grid `PB-S-GRID`** south of `W-RG-BLOCK`, 1' inside the W/E/rear lot lines: 380 cells at 15", 44 accents on the
   `(i + 3j) mod 9` lattice. The basin reuses the same grid code for its slope and floor
   beds. `notes/grid_garden.md`.
+- **The raised-garden terrace is filled and planted** (owner, 2026-09-23): `PB-TER-S`/`-W`/`-E`
+  in `params/raised_garden.py`, three strips tiling the U from the apron's inner block face to
+  the court walls' dimpleboard face. `PlantingBed.soil_depth`/`fill_depth` build it: 12" of
+  topsoil (6.47 cy, `planting_soil`, priced) over fill to the -3'-4" yard (15.09 cy,
+  `planting_fill`, $0 — in the earthwork allowance), flush with the 0'-0" wall top. One row of
+  staked 'Celebrity' tomatoes, 3'-0" apart (18 plants; `form="vegetable"`, fruit on the outside
+  of the foliage so it reads). **Nothing woody, ever**: roots off the
+  dimpleboard and block, and no free body carries a tree's surcharge. A bed is not a walking
+  surface, so the no-guard argument stands.
 - **Espaliers**: four dwarf apples in `plan/landscape.py` (editable), two on each of
   `TRL-W-S`/`-N` (13' runs) at x=-5', mirrored round the power service at y=18'. `site.utility_clearance` grades every post,
   tree hole and basin against the 24" locate tolerance. The silt fence's west leg moved to

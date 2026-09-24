@@ -40,7 +40,7 @@ _SCHEDULE = {
     ("footing", "#4", "hdg-a767"): (31, 270.1),
     ("footing", "#5", "hdg-a767"): (156, 1051.0),
     ("foundation wall", "#3", "hdg-a767"): (44, 70.6),
-    ("foundation wall", "#4", "hdg-a767"): (311, 1715.4),
+    ("foundation wall", "#4", "hdg-a767"): (287, 1620.5),
     ("foundation wall", "#5", "hdg-a767"): (141, 1420.3),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
     ("slab", "#3", "black"): (220, 237.3),
@@ -72,8 +72,10 @@ _SCHEDULE = {
 # +94.7 lb, +7 pieces the same day: FT-SG-S's 4'-4" toe (100", bottom-x #5 @ 9"), less
 # what W2/E2 give up where FT-SG-S's larger pour now keeps 16" more of their overlap.
 # −4.2 lb on 2026-09-23: the balcony 3" lower, 4 columns x 4 #5 x 3" (note addendum).
-_TOTAL_LB = 6566.3
-_TOTAL_PIECES = 1172
+# −94.9 lb, −24 pieces the same day: W-GF-N-DR retired (21 bars), W-GF-N 17 -> 14 at its
+# new open end (note addendum).
+_TOTAL_LB = 6471.4
+_TOTAL_PIECES = 1148
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
 #: authoring steel may lift the tonnage into the register's band without opening it. Opening

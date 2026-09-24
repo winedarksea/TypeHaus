@@ -188,7 +188,8 @@ def test_a_machine_67_inches_above_the_end_is_not_a_joint(catlin_model):
 def test_each_bedroom_grille_is_fed_by_a_drawn_branch(catlin_plan, catlin_model, n):
     """REG-S-HP-BED1/2/3 named the trunk until 2026-09-23 and nothing reached them: the check
     tests run ENDS and `register_duct_ref` only that the tag exists. Each is now the boot at
-    the end of its own bay leg, and the leg's riser tees into DU-S-HP-SUP."""
+    the end of its own branch: BED1/BED2 a side collar straight off DU-S-HP-SUP's east face,
+    BED3 a bay leg whose riser tees into the trunk."""
     from typehaus.checks.mep.duct_connectivity import BOOT_REACH_M
 
     register = next(e for e in catlin_plan.all_elements() if e.tag == f"REG-S-HP-BED{n}")
@@ -198,5 +199,5 @@ def test_each_bedroom_grille_is_fed_by_a_drawn_branch(catlin_plan, catlin_model,
     end = leg.path[-1]
     assert ((at[0] - end[0]) ** 2 + (at[1] - end[1]) ** 2) ** 0.5 <= BOOT_REACH_M
     findings = {f.message for f in _connectivity(catlin_model) if f.result.value == "pass"}
-    assert f"duct DU-S-HP-BED{n}-RISE start lands on DU-S-HP-SUP" in findings
-    assert f"duct DU-S-HP-BED{n}-RISE end lands on DU-S-HP-BED{n}" in findings
+    tee = f"DU-S-HP-BED{n}" if n < 3 else f"DU-S-HP-BED{n}-RISE"
+    assert f"duct {tee} start lands on DU-S-HP-SUP" in findings

@@ -121,3 +121,14 @@ def test_impervious_grading_silent_without_surfaces(catlin_model):
     report = run_from_model(model, [], tier=Tier.CODE)
     matched = [f for f in report.findings if f.check_id == "code.R401_3_impervious"]
     assert matched == []
+
+
+def test_a_stem_gapped_under_a_door_is_still_a_building(catlin_model):
+    """The garage stem is an open U under its overhead door; W-G-N above spans the gap."""
+    from typehaus.checks.code.mn_residential._common import _foundation_enclosures
+
+    class _Ctx:
+        model = catlin_model
+
+    areas = sorted(round(p.area * 10.7639) for p in _foundation_enclosures(_Ctx()))
+    assert areas == [576, 1296]  # the garage and the house; the sunken court is a hole

@@ -125,8 +125,13 @@ a dry-stacked landscape wall.
 
 Not modelled: the SRW cap unit, the filter fabric behind the wall rock, and AB's drain pipe
 ("required for walls ... constructed in silty or clay soils", manual p.22). The wall rock is
-authored on the spec (graded) but not billed. The growing medium is not on this list
-because there is no longer a bed to fill.
+authored on the spec (graded) but not billed.
+
+**The terrace is filled and planted (2026-09-23)**: ``TERRACE_BEDS``, three ``PlantingBed``
+strips tiling the U, each carrying 12" of planting soil over compacted fill down to the yard.
+A bed is not a walking surface, so the paragraph above stays true. The 12" wall-rock zone
+sits inside the fill prism, still unmodelled. **Grasses and perennials only, nothing woody**:
+roots stay off the dimpleboard and the block, and a tree is surcharge no free body carries.
 
 Known and accepted: the west leg (x ∈ [3.5, 4.5]) runs over the x = 3 sewer and beside the
 x = 5 water line for its whole length. Both are 5-6' below grade against a wall bottom that
@@ -141,7 +146,9 @@ from dataclasses import dataclass
 from typehaus import (
     FootingBedding,
     FoundationWall,
+    GridLayout,
     Node,
+    PlantingBed,
     SegmentalWallSpec,
     SrwDrainageZone,
     face,
@@ -151,6 +158,7 @@ from typehaus import (
 )
 
 from params.sunken_garden import (
+    _SG_RETAINED_FACE_IN,
     BALCONY_FRONT_AXIS_Y_FT,
     RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN,
     LOCAL_YARD_GRADE_IN,
@@ -408,6 +416,43 @@ BEDDINGS = [
     for i, w in enumerate(WALLS, start=1)
 ]
 
+# ** THE TERRACE: SOIL, FILL AND ONE ROW OF TOMATOES (owner, 2026-09-23). ** Three strips,
+# not one U: `grid_cells` strikes one lattice off the bed's bounding box, and across the U's
+# 25' the east strip's row would land off its centreline and be culled. Each strip insets by
+# half its own width, which leaves exactly one row on the centre line (the rain-garden floor's
+# trick). Edges are the apron's inner block face and the court walls' dimpleboard face, so the
+# soil laps neither. Finished soil is flush with the top course: the terrace height every
+# SRW and court record already assumes. One row of staked tomatoes, 3'-0" apart.
+_ter_block_half_ft = _block_thickness_ft / 2.0
+_ter_court_face_ft = _sg_half_thickness_ft + _SG_RETAINED_FACE_IN / 12.0
+_TER_W_OUT, _TER_E_OUT = X_WEST + _ter_block_half_ft, X_EAST - _ter_block_half_ft
+_TER_S_OUT, _TER_N = Y_SOUTH + _ter_block_half_ft, Y_NORTH - _ter_block_half_ft
+_TER_W_IN, _TER_E_IN = _sg_x_west - _ter_court_face_ft, _sg_x_east + _ter_court_face_ft
+_TER_S_IN = SOUTH_RETAINING_WALL_AXIS_Y_FT - _ter_court_face_ft
+TERRACE_SOIL_IN = 12.0
+_TER_BED = dict(
+    type_ref="PT-SOL-TOMATO",
+    grid=GridLayout(spacing=inch(36), edge_inset=ft((_TER_S_IN - _TER_S_OUT) / 2.0)),
+    ground_elevation=TOP,
+    soil_depth=inch(TERRACE_SOIL_IN), soil="screened topsoil / planting mix",
+    fill_depth=inch(RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN - TERRACE_SOIL_IN),
+    fill="compacted granular terrace fill",
+)
+
+
+def _ter_rect(x0: float, y0: float, x1: float, y1: float):
+    return (pt(ft(x0), ft(y0)), pt(ft(x1), ft(y0)), pt(ft(x1), ft(y1)), pt(ft(x0), ft(y1)))
+
+
+TERRACE_BEDS = [
+    PlantingBed(uid="6D8VCS0XXS", tag="PB-TER-S",
+                outline=_ter_rect(_TER_W_OUT, _TER_S_OUT, _TER_E_OUT, _TER_S_IN), **_TER_BED),
+    PlantingBed(uid="2FGDVK0Y6Y", tag="PB-TER-W",
+                outline=_ter_rect(_TER_W_OUT, _TER_S_IN, _TER_W_IN, _TER_N), **_TER_BED),
+    PlantingBed(uid="QETBCAY7CV", tag="PB-TER-E",
+                outline=_ter_rect(_TER_E_IN, _TER_S_IN, _TER_E_OUT, _TER_N), **_TER_BED),
+]
+
 if SUNKEN_GARDEN_OPTION.planting_layout == "yard-grade":
     BASEMENT_ELEMENTS = []
 elif SUNKEN_GARDEN_OPTION.planting_layout == "setback":
@@ -423,4 +468,4 @@ elif SUNKEN_GARDEN_OPTION.planting_layout == "setback":
         soil_height_in=SUNKEN_GARDEN_OPTION.raised_soil_height_in,
     )
 else:
-    BASEMENT_ELEMENTS = [*NODES, *WALLS, *BEDDINGS]
+    BASEMENT_ELEMENTS = [*NODES, *WALLS, *BEDDINGS, *TERRACE_BEDS]

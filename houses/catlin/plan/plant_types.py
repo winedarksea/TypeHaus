@@ -44,6 +44,8 @@ FOLIAGE_MATERIALS = (
              "#c4a878"),
     _foliage("apple-bark", "Apple bark, grey-brown", "#6b5a4a"),
     _foliage("apple-fruit", "Apple fruit, red", "#b3262a"),
+    _foliage("tomato-foliage", "Tomato foliage, mid green", "#4f7a32"),
+    _foliage("tomato-fruit", "Tomato fruit, ripe red", "#c8321e"),
 )
 
 PLANT_TYPES = (
@@ -118,6 +120,13 @@ PLANT_TYPES = (
               common_name="purple sage", form="shrub", mature_height=inch(18),
               mature_spread=inch(18), foliage_material="perennial-foliage",
               bloom="purple-grey foliage, sub-shrub", source=_TYPICAL),
+    # --- the raised-garden terrace (params/raised_garden.py): a staked determinate ---------
+    PlantType(tag="PT-SOL-TOMATO", botanical_name="Solanum lycopersicum",
+              cultivar="Celebrity", common_name="tomato", form="vegetable",
+              mature_height=inch(42), mature_spread=inch(24),
+              foliage_material="tomato-foliage", fruit_material="tomato-fruit",
+              bloom="red fruit, July-September; an annual, replanted each May",
+              source=_TYPICAL),
     # --- the espaliers: four Minnesota cultivars that pollinate one another ---------------
     PlantType(tag="PT-MAL-HONEYCRISP", botanical_name="Malus domestica", cultivar="Honeycrisp",
               common_name="apple", form="tree", mature_height=ft(8), mature_spread=ft(6),

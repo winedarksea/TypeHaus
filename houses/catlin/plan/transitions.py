@@ -108,8 +108,8 @@ TRANSITIONS = (
                # silently re-adds a detail sheet for a perimeter with no perimeter work.
                condition_pattern="opening_perimeter:BASEMENT_[0-9]*",
                notes="notes/basement_to_framed_wall_detail.md", overlay="foundation-window"),
-    # Starred: the garage/breezeway threshold condition — both doors open onto the slab
-    # at grade, with the ICF stem dropped to a grade beam under them, so the perimeter
+    # Starred: the garage/breezeway threshold condition — the overhead door opens onto the
+    # slab at grade, with the ICF stem gapped under it, so the perimeter
     # flashing here is nothing like a standard framed opening.
     # Same reasoning as the garden arch above, one wall further north: the reveals through
     # W-B-BRICK are open arched holes in a freestanding wythe, and the flashed, bucked,

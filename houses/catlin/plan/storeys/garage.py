@@ -153,8 +153,8 @@ WALLS = [
 # model, and it keeps band and Z one colour and one coil order.
 #
 # ** IT BREAKS AT THE ONE STEM GAP. ** There is no stem — and so no band and no Z — across
-# the 16'-0" overhead door, where params/foundations.py drops the stem to a grade beam flush
-# with grade. Five runs, 80 LF: south one unbroken 24'-0", east 24'-0", north 4'-0" twice,
+# the 16'-0" overhead door, where params/foundations.py gaps the stem and the slab runs out
+# to the door line. Five runs, 80 LF: south one unbroken 24'-0", east 24'-0", north 4'-0" twice,
 # west 24'-0". The south wall was two runs (2'-3" + 18'-3") until 2026-09-11, broken at the
 # service door's own stem gap; that gap is closed (the door sill is +1'-0", not the slab, so
 # nothing needed the stem out of the way — see `W-GF-S-DR` in params/foundations.py) and
@@ -215,7 +215,7 @@ STEM_TOP_Z_FLASHING = [
 
 # Published so params/foundations.py can gap the ICF stem under the overhead door instead
 # of repeating this offset/width: there is no 22"-above-grade stem wall under a vehicle
-# door (it would be a curb the car has to climb), so the stem drops to a grade beam there.
+# door (it would be a curb the car has to climb), so the stem stops at the jambs.
 #
 # ** MEASURED FROM N-G-NE SINCE 2026-09-07, AND THE NUMBER IS UNCHANGED. ** The door hangs
 # off W-G-N, which runs NE->NW from x=30', so 4'-0" puts the 16'-0" opening at x 10'..26' and
@@ -232,8 +232,8 @@ STEM_TOP_Z_FLASHING = [
 # the base band is uniform on all four walls and does not care where the door sits.
 #
 # WHAT STILL HOLDS THE CONSTANT is the chain below it, which is real but is a cost of
-# moving rather than a reason not to: params/foundations.py gaps the ICF stem into a grade
-# beam on this offset, so the gap nodes, two stem segments, their footings and the two
+# moving rather than a reason not to: params/foundations.py gaps the ICF stem on this
+# offset, so the gap nodes, two stem segments, their footings and the two
 # STEM_TOP_Z_FLASHING break stations above all travel with it.
 # ** DO NOT quietly re-decide this either way. ** It is an owner question now: one stud
 # against a door centred on the framing module. The rotation deliberately carried the
@@ -278,7 +278,7 @@ OPENINGS = [
     # rather than computed; the dialect bans arithmetic). The tie is held by
     # test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade.
     # Head follows the threshold down to 7'-0" above the slab. params/foundations.py gaps
-    # the stem to a grade beam under this opening so there's no curb for the car to climb.
+    # the stem under this opening so there's no curb for the car to climb.
     # The header is a PRESCRIPTIVE read, not an engineered beam (since 2026-09-11). The
     # supplier's own header table answers a 16' rough opening under this roof load, and a
     # reviewer opens the document and closes the question — see notes/garage_door_header.md.

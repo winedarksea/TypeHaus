@@ -101,6 +101,8 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("concrete", "rain_garden_media"): "Rain garden media",
     ("concrete", "rain_garden_stone"): "Rain garden stone",
     ("concrete", "leader_extension"): "Leader extension",
+    ("concrete", "planting_soil"): "Planting soil",
+    ("concrete", "planting_fill"): "Planting bed fill",
     ("floor_heat", "electric"): "Electric radiant floor heat cable",
     ("data_raceways", "data"): "Data raceway", ("data_raceways", "spare"): "Spare raceway",
     ("construction_returns", "pt-sill-plate"): "Treated sill plate",

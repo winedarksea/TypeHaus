@@ -119,7 +119,10 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     #
     # **45 SINCE 2026-09-19:** `W-M-FIRE-STUB` became `-STUB-S` / `-STUB-M` / `-STUB-N`,
     # three piers standing in the two joist pockets. Two tags in, none out.
-    assert len({tag for row in rows for tag in row["tags"]}) == 45
+    #
+    # **44 SINCE 2026-09-23:** the overhead door's grade beam `W-GF-N-DR` is retired; the
+    # garage slab runs out to the door line instead.
+    assert len({tag for row in rows for tag in row["tags"]}) == 44
     # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,

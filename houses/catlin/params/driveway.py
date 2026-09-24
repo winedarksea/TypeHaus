@@ -15,9 +15,9 @@ lesser of 15% of the 6,650 sf lot and 1,000 sf, so 15% = 997.5 sf governs. The d
 the three `kind="pad"` surfaces sit well under that. `emit/draw/site_metrics.py` shows the
 cap in the C-101 coverage table, and no check grades it.
 
-** THE K8 JOINT IS THE 1" GAP, NOT AN ELEMENT. ** `Y0` is the grade beam W-GF-N-DR's
-resolved outer face at the door, its aluminium stem band (y 67'-2 5/8" node line + 1/4"
-standoff + coil), plus 1". The 1" is the K8 joint in notes/garage_wall_detail_side.md:
+** THE K8 JOINT IS THE 1" GAP, NOT AN ELEMENT. ** `Y0` is SL-G-FLOOR's door edge, the
+y 67'-2 5/8" node line, plus 1". (It was the grade beam W-GF-N-DR's banded face until the
+beam was retired on 2026-09-23; the slab now runs out to the door.) The 1" is the K8 joint in notes/garage_wall_detail_side.md:
 1" 40 psi XPS (Foamular 400, ASTM C578 Type VI, the garage slab's grade) under 1/2" of
 traffic-rated polyurethane sealant, ~16 LF. It is deliberately not an `IsolationBoard`,
 because that element spawns a `thermal_break_transfer` engineering item wanting a seal,
@@ -31,8 +31,7 @@ first on the taper line (Y0 + FLARE) so the flare's corners are not re-entrant c
 ** WHY IT EXISTS. ** Saint Paul DSI will not review a garage a car cannot reach, and the drive
 is the only way a vehicle leaves the site, so `plan/site.py`'s rock construction entrance
 sits on it. The fall starts 1" below the garage threshold so the drive sheds away from the
-slab. `code.R401_3_impervious` does not reach it: that check measures off the house
-footprint (y <= 36'), and this starts ~31' north of it.
+slab. `code.R401_3_impervious` grades it against the garage's foundation enclosure.
 
 Walk A (params/landscape_walk.py) meets the east taper with a 1/2" isolation joint.
 """
@@ -45,10 +44,10 @@ ASSEMBLY = "DRIVEWAY_FRC_CLASS5"
 TOP = ft(-2, -11)                    # 1" below the garage slab, at the door
 FALL_TO = ft(-3, -3.5)               # at the lot line: 4 1/2" over the run, 2.18%
 
-#: W-GF-N-DR's outer face at the door: node line + 1/4" coil standoff + 0.05" coil.
-GRADE_BEAM_FACE_Y = 67.0 + 2.925 / 12.0
+#: SL-G-FLOOR's edge at the door: the garage's north node line, 67'-2 5/8".
+SLAB_EDGE_Y = 67.0 + 2.625 / 12.0
 JOINT_FT = 1.0 / 12.0                # K8: 1" XPS
-Y0 = GRADE_BEAM_FACE_Y + JOINT_FT
+Y0 = SLAB_EDGE_Y + JOINT_FT
 Y_LOT = 84.5                         # front (north) lot line
 DOOR_X = (10.0, 26.0)                # D-G-OVERHEAD's jambs
 DRIVE_X = (12.0, 24.0)               # the 12' ordinance width, centred on x = 18'

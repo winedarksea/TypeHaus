@@ -74,10 +74,10 @@ _ENVELOPE_WALLS = (
     "W-S-N3B", "W-S-S1", "W-S-S2", "W-S-W1", "W-S-W1B", "W-S-W2", "W-S-W3", "W-S-W4",
 )
 
-# The nine stem walls of the DETACHED garage plus the retired breezeway screen wall. They
+# The eight stem walls of the DETACHED garage plus the retired breezeway screen wall. They
 # are filed on the house's own ``main`` storey key because they share the plan frame.
 _DETACHED_GARAGE_WALLS = (
-    "W-GF-E", "W-GF-N", "W-GF-N-DR", "W-GF-N2", "W-GF-S-DR",
+    "W-GF-E", "W-GF-N", "W-GF-N2", "W-GF-S-DR",
     "W-GF-S1", "W-GF-S2", "W-GF-S3", "W-GF-W",
 )
 

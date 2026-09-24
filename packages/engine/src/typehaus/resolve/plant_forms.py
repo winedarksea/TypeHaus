@@ -12,7 +12,7 @@ import math
 from typehaus.resolve.plant_models import MeshBuilder
 
 TRIANGLE_BUDGET = {"grass": 420, "perennial": 420, "groundcover": 420, "shrub": 500,
-                   "tree": 620, "espalier": 1600}
+                   "tree": 620, "vegetable": 560, "espalier": 1600}
 
 
 def _polar(r: float, a: float, z: float) -> tuple[float, float, float]:
@@ -132,8 +132,27 @@ def tree(mesh: MeshBuilder, *, has_bloom: bool) -> None:
             mesh.berry("fruit", _polar(rng.uniform(0.15, 0.4), a, rng.uniform(0.55, 0.85)), 0.03)
 
 
+def vegetable(mesh: MeshBuilder, *, has_bloom: bool) -> None:
+    """A staked fruiting vegetable (a tomato): a stake, 4-5 leafy clumps spiralling up it, and
+    fruit hung on the OUTSIDE of the foliage, because the fruit is what reads at a distance.
+    ``has_bloom`` is the type's fruit (``build_prototype``), as on a tree."""
+    rng = mesh.rng
+    mesh.tube("stem", (0.0, 0.0, 0.0), (0.0, 0.0, 1.0), 0.02, 0.015, sides=4)
+    tiers = rng.randint(4, 5)
+    for n in range(tiers):
+        a = n * 2.4 + rng.uniform(-0.3, 0.3)        # ~137 deg phyllotaxis, no two stacked
+        z = 0.22 + 0.62 * n / (tiers - 1)
+        mesh.blob("foliage", _polar(rng.uniform(0.08, 0.16), a, z), (0.2, 0.2, 0.15),
+                  lumpiness=0.2)
+    if has_bloom:
+        for _ in range(rng.randint(8, 10)):
+            a = rng.uniform(0.0, 2.0 * math.pi)
+            mesh.berry("fruit", _polar(rng.uniform(0.3, 0.36), a, rng.uniform(0.25, 0.75)),
+                       0.045)
+
+
 FORM_BUILDERS = {"grass": grass, "perennial": perennial, "groundcover": groundcover,
-                 "shrub": shrub, "tree": tree}
+                 "shrub": shrub, "tree": tree, "vegetable": vegetable}
 
 
 def espalier(mesh: MeshBuilder, *, spread: float, height: float, wires: tuple[float, ...],

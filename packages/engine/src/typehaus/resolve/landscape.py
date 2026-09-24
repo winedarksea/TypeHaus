@@ -1,11 +1,13 @@
 """Planting and trellises → plants and display solids.
 
 Beds expand into plants here — a grid clipped to its outline, or one plant per planting
-pocket in a walk slab — with accents applied by the bed's lattice rule. Every solid is
-``derived=True``: drawn by glTF, model.json and the viewer, never measured by the concrete
-take-off, sections, IFC or bids. A plant's solid is its bounding and pick record; what draws
-is its procedural model (``resolve/plant_models.py``), instanced by the same uid. The
-counts live in ``model.plants`` and bill (unpriced) from ``takeoff/planting.py``.
+pocket in a walk slab — with accents applied by the bed's lattice rule. Every plant and
+trellis solid is ``derived=True``: drawn by glTF, model.json and the viewer, never measured
+by the concrete take-off, sections, IFC or bids. A bed's own soil and fill are the
+exception: real, measured solids like a rain garden's media, because they are bought. A
+plant's solid is its bounding and pick record; what draws is its procedural model
+(``resolve/plant_models.py``), instanced by the same uid. The counts live in
+``model.plants`` and bill (unpriced) from ``takeoff/planting.py``.
 """
 
 from __future__ import annotations
@@ -38,6 +40,10 @@ from typehaus.resolve.rain_garden import surface_z_m
 
 PLANT_CATEGORY = "plant"
 TRELLIS_CATEGORY = "trellis"
+SOIL_CATEGORY = "planting_soil"
+FILL_CATEGORY = "planting_fill"
+#: Drawing-palette refs: the rain garden media's ``soil`` hatch, the drywell's ``aggregate``.
+_SOIL, _FILL = "soil", "aggregate"
 
 _PLANT_FACETS = 8
 _ESPALIER_THICKNESS_M = 6.0 * 0.0254
@@ -199,8 +205,9 @@ def _basin_under(bed: PlantingBed, basins) -> RainGarden | None:
 
 
 def _resolve_bed(model, bed: PlantingBed, storey: str, types, grade: float, basins) -> None:
+    ground = bed.ground_elevation.meters if bed.ground_elevation is not None else grade
+    _resolve_bed_earth(model, bed, storey, ground)
     if bed.grid is not None:
-        ground = bed.ground_elevation.meters if bed.ground_elevation is not None else grade
         basin = _basin_under(bed, basins)
         for i, j, x, y in grid_cells(bed.outline, bed.grid):
             accent = accent_type(bed.accents, i, j)
@@ -221,6 +228,24 @@ def _resolve_bed(model, bed: PlantingBed, storey: str, types, grade: float, basi
                 continue
             _add_plant(model, uid=f"{bed.uid}-P{n:03d}", tag=f"{bed.tag}-{opening}",
                        storey=storey, ptype=ptype, x=x, y=y, ground=top, source=bed.tag)
+
+
+def _resolve_bed_earth(model, bed: PlantingBed, storey: str, ground: float) -> None:
+    """Planting soil under the bed's ground, fill under the soil (integrity reports no ring)."""
+    ring = [p.xy_m for p in bed.outline]
+    if len(ring) < 3:
+        return
+    top = ground
+    for depth, category, suffix, material in (
+            (bed.soil_depth, SOIL_CATEGORY, "SOIL", _SOIL),
+            (bed.fill_depth, FILL_CATEGORY, "FILL", _FILL)):
+        if depth is None or depth.meters <= 0.0:
+            continue
+        model.solids.append(ResolvedSolid(
+            uid=f"{bed.uid}-{suffix}", tag=f"{bed.tag}-{suffix}", storey=storey,
+            category=category, outline=ring, z0_m=top - depth.meters, z1_m=top,
+            material=material))
+        top -= depth.meters
 
 
 def trellis_post_stations(trellis: Trellis) -> list[tuple[float, float]]:

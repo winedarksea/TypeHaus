@@ -72,9 +72,10 @@ the walk would be 5.8", 1" out against R311.7.5.1's 3/8".
 
 The drive (`params/driveway.py`, notes/driveway_layout.md) flares 45° from x = 26' at its
 south edge to x = 24' two feet north. A's SW corner is cut on that line offset 1/2" square
-to it: the line x + y = 26 + Y0 + 0.5/12·√2 = 93.386, so A's south edge starts at
-x = 93.386 − 67.332 = **26.054** and its west edge at y = 93.386 − 24.042 = **69.344**. The
-notch is ½ · (26.054 − 24.042) · (69.344 − 67.332) = ½ · 2.012 · 2.012 = **2.02 sf**.
+to it: the line x + y = 26 + Y0 + 0.5/12·√2 = 93.361 (Y0 = 67.302 since the garage slab
+took the grade beam's place, 2026-09-23), so A's south edge starts at
+x = 93.361 − 67.332 = **26.029** and its west edge at y = 93.361 − 24.042 = **69.319**. The
+notch is ½ · 1.9876 · 1.9876 = **1.98 sf**.
 A's westmost pocket, (29.445, 69.00), is 3.58' from that line, past the 2'-0" end inset, so
 `_A_STATIONS` does not move.
 

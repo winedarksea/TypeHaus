@@ -54,8 +54,8 @@ face row governs: 1 1/2" for #5 and smaller exposed to ground. 3" a side would a
 0" for bars in a 6" core (`integrity.reinforcement_layout` caught it on first layout).
 
 **No dowels (D10).** The stems bear on crushed-stone footings (`params/foundations.py`,
-R403.5), so there is no pour below to lap into. `W-GF-N-DR`, lowered at the overhead door,
-is an ordinary stem on the same stone strip and takes the same schedule.
+R403.5), so there is no pour below to lap into. The stem gaps at the overhead door (the
+grade beam `W-GF-N-DR` that spanned it was retired 2026-09-23).
 
 ## Sources
 

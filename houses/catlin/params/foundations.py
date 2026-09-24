@@ -334,12 +334,17 @@ _FROST = 42.0 / 12.0  # frost depth below grade
 # *reveal*, a height above soil, authored next to the wall lines it belongs with
 # (plan/storeys/garage.py); grade is what it is a reveal above.
 _STEM_TOP = ft(_GRADE_FT + GARAGE_STEM_REVEAL.feet)
-# A car can't climb a 22" ICF stem, so the north stem gaps at the overhead door: the flanking
-# segments keep the full reveal, and the segment behind the door becomes a grade beam flush
-# with the slab (grade), no curb across the opening. W-G-N above is untouched (splitting it
-# would break the ridge closure it carries) — the door reaches down via a negative
-# sill_height in plan/storeys/garage.py instead.
-_GRADE_BEAM_TOP = SITE_GRADE
+# A car can't climb a 22" ICF stem, so the north stem GAPS at the overhead door: the flanking
+# segments keep the full reveal and nothing is poured between them. W-G-N above is untouched
+# (splitting it would break the ridge closure it carries) — the door reaches down via a
+# negative sill_height in plan/storeys/garage.py, and its header carries the roof to the
+# jamb packs on the two 4'-0" stem piers.
+#
+# ** NO GRADE BEAM SINCE 2026-09-23 (owner). ** W-GF-N-DR (uid CGF105) and FT-GF-N-DR
+# (CGF205) are retired: nothing bears on the opening, the slab runs out to the door line
+# (SL-G-FLOOR's tab below), and the K8 joint — 1" XPS + PU sealant — separates it from the
+# driveway. The garage is unconditioned, so frost reaches under the slab anyway; the
+# threshold floats with it rather than sitting on a frost wall. The gap nodes are open ends.
 # The service door's stem gap is CLOSED since 2026-09-11 (see W-GF-S-DR below); these two
 # are the arithmetic that produced its fossil split stations, 2'-3" and 5'-9" off N-GF-SW —
 # the 2026-09-07..11 door offset less/plus the 3" margin the hydrant crossing asked for.
@@ -355,10 +360,11 @@ GARAGE_STEM_NODES = [
     # east->west, so OVERHEAD_DOOR_OFFSET is measured back from x=30': the jambs land at
     # x=26' and x=10'. Flush with the opening, no margin — the ±3" `_SERVICE_GAP_MARGIN`
     # below is the service door's rule, forced by a buried water line, and nothing crosses
-    # here. CGF005 is the uid the retired east gap's south node carried.
+    # here. CGF005 is the uid the retired east gap's south node carried. `open_end`: the
+    # stem stops here and nothing spans the door (see the grade-beam note above).
     Node(uid="CGF005AAAA", tag="N-GF-N-DRW",
          position=pt(GARAGE_X_EAST - OVERHEAD_DOOR_OFFSET - OVERHEAD_DOOR_WIDTH,
-                     GARAGE_Y_NORTH)),
+                     GARAGE_Y_NORTH), open_end=True),
     # ** THE SOUTH STEM'S DOOR SPLIT IS A FOSSIL TOO, SINCE 2026-09-11, AND IT IS PINNED. **
     # From 2026-08-01 this was the service door's stem gap, 3" wider than the opening each
     # side because the hydrant line (PR-G-HYDRANT-CW) crossed buried at the door's west jamb
@@ -388,7 +394,7 @@ GARAGE_STEM_NODES = [
     # overhead door's east jamb, so the node the deleted wainscot left behind is retagged in
     # place — same uid, same coordinate, a reason at last. Do not merge W-GF-N2 away.
     Node(uid="CGF010AAAA", tag="N-GF-N-DRE",
-         position=pt(GARAGE_X_EAST - OVERHEAD_DOOR_OFFSET, GARAGE_Y_NORTH)),
+         position=pt(GARAGE_X_EAST - OVERHEAD_DOOR_OFFSET, GARAGE_Y_NORTH), open_end=True),
 ]
 
 # Aligns the stem's exterior EPS face to the 24'x24' node line, which is also the wood
@@ -434,13 +440,13 @@ _ICF_STEM_STEEL = ReinforcementSpec(
     source="IRC Table R404.1.2(8) footnote d floor (#4 @ 48\"), authored at the ICF's 16\" module",
 )
 
+# `interior_room`: the stem is an open U since the grade beam went, and an open chain has no
+# winding to recover (resolve/orientation.py falls back to +1, which builds every layer
+# inside out). Naming the garage puts layer 0 — the gypsum band — on its side of each wall.
 _STEM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN, top_elevation=_STEM_TOP,
              bottom_elevation=ft(_GRADE_FT - _FROST),
-             unbalanced_fill=_NO_RETAINED_FILL, reinforcement=_ICF_STEM_STEEL)
-_GRADE_BEAM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN,
-                   top_elevation=_GRADE_BEAM_TOP,
-                   bottom_elevation=ft(_GRADE_FT - _FROST),
-                   unbalanced_fill=_NO_RETAINED_FILL, reinforcement=_ICF_STEM_STEEL)
+             unbalanced_fill=_NO_RETAINED_FILL, reinforcement=_ICF_STEM_STEEL,
+             interior_room="RM-GARAGE")
 
 GARAGE_STEM_WALLS = [
     # South stem, split four ways: two fossil splits (N-GF-S-DRW/-DRE, N-GF-S-BRICK) and no
@@ -465,14 +471,11 @@ GARAGE_STEM_WALLS = [
     # carries the merged wall (W-GF-E2/CGF106 retired).
     FoundationWall(uid="CGF102AAAA", tag="W-GF-E", start_node="N-GF-SE",
                    end_node="N-GF-NE", **_STEM),
-    # North stem, split three ways at the overhead door — the south wall's pattern exactly.
-    # Every uid here is re-used from the east gap it replaces or from the wall it splits:
-    # W-GF-N2 keeps CGF110 (its east end is unmoved), the grade beam takes CGF105 off
-    # W-GF-E-DR, and W-GF-N keeps CGF103 on the west remnant.
+    # North stem: two 4'-0" piers either side of the overhead door, nothing between them.
+    # W-GF-N2 keeps CGF110 (its east end is unmoved) and W-GF-N keeps CGF103 on the west
+    # remnant. The grade beam W-GF-N-DR (CGF105) is retired 2026-09-23 — never reuse it.
     FoundationWall(uid="CGF110AAAA", tag="W-GF-N2", start_node="N-GF-NE",
                    end_node="N-GF-N-DRE", **_STEM),
-    FoundationWall(uid="CGF105AAAA", tag="W-GF-N-DR", start_node="N-GF-N-DRE",
-                   end_node="N-GF-N-DRW", **_GRADE_BEAM),
     FoundationWall(uid="CGF103AAAA", tag="W-GF-N", start_node="N-GF-N-DRW",
                    end_node="N-GF-NW", **_STEM),
     FoundationWall(uid="CGF104AAAA", tag="W-GF-W", start_node="N-GF-NW",
@@ -529,7 +532,7 @@ _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
 #      bearing, which is the trade the section makes and the reason it is limited to walls
 #      that retain nothing.
 #   2. GONE, and by this file. `unbalanced_fill=ft(0)` is authored on `_STEM` and
-#      `_GRADE_BEAM` (see `_NO_RETAINED_FILL` above): grade is -2'-10", the stem runs
+#      the since-retired `_GRADE_BEAM` (see `_NO_RETAINED_FILL` above): grade is -2'-10", the stem runs
 #      -6'-4"..-1'-0", and SL-G-FLOOR's top is -2'-10" — exactly grade — so these stems
 #      retain nothing and the 3'-6" this reason rested on was the derived proxy, not the
 #      building. That authored zero is now also what makes the R403.5 claim TESTABLE:
@@ -613,11 +616,11 @@ _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
 # (`FootingBedding.non_frost_susceptible` + `drain_tile`, ASCE 32 via IRC R403.1.4.1) — but
 # that is a route to a SHALLOWER footing, not to no footing, and nothing here wants to come up.
 #
-# ** WHAT THE REQUEST IS ACTUALLY POINTING AT, AND IT IS REAL. ** These nine are the only
+# ** WHAT THE REQUEST IS ACTUALLY POINTING AT, AND IT IS REAL. ** These eight are the only
 # footings in this house with NO `FootingBedding` under them. `HOUSE_FOOTING_BEDDING` above
 # beds every FT-B-* on 7" of stone; `sunken_garden.py` beds every FT-SG-*; `raised_garden.py`
 # beds all five W-RG-*. `FOOTING_20`'s own `source` string even says the strip is "poured
-# against the bedding prep" — and for these nine there is none. Left open rather than
+# against the bedding prep" — and for these eight there is none. Left open rather than
 # authored here for one honest reason: a bed's drain tile needs a collector below it, and the
 # garage has none. The house's falls to SM-B-RADON and the court's to its soakaway course; there is
 # no sump in the garage and no gravity outlet below -7'-0" on this lot. An undrained bed is a
@@ -632,7 +635,7 @@ _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
 # the gravity path from the house side to the court's soakaway needs no pump at all.
 #
 # ** THE DECISION IS STILL OPEN AND THIS IS NOT AN INSTRUCTION TO AUTHOR IT. ** Whether the
-# garage wants beds is a cost and a scope question — nine footings, an excavation and a
+# garage wants beds is a cost and a scope question — eight footings, an excavation and a
 # stone order — and it is deliberately out of scope here. What is recorded is that the
 # reason currently given for NOT doing it is not a fact about the lot. Revisit it on the
 # merits: the run from the garage to the court is long, crosses the drive and would want its
@@ -645,7 +648,6 @@ GARAGE_FOOTINGS = [
     Footing(uid="CGF209AAAA", tag="FT-GF-S3", under="W-GF-S3", **_GARAGE_FOOTING),
     Footing(uid="CGF202AAAA", tag="FT-GF-E", under="W-GF-E", **_GARAGE_FOOTING),
     Footing(uid="CGF210AAAA", tag="FT-GF-N2", under="W-GF-N2", **_GARAGE_FOOTING),
-    Footing(uid="CGF205AAAA", tag="FT-GF-N-DR", under="W-GF-N-DR", **_GARAGE_FOOTING),
     Footing(uid="CGF203AAAA", tag="FT-GF-N", under="W-GF-N", **_GARAGE_FOOTING),
     Footing(uid="CGF204AAAA", tag="FT-GF-W", under="W-GF-W", **_GARAGE_FOOTING),
 ]
@@ -662,6 +664,11 @@ _slab_y_s = GARAGE_Y_SOUTH + _SLAB_INSET
 _slab_y_n = GARAGE_Y_NORTH - _SLAB_INSET
 _slab_x_w = GARAGE_X_WEST + _SLAB_INSET
 _slab_x_e = GARAGE_X_EAST - _SLAB_INSET
+# The overhead door's tab: with no grade beam under the door the slab runs out between the
+# two stem piers to the node line (the stems' outer EPS face), the usual 1/2" off each pier
+# end. The driveway's K8 joint starts there (params/driveway.py).
+_door_x_e = GARAGE_X_EAST - OVERHEAD_DOOR_OFFSET - _SLAB_GAP
+_door_x_w = GARAGE_X_EAST - OVERHEAD_DOOR_OFFSET - OVERHEAD_DOOR_WIDTH + _SLAB_GAP
 # ** THE HOUSE SLAB-EDGE BREAK, STATED (free body §11j-§11k, basis 8). ** SL-B-FLOOR's south and
 # north edges carry the court's thermal-break thrust to the far footing line, so the board's
 # grade is a graded input: FOAMULAR 1000 (100 psi) holds the sheet's 1/3 sustained-load rule
@@ -686,7 +693,9 @@ GARAGE_SLAB_EDGE_BREAK = dict(
 GARAGE_SLAB = Slab(
     uid="CGS501AAAA", tag="SL-G-FLOOR",
     outline=(pt(_slab_x_w, _slab_y_s), pt(_slab_x_e, _slab_y_s),
-             pt(_slab_x_e, _slab_y_n), pt(_slab_x_w, _slab_y_n)),
+             pt(_slab_x_e, _slab_y_n), pt(_door_x_e, _slab_y_n),
+             pt(_door_x_e, GARAGE_Y_NORTH), pt(_door_x_w, GARAGE_Y_NORTH),
+             pt(_door_x_w, _slab_y_n), pt(_slab_x_w, _slab_y_n)),
     thickness=inch(3.5), assembly="GARAGE_SLAB_ON_GRADE", top_elevation=SITE_GRADE,
     perimeter_thermal_break=SlabThermalBreak(**GARAGE_SLAB_EDGE_BREAK),
 )

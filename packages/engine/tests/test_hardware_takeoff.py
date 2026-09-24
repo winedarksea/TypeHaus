@@ -301,7 +301,9 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # wall it landed squarely on girt course 003 (z 48"..51 1/2"), breaking it in one bay and
     # buying the blocks that carry the two cut ends. On the north wall it sits in the clear
     # between that course and the 72" one — 4" under, 7 1/2" over — and cuts nothing.
-    assert row["count"] == 1130 and furring[0]["count"] == 224
+    # ** 224 -> 198 ON 2026-09-23: W-GF-N-DR's 2" coil strip (grade to slab top) went with
+    # the grade beam, and this row grids fasteners per wall run. **
+    assert row["count"] == 1130 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

@@ -287,8 +287,9 @@ def build_prototype(ptype, k: int) -> PlantPrototype:
     from typehaus.resolve.plant_forms import FORM_BUILDERS
 
     mesh = MeshBuilder(rng=random.Random(f"{ptype.tag}#{k}"))
-    # A tree's "bloom" worth drawing is its fruit.
-    flag = ptype.fruit_material if ptype.form == "tree" else ptype.bloom_material
+    # A tree's or a vegetable's "bloom" worth drawing is its fruit.
+    flag = (ptype.fruit_material if ptype.form in ("tree", "vegetable")
+            else ptype.bloom_material)
     FORM_BUILDERS[ptype.form](mesh, has_bloom=bool(flag))
     mesh.normalise_unit()
     return PlantPrototype(ref=prototype_ref(ptype.tag, k), parts=mesh.parts(), form=ptype.form,

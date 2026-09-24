@@ -26,7 +26,8 @@ class PlantType(HausModel):
     botanical_name: str
     cultivar: str = ""
     common_name: str = ""
-    form: Literal["grass", "perennial", "groundcover", "shrub", "tree"] = "perennial"
+    form: Literal["grass", "perennial", "groundcover", "shrub", "tree",
+                  "vegetable"] = "perennial"
     mature_height: Length
     mature_spread: Length
     # A ``Material`` tag carrying the render colour (``Material.color``).
@@ -94,7 +95,12 @@ class Plant(Element):
 
 @register_element
 class PlantingBed(Element):
-    """A bed planted on a grid or in slab pockets — exactly one of the two."""
+    """A bed planted on a grid or in slab pockets — exactly one of the two.
+
+    ``soil_depth``/``fill_depth`` build the bed itself (a raised terrace): planting soil
+    straight under ``ground_elevation``, fill under that, both over ``outline``. Unset = the
+    bed is planted into ground that is already there, as ``RainGarden`` media is not.
+    """
 
     type_ref: str  # the field plant
     outline: tuple[Point2D, ...] = ()  # required for a grid; ignored for pockets
@@ -102,6 +108,10 @@ class PlantingBed(Element):
     pockets: PocketLayout | None = None
     accents: AccentRule | None = None
     ground_elevation: Length | None = None  # None = site grade (pockets: the slab top)
+    soil_depth: Length | None = None
+    soil: str = ""
+    fill_depth: Length | None = None
+    fill: str = ""
 
 
 @register_element

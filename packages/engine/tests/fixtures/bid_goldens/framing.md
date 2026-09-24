@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** f025e97af21e00b9  
+**Model hash:** 876611ef5aae5572  
 **Lines:** 141
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -163,14 +163,14 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Treated sill plate, KDAT southern yellow pine (treated exterior framing) (pt-sill-plate) | 399.7 | LF |  | building |
+| Treated sill plate, KDAT southern yellow pine (treated exterior framing) (pt-sill-plate) | 383.7 | LF |  | building |
 
 ## Sill gaskets
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Sill seal foam gasket, under the sill plate (sill-seal-foam) | 141.7 | LF |  | building |
-| Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | 258 | LF |  | building |
+| Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | 242 | LF |  | building |
 
 ## Assembly layers, by material
 

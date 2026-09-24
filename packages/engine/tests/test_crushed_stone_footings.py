@@ -32,10 +32,10 @@ def _one(ctx):
 
 
 # ------------------------------------------------------------------ catlin, the real one
-def test_catlins_nine_garage_footings_pass_on_stone(catlin_ctx) -> None:
+def test_catlins_eight_garage_footings_pass_on_stone(catlin_ctx) -> None:
     """The landed verdict, and the arithmetic that earns it.
 
-    Nine 20" x 8" strips under the garage's ICF stem runs. Table R403.4's one-storey
+    Eight 20" x 8" strips under the garage's ICF stem runs. Table R403.4's one-storey
     conventional light-frame row wants D = 4" at every soil bearing value it publishes, and
     W = 13"/15"/17" for an 8"/10"/12" wall. Both authored dimensions clear the widest of
     those, which is what the check requires here — see the sub-8" note below.
@@ -44,7 +44,7 @@ def test_catlins_nine_garage_footings_pass_on_stone(catlin_ctx) -> None:
     assert {f.result for f in found} == {Result.PASS}, [
         f.message for f in found if f.result is not Result.PASS]
     tags = sorted(t for f in found for t in f.element_tags)
-    assert len(tags) == 9, tags
+    assert len(tags) == 8, tags  # nine until FT-GF-N-DR retired, 2026-09-23
     assert all(t.startswith("FT-GF-") for t in tags), tags
     assert all("Seismic Design Category A" in f.message for f in found)
 
@@ -95,7 +95,7 @@ def test_a_profile_that_states_no_category_reports_unknown(catlin_ctx) -> None:
     found = _one(ctx)
     assert found.result is Result.UNKNOWN
     assert "R301.2.2.1" in found.message
-    assert len(found.element_tags) == 9, "the UNKNOWN names every footing it could not grade"
+    assert len(found.element_tags) == 8, "the UNKNOWN names every footing it could not grade"
 
 
 def test_category_d_fails_them_all_at_once(catlin_ctx) -> None:

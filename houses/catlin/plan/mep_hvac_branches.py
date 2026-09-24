@@ -2,47 +2,44 @@
 # Catlin MEP — System 1's three bedroom supply branches, off DU-S-HP-SUP (plan/mep_hvac.py).
 #
 # Until 2026-09-23 REG-S-HP-BED1/2/3 named the trunk and nothing reached them: an unmodelled
-# "boot through W-S-BW1/2/3's stud bay" that could not have been built. Each grille sat on or
-# beside an FS-ATTIC joist, reached 1 3/8" into the hall wall, and BED3's was north of the
-# point where the trunk leaves SF-S-DUCT for SF-S-HP1, beside the return plenum.
+# "boot through W-S-BW1/2/3's stud bay" that could not have been built. Each was a CEILING
+# grille, sat on or beside an FS-ATTIC joist, and reached 1 3/8" into the hall wall.
 #
-# Each branch is the DU-S-HP-SOUTH idiom: a RISER standing up out of the trunk inside
-# SF-S-DUCT, then a bay leg running EAST in one FS-ATTIC bay to a 90 degree ceiling boot
-# (unmodelled, like REG-S-HP-STUDY2's). Two runs, because a run carries one `routing` and one
-# `soffit_ref`. The leg rides over the hall wall's top plates (104 3/8"..107 3/8"), so nothing
-# is bored or notched.
+# BED1 and BED2 are SIDE COLLARS: a 6" stub straight east off the trunk's east face at its
+# 100 1/8" centreline, across SF-S-DUCT's empty east lane, through W-S-BW1/2's stud bay (under
+# the plates at 104 3/8") to a high sidewall grille on the bedroom face — the REG-S-HP-STAIR
+# idiom with a wall in the way. Each stub is on a clean 14 1/2" bay centre south of its door:
+# BED1 12'-4" (studs 11'-8"/13'-0"), BED2 19'-8" (studs 19'-0"/20'-4"). Two field items:
+# - the 2 5/8" shadow gap between the box's east face (21'-5 1/2") and the wall's hall face
+#   (21'-8 1/8") is open to the hall below; close it across the stub with a lining return.
+# - the hall face's resilient channel at 96"..98 1/2" is cut in that one bay; no height
+#   between the trunk and the plates clears it.
+# They are EXPOSED with an authored centreline, as DU-S-HP-SUITE is: a run naming SF-S-DUCT is
+# graded across the box's width, and these leave it through its side.
 #
-# FS-ATTIC joists run in x at y=16n, so a bay is centred on 8" + 16n:
-# - BED1 at 12'-8": 14'-0" would crowd DU-S-HP-SUITE's tee at 14'-1 7/8"; south of D-S-BED1.
-# - BED2 at 20'-8": the 22'-0" bay holds DU-S-ERV-HP-FEED; south of D-S-BED2.
-# - BED3 at 27'-4": the last bay inside SF-S-DUCT (it ends at 27'-8"). It sits over BED3's
-#   SOUTH edge — joist 020 bears on W-S-BD2 — and the grille lands ~6" north of that wall's
-#   face. A sidewall grille IN W-S-BD2 is not buildable: a 2x4 cannot take a 6" boot.
+# BED3 cannot do this: north of 27'-8" the trunk is in SF-S-HP1 beside the return plenum. It
+# is the DU-S-HP-SOUTH idiom instead — a RISER out of the trunk inside SF-S-DUCT, then a leg
+# EAST in the 27'-4" FS-ATTIC bay (the last inside SF-S-DUCT) over the hall wall's plates to
+# an unmodelled 90 degree ceiling boot. Two runs, because a run carries one `routing`. The bay
+# sits over BED3's SOUTH edge — joist 020 bears on W-S-BD2 — and the grille lands ~6" north
+# of that wall's face. Riser elevations: 100 1/8" is the trunk's centreline (the tee), 111 1/8"
+# the centreline a 6" duct derives in an FS-ATTIC bay.
 #
 # 6" round galvanized at 80 cfm is `size_for_cfm`'s answer: 407 fpm, under Manual D's 700 fpm
-# branch limit. Riser elevations are storey-relative: 100 1/8" is the trunk's centreline (the
-# tee), 111 1/8" the centreline a 6" duct derives in an FS-ATTIC bay.
+# branch limit.
 
 from typehaus import DuctRouting, DuctRun, DuctSystem, ft, inch, pt
 
 DUCTS_HVAC_BRANCHES_SECOND = [
-    DuctRun(uid="Y85GQW7GD3", tag="DU-S-HP-BED1-RISE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(12, 8)), pt(ft(19, 6), ft(12, 8))),
-            elevations=(inch(100.125), inch(111.125)),
-            diameter=inch(6), routing=DuctRouting.SOFFIT, soffit_ref="SF-S-DUCT",
-            material="galvanized", design_cfm=80),
     DuctRun(uid="AFRBDV5JT6", tag="DU-S-HP-BED1", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(12, 8)), pt(ft(22, 9), ft(12, 8))),
-            diameter=inch(6), routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC",
-            material="galvanized", design_cfm=80),
-    DuctRun(uid="JH7KT62NJN", tag="DU-S-HP-BED2-RISE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(20, 8)), pt(ft(19, 6), ft(20, 8))),
-            elevations=(inch(100.125), inch(111.125)),
-            diameter=inch(6), routing=DuctRouting.SOFFIT, soffit_ref="SF-S-DUCT",
+            path=(pt(ft(19, 6), ft(12, 4)), pt(inch(265.375), ft(12, 4))),
+            elevations=(inch(100.125), inch(100.125)),
+            diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=80),
     DuctRun(uid="QBDPVD0HE2", tag="DU-S-HP-BED2", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(20, 8)), pt(ft(22, 9), ft(20, 8))),
-            diameter=inch(6), routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC",
+            path=(pt(ft(19, 6), ft(19, 8)), pt(inch(265.375), ft(19, 8))),
+            elevations=(inch(100.125), inch(100.125)),
+            diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=80),
     DuctRun(uid="BT159ZSXAT", tag="DU-S-HP-BED3-RISE", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 6), ft(27, 4)), pt(ft(19, 6), ft(27, 4))),

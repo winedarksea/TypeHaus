@@ -632,3 +632,10 @@ face). Rows: footing #5 150 → 156 pieces, 962.7 → **1,051.0** lb
 Total **6,566.3 lb / 1,172 pieces** (was 6,570.5). `balcony_level_ft` 10.0 → 9.75' shortens
 the four corner columns 3": 4 columns × 4 #5 verticals × 3" = 48" = 4.0 LF × 1.043 plf =
 −4.2 lb. Column #5 **545.3** lb, 80 pieces (was 549.5); no tie is lost (column #3 unchanged).
+
+## Addendum 2026-09-23 — the overhead door's grade beam retired
+
+Total **6,471.4 lb / 1,148 pieces** (was 6,566.3 / 1,172). `W-GF-N-DR` is gone with its 21
+bars of `_ICF_STEM_STEEL` (#4 @ 16" each way), and `W-GF-N` lays 14 where it laid 17: its
+east end is an open end now, not a junction the horizontals ran through. Foundation wall #4
+311 → **287** pieces, 1,715.4 → **1,620.5** lb. No other row moves.

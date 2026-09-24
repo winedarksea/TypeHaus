@@ -1562,6 +1562,11 @@
 # by the yard, like the drywell's stone; the excavation is in the earthwork allowance.
 "rain_garden_media" = { material = { low = 50, high = 90 }, labour = { low = 40, high = 110 } }  # 12.96 cy over both basins, MnDOT 3877.2 Type G mix, placed by hand
 "rain_garden_stone" = { material = { low = 40, high = 70 }, labour = { low = 30, high = 90 } }  # 6.48 cy over both basins, washed filter aggregate under the media
+# The raised-garden terrace (params/raised_garden.py TERRACE_BEDS): 12" of screened topsoil
+# placed by hand between the apron and the court walls, then the fill under it. The FILL is
+# ZERO on purpose: it is the excavator's, inside `site-excavation-backfill-grading`.
+"planting_soil" = { material = { low = 35, high = 65 }, labour = { low = 40, high = 110 } }  # 6.47 cy, PB-TER-*
+"planting_fill" = { low = 0, high = 0 }  # 15.09 cy, PB-TER-* — bills in the earthwork allowance
 # ZERO on purpose: the pipe is billed by the foot in [drainage] `leader_extension:pvc-sdr35`.
 "leader_extension" = { low = 0, high = 0 }  # 0.12 cy — bills in [drainage]
 # ZERO on purpose, like `leader_extension`: AD-SG-COURT bills by the piece and its riser by
