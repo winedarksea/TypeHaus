@@ -67,3 +67,21 @@ def surround_zone(width: Length, depth: Length, reach: Length, purpose: str,
     return _zone(((-half_width, -half_depth), (half_width, -half_depth),
                   (half_width, half_depth), (-half_width, half_depth)), purpose,
                  occupant_types=occupant_types)
+
+
+def open_corner_zone(width: Length, depth: Length, reach: Length, purpose: str,
+                     *, source: str = PLANNING_SOURCE,
+                     occupant_types: tuple[str, ...] = ()) -> tuple[ClearanceZone, ClearanceZone]:
+    """A rectangular table's chair-use margin as two crossed bands, not one bigger rectangle.
+
+    ``surround_zone`` is right for a ROUND table, whose corners really seat a chair. On a
+    rectangular one the four corner squares hold nothing: one band the table's width running
+    past both long sides, one band its depth running past both ends. Strictly smaller than
+    ``surround_zone``, and smaller only where nothing stands.
+    """
+    hw, hd, r = width.meters / 2, depth.meters / 2, reach.meters
+
+    def band(x: float, y: float) -> ClearanceZone:
+        return _zone(((-x, -y), (x, -y), (x, y), (-x, y)), purpose, source,
+                     occupant_types=occupant_types)
+    return band(hw, hd + r), band(hw + r, hd)

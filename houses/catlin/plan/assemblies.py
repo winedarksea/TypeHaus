@@ -28,6 +28,12 @@ from typehaus import (
 )
 from typehaus.model import PartitionLayout
 from library import (
+    CONCRETE_BEARING,
+    STUD_BEARING,
+    PAINT_FINISH,
+    PAINT_FINISH_A,
+    PAINT_FINISH_B,
+    GWB_LINING,
     FOUNDATION_WALL_12_INT,
     FOUNDATION_WALL_XPS4_OUTBOARD,
     INT_2X4_PARTITION,
@@ -197,20 +203,11 @@ INTERIOR_SLAB_MIX = ConcreteSpec(
 # through a return, so two walls are "continuous" when they publish the same bearing
 # material (concrete↔concrete, SPF↔SPF) regardless of the finish/insulation around it —
 # never by layer name or index. Variants inherit these from their base assembly.
-_CONCRETE_BEARING = AssemblyInterface(role="bearing", layer_name="concrete", outboard=False)
-_STUD_BEARING = AssemblyInterface(role="bearing", layer_name="stud", outboard=False)
-
-# Painted gypsum lining. Paint comes FIRST (interior->exterior order) because it is the
-# room-side face and so the assembly's warm-side vapour retarder in the Glaser walk (IRC
-# R702.7/.7.1: latex over gypsum is Class III, 1.0-10 perm). Bare gypsum reads ~30 perm —
-# no retarder — which is not the wall that gets built.
-# Colour lives on the `latex-paint` material, not on the Layer (no colour slot): a
+# Painted gypsum lining (PAINT_FINISH, GWB_LINING) and the bearing interfaces come from the
+# library. Colour lives on the `latex-paint` material, not on the Layer (no colour slot): a
 # different wall colour is a different Material. `latex-paint-accent` + `ACCENT_GWB_LINING`
 # below are that mechanism's accent-wall instance, swapped in per room/wall via
 # `Room.wall_lining`/`wall_lining_exceptions` (see RM-S-BED1 in storeys/second.py).
-_PAINT_FINISH = Layer(name="paint", material_ref="latex-paint", thickness=inch(0.01),
-                      function=LayerFunction.FINISH,
-                      control={ControlLayer.VAPOR})
 
 # The accent film. Same name ("paint"), same thickness, same Class III vapour job — only the
 # material (and so the colour) differs, which is what keeps an accent wall's Glaser walk and
@@ -219,22 +216,7 @@ _PAINT_FINISH_ACCENT = Layer(name="paint", material_ref="latex-paint-accent",
                              thickness=inch(0.01), function=LayerFunction.FINISH,
                              control={ControlLayer.VAPOR})
 
-# The same film named per face, for partitions that carry their gypsum in `layers` and so
-# have two room faces rather than one lining. `-a`/`-b` match the `gwb-a`/`gwb-b` each sits on.
-_PAINT_FINISH_A = Layer(name="paint-a", material_ref="latex-paint", thickness=inch(0.01),
-                        function=LayerFunction.FINISH,
-                        control={ControlLayer.VAPOR})
-_PAINT_FINISH_B = Layer(name="paint-b", material_ref="latex-paint", thickness=inch(0.01),
-                        function=LayerFunction.FINISH,
-                        control={ControlLayer.VAPOR})
-
-_GWB_LINING = (
-    _PAINT_FINISH,
-    Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.625),
-          function=LayerFunction.FINISH),
-)
-
-# The accent-wall lining: `_GWB_LINING` with the accent film in place of the off-white one.
+# The accent-wall lining: `GWB_LINING` with the accent film in place of the off-white one.
 # Same gypsum sheet, same total thickness, so swapping it via `Room.wall_lining` /
 # `wall_lining_exceptions` moves no face and changes no clear-floor inset — only the colour.
 ACCENT_GWB_LINING = (
@@ -415,8 +397,8 @@ EXT_2X6 = Assembly(
         Layer(name="cladding", material_ref="pbr-panel-24", thickness=inch(1.25),
               function=LayerFunction.CLADDING),
     ),
-    interfaces=(_STUD_BEARING,),
-    default_lining=_GWB_LINING,
+    interfaces=(STUD_BEARING,),
+    default_lining=GWB_LINING,
     source="catlin-house ifcplot/catlin_house.py wall siding stack; main-storey studs are LSL, second/attic standard dimensional 2x6",
 )
 
@@ -484,7 +466,7 @@ RAFTER_PLATE = Assembly(
 #    glass wool and stone wool do that within a point or two of each other at the same
 #    thickness. Published STC tables separate assemblies by MASS and DECOUPLING (layer
 #    count, resilient channel, staggered or double studs), not by which wool is in the bay.
-# 2. **Vapour.** Both materials read 116 perm-in in `library/materials.py`. Identical. The
+# 2. **Vapour.** Both materials read 116 perm-in in `library/materials/`. Identical. The
 #    swap has no Glaser consequence anywhere in this house.
 #
 # **Where mineral wool IS kept, and why** — every one of these is a damp, hot or wet case
@@ -553,8 +535,8 @@ EXT_2X6_SWINBURNE = Assembly(
         Layer(name="cladding", material_ref="standing-seam-snaplock", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ),
-    interfaces=(_STUD_BEARING,),
-    default_lining=_GWB_LINING,
+    interfaces=(STUD_BEARING,),
+    default_lining=GWB_LINING,
     source="the 2026-08-23 EXT_2X6 outrigger stack, retired 2026-08-26 in favour of the catlin truss; kept unreferenced so the revert is a swap",
 )
 
@@ -670,7 +652,7 @@ ROOF = Assembly(
               function=LayerFunction.CLADDING),
     ),
     default_lining=(
-        _PAINT_FINISH,
+        PAINT_FINISH,
         Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
@@ -779,7 +761,7 @@ _PROTECTION_PANEL = Layer(name="foundation-coating",
 # rest inside W-B-BRICK's ventilated cavity or behind 6'-4" of backfill — a scope that never
 # cleared a plasterer's mobilisation. The 29 SF is now the same GRADE band the N/E/W walls
 # carry. The layer, the assembly and the full argument are in git; `Material(tag="stucco")`
-# stays in library/materials.py because engine tests use the tag.
+# stays in library/materials/ because engine tests use the tag.
 
 # The east wall (W-B-E1/E2), the only perimeter run SL-M-DECK bears on.
 # ** THE POUR IS AUTHORED HERE NOW, NOT SPLATTED FROM THE LIBRARY CORE. **
@@ -797,7 +779,7 @@ BASEMENT_12 = Assembly(
         *FOUNDATION_WALL_XPS4_OUTBOARD,
         _PROTECTION_PANEL,
     ),
-    interfaces=(_CONCRETE_BEARING,),
+    interfaces=(CONCRETE_BEARING,),
     source="library FOUNDATION_WALL_12_XPS4 + the house's above-grade acrylic coating band (catlin basement east, where SL-M-DECK bears)",
 )
 
@@ -810,7 +792,7 @@ BASEMENT_8 = Assembly(
         *FOUNDATION_WALL_XPS4_OUTBOARD,
         _PROTECTION_PANEL,
     ),
-    interfaces=(_CONCRETE_BEARING,),
+    interfaces=(CONCRETE_BEARING,),
     source="library FOUNDATION_WALL_8_XPS4 + the house's above-grade acrylic coating band (catlin basement west/north, wood floor only)",
 )
 
@@ -827,7 +809,7 @@ BASEMENT_8 = Assembly(
 # (Foamular 400 / Styrofoam Highload 40) is the frost-wing and footing-bearing grade and
 # stays on those assemblies, where a strip footing imposes 10-14 psi on the board. A
 # residential basement floor imposes far less, and 25 psi (Foamular 250, the standard
-# under-slab board) carries it with the same margin. NOTE: `library/materials.py` has ONE
+# under-slab board) carries it with the same margin. NOTE: `library/materials/` has ONE
 # `xps` tag with no compressive field, and prices.toml keys XPS on THICKNESS only — so the
 # psi grade lives in this `source=` line and is NOT priced. A 25 psi board is genuinely
 # cheaper than a 40 psi one; the estimate does not yet see that.
@@ -905,12 +887,12 @@ DECK_EPS_INT = Assembly(
         Layer(name="gwb", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
-    interfaces=(_CONCRETE_BEARING,),
+    interfaces=(CONCRETE_BEARING,),
     source="catlin-house main-floor deck — LiteDeck 10\" EPS stay-in-place beam (8\" base panel + 2\" top hat) with a 4 3/8\" cast cover (14 3/8\" total, so the soffit lands on the same flat bearing seat as the wood bays' mudsill), steel furring rib and a 5/8\" gypsum R316.4 thermal barrier under it; replaced CATLIN_DECK_9_INT 2026-08-21, deepened 2026-08-23",
 )
 
 # ** THE WASH LAYER'S THICKNESS IS A RENDER DECISION, NOT A CLAIM ABOUT FILM BUILD. ** A
-# two-coat mineral silicate wash is a film, not a board; `_PAINT_FINISH` above carries such a
+# two-coat mineral silicate wash is a film, not a board; `PAINT_FINISH` above carries such a
 # film at inch(0.01) and that is the honest number. It cannot be used here, and the reason is
 # the renderer rather than the chemistry.
 #
@@ -924,7 +906,7 @@ DECK_EPS_INT = Assembly(
 # ** 1/8", AND THE DEPTH-BUFFER ARGUMENT THAT USED TO PICK IT IS GONE. ** For a while this
 # value was a renderer workaround. `Material.coating=True` does NOT stop a wall layer drawing
 # (`_is_coating` is scoped to room FLOOR finishes), so the wash gets a real plane, and at
-# `_PAINT_FINISH`'s honest inch(0.01) it z-fought: Panel3D's ordinary 24-bit depth buffer on
+# `PAINT_FINISH`'s honest inch(0.01) it z-fought: Panel3D's ordinary 24-bit depth buffer on
 # `PerspectiveCamera(50, 1, 0.05, 500)` resolves only about z^2 * 1.19e-6 metres (0.48 mm at
 # 20 m, 3.2 mm at 52 m), so the viewer flashed grey through the white. Thickening it was a losing
 # race — 0.01", 1/16" and 1/8" all still shimmered — and the race is over: the viewer now gives
@@ -935,7 +917,7 @@ DECK_EPS_INT = Assembly(
 # render ones: it is two coats plus, on the SRW block, the whole-face Quartz Filler or Bonding
 # Coat the Beeckosil TDS requires as a CMU pretreatment — and it is exactly what this house's
 # other coating, `foundation-coating-acrylic`, has carried since 2026-09-04. It is deliberately
-# NOT `_PAINT_FINISH`'s 0.01": that is a brushed latex film on gypsum, which this is not.
+# NOT `PAINT_FINISH`'s 0.01": that is a brushed latex film on gypsum, which this is not.
 #
 # ** ONE PARITY CAVEAT. ** glTF has no `polygonOffset`, so an exported .glb opened in a third-party
 # viewer can still shimmer here where the live viewer does not. That is a limitation of the
@@ -1011,7 +993,7 @@ SUNKEN_GARDEN_WALL = Assembly(
               control={ControlLayer.DRAINAGE}, slot="retained-face",
               extent=LayerExtent(top=LayerBound(datum=LayerDatum.GRADE))),
     ),
-    interfaces=(_CONCRETE_BEARING,),
+    interfaces=(CONCRETE_BEARING,),
     source="catlin-house W-SG-W1/E1 — the porch box's side walls: court face washed white, outboard face dimpleboard below grade only (2026-09-16), exposed concrete above it",
 )
 
@@ -1023,7 +1005,7 @@ SUNKEN_GARDEN_WALL_DRAINED = Assembly(
               thickness=inch(_COURT_DRAINAGE_IN), function=LayerFunction.DRAINAGE,
               control={ControlLayer.DRAINAGE}),
     ),
-    interfaces=(_CONCRETE_BEARING,),
+    interfaces=(CONCRETE_BEARING,),
     source="catlin-house W-SG-W2/E2/S — the retaining U: court face washed white, outboard face dimpleboard full height; the 60-mil membrane and bonded drainage composite were replaced 2026-09-16 (both faces exterior, galvanized steel)",
 )
 
@@ -1044,7 +1026,7 @@ SUNKEN_GARDEN_WALL_DRAINED = Assembly(
 # tag still names the same five subjects; one buried beam takes a new tag. The reverse split would
 # have retagged five.
 #
-# Everything else is deliberately IDENTICAL — 12", EXPOSED_MIX, _CONCRETE_BEARING — because it is
+# Everything else is deliberately IDENTICAL — 12", EXPOSED_MIX, CONCRETE_BEARING — because it is
 # literally the same pour off the same ticket (prices.toml: "one ticket for the whole court and
 # entry"). Its `prices.toml` [wall_structure] row is split off at the SAME rate for that reason.
 # This assembly is NOT the place to reconsider the mix; `unbalanced_fill=inch(0)` on the wall is
@@ -1055,7 +1037,7 @@ SUNKEN_GARDEN_GRADE_BEAM_12 = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
-    interfaces=(_CONCRETE_BEARING,),
+    interfaces=(CONCRETE_BEARING,),
     source="catlin-house W-SG-ARCH — the buried grade beam / strut on the N-SG-MW/N-SG-ME line, the same 12\" EXPOSED_MIX court pour off the same ticket as SUNKEN_GARDEN_WALL and split off it 2026-09-13 for one reason only: it carries NO mineral silicate wash, because its top is the rim slab's underside and nothing of it shows",
 )
 
@@ -1098,7 +1080,7 @@ SG_VENEER_BEAM_14 = Assembly(
         Layer(name="xps-break", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
-    interfaces=(_CONCRETE_BEARING,),
+    interfaces=(CONCRETE_BEARING,),
     source="sunken-garden veneer grade beam (2026-09-05): the court's own 12\" exposed pour, spanning W-SG-W1 to W-SG-E1 to carry W-B-BRICK clear of the house footing, with a 2\" 15 psi XPS isolation board (ASTM C578 Type X) on its north face against FT-B-S2/S3's trimmed toe — the same product as the court's IsolationBoards TB-SG-*, expressed as a layer so it resolves, bills and draws",
 )
 
@@ -1178,7 +1160,7 @@ SUNKEN_GARDEN_COLUMN_12 = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
-    interfaces=(_CONCRETE_BEARING,),
+    interfaces=(CONCRETE_BEARING,),
     # (single literal: the editable dialect forbids concatenated strings)
     # The 1/2"-1" STANDOFF is what holds exposed wood clear of the pour so the joint drains
     # and dries (AITC/WoodWorks). It must be STAINLESS, or hot-dip with an isolator — these
@@ -1336,7 +1318,7 @@ BASEMENT_FIBER_CEMENT_SCREEN = Assembly(
 # to grade. Both functions are in `takeoff/envelope.py::_BILLABLE`, so billing is identical.
 #
 # ** NO ControlLayer.VAPOR. ** A silicate wash is ~25 perms — the opposite of a retarder. See
-# `silicate-wash-white` in library/materials.py for the derivation.
+# `silicate-wash-white` in library/materials/ for the derivation.
 #
 # Geometry: the stack totals 3 3/4" rather than 3 5/8", so the centred panel drifts 1/16" west
 # and the overhang past W-B-E1's pour goes 1/8" -> 3/16". Below every tolerance in
@@ -1401,7 +1383,7 @@ RETAINING_BLOCK_12 = Assembly(
 # price, same pail as `silicate-wash-white` on the court's cast concrete; the split tag exists
 # because a thin silicate film over dry-stacked SRW units telegraphs the unit module and the
 # open joints straight through, where over as-cast concrete it reads as one flat plane. See
-# library/materials.py.
+# library/materials/.
 #
 # ** THE SRW UNITS ARE THE WEAKEST SUBSTRATE IN THIS SCOPE AND THE RISK IS REAL. ** Dry-cast,
 # integrally coloured units are far less absorbent than cast-in-place and frequently carry an
@@ -1439,23 +1421,6 @@ PORCH_DECK_COMPOSITE = Assembly(
     # deck on this assembly is pitched. Installation instruction, not a modelled fact —
     # there is no gap field and one would buy nothing.
     source="catlin-house porch floor — composite decking on PT 2x8 joists, gapped 3/16\"",
-)
-
-# --- breezeway enclosure -------------------------------------------------------
-# Two glazing assemblies, deliberately without insulation, membrane or deck layers: the
-# breezeway is an unheated shelter between two heated buildings, so its envelope only sheds
-# water/cuts wind and must not fall inside an energy check. Single-layer sheet assemblies
-# because the sheet *is* the whole construction — the 2x6 rafters are real Beams
-# (params/breezeway.py, on their own drainage-wedge elevations) rather than a framing layer
-# here, so a rafter layer would frame nothing and would mislabel the polycarbonate "spf" in
-# every consumer that reads an assembly's structure layer (GLB colour, viewer, cut detail).
-BREEZEWAY_ROOF_GLAZING = Assembly(
-    tag="BREEZEWAY_ROOF_GLAZING",
-    layers=(
-        Layer(name="glazing", material_ref="polycarbonate-multiwall", thickness=inch(0.63),
-              function=LayerFunction.STRUCTURE),
-    ),
-    source="breezeway roof — two 4'x4' pieces of one 16mm 5-wall sheet on drainage wedges over 2x6 rafters",
 )
 
 # The breezeway's own glazed side wall was deleted 2026-09-12 with the rest of the breezeway
@@ -1546,7 +1511,7 @@ POST_WHITE_PAINT_DF = Assembly(
               thickness=inch(5.5), function=LayerFunction.STRUCTURE),
     ),
     # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house balcony CENTRE 6x6 pillars PT-SG-BR2/BF2 — Douglas Fir-Larch, specific gravity 0.50, white-painted finish. THE SPECIES IS A CONNECTOR REQUIREMENT, not a preference: ICC-ES ESR-2604 §3.2.2, ESR-2105 §3.5.2 and ESR-3096 §3.2.2 all carry the SAME clause — sawn or engineered lumber, SG >= 0.50, 19% maximum moisture content — and at SPF 0.42 neither the CCQ46SDS2.5 cap over these posts nor the MSTA12Z strap and L50Z angles that tie their bases down had any published value. The clause is family-wide, so the species call survives every part change at this joint; only the citation widens. The moisture half is still not met by an open deck frame and rides on the seal, while the WET SERVICE half is resolvable and applied: both ESR-2105 §4.1 and ESR-3096 §4.1 send it to the NDS wet service factor, so C_M 0.70 is already inside the 658 lbf and 375 lbf recorded in library/hardware.py. Chamfer or bevel the 1/2\" of upward end grain left proud on the east and west faces of each pillar top by the narrower beam over it, and seal the cut before standing. Cut a ~9\" square through the composite porch plank so the POST ITSELF bears on the 3-ply joist pack below, not on decking (Trex: composite decking is not structural material) — 9\" because the post is 5-1/2\" square and the cut must also clear the L50Z angle legs lying on the pack beside it. The post stands directly on the joists with no plate between, so the joint is wood on wood. PT-SG-BF2 also serves as the RL-SG-PORCH south-leg guard post at x 18'-0\", so its top 42\" is a guard post and its rails frame into the 6x6 rather than into a 2x2 beside it",
+    source="catlin-house balcony CENTRE 6x6 pillars PT-SG-BR2/BF2 — Douglas Fir-Larch, specific gravity 0.50, white-painted finish. THE SPECIES IS A CONNECTOR REQUIREMENT, not a preference: ICC-ES ESR-2604 §3.2.2, ESR-2105 §3.5.2 and ESR-3096 §3.2.2 all carry the SAME clause — sawn or engineered lumber, SG >= 0.50, 19% maximum moisture content — and at SPF 0.42 neither the CCQ46SDS2.5 cap over these posts nor the MSTA12Z strap and L50Z angles that tie their bases down had any published value. The clause is family-wide, so the species call survives every part change at this joint; only the citation widens. The moisture half is still not met by an open deck frame and rides on the seal, while the WET SERVICE half is resolvable and applied: both ESR-2105 §4.1 and ESR-3096 §4.1 send it to the NDS wet service factor, so C_M 0.70 is already inside the 658 lbf and 375 lbf recorded in library/hardware/. Chamfer or bevel the 1/2\" of upward end grain left proud on the east and west faces of each pillar top by the narrower beam over it, and seal the cut before standing. Cut a ~9\" square through the composite porch plank so the POST ITSELF bears on the 3-ply joist pack below, not on decking (Trex: composite decking is not structural material) — 9\" because the post is 5-1/2\" square and the cut must also clear the L50Z angle legs lying on the pack beside it. The post stands directly on the joists with no plate between, so the joint is wood on wood. PT-SG-BF2 also serves as the RL-SG-PORCH south-leg guard post at x 18'-0\", so its top 42\" is a guard post and its rails frame into the 6x6 rather than into a 2x2 beside it",
 )
 
 # Guards were split off POST_WHITE_PAINT (they shared it with the balcony's
@@ -1799,7 +1764,7 @@ PIER_CONCRETE_12 = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
-    interfaces=(_CONCRETE_BEARING,),
+    interfaces=(CONCRETE_BEARING,),
     # ** ALL SIX CARRY WOOD, AND NOT ONE OF THEM TAKES A GROUT ISLAND (2026-09-12). **
     # PT-BW-W/-E/-GW/-GE each take a 2-2x8 seat beam across the circle; PT-BW-RE/-RNE take
     # BM-BW-RE's 3-ply 2x12, and its south END lands on PT-BW-RE, the one beam end on a pour
@@ -2342,7 +2307,7 @@ GARAGE_WALL_2X6 = Assembly(
         Layer(name="cladding", material_ref="corrugated-panel-24", thickness=inch(0.875),
               function=LayerFunction.CLADDING),
     ),
-    default_lining=_GWB_LINING,
+    default_lining=GWB_LINING,
     source="catlin-house ifcplot/assemblies.py GARAGE_WALL; rainscreen furring dropped 2026-08-20; rebuilt 2026-08-31 — 24\" o.c. studs, 2\" ccSPF in the bays, 5/8\" CDX for the 1.5\" Zip-R, and 7/8\" corrugated exposed-fastener panel for the 26 ga. nail strip. No WRB (IRC R703.2 exception, unconditioned detached accessory building)",
 )
 
@@ -2561,7 +2526,7 @@ CANOPY_ROOF = Assembly(
 # löyly room), INT_2X6_BRG_EXPOSED_PLY (exposed wood faces, already hardwax-oil
 # finished), the masonry/concrete/deck/glazing assemblies (no gypsum face), POST_WHITE_PAINT
 # (its own exterior-paint material), and INT_2X4_PARTITION (a tested STC assembly — see
-# library/assemblies.py for why it doesn't get layers added). A gypsum face left bare and
+# library/assemblies/ for why it doesn't get layers added). A gypsum face left bare and
 # facing a room is still billed paint, by takeoff/derived_paint.py.
 # LAYOUT_ORIGIN, INTERIOR. The five bearing assemblies below join the four
 # facades on ``layout_origin="line"``. The facades were done first because they are what you
@@ -2587,7 +2552,7 @@ CANOPY_ROOF = Assembly(
 INT_2X6_BRG = Assembly(
     tag="INT_2X6_BRG",
     layers=(
-        _PAINT_FINISH_A,
+        PAINT_FINISH_A,
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
@@ -2595,9 +2560,9 @@ INT_2X6_BRG = Assembly(
               framing=FramingSpec(member="2x6", layout_origin="line")),
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
-        _PAINT_FINISH_B,
+        PAINT_FINISH_B,
     ),
-    interfaces=(_STUD_BEARING,),
+    interfaces=(STUD_BEARING,),
     source="catlin-house centerline bearing wall (2x6)",
 )
 
@@ -2673,7 +2638,7 @@ INT_2X6_BRG_RC = Assembly(
 )
 
 # INT_2X6_PLUMBING and INT_2X6_STAGGERED_PLUMBING (generic wet-wall partitions, no
-# house-specific geometry or owner data) were promoted to library/assemblies.py
+# house-specific geometry or owner data) were promoted to library/assemblies/
 # (CONTRIBUTING §Promotion flow) and are imported above. The staggered
 # variant's non-bearing rationale — same 5.5" pipe cavity as the bearing wall above, but
 # decoupled staggered studs so a stack never needs a stud bored on the way through —
@@ -2795,7 +2760,7 @@ INT_2X8_PLUMBING = Assembly(
 INT_ESS_CLOSET_STEEL = Assembly(
     tag="INT_ESS_CLOSET_STEEL",
     layers=(
-        _PAINT_FINISH_A,
+        PAINT_FINISH_A,
         Layer(name="gwb-x-a", material_ref="gwb-x", thickness=inch(0.625),
               function=LayerFunction.FINISH),
         Layer(name="steel-stud", material_ref="steel-stud", thickness=inch(3.5),
@@ -2803,7 +2768,7 @@ INT_ESS_CLOSET_STEEL = Assembly(
               framing=FramingSpec(member="2x4", spacing=inch(16))),
         Layer(name="gwb-x-b", material_ref="gwb-x", thickness=inch(0.625),
               function=LayerFunction.FINISH),
-        _PAINT_FINISH_B,
+        PAINT_FINISH_B,
     ),
     source="owner ESS-closet standard, 2026-08-02: 25 ga. steel C-stud at 16 in. o.c. with 5/8 in. Type X both faces (notes/backup_power.md). Not a code-required rated assembly and not claimed as one — no tested assembly number is cited.",
 )
@@ -2895,7 +2860,7 @@ SAUNA_2X4 = Assembly(
         Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
-    interfaces=(_STUD_BEARING,),
+    interfaces=(STUD_BEARING,),
     source="catlin-house sauna_basement_wall_detail.py + notes/sauna_basement_wall_detail.md",
 )
 
@@ -3148,7 +3113,7 @@ GARDEN_CURB_6 = Assembly(
     layers=(
         *_GARDEN_CURB_CORE,
     ),
-    interfaces=(_CONCRETE_BEARING,),
+    interfaces=(CONCRETE_BEARING,),
     source="catlin sunken-garden curb (W-B-S3), 2026-08-28: 6 in. of the south pour kept 7 1/4 in. above the slab under the framed walkout, on its own waterproofing and 4 in. XPS, bare to the brick cavity since the 2026-09-02 stucco retirement",
 )
 
@@ -3175,7 +3140,7 @@ GARDEN_FRAMED_2X6 = Assembly(
         _GARDEN_FRAMED_STUD,
         *_GARDEN_FRAMED_OUTBOARD,
     ),
-    interfaces=(_STUD_BEARING,),
+    interfaces=(STUD_BEARING,),
     source="catlin basement south walkout (W-B-S3-FR), framed 2026-08-28: 2x6 spf at 16 in. o.c. with mineral wool, on the same outboard tail the curb below it carries (waterproofing, 4 in. XPS, bare to the brick cavity since the 2026-09-02 stucco retirement) so the sunken garden's finished face does not move",
 )
 
@@ -3223,7 +3188,7 @@ INT_2X6_BRG_EXPOSED_PLY = Assembly(
         Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
               function=LayerFunction.FINISH),
     ),
-    interfaces=(_STUD_BEARING,),
+    interfaces=(STUD_BEARING,),
     source="catlin stair-line bearing wall (W-B-STR2/STR3B basement, W-M-STRW/STRW2 main): 2x6 bearing studs at 16 in. o.c. on a gasketed PT sill, 3/4 in. cabinet-grade plywood on the stair face. The mudroom pair carries exposed Select Structural S4S DF studs (open bays = coat nooks) via Wall.layer_materials; everything below is plain spf, where nothing is exposed to a finished room.",
 )
 
@@ -3312,7 +3277,7 @@ STAIRWELL_PARTITION_4H = Assembly(
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.5),
               function=LayerFunction.FINISH),
     ),
-    interfaces=(_STUD_BEARING,),
+    interfaces=(STUD_BEARING,),
     source="catlin basement stair-well partition (W-B-WELL), 2026-09-05: 1/2 in. board each face of the 2x4 studs resolve/stairs/u_split.py already generates, so the built thickness is exactly the 4 1/2 in. resolve/stairs/common.py reserves between the flights",
 )
 
@@ -3695,7 +3660,7 @@ MATERIALS = [
     # at the dearest of the four would overstate the biggest line in the house by roughly
     # $5,000-18,000.
     #
-    #   `standing-seam` (library/materials.py) — 24 ga, MECHANICALLY FIELD-SEAMED.
+    #   `standing-seam` (library/materials/) — 24 ga, MECHANICALLY FIELD-SEAMED.
     #       ROOF and nothing else. Every seam takes a separate powered-seamer pass:
     #       +$1.50-3.00/SF of labour and ~50% more crew-hours than a hand-closed profile,
     #       plus a seamer rental. It is on the main house roof on purpose — this is the roof
@@ -3827,7 +3792,7 @@ MATERIALS = [
     # presentation triple and says nothing about the near-infrared, where most of the energy
     # is; only a published SR answers it.
     #
-    # HOUSE-LOCAL rather than an edit to `library/materials.py`, for the same reason
+    # HOUSE-LOCAL rather than an edit to `library/materials/`, for the same reason
     # `pbr-panel-24` is: a colour is this house's choice and the library row is the shared,
     # reviewed catalog entry (CONTRIBUTING section Promotion flow). Every other building-
     # science number is `standing-seam`'s verbatim — continuous sheet steel carries no R and
@@ -3846,7 +3811,7 @@ MATERIALS = [
              source="Metal Sales PBR-Panel: 24 ga. PVDF-coated steel purlin-bearing-rib wall panel, 36\" net coverage, 1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; 318 psf outward at 2'-0\" (PBR Condensed Technical Reference 1/2026 wall table; the 26 ga row of the same table is 236 psf). PVDF Linen White (81), SR 0.73 / TE 0.86 / SRI 89; same vapour-impermeable sheet steel as the skins above, and the same colour as the board & batten and the garage corrugated"),
     # `corrugated-panel-24` — the library's `corrugated-panel-26` one gauge heavier, in the
     # same Linen White, on GARAGE_WALL_2X6 and both ENTRY_SCREEN faces. HOUSE-LOCAL and NOT
-    # an edit to `library/materials.py`: the library row is the shared, reviewed catalog
+    # an edit to `library/materials/`: the library row is the shared, reviewed catalog
     # entry and a second house may still want 26 ga (CONTRIBUTING §Promotion flow). Same
     # gauge reasoning as `pbr-panel-24` above, and the entry screen moves WITH the garage
     # because CLAUDE.md records that its west face must stay in the same plane and the same
@@ -4103,7 +4068,7 @@ MATERIALS = [
     # (`roof-ice-and-water-barrier-code-minimum` in prices.toml) rather than modelled here.
     # It is small enough that sealing it does not close the field's drying path.
     # The plant room's three materials — `pvc-panel`, `humid-room-membrane` and
-    # `vinyl-sheet` — were authored here first and promoted to `library/materials.py`
+    # `vinyl-sheet` — were authored here first and promoted to `library/materials/`
     # (CONTRIBUTING §Promotion flow): none of them carries a project
     # coordinate, an owner choice or a house-specific dimension, all three are ordinary
     # catalog products with stable tags, and `takeoff/finishes.py::_WASTE` (engine code)
@@ -4185,7 +4150,7 @@ MATERIALS = [
              color="#a07c5c", finish="brown-brick",
              source="basement south veneer over the sunken garden — the Ishtar plinth 2026-08-20, the whole field since 2026-09-04; standard unglazed ASTM C216 Grade SW face brick, no special order"),
     # cmu, grout (porch railing wythe/balcony post bases) were promoted to
-    # library/materials.py (CONTRIBUTING §Promotion flow); they arrive here
+    # library/materials/ (CONTRIBUTING §Promotion flow); they arrive here
     # through ALL_MATERIALS above.
     # The house's one exterior dark: every dark metal element on the
     # envelope — rake/eave/ridge trim coil, opening casings, guards — shares this value.
@@ -4329,7 +4294,7 @@ MATERIALS = [
     # NO `species`, deliberately — that field is what gates `haus millwork`, and a cast
     # panel is not a board to be ripped out of stock. NO `stock_bf_per_sqft` either: unset,
     # `resolve/paneling.py` draws the band at its 1/2" default, which is this panel's actual
-    # thickness. And NO vapour field, on the same reading `library/materials.py` states for
+    # thickness. And NO vapour field, on the same reading `library/materials/` states for
     # `pvc-panel` and `fiber-cement` — a butted, adhered panel with sealed joints has no
     # published ASTM E96 number that means anything at an assembly scale, and declaring one
     # would be inventing it. It costs nothing here: the panel is in no *assembly*, only a
@@ -4362,7 +4327,7 @@ MATERIALS = [
     # ** THE PERMEANCE IS A CLASS BAND, NOT A PRODUCT TEST, AND THE SOURCE SAYS SO. **
     # Styro publishes appearance, pH, wet density and chemistry and no ASTM E96 number - the
     # whole product class does not test for it. So this is authored the way `latex-paint` is
-    # (library/materials.py): a midpoint of a published band, quoted as a band. What makes
+    # (library/materials/): a midpoint of a published band, quoted as a band. What makes
     # that honest HERE and dishonest for the protection board below is the joint. A butted
     # board's installed permeance is dominated by its unsealed seams and no band describes
     # it; a mesh-reinforced trowel lamina is monolithic and seamless by construction, which
@@ -4386,7 +4351,7 @@ MATERIALS = [
     # `material_ref`/`thickness` edit on `_PROTECTION_PANEL` above.
     #
     # ** AND IT IS WHY THE COATING WAS TAKEN. ** Both vapour fields are UNSET here, and that
-    # was the finding rather than a gap - the same conclusion library/materials.py reached
+    # was the finding rather than a gap - the same conclusion library/materials/ reached
     # for `pvc-panel` and `fiber-cement`. ``perm_rating=0.0`` is not usable: perm_rating is a
     # *permeability* (perms per inch), ``Material.vapor_permeance_at`` treats 0.0 there as
     # "not authored", so the field would be inert. The published ASHRAE aluminium-foil
@@ -4401,7 +4366,7 @@ MATERIALS = [
     # coating is what answers it**, because a seamless lamina is a shape a published band
     # actually describes.
     # stucco (no instance in this house), composite-deck (porch
-    # floor) and aluminum-deck (balcony plank) were promoted to library/materials.py
+    # floor) and aluminum-deck (balcony plank) were promoted to library/materials/
     # (CONTRIBUTING §Promotion flow); they arrive here through
     # ALL_MATERIALS above.
     # ``preservative_treated``: the paint is a finish over PT stock, which is what the name
@@ -4429,7 +4394,7 @@ MATERIALS = [
              source="balcony centre 6x6 pillars PT-SG-BR2/BF2, exterior white paint over Douglas Fir-Larch specified at specific gravity 0.50 so the SG >= 0.50 clause is met at both ends — ESR-2604 §3.2.2 for the CCQ46SDS2.5 cap above, ESR-2105 §3.5.2 and ESR-3096 §3.2.2 for the MSTA12Z strap and L50Z angles at the base below; painted softwood ~1 perm-in"),
     # retaining-block (raised garden outer face), polycarbonate-multiwall (breezeway
     # glazing) and aluminum-extrusion (breezeway glazing trim) were promoted to
-    # library/materials.py (CONTRIBUTING §Promotion flow); they arrive here
+    # library/materials/ (CONTRIBUTING §Promotion flow); they arrive here
     # through ALL_MATERIALS above.
 ]
 
@@ -4614,7 +4579,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
         Layer(name="cladding", material_ref="pbr-panel-24", thickness=inch(1.25),
               function=LayerFunction.CLADDING),
     ),
-    interfaces=(_STUD_BEARING,),
+    interfaces=(STUD_BEARING,),
     source="notes/plant_room.md — EXT_2X6 outboard of a sealed PVC/membrane liner; the sheathing datum does not move (decision #43), the liner grows inward",
 )
 
@@ -4662,9 +4627,9 @@ PLANT_INT_2X4_HUMID = Assembly(
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
-        _PAINT_FINISH_B,
+        PAINT_FINISH_B,
     ),
-    interfaces=(_STUD_BEARING,),
+    interfaces=(STUD_BEARING,),
     source="notes/plant_room.md — plant room north partitions; humid liner one face, painted gypsum the other",
 )
 
@@ -4679,7 +4644,7 @@ PLANT_INT_2X4_HUMID = Assembly(
 # wool is hydrophobic, non-capillary and dimensionally stable when it does get wet;
 # fiberglass in this box would slump into the bottom of the bay and stay damp. If the
 # reinsulation pass ever sweeps `mineral-wool` -> `fiberglass` across the house, THIS
-# ASSEMBLY IS AN EXPLICIT EXCEPTION and must be skipped. `library/materials.py` carries
+# ASSEMBLY IS AN EXPLICIT EXCEPTION and must be skipped. `library/materials/` carries
 # both materials; the swap is a material_ref edit, so nothing but this note stops it.
 #
 # The batt is not there for an energy code — both faces are inside the thermal envelope and
@@ -4712,7 +4677,7 @@ TUBDECK_INT_2X4 = Assembly(
         Layer(name="ply-bay", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
     ),
-    interfaces=(_STUD_BEARING,),
+    interfaces=(STUD_BEARING,),
     source="Kohler Installation and Care Guide 1196030-2 (Bath with Heated Surface): 2x4 or 2x6 stud framing, maximum 1/8 in. gap between the bath rim and the framing/deck. Mineral wool cavity is a moisture decision, not an energy one - see the note above; do not substitute fiberglass",
 )
 
@@ -4855,7 +4820,6 @@ ASSEMBLIES = [
     RETAINING_BLOCK_12,
     RETAINING_BLOCK_12_WASHED,
     PORCH_DECK_COMPOSITE,
-    BREEZEWAY_ROOF_GLAZING,
     BALCONY_DECK_ALUMINUM,
     POST_WHITE_PAINT,
     POST_WHITE_PAINT_DF,

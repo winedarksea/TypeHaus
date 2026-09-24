@@ -4,7 +4,7 @@ Identity only. A ``Product`` says which box arrives on site: brand, the manufact
 designation, the marketing name, a distributor number where that is what you order by. It
 carries **no price, vendor rate, or availability data, ever** — dollars belong to the house
 (``prices.toml`` / ``costs.toml``), never to the engine (``plans/01-decisions.md`` #28).
-``library/hardware.py`` has been following that split unstated since the connector catalog
+``library/hardware/`` has been following that split unstated since the connector catalog
 landed; this is the same record generalized to everything else a house chooses.
 
 Why a shared catalog record rather than three fields on eight classes: one place for the

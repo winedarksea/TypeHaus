@@ -40,7 +40,7 @@ from __future__ import annotations
 
 from typehaus.model import ApplianceType, Service, ServicePort, ft, inch
 
-from library.placeables._zones import front_zone
+from library.placeables import front_zone
 
 # --- laundry ---------------------------------------------------------------------------
 #

@@ -199,7 +199,7 @@ pine at an entry salted every winter, and the house buys stainless at every KDAT
 > ring-shank nails. **The 440/75/70 row is real — it is the stainless smooth-shank table.**
 > It was never a bad figure, it was the answer to a different installation.
 >
-> So the H2.5ASS is a **700 / 110 / 110** part here, and `library/hardware.py` records it,
+> So the H2.5ASS is a **700 / 110 / 110** part here, and `library/hardware/` records it,
 > against 256 lb of demand.
 >
 > ⚠ **AND IT KEEPS THE 700 WHERE THE GALVANIZED TIE DROPPED TO 615 ON 2026-09-14.** That is

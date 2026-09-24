@@ -3,7 +3,7 @@
 ``Room.floor_finish`` has resolved and exported since M1, but nothing consumed it — the .glb
 painted every room one flat grey and the viewer drew no room floor at all, so a house of
 carpet, oak, LVP and tile looked like bare subfloor everywhere. The fix is not "a colour per
-room": it is that the finish string names a real ``Material`` in ``library/materials.py``, so
+room": it is that the finish string names a real ``Material`` in ``library/materials/``, so
 the viewer, the export and the takeoff all resolve one definition. These tests pin that
 contract — the string↔material join, and what happens when it fails.
 

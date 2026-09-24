@@ -103,7 +103,7 @@ for every one of the four units.
 4" of 2 lb closed-cell spray foam at 1.6 perm-in, which runs **≈ 0.4 perm: Class II**,
 in one bonded seamless application. There is no board in this wall, so there is nothing to
 specify wrongly; the sprayed foam's 1.6 perm-in is authored
-in `library/materials.py` and the condensation gate reads it directly.
+in `library/materials/` and the condensation gate reads it directly.
 
 **If this wall is ever specified with board insulation again: glass-faced or unfaced
 polyiso, never foil-faced.** Foil-faced polyiso (the house's own `polyiso-foil`, 0.03 perm)
@@ -183,12 +183,12 @@ continuous, sealed membrane behind the panel**, chosen because it *has* a publis
 number.
 
 The model says so in the only way that is honest: `pvc-panel` and `vinyl-sheet` carry **no**
-`vapor_permeance_perms` at all (per the convention in `library/materials.py`), and
+`vapor_permeance_perms` at all (per the convention in `library/materials/`), and
 `humid-room-membrane` carries 0.05 perm with its basis in `source=`. That value is authored
 as a **specification** — the loosest the submitted product may test at and still be Class I
 with margin — not as a reading off one datasheet.
 
-All three live in `library/materials.py`, not in this house. They were authored here first
+All three live in `library/materials/`, not in this house. They were authored here first
 and promoted the same day (CONTRIBUTING §Promotion flow): none of them carries a project
 coordinate, an owner choice or a house-specific dimension, all three are ordinary catalog
 products with stable tags — and `takeoff/finishes.py::_WASTE` is *engine* code that names

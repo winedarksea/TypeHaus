@@ -1,7 +1,7 @@
 """The catalog record for a piece of structural connection hardware, plus its lookups.
 
-The *type* lives in the engine and the *items* live in ``library/hardware.py`` — the same
-split as ``Material`` / ``library/materials.py``. A take-off derives a role ("this joint
+The *type* lives in the engine and the *items* live in ``library/hardware/`` — the same
+split as ``Material`` / ``library/materials/``. A take-off derives a role ("this joint
 needs a sloped joist hanger, 10 in of screw"); the catalog is what turns that role into a
 manufacturer part number with a citable source.
 """
@@ -90,7 +90,7 @@ ROLE_POST_BASE_ANCHOR = "post_base_anchor"
 #: The one fastener in this catalog that deliberately pierces a waterproof plane: the
 #: through-deck anchor holding a mechanical stand down to blocking under a dry-below
 #: deck. Its own role rather than a ``post_base`` variant, because what it is selected
-#: for is the SEAL and the alloy, not the post section — see library/hardware.py.
+#: for is the SEAL and the alloy, not the post section — see library/hardware/.
 ROLE_DECK_EQUIPMENT_ANCHOR = "deck_equipment_anchor"
 #: The wedge anchor holding a ground-mounted equipment stand down to its concrete pad.
 #: Its own role rather than a second product on ROLE_DECK_EQUIPMENT_ANCHOR — that part is
@@ -322,7 +322,7 @@ class StructuralHardware:
 
 
 def structural_hardware_catalog() -> tuple:
-    """The shared ``library/hardware.py`` catalog.
+    """The shared ``library/hardware/`` catalog.
 
     Imported lazily: the engine package must import without the repo-root ``library``
     package on ``sys.path`` (the plan loader puts it there when a house is loaded).
@@ -333,7 +333,7 @@ def structural_hardware_catalog() -> tuple:
 
 
 def hardware_capacity_records() -> tuple:
-    """Parts ``library/hardware.py`` holds an allowable for but does not bill.
+    """Parts ``library/hardware/`` holds an allowable for but does not bill.
 
     Kept out of ``structural_hardware_catalog`` on purpose: everything in that tuple is
     orderable and selectable by role, and a capacity record is neither. Only

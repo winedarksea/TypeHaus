@@ -279,7 +279,7 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     `INT_2X4_STAGGERED_GWB|INT_2X6_STAGGERED_PLUMBING`, not a `INT_2X4_PARTITION` pair at
     all** — W-S-SN3 is a wet wall for the suite bath's fixtures
     (`INT_2X6_STAGGERED_PLUMBING`, `plan/storeys/second.py`), independent of the north
-    wall's own gypsum spec (`INT_2X4_STAGGERED_GWB`, `library/assemblies.py`). Two
+    wall's own gypsum spec (`INT_2X4_STAGGERED_GWB`, `library/assemblies/`). Two
     staggered assemblies differing by a paint/finish layer stay a real key regardless of
     gwb layer count, so `_layers_equivalent` (`resolve/pipeline.py`) does not drop this one
     — but it WOULD drop `INT_2X4_PARTITION|INT_2X4_STAGGERED_GWB` at a node where the

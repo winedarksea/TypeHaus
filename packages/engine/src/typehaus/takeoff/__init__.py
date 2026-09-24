@@ -7,7 +7,7 @@ Public surface only — the derivations live in focused sibling modules:
 - :mod:`typehaus.takeoff.glazing` — glazing panels by the sheet, their extrusions by the
   lineal foot, and the gasketed fixings that hold them.
 - :mod:`typehaus.takeoff.hardware` — the critical connection hardware, with its rules in
-  :mod:`typehaus.hardware.config` and its parts in ``library/hardware.py``.
+  :mod:`typehaus.hardware.config` and its parts in ``library/hardware/``.
 - :mod:`typehaus.takeoff.lighting` — the luminaire schedule, its controls, the LED runs
   and their supplies, and the real connected lighting load.
 - :mod:`typehaus.takeoff.bom` — every section at once.

@@ -154,7 +154,7 @@ def test_an_enclosure_with_no_room_in_it_is_not_floor_area(catlin_model) -> None
     ("column:ELM_TIMBER", "framing"),
     ("column:POST_WHITE_PAINT", "framing"),
     ("glazing:BREEZEWAY_GLAZED_WALL", "openings"),
-    ("glazing:BREEZEWAY_ROOF_GLAZING", "openings"),
+    ("glazing:GLAZED_WALL_MULTIWALL_16MM", "openings"),
     ("bug_screen:EXT_2X6", "siding"),
     ("drywell", "drainage"),
     ("drain_tile", "drainage"),

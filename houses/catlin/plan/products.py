@@ -9,7 +9,7 @@ referenced by ``product_ref`` from the type or material that is it.
 
 **Identity only, never a price** (``plans/01-decisions.md`` #28). Not a dollar figure, not a
 vendor, not availability — those belong to ``prices.toml`` and ``costs.toml``, which are the
-house's own documents and stay outside the model. ``library/hardware.py`` has shipped
+house's own documents and stay outside the model. ``library/hardware/`` has shipped
 manufacturer + model since the connector catalog landed; this is the same split, written down.
 
 NOT ``# haus: editable``: like ``appliance_types.py`` and ``lighting_types.py`` this is a

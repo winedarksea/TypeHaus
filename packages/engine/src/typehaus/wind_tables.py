@@ -142,7 +142,7 @@ def force_coefficient(b_over_s: float, s_over_h: float, *, tol: float = 0.02) ->
 #
 # The table is the REQUIRED resistance, not an allowable — it is a demand a reader looks up
 # rather than a capacity. That is why it lives beside the force coefficients and not in
-# ``library/hardware.py``: what the connector can take is the hardware catalog's business,
+# ``library/hardware/``: what the connector can take is the hardware catalog's business,
 # and the comparison between them belongs to whoever holds both.
 
 #: Values in POUNDS PER CONNECTION, ASD. Keyed ``(exposure, spacing_in, span_ft)`` to a pair

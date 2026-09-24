@@ -28,7 +28,7 @@ Interior → exterior, as authored in `plan/assemblies.py::ROOF`:
 | — | exterior air film (RSI 0.03) | — | — | 0.170 |
 | | | **13.09"** | | **53.19** |
 
-R/inch values are the catalog's (`library/materials.py`, `plan/assemblies.py`): spf 1.25,
+R/inch values are the catalog's (`library/materials/`, `plan/assemblies.py`): spf 1.25,
 gypsum 0.90, Structural-1 plywood 1.25, ccSPF 6.5, and `fiberglass-r30c` 3.78 (derived in
 §4). Steel and butyl are R-0.
 
@@ -215,7 +215,7 @@ Recorded plainly because the engine will neither stop you nor help you on any of
   derated allowable nearer 560-600 lbf", the 560-600 being a guess because ESR-2613 has no
   SPF column. **Simpson's catalog does** (C-C-2024 p. 288, the H/TSP table, split into DF/SP
   and SPF/HF halves): the H2.5A is **615 lbf** in SPF/HF at 160%. The guess was close and is
-  now sourced; `library/hardware.py` carries 615 as the record's own value.
+  now sourced; `library/hardware/` carries 615 as the record's own value.
 - **Two demands are in play and they are not the same number.** At 24" o.c. this note's
   component-and-cladding estimate is roughly **480 lb/tie**, against 615 — inside, but not
   comfortably, and roof corner/edge zone coefficients run higher than the wall figure that

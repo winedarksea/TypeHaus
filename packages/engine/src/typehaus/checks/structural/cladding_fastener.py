@@ -36,7 +36,7 @@ TIP_LENGTHS_D = 2.0
 C_D_WIND = 1.6
 
 #: NDS 2018 Table 11.3.3, wet service, withdrawal of a screw. 0.7 — the same call
-#: ``library/hardware.py`` makes for exterior connectors on this house, and the right one
+#: ``library/hardware/`` makes for exterior connectors on this house, and the right one
 #: for a rainscreen cavity that wets and dries with the weather.
 C_M_WET = 0.7
 

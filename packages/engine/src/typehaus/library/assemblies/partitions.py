@@ -1,239 +1,20 @@
-"""Starter assemblies ported from ifcplot/assemblies.py (→ 02 migration table, WP1.3)."""
+"""Interior partitions: the STC family and the wet walls."""
 
 from __future__ import annotations
 
+from typehaus.library.assemblies._layers import (
+    PAINT_FINISH_A,
+    PAINT_FINISH_B,
+    STUD_BEARING,
+)
 from typehaus.model import (
     Assembly,
-    AssemblyInterface,
     CavityFill,
-    ControlLayer,
     FramingSpec,
     Layer,
     LayerFunction,
-    MasonrySpec,
     PartitionLayout,
     inch,
-)
-
-# The load-bearing face the junction solver binds a concrete↔concrete return on (#44):
-# the pour's inboard face, named by LAYER, not index, so an outboard skin may be added
-# without invalidating the transition.
-_CONCRETE_BEARING = AssemblyInterface(role="bearing", layer_name="concrete", outboard=False)
-
-# The same mechanism for a stud wall: two framed walls are "continuous" through a
-# corner/tee when they publish the same bearing material (SPF↔SPF), regardless of the
-# finish either side of it.
-_STUD_BEARING = AssemblyInterface(role="bearing", layer_name="stud", outboard=False)
-
-# Painted gypsum lining. Layer order is interior → exterior everywhere the lining is
-# consumed (``list(default_lining) + list(layers)``), so the paint is *first*: it is the
-# room-side face, and that position is what makes it the assembly's warm-side vapour
-# retarder in the Glaser walk (IRC R702.7 / R702.7.1 Class III, → checks/building_science).
-_PAINT_FINISH = Layer(name="paint", material_ref="latex-paint", thickness=inch(0.01),
-                      function=LayerFunction.FINISH,
-                      control=frozenset({ControlLayer.VAPOR}))
-
-_GWB_LINING = (
-    _PAINT_FINISH,
-    Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.625),
-          function=LayerFunction.FINISH),
-)
-
-# 2x4 wall with 1" continuous exterior insulation.
-HOUSE_WALL_2X4_WITH_CI = Assembly(
-    tag="HOUSE_WALL_2X4_WITH_CI",
-    layers=(
-        Layer(name="stud", material_ref="spf", thickness=inch(3.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4"),
-              control={ControlLayer.THERMAL},
-              cavity=CavityFill(material_ref="fiberglass")),
-        Layer(name="osb", material_ref="osb", thickness=inch(0.5),
-              function=LayerFunction.SHEATHING),
-        Layer(name="wrb", material_ref="air-barrier", thickness=inch(0.02),
-              function=LayerFunction.MEMBRANE,
-              control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="ci", material_ref="polyiso", thickness=inch(1.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        # Furring + cladding as separate layers (the catlin-house siding-stack pattern):
-        # the furring is a drained-and-back-vented rainscreen cavity open to outdoor air,
-        # so the Glaser walk truncates there and the fiber-cement (no published ASTM E96
-        # rating) never blocks a permeance verdict for the wall behind it.
-        Layer(name="furring", material_ref="spf", thickness=inch(0.5),
-              function=LayerFunction.FURRING,
-              framing=FramingSpec(member="1x4", direction="vertical")),
-        Layer(name="cladding", material_ref="fiber-cement", thickness=inch(0.3125),
-              function=LayerFunction.CLADDING),
-    ),
-    default_lining=_GWB_LINING,
-    source="Adapted from catlin-house ifcplot/assemblies.py",
-)
-
-# 2x6 wall with ZIP-R exterior sheathing (the PGH envelope).
-HOUSE_WALL_2X6_WITH_ZIPR = Assembly(
-    tag="HOUSE_WALL_2X6_WITH_ZIPR",
-    layers=(
-        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6"),
-              control={ControlLayer.THERMAL},
-              cavity=CavityFill(material_ref="mineral-wool")),
-        Layer(name="zip-r", material_ref="zip-r", thickness=inch(1.5),
-              function=LayerFunction.SHEATHING,
-              control={ControlLayer.AIR, ControlLayer.WATER, ControlLayer.THERMAL}),
-        # Furring + cladding split, same rationale as HOUSE_WALL_2X4_WITH_CI above.
-        Layer(name="furring", material_ref="spf", thickness=inch(0.5),
-              function=LayerFunction.FURRING,
-              framing=FramingSpec(member="1x4", direction="vertical")),
-        Layer(name="cladding", material_ref="fiber-cement", thickness=inch(0.3125),
-              function=LayerFunction.CLADDING),
-    ),
-    default_lining=_GWB_LINING,
-    source="Adapted from catlin-house ifcplot/assemblies.py",
-)
-
-# ICF garage foundation/wall — layered solid + arithmetic unit takeoff (#23).
-GARAGE_ICF = Assembly(
-    tag="GARAGE_ICF",
-    layers=(
-        Layer(name="eps-ext", material_ref="icf-eps", thickness=inch(2.625),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="concrete", material_ref="concrete", thickness=inch(6.0),
-              function=LayerFunction.STRUCTURE,
-              masonry=MasonrySpec(unit_size="ICF-6", core_fill=True)),
-        Layer(name="eps-int", material_ref="icf-eps", thickness=inch(2.625),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-    ),
-    interfaces=(_CONCRETE_BEARING,),
-    default_lining=_GWB_LINING,
-)
-
-# --- cast concrete foundation walls ----------------------------------------------
-#
-# The generic 8"/12" family. A house draws the pour from here rather than re-minting it,
-# and adds its own outermost protective skin (parge, panel, veneer) on top of a ``_CORE``
-# tuple where it wants one — that skin is a colour and exposure decision, which is a house
-# decision, while the pour, the waterproofing, the two staggered 2" XPS courses and the
-# bearing face are not.
-#
-# **8" vs 12" is a soil/height question, never a default.** IRC Table R404.1.2(8) is what
-# decides it: at 45 psf/ft equivalent fluid density, a 10' wall retaining 7' of unbalanced
-# fill takes 12" plain but 8" reinforced #6 @ 48" o.c. vertical. The 12" members here exist
-# for the cases the table (or a cast deck bearing on the wall top beside the sill) actually
-# earns them; picking one without reading the row for the wall's own height, backfill and
-# soil class is how an unreinforced 8" wall gets built where the table required steel.
-# ``structural.foundation_unbalanced_fill`` grades this from the STRUCTURE layer, so the
-# thickness authored here is the thickness that gets checked.
-
-_R404_SOURCE = ("IRC Table R404.1.2(8), plain and minimally reinforced concrete "
-                "foundation walls: 45 psf/ft equivalent fluid density, 10 ft maximum "
-                "wall height, 7 ft unbalanced backfill")
-
-# Bare pours for interior cross / bearing walls — soil on neither face.
-#
-# **The ``INT`` token is load-bearing and must stay underscore-delimited.**
-# ``mn_energy._is_interior_assembly`` is literally ``"INT" in tag.split("_")``; without it
-# a bare concrete wall between two conditioned rooms is graded as basement envelope and
-# fails on R-1.5. The token must not lead the tag either — ``INT_*`` is the acoustic
-# namespace, whose test demands a published STC and a URL, and a cast wall has no lab test
-# to cite.
-FOUNDATION_WALL_8_INT = Assembly(
-    tag="FOUNDATION_WALL_8_INT",
-    layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
-              function=LayerFunction.STRUCTURE),
-    ),
-    interfaces=(_CONCRETE_BEARING,),
-    source=_R404_SOURCE + "; 8 in. requires #6 at 48 in. o.c. vertical",
-)
-
-FOUNDATION_WALL_12_INT = Assembly(
-    tag="FOUNDATION_WALL_12_INT",
-    layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE),
-    ),
-    interfaces=(_CONCRETE_BEARING,),
-    source=_R404_SOURCE + "; 12 in. reads NR (no vertical reinforcement required)",
-)
-
-# Below-grade envelope cores, interior→exterior from the pour outward: whatever is inboard
-# of the concrete is the consuming house's business, and so is whatever protects the foam
-# outboard of it. Exported as bare layer tuples so a house can splat one and append its own
-# skin without re-typing the pour — ``FOUNDATION_WALL_*_XPS4`` below are the skinless
-# assemblies for a house that wants the core as-is.
-#
-# 2 x 2" rather than one 4" board: staggered joints, and 2" is the stocked thickness.
-# Waterproofing outboard of the pour and inboard of the foam is where Minn. R. 1309.0406
-# subp. 2 puts it, and it is also GCP's own instruction: "Insulation, if used, must be
-# applied over the membrane."
-#: Everything OUTBOARD of the pour, published separately because a house that states its own
-#: mix has to author its own concrete layer and cannot splat one that carries somebody else's.
-#: A ``ConcreteSpec`` is a purchase decision — one ticket from one plant — so it belongs to
-#: the house, and the library must not put one in a shared core. Slicing this out of the core
-#: at the point of use is not open to a house either: ``plan/*.py`` is the constrained
-#: editable dialect, which forbids subscripting.
-FOUNDATION_WALL_XPS4_OUTBOARD = (
-    Layer(name="waterproofing", material_ref="waterproofing", thickness=inch(0.06),
-          function=LayerFunction.MEMBRANE,
-          control={ControlLayer.AIR, ControlLayer.WATER}),
-    Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
-          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-    Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
-          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-)
-
-FOUNDATION_WALL_8_XPS4_CORE = (
-    Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
-          function=LayerFunction.STRUCTURE),
-    *FOUNDATION_WALL_XPS4_OUTBOARD,
-)
-
-FOUNDATION_WALL_12_XPS4_CORE = (
-    Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-          function=LayerFunction.STRUCTURE),
-    *FOUNDATION_WALL_XPS4_OUTBOARD,
-)
-
-# 8" + waterproofing + 4" XPS = 12.06" total, ~R-21.8.
-FOUNDATION_WALL_8_XPS4 = Assembly(
-    tag="FOUNDATION_WALL_8_XPS4",
-    layers=FOUNDATION_WALL_8_XPS4_CORE,
-    interfaces=(_CONCRETE_BEARING,),
-    source=_R404_SOURCE + "; 8 in. requires #6 at 48 in. o.c. vertical. Exterior "
-                          "insulation 2 x 2 in. XPS over waterproofing per Minn. R. "
-                          "1309.0406 subp. 2, which deletes IRC R406.1",
-)
-
-# 12" + the same tail = 16.06".
-FOUNDATION_WALL_12_XPS4 = Assembly(
-    tag="FOUNDATION_WALL_12_XPS4",
-    layers=FOUNDATION_WALL_12_XPS4_CORE,
-    interfaces=(_CONCRETE_BEARING,),
-    source=_R404_SOURCE + "; 12 in. reads NR (no vertical reinforcement required). "
-                          "Exterior insulation 2 x 2 in. XPS over waterproofing per "
-                          "Minn. R. 1309.0406 subp. 2, which deletes IRC R406.1",
-)
-
-
-HOUSE_ROOF = Assembly(
-    tag="HOUSE_ROOF",
-    layers=(
-        Layer(name="rafter", material_ref="spf", thickness=inch(11.875),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x12"),
-              control={ControlLayer.THERMAL},
-              cavity=CavityFill(material_ref="mineral-wool", framing_factor=0.1)),
-        Layer(name="deck", material_ref="osb", thickness=inch(0.625),
-              function=LayerFunction.SHEATHING),
-        Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.02),
-              function=LayerFunction.MEMBRANE,
-              control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="roofing", material_ref="standing-seam", thickness=inch(0.06),
-              function=LayerFunction.CLADDING),
-    ),
-    default_lining=(
-        _PAINT_FINISH,
-        Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-    ),
 )
 
 # STC-rated interior partition presets (#50).  STC is always a published test result,
@@ -447,33 +228,26 @@ INT_2X4_DOUBLE_STUD_MINERAL_WOOL = Assembly(
 # ``INT_2X4_STAGGERED_DOUBLE_GWB`` above and cites the same USG/GA WP 5530 test for that
 # framing geometry, but carries a single layer of gypsum per face rather than a double
 # layer, so it does not inherit that assembly's STC 52 rating.
-_PAINT_FINISH_A = Layer(name="paint-a", material_ref="latex-paint", thickness=inch(0.01),
-                        function=LayerFunction.FINISH,
-                        control={ControlLayer.VAPOR})
-_PAINT_FINISH_B = Layer(name="paint-b", material_ref="latex-paint", thickness=inch(0.01),
-                        function=LayerFunction.FINISH,
-                        control={ControlLayer.VAPOR})
-
 INT_2X6_PLUMBING = Assembly(
     tag="INT_2X6_PLUMBING",
     layers=(
-        _PAINT_FINISH_A,
+        PAINT_FINISH_A,
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
-        _PAINT_FINISH_B,
+        PAINT_FINISH_B,
     ),
-    interfaces=(_STUD_BEARING,),
+    interfaces=(STUD_BEARING,),
     source="wet wall — 2x6 depth for a 3 in. stack",
 )
 
 INT_2X6_STAGGERED_PLUMBING = Assembly(
     tag="INT_2X6_STAGGERED_PLUMBING",
     layers=(
-        _PAINT_FINISH_A,
+        PAINT_FINISH_A,
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
         Layer(name="staggered-studs", material_ref="spf", thickness=inch(5.5),
@@ -484,54 +258,11 @@ INT_2X6_STAGGERED_PLUMBING = Assembly(
               cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
-        _PAINT_FINISH_B,
+        PAINT_FINISH_B,
     ),
-    interfaces=(_STUD_BEARING,),
+    interfaces=(STUD_BEARING,),
     source="wet wall, non-bearing — 2x4 staggered on 2x6 plates per USG/GA WP 5530 "
            "(16 in. o.c. per face, 8 in. combined), 3.5 in. fiberglass sound batt; the "
            "framing geometry is the tested one, the single-layer gypsum face is not, so "
            "no STC is claimed",
-)
-
-# A glazed wall with no frame of its own: one 16mm multiwall polycarbonate sheet standing
-# in a U-channel at the sill and an F-channel at the head, spanning post to post unaided.
-# The sheet is STRUCTURE, not CLADDING, because it IS the wall — the same reading a single
-# plank layer gets on a deck. Under rafters that do the spanning it would be cladding, and
-# that is a different assembly.
-#
-# Span is the whole question and the sheet answers it: SABIC publishes wall spans for
-# THERMOCLEAR 16mm, and a house that stands one further apart than the published table
-# allows is authoring a ``PublishedSpan``, not this tag.
-GLAZED_WALL_MULTIWALL_16MM = Assembly(
-    tag="GLAZED_WALL_MULTIWALL_16MM",
-    label="16mm multiwall polycarbonate glazed wall",
-    layers=(
-        Layer(name="glazing", material_ref="polycarbonate-multiwall", thickness=inch(0.63),
-              function=LayerFunction.STRUCTURE),
-    ),
-    source="SABIC LEXAN THERMOCLEAR 16mm five-wall sheet, self-spanning between posts in "
-           "U-channel (sill) and F-channel (head) glazing profiles",
-)
-
-STARTER_FLOOR = {"subfloor": "plywood-subfloor", "joist": "11.875 I-joist"}
-
-# Assemblies whose R-value / card should render for M1 acceptance.
-ALL_ASSEMBLIES: tuple[Assembly, ...] = (
-    HOUSE_WALL_2X4_WITH_CI,
-    HOUSE_WALL_2X6_WITH_ZIPR,
-    GARAGE_ICF,
-    FOUNDATION_WALL_8_INT,
-    FOUNDATION_WALL_12_INT,
-    FOUNDATION_WALL_8_XPS4,
-    FOUNDATION_WALL_12_XPS4,
-    HOUSE_ROOF,
-    INT_2X4_PARTITION,
-    INT_2X4_RC,
-    INT_2X4_RC_DOUBLE_GWB,
-    INT_2X4_STAGGERED_DOUBLE_GWB,
-    INT_2X4_STAGGERED_GWB,
-    INT_2X4_DOUBLE_STUD_MINERAL_WOOL,
-    INT_2X6_PLUMBING,
-    INT_2X6_STAGGERED_PLUMBING,
-    GLAZED_WALL_MULTIWALL_16MM,
 )

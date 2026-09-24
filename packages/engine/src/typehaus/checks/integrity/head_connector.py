@@ -7,7 +7,7 @@ quoted number is compared with the catalog row here, at ERROR — the
 one spelling and the order buys the other.
 
 The lateral figure quoted is the LOWER of the row's two directions (F1, F2): a value that
-holds for one sign of the load only is not a capacity (``library/hardware.py``, HGAM10).
+holds for one sign of the load only is not a capacity (``library/hardware/``, HGAM10).
 A ``set_rated`` connector quotes the catalog row as is: that row already records the set.
 """
 

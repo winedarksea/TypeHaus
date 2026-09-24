@@ -111,7 +111,7 @@ seat. **Twelve standoffs house-wide now, and not one grout island**: six in the 
 (`CN-SG-STDF-*`), six at the north entry (`CN-BW-STDF-*`).
 
 **It is a MODELLED PART as of 2026-09-03, and it stopped being prose.** `SS316-SHIM-35`
-(`library/hardware.py`, `ROLE_BEARING_STANDOFF`) carries the specification now — 316
+(`library/hardware/`, `ROLE_BEARING_STANDOFF`) carries the specification now — 316
 stainless, 3-1/2" square, stacked to the gap, no grout island under it, EPDM or HDPE where it
 meets a zinc-coated tie (the `HETA20Z` pair since 2026-09-21) — and six `CN-SG-STDF-*` connectors put one at every wood-on-concrete beam
 seat in the garden: the four balcony corner column tops and `PT-SG-COL`/`PT-SG-FCOL`. Until
@@ -136,7 +136,7 @@ also a **published condition on the hanger's capacity**, which is what moved it 
 practice to a requirement.
 
 Those four were retyped from `HUCQ410-SDS` to `HUC212-3` on 2026-09-12 (the HUCQ is a
-wood-header part and its seat was 15/16" too narrow — `library/hardware.py`). The HUC's
+wood-header part and its seat was 15/16" too narrow — `library/hardware/`). The HUC's
 concrete loads come from Simpson's masonry/concrete hanger table, C-C p. 280, and **footnote
 5 of that table reads, verbatim: "Products shall be installed such that Titen® screws are not
 exposed to weather."** A pocket in the wall of an open garden is weather until it is detailed

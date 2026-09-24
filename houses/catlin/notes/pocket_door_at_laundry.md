@@ -72,6 +72,6 @@ fits the geometry, but it is past the published frame ladder.
 `DT-POCKET-INT-48` (`library/doors.py`) is **not** a commodity size. The Johnson 1500PF
 series — the ladder the 24"–36" family is dimensioned from — stops at 36" and 125 lb, and a
 4'-0" solid-core leaf is past both. This one is a heavy-duty timber-framed cavity unit
-(`POCKET_FRAME_KIT_HEAVY`, `library/hardware.py`), billed as a counted part in the BOM's
+(`POCKET_FRAME_KIT_HEAVY`, `library/hardware/`), billed as a counted part in the BOM's
 hardware section rather than swept into the `finish-door-*` allowance. Ordering a 1500PF kit
 for this door gets a frame the leaf will pull off the wall.

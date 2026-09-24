@@ -32,7 +32,7 @@ Three limit states, and the first is the one the audit found open
 **Capacities are READ, demand is COMPUTED.** The withdrawal and pull-through numbers come
 off the screw's evaluation report through ``FramingSpec.standoff_fastener_*`` — authored on
 the house, because ``engineering/`` may not import the hardware catalog
-(``library/hardware.py`` reaches ``takeoff``). NDS §12.2's ``W = 2850 G^2 D`` is computed
+(``library/hardware/`` reaches ``takeoff``). NDS §12.2's ``W = 2850 G^2 D`` is computed
 alongside as a cross-check only, never as the grade.
 
 The demand is ``typehaus.wind``'s, term for term with ``structural.cladding_wind``: the same

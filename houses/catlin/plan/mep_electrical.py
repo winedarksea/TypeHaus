@@ -459,7 +459,7 @@ NEMA_CLAMP = []
 # The two roof leaders (params/roof_trim.py, TR-RF-LEADER-W/E) run ~24' down the north end
 # of the west/east faces, steadied — NOT supported — by a two-hole 316 stainless pipe strap
 # on a standoff block, screwed through the panel into the girt behind with two of the same
-# gasketed T09150HWAM screws the panel itself is hung on (library/hardware.py,
+# gasketed T09150HWAM screws the panel itself is hung on (library/hardware/,
 # THROUGH_PANEL_PIPE_STRAP; same hardware as CN-M-VENT-CLAMP1..3).
 #
 # ** This is not a downgrade from an S-5! CanDuit #13 ring on a seam clamp — it is the only

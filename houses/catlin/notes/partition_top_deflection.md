@@ -70,7 +70,7 @@ predrilled, and the sleeve must not enter it.
 also printed in Fastening Systems Technical Guide C-F-2025TECHSUP pp. 100–101. At a 3/4" gap
 on a double 2x the SDPW19600 is **165 lbf** allowable lateral, ASD, C_D = 1.6, safety factor
 5.0, SPF at SG 0.42 — identical at 0" and 3/4" offset. Both numbers are transcribed onto the
-catalog record in `library/hardware.py`, in `lateral_f1_lb`/`lateral_f2_lb`, and `uplift_lb`
+catalog record in `library/hardware/`, in `lateral_f1_lb`/`lateral_f2_lb`, and `uplift_lb`
 is left `None` and must stay `None`: this joint releases vertically on purpose.
 
 There is also a maximum-spacing table (8'/10' walls at 5 psf) whose worst case for this part

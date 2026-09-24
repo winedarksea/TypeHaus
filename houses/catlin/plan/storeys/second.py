@@ -432,7 +432,7 @@ WALLS = [
     # studs alternating on 2x6 plates, 3.5" fiberglass) rather than the house's default
     # single-stud INT_2X4_PARTITION, because a wall whose far face carries a vanity and a
     # bath is the one the sleeper hears through — the staggered studs decouple the two
-    # faces even without a second gypsum layer (`library/assemblies.py`, no STC claimed,
+    # faces even without a second gypsum layer (`library/assemblies/`, no STC claimed,
     # a comparable single-layer build lists around STC 48 against the partition's 34).
     # Single 5/8" gypsum each face since 2026-08-30 (was two): the double layer only buys
     # a few more points over the staggered studs' own decoupling, at a gypsum-heavy cost

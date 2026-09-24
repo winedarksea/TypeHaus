@@ -18,7 +18,7 @@ recorded here. A laying length (centre-to-face) is a measurement off a manufactu
 submittal, it varies between makers at one pattern, and where this repo has not read one the
 field is ``None`` — which :mod:`typehaus.resolve.mep_fittings` reports as a coverage gap.
 ``None`` here means "nobody has read a submittal", exactly as it does in
-``library/hardware.py``, and it is materially different from a number somebody reasoned to.
+``library/hardware/``, and it is materially different from a number somebody reasoned to.
 
 Inches and floats throughout, like ``StructuralHardware``: this package may not reach for
 ``quantities`` and a catalog row is read off a printed table in the units it is printed in.

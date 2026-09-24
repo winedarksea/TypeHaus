@@ -1898,7 +1898,7 @@ HP_STAND_LEGS = [
 # the anchor is set through. ``EQUIPMENT_ANCHOR`` for the same reason it always was: the
 # part is selected by the joint, not by the section above it, and filing it as a post base
 # would print a 3/8" wedge anchor's part number under "modeled post base connector(s)".
-# The part is ``SS316-WEDGE-38x3`` in library/hardware.py — 316 because an aluminium leg on
+# The part is ``SS316-WEDGE-38x3`` in library/hardware/ — 316 because an aluminium leg on
 # a de-iced pad at grade is in the splash zone all winter.
 HP_STAND_ANCHORS = [
     Connector(uid=f"SGHC{_hk}{_hi}AAAA", tag=f"CN-SG-HP{_hk}{_hi}",

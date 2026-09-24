@@ -2,7 +2,7 @@
 
 Paint is authored as a ``latex-paint`` coating layer where an assembly carries one. Where it
 does not, the gypsum is still painted in reality and this bills it: the STC presets keep
-paint out of a tested core (``library/assemblies.py``), and no deck's ``ceiling_below``
+paint out of a tested core (``library/assemblies/``), and no deck's ``ceiling_below``
 carries any.
 
 A gypsum layer is *exposed* when it ends a stack, so nothing is outboard of it, and it bills

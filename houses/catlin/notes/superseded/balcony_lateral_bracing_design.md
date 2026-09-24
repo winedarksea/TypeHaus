@@ -449,8 +449,8 @@ brace-rail redesign and it stays flagged.
 | q<sub>z</sub> and K<sub>z</sub> | `packages/engine/src/typehaus/wind.py` |
 | the three verified C<sub>f</sub> cells | `checks/structural/_asce_29_3_table.py` |
 | the demand-to-capacity chain | `checks/structural/lateral_racking.py` |
-| the KBS1Z allowable, transcribed | `library/hardware.py::KBS1Z_KNEE_BRACE` |
-| the lapped foot's bolt | `library/hardware.py::LAPPED_BRACE_BOLT` |
+| the KBS1Z allowable, transcribed | `library/hardware/::KBS1Z_KNEE_BRACE` |
+| the lapped foot's bolt | `library/hardware/::LAPPED_BRACE_BOLT` |
 | the braces themselves | `params/sunken_garden.py::KNEE_BRACES` |
 | the lap and the plane (§4a) | `model/structure.py::KneeBrace.plane_offset` / `.foot_lap` |
 | the oracle for §1's arithmetic | `notes/catlin_truss_engineering.md` §2 |

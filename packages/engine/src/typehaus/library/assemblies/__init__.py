@@ -1,0 +1,94 @@
+"""Starter assemblies ported from ifcplot/assemblies.py (→ 02 migration table, WP1.3)."""
+
+from __future__ import annotations
+
+from typehaus.library.assemblies._layers import (
+    CONCRETE_BEARING,
+    GWB_LINING,
+    PAINT_FINISH,
+    PAINT_FINISH_A,
+    PAINT_FINISH_B,
+    STUD_BEARING,
+)
+from typehaus.library.assemblies.exterior import (
+    GARAGE_ICF,
+    GLAZED_WALL_MULTIWALL_16MM,
+    HOUSE_WALL_2X4_WITH_CI,
+    HOUSE_WALL_2X6_WITH_ZIPR,
+)
+from typehaus.library.assemblies.floors_roofs import (
+    HOUSE_ROOF,
+    STARTER_FLOOR,
+)
+from typehaus.library.assemblies.foundation import (
+    FOUNDATION_WALL_8_INT,
+    FOUNDATION_WALL_8_XPS4,
+    FOUNDATION_WALL_8_XPS4_CORE,
+    FOUNDATION_WALL_12_INT,
+    FOUNDATION_WALL_12_XPS4,
+    FOUNDATION_WALL_12_XPS4_CORE,
+    FOUNDATION_WALL_XPS4_OUTBOARD,
+)
+from typehaus.library.assemblies.partitions import (
+    INT_2X4_DOUBLE_STUD_MINERAL_WOOL,
+    INT_2X4_PARTITION,
+    INT_2X4_RC,
+    INT_2X4_RC_DOUBLE_GWB,
+    INT_2X4_STAGGERED_DOUBLE_GWB,
+    INT_2X4_STAGGERED_GWB,
+    INT_2X6_PLUMBING,
+    INT_2X6_STAGGERED_PLUMBING,
+)
+from typehaus.model import Assembly
+
+# Assemblies whose R-value / card should render for M1 acceptance.
+ALL_ASSEMBLIES: tuple[Assembly, ...] = (
+    HOUSE_WALL_2X4_WITH_CI,
+    HOUSE_WALL_2X6_WITH_ZIPR,
+    GARAGE_ICF,
+    FOUNDATION_WALL_8_INT,
+    FOUNDATION_WALL_12_INT,
+    FOUNDATION_WALL_8_XPS4,
+    FOUNDATION_WALL_12_XPS4,
+    HOUSE_ROOF,
+    INT_2X4_PARTITION,
+    INT_2X4_RC,
+    INT_2X4_RC_DOUBLE_GWB,
+    INT_2X4_STAGGERED_DOUBLE_GWB,
+    INT_2X4_STAGGERED_GWB,
+    INT_2X4_DOUBLE_STUD_MINERAL_WOOL,
+    INT_2X6_PLUMBING,
+    INT_2X6_STAGGERED_PLUMBING,
+    GLAZED_WALL_MULTIWALL_16MM,
+)
+
+__all__ = [
+    "ALL_ASSEMBLIES",
+    "CONCRETE_BEARING",
+    "GWB_LINING",
+    "PAINT_FINISH",
+    "PAINT_FINISH_A",
+    "PAINT_FINISH_B",
+    "STUD_BEARING",
+    "GARAGE_ICF",
+    "GLAZED_WALL_MULTIWALL_16MM",
+    "HOUSE_WALL_2X4_WITH_CI",
+    "HOUSE_WALL_2X6_WITH_ZIPR",
+    "HOUSE_ROOF",
+    "STARTER_FLOOR",
+    "FOUNDATION_WALL_8_INT",
+    "FOUNDATION_WALL_8_XPS4",
+    "FOUNDATION_WALL_8_XPS4_CORE",
+    "FOUNDATION_WALL_12_INT",
+    "FOUNDATION_WALL_12_XPS4",
+    "FOUNDATION_WALL_12_XPS4_CORE",
+    "FOUNDATION_WALL_XPS4_OUTBOARD",
+    "INT_2X4_DOUBLE_STUD_MINERAL_WOOL",
+    "INT_2X4_PARTITION",
+    "INT_2X4_RC",
+    "INT_2X4_RC_DOUBLE_GWB",
+    "INT_2X4_STAGGERED_DOUBLE_GWB",
+    "INT_2X4_STAGGERED_GWB",
+    "INT_2X6_PLUMBING",
+    "INT_2X6_STAGGERED_PLUMBING",
+]

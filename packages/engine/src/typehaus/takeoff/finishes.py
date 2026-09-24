@@ -2,7 +2,7 @@
 
 ``Room.floor_finish`` renders now (``ui/src/three/builders/structure.ts::buildRoomFloor``,
 ``emit/gltf/palette.py::_room_floor_color``). This is what makes it *orderable*: one row per
-finish, house-wide, resolved against the ``library/materials.py`` entries the finish strings
+finish, house-wide, resolved against the ``library/materials/`` entries the finish strings
 name — the same single definition the viewer and the export read, so a finish cannot look
 right and bill wrong.
 

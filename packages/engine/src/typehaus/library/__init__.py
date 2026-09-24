@@ -7,6 +7,7 @@ import ...``. Each item is declarative wherever possible so the dialect trust cl
 from __future__ import annotations
 
 from typehaus.library.assemblies import (
+    CONCRETE_BEARING,
     FOUNDATION_WALL_8_INT,
     FOUNDATION_WALL_8_XPS4,
     FOUNDATION_WALL_8_XPS4_CORE,
@@ -16,6 +17,7 @@ from typehaus.library.assemblies import (
     FOUNDATION_WALL_XPS4_OUTBOARD,
     GARAGE_ICF,
     GLAZED_WALL_MULTIWALL_16MM,
+    GWB_LINING,
     HOUSE_ROOF,
     HOUSE_WALL_2X4_WITH_CI,
     HOUSE_WALL_2X6_WITH_ZIPR,
@@ -27,7 +29,11 @@ from typehaus.library.assemblies import (
     INT_2X4_STAGGERED_GWB,
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,
+    PAINT_FINISH,
+    PAINT_FINISH_A,
+    PAINT_FINISH_B,
     STARTER_FLOOR,
+    STUD_BEARING,
 )
 from typehaus.library.doors import (
     ALL_DOOR_TYPES,
@@ -54,6 +60,12 @@ from typehaus.library.railings import ALL_RAILING_TYPES
 from typehaus.library.windows import WINDOW_TYPES_16_INCH_MODULE
 
 __all__ = [
+    "CONCRETE_BEARING",
+    "STUD_BEARING",
+    "PAINT_FINISH",
+    "PAINT_FINISH_A",
+    "PAINT_FINISH_B",
+    "GWB_LINING",
     "ALL_MATERIALS",
     "STRUCTURAL_HARDWARE",
     "HOUSE_WALL_2X4_WITH_CI",

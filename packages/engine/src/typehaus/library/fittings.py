@@ -1,6 +1,6 @@
 """The shared catalog of pipe and duct fittings — the patterns, and what each one turns.
 
-Same split as ``library/hardware.py`` / ``hardware/catalog.py``: the record type is
+Same split as ``library/hardware/`` / ``hardware/catalog.py``: the record type is
 :class:`~typehaus.hardware.fittings.FittingSpec` and the items are here.
 
 **What is recorded and what is not.** A pattern's *angle* is definitional — ASTM D3311

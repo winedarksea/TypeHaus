@@ -599,7 +599,7 @@ for _i, (_t, _y) in enumerate((("E", PIER_LINE_Y_FT), ("NE", GARAGE_SEAT_Y_FT)))
 #
 # Two conditions come with the letter and both are drawing items: every fastener at a
 # stainless connector is stainless (the 1/2" through-bolts included, not only the anchor),
-# and the 16d nails into the post are SSA16D. See `library/hardware.py::ABU66SS_POST_BASE`.
+# and the 16d nails into the post are SSA16D. See `library/hardware/::ABU66SS_POST_BASE`.
 COLUMN_BASES = [
     Connector(uid=f"BWCB{_i}AAAAAA"[:10], tag=f"CN-BW-BASE-{_s}",
               kind=ConnectorKind.POST_BASE, position=pt(ft(_x), ft(_y)),
@@ -658,7 +658,7 @@ INTERIOR_POST_BASES = [
 # with no dead relief taken at all (it was 427 / ~256 while a fourth truss stood at the
 # garage wall; the same uplift now shares over one bearing fewer). Even the lowest H2.5ASS figure in circulation covers
 # that -- but NOT by the margin the galvanized tie's 700 lbf would suggest, which is why
-# `library/hardware.py` carries the stainless tie as its own record with no allowable.
+# `library/hardware/` carries the stainless tie as its own record with no allowable.
 #
 # ** THREE TRUSSES, AND THE FOURTH WAS AN ARTEFACT (2026-09-11). ** The stations are the
 # truss layout's own. `roof_gable.build_truss_layout` walks the bearing axis at the

@@ -100,7 +100,7 @@ BASEMENT_FIXTURES = (
 # "the clear space in front of any water closet or bidet shall be not less than twenty-four
 # (24) inches." (Anoka's and Farmington's residential bathroom handouts both print 15"/24"
 # and cite 402.5. The 21" people quote is IRC's, and the 21" dwelling-unit exception attached
-# to it is a Washington amendment.) `_water_closet_required_clearance` encodes 24", and this
+# to it is a Washington amendment.) `water_closet_required_clearance` encodes 24", and this
 # house sets `active_code_profile="MN/IRC"`, so the envelope really is graded rather than
 # silently dropped — see plan/manifest.py.
 #

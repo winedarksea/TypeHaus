@@ -303,7 +303,7 @@ the nailer to catch a short screw.
 | Factor | Value | Why |
 |---|---|---|
 | C_D, load duration | 1.6 | NDS Table 2.3.2, wind. The demand is a wind suction; a fastener is not exempt from the factor the rest of the house's wind capacities use. |
-| C_M, wet service | 0.7 | NDS Table 11.3.3, withdrawal of a screw in a member that will be above 19% MC in service. A rainscreen cavity wets and dries with the weather. The same call `library/hardware.py` makes for this house's exterior connectors. |
+| C_M, wet service | 0.7 | NDS Table 11.3.3, withdrawal of a screw in a member that will be above 19% MC in service. A rainscreen cavity wets and dries with the weather. The same call `library/hardware/` makes for this house's exterior connectors. |
 | C_t, temperature | 1.0 | Table 11.3.4: sustained service below 100 °F. |
 | C_eg, end grain | 1.0 | §12.2.4 would put it at 0.75 for a screw into end grain. Every screw here is into the side grain of a flat-laid 2x4. |
 | C_i, incising | — | **Not applicable.** Table 11.3.1 lists no incising factor for connections, and KDAT SYP is not incised in any case. |

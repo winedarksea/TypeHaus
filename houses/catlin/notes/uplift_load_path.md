@@ -267,7 +267,7 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
   Both are now **HGAM10**, the part the raw hardware notes were pointing at all along: a
   masonry gusset angle, #14 screws into the wood leg and Titen Turbo into the concrete, with
   a 1½" minimum edge distance that both rounds satisfy as cast (6" to centre on the 12"
-  round, 8" on the 16"). `library/hardware.py` stocks it under the new
+  round, 8" on the 16"). `library/hardware/` stocks it under the new
   `ROLE_MASONRY_GUSSET_ANGLE`, and `prices.toml` carries a `[hardware]` row for it — the two
   things the open item was waiting for. It is its own role and not a second product on
   `ROLE_HURRICANE_TIE` because `hardware_for_role` holds exactly one item per role.
@@ -299,7 +299,7 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
 
 ## Purchasing
 
-Parts are catalogued as Simpson because that is what `library/hardware.py` and the published
+Parts are catalogued as Simpson because that is what `library/hardware/` and the published
 load tables it cites already use. MiTek sells an equivalent for every one of them and is
 usually cheaper:
 

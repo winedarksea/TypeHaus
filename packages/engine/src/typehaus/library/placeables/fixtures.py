@@ -57,7 +57,7 @@ WATER_CLOSET_FRONT_CLEARANCE = ft(2)
 WATER_CLOSET_CODE_PROFILE = "MN/IRC"
 
 
-def _water_closet_required_clearance(depth) -> ClearanceZone:
+def water_closet_required_clearance(depth) -> ClearanceZone:
     """Return the MN/IRC code envelope around a bowl facing local ``-y``."""
     half_depth = depth.meters / 2
     half_width = WATER_CLOSET_SIDE_CLEARANCE.meters
@@ -77,7 +77,7 @@ TOILET = FixtureType(
     tag="FX-TOILET-STD", name="Water closet", footprint=(ft(1, 8), ft(2, 4)), height=ft(2, 6),
     plan_symbol="toilet", source=REFERENCE, basin=False,
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(_water_closet_required_clearance(ft(2, 4)),),
+    clearances=(water_closet_required_clearance(ft(2, 4)),),
 )
 LAVATORY = FixtureType(
     tag="FX-LAV-24", name="Lavatory", footprint=(ft(2), ft(1, 8)), height=ft(3, 4),
@@ -191,7 +191,7 @@ TOILET_WALL_HUNG = FixtureType(
     footprint=(inch(15), inch(19.3)), height=inch(13.625),
     plan_symbol="toilet-wall-hung", basin=False,
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(_water_closet_required_clearance(inch(19.3)),),
+    clearances=(water_closet_required_clearance(inch(19.3)),),
     mount=Mount(kind=MountKind.WALL, elevation=inch(1.375)),
     # Geberit's Duofix element is 500 mm (19 11/16") wide across the frame's uprights, and
     # TOTO's DuoFit is within an eighth of it, so the clear bay between the flanking studs

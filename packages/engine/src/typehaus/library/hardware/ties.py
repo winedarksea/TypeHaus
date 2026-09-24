@@ -1,4 +1,4 @@
-"""Tie hardware for a deck held to another structure — split out of ``hardware.py`` (size).
+"""Tie hardware for a deck held to another structure — split out of the hardware catalog (size).
 
 The north-entry landing's two tie lines (catlin ``params/landing_tie.py``, owner
 2026-09-21): HL33HDG wood to wood into the garage's west wall, and HL35HDG on the garage

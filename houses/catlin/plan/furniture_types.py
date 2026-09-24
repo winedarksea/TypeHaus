@@ -9,13 +9,11 @@ exist to be *scheduled and billed*, and to sit in 3D at the height someone build
 
 from __future__ import annotations
 
-from library.placeables._zones import front_zone
+from library.placeables import front_zone, open_corner_zone
 
 from typehaus.model import (
     BuiltInBookcaseBay,
     BuiltInBookcaseSpec,
-    ClearancePolicy,
-    ClearanceZone,
     Footprint2D,
     FurnitureType,
     Mount,
@@ -23,7 +21,6 @@ from typehaus.model import (
     PlacementStrategy,
     ft,
     inch,
-    m,
     pt,
 )
 
@@ -571,39 +568,16 @@ _DINING_SOURCE = (
 _DINING_CHAIR = "FURN-DINING-CHAIR"
 
 
-def _open_corner_chair_zone(half_width, half_depth, reach):
-    """A rectangular table's chair-use margin as two crossed bands, not one bigger rectangle.
-
-    ``library.placeables._zones.surround_zone`` grows the footprint by ``reach`` on all four
-    sides, which is right for a ROUND table — its footprint is the square around the circle
-    and a chair really does sit on the diagonal. On a rectangular table the four corner
-    squares hold nothing: a seat is on a side, and the corner of an 8' table is where two
-    seats' elbows meet, not where a seventh chair goes.
-
-    So this is the same ``reach`` on every side, minus those corners: one band the table's
-    own width running past both long sides, one band the table's own depth running past both
-    ends. Strictly smaller than ``surround_zone``, and smaller only where nothing stands.
-    """
-    def band(hw, hd) -> ClearanceZone:
-        return ClearanceZone(
-            footprint=Footprint2D(points=(pt(m(-hw), m(-hd)), pt(m(hw), m(-hd)),
-                                          pt(m(hw), m(hd)), pt(m(-hw), m(hd)))),
-            purpose="chair-use zone", policy=ClearancePolicy.RECOMMENDED,
-            source=_DINING_SOURCE, occupant_types=(_DINING_CHAIR,),
-        )
-    return (band(half_width.meters, half_depth.meters + reach.meters),
-            band(half_width.meters + reach.meters, half_depth.meters))
-
-
 # The house's dining table. Identical to library FURN-DINING-8 in every dimension — 8' x
 # 3'-6", 30" high, eight places — and differs only in the shape of its recommended zone.
 # It is house-local rather than a change to the shared type because the shared one is also
-# the round table's rule, and on a round table the corners are real (see the helper above).
+# the round table's rule, and on a round table the corners are real (see ``open_corner_zone``).
 DINING_8_OPEN_CORNERS = FurnitureType(
     tag="FT-DINING-8-OPEN-CORNERS", name="Eight-seat dining table (open-corner chair zone)",
     footprint=(ft(8), ft(3, 6)), height=ft(2, 6), plan_symbol="dining-table",
     source=_DINING_SOURCE,
-    clearances=_open_corner_chair_zone(ft(4), ft(1, 9), ft(3)),
+    clearances=open_corner_zone(ft(8), ft(3, 6), ft(3), "chair-use zone",
+                                source=_DINING_SOURCE, occupant_types=(_DINING_CHAIR,)),
 )
 
 

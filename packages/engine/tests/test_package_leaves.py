@@ -73,7 +73,7 @@ _ALLOWED: dict[str, set[str]] = {
                  "schedule", "hardware"},
     "joints": {"model", "resolve", "quantities", "hardware", "joints"},
     #: ``library`` for the catalog items, the same split as ``Material`` /
-    #: ``library/materials.py``; nothing else under ``typehaus``.
+    #: ``library/materials/``; nothing else under ``typehaus``.
     "hardware": {"library", "hardware"},
 }
 

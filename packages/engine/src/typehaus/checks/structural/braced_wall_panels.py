@@ -11,7 +11,7 @@ meets or does not, and they are the ones a braced-wall inspection actually walks
   sheathing, not from an authored designation; a hold-down is a real ``Connector`` of kind
   HOLD_DOWN whose catalogued part publishes at least 800 lb. **A device with no published
   allowable is named and refused** — an unrated part is exactly what this rule exists to
-  catch (``library/hardware.py``'s CS16 comment is the long version).
+  catch (``library/hardware/``'s CS16 comment is the long version).
 * **R602.10.2.2 / .2.3** — a panel begins within 10 ft of each end of the line, adjacent
   panel edges are not more than 20 ft apart, and a line over 16 ft carries at least two.
 * **R602.10.2** — a panel is a FULL-HEIGHT section of wall, so a door or window inside one

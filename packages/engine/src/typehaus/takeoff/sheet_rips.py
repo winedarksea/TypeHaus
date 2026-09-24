@@ -17,7 +17,7 @@ Only a member that really is cut from a wood structural panel comes here. A meta
 band, a spray-foam eave return and a KDAT furring stick are all spelled as ``panel``
 profiles too (the profile grammar describes a swept rectangle, not a product), and every one
 of them is genuinely bought by the lineal foot. :data:`SHEET_RIP_MATERIALS` is the
-allowlist that separates the two, and it names ``library/materials.py`` tags rather than
+allowlist that separates the two, and it names ``library/materials/`` tags rather than
 guessing from substrings in them — "plywood" appears in ``plywood-subfloor`` and in nothing
 that would tell you ``osb`` is the same kind of purchase.
 """
@@ -58,7 +58,7 @@ _SHEET_THICKNESS_IN: tuple[float, ...] = (
 #: thickness rather than inventing a build-up nobody drew.
 _MAX_PLIES = 4
 
-#: Materials whose panel-profile members are cut from a 4x8 sheet, by ``library/materials.py``
+#: Materials whose panel-profile members are cut from a 4x8 sheet, by ``library/materials/``
 #: tag. Everything else that wears a ``panel`` profile — ``metal-dark-exterior`` coil trim,
 #: ``closed-cell-spray-foam`` eave returns, ``pvc-cellular`` soffit, ``kdat`` furring,
 #: ``board-batten-24``/``pbr-panel-26`` cladding bands — is bought by the lineal foot or the

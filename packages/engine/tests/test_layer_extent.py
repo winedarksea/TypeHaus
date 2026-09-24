@@ -188,7 +188,7 @@ def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
     rows = {row["material"]: row for row in envelope_layer_takeoff(catlin_model)}
     panel = rows["foundation-coating-acrylic-black"]
     assert panel["net_area_sqft"] == pytest.approx(282.6, abs=1.0)
-    # The parge survives nowhere: `Material(tag="stucco")` is still in library/materials.py
+    # The parge survives nowhere: `Material(tag="stucco")` is still in library/materials/
     # — this house simply has no instance of it. Nor does the protection board, which is
     # kept as the named alternate in plan/assemblies.py and priced in prices.toml but is
     # referenced by no layer; an unreferenced material must not reach the bill.

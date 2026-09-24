@@ -734,7 +734,7 @@ The four evicted MEP runs are a real finding and the honest half of this section
 **What changed in the tree (2026-09-12):** `Slab.published_span` + `checks/structural/slab_span.py`
 (the new prescriptive read); `params/main_deck.py` (the row, the BuildDeck docstring, the
 coating); `plan/assemblies.py` (`POLISHED_MIX` → `DECK_CAP_MIX`, R-3.125 → R-2.9 for the 10"
-section, the stale 4 5/8"/8" comment); `coated-concrete` in `library/materials.py`,
+section, the stale 4 5/8"/8" comment); `coated-concrete` in `library/materials/`,
 `takeoff/finishes.py` and `checks/integrity`; `prices.toml`;
 `notes/mixed_deck_movement_joint.md`; `notes/rebar_backout.md`. **Not done, deliberately:**
 authoring the now-sourced cap rebar schedule as a `ReinforcementSpec` — it moves tonnage into

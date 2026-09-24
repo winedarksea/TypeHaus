@@ -229,7 +229,7 @@ Three things answer it, and all three are already in the model:
 * **The bearing STRESS at the centre pillars is not here** — `notes/centre_pillar_bearing.md`
   §2–4. This note covers only what that joint does over time.
 * **The four beam pockets' hanger capacity is not here.** `HUC212-3`'s published concrete row
-  is recorded on the catalog record itself (`library/hardware.py`), and §8 below is only the
+  is recorded on the catalog record itself (`library/hardware/`), and §8 below is only the
   part of that joint this note owns.
 * **No wind, seismic or snow load appears anywhere above.** Every movement here is thermal or
   hygroscopic.
@@ -238,7 +238,7 @@ Three things answer it, and all three are already in the model:
 
 The back and front porch beams land in 6" pockets cast in the 12" `W-SG-W1`/`E1` walls, on
 `HUC212-3` concealed-flange hangers (retyped from `HUCQ410-SDS` on 2026-09-12 — that part is
-not published for concrete and its seat was 15/16" too narrow; `library/hardware.py`).
+not published for concrete and its seat was 15/16" too narrow; `library/hardware/`).
 
 **The hanger is not what carries the beam.** 4 1/2" × 6" = **27 sq in** of the three-ply
 bears directly on the cast sill of the pocket, and that is the gravity path whatever hangs

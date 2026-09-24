@@ -124,7 +124,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   instead of a circuit. The `ED-*-LT` fixtures still live in `plan/mep_electrical.py` — they were
   re-typed in place from the old generic `ED-T-LIGHT` so their uids (and IFC GlobalIds)
   survived — and each is one corner of a grid completed here.
-- `plan/lighting_types.py` — the `LuminaireType` catalog, schedule marks A–X (NOT
+- `plan/lighting_types.py` + `plan/lighting_types_decor.py` — the `LuminaireType` catalog, marks A–X (NOT
   editable: `frozenset` again). It said A–P until 2026-09-15 and had been wrong for a
   while: the run is A…X with `I` and `O` never used (they read as digits on a drawing),
   plus numbered variants of an existing family (`A1`, `E1`, `J1`, `P1`…), 31 marks in all.
@@ -1478,7 +1478,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   target of R-10; PASSes `code.energy_prescriptive`'s R-10 slab row). Detached garage slab:
   1" at **40 psi** — a loaded wheel is a contact patch, not a distributed floor load.
   `RM-GARAGE` is `conditioned=False`, so nothing grades the garage number.
-  - Do not assume a psi change is priced: `library/materials.py`'s `xps` tag has no
+  - Do not assume a psi change is priced: `library/materials/`'s `xps` tag has no
     compressive field and `prices.toml` keys XPS on **thickness only**, so 25 psi and 40 psi
     board bill identically here though 40 psi runs ~20-35% over in the yard. XPS price rows
     ARE qualified by `thickness_in` (`cli/prices.py`'s `envelope_layers`), or any
@@ -2062,7 +2062,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Sunken garden court
 
 - **Every interior face of the court is washed white, and that is a daylighting device.** An
-  untinted white mineral silicate wash (`silicate-wash-white` in `library/materials.py`, LRV 90)
+  untinted white mineral silicate wash (`silicate-wash-white` in `library/materials/`, LRV 90)
   on: the five court walls' **court face**, full height (`SUNKEN_GARDEN_WALL` layer 0); all six
   12" cast columns, full round; and — as `silicate-wash-white-block` — the **outboard (yard)
   face** of the three raised-garden perimeter legs, banded to the exposed 3'-4". Bare grey

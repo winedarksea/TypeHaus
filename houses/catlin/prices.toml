@@ -361,7 +361,7 @@
 # A pocket door's split stud: two 1x4 legs with the leaf slot between them, so the material
 # is exactly twice the 1x4 above. Labour is NOT doubled — the pair is set as one member, and
 # the frame kit ships them assembled (they are steel-wrapped in the heavy-duty unit), so the
-# carpenter hangs one thing. See library/hardware.py: a house that buys the kit is over-billed
+# carpenter hangs one thing. See library/hardware/: a house that buys the kit is over-billed
 # by this row and under-billed by nothing.
 "2-1x4" = { material = { low = 0.9, high = 1.4 }, labour = { low = 0.35, high = 0.7 } }  # 20 LF
 # "1x6.81165 panel" =    # 112 LF — cellular-PVC fascia, billed in [edge_trim]
@@ -759,7 +759,7 @@
 #
 # So the lesson the earlier version of this comment drew — that a real base is expensive —
 # was drawn from the wrong part. A published number costs about $5. See
-# library/hardware.py for both readings, ESR-2105 Table 3 and ESR-3096 Table 4.
+# library/hardware/ for both readings, ESR-2105 Table 3 and ESR-3096 Table 4.
 # RETIRED 2026-09-14, kept priced per the glazed-green-brick convention. These two were the
 # five-part base tie under the centre pillars while those pillars bore on the porch FRAMING.
 # Both came back down onto the cast column tops that day and take an ABU66SS each — a
@@ -878,7 +878,7 @@
 # winter, and the house buys stainless at every KDAT joint (owner, 2026-09-10). Unlike the
 # ABU66/ABU66SS pair above — one row, priced at the stainless rate, because nothing in the
 # model can say "buy the stainless variant" of a DERIVED part — these six are AUTHORED, so
-# they carry their own part number and bill on their own row. `library/hardware.py` keeps the
+# they carry their own part number and bill on their own row. `library/hardware/` keeps the
 # H2.5ASS as a capacity-only record, and since 2026-09-11 it carries the galvanised tie's
 # 700/110/110: Simpson letter L-F-SSNAILS rates a stainless connector at its carbon twin's
 # published values. The lower figures that were in circulation (440/75/70) are a real table —
@@ -940,7 +940,7 @@
 # catalog that publishes a load into concrete: p. 280's masonry/concrete table lists HU and
 # HUC only, and its loads come from substituting the wood table's face NAILS with 1/4"
 # Titen screws — which an HUCQ, fastened with SDS wood screws, has no holes for.
-# See library/hardware.py::HUCQ_CONCRETE_HANGER, kept as the record of that finding.
+# See library/hardware/::HUCQ_CONCRETE_HANGER, kept as the record of that finding.
 #
 # The concealed-flange HUC family, which is what p. 280 actually publishes. DERIVED only:
 # `takeoff/hangers.py::_explicit_hanger_rows` names this family for a resolver-emitted
@@ -1092,7 +1092,7 @@
 "S-5-PVKIT" = { low = 14, high = 35 }  # 48 ea
 # 2026-08-21 — D-M-LAUN's pocket frame. ** NOT RE-SOURCED IN THIS PASS ** — a heavy-duty
 # cavity frame is configured per order rather than shelf-priced, which is also why
-# library/hardware.py records no SKU ladder for it. The low end is roughly 3x a commodity
+# library/hardware/ records no SKU ladder for it. The low end is roughly 3x a commodity
 # 1500PF kit (those sit near $90-130 retail); the high end is where a 4'-0" timber-framed
 # unit with soft-close hardware lands. This is the one line in this section standing on a
 # ratio instead of a quote — re-source it before it matters.
@@ -1211,7 +1211,7 @@
 #
 # It REPLACES "SS316-LAG-38x4-EPDM" ($4-8, 8 ea), the through-deck lag this house needed
 # while both condensers stood on FS-SG-DECK. Nothing is bolted through that plank now, so
-# the deck anchor's row went with the stand — the part survives in library/hardware.py for
+# the deck anchor's row went with the stand — the part survives in library/hardware/ for
 # any house that does put equipment on a dry-below deck.
 "SS316-WEDGE-38x3" = { low = 4, high = 7 }  # 12 ea — four legs each under three stands. The "8 ea" this comment carried was stale from the day SL-M-HP3PAD shipped; on 2026-09-04 HP1 moved to its own north pad and the count is still 12, four to each of SL-SG-HPPAD, SL-M-HP3PAD and SL-M-HP1PAD
 "SS316-STANDOFF-STRAP #13" = { low = 3, high = 5.5 }  # 8 ea — roof leaders
@@ -1923,7 +1923,8 @@
 # "glazing:BREEZEWAY_GLAZED_WALL" = { material = { low = 4400, high = 10200 }, labour = { low = 4500, high = 9600 } }
 # stood here for 0.16 cy = 79.2 SF. RETIRED 2026-09-12 with the assembly, which went with the
 # rest of the breezeway; the generic stack is library GLAZED_WALL_MULTIWALL_16MM now.
-"glazing:BREEZEWAY_ROOF_GLAZING" = { material = { low = 7200, high = 16600 }, labour = { low = 8800, high = 15400 } }  # 0.03 cy = 16.0 SF
+# The retired canopy's row, kept priced against the library stack it was a copy of.
+"glazing:GLAZED_WALL_MULTIWALL_16MM" = { material = { low = 7200, high = 16600 }, labour = { low = 8800, high = 15400 } }  # 0.03 cy = 16.0 SF
 #
 # ALUMINIUM BALCONY DECK — moved to [sheet_goods] `aluminum-deck` on 2026-08-22, when
 # SL-SG-DECK stopped being a Slab and became FS-SG-DECK's `subfloor`. Same boards, same
@@ -3773,7 +3774,7 @@
 # which fails the owner's binding constraint of a raw, untreated, unprimed substrate.
 "silicate-wash-white" = { material = { low = 0.89, high = 1.3 }, labour = { low = 2.45, high = 5.06 } }  # 652.5 SF — the five court walls' court face (full height); 2 coats, NO primer on raw mineral substrate
 # The fireplace surround's room face: the same pail and rate, a separate tag only so the viewer
-# can course it as brick (library/materials.py).
+# can course it as brick (library/materials/).
 "silicate-wash-white-brick" = { material = { low = 0.89, high = 1.3 }, labour = { low = 2.45, high = 5.06 } }  # 18.9 SF
 # The SRW legs: worse coverage on a split-face-textured unit PLUS the whole-face Quartz Filler or
 # Bonding Coat pretreatment the TDS requires on block. Same pail, same crew, same arrival —
@@ -4371,7 +4372,7 @@
 # same tape whether it is 1" or 3" stock. So a thinner slab board buys a MATERIAL saving
 # only, and the estimate does not credit it with a labour one it may not earn.
 #
-# NOT PRICED, AND WORTH KNOWING: the COMPRESSIVE GRADE. `library/materials.py` has one
+# NOT PRICED, AND WORTH KNOWING: the COMPRESSIVE GRADE. `library/materials/` has one
 # `xps` tag with no psi field, and this key qualifies on thickness alone — so the garage
 # slab's 40 psi board (vehicle wheel loads) and the basement's 25 psi board carry the same
 # rate here, and they do not carry the same rate in the yard. 40 psi runs roughly 20-35%
@@ -7489,7 +7490,7 @@ wall_structure = true
 "openings:WT-1436" = "catalog-only: the south flankers moved out a bay to WT-1424 on 2026-09-22"
 "openings:WT-2464" = "catalog-only window size, kept per the retired-sizes-stay-priced convention"
 "openings:WT-2764" = "catalog-only: the Juliet pair grew to WT-2754 on 2026-09-10"
-"concrete:glazing:BREEZEWAY_ROOF_GLAZING" = "the breezeway's polycarbonate canopy, retired 2026-09-10 for RF-BW-CANOPY"
+"concrete:glazing:GLAZED_WALL_MULTIWALL_16MM" = "the breezeway canopy's 16mm multiwall stack, retired 2026-09-10 for RF-BW-CANOPY"
 "concrete:bug_screen:GARAGE_WALL_2X6" = "reads 0 SF for a corrugated wall by design — the closures bill as an allowance"
 "floor_finishes:polished-concrete" = "the costed fallback to the 2K PU coating on SL-M-DECK (2026-09-12)"
 

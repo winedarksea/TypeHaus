@@ -154,136 +154,6 @@ DOOR_TYPES = [
 # 3-1/4" is the ordinary double-glazed unit; the two plant-room `-HP` types are 4",
 # because a triple pack on a warm-edge spacer in a thermally broken frame is a deeper
 # section. Both are product facts, and both are the term the derived stool subtracts.
-WINDOW_TYPES = [
-    # 14" RO — falls between studs on the 16" grid without breaking a stud line, so it
-    # frames with no header, no jacks and no kings. 24" tall because the 5' attic knee
-    # walls (WIN-A-W-S/W-N, WIN-A-E-S/E-N) have only that much room under the top plate
-    # — the same 24" is what lets this size duck under the 4:12 south rake as well.
-    # That combination makes it the house's fallback wherever a bigger unit will not go.
-    # 14" RO, 36" tall — the south gable's flanker size SINCE 2026-08-29, and a THIRD
-    # height in the 14" family. It exists because the attic went 6:12 with the eave on a
-    # 1 1/2" plate: the roof underside is now `1 1/2" + x/2` above the attic floor, so a
-    # flanker at x 12'-8" has 74" of rake over its outer jamb and the WT-1448 that used to
-    # sit there wants 80" (2'-8" sill + 48" + 2" of raked plate and flat header). 36" fits
-    # with 4" to spare and keeps RM-A-STUDY on daylight: 13.625 sf of glazing against the
-    # 13.2 sf R303.1 asks of a 165 sf room. Dropping to WT-1424 instead would save the type
-    # and push a habitable office onto R303.1 Exception 1's electric-light substitute —
-    # not a trade a high-performance house should make.
-    #
-    # The SKU premium is near zero: same 14" width family, same buck, same header (none —
-    # a 14" RO lands wholly inside a 16" bay), same flashing. Casement like WT-1448, not
-    # WT-1424's awning; 36" is past what an awning projects.
-    # 14" RO, 48" tall — the south gable's flanker size, and the one deliberate
-    # break of "one height per family". The juliet family doesn't fit: it breaks a stud, taking a
-    # 5.5"-deep header that at the nearest usable stud line (x 8'-0"/28'-0") clashes with the
-    # 4:12 roof underside by 1.8". 14" lands wholly inside a bay so no header forms, and the
-    # 6'-8" head (the main storey's head line) clears the rake by 2'-0". Casement, not
-    # WT-1424's awning: a 48"-tall leaf is past what an awning projects.
-    # 24" RO — the attic gable's juliet size (widened from 18" -> 24"). Still one stud
-    # broken, but the pair no longer centres on the stud lines: each unit grew OUTWARD only,
-    # since the 14" pier
-    # between them is bearing (see WIN-A-S-JUL-W/E in plan/storeys/attic.py). 64" tall is a
-    # proportion choice, not a clearance one — head lands at 8'-0" with the storey's 2'-8"
-    # sill, well clear of the rake. Casement stays: 24" is workable as a tilt-turn where 18"
-    # was under the hardware's minimum frame width, but the family is casement throughout.
-    # 24" also clears Andersen 400's 20-11/16" narrowest casement, which 18" did not — see
-    # the "BELOW A STOCK LINE'S MINIMUM SIZE" note in prices.toml.
-    # Catalog-only: WT-2764 took over both juliets when the pair widened again (24" -> 27"
-    # each), and WT-2464 is now referenced by nothing. Kept rather than
-    # deleted, the convention WT-3660, glazed-green-brick and EXT_2X6_SWINBURNE are
-    # all held under — a retired size is a priced, available product, not dead code.
-    # 27" RO — bearing-wall size (N*2-9): one stud broken, jacks added. 36" tall
-    # because the garage's 8' wall can't take a 60" height at a 42" sill (header would
-    # land above the top plate). 27x36 still clears R310 egress (6.75 sf > 5.7).
-    # 27" RO x 48" — the same bearing cap as WT-2736 at WT-3048's height, for the one
-    # bearing-wall unit whose head line had to survive the narrowing:
-    # WIN-M-EAST-MID, the east living row's feature window, keeps its 2'-8" sill and
-    # 6'-8" head while the width comes off. Third break of "one height per family", and
-    # the cheapest of the three — a retype that moves neither datum.
-    #
-    # ** THE DATUMS ARE 2'-8" / 6'-8", NOT 2'-6" / 6'-6". ** Commit c2ed5b9d ("Close the
-    # sunken garden's structural loop") moved all three east sills 2'-6" -> 2'-8" in one
-    # silent hunk of a retaining-wall change, and every comment that quoted the old pair went
-    # stale at once. The row's head is therefore 6'-8" — THE HOUSE'S OWN DOOR-HEAD LINE — which
-    # is a better fact than the one it replaced, not merely a correction. Corrected here,
-    # at the row in OPENINGS, and in houses/catlin/CLAUDE.md on 2026-09-06.
-    # 27" RO x 54" — the bearing-wall BEDROOM size. WIN-S-BED1/BED2 are
-    # single-window rooms, so R303.1 binds on AREA and the 27" cap has to be paid for in
-    # height: at 27x48 BED2 has 9.00 sf against its 9.945 sf requirement and FAILS. 27x54
-    # is 10.125 sf / 5.063 sf openable, which clears BED1 (119.66 sf -> 9.573) by
-    # +0.55/+0.28 sf and BED2 (124.32 sf -> 9.945) by +0.18/+0.09 — better margins than the
-    # 30x48 it replaces (+0.43/+0.21 and +0.055/+0.027).
-    # This is exactly the "taller unit, not a wider one" an earlier note said the
-    # answer would have to be. Head lands at 7'-6" on a 3'-0" sill, 18" clear below the
-    # 9'-0" plate — room for a 2-2x8 header (7 1/4") and the double top plate with 7 3/4"
-    # of cripple left over, which is what disproves that note's "27" cannot reach it at
-    # any height that fits under the 9'-0" plate".
-    # 27" RO x 64" — the attic gable's juliet size, replacing WT-2464 at
-    # WIN-A-S-JUL-W/E. Each unit widened 1 1/2" per side so the pair's CENTRES stayed on the
-    # 16'-0"/20'-0" stud lines and the clear pier between them closed 24" -> 21", 7" over
-    # what RB-HOUSE's south bearing point needs (see the juliet note in storeys/attic.py).
-    # W-A-S2/W-A-S3 are NONBEARING, whose width cap is 30", so 27" is inside it with room.
-    # FOURTH height in the 27" family (36/48/54/64) and the fourth deliberate break of "one
-    # height per family" — which is the RO ladder working as designed, not a drift: the cap
-    # is on WIDTH, so composition has to be bought in HEIGHT (see WT-1448's note).
-    # 30" RO — non-load-bearing size (N*2-6): one stud broken. 36" tall keeps the
-    # attic-gable heads below the cathedral-roof framing. The north-side size (attic gable
-    # pair, hall).
-    # 30" RO — the south-glazing size, narrowed from the 42" WT-4248. One stud
-    # broken, not two: the module's ideal position moves with RO width, so the four facade
-    # columns moved 8" inboard with it (3'-4"/8'-8" -> 4'-0"/9'-4", 28'-0"/33'-4" ->
-    # 27'-4"/32'-8"); head line and storey stacking are untouched. Second deliberate break of
-    # "one height per family" (see WT-1448) — WT-3036's 36" would drop the head off the
-    # shared 6'-8" door-head line. Non-bearing walls only (preferences [framing]).
-    # 36" RO — concrete basement wall only (no stud module to respect down there).
-    # Catalog-only: WIN-B-SAUNA was its last instance and took WT-1424.
-    # Kept as an available product for the next basement opening rather than deleted.
-    # Same unit, same glass, no sash: a picture window for the openings that are there for
-    # daylight and view only. It is a separate *type* rather than a note on WT-3660 because
-    # a fixed unit is a different product on the quote and carries no ventilation or egress
-    # credit — the existing tags stay as they are, since they are referenced house-wide.
-    # The mudroom's picture unit: same 14" RO / 24" tall glass as WT-1424 (still the one
-    # size that clears a 16" stud bay unbroken), no sash — it is there for daylight over
-    # the bench, not ventilation. A separate type for the same reason WT-3660-FIX is
-    # separate from WT-3660: fixed vs. operable is a different product on the schedule.
-    # --- tempered twins (code.R308_4_safety_glazing) ----------------------
-    # Four types, identical to their parent but for the glass — R308.4 makes a *location*
-    # hazardous (wet room, within 24" of a door, within 60" of a stair), so only the unit
-    # that lands there gets tempered. Not new width families; no facade/framing rule sees
-    # them. Adding a tempered unit is a retype, never a move.
-    # --- high-performance twins (building_science.glazing_dew_point) -------
-    # Two types for the plant room, identical in every dimension to their parents and
-    # differing only in the glass package: triple/low-e at U-0.14 with a warm-edge spacer
-    # and a thermally broken frame. Exactly the `-T` precedent one line up — adding a
-    # better unit is a RETYPE, never a move, so no facade column, no header, no framing
-    # module and no stud line changes.
-    #
-    # This is not gold-plating, it is the room's only way to have glass at all. At 75 F /
-    # 70% RH the dew point is 64.4 F. A U-0.25 unit's centre of glass sits at 59.7 F at the
-    # -15 F design temperature and condenses below about +13 F outdoors — most of a
-    # Minnesota winter. U-0.14 puts it at 66.4 F, dry to roughly -35 F, which narrows the
-    # residual problem to the frame and the edge of glass (5-8 F colder than centre) —
-    # which is what the warm-edge spacer, the glass-wash throw off REG-S-HP-PLANT and the
-    # drained sill pans are there to handle.
-    #
-    # SHGC is deliberately unchanged at 0.35: this room is south-glazed for plants, and a
-    # triple unit that bought its U with a low SHGC would take the light the room exists
-    # for. VT likewise.
-    #
-    # BOTH ARE FIXED, NOT CASEMENT (2026-09-03), and that is a consequence of the U-0.14
-    # spec rather than a separate choice. A U-0.14 whole-window number is only reachable on
-    # a fixed unit: an operable sash carries a second frame profile, a sash-to-frame gap and
-    # hardware through the thermal break, and the same glass package in a casement lands
-    # around U-0.18-0.20. It is also the right answer for the room — an openable sash in a
-    # 70%-RH room is an owner-operable hole in a Class I liner, and RM-S-PLANT is
-    # ventilated mechanically by design (REG-S-HP-PLANT in, REG-S-ERV-PLANT-EXH out, both
-    # dampered), never by opening a window. R303.1's openable-area half is therefore carried
-    # by Exception 1, which this room already meets on its grow tubes and its supply
-    # terminal, and there is no egress duty on the second storey's SW corner.
-    # There was a third, WT-3048-HP-T: the tempered twin WIN-S-PLANT2 needed while it sat
-    # within 24" of D-S-DECK-W. That door is gone (see second.py), the location is no longer
-    # hazardous under R308.4.2, and the type went with it.
-]
 
 # Placement files retain only house-specific type records in their executable catalog;
 # common door/window presets are composed by the manifest from ``typehaus.library``.
@@ -851,7 +721,7 @@ WALLS = [
     # ** RETYPED AGAIN, TO THE SINGLE-GWB INT_2X4_STAGGERED_GWB, 2026-08-30. ** Same
     # staggered framing, same 3.5" fiberglass, one 5/8" gypsum layer per face instead of
     # two: the double layer was the more expensive half of the assembly to cut for the
-    # material cost, not the insulation (`library/assemblies.py`). No STC is claimed for
+    # material cost, not the insulation (`library/assemblies/`). No STC is claimed for
     # the single-layer build, but the staggered studs are most of what the double layer's
     # STC 52 bought over the bare partition's 36 in the first place — see the library note.
     # (That bare partition is UNINSULATED and STC 34 since 2026-08-31, so the gap this wall
@@ -1515,7 +1385,7 @@ OPENINGS = [
     # 4'-0" / 12'-0" (the true-even 11'-8" middle isn't a stud line on W-M-E1). Both sills
     # stay 2'-8": the BESTA run tops out at 29 3/4" (placeables.py), clearing the
     # countertop by 2 1/4" — the old "1/4"" here was the 2'-6" sill's number and went stale
-    # with it (see the WT-2748 note in WINDOW_TYPES).
+    # with it (see WT-2748 in the catalog, `library` WINDOW_TYPES_16_INCH_MODULE).
     #
     # 2026-08-27: both retyped WT-2736 -> WT-2748, 36" -> 48" tall. Same 27" bearing width,
     # so the near-jamb offsets and the row's 4'-0"/12'-0" beat are untouched; the head

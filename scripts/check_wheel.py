@@ -20,8 +20,8 @@ from pathlib import Path
 REQUIRED = (
     "typehaus/library/__init__.py",
     "typehaus/library/placeables/__init__.py",
-    "typehaus/library/assemblies.py",
-    "typehaus/library/materials.py",
+    "typehaus/library/assemblies/__init__.py",
+    "typehaus/library/materials/__init__.py",
     "typehaus/templates/starter/plan/manifest.py",
     "typehaus/templates/starter/preferences.toml",
     "typehaus/templates/empty/plan/manifest.py",

@@ -194,7 +194,7 @@ safe.**
 
 `W-S-BD1` and `W-S-BD2` ([`second.py:268-271`](houses/catlin/plan/storeys/second.py#L268))
 separate `RM-S-BED1 / BED2 / BED3` and are `INT_2X4_PARTITION` — **STC 36**
-(`library/assemblies.py:239-249`, a lab transcription). Nine feet away on the same storey,
+(`library/assemblies/:239-249`, a lab transcription). Nine feet away on the same storey,
 `W-S-SN1` / `W-S-SN2` are `INT_2X4_STAGGERED_DOUBLE_GWB` — **STC 52** — and the comment says
 why: *"a wall whose far face carries a vanity and a bath is the one the sleeper hears
 through."* **A wall with a sleeper on *both* faces has a strictly stronger claim, and it got

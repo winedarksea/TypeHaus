@@ -231,7 +231,7 @@ heaves an inch is still a flight of five risers.
 
 **THREE 18" aluminium ground stands on three separate pads**, all on `EQUIP_STAND_ALUM`,
 each modelled as four legs, one 3/8" x 3" 316 stainless wedge anchor per leg (part
-`SS316-WEDGE-38x3` in `library/hardware.py`) — **twelve anchors in the house**:
+`SS316-WEDGE-38x3` in `library/hardware/`) — **twelve anchors in the house**:
 
 | unit | pad | legs | anchors | form |
 |---|---|---|---|---|

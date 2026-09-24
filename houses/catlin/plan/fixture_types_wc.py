@@ -24,7 +24,7 @@ from library.placeables.fixtures import (
     SHOWER,
     TOILET_WALL_HUNG,
     TUB_SHOWER,
-    _water_closet_required_clearance,
+    water_closet_required_clearance,
 )
 
 from typehaus.model import FixtureType, Footprint2D, Service, ft, inch, m, pt
@@ -41,7 +41,7 @@ from typehaus.model.placeable_symbols.plumbing import NEO_ANGLE_CUT_FRACTION, ne
 # $2,152 against $1,598 for the split, and it would still leave two tank designs.
 #
 # ** THE FOOTPRINT IS THE CHINA, THE CLEARANCE IS THE CODE, AND THEY ARE SEPARATE. **
-# ``_water_closet_required_clearance`` draws UPC 402.5's 15"/24" envelope off the DEPTH
+# ``water_closet_required_clearance`` draws UPC 402.5's 15"/24" envelope off the DEPTH
 # alone, so the manufactured width below is a drawing dimension and changes no finding.
 
 # RM-M-BATH1. ** Built by copying the library type rather than by re-declaring it, and that
@@ -83,7 +83,7 @@ TOTO_CARLYLE_II = FixtureType(
     basin=False,
     product_ref="PROD-TOTO-CST614CEFGAT40",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(_water_closet_required_clearance(inch(30)),),
+    clearances=(water_closet_required_clearance(inch(30)),),
     source='TOTO Carlyle II CST614CEFGAT40#01, owner selection 2026-09-06. TOTO USA spec '
            'sheet read 2026-09-06: 30" L x 18 1/4" W x 28 1/4" H, 12" rough-in, 1.28 gpf '
            'Tornado Flush, CEFIONTECT, one-piece skirted. The AT40 suffix is WASHLET+ '
@@ -105,7 +105,7 @@ TOTO_AQUIA_IV = FixtureType(
     basin=False,
     product_ref="PROD-TOTO-CST446CEMGN",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(_water_closet_required_clearance(inch(27.5625)),),
+    clearances=(water_closet_required_clearance(inch(27.5625)),),
     source='TOTO Aquia IV CST446CEMGN#01, owner selection 2026-09-06. TOTO USA spec sheet '
            'read 2026-09-06: 27 9/16" D x 15 1/2" W x 29 1/8" H, rim 14 15/16", 12" '
            'rough-in, 1.28/0.9 gpf dual flush, CEFIONTECT, skirted trapway. ** THAT RIM '
@@ -126,7 +126,7 @@ TOTO_DRAKE = FixtureType(
     basin=False,
     product_ref="PROD-TOTO-CST776CEFG",
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(_water_closet_required_clearance(inch(28.375)),),
+    clearances=(water_closet_required_clearance(inch(28.375)),),
     source='TOTO Drake CST776CEFG#01, owner selection 2026-09-06. Published dimensions read '
            '2026-09-06: 28 3/8" D x 17 3/16" W x 30 1/8" H, rim 16 1/8" (universal height), '
            '12" rough-in, 2 1/8" trapway, 1.28 gpf Tornado Flush, CEFIONTECT. Seat is the '

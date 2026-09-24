@@ -41,9 +41,6 @@ from plan import (mep_drainage, mep_electrical, mep_erv_l1, mep_erv_l2, mep_erv_
 REGISTER_TYPES = (*mep_hvac.REGISTER_TYPES, *mep_erv_types.REGISTER_TYPES_ERV)
 EQUIPMENT_TYPES = (*mep_hvac.EQUIPMENT_TYPES, *mep_erv_types.EQUIPMENT_TYPES_ERV)
 ELECTRICAL_DEVICE_TYPES = mep_electrical.ELECTRICAL_DEVICE_TYPES
-# The duct as a PRODUCT, keyed by the (material, nominal diameter) pair a run states
-# and `prices.toml` already qualifies on. Read only by `mep.erv_static_budget`.
-DUCT_PRODUCT_TYPES = mep_erv_types.DUCT_PRODUCT_TYPES_ERV
 
 MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_sleeves.SUPPLY_SLEEVES,

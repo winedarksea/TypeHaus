@@ -526,7 +526,7 @@ class ConnectorKind(Enum):
     # connector(s)" against a lag screw's part number, next to ten real ABU66SS. A reader
     # cannot order from that, and a framer reading the schedule would look for a bracket
     # that does not exist. See ROLE_DECK_EQUIPMENT_ANCHOR in hardware/catalog.py for
-    # the same split on the catalog side, and library/hardware.py for the part.
+    # the same split on the catalog side, and library/hardware/ for the part.
     EQUIPMENT_ANCHOR = "equipment_anchor"  # gasketed through-deck equipment fastener
     # The shim pack that holds a wood beam soffit clear of the pour it lands on. Not a
     # POST_BASE: a base is a formed stirrup selected by the post SECTION, bought and

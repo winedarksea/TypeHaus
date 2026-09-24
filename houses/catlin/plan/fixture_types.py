@@ -15,7 +15,7 @@ Nothing here duplicates the library.
 
 from __future__ import annotations
 
-from library.placeables._zones import front_zone
+from library.placeables import front_zone
 from plan.fixture_types_wc import WC_AND_SHOWER_TYPES
 from typehaus.model import FixtureType, Service, inch
 
@@ -181,7 +181,7 @@ BATH2_VANITY_48 = FixtureType(
 # Guideline 4 builds its recommended 30" on, and a vanity you cannot stand in front of is a
 # bad vanity whether or not an inspector says so. The WATER CLOSETS are a different matter:
 # theirs IS 24" and it is enforced, because the house sets `active_code_profile="MN/IRC"`
-# and `_water_closet_required_clearance` encodes 24". Every placement below was checked by
+# and `water_closet_required_clearance` encodes 24". Every placement below was checked by
 # hand against those 24"/15" envelopes as well as against its own 21".
 #
 # ** THE ZONES RESOLVE AS *RECOMMENDED*, WHICH IS NOT WHAT A READER EXPECTS. **
