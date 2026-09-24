@@ -14,6 +14,7 @@ registers its check through a module constant, so a text search misses it.
 
 from __future__ import annotations
 
+import functools
 from pathlib import Path
 
 import pytest
@@ -32,6 +33,20 @@ CATLIN = REPO / "houses" / "catlin"
 STARTER = REPO / "houses" / "starter"
 
 ALL_PROFILES = sorted(PROFILES.values(), key=lambda p: p.name)
+
+
+@functools.cache
+def _report(directory: Path, profile_name: str):
+    """``run(load_plan(directory).plan, directory, profile=...)``, once per module.
+
+    Read-only: several tests grade the same house and profile, and a catlin run is ~10 s.
+    """
+    from typehaus.checks import run
+    from typehaus.source import load_plan
+
+    result = load_plan(directory)
+    assert result.plan is not None
+    return run(result.plan, directory, profile=profile_name)
 
 
 def _registered_ids(tier: Tier | None = None) -> set[str]:
@@ -78,12 +93,7 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
     """The profile's stated rigor is that "every rule carries a citation" — until now
     nothing enforced it, and an uncited CODE finding is unreviewable: a plan reviewer cannot
     check an assertion that names no section."""
-    from typehaus.checks import run
-    from typehaus.source import load_plan
-
-    result = load_plan(starter_dir)
-    assert result.plan is not None
-    report = run(result.plan, starter_dir, profile=profile.name)
+    report = _report(starter_dir, profile.name)
     code_ids = _registered_ids(Tier.CODE)
     uncited = sorted({finding.check_id for finding in report.findings
                       if finding.check_id in code_ids and not finding.code_ref})
@@ -247,13 +257,9 @@ def _engineered_labels(profile) -> set[str]:
     requirement is engineered is a property of a house's geometry — 10 feet of unbalanced
     fill here, 3 feet next door — so a jurisdiction profile cannot know it in advance.
     """
-    from typehaus.checks import evaluate_permit_checklist, run
-    from typehaus.source import load_plan
+    from typehaus.checks import evaluate_permit_checklist
 
-    result = load_plan(CATLIN)
-    assert result.plan is not None
-    checklist = evaluate_permit_checklist(run(result.plan, CATLIN, profile=profile.name),
-                                          profile)
+    checklist = evaluate_permit_checklist(_report(CATLIN, profile.name), profile)
     return {item.label for item in checklist.engineered}
 
 
@@ -334,14 +340,9 @@ def test_the_default_profile_states_a_climate_table() -> None:
 @pytest.mark.parametrize("profile", ALL_PROFILES, ids=lambda p: p.name)
 @pytest.mark.parametrize("house", ["catlin", "starter"])
 def test_every_engineered_finding_is_on_a_permit_item(profile, house) -> None:
-    from typehaus.checks import run
     from typehaus.findings import Authority
-    from typehaus.source import load_plan
 
-    directory = CATLIN if house == "catlin" else STARTER
-    result = load_plan(directory)
-    assert result.plan is not None
-    report = run(result.plan, directory, profile=profile.name)
+    report = _report(CATLIN if house == "catlin" else STARTER, profile.name)
 
     covered = profile.permit_check_ids()
     excluded = {check_id for check_id, _reason in profile.permit_exclusions}
@@ -367,14 +368,9 @@ def test_every_engineered_finding_names_an_item_a_signoff_could_cover(profile, h
     that claims the authority and names nothing gives a reader no more than the paragraph
     it replaced.
     """
-    from typehaus.checks import run
     from typehaus.findings import Authority
-    from typehaus.source import load_plan
 
-    directory = CATLIN if house == "catlin" else STARTER
-    result = load_plan(directory)
-    assert result.plan is not None
-    report = run(result.plan, directory, profile=profile.name)
+    report = _report(CATLIN if house == "catlin" else STARTER, profile.name)
 
     nameless = [finding.check_id for finding in report.findings
                 if finding.authority is Authority.ENGINEERED and not finding.engineering_item]

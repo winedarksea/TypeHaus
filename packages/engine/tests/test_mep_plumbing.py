@@ -160,7 +160,7 @@ def test_sleeve_alignment_fails_at_one_inch_offset(catlin_model):
         if s.tag == "SP-M-KITCH" else s
         for s in catlin_model.sleeves
     ]
-    report = run_from_model(model, [], tier=Tier.CODE)
+    report = run_from_model(model, [], tier=Tier.CODE, only="mep.sleeve_alignment")
     fails = [f for f in report.findings
              if f.check_id == "mep.sleeve_alignment" and "SP-M-KITCH" in f.element_tags
              and f.result.value == "fail"]
@@ -207,7 +207,7 @@ def test_sleeve_rejected_when_inside_floor_opening():
 
 
 def test_drain_slope_pass_for_catlin_main_run(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.CODE)
+    report = run_from_model(catlin_model, [], tier=Tier.CODE, only="mep.drain_slope")
     matched = [f for f in report.findings if f.check_id == "mep.drain_slope"]
     assert matched and all(f.result.value == "pass" for f in matched)
 
@@ -314,7 +314,8 @@ def test_vent_termination_height_passes_when_the_elevation_is_left_derived():
 
 
 def test_catlin_vent_termination_height_passes(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY,
+                            only="mep.vent_termination_height")
     matched = [f for f in report.findings if f.check_id == "mep.vent_termination_height"]
     assert matched and all(f.result.value == "pass" for f in matched)
 
@@ -323,7 +324,7 @@ def test_catlin_sleeve_alignment_is_clean(catlin_model):
     """The whole check, not just the offsets: ``mep.sleeve_alignment`` also fails a drain
     fixture standing over a structural slab with nothing serving it, which is how the
     basement utility sink surfaced."""
-    report = run_from_model(catlin_model, [], tier=Tier.CODE)
+    report = run_from_model(catlin_model, [], tier=Tier.CODE, only="mep.sleeve_alignment")
     matched = [f for f in report.findings if f.check_id == "mep.sleeve_alignment"]
     assert matched
     assert all(f.result.value == "pass" for f in matched), \
@@ -358,7 +359,7 @@ def test_catlin_wet_wall_depth_has_no_findings(catlin_model):
     ``preferences.toml``'s own planning allowance and the check is ADVISORY tier, in no item of
     the mn-2020 permit profile. This test holds the house to its own preference, nothing more.
     """
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only="advisory.wet_wall_depth")
     matched = [f for f in report.findings if f.check_id == "advisory.wet_wall_depth"]
     assert not matched, [f.message for f in matched]
 
@@ -425,9 +426,13 @@ def test_laundry_tub_drain_clears_the_centre_cross_wall(catlin_model):
     assert 18.5 * 0.3048 < drain_y < (19 + 1.125 / 12) * 0.3048
 
 
-def test_catlin_door_swings_are_clear_of_fixtures(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.INTEGRITY)
-    matched = [f for f in report.findings if f.check_id == "integrity.door_swing_conflict"]
+def test_catlin_door_swings_are_clear_of_fixtures(catlin_plan):
+    """A RESOLVE-time finding (``resolve/placeables.py``), not a registered check: this
+    once ran the registry with ``[]`` for resolve findings and so could never fail."""
+    from typehaus.resolve import resolve
+
+    _model, findings = resolve(catlin_plan)
+    matched = [f for f in findings if f.check_id == "integrity.door_swing_conflict"]
     assert not matched, [f.message for f in matched]
 
 
@@ -435,7 +440,7 @@ def test_catlin_door_swings_are_clear_of_fixtures(catlin_model):
 # that drains is vented (Service.VENT alongside Service.DRAIN in `needs`), so a fixture
 # type that omits it silently passes an unvented design.
 def test_catlin_fixtures_all_reach_a_vent_chase(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only="mep.vent_reachability")
     matched = [f for f in report.findings if f.check_id == "mep.vent_reachability"]
     assert matched
     unvented = [(f.message) for f in matched if f.result.value != "pass"]
@@ -549,7 +554,7 @@ def test_vent_reachability_fails_a_water_closet_with_no_vent_path(catlin_model):
 
     model = copy.copy(catlin_model)
     model.pipe_runs = [run for run in catlin_model.pipe_runs if run.tag != "PR-M-WC-VENT"]
-    report = run_from_model(model, [], tier=Tier.ADVISORY)
+    report = run_from_model(model, [], tier=Tier.ADVISORY, only="mep.vent_reachability")
     failed = {tag for f in report.findings if f.check_id == "mep.vent_reachability"
               and f.result.value == "fail" for tag in f.element_tags}
     # FX-M-BATH1-WC alone: FX-M-BATH2-WC backs W-M-HS1 and vents in-wall, so deleting this

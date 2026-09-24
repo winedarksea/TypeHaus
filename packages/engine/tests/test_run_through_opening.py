@@ -39,7 +39,7 @@ from typehaus.findings import Result
 
 @pytest.fixture(scope="module")
 def findings(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only="mep.run_through_opening")
     return [f for f in report.findings if f.check_id == "mep.run_through_opening"]
 
 

@@ -19,7 +19,7 @@ def _model_with_site(catlin_model, **site_updates):
 
 
 def test_catlin_site_setback_passes(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.CODE)
+    report = run_from_model(catlin_model, [], tier=Tier.CODE, only="code.site_setback")
     matched = [f for f in report.findings if f.check_id == "code.site_setback"]
     assert matched and all(f.result.value == "pass" for f in matched)
 
@@ -31,20 +31,20 @@ def test_shrunk_parcel_fails(catlin_model):
         catlin_model,
         parcel=(pt(ft(0), ft(0)), pt(ft(36), ft(0)), pt(ft(36), ft(36)), pt(ft(0), ft(36))),
     )
-    report = run_from_model(model, [], tier=Tier.CODE)
+    report = run_from_model(model, [], tier=Tier.CODE, only="code.site_setback")
     matched = [f for f in report.findings if f.check_id == "code.site_setback"]
     assert matched and any(f.result.value == "fail" for f in matched)
 
 
 def test_no_parcel_is_unknown(catlin_model):
     model = _model_with_site(catlin_model, parcel=(), setbacks=())
-    report = run_from_model(model, [], tier=Tier.CODE)
+    report = run_from_model(model, [], tier=Tier.CODE, only="code.site_setback")
     matched = [f for f in report.findings if f.check_id == "code.site_setback"]
     assert matched and all(f.result.value == "unknown" for f in matched)
 
 
 def test_catlin_foundation_grading_passes(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.CODE)
+    report = run_from_model(catlin_model, [], tier=Tier.CODE, only="code.R401_3_grading")
     matched = [f for f in report.findings if f.check_id == "code.R401_3_grading"]
     assert matched and all(f.result.value == "pass" for f in matched)
     assert all(f.code_ref == "R401.3" for f in matched)
@@ -58,20 +58,20 @@ def test_grading_fails_when_grade_rises_toward_foundation(catlin_model):
     # rises toward the foundation instead of falling away from it.
     rising = SpotElevation(position=pt(ft(18), ft(-2)), elevation=ft(0, 6))
     model = _model_with_site(catlin_model, spot_elevations=(rising,))
-    report = run_from_model(model, [], tier=Tier.CODE)
+    report = run_from_model(model, [], tier=Tier.CODE, only="code.R401_3_grading")
     matched = [f for f in report.findings if f.check_id == "code.R401_3_grading"]
     assert matched and any(f.result.value == "fail" for f in matched)
 
 
 def test_grading_unknown_without_spot_elevations(catlin_model):
     model = _model_with_site(catlin_model, spot_elevations=())
-    report = run_from_model(model, [], tier=Tier.CODE)
+    report = run_from_model(model, [], tier=Tier.CODE, only="code.R401_3_grading")
     matched = [f for f in report.findings if f.check_id == "code.R401_3_grading"]
     assert matched and all(f.result.value == "unknown" for f in matched)
 
 
 def test_catlin_impervious_grading_passes(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.CODE)
+    report = run_from_model(catlin_model, [], tier=Tier.CODE, only="code.R401_3_impervious")
     matched = [f for f in report.findings if f.check_id == "code.R401_3_impervious"]
     assert matched and all(f.result.value == "pass" for f in matched)
     assert all(f.code_ref == "R401.3" for f in matched)
@@ -91,7 +91,7 @@ def test_impervious_grading_fails_when_surface_slopes_toward_foundation(catlin_m
         far_elevation=ft(0, -1),
     )
     model = _model_with_site(catlin_model, impervious_surfaces=(back_pitched,))
-    report = run_from_model(model, [], tier=Tier.CODE)
+    report = run_from_model(model, [], tier=Tier.CODE, only="code.R401_3_impervious")
     matched = [f for f in report.findings if f.check_id == "code.R401_3_impervious"]
     assert matched and any(f.result.value == "fail" for f in matched)
 
@@ -109,7 +109,7 @@ def test_impervious_grading_fails_when_slope_below_two_percent(catlin_model):
         far_elevation=ft(0, -2),
     )
     model = _model_with_site(catlin_model, impervious_surfaces=(shallow,))
-    report = run_from_model(model, [], tier=Tier.CODE)
+    report = run_from_model(model, [], tier=Tier.CODE, only="code.R401_3_impervious")
     matched = [f for f in report.findings if f.check_id == "code.R401_3_impervious"]
     assert matched and any(f.result.value == "fail" for f in matched)
 
@@ -118,7 +118,7 @@ def test_impervious_grading_silent_without_surfaces(catlin_model):
     # With no impervious surfaces modeled the rule does not apply — it emits no finding
     # (never a spurious fail or unknown).
     model = _model_with_site(catlin_model, impervious_surfaces=())
-    report = run_from_model(model, [], tier=Tier.CODE)
+    report = run_from_model(model, [], tier=Tier.CODE, only="code.R401_3_impervious")
     matched = [f for f in report.findings if f.check_id == "code.R401_3_impervious"]
     assert matched == []
 

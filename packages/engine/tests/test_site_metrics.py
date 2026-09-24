@@ -114,7 +114,7 @@ def _parcel_verdicts(catlin_model, **site_updates):
     from typehaus.checks.registry import Tier
 
     model = _model_with_site(catlin_model, **site_updates)
-    report = run_from_model(model, [], tier=Tier.CODE)
+    report = run_from_model(model, [], tier=Tier.CODE, only="code.site_parcel_is_surveyed")
     return [f for f in report.findings if f.check_id == "code.site_parcel_is_surveyed"]
 
 

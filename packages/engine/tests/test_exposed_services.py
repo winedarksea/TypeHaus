@@ -34,7 +34,7 @@ _REASON = "owner accepts exposed services in the basement: this ceiling is left 
 
 
 def _findings(model):
-    return [f for f in run_from_model(model, [], tier=Tier.ADVISORY).findings
+    return [f for f in run_from_model(model, [], tier=Tier.ADVISORY, only=CID).findings
             if f.check_id == CID]
 
 

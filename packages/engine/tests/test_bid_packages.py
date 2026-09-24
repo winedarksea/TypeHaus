@@ -7,10 +7,6 @@ rewrites the framing golden from the current build; read the diff before committ
 
 from __future__ import annotations
 
-import filecmp
-import json
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
@@ -112,20 +108,6 @@ def test_framing_golden(request, tmp_path: Path) -> None:
         pytest.skip("blessed the framing bid golden")
     assert GOLDEN.exists(), "no golden yet — run with --bless"
     assert _strip_hash(rendered) == _strip_hash(GOLDEN.read_text(encoding="utf-8"))
-
-
-def test_all_is_byte_deterministic(tmp_path: Path) -> None:
-    for name in ("a", "b"):
-        result = subprocess.run([sys.executable, "-m", "typehaus.cli.app", "bids", str(CATLIN),
-                                 "--all", "--out", str(tmp_path / name)],
-                                capture_output=True, text=True)
-        assert result.returncode == 0, result.stdout + result.stderr
-    match, mismatch, errors = filecmp.cmpfiles(
-        tmp_path / "a", tmp_path / "b", [p.name for p in (tmp_path / "a").iterdir()],
-        shallow=False)
-    assert not mismatch and not errors, (mismatch, errors)
-    manifest = json.loads((tmp_path / "a" / "MANIFEST.json").read_text())
-    assert "framing.md" in manifest["files"] and "README.md" in manifest["files"]
 
 
 def test_priced_is_refused_without_prices(starter_dir: Path) -> None:

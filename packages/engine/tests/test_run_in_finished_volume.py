@@ -27,7 +27,8 @@ from typehaus.model.enums import EXPOSED_SERVICE_OCCUPANCIES, Occupancy
 
 @pytest.fixture(scope="module")
 def findings(catlin_model_ro):
-    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="mep.run_in_finished_volume")
     return [f for f in report.findings if f.check_id == "mep.run_in_finished_volume"]
 
 
@@ -173,7 +174,8 @@ def test_a_service_room_ceiling_is_not_a_finished_one() -> None:
 
 
 def _fails_for(model, tag):
-    return [f for f in run_from_model(model, [], tier=Tier.ADVISORY).findings
+    return [f for f in run_from_model(model, [], tier=Tier.ADVISORY,
+                                      only="mep.run_in_finished_volume").findings
             if f.check_id == "mep.run_in_finished_volume"
             and f.result is Result.FAIL and f.element_tags[0] == tag]
 

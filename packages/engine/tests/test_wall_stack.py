@@ -101,7 +101,7 @@ def _plan(*, jambs: bool = True, plinth_top=_PLINTH_TOP, head_base=_HEAD_BASE,
 
 def _finding(**kwargs):
     model, resolve_findings = resolve(_plan(**kwargs))
-    matched = [f for f in run_from_model(model, resolve_findings).findings
+    matched = [f for f in run_from_model(model, resolve_findings, only=_CHECK_ID).findings
                if f.check_id == _CHECK_ID]
     assert len(matched) == 1, [f.message for f in matched]
     return matched[0]
@@ -183,7 +183,7 @@ def test_nothing_stacked_is_not_applicable_not_silence() -> None:
     model, resolve_findings = resolve(_plan(jambs=False, plinth_top=_PLINTH_TOP))
     # One wall alone on its plane: strip the head so nothing is over anything.
     model.walls = [w for w in model.walls if w.tag != "W-HEAD"]
-    matched = [f for f in run_from_model(model, resolve_findings).findings
+    matched = [f for f in run_from_model(model, resolve_findings, only=_CHECK_ID).findings
                if f.check_id == _CHECK_ID]
     assert [f.result for f in matched] == [Result.NOT_APPLICABLE]
 
@@ -199,7 +199,7 @@ def test_catlin_fireplace_stack_closes(catlin_model_ro) -> None:
     new FAIL here means someone's arithmetic went stale, which is the whole point — but a
     new *stack* appearing is worth reading too, so the count is pinned.
     """
-    matched = [f for f in run_from_model(catlin_model_ro, []).findings
+    matched = [f for f in run_from_model(catlin_model_ro, [], only=_CHECK_ID).findings
                if f.check_id == _CHECK_ID]
     assert len(matched) == 1
     assert matched[0].result is Result.PASS

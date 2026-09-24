@@ -159,7 +159,7 @@ def test_without_the_wing_insulation_the_same_three_footings_fail(catlin_plan, c
     stripped = copy.copy(catlin_model)
     stripped.solids = [s for s in catlin_model.solids
                        if not s.tag.startswith("SL-SG-FROST-")]
-    report = run_from_model(stripped, [], tier=Tier.STRUCTURAL)
+    report = run_from_model(stripped, [], tier=Tier.STRUCTURAL, only=CHECK_ID)
     by_tag = {}
     for finding in report.findings:
         if finding.check_id == CHECK_ID:
@@ -322,7 +322,7 @@ def _frost_by_tag(model):
     """``structural.frost_depth`` findings from a hand-altered model, indexed by tag."""
     from typehaus.checks import run_from_model
 
-    report = run_from_model(model, [], tier=Tier.STRUCTURAL)
+    report = run_from_model(model, [], tier=Tier.STRUCTURAL, only=CHECK_ID)
     out: dict[str, object] = {}
     for finding in report.findings:
         if finding.check_id == CHECK_ID:

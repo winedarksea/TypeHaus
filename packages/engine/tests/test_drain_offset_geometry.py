@@ -26,7 +26,7 @@ from typehaus.quantities import M_PER_IN
 
 @pytest.fixture(scope="module")
 def findings(catlin_model_ro):
-    report = run_from_model(catlin_model_ro, [], tier=Tier.CODE)
+    report = run_from_model(catlin_model_ro, [], tier=Tier.CODE, only="mep.drain_offset_geometry")
     return [f for f in report.findings if f.check_id == "mep.drain_offset_geometry"]
 
 
@@ -55,7 +55,8 @@ def _regressed(model, run_tag: str, path, z):
 
 
 def _fails(model):
-    return [f for f in run_from_model(model, [], tier=Tier.CODE).findings
+    return [f for f in run_from_model(model, [], tier=Tier.CODE,
+                                      only="mep.drain_offset_geometry").findings
             if f.check_id == "mep.drain_offset_geometry" and f.result is Result.FAIL]
 
 

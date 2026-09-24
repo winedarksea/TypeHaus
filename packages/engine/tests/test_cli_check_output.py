@@ -24,6 +24,30 @@ from _helpers import CATLIN, STARTER
 runner = CliRunner()
 
 
+@pytest.fixture(scope="module", autouse=True)
+def _memoised_check_run():
+    """One registry run per (house, profile, tier, suppress) for this module.
+
+    ``haus check`` only reads the report, and nothing here edits a house between invokes;
+    catlin goes from ~8 full runs to 2. ``cmd_build`` imports ``run`` function-locally, so
+    patching the package attribute reaches it.
+    """
+    import typehaus.checks
+
+    real = typehaus.checks.run
+    cache: dict[tuple, object] = {}
+
+    def run(plan, house_dir=None, profile=None, tier=None, *, suppress=True):
+        key = (str(house_dir), profile, tier, suppress)
+        if key not in cache:
+            cache[key] = real(plan, house_dir, profile, tier, suppress=suppress)
+        return cache[key]
+
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(typehaus.checks, "run", run)
+        yield
+
+
 # `haus check` on catlin is a full registry run, ~20 s, and these two invocations were each
 # made twice for the same bytes. Module scope, not session: `--dist loadfile` keeps a module
 # on one worker, and nothing outside this file wants a CliRunner result.

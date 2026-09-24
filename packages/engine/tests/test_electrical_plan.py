@@ -88,7 +88,7 @@ def test_every_habitable_room_has_a_light_and_a_switch(catlin_model):
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Tier
 
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only="electrical.room_lighting")
     findings = [f for f in report.findings if f.check_id == "electrical.room_lighting"]
     assert findings
     assert all(f.result.value == "pass" for f in findings), \
@@ -331,9 +331,10 @@ def test_the_three_lighting_checks_pass_on_the_catlin_house(catlin_model):
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Tier
 
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
-    for check_id in ("electrical.lighting_controls", "electrical.wet_location",
-                     "electrical.light_run_psu"):
+    ids = ("electrical.lighting_controls", "electrical.wet_location",
+           "electrical.light_run_psu")
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only=ids)
+    for check_id in ids:
         findings = [f for f in report.findings if f.check_id == check_id]
         assert findings, check_id
         assert all(f.result.value == "pass" for f in findings), \
@@ -368,7 +369,7 @@ def test_dark_sky_lighting_passes_on_the_catlin_house(catlin_model):
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Tier
 
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only="advisory.dark_sky_lighting")
     findings = [f for f in report.findings if f.check_id == "advisory.dark_sky_lighting"]
     assert findings
     assert all(f.result.value == "pass" for f in findings), \
@@ -417,7 +418,8 @@ def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Tier
 
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY,
+                            only="electrical.island_receptacle")
     findings = [f for f in report.findings if f.check_id == "electrical.island_receptacle"]
     assert [f.result.value for f in findings] == ["not_applicable"]
     assert "no freestanding island" in findings[0].message

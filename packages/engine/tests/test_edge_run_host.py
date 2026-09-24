@@ -24,7 +24,7 @@ _CHECK_ID = "integrity.edge_run_host"
 
 @pytest.fixture(scope="module")
 def findings(catlin_model_ro):
-    return [f for f in run_from_model(catlin_model_ro, []).findings
+    return [f for f in run_from_model(catlin_model_ro, [], only=_CHECK_ID).findings
             if f.check_id == _CHECK_ID]
 
 
@@ -109,7 +109,7 @@ def test_a_level_beam_still_gets_a_tight_test(catlin_plan, catlin_model_ro) -> N
     def verdicts(top_in: float):
         model, resolve_findings = resolve(_catlin_with_a_cap_on(
             catlin_plan, "BM-SG-LDGW", top_in))
-        return [f.result for f in run_from_model(model, resolve_findings).findings
+        return [f.result for f in run_from_model(model, resolve_findings, only=_CHECK_ID).findings
                 if f.check_id == _CHECK_ID and "TR-TEST-CAP" in f.element_tags]
 
     on_top = high / M_PER_IN
@@ -157,7 +157,7 @@ def _verdicts(host_ref: str | None):
     from typehaus.resolve import resolve
 
     model, resolve_findings = resolve(_one_flashing_plan(host_ref))
-    return [f for f in run_from_model(model, resolve_findings).findings
+    return [f for f in run_from_model(model, resolve_findings, only=_CHECK_ID).findings
             if f.check_id == _CHECK_ID]
 
 

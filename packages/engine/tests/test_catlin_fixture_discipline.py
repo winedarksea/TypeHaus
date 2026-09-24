@@ -57,9 +57,6 @@ _BUDGET: dict[str, tuple[int, str]] = {
            "catlin_ifc_path is the framed default and is a different file"),
     "test_model_json.py": (
         1, "reads `result.provenance` off the LoadResult, which catlin_plan discards"),
-    "test_permit_coverage.py": (
-        1, "runs with an explicit `profile=`, which resolves a different jurisdiction than "
-           "the fixture's — a different report, not a cheaper one"),
     "test_member_interference.py": (
         1, "empties `ctx.model.junctions`; a shared model must never be mutated"),
     "test_concrete_interference.py": (

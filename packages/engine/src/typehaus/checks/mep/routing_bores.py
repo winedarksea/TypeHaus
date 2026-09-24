@@ -38,7 +38,7 @@ from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
-from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.registry import CheckContext, Tier, check, shared
 from typehaus.findings import Finding
 
 _STUD = "mep.run_through_stud"
@@ -65,8 +65,23 @@ def bearing_wall_tags(ctx: CheckContext) -> frozenset[str]:
     return frozenset(tags)
 
 
-def _crossings(ctx: CheckContext):
+def _crossings(ctx: CheckContext) -> list:
     """``(run tag, wall, [MemberCut])`` for every run that meets a wall's framing.
+
+    Shared by the three bore checks for one check run (``registry.shared``); read-only.
+    """
+    return shared(ctx, "routing_bores.crossings", lambda: list(_iter_crossings(ctx)))
+
+
+def _stud_planes(ctx: CheckContext) -> dict:
+    """``wall_cavity.stud_plane_verdicts``, shared for one check run; read-only."""
+    from typehaus.checks.mep.wall_cavity import stud_plane_verdicts
+
+    return shared(ctx, "routing_bores.stud_planes", lambda: stud_plane_verdicts(ctx))
+
+
+def _iter_crossings(ctx: CheckContext):
+    """The walk behind :func:`_crossings`.
 
     Indexed by the walls' own plan footprints, because the naive loop is 108 runs against
     99 walls against every member of each and is the kind of thing that turns a check run
@@ -117,14 +132,13 @@ def run_through_stud(ctx: CheckContext) -> list[Finding]:
     model authors a notch, ``mep_bores.stud_notch`` is the predicate and it is reached the
     same way.
     """
-    from typehaus.checks.mep.wall_cavity import stud_plane_verdicts
     from typehaus.quantities import M_PER_IN
     from typehaus.resolve.mep_bores import stud_bore
 
     bearing = bearing_wall_tags(ctx)
     # Per WALL first (``wall_cavity``): a run standing beside or too big for the cavity is
     # that, whichever studs it happens to clip; one standing between studs is still graded.
-    cavity = stud_plane_verdicts(ctx)
+    cavity = dict(_stud_planes(ctx))  # a copy: entries are popped below
     out: list[Finding] = []
     seen = 0
     for tag, wall, cuts in _crossings(ctx):
@@ -175,9 +189,7 @@ def run_through_stud(ctx: CheckContext) -> list[Finding]:
 
 def standing_beside(ctx: CheckContext) -> frozenset[tuple[str, str]]:
     """(run, wall) pairs whose run is not IN the wall but against it (``wall_cavity``)."""
-    from typehaus.checks.mep.wall_cavity import stud_plane_verdicts
-
-    return frozenset(key for key, verdict in stud_plane_verdicts(ctx).items()
+    return frozenset(key for key, verdict in _stud_planes(ctx).items()
                      if verdict.kind == "beside")
 
 

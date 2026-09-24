@@ -69,7 +69,7 @@ def _plan(framing: FramingSpec) -> PlanModel:
 
 def _graded(framing: FramingSpec):
     model, _ = resolve(_plan(framing))
-    findings = [f for f in run_from_model(model, [], tier=Tier.STRUCTURAL).findings
+    findings = [f for f in run_from_model(model, [], tier=Tier.STRUCTURAL, only=_CHECK_ID).findings
                 if f.check_id == _CHECK_ID]
     assert len(findings) == 1, [f.message for f in findings]
     return model, findings[0]
@@ -162,6 +162,6 @@ def test_an_unframed_soffit_gets_no_finding_at_all() -> None:
     The check still has to say something when NO soffit in the model frames anything, and it
     says N/A — earned from positive evidence of absence, not assumed."""
     model, _ = resolve(_plan(None))
-    findings = [f for f in run_from_model(model, [], tier=Tier.STRUCTURAL).findings
+    findings = [f for f in run_from_model(model, [], tier=Tier.STRUCTURAL, only=_CHECK_ID).findings
                 if f.check_id == _CHECK_ID]
     assert [f.result for f in findings] == [Result.NOT_APPLICABLE]

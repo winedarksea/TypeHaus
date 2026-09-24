@@ -32,8 +32,36 @@ def client(house: Path):
         yield c
 
 
+@pytest.fixture(scope="module")
+def _check_reports() -> dict:
+    return {}
+
+
+@pytest.fixture
+def memo_checks(_check_reports: dict, monkeypatch):
+    """One registry run per (house, tier) across the CLI tests, which only read the sandbox.
+
+    Not for the server tests: they write it. ``cmd_schedule`` imports ``run_checks``
+    function-locally, so patching the registry attribute reaches it.
+    """
+    import typehaus.checks.registry as registry
+
+    real = registry.run_checks
+
+    def run_checks(ctx, tier=None, **kwargs):
+        if kwargs:
+            return real(ctx, tier, **kwargs)
+        key = (str(ctx.plan.source_root), tier)
+        if key not in _check_reports:
+            _check_reports[key] = real(ctx, tier)
+        return _check_reports[key]
+
+    monkeypatch.setattr(registry, "run_checks", run_checks)
+
+
 # --- CLI --------------------------------------------------------------------------------
 
+@pytest.mark.usefixtures("memo_checks")
 def test_inspections_lists_the_profiles_own_list_plus_the_houses_extra(house: Path) -> None:
     result = CliRunner().invoke(app, ["inspections", str(house), "--json"])
     assert result.exit_code == 0, result.output
@@ -52,6 +80,7 @@ def test_inspections_lists_the_profiles_own_list_plus_the_houses_extra(house: Pa
     assert payload["authorities"]["building"]["phone"]
 
 
+@pytest.mark.usefixtures("memo_checks")
 def test_gas_and_lath_are_not_applicable_with_evidence(house: Path) -> None:
     import json
 
@@ -64,6 +93,7 @@ def test_gas_and_lath_are_not_applicable_with_evidence(house: Path) -> None:
     assert "cement plaster" in by_id["lath"]["evidence"]
 
 
+@pytest.mark.usefixtures("memo_checks")
 def test_the_fireplace_inspection_stays_listed_because_na_is_not_earned(house: Path) -> None:
     import json
 
@@ -75,6 +105,7 @@ def test_the_fireplace_inspection_stays_listed_because_na_is_not_earned(house: P
     assert "no fireplace element kind" in fireplace["evidence"]
 
 
+@pytest.mark.usefixtures("memo_checks")
 def test_footing_is_not_ready_and_names_what_is_missing(house: Path) -> None:
     result = CliRunner().invoke(app, ["inspections", str(house)])
     assert result.exit_code == 0, result.output
@@ -82,6 +113,7 @@ def test_footing_is_not_ready_and_names_what_is_missing(house: Path) -> None:
     assert "Erosion and sediment control resolved" in result.stdout
 
 
+@pytest.mark.usefixtures("memo_checks")
 def test_the_weathertight_milestone_names_its_real_blockers(house: Path) -> None:
     result = CliRunner().invoke(
         app, ["schedule", str(house), "--milestone", "weathertight"])
@@ -93,6 +125,7 @@ def test_the_weathertight_milestone_names_its_real_blockers(house: Path) -> None
     assert "Foundation\n" not in result.stdout
 
 
+@pytest.mark.usefixtures("memo_checks")
 def test_propose_prints_a_split_and_writes_nothing(house: Path) -> None:
     before = (house / "tasks.toml").read_text() if (house / "tasks.toml").exists() else None
     result = CliRunner().invoke(
@@ -103,6 +136,7 @@ def test_propose_prints_a_split_and_writes_nothing(house: Path) -> None:
     assert after == before
 
 
+@pytest.mark.usefixtures("memo_checks")
 def test_propose_on_an_unknown_package_lists_the_real_ones(house: Path) -> None:
     result = CliRunner().invoke(app, ["schedule", str(house), "--propose", "task/nope"])
     assert result.exit_code == 2

@@ -47,7 +47,8 @@ def test_the_finding_prints_the_summarys_numbers(catlin_model_ro) -> None:
 
     summary = whole_house_summary(catlin_model_ro, catlin_model_ro.plan)
     assert summary is not None
-    report = run_from_model(catlin_model_ro, [], tier=Tier.CODE)
+    report = run_from_model(catlin_model_ro, [], tier=Tier.CODE,
+                            only="code.N1103_6_whole_house_ventilation")
     matched = [f for f in report.findings
                if f.check_id == "code.N1103_6_whole_house_ventilation"]
     assert matched and all(f.result is Result.PASS for f in matched)

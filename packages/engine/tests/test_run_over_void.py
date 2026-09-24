@@ -29,7 +29,7 @@ _M_TO_FT = 3.280839895013123
 
 @pytest.fixture(scope="module")
 def findings(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only="mep.run_over_void")
     return [f for f in report.findings if f.check_id == "mep.run_over_void"]
 
 
@@ -77,7 +77,8 @@ def test_it_catches_a_run_drawn_across_the_stairwell(catlin_model):
         catlin_model,
         conduits=tuple(regressed if run.tag == original.tag else run
                        for run in catlin_model.conduits))
-    findings = [f for f in run_from_model(model, [], tier=Tier.ADVISORY).findings
+    findings = [f for f in run_from_model(model, [], tier=Tier.ADVISORY,
+                                          only="mep.run_over_void").findings
                 if f.check_id == "mep.run_over_void"]
     fails = [f for f in findings if f.result is Result.FAIL]
     assert len(fails) == 1, [f.message for f in fails]
@@ -105,7 +106,8 @@ def test_the_void_is_buffered_inward_so_a_trimmer_line_is_not_a_span(catlin_mode
         catlin_model,
         conduits=tuple(on_the_trimmer if run.tag == original.tag else run
                        for run in catlin_model.conduits))
-    fails = [f for f in run_from_model(model, [], tier=Tier.ADVISORY).findings
+    fails = [f for f in run_from_model(model, [], tier=Tier.ADVISORY,
+                                       only="mep.run_over_void").findings
              if f.check_id == "mep.run_over_void" and f.result is Result.FAIL]
     assert not fails, [f.message for f in fails]
     assert pytest.approx(0.0254) == VOID_BUFFER_M
@@ -165,7 +167,8 @@ def test_a_run_beside_a_face_is_clamped_to_it_and_one_away_is_not(catlin_model):
         moved = dataclasses.replace(run, path=path)
         model = dataclasses.replace(catlin_model, pipe_runs=tuple(
             moved if r.tag == run.tag else r for r in catlin_model.pipe_runs))
-        return [f for f in run_from_model(model, [], tier=Tier.ADVISORY).findings
+        return [f for f in run_from_model(model, [], tier=Tier.ADVISORY,
+                                          only="mep.run_over_void").findings
                 if f.check_id == "mep.run_over_void" and f.result is Result.FAIL
                 and run.tag in f.element_tags]
 
@@ -191,7 +194,7 @@ def test_the_ratio_advisory_is_registered_and_passes_catlin(catlin_model):
     from typehaus.checks.registry import MepPreferences
 
     assert "mep.run_route_efficiency" in {cid for cid, _ in registered(Tier.ADVISORY)}
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only="mep.run_route_efficiency")
     mine = [f for f in report.findings if f.check_id == "mep.run_route_efficiency"]
     assert mine and not [f for f in mine if f.result is Result.FAIL]
     assert MepPreferences().max_run_developed_over_straight == 2.5
@@ -211,7 +214,8 @@ def test_a_trunk_is_excluded_because_it_is_not_a_route(catlin_model):
     assert len(trunk.serves) >= 3
     row = next(r for r in run_schedule(catlin_model) if r["tag"] == "PR-B-CW-TRUNK")
     assert row["ratio"] > 2.5  # it WOULD fail, and is not graded
-    findings = [f for f in run_from_model(catlin_model, [], tier=Tier.ADVISORY).findings
+    findings = [f for f in run_from_model(catlin_model, [], tier=Tier.ADVISORY,
+                                          only="mep.run_route_efficiency").findings
                 if f.check_id == "mep.run_route_efficiency"]
     assert not any("PR-B-CW-TRUNK" in f.element_tags for f in findings)
 

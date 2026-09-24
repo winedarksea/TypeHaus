@@ -28,7 +28,7 @@ def _plan(circuits=(), devices=(), types=()):
 def _findings(plan, check_id):
     model, findings = resolve(plan)
     assert not [f for f in findings if f.severity.value == "error"]
-    report = run_from_model(model, [], tier=Tier.ADVISORY)
+    report = run_from_model(model, [], tier=Tier.ADVISORY, only=check_id)
     return [f for f in report.findings if f.check_id == check_id]
 
 
@@ -152,7 +152,7 @@ def _room_plan(project, devices=()):
 def _spacing_findings(plan):
     model, findings = resolve(plan)
     assert not [f for f in findings if f.severity.value == "error"]
-    report = run_from_model(model, [], tier=Tier.ADVISORY)
+    report = run_from_model(model, [], tier=Tier.ADVISORY, only="electrical.receptacle_spacing")
     return [f for f in report.findings
             if f.check_id == "electrical.receptacle_spacing" and "RM-1" in f.element_tags]
 
@@ -304,7 +304,8 @@ _ACCEPTED_SPACING_GAPS: set[tuple[str, str]] = set()
 
 
 def test_catlin_receptacle_spacing_passes_after_fill(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY,
+                            only="electrical.receptacle_spacing")
     findings = [f for f in report.findings if f.check_id == "electrical.receptacle_spacing"]
     fails = [f for f in findings if f.result.value == "fail"
              and (f.check_id, *f.element_tags) not in _ACCEPTED_SPACING_GAPS]
@@ -323,7 +324,7 @@ def test_catlin_receptacle_spacing_passes_after_fill(catlin_model):
 
 
 def test_catlin_circuit_refs_reconcile(catlin_model):
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only="electrical.circuit_refs")
     findings = [f for f in report.findings if f.check_id == "electrical.circuit_refs"]
     assert [f.result.value for f in findings] == ["pass"]
 
@@ -536,7 +537,7 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     54 down to 44, and CKT-DISPOSAL's addition plus CKT-WH-240's move to the backup
     subpanel land it at 43, with the subpanel carrying 8 of its 12. All four numbers are
     measured off the model, never pinned."""
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only="electrical.panel_spaces")
     findings = [f for f in report.findings if f.check_id == "electrical.panel_spaces"]
     assert findings
     assert all(f.result.value == "pass" for f in findings), [f.message for f in findings]
@@ -574,7 +575,7 @@ def test_catlin_service_load_finding_reflects_the_service_decision(catlin_model)
     Both branches stay live: if the service is ever slimmed back, the check has to fail."""
     from typehaus.takeoff import service_load_summary
 
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only="electrical.service_load")
     findings = [f for f in report.findings if f.check_id == "electrical.service_load"]
     summary = service_load_summary(catlin_model)
     assert findings
@@ -608,7 +609,7 @@ def test_load_management_credits_the_managed_excess():
     def _run(library):
         model, findings = resolve(base.model_copy(update={"library": library}))
         assert not [f for f in findings if f.severity.value == "error"]
-        report = run_from_model(model, [], tier=Tier.ADVISORY)
+        report = run_from_model(model, [], tier=Tier.ADVISORY, only="electrical.service_load")
         return [f for f in report.findings if f.check_id == "electrical.service_load"]
 
     unmanaged = _run(Library(circuits=(big,)))
@@ -725,7 +726,7 @@ def test_705_12_reads_the_panels_own_main_not_a_320a_service():
                  types=(panel_type, meter_type))
     model, errors = resolve(plan)
     assert not [f for f in errors if f.severity.value == "error"]
-    report = run_from_model(model, [], tier=Tier.CODE)
+    report = run_from_model(model, [], tier=Tier.CODE, only="code.NEC_705_12_interconnection")
     findings = [f for f in report.findings
                 if f.check_id == "code.NEC_705_12_interconnection"]
     assert findings and findings[0].result.value == "pass", [f.message for f in findings]
@@ -841,7 +842,7 @@ def test_service_load_is_null_without_circuits():
 
 
 def _room_result(model, room_tag: str) -> str:
-    report = run_from_model(model, [], tier=Tier.ADVISORY)
+    report = run_from_model(model, [], tier=Tier.ADVISORY, only="electrical.receptacle_spacing")
     finding = next(f for f in report.findings
                    if f.check_id == "electrical.receptacle_spacing"
                    and f.element_tags == (room_tag,))

@@ -24,7 +24,7 @@ _CID = "structural.door_framing_module"
 def findings(catlin_model):
     """Run WITHOUT the house's preferences, so its decided-advisory suppression is not in
     play — these tests are about what the check says, not about what catlin does with it."""
-    report = run_from_model(catlin_model, [], preferences=Preferences())
+    report = run_from_model(catlin_model, [], preferences=Preferences(), only=_CID)
     return [f for f in report.findings if f.check_id == _CID]
 
 
@@ -151,7 +151,7 @@ def test_catlin_carries_exactly_one_decided_advisory(catlin_model):
     from typehaus.checks.run import load_preferences
 
     prefs = load_preferences(Path(catlin_model.plan.source_root))
-    report = run_from_model(catlin_model, [], preferences=prefs)
+    report = run_from_model(catlin_model, [], preferences=prefs, only=_CID)
     mine = [f for f in report.findings if f.check_id == _CID]
     assert not [f for f in mine if f.result is Result.FAIL]
     assert [f for f in mine if f.result is Result.UNKNOWN]

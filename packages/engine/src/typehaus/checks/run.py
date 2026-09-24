@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import replace
 from pathlib import Path
 
@@ -192,8 +193,9 @@ def run(plan: PlanModel, house_dir: Path | None = None, profile: str | None = No
 def run_from_model(model: ResolvedModel, resolve_findings: list[Finding],
                    house_dir: Path | None = None, profile: str | None = None,
                    tier: Tier | None = None,
-                   preferences: Preferences | None = None) -> CheckReport:
-    """Run the registry against an already-resolved model.
+                   preferences: Preferences | None = None,
+                   only: str | Iterable[str] | None = None) -> CheckReport:
+    """Run the registry against an already-resolved model (``only``: see ``run_checks``).
 
     ``preferences`` wins over ``house_dir`` for callers that have already loaded them and
     hold no directory — the cover sheet is exactly that caller. Passing neither would
@@ -209,4 +211,4 @@ def run_from_model(model: ResolvedModel, resolve_findings: list[Finding],
                        profile=jurisdiction,
                        resolve_findings=resolve_findings,
                        engineering=engineering, engineering_register=register)
-    return run_checks(ctx, tier)
+    return run_checks(ctx, tier, only=only)

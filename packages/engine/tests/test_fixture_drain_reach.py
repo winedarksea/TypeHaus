@@ -24,7 +24,7 @@ from typehaus.findings import Result
 
 @pytest.fixture(scope="module")
 def findings(catlin_model_ro):
-    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY)
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY, only="mep.fixture_drain_reach")
     return [f for f in report.findings if f.check_id == "mep.fixture_drain_reach"]
 
 
@@ -79,7 +79,8 @@ def test_a_fixture_no_run_names_fails_rather_than_unknowns(catlin_model) -> None
                                               if t != "FX-B-BATH-WC"))
         for run in catlin_model.pipe_runs)
     model = dataclasses.replace(catlin_model, pipe_runs=stripped)
-    findings = [f for f in run_from_model(model, [], tier=Tier.ADVISORY).findings
+    findings = [f for f in run_from_model(model, [], tier=Tier.ADVISORY,
+                                          only="mep.fixture_drain_reach").findings
                 if f.check_id == "mep.fixture_drain_reach"
                 and "FX-B-BATH-WC" in f.element_tags]
     assert [f.result for f in findings] == [Result.FAIL]
@@ -105,7 +106,8 @@ def test_the_vertical_gate_stops_a_pipe_on_another_floor_reaching_up(catlin_mode
 
     model = dataclasses.replace(
         catlin_model, pipe_runs=tuple(restated(r) for r in catlin_model.pipe_runs))
-    findings = [f for f in run_from_model(model, [], tier=Tier.ADVISORY).findings
+    findings = [f for f in run_from_model(model, [], tier=Tier.ADVISORY,
+                                          only="mep.fixture_drain_reach").findings
                 if f.check_id == "mep.fixture_drain_reach"
                 and "FX-M-KITCH-SINK" in f.element_tags]
     assert [f.result for f in findings] == [Result.FAIL]

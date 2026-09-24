@@ -55,7 +55,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from typehaus.checks._authoring import failed, not_applicable, passed
-from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.registry import CheckContext, Tier, check, shared
 from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.mep_soffit import (
@@ -147,10 +147,14 @@ def equipment_at_end(ctx: CheckContext, z: float | None,
     """
     from shapely.geometry import Polygon
 
+    # Filled lazily, so the first hit still returns early; kept for one check run.
+    bounds: dict = shared(ctx, "duct_connectivity.footprint_bounds", dict)
     for obj in ctx.model.canvas_objects:
         if not obj.footprint:
             continue
-        x0, y0, x1, y1 = Polygon(obj.footprint).bounds
+        if id(obj) not in bounds:
+            bounds[id(obj)] = Polygon(obj.footprint).bounds
+        x0, y0, x1, y1 = bounds[id(obj)]
         box = ((x0 - JOINT_TOLERANCE_M, x1 + JOINT_TOLERANCE_M),
                (y0 - JOINT_TOLERANCE_M, y1 + JOINT_TOLERANCE_M))
         if not segment_meets_box(point, point, box):

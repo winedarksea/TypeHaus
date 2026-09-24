@@ -81,7 +81,7 @@ def _plan(*, reveal_at=_DOOR_AT, backer_door: bool = True, veneer: bool = True,
 
 def _finding(**kwargs):
     model, resolve_findings = resolve(_plan(**kwargs))
-    matched = [f for f in run_from_model(model, resolve_findings).findings
+    matched = [f for f in run_from_model(model, resolve_findings, only=_CHECK_ID).findings
                if f.check_id == _CHECK_ID]
     assert len(matched) == 1, [f.message for f in matched]
     return matched[0]

@@ -40,7 +40,7 @@ def _model_at_grade(catlin_model, grade):
 
 
 def _frost(model):
-    report = run_from_model(model, [], tier=Tier.STRUCTURAL)
+    report = run_from_model(model, [], tier=Tier.STRUCTURAL, only="structural.frost_depth")
     return [f for f in report.findings if f.check_id == "structural.frost_depth"]
 
 

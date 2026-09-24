@@ -21,7 +21,7 @@ _CID = "code.site_parcel_is_surveyed"
 
 def _verdicts(catlin_model, **site_updates):
     model = _model_with_site(catlin_model, **site_updates)
-    report = run_from_model(model, [], tier=Tier.CODE)
+    report = run_from_model(model, [], tier=Tier.CODE, only=_CID)
     return [f for f in report.findings if f.check_id == _CID]
 
 
@@ -35,7 +35,7 @@ def test_a_placeholder_parcel_is_a_warn_severity_fail(catlin_model) -> None:
 
 def test_catlin_carries_no_error_severity_parcel_finding(catlin_model) -> None:
     """catlin's own site is the placeholder case, unmodified."""
-    report = run_from_model(catlin_model, [], tier=Tier.CODE)
+    report = run_from_model(catlin_model, [], tier=Tier.CODE, only=_CID)
     matched = [f for f in report.findings if f.check_id == _CID]
     assert matched and all(f.severity is Severity.WARN for f in matched)
 

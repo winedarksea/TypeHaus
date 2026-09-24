@@ -20,7 +20,7 @@ from typehaus.findings import Result
 
 @pytest.fixture(scope="module")
 def findings(catlin_model_ro):
-    report = run_from_model(catlin_model_ro, [], tier=Tier.CODE)
+    report = run_from_model(catlin_model_ro, [], tier=Tier.CODE, only="mep.pocket_occupancy")
     return [f for f in report.findings if f.check_id == "mep.pocket_occupancy"]
 
 
@@ -68,5 +68,6 @@ def test_a_pipe_over_the_head_track_is_not_in_the_pocket(catlin_model) -> None:
 
 
 def _fails(model):
-    return [f for f in run_from_model(model, [], tier=Tier.CODE).findings
+    return [f for f in run_from_model(model, [], tier=Tier.CODE,
+                                      only="mep.pocket_occupancy").findings
             if f.check_id == "mep.pocket_occupancy" and f.result is Result.FAIL]

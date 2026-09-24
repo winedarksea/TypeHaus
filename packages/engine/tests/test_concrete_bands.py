@@ -69,6 +69,7 @@ def test_the_kitchen_drain_still_crosses_the_cap_through_its_sleeve(
 
 def test_catlin_has_no_unsleeved_concrete_crossing(catlin_model_ro) -> None:
     """The gate this whole pass exists for."""
-    findings = [f for f in run_from_model(catlin_model_ro, [], tier=Tier.CODE).findings
+    findings = [f for f in run_from_model(catlin_model_ro, [], tier=Tier.CODE,
+                                          only="mep.sleeve_coverage").findings
                 if f.check_id == "mep.sleeve_coverage" and f.result is Result.FAIL]
     assert not findings, [f.message for f in findings]

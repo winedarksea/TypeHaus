@@ -66,8 +66,8 @@ def catlin_model_ro(catlin_plan):
 
     Handing this to a mutating test is the failure mode, and it is a quiet one — the damage
     lands in whatever module runs next. When in doubt use ``catlin_model``: a resolve is
-    ~290 ms, cheaper than a ``copy.deepcopy`` of the result (~475 ms, measured), so there is
-    no defensive-copy shortcut to reach for here.
+    ~1.2 s idle (2026-09-24). A ``copy.deepcopy`` of the result is now about half that, but
+    a copy only protects a test that remembers to take one.
     """
     from typehaus.resolve import resolve
 

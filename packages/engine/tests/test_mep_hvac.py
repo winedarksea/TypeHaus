@@ -96,7 +96,7 @@ def test_bearing_crossing_reported_with_fire_blocking_note(catlin_model):
     perpendicular positions on both sides of the line. What the builder still owes is the
     R302.11 draftstop, so the crossing rides along as a *note on a PASS* rather than as a
     failure that would have to be waived on every through-duct in the house."""
-    report = run_from_model(catlin_model, [], tier=Tier.STRUCTURAL)
+    report = run_from_model(catlin_model, [], tier=Tier.STRUCTURAL, only="mep.duct_joist_bay")
     matched = [f for f in report.findings if f.check_id == "mep.duct_joist_bay"]
     assert matched
     assert all(f.result.value == "pass" for f in matched)
@@ -126,7 +126,7 @@ def test_depth_exceeding_joist_depth_fails(second_floor):
 
 
 def _connectivity(model):
-    report = run_from_model(model, [], tier=Tier.INTEGRITY)
+    report = run_from_model(model, [], tier=Tier.INTEGRITY, only="mep.duct_connectivity")
     return [f for f in report.findings if f.check_id == "mep.duct_connectivity"]
 
 

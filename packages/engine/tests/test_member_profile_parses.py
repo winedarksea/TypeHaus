@@ -258,7 +258,7 @@ def test_nothing_to_grade_is_not_applicable_not_silence() -> None:
 def catlin_findings(catlin_model_ro, catlin_plan):
     from typehaus.checks import run_from_model
 
-    report = run_from_model(catlin_model_ro, [], tier=Tier.INTEGRITY)
+    report = run_from_model(catlin_model_ro, [], tier=Tier.INTEGRITY, only=_CHECK_ID)
     return [f for f in report.findings if f.check_id == _CHECK_ID]
 
 

@@ -7,9 +7,11 @@ UNKNOWN is counted in its own column, never folded into passes.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterable, Mapping
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any, TypeVar
 
 # JurisdictionProfile lived here before it grew into its own module; it is still imported
 # from this one by existing call sites, so the name stays bound here deliberately.
@@ -432,16 +434,53 @@ def _suppressed(finding: Finding, suppressed: frozenset[str]) -> bool:
     return any(f"{finding.check_id}:{tag}" in suppressed for tag in finding.element_tags)
 
 
-def run_checks(ctx: CheckContext, tier: Tier | None = None) -> CheckReport:
-    """Run every registered check (of the given tier) plus resolve-time findings."""
+_T = TypeVar("_T")
+#: A scratch dict that lives for exactly one ``run_checks`` call — see :func:`shared`.
+_RUN_SCOPE: ContextVar[dict[Any, Any] | None] = ContextVar("_RUN_SCOPE", default=None)
+
+
+def shared(ctx: CheckContext, key: str, fn: Callable[[], _T]) -> _T:
+    """``fn()``, computed once per ``run_checks`` call for this ``ctx``; outside one, just ``fn()``.
+
+    Deliberately not cached on the model or the context: tests mutate and ``copy.copy``
+    those, and a stale derived value there would silently change a verdict. Within one run
+    nothing mutates underneath it. ``fn`` must return something its callers only read.
+    """
+    scope = _RUN_SCOPE.get()
+    if scope is None:
+        return fn()
+    slot = (id(ctx), key)
+    if slot not in scope:
+        scope[slot] = fn()
+    return scope[slot]
+
+
+def run_checks(ctx: CheckContext, tier: Tier | None = None, *,
+               only: str | Iterable[str] | None = None) -> CheckReport:
+    """Run every registered check (of the given tier) plus resolve-time findings.
+
+    ``only`` restricts the run to those *registered* ids (``ran`` says which ran). An id not
+    registered in the tier raises: a typo would otherwise make an absence assertion pass.
+    """
+    checks = registered(tier)
+    if only is not None:
+        wanted = {only} if isinstance(only, str) else set(only)
+        unknown = wanted - {check_id for check_id, _fn in checks}
+        if unknown:
+            raise ValueError(f"only= names unregistered check ids: {sorted(unknown)}")
+        checks = [pair for pair in checks if pair[0] in wanted]
     findings: list[Finding] = list(ctx.resolve_findings)
     ran: list[str] = []
-    for check_id, fn in registered(tier):
-        ran.append(check_id)
-        for finding in fn(ctx):
-            if _suppressed(finding, ctx.preferences.suppressed):
-                continue
-            findings.append(finding)
+    token = _RUN_SCOPE.set({})
+    try:
+        for check_id, fn in checks:
+            ran.append(check_id)
+            for finding in fn(ctx):
+                if _suppressed(finding, ctx.preferences.suppressed):
+                    continue
+                findings.append(finding)
+    finally:
+        _RUN_SCOPE.reset(token)
     return CheckReport(findings=findings, ran=tuple(ran),
                        engineering=ctx.engineering,
                        engineering_register=ctx.engineering_register)

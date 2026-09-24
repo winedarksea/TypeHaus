@@ -214,7 +214,8 @@ def test_the_port_verdict_says_it_is_service_level(catlin_model):
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Preferences
 
-    report = run_from_model(catlin_model, [], preferences=Preferences())
+    report = run_from_model(catlin_model, [], preferences=Preferences(),
+                            only="mep.equipment_port_service")
     mine = [f for f in report.findings if f.check_id == "mep.equipment_port_service"]
     assert mine
     assert any("service-level verdict" in f.message for f in mine)
@@ -230,7 +231,8 @@ def test_connectivity_reports_a_dimensioned_landing_and_never_re_fails_it(catlin
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Preferences
 
-    report = run_from_model(catlin_model, [], preferences=Preferences())
+    report = run_from_model(catlin_model, [], preferences=Preferences(),
+                            only="mep.duct_connectivity")
     mine = [f for f in report.findings if f.check_id == "mep.duct_connectivity"]
     assert mine
     noted = [f for f in mine if "dimensioned port" in f.message]

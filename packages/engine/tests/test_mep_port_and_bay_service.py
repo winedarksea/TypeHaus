@@ -18,7 +18,7 @@ from typehaus.model.enums import AIR_SERVICE_DUCT_SYSTEM, DuctSystem, Service
 
 
 def _findings(model, check_id, tier=Tier.INTEGRITY):
-    return [f for f in run_from_model(model, [], tier=tier).findings
+    return [f for f in run_from_model(model, [], tier=tier, only=check_id).findings
             if f.check_id == check_id]
 
 

@@ -208,7 +208,8 @@ def test_the_check_grades_the_header_and_earns_its_not_applicable() -> None:
     every check to.
     """
     model, _ = resolve(_plan(_ONE_STATION))
-    graded = [f for f in run_from_model(model, [], tier=Tier.STRUCTURAL).findings
+    graded = [f for f in run_from_model(model, [], tier=Tier.STRUCTURAL,
+                                        only=_OPENING_CHECK_ID).findings
               if f.check_id == _OPENING_CHECK_ID]
     assert len(graded) == 1
     assert graded[0].result is Result.PASS
@@ -216,7 +217,8 @@ def test_the_check_grades_the_header_and_earns_its_not_applicable() -> None:
     assert "32.00" in graded[0].message  # the header span it actually graded
 
     bare, _ = resolve(_plan(()))
-    none = [f for f in run_from_model(bare, [], tier=Tier.STRUCTURAL).findings
+    none = [f for f in run_from_model(bare, [], tier=Tier.STRUCTURAL,
+                                      only=_OPENING_CHECK_ID).findings
             if f.check_id == _OPENING_CHECK_ID]
     assert len(none) == 1
     assert none[0].result is Result.NOT_APPLICABLE

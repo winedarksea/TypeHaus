@@ -91,7 +91,22 @@ def _top_probes(solid) -> list[tuple[float, float, float]]:
     return [(pt[0], pt[1], top) for pt in (solid.outline or ())]
 
 
-def _lowest_roof_over(ctx: CheckContext, point: tuple[float, float]):
+def _bearing_boxes(ctx: CheckContext) -> list:
+    """``(roof, (minx, miny, maxx, maxy))`` for every roof with a bearing footprint."""
+    from typehaus.resolve.roof_geometry import roof_bearing_footprint
+
+    out = []
+    for roof in ctx.model.roofs:
+        footprint = roof_bearing_footprint(ctx.model, roof)
+        if footprint is None:
+            continue
+        xs = [corner[0] for corner in footprint]
+        ys = [corner[1] for corner in footprint]
+        out.append((roof, (min(xs), min(ys), max(xs), max(ys))))
+    return out
+
+
+def _lowest_roof_over(ctx: CheckContext, point: tuple[float, float], boxes: list):
     """The lowest roof structure over a plan point, as ``(roof, underside_z)``.
 
     Bearing footprint rather than ``ResolvedRoof.footprint``: the latter is expanded by the
@@ -100,16 +115,9 @@ def _lowest_roof_over(ctx: CheckContext, point: tuple[float, float]):
     main run — the *lowest* one is the binding constraint, because that is the one an
     element standing there would come up against first.
     """
-    from typehaus.resolve.roof_geometry import roof_bearing_footprint
-
     best = None
-    for roof in ctx.model.roofs:
-        footprint = roof_bearing_footprint(ctx.model, roof)
-        if footprint is None:
-            continue
-        xs = [corner[0] for corner in footprint]
-        ys = [corner[1] for corner in footprint]
-        if not (min(xs) <= point[0] <= max(xs) and min(ys) <= point[1] <= max(ys)):
+    for roof, (minx, miny, maxx, maxy) in boxes:
+        if not (minx <= point[0] <= maxx and miny <= point[1] <= maxy):
             continue
         underside = roof_underside_at(ctx.model, roof, point)
         if best is None or underside < best[1]:
@@ -128,6 +136,7 @@ def element_above_roof(ctx: CheckContext) -> list[Finding]:
         )]
 
     graded = 0
+    boxes = _bearing_boxes(ctx)  # per roof, not per probe: ~2,300 probes on catlin
     worst: dict[str, tuple[float, float, float, str]] = {}
     for solid in ctx.model.solids:
         category = solid.category or ""
@@ -143,7 +152,7 @@ def element_above_roof(ctx: CheckContext) -> list[Finding]:
         graded += 1
         for x, y, top in probes:
             point = (x, y)
-            over_roof = _lowest_roof_over(ctx, point)
+            over_roof = _lowest_roof_over(ctx, point, boxes)
             if over_roof is None:
                 continue
             roof, underside = over_roof
