@@ -137,6 +137,13 @@ class HangerDetectionRules:
     floor_opening_hangable_categories: frozenset = frozenset({"header"})
     # What an opening carrier accepts: the same deck's cut joists and headers, nothing else.
     floor_opening_hung_categories: frozenset = frozenset({"joist", "header"})
+    # A deck's joists and rims carry a stair's stringer heads, and nothing else: a joist
+    # beside a joist is blocking, not a hanger.
+    stair_head_carrier_categories: frozenset = frozenset({"joist", "rim"})
+    stair_head_hung_categories: frozenset = frozenset({"stringer"})
+    # A member within this plan angle of its carrier runs ALONGSIDE it and never dies into
+    # it, however close its end lands (a joist blocked to a flush beam, a rim on its line).
+    parallel_reject_deg: float = 20.0
     # IRC R502.10, sawn lumber: hangers where a header spans more than 6 ft or a tail joist
     # runs more than 12 ft; shorter joints are end-nailed. Engineered decks always hang.
     sawn_header_hanger_over_ft: float = 6.0

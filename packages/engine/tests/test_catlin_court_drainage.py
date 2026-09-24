@@ -76,6 +76,18 @@ def test_the_area_drain_lets_go_below_frost_in_the_strip_north_of_the_beam(catli
     assert (floor.z1_m - riser.z0_m) / _IN == pytest.approx(42.0 + 12.0), "12\" below frost"
 
 
+def test_the_grate_is_at_x_20_and_voids_the_rim(catlin_model_ro):
+    """x=20': 2'-0" east of FD-SG-FIELD, 13'-0" from FD-SG-OVERFLOW; the basin cuts the slab."""
+    plan = catlin_model_ro.plan
+    x, _ = plan.by_tag("AD-SG-COURT").position.xy_m
+    assert x / _FT == pytest.approx(20.0)
+    assert (x - plan.by_tag("FD-SG-FIELD").path[0].xy_m[0]) / _FT == pytest.approx(2.0)
+    assert (x - plan.by_tag("FD-SG-OVERFLOW").path[0].xy_m[0]) / _FT == pytest.approx(13.0)
+    solids = {s.tag: s for s in catlin_model_ro.solids}
+    basin = sorted(solids["AD-SG-COURT"].outline)
+    assert basin in [sorted(v) for v in solids["SL-SG-FLOOR"].voids]
+
+
 def test_the_pump_walks_to_the_rain_garden(catlin_model_ro, ctx):
     from typehaus.checks.mep.sump_discharge import pump_discharge
     from typehaus.resolve.drainage_network import EdgeKind, build_network

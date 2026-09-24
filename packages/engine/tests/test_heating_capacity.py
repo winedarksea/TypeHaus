@@ -436,13 +436,9 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # box is the last thing that enclosure wants. Unclaimed here means "served by no zone",
     # which is the true statement, not a gap to fill.
     #
-    # RM-M-MUD-CLOSET: a framed reach-in that was never zoned, and its 48" bypass slider
-    # onto the conditioned mudroom is wide open air transfer, not a sealed enclosure — a
-    # dedicated supply register would be serving a storage closet through its own open
-    # door.
-    # RM-M-PANTRY is the same case: a framed reach-in off a conditioned room, with no
-    # register and no need of one — it borrows the kitchen's air through a 60" bypass that
-    # is open whenever anyone is in there.
+    # RM-M-MUD-CLOSET (EQ-M-HP3-STAIR, 2026-09-18) and RM-M-PANTRY (EQ-M-HP2-LIVING,
+    # 2026-09-24) are claimed with no register: each is a reach-in heated through its open
+    # bypass door, so its load belongs to the zone next door.
     #
     # RM-A-STUBATH is claimed despite EQ-S-HP1-AH's zone_rooms naming
     # "RM-A-STUDIO-BATH" (a typo — the room is RM-A-STUBATH; a zone_rooms entry naming no
@@ -451,7 +447,7 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # under the door. That is true about AIR, not about the HEATING ZONE: a 50 sf
     # conditioned room off a conditioned bedroom is inside System 1's zone whether or not
     # it has a boot of its own, and its load belongs in that zone's block load.
-    assert set(unclaimed) == {"RM-B-ESS", "RM-M-PANTRY"}
+    assert set(unclaimed) == {"RM-B-ESS"}
 
 
 # --- supplemental resistance heat ------------------------------------------------------

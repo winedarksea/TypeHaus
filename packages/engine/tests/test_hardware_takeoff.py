@@ -8,6 +8,23 @@ from __future__ import annotations
 
 import pytest
 
+from typehaus.hardware.catalog import (
+    ROLE_EXPOSED_FASTENER_PANEL_SCREW,
+    ROLE_EXTERIOR_INSULATION_SCREW,
+    ROLE_GIRT_STANDOFF_SCREW,
+    ROLE_KNEE_BRACE,
+    ROLE_MUDSILL_ANCHOR,
+    ROLE_PIPE_CLAMP,
+    ROLE_SLOPED_JOIST_HANGER,
+    ROLE_THROUGH_PANEL_PIPE_STRAP,
+    hardware_for_role,
+    screw_for_required_length,
+    structural_hardware_catalog,
+)
+from typehaus.hardware.config import (
+    DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG,
+)
+from typehaus.hardware.config import FT_TO_M
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Connector
 from typehaus.quantities import M_PER_IN
@@ -26,23 +43,6 @@ from typehaus.takeoff.fasteners import (
     fastener_grid_count,
 )
 from typehaus.takeoff.hangers import hung_connections
-from typehaus.hardware.catalog import (
-    ROLE_EXPOSED_FASTENER_PANEL_SCREW,
-    ROLE_EXTERIOR_INSULATION_SCREW,
-    ROLE_GIRT_STANDOFF_SCREW,
-    ROLE_KNEE_BRACE,
-    ROLE_MUDSILL_ANCHOR,
-    ROLE_PIPE_CLAMP,
-    ROLE_SLOPED_JOIST_HANGER,
-    ROLE_THROUGH_PANEL_PIPE_STRAP,
-    hardware_for_role,
-    screw_for_required_length,
-    structural_hardware_catalog,
-)
-from typehaus.hardware.config import (
-    DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG,
-)
-from typehaus.hardware.config import FT_TO_M
 
 FASTENERS = CONFIG.exterior_insulation_fasteners
 STRIP_SPACING_M = FASTENERS.strip_spacing_in * M_PER_IN
@@ -378,18 +378,14 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     hung_keys = {item.member_key for item in connections}
     breezeway_joists = {f"{m.parent_uid}:{m.child_key}" for m in breezeway.members
                         if m.category == "joist"}
-    # Two of the six still hang, and they are the two running alongside BM-BW-FC and
-    # BM-BW-FE: `_flush_framed_pairs` pairs a joist with a beam by plan proximity, and a
-    # joist PARALLEL to a beam a few inches away reads the same as one dying into it. Two
-    # hangers is a small over-bill on a real detail (those two joists are blocked and nailed
-    # to the carriers beside them), and it is recorded here rather than asserted away.
-    assert len(breezeway_joists & hung_keys) == 2, sorted(breezeway_joists & hung_keys)
-    # FS-BW-GARAGE is the garage landing, split off FS-BW-FLOOR on 2026-09-10, and its seven
-    # are two different things. FIVE ARE REAL: its 2x8s run east-west between BM-BW-FC and
-    # BM-BW-FE and share their depth exactly (-8 1/4" to -1"), which is a flush frame and
-    # buys a hanger each. The other TWO are the parallel false positive again, and worse
-    # here — the floor outline runs beam-line to beam-line, so each rim lands colinear with
-    # the beam under it and reads as dying into it. Same over-bill, same reason, recorded.
+    # None hang. The two running alongside BM-BW-FC and BM-BW-FE (blocked and nailed to
+    # them) used to bill four LUS28Z; a member within `parallel_reject_deg` of a carrier
+    # runs beside it and never dies into it (2026-09-24).
+    assert not breezeway_joists & hung_keys, sorted(breezeway_joists & hung_keys)
+    # FS-BW-GARAGE is the garage landing, split off FS-BW-FLOOR on 2026-09-10. Its five
+    # 2x8s run east-west between BM-BW-FC and BM-BW-FE and share their depth exactly
+    # (-8 1/4" to -1"): a flush frame, a hanger each. Its two rims lie ON the beam lines and
+    # are parallel to them, so they hang in nothing (four phantom LUSZ until 2026-09-24).
     garage_landing = next(f for f in catlin_model.floors if f.tag == "FS-BW-GARAGE")
     landing_keys = {f"{m.parent_uid}:{m.child_key}" for m in garage_landing.members}
     landing_hung = {f"{m.parent_uid}:{m.child_key}" for m in garage_landing.members
@@ -397,7 +393,7 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     landing_rims = {f"{m.parent_uid}:{m.child_key}" for m in garage_landing.members
                     if m.category == "rim"} & hung_keys
     assert len(landing_hung) == 5, sorted(landing_hung)
-    assert len(landing_rims) == 2, sorted(landing_rims)
+    assert not landing_rims, sorted(landing_rims)
     # BM-SG-BLC (the balcony's hung centre line) retired with the centre support line in
     # 2026-09; the balcony joists bear on its two outer beams and hang in nothing. The porch
     # ledgers took its place in this list.

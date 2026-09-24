@@ -113,6 +113,7 @@ DETAIL_FILL: dict[str, str] = {
     "gwb": "#e6e6e6",
     "polyiso": "#f4e6b1",
     "polyiso-foil": "#efdf9e",
+    "polyiso-foil-thermax": "#efdf9e",  # catlin's sauna board (house-local)
     "eps": "#c8e0f8",
     "icf-eps": "#d8e8fa",
     "xps": "#a7d7c5",
@@ -229,6 +230,7 @@ DETAIL_HATCH: dict[str, str] = {
     "gwb": "gypsum",
     "polyiso": "none",
     "polyiso-foil": "none",
+    "polyiso-foil-thermax": "none",
     "eps": "none",
     "icf-eps": "none",
     "xps": "none",

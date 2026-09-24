@@ -105,10 +105,12 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # 137 -> 136 in 2026-09: the main-storey sill run over the sunken garden (y = -11 3/4")
     # spans axis to axis of the court's side walls, 20'-0" -> 18'-0" with the 17'-0" court.
     # At a 4' pitch, fencepost: floor(20/4)+1 = 6 became floor(18/4)+1 = 5.
-    assert joints["mudsill_anchor"] == 136
-    # 39 -> 40 on 2026-09-23: ST-G-SERVICE's stringer-1 moved 3/4" in with the outer-stringer
-    # inset and its head now lands inside BM-BW-FE's 6" end gap, matching stringer-0 on
-    # BM-BW-FC. Both carriers run PARALLEL to the stringers (plans/TODO.md: hung.py axis test).
+    # 136 -> 131 (9e0827b1): the overhead door's grade beam retired, and the five MASA on its
+    # phantom 16 LF of sill (x = 10'..26' on 4' centres) went with it.
+    assert joints["mudsill_anchor"] == 131
+    # 38 rafters on the ridge plus ST-G-SERVICE's two stringer heads, which hang on
+    # FS-BW-GARAGE's north-edge 2x8 (2026-09-24; before that they billed on BM-BW-FC/FE,
+    # beams running PARALLEL to them).
     assert joints["sloped_joist_hanger"] == 40
     assert joints["ridge_tie_strap"] == 19
     assert joints["embedded_strap_holdown"] == 40

@@ -347,9 +347,7 @@ BASEMENT_EQUIPMENT = [
               outdoor_ref="EQ-M-HP2-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
               zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
-                          "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH",
-                          # The ESS closet off RM-B-FURNACE: LiFePO4 won't charge below 32 F.
-                          "RM-B-ESS")),
+                          "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH")),
     # ** ON THE EAST LINER SINCE 2026-09-05 (round three), AND IT TURNED TO GET THERE. **
     # It stood on the SOUTH liner at x 14'-5 3/4"..15'-11 3/4" from the shrink until the
     # south bench grew: with the heater in the middle of that wall the bench could be 2'-6"

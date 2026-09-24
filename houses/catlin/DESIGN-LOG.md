@@ -1357,6 +1357,7 @@ replace the lumber forms and the bedding tile, and serve as the sub-slab radon c
 - **XPS under the footing instead of stone is refused too** (owner): long-term creep and
   compression under a permanent bearing load. `FT-B-S1..S4` already bear on 2" of 40 psi XPS
   (`FOOTING_FPSF_20`), which is the open inconsistency, logged in `plans/TODO.md`.
+  (Closed 2026-09-24: the XPS is gone, see the entry of that date.)
 
 - **THE SAUNA'S FIBRE-OPTIC LIGHTING IS CUT; TWO 24V UNDER-BENCH RUNS REPLACE IT
   (2026-09-13).** The room's only light was `ED-B-SAUNA-LT`, a single point fixture on
@@ -2732,7 +2733,7 @@ the hole. Snowmelt onto a frozen field had no way into the stone at all, and the
    `drainage.soakaway_storage` PASSES it (`notes/court_soakaway_storage.md`). 18" only if the
    credit turns out unrealistic.
 4. **`AD-SG-COURT`**: a 12" grate in the rim slab just north of `W-SG-ARCH`, under the balcony,
-   1" clear of the beam and 2' off the x=18' overflow line; a solid 4" riser into
+   1" clear of the beam, at x=20' since 2026-09-24 (it was 2' off the old x=18' overflow line); a solid 4" riser into
    `FB-SG-ARCH`'s stone (bed widened 24" -> 36" for a 12" strip north of the beam), letting go
    at -163 7/16", 12" below frost. Passive, no heat trace.
 5. **`drainage.soakaway_storage`**, advisory, new in the engine.
@@ -3840,3 +3841,30 @@ surface that reaches the court, so the water goes there.
   off 200 sf). Water the soil, not the leaves (UMN/Rutgers); screen and lock the lid; off
   mid-October to mid-April.
 
+## 2026-09-24 — Footing XPS out, the court grate to x=20', BATH2's heat accepted, sauna foam listed
+
+- **`FT-B-S1..S4` bear on plain concrete.** `FOOTING_FPSF_20` (8" pour on 2" of 40 psi XPS)
+  is replaced by `FOOTING_EXPOSED_20`, one 8" `EXPOSED_MIX` layer, so the F3 class stays. The
+  owner refuses foam under a permanent bearing load (creep). Frost protection never rested on
+  the board: `SL-SG-FROST-W/E/N` over the drained `FB-B-S*` stone hold it, and
+  `structural.frost_depth` reads the same on all four. 60 SF of `xps:2.0` leaves the bill.
+- **`AD-SG-COURT` moves to x=20'** (`FIELD_X_MID_FT + 2.0`): 2' east of `FD-SG-FIELD`, 13' off
+  `FD-SG-OVERFLOW` on W1's west heel. Its basin now VOIDS `SL-SG-FLOOR`, which it never did,
+  so the grate and the slab z-fought in 3D and the slab billed the basin's concrete
+  (`resolve/drainage.py`; a basin outside its host is `integrity.area_drain_host`).
+- **The overflow's air path is accepted.** `FD-SG-OVERFLOW`'s stone joins the sub-slab radon
+  stone to the court's, which opens at the grate, and relief surcharges the house tile 3-4"
+  before the pit's -123 7/16" inlet. The court's own lip is -127 7/16". The owner accepts
+  both; the fix, if it is ever wanted, is a solid pipe from the pit to the court stone with a
+  dip-tube water seal at the pit.
+- **`RM-M-BATH2`'s floor cable is its only heat, and that is accepted** (owner): the room
+  block load is approximate by design and the door opens to heated rooms.
+  `mep.room_heat_source:RM-M-BATH2` is suppressed in `preferences.toml`.
+- **The sauna's foil polyiso passes R316.4 on its own listing (R316.6).** The IRC has no sauna
+  exemption. The board is now named, `polyiso-foil-thermax` (DuPont Thermax Sheathing), and
+  `Material.thermal_barrier_listing` carries Intertek CCRR-0435 §5.5 (no thermal barrier
+  required, max 4", any wall or ceiling). All five sauna assemblies and the ceiling use it.
+  **The plant room stays UNKNOWN**: Heatlok HFO High Lift's ESR-4073 drops the barrier only
+  under a DC 315 intumescent coat (§4.3.2), which that wall does not have. 1/2" gypsum behind
+  the PVC panel would close it. R316.4's wood-panel alternative is 23/32" (IRC 2018, MN 2020),
+  not 5/8"; the check says so now.

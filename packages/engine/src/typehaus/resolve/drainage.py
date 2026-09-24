@@ -9,6 +9,8 @@ that module is envelope trim and hardware; a trench across the yard is neither.
 
 from __future__ import annotations
 
+import dataclasses
+
 from typehaus.findings import Finding, element_error
 from typehaus.model.landscape import RainGarden
 from typehaus.model.stormwater import AreaDrain
@@ -17,7 +19,11 @@ from typehaus.model.trim import Downspout
 from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
 from typehaus.resolve.geometry import circle_outline, rect_between
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
+from typehaus.resolve.overlay import difference, union_all
 from typehaus.resolve.rain_garden import floor_z_m
+
+#: Overlap a basin may leave outside its slab and still count as inside it: grid noise.
+_BASIN_SLACK_M2 = 1e-8
 
 #: A drywell is a cylinder; the solid IR extrudes a plan outline, so the bore is faceted.
 #: Matched to the vent/downspout risers so round things read alike in the viewer.
@@ -52,13 +58,17 @@ def resolve_drainage(model: ResolvedModel) -> list[Finding]:
 
 
 def _resolve_area_drain(model: ResolvedModel, el: AreaDrain, storey: str) -> list[Finding]:
-    """The basin in its slab, and the solid riser from the basin floor to the outlet."""
-    host = next((s for s in model.solids
-                 if s.tag == el.host_ref and s.category == "slab"), None)
-    if host is None:
+    """The basin in its slab, and the solid riser from the basin floor to the outlet.
+
+    The basin voids its host slab, so the pour is billed and drawn net of the hole.
+    """
+    index = next((i for i, s in enumerate(model.solids)
+                  if s.tag == el.host_ref and s.category == "slab"), None)
+    if index is None:
         return [element_error("integrity.area_drain_host",
                               f"area drain {el.tag} is set in {el.host_ref!r}, which is not "
                               f"a resolved slab", el.tag)]
+    host = model.solids[index]
     rim = el.rim_elevation.meters if el.rim_elevation is not None else host.z1_m
     floor = rim - el.basin_depth.meters
     sizes = (el.grate_size.meters, el.basin_depth.meters, el.outlet_diameter.meters)
@@ -69,10 +79,16 @@ def _resolve_area_drain(model: ResolvedModel, el: AreaDrain, storey: str) -> lis
                               el.tag)]
     x, y = el.position.xy_m
     half = el.grate_size.meters / 2.0
+    ring = rect_between((x - half, y), (x + half, y), -half, half)
+    if not _inside_net_slab(host, ring):
+        return [element_error("integrity.area_drain_host",
+                              f"area drain {el.tag}'s basin is not wholly inside "
+                              f"{el.host_ref}'s poured area (outline less its voids)", el.tag)]
+    model.solids[index] = dataclasses.replace(
+        host, voids=(*host.voids, tuple(tuple(p) for p in ring)))
     model.solids.append(ResolvedSolid(
         uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="area_drain",
-        outline=rect_between((x - half, y), (x + half, y), -half, half),
-        z0_m=floor, z1_m=rim, material="polyethylene"))
+        outline=ring, z0_m=floor, z1_m=rim, material="polyethylene"))
     if floor > el.outlet_invert.meters:
         r = el.outlet_diameter.meters / 2.0
         model.solids.append(ResolvedSolid(
@@ -81,6 +97,14 @@ def _resolve_area_drain(model: ResolvedModel, el: AreaDrain, storey: str) -> lis
             outline=rect_between((x - r, y), (x + r, y), -r, r),
             z0_m=el.outlet_invert.meters, z1_m=floor, material=el.outlet_material))
     return []
+
+
+def _inside_net_slab(host: ResolvedSolid, ring: list[tuple[float, float]]) -> bool:
+    """Is the basin inside the slab's outline less its existing voids (to a micron)?"""
+    from shapely.geometry import Polygon
+
+    net = difference(Polygon(host.outline), union_all(Polygon(v) for v in host.voids))
+    return difference(Polygon(ring), net).area <= _BASIN_SLACK_M2
 
 
 #: Planting soil, keyed into the drawing palette's existing ``soil`` hatch; the stone under

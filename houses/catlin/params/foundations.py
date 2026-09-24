@@ -106,24 +106,24 @@ _HOUSE_WALL_TAGS = (
     (24, "W-B-STR3B"),
 )
 
-# The three south strips are formed in an insulated footing form, the rest are poured
-# against the bedding as before. They are the strips the sunken garden runs along: the
-# garden floor is at -9'-1 7/16" and they bottom out at -9'-9 7/16", **8" of frost cover**
-# against MN Rules 1303.1600's 42" for Ramsey County — measured, as IRC R403.1.4.1 says to,
-# from the lowest adjacent grade, which beside them is the garden floor and not the -2'-10"
-# site plane six and a half feet overhead.
+# The four south strips take FOOTING_EXPOSED_20 (the EXPOSED mix, F3), the rest FOOTING_20;
+# all are plain strips on the bedding, with no foam under them (owner: creep). They are the
+# strips the sunken garden runs along: the garden floor is at -9'-1 7/16" and they bottom
+# out at -9'-9 7/16", **8" of frost cover** against MN Rules 1303.1600's 42" for Ramsey
+# County — measured, as IRC R403.1.4.1 says to, from the lowest adjacent grade, which beside
+# them is the garden floor and not the -2'-10" site plane six and a half feet overhead.
 #
 # ``structural.frost_depth`` derives a local grade per footing; the answer to what it finds
 # here is IRC R403.3 — the horizontal wings under the garden slab
-# (``params/sunken_garden.FROST_WINGS``) plus this form, which keeps the concrete off the
-# soil on both faces. Deepening the strips is not an available alternative: FT-B-S2/S3's
+# (``params/sunken_garden.FROST_WINGS``, SL-SG-FROST-W/E/N) over the drained stone bedding.
+# Deepening the strips is not an available alternative: FT-B-S2/S3's
 # south toe is what carries SG_VENEER_BEAM_14's isolation board at -8"..-10" (that is what
 # `_SOUTH_TOE_TRIM` below is for), so re-centring the strips and re-founding the brick wall
 # are one change and not this one. It used to be the veneer PLINTH that leaned on that toe;
 # the plinth is gone and the constraint is not.
 # W-B-S1B joined on 2026-09-05 and left the same day with the sauna shrink. FT-B-S1 is one
 # unsplit strip again, and it is back inside the court's 42" frost reach — which is what the
-# insulated form and the `SL-SG-FROST-W` wings under the garden slab are for. See the header
+# `SL-SG-FROST-W` wings under the garden slab are for. See the header
 # note on `structural.frost_depth` above.
 _FROST_FORMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
 # ** THIS SET IS EMPTY, AND `_SOUTH_TOE_TRIM` IS SUPERSEDED (2026-09-05, second pass). **
@@ -272,7 +272,7 @@ HOUSE_FOOTINGS = [
             width=inch(20), depth=inch(8),
             center_on=_center_on(t), offset=_toe_offset(t),
             start_extension=_START_EXTENSION.get(t),
-            assembly="FOOTING_FPSF_20" if t in _FROST_FORMED else "FOOTING_20")
+            assembly="FOOTING_EXPOSED_20" if t in _FROST_FORMED else "FOOTING_20")
     for i, t in _HOUSE_WALL_TAGS
 ]
 

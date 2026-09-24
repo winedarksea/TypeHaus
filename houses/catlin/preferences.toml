@@ -629,4 +629,8 @@ suppress = [
   # suppressed check id takes its PASSES out of the denominator too, and a reader who finds
   # one assumes there is still something behind it. `D-M-BATH1` and `D-G-OVERHEAD` above
   # both still fire and both stay.
+
+  # Owner accepts (2026-09-23): the floor cable is BATH2's sole heat, the room load estimate
+  # is approximate by design, and the door opens to heated rooms.
+  "mep.room_heat_source:RM-M-BATH2",
 ]

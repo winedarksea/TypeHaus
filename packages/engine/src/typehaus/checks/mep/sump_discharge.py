@@ -26,6 +26,8 @@ _IN = 0.0254
 LEADER_SLACK_M = 6.0 * _IN
 #: Rounding a line's profile may not count as a re-rise.
 _RISE_TOL_M = 0.25 * _IN
+#: ``mep.footing_clearance``'s citation: the pit is an excavation beside a footing.
+_UPC_314_1 = "MN Plumbing Code (ch. 4714) 314.1"
 
 
 def _pit(ctx: CheckContext, tag: str):
@@ -136,7 +138,7 @@ def pit_footing_clearance(ctx: CheckContext) -> list[Finding]:
     cid = "mep.pit_footing_clearance"
     pits = [s for s in ctx.model.solids if s.category == "sump" and len(s.outline) >= 3]
     if not pits:
-        return [not_applicable(cid, "no sump pit is modelled")]
+        return [not_applicable(cid, "no sump pit is modelled", code=_UPC_314_1)]
     bearings = [(s, Polygon(s.outline)) for s in ctx.model.solids
                 if s.category in ("footing", "pad") and len(s.outline) >= 3]
     out: list[Finding] = []
@@ -153,9 +155,9 @@ def pit_footing_clearance(ctx: CheckContext) -> list[Finding]:
                                   f"{where})")
         if not undermined:
             out.append(_pass(cid, f"{pit.tag} clears every footing's 45° influence line",
-                             (pit.tag,)))
+                             (pit.tag,), code=_UPC_314_1))
             continue
         out.append(_fail(
             cid, f"{pit.tag} is inside the 45° influence line of {'; '.join(undermined)} — "
-                 f"move the pit or step the footing down", (pit.tag,)))
+                 f"move the pit or step the footing down", (pit.tag,), code=_UPC_314_1))
     return out

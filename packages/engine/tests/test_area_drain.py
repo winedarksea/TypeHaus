@@ -83,8 +83,21 @@ def test_the_riser_runs_from_the_basin_floor_to_the_outlet(drained):
     assert riser.z0_m == pytest.approx(_OUTLET.meters)
 
 
+def test_the_basin_voids_its_host_slab(drained):
+    """The pour is net of the hole: one void, the basin's own ring, 1 sf off 32 sf."""
+    from shapely.geometry import Polygon
+
+    slab = next(s for s in drained[1].solids if s.tag == "SL-TEST-AD")
+    basin = next(s for s in drained[1].solids if s.tag == "AD-TEST")
+    assert [sorted(v) for v in slab.voids] == [sorted(tuple(p) for p in basin.outline)]
+    net_sf = Polygon(slab.outline, holes=[list(v) for v in slab.voids]).area / 0.3048 ** 2
+    assert net_sf == pytest.approx(8 * 4 - 1)
+
+
 @pytest.mark.parametrize(("drain", "cid"), [
     (_drain(host_ref="SL-NOWHERE"), "integrity.area_drain_host"),
+    # Half the grate off the slab's west edge (x=70').
+    (_drain(position=pt(ft(70), ft(12))), "integrity.area_drain_host"),
     (_drain(grate_size=inch(0)), "integrity.area_drain_geometry"),
     (_drain(outlet_invert=ft(_SLAB_TOP_FT)), "integrity.area_drain_geometry"),
 ])

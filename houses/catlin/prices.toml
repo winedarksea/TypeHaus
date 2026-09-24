@@ -1012,7 +1012,7 @@
 # it — the derived rule uses the cheaper, stronger KBS1Z strap (see houses/catlin/
 # notes/uplift_load_path.md) — so this row prices the authored one-offs only.
 "PC6Z" = { low = 14, high = 26 }  # 0 ea
-"LSSR" = { low = 12, high = 22 }  # 56 ea
+"LSSR" = { low = 12, high = 22 }  # 40 ea — 38 ridge + 2 ST-G-SERVICE stringers on FS-BW-GARAGE (2026-09-24)
 # Rafter-to-rafter over the peak, one per opposing pair — the piece the LSSR above does
 # NOT do. A 24" x 1-1/4" 20ga strap tie is $3.50-4.50 single-piece retail (Fasteners Plus /
 # Home Depot, 2026); the low end is the contractor carton this section discounts to
@@ -1030,11 +1030,11 @@
 "HHUS410" = { low = 14, high = 24 }  # 10 ea
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
-"LUS28Z" = { low = 2.5, high = 7.5 }  # 14 ea — the breezeway beams (the 18 at BM-SG-BLC retired with it, 2026-09-22)
+"LUS28Z" = { low = 2.5, high = 7.5 }  # 10 ea — the breezeway beams (4 phantom joists alongside BM-BW-FC/-FE dropped 2026-09-24; the 18 at BM-SG-BLC retired 2026-09-22)
 # The single-2x12 face-mount in stainless (owner, 2026-09-22): Simpson publishes no LUS212, and
 # its 2x12 rows list the LUS210 (H 7-13/16"). The porch joists hang on it at both ledgers.
 "LUS210SS" = { low = 6.0, high = 12.0 }  # 20 ea — FS-SG-PORCH's 10 joists, both ends, on BM-SG-LDGW/LDGE
-"LUSZ" = { low = 2.5, high = 7.5 }  # 6 ea — rim boards hung in the same treated beams
+"LUSZ" = { low = 2.5, high = 7.5 }  # 2 ea — FS-BW-FLOOR's rims into BM-BW-FE (FS-BW-GARAGE's 4 ran alongside their beams, dropped 2026-09-24)
 # "LUS210" retired 2026-08-23. It priced the two back-beam hangers until the 2026-08-22
 # retype moved them onto HUCQ410-SDS, after which nothing in the house authored a LUS210 and
 # the row billed nothing. A price row for a part the model does not contain is not harmless:
@@ -1593,7 +1593,7 @@
 # SPLIT 2026-08-27. Material is the Twin Cities 2026 ready-mix quote this comment already
 # names ($180-200/cy, a YARD'S PRE-TAX SHEET) plus the rebar and form lumber consumed in the
 # pour; labour is the residual. That order matters — see the [basis_notes] on this section.
-"footing" = { material = { low = 195, high = 240 }, labour = { low = 85, high = 210 } }  # 26.92 cy MEASURED (19.09 COURT_FOOTING_12 + 6.35 FOOTING_20 + 1.48 FOOTING_FPSF_20) — 30.87 until 2026-09-15, when the garage's nine (3.95 cy) went to stone. The 33.25/31.52/1.73 this comment carried was stale again; re-read off `haus takeoff` rather than re-derived
+"footing" = { material = { low = 195, high = 240 }, labour = { low = 85, high = 210 } }  # 26.92 cy MEASURED (19.09 COURT_FOOTING_12 + 6.35 FOOTING_20 + 1.48 FOOTING_EXPOSED_20) — 30.87 until 2026-09-15, when the garage's nine (3.95 cy) went to stone. The 33.25/31.52/1.73 this comment carried was stale again; re-read off `haus takeoff` rather than re-derived
 # ** THE GARAGE'S NINE, WHICH ARE STONE AND NOT CONCRETE (2026-09-15). ** 2024 IRC R403.5,
 # graded by `code.R403_5_crushed_stone_footings`. They left the row above — that is the
 # 30.87 -> 26.92 cy — and they land here because `structural_solids` keys on solid CATEGORY
@@ -3893,7 +3893,10 @@
 # roof redesign ($8,000-13,600 across 3,095.7 SF of two staggered courses). Kept for the
 # rate; `polyiso-foil` below is a different product on a different scope and is still live.
 "polyiso" = { material = { low = 1.5, high = 2.3 }, labour = { low = 1.1, high = 2.1 } }  # 0 SF (was 3095.7) — was roof CI only, ~2x the labour of cavity batt
-"polyiso-foil" = { material = { low = 1.3, high = 2.4 }, labour = { low = 1.3, high = 2.3 } }  # 297.4 SF
+"polyiso-foil" = { material = { low = 1.3, high = 2.4 }, labour = { low = 1.3, high = 2.3 } }  # 0 SF (was 297.4) — the sauna board is now named, below; kept for the rate
+# The sauna liner's board by name since 2026-09-24 (DuPont Thermax Sheathing, CCRR-0435 §5.5 —
+# R316.4 passes on the listing). Same band as generic foil polyiso until a quote says otherwise.
+"polyiso-foil-thermax" = { material = { low = 1.3, high = 2.4 }, labour = { low = 1.3, high = 2.3 } }  # 297.4 SF
 "sauna-shiplap" = { material = { low = 4.5, high = 9 }, labour = { low = 6, high = 11 } }  # 297.4 SF — retagged from `sauna-tg` 2026-08-28 (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate
 # ** THE BIGGEST LINE IN THE HOUSE, and as of 2026-08-20 it is FOUR lines. ** One
 # `standing-seam` row used to carry all 6,322 SF at one rate. That was wrong in a specific,
@@ -4382,7 +4385,7 @@
 # the bottom. Below grade the backfill holds it. The mastic is inside this row's labour half
 # (a tube per ~35 SF is noise against the board), which is what `Material.exposed_fastener =
 # False` already asserts for every layer that has no countable fastener.
-"xps:2.0" = { material = { low = 0.74, high = 1.49 }, labour = { low = 0.75, high = 1.45 } }  # 3669.8 SF — foundation walls (2 x 2" staggered), basement slab (2", 25 psi), footing, wall
+"xps:2.0" = { material = { low = 0.74, high = 1.49 }, labour = { low = 0.75, high = 1.45 } }  # 3609.8 SF — foundation walls (2 x 2" staggered), basement slab (2", 25 psi), wall
 "xps:3.0" = { material = { low = 1.12, high = 2.23 }, labour = { low = 0.75, high = 1.45 } }  # 0 SF — was 1783.7 (basement + garage slabs) until the 2026-08-31 slab review. Kept for the rate.
 # The blended fallback. Any thickness without a row above lands here. Researched; the three
 # qualified rows are derived FROM it, so re-researching this row should re-derive those.

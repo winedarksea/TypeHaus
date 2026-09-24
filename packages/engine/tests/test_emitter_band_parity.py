@@ -229,12 +229,14 @@ def test_the_sauna_liner_no_longer_runs_across_its_own_door_and_window(catlin_mo
 
 
 def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc):
-    """55 of the 61 do not split, and their GUIDs must not move because the call changed.
+    """53 of the 59 do not split, and their GUIDs must not move because the call changed.
 
     47 since 2026-09-16: W-SG-W1/E1's dimpleboard stops at grade. 61 since the platform
     trim (``layer_bands.clamp_to_plates``): a lifted or dropped ENVELOPE wall's interior
     finish stops at the plate while its skin runs the rim band, so the finish is now a part
-    too. None of the 41 original keys moved — this count grew, it did not shift.
+    too. None of the 41 original keys moved — this count grew, it did not shift. 59 since
+    2026-09-23: the ICF grade beam under D-G-OVERHEAD is retired, and W-GF-N-DR's two coil
+    layers went with the wall.
 
     A GlobalId is an identity a federated model and its issue log hold onto. Re-keying a
     part that still means exactly what it meant before would break those references for
@@ -246,8 +248,8 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     parts = {p.Name: p.GlobalId for p in catlin_ifc.by_type("IfcBuildingElementPart")}
     unsplit = [(w, ly) for w in catlin_model_ro.walls for ly in w.body_layers()
                if f"{w.tag}:{ly.name}" in parts]
-    assert len(unsplit) == 55, \
-        f"expected the 61 banded layers less the 6 that split, got {len(unsplit)}"
+    assert len(unsplit) == 53, \
+        f"expected the 59 banded layers less the 6 that split, got {len(unsplit)}"
     for wall, layer in unsplit:
         assert parts[f"{wall.tag}:{layer.name}"] == derive_child_guid(
             project_uuid, "wall-parts", f"{wall.uid}/{layer.name}")

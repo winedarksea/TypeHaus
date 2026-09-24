@@ -26,15 +26,8 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `mep.wet_wall_occupancy` x3 on the basement and suite risers). Answering it means moving
   `W-S-SS2`'s guard coverage and re-authoring three riser extents — a design pass.
 
-- **Six conduit sections still bend past NEC 358.26's 360° between pull points**, reported as
-  `ADVISORY — ` by `mep.conduit_bend_total`: CD-B-DATA-MEDIA 940.6°, CD-B-KITCHEN 900°,
-  CD-B-ATTIC-RISER+CD-A-PV-EAST 540°, CD-B-GARAGE+CD-B-GAP-EV 501.6°,
-  CD-B-DATA-CHASE+CD-A-DATA-NE 450°, CD-M-DATA-PORCH 450°. `haus route --alternatives 3
-  --evaluate` found no clean re-route (2026-09-23): every alternative adds a FAIL, and
-  CD-B-KITCHEN-PROPOSED-C (900° -> 360°) passes through CD-B-DATA-STUDY at the panel (a
-  suppressed `mep.run_interference`) and runs ~17' inside SL-M-DECK. The open question is
-  where a pull box or conduit body may go (`ConduitRun.pull_points` takes vertex indices).
-  Router proposals do not carry `pull_points` yet, so a re-route drops authored boxes.
+- **Router proposals drop `pull_points`**, so re-routing a boxed raceway loses its authored
+  boxes; and conduit elbows and pull boxes are unbilled.
 
 - **Concrete spec UNKNOWNs (8) wait on the mix submittal and a soil test:** chloride x4
   (ASTM C1218), ASR x2 (the aggregate's C1293/C1260 result plus a C1778 structure class), SCM
@@ -52,9 +45,10 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     edges, so a 1 1/2" post now oversails its stringer's outer face by 3/4". Moving both 3/4"
     in (`params/sunken_garden.py` `PORCH_STAIR_RAILS`) re-centres them; clear width ~33" ->
     31 1/2", still over the 27" minimum.
-  - `joints/hung.py`'s `hung_connections` has no axis test for a beam carrier: ST-G-SERVICE's
-    two stringers run PARALLEL to `BM-BW-FC`/`-FE` and each bills an LSSR because its head is
-    inside the 6" end gap. A hanger needs a crossing member.
+  - `ST-G-SERVICE`'s stringer heads bill 2 LSSR on `FS-BW-GARAGE`'s north-edge 2x8, and no
+    catalogued LSSR row suits it: the 2x12 heads hang 4 1/2" below the 2x8, and the 36" flight
+    is wider than the ~31" landing framing (one stringer lands 3" past `BM-BW-FE`). Needs a
+    full-width carrier or a stair-stringer connector (LSC class).
 
 ### From the 2026-09-10 `plans/notes.md` triage
 
@@ -129,21 +123,12 @@ with every suppression lifted.
   - `haus route --run PR-B-CW-TRUNK` refuses before searching: its first vertex is the
     service entrance, and no run feeds it. The trunk was re-routed by hand under the
     `FO-M-ERV-OA` trimmer packs (TJ-9015 refuses the bore: point load, below the middle third).
-  - `cli/cmd_route.py` is 605 lines, over the 500-line rule.
+  - `cli/cmd_route.py` is 571 lines, over the 500-line rule.
 
 ### Structural/framing residuals
 
-- **The court/sump overflow is not one invert, and it is an air path.** `FD-SG-OVERFLOW`
-  (catlin, moved to W1's west heel 2026-09-23) reaches `SM-B-RADON` only through the house
-  footing tile, 3-4" above its -127 7/16" lip, so relief surcharges that tile first; and its
-  stone trench joins the sub-slab radon stone to the court's, which opens at `AD-SG-COURT`'s
-  grate — an outdoor-air short-circuit of the passive stack. Owner accepts both for now. The
-  fix is one dedicated solid pipe from the pit at -127 7/16" to the court stone, with a water
-  seal (dip tube) at the pit.
-- **`FT-B-S1..S4` bear on 2" of 40 psi XPS (`FOOTING_FPSF_20`), and the owner rejects XPS
-  under a footing** (creep under permanent load, 2026-09-23 Form-A-Drain review). Decide
-  whether these four go to the stone bed like every other house strip, and what then holds
-  their R403.3 frost protection.
+- **`FS-BW-GARAGE`'s rims sit inside `BM-BW-FC`/`-FE`**: the landing bills rim lumber that
+  stands in the carrier beams' own volume (phantom lumber).
 - **Four matchers share one arithmetic but still answer at three tolerances.**
   `platform._collinear_overlap`, `stacking._axis_match`, `construction_geometry._stack_overlap`
   and `layout_lines._collinear` all route through `layout_lines.collinear_overlap` since

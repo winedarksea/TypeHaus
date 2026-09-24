@@ -88,10 +88,10 @@ GARDEN_UNDERDRAIN = FrenchDrain(
 
 # ** THE COURT'S AREA DRAIN (2026-09-22). ** A frozen putting-green field takes no snowmelt,
 # so the paved rim needs its own way into the stone. A 12" grate in SL-SG-FLOOR just north of
-# W-SG-ARCH, under the balcony overhang (the spot that ices last), 2'-0" west of the x=18'
-# overflow line and 1" clear of the beam's north face; a solid 4" riser drops through the
-# 12" strip of FB-SG-ARCH's bed north of the beam and lets go at SOAKAWAY_TOP, -163 7/16",
-# 12" below the frost line. Passive: no heat trace. The court has no modelled fall to it,
+# W-SG-ARCH, under the balcony overhang (the spot that ices last), at x=20' (2'-0" east of
+# FD-SG-FIELD, 13'-0" from FD-SG-OVERFLOW) and 1" clear of the beam's north face; its basin
+# voids the slab. A solid 4" riser drops through the 12" strip of FB-SG-ARCH's bed north of
+# the beam and lets go at SOAKAWAY_TOP, -163 7/16", 12" below the frost line. Passive: no heat trace. The court has no modelled fall to it,
 # and the basin can ice — both recorded in DESIGN-LOG, not solved.
 #
 # `catchment` is the open court south of the balcony's front edge — the surface a melt
@@ -100,7 +100,7 @@ _GRATE_IN = 12.0
 _AD_Y_FT = ARCH_AXIS_Y_FT + 0.5 + (1.0 + _GRATE_IN / 2.0) / 12.0   # beam face + 1" + half
 COURT_AREA_DRAIN = AreaDrain(
     uid="SGAD01AAAA", tag="AD-SG-COURT",
-    position=pt(ft(FIELD_X_MID_FT - 2.0), ft(_AD_Y_FT)),
+    position=pt(ft(FIELD_X_MID_FT + 2.0), ft(_AD_Y_FT)),
     grate_size=inch(_GRATE_IN), basin_depth=inch(12),
     outlet_diameter=inch(4), outlet_invert=SOAKAWAY_TOP,
     host_ref="SL-SG-FLOOR", discharge_ref="FB-SG-ARCH",
@@ -122,12 +122,12 @@ COURT_AREA_DRAIN = AreaDrain(
 # the leg is a short level trench from inside that stone, 2'-0" west of the wall axis on the
 # footing's heel, across the joint into FB-B-S1's bedding. Almost no digging beyond the bed.
 #
-# ** Its invert is AT the field profile's underside, -127 7/16". ** Storage in a soakaway is
-# only the volume beneath its inlet, so the stone must fill and SPILL — never back up into the
-# field's gravel. The house end is NOT at that level: FB-B-S1's stone bottoms at -124 7/16" and
-# the pit takes its tile at -123 7/16", so either way the water passes through the house
-# footing tile 3-4" above this invert. A true one-invert tie would be a dedicated pipe from
-# the pit (plans/TODO.md). The trench's stone also joins the sub-slab radon stone to the
+# ** -127 7/16" (the field profile's underside) is the COURT's lip; the PIT relieves at
+# -123 7/16". ** The court's stone fills and spills here, never backing up into the field's
+# gravel. The house end is higher: FB-B-S1's stone bottoms at -124 7/16" and SM-B-RADON takes
+# its tile at -123 7/16", so the house footing tile surcharges 3-4" over this invert before
+# the pit relieves. A true one-invert tie would be a dedicated pipe from the pit
+# (plans/TODO.md). The trench's stone also joins the sub-slab radon stone to the
 # court's, which opens at AD-SG-COURT's grate — logged there too.
 _HOUSE_BED_FACE_Y_FT = -4.0 / 12.0   # FB-B-S1/S2's south face, measured
 _OVERFLOW_X_FT = WALL_W_AXIS_X_FT - 2.0

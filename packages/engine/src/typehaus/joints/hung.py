@@ -44,6 +44,8 @@ class CarryingElement:
     z1_end_m: float | None = None
     #: The ``FloorSystem`` tag of a floor-opening header/trimmer carrier, else ``""``.
     floor: str = ""
+    #: A deck joist or rim: it carries stringer heads only.
+    stair_head: bool = False
 
     def band_at(self, point) -> tuple[float, float]:
         """``(soffit, top)`` at plan ``point`` along this carrier."""
@@ -101,6 +103,13 @@ def _member_carriers(model: ResolvedModel, rules: HangerDetectionRules) -> list:
         for floor in model.floors for member in floor.members
         if member.category in rules.floor_opening_carrier_categories
     )
+    carriers.extend(
+        CarryingElement(tag=f"{member.parent_uid}:{member.child_key}", p0=member.p0,
+                        p1=member.p1, z0_m=member.z0_m, z1_m=member.z1_m,
+                        category=member.category, stair_head=True)
+        for floor in model.floors for member in floor.members
+        if member.category in rules.stair_head_carrier_categories
+    )
     for solid in model.solids:
         if solid.category not in rules.carrier_solid_categories:
             continue
@@ -141,6 +150,7 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
     # A floor-opening header hangs; a wall-opening header of the same category does not.
     opening_hangable = {id(member) for floor in model.floors for member in floor.members
                         if member.category in rules.floor_opening_hangable_categories}
+    through_opening = _stairs_through_openings(model)
     found: list = []
     for member in model.all_members():
         if (member.category not in rules.hangable_member_categories
@@ -148,15 +158,23 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
             continue
         member_key = f"{member.parent_uid}:{member.child_key}"
         member_floor = floor_of.get(id(member), "")
-        member_axis = axis_of(member.p0, member.p1)
         sloped = member.z0_end_m is not None or member.z1_end_m is not None
         for point, bottom_z, top_z in _member_ends(member):
             best = None
             for carrier in carriers:
                 if carrier.tag == member_key:
                     continue
+                # A deck joist or rim carries a stringer head, and only for a flight landing
+                # on a deck edge: one arriving through a floor opening is the stair's detail.
+                if carrier.stair_head and (
+                        member.category not in rules.stair_head_hung_categories
+                        or member.parent_uid in through_opening):
+                    continue
                 distance = distance_point_to_segment(point, carrier.p0, carrier.p1)
                 if distance > gap_tolerance_m:
+                    continue
+                # A member running alongside a carrier is blocked or nailed to it, never hung.
+                if _parallel(member, carrier, rules.parallel_reject_deg):
                     continue
                 # A floor-opening carrier takes only its own deck's joists and headers framing
                 # INTO it — a stringer head is the stair's detail, and a joist or rim running
@@ -164,7 +182,6 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                 if carrier.floor and (
                         member_floor != carrier.floor
                         or member.category not in rules.floor_opening_hung_categories
-                        or axis_of(carrier.p0, carrier.p1) == member_axis
                         or _end_nailed(member, rules)):
                     continue
                 # Bearing on top of the carrier is not a hanger; hanging means the member's
@@ -193,6 +210,26 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                 axis=axis_of(carrier.p0, carrier.p1),
                 member_floor=member_floor))
     return found
+
+
+def _stairs_through_openings(model: ResolvedModel) -> set[str]:
+    """Uids of the stairs authored through a ``FloorOpening``."""
+    if model.plan is None:
+        return set()
+    return {stair.uid for stair in model.stairs
+            if getattr(model.plan.by_tag(stair.tag), "floor_opening", None)}
+
+
+def _parallel(member, carrier: CarryingElement, reject_deg: float) -> bool:
+    """The two plan lines within ``reject_deg`` of each other. A zero-length line has no
+    direction and is never parallel."""
+    mx, my = member.p1[0] - member.p0[0], member.p1[1] - member.p0[1]
+    cx, cy = carrier.p1[0] - carrier.p0[0], carrier.p1[1] - carrier.p0[1]
+    lengths = math.hypot(mx, my) * math.hypot(cx, cy)
+    if lengths < 1e-12:
+        return False
+    cos_angle = min(abs(mx * cx + my * cy) / lengths, 1.0)
+    return math.degrees(math.acos(cos_angle)) < reject_deg
 
 
 def _end_nailed(member, rules: HangerDetectionRules) -> bool:

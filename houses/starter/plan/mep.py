@@ -21,13 +21,15 @@ from typehaus import (
 
 # The collection point (subpart 3/4.E). It sits in the north-west corner of the floor,
 # under the upper storey's landing, so the pipe above it rises inside a closet corner
-# instead of through the middle of the room.
+# instead of through the middle of the room. y=16'-8" puts the vent's exit through W-204
+# between two studs: at y=16'-0" it bored stud-003, and a 3" pipe's 3.50" OD is more than
+# R602.6's 60% of a 2x6.
 #
 # The starter models no foundation yet, so the pit names no `host_ref`: add one pointing
 # at your slab when you author it. `sealed_cover=True` is what subpart 4.E grades — an
 # open pit vents the soil gas straight back into the house.
 SUMP = [
-    Sump(uid="Q2CDVAATY2", tag="SM-RADON", position=pt(ft(1), ft(16)),
+    Sump(uid="Q2CDVAATY2", tag="SM-RADON", position=pt(ft(1), ft(16, 8)),
          diameter=inch(12), depth=inch(18),
          sealed_cover=True, radon_vent=True, vent_ref="VR-RADON"),
 ]
@@ -45,7 +47,7 @@ SUMP = [
 # every window, so the system earns its clearance vertically.
 RISER = [
     VentRun(uid="BAMTTS248T", tag="VR-RADON", systems=(PipeSystem.RADON,), diameter=inch(3),
-            chase_position=pt(ft(1), ft(16)), start_elevation=ft(-2),
+            chase_position=pt(ft(1), ft(16, 8)), start_elevation=ft(-2),
             exit_elevation=ft(16), exit_offset=pt(ft(-2), ft(0)),
             roof_termination_elevation=ft(21),
             wall_ref="W-204", attachment="standing_seam_clamp"),

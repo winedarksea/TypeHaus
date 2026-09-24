@@ -1,8 +1,9 @@
 """R316.4 — the thermal barrier over foam plastic.
 
 Foam plastic burns fast and gives off a lot of smoke doing it, so the code does not let it
-face an occupied room: R316.4 asks for 1/2" gypsum wallboard, 5/8" wood structural panel, or
-a material meeting the NFPA 275 acceptance criteria, between the foam and the interior.
+face an occupied room: R316.4 asks for 1/2" gypsum wallboard, 23/32" wood structural panel,
+or a material meeting the NFPA 275 acceptance criteria, between the foam and the interior.
+R316.6 lets a product's own listing waive that (``Material.thermal_barrier_listing``).
 
 Nothing enforced it here, and catlin has 8" of EPS deck form over its dining end whose only
 protection is a single 5/8" gypsum layer at the bottom of ``DECK_EPS_INT``. Deleting
@@ -34,13 +35,14 @@ _CODE = "R316.4"
 
 #: R316.4 verbatim: "not less than 1/2-inch gypsum wallboard".
 _MIN_GYPSUM = inch(0.5)
-#: R316.4's second named alternative, "5/8-inch wood structural panel". The model has no
+#: R316.4's second named alternative, "23/32-inch (18.2 mm) wood structural panel" (IRC 2018,
+#: the base of MN 2020; 5/8" is R302.13's floor membrane, not this). The model has no
 #: field that identifies a wood structural panel — ``struct-1-plywood``, ``osb`` and
 #: ``plywood-subfloor`` all are, and nothing on ``Material`` says so — so a sheathing layer
 #: inboard of foam produces an UNKNOWN naming it rather than a pass or a failure. Adding the
 #: datum is a smaller change than guessing at it, and guessing is how a fire rule quietly
 #: stops applying (see ``fire_separation._gypsum_grade`` on the same temptation).
-_MIN_WOOD_PANEL = inch(0.625)
+_MIN_WOOD_PANEL = inch(23.0 / 32.0)
 #: Concrete and masonry pass R316.4 through its NFPA 275 clause without argument — the test
 #: is a 250°F rise over the barrier in 15 minutes plus integrity, and an inch of concrete is
 #: not close to the line. Recognised by DENSITY rather than by tag, which is the only
@@ -125,10 +127,14 @@ def _barrier_verdict(ctx: CheckContext,
             thin.append(f"only {layer.thickness.fmt()} of {material.tag} ('{layer.name}')")
             continue
         if layer.function is LayerFunction.SHEATHING:
+            if layer.thickness.meters + 1e-9 < _MIN_WOOD_PANEL.meters:
+                why = ("under the 23/32\" R316.4 names for a wood structural panel, so only "
+                       "an NFPA 275 listing could qualify it")
+            else:
+                why = ("R316.4 also admits 23/32\" wood structural panel, and no field on "
+                       "Material says whether this is one")
             unclassified.append(
-                f"'{layer.name}' is {layer.thickness.fmt()} of {material.tag}; R316.4 also "
-                "admits 5/8\" wood structural panel, and no field on Material says whether "
-                "this is one")
+                f"'{layer.name}' is {layer.thickness.fmt()} of {material.tag}; {why}")
             continue
         unclassified.append(f"'{layer.name}' ({material.tag}) is not identified as an "
                             "approved thermal barrier")
@@ -199,6 +205,12 @@ def foam_plastic_thermal_barrier(ctx: CheckContext) -> list[Finding]:
             if foam is None:
                 continue
             material, label, thickness = foam
+            if material.thermal_barrier_listing:
+                out.append(_pass(_CID, f"{tag}: {thickness.fmt()} of {material.tag} "
+                                       f"('{label}') needs no thermal barrier under its "
+                                       f"R316.6 approval: {material.thermal_barrier_listing}",
+                                 _CODE))
+                break
             verdict, phrase = _barrier_verdict(ctx, list(reversed(layers[:index])))
             if verdict == "pass":
                 out.append(_pass(_CID, f"{tag}: {thickness.fmt()} of "
@@ -207,8 +219,8 @@ def foam_plastic_thermal_barrier(ctx: CheckContext) -> list[Finding]:
                 out.append(_fail(_CID, f"{tag} puts {thickness.fmt()} of "
                                        f"{material.tag} ('{label}') toward the "
                                        f"interior with {phrase}; R316.4 requires 1/2\" "
-                                       "gypsum, 5/8\" wood structural panel or an NFPA "
-                                       "275 barrier", (tag,), _CODE))
+                                       "gypsum, 23/32\" wood structural panel or an "
+                                       "NFPA 275 barrier", (tag,), _CODE))
             else:
                 out.append(_unknown(_CID, f"{tag}: {phrase}", (tag,), _CODE))
             break

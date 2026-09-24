@@ -233,7 +233,7 @@ column   PIER_CONCRETE_12                       1.51 cy
 column   SUNKEN_GARDEN_COLUMN_12                1.53
 footing  COURT_FOOTING_12                      19.09
 footing  FOOTING_20                             6.35
-footing  FOOTING_FPSF_20                        1.48
+footing  FOOTING_EXPOSED_20                     1.48
 pad      PIER_BASE_12                           1.06
 slab     DECK_EPS_INT                          18.37
 slab     ENTRY_STEP_TIER                        1.90

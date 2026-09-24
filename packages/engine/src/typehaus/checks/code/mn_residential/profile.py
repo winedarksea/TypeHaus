@@ -405,8 +405,11 @@ MN_2020 = JurisdictionProfile(
         # The finding prose in `checks/mep/plumbing_concrete.py`, `resolve/mep_sleeves.py`
         # and the catlin plan files was swept to match on 2026-09-19; nothing in the
         # plumbing band says "IRC P2604" any more.
+        # `pit_footing_clearance` is 314.1's influence line applied to the hole a sump pit
+        # is dug in: the same excavation question, asked of a pit instead of a trench.
         PermitItemSpec("Pipe below and beside concrete",
-                       ("mep.under_slab_burial", "mep.footing_clearance"),
+                       ("mep.under_slab_burial", "mep.footing_clearance",
+                        "mep.pit_footing_clearance"),
                        ("MN Plumbing Code (ch. 4714) 314.1",
                         "MN Plumbing Code (ch. 4714) 314.4")),
         PermitItemSpec("Building sewer invert at the exit sleeve",

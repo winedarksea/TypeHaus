@@ -140,10 +140,12 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     assert "SL-SG-STOOP" not in poured, "the stoop was retired 2026-09-05"
     assert poured["SL-SG-FIELD"] == '18"'
     # SL-BW-TIER1..4 are the four cast terrace tiers that replaced SL-G-STEP-0 on 2026-09-10,
-    # and 6-3/4" is a real thickness rather than a rounded one: it is the 6.8" rise itself,
-    # since each tier is wedding-caked fully onto the one below (params/breezeway.py states
-    # the case, and plan/assemblies.py::ENTRY_STEP_TIER says why it is not frost-founded).
-    assert all(thickness == '6-3/4"' for tag, thickness in poured.items()
+    # and each is the rise itself, since each tier is wedding-caked fully onto the one below
+    # (params/breezeway.py states the case, and plan/assemblies.py::ENTRY_STEP_TIER says why
+    # it is not frost-founded). 6.6" since 2026-09-23, when the flight began springing from
+    # the entry walk 1" over grade: 33" / 5 risers, which the schedule's eighths print as
+    # 6-5/8" (it was 34" / 5 = 6.8", printed 6-3/4").
+    assert all(thickness == '6-5/8"' for tag, thickness in poured.items()
                if tag.startswith("SL-BW-TIER")), poured
     assert all(thickness == '3-1/2"' for tag, thickness in poured.items()
                if not tag.startswith(("SL-G-STEP-", "SL-BW-TIER", "SL-SG-FROST-",
@@ -205,8 +207,8 @@ def test_s100_names_its_missing_inputs_instead_of_inventing_them(catlin_model):
 
 
 def test_s100_schedules_the_sill_anchorage_it_already_derived(catlin_model):
-    from typehaus.takeoff.anchors import mudsill_anchor_rows
     from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
+    from typehaus.takeoff.anchors import mudsill_anchor_rows
 
     table = anchorage_schedule(catlin_model)
     assert table.columns == ("MARK", "TYPE", "PART", "SPACING", "QTY", "WALLS")

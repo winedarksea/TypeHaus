@@ -2066,9 +2066,9 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     """W-B-BRICK's load and its cold both leave the house footing alone. The FACE matters.
 
     The old detail put a plinth (FT-B-BRICK) straight onto FT-B-S2/S3's projecting toe and
-    relied on two annotations to break it — `FOOTING_FPSF_20`'s `xps-bearing` layer, which
-    billed 16 SF of foam it never placed, and `FB-B-BRICK.cast_foam_in_aggregate`, a bool
-    with no thickness at all beside a 2" undercut that billed as washed stone. Nothing in
+    relied on two annotations to break it — the since-retired `FOOTING_FPSF_20`'s
+    `xps-bearing` layer, which billed 16 SF of foam it never placed, and
+    `FB-B-BRICK.cast_foam_in_aggregate`, a bool with no thickness at all beside a 2" undercut that billed as washed stone. Nothing in
     the engine grades a thermal break for continuity, so the whole condition sat at 0 FAIL
     with 129 SF of brick, exposed on both faces in an open court, feeding it.
 

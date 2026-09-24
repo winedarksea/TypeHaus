@@ -565,8 +565,8 @@ WALLS = [
     # The east 8'-10" of the old W-B-S3, split off 4" west of the court's east face
     # (see N-B-S3 — the split used to sit on the wall AXIS, half a wall inside the soil).
     # Buried like W-B-S1, so it keeps the 7'-row bar — and it must join
-    # ``params/foundations._FROST_FORMED`` with it, or FT-B-S4 loses the insulated
-    # FOOTING_FPSF_20 form the garden floor's low adjacent grade is the reason for.
+    # ``params/foundations._FROST_FORMED`` with it, or FT-B-S4 loses FOOTING_EXPOSED_20
+    # (the F3 exposed mix) the garden floor's low adjacent grade is the reason for.
     FoundationWall(uid="72HXFS8M11", tag="W-B-S4", start_node="N-B-S3",
                    end_node="N-B-SE", assembly="BASEMENT_8",
                    alignment=face("concrete-ext"),
@@ -1396,7 +1396,7 @@ ROOMS = [
              Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
                    function=LayerFunction.FURRING,
                    framing=FramingSpec(member="1x4", direction="horizontal")),
-             Layer(name="foil-polyiso", material_ref="polyiso-foil", thickness=inch(2.0),
+             Layer(name="foil-polyiso", material_ref="polyiso-foil-thermax", thickness=inch(2.0),
                    function=LayerFunction.INSULATION,
                    control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR}),
              # ** THE SERVICE CAVITY, NEW 2026-09-07, AND IT IS THE OUTERMOST LAYER FOR A

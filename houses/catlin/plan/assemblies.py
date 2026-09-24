@@ -60,8 +60,8 @@ from library import (
 # ** F0 ON THE BURIED MIX IS EARNED, NOT ASSUMED. ** ACI's F categories grade freeze-thaw,
 # and a strip footing bearing below Ramsey County's 42" frost depth does not freeze. The
 # three sunken-garden-face strips are the exception that proves it — they bottom out 8"
-# below the garden floor and are frost-protected by a form and wings under IRC R403.3
-# (FOOTING_FPSF_20 below), which is a detail precisely because the concrete there IS in the
+# below the garden floor and are frost-protected by wings under IRC R403.3
+# (FOOTING_EXPOSED_20 below), which is a detail precisely because the concrete there IS in the
 # freezing zone. ``exposure_s`` is left UNSET on all three: nobody has run a soil sulfate
 # test, and "S0" would be an assumption wearing a measurement's clothes.
 # ** 5,000 psi, AND THAT SETTLES A STANDING OPEN QUESTION. ** IRC Table R402.2's basement-
@@ -1863,7 +1863,7 @@ GARAGE_ICF_CORE = inch(6.0)
 # with, banded from grade up — `code.R316_4` asked for it. The
 # ICF's interior EPS stood bare inside the garage from the slab (poured at grade) to the
 # stem top 1'-10" above it, ~176 SF of exposed foam plastic facing an occupied space with
-# no thermal barrier over it. R316.4 wants 1/2" gypsum, 5/8" wood structural panel or an
+# no thermal barrier over it. R316.4 wants 1/2" gypsum, 23/32" wood structural panel or an
 # NFPA 275 barrier, and the garage is boarded already (GARAGE_WALL_2X6's `default_lining`),
 # so continuing that board down the stem is the detail rather than a new one.
 #
@@ -2009,23 +2009,7 @@ SG_FROST_WING_XPS2 = Assembly(
     source="IRC R403.3 Figure R403.3(3) horizontal wing at a corner, Table R403.3(1) at AFI 2500: R-4.9 required over dimension C = 40\"; 2\" XPS at 40 psi is R-10",
 )
 
-# The footings the wings protect, bearing on load-rated insulation rather than on soil.
-#
-# IRC R403.3 sends a frost-protected shallow foundation to **ASCE 32**, and ASCE 32 is where
-# insulation *beneath* a footing comes from — it is the Scandinavian FPSF detail, not an
-# improvisation. The arithmetic is the part worth writing down: a 20" strip under a
-# residential basement wall delivers on the order of 1,500-2,000 psf to the bearing plane,
-# i.e. **10-14 psi**, against 40 psi XPS. The foam is loaded to roughly a third of its rated
-# compressive strength at 10% deformation, and creep at that ratio is what the rating exists
-# to bound. Same board, same grade, as the 3" under SLAB_FLOOR.
-#
-# The wall bears on concrete, not on foam: the insulation is the bottom layer and the top of
-# the strip is the pour. The vertical faces of the form are insulated too in the built
-# detail — that is what makes it an insulated *form* — and this stack cannot say so, because
-# a ``Footing``'s layers run depth-wise through a horizontal element and there is no sideways
-# axis in them. The wings (SG_FROST_WING_XPS1/2) are the horizontal leg and the basement
-# wall's own 4" XPS is the vertical one, so the two legs Table R403.3(1) actually grades are
-# both modelled; the form's side foam is detail, not a graded quantity.
+# The footings the wings protect are plain strips on their stone bedding (FOOTING_EXPOSED_20); no foam under a footing (owner: creep).
 # The 20x8 strip under every house and garage wall that is NOT one of the four
 # sunken-garden-face runs. It carried no assembly at all until 2026-09-03, which meant its
 # pour had nowhere to state a mix and ``structural_solids`` grouped it with every other
@@ -2277,15 +2261,14 @@ PIER_BASE_12 = Assembly(
     source="the 12\" plain bases under the round piers — the sunken garden's two belled footings and the four breezeway pads, all bearing at or below frost depth (IRC R403.1.4); unreinforced by design and graded as plain concrete under ACI 318-19 §14.1.4, see notes/sunken_garden_piers.md §5",
 )
 
-FOOTING_FPSF_20 = Assembly(
-    tag="FOOTING_FPSF_20",
+# FOOTING_20's section on the EXPOSED mix (F3): these strips sit inside the court's frost zone.
+FOOTING_EXPOSED_20 = Assembly(
+    tag="FOOTING_EXPOSED_20",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
-        Layer(name="xps-bearing", material_ref="xps", thickness=inch(2.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
-    source="frost-protected shallow footing at the sunken-garden face: 8\" cast strip bearing on 2\" XPS at 40 psi (IRC R403.3 -> ASCE 32; ~10-14 psi imposed against a 40 psi board), with the horizontal wings SG_FROST_WING_XPS1/2 under the garden slab beside it",
+    source="the 20\" x 8\" plain strip under the four sunken-garden-face walls (FT-B-S1..S4), on the 7\" washed-stone bedding; frost-protected under IRC R403.3 by the horizontal wings SG_FROST_WING_XPS1/2 under the garden slab, EXPOSED_MIX because the strip is inside the frost zone",
 )
 
 GARAGE_WALL_2X6 = Assembly(
@@ -2379,7 +2362,7 @@ GARAGE_WALL_2X6 = Assembly(
 # **40 psi here, where the basement takes 25.** This is the one slab in the house that
 # carries VEHICLE wheel loads, and a loaded wheel is a small contact patch, not a
 # distributed floor load. 40 psi (ASTM C578 Type VI, e.g. Foamular 400) is the same
-# slab-bearing grade SG_FROST_WING_XPS1/2 and FOOTING_FPSF_20 carry, so it is a grade
+# slab-bearing grade SG_FROST_WING_XPS1/2 carry, so it is a grade
 # already on the order. See SLAB_FLOOR above for why the psi lives in `source=`:
 # there is one `xps` material tag with no compressive field, and prices.toml keys XPS on
 # THICKNESS alone — so a 40 psi board and a 25 psi board cost the same in this estimate and
@@ -2893,7 +2876,7 @@ _SAUNA_LINER = (
           function=LayerFunction.FURRING,
           framing=FramingSpec(member="1x4", direction="horizontal"),
           extent=_SAUNA_CEILING),
-    Layer(name="foil-polyiso", material_ref="polyiso-foil", thickness=inch(2.0),
+    Layer(name="foil-polyiso", material_ref="polyiso-foil-thermax", thickness=inch(2.0),
           function=LayerFunction.INSULATION,
           control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR},
           extent=_SAUNA_CEILING),
@@ -3343,6 +3326,20 @@ MATERIALS = [
         hatch="concrete",
         color="#9a958a",
         source="MnDOT Spec 3138 Class 5 aggregate base",
+    ),
+    # The sauna liner's foil polyiso, named (2026-09-24): the IRC has no sauna exemption from
+    # R316.4, so the pass is R316.6 specific approval — this board's own evaluation report.
+    # Numbers mirror the library's `polyiso-foil` (the published R-6.5/in is not claimed).
+    Material(
+        tag="polyiso-foil-thermax",
+        name="DuPont Thermax Sheathing, foil-faced polyiso",
+        r_per_inch=6.0,
+        perm_rating=0.03,
+        hatch="rigid",
+        color="#d9d2a8",
+        foam_plastic=True,
+        thermal_barrier_listing="Intertek CCRR-0435 (rev. 2026-06-19) §5.5: Thermax boards may be installed without the IRC R316.4 / IBC 2603.4 thermal barrier; §5.1: max 4 in., any wall or floor/ceiling assembly, any type of structure, interior fasteners max 24 in. o.c. across / 48 in. along the board (NFPA 286, UL 1715)",
+        source="DuPont Thermax Sheathing PIS 43-D100094 (2025-07-25): R-13 at 2 in., 0.03 perm, 1 mil aluminum both faces; max use temperature 250 F per Thermax Heavy Duty PIS 43-D100093",
     ),
     # --- THE 2026-09-06 INTERIOR SELECTIONS PASS -----------------------------------------
     #
@@ -4856,7 +4853,7 @@ ASSEMBLIES = [
     DRIVEWAY_FRC_CLASS5,
     SG_FROST_WING_XPS1,
     SG_FROST_WING_XPS2,
-    FOOTING_FPSF_20,
+    FOOTING_EXPOSED_20,
     FOOTING_20,
     FOOTING_STONE_20,
     COURT_FOOTING_12,

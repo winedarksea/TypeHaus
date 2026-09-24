@@ -163,6 +163,11 @@ class Material(HausModel):
     # False — R316 does not reach them, and marking them would demand a thermal barrier
     # over every batt in the house.
     foam_plastic: bool = False
+    # The R316.6 specific approval that lets THIS foam product stand without the R316.4
+    # thermal barrier: report number, section and its limits, quoted (e.g. "Intertek
+    # CCRR-0435 §5.5 ... max 4 in."). ``code.R316_4`` passes the layer and prints it. A
+    # product fact, so house-local only — never set on a generic library entry.
+    thermal_barrier_listing: str | None = None
     # "Air-impermeable insulation" as IRC R806.5 / R202 uses the phrase: an insulation
     # tested at <= 0.02 L/s.m2 at 75 Pa by ASTM E2178 or E283. Closed-cell spray foam and
     # rigid board qualify; every fibre insulation does not, at any density. It is authored
