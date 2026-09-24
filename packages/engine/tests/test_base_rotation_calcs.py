@@ -32,10 +32,11 @@ _WORKED = {
     # ** RE-WORKED 2026-09-23 (note addendum 2026-09-23) ** with each deck beam on its own
     # half-bay strip: the landing's deck share fell 17.03 -> 9.93 ft2 (W/E), 9.60 (GW/GE).
     # Seat beams from the column's east face, 2026-09-23 (addendum 2026-09-23c): 3.3542' long.
-    "PT-BW-W": (1.1013, 1.3975, Status.INCOMPLETE),
-    "PT-BW-E": (1.0260, 1.0797, Status.OK),
-    "PT-BW-GW": (1.4052, None, Status.OVER),
-    "PT-BW-GE": (1.0684, 1.3280, Status.INCOMPLETE),
+    # Carriers 4.5" shorter at the landing header, 2026-09-24 (addendum 2026-09-24).
+    "PT-BW-W": (1.1011, 1.3967, Status.INCOMPLETE),
+    "PT-BW-E": (1.0259, 1.0792, Status.OK),
+    "PT-BW-GW": (1.4043, None, Status.OVER),
+    "PT-BW-GE": (1.0678, 1.3246, Status.INCOMPLETE),
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->
     # 4,855 lb (front), 4,877 (rear); wall-top k_θ unchanged. Front R 6.616 / 6.242.
     # 3" lower on 2026-09-23 (addendum 2026-09-23b): L 105.125", P_u 4,820.0; R 6.412 / 6.049.

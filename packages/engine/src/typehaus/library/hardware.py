@@ -76,6 +76,7 @@ from typehaus.hardware.catalog import (
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_SNAP_LOCK_SEAM_CLAMP,
     ROLE_SNOW_RETENTION,
+    ROLE_STAIR_STRINGER_CONNECTOR,
     ROLE_STANDING_SEAM_CLAMP,
     ROLE_STUD_PLATE_TIE,
     ROLE_THROUGH_PANEL_PIPE_STRAP,
@@ -293,6 +294,29 @@ LSSR_SLOPED_HANGER = StructuralHardware(
                  "inside that range** — the 0.85 above 45 degrees belongs to the LRUZ, and "
                  "CSG-TJUS25 p. 3's sloped-joist reductions belong to ITS/IUS/MIT/MIU/BA/"
                  "HB/WP/HU, hangers with no sloped seat. 6:12 is 26.57 degrees",
+    ),
+)
+
+LSCZ_STRINGER_CONNECTOR = StructuralHardware(
+    tag="simpson-lscz-adjustable-stringer-connector",
+    name="LSCZ adjustable stair-stringer connector (ZMAX)",
+    role=ROLE_STAIR_STRINGER_CONNECTOR,
+    manufacturer=_SIMPSON,
+    model="LSCZ",
+    source="Simpson Strong-Tie LSC adjustable stringer connector, 18 ga, field-slopeable to "
+           "any common stringer pitch; LSCZ is the ZMAX finish (strongtie.com/lsc)",
+    # The STANDARD row: footnote 4 puts an LSC at the end of a rim over support framing
+    # there, and a stringer head at a header's end over its post is that case.
+    allowable=AllowableLoads(
+        download_lb=755.0,
+        load_duration_factor=1.0,
+        species="DF/SP (KDAT southern pine); SPF/HF is 650 lbf on the same row",
+        fasteners="(8) 0.148\" x 1-1/2\" into the rim board, (8) 0.148\" x 1-1/2\" into the "
+                  "stringer wide face, (1) 0.148\" x 1-1/2\" into the stringer narrow face "
+                  "(second-to-last hole)",
+        citation="Simpson Strong-Tie C-C-2024 p. 308, LSCZ/LSCSS, Standard installation, "
+                 "DF/SP Floor (100) 755 lbf, Snow (115) 755 lbf. No uplift or lateral is "
+                 "published for the part",
     ),
 )
 
@@ -2239,6 +2263,7 @@ STRUCTURAL_HARDWARE: tuple = (
     SDPW19_DEFLECTOR_SCREW,
     FASTENMASTER_TIMBERLOK,
     LSSR_SLOPED_HANGER,
+    LSCZ_STRINGER_CONNECTOR,
     LSTA24_RIDGE_STRAP,
     LUS_FACE_MOUNT_HANGER,
     LUSZ_FACE_MOUNT_HANGER,

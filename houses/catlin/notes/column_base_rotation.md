@@ -393,3 +393,22 @@ Worked, `PT-BW-W`: `D = 9.558 × 10 + 400 + 902.6 + 56.5 + 98.3 = 1,553.0`, `L =
 `Pc,rigid = π² × 1.3033e9 / (2.1 × 91.94)² = 345,084`; at 1.0", `R = 4.6047e6 × 91.94 /
 1.3033e9 = 0.3248`, `Pc,flex = 345,084 / (1 + 3/0.3248) = 33,713`, `δ = 1 / (1 − 7,192.1 /
 25,285) = 1.3975`. No verdict moves: GW is still over 1.4 at the stiff end (rows history).
+
+## Addendum 2026-09-24 — the carriers stop at the landing header
+
+`BM-BW-FC`/`-FE` now hang in `BM-BW-LAND-HDR`'s south face, so each is 4.5" shorter. Each
+floor beam's strip loses `0.375 × 1.164 = 0.4365` ft², and its share to each of the six piers
+goes `2 × 12.165 / 6 = 4.055` → `2 × 11.7285 / 6 = 3.9095`. The tributary is **9.412** (W/E) and
+**9.098** (GW/GE). k_θ and L are unchanged; EI moves only through β.
+
+| column | D | P_u | β | δ 0.25" | δ 1.0" |
+|---|---:|---:|---:|---:|---:|
+| `PT-BW-W` | 1,551.5 | 7,181.0 | 0.2593 | 1.1011 | 1.3967 |
+| `PT-BW-E` | 996.7 | 1,798.4 | 0.6651 | 1.0259 | 1.0792 |
+| `PT-BW-GW` | 1,239.7 | 6,786.7 | 0.2192 | 1.4043 | mechanism |
+| `PT-BW-GE` | 684.9 | 1,404.2 | 0.5853 | 1.0678 | 1.3246 |
+
+Worked, `PT-BW-W`: `D = 9.412 × 10 + 400 + 902.6 + 56.5 + 98.3 = 1,551.5`, `L = 9.412 × 40 +
+40 × 73.7 = 3,324.5`, `P_u = 7,181.0`, `EI = 1.6410e9 / 1.2593 = 1.3031e9`, `Pc,rigid =
+345,029`; at 1.0", `R = 0.32488`, `Pc,flex = 345,029 / 10.2342 = 33,713`, `δ = 1 / (1 − 7,181.0
+/ 25,285) = 1.3967`. No verdict moves.

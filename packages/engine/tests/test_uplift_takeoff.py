@@ -433,17 +433,17 @@ def test_an_authored_column_cap_stands_down_the_derived_strap(catlin_model_ro):
     Catlin billed no strap at all between the breezeway's retirement and 2026-09-10. The
     north entry brought the rule back to life, and the population splits, which is what
     makes the guard readable: BM-BW-RW lands on PT-BW-CW / PT-BW-CNW under an authored
-    CCQ46SDS2.5 cap and must NOT be strapped again, while BM-BW-FC/FE land on PT-BW-IC/IE —
-    the posts that ended the interior cantilever, with nothing authored at their tops — and
-    must be. BM-BW-RE is in neither set as of 2026-09-10: it lands on cast concrete, and a
+    CCQ46SDS2.5 cap and must NOT be strapped again, while BM-BW-LAND-HDR lands on
+    PT-BW-IC/IE — the posts that ended the interior cantilever, with nothing authored at their
+    tops — and must be (the carriers themselves hang in the header since 2026-09-24). BM-BW-RE is in neither set as of 2026-09-10: it lands on cast concrete, and a
     beam-on-WOOD-post rule has no business there.
     """
     rows = post_beam_strap_rows(catlin_model_ro, RULES)
     assert len(rows) == 1
     assert rows[0]["part_number"] == "KBS1Z"
     assert rows[0]["count"] == 2
-    assert "BM-BW-FC->PT-BW-IC" in rows[0]["basis"]
-    assert "BM-BW-FE->PT-BW-IE" in rows[0]["basis"]
+    assert "BM-BW-LAND-HDR->PT-BW-IC" in rows[0]["basis"]
+    assert "BM-BW-LAND-HDR->PT-BW-IE" in rows[0]["basis"]
     for joint in AUTHORED_POST_BEAM_JOINTS:
         beam, post = sorted(joint)
         assert f"{beam}->{post}" not in rows[0]["basis"], joint

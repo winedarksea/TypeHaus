@@ -32,6 +32,7 @@ from typehaus.hardware.catalog import (
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SCL_FACE_MOUNT_HANGER,
     ROLE_SLOPED_JOIST_HANGER,
+    ROLE_STAIR_STRINGER_CONNECTOR,
 )
 
 #: The solid category a non-embedded, non-hanger connector marker is filed under. Matches
@@ -74,6 +75,10 @@ MARKER_RULES: dict[str, MarkerRule] = {
     ROLE_SLOPED_JOIST_HANGER: MarkerRule(draw=True, along_in=1.50, across_in=0.75,
                                          half_h_in=None,
                                          category=CATEGORY_CONNECTOR_HANGER),
+    # Beside the stringer's plumb cut, as deep as the stringer head.
+    ROLE_STAIR_STRINGER_CONNECTOR: MarkerRule(draw=True, along_in=1.50, across_in=0.75,
+                                              half_h_in=None,
+                                              category=CATEGORY_CONNECTOR_HANGER),
     # An LSTA24 is two feet of strap over the peak: long, and almost nothing thick.
     ROLE_RIDGE_TIE_STRAP: MarkerRule(draw=True, along_in=12.00, across_in=0.63,
                                      half_h_in=0.25),

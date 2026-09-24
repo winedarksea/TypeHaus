@@ -3039,6 +3039,62 @@
       "node": "polyline",
       "points": [
         [
+          561.125,
+          -12.25
+        ],
+        [
+          565.625,
+          -12.25
+        ],
+        [
+          565.625,
+          -1.0
+        ],
+        [
+          561.125,
+          -1.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWB011AAAA",
+      "tag": "BM-BW-LAND-HDR"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          561.125,
+          -12.25
+        ],
+        [
+          565.625,
+          -12.25
+        ],
+        [
+          565.625,
+          -1.0
+        ],
+        [
+          561.125,
+          -1.0
+        ]
+      ],
+      "pattern": "kdat",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           419.00000000000006,
           -13.637073863636356
         ],
@@ -3680,11 +3736,11 @@
       "points": [
         [
           519.26,
-          87.375
+          87.36500000000001
         ],
         [
           624.0,
-          87.375
+          87.36500000000001
         ],
         [
           624.0,
@@ -3708,11 +3764,11 @@
       "boundary": [
         [
           519.26,
-          87.375
+          87.36500000000001
         ],
         [
           624.0,
-          87.375
+          87.36500000000001
         ],
         [
           624.0,
@@ -3723,12 +3779,12 @@
           88.0
         ]
       ],
-      "pattern": "gwb",
+      "pattern": "gwb-primer",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb"
+      "material": "gwb-primer"
     },
     {
       "space": "model",
@@ -5180,62 +5236,6 @@
         ],
         [
           554.125,
-          -1.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          564.875,
-          -8.25
-        ],
-        [
-          566.375,
-          -8.25
-        ],
-        [
-          566.375,
-          -1.0
-        ],
-        [
-          564.875,
-          -1.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWFS02AAAA",
-      "tag": "joist-0-004-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          564.875,
-          -8.25
-        ],
-        [
-          566.375,
-          -8.25
-        ],
-        [
-          566.375,
-          -1.0
-        ],
-        [
-          564.875,
           -1.0
         ]
       ],

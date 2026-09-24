@@ -26,7 +26,7 @@ from typehaus.resolve.geometry_members import member_solid
 from typehaus.source import load_plan
 from typehaus.checks import run
 from typehaus.findings import Result
-from _helpers import CATLIN as CATLIN_DIR, frames_structure
+from _helpers import CATLIN as CATLIN_DIR, catlin_params, frames_structure
 
 # Old CatlinHouseSpec contract values.
 HOUSE_SIZE_FT = 36.0
@@ -1989,7 +1989,7 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
     all. **A comment is not a guard**: the retaining top's two spot elevations carried one
     for two revisions and went stale anyway, which is why this is a test.
     """
-    from params import sunken_garden
+    sunken_garden = catlin_params("sunken_garden")
 
     # Basis 6 (2026-09-21): the four closure boards 2.5", the beam's 2" — one product
     # (ASTM C578 Type X, 15 psi), two thicknesses (free body §11i). Basis 7 (2026-09-22)
@@ -2021,7 +2021,7 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
     # `plan/storeys/basement.py` is `# haus: editable` and cannot import `params/`, so
     # SL-B-FLOOR spells out what `params/foundations.SLAB_EDGE_BREAK` holds. One board, two
     # spellings — the `_HOUSE_FOOTING_DEPTH_IN` pattern.
-    from params import foundations
+    foundations = catlin_params("foundations")
 
     edge = catlin_model.plan.by_tag("SL-B-FLOOR").perimeter_thermal_break
     assert edge.psi == pytest.approx(100.0) and not edge.modulus_estimated

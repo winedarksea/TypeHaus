@@ -997,7 +997,7 @@
 # Material only, per this section's rule: nailing a face-mount hanger to a 6x6 is framing
 # labour. ** THE ROW MUST EXIST EVEN AT A ROUGH BAND **: an unpriced part is silently dropped
 # from the takeoff, so the total FALLS and the omission reads as a saving.
-"HU28-2Z" = { low = 9, high = 16 }  # 2 ea — CN-BW-HGR-CW/-CNW
+"HU28-2Z" = { low = 9, high = 16 }  # 6 ea — CN-BW-HGR-CW/-CNW/-SCS-S/-SCS-N/-FC/-FE
 # 22 ea -> 30 on 2026-08-30: the eight balcony knee braces moved off the unrated APVKB45-6
 # onto this part, two per brace (Simpson's own instruction — "install single KBS1Z on each
 # end" — and the F1 the code report publishes is measured through that pair). Net material
@@ -1012,7 +1012,10 @@
 # it — the derived rule uses the cheaper, stronger KBS1Z strap (see houses/catlin/
 # notes/uplift_load_path.md) — so this row prices the authored one-offs only.
 "PC6Z" = { low = 14, high = 26 }  # 0 ea
-"LSSR" = { low = 12, high = 22 }  # 40 ea — 38 ridge + 2 ST-G-SERVICE stringers on FS-BW-GARAGE (2026-09-24)
+"LSSR" = { low = 12, high = 22 }  # 38 ea — the ridge; the ST-G-SERVICE stringers moved to LSCZ (2026-09-24)
+# LSCZ $2.99 each, fastenersplus.com (read 2026-09-24); the band carries the house's usual
+# contractor-carton low and a ZMAX/short-stock high.
+"LSCZ" = { low = 2.5, high = 5 }  # 2 ea — ST-G-SERVICE's stringer heads on BM-BW-LAND-HDR
 # Rafter-to-rafter over the peak, one per opposing pair — the piece the LSSR above does
 # NOT do. A 24" x 1-1/4" 20ga strap tie is $3.50-4.50 single-piece retail (Fasteners Plus /
 # Home Depot, 2026); the low end is the contractor carton this section discounts to

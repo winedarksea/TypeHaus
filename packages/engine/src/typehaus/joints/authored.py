@@ -87,7 +87,8 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
     """``(role, catalog item, part number)`` for one hung end.
 
     An authored spec for its (carrier, floor) wins and bills under its own catalog role.
-    Otherwise the derived family: LSSR sloped, LUS/LUSZ level by the carrier's treatment.
+    Otherwise the derived family: LSCZ for a stair stringer, LSSR sloped, LUS/LUSZ level by
+    the carrier's treatment.
     """
     from typehaus.hardware.catalog import (
         EXPOSURE_DRY,
@@ -95,6 +96,7 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
         ROLE_FACE_MOUNT_JOIST_HANGER,
         ROLE_SCL_FACE_MOUNT_HANGER,
         ROLE_SLOPED_JOIST_HANGER,
+        ROLE_STAIR_STRINGER_CONNECTOR,
         hardware_by_model,
         hardware_for_role,
         sized_hanger_model,
@@ -108,6 +110,9 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
             raise LookupError(f"authored hanger {authored!r} on {connection.carrier_tag} x "
                               f"{connection.member_floor} is not in the hardware catalog")
         return item.role, item, authored
+    if connection.member_category == "stringer":
+        item = hardware_for_role(ROLE_STAIR_STRINGER_CONNECTOR)
+        return ROLE_STAIR_STRINGER_CONNECTOR, item, item.model
     if connection.sloped:
         item = hardware_for_role(ROLE_SLOPED_JOIST_HANGER)
         return ROLE_SLOPED_JOIST_HANGER, item, item.model

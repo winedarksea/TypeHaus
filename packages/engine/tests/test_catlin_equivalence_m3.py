@@ -433,10 +433,10 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
     #
     # The plant room's two exterior walls carry PLANT_EXT_2X6_HUMID: the same layers
     # outboard of the studs, with a three-layer sealed liner (PVC panel / drainage strapping
-    # / Class I membrane) in place of the two-layer painted-gypsum lining. One more than the
-    # rest.
+    # / Class I membrane) in place of the two-layer painted-gypsum lining, plus R316.4's
+    # gypsum behind the membrane (2026-09-24). Two more than the rest.
     _HUMID_LINED = {"House Second Stud Wall 1", "House Second Stud Wall 4"}
-    expected = {name: 9 for name in _HUMID_LINED}
+    expected = {name: 10 for name in _HUMID_LINED}
     assert all(item.current_layer_count == expected.get(item.reference_name, 8)
                for item in exterior), [
         item.as_dict() for item in exterior

@@ -143,7 +143,7 @@ and the three assemblies that carry it:
 
 | tag | where | outboard of the liner |
 |---|---|---|
-| `PLANT_EXT_2X6_HUMID` | `W-S-S1`, `W-S-W4` | the whole `EXT_2X6` stack |
+| `PLANT_EXT_2X6_HUMID` | `W-S-S1`, `W-S-W4` | 5/8" `gwb` on the studs (R316.4's thermal barrier over the ccSPF, 2026-09-24), then the whole `EXT_2X6` stack |
 | `PLANT_INT_2X6_BRG_HUMID` | `W-S-C1` (x=18' bearing line) | 2x6 + gypsum on the study side |
 | `PLANT_INT_2X4_HUMID` | `W-S-PS1`, `W-S-PS2` | 2x4 + gypsum on the study side |
 
@@ -194,10 +194,10 @@ coordinate, an owner choice or a house-specific dimension, all three are ordinar
 products with stable tags — and `takeoff/finishes.py::_WASTE` is *engine* code that names
 `vinyl-sheet`, which an engine table may not do for a material only one house defines.
 
-The Glaser walk therefore starts at the membrane, not at the panel: `glaser_layers` now trims
-a room-side ventilated cavity the same way it has always trimmed an exterior rainscreen. That
-is both the honest scope (the gap behind the panel is at room conditions) and the conservative
-one (the panel's own vapour resistance is credited at nothing).
+The Glaser walk was meant to start at the membrane, trimming the room-side gap the way it
+trims an exterior rainscreen. **It does not today**: the furring is not an AIRGAP layer, so the
+walk still reaches the panel, and `building_science.condensation` reads UNKNOWN on the PVC's
+missing perm. Either an E96 number for the panel or an AIRGAP furring would close it.
 
 ### Ceiling — modelled
 
@@ -364,13 +364,15 @@ misted or hosed.
 
 `haus check houses/catlin --only all`:
 
-- `building_science.condensation` reports `PLANT_EXT_2X6_HUMID @ RM-S-PLANT` **at 70 % RH**
-  against the humid liner and passes the monthly gate — tightest plane 75 % RH, 577 Pa below
-  saturation, warm-side retarder named as `humid-membrane`, Class I.
+- `building_science.condensation` reports `PLANT_EXT_2X6_HUMID @ RM-S-PLANT` UNKNOWN: the
+  walk reaches the PVC panel, which has no E96 value (see above).
+- `code.R316_4` passes on `PLANT_EXT_2X6_HUMID`: the 4" of ccSPF is behind 5/8" gypsum
+  (`gwb-plant`), which sits on the studs, dry side of the membrane.
 - `building_science.humid_room_liner` passes on all five bounding walls and the ceiling,
   naming `humid-membrane` at 0.050 perm on the room side of each core.
 - `building_science.humid_room_finish` passes on all six surfaces — no paper-faced gypsum
-  shows.
+  is room-side of the membrane. The check stops at the first air+vapour layer, so the
+  R316.4 board behind it is not read as a room face.
 - `building_science.glazing_dew_point` passes all four windows by 1.9 °F **at the centre of
   glass**, and says in the finding that the frame and edge run 5–8 °F colder. That margin is
   the whole reason the frame spec, the sill pans and the glass wash are not optional.

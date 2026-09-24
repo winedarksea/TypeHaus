@@ -2507,6 +2507,14 @@ D = 375,771.1;  friction 93,942.8;  capped 121,500.0 / 27,315.75 = 4.4480  ratio
                                     uncapped 121,500.0 / 42,074.2 = 2.8878  ratio 0.5194
 ```
 
+2026-09-24: the stair well walls. `W-M-WELL` is new, 59.25" x 107.0" at 8 psf = 352.3 lb, and
+`W-B-WELL` now runs up to the main floor, top −12.625" → +0.986", + 66" x 13.61" at 8 psf = 49.9 lb.
+
+```
+D = 376,173.7;  friction 94,043.4;  capped 121,600.6 / 27,315.75 = 4.4517  ratio 0.3370
+                                    uncapped 121,600.6 / 42,074.2 = 2.8902  ratio 0.5190
+```
+
 ### 12a. FT-SG-S's toe grows 1'-4" (2026-09-22) — the south strip row
 
 The owner squared the planted field (11'-0" x 11'-0") by paving its shaded south 16" with

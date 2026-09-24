@@ -33,7 +33,7 @@ from typehaus.takeoff.hvac import heating_zones
 #
 # The factor's denominator is the DESIGN load, because that is what a Manual S sizing factor
 # is; walking the whole table is what finds the largest MINIMUM, which is rarely on the
-# design row. System 2 passes the cap at 0.60 and still cycles above 27 °F — the rule catches
+# design row. System 2 passes the cap at 0.59 and still cycles above 28 °F — the rule catches
 # gross over-size, the crossover describes the year, and they are not the same statement.
 # **Every verdict is PASS**: over the cap the message leads with ``ADVISORY —`` and the
 # result does not gate. Owner decision, 2026-09-18 — short-cycling costs efficiency, comfort
@@ -41,9 +41,10 @@ from typehaus.takeoff.hvac import heating_zones
 # whether the advisory fires, not whether the check failed.
 _ADVISED = True
 _CATLIN = {
-    # HP1 was 15,410 / -5.9 °F before WIN-A-S2/-S3 went WT-1436 -> WT-1424 (c3c46cff).
-    "EQ-M-HP1-OD": (15_365, 14_000, 5.0, 0.91, -6.1, _ADVISED),
-    "EQ-M-HP2-OD": (14_668, 8_800, 5.0, 0.60, 27.1, not _ADVISED),
+    # HP1 was 15,410 / -5.9 °F before WIN-A-S2/-S3 went WT-1436 -> WT-1424 (c3c46cff), and
+    # 15,365 before the plant room's R316.4 gypsum (2026-09-24).
+    "EQ-M-HP1-OD": (15_359, 14_000, 5.0, 0.91, -6.1, _ADVISED),
+    "EQ-M-HP2-OD": (14_877, 8_800, 5.0, 0.59, 28.0, not _ADVISED),
     "EQ-M-HP3-OD": (1_043, 2_800, 17.0, 2.69, None, _ADVISED),
 }
 
@@ -78,14 +79,14 @@ def test_the_design_point_is_reproduced_EXACTLY(catlin_ctx) -> None:
 
 def test_the_load_falls_as_it_warms_and_the_ground_term_does_not_move(catlin_ctx) -> None:
     """The decomposition's shape: a ground-coupled component's ΔT is to the soil, which does
-    not know what the air is doing. System 2's zone carries 2,412 Btu/h of it (a basement);
+    not know what the air is doing. System 2's zone carries 2,441 Btu/h of it (a basement);
     System 1's carries none (second storey and attic), so its load is pure air."""
     zones = {z.equipment_tag: z for z in heating_zones(
         catlin_ctx.model, catlin_ctx.preferences)[0]}
     upstairs = zones["EQ-M-HP1-OD"]
     basement = zones["EQ-M-HP2-OD"]
     assert upstairs.ground_coupled_btuh == pytest.approx(0.0)
-    assert basement.ground_coupled_btuh == pytest.approx(2_412, rel=0.01)
+    assert basement.ground_coupled_btuh == pytest.approx(2_441, rel=0.01)
     for zone in (upstairs, basement):
         assert (zone.heating_load_at_outdoor_f(47.0)
                 < zone.heating_load_at_outdoor_f(5.0)
@@ -136,12 +137,12 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
-    """0.80 as a ratio is a number nobody can act on; ``12,292 Btu/h against this zone's
-    15,365`` is one an equipment selector can shop against."""
+    """0.80 as a ratio is a number nobody can act on; ``12,287 Btu/h against this zone's
+    15,359`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
-    assert f"{0.80 * 15_365:,.0f} Btu/h".replace(",", ",") in finding.message
+    assert f"{0.80 * 15_359:,.0f} Btu/h".replace(",", ",") in finding.message
 
 
 # --- §3. the crossover ------------------------------------------------------------------------
@@ -150,8 +151,8 @@ def test_the_crossover_is_the_sentence_an_owner_can_act_on(catlin_ctx) -> None:
     """§3. "It modulates down to the load only below −6.1 °F" is a fact about this
     building's year; "minimum sizing factor 0.91" is one nobody can act on.
 
-    **Reported on a PASS as well**, and System 2 is why: it passes the Manual S cap at 0.60
-    and still cycles above 27.1 °F, which is most of a Minnesota heating season. The rule
+    **Reported on a PASS as well**, and System 2 is why: it passes the Manual S cap at 0.59
+    and still cycles above 28.0 °F, which is most of a Minnesota heating season. The rule
     catches gross over-size; the crossover describes the year.
     """
     zones = {z.equipment_tag: z for z in heating_zones(

@@ -430,15 +430,10 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
         catlin_model, preferences).heating_load_btu_per_hour
     parts = sum(zone.heating_load_btu_per_hour for zone in zones)
     assert 0 < parts <= whole * 1.05
-    # RM-B-ESS: the battery closet is a 12 sf cabinet carved out of RM-B-FURNACE, and it
-    # gets no terminal of its own on purpose. It is enclosed on every side by conditioned
-    # space, its own occupant is a heat *source*, and a supply boot into a sealed Type X
-    # box is the last thing that enclosure wants. Unclaimed here means "served by no zone",
-    # which is the true statement, not a gap to fill.
-    #
-    # RM-M-MUD-CLOSET (EQ-M-HP3-STAIR, 2026-09-18) and RM-M-PANTRY (EQ-M-HP2-LIVING,
-    # 2026-09-24) are claimed with no register: each is a reach-in heated through its open
-    # bypass door, so its load belongs to the zone next door.
+    # RM-M-MUD-CLOSET (EQ-M-HP3-STAIR, 2026-09-18), RM-M-PANTRY (EQ-M-HP2-LIVING) and
+    # RM-B-ESS (EQ-B-HP2-GYM, 2026-09-24) are claimed with no register: each is a closet
+    # whose load belongs to the zone around it. The ESS closet still gets no supply boot —
+    # it is a sealed Type X box — but its envelope share is real load.
     #
     # RM-A-STUBATH is claimed despite EQ-S-HP1-AH's zone_rooms naming
     # "RM-A-STUDIO-BATH" (a typo — the room is RM-A-STUBATH; a zone_rooms entry naming no
@@ -447,7 +442,7 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # under the door. That is true about AIR, not about the HEATING ZONE: a 50 sf
     # conditioned room off a conditioned bedroom is inside System 1's zone whether or not
     # it has a boot of its own, and its load belongs in that zone's block load.
-    assert set(unclaimed) == {"RM-B-ESS"}
+    assert set(unclaimed) == set()
 
 
 # --- supplemental resistance heat ------------------------------------------------------

@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import math
 
+from typehaus.hardware.catalog import ROLE_SLOPED_JOIST_HANGER, ROLE_STAIR_STRINGER_CONNECTOR
 from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
-from typehaus.joints.hung import hung_connections
+from typehaus.joints.authored import hanger_part
+from typehaus.joints.hung import HungConnection, hung_connections
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import (
     FramedMember,
@@ -73,17 +75,28 @@ def test_a_deck_joist_carries_a_stringer_head_and_nothing_else() -> None:
         == [("S:stringer-0", "F:joist-edge", True)]
 
 
-def test_st_g_service_hangs_on_the_garage_landing(catlin_model_ro) -> None:
-    """Its two stringer heads hang on FS-BW-GARAGE's north-edge 2x8, not on BM-BW-FC/FE,
-    which run alongside them."""
+def test_st_g_service_hangs_on_the_landing_header(catlin_model_ro) -> None:
+    """Both stringer heads hang on BM-BW-LAND-HDR, the full-width header at the landing's
+    north edge, and bill as LSCZ stair-stringer connectors, not joist hangers."""
     stair = next(s for s in catlin_model_ro.stairs if s.tag == "ST-G-SERVICE")
-    landing = next(f for f in catlin_model_ro.floors if f.tag == "FS-BW-GARAGE")
-    landing_keys = {f"{m.parent_uid}:{m.child_key}" for m in landing.members}
     heads = [c for c in hung_connections(catlin_model_ro, CONFIG.hanger_detection)
              if c.member_key.startswith(f"{stair.uid}:stringer-")]
     assert len(heads) == 2
-    assert all(c.carrier_tag in landing_keys and c.sloped for c in heads), heads
-    assert len({c.carrier_tag for c in heads}) == 1
+    assert {c.carrier_tag for c in heads} == {"BM-BW-LAND-HDR"}, heads
+    assert all(c.member_category == "stringer" and c.sloped for c in heads), heads
     rows = [row for row in hardware_takeoff(catlin_model_ro)
-            if row.get("part_number") == "LSSR" and row["basis"].startswith("2 x 2x12")]
+            if row.get("part_number") == "LSCZ"]
     assert [row["count"] for row in rows] == [2], rows
+    assert not [row for row in hardware_takeoff(catlin_model_ro)
+                if row.get("part_number") == "LSSR" and row["basis"].startswith("2 x 2x12")]
+
+
+def test_a_stringer_head_takes_a_stair_stringer_connector_not_a_sloped_hanger() -> None:
+    """Both are sloped ends; only the stringer's plumb cut takes an LSC-class part."""
+    def part(category):
+        return hanger_part(HungConnection(member_key="S:x", member_profile="2x12",
+                                          carrier_tag="BM-1", sloped=True,
+                                          member_category=category), {})
+    role, _item, model = part("stringer")
+    assert (role, model) == (ROLE_STAIR_STRINGER_CONNECTOR, "LSCZ")
+    assert part("rafter")[0] == ROLE_SLOPED_JOIST_HANGER

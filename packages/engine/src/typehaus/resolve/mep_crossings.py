@@ -143,6 +143,20 @@ class MemberCrossing:
     t: float = 0.0
 
 
+def is_member_line(member) -> bool:
+    """One of the floor's own member lines: a joist, a rim, or a trimmer in an open-web
+    truss section — an opening's edge on a truss floor is a truss, and a leg across it
+    passes through the same web window (catlin's FO-S-ERV-CHASE, 2026-09-24)."""
+    if member.category in ("joist", "rim"):
+        return True
+    if member.category != "trimmer":
+        return False
+    from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
+
+    section = cross_section(member.profile)
+    return section is not None and open_web_opening_m(section) is not None
+
+
 def leg_crossings(floor: ResolvedFloor,
                   a: tuple[float, float], b: tuple[float, float],
                   za: float, zb: float) -> list[MemberCrossing]:
@@ -167,7 +181,7 @@ def leg_crossings(floor: ResolvedFloor,
 
     out: list[MemberCrossing] = []
     for member in floor.members:
-        if member.z0_m is None or member.category not in ("joist", "rim"):
+        if member.z0_m is None or not is_member_line(member):
             continue
         p0 = member.p0[1] if along_x else member.p0[0]
         p1 = member.p1[1] if along_x else member.p1[0]

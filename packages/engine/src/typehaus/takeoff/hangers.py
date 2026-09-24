@@ -18,6 +18,7 @@ from typehaus.hardware.catalog import (
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SCL_FACE_MOUNT_HANGER,
     ROLE_SLOPED_JOIST_HANGER,
+    ROLE_STAIR_STRINGER_CONNECTOR,
     hardware_for_role,
 )
 from typehaus.hardware.config import HangerDetectionRules
@@ -120,7 +121,7 @@ def joist_hanger_rows(model: ResolvedModel, rules: HangerDetectionRules) -> list
         item, sloped = parts[key]
         carrier_name = carrier_tag.split(":")[-1]
         authored = role not in (ROLE_FACE_MOUNT_JOIST_HANGER, ROLE_SLOPED_JOIST_HANGER,
-                                ROLE_SCL_FACE_MOUNT_HANGER)
+                                ROLE_SCL_FACE_MOUNT_HANGER, ROLE_STAIR_STRINGER_CONNECTOR)
         rows.append(hardware_row(
             item, scope="hung framing", count=count, size=profile, part_number=part,
             basis=(f"{count} x {profile} hung in the depth of {carrier_name} "

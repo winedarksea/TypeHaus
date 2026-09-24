@@ -265,7 +265,8 @@ changes went in with that decision:
 - **`RM-M-MUD-CLOSET` joined its zone.** It was one of three conditioned rooms no equipment
   claimed. It opens off the mudroom, shares its air, and is on the wrong side of the house
   for System 2's heads. The zone's design load goes 932 → 1,043 Btu/h and the sizing factor
-  3.00 → 2.69. (`RM-B-ESS` and `RM-M-PANTRY` remain unclaimed and still report UNKNOWN.)
+  3.00 → 2.69. (`RM-B-ESS` and `RM-M-PANTRY` joined System 2 later; see the 2026-09-24
+  addendum.)
 - **The modelled load for this zone is an under-count, and the reason is the front door.**
   `estimate_block_load` apportions the house's blower-door infiltration by *conditioned
   volume share* — a whole-house average. These rooms are the entry vestibule: on a moving
@@ -304,7 +305,6 @@ cooling load.
   it is ever revisited: *a unit whose minimum at any published temperature is under 12,292
   Btu/h*, with the soffit-depth consequence in §6.
 - **System 3's existence.** Kept for now, explicitly reversible.
-- **`RM-B-ESS` and `RM-M-PANTRY`** belong to no zone and report UNKNOWN.
 
 ## 9. What is NOT graded here
 
@@ -336,3 +336,17 @@ so HP1's air UA 181.30 → 180.76 and its design load 15,410 → **15,365** (−
 **12,292**, the crossover **−6.1 °F** (was −5.9). The NEEP search in §6 is the 2026-09-18 one
 and stands. The sensible cooling 8,665 → 8,889 is drift since 2026-09-18, not this change
 (less glass can only lower it).
+
+## Addendum 2026-09-24 — System 2 claims the pantry and the ESS closet
+
+Every conditioned room is now in a zone. `RM-M-PANTRY` joined `EQ-M-HP2-LIVING` and
+`RM-B-ESS` joined `EQ-B-HP2-GYM`, both for their load only: neither gets a register, and
+the ESS closet is a sealed Type X box that should never get a supply boot. HP2's design
+load goes 14,668 → 14,793 (pantry) → **14,877 Btu/h** (ESS), and ground-coupled goes 2,412 →
+**2,441** (the closet's slab). The sizing factor goes 0.60 → **0.59**, and the crossover goes
+27.1 → **28.0 °F**. No verdict moves.
+
+System 1 moves too, the same day. `PLANT_EXT_2X6_HUMID` gained 5/8" of gypsum behind the
+membrane (R316.4), which adds R to `W-S-S1`/`W-S-W4`. HP1's design load goes 15,365 →
+**15,359 Btu/h**, so the Manual S cap is 0.80 × 15,359 = **12,287 Btu/h**. The sizing factor
+stays 0.91 and the crossover stays −6.1 °F.

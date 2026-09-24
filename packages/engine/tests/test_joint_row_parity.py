@@ -108,10 +108,10 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # 136 -> 131 (9e0827b1): the overhead door's grade beam retired, and the five MASA on its
     # phantom 16 LF of sill (x = 10'..26' on 4' centres) went with it.
     assert joints["mudsill_anchor"] == 131
-    # 38 rafters on the ridge plus ST-G-SERVICE's two stringer heads, which hang on
-    # FS-BW-GARAGE's north-edge 2x8 (2026-09-24; before that they billed on BM-BW-FC/FE,
-    # beams running PARALLEL to them).
-    assert joints["sloped_joist_hanger"] == 40
+    # 38 rafters on the ridge. ST-G-SERVICE's two stringer heads were two more until
+    # 2026-09-24; they hang on BM-BW-LAND-HDR on LSCZ now, their own role.
+    assert joints["sloped_joist_hanger"] == 38
+    assert joints["stair_stringer_connector"] == 2
     assert joints["ridge_tie_strap"] == 19
     assert joints["embedded_strap_holdown"] == 40
     # The leg that had nothing until 2026-09-14: six attic gable-end walls, 22 ties, plus one

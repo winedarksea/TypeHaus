@@ -3885,7 +3885,34 @@ surface that reaches the court, so the water goes there.
   exemption. The board is now named, `polyiso-foil-thermax` (DuPont Thermax Sheathing), and
   `Material.thermal_barrier_listing` carries Intertek CCRR-0435 §5.5 (no thermal barrier
   required, max 4", any wall or ceiling). All five sauna assemblies and the ceiling use it.
-  **The plant room stays UNKNOWN**: Heatlok HFO High Lift's ESR-4073 drops the barrier only
-  under a DC 315 intumescent coat (§4.3.2), which that wall does not have. 1/2" gypsum behind
-  the PVC panel would close it. R316.4's wood-panel alternative is 23/32" (IRC 2018, MN 2020),
+  The plant room was left UNKNOWN here: Heatlok HFO High Lift's ESR-4073 drops the barrier
+  only under a DC 315 intumescent coat (§4.3.2), which that wall does not have. Closed the
+  same day with gypsum behind the membrane (next entry). R316.4's wood-panel alternative is 23/32" (IRC 2018, MN 2020),
   not 5/8"; the check says so now.
+
+## 2026-09-24 — Service-stair landing header, plant-room gypsum, ESS closet zoned
+
+- **`ST-G-SERVICE` hangs on a full-width header.** The flight is 36" wide (stem face to
+  9'-11 5/8"), but `BM-BW-FC`/`-FE` only bracket 7'-0"..9'-7", so its east stringer landed on
+  nothing. `FE` could not follow it east: it crosses `W-G-S` inside the door RO, and 9'-7" is
+  the jack. `BM-BW-LAND-HDR` (3-2x12 KDAT, flush with the joists) now spans the flight's full
+  width at the landing's north edge on `PT-BW-IC`/`-IE`. `IE` moved 4 3/8" east to its end,
+  and both posts are now 21 3/4". The carriers hang in it on `HU28-2Z`, and the stringers hang on its north face
+  on **LSCZ** (C-C-2024 p. 308: 755 lbf DF/SP, standard install). That is a new engine
+  role, `stair_stringer_connector`. LSSR drops 40 → 38. `FS-BW-GARAGE` stops at its third 12"
+  line, so there is no north-edge 2x8 beside the header. `structural.subfloor_oversail`
+  now counts a flush beam under the sheet as framing.
+- **The plant room's ccSPF wall gets 5/8" gypsum behind the membrane** (owner), closing
+  `code.R316_4`. The board is the house's own `gwb`, not a new 1/2" SKU. It sits on the
+  studs, dry side of the Class I membrane, so no moisture-sensitive material sees room air;
+  `building_science.humid_room_finish` now stops at that membrane. The wall-bracing
+  non-gypsum x1.40 lifts on both lines, which is correct. **Declined:**
+  - Durock has no NFPA 275 listing, is limited to tile, brick and stucco finishes, and has no
+    published E96 value.
+  - DensArmor costs more and is harder to source.
+  - 23/32" plywood would also meet R316.4, but it would not match the 1/2" sheathing used
+    everywhere else, and the check would read it UNKNOWN until a wood-structural-panel
+    marker exists.
+- **`RM-B-ESS` joins `EQ-B-HP2-GYM`'s zone** for its load only. It gets no register, and a
+  supply boot into the sealed Type X closet is still wrong. Every conditioned room is now in a
+  zone (`notes/heat_pump_turndown.md` addendum).

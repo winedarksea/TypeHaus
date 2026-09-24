@@ -42,6 +42,9 @@ ROLE_GABLE_END_TIE = "gable_end_tie"
 # so the joint only holds the truss down on the plate. Its own role so the stud tie is not it.
 ROLE_GABLE_TRUSS_ANCHOR = "gable_truss_anchor"
 ROLE_SLOPED_JOIST_HANGER = "sloped_joist_hanger"
+# A stair stringer's head on the carrying header or rim: its own role because a joist
+# hanger's seat is not what a stringer's plumb cut bears in (C-C-2024 p. 308).
+ROLE_STAIR_STRINGER_CONNECTOR = "stair_stringer_connector"
 # The strap that carries a rafter's tension THROUGH the ridge to its opposite number.
 # Its own role, not a variant of the sloped hanger: the hanger holds one rafter up in
 # the beam's depth and does nothing across the peak, which is why Weyerhaeuser's H5S

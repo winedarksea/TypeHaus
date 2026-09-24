@@ -168,7 +168,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "polyiso-foil"
+      "material": "polyiso-foil-thermax"
     },
     {
       "space": "model",
@@ -504,7 +504,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "polyiso-foil"
+      "material": "polyiso-foil-thermax"
     },
     {
       "space": "model",

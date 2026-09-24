@@ -11,6 +11,7 @@ import pytest
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.mep_crossings import (
     SOLID_SAWN_EDGE_CLEARANCE_M,
+    is_member_line,
     leg_crossings,
     member_window,
 )
@@ -99,3 +100,14 @@ def test_a_crossing_is_dropped_when_the_run_is_below_the_floor(catlin_model_ro) 
     assert inside, "a leg crossing in y should meet members"
     below = leg_crossings(floor, (1.0, 5.0), (1.0, 9.0), 0.5, 0.5)
     assert below == []
+
+
+def test_an_open_web_trimmer_is_a_truss_line(catlin_model_ro) -> None:
+    """FO-S-ERV-CHASE's edges on FS-S-WEST are truss lines, so a leg across one is graded
+    in the web window, not as a bore through an engineered member."""
+    floor = _floor(catlin_model_ro, "FS-S-WEST")
+    trimmers = [m for m in floor.members if m.child_key.startswith("trimmer-FO-S-ERV-CHASE")]
+    assert trimmers and all(is_member_line(m) for m in trimmers)
+    lvl = next(m for f in catlin_model_ro.floors for m in f.members
+               if m.category == "trimmer" and "LVL" in m.profile)
+    assert not is_member_line(lvl)

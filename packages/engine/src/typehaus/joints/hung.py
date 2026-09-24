@@ -86,6 +86,8 @@ class HungConnection:
     #: Tag of the ``FloorSystem`` the hung member belongs to, or ``""``. With the carrier it
     #: keys an authored hanger spec (:func:`typehaus.joints.authored.hanger_specs`).
     member_floor: str = ""
+    #: The hung member's own category — a ``stringer`` takes a stair-stringer connector.
+    member_category: str = ""
 
 
 def _member_carriers(model: ResolvedModel, rules: HangerDetectionRules) -> list:
@@ -208,7 +210,7 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                 point_m=(point[0], point[1]), carrier_soffit_m=carrier_z0,
                 member_depth_m=max(top_z - bottom_z, 0.0),
                 axis=axis_of(carrier.p0, carrier.p1),
-                member_floor=member_floor))
+                member_floor=member_floor, member_category=member.category))
     return found
 
 

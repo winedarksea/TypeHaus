@@ -79,7 +79,13 @@ _TOO_OPEN = _assembly("TOO_OPEN", [
            {ControlLayer.VAPOR, ControlLayer.AIR}, inch(0.04)),
     _layer("stud", "spf", LayerFunction.STRUCTURE, thickness=inch(5.5)),
 ])
-_ASSEMBLIES = {a.tag: a for a in (_LINED, _UNLINED, _VAPOR_ONLY, _TOO_OPEN)}
+# The plant room's R316.4 thermal barrier: gypsum on the studs, sealed behind the membrane.
+_LINED_OVER_GWB = _assembly("HUMID_GWB", [
+    *_LINED.layers[:2],
+    _layer("gwb-plant", "gwb", LayerFunction.FINISH, thickness=inch(0.625)),
+    _LINED.layers[2],
+])
+_ASSEMBLIES = {a.tag: a for a in (_LINED, _UNLINED, _VAPOR_ONLY, _TOO_OPEN, _LINED_OVER_GWB)}
 _MATERIALS = {m.tag: m for m in (CLASS_I, CLASS_III, GWB, PVC, SPF)}
 
 
@@ -186,6 +192,11 @@ def test_paper_faced_gypsum_on_the_room_face_fails():
 
 def test_a_non_cellulose_room_face_passes():
     findings = humid_room_finish(_ctx(assembly="HUMID"))
+    assert [f.result for f in findings] == [Result.PASS]
+
+
+def test_gypsum_sealed_behind_the_membrane_is_not_on_the_room_face():
+    findings = humid_room_finish(_ctx(assembly="HUMID_GWB"))
     assert [f.result for f in findings] == [Result.PASS]
 
 

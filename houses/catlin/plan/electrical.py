@@ -333,6 +333,8 @@ BASEMENT_EQUIPMENT = [
     # face at 6 5/8"; `rotation=deg(0)` aims the discharge at -y, which is into the wall, so
     # the louvre throws off the coil face at +y. zone_rooms is the whole conditioned
     # basement (one open volume off the stair) — EQ-B-SAUNA-HTR heats the sauna, not space.
+    # RM-B-ESS is claimed for its load only, like the pantry on HP2-LIVING: no register
+    # is implied, and a supply boot into the sealed Type X closet is still wrong.
     #
     # ** THE HEAD WAS 5 1/2" INTO THE CEILING AND THAT WAS NOT THE DRAG'S DOING. ** The mount
     # was authored at 7'-6" AFF and this is a 10 53/64" cabinet, so its top stood at 100 13/16"
@@ -347,7 +349,7 @@ BASEMENT_EQUIPMENT = [
               outdoor_ref="EQ-M-HP2-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
               zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
-                          "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH")),
+                          "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH", "RM-B-ESS")),
     # ** ON THE EAST LINER SINCE 2026-09-05 (round three), AND IT TURNED TO GET THERE. **
     # It stood on the SOUTH liner at x 14'-5 3/4"..15'-11 3/4" from the shrink until the
     # south bench grew: with the heater in the middle of that wall the bench could be 2'-6"
@@ -2072,7 +2074,9 @@ NEC_FILL_SECOND = [
     #
     # All five moved off the old finished face at the same time: the liner is 1 1/4" thicker
     # than the painted gypsum it replaced, so the south and west faces came in to y/x 7 9/32"
-    # and the north partitions' faces went out to y 8'-9 9/32". Each device sits ~1 1/2"
+    # and the north partitions' faces went out to y 8'-9 9/32". The south and west faces came
+    # in 5/8" more with R316.4's gypsum behind the membrane (2026-09-24), to 7 29/32", and
+    # RC1-RC3 moved with them. Each device sits ~1 1/2"
     # inside its new face, the same station `electrical.receptacle_spacing` measures, and
     # `test_wall_mounted_devices_resolve_against_a_wall_face` is what caught them buried.
     #
@@ -2089,7 +2093,7 @@ NEC_FILL_SECOND = [
     # on their own spacing. The bay is still the right one — it stays.
     # FX-S-BALC-HYD gave up this bay for it and moved to 7'-4" (plan/fixtures.py).
     ElectricalDevice(uid="NEC021AAAA", tag="ED-S-PLANT-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(11, 4), ft(0, 8.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
+                     position=pt(ft(11, 4), ft(0, 9.375)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # RC2 is the outlet nearest FX-S-BALC-HYD (1'-5 3/4" in plan) and it is deliberately NOT
@@ -2098,11 +2102,11 @@ NEC_FILL_SECOND = [
     # for a device that ships as a battery unit. Nothing is authored on the balcony either.
     # See notes/plant_room.md, open item 2.
     ElectricalDevice(uid="NEC022AAAA", tag="ED-S-PLANT-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(5, 10.25), ft(0, 8.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
+                     position=pt(ft(5, 10.25), ft(0, 9.375)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC023AAAA", tag="ED-S-PLANT-RC3", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(0, 8.75), ft(3, 6.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
+                     position=pt(ft(0, 9.375), ft(3, 6.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), room="RM-S-PLANT", rotation=deg(90)),
     ElectricalDevice(uid="NEC024AAAA", tag="ED-S-PLANT-RC4", kind=DeviceKind.RECEPTACLE_GFCI,

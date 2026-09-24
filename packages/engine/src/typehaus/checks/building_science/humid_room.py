@@ -148,6 +148,17 @@ def _room_side_span(layers: tuple[Layer, ...]) -> tuple[Layer, ...]:
     return layers
 
 
+def _room_air_span(layers: tuple[Layer, ...]) -> tuple[Layer, ...]:
+    """The room-side span, stopped before the first air+vapour control layer: what lies
+    behind a sealed membrane never sees room air (catlin's plant-room gypsum, R316.4's
+    thermal barrier, sits on the studs behind one)."""
+    span = _room_side_span(layers)
+    for index, layer in enumerate(span):
+        if {ControlLayer.VAPOR, ControlLayer.AIR} <= set(layer.control or ()):
+            return span[:index]
+    return span
+
+
 @check(Tier.BUILDING_SCIENCE, LINER_CHECK_ID)
 def humid_room_liner(ctx: CheckContext) -> list[Finding]:
     """A wet/humid room's bounding assemblies carry a room-side Class I air+vapour layer.
@@ -217,7 +228,8 @@ def humid_room_liner(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.BUILDING_SCIENCE, FINISH_CHECK_ID)
 def humid_room_finish(ctx: CheckContext) -> list[Finding]:
-    """No paper-faced gypsum on the room face of a wet or humid room.
+    """No paper-faced gypsum on the room face of a wet or humid room — room-side of any
+    sealed air+vapour membrane, which is where room air reaches.
 
     ``Material.gypsum_type`` is the test, and its vocabulary is entirely paper-faced today
     (regular / type-x / type-c), so carrying it *is* carrying a paper facer. Paint over it
@@ -227,7 +239,7 @@ def humid_room_finish(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for surface in humid_surfaces(ctx):
         tags = (surface.room_tag, surface.wall_tag)
-        offenders = [ly.material_ref for ly in _room_side_span(surface.layers)
+        offenders = [ly.material_ref for ly in _room_air_span(surface.layers)
                      if ly.function == LayerFunction.FINISH
                      and getattr(ctx.plan.library.material(ly.material_ref),
                                  "gypsum_type", None) is not None]

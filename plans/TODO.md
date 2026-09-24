@@ -45,10 +45,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     edges, so a 1 1/2" post now oversails its stringer's outer face by 3/4". Moving both 3/4"
     in (`params/sunken_garden.py` `PORCH_STAIR_RAILS`) re-centres them; clear width ~33" ->
     31 1/2", still over the 27" minimum.
-  - `ST-G-SERVICE`'s stringer heads bill 2 LSSR on `FS-BW-GARAGE`'s north-edge 2x8, and no
-    catalogued LSSR row suits it: the 2x12 heads hang 4 1/2" below the 2x8, and the 36" flight
-    is wider than the ~31" landing framing (one stringer lands 3" past `BM-BW-FE`). Needs a
-    full-width carrier or a stair-stringer connector (LSC class).
 
 ### From the 2026-09-10 `plans/notes.md` triage
 

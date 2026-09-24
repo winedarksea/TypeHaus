@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections import Counter
 
 import pytest
-from _helpers import check_context
+from _helpers import catlin_params, check_context
 
 from typehaus.findings import Result
 from typehaus.resolve.rain_garden import ponding_volume_m3
@@ -97,7 +97,7 @@ def test_driveway_quantities(catlin_model_ro) -> None:
 
 def test_walk_a_clears_the_driveway_flare(catlin_plan) -> None:
     """notes/sidewalk_layout.md §2a: A is notched 1/2" off the flare, no lap anywhere."""
-    from params import driveway, landscape_walk
+    driveway, landscape_walk = catlin_params("driveway", "landscape_walk")
     from shapely.geometry import Polygon
 
     walk, drive = Polygon(landscape_walk.A_RING), Polygon(driveway.OUTLINE)
@@ -160,7 +160,7 @@ def test_the_walk_turns_the_corner_under_open_concrete(catlin_model_ro) -> None:
 def test_the_east_garage_leader_drops_clear_of_both_walks(catlin_model_ro) -> None:
     """TR-G-LEADER-E goosenecks from the trough to the garage north wall, so its drop stands
     in walk A's 12" edge band and out of the A-to-B turn (plan/storeys/garage.py)."""
-    from params import landscape_walk
+    landscape_walk = catlin_params("landscape_walk")
     from shapely.geometry import Polygon, box
 
     drop = Polygon(next(s for s in catlin_model_ro.solids

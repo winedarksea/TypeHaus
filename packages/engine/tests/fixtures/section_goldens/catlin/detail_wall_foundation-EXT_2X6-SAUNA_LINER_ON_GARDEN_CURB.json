@@ -168,7 +168,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "polyiso-foil"
+      "material": "polyiso-foil-thermax"
     },
     {
       "space": "model",
@@ -616,7 +616,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "polyiso-foil"
+      "material": "polyiso-foil-thermax"
     },
     {
       "space": "model",
@@ -3880,7 +3880,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "polyiso-foil"
+      "material": "polyiso-foil-thermax"
     },
     {
       "space": "paper",
@@ -3917,7 +3917,7 @@
         0.7,
         1.058
       ],
-      "content": "polyiso-foil  2\"",
+      "content": "polyiso-foil-thermax  2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

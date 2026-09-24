@@ -33,6 +33,8 @@ from typing import Any
 from typehaus.analytical import materials
 from typehaus.analytical import ties as _ties
 from typehaus.analytical.graph import NODE_SNAP_M, Member, Node, Releases
+from typehaus.analytical.stations import fold as _fold
+from typehaus.analytical.stations import stations as _stations
 from typehaus.resolve.framing.profiles import CrossSection, cross_section
 
 _Vec3 = tuple[float, float, float]
@@ -280,6 +282,7 @@ def build_members(ctx: Any, scope: Any) -> MemberGraph:
     # free to slide along the beam it sits on — a mechanism the solver reports as an
     # instability, at the one place in the model where two members actually meet.
     points = list(nodes.points)
+    merged: dict[int, int] = {}
     # (id, tag, category, i, j, section, material, e_pa, e_basis, releases)
     pending: list[tuple[str, str, str, int, int, CrossSection, str, float, str, Releases]] = []
     for tag, axis in sorted({**posts, **axes}.items()):
@@ -293,7 +296,7 @@ def build_members(ctx: Any, scope: Any) -> MemberGraph:
         material, e_pa, e_basis, assumed = _material(
             ctx, element, element.size, moduli.get(tag), scope.items_for(tag))
         _remember(assumptions, assumed)
-        stations = _stations(axis, points, extra.get(tag, ()))
+        stations = _stations(axis, points, extra.get(tag, ()), merged)
         pieces: list[str] = []
         for index in range(len(stations) - 1):
             (_t0, n0), (_t1, n1) = stations[index], stations[index + 1]
@@ -312,7 +315,7 @@ def build_members(ctx: Any, scope: Any) -> MemberGraph:
             graph.post_carries[tag] = tuple(
                 sorted(t for t in axes if tag in (plan.by_tag(t).bearing_refs or ())))
 
-    node_ids = nodes.ids()
+    node_ids = _fold(nodes, merged)
     built = [
         Member(id=member_id, tag=tag, category=category, n0=node_ids[i], n1=node_ids[j],
                section=section, material=material, e_pa=e_pa, e_basis=e_basis,
@@ -322,7 +325,8 @@ def build_members(ctx: Any, scope: Any) -> MemberGraph:
         in pending
         if node_ids[i] != node_ids[j]  # two ends that merged are not a member
     ]
-    graph.nodes = nodes.nodes()
+    graph.nodes = tuple(node for index, node in enumerate(nodes.nodes())
+                        if index not in merged)
     graph.members = tuple(sorted(built, key=lambda member: member.id))
     graph.post_base = {tag: node_ids[int(i)] for tag, i in sorted(graph.post_base.items())}
     graph.post_top = {tag: node_ids[int(i)] for tag, i in sorted(graph.post_top.items())}
@@ -335,44 +339,6 @@ def build_members(ctx: Any, scope: Any) -> MemberGraph:
     _remember(assumptions, _SUPPORT_ROTATIONS)
     graph.assumptions = tuple(assumptions)
     return graph
-
-
-def _stations(axis: _Axis, points: list[_Vec3],
-              extra: Any = ()) -> list[tuple[float, int]]:
-    """``(parameter, node index)`` for every node ON this axis, ends included, in order.
-
-    A node within :data:`NODE_SNAP_M` of the axis is on it — the same distance two points
-    merge at, so a node cannot be "nearly" on a member and be treated as elsewhere.
-    """
-    found: list[tuple[float, int]] = list(extra)
-    length = axis.length_m
-    for index, point in enumerate(points):
-        param = _param_on(axis, point)
-        if param is None:
-            continue
-        if all(index != seen for _param, seen in found):
-            found.append((param, index))
-    found.sort()
-    # Two stations closer together than the snap distance are one station; keeping both
-    # would mint a member shorter than the tolerance its own nodes were merged at.
-    out: list[tuple[float, int]] = []
-    for param, index in found:
-        if out and abs(param - out[-1][0]) * length <= NODE_SNAP_M:
-            continue
-        out.append((param, index))
-    return out
-
-
-def _param_on(axis: _Axis, point: _Vec3) -> float | None:
-    """The parameter of ``point`` on ``axis``, or ``None`` where it is not on it."""
-    d = (axis.p1[0] - axis.p0[0], axis.p1[1] - axis.p0[1], axis.p1[2] - axis.p0[2])
-    denominator = d[0] * d[0] + d[1] * d[1] + d[2] * d[2]
-    if denominator < 1e-18:
-        return None
-    raw = sum(d[axis_index] * (point[axis_index] - axis.p0[axis_index])
-              for axis_index in range(3)) / denominator
-    param = min(max(raw, 0.0), 1.0)
-    return param if math.dist(axis.at(param), point) <= NODE_SNAP_M else None
 
 
 def _is_support(plan: Any, ref: str) -> bool:

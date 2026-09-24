@@ -38,10 +38,10 @@ def test_each_authored_pull_point_is_graded(catlin_model_ro) -> None:
                    for s in mine), (tag, [s.total_deg for s in mine])
 
 
-def test_only_the_ess_closet_is_outside_a_heating_zone(catlin_model_ro) -> None:
-    """RM-M-PANTRY is EQ-M-HP2-LIVING's; RM-B-ESS is unzoned on purpose (see
-    ``test_heating_capacity.test_catlin_zone_loads_do_not_exceed_the_whole_house_load``)."""
+def test_every_room_is_inside_a_heating_zone(catlin_model_ro) -> None:
+    """RM-M-PANTRY is EQ-M-HP2-LIVING's and RM-B-ESS is EQ-B-HP2-GYM's, both for load only
+    (see ``test_heating_capacity.test_catlin_zone_loads_do_not_exceed_the_whole_house_load``)."""
     unclaimed = {tag for f in heating_capacity(check_context(model=catlin_model_ro))
                  if f.result is Result.UNKNOWN and "in no equipment zone_rooms" in f.message
                  for tag in f.element_tags}
-    assert unclaimed == {"RM-B-ESS"}
+    assert unclaimed == set()

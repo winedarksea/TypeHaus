@@ -382,8 +382,8 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     # them) used to bill four LUS28Z; a member within `parallel_reject_deg` of a carrier
     # runs beside it and never dies into it (2026-09-24).
     assert not breezeway_joists & hung_keys, sorted(breezeway_joists & hung_keys)
-    # FS-BW-GARAGE is the garage landing, split off FS-BW-FLOOR on 2026-09-10. Its five
-    # 2x8s run east-west between BM-BW-FC and BM-BW-FE and share their depth exactly
+    # FS-BW-GARAGE is the garage landing, split off FS-BW-FLOOR on 2026-09-10. Its four
+    # 2x8s (five until 2026-09-24, when BM-BW-LAND-HDR took the north edge) run east-west between BM-BW-FC and BM-BW-FE and share their depth exactly
     # (-8 1/4" to -1"): a flush frame, a hanger each. Its two rims lie ON the beam lines and
     # are parallel to them, so they hang in nothing (four phantom LUSZ until 2026-09-24).
     garage_landing = next(f for f in catlin_model.floors if f.tag == "FS-BW-GARAGE")
@@ -392,7 +392,7 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
                     if m.category == "joist"} & hung_keys
     landing_rims = {f"{m.parent_uid}:{m.child_key}" for m in garage_landing.members
                     if m.category == "rim"} & hung_keys
-    assert len(landing_hung) == 5, sorted(landing_hung)
+    assert len(landing_hung) == 4, sorted(landing_hung)
     assert not landing_rims, sorted(landing_rims)
     # BM-SG-BLC (the balcony's hung centre line) retired with the centre support line in
     # 2026-09; the balcony joists bear on its two outer beams and hang in nothing. The porch

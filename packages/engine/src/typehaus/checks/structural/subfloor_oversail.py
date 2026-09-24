@@ -15,14 +15,18 @@ uplift pass find neither a derived tie nor a hanger, and FAIL **every member und
 deck** — a cascade whose cause is nowhere near where it is reported. Bounding the oversail
 here is what turns that into one finding naming one deck.
 
-The measure is the largest distance from any sheet corner to the framing's own plan
-bounding box, so a sheet that oversails on one edge only is graded on that edge. A sheet
+The measure is the largest distance from any sheet corner to the framing's plan bounding
+box, so a sheet that oversails on one edge only is graded on that edge. The framing is the
+deck's own members plus any beam topped flush with them under the sheet: a header the boards
+land on is as much framing as a joist (catlin's ``BM-BW-LAND-HDR`` ends ``FS-BW-GARAGE``). A sheet
 INSIDE the framing is not an oversail and is not this check's business — a plank narrower
 than its joists is a design choice, and the joists it leaves bare are visible in the
 framing plan.
 """
 
 from __future__ import annotations
+
+from shapely.geometry import Polygon
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity, not_applicable
@@ -31,12 +35,18 @@ from typehaus.quantities import M_PER_IN
 
 _CHECK_ID = "structural.subfloor_oversail"
 _LIMIT_IN = DEFAULT_HARDWARE_TAKEOFF_CONFIG.uplift.bearing_plan_tolerance_in
+_FLUSH_M = 0.25 * M_PER_IN
 
 
-def _framing_box(floor) -> tuple[float, float, float, float] | None:
+def _framing_box(floor, sheet, solids) -> tuple[float, float, float, float] | None:
     points = [point for member in floor.members for point in (member.p0, member.p1)]
     if not points:
         return None
+    top = max(member.z1_m for member in floor.members)
+    points += [point for solid in solids
+               if solid.category == "beam" and abs(solid.z1_m - top) <= _FLUSH_M
+               and sheet.contains(Polygon(solid.outline).centroid)
+               for point in solid.outline]
     xs = [p[0] for p in points]
     ys = [p[1] for p in points]
     return min(xs), max(xs), min(ys), max(ys)
@@ -59,7 +69,8 @@ def subfloor_oversail(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for system in sorted(authored, key=lambda item: item.tag):
         floor = floors.get(system.tag)
-        box = _framing_box(floor) if floor is not None else None
+        sheet = Polygon([point.xy_m for point in system.subfloor_outline])
+        box = _framing_box(floor, sheet, ctx.model.solids) if floor is not None else None
         if box is None:
             out.append(Finding(
                 severity=Severity.WARN, check_id=_CHECK_ID,

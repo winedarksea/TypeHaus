@@ -10,6 +10,7 @@ from __future__ import annotations
 import math
 
 import pytest
+from _helpers import catlin_params
 
 from typehaus.model import (
     Connector,
@@ -287,7 +288,7 @@ def test_foam_thermal_break_lies_in_the_joint_it_breaks(catlin_model) -> None:
     must be ``THERMAL_BREAK_IN`` (2.5" since basis 4) deep in Y and long in X. Rotated 90° it
     stops separating the two structures at all.
     """
-    from params import sunken_garden
+    sunken_garden = catlin_params("sunken_garden")
 
     for block in _solids(catlin_model, "thermal_break"):
         xs = [x for x, _ in block.outline]

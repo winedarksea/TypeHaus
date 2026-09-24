@@ -188,6 +188,20 @@ FIELD_EAST_X_FT = LANDING_EAST_FT - BEAM_WIDTH_IN / 12 - JOIST_MEMBER_WIDTH_IN /
 BEAM_X_FT = (FIELD_WEST_X_FT + 1.0 - (JOIST_MEMBER_WIDTH_IN + BEAM_WIDTH_IN) / 24,
              SERVICE_RO_EAST_FT - BEAM_WIDTH_IN / 24)
 assert BEAM_X_FT[0] - 3.5 / 24 >= GARAGE_STEM_INSIDE_X_FT, "PT-BW-IC is inside the stem's board"
+# ** A FULL-WIDTH HEADER ENDS THE INTERIOR LANDING (owner, 2026-09-24). ** ST-G-SERVICE is 36"
+# wide, stem face to 9'-11 5/8", and the carriers bracket only 7'-0"..9'-7": its east stringer
+# hung on nothing. FE cannot follow it east -- it crosses W-G-S inside the door RO, and 9'-7"
+# is the jack. So a 3-2x12 KDAT header spans the flight's full width at the landing's north
+# edge, flush with the joists, on the two posts; FC/FE hang in its south face (HU28-2Z) and
+# both stringers hang on its north face on LSCZ. PT-BW-IE moves 4 3/8" east to its end.
+# Three plies, not two: at 4 1/2" the 4x4s stand centred under it with nothing proud of
+# either face, where a 3" header left a post 1/4" into the stringer heads.
+LANDING_HEADER_WIDTH_IN = 4.5
+LANDING_HEADER_Y_FT = GARAGE_LANDING_END_Y_FT - LANDING_HEADER_WIDTH_IN / 24
+CARRIER_END_Y_FT = GARAGE_LANDING_END_Y_FT - LANDING_HEADER_WIDTH_IN / 12
+LANDING_HEADER_SOFFIT_FT = DECK_JOIST_TOP_FT - 11.25 / 12
+INTERIOR_POST_Y_FT = LANDING_HEADER_Y_FT
+INTERIOR_POST_X_FT = (BEAM_X_FT[0], GARAGE_LANDING_EAST_FT - 1.75 / 12)
 HOUSE_SEAT_Y_FT = PIER_LINE_Y_FT
 # ** THE GARAGE SEAT MOVED 6" SOUTH, OFF THE STEM. ** A pedestal under it at the old
 # y=42'-11 3/4" overlapped W-G-S's bottom plate and its corner post outright, and the stem's
@@ -279,8 +293,10 @@ beam(2, "BM-BW-GARAGE-SEAT", LANDING_WEST_FT + COLUMN_HALF_FT, GARAGE_SEAT_Y_FT,
 # joist field has them all the way through, and run north to the interior landing's end on a
 # post apiece. Uid numbers stay 4 and 5 -- 3 was BM-BW-FW and is not reused.
 for index, (suffix, x) in enumerate(zip(("FC", "FE"), BEAM_X_FT, strict=True), 4):
-    beam(index, f"BM-BW-{suffix}", x, FRAME_Y0_FT, x, GARAGE_LANDING_END_Y_FT,
-         ("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT", f"PT-BW-I{suffix[-1]}"))
+    beam(index, f"BM-BW-{suffix}", x, FRAME_Y0_FT, x, CARRIER_END_Y_FT,
+         ("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT", "BM-BW-LAND-HDR"))
+beam(11, "BM-BW-LAND-HDR", GARAGE_STEM_INSIDE_X_FT, LANDING_HEADER_Y_FT,
+     GARAGE_LANDING_EAST_FT, LANDING_HEADER_Y_FT, ("PT-BW-IC", "PT-BW-IE"), size="3-2x12")
 
 # ** THE TWO ROOF HEADERS, AND THE CANOPY THEY CARRY TOUCHES THE GARAGE FOR NOTHING. **
 # These used to bear north on `W-G-W` / `W-G-E`, on the premise that a header landing on the
@@ -775,11 +791,12 @@ ROOF_COLUMNS = [
 # ** 4x4 ON 1" STANDOFF BASES, SIZED TO REACH THE BEAMS (owner, 2026-09-11). ** The first
 # pass authored 6x6s at `BEARING_TOP_FT - SITE_GRADE`, the PIER top, so they stopped at
 # -1'-3 1/2" under carriers whose soffit is -0'-8 1/4": a 7 1/4" gap, and nothing graded it.
-# 25 3/4" from the slab at -2'-10" to the carrier soffit is the height, ABU44 on a cast-in
+# 25 3/4" from the slab at -2'-10" to the carrier soffit was the height (21 3/4" to the landing
+# header's soffit since 2026-09-24), ABU44 on a cast-in
 # AB-058-10-SS is the base (params/breezeway.py::INTERIOR_POST_BASES), and 4x4 is enough:
-# `structural.deck_post_height` reads DECK_POST_HEIGHT_FT's 6'-9" for a 4x4 against 2'-1 3/4",
+# `structural.deck_post_height` reads DECK_POST_HEIGHT_FT's 6'-9" for a 4x4 against 1'-9 3/4",
 # and its "R507.4 wants 6x6" decoration only prints when the height is over the table.
-INTERIOR_POST_HEIGHT_FT = SEAT_TOP_FT - SITE_GRADE.feet
+INTERIOR_POST_HEIGHT_FT = LANDING_HEADER_SOFFIT_FT - SITE_GRADE.feet
 #
 # ** THEY BEAR ON THE SLAB AS CAST, AND THE THICKENING IS GONE (owner, 2026-09-11). ** This
 # carried a "thicken to 10in over a 2ft square under each post, monolithic" note for a day.
@@ -804,10 +821,10 @@ INTERIOR_POST_HEIGHT_FT = SEAT_TOP_FT - SITE_GRADE.feet
 # "monolithic", and an isolated pad reports a concrete_interference lap with `SL-G-FLOOR`.
 INTERIOR_POSTS = [
     Post(uid=f"BWPT{9 + _i:02d}AAAA", tag=f"PT-BW-I{_s}",
-         position=pt(ft(_x), ft(GARAGE_LANDING_END_Y_FT)),
+         position=pt(ft(_x), ft(INTERIOR_POST_Y_FT)),
          size="4x4", height=ft(INTERIOR_POST_HEIGHT_FT), assembly="POST_KDAT",
          supported_by="SL-G-FLOOR")
-    for _i, (_s, _x) in enumerate(zip(("C", "E"), BEAM_X_FT, strict=True))
+    for _i, (_s, _x) in enumerate(zip(("C", "E"), INTERIOR_POST_X_FT, strict=True))
 ]
 
 

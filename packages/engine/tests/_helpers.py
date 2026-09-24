@@ -100,3 +100,29 @@ def check_context(plan=None, model=None, *, preferences=None, profile="mn-2020",
         resolve_findings=list(resolve_findings or ()),
     )
 
+
+
+def catlin_params(*names: str):
+    """Import ``houses/catlin/params/<name>`` modules for a test to read.
+
+    A bare ``from params import x`` reads whichever house the worker loaded LAST: the loader
+    purges ``plan``/``params`` on every load, so after a starter load the cached ``plan``
+    is starter's and catlin's ``params`` cannot import. This purges and re-imports the way
+    ``source/loader.py`` does, under its lock. One name returns the module, several a tuple.
+    """
+    import importlib
+    import sys
+
+    from typehaus.source import loader
+
+    with loader._IMPORT_LOCK:
+        for mod in [m for m in sys.modules if m in ("plan", "params")
+                    or m.startswith(("plan.", "params."))]:
+            del sys.modules[mod]
+        loader._alias_library()
+        sys.path.insert(0, str(CATLIN))
+        try:
+            mods = tuple(importlib.import_module(f"params.{n}") for n in names)
+        finally:
+            sys.path.remove(str(CATLIN))
+    return mods[0] if len(mods) == 1 else mods

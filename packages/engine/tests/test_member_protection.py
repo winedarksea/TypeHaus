@@ -27,7 +27,7 @@ GLULAM_BEAMS = {"BM-SG-BLW", "BM-SG-BLE"}
 #: KDAT, so 4 1/2" across and two open ply seams each — the site-built beam this section
 #: was written for. Since the porch's four 3-ply beams were retired (2026-09) they are the
 #: only ply beams left.
-PLY_BEAMS = {"BM-BW-RW", "BM-BW-RE"}
+PLY_BEAMS = {"BM-BW-RW", "BM-BW-RE", "BM-BW-LAND-HDR"}
 #: The porch's two single-2x12 ledgers (2026-09), on the COMMON roll at 1 1/2": no seam.
 LEDGERS = {"BM-SG-LDGW", "BM-SG-LDGE"}
 #: Every beam on the wide roll, whatever its width.
@@ -78,11 +78,12 @@ def test_beam_length_is_the_axis_length(rows):
     wide = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 4.5]
     assert len(wide) == 1
     # The canopy's two 3-2x12 headers at 5'-8 5/8" each — PIER_LINE_Y_FT 37'-6" to
-    # GARAGE_Y_SOUTH 43'-2 5/8" — for 11.4'. The porch's four ply beams (50.5' with the
+    # GARAGE_Y_SOUTH 43'-2 5/8" — for 11.4', plus the garage landing's 3'-0" header
+    # (BM-BW-LAND-HDR, 2026-09-24): 14.4'. The porch's four ply beams (50.5' with the
     # headers) left with the centre support line in 2026-09; a beam's billed length is its
     # AXIS, so the tape followed the retirement exactly, which is the property pinned here.
-    assert wide[0]["length_ft"] == pytest.approx(11.4, abs=0.1)
-    assert wide[0]["count"] == 2
+    assert wide[0]["length_ft"] == pytest.approx(14.4, abs=0.1)
+    assert wide[0]["count"] == 3
 
     glulam = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 3.5]
     assert len(glulam) == 1

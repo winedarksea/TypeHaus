@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 7a3df58a86df3c87  
-**Lines:** 141
+**Model hash:** 439b3153780e42bc  
+**Lines:** 139
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -18,14 +18,14 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | 1.25x11.25 rim White-painted PT lumber — rim board (1.25x11.25 rim:post-paint-white) | 20 | LF ordered | 2 pcs, 19.1 LF cut | building |
 | 1.25x11.875 rim — rim board (1.25x11.875 rim) | 140 | LF ordered | 6 pcs, 135.0 LF cut | building |
-| 1.25x7.25 rim — rim board (1.25x7.25 rim) | 16 | LF ordered | 4 pcs, 13.7 LF cut | building |
+| 1.25x7.25 rim — rim board (1.25x7.25 rim) | 16 | LF ordered | 4 pcs, 11.9 LF cut | building |
 | 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 1 pcs, 1.9 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
 | 1.75x11.875 LVL — trimmer (1.75x11.875 LVL) | 184 | LF ordered | 16 pcs, 168.7 LF cut | building |
 | 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,388 | LF ordered | 216 pcs, 2143.4 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
 | 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 44 | ea | 44 pcs, 514.1 LF cut; 535.0 LF in the takeoff | building |
-| 1x4 SPF framing lumber — girt strapping (1x4:spf) | 414 | LF ordered | 56 pcs, 369.0 LF cut | building |
+| 1x4 SPF framing lumber — girt strapping (1x4:spf) | 414 | LF ordered | 56 pcs, 367.4 LF cut | building |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | 280 | LF ordered | 42 pcs, 231.4 LF cut | building |
 | 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 8 | LF ordered | 3 pcs, 7.6 LF cut | building |
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | 20 | LF ordered | 1 pcs, 16.7 LF cut | building |
@@ -41,11 +41,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 114 | LF ordered | 23 pcs, 85.8 LF cut | building |
 | 2x12 — blocking, joist (2x12:kdat) | 464 | LF ordered | 48 pcs, 421.1 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.6 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,692 | LF ordered | 634 pcs, 3952.0 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,692 | LF ordered | 634 pcs, 3951.9 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,814 | LF ordered | 462 pcs, 2437.4 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,860 | LF ordered | 1371 pcs, 7651.3 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,860 | LF ordered | 1371 pcs, 7651.2 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | 88 | LF ordered | 9 pcs, 72.0 LF cut | building |
-| 2x8 — header, jack stud, joist, king stud, landing framing, plate, stud (2x8) | 240 | LF ordered | 45 pcs, 202.2 LF cut | building |
+| 2x8 — header, jack stud, joist, king stud, landing framing, plate, stud (2x8) | 240 | LF ordered | 44 pcs, 199.8 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 430 | LF ordered | 76 pcs, 357.3 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1130 pcs, 329.6 LF cut | building |
@@ -97,15 +97,14 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 1 | ea |  | building |
 | HL33HDG heavy angle, 7 ga, hot-dip galvanized | 2 | ea |  | building |
 | HL35HDG heavy angle, 7 ga, hot-dip galvanized | 4 | ea |  | building |
-| HU28-2Z face-mount hanger, double 2x8 (ZMAX) | 4 | ea |  | building |
+| HU28-2Z face-mount hanger, double 2x8 (ZMAX) | 6 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger | 2 | ea |  | building |
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | 3 | ea |  | building |
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | 4 | ea |  | building |
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | 7 | ea |  | building |
 | KBS1Z knee-brace / beam strap (ZMAX) | 2 | ea |  | building |
 | LS30 skewable angle, gable-end stud to rafter | 22 | ea |  | building |
-| LSSR field-adjustable slope/skew hanger | 1 | ea |  | building |
-| LSSR field-adjustable slope/skew hanger | 1 | ea |  | building |
+| LSCZ adjustable stair-stringer connector (ZMAX) | 2 | ea |  | building |
 | LSSR field-adjustable slope/skew hanger | 38 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 19 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 7 | ea |  | building |
@@ -117,10 +116,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS face-mount joist hanger | 12 | ea |  | building |
 | LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 10 | ea |  | building |
 | LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 10 | ea |  | building |
-| LUS ZMAX face-mount joist hanger (LUS28Z) | 7 | ea |  | building |
-| LUS ZMAX face-mount joist hanger (LUS28Z) | 7 | ea |  | building |
+| LUS ZMAX face-mount joist hanger (LUS28Z) | 4 | ea |  | building |
+| LUS ZMAX face-mount joist hanger (LUS28Z) | 4 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
-| LUS ZMAX face-mount joist hanger (LUSZ) | 4 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 77 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 99 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 10 | ea |  | building |
@@ -139,7 +137,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 80.4 | bf | 2 placed, 5.6 SF plan; 0.25 cy in the takeoff | second |
-| Beam — BEAM_KDAT (beam:BEAM_KDAT) | 127.2 | bf | 9 placed, 14.0 SF plan; 0.39 cy in the takeoff | main |
+| Beam — BEAM_KDAT (beam:BEAM_KDAT) | 139.2 | bf | 10 placed, 14.9 SF plan; 0.43 cy in the takeoff | main |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 84 | bf | 3 placed, 7.1 SF plan; 0.26 cy in the takeoff | main, second |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | 111.6 | bf | 4 placed, 1.0 SF plan; 0.34 cy in the takeoff | second |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
@@ -152,12 +150,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | butyl-tape, 1 1/2" on beam (butyl-tape) | 18 | LF |  | main |
-| butyl-tape, 1 1/4" on deck (butyl-tape) | 32.8 | LF |  | main, second |
-| butyl-tape, 1 1/2" on deck (butyl-tape) | 458.3 | LF |  | main, second |
+| butyl-tape, 1 1/4" on deck (butyl-tape) | 31 | LF |  | main, second |
+| butyl-tape, 1 1/2" on deck (butyl-tape) | 456 | LF |  | main, second |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 4.5 | LF |  | main |
-| butyl-tape-beam, 3" on beam (butyl-tape-beam) | 27.6 | LF |  | main |
+| butyl-tape-beam, 3" on beam (butyl-tape-beam) | 26.8 | LF |  | main |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 19.3 | LF |  | second |
-| butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | 11.4 | LF |  | main |
+| butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | 14.4 | LF |  | main |
 
 ## Construction returns
 
@@ -290,8 +288,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | — |
 | KBS1Z knee-brace / beam strap (ZMAX) | — |
 | LS30 skewable angle, gable-end stud to rafter | — |
-| LSSR field-adjustable slope/skew hanger | — |
-| LSSR field-adjustable slope/skew hanger | — |
+| LSCZ adjustable stair-stringer connector (ZMAX) | — |
 | LSSR field-adjustable slope/skew hanger | — |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | — |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | — |
@@ -306,7 +303,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUS28Z) | — |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | — |
 | LUS ZMAX face-mount joist hanger (LUSZ) | — |
-| LUS ZMAX face-mount joist hanger (LUSZ) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
@@ -320,7 +316,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | BM-SG-BLE, BM-SG-BLW |
-| Beam — BEAM_KDAT (beam:BEAM_KDAT) | BM-BW-FC, BM-BW-FE, BM-BW-GARAGE-SEAT, BM-BW-HOUSE-SEAT, BM-BW-RE, BM-BW-RW, BM-BW-SCSILL, BM-SG-LDGE, BM-SG-LDGW |
+| Beam — BEAM_KDAT (beam:BEAM_KDAT) | BM-BW-FC, BM-BW-FE, BM-BW-GARAGE-SEAT, BM-BW-HOUSE-SEAT, BM-BW-LAND-HDR, BM-BW-RE, BM-BW-RW, BM-BW-SCSILL, BM-SG-LDGE, BM-SG-LDGW |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | BM-M-HALL, BM-S-BATH-E, BM-S-HALL |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2, P-S-TUDOR3, P-S-TUDOR4 |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | PT-M-HP1-L1, PT-M-HP1-L2, PT-M-HP1-L3, PT-M-HP1-L4, PT-M-HP3-L1, PT-M-HP3-L2, PT-M-HP3-L3, PT-M-HP3-L4, PT-SG-HPB1, PT-SG-HPB2, PT-SG-HPB3, PT-SG-HPB4 |
@@ -333,7 +329,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | BM-BW-SCSILL |
 | butyl-tape-beam, 3" on beam (butyl-tape-beam) | BM-BW-FC, BM-BW-FE, BM-BW-GARAGE-SEAT, BM-BW-HOUSE-SEAT |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | BM-SG-BLE, BM-SG-BLW |
-| butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | BM-BW-RE, BM-BW-RW |
+| butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | BM-BW-LAND-HDR, BM-BW-RE, BM-BW-RW |
 | Treated sill plate, KDAT southern yellow pine (treated exterior framing) (pt-sill-plate) | — |
 | Sill seal foam gasket, under the sill plate (sill-seal-foam) | — |
 | Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | — |

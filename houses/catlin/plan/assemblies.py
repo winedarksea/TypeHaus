@@ -4474,10 +4474,18 @@ _HUMID_LINER = (
 # Keeping it flat costs the duplication. That is the honest trade until a variant can state
 # an EMPTY `default_lining` distinct from an absent one — today an empty one means "track
 # the base", and the base's painted gypsum is exactly what must NOT land in this room.
+# ** GYPSUM BEHIND THE MEMBRANE (owner, 2026-09-24). ** This is the one liner wall with
+# ccSPF in it, and R316.4 wants a thermal barrier between that foam and the room: neither the
+# PVC nor the membrane is one. The house's own 5/8" `gwb` goes on the studs, on the DRY side
+# of the membrane, so no moisture-sensitive material sees room air. Durock has no NFPA 275
+# listing and no E96 number; 23/32" plywood also qualifies but would not match the house's
+# 1/2" sheathing everywhere else.
 PLANT_EXT_2X6_HUMID = Assembly(
     tag="PLANT_EXT_2X6_HUMID",
     layers=(
         *_HUMID_LINER,
+        Layer(name="gwb-plant", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),

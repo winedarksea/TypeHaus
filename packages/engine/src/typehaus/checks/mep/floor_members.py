@@ -9,8 +9,9 @@ blocking, a solid-sawn joist or rim — against the envelope (``resolve/mep_enve
 * a **riser** through a member's plan, or a leg running **along** inside it, occupies the
   member itself: that is not a hole anyone drills, it is the member's removal. FAIL.
 * a leg **across** a trimmer, header or block is a bore, graded by ``mep_bores`` — which is
-  an honest UNKNOWN for an LVL, whose holes come off the maker's chart. Across a joist or a
-  rim it is ``mep.run_member_crossing``'s, and skipped here.
+  an honest UNKNOWN for an LVL, whose holes come off the maker's chart. Across a joist, a
+  rim or an open-web trimmer (a truss line) it is ``mep.run_member_crossing``'s, and
+  skipped here.
 
 A riser through a FLAT member (a block laid on its face) is a drilled hole, not a removal,
 and is graded as a bore. I-joist members are ``mep.run_in_joist_flange``'s; the 2x6 boxes
@@ -40,10 +41,9 @@ from typehaus.checks.mep.framing_envelope import (
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.mep_crossings import is_member_line
 
 _CID = "mep.run_through_floor_member"
-#: Categories ``mep.run_member_crossing`` owns when a leg crosses them.
-_CROSSING_OWNED = ("joist", "rim")
 #: The 2x6 box ``resolve/floor_blocking`` frames AROUND a crossing run; its fit is
 #: ``blocking_conflicts``, graded by ``mep.run_through_blocking``.
 _BOX_PART = re.compile(r"-(rail-top|rail-bottom|cheek-lo|cheek-hi)$")
@@ -106,7 +106,8 @@ def run_through_floor_member(ctx: CheckContext) -> list[Finding]:
                 how = relation(leg, member)
                 flat = how == "riser" and z1 - z0 < _plan_width(footprint, normal)
                 if how == "across" or flat:
-                    if member.category not in _CROSSING_OWNED or flat:
+                    # A leg across a member line is ``mep.run_member_crossing``'s.
+                    if not is_member_line(member) or flat:
                         hits.setdefault(leg.tag, []).append(("bore", member, leg, 0.0))
                     continue
                 depth = bite(leg, footprint, normal)

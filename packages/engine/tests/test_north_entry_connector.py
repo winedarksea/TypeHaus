@@ -74,11 +74,12 @@ def test_interior_landing_has_three_clear_feet_and_real_continuing_beams(catlin_
         # No `engineering_note` any more: the escape that turned one into a delegated
         # ENGINEERED finding is deleted, and these beams are graded prescriptively now.
         assert not beam.engineering_note
-        # Their tips are POSTED, ending the 4'-2" interior cantilever that broke R507.5.1.
+        # Their tips hang in BM-BW-LAND-HDR, which is POSTED: that ends the 4'-2" interior
+        # cantilever that broke R507.5.1, and the header spans the whole 36" flight.
         assert set(beam.bearing_refs) == {"BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT",
-                                          f"PT-BW-I{tag[-1]}"}
+                                          "BM-BW-LAND-HDR"}
         end = model.plan.by_tag(beam.end_node).position
-        assert end.y.meters == pytest.approx(y_end)
+        assert end.y.meters == pytest.approx(y_end - inch(4.5).meters)
         # Inside the RO (6'-7"..9'-7"): the west carrier is sistered to FS-BW-FLOOR's joist
         # at 7'-3 3/4" and the east one's face is on the jamb.
         assert ft(6, 7).meters < end.x.meters < ft(9, 7).meters
