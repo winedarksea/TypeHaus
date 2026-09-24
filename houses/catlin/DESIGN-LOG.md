@@ -2756,6 +2756,23 @@ the takeoff, and the field underdrain `FD-SG-FIELD` stayed.
 - **Rate, by hand**: `notes/court_soakaway_storage.md` §7 — Dupuit through W1 at FHWA's
   1,000 ft/day floor carries ~2x a generous melt bound at a 6" mound.
 
+### The overflow moved to W1's west heel, and it was never one invert (2026-09-23)
+
+`FD-SG-OVERFLOW` ran 13' down the court's centreline from the field, sleeved through
+`W-SG-ARCH` (`SP-`/`PR-SG-ARCH-OVERFLOW`, now retired), to FB-B-S2/S3's bedding. With the
+court beds pipeless, W1's stone is the court's body and reaches the closure break, so the leg
+became a 12" level link on W1's heel (x 7'-0") into FB-B-S1's bedding, and the relief lip moved
+from ARCH to W1. Owner's choice over a dedicated pit-to-court pipe.
+- **The "one tie, one invert" was false and still is.** No pipe leaves `SM-B-RADON` at
+  -127 7/16": both ways run through the house footing tile (bed floor -124 7/16", pit inlet
+  -123 7/16"), so the tile surcharges 3-4" before relief. The pit's `overflow_invert` now
+  states its inlet, the level it really relieves at. The court's lip stays at the field
+  profile's underside, so it never backs into the field's gravel.
+- **The trench is also a radon air path** (sub-slab stone → court stone → `AD-SG-COURT`'s
+  grate). Accepted for now; both are open in `plans/TODO.md`, and the fix is one solid pipe
+  from the pit with a water-sealed dip tube.
+- `mep.run_in_slab`'s last suppression (the beam pipe clipping `SL-SG-FIELD`) went with it.
+
 ### The court went 17'-0" so both decks span wall to wall, and the centre line went (2026-09-22)
 
 The court was 19'-0" clear only so the balcony's centre pillars could sit on a 10' grid. At

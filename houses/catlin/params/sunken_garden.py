@@ -1380,6 +1380,11 @@ _BEDDING_UID = {"FT-SG-W1": "SGB002AAAA", "FT-SG-E1": "SGB003AAAA",
 # own, so their stone lets go into the retaining bed it abuts at the grade-beam line.
 _STONE_TO = {"FT-SG-W1": "FB-SG-W2", "FT-SG-E1": "FB-SG-E2"}
 _STONE_FROM = {"FT-SG-W2": "FB-SG-W1", "FT-SG-E2": "FB-SG-E1"}
+# ** THE COURT'S RELIEF IS AT W1 (2026-09-23), where FD-SG-OVERFLOW starts in its stone on the
+# west heel. The lip is the field profile's underside, -127 7/16": the body spills into that
+# trench before it backs into the field's gravel. SM-B-RADON's bridge arrives the same way.
+_RELIEF = {"FT-SG-W1": dict(overflow_ref="FD-SG-OVERFLOW",
+                            overflow_invert=_court_top - inch(SPEC.field_depth_in))}
 _SOAKAWAY = dict(soakaway_depth=inch(SPEC.soakaway_depth_in),
                  void_ratio=SPEC.soakaway_void_ratio,
                  infiltration_in_per_hr=SPEC.soakaway_infiltration_in_per_hr,
@@ -1425,6 +1430,8 @@ FOOTING_BEDDING = [
         **({"discharge_ref": _STONE_TO[f.tag]} if f.tag in _STONE_TO else {}),
         **({} if f.tag in _HOUSE_ADJACENT else _SOAKAWAY),
         **({"inlet_refs": (_STONE_FROM[f.tag],)} if f.tag in _STONE_FROM else {}),
+        **({"inlet_refs": ("SM-B-RADON",)} if f.tag in _RELIEF else {}),
+        **_RELIEF.get(f.tag, {}),
     )
     for f in FOOTINGS
 ]
@@ -1469,10 +1476,9 @@ _SG_SOAKAWAY_BOTTOM = _SG_WALL_BED_BOTTOM - inch(SPEC.soakaway_depth_in)
 # beam plus 12" each side, and the north 12" (-10'-6" to -9'-6") is the strip AD-SG-COURT's
 # riser drops into (params/sunken_garden_drainage.py). 24" had no room north of the beam.
 #
-# ** THE COURT'S RELIEF IS HERE. ** Its overflow lip is FD-SG-OVERFLOW's invert, -127 7/16"
-# (the profile underside), the same one-tie invert SM-B-RADON's bridge spills back at
-# (decision 6). That lip sits 36" INSIDE the 42" drained section, so the drained frost
-# section floods before relief — pre-existing, not reachable by gravity, and stated by
+# The court's relief was here until 2026-09-23 and moved to FB-SG-W1 with FD-SG-OVERFLOW
+# (`_RELIEF` above). The lip still sits 36" INSIDE the 42" drained section, so the drained
+# frost section floods before relief — not reachable by gravity, and stated by
 # `drainage.soakaway_storage`'s second finding rather than hidden.
 ARCH_BED_WIDTH_IN = 36.0
 FOOTING_BEDDING.append(
@@ -1483,9 +1489,7 @@ FOOTING_BEDDING.append(
         non_frost_susceptible=True,
         drain_tile=False,
         **_SOAKAWAY,
-        inlet_refs=("FD-SG-FIELD", "AD-SG-COURT", "SM-B-RADON"),
-        overflow_ref="FD-SG-OVERFLOW",
-        overflow_invert=_court_top - inch(SPEC.field_depth_in),
+        inlet_refs=("FD-SG-FIELD", "AD-SG-COURT"),
     )
 )
 
@@ -1543,6 +1547,8 @@ SOAKAWAY_TOP = _SG_WALL_BED_BOTTOM        # the drained section's floor = the co
 BALCONY_FRONT_Y_FT = _y_balcony_front
 COURT_X_FT = (_x_in_w, _x_in_e)
 COURT_Y_S_FT = _y_in_s
+WALL_W_AXIS_X_FT = _x_ax_w          # W-SG-W1/W2's axis
+WALL_N_END_Y_FT = _y_wall_end       # W1/E1's north end, at the closure break
 
 
 GARDEN_SLAB = Slab(
@@ -3184,6 +3190,8 @@ SEQUENCE_NOTES = [
 # TR-SG-CAP-BKW/-BKE/-FRW/-FRE SGCP01AAAA..SGCP04AAAA. N-SGM-NW/-NE/-FW/-FE keep theirs.
 # ** And with the soakaway course (2026-09-22): DRW-SG-MAIN SGDR01AAAA, FD-SG-LEAD-W/-E
 # SGFD03AAAA/SGFD04AAAA. **
+# ** And with the overflow's move to the west heel (2026-09-23): SP-SG-ARCH-OVERFLOW
+# SGSP01AAAA, PR-SG-ARCH-OVERFLOW SGPR01AAAA. **
 BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS,
                      *FOOTING_BEDDING, *SEQUENCE_NOTES,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,

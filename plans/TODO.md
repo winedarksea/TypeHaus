@@ -128,6 +128,13 @@ with every suppression lifted.
 
 ### Structural/framing residuals
 
+- **The court/sump overflow is not one invert, and it is an air path.** `FD-SG-OVERFLOW`
+  (catlin, moved to W1's west heel 2026-09-23) reaches `SM-B-RADON` only through the house
+  footing tile, 3-4" above its -127 7/16" lip, so relief surcharges that tile first; and its
+  stone trench joins the sub-slab radon stone to the court's, which opens at `AD-SG-COURT`'s
+  grate — an outdoor-air short-circuit of the passive stack. Owner accepts both for now. The
+  fix is one dedicated solid pipe from the pit at -127 7/16" to the court stone, with a water
+  seal (dip tube) at the pit.
 - **`FT-B-S1..S4` bear on 2" of 40 psi XPS (`FOOTING_FPSF_20`), and the owner rejects XPS
   under a footing** (creep under permanent load, 2026-09-23 Form-A-Drain review). Decide
   whether these four go to the stone bed like every other house strip, and what then holds

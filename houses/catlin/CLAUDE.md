@@ -2269,10 +2269,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   (-13'-7 7/16" = `SOAKAWAY_TOP`), the four soakaway beds at `_SG_SOAKAWAY_BOTTOM`
   (-14'-7 7/16"); the step is at y = -11'-0". `FB-SG-ARCH` is 36" wide so `AD-SG-COURT`'s
   riser drops into the 12" strip north of the beam.
-- **Relief is one invert, -127 7/16".** `FB-SG-ARCH` overflows to `FD-SG-OVERFLOW` → SM-B-RADON
-  and the sump's bridge spills back to `FB-SG-ARCH` at the same level. That lip is 36" inside
-  the drained section — the frost section floods before relief; `drainage.soakaway_storage`
-  says so as an UNKNOWN. Don't try to fix it by gravity; there is no lower outlet.
+- **Relief is at `FB-SG-W1`, -127 7/16" (2026-09-23).** `FD-SG-OVERFLOW` is a short level
+  trench on W1's west heel (x 7'-0") across the closure joint into FB-B-S1's bedding; the
+  centre-line trench and its grade-beam sleeve are retired. **It is NOT one invert**: court and
+  pit share overflow through the house footing tile (bed floor -124 7/16", pit inlet -123
+  7/16"), so `SM-B-RADON` relieves at its inlet and the tile surcharges 3-4" first. That lip is
+  36" inside the drained section — the frost section floods before relief;
+  `drainage.soakaway_storage` says so as an UNKNOWN. A true one-invert tie is a dedicated
+  pit-to-court pipe (plans/TODO.md).
 - `SM-B-RADON` pumps through `PR-B-SUMP-DISCH` (`PipeSystem.SUMP_DISCHARGE`, sleeved through
   `W-B-W1`) into `TR-RF-LEADER-W`'s extension riser, so `RG-W-BASIN` also takes pumped water
   (a `rain_garden_capacity` UNKNOWN). The pump's `check_valve`/`freeze_relief` are graded by

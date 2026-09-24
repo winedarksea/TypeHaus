@@ -185,7 +185,8 @@ def test_the_soakaway_is_a_course_below_the_drained_section(catlin_model):
     # The balcony leader is NOT an inlet: it hangs outside the east wall.
     arch = catlin_model.plan.by_tag("FB-SG-ARCH")
     assert "TR-SG-LEADER-SE" not in arch.inlet_refs
-    assert set(arch.inlet_refs) == {"FD-SG-FIELD", "AD-SG-COURT", "SM-B-RADON"}
+    assert set(arch.inlet_refs) == {"FD-SG-FIELD", "AD-SG-COURT"}
+    assert catlin_model.plan.by_tag("FB-SG-W1").inlet_refs == ("SM-B-RADON",)
 
 
 def test_the_garden_field_has_a_real_underdrain_and_not_a_prose_one(catlin_model):
@@ -428,16 +429,16 @@ def test_every_drainage_source_reaches_something_that_disposes_of_water(catlin_m
         assert reached, f"{source}: {problem} (followed {path})"
 
 
-def test_the_bridge_runs_both_ways_and_it_is_one_tie(catlin_model):
+def test_the_bridge_runs_both_ways_through_the_house_tile(catlin_model):
     """**Owner decision 6, as a graph rather than as a paragraph.**
 
-    The sump and the court's soakaway each fall back to the other. That is deliberately a
-    CYCLE — one tie at a common invert, no valves, no high-water device, no directional
-    control — and the walk has to tolerate it rather than call it a fault.
+    The sump and the court's soakaway each fall back to the other: deliberately a CYCLE, no
+    valves, no high-water device, and the walk has to tolerate it rather than call it a fault.
 
-    Since 2026-09-22 the court's end of the tie is FB-SG-ARCH's soakaway course (the well is
-    retired). Gravity runs sump -> course and it comes free: the course's top is
-    -13'-7 7/16", below the pit's own floor.
+    Since 2026-09-23 the court's end is FB-SG-W1, where FD-SG-OVERFLOW starts on the west
+    heel. It is NOT one invert: the court spills at the field profile's underside, and the pit
+    reaches the court only back through the house tile, so it relieves at its own inlet.
+    Gravity still runs sump -> court free: W1's drained floor is below the pit's.
     """
     from typehaus.resolve.drainage_network import EdgeKind
 
@@ -445,23 +446,41 @@ def test_the_bridge_runs_both_ways_and_it_is_one_tie(catlin_model):
     reached, path, problem = network.reaches_disposal(
         "SM-B-RADON", first_hop=EdgeKind.OVERFLOW, not_being="SM-B-RADON")
     assert reached, problem
-    assert path[-1] == "FB-SG-ARCH", path
+    assert path[:2] == ["SM-B-RADON", "FB-SG-W1"], path
 
     reached, path, problem = network.reaches_disposal(
-        "FB-SG-ARCH", first_hop=EdgeKind.OVERFLOW, not_being="FB-SG-ARCH")
+        "FB-SG-W1", first_hop=EdgeKind.OVERFLOW, not_being="FB-SG-W1")
     assert reached, problem
-    assert path == ["FB-SG-ARCH", "FD-SG-OVERFLOW", "SM-B-RADON"], path
+    assert path == ["FB-SG-W1", "FD-SG-OVERFLOW", "SM-B-RADON"], path
 
-    # One invert, three ways of saying it.
     plan = catlin_model.plan
-    for invert in (plan.by_tag("SM-B-RADON").overflow_invert,
-                   plan.by_tag("FB-SG-ARCH").overflow_invert,
+    for invert in (plan.by_tag("FB-SG-W1").overflow_invert,
                    plan.by_tag("FD-SG-OVERFLOW").invert):
         assert invert.inches == pytest.approx(-127.4375)
-    # Downhill without a pump: the course's top is below the pit's floor.
+    sump = plan.by_tag("SM-B-RADON")
+    assert sump.overflow_invert.inches == pytest.approx(sump.inlet_invert.inches)
+    assert plan.by_tag("FB-SG-ARCH").overflow_ref is None
+    # Downhill without a pump: the court's drained floor is below the pit's floor.
     pit_floor = next(s.z0_m for s in catlin_model.solids if s.tag == "SM-B-RADON")
-    arch = next(b for b in catlin_model.footing_beddings if b.tag == "FB-SG-ARCH")
-    assert arch.z0_m < pit_floor
+    w1 = next(b for b in catlin_model.footing_beddings if b.tag == "FB-SG-W1")
+    assert w1.z0_m < pit_floor
+
+
+def test_the_overflow_runs_on_the_west_heel(catlin_model):
+    """A short level leg from inside FB-SG-W1's stone to FB-B-S1's bedding: no trench down
+    the court, and nothing crosses the grade beam (its sleeve and pipe are retired)."""
+    run = catlin_model.plan.by_tag("FD-SG-OVERFLOW")
+    xs = {round(p.x.inches, 3) for p in run.path}
+    assert xs == {84.0}, "2 ft west of W-SG-W1's axis, on the footing's heel"
+    assert run.end_invert is None, "level: it carries water both ways"
+    w1 = next(b for b in catlin_model.footing_beddings if b.tag == "FB-SG-W1")
+    s1 = next(b for b in catlin_model.footing_beddings if b.tag == "FB-B-S1")
+    from shapely.geometry import Point, Polygon
+    start, end = run.path[0].xy_m, run.path[-1].xy_m
+    assert Polygon(w1.outline).contains(Point(start))
+    assert Polygon(s1.outline).distance(Point(end)) < 1e-6
+    for retired in ("SP-SG-ARCH-OVERFLOW", "PR-SG-ARCH-OVERFLOW"):
+        assert catlin_model.plan.by_tag(retired) is None
 
 
 def test_the_field_lateral_falls_into_the_stone_it_feeds(catlin_model):

@@ -161,8 +161,7 @@ def test_catlin_variants_are_isolated_and_keep_wall_identity() -> None:
     against_wall = next(item for item in against_items if item.tag == "W-SG-W2")
     reference_wall = next(item for item in reference_items if item.tag == "W-SG-W2")
     assert against_wall.uid == reference_wall.uid
-    assert any(item.tag == "SP-SG-ARCH-OVERFLOW" for item in reference_items)
-    assert any(item.tag == "PR-SG-ARCH-OVERFLOW" for item in reference_items)
+    assert any(item.tag == "FD-SG-OVERFLOW" for item in reference_items)
 
 
 def test_parameter_context_restores_and_unknown_house_parameter_fails() -> None:

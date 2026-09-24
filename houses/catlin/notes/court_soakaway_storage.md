@@ -74,7 +74,8 @@ The check prints "155 cf of voids (388 sf) + 93 cf infiltrated over 48 h (presum
 
 ## 5. The lip
 
-`FB-SG-ARCH.overflow_invert` = court top -109 7/16" − 18" field = **-127 7/16"**. The drained
+`FB-SG-W1.overflow_invert` = court top -109 7/16" − 18" field = **-127 7/16"** (on
+`FB-SG-ARCH` until 2026-09-23, when the overflow moved to W1's west heel). The drained
 section's bottom, the lowest `z0` in the body, is -163 7/16". The lip is 36" above it, so the
 drained frost section fills before the water goes to `FD-SG-OVERFLOW` → `SM-B-RADON`.
 Reported as UNKNOWN: "sits 36" above the drained section's bottom".

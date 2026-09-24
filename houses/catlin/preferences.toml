@@ -454,7 +454,8 @@ suppress = [
   # `mep.run_through_stud` is 0 FAIL. A new over-bore anywhere in the house now reports,
   # which is what the per-run form was protecting.
 
-  # ** mep.run_in_slab: 2 RUNS INSIDE A POUR. NEW CHECK, 2026-09-19. AN OPEN CAMPAIGN. **
+  # ** mep.run_in_slab: 2 RUNS INSIDE A POUR, BOTH CLOSED (B5 2026-09-22; PR-SG-ARCH-OVERFLOW
+  # retired 2026-09-23 with the overflow's move to the west heel). NEW CHECK, 2026-09-19. **
   #
   # The check this file's supply-band note above has asked for since the cold band moved
   # ("**A `mep.run_in_slab` check is the honest follow-on and is not written yet.**"). It
@@ -476,11 +477,6 @@ suppress = [
   #     the wall, one foot of it, instead of on a transit leg — and what it owes is a cast
   #     sleeve at (18'-0", 26'-0"), which is a concrete decision taken before the pour and
   #     not a duct decision taken after it.
-  #   * PR-SG-ARCH-OVERFLOW's first leg straddles SL-SG-FIELD's underside — its envelope
-  #     breaks the slab's bottom face for six inches at the field's north edge. Either the
-  #     pipe drops 2" and runs clear beneath, or the slab edge owes it a cast void. It is
-  #     six inches of pipe and an owner-visible decision about neither; left open with the
-  #     rest of the campaign rather than nudged quietly.
   #
   # Itemised, not blanket: a NEW run in a pour anywhere in the house still reports.
   # ** mep.run_interference: ONE ITEMISED RUN, AND IT IS THE WATER HEATER (P3, 2026-09-19). **
@@ -503,7 +499,6 @@ suppress = [
   # them somebody else's decision: a 2x8 wet wall, a furred chase, or a 1/2" sleeve — and the
   # sleeve is R403.5.3's question, not this check's.
   "mep.run_interference:PR-A-HW-STUBATH",
-  "mep.run_in_slab:PR-SG-ARCH-OVERFLOW",
 
   # ** mep.riser_through_deck: 47 RISERS THROUGH A DECK WITH NO HOLE DRAWN (35 on 2026-09-23: 6 on a member, 29 undrawn). NEW CHECK,
   # 2026-09-19. AN OPEN CAMPAIGN, AND THE ONE plans/TODO.md HAS NAMED SINCE 2026-09-15. **

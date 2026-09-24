@@ -36,7 +36,6 @@ def test_the_five_that_tie_into_nothing_are_not_graded(catlin_model_ro) -> None:
     orphans = {tie.child for tie in records if tie.parent is None}
     assert orphans == {
         "PR-B-MAIN-DRAIN", "PR-B-ERV-COND", "PR-B-WH-TPR", "PR-M-DRYER-COND",
-        "PR-SG-ARCH-OVERFLOW",
     }
     assert all(tie.drop_m is None for tie in records if tie.parent is None)
 

@@ -773,24 +773,20 @@ RADON_SUMP = [
          # presents. A literal because this file is `# haus: editable` and may hold only
          # literals; the derivation is here so the next reader can re-shoot it.
          inlet_invert=inch(-123.4375),
-         # ** THE BRIDGE (owner decision 6, 2026-09-14): ONE TIE, AT ONE INVERT. **
+         # ** THE BRIDGE (owner decision 6, 2026-09-14): the pit and the court share overflow. **
          # This pit is a SEALED RADON sump with a 1/3 hp pump on the backup panel, and it is
-         # the storm collector for the whole house perimeter. Its two failure modes are a
-         # pump that stops and an inflow past the pump's rate, and until now nothing said
-         # where the water went in either case.
+         # the storm collector for the whole house perimeter. When the pump stops or is
+         # outrun, the water goes to the court's soakaway course, downhill with no pump.
          #
-         # It goes to the court's soakaway course, and **the path is downhill and needs no
-         # pump**: FB-SG-ARCH's stone runs down to -14'-7 7/16", its course's top is
-         # -13'-7 7/16", **36" below this tie and 26 1/2" below this pit's own floor**.
-         #
-         # The tie is at -10'-7 7/16", **the same invert `FD-SG-OVERFLOW` arrives at**: one
-         # penetration level, no valves, no high-water device, no directional control.
-         # Deliberately 4" BELOW the inlet invert above, so the pit relieves to the court
-         # before it backs up into the house footing tile — which is the only ordering this
-         # design asks for. Water finding its way to the court's stone instead of the pump is
-         # acceptable; so is the reverse (FB-SG-ARCH relieves back here at the same invert).
-         overflow_ref="FB-SG-ARCH",
-         overflow_invert=inch(-127.4375)),
+         # ** IT GOES BACK THROUGH THE HOUSE TILE, AT THIS PIT'S INLET INVERT (2026-09-23). **
+         # This said "one tie at -10'-7 7/16", 4" below the inlet, so the pit relieves before it
+         # backs up into the footing tile". No pipe leaves the pit at that level: the path is
+         # the house beds' own tile and stone to FB-B-S1, then FD-SG-OVERFLOW on the court's
+         # west heel into FB-SG-W1. So it relieves at -10'-3 7/16" and the house tile IS the
+         # path. The court relieves back the same way. A dedicated pit-to-court pipe would make
+         # it one invert (plans/TODO.md).
+         overflow_ref="FB-SG-W1",
+         overflow_invert=inch(-123.4375)),
 ]
 
 # --- the sump's pumped discharge (2026-09-22) -------------------------------------------
@@ -807,7 +803,7 @@ SUMP_DISCHARGE = [
             # Starts at the lid (the slab top): the pump's own riser in the pit is the pump's.
             # 8.3" off the pit's centre since it moved to the chase, inside its 9" radius.
             elevations=(inch(0), inch(88.4375), inch(87.8375), inch(87.4375))),
-    # The wall crossing, sleeved like SP-SG-ARCH-OVERFLOW, on the 8" pour's centreline 4" in
+    # The wall crossing, sleeved, on the 8" pour's centreline 4" in
     # from the axis; centre = invert at the wall + 3/4".
     SleevePenetration(uid="DS557CEW46", tag="SP-B-W1-SUMP-DISCH", host_ref="W-B-W1",
                       position=pt(inch(4), ft(34, 6)), pipe_diameter=inch(1.5),

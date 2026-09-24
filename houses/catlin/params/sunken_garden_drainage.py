@@ -1,5 +1,6 @@
 """Sunken garden court drainage — the field's underdrain, the court's area drain and its
-overflow leg. All three let go into (or relieve) FB-SG-ARCH's soakaway course.
+overflow leg. The first two let go into FB-SG-ARCH's soakaway course; the leg relieves the
+court's body of stone from FB-SG-W1 to the house tile and SM-B-RADON.
 
 Split out of ``params/sunken_garden.py``, which publishes the court geometry these runs are
 drawn against. Everything here is generated; uids are minted by hand (``haus fmt`` does not
@@ -14,25 +15,21 @@ from typehaus import (
     FrenchDrain,
     ft,
     inch,
-    PipeRun,
-    PipeSystem,
     pt,
-    Service,
-    SleevePenetration,
 )
 
 from params.sunken_garden import (
     ARCH_AXIS_Y_FT,
     ARCH_BED_WIDTH_IN,
     BALCONY_FRONT_Y_FT,
-    COURT_TOP,
     COURT_X_FT,
     COURT_Y_S_FT,
     FIELD_BOTTOM,
     FIELD_X_MID_FT,
-    FIELD_Y_N_FT,
     FIELD_Y_S_FT,
     SOAKAWAY_TOP,
+    WALL_N_END_Y_FT,
+    WALL_W_AXIS_X_FT,
 )
 
 # --- the field's underdrain, and the court's overflow leg --------------------------
@@ -113,64 +110,35 @@ COURT_AREA_DRAIN = AreaDrain(
                pt(ft(COURT_X_FT[0]), ft(BALCONY_FRONT_Y_FT))),
 )
 
-# ** THE OVERFLOW LEG: THE COURT'S SECOND WAY OUT. ** The soakaway course is in glacial
-# till, and MPCA's own numbers say that is a detention structure rather than an infiltration
-# one (HSG D, 0.06 in/hr design rate). This leg is FB-SG-ARCH's `overflow_ref`: when the
-# course and the drained section above it fill to -127 7/16", the water goes to the sump.
+# ** THE OVERFLOW LEG: THE COURT'S SECOND WAY OUT, AND THE SUMP'S. ** The soakaway course is
+# in glacial till, and MPCA's own numbers say that is a detention structure rather than an
+# infiltration one (HSG D, 0.06 in/hr design rate). This leg lets the court and SM-B-RADON
+# share overflow either way when one of them is behind: it is FB-SG-W1's `overflow_ref`, and
+# the pit's bridge arrives by it.
 #
-# ** Its invert is AT the profile underside. ** -127 7/16", 8" above the underdrain's trench
-# floor. Storage in a soakaway is only the volume beneath its inlet, so the stone must fill
-# and SPILL — never back up into the gravel, which would drown the rootzone from below.
+# ** ON THE WEST HEEL, NOT DOWN THE COURT (2026-09-23). ** It ran down the centreline from the
+# field, sleeved through W-SG-ARCH (SP-/PR-SG-ARCH-OVERFLOW, retired, uids spent). Since the
+# court beds run no pipe, W1's stone IS the court's body and reaches to the closure break, so
+# the leg is a short level trench from inside that stone, 2'-0" west of the wall axis on the
+# footing's heel, across the joint into FB-B-S1's bedding. Almost no digging beyond the bed.
 #
-# ** THE TRENCH STOPS AT THE GRADE BEAM'S NORTH FACE, AND THAT IS THE POINT. ** The leg from
-# the field north to here is a 4" pipe SLEEVED through W-SG-ARCH at mid-depth, not an
-# excavation: a stone trench crossing the beam at this invert would undermine the strut the
-# free-body note holds the whole court together with. `FrenchDrain` has no way to say
-# "sleeve", so the modelled trench is only the part that really is one; the cast opening is
-# `SP-SG-ARCH-OVERFLOW` below. North of the court it ties into the house collector, which as of
-# today falls to the same sump.
-# ** IT NOW REACHES THE HOUSE STONE, AND IT USED TO STOP SIX INCHES SHORT. ** The trench
-# ended at `_y_in_n` (-0'-10"), which is the porch deck's north edge and not a drainage
-# elevation at all — the run stopped there because that is where the court's own geometry
-# stops, and the sentence above ("North of the court it ties into the house collector") was
-# the whole of the connection. `FB-B-S2`/`FB-B-S3`'s bedding stone starts 6" further north
-# at -0'-4", so what lay between the two was six inches of undisturbed clay, and
-# `drainage.outfall_connection` says so.
-#
-# `_HOUSE_BED_FACE_Y_FT` is that face, measured. Six inches is a trivial amount of digging
-# and the defect it fixes is not trivial: this is the court's SECOND way out, and the leg
-# that was missing is the one at the far end of it.
-_HOUSE_BED_FACE_Y_FT = -4.0 / 12.0
+# ** Its invert is AT the field profile's underside, -127 7/16". ** Storage in a soakaway is
+# only the volume beneath its inlet, so the stone must fill and SPILL — never back up into the
+# field's gravel. The house end is NOT at that level: FB-B-S1's stone bottoms at -124 7/16" and
+# the pit takes its tile at -123 7/16", so either way the water passes through the house
+# footing tile 3-4" above this invert. A true one-invert tie would be a dedicated pipe from
+# the pit (plans/TODO.md). The trench's stone also joins the sub-slab radon stone to the
+# court's, which opens at AD-SG-COURT's grate — logged there too.
+_HOUSE_BED_FACE_Y_FT = -4.0 / 12.0   # FB-B-S1/S2's south face, measured
+_OVERFLOW_X_FT = WALL_W_AXIS_X_FT - 2.0
 GARDEN_OVERFLOW = FrenchDrain(
     uid="SGFD02AAAA", tag="FD-SG-OVERFLOW",
-    path=(pt(ft(FIELD_X_MID_FT), ft(FIELD_Y_N_FT + 1.0)),
-          pt(ft(FIELD_X_MID_FT), ft(_HOUSE_BED_FACE_Y_FT))),
+    path=(pt(ft(_OVERFLOW_X_FT), ft(WALL_N_END_Y_FT - 1.0)),
+          pt(ft(_OVERFLOW_X_FT), ft(_HOUSE_BED_FACE_Y_FT))),
     invert=FIELD_BOTTOM,
     trench_width=inch(6), trench_depth=inch(8),
     tile=DrainTile(diameter=inch(4), sock=False, discharge="SM-B-RADON"),
     discharge_ref="SM-B-RADON",
 )
 
-# The overflow crosses the grade beam as a pipe, not as a stone trench. Authoring its cast
-# sleeve keeps the opening visible to reinforcement coordination and concrete takeoff.
-GARDEN_OVERFLOW_SLEEVE = SleevePenetration(
-    uid="SGSP01AAAA", tag="SP-SG-ARCH-OVERFLOW", host_ref="W-SG-ARCH",
-    position=pt(ft(FIELD_X_MID_FT), ft(ARCH_AXIS_Y_FT)),
-    pipe_diameter=inch(4), sleeve_diameter=inch(6),
-    purpose=Service.DRAIN,
-    axis="horizontal", center_elevation=GARDEN_OVERFLOW.invert + inch(2),
-)
-GARDEN_OVERFLOW_BEAM_PIPE = PipeRun(
-    uid="SGPR01AAAA", tag="PR-SG-ARCH-OVERFLOW", system=PipeSystem.DRAIN,
-    path=(pt(ft(FIELD_X_MID_FT), ft(ARCH_AXIS_Y_FT - 1.0)),
-          pt(ft(FIELD_X_MID_FT), ft(ARCH_AXIS_Y_FT + 1.0))),
-    diameter=inch(4), material="pvc",
-    # A half-inch fall over this two-foot crossing supplies the minimum 1/4 in/ft slope;
-    # its midpoint remains concentric with the sleeve above.
-    elevations=(GARDEN_OVERFLOW.invert - COURT_TOP + inch(0.25),
-                GARDEN_OVERFLOW.invert - COURT_TOP - inch(0.25)),
-    serves=(),
-)
-
-BASEMENT_ELEMENTS = [GARDEN_UNDERDRAIN, COURT_AREA_DRAIN, GARDEN_OVERFLOW,
-                     GARDEN_OVERFLOW_SLEEVE, GARDEN_OVERFLOW_BEAM_PIPE]
+BASEMENT_ELEMENTS = [GARDEN_UNDERDRAIN, COURT_AREA_DRAIN, GARDEN_OVERFLOW]

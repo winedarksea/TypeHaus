@@ -88,9 +88,8 @@ def test_a_clip_is_not_a_length_of_pipe_in_a_pour() -> None:
 
 def test_catlin_reports_exactly_the_one_it_has(catlin_ctx) -> None:
     """Pinned so a campaign that fixes one, or a geometry move that adds one, is visible."""
-    assert sorted(tuple(f.element_tags) for f in _fails(catlin_ctx)) == [
-        ("PR-SG-ARCH-OVERFLOW", "SL-SG-FIELD"),
-    ]
+    # PR-SG-ARCH-OVERFLOW, the last, retired with the overflow's move to W1's heel (2026-09-23).
+    assert sorted(tuple(f.element_tags) for f in _fails(catlin_ctx)) == []
 
 
 def test_a_run_lying_ALONG_a_face_is_not_a_crossing() -> None:

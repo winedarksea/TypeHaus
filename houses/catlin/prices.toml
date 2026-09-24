@@ -1552,7 +1552,7 @@
 # At $6-14/LF installed that is $18-42/SF. The money is within 3% of the $/cy rate it replaces;
 # what changes is that the multiplier is now 3, not ~230, so the rate is one an estimator can
 # check against a quote. See plans/cost-options.md on whether 761 LF is the right LENGTH.
-"drain_tile" = { low = 18, high = 42, unit = "SF" }  # 240.7 SF = 722 LF @ $6-14/LF (2026-09-22: was 254.0 SF; the court's two well leads and the field lateral's 28" dive went with DRW-SG-MAIN) (-2.9 SF on 2026-09-10: the court shortened 28' -> 26', so the south wall's bed ring and the two side rings lost 4'-0" of run between them, and the narrower strips shortened every ring's cross-run)
+"drain_tile" = { low = 18, high = 42, unit = "SF" }  # 153.2 SF = 460 LF @ $6-14/LF (2026-09-23: was 240.7 SF / 722 LF — the six court beds run no pipe, and the overflow leg is a 12" link on W1's heel) (2026-09-22: was 254.0 SF; the court's two well leads and the field lateral's 28" dive went with DRW-SG-MAIN) (-2.9 SF on 2026-09-10: the court shortened 28' -> 26', so the south wall's bed ring and the two side rings lost 4'-0" of run between them, and the narrower strips shortened every ring's cross-run)
 # ** THE HYDRANT PIT ONLY SINCE 2026-09-22. ** DRW-SG-MAIN (4.36 cy) is retired: the court's
 # soakaway is now a 12" course under four of its beds, bought in [footing_bedding] by the
 # yard. What is left is DRW-G-HYDRANT's 0.10 cy, spotted off the #57 order; the $/cy stays
@@ -1573,7 +1573,8 @@
 # the foot in [drainage].
 "area_drain" = { low = 0, high = 0 }  # 0.04 cy — bills in [drainage]
 "area_drain_riser" = { low = 0, high = 0 }  # 0.01 cy — bills in [drainage]
-# The two sunken-garden trenches: FD-SG-FIELD and FD-SG-OVERFLOW in the field. FD-SG-LEAD-W/E
+# The two sunken-garden trenches: FD-SG-FIELD in the field and FD-SG-OVERFLOW, a 1' link on
+# W1's west heel since 2026-09-23 (it ran down the court). FD-SG-LEAD-W/E
 # retired with DRW-SG-MAIN on 2026-09-22 (4 -> 2 trenches). Same washed stone as the drywell,
 # but a quarter yard is a hand-barrowed quantity 9' down a court with no truck access, so the
 # placement dominates the material by a wide margin.
@@ -1583,7 +1584,7 @@
 # $/cy, and a steep one: the money in a hand-dug trench 9' down is the access and the barrow.
 # (It is NOT a lump — this table bills by the yard — so the retired leads took their share
 # with them: $204-561 for four trenches became $104-286 for two.)
-"french_drain" = { low = 400, high = 1100 }  # 0.26 cy in two hand-dug trenches
+"french_drain" = { low = 400, high = 1100 }  # 0.14 cy in two hand-dug trenches (0.26 until the overflow moved to W1's heel, 2026-09-23)
 # "dowel" =    # 0 cy
 # A 16"x8" footing is 0.0329 cy/LF, so this is $9.20-14.80/LF. Inch Calculator's dimension
 # table back-solves to a consistent $256-267/cy but on a $137/cy ready-mix basis; Twin Cities
