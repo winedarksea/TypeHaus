@@ -159,6 +159,13 @@ def radon_control_notes(model: ResolvedModel) -> list[str]:
             f"{'SEALED' if sump.sealed_cover else 'UNSEALED'} COVER, VENT "
             f"{sump.vent_ref or 'NOT NAMED'})" for sump in sorted(sumps, key=lambda s: s.tag))
             + ". THE 10 FT OF PERFORATED PIPE UNDER THE MEMBRANE IS NOT MODELLED.")
+        tiled = {bed.tag for bed in model.footing_beddings if bed.drain_tile}
+        for sump in sorted(sumps, key=lambda s: s.tag):
+            fed = [tag for tag in sump.inlet_refs if tag in tiled]
+            if fed:
+                notes.append(f"SUBP. 4.E: {sump.tag} IS CONNECTED TO THE INTERIOR DRAIN TILE OF "
+                             f"{len(fed)} FOOTING BEDDINGS, AND ITS SEALED COVER TERMINATES "
+                             f"THE VENT.")
     else:
         notes.append("SUBP. 3: NO SEALED COLLECTION POINT IS MODELLED.")
     notes.extend(_radon_riser_notes(model, risers))

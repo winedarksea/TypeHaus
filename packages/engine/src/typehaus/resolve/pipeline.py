@@ -149,6 +149,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.landscape import resolve_landscape
 
         findings.extend(resolve_landscape(model))
+        # Each slab's base course and under-slab board, drawn (derived: never billed).
+        from typehaus.resolve.slab_layers import resolve_slab_layers
+
+        resolve_slab_layers(model)
     with _stage("rooms"):
         findings.extend(resolve_rooms(plan, model))
         # After resolve_rooms: needs each room's clear face to hang a ceiling under.

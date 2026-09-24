@@ -124,6 +124,10 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     # A planting bed's own earth (a raised terrace): the landscaper places the soil, the
     # excavator the fill under it.
     "planting_soil": "landscaping", "planting_fill": "earth",
+    # A slab's drawn base course and under-slab board (resolve/slab_layers.py). The
+    # fallback only: `trade_rules.solid_trades` re-files each by its material, as the
+    # takeoff files the same layer (stone -> earth, XPS -> insulation).
+    "sub_slab": "earth",
     # A dropped soffit box and a room's ceiling plane are the drywaller's overhead surfaces.
     "soffit": "drywall", "ceiling": "drywall",
     # Pours, and what is cast into them. Equal to the fallback; named so the parity test's

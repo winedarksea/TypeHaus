@@ -340,7 +340,9 @@ VENT_RISERS = [
             systems=(PipeSystem.RADON, PipeSystem.VENT), diameter=inch(3),
             # (1', 35'-1.3") since 2026-09-23, out of FO-M-ERV-OA's trimmers and into the
             # grown FO-M-ERV-EA; exit_offset shrank to keep the exterior riser at y=37'-0".
-            chase_position=pt(ft(1), inch(421.3)), start_elevation=ft(-8, -10),
+            # Starts at the ceiling band since 2026-09-23, where PR-B-RADON-LEG arrives from the
+            # pit (mep_drainage.py): -109 7/16" + 85 1/2".
+            chase_position=pt(ft(1), inch(421.3)), start_elevation=inch(-23.9375),
             chase_offset=pt(ft(8, 7.5), ft(0)), chase_offset_elevation=ft(19, 6),
             exit_elevation=ft(23, 10), exit_offset=pt(ft(0), inch(22.7)),
             wall_ref="W-A-N2", attachment="pipe_strap"),

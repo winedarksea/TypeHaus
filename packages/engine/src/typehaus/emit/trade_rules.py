@@ -200,6 +200,8 @@ def solid_trades(category: str | None, material: str | None = None) -> tuple[str
     mat = (material or "").strip().lower()
     if key in _CAST_BY_MATERIAL and mat == "concrete":
         return ("concrete",)
+    if key == "sub_slab":  # the layer's own trade, as takeoff/envelope.py bills it
+        return (material_trade(mat) or "concrete",)
     if key in _LAID_BY_MATERIAL and mat and mat != "concrete":
         laid = material_trade(mat) or "framing"
         # FPSF wing foam is laid on the bearing soil in the foundation sequence, by the

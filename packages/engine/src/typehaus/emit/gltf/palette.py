@@ -228,6 +228,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "trellis": (0.55, 0.47, 0.36, 1.0),            # KDAT post, weathered
     "planting_soil": (0.24, 0.16, 0.10, 1.0),      # a bed's topsoil: rich dark brown
     "planting_fill": (0.40, 0.31, 0.22, 1.0),      # the fill under it, a lighter earth
+    # A slab's base course/board; its material's own colour wins where it states one.
+    "sub_slab": (0.56, 0.55, 0.53, 1.0),
     "ridge_cap": (0.85, 0.86, 0.87, 1.0),  # vented standing-seam ridge cap
     "corner_trim": (0.85, 0.86, 0.87, 1.0),  # eave corner trim (continuous skin)
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing

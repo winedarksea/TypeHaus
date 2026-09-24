@@ -95,10 +95,10 @@ def run_starts_in(run: FrenchDrain, ctx: CheckContext, body: frozenset) -> bool:
 def reaches_through_stone(ctx: CheckContext, run: FrenchDrain, target: str) -> bool:
     """Does this run's trench end in a body of stone that reaches ``target``?
 
-    The connection a trench makes to a receiver it does not touch: it ends in a bedding, the
-    bedding's body is continuous with the receiver, and water is in the receiver. Both halves
-    are geometric — touching in plan, overlapping in section — so this claims nothing the
-    model cannot show.
+    The connection a trench makes to a receiver it does not touch: it ends in a bedding, and
+    the bedding's body is continuous with the receiver or is served by a lead that ends in
+    it. Every half is geometric — touching in plan, overlapping in section, a lead's end in
+    the footprint — so this claims nothing the model cannot show.
     """
     from typehaus.resolve.drainage_network import BODY_TOUCH_TOLERANCE_M, stone_bodies
 
@@ -112,7 +112,24 @@ def reaches_through_stone(ctx: CheckContext, run: FrenchDrain, target: str) -> b
         body = bodies[bed.tag]
         if not run_starts_in(run, ctx, frozenset({bed.tag})):
             continue
-        if body_touches(ctx, body, footprints[target], BODY_TOUCH_TOLERANCE_M):
+        if (body_touches(ctx, body, footprints[target], BODY_TOUCH_TOLERANCE_M)
+                or lead_serves(ctx, body, target, footprints[target], run)):
+            return True
+    return False
+
+
+def lead_serves(ctx: CheckContext, body: frozenset, target: str, footprint,
+                via: FrenchDrain | None = None) -> bool:
+    """A run (other than ``via``) picks up from this body and ends in ``target``."""
+    from shapely.geometry import Point as ShapelyPoint
+
+    for lead in _elements(ctx):
+        if not isinstance(lead, FrenchDrain) or (via is not None and lead.tag == via.tag):
+            continue
+        if lead.discharge_ref != target or not run_starts_in(lead, ctx, body):
+            continue
+        end = ShapelyPoint(lead.path[-1].x.meters, lead.path[-1].y.meters)
+        if footprint[0].distance(end) <= PLAN_ARRIVAL_SLACK_M:
             return True
     return False
 

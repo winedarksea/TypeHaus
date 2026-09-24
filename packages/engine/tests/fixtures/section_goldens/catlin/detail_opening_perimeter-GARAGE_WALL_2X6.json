@@ -7,258 +7,6 @@
       "node": "polyline",
       "points": [
         [
-          795.625,
-          -51.716535433070874
-        ],
-        [
-          798.125,
-          -51.716535433070874
-        ],
-        [
-          798.125,
-          -34.0
-        ],
-        [
-          795.625,
-          -34.0
-        ]
-      ],
-      "layer": "A-WALL-INSU",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CGF105AAAA",
-      "tag": "W-GF-N-DR/eps-int"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          795.625,
-          -51.716535433070874
-        ],
-        [
-          798.125,
-          -51.716535433070874
-        ],
-        [
-          798.125,
-          -34.0
-        ],
-        [
-          795.625,
-          -34.0
-        ]
-      ],
-      "pattern": "none",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "icf-eps"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          798.125,
-          -51.716535433070874
-        ],
-        [
-          804.125,
-          -51.716535433070874
-        ],
-        [
-          804.125,
-          -34.0
-        ],
-        [
-          798.125,
-          -34.0
-        ]
-      ],
-      "layer": "A-WALL",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CGF105AAAA",
-      "tag": "W-GF-N-DR/concrete"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          798.125,
-          -51.716535433070874
-        ],
-        [
-          804.125,
-          -51.716535433070874
-        ],
-        [
-          804.125,
-          -34.0
-        ],
-        [
-          798.125,
-          -34.0
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          804.125,
-          -51.716535433070874
-        ],
-        [
-          806.6250000000001,
-          -51.716535433070874
-        ],
-        [
-          806.6250000000001,
-          -34.0
-        ],
-        [
-          804.125,
-          -34.0
-        ]
-      ],
-      "layer": "A-WALL-INSU",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CGF105AAAA",
-      "tag": "W-GF-N-DR/eps-ext"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          804.125,
-          -51.716535433070874
-        ],
-        [
-          806.6250000000001,
-          -51.716535433070874
-        ],
-        [
-          806.6250000000001,
-          -34.0
-        ],
-        [
-          804.125,
-          -34.0
-        ]
-      ],
-      "pattern": "none",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "icf-eps"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          806.6250000000001,
-          -36.0
-        ],
-        [
-          806.875,
-          -36.0
-        ],
-        [
-          806.875,
-          -34.0
-        ],
-        [
-          806.6250000000001,
-          -34.0
-        ]
-      ],
-      "layer": "A-WALL-PATT",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CGF105AAAA",
-      "tag": "W-GF-N-DR/coil-gap"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          806.6250000000001,
-          -36.0
-        ],
-        [
-          806.875,
-          -36.0
-        ],
-        [
-          806.875,
-          -34.0
-        ],
-        [
-          806.6250000000001,
-          -34.0
-        ]
-      ],
-      "pattern": "membrane",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "air-barrier"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          806.875,
-          -36.0
-        ],
-        [
-          806.9250000000001,
-          -36.0
-        ],
-        [
-          806.9250000000001,
-          -34.0
-        ],
-        [
-          806.875,
-          -34.0
-        ]
-      ],
-      "layer": "A-WALL",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CGF105AAAA",
-      "tag": "W-GF-N-DR/coil-ext"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           799.865,
           49.99999999999999
         ],
@@ -615,11 +363,11 @@
           -37.5
         ],
         [
-          795.125,
+          806.6250000000001,
           -37.5
         ],
         [
-          795.125,
+          806.6250000000001,
           -34.0
         ],
         [
@@ -643,11 +391,11 @@
           -37.5
         ],
         [
-          795.125,
+          806.6250000000001,
           -37.5
         ],
         [
-          795.125,
+          806.6250000000001,
           -34.0
         ],
         [
@@ -667,7 +415,7 @@
       "node": "polyline",
       "points": [
         [
-          807.925,
+          807.625,
           -39.0
         ],
         [
@@ -679,7 +427,7 @@
           -35.0
         ],
         [
-          807.925,
+          807.625,
           -35.0
         ]
       ],
@@ -695,7 +443,7 @@
       "node": "hatch",
       "boundary": [
         [
-          807.925,
+          807.625,
           -39.0
         ],
         [
@@ -707,7 +455,7 @@
           -35.0
         ],
         [
-          807.925,
+          807.625,
           -35.0
         ]
       ],
@@ -885,131 +633,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          796.8750000000001,
-          -36.63333333333333
-        ],
-        "name": ""
-      },
-      "at": [
-        789.0224803149608,
-        -36.63333333333333
-      ],
-      "to": [
-        796.8750000000001,
-        -36.63333333333333
-      ],
-      "text": "eps-int 2.5\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          801.125,
-          -40.425
-        ],
-        "name": ""
-      },
-      "at": [
-        789.0224803149608,
-        -40.425
-      ],
-      "to": [
-        801.125,
-        -40.425
-      ],
-      "text": "concrete 6\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          805.375,
-          -44.21666666666666
-        ],
-        "name": ""
-      },
-      "at": [
-        789.0224803149608,
-        -44.21666666666666
-      ],
-      "to": [
-        805.375,
-        -44.21666666666666
-      ],
-      "text": "eps-ext 2.5\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          806.75,
-          -48.008333333333326
-        ],
-        "name": ""
-      },
-      "at": [
-        789.0224803149608,
-        -48.008333333333326
-      ],
-      "to": [
-        806.75,
-        -48.008333333333326
-      ],
-      "text": "coil-gap 0.25\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          806.9000000000001,
-          -51.79999999999999
-        ],
-        "name": ""
-      },
-      "at": [
-        789.0224803149608,
-        -51.79999999999999
-      ],
-      "to": [
-        806.9000000000001,
-        -51.79999999999999
-      ],
-      "text": "coil-ext 0.05\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
     },
     {
       "space": "model",

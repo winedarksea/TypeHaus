@@ -10,6 +10,8 @@
 # plan/mep_venting.py.
 
 from typehaus import (
+    DrainTile,
+    FrenchDrain,
     PipeRun,
     PipeSystem,
     Service,
@@ -726,8 +728,13 @@ TPR_DISCHARGE = [
 ]
 
 # --- Radon sump + shared radon/plumbing vent riser ---------------------------------
-# A sealed radon sump in the NW basement furnace room, riding RM-M-MECH's framed shaft
-# closet. Its passive radon vent shares the plumbing vent's chase up to 23'-10", then turns
+# A sealed radon sump in the basement furnace room. ** IT STANDS AT (5'-9", 28'-0"), OFF THE
+# NW CORNER, SINCE 2026-09-23. ** Centred on the chase it sat 19 1/2" below FT-B-W1/FT-B-N4's
+# bearing and cut 9" into both (`mep.pit_footing_clearance`). The corner has no clean station:
+# the panels' 110.26 space, the hung ERV and the ESS clearance fill it. Here it clears every
+# footing, all three, and the water heater; its 3" radon leg (PR-B-RADON-LEG) climbs from the
+# sealed lid and crosses the ceiling to the chase, where the riser takes over. That riser
+# shares the plumbing vent's chase up to 23'-10", then turns
 # out through the north gable siding and back up. ** IT JOGS EAST INSIDE THE ATTIC FIRST **
 # — at x=1'-0" the 6:12 roof underside is 20'-8 1/4" and the riser cannot stand up there at
 # all, so `VentRun.chase_offset` steps it 12'-4" through the FS-ATTIC joist webs to
@@ -735,8 +742,7 @@ TPR_DISCHARGE = [
 # roof surface, resolve/vent_termination.py), not authored — an authored absolute can't
 # follow a rake.
 RADON_SUMP = [
-    # Centred under VR-M-RADON-VENT's chase (1'-0", 35'-1.3"), which moved there 2026-09-23.
-    Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(ft(1), inch(421.3)),
+    Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(ft(5, 9), ft(28)),
          diameter=inch(18), depth=inch(24), host_ref="SL-B-FLOOR",
          sealed_cover=True, radon_vent=True, vent_ref="VR-M-RADON-VENT",
          # CKT-SUMP was already on the panel schedule but the pit only implied a pump;
@@ -757,16 +763,16 @@ RADON_SUMP = [
          # arrives in it. `Drywell.inlet_refs` has always carried the mirror of this;
          # `Sump` did not.
          #
-         # The perimeter rings are ONE connected body of washed stone that abuts this pit —
-         # `drainage.tile_lead` establishes that from the geometry rather than from a
-         # sentence, and it is why no lead pipe is owed here the way one is in the court.
+         # The perimeter rings are ONE connected body of washed stone, and since the pit left
+         # the corner it no longer abuts them: FD-B-SUMP-LEAD carries that body in from
+         # FB-B-STR3, 2'-8" east, which is what `drainage.tile_lead` now finds.
          inlet_refs=("FB-B-S1", "FB-B-S2", "FB-B-S3", "FB-B-S4",
                      "FB-B-E1", "FB-B-E2",
                      "FB-B-N1", "FB-B-N2", "FB-B-N3", "FB-B-N4",
                      "FB-B-W1", "FB-B-W2",
                      "FB-B-CS", "FB-B-CS2", "FB-B-CN", "FB-B-CN2",
                      "FB-B-STR", "FB-B-STR3", "FB-B-STR3B",
-                     "FD-SG-OVERFLOW"),
+                     "FD-SG-OVERFLOW", "FD-B-SUMP-LEAD"),
          # The level water ARRIVES at, which is not the pit floor (-11'-4 15/16") and not
          # the slab. The perimeter beds bottom at -10'-4 7/16" and the derived tile floats
          # one course of bedding above that, so -10'-3 7/16" is the invert every ring
@@ -787,22 +793,38 @@ RADON_SUMP = [
          # it one invert (plans/TODO.md).
          overflow_ref="FB-SG-W1",
          overflow_invert=inch(-123.4375)),
+    # The house tile's lead into the pit: out of FB-B-STR3's stone (the nearest bed of the
+    # connected body), west along y=28'-0" under the slab, falling 1/2" to the pit's inlet.
+    FrenchDrain(uid="D5Q8234WSS", tag="FD-B-SUMP-LEAD",
+                path=(pt(ft(9, 6), ft(28)), pt(ft(5, 9), ft(28))),
+                invert=inch(-123.4375), end_invert=inch(-123.9375),
+                trench_width=inch(6), trench_depth=inch(8),
+                tile=DrainTile(diameter=inch(4), sock=True, discharge="SM-B-RADON"),
+                discharge_ref="SM-B-RADON"),
+    # The sealed lid to the chase: solid 3" PVC up to the ceiling band and across to the
+    # riser's foot, falling back to the pit so condensate drains to it. Basement-relative.
+    PipeRun(uid="90RG08DW5Y", tag="PR-B-RADON-LEG", system=PipeSystem.RADON,
+            path=(pt(ft(5, 9), ft(28)), pt(ft(5, 9), ft(28)), pt(ft(1, 6), ft(28)),
+                  pt(ft(1, 6), inch(421.3)), pt(ft(1), inch(421.3))),
+            diameter=inch(3), material="pvc",
+            elevations=(inch(0), inch(84), inch(84.5), inch(85.5), inch(85.5))),
 ]
 
 # --- the sump's pumped discharge (2026-09-22) -------------------------------------------
-# 1 1/2" PVC Sch 40 out of the sealed lid through a gasketed grommet at (1'-4", 34'-6"), 4"
-# east of the radon/vent bundle at (1'-0", 34'-6"), up to -1'-9" (above grade -2'-10",
-# below the pour top), west through W-B-W1 6" south of W-B-N4's inner face, and down at
+# 1 1/2" PVC Sch 40 out of the sealed lid through a gasketed grommet 5" east of the pit's
+# centre (5'-9", 28'-0"; moved 2026-09-23), up to -1'-9" (above grade -2'-10", below the pour
+# top), across the ceiling to W-B-W1, through it 6" south of W-B-N4's inner face, and down at
 # >= 1/4"/ft to a wye on TR-RF-LEADER-W-EXT-RISER at -1'-10". Elevations are basement-
 # relative (datum -109 7/16"). Check valve and ice guard are on the pump (SM-B-RADON).
 SUMP_DISCHARGE = [
     PipeRun(uid="23NF4WJS89", tag="PR-B-SUMP-DISCH", system=PipeSystem.SUMP_DISCHARGE,
-            path=(pt(ft(1, 4), ft(34, 6)), pt(ft(1, 4), ft(34, 6)),
+            path=(pt(ft(6, 2), ft(28)), pt(ft(6, 2), ft(28)), pt(ft(1, 9), ft(28)),
+                  pt(ft(1, 9), ft(34, 6)),
                   pt(inch(-10.5), ft(34, 6)), pt(inch(-10.5), ft(35, 6))),
             diameter=inch(1.5), material="pvc",
             # Starts at the lid (the slab top): the pump's own riser in the pit is the pump's.
-            # 8.3" off the pit's centre since it moved to the chase, inside its 9" radius.
-            elevations=(inch(0), inch(88.4375), inch(87.8375), inch(87.4375))),
+            elevations=(inch(0), inch(89.4375), inch(89.1375), inch(88.4375),
+                        inch(87.8375), inch(87.4375))),
     # The wall crossing, sleeved, on the 8" pour's centreline 4" in
     # from the axis; centre = invert at the wall + 3/4".
     SleevePenetration(uid="DS557CEW46", tag="SP-B-W1-SUMP-DISCH", host_ref="W-B-W1",

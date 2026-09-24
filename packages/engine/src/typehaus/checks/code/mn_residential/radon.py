@@ -7,7 +7,10 @@ system — sealed sump, shared radon/vent riser, exterior junction box for a fut
 
 What is gradeable from the model, and what is not:
 
-* **Subpart 4.E, sealed sump cover** — ``Sump.sealed_cover``. Direct.
+* **Subpart 4.E, the sump as the vent's termination** — a sealed cover (``Sump.sealed_cover``)
+  on a sump *connected to interior drain tile*: a tiled bed it names in ``inlet_refs``, under
+  the heated slab, whose stone reaches the pit or is carried into it by a lead
+  (``interior_tile_feeders``). Direct.
 * **Subpart 5, the vent pipe** — that one exists, rises from the collection point, and
   terminates 12" above the roof. The 12" is *derived* by ``resolve/vent_termination.py``
   and already graded by ``mep.vent_termination_height``, so this rule asserts the system's
@@ -94,9 +97,18 @@ def radon_control_system(ctx: CheckContext) -> list[Finding]:
                                 "subpart 3's connection cannot be traced", (riser.tag,),
                                 _CODE))
         for sump in served:
-            if sump.sealed_cover:
+            feeders = interior_tile_feeders(ctx, sump)
+            if sump.sealed_cover and feeders:
                 out.append(_pass(_CID, f"{sump.tag} is the sealed collection point for "
-                                       f"{riser.tag}", _CODE))
+                                       f"{riser.tag}, connected to interior drain tile in "
+                                       f"{len(feeders)} footing beddings under the slab "
+                                       f"(subpart 4.E)", _CODE))
+            elif sump.sealed_cover:
+                out.append(_unknown(_CID, f"{sump.tag} is sealed but no interior drain tile "
+                                          f"under the slab is traced into it, so subpart "
+                                          f"4.E's connection is not shown; subpart 3's T "
+                                          f"in the gas-permeable layer is not modelled",
+                                    (sump.tag,), _CODE))
             else:
                 out.append(_fail(_CID, f"{sump.tag} vents radon through an unsealed cover; "
                                        "subpart 4.E requires a sealed or gasketed cover on a "
@@ -104,6 +116,43 @@ def radon_control_system(ctx: CheckContext) -> list[Finding]:
                                  (sump.tag,), _CODE))
         out.extend(_separation_findings(ctx, riser))
         out.append(_fan_power_finding(ctx, riser))
+    return out
+
+
+def interior_tile_feeders(ctx: CheckContext, sump: Sump) -> list[str]:
+    """Tiled beds the sump names, under the heated slab, whose water physically reaches it.
+
+    "Interior drain tile" is read as tile beneath the conditioned floor — the perimeter rings'
+    inner halves lie in stone continuous with the slab's gas-permeable layer. Reaching the
+    pit is ``drainage.tile_lead``'s test: continuous stone, or a lead that ends in it.
+    """
+    from shapely.geometry import Polygon
+
+    from typehaus.checks.mep.drainage_receivers import (
+        body_touches,
+        lead_serves,
+        receiver_footprints,
+    )
+    from typehaus.resolve.drainage_network import BODY_TOUCH_TOLERANCE_M, stone_bodies
+    from typehaus.resolve.site_earth import heated_floor_footprint
+
+    pit = receiver_footprints(ctx).get(sump.tag)
+    heated = heated_floor_footprint(ctx.model)
+    if pit is None or heated is None:
+        return []
+    beds = {bed.tag: bed for bed in ctx.model.footing_beddings}
+    bodies = stone_bodies(ctx.model)
+    out = []
+    for tag in sump.inlet_refs:
+        bed = beds.get(tag)
+        if bed is None or not bed.drain_tile or len(bed.outline) < 3:
+            continue
+        if not Polygon(bed.outline).intersects(heated):
+            continue
+        body = bodies.get(tag, frozenset({tag}))
+        if (body_touches(ctx, body, pit, BODY_TOUCH_TOLERANCE_M)
+                or lead_serves(ctx, body, sump.tag, pit)):
+            out.append(tag)
     return out
 
 

@@ -56,6 +56,7 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   trellis: "Trellis",
   planting_soil: "Planting soil",
   planting_fill: "Planting bed fill",
+  sub_slab: "Under-slab layer",
   downspout: "Downspout",
   sump: "Sump pit",
   thermal_break: "Thermal break",

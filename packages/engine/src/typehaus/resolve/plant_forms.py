@@ -134,21 +134,30 @@ def tree(mesh: MeshBuilder, *, has_bloom: bool) -> None:
 
 def vegetable(mesh: MeshBuilder, *, has_bloom: bool) -> None:
     """A staked fruiting vegetable (a tomato): a stake, 4-5 leafy clumps spiralling up it, and
-    fruit hung on the OUTSIDE of the foliage, because the fruit is what reads at a distance.
-    ``has_bloom`` is the type's fruit (``build_prototype``), as on a tree."""
+    a truss of 2-3 fruit hung off the lower outside of each clump, half sunk in its surface,
+    so the fruit reads at a distance and is never in the air. ``has_bloom`` is the type's
+    fruit (``build_prototype``), as on a tree."""
     rng = mesh.rng
     mesh.tube("stem", (0.0, 0.0, 0.0), (0.0, 0.0, 1.0), 0.02, 0.015, sides=4)
     tiers = rng.randint(4, 5)
+    radius, squash, fruit = 0.2, 0.75, 0.06
     for n in range(tiers):
         a = n * 2.4 + rng.uniform(-0.3, 0.3)        # ~137 deg phyllotaxis, no two stacked
         z = 0.22 + 0.62 * n / (tiers - 1)
-        mesh.blob("foliage", _polar(rng.uniform(0.08, 0.16), a, z), (0.2, 0.2, 0.15),
-                  lumpiness=0.2)
-    if has_bloom:
-        for _ in range(rng.randint(8, 10)):
-            a = rng.uniform(0.0, 2.0 * math.pi)
-            mesh.berry("fruit", _polar(rng.uniform(0.3, 0.36), a, rng.uniform(0.25, 0.75)),
-                       0.045)
+        cx, cy, cz = _polar(rng.uniform(0.08, 0.16), a, z)
+        mesh.blob("foliage", (cx, cy, cz), (radius, radius, radius * squash), lumpiness=0.2)
+        if not has_bloom or n == tiers - 1:         # nothing fruits in the top clump
+            continue
+        for _ in range(rng.randint(2, 3)):
+            # Outward from the stake, and down: a truss hangs under its leaves.
+            b = a + rng.uniform(-0.9, 0.9)
+            drop = rng.uniform(0.25, 0.7)
+            ux, uy, uz = math.cos(b) * math.cos(drop), math.sin(b) * math.cos(drop), -math.sin(drop)
+            # On the nominal surface: the lumpy one is 0.8-1.2 R, and a fruit spanning
+            # R -/+ 0.06 straddles all of it, half in the leaves and half out.
+            reach = radius
+            mesh.berry("fruit", (cx + ux * reach, cy + uy * reach,
+                                 cz + uz * reach * squash), fruit)
 
 
 FORM_BUILDERS = {"grass": grass, "perennial": perennial, "groundcover": groundcover,

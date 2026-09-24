@@ -4,7 +4,8 @@
 gets the water there. This grades the line: its system, that it leaves the pit, that it
 lands on the receiver, that it does not re-rise after its high point (a trap that freezes),
 that a check valve holds the column, and that a buried receiver shallower than frost has a
-freeze relief. ADVISORY like the rest of site drainage.
+freeze relief. ADVISORY like the rest of site drainage. ``mep.pit_footing_clearance`` asks
+the pit's other question: whether the hole it sits in undermines a footing.
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ from __future__ import annotations
 from shapely.geometry import Point, Polygon
 
 from typehaus.checks._authoring import advisory, not_applicable
+from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
@@ -120,3 +122,40 @@ def _freeze(ctx: CheckContext, sump: Sump, receiver, tags) -> list[Finding]:
                           f"against a {frost_in:.0f}\" frost depth and {sump.tag}'s line has "
                           f"no freeze relief: a frozen receiver dead-heads the pump",
                      tags, Result.UNKNOWN)]
+
+
+@check(Tier.CODE, "mep.pit_footing_clearance")
+def pit_footing_clearance(ctx: CheckContext) -> list[Finding]:
+    """A pit dug below a footing's bearing plane stays outside its 45° influence line.
+
+    ``mep.footing_clearance``'s rule for a pipe, applied to the hole a sump sits in: its plan
+    distance to the footing must be at least how far its floor sits below the bearing. Graded
+    per footing — the distance to a pour is the least distance to any of its members, so no
+    interior joint can pose as a free edge the way it could for a pipe's nearest boundary.
+    """
+    cid = "mep.pit_footing_clearance"
+    pits = [s for s in ctx.model.solids if s.category == "sump" and len(s.outline) >= 3]
+    if not pits:
+        return [not_applicable(cid, "no sump pit is modelled")]
+    bearings = [(s, Polygon(s.outline)) for s in ctx.model.solids
+                if s.category in ("footing", "pad") and len(s.outline) >= 3]
+    out: list[Finding] = []
+    for pit in pits:
+        hole = Polygon(pit.outline)
+        undermined = []
+        for footing, footprint in sorted(bearings, key=lambda item: item[0].tag):
+            below = footing.z0_m - pit.z0_m
+            gap = hole.distance(footprint)
+            if below > 1e-9 and gap + 1e-9 < below:
+                where = ("overlaps it" if gap <= 1e-9
+                         else f"is {gap / _IN:.1f}\" off it")
+                undermined.append(f"{footing.tag} ({below / _IN:.1f}\" below its bearing, "
+                                  f"{where})")
+        if not undermined:
+            out.append(_pass(cid, f"{pit.tag} clears every footing's 45° influence line",
+                             (pit.tag,)))
+            continue
+        out.append(_fail(
+            cid, f"{pit.tag} is inside the 45° influence line of {'; '.join(undermined)} — "
+                 f"move the pit or step the footing down", (pit.tag,)))
+    return out

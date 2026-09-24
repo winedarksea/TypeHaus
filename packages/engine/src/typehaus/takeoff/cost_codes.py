@@ -268,6 +268,7 @@ _SOLID_TRADE_CODES: dict[str, CostCode] = {
     "insulation": CostCode("2100", "07 21 00", "insulation"),  # an XPS frost wing
     "landscaping": CostCode("1100", "32 90 00", "landscaping"),  # the putting green
     "masonry": CostCode("1200", "07 92 00", "masonry"),        # a wythe's sealant joints
+    "earth": CostCode("1000", "31 20 00", "earth"),            # terrace fill, slab base
 }
 
 

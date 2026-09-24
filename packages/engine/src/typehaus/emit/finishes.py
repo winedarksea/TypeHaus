@@ -29,7 +29,7 @@ LAYER_KEYS = frozenset({
 
 # Whole-element surfaces that are not a layer of a stack.
 ELEMENT_KEYS = frozenset({
-    "floor", "roof", "slab", "footing", "pad", "column", "beam", "furniture", "earth",
+    "floor", "roof", "slab", "sub_slab", "footing", "pad", "column", "beam", "furniture", "earth",
     "opening_frame", "glass", "solar",
 })
 

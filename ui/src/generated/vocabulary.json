@@ -150,6 +150,7 @@
     "stringer": 10054466,
     "structure": 10384199,
     "stud": 11699540,
+    "sub_slab": 9407623,
     "sump": 5001815,
     "thermal_break": 15895590,
     "tread": 11699540,
@@ -315,6 +316,7 @@
     "stringer": 10054466,
     "structure": 10384199,
     "stud": 11699540,
+    "sub_slab": 9407623,
     "sump": 5001815,
     "thermal_break": 15895590,
     "tread": 11699540,
@@ -517,6 +519,9 @@
     "soffit": [
       "drywall"
     ],
+    "sub_slab": [
+      "concrete"
+    ],
     "sump": [
       "drainage"
     ],
@@ -601,6 +606,7 @@
     "slab": "concrete",
     "snow_guard": "roofing",
     "soffit": "drywall",
+    "sub_slab": "earth",
     "sump": "drainage",
     "thermal_break": "concrete",
     "trellis": "landscaping",
