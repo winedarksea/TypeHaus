@@ -121,3 +121,54 @@ Not a venting *design*: whether a vent is required, where it may connect, its si
 termination are `mep.vent_reachability`, `mep.vent_termination_height`, `mep.pipe_sizing`
 and `checks/mep/vent_path.py`. This note is about one thing — the shape of the profile
 between the drainage connection and the terminal.
+
+## 5. The router: a vent never falls on its way to the stack
+
+The oracle for `routing/search.shortest_route(rising=True)`, which `haus route` uses for
+every vent and radon target (`routing/trades/pipe.rises`), and for the vent root being the
+stack's own VENT riser (`cli/route_roots._stack_leg`). Reproduced by
+`tests/test_routing_vent.py`.
+
+MN 905.1 wants a vent graded to drain back to its drain. For a search that is one rule: no
+step from the origin (the fixture end) to the root (the stack) may lose elevation. A vent
+that dips under a duct and climbs back is a trap, however cheap its lane.
+
+**The world.** A vertical section, x and z each at 0, 24 and 48 inches, all at y = 0. The
+centre node (24, 24) is a duct and is absent. Costs are the §4 drain-note units, inches of
+equivalent travel:
+
+- a 24" horizontal step costs 24; on the top row (z = 48) it costs 60, which is 24 of
+  travel plus 36 for crossing a finished room;
+- a 24" vertical step costs 12, which is 24 x the 0.5 riser weight;
+- each bend costs 24.
+
+Node ids go in (z, x) order: 0 (0,0), 1 (24,0), 2 (48,0), 3 (0,24), 4 (48,24), 5 (0,48),
+6 (24,48), 7 (48,48). The origin is node 3. The stack stands at x = 48, so nodes 4 and 7
+are both on it.
+
+**Unconstrained.** The cheapest route dips under the duct:
+
+| route | steps | bends | cost |
+|---|---|---|---|
+| 3 → 0 → 1 → 2 → 4 (under) | 12 + 24 + 24 + 12 = 72 | 2 × 24 = 48 | **120** |
+| 3 → 5 → 6 → 7 (over, onto the stack) | 12 + 60 + 60 = 132 | 1 × 24 = 24 | 156 |
+| 3 → 5 → 6 → 7 → 4 (over, down to the root) | 132 + 12 = 144 | 2 × 24 = 48 | 192 |
+
+A router without the rule proposes the first route: a 24" dip, which is a trap.
+
+**Rising.** Step 3 → 0 loses 24", so the whole dip is refused. The only way off node 3 is up
+to node 5, and 7 → 4 falls too, so the answer is **3 → 5 → 6 → 7, cost 156, one bend**. The
+vent reaches the stack 24" higher than the node it was drawn to, which is where a vent
+rising over a duct bank really meets the stack.
+
+**Refusal.** Offer the stack only at node 4, the root's own level, and no rising route
+exists. The search returns nothing, and the refusal is the finding: the lane has to go
+somewhere else, or the stack has to be offered higher.
+
+**Why the root is the stack, not the chase point.** A `VentRun` bundles its risers ±2.4"
+either side of `chase_position` (`vent_termination.riser_polylines`). On catlin the chase
+point is between the radon and vent risers, inside both envelopes, so a vent routed to it
+was routed into the radon pipe. The root is now the VENT riser's own leg, clipped to the
+vent's own elevation band plus 24" of headroom (`_STACK_HEADROOM_M`). The radon riser stays
+a hard prism, and a terminal's one-step leniency covers only the prisms the terminal itself
+stands in (`routing/graph.build_graph`).
