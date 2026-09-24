@@ -564,9 +564,10 @@ SUPPLY = [
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
     PipeRun(uid="CBPW43AAAA", tag="PR-B-HW-SUITE", system=PipeSystem.WATER_HOT,
-            # Into the riser's joist bay from the SOUTH: FS-M-WEST blocks that bay at
-            # x=14'-6" under the laundry duct's drop.
-            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(16, 5), ft(17)), pt(ft(16, 5), ft(18)),
+            # Tees off PR-B-HW-TRUNK at y=17'-0" and runs square east under the joists,
+            # into the riser's bay from the SOUTH: FS-M-WEST blocks that bay at x=14'-6"
+            # under the laundry duct's drop, and PR-B-HW-KITCH holds y=15'-6".
+            path=(pt(ft(6, 6), ft(17)), pt(ft(16, 5), ft(17)), pt(ft(16, 5), ft(18)),
                   pt(ft(16, 5), ft(18)),
                   pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(22, 4)),
                   pt(ft(14, 3.6), ft(22, 4)), pt(ft(14, 3.6), ft(22, 4)),

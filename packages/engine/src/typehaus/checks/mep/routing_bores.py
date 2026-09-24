@@ -214,9 +214,12 @@ def run_through_plate(ctx: CheckContext) -> list[Finding]:
     across the plate through its whole thickness: the plate is severed whatever the width.
     """
     from typehaus.resolve.mep_bores import top_plate_cut
+    from typehaus.resolve.room_openings import rooms_by_storey, wall_is_exterior
 
     ties = plate_ties(ctx)
     beside = standing_beside(ctx)
+    bearing = bearing_wall_tags(ctx)
+    rooms = rooms_by_storey(ctx.model)
     out: list[Finding] = []
     seen = 0
     for tag, wall, cuts in _crossings(ctx):
@@ -232,9 +235,11 @@ def run_through_plate(ctx: CheckContext) -> list[Finding]:
         seen += 1
         covered = ties.get(wall.tag, frozenset())
         tied = "*" in covered or tag in covered
+        # R602.6.1's own scope: exterior walls and interior BEARING walls.
+        governed = wall.tag in bearing or wall_is_exterior(ctx.model, wall, rooms)
         verdicts = [(cut, top_plate_cut(cut.profile, cut.diameter_in, tie=tied,
                                         through_in=cut.through_in,
-                                        spans_width=cut.spans_width))
+                                        spans_width=cut.spans_width, governed=governed))
                     for cut in plates]
         bad = [(cut, v) for cut, v in verdicts if v.ok is False]
         unsure = [(cut, v) for cut, v in verdicts if v.ok is None]

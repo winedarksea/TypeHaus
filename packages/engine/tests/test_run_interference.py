@@ -147,12 +147,12 @@ def test_catlin_reports_the_suite_stack_head_crossing(catlin_ctx) -> None:
     each other, two feet from the stack head they share. Invisible while the exemption was
     a single bool for the pair.
 
-    **Re-measured by hand on 2026-09-19**, when the reading stopped being prism-against-
-    prism. The old pair of numbers — 2.21" in plan, 5.00" in elevation — were read off two
-    BANDED boxes, and 5.00" was never reachable: these are 3" DWV, 3.50" outside, so two of
-    them share at most 3.50" of elevation even drawn concentric. What is there is a single
-    station where the two centrelines are 0.86" apart in plan and 0.9" apart in z, which
-    puts 2.64" of each pipe inside the other on both axes.
+    **Re-measured by hand on 2026-09-23**, when the stack left the master closet for
+    W-M-CLN at (12'-6", 18'-0"). PR-A-STUBATH-DRAIN's leg 3 falls 9'-8" -> 9'-6 1/2" from
+    (9'-7 1/2", 19'-4") to the head; PR-M-S-SUITE-WC-DRAIN's leg 2 falls 9'-8 1/2" ->
+    9'-5 3/8" along x=11'-2.81". Where they cross the two centrelines are about 1.1" apart
+    in z, so two 3.50" OD pipes share about 2.4" — 2.44" as measured at the station. It was
+    2.64" with the stack at (13'-0", 16'-10.8").
     """
     message = next(
         (f.message for f in run_interference(catlin_ctx)
@@ -160,10 +160,10 @@ def test_catlin_reports_the_suite_stack_head_crossing(catlin_ctx) -> None:
          and "PR-A-STUBATH-DRAIN" in f.element_tags
          and "PR-M-S-SUITE-WC-DRAIN" in f.element_tags), None)
     assert message is not None, "the crossing at the suite stack head is reported"
-    assert '2.64" inside each other in plan' in message
-    assert '2.64" in elevation' in message
+    assert '2.44" inside each other in plan' in message
+    assert '2.44" in elevation' in message
     # Both centrelines, at the station — the two numbers a plan file authors.
-    assert "runs at 9'-7.3\"" in message and "at 9'-6.4\"" in message
+    assert "runs at 9'-7.2\"" in message and "at 9'-6.1\"" in message
     # Leg for leg, as it was measured by hand. The legs are named in PAIR order, which the
     # message did not do: it hung the first run's leg number off the second run's name.
     assert "leg 3 of PR-A-STUBATH-DRAIN" in message

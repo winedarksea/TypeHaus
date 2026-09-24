@@ -365,11 +365,22 @@ SECOND_DRAINS = [
     # cannot both hold. At 9'-7 1/2" the branch drops to 9'-8 3/4", falls 0.30"/ft, and crowns
     # 1 3/4" clear. Nothing else reads this number and the drop below it is vertical, so the
     # cost of the move is 1 1/2" of stack.
+    # ** IN W-M-CLN SINCE 2026-09-23, NOT STANDING IN THE MASTER CLOSET. ** The barrel was at
+    # (13'-0", 16'-10.8"), 9.8" off the closet's north wall and through FURN-M-CLOSET-SHELF;
+    # RM-M-CLOSET is `closed_to_services`. W-M-CLN is staggered 2x4 on 2x6 plates and
+    # non-bearing, so a 3.50" barrel stands mid-bay at x=12'-6" with 1 1/2" to the studs
+    # either side and bores both plates. A straight drop would land 3/8" into
+    # DU-B-ERV-R-GYM's y=17'-4.8" lane, so it offsets 1'-4" south inside FS-M-WEST's joist
+    # band — one web bore at the y=17'-4" I-joist — and drops onto its old lane west.
     PipeRun(uid="CMPD08AAAA", tag="PR-M-S-SUITE-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(13), ft(16, 10.8)), pt(ft(13), ft(16, 10.8)),
-                  pt(ft(6, 2.4), ft(16, 8.4)), pt(ft(6), ft(16, 6))),
+            path=(pt(ft(12, 6), ft(18)), pt(ft(12, 6), ft(18)), pt(ft(12, 6), ft(18)),
+                  pt(ft(12, 6), ft(18)), pt(ft(12, 6), ft(16, 8)),
+                  pt(ft(12, 6), ft(16, 8)), pt(ft(6, 2.4), ft(16, 8.4)),
+                  pt(ft(6), ft(16, 6))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(9, 7.5), ft(-1.8333), ft(-2.2503), ft(-2.3163)),
+            elevations=(ft(9, 7.5), ft(8, 11.875), ft(0), inch(-5), inch(-5.5),
+                        ft(-1.8333), ft(-2.2503), ft(-2.3163)),
+            wall_refs=(None, "W-M-CLN", None, None, None, None, None),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
 ]
@@ -467,7 +478,7 @@ SECOND_BRANCH_DRAINS = [
     # attic branch enters it.
     PipeRun(uid="885X4850FE", tag="PR-M-S-SUITE-WC-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(134.81), inch(250.625)), pt(inch(134.81), inch(250.625)),
-                  pt(inch(134.81), ft(16, 10.8)), pt(ft(13), ft(16, 10.8))),
+                  pt(inch(134.81), ft(18)), pt(ft(12, 6), ft(18))),
             diameter=inch(3), material="pvc",
             elevations=(ft(10, 0.75), ft(9, 8.5), ft(9, 5.375), ft(9, 4)),
             serves=("FX-S-SUITEBATH-WC",)),
@@ -880,7 +891,7 @@ STUDIO_DRAINS = [
     # fitting at one point.
     PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(11, 0.875), ft(19, 4)), pt(ft(9, 7.5), ft(19, 4)),
-                  pt(ft(9, 7.5), ft(19, 4)), pt(ft(13), ft(16, 10.8))),
+                  pt(ft(9, 7.5), ft(19, 4)), pt(ft(12, 6), ft(18))),
             diameter=inch(3), material="pvc",
             elevations=(ft(19, 4), ft(19, 3.5), ft(9, 8), ft(9, 6.5)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),

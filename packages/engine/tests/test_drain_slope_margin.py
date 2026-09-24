@@ -64,8 +64,10 @@ def test_the_margin_prints_on_pass_too(catlin_plan, catlin_model_ro) -> None:
     findings = _run(catlin_plan, catlin_model_ro)
     suite = next(f for f in findings if "PR-M-S-SUITE-WC-DRAIN" in f.element_tags)
     assert suite.result is Result.PASS
-    assert '0.779"/ft' in suite.message
-    assert '+0.529"/ft over' in suite.message
+    # 3.125" of fall over the 34.6" south leg since the stack moved into W-M-CLN
+    # (2026-09-23); it was 0.779"/ft over the old 47.8".
+    assert '1.083"/ft' in suite.message
+    assert '+0.833"/ft over' in suite.message
 
 
 def test_pr_b_bath_drain_is_the_run_bld05_was_reaching_for(

@@ -290,7 +290,7 @@ def stud_notch(profile: str, depth_of_notch_in: float, *,
 
 def top_plate_cut(profile: str, cut_in: float, *, tie: bool | None = None,
                   through_in: float | None = None,
-                  spans_width: bool = False) -> BoreVerdict:
+                  spans_width: bool = False, governed: bool = True) -> BoreVerdict:
     """IRC R602.6.1 on a cut or notched top plate.
 
     **Over 50% is not illegal, it is conditional**, and that distinction is the whole value
@@ -310,6 +310,10 @@ def top_plate_cut(profile: str, cut_in: float, *, tie: bool | None = None,
     **Nor is a run that takes the plate's whole thickness across its whole width**
     (``through_in``, ``spans_width`` → ``MemberCut``): a 2.38" vent laid through a 1.50"
     plate leaves nothing of it at that station, whatever fraction of the width it measures.
+
+    **R602.6.1 reaches "an exterior wall or interior load-bearing wall" and no other.**
+    ``governed=False`` is the caller saying the plate is an interior non-bearing
+    partition's: a cut there is not the section's business and passes on that ground.
     """
     from typehaus.resolve.framing.profiles import cross_section
 
@@ -338,6 +342,11 @@ def top_plate_cut(profile: str, cut_in: float, *, tie: bool | None = None,
             "and IRC R602.6.1 governs a plate that stays continuous either side of a cut",
             remedy="draw the opening and its header — `mep.run_through_header` grades what "
                    "the run then passes")
+    if not governed:
+        return BoreVerdict(True, "plate_cut", cut_in, None,
+                           f'IRC R602.6.1 governs the top plates of exterior and interior '
+                           f'load-bearing walls; this is an interior non-bearing partition, '
+                           f'so {cut_in:.2f}" out of its {profile} plate needs no tie')
     if cut_in <= limit + 1e-9:
         return BoreVerdict(True, "plate_cut", cut_in, limit,
                            f'IRC R602.6.1: {cut_in:.2f}" out of a {profile} top plate, '

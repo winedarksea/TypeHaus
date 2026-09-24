@@ -28,21 +28,34 @@ def test_bearing_walls_are_READ_from_the_model_not_guessed_from_exterior(catlin_
     assert {w.tag for w in catlin_ctx.model.walls if w.is_foundation} <= tags
 
 
-def test_a_plate_cut_past_half_names_the_tie_that_would_permit_it(catlin_ctx) -> None:
-    """R602.6.1 PERMITS the cut with a tie, and the finding has to say so.
+def test_a_plate_cut_past_half_names_the_tie_that_would_permit_it() -> None:
+    """R602.6.1 PERMITS the cut with a tie, and the verdict has to say so.
 
-    ** THIS USED TO ASSERT UNKNOWN AND NO FAIL, AND BOTH HAVE MOVED. ** The reasoning then
-    was that the model had no vocabulary for a plate tie, so an absent tie was not evidence
-    of absence. `PlateTie` exists now, so an untied cut past half is a FAIL naming the
-    element to author — and the UNKNOWNs that remain are the framed openings, which are a
-    different question and say a different thing. The 16 ga detail moved with it: it is the
-    REMEDY, so it is in the fix hint, along with the `PlateTie(...)` line to paste.
+    Catlin carried the one live case — ``PR-B-SAUNA-VENT`` through ``W-B-ESS-S`` — until
+    2026-09-23, when the check learned the section's own scope (below), so the mechanism is
+    pinned on the verdict itself.
     """
+    from typehaus.resolve.mep_bores import top_plate_cut
+
+    untied = top_plate_cut("2x4", 2.375, tie=False)
+    assert untied.ok is False and "R602.6.1" in untied.basis
+    assert "16 ga" in untied.remedy
+    assert top_plate_cut("2x4", 2.375, tie=True).ok is True
+
+
+def test_R602_6_1_reaches_exterior_and_bearing_walls_only(catlin_ctx) -> None:
+    """"An exterior wall or interior load-bearing wall" — a non-bearing partition's plate
+    is not the section's business. ``W-B-ESS-S`` is one, and so is ``W-M-CLN``, which the
+    suite stack bores since it left the master closet."""
+    from typehaus.resolve.mep_bores import top_plate_cut
+
+    assert top_plate_cut("2x4", 2.375, tie=False, governed=False).ok is True
     findings = run_through_plate(catlin_ctx)
-    cuts = [f for f in findings if f.result.value == "fail"]
-    assert cuts, "catlin still has one untied plate cut; see preferences.toml"
-    assert all("R602.6.1" in f.message for f in cuts)
-    assert all("16 ga" in f.fix_hint and "PlateTie(" in f.fix_hint for f in cuts)
+    assert not [f for f in findings if f.result.value == "fail"]
+    for pair in (("PR-B-SAUNA-VENT", "W-B-ESS-S"), ("PR-M-S-SUITE-DRAIN", "W-M-CLN")):
+        passed = [f for f in findings if f.element_tags == pair]
+        assert passed and passed[0].result.value == "pass", pair
+        assert "non-bearing partition" in passed[0].message
     openings = [f for f in findings if f.result.value == "unknown"]
     assert openings
     assert all("framed opening" in f.message for f in openings)
