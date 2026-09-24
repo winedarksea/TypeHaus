@@ -51,24 +51,19 @@ WESTGATE_VAPORTIGHT = Product(
            "4000 K, not 5000 K -- 5000 K makes airborne sawdust glare.",
 )
 
-KUZCO_SAMAR = Product(
-    tag="PROD-KUZCO-CH57514", brand="Kuzco Lighting", model="CH57514-CH/OP",
-    name="Samar 3-globe cascading pendant, chrome with opal glass",
-    source="Kuzco Lighting product page, read 2026-09-06. Over the 20'-4\" stairwell void. "
-           "** THE POINT IS THE SOCKET: 3 x REPLACEABLE E26, NO DRIVER. ** The E26 has been "
-           "continuous since 1909 and a failed lamp costs six dollars, against a 2026 "
-           "fixture with a proprietary LED board that is unsupportable in 2041. Cables "
-           "adjust to 120\". ** THIS IS ALSO THE ARGUMENT AGAINST A CHANDELIER LIFT, ** "
-           "which was considered and rejected: over this void a lift needs ~14 ft of travel, "
-           "so a cascade whose bottom globe hangs 8 ft below its canopy ends up BELOW THE "
-           "FLOOR before the canopy is reachable, and a lift package also wants 3 ft of "
-           "accessible level cavity plumb above -- which a peaked trussed ridge does not "
-           "have. (The ALL15/25/35/50 model numbers in the original brief do not exist; the "
-           "real line is ALL200/300/700/1000.) ** FORM RULE FOR A 20 FT VOID: ** enclosed "
-           "opal globes on thin cable. No crystal, no upward-facing candle sockets, no open "
-           "drums, and NO horizontal rings or tiers -- a stairwell is the house's dust "
-           "chimney and you look DOWN on this fixture from the upper landing, so every "
-           "horizontal band is a visible top face.",
+DOLRIA_PC0008 = Product(
+    tag="PROD-DOLRIA-PC0008", brand="dolria", model="PC0008-20T-G",
+    name="20-light cascading cluster chandelier, gold with bubble-crystal globes",
+    url="https://www.amazon.com/dp/B0B5G5PJDF",
+    source="Amazon listing B0B5G5PJDF, read 2026-09-23; the owner's pick, 'very similar, "
+           "perhaps the same' as Wayfair's Latitude Run W118039723. 23\" canopy, wires "
+           "3.9\"-156\" each, 20 integrated LED, 100 W, AC 110-240 V, remote dimming and "
+           "colour, 'Specification Met: UL'. ** THE LISTING SAYS UL; THE FIXTURE MUST. ** "
+           "NEC 110.2/110.3(B) - find the UL/ETL mark on the canopy before it goes up. ** "
+           "NOT REPLACEABLE, AND ACCEPTED (2026-09-23): ** the driver sits in a canopy 27' "
+           "up, so its failure is a scaffold in the well. The Kuzco Samar it replaces had "
+           "3 x E26 for exactly that reason, but 14\" of fixture could not fill a 27' void "
+           "and 120\" of wire could not reach the hang.",
 )
 ROBERN_VITALITY_ROUND = Product(
     tag="PROD-ROBERN-YM0030CPFPD3", brand="Robern", model="YM0030CPFPD3",
@@ -191,7 +186,7 @@ LEDSUPPLY_SAUNA_STRIP = Product(
 )
 
 LIGHTING_PRODUCTS = (
-    LOTUS_LL4SR_CAN, WESTGATE_VAPORTIGHT, KUZCO_SAMAR, ROBERN_VITALITY_ROUND,
+    LOTUS_LL4SR_CAN, WESTGATE_VAPORTIGHT, DOLRIA_PC0008, ROBERN_VITALITY_ROUND,
     MODERN_FORMS_BANTAM, MODERN_FORMS_MYKONOS, CRAFTMADE_FORCE_XL,
     ARMACOST_RIBBONFLEX_COB, DIODE_VALENT_X, DIODE_OMNIDRIVE_X,
     LEDSUPPLY_SAUNA_STRIP,

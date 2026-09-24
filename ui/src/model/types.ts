@@ -440,6 +440,9 @@ export interface CanvasObject {
   // "46 in above this floor" is what someone wrote, and it survives a storey datum change in a
   // way a resolved absolute height does not. Absent on an object authored with no mount.
   mount?: { kind: "floor" | "wall" | "ceiling"; elevation_m: number | null; drop_m: number | null; recessed_into_host_surface?: boolean } | null;
+  // A hung luminaire's cable, top of body (z0) to the surface it hangs from (z1), and the
+  // canopy there (→ resolve/suspension.py). Null when the canopy sits on its ceiling.
+  suspension?: { z0_m: number; z1_m: number; cable_m: number; canopy_m: number; canopy_thickness_m: number; from: string | null } | null;
   // Set on an object the engine recovered as an occupant of another object's clearance zone
   // (a chair at its table) — the group's uid. Members do not conflict with each other's
   // recommended clearance, and dragging the group's owner should carry them along.

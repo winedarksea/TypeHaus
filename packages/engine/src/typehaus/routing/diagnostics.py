@@ -75,9 +75,6 @@ _KIND_MOBILITY = {
     "member": Mobility.FIXED,
     # A flight's R311.7.2 headroom and its stringers: the stair does not move for a duct.
     "stair": Mobility.FIXED,
-    # A closet's shelving or a wardrobe (``resolve/mep_furnishings``): the closet does not
-    # move for a pipe either.
-    "furnishing": Mobility.FIXED,
     "run": Mobility.MOVABLE,
     "avoid": Mobility.UNKNOWN,
 }

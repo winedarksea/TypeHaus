@@ -136,27 +136,28 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # ``height`` on a hanging fixture is the *whole assembly* — canopy, drop, shade — which
     # is what lets ``Mount(CEILING, drop=height)` land the canopy on the ceiling and read
     # the bottom of the shade off the same number (→ placeable_symbols/lighting.pendant).
-    # ** RE-SPECIFIED 2026-09-06, AND THE LAMP IS THE WHOLE DECISION. ** 3 x REPLACEABLE
-    # E26, not six integrated candelabra: over a 20'-4" void the fixture is unreachable, and
-    # the question is not "how long does the LED last" — at 3 h/day, 25,000 h is 23 years, so
-    # every LED fixture "never needs relamping" — but "what dies first". The answer is the
-    # DRIVER: electrolytic capacitors rated at 25 C, halving per 10 C above, sitting at the
-    # ridge of a 20 ft stack-effect chimney. Realistic life there is 12-20 years, and a lift
-    # would not fix obsolescence anyway. An E26 socket has been continuous since 1909 and the
-    # failure costs six dollars. 2400 lm was already right; 2700 K was not — it pushes white
-    # paint yellow and makes white oak read orange, which is exactly this palette's failure
-    # mode, so this joins the house's 3000 K standard.
-    LuminaireType(tag="ED-T-LT-CHANDELIER", name="3-globe cascading pendant over the stairwell",
+    # A body hung lower than its ceiling draws the resolved cable above it instead (mark L).
+    # ** RE-SPECIFIED 2026-09-23: A 20-GLOBE CASCADE, AND THE WIRE IS WHY. ** The canopy is on
+    # the rafters 17'-2" over the landing floor; a 14" three-globe cluster on 120" of wire
+    # floated in that void and could not reach its own drawn hang. This one's globes each
+    # hang on their own 3.9"-156" wire, so the body here is the cascade BAND and the rest is
+    # the resolved cable (→ resolve/suspension.py), graded by `electrical.suspension_reach`.
+    # ** NO WALL DIMMER. ** It dims and tunes by its own remote; the listing forbids a phase
+    # dimmer upstream, so `dimmable=False` and its switches are plain. 3000 K is SET on the
+    # remote to hold the house standard. Lumens and CRI are unpublished and left unstated.
+    # ** THE FORM RULE BENDS: ** bubble crystal, not opal, is the owner's pick; a globe is
+    # still no horizontal ring, but it dusts on its top face from the landing.
+    LuminaireType(tag="ED-T-LT-CHANDELIER", name="20-globe cascade over the stairwell",
                   form=LuminaireForm.CHANDELIER, type_mark="L",
-                  footprint=(inch(30), inch(30)), height=ft(4), plan_symbol="chandelier",
-                  lamp="3 x E26 LED, field replaceable", watts=28.0, lumens=2400.0,
-                  cct_k=3000, cri=90, dimmable=True, load_va=28.0, ports=_POWER_120,
-                  product_ref="PROD-KUZCO-CH57514",
-                  source="Kuzco Samar CH57514-CH/OP, opal globes on cables adjustable to "
-                         "120\". No integral driver — a standard 120 V phase dimmer runs it. "
-                         "The stair SCONCES (mark K) are the stair's real light: "
-                         "inverse-square means 2400 lm twelve feet up delivers almost "
-                         "nothing to the treads, and this fixture is decorative."),
+                  footprint=(inch(23), inch(23)), height=ft(6), plan_symbol="cluster-pendant",
+                  lamp="20 x LED integrated, not replaceable", watts=100.0,
+                  cct_k=3000, dimmable=False, load_va=100.0, ports=_POWER_120,
+                  max_overall_height=inch(156), canopy_diameter=inch(23),
+                  product_ref="PROD-DOLRIA-PC0008",
+                  source="dolria PC0008-20T-G: 23\" canopy, 20 globes on wires adjustable "
+                         "3.9\"-156\", 100 W integrated LED with its own remote dimmer. "
+                         "The stair SCONCES (mark K) are the stair's real light; this is "
+                         "decorative."),
     # ** RE-TYPED FROM A ROUND PENDANT TO A 48" LINEAR CHANDELIER, 2026-09-06, AND THE
     # ARITHMETIC IS WHY. ** The round-fixture rule sizes off a table's NARROW dimension, so
     # over a 40 x 84 table it gives a 20"-27" fixture with ~28" of dark tabletop at each end

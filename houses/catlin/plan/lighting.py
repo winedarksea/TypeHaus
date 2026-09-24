@@ -1666,26 +1666,27 @@ SECOND_LIGHTING = [
     # for it instead — a double-height pendant hanging over the well — and the landing's own
     # switch (ED-S-LANDING-SW) runs it.
     #
-    # ** THE CHANDELIER'S VOLUME NOW RUNS TO THE ROOF UNDERSIDE. ** At x=13'-11 7/8" that is
-    # 5'-0" + x/3 = 9'-8" above the attic deck, so 19'-8" above the second floor.
-    #
-    # It is authored with an EXPLICIT `elevation` and NOT with `drop`, and the difference
-    # matters. `resolve/placeables.py` subtracts a `drop` from `floor +
-    # storey.default_ceiling_height` — the 9'-0" plane that does not exist over this open
-    # well. `elevation` is read as the body's BASE directly, so ft(5) puts the shade bottom
-    # at 5'-0" over the second floor, clear of the landing and reachable from the flight;
-    # the fitting hangs on ~14'-8" of stem from the rafters above it, reading from the main
-    # floor as well as from the landing.
+    # ** THE CANOPY IS ON THE RAFTERS AND THE CASCADE HANGS 11'-8" FROM IT (2026-09-23). **
+    # At x=13'-11 7/8" the 6:12 underside is 27'-3" (project), 17'-2" over this floor.
+    # `elevation` is the LOWEST GLOBE: 5'-6" over the landing floor, 8 1/2" above the
+    # R311.7.2 volume over the upper flight's nearest going (6'-8" over its nosing), which
+    # the 23" cascade overhangs in plan. The type's 6' is the cascade band, so the top globe
+    # is at 11'-6" — above the attic floor, seen from the attic hall too — and the 5'-8"
+    # above it is cable (→ resolve/suspension.py). 11'-8" overall of the 13'-0" it ships.
+    # ** THE 23" CANOPY NEEDS A LEVEL SEAT ON 6:12: ** flat, it stands 5 3/4" off the rake
+    # at its low edge. The listing claims a sloped-ceiling mount; if it is a swivel hook
+    # only, block a level plinth between the rafters.
     ElectricalDevice(uid="QTS001AAAA", tag="ED-S-STAIR-CHAND", kind=DeviceKind.LIGHT,
                      position=pt(m(4.26405), m(9.3355)), type_ref="ED-T-LT-CHANDELIER",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      controlled_by=("ED-S-STAIR-SW", "ED-S-LANDING-SW"),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(5))),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(5, 6))),
     # On W-S-SN3's north face at y=22'-6 1/4", the wall you walk straight at off the
     # flight — a two-gang box with ED-S-LANDING-SW. x=12' is inside the well's west lane
-    # (x 10'-3 3/8"..13'-9 3/4"), where ST-M2S turns left, and is where you arrive.
+    # (x 10'-3 3/8"..13'-9 3/4"), where ST-M2S turns left, and is where you arrive. A plain
+    # switch, not a dimmer: the chandelier dims by its own remote (mark L).
     ElectricalDevice(uid="QTS001BAAA", tag="ED-S-STAIR-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(12), ft(22, 8.375)), type_ref="ED-T-SWITCH-DIM",
+                     position=pt(ft(12), ft(22, 8.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]

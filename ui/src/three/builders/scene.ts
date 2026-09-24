@@ -25,7 +25,7 @@ import { buildLightRun } from "./lightRun";
 import { buildPlants, instancedPlantUids } from "./plants";
 import type { RebarLayer } from "./rebar";
 import { tagStorey as tagStoreyChildren, tagTrades } from "./registry";
-import { buildCanvasObject, buildEarth } from "./site";
+import { buildCanvasObject, buildEarth, buildSuspension } from "./site";
 import { buildOpening, buildWall } from "./walls";
 import {
   buildBrace, buildFloor, buildFootingBedding, buildRoof, buildRoomFloor,
@@ -305,6 +305,7 @@ export function populateScene(options: PopulateSceneOptions) {
     const before = snapshot(tradeGroups);
     const fallback = buildCanvasObject(group, item, type, center, mode, palette, elevation,
       registry.picks, registry.byUid);
+    buildSuspension(group, item, center, mode, registry.picks, registry.byUid);
     tagNew(tradeGroups, before, trades);
     tagStorey(tradeGroups, before, item.storey ?? null);
     if (!type?.model_glb || !fallback) continue;

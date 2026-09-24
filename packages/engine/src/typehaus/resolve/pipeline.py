@@ -46,6 +46,7 @@ from typehaus.resolve.roof_geometry import apply_to_roof_wall_tops, apply_truss_
 from typehaus.resolve.rooms import resolve_rooms
 from typehaus.resolve.solar import resolve_solar
 from typehaus.resolve.stacking import resolve_stacking
+from typehaus.resolve.suspension import resolve_suspensions
 from typehaus.resolve.topology import detect_gaps, resolve_storey_walls
 
 
@@ -165,6 +166,8 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_paneling(plan, model))
     with _stage("placeables"):
         findings.extend(resolve_placeables(plan, model))
+        # After floors, roofs, soffits and ceilings: a hung fixture's cable runs to them.
+        resolve_suspensions(model)
     with _stage("millwork"):
         # After placeables and rooms: a shelf bank hosted on a carcass reads that
         # placeable's resolved type, and a stool's room scope reads the resolved rooms.

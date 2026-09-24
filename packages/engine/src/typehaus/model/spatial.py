@@ -71,6 +71,11 @@ class Room(Element):
     # pipe somebody walks into — ``code.R305_ceiling_height`` measures the STRUCTURE
     # overhead and has never seen a pipe at all.
     exposed_services: str | None = None
+    # The mirror: why a room that WOULD take open services by its occupancy does not — a
+    # walk-in closet somebody dresses in is ``STORAGE`` and a store room is too. Graded and
+    # routed as finished (``mep.run_in_finished_volume``, the router's room price). A reason,
+    # for the reason above.
+    closed_to_services: str | None = None
     # How wet this room is run — a separate axis from `occupancy` (see HumidityClass).
     # It is what scopes the condensation walk and the humid-room checks to the RH a
     # bounding assembly actually faces, instead of the whole-house design figure.
@@ -84,7 +89,7 @@ class Room(Element):
     # the house's ``Preferences.interior_setpoint_f``.
     design_temperature_f: float | None = None
 
-    @field_validator("exposed_services")
+    @field_validator("exposed_services", "closed_to_services")
     @classmethod
     def _reason_is_a_sentence(cls, value: str | None) -> str | None:
         """A declaration nobody explained is a suppression, so refuse one at load time.
@@ -98,7 +103,7 @@ class Room(Element):
         reason = value.strip()
         if len(reason) < 12 or " " not in reason:
             raise ValueError(
-                "Room.exposed_services is the REASON the ceiling is left open, not a flag: "
+                "Room.exposed_services / closed_to_services is a REASON, not a flag: "
                 "write the sentence a reviewer should read "
                 f"(e.g. 'owner accepts exposed service runs in the gym'), not {value!r}")
         return reason

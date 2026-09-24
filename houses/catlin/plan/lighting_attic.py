@@ -228,8 +228,8 @@ ATTIC_LIGHTING = [
     # `resolve/placeables.py` hangs a bare `drop` off `floor + storey.default_ceiling_height`,
     # which on this storey is the 11'-0" nominal in plan/manifest.py. It resolved to 10'-8"
     # above the attic floor with its 2'-6" body running to 13'-2" — four feet ABOVE the roof,
-    # which is what the viewer showed. The same trap ED-S-STAIR-CHAND's note in plan/lighting.py
-    # already warns about, and the same reason SF-S-HP1's air handler carries a `soffit_ref`.
+    # which is what the viewer showed — the same reason SF-S-HP1's air handler carries a
+    # `soffit_ref`, and what `electrical.suspension_reach` now reports.
     #
     # ** BUT THE HEIGHT WAS NEVER THE REAL PROBLEM — THERE IS NO ROOM FOR A PENDANT HERE. **
     # FURN-A-STUDIO-BAR-BASE is 54 3/4" tall and the 6:12 underside `1 1/2" + x/2` over its

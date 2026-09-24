@@ -2447,13 +2447,9 @@
 "ED-T-LT-CAN4" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 108 } }  # 39 ea
 "ED-T-LT-CAN4-4000" = { material = { low = 25, high = 75 }, labour = { low = 52, high = 108 } }  # 4 ea
 "ED-T-LT-CAN4-WET" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 10 ea
-# Kuzco Samar CH57514-CH/OP at $398. ** THE LABOUR HIGH END IS A LIFT, NOT A LADDER: ** it
-# hangs over a 20'-4" void. ** A CHANDELIER LIFT WAS PRICED AND REJECTED at $2,700-3,100 **
-# -- over this void one needs ~14 ft of travel, so a cascade whose bottom globe hangs 8 ft
-# below its canopy ends up BELOW THE FLOOR before the canopy is reachable, and a lift also
-# wants 3 ft of accessible level cavity plumb above, which a peaked trussed ridge does not
-# have. 3 x replaceable E26 makes the relamp a $6 part instead.
-"ED-T-LT-CHANDELIER" = { material = { low = 380, high = 700 }, labour = { low = 150, high = 450 } }  # 1 ea
+# dolria PC0008-20T-G (Amazon B0B5G5PJDF); the same-looking Latitude Run is $500 at Wayfair.
+# ** THE LABOUR HIGH END IS A LIFT, NOT A LADDER: ** the canopy is on the rafters 27' up.
+"ED-T-LT-CHANDELIER" = { material = { low = 400, high = 550 }, labour = { low = 150, high = 450 } }  # 1 ea
 # 2026-09-06: PLACED NOWHERE. ED-B-GYM-LT was the only one and it retyped to
 # ED-T-LT-FAN52-FLUSH for headroom. The row is KEPT under the `glazed-green-brick`
 # convention — a downrod fan is the revert if no flush SKU can be sourced, and

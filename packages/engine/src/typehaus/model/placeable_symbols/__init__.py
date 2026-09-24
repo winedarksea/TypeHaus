@@ -85,7 +85,8 @@ SYMBOL_NAMES = frozenset({
     # "linear-light" covers ordinary compact linear fixtures. The plant tube has the
     # same plan glyph but its own 3D cable-suspension massing.
     "recessed-can", "panel-light", "sconce", "sconce-updown", "sconce-spot",
-    "pendant", "chandelier", "ceiling-fan-light", "linear-light", "suspended-linear-light",
+    "pendant", "chandelier", "cluster-pendant", "ceiling-fan-light", "linear-light",
+    "suspended-linear-light",
 })
 
 # Names in the vocabulary with no builder yet. Kept explicit so "not implemented" is a

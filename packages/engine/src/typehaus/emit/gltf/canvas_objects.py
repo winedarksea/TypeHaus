@@ -14,6 +14,7 @@ from typehaus.model.built_in_bookcase import built_in_bookcase_parts
 from typehaus.model.canvas import canvas_object_types
 from typehaus.model.placeable_symbols import PART_COLORS, lamp_role, model_parts, place_local
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
+from typehaus.resolve.suspension import suspension_draw
 
 
 def _canvas_trade(domain: str) -> str:
@@ -51,6 +52,7 @@ def _add_canvas_objects(scene: _SceneBuilder, model: ResolvedModel) -> None:
             drawn = _add_canvas_parts(mb, item, product_type)
         if not drawn:
             _add_canvas_box(mb, item, heights.get(item.type_ref))
+        _add_suspension(mb, item, product_type)
         scene.add_object(mb, (_canvas_trade(item.domain),),
                          kind="canvas_object", uid=item.uid)
 
@@ -127,3 +129,20 @@ def _add_canvas_box(mb: _MeshBuilder, item: ResolvedCanvasObject, height_m: floa
         return
     height = height_m if height_m else 0.25  # Panel3D uses type.height_m ?? 0.25
     mb.add_prism(ring, item.z_m, item.z_m + height, _color("furniture"))
+
+
+def _add_suspension(mb: _MeshBuilder, item: ResolvedCanvasObject,
+                    product_type: object | None) -> None:
+    """A hung body's cable up to its ceiling and the canopy there; the viewer draws the same."""
+    draw = suspension_draw(item, product_type)
+    if draw is None:
+        return
+    x, y = item.position
+
+    def square(side: float) -> list[tuple[float, float]]:
+        h = side / 2
+        return [(x - h, y - h), (x + h, y - h), (x + h, y + h), (x - h, y + h)]
+
+    mb.add_prism(square(draw.cable_m), draw.z0_m, draw.z1_m, PART_COLORS["metal"])
+    mb.add_prism(square(draw.canopy_m), draw.z1_m - draw.canopy_thickness_m, draw.z1_m,
+                 PART_COLORS["metal"])

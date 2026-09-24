@@ -542,32 +542,40 @@ SUPPLY = [
     # W-S-SN3 starts at the deck it stands on, and a leg naming it from inside the truss
     # floor is a leg `mep.wet_wall_occupancy` reads as escaping the wall.
     # ** BOTH RISE INSIDE W-M-CLN2 SINCE 2026-09-23, NOT IN THE MASTER CLOSET. ** They stood
-    # at y=16'-10.8", 9.8" off the closet's north wall and through FURN-M-CLOSET-SHELF's
-    # hanging space (`mep.run_through_furnishing`). W-M-CLN2 is staggered 2x4 on 2x6
-    # plates, non-bearing, studs every 8" on alternate faces: the cold stands mid-bay at
-    # x=14'-5", the hot at 15'-1", 3 1/4" off every stud, and each bores the top plate into
-    # FS-S-WEST, then steps west on y=18'-0" to its old lane north.
+    # at y=16'-10.8", 9.8" off the closet's north wall and through FURN-M-CLOSET-SHELF;
+    # RM-M-CLOSET is `closed_to_services`. W-M-CLN2 is staggered 2x4 on 2x6 plates,
+    # non-bearing, studs every 8" on alternate faces: the cold stands mid-bay at x=15'-9",
+    # the hot at 16'-5", 3 1/4" off every stud and east of DU-M-ERV-R-LAUNDRY's drop at
+    # x=14'-5". Each bores the top plate into FS-S-WEST, runs north in the same web opening
+    # (15'-4 1/2"..16'-7 1/2") to y=22'-4", and west under W-S-SN3 to its old riser. The
+    # wall leg is split at the wall's base and top so it names only the wall it is in.
     PipeRun(uid="CBPW42AAAA", tag="PR-B-CW-SUITE", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(8), ft(16)), pt(ft(14, 5), ft(18)),
-                  pt(ft(14, 5), ft(18)), pt(ft(13, 7.2), ft(18)), pt(ft(13, 7.2), ft(22, 4)),
-                  pt(ft(13, 7.2), ft(22, 4)), pt(ft(13, 7.2), ft(22, 4))),
+            path=(pt(ft(8), ft(16)), pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)),
+                  pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(22, 4)),
+                  pt(ft(13, 7.2), ft(22, 4)), pt(ft(13, 7.2), ft(22, 4)),
+                  pt(ft(13, 7.2), ft(22, 4))),
             diameter=inch(0.75), material="copper", finish="lacquered",
             # +5/16" on 2026-09-16 (7.1875 -> 7.5): the 4" ERV ducts' crowns are at 9'-5 5/8",
             # and KITCH/BED2 now cross this jog at y=21'-10"/22'-2". 5/16" left under the tub drain.
-            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(18, 7.5), ft(18, 7.5),
-                        ft(18, 7.5), ft(19, 1.4375), ft(21, 7.4375)),
-            wall_refs=(None, "W-M-CLN2", None, None, None, "W-S-SN3"),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(18, 1.3125),
+                        ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(19, 1.4375),
+                        ft(21, 7.4375)),
+            wall_refs=(None, None, "W-M-CLN2", None, None, None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
     PipeRun(uid="CBPW43AAAA", tag="PR-B-HW-SUITE", system=PipeSystem.WATER_HOT,
-            # x=14'-3.6": at 14'-2.4" the jacket stood 0.475" inside W-B-HALL-W's stud plane.
-            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(15, 1), ft(18)),
-                  pt(ft(15, 1), ft(18)), pt(ft(14, 3.6), ft(18)), pt(ft(14, 3.6), ft(22, 4)),
-                  pt(ft(14, 3.6), ft(22, 4)), pt(ft(14, 3.6), ft(22, 4))),
+            # Into the riser's joist bay from the SOUTH: FS-M-WEST blocks that bay at
+            # x=14'-6" under the laundry duct's drop.
+            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(16, 5), ft(17)), pt(ft(16, 5), ft(18)),
+                  pt(ft(16, 5), ft(18)),
+                  pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(22, 4)),
+                  pt(ft(14, 3.6), ft(22, 4)), pt(ft(14, 3.6), ft(22, 4)),
+                  pt(ft(14, 3.6), ft(22, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(18, 11.4375), ft(18, 11.4375),
-                        ft(18, 11.4375), ft(19, 1.4375), ft(21, 7.4375)),
-            wall_refs=(None, "W-M-CLN2", None, None, None, "W-S-SN3"),
+            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375),
+                        ft(18, 1.3125), ft(18, 11.4375), ft(18, 11.4375), ft(18, 11.4375),
+                        ft(19, 1.4375), ft(21, 7.4375)),
+            wall_refs=(None, None, None, "W-M-CLN2", None, None, None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
     # Stair-foot bathroom, fed off the same pair of runs (same uids) that fed FX-1 until
     # 2026-07-30. They bore W-B-STR2 at their own y (cold 20'-3", hot 19'-9") and now stop
@@ -935,10 +943,10 @@ STUDIO_SUPPLY = [
             # FS-S-WEST's web window AND through two of D1's radials at the low tier. The
             # window is 109 5/8"..118 1/2" and the clear band over the drain is
             # 117.19"..118.06"; this sits in it.
-            path=(pt(ft(13, 7.2), ft(18)), pt(ft(9, 5.5), ft(20, 6)),
+            path=(pt(ft(13, 7.2), ft(22, 4)), pt(ft(9, 5.5), ft(20, 6)),
                   pt(ft(9, 5.5), ft(20, 6))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(9, 9.6), ft(9, 9.6), ft(22, 6)),
+            elevations=(ft(9, 6.0625), ft(9, 6.0625), ft(22, 6)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
     PipeRun(uid="TCWF4YDZTW", tag="PR-A-HW-STUBATH", system=PipeSystem.WATER_HOT,
@@ -953,7 +961,7 @@ STUDIO_SUPPLY = [
             # stays where the wall wants it and the pair is itemised in preferences.toml
             # with this number. The fix is a 2x8 bay, a furred chase, or a thinner sleeve —
             # and the sleeve is an energy-code question (R403.5.3), not a clearance one.
-            path=(pt(ft(14, 3.6), ft(18)), pt(ft(9, 7.5), ft(21)),
+            path=(pt(ft(14, 3.6), ft(22, 4)), pt(ft(9, 7.5), ft(21)),
                   pt(ft(9, 7.5), ft(21))),
             diameter=inch(0.75), material="copper",
             insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',

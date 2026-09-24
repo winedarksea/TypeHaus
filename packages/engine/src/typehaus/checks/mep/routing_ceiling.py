@@ -254,8 +254,9 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
 
     A room is finished unless its occupancy is in
     :data:`~typehaus.model.enums.EXPOSED_SERVICE_OCCUPANCIES` — a mechanical room's ceiling
-    is a service plane and pipe hangs there by design. Everything else is graded, hallways
-    and stairwells included: those are the rooms people look *up* in.
+    is a service plane and pipe hangs there by design — unless ``Room.closed_to_services``
+    says why this one is not (a walk-in closet somebody dresses in). Everything else is
+    graded, hallways and stairwells included: those are the rooms people look *up* in.
     """
     cid = "mep.run_in_finished_volume"
     rules = ctx.preferences.mep
@@ -268,6 +269,7 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
                              "there is nothing to say a room's air ends at", ())]
 
     occupancies = {room.tag: room.occupancy for room in ctx.model.rooms}
+    closed = {room.tag for room in ctx.model.rooms if room.closed_to_services}
     declared = {room.tag: room.exposed_services for room in ctx.model.rooms
                 if room.exposed_services}
     storey_z = {storey.tag: storey.elevation.meters for storey in ctx.plan.storeys}
@@ -284,7 +286,8 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
             follow_roof.add(ceiling.room_ref)
             continue
         occupancy = occupancies.get(ceiling.room_ref)
-        if occupancy is not None and Occupancy(occupancy) in EXPOSED_SERVICE_OCCUPANCIES:
+        if (occupancy is not None and Occupancy(occupancy) in EXPOSED_SERVICE_OCCUPANCIES
+                and ceiling.room_ref not in closed):
             continue
         if len(ceiling.outline) < 3:
             continue

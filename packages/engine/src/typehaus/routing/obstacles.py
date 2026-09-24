@@ -49,7 +49,7 @@ class HardPrism:
     """A plan footprint and a z band the route may not enter. Already inflated."""
 
     tag: str
-    kind: str  # opening | void | stair | member | furnishing | concrete | run | avoid
+    kind: str  # "opening" | "void" | "stair" | "member" | "concrete" | "run" | "avoid"
     footprint: Any  # shapely Polygon
     z0_m: float
     z1_m: float
@@ -217,15 +217,6 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
                                      z0_m=window.z0_m - inflate,
                                      z1_m=window.z1_m + inflate))
 
-    # A storage furnishing's column, floor to ceiling — the volume
-    # ``mep.run_through_furnishing`` grades, from the same reading.
-    from typehaus.resolve.mep_furnishings import furnishing_columns
-
-    for column in furnishing_columns(model):
-        out.append(HardPrism(tag=column.tag, kind="furnishing",
-                             footprint=column.footprint.buffer(inflate),
-                             z0_m=column.z0_m - inflate, z1_m=column.z1_m + inflate))
-
     # Concrete. Only the bands that are actually concrete — a stay-in-place foam deck form
     # is not a pour, and ``resolve/mep_queries.concrete_bands`` is the one place that
     # reading lives.
@@ -329,7 +320,10 @@ def soft_prisms(model: ResolvedModel) -> list[SoftPrism]:
     those rooms UNKNOWN, and the cost function is silent about them for the same reason.
     """
     storey_z = {s.tag: s.elevation.meters for s in model.plan.storeys}
-    occupancies = {room.tag: room.occupancy for room in model.rooms}
+    # ``Room.closed_to_services`` is priced as finished air, as the check grades it:
+    # "living" is the table's price for a room people are in.
+    occupancies = {room.tag: "living" if room.closed_to_services else room.occupancy
+                   for room in model.rooms}
     out: list[SoftPrism] = []
     for ceiling in model.ceilings:
         if ceiling.z0_m is None:

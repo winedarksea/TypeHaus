@@ -1009,6 +1009,8 @@ class ResolvedRoom:
     # verbatim because ``mep.run_in_finished_volume`` quotes it in its PASS: a reviewer
     # reads the decision, not a silence. ``None`` is the ordinary finished ceiling.
     exposed_services: str | None = None
+    # ``Room.closed_to_services``: a storage room graded and routed as finished.
+    closed_to_services: str | None = None
 
 
 @dataclass(frozen=True)
@@ -1335,6 +1337,11 @@ class ResolvedCanvasObject:
     # both: z_m to draw the object, the mount to show (and write back) the height someone
     # actually typed — "46 in above this floor" survives a storey datum change, 2.34 m does not.
     mount: Mount | None = None
+    # A hung luminaire's cable: top of its body to the surface plumb above it, and that
+    # surface's tag (→ resolve/suspension.py). Negative when the body runs through it;
+    # ``None`` for anything not hung, or hung under nothing the model resolved.
+    suspension_m: float | None = None
+    suspended_from: str | None = None
 
 
 @dataclass(frozen=True)

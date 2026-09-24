@@ -150,7 +150,8 @@ def test_a_wall_something_bears_on_is_not_a_partition(catlin_model_ro, tag: str)
 
 
 def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) -> None:
-    """62 partitions, including the four new study return/rear segments.
+    """63 partitions, including the four new study return/rear segments and W-M-WELL (the
+    main stair's well partition, 2026-09-23).
 
     Not a tautology: the pass MOVES the plate it selects on, so a full-height tolerance
     measured only upward would drop ``W-B-CE`` — whose plate lands 1-11/16" below its
@@ -160,7 +161,7 @@ def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) ->
     refs = bearing_ref_tags(catlin_model_ro.plan)
     tags = [w.tag for w in catlin_model_ro.walls
             if takes_a_deflection_gap(catlin_model_ro, w, refs)]
-    assert len(tags) == 62
+    assert len(tags) == 63
     assert "W-B-CE" in tags
 
 

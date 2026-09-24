@@ -818,6 +818,13 @@ class LuminaireType(ElectricalDeviceType):
     # Linear forms only: the load per lineal foot a ``LightRun`` multiplies by its length
     # to get connected VA and to size its 24V supply.
     watts_per_ft: float | None = None
+    # Hung forms only: the longest hang the product ships, canopy to its lowest point with
+    # the cable or stem let out in full. ``height`` is the body; the resolved suspension
+    # (→ resolve/suspension.py) is the cable above it, and `electrical.suspension_reach`
+    # grades the two together against this.
+    max_overall_height: Length | None = None
+    # The canopy at the ceiling, which a cluster spreads to the width of its whole cascade.
+    canopy_diameter: Length | None = None
 
 
 for _name, _obj in (

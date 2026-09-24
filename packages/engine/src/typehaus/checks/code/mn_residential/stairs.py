@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import math
 
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Polygon
 
 from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
 from typehaus.checks.code.mn_residential.handrail_geometry import (
@@ -22,7 +22,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, not_applicable
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.roof_geometry import roof_underside_at
+from typehaus.resolve.overhead import OverheadIndex
 from typehaus.resolve.stair_headroom import STAIR_HEADROOM, run_clearances
 from typehaus.resolve.stairs.walkline import flight_stations
 
@@ -38,13 +38,6 @@ _MIN_HANDRAIL_RISERS = 4  # R311.7.8: required on flights with four or more rise
 # under a raking well header is at one side, not the middle).
 _HEADROOM_SAMPLE_STEP_M = 0.05
 _HEADROOM_LATERAL_FRACTIONS = (0.0, 0.5, 1.0)
-# An obstruction must clear the walking surface by at least this to count as *overhead*
-# rather than the surface's own construction.
-_HEADROOM_OVERHEAD_EPS_M = 0.001
-# Floor/soffit cover shrinks by this before containment: stair edges are authored on the
-# well's edges, so boundary samples otherwise flip between in-void and under-deck on
-# float summation error. 5 mm decides no real header.
-_HEADROOM_PLAN_EPS_M = 0.005
 
 
 @check(Tier.CODE, "code.R311_7_stair_geometry")
@@ -154,62 +147,27 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
     cid, code = "code.R311_7_2_stair_headroom", "R311.7.2"
     if not ctx.model.stairs:
         return [_unknown(cid, "no resolved stairs", (), code)]
-    floors = []
-    for floor in ctx.model.floors:
-        if not floor.deck_outline:
-            continue
-        underside = min([member.z0_m for member in floor.members] + [floor.deck_z0_m])
-        cover = Polygon(floor.deck_outline,
-                        holes=[list(void) for void in floor.deck_voids]
-                        ).buffer(-_HEADROOM_PLAN_EPS_M)
-        if not cover.is_empty:
-            floors.append((cover, underside, floor.tag))
-    roofs = [(Polygon(roof.footprint), roof) for roof in ctx.model.roofs if roof.footprint]
-    soffits = []
-    for soffit in ctx.model.soffits:
-        if not soffit.outline:
-            continue
-        cover = Polygon(soffit.outline).buffer(-_HEADROOM_PLAN_EPS_M)
-        if not cover.is_empty:
-            soffits.append((cover, soffit.z0_m, soffit.tag))
+    overhead = OverheadIndex(ctx.model)
     out: list[Finding] = []
     for stair in ctx.model.stairs:
         worst: tuple[float, tuple[float, float], str] | None = None
         covered = False  # anything at all standing over the walk in plan
         for stations in _flight_stations(stair).values():
             for x, y, z in _walk_samples(stations):
-                point = Point(x, y)
-                lowest: tuple[float, str] | None = None
-                if not covered:
-                    covered = (any(p.contains(point) for p, _, _ in floors)
-                               or any(p.contains(point) for p, _ in roofs)
-                               or any(p.contains(point) for p, _, _ in soffits))
-                for polygon, underside, tag in floors:
-                    if (underside > z + _HEADROOM_OVERHEAD_EPS_M and polygon.contains(point)
-                            and (lowest is None or underside < lowest[0])):
-                        lowest = (underside, tag)
-                for polygon, roof in roofs:
-                    if polygon.contains(point):
-                        underside = roof_underside_at(ctx.model, roof, (x, y))
-                        if underside > z + _HEADROOM_OVERHEAD_EPS_M and (
-                                lowest is None or underside < lowest[0]):
-                            lowest = (underside, roof.tag)
-                for polygon, underside, tag in soffits:
-                    if (underside > z + _HEADROOM_OVERHEAD_EPS_M and polygon.contains(point)
-                            and (lowest is None or underside < lowest[0])):
-                        lowest = (underside, tag)
+                covered = covered or overhead.covers(x, y)
+                lowest = overhead.lowest_above(x, y, z)
                 if lowest is None:
                     continue
-                clearance = lowest[0] - z
+                clearance = lowest.z_m - z
                 if worst is None or clearance < worst[0]:
-                    worst = (clearance, (x, y), lowest[1])
+                    worst = (clearance, (x, y), lowest.tag)
         # Runs feed the measurement but never ``covered``: a duct is not a sky.
         runs = run_clearances(ctx.model, stair)
         for run_tag, (clearance, xy) in runs.items():
             if worst is None or clearance < worst[0]:
                 worst = (clearance, xy, run_tag)
         if worst is None:
-            if not covered and roofs:
+            if not covered and overhead.has_roof:
                 out.append(not_applicable(
                     cid, f"{stair.tag} is open to the sky — no floor deck, roof plane or "
                     "soffit stands over any point of its walking line, so R311.7.2 has no "

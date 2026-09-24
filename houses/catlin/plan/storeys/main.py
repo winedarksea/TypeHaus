@@ -328,10 +328,10 @@ NODES = [
     # `resolve/topology.py` builds junctions from wall *endpoints* only, so the tee needs its
     # own segment here regardless of how short W-M-STRW2 south of it gets.
     Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 6))),
-    # W-M-WELL's ends: FO-M-STAIR's south edge (the stairhead) and ST-M2S's upper
-    # half-landing edge. Both free.
+    # W-M-WELL's ends: FO-M-STAIR's south edge (the stairhead) and the south face of
+    # ST-M2S's upper-landing joist (its axis is the landing edge, 31'-0 3/8"). Both free.
     Node(uid="4YBM7GZBJZ", tag="N-M-WELL-S", position=pt(ft(14), ft(26, 0.375)), open_end=True),
-    Node(uid="0RW1TEC7JH", tag="N-M-WELL-N", position=pt(ft(14), ft(31, 0.375)), open_end=True),
+    Node(uid="0RW1TEC7JH", tag="N-M-WELL-N", position=pt(ft(14), ft(30, 11.625)), open_end=True),
     # W-M-BAE shifts 2' east; the mudroom door remains at its existing
     # 6" tee clearance.
     #
@@ -772,10 +772,12 @@ WALLS = [
     # the 4 1/2" slot at the head of the stairs is wall rather than a guard
     # (RL-M-STAIRHEAD, retired 2026-09-23). Same device as W-B-WELL: the stair generates
     # the studs (inset 0.20 m from each end), this wall adds the faces and carries no
-    # FramingSpec — see STAIRWELL_PARTITION_4H. Top at 9'-0" like every main wall: higher
-    # runs into FO-S-STAIR's south trimmer (structural.through_deck_clearance).
+    # FramingSpec — see STAIRWELL_PARTITION_4H. Base at the stairs' 0.9862" walking surface,
+    # where ST-M2S's generated bottom plate sits and ST-B2M's partition top plate stops; top
+    # at 9'-0" like every main wall — higher runs into FO-S-STAIR's south trimmer
+    # (structural.through_deck_clearance).
     Wall(uid="SNNBY9M3CE", tag="W-M-WELL", start_node="N-M-WELL-S", end_node="N-M-WELL-N",
-         assembly="STAIRWELL_PARTITION_4H", top=ft(9),
+         assembly="STAIRWELL_PARTITION_4H", base_elevation=inch(0.9862), top=inch(107.0138),
          interior_room="RM-M-LIVING"),
     Wall(uid="CMW119AAAA", tag="W-M-STOS", start_node="N-M-W1",
          end_node="N-M-BA1", assembly="INT_2X4_PARTITION", top=ft(9)),
@@ -1722,7 +1724,8 @@ ROOMS = [
     Room(uid="CMR406AAAA", tag="RM-M-STUDY", seed=pt(ft(15, 8), ft(20)),
          occupancy=Occupancy.OFFICE, floor_finish="lvp"),
     Room(uid="CMR407AAAA", tag="RM-M-CLOSET", seed=pt(ft(13), ft(15, 4)),
-         occupancy=Occupancy.STORAGE, floor_finish="carpet"),
+         occupancy=Occupancy.STORAGE, floor_finish="carpet",
+         closed_to_services="the master suite's walk-in closet is dressed in, not a store room: no pipe or duct stands or hangs in it"),
     # Retagged from RM-M-STORAGE with the mudroom conversion: entry vestibule
     # now, not bulk storage, but still Occupancy.STORAGE — there is no MUDROOM occupancy in
     # the closed enum and STORAGE is the closer fit of what exists (unheated-adjacent,

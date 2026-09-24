@@ -6,6 +6,7 @@ from math import atan2, degrees
 from typing import Any
 
 from typehaus.model.built_in_bookcase import built_in_bookcase_parts
+from typehaus.model.electrical import luminaire_types
 from typehaus.model.placeable_symbols import lamp_role, model_parts, part_hex, plan_symbol_strokes
 from typehaus.model.placeables import PlacementStrategy
 from typehaus.model.plan import PlanModel
@@ -160,6 +161,7 @@ def resolved_canvas_objects(
     """
     type_metadata = {item["tag"]: item for item in canvas_object_types(model.plan)}
     prov_of = provenance_of if provenance_of is not None else (lambda _tag: None)
+    luminaires = luminaire_types(model.plan.library)
     placeables = [{
         "uid": item.uid, "tag": item.tag, "storey": item.storey, "kind": item.kind,
         "type": item.type_ref, "domain": item.domain, "room": item.room,
@@ -168,6 +170,8 @@ def resolved_canvas_objects(
         # The authored mount, not just the z_m resolved from it: the inspector edits the height
         # someone wrote, and needs its units and kind (wall/ceiling) to say so.
         "mount": _mount(item.mount),
+        # A hung body's cable and canopy (→ resolve/suspension.py), or null.
+        "suspension": _suspension(item, luminaires.get(item.type_ref or "")),
         "attachment": ({"wall": item.attachment_wall, "face": item.attachment_face}
                        if item.attachment_wall is not None else None),
         "footprint": [list(point) for point in item.footprint],
@@ -201,6 +205,17 @@ def _clearance(zone: Any) -> dict[str, Any]:
     return {"footprint_m": _polygon(zone.footprint), "purpose": zone.purpose,
             "policy": zone.policy.value, "source": zone.source,
             "code_profile": zone.code_profile}
+
+
+def _suspension(item: Any, product: Any) -> dict[str, Any] | None:
+    from typehaus.resolve.suspension import suspension_draw
+
+    draw = suspension_draw(item, product)
+    if draw is None:
+        return None
+    return {"z0_m": draw.z0_m, "z1_m": draw.z1_m, "cable_m": draw.cable_m,
+            "canopy_m": draw.canopy_m, "canopy_thickness_m": draw.canopy_thickness_m,
+            "from": item.suspended_from}
 
 
 def _mount(mount: Any) -> dict[str, Any] | None:

@@ -201,6 +201,40 @@ def chandelier(*, arms: int = 6) -> Builder:
     return build
 
 
+def cluster_pendant(*, globes: int = 20) -> Builder:
+    """A cascade: globes on their own cables, spread through the footprint and the height.
+
+    The type's height is the cascade band, lowest globe to highest; the cable above the band
+    is the resolved suspension, drawn by the consumer. Positions are a golden-angle spiral in
+    plan and a golden-ratio stagger in height, so every globe sits clear of its neighbours and
+    one always sits at the bottom of the band.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        import math
+
+        outer_r = _plan_size(width, depth) / 2
+        globe_r = min(outer_r * 0.17, height / 2)
+        cable_t = min(globe_r * 0.2, 0.003175)
+        strokes: list[Stroke] = [circle(0, 0, outer_r, weight=DETAIL_WEIGHT)]
+        parts: list[Part] = []
+        count = max(3, globes)
+        golden = math.pi * (3 - math.sqrt(5))
+        for index in range(count):
+            r = (outer_r - globe_r) * math.sqrt((index + 0.5) / count)
+            cx, cy = r * math.cos(index * golden), r * math.sin(index * golden)
+            cz = globe_r + ((index * 0.6180339887) % 1.0) * (height - 2 * globe_r)
+            strokes.append(circle(cx, cy, globe_r, segments=12, fill="lamp",
+                                  weight=DETAIL_WEIGHT))
+            parts.append(box(cx, cy, cz - globe_r, cz + globe_r, globe_r * 2, globe_r * 2,
+                             "lamp"))
+            if cz + globe_r < height:
+                parts.append(box(cx, cy, cz + globe_r, height, cable_t, cable_t, "metal"))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def ceiling_fan_light(*, blades: int = 4) -> Builder:
     """A fan with a light kit: the sweep circle, blade lobes, and the lit hub.
 
@@ -319,6 +353,7 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "sconce-spot": sconce(throw="spot"),
     "pendant": pendant(),
     "chandelier": chandelier(arms=6),
+    "cluster-pendant": cluster_pendant(globes=20),
     "ceiling-fan-light": ceiling_fan_light(blades=4),
     "linear-light": linear_light(),
     "suspended-linear-light": suspended_linear_light(),
