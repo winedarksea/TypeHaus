@@ -96,7 +96,7 @@ def _duct_vertex_z(model: ResolvedModel, duct: DuctRun, path: list[tuple[float, 
 
 def _containing_floor(model: ResolvedModel, storey_tag: str, direction: str,
                       point: tuple[float, float], fallback):
-    """Whichever FloorSystem on this storey shares ``direction`` and contains ``point``.
+    """Whichever FloorSystem on the named floor's storey shares ``direction`` and contains ``point``.
 
     Siblings from the same x-spanning deck split share a joist ``direction``; a duct that
     crosses the split boundary needs the floor under each segment, not the one named by
@@ -163,8 +163,10 @@ def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
     width_m, depth_m, diameter_m = section
     floor = (next((f for f in model.floors if f.tag == duct.floor_ref), None)
              if duct.floor_ref else None)
+    # The floor_ref names the floor; its siblings are on ITS storey, not the duct's.
     conflicts, crossings, depth_ok = _bay_occupancy(
-        model, duct, storey.tag, path, floor, width_m, depth_m)
+        model, duct, floor.storey if floor is not None else storey.tag, path, floor,
+        width_m, depth_m)
     z, z_findings = _duct_vertex_z(model, duct, path, storey, floor, depth_m)
     findings.extend(z_findings)
     if not z:
