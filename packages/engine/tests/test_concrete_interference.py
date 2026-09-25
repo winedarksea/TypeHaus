@@ -192,3 +192,17 @@ def test_a_declared_pour_against_a_CONCRETE_footing_still_reports_by_name(
     # joint, never bearing area (ACI 318-19 §13.3.4's combined-footing line).
     assert all("takes no credit" in f.message for f in declared)
     assert all(solid.tag in f.element_tags for f in declared)
+
+
+def test_cast_with_a_stone_footing_is_a_FAIL(catlin_plan) -> None:
+    """A ``cast_with`` naming a non-concrete footing is stale: nothing is cast with stone."""
+    stone = next(el.tag for el in catlin_plan.all_elements()
+                 if type(el).__name__ == "Footing" and el.material != "concrete")
+    pad = next(el for el in catlin_plan.all_elements() if isinstance(el, Pad))
+    swapped = pad.model_copy(update={"cast_with": (stone,)})
+    plan = catlin_plan.model_copy(update={"elements": {
+        k: tuple(swapped if el is pad else el for el in v)
+        for k, v in catlin_plan.elements.items()}})
+    ctx, _ = build_context(plan, CATLIN_DIR)
+    bad = [f for f in _findings(ctx) if f.result is Result.FAIL and "CAST WITH" in f.message]
+    assert [f.element_tags for f in bad] == [(pad.tag,)]

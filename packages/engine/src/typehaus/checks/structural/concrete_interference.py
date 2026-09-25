@@ -87,6 +87,19 @@ def _declared_pours(plan: PlanModel) -> set[frozenset[str]]:
     return declared
 
 
+def _cast_with_non_concrete(plan: PlanModel) -> list[tuple[str, str]]:
+    """``(pad, target)`` for every ``cast_with`` naming something that is not a concrete pour.
+
+    Nothing is cast monolithically with stone, or with a tag that is not a footing or pad.
+    """
+    from typehaus.model.structure import Footing, Pad
+
+    pours = {el.tag for el in plan.all_elements()
+             if isinstance(el, Pad) or (isinstance(el, Footing) and el.material == "concrete")}
+    return sorted((el.tag, other) for el in plan.all_elements() if isinstance(el, Pad)
+                  for other in el.cast_with if other not in pours)
+
+
 def _isolated_tags(plan: PlanModel) -> set[str]:
     """Tags of the pours that stand alone: every ``Pad``, and every wall-less ``Footing``."""
     from typehaus.model.structure import Footing, Pad
@@ -147,7 +160,18 @@ def concrete_interference(ctx: CheckContext) -> list[Finding]:
         if poly.is_valid and poly.area > _TOL_AREA:
             others.append((wall_tag, f"{wall_tag}/{layer_name}", poly, z0, z1))
 
-    out: list[Finding] = []
+    out: list[Finding] = [
+        Finding(
+            severity=Severity.ERROR,
+            check_id="structural.concrete_interference",
+            message=(f"{pad} declares it is CAST WITH {other}, which is not a concrete pour "
+                     f"— the declaration is stale or wrong and credits nothing"),
+            element_tags=(pad,),
+            fix_hint=f"delete {other!r} from {pad}.cast_with",
+            result=Result.FAIL,
+        )
+        for pad, other in _cast_with_non_concrete(model.plan)
+    ]
     declared = _declared_pours(model.plan)
     reported: set[frozenset[str]] = set()
     clashed: set[str] = set()
