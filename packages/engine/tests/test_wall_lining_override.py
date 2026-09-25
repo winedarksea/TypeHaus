@@ -30,7 +30,7 @@ from typehaus.model import (
 )
 from typehaus.model.enums import Occupancy
 from typehaus.resolve import resolve
-from typehaus.resolve.rooms import _lining_inset, wall_lining_overrides
+from typehaus.resolve.rooms import wall_lining_overrides
 
 _PAINT = Layer(name="paint", material_ref="paint", thickness=inch(0.01),
                function=LayerFunction.FINISH)
@@ -194,17 +194,23 @@ def test_override_on_a_lining_less_assembly_warns_and_is_not_applied(project) ->
     assert _innermost(model, "W-MID") == "spf"
 
 
-def test_lining_inset_matches_the_overridden_stack(project) -> None:
-    """``_lining_inset`` (the clear-face inset) and the resolved stack read the same
-    override, so an accent room's floor area does not drift from its walls."""
-    room = _west(wall_lining=ACCENT_LINING)
-    plan = _plan(project, west_room=room)
+def test_clear_face_stops_at_the_overridden_walls_finish_face(project) -> None:
+    """The clear face is cut from each wall's resolved layers, so an overridden lining is
+    the face the room's floor stops at — touching it, never under it."""
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.wall_faces import wall_body
+
+    plan = _plan(project, west_room=_west(wall_lining=ACCENT_LINING))
+    model, _findings = resolve(plan)
     authored = next(e for e in plan.storey_elements("main") if e.element_kind == "Room")
-    expected = sum(layer.thickness.meters for layer in ACCENT_LINING)
-    assert _lining_inset(plan, authored) == pytest.approx(expected)
-    # Same thickness as the default lining — swapping the colour moves no face.
-    default = plan.library.resolve_assembly("EXT").default_lining
-    assert expected == pytest.approx(sum(ly.thickness.meters for ly in default))
+    room = next(r for r in model.rooms if r.tag == authored.tag)
+    clear = Polygon(room.clear_face)
+    assert clear.area < Polygon(room.axis_face).area
+    for wall in (w for w in model.walls if w.tag in ("W-MID", "W-N2", "W-S1", "W-W")):
+        body = wall_body(wall, wall.z0_m, wall.z1_m)
+        assert clear.intersection(body).area < 1e-9, wall.tag
+        assert clear.distance(body) < 1e-6, wall.tag
 
 
 def test_override_map_is_plan_only_and_names_the_walls(project) -> None:

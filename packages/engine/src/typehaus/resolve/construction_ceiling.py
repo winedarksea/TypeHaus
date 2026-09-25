@@ -27,7 +27,8 @@ from typehaus.resolve.model import ResolvedConstructionReturn, ResolvedModel
 # only way to guarantee that. Precedent elsewhere in the tree: ``checks.building_science.
 # energy_load`` imports the WWR check's facade helpers (``checks.building_science.wwr``)
 # rather than re-deriving them.
-from typehaus.resolve.rooms import _lining_inset, _storey_faces
+from typehaus.resolve.rooms import _storey_faces
+from typehaus.resolve.wall_faces import clear_cell, storey_wall_mass
 
 # --- ceiling channel ----------------------------------------------------------
 # Resilient channel: light-gauge hat channel screwed across the joist soffit with the
@@ -42,26 +43,27 @@ _RC_DEFAULT_SPACING_M = 0.4064
 _RC_MATERIAL = "galv-steel"
 
 
-def _room_clear_face(plan: PlanModel, storey_tag: str, room_tag: str) -> Polygon | None:
+def _room_clear_face(model: ResolvedModel, storey_tag: str,
+                     room_tag: str) -> Polygon | None:
     """A room's clear-face polygon, derived the way the rooms stage derives it.
 
     Re-derived rather than read off ``model.rooms``: this pass runs pre-framing, several
     stages ahead of ``resolve_rooms``, so ``model.rooms`` is still empty here. Sharing
-    ``_storey_faces`` / ``_lining_inset`` with that stage is what keeps the two polygons
-    identical — a scoped rule has to bill the same room the plan draws, not an
+    ``_storey_faces`` / ``wall_faces.clear_cell`` with that stage is what keeps the two
+    polygons identical — a scoped rule has to bill the same room the plan draws, not an
     approximation of it.
     """
+    plan = model.plan
     room = next((element for element in plan.storey_elements(storey_tag)
                  if element.element_kind == "Room" and element.tag == room_tag), None)
     if room is None:
         return None
     seed = Point(room.seed.xy_m)
-    face = next((f for f in _storey_faces(plan, storey_tag) if f.contains(seed)), None)
+    faces = _storey_faces(plan, storey_tag)
+    face = next((f for f in faces if f.contains(seed)), None)
     if face is None:
         return None
-    inset = _lining_inset(plan, room)
-    clear = face.buffer(-inset) if inset > 0 else face
-    return face if clear.is_empty or clear.geom_type != "Polygon" else clear
+    return clear_cell(face, storey_wall_mass(model, storey_tag, faces), seed)
 
 
 def _room_storey(plan: PlanModel, room_tag: str):
@@ -113,7 +115,7 @@ def _find_ceiling_channel(model: ResolvedModel, rule: ConstructionRule) \
     if rule.scope_ref is not None:
         room_storey = _room_storey(plan, rule.scope_ref)
         face = (None if room_storey is None
-                else _room_clear_face(plan, room_storey.tag, rule.scope_ref))
+                else _room_clear_face(model, room_storey.tag, rule.scope_ref))
         if face is None:
             return
         # The ceiling over that room is the LOWEST membraned deck above it, which is not

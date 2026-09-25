@@ -46,7 +46,7 @@ than from a naming convention:
   to the final segment on purpose — "this run has a register somewhere" would excuse a riser
   dangling in a chase at the other end of the house.
 And one exempts it: an end **outdoors**, which is a hood — the same
-``clear_face`` probe ``mep.erv_outdoor_terminals`` and ``code.M1502_dryer_exhaust`` use, and
+axis-cell probe ``mep.erv_outdoor_terminals`` and ``code.M1502_dryer_exhaust`` use, and
 a fact about geometry rather than about the tag.
 """
 
@@ -64,6 +64,7 @@ from typehaus.resolve.mep_soffit import (
     plan_distance_to_segment,
     segment_meets_box,
 )
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 if TYPE_CHECKING:
     from typehaus.resolve.model import ResolvedDuct
@@ -83,11 +84,11 @@ BOOT_REACH_M = inch(36).meters
 
 def _ends_outdoors(ctx: CheckContext, point: tuple[float, float]) -> bool:
     """Whether a plan point lands outside every resolved room's clear face."""
-    from shapely.geometry import Point, Polygon
+    from shapely.geometry import Point
 
     probe = Point(point)
     for room in ctx.model.rooms:
-        if len(room.clear_face) >= 3 and Polygon(room.clear_face).covers(probe):
+        if len(axis_ring(room)) >= 3 and axis_polygon(room).covers(probe):
             return False
     return True
 

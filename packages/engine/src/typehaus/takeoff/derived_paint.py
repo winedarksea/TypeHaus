@@ -27,6 +27,7 @@ from typehaus.model.enums import LayerFunction, Occupancy
 from typehaus.model.spatial import Room
 from typehaus.resolve.ceiling_over import ceiling_decks_over
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 _M2_TO_FT2 = 10.7639104
 #: What derived paint bills as — the library's interior latex, priced by the house's row.
@@ -113,9 +114,9 @@ def _used_rooms(model: ResolvedModel) -> list[tuple[Polygon, Any, float, float]]
     out = []
     for room in model.rooms:
         storey = storeys.get(room.storey)
-        if storey is None or not _used(room) or len(room.clear_face) < 3:
+        if storey is None or not _used(room) or len(axis_ring(room)) < 3:
             continue
-        face = Polygon(room.clear_face)
+        face = axis_polygon(room)  # which room a face looks into is an ownership question
         z0 = storey.elevation.meters
         out.append((face, prep(face), z0, z0 + storey.default_ceiling_height.meters))
     return out
@@ -137,9 +138,9 @@ def _facing_fraction(wall: ResolvedWall, row: list[Any],
                      rooms: list[tuple[Polygon, Any, float, float]]) -> float:
     """Share of the row's outer face that looks into a used room, sampled along the axis.
 
-    The probe stands 1" off the outer face. ``clear_face`` is inset from the wall AXIS, not
-    the finish face, so the room on this side contains it and the one across the wall
-    does not.
+    The probe stands 1" off the outer face and is tested against each room's AXIS cell, so
+    the room on this side contains it at every station, corners included, and the one
+    across the wall does not.
     """
     (x0, y0), (x1, y1) = wall.axis
     run = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5

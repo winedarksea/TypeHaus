@@ -32,8 +32,9 @@ _SAUNA_WALLS = {"W-B-SA-W", "W-B-SA-N", "W-B-CS", "W-B-S2", "W-B-S2-FR"}
 
 
 def _sauna(catlin_model) -> Polygon:
+    # The AXIS cell: the liner is wall body, so it lies outside the clear (finish) face.
     room = next(r for r in catlin_model.rooms if r.tag == "RM-B-SAUNA")
-    return Polygon(room.clear_face)
+    return Polygon(room.axis_face)
 
 
 def test_sauna_liner_lands_inside_the_sauna(catlin_model) -> None:

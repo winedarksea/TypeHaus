@@ -203,10 +203,10 @@ def test_the_deck_does_not_carve_up_the_room():
     face nothing claims."""
     model, _ = resolve(_plan())
     room = next(r for r in model.rooms if r.tag == "RM-M-BATH2")
-    # ~74.4 sf since 2026-09-09: the room's east boundary (W-M-BA2E/E2) moved 2" east with
-    # the jog realignment, which is 1.6 sf of real floor. The band is here to catch the
-    # ~20 sf collapse, not to pin the wall.
-    assert 73.5 < room.area_m2 * 10.7639 < 75.0
+    # 87.97" x 106.24" between finish faces = 64.9 sf. The knee walls close no loop, so
+    # they stand IN the room and are not subtracted; subtracting them split off the 17 sf
+    # tub box. The band catches that collapse, not the wall.
+    assert 64.4 < room.area_m2 * 10.7639 < 65.4
 
 
 def test_the_bask_heated_surface_has_its_dedicated_gfci_circuit_and_outlet():

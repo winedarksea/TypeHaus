@@ -36,6 +36,7 @@ from typehaus.emit.draw.structural_common import (
 from typehaus.hardware.config import FT_TO_M
 from typehaus.resolve.assembly_material import is_flatwork
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, ResolvedWall
+from typehaus.resolve.room_lookup import axis_ring
 from typehaus.resolve.solid_categories import is_pour_slab
 
 if TYPE_CHECKING:
@@ -132,7 +133,7 @@ def _room_below(model: ResolvedModel, slab: ResolvedSolid,
     for room in model.rooms:
         if storey_elevation.get(room.storey, 0.0) >= slab.z0_m:
             continue
-        if len(room.clear_face) >= 3 and point_in_bbox(outline_center(room.clear_face), slab_box):
+        if len(axis_ring(room)) >= 3 and point_in_bbox(outline_center(axis_ring(room)), slab_box):
             return True
     return False
 

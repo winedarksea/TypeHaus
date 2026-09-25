@@ -1,33 +1,25 @@
 """Which walls bound a room, and over what run — the room→wall query, derived once.
 
 No authored relation ties a Room to its walls (rooms claim a polygonized face by seed;
-walls only know their nodes), so every consumer that needed the answer has re-derived it
-with its own shapely probe and its own slop — ``fire_separation._separating_walls``,
-``_wall_is_exterior``, ``energy._stands_between_conditioned_rooms``. This module hosts the
-predicate for new consumers (``resolve/paneling.py`` first): a wall bounds a room when its
-axis lies within half its own thickness (plus slop) of the room's face, and the *shared
-run* is the axis clipped to that neighbourhood — so a long wall that borders the room for
-only part of its length contributes only that part.
-
-The existing probes are left in place; migrating them is worthwhile but separate.
+walls only know their nodes). A wall bounds a room when its own layer body
+(:func:`~typehaus.resolve.wall_faces.wall_body`) touches the room's clear face — which
+is the finish face, so the two meet within float noise — and the *shared run* is the
+clear-face boundary lying on that body, projected onto the wall axis.
 """
 
 from __future__ import annotations
 
 from shapely.geometry import LineString, Point, Polygon
+from shapely.ops import linemerge
 
 from typehaus.resolve.model import ResolvedModel, ResolvedRoom, ResolvedWall
+from typehaus.resolve.wall_faces import wall_body
 
-# Generous enough to absorb the clear-face lining inset (a uniform approximation,
-# resolve/rooms.py::_lining_inset) plus polygonize jitter; small enough not to claim the
-# parallel wall one stud bay over.
-_BOUNDING_SLOP_M = 0.08
-# Extra clip margin past the wall's own offset when deriving the shared run. Small on
-# purpose: at offset d the clip disk reaches only ~sqrt(2·d·slop) past a face corner
-# (about an inch), where clipping at the membership reach ran ~5" past every corner.
-_CLIP_SLOP_M = 0.02
-# Shared runs shorter than this are corner artifacts — the ~1" of a collinear neighbour
-# wall the clip disk still catches past a face corner — not walls a finish runs along.
+# A clear face is cut from the wall bodies, so a bounding body touches it to float noise;
+# 1 cm is the plan's stated tolerance and far short of the next wall over.
+_TOUCH_M = 0.01
+# Shared runs shorter than this are corner artifacts — the 1 cm of a perpendicular
+# neighbour's face the touch band catches — not walls a finish runs along.
 _MIN_RUN_M = 0.05
 
 
@@ -43,6 +35,7 @@ def bounding_walls(
     if len(room.clear_face) < 3:
         return []
     face = Polygon(room.clear_face)
+    edge = face.exterior
     out: list[tuple[ResolvedWall, tuple[float, float]]] = []
     for wall in model.walls:
         if wall.storey != room.storey:
@@ -50,26 +43,21 @@ def bounding_walls(
         axis = LineString(wall.axis)
         if axis.length <= 0.0:
             continue
-        reach = wall.thickness_m / 2.0 + _BOUNDING_SLOP_M
-        offset = axis.distance(face)
-        if offset > reach:
+        if getattr(wall, "layers", None):
+            body = wall_body(wall, wall.z0_m, wall.z1_m)
+        else:  # a layerless stand-in: its axis at its stated thickness
+            body = axis.buffer(getattr(wall, "thickness_m", 0.0) / 2.0, cap_style="flat")
+        if body.is_empty or body.distance(face) > _TOUCH_M:
             continue
-        # Clip with the wall's *actual* offset from the face (its half-thickness-ish
-        # lining inset), not the membership reach: clipping with the full reach ran every
-        # interval ~reach past each corner and picked up stub runs from collinear
-        # neighbour walls, inflating a wainscot's perimeter by a couple of lineal feet.
-        shared = axis.intersection(face.buffer(offset + _CLIP_SLOP_M))
-        segments = (
-            shared.geoms if shared.geom_type in ("MultiLineString", "GeometryCollection")
-            else (shared,)
-        )
+        shared = edge.intersection(body.buffer(_TOUCH_M))
+        if shared.geom_type == "MultiLineString":
+            shared = linemerge(shared)  # rejoin a run the ring's start point split
+        segments = getattr(shared, "geoms", (shared,))
         for segment in segments:
             if segment.geom_type != "LineString" or segment.length <= 0.0:
                 continue
-            coords = list(segment.coords)
-            u0 = axis.project(Point(coords[0]))
-            u1 = axis.project(Point(coords[-1]))
-            lo, hi = sorted((u0, u1))
+            stations = [axis.project(Point(c)) for c in segment.coords]
+            lo, hi = min(stations), max(stations)
             if hi - lo > _MIN_RUN_M:
                 out.append((wall, (lo, hi)))
     return out

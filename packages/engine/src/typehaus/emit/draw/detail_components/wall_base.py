@@ -35,6 +35,7 @@ from typehaus.emit.draw.scene import IRNode
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.accessories import BUG_SCREEN_HEIGHT_IN, BUG_SCREEN_MATERIAL
 from typehaus.resolve.model import ResolvedLayer, ResolvedWall
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 # How near a banded layer's top must land on the wall top to read as "runs to the top" —
 # a protection panel is ordered flush with the wall it faces, not to a course line.
@@ -227,12 +228,12 @@ def slab_is_on_grade(model, slab) -> bool:
         return True
     centroid = Polygon(slab.outline).centroid
     for room in model.rooms:
-        if len(room.clear_face) < 3:
+        if len(axis_ring(room)) < 3:
             continue
         storey = model.plan.storey(room.storey)
         if storey is None or storey.elevation.meters >= slab.z0_m:
             continue
-        if Polygon(room.clear_face).covers(centroid):
+        if axis_polygon(room).covers(centroid):
             return False
     return True
 

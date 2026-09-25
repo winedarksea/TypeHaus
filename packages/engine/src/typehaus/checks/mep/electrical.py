@@ -11,6 +11,7 @@ from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
 from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.intervals import merge as _merge_intervals
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 _HABITABLE = {Occupancy.BEDROOM, Occupancy.LIVING, Occupancy.KITCHEN, Occupancy.DINING,
              Occupancy.OFFICE}
@@ -63,12 +64,12 @@ _IN_ROOM_TOLERANCE_M = 0.15
 
 def _devices_in_room(ctx: CheckContext, storey_tag: str, room) -> list:
     """The storey's devices whose position lies in the resolved room's clear face."""
-    from shapely.geometry import Point, Polygon
+    from shapely.geometry import Point
 
     resolved = next((r for r in ctx.model.rooms if r.tag == room.tag), None)
-    if resolved is None or len(resolved.clear_face) < 3:
+    if resolved is None or len(axis_ring(resolved)) < 3:
         return []
-    face = Polygon(resolved.clear_face)
+    face = axis_polygon(resolved)
     return [
         element for element in ctx.plan.storey_elements(storey_tag)
         if element.element_kind == "ElectricalDevice"
@@ -184,8 +185,10 @@ def _floor_opening_intervals(ctx: CheckContext, ring: list,
         for piece in getattr(fronting, "geoms", (fronting,)):
             if piece.is_empty or piece.length <= 0:
                 continue
-            offsets = [boundary.project(Point(coord)) for coord in piece.coords]
-            intervals.append((min(offsets), max(offsets)))
+            # Cyclic, as for cabinets: a piece crossing the ring's seam projects near 0 AND
+            # near the full length, and min..max then swallowed the whole room.
+            offsets = sorted(boundary.project(Point(coord)) for coord in piece.coords)
+            intervals.extend(_cyclic_span(offsets, boundary.length))
     return intervals
 
 

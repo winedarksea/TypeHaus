@@ -14,6 +14,7 @@ from typehaus.resolve.model import ResolvedFinishZone, ResolvedModel, ResolvedRo
 from typehaus.resolve.roof_geometry import room_head_limited_area_m2
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.room_openings import room_glazing_areas
+from typehaus.resolve.wall_faces import clear_cell, storey_wall_mass
 
 
 def _storey_faces(plan: PlanModel, storey_tag: str) -> list[Polygon]:
@@ -43,8 +44,8 @@ def wall_lining_overrides(plan: PlanModel,
                           storey_tag: str) -> tuple[dict[str, tuple], list[Finding]]:
     """Per-wall lining overrides authored on the storey's Rooms, plus their findings.
 
-    ``Room.wall_lining`` / ``wall_lining_exceptions`` set the clear-face inset via
-    :func:`_lining_inset` but do not reach wall geometry on their own. This is the map —
+    ``Room.wall_lining`` / ``wall_lining_exceptions`` do not reach wall geometry on
+    their own. This is the map —
     wall tag → lining layer tuple — computed from plan inputs only (the same seed-claimed
     faces :func:`resolve_rooms` uses) so :func:`~typehaus.resolve.topology.resolve_storey_walls`
     can consume it before any wall resolves.
@@ -141,6 +142,7 @@ def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     pending: list[tuple[int, object, Polygon]] = []
     for storey in plan.storeys:
         faces = _storey_faces(plan, storey.tag)
+        mass = None
         for room in (e for e in plan.storey_elements(storey.tag)
                      if e.element_kind == "Room"):
             seed = Point(room.seed.xy_m)
@@ -157,16 +159,27 @@ def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     )
                 )
                 continue
-            # Clear-face polygon: inset by resolved interior lining thickness.
-            inset = _lining_inset(plan, room)
-            clear = face.buffer(-inset) if inset > 0 else face
-            if clear.is_empty or clear.geom_type != "Polygon":
-                clear = face
+            # Clear face: the axis cell minus every wall layer standing on the storey.
+            if mass is None:
+                mass = storey_wall_mass(model, storey.tag, faces)
+            clear = clear_cell(face, mass, seed)
+            if clear is None:
+                findings.append(Finding(
+                    severity=Severity.ERROR,
+                    check_id="integrity.room_seed_in_wall",
+                    message=f"room {room.tag} seed lies inside a wall's layers — it "
+                            "claims no floor",
+                    element_tags=(room.tag,),
+                    fix_hint="move the seed off the wall body into the room's floor",
+                    result=Result.FAIL,
+                ))
+                continue
             ring = [(x, y) for x, y in clear.exterior.coords[:-1]]
             resolved = ResolvedRoom(
                 uid=room.uid, tag=room.tag, storey=storey.tag,
                 occupancy=room.occupancy.value, conditioned=room.conditioned,
                 clear_face=ring, area_m2=clear.area, floor_finish=room.floor_finish,
+                axis_face=[(x, y) for x, y in face.exterior.coords[:-1]],
                 finish_zones=_finish_zones(plan, storey.tag, room, clear),
                 head_limited_area_m2=room_head_limited_area_m2(
                     model, ring, storey.elevation.meters),
@@ -319,19 +332,6 @@ def _derived_finish_zones(plan: PlanModel, storey_tag: str, room, clear: Polygon
                 source_ref=slab.tag,
             ))
     return out
-
-
-def _lining_inset(plan: PlanModel, room) -> float:
-    """Interior lining thickness for the room's faces (assembly default unless overridden)."""
-    if room.wall_lining:
-        return sum(layer.thickness.meters for layer in room.wall_lining)
-    # Approximate: use the default_lining of the first bounding wall's assembly.
-    for w in plan.storey_elements(room_storey(plan, room)):
-        if w.element_kind in ("Wall", "FoundationWall"):
-            asm = plan.library.resolve_assembly(w.assembly)
-            if asm and asm.default_lining:
-                return sum(layer.thickness.meters for layer in asm.default_lining)
-    return 0.0
 
 
 def room_storey(plan: PlanModel, room) -> str:

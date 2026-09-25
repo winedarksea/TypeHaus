@@ -26,6 +26,7 @@ from typehaus.checks.mep.electrical_code import (
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 from typehaus.resolve.solid_categories import in_slab_family
 
 # 210.52(D)'s reach, measured to the OUTSIDE EDGE of the basin.
@@ -102,8 +103,8 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
 
     rooms: dict[str, list] = {}
     for room in ctx.model.rooms:
-        if len(room.clear_face) >= 3:
-            rooms.setdefault(room.storey, []).append((room, Polygon(room.clear_face)))
+        if len(axis_ring(room)) >= 3:
+            rooms.setdefault(room.storey, []).append((room, axis_polygon(room)))
     by_tag = {room.tag: room for room in ctx.model.rooms}
     barriers = _wall_barrier(ctx)
     devices = _receptacles(ctx, rooms, by_tag)

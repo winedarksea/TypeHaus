@@ -971,9 +971,13 @@ class ResolvedRoom:
     storey: str
     occupancy: str
     conditioned: bool
-    clear_face: Ring  # interior face polygon (core + resolved lining)
+    # The finish face: the axis cell minus every wall layer on the storey (wall_faces.py).
+    clear_face: Ring
     area_m2: float
     floor_finish: str | None
+    # The raw wall-axis cell. Ownership ("which room is this point in") reads this, so a
+    # point inside a wall still belongs to a room (resolve/room_lookup.py).
+    axis_face: Ring = ()
     # Authored in-room overrides of ``floor_finish``. ``Room.finish_zones`` had no field here
     # at all, so a FinishZone written in plan source was silently dropped at resolve and
     # reached no viewer, emitter or takeoff. ``area_m2`` is the zone clipped to the room, so

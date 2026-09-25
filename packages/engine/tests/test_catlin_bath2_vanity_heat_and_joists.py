@@ -150,17 +150,15 @@ def test_the_vanity_fits_the_west_wall_without_entering_the_toilets_clearance():
     assert 3.5 < envelope_starts - vy1 < 5.0
 
 
-def test_the_vanity_backs_onto_the_wall_face_not_the_rooms_clear_face():
-    """** THE REGRESSION THIS FILE EXISTS FOR MOST. ** A first cut of this cabinet was
-    placed off `Room.clear_face`, which is inset from the wall AXIS rather than from the
-    finished face — so a 51" vanity stood SIX INCHES inside W-M-W3's studs, and the whole
-    house still checked 0 FAIL, because nothing grades a fixture against a wall face. The
-    same mistake put the floor-heat polygon in the wall beside it."""
+def test_the_vanity_backs_onto_the_wall_face_and_the_room_reports_that_face():
+    """A first cut of this cabinet was placed off the old axis-derived `Room.clear_face` and
+    stood SIX INCHES inside W-M-W3's studs at 0 FAIL. The clear face is now the finish face,
+    so the room, the wall layers and the cabinet back must all agree."""
     model = _model()
     face = _finish_face(model, "W-M-W3", "x", "max")
     room = next(r for r in model.rooms if r.tag == "RM-M-BATH2")
     reported = min(p[0] for p in room.clear_face) / M_PER_IN
-    assert face - reported > 5.0, "if these ever agree, this test has stopped testing"
+    assert abs(face - reported) < 0.01, "the room's clear face is not W-M-W3's finish face"
 
     back = min(p[0] for p in _canvas(model, "FX-M-BATH2-SINK").footprint) / M_PER_IN
     assert abs(back - face) < 0.05, "the cabinet is not on the finished wall face"

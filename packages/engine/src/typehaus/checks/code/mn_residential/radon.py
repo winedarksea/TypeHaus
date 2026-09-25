@@ -38,6 +38,7 @@ from typehaus.model.enums import DeviceKind, PipeSystem
 from typehaus.model.mep import Sump, VentRun
 from typehaus.quantities import ft
 from typehaus.resolve.geometry import opening_center
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 from typehaus.resolve.vent_termination import exterior_riser_point
 
 _CODE = "MN 1303.2402"
@@ -238,7 +239,7 @@ def _fan_power_finding(ctx: CheckContext, riser: VentRun) -> Finding:
     and is the one place the rule names. So the location test asks which room the box stands
     in, not merely whether it is on an exterior wall.
     """
-    from shapely.geometry import Point, Polygon
+    from shapely.geometry import Point
 
     rx, ry = _exterior_riser_point(riser)
     boxes = [e for e in ctx.plan.all_elements()
@@ -285,13 +286,13 @@ def _fan_power_finding(ctx: CheckContext, riser: VentRun) -> Finding:
     for box in near:
         point = Point(*box.position.xy_m)
         for room in ctx.model.rooms:
-            if len(room.clear_face) < 3 or not room.conditioned:
+            if len(axis_ring(room)) < 3 or not room.conditioned:
                 continue
             # Same storey only — a plan point is over every storey at once, and a box is on
             # exactly one of them.
             if exit_storey is not None and room.storey != exit_storey:
                 continue
-            if Polygon(room.clear_face).covers(point):
+            if axis_polygon(room).covers(point):
                 interior.append((box.tag, room.tag))
                 break
     if interior:

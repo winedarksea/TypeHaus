@@ -226,14 +226,7 @@ def _room_side_sign(wall, toward: tuple[float, float]) -> float:
 def _room_side_offset(wall, toward: tuple[float, float]) -> float:
     """How far the wall's face stands off its axis, on the side ``toward`` points to.
 
-    Measured from the wall's own resolved layer polygons rather than from the room's clear
-    face. That is deliberate: ``resolve/rooms.py::_lining_inset`` insets a claimed face by one
-    uniform figure derived from ``Room.wall_lining`` rather than by each bounding wall's own
-    resolved lining, so the clear face does *not* sit on the finish plane of a wall with an
-    unusual liner — the sauna's 3 1/2" liner famously does not move its room polygon at all.
-    Hanging a band off it would put the sauna's tile splash three inches inside the wall.
-
-    The layer polygons have no such problem: they are where the wall's material actually is.
+    Measured from the wall's own resolved layer polygons: they are where its material is.
     """
     from typehaus.resolve.geometry import normal, sub, unit
 

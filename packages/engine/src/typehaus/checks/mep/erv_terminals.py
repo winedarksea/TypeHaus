@@ -26,6 +26,7 @@ from typehaus.checks._authoring import advisory, failed, not_applicable, passed,
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import DuctSystem, EquipmentKind
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 #: IRC M1602.2 / ASHRAE 62.2-2019 §6.8: an outdoor-air intake stands at least 10 ft from
 #: any exhaust outlet. A manufacturer's manual may allow less for its own balanced pair —
@@ -98,13 +99,13 @@ def _ends_outdoors(ctx: CheckContext, duct) -> bool:
     machine, in a room; the stale-air leg ends in the open air. The same probe
     ``code.M1502_dryer_exhaust`` uses for M1502.3, for the same reason.
     """
-    from shapely.geometry import Point, Polygon
+    from shapely.geometry import Point
 
     if not duct.path:
         return False
     probe = Point(duct.path[-1])
     for room in ctx.model.rooms:
-        if len(room.clear_face) >= 3 and Polygon(room.clear_face).covers(probe):
+        if len(axis_ring(room)) >= 3 and axis_polygon(room).covers(probe):
             return False
     return True
 

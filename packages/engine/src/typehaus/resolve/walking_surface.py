@@ -28,6 +28,7 @@ from dataclasses import dataclass
 from shapely.geometry import Point, Polygon
 
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 from typehaus.resolve.solid_categories import in_slab_family
 
 # Deck covers shrink by this before containment. Stair edges and room boundaries are
@@ -177,17 +178,17 @@ def room_finish_at(model: ResolvedModel, storey: str, point: tuple[float, float]
 
     Split from ``floor_surface_at`` because the two halves are not always asked at the same
     place. A stair's top nosing stands inside its own well, where no deck covers it — the
-    arrival deck is the one the well is a hole in — but a ``Room``'s ``clear_face`` is not
+    arrival deck is the one the well is a hole in — but a ``Room``'s axis cell is not
     cut by a floor opening, so the room whose finish the flight lands on is readable right
     there. Returns ``(None, None, 0.0)`` where no room covers the probe: outdoors and in a
     garage bay there is no covering to stand on, which is a bare deck, not a missing number.
     """
     probe = Point(*point)
     for room in model.rooms:
-        if (room.storey != storey or len(room.clear_face) < 3
-                or _bbox_misses(point, room.clear_face)):
+        if (room.storey != storey or len(axis_ring(room)) < 3
+                or _bbox_misses(point, axis_ring(room))):
             continue
-        if Polygon(room.clear_face).covers(probe):
+        if axis_polygon(room).covers(probe):
             return room.tag, room.floor_finish, _finish_depth(model, room.floor_finish)
     return None, None, 0.0
 

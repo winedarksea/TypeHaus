@@ -12,6 +12,7 @@ from __future__ import annotations
 from typehaus.model.elements import Wall
 from typehaus.model.plan import PlanModel
 from typehaus.model.remap import MutationResult
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 from typehaus.source.macros_common import (
     _PLACEABLE_KINDS,
     ROOM_BOUNDARY_NODE_TOLERANCE_M,
@@ -149,14 +150,14 @@ def _rooms_with_moved_boundaries(plan: PlanModel, storey: str, moved_nodes: set[
                                  rooms=None) -> set[str]:
     """Return rooms whose complete authored boundary node set participates in this move."""
     try:
-        from shapely.geometry import Point, Polygon
+        from shapely.geometry import Point
 
         nodes = _nodes(plan, storey)
         translated: set[str] = set()
         for room in _resolved_rooms(plan, rooms):
-            if room.storey != storey or len(room.clear_face) < 3:
+            if room.storey != storey or len(axis_ring(room)) < 3:
                 continue
-            boundary = Polygon(room.clear_face).boundary
+            boundary = axis_polygon(room).boundary
             boundary_nodes = {
                 node.tag for node in nodes
                 if boundary.distance(Point(node.position.xy_m))

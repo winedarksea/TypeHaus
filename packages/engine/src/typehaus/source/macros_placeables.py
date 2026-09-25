@@ -24,6 +24,7 @@ from typehaus.model.spatial import Appliance, Fixture, Furniture
 from typehaus.quantities import deg
 from typehaus.quantities.length import ft, m
 from typehaus.quantities.point import pt
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 from typehaus.source.macros_common import (
     ROTATION_SNAP_DEGREES,
     XY,
@@ -418,11 +419,11 @@ def _containing_room(plan: PlanModel, storey: str, position: tuple[float, float]
     keeping a now-wrong room; the resolver reports the topology problem itself.
     """
     try:
-        from shapely.geometry import Point, Polygon
+        from shapely.geometry import Point
 
         return next((room.tag for room in _resolved_rooms(plan, rooms)
-                     if room.storey == storey and len(room.clear_face) >= 3
-                     and Polygon(room.clear_face).covers(Point(position))), None)
+                     if room.storey == storey and len(axis_ring(room)) >= 3
+                     and axis_polygon(room).covers(Point(position))), None)
     except Exception:  # noqa: BLE001 - macros must remain usable while a plan is mid-edit
         return None
 

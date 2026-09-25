@@ -209,21 +209,23 @@ def test_the_ceiling_channel_is_scoped_to_one_room(catlin_model) -> None:
     assert rc.takeoff_category == "resilient-channel"
     assert set(rc.element_tags) == {"FS-S-WEST", "FS-S-EAST", "RM-M-LIVING"}
     assert rc.returning_layer == "gwb"  # the membrane it carries, authored on the deck
-    assert Polygon(rc.outline).area == pytest.approx(_living_room(catlin_model).area_m2)
+    # The clear face is the finish face, which runs to the well's edge, so the well cuts
+    # the outline rather than sitting in it as a hole.
+    field = Polygon(_living_room(catlin_model).clear_face).difference(_stair_hole(catlin_model))
+    assert Polygon(rc.outline).area == pytest.approx(field.area)
     # A field, not a junction lap: there is no boundary condition for an overlay to join on.
     assert rc.condition_key is None
 
 
 def test_the_ceiling_channel_leaves_the_stair_well_out(catlin_model) -> None:
     """No ceiling hangs under FO-S-STAIR, so no channel is ordered for it — ~70 sqft of
-    RM-M-LIVING, 9% of the room and 9% of the channel. The well falls *inside* the room, so
-    it is a hole: it comes off the billed quantity, which the outline ring cannot show."""
+    RM-M-LIVING, 10% of the room and of the channel."""
     rc = _rc(catlin_model)
     room = Polygon(_living_room(catlin_model).clear_face)
     hole = _stair_hole(catlin_model)
     assert hole.intersection(room).area > 5.0  # the guard only bites if they overlap
     assert rc.length_m * _RC_SPACING_M == pytest.approx(room.difference(hole).area)
-    assert rc.length_m < Polygon(rc.outline).area / _RC_SPACING_M
+    assert rc.length_m * _RC_SPACING_M < room.area - 5.0
 
 
 def test_the_ceiling_channel_length_is_its_field_over_the_spacing(catlin_model) -> None:
@@ -236,7 +238,7 @@ def test_the_ceiling_channel_length_is_its_field_over_the_spacing(catlin_model) 
     assert rc.length_m == pytest.approx(field.area / _RC_SPACING_M)
     # The channel field is the room's clear face less the stair hole, derived from the
     # field above and pinned here so the number cannot drift without someone reading why.
-    assert rc.length_m / 0.3048 == pytest.approx(508.7, abs=2.0)
+    assert rc.length_m / 0.3048 == pytest.approx(472.5, abs=2.0)
 
 
 def test_the_ceiling_channel_hangs_below_the_joist_soffit(catlin_model) -> None:

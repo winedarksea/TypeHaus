@@ -42,10 +42,11 @@ from typehaus.takeoff.hvac import heating_zones
 _ADVISED = True
 _CATLIN = {
     # HP1 was 15,410 / -5.9 °F before WIN-A-S2/-S3 went WT-1436 -> WT-1424 (c3c46cff), and
-    # 15,365 before the plant room's R316.4 gypsum (2026-09-24).
-    "EQ-M-HP1-OD": (15_359, 14_000, 5.0, 0.91, -6.1, _ADVISED),
-    "EQ-M-HP2-OD": (14_877, 8_800, 5.0, 0.59, 28.0, not _ADVISED),
-    "EQ-M-HP3-OD": (1_043, 2_800, 17.0, 2.69, None, _ADVISED),
+    # 15,365 before the plant room's R316.4 gypsum, and 15,359 before room volume became
+    # finish-face volume (both 2026-09-24; the note's second addendum).
+    "EQ-M-HP1-OD": (15_137, 14_000, 5.0, 0.92, -7.1, _ADVISED),
+    "EQ-M-HP2-OD": (14_542, 8_800, 5.0, 0.61, 26.7, not _ADVISED),
+    "EQ-M-HP3-OD": (1_016, 2_800, 17.0, 2.76, None, _ADVISED),
 }
 
 
@@ -142,7 +143,7 @@ def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> No
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
-    assert f"{0.80 * 15_359:,.0f} Btu/h".replace(",", ",") in finding.message
+    assert f"{0.80 * 15_137:,.0f} Btu/h".replace(",", ",") in finding.message
 
 
 # --- §3. the crossover ------------------------------------------------------------------------

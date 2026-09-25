@@ -14,6 +14,7 @@ from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
 from typehaus.resolve.mep import is_parallel_to_floor
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 if TYPE_CHECKING:
     pass
@@ -74,7 +75,7 @@ def _registers_by_room(ctx: CheckContext, cid: str) -> tuple[dict, dict, list, l
     """Map every authored Register to a room tag.
 
     Returns (room->kinds, room->supply duct_refs, registers, findings)."""
-    from shapely.geometry import Point, Polygon
+    from shapely.geometry import Point
 
     out: list[Finding] = []
     by_room: dict[str, set] = {}
@@ -91,8 +92,8 @@ def _registers_by_room(ctx: CheckContext, cid: str) -> tuple[dict, dict, list, l
                 point = Point(element.position.xy_m)
                 room_tag = next(
                     (r.tag for r in rooms
-                     if r.storey == storey.tag and len(r.clear_face) >= 3
-                     and Polygon(r.clear_face).contains(point)), None)
+                     if r.storey == storey.tag and len(axis_ring(r)) >= 3
+                     and axis_polygon(r).contains(point)), None)
             if room_tag is None:
                 out.append(_unknown(
                     cid, f"register {element.tag} carries no room= and its position lands "

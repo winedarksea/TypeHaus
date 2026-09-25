@@ -12,6 +12,7 @@ from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import DuctSystem
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 # M1502.4.5.1: 35 feet of developed length from the connection to the termination, less
 # 5 feet per 45-degree bend and 2.5 feet per 90-degree bend.
@@ -153,13 +154,13 @@ def _turn_degrees(a, b, c, math) -> float:
 
 
 def _room_containing(ctx: CheckContext, run, point) -> str | None:
-    from shapely.geometry import Point, Polygon
+    from shapely.geometry import Point
 
     probe = Point(point)
     storey = getattr(run, "storey", None)
     for room in ctx.model.rooms:
         if storey is not None and room.storey != storey:
             continue
-        if len(room.clear_face) >= 3 and Polygon(room.clear_face).covers(probe):
+        if len(axis_ring(room)) >= 3 and axis_polygon(room).covers(probe):
             return room.tag
     return None

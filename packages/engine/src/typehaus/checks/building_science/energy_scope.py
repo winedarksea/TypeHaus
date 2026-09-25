@@ -79,14 +79,18 @@ def _volume_ft3(model: ResolvedModel, rooms: list[object]) -> float:
 
 
 def _room_scope(model: ResolvedModel, rooms: frozenset[str]) -> dict[str, object]:
-    """Per-storey union of the selected rooms' clear faces, for attributing envelope area."""
-    from shapely.geometry import Polygon
+    """Per-storey union of the selected rooms' AXIS cells, for attributing envelope area.
+
+    Attribution is ownership: a wall's run belongs to the rooms whose cells it bounds.
+    """
     from shapely.ops import unary_union
+
+    from typehaus.resolve.room_lookup import axis_polygon
 
     by_storey: dict[str, list[object]] = {}
     for room in model.rooms:
         if room.tag in rooms and len(room.clear_face) >= 3:
-            by_storey.setdefault(room.storey, []).append(Polygon(room.clear_face))
+            by_storey.setdefault(room.storey, []).append(axis_polygon(room))
     return {storey: unary_union(polygons) for storey, polygons in by_storey.items()}
 
 

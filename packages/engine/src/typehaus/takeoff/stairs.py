@@ -17,6 +17,7 @@ from __future__ import annotations
 from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel, ResolvedStair
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 _M_TO_FT = 3.280839895
 _M2_TO_FT2 = 10.7639104
@@ -61,7 +62,7 @@ def _in_conditioned_space(model: ResolvedModel, stair: ResolvedStair) -> bool:
     """Does this stair stand in a conditioned room?
 
     ``ResolvedStair`` carries a ``storey`` and an ``outline`` but no room reference, so the
-    question is answered geometrically: the centroid of the outline against ``clear_face``
+    question is answered geometrically: the centroid of the outline against ``axis_face``
     for every room on the same storey (the containment test ``checks/mep/exhaust.py``
     already uses to name the room a duct end lands in).
 
@@ -75,9 +76,9 @@ def _in_conditioned_space(model: ResolvedModel, stair: ResolvedStair) -> bool:
         return True
     probe = Polygon(stair.outline).centroid
     for room in model.rooms:
-        if room.storey != stair.storey or len(room.clear_face) < 3:
+        if room.storey != stair.storey or len(axis_ring(room)) < 3:
             continue
-        if Polygon(room.clear_face).covers(probe):
+        if axis_polygon(room).covers(probe):
             return room.conditioned
     return True
 

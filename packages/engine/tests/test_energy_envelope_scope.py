@@ -35,7 +35,9 @@ from typehaus.resolve.solid_categories import in_slab_family
 
 # --- the pinned result ---------------------------------------------------------------------
 
-_HEATING_BTUH = 31_672.5
+# 31,672.5 -> 31,057.0 (2026-09-24): conditioned volume is finish-face area x height now,
+# 46,159 -> 41,291 ft3, which takes 610 Btu/h off infiltration (note §6).
+_HEATING_BTUH = 31_057.0
 # SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
 # (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
 # latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2

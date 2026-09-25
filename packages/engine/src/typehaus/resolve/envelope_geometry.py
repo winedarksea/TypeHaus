@@ -22,10 +22,10 @@ of the three tests above is there because it is the one that fixes one of those 
 
 * **``bounds_conditioned_space``** measures the wall *body* — not ``axis ± thickness/2``,
   because ``axis`` is an alignment reference and a ``face(...)``-aligned wall carries its
-  whole depth to one side of it — against a conditioned room's ``clear_face`` on the same
-  storey. It excludes ``W-B-BRICK`` at 0.154 m and admits the three "the room doesn't reach
-  this wall" walls at 0.016 m, and it excludes every tag in both retired prefix tuples on
-  geometry alone.
+  whole depth to one side of it — against a conditioned room's AXIS cell on the same
+  storey (the clear face is the finish face, a wall's depth short of the outboard band
+  walls). It excludes ``W-B-BRICK``, admits the three "the room doesn't reach this wall"
+  walls, and excludes every tag in both retired prefix tuples on geometry alone.
 * **``carries_a_weather_skin``** keeps a bare bearing course out. A 2x plate laid flat on a
   deck under a story-and-a-half roof runs along a room's edge and encloses nothing: no
   sheathing, no foam, no cladding. The envelope at that line runs from the wall BELOW the
@@ -62,9 +62,8 @@ from typehaus.resolve.roof_edge_geometry import skin_layers
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedSolid, ResolvedWall
 
-# How far a wall's BODY may sit off a conditioned room's interior face and still be that
-# room's enclosure. The room polygon is the interior *face*, so a bounding wall's body lands
-# on it or just off it; this absorbs lining and junction resolution only.
+# How far a wall's BODY may sit off a conditioned room's axis cell and still be that
+# room's enclosure; this absorbs lining and junction resolution only.
 _ENVELOPE_ADJACENCY_TOLERANCE_M = 0.05
 
 # How far past a wall face to probe for the interior region. 6" clears the wall's own
@@ -394,12 +393,18 @@ def _build(model: ResolvedModel) -> EnvelopeGeometry:
     from shapely.geometry import Polygon
 
     from typehaus.resolve.overlay import difference, union_all
+    from typehaus.resolve.room_lookup import axis_polygon
 
     # --- bounds_conditioned_space ------------------------------------------------------
+    # Adjacency is read off the AXIS cells: the clear face is the finish face, which the
+    # outboard band walls (W-S-W1B and kin) stand a full wall off. The interior region and
+    # the prisms below keep the clear faces.
     conditioned_faces: dict[str, list[object]] = {}
+    conditioned_cells: dict[str, list[object]] = {}
     for room in model.rooms:
         if room.conditioned and len(room.clear_face) >= 3:
             conditioned_faces.setdefault(room.storey, []).append(Polygon(room.clear_face))
+            conditioned_cells.setdefault(room.storey, []).append(axis_polygon(room))
     bodies_by_storey: dict[str, list[object]] = {}
     body_by_uid: dict[str, object] = {}
     for wall in model.walls:
@@ -411,7 +416,7 @@ def _build(model: ResolvedModel) -> EnvelopeGeometry:
     bounding: set[str] = set()
     for wall in model.walls:
         body = body_by_uid.get(wall.uid)
-        near = conditioned_faces.get(wall.storey, ())
+        near = conditioned_cells.get(wall.storey, ())
         if body is None or not near:
             continue
         # Distances per room polygon rather than over a union: min() answers the question

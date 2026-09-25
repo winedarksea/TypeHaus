@@ -369,9 +369,12 @@ def test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other(catlin_model
     clear face and disjoint from each other."""
     from shapely.geometry import Polygon
 
-    room = Polygon(next(r for r in catlin_model.rooms if r.tag == "RM-M-BATH1").clear_face)
+    # Fixtures only: a wall device's body is let into the wall (Phase 8 grades those). The
+    # clear face IS the finish face, so 0.1 mm absorbs the float noise of a flush back.
+    room = Polygon(next(r for r in catlin_model.rooms
+                        if r.tag == "RM-M-BATH1").clear_face).buffer(1e-4)
     footprints = {obj.tag: Polygon(obj.footprint) for obj in catlin_model.canvas_objects
-                  if obj.room == "RM-M-BATH1"}
+                  if obj.room == "RM-M-BATH1" and obj.kind == "Fixture"}
     assert {"FX-M-BATH1-WC", "FX-M-BATH1-LAV"} <= set(footprints)
     for tag, footprint in footprints.items():
         assert room.covers(footprint), f"{tag} escapes RM-M-BATH1"

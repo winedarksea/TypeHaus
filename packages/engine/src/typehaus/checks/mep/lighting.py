@@ -17,6 +17,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.electrical import luminaire_types
 from typehaus.model.enums import Occupancy
+from typehaus.resolve.room_lookup import axis_ring
 
 # The sizing factor a 24V LED supply is picked by: continuous load at 125%, the same
 # NEC 210.19(A)(1) basis a continuous branch-circuit load uses. A driver run at its
@@ -238,8 +239,8 @@ def _stands_outside_every_room(ctx: CheckContext, element: object, storey_tag: s
         if not path:
             return False
         point = Point(path[0].xy_m)
-    rings = [room.clear_face for room in ctx.model.rooms
-             if room.storey == storey_tag and len(room.clear_face) >= 3]
+    rings = [axis_ring(room) for room in ctx.model.rooms
+             if room.storey == storey_tag and len(axis_ring(room)) >= 3]
     return not any(Polygon(ring).buffer(0).contains(point) for ring in rings)
 
 

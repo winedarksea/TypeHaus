@@ -115,7 +115,7 @@ def _find_rim_cavity_foam(model: ResolvedModel, rule: ConstructionRule) \
     storey = _room_storey(model.plan, rule.scope_ref)
     if storey is None:
         return
-    face = _room_clear_face(model.plan, storey.tag, rule.scope_ref)
+    face = _room_clear_face(model, storey.tag, rule.scope_ref)
     if face is None:
         return
     depth_m = rule.dimension.meters if rule.dimension is not None else _DEFAULT_DEPTH_M

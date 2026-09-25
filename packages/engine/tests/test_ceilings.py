@@ -160,8 +160,8 @@ def test_a_room_straddling_two_decks_resolves_a_ceiling_per_plane(catlin_model) 
     # bay's. (The form's 1/2" steel rib adds the rest of CLAUDE.md's 2 1/16" on site; EPS
     # is never modelled here, so the model states the 1 9/16" it can derive.)
     assert wood.z1_m - concrete.z1_m == pytest.approx(inch(1.5625).meters)
-    assert _sqft(wood) == pytest.approx(234.0, abs=0.5)
-    assert _sqft(concrete) == pytest.approx(90.0, abs=0.5)
+    assert _sqft(wood) == pytest.approx(207.1, abs=0.5)  # finish faces (234.0 axis-derived)
+    assert _sqft(concrete) == pytest.approx(78.0, abs=0.5)  # finish faces (90.0 axis)
     for ceiling in (wood, concrete):
         solid = _solid(catlin_model, ceiling.tag)
         assert solid is not None and solid.material == "gwb"

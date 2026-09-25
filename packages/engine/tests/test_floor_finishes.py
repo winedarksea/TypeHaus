@@ -182,15 +182,16 @@ def test_finish_zones_survive_resolve(catlin_model, project):
     assert len(resolved.finish_zones) == 1
     carried = resolved.finish_zones[0]
     assert carried.material_ref == "tile"
-    # Clipped to the room: 2' x 4' of the authored 4' x 4' pad.
-    assert carried.area_m2 == pytest.approx(ft(2).meters * ft(4).meters, rel=1e-6)
+    # Clipped to the room's finish face, 1 3/4" (half the stud) inside the wall axis:
+    # 22 1/4" x 4' of the authored 4' x 4' pad.
+    clipped = (ft(2).meters - inch(1.75).meters) * ft(4).meters
+    assert carried.area_m2 == pytest.approx(clipped, rel=1e-6)
     # ** AND THE CLIPPED RING IS WHAT IS DRAWN. ** Until 2026-09-05 the authored outline was
     # carried through instead, so this pad billed 2'x4' and drew 4'x4' — two feet of tile on
     # the wrong side of the wall, in the .glb, the viewer and every plan drawing. It surfaced
     # as a living-room floor sticking a foot out of the catlin house, past walls that were
     # never near the zone's real edges, and no check saw it because the AREA was right.
-    assert Polygon(carried.outline).area == pytest.approx(
-        ft(2).meters * ft(4).meters, rel=1e-6)
+    assert Polygon(carried.outline).area == pytest.approx(clipped, rel=1e-6)
     assert Polygon(resolved.clear_face).buffer(1e-6).contains(Polygon(carried.outline))
 
 
@@ -302,12 +303,13 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     #
     # UNMOVED by either 2026-09-05 finishes change, and that is the point: both touched only
     # what is SOUTH of _BAND_Y, and the band is north of it.
-    assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(392.7, abs=0.5)
+    # 372.3 since the room's clear face became its finish face (392.7 axis-derived).
+    assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(372.3, abs=0.5)
     # 355.1 until the hall zone, 307.0 with it, 123.9 with the oak bay taken out as well.
     # Back to 355.6 now that both authored zones are gone: everything in this room that is
     # not over SL-M-DECK is one plank floor — south bay, stair lane and hall band alike.
     field = (living.area_m2 - zone.area_m2) * _M2_TO_FT2
-    assert field == pytest.approx(355.6, abs=0.5)
+    assert field == pytest.approx(327.7, abs=0.5)  # finish faces (355.6 axis-derived)
 
 
 def test_a_derived_zone_is_clipped_to_the_room_not_drawn_as_the_slab(catlin_model):
@@ -341,7 +343,8 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     assert rows["coated-concrete"]["rooms"] == ["RM-M-LIVING", "RM-M-PANTRY"]
     assert rows["coated-concrete"]["coating"] is True
     assert rows["coated-concrete"]["waste_pct"] == 0.0
-    assert float(rows["coated-concrete"]["net_area_sqft"]) == pytest.approx(410.2, abs=0.5)
+    # 384.9 since the clear face became the finish face (410.2 axis-derived).
+    assert float(rows["coated-concrete"]["net_area_sqft"]) == pytest.approx(384.9, abs=0.5)
     # ** 2026-09-05, the main-floor finishes. ** 694.3 -> 808.2 of LVP. The plank GAINED,
     # in three moves:
     #   * +48.5   the hall band's vinyl-sheet zone was DELETED, so the corridor falls back
@@ -361,7 +364,8 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # bath2 east line went 2" east onto a single axis; RM-M-LAUNDRY sits on the far side of
     # it and gave up 2" across its ~62 3/4" width = 0.87 sf. RM-M-BATH2 took the same 2" and
     # is tile, so the plank total falls rather than moving sideways.
-    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(722.5, abs=0.5)
+    # 647.7 between finish faces (722.5 while the clear face was axis-derived).
+    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(647.7, abs=0.5)
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
     # The oak is the two studies plus the suite pair. It reached 555.9 across three rooms
@@ -372,7 +376,8 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # it again on the merits, and the second storey alone now carries ~341 sf of it.
     assert set(rows["oak-floor-custom"]["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2",
                                          "RM-S-SUITE", "RM-S-CLOSET"}
-    assert float(rows["oak-floor-custom"]["net_area_sqft"]) == pytest.approx(507.6, abs=0.5)
+    # 453.9 between finish faces (507.6 axis-derived).
+    assert float(rows["oak-floor-custom"]["net_area_sqft"]) == pytest.approx(453.9, abs=0.5)
     # ** vinyl-sheet has left the main storey entirely. ** What is left is the rooms that are
     # genuinely wet or genuinely cheap-and-washable, on three different storeys: RM-S-PLANT
     # (the spec that started it), RM-A-STUBATH, RM-B-BATH — and, since 2026-09-09,
@@ -381,7 +386,8 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # room is most of the 228.8 -> 584.7.
     assert set(rows["vinyl-sheet"]["rooms"]) == {"RM-A-STUBATH", "RM-A-STUDIO",
                                                  "RM-B-BATH", "RM-S-PLANT"}
-    assert float(rows["vinyl-sheet"]["net_area_sqft"]) == pytest.approx(584.7, abs=0.5)
+    # 525.5 between finish faces (584.7 axis-derived).
+    assert float(rows["vinyl-sheet"]["net_area_sqft"]) == pytest.approx(525.5, abs=0.5)
     # Tile is RM-M-BATH2 (its radiant zone's mass) plus the whole mudroom SUITE — the
     # mudroom itself and BOTH its closets.
     #

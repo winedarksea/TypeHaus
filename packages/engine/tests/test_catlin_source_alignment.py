@@ -298,21 +298,12 @@ def test_the_survey_rooms_all_exist(catlin_plan):
     assert {"RM-S-SUITEBATH", "RM-S-VANITY", "RM-S-NCLOSET", "RM-S-HALL"} <= tags
     assert "RM-S-DRESS" not in tags  # the source has no dressing corridor
 
-    # Source labels, for reference: our clear faces are inset by the gwb only while the
-    # survey measures to its own 4 1/4"/6 3/4" wall faces, so ours read uniformly ~8% high.
-    # A row may carry its own ceiling where we have deliberately left the survey behind.
+    # Source labels, for reference. Our clear faces are finish faces, as the survey's are,
+    # but the port has moved walls since (the plant room's liner, the bath wet wall), so
+    # the band is -15%..+10% of the survey figure: it catches a lost room, not a stud.
     area_sf = {room.tag: room.area_m2 / 0.09290304 for room in model.rooms}
-    for tag, source, *ceiling in (("RM-S-BED1", 114.2), ("RM-S-BED2", 114.2),
-                                  ("RM-S-BED3", 114.2),
-                                  ("RM-S-SUITEBATH", 46.01), ("RM-S-CLOSET", 22.05),
-                                  # 1.30, not the default 1.25: this alcove is the room that
-                                  # GAINED 2" when W-S-BD-N moved north with the y=26'-6"
-                                  # line (RM-S-BATH1 on the other face lost it and is still
-                                  # well inside its band). At 18.23 sf it is the smallest
-                                  # room on the list, so the clear-face oversizing this
-                                  # whole band exists to absorb already ate most of it.
-                                  ("RM-S-VANITY", 18.23, 1.30),
-                                  ("RM-S-BATH1", 80.73),
-                                  ("RM-S-PLANT", 146.40), ("RM-S-STUDY2", 146.42)):
-        limit = source * (ceiling[0] if ceiling else 1.25)
-        assert source <= area_sf[tag] <= limit, (tag, area_sf[tag])
+    for tag, source in (("RM-S-BED1", 114.2), ("RM-S-BED2", 114.2), ("RM-S-BED3", 114.2),
+                        ("RM-S-SUITEBATH", 46.01), ("RM-S-CLOSET", 22.05),
+                        ("RM-S-VANITY", 18.23), ("RM-S-BATH1", 80.73),
+                        ("RM-S-PLANT", 146.40), ("RM-S-STUDY2", 146.42)):
+        assert 0.85 * source <= area_sf[tag] <= 1.10 * source, (tag, area_sf[tag])

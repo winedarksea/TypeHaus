@@ -35,10 +35,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Point
 
 from typehaus.model.braced_wall import BracedWallPanel
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 #: Wood structural panel sheathing, by the material refs a house uses. ``siding-303-mdo``
 #: is APA Rated Siding 303, a wood structural panel sold as a finished face.
@@ -208,8 +209,8 @@ def _rooms_both_sides(model, wall) -> bool:
         return False
     nx, ny = -(by - ay) / length, (bx - ax) / length
     mid = ((ax + bx) / 2.0, (ay + by) / 2.0)
-    faces = [Polygon(room.clear_face) for room in model.rooms
-             if room.storey == wall.storey and len(room.clear_face) >= 3]
+    faces = [axis_polygon(room) for room in model.rooms
+             if room.storey == wall.storey and len(axis_ring(room)) >= 3]
     sides = [Point(mid[0] + s * nx * _ROOM_PROBE_M, mid[1] + s * ny * _ROOM_PROBE_M)
              for s in (1.0, -1.0)]
     return all(any(face.contains(p) for face in faces) for p in sides)

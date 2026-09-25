@@ -586,7 +586,7 @@ def stair_end_risers(ctx: CheckContext) -> list[Finding]:
             if deck is not None:
                 deck_tag, deck_top = deck
                 # The well's own deck is the arrival, but its FINISH belongs to the room the
-                # flight steps out into — read at the probes, since a Room's clear_face is
+                # flight steps out into — read at the probes, since a Room's axis cell is
                 # not cut by a floor opening.
                 for probe in probes:
                     room_tag, finish_ref, finish_in = room_finish_at(

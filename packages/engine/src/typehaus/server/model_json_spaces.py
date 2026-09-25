@@ -29,6 +29,8 @@ def spaces_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str
              "provenance": _provenance(provenance, r.tag),
              "conditioned": r.conditioned, "area_m2": r.area_m2,
              "clear_face": [list(p) for p in r.clear_face], "floor_finish": r.floor_finish,
+             # The wall-axis cell (ownership); clear_face is the finish face.
+             "axis_face": [list(p) for p in r.axis_face],
              # In-room finish overrides — a hearth pad authored on the room, or the band a
              # slab whose own top face is the finished floor claims back from it. Resolved
              # since the FinishZone work and carried into the .glb, but never exported here,

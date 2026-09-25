@@ -204,7 +204,8 @@ def preview_to_dict(model: ResolvedModel) -> dict[str, Any]:
         ],
         "rooms": [
             {"tag": r.tag, "storey": r.storey, "area_m2": r.area_m2,
-             "clear_face": [list(p) for p in r.clear_face]}
+             "clear_face": [list(p) for p in r.clear_face],
+             "axis_face": [list(p) for p in r.axis_face]}
             for r in model.rooms
         ],
     }

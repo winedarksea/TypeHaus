@@ -14,6 +14,7 @@ from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy, Service
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 # E3902: the locations where a 125V 15/20A receptacle must be GFCI-protected. Bathrooms,
 # garages and accessory buildings, outdoors, crawl spaces, unfinished basements, kitchens,
@@ -59,7 +60,7 @@ def gfci_locations(ctx: CheckContext) -> list[Finding]:
     circuit at all, is UNKNOWN rather than FAIL — breaker protection cannot be ruled out
     from an unassigned device, and an inspector would ask rather than write it up.
     """
-    from shapely.geometry import Point, Polygon
+    from shapely.geometry import Point
 
     from typehaus.checks.code.mn_residential._common import _storey_is_below_grade
     from typehaus.checks.mep.electrical import _counts_as_a_125v_receptacle
@@ -81,8 +82,8 @@ def gfci_locations(ctx: CheckContext) -> list[Finding]:
     circuits = {c.tag: c for c in ctx.plan.library.circuits}
     rooms: dict[str, list] = {}
     for room in ctx.model.rooms:
-        if len(room.clear_face) >= 3:
-            rooms.setdefault(room.storey, []).append((room, Polygon(room.clear_face)))
+        if len(axis_ring(room)) >= 3:
+            rooms.setdefault(room.storey, []).append((room, axis_polygon(room)))
     below_grade = {storey.tag: _storey_is_below_grade(ctx, storey)
                    for storey in ctx.plan.storeys}
     sinks = _sink_points(ctx)
@@ -315,7 +316,7 @@ def afci_branch_circuits(ctx: CheckContext) -> list[Finding]:
     A 2-pole range or heat-pump circuit lands in a living room like every other circuit does
     and is not what E3902.16 is about.
     """
-    from shapely.geometry import Point, Polygon
+    from shapely.geometry import Point
 
     cid, code = "code.E3902_16_afci", "E3902.16"
     circuits = {c.tag: c for c in ctx.plan.library.circuits}
@@ -324,8 +325,8 @@ def afci_branch_circuits(ctx: CheckContext) -> list[Finding]:
 
     rooms: dict[str, list] = {}
     for room in ctx.model.rooms:
-        if len(room.clear_face) >= 3:
-            rooms.setdefault(room.storey, []).append((room, Polygon(room.clear_face)))
+        if len(axis_ring(room)) >= 3:
+            rooms.setdefault(room.storey, []).append((room, axis_polygon(room)))
     by_tag = {room.tag: room for room in ctx.model.rooms}
 
     # Which rooms each circuit reaches, via every consumer that names it.

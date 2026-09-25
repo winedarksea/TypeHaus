@@ -36,7 +36,8 @@ def test_attic_pocket_is_not_134_square_feet(catlin_model_ro):
     a rounding error against 134, not that it is exactly 6.
     """
     pocket = _room(catlin_model_ro, "RM-A-POCKET")
-    assert pocket.area_m2 * SF_PER_M2 == __import__("pytest").approx(134.2, abs=0.5)
+    # 120.1 between finish faces (134.2 when the clear face was axis-derived).
+    assert pocket.area_m2 * SF_PER_M2 == __import__("pytest").approx(120.1, abs=0.5)
     assert pocket.head_limited_area_m2 * SF_PER_M2 < 10.0
 
 

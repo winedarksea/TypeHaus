@@ -338,7 +338,10 @@ export interface Room {
    * or energy quantity: the floor under a rake is still sheathed, finished and heated.
    */
   head_limited_area_m2?: number | null;
+  /** The finish face: the wall-axis cell minus every wall layer on the storey. */
   clear_face: Vec2[];
+  /** The raw wall-axis cell — which room owns a point. */
+  axis_face?: Vec2[];
   floor_finish: string | null;
   /**
    * In-room floor-finish overrides. Each cuts its own area out of the field finish rather

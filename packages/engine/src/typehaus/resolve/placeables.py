@@ -23,6 +23,7 @@ from typehaus.resolve.room_floor import (
     room_finished_floor_elevation,
     room_floor_elevation,
 )
+from typehaus.resolve.room_lookup import axis_polygon
 
 _TYPE_COLLECTIONS = (
     ("furniture_types", "Furniture", "furniture"),
@@ -61,7 +62,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
         room_shapes: list[tuple[str, Polygon, _Bounds]] = []
         for room in model.rooms:
             if room.storey == storey.tag:
-                shape = Polygon(room.clear_face)
+                shape = axis_polygon(room)
                 room_shapes.append((room.tag, shape, shape.bounds))
         for item in plan.storey_elements(storey.tag):
             domain = kind_domains.get(item.element_kind)

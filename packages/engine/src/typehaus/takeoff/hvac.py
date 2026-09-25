@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from typehaus.checks.registry import Preferences
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.room_lookup import axis_polygon
 
 _M_TO_FT = 3.280839895
 # Electric resistance heat converts at the physical constant — no efficiency term to apply.
@@ -387,7 +388,7 @@ def supplemental_heat_by_room(model: ResolvedModel) -> dict[str, list[tuple[str,
                 continue
             centre = Polygon(zone.zone).representative_point()
             host = next((room for room in rooms_by_storey.get(storey.tag, [])
-                         if Polygon(room.clear_face).contains(Point(centre))), None)
+                         if axis_polygon(room).contains(Point(centre))), None)
             if host is not None:
                 add(host.tag, element.tag, btuh)
     return out
@@ -488,7 +489,7 @@ def room_heat_sources(model: ResolvedModel,
             if host is None:
                 centre = polygon.representative_point()
                 found = next((room for room in rooms_by_storey.get(storey.tag, [])
-                              if Polygon(room.clear_face).contains(Point(centre))), None)
+                              if axis_polygon(room).contains(Point(centre))), None)
                 host = found.tag if found is not None else None
             if host is None:
                 continue
