@@ -125,6 +125,14 @@ def test_cli_takeoff_reports_dollar_estimates_with_prices_present(priced_starter
     assert "$" in result.output
 
 
+def test_cli_takeoff_headline_counts_unpriced_and_strict_exits_1(
+        priced_starter: Path) -> None:
+    result = _run("takeoff", str(priced_starter), "--summary")
+    assert result.exit_code == 0, result.output
+    assert "unpriced row group(s)" in result.output.split("construction total", 1)[1]
+    assert _run("takeoff", str(priced_starter), "--summary", "--strict").exit_code == 1
+
+
 def test_cli_takeoff_still_works_without_prices(starter_dir: Path) -> None:
     result = _run("takeoff", str(starter_dir))
     assert result.exit_code == 0, result.output
