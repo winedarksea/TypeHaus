@@ -116,12 +116,10 @@ def _band_outline_of(wall, opening):
 def test_a_band_sits_on_its_room_side_of_the_wall(bands, catlin_model):
     """The whole rectangle lies on the room's side of the wall axis, not the far side.
 
-    Derived from the wall's own layer polygons rather than from ``Room.clear_face``, because
-    ``resolve/rooms.py::_lining_inset`` insets a claimed face by one uniform figure rather than
-    by each wall's own lining — the sauna's 3 1/2" liner does not move its room polygon at all.
-    Hanging a band off the clear face would bury the tile splash inside the wall.
+    Graded against the room's AXIS cell: a replacing band sits in the finish depth, which is
+    outside the clear face (that is the finish face itself) but inside the axis cell.
     """
-    faces = {room.tag: Polygon(room.clear_face) for room in catlin_model.rooms}
+    faces = {room.tag: Polygon(room.axis_face) for room in catlin_model.rooms}
     for band in (b for b in bands if b.outline and b.room):
         face = faces[band.room]
         centroid = Polygon(band.outline).centroid
@@ -229,12 +227,12 @@ def test_the_bands_still_bill_what_they_billed(bands):
 
     51 SF of walnut and 45 SF of tile were the numbers before the polygon existed. If adding
     geometry moved either, the band being drawn is not the band being bought. The walnut
-    reads 46.0 SF rather than 46.5 since 2026-09-09: W-M-LS moved 1" east (storeys/main.py),
-    which takes 2" off the study's wainscoted perimeter, i.e. exactly 0.5 SF at 36" high.
+    reads 40.0 SF since the clear face became the finish face: the study's wainscoted runs
+    stop at each corner's finish face, not at the wall centrelines (190 1/4" less the door).
     """
     walnut = sum(b.area_m2 for b in bands if b.tag == "WP-M-STUDY-WAINSCOT") * _M2_TO_FT2
     tile = sum(b.area_m2 for b in bands if b.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
-    assert walnut == pytest.approx(46.0, abs=0.5)
+    assert walnut == pytest.approx(40.0, abs=0.5)
     assert tile == pytest.approx(45.0, abs=0.5)
 
 

@@ -36,16 +36,20 @@ needs no decision.
 | term | `FH-M-BATH2` | `FH-S-BATH1` |
 |---|---|---|
 | room | `RM-M-BATH2` | `RM-S-BATH1` |
-| room floor area | 74.4 ft² | 84.9 ft² |
-| heated zone polygon | **17.52 ft²** | **27.31 ft²** |
-| fraction of floor heated | 23.5 % | 32.2 % |
+| room floor area | 64.9 ft² | 73.3 ft² |
+| heated zone polygon | **17.52 ft²** | **26.83 ft²** |
+| fraction of floor heated | 27.0 % | 36.6 % |
 | cable SKU | Schluter DITRA-HEAT-E-HK **DHEHK12016** | **DHEHK12027** |
 | nameplate | 203 W, 1.7 A, 120 V, 16.0 ft² of coverage | 338 W, 2.8 A, 120 V, 26.7 ft² |
 | spacing | 3 5/8" ("3-stud") | 3 5/8" |
 | floor covering | porcelain tile over the cable's own uncoupling membrane | the same |
 
+*Floor areas are between finish faces since 2026-09-24 (they read 74.4 and 84.9 ft² while
+the room face was axis-derived); `FH-S-BATH1` moved its west edge to 2" off the wall's
+finish face — at x=5" it had run 1 5/8" under the wall.*
+
 **The heated area is the POLYGON, not the cable's rated coverage.** The surplus (1.52 ft²
-and 0.61 ft² respectively) is Schluter's required buffer zone: it is warm floor, it is simply
+and 0.13 ft² respectively) is Schluter's required buffer zone: it is warm floor, it is simply
 not cable. Using 16.0 and 26.7 would understate both rooms.
 
 **Why so little of each floor is heated.** Schluter's keepouts are manufacturer minimums, not
@@ -89,7 +93,7 @@ both rooms, which is the finding of §4.
 | | area term | watts term | binding | delivered |
 |---|---|---|---|---|
 | `FH-M-BATH2` | 17.52 × 22.8 = 399.5 | 203 × 3.412 = 692.6 | **area** | **399 Btu/h** |
-| `FH-S-BATH1` | 27.31 × 22.8 = 622.7 | 338 × 3.412 = 1,153.3 | **area** | **623 Btu/h** |
+| `FH-S-BATH1` | 26.83 × 22.8 = 611.7 | 338 × 3.412 = 1,153.3 | **area** | **612 Btu/h** |
 
 ## 3. What each room loses
 
@@ -113,8 +117,12 @@ interior, and three of its four walls bound conditioned space.
 
 | room | pass A (envelope only) | pass B (engine) | difference |
 |---|---|---|---|
-| `RM-M-BATH2` | 303 Btu/h | **567 Btu/h** | +264 |
-| `RM-S-BATH1` | not worked by hand | **619 Btu/h** | — |
+| `RM-M-BATH2` | 303 Btu/h | **556 Btu/h** | +253 |
+| `RM-S-BATH1` | not worked by hand | **606 Btu/h** | — |
+
+**\*\* 2026-09-24: 567 -> 556 and 619 -> 606. \*\*** The room areas became finish-face
+areas, which shrinks the conditioned volume and each bath's share of the air-side terms; pass A is conduction
+through the same exterior wall and window and does not move.
 
 **\*\* BOTH PASS-B FIGURES MOVED 2026-09-18, AND THEY MOVED IN OPPOSITE DIRECTIONS. \*\***
 They were 673 and 591. The block-load correction changed five terms at once and the net
@@ -140,8 +148,12 @@ only. Pass B adds the two air-side terms — blower-door infiltration and ERV ve
 
 | | delivered | load (engine) | margin | verdict |
 |---|---|---|---|---|
-| `RM-M-BATH2` | 399 Btu/h | 567 Btu/h | **−168 (30 % short)** | UNKNOWN |
-| `RM-S-BATH1` | 623 Btu/h | 619 Btu/h | **+4 (0.6 % over)** | PASS |
+| `RM-M-BATH2` | 399 Btu/h | 556 Btu/h | **−157 (28 % short)** | UNKNOWN |
+| `RM-S-BATH1` | 612 Btu/h | 606 Btu/h | **+5 (0.9 % over)** | PASS |
+
+*(2026-09-24: the margin is +5 Btu/h on the finish-face loads above — the 2" standoff
+cost 11 Btu/h of delivery and the smaller volume took 13 off the load; the paragraph below
+records the 2026-09-18 state and its argument still holds.)*
 
 **`RM-S-BATH1` still carries its room, and its margin is now 0.6 %, not 5 %.** The verdict
 did not change and the decision it supports did: 31 Btu/h of slack on a 591 Btu/h load was a

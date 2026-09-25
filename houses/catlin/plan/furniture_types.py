@@ -207,13 +207,10 @@ SUITEBATH_RETURN_3011 = FurnitureType(
 # ~15.4 sf — with W-M-LS/W-M-CLN2 as INT_2X4_STAGGERED_DOUBLE_GWB. **STALE:** both walls are
 # now the thinner single-gwb INT_2X4_STAGGERED_GWB, opening the box ~5/8" per retyped face
 # (~49 1/4" x 46 1/4"), but the STUDY_BENCH footprint, wainscot-return scribe and seat-length
-# math below are still cut to the OLD box. Re-derive from a fresh `out/model.json` (never
-# `Room.clear_face`, see below) before this casework is built.
-# ** DO NOT MEASURE OFF `Room.clear_face`: **
-# `resolve/rooms.py::_lining_inset` insets a claimed face by one uniform 0.635" whatever the
-# wall actually is, so it still reports the 4'-8" x 4'-4" axis box and the published 19.3 sf
-# (plans/TODO.md, the RM-S-PLANT write-up). The sauna benches in plan/placeables.py are
-# dimensioned the same way, off liner faces.
+# math below are still cut to the OLD box. Re-derive before this casework is built:
+# `Room.clear_face` IS the finish face now (axis cell minus the wall layers) and reads
+# 48 1/4" x 46 1/4", 15.5 sf. The sauna benches in plan/placeables.py are dimensioned
+# the same way, off liner faces.
 #
 # Then the millwork is set against the LINING, not the gypsum: WP-M-STUDY-WAINSCOT keeps all
 # four walls and resolves 3/4" thick, so the box the joiner scribes to is 3/4" smaller on

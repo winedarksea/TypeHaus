@@ -2555,13 +2555,9 @@ def _wall_bodies_by_storey(model):
 
 def test_wall_referenced_fixtures_stand_against_a_finish_face_not_inside_the_studs(
         catlin_model):
-    """The `clear_face` trap, on the family it has actually bitten (plans/TODO.md).
-
-    ``Room.clear_face`` is inset from each wall's **AXIS** by a constant lining figure
-    (``resolve/rooms.py::_lining_inset``), not from its finish face. Anything authored off
-    the number the model reports for a room therefore lands *inside* the framing by the
-    difference — a 54" vanity stood six inches in the studs at 0 FAIL, and the floor-heat
-    polygon beside it went in the same way (``test_catlin_bath2_vanity_heat_and_joists``).
+    """Every fixture that names a wall stands on that wall's finish face and inside its
+    room's clear face, which IS that finish face (``resolve/wall_faces.py``). A 54" vanity
+    once stood six inches in the studs at 0 FAIL, authored off the old axis-derived face.
 
     Keyed on ``attachment_wall``, NOT on ``mount.kind``: a vanity is ``MountKind.FLOOR`` —
     it stands on the floor and backs onto a wall — so the receptacle test above never sees
@@ -2592,25 +2588,26 @@ def test_wall_referenced_fixtures_stand_against_a_finish_face_not_inside_the_stu
             offenders.append((item.tag, "floating %.1f\" off %s"
                               % (solid.distance(body) / inch(1).meters,
                                  item.attachment_wall)))
+    rooms = {r.tag: Polygon(r.clear_face).buffer(inch(0.5).meters)
+             for r in catlin_model.rooms}
+    for item in catlin_model.canvas_objects:
+        if item.kind == "Fixture" and item.attachment_wall and item.room in rooms:
+            assert rooms[item.room].covers(Polygon(item.footprint)), item.tag
     assert not offenders, offenders
 
 
 def test_floor_heat_zones_do_not_run_under_the_walls_that_bound_them(catlin_model):
-    """The other half of the `clear_face` trap, and the one with no z to hide behind.
-
-    A ``ResolvedFloorHeat.zone`` is a plan polygon with no elevation at all, so the test is
-    simply that it must not lie under a wall. It matters here because
-    ``resolve/floor_heat.py`` FALLS BACK to ``room.clear_face`` when no zone is authored —
-    and that fallback *is* the trap: a zone taken from the clear face runs to each wall's
-    centreline, so every mat is billed running two or three inches into the framing on all
-    four sides, under the bottom plate, where no cable may go.
-
-    A sliver is tolerated (the fallback is deliberate and the rings are authored to 1/8"),
-    but a mat that laps a wall by more than half an inch of its own area is the bug.
+    """A floor-heat zone lies inside its room's clear face — the finish face — and under no
+    wall. ``resolve/floor_heat.py`` falls back to ``room.clear_face`` when no zone is
+    authored, which is now exactly the floor a mat may cover. Rings are authored to 1/8",
+    so a lap under half an inch of the mat's own size is tolerated.
     """
     from shapely.geometry import Polygon
 
     walls = _wall_bodies_by_storey(catlin_model)
+    faces: dict[str, list] = {}
+    for r in catlin_model.rooms:
+        faces.setdefault(r.storey, []).append(Polygon(r.clear_face).buffer(inch(0.5).meters))
     offenders = []
     for zone in catlin_model.floor_heat:
         if len(zone.zone) < 3:
@@ -2618,6 +2615,8 @@ def test_floor_heat_zones_do_not_run_under_the_walls_that_bound_them(catlin_mode
         mat = Polygon(zone.zone)
         if not mat.is_valid or mat.area <= 1e-9:
             continue
+        assert any(face.covers(mat) for face in faces.get(zone.storey, ())), \
+            f"{zone.tag} leaves every room"
         for _tag, solid, _z0, _z1 in walls.get(zone.storey, []):
             lap = solid.intersection(mat).area
             if lap / math.sqrt(mat.area) > inch(0.5).meters:
@@ -2668,7 +2667,7 @@ def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
     # shrinks this zone by that room's area; the pantry sits at y 33'-3 3/8"..35'-5 3/8",
     # nowhere near the _BAND_Y line this test moves, so the 7' x 18' arithmetic below is
     # unaffected.
-    assert before == pytest.approx(392.7, abs=0.5)
+    assert before == pytest.approx(372.3, abs=0.5)  # finish-face room (392.7 axis-derived)
     assert before - after == pytest.approx(7.0 * 17.9, rel=0.05)
 
 

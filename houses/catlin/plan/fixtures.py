@@ -75,7 +75,7 @@ BASEMENT_FIXTURES = (
     # 21", is now a straight cost call rather than a door-swing one (see fixture_types.py on
     # the big-box combo depth) — D-B-BATH is on the east wall and swings out.
     #
-    # Position is measured off the wall's own layer polygons, never off `Room.clear_face`.
+    # Position is measured off the wall's own layer polygons, which `Room.clear_face` follows.
     # Carcass y 18'-2 3/8"..19'-8 3/8"; the 21" front zone reaches y=21'-5 3/8", clear of
     # the WC's own 24" envelope, which starts at 20'-11 5/8".
     #
@@ -88,9 +88,8 @@ BASEMENT_FIXTURES = (
 
 # ** RM-M-BATH1 IS 61.98" x 44.24" BETWEEN FINISH FACES, AND THAT IS WHY THE WALL-HUNG
 # BOWL STAYS. ** (x 6.635"..68.615" off W-M-W2/W-M-BAE, y 271.385"..315.625" off
-# W-M-HS1/W-M-STOS.) The room's resolved `clear_face` reads 70.73" x 46.73" and is NOT the
-# number to design against: `resolve/rooms.py` polygonizes wall AXES and insets only the
-# lining, so it hands back a room ~2.4"-3.4" oversize on every side.
+# W-M-HS1/W-M-STOS.) The room's resolved `clear_face` reads the same box (61.97" x
+# 44.25"); it read 70.73" x 46.73" while it was axis-derived.
 #
 # The governing dimension is 24" in front, and it is NOT the IRC's 21": Minn. R. 1309.0010
 # subp. 3.D deletes IRC chapters 25-33 outright (only P2904 survives) and 1309.0307 replaces
@@ -195,10 +194,8 @@ MAIN_FIXTURES = (
     # `test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other` holds this fixture
     # clear of the hall — the room's south face tracks N-M-W2/N-M-C2's station.
     # ** A 24" VANITY, NOT A BARE BOWL 2 1/2" INSIDE THE WALL. ** The old FX-LAV-COMPACT
-    # (18" x 14", no cabinet) had been authored off `Room.clear_face`, whose north edge
-    # reads 268.64" because rooms.py polygonises wall AXES — 2 1/2" north of W-M-HS1's real
-    # finish face at y=271.39". Nothing checks a Fixture against a wall face, so this class
-    # of error builds and checks clean silently.
+    # (18" x 14", no cabinet) had been authored off the old axis-derived `Room.clear_face`
+    # (north edge 268.64"), 2 1/2" north of W-M-HS1's real finish face at y=271.39".
     #
     # ** 24" IS EVERYTHING THIS ROOM HAS. ** The wall-hung water closet takes the west half
     # of the north wall: its centreline is x=26.41", so its 15" side band ends at x=41.41",
@@ -303,12 +300,9 @@ MAIN_FIXTURES = (
     # here would float a 54" cabinet up the wall with its toe kick in mid-air. The type's
     # own 41 1/2" height puts the counter at 36" from the floor.
     #
-    # ** POSITION IS STRUCK OFF THE WALLS' OWN FINISH FACES, NOT OFF `Room.clear_face`. **
-    # This is the trap that cost a rebuild: `clear_face` is inset from the wall AXIS by the
-    # room's lining, NOT from the finished face, so RM-M-BATH2 reports a west edge at
-    # x=5/8" where W-M-W3's paint face is actually at x=6 5/8" -- the wall is 13 7/8" thick
-    # and its axis is at x=0. A cabinet placed on the reported number stands SIX INCHES
-    # inside the studs, and nothing fails: no check grades a fixture against a wall face.
+    # ** POSITION IS STRUCK OFF THE WALLS' OWN FINISH FACES. ** The old axis-derived
+    # `Room.clear_face` put RM-M-BATH2's west edge at x=5/8" (W-M-W3's paint face is x=6 5/8")
+    # and a cabinet placed on it stood six inches in the studs; it is the finish face now.
     # The faces here are read off the walls' own layer polygons: W-M-W3 at x=6.635",
     # W-M-BDN1 at y=158.375", W-M-HS1 at y=264.615", W-M-BA2E at x=94.625".
     #

@@ -75,8 +75,8 @@ def test_the_delivered_figure_is_capped_by_both_area_and_wattage() -> None:
     assert min(17.52 * _DELIVERED_BTUH_PER_FT2, 203 * _W_TO_BTUH) == pytest.approx(399, abs=1)
     assert pytest.approx(693, abs=1) == 203 * _W_TO_BTUH, \
         "the cable draws more than it delivers"
-    # FH-S-BATH1: 27.31 ft2, DHEHK12027 at 338 W.
-    assert min(27.31 * _DELIVERED_BTUH_PER_FT2, 338 * _W_TO_BTUH) == pytest.approx(623, abs=1)
+    # FH-S-BATH1: 26.83 ft2 (2" off the west wall's finish face), DHEHK12027 at 338 W.
+    assert min(26.83 * _DELIVERED_BTUH_PER_FT2, 338 * _W_TO_BTUH) == pytest.approx(612, abs=1)
 
 
 def test_covering_bath2s_load_would_need_area_the_room_does_not_have() -> None:
@@ -100,7 +100,11 @@ def test_both_bath_zones_state_the_corrected_delivered_output(catlin_plan) -> No
 
 
 def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
-    """Note §4's table: 623 against 619 (PASS), and 399 against 567 (30% short).
+    """Note §4's table: 612 against 606 (PASS), and 399 against 556 (28% short).
+
+    **Both loads fell 2026-09-24** (619 -> 606, 567 -> 556) when room volume became
+    finish-face volume, which shrinks each bath's share of the air terms; FH-S-BATH1 also
+    lost 0.48 ft2 to its 2" wall standoff (623 -> 612). Neither verdict changed.
 
     **Both design loads moved with the block-load correction (2026-09-18)** and the note's
     §4 moved with them: 591 -> 619 on BATH1 and 673 -> 567 on BATH2. The direction differs
@@ -111,11 +115,11 @@ def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
     """
     rows = _by_room(catlin_model_ro)
     assert rows["RM-S-BATH1"].result is Result.PASS
-    assert "delivers 623 Btu/h against a 619 Btu/h design load" in rows["RM-S-BATH1"].message
+    assert "delivers 612 Btu/h against a 606 Btu/h design load" in rows["RM-S-BATH1"].message
 
     bath2 = rows["RM-M-BATH2"]
-    assert "delivers 399 Btu/h against a 567 Btu/h design load" in bath2.message
-    assert "168 Btu/h (30%) short" in bath2.message
+    assert "delivers 399 Btu/h against a 556 Btu/h design load" in bath2.message
+    assert "157 Btu/h (28%) short" in bath2.message
 
 
 def test_the_shortfall_is_unknown_because_a_room_scoped_load_is_approximate(
@@ -177,7 +181,7 @@ def test_halving_the_delivered_output_widens_the_shortfall(catlin_plan) -> None:
     plan = _retype_zone(catlin_plan, "FH-S-BATH1", delivered_btuh_per_ft2=11.4)
     rows = _by_room(plan, plan=True)
     assert rows["RM-S-BATH1"].result is Result.UNKNOWN
-    assert "311 Btu/h" in rows["RM-S-BATH1"].message
+    assert "306 Btu/h" in rows["RM-S-BATH1"].message
 
 
 def test_a_zone_that_delivers_nothing_at_all_is_the_fail_branch(catlin_plan) -> None:

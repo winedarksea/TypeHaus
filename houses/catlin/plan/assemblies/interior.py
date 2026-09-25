@@ -177,7 +177,7 @@ ACCENT_GWB_LINING = (
 # W-A-STU-W's replacement. INT_2X6_STAGGERED_PLUMBING's 2x4 studs allow a 2.10" bore and the
 # studio's two 2" vents wanted 2.38" through eleven of them; continuous 2x6 studs allow
 # 3.30". The thickness is identical — 0.01 + 0.625 + 5.5 + 0.625 + 0.01 = 6.77" — so no face
-# moves, no fixture moves and no `clear_face` moves. This is the same trade
+# moves, no fixture moves and no room face moves. This is the same trade
 # INT_2X6_BRG_PLUMBING above made on the second storey, and it keeps the batt for the same
 # reason that one did: plain INT_2X6_PLUMBING carries no `CavityFill`, so retyping to it
 # would silently strip a bath/studio party wall's 3 1/2" sound batt on top of its

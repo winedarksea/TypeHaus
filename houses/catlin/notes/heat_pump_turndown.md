@@ -350,3 +350,18 @@ System 1 moves too, the same day. `PLANT_EXT_2X6_HUMID` gained 5/8" of gypsum be
 membrane (R316.4), which adds R to `W-S-S1`/`W-S-W4`. HP1's design load goes 15,365 →
 **15,359 Btu/h**, so the Manual S cap is 0.80 × 15,359 = **12,287 Btu/h**. The sizing factor
 stays 0.91 and the crossover stays −6.1 °F.
+
+## Addendum 2026-09-24 (later) — room volume is finish-face volume
+
+`ResolvedRoom.clear_face` became the finish face (the axis cell minus the wall layers), so
+the conditioned volume the air terms are charged on fell 46,159 → 41,291 ft³
+(`block_load_basis.md` §6). Conduction and the ground term do not move — attribution still
+reads the axis cells, so HP2's ground-coupled stays **2,441**. Only the air side falls:
+
+| | design load | sizing factor | Manual S cap | crossover |
+|---|---|---|---|---|
+| HP1 | 15,359 → **15,137** | 14,000 / 15,137 = **0.92** | **12,110 Btu/h** | **−7.1 °F** |
+| HP2 | 14,877 → **14,542** | 8,800 / 14,542 = **0.61** | **11,633 Btu/h** | **26.7 °F** |
+| HP3 | 1,043 → **1,016** | 2,800 / 1,016 = **2.76** | **813 Btu/h** | never |
+
+No verdict moves.

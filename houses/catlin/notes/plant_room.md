@@ -157,11 +157,8 @@ Three things about this that will bite if missed:
 - The liner costs ~1 1/4" all round — about 7 sf of floor (159.2 → ~152 sf). Harmless here:
   the room has no egress duty and a smaller floor *improves* the R303.1 glazing ratio. The
   window and door jamb returns all deepen by that amount.
-  **The model does not yet show that.** `resolve/rooms.py::_lining_inset` insets a room's
-  claimed face by one uniform figure (0.635", the painted-gypsum stack) rather than by each
-  bounding wall's own lining, so `RM-S-PLANT` still resolves at 159.15 sf — exactly as the
-  sauna's 3 1/2" liner fails to move its own room polygon. Systemic and pre-existing;
-  `plans/TODO.md` carries it.
+  The model shows it: `clear_face` is the axis cell minus every wall layer, so `RM-S-PLANT`
+  resolves at 137.5 sf (it read 159.2 sf while the face was axis-derived).
 
 ### FRP is disqualified; PVC is the panel
 

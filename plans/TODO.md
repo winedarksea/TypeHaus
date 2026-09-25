@@ -3,16 +3,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-- **`Room.clear_face` is not the wall's finish face** — it's inset from the wall AXIS by one
-  uniform `_lining_inset` (0.635"), not each wall's own resolved layer polygons, so a room
-  polygon doesn't move when a liner or a retype does (`RM-M-STUDY`: published 19.3 sf vs a
-  measured 15.4 sf clear box). Fixtures are now guarded
-  (`test_catlin_contract_m3.py::test_wall_referenced_fixtures_stand_against_a_finish_face_not_inside_the_studs`);
-  millwork still must not be sized off `clear_face` — use `out/model.json`'s wall layer
-  polygons. The real fix is a second `ResolvedRoom` polygon that IS the finish face, and it
-  moves every room's area at once (279 references across 51 engine modules + tests + houses +
-  ui). **DEFERRED.** Details: the `clear-face-is-not-the-finish-face` memory note.
-
 - **2D-edit sync** — a PatchOp rewrites one constructor; derived data recomputes but authored
   cross-references don't. `retype_placeable` already re-anchors wall-fitted placeables and
   scans tag references. Still open (~3-4 days if approved): authored refs + advisory checks

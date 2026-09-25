@@ -199,7 +199,9 @@ def test_the_suite_headboard_band_is_the_sound_walls_full_run_to_six_feet(catlin
         assert p.band_z0_m == pytest.approx(0.0, abs=1e-6)
         assert p.band_z1_m * _M_TO_FT == pytest.approx(6.0, abs=1e-6)
     area = sum(p.area_m2 for p in band) * _M2_TO_FT2
-    assert area == pytest.approx(57.8, abs=0.5)
+    # 52.7, not the 57.8 an axis-derived room read: the run stops at W-S-W3's and W-S-DC2's
+    # finish faces (105 1/2" of wall between them), not their centrelines.
+    assert area == pytest.approx(52.7, abs=0.5)
     # No punches, so the band is exactly its run x 6'.
     run = sum(p.run_m for p in band) * _M_TO_FT
     assert area == pytest.approx(run * 6.0, abs=0.05)

@@ -975,8 +975,8 @@ MAIN_LIGHTING = [
     # the rod's quarter points (11'-0" and 15'-0"). y stays at 15'-8", which the resolved
     # footprint puts 8 5/8" clear in front of the shelf's own front edge (y=16'-4 5/8") —
     # lighting the hanging clothes' FACES rather than the top of the shelf. Measure that
-    # off the shelf, not off `Room.clear_face`, which is inset from the wall AXIS and is
-    # not the finish face. 1,300 lm over 48.4 sf = 12.9 fc.
+    # off the shelf, not off the wall's finish face (`Room.clear_face`).
+    # 1,300 lm over 48.4 sf = 12.9 fc.
     #
     # ** MEP CHECKED, AND THE MOVE WEST IS THE TIGHT HALF OF IT. ** Four services cross this
     # ceiling: PR-B-HW-SUITE-RUN, PR-B-CW-SUITE-RUN, PR-M-S-SUITE-DRAIN-RUN and

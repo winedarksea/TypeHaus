@@ -111,8 +111,8 @@ BASEMENT_PLACEABLES = [
     #
     # A windowless 324 sf box whose four resolved finish faces are south (W-B-CE) y=18'-3
     # 3/8", west (W-B-CN/CN2) x=18'-6", north (W-B-N1) y=35'-4", east (W-B-E2) x=35'-0" —
-    # 16'-6" x 17'-0 5/8" clear. Everything below is dimensioned off those faces, not off the
-    # room's `clear_face` ring, which for a concrete wall lands on the wall AXIS.
+    # 16'-6" x 17'-0 5/8" clear. Everything below is dimensioned off those faces (which the
+    # room's `clear_face` ring now follows).
     #
     # The screen: 98" (85.3" wide), hung on the north concrete wall, centred at x=26'-9",
     # which is the room's own centreline and where the owner asked for the ethernet drop
@@ -906,7 +906,8 @@ MAIN_PLACEABLES = [
     # around in it; you step into the 18 7/8" pocket east of the desk, sit, and slide west.
     #
     # Both are dimensioned to the WAINSCOT faces (the joiner's box), not to node lines and
-    # NOT to `Room.clear_face` — see the derivation on FT-STUDY-BENCH in
+    # NOT to `Room.clear_face` (the gypsum face, 3/4" behind the wainscot) — see
+    # the derivation on FT-STUDY-BENCH in
     # plan/furniture_types.py. The lined box is x 164 3/4"..211 7/8", y 220 3/4"..264 7/8".
     #
     # Rotation, the thing that goes wrong: the `sauna-bench` and `desk` glyphs both put the
@@ -1010,8 +1011,7 @@ MAIN_PLACEABLES = [
     # The room's only wall storage, on the only free wall left: W-M-HS1's bathroom face,
     # x 6 5/8" (W-M-W3's finish face, which FX-M-BATH2-SINK is also struck off) to 4'-4"
     # (W-M-TUBDK-W's west face). 45 3/8" of free run, a 45" carcass, 3/16" of scribe each
-    # end. Faces are struck off W-M-HS1's own layer polygons, never Room.clear_face — that
-    # is inset from the wall AXIS and would bury the box ~3" in the studs.
+    # end. Faces are struck off W-M-HS1's own layer polygons.
     #
     # `Mount.elevation` is the BOTTOM of the body (as for FURN-M-KIT-OVER-FRIDGE), so
     # 48 + 60 = 108" = the ceiling. 48" is a code line, not taste: below FX-TOILET-STD's own
@@ -1119,9 +1119,7 @@ MAIN_PLACEABLES = [
     # plan as usable floor and bills as nothing.
     #
     # Each run hangs on the closet's longest uninterrupted wall, 8" (half the 16" depth)
-    # off its finish face — measured off the wall's own layer polygons, NOT off
-    # `Room.clear_face`, which is inset from the wall AXIS and would bury each unit ~3" in
-    # the studs. Elevation 66" is the shelf; a full-length coat hangs clear beneath it.
+    # off its finish face — measured off the wall's own layer polygons. Elevation 66" is the shelf; a full-length coat hangs clear beneath it.
     #
     # RM-M-MUD-CLOSET: 63" of clear wall between x 6 5/8" and 5'-9 5/8", north wall
     # (W-M-MUDC-N, face y 29'-5 1/8"). A 60" run centres in it with 1 1/2" either side.

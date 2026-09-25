@@ -1758,12 +1758,9 @@ FLOOR_HEAT = [
     # closed-toe vanity, because the trapped air cooks it. The polygon holds exactly 2.00"
     # at every one of those.
     #
-    # ** EVERY NUMBER IN THIS POLYGON IS STRUCK OFF A WALL'S FINISH FACE, NOT OFF
-    # `Room.clear_face`. ** RM-M-BATH2 reports a west edge at x=5/8" and a south edge at
-    # y=13'-0 5/8"; the actual painted faces are x=6 5/8" and y=13'-2 3/8", because
-    # `clear_face` insets from the wall AXIS and W-M-W3 is 13 7/8" thick. A first cut of
-    # this zone used the reported numbers and ran six inches into the studs, passing every
-    # check in the house — nothing grades a floor-heat polygon against a wall face.
+    # ** EVERY NUMBER IN THIS POLYGON IS STRUCK OFF A WALL'S FINISH FACE ** — x=6 5/8" and
+    # y=13'-2 3/8", which `Room.clear_face` now reports. A first cut used the old
+    # axis-derived face (x=5/8") and ran six inches into the studs at 0 FAIL.
     #
     # ** IT IS DRAWN TO THE REAL FIXTURES NOW. ** Until 2026-08-29
     # `advisory.floor_heat_fixture_keepout` rebuilt each fixture's box from its TYPE's
@@ -2227,9 +2224,8 @@ PANELING = [
     # ** THE TWO WALLS ARE W-M-BA2E2 AND W-M-BDN1, NOT W-M-BA2E. ** FX-M-BATH2-SH's
     # `wall_ref` names W-M-BA2E, which is the RISER's wall — the same trap plan/fixtures.py
     # already calls out for the basin. W-M-BA2E runs y 22'-4" -> 18'-0" and never touches
-    # the pan. The spans below are struck off the fixture's authored position and NOT off
-    # `Room.clear_face`, which is inset from the wall AXIS and would land the band inside
-    # the studs. FX-M-BATH2-SH's `position` is the pan's CENTRE, not the corner the
+    # the pan. The spans below are struck off the fixture's authored position.
+    # FX-M-BATH2-SH's `position` is the pan's CENTRE, not the corner the
     # "6'-2 5/8"" figure once quoted here — the honest centre was 7'-0" and is now
     # 6'-4 5/8", moved -5 3/8" west 2026-09-09 when W-M-BA2E2 came off its jog and back
     # onto W-M-BA2E's line — so the 36" pan occupies x 4'-10 5/8"..7'-10 5/8" and

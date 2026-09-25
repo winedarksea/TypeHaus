@@ -241,13 +241,14 @@ commissioned airflow whatever the weather is doing.
 ACF = (1 − 6.8754e−6 × 830)^5.2559 = 0.9704
 ```
 
-Net, on the house's 1.0 ACH50 over 46,159 ft³ of conditioned volume (room clear-face area ×
-the storey's `default_ceiling_height`, which is what `_volume_ft3` measures):
+Net, on the house's 1.0 ACH50 over 41,291 ft³ of conditioned volume (room clear-face area ×
+the storey's `default_ceiling_height`, which is what `_volume_ft3` measures; 46,159 ft³ until
+2026-09-24, when the clear face became the finish face rather than the axis cell):
 
 ```
-CFM50  = 1.0 × 46,159 / 60            = 769.3
-CFMnat = 769.3 / 17.76                = 43.32
-q_heat = 1.08 × 0.9704 × 43.32 × 1.5 × 85   =  5,788 Btu/h
+CFM50  = 1.0 × 41,291 / 60            = 688.2
+CFMnat = 688.2 / 17.76                = 38.75
+q_heat = 1.08 × 0.9704 × 38.75 × 1.5 × 85   =  5,178 Btu/h   (was 5,788)
 ```
 
 Against 3,924 Btu/h before: the uplift is 1.5×, the ACF takes 3% back, and the N-factor
@@ -269,11 +270,12 @@ q_vent = 1.08 × 0.9704 × 73.5 × 85          =  6,547 Btu/h
 | `slab` | 1,296.0 ft² | 25.47 | 45.14 | 1,150 |
 | `windows` | 258.7 ft² | 60.62 | 85 | 5,153 |
 | `doors` | 120.0 ft² | 24.00 | 85 | 2,040 |
-| infiltration | — | — | 85 | 5,788 |
+| infiltration | — | — | 85 | 5,178 |
 | ERV ventilation air | — | — | 85 | 6,547 |
-| | | | | **31,672** |
+| | | | | **31,062** |
 
-The table is current to 2026-09-23 (revision below); the prose after it is the 2026-09-18 pass.
+The table is current to 2026-09-24 (finish-face volume; the engine reads 31,057, the walls'
+UA having moved 0.06 with the plant room's gypsum); the prose after it is the 2026-09-18 pass.
 
 Cooling: **22,154 Btu/h, 1.846 tons**, of which 17,435 is the window-and-door solar term —
 and that term is the one §0's warning is about.

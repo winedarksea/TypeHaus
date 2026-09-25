@@ -1536,9 +1536,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - Cladding: `N-B-BRICK-W`/`-E` stand off `inch(-4.05)` on bare XPS; veneer clear cavity is
     **1-1/2"** (IRC R703.8.4 min 1"). Never re-strike this node off a parge finish face — it
     must sit on the foam itself (→ DESIGN-LOG.md, "Basement"). Walls align on
-    `face("concrete-ext")`: the furnace room and workshop have 4" more clear on the inside
-    face than the model reports — `clear_face` is inset from the wall axis and did not move
-    with the thinner wall; read the layer polygons instead (`notes/basement_to_framed_wall_detail.md`).
+    `face("concrete-ext")`: the furnace room and workshop gained 4" of clear on the inside
+    face, and `clear_face` (the finish face) shows it (`notes/basement_to_framed_wall_detail.md`).
 
 - **Sauna (`RM-B-SAUNA`).** Against the south (garden) wall, long axis east-west; west wall
   at x=8'-10" on `N-B-S1`; south face is one plane on `W-B-S2`'s garden curb, no jog. Clear

@@ -56,8 +56,7 @@ from typehaus import (
 # 10'-6", and the mechanical room took the other 3 1/8" of what the pour used to occupy.
 # Both flights widened to 3'-5 1/16" to keep the well full, so the code minimum is cleared
 # by more than it was, not less.
-# Note that the model does not report this: `clear_face` is inset from the wall AXIS
-# network (resolve/rooms.py), and the axis did not move.
+# `clear_face` (the finish face) reports it.
 #
 # ================= THE WEST HALF WAS REPLANNED ON 2026-09-05 =================
 #
@@ -1487,15 +1486,15 @@ FLOOR_OPENINGS = [
 # that bills as tile and is subtracted from the SAUNA assemblies' sauna-shiplap liner area.
 # W-B-CS runs from N-B-SA-NE (the shower corner) south, so its splash is the first 3';
 # the north wall runs west→east into that same corner, so its splash is the last 3' of that
-# line — re-datumed to 5'-10" when the 2026-09-05 shrink took the run from 13'-4" to 9'-2",
-# and re-datumed again on 2026-09-07 onto W-B-SA-N2, the 4'-1 5/16" east segment the hall's
-# tee at N-B-HALL-S cut off. x 14'-8"..17'-8" is entirely inside that segment, so the span
-# is 9 5/16" off its start rather than 5'-10" off the old whole wall's.
+# line, on W-B-SA-N2 (the east segment the hall's tee at N-B-HALL-S cut off). Both spans
+# are 36" of TILE measured from the pan corner's FINISH face, which sits 6 1/4" off the
+# W-B-CS axis and 4 13/16" off the W-B-SA-N2 axis — the room's clear face is that finish
+# face, so a span datumed at an axis corner loses those inches to the wall.
 PANELING = [
     WallPaneling(uid="CBK901AAAA", tag="WP-B-SAUNA-SPLASH", room="RM-B-SAUNA",
                  material_ref="tile", height=ft(7, 6), replaces_wall_finish=True,
-                 spans=(PanelingSpan(wall_ref="W-B-CS", start=ft(0), length=ft(3)),
-                        PanelingSpan(wall_ref="W-B-SA-N2", start=inch(9.3125), length=ft(3)))),
+                 spans=(PanelingSpan(wall_ref="W-B-CS", start=inch(4.8125), length=ft(3)),
+                        PanelingSpan(wall_ref="W-B-SA-N2", start=inch(7.0625), length=ft(3)))),
 ]
 
 # --- RM-B-BATH's wet-wall bulkhead --------------------------------------------------
@@ -1512,8 +1511,8 @@ PANELING = [
 # else). y runs from the north wall face to 20'-3", 6" clear past the southernmost of the
 # three.
 #
-# ** THE CORNERS ARE THE WALLS' FINISH FACES, NOT `Room.clear_face`. ** The clear face
-# polygonises wall AXES and reaches 2-3" INTO every wall around it, so a box drawn to it put
+# ** THE CORNERS ARE THE WALLS' FINISH FACES. ** The old axis-derived `Room.clear_face`
+# reached 2-3" INTO every wall around it, so a box drawn to it put
 # the ladder's rails through W-B-CW2's top plates and W-B-STR2's studs — 22 hits of
 # `structural.member_interference`, all of them real. These four numbers are read off the
 # resolved layer polygons instead: W-B-STR2's east face at 123 3/8", W-B-BA-E's west face at

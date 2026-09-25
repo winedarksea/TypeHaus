@@ -295,7 +295,7 @@ WALLS = [
     # `preferences.toml` for it. Real 2x6 studs allow 3.30" and the eleven bores are legal.
     #
     # ** THE FACES DO NOT MOVE. ** Both assemblies are paint/gwb/5.5" stud/gwb/paint — identical
-    # overall thickness — so every fixture station, every backing band and every `clear_face` on
+    # overall thickness — so every fixture station, every backing band and every room face on
     # this wall is untouched. What is paid is the decoupling and the 3 1/2" sound batt the
     # staggered layup carried — INT_2X6_PLUMBING_BATT rather than plain INT_2X6_PLUMBING keeps
     # the 3 1/2" batt, which is the trade INT_2X6_BRG_PLUMBING already made one storey down.

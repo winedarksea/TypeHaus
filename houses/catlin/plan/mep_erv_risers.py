@@ -216,7 +216,7 @@ DUCTS_ERV_RISERS = [
     # ** THE HOOD VERTEX IS x = -0'-8", AND -0'-6" WAS SHORT (corrected 2026-09-11). **
     # -6" was picked to clear `mep.erv_outdoor_terminals`, which decides which EXHAUST run is
     # the machine's discharge by asking whether the run's LAST vertex lands outside every
-    # resolved room's `clear_face` — and `clear_face` sits on the wall AXIS, which for these
+    # resolved room's cell — and that cell was the wall AXIS, which for these
     # `face("sheathing-ext")` walls is x=0'-0". A run stopping at the interior face reads as
     # indoors, the check finds no discharge at all, the 10-ft test never runs, and the whole
     # thing degrades silently to a single PASS on hood height. -6" cleared the axis and the

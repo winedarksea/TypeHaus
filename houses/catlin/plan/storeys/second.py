@@ -1139,15 +1139,18 @@ FLOOR_HEAT = [
               # The eight points below enclosed 29.43 ft2, not 42.4, so the "42.4 x 12 W" that
               # produced 510 W was wrong twice over -- wrong area, and `area x 12` is not a
               # thing you can buy. See the wattage note below.
-              zone=(pt(ft(0, 5), ft(26, 11)), pt(ft(9, 7), ft(26, 11)),
+              # West edge x=8 5/8", not 5": the west wall's finish face is x=6 5/8", so at
+              # 5" the mat ran 1 5/8" under it (caught once `clear_face` became the finish
+              # face); 8 5/8" is Schluter's 2" wall standoff. 27.31 ft2 -> 26.83 ft2.
+              zone=(pt(inch(8.625), ft(26, 11)), pt(ft(9, 7), ft(26, 11)),
                     pt(ft(9, 7), inch(343.88)), pt(inch(93.62), inch(343.88)),
                     pt(inch(93.62), ft(31, 3)), pt(ft(3, 3), ft(31, 3)),
-                    pt(ft(3, 3), ft(28, 6)), pt(ft(0, 5), ft(28, 6))),
+                    pt(ft(3, 3), ft(28, 6)), pt(inch(8.625), ft(28, 6))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3.625), embed=in_slab(inch(0.5)),
               # ** 338 W IS A PART NUMBER, NOT AN ARITHMETIC RESULT. ** Schluter
               # DITRA-HEAT-E-HK cable is sold in fixed, UNCUTTABLE lengths, so this field is
               # a purchased nameplate: DHEHK12027, 26.7 ft2 / 338 W / 2.8 A at 120 V, the
-              # largest unit that does not exceed the 27.31 ft2 zone. The surplus 0.61 ft2 is
+              # largest unit that does not exceed the 26.83 ft2 zone. The surplus 0.13 ft2 is
               # the buffer zone Schluter requires. `spacing` is 3 5/8" (3-stud), which is what
               # puts 26.7 ft2 of cable at the 12.7 W/ft2 the ladder is rated at.
               #
@@ -1162,9 +1165,9 @@ FLOOR_HEAT = [
               # the design point is 84 F floor over 72 F operative, which their own
               # Q = 8.92 x dT^1.1 W/m2 puts at 22.8 Btu/h/ft2. The load is worked in
               # notes/room_heat_loss_baths.md and by `estimate_block_load(rooms=...)`:
-              #     delivered = min(27.31 ft2 x 22.8, 338 W x 3.412) = min(623, 1,153) = 623
-              #     load      = 591 Btu/h at -15 F
-              # so this room is covered with about 5% to spare. RM-M-BATH2 is NOT, and the
+              #     delivered = min(26.83 ft2 x 22.8, 338 W x 3.412) = min(612, 1,153) = 612
+              #     load      = 606 Btu/h at -15 F (finish-face volume)
+              # so this room is covered with about 1% to spare. RM-M-BATH2 is NOT, and the
               # reason is heated AREA, not wattage — see the note.
               watts=338, delivered_btuh_per_ft2=22.8,
               stat=pt(ft(1, 6), ft(32))),

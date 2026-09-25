@@ -84,8 +84,8 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
 # -SHALLOW depth (the boxed big-box combos measure 18.6"-18.75"), and the pair leaves
 # 4 1/4" to the water closet's envelope. The three inches of length come out of the drawer
 # bank; the 30" sink base is untouched. ** Measure that run off the WALLS' finish faces
-# and never off `Room.clear_face` ** -- the latter is inset from the wall AXIS, which on
-# this 13 7/8" exterior wall reads six inches out. The counter overhangs the carcass to 19".
+# ** -- `Room.clear_face` is that finish face now; it read six inches out on this 13 7/8"
+# exterior wall while it was axis-derived. The counter overhangs the carcass to 19".
 #
 # ``height`` is 41 1/2" and that is NOT the counter -- this file's library twin explains
 # why: a fixture's height is OVERALL including the spout, and ``_deck_height`` subtracts a
