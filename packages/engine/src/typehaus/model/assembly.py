@@ -90,7 +90,6 @@ class FramingSpec(HausModel):
     #: of them. May be negative — the module is unbounded below and the band's own bottom
     #: is where the courses actually start.
     course_offset: Length | None = None
-    stagger_gap: Length | None = None  # for STAGGERED/DOUBLE partition layouts
     direction: str | None = None  # FURRING only: "vertical" | "horizontal"
     # FURRING only: which way the stick is turned in the band. "flat" (the default, and
     # every furred wall before the truss wall existed) lays the wide face against the
