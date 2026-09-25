@@ -56,6 +56,9 @@
     "buck": 13218188,
     "ceiling": 15592419,
     "cladding": 9213081,
+    "cleanout_cap": 13412408,
+    "cleanout_extension": 3684413,
+    "cleanout_fitting": 2697518,
     "column": 10066334,
     "conduit_data": 3057819,
     "conduit_power": 9129395,
@@ -225,6 +228,9 @@
     "buck": 13218188,
     "ceiling": 15592419,
     "cladding": 9213081,
+    "cleanout_cap": 13412408,
+    "cleanout_extension": 3684413,
+    "cleanout_fitting": 2697518,
     "column": 10066334,
     "conduit_data": 3057819,
     "conduit_power": 9129395,
@@ -362,6 +368,15 @@
     ],
     "ceiling": [
       "drywall"
+    ],
+    "cleanout_cap": [
+      "plumbing"
+    ],
+    "cleanout_extension": [
+      "plumbing"
+    ],
+    "cleanout_fitting": [
+      "plumbing"
     ],
     "column": [
       "framing"
@@ -567,6 +582,9 @@
     "beam_cap": "siding",
     "bug_screen": "siding",
     "ceiling": "drywall",
+    "cleanout_cap": "plumbing",
+    "cleanout_extension": "plumbing",
+    "cleanout_fitting": "plumbing",
     "column": "framing",
     "conduit_data": "electrical",
     "conduit_power": "electrical",

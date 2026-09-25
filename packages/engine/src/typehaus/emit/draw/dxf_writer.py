@@ -39,7 +39,7 @@ _DEVICE_SYMBOLS = frozenset({
 # so an unlisted name is a wrong glyph rather than a missing one. Tests assert the plan
 # builders emit nothing outside this set (in both writers, which must stay in step).
 SYMBOL_NAMES_WITH_DEDICATED_GLYPH = (
-    DOOR_SYMBOL_NAMES | _DEVICE_SYMBOLS | frozenset({"post", "span-arrow", "sleeve"})
+    DOOR_SYMBOL_NAMES | _DEVICE_SYMBOLS | frozenset({"post", "span-arrow", "sleeve", "cleanout"})
 )
 
 # AIA layer → (ACI color, lineweight in 1/100 mm). A small default palette.
@@ -365,6 +365,12 @@ def _add_symbol(msp: object, node: Symbol) -> None:
         end = (x + half * math.cos(a), y + half * math.sin(a))
         start = (x - half * math.cos(a), y - half * math.sin(a))
         msp.add_line(start, end, dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
+    elif node.name == "cleanout":
+        radius = max(w * 0.5, 2.0)
+        x, y = node.insert
+        msp.add_circle(node.insert, radius=radius, dxfattribs={"layer": node.layer})
+        msp.add_line((x - radius, y), (x + radius, y), dxfattribs={"layer": node.layer})
+        msp.add_line((x, y - radius), (x, y + radius), dxfattribs={"layer": node.layer})
     elif node.name == "sleeve":
         msp.add_circle(node.insert, radius=max(w * 0.5, 1.0),  # type: ignore[attr-defined]
                        dxfattribs={"layer": node.layer})

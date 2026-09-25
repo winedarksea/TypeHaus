@@ -131,7 +131,7 @@ def remap_ops_for(element: Element, remap: ReferenceRemap) -> list[PatchOp]:
 
 def _register_builtins() -> None:
     from typehaus.model.elements import Door, RoughOpening, Wall, Window
-    from typehaus.model.mep import ElectricalDevice, Equipment, Register
+    from typehaus.model.mep import DrainCleanout, ElectricalDevice, Equipment, Register
     from typehaus.model.spatial import Appliance, Fixture, Furniture, Room, Stair
 
     @remap_handler(Wall, ref_fields=("start_node", "end_node", "stacks_on", "bearing_refs"))
@@ -195,6 +195,17 @@ def _register_builtins() -> None:
     for _cls in (Furniture, Fixture, Appliance, Equipment, Register, ElectricalDevice):
         fields = tuple(f for f in ("wall_ref", "location") if f in _cls.model_fields)
         remap_handler(_cls, ref_fields=fields)(_placeable_handler(_cls.__name__))
+
+    @remap_handler(DrainCleanout, ref_fields=("wall_ref", "pipe_ref"))
+    def _cleanout(el: Element, remap: ReferenceRemap) -> list[PatchOp]:
+        changed = {}
+        for field_name in ("wall_ref", "pipe_ref"):
+            current = getattr(el, field_name, None)
+            target = remap.rehost.get(el.tag) if field_name == "wall_ref" else None
+            target = target or (remap.resolve(current) if current else None)
+            if target is not None and target != current:
+                changed[field_name] = target
+        return [PatchOp("update", "DrainCleanout", el.tag, changed)] if changed else []
 
     @remap_handler(Stair, ref_fields=("bearing_refs",))
     def _stair(el: Element, remap: ReferenceRemap) -> list[PatchOp]:

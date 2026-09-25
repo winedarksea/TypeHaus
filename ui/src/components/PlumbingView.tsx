@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type {
-  Plumbing, PlumbingCastInRow, PlumbingFittingRow, PlumbingFixtureRow, PlumbingPipeGroup,
+  Plumbing, PlumbingCastInRow, PlumbingCleanoutRow, PlumbingFittingRow, PlumbingFixtureRow, PlumbingPipeGroup,
   PlumbingRiserRun, PlumbingRunLoadRow,
 } from "../model/types";
 import {
@@ -367,6 +367,24 @@ export function PlumbingView() {
                 </span>
               </div>
             ))}
+          </div>
+        )}
+        {takeoff.cleanouts?.length > 0 && (
+          <div className="reader-card">
+            <div className="reader-card-head">
+              <span className="reader-card-title">Sanitary cleanouts</span>
+              <span className="muted">{takeoff.cleanouts.length}</span>
+            </div>
+            <ReaderTable<PlumbingCleanoutRow> rows={takeoff.cleanouts}
+              rowKey={(row) => row.tag}
+              columns={[
+                { key: "tag", header: "Cleanout", cell: (r) =>
+                  <TagCell tag={r.tag} index={index} onJump={jump} title="Zoom to cleanout" mono /> },
+                { key: "pipe", header: "Drain", cellClass: "reader-mono", cell: (r) => r.pipe_ref },
+                { key: "type", header: "Type", cell: (r) => r.direction.replace("_", "-") },
+                { key: "dia", header: "Ø", num: true, cell: (r) => `${r.diameter_in}"` },
+                { key: "access", header: "Cap access", cell: (r) => r.access },
+              ]} />
           </div>
         )}
       </ReaderSection>

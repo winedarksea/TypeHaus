@@ -32,10 +32,25 @@ element order — and therefore model.json — is unchanged.
 
 from __future__ import annotations
 
-from plan import (mep_drainage, mep_electrical, mep_erv_l1, mep_erv_l2, mep_erv_l3,
-                  mep_erv_outdoor, mep_erv_risers, mep_erv_types, mep_hvac, mep_hvac_branches,
-                  mep_registers, mep_sleeves, mep_supply, mep_supply_devices, mep_supply_plant,
-                  mep_venting)
+from plan import (
+                  mep_cleanouts,
+                  mep_drainage,
+                  mep_electrical,
+                  mep_erv_l1,
+                  mep_erv_l2,
+                  mep_erv_l3,
+                  mep_erv_outdoor,
+                  mep_erv_risers,
+                  mep_erv_types,
+                  mep_hvac,
+                  mep_hvac_branches,
+                  mep_registers,
+                  mep_sleeves,
+                  mep_supply,
+                  mep_supply_devices,
+                  mep_supply_plant,
+                  mep_venting,
+)
 
 # Catalogs, re-exported so ``manifest.py``'s Library(...) call is untouched by the split.
 REGISTER_TYPES = (*mep_hvac.REGISTER_TYPES, *mep_erv_types.REGISTER_TYPES_ERV)
@@ -43,6 +58,7 @@ EQUIPMENT_TYPES = (*mep_hvac.EQUIPMENT_TYPES, *mep_erv_types.EQUIPMENT_TYPES_ERV
 ELECTRICAL_DEVICE_TYPES = mep_electrical.ELECTRICAL_DEVICE_TYPES
 
 MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
+                 *mep_cleanouts.MAIN_CLEANOUTS,
                  *mep_sleeves.SUPPLY_SLEEVES,
                  *mep_sleeves.STACK_SLEEVES,
                  *mep_drainage.SECOND_DRAINS,
@@ -89,6 +105,7 @@ GARAGE_DECK_ELEMENTS = [*mep_sleeves.GARAGE_SLEEVES,
                         *mep_supply_devices.SUPPLY_DEVICES_GARAGE]
 
 BASEMENT_ELEMENTS = [*mep_drainage.DRAINS,
+                     *mep_cleanouts.BASEMENT_CLEANOUTS,
                      *mep_drainage.CONDENSATE,
                      *mep_drainage.ERV_CONDENSATE,
                      *mep_drainage.TPR_DISCHARGE,

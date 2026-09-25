@@ -1050,6 +1050,19 @@ export interface PlumbingAccessoryRow {
   install_parts: string[];
 }
 
+export interface PlumbingCleanoutRow {
+  tag: string;
+  pipe_ref: string;
+  storey: string;
+  direction: string;
+  access: string;
+  wall_ref: string | null;
+  accessible: boolean;
+  diameter_in: number;
+  cap_position: number[];
+  cap_z_m: number;
+}
+
 export interface Plumbing {
   riser: PlumbingRiserRun[];
   fixture_units: {
@@ -1064,6 +1077,7 @@ export interface Plumbing {
     cast_in: PlumbingCastInRow[];
     hydrants: PlumbingHydrantRow[];
     accessories: PlumbingAccessoryRow[];
+    cleanouts: PlumbingCleanoutRow[];
   };
 }
 

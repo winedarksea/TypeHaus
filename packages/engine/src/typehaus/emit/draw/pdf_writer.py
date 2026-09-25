@@ -181,7 +181,8 @@ _MARKER_STYLE = {
 # bar, so an unlisted name is not a missing glyph but a *wrong* one — how every smoke alarm
 # came to be drawn as glazing. Tests assert the plan builders emit nothing outside this set.
 SYMBOL_NAMES_WITH_DEDICATED_GLYPH = (
-    DOOR_SYMBOL_NAMES | frozenset(_MARKER_STYLE) | frozenset({"post", "span-arrow", "sleeve"})
+    DOOR_SYMBOL_NAMES | frozenset(_MARKER_STYLE)
+    | frozenset({"post", "span-arrow", "sleeve", "cleanout"})
 )
 
 
@@ -1033,6 +1034,12 @@ def _draw_symbol(ax: object, node: Symbol, Arc: object) -> None:
         ax.annotate("", xy=(node.insert[0] + dx, node.insert[1] + dy),
                     xytext=(node.insert[0] - dx, node.insert[1] - dy),
                     arrowprops=dict(arrowstyle="->", color="#8a5a20", lw=1.0))
+    elif node.name == "cleanout":
+        size = max(w, 4.0)
+        ax.plot(node.insert[0], node.insert[1], marker="o", markersize=size,
+                markerfacecolor="none", markeredgecolor="#333338", markeredgewidth=1.0)
+        ax.plot(node.insert[0], node.insert[1], marker="+", markersize=size,
+                color="#333338", markeredgewidth=1.0)
     elif node.name == "sleeve":
         size = max(w, 2.0)
         ax.plot(node.insert[0], node.insert[1], marker="o", markersize=size,

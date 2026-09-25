@@ -376,10 +376,11 @@ MN_2020 = JurisdictionProfile(
         # blocking=True, so neither ratchet moves.
         PermitItemSpec("Plumbing drain slope and offsets",
                        ("mep.drain_slope", "mep.drain_offset_geometry",
-                        "mep.drain_tie_in", "mep.vent_grade"),
+                        "mep.drain_tie_in", "mep.vent_grade", "mep.drain_cleanouts"),
                        ("MN Plumbing Code (ch. 4714) 708.0",
                         "MN Plumbing Code (ch. 4714) 706.3",
-                        "MN Plumbing Code (ch. 4714) 905.1")),
+                        "MN Plumbing Code (ch. 4714) 905.1",
+                        "MN Plumbing Code (ch. 4714) 707.4")),
         # Every one of these plumbing checks answers a line a plan reviewer actually asks
         # about, so they go on the checklist rather than into the exclusion list — the
         # pour-day sleeve schedule most of all, since it is the one item that cannot be

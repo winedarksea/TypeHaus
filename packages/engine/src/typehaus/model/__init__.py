@@ -85,6 +85,7 @@ from typehaus.model.landscape import (
 from typehaus.model.materials import Material
 from typehaus.model.mep import (
     ConduitRun,
+    DrainCleanout,
     DuctRun,
     ElectricalDevice,
     Equipment,
@@ -354,7 +355,8 @@ __all__ = [
     "ShearPanelSpec", "DiaphragmSpec", "HeadConnector", "InServiceMoisture",
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",
-    "PipeRun", "PipeAccessory", "SleevePenetration", "DuctRun", "Register", "Equipment",
+    "PipeRun", "PipeAccessory", "DrainCleanout", "SleevePenetration", "DuctRun",
+    "Register", "Equipment",
     "ElectricalDevice",
     "Circuit", "LoadManagement", "ConduitRun", "LightRun",
     "Sump", "SumpPump", "VentRun",

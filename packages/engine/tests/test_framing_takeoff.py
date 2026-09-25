@@ -342,6 +342,7 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "panelings": ("wood_surfaces",),
     "pipe_runs": ("pipe_runs", "pipe_fittings", "pipe_insulation"),
     "pipe_accessories": ("plumbing_specialties", "install_parts"),
+    "drain_cleanouts": ("plumbing_specialties",),
     "sleeves": ("sleeves",),
     "ducts": ("ducts", "duct_fittings", "duct_insulation"),
     "conduits": ("conduit", "conductors"),

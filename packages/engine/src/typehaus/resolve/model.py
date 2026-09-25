@@ -1050,6 +1050,7 @@ class ResolvedPipeRun:
     # Fixture tags this run carries. Authored on ``PipeRun.serves``; carried into the IR so
     # a check can ask "which run vents/drains this fixture" without re-reading plan source.
     serves: tuple[str, ...] = ()
+    sanitary: bool = True
     z_m: tuple[float, ...] | None = None  # per-vertex absolute inverts, len == len(path)
     wall_refs: tuple[str | None, ...] = ()  # host wall per segment; () -> none declared
     material: str | None = None
@@ -1058,6 +1059,25 @@ class ResolvedPipeRun:
     # Self-regulating heater cable on the run, billed by the foot beside the insulation.
     # Separate from it on purpose: a traced AND lagged run is the normal outdoor spec.
     freeze_protection: str | None = None
+
+
+@dataclass(frozen=True)
+class ResolvedDrainCleanout:
+    uid: str
+    tag: str
+    storey: str
+    pipe_ref: str
+    position: tuple[float, float]
+    fitting_z_m: float
+    cap_position: tuple[float, float]
+    cap_z_m: float
+    direction: str
+    access: str
+    wall_ref: str | None
+    clear_width_m: float
+    clear_depth_m: float
+    accessible: bool
+    diameter_m: float
 
 
 @dataclass(frozen=True)
@@ -1411,6 +1431,7 @@ class ResolvedModel:
     # resolving that wall (→ resolve/layout_lines.py). Never exported as an element.
     layout_lines: list[ResolvedLayoutLine] = field(default_factory=list)
     pipe_runs: list[ResolvedPipeRun] = field(default_factory=list)
+    drain_cleanouts: list[ResolvedDrainCleanout] = field(default_factory=list)
     pipe_accessories: list[ResolvedPipeAccessory] = field(default_factory=list)
     sleeves: list[ResolvedSleeve] = field(default_factory=list)
     ducts: list[ResolvedDuct] = field(default_factory=list)
@@ -1453,7 +1474,7 @@ class ResolvedModel:
             self.walls, self.openings, self.solids, self.construction_returns, self.roofs,
             self.stairs, self.floors, self.soffits, self.braces, self.floor_heat, self.rooms,
             self.panelings, self.window_stools, self.shelf_banks, self.countertops,
-            self.pipe_runs, self.pipe_accessories, self.sleeves, self.ducts,
+            self.pipe_runs, self.drain_cleanouts, self.pipe_accessories, self.sleeves, self.ducts,
             self.conduits, self.light_runs, self.solar_panels, self.footing_beddings,
             self.canvas_objects,
         ):

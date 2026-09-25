@@ -527,7 +527,7 @@ SECOND_BRANCH_DRAINS = [
 # of at its head. 2" clear of PR-B-CW-SAUNA (x=17'-4") and PR-B-SAUNA-VENT (x=17'-4"), and
 # it crosses nothing else — DU-B-ERV-R-GYM is at y=10'-6 5/8", north of the tie.
 CONDENSATE_MAIN = [
-    PipeRun(uid="CMPC02AAAA", tag="PR-M-COND-HEADS", system=PipeSystem.DRAIN,
+    PipeRun(uid="CMPC02AAAA", tag="PR-M-COND-HEADS", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(9))),
             diameter=inch(0.75), material="pvc",
             # 0.3"/ft over the 8'-0" north leg, landing on PR-B-COND's interpolated
@@ -561,7 +561,7 @@ LAUNDRY_MAIN = [
             wall_refs=("W-M-BA2E",)),
     # Both ends ride their fixtures — it leaves the dryer's east face and turns south over
     # the tub.
-    PipeRun(uid="5NYN0SKYSV", tag="PR-M-DRYER-COND", system=PipeSystem.DRAIN,
+    PipeRun(uid="5NYN0SKYSV", tag="PR-M-DRYER-COND", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(ft(10, 8), ft(19, 8.635)), pt(ft(11, 9), ft(19, 8.635)),
                   pt(ft(11, 9), ft(18, 11.135))),
             diameter=inch(0.75), material="pvc",
@@ -657,7 +657,7 @@ ERV_CONDENSATE = [
     # 9 9/16". What is left in the room is the last 1'-10", at floor level, landing the 9"
     # air gap over FX-B-SAUNA-FD — the run's own final leg to its receptor, which is what an
     # indirect waste to a floor drain looks like. 0.3"/ft on both horizontals.
-    PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN,
+    PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
             # ** THE NORTH-SOUTH LANE IS x=2'-7", NOT 2'-11" (P2, 2026-09-19). ** At
             # 2'-11" it ran one inch from PR-B-MAIN-DRAIN's 4" vertical at (3'-0", 15'-6"),
             # which drops from -2'-5" to the footing — and a 4" main and a 3/4" condensate
@@ -700,7 +700,7 @@ ERV_CONDENSATE = [
 # 89" and 88 1/2", 9" and 8 1/2" clear. NOTHING ON THIS RUN MOVES FOR THAT. The 2 5/8" the
 # head came up was argued off the deck soffit's own 1 5/8" usable band, not off the box.
 CONDENSATE = [
-    PipeRun(uid="CBPC01AAAA", tag="PR-B-COND", system=PipeSystem.DRAIN,
+    PipeRun(uid="CBPC01AAAA", tag="PR-B-COND", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(ft(27), ft(10, 11)), pt(ft(18), ft(10, 11)), pt(ft(18), ft(9)),
                   pt(ft(13, 6), ft(9)), pt(ft(13, 6), inch(98.1875)),
                   pt(ft(13, 6), inch(98.1875))),
@@ -738,7 +738,7 @@ CONDENSATE = [
 # grades this one by PROXIMITY to the tank centre for exactly that reason, while the other
 # seven are graded against a port by service.
 TPR_DISCHARGE = [
-    PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN,
+    PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(ft(4, 4), ft(24)), pt(ft(4, 4), ft(24)),
                   pt(ft(4, 4), ft(23))),
             diameter=inch(0.75), material="copper",

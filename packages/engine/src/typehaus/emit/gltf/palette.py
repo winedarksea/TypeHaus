@@ -156,6 +156,9 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "vent": (0.88, 0.88, 0.86, 1.0),       # painted vent pipe
     # routed plumbing runs (→ resolve/mep.py _emit_run_solids), riser-diagram colors
     "pipe_drain": (0.20, 0.20, 0.22, 1.0),       # ABS/PVC waste, near-black
+    "cleanout_fitting": (0.16, 0.16, 0.18, 1.0),
+    "cleanout_extension": (0.22, 0.22, 0.24, 1.0),
+    "cleanout_cap": (0.80, 0.66, 0.22, 1.0),
     "pipe_vent": (0.88, 0.88, 0.86, 1.0),        # same as the vent risers
     "pipe_water_hot": (0.80, 0.25, 0.22, 1.0),   # red PEX
     "pipe_water_cold": (0.20, 0.40, 0.75, 1.0),  # blue PEX

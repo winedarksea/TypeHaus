@@ -80,7 +80,8 @@ def _sleeves_for(model: ResolvedModel, storey_tag: str):
 
 def has_plumbing_content(model: ResolvedModel, storey_tag: str) -> bool:
     pipes = [p for p in model.pipe_runs if p.storey == storey_tag]
-    return bool(pipes or _sleeves_for(model, storey_tag))
+    return bool(pipes or _sleeves_for(model, storey_tag)
+                or any(c.storey == storey_tag for c in model.drain_cleanouts))
 
 
 def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
@@ -108,6 +109,17 @@ def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
             text = f'{diameter_in:.0f}" {label}'
         b.add(Leader(anchor=NamedPoint(xy=_in(mid), name=run.tag), at=_in(mid),
                      to=_in((mid[0], mid[1] + 1.0)), text=text, layer=layer))
+
+    for cleanout in model.drain_cleanouts:
+        if cleanout.storey != storey:
+            continue
+        b.add(Symbol(name="cleanout", insert=_in(cleanout.cap_position),
+                     layer="P-SANR-PIPE", scale=cleanout.diameter_m / M_PER_IN))
+        b.add(Leader(anchor=NamedPoint(xy=_in(cleanout.cap_position), name=cleanout.tag),
+                     at=_in(cleanout.cap_position),
+                     to=_in((cleanout.cap_position[0], cleanout.cap_position[1] + 0.6)),
+                     text=f"{cleanout.tag} {cleanout.direction.replace('_', '-').upper()} CO",
+                     layer="P-SANR-PIPE"))
 
     for sleeve in _sleeves_for(model, storey):
         b.add(Symbol(name="sleeve", insert=_in(sleeve.center), layer="P-SANR-PIPE",

@@ -224,5 +224,13 @@ def plumbing_takeoff(model: ResolvedModel) -> dict[str, object]:
             "cast_in": cast_in_list(model),
             "hydrants": hydrant_rows(model),
             "accessories": accessory_rows(model),
+            "cleanouts": [
+                {"tag": c.tag, "pipe_ref": c.pipe_ref, "storey": c.storey,
+                 "direction": c.direction, "access": c.access, "wall_ref": c.wall_ref,
+                 "accessible": c.accessible,
+                 "diameter_in": round(c.diameter_m / M_PER_IN, 2),
+                 "cap_position": list(c.cap_position), "cap_z_m": c.cap_z_m}
+                for c in sorted(model.drain_cleanouts, key=lambda item: item.tag)
+            ],
         },
     }

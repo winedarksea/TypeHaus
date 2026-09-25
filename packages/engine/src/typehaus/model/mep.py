@@ -97,6 +97,9 @@ class PipeRun(Element):
     #: Optional with a default, so the editable dialect is untouched.
     reduced_slope_approval: str | None = None
     serves: tuple[str, ...] = ()  # upstream Fixture tags
+    # Some indirect wastes and relief discharges use the drain pipe geometry but do not
+    # belong to the connected sanitary system governed by UPC 707.4.
+    sanitary: bool = True
     wall_refs: tuple[str | None, ...] | None = None  # host wall per segment
     wall_ref: str | None = None  # sugar: every segment hosted by this one wall
     material: str | None = None  # "pex" | "pvc" | "abs" | "copper" — takeoff grouping
@@ -126,6 +129,27 @@ class PipeRun(Element):
     # in an unheated pipe in February is how the pipe, and then whatever it discharges into,
     # plugs with ice.
     freeze_protection: str | None = None  # e.g. '5 W/ft self-regulating, 120 V'
+
+
+@register_element
+class DrainCleanout(Element):
+    """Authored sanitary fitting with an accessible cap connected to a drain run.
+
+    Both elevations are storey-relative. The access extension joins the fitting to the
+    cap; ``access`` names the finish plane where the cap is opened.
+    """
+
+    pipe_ref: str
+    position: Point2D
+    fitting_elevation: Length
+    cap_position: Point2D
+    cap_elevation: Length
+    direction: str = "one_way"  # one_way | two_way
+    access: str = "wall"  # wall | cabinet | ceiling | floor | grade
+    wall_ref: str | None = None
+    clear_width: Length
+    clear_depth: Length
+    accessible: bool = True
 
 
 @register_element
@@ -545,6 +569,7 @@ class LightRun(Element):
 
 for _name, _obj in (
     ("PipeRun", PipeRun),
+    ("DrainCleanout", DrainCleanout),
     ("PipeAccessory", PipeAccessory),
     ("SleevePenetration", SleevePenetration),
     ("DuctRun", DuctRun),

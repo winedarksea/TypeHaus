@@ -23,6 +23,7 @@ already names, and importing it is what registers all sixteen checks.
 
 from __future__ import annotations
 
+from typehaus.checks.mep.drain_cleanouts import drain_cleanouts  # noqa: F401 - register
 from typehaus.checks.mep.plumbing_concrete import (  # noqa: F401 - re-export + register
     _missing_sleeve_findings,
     footing_clearance,

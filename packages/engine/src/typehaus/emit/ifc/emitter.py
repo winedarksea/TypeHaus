@@ -174,6 +174,8 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     element_entities: dict[str, Any] = dict(wall_entities)
 
     drainage_elements = []
+    cleanout_entities = []
+    cleanouts_by_tag = {cleanout.tag: cleanout for cleanout in model.drain_cleanouts}
     for solid in sorted(model.solids, key=lambda item: item.uid):
         # Pipe accessories have a dedicated emitter (``_emit_pipe_accessories``) that knows
         # which IfcValve PredefinedType each kind is. Emitting the solid too would put a
@@ -195,6 +197,16 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
             continue
         element = _emit_solid(f, body, solid, storeys, project_uuid, model)
         element_entities.setdefault(solid.tag, element)
+        if solid.category.startswith("cleanout_"):
+            cleanout_entities.append(element)
+            cleanout = next(c for tag, c in cleanouts_by_tag.items()
+                            if solid.tag == tag or solid.tag.startswith(tag + "-"))
+            ll.ensure_pset(f, element, "TypeHaus_DrainCleanout", {
+                "pipe_ref": cleanout.pipe_ref, "direction": cleanout.direction,
+                "access": cleanout.access, "component": solid.category,
+                "wall_ref": cleanout.wall_ref or "",
+                "accessible": cleanout.accessible,
+            })
         if (solid.category or "").lower() in DRAINAGE_CATEGORIES:
             drainage_elements.append(element)
     drainage_elements.extend(_emit_sump_pumps(f, model, storeys, project_uuid))
@@ -239,6 +251,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     for run in sorted(model.pipe_runs, key=lambda item: item.uid):
         segments = _emit_pipe_run(f, body, run, storeys, project_uuid)
         system_elements[run.system].extend(segments)
+    system_elements["drain"].extend(cleanout_entities)
     # The parts at the corners, filed into the same systems as the segments they sit
     # between. Ducts come back in the same call and are grouped by their own emitter below.
     fittings_by_system = emit_fittings(f, model, storeys, project_uuid)

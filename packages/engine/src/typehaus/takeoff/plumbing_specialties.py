@@ -43,6 +43,14 @@ def plumbing_specialties_takeoff(model: ResolvedModel) -> list[dict[str, object]
         tags = entry["tags"]
         assert isinstance(tags, list)
         tags.append(acc.tag)
+    for cleanout in model.drain_cleanouts:
+        size = round(cleanout.diameter_m / M_PER_IN, 2)
+        key = (f"cleanout_{cleanout.direction}", cleanout.access, "drain", size)
+        entry = rows.setdefault(key, {"count": 0, "tags": []})
+        entry["count"] = int(entry["count"]) + 1
+        tags = entry["tags"]
+        assert isinstance(tags, list)
+        tags.append(cleanout.tag)
     return [
         {"kind": kind, "model": model_no, "system": system, "size_in": size,
          "count": int(entry["count"]), "tags": sorted(entry["tags"])}

@@ -20,6 +20,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LuminaireForm, PipeAccessoryKind, Service
 from typehaus.model.mep import (
     ConduitRun,
+    DrainCleanout,
     DuctRun,
     LightRun,
     PipeAccessory,
@@ -27,6 +28,7 @@ from typehaus.model.mep import (
     SleevePenetration,
 )
 from typehaus.quantities import inch
+from typehaus.resolve.cleanouts import resolve_drain_cleanout
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep_ducts import resolve_duct_run
 from typehaus.resolve.mep_queries import (  # noqa: F401 - re-exported query API
@@ -97,6 +99,8 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
         for element in model.plan.storey_elements(storey.tag):
             if isinstance(element, PipeAccessory):
                 findings.extend(_resolve_pipe_accessory(model, element, storey))
+            elif isinstance(element, DrainCleanout):
+                findings.extend(resolve_drain_cleanout(model, element, storey))
     return findings
 
 
@@ -308,6 +312,7 @@ def _resolve_pipe_run(model: ResolvedModel, run: PipeRun, storey) -> list[Findin
         z_start_m=z[0] if z is not None else None,
         z_end_m=z[-1] if z is not None else None,
         length_m=developed, serves=tuple(run.serves),
+        sanitary=run.sanitary,
         z_m=tuple(z) if z is not None else None,
         wall_refs=wall_refs, material=run.material,
         finish=run.finish, insulation=run.insulation,

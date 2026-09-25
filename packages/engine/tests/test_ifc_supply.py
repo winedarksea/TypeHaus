@@ -212,9 +212,11 @@ def test_every_routed_run_category_is_declared(catlin_model_ro):
     # prism either, so a TILTED beam (``Beam.top_rise_end`` — catlin's three balcony glulams
     # fall 2" south for drainage) resolves through the same ``SolidSweep``. The sweep is a
     # GEOMETRY fact, not a trade one, and this assertion is about the trade vocabulary. A
-    # horizontal cast sleeve (one round sweep since 2026-09-24) is a hole, not a run, too.
+    # horizontal cast sleeve and the three parts of an authored cleanout are fittings,
+    # not routed runs, although all four use the sweep geometry primitive.
     minted = {(s.category or "").lower() for s in catlin_model_ro.solids if s.sweep is not None}
-    assert minted - {"railing", "beam", "pipe_sleeve"} <= ROUTED_RUN_CATEGORIES
+    fittings = {"cleanout_fitting", "cleanout_extension", "cleanout_cap"}
+    assert minted - {"railing", "beam", "pipe_sleeve"} - fittings <= ROUTED_RUN_CATEGORIES
 
 
 def test_the_runs_are_still_in_the_file_as_segments(catlin_model_ro, catlin_ifc):

@@ -55,6 +55,9 @@ ROWS: tuple[C, ...] = (
     # Routed plumbing, one category per PipeSystem.
     *(_pipe(s) for s in ("drain", "vent", "water_hot", "water_cold", "gas", "radon",
                          "sump_discharge")),
+    *(C(name, trade="plumbing", ifc_class="IfcPipeFitting", ifc_predefined="USERDEFINED",
+        ifc_object_type=name.upper(), billed_elsewhere=True, collision=_HARD)
+      for name in ("cleanout_fitting", "cleanout_extension", "cleanout_cap")),
     # In-line supply devices, one per PipeAccessoryKind. ``trap_primer`` has no trade row
     # and takes the fallback trade (unchanged behaviour).
     *(_accessory(k) for k in ("main_shutoff", "shutoff", "backflow_preventer",
