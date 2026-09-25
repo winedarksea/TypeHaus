@@ -19,6 +19,7 @@ from typehaus.findings import Finding, not_applicable
 from typehaus.model.enums import Occupancy
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import opening_center
+from typehaus.resolve.ownership import children_of
 
 _ARC_OF_DOOR = inch(24)  # R308.4.2: within a 24" arc of either vertical door edge
 _DOOR_ARC_MAX_SILL = inch(60)  # ...with the bottom edge below 60" above the floor
@@ -218,8 +219,7 @@ def structural_glass_guard(ctx: CheckContext) -> list[Finding]:
     for element in ctx.plan.all_elements():
         if not isinstance(element, Railing) or element.infill != "panel":
             continue
-        panels = [s for s in ctx.model.solids
-                  if s.category == "railing_glass" and s.tag.startswith(f"{element.tag}-")]
+        panels = children_of(ctx.model, element, ("railing_glass",))
         if panels:
             glass_guards.append((element, len(panels)))
     if not glass_guards:

@@ -24,13 +24,13 @@ from __future__ import annotations
 
 import pytest
 
-from typehaus.checks.building_science.envelope_geometry import (
-    carries_a_weather_skin,
-    envelope_geometry,
-)
 from typehaus.checks.building_science.wwr import _facade_for_wall
 from typehaus.checks.registry import Preferences
 from typehaus.energy import estimate_block_load
+from typehaus.resolve.envelope_geometry import (
+    carries_a_weather_skin,
+    envelope_geometry,
+)
 
 # --- the pinned result ---------------------------------------------------------------------
 
@@ -389,6 +389,7 @@ def test_a_house_with_no_conditioned_room_says_so() -> None:
     """``houses/empty`` resolves no rooms and no walls. Every component is zero, the load is
     zero, and the gaps are NAMED — an empty envelope must not read as a tight one."""
     from _helpers import HOUSES
+
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
 

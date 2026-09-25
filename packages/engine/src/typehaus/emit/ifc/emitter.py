@@ -30,6 +30,7 @@ from typehaus.emit.ifc.architectural import (
     _emit_space,
     _emit_wall,
     _emit_wall_types,
+    is_external_wall,
 )
 from typehaus.emit.ifc.electrical import emit_conduits, emit_light_runs, emit_solar_panels
 from typehaus.emit.ifc.engineering_pset import attach_engineering_psets
@@ -158,7 +159,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     for rw in sorted(model.walls, key=lambda w: w.uid):
         wall_entities[rw.tag] = _emit_wall(
             f, body, rw, storeys, project_uuid, lod, wall_types,
-            openings_by_wall.get(rw.tag, ()),
+            openings_by_wall.get(rw.tag, ()), is_external=is_external_wall(model, rw),
         )
 
     opening_types = _emit_opening_types(f, model, project_uuid)

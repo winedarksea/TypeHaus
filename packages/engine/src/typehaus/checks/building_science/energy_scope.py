@@ -12,8 +12,8 @@ this module keeps :func:`_is_envelope_wall` as the two-argument front door onto 
 
 from __future__ import annotations
 
-from typehaus.checks.building_science.envelope_geometry import envelope_geometry
 from typehaus.model.plan import PlanModel
+from typehaus.resolve.envelope_geometry import envelope_geometry
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 _M2_TO_FT2 = 10.7639104167

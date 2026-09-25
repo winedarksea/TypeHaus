@@ -24,6 +24,7 @@ from typehaus.checks.guard_lines import guard_lines
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN, inch
+from typehaus.resolve.ownership import children_of
 
 # --- R312.1 guards at stair-well openings ----------------------------------------------
 # The heights and the coverage derivation live in ``edge_coverage``; these are this
@@ -512,9 +513,7 @@ def _largest_drawn_opening_m(ctx: CheckContext, guard) -> float | None:
     if not isinstance(guard.source, Railing):
         return _largest_screen_opening_m(ctx, guard)
     guard = guard.source
-    prefix = f"{guard.tag}-"
-    solids = [s for s in ctx.model.solids
-              if s.category in _INFILL_CATEGORIES and s.tag.startswith(prefix)]
+    solids = children_of(ctx.model, guard, _INFILL_CATEGORIES)
     if not solids:
         return None
     path = [p.xy_m for p in guard.path]

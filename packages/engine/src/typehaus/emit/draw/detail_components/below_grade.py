@@ -92,10 +92,11 @@ def faces_soil(wall) -> bool:
 
 
 def footing_under(model, wall):
-    """The strip footing carrying this wall, by the ``FT-<wall suffix>`` naming convention."""
-    suffix = wall.tag[2:] if wall.tag.startswith("W-") else wall.tag
+    """The strip footing carrying this wall: the authored ``Footing`` whose ``under`` names it."""
+    tags = {element.tag for element in model.plan.elements_of_kind("Footing")
+            if element.under == wall.tag}
     return next((s for s in model.solids
-                 if s.category == "footing" and s.tag == f"FT-{suffix}"), None)
+                 if s.category == "footing" and s.tag in tags), None)
 
 
 def bedding_for(model, footing):

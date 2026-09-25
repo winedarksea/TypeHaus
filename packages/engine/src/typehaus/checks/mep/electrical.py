@@ -56,12 +56,23 @@ def room_lighting(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+# How far outside a room's clear face a device may sit and still be in it: a wall-mounted
+# switch stands on the finish face, which lies a few inches off the clear face.
+_IN_ROOM_TOLERANCE_M = 0.15
+
+
 def _devices_in_room(ctx: CheckContext, storey_tag: str, room) -> list:
-    """Symbols-only proximity match: nearest room seed by tag suffix (→ ED-<room-suffix>-*)."""
-    suffix = room.tag[3:]  # "RM-M-BED" -> "M-BED"
+    """The storey's devices whose position lies in the resolved room's clear face."""
+    from shapely.geometry import Point, Polygon
+
+    resolved = next((r for r in ctx.model.rooms if r.tag == room.tag), None)
+    if resolved is None or len(resolved.clear_face) < 3:
+        return []
+    face = Polygon(resolved.clear_face)
     return [
         element for element in ctx.plan.storey_elements(storey_tag)
-        if element.element_kind == "ElectricalDevice" and element.tag.startswith(f"ED-{suffix}-")
+        if element.element_kind == "ElectricalDevice"
+        and face.distance(Point(element.position.xy_m)) <= _IN_ROOM_TOLERANCE_M
     ]
 
 

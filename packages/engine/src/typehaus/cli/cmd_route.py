@@ -42,6 +42,7 @@ from typehaus.cli.route_support import (
     _root_nodes,
     _storey_datum,
 )
+from typehaus.model.spatial import Fixture
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
@@ -70,7 +71,7 @@ def _unconnected_fixtures(directory: Path, model: ResolvedModel) -> list[str]:
                    if finding.check_id == "mep.fixture_drain_reach"
                    and finding.result.value == "fail"
                    for tag in finding.element_tags
-                   if tag.startswith("FX-")})
+                   if isinstance(model.plan.by_tag(tag), Fixture)})
 
 
 def _route_cost(directory: Path) -> RouteCost:

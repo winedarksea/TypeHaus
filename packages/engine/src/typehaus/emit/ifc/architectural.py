@@ -26,6 +26,7 @@ from typehaus.emit.ifc import lowlevel as ll
 from typehaus.emit.ifc.structural import _emit_framed_member
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
+from typehaus.resolve.envelope_geometry import envelope_geometry
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.geometry_walls import layer_solids
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
@@ -56,6 +57,11 @@ def _full_height_layers(wall: ResolvedWall) -> tuple[ResolvedLayer, ...]:
     as ``EXT_2X6~lining0`` — a lining variant that is not a lining.
     """
     return tuple(ly for ly in wall.depth_layers() if ly.band_spec is None)
+
+
+def is_external_wall(model: ResolvedModel, wall: ResolvedWall) -> bool:
+    """Pset IsExternal: not interior on both faces (resolve/envelope_geometry)."""
+    return not envelope_geometry(model).both_faces_interior(wall)
 
 
 def _wall_type_key(wall: ResolvedWall) -> tuple:
@@ -120,7 +126,7 @@ def _emit_wall_types(f: Any, model: ResolvedModel,
 def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
                project_uuid: Any, lod: str,
                wall_types: dict[tuple, tuple[Any, Any]],
-               openings: Any = ()) -> Any:
+               openings: Any = (), *, is_external: bool = True) -> Any:
     guid = derive_guid(project_uuid, rw.uid)
     ifc_class = "IfcWall"
     wall = ll.create_entity(f, ifc_class, name=rw.tag)
@@ -144,7 +150,7 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
         "plan_content_hash": _content_hash(rw),
     })
     ll.ensure_pset(f, wall, "Pset_WallCommon", {
-        "IsExternal": not rw.tag.startswith("INT"),
+        "IsExternal": is_external,
     })
     wall_type, layer_set = wall_types[_wall_type_key(rw)]
     ll.assign_type(f, wall, wall_type)
@@ -416,7 +422,7 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     filling.OverallHeight = opening.height_m
     ll.assign_representation(f, filling, ll.add_prism_from_profile(
         f, body, frame_profile, opening.height_m, z0))
-    is_external = not rw.tag.startswith("INT")
+    is_external = is_external_wall(model, rw)
     ll.ensure_pset(f, filling, PSET_SOURCE, {
         "uid": opening.uid, "tag": opening.tag, "type": opening.type_ref or "",
         "host_wall": opening.host_wall,

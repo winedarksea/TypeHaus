@@ -283,7 +283,7 @@ def _face_point_and_normal(model: ResolvedModel, wall: ResolvedWall, opening):
     """
     from shapely.geometry import Point
 
-    from typehaus.checks.building_science.envelope_geometry import (
+    from typehaus.resolve.envelope_geometry import (
         _INTERIOR_PROBE_OFFSET_M,
         envelope_geometry,
     )

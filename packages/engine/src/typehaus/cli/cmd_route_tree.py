@@ -18,6 +18,7 @@ from typehaus.cli.route_support import (
     _storey_of,
     branch_diameter_m,
 )
+from typehaus.model.spatial import Fixture
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
@@ -64,7 +65,7 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
                         "into anywhere along it")
         return [], problems, [], []
 
-    fixtures = [tag for tag in main.serves if tag.startswith("FX-")]
+    fixtures = [tag for tag in main.serves if isinstance(model.plan.by_tag(tag), Fixture)]
     if not fixtures:
         problems.append(f"{target}: serves no fixture, so nothing feeds it. `--run "
                         f"{target}` re-routes the main itself")

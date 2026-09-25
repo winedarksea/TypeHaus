@@ -56,7 +56,7 @@ class _FakePlan:
 def railing(tag: str = "RL-T", *, path=None, **kw) -> Railing:
     """A guard with the reference house's proportions, overridable field by field."""
     defaults = dict(
-        uid=f"RLT{tag[-6:]:0>7}"[:10], tag=tag,
+        uid=f"RLT{tag.replace('-', '')[-6:]:0>7}"[:10], tag=tag,  # authored uids carry no hyphen
         path=path or (pt(ft(0), ft(0)), pt(ft(10), ft(0))),
         kind=RailingKind.METAL_FASCIA_MOUNT,
         height=inch(42), base_elevation=ft(0), post_spacing=inch(60),

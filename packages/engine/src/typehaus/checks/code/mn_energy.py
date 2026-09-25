@@ -14,19 +14,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from typehaus.analysis import assembly_r_value
-
-# ``envelope_geometry`` is imported from the defining module rather than through the
-# ``typehaus.energy`` facade: ``typehaus.energy -> checks -> mn_energy -> typehaus.energy``
-# is a live cycle that only resolves because ``checks/__init__`` happens to be imported
-# first. ``condensation.py`` reaches into ``building_science`` the same way, for the same
-# reason.
-from typehaus.checks.building_science.envelope_geometry import (
-    carries_a_weather_skin,
-    envelope_geometry,
-)
 from typehaus.checks.registry import CheckContext, Preferences, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
+from typehaus.resolve.envelope_geometry import envelope_geometry
 from typehaus.resolve.model import ResolvedModel
 
 
@@ -65,14 +56,6 @@ class PrescriptiveRow:
 
 
 
-def _is_interior_assembly(tag: str) -> bool:
-    """Interior partitions/cross-walls carry no prescriptive R-value requirement — they
-    aren't part of the thermal envelope. This codebase's own naming convention already
-    marks them with an "INT" token (FOUNDATION_WALL_12_INT, INT_2X6_PLUMBING, ...); the IFC
-    emitter's ``Pset_WallCommon.IsExternal`` uses the same signal on the wall tag."""
-    return "INT" in tag.split("_")
-
-
 def _row_for_assembly(plan: PlanModel, tag: str, role: str, required_r: float) -> PrescriptiveRow:
     assembly = plan.library.resolve_assembly(tag)
     if assembly is None:
@@ -97,16 +80,12 @@ def evaluate_envelope(model: ResolvedModel, plan: PlanModel,
     for tag in sorted({roof.assembly for roof in model.roofs
                        if geometry.is_envelope_roof(roof)[0]}):
         rows.append(_row_for_assembly(plan, tag, "roof", envelope.ceiling_r))
+    # A wall with interior on both faces is a partition, whatever its assembly is named.
     for tag in sorted({w.assembly for w in model.walls
-                       if not w.is_foundation and geometry.bounds_conditioned_space(w)
-                       and carries_a_weather_skin(w)}):
-        if _is_interior_assembly(tag):
-            continue
+                       if not w.is_foundation and geometry.is_envelope_wall(w)}):
         rows.append(_row_for_assembly(plan, tag, "above-grade wall", envelope.wood_wall_r))
     for tag in sorted({w.assembly for w in model.walls
-                       if w.is_foundation and geometry.bounds_conditioned_space(w)}):
-        if _is_interior_assembly(tag):
-            continue
+                       if w.is_foundation and geometry.is_envelope_wall(w)}):
         rows.append(_row_for_assembly(plan, tag, "foundation wall", envelope.basement_wall_r))
     # A slab earns a row when it is a thermal-boundary floor — derived, not read off a
     # tag prefix. ``is_envelope_slab`` answers "exactly one side conditioned", which drops
@@ -118,11 +97,6 @@ def evaluate_envelope(model: ResolvedModel, plan: PlanModel,
         if slab.assembly is None:
             rows.append(PrescriptiveRow(slab.tag, "slab", f"R-{envelope.slab_r:.0f}",
                                         "UNKNOWN (no assembly authored)", "unknown"))
-            continue
-        # A slab between two conditioned storeys is an interior floor, not an envelope
-        # element — catlin's 9" main-floor deck has conditioned basement below and
-        # conditioned living space above. Same "INT" naming signal the wall loops use.
-        if _is_interior_assembly(slab.assembly):
             continue
         row = _row_for_assembly(plan, slab.assembly, "slab", envelope.slab_r)
         rows.append(PrescriptiveRow(slab.tag, row.role, row.required, row.provided,

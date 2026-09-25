@@ -46,7 +46,6 @@ from typehaus.checks.building_science.energy_scope import (
     _volume_ft3,
     _wall_scope_fraction,
 )
-from typehaus.checks.building_science.envelope_geometry import envelope_geometry
 from typehaus.checks.building_science.ground import (
     basement_floor_u,
     basement_wall_u_avg,
@@ -64,6 +63,7 @@ from typehaus.checks.building_science.solar import (
 )
 from typehaus.checks.building_science.wwr import _wall_length
 from typehaus.checks.registry import Preferences
+from typehaus.resolve.envelope_geometry import envelope_geometry
 from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.site_earth import (

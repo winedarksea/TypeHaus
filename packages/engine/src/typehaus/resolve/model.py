@@ -1431,7 +1431,7 @@ class ResolvedModel:
     # ``next((x for x in coll if x.tag == tag), None)`` over one collection each — this
     # covers all of them in one dict lookup instead of a linear scan.
     _tag_index: dict[str, object] = field(default_factory=dict, repr=False, compare=False)
-    # The derived thermal boundary (→ checks/building_science/envelope_geometry.py), cached
+    # The derived thermal boundary (→ resolve/envelope_geometry.py), cached
     # here for the same reason ``_tag_index`` is: it costs ~40 ms and ``estimate_block_load``
     # runs eleven times in one check pass. Built lazily by ``envelope_geometry(model)`` on
     # first ask rather than by a resolve stage, because ``checks`` is downstream of

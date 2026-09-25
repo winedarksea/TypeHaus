@@ -141,3 +141,17 @@ def test_door_types_export_their_authored_operation(catlin_model, catlin_ifc):
     # so a new operation fails here rather than silently at export in front of an architect.
     authored = {door_type.operation for door_type in catlin_model.plan.library.door_types}
     assert authored <= set(DoorOperation)
+
+
+def test_wall_is_external_is_derived_not_read_off_the_tag(catlin_model, catlin_ifc):
+    """Pset_WallCommon.IsExternal comes from the envelope geometry: a basement cross wall is
+    interior on both faces, a basement perimeter wall is not. (The old test was
+    ``not tag.startswith("INT")``, which no wall tag ever did, so every wall was external.)"""
+    import ifcopenshell
+    import ifcopenshell.util.element as eu
+
+    f = ifcopenshell.open(str(catlin_ifc))
+    walls = {w.Name: w for w in f.by_type("IfcWall")}
+    external = {name: eu.get_pset(w, "Pset_WallCommon", "IsExternal") for name, w in walls.items()}
+    assert external["W-B-CS"] is False
+    assert external["W-B-S1"] is True

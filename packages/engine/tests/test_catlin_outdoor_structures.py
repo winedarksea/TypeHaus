@@ -572,7 +572,7 @@ def test_the_south_leg_keeps_w_rg_blocks_identity_across_the_rewrite(catlin_mode
     # ...and the shared "W-RG-" prefix is intact on all three. **It no longer exempts them
     # from anything**: the block load and the MN prescriptive table each carried a tuple of
     # this house's tag prefixes until 2026-09-18, and both now derive the thermal envelope
-    # from geometry (`checks/building_science/envelope_geometry.py`), which excludes these
+    # from geometry (`resolve/envelope_geometry.py`), which excludes these
     # three walls on their own account. The assertion stays because the prefix is still the
     # family's identity in the drawings and the schedules — it is just not load-bearing for
     # a verdict any more, and renaming them would once have silently changed an energy

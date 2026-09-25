@@ -22,6 +22,7 @@ import math
 
 import pytest
 
+from typehaus.checks.building_science.energy_scope import _storey_is_conditioned
 from typehaus.checks.building_science.solar import (
     _AED_DIVERSITY_FACTOR,
     _APPLIANCE_SENSIBLE_BTUH,
@@ -38,8 +39,7 @@ from typehaus.checks.building_science.solar import (
     solar_position,
     vertical_surface_irradiance,
 )
-from typehaus.checks.building_science.envelope_geometry import envelope_geometry
-from typehaus.checks.building_science.energy_scope import _storey_is_conditioned
+from typehaus.resolve.envelope_geometry import envelope_geometry
 
 _LATITUDE = 44.9778  # catlin's, to four places, off ``plan/site.py``
 

@@ -303,7 +303,7 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
                   "its own material — every element it points to is billed under its own "
                   "collection's entry",
     "_envelope_geometry": "the derived thermal boundary, cached beside `_tag_index` for "
-                          "the same reason (→ checks/building_science/envelope_geometry.py). "
+                          "the same reason (→ resolve/envelope_geometry.py). "
                           "A CLASSIFICATION of walls, slabs and roofs already billed under "
                           "their own entries — it says which of them the block load sums, "
                           "and orders nothing",
