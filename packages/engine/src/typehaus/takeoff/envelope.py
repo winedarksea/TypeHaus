@@ -26,6 +26,7 @@ from collections import defaultdict
 from shapely.geometry import Polygon
 
 from typehaus.model.enums import LayerFunction, TrimKind
+from typehaus.model.layer_functions import LAYER_FUNCTIONS
 from typehaus.model.spatial import Room
 from typehaus.resolve.accessories import (
     BUG_SCREEN_MATERIAL,
@@ -59,18 +60,8 @@ _M_TO_FT = 3.280839895
 #: STRUCTURE bills by the cubic yard in ``structural_solids`` and everything else by area.
 _LAYERED_SOLID_SCOPES = ("footing", "pad")
 
-_BILLABLE = (
-    LayerFunction.INSULATION,
-    LayerFunction.SHEATHING,
-    LayerFunction.CLADDING,
-    LayerFunction.MEMBRANE,
-    #: A drained plane bills exactly like the membrane it protects: a manufactured sheet
-    #: bought and hung by the square foot. Unlike AIRGAP, which is genuinely nothing, this
-    #: is a roll of dimpled HDPE with a fabric bonded to it, and a retained face that
-    #: carries one and orders none is the defect ``test_framing_takeoff`` refuses.
-    LayerFunction.DRAINAGE,
-    LayerFunction.FINISH,
-)
+#: Billed here by area (``model/layer_functions``). FURRING bills as lumber, AIRGAP is air.
+_BILLABLE = frozenset(f for f, row in LAYER_FUNCTIONS.items() if row.billable)
 
 
 def wall_net_areas_m2(model: ResolvedModel) -> dict[str, float]:

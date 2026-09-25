@@ -19,14 +19,12 @@ which ``tests/test_palette_parity.py`` checks in both directions.
 from __future__ import annotations
 
 from typehaus.emit.draw.palette import family_of
+from typehaus.model.layer_functions import LAYER_FUNCTIONS, values_where
 from typehaus.resolve.model import FramedMember
 from typehaus.resolve.solid_categories import categories_where
 
 # Assembly layer functions: the bands a wall/roof/floor stack is built from.
-LAYER_KEYS = frozenset({
-    "structure", "insulation", "sheathing", "cladding", "lining", "finish", "membrane",
-    "air_gap", "airgap", "furring",
-})
+LAYER_KEYS = values_where(finish_key=True) | frozenset({"lining", "air_gap"})
 
 # Whole-element surfaces that are not a layer of a stack: the registry's ``element`` rows plus
 # the part keys that are not categories.
@@ -108,10 +106,9 @@ def member_material_key(member: FramedMember) -> str:
 # The band families a stack is built from, stamped on every ``GPart.layer_group`` of the
 # geometry IR. Engine-internal since 2026-09-12: the viewer toggles by TRADE
 # (``emit/trade_rules.layer_trade``), so nothing here is mirrored into the UI any more.
-LAYER_VISIBILITY_GROUPS = (
-    "structure", "sheathing", "membrane", "insulation", "airgap", "furring", "cladding",
-    "finish", "other",
-)
+LAYER_VISIBILITY_GROUPS = (*dict.fromkeys(
+    row.visibility_group for row in LAYER_FUNCTIONS.values() if row.visibility_group != "other"
+), "other")
 
 # Synonyms the engine emits for the same bucket. `lining` is an interior finish stack, and
 # `fascia`/`soffit` are the derived eave trim that continues the cladding plane.

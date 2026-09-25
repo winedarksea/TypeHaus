@@ -8,25 +8,17 @@ that changes here has to change there too, or the .glb and the live viewer disag
 from __future__ import annotations
 
 from typehaus.emit.draw.palette import family_of, material_color, material_family_color
+from typehaus.model.layer_functions import by_value
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.model import ResolvedModel
 
 # function/category → RGBA color (linear, 0..1). Keys are lowercased layer functions and
 # member categories; anything unmatched falls back to a neutral gray.
 _PALETTE: dict[str, tuple[float, float, float, float]] = {
-    "structure": (0.62, 0.45, 0.28, 1.0),
-    "insulation": (0.93, 0.74, 0.36, 1.0),
-    "sheathing": (0.72, 0.72, 0.70, 1.0),
-    "cladding": (0.55, 0.58, 0.60, 1.0),
+    **by_value("rgba"),  # type: ignore[dict-item]  # every LayerFunction (model/layer_functions)
     "lining": (0.90, 0.89, 0.86, 1.0),
-    "finish": (0.90, 0.89, 0.86, 1.0),
-    "membrane": (0.30, 0.45, 0.55, 1.0),
-    # ``LayerFunction.AIRGAP`` spells itself "airgap"; "air_gap" beside it has never matched
-    # anything and is kept only so a caller reaching for the old key still gets a colour.
-    # Translucent, because a gap is air: it should read as the void it is behind the girts.
-    "airgap": (0.80, 0.85, 0.90, 0.35),
+    # "air_gap" has never matched anything; kept so a caller reaching for it gets a colour.
     "air_gap": (0.80, 0.85, 0.90, 0.35),
-    "furring": (0.68, 0.52, 0.34, 1.0),
     # framing member categories
     "stud": (0.70, 0.52, 0.33, 1.0),
     "plate": (0.66, 0.48, 0.30, 1.0),

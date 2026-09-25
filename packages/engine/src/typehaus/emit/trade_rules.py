@@ -13,6 +13,7 @@ from __future__ import annotations
 import fnmatch
 
 from typehaus.emit.trades import FALLBACK_TRADE, TRADES, sequence_rank, solid_trade
+from typehaus.model.layer_functions import by_value
 from typehaus.resolve.solid_categories import categories_where
 
 # --- materials --------------------------------------------------------------------------
@@ -96,23 +97,15 @@ def material_trade(material_ref: str | None) -> str | None:
 # --- assembly layers ------------------------------------------------------------------
 
 #: Layer function -> the trade it takes when neither material nor scope says otherwise.
-#: Every ``LayerFunction`` plus the spellings the takeoff and the IR emit.
+#: Every ``LayerFunction`` (``model/layer_functions``) plus the spellings the takeoff and
+#: the IR emit.
+_TRADE = by_value("trade")
 LAYER_FUNCTION_TRADE: dict[str, str] = {
-    "structure": "framing",
-    "sheathing": "framing",
-    "membrane": "siding",
-    # A drained plane is the DRAINAGE trade's, not siding's: it goes on with the tile, the
-    # stone and the backfill, by the crew that is already in the hole, and it is inspected
-    # at `insp/foundation_backfill` alongside them. Sending it to siding would schedule a
-    # buried drainage board after the roof was on.
-    "drainage": "drainage",
-    "insulation": "insulation",
+    **{k: _TRADE[k] for k in ("structure", "sheathing", "membrane", "drainage", "insulation")},
     "insulation (cavity)": "insulation",
-    "airgap": "siding",
-    "air_gap": "siding",
-    "furring": "siding",
-    "cladding": "siding",
-    "finish": "drywall",
+    "airgap": _TRADE["airgap"],
+    "air_gap": _TRADE["airgap"],
+    **{k: _TRADE[k] for k in ("furring", "cladding", "finish")},
     "lining": "drywall",
 }
 
@@ -238,9 +231,9 @@ MEMBER_CATEGORY_TRADE: dict[str, str] = {
     **{category: "stairs" for category in STAIR_MEMBER_CATEGORIES},
     "gutter": "drainage",
     "rebar": "concrete",
-    "insulation": "insulation",
-    "airgap": "siding", "air_gap": "siding", "furring": "siding",
-    "corner_trim": "siding", "fascia": "siding", "soffit": "siding", "cladding": "siding",
+    **{k: _TRADE[k] for k in ("insulation", "airgap", "furring", "cladding")},
+    "air_gap": _TRADE["airgap"],
+    "corner_trim": "siding", "fascia": "siding", "soffit": "siding",
     "ridge_cap": "roofing",
 }
 

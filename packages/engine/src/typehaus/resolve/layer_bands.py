@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Any
 
 from typehaus.model.assembly import LayerBound
 from typehaus.model.enums import LayerDatum
+from typehaus.model.layer_functions import values_where
 from typehaus.resolve.model import ResolvedLayer
 
 if TYPE_CHECKING:  # only for the annotation; importing it would be a cycle
@@ -134,7 +135,7 @@ def reband(wall: ResolvedWall, z0: float, z1: float, grade_m: float,
 # there to close the building, so on a lifted wall it is exactly what must keep running
 # through the joist band to lap the rim. Anything else outboard of the stud (furring under
 # a cladding, exterior insulation) is carried by the same test through its neighbours.
-_WEATHER_FUNCTIONS = frozenset({"cladding", "sheathing", "membrane", "drainage", "airgap"})
+_WEATHER_FUNCTIONS = values_where(weather=True)
 
 
 def has_weather_skin(layers: tuple[ResolvedLayer, ...]) -> bool:

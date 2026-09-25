@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from typehaus.model.layer_functions import by_value
+
 if TYPE_CHECKING:
     from typehaus.model import Material
     from typehaus.model.plan import Library
@@ -250,10 +252,7 @@ _FUNCTION_FILL = {
     "membrane": "#1e3a5f", "cladding": "#2f2f2f", "finish": "#e6e6e6",
     "furring": "#c8a26a", "airgap": "#eef2f5",
 }
-_FUNCTION_HATCH = {
-    "structure": "lumber", "sheathing": "osb", "insulation": "batt",
-    "membrane": "membrane",
-}
+_FUNCTION_HATCH: dict[str, str] = by_value("hatch")  # type: ignore[assignment]
 
 
 def material_fill(material: Material) -> str | None:
@@ -319,16 +318,7 @@ def library_fill(library: Library | None, material_ref: str | None) -> str | Non
     return material_fill(material) if material is not None else None
 
 
-_FUNCTION_AIA = {
-    "structure": "A-WALL",
-    "sheathing": "A-WALL",
-    "cladding": "A-WALL",
-    "finish": "A-WALL-FINI",
-    "insulation": "A-WALL-INSU",
-    "membrane": "A-WALL-PATT",
-    "airgap": "A-WALL-PATT",
-    "furring": "A-WALL",
-}
+_FUNCTION_AIA: dict[str, str] = by_value("aia")  # type: ignore[assignment]
 
 
 def aia_layer(function: str | None) -> str:

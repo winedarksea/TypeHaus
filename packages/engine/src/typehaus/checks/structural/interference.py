@@ -31,6 +31,7 @@ from typehaus.checks.structural._rafter_seat import (
     wall_readings,
 )
 from typehaus.findings import Finding, Result, Severity
+from typehaus.model.layer_functions import values_where
 from typehaus.quantities import inch
 from typehaus.resolve.framing.truss_wall import TRUSS_CATEGORIES
 
@@ -114,9 +115,8 @@ _TRUSS_KINDS = frozenset({"roof_truss"})
 # wall's *axis* rather than its finished face — defect D3 in plans/TODO.md, the same offset
 # that already clears every stud and plate below — so a contact there reports that datum, not
 # the elevation-arithmetic bug this check exists to catch.
-_ENVELOPE_SKIN_KINDS = frozenset({"sheathing", "furring", "strapping", "cladding", "fascia",
-                                  "soffit", "insulation", "membrane", "airgap", "gutter",
-                                  "ridge_cap", "corner_trim"}) | TRUSS_CATEGORIES
+_ENVELOPE_SKIN_KINDS = values_where(interference_skin=True) | frozenset({
+    "strapping", "fascia", "soffit", "gutter", "ridge_cap", "corner_trim"}) | TRUSS_CATEGORIES
 # Rake framing (resolve/framing/roof_gable.py): outlookers run *over* the dropped gable
 # truss and land on the barge rafter. Interpenetration there is the joint the drop creates.
 _RAKE_KINDS = frozenset({"outlooker", "barge_rafter"})

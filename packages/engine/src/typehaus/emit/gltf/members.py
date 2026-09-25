@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _color, _material_finish_color
+from typehaus.model.layer_functions import values_where
 from typehaus.resolve.geometry_ir import GSweep
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.model import FramedMember
@@ -16,9 +17,8 @@ from typehaus.resolve.model import FramedMember
 # Fascia is trim by category but framing by trade (its members carry trade="framing"), so it
 # counts as framing here. Mirrored by ``ROOF_SKIN_CATEGORIES`` in ui/src/three/members.ts —
 # keep the two in step.
-ROOF_SKIN_CATEGORIES = frozenset({
-    "sheathing", "membrane", "insulation", "furring", "cladding", "airgap", "air_gap",
-    "lining", "finish", "soffit", "gutter", "ridge_cap", "corner_trim",
+ROOF_SKIN_CATEGORIES = values_where(roof_skin=True) | frozenset({
+    "air_gap", "lining", "soffit", "gutter", "ridge_cap", "corner_trim",
 })
 
 

@@ -15,6 +15,8 @@ from dataclasses import dataclass, field
 from fractions import Fraction
 from typing import Any
 
+from typehaus.model.layer_functions import by_value
+
 #: What each estimate section is, for a heading or a bid group.
 SECTION_LABELS: dict[str, str] = {
     "framing": "Lumber and engineered wood", "sheet_goods": "Sheet goods",
@@ -61,7 +63,7 @@ ROLE_GLOSSARY: dict[str, str] = {
     "newel": "newel post", "winder": "winder tread", "hanger": "hanger board",
     "bearing_stiffener": "bearing stiffener", "seat_cut": "seat cut", "roof_truss": "roof truss",
     "ridge_beam": "ridge beam", "ridge_cap": "ridge cap", "corner_trim": "corner trim",
-    "trimmer": "trimmer", "airgap": "vent-gap strip", "furring": "furring",
+    "trimmer": "trimmer", **by_value("role_label"),  # type: ignore[dict-item]
 }
 
 #: (section, bare key) -> label, for keys that are enum values rather than catalog tags.
