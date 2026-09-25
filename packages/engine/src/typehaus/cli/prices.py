@@ -458,8 +458,13 @@ DRIVER_SCALARS = {"space_summary.conditioned_sf": "conditioned",
 DRIVER_ROW_COUNT = "rows"
 
 
-def _driver_parts(spec: str) -> tuple[str, str, dict[str, str]]:
-    """``"openings.count[kind=door]"`` -> ``("openings", "count", {"kind": "door"})``.
+#: One driver filter clause: ``(field, negate, value text)``.
+DriverFilter = tuple[str, bool, str]
+
+
+def _driver_parts(spec: str) -> tuple[str, str, list[DriverFilter]]:
+    """``"openings.count[kind=door,operation!=pocket]"`` ->
+    ``("openings", "count", [("kind", False, "door"), ("operation", True, "pocket")])``.
 
     The shape was validated at load (``price_file._driver``); this is the same grammar read
     for its parts, and a spec that reaches here has already matched it.
@@ -469,8 +474,26 @@ def _driver_parts(spec: str) -> tuple[str, str, dict[str, str]]:
     match = _DRIVER_GRAMMAR.match(spec)
     assert match is not None, spec  # load-time validation is what makes this safe
     raw = match["filters"] or ""
-    filters = dict(clause.split("=", 1) for clause in raw.split(",")) if raw else {}
+    filters: list[DriverFilter] = []
+    for clause in raw.split(",") if raw else ():
+        name, value = clause.split("=", 1)
+        filters.append((name.rstrip("!"), name.endswith("!"), value))
     return match["table"], match["field"], filters
+
+
+def _filter_matches(row_value: Any, negate: bool, text: str) -> bool:
+    """Compare typed off the row's own value: a bool reads ``true``/``false`` in any case, a
+    number compares numerically (``diameter_in=3`` matches 3.0), anything else as text."""
+    if isinstance(row_value, bool):
+        equal = text.strip().lower() == str(row_value).lower()
+    elif isinstance(row_value, (int, float)):
+        try:
+            equal = float(text) == float(row_value)
+        except ValueError:
+            equal = False
+    else:
+        equal = str(row_value) == text
+    return equal != negate
 
 
 def _resolve_driver(bom: Mapping[str, Any], areas: Mapping[str, float] | None,
@@ -513,12 +536,12 @@ def _resolve_driver(bom: Mapping[str, Any], areas: Mapping[str, float] | None,
             f"{table_name!r}. A driver reads a table of rows; "
             f"{'that key is a summary dict' if table_name in bom else 'no such key exists'}. "
             f"Tables: {sorted(k for k, v in bom.items() if isinstance(v, list))}")
-    for filter_field in filters:
+    for filter_field, _negate, _text in filters:
         if not any(filter_field in row for row in table if isinstance(row, Mapping)):
             raise ValueError(f"[{ALLOWANCES}] {key!r} has driver {spec!r}, but no row of "
                              f"{table_name!r} carries a {filter_field!r} field")
     matched = [row for row in table if isinstance(row, Mapping)
-               and all(str(row.get(f)) == v for f, v in filters.items())]
+               and all(_filter_matches(row.get(f), neg, v) for f, neg, v in filters)]
     if field == DRIVER_ROW_COUNT:
         return float(len(matched)), [(table_name, row) for row in matched]
     if not any(field in row for row in table if isinstance(row, Mapping)):

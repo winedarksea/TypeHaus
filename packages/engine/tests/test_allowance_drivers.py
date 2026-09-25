@@ -87,6 +87,24 @@ def test_a_filter_narrows_the_sum(tmp_path) -> None:
     assert row["quantity"] == 13.0
 
 
+def test_a_negated_filter_excludes(tmp_path) -> None:
+    row = _allowance(tmp_path, 'x = { low = 1, high = 1, unit = "ea", '
+                     'driver = "openings.count[kind=door,operation!=overhead]" }'
+                     )["sections"]["allowances"]["rows"][0]
+    assert row["quantity"] == 12.0
+
+
+def test_filters_compare_typed(tmp_path) -> None:
+    """``3`` matches 3.0 and ``true`` matches True: the row's own type decides."""
+    bom = {"ducts": [{"diameter_in": 3.0, "terminal": True, "runs": 2},
+                     {"diameter_in": 4.0, "terminal": False, "runs": 5}]}
+    for spec in ("ducts.runs[diameter_in=3]", "ducts.runs[terminal=true]",
+                 "ducts.runs[diameter_in=3.0,terminal=True]"):
+        row = _allowance(tmp_path, f'x = {{ low = 1, high = 1, unit = "ea", driver = "{spec}" }}',
+                         bom=bom)["sections"]["allowances"]["rows"][0]
+        assert row["quantity"] == 2.0, spec
+
+
 def test_a_door_function_filter_counts_one_hardware_set_per_leaf(tmp_path) -> None:
     """``DoorType.function`` is what a lockset is bought by; the openings row carries it."""
     bom = {"openings": [

@@ -92,14 +92,17 @@ Grammar: `"<bom_table>.<field>"`, summed over the table, with an optional
 - **`space_summary.conditioned_sf`** and **`space_summary.gross_sf`** are the two addressable
   scalars, read from the `areas` mapping the caller supplies.
 
-Four rules the loader and the estimate enforce:
+Five rules the loader and the estimate enforce:
 
 1. Only `[allowances]` may carry a `driver`. Every other section already joins the BOM
    through `ESTIMATE_PLANS`, and a second per-row quantity source would shadow it silently.
 2. A driver that cannot be resolved — unknown table, a field no row carries, a scalar with no
    `areas` behind it — is a hard error naming the key. It never becomes zero.
 3. A driver that resolves *to* zero reports the row as **unpriced**, not as a $0 line.
-4. `envelope_layers` reports a **layer, not a plane**, so `[scope=roof]` sums every stacked
+4. A filter compares **typed** off the row's value — a bool reads `true`/`True`, a number
+   compares numerically (`diameter_in=3` matches `3.0`), anything else as exact text — and
+   `field!=value` **excludes** (`openings.count[kind=door,operation!=pocket]`).
+5. `envelope_layers` reports a **layer, not a plane**, so `[scope=roof]` sums every stacked
    layer. Two filters (`[scope=roof,function=cladding]`) are usually what you want.
 
 `haus takeoff` lists every driven allowance whose quantity was measured off BOM rows another

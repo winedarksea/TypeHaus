@@ -473,13 +473,14 @@ DRIVER_SECTION = "allowances"
 _DRIVER_GRAMMAR = re.compile(
     r"^(?P<table>[A-Za-z_][A-Za-z0-9_]*)"
     r"\.(?P<field>[A-Za-z_][A-Za-z0-9_]*)"
-    r"(?:\[(?P<filters>[A-Za-z_][A-Za-z0-9_]*=[^,\]]*"
-    r"(?:,[A-Za-z_][A-Za-z0-9_]*=[^,\]]*)*)\])?$")
+    r"(?:\[(?P<filters>[A-Za-z_][A-Za-z0-9_]*!?=[^,\]]*"
+    r"(?:,[A-Za-z_][A-Za-z0-9_]*!?=[^,\]]*)*)\])?$")
 
 _DRIVER_SHAPES = (
     '   driver = "envelope_layers.net_area_sqft[material=standing-seam]"\n'
     '   driver = "envelope_layers.net_area_sqft[scope=roof,function=cladding]"\n'
     '   driver = "openings.count[kind=door]"\n'
+    '   driver = "openings.count[kind=door,operation!=pocket]"  # != excludes\n'
     '   driver = "panel_schedule.rows"            # `rows` counts rows: a table with no count\n'
     '   driver = "space_summary.gross_sf"         # the two addressable scalars')
 
@@ -501,7 +502,8 @@ def _driver(section: str, key: str, raw: object, path: Path) -> str:
     if not _DRIVER_GRAMMAR.match(spec):
         raise ValueError(
             f"{path}: [{section}] {key!r} has driver {spec!r}, which is not "
-            f"\"<bom_table>.<field>\" with an optional [<field>=<value>] filter. "
+            f"\"<bom_table>.<field>\" with optional [<field>=<value>] / [<field>!=<value>] "
+            f"filters. "
             f"For example:\n{_DRIVER_SHAPES}")
     return spec
 
