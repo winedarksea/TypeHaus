@@ -26,14 +26,18 @@ from typing import Any
 
 import shapely
 from shapely.geometry import GeometryCollection
+from shapely.geometry.base import BaseGeometry
 
 #: One micron, in meters. See the module docstring for why this is safe.
 GRID_SIZE_M = 1e-6
 
 
 def union_all(geometries: Any) -> Any:
-    """``unary_union`` on a fixed-precision grid — safe on GEOS 3.12 as well as 3.13."""
-    items = list(geometries)
+    """``unary_union`` on a fixed-precision grid — safe on GEOS 3.12 as well as 3.13.
+
+    Takes an iterable of geometries or a single (multi-part) geometry, as ``unary_union`` did.
+    """
+    items = [geometries] if isinstance(geometries, BaseGeometry) else list(geometries)
     if not items:
         return GeometryCollection()
     return shapely.union_all(items, grid_size=GRID_SIZE_M)

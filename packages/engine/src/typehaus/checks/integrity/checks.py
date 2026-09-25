@@ -514,7 +514,8 @@ def concrete_finish_needs_concrete_deck(ctx: CheckContext) -> list[Finding]:
     which is precisely what this measures.
     """
     from shapely.geometry import Polygon
-    from shapely.ops import unary_union
+
+    from typehaus.resolve.overlay import union_all
 
     slabs_by_storey: dict[str, list[Polygon]] = {}
     for solid in ctx.model.solids:
@@ -524,7 +525,7 @@ def concrete_finish_needs_concrete_deck(ctx: CheckContext) -> list[Finding]:
         if not footprint.is_valid:
             footprint = footprint.buffer(0)
         slabs_by_storey.setdefault(solid.storey, []).append(footprint)
-    concrete_by_storey = {storey: unary_union(parts)
+    concrete_by_storey = {storey: union_all(parts)
                           for storey, parts in slabs_by_storey.items()}
 
     out: list[Finding] = []

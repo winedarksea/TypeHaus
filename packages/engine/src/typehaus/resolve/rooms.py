@@ -6,11 +6,12 @@ from __future__ import annotations
 from dataclasses import replace
 
 from shapely.geometry import LineString, Point, Polygon
-from shapely.ops import polygonize, unary_union
+from shapely.ops import polygonize
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedFinishZone, ResolvedModel, ResolvedRoom
+from typehaus.resolve.overlay import union_all
 from typehaus.resolve.roof_geometry import room_head_limited_area_m2
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.room_openings import room_glazing_areas
@@ -29,7 +30,7 @@ def _storey_faces(plan: PlanModel, storey_tag: str) -> list[Polygon]:
                 segments.append(LineString([a, b]))
     if not segments:
         return []
-    merged = unary_union(segments)
+    merged = union_all(segments)
     return list(polygonize(merged))
 
 
@@ -309,7 +310,7 @@ def _derived_finish_zones(plan: PlanModel, storey_tag: str, room, clear: Polygon
     of the room that sits on that slab.
     """
     out: list[ResolvedFinishZone] = []
-    blocked = unary_union(authored) if authored else None
+    blocked = union_all(authored) if authored else None
     for slab in plan.storey_elements(storey_tag):
         if slab.element_kind != "Slab" or not slab.floor_finish:
             continue

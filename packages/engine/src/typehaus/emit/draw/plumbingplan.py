@@ -9,7 +9,6 @@ rough-in against the cast-in-place pour above it, → 2.5).
 from __future__ import annotations
 
 from shapely.geometry import Polygon
-from shapely.ops import unary_union
 
 from typehaus.emit.draw._shared import emit_fixtures, emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
@@ -18,6 +17,7 @@ from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneB
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.ceiling_over import ceiling_decks_over
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.overlay import union_all
 
 _DRAIN_VENT = {"drain", "vent"}
 
@@ -63,7 +63,7 @@ def storey_above(model: ResolvedModel, storey_tag: str) -> str | None:
     if faces:
         decked = {deck_storey.tag
                   for deck_storey, _deck in ceiling_decks_over(
-                      model.plan, storey_tag, unary_union(faces))}
+                      model.plan, storey_tag, union_all(faces))}
         return next((s.tag for s in storeys if s.tag in decked), None)
     ceiling = here.elevation.meters + here.default_ceiling_height.meters - _CEILING_SLACK_M
     return next((s.tag for s in storeys

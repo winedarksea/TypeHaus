@@ -236,7 +236,8 @@ def _finishes_under(zone_polygon, room, face) -> list[str]:
     real condition — the surface-temperature limit applies to the half that is plank.
     """
     from shapely.geometry import Polygon
-    from shapely.ops import unary_union
+
+    from typehaus.resolve.overlay import union_all
 
     reached = zone_polygon.intersection(face)
     if reached.is_empty:
@@ -251,7 +252,7 @@ def _finishes_under(zone_polygon, room, face) -> list[str]:
         if (reached.intersection(outline).area > 0.0
                 and override.material_ref not in finishes):
             finishes.append(override.material_ref)
-    field = reached.difference(unary_union(overrides)) if overrides else reached
+    field = reached.difference(union_all(overrides)) if overrides else reached
     if room.floor_finish and not field.is_empty and field.area > 0.0:
         finishes.append(room.floor_finish)
     return finishes

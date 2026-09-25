@@ -72,7 +72,8 @@ def _framed_envelope_band(wall, structure) -> Ring:
     ``()`` when the wall has no sheathing to say which side is outboard.
     """
     from shapely.geometry import Polygon
-    from shapely.ops import unary_union
+
+    from typehaus.resolve.overlay import union_all
 
     sheathing = next((ly for ly in wall.layers if ly.function == "sheathing"), None)
     (x0, y0), (x1, y1) = wall.axis
@@ -90,7 +91,7 @@ def _framed_envelope_band(wall, structure) -> Ring:
     parts = [Polygon(ly.polygon) for ly in wall.layers
              if not ly.is_cavity and ly.function != "structure" and len(ly.polygon) >= 3
              and (offset(ly) - base) * reach >= reach * reach - 1e-9]
-    band = unary_union(parts) if parts else None
+    band = union_all(parts) if parts else None
     if band is None or band.is_empty or band.geom_type != "Polygon":
         return ()
     return tuple(band.exterior.coords)[:-1]

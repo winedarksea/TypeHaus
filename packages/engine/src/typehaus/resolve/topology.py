@@ -13,7 +13,6 @@ from dataclasses import replace
 
 from shapely import get_coordinates, is_valid
 from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
-from shapely.ops import unary_union
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
@@ -32,6 +31,7 @@ from typehaus.resolve.model import (
     ResolvedWall,
 )
 from typehaus.resolve.orientation import resolve_storey_windings, wall_outward_sign
+from typehaus.resolve.overlay import union_all
 from typehaus.resolve.rooms import wall_lining_overrides
 from typehaus.resolve.sheathing_corner import butt_sheathing
 
@@ -788,7 +788,7 @@ def _through_envelope(walls: dict[str, ResolvedWall], wall_tags: tuple[str, ...]
         for layer in walls[wall_tag].depth_layers()
         if len(layer.polygon) >= 3
     ]
-    return unary_union(polygons) if polygons else GeometryCollection()
+    return union_all(polygons) if polygons else GeometryCollection()
 
 
 def _butt_branches(walls: dict[str, ResolvedWall], junction: ResolvedJunction) -> None:
@@ -827,7 +827,7 @@ def _remove_fallback_overlaps(walls: dict[str, ResolvedWall],
             if not normalized:
                 normalized = original
             trimmed[index] = normalized
-            occupied = unary_union((occupied, polygon))
+            occupied = union_all((occupied, polygon))
         walls[incident.wall_tag] = _with_layer_polygons(wall, trimmed)
 
 

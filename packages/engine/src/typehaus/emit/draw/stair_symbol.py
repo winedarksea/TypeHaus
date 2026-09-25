@@ -31,7 +31,6 @@ from __future__ import annotations
 import math
 
 from shapely.geometry import Point, Polygon
-from shapely.ops import unary_union
 
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.lineweights import LIGHT, PROFILE
@@ -41,6 +40,7 @@ from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.overlay import union_all
 from typehaus.resolve.stairs.walkline import stair_walk_stations
 
 Pt = tuple[float, float]
@@ -233,7 +233,7 @@ def _emit_one(b: SceneBuilder, model: ResolvedModel, stair, storey: str, cut_z: 
                 if member.category in _WALKING and member.p0 != member.p1]
     if not surfaces or len(route) < 2:
         return None, []
-    occluder = unary_union(bands) if bands else None
+    occluder = union_all(bands) if bands else None
     cut_any = any(member.z1_m > cut_z for member in surfaces)
     visible = [member for member in surfaces
                if member.z1_m <= cut_z
@@ -428,4 +428,4 @@ def _band(stair, flights: dict[str, list], break_seg: Segment | None) -> Polygon
             else marks[-1]
         pieces.append(Polygon([marks[0][0], marks[0][1], end[1], end[0]]))
     pieces = [piece for piece in pieces if piece.is_valid and not piece.is_empty]
-    return unary_union(pieces) if pieces else None
+    return union_all(pieces) if pieces else None

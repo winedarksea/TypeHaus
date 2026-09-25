@@ -19,9 +19,9 @@ from __future__ import annotations
 from typing import Any
 
 from shapely.geometry import Polygon
-from shapely.ops import unary_union
 
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, Ring
+from typehaus.resolve.overlay import union_all
 from typehaus.resolve.solid_categories import in_slab_family
 
 # A slab-on-grade tops out level with the finished exterior grade, and rounding through
@@ -65,7 +65,7 @@ def earth_plane_void_rings(model: ResolvedModel) -> list[Ring]:
             footprints.append(polygon)
     if not footprints:
         return []
-    merged = unary_union(footprints)
+    merged = union_all(footprints)
     parts = merged.geoms if merged.geom_type == "MultiPolygon" else [merged]
     # Interior holes in the merged footprint are earth the excavation left standing, so only
     # the outer boundary of each part cuts the sheet.
@@ -111,7 +111,7 @@ def _conditioned_room_footprint(model: ResolvedModel) -> Any | None:
         polygon = Polygon(room.clear_face)
         if polygon.is_valid and polygon.area > 0.0:
             faces.append(polygon)
-    return unary_union(faces) if faces else None
+    return union_all(faces) if faces else None
 
 
 def open_excavation_floors(model: ResolvedModel) -> list[tuple[str, Any, float]]:
@@ -135,7 +135,7 @@ def heated_floor_footprint(model: ResolvedModel) -> Any | None:
     columns of a heated basement 42" below its slab.
     """
     footprints = _below_grade_floors(model)[1]
-    return unary_union(footprints) if footprints else None
+    return union_all(footprints) if footprints else None
 
 
 def _below_grade_floors(

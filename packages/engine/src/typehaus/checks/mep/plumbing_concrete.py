@@ -250,7 +250,7 @@ def _footing_pours(solids, polygon_type):
     Same bearing elevation and touching in plan is the test — two footings at different
     depths meeting at a step are two pours, and each keeps its own edge.
     """
-    from shapely.ops import unary_union
+    from typehaus.resolve.overlay import union_all
 
     remaining = [(s, polygon_type(s.outline)) for s in solids]
     pours = []
@@ -269,7 +269,7 @@ def _footing_pours(solids, polygon_type):
                     shapes.append(poly)
                     remaining.remove(candidate)
                     grew = True
-        pours.append((_Pour(members), unary_union(shapes)))
+        pours.append((_Pour(members), union_all(shapes)))
     return pours
 
 

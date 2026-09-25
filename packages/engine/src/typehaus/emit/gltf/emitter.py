@@ -346,12 +346,13 @@ def _field_finish_rings(room: ResolvedRoom) -> list[Ring]:
     if not room.finish_zones:
         return [room.clear_face]
     from shapely.geometry import Polygon
-    from shapely.ops import unary_union
+
+    from typehaus.resolve.overlay import union_all
 
     face = Polygon(room.clear_face)
     if not face.is_valid:
         face = face.buffer(0)
-    zones = unary_union([Polygon(zone.outline).buffer(0) for zone in room.finish_zones
+    zones = union_all([Polygon(zone.outline).buffer(0) for zone in room.finish_zones
                          if len(zone.outline) >= 3])
     remainder = face.difference(zones)
     if remainder.is_empty:

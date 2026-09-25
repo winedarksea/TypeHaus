@@ -83,15 +83,14 @@ def _room_scope(model: ResolvedModel, rooms: frozenset[str]) -> dict[str, object
 
     Attribution is ownership: a wall's run belongs to the rooms whose cells it bounds.
     """
-    from shapely.ops import unary_union
-
+    from typehaus.resolve.overlay import union_all
     from typehaus.resolve.room_lookup import axis_polygon
 
     by_storey: dict[str, list[object]] = {}
     for room in model.rooms:
         if room.tag in rooms and len(room.clear_face) >= 3:
             by_storey.setdefault(room.storey, []).append(axis_polygon(room))
-    return {storey: unary_union(polygons) for storey, polygons in by_storey.items()}
+    return {storey: union_all(polygons) for storey, polygons in by_storey.items()}
 
 
 def _wall_scope_fraction(wall: ResolvedWall, scope: dict[str, object] | None) -> float:

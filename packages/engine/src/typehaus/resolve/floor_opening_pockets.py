@@ -8,7 +8,6 @@ the sole consumer; every other spatial rule continues to see the ordinary deck a
 from __future__ import annotations
 
 from shapely.geometry import LineString, Point, Polygon
-from shapely.ops import unary_union
 
 from typehaus.findings import Finding, element_error
 from typehaus.model.elements import Door, RoughOpening, Wall, Window
@@ -20,6 +19,7 @@ from typehaus.model.floors import (
 from typehaus.model.spatial import Room
 from typehaus.resolve.floor_openings import _rectangular_opening_box
 from typehaus.resolve.model import ResolvedFloorOpeningPocketClosure, ResolvedModel
+from typehaus.resolve.overlay import union_all
 
 _CHECK_ID = "resolve.floor_opening_pocket_closure"
 _TOUCH_TOL_M = 0.04  # joins are construction geometry, not a permissive proximity search
@@ -93,7 +93,7 @@ def _wall_polygon(wall) -> Polygon | None:
 
 def _boundary_is_walled(pocket: Polygon, edge_line: LineString, walls) -> bool:
     """Every pocket boundary except its admitted well edge must meet a named wall."""
-    wall_area = unary_union(walls).buffer(_TOUCH_TOL_M)
+    wall_area = union_all(walls).buffer(_TOUCH_TOL_M)
     boundary = pocket.boundary.difference(edge_line.buffer(_TOUCH_TOL_M))
     # A buffer turns the line subtraction into short rounded endpoint caps.  Sampling the
     # residual segments catches a missing return without pretending a furniture footprint
@@ -228,7 +228,7 @@ def resolve_floor_opening_pockets(plan, model: ResolvedModel) -> list[Finding]:
             continue
 
         wall_polygons = [polygon for _tag, _wall, polygon in walls]
-        wall_union = unary_union(wall_polygons)
+        wall_union = union_all(wall_polygons)
         if any(
             a.intersection(b).area > _TOUCH_TOL_M**2
             for index, a in enumerate(wall_polygons)

@@ -132,12 +132,12 @@ def _underfoot(model: ResolvedModel, point: tuple[float, float], structural: flo
 
 def _floored_point(model: ResolvedModel, room: ResolvedRoom, structural: float):
     """A point of the room clear of every void in the decks at its own level, or None."""
-    from shapely.ops import unary_union
+    from typehaus.resolve.overlay import union_all
 
     voids = [Polygon(ring) for floor in model.floors
              if abs(floor.deck_z1_m - structural) < SLAB_MATCH_TOLERANCE_M
              for ring in floor.deck_voids if len(ring) >= 3]
-    solid = Polygon(room.clear_face).difference(unary_union(voids)) if voids else None
+    solid = Polygon(room.clear_face).difference(union_all(voids)) if voids else None
     if solid is None or solid.is_empty:
         return None
     point = solid.representative_point()

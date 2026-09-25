@@ -40,11 +40,12 @@ class Tier:
 
 def _footprint(resolved):  # type: ignore[no-untyped-def]
     from shapely.geometry import Polygon
-    from shapely.ops import unary_union
+
+    from typehaus.resolve.overlay import union_all
 
     rings = [Polygon(layer.polygon) for layer in resolved.layers
              if not layer.is_cavity and len(layer.polygon) >= 3]
-    return unary_union([r for r in rings if r.is_valid and r.area > 0]) if rings else None
+    return union_all([r for r in rings if r.is_valid and r.area > 0]) if rings else None
 
 
 def _direction(axis) -> tuple[float, float]:  # type: ignore[no-untyped-def]

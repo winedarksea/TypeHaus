@@ -352,7 +352,8 @@ def wall_top_landing_width(ctx: CheckContext) -> list[Finding]:
     projection and ``code.R311_7_1_stair_width`` is where that is graded.
     """
     from shapely.geometry import Point, Polygon
-    from shapely.ops import unary_union
+
+    from typehaus.resolve.overlay import union_all
 
     cid, code = "code.R311_7_1_wall_top_landing", "R311.7.1"
     if not ctx.model.stairs:
@@ -377,7 +378,7 @@ def wall_top_landing_width(ctx: CheckContext) -> list[Finding]:
         if any(poly.covers(probe) and abs(top_at(*step) - z) <= _WALL_TOP_ARRIVAL_TOL_M
                for poly, top_at in modelled):
             continue  # it arrives on a modeled walking surface; other rules measure that
-        tops = ((w, unary_union([Polygon(layer.polygon) for layer in w.layers]))
+        tops = ((w, union_all([Polygon(layer.polygon) for layer in w.layers]))
                 for w in ctx.model.walls
                 if abs(w.z1_m - z) <= _WALL_TOP_ARRIVAL_TOL_M and w.layers)
         found = next(((w, poly) for w, poly in tops if poly.covers(probe)), None)

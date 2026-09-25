@@ -145,8 +145,9 @@ def _foundation_enclosures(ctx: CheckContext) -> list:
     reconstruct" are different UNKNOWNs.
     """
     from shapely.geometry import LineString
-    from shapely.ops import polygonize, unary_union
+    from shapely.ops import polygonize
 
+    from typehaus.resolve.overlay import union_all
     from typehaus.resolve.site_earth import open_excavation_floors
 
     segments = [LineString([wall.axis[0], wall.axis[1]])
@@ -155,14 +156,14 @@ def _foundation_enclosures(ctx: CheckContext) -> list:
         return []
     segments += _bridging_walls(
         segments, [wall for wall in ctx.model.walls if not wall.is_foundation])
-    faces = list(polygonize(unary_union(segments)))
+    faces = list(polygonize(union_all(segments)))
     if not faces:
         return []
-    merged = unary_union(faces)
+    merged = union_all(faces)
     polys = list(merged.geoms) if merged.geom_type == "MultiPolygon" else [merged]
     excavations = [polygon for _tag, polygon, _z in open_excavation_floors(ctx.model)]
     if excavations:
-        dug = unary_union(excavations)
+        dug = union_all(excavations)
         polys = [poly for poly in polys
                  if poly.intersection(dug).area <= _EXCAVATION_MAJORITY * poly.area]
     return sorted(polys, key=lambda poly: poly.area, reverse=True)

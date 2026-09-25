@@ -111,3 +111,32 @@ def test_no_resolved_layer_ring_has_consecutive_duplicate_vertices(catlin_model)
                     offenders.append((wall.tag, index, a))
                     break
     assert not offenders
+
+
+def test_no_bare_unary_union_in_the_engine() -> None:
+    """Every union goes through ``resolve/overlay.py``; a bare one throws on GEOS 3.12."""
+    import re
+    from pathlib import Path
+
+    import typehaus
+
+    root = Path(typehaus.__file__).parent
+    call = re.compile(r"(?<![\w`])unary_union\(|import[^\n]*\bunary_union\b|shapely\.union_all\(")
+    offenders = [
+        f"{p.relative_to(root)}:{n}"
+        for p in root.rglob("*.py")
+        if p.name != "overlay.py" or p.parent.name != "resolve"
+        for n, line in enumerate(p.read_text().splitlines(), 1)
+        if call.search(line)
+    ]
+    assert offenders == [], offenders
+
+
+def test_union_all_takes_a_single_geometry() -> None:
+    from shapely.geometry import MultiPolygon
+
+    from typehaus.resolve.overlay import union_all
+
+    a = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
+    b = Polygon([(1, 0), (2, 0), (2, 1), (1, 1)])
+    assert union_all(MultiPolygon([a, b])).area == pytest.approx(2.0)

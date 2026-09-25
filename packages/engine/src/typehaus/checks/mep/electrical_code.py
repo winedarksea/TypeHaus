@@ -210,7 +210,9 @@ def _pierces_a_wall(point: Any, sink: Any, barrier: Any) -> bool:
 def _wall_barrier(ctx: CheckContext) -> dict[str, Any]:
     """Per storey, the wall footprints a cord may not pass through, openings punched out."""
     from shapely.geometry import LineString
-    from shapely.ops import substring, unary_union
+    from shapely.ops import substring
+
+    from typehaus.resolve.overlay import union_all
 
     axes: dict[str, tuple[Any, float, str]] = {}
     solids: dict[str, list[Any]] = {}
@@ -244,10 +246,10 @@ def _wall_barrier(ctx: CheckContext) -> dict[str, Any]:
             substring(axis, lo, hi).buffer(thickness, cap_style=2))
     out: dict[str, Any] = {}
     for storey, parts in solids.items():
-        solid = unary_union(parts)
+        solid = union_all(parts)
         cut = holes.get(storey)
         if cut:
-            solid = solid.difference(unary_union(cut))
+            solid = solid.difference(union_all(cut))
         out[storey] = solid
     return out
 

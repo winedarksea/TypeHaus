@@ -15,7 +15,6 @@ ADVISORY: the rate is usually presumed from a soil class, and a soils report clo
 from __future__ import annotations
 
 from shapely.geometry import Polygon
-from shapely.ops import unary_union
 
 from typehaus.checks._authoring import advisory, not_applicable
 from typehaus.checks._authoring import passed as _pass
@@ -24,6 +23,7 @@ from typehaus.findings import Finding, Result
 from typehaus.model.stormwater import AreaDrain
 from typehaus.model.structure import FootingBedding
 from typehaus.resolve.drainage_network import EdgeKind, build_network, stone_bodies
+from typehaus.resolve.overlay import union_all
 
 #: Hours of infiltration credited against a melt. A melt is slow — the same 48 h the MN
 #: Stormwater Manual gives a basin to drain — so the soil is counted over it; a storm gets
@@ -47,7 +47,7 @@ def _course(members) -> tuple[float, float, list[str]]:
     unstated: list[str] = []
     for bed in sorted(members, key=lambda b: b.tag):
         piece = _poly(bed.outline).difference(counted)
-        counted = unary_union([counted, _poly(bed.outline)])
+        counted = union_all([counted, _poly(bed.outline)])
         if bed.void_ratio is None:
             unstated.append(f"{bed.tag} void_ratio")
             continue
@@ -61,7 +61,7 @@ def _infiltration_m3(members) -> tuple[float, list[str]]:
     unstated: list[str] = []
     for bed in sorted(members, key=lambda b: b.tag):
         piece = _poly(bed.outline).difference(counted)
-        counted = unary_union([counted, _poly(bed.outline)])
+        counted = union_all([counted, _poly(bed.outline)])
         if bed.infiltration_in_per_hr is None:
             unstated.append(f"{bed.tag} infiltration_in_per_hr")
             continue

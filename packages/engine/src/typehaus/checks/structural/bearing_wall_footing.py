@@ -101,10 +101,10 @@ def bearing_wall_footing(ctx: CheckContext) -> list[Finding]:
     if ctx.plan is None:
         return []
     from shapely.geometry import LineString, Polygon
-    from shapely.ops import unary_union
 
     # The foundation sheet's own reading of "bears on grade"; one definition, two readers.
     from typehaus.emit.draw.foundation_schedule import slabs_on_grade
+    from typehaus.resolve.overlay import union_all
 
     named = _named_bearings(ctx.plan)
     authored = {el.tag: el for el in ctx.plan.all_elements()}
@@ -129,7 +129,7 @@ def bearing_wall_footing(ctx: CheckContext) -> list[Finding]:
                                (wall.tag, *on), code=_CODE))
             continue
         under = [s for s in supports if abs(s.z1_m - wall.z0_m) <= _Z_TOL_M]
-        ground = unary_union([Polygon(s.outline) for s in under]) if under else None
+        ground = union_all([Polygon(s.outline) for s in under]) if under else None
         footing_tags = sorted(s.tag for s in under
                               if Polygon(s.outline).intersects(axis.buffer(0.2)))
         out.append(_grade_wall(wall, on, members, ground, footing_tags))

@@ -159,16 +159,18 @@ def _emit_impervious_grading(builder: SceneBuilder, model: ResolvedModel, site) 
 def _primary_footprint(model: ResolvedModel):
     """Largest foundation-wall enclosure (the main building), or None if unavailable."""
     from shapely.geometry import LineString
-    from shapely.ops import polygonize, unary_union
+    from shapely.ops import polygonize
+
+    from typehaus.resolve.overlay import union_all
 
     segments = [LineString([wall.axis[0], wall.axis[1]])
                 for wall in model.walls if wall.is_foundation]
     if not segments:
         return None
-    faces = list(polygonize(unary_union(segments)))
+    faces = list(polygonize(union_all(segments)))
     if not faces:
         return None
-    merged = unary_union(faces)
+    merged = union_all(faces)
     polys = list(merged.geoms) if merged.geom_type == "MultiPolygon" else [merged]
     return max(polys, key=lambda poly: poly.area)
 
