@@ -18,7 +18,12 @@ name onto the packaged package, so authoring is unchanged.
    immediately; keep coordinates, sizing decisions, owner selections, and proprietary
    assets local.
 3. Add the item to the focused module under `typehaus/library/` and export it from that
-   package's `__init__.py`.
+   package's `__init__.py`. Materials, assemblies and hardware are subpackages
+   (`materials/{framing,sheathing,insulation,membranes,cladding,finishes,concrete_masonry,site}.py`,
+   `assemblies/{foundation,exterior,partitions,floors_roofs,structural}.py` with shared layer
+   helpers in `assemblies/_layers.py`, `hardware/*.py`); the catalog tuples keep their order,
+   because `PlanModel.material()` returns the first match. A variant of an existing item is a
+   `model_copy`, not a hand-kept copy of its physics.
    Include the original technical source in `source`; empirical ratings such as STC must
    cite a published test or manufacturer assembly and must not be estimated.
 4. Add the item to the relevant catalog tuple (`ALL_ASSEMBLIES`, materials, types, or
@@ -45,6 +50,9 @@ to the authoritative source instead.
 
 - Tags are stable, descriptive, and unique.
 - Every material reference resolves through the shared library.
+- A material's drawing look is authored on it (`hatch`, `color`, `finish`), never added to a
+  palette table in `emit/` or `ui/src`. A lint refuses any house-only tag in engine or UI source.
+- An owner colour choice stays in the house as a `model_copy` of the promoted row.
 - Dimensions and framing describe the published configuration exactly.
 - Sources identify the test, report, or manufacturer system used for an empirical value.
 - The item has no house-specific geometry, permit claim, or unlicensed asset.

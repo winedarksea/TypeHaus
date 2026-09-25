@@ -43,6 +43,26 @@ is already parallel.
   `haus new` template.
 - `ui/` — the React/three.js editor; `plans/` — the living design docs and decision log.
 
+## Registries and geometry semantics
+
+- **A solid category is a registry row** (`resolve/solid_category_table.py`, decision #80):
+  trade, IFC class, elevation family, `is_pour`, `slab_family`, `supports_on_top` and
+  `collision` all derive from it, and an unknown name raises. Add a row, not a table entry.
+- **`LayerFunction` metadata is one table** (`model/layer_functions.py`): trade, billing,
+  weather, fill/hatch fallback and glTF colour. A test requires a row for every enum member.
+- **A material's look is authored on the `Material`** (`hatch`, `color`, `finish`). No engine
+  or UI table may name a house-only tag, and a lint enforces it (decision #57).
+- **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
+  reads `is_pour_slab`, never `category == "slab"`.
+- **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure
+  furniture and areas off `clear_face`. For "which room is this in", use
+  `resolve/room_lookup.room_owning`.
+- **Wall mounts are hosted** (decision #83): a `WallAttachment` and no `position`. Read a
+  placeable's plan point through `resolve/placeables.placed_xy`, never `.position`.
+- **Equipment collides** (decision #84): only an authored relation pardons a contact.
+- Ownership is by uid or geometry, never by tag prefix: `resolve/ownership.children_of`.
+  Every `unary_union` goes through `resolve/overlay.py`.
+
 ## Commands worth knowing
 
 ```

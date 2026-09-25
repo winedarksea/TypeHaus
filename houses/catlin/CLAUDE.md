@@ -1859,9 +1859,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - Fascia substrate is formed metal over a wood nailer, not 5/4 cellular PVC — dark colour on
     PVC forces a solar-reflective coating that caps the LRV below `#1c1f24`. **The soffit
     stays cellular PVC and stays white** so the overhang doesn't read as a shadow.
-  - Tag-keyed in both renderer palettes (`_FINISH_BASE` / `FINISH_BASE`, kept in step by
-    hand), not by declared `finish` — a fascia/ridge cap is a framed MEMBER and `memberColor`
-    has no catalog access. Neither tag contains "seam" and trim carries no `skin_family`.
+  - The colour is authored on the house `Material` (`color`/`hatch`); both renderers read it
+    through `authored_colors` / `model.json`. No engine or UI table names a catlin tag.
 - **The garage ICF stem is covered on both faces above grade.**
   - Inside: 5/8" gypsum banded from `GRADE` up (`code.R316_4`), continuing the board
     `GARAGE_WALL_2X6` already lines with.
@@ -1891,8 +1890,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Roof edge/water chain/guards get the colour by *material*
   (`metal-dark-exterior`), named by `RF-HOUSE.edge_trim_material`,
   `params/roof_trim.py::_CHAIN_MATERIAL`, and `RAILING_DARK_METAL`. Both
-  renderers resolve via `_FINISH_BASE`/`FINISH_BASE` (emit/gltf/palette.py,
-  ui/src/nordic/palette.ts) — keep in step.
+  renderers read the colour authored on that `Material`.
 - A gutter/downspout is a solid: `ResolvedSolid.material` wins over category
   palette only when it *states* a colour; a generic ref like `"aluminum"` still
   falls to category.
@@ -2447,9 +2445,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   Glazed brick is unsuitable here: [BIA Tech Note 13](https://www.gobrick.com/media/file/13-ceramic-glazed-brick-exterior-walls.pdf)
   says not to use it where it can saturate, and this court is a rain sump with walls.
   - **Do not delete** `glazed-green-brick`, `glazed-lapis-brick`, `glazed-gold-brick` from the
-    catalog, their `MasonryStyle`s in `ui/src/three/materials.ts`, or their `_FINISH_BASE`
-    entries in `emit/gltf/palette.py` — none is referenced now, but a scheme revert is a
-    three-place change and needs all three intact. Their `prices.toml` rows are commented
+    catalog, or their `MasonryStyle`s in `ui/src/three/materials.ts` — none is referenced now, but a
+    scheme revert needs both intact (the colour itself is authored on the `Material`). Their `prices.toml` rows are commented
     out, not removed, for the same reason.
   - `BROWN_BRICK_STYLE.jitterHSL = [0.008, 0.035, 0.09]` — deliberately between a glaze's
     near-zero and `BRICK_STYLE`'s `[0.02, 0.08, 0.16]`; either extreme misreads on a 129 SF
