@@ -16,12 +16,12 @@ Both no-op when no ESS is placed.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import advisory_fail
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result
+from typehaus.findings import Finding
 from typehaus.model.enums import EquipmentKind
 from typehaus.quantities import inch
 
@@ -29,12 +29,6 @@ from typehaus.quantities import inch
 # membrane R302.6 asks for over a garage. Reuses ``fire_separation``'s reader so "is this
 # layer Type X" has one answer in the engine.
 _MIN_TYPE_X_MEMBRANE = inch(0.625)
-
-
-# WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR
-# severity, and this finding is advisory, not a hard blocker.
-def _warn(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return advisory(cid, msg, tags, Result.FAIL)
 
 
 # Structural materials that are the enclosure by themselves. Read off the material's own
@@ -172,7 +166,7 @@ def ess_enclosure(ctx: CheckContext) -> list[Finding]:
             if type_x + 1e-9 < _MIN_TYPE_X_MEMBRANE.meters:
                 thin.append((wall.tag, type_x))
         if thin:
-            out.append(_warn(
+            out.append(advisory_fail(
                 cid, f"ESS room {room_tag} is enclosed by "
                      + ", ".join(f"{tag} ({value / .0254:.2f}\" Type X)"
                                  for tag, value in sorted(thin))
@@ -232,7 +226,7 @@ def ess_clearance(ctx: CheckContext) -> list[Finding]:
                                 (battery.tag,)))
             continue
         if not obj.required_clearances:
-            out.append(_warn(
+            out.append(advisory_fail(
                 cid, f"{battery.tag} declares no REQUIRED clearance zone; the owner's ESS "
                      "standard is a 3' separation from other devices, and a zone nobody "
                      "authored is a separation nothing defends",
@@ -257,7 +251,7 @@ def ess_clearance(ctx: CheckContext) -> list[Finding]:
                 if shape.intersection(Polygon(peer.footprint)).area > 1e-3:
                     intruders.append(peer.tag)
         if intruders:
-            out.append(_warn(
+            out.append(advisory_fail(
                 cid, f"{battery.tag}'s 3' separation zone holds "
                      + ", ".join(sorted(set(intruders)))
                      + " — the wall between them does not make the distance",

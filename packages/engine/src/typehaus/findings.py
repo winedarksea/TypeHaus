@@ -152,6 +152,25 @@ def advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result, code: st
                    code_ref=code, fix_hint=fix, result=result, authority=authority)
 
 
+def advisory_fail(cid: str, msg: str, tags: tuple[str, ...] = (), code: str | None = None,
+                  fix: str | None = None) -> Finding:
+    """WARN severity, FAIL result: red in the report, yet not a permit blocker (the gate keys
+    off ERROR severity). Named for what it returns — the old local ``_warn`` hid the FAIL."""
+    return advisory(cid, msg, tags, Result.FAIL, code=code, fix=fix)
+
+
+def by_result(cid: str, result: Result, msg: str, tags: tuple[str, ...] = (),
+              code: str | None = None, fix: str | None = None) -> Finding:
+    """Dispatch to the named constructor for ``result`` (FAIL is ``failed``, ERROR)."""
+    if result is Result.NOT_APPLICABLE:
+        return not_applicable(cid, msg, tags, code=code)
+    if result is Result.PASS:
+        return passed(cid, msg, tags, code=code)
+    if result is Result.UNKNOWN:
+        return unknown(cid, msg, tags, code=code, fix=fix)
+    return failed(cid, msg, tags, code=code, fix=fix)
+
+
 #: The two verdicts that leave nothing outstanding on a checklist line.
 GATE_OK = frozenset({Result.PASS, Result.NOT_APPLICABLE})
 

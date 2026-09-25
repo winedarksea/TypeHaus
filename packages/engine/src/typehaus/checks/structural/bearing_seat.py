@@ -31,6 +31,7 @@ this; a slab on another storey is not this either.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import failed
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity, not_applicable
 from typehaus.model.floors import FloorSystem, Slab
@@ -57,8 +58,7 @@ _SHARED_EDGE_M = 0.3048
 
 
 def _fail(msg: str, tags: tuple[str, ...], hint: str | None = None) -> Finding:
-    return Finding(severity=Severity.ERROR, check_id="structural.mixed_deck_bearing_seat",
-                   message=msg, element_tags=tags, result=Result.FAIL, fix_hint=hint)
+    return failed("structural.mixed_deck_bearing_seat", msg, tags, fix=hint)
 
 
 def _adjacent(a: list[tuple[float, float]], b: list[tuple[float, float]]) -> bool:

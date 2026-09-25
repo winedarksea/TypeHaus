@@ -38,6 +38,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from typehaus.checks._authoring import unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConnectorKind
@@ -82,8 +83,7 @@ def _advisory(msg: str, tags: tuple[str, ...], result: Result,
 
 
 def _unknown(msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id="structural.cantilever_point_load",
-                   message=f"UNKNOWN — {msg}", element_tags=tags, result=Result.UNKNOWN)
+    return unknown("structural.cantilever_point_load", msg, tags)
 
 
 def _axis_perp(point: tuple[float, float], along_x: bool) -> tuple[float, float]:

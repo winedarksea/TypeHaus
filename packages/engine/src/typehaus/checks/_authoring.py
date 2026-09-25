@@ -39,6 +39,8 @@ from typehaus.findings import (
     Result,
     Severity,
     advisory,
+    advisory_fail,
+    by_result,
     failed,
     not_applicable,
     passed,
@@ -187,5 +189,5 @@ def _deferred(record, cid: str, item: str, msg: str, tags: tuple[str, ...],
     )
 
 
-__all__ = ["Authority", "advisory", "engineered", "failed", "not_applicable",
-           "passed", "structural_advisory", "unknown"]
+__all__ = ["Authority", "advisory", "advisory_fail", "by_result", "engineered", "failed",
+           "not_applicable", "passed", "structural_advisory", "unknown"]

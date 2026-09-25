@@ -37,7 +37,7 @@ and found empty, which is a verdict, not an absence of one.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import advisory_fail
 from typehaus.checks._authoring import engineered as _engineered
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
@@ -73,7 +73,7 @@ def _fail(msg: str, tags: tuple[str, ...], fix: str | None = None) -> Finding:
     keys off ERROR severity alone, and how a condenser is bolted down is not a question the
     permit set answers.
     """
-    return advisory(_CID, msg, tags, Result.FAIL, fix=fix)
+    return advisory_fail(_CID, msg, tags, fix=fix)
 
 
 def _inside(point: tuple[float, float], ring: list[tuple[float, float]]) -> bool:

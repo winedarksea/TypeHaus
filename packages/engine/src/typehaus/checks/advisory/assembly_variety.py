@@ -17,13 +17,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from typehaus.checks._authoring import advisory_fail
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
-
-
-def _warn(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
 
 
 def _note(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
@@ -84,7 +80,7 @@ def assembly_variety(ctx: CheckContext) -> list[Finding]:
             continue
         for i, first in enumerate(tags):
             for second in tags[i + 1:]:
-                out.append(_warn(
+                out.append(advisory_fail(
                     _CID,
                     f"wall assemblies {first} and {second} are the same stack and differ "
                     "only in which material fills a layer — fold them into one tag and "

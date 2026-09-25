@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import advisory, advisory_fail
 from typehaus.checks.integrity.furring_spec import furring_spec_findings
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
@@ -17,11 +17,6 @@ from typehaus.resolve.solid_categories import is_pour_slab
 def _err(check_id: str, msg: str, tags: tuple[str, ...] = (), hint: str | None = None,
          result: Result = Result.FAIL) -> Finding:
     return advisory(check_id, msg, tags, result, fix=hint, severity=Severity.ERROR)
-
-
-def _warn(check_id: str, msg: str, tags: tuple[str, ...] = (),
-          result: Result = Result.FAIL) -> Finding:
-    return advisory(check_id, msg, tags, result, severity=Severity.WARN)
 
 
 @check(Tier.INTEGRITY, "integrity.tag_unique")
@@ -405,9 +400,9 @@ def condition_coverage(ctx: CheckContext) -> list[Finding]:
     for cond in ctx.model.conditions:
         covered = any(_matches(t.condition_pattern, cond.key) for t in transitions)
         if not covered:
-            out.append(_warn("integrity.condition_coverage",
-                             f"boundary condition {cond.key} has no Transition binding",
-                             cond.element_tags))
+            out.append(advisory_fail("integrity.condition_coverage",
+                                     f"boundary condition {cond.key} has no Transition binding",
+                                     cond.element_tags))
     return out
 
 
@@ -427,17 +422,18 @@ def condition_star_override(ctx: CheckContext) -> list[Finding]:
         for field in ("starred_conditions", "unstarred_conditions"):
             for key in getattr(tr, field, ()):
                 if key not in derived:
-                    out.append(_warn("integrity.condition_star_override",
-                                     f"transition {tr.tag} {field} names {key!r}, which no "
-                                     f"longer derives to any boundary condition",
-                                     (tr.tag,)))
+                    out.append(advisory_fail("integrity.condition_star_override",
+                                             f"transition {tr.tag} {field} names {key!r}, which no "
+                                             f"longer derives to any boundary condition",
+                                             (tr.tag,)))
                 elif not _matches(tr.condition_pattern, key):
                     # The key is real, but this transition never binds it — the override is
                     # inert, and the detail is curated by whichever transition does bind it.
-                    out.append(_warn("integrity.condition_star_override",
-                                     f"transition {tr.tag} {field} names {key!r}, which its "
-                                     f"pattern {tr.condition_pattern!r} does not match",
-                                     (tr.tag,)))
+                    out.append(advisory_fail(
+                        "integrity.condition_star_override",
+                        f"transition {tr.tag} {field} names {key!r}, which its "
+                        f"pattern {tr.condition_pattern!r} does not match",
+                        (tr.tag,)))
     return out
 
 

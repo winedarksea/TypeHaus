@@ -8,7 +8,7 @@ in feet and elbows; the other two are relationships between runs.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import failed, not_applicable, passed, unknown
+from typehaus.checks._authoring import by_result
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import DuctSystem
@@ -21,16 +21,6 @@ _ELBOW_45_PENALTY_FT = 2.5
 _ELBOW_90_PENALTY_FT = 5.0
 # Below this turn, the polyline is following a wall, not making a fitting.
 _MIN_TURN_DEGREES = 20.0
-
-
-def _finding(cid, result, message, tags, code, fix=None) -> Finding:
-    if result is Result.NOT_APPLICABLE:
-        return not_applicable(cid, message, tags, code=code)
-    if result is Result.PASS:
-        return passed(cid, message, tags, code=code)
-    if result is Result.UNKNOWN:
-        return unknown(cid, message, tags, code=code, fix=fix)
-    return failed(cid, message, tags, code=code, fix=fix)
 
 
 @check(Tier.CODE, "code.M1502_dryer_exhaust")
@@ -63,31 +53,31 @@ def dryer_exhaust(ctx: CheckContext) -> list[Finding]:
             if d.element_kind == "DuctRun" and d.system is DuctSystem.DRYER]
     if not dryers and not runs:
         if ductless:
-            return [_finding(cid, Result.PASS,
-                             f"{', '.join(sorted(d.tag for d in ductless))} is a condensing "
-                             "(ductless) dryer — M1502.1 exempts it from this section", (),
-                             "M1502.1")]
+            return [by_result(cid, Result.PASS,
+                              f"{', '.join(sorted(d.tag for d in ductless))} is a condensing "
+                              "(ductless) dryer — M1502.1 exempts it from this section", (),
+                              "M1502.1")]
         # UNKNOWN, deliberately not N/A. A dwelling does laundry; "no dryer is modeled"
         # in a house with a laundry room is a gap in the model, not a fact about the
         # building, and calling it N/A would be exactly the unearned use of that verdict
         # Result.NOT_APPLICABLE's own docstring rules out.
-        return [_finding(cid, Result.UNKNOWN, "no dryer and no dryer exhaust run are "
-                         "modeled", (), code)]
+        return [by_result(cid, Result.UNKNOWN, "no dryer and no dryer exhaust run are "
+                          "modeled", (), code)]
     if not runs:
-        return [_finding(cid, Result.FAIL,
-                         f"dryer {', '.join(sorted(d.tag for d in dryers))} has no "
-                         "DuctSystem.DRYER exhaust run; M1502.2 requires an independent "
-                         "exhaust to the outdoors",
-                         tuple(sorted(d.tag for d in dryers)), "M1502.2",
-                         "author a DuctRun with system=DuctSystem.DRYER from the dryer to "
-                         "an exterior termination")]
+        return [by_result(cid, Result.FAIL,
+                          f"dryer {', '.join(sorted(d.tag for d in dryers))} has no "
+                          "DuctSystem.DRYER exhaust run; M1502.2 requires an independent "
+                          "exhaust to the outdoors",
+                          tuple(sorted(d.tag for d in dryers)), "M1502.2",
+                          "author a DuctRun with system=DuctSystem.DRYER from the dryer to "
+                          "an exterior termination")]
 
     out: list[Finding] = []
     for run in runs:
         points = [p.xy_m for p in run.path]
         if len(points) < 2:
-            out.append(_finding(cid, Result.UNKNOWN, f"{run.tag} has no routed path to "
-                                "measure", (run.tag,), "M1502.4.5.1"))
+            out.append(by_result(cid, Result.UNKNOWN, f"{run.tag} has no routed path to "
+                                 "measure", (run.tag,), "M1502.4.5.1"))
             continue
         # strict=False on both windows: the tails are deliberately one and two shorter
         # than ``points`` — that raggedness *is* the sliding window.
@@ -108,36 +98,36 @@ def dryer_exhaust(ctx: CheckContext) -> list[Finding]:
         detail = (f"{developed:.0f}' developed ({straight_ft:.0f}' of duct + "
                   f"{penalty_ft:.0f}' for {elbows} fitting(s))")
         if developed > _MAX_DEVELOPED_FT + 1e-6:
-            out.append(_finding(cid, Result.FAIL,
-                                f"{run.tag} runs {detail}; M1502.4.5.1 allows 35'",
-                                (run.tag,), "M1502.4.5.1",
-                                "shorten the run, remove elbows, or specify a booster fan "
-                                "with the manufacturer's own length table"))
+            out.append(by_result(cid, Result.FAIL,
+                                 f"{run.tag} runs {detail}; M1502.4.5.1 allows 35'",
+                                 (run.tag,), "M1502.4.5.1",
+                                 "shorten the run, remove elbows, or specify a booster fan "
+                                 "with the manufacturer's own length table"))
         else:
-            out.append(_finding(cid, Result.PASS, f"{run.tag} runs {detail} (<= 35')",
-                                (), "M1502.4.5.1"))
+            out.append(by_result(cid, Result.PASS, f"{run.tag} runs {detail} (<= 35')",
+                                 (), "M1502.4.5.1"))
 
         # M1502.2: the exhaust is independent of every other system.
         shared = [other.tag for other in ctx.plan.all_elements()
                   if other.element_kind == "Register" and other.duct_ref == run.tag
                   and other.kind is not DuctSystem.DRYER]
         if shared:
-            out.append(_finding(cid, Result.FAIL,
-                                f"{run.tag} also terminates {', '.join(sorted(shared))}; "
-                                "M1502.2 requires the dryer exhaust to be independent of "
-                                "all other systems", (run.tag, *sorted(shared)), "M1502.2"))
+            out.append(by_result(cid, Result.FAIL,
+                                 f"{run.tag} also terminates {', '.join(sorted(shared))}; "
+                                 "M1502.2 requires the dryer exhaust to be independent of "
+                                 "all other systems", (run.tag, *sorted(shared)), "M1502.2"))
 
         # M1502.3: it terminates outdoors, not into another room.
         end = points[-1]
         inside = _room_containing(ctx, run, end)
         if inside is not None:
-            out.append(_finding(cid, Result.FAIL,
-                                f"{run.tag} terminates inside {inside}; M1502.3 requires "
-                                "termination to the outdoors",
-                                (run.tag, inside), "M1502.3"))
+            out.append(by_result(cid, Result.FAIL,
+                                 f"{run.tag} terminates inside {inside}; M1502.3 requires "
+                                 "termination to the outdoors",
+                                 (run.tag, inside), "M1502.3"))
         else:
-            out.append(_finding(cid, Result.PASS, f"{run.tag} terminates outside every "
-                                "resolved room face", (), "M1502.3"))
+            out.append(by_result(cid, Result.PASS, f"{run.tag} terminates outside every "
+                                 "resolved room face", (), "M1502.3"))
     return out
 
 

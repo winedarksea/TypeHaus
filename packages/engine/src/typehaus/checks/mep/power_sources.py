@@ -20,7 +20,7 @@ rules.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import failed, not_applicable, passed, unknown
+from typehaus.checks._authoring import by_result, not_applicable
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 
@@ -31,17 +31,6 @@ _BUS_ALLOWANCE = 1.2
 # group whose summed cold Voc stays under this needs no per-module shutdown device; a group
 # over it does. 80V is the limit for conductors *inside* the array boundary.
 _RAPID_SHUTDOWN_LIMIT_V = 80.0
-
-
-def _finding(cid: str, result: Result, message: str, tags: tuple[str, ...],
-             code: str, fix: str | None = None) -> Finding:
-    if result is Result.NOT_APPLICABLE:
-        return not_applicable(cid, message, tags, code=code)
-    if result is Result.PASS:
-        return passed(cid, message, tags, code=code)
-    if result is Result.UNKNOWN:
-        return unknown(cid, message, tags, code=code, fix=fix)
-    return failed(cid, message, tags, code=code, fix=fix)
 
 
 @check(Tier.CODE, "code.NEC_705_12_interconnection")
@@ -99,7 +88,7 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
         source_amps = sum(c.breaker_amps for c in group)
         tags = tuple([panel_ref] + sorted(c.tag for c in group))
         if bus_amps is None:
-            out.append(_finding(
+            out.append(by_result(
                 cid, Result.UNKNOWN,
                 f"panel {panel_ref} carries {source_amps}A of source breakers "
                 f"({', '.join(sorted(c.tag for c in group))}) but its type declares no "
@@ -107,7 +96,7 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
                 "declare bus_amps on the panel's ElectricalDeviceType"))
             continue
         if main_amps is None:
-            out.append(_finding(
+            out.append(by_result(
                 cid, Result.UNKNOWN,
                 f"panel {panel_ref} has a {bus_amps}A bus but neither its type nor the "
                 "service states a main breaker, so the main term of 705.12 is unknown",
@@ -117,7 +106,7 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
         total = float(main_amps) + source_amps
         headroom = allowance - total
         if total > allowance + 1e-9:
-            out.append(_finding(
+            out.append(by_result(
                 cid, Result.FAIL,
                 f"panel {panel_ref}: {main_amps:g}A main + {source_amps}A of source "
                 f"breakers = {total:g}A exceeds {_BUS_ALLOWANCE:g} x {bus_amps}A bus = "
@@ -125,7 +114,7 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
                 f"reduce the source breaker(s) by {total - allowance:g}A, or use a "
                 "supply-side connection"))
         else:
-            out.append(_finding(
+            out.append(by_result(
                 cid, Result.PASS,
                 f"panel {panel_ref}: {main_amps:g}A main + {source_amps}A source "
                 f"({', '.join(sorted(c.tag for c in group))}) = {total:g}A of the "
@@ -171,7 +160,7 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
         modules = sorted(modules, key=lambda p: p.tag)
         missing_voc = [p.tag for p in modules if p.voc_cold is None and not p.rsd]
         if missing_voc:
-            out.append(_finding(
+            out.append(by_result(
                 cid, Result.UNKNOWN,
                 f"string {string_tag}: {len(missing_voc)} module(s) carry no shutdown "
                 f"device and declare no ``voc_cold`` ({', '.join(sorted(missing_voc))}), so "
@@ -190,7 +179,7 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
                 uncontrolled.append(panel)
         if uncontrolled:
             tags = tuple(p.tag for p in uncontrolled)
-            out.append(_finding(
+            out.append(by_result(
                 cid, Result.FAIL,
                 f"string {string_tag}: {len(uncontrolled)} module(s) are reached before any "
                 f"shutdown device on the string ({', '.join(tags)}), so nothing controls "
@@ -201,7 +190,7 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
         run_v = sum(p.voc_cold for p in worst)
         tags = tuple(p.tag for p in worst)
         if run_v > _RAPID_SHUTDOWN_LIMIT_V + 1e-9:
-            out.append(_finding(
+            out.append(by_result(
                 cid, Result.FAIL,
                 f"string {string_tag}: the largest shutdown group is {len(worst)} module(s) "
                 f"at {run_v:.1f}V cold Voc, over the {_RAPID_SHUTDOWN_LIMIT_V:g}V limit "
@@ -209,13 +198,13 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
                 "fit a SunSpec transmitter to more modules until no group exceeds "
                 f"{_RAPID_SHUTDOWN_LIMIT_V:g}V cold"))
         elif len(worst) == 1:
-            out.append(_finding(
+            out.append(by_result(
                 cid, Result.PASS,
                 f"string {string_tag}: all {len(modules)} modules carry a rapid-shutdown "
                 f"device of their own ({run_v:.1f}V cold each)",
                 tuple(p.tag for p in modules), code))
         else:
-            out.append(_finding(
+            out.append(by_result(
                 cid, Result.PASS,
                 f"string {string_tag}: the largest shutdown group is {len(worst)} module(s) "
                 f"at {run_v:.1f}V cold, within the {_RAPID_SHUTDOWN_LIMIT_V:g}V limit",

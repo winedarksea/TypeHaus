@@ -13,8 +13,9 @@ A ``set_rated`` connector quotes the catalog row as is: that row already records
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import failed
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding
 
 _CHECK_ID = "integrity.head_connector_agrees"
 _TOLERANCE_LB = 0.5
@@ -68,5 +69,4 @@ def head_connector_agrees(ctx: CheckContext) -> list[Finding]:
 
 
 def _finding(tag: str, message: str, hint: str) -> Finding:
-    return Finding(severity=Severity.ERROR, check_id=_CHECK_ID, message=message,
-                   element_tags=(tag,), fix_hint=hint, result=Result.FAIL)
+    return failed(_CHECK_ID, message, (tag,), fix=hint)
