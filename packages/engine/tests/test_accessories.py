@@ -253,12 +253,16 @@ def test_knee_brace_member_carries_its_assembly_material(braced_model) -> None:
     member (the IR slot both emitters read), and the glTF palette resolves that ref to the
     authored finish rather than the bare "brace" category lumber."""
     from typehaus.emit.gltf.palette import _hex_rgba, _material_finish_color
+    from typehaus.model import Material
 
     for brace in braced_model.braces:
         if brace.kind != "brace":
             continue
         assert brace.members[0].material == "post-paint-white", brace.tag
-    assert (_material_finish_color("post-paint-white", "brace")
+    # The colour is the house's to state (decision #57): no engine table names this tag.
+    authored = {"post-paint-white": Material(tag="post-paint-white", name="white",
+                                             color="#f4f2ee")}
+    assert (_material_finish_color("post-paint-white", "brace", authored)
             == _hex_rgba("#f4f2ee"))
 
 
