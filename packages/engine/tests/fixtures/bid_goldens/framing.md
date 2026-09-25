@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** def1f859fea13256  
-**Lines:** 140
+**Model hash:** 1a440e7d0f2cead1  
+**Lines:** 142
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -22,7 +22,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 1 pcs, 1.9 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
 | 1.75x11.875 LVL — trimmer (1.75x11.875 LVL) | 184 | LF ordered | 16 pcs, 168.7 LF cut | building |
-| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,388 | LF ordered | 216 pcs, 2143.4 LF cut | building |
+| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,388 | LF ordered | 214 pcs, 2141.1 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
 | 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 44 | ea | 44 pcs, 514.1 LF cut; 535.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | 414 | LF ordered | 56 pcs, 367.4 LF cut | building |
@@ -41,7 +41,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 114 | LF ordered | 23 pcs, 85.8 LF cut | building |
 | 2x12 — blocking, joist (2x12:kdat) | 464 | LF ordered | 48 pcs, 421.1 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.6 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,692 | LF ordered | 634 pcs, 3951.9 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,676 | LF ordered | 633 pcs, 3943.6 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,814 | LF ordered | 462 pcs, 2437.4 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,860 | LF ordered | 1371 pcs, 7651.2 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | 88 | LF ordered | 9 pcs, 72.0 LF cut | building |
@@ -120,11 +120,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 4 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 4 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 77 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 74 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 99 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 10 | ea |  | building |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 318 | ea |  | building |
+| modeled connector (SS316-BOLT-38) | 4 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 10 | ea |  | building |
 | THA422 top-flange floor truss hanger | 3 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
@@ -133,18 +134,24 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,130 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 72 | ea |  | building |
 
-## Pours and structural solids
+## Other structural solids
+
+| item | quantity | unit | detail | storeys |
+|---|---|---|---|---|
+| Beam — EQUIP_STAND_ALUM (beam:EQUIP_STAND_ALUM) | 2 | ea | 2 placed, 0.4 SF plan | main |
+| Column — ELM_TIMBER (column:ELM_TIMBER) | 111.6 | bf | 4 placed, 1.0 SF plan; 0.34 cy in the takeoff | second |
+| Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
+| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 19.2 | bf | 3 placed, 0.3 SF plan; 0.06 cy in the takeoff | main |
+| Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | 7.3 | SF | 1 placed, 7.3 SF plan; 0.05 cy in the takeoff | main |
+
+## Timber
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 80.4 | bf | 2 placed, 5.6 SF plan; 0.25 cy in the takeoff | second |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | 139.2 | bf | 10 placed, 14.9 SF plan; 0.43 cy in the takeoff | main |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 84 | bf | 3 placed, 7.1 SF plan; 0.26 cy in the takeoff | main, second |
-| Column — ELM_TIMBER (column:ELM_TIMBER) | 111.6 | bf | 4 placed, 1.0 SF plan; 0.34 cy in the takeoff | second |
-| Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
 | Column — POST_KDAT (column:POST_KDAT) | 42 | bf | 4 placed, 0.6 SF plan; 0.13 cy in the takeoff | main |
-| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 19.2 | bf | 3 placed, 0.3 SF plan; 0.06 cy in the takeoff | main |
-| Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | 7.3 | SF | 1 placed, 7.3 SF plan; 0.05 cy in the takeoff | main |
 
 ## Member protection tape
 
@@ -310,6 +317,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | SP4 stud plate tie (2x4) | — |
 | SP6 stud plate tie (2x6) | — |
+| modeled connector (SS316-BOLT-38) | — |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | — |
 | THA422 top-flange floor truss hanger | — |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | — |
@@ -317,14 +325,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | KDAT 4x4 tie block, 5" long, screwed to the tied member (TIE-BLOCK-4X4X5-KDAT) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
+| Beam — EQUIP_STAND_ALUM (beam:EQUIP_STAND_ALUM) | BM-M-HP3-R1, BM-M-HP3-R2 |
+| Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2, P-S-TUDOR3, P-S-TUDOR4 |
+| Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | PT-M-HP1-L1, PT-M-HP1-L2, PT-M-HP1-L3, PT-M-HP1-L4, PT-M-HP3-L1, PT-M-HP3-L2, PT-M-HP3-L3, PT-M-HP3-L4, PT-SG-HPB1, PT-SG-HPB2, PT-SG-HPB3, PT-SG-HPB4 |
+| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRLAND-SE, P-M-STRWELL-S, P-M-STRWELL-SS |
+| Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | BM-SG-BLE, BM-SG-BLW |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | BM-BW-FC, BM-BW-FE, BM-BW-GARAGE-SEAT, BM-BW-HOUSE-SEAT, BM-BW-LAND-HDR, BM-BW-RE, BM-BW-RW, BM-BW-SCSILL, BM-SG-LDGE, BM-SG-LDGW |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | BM-M-HALL, BM-S-BATH-E, BM-S-HALL |
-| Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2, P-S-TUDOR3, P-S-TUDOR4 |
-| Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | PT-M-HP1-L1, PT-M-HP1-L2, PT-M-HP1-L3, PT-M-HP1-L4, PT-M-HP3-L1, PT-M-HP3-L2, PT-M-HP3-L3, PT-M-HP3-L4, PT-SG-HPB1, PT-SG-HPB2, PT-SG-HPB3, PT-SG-HPB4 |
 | Column — POST_KDAT (column:POST_KDAT) | PT-BW-CNW, PT-BW-CW, PT-BW-IC, PT-BW-IE |
-| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRLAND-SE, P-M-STRWELL-S, P-M-STRWELL-SS |
-| Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |
 | butyl-tape, 1 1/2" on beam (butyl-tape) | BM-SG-LDGE, BM-SG-LDGW |
 | butyl-tape, 1 1/4" on deck (butyl-tape) | FS-BW-FLOOR, FS-BW-GARAGE, FS-SG-DECK |
 | butyl-tape, 1 1/2" on deck (butyl-tape) | FS-BW-FLOOR, FS-BW-GARAGE, FS-SG-DECK, FS-SG-PORCH |

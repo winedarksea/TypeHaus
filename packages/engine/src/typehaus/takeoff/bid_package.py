@@ -26,6 +26,7 @@ from typehaus.takeoff.bid_recipes import Recipe, recipe_for, shape_for
 from typehaus.takeoff.bom_walk import BomRow, walk_bom
 from typehaus.takeoff.cost_codes import cost_code
 from typehaus.takeoff.labels import EMPTY_LABELS, LabelIndex, describe
+from typehaus.takeoff.solid_sections import SOLID_SECTIONS
 
 BUILDING = "building"
 
@@ -44,7 +45,7 @@ _CY_PER_CUFT = 1.0 / 27.0
 
 
 def _mirrored(item: BomRow) -> bool:
-    if item.section in ("concrete", "timber"):
+    if item.section in SOLID_SECTIONS:
         return item.key in MIRRORED_SOLID_CATEGORIES
     # A room with no finish authored is a gap in the model, not a line to quote.
     return item.section == "floor_finishes" and item.key in ("None", "")
@@ -60,7 +61,7 @@ def _shaped_quantity(item: BomRow, trade: str, default_unit: str) -> tuple[float
     row = item.row
     key = item.key
     material = str(item.material or row.get("material") or "").lower()
-    if item.section in ("concrete", "timber"):
+    if item.section in SOLID_SECTIONS:
         if material == "concrete" or (not material and (
                 is_pour_category(key) or key in ("thermal_break", "dowel"))):
             if key == "dowel":

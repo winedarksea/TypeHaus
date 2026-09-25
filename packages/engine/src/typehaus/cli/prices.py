@@ -37,7 +37,7 @@ from typehaus.cli.price_file import (  # noqa: F401  (re-exported: this is the p
 __all__ = [
     "ALTERNATE_UNITS", "BASES", "INSTALLED", "LABOUR", "MATERIAL", "PRICES_FILENAME",
     "ALLOWANCE_KEY_FIELD", "ALLOWANCES", "Adjustments",
-    "ESTIMATE_PLANS", "EXCLUDED_FROM_TOTAL", "MATERIAL_ONLY", "PriceRange", "Prices", "UnitPrice",
+    "ESTIMATE_PLANS", "EXCLUDED_FROM_TOTAL", "PriceRange", "Prices", "UnitPrice",
     "QUALIFIED_KEY_FIELD", "UNPRICED_VIEWS", "WASTE_IN_QUANTITY", "ZERO",
     "candidate_keys", "qualifier_fields",
     "estimate_costs", "load_prices",
@@ -46,6 +46,7 @@ __all__ = [
 
 from typehaus.takeoff.labels import EMPTY_LABELS, LabelIndex, describe
 from typehaus.takeoff.product_labels import specified_product
+from typehaus.takeoff.solid_sections import SOLID_SECTIONS, bare_key_prices, row_section
 
 
 def _describe(row: Mapping[str, object], section: str, key: str,
@@ -73,7 +74,11 @@ ESTIMATE_PLANS = (
     ("framing", "framing_by_size", "profile", "order_length_ft", "LF"),
     ("sheet_goods", "sheet_goods", "material", "sheets", "sheets"),
     ("hardware", "hardware", "part_number", "count", "ea"),
+    # ``structural_solids`` prices in four sections, each row in exactly one of them
+    # (``takeoff/solid_sections``): cast concrete, timber, site work, and the rest.
     ("concrete", "structural_solids", "category", "volume_cubic_yards", "cy"),
+    ("site", "structural_solids", "category", "volume_cubic_yards", "cy"),
+    ("solids", "structural_solids", "category", "volume_cubic_yards", "cy"),
     ("floor_heat", "floor_heat", "system", "wire_length_ft", "LF"),
     ("placeables", "placeables", "type", "count", "ea"),
     # Priced on the *order* quantity, not the net area: a finish is bought with its
@@ -123,9 +128,7 @@ ESTIMATE_PLANS = (
     # bar designation and the qualifier is the coating, so a house that has not told black
     # and galvanized apart still prices on `#5` while one that has gets `#5:hdg-a767`.
     ("reinforcement", "reinforcement", "bar", "weight_lb", "lb"),
-    # The wood half of ``structural_solids``. Identical join to ``concrete``, on the
-    # identical BOM table; ``MATERIAL_ONLY`` is what keeps the two from both billing the same
-    # row. See the field comment on ``Prices.timber``.
+    # The wood section of ``structural_solids``; see ``Prices.timber``.
     ("timber", "structural_solids", "category", "volume_cubic_yards", "cy"),
     # Rolled steel by the foot of its own AISC section. NOT a third read of
     # ``structural_solids``: ``takeoff/steel.py`` is its own table and takes these members
@@ -167,49 +170,6 @@ ESTIMATE_PLANS = (
 #: 2x6, and it is visible on its own line with its own basis rather than folded into a total.
 ALLOWANCES = "allowances"
 ALLOWANCE_KEY_FIELD = "item"
-
-#: Sections that may only bill a BOM row made of certain materials, and the set of
-#: ``structure_material`` values each will accept. ``None`` in a set means "the model never
-#: said" — no assembly, so no material — and a section carrying it is the CATCH-ALL for
-#: its BOM table.
-#:
-#: ``concrete`` needs the guard because ``structural_solids`` keys on solid CATEGORY, and a
-#: category is not a material. "slab" covers SL-M-DECK (9" of cast concrete) *and* a Wahoo
-#: aluminium plank deck and a composite plank deck; "column" covers a concrete pier and
-#: four solid elm timbers. Without this guard the wood ones bill at the ready-mix $/cy on
-#: top of billing as lumber in ``sheet_goods``/``framing`` — a double-count, not just a
-#: mis-price.
-#:
-#: A single material tag cannot say "any structural wood" — which is what ``timber`` needs.
-#: ``timber`` reads the *same*
-#: ``structural_solids`` table ``concrete`` does, and the two are told apart here and
-#: nowhere else: a Beam or a Post is a solid whose category says nothing about what it is
-#: made of, so the material is the only honest discriminator.
-#:
-#: WHY THE SET NAMES ONLY ENGINEERED AND TREATED LUMBER, not every wood tag in the library:
-#: ``spf`` is the STRUCTURE material of ordinary stud-wall assemblies, and a solid that is
-#: not lumber at all can carry one — catlin's rainscreen vent strip is a ``bug_screen``
-#: solid holding ``EXT_2X6``, whose structure layer is spf studs. So ``spf`` on a
-#: solid does not mean "this solid is a stick of timber", while ``lvl``/``lsl``/``kdat`` are
-#: only ever authored on a member that really is one. A house whose own wood tag should bill
-#: here either uses one of these or prices the row by QUALIFIED key, exactly as the elm
-#: posts already do.
-#:
-#: The guard is a *default*, not a wall. A house that authors the QUALIFIED key for one of
-#: these rows (``"slab:BALCONY_DECK_ALUMINUM"``, see :data:`QUALIFIED_KEY_FIELD`) has said
-#: which assembly it means and at what rate, so ``estimate_costs`` prices it. That is the
-#: escape hatch for a solid no other table bills — the aluminium balcony deck, the elm
-#: posts, the breezeway polycarbonate — none of which are lumber and so none of which are
-#: double-counted. A bare-category row is still filtered.
-MATERIAL_ONLY: dict[str, frozenset[str | None]] = {
-    "concrete": frozenset({"concrete", None}),
-    # ``glulam-treated`` joins the three since 2026-09-03: the balcony beams are a
-    # manufactured member bought by the lineal foot out of [timber], and without the
-    # entry the material guard drops them from the bill entirely — which makes the
-    # total FALL and reads as a saving.
-    "timber": frozenset({"lvl", "lsl", "kdat", "glulam-treated"}),
-}
-
 
 #: Sections whose price table may key a row more narrowly than its ``key_field`` alone,
 #: by appending a second BOM field as ``"<key>:<qualifier>"``. The qualified key is used
@@ -265,7 +225,7 @@ MATERIAL_ONLY: dict[str, frozenset[str | None]] = {
 #: forced it: a 3" radial branch and a 6" trunk are not the same article at all, and one
 #: blended per-foot rate across 246 LF of each was the standing admission in prices.toml.
 QUALIFIED_KEY_FIELD: dict[str, str | tuple[str, ...]] = {
-    "concrete": "assembly", "timber": "assembly",
+    **{section: "assembly" for section in SOLID_SECTIONS},
     # THE one line that prices black and galvanized bar separately while leaving a house
     # that authors only `#5` completely unchanged — `#5:hdg-a767` falls back to `#5` through
     # ``candidate_keys``. HDG is roughly +$0.30/lb, and if the two do not price apart then
@@ -354,8 +314,7 @@ def rate_for(prices: Prices, section: str, key: object,
 #: ``grand_total``, so nothing is hidden — only re-filed.
 EXCLUDED_FROM_TOTAL = frozenset({"furnishings"})
 
-#: The price table an estimate section reads: every section except concrete (which prices
-#: the ``structural_solids`` rows) shares its table's name.
+#: The price table an estimate section reads: every section shares its table's name.
 _PLAN_TABLE = {name: name for name, *_ in ESTIMATE_PLANS}
 
 
@@ -376,11 +335,11 @@ _PLAN_TABLE = {name: name for name, *_ in ESTIMATE_PLANS}
 UNPRICED_VIEWS: dict[str, str] = {
     # Same sticks, aggregated differently — `framing_by_size` is the priced view.
     "framing": "priced as framing_by_size",
-    # Solid categories, so they reach [concrete] by qualified key (`glazing:<assembly>`,
+    # Solid categories, so they reach [solids] by qualified key (`glazing:<assembly>`,
     # `bug_screen:<assembly>`) rather than through a table of their own.
-    "glazing_panels": "priced in [concrete] as glazing:<assembly> (structural_solids)",
-    "glazing_trim": "priced in [concrete] as glazing_trim (structural_solids)",
-    "bug_screens": "priced in [concrete] as bug_screen:<assembly> (structural_solids)",
+    "glazing_panels": "priced in [solids] as glazing:<assembly> (structural_solids)",
+    "glazing_trim": "priced in [solids] as glazing_trim (structural_solids)",
+    "bug_screens": "priced in [solids] as bug_screen:<assembly> (structural_solids)",
     # Tread and riser stock is lumber; the nosings and transitions are an allowance DRIVEN
     # off this very table's ``tread_lf``, so the quantity is not unread, only unpriced by a
     # section of its own.
@@ -746,39 +705,33 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
         buckets = empty_buckets()
         waste_sum = ZERO
         tax_paid_sum = ZERO
-        required_materials = MATERIAL_ONLY.get(name)
+        solid = name in SOLID_SECTIONS
         for row in bom.get(bom_key, []) or []:
-            if required_materials is not None:
+            if solid:
+                # Each solid belongs to exactly one section (``takeoff/solid_sections``),
+                # which alone prices it and alone reports it unpriced.
+                owner = row_section(row)
+                if owner != name:
+                    # A rate authored for this row in the wrong section would sit unread. A
+                    # bare key is only this row's when the row has no material to share it.
+                    bare_ok = not row.get("structure_material")
+                    stray = [k for k in candidate_keys(row.get(key_field), row.get("assembly"))
+                             if (":" in k or bare_ok) and table.get(k) is not None]
+                    if stray:
+                        raise ValueError(f"prices.toml [{name}] {stray[0]!r} prices a solid "
+                                         f"that belongs in [{owner}]; move the row there")
+                    continue
                 material = row.get("structure_material")
-                if material not in required_materials:
-                    # A wood deck is not ready-mix, so this section does not price the row
-                    # *by default*. But a QUALIFIED key names one assembly and nothing else,
-                    # so authoring `slab:BALCONY_DECK_ALUMINUM` in [concrete] is an explicit
-                    # statement that the house wants this row priced here — the only table
-                    # that bills `structural_solids` at all. Honour that; skip only when the
-                    # house has stayed silent.
+                if not bare_key_prices(name, material):
                     fields = qualifier_fields(name)
                     keys = candidate_keys(row.get(key_field),
                                           tuple(row.get(f) for f in fields))
-                    # The most specific spelling, for the miss report; the opt-in test
-                    # accepts ANY qualified spelling the house actually authored.
-                    qualified = keys[0]
-                    if not (fields and any(table.get(k) is not None for k in keys[:-1])):
-                        # Recorded, never silent — but recorded ONCE. Two guarded sections
-                        # now read ``structural_solids`` (concrete and timber), and a row
-                        # that plainly belongs to the other one is not a hole in this one:
-                        # reporting from both would list every pipe sleeve and gutter twice
-                        # and drown the real misses. The CATCH-ALL — the section whose set
-                        # carries ``None``, i.e. the one that bills a solid the model never
-                        # gave a material — owns the report; the specialist stays quiet.
-                        # A row homeless in *every* section still surfaces, from the
-                        # catch-all, exactly as it did before ``timber`` existed.
-                        if None in required_materials:
-                            quantity = float(row.get(section_quantity_field) or 0.0)
-                            if quantity:
-                                misses.append((bom_key, {
-                                    "section": name, "key": qualified,
-                                    "quantity": round(quantity, 2), "unit": section_unit}))
+                    if not any(table.get(k) is not None for k in keys[:-1]):
+                        quantity = float(row.get(section_quantity_field) or 0.0)
+                        if quantity:
+                            misses.append((bom_key, {
+                                "section": name, "key": keys[0],
+                                "quantity": round(quantity, 2), "unit": section_unit}))
                         continue
             fields = qualifier_fields(name)
             key, price = rate_for(prices, name, row.get(key_field),

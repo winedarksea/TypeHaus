@@ -30,6 +30,7 @@ from typehaus.emit.trade_rules import (
     solid_trades,
 )
 from typehaus.emit.trades import TRADES
+from typehaus.takeoff.solid_sections import SOLID_SECTIONS
 
 
 @dataclass(frozen=True)
@@ -120,8 +121,8 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("concrete", "footing*", CostCode("1200", "03 30 00", "concrete")),
     ("concrete", "pier*", CostCode("1200", "03 30 00", "concrete")),
     # Gutters and leaders are 07 71 00 Roof Specialties, not 33 46 00 subdrainage.
-    ("concrete", "gutter", CostCode("2600", "07 71 00", "drainage")),
-    ("concrete", "downspout", CostCode("2600", "07 71 00", "drainage")),
+    ("site", "gutter", CostCode("2600", "07 71 00", "drainage")),
+    ("site", "downspout", CostCode("2600", "07 71 00", "drainage")),
     ("framing", "gutter*", CostCode("2600", "07 71 00", "drainage")),
     # The Larsen/Swinburne corner box closes a wall cavity on the cladding plane.
     ("framing", "* corner panel", CostCode("2100", "07 46 00", "siding")),
@@ -226,6 +227,10 @@ SECTION_CODES: dict[str, CostCode] = {
     "wall_structure": CostCode("1200", "03 30 00", "concrete"),
     # Structural wood solids, reached only when ``_solid_code`` declines.
     "timber": CostCode("2000", "06 11 00", "framing"),
+    # Reached only when ``_solid_code`` declines, i.e. the row's trade is concrete (an XPS
+    # frost wing laid in the foundation sequence).
+    "site": CostCode("1300", "03 30 00", "concrete"),
+    "solids": CostCode("1300", "03 30 00", "concrete"),
     # Rolled steel members by the foot of their section (``takeoff/steel.py``). MasterFormat
     # 05 12 00 is structural steel framing; the trade is ``framing`` rather than a steel
     # erector's, because on this scale the piece is set by whoever is already there — the
@@ -247,9 +252,6 @@ SECTION_CODES: dict[str, CostCode] = {
 }
 
 
-#: The estimate sections that price ``structural_solids`` — whose table name and content
-#: disagree: ``[concrete]`` bills every solid there is a $/cy for, pour or not.
-SOLID_SECTIONS = frozenset({"concrete", "timber"})
 
 #: Where a ``structural_solids`` row files once its category (and material) name a trade.
 #: Keyed by trade so a new solid category files itself the moment ``SOLID_CATEGORY_TRADE``

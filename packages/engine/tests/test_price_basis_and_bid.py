@@ -113,49 +113,48 @@ def test_a_declared_split_scales_with_the_quantity(tmp_path) -> None:
     assert buckets[LABOUR]["low"] == pytest.approx(30.0)
 
 
-# --- 2C: the ready-mix guard, and the qualified key that opens it -------------------------
+# --- 2C: one section per solid, and the qualified key a material needs -------------------
 # `structural_solids` keys on solid CATEGORY, and a category is not a material: "slab" covers
-# an EPS-formed concrete deck *and* an aluminium balcony plank. MATERIAL_ONLY stops the
-# wood/metal ones billing at the ready-mix $/cy. But those solids are billed by no other
-# table, so a house that names one explicitly — by its qualified `category:assembly` key —
-# has to be able to price it, or the estimate can only ever report it as a hole.
+# an EPS-formed concrete deck *and* an aluminium balcony plank. Each row prices in exactly one
+# section (takeoff/solid_sections); a row with a material outside [concrete]/[timber] needs a
+# qualified `category:assembly` key, so a bare rate never double-counts it.
 
 _MIXED_SOLIDS = {"structural_solids": [
     {"category": "slab", "assembly": "DECK_EPS_INT",
      "structure_material": "concrete", "volume_cubic_yards": 10.0},
     {"category": "slab", "assembly": "BALCONY_DECK_ALUMINUM",
      "structure_material": "aluminum-deck", "volume_cubic_yards": 2.0},
+    {"category": "drain_tile", "volume_cubic_yards": 1.0},
 ]}
 
 
 def test_a_non_concrete_solid_stays_unpriced_when_the_house_says_nothing(tmp_path) -> None:
-    prices = _prices(tmp_path, '[basis]\nconcrete = "installed"\n[concrete]\nslab = 200\n')
+    prices = _prices(tmp_path, '[concrete]\nslab = 200\n[solids]\nslab = 999\n')
     estimate = estimate_costs(_MIXED_SOLIDS, prices)
-    unpriced = {row["key"] for row in estimate["unpriced"]}
-    assert "slab:BALCONY_DECK_ALUMINUM" in unpriced
+    unpriced = {(row["section"], row["key"]) for row in estimate["unpriced"]}
+    assert ("solids", "slab:BALCONY_DECK_ALUMINUM") in unpriced
     # ...and it is a hole, not a zero: only the concrete yardage reaches the subtotal.
     assert estimate["sections"]["concrete"]["subtotal"]["low"] == 2000.0
 
 
-def test_a_bare_category_rate_never_reaches_the_aluminium_deck(tmp_path) -> None:
-    """The double-count the guard exists to stop. `slab = 200` must not pick up 2 cy of
-    aluminium plank just because the plank's category happens to be "slab"."""
-    prices = _prices(tmp_path, '[basis]\nconcrete = "installed"\n[concrete]\nslab = 200\n')
-    keys = {row["key"] for row in estimate_costs(_MIXED_SOLIDS, prices)["sections"]
-            ["concrete"]["rows"]}
-    assert keys == {"slab"}
-
-
-def test_an_explicit_qualified_key_prices_a_non_concrete_solid(tmp_path) -> None:
-    prices = _prices(tmp_path, '[basis]\nconcrete = "installed"\n[concrete]\nslab = 200\n'
-                               '"slab:BALCONY_DECK_ALUMINUM" = 3900\n')
+def test_each_solid_prices_in_its_own_section(tmp_path) -> None:
+    prices = _prices(tmp_path, '[concrete]\nslab = 200\n[site]\ndrain_tile = 30\n'
+                               '[solids]\n"slab:BALCONY_DECK_ALUMINUM" = 3900\n')
     estimate = estimate_costs(_MIXED_SOLIDS, prices)
-    rows = {row["key"]: row for row in estimate["sections"]["concrete"]["rows"]}
-    assert rows["slab:BALCONY_DECK_ALUMINUM"]["cost"]["low"] == 7800.0
-    assert not [r for r in estimate["unpriced"] if r["key"].startswith("slab:BALCONY")]
-    # The concrete deck still bills on the bare-category rate; opening the hatch for one
-    # assembly must not change what the others do.
-    assert rows["slab"]["cost"]["low"] == 2000.0
+    keys = {name: {row["key"] for row in estimate["sections"][name]["rows"]}
+            for name in ("concrete", "site", "solids")}
+    assert keys == {"concrete": {"slab"}, "site": {"drain_tile"},
+                    "solids": {"slab:BALCONY_DECK_ALUMINUM"}}
+    solids = estimate["sections"]["solids"]["rows"][0]
+    assert solids["cost"]["low"] == 7800.0
+    assert not estimate["unpriced"]
+
+
+@pytest.mark.parametrize("table", ['[concrete]\n"slab:BALCONY_DECK_ALUMINUM" = 3900\n',
+                                   '[concrete]\ndrain_tile = 30\n'])
+def test_a_solid_priced_in_the_wrong_section_is_an_error(tmp_path, table) -> None:
+    with pytest.raises(ValueError, match="move the row there"):
+        estimate_costs(_MIXED_SOLIDS, _prices(tmp_path, table))
 
 
 # --- 2B: waste, contingency, markup, tax --------------------------------------------------
@@ -287,7 +286,7 @@ def catlin_dir():
 
 _UNIT_SOLIDS = {
     "structural_solids": [
-        {"category": "footing", "structure_material": "concrete",
+        {"category": "drywell", "structure_material": None,
          "volume_cubic_yards": 10.0, "count": 4, "plan_area_sqft": 300.0},
         {"category": "sump", "structure_material": None,
          "volume_cubic_yards": 0.19, "count": 1, "plan_area_sqft": 2.2},
@@ -297,34 +296,34 @@ _UNIT_SOLIDS = {
 
 def test_a_row_without_a_unit_still_prices_on_the_section_quantity(tmp_path) -> None:
     """The whole point of the default: no existing prices.toml changes meaning."""
-    prices = _prices(tmp_path, '[concrete]\nfooting = 100\n')
-    row = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["concrete"]["rows"][0]
+    prices = _prices(tmp_path, '[site]\ndrywell = 100\n')
+    row = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["site"]["rows"][0]
     assert (row["quantity"], row["unit"]) == (10.0, "cy")
     assert row["cost"] == {"low": 1000.0, "high": 1000.0}
 
 
 def test_a_unit_override_reads_a_different_field_of_the_same_row(tmp_path) -> None:
-    prices = _prices(tmp_path, '[concrete]\nsump = { low = 900, high = 2200, unit = "ea" }\n')
-    row = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["concrete"]["rows"][0]
+    prices = _prices(tmp_path, '[site]\nsump = { low = 900, high = 2200, unit = "ea" }\n')
+    row = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["site"]["rows"][0]
     assert (row["quantity"], row["unit"]) == (1.0, "ea")
     assert row["cost"] == {"low": 900.0, "high": 2200.0}
 
 
 def test_the_unit_is_resolved_per_row_not_per_section(tmp_path) -> None:
-    """`sump` priced each and `footing` priced by the yard, in the same table, same estimate."""
-    prices = _prices(tmp_path, '[concrete]\nfooting = 100\n'
+    """`sump` priced each and `drywell` priced by the yard, in the same table, same estimate."""
+    prices = _prices(tmp_path, '[site]\ndrywell = 100\n'
                                'sump = { low = 900, high = 2200, unit = "ea" }\n')
-    priced = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["concrete"]["rows"]
+    priced = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["site"]["rows"]
     rows = {r["key"]: r for r in priced}
-    assert (rows["footing"]["quantity"], rows["footing"]["unit"]) == (10.0, "cy")
+    assert (rows["drywell"]["quantity"], rows["drywell"]["unit"]) == (10.0, "cy")
     assert (rows["sump"]["quantity"], rows["sump"]["unit"]) == (1.0, "ea")
 
 
 def test_a_unit_override_composes_with_a_material_labour_split(tmp_path) -> None:
-    prices = _prices(tmp_path, '[concrete]\nsump = { unit = "ea", '
+    prices = _prices(tmp_path, '[site]\nsump = { unit = "ea", '
                                'material = { low = 400, high = 900 }, '
                                'labour = { low = 500, high = 1300 } }\n')
-    row = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["concrete"]["rows"][0]
+    row = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["site"]["rows"][0]
     assert row["unit"] == "ea" and row["basis"] == INSTALLED
     assert row["material"] == {"low": 400.0, "high": 900.0}
     assert row["labour"] == {"low": 500.0, "high": 1300.0}
@@ -332,7 +331,7 @@ def test_a_unit_override_composes_with_a_material_labour_split(tmp_path) -> None
 
 def test_a_unit_the_section_does_not_offer_is_a_load_error(tmp_path) -> None:
     with pytest.raises(ValueError, match="offers"):
-        _prices(tmp_path, '[concrete]\nsump = { low = 1, high = 2, unit = "LF" }\n')
+        _prices(tmp_path, '[site]\nsump = { low = 1, high = 2, unit = "LF" }\n')
 
 
 def test_a_section_with_no_alternates_refuses_a_unit_at_all(tmp_path) -> None:

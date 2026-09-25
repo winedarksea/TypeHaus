@@ -125,6 +125,11 @@ def _no_calc(kind: str, key: str) -> EngineeringRecord:
     return no_calc(kind, key, oracle=_ORACLES.get(kind, ()))
 
 
+def has_calc(kind: str) -> bool:
+    """Whether ``kind`` has a calculation, not merely an enumeration of keys."""
+    return kind in _CALCS
+
+
 def registered_kinds() -> tuple[str, ...]:
     return tuple(sorted(set(_CALCS) | set(_KEYS)))
 

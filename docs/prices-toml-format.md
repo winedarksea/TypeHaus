@@ -23,6 +23,12 @@ LUS210 = 1.85
 [concrete]       # $ per cubic yard placed, keyed by solid category (slab, footing, ...)
 slab = { low = 180, high = 240 }
 
+[site]           # stormwater, planting and aggregate solids by the yard (drain_tile, drywell, ...)
+drywell = { low = 150, high = 350 }
+
+[solids]         # every other solid; a row with a material needs a "category:assembly" key
+"glazing:GLAZED_WALL_MULTIWALL_16MM" = { low = 7200, high = 12000 }
+
 [steel_members]  # $ per LINEAL FOOT of a rolled steel member, keyed by its AISC section
 "L3.5x3.5x0.25" = { material = { low = 14, high = 24 }, labour = { low = 20, high = 45 } }
 
@@ -47,6 +53,11 @@ ikea-sofa-84 = { low = 700, high = 2400 }   # reads, but reported beside the tot
 [data_raceways]  # $ per lineal foot of low-voltage raceway, keyed by service (data / spare)
 data = { low = 2.80, high = 6.40 }
 ```
+
+`structural_solids` prices in four sections, and each row lands in exactly one
+(`takeoff/solid_sections.py`): `[concrete]` (cast concrete), `[timber]` (engineered and
+treated lumber), `[site]` (the drainage, landscaping and earth trades) and `[solids]` (the
+rest). A rate authored in the wrong one is a hard error naming the right one.
 
 `[steel_members]` is the one family `[concrete]` and `[timber]` cannot buy, and it is worth
 saying why it is not a row of either. Both of those price a `structural_solids` row by the

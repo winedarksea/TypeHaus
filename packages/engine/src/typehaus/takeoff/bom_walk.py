@@ -36,22 +36,26 @@ class BomRow:
 def walk_bom(bom: Mapping[str, Any], *, every_section: bool = False) -> list[BomRow]:
     """Every BOM row under its estimate section, in ``ESTIMATE_PLANS`` order.
 
-    Two estimate sections read the same table (``concrete``/``timber`` over
-    ``structural_solids``, ``placeables``/``furnishings`` over ``placeables``). By default a
+    ``structural_solids`` rows each walk once, under their own section
+    (``takeoff/solid_sections``). ``placeables``/``furnishings`` share a table: by default a
     table is walked ONCE, under the first section that names it — a bid package must hold
     each row exactly once. ``every_section=True`` is the estimate's own view, one entry per
     section, which is what the work packages have always seen.
     """
     from typehaus.cli.prices import ESTIMATE_PLANS, candidate_keys, qualifier_fields
+    from typehaus.takeoff.solid_sections import SOLID_SECTIONS, row_section
 
     out: list[BomRow] = []
     seen_tables: set[str] = set()
     for section, bom_key, key_field, quantity_field, unit in ESTIMATE_PLANS:
-        if not every_section and bom_key in seen_tables:
+        solid = section in SOLID_SECTIONS
+        if not every_section and bom_key in seen_tables and not solid:
             continue
         seen_tables.add(bom_key)
         fields = qualifier_fields(section)
         for row in bom.get(bom_key, []) or []:
+            if solid and row_section(row) != section:
+                continue
             key = str(row.get(key_field))
             qualifiers = tuple(row.get(f) for f in fields) if fields else None
             qualified = candidate_keys(key, qualifiers)[0] if qualifiers else key

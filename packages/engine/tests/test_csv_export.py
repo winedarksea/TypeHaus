@@ -28,8 +28,8 @@ _BOM = {
         {"category": "column", "volume_cubic_yards": 2.0, "assembly": "POST_WHITE"},
     ],
 }
-_PRICES = '[basis]\nframing = "material"\nconcrete = "installed"\n' \
-          '[framing]\n"2x6" = 1.0\n[concrete]\ncolumn = 300\n'
+_PRICES = '[basis]\nframing = "material"\nsolids = "installed"\n' \
+          '[framing]\n"2x6" = 1.0\n[solids]\ncolumn = 300\n'
 
 
 @pytest.fixture
@@ -89,7 +89,7 @@ def test_the_column_order_is_the_documented_intake_shape() -> None:
 
 
 def test_one_row_per_section_key_even_when_the_estimate_has_several(estimate) -> None:
-    """``structural_solids`` bills two assemblies as ``concrete/column``. ``(section, key)``
+    """``structural_solids`` bills two assemblies as ``solids/column``. ``(section, key)``
     is what ``costs.toml`` files an actual cost under, so the CSV has to aggregate or the
     file cannot be written back unambiguously."""
     rows = estimate_rows(estimate)

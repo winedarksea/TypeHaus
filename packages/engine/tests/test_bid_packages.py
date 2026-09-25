@@ -21,6 +21,7 @@ from typehaus.takeoff.bid_recipes import RECIPES, SHAPES, _validate
 from typehaus.takeoff.bom import bill_of_materials
 from typehaus.takeoff.bom_walk import walk_bom
 from typehaus.takeoff.labels import LabelIndex
+from typehaus.takeoff.solid_sections import SOLID_SECTIONS
 
 GOLDEN = REPO_ROOT / "packages" / "engine" / "tests" / "fixtures" / "bid_goldens" / "framing.md"
 runner = CliRunner()
@@ -53,7 +54,8 @@ def test_every_bom_row_lands_in_exactly_one_package(packages) -> None:
     assert sorted(placed) == sorted(walked)
     assert set(built) <= TRADES
     mirrored = [item for item in walk_bom(bom) if is_mirrored(item)]
-    assert mirrored and all(item.section in ("concrete", "floor_finishes") for item in mirrored)
+    sections = (*SOLID_SECTIONS, "floor_finishes")
+    assert mirrored and all(item.section in sections for item in mirrored)
 
 
 def test_quantities_take_the_unit_a_sub_quotes_in(packages) -> None:
@@ -61,16 +63,16 @@ def test_quantities_take_the_unit_a_sub_quotes_in(packages) -> None:
     module, a truss is a truss, aggregate under the green is a yard."""
     _bom, built = packages
     by_key = {(line.section, line.key): line for p in built.values() for line in p.lines}
-    assert by_key[("concrete", "beam:BEAM_KDAT")].unit == "bf"
+    assert by_key[("timber", "beam:BEAM_KDAT")].unit == "bf"
     assert by_key[("wall_structure", "BASEMENT_BRICK_VENEER:brown-brick")].unit == "SF"
     assert by_key[("solar_modules", "Aptos 440 W module, 69.4 x 44.6 x 1.2 in")].unit == "ea"
     assert by_key[("framing", "24 roof truss")].unit == "ea"
     assert by_key[("envelope_layers", "usga-choker-sand:2.0")].unit == "cy"
     footing = next(line for line in built["concrete"].lines if line.key.startswith("footing"))
     assert footing.unit == "cy"
-    assert by_key[("concrete", "slab_band:FROST_WING_XPS_1IN")].unit == "SF"
+    assert by_key[("solids", "slab_band:FROST_WING_XPS_1IN")].unit == "SF"
     assert any(line.key == "slab_band:FROST_WING_XPS_1IN" for line in built["concrete"].lines)
-    assert ("concrete", "pipe_drain") not in by_key
+    assert ("solids", "pipe_drain") not in by_key
 
 
 def test_unpriced_by_default_and_priced_needs_an_estimate(packages, catlin_model) -> None:

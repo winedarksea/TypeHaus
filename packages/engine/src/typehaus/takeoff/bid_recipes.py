@@ -86,7 +86,9 @@ SHAPES: dict[str, Shape] = {
     "framing": Shape("Lumber and engineered wood, by size", _lumber, "LF ordered"),
     "sheet_goods": Shape("Sheet goods, by the sheet", _sheets, unit_of=_sheet_unit),
     "hardware": Shape("Connectors and fasteners, by part"),
-    "concrete": Shape("Pours and structural solids", _solid),
+    "concrete": Shape("Pours, by the yard", _solid),
+    "site": Shape("Site solids: stormwater, planting and aggregate", _solid),
+    "solids": Shape("Other structural solids", _solid),
     "reinforcement": Shape("Reinforcing steel, by bar", _bar, "lb"),
     "wall_structure": Shape("Wall structure", None),
     "footing_bedding": Shape("Footing bedding", _members, "cy"),
@@ -154,10 +156,10 @@ RECIPES: dict[str, Recipe] = {
                     "footings, with the perimeter tile bedded in it.",
                     ("footing_bedding", "envelope_layers", "allowances"), ("S-100", "C-100")),
     "drainage": Recipe("Drainage", "The stormwater run from the gutter to daylight: leaders, "
-                       "tile, drywells and the sump.", ("drainage", "concrete", "allowances"),
+                       "tile, drywells and the sump.", ("drainage", "site", "allowances"),
                        ("S-100", "P-101")),
     "landscaping": Recipe("Landscaping", "Final grade, sod, rootzone and the segmental "
-                          "retaining block.", ("envelope_layers", "wall_structure", "concrete"),
+                          "retaining block.", ("envelope_layers", "wall_structure", "site"),
                           ("C-100",)),
     "concrete": Recipe("Concrete", "Every pour, by the yard: footings, foundation walls, slabs, "
                        "the cast columns, the reinforcing steel and the cast-in anchors and "
@@ -169,12 +171,12 @@ RECIPES: dict[str, Recipe] = {
     "framing": Recipe("Framing", "Sticks by size with piece counts, sheet goods by the sheet, "
                       "the structural hardware, the decks, and the tape on every member "
                       "top. Trusses and engineered wood are called out by the profile.",
-                      ("framing", "sheet_goods", "hardware", "concrete", "timber",
+                      ("framing", "sheet_goods", "hardware", "solids", "timber",
                        "member_protection", "construction_returns", "sill_gaskets",
                        "envelope_layers", "wall_structure"),
                       ("S-100", "S-101", "S-201", "A-301", "A-401")),
     "stairs": Recipe("Stairs and guards", "Stringers, treads, risers and newels, and every "
-                     "guard and handrail.", ("framing", "railings", "concrete"),
+                     "guard and handrail.", ("framing", "railings", "solids"),
                      ("A-301", "A-401")),
     "roofing": Recipe("Roofing", "Standing seam, underlayment, drip and ridge, and the snow "
                       "retention and clamps fastened into the skin.",
@@ -183,21 +185,21 @@ RECIPES: dict[str, Recipe] = {
     "siding": Recipe("Siding and trim", "Cladding, the WRB and furring behind it, corners, "
                      "fascia, the eave soffit and the closures.",
                      ("envelope_layers", "edge_trim", "framing", "hardware", "sheet_goods",
-                      "wall_structure", "concrete", "allowances"),
+                      "wall_structure", "solids", "allowances"),
                      ("A-201", "A-401")),
     "insulation": Recipe("Insulation and air sealing", "Spray foam, batts, blown fill, rigid "
                          "board and the rim foam, plus the air-sealing allowance.",
-                         ("envelope_layers", "construction_returns", "sheet_goods", "concrete",
+                         ("envelope_layers", "construction_returns", "sheet_goods", "solids",
                           "allowances"), ("A-301", "A-401")),
     "drywall": Recipe("Drywall", "Board by the sheet and the area behind it, resilient "
                       "channel, and the dropped soffit boxes.",
-                      ("sheet_goods", "envelope_layers", "construction_returns", "concrete"),
+                      ("sheet_goods", "envelope_layers", "construction_returns", "solids"),
                       ("A-101",)),
     "paint": Recipe("Paint", "Wall and ceiling coats by area, the foundation coating, and the "
                     "trim allowance.", ("envelope_layers", "allowances"), ("A-101",)),
     "openings": Recipe("Windows and doors", "Every product by type and size, the pocket "
                        "frames, and the hardware allowances.",
-                       ("openings", "hardware", "concrete", "allowances"), ("A-601",)),
+                       ("openings", "hardware", "solids", "allowances"), ("A-601",)),
     "tile": Recipe("Tile", "Floor and wall tile by area with the uncoupling membrane.",
                    ("floor_finishes", "allowances"), ("A-101",)),
     "flooring": Recipe("Flooring", "Every finish floor by ordered area, with its underlayment.",
@@ -210,19 +212,19 @@ RECIPES: dict[str, Recipe] = {
                        "the sleeves that go in before the pour, every fixture by model, and "
                        "the water heater.",
                        ("pipe_runs", "pipe_fittings", "sleeves", "plumbing_specialties",
-                        "pipe_insulation", "install_parts", "placeables", "concrete",
+                        "pipe_insulation", "install_parts", "placeables", "solids",
                         "allowances"), ("P-101", "P-201")),
     "electrical": Recipe("Electrical", "Devices and luminaires by model, conduit and "
                          "conductors by the foot, the PV array with its inverter and battery, "
                          "and the appliance control kits.",
                          ("placeables", "conduit", "conductors", "data_raceways",
                           "solar_modules", "hardware", "install_parts", "freeze_protection",
-                          "concrete", "allowances"), ("E-101", "E-601", "E-602")),
+                          "solids", "allowances"), ("E-101", "E-601", "E-602")),
     "mechanical": Recipe("Mechanical", "Ducts by system and size in feet, fittings and "
                          "insulation, every register and the equipment by model, and the "
                          "radiant floor cable.",
                          ("ducts", "duct_fittings", "duct_insulation", "placeables",
-                          "floor_heat", "hardware", "concrete", "pipe_runs", "allowances"),
+                          "floor_heat", "hardware", "solids", "pipe_runs", "allowances"),
                          ("M-101", "M-201")),
     "furniture": Recipe("Furniture and appliances", "Loose furniture and appliances by model; "
                         "the porch enclosure panels.", ("placeables", "furnishings",

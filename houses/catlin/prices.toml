@@ -222,7 +222,7 @@
 # `JoistSpec.rim_material`: 20 LF of that same stock, WHITE-PAINTED — FS-SG-DECK's two
 # rim bands only since 2026-09-22 (the porch hangs on ledgers and has no rim). Qualified
 # key, so the bare band above keeps its own rate. The delta over that rate is primer + 2 coats at $2.00-4.50/SF, the same paint the pillars carry in
-# [concrete] "column:POST_WHITE_PAINT", over 0.75 SF of face per LF (the 7 1/4" outer face
+# [solids] "column:POST_WHITE_PAINT", over 0.75 SF of face per LF (the 7 1/4" outer face
 # plus the 1 1/4" bottom edge) = $1.50-3.38/LF. Painting a narrow band is ~85% labour, as
 # the pillar note says of a 6x6, so that splits $0.25-0.50 material and $1.30-2.90 labour.
 # Re-keyed 2026-09-22 from 1.25x7.25: the balcony joists went 2x12, so the band did, and the
@@ -599,7 +599,7 @@
 #
 # 2026-09-03: **the breezeway plank joined this row**, 164.7 -> 181.1 SF, when SL-BW-DECK
 # stopped being a Slab and became FS-BW-FLOOR's subfloor (see the retired
-# `slab:PORCH_DECK_COMPOSITE` row in [concrete]). Both areas round to the same 6 sheets, so
+# `slab:PORCH_DECK_COMPOSITE` row in [solids]). Both areas round to the same 6 sheets, so
 # the MATERIAL is genuinely already bought — 6 x 32 = 192 SF against 181.1 net.
 #
 # The LABOUR is not, and this is where an unpriced item would have vanished. The retired row
@@ -1541,53 +1541,6 @@
 # any stress under §14.1.5** — so it is stated here once instead of being reconstructed
 # from two obituaries. notes/north_entry_piers.md §6 is the live derivation.
 "column:PIER_CONCRETE_12" = { material = { low = 506, high = 949 }, labour = { low = 638, high = 1348 } }  # 1.51 cy = 53.5 LF over six shafts, two of which run full height as canopy columns; $/cy, so the line scales
-# ** THE LARGEST PROPORTIONAL ERROR IN THE 2026-08-08 FILE, ~5x. ** The old $240-400/cy came
-# out at $0.99-1.66 per LF over the ~800 LF this volume represents, which is roughly the bare
-# pipe and not even all of it. New-construction installed exterior footing drain, open trench,
-# is $6-14/LF. Retrofit "French drain" prices of $30-100/LF buy a re-excavation of a finished
-# house and do not apply. The washed-rock envelope is billed in [footing_bedding], not here.
-# 2026-08-20: RE-UNITED. This row wanted to be $/LF and could not be, because structural_solids
-# bills by the yard. `unit = "SF"` (cli/price_file.ALTERNATE_UNITS) now reads the row's own
-# `plan_area_sqft` instead, and the conversion to the foot is EXACT rather than estimated:
-# `resolve/drain_tile.py` extrudes each run as a band exactly one pipe diameter wide, so at 4"
-# pipe the plan area is LF/3 and $/SF = 3 x $/LF. 253.8 SF is therefore 761.4 LF — and the
-# takeoff agrees independently: [footing_bedding] reports drain_tile_ft 515.3 + 246.0 = 761.3.
-# At $6-14/LF installed that is $18-42/SF. The money is within 3% of the $/cy rate it replaces;
-# what changes is that the multiplier is now 3, not ~230, so the rate is one an estimator can
-# check against a quote. See plans/cost-options.md on whether 761 LF is the right LENGTH.
-"drain_tile" = { low = 18, high = 42, unit = "SF" }  # 153.2 SF = 460 LF @ $6-14/LF (2026-09-23: was 240.7 SF / 722 LF — the six court beds run no pipe, and the overflow leg is a 12" link on W1's heel) (2026-09-22: was 254.0 SF; the court's two well leads and the field lateral's 28" dive went with DRW-SG-MAIN) (-2.9 SF on 2026-09-10: the court shortened 28' -> 26', so the south wall's bed ring and the two side rings lost 4'-0" of run between them, and the narrower strips shortened every ring's cross-run)
-# ** THE HYDRANT PIT ONLY SINCE 2026-09-22. ** DRW-SG-MAIN (4.36 cy) is retired: the court's
-# soakaway is now a 12" course under four of its beds, bought in [footing_bedding] by the
-# yard. What is left is DRW-G-HYDRANT's 0.10 cy, spotted off the #57 order; the $/cy stays
-# the small-pit rate (excavation, wrap and placement dominate a few bags of stone).
-"drywell" = { low = 150, high = 350 }  # 0.10 cy — DRW-G-HYDRANT only
-# The west rain garden RG-W-BASIN (params/landscape_gardens.py). Media and stone bill here
-# by the yard, like the drywell's stone; the excavation is in the earthwork allowance.
-"rain_garden_media" = { material = { low = 50, high = 90 }, labour = { low = 40, high = 110 } }  # 12.96 cy over both basins, MnDOT 3877.2 Type G mix, placed by hand
-"rain_garden_stone" = { material = { low = 40, high = 70 }, labour = { low = 30, high = 90 } }  # 6.48 cy over both basins, washed filter aggregate under the media
-# The raised-garden terrace (params/raised_garden.py TERRACE_BEDS): 12" of screened topsoil
-# placed by hand between the apron and the court walls, then the fill under it. The FILL is
-# ZERO on purpose: it is the excavator's, inside `site-excavation-backfill-grading`.
-"planting_soil" = { material = { low = 35, high = 65 }, labour = { low = 40, high = 110 } }  # 6.47 cy, PB-TER-*
-"planting_fill" = { low = 0, high = 0 }  # 15.09 cy, PB-TER-* — bills in the earthwork allowance
-# ZERO on purpose: the pipe is billed by the foot in [drainage] `leader_extension:pvc-sdr35`.
-"leader_extension" = { low = 0, high = 0 }  # 0.12 cy — bills in [drainage]
-# ZERO on purpose, like `leader_extension`: AD-SG-COURT bills by the piece and its riser by
-# the foot in [drainage].
-"area_drain" = { low = 0, high = 0 }  # 0.04 cy — bills in [drainage]
-"area_drain_riser" = { low = 0, high = 0 }  # 0.01 cy — bills in [drainage]
-# The two sunken-garden trenches: FD-SG-FIELD in the field and FD-SG-OVERFLOW, a 1' link on
-# W1's west heel since 2026-09-23 (it ran down the court). FD-SG-LEAD-W/E
-# retired with DRW-SG-MAIN on 2026-09-22 (4 -> 2 trenches). Same washed stone as the drywell,
-# but a quarter yard is a hand-barrowed quantity 9' down a court with no truck access, so the
-# placement dominates the material by a wide margin.
-# The 4" pipe inside each trench is NOT here — it bills as `drain_tile` above, by the foot,
-# like every other run in the house.
-#
-# $/cy, and a steep one: the money in a hand-dug trench 9' down is the access and the barrow.
-# (It is NOT a lump — this table bills by the yard — so the retired leads took their share
-# with them: $204-561 for four trenches became $104-286 for two.)
-"french_drain" = { low = 400, high = 1100 }  # 0.14 cy in two hand-dug trenches (0.26 until the overflow moved to W1's heel, 2026-09-23)
 # "dowel" =    # 0 cy
 # A 16"x8" footing is 0.0329 cy/LF, so this is $9.20-14.80/LF. Inch Calculator's dimension
 # table back-solves to a consistent $256-267/cy but on a $137/cy ready-mix basis; Twin Cities
@@ -1597,37 +1550,6 @@
 # names ($180-200/cy, a YARD'S PRE-TAX SHEET) plus the rebar and form lumber consumed in the
 # pour; labour is the residual. That order matters — see the [basis_notes] on this section.
 "footing" = { material = { low = 195, high = 240 }, labour = { low = 85, high = 210 } }  # 26.92 cy MEASURED (19.09 COURT_FOOTING_12 + 6.35 FOOTING_20 + 1.48 FOOTING_EXPOSED_20) — 30.87 until 2026-09-15, when the garage's nine (3.95 cy) went to stone. The 33.25/31.52/1.73 this comment carried was stale again; re-read off `haus takeoff` rather than re-derived
-# ** THE GARAGE'S NINE, WHICH ARE STONE AND NOT CONCRETE (2026-09-15). ** 2024 IRC R403.5,
-# graded by `code.R403_5_crushed_stone_footings`. They left the row above — that is the
-# 30.87 -> 26.92 cy — and they land here because `structural_solids` keys on solid CATEGORY
-# and a qualified `<category>:<assembly>` key is the escape hatch a non-concrete solid uses
-# (cli/prices.QUALIFIED_KEY_FIELD). Without this row the material guard drops them from the
-# bill entirely and the TOTAL FALLS, which reads as a saving.
-#
-# MATERIAL. Not the [footing_bedding] #57 rate, and the difference is the gradation:
-# R403.4.1 wants 1/2" MAXIMUM and 1/16" minimum, where #57 tops out at 1" and carries
-# nothing under a #4. That is a coarse FILTER aggregate, a more processed and more expensive
-# product than a bedding stone, and MnDOT 2025 Average Bid Prices price the two apart:
-# Coarse Filter Aggregate (CV) $81.24/CY against Coarse Aggregate Bedding (CV) $65.21/CY,
-# both IN PLACE. Delivered-only sits under the in-place figure, which is where $55-85 comes
-# from — the same reasoning, and the same source, as the [footing_bedding] band above.
-#
-# ** THE QUANTITY IS THE REAL COST RISK, AS IT WAS FOR CLASS 5. ** 3.95 cy is 5.5 tons —
-# well under a tandem, and the per-order delivery charge ($150-485 by zone at Plaisted) is
-# larger than the stone. ORDER IT WITH THE 71.2 CY OF #57 the footing beddings already buy:
-# one release, two products, one trip. Priced here as though it does, because the alternative
-# is a $150-485 line this file cannot attribute to a cubic yard. If it ends up a separate
-# call, add that delivery to [allowances] rather than inflating this rate.
-#
-# LABOUR IS A SEPARATE FIELD AND IS NOT THE EXCAVATOR'S SPREAD. R403.5 requires the stone
-# CONSOLIDATED with a vibratory plate in lifts not greater than 8" — at an 8" footing that is
-# one full-depth lift per run, plate-compacted and left flat enough to set an ICF course on.
-# That is not the $8-15/cy "spreading and levelling" the [footing_bedding] comment says sits
-# in the excavator's number; it is a trade operation with its own machine and its own
-# inspection hold. $60-140/cy looks high against the stone until you notice 3.95 cy is half a
-# day for one person with a plate whatever the volume — this band IS mobilisation, spread
-# over the yards, and it is why it is wider than the material above it.
-"footing:FOOTING_STONE_20" = { material = { low = 55, high = 85 }, labour = { low = 60, high = 140 } }  # 3.95 cy = 5.5 tons
 # ** THE GENERIC ROW, AND CATLIN NO LONGER USES IT (2026-09-14). ** It is a lump for a pad
 # nobody has sized — all setup and no volume, really a $300-600 minimum charge — and the
 # "0.59 cy" in this comment was stale for as long as the house had no `Pad` at all. Kept
@@ -1810,12 +1732,6 @@
 # deck's, because the form supplier gives a layout and the shoring is prescriptive out of the
 # manual rather than designed.
 "slab:DECK_EPS_INT" = { low = 11.02, high = 23.39, unit = "SF" }  # 414 SF — EPS-formed deck, concrete + temporary shoring, pump in [allowances]
-# $400-1,200 each — basin, gasketed sealed lid, 4" riser, sub-slab connection, slab patch.
-# Minnesota has required radon-resistant new construction since June 2009, so this is code
-# scope, not an option. 2026-08-20: RE-UNITED — `unit = "ea"` reads the row's `count`, so the
-# rate below is now literally the per-basin price the paragraph above quotes, instead of the
-# $2,100-6,300/cy that price had to be disguised as. Same money, checkable rate.
-"sump" = { low = 400, high = 1200, unit = "ea" }  # 1 ea — basin, sealed lid, riser, slab patch
 # 2026-08-20: RE-UNITED, and REPRICED — the old rate was not just mis-keyed, it was wrong.
 # It read $15-60/LF for a structural bearing break (Armatherm FRR, Foamglas Perinsul) under
 # three ~0.3 SF pads at the sunken-garden column and drywell, giving $25-90 each against the
@@ -1863,13 +1779,116 @@
 # against a pour; it is now pull-a-blockout-and-set-a-board, plus the blockout stock and its
 # stripping. Noted, not re-rated: the two probably net out, and nobody has quoted either.
 "thermal_break" = { low = 78, high = 183, unit = "cuft" }  # 5.74 cf — the garden closure boards
+
+# Mirrors and markers — billed in their own sections, or in no section at all:
+# "conduit_data" =    # 0.02 cy
+# "conduit_power" =    # 0.06 cy   # "connector" =    # 0.3 cy
+# "downspout" =    # 0.2 cy        # "fascia" =    # 0.09 cy
+# "flashing" =    # 0.16 cy
+# "glazing_trim" =    # 0.03 cy    # "gutter" =    # 0.17 cy
+# "pipe_drain" =    # 0.29 cy      # "pipe_sleeve" =    # 0.09 cy
+# "pipe_sump_discharge" =    # 0.11 cy — bills in [pipe_runs]
+# "pipe_vent" =    # 0.14 cy       # "pipe_water_cold" =    # 0.05 cy
+# "pipe_water_hot" =    # 0.02 cy  # "railing" =    # 0.14 cy
+# "shutoff" =    # 0.01 cy
+# "vacuum_breaker" =    # 0.01 cy  # "vent" =    # 0.14 cy
+# "water_hammer_arrestor" =    # 0.01 cy
+
+[site]
+# Stormwater, planting and aggregate solids (takeoff/solid_sections.py), by the yard unless
+# a row names its own unit. Split out of [concrete] 2026-09-25; the rates did not move.
+# ** THE LARGEST PROPORTIONAL ERROR IN THE 2026-08-08 FILE, ~5x. ** The old $240-400/cy came
+# out at $0.99-1.66 per LF over the ~800 LF this volume represents, which is roughly the bare
+# pipe and not even all of it. New-construction installed exterior footing drain, open trench,
+# is $6-14/LF. Retrofit "French drain" prices of $30-100/LF buy a re-excavation of a finished
+# house and do not apply. The washed-rock envelope is billed in [footing_bedding], not here.
+# 2026-08-20: RE-UNITED. This row wanted to be $/LF and could not be, because structural_solids
+# bills by the yard. `unit = "SF"` (cli/price_file.ALTERNATE_UNITS) now reads the row's own
+# `plan_area_sqft` instead, and the conversion to the foot is EXACT rather than estimated:
+# `resolve/drain_tile.py` extrudes each run as a band exactly one pipe diameter wide, so at 4"
+# pipe the plan area is LF/3 and $/SF = 3 x $/LF. 253.8 SF is therefore 761.4 LF — and the
+# takeoff agrees independently: [footing_bedding] reports drain_tile_ft 515.3 + 246.0 = 761.3.
+# At $6-14/LF installed that is $18-42/SF. The money is within 3% of the $/cy rate it replaces;
+# what changes is that the multiplier is now 3, not ~230, so the rate is one an estimator can
+# check against a quote. See plans/cost-options.md on whether 761 LF is the right LENGTH.
+"drain_tile" = { low = 18, high = 42, unit = "SF" }  # 153.2 SF = 460 LF @ $6-14/LF (2026-09-23: was 240.7 SF / 722 LF — the six court beds run no pipe, and the overflow leg is a 12" link on W1's heel) (2026-09-22: was 254.0 SF; the court's two well leads and the field lateral's 28" dive went with DRW-SG-MAIN) (-2.9 SF on 2026-09-10: the court shortened 28' -> 26', so the south wall's bed ring and the two side rings lost 4'-0" of run between them, and the narrower strips shortened every ring's cross-run)
+# ** THE HYDRANT PIT ONLY SINCE 2026-09-22. ** DRW-SG-MAIN (4.36 cy) is retired: the court's
+# soakaway is now a 12" course under four of its beds, bought in [footing_bedding] by the
+# yard. What is left is DRW-G-HYDRANT's 0.10 cy, spotted off the #57 order; the $/cy stays
+# the small-pit rate (excavation, wrap and placement dominate a few bags of stone).
+"drywell" = { low = 150, high = 350 }  # 0.10 cy — DRW-G-HYDRANT only
+# The west rain garden RG-W-BASIN (params/landscape_gardens.py). Media and stone bill here
+# by the yard, like the drywell's stone; the excavation is in the earthwork allowance.
+"rain_garden_media" = { material = { low = 50, high = 90 }, labour = { low = 40, high = 110 } }  # 12.96 cy over both basins, MnDOT 3877.2 Type G mix, placed by hand
+"rain_garden_stone" = { material = { low = 40, high = 70 }, labour = { low = 30, high = 90 } }  # 6.48 cy over both basins, washed filter aggregate under the media
+# The raised-garden terrace (params/raised_garden.py TERRACE_BEDS): 12" of screened topsoil
+# placed by hand between the apron and the court walls, then the fill under it. The FILL is
+# ZERO on purpose: it is the excavator's, inside `site-excavation-backfill-grading`.
+"planting_soil" = { material = { low = 35, high = 65 }, labour = { low = 40, high = 110 } }  # 6.47 cy, PB-TER-*
+"planting_fill" = { low = 0, high = 0 }  # 15.09 cy, PB-TER-* — bills in the earthwork allowance
+# ZERO on purpose: the pipe is billed by the foot in [drainage] `leader_extension:pvc-sdr35`.
+"leader_extension" = { low = 0, high = 0 }  # 0.12 cy — bills in [drainage]
+# ZERO on purpose, like `leader_extension`: AD-SG-COURT bills by the piece and its riser by
+# the foot in [drainage].
+"area_drain" = { low = 0, high = 0 }  # 0.04 cy — bills in [drainage]
+"area_drain_riser" = { low = 0, high = 0 }  # 0.01 cy — bills in [drainage]
+# The two sunken-garden trenches: FD-SG-FIELD in the field and FD-SG-OVERFLOW, a 1' link on
+# W1's west heel since 2026-09-23 (it ran down the court). FD-SG-LEAD-W/E
+# retired with DRW-SG-MAIN on 2026-09-22 (4 -> 2 trenches). Same washed stone as the drywell,
+# but a quarter yard is a hand-barrowed quantity 9' down a court with no truck access, so the
+# placement dominates the material by a wide margin.
+# The 4" pipe inside each trench is NOT here — it bills as `drain_tile` above, by the foot,
+# like every other run in the house.
+#
+# $/cy, and a steep one: the money in a hand-dug trench 9' down is the access and the barrow.
+# (It is NOT a lump — this table bills by the yard — so the retired leads took their share
+# with them: $204-561 for four trenches became $104-286 for two.)
+"french_drain" = { low = 400, high = 1100 }  # 0.14 cy in two hand-dug trenches (0.26 until the overflow moved to W1's heel, 2026-09-23)
+# ** THE GARAGE'S NINE, WHICH ARE STONE AND NOT CONCRETE (2026-09-15). ** 2024 IRC R403.5,
+# graded by `code.R403_5_crushed_stone_footings`. They left the row above — that is the
+# 30.87 -> 26.92 cy — and they land here because `structural_solids` keys on solid CATEGORY
+# and a qualified `<category>:<assembly>` key is the escape hatch a non-concrete solid uses
+# (cli/prices.QUALIFIED_KEY_FIELD). Without this row the material guard drops them from the
+# bill entirely and the TOTAL FALLS, which reads as a saving.
+#
+# MATERIAL. Not the [footing_bedding] #57 rate, and the difference is the gradation:
+# R403.4.1 wants 1/2" MAXIMUM and 1/16" minimum, where #57 tops out at 1" and carries
+# nothing under a #4. That is a coarse FILTER aggregate, a more processed and more expensive
+# product than a bedding stone, and MnDOT 2025 Average Bid Prices price the two apart:
+# Coarse Filter Aggregate (CV) $81.24/CY against Coarse Aggregate Bedding (CV) $65.21/CY,
+# both IN PLACE. Delivered-only sits under the in-place figure, which is where $55-85 comes
+# from — the same reasoning, and the same source, as the [footing_bedding] band above.
+#
+# ** THE QUANTITY IS THE REAL COST RISK, AS IT WAS FOR CLASS 5. ** 3.95 cy is 5.5 tons —
+# well under a tandem, and the per-order delivery charge ($150-485 by zone at Plaisted) is
+# larger than the stone. ORDER IT WITH THE 71.2 CY OF #57 the footing beddings already buy:
+# one release, two products, one trip. Priced here as though it does, because the alternative
+# is a $150-485 line this file cannot attribute to a cubic yard. If it ends up a separate
+# call, add that delivery to [allowances] rather than inflating this rate.
+#
+# LABOUR IS A SEPARATE FIELD AND IS NOT THE EXCAVATOR'S SPREAD. R403.5 requires the stone
+# CONSOLIDATED with a vibratory plate in lifts not greater than 8" — at an 8" footing that is
+# one full-depth lift per run, plate-compacted and left flat enough to set an ICF course on.
+# That is not the $8-15/cy "spreading and levelling" the [footing_bedding] comment says sits
+# in the excavator's number; it is a trade operation with its own machine and its own
+# inspection hold. $60-140/cy looks high against the stone until you notice 3.95 cy is half a
+# day for one person with a plate whatever the volume — this band IS mobilisation, spread
+# over the yards, and it is why it is wider than the material above it.
+"footing:FOOTING_STONE_20" = { material = { low = 55, high = 85 }, labour = { low = 60, high = 140 } }  # 3.95 cy = 5.5 tons
+# $400-1,200 each — basin, gasketed sealed lid, 4" riser, sub-slab connection, slab patch.
+# Minnesota has required radon-resistant new construction since June 2009, so this is code
+# scope, not an option. 2026-08-20: RE-UNITED — `unit = "ea"` reads the row's `count`, so the
+# rate below is now literally the per-basin price the paragraph above quotes, instead of the
+# $2,100-6,300/cy that price had to be disguised as. Same money, checkable rate.
+"sump" = { low = 400, high = 1200, unit = "ea" }  # 1 ea — basin, sealed lid, riser, slab patch
+
+[solids]
+# Every other structural solid: glazing, timbers and painted posts, the equipment stand,
+# soffits, bug screens, decks. A row with a material prices only by its qualified key.
+# Split out of [concrete] 2026-09-25; the rates did not move.
 # --- 2026-08-20: SOLIDS THAT NO OTHER TABLE BILLS ---------------------------------------
-# structural_solids is the only table that reaches these rows, and until today [concrete]
-# refused them because their structure_material is not "concrete" (cli/prices.MATERIAL_ONLY —
-# the guard that stops an aluminium deck billing at the ready-mix $/cy). That guard is now a
-# default rather than a wall: a QUALIFIED "category:assembly" key names one assembly and one
-# rate, so authoring it here is an explicit instruction to price this row. A bare-category row
-# is still filtered, so nothing that used to be excluded silently starts billing.
+# structural_solids is the only table that reaches these rows. A row carrying a material
+# prices only on a QUALIFIED "category:assembly" key, so nothing silently starts billing.
 #
 # READ THE $/cy NUMBERS WITH CARE. They are large because the divisor is a modelled volume that
 # has nothing to do with how the trade sells the work. Each row states its native unit first;
@@ -2091,7 +2110,7 @@
 # ** RETIRED 2026-09-03. THIS ROW IS DORMANT AND BILLS NOTHING. ** It went the way the
 # balcony's `slab:BALCONY_DECK_ALUMINUM` went: SL-BW-DECK is FS-BW-FLOOR's subfloor now, so
 # it bills by the square foot on [sheet_goods] `composite-deck` instead of by the cubic yard
-# out of a table named [concrete]. What made that possible is one field —
+# out of a table named [concrete] (now [solids]). What made that possible is one field —
 # `FloorSystem.subfloor_outline` — which lets a plank oversail its joist field; the 2026-08-22
 # attempt failed because a floor system's sheet WAS its joist field, and this plank runs
 # 2 3/4" past the rim onto the two door thresholds.
@@ -2125,20 +2144,6 @@
 # [envelope_layers] (6.3 SF net of the tub cutout); pricing it again here would double-bill
 # the sheet. Nor is the tile: that is [floor_finishes].
 "slab_platform:TUBDECK_INT_PLY_CAP" = { material = { low = 625, high = 1500 }, labour = { low = 2000, high = 5000 } }  # 0.04 cy = ~26 bf; $25-60 mat + $80-200 lab
-
-# Mirrors and markers — billed in their own sections, or in no section at all:
-# "conduit_data" =    # 0.02 cy
-# "conduit_power" =    # 0.06 cy   # "connector" =    # 0.3 cy
-# "downspout" =    # 0.2 cy        # "fascia" =    # 0.09 cy
-# "flashing" =    # 0.16 cy
-# "glazing_trim" =    # 0.03 cy    # "gutter" =    # 0.17 cy
-# "pipe_drain" =    # 0.29 cy      # "pipe_sleeve" =    # 0.09 cy
-# "pipe_sump_discharge" =    # 0.11 cy — bills in [pipe_runs]
-# "pipe_vent" =    # 0.14 cy       # "pipe_water_cold" =    # 0.05 cy
-# "pipe_water_hot" =    # 0.02 cy  # "railing" =    # 0.14 cy
-# "shutoff" =    # 0.01 cy
-# "vacuum_breaker" =    # 0.01 cy  # "vent" =    # 0.14 cy
-# "water_hammer_arrestor" =    # 0.01 cy
 
 [floor_heat]
 # RESEARCHED 2026-08-08 — [low, high] $/LF of heating CABLE, material only, thermostat
@@ -5826,10 +5831,10 @@
 # `french_drain` is a ZERO ROW, not an absent one, and that is the difference from `drywell`
 # below: a FrenchDrain carries a real length_ft, so with no row at all it would sit on
 # `haus takeoff`'s unpriced list forever while being fully priced twice over elsewhere — the
-# 4" pipe inside it as [concrete] `drain_tile` ($/LF, open-trench installed) and the stone
-# around it as [concrete] `french_drain` ($/cy). A $/LF rate here would bill the same trench a
+# 4" pipe inside it as [site] `drain_tile` ($/LF, open-trench installed) and the stone
+# around it as [site] `french_drain` ($/cy). A $/LF rate here would bill the same trench a
 # third time. The zero says "priced, elsewhere, on purpose".
-"french_drain" = { low = 0, high = 0 }  # 20.2 LF — bills in [concrete], twice over already
+"french_drain" = { low = 0, high = 0 }  # 20.2 LF — bills in [site], twice over already
 # AD-SG-COURT, 2026-09-22: a 12" square PE catch basin with a cast-iron-look grate (NDS 1200
 # class, $60-140 retail) set in the rim pour, and its solid 4" PVC riser by the foot at the
 # [pipe_runs] 4" DWV rate plus the coupling into the basin outlet.
@@ -5838,8 +5843,8 @@
 # `drywell` is deliberately absent, and STILL should be: those rows carry length_ft 0, and a
 # [drainage] rate would join to that zero and price nothing at all — silently, because a
 # zero-quantity row is not reported as unpriced either. The hydrant pit's 0.10 cy of washed
-# stone bills in [concrete] instead (DRW-SG-MAIN's 4.35 cy retired 2026-09-22). If it is ever wanted here, [drainage] now offers `unit = "cy"`, which reads
-# `aggregate_cubic_yards` — but then it must be deleted from [concrete] the same day.
+# stone bills in [site] instead (DRW-SG-MAIN's 4.35 cy retired 2026-09-22). If it is ever wanted here, [drainage] now offers `unit = "cy"`, which reads
+# `aggregate_cubic_yards` — but then it must be deleted from [site] the same day.
 # Sources: homeguide.com 2026 aluminum gutter installation cost, angi.com gutter
 # replacement 2026, modernize.com gutter cost calculator.
 # --- 2026-08-20: SPLIT BY PRODUCT ---------------------------------------------------------
@@ -6239,11 +6244,11 @@ concrete-driveway-apron-and-walks = { material = { low = 1500, high = 3500 }, la
 # ** REDUCED 2026-08-30. Three of the four items it named are priced elsewhere. ** The old
 # scope was "the rock envelope beyond the footing bedding, the trench labour, the sump pit and
 # the daylight outlet", and:
-#   trench labour  — inside [concrete] `drain_tile`, whose $6-14/LF is explicitly a
+#   trench labour  — inside [site] `drain_tile`, whose $6-14/LF is explicitly a
 #                    NEW-CONSTRUCTION INSTALLED, OPEN-TRENCH rate (see its note). 761.4 LF.
 #   rock envelope  — billed by the yard in [footing_bedding], which the drain_tile note also
 #                    says in as many words.
-#   sump pit       — [concrete] `sump`, 1 ea at $400-1,200: basin, sealed lid, riser, patch.
+#   sump pit       — [site] `sump`, 1 ea at $400-1,200: basin, sealed lid, riser, patch.
 # The DAYLIGHT OUTLET is the residual and is still real, but it is a DIFFERENT OUTLET as of
 # 2026-09-05: the pump's PRESSURE discharge. ** RE-SCOPED 2026-09-22 the same day the line was
 # modelled: ** PR-B-SUMP-DISCH now bills its pipe in [pipe_runs] (no sleeve: since 2026-09-24
@@ -7266,6 +7271,8 @@ permits-design-testing-and-insurance = { low = 20000, high = 60000 }
 # mistake, not a rate, and that is what [contingency] is for. Omission here is a claim, not
 # an oversight.
 concrete             = 0.05   # short-load and over-order on ready-mix; you cannot buy 0.4 cy
+site                 = 0.05   # carried over from [concrete] when these rows split out (2026-09-25)
+solids               = 0.05   # likewise
 wall_structure       = 0.05   # same, plus block breakage on RETAINING_BLOCK_12
 footing_bedding      = 0.10   # aggregate compacts and is lost into the subgrade
 envelope_layers      = 0.10   # board cuts, membrane laps, and the offcut at every opening
@@ -7477,8 +7484,8 @@ wall_structure = true
 "openings:WT-1436" = "catalog-only: the south flankers moved out a bay to WT-1424 on 2026-09-22"
 "openings:WT-2464" = "catalog-only window size, kept per the retired-sizes-stay-priced convention"
 "openings:WT-2764" = "catalog-only: the Juliet pair grew to WT-2754 on 2026-09-10"
-"concrete:glazing:GLAZED_WALL_MULTIWALL_16MM" = "the breezeway canopy's 16mm multiwall stack, retired 2026-09-10 for RF-BW-CANOPY"
-"concrete:bug_screen:GARAGE_WALL_2X6" = "reads 0 SF for a corrugated wall by design — the closures bill as an allowance"
+"solids:glazing:GLAZED_WALL_MULTIWALL_16MM" = "the breezeway canopy's 16mm multiwall stack, retired 2026-09-10 for RF-BW-CANOPY"
+"solids:bug_screen:GARAGE_WALL_2X6" = "reads 0 SF for a corrugated wall by design — the closures bill as an allowance"
 "floor_finishes:polished-concrete" = "the costed fallback to the 2K PU coating on SL-M-DECK (2026-09-12)"
 
 [basis]
@@ -7486,6 +7493,8 @@ framing              = "material"
 sheet_goods          = "material"
 hardware             = "material"
 concrete             = "installed"
+site                 = "installed"
+solids               = "installed"
 floor_heat           = "material"
 placeables           = "material"
 floor_finishes       = "material"

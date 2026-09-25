@@ -16,11 +16,13 @@ from fractions import Fraction
 from typing import Any
 
 from typehaus.model.layer_functions import by_value
+from typehaus.takeoff.solid_sections import SOLID_SECTIONS
 
 #: What each estimate section is, for a heading or a bid group.
 SECTION_LABELS: dict[str, str] = {
     "framing": "Lumber and engineered wood", "sheet_goods": "Sheet goods",
-    "hardware": "Connectors and fasteners", "concrete": "Cast and structural solids",
+    "hardware": "Connectors and fasteners", "concrete": "Cast concrete",
+    "site": "Site solids", "solids": "Other structural solids",
     "floor_heat": "Radiant floor heat", "placeables": "Fixtures, equipment and casework",
     "floor_finishes": "Floor finishes", "envelope_layers": "Assembly layers",
     "wood_surfaces": "Wood surfaces", "countertops": "Countertops",
@@ -238,7 +240,7 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
             function = ""
         return (f"{name} {function}, {thickness} — {g('scope') or ''}"
                 .replace(" ,", ",").strip(" —,"))
-    if section in ("concrete", "timber"):
+    if section in SOLID_SECTIONS:
         head = KEY_GLOSSARY.get(("concrete", bare), bare.replace("_", " ").capitalize())
         assembly = g("assembly")
         return f"{head} — {labels.assembly(assembly)}" if assembly else head

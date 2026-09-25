@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typehaus.checks.code.mn_energy import MN_ZONE_6
 from typehaus.checks.code.mn_residential.inspections import MN_INSPECTIONS
+from typehaus.checks.engineered_rows import permit_items as engineered_permit_items
 from typehaus.checks.jurisdiction import JurisdictionProfile, PermitItemSpec
 
 MN_2020 = JurisdictionProfile(
@@ -586,46 +587,9 @@ MN_2020 = JurisdictionProfile(
                        ("structural.column_on_wall_support",),
                        ("IRC R404.1.2", "ACI 318-19 §22.8.3", "ACI 318-19 §22.9",
                         "ACI 318-19 §25.4.2")),
-        # Added 2026-09-20: five kinds `haus engineering` listed and no check named, so
-        # their deferrals were invisible here. Non-blocking while a kind is deferred; each
-        # flips to blocking in the commit that registers its calculation (base_rotation:
-        # `engineering/base_rotation.py`, 2026-09-20). Base STIFFNESS is
-        # its own line beside base STRENGTH above: different questions, and a reviewer
-        # wants both answered.
-        PermitItemSpec("Fixed column base rotation (stiffness and sway)",
-                       ("structural.base_rotation",),
-                       ("ACI 318-19 §6.6.4", "ACI 318-19 §6.2.5.3", "IBC 2018 §1806.3.4")),
-        # The four lines below BLOCK since 2026-09-20: each kind is a registered calculation
-        # now, and `engineered()`'s contract is that a registered kind gates. On catlin they
-        # hold the draft gate shut, and that is the answer the work was for: PT-BW-W/-GW's
-        # heads have no published lateral value, the veneer beam's end anchorage is
-        # unauthored, the thermal breaks await GFRP data and a measured modulus, and the
-        # SRW apron passed on 2026-09-21 (AB Stones). A suppressed finding leaves its
-        # line UNKNOWN, so blocking is also what keeps a suppressed OVER from opening either
-        # gate.
-        # Added 2026-09-21. A tie to a concrete wall takes a deck's columns OUT of its lateral
-        # system (`deck_tie_basis.wall_ties`), so the tie is that system and has to be graded
-        # or the relief is a claim. Blocking: a registered calculation.
-        PermitItemSpec("Deck lateral tie to a concrete wall",
-                       ("structural.deck_tie",),
-                       ("IRC R301.5", "ASCE 7-16 §29.3", "the tie part's evaluation report")),
-        PermitItemSpec("Cast column head joint (connector, shear, torsion)",
-                       ("structural.column_head_joint",),
-                       ("ACI 318-19 §22.5", "ACI 318-19 §22.7", "ACI 318-19 §22.8")),
-        PermitItemSpec("Cast beam carrying a masonry veneer",
-                       ("structural.veneer_beam",),
-                       ("ACI 318-19 §9.5", "ACI 318-19 §22.7", "ACI 318-19 §24.2.2",
-                        "ACI 318-19 §25.4.3", "TMS 402-22 §13.1.2.3")),
-        # Still deferred: the anchor supplier's design. Non-blocking until it is computed.
-        PermitItemSpec("Masonry veneer anchorage over an insulated standoff",
-                       ("structural.veneer_anchor",),
-                       ("TMS 402-16 §12.2", "IRC R703.8.4"), blocking=False),
-        PermitItemSpec("Isolation joint between separately founded pours",
-                       ("structural.thermal_break",),
-                       ("ACI 347R-14", "ACI 318-19 §22.3", "ASTM C578")),
-        PermitItemSpec("Segmental gravity retaining walls (tiered)",
-                       ("structural.tiered_retaining",),
-                       ("IRC R404.4", "IBC 2018 §1807.2")),
+        # One line per `checks/engineered_rows.ROWS` entry: blocking iff the kind has a
+        # registered, non-deferred calculation, so no edit here when one lands.
+        *engineered_permit_items(),
         # Added 2026-09-22, when `wall_panel` left the register as a manufacturer read:
         # without a line the question would vanish from every register.
         PermitItemSpec("Exterior wall covering — wind pressure",

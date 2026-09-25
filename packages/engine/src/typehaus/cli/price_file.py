@@ -36,7 +36,8 @@ except ModuleNotFoundError:  # pragma: no cover - exercised on <3.11 only
 
 PRICES_FILENAME = "prices.toml"
 
-_SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "placeables",
+_SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids", "floor_heat",
+             "placeables",
              "floor_finishes", "envelope_layers", "wood_surfaces", "shelving", "openings",
              # Work surfaces by the square foot, keyed on material tag.
              "countertops",
@@ -67,8 +68,7 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              # ``REBAR_INCLUSIVE_SECTIONS`` — a $/cy rate that still claims to contain its
              # own rebar, next to a non-empty reinforcement table, is a hard error.
              "reinforcement",
-             # Structural WOOD solids by the yard — the other half of [concrete]. See
-             # ``Prices.timber``.
+             # Structural WOOD solids by the yard. See ``Prices.timber``.
              "timber",
              # Rolled STEEL members by the lineal foot of a named AISC section — the third
              # half, and the one a volume rate cannot buy. See ``Prices.steel_members``.
@@ -155,9 +155,8 @@ BASES = (MATERIAL, LABOUR, INSTALLED)
 #: pricing 3.13 cubic yards at a per-foot rate and printing the answer with a dollar sign.
 ALTERNATE_UNITS: dict[str, dict[str, str]] = {
     # ``structural_solids``: every row carries all four, so any of them is honest.
-    "concrete": {"ea": "count", "SF": "plan_area_sqft", "cuft": "volume_cuft"},
-    # Same table, same rows — see ``Prices.timber``.
-    "timber": {"ea": "count", "SF": "plan_area_sqft", "cuft": "volume_cuft"},
+    **{section: {"ea": "count", "SF": "plan_area_sqft", "cuft": "volume_cuft"}
+       for section in ("concrete", "timber", "site", "solids")},
     # A fabricated piece — a welded saddle, a drilled angle — is bought as one part, not by
     # the foot of stock. The default stays LF, which is how mill lengths are quoted.
     "steel_members": {"ea": "count"},
@@ -231,7 +230,16 @@ class Prices:
     framing: Mapping[str, PriceRange] = field(default_factory=dict)
     sheet_goods: Mapping[str, PriceRange] = field(default_factory=dict)
     hardware: Mapping[str, PriceRange] = field(default_factory=dict)
+    # ``structural_solids`` by the cubic yard, keyed on solid CATEGORY and optionally
+    # qualified by assembly (``"slab:SLAB_FLOOR"``). Each row prices in exactly one of
+    # [concrete] / [timber] / [site] / [solids] — ``takeoff/solid_sections``.
     concrete: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Stormwater, planting and aggregate solids: drain tile, drywells, rain-garden media,
+    # planting soil, a crushed-stone footing.
+    site: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Every other solid: glazing, elm and painted posts, an aluminium stand, a composite
+    # deck, soffits, bug screens. A row with a material prices only by QUALIFIED key.
+    solids: Mapping[str, PriceRange] = field(default_factory=dict)
     floor_heat: Mapping[str, PriceRange] = field(default_factory=dict)
     placeables: Mapping[str, PriceRange] = field(default_factory=dict)
     # An unpriced section is invisible in `haus variants compare`, so every billable family
@@ -311,14 +319,8 @@ class Prices:
     #: galvanized runs roughly +$0.30/lb over black bar, and if the two do not price
     #: separately the whole point of specifying it is invisible in the estimate.
     reinforcement: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Structural WOOD solids by the cubic yard, keyed exactly like [concrete]: the solid
-    # CATEGORY, optionally qualified by assembly as ``"beam:BEAM_LVL"``.
-    #
-    # It reads the *same* ``structural_solids`` BOM table [concrete] does, and the two are
-    # kept apart by ``prices.MATERIAL_ONLY`` alone: [concrete] bills the rows whose
-    # ``structure_material`` is concrete, this one bills the rows whose material is a wood.
-    # "beam" is a category, not a material, so LVL and KDAT sticks need this table rather
-    # than the ready-mix one.
+    # Structural WOOD solids by the cubic yard, keyed like [concrete] (``"beam:BEAM_LVL"``):
+    # the rows whose material is an engineered or treated lumber.
     #
     # A yard is an odd unit for lumber and it is the honest one here: ``structural_solids``
     # measures volume, and these members bill NOWHERE else — the framing takeoff reads
@@ -344,7 +346,7 @@ class Prices:
     railings: Mapping[str, PriceRange] = field(default_factory=dict)
     # Gutters and leaders by the foot, keyed on the drainage row category. Mind the mirror:
     # these runs also surface in ``structural_solids`` as a fraction of a cubic yard of sheet
-    # metal — price them here, and leave `gutter`/`downspout` blank in [concrete]. The
+    # metal — price them here, and leave `gutter`/`downspout` blank in [site]. The
     # drywell rows carry length 0 and bill their aggregate there instead.
     drainage: Mapping[str, PriceRange] = field(default_factory=dict)
     # Construction-rule returns by the lineal foot, keyed on the row's ``takeoff_category`` —
