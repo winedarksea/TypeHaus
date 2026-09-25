@@ -150,19 +150,22 @@ def test_a_wall_something_bears_on_is_not_a_partition(catlin_model_ro, tag: str)
 
 
 def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) -> None:
-    """63 partitions, including the four new study return/rear segments and W-M-WELL (the
+    """62 partitions, including the four new study return/rear segments and W-M-WELL (the
     main stair's well partition, 2026-09-23).
 
     Not a tautology: the pass MOVES the plate it selects on, so a full-height tolerance
     measured only upward would drop ``W-B-CE`` — whose plate lands 1-11/16" below its
-    storey line — the moment it had been treated as a partition. The fastener take-off asks
-    this question of the resolved model, so it has to be a fixed point.
+    storey line — the moment it had been treated as a partition. ``W-M-WELL`` is in this
+    candidate set but has no wall-framed top plate, so the fastener take-off records a refusal
+    instead of inventing a screw joint. The fastener take-off asks this question of the
+    resolved model, so it has to be a fixed point.
     """
     refs = bearing_ref_tags(catlin_model_ro.plan)
     tags = [w.tag for w in catlin_model_ro.walls
             if takes_a_deflection_gap(catlin_model_ro, w, refs)]
-    assert len(tags) == 63
+    assert len(tags) == 62
     assert "W-B-CE" in tags
+    assert "W-M-WELL" in tags
 
 
 # --- the SDPW schedule -----------------------------------------------------------------
@@ -195,12 +198,13 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     would call for blocking in the bays that already have a joist in them.
     """
     counts = {row["scope"]: row["count"] for row in sdpw_rows}
-    # 2026-09-23: FS-S-WEST's 26'-8" truss moved to 26'-10", off W-M-STOS2 (2 -> 3 blocked).
-    # 2026-09-24: FO-S-ERV-CHASE's trimmer pack took two truss lines over the west wall (99).
+    # Current plan counts: 99 perpendicular crossings, 10 parallel-member pitches, and 74
+    # blocked bays between parallel members. Keep each condition separate because each uses
+    # a different landing rule.
     assert counts == {
         "partition top plate, perpendicular framing above": 99,
         "partition top plate, under a parallel member": 10,
-        "partition top plate, blocking between parallel members": 77,
+        "partition top plate, blocking between parallel members": 74,
     }
 
 

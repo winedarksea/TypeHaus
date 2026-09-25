@@ -125,7 +125,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 10 | ea |  | building |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 316 | ea |  | building |
-| modeled connector (SS316-BOLT-38) | 4 | ea |  | building |
+| 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | 4 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 10 | ea |  | building |
 | THA422 top-flange floor truss hanger | 3 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
@@ -317,7 +317,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | SP4 stud plate tie (2x4) | — |
 | SP6 stud plate tie (2x6) | — |
-| modeled connector (SS316-BOLT-38) | — |
+| 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | — |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | — |
 | THA422 top-flange floor truss hanger | — |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | — |

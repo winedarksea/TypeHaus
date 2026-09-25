@@ -43,9 +43,8 @@ from typing import NamedTuple
 from shapely.geometry import Polygon
 
 from typehaus.findings import Finding, Result, Severity, element_error
-from typehaus.model.enums import LayerFunction
+from typehaus.model.enums import LayerFunction, ShelfProcurement
 from typehaus.model.millwork import Countertop, MillworkStandard, ShelfBank, WindowStool
-from typehaus.model.enums import ShelfProcurement
 from typehaus.model.plan import PlanModel
 from typehaus.model.types import FurnitureType
 from typehaus.resolve.model import (
@@ -260,13 +259,13 @@ def _resolve_shelf_banks(plan: PlanModel, model: ResolvedModel) -> list[Finding]
                     "integrity.shelf_bank_ref",
                     f"shelf bank {el.tag} names no material {el.material_ref!r}", el.tag))
                 continue
-            if el.procurement is ShelfProcurement.CUSTOM_MILLED:
-                if material.nominal_quarters is None:
-                    findings.append(element_error(
-                        "integrity.shelf_bank_procurement",
-                        f"custom-milled shelf bank {el.tag} needs material "
-                        f"{el.material_ref!r} to declare nominal_quarters", el.tag))
-                    continue
+            if (el.procurement is ShelfProcurement.CUSTOM_MILLED
+                    and material.nominal_quarters is None):
+                findings.append(element_error(
+                    "integrity.shelf_bank_procurement",
+                    f"custom-milled shelf bank {el.tag} needs material "
+                    f"{el.material_ref!r} to declare nominal_quarters", el.tag))
+                continue
             wall = walls.get(el.host)
             placeable = placeables.get(el.host)
             if wall is None and placeable is None:

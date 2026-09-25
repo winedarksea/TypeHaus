@@ -492,14 +492,16 @@ def test_envelope_bills_more_than_the_sheathing(bom):
     assert "sheathing" in functions
     # The overlap with sheet_goods is flagged, so a caller summing both cannot double-count —
     # and only where there IS one. `sheet_goods_takeoff` walks walls, roofs and floor systems
-    # and has never walked a slab, so the 4" capillary break under SLAB_FLOOR (a
-    # SHEATHING layer, and #57 stone rather than a sheet good at all) bills here and nowhere
-    # else. Flagging it would point a reader at a row that does not exist.
+    # and has never walked a slab-family solid, so the base courses and platform layers bill
+    # here and nowhere else. Flagging them would point a reader at a row that does not exist.
     sheathing = [row for row in bom["envelope_layers"] if row["function"] == "sheathing"]
     assert sheathing
-    assert all(row["also_in_sheet_goods"] for row in sheathing if row["scope"] != "slab")
+    from typehaus.resolve.solid_categories import in_slab_family
+
+    assert all(row["also_in_sheet_goods"] for row in sheathing
+               if not in_slab_family(row["scope"]))
     assert not any(row["also_in_sheet_goods"] for row in sheathing
-                   if row["scope"] == "slab")
+                   if in_slab_family(row["scope"]))
     assert not any(row["also_in_sheet_goods"] for row in bom["envelope_layers"]
                    if row["function"] != "sheathing")
 

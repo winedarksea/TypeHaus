@@ -195,7 +195,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # (→ ``takeoff/anchors.sill_gasket_rows``).
                         "construction_returns", "sill_gaskets",
                         "sheet_goods", "glazing_panels",
-                        "glazing_trim", "hardware", "placeables", "floor_heat",
+                        "glazing_trim", "hardware", "placeables", "shelving", "floor_heat",
                         "electrical_devices", "panel_schedule", "service_load",
                         "conduit", "conductors", "solar",
                         # The list view of ``solar["by_product"]`` that
@@ -254,15 +254,13 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # frames no members and is not a solid reached no row at all —
                         # 43 of catlin's 154 walls, ~131 cy (→ takeoff/wall_structure.py).
                         "wall_structure"}
-    # ``freeze_protection`` is the one section catlin may legitimately return empty. It bills
-    # heater cable by the foot off ``PipeRun.freeze_protection``, and the only two traced runs
-    # this house ever had were the balcony condensers' defrost lines — deleted on 2026-09-02
-    # when both units moved to a ground pad and started dripping onto it
-    # (houses/catlin/notes/heat_pump_ground_pad.md). The section stays in the contract above
-    # because a house with an outdoor run still needs it; it is exempted here rather than
-    # dropped, so a section that empties for any OTHER reason still fails this line.
+    # These sections may be empty for this design: no outdoor pipe run needs freeze cable;
+    # no shelf uses separate-purchase procurement; and glazing panels/trims are optional
+    # take-off families for other houses. Keep the sections in the contract because a house
+    # that does use them still needs the corresponding order line.
     empty = {name for name, section in bom.items() if not section}
-    assert empty <= {"freeze_protection", "glazing_panels", "glazing_trim"}, f"BOM section(s) came back empty: {sorted(empty)}"
+    assert empty <= {"freeze_protection", "glazing_panels", "glazing_trim", "shelving"}, \
+        f"BOM section(s) came back empty: {sorted(empty)}"
     # The framing section still reconciles 1:1 with the resolved members, less the panel
     # members that bill by the sheet in `sheet_goods` instead — and less the stair treads
     # that are not lumber at all. This line had no second term and was RED at HEAD: the

@@ -147,9 +147,11 @@ rm -f "$CATLIN_CHECK"
 echo "== full build: catlin (model.json + IFC) =="
 $HAUS build houses/catlin --timing
 
-# bench_rebuild is deliberately NOT run standalone here: test_resolve_perf_guard.py in the
-# engine tests above already subprocesses the same benchmark and asserts on its result, so
-# this stage was measuring the same thing a second time and a slower way.
+# That test also runs inside the xdist suite above, where it reports overruns without gating:
+# other workers distort wall-clock results. Run it once more without xdist so the local budget
+# is measured after the suite's parallel load is gone.
+echo "== rebuild budget: catlin (serial) =="
+$PY -m pytest -n0 packages/engine/tests/test_resolve_perf_guard.py::test_rebuild_stays_inside_its_order_of_magnitude -q
 
 echo "== ui: typecheck, test, build =="
 (cd ui && npm run typecheck && npm test && npm run build)

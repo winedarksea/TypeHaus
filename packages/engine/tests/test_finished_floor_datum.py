@@ -124,7 +124,7 @@ def test_an_unstated_covering_is_unknown_and_resolves_to_the_structure(catlin_pl
     library = catlin_plan.library
     stripped = tuple(
         material.model_copy(update={"finish_thickness_in": None})
-        if material.tag == "oak" else material
+        if material.tag == "oak-floor-custom" else material
         for material in library.materials)
     plan = catlin_plan.model_copy(update={
         "library": library.model_copy(update={"materials": stripped})})

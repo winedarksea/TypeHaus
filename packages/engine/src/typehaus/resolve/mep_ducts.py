@@ -96,7 +96,7 @@ def _duct_vertex_z(model: ResolvedModel, duct: DuctRun, path: list[tuple[float, 
 
 def _containing_floor(model: ResolvedModel, storey_tag: str, direction: str,
                       point: tuple[float, float], fallback):
-    """Whichever FloorSystem on the named floor's storey shares ``direction`` and contains ``point``.
+    """Find the same-direction FloorSystem containing ``point`` on this storey.
 
     Siblings from the same x-spanning deck split share a joist ``direction``; a duct that
     crosses the split boundary needs the floor under each segment, not the one named by

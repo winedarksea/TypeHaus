@@ -40,6 +40,10 @@ echo "== ruff =="
 echo "== pytest =="
 "$VPY" -m pytest packages/engine/tests -q
 
+echo "== rebuild budget: catlin (serial) =="
+"$VPY" -m pytest -n0 \
+  packages/engine/tests/test_resolve_perf_guard.py::test_rebuild_stays_inside_its_order_of_magnitude -q
+
 echo "== checks-as-tests on the starter house =="
 TYPEHAUS_HOUSE=houses/starter "$VPY" -m pytest -p no:typehaus_checks \
   packages/engine/src/typehaus/checks/pytest_plugin.py -q
