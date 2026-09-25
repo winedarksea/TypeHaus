@@ -43,14 +43,14 @@ from typehaus.engineering.retaining_basis import (
     bar_count_for_roles,
     bar_for_roles,
 )
-from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF
-from typehaus.engineering.sunken_garden.veneer_beam import (
+from typehaus.engineering.retaining_court.veneer_beam import (
     DEAD_LOAD_FACTOR,
     TORSION_THRESHOLD_COEFFICIENT,
     check_veneer_beam,
     deflection_after_attachment,
     torsion_design,
 )
+from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF
 from typehaus.engineering.veneer_beam_anchorage import anchor_rows
 from typehaus.engineering.veneer_beam_joint import joint_states
 from typehaus.model.rebar import BARS

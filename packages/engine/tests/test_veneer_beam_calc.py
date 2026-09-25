@@ -17,7 +17,7 @@ from typehaus.engineering import Status
 from typehaus.engineering.item import Scope
 from typehaus.engineering.registry import EngineeringContext
 from typehaus.engineering.retaining_basis import bar_count_for_roles, bar_for_roles
-from typehaus.engineering.sunken_garden.veneer_beam import (
+from typehaus.engineering.retaining_court.veneer_beam import (
     deflection_after_attachment,
     torsion_design,
 )

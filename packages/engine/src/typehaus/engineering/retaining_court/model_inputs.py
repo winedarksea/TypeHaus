@@ -25,10 +25,11 @@ from dataclasses import replace
 
 from typehaus.engineering.registry import EngineeringContext
 from typehaus.engineering.retaining_basis import _geometry
-from typehaus.engineering.sunken_garden.inputs import (
+from typehaus.engineering.retaining_court.inputs import (
     BasedValue,
+    CourtDesignInput,
     CourtGeometry,
-    SunkenGardenDesignInput,
+    CourtWallTags,
     default_design_input,
 )
 
@@ -198,6 +199,7 @@ def court_geometry(ctx: EngineeringContext) -> tuple[CourtGeometry | None, list[
     (cx, cy), _ = axes[right]
     separation = abs((cx - ax) * -uy + (cy - ay) * ux)
 
+    end_tags = [tag for tag in sections if tag not in pair]
     return CourtGeometry(
         # Axis-to-axis less one full stem: each centreline carries half a stem into the
         # court, so the clear dimension loses one thickness, not two halves of two.
@@ -210,7 +212,80 @@ def court_geometry(ctx: EngineeringContext) -> tuple[CourtGeometry | None, list[
         footing_width_ft=first.footing_width_ft,
         toe_ft=first.toe_ft,
         end_toe_extension_ft=max(end_extensions, default=0.0),
+        walls=court_wall_tags(ctx, walls, pair, end_tags, axes),
     ), []
+
+
+#: How far off a leg's line an element may sit and still be read as on it, feet.
+_ON_LINE_FT = 1.0
+
+
+def _frame(axis) -> tuple[float, float, float, float, float]:
+    (ax, ay), (bx, by) = axis
+    run = math.hypot(bx - ax, by - ay)
+    return ax, ay, (bx - ax) / run, (by - ay) / run, run
+
+
+def court_wall_tags(ctx: EngineeringContext, walls: list, pair: tuple[str, str],
+                    end_tags: list[str], axes: dict) -> CourtWallTags:
+    """Each coupled-model role's authored tag, read off the model's relations.
+
+    Left is the leg with the smaller plan (x, y) midpoint. A leg's upper extension is a
+    resolved wall collinear with it that meets its open end; the cross-member is the court
+    walls' shared ``base_restraint_ref``; the tie is a veneer beam spanning the two uppers.
+    A role nothing plays keeps its label.
+    """
+    from typehaus.engineering.veneer_beam import veneer_beams
+
+    def mid(tag):
+        (ax, ay), (bx, by) = axes[tag]
+        return ((ax + bx) / 2.0, (ay + by) / 2.0)
+
+    left, right = sorted(pair, key=mid)
+    end_pts = [p for tag in end_tags for p in axes[tag]]
+
+    def upper(tag: str) -> str | None:
+        ax, ay, ux, uy, _run = _frame(axes[tag])
+        # the open end: the leg endpoint farther from the end wall
+        a, b = axes[tag]
+        if not end_pts:
+            return None
+        open_pt = max((a, b), key=lambda q: min(math.dist(q, p) for p in end_pts))
+        for wall in sorted(ctx.model.walls, key=lambda w: w.tag):
+            if wall.tag in axes:
+                continue
+            pts = [(x / _M_PER_FT, y / _M_PER_FT) for x, y in wall.axis]
+            off = [abs((x - ax) * -uy + (y - ay) * ux) for x, y in pts]
+            if max(off) <= 1e-3 and min(math.dist(q, open_pt) for q in pts) <= 1e-3:
+                return wall.tag
+        return None
+
+    refs = {getattr(w, "base_restraint_ref", None) for w in walls} - {None}
+    lu, ru = upper(left), upper(right)
+    tie = None
+    if lu and ru:
+        la, lb = _axis_ft(ctx, lu), _axis_ft(ctx, ru)
+        for beam, _carried in veneer_beams(ctx):
+            axis = _axis_ft(ctx, beam.tag)
+            if axis is None:
+                continue
+            a, b = axis
+            if any(_line_offset(p, la) <= _ON_LINE_FT and _line_offset(q, lb) <= _ON_LINE_FT
+                   for p, q in ((a, b), (b, a))):
+                tie = beam.tag
+                break
+    base = CourtWallTags()
+    return CourtWallTags(
+        left_upper=lu or base.left_upper, left=left,
+        right_upper=ru or base.right_upper, right=right,
+        end=end_tags[0] if len(end_tags) == 1 else base.end,
+        cross=next(iter(refs)) if len(refs) == 1 else base.cross,
+        tie=tie or base.tie)
+
+
+def _line_offset(point, axis) -> float:
+    ax, ay, ux, uy, _run = _frame(axis)
+    return abs((point[0] - ax) * -uy + (point[1] - ay) * ux)
 
 
 def _parallel_pair(axes: dict) -> tuple[str, str] | None:
@@ -231,7 +306,7 @@ def _parallel_pair(axes: dict) -> tuple[str, str] | None:
 
 
 def design_input_from_model(
-        ctx: EngineeringContext) -> tuple[SunkenGardenDesignInput, tuple[str, ...]]:
+        ctx: EngineeringContext) -> tuple[CourtDesignInput, tuple[str, ...]]:
     """The study's basis, derived. Second element names every value that stayed a literal.
 
     Nothing here invents a site fact. Soil strength, stiffness, groundwater and the balcony

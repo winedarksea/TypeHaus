@@ -8,7 +8,7 @@ dowels); §6f added 2026-09-22 (TMS ℓ/600, end fixity, the joint rows) and §6
 **Oracle for:** `checks/structural/masonry_joint.py` (§6g, `tests/test_masonry_joint.py`), and
 `engineering/veneer_beam.py` (`veneer_beam/W-SG-BRKBM`) since 2026-09-20 —
 §6 is worked at the model's own geometry and `tests/test_veneer_beam_calc.py` reproduces it;
-§3/§4 still oracle the report-side `engineering/sunken_garden/veneer_beam.py` at their literals.
+§3/§4 still oracle the report-side `engineering/retaining_court/veneer_beam.py` at their literals.
 The masonry anchors (§5.1) are NOT computed: they are `veneer_anchor/W-B-BRICK`, a deferral.
 The geometry is pinned by
 `tests/test_catlin_contract_m3.py::test_the_veneer_beam_isolates_the_house_footing`.

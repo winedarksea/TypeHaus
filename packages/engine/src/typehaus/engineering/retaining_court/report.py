@@ -8,27 +8,27 @@ from collections.abc import Mapping
 from dataclasses import asdict
 from pathlib import Path
 
-from typehaus.engineering.sunken_garden.comparison import (
+from typehaus.engineering.retaining_court.comparison import (
     COURTYARD_LAYOUTS,
     REFERENCE_LAYOUT,
     CostLine,
     compare_layouts,
     sizing_study,
 )
-from typehaus.engineering.sunken_garden.cost_report import (
+from typehaus.engineering.retaining_court.cost_report import (
     cost_basis,
     cost_detail,
     layout_table,
     recommendation_lines,
 )
-from typehaus.engineering.sunken_garden.inputs import (
+from typehaus.engineering.retaining_court.inputs import (
+    CourtDesignInput,
     PlantingProfile,
-    SunkenGardenDesignInput,
     default_design_input,
 )
-from typehaus.engineering.sunken_garden.veneer_beam import check_veneer_beam
+from typehaus.engineering.retaining_court.veneer_beam import check_veneer_beam
 
-BASIS_VERSION = "sunken-garden-study-1.0"
+BASIS_VERSION = "retaining-court-study-1.0"
 
 
 def _fingerprint(payload: object) -> str:
@@ -36,7 +36,7 @@ def _fingerprint(payload: object) -> str:
     return hashlib.sha256(BASIS_VERSION.encode() + b":" + encoded).hexdigest()[:16]
 
 
-def _basis_lines(design: SunkenGardenDesignInput,
+def _basis_lines(design: CourtDesignInput,
                  fell_back: tuple[str, ...]) -> list[str]:
     """What this run was driven from — the half the study used to leave unsaid.
 
@@ -76,7 +76,7 @@ def _basis_lines(design: SunkenGardenDesignInput,
     return lines
 
 
-def _smallest(layout: PlantingProfile, design: SunkenGardenDesignInput):
+def _smallest(layout: PlantingProfile, design: CourtDesignInput):
     """The lightest section in the bounded sweep that clears screening for ``layout``.
 
     Falls back to the least-overstressed candidate when none passes, so the caller can say
@@ -88,7 +88,7 @@ def _smallest(layout: PlantingProfile, design: SunkenGardenDesignInput):
                key=lambda item: (item.governing_ratio, item.concrete_cy)), bool(passing)
 
 
-def _terrace_verdict(design: SunkenGardenDesignInput) -> list[str]:
+def _terrace_verdict(design: CourtDesignInput) -> list[str]:
     """**Decision 1, answered on evidence rather than on preference.**
 
     The owner's standing position is that the raised terrace stays *unless removing it buys
@@ -161,7 +161,7 @@ def _terrace_verdict(design: SunkenGardenDesignInput) -> list[str]:
     return lines
 
 
-def _sizing_lines(design: SunkenGardenDesignInput) -> list[str]:
+def _sizing_lines(design: CourtDesignInput) -> list[str]:
     lines = [
         "| Layout | Stem | Footing | Toe / heel | Concrete | Governing | Status |",
         "|---|---:|---:|---:|---:|---|---|",
@@ -230,7 +230,7 @@ def _svg(layout: str, raised_in: float, width_in: float, setback_in: float) -> s
     ))
 
 
-def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
+def write_study(output_dir: Path, design: CourtDesignInput | None = None,
                 fell_back: tuple[str, ...] = (),
                 costs: Mapping[str, tuple[CostLine, ...]] | None = None,
                 cost_source: str | None = None,
@@ -242,7 +242,7 @@ def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
     from the model and kept its literal — printed, because a study that silently agrees with
     itself is the failure this whole path was rebuilt to stop.
 
-    ``costs`` is each ``variants.toml`` entry's priced BOM lines (``cli/sunken_garden_costs``)
+    ``costs`` is each ``variants.toml`` entry's priced BOM lines (``cli/retaining_court_costs``)
     and ``cost_source`` the price file; both ``None`` prints every layout unpriced.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -257,7 +257,7 @@ def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
                  layout.setback_ft * 12), encoding="utf-8")
 
     lines = [
-        "# Sunken courtyard engineering and cost comparison", "",
+        "# Retaining court engineering and cost comparison", "",
         f"Basis version: `{BASIS_VERSION}`  ",
         f"Engineering fingerprint: `{_fingerprint(asdict(design))}`", "",
         "The existing plan remains the default. All proposed layouts are comparison variants; "
@@ -269,6 +269,8 @@ def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
         "## Itemized variable work", "",
     ]
     lines.extend(cost_detail(results))
+    g = design.geometry
+    t = g.walls
     lines.extend([
         *_terrace_verdict(design),
         "## Conditional structural optimization", "", *_sizing_lines(design), "",
@@ -280,19 +282,23 @@ def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
         "structural savings are therefore reported as $0; smaller stems or footings remain "
         "design candidates only and must not be carried into bidding.", "",
         "## Coupled structural model and member schedule", "",
-        "The PyNite model contains shell elements for W-SG-W1, W-SG-W2, W-SG-S, W-SG-E2 "
-        "and W-SG-E1; footing plates; W-SG-ARCH; the optional W-SG-BRKBM tie; four balcony "
+        f"The PyNite model contains shell elements for {t.left_upper}, {t.left}, {t.end}, "
+        f"{t.right} and {t.right_upper}; footing plates; {t.cross}; the optional {t.tie} "
+        "tie; four balcony "
         "reaction nodes; horizontal soil springs; and one-sided vertical contact springs. "
         "It runs with and without the veneer tie and with unequal east/west load. The project "
         "solve is INCOMPLETE until measured soil stiffness and column reactions are supplied; "
         "the solver does not substitute fixed supports or zero reactions.", "",
         "| Members | Current study section | Role / required check |", "|---|---|---|",
-        "| W-SG-W1 / E1 | 12-in stem | porch wall, balcony local zones, staged backfill |",
-        "| W-SG-W2 / E2 / S | 12-in stem, #6 at 10 in | retained wall plates and corners |",
-        "| FT-SG-W1/E1/W2/E2/S | 7 ft by 12 in, #5 mat | contact, bearing, toe/heel flexure |",
-        "| W-SG-ARCH | 12 by 17.75 in | calculated transverse force and penetrated section |",
-        "| W-SG-BRKBM | 12 by 17.75 in | brick gravity beam and optional transverse tie |",
-        "| PT-SG-BR/BF corners | local 12-in cast columns | reactions, bearing and anchorage |",
+        f"| {t.left_upper} / {t.right_upper} | {g.stem_thickness_in:g}-in stem | "
+        "porch wall, balcony local zones, staged backfill |",
+        f"| {t.left} / {t.right} / {t.end} | {g.stem_thickness_in:g}-in stem | "
+        "retained wall plates and corners |",
+        f"| footings | {g.footing_width_ft:g} ft by {g.footing_depth_ft * 12:g} in | "
+        "contact, bearing, toe/heel flexure |",
+        f"| {t.cross} | cross-member | calculated transverse force and penetrated section |",
+        f"| {t.tie} | veneer beam | brick gravity beam and optional transverse tie |",
+        "| balcony column corners | local cast columns | reactions, bearing and anchorage |",
         "", "Validation examples cover a cantilever wall, beam/frame response, unequal loading, "
         "removed ties, missing-input refusal, global equilibrium and 4/3/2-foot mesh response.", "",
         "## Corrected veneer beam", "",

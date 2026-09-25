@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-import typehaus.engineering.sunken_garden as study_package
-from typehaus.cli.sunken_garden_costs import price_variants
-from typehaus.engineering.sunken_garden.report import write_study
+import typehaus.engineering.retaining_court as study_package
+from typehaus.cli.retaining_court_costs import price_variants
+from typehaus.engineering.retaining_court.report import write_study
 
 CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 

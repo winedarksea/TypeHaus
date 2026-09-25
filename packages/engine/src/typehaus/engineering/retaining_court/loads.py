@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from typehaus.engineering.sunken_garden.inputs import PlantingProfile, SunkenGardenDesignInput
+from typehaus.engineering.retaining_court.inputs import CourtDesignInput, PlantingProfile
 
 
 @dataclass(frozen=True)
@@ -37,7 +37,7 @@ def finite_strip_lateral_pressure_psf(*, surcharge_psf: float, depth_ft: float,
     )
 
 
-def pressure_at_height_psf(design: SunkenGardenDesignInput, planting: PlantingProfile,
+def pressure_at_height_psf(design: CourtDesignInput, planting: PlantingProfile,
                            height_above_footing_ft: float, *, wet: bool = False,
                            compaction_surcharge_psf: float = 0.0,
                            full_height_comparison: bool = False) -> float:
@@ -72,7 +72,7 @@ def pressure_at_height_psf(design: SunkenGardenDesignInput, planting: PlantingPr
     return direct + surcharge + water
 
 
-def integrate_pressure(design: SunkenGardenDesignInput, planting: PlantingProfile,
+def integrate_pressure(design: CourtDesignInput, planting: PlantingProfile,
                        *, wet: bool = False, compaction_surcharge_psf: float = 0.0,
                        full_height_comparison: bool = False,
                        subdivisions: int = 1200) -> PressureResult:

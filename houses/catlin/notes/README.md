@@ -44,7 +44,7 @@ each is kept because the *rule* it established usually outlives the design that 
 | `sunken_garden_court_free_body.md` | `engineering/retaining_system.py`, `retaining_basis.py` (`tests/test_retaining_court.py`); §11j is the `thermal_break_transfer/*` oracle — `engineering/thermal_break*.py` (`tests/test_thermal_break.py`) | live |
 | `sunken_garden_piers.md` | `engineering/pier_basis.py`, `engineering/spread_footing.py` (`tests/test_pier_calcs.py`) | live |
 | `sunken_garden_retaining_screening.md` | `engineering/retaining_wall.py` §4 (`tests/test_retaining_wall_calc.py`) | live |
-| `sunken_garden_veneer_beam.md` | `engineering/sunken_garden/veneer_beam.py` §3 flexure and §4 torsion, and the `veneer_beam/W-SG-BRKBM` deferral (`tests/test_sunken_garden_study.py`) | live |
+| `sunken_garden_veneer_beam.md` | `engineering/retaining_court/veneer_beam.py` §3 flexure and §4 torsion, and the `veneer_beam/W-SG-BRKBM` deferral (`tests/test_retaining_court_study.py`) | live |
 | `uplift_load_path.md` | `rafter/RF-*` deferral, the two trussed roofs (`tests/test_uplift_load_path.py`) | live |
 | `soffit_rung_deflection.md` | `checks/structural/soffit.py` | live |
 | `erv_static_budget.md` | `checks/mep/erv_static.py` — the whole ERV distribution's pressure budget against the Broan's published fan curve (`tests/test_erv_static_oracle.py`) | live |

@@ -394,14 +394,14 @@ LEGEND_SWATCH_IN = 2.6
 LEGEND_ROW_PITCH_IN = 3.6
 
 
-# --- Breezeway glazing --------------------------------------------------------
-# The enclosed breezeway's cross section (``params/breezeway.py``). Everything here is
-# either a fabrication instruction the model has no field for (weep-hole pitch, breather
+# --- Glazed roof enclosure ----------------------------------------------------
+# A polycarbonate glazed-roof enclosure's cross section. Everything here is either
+# a fabrication instruction the model has no field for (weep-hole pitch, breather
 # tape) or a drawing convention (how thick a 0.05" extrusion is drawn at detail scale).
 
 
 @dataclass(frozen=True)
-class BreezewayGlazingConfig:
+class GlazedRoofConfig:
     """The multiwall-polycarbonate enclosure's drawn vocabulary.
 
     Building facts the model does not carry a field for:
@@ -443,4 +443,4 @@ class BreezewayGlazingConfig:
     fastener_shank_in: float = 1.75
 
 
-BREEZEWAY_GLAZING = BreezewayGlazingConfig()
+GLAZED_ROOF = GlazedRoofConfig()

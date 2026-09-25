@@ -7,7 +7,7 @@ but remains visible as an unresolved requirement in the published comparison.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Generic, TypeVar
 
 T = TypeVar("T")
@@ -34,6 +34,25 @@ class SoilProfile:
 
 
 @dataclass(frozen=True)
+class CourtWallTags:
+    """Which authored element plays each role in the coupled model.
+
+    Read off the model by ``model_inputs.court_wall_tags``; the defaults are role labels,
+    used only where the study runs without a plan. ``*_upper`` is a leg's collinear
+    extension beyond the open end; ``cross`` is the walls' ``base_restraint_ref``; ``tie``
+    the veneer beam spanning the upper legs.
+    """
+
+    left_upper: str = "leg-L-upper"
+    left: str = "leg-L"
+    right_upper: str = "leg-R-upper"
+    right: str = "leg-R"
+    end: str = "end-wall"
+    cross: str = "cross-member"
+    tie: str = "veneer-tie"
+
+
+@dataclass(frozen=True)
 class CourtGeometry:
     clear_width_ft: float
     retained_side_length_ft: float
@@ -44,8 +63,9 @@ class CourtGeometry:
     footing_width_ft: float
     toe_ft: float
     #: The end wall's footing is the legs' section plus this much more TOE (court side);
-    #: heel, stem and depth are shared. Catlin's FT-SG-S carries 16" to square the field.
+    #: heel, stem and depth are shared.
     end_toe_extension_ft: float = 0.0
+    walls: CourtWallTags = field(default_factory=CourtWallTags)
 
     @property
     def heel_ft(self) -> float:
@@ -80,7 +100,7 @@ class DrainageInputs:
 
 
 @dataclass(frozen=True)
-class SunkenGardenDesignInput:
+class CourtDesignInput:
     geometry: CourtGeometry
     soil: SoilProfile
     connections: ConnectionAssumptions
@@ -109,20 +129,20 @@ class SunkenGardenDesignInput:
 #:
 #: It remains a literal only because this module must build a design input with no plan in
 #: hand — the report's standalone path and the load benchmarks in
-#: ``tests/test_sunken_garden_study.py``. **The model supersedes it**:
+#: ``tests/test_retaining_court_study.py``. **The model supersedes it**:
 #: ``model_inputs.design_input_from_model`` reads the yard from the site's own grade spots,
-#: and that is the path ``haus sunken-garden-study`` takes. If the two ever disagree,
-#: ``tests/test_sunken_garden_study.py`` says so and the model is right.
+#: and that is the path ``haus retaining-court-study`` takes. If the two ever disagree,
+#: ``tests/test_retaining_court_study.py`` says so and the model is right.
 CATLIN_ORDINARY_RETAINED_HEIGHT_FT = 5.786458333333333
 
 
 def default_design_input(*, stem_thickness_in: float = 12.0,
                          footing_width_ft: float = 7.0,
                          toe_ft: float = 3.0,
-                         end_toe_extension_ft: float = 16.0 / 12.0) -> SunkenGardenDesignInput:
+                         end_toe_extension_ft: float = 16.0 / 12.0) -> CourtDesignInput:
     """Catlin study basis. Site-dependent values stay explicitly unresolved."""
 
-    return SunkenGardenDesignInput(
+    return CourtDesignInput(
         geometry=CourtGeometry(
             clear_width_ft=17.0, retained_side_length_ft=16.0 + 4.0 / 12.0,
             concrete_stem_height_ft=9.1198, concrete_top_elevation_ft=0.0,

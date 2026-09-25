@@ -1,4 +1,4 @@
-"""Coupled five-wall PyNite shell model for the sunken courtyard.
+"""Coupled five-wall PyNite shell model for a retaining court (a U of retaining walls).
 
 The analytical layer owns solver orchestration. This model is deliberately unavailable when
 site/connection stiffness or balcony reactions are missing. It never substitutes fixed
@@ -23,8 +23,8 @@ from typehaus.analytical.graph import (
     SupportSpring,
 )
 from typehaus.analytical.solve import SolveResult, solve
-from typehaus.engineering.sunken_garden.inputs import PlantingProfile, SunkenGardenDesignInput
-from typehaus.engineering.sunken_garden.loads import pressure_at_height_psf
+from typehaus.engineering.retaining_court.inputs import CourtDesignInput, PlantingProfile
+from typehaus.engineering.retaining_court.loads import pressure_at_height_psf
 from typehaus.resolve.framing.profiles import CrossSection
 
 FT_TO_M = 0.3048
@@ -107,7 +107,7 @@ def _stations(start: float, end: float, maximum_step: float) -> tuple[float, ...
     return tuple(start + (end - start) * index / count for index in range(count + 1))
 
 
-def build_coupled_model(design: SunkenGardenDesignInput, planting: PlantingProfile, *,
+def build_coupled_model(design: CourtDesignInput, planting: PlantingProfile, *,
                         mesh_ft: float = 2.0, west_multiplier: float = 1.0,
                         east_multiplier: float = 1.0, include_veneer_tie: bool = True,
                         include_porch_bracing: bool = False) -> AnalyticalModel:
@@ -161,48 +161,50 @@ def build_coupled_model(design: SunkenGardenDesignInput, planting: PlantingProfi
                                        "surcharge"))
 
     width = design.geometry.clear_width_ft + design.geometry.stem_thickness_in / 12.0
+    tags = design.geometry.walls
     north, middle, south = -8.0, 0.0, design.geometry.retained_side_length_ft
     height = design.geometry.concrete_stem_height_ft
     common = dict(height_ft=height, thickness_in=design.geometry.stem_thickness_in,
                   mesh_ft=mesh_ft, pressure=add_pressure)
     # Opposite wall normals require opposite pressure signs. The south wall's order points
     # its local normal toward the court; the equilibrium test catches any future reversal.
-    mesh.wall(tag="W-SG-W1", axis="y", fixed_ft=0.0, start_ft=north, end_ft=middle,
+    mesh.wall(tag=tags.left_upper, axis="y", fixed_ft=0.0, start_ft=north, end_ft=middle,
               pressure_multiplier=west_multiplier, **common)
-    mesh.wall(tag="W-SG-W2", axis="y", fixed_ft=0.0, start_ft=middle, end_ft=south,
+    mesh.wall(tag=tags.left, axis="y", fixed_ft=0.0, start_ft=middle, end_ft=south,
               pressure_multiplier=west_multiplier, **common)
-    mesh.wall(tag="W-SG-E1", axis="y", fixed_ft=width, start_ft=middle, end_ft=north,
+    mesh.wall(tag=tags.right_upper, axis="y", fixed_ft=width, start_ft=middle, end_ft=north,
               pressure_multiplier=east_multiplier, **common)
-    mesh.wall(tag="W-SG-E2", axis="y", fixed_ft=width, start_ft=south, end_ft=middle,
+    mesh.wall(tag=tags.right, axis="y", fixed_ft=width, start_ft=south, end_ft=middle,
               pressure_multiplier=east_multiplier, **common)
-    mesh.wall(tag="W-SG-S", axis="x", fixed_ft=south, start_ft=width, end_ft=0.0,
+    mesh.wall(tag=tags.end, axis="x", fixed_ft=south, start_ft=width, end_ft=0.0,
               pressure_multiplier=1.0, **common)
 
     stem_half = design.geometry.stem_thickness_in / 24.0
     toe, heel = design.geometry.toe_ft, design.geometry.heel_ft
     end_ext = design.geometry.end_toe_extension_ft
-    mesh.footing(tag="FT-SG-W1/W2", x0_ft=-stem_half - heel, x1_ft=stem_half + toe,
+    mesh.footing(tag=f"{tags.left_upper}/{tags.left} footing", x0_ft=-stem_half - heel,
+                 x1_ft=stem_half + toe,
                  y0_ft=north, y1_ft=south, depth_ft=design.geometry.footing_depth_ft,
                  mesh_ft=mesh_ft)
-    mesh.footing(tag="FT-SG-E1/E2", x0_ft=width - stem_half - toe,
+    mesh.footing(tag=f"{tags.right_upper}/{tags.right} footing", x0_ft=width - stem_half - toe,
                  x1_ft=width + stem_half + heel, y0_ft=north, y1_ft=south,
                  depth_ft=design.geometry.footing_depth_ft, mesh_ft=mesh_ft)
-    mesh.footing(tag="FT-SG-S", x0_ft=-stem_half - heel, x1_ft=width + stem_half + heel,
+    mesh.footing(tag=f"{tags.end} footing", x0_ft=-stem_half - heel, x1_ft=width + stem_half + heel,
                  y0_ft=south - stem_half - toe - end_ext, y1_ft=south + stem_half + heel,
                  depth_ft=design.geometry.footing_depth_ft, mesh_ft=mesh_ft)
 
     beam_section = CrossSection("rect", design.geometry.stem_thickness_in * IN_TO_M,
                                 17.75 * IN_TO_M)
     members = [Member(
-        id="W-SG-ARCH", tag="W-SG-ARCH", category="beam",
+        id=tags.cross, tag=tags.cross, category="beam",
         n0=mesh.node(0.0, middle, 0.0), n1=mesh.node(width, middle, 0.0),
         section=beam_section, material="concrete", e_pa=CONCRETE_E_PA,
         e_basis="specified 5,000 psi normalweight concrete",
-        item_ids=("retaining_system/W-SG-ARCH",),
+        item_ids=(f"retaining_system/{tags.cross}",),
     )]
     if include_veneer_tie:
         members.append(Member(
-            id="W-SG-BRKBM", tag="W-SG-BRKBM", category="beam",
+            id=tags.tie, tag=tags.tie, category="beam",
             n0=mesh.node(0.0, north, height), n1=mesh.node(width, north, height),
             section=beam_section, material="concrete", e_pa=CONCRETE_E_PA,
             e_basis="specified 5,000 psi normalweight concrete",
@@ -273,7 +275,7 @@ def build_coupled_model(design: SunkenGardenDesignInput, planting: PlantingProfi
                                                 LoadCaseKind.EARTH: 1.0},
                                   "service response; strength combinations are separate"),),
         include_unit_case_combinations=False,
-        scope=("retaining_system/W-SG-ARCH", "sunken_garden/coupled"),
+        scope=(f"retaining_system/{tags.cross}", "retaining_court/coupled"),
         assumptions=("wall corners share mesh nodes and are monolithic",
                      "porch framing receives no bracing credit",
                      "vertical foundation contact is compression-only"),
@@ -282,7 +284,7 @@ def build_coupled_model(design: SunkenGardenDesignInput, planting: PlantingProfi
     )
 
 
-def analyse_coupled(design: SunkenGardenDesignInput, planting: PlantingProfile,
+def analyse_coupled(design: CourtDesignInput, planting: PlantingProfile,
                     **kwargs) -> CoupledAnalysisResult:
     """Solve or return an explicit incomplete/unsuccessful result."""
 

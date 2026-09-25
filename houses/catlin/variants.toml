@@ -1,6 +1,13 @@
 # The existing geometry remains the base plan. These variants are isolated imports of that
 # plan with parameter values applied before geometry is generated.
 
+# What the retaining-court study prices (`haus retaining-court-study`): tag substrings for
+# the court, the raised terrace and the comparison planter, and the whole-site allowances
+# reported beside the deltas. Every swapped assembly is in scope as well.
+[study]
+scope_tags = ["-SG-", "-RG-", "-RGV-"]
+allowance_words = ["sunken-garden", "court"]
+
 [[variant]]
 name = "reference"
 description = "Existing 40-inch raised garden, brick, 12-inch stems and 7-foot footings."

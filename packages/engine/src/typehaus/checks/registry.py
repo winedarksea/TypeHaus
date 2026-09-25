@@ -212,7 +212,7 @@ class StructuralPreferences:
     #: allowable bearing PRESSURE and says nothing about how far the soil moves under it —
     #: so the engine refuses rather than defaulting, and the refusal is printed in the
     #: export's own gap register. This is the same ``BasedValue`` refusal
-    #: ``engineering/sunken_garden/inputs`` applies to the courtyard's coupled model,
+    #: ``engineering/retaining_court/inputs`` applies to the courtyard's coupled model,
     #: reaching the project graph.
     soil_vertical_subgrade_pci: float | None = None
     soil_horizontal_subgrade_pci: float | None = None

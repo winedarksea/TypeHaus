@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from typehaus.engineering.sunken_garden.inputs import PlantingProfile, SunkenGardenDesignInput
-from typehaus.engineering.sunken_garden.loads import PressureResult, integrate_pressure
+from typehaus.engineering.retaining_court.inputs import CourtDesignInput, PlantingProfile
+from typehaus.engineering.retaining_court.loads import PressureResult, integrate_pressure
 
 CONCRETE_PCF = 150.0
 
@@ -23,7 +23,7 @@ class StabilityResult:
     passes_screening: bool
 
 
-def _raised_soil_overlap_ft(design: SunkenGardenDesignInput,
+def _raised_soil_overlap_ft(design: CourtDesignInput,
                             planting: PlantingProfile) -> float:
     heel = design.geometry.heel_ft
     if planting.layout in {"against-wall", "reference"}:
@@ -33,7 +33,7 @@ def _raised_soil_overlap_ft(design: SunkenGardenDesignInput,
     return 0.0
 
 
-def analyse_stability(design: SunkenGardenDesignInput, planting: PlantingProfile, *,
+def analyse_stability(design: CourtDesignInput, planting: PlantingProfile, *,
                       case: str = "ordinary", wet: bool = False,
                       compaction_surcharge_psf: float = 0.0,
                       full_height_comparison: bool = False) -> StabilityResult:

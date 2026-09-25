@@ -7,20 +7,20 @@ from pathlib import Path
 
 import pytest
 
-from typehaus.analytical.sunken_garden_coupled import analyse_coupled
+from typehaus.analytical.retaining_court_coupled import analyse_coupled
 from typehaus.diff.compare import variant_plan
 from typehaus.diff.variants import find_variant, load_variants
-from typehaus.engineering.sunken_garden.comparison import COURTYARD_LAYOUTS, sizing_study
-from typehaus.engineering.sunken_garden.inputs import (
+from typehaus.engineering.retaining_court.comparison import COURTYARD_LAYOUTS, sizing_study
+from typehaus.engineering.retaining_court.inputs import (
     BasedValue,
     PlantingProfile,
     default_design_input,
 )
-from typehaus.engineering.sunken_garden.loads import (
+from typehaus.engineering.retaining_court.loads import (
     finite_strip_lateral_pressure_psf,
     integrate_pressure,
 )
-from typehaus.engineering.sunken_garden.veneer_beam import check_veneer_beam
+from typehaus.engineering.retaining_court.veneer_beam import check_veneer_beam
 from typehaus.source.loader import load_plan
 from typehaus.source.parameter_overrides import activated, parameter
 
@@ -247,8 +247,8 @@ def test_coupled_plate_model_equilibrates_and_converges() -> None:
         default.maximum_translation_in, rel=0.25)
     assert default.model is not None
     assert {plate.tag for plate in default.model.plates} >= {
-        "W-SG-W1", "W-SG-W2", "W-SG-E1", "W-SG-E2", "W-SG-S",
-        "FT-SG-W1/W2", "FT-SG-E1/E2", "FT-SG-S",
+        "leg-L-upper", "leg-L", "leg-R-upper", "leg-R", "end-wall",
+        "leg-L-upper/leg-L footing", "leg-R-upper/leg-R footing", "end-wall footing",
     }
 
 
@@ -261,7 +261,7 @@ def test_removed_tie_and_unequal_loading_are_real_model_changes() -> None:
     )
     assert symmetric.successful and unequal.successful
     assert unequal.model is not None
-    assert "W-SG-BRKBM" not in {member.id for member in unequal.model.members}
+    assert "veneer-tie" not in {member.id for member in unequal.model.members}
     assert unequal.maximum_translation_in != pytest.approx(symmetric.maximum_translation_in)
 
 
@@ -299,7 +299,7 @@ def test_the_study_reads_the_authored_court_and_not_a_literal() -> None:
     stem (20 ft until the court narrowed to 17'-0" on 2026-09-22), and the ordinary height
     is the authored -3'-4" south yard above the -9'-1 7/16" footing top.
     """
-    from typehaus.engineering.sunken_garden.model_inputs import design_input_from_model
+    from typehaus.engineering.retaining_court.model_inputs import design_input_from_model
 
     design, fell_back = design_input_from_model(_catlin_context())
     assert fell_back == (), fell_back
@@ -321,6 +321,11 @@ def test_the_study_reads_the_authored_court_and_not_a_literal() -> None:
     # terrace IS the full wall. 5.7865 + 3.3333 = 9.1198 exactly.
     assert height.value + 40.0 / 12.0 == pytest.approx(
         geometry.concrete_stem_height_ft, abs=1e-6)
+    # Every coupled-model role is read off the model's relations, not a tag literal.
+    walls = geometry.walls
+    assert (walls.left_upper, walls.left, walls.right_upper, walls.right, walls.end,
+            walls.cross, walls.tie) == ("W-SG-W1", "W-SG-W2", "W-SG-E1", "W-SG-E2",
+                                        "W-SG-S", "W-SG-ARCH", "W-SG-BRKBM")
 
 
 def test_the_literal_basis_agrees_with_the_model_it_stands_in_for() -> None:
@@ -330,7 +335,7 @@ def test_the_literal_basis_agrees_with_the_model_it_stands_in_for() -> None:
     need a design input with no house in hand — but it is not allowed to describe a
     different building. This is the assertion that was missing when it did.
     """
-    from typehaus.engineering.sunken_garden.model_inputs import design_input_from_model
+    from typehaus.engineering.retaining_court.model_inputs import design_input_from_model
 
     literal = default_design_input()
     derived, _ = design_input_from_model(_catlin_context())
@@ -353,7 +358,7 @@ def test_no_stability_case_is_a_silent_duplicate_of_another() -> None:
     keeps a new inert case from taking their place: every case in the sweep must differ from
     every other in the numbers a reader would act on.
     """
-    from typehaus.engineering.sunken_garden.comparison import _cases
+    from typehaus.engineering.retaining_court.comparison import _cases
 
     design = default_design_input()
     cases = _cases(design, COURTYARD_LAYOUTS[0])

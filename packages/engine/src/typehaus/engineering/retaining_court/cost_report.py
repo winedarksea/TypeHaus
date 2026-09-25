@@ -7,8 +7,8 @@ from __future__ import annotations
 
 import math
 
-from typehaus.engineering.sunken_garden.comparison import CostRange, LayoutResult
-from typehaus.engineering.sunken_garden.inputs import SunkenGardenDesignInput
+from typehaus.engineering.retaining_court.comparison import CostRange, LayoutResult
+from typehaus.engineering.retaining_court.inputs import CourtDesignInput
 
 ZERO = CostRange(0.0, 0.0)
 
@@ -75,7 +75,7 @@ def _ratio_cell(case, allowable_psf: float | None) -> str:
 
 
 def layout_table(results: tuple[LayoutResult, ...], priced: bool,
-                 design: SunkenGardenDesignInput | None = None) -> list[str]:
+                 design: CourtDesignInput | None = None) -> list[str]:
     allowable_psf = None if design is None else design.soil.allowable_bearing_psf.value
     reference = results[0].installed_cost
     lines = ["| Alternative | Material | Labor | Merged installed | Installed | Direct result | "
@@ -126,10 +126,10 @@ def cost_basis(source: str | None, allowances: tuple[tuple[str, CostRange], ...]
                 "quantities are the product, dollars are opt-in).", ""]
     lines = [
         f"Every line is the variant's own resolved model — the declared `variants.toml` entry, "
-        f"ablated to the court (`-SG-`), terrace (`-RG-`), comparison planter (`-RGV-`) and "
-        f"walkout-finish walls — billed and priced from `{source}`, before waste, contingency, "
-        "markup and tax. \"Merged\" is installed money with no declared split and is never "
-        "divided. Concrete stays rebar-inclusive where the house says so.", "",
+        f"ablated to its `[study]` scope and swapped assemblies — billed and priced from "
+        f"`{source}`, before waste, contingency, markup and tax. \"Merged\" is installed "
+        "money with no declared split and is never divided. Concrete stays rebar-inclusive "
+        "where the house says so.", "",
     ]
     if allowances:
         lines += ["Fixed allowances touching the court are **held outside** every delta until "

@@ -20,7 +20,7 @@ EXPECTED_COMMANDS = {
     "analysis", "bids", "build", "calcs", "check", "compare", "diff", "doctor", "energy",
     "engineering", "explain", "export", "fmt", "handoff",
     "import", "import-project", "ls", "millwork", "new", "permit-check", "print",
-    "inspections", "record", "render", "route", "schedule",
+    "inspections", "record", "render", "retaining-court-study", "route", "schedule",
     "serve", "sunken-garden-study", "takeoff", "tasks", "trial", "version",
 }
 

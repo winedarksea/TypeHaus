@@ -1,4 +1,4 @@
-"""Generate the coordinated Catlin sunken-courtyard engineering study."""
+"""Generate the coordinated retaining-court (closed-loop retaining system) study."""
 
 from __future__ import annotations
 
@@ -9,26 +9,26 @@ import typer
 from typehaus.cli._shared import app, console
 
 
-@app.command("sunken-garden-study")
-def sunken_garden_study(
+@app.command("retaining-court-study")
+def retaining_court_study(
     house: Path | None = typer.Argument(None, help="House directory (default: cwd)"),
     out: Path | None = typer.Option(
-        None, "--out", help="Output directory (default: <house>/out/sunken-garden-study)."),
+        None, "--out", help="Output directory (default: <house>/out/retaining-court-study)."),
 ) -> None:
     """Write the layout, engineering, sizing and cost comparison."""
 
-    from typehaus.analytical.sunken_garden_coupled import analyse_coupled
+    from typehaus.analytical.retaining_court_coupled import analyse_coupled
     from typehaus.cli._shared import _resolve_house
-    from typehaus.cli.sunken_garden_costs import price_variants
+    from typehaus.cli.retaining_court_costs import price_variants
     from typehaus.engineering.registry import EngineeringContext
-    from typehaus.engineering.sunken_garden.comparison import REFERENCE_LAYOUT
-    from typehaus.engineering.sunken_garden.model_inputs import design_input_from_model
-    from typehaus.engineering.sunken_garden.report import write_study
+    from typehaus.engineering.retaining_court.comparison import REFERENCE_LAYOUT
+    from typehaus.engineering.retaining_court.model_inputs import design_input_from_model
+    from typehaus.engineering.retaining_court.report import write_study
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
 
     root = _resolve_house(house)
-    output = out.resolve() if out is not None else root / "out" / "sunken-garden-study"
+    output = out.resolve() if out is not None else root / "out" / "retaining-court-study"
 
     # ** THIS COMMAND RESOLVED THE HOUSE AND THEN NEVER OPENED IT, UNTIL 2026-09-14. **
     # ``write_study`` ran off ``default_design_input()``'s literals, which disagreed with the
@@ -75,3 +75,7 @@ def sunken_garden_study(
         console.print("[yellow]the coupled five-wall solve is refused:[/]")
         for item in coupled.unresolved:
             console.print(f"  {item}")
+
+
+# The command's old name, kept as a hidden alias.
+app.command("sunken-garden-study", hidden=True)(retaining_court_study)

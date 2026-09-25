@@ -410,7 +410,7 @@ def _free_body(members: list[_Member]) -> tuple[float, float, float]:
 #: the strut, so the pinned end is the conservative one and is what the record grades; the
 #: fixed end is published beside it so a reviewer can see the whole family rather than one
 #: number. Nothing here needs a soil spring, which is the point: the coupled model
-#: (``analytical/sunken_garden_coupled.py``) is INCOMPLETE without a geotechnical report,
+#: (``analytical/retaining_court_coupled.py``) is INCOMPLETE without a geotechnical report,
 #: and this row must not be.
 STRUT_PROP_SHARE = (0.375, 0.500)
 

@@ -5,12 +5,12 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
 
-from typehaus.engineering.sunken_garden.inputs import (
+from typehaus.engineering.retaining_court.inputs import (
+    CourtDesignInput,
     PlantingProfile,
-    SunkenGardenDesignInput,
     default_design_input,
 )
-from typehaus.engineering.sunken_garden.stability import StabilityResult, analyse_stability
+from typehaus.engineering.retaining_court.stability import StabilityResult, analyse_stability
 
 COURTYARD_LAYOUTS = (
     PlantingProfile("yard-grade", 0.0, 0.0, 0.0),
@@ -82,7 +82,7 @@ class SizingCandidate:
     concrete_cy: float
 
 
-def _court_length_ft(design: SunkenGardenDesignInput) -> float:
+def _court_length_ft(design: CourtDesignInput) -> float:
     return 2.0 * design.geometry.retained_side_length_ft + design.geometry.clear_width_ft + 1.0
 
 
@@ -96,16 +96,16 @@ def _court_length_ft(design: SunkenGardenDesignInput) -> float:
 #: They cannot differ *here* because this free body is **one lineal foot of one wall**.
 #: Backfilling one leg before the other, or in unequal lifts, changes nothing about that
 #: foot: it changes how the legs share thrust through the cross-member and the corners,
-#: which is a question about the whole U. ``analytical/sunken_garden_coupled.py`` is where
+#: which is a question about the whole U. ``analytical/retaining_court_coupled.py`` is where
 #: it is asked — it already runs with and without the veneer tie and with unequal east/west
 #: load — and ``engineering/retaining_system.py`` is where the closed loop is summed.
 ASYMMETRIC_CASES_ARE_SYSTEM_LEVEL = (
     "one-side-only and staged-backfill are system cases, not per-foot ones: see "
-    "analytical/sunken_garden_coupled.py and engineering/retaining_system.py"
+    "analytical/retaining_court_coupled.py and engineering/retaining_system.py"
 )
 
 
-def _cases(design: SunkenGardenDesignInput,
+def _cases(design: CourtDesignInput,
            planting: PlantingProfile) -> tuple[StabilityResult, ...]:
     return (
         analyse_stability(design, planting, case="symmetric-service"),
@@ -117,7 +117,7 @@ def _cases(design: SunkenGardenDesignInput,
     )
 
 
-def compare_layouts(design: SunkenGardenDesignInput | None = None,
+def compare_layouts(design: CourtDesignInput | None = None,
                     costs: Mapping[str, tuple[CostLine, ...]] | None = None,
                     ) -> tuple[LayoutResult, ...]:
     """``costs`` maps a ``variants.toml`` name to its priced lines; absent means unpriced."""
@@ -143,7 +143,7 @@ def compare_layouts(design: SunkenGardenDesignInput | None = None,
     return tuple(out)
 
 
-def _concrete_volume_cy(design: SunkenGardenDesignInput) -> float:
+def _concrete_volume_cy(design: CourtDesignInput) -> float:
     length = _court_length_ft(design)
     stem_t = design.geometry.stem_thickness_in / 12.0
     # U-shaped runs overlap at two monolithic corners; subtract those squares once.
@@ -155,7 +155,7 @@ def _concrete_volume_cy(design: SunkenGardenDesignInput) -> float:
 
 
 def sizing_study(planting: PlantingProfile,
-                 design: SunkenGardenDesignInput | None = None) -> tuple[SizingCandidate, ...]:
+                 design: CourtDesignInput | None = None) -> tuple[SizingCandidate, ...]:
     """The requested bounded 10/12-inch, 4-7 foot, 6-inch toe/heel sweep."""
 
     base = design or default_design_input()

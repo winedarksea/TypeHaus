@@ -1,6 +1,7 @@
-"""Breezeway glazing vocabulary — the parts of the enclosure that are not model geometry.
+"""Glazed-roof enclosure vocabulary — the parts of a polycarbonate enclosure that are not
+model geometry.
 
-The breezeway's structure (posts, beams, rafters, joists, decking) and its sheets and
+The enclosure's structure (posts, beams, rafters, joists, decking) and its sheets and
 extrusions are all real resolved elements, so the section cuts them without help. What it
 cannot cut is everything that makes the enclosure *work*:
 
@@ -13,10 +14,10 @@ cannot cut is everything that makes the enclosure *work*:
 * the **breather tape** between each joist top and the decking above it.
 
 All of it is documentation, none of it mutates construction geometry, and the whole module
-self-gates on a breezeway glazing panel actually being in the cut — an authored detail
+self-gates on a roof glazing panel actually being in the cut — an authored detail
 anywhere else in the house gets nothing from here.
 
-Every dimension comes from :data:`~...config.BREEZEWAY_GLAZING`. Nodes are ``Polyline`` and
+Every dimension comes from :data:`~...config.GLAZED_ROOF`. Nodes are ``Polyline`` and
 ``Hatch`` only (``tests/test_detail_vocabulary.py`` enforces it), tagged
 ``detail-component:<name>``.
 
@@ -26,7 +27,7 @@ Section coordinates: ``u`` is the in-section axis, ``z`` is world z, both in mod
 from __future__ import annotations
 
 from typehaus.emit.draw.detail_components.config import (
-    BREEZEWAY_GLAZING as CFG,
+    GLAZED_ROOF as CFG,
 )
 from typehaus.emit.draw.detail_components.config import LAYER
 from typehaus.emit.draw.detail_components.geometry import rect_region
@@ -78,13 +79,13 @@ def weeping_u_channel(u_center: float, z_top: float, crop_in) -> list[IRNode]:
     t = CFG.extrusion_draw_in
     lip = 1.5
     nodes = rect_region(u_center - t, z_top - lip, u_center + t, z_top,
-                        "breezeway-u-channel", _ALUMINUM, None)
+                        "glazed-roof-u-channel", _ALUMINUM, None)
     # The weep hole: a short break drawn in the channel's bottom leg.
     half = CFG.weep_diameter_in / 2.0
     nodes.append(Polyline(
         points=((u_center - half, z_top - lip), (u_center + half, z_top - lip)),
         layer=LAYER, closed=False, lineweight=CUT,
-        tag="detail-component:breezeway-weep-hole"))
+        tag="detail-component:glazed-roof-weep-hole"))
     return nodes
 
 
@@ -114,19 +115,19 @@ def shared_h_channel(u_center: float, z_joint: float, roof_sign: float,
     # nothing oversails it.
     nodes += rect_region(min(outer, outer + roof_sign * t), web_bottom - lap,
                          max(outer, outer + roof_sign * t), web_top + half + t,
-                         "breezeway-h-channel-outer-leg", _ALUMINUM, None)
+                         "glazed-roof-h-channel-outer-leg", _ALUMINUM, None)
     # Inboard leg: shorter, stopping under the web — the roof sheet passes over it.
     nodes += rect_region(min(inner, inner + roof_sign * t), web_bottom - lap,
                          max(inner, inner + roof_sign * t), web_bottom,
-                         "breezeway-h-channel-inner-leg", _ALUMINUM, None)
+                         "glazed-roof-h-channel-inner-leg", _ALUMINUM, None)
     # The web between the two slots.
     nodes += rect_region(min(outer, inner), web_bottom, max(outer, inner), web_top,
-                         "breezeway-h-channel-web", _ALUMINUM, None)
+                         "glazed-roof-h-channel-web", _ALUMINUM, None)
     # The upper flange, lapping in over the roof sheet.
     flange_far = u_center + roof_sign * lap
     nodes += rect_region(min(u_center, flange_far), web_top + half,
                          max(u_center, flange_far), web_top + half + t,
-                         "breezeway-h-channel-flange", _ALUMINUM, None)
+                         "glazed-roof-h-channel-flange", _ALUMINUM, None)
     return nodes
 
 
@@ -142,9 +143,9 @@ def crown_glazing_bar(u_center: float, z_top: float, crop_in) -> list[IRNode]:
     t = CFG.extrusion_draw_in
     half = 1.25
     nodes = rect_region(u_center - half, z_top - t, u_center + half, z_top,
-                        "breezeway-glazing-bar-cap", _ALUMINUM, None)
+                        "glazed-roof-glazing-bar-cap", _ALUMINUM, None)
     nodes += rect_region(u_center - half, z_top - 3 * t, u_center + half, z_top - 2 * t,
-                         "breezeway-glazing-bar-base", _ALUMINUM, None)
+                         "glazed-roof-glazing-bar-base", _ALUMINUM, None)
     return nodes
 
 
@@ -158,13 +159,13 @@ def gasketed_fastener(u: float, z_top: float, crop_in) -> list[IRNode]:
         return []
     nodes = rect_region(u - CFG.fastener_head_in / 2.0, z_top,
                         u + CFG.fastener_head_in / 2.0, z_top + CFG.fastener_head_in,
-                        "breezeway-panel-fastener-head", "metal", None)
+                        "glazed-roof-panel-fastener-head", "metal", None)
     nodes += rect_region(u - CFG.fastener_washer_in / 2.0, z_top - 0.15,
                          u + CFG.fastener_washer_in / 2.0, z_top,
-                         "breezeway-panel-fastener-washer", "rubber", None)
+                         "glazed-roof-panel-fastener-washer", "rubber", None)
     nodes.append(Polyline(points=((u, z_top), (u, z_top - CFG.fastener_shank_in)),
                           layer=LAYER, closed=False, lineweight=PROFILE,
-                          tag="detail-component:breezeway-panel-fastener-shank"))
+                          tag="detail-component:glazed-roof-panel-fastener-shank"))
     return nodes
 
 
@@ -180,7 +181,7 @@ def breather_tape(joists, crop_in) -> list[IRNode]:
         if not _in_frame((u0 + u1) / 2.0, z_top, crop_in):
             continue
         nodes += rect_region(u0, z_top, u1, z_top + 0.0625,
-                             f"breezeway-breather-tape-{index}", "membrane", None)
+                             f"glazed-roof-breather-tape-{index}", "membrane", None)
     return nodes
 
 
@@ -198,7 +199,7 @@ def _wedge_rise_in(model, direction: str, station: float) -> float:
     return rise
 
 
-def breezeway_components(model, direction, station, crop) -> list[IRNode]:
+def glazed_roof_components(model, direction, station, crop) -> list[IRNode]:
     """The whole vocabulary, derived from what the cut actually crosses."""
     roof_panels = [item for item in _cut_solids(model, "glazing", direction, station, crop)
                    if (item[0].assembly or "").endswith("ROOF_GLAZING")]
@@ -208,7 +209,7 @@ def breezeway_components(model, direction, station, crop) -> list[IRNode]:
                (crop[1][0] / M_PER_IN, crop[1][1] / M_PER_IN))
 
     nodes: list[IRNode] = []
-    # No drainage wedge here any more. It used to be synthesised from BREEZEWAY_GLAZING
+    # No drainage wedge here any more. It used to be synthesised from GLAZED_ROOF
     # because a ``Beam`` is a prism and nothing in the model could hold a taper. A ``Wedge``
     # can, so the six shims are resolved members now and ``_emit_member_cuts`` cuts them like
     # every other stick — drawing them here as well would draw each one twice.
@@ -238,10 +239,11 @@ def breezeway_components(model, direction, station, crop) -> list[IRNode]:
             continue
         nodes += weeping_u_channel((u0 + u1) / 2.0, z1, crop_in)
 
+    # Tape goes on the joists UNDER the glazed roof: selected by relation (in plan beneath
+    # the cut's roof panels), not by the floor's tag.
+    roof_u0, roof_u1 = spans[0][0], spans[-1][1]
     joists = []
     for floor in model.floors:
-        if not floor.tag.startswith("FS-BW-"):
-            continue
         for member in floor.members:
             if member.category != "joist":
                 continue
@@ -251,17 +253,19 @@ def breezeway_components(model, direction, station, crop) -> list[IRNode]:
                 continue
             along = ([member.p0[0], member.p1[0]] if direction == "x"
                      else [member.p0[1], member.p1[1]])
-            joists.append((min(along) / M_PER_IN, max(along) / M_PER_IN,
-                           member.z1_m / M_PER_IN))
+            a0, a1 = min(along) / M_PER_IN, max(along) / M_PER_IN
+            if a1 < roof_u0 or a0 > roof_u1:
+                continue
+            joists.append((a0, a1, member.z1_m / M_PER_IN))
     nodes += breather_tape(joists, crop_in)
     return nodes
 
 
-def breezeway_overlay_for_slice(model, view) -> list[IRNode]:
-    """Breezeway vocabulary for an authored ``Slice`` (documentation-only path).
+def glazed_roof_overlay_for_slice(model, view) -> list[IRNode]:
+    """Glazed-roof vocabulary for an authored ``Slice`` (documentation-only path).
 
-    Self-gated on a breezeway roof panel being in the cut, exactly like
-    ``sauna_overlay_for_slice``: a non-breezeway authored detail is byte-identical to the
+    Self-gated on a roof glazing panel being in the cut, exactly like
+    ``sauna_overlay_for_slice``: any other authored detail is byte-identical to the
     plain ``build_section`` output.
     """
     if view.crop is None or view.cut_origin is None:
@@ -269,4 +273,4 @@ def breezeway_overlay_for_slice(model, view) -> list[IRNode]:
     direction = view.cut_direction or "x"
     station = view.cut_origin.xy_m[1] if direction == "x" else view.cut_origin.xy_m[0]
     crop = (view.crop[0].xy_m, view.crop[1].xy_m)
-    return breezeway_components(model, direction, station, crop)
+    return glazed_roof_components(model, direction, station, crop)

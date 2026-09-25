@@ -10,17 +10,40 @@ plain :class:`CostLine` data.
 from __future__ import annotations
 
 import dataclasses
-import re
 from pathlib import Path
 
-from typehaus.engineering.sunken_garden.comparison import CostLine, CostRange
+from typehaus.engineering.retaining_court.comparison import CostLine, CostRange
 
-#: Court, raised terrace and comparison planter tags (-SG-, -RG-, -RGV-).
-SCOPE_TAG = re.compile(r"-(SG|RG|RGV)-")
-#: The walkout finish belongs to the house wall, not a garden tag; the swap retypes it.
-SCOPE_ASSEMBLIES = frozenset({"BASEMENT_BRICK_VENEER", "BASEMENT_FIBER_CEMENT_SCREEN"})
-#: Whole-site allowances that touch the court; reported beside the deltas, never inside them.
-ALLOWANCE_WORDS = re.compile(r"sunken-garden|court")
+#: ``variants.toml``'s optional ``[study]`` table names the scope. Its ``scope_tags`` are tag
+#: substrings (the court, its terrace, a comparison planter); ``allowance_words`` pick the
+#: whole-site allowances reported beside the deltas, never inside them. Every assembly a
+#: variant swaps is in scope too: a swap retypes an element the study compares.
+STUDY_TABLE = "study"
+
+
+@dataclasses.dataclass(frozen=True)
+class StudyScope:
+    tags: tuple[str, ...] = ()
+    assemblies: frozenset[str] = frozenset()
+    allowance_words: tuple[str, ...] = ()
+
+    def contains(self, item: object) -> bool:
+        tag = _tag(item)
+        if tag and any(part in tag for part in self.tags):
+            return True
+        return getattr(item, "assembly", None) in self.assemblies
+
+
+def study_scope(house: Path, specs) -> StudyScope:
+    import tomllib
+
+    from typehaus.diff.variants import VARIANTS_FILENAME
+
+    path = Path(house) / VARIANTS_FILENAME
+    table = tomllib.loads(path.read_text()).get(STUDY_TABLE, {}) if path.exists() else {}
+    swapped = {name for spec in specs for pair in spec.assembly_swaps.items() for name in pair}
+    return StudyScope(tuple(str(t) for t in table.get("scope_tags", ())), frozenset(swapped),
+                      tuple(str(w) for w in table.get("allowance_words", ())))
 
 
 @dataclasses.dataclass(frozen=True)
@@ -41,20 +64,13 @@ def _tag(item: object) -> str | None:
     return None
 
 
-def _in_scope(item: object) -> bool:
-    tag = _tag(item)
-    if tag and SCOPE_TAG.search(tag):
-        return True
-    return getattr(item, "assembly", None) in SCOPE_ASSEMBLIES
-
-
-def ablate_to_scope(model) -> None:
-    """Keep only courtyard elements in every tagged collection; untagged graphs stay."""
+def ablate_to_scope(model, scope: StudyScope) -> None:
+    """Keep only the study's elements in every tagged collection; untagged graphs stay."""
 
     for item in dataclasses.fields(model):
         values = getattr(model, item.name)
         if isinstance(values, list) and any(_tag(value) for value in values):
-            setattr(model, item.name, [value for value in values if _in_scope(value)])
+            setattr(model, item.name, [value for value in values if scope.contains(value)])
     model.index_by_tag()
 
 
@@ -93,16 +109,19 @@ def price_variants(house: Path) -> VariantCosts | None:
     prices = load_prices(house)
     if prices is None:
         return None
+    specs = load_variants(house)
+    scope = study_scope(house, specs)
     allowances = tuple(
         (key, CostRange(float(price.low), float(price.high)))
         for key, price in sorted(prices.allowances.items())
-        if ALLOWANCE_WORDS.search(key) and not getattr(price, "driver", None))
+        if any(word in key for word in scope.allowance_words)
+        and not getattr(price, "driver", None))
     # Driven allowances read whole-house BOM fields an ablated BOM no longer has, and none
     # of them varies with a courtyard layout.
     scoped_prices = dataclasses.replace(prices, allowances={})
     lines: dict[str, tuple[CostLine, ...]] = {}
-    for spec in load_variants(house):
+    for spec in specs:
         model, _ = resolve_variant(spec.selection(house))
-        ablate_to_scope(model)
+        ablate_to_scope(model, scope)
         lines[spec.name] = _lines(estimate_costs(bill_of_materials(model), scoped_prices))
     return VariantCosts(lines, allowances, prices.path.name)

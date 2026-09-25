@@ -25,20 +25,11 @@ from typehaus.emit.draw.detail_components.below_grade import (
     grade_line,
     soil_body,
 )
-from typehaus.emit.draw.detail_components.breezeway import (
-    breather_tape,
-    breezeway_components,
-    breezeway_overlay_for_slice,
-    crown_glazing_bar,
-    gasketed_fastener,
-    shared_h_channel,
-    weeping_u_channel,
-)
 from typehaus.emit.draw.detail_components.chrome import dimension_strings, material_legend
 from typehaus.emit.draw.detail_components.config import (
     BASEMENT_TO_FRAMED_WALL,
-    BREEZEWAY_GLAZING,
     FOUNDATION_FACE,
+    GLAZED_ROOF,
     INTERIOR_SLAB_DRIP,
     LAYER,
     OPENING_DETAIL,
@@ -82,6 +73,15 @@ from typehaus.emit.draw.detail_components.geometry import (
     path_from_steps,
     thicken_polyline,
 )
+from typehaus.emit.draw.detail_components.glazed_roof import (
+    breather_tape,
+    crown_glazing_bar,
+    gasketed_fastener,
+    glazed_roof_components,
+    glazed_roof_overlay_for_slice,
+    shared_h_channel,
+    weeping_u_channel,
+)
 from typehaus.emit.draw.detail_components.opening import (
     concrete_opening_bucks,
     humid_liner_opening_return,
@@ -124,7 +124,7 @@ from typehaus.emit.draw.detail_components.wall_base import (
 
 __all__ = [
     "BASEMENT_TO_FRAMED_WALL",
-    "BREEZEWAY_GLAZING",
+    "GLAZED_ROOF",
     "FOUNDATION_FACE",
     "INTERIOR_SLAB_DRIP",
     "LAYER",
@@ -155,8 +155,8 @@ __all__ = [
     "basement_framed_wall",
     "box_gutter",
     "breather_tape",
-    "breezeway_components",
-    "breezeway_overlay_for_slice",
+    "glazed_roof_components",
+    "glazed_roof_overlay_for_slice",
     "crown_glazing_bar",
     "gasketed_fastener",
     "shared_h_channel",

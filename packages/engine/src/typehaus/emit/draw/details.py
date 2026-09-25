@@ -147,14 +147,14 @@ def build_authored_detail_scene(model: ResolvedModel, view: Slice) -> Scene:
     construction geometry.
     """
     from typehaus.emit.draw.detail_components import (
-        breezeway_overlay_for_slice,
+        glazed_roof_overlay_for_slice,
         ridge_overlay_for_slice,
         sauna_overlay_for_slice,
         shower_overlay_for_slice,
     )
 
     scene = build_section(model, view)
-    for recipe in (sauna_overlay_for_slice, breezeway_overlay_for_slice,
+    for recipe in (sauna_overlay_for_slice, glazed_roof_overlay_for_slice,
                    shower_overlay_for_slice, ridge_overlay_for_slice):
         overlay = recipe(model, view)
         if overlay:

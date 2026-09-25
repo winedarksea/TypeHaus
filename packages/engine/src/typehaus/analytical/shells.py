@@ -13,7 +13,7 @@ that is a geotechnical measurement: IBC Table 1806.2 publishes an allowable bear
 *pressure* and says nothing about how far the soil moves under it. ``preferences.toml``
 ``[structural]`` holds the two moduli and their basis, all three unauthored here, so this
 stage emits no plate and writes the refusal into the export's own gap register — the same
-``BasedValue`` refusal ``engineering/sunken_garden/inputs`` applies to the coupled model,
+``BasedValue`` refusal ``engineering/retaining_court/inputs`` applies to the coupled model,
 now reaching the project graph. A defaulted spring would be a stiffness nobody chose
 driving a deflection somebody reads.
 """
@@ -46,7 +46,7 @@ CONCRETE_POISSON = 0.2
 SHELL_KINDS = frozenset({"retaining_wall"})
 
 #: Midpoint strips per plate when averaging the earth-pressure profile over its height —
-#: the band average, not a midpoint sample, for the reason ``sunken_garden_coupled`` gives.
+#: the band average, not a midpoint sample, for the reason ``retaining_court_coupled`` gives.
 _PRESSURE_SUBDIVISIONS = 32
 _MESH_FT = 2.0
 
