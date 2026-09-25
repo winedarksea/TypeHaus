@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, final
+from typing import TYPE_CHECKING, Any, cast, final
 
 from typehaus.quantities._base import UnitSystem, pydantic_quantity_schema
 
@@ -19,6 +19,8 @@ class RValue:
     """Thermal resistance, canonical RSI. Authored via ``r_us`` for the US market."""
 
     __slots__ = ("_rsi",)
+
+    _rsi: float
 
     def __init__(self, rsi: float) -> None:
         object.__setattr__(self, "_rsi", float(rsi))
@@ -73,7 +75,7 @@ def rsi(value: float) -> RValue:
 
 def _r_from_source(text: str) -> RValue:
     env: dict[str, Any] = {"r_us": r_us, "rsi": rsi}
-    return eval(text, {"__builtins__": {}}, env)  # noqa: S307
+    return cast(RValue, eval(text, {"__builtins__": {}}, env))  # noqa: S307
 
 
 @final
@@ -81,6 +83,8 @@ class UFactor:
     """Thermal transmittance, canonical W/m²·K. Authored via ``u_us`` (BTU/hr·ft²·°F)."""
 
     __slots__ = ("_si",)
+
+    _si: float
 
     def __init__(self, si: float) -> None:
         object.__setattr__(self, "_si", float(si))
@@ -123,7 +127,7 @@ def u_us(value: float) -> UFactor:
 
 def _u_from_source(text: str) -> UFactor:
     env: dict[str, Any] = {"u_us": u_us}
-    return eval(text, {"__builtins__": {}}, env)  # noqa: S307
+    return cast(UFactor, eval(text, {"__builtins__": {}}, env))  # noqa: S307
 
 
 @final
@@ -131,6 +135,9 @@ class Temperature:
     """A temperature, canonical Celsius, authored °F for the imperial market (#41)."""
 
     __slots__ = ("_c", "_authored_f")
+
+    _c: float
+    _authored_f: bool
 
     def __init__(self, celsius: float, authored_f: bool = False) -> None:
         object.__setattr__(self, "_c", float(celsius))
@@ -182,4 +189,4 @@ def degC(value: float) -> Temperature:
 
 def _temp_from_source(text: str) -> Temperature:
     env: dict[str, Any] = {"degF": degF, "degC": degC}
-    return eval(text, {"__builtins__": {}}, env)  # noqa: S307
+    return cast(Temperature, eval(text, {"__builtins__": {}}, env))  # noqa: S307

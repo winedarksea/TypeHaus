@@ -8,7 +8,9 @@ supports or zero column loads and calls that a pass.
 from __future__ import annotations
 
 import math
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import TypedDict
 
 from typehaus.analytical.graph import (
     AnalyticalModel,
@@ -39,6 +41,15 @@ CONCRETE_E_PA = 30.0e9
 #: percent on any mesh this model is run at, and the cost is one arithmetic loop per plate.
 _PRESSURE_SUBDIVISIONS = 32
 
+_PressureAdder = Callable[[str, float, float, float], None]
+
+
+class _WallOptions(TypedDict):
+    height_ft: float
+    thickness_in: float
+    mesh_ft: float
+    pressure: _PressureAdder
+
 
 @dataclass(frozen=True)
 class CoupledAnalysisResult:
@@ -56,7 +67,7 @@ class _Mesh:
         self.plates: list[Plate] = []
 
     def node(self, x_ft: float, y_ft: float, z_ft: float) -> str:
-        key = tuple(round(value * 12000) for value in (x_ft, y_ft, z_ft))
+        key = (round(x_ft * 12000), round(y_ft * 12000), round(z_ft * 12000))
         if key not in self.nodes:
             node_id = f"SGS-{key[0]}-{key[1]}-{key[2]}"
             self.nodes[key] = Node(node_id, x_ft * FT_TO_M, y_ft * FT_TO_M, z_ft * FT_TO_M)
@@ -64,7 +75,7 @@ class _Mesh:
 
     def wall(self, *, tag: str, axis: str, fixed_ft: float, start_ft: float, end_ft: float,
              height_ft: float, thickness_in: float, mesh_ft: float,
-             pressure_multiplier: float, pressure) -> None:
+             pressure_multiplier: float, pressure: _PressureAdder) -> None:
         along = _stations(start_ft, end_ft, mesh_ft)
         vertical = _stations(0.0, height_ft, mesh_ft)
         for a0, a1 in zip(along, along[1:], strict=False):
@@ -125,6 +136,9 @@ def build_coupled_model(design: CourtDesignInput, planting: PlantingProfile, *,
         missing.append("four balcony-column reactions")
     if missing:
         raise ValueError("coupled model requires " + ", ".join(missing))
+    # These are validated together above so the solver never sees a partial soil support.
+    assert (vertical_pci is not None and horizontal_pci is not None
+            and reactions is not None)
 
     mesh = _Mesh()
     pressures: list[PlatePressure] = []
@@ -164,8 +178,12 @@ def build_coupled_model(design: CourtDesignInput, planting: PlantingProfile, *,
     tags = design.geometry.walls
     north, middle, south = -8.0, 0.0, design.geometry.retained_side_length_ft
     height = design.geometry.concrete_stem_height_ft
-    common = dict(height_ft=height, thickness_in=design.geometry.stem_thickness_in,
-                  mesh_ft=mesh_ft, pressure=add_pressure)
+    common: _WallOptions = {
+        "height_ft": height,
+        "thickness_in": design.geometry.stem_thickness_in,
+        "mesh_ft": mesh_ft,
+        "pressure": add_pressure,
+    }
     # Opposite wall normals require opposite pressure signs. The south wall's order points
     # its local normal toward the court; the equilibrium test catches any future reversal.
     mesh.wall(tag=tags.left_upper, axis="y", fixed_ft=0.0, start_ft=north, end_ft=middle,

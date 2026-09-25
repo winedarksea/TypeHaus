@@ -8,20 +8,43 @@ derivation below that entry point builds rows, and the entry point imports them 
 
 from __future__ import annotations
 
+from typing import NotRequired, TypedDict
+
 from typehaus.hardware.catalog import StructuralHardware
+
+
+class HardwareRow(TypedDict):
+    """Stable output schema for a derived hardware takeoff line."""
+
+    scope: str
+    role: str | None
+    hardware_tag: str | None
+    description: str
+    manufacturer: str | None
+    part_number: str | None
+    size: str | None
+    unit: str
+    count: int
+    length_ft: float | None
+    coils: int | None
+    basis: str
+    source: str | None
+    by_storey: dict[str, int] | None
+    tags: NotRequired[list[str]]
 
 
 def hardware_row(item: StructuralHardware | None, *, scope: str, count: int, basis: str,
                  part_number: str | None = None, size: str | None = None,
                  length_ft: float | None = None, coils: int | None = None,
-                 by_storey: dict | None = None, tags: list | None = None) -> dict:
+                 by_storey: dict[str, int] | None = None,
+                 tags: list[str] | None = None) -> HardwareRow:
     """One BOM line: what it is, how many, and the rule that produced the number.
 
     ``basis`` is not decoration — a hardware count is only auditable if the line carries
     the spacing/condition it came from, so every row states it. ``tags`` names where the
     parts go — the pour a cast-in part is set into — and is left off a row that omits it.
     """
-    row = {
+    row: HardwareRow = {
         "scope": scope,
         "role": item.role if item else None,
         "hardware_tag": item.tag if item else None,

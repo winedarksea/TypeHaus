@@ -733,6 +733,11 @@ def _geometry(ctx: EngineeringContext, wall) -> tuple[_Geometry | None, list[str
     if missing:
         return None, missing
 
+    assert thickness_in is not None
+    assert wall_height is not None
+    assert footing is not None
+    assert wall.unbalanced_fill is not None
+
     width_ft = footing.width.meters / _M_PER_FT
     depth_ft = footing.depth.meters / _M_PER_FT
     # **The wall stands ON the footing.**
@@ -809,7 +814,7 @@ def _heelward_offset(ctx: EngineeringContext, wall, footing) -> tuple[float, str
         return 0.0, f"a resolved {wall.tag} to take the footing offset's sign from"
     windings = resolve_storey_windings(ctx.plan, resolved.storey)
     key = windings.component_key_for_wall(wall)
-    if not windings.outer_loop_area_by_component_key.get(key):
+    if key is None or not windings.outer_loop_area_by_component_key.get(key):
         return 0.0, (f"a recoverable winding on {wall.tag}'s structure — its footing is "
                      f"authored off-centre and nothing says which side the heel is on")
     sign = wall_outward_sign(ctx.plan, wall, resolved.storey, windings.sign_for_wall(wall))

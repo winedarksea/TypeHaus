@@ -403,6 +403,8 @@ def partition_top_joints(
             end_in = min((hit.end_distance_in for hit in over_plate
                           if hit.end_distance_in is not None), default=None)
         elif in_bay:
+            # ``in_bay`` is populated only for a structure with a measured spacing above.
+            assert module_in is not None
             scope, chosen = BETWEEN_MEMBERS, in_bay
             count = int(run_in // module_in) + 1
             pitch_in = module_in

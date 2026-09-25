@@ -35,7 +35,9 @@ class _HouseFinder:
         if name.split(".", 1)[0] not in _HOUSE_ROOTS:
             return None
         spec = importlib.machinery.PathFinder.find_spec(name, path)
-        if spec is not None and isinstance(spec.loader, importlib.machinery.SourceFileLoader):
+        if (spec is not None
+                and spec.origin is not None
+                and isinstance(spec.loader, importlib.machinery.SourceFileLoader)):
             spec.loader = FreshSourceLoader(spec.name, spec.origin)
         return spec
 

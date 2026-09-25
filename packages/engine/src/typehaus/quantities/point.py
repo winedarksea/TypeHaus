@@ -17,6 +17,9 @@ class Point2D:
 
     __slots__ = ("_x", "_y")
 
+    _x: Length
+    _y: Length
+
     def __init__(self, x: Length, y: Length) -> None:
         object.__setattr__(self, "_x", x)
         object.__setattr__(self, "_y", y)

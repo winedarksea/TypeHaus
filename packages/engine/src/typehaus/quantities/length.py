@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from enum import Enum
 from fractions import Fraction
-from typing import TYPE_CHECKING, Any, final
+from typing import TYPE_CHECKING, Any, cast, final
 
 from typehaus.quantities._base import UnitSystem, pydantic_quantity_schema
 
@@ -37,6 +37,10 @@ class Length:
     """
 
     __slots__ = ("_m", "_unit", "_args")
+
+    _m: float
+    _unit: AuthoredUnit
+    _args: tuple[float, ...]
 
     def __init__(self, meters: float, unit: AuthoredUnit, args: tuple[float, ...]) -> None:
         object.__setattr__(self, "_m", float(meters))
@@ -198,4 +202,4 @@ def m(x: float) -> Length:
 def _from_source(text: str) -> Length:
     """Evaluate a ``to_source()`` string safely (only the four constructors)."""
     env: dict[str, Any] = {"ft": ft, "inch": inch, "mm": mm, "m": m}
-    return eval(text, {"__builtins__": {}}, env)  # noqa: S307 - closed constructor env
+    return cast(Length, eval(text, {"__builtins__": {}}, env))  # noqa: S307 - closed constructor env

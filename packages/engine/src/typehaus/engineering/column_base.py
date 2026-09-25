@@ -268,6 +268,7 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
             summary=f"{pier.tag}: the base-fixity check could not run",
             missing=tuple(missing), element_tags=tags)
 
+    assert soil is not None and grade_ft is not None and shear is not None and plan is not None
     shear_lb, arm_ft = shear
     least_ft, area_ft2 = plan
     base_top_ft = _base_top_ft(pad)
@@ -279,7 +280,8 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
     diameter_ft = pier.diameter_in / 12.0
     pole = _pole(ctx, pier, pad, diameter_ft) if shaft_embedment_ft is not None else None
     total_embedment_ft = (shaft_embedment_ft + pole.thickness_ft
-                          if pole is not None and pole.credited else shaft_embedment_ft)
+                          if shaft_embedment_ft is not None
+                          and pole is not None and pole.credited else shaft_embedment_ft)
 
     states: list[LimitState] = []
     notes: list[str] = []
@@ -296,6 +298,7 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
         if not claimed:
             missing.append("a bottom elevation on the base, to measure embedment from")
     else:
+        assert base_top_ft is not None and shaft_embedment_ft is not None
         lateral = soil.lateral_bearing_psf_per_ft
         plain_ends = pole.needs(shear_lb, height_ft, lateral)
         doubled_ends = pole.needs(shear_lb, height_ft, lateral * ISOLATED_POLE_FACTOR)

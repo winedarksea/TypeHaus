@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Any, final
+from typing import TYPE_CHECKING, Any, cast, final
 
 from typehaus.quantities._base import UnitSystem, pydantic_quantity_schema
 
@@ -17,6 +17,8 @@ class Angle:
     """An angle in canonical radians, authored in degrees for the imperial market."""
 
     __slots__ = ("_rad",)
+
+    _rad: float
 
     def __init__(self, radians: float) -> None:
         object.__setattr__(self, "_rad", float(radians))
@@ -72,7 +74,7 @@ def rad(radians: float) -> Angle:
 
 def _angle_from_source(text: str) -> Angle:
     env: dict[str, Any] = {"deg": deg, "rad": rad}
-    return eval(text, {"__builtins__": {}}, env)  # noqa: S307
+    return cast(Angle, eval(text, {"__builtins__": {}}, env))  # noqa: S307
 
 
 @final
@@ -80,6 +82,9 @@ class Pitch:
     """Roof pitch as rise-over-run (e.g. ``Pitch(rise=4, run=12)``)."""
 
     __slots__ = ("_rise", "_run")
+
+    _rise: float
+    _run: float
 
     def __init__(self, rise: float, run: float = 12.0) -> None:
         if run == 0:
@@ -130,4 +135,4 @@ class Pitch:
 
 def _pitch_from_source(text: str) -> Pitch:
     env: dict[str, Any] = {"Pitch": Pitch}
-    return eval(text, {"__builtins__": {}}, env)  # noqa: S307
+    return cast(Pitch, eval(text, {"__builtins__": {}}, env))  # noqa: S307

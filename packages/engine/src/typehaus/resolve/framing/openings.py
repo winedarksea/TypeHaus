@@ -554,6 +554,10 @@ def _frame_inside_one_bay(rw, direction, wall_start, opening: WallOpening, membe
         else:
             right_station = edge
 
+    # The loop fills each missing station above, but mypy cannot follow the string-keyed
+    # branch that assigns the matching local.
+    assert left_station is not None and right_station is not None
+
     # Sill and head nailer span between the flanking studs' inner faces: they butt the studs
     # they bear on instead of floating across the rough opening with unsupported ends.
     bearing_start = left_station + thickness / 2

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, final
+from typing import TYPE_CHECKING, Any, cast, final
 
 from typehaus.quantities._base import UnitSystem, pydantic_quantity_schema
 from typehaus.quantities.length import M_PER_FT
@@ -19,6 +19,8 @@ class Area:
     """An area in canonical square meters."""
 
     __slots__ = ("_m2",)
+
+    _m2: float
 
     def __init__(self, sq_meters: float) -> None:
         object.__setattr__(self, "_m2", float(sq_meters))
@@ -77,4 +79,4 @@ def sqm(x: float) -> Area:
 
 def _area_from_source(text: str) -> Area:
     env: dict[str, Any] = {"sqft": sqft, "sqm": sqm}
-    return eval(text, {"__builtins__": {}}, env)  # noqa: S307
+    return cast(Area, eval(text, {"__builtins__": {}}, env))  # noqa: S307
