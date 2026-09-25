@@ -13,6 +13,7 @@ from __future__ import annotations
 import fnmatch
 
 from typehaus.emit.trades import FALLBACK_TRADE, TRADES, sequence_rank, solid_trade
+from typehaus.resolve.solid_categories import categories_where
 
 # --- materials --------------------------------------------------------------------------
 
@@ -179,7 +180,7 @@ def assembly_trades(plan, assembly_tag: str | None, scope: str) -> tuple[str, ..
 
 #: Categories a concrete ``structure_material`` turns into a pour (a cast column) — the
 #: mirror of a laid deck in a ``slab`` row.
-_CAST_BY_MATERIAL = frozenset({"column", "post", "beam"})
+_CAST_BY_MATERIAL = categories_where(material_refile="cast")
 #: Categories whose material may say "not a pour": a plank deck, a sod green, an XPS wing.
 #:
 #: ** "footing" JOINED ON 2026-09-15 AND IT USED TO BE UNCONDITIONAL. ** Every footing
@@ -189,7 +190,9 @@ _CAST_BY_MATERIAL = frozenset({"column", "post", "beam"})
 #: width, a depth and a bearing plane, carrying load — and no concrete sub places it.
 #: Without this it billed to the concrete trade, which would schedule it into a pour
 #: sequence with nothing to pour, in a package the excavator has already left.
-_LAID_BY_MATERIAL = frozenset({"slab", "pad", "footing"})
+_LAID_BY_MATERIAL = categories_where(material_refile="laid")
+#: A slab's base course: the layer material's own trade.
+_LAYER_BY_MATERIAL = categories_where(material_refile="layer")
 
 
 def solid_trades(category: str | None, material: str | None = None) -> tuple[str, ...]:
@@ -200,7 +203,7 @@ def solid_trades(category: str | None, material: str | None = None) -> tuple[str
     mat = (material or "").strip().lower()
     if key in _CAST_BY_MATERIAL and mat == "concrete":
         return ("concrete",)
-    if key == "sub_slab":  # the layer's own trade, as takeoff/envelope.py bills it
+    if key in _LAYER_BY_MATERIAL:  # the layer's own trade, as takeoff/envelope.py bills it
         return (material_trade(mat) or "concrete",)
     if key in _LAID_BY_MATERIAL and mat and mat != "concrete":
         laid = material_trade(mat) or "framing"

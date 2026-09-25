@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw.palette import family_of
 from typehaus.resolve.model import FramedMember
+from typehaus.resolve.solid_categories import categories_where
 
 # Assembly layer functions: the bands a wall/roof/floor stack is built from.
 LAYER_KEYS = frozenset({
@@ -27,38 +28,18 @@ LAYER_KEYS = frozenset({
     "air_gap", "airgap", "furring",
 })
 
-# Whole-element surfaces that are not a layer of a stack.
-ELEMENT_KEYS = frozenset({
-    "floor", "roof", "slab", "sub_slab", "footing", "pad", "column", "beam", "furniture", "earth",
-    "opening_frame", "glass", "solar",
+# Whole-element surfaces that are not a layer of a stack: the registry's ``element`` rows plus
+# the part keys that are not categories.
+ELEMENT_KEYS = categories_where(finish_group="element") | frozenset({
+    "furniture", "opening_frame", "glass", "solar",
 })
 
-# Accessory and trim products (→ resolve/accessories.py, resolve/roof_trim.py).
-ACCESSORY_KEYS = frozenset({
-    "railing", "railing_infill", "railing_glass",
-    "dowel", "thermal_break", "connector", "snow_guard", "seam_clamp", "panel_strap",
-    "sump", "vent", "fascia", "soffit", "eave_soffit", "wall_corner", "beam_cap",
-    "movement_joint",
-    "gutter", "ridge_cap", "corner_trim", "flashing",
-    # Stormwater (→ emit/trades.py DRAINAGE_CATEGORIES). The leader is the gutter's own
-    # aluminium; the buried three read as what they are made of — perforated HDPE tile and
-    # the washed rock around a trench or a soakaway — so a drainage view is not one grey.
-    "downspout", "drain_tile", "french_drain", "drywell",
-    "rain_garden_media", "rain_garden_stone", "leader_extension", "area_drain",
-    "area_drain_riser", "plant", "trellis", "planting_soil", "planting_fill",
-    # Resolved solid categories the glTF palette never had an entry for, so they take its
-    # neutral-grey fallback today. Naming them here keeps the IR honest about what they are
-    # — a glazing panel is not "structure" — and leaves picking their tones to the emitter
-    # switch, where a colour change is a reviewable diff rather than a side effect.
-    "glazing", "glazing_trim", "bug_screen",
-    # Exterior window casing on the cladding plane (resolve/geometry_openings.py). Its
-    # colour is a design choice authored in both palettes, not derived from a material.
-    "window_trim",
-    # A sectional overhead door's panel. Split from the frame it hangs in because a garage
-    # door is a factory-finished product in its own colour, not a length of the same trim
-    # coil: sharing "window_trim" painted the whole 16' panel the house's near-black
-    # exterior dark, which reads as matte black rather than the charcoal it is meant to be.
-    "overhead_door",
+# Accessory and trim products: the registry's ``accessory`` rows plus part keys that are not
+# categories. ``corner_trim``; exterior window casing (resolve/geometry_openings.py), whose
+# colour is authored in both palettes; and a sectional overhead door's panel, split from its
+# frame because it is a factory-finished product in its own colour.
+ACCESSORY_KEYS = categories_where(finish_group="accessory") | frozenset({
+    "corner_trim", "window_trim", "overhead_door",
 })
 
 # Material families, inferred from a material ref by `emit/draw/palette.family_of` (mirrored

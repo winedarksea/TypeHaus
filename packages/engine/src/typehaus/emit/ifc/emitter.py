@@ -178,12 +178,12 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
         # Pipe accessories have a dedicated emitter (``_emit_pipe_accessories``) that knows
         # which IfcValve PredefinedType each kind is. Emitting the solid too would put a
         # second, untyped copy of every shutoff in the file — and, since none of these
-        # categories is in ``_SOLID_IFC_CLASS``, that copy would be an ``IfcFooting``.
+        # categories has an IFC class in the registry, that copy would raise.
         if (solid.category or "").lower() in PIPE_ACCESSORY_CATEGORIES:
             continue
         # And a routed run's own tube, for the same reason: ``_emit_pipe_run`` and
         # ``emit_conduits`` already export it as the segments it is. The solid is how glTF
-        # and the viewer draw a run; in IFC it would be a duplicate, and an IfcFooting.
+        # and the viewer draw a run; in IFC it would be a duplicate.
         if (solid.category or "").lower() in ROUTED_RUN_CATEGORIES:
             continue
         # A derived connector marker stands for a part billed by part number elsewhere. It

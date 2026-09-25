@@ -18,6 +18,7 @@ classification rules live in :mod:`typehaus.emit.trade_rules`.
 from __future__ import annotations
 
 from typehaus.model.enums import DuctSystem, PipeAccessoryKind, PipeSystem
+from typehaus.resolve.solid_categories import SOLID_CATEGORIES
 
 #: ``(group id, group label, trades)`` in viewer order. The tuples partition :data:`TRADES`.
 TRADE_GROUPS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
@@ -71,82 +72,11 @@ TRADES = frozenset(TRADE_GROUP)
 #: a pour, and a category landing here reads as "not classified", not as a claim.
 FALLBACK_TRADE = "concrete"
 
-#: Solid category -> trade, for every ``ResolvedSolid.category`` the resolver mints. Material
-#: overrides (a cast column, a laid deck) are :func:`typehaus.emit.trade_rules.solid_trades`.
+#: Solid category -> trade, derived from the registry (``resolve/solid_category_table.py``).
+#: Material overrides (a cast column, a laid deck) are
+#: :func:`typehaus.emit.trade_rules.solid_trades`.
 SOLID_CATEGORY_TRADE: dict[str, str] = {
-    # Standalone structure (``resolve/envelope.py::resolve_columns_and_beams``): same lumber
-    # as the studs around it. A concrete pier re-files by material.
-    "beam": "framing",
-    "column": "framing",
-    # Routed plumbing, one category per ``PipeSystem`` (``resolve/mep.py``).
-    "pipe_drain": "plumbing", "pipe_vent": "plumbing",
-    "pipe_water_hot": "plumbing", "pipe_water_cold": "plumbing",
-    "pipe_gas": "plumbing", "pipe_radon": "plumbing", "pipe_sump_discharge": "plumbing",
-    # In-line supply devices, one category per ``PipeAccessoryKind`` so the inspector can
-    # label a shutoff as a shutoff.
-    "main_shutoff": "plumbing", "shutoff": "plumbing", "backflow_preventer": "plumbing",
-    "vacuum_breaker": "plumbing", "water_hammer_arrestor": "plumbing",
-    "ro_stub": "plumbing", "penetration_seal": "plumbing",
-    # Cast-in block-outs: a pre-pour operation graded by the plumbing rough-in rules, kept
-    # on one toggle so the pour-day list is visible at once.
-    "pipe_sleeve": "plumbing",
-    # Raceways, split by the NEC 800.133/725 power-vs-comms line for colour, not trade.
-    "conduit_power": "electrical", "conduit_data": "electrical",
-    # Vent runs and routed air, one category per ``DuctSystem`` for colour.
-    "vent": "mechanical",
-    "duct_supply": "mechanical", "duct_return": "mechanical", "duct_exhaust": "mechanical",
-    "duct_dryer": "mechanical", "duct_transfer": "mechanical",
-    "duct_outdoor_air": "mechanical",
-    # Fenestration: the glazing and the extrusions holding it, even in a roof plane.
-    "glazing": "openings", "glazing_trim": "openings",
-    # Roof edge trim (``resolve/roof_trim.py``, ``resolve/accessories.py``). ``flashing``
-    # collapses drip and counterflashing; the BOM's ``edge_trim`` rows keep the real kind
-    # and split siding from roofing there.
-    "flashing": "roofing",
-    "ridge_cap": "roofing",
-    # Fastened INTO the standing-seam skin, whatever the clamp holds.
-    "snow_guard": "roofing", "seam_clamp": "roofing", "panel_strap": "roofing",
-    # The siding contractor's trim: fascia, the vented eave soffit panel, wall corner
-    # closures, the aluminium cap over an exposed beam, the rainscreen base strip and
-    # breezeway slat infill. ``beam_cap`` split off ``flashing`` so the sunken-garden caps
-    # stop showing under Roof; ``takeoff/cost_codes._SIDING_EDGE_TRIM`` already billed it here.
-    "fascia": "siding", "eave_soffit": "siding", "wall_corner": "siding",
-    "beam_cap": "siding", "bug_screen": "siding", "screen_slat": "siding",
-    "movement_joint": "masonry",  # a brick wythe's sealant end joint
-    # Stormwater: one run from the gutter to daylight, one toggle. The IFC emitter groups
-    # exactly these into ``IfcDistributionSystem/STORMWATER``.
-    "gutter": "drainage", "downspout": "drainage", "sump": "drainage",
-    "drain_tile": "drainage", "french_drain": "drainage", "drywell": "drainage",
-    "rain_garden_media": "drainage", "rain_garden_stone": "drainage",
-    "leader_extension": "drainage", "area_drain": "drainage", "area_drain_riser": "drainage",
-    # Illustrative planting and the espalier frame (resolve/landscape.py): derived, unpriced.
-    "plant": "landscaping", "trellis": "landscaping",
-    # A planting bed's own earth (a raised terrace): the landscaper places the soil, the
-    # excavator the fill under it.
-    "planting_soil": "landscaping", "planting_fill": "earth",
-    # A slab's drawn base course and under-slab board (resolve/slab_layers.py). The
-    # fallback only: `trade_rules.solid_trades` re-files each by its material, as the
-    # takeoff files the same layer (stone -> earth, XPS -> insulation).
-    "sub_slab": "earth",
-    # A dropped soffit box and a room's ceiling plane are the drywaller's overhead surfaces.
-    "soffit": "drywall", "ceiling": "drywall",
-    # Pours, and what is cast into them. Equal to the fallback; named so the parity test's
-    # "unclassified" list stays meaningful.
-    "slab": "concrete", "footing": "concrete", "pad": "concrete",
-    "dowel": "concrete", "thermal_break": "concrete",
-    # Guards and handrails, frame and infill. ``Canvas2D.tsx`` gates the plan's railing
-    # outlines on the same trade.
-    "railing": "stairs", "railing_infill": "stairs", "railing_glass": "stairs",
-    # Structural hardware rides with the members it joins.
-    "connector": "framing",
-    # Both carved-off connector families stay FRAMING here, deliberately. This table decides
-    # the viewer's CONTAINER and nothing else; who is *quoted* a cast-in anchor is decided by
-    # its cost code (``takeoff/cost_codes.py``), which is where the concrete sub's scope
-    # actually lives. Flipping this to "concrete" would move only the container — and would
-    # BREAK the Connectors toggle, whose facet machinery is keyed to framing.
-    "connector_embedded": "framing",
-    "connector_hanger": "framing",
-}
+    row.name: row.trade for row in SOLID_CATEGORIES.values() if row.trade is not None}
 
 
 #: Stormwater, derived from the table so the two can never disagree (``emit/ifc/mep.py``).
@@ -159,7 +89,7 @@ PIPE_ACCESSORY_CATEGORIES = frozenset(kind.value for kind in PipeAccessoryKind)
 
 #: The one swept solid a routed run gives (``resolve/mep.py::_emit_run_solids``). The IFC
 #: emitter skips these too: a run already exports as real segments, and a second copy would
-#: land on the ``IfcFooting`` fallback. glTF and ``model.json`` are the other way round.
+#: raise in `_emit_solid` (no IFC class). glTF and ``model.json`` are the other way round.
 ROUTED_RUN_CATEGORIES = (frozenset(f"pipe_{system.value}" for system in PipeSystem)
                          | frozenset(f"duct_{system.value}" for system in DuctSystem)
                          | frozenset({"conduit_power", "conduit_data"}))

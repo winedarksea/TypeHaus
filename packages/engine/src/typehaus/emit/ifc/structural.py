@@ -3,8 +3,8 @@
 Split out of :mod:`typehaus.emit.ifc.emitter` alongside the architectural, MEP and site
 modules (→ AGENTS.md §1.1). What lands here is everything whose IFC class follows what
 carries load rather than what encloses space: the generated members a framed parent
-aggregates, the resolved-solid class table (the one place a category becomes an IFC class,
-with ``IfcFooting`` as the deliberate pour fallback), a floor's deck and its joists, a
+aggregates, the resolved-solid emit (a category's IFC class is the SolidCategory registry's,
+and an unregistered one raises), a floor's deck and its joists, a
 brace's raked sticks, and the stair those members hang off.
 
 ``_emit_framed_member`` sits here rather than with the walls because a wall and a stair
@@ -24,6 +24,7 @@ from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.geometry_ir import GBox
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.solid_categories import SOLID_CATEGORIES, solid_category
 from typehaus.resolve.sweep import (
     clean_path,
     is_round_profile,
@@ -77,70 +78,30 @@ def _emit_framed_member(f: Any, body: Any, parent_tag: str, parent_uid: str,
     return child
 
 
-# What a resolved solid becomes in IFC: ``(class, PredefinedType | None)``. A category with
-# no entry falls through to ``IfcFooting``, which is right for a pour and wrong for anything
-# else — every category that is not a pour belongs in this table.
-#
-# The drainage rows are the ones IFC actually has homes for, and using them is what makes the
-# export read as a stormwater system in Revit/Bonsai rather than as loose proxies:
-# ``IfcPipeSegment`` for anything the water runs *through* (its PredefinedType separates the
-# hung channel from the rigid leader from the flexible buried tile), and
-# ``IfcDistributionChamberElement`` for anything it collects *in*. ``SOAKAWAY`` has no enum
-# member, so the drywell is USERDEFINED with an ObjectType that names it.
+# What a resolved solid becomes in IFC — class, PredefinedType and (where the IFC4 enum has
+# no member for what the thing is) ObjectType — is the registry's (``resolve/
+# solid_category_table.py``). There is no fallback: an unregistered category, or one with no
+# IFC class, raises rather than exporting as a footing.
+def _solid_ifc(category: str) -> tuple[str, str | None, str | None]:
+    row = solid_category(category)
+    if row.ifc_class is None:
+        raise ValueError(f"solid category {category!r} has no IFC class in the registry")
+    return row.ifc_class, row.ifc_predefined, row.ifc_object_type
+
+
+#: ``category -> (class, PredefinedType)``, a derived read-only view for tests and tools.
 _SOLID_IFC_CLASS: dict[str, tuple[str, str | None]] = {
-    "slab": ("IfcSlab", None), "column": ("IfcColumn", None), "beam": ("IfcBeam", None),
-    "railing": ("IfcRailing", None), "dowel": ("IfcReinforcingBar", None),
-    # Guard infill exports as part of the railing it fills, not as ``IfcPlate``: ``diff/
-    # semantic.py`` has no ``IfcPlate`` row, so a glass lite exported that way would vanish
-    # from the ``haus diff`` census rather than round-trip.
-    "railing_infill": ("IfcRailing", None), "railing_glass": ("IfcRailing", None),
-    "connector": ("IfcMechanicalFastener", None),
-    # Not fasteners in the IFC sense: a snow-retention rail and a seam clamp are accessories
-    # mounted ON the roof skin, not hardware joining two structural members. ``diff/
-    # semantic.py`` carries an ``IfcDiscreteAccessory`` row, so both still round-trip.
-    "snow_guard": ("IfcDiscreteAccessory", None),
-    "seam_clamp": ("IfcDiscreteAccessory", None),
-    "panel_strap": ("IfcDiscreteAccessory", None),
-    "vent": ("IfcBuildingElementProxy", None),
-    "fascia": ("IfcCovering", None), "soffit": ("IfcCovering", None),
-    "flashing": ("IfcCovering", None), "wall_corner": ("IfcCovering", None),
-    "movement_joint": ("IfcCovering", None),
-    "beam_cap": ("IfcCovering", None),
-    "eave_soffit": ("IfcCovering", None),
-    "ceiling": ("IfcCovering", "CEILING"),
-    "thermal_break": ("IfcBuildingElementProxy", None),
-    # stormwater (→ emit/trades.py DRAINAGE_CATEGORIES)
-    "gutter": ("IfcPipeSegment", "GUTTER"),
-    "downspout": ("IfcPipeSegment", "RIGIDSEGMENT"),
-    "drain_tile": ("IfcPipeSegment", "FLEXIBLESEGMENT"),
-    "sump": ("IfcDistributionChamberElement", "SUMP"),
-    "french_drain": ("IfcDistributionChamberElement", "TRENCH"),
-    "drywell": ("IfcDistributionChamberElement", "USERDEFINED"),
-    "leader_extension": ("IfcPipeSegment", "RIGIDSEGMENT"),
-    "area_drain": ("IfcWasteTerminal", "GULLYSUMP"),
-    "area_drain_riser": ("IfcPipeSegment", "RIGIDSEGMENT"),
-    "rain_garden_media": ("IfcDistributionChamberElement", "USERDEFINED"),
-    "rain_garden_stone": ("IfcDistributionChamberElement", "USERDEFINED"),
-    # a planting bed's own earth (resolve/landscape.py)
-    "planting_soil": ("IfcGeographicElement", "USERDEFINED"),
-    "planting_fill": ("IfcGeographicElement", "USERDEFINED"),
-}
-
-
-#: Where the IFC4 enum has no member for what the thing is, ``ObjectType`` carries the name.
-_SOLID_OBJECT_TYPE = {"drywell": "SOAKAWAY", "rain_garden_media": "BIORETENTION",
-                      "rain_garden_stone": "BIORETENTION", "planting_soil": "PLANTING_SOIL",
-                      "planting_fill": "TERRACE_FILL"}
+    row.name: (row.ifc_class, row.ifc_predefined)
+    for row in SOLID_CATEGORIES.values() if row.ifc_class is not None}
 
 
 def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any,
                 model: Any = None) -> Any:
     """One resolved solid as its IFC element. Returns it, so systems can group members."""
-    ifc_class, predefined_type = _SOLID_IFC_CLASS.get(solid.category, ("IfcFooting", None))
+    ifc_class, predefined_type, object_type = _solid_ifc(solid.category)
     element = ll.create_entity(f, ifc_class, name=solid.tag)
     if predefined_type is not None:
         element.PredefinedType = predefined_type
-    object_type = _SOLID_OBJECT_TYPE.get(solid.category)
     if object_type is not None:
         element.ObjectType = object_type
     element.GlobalId = derive_guid(project_uuid, solid.uid)

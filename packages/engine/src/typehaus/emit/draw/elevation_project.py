@@ -70,6 +70,7 @@ from typehaus.resolve.geometry_ir import (
     GSweep,
 )
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.solid_categories import SOLID_CATEGORIES
 
 Vec3 = tuple[float, float, float]
 UZ = tuple[float, float]
@@ -336,24 +337,16 @@ def rings_of(geometry: BaseGeometry) -> list[tuple[UZ, ...]]:
 
 
 # --- what an exterior elevation can see --------------------------------------------------
-#: IR element kind -> drawing family. A kind absent from this table is not drawn, and every
+#: IR element kind -> drawing family (the registry's ``elevation_family``). A kind absent
+#: from this table is not drawn, and every
 #: absence is a decision: framing (7,469 solids in the reference house) is behind cladding,
 #: decking or a ceiling everywhere it exists; plumbing, HVAC, conduit, drain tile and pipe
 #: sleeves are buried or interior; ``ceiling`` and ``earth`` are the insides of surfaces this
 #: view looks at from outside. Seam clamps and panel straps are excluded for a different
 #: reason — they are real and they are visible, but at 1/4"=1'-0" a 3" clip is a dot, and
 #: eighty-two dots along an eave read as dirt on the sheet rather than as hardware.
-_KIND_FAMILY = {
-    "wall": "body", "slab": "body", "footing": "body", "pad": "body", "floor": "body",
-    "column": "body", "beam": "body", "soffit": "body",
-    "roof": "roof", "solar_panel": "roof",
-    "fascia": "trim", "gutter": "trim", "downspout": "trim", "flashing": "trim",
-    "wall_corner": "trim", "eave_soffit": "trim", "beam_cap": "trim",
-    "movement_joint": "trim",
-    "snow_guard": "trim", "vent": "trim",
-    "railing": "rail", "railing_infill": "rail",
-    "glazing": "glaz", "glazing_trim": "sash",
-}
+_KIND_FAMILY = {row.name: row.elevation_family for row in SOLID_CATEGORIES.values()
+                if row.elevation_family is not None}
 
 #: An opening's own parts split three ways: the glass reads as glass, and everything else —
 #: frame, mullion, stile, track, leaf, exterior casing — reads as the product's linework,

@@ -143,8 +143,8 @@ def _emit_pipe_accessories(f: Any, body: Any, model: ResolvedModel,
     Returns ``(accessory, entity)`` pairs so the caller can file each into the hot or cold
     system its host run belongs to. The box representation is the resolver's marker solid,
     rebuilt here rather than taken from ``model.solids`` because the generic solid loop
-    deliberately skips this category — a device that fell through ``_SOLID_IFC_CLASS`` would
-    export as an ``IfcFooting``, which is exactly the wart this emitter exists to avoid.
+    deliberately skips this category — a device reaching
+    ``_emit_solid`` would raise: the registry gives it no IFC class.
     """
     out: list[tuple] = []
     for accessory in sorted(model.pipe_accessories, key=lambda item: item.uid):

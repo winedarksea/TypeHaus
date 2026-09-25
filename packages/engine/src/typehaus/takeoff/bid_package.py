@@ -21,6 +21,7 @@ from typehaus.emit.trades import (
     TRADE_LABELS,
     sequence_rank,
 )
+from typehaus.resolve.solid_categories import categories_where
 from typehaus.takeoff.bid_recipes import Recipe, recipe_for, shape_for
 from typehaus.takeoff.bom_walk import BomRow, walk_bom
 from typehaus.takeoff.cost_codes import cost_code
@@ -33,15 +34,8 @@ BUILDING = "building"
 #: volume — that is the takeoff's geometry view — but a package that listed "0.01 cy of
 #: backflow preventer" beside the valve itself read as a cast pour to every reviewer
 #: (audit:2026-09-12, 41 rows across nine trades). Dropped from packages, never from the BOM.
-MIRRORED_SOLID_CATEGORIES = frozenset(
-    ROUTED_RUN_CATEGORIES | PIPE_ACCESSORY_CATEGORIES | DRAINAGE_CATEGORIES | {
-        "vent", "fascia", "flashing", "wall_corner", "beam_cap", "eave_soffit",
-        "movement_joint",
-        "bug_screen", "glazing",
-        "glazing_trim", "snow_guard", "seam_clamp", "panel_strap", "railing",
-        "railing_infill", "railing_glass", "connector", "connector_embedded",
-        "connector_hanger", "ceiling", "soffit", "screen_slat",
-    })
+MIRRORED_SOLID_CATEGORIES = (ROUTED_RUN_CATEGORIES | PIPE_ACCESSORY_CATEGORIES
+                             | DRAINAGE_CATEGORIES | categories_where(billed_elsewhere=True))
 
 #: Aggregates a sub buys by the yard, even where the takeoff carries them as a layer area.
 _AGGREGATE_TRADES = frozenset({"earth", "landscaping"})

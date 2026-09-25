@@ -39,10 +39,11 @@ from typehaus.findings import Finding, Result, Severity, not_applicable
 from typehaus.model.plan import PlanModel
 from typehaus.quantities import inch
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.solid_categories import categories_where
 
 #: Solid categories that are a *pour*. ``column`` is excluded: a concrete pier standing on
 #: its own pad shares that pad's whole footprint by design.
-CONCRETE_CATEGORIES = ("pad", "footing", "slab")
+CONCRETE_CATEGORIES = categories_where(is_pour=True)
 
 # Minimum shared plan area (m²). A face abutment intersects in a zero-area line; this clears
 # it with margin. Same constant, same reasoning, as interference.py's.
