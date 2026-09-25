@@ -16,6 +16,7 @@ from typehaus import (
     inch,
     pt,
 )
+from typehaus.model import Location, WallAttachment, deg
 # THE TWO EXTERIOR HOODS — NORTH facade, stacked, exhaust over intake.
 #
 # ** THEY MOVED OFF THE WEST FACADE ON 2026-09-15, AND THE CLASHES ARE WHY. ** Each run had
@@ -100,7 +101,7 @@ from typehaus import (
 # host; the take-off under-bills two escutcheon-and-foam kits, which is the honest gap.
 EQUIPMENT_ERV_HOODS_MAIN = [
     Equipment(uid="0NF97ZR9Z3", tag="EQ-M-ERV-HOOD-OA", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(3, 4), inch(445.25)), footprint=(inch(12), inch(12)),
+              footprint=(inch(12), inch(12)),
               # The intake, and it is the LOW one deliberately: an exhaust plume rises, so
               # the intake belongs under it, not over it. Still twice `erv_terminals`' 36"
               # rule of thumb off the -2'-10" grade plane, and clear of any drift a 50 psf
@@ -117,11 +118,14 @@ EQUIPMENT_ERV_HOODS_MAIN = [
               # electrical installation", so 110.26(A)(3)'s 6"-overhang allowance does not
               # reach it — the box has to be wholly out.
               room=None, type_ref="EQ-T-ERV-HOOD-6",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(5)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-N3B", face="right", distance_from_start=inch(32),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 EQUIPMENT_ERV_HOODS_SECOND = [
     Equipment(uid="38M0D2FNXH", tag="EQ-S-ERV-HOOD-EA", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(inch(24.625), inch(445.25)), footprint=(inch(12), inch(12)),
+              footprint=(inch(12), inch(12)),
               # ** y=34'-0" IS A STUD BAY, AND 34'-8" WAS A STUD (2026-09-11). ** W-S-W1B
               # frames studs at y 400"/416"/430 3/4"; the hood and its duct sat at y=416"
               # dead on `stud-001`, so the 6" penetration bored the middle out of a bearing
@@ -137,7 +141,10 @@ EQUIPMENT_ERV_HOODS_SECOND = [
               # on +17'-0" clears that by 1'-6", so nothing on the inside face constrains the
               # height either. room=None, as above and as EQ-M-HP3-OD is authored.
               room=None, type_ref="EQ-T-ERV-HOOD-6-EXH",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-N3B", face="right", distance_from_start=inch(8.375),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 # =============================== THE TWO WALL PENETRATIONS =============================
 #

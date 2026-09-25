@@ -234,6 +234,9 @@ def backing_wall(plan: PlanModel, model: ResolvedModel, body,
     ``Fixture`` while carriers were the only caller; nothing in the body ever needed that.
     """
     walls = {wall.tag: wall for wall in model.walls}
+    attachment = getattr(getattr(body, "location", None), "attachment", None)
+    if attachment is not None:
+        return _backing_wall(list(model.walls), body, body_type)
     for storey_tag in plan.elements:
         elements = plan.storey_elements(storey_tag)
         if not any(element.tag == body.tag for element in elements):
@@ -247,6 +250,11 @@ def backing_wall(plan: PlanModel, model: ResolvedModel, body,
 def _backing_wall(walls: list[ResolvedWall], fixture,
                   fixture_type) -> tuple[ResolvedWall, float] | None:
     """``(wall, station along its axis)`` for the wall the body's back faces, or None."""
+    attachment = getattr(getattr(fixture, "location", None), "attachment", None)
+    if attachment is not None:
+        # A hosted body names its wall; the station is its own.
+        hosted = next((w for w in walls if w.tag == attachment.wall_ref), None)
+        return None if hosted is None else (hosted, attachment.distance_from_start.meters)
     depth = fixture_type.footprint[1].meters
     radians = math.radians(_degrees(fixture.rotation))
     cos, sin = math.cos(radians), math.sin(radians)

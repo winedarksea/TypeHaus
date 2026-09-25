@@ -24,6 +24,7 @@ from typehaus.resolve.framing.carriers import (
     carrier_bays,
     carrier_keepouts,
 )
+from typehaus.resolve.placeables import placed_xy
 
 IN = 0.0254
 CARRIER_WALL = "W-M-HS1"
@@ -159,8 +160,9 @@ def test_the_drain_point_is_derived_from_the_type_and_the_host_wall(catlin_plan,
     wall = catlin_model_ro.wall(CARRIER_WALL)
     assert point[0] / IN == pytest.approx(26.409, abs=0.01)
     assert point[1] == pytest.approx(wall.axis[0][1])          # on the wall's own axis
-    assert point[1] != pytest.approx(fixture.position.xy_m[1])  # NOT under the footprint
-    nominal = fixture.position.xy_m[1] - 11.9 * IN             # the type's raw set-back
+    centre = placed_xy(catlin_model_ro, fixture)               # hosted: derived, not authored
+    assert point[1] != pytest.approx(centre[1])                # NOT under the footprint
+    nominal = centre[1] - 11.9 * IN                            # the type's raw set-back
     assert abs(point[1] - nominal) / IN == pytest.approx(1.135, abs=0.01)
 
 

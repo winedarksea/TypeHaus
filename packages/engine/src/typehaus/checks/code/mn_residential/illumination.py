@@ -43,6 +43,7 @@ from typehaus.findings import Finding
 from typehaus.model.enums import Occupancy
 from typehaus.quantities import ft
 from typehaus.resolve.geometry import opening_center
+from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.stairs.walkline import flight_walklines, walkline_z_at
 
 # R303.7: "a wall switch at each floor level ... where the stairway has six or more risers".
@@ -114,11 +115,12 @@ def _resolved_light_z(ctx: CheckContext) -> dict[str, float]:
     return heights
 
 
-def _plan_points(element) -> list[tuple[float, float]]:
+def _plan_points(model, element) -> list[tuple[float, float]]:
     """The plan points a luminaire occupies: a device's position, a run's vertices."""
     if element.element_kind == "LightRun":
         return [p.xy_m for p in element.path]
-    return [element.position.xy_m]
+    xy = placed_xy(model, element)
+    return [xy] if xy is not None else []
 
 
 def _lights_near(ctx: CheckContext, region, storeys: set[str], *, stair=None):
@@ -158,11 +160,11 @@ def _lights_near(ctx: CheckContext, region, storeys: set[str], *, stair=None):
                     continue
             elif (kind == "ElectricalDevice"
                   and getattr(element.kind, "value", None) == "light"):
-                if not region.covers(Point(*element.position.xy_m)):
+                if not region.covers(Point(*placed_xy(ctx.model, element))):
                     continue
             else:
                 continue
-            nosing = _nosing_under(lines, heights, element, band)
+            nosing = _nosing_under(ctx.model, lines, heights, element, band)
             if nosing is not None:
                 buried.append((element, nosing))
             else:
@@ -170,7 +172,7 @@ def _lights_near(ctx: CheckContext, region, storeys: set[str], *, stair=None):
     return serving, buried
 
 
-def _nosing_under(lines, heights: dict[str, float], element, band: float):
+def _nosing_under(model, lines, heights: dict[str, float], element, band: float):
     """``(nosing_z, fixture_z)`` when this luminaire sits more than ``band`` under the nosings.
 
     ``None`` — the fixture is over the treads (or in the riser band beside them), or the
@@ -181,7 +183,7 @@ def _nosing_under(lines, heights: dict[str, float], element, band: float):
     if fixture_z is None:
         return None
     worst = None
-    for point in _plan_points(element):
+    for point in _plan_points(model, element):
         nosing_z = walkline_z_at(lines, point, _NOSING_LATERAL_REACH_M)
         if nosing_z is None:
             continue

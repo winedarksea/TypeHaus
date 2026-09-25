@@ -14,6 +14,7 @@ from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
 from typehaus.resolve.mep import is_parallel_to_floor
+from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 if TYPE_CHECKING:
@@ -89,7 +90,7 @@ def _registers_by_room(ctx: CheckContext, cid: str) -> tuple[dict, dict, list, l
             registers.append(element)
             room_tag = element.room
             if room_tag is None:
-                point = Point(element.position.xy_m)
+                point = Point(placed_xy(ctx.model, element))
                 room_tag = next(
                     (r.tag for r in rooms
                      if r.storey == storey.tag and len(axis_ring(r)) >= 3

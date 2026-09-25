@@ -9,6 +9,7 @@ import pytest
 
 from typehaus.checks import run_from_model
 from typehaus.checks.registry import Tier
+from typehaus.resolve.placeables import placed_xy
 
 
 def test_expected_drain_point_is_the_authored_outlet_when_there_is_one(catlin_model):
@@ -19,7 +20,7 @@ def test_expected_drain_point_is_the_authored_outlet_when_there_is_one(catlin_mo
     fixture = catlin_model.plan.by_tag("FX-M-KITCH-SINK")
     assert fixture.drain_position is not None
     assert sleeve.expected_center == fixture.drain_position.xy_m
-    assert sleeve.expected_center != fixture.position.xy_m
+    assert sleeve.expected_center != placed_xy(catlin_model, fixture)
 
 
 def test_floor_wc_drains_under_its_own_bowl(catlin_model):
@@ -170,8 +171,8 @@ def test_sleeve_alignment_fails_at_one_inch_offset(catlin_model):
 def test_sleeve_rejected_when_inside_floor_opening():
     from typehaus.model.mep import SleevePenetration
     from typehaus.quantities import ft, inch, pt
-    from typehaus.resolve.model import ResolvedModel, ResolvedSolid
     from typehaus.resolve.mep import resolve_mep
+    from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 
     class _FakeOpening:
         outline = (pt(ft(0), ft(0)), pt(ft(2), ft(0)), pt(ft(2), ft(2)), pt(ft(0), ft(2)))
@@ -216,8 +217,8 @@ def test_drain_slope_unknown_without_inverts():
     from typehaus.model.enums import PipeSystem
     from typehaus.model.mep import PipeRun
     from typehaus.quantities import ft, inch, pt
-    from typehaus.resolve.model import ResolvedModel
     from typehaus.resolve.mep import resolve_mep
+    from typehaus.resolve.model import ResolvedModel
 
     run = PipeRun(uid="X", tag="PR-TEST", system=PipeSystem.DRAIN,
                  path=(pt(ft(0), ft(0)), pt(ft(10), ft(0))), diameter=inch(3))
@@ -675,10 +676,10 @@ def test_a_jog_steps_the_riser_over_inside_before_it_exits_the_wall():
 
 def test_the_wall_exit_leaves_from_the_jogged_station_not_the_chase():
     """The exit offset is measured from wherever the riser actually stands."""
-    from typehaus.resolve.vent_termination import exterior_riser_point
     from typehaus.model.enums import PipeSystem
     from typehaus.model.mep import VentRun
     from typehaus.quantities import inch, m, pt
+    from typehaus.resolve.vent_termination import exterior_riser_point
 
     vent = VentRun(uid="V1", tag="VR-TEST", systems=(PipeSystem.VENT,), diameter=inch(3),
                    chase_position=pt(m(2), m(2)), start_elevation=m(0), exit_elevation=m(3),

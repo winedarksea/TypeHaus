@@ -27,6 +27,7 @@ from typehaus.emit.draw.foundation_frost_notes import (
     lowest_adjacent_grade_notes,
 )
 from typehaus.emit.draw.structural_common import elevation_feet, feet_inches
+from typehaus.resolve.placeables import placed_xy
 
 
 def _under_slab_note(model: ResolvedModel, slab: ResolvedSolid) -> str:
@@ -243,7 +244,7 @@ def _fan_power_notes(model: ResolvedModel, risers: list[Any],
         for box in boxes:
             if getattr(box, "room", None):
                 continue
-            bx, by = box.position.xy_m
+            bx, by = placed_xy(model, box)
             if ((bx - rx) ** 2 + (by - ry) ** 2) ** 0.5 <= _FAN_BOX_REACH.meters:
                 named.append(box.tag)
     if named:

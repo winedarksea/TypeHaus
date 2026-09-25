@@ -7912,6 +7912,62 @@
       "node": "polyline",
       "points": [
         [
+          2.5,
+          82.0
+        ],
+        [
+          4.0,
+          82.0
+        ],
+        [
+          4.0,
+          89.24999999999999
+        ],
+        [
+          2.5,
+          89.24999999999999
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "backing-1-001"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          2.5,
+          82.0
+        ],
+        [
+          4.0,
+          82.0
+        ],
+        [
+          4.0,
+          89.24999999999999
+        ],
+        [
+          2.5,
+          89.24999999999999
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -6.000000000000001,
           -13.437499999999998
         ],

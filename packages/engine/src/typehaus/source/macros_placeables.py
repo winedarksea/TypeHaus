@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import math
 
-from typehaus.model.elements import Door, RoughOpening
+from typehaus.model.elements import Door, RoughOpening, Wall
 from typehaus.model.enums import DeviceKind, DuctSystem, EquipmentKind, Service
 from typehaus.model.mep import ElectricalDevice, Equipment, Register
 from typehaus.model.placeables import Mount
@@ -102,14 +102,19 @@ def attach_placeable(plan: PlanModel, storey: str, *, tag: str, wall: str, face:
         raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
     if face not in {"left", "right"}:
         raise MacroError("attachment face must be 'left' or 'right'")
-    if not any(candidate.tag == wall for candidate in _walls(plan, storey)):
-        raise MacroError(f"no wall {wall!r} on storey {storey!r}")
+    # Any storey's wall: a wall is filed on the storey that BUILDS it, a device on the one
+    # that powers it, and a garden wall carries devices hung from the floor above.
+    if not any(isinstance(candidate, Wall) and candidate.tag == wall
+               for candidate in plan.all_elements()):
+        raise MacroError(f"no wall {wall!r}")
     d, normal_gap = _as_length(distance), _as_length(gap)
     location = (f'Location(attachment=WallAttachment(wall_ref="{wall}", face="{face}", '
                 f'distance_from_start={d.to_source()}, normal_gap={normal_gap.to_source()}, '
                 f'rotation_offset={deg(rotation_offset).to_source()}))')
+    # Exactly one of position / attachment: the centre is now derived from the face.
     return MutationResult(ops=[PatchOp("update", item.element_kind, tag,
-                                       {"location": RawExpr(location)})])
+                                       {"location": RawExpr(location),
+                                        "position": DELETE_FIELD})])
 
 
 def set_placeable_mount(plan: PlanModel, storey: str, *, tag: str,
@@ -145,6 +150,9 @@ def detach_placeable(plan: PlanModel, storey: str, *, tag: str,
         raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
     fields: dict[str, object] = {"location": DELETE_FIELD}
     if position is None:
+        if getattr(item, "position", None) is None:
+            raise MacroError(f"detaching {tag!r} needs a position: its centre came from "
+                             "its wall face")
         return MutationResult(ops=[PatchOp("update", item.element_kind, tag, fields)])
     xy = (_meters(position[0]), _meters(position[1]))
     fields["position"] = _point_expr(position[0], position[1])

@@ -28,6 +28,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import Service
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.solid_categories import is_pour_slab
 
 _ALIGNMENT_TOLERANCE_M = 0.0127  # 1/2"
@@ -94,7 +95,7 @@ def _missing_sleeve_findings(ctx: CheckContext) -> list[Finding]:
             fixture_type = types.get(fixture.type_ref)
             if fixture_type is None or Service.DRAIN not in fixture_type.needs:
                 continue
-            point = Point(fixture.position.xy_m)
+            point = Point(placed_xy(ctx.model, fixture))
             host = next((s for s in storey_slabs if Polygon(s.outline).contains(point)), None)
             if host is None:
                 continue  # fixture isn't over a structural slab at all

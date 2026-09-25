@@ -17,21 +17,30 @@ from typehaus import (
     inch,
     pt,
 )
-from typehaus.model import m
+from typehaus.model import Location, WallAttachment
 
 NEC_FILL_ATTIC = [
     ElectricalDevice(uid="NEC048AAAA", tag="ED-A-EAST-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(18, 4.375), ft(13, 8.25)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C2", face="right", distance_from_start=inch(56.25),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC049AAAA", tag="ED-A-EAST-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(18, 4.375), ft(24, 0.875)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C2B", face="right", distance_from_start=inch(20.875),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC050AAAA", tag="ED-A-EAST-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(19, 5.375), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-N1", face="left", distance_from_start=inch(198.625),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** ED-A-EAST-RC4 AND -RC6 ARE DELETED (2026-09-10), uids NEC051AAAA and NEC053AAAA
     # RETIRED — never reuse either. ** RM-A-EAST-UNFIN is 475 sf of UNFINISHED STORAGE and
     # `electrical.receptacle_spacing` does not walk it at all (its occupancy list is
@@ -73,15 +82,21 @@ NEC_FILL_ATTIC = [
     # east loft and looking south; it moved with the rear partition rather than remaining
     # inside the new wall footprint.
     ElectricalDevice(uid="NEC055AAAA", tag="ED-A-EAST-RC8", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(26, 6.375), ft(10, 2)), type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-SN-REAR", face="left", distance_from_start=inch(51.375),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # RC1 sits on the south wall between RC4/RC3; RC2 on the east wall south of the well,
     # closing the 7'-10" run from RC3 round the corner.
     ElectricalDevice(uid="NEC056AAAA", tag="ED-A-STUDY-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(29), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-S3", face="left", distance_from_start=inch(132),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC057AAAA", tag="ED-A-STUDY-RC2", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(34, 4.375), ft(2)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
@@ -95,13 +110,19 @@ NEC_FILL_ATTIC = [
     # "RC1 on the south wall between RC4/RC3", which is what a stale corner reads like once
     # the gable has shrunk under it. RC2 holds the corner alone now.
     ElectricalDevice(uid="NEC059AAAA", tag="ED-A-STUDY-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(23, 10.5), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-S3", face="left", distance_from_start=inch(70.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC060AAAA", tag="ED-A-STUDY-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18, 4.375), ft(4, 6.375)), type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C1", face="right", distance_from_start=inch(54.375),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # --- the guest studio, 2026-08-29 ------------------------------------------------
     # ** EVERY POSITION BELOW IS ITS WALL'S FINISH FACE PLUS 1". ** A device position is a
     # plain plan point and nothing in the resolver pulls it onto a wall, so a box authored ON
@@ -129,18 +150,27 @@ NEC_FILL_ATTIC = [
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.FLOOR)),
     ElectricalDevice(uid="AN95ADVNCZ", tag="ED-A-STUDIO-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(8), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-S1", face="left", distance_from_start=inch(96),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="8H8X3VKAC2", tag="ED-A-STUDIO-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(13), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-S2", face="left", distance_from_start=inch(52),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # Two on the centre wall's west face.
     ElectricalDevice(uid="80A9PJCFAC", tag="ED-A-STUDIO-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17, 7.625), ft(3)), type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C1", face="left", distance_from_start=inch(36),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** RC5 STAYS A GFCI DEVICE, AND SINCE 2026-09-09 IT IS BY CHOICE RATHER THAN BY RULE. **
     # It was made GFCI because the wet bar stood on this same wall: `_sink_points` projects
     # E3902.10's 6'-0" radius from every Service.DRAIN fixture, and the bar sink was 4'-8"
@@ -152,9 +182,12 @@ NEC_FILL_ATTIC = [
     # stays `gfci=False` and the protection rides the device, which is the house rule
     # (circuits.py). RC4 at y 3'-0" is further again and stays ordinary.
     ElectricalDevice(uid="CX9R0H14DZ", tag="ED-A-STUDIO-RC5", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(17, 7.625), ft(12)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C2", face="left", distance_from_start=inch(36),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # On the bath's south wall and the pocket wall. ** E3902.10's 6'-0" radius is measured from
     # EVERY fixture whose type declares Service.DRAIN, not just from sinks. ** That is
     # `_sink_points`' actual behaviour and it is wider than it sounds: the shower and the water
@@ -192,10 +225,13 @@ NEC_FILL_ATTIC = [
     # turns the north corner. Plain, not GFCI: the nearest Service.DRAIN fixture is the bar
     # sink, and the bath's own fixtures are behind a wall a cord cannot pierce.
     ElectricalDevice(uid="SZ4K3PX817", tag="ED-A-STUDIO-RC10", kind=DeviceKind.RECEPTACLE,
-                     position=pt(m(2.82109), m(5.42174)), type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC", room="RM-A-STUDIO",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
-                     rotation=deg(270)),
+
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-STU-W", face="left", distance_from_start=inch(5.46875),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** RC6 MOVED EAST OF THE DOOR, 15'-6" -> 17'-2" (2026-09-09), BECAUSE IT WAS INSIDE THE
     # ROUGH OPENING. ** D-A-STUBATH slid east with the kitchenette and its RO is
     # 13'-11 1/2"..15'-11 1/2" now; 15'-6" is inside it. ** NOTHING GRADES THAT ** — no rule in this engine
@@ -210,9 +246,12 @@ NEC_FILL_ATTIC = [
                      # its studs legally, and both faces moved 1" off the axis with it. This box is
                      # authored 1.000" off the GYPSUM face (the 0.01" paint film is not in the
                      # offset), so it moves the same 1".
-                     position=pt(ft(17, 2), ft(16, 11.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(180)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-BATH-S", face="right", distance_from_start=inch(90.5),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NZQNA1VMKW", tag="ED-A-STUDIO-RC7", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(3), ft(21, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
@@ -243,9 +282,12 @@ NEC_FILL_ATTIC = [
                      # its studs legally, and both faces moved 1" off the axis with it. This box is
                      # authored 1.000" off the GYPSUM face (the 0.01" paint film is not in the
                      # offset), so it moves the same 1".
-                     position=pt(ft(13, 4), ft(16, 11.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(58)), rotation=deg(180)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(58)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-BATH-S", face="right", distance_from_start=inch(44.5),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The bath's own, GFCI under E3902.1 — every 125V receptacle in a bathroom, sink or no
     # sink — and on the new CKT-BATH-ATTIC rather than the general attic circuit.
     # Its prior station failed `code.E3901_6_bathroom_receptacle` (IRC E3901.6 / NEC
@@ -263,9 +305,12 @@ NEC_FILL_ATTIC = [
     # x 164 5/8", so this plate is 14 5/8" from it and has plenty of that margin; what it has
     # no margin in is the wall itself.
     ElectricalDevice(uid="N2Z2AA6EGB", tag="ED-A-STUBATH-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(inch(150), inch(264.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-BATH-ATTIC", room="RM-A-STUBATH",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(180)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-HALL-S", face="right", distance_from_start=inch(30),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # At the ERV, in the pocket. IRC M1305.1.3 wants a receptacle (and a light — see
     # ED-A-POCKET-LT1) at the appliance; the pocket is STORAGE so 210.52 spacing never asks
     # for one, which is exactly why it has to be authored deliberately.

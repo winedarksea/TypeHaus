@@ -1581,9 +1581,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   clear **3'-3 15/16" x 7'-1 1/4"**. Wet wall is `W-B-BA-E`, an `INT_2X6_STAGGERED_PLUMBING`
   partition at `inch(166.6875)` on the stair well's centreline, carrying the shared vent
   riser at (13'-10 11/16", 19'-3"); `W-B-BA-N` is a dry `INT_2X4_PARTITION`. `D-B-BATH`
-  swings out into the hall with `flip_swing=True` on this wall. No `haus check` rule grades
-  a wall device's depth — `test_wall_mounted_devices_resolve_against_a_wall_face` is the only
-  guard, so verify `ED-B-BATH-SW` sits flush with the studs by eye.
+  swings out into the hall with `flip_swing=True` on this wall. Wall devices are hosted on
+  their face (`location.attachment`) and `integrity.wall_mount_on_face` grades the body.
 
 - **Hall and circulation.** The hall runs from the stair foot south, west of `W-B-CN2`, the
   full way to the sauna's north wall, on the x=13'-10 11/16" well-partition centreline shared

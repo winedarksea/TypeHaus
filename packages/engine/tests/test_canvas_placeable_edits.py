@@ -67,11 +67,12 @@ def _attached_chair(plan):
 
 
 def test_move_reports_wall_ref_left_behind(catlin_plan):
-    fixture = next(e for e in catlin_plan.all_elements() if e.tag == "FX-M-BATH1-WC")
+    # A free fixture naming a wall_ref; a hosted one has no authored point to measure from.
+    fixture = next(e for e in catlin_plan.all_elements() if e.tag == "FX-M-BATH1-LAV")
     x, y = fixture.position.xy_m
-    near = move_placeable(catlin_plan, "main", tag="FX-M-BATH1-WC", position=(x, y + 0.05))
+    near = move_placeable(catlin_plan, "main", tag="FX-M-BATH1-LAV", position=(x, y + 0.05))
     assert not [i for i in near.impacts if i.kind == "left_behind"]
-    far = move_placeable(catlin_plan, "main", tag="FX-M-BATH1-WC", position=(x + 4, y + 4))
+    far = move_placeable(catlin_plan, "main", tag="FX-M-BATH1-LAV", position=(x + 4, y + 4))
     left = [i for i in far.impacts if i.kind == "left_behind"]
     assert len(left) == 1 and "W-M-BAE" in left[0].reason
     assert left[0].reason in far.warnings
@@ -125,8 +126,10 @@ def test_slide_placeable_keeps_gap_and_rotation_offset(starter_plan):
     past_end = _apply(plan, slide_placeable(plan, "main", tag="F-CHAIR", distance=99))
     far = next(e for e in past_end.all_elements() if e.tag == "F-CHAIR").location.attachment
     assert far.distance_from_start.meters == pytest.approx(7.3152)
+    free = _apply(plan, place_placeable(plan, "main", type_ref="FURN-ARMCHAIR-35",
+                                        position=(3.0, 3.0), tag="F-FREE"))
     with pytest.raises(MacroError, match="not attached"):
-        slide_placeable(plan, "main", tag="ED-Main-RC1", distance=1)
+        slide_placeable(free, "main", tag="F-FREE", distance=1)
 
 
 def test_place_placeable_carries_rotation_and_kind(starter_plan):

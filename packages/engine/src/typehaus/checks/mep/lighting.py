@@ -17,6 +17,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.electrical import luminaire_types
 from typehaus.model.enums import Occupancy
+from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_ring
 
 # The sizing factor a 24V LED supply is picked by: continuous load at 125%, the same
@@ -231,9 +232,9 @@ def _stands_outside_every_room(ctx: CheckContext, element: object, storey_tag: s
     """
     from shapely.geometry import Point, Polygon
 
-    position = getattr(element, "position", None)
-    if position is not None:
-        point = Point(position.xy_m)
+    xy = placed_xy(ctx.model, element)
+    if xy is not None:
+        point = Point(xy)
     else:
         path = getattr(element, "path", ())
         if not path:

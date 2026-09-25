@@ -19,7 +19,7 @@ from typehaus import (
     inch,
     pt,
 )
-from typehaus.model import m
+from typehaus.model import Location, WallAttachment
 
 # ** EVERY CEILING ELEVATION IN THIS FILE ANSWERS TO ONE LINE (2026-08-29). ** The attic
 # went 6:12 on a 1 1/2" rafter plate, so the roof underside above the attic finished floor is
@@ -87,9 +87,12 @@ ATTIC_LIGHTING = [
     # elevation and circuit are all unchanged, and its 600 lm now count toward RM-A-STUDIO's
     # R303.1 Exception 1 (see below).
     ElectricalDevice(uid="QTA0001AAA", tag="ED-A-STUDIO-SCONCE", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(0, 8.625)), type_ref="ED-T-LT-SPOT-SW",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+                     type_ref="ED-T-LT-SPOT-SW",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-S2", face="left", distance_from_start=inch(64),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-A-EAST-UNFIN, 475 sf of unfinished storage under the east rake. The three cans that
     # were one line at x=22'-0" become three up/down sconces on the centre wall's EAST face,
@@ -101,20 +104,29 @@ ATTIC_LIGHTING = [
     # ** NO LUMEN CONSEQUENCE: ** storage is not a habitable room, so R303.1 never applied
     # here — this room is the one place on the storey where the change is free.
     ElectricalDevice(uid="QTA0002AAA", tag="ED-A-EAST-SCONCE2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 5.375), ft(26)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN", rotation=deg(90),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C2B", face="right", distance_from_start=inch(44),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTA0003AAA", tag="ED-A-EAST-SCONCE3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 5.375), ft(15)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN", rotation=deg(90),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C2", face="right", distance_from_start=inch(72),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTA0004AAA", tag="ED-A-EAST-SCONCE4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 5.375), ft(20, 6)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN", rotation=deg(90),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C2M", face="right", distance_from_start=inch(38),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-A-STUDY: the second of the notes' two studies. The stair sconce lights ST-S2A's
     # landing at the top of the flight.
@@ -129,28 +141,34 @@ ATTIC_LIGHTING = [
     # 2,064 Exception 1 would ask for, which is the margin that made a two-for-two swap
     # acceptable instead of a three-for-two.
     ElectricalDevice(uid="QTA0005AAA", tag="ED-A-STUDY-SCONCE2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 5.375), ft(4, 6)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", rotation=deg(90),
-                     controlled_by=("ED-A-STUDY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", controlled_by=("ED-A-STUDY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C1", face="right", distance_from_start=inch(54),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # On the CENTRE wall (W-A-C1, x=18'-0"), study side — x 18'-5 3/8" is that wall's
     # study-side finish face plus a sconce body's own reveal — at 2'-3" in y, 4'-0" mount,
     # thrown east across the room. There is no knee wall on this gable: W-A-E1 is a 1 1/2"
     # plate and the roof underside at x=35'-3 3/8" is only 5 3/4", too low to mount at.
     # `electrical.room_lighting` reads `room=`, not position, so this is a station move only.
     ElectricalDevice(uid="QTA0006AAA", tag="ED-A-STUDY-SPOT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 5.375), ft(2, 3)), type_ref="ED-T-LT-SCONCE-SPOT",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", rotation=deg(90),
-                     controlled_by=("ED-A-STUDY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
+                     type_ref="ED-T-LT-SCONCE-SPOT",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", controlled_by=("ED-A-STUDY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(4)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C1", face="right", distance_from_start=inch(27),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # Mount 3'-9": at x=27'-3 3/4" the south gable's rake gives 4'-5 5/8", and a 4'-0" mount
     # would stand 3/8" through it. This fitting lights ST-S2A's landing, drawn against the
     # flight.
     ElectricalDevice(uid="QTA0007AAA", tag="ED-A-STUDY-STAIR-SC", kind=DeviceKind.LIGHT,
-                     position=pt(m(8.32505), m(0.222461)), type_ref="ED-T-LT-SCONCE-STAIR",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", rotation=deg(180),
-                     controlled_by=("ED-A-STUDY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 9))),
+                     type_ref="ED-T-LT-SCONCE-STAIR",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", controlled_by=("ED-A-STUDY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 9)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-S3", face="left", distance_from_start=inch(111.75),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # Every tag in this block is ED-A-STUDIO-*, not ED-A-WEST-*: `electrical.room_lighting`
     # matches devices to a room by NAME — `ED-{room.tag[3:]}-*` — so a fitting must carry its
@@ -209,20 +227,26 @@ ATTIC_LIGHTING = [
     # buys light where nobody stands and spends the ALWAYS_ON headroom the backup cycle is
     # graded against, which was true at five and is true at three.
     ElectricalDevice(uid="QTA0008AAA", tag="ED-A-STUDIO-WALL1", kind=DeviceKind.LIGHT,
-                     position=pt(inch(210.6), ft(2)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
-                     controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", controlled_by=("ED-A-STUDIO-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C1", face="left", distance_from_start=inch(24),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QP7K1NEC12", tag="ED-A-STUDIO-WALL3", kind=DeviceKind.LIGHT,
-                     position=pt(inch(210.6), ft(7)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
-                     controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", controlled_by=("ED-A-STUDIO-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C1B", face="left", distance_from_start=inch(17),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="6M2C9K60B8", tag="ED-A-STUDIO-WALL5", kind=DeviceKind.LIGHT,
-                     position=pt(inch(210.6), ft(12)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
-                     controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", controlled_by=("ED-A-STUDIO-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C2", face="left", distance_from_start=inch(36),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** THE BAR PENDANT IS GONE AND A WALL TASK BAR IS IN ITS PLACE (2026-09-10). ** The
     # pendant was authored with `drop=inch(4)` and NO `elevation`, and that is the whole bug:
     # `resolve/placeables.py` hangs a bare `drop` off `floor + storey.default_ceiling_height`,
@@ -273,17 +297,22 @@ ATTIC_LIGHTING = [
                      # its studs legally, and both faces moved 1" off the axis with it. This box is
                      # authored 1.000" off the GYPSUM face (the 0.01" paint film is not in the
                      # offset), so it moves the same 1".
-                     position=pt(inch(152.5), inch(203.625)), type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(180),
-                     controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(58))),
+                     type_ref="ED-T-LT-MIRROR",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", controlled_by=("ED-A-STUDIO-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(58)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-BATH-S", face="right", distance_from_start=inch(37),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # On W-A-C1B's west face at 6'-0", position unchanged: the two centre-wall segments are
     # collinear, but the wall south of y=5'-7" faces RM-A-STUDY and the studio does not start
     # until that line. A station 5" further south is a switch in the wrong room.
     ElectricalDevice(uid="QTA000CAAA", tag="ED-A-STUDIO-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(17, 7.625), ft(6)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C1B", face="left", distance_from_start=inch(5),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** THE ONE RECESSED CAN THIS STOREY KEEPS, AND THE REASON IS THE SHOWER. ** Everything
     # else here went to a wall fitting on 2026-09-06; a sconce over a 36" pan is the wrong
     # article, and the 26.6 deg tilt a flat trim takes in a 6:12 plane — the objection that
@@ -312,10 +341,13 @@ ATTIC_LIGHTING = [
     # existing row and not a new product: 1,300 lm of front light at a basin, which the
     # ceiling can (a downlight behind your head) never gave this mirror.
     ElectricalDevice(uid="3W86JZVH61", tag="ED-A-STUBATH-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(inch(164.625), inch(264.625)), type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUBATH", rotation=deg(180),
+                     type_ref="ED-T-LT-MIRROR",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
                      controlled_by=("ED-A-STUBATH-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-HALL-S", face="right", distance_from_start=inch(44.625),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # On W-A-BATH-S's north face — the wall you reach for on the way in. It was first put on
     # W-A-STU-W beside the lavatory, and `test_wall_mounted_devices_resolve_against_a_wall_face`
     # reported it floating 1.6" off that face; the door wall is both the better station and the
@@ -334,9 +366,12 @@ ATTIC_LIGHTING = [
                      # its studs legally, and both faces moved 1" off the axis with it. This box is
                      # authored 1.000" off the GYPSUM face (the 0.01" paint film is not in the
                      # offset), so it moves the same 1".
-                     position=pt(ft(13, 3), ft(17, 8.375)), type_ref="ED-T-SWITCH",
+                     type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-BATH-S", face="left", distance_from_start=inch(43.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # The pocket's light: its old station (14'-0", 30'-0") fell inside FO-A-HALL, open to
     # the roof with no ceiling to recess into. Retyped can -> ED-T-LT-SHOP4, a 4' surface
     # strip, damp rated, 4,400 lm — the pocket runs x 0..10' under the west rake (ceiling
@@ -363,8 +398,13 @@ ATTIC_LIGHTING = [
     # door. ** NOTHING GRADES A WALL DEVICE AGAINST A ROUGH OPENING **, so this is held here.
     # It does not collide with ED-A-STUDIO-AP at x=6'-6": that one mounts at 3'-0", this at
     # 3'-10".
+    # ** 3'-0" SINCE 2026-09-25. ** At 3'-10" the box stood 6 1/2" above W-A-STU-N's raked
+    # top (41 1/2" AFF at this station) and through the roof; ED-A-STUDIO-AP went to 2'-2".
     ElectricalDevice(uid="G5RDBXPZVD", tag="ED-A-POCKET-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(6, 8), ft(22, 0.625)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-STU-N", face="right", distance_from_start=inch(80),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]

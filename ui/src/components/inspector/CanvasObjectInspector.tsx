@@ -183,7 +183,8 @@ export function CanvasObjectInspector({ model, item }: { model: Model; item: Can
       <input value={distance} aria-label="Distance from wall start" placeholder="3'-6&quot;"
         onChange={(event) => setDistance(event.target.value)} />
       <button className="btn" onClick={() => void attach()}>Attach</button>
-      {item.attachment && <button className="btn" onClick={() => void runMacro({ macro: "detach_placeable", storey: item.storey, tag: item.tag })}>Detach</button>}
+      {item.attachment && <button className="btn" onClick={() => void runMacro({ macro: "detach_placeable", storey: item.storey, tag: item.tag,
+        ...(position ? { position: [formatFtIn(position[0]), formatFtIn(position[1])] as [string, string] } : {}) })}>Detach</button>}
     </div>
   </div>;
 }

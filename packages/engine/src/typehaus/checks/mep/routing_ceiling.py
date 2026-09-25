@@ -72,6 +72,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import EXPOSED_SERVICE_OCCUPANCIES, Occupancy
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.placeables import placed_xy
 
 #: What each trade can actually terminate at, by run kind. **Per trade, not one list**, and
 #: that is what makes the grace rule mean something: a drain ending near a light switch has
@@ -128,8 +129,7 @@ def _terminals_in(ctx: CheckContext, storey: str,
                  if element.element_kind in allowed]
         if not kinds:
             continue
-        position = getattr(element, "position", None)
-        xy = getattr(position, "xy_m", None)
+        xy = placed_xy(ctx.model, element)
         if xy is None or not outline.covers(Point(xy)):
             continue
         for trade in kinds:

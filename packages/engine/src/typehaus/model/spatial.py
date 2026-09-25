@@ -3,7 +3,7 @@ Furniture (→ 10, → 11)."""
 
 from __future__ import annotations
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 
 from typehaus.model.assembly import Layer
 from typehaus.model.base import Element
@@ -15,7 +15,7 @@ from typehaus.model.enums import (
     RoofForm,
 )
 from typehaus.model.floors import FinishZone
-from typehaus.model.placeables import Location, Mount
+from typehaus.model.placeables import Location, Mount, require_placed_or_hosted
 from typehaus.model.refs import (
     DiaphragmSpec,
     FollowRoof,
@@ -346,12 +346,17 @@ class Fixture(Element):
     # resolvable room, so a required str made a legal UI move write unloadable source.
     # A fixture that ends up without a room is a check finding, not a load error.
     room: str | None = None
-    position: Point2D
+    position: Point2D | None = None  # None when location.attachment hosts it
     wall_ref: str | None = None  # drain-stack wall when services need a vertical chase
     drain_position: Point2D | None = None  # contractor override; default = position
     rotation: object | None = None  # Angle | None
     location: Location | None = None
     mount: Mount = Mount()
+
+    @model_validator(mode="after")
+    def _placed_or_hosted(self):
+        require_placed_or_hosted(self)
+        return self
 
 
 @register_element
@@ -359,11 +364,16 @@ class Furniture(Element):
     """A placed furniture instance driving dashboards/overlays (M3, #49)."""
 
     type_ref: str
-    position: Point2D
+    position: Point2D | None = None  # None when location.attachment hosts it
     rotation: object | None = None  # Angle | None
     room: str | None = None
     location: Location | None = None
     mount: Mount = Mount()
+
+    @model_validator(mode="after")
+    def _placed_or_hosted(self):
+        require_placed_or_hosted(self)
+        return self
 
 
 @register_element
@@ -381,7 +391,7 @@ class Appliance(Element):
     """
 
     type_ref: str
-    position: Point2D
+    position: Point2D | None = None  # None when location.attachment hosts it
     room: str | None = None
     rotation: object | None = None
     location: Location | None = None
@@ -389,6 +399,11 @@ class Appliance(Element):
     wall_ref: str | None = None
     drain_position: Point2D | None = None
     install_parts: tuple[str, ...] = ()  # loose kit billed with this installation
+
+    @model_validator(mode="after")
+    def _placed_or_hosted(self):
+        require_placed_or_hosted(self)
+        return self
 
 
 for _name, _obj in (

@@ -242,7 +242,7 @@ def test_macro_endpoint_room_rect_round_trip(house: Path):
 # --- P8: attachments through split and heal -----------------------------------
 
 _SCONCE = PatchOp("add", "ElectricalDevice", "ED-SCONCE", {
-    "kind": RawExpr("DeviceKind.LIGHT"), "position": RawExpr("pt(ft(18), ft(0))"),
+    "kind": RawExpr("DeviceKind.LIGHT"),
     "mount": RawExpr("Mount(kind=MountKind.WALL, elevation=ft(6))"),
     "location": RawExpr('Location(attachment=WallAttachment(wall_ref="W-101", face="left", '
                         'distance_from_start=ft(18)))')},

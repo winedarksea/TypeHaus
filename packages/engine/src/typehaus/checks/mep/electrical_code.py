@@ -14,6 +14,7 @@ from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy, Service
+from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 # E3902: the locations where a 125V 15/20A receptacle must be GFCI-protected. Bathrooms,
@@ -92,7 +93,7 @@ def gfci_locations(ctx: CheckContext) -> list[Finding]:
     by_tag = {room.tag: room for room in ctx.model.rooms}
     out: list[Finding] = []
     for device, storey_tag in devices:
-        point = Point(device.position.xy_m)
+        point = Point(placed_xy(ctx.model, device))
         room = _room_of(device, point, rooms.get(storey_tag, ()), by_tag)
         reason = _why_gfci_required(ctx, device, room, point,
                                     sinks.get(storey_tag, ()), below_grade,
@@ -339,10 +340,10 @@ def afci_branch_circuits(ctx: CheckContext) -> list[Finding]:
             circuit_tag = getattr(element, "circuit", None)
             if not circuit_tag or circuit_tag not in circuits:
                 continue
-            position = getattr(element, "position", None)
-            if position is None:
+            xy = placed_xy(ctx.model, element)
+            if xy is None:
                 continue
-            room = _room_of(element, Point(position.xy_m), rooms.get(storey.tag, ()), by_tag)
+            room = _room_of(element, Point(xy), rooms.get(storey.tag, ()), by_tag)
             if room is None:
                 unplaced.setdefault(circuit_tag, set()).add(element.tag)
             else:

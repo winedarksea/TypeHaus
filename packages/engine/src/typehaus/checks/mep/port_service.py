@@ -66,7 +66,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import AIR_SERVICE_DUCT_SYSTEM
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.mep_sleeves import rotate_into_plan
+from typehaus.resolve.mep_ports import _place as place_port
 from typehaus.resolve.mep_soffit import segment_meets_box
 
 if TYPE_CHECKING:
@@ -134,17 +134,17 @@ def _arrivals(ctx: CheckContext, obj: ResolvedCanvasObject, height_m: float | No
     return ends, through
 
 
-def _port_stations(element: object, ports: list[ServicePort]) -> str:
+def _port_stations(obj: ResolvedCanvasObject, ports: list[ServicePort]) -> str:
     """Where the declared ports land in plan, for the message. Never the verdict.
 
-    They are placed with the same ``rotate_into_plan`` the plan symbols and the drain-drop
-    resolver use, so what is printed is where the model actually thinks the collar is —
+    They are placed with ``resolve/mep_ports``' transform off the RESOLVED placement, so
+    what is printed is where the model actually thinks the collar is —
     which is exactly how a reader discovers that four of them are the same point.
     """
     seen: list[str] = []
     for port in ports:
         local = (port.position[0].meters, port.position[1].meters)
-        x, y = rotate_into_plan(element, local)
+        x, y = place_port(obj, local)
         station = f"({x / M_PER_IN / 12:.2f}', {y / M_PER_IN / 12:.2f}')"
         if station not in seen:
             seen.append(station)
@@ -160,7 +160,7 @@ def _port_point(element: object, obj: ResolvedCanvasObject,
     Plan through the placement's rotation, z off the object's own base — which is the datum
     ``_reaches_vertically`` measures from, and the reason the z term is an addition here.
     """
-    x, y = rotate_into_plan(element, (port.position[0].meters, port.position[1].meters))
+    x, y = place_port(obj, (port.position[0].meters, port.position[1].meters))
     return x, y, obj.z_m + port.position[2].meters
 
 
@@ -242,7 +242,7 @@ def equipment_port_service(ctx: CheckContext) -> list[Finding]:
         ends, through = _arrivals(ctx, obj, height_m)
         arrived = ends or through
         how = "ends in" if ends else "passes through"
-        stations = _port_stations(element, ports)
+        stations = _port_stations(obj, ports)
         names = ", ".join(sorted(wanted))
         if not arrived:
             out.append(failed(

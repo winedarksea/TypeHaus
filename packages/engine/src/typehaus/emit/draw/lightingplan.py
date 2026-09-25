@@ -34,6 +34,7 @@ from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
 from typehaus.model.electrical import luminaire_types
 from typehaus.model.placeable_symbols import place_local, plan_symbol_strokes
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.placeables import placed_xy
 
 _M_TO_FT = 3.280839895013123
 
@@ -84,10 +85,10 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
                 if element.element_kind == "ElectricalDevice"
                 and element.kind.value == "switch"]
     for switch in switches:
-        positions[switch.tag] = switch.position.xy_m
+        positions[switch.tag] = placed_xy(model, switch)
         product = device_types.get(switch.type_ref or "")
         control = getattr(product, "control", None)
-        b.add(Text(anchor=_in(switch.position.xy_m),
+        b.add(Text(anchor=_in(placed_xy(model, switch)),
                    content=_SWITCH_MARK.get(control or "", _PLAIN_SWITCH_MARK),
                    height=2.2, layer="E-LITE", align="center"))
 
@@ -97,7 +98,7 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
     for element in luminaires:
         product = types[element.type_ref]
         forms_present.add(product.form.value)
-        centre = element.position.xy_m
+        centre = placed_xy(model, element)
         positions[element.tag] = centre
         _emit_glyph(b, product.plan_symbol, product.footprint[0].meters,
                     product.footprint[1].meters, centre, _rotation_degrees(element),
@@ -109,7 +110,7 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
     # Every device on the sheet, by tag — switches and luminaires already have their own
     # entries in `positions`, but a PSU/driver (an ElectricalDevice of no luminaire form) is
     # neither, so the leader below needs its own lookup rather than reusing `positions`.
-    device_positions = {element.tag: element.position.xy_m
+    device_positions = {element.tag: placed_xy(model, element)
                         for element in model.plan.storey_elements(storey)
                         if element.element_kind == "ElectricalDevice"}
 

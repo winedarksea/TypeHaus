@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.placeables import placed_xy
 from typehaus.server.model_json_shared import _provenance
 from typehaus.source.provenance import Provenance
 
@@ -35,7 +36,7 @@ def placeables_json(
             {"uid": fixture.uid, "tag": fixture.tag, "storey": storey.tag,
              "type": fixture.type_ref, "room": fixture.room,
              "wall_ref": fixture.wall_ref,
-             "position": list(fixture.position.xy_m),
+             "position": list(placed_xy(model, fixture) or ()),
              "provenance": _provenance(provenance, fixture.tag),
              "footprint_m": [dimension.meters for dimension in fixture_type.footprint],
              "clearance_m": ([dimension.meters for dimension in fixture_type.clearance]
@@ -50,7 +51,7 @@ def placeables_json(
         ],
         "furniture": [
             {"uid": furniture.uid, "tag": furniture.tag, "storey": storey.tag,
-             "type": furniture.type_ref, "position": list(furniture.position.xy_m),
+             "type": furniture.type_ref, "position": list(placed_xy(model, furniture) or ()),
              "provenance": _provenance(provenance, furniture.tag),
              "footprint_m": [dimension.meters for dimension in furniture_type.footprint],
              "height_m": furniture_type.height.meters, "storage": furniture_type.storage,

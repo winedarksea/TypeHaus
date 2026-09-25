@@ -15,6 +15,7 @@ from typehaus.checks.mep.erv_terminals import erv_outdoor_terminals
 from typehaus.findings import Result
 from typehaus.model.enums import DuctSystem, Service
 from typehaus.quantities import M_PER_IN, ft, inch
+from typehaus.resolve.placeables import placed_xy
 
 _FT = 0.3048
 
@@ -242,7 +243,7 @@ def test_the_hoods_clear_the_code_separations(catlin_plan, catlin_model) -> None
         [f.message for f in findings if f.result is not Result.PASS]
 
 
-def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan) -> None:
+def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan, catlin_model_ro) -> None:
     """The rule that governs the pair, replacing the north-gable mirror.
 
     This test used to assert ``x(OA) + x(EA) == 36.0`` — the gable's mirror about the ridge.
@@ -291,7 +292,7 @@ def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan) -> None:
     assert intake_z - 0.5 >= 4.0 + 3.5 / 12.0, "the intake box is inside the disconnect's space"
 
     for tag, hood in hoods.items():
-        x, y = (v / _FT for v in hood.position.xy_m)
+        x, y = (v / _FT for v in placed_xy(catlin_model_ro, hood))
         # The NORTH wall, not the west facade and not the north gable: y is outboard of the
         # cladding at 36'-7 1/4", x is inside the house's width. A negative x on either of
         # these is the old west-facade station; a y near 36'-0" is the stud-cavity bug.

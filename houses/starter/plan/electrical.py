@@ -33,6 +33,7 @@ from typehaus import (
     inch,
     pt,
 )
+from typehaus.model import Location, WallAttachment
 
 # --- main storey -------------------------------------------------------------------
 #
@@ -43,8 +44,10 @@ from typehaus import (
 # this is the first thing that should move into it.
 PANEL = [
     ElectricalDevice(uid="95YK2Q5XDP", tag="ED-PANEL", kind=DeviceKind.PANEL, type_ref="ED-T-PANEL",
-                     position=pt(inch(3), ft(17)), room="RM-Main", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+                     room="RM-Main", mount=Mount(kind=MountKind.WALL, elevation=ft(5)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-104", face="left", distance_from_start=inch(36),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
 # One ceiling fixture at the room's centre and one switch inside the front door. The
@@ -63,8 +66,11 @@ MAIN_LIGHTING = [
     # latch side.
     ElectricalDevice(uid="VWVMA7CSJH", tag="ED-Main-SW1", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",
-                     position=pt(ft(6, 6), inch(2)), room="RM-Main", circuit="CKT-LIGHTS",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     room="RM-Main", circuit="CKT-LIGHTS",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-101", face="left", distance_from_start=inch(78),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
 # NEC 210.52(A): no point along the floor line of a wall space more than 6' from a
@@ -74,37 +80,53 @@ MAIN_LIGHTING = [
 # covers it, and `electrical.receptacle_spacing` measures exactly that.
 MAIN_RECEPTACLES = [
     ElectricalDevice(uid="6840M32QNF", tag="ED-Main-RC1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(inch(2), ft(2, 6)),
-                     room="RM-Main", circuit="CKT-RECEPT", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Main", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-104", face="left", distance_from_start=inch(210),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="BSDJA0DF9S", tag="ED-Main-RC2", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(inch(2), ft(13)),
-                     room="RM-Main", circuit="CKT-RECEPT", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Main", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-104", face="left", distance_from_start=inch(84),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="TY97N1DXAQ", tag="ED-Main-RC3", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(3, 6), ft(19, 10)),
-                     room="RM-Main", circuit="CKT-RECEPT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Main", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-103", face="left", distance_from_start=inch(246),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="EEKAB1X09G", tag="ED-Main-RC4", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(14), ft(19, 10)),
-                     room="RM-Main", circuit="CKT-RECEPT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Main", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-103", face="left", distance_from_start=inch(120),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="GZB0GVK7QY", tag="ED-Main-RC5", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(23, 10), ft(19)),
-                     room="RM-Main", circuit="CKT-RECEPT", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Main", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-102", face="left", distance_from_start=inch(228),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="KT190FCTGH", tag="ED-Main-RC6", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(23, 10), ft(8, 6)),
-                     room="RM-Main", circuit="CKT-RECEPT", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Main", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-102", face="left", distance_from_start=inch(102),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="DJSGNVHH9E", tag="ED-Main-RC7", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(22), inch(2)),
-                     room="RM-Main", circuit="CKT-RECEPT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Main", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-101", face="left", distance_from_start=inch(264),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="06D5MW2R6T", tag="ED-Main-RC8", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(11, 6), inch(2)),
-                     room="RM-Main", circuit="CKT-RECEPT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Main", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-101", face="left", distance_from_start=inch(138),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
 MAIN_DEVICES = [*PANEL, *MAIN_LIGHTING, *MAIN_RECEPTACLES]
@@ -121,51 +143,71 @@ UPPER_LIGHTING = [
     # 14'-8"..17'-4").
     ElectricalDevice(uid="MT08T1Q659", tag="ED-Upper-SW1", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",
-                     position=pt(ft(8, 3), ft(14, 2)), room="RM-Upper",
-                     circuit="CKT-LIGHTS", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     room="RM-Upper",
+                     circuit="CKT-LIGHTS", mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-205", face="left", distance_from_start=inch(70),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
 # Same 6' rule, one break (D-201), 84'-11" of wall space around an L — which needs nine
 # rather than eight because the two partition legs put two corners close together.
 UPPER_RECEPTACLES = [
     ElectricalDevice(uid="XZG3KBEVJY", tag="ED-Upper-RC1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(11), ft(19, 10)),
-                     room="RM-Upper", circuit="CKT-RECEPT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Upper", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-203", face="left", distance_from_start=inch(156),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="6GBZ02ZQQF", tag="ED-Upper-RC2", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(21), ft(19, 10)),
-                     room="RM-Upper", circuit="CKT-RECEPT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Upper", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-203", face="left", distance_from_start=inch(36),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="T50Z128HSD", tag="ED-Upper-RC3", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(23, 10), ft(13, 6)),
-                     room="RM-Upper", circuit="CKT-RECEPT", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Upper", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-202", face="left", distance_from_start=inch(162),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="EJ75QKP365", tag="ED-Upper-RC4", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(23, 10), ft(5)),
-                     room="RM-Upper", circuit="CKT-RECEPT", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Upper", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-202", face="left", distance_from_start=inch(60),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CHCT0K8BNN", tag="ED-Upper-RC5", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(20), inch(2)),
-                     room="RM-Upper", circuit="CKT-RECEPT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Upper", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-201", face="left", distance_from_start=inch(240),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="Y7S76GDZ60", tag="ED-Upper-RC6", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(10), inch(2)),
-                     room="RM-Upper", circuit="CKT-RECEPT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Upper", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-201", face="left", distance_from_start=inch(120),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="P1AB6DTNWK", tag="ED-Upper-RC7", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(1, 6), inch(2)),
-                     room="RM-Upper", circuit="CKT-RECEPT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Upper", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-201", face="left", distance_from_start=inch(18),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="57X4E8PS86", tag="ED-Upper-RC8", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(inch(2), ft(6)),
-                     room="RM-Upper", circuit="CKT-RECEPT", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Upper", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-204B", face="left", distance_from_start=inch(72),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The landing's south partition W-206, bedroom side.
     ElectricalDevice(uid="B4G7497Z1G", tag="ED-Upper-RC9", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE", position=pt(ft(5, 6), ft(11, 10)),
-                     room="RM-Upper", circuit="CKT-RECEPT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     type_ref="ED-T-RECEPTACLE", room="RM-Upper", circuit="CKT-RECEPT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-206", face="left", distance_from_start=inch(30),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
 UPPER_DEVICES = [*UPPER_LIGHTING, *UPPER_RECEPTACLES]

@@ -1324,6 +1324,9 @@ class ResolvedCanvasObject:
     z_m: float
     rotation_degrees: float
     footprint: Ring
+    # The body's absolute z band (bottom, top); the top is None when the type states no height.
+    body_z0_m: float | None = None
+    body_z1_m: float | None = None
     required_clearances: tuple[Ring, ...] = ()
     recommended_clearances: tuple[Ring, ...] = ()
     attachment_wall: str | None = None

@@ -14,6 +14,8 @@ So the model stays authored, and the router argues.
 
 from __future__ import annotations
 
+from pydantic import model_validator
+
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import (
     DeviceKind,
@@ -24,7 +26,7 @@ from typehaus.model.enums import (
     PipeSystem,
     Service,
 )
-from typehaus.model.placeables import Location, Mount
+from typehaus.model.placeables import Location, Mount, require_placed_or_hosted
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
 
@@ -248,7 +250,7 @@ class Register(Element):
     """A supply/return grille terminating a DuctRun."""
 
     kind: DuctSystem
-    position: Point2D
+    position: Point2D | None = None  # None when location.attachment hosts it
     duct_ref: str | None = None
     type_ref: str | None = None
     room: str | None = None
@@ -263,13 +265,18 @@ class Register(Element):
     # Documentation like the run's, not a solved quantity; unstated stays UNKNOWN.
     design_cfm: float | None = None
 
+    @model_validator(mode="after")
+    def _placed_or_hosted(self):
+        require_placed_or_hosted(self)
+        return self
+
 
 @register_element
 class Equipment(Element):
     """Mechanical/water-heating equipment with a declared footprint."""
 
     kind: EquipmentKind
-    position: Point2D
+    position: Point2D | None = None  # None when location.attachment hosts it
     footprint: tuple[Length, Length]
     room: str | None = None
     type_ref: str | None = None
@@ -324,6 +331,11 @@ class Equipment(Element):
     # ``mep.duct_soffit_occupancy`` counts its case against the box's clear width alongside
     # every duct sharing it.
     soffit_ref: str | None = None
+
+    @model_validator(mode="after")
+    def _placed_or_hosted(self):
+        require_placed_or_hosted(self)
+        return self
 
 
 class SumpPump(HausModel):
@@ -479,7 +491,9 @@ class ElectricalDevice(Element):
     read, so every light silently resolved to the floor."""
 
     kind: DeviceKind
-    position: Point2D
+    position: Point2D | None = None  # None when location.attachment hosts it
+    # DEPRECATED: a bare wall name locates nothing. Host the device with
+    # ``location=Location(attachment=WallAttachment(...))``; kept only so old source loads.
     wall_ref: str | None = None
     circuit: str | None = None  # Circuit tag in Library.circuits (panel schedule)
     type_ref: str | None = None
@@ -493,6 +507,11 @@ class ElectricalDevice(Element):
     # switch itself, on an always-on device, and on a fixture whose type carries
     # ``integral_switch``.
     controlled_by: tuple[str, ...] = ()
+
+    @model_validator(mode="after")
+    def _placed_or_hosted(self):
+        require_placed_or_hosted(self)
+        return self
 
 
 @register_element

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
+from typehaus.resolve.placeables import placed_xy
 
 
 def _warn(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
@@ -337,13 +338,13 @@ def clearance_overlap(ctx: CheckContext) -> list[Finding]:
         if clearance is None:
             continue
         front, back, left, right = clearance
-        x, y = source.position.xy_m
+        x, y = placed_xy(ctx.model, source)
         zone = box(x - footprint[0] / 2 - left, y - footprint[1] / 2 - back,
                    x + footprint[0] / 2 + right, y + footprint[1] / 2 + front)
         for other_storey, other, other_footprint, _ in placed:
             if other_storey != storey or other.uid == source.uid:
                 continue
-            ox, oy = other.position.xy_m
+            ox, oy = placed_xy(ctx.model, other)
             other_box = box(ox - other_footprint[0] / 2, oy - other_footprint[1] / 2,
                             ox + other_footprint[0] / 2, oy + other_footprint[1] / 2)
             key = tuple(sorted((source.tag, other.tag)))

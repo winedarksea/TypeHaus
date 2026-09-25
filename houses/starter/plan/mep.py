@@ -18,6 +18,7 @@ from typehaus import (
     inch,
     pt,
 )
+from typehaus.model import Location, WallAttachment, deg
 
 # The collection point (subpart 3/4.E). It sits in the north-west corner of the floor,
 # under the upper storey's landing, so the pipe above it rises inside a closet corner
@@ -64,6 +65,9 @@ RISER = [
 # is the field a future fan would otherwise be added without.
 FAN_BOX = [
     ElectricalDevice(uid="1S4K85KRDC", tag="ED-RADON-FAN-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(-1), ft(13)), circuit="CKT-RADON",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(10))),
+                     circuit="CKT-RADON",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(10)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-204", face="right", distance_from_start=inch(84),
+                         normal_gap=inch(0), rotation_offset=deg(90)))),
 ]

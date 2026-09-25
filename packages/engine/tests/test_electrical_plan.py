@@ -9,6 +9,7 @@ import pytest
 from typehaus.emit.draw.electricalplan import build_electrical_plan, has_electrical_content
 from typehaus.emit.draw.scene import Symbol
 from typehaus.resolve import resolve
+from typehaus.resolve.placeables import placed_xy
 from typehaus.source import load_plan
 
 
@@ -165,10 +166,10 @@ def test_the_pocket_condenser_disconnect_clears_the_stair_and_reaches_from_grade
     want_x = 27.5 + 1.625 / 12.0
     for tag, want_y in (("ED-M-HP2-DISC", -4.5),):
         device = devices[tag]
-        x_ft, y_ft = (c / 0.3048 for c in device.position.xy_m)
+        x_ft, y_ft = (c / 0.3048 for c in placed_xy(catlin_model, device))
         assert x_ft == pytest.approx(want_x), tag
         assert y_ft == pytest.approx(want_y), tag
-        assert device.mount.elevation.inches == pytest.approx(-8.0), tag
+        assert device.mount.elevation.inches == pytest.approx(-10.0), tag
         # main's datum is 0'-0"; the standing surface is grade. Above it, and well under
         # 404.8(A)'s 6'-7".
         reach_in = (device.mount.elevation.inches / 12.0 - grade_ft) * 12.0
@@ -225,7 +226,7 @@ def test_the_porch_stair_has_its_R303_8_top_landing_light(catlin_model):
     assert light.type_ref == "ED-T-LT-SCONCE-EXT"
     assert light.room is None
     assert "ED-M-PORCH-FLOOD-SW" in light.controlled_by
-    x_ft, y_ft = (c / 0.3048 for c in light.position.xy_m)
+    x_ft, y_ft = (c / 0.3048 for c in placed_xy(catlin_model, light))
     # 5" body, footprint CENTRED, back on W-M-S2's -0'-7 1/4" cladding face at this station.
     assert y_ft == pytest.approx(-9.75 / 12.0)
     assert light.mount.elevation.inches == pytest.approx(84.0)
@@ -234,7 +235,7 @@ def test_the_porch_stair_has_its_R303_8_top_landing_light(catlin_model):
 
     deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-PORCH")
     outline = Polygon([p.xy_m if hasattr(p, "xy_m") else p for p in deck.deck_outline])
-    assert outline.distance(Point(*light.position.xy_m)) < 0.0254, \
+    assert outline.distance(Point(*placed_xy(catlin_model, light))) < 0.0254, \
         "the fitting must stand at the landing R303.8 names, not merely near the flight"
 
 
@@ -343,8 +344,8 @@ def test_the_three_lighting_checks_pass_on_the_catlin_house(catlin_model):
 
 def test_a_fixture_with_no_switch_is_reported(catlin_model):
     """The check has to actually fire — one that only ever passes proves nothing."""
-    from typehaus.checks.mep.lighting import lighting_controls
     from typehaus.checks.code.mn_residential.profile import MN_2020
+    from typehaus.checks.mep.lighting import lighting_controls
     from typehaus.checks.registry import CheckContext, Preferences
 
     def context(plan):

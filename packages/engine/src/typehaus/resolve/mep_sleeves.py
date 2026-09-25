@@ -35,6 +35,7 @@ from typehaus.resolve.model import (
 )
 from typehaus.resolve.round_solids import PIPE_FACETS
 from typehaus.resolve.sweep import round_profile, sweep_plan_silhouette, sweep_z_extent
+from typehaus.resolve.wall_hosting import hosted_placement
 
 
 def _sleeve_host(model: ResolvedModel, host_ref: str):
@@ -404,7 +405,7 @@ def _expected_drain_point(model: ResolvedModel,
         backing = backing_wall(model.plan, model, fixture, fixture_type)
         if port is not None:
             local = (port.position[0].meters, port.position[1].meters)
-            point = rotate_into_plan(fixture, local)
+            point = rotate_into_plan(fixture, local, model)
             # The port's set-back is a PRODUCT nominal, measured off the frame's own face:
             # "1 3/4" behind the frame" says nothing about how thick the gypsum in front of
             # it is, and the type cannot know. What is actually true of the pipe is that it
@@ -416,17 +417,21 @@ def _expected_drain_point(model: ResolvedModel,
     # A water closet is the only common fixture with no hot-water connection — the one
     # reliable signal in this schema that a fixture is floor-drained (drain at its own
     # footprint) rather than wall-drained (trap arm back to a wet-wall stack).
+    placed = hosted_placement(fixture, model)
+    if placed is None:
+        return None
     if Service.WATER_HOT not in fixture_type.needs:
-        return fixture.position.xy_m
+        return placed[0]
     if fixture.wall_ref is None:
         return None
     wall = model.wall(fixture.wall_ref)
     if wall is None:
         return None
-    return _project_onto_line(fixture.position.xy_m, wall.axis)
+    return _project_onto_line(placed[0], wall.axis)
 
 
-def rotate_into_plan(placeable, local: tuple[float, float]) -> tuple[float, float]:
+def rotate_into_plan(placeable, local: tuple[float, float],
+                     model: ResolvedModel | None = None) -> tuple[float, float]:
     """A point in the product's local frame, placed at the placeable's position/rotation.
 
     The same frame every placeable symbol is drawn in (``model/placeable_symbols/_frame``):
@@ -437,10 +442,14 @@ def rotate_into_plan(placeable, local: tuple[float, float]) -> tuple[float, floa
     air ports are stated in exactly this frame, and ``checks/mep/port_service`` places them
     with this function rather than a second copy of the same two lines of trigonometry.
     """
-    radians = math.radians(_fixture_degrees(placeable))
+    placed = hosted_placement(placeable, model) if model is not None else None
+    if placed is None:
+        (px, py), degrees = placeable.position.xy_m, _fixture_degrees(placeable)
+    else:
+        (px, py), degrees = placed
+    radians = math.radians(degrees)
     cos, sin = math.cos(radians), math.sin(radians)
     x, y = local
-    px, py = placeable.position.xy_m
     return (px + x * cos - y * sin, py + x * sin + y * cos)
 
 

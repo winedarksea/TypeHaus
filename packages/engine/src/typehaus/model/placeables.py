@@ -150,3 +150,18 @@ class Mount(HausModel):
     # obstructs a neighbour's clear floor space (→ resolve/placeable_clear_floor_obstruction).
     # Default ``False`` so an unstated mount is read as surface-mounted and still obstructs.
     recessed_into_host_surface: bool = False
+
+
+def require_placed_or_hosted(item: object) -> None:
+    """Exactly one of a plan point (``position`` / ``location.position``) or a wall
+    attachment: an attached placeable's centre is derived, so a second, authored one could
+    only disagree with it."""
+    location = getattr(item, "location", None)
+    attachment = getattr(location, "attachment", None)
+    position = getattr(item, "position", None)
+    tag = getattr(item, "tag", "?")
+    if attachment is not None and position is not None:
+        raise ValueError(f"{tag}: author `position` or `location.attachment`, not both — "
+                         "an attached placeable's centre comes from its wall face")
+    if attachment is None and position is None and getattr(location, "position", None) is None:
+        raise ValueError(f"{tag}: a placeable needs a `position` or a `location.attachment`")

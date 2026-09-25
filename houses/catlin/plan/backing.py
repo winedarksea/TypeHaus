@@ -131,10 +131,11 @@ MAIN_BACKING = [
                 start=ft(20), length=ft(16),
                 elevation=inch(51), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="upper cabinet bottom rail (53 in.)"),
+    # Full length since 2026-09-25: it also takes FURN-M-FIRE-MANTEL (64 in.).
     WallBacking(uid="GBHV48GS1S", tag="BK-M-E1-MID", wall_ref="W-M-E1",
-                start=ft(20), length=ft(16),
                 elevation=inch(64), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="range hood (66 in.) and FURN-M-KIT-WN1 (68 in.)"),
+                material_ref="spf",
+                purpose="range hood (66 in.), FURN-M-KIT-WN1 (68 in.), mantel (64 in.)"),
     # FURN-M-KIT-MIXER-GARAGE-UP's bottom rail. The old one-piece 72" garage spanned 36" to
     # the ceiling and was caught by whichever bands it crossed; split at 76" it has a rail of
     # its own, between BK-M-E1-MID's top at 71 1/4" and BK-M-E1-ROD's bottom at 82".
@@ -149,6 +150,33 @@ MAIN_BACKING = [
                 start=ft(20), length=ft(16),
                 elevation=inch(91), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="stacker course rail (93 in.)"),
+    # ** HOSTING SURFACED THESE, 2026-09-25. ** Until the wall-mounted bodies were hosted on
+    # their faces, `advisory.wall_backing_present` could not square them onto a wall and
+    # said UNKNOWN; hosted, it names the wall and there was nothing behind them.
+    WallBacking(uid="PE3FV6DGRM", tag="BK-M-S2-ROD", wall_ref="W-M-S2",
+                elevation=inch(82), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="curtain rod brackets (84 in.)"),
+    WallBacking(uid="DQYV0CA18A", tag="BK-M-C1-ROD", wall_ref="W-M-C1",
+                elevation=inch(82), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="curtain rod brackets (84 in.)"),
+    WallBacking(uid="016TC9913X", tag="BK-M-W4-ROD", wall_ref="W-M-W4",
+                elevation=inch(82), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="curtain rod brackets (84 in.)"),
+    WallBacking(uid="7T3GDF98A5", tag="BK-M-S1-ROD", wall_ref="W-M-S1",
+                elevation=inch(82), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="curtain rod brackets (84 in.)"),
+    WallBacking(uid="VBFFYKBZJW", tag="BK-M-CLN-RACK", wall_ref="W-M-CLN",
+                elevation=inch(46), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="laundry drying rack (48 in.)"),
+    WallBacking(uid="8YJBD0RKJR", tag="BK-M-STOS-SHELF", wall_ref="W-M-STOS",
+                elevation=inch(64), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="mudroom shelf (66 in.)"),
+    WallBacking(uid="GWVBD431GV", tag="BK-M-N1-DISP", wall_ref="W-M-N1",
+                elevation=inch(12), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="disposal switch box and air-switch bracket (14 in.)"),
+    WallBacking(uid="GRFFVAA88Y", tag="BK-M-E1-MIXER", wall_ref="W-M-E1",
+                elevation=inch(34), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="mixer garage lower box (36 in.)"),
     WallBacking(uid="SBE1761N5C", tag="BK-M-C5-MID", wall_ref="W-M-C5",
                 elevation=inch(76), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="over-fridge and over-freezer cabinets (78 in.)"),
@@ -187,6 +215,9 @@ MAIN_BACKING = [
 ]
 
 SECOND_BACKING = [
+    WallBacking(uid="PKRGE2ZNBP", tag="BK-S-PS2-SHELF", wall_ref="W-S-PS2",
+                elevation=inch(64), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="closet shelf and rod (66 in.)"),
     WallBacking(uid="0C6ST8E3ET", tag="BK-S-N1B-ROD", wall_ref="W-S-N1B",
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="closet shelf and rod (66 in.)"),
@@ -224,4 +255,7 @@ ATTIC_BACKING = [
     WallBacking(uid="DHRK7N7J1Y", tag="BK-A-BATH-S", wall_ref="W-A-BATH-S",
                 elevation=inch(46), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="SUNNERSTA kitchenette wall anchor rail"),
+    WallBacking(uid="YQYFFHW9T6", tag="BK-A-BATH-S-SINK", wall_ref="W-A-BATH-S",
+                elevation=inch(25), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="bar sink hanger (27 in.)"),
 ]

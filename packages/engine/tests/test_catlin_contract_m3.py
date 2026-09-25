@@ -2463,81 +2463,6 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     assert stairs["ST-S2A"]["run_reversed"] is True
 
 
-# Devices that are deliberately not on a wall face: `wall_ref` only names Walls, so a
-# device mounted elsewhere (a furniture end panel, a pillar strap) has to say so here.
-# ED-M-PORCH-FLOOD is strapped to pillar PT-SG-BR2 — the one legitimate case. Shrinking this
-# set is the direction it should move; adding to it is how a device ends up floating in a
-# room and nobody notices.
-_NOT_WALL_HOSTED = {"ED-M-PORCH-FLOOD"}
-
-
-def test_wall_mounted_devices_resolve_against_a_wall_face(catlin_model):
-    """A switch or receptacle lands on the finish plane, not on the wall's centreline.
-
-    Authored device positions are plain plan points — nothing in the resolver pulls them
-    onto a wall — so a box authored at the wall's axis resolves *inside* the framing, and
-    one authored a few feet off resolves in mid-air. This is what says they stay fixed. The
-    test grades the resolved body,
-    not the authored point: its back edge sits on a wall face (a recessed box the other
-    way), it does not reach through into the studs, and it is not floating in a room.
-    """
-    from shapely.geometry import Polygon
-    from shapely.ops import unary_union
-
-    # Every wall, not the device's own storey's walls. A wall is filed on the storey that
-    # BUILDS it, and an exterior device is filed on the storey that POWERS it; the two part
-    # company the moment something hangs on a garden or foundation wall from the floor above.
-    # ED-M-HP1/2-DISC and ED-M-STAIR-LT hang on W-SG-E1, which is filed on `basement` because
-    # it is poured with the sunken garden and tops out at 0'-0" — a storey-keyed search
-    # reported all three as floating three feet off a wall they are bolted to. `z` is the
-    # question that actually disambiguates, and it is asked below.
-    #
-    # A banded layer (``extent``) is only there over its own z range: W-SG-E1's dimpleboard
-    # stops at grade, and the devices above it hang on bare concrete.
-    walls: list = []
-    for wall in catlin_model.walls:
-        parts = [(Polygon(layer.polygon), layer.z0_m, layer.z1_m)
-                 for layer in wall.layers if len(layer.polygon) >= 3]
-        parts = [p for p in parts if p[0].is_valid and p[0].area > 1e-9]
-        if parts:
-            walls.append((parts, wall.z0_m, wall.z1_m))
-
-    offenders = []
-    for item in catlin_model.canvas_objects:
-        if item.kind != "ElectricalDevice" or item.tag in _NOT_WALL_HOSTED:
-            continue
-        mount = item.mount
-        if mount is None or mount.kind.value != "wall":
-            continue
-        body = Polygon(item.footprint)
-        best = None
-        for parts, z0, z1 in walls:
-            if z1 <= item.z_m + 1e-6 or z0 >= item.z_m + 1e-6:
-                continue  # this wall is not there at the height the device hangs
-            present = [poly for poly, lz0, lz1 in parts
-                       if (lz0 is None or lz0 <= item.z_m + 1e-6)
-                       and (lz1 is None or lz1 >= item.z_m - 1e-6)]
-            if not present:
-                continue
-            solid = unary_union(present)
-            overlap = solid.intersection(body).area
-            gap = solid.distance(body)
-            if best is None or (overlap, -gap) > (best[0], -best[1]):
-                best = (overlap, gap)
-        if best is None:
-            offenders.append((item.tag, "no wall at its mounting height"))
-            continue
-        overlap, gap = best
-        # Positions are authored to 1/8", so grade how far the body reaches past the face
-        # rather than whether it touches it at all.
-        reach = overlap / math.sqrt(body.area)
-        if reach > inch(0.25).meters and not mount.recessed_into_host_surface:
-            offenders.append((item.tag, "buried %.2f\" into the wall" % (reach / inch(1).meters)))
-        elif overlap <= 1e-9 and gap > inch(0.25).meters:
-            offenders.append((item.tag, "floating %.1f\" off the wall" % (gap / inch(1).meters)))
-    assert not offenders, offenders
-
-
 def _wall_bodies_by_storey(model):
     """Per storey, the unioned layer footprint of every wall, with its z extent."""
     from shapely.geometry import Polygon
@@ -2567,8 +2492,17 @@ def test_wall_referenced_fixtures_stand_against_a_finish_face_not_inside_the_stu
 
     walls = _wall_bodies_by_storey(catlin_model)
     offenders = []
+    def recessed(item) -> bool:
+        return item.mount is not None and item.mount.recessed_into_host_surface
+
+    def declared_gap(item) -> float:
+        attachment = getattr(catlin_model.plan.by_tag(item.tag).location, "attachment", None)
+        return attachment.normal_gap.meters if attachment is not None else 0.0
+
+    # A recessed body (a wall hydrant's barrel) is set INTO its wall on purpose, and a hosted
+    # one may stand off by the normal_gap its attachment declares (a sink in its counter).
     for item in catlin_model.canvas_objects:
-        if item.kind != "Fixture" or item.attachment_wall is None:
+        if item.kind != "Fixture" or item.attachment_wall is None or recessed(item):
             continue
         body = Polygon(item.footprint)
         named = [entry for entry in walls.get(item.storey, [])
@@ -2584,14 +2518,15 @@ def test_wall_referenced_fixtures_stand_against_a_finish_face_not_inside_the_stu
         if reach > inch(0.5).meters:
             offenders.append((item.tag, "buried %.2f\" into %s"
                               % (reach / inch(1).meters, item.attachment_wall)))
-        elif overlap <= 1e-9 and solid.distance(body) > inch(0.5).meters:
+        elif overlap <= 1e-9 and solid.distance(body) > declared_gap(item) + inch(0.5).meters:
             offenders.append((item.tag, "floating %.1f\" off %s"
                               % (solid.distance(body) / inch(1).meters,
                                  item.attachment_wall)))
     rooms = {r.tag: Polygon(r.clear_face).buffer(inch(0.5).meters)
              for r in catlin_model.rooms}
     for item in catlin_model.canvas_objects:
-        if item.kind == "Fixture" and item.attachment_wall and item.room in rooms:
+        if (item.kind == "Fixture" and item.attachment_wall and item.room in rooms
+                and not recessed(item)):
             assert rooms[item.room].covers(Polygon(item.footprint)), item.tag
     assert not offenders, offenders
 

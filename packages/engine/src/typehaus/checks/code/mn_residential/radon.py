@@ -38,6 +38,7 @@ from typehaus.model.enums import DeviceKind, PipeSystem
 from typehaus.model.mep import Sump, VentRun
 from typehaus.quantities import ft
 from typehaus.resolve.geometry import opening_center
+from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 from typehaus.resolve.vent_termination import exterior_riser_point
 
@@ -267,7 +268,7 @@ def _fan_power_finding(ctx: CheckContext, riser: VentRun) -> Finding:
     reach = _FAN_BOX_REACH.meters
     near = []
     for box in boxes:
-        bx, by = box.position.xy_m
+        bx, by = placed_xy(ctx.model, box)
         if ((bx - rx) ** 2 + (by - ry) ** 2) ** 0.5 > reach:
             continue
         declared = getattr(box, "room", None)
@@ -284,7 +285,7 @@ def _fan_power_finding(ctx: CheckContext, riser: VentRun) -> Finding:
                      _CODE)
     interior = []
     for box in near:
-        point = Point(*box.position.xy_m)
+        point = Point(*placed_xy(ctx.model, box))
         for room in ctx.model.rooms:
             if len(axis_ring(room)) < 3 or not room.conditioned:
                 continue

@@ -11,6 +11,7 @@ from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
 from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.intervals import merge as _merge_intervals
+from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 _HABITABLE = {Occupancy.BEDROOM, Occupancy.LIVING, Occupancy.KITCHEN, Occupancy.DINING,
@@ -73,7 +74,7 @@ def _devices_in_room(ctx: CheckContext, storey_tag: str, room) -> list:
     return [
         element for element in ctx.plan.storey_elements(storey_tag)
         if element.element_kind == "ElectricalDevice"
-        and face.distance(Point(element.position.xy_m)) <= _IN_ROOM_TOLERANCE_M
+        and face.distance(Point(placed_xy(ctx.model, element))) <= _IN_ROOM_TOLERANCE_M
     ]
 
 
@@ -333,7 +334,7 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
         for device in devices_by_storey.get(room.storey, []):
             if not _counts_as_a_125v_receptacle(ctx, device):
                 continue
-            s, d = _perimeter_position(ring, device.position.xy_m)
+            s, d = _perimeter_position(ring, placed_xy(ctx.model, device))
             if d <= _NEAR_WALL_M:
                 positions.append(s)
         breaks = (_door_intervals(ctx, ring, room.storey)
@@ -442,7 +443,7 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
             continue
         islands += 1
         reach = carcass.buffer(_ISLAND_RECEPTACLE_MARGIN_M)
-        served = any(reach.contains(Point(device.position.xy_m))
+        served = any(reach.contains(Point(placed_xy(ctx.model, device)))
                      for device in receptacles_by_storey.get(item.storey, []))
         if served:
             out.append(_pass(cid, f"island {item.tag} has a receptacle at its footprint",

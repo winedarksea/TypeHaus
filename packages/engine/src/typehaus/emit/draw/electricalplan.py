@@ -11,6 +11,7 @@ from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.placeables import placed_xy
 
 _DEVICE_LAYER = {
     "receptacle": "E-POWR-DEVC", "gfci": "E-POWR-DEVC", "receptacle_240": "E-POWR-DEVC",
@@ -42,8 +43,9 @@ def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
         if element.element_kind != "ElectricalDevice":
             continue
         layer = _DEVICE_LAYER.get(element.kind.value, "E-POWR-DEVC")
-        b.add(Symbol(name=element.kind.value, insert=_in(element.position.xy_m), layer=layer))
-        b.add(Text(anchor=_in((element.position.xy_m[0] + 0.1, element.position.xy_m[1] + 0.1)),
+        x, y = placed_xy(model, element)
+        b.add(Symbol(name=element.kind.value, insert=_in((x, y)), layer=layer))
+        b.add(Text(anchor=_in((x + 0.1, y + 0.1)),
                    content=element.tag.removeprefix("ED-"), height=1.5, layer="A-ANNO-TEXT"))
 
     # Conduit trunks: dashed homerun polylines on their own raceway layer. The label sits

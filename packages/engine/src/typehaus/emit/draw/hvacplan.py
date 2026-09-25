@@ -22,6 +22,7 @@ from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.placeables import placed_xy
 
 _SUPPLY_LAYER = "M-HVAC-SDFF"
 _RETURN_LAYER = "M-HVAC-RDFF"
@@ -92,7 +93,7 @@ def _emit_registers(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         if element.element_kind != "Register":
             continue
         layer = _system_layer(element.kind.value)
-        b.add(Symbol(name=f"register-{element.kind.value}", insert=_in(element.position.xy_m),
+        b.add(Symbol(name=f"register-{element.kind.value}", insert=_in(placed_xy(model, element)),
                      layer=layer))
 
 
@@ -101,7 +102,7 @@ def _emit_equipment(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         if element.element_kind != "Equipment":
             continue
         width, depth = (dim.meters for dim in element.footprint)
-        x, y = element.position.xy_m
+        x, y = placed_xy(model, element)
         outline = ((x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
                    (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2))
         b.add(Polyline(points=tuple(_in(p) for p in outline), layer="M-HVAC-EQPM",

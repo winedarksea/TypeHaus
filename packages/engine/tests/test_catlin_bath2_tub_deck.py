@@ -226,7 +226,7 @@ def test_the_bask_heated_surface_has_its_dedicated_gfci_circuit_and_outlet():
 
     model, _ = resolve(plan)
     tub = _bounds(_canvas(model, "FX-M-BATH2-TUB").footprint)
-    x, y = (v / M_PER_IN for v in outlet.position.xy_m)
+    x, y = (v / M_PER_IN for v in _canvas(model, outlet.tag).position)
     # "Behind the bath": inside the box, in the foot bay SOUTH of the shell — the only part
     # of the enclosure with room for a plug, since the bath sits 3/16" off the west face.
     assert tub[0] - 1.0 <= x <= tub[1]

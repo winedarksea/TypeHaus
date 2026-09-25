@@ -5,7 +5,7 @@
 # at the repo root (it uses `frozenset(...)`, which the editable dialect forbids).
 
 from typehaus import Appliance, Fixture, Mount, MountKind, deg, ft, inch, pt
-from typehaus.model import m
+from typehaus.model import Location, WallAttachment, m
 
 # --- basement ----------------------------------------------------------------------------
 # Both RM-B-SAUNA fixtures drain under the slab to PR-B-MAIN-DRAIN, not a wall stack
@@ -189,8 +189,11 @@ BASEMENT_FIXTURES = (
 # CHASE-vented set specifically.
 MAIN_FIXTURES = (
     Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOTO-SP-WH", room="RM-M-BATH1",
-            position=pt(m(0.670778), m(7.138289)), rotation=deg(180), wall_ref="W-M-BAE",
-            mount=Mount(kind=MountKind.WALL, elevation=inch(1.375))),
+            wall_ref="W-M-BAE",
+            mount=Mount(kind=MountKind.WALL, elevation=inch(1.375)),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-M-HS1", face="left", distance_from_start=inch(26.40625),
+                normal_gap=inch(0), rotation_offset=deg(-180)))),
     # `test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other` holds this fixture
     # clear of the hall — the room's south face tracks N-M-W2/N-M-C2's station.
     # ** A 24" VANITY, NOT A BARE BOWL 2 1/2" INSIDE THE WALL. ** The old FX-LAV-COMPACT
@@ -394,9 +397,12 @@ MAIN_FIXTURES = (
     # just on the type) because the resolver reads the instance Mount; it lands the rim on
     # the 36" counter with 9" of bowl below.
     Fixture(uid="WZRCBGNDFW", tag="FX-M-KITCH-SINK", type_ref="FX-KITCHEN-SINK-33", room="RM-M-LIVING",
-            position=pt(ft(29, 4), ft(34, 5.375)), wall_ref="W-M-N1",
+            wall_ref="W-M-N1",
             mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
-            drain_position=pt(ft(29, 4), ft(35))),
+            drain_position=pt(ft(29, 4), ft(35)),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-M-N1", face="left", distance_from_start=inch(80), normal_gap=inch(1),
+                rotation_offset=deg(-180)))),
 )
 
 
@@ -789,9 +795,12 @@ ATTIC_FIXTURES = (
     # SUNNERSTA's worktop measures nearer 36", raise it — and re-check that the revent's
     # horizontal still clears the flood rim by P3104.4's 6".
     Fixture(uid="11TZJE81BZ", tag="FX-A-STUDIO-BAR-SINK", type_ref="FX-LAV-COMPACT", room="RM-A-STUDIO",
-            position=pt(inch(152.5), inch(194.625)), wall_ref="W-A-STU-W",
+            wall_ref="W-A-STU-W",
             mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
-            drain_position=pt(inch(152.5), inch(194.625))),
+            drain_position=pt(inch(152.5), inch(194.625)),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-A-BATH-S", face="right", distance_from_start=inch(37),
+                normal_gap=inch(3), rotation_offset=deg(0)))),
 )
 
 
@@ -841,11 +850,17 @@ ATTIC_FIXTURES = (
 # the writer can round-trip.
 PORCH_HYDRANT = (
     Fixture(uid="7QK2M4XR0B", tag="FX-M-PORCH-HYD", type_ref="FX-HYDRANT-SD34",
-            room="RM-M-BED", position=pt(ft(12, 8), ft(0)), wall_ref="W-M-S1",
-            mount=Mount(kind=MountKind.WALL, elevation=inch(24))),
+            room="RM-M-BED", wall_ref="W-M-S1",
+            mount=Mount(kind=MountKind.WALL, elevation=inch(24), recessed_into_host_surface=True),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-M-S1", face="right", distance_from_start=inch(152),
+                normal_gap=inch(-10.25), rotation_offset=deg(0)))),
 )
 BALCONY_HYDRANT = (
     Fixture(uid="D3NLW8VC5T", tag="FX-S-BALC-HYD", type_ref="FX-HYDRANT-SD34",
-            room="RM-S-PLANT", position=pt(ft(7, 4), ft(0)), wall_ref="W-S-S1",
-            mount=Mount(kind=MountKind.WALL, elevation=inch(24))),
+            room="RM-S-PLANT", wall_ref="W-S-S1",
+            mount=Mount(kind=MountKind.WALL, elevation=inch(24), recessed_into_host_surface=True),
+            location=Location(attachment=WallAttachment(
+                wall_ref="W-S-S1", face="right", distance_from_start=inch(88),
+                normal_gap=inch(-10.25), rotation_offset=deg(0)))),
 )

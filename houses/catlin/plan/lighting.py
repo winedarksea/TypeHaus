@@ -37,7 +37,7 @@ from typehaus import (
     inch,
     pt,
 )
-from typehaus.model import m
+from typehaus.model import Location, WallAttachment, m
 
 # --- Basement -------------------------------------------------------------------------
 # All of it on CKT-LT-BACKUP: electrical_notes.md line 24 puts basement and kitchen
@@ -115,13 +115,16 @@ BASEMENT_LIGHTING = [
     # ** x IS THE BOX'S CENTRE, NOT ITS FACE. ** 163.4375" is where the plate lands — the
     # face at 163.3025" plus the 0.135" seat — and authoring it as the position put the
     # whole 2" body 1" further east, 1.61" inside W-B-HALL-W's studs
-    # (`test_wall_mounted_devices_resolve_against_a_wall_face`). A device footprint is a
+    # (`integrity.wall_mount_on_face`). A device footprint is a
     # plan rectangle CENTRED on `position`, so the centre is an inch back: 162.4375".
     # ED-B-STAIR-SW reads the same way against a wall on its other side.
     ElectricalDevice(uid="QTB0007AAA", tag="ED-B-WORKSHOP-SW", kind=DeviceKind.SWITCH,
-                     position=pt(inch(162.4375), inch(170.4375)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP", rotation=deg(270),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-HALL-W", face="right", distance_from_start=inch(45.5625),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # The under-stair storage (new 2026-09-05). ED-T-LT-SPOT-SW is the
     # house's integral-switch down-spot — the same article ED-A-STUDIO-SCONCE uses — which
@@ -135,9 +138,12 @@ BASEMENT_LIGHTING = [
     # far jamb, at 4'-6" AFF. The elevation is set by the RAKE, not by habit: the flight
     # overhead is 6'-1 5/8" up at this y, and a 9" fixture at 54" tops out 10 5/8" under it.
     ElectricalDevice(uid="JYMY6WGGP3", tag="ED-B-CLOSET-LT", kind=DeviceKind.LIGHT,
-                     position=pt(inch(125.25), ft(28, 8)), type_ref="ED-T-LT-SPOT-SW",
-                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+                     type_ref="ED-T-LT-SPOT-SW",
+                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-STR3", face="left", distance_from_start=inch(28),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # ** RM-B-SAUNA IS LIT FROM UNDER THE BENCHES SINCE 2026-09-13; NOTHING ELECTRICAL IS
     # LEFT IN THE HOT ROOM. ** ED-B-SAUNA-LT (mark V, a $1,500-2,250 Cariitti fibre kit) was
@@ -194,9 +200,12 @@ BASEMENT_LIGHTING = [
     # sauna's plumbing through W-B-CS to keep this foil-faced polyiso unbroken; what crosses
     # here is one 24V Class 2 pair through a single gasketed grommet, sealed both faces.
     ElectricalDevice(uid="392P1PBQF7", tag="ED-B-SAUNA-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(inch(120), inch(126.8125)), type_ref="ED-T-LT-PSU-60",
-                     circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP", rotation=deg(0),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     type_ref="ED-T-LT-PSU-60",
+                     circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-SA-N", face="left", distance_from_start=inch(2),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # The control is OUTSIDE the hot room — a wall switch is rated to 40 C ambient and a
     # sauna is not, which is why an integral-switch J1 could never stand inside. On W-B-CS's
     # GYM face, 4 3/8" north of D-B-SAUNA's north jamb, so it is the switch you reach on the
@@ -205,9 +214,12 @@ BASEMENT_LIGHTING = [
     # with the OMNIDRIVE X as a reverse-phase ELV control (Lutron DVELV-300P), NEVER the
     # DVCL-153P the cans use — that mis-pairing is the commonest cause of tape flicker.
     ElectricalDevice(uid="MDVC5HGQZ8", tag="ED-B-SAUNA-SW", kind=DeviceKind.SWITCH,
-                     position=pt(inch(220.375), inch(66)), type_ref="ED-T-SWITCH-DIM",
-                     circuit="CKT-LT-BACKUP", room="RM-B-GYM", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-BACKUP", room="RM-B-GYM",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-CS", face="left", distance_from_start=inch(54),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-B-FURNACE: two cans, not 2x4 panels — the ceiling is full of supply, drain and ERV
     # runs, and each panel sat ~3" off a pipe. Re-typed in place (uids kept). Stations are the
@@ -226,9 +238,12 @@ BASEMENT_LIGHTING = [
     # y=23'-0" is mid-room on the east wall face (W-B-STR3, framed 2x6), x=9'-5" to 9'-8 1/8"
     # — 1" proud of the face — which is where you reach it walking in from D-B-FURN.
     ElectricalDevice(uid="QTB000AAAA", tag="ED-B-FURNACE-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(9, 8.125), ft(23)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-BACKUP", room="RM-B-FURNACE", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-STR3B", face="right", distance_from_start=inch(30),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-B-PLAY-N is the theatre. Up/down sconces are the traditional answer (notes) and the
     # dimmer is the whole point: bright enough to cross the room, dark enough to watch
@@ -261,42 +276,54 @@ BASEMENT_LIGHTING = [
     # side wall to foul at 6'-6": the bookcases are on the south wall, the 98" screen and
     # the sectional are in the middle third.
     ElectricalDevice(uid="QTB000BAAA", tag="ED-B-PLAY-N-SCONCE1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(34, 10), ft(22, 6)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(-90),
-                     controlled_by=("ED-B-PLAY-N-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-E2", face="left", distance_from_start=inch(54),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTB000CAAA", tag="ED-B-PLAY-N-SCONCE2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(34, 10), ft(31, 6)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(-90),
-                     controlled_by=("ED-B-PLAY-N-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-E2", face="left", distance_from_start=inch(162),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="7VRS9XJKG7", tag="ED-B-PLAY-N-SCONCE3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(34, 10), ft(27)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(-90),
-                     controlled_by=("ED-B-PLAY-N-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-E2", face="left", distance_from_start=inch(108),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # West wall. ** THE TWO DEVICE LINES ARE NOT MIRRORED, AND THAT IS CORRECT: ** the east
     # side is W-B-E2, a 16.17" foundation wall, and the west is W-B-CN/CN2 at 12", so a
     # station mirrored about x=27'-0" would stand 6" off the west face. x=18'-8" puts a
     # 4"-deep body's back ON that face (216" axis + 6" half-thickness + 2"), which is what
-    # `test_wall_mounted_devices_resolve_against_a_wall_face` grades — the resolved body,
+    # `integrity.wall_mount_on_face` grades — the resolved body,
     # never the authored point. The two banks line up in ELEVATION and in y, which is what
     # reads in the room.
     ElectricalDevice(uid="NYEVZE2RN5", tag="ED-B-PLAY-N-SCONCE4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 8), ft(22, 6)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(90),
-                     controlled_by=("ED-B-PLAY-N-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-CN", face="right", distance_from_start=inch(8.625),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="4XZRS7P3VR", tag="ED-B-PLAY-N-SCONCE5", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 8), ft(27)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(90),
-                     controlled_by=("ED-B-PLAY-N-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-CN", face="right", distance_from_start=inch(62.625),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="JBZ1PYPYF0", tag="ED-B-PLAY-N-SCONCE6", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 8), ft(31, 6)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(90),
-                     controlled_by=("ED-B-PLAY-N-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-CN", face="right", distance_from_start=inch(116.625),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** THE AMBIENT COVE WAS DESIGNED, PRICED AND THEN WITHDRAWN (2026-09-06), AND THE
     # REASON IS THE BATTERY, NOT THE CEILING. ** Two surface COB channels up the side walls
     # at 7'-4" were the ambient tier the cans used to be — nothing recessed, nothing through
@@ -319,9 +346,12 @@ BASEMENT_LIGHTING = [
     # was never worth anything to code.R303_1_light_and_ventilation either way — a LightRun
     # counts 0 lm — so nothing but the room's feel is riding on it.
     ElectricalDevice(uid="QTB000FAAA", tag="ED-B-PLAY-N-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(18, 7), ft(20)), type_ref="ED-T-SWITCH-DIM",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-CN2", face="right", distance_from_start=inch(24),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-B-STAIR: the railing light the notes ask for. A 24V tape at 34" on the stair's
     # west wall, under the handrail — it lights the treads without a fixture in anyone's
@@ -359,9 +389,12 @@ BASEMENT_LIGHTING = [
     # face — and reads as 0.8" buried. Four inches north is clear of it and still the first
     # thing your hand finds at the stair foot.
     ElectricalDevice(uid="QTB000HAAA", tag="ED-B-STAIR-SW", kind=DeviceKind.SWITCH,
-                     position=pt(inch(169.9375), ft(25, 10)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-WELL", face="right", distance_from_start=inch(4),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # The can lights the HALL — the slot between W-B-BA-E and W-B-CN2 — centred in it and
     # level with D-B-BATH's leaf. The slot was 3'-2 5/8" and the can sat at x=15'-9";
     # sliding W-B-BA-E 1 5/16" west onto the well partition's line (2026-09-05) made it
@@ -422,12 +455,15 @@ BASEMENT_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # x follows W-B-BA-E: the wall slid 1 5/16" west on 2026-09-05 and the switch went with
     # it, back onto the new finish face at 13'-7 5/16". Left where it was it stood 1 5/16"
-    # inside the studs — `test_wall_mounted_devices_resolve_against_a_wall_face` caught it,
+    # inside the studs — `integrity.wall_mount_on_face` caught it,
     # and no `haus check` rule does.
     ElectricalDevice(uid="QTB000LAAA", tag="ED-B-BATH-SW", kind=DeviceKind.SWITCH,
-                     position=pt(inch(162.3125), ft(24, 2)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-BACKUP", room="RM-B-BATH", rotation=deg(270),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-B-BATH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-BA-E", face="right", distance_from_start=inch(16),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
 # --- Main storey ----------------------------------------------------------------------
@@ -497,9 +533,12 @@ MAIN_LIGHTING = [
     # A dimmer rather than the warm set's plain switch: the daylight cans are the ones you
     # turn down, since they are the set that is on when you do not want the full 4800 lm.
     ElectricalDevice(uid="QTM001DAAA", tag="ED-M-LIVING-SW-DAY", kind=DeviceKind.SWITCH,
-                     position=pt(ft(18, 4.375), ft(12, 4)), type_ref="ED-T-SWITCH-DIM",
+                     type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-C1", face="right", distance_from_start=inch(148),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # The dining fixture, centred on FURN-M-DINING. A 3'-6" assembly off a 9' ceiling puts
     # the shade bottom at 5'-6" — about 3' over a 30" table, which is the height that lights
@@ -510,9 +549,12 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-DINING-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(3, 6))),
     ElectricalDevice(uid="QTM0006AAA", tag="ED-M-DINING-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(18, 4.375), ft(16)), type_ref="ED-T-SWITCH-DIM",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-C2", face="right", distance_from_start=inch(36),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # The kitchen end of the same room, on the backup circuit with the basement
     # (electrical_notes.md line 24).
@@ -649,9 +691,12 @@ MAIN_LIGHTING = [
     # while measuring this move; a receptacle is a spacing decision (electrical.py's
     # NEC 210.52 run) and not this switch's to make. See plans/TODO.md.
     ElectricalDevice(uid="QTM000DAAA", tag="ED-M-KITCH-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(18, 4.375), ft(21, 10.5)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-C3", face="right", distance_from_start=inch(46.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # --- kitchen under-cabinet task light -----------------------------------------------
     # Ceiling cans alone over a counter you stand in front of light your own shadow onto
@@ -735,9 +780,12 @@ MAIN_LIGHTING = [
     # used to stand here calling it "a pre-existing condition this commit neither causes
     # nor fixes" is spent.
     ElectricalDevice(uid="EX3ZQQPM9K", tag="ED-M-KITCH-SW-UC", kind=DeviceKind.SWITCH,
-                     position=pt(ft(24, 7.375), ft(33, 1)), type_ref="ED-T-SWITCH-DIM",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-PAN-E", face="right", distance_from_start=inch(0),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # --- RM-M-PANTRY's vertical slot -----------------------------------------------------
     # A POINT DEVICE, NOT A LightRun — see ED-T-LT-SLOT72's note in plan/lighting_types.py
@@ -755,16 +803,21 @@ MAIN_LIGHTING = [
     # standard for a closet. Optionally a second layer of shelf-edge strips at the front
     # underside of each shelf, facing back. 3000-4000K either way.
     ElectricalDevice(uid="2A635YS6VW", tag="ED-M-PANTRY-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 5.125), ft(33, 4.375)), type_ref="ED-T-LT-SLOT72",
-                     circuit="CKT-LT-BACKUP", room="RM-M-PANTRY", rotation=deg(90),
-                     controlled_by=("ED-M-PANTRY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(1, 6))),
+                     type_ref="ED-T-LT-SLOT72",
+                     circuit="CKT-LT-BACKUP", room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(1, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-PAN-S", face="left", distance_from_start=inch(5.125),
+                         normal_gap=inch(0), rotation_offset=deg(90)))),
     # Switched from the KITCHEN side, the way a closet is. The only wall left on that face
     # is the 8 7/8" east of D-M-PANTRY's rough opening.
     ElectricalDevice(uid="1M4ZM8DRWH", tag="ED-M-PANTRY-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(24, 2), ft(32, 9.625)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-PAN-S", face="right", distance_from_start=inch(74),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-BED: a four-can grid (ED-M-BED-LT is the SW corner of it, plan/mep.py), on a
     # 3-WAY since 2026-09-15. The only switch in this room stood at the CLOSET door. There
@@ -794,9 +847,12 @@ MAIN_LIGHTING = [
     # CKT-LT-MAIN, the same circuit as every can it switches. Both ends are
     # ED-T-SWITCH-DIM, which is the house's own 3-way convention (ED-S-HALL-SW/-SW2).
     ElectricalDevice(uid="08SZS6SKK5", tag="ED-M-BED-SW2", kind=DeviceKind.SWITCH,
-                     position=pt(inch(211.115), ft(4, 11)), type_ref="ED-T-SWITCH-DIM",
-                     circuit="CKT-LT-MAIN", room="RM-M-BED", rotation=deg(270),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-MAIN", room="RM-M-BED",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-C1", face="left", distance_from_start=inch(59),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** A READING LIGHT, WHICH THIS ROOM ALSO DID NOT HAVE. ** Four cans on a grid light a
     # floor; nothing in here lit a book. Mark G, ED-T-LT-WALL-LINEAR — the same 36" bar
     # RM-S-SUITE carries as ED-S-SUITE-LAMP, at the same 5'-6". No new type and no new
@@ -811,14 +867,19 @@ MAIN_LIGHTING = [
     # switch stands beside it at x=12'-4", between the bar's end and ED-M-BED-RC2 — 4" clear
     # of each, reachable lying down, and over a 26" nightstand at 46".
     ElectricalDevice(uid="FVEG6VJPGG", tag="ED-M-BED-LAMP", kind=DeviceKind.LIGHT,
-                     position=pt(ft(10, 4), inch(152.125)), type_ref="ED-T-LT-WALL-LINEAR",
-                     circuit="CKT-LT-MAIN", room="RM-M-BED", rotation=deg(0),
-                     controlled_by=("ED-M-BED-LAMP-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
+                     type_ref="ED-T-LT-WALL-LINEAR",
+                     circuit="CKT-LT-MAIN", room="RM-M-BED", controlled_by=("ED-M-BED-LAMP-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-BDN2", face="right", distance_from_start=inch(26),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="4MYVGDXN3Y", tag="ED-M-BED-LAMP-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(12, 4), ft(12, 8.625)), type_ref="ED-T-SWITCH-DIM",
-                     circuit="CKT-LT-MAIN", room="RM-M-BED", rotation=deg(0),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-MAIN", room="RM-M-BED",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-BDN2", face="right", distance_from_start=inch(50),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # ** THE BEDROOM FAN (2026-09-20), AND IT REVIVES MARK N RATHER THAN ADDING A TYPE. **
     # ED-T-LT-FAN52 has been catalog-only since ED-B-GYM-LT retyped to the N3 hugger for
@@ -855,9 +916,12 @@ MAIN_LIGHTING = [
     # jamb at y=5'-5". x=211.115" is W-M-C1's bedroom-face convention, as SW2 and
     # ED-M-BED-RC3/RC4 are. RC4 is on this wall at y=1'-1.5" and 16" AFF — no conflict.
     ElectricalDevice(uid="KCDD6WVW46", tag="ED-M-BED-FAN-SW", kind=DeviceKind.SWITCH,
-                     position=pt(inch(211.115), ft(4, 7)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-BED", rotation=deg(270),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-BED",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-C1", face="left", distance_from_start=inch(55),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-STUDY has no exterior wall, so the notes' "sconce to the side of the window"
     # applies to the two studies that do (RM-S-STUDY2, RM-A-STUDY). This one gets a down
@@ -895,10 +959,12 @@ MAIN_LIGHTING = [
     # coves are excluded by `_room_lumens`). Moving one within the room is safe; removing
     # one is a FAIL.
     ElectricalDevice(uid="QTM000HAAA", tag="ED-M-STUDY-SPOT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(17, 6.625), ft(21, 5)), type_ref="ED-T-LT-SCONCE-SPOT",
-                     circuit="CKT-LT-MAIN", room="RM-M-STUDY", rotation=deg(-90),
-                     controlled_by=("ED-M-STUDY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
+                     type_ref="ED-T-LT-SCONCE-SPOT",
+                     circuit="CKT-LT-MAIN", room="RM-M-STUDY", controlled_by=("ED-M-STUDY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-C3", face="left", distance_from_start=inch(41),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-BATH1: wet-rated can plus a mirror light over the lavatory, which backs onto
     # the room's north wall (FX-M-BATH1-LAV, plan/fixtures.py).
@@ -912,16 +978,21 @@ MAIN_LIGHTING = [
     # 22'-7 3/8", not 22'-6 3/8" — the fitting has to follow or it resolves inside the studs.
     # Nothing about BATH1 changed; it is the other room's wall.
     ElectricalDevice(uid="QTM000KAAA", tag="ED-M-BATH1-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(m(1.36284), ft(22, 8.385)), type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH1", rotation=deg(-180),
-                     controlled_by=("ED-M-BATH1-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-MIRROR",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH1", controlled_by=("ED-M-BATH1-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-HS1", face="left", distance_from_start=inch(53.65625),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTM000MAAA", tag="ED-M-BATH1-SW", kind=DeviceKind.SWITCH,
                      # On the west wall, clear of the toilet/lavatory footprints on the
                      # south wall.
-                     position=pt(ft(5, 7.625), ft(25, 8.375)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH1", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH1",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-BAE", face="right", distance_from_start=inch(9.625),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-M-BATH2: two wet cans (one over the future tub/shower end) and a mirror light on
     # the west wall. The radiant-floor stat ED-M-BATH2-FH-STAT is a separate control and
@@ -937,14 +1008,19 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-BATH2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000QAAA", tag="ED-M-BATH2-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(inch(7.635), inch(173.375)), type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH2", rotation=deg(90),
-                     controlled_by=("ED-M-BATH2-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-MIRROR",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH2", controlled_by=("ED-M-BATH2-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-W3", face="left", distance_from_start=inch(94.625),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTM000RAAA", tag="ED-M-BATH2-SW", kind=DeviceKind.SWITCH,
-                     position=pt(m(0.500866), m(4.04922)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH2", rotation=deg(0),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-BDN1", face="left", distance_from_start=inch(19.71875),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-M-LAUNDRY / RM-M-CLOSET / RM-M-MUDROOM: 3" cans. Small rooms want a small
     # aperture — a 4" can in a 22 ft2 laundry is a headlamp.
@@ -961,9 +1037,12 @@ MAIN_LIGHTING = [
     # face. Left where they were, one buried 2 13/16" into the studs and the other floated
     # 5 3/8" into the room, and `haus check` graded neither.
     ElectricalDevice(uid="QTM000TAAA", tag="ED-M-LAUNDRY-SW", kind=DeviceKind.SWITCH,
-                     position=pt(inch(102.385), ft(21, 2)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-BA2E", face="left", distance_from_start=inch(14),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** A SECOND CAN, AND THE FIRST ONE MOVES, 2026-09-06. ** 48.4 sf, 8'-11 1/2" clear,
     # on ONE 650 lm CAN3 at mid-span: 6.4 fc at the engine's own CU 0.60 x LLF 0.80,
     # for a room whose whole job is telling navy from black. ** NOTHING EVER LOOKED AT IT: **
@@ -996,9 +1075,12 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000WAAA", tag="ED-M-CLOSET-SW", kind=DeviceKind.SWITCH,
-                     position=pt(inch(102.385), ft(16, 10)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-CLOSET", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(14),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # room=RM-M-MUD-CLOSET: the closet conversion framed a room around this ceiling point,
     # and the light's `room` has to name it or `integrity.placeable_room_mismatch` fires.
     # Nothing moves — a label catching up with a wall.
@@ -1015,9 +1097,12 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000ZAAA", tag="ED-M-STORAGE-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(9, 8.125), ft(27)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-STRW", face="right", distance_from_start=inch(108),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # ** THE NORTH ENTRY'S OWN LIGHT, AND UNTIL 2026-09-11 IT DID NOT EXIST. **
     # `code.R303_8_exterior_stairway_illumination` wants a luminaire at ST-BW-ENTRY's top
@@ -1038,10 +1123,12 @@ MAIN_LIGHTING = [
     # beside a 6'-8" door head; the canopy's truss chords are at +7'-4" at the headers and
     # rise toward the ridge, so nothing is overhead within 1'-0".
     ElectricalDevice(uid="NGK4BKKT48", tag="ED-M-ENTRY-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(11, 4), ft(36, 9.75)), type_ref="ED-T-LT-SCONCE-EXT",
-                     circuit="CKT-LT-MAIN", rotation=deg(0),
-                     controlled_by=("ED-M-ENTRY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 4))),
+                     type_ref="ED-T-LT-SCONCE-EXT",
+                     circuit="CKT-LT-MAIN", controlled_by=("ED-M-ENTRY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 4)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-N2", face="right", distance_from_start=inch(80),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Its switch, inside the dwelling (R303.8.1 — the garage's ED-G-EXT-SW is in the wrong
     # building for this one). D-M-ENTRY fills W-M-N3 to within 6" of both ends, so there is
     # no north-wall station beside the door; the return wall W-M-STRW takes it, on its
@@ -1049,9 +1136,12 @@ MAIN_LIGHTING = [
     # south of W-M-N2's gyp face and clear of the wall's top stud at 35'-4 5/8". REG-M-XFER-MUD
     # (3'-6"..4'-4") is in the bay south, past the stud at 34'-8".
     ElectricalDevice(uid="1XT4G5S2XX", tag="ED-M-ENTRY-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(9, 8.125), ft(34, 10)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-STRW", face="right", distance_from_start=inch(14),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # ** THE MUDROOM ITSELF HAD NO LIGHT AT ALL UNTIL 2026-09-15. ** It is the front door,
     # and both devices standing in it switched lights somewhere else: ED-M-STORAGE-SW the
@@ -1092,10 +1182,12 @@ MAIN_LIGHTING = [
     # and the 106 1/4" ceiling by 20". x=8 11/16" is the face convention: W-M-W1's paint
     # plane is 6.635" and the 4"-deep body is centred on its own position.
     ElectricalDevice(uid="FPDTQVFPTK", tag="ED-M-MUDROOM-SCONCE", kind=DeviceKind.LIGHT,
-                     position=pt(inch(8.6875), ft(31, 4)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", rotation=deg(90),
-                     controlled_by=("ED-M-MUDROOM-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 8))),
+                     type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", controlled_by=("ED-M-MUDROOM-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 8)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-W1", face="left", distance_from_start=inch(24),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** A DIMMER, AND IT IS NOT ON THE NORTH WALL. ** D-M-ENTRY fills W-M-N3 to within 6"
     # of both ends — the note on ED-M-ENTRY-SW above already settled that there is no
     # north-wall station here — so this banks against ED-M-ENTRY-SW on W-M-STRW's mudroom
@@ -1106,9 +1198,12 @@ MAIN_LIGHTING = [
     # is arriving at 11pm into something other than a bright white box. All three fixtures
     # above are dimmable=True. The whole addition is 30 VA (2 x 9 + 12) on CKT-LT-MAIN.
     ElectricalDevice(uid="0ZZNRE9AV0", tag="ED-M-MUDROOM-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(9, 8.125), ft(34, 6)), type_ref="ED-T-SWITCH-DIM",
-                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-STRW", face="right", distance_from_start=inch(18),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-M-HALL: three 3" cans down the run, on a 3-way pair — a 14' hall switched from
     # one end only is the classic thing to get wrong.
@@ -1136,13 +1231,19 @@ MAIN_LIGHTING = [
     # bottom 3/8" was left standing in it. At 22'-10" the plate runs y 22'-8"..23'-0" and is
     # still 4" clear of D-M-BATH1's opening at 23'-4" — that door is what bounds it north.
     ElectricalDevice(uid="QTM0013AAA", tag="ED-M-HALL-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(6, 4.375), ft(22, 10)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-BAE", face="left", distance_from_start=inch(44),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTM0014AAA", tag="ED-M-HALL-SW2", kind=DeviceKind.SWITCH,
-                     position=pt(ft(17, 7), ft(22, 7.375)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-HS4", face="left", distance_from_start=inch(50),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # The stair head. Both kept their tags and positions when RM-M-STAIR retired into
     # RM-M-LIVING (2026-07-30) — they still light the well, they are just no longer in a
@@ -1153,9 +1254,12 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-STAIR-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0016AAA", tag="ED-M-STAIR-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(10, 4.375), ft(28)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-STRW", face="left", distance_from_start=inch(96),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # The porch fan (notes: "Large ceiling fan (60\") on porch ceiling"). Damp rated: it
     # hangs under FS-SG-DECK, the balcony deck, open on three sides.
@@ -1199,9 +1303,11 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 5))),
     ElectricalDevice(uid="QTM0018AAA", tag="ED-M-PORCH-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(24, 10), ft(0, 7.625)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-S2", face="left", distance_from_start=inch(82),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # The porch flood (2026-08-02): mark S, narrow-throw full-cutoff spot. It hung on the
     # balcony's centre rear pillar PT-SG-BR2 until 2026-09-22; with that pillar retired it is
@@ -1210,17 +1316,21 @@ MAIN_LIGHTING = [
     # deck edge. NO `room=`: like the porch fan, it must read as exterior to the wet-
     # location and dark-sky checks.
     ElectricalDevice(uid="QTM001EAAA", tag="ED-M-PORCH-FLOOD", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18), inch(-5)), type_ref="ED-T-LT-FLOOD-NARROW",
-                     circuit="CKT-LT-MAIN", rotation=deg(0),
-                     controlled_by=("ED-M-PORCH-FLOOD-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(8))),
+                     type_ref="ED-T-LT-FLOOD-NARROW",
+                     circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-FLOOD-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(8)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-S1", face="right", distance_from_start=inch(216),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # Own switch, second gang beside ED-M-PORCH-SW — separate leg, not shared: the fan
     # runs whole evenings, the flood is the you-heard-something light, and sharing one
     # switch would glare the flood on every night the fan spins.
     ElectricalDevice(uid="QTM001FAAA", tag="ED-M-PORCH-FLOOD-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(25, 2), ft(0, 7.625)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-S2", face="left", distance_from_start=inch(86),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # ST-SG-PORCH's top-landing light (2026-09-03). R303.8 wants a luminaire at the top
     # landing of an exterior stair. The top landing here is FS-SG-PORCH — the 171 sf porch
@@ -1279,10 +1389,12 @@ MAIN_LIGHTING = [
     # wants the exterior light switched from inside, that switch already is, and the flood
     # and the stair light are wanted on the same errand.
     ElectricalDevice(uid="QTM001GAAA", tag="ED-M-STAIR-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25, 8), ft(0, -9.75)), type_ref="ED-T-LT-SCONCE-EXT",
-                     circuit="CKT-LT-MAIN", rotation=deg(0),
-                     controlled_by=("ED-M-PORCH-FLOOD-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+                     type_ref="ED-T-LT-SCONCE-EXT",
+                     circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-FLOOD-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-S2", face="right", distance_from_start=inch(92),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
 # --- Second storey --------------------------------------------------------------------
@@ -1334,23 +1446,31 @@ SECOND_LIGHTING = [
     # protected from. Authored x is the face LESS 1" (box back on the face, 2" box):
     # 21'-8 1/8" - 1" = 21'-7 1/8".
     ElectricalDevice(uid="QTS0005AAA", tag="ED-S-HALL-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(21, 7.125), ft(10)), type_ref="ED-T-SWITCH-DIM",
-                     circuit="CKT-LT-UPPER", room="RM-S-HALL", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BW1", face="left", distance_from_start=inch(12),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTS0006AAA", tag="ED-S-HALL-SW2", kind=DeviceKind.SWITCH,
-                     position=pt(ft(21, 7.125), ft(26, 6)), type_ref="ED-T-SWITCH-DIM",
-                     circuit="CKT-LT-UPPER", room="RM-S-HALL", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BW2", face="left", distance_from_start=inch(106),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-S-SUITE: the linear wall lamp the notes ask for over the bed, on the long west
     # wall, plus cans down the west strip and one in the arm past the walk-in.
     # y tracks W-S-SN1's south face (same station as ED-S-SUITE-RC5), the 8" staggered
     # sound wall.
     ElectricalDevice(uid="QTS0007AAA", tag="ED-S-SUITE-LAMP", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4, 11.875), inch(263.125)), type_ref="ED-T-LT-WALL-LINEAR",
-                     circuit="CKT-LT-UPPER", room="RM-S-SUITE", rotation=deg(180),
-                     controlled_by=("ED-S-SUITE-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
+                     type_ref="ED-T-LT-WALL-LINEAR",
+                     circuit="CKT-LT-UPPER", room="RM-S-SUITE", controlled_by=("ED-S-SUITE-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-SN1", face="right", distance_from_start=inch(59.875),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTS0008AAA", tag="ED-S-SUITE-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(4), ft(15)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITE",
@@ -1373,9 +1493,12 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS000CAAA", tag="ED-S-CLOSET-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(9, 10.875), ft(11, 11)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-UPPER", room="RM-S-CLOSET", rotation=deg(90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-UPPER", room="RM-S-CLOSET",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-DC1", face="right", distance_from_start=inch(35),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-S-SUITEBATH: ED-S-SUITEBATH-LT is now a wet can; a second sits over the shower in
     # the NE corner, and the mirror light goes on the south wall over FX-S-SUITEBATH-LAV.
@@ -1402,10 +1525,13 @@ SECOND_LIGHTING = [
     ElectricalDevice(uid="QTS000EAAA", tag="ED-S-SUITEBATH-MIRROR", kind=DeviceKind.LIGHT,
                      # y = 264.625" (W-S-SBN's bath face) less half of the Robern's 1 3/4"
                      # body. The bar this replaced was 3" deep and sat at 263.625".
-                     position=pt(ft(13, 10), inch(263.75)), type_ref="ED-T-LT-MIRROR-RING",
-                     circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH", rotation=deg(180),
+                     type_ref="ED-T-LT-MIRROR-RING",
+                     circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH",
                      controlled_by=("ED-S-SUITEBATH-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-SN3", face="right", distance_from_start=inch(50.5),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** THE ROBERN IS CORD-AND-PLUG, so it needs a receptacle of its own ** — not the same
     # outlet as ED-S-SUITEBATH-RC1, which is the NEC 210.52(D) counter-height one and stays.
     # Same pattern and the same 54" band as ED-S-BATH1-RC-MIRROR. GFCI at the receptacle,
@@ -1438,9 +1564,12 @@ SECOND_LIGHTING = [
     # ED-S-SUITEBATH-RC1 is 2 1/2" off the lav carcass and carries it either way.
     ElectricalDevice(uid="CE0KDETNZH", tag="ED-S-SUITEBATH-RC-MIRROR",
                      kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(inch(147.5), ft(21, 11.625)), type_ref="ED-T-RECEPTACLE-GFCI",
-                     circuit="CKT-RC-SECOND", room="RM-S-SUITEBATH", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+                     type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-SECOND", room="RM-S-SUITEBATH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-SN3", face="right", distance_from_start=inch(32),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The lit shower niche (plans/TODO.md §Plumbing: Schluter-KERDI-BOARD-SNLT).
     # In W-S-C2C, the alcove wall that's neither glazed south nor a door: 2'-4" of head
     # channel centred on the alcove (y 17'-0"..22'-0") at y=19'-6", x=17'-9" (3" proud of
@@ -1459,15 +1588,19 @@ SECOND_LIGHTING = [
 
     # RM-S-VANITY: two lavatories, two mirror lights, both on the north wet wall.
     ElectricalDevice(uid="QTS000FAAA", tag="ED-S-VANITY-MIRROR1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(1, 9), ft(26, 1.625)), type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-UPPER", room="RM-S-VANITY", rotation=deg(0),
-                     controlled_by=("ED-S-VANITY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-MIRROR",
+                     circuit="CKT-LT-UPPER", room="RM-S-VANITY", controlled_by=("ED-S-VANITY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BD-N", face="right", distance_from_start=inch(21),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTS000GAAA", tag="ED-S-VANITY-MIRROR2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4), ft(26, 1.625)), type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-UPPER", room="RM-S-VANITY", rotation=deg(0),
-                     controlled_by=("ED-S-VANITY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-MIRROR",
+                     circuit="CKT-LT-UPPER", room="RM-S-VANITY", controlled_by=("ED-S-VANITY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BD-N", face="right", distance_from_start=inch(48),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-S-BATH1: two wet cans, one over the shower, and the mirror the brief is most
     # specific about — a 36" front-lit ring on the room's east wall, on the lavatory's
@@ -1489,10 +1622,12 @@ SECOND_LIGHTING = [
                      # where the authored ring was 3", so the old centre left the glass
                      # floating 0.6" off W-S-BD-E's face. The FACE has not moved (9'-8 5/8");
                      # the centre is face less half the new depth.
-                     position=pt(inch(115.75), ft(31)), type_ref="ED-T-LT-MIRROR-RING",
-                     circuit="CKT-LT-UPPER", room="RM-S-BATH1", rotation=deg(-90),
-                     controlled_by=("ED-S-BATH1-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
+                     type_ref="ED-T-LT-MIRROR-RING",
+                     circuit="CKT-LT-UPPER", room="RM-S-BATH1", controlled_by=("ED-S-BATH1-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(28),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # Mirror is hardwired *and* gets an outlet beside it (electrical_notes.md line 80), so a
     # future replacement doesn't need an electrician. GFCI at the RECEPTACLE, not at the
     # breaker — 210.8(A)(1), and CKT-RC-SECOND is deliberately not GFCI at the panel
@@ -1519,13 +1654,19 @@ SECOND_LIGHTING = [
     # centred any further north.
     ElectricalDevice(uid="QTS000MAAA", tag="ED-S-BATH1-RC-MIRROR",
                      kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(9, 7.625), inch(390.75)), type_ref="ED-T-RECEPTACLE-GFCI",
-                     circuit="CKT-RC-SECOND", room="RM-S-BATH1", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+                     type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-SECOND", room="RM-S-BATH1",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(9.25),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTS000NAAA", tag="ED-S-BATH1-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(9, 7.625), ft(29, 6)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-UPPER", room="RM-S-BATH1", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-UPPER", room="RM-S-BATH1",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(46),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # The hall bath's lit niche (2026-08-02), mirroring the suite's LR-S-NICHE — same
     # KERDI-BOARD-SNLT board and rules (notes/shower_niche.md: board IS the membrane,
     # driver lead exits through the head channel, sealed with KERDI-FIX).
@@ -1565,9 +1706,12 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(2, 3))),
     ElectricalDevice(uid="QTS000RAAA", tag="ED-S-PLANT-SW-TIMER", kind=DeviceKind.SWITCH,
-                     position=pt(ft(17, 7), ft(2)), type_ref="ED-T-SWITCH-TIMER",
-                     circuit="CKT-LT-UPPER", room="RM-S-PLANT", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     type_ref="ED-T-SWITCH-TIMER",
+                     circuit="CKT-LT-UPPER", room="RM-S-PLANT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-C1", face="left", distance_from_start=inch(24),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-S-STUDY2: the notes' study sconces — down spots on the *side* walls, set back
     # from the south window wall, so the desk is lit without a lit head in the glass after
@@ -1578,15 +1722,19 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-STUDY2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS000TAAA", tag="ED-S-STUDY2-SPOT1", kind=DeviceKind.LIGHT,
-                     position=pt(m(7.74783), m(0.217857)), type_ref="ED-T-LT-SCONCE-SPOT",
-                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(180),
-                     controlled_by=("ED-S-STUDY2-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
+                     type_ref="ED-T-LT-SCONCE-SPOT",
+                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", controlled_by=("ED-S-STUDY2-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-S2", face="left", distance_from_start=inch(89.03125),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTS000VAAA", tag="ED-S-STUDY2-SPOT2", kind=DeviceKind.LIGHT,
-                     position=pt(m(9.10893), m(0.219983)), type_ref="ED-T-LT-SCONCE-SPOT",
-                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(180),
-                     controlled_by=("ED-S-STUDY2-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
+                     type_ref="ED-T-LT-SCONCE-SPOT",
+                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", controlled_by=("ED-S-STUDY2-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-S2", face="left", distance_from_start=inch(142.625),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # x=29'-0", z=7'-6": ST-S2A climbs westward at 7 1/2" per 10" of run, so a station too
     # far west buries the fixture in its own flight — at x=25'-0" the tread top is 95 1/2"
     # storey-relative against a 10'-0" floor-to-floor storey, leaving no band for an 8"
@@ -1599,15 +1747,19 @@ SECOND_LIGHTING = [
     # `electrical.room_lighting` counts by room, and the fc advisory is planar. Nothing in
     # the engine compares a wall-mount elevation against the stair it lights.
     ElectricalDevice(uid="QTS000WAAA", tag="ED-S-STUDY2-STAIR-SC1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29), ft(8, 7.625)), type_ref="ED-T-LT-SCONCE-STAIR",
-                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(0),
-                     controlled_by=("ED-S-STUDY2-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6))),
+                     type_ref="ED-T-LT-SCONCE-STAIR",
+                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", controlled_by=("ED-S-STUDY2-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-SS2", face="right", distance_from_start=inch(85),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTS000XAAA", tag="ED-S-STUDY2-STAIR-SC2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(8, 7.625)), type_ref="ED-T-LT-SCONCE-STAIR",
-                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(0),
-                     controlled_by=("ED-S-STUDY2-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     type_ref="ED-T-LT-SCONCE-STAIR",
+                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", controlled_by=("ED-S-STUDY2-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-SS2", face="right", distance_from_start=inch(121),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-S-BED1/2/3: identical four-can grids flanking each bed wall.
     ElectricalDevice(uid="QTS0010AAA", tag="ED-S-BED1-CAN2", kind=DeviceKind.LIGHT,
@@ -1686,9 +1838,12 @@ SECOND_LIGHTING = [
     # (x 10'-3 3/8"..13'-9 3/4"), where ST-M2S turns left, and is where you arrive. A plain
     # switch, not a dimmer: the chandelier dims by its own remote (mark L).
     ElectricalDevice(uid="QTS001BAAA", tag="ED-S-STAIR-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(12), ft(22, 8.375)), type_ref="ED-T-SWITCH",
+                     type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-SN3", face="left", distance_from_start=inch(28.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
 # --- Attic ----------------------------------------------------------------------------
@@ -1740,9 +1895,12 @@ GARAGE_LIGHTING = [
     # +1'-0" absolute against a landing at 0'-0". 80" over the slab is +3'-10" absolute, 46"
     # over the landing you stand on to reach it.
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(10, 8), ft(43, 10.375)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(80))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(80)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-S", face="left", distance_from_start=inch(56),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # The garage-door lights (2026-08-02; a PAIR since 2026-09-07): mark R, full-cutoff
     # exterior sconces. The single light followed the overhead door onto W-G-N earlier the
@@ -1770,24 +1928,28 @@ GARAGE_LIGHTING = [
     # ** y IS THE FIXTURE'S CENTRE, NOT THE WALL FACE, on both. ** A wall device's footprint
     # is centred on its position, so a 5" sconce owes the cladding face half its depth or it
     # resolves buried in the panel — which nothing in `haus check` grades, though
-    # test_wall_mounted_devices_resolve_against_a_wall_face does. W-G-N's cladding outer face
+    # integrity.wall_mount_on_face does. W-G-N's cladding outer face
     # is 64'-9 1/2" (GARAGE_Y_NORTH + the 7/8" corrugated panel), so the centre is 2 1/2"
     # proud of it at 65'-0".
     ElectricalDevice(uid="QTG0004AAA", tag="ED-G-EXT-LT-E", kind=DeviceKind.LIGHT,
                      # x=28'-0" is 2'-0" in from the NE corner. The uid is the original
                      # light's: this element did not stop existing when it was retagged.
-                     position=pt(ft(28), ft(67, 6)), type_ref="ED-T-LT-SCONCE-EXT",
-                     circuit="CKT-LT-MAIN", rotation=deg(180),
-                     controlled_by=("ED-G-EXT-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8))),
+                     type_ref="ED-T-LT-SCONCE-EXT",
+                     circuit="CKT-LT-MAIN", controlled_by=("ED-G-EXT-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-N", face="right", distance_from_start=inch(24),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="GT8NZ3DTSX", tag="ED-G-EXT-LT-W", kind=DeviceKind.LIGHT,
                      # x=8'-0" is 2'-0" in from the NW corner, the exact mirror of -E about
                      # the door's centreline at x=18'-0". Same circuit, same switch: the pair
                      # is one control, not two.
-                     position=pt(ft(8), ft(67, 6)), type_ref="ED-T-LT-SCONCE-EXT",
-                     circuit="CKT-LT-MAIN", rotation=deg(180),
-                     controlled_by=("ED-G-EXT-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8))),
+                     type_ref="ED-T-LT-SCONCE-EXT",
+                     circuit="CKT-LT-MAIN", controlled_by=("ED-G-EXT-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-N", face="right", distance_from_start=inch(264),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # Its switch, inside, beside ED-G-SW at the service door: 6" west of it and 4" east of
     # the door's east king (see ED-G-SW for the stations and the 80" elevation; nothing
     # grades a wall device against an opening, so a move of that door must move both by
@@ -1796,9 +1958,12 @@ GARAGE_LIGHTING = [
     # half of it. It stays here though its luminaires crossed to the far wall: the switch
     # belongs at the door you enter by, not under the lamp.
     ElectricalDevice(uid="QTG0005AAA", tag="ED-G-EXT-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(10, 2), ft(43, 10.375)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(80))),
+                     type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(80)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-S", face="left", distance_from_start=inch(50),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # --- The garage's exterior linear (2026-09-11): two eave soffits + the gable face -----
     #
@@ -1879,7 +2044,10 @@ GARAGE_LIGHTING = [
     # already use (10'-2", 10'-8", 11'-2"), same 80" over the slab = 46" over the landing.
     # Same circuit as the loads it switches, so no NEC 210.7 two-circuit box.
     ElectricalDevice(uid="S7ANA4Q300", tag="ED-G-SOFFIT-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(11, 2), ft(43, 10.375)), type_ref="ED-T-SWITCH-TIMER",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(80))),
+                     type_ref="ED-T-SWITCH-TIMER",
+                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(80)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-S", face="left", distance_from_start=inch(62),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]

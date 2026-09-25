@@ -120,8 +120,10 @@ BASEMENT_PLACEABLES = [
     # 6'-8" under an 8'-3 1/2" ceiling. **An 8" concrete wall takes anchors, not blocking** —
     # there is no stud bay behind this and the mount is a mechanical fixing into the pour.
     Furniture(uid="X99HBG99WJ", tag="FURN-B-PLAY-TV", type_ref="FURN-TV-98", room="RM-B-PLAY-N",
-              position=pt(ft(26, 9), ft(34, 7.75)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(30))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(30)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-B-N1", face="left", distance_from_start=inch(111),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The U, opening north at the screen. 11'-0" of back run leaves 2'-9" either side of a
     # 16'-6" box; y 21'-6" to 29'-6" puts the back run 11'-13' off the panel — right for a
     # 98" screen — and leaves 2'-2 3/4" of walk between the bookcases and the sectional's
@@ -270,8 +272,10 @@ MAIN_PLACEABLES = [
     # exactly 0", which is tangency, not overlap.
     Furniture(uid="5RWQRV1P72", tag="FURN-M-FIRE-MANTEL",
               type_ref="FT-MANTEL-WALNUT-46", room="RM-M-LIVING",
-              position=pt(inch(419.625), ft(8, 8)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(64))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(64)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(104),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** SAY THE COST OUT LOUD: TURNING THE SOFA EAST MEANS IT NO LONGER ADDRESSES THIS. **
     # The fire and this console now sit 90 degrees apart, and a 64" mantel with brick above it
     # cannot take a panel — so no screen can go over the fire either.
@@ -473,8 +477,10 @@ MAIN_PLACEABLES = [
     # The 6 1/8" of PANTRYC's top left uncovered is a finished cabinet top, not a hole: it
     # is the same detail as the top of any 96" tall that stops short of a ceiling.
     Furniture(uid="ZMBSYYRCX5", tag="FURN-M-KIT-PANTRYC-ST", type_ref="SEKT-TS18-15", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(26, 7.875)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(9.875),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
     # Over the two cold boxes: 24" deep like the talls, so all four fronts land on
     # x=20'-3 3/8" and the appliances stand 3" proud — clearing the fridge/freezer door
     # swing.
@@ -498,11 +504,15 @@ MAIN_PLACEABLES = [
     # in the room lands. Box centres are 28'-10 3/4" and 31'-4 3/4", NOT the appliance
     # centres below them.
     Furniture(uid="8T3D1P2QRV", tag="FURN-M-KIT-OVER-FRIDGE", type_ref="SEKT-TW30-30", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(31, 4.75)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(78))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(78)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(66.75),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
     Furniture(uid="Y4KJ6WB0ZC", tag="FURN-M-KIT-OVER-FREEZER", type_ref="SEKT-TW30-30", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(28, 10.75)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(78))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(78)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(36.75),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** THE COLD RUN'S STACKER COURSE IS GONE, AND THAT IS THE POINT (2026-09-11). **
     # FURN-M-KIT-OVER-FRIDGE-ST/-FREEZER-ST were two CASE-TS3278-12 at 96" closing a 21"
     # box to the ceiling. A 30" SEKTION wall frame hung at 78" lands on 108" by itself, so
@@ -535,7 +545,6 @@ MAIN_PLACEABLES = [
     # not a 120V toggle over a wet sink. Route isn't designed, so only the seven known part
     # numbers are modelled, billed through `[install_parts]`.
     Appliance(uid="ADCW7VPPC1", tag="APPL-M-DISP", type_ref="APPL-DISPOSAL", room="RM-M-LIVING",
-              position=pt(ft(29, 4), ft(35)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(14.5)),
               install_parts=("24V Class-2 control transformer, 40 VA",
                              "double-pole contactor, 30 A, 24V coil",
@@ -543,7 +552,10 @@ MAIN_PLACEABLES = [
                              "guarded illuminated toggle switch, 24V",
                              "momentary pushbutton, stainless, counter-top",
                              "2-gang low-voltage mounting ring and plate",
-                             "18/6 CL2 control cable, 50 ft")),
+                             "18/6 CL2 control cable, 50 ft"),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-N1", face="left", distance_from_start=inch(80),
+                  normal_gap=inch(1.875), rotation_offset=deg(-180)))),
     # Product: LG LDTS5552S (plan/appliance_types.py).
     # 23 3/4"x24 5/8" against the allowance's 24"x24" — the nominal-vs-actual quarter inch
     # a 24" cabinet opening already carries, so the run's arithmetic is unaffected.
@@ -555,11 +567,15 @@ MAIN_PLACEABLES = [
     # North wall uppers — ordered with the base run. Nothing over the sink
     # (the window's there), the pantry (already full height) or the corner filler.
     Furniture(uid="AQTQJBTXRR", tag="FURN-M-KIT-WE1", type_ref="SEKT-W15-40", room="RM-M-LIVING",
-              position=pt(ft(25, 2.5), ft(34, 9.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(53)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-N1", face="left", distance_from_start=inch(129.5),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="VKP909PNS6", tag="FURN-M-KIT-WE2", type_ref="SEKT-W24-40", room="RM-M-LIVING",
-              position=pt(ft(26, 10), ft(34, 9.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(53)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-N1", face="left", distance_from_start=inch(110),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** THE STACKER COURSE, NOW AT 93". ** The 40" uppers hung at 53" stop at 93" under a
     # 108" ceiling and the owner asked for them to reach it. 15" is the SHORTEST SEKTION
     # wall frame, so 93 + 15 = 108 lands exactly with no custom carcass — the same trick the
@@ -573,11 +589,15 @@ MAIN_PLACEABLES = [
     # -TS18-15, so every cabinet in this kitchen lands on 108" and there is no step anywhere
     # in the room.
     Furniture(uid="H3N6SVBPQY", tag="FURN-M-KIT-WE1-ST", type_ref="SEKT-W15-15", room="RM-M-LIVING",
-              position=pt(ft(25, 2.5), ft(34, 9.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-N1", face="left", distance_from_start=inch(129.5),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="PVRA77ZM2N", tag="FURN-M-KIT-WE2-ST", type_ref="SEKT-W24-15", room="RM-M-LIVING",
-              position=pt(ft(26, 10), ft(34, 9.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-N1", face="left", distance_from_start=inch(110),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** THE COURSE RUNS ACROSS THE SINK WINDOW (owner's call). ** The uppers below stop
     # either side of WIN-M-KITCH, but at 93" that no longer matters: the window's head is
     # 78" (sill 42" + WT-2736's 36"), so the stacker course clears it by 15" and there is
@@ -588,8 +608,10 @@ MAIN_PLACEABLES = [
     # up, so the band's joints land on the base joints below. One stock bridge box, no
     # filler.
     Furniture(uid="RSP5MTPXPM", tag="FURN-M-KIT-WE4-ST", type_ref="SEKT-W36-15", room="RM-M-LIVING",
-              position=pt(ft(29, 4), ft(34, 9.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-N1", face="left", distance_from_start=inch(80), normal_gap=inch(0),
+                  rotation_offset=deg(-180)))),
     # ** EAST FLANK, OVER FURN-M-KIT-E2. ** SEKT-W30-40 (E2's own width carried up) takes
     # x 30'-10"..33'-4", so the joint lands on the base joint below and stops 1" clear of
     # WIN-M-KITCH-N's RO at 33'-5".
@@ -599,11 +621,15 @@ MAIN_PLACEABLES = [
     # the corner filler that replaced FURN-M-KIT-WE3 — see the note below. Tags are
     # chronological here, not west-to-east — WE4-ST is the window stacker at 29'-4".
     Furniture(uid="2V68CXXCNR", tag="FURN-M-KIT-WE5", type_ref="SEKT-W30-40", room="RM-M-LIVING",
-              position=pt(ft(32, 1), ft(34, 9.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(53)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-N1", face="left", distance_from_start=inch(47), normal_gap=inch(0),
+                  rotation_offset=deg(-180)))),
     Furniture(uid="T0QD4C4KHD", tag="FURN-M-KIT-WE5-ST", type_ref="SEKT-W30-15",
-              room="RM-M-LIVING", position=pt(ft(32, 1), ft(34, 9.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(93)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-N1", face="left", distance_from_start=inch(47), normal_gap=inch(0),
+                  rotation_offset=deg(-180)))),
     # ** FURN-M-KIT-WE3 IS DELETED, AND THE 15" UPPER DEPTH IS WHY (2026-09-11). ** It was
     # a CASE-W12 hung at 66" over WIN-M-KITCH-N, in the 12 3/8" between FURN-M-KIT-E2's
     # east end (33'-4") and FURN-M-KIT-WN1's 13"-deep return (34'-4 3/8"). SEKTION's
@@ -686,11 +712,15 @@ MAIN_PLACEABLES = [
               position=pt(ft(34, 5.375), ft(22, 2.375)), rotation=deg(-90)),
     # Both to the ceiling with PANTRYC — see its note on the west run.
     Furniture(uid="4WFET9VXWK", tag="FURN-M-KIT-PANTRY-S1-ST", type_ref="SEKT-TS24-15", room="RM-M-LIVING",
-              position=pt(ft(34, 5.375), ft(24, 2.375)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(290.375),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="785R3FDGRK", tag="FURN-M-KIT-PANTRY-S2-ST", type_ref="SEKT-TS24-15", room="RM-M-LIVING",
-              position=pt(ft(34, 5.375), ft(22, 2.375)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(266.375),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # East wall uppers, 15" deep. With the peninsula, FURN-M-KIT-WN2
     # (which was over N2, at y 25'-5 3/8"..27'-11 3/8") is gone — the peninsula's east end
@@ -706,20 +736,28 @@ MAIN_PLACEABLES = [
     # It claims the inside corner, 15" deep to x=34'-2 3/8", which is the corner rule this
     # file's header states and is what deleted FURN-M-KIT-WE3.
     Furniture(uid="2BF9VM3SFA", tag="FURN-M-KIT-WN1", type_ref="SEKT-W30-40", room="RM-M-LIVING",
-              position=pt(ft(34, 9.875), ft(34, 2.375)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(68))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(68)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(410.375),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Recirculating canopy hood, 30" over the cooktop: mount 5'-6" on a 3' range. Moved north
     # with the range.
     Appliance(uid="Q0W3FYXJGX", tag="APPL-M-HOOD", type_ref="APPL-HOOD-RECIRC", room="RM-M-LIVING",
-              position=pt(ft(34, 7.375), ft(31, 8.375)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(380.375),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     # WN3 follows N3: 30" -> 24" and north to 29'-5 3/8", so upper and base share a face.
     Furniture(uid="DVWYR4A5J3", tag="FURN-M-KIT-WN3", type_ref="SEKT-W24-40", room="RM-M-LIVING",
-              position=pt(ft(34, 9.875), ft(29, 5.375)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(53)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(353.375),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="FTTPRYMZEH", tag="FURN-M-KIT-WN3-ST", type_ref="SEKT-W24-15", room="RM-M-LIVING",
-              position=pt(ft(34, 9.875), ft(29, 5.375)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(353.375),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** WN4 FILLS THE 15" THE GARAGE LEFT ** (owner's call): y 27'-2 3/8"..28'-5 3/8",
     # between FURN-M-KIT-MIXER-GARAGE's north face and WN3's south face, over the peninsula's
     # east end. 15" is a stock SEKTION wall width and is why this is a second box rather than
@@ -729,11 +767,15 @@ MAIN_PLACEABLES = [
     # 24" depth out to the uppers' 15" — which is what a tall cabinet beside uppers always
     # does.
     Furniture(uid="0J52FYZBY6", tag="FURN-M-KIT-WN4", type_ref="SEKT-W15-40", room="RM-M-LIVING",
-              position=pt(ft(34, 9.875), ft(27, 9.875)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(53)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(333.875),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="N8BZY1M8FA", tag="FURN-M-KIT-WN4-ST", type_ref="SEKT-W15-15", room="RM-M-LIVING",
-              position=pt(ft(34, 9.875), ft(27, 9.875)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(333.875),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # ** THE ISLAND BECAME A PENINSULA. ** The prior 5'x3' CASE-ISLAND-60 island's aisle to
     # the range front was 3'-5 3/8", against the 42" a work aisle wants. Landing the east
@@ -829,11 +871,15 @@ MAIN_PLACEABLES = [
     # The 40" frame goes on the BOTTOM: that is the bay the mixer slides out of at counter
     # level, and the pull-out and its two receptacles want the taller of the two.
     Furniture(uid="5T1VTCY3EV", tag="FURN-M-KIT-MIXER-GARAGE", type_ref="SEKT-TW24-40",
-              room="RM-M-LIVING", position=pt(ft(34, 5.375), ft(26, 2.375)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(314.375),
+                  normal_gap=inch(0), rotation_offset=deg(-90)))),
     Furniture(uid="34W6S0G5EX", tag="FURN-M-KIT-MIXER-GARAGE-UP", type_ref="SEKT-TW24-30",
-              room="RM-M-LIVING", position=pt(ft(34, 5.375), ft(26, 2.375)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(76))),
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(314.375),
+                  normal_gap=inch(0), rotation_offset=deg(-90)))),
 
     # --- RM-M-PANTRY (storeys/main.py) -----------------------------------
     # The shelf stack, wall face to wall face across the room's whole 70 1/4" clear span,
@@ -894,8 +940,10 @@ MAIN_PLACEABLES = [
     # that moves a face moves the rack with it on that axis — sweep both faces of every wall
     # you thicken, not just the room you are working in.
     Furniture(uid="XJSV712BWZ", tag="FURN-M-LAUNDRY-RACK", type_ref="FURN-WALL-RACK-24", room="RM-M-LAUNDRY",
-              position=pt(m(3.9124), m(5.882015)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-CLN", face="left", distance_from_start=inch(56.03125),
+                  normal_gap=inch(0), rotation_offset=deg(90)))),
 
     # --- RM-M-STUDY, the call booth -----------------------------------------------------
     #
@@ -953,31 +1001,47 @@ MAIN_PLACEABLES = [
     # y=10" (or x, on side walls) centres the rod 10" off the wall line: 6 1/2" finish face
     # + ~3 1/2" bracket projection. Each rod centres on its opening's RO centre.
     Furniture(uid="EYJ3ZHXFSF", tag="FURN-M-LIV-ROD-S1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
-              position=pt(m(9.7859), m(0.260305)), rotation=deg(180),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-S2", face="left", distance_from_start=inch(169.28125),
+                  normal_gap=inch(1.625), rotation_offset=deg(-180)))),
     Furniture(uid="WJTG6V6T09", tag="FURN-M-LIV-ROD-BALC", type_ref="FT-CURTAIN-ROD-84", room="RM-M-LIVING",
-              position=pt(ft(21, 10), ft(0, 10)), rotation=deg(180),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-C1", face="right", distance_from_start=inch(10),
+                  normal_gap=inch(0.625), rotation_offset=deg(90)))),
     Furniture(uid="2M12W07AGB", tag="FURN-M-LIV-ROD-E1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
-              position=pt(ft(35, 2), ft(4)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(48),
+                  normal_gap=inch(1.375), rotation_offset=deg(-180)))),
     Furniture(uid="94TRP24ZX6", tag="FURN-M-LIV-ROD-E2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
-              position=pt(m(10.7243), m(4.05294)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(159.5625),
+                  normal_gap=inch(1.15625), rotation_offset=deg(-180)))),
     # "Master bedroom" is read as RM-M-BED, the main-storey bedroom — not the second-storey
     # suite. Flag if that was the wrong room: the four rods move, nothing else does.
     Furniture(uid="BYYY8GG7E6", tag="FURN-M-BED-ROD-W1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
-              position=pt(ft(0, 10), ft(5, 4)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-W4", face="left", distance_from_start=inch(92),
+                  normal_gap=inch(1.375), rotation_offset=deg(-180)))),
     Furniture(uid="R4A47142RN", tag="FURN-M-BED-ROD-W2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
-              position=pt(ft(0, 10), ft(10, 8)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-W4", face="left", distance_from_start=inch(28),
+                  normal_gap=inch(1.375), rotation_offset=deg(-180)))),
     Furniture(uid="320A53KSR4", tag="FURN-M-BED-ROD-S1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
-              position=pt(ft(4), ft(0, 10)), rotation=deg(180),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-S1", face="left", distance_from_start=inch(48),
+                  normal_gap=inch(1.375), rotation_offset=deg(-180)))),
     Furniture(uid="9222FS9Q20", tag="FURN-M-BED-ROD-S2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
-              position=pt(m(4.54649), m(0.258555)), rotation=deg(180),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-S1", face="left", distance_from_start=inch(179),
+                  normal_gap=inch(1.53125), rotation_offset=deg(-180)))),
 
     # --- plumbing access panels ---------------------------------
     # FX-M-BATH1-WC is the house's one wall-hung WC: the china bolts to an in-wall carrier
@@ -995,8 +1059,10 @@ MAIN_PLACEABLES = [
     # the china standing in front of it. Base 2'-0", so the opening spans 2'-0"..4'-5" and
     # covers the actuator-plate opening, which sits 26 3/8" up the frame.
     Furniture(uid="RSDC92XMBB", tag="FURN-M-BATH1-AP", type_ref="FT-ACCESS-PANEL-1429", room="RM-M-BATH1",
-              position=pt(m(0.670778), inch(270.885)), rotation=deg(180),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(2))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(2), recessed_into_host_surface=True),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-HS1", face="left", distance_from_start=inch(26.40625),
+                  normal_gap=inch(-1), rotation_offset=deg(-180)))),
     # FX-M-BATH2-TUB drains at SP-M-BATH2-TUB (7'-4", 19'-4.8"), 8" off W-M-BA2E and
     # behind the tub rather than at either end of it — so the trap and the waste-and-
     # overflow are unreachable from BATH2 without pulling the tub. They are 8" the other
@@ -1004,8 +1070,10 @@ MAIN_PLACEABLES = [
     # W-M-BA2E at the drain's own y. Base at 6" puts the opening at 6"..1'-8", the band
     # the tee and trap occupy.
     Furniture(uid="1AQVMB4JJD", tag="FURN-M-BATH2-TUBDK-AP", type_ref="FT-ACCESS-PANEL-1414",
-              room="RM-M-BATH2", position=pt(ft(4, 3.5), ft(16, 10)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(3))),
+              room="RM-M-BATH2", mount=Mount(kind=MountKind.WALL, elevation=inch(3)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-TUBDK-W", face="right", distance_from_start=inch(62.625),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # --- RM-M-BATH2 over-toilet cabinet --------------------------
     # The room's only wall storage, on the only free wall left: W-M-HS1's bathroom face,
@@ -1020,8 +1088,10 @@ MAIN_PLACEABLES = [
     # notes/bath2_over_toilet_cabinet.md.
     Furniture(uid="N688X4AYJ4", tag="FURN-M-BATH2-CAB", type_ref="FT-BATH2-CAB-4506",
               room="RM-M-BATH2",
-              position=pt(inch(29.3175), inch(261.615)), rotation=deg(0),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-HS1", face="right", distance_from_start=inch(29.3125),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # --- porch enclosure track ------------------------------------
     # FOUR TRACK RUNS became THREE on 2026-09-22: one front run and two flanks. See
@@ -1124,8 +1194,10 @@ MAIN_PLACEABLES = [
     # RM-M-MUD-CLOSET: 63" of clear wall between x 6 5/8" and 5'-9 5/8", north wall
     # (W-M-MUDC-N, face y 29'-5 1/8"). A 60" run centres in it with 1 1/2" either side.
     Furniture(uid="1HYRGFZMA0", tag="FURN-M-MUDC-SHELF", type_ref="FT-CLOSET-SHELFROD-60",
-              room="RM-M-MUD-CLOSET", position=pt(m(0.96118), m(8.36092)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
+              room="RM-M-MUD-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(66)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-STOS", face="left", distance_from_start=inch(37.84375),
+                  normal_gap=inch(0.78125), rotation_offset=deg(0)))),
     # RM-M-CLOSET: 111 1/4" of clear wall on the north side (W-M-CLN/W-M-CLN2, face
     # y 17'-8 5/8"), measured from W-M-BA2E2's closet face at x=8'-5 3/8" to W-M-CLN2's end.
     # A 96" run leaves 6 5/8" west and 8 5/8" east — the walk-in's turn-in space, 2" of it
@@ -1133,8 +1205,10 @@ MAIN_PLACEABLES = [
     # 113 1/4" and a symmetric 8 5/8" both ends before that). The rod is not re-centred for
     # 2": moving it buys nothing anyone can stand in.
     Furniture(uid="TM01W8E003", tag="FURN-M-CLOSET-SHELF", type_ref="FT-CLOSET-SHELFROD-96",
-              room="RM-M-CLOSET", position=pt(inch(156), inch(204.625)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
+              room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(66)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-CLN", face="right", distance_from_start=inch(58),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 GARAGE_PLACEABLES = [
     # The 60"-wide work surface runs along the west wall directly below the infrared
@@ -1325,10 +1399,13 @@ SECOND_PLACEABLES = [
     # condenses on purpose has to be wet-location listed rather than the ordinary interior
     # sconce this shares with the study.
     ElectricalDevice(uid="QTS0020AAA", tag="ED-S-PLANT-SPOT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4, 2.125), ft(8, 6.375)), type_ref="ED-T-LT-SCONCE-SPOT-WET",
+                     type_ref="ED-T-LT-SCONCE-SPOT-WET",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-PS1", face="right", distance_from_start=inch(50.125),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # --- plumbing access panel ----------------------------------
     # FX-S-SUITEBATH-TUBSH's waste-and-overflow tee is at its north end, 1" off W-S-SN3 (the
@@ -1339,8 +1416,10 @@ SECOND_PLACEABLES = [
     # itself — no better than pulling the apron. Left for the ceiling below.
     # Neither fixture carries a `drain_position`; recheck this placement if one is authored.
     Furniture(uid="NHFPDD49RB", tag="FURN-S-SUITEBATH-AP", type_ref="FT-ACCESS-PANEL-1414", room="RM-S-HALL",
-              position=pt(ft(16, 4.5), ft(22, 6.375)), rotation=deg(180),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(0, 6))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(0, 6), recessed_into_host_surface=True),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-SN3", face="left", distance_from_start=inch(81),
+                  normal_gap=inch(-1.5), rotation_offset=deg(-180)))),
     # --- mechanical-shaft access panel --------------------------
     # The NW shaft (W-S-CH-W/CH-S) is the house's basement-to-attic pipe highway, not a
     # leftover corner: VR-M-RADON-VENT's 3" combined radon/plumbing riser stands in it at
@@ -1365,8 +1444,10 @@ SECOND_PLACEABLES = [
     # FX-S-BATH1-WC's clearance zone and the wall face — enough to kneel square to the
     # opening, and the FH-S-BATH1 mat stops at y 31'-3" so nobody kneels on it.
     Furniture(uid="7MW8644E5H", tag="FURN-S-BATH1-CH-AP", type_ref="FT-ACCESS-PANEL-1429", room="RM-S-BATH1",
-              position=pt(ft(1, 4), ft(32, 10.5)),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(2))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(2), recessed_into_host_surface=True),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-CH-S", face="left", distance_from_start=inch(17),
+                  normal_gap=inch(-0.5), rotation_offset=deg(-180)))),
 
     # ** THE AIR HANDLER'S SERVICE OPENING, AND THE OLD BOX HAD NOTHING LIKE IT. **
     # Until 2026-09-04 the only way into System 1's machine was REG-S-HP-RET's hinged
@@ -1395,14 +1476,18 @@ SECOND_PLACEABLES = [
     # RM-S-CLOSET: 94 3/4" of clear wall on the north side (W-S-CLN, face y 12'-2 5/8");
     # an 84" run leaves 5 3/8" either end clear of W-S-DC1's jamb.
     Furniture(uid="CMWJ7Q6Y7H", tag="FURN-S-CLOSET-SHELF", type_ref="FT-CLOSET-SHELFROD-84",
-              room="RM-S-CLOSET", position=pt(m(4.20401), m(3.01808)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
+              room="RM-S-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(66)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-PS2", face="left", distance_from_start=inch(50),
+                  normal_gap=inch(0.4375), rotation_offset=deg(0)))),
     # RM-S-NCLOSET is the odd one: 40 3/4" wide, so a 16" shelf plus a hang rod would leave
     # under 2' of standing room in front of it. It takes the 12"-deep LINEN shelf instead,
     # no rod — this closet is off the north hall and stores goods, not coats.
     Furniture(uid="XBBM4XVJ8Q", tag="FURN-S-NCLOSET-SHELF", type_ref="FT-CLOSET-SHELF-36",
-              room="RM-S-NCLOSET", position=pt(inch(239.75), inch(419.375)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
+              room="RM-S-NCLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(66)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-N1B", face="left", distance_from_start=inch(23.25),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 # The attic study uses the same compact work-and-meeting program as the second-storey
 # study, but the stair opening occupies the north side of the room.
@@ -1429,7 +1514,7 @@ SECOND_PLACEABLES = [
 #     clearance_conflict` is what settled that number.
 ATTIC_PLACEABLES = [
     Furniture(uid="P8A4CASE01", tag="FURN-A-STUDY-BUILTIN", type_ref="FT-A-STUDY-BUILTIN",
-              room="RM-A-STUDY", position=pt(ft(26, 7.0625), ft(9, 2.9375)),
+              room="RM-A-STUDY",
               location=Location(attachment=WallAttachment(
                   wall_ref="W-A-SN-REAR", face="right", distance_from_start=inch(52.0625)))),
     # y=4'-6" and not 5'-0": D-A-STUDY's leaf sweeps x 18'-8 7/8"..21'-2 7/8", y 6'-10" to

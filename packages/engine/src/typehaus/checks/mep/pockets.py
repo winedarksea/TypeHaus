@@ -19,6 +19,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.resolve.framing.pockets import pocket_segments
 from typehaus.resolve.geometry import length, sub, unit
+from typehaus.resolve.placeables import placed_xy
 
 _CID = "mep.pocket_occupancy"
 # A fastening or a box needs the wall's depth, so anything whose plan point lands within
@@ -106,8 +107,7 @@ def pocket_occupancy(ctx: CheckContext) -> list[Finding]:
             mount_kind = getattr(getattr(mount, "kind", None), "value", None)
             if mount_kind != "wall":
                 continue
-            position = getattr(element, "position", None)
-            xy = getattr(position, "xy_m", None)
+            xy = placed_xy(ctx.model, element)
             if xy is None or not Point(xy).within(band):
                 continue
             hits.append((element.tag, "recessed device" if getattr(

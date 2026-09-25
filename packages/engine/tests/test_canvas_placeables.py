@@ -625,7 +625,7 @@ def test_resolved_attachment_preserves_the_authored_wall_face() -> None:
     assert plan is not None
     furniture_type = FurnitureType(tag="F-ATTACHED", name="Attached shelf", footprint=(m(.6), m(.2)), height=m(.3))
     attached = Furniture(uid="ATTACHED001", tag="F-ATTACHED-1", type_ref="F-ATTACHED",
-                         position=pt(m(0), m(0)), location=Location(attachment=WallAttachment(
+                         location=Location(attachment=WallAttachment(
                              wall_ref="W-M-BAE", face="right", distance_from_start=m(1),
                          )))
     model, findings = resolve(plan.model_copy(update={

@@ -30,7 +30,7 @@ def _follower_ops(plan: PlanModel, storey: str, item: object,
     """Ops that carry ``item``'s followers to ``new_xy``, and every impact of the free move."""
     ops, impacts = _drain_follower_ops(plan, storey, item, new_xy)
     wall_ref = getattr(item, "wall_ref", None)
-    if wall_ref:
+    if wall_ref and getattr(item, "position", None) is not None:
         axis = _wall_axis(plan, storey, wall_ref)
         before = _segment_distance(*axis, item.position.xy_m) if axis is not None else 0.0
         after = _segment_distance(*axis, new_xy) if axis is not None else 0.0
@@ -149,6 +149,11 @@ def _drain_follower_ops(plan: PlanModel, storey: str, item: object,
         return [], [Impact(item.tag, "carried",
                            f"{item.tag} authors its drain_position, so its drain stays put")]
 
+    if item.position is None:
+        # A hosted fixture's centre is derived from its wall face; a plan-only macro
+        # cannot say where its drain was.
+        return [], [Impact(item.tag, "needs_review",
+                           f"{item.tag} left its wall; its drain followers stayed put")]
     old_xy = _convention_drain_point(plan, storey, item, item.position.xy_m)
     target_xy = _convention_drain_point(plan, storey, item, new_xy)
     if old_xy is None or target_xy is None:

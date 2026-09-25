@@ -24,6 +24,7 @@ from typehaus.resolve.room_floor import (
     room_floor_elevation,
 )
 from typehaus.resolve.room_lookup import axis_polygon
+from typehaus.resolve.wall_hosting import resolve_location
 
 _TYPE_COLLECTIONS = (
     ("furniture_types", "Furniture", "furniture"),
@@ -78,12 +79,11 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     "integrity.unknown_placeable_type", item.tag,
                     f"placeable {item.tag} references missing type {type_ref!r}"))
                 continue
-            center, rotation, attachment, attachment_face = _resolve_location(
-                item, product_type, model, findings)
+            local_footprint = _local_footprint(product_type, item)
+            center, rotation, attachment, attachment_face = resolve_location(
+                item, model, findings, local_footprint)
             if center is None:
                 continue
-            local_footprint = _local_footprint(product_type, item)
-            footprint = _transformed_polygon(local_footprint, center, rotation)
             resolved_room = _containing_room(room_shapes, center)
             explicit_room = getattr(item, "room", None)
             # Mount heights are measured off the FINISHED floor the thing stands on —
@@ -95,6 +95,17 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 storey, item, floor_m=floor, structural_floor_m=structural_floor,
                 soffit_underside_m=_soffit_underside(model, item))
             profile = _body_profile(product_type, item, floor, mount_elevation, local_footprint)
+            body_z0 = floor + profile.base_above_storey_floor_m
+            body_z1 = (body_z0 + profile.body_height_m
+                       if profile.body_height_m is not None else None)
+            if attachment is not None:
+                # Second pass: the finish face over the body's own band, not the tallest
+                # layer anywhere on the wall.
+                center, rotation, _, _ = resolve_location(
+                    item, model, findings, local_footprint,
+                    band=(body_z0, body_z1 if body_z1 is not None else body_z0))
+                resolved_room = _containing_room(room_shapes, center) or resolved_room
+            footprint = _transformed_polygon(local_footprint, center, rotation)
             profiles_by_uid[item.uid] = profile
             obstruction_by_uid[item.uid] = clear_floor_space_obstruction(profile)
             if (explicit_room is not None and explicit_room != resolved_room
@@ -110,7 +121,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 uid=item.uid, tag=item.tag, storey=storey.tag, domain=domain,
                 kind=item.element_kind, type_ref=type_ref,
                 room=explicit_room or resolved_room, position=center, rotation_degrees=rotation,
-                z_m=mount_elevation,
+                z_m=mount_elevation, body_z0_m=body_z0, body_z1_m=body_z1,
                 footprint=footprint,
                 required_clearances=tuple(ring for zone, ring in zones if _is_required(zone)),
                 recommended_clearances=tuple(
@@ -157,7 +168,10 @@ def _set_into_room_wall(item: object, room_tag: str, center: tuple[float, float]
     placeable pulled off its host, or one naming a wall on the far side of the house, fails
     the first test; one set into a wall of some other room fails the second.
     """
-    wall = model.wall(getattr(item, "wall_ref", None) or "")
+    location = getattr(item, "location", None)
+    attachment = getattr(location, "attachment", None)
+    ref = attachment.wall_ref if attachment is not None else getattr(item, "wall_ref", None)
+    wall = model.wall(ref or "")
     if wall is None:
         return False
     rings = [Polygon(layer.polygon) for layer in wall.layers if len(layer.polygon) >= 3]
@@ -300,56 +314,26 @@ def _local_depth_extent(local_footprint: list[tuple[float, float]]) -> float:
     return max(depths) - min(depths) if depths else 0.0
 
 
-def _resolve_location(
-    item: object, product_type: object | None, model: ResolvedModel,
-    findings: list[Finding],
-) -> tuple[tuple[float, float] | None, float, str | None, str | None]:
-    location = getattr(item, "location", None)
-    attachment = location.attachment if location is not None else None
-    rotation = _degrees(getattr(location, "rotation", None) if location is not None else None)
-    rotation = _degrees(getattr(item, "rotation", None)) if rotation == 0 else rotation
-    if attachment is None:
-        point = (location.position
-                 if location is not None and location.position is not None
-                 else getattr(item, "position", None))
-        return (point.xy_m if point is not None else None), rotation, None, None
-    wall = model.wall(attachment.wall_ref)
-    if wall is None:
-        findings.append(_finding(
-            "integrity.orphan_wall_attachment", item.tag,
-            f"placeable {item.tag} attaches to missing wall {attachment.wall_ref}"))
-        return None, rotation, attachment.wall_ref, attachment.face
-    (x0, y0), (x1, y1) = wall.axis
-    dx, dy = x1 - x0, y1 - y0
-    length = math.hypot(dx, dy)
-    if length < 1e-9:
-        findings.append(_finding("integrity.invalid_wall_attachment", item.tag,
-                                 f"placeable {item.tag} cannot attach to a zero-length wall"))
-        return None, rotation, wall.tag, attachment.face
-    tangent = (dx / length, dy / length)
-    left = (-tangent[1], tangent[0])
-    sign = 1 if attachment.face == "left" else -1
-    distance = max(0.0, min(length, attachment.distance_from_start.meters))
-    # Layer vertices encode the resolved finish assembly, so their extreme normal offset
-    # tracks thickness changes without storing a fragile authored wall-depth number.
-    offsets = [(point[0] - x0) * left[0] + (point[1] - y0) * left[1]
-               for layer in wall.layers for point in layer.polygon]
-    finish_offset = (max(offsets) if sign > 0 else min(offsets)) if offsets else 0.0
-    gap = attachment.normal_gap.meters
-    resolved_rotation = (math.degrees(math.atan2(tangent[1], tangent[0]))
-                         + _degrees(attachment.rotation_offset))
-    # Align the *nearest footprint edge*, not its center, to the resolved finish face.
-    # Project the rotated local polygon onto the wall's left-normal: left attachments use
-    # the minimum (wallward) edge; right attachments use the maximum edge.
-    radians = math.radians(resolved_rotation)
-    cos, sin = math.cos(radians), math.sin(radians)
-    normal_projections = [(px * cos - py * sin) * left[0] + (px * sin + py * cos) * left[1]
-                          for px, py in _local_footprint(product_type, item)]
-    wallward_edge = min(normal_projections) if sign > 0 else max(normal_projections)
-    center_offset = finish_offset + sign * gap - wallward_edge
-    return ((x0 + tangent[0] * distance + left[0] * center_offset,
-             y0 + tangent[1] * distance + left[1] * center_offset),
-            resolved_rotation, wall.tag, attachment.face)
+def placed_xy(model: ResolvedModel, element: object) -> tuple[float, float] | None:
+    """Plan (x, y) m where a placeable resolved: its wall-face centre when it is attached,
+    else its authored point. The one accessor for a placeable's position."""
+    objects = model.canvas_objects
+    cached = _PLACED.get(id(model))
+    if cached is None or cached[0] is not objects or cached[1] != len(objects):
+        cached = (objects, len(objects), {obj.uid: obj.position for obj in objects})
+        if len(_PLACED) > 8:
+            _PLACED.clear()  # a small memo, not a registry of every model ever resolved
+        _PLACED[id(model)] = cached
+    xy = cached[2].get(getattr(element, "uid", None))
+    if xy is not None:
+        return xy
+    location = getattr(element, "location", None)
+    point = getattr(location, "position", None) or getattr(element, "position", None)
+    return point.xy_m if point is not None else None
+
+
+#: id(model) -> (the canvas_objects list indexed, its length, uid -> position).
+_PLACED: dict[int, tuple[list, int, dict[str, tuple[float, float]]]] = {}
 
 
 def _local_footprint(product_type: object | None, item: object) -> list[tuple[float, float]]:

@@ -390,7 +390,7 @@ def _emit_registers_equipment_devices(f: Any, body: Any, model: ResolvedModel,
 def _emit_register(f: Any, body: Any, register: Any, storey: Any, storeys: dict[str, Any],
                    project_uuid: Any, product_type: Any | None, resolved: Any | None,
                    type_object: Any | None) -> None:
-    x, y = register.position.xy_m
+    x, y = resolved.position if resolved is not None else register.position.xy_m
     outline = resolved.footprint if resolved is not None else _rectangle(x, y, 0.10, 0.10)
     height = product_type.height.meters if product_type is not None else 0.05
     z0 = resolved.z_m if resolved is not None else storey.elevation.meters
@@ -459,7 +459,7 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
                     type_object: Any | None,
                     ifc_class: str = "IfcBuildingElementProxy") -> None:
     width, depth = (dim.meters for dim in equipment.footprint)
-    x, y = equipment.position.xy_m
+    x, y = resolved.position if resolved is not None else equipment.position.xy_m
     outline = resolved.footprint if resolved is not None else _rectangle(x, y, width, depth)
     height = product_type.height.meters if product_type is not None else 1.5
     z0 = resolved.z_m if resolved is not None else storey.elevation.meters
@@ -515,7 +515,7 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
 def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str, Any],
                  project_uuid: Any, product_type: Any | None, resolved: Any | None,
                  type_object: Any | None) -> Any:
-    x, y = device.position.xy_m
+    x, y = resolved.position if resolved is not None else device.position.xy_m
     half = 0.05  # 4"x4" nominal device box
     outline = resolved.footprint if resolved is not None else _rectangle(x, y, half * 2, half * 2)
     # The placeable resolver owns the Mount contract, so IFC reads the same elevation as
