@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from typehaus.checks._authoring import failed, not_applicable, passed, unknown
+from typehaus.checks._authoring import by_result
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy, Service
@@ -40,17 +40,6 @@ _SINK_REACH_M = 6 * 0.3048  # E3902.10: within 6' of the top inside edge of a si
 _PIERCE_TOL_M = 1 * 0.0254
 
 
-def _finding(cid: str, result: Result, message: str, tags: tuple[str, ...],
-             code: str, fix: str | None = None) -> Finding:
-    if result is Result.NOT_APPLICABLE:
-        return not_applicable(cid, message, tags, code=code)
-    if result is Result.PASS:
-        return passed(cid, message, tags, code=code)
-    if result is Result.UNKNOWN:
-        return unknown(cid, message, tags, code=code, fix=fix)
-    return failed(cid, message, tags, code=code, fix=fix)
-
-
 @check(Tier.CODE, "code.E3902_gfci_locations")
 def gfci_locations(ctx: CheckContext) -> list[Finding]:
     """E3902 — every receptacle in a wet, outdoor or below-grade location is GFCI-protected.
@@ -77,7 +66,7 @@ def gfci_locations(ctx: CheckContext) -> list[Finding]:
                     and _counts_as_a_125v_receptacle(ctx, element)):
                 devices.append((element, storey.tag))
     if not devices:
-        return [_finding(cid, Result.UNKNOWN, "no 125V receptacles are modeled", (), code)]
+        return [by_result(cid, Result.UNKNOWN, "no 125V receptacles are modeled", (), code)]
     # Circuits are schedule data in the library, not storey elements — they have no
     # position and never appear in an element list.
     circuits = {c.tag: c for c in ctx.plan.library.circuits}
@@ -102,31 +91,31 @@ def gfci_locations(ctx: CheckContext) -> list[Finding]:
             continue
         tags = (device.tag,) + ((room.tag,) if room is not None else ())
         if device.kind.value == "gfci":
-            out.append(_finding(cid, Result.PASS,
-                                f"{device.tag} is a GFCI device — {reason}", (), code))
+            out.append(by_result(cid, Result.PASS,
+                                 f"{device.tag} is a GFCI device — {reason}", (), code))
             continue
         circuit = circuits.get(device.circuit) if device.circuit else None
         if circuit is None:
-            out.append(_finding(cid, Result.UNKNOWN,
-                                f"{device.tag} requires GFCI protection — {reason} — and "
-                                "names no circuit, so breaker protection cannot be "
-                                "confirmed", tags, code,
-                                "assign the device to a circuit, or make it a GFCI device"))
+            out.append(by_result(cid, Result.UNKNOWN,
+                                 f"{device.tag} requires GFCI protection — {reason} — and "
+                                 "names no circuit, so breaker protection cannot be "
+                                 "confirmed", tags, code,
+                                 "assign the device to a circuit, or make it a GFCI device"))
         elif getattr(circuit, "gfci", False):
-            out.append(_finding(cid, Result.PASS,
-                                f"{device.tag} is protected by GFCI breaker "
-                                f"{circuit.tag} — {reason}", (), code))
+            out.append(by_result(cid, Result.PASS,
+                                 f"{device.tag} is protected by GFCI breaker "
+                                 f"{circuit.tag} — {reason}", (), code))
         else:
-            out.append(_finding(cid, Result.FAIL,
-                                f"{device.tag} requires GFCI protection — {reason} — but is "
-                                f"an ordinary receptacle on non-GFCI circuit {circuit.tag}",
-                                tags, code,
-                                "make it a RECEPTACLE_GFCI device, or set gfci=True on "
-                                f"{circuit.tag}"))
+            out.append(by_result(cid, Result.FAIL,
+                                 f"{device.tag} requires GFCI protection — {reason} — but is "
+                                 f"an ordinary receptacle on non-GFCI circuit {circuit.tag}",
+                                 tags, code,
+                                 "make it a RECEPTACLE_GFCI device, or set gfci=True on "
+                                 f"{circuit.tag}"))
     if not out:
-        return [_finding(cid, Result.PASS, "no receptacle sits in an E3902 location "
-                         "(bath, kitchen, garage, laundry, outdoors, unfinished basement, "
-                         "or within 6' of a sink)", (), code)]
+        return [by_result(cid, Result.PASS, "no receptacle sits in an E3902 location "
+                          "(bath, kitchen, garage, laundry, outdoors, unfinished basement, "
+                          "or within 6' of a sink)", (), code)]
     return out
 
 
@@ -324,7 +313,7 @@ def afci_branch_circuits(ctx: CheckContext) -> list[Finding]:
     cid, code = "code.E3902_16_afci", "E3902.16"
     circuits = {c.tag: c for c in ctx.plan.library.circuits}
     if not circuits:
-        return [_finding(cid, Result.UNKNOWN, "the plan states no circuits", (), code)]
+        return [by_result(cid, Result.UNKNOWN, "the plan states no circuits", (), code)]
 
     rooms: dict[str, list] = {}
     for room in ctx.model.rooms:
@@ -356,24 +345,24 @@ def afci_branch_circuits(ctx: CheckContext) -> list[Finding]:
         occupancies = served.get(tag, set())
         if not occupancies:
             if tag in unplaced:
-                out.append(_finding(cid, Result.UNKNOWN,
-                                    f"{tag} feeds {', '.join(sorted(unplaced[tag]))}, none of "
-                                    "which resolves to a room, so whether E3902.16 reaches "
-                                    "it cannot be decided", (tag,), code))
+                out.append(by_result(cid, Result.UNKNOWN,
+                                     f"{tag} feeds {', '.join(sorted(unplaced[tag]))}, none of "
+                                     "which resolves to a room, so whether E3902.16 reaches "
+                                     "it cannot be decided", (tag,), code))
             continue
         habitable = occupancies & _AFCI_OCCUPANCIES
         if not habitable:
             continue
         where = ", ".join(sorted(habitable))
         if getattr(circuit, "afci", False):
-            out.append(_finding(cid, Result.PASS, f"{tag} is AFCI-protected ({where})",
-                                (), code))
+            out.append(by_result(cid, Result.PASS, f"{tag} is AFCI-protected ({where})",
+                                 (), code))
         else:
-            out.append(_finding(cid, Result.FAIL,
-                                f"{tag} serves {where} space and is not AFCI-protected",
-                                (tag,), code,
-                                f"set afci=True on {tag} in the circuit schedule"))
+            out.append(by_result(cid, Result.FAIL,
+                                 f"{tag} serves {where} space and is not AFCI-protected",
+                                 (tag,), code,
+                                 f"set afci=True on {tag} in the circuit schedule"))
     if not out:
-        return [_finding(cid, Result.PASS, "no circuit serves a room E3902.16 covers",
-                         (), code)]
+        return [by_result(cid, Result.PASS, "no circuit serves a room E3902.16 covers",
+                          (), code)]
     return out

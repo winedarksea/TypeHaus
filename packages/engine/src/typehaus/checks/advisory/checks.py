@@ -6,27 +6,14 @@ individually suppressible in preferences.toml.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import advisory_fail, passed
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding
 from typehaus.resolve.placeables import placed_xy
 
-
-def _warn(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
-
-
-def _note(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    """A finding that reports a *fact* the reader should know, not a verdict against them.
-
-    Same WARN severity and the same words as ``_warn`` — it still prints, and the advice is
-    the point — but a passing result, because there is nothing here to fix. A check that
-    cannot pass (a house always has more than one window size; a wood floor over radiant is
-    always temperature-limited) contributes a permanent failure to the tally, and a fail
-    count nobody can drive to zero is a fail count nobody reads.
-    """
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.PASS)
+# A red here is ``advisory_fail`` (WARN + FAIL, never a permit blocker); a fact the reader
+# should know, with nothing to fix, is ``passed`` — a fail count nobody can drive to zero
+# is a fail count nobody reads.
 
 
 @check(Tier.ADVISORY, "advisory.habitable_window")
@@ -40,9 +27,9 @@ def habitable_room_window(ctx: CheckContext) -> list[Finding]:
     has_window = any(not op.is_door for op in ctx.model.openings)
     for room in (e for e in ctx.plan.all_elements() if e.element_kind == "Room"):
         if room.occupancy in habitable and not has_window:
-            out.append(_warn("advisory.habitable_window",
-                             f"habitable room {room.tag} appears to have no window — "
-                             "consider natural light/ventilation", (room.tag,)))
+            out.append(advisory_fail("advisory.habitable_window",
+                                     f"habitable room {room.tag} appears to have no window — "
+                                     "consider natural light/ventilation", (room.tag,)))
     return out
 
 
@@ -58,9 +45,9 @@ def window_size_variety(ctx: CheckContext) -> list[Finding]:
         return []
     hist = ", ".join(f"{w*39.37:.0f}x{h*39.37:.0f}\"×{n}" for (w, h), n in sizes.items())
     total = sum(sizes.values())
-    return [_note("advisory.window_size_variety",
-                  f"{len(sizes)} unique window sizes across {total} windows — fewer eases "
-                  f"ordering ({hist})")]
+    return [passed("advisory.window_size_variety",
+                   f"{len(sizes)} unique window sizes across {total} windows — fewer eases "
+                   f"ordering ({hist})")]
 
 
 @check(Tier.ADVISORY, "advisory.control_continuity")
@@ -76,9 +63,9 @@ def control_layer_continuity(ctx: CheckContext) -> list[Finding]:
             _matches(t.condition_pattern, cond.key) and t.continuity for t in transitions
         )
         if not declared:
-            out.append(_warn("advisory.control_continuity",
-                             f"control-layer continuity not declared across {cond.key}",
-                             cond.element_tags))
+            out.append(advisory_fail("advisory.control_continuity",
+                                     f"control-layer continuity not declared across {cond.key}",
+                                     cond.element_tags))
     return out
 
 
@@ -96,13 +83,14 @@ def wet_wall_depth(ctx: CheckContext) -> list[Finding]:
         if fixture_type is None or Service.DRAIN not in fixture_type.needs:
             continue
         if fixture.wall_ref is None:
-            out.append(_warn("advisory.wet_wall_depth",
-                             f"drain fixture {fixture.tag} has no wall_ref for a service chase",
-                             (fixture.tag,)))
+            out.append(advisory_fail(
+                "advisory.wet_wall_depth",
+                f"drain fixture {fixture.tag} has no wall_ref for a service chase",
+                (fixture.tag,)))
             continue
         wall = ctx.model.wall(fixture.wall_ref)
         if wall is None:
-            out.append(_warn(
+            out.append(advisory_fail(
                 "advisory.wet_wall_depth",
                 f"drain fixture {fixture.tag} references missing wall {fixture.wall_ref}",
                 (fixture.tag, fixture.wall_ref)))
@@ -110,7 +98,7 @@ def wet_wall_depth(ctx: CheckContext) -> list[Finding]:
         structure = next((layer for layer in wall.layers if layer.function == "structure"), None)
         if structure is None or structure.thickness_m + 1e-9 < required:
             actual = structure.thickness_m / 0.0254 if structure is not None else 0.0
-            out.append(_warn(
+            out.append(advisory_fail(
                 "advisory.wet_wall_depth",
                 f"drain fixture {fixture.tag} uses {fixture.wall_ref} with "
                 f"{actual:.1f}\" structure; "
@@ -126,9 +114,10 @@ def fixture_room_unassigned(ctx: CheckContext) -> list[Finding]:
     saying out loud. A drag that lands a fixture outside every resolvable room stays
     loadable and keeps its authored position; the gap is reported here, not at import
     time."""
-    return [_warn("advisory.fixture_room_unassigned",
-                  f"fixture {obj.tag} is in no room — the fixture schedule needs one; move it "
-                  "inside a room or extend the room boundary", (obj.tag,))
+    return [advisory_fail(
+                "advisory.fixture_room_unassigned",
+                f"fixture {obj.tag} is in no room — the fixture schedule needs one; move it "
+                "inside a room or extend the room boundary", (obj.tag,))
             for obj in ctx.model.canvas_objects
             if obj.kind == "Fixture" and obj.room is None]
 
@@ -154,7 +143,7 @@ def floor_heat_fixture_keepout(ctx: CheckContext) -> list[Finding]:
             if fixture.storey != zone.storey:
                 continue
             if zone_polygon.intersects(Polygon(fixture.footprint)):
-                out.append(_warn(
+                out.append(advisory_fail(
                     "advisory.floor_heat_fixture_keepout",
                     f"floor-heat zone {zone.tag} overlaps fixture {fixture.tag}; "
                     "exclude the fixture footprint from the heating loop",
@@ -220,7 +209,7 @@ def floor_finish_over_radiant(ctx: CheckContext) -> list[Finding]:
                     continue
                 # A note, not a verdict — the docstring above says every one of these pairings
                 # is a legal one people build, and a commissioning constraint is not a defect.
-                out.append(_note(
+                out.append(passed(
                     "advisory.floor_finish_over_radiant",
                     f"floor-heat zone {zone.tag} runs under {room.tag}'s "
                     f"{finish} floor: {reason}",
@@ -285,7 +274,7 @@ def fixture_overlap(ctx: CheckContext) -> list[Finding]:
             other_shape = Polygon(other.footprint)
             if key not in reported and source_shape.intersection(other_shape).area > 1e-3:
                 reported.add(key)
-                out.append(_warn(
+                out.append(advisory_fail(
                     "advisory.fixture_overlap",
                     f"fixtures {key[0]} and {key[1]} overlap in {source.room}; "
                     "separate their footprints", key))
@@ -293,7 +282,7 @@ def fixture_overlap(ctx: CheckContext) -> list[Finding]:
             if any(Polygon(zone).intersection(other_shape).area > 1e-3
                    for zone in source.required_clearances) and zone_key not in reported:
                 reported.add(zone_key)
-                out.append(_warn(
+                out.append(advisory_fail(
                     "advisory.fixture_overlap",
                     f"required clearance zone of {source.tag} holds fixture {other.tag} "
                     f"in {source.room}; keep the code clearance clear",
@@ -350,7 +339,7 @@ def clearance_overlap(ctx: CheckContext) -> list[Finding]:
             key = tuple(sorted((source.tag, other.tag)))
             if zone.intersects(other_box) and key not in reported:
                 reported.add(key)
-                out.append(_warn(
+                out.append(advisory_fail(
                     "advisory.clearance_overlap",
                     f"declared clearance for {source.tag} overlaps {other.tag}; "
                     "review the use zone",
@@ -439,7 +428,7 @@ def cladding_side_mismatch(ctx: CheckContext) -> list[Finding]:
             if len(hands) != 2 or min(abs(h) for h in hands) < 1e-9:
                 continue
             if hands[0] * hands[1] < 0.0:
-                out.append(_warn(
+                out.append(advisory_fail(
                     "advisory.cladding_side_mismatch",
                     f"{tag_a} and {tag_b} meet at {node} but their cladding faces opposite "
                     "sides of the run — one of them is authored end-to-start, so its layer "

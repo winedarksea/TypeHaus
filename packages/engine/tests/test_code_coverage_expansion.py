@@ -594,7 +594,7 @@ def test_afci_passes_a_protected_circuit_and_fails_an_unprotected_one():
                 library=SimpleNamespace(circuits=[circuit]),
                 storeys=[SimpleNamespace(tag="main", elevation=ft(0))],
                 storey_elements=lambda tag: [device] if tag == "main" else []),
-            model=SimpleNamespace(rooms=[room]),
+            model=SimpleNamespace(rooms=[room], canvas_objects=[]),
         )
 
     assert _results(afci_branch_circuits(_ctx(True))) == [Result.PASS]
@@ -626,7 +626,7 @@ def test_afci_does_not_reach_a_240v_or_oversized_circuit():
                 library=SimpleNamespace(circuits=[circuit]),
                 storeys=[SimpleNamespace(tag="main", elevation=ft(0))],
                 storey_elements=lambda tag: [device] if tag == "main" else []),
-            model=SimpleNamespace(rooms=[room]),
+            model=SimpleNamespace(rooms=[room], canvas_objects=[]),
         )
 
     # 240V, and a 120V circuit over 20A: both out of scope, so neither is reported at all.
@@ -715,7 +715,7 @@ def test_water_heater_relief_fails_a_discharge_that_rises():
     from typehaus.quantities import pt
 
     def _ctx(z_profile):
-        heater = SimpleNamespace(element_kind="Equipment", tag="EQ-WH",
+        heater = SimpleNamespace(element_kind="Equipment", tag="EQ-WH", uid="EQWH",
                                  kind=EquipmentKind.WATER_HEATER,
                                  position=pt(ft(1), ft(1)), storey="basement",
                                  relief_discharge_ref="PR-TPR", drain_pan=False)
@@ -727,7 +727,7 @@ def test_water_heater_relief_fails_a_discharge_that_rises():
             plan=SimpleNamespace(all_elements=lambda: [heater],
                                  storey_elements=lambda tag: [heater],
                                  storeys=[SimpleNamespace(tag="basement", elevation=ft(0))]),
-            model=SimpleNamespace(pipe_runs=[run], solids=[slab], rooms=[]),
+            model=SimpleNamespace(pipe_runs=[run], solids=[slab], rooms=[], canvas_objects=[]),
         )
 
     # Drains downhill and terminates 12" above the floor.
@@ -750,7 +750,7 @@ def test_water_heater_relief_is_unknown_when_no_discharge_is_named():
     from typehaus.model.enums import EquipmentKind
     from typehaus.quantities import pt
 
-    heater = SimpleNamespace(element_kind="Equipment", tag="EQ-WH",
+    heater = SimpleNamespace(element_kind="Equipment", tag="EQ-WH", uid="EQWH",
                              kind=EquipmentKind.WATER_HEATER, position=pt(ft(1), ft(1)),
                              storey="basement", relief_discharge_ref=None, drain_pan=False)
     ctx = SimpleNamespace(

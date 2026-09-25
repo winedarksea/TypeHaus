@@ -19,7 +19,7 @@ or below the floor fails.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import failed, not_applicable, passed, unknown
+from typehaus.checks._authoring import by_result
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import EquipmentKind
@@ -37,16 +37,6 @@ _DISCHARGE = "MN Plumbing Code (ch. 4714) 608.5"
 _PAN = "MN Plumbing Code (ch. 4714) 507.5"
 
 
-def _finding(cid, result, message, tags, code, fix=None) -> Finding:
-    if result is Result.NOT_APPLICABLE:
-        return not_applicable(cid, message, tags, code=code)
-    if result is Result.PASS:
-        return passed(cid, message, tags, code=code)
-    if result is Result.UNKNOWN:
-        return unknown(cid, message, tags, code=code, fix=fix)
-    return failed(cid, message, tags, code=code, fix=fix)
-
-
 @check(Tier.CODE, "code.MN_4714_0608_water_heater_relief")
 def water_heater_relief(ctx: CheckContext) -> list[Finding]:
     """UPC 608.5 — every water heater's relief valve discharges through an unobstructed pipe."""
@@ -54,7 +44,7 @@ def water_heater_relief(ctx: CheckContext) -> list[Finding]:
     heaters = [e for e in ctx.plan.all_elements()
                if e.element_kind == "Equipment" and e.kind is EquipmentKind.WATER_HEATER]
     if not heaters:
-        return [_finding(cid, Result.UNKNOWN, "no water heater is modeled", (), code)]
+        return [by_result(cid, Result.UNKNOWN, "no water heater is modeled", (), code)]
     runs = {r.tag: r for r in ctx.model.pipe_runs}
     storeys = {s.tag: s for s in ctx.plan.storeys}
 
@@ -62,18 +52,18 @@ def water_heater_relief(ctx: CheckContext) -> list[Finding]:
     for heater in heaters:
         ref = heater.relief_discharge_ref
         if ref is None:
-            out.append(_finding(cid, Result.UNKNOWN,
-                                f"{heater.tag} names no relief_discharge_ref, so the TPR "
-                                "discharge required by UPC 608.5 is not modeled",
-                                (heater.tag,), _DISCHARGE,
-                                "author the discharge as a PipeRun and name it on the "
-                                "heater"))
+            out.append(by_result(cid, Result.UNKNOWN,
+                                 f"{heater.tag} names no relief_discharge_ref, so the TPR "
+                                 "discharge required by UPC 608.5 is not modeled",
+                                 (heater.tag,), _DISCHARGE,
+                                 "author the discharge as a PipeRun and name it on the "
+                                 "heater"))
             continue
         run = runs.get(ref)
         if run is None:
-            out.append(_finding(cid, Result.FAIL,
-                                f"{heater.tag} names relief discharge {ref}, which resolves "
-                                "to no pipe run", (heater.tag, ref), _DISCHARGE))
+            out.append(by_result(cid, Result.FAIL,
+                                 f"{heater.tag} names relief discharge {ref}, which resolves "
+                                 "to no pipe run", (heater.tag, ref), _DISCHARGE))
             continue
         elevations = list(run.z_m) if run.z_m else [run.z_start_m, run.z_end_m]
         # strict=False: an offset pairwise walk down the run's elevations — the second
@@ -81,49 +71,49 @@ def water_heater_relief(ctx: CheckContext) -> list[Finding]:
         rises = [(b - a) for a, b in zip(elevations, elevations[1:], strict=False)
                  if b - a > _RISE_TOLERANCE_M]
         if rises:
-            out.append(_finding(cid, Result.FAIL,
-                                f"{heater.tag}'s relief discharge {ref} rises "
-                                f"{max(rises) / .0254:.1f}\" along its run; UPC 608.5 "
-                                "requires it to drain by gravity with no trap",
-                                (heater.tag, ref), _DISCHARGE))
+            out.append(by_result(cid, Result.FAIL,
+                                 f"{heater.tag}'s relief discharge {ref} rises "
+                                 f"{max(rises) / .0254:.1f}\" along its run; UPC 608.5 "
+                                 "requires it to drain by gravity with no trap",
+                                 (heater.tag, ref), _DISCHARGE))
             continue
         storey = storeys.get(_storey_of(ctx, heater.tag))
         floor = storey.elevation.meters if storey else None
         if floor is None:
-            out.append(_finding(cid, Result.PASS,
-                                f"{heater.tag}'s relief discharge {ref} drains downhill "
-                                "(termination height unmeasured: no storey datum)",
-                                (), _DISCHARGE))
+            out.append(by_result(cid, Result.PASS,
+                                 f"{heater.tag}'s relief discharge {ref} drains downhill "
+                                 "(termination height unmeasured: no storey datum)",
+                                 (), _DISCHARGE))
             continue
         above_floor = elevations[-1] - floor
         if 0.0 < above_floor <= _MAX_TERMINATION.meters:
-            out.append(_finding(cid, Result.PASS,
-                                f"{heater.tag}'s relief discharge {ref} drains downhill and "
-                                f"terminates {above_floor / .0254:.0f}\" above the floor",
-                                (), _DISCHARGE))
+            out.append(by_result(cid, Result.PASS,
+                                 f"{heater.tag}'s relief discharge {ref} drains downhill and "
+                                 f"terminates {above_floor / .0254:.0f}\" above the floor",
+                                 (), _DISCHARGE))
         else:
-            out.append(_finding(cid, Result.FAIL,
-                                f"{heater.tag}'s relief discharge {ref} terminates "
-                                f"{above_floor / .0254:.0f}\" above the floor; Minn. R. "
-                                "4714.0608 (UPC 608.5(3)) requires an air gap within 18\" "
-                                "of the floor", (heater.tag, ref), _DISCHARGE))
+            out.append(by_result(cid, Result.FAIL,
+                                 f"{heater.tag}'s relief discharge {ref} terminates "
+                                 f"{above_floor / .0254:.0f}\" above the floor; Minn. R. "
+                                 "4714.0608 (UPC 608.5(3)) requires an air gap within 18\" "
+                                 "of the floor", (heater.tag, ref), _DISCHARGE))
 
         # UPC 507.5: a pan wherever a leak damages what is below. A heater standing on a slab
         # has nothing below it to damage, which is why this is conditional rather than
         # universal — and it is the one part of the rule that needs the building, not the
         # appliance.
         if _stands_on_slab(ctx, heater):
-            out.append(_finding(cid, Result.PASS,
-                                f"{heater.tag} stands on a slab — UPC 507.5 requires no pan",
-                                (), _PAN))
+            out.append(by_result(cid, Result.PASS,
+                                 f"{heater.tag} stands on a slab — UPC 507.5 requires no pan",
+                                 (), _PAN))
         elif heater.drain_pan:
-            out.append(_finding(cid, Result.PASS, f"{heater.tag} sits in a drain pan",
-                                (), _PAN))
+            out.append(by_result(cid, Result.PASS, f"{heater.tag} sits in a drain pan",
+                                 (), _PAN))
         else:
-            out.append(_finding(cid, Result.FAIL,
-                                f"{heater.tag} sits over occupied space with no drain pan; "
-                                "UPC 507.5 requires one where a leak causes damage",
-                                (heater.tag,), _PAN))
+            out.append(by_result(cid, Result.FAIL,
+                                 f"{heater.tag} sits over occupied space with no drain pan; "
+                                 "UPC 507.5 requires one where a leak causes damage",
+                                 (heater.tag,), _PAN))
     return out
 
 

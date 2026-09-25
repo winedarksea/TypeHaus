@@ -17,8 +17,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from typehaus.checks._authoring import by_result
 from typehaus.checks.mep.electrical_code import (
-    _finding,
     _pierces_a_wall,
     _room_of,
     _wall_barrier,
@@ -85,7 +85,7 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
     bathrooms = {room.tag: room for room in ctx.model.rooms
                  if room.occupancy == Occupancy.BATHROOM.value}
     basins, unclassified = _basins(ctx, bathrooms)
-    unstated = [_finding(
+    unstated = [by_result(
         cid, Result.UNKNOWN,
         f"{obj.tag} stands in a bathroom and nothing says whether it is a lavatory basin — "
         f"{type_ref} states no `basin` and its plan symbol ({symbol or 'none'}) is in "
@@ -98,8 +98,8 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
             return unstated
         # N/A is EARNED here: every fixture in every bathroom was classified, and none of
         # them is a basin.
-        return [_finding(cid, Result.NOT_APPLICABLE,
-                         "no lavatory basin is modeled in any bathroom", (), code)]
+        return [by_result(cid, Result.NOT_APPLICABLE,
+                          "no lavatory basin is modeled in any bathroom", (), code)]
 
     rooms: dict[str, list] = {}
     for room in ctx.model.rooms:
@@ -130,7 +130,7 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
                 continue
             where = _location_branch(obj, carcass, wall_bands.get(obj.storey, ()))
             if where is None:
-                out.append(_finding(
+                out.append(by_result(
                     cid, Result.UNKNOWN,
                     f"{obj.tag} is {_inches(distance)} from {basin.tag} and stands over "
                     "neither a wall nor open floor, so 210.52(D)'s cabinet-face branch "
@@ -142,15 +142,15 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
             if best is None or distance < best[0]:
                 best = (distance, obj, where)
         if best is not None and best[2]:
-            out.append(_finding(
+            out.append(by_result(
                 cid, Result.PASS,
                 f"{basin.tag} is served by {best[1].tag} at {_inches(best[0])} "
                 f"({best[2]})", (), code))
         elif best is None:
-            out.append(_finding(cid, Result.FAIL, _fail_message(basin, rejected),
-                                (basin.tag, basin_room.tag), code,
-                                "add a 125V receptacle on the wall beside "
-                                f"{basin.tag}, within 36\" of its edge"))
+            out.append(by_result(cid, Result.FAIL, _fail_message(basin, rejected),
+                                 (basin.tag, basin_room.tag), code,
+                                 "add a 125V receptacle on the wall beside "
+                                 f"{basin.tag}, within 36\" of its edge"))
     return out
 
 
