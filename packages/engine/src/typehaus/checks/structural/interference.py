@@ -224,7 +224,7 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
 def _within_wall_pairs(plan) -> set[tuple[str, str]]:
     """``(post tag, wall uid)`` pairs the author declared with ``Post.within_wall``.
 
-    A full-height timber standing in a wall's stud line (the suite's tudor posts) has the
+    A timber standing in a wall's stud line (the suite's tudor posts) has the
     plates and studs cut around it — joinery the box IR cannot express, so the post reads
     as sharing volume with that wall's framing for its whole height. The clearance is
     authored, never guessed: only the named wall's members are cleared, so the same post

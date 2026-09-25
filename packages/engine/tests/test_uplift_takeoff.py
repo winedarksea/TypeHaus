@@ -522,7 +522,10 @@ def test_the_wall_runs_are_strapped_not_only_the_corners(catlin_model_ro) -> Non
     assert row["part_number"] == "CS16"
     assert row["unit"] == "coil", "strapping is bought by the coil, not the piece"
     assert "8 at stacked framed-exterior corners" in row["basis"]
-    assert "64 along the runs between them at 4 ft o.c." in row["basis"]
+    # 64 -> 65 on 2026-09-25: a wall counts as framed on a king or corner as well as a
+    # stud. W-S-W3 gave its last module studs to the tudor posts and kept its 3; W-M-N3,
+    # all jamb packs, had never been counted and gained its 1.
+    assert "65 along the runs between them at 4 ft o.c." in row["basis"]
     # The purchasable count is coils; the straps they are cut into stay in the basis.
     assert row["count"] == row["coils"] == 2
     assert row["length_ft"] > 0

@@ -29685,27 +29685,27 @@
 ],
 "geometry/CSK901AAAA/body": [
 3.06705,
-5.7912,
+5.715,
 2,
-"55a46047b513"
+"304e3fd399d1"
 ],
 "geometry/CSK902AAAA/body": [
 3.06705,
-5.7912,
+5.715,
 2,
-"55a46047b513"
+"304e3fd399d1"
 ],
 "geometry/CSK903AAAA/body": [
 3.06705,
-5.7912,
+5.715,
 2,
-"55a46047b513"
+"304e3fd399d1"
 ],
 "geometry/CSK904AAAA/body": [
 3.06705,
-5.7912,
+5.715,
 2,
-"55a46047b513"
+"304e3fd399d1"
 ],
 "geometry/CSP901AAAA-run/body": [
 5.8420002,
@@ -36715,7 +36715,31 @@
 8,
 "8dde2059c226"
 ],
-"geometry/CSW112AAAA::framing/member:plate-bottom": [
+"geometry/CSW112AAAA::framing/member:plate-bottom-0": [
+3.048,
+3.0861,
+8,
+"a5ef254b6050"
+],
+"geometry/CSW112AAAA::framing/member:plate-bottom-1": [
+3.048,
+3.0861,
+8,
+"a5ef254b6050"
+],
+"geometry/CSW112AAAA::framing/member:plate-bottom-2": [
+3.048,
+3.0861,
+8,
+"a5ef254b6050"
+],
+"geometry/CSW112AAAA::framing/member:plate-bottom-3": [
+3.048,
+3.0861,
+8,
+"a5ef254b6050"
+],
+"geometry/CSW112AAAA::framing/member:plate-bottom-4": [
 3.048,
 3.0861,
 8,
@@ -36816,30 +36840,6 @@
 6.11505,
 8,
 "8669e34b3b2a"
-],
-"geometry/CSW112AAAA::framing/member:stud-000": [
-3.0861,
-5.715,
-8,
-"50ef2552dcd5"
-],
-"geometry/CSW112AAAA::framing/member:stud-001": [
-3.0861,
-5.715,
-8,
-"50ef2552dcd5"
-],
-"geometry/CSW112AAAA::framing/member:stud-002": [
-3.0861,
-5.715,
-8,
-"50ef2552dcd5"
-],
-"geometry/CSW112AAAA::framing/member:stud-003": [
-3.0861,
-5.715,
-8,
-"50ef2552dcd5"
 ],
 "geometry/CSW112AAAA::framing/member:tee-N-S-W3-block-00": [
 3.6957,
@@ -76247,7 +76247,31 @@
 2,
 "20c1e0b75403"
 ],
-"member/CSW112AAAA/plate-bottom": [
+"member/CSW112AAAA/plate-bottom-0": [
+3.048,
+3.0861,
+2,
+"b6da518d5173"
+],
+"member/CSW112AAAA/plate-bottom-1": [
+3.048,
+3.0861,
+2,
+"b6da518d5173"
+],
+"member/CSW112AAAA/plate-bottom-2": [
+3.048,
+3.0861,
+2,
+"b6da518d5173"
+],
+"member/CSW112AAAA/plate-bottom-3": [
+3.048,
+3.0861,
+2,
+"b6da518d5173"
+],
+"member/CSW112AAAA/plate-bottom-4": [
 3.048,
 3.0861,
 2,
@@ -76348,30 +76372,6 @@
 6.11505,
 2,
 "1e6871fbce74"
-],
-"member/CSW112AAAA/stud-000": [
-3.0861,
-5.715,
-2,
-"015f08fd3431"
-],
-"member/CSW112AAAA/stud-001": [
-3.0861,
-5.715,
-2,
-"015f08fd3431"
-],
-"member/CSW112AAAA/stud-002": [
-3.0861,
-5.715,
-2,
-"015f08fd3431"
-],
-"member/CSW112AAAA/stud-003": [
-3.0861,
-5.715,
-2,
-"015f08fd3431"
 ],
 "member/CSW112AAAA/tee-N-S-W3-block-00": [
 3.6957,
@@ -85420,13 +85420,13 @@
 "solids/P-M-STRWELL-SS/z0_m": -2.7797125,
 "solids/P-M-STRWELL-SS/z1_m": 0.0,
 "solids/P-S-TUDOR1/z0_m": 3.06705,
-"solids/P-S-TUDOR1/z1_m": 5.7912,
+"solids/P-S-TUDOR1/z1_m": 5.715,
 "solids/P-S-TUDOR2/z0_m": 3.06705,
-"solids/P-S-TUDOR2/z1_m": 5.7912,
+"solids/P-S-TUDOR2/z1_m": 5.715,
 "solids/P-S-TUDOR3/z0_m": 3.06705,
-"solids/P-S-TUDOR3/z1_m": 5.7912,
+"solids/P-S-TUDOR3/z1_m": 5.715,
 "solids/P-S-TUDOR4/z0_m": 3.06705,
-"solids/P-S-TUDOR4/z1_m": 5.7912,
+"solids/P-S-TUDOR4/z1_m": 5.715,
 "solids/PA-A-STUBATH-STOP-CW/z0_m": 6.7818,
 "solids/PA-A-STUBATH-STOP-CW/z1_m": 6.9342,
 "solids/PA-A-STUBATH-STOP-HW/z0_m": 6.7818,

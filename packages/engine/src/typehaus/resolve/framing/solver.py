@@ -48,7 +48,7 @@ from typehaus.resolve.framing.openings import (
 )
 from typehaus.resolve.framing.pockets import pocket_keepouts
 from typehaus.resolve.framing.posts import (
-    PLATE_CUT_WALLS,
+    cuts_top_plates,
     post_bands,
     post_keepouts,
     posts_by_wall,
@@ -101,6 +101,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                stud_keepouts: tuple[tuple[float, float], ...] = (),
                carrier_bays: tuple[tuple[float, float], ...] = (),
                post_bands: tuple[tuple[float, float], ...] = (),
+               post_top_bands: tuple[tuple[float, float], ...] | None = None,
                backing: tuple[BackingBand, ...] = (),
                continuation_start: str | None = None,
                continuation_end: str | None = None,
@@ -129,8 +130,10 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     standing *inside* this wall (``Post.within_wall``, via ``framing/posts.py``). They do
     two things here: the module studs part around them (widened to a stud centreline by
     ``post_keepouts``, which is why the widening happens in this function — the stud face
-    dimension is known here and nowhere above), and every plate course is cut at the post
-    faces. They are NOT framed like a carrier bay: a post standing in the wall *is* the
+    dimension is known here and nowhere above), and the sole plate is cut at the post
+    faces. ``post_top_bands`` is the subset that also cuts the top courses (``None``: all of
+    them); a post that stops under the top plates leaves them continuous. They are NOT
+    framed like a carrier bay: a post standing in the wall *is* the
     member on that line.
 
     ``continuation_start``/``continuation_end`` mark an end where this wall simply *carries
@@ -217,11 +220,11 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                        thickness, neighbour_insets_start, neighbour_insets_end,
                        openings=openings, post_bands=post_bands)
         return tuple(plate_only)
-    top_plates = 2 if spec.double_top_plate and not spec.advanced_framing else 1
+    top_plates = _top_plate_count(spec)
     _append_plates(members, rw, plate_member, p0, d, axis_len, z0, plate_h, top_plates,
                    top_start, top_end, structure_polygon, start_role, end_role, thickness,
                    neighbour_insets_start, neighbour_insets_end, openings=openings,
-                   post_bands=post_bands)
+                   post_bands=post_bands, post_top_bands=post_top_bands)
 
     # --- studs at spacing, skipping those inside an opening's king/jack pack --
     stud_z0 = z0 + plate_h
@@ -468,6 +471,18 @@ def _module_stations(axis_len: float, spacing: float, thickness: float,
     return stations
 
 
+def _top_plate_count(spec) -> int:
+    return 2 if spec.double_top_plate and not spec.advanced_framing else 1
+
+
+def _top_plates_m(plan: PlanModel, rw: ResolvedWall) -> float:
+    """The top-plate stack's depth on ``rw``; 0 where it frames no top courses."""
+    layer = structure_layer(plan, rw.assembly)
+    if not frames_as_members(layer) or layer.framing.wall_frame == "plate":
+        return 0.0
+    return _top_plate_count(layer.framing) * 1.5 * 0.0254
+
+
 def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p0, d,
                    axis_len: float, z0: float, plate_h: float, top_plates: int,
                    top_start: float, top_end: float, structure_polygon,
@@ -476,7 +491,8 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
                    neighbour_insets_start: tuple[float, float] | None = None,
                    neighbour_insets_end: tuple[float, float] | None = None,
                    openings: tuple[WallOpening, ...] = (),
-                   post_bands: tuple[tuple[float, float], ...] = ()) -> None:
+                   post_bands: tuple[tuple[float, float], ...] = (),
+                   post_top_bands: tuple[tuple[float, float], ...] | None = None) -> None:
     """Bottom + top plate course(s), each cut to the corner square that course owns.
 
     The cap plate of a double top plate laps the *opposite* way from the courses below it:
@@ -490,11 +506,11 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
     ``"plate-bottom"``, which is every wall in every house but the garage's door wall.
 
     ``post_bands`` are the ``(centre, half)`` footprints of any post standing *inside* this
-    wall (``framing/posts.py``), and they cut **every** course, top as well as bottom: a
-    6x6 column in the stud line interrupts the whole plate stack, which is exactly what
-    ``Post.within_wall``'s docstring has always promised. The two producers merge into one
-    break list before either course is cut, so an opening break and a post band that
-    overlap make one cut and not two.
+    wall (``framing/posts.py``). They cut the sole plate; ``post_top_bands`` (``None``: the
+    same bands) cut the top courses too — a 6x6 column rising through the stack interrupts
+    it, while a stud-height post under a bearing wall's double top plate does not. The two
+    producers merge into one break list before either course is cut, so an opening break
+    and a post band that overlap make one cut and not two.
 
     **The single-segment key convention is load-bearing.** A course that survives in one
     piece keeps its historical key — ``plate-bottom`` / ``plate-top-{i}`` — and only a
@@ -531,11 +547,11 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
         key = "plate-bottom" if single else f"plate-bottom-{i}"
         members.append(_plate(rw, point_at(seg_start), point_at(seg_end),
                               key, z0, z0 + plate_h, member))
-    # A post interrupts the top courses too, but an opening below the framing base does
-    # not — the top plate runs over a garage door — so the top courses take only the post
-    # half of the break list.
-    top_breaks = merge_spans([(centre - half, centre + half)
-                               for centre, half in post_bands])
+    # A full-height post interrupts the top courses too, but an opening below the framing
+    # base does not — the top plate runs over a garage door — so the top courses take only
+    # the posts that rise through them.
+    top_breaks = merge_spans([(centre - half, centre + half) for centre, half in
+                              (post_bands if post_top_bands is None else post_top_bands)])
     for i in range(top_plates):
         laps_back = top_plates > 1 and i == top_plates - 1
         roles = ((invert_corner_role(start_role), invert_corner_role(end_role))
@@ -849,19 +865,22 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
         # ``frame_wall`` only ever consults the style at an end it owns).
         authored = authored_walls.get(rw.tag)
         wall_posts = posts_for_wall.get(rw.tag, ())
-        if wall_posts and rw.tag in PLATE_CUT_WALLS:
+        wall_post_bands: tuple[tuple[float, float], ...] = ()
+        wall_top_bands: tuple[tuple[float, float], ...] | None = None
+        if wall_posts:
             # Projected on ``rw.axis``, not the framing axis: ``band_axis`` only translates
             # perpendicular to the direction, so the station is the same either way and
             # ``framing/posts.py`` stays free of the solver's privates.
-            wall_post_bands = post_bands(wall_posts, rw.axis[0],
-                                         unit(sub(rw.axis[1], rw.axis[0])))
-            findings.extend(short_post_findings(
-                # ``max``, for the reason ``_short_wall_finding`` gives: on a raked wall
-                # the low axis end is an elevation no member stands at.
-                wall_posts, rw.tag,
-                max(_wall_top_elevations(rw)) - rw.base_ref_z_m))
-        else:
-            wall_post_bands = ()
+            axis_dir = unit(sub(rw.axis[1], rw.axis[0]))
+            # ``max``, for the reason ``_short_wall_finding`` gives: on a raked wall the
+            # low axis end is an elevation no member stands at.
+            framing_h = max(_wall_top_elevations(rw)) - rw.base_ref_z_m
+            top_m = _top_plates_m(plan, rw)
+            wall_post_bands = post_bands(wall_posts, rw.axis[0], axis_dir)
+            wall_top_bands = post_bands(
+                tuple(p for p in wall_posts if cuts_top_plates(p, framing_h, top_m)),
+                rw.axis[0], axis_dir)
+            findings.extend(short_post_findings(wall_posts, rw.tag, framing_h, top_m))
         members = frame_wall(plan, rw, by_host.get(rw.tag, []),
                              backing=tuple(backing_by_wall.get(rw.tag, ())),
                              corner_start="start" in endpoints,
@@ -886,6 +905,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                              stud_keepouts=tuple(keepouts.get(rw.tag, ())),
                              carrier_bays=tuple(bays_by_wall.get(rw.tag, ())),
                              post_bands=wall_post_bands,
+                             post_top_bands=wall_top_bands,
                              continuation_start=continuations.get((rw.tag, "start")),
                              continuation_end=continuations.get((rw.tag, "end")),
                              line=lines_for_wall.get(rw.tag))

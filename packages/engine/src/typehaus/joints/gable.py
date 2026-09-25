@@ -87,7 +87,7 @@ class GableEnd:
 def _is_exterior_framed_wall(wall) -> bool:
     """A wall with a weather skin *and* studs. Same test ``stud_plate_tie_rows`` applies."""
     return (any(layer.function == "cladding" for layer in wall.layers)
-            and any(member.category == "stud" for member in wall.members))
+            and any(member.category in ("stud", "king", "corner") for member in wall.members))
 
 
 def _seated_gable_truss(roof, wall, along) -> str | None:

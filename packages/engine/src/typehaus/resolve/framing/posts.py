@@ -18,10 +18,11 @@ Two things come out of a post, and they are the two halves of this leaf, exactly
 **There is deliberately no z-overlap gate.** ``frame_model`` runs before
 ``resolve_columns_and_beams``, so a post's resolved z extent does not exist yet, and
 re-deriving ``_resolve_post``'s bearing chain here would be a second copy of that
-arithmetic free to drift from the first. Instead ``within_wall`` is read as the full-height
-declaration its docstring makes, and a post whose authored ``height`` falls short of the
-wall's framing height is reported as a named gap (``short_post_findings``) rather than
-silently cutting a plate a pedestal does not reach.
+arithmetic. The authored ``height`` is read instead, and a within-wall post reaches one of
+two tops: the top of the framing (every plate course is cut, the breezeway screen's 6x6s)
+or the underside of the top plates (only the sole plate is cut and the double top plate
+runs over it continuous, catlin's tudor timbers in a bearing wall) — ``cuts_top_plates``.
+Anything shorter is a named gap (``short_post_findings``), not a silent cut.
 
 A leaf: it imports ``model``/``quantities``/``resolve`` primitives and is imported by
 ``framing/solver.py``, never the other way round.
@@ -35,7 +36,7 @@ from typehaus.model.structure import Post
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section, post_outline
 
-__all__ = ["PLATE_CUT_WALLS", "post_bands", "post_keepouts", "posts_by_wall",
+__all__ = ["cuts_top_plates", "post_bands", "post_keepouts", "posts_by_wall",
            "short_post_findings"]
 
 # How far past the post face a module stud's *centreline* has to stay: half a stud face,
@@ -44,16 +45,10 @@ __all__ = ["PLATE_CUT_WALLS", "post_bands", "post_keepouts", "posts_by_wall",
 # stud's own thickness at the call site and not against a constant here.
 _CENTRELINE_ALLOWANCE = 0.5
 
-# **Temporary, and the plan that introduced it says so.** Cutting the plates is correct
-# wherever ``within_wall`` is authored, but catlin's four tudor timbers in ``W-S-W3`` stand
-# in window rough openings — ``P-S-TUDOR1`` dead centre of one, ``P-S-TUDOR4`` on the
-# next one's jamb pack — contradicting the comment beside them and leaving that opening's
-# cripples, kings and jacks with no plate to bear on. That is a real modelling defect this
-# change uncovered rather than caused; moving a 6 1/8" elm timber out of a window is the
-# owner's decision, not the framer's. So the geometry is gated to the walls whose posts
-# have been looked at, and the tudor arm follows the fix. Delete this list — do not extend
-# it — when those posts are resolved.
-PLATE_CUT_WALLS: frozenset[str] = frozenset({"W-BW-SCREEN"})
+# How far a stud-height post may fall short of the underside of the top plates: it stands
+# on the subfloor through the cut sole plate, so its base sits up to a sheet above the
+# framing base.
+_SEAT_TOLERANCE_M = 1.0 * M_PER_IN
 
 
 def posts_by_wall(plan: PlanModel) -> dict[str, tuple[Post, ...]]:
@@ -115,23 +110,40 @@ def post_keepouts(bands: tuple[tuple[float, float], ...],
             for centre, half in bands]
 
 
-def short_post_findings(posts: tuple[Post, ...], wall_tag: str,
-                        framing_height_m: float) -> list[Finding]:
-    """WARN for a post whose authored height falls short of the wall's framing height.
+def cuts_top_plates(post: Post, framing_height_m: float, top_plates_m: float) -> bool:
+    """Whether ``post`` rises through the top plates, so every course is cut around it.
 
-    ``within_wall`` is read here as a full-height declaration, because the framing stage
-    cannot yet see a post's resolved z extent (see the module docstring). A partial-height
-    pedestal standing in a stud line is therefore a named gap rather than a silent wrong
-    answer: its plates would be cut over their whole height for a post that only reaches
-    part way up.
+    ``False`` for a post that stops at or under the top plates' underside (``height`` no
+    more than the framing height less the top courses, plus a seat's tolerance): only the
+    sole plate is cut and the top plate runs over it continuous. A post with no authored
+    ``height`` is read as full height, as ``within_wall`` has always promised.
+    """
+    if post.height is None:
+        return True
+    return post.height.meters > framing_height_m - top_plates_m + _SEAT_TOLERANCE_M
+
+
+def short_post_findings(posts: tuple[Post, ...], wall_tag: str,
+                        framing_height_m: float, top_plates_m: float = 0.0) -> list[Finding]:
+    """WARN for a post that reaches neither the framing top nor the top plates' underside.
+
+    The framing stage cannot yet see a post's resolved z extent (see the module
+    docstring), so a partial-height pedestal standing in a stud line is a named gap rather
+    than a silent wrong answer: its plates would be cut for a post that only reaches part
+    way up. A stud-height post (``cuts_top_plates`` False, within the seat tolerance) is
+    one of the two tops and does not warn.
 
     A post with no authored ``height`` says nothing to contradict, and passes.
     """
+    stud_height_m = framing_height_m - top_plates_m - _SEAT_TOLERANCE_M
     findings: list[Finding] = []
     for post in posts:
         if post.height is None:
             continue
         if post.height.meters >= framing_height_m - 1e-6:
+            continue
+        if (top_plates_m and post.height.meters >= stud_height_m - 1e-6
+                and not cuts_top_plates(post, framing_height_m, top_plates_m)):
             continue
         findings.append(Finding(
             severity=Severity.WARN, check_id="integrity.post_within_wall_short",
@@ -139,8 +151,8 @@ def short_post_findings(posts: tuple[Post, ...], wall_tag: str,
                      f"{post.height.meters / M_PER_IN:.4g}\" tall against "
                      f"{framing_height_m / M_PER_IN:.4g}\" of wall framing"),
             element_tags=(post.tag, wall_tag), result=Result.UNKNOWN,
-            fix_hint=("within_wall is read as a full-height declaration — the plates are "
-                      "cut around the post over their whole height. A partial-height "
-                      "pedestal wants framing down onto its cap, which this stage cannot "
-                      "derive: leave within_wall unset and report the clash instead")))
+            fix_hint=("within_wall reads a post as reaching the framing top or the "
+                      "underside of the top plates. A partial-height pedestal wants "
+                      "framing down onto its cap, which this stage cannot derive: leave "
+                      "within_wall unset and report the clash instead")))
     return findings

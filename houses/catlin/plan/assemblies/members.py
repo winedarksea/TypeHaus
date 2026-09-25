@@ -93,7 +93,8 @@ POST_WHITE_PAINT_DF = Assembly(
 # The suite bedroom's four elm tudor posts (plans/TODO.md §Hardwood): same pattern as
 # POST_WHITE_PAINT — the STRUCTURE material colours the solid and names the species for the
 # wood_surfaces takeoff. 6.125" body = the custom timber, sheathing to drywall face, a
-# deviation within W-S-W3's stud line, deliberately not a change to EXT_2X6.
+# deviation within W-S-W3's stud line, deliberately not a change to EXT_2X6. Stud height:
+# only the sole plate is cut, the double top plate runs over the posts.
 ELM_TIMBER = Assembly(
     tag="ELM_TIMBER",
     layers=(

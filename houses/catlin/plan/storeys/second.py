@@ -752,13 +752,13 @@ OPENINGS = [
     # counter height and does not travel up.
     Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-1424",
            position=from_node("N-S-E3", ft(6, 9)), sill_height=ft(4)),      # y 34'-0"
-    # West suite (bearing wall). SUITE1 moved 13'-0" -> 10'-4" for the third exact
+    # West suite (bearing wall). SUITE1 moved 13'-0" -> 10'-8" for the third exact
     # main/second west column. Its header crosses W-S-W3's top ladder-backing rung, so the
     # solver omits that nonstructural rung while preserving the header and every other rung.
     Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W3", type_ref="WT-2736",
-           position=from_node("N-S-W2", ft(10, 6.5)), sill_height=ft(3)),   # y 10'-4"
+           position=from_node("N-S-W2", ft(10, 6.5)), sill_height=ft(3)),   # y 10'-8"
     Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W3", type_ref="WT-2736",
-           position=from_node("N-S-W2", ft(1, 2.5)), sill_height=ft(3)),      # y 19'-8"
+           position=from_node("N-S-W2", ft(1, 2.5)), sill_height=ft(3)),      # y 20'-0"
     # Plant room — south glazing: centres 4'-0" and 9'-4" are stud lines on W-S-S1's grid,
     # stacking exactly over WIN-M-BED-S1/2. Sill 2'-8" = the shared 6'-8" head line.
     # Narrowed 42" -> 30" and moved 8" east off the old bay centres (WT-3048, 2026-08-01,
@@ -1502,20 +1502,23 @@ FLOOR = []
 # The suite bedroom's four "tudor" posts (plans/TODO.md §Hardwood): custom 6-1/8" square
 # elm timbers standing in W-S-W3's stud line, flush with the drywall plane. Deliberately
 # NOT a change to EXT_2X6 — each post is a deviation within the stud line, so the
-# wall assembly is untouched. Centre x=3-9/16" off the sheathing-ext plane; cut 8'-11 1/4"
-# to top out flush with the 9' plate. y-positions keep >6" clear of both WT-2736 ROs.
+# wall assembly is untouched. Centre x=3-9/16" off the sheathing-ext plane. Spaced evenly
+# between SUITE1's and SUITE2's jamb packs (king faces y 12'-0 1/2" / 18'-7 1/2"): five
+# ~10 7/8" gaps, symmetric about the pair. Each post lands over a W-M-W3 stud (160/176/
+# 192/208") and replaces the module stud it lands on. Cut 8'-8 1/4": it stands on the deck
+# through the cut sole plate and stops under W-S-W3's continuous double top plate.
 POSTS = [
-    Post(uid="CSK901AAAA", tag="P-S-TUDOR1", position=pt(inch(3.5625), ft(10, 8)),
-         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-S-WEST",
+    Post(uid="CSK901AAAA", tag="P-S-TUDOR1", position=pt(inch(3.5625), ft(13, 2.4375)),
+         size="6.125x6.125", height=ft(8, 8.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
-    Post(uid="CSK902AAAA", tag="P-S-TUDOR2", position=pt(inch(3.5625), ft(15, 4)),
-         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-S-WEST",
+    Post(uid="CSK902AAAA", tag="P-S-TUDOR2", position=pt(inch(3.5625), ft(14, 7.5)),
+         size="6.125x6.125", height=ft(8, 8.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
-    Post(uid="CSK903AAAA", tag="P-S-TUDOR3", position=pt(inch(3.5625), ft(17, 4)),
-         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-S-WEST",
+    Post(uid="CSK903AAAA", tag="P-S-TUDOR3", position=pt(inch(3.5625), ft(16, 0.5)),
+         size="6.125x6.125", height=ft(8, 8.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
-    Post(uid="CSK904AAAA", tag="P-S-TUDOR4", position=pt(inch(3.5625), ft(21, 4)),
-         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-S-WEST",
+    Post(uid="CSK904AAAA", tag="P-S-TUDOR4", position=pt(inch(3.5625), ft(17, 5.5625)),
+         size="6.125x6.125", height=ft(8, 8.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
 ]
 

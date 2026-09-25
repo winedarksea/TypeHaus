@@ -37,5 +37,6 @@ from typehaus.checks.structural import (
     truss_reactions,  # noqa: F401 - registers checks
     truss_wall,  # noqa: F401 - registers checks
     uplift_path,  # noqa: F401 - registers checks
+    wall_posts,  # noqa: F401 - registers checks
     window_module,  # noqa: F401 - registers checks
 )

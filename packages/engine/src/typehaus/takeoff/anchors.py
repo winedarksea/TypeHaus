@@ -120,10 +120,15 @@ def strap_holdown_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
                f"{len(returns)} runs share {len(locations)} end locations"))]
 
 
+# A wall whose every module stud gave way to a jamb pack or a within-wall post (catlin's
+# W-S-W3) is still a framed wall.
+_FRAMED_VERTICALS = frozenset({"stud", "king", "corner"})
+
+
 def _is_exterior_framed_wall(wall) -> bool:
     """A wall with a weather skin *and* studs: the walls whose uplift path is strapped."""
     return (any(layer.function == "cladding" for layer in wall.layers)
-            and any(member.category == "stud" for member in wall.members))
+            and any(member.category in _FRAMED_VERTICALS for member in wall.members))
 
 
 def stud_plate_tie_rows(model: ResolvedModel, rules: WallTieRules) -> list:

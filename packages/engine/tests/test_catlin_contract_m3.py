@@ -2971,3 +2971,36 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     assert orphan_count <= 130, (
         f"{orphan_count}/{total} upper-storey studs stand over no stud below "
         f"(expected at most 130/258); first offenders {orphans[:12]}")
+
+
+def test_the_suite_tudor_posts_space_evenly_between_the_windows_over_studs(catlin_model):
+    """P-S-TUDOR1..4 in W-S-W3 (storeys/second.py): five equal gaps from SUITE1's king face
+    to SUITE2's, symmetric about the pair, each post clear of both jamb packs and over a
+    W-M-W3 stud. The two checks in ``checks/structural/wall_posts.py`` grade the clearance
+    and the bearing; this pins the rhythm, which no check asks about.
+    """
+    from typehaus.resolve.framing.footprint import member_footprint
+
+    walls = {w.tag: w for w in catlin_model.walls}
+    upper = walls["W-S-W3"]
+    kings = [member_footprint(m)[0] for m in upper.members if m.category == "king"]
+    king_ys = sorted(max(p[1] for p in ring) / 0.0254 for ring in kings)
+    posts = sorted(
+        (min(p[1] for p in s.outline) / 0.0254, max(p[1] for p in s.outline) / 0.0254)
+        for s in catlin_model.solids if s.tag.startswith("P-S-TUDOR"))
+    assert len(posts) == 4
+    # SUITE1's north king face and SUITE2's south king face bound the zone.
+    zone_lo = max(y for y in king_ys if y < posts[0][0])
+    zone_hi = min(min(p[1] for p in ring) / 0.0254 for ring in kings
+                  if min(p[1] for p in ring) / 0.0254 > posts[-1][1])
+    edges = [zone_lo, *(y for post in posts for y in post), zone_hi]
+    gaps = [edges[i + 1] - edges[i] for i in range(0, len(edges), 2)]
+    assert max(gaps) - min(gaps) <= 1 / 16 + 1e-6, gaps
+    assert gaps[0] > 0 and gaps[-1] > 0, "a post stands in a jamb pack"
+    centres = [(lo + hi) / 2 for lo, hi in posts]
+    mid = (zone_lo + zone_hi) / 2
+    for a, b in zip(centres, reversed(centres), strict=True):
+        assert (a + b) / 2 == pytest.approx(mid, abs=1 / 32), centres
+    studs = [m.p0[1] / 0.0254 for m in walls["W-M-W3"].members if m.category == "stud"]
+    for lo, hi in posts:
+        assert any(lo <= s <= hi for s in studs), (lo, hi, sorted(studs))
