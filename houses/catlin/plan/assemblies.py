@@ -3459,7 +3459,7 @@ MATERIALS = [
     Material(tag="oak-tread", name="White oak stair tread, 8/4 bullnose", hatch="lumber",
              color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
              nominal_quarters=8, milling_profile="bullnose", requires_custom_milling=True,
-             source="owner-milled white oak. The one place a profile IS worth a setup: a tread nosing is R311.7.5.3 geometry, not decoration, and 28 identical pieces amortise one bullnose grind"),
+             source="owner-milled white oak. Tread and landing nosings share the bullnose setup; the landing nosing also gets a groove to meet the T&G field"),
     # --- the metal skins --------------------------------------------------------
     # The house is clad in metal in FIVE specifications. They are all the same white PVDF
     # steel to look at; what separates them is SEAM PROFILE and GAUGE, and both are labour

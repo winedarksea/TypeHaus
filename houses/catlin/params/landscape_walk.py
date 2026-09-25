@@ -18,6 +18,7 @@ notes/sidewalk_layout.md.
 
 from __future__ import annotations
 
+from typehaus.geometry import ring
 import math
 
 from typehaus import (
@@ -29,7 +30,6 @@ from typehaus import (
     Slab,
     ft,
     inch,
-    pt,
 )
 
 from params.breezeway import STAIR_FOOT_X_FT, STAIR_Y0_FT, STAIR_Y1_FT
@@ -50,8 +50,7 @@ FULL = (20.0 / 12.0, 72.0 / 12.0)    # 12 + 8, and 92 - 20
 ONE_SIDED = (44.0 / 12.0,)           # 36 walk + 8, measured off the house side
 
 
-def _ring(points):
-    return tuple(pt(ft(x), ft(y)) for x, y in points)
+_ring = ring
 
 
 def _rect(x0, y0, x1, y1):

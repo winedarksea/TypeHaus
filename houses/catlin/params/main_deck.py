@@ -131,6 +131,7 @@ Insul-Deck technical summary; ICF Builder's foam-decking comparison. No ICC-ES r
 found for any of the four EPS deck systems examined — see plans/buildability.md BLD-03.
 """
 
+from typehaus.geometry import rect
 from typehaus import (
     BarSpec,
     DeckLayer,
@@ -139,7 +140,6 @@ from typehaus import (
     JoistSpec,
     Layer,
     LayerFunction,
-    Point2D,
     PublishedSpan,
     ReinforcementSpec,
     RibLayout,
@@ -271,8 +271,7 @@ _HOUSE = ft(36)
 _ZERO = ft(0)
 
 
-def _rect(x0: object, y0: object, x1: object, y1: object) -> tuple[Point2D, ...]:
-    return (pt(x0, y0), pt(x1, y0), pt(x1, y1), pt(x0, y1))
+_rect = rect
 
 
 # --- the west half, in three bays -------------------------------------------------

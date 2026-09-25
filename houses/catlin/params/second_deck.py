@@ -44,7 +44,8 @@ framing face and 3 1/2" onto the x=18' plate. Clear span 17'-3 1/4". An 18' blan
 the fabricator's order, which ``haus takeoff``'s fabrication schedule states.
 """
 
-from typehaus import DeckLayer, FloorSystem, JoistSpec, Layer, LayerFunction, Point2D, ft, inch, pt
+from typehaus.geometry import rect
+from typehaus import DeckLayer, FloorSystem, JoistSpec, Layer, LayerFunction, ft, inch
 
 # Both members share one depth, deliberately — see the module docstring. ``main_deck.py``
 # imports ``_DEPTH``/``_SUBFLOOR`` from here rather than restating them, so the concrete
@@ -74,8 +75,7 @@ _HOUSE = ft(36)
 _ZERO = ft(0)
 
 
-def _rect(x0: object, y0: object, x1: object, y1: object) -> tuple[Point2D, ...]:
-    return (pt(x0, y0), pt(x1, y0), pt(x1, y1), pt(x0, y1))
+_rect = rect
 
 
 # ** THE WEB PANEL LAYOUT IS PROVISIONAL AND SAYS SO. **

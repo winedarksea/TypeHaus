@@ -576,11 +576,11 @@
 # mills the treads rather than buying them, the MATERIAL half of this row is what falls
 # away, not the labour half.
 "deck 11x1.5" = { material = { low = 7, high = 14.5 }, labour = { low = 11.5, high = 23 } }  # 288 LF — stair treads (blend: 28 oak, 12 carpet); the 32 LF kdat half is the two EXTERIOR flights, ST-G-SERVICE and ST-SG-PORCH (4 treads at 3'-0" each, 2026-09-03), which are neither oak nor carpeted and sit at the low end of this blend
-# The two landing decks, one per flight that has one. `stair_finish` gives ST-B2M a widest
-# tread of 3.31' and ST-M2S 3.53', each ~2" narrower than one of these decks, which is how
-# the 42" deck is read as the carpeted basement flight and the 44.625" as the oak one.
-# Both are a 1-1/2" platform (3.5-3.7 SF of sheet stock per LF, $7-14/LF); the oak one
-# carries 3.7 SF/LF of finish flooring on top at the [floor_finishes] oak rate.
+# The two landing platforms, one per flight that has one. These existing `deck WxT` framing
+# rows retain the platform pricing driver. ST-B2M's 1" substrate carries carpet and pad;
+# ST-M2S's 1-1/2" assembly is 3/4" plywood plus 3/4" owner-milled oak T&G, with a solid
+# 8/4 nosing. `haus millwork` gives the oak field and nosing cut list; it remains an unpriced
+# view, while these rows keep the existing platform estimate.
 "deck 42x1.5" = { material = { low = 8, high = 16 }, labour = { low = 9.5, high = 25 } }  # 16 LF — ST-B2M landing, carpeted
 "deck 44.625x1.5" = { material = { low = 22, high = 48 }, labour = { low = 9.5, high = 25 } }  # 16 LF — ST-M2S landing, oak
 "hanger" = { material = { low = 1.5, high = 4 }, labour = { low = 1.3, high = 2.6 } }  # 32 LF — stair hanger board, 2x stock

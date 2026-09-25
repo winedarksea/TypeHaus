@@ -9,6 +9,7 @@
 # nonbearing cap (32" - 1.5" = 30.5" clear, no jacks under a R602.7.4 flat 2x4 header),
 # 27" the bearing cap (the same 30.5" less a jack each side = 27.5", R602.7.5). The 3"
 # between the two caps IS the pair of jacks.
+from library.doors import DT_INT_ACCESS24, DT_INT_CLOSET24
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -107,8 +108,7 @@ DOOR_TYPES = [
     # (EQ-A-ERV-MAN-EXH, the outdoor-air hood, VR-M-RADON-VENT's head), and IRC M1305.1.3
     # asks a passageway of not less than 30" high and 22" wide — 24 x 42 clears both. No
     # habitable room is reached through it, so R311's door rules have nothing to say.
-    DoorType(tag="DT-INT-ACCESS24", width=ft(2), height=ft(3), function="passage",
-             source="2026-08-29 attic 6:12 redesign — M1305.1.3 service access to RM-A-POCKET under the west rake"),
+    DT_INT_ACCESS24,
     # 2'-0" x 6'-0" — the house's second sub-6'-8" leaf, and the under-stair storage's only option.
     # The closet is under ST-B2M's arriving flight and its head rakes: 96.7" at the south
     # end, 0.73" lost per inch north. A door needs its full height plus a ~2" header at its
@@ -116,8 +116,7 @@ DOOR_TYPES = [
     # where 76.5" is all there is. A 6'-8" leaf wants 82" and would be six inches into the
     # stringer; 6'-0" wants 74" and clears by 2 1/2". Same derivation as DT-INT-ACCESS24
     # above, one storey down.
-    DoorType(tag="DT-INT-CLOSET24", width=ft(2), height=ft(6), function="closet",
-             source="2026-09-05 under-stair closet — the tallest leaf ST-B2M's raking soffit admits at D-B-CLOSET's far jamb"),
+    DT_INT_CLOSET24,
     # DT-INT-BIFOLD60 retired 2026-09-12: never hung. O-S-CLOSET is the house's only bifold
     # and W-S-CLN takes the 56" below; D-M-LAUN was the other candidate and became a pocket
     # (DT-POCKET-INT-48) on 2026-08-21, which is what retired the second BIFOLD56 as well.
@@ -2063,10 +2062,11 @@ SLABS = [
 # the two end ones included, is where it is drawn, which
 # `code.R311_7_5_1_stair_end_risers` now measures rather than assumes.
 #
-# `tread_thickness` states that 1" substrate, and since 2026-09-11 every layout honours it
-# (it was straight-only for as long as only `straight.py` applied the drop). It buys the
-# treads AND both landing decks — one flight, one stock — and it is a takeoff fact only:
-# `_notch_z` drops each board by exactly this much, so no riser moves and the end risers
+# `tread_thickness` states the bought board/substrate depth and every layout honours it. On
+# this carpeted flight, the 1" substrate plus 1/2" carpet and pad fills the 1-1/2" member.
+# The oak ST-M2S landing uses the same 1-1/2" geometry as 3/4" plywood plus 3/4" oak T&G,
+# with a solid nosing at the exposed edge. `_notch_z` drops each resolved walking surface by
+# its declared thickness, so no riser moves and the end risers
 # `code.R311_7_5_1_stair_end_risers` measures are the ones above.
 #
 # `landing_depth` is DERIVED, not R311.7.6's 36": it runs both half-landings to W-B-N2's

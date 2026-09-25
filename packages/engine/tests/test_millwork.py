@@ -38,6 +38,7 @@ def test_the_millwork_kinds_are_registered_elements_and_dialect_constructors() -
     # ShelfBay is a HausModel, not an Element — it has no identity of its own — but the
     # dialect still has to be able to call it, or the bays cannot be authored.
     assert "ShelfBay" in ctors and "ShelfBay" not in kinds
+    assert "StairLandingMillwork" in ctors and "StairLandingMillwork" not in kinds
 
 
 def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
@@ -206,6 +207,12 @@ def test_the_house_declares_exactly_one_millwork_standard(catlin_plan) -> None:
     standard = found[0]
     assert standard.max_board_width.inches == pytest.approx(18.0)
     assert standard.tread_stairs == ("ST-M2S", "ST-S2A")
+    assert standard.landing_deck.stair_refs == ("ST-M2S",)
+    assert standard.landing_deck.field_material_ref == "oak-floor-custom"
+    assert standard.landing_deck.board_face_width.inches == pytest.approx(3.5)
+    assert standard.landing_deck.board_coverage_width.inches == pytest.approx(3.125)
+    assert standard.landing_deck.nosing_material_ref == "oak-tread"
+    assert standard.landing_deck.nosing_profile == "bullnose + groove"
 
 
 def test_a_second_millwork_standard_is_an_error_not_a_winner(catlin_plan) -> None:

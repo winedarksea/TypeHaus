@@ -38,7 +38,8 @@ Walk A (params/landscape_walk.py) meets the east taper with a 1/2" isolation joi
 
 from __future__ import annotations
 
-from typehaus import ImperviousSurface, Slab, ft, inch, pt
+from typehaus.geometry import ring
+from typehaus import ImperviousSurface, Slab, ft, inch
 
 ASSEMBLY = "DRIVEWAY_FRC_CLASS5"
 TOP = ft(-2, -11)                    # 1" below the garage slab, at the door
@@ -60,8 +61,7 @@ OUTLINE = (
 )
 
 
-def _ring(points):
-    return tuple(pt(ft(x), ft(y)) for x, y in points)
+_ring = ring
 
 
 # The uid is minted by typehaus.model.ids.new_uid(): `haus fmt` never visits params/.

@@ -182,3 +182,17 @@ STANDARD_DOOR_TYPES = (
 )
 
 ALL_DOOR_TYPES = (*POCKET_DOOR_TYPES, *STANDARD_DOOR_TYPES)
+
+
+# Short leaves for service and under-stair openings, where the head cannot give 6'-8".
+# Opt-in: not in ALL_DOOR_TYPES.
+DT_INT_ACCESS24 = DoorType(
+    tag="DT-INT-ACCESS24", width=ft(2), height=ft(3), function="passage",
+    source="2'-0\" x 3'-0\" service door: IRC M1305.1.3 asks a passageway of not less than "
+           "30 in. high and 22 in. wide to reach an appliance",
+)
+DT_INT_CLOSET24 = DoorType(
+    tag="DT-INT-CLOSET24", width=ft(2), height=ft(6), function="closet",
+    source="2'-0\" x 6'-0\" closet leaf, for a head (under a stair flight) that cannot "
+           "give 6'-8\" plus a header",
+)

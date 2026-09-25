@@ -228,3 +228,23 @@ ALL_VENTILATION_EQUIPMENT_TYPES = (
         source=_SOURCE,
     ),
 )
+
+
+# Heat-pump air terminals a house opts in to (not in ALL_REGISTER_TYPES).
+REG_T_HP_SUP_DAMPERED = RegisterType(
+    tag="REG-T-HP-SUP-DAMPERED",
+    name="Heat-pump supply register, 12x6, motorised isolation damper",
+    footprint=(inch(12), inch(6)), height=inch(1), plan_symbol="register",
+    source="12 x 6 ceiling supply register with a motorised zone damper, so a humid room's "
+           "terminal can be isolated from a whole-house air handler",
+    ports=(_port("supply", Service.SUPPLY_AIR),),
+)
+REG_T_HP_RET = RegisterType(
+    tag="REG-T-HP-RET", name="Heat-pump return grille, 28x12, filter-back",
+    footprint=(inch(28), inch(12)), height=inch(1), plan_symbol="register",
+    filter_nominal_size="28x12x1", filter_merv=13, service_face="bottom",
+    source="Filter-back return grille, 28 x 12 nominal (336 in2 gross), hinged face, MERV 13 "
+           "1\" filter behind it; ACCA Manual D sec. 4-10 limits face velocity to 300 fpm for "
+           "a filter grille (~700 cfm here)",
+    ports=(_port("return", Service.RETURN_AIR),),
+)

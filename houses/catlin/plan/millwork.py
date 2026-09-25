@@ -15,7 +15,13 @@
 # go wrong again the first time a foam lift or a girt depth moved.
 
 from typehaus import ft, inch
-from typehaus.model import MillworkStandard, ShelfBank, ShelfBay, ShelfProcurement
+from typehaus.model import (
+    MillworkStandard,
+    ShelfBank,
+    ShelfBay,
+    ShelfProcurement,
+    StairLandingMillwork,
+)
 
 # The one declaration. Scope is EXT_2X6 alone — 39 of the 45 windows:
 #   * PLANT_EXT_2X6_HUMID (3) is the plant room, which runs at 70% RH by design. Oak in
@@ -44,6 +50,16 @@ MILLWORK = [
         # basement flight and is carpeted, ST-G-SERVICE is the garage's.
         tread_material_ref="oak-tread",
         tread_stairs=("ST-M2S", "ST-S2A"),
+        landing_deck=StairLandingMillwork(
+            stair_refs=("ST-M2S",),
+            field_material_ref="oak-floor-custom",
+            field_thickness=inch(0.75),
+            board_face_width=inch(3.5),
+            board_coverage_width=inch(3.125),
+            nosing_material_ref="oak-tread",
+            nosing_thickness=inch(1.5),
+            nosing_profile="bullnose + groove",
+        ),
         max_board_width=inch(18),
     ),
 ]

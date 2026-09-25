@@ -13,6 +13,7 @@
 # stair FloorOpening (x:11'-18', y:25'-36') and both cross the central bearing wall at
 # x=18'. The terminals on these trunks are in plan/mep_registers.py.
 
+from library.hvac import REG_T_HP_RET, REG_T_HP_SUP_DAMPERED
 from typehaus import (
     ClearancePolicy,
     ClearanceZone,
@@ -93,13 +94,7 @@ REGISTER_TYPES = (
     # damper carries the plant room's moisture house-wide; and a supply-only terminal in a
     # closed room pressurises it. Motorised so the RH controller owns it, interlocked with
     # REG-S-ERV-PLANT-EXH.
-    RegisterType(tag="REG-T-HP-SUP-DAMPERED",
-                 name="Heat-pump supply register, 12x6, motorised isolation damper",
-                 footprint=(inch(12), inch(6)), height=inch(1),
-                 plan_symbol="register",
-                 source="notes/plant_room.md — REG-T-HP-SUP with a motorised zone damper so System 1 can be isolated from a 70% RH room",
-                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
+    REG_T_HP_SUP_DAMPERED,
     # The SIDEWALL twin of REG-T-HP-SUP, and the house's only System 1 terminal that is not
     # cut into a ceiling. It exists for REG-S-HP-STAIR, which was a ceiling diffuser dumping
     # 50 cfm straight down 6'-2" from a 650 cfm return in the same room — a short circuit that
@@ -141,13 +136,7 @@ REGISTER_TYPES = (
     # filter and the only serviceable face on System 1 — EQ-S-HP1-AH hangs in SF-S-HP1 with
     # no filter cabinet of its own — so this is the row an owner's maintenance schedule is
     # built from and the size that gets ordered four times a year.
-    RegisterType(tag="REG-T-HP-RET", name="Heat-pump return grille, 28x12, filter-back",
-                 footprint=(inch(28), inch(12)), height=inch(1),
-                 plan_symbol="register",
-                 filter_nominal_size="28x12x1", filter_merv=13, service_face="bottom",
-                 source="Filter-back return grille, 28 x 12 nominal (336 in2 gross), hinged face, MERV 13 1\" filter behind it. Sized to Manual D SS4-10's 300 fpm figure for a filter grille at the 650 cfm of room air System 1 draws through it (279 fpm), the ERV's 100 cfm entering the same plenum separately. It was 30 x 16 until 2026-09-04, when the grille was sized down to sit wholly inside EQ-S-ERV-MIX rather than lapping the plenum, the duct and 120 in2 of open cavity.",
-                 ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
+    REG_T_HP_RET,
     # Third family: a passive transfer louver — no duct/fan/system, just a hole with a
     # grille, moving air on pressure difference alone. `ports=()` is deliberate: nothing to
     # connect it to. (`needs` still defaults to SUPPLY_AIR — unused by a register, and the

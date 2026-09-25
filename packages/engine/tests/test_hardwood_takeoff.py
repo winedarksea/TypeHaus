@@ -272,17 +272,46 @@ def test_a_tread_is_scheduled_lying_flat(rows):
 
 
 def test_the_landing_decks_are_scheduled_and_flagged(rows):
-    decks = _use(rows, "stair landing deck")
-    assert sum(row["pieces"] for row in decks) == 2
-    for row in decks:
-        # A landing resolves as ONE member because that is what the framing pass needs. A
-        # schedule that reads that literally asks a mill for a 45" board; it is a walking
-        # SURFACE, laid up out of boards exactly like the floor it steps onto.
-        assert row["layup"] == "boards"
-        assert row["boards_per_piece"] > 1
-        assert row["board_width_in"] <= 18.0
-        assert row["board_width_in"] * row["boards_per_piece"] == pytest.approx(
-            row["finished_width_in"], abs=0.01)
+    nosings = _use(rows, "stair landing nosing")
+    boards = _use(rows, "stair landing board")
+    closers = _use(rows, "stair landing closing board")
+    assert len(nosings) == 2
+    assert {row["location"] for row in nosings} == {
+        "landing-lower", "landing-upper"}
+    assert all(row["pieces"] == 1 and row["material"] == "oak-tread" for row in nosings)
+    assert all(row["finished_thickness_in"] == pytest.approx(1.5) for row in nosings)
+    assert all(row["finished_width_in"] == pytest.approx(11.0) for row in nosings)
+    assert all(row["finished_length_in"] == pytest.approx(44.625) for row in nosings)
+    assert all(row["milling_profile"] == "bullnose + groove" for row in nosings)
+
+    assert len(boards) == 2
+    assert {row["location"]: row["pieces"] for row in boards} == {
+        "landing-lower": 10, "landing-upper": 13}
+    assert all(row["material"] == "oak-floor-custom" for row in boards)
+    assert all(row["finished_thickness_in"] == pytest.approx(0.75) for row in boards)
+    assert all(row["finished_width_in"] == pytest.approx(3.5) for row in boards)
+    assert all(row["finished_length_in"] == pytest.approx(44.625) for row in boards)
+    assert all(row["milling_profile"] == "T&G" for row in boards)
+
+    assert len(closers) == 1
+    closing = closers[0]
+    assert closing["location"] == "landing-upper"
+    assert closing["pieces"] == 1 and closing["layup"] == "one board"
+    assert closing["finished_width_in"] == pytest.approx(3.5)  # full stock blank ordered
+    assert "rip to 1.00\" face" in closing["stock_note"]
+    assert "0.625\" coverage" in closing["stock_note"]
+    assert closing["rough_board_feet"] == pytest.approx(
+        boards[0]["rough_board_feet"] / boards[0]["pieces"], abs=0.05)
+
+    # The landing rectangles are 42-1/4" and 52-1/4" deep. The nosing occupies 11";
+    # board courses cover the remainder, including the 5/8" closing-course coverage.
+    field_depth_by_location = {
+        "landing-lower": 10 * 3.125,
+        "landing-upper": 13 * 3.125 + 0.625,
+    }
+    assert field_depth_by_location["landing-lower"] == pytest.approx(31.25)
+    assert field_depth_by_location["landing-upper"] == pytest.approx(41.25)
+    assert not _use(rows, "stair landing deck")
 
 
 def test_a_coverage_field_is_boards_and_never_a_panel(rows):
@@ -306,6 +335,7 @@ def test_the_csv_and_the_markdown_carry_the_same_rows_and_the_species(rows, tmp_
 
     assert "species" in MILLWORK_COLUMNS, "the mill sorts its pile by species first"
     assert "layup" in MILLWORK_COLUMNS
+    assert "location" in MILLWORK_COLUMNS
 
     flat = _flat_rows(rows)
     assert len(flat) == len(rows)
@@ -319,6 +349,13 @@ def test_the_csv_and_the_markdown_carry_the_same_rows_and_the_species(rows, tmp_
     read_back = list(csv_module.DictReader(path.open(encoding="utf-8")))
     assert [entry["species"] for entry in read_back] == [
         str(entry["species"]) for entry in flat]
+    landing_indexes = [index for index, row in enumerate(rows)
+                       if str(row["use"]).startswith("stair landing ")]
+    assert len(landing_indexes) == 5
+    for index in landing_indexes:
+        for column in ("use", "location", "milling_profile", "stock_note", "element_tags"):
+            expected = "" if flat[index][column] is None else str(flat[index][column])
+            assert read_back[index][column] == expected
 
     text = _markdown(rows)
     # One table row per schedule row, plus the header and its rule.
@@ -328,3 +365,5 @@ def test_the_csv_and_the_markdown_carry_the_same_rows_and_the_species(rows, tmp_
         assert species in text
     assert "Rough board feet by species" in text
     assert "sawn timber" in text and "edge-glued panel" in text
+    assert "landing-lower" in text and "landing-upper" in text
+    assert "rip to 1.00\" face" in text and "0.625\" coverage" in text

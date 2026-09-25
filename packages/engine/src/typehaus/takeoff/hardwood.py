@@ -19,9 +19,9 @@ different instruction and a different rough quantity:
 * ``one board`` — a stool, a shelf, a tread. The overwhelming majority.
 * ``edge-glued panel`` — a finished face wider than any board the supply can produce, so it
   is jointed up from two or more. The count is on the row, not left to the reader.
-* ``boards`` — a *surface* rather than a piece: a stair landing is a field of boards laid
-  side by side over its framing, the way a floor is. There is no glue and there is no one
-  board; there are N of them, and the schedule says how many and how wide.
+* ``boards`` — a *surface* rather than a piece: an unconfigured stair landing is a field of
+  boards laid side by side over its framing, the way a floor is. Explicit landing millwork
+  instead expands that field into one cut-list row per board course.
 * ``sawn timber`` — cut to its finished section from the log, not built up from board
   stock. Its rough size is the finished section plus a dressing skim, and nothing else.
 
@@ -85,8 +85,9 @@ _PROFILE_FACE_FACTOR: dict[str, float] = {
 _FLAT_FACE_FACTOR = 1.0
 
 #: Order the schedule groups by. A mill reads it top to bottom as one day's work.
-_USE_ORDER = ("window stool", "shelf", "stair tread", "stair landing deck", "floor",
-              "wainscot", "wall liner", "timber post")
+_USE_ORDER = ("window stool", "shelf", "stair tread", "stair landing nosing",
+              "stair landing board", "stair landing closing board", "stair landing deck",
+              "floor", "wainscot", "wall liner", "timber post")
 
 
 def hardwood_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -202,7 +203,7 @@ def _piece_row(use: str, material_ref: str, materials: Mapping[str, object], pie
         "pieces": pieces,
         "finished_thickness_in": round(thickness_in, 3),
         "finished_width_in": round(width_in, 3),
-        "finished_length_in": round(length_in, 2),
+        "finished_length_in": round(length_in, 3),
         "finished_board_feet": round(
             pieces * thickness_in * width_in * length_in / _SQIN_PER_BF_IN, 1),
         "nominal_quarters": quarters,
@@ -318,26 +319,33 @@ def _shelf_rows(model: ResolvedModel, materials: Mapping[str, object],
 def _stair_rows(model: ResolvedModel, materials: Mapping[str, object],
                 standard: MillworkStandard | None,
                 max_board_width_in: float | None) -> list[dict[str, object]]:
-    """Treads and landing decks for the flights the house says are hardwood.
+    """Treads and landing finishes for the flights the house says are hardwood.
 
     Counted off the resolved members, exactly as ``takeoff/stairs.py`` does, so a stair with
     winders schedules the winder blanks it really generated. A winder bills at its wide end:
     that is the blank the shop cuts the taper from.
     """
-    if standard is None or standard.tread_material_ref is None or not standard.tread_stairs:
+    if standard is None:
         return []
     from typehaus.resolve.framing.profiles import cross_section
 
     material_ref = standard.tread_material_ref
-    scope = set(standard.tread_stairs)
+    scope = set(standard.tread_stairs) if material_ref is not None else set()
+    landing_spec = standard.landing_deck
+    landing_scope = set(landing_spec.stair_refs) if landing_spec is not None else set()
+    if not scope and not landing_scope:
+        return []
     also = {"also_in_framing": True, "also_in_stair_finish": True}
     tread_groups: dict[tuple[float, ...], tuple[int, list[str]]] = {}
     deck_groups: dict[tuple[float, ...], tuple[int, list[str]]] = {}
+    landing_rows: list[dict[str, object]] = []
     for stair in model.stairs:
-        if stair.tag not in scope:
+        if stair.tag not in scope and stair.tag not in landing_scope:
             continue
         for member in stair.members:
             if member.category not in ("tread", "winder", "landing"):
+                continue
+            if member.category != "landing" and stair.tag not in scope:
                 continue
             # A walking surface lies FLAT, so its thickness is the narrow face of its
             # section and the board's own width is the wide one, whichever order the
@@ -347,7 +355,26 @@ def _stair_rows(model: ResolvedModel, materials: Mapping[str, object],
             board_in = max(section.width_m, section.depth_m) * _M_TO_IN
             key = (round(thickness_in, 3), round(board_in, 2),
                    round(member.length_m * _M_TO_IN, 2))
-            groups = deck_groups if member.category == "landing" else tread_groups
+            if member.category == "landing" and landing_spec is not None \
+                    and stair.tag in landing_scope:
+                landing_rows.extend(_landing_deck_rows(
+                    stair.tag, member.child_key, member.length_m * _M_TO_IN,
+                    stair.tread_depth_m / 0.0254,
+                    board_face_width_in=landing_spec.board_face_width.inches,
+                    board_coverage_width_in=landing_spec.board_coverage_width.inches,
+                    field_thickness_in=landing_spec.field_thickness.inches,
+                    field_material_ref=landing_spec.field_material_ref,
+                    nosing_material_ref=landing_spec.nosing_material_ref,
+                    nosing_thickness_in=landing_spec.nosing_thickness.inches,
+                    nosing_profile=landing_spec.nosing_profile,
+                    landing_width_in=board_in,
+                    materials=materials,
+                    max_board_width_in=max_board_width_in,
+                    also=also))
+                continue
+            if material_ref is None:
+                continue
+            groups = (deck_groups if member.category == "landing" else tread_groups)
             count, tags = groups.get(key, (0, []))
             groups[key] = (count + 1, tags + [stair.tag])
     rows = []
@@ -355,13 +382,59 @@ def _stair_rows(model: ResolvedModel, materials: Mapping[str, object],
         rows.append(_piece_row("stair tread", material_ref, materials, count,
                                thickness, run, width, max_board_width_in, tags, also))
     for (thickness, depth, length), (count, tags) in deck_groups.items():
-        # A landing is a SURFACE, laid up out of however many boards its width takes, the
-        # same way the floor it walks onto is. It resolves as one member because that is
-        # what the framing pass needs; asking a mill for a 44-5/8" board is what happens
-        # when a schedule takes that member literally.
+        # Legacy landing declarations remain an area-like field row. A house that supplies
+        # ``landing_deck`` gets its surface decomposed into nosing and board courses below.
         rows.append(_piece_row("stair landing deck", material_ref, materials, count,
                                thickness, depth, length, max_board_width_in, tags, also,
                                layup=_LAYUP_FIELD))
+    return rows + landing_rows
+
+
+def _landing_deck_rows(stair_tag: str, landing_key: str,
+                       landing_depth_in: float, nosing_depth_in: float,
+                       *, board_face_width_in: float, board_coverage_width_in: float,
+                       field_thickness_in: float, field_material_ref: str,
+                       nosing_material_ref: str, nosing_thickness_in: float,
+                       nosing_profile: str, landing_width_in: float,
+                       materials: Mapping[str, object],
+                       max_board_width_in: float | None,
+                       also: Mapping[str, object]) -> list[dict[str, object]]:
+    """Expand one landing surface into its nosing, full courses and optional closing rip.
+
+    The T&G closing course is ordered as a full-width blank; its stock quantity therefore
+    remains honest even though the installer rips away most of its face width.
+    """
+    field_depth_in = landing_depth_in - nosing_depth_in
+    if field_depth_in <= 1e-9:
+        return []
+    full_courses = int(math.floor(field_depth_in / board_coverage_width_in + 1e-9))
+    closing_coverage_in = field_depth_in - full_courses * board_coverage_width_in
+    rows: list[dict[str, object]] = [_piece_row(
+        "stair landing nosing", nosing_material_ref, materials, 1,
+        nosing_thickness_in, nosing_depth_in, landing_width_in, max_board_width_in,
+        [stair_tag], also, profile=nosing_profile)]
+    rows[0]["location"] = landing_key
+    if full_courses:
+        rows.append(_piece_row(
+            "stair landing board", field_material_ref, materials, full_courses,
+            field_thickness_in, board_face_width_in, landing_width_in, max_board_width_in,
+            [stair_tag], also, profile="T&G"))
+        rows[-1]["location"] = landing_key
+        rows[-1]["stock_note"] = (
+            f'{landing_key}: {full_courses} full courses, '
+            f'{full_courses * board_coverage_width_in:.3f}" net coverage')
+    if closing_coverage_in > 1e-9:
+        tongue_allowance_in = board_face_width_in - board_coverage_width_in
+        closing_face_in = closing_coverage_in + tongue_allowance_in
+        row = _piece_row(
+            "stair landing closing board", field_material_ref, materials, 1,
+            field_thickness_in, board_face_width_in, landing_width_in, max_board_width_in,
+            [stair_tag], also, profile="T&G")
+        row["stock_note"] = (
+            f'{landing_key}: order one {board_face_width_in:.2f}" T&G blank; rip to '
+            f'{closing_face_in:.2f}" face for {closing_coverage_in:.3f}" coverage')
+        row["location"] = landing_key
+        rows.append(row)
     return rows
 
 

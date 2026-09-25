@@ -10,6 +10,7 @@ and -3'-1" in the garage-side strips; the south yard is -3'-4".
 
 from __future__ import annotations
 
+from typehaus.geometry import rect
 from typehaus import (
     AccentRule,
     GridLayout,
@@ -39,8 +40,7 @@ RG_STONE = inch(6)
 _SLOPE_FT = RG_SIDE_SLOPE * RG_PONDING.feet
 
 
-def _rect(x0: float, y0: float, x1: float, y1: float):
-    return (pt(ft(x0), ft(y0)), pt(ft(x1), ft(y0)), pt(ft(x1), ft(y1)), pt(ft(x0), ft(y1)))
+_rect = rect
 
 
 # Zone 3 (rim and side slopes): 'Jazz' on the house bluestem grid; zone 1 (the floor):

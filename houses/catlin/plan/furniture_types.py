@@ -1,15 +1,24 @@
 """House-local furniture catalog for items specific to the Catlin plan.
 
 Only items *made to fit this house* belong here: nothing here is a product anyone would
-reuse across plans (the test for house-local). Curtain rods and access panels are
-``plan_symbol=None`` on purpose — a rod at 7'-0" and a panel in a wall face are not
-floor-plan objects, so drawing a glyph would put a rectangle where the room is empty. They
-exist to be *scheduled and billed*, and to sit in 3D at the height someone builds them at.
+reuse across plans (the test for house-local). The curtain rods, access panels and closet
+shelving this house places are library rows (``library.placeables.allowances``).
 """
 
 from __future__ import annotations
 
 from library.placeables import front_zone, open_corner_zone
+from library.placeables.allowances import (
+    ACCESS_PANEL_1414,
+    ACCESS_PANEL_1429,
+    ACCESS_PANEL_CLG_3029,
+    CLOSET_SHELF_36,
+    CLOSET_SHELF_ROD_60,
+    CLOSET_SHELF_ROD_84,
+    CLOSET_SHELF_ROD_96,
+    CURTAIN_ROD_48,
+    CURTAIN_ROD_84,
+)
 
 from typehaus.model import (
     BuiltInBookcaseBay,
@@ -46,21 +55,9 @@ STUDY_BUILT_IN_BOOKCASE = FurnitureType(
     source="Catlin study fixed casework: front y=105 5/8 in.; x=272..368 3/4 in.; three 31 1/4 in. clear bays with 60/42/30 in. tops and 5/4/3 horizontal boards; 2 5/8 in. west filler closes to W-A-SN-WR.",
 )
 
-_ROD_SOURCE = ("plans/TODO.md — window treatments. Width is the rod, not the opening: a "
-               "rod runs past the RO on both sides so the stack sits on wall, not glass.")
 # 48" covers every main-storey window in the house — the widest RO on a rod is 30"
 # (WT-3048), which leaves 9" of stackback each side. 84" is D-M-BALC's french pair (60"
 # RO, 12" each side). Depth is the bracket projection, height the rod and finial.
-CURTAIN_ROD_48 = FurnitureType(
-    tag="FT-CURTAIN-ROD-48", name='Curtain rod, 48"',
-    footprint=(inch(48), inch(4)), height=inch(2),
-    plan_symbol=None, mount=_WALL_MOUNT, source=_ROD_SOURCE,
-)
-CURTAIN_ROD_84 = FurnitureType(
-    tag="FT-CURTAIN-ROD-84", name='Curtain rod, 84"',
-    footprint=(inch(84), inch(4)), height=inch(2),
-    plan_symbol=None, mount=_WALL_MOUNT, source=_ROD_SOURCE,
-)
 # --- the porch enclosure track -------------------------------------------------------
 # NOT A CURTAIN ROD. 2026-09-03: the two 114" rods and the two 98" side rods were replaced
 # by a snap-carrier aluminium curtain TRACK, the hardware a screened-porch enclosure is
@@ -106,20 +103,8 @@ PORCH_TRACK_102 = FurnitureType(
     plan_symbol=None, mount=Mount(kind=MountKind.CEILING), source=_TRACK_SOURCE,
 )
 
-_PANEL_SOURCE = ("plans/TODO.md — plumbing access. Framed metal panel in a finished wall "
-                 "face; size is the clear opening, depth the frame's projection.")
 # 14x14 is the tub waste-and-overflow size, 14x29 the wall-hung WC carrier size — the
 # carrier is a tall frame and the panel has to reach the whole of it.
-ACCESS_PANEL_1414 = FurnitureType(
-    tag="FT-ACCESS-PANEL-1414", name='Access panel, 14" x 14"',
-    footprint=(inch(14), inch(1)), height=inch(14),
-    plan_symbol=None, mount=_WALL_MOUNT, source=_PANEL_SOURCE,
-)
-ACCESS_PANEL_1429 = FurnitureType(
-    tag="FT-ACCESS-PANEL-1429", name='Access panel, 14" x 29"',
-    footprint=(inch(14), inch(1)), height=inch(29),
-    plan_symbol=None, mount=_WALL_MOUNT, source=_PANEL_SOURCE,
-)
 # ** A CEILING PANEL IS A DIFFERENT SHAPE OF TYPE, NOT A REUSE OF THE TWO ABOVE. ** Those
 # two are WALL mounts: their `footprint` is (width, frame projection) and their `height` is
 # the vertical dimension of the opening. Lay one in a ceiling and the plan rectangle comes
@@ -138,16 +123,6 @@ ACCESS_PANEL_1429 = FurnitureType(
 # the CLOSET the return plenum, which is exactly what IMC 601.5(7) forbids. A hinged, gasketed
 # door is the compliant version of the same convenience: air does not enter through it, so it
 # is a service hatch and not an inlet.
-ACCESS_PANEL_CLG_3029 = FurnitureType(
-    tag="FT-ACCESS-PANEL-CLG-3029", name='Ceiling access panel, 30" x 29", gasketed',
-    footprint=(inch(30), inch(29)), height=inch(1),
-    plan_symbol=None, mount=Mount(kind=MountKind.CEILING),
-    source=("plans/TODO.md — mechanical access. Hinged, gasketed framed panel in a finished "
-            "ceiling face; plan size is the clear opening, height the frame's projection. "
-            "Sized to SF-S-HP1's framed opening AO-S-HP1-AP, which heads off one ladder rung "
-            "to make it. The gasket is not a nicety: the cavity above is return-side, and an "
-            "unsealed lid in a closet ceiling is IMC 601.5(7)'s return-air-from-a-closet."),
-)
 
 # --- built-in millwork ----------------------------------------------------------------
 #
@@ -626,38 +601,7 @@ SOFA_84_SEAT_BAND = FurnitureType(
 # depth of floor the room does not have, and a plan that draws the closet empty reads as
 # room that is there. They are WALL-mounted at rod height, so nothing stands on the floor —
 # the symbol is the reach, not an obstruction.
-_CLOSET_SOURCE = (
-    "Ventilated epoxy-coated steel shelf on 12 ga. wall standards and brackets, with the "
-    "integral hang rod — ClosetMaid/Rubbermaid-class, the ordinary reach-in fit-out. "
-    "Standards land on studs; a 16\" shelf on 24\" bracket spacing carries a loaded rod. "
-    "Mounted at 66\" so a full-length coat (54\"-58\") hangs clear of the floor with the "
-    "shelf above it, which is what the mudroom closet is for (plans/TODO.md)."
-)
 
-CLOSET_SHELF_ROD_60 = FurnitureType(
-    tag="FT-CLOSET-SHELFROD-60", name='Closet shelf and rod, 60" x 16"',
-    footprint=(inch(60), inch(16)), height=inch(1),
-    storage=True, work_surface=False, plan_symbol="bookcase",
-    mount=_WALL_MOUNT, source=_CLOSET_SOURCE,
-)
-CLOSET_SHELF_ROD_96 = FurnitureType(
-    tag="FT-CLOSET-SHELFROD-96", name='Closet shelf and rod, 96" x 16"',
-    footprint=(inch(96), inch(16)), height=inch(1),
-    storage=True, work_surface=False, plan_symbol="bookcase",
-    mount=_WALL_MOUNT, source=_CLOSET_SOURCE,
-)
-CLOSET_SHELF_ROD_84 = FurnitureType(
-    tag="FT-CLOSET-SHELFROD-84", name='Closet shelf and rod, 84" x 16"',
-    footprint=(inch(84), inch(16)), height=inch(1),
-    storage=True, work_surface=False, plan_symbol="bookcase",
-    mount=_WALL_MOUNT, source=_CLOSET_SOURCE,
-)
-CLOSET_SHELF_36 = FurnitureType(
-    tag="FT-CLOSET-SHELF-36", name='Closet linen shelf, 36" x 12"',
-    footprint=(inch(36), inch(12)), height=inch(1),
-    storage=True, work_surface=False, plan_symbol="bookcase",
-    mount=_WALL_MOUNT, source=_CLOSET_SOURCE,
-)
 
 
 # --- RM-M-BATH2, the over-toilet cabinet -------------------------------------------------

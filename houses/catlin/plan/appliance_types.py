@@ -41,6 +41,7 @@ from __future__ import annotations
 from typehaus.model import ApplianceType, Service, ServicePort, ft, inch
 
 from library.placeables import front_zone
+from library.placeables.appliances import BAR_REFRIGERATOR_24, BAR_REFRIGERATOR_CUBE_19
 
 # --- laundry ---------------------------------------------------------------------------
 #
@@ -281,18 +282,7 @@ FRIGIDAIRE_ALL_FREEZER = ApplianceType(
 # plus fridge is a bar; add a range or a cooktop and the studio becomes a second dwelling
 # unit, and IRC R302.3's two-family separation lands on the floor and the centre wall.
 # Do not add one here.
-BAR_REFRIGERATOR = ApplianceType(
-    tag="APPL-BAR-FRIDGE-24",
-    name='24" undercounter beverage refrigerator (class allowance)',
-    footprint=(inch(24), inch(24)), height=inch(34),
-    plan_symbol="refrigerator",
-    needs=frozenset({Service.POWER_120}),
-    ports=(ServicePort(tag="power", service=Service.POWER_120,
-                       position=(ft(0), ft(0), ft(1))),),
-    source='Undercounter all-refrigerator, 24" nominal (24" x 24" x 34"), 120V/15A '
-           "cord-and-plug, no water connection. CLASS ALLOWANCE: final appliance selection by "
-           "owner, unlike every other type in this file.",
-)
+BAR_REFRIGERATOR = BAR_REFRIGERATOR_24
 
 
 # ** AND THE 24" ONE DOES NOT FIT THE KITCHENETTE THE OWNER BOUGHT (2026-09-09). ** The
@@ -309,19 +299,7 @@ BAR_REFRIGERATOR = ApplianceType(
 #
 # POWER_120 only, NO ICE MAKER LINE, and NOTHING THAT COOKS — both arguments above carry over
 # verbatim and neither is weakened by the appliance getting smaller.
-BAR_REFRIGERATOR_CUBE = ApplianceType(
-    tag="APPL-BAR-FRIDGE-CUBE-19",
-    name='19" cube refrigerator, under the SUNNERSTA worktop (class allowance)',
-    footprint=(inch(19), inch(19)), height=inch(20),
-    plan_symbol="refrigerator",
-    needs=frozenset({Service.POWER_120}),
-    ports=(ServicePort(tag="power", service=Service.POWER_120,
-                       position=(ft(0), ft(0), ft(1))),),
-    source='Cube all-refrigerator, ~1.7 cu ft (19" x 19" x 20" nominal), 120V/15A '
-           "cord-and-plug, no water connection, sized to sit in FT-STUDIO-KITCHENETTE-4422's "
-           "cavity. CLASS ALLOWANCE: final appliance selection by owner, and the envelope "
-           "itself is provisional until the unit's clear opening is measured.",
-)
+BAR_REFRIGERATOR_CUBE = BAR_REFRIGERATOR_CUBE_19
 
 
 APPLIANCE_TYPES = (LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER,

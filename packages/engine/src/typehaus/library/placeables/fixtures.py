@@ -318,3 +318,34 @@ LAUNDRY_SINK = FixtureType(
 STARTER_FIXTURE_TYPES = (TOILET, LAVATORY, VANITY, TUB, TUB_SHOWER, SHOWER, KITCHEN_SINK,
                          FLOOR_DRAIN, TOILET_WALL_HUNG, LAVATORY_COMPACT, WALL_HYDRANT,
                          WALL_HYDRANT_SELF_DRAINING, LAUNDRY_SINK)
+
+
+# --- vanity ladder ----------------------------------------------------------------------
+#
+# Sink-base vanities at the stock widths (24/30/36/48). ``-SHALLOW`` is 18" deep — the depth
+# the boxed big-box combos (cabinet and top together) come in — and ``-SINGLE`` 21". The 21"
+# front zone is a design convention, not a code minimum: UPC 402.5 names water closets and
+# bidets only. No product: a house names its own with ``model_copy(update={"product_ref": ...})``.
+# Opt-in (``VANITY_TYPES``), not in STARTER_FIXTURE_TYPES.
+_VANITY_SOURCE = ('Vanity sink base with a one-piece top and integral bowl, finished counter '
+                  '36" (NKBA Bathroom Planning Guideline 7 allows 32"-43")')
+
+
+def _vanity(width: int, depth: int, name: str, kind: str) -> FixtureType:
+    return FixtureType(
+        tag=f"FX-VANITY-{width}-{kind}", name=name,
+        footprint=(inch(width), inch(depth)), height=inch(41.5),
+        plan_symbol="vanity", basin=True,
+        needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+        clearances=(front_zone(inch(width), inch(depth), inch(21), "lavatory front clearance"),),
+        source=_VANITY_SOURCE,
+    )
+
+
+VANITY_24_SHALLOW = _vanity(24, 18, 'Vanity, 24" single basin, shallow', "SHALLOW")
+VANITY_30_SHALLOW = _vanity(30, 18, 'Vanity, 30" single basin, shallow', "SHALLOW")
+VANITY_30_SINGLE = _vanity(30, 21, 'Vanity, 30" single basin', "SINGLE")
+VANITY_36_SHALLOW = _vanity(36, 18, 'Vanity, 36" single basin, shallow', "SHALLOW")
+VANITY_48_SINGLE = _vanity(48, 21, 'Vanity, 48" single basin with drawer bank', "SINGLE")
+VANITY_TYPES = (VANITY_24_SHALLOW, VANITY_30_SHALLOW, VANITY_30_SINGLE, VANITY_36_SHALLOW,
+                VANITY_48_SINGLE)

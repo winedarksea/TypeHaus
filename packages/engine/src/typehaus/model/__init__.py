@@ -102,6 +102,7 @@ from typehaus.model.millwork import (
     MillworkStandard,
     ShelfBank,
     ShelfBay,
+    StairLandingMillwork,
     WindowStool,
 )
 from typehaus.model.paneling import PanelingSpan, WallPaneling
@@ -340,7 +341,8 @@ __all__ = [
     "Soffit", "SoffitOpening",
     "FloorHeat", "FinishZone",
     "PanelingSpan", "WallPaneling", "WallBacking", "BracedWallPanel",
-    "Countertop", "MillworkStandard", "ShelfBank", "ShelfBay", "WindowStool",
+    "Countertop", "MillworkStandard", "StairLandingMillwork", "ShelfBank", "ShelfBay",
+    "WindowStool",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",

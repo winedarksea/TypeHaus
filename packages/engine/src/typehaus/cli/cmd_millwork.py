@@ -18,7 +18,7 @@ from typehaus.findings import Severity
 
 #: The mill's column set: what to cut, how many, to what finished size, from what stock,
 #: with what profile — and whether it can come off one board.
-MILLWORK_COLUMNS = ("use", "species", "material", "pieces", "finished_size",
+MILLWORK_COLUMNS = ("use", "location", "species", "material", "pieces", "finished_size",
                     "coverage_sqft", "nominal_stock", "milling_profile", "layup",
                     "boards_per_piece", "board_width_in", "rough_width_in",
                     "rough_board_feet", "rough_surface_sqft", "stock_note", "element_tags")

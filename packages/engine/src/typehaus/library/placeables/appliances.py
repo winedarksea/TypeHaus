@@ -149,3 +149,27 @@ DISPOSAL = ApplianceType(
 STARTER_APPLIANCE_TYPES = (REFRIGERATOR, GAS_RANGE, ELECTRIC_RANGE, DISHWASHER, DRYER,
                            MICROWAVE_OTR, FREEZER_UPRIGHT, HOOD_RECIRC, WASHER,
                            WASHER_DRYER_STACKED, DISPOSAL)
+
+
+# Undercounter all-refrigerators for a wet bar. POWER_120 only, no water line. Opt-in: not
+# in STARTER_APPLIANCE_TYPES.
+BAR_REFRIGERATOR_24 = ApplianceType(
+    tag="APPL-BAR-FRIDGE-24",
+    name='24" undercounter beverage refrigerator (class allowance)',
+    footprint=(inch(24), inch(24)), height=inch(34), plan_symbol="refrigerator",
+    needs=frozenset({Service.POWER_120}),
+    ports=(ServicePort(tag="power", service=Service.POWER_120,
+                       position=(ft(0), ft(0), ft(1))),),
+    source='Undercounter all-refrigerator, 24" nominal (24" x 24" x 34"), 120V/15A '
+           "cord-and-plug, no water connection. " + REFERENCE,
+)
+BAR_REFRIGERATOR_CUBE_19 = ApplianceType(
+    tag="APPL-BAR-FRIDGE-CUBE-19",
+    name='19" cube refrigerator (class allowance)',
+    footprint=(inch(19), inch(19)), height=inch(20), plan_symbol="refrigerator",
+    needs=frozenset({Service.POWER_120}),
+    ports=(ServicePort(tag="power", service=Service.POWER_120,
+                       position=(ft(0), ft(0), ft(1))),),
+    source='Cube all-refrigerator, ~1.7 cu ft (19" x 19" x 20" nominal), 120V/15A '
+           "cord-and-plug, no water connection. " + REFERENCE,
+)

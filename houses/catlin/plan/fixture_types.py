@@ -16,6 +16,13 @@ Nothing here duplicates the library.
 from __future__ import annotations
 
 from library.placeables import front_zone
+from library.placeables.fixtures import (
+    VANITY_24_SHALLOW as _LIB_VANITY_24_SHALLOW,
+    VANITY_30_SHALLOW as _LIB_VANITY_30_SHALLOW,
+    VANITY_30_SINGLE as _LIB_VANITY_30_SINGLE,
+    VANITY_36_SHALLOW as _LIB_VANITY_36_SHALLOW,
+    VANITY_48_SINGLE as _LIB_VANITY_48_SINGLE,
+)
 from plan.fixture_types_wc import WC_AND_SHOWER_TYPES
 from typehaus.model import FixtureType, Service, inch
 
@@ -208,17 +215,9 @@ BATH2_VANITY_48 = FixtureType(
 # bowl's 15" side band (x=41.41") and the east wall's face (x=68.62") -- 27.21", so a 24"
 # cabinet fits with 3.2" to spare and a 30" one does not. 18" deep is forced: at 21" the
 # 21" front zone would reach y=316.39" against a south wall face at 313.63".
-VANITY_24_SHALLOW = FixtureType(
-    tag="FX-VANITY-24-SHALLOW",
-    name='Vanity, 24" single basin, shallow',
-    footprint=(inch(24), inch(18)),
-    height=inch(41.5),
-    plan_symbol="vanity",
-    basin=True,
-    product_ref="PROD-SWAN-CONTOUR",
-    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(front_zone(inch(24), inch(18), inch(21), "lavatory front clearance"),),
-    source='Small-bath vanity, owner selection 2026-08-30. 24" x 18" carcass, 25" x 19" '
+VANITY_24_SHALLOW = _LIB_VANITY_24_SHALLOW.model_copy(update={
+    "product_ref": "PROD-SWAN-CONTOUR",
+    "source": 'Small-bath vanity, owner selection 2026-08-30. 24" x 18" carcass, 25" x 19" '
            'one-piece SOLID-SURFACE top with an integral coved bowl, finished counter 36" '
            '(comfort height; NKBA Bathroom Planning Guideline 7 allows 32"-43"). One sink '
            'base, two doors, one full-depth adjustable shelf (SB-M-BATH1-VAN). This is the '
@@ -226,70 +225,46 @@ VANITY_24_SHALLOW = FixtureType(
            'boxed together for roughly the price of the top alone -- which is why 18" is '
            'the cheap depth here and not a compromise. Replaces an 18" x 14" wall-hung '
            'basin that had no cabinet at all.',
-)
+})
 
 # RM-S-VANITY, the double-vanity alcove off the second-storey landing, and RM-S-SUITEBATH's
 # west half. 30" is the stock size that fits both. Shallow because the alcove is only 40.62"
 # deep: at 18" the front zone stops at y=273.62" against a north face at y=272.0", and at
 # 21" it would overrun by 1.38".
-VANITY_30_SHALLOW = FixtureType(
-    tag="FX-VANITY-30-SHALLOW",
-    name='Vanity, 30" single basin, shallow',
-    footprint=(inch(30), inch(18)),
-    height=inch(41.5),
-    plan_symbol="vanity",
-    basin=True,
-    product_ref="PROD-SWAN-CONTOUR",
-    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(front_zone(inch(30), inch(18), inch(21), "lavatory front clearance"),),
-    source='Vanity, owner selection 2026-08-30. 30" x 18" carcass, 31" x 19" '
+VANITY_30_SHALLOW = _LIB_VANITY_30_SHALLOW.model_copy(update={
+    "product_ref": "PROD-SWAN-CONTOUR",
+    "source": 'Vanity, owner selection 2026-08-30. 30" x 18" carcass, 31" x 19" '
            'one-piece SOLID-SURFACE top with an integral coved bowl, finished counter 36". One '
            'sink base, two doors, one full-depth adjustable shelf. TWO of these stand side '
            'by side in RM-S-VANITY under one 61" double top -- which is how a 60" double '
            'vanity is actually built and bought, and it keeps two drains, two traps and '
            'two lavatories in the fixture schedule rather than collapsing them into one.',
-)
+})
 
 # RM-S-SUITEBATH's south wall. 31.76" between the water closet's 15" side band (x=149.81")
 # and the tub-shower's west face (x=181.57"), so 30" is the largest stock width that fits.
 # The room is 71" deep, so this one keeps the standard 21".
-VANITY_30_SINGLE = FixtureType(
-    tag="FX-VANITY-30-SINGLE",
-    name='Vanity, 30" single basin',
-    footprint=(inch(30), inch(21)),
-    height=inch(41.5),
-    plan_symbol="vanity",
-    basin=True,
-    product_ref="PROD-SWAN-CONTOUR",
-    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(front_zone(inch(30), inch(21), inch(21), "lavatory front clearance"),),
-    source='Primary-suite bath vanity, owner selection 2026-08-30. 30" x 21" carcass '
+VANITY_30_SINGLE = _LIB_VANITY_30_SINGLE.model_copy(update={
+    "product_ref": "PROD-SWAN-CONTOUR",
+    "source": 'Primary-suite bath vanity, owner selection 2026-08-30. 30" x 21" carcass '
            '(Menards Quality One VDB3021 / KraftMaid vanity sink base class), 31" x 22" '
            'one-piece SOLID-SURFACE top with an integral coved bowl, finished counter 36". One '
            'sink base, two doors, one full-depth adjustable shelf (SB-S-SUITEBATH-VAN).',
-)
+})
 
 # RM-B-BATH (basement, 86.62" x 39.61") and RM-A-STUBATH (attic guest bath). Both have far
 # more wall than 36" -- the constraint in each is elsewhere. In the basement it is
 # D-B-BATH's swing: the door's arc reaches the east wall, and a 21"-deep cabinet is caught
 # by it at every position on that wall while an 18"-deep one clears from the north face on.
 # In the attic the vanity is held east of the west-wall receptacle and west of the shower.
-VANITY_36_SHALLOW = FixtureType(
-    tag="FX-VANITY-36-SHALLOW",
-    name='Vanity, 36" single basin, shallow',
-    footprint=(inch(36), inch(18)),
-    height=inch(41.5),
-    plan_symbol="vanity",
-    basin=True,
-    product_ref="PROD-SWAN-CONTOUR",
-    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(front_zone(inch(36), inch(18), inch(21), "lavatory front clearance"),),
-    source='Vanity, owner selection 2026-08-30. 36" x 18" carcass, 37" x 19" '
+VANITY_36_SHALLOW = _LIB_VANITY_36_SHALLOW.model_copy(update={
+    "product_ref": "PROD-SWAN-CONTOUR",
+    "source": 'Vanity, owner selection 2026-08-30. 36" x 18" carcass, 37" x 19" '
            'one-piece SOLID-SURFACE top with an integral coved bowl, finished counter 36". One '
            'sink base, two doors, one full-depth adjustable shelf. 36" is the widest of '
            'the three volume stock sizes (24/30/36) and the last one before the price step '
            'up to 48". Used twice: RM-B-BATH and RM-A-STUBATH.',
-)
+})
 
 # RM-S-BATH1, the second-storey hall bath. The east wall gives 46.5" of usable run -- bounded
 # north by D-S-BATH1's swing arc and south by FURN-S-BATH1-SHELF, the shower's return panel.
@@ -297,16 +272,8 @@ VANITY_36_SHALLOW = FixtureType(
 # far north as the swing allows the cabinet runs y 345.75"..393.75", scribing to the shelf
 # with 0.75" to spare. It is the only vanity in the house wide enough to carry a drawer bank
 # without giving up a full-size sink base, so it is the only one that gets one.
-VANITY_48_SINGLE = FixtureType(
-    tag="FX-VANITY-48-SINGLE",
-    name='Vanity, 48" single basin with drawer bank',
-    footprint=(inch(48), inch(21)),
-    height=inch(41.5),
-    plan_symbol="vanity",
-    basin=True,
-    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(front_zone(inch(48), inch(21), inch(21), "lavatory front clearance"),),
-    source='Hall-bath vanity, owner selection 2026-08-30, top revised 2026-09-06. 48" x '
+VANITY_48_SINGLE = _LIB_VANITY_48_SINGLE.model_copy(update={
+    "source": 'Hall-bath vanity, owner selection 2026-08-30, top revised 2026-09-06. 48" x '
            '21" carcass, 49" x 22" QUARTZ top with a Kohler Caxton K-20000-0 undermount '
            '(PROD-KOHLER-K-20000) -- this and the 51" are the two busiest decks and the '
            'only two that are fabricated rather than bought boxed. Finished counter 36". '
@@ -315,7 +282,7 @@ VANITY_48_SINGLE = FixtureType(
            'the NORTH end. The drawer bank is the ~1.5x-per-inch cabinet in the house and '
            'is bought here only because 48" leaves room for it beside a full sink base; '
            'every other bathroom takes doors and a shelf instead.',
-)
+})
 
 # ---------------------------------------------------------------------------
 # THE TOPS CHANGED, AND IT IS THE BEST CLEANABILITY-PER-DOLLAR MOVE IN THE HOUSE (2026-09-06)

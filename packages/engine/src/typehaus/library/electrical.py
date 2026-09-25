@@ -185,3 +185,33 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         control="timer",
     ),
 )
+
+
+# --- panelboards ---------------------------------------------------------------------------
+#
+# A ladder of load centres by bus rating, deliberately NOT in ALL_ELECTRICAL_DEVICE_TYPES: a
+# house opts in to the one it installs (``*PANEL_TYPES`` or a single row), because a panel
+# nobody placed has no business in a catalog. ``service_amps`` is the panel's OWN main —
+# ``code.NEC_705_12_interconnection`` reads it before the service size, so a feeder panel
+# must state it. ``bus_amps`` is stated only where it exceeds the main (a backfed bus).
+_PANEL_SOURCE = ("UL 67 panelboard / load centre class (NEC 408); spaces and bus rating per "
+                 "the selected product's label")
+
+
+def _panel(tag: str, name: str, width, height, *, spaces: int, main: int,
+           bus: int | None = None) -> ElectricalDeviceType:
+    return ElectricalDeviceType(
+        tag=tag, name=name, footprint=(width, inch(4)), height=height, plan_symbol="panel",
+        spaces=spaces, service_amps=main, bus_amps=bus, source=_PANEL_SOURCE,
+        ports=(ServicePort(tag="service", service=Service.POWER_240,
+                           position=(ft(0), ft(0), ft(0))),))
+
+
+PANEL_TYPES = (
+    _panel("ED-T-PANEL-100A", "100A load centre, 20 spaces", inch(14), ft(2),
+           spaces=20, main=100),
+    _panel("ED-T-PANEL-200A", "200A main, 200A bus, 20 spaces", inch(16), ft(2, 6),
+           spaces=20, main=200, bus=200),
+    _panel("ED-T-PANEL-225A", "225A bus, 200A main, 54 spaces", inch(20), ft(3),
+           spaces=54, main=200, bus=225),
+)

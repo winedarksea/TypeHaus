@@ -25,6 +25,7 @@ Product references live in ``source`` so a substitution is a one-line, reviewabl
 from __future__ import annotations
 
 from plan.lighting_types_decor import DECORATIVE_LUMINAIRE_TYPES
+from library.lighting import luminaire_class
 from typehaus import ElectricalDeviceType, LuminaireForm, Service, ServicePort, ft, inch
 from typehaus.model import LuminaireType
 
@@ -82,32 +83,13 @@ AMBIENT_LUMINAIRE_TYPES = (
     # matters (Revit's Initial Color Temperature, IFC's light source, the E-602 schedule):
     # two CCTs in one room have to read as two schedule rows or the electrician cannot tell
     # which module goes in which can. Do not "deduplicate" these two into one entry.
-    LuminaireType(tag="ED-T-LT-CAN4-4000", name='4" recessed can, 4000K, white regressed trim',
-                  form=LuminaireForm.RECESSED_CAN, type_mark="A1",
-                  footprint=(inch(5), inch(5)), height=inch(2), plan_symbol="recessed-can",
-                  lamp="LED module, field replaceable, set to 4000K", watts=12.0,
-                  lumens=950.0, cct_k=4000, cri=90, dimmable=True, load_va=12.0,
-                  ports=_POWER_120,
-                  # ** A1 IS NOT A DEDUPLICATION TARGET, AND NEITHER ARE ITS PLACEMENTS. **
-                  # The four A1 cans in RM-M-LIVING are a deliberate warm/cool scene —
-                  # an interleaved diamond symmetric about (27', 7') on its own dimmer leg
-                  # ED-M-LIVING-SW-DAY. Two colour temperatures in the one room is an owner
-                  # preference here, not the defect it is in the kitchen, where the panels
-                  # were a second CCT nobody chose.
-                  #
-                  # ** NO product_ref, 2026-09-06. ** It pointed at
-                  # PROD-LOTUS-LL4SR-30K-WH — the *3000 K* SKU — while the source below
-                  # forbids a selectable module and demands a fixed 4000 K one. The
-                  # reference contradicted the specification; ED-T-LT-CAN3 is the
-                  # precedent for naming the requirement and leaving the part number
-                  # blank until the 4000 K tap is confirmed against a datasheet.
-                  source="Lotus LL4SR class, 4\" deeply regressed white trim, in the 4000K "
+    luminaire_class("ED-T-LT-CAN4-4000").model_copy(update={"type_mark": "A1", "source": "Lotus LL4SR class, 4\" deeply regressed white trim, in the 4000K "
                          "tap. ** BUY A FIXED-CCT MODULE, NEVER A 5CCT SELECTABLE ONE: ** "
                          "the DIP switch gets set wrong constantly, one can at the wrong "
                          "temperature in a run of eight is a screaming defect, and a "
                          "dedicated phosphor gives better R9 than a warm/cool blend. Two "
                          "schedule rows is how the electrician tells them apart, which is "
-                         "the reason A1 exists at all."),
+                         "the reason A1 exists at all."}),
     # Same housing, wet-listed: a can over a tub or inside a shower enclosure is in a wet
     # location, and every bath can here is specified that way rather than sorting them by
     # which side of the curtain they fall on.
@@ -127,24 +109,14 @@ AMBIENT_LUMINAIRE_TYPES = (
     # guessing a depth from a sibling is how the 6" above got in. Confirm the sheet, then
     # fix it. Every ED-T-LT-CAN3 in this house is in a flat joist-bay ceiling, so nothing
     # currently turns on the number.
-    LuminaireType(tag="ED-T-LT-CAN3", name='3" recessed can, white regressed trim',
-                  form=LuminaireForm.RECESSED_CAN, type_mark="C",
-                  footprint=(inch(3.75), inch(3.75)), height=inch(5),
-                  plan_symbol="recessed-can",
-                  lamp="LED module, field replaceable", watts=9.0, lumens=650.0,
-                  cct_k=3000, cri=90, dimmable=True, load_va=9.0, ports=_POWER_120,
-                  source='3" deeply regressed white trim, IC airtight, in the Lotus '
+    luminaire_class("ED-T-LT-CAN3").model_copy(update={"type_mark": "C", "source": '3" deeply regressed white trim, IC airtight, in the Lotus '
                          'LL3SR class (no product_ref: the 3" SKU was not confirmed against '
                          'a datasheet, and only the 4" was). Halls, closets, the laundry and '
                          'the two stairs — 650 lm is the circulation tier and 900 would '
-                         'over-light every one of them.'),
+                         'over-light every one of them.'}),
 
     # --- D: flat panels (kitchen, fitness, workshop) ----------------------------------
-    LuminaireType(tag="ED-T-LT-PANEL", name="2x4 edge-lit LED flat panel",
-                  form=LuminaireForm.PANEL, type_mark="D",
-                  footprint=(ft(4), ft(2)), height=inch(1.5), plan_symbol="panel-light",
-                  lamp="LED integrated", watts=40.0, lumens=4800.0, cct_k=4000, cri=80,
-                  dimmable=True, load_va=40.0, ports=_POWER_120),
+    luminaire_class("ED-T-LT-PANEL").model_copy(update={"type_mark": "D"}),
 
     # --- E: the 24V cove tape (shadow-gap ceilings, stair railing) --------------------
     # No ports and no plan symbol: this type is never placed as a device. It is named by a
@@ -182,15 +154,9 @@ AMBIENT_LUMINAIRE_TYPES = (
     # ``wet_rated`` rather than ``damp_rated``: this is inside the tub-shower's own alcove,
     # in the zone water is directed at. ``electrical.wet_location`` walks LightRuns as well
     # as fixtures, so it grades this one without any extension.
-    LuminaireType(tag="ED-T-LT-NICHE-SNLT",
-                  name="Lit shower niche, 24V tape in a KERDI-BOARD-SNLT channel",
-                  form=LuminaireForm.STRIP, type_mark="E1",
-                  footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
-                  lamp="LED tape, 24V DC, IP67", watts_per_ft=3.0, lumens=250.0,
-                  cct_k=3000, cri=90, voltage=24, dimmable=True, wet_rated=True,
-                  source="Schluter-KERDI-BOARD-SNLT prefabricated bonded-waterproof niche "
+    luminaire_class("ED-T-LT-NICHE-SNLT").model_copy(update={"type_mark": "E1", "source": "Schluter-KERDI-BOARD-SNLT prefabricated bonded-waterproof niche "
                          "with an integrated LIPROTEC-LLP profile; LIPROTEC-ES 24V driver "
-                         "(here the shared ED-T-LT-PSU-60 in the ceiling above)."),
+                         "(here the shared ED-T-LT-PSU-60 in the ceiling above)."}),
 
     # --- U: the kitchen's under-cabinet task tape -------------------------------------
     # A SEPARATE TYPE FROM E, NOT A LONGER RUN OF IT, and the whole reason is output.
@@ -261,18 +227,11 @@ AMBIENT_LUMINAIRE_TYPES = (
     # a strip that sprays the sky. `advisory.dark_sky_lighting` exempts the ceiling-mounted
     # soffit runs (the soffit is their shield) and grades the wall-mounted gable run on this
     # flag, so the flag and the detail must stay in step. 3000K for the same section's ceiling.
-    LuminaireType(tag="ED-T-LT-LINEAR-EXT",
-                  name="Exterior linear LED in an aluminium channel, IP66",
-                  form=LuminaireForm.STRIP, type_mark="W",
-                  footprint=(inch(2.5), inch(2.5)), height=inch(2.5),
-                  lamp="LED module, 120V integral driver, 4' modular sections",
-                  watts_per_ft=2.5, lumens=210.0, cct_k=3000, cri=90, voltage=120,
-                  dimmable=True, damp_rated=True, wet_rated=True, full_cutoff=True,
-                  source="Extruded aluminium exterior linear, gasketed frosted lens, IP66, "
+    luminaire_class("ED-T-LT-LINEAR-EXT").model_copy(update={"type_mark": "W", "source": "Extruded aluminium exterior linear, gasketed frosted lens, IP66, "
                          "120V integral ELV/TRIAC driver, 3000K / 90 CRI, ~2.5 W/ft at "
                          "~210 lm/ft, in 4' sections with wet-location feed-through "
                          "fittings. Aperture mounted facing DOWN (full cutoff). No "
-                         "product_ref until a datasheet is read."),
+                         "product_ref until a datasheet is read."}),
 
     # --- X: the sauna's under-bench tape (2026-09-13) ---------------------------------
     # ** THIS REPLACES THE FIBRE-OPTIC KIT, AND THE REASON IS MONEY, NOT PHYSICS. **
@@ -327,27 +286,14 @@ AMBIENT_LUMINAIRE_TYPES = (
     # lighting equipment to be *listed*, and UL 8800 is that listing — it admits only damp-
     # or wet-rated horticultural luminaires. RM-S-PLANT is held at 70% RH and is misted, so
     # these take the wet end of it.
-    LuminaireType(tag="ED-T-LT-TUBE6",
-                  name="6' suspended linear tube, wet, UL 8800 horticultural",
-                  form=LuminaireForm.LINEAR_TUBE, type_mark="F",
-                  footprint=(ft(6), inch(3)), height=ft(2, 3),
-                  plan_symbol="suspended-linear-light",
-                  lamp="T8 LED, multi-watt selectable 25/40/50 W", watts=50.0,
-                  lumens=6000.0, cct_k=3500, cri=90, dimmable=True, damp_rated=True,
-                  wet_rated=True, load_va=50.0, ports=_POWER_120,
-                  source="6' linear LED grow tube, black, 120-277V, on a T8 harness + cable "
+    luminaire_class("ED-T-LT-TUBE6").model_copy(update={"type_mark": "F", "source": "6' linear LED grow tube, black, 120-277V, on a T8 harness + cable "
                          "suspension kit; specified UL 8800 listed and wet-location rated "
-                         "per NEC 410 Part XVI (notes/plant_room.md)"),
+                         "per NEC 410 Part XVI (notes/plant_room.md)"}),
 
     # --- G: the suite's over-bed wall lamp --------------------------------------------
-    LuminaireType(tag="ED-T-LT-WALL-LINEAR", name="36\" linear LED wall lamp",
-                  form=LuminaireForm.WALL_LAMP, type_mark="G",
-                  footprint=(ft(3), inch(3)), height=inch(4), plan_symbol="linear-light",
-                  lamp="LED integrated", watts=18.0, lumens=1500.0, cct_k=3000, cri=90,
-                  dimmable=True, load_va=18.0, ports=_POWER_120,
-                  source="3000K with the house standard (was 2700K): this lamp is in the "
+    luminaire_class("ED-T-LT-WALL-LINEAR").model_copy(update={"type_mark": "G", "source": "3000K with the house standard (was 2700K): this lamp is in the "
                          "same sightline as the suite's cans, and 2700K makes white oak "
-                         "read orange."),
+                         "read orange."}),
 
     # --- T: RM-M-PANTRY's vertical slot -----------------------------------------------
     # ** A POINT DEVICE, AND A ``LightRun`` CANNOT BE ONE. ** ``LightRun.path`` is a PLAN

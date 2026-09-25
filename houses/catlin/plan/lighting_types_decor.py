@@ -13,6 +13,7 @@ numbered suffix (J1, J2, N1, N2, P1) rather than the next free letter.
 
 from __future__ import annotations
 
+from library.lighting import luminaire_class
 from typehaus import LuminaireForm, Service, ServicePort, ft, inch
 from typehaus.model import LuminaireType
 
@@ -23,20 +24,10 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # --- H/J/K: sconces ---------------------------------------------------------------
     # Up-and-down for the basement theatre, on a dimmer: the traditional answer for a room
     # you want lit enough to walk through and dark enough to watch something in.
-    LuminaireType(tag="ED-T-LT-SCONCE-UD", name="Up/down wall sconce",
-                  form=LuminaireForm.SCONCE, type_mark="H",
-                  footprint=(inch(6), inch(4)), height=inch(12),
-                  plan_symbol="sconce-updown",
-                  lamp="LED integrated, 2 x 6 W", watts=12.0, lumens=700.0, cct_k=3000,
-                  cri=90, dimmable=True, load_va=12.0, ports=_POWER_120,
-                  source="3000K with the house standard (was 2700K)."),
+    luminaire_class("ED-T-LT-SCONCE-UD").model_copy(update={"type_mark": "H", "source": "3000K with the house standard (was 2700K)."}),
     # Down-spot for the studies. Set back from the window wall so it lights the desk
     # without putting a lit head in the glass after dark (notes: "more privacy at night").
-    LuminaireType(tag="ED-T-LT-SCONCE-SPOT", name="Adjustable down-spot wall sconce",
-                  form=LuminaireForm.SCONCE, type_mark="J",
-                  footprint=(inch(5), inch(4)), height=inch(9), plan_symbol="sconce-spot",
-                  lamp="LED integrated", watts=8.0, lumens=600.0, cct_k=3000, cri=90,
-                  dimmable=True, load_va=8.0, ports=_POWER_120),
+    luminaire_class("ED-T-LT-SCONCE-SPOT").model_copy(update={"type_mark": "J"}),
     # ``integral_switch`` is what exempts it from ``electrical.lighting_controls``.
     # ED-A-STUDIO-SCONCE sits in RM-A-STUDIO, 30' from the loft's own switching, so the
     # integral switch is a convenience there rather than a necessity.
@@ -44,29 +35,18 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # gasketed lens and a corrosion-resistant housing — RM-S-PLANT is a damp location
     # throughout and a wet one where it is misted, and this one is 6'-0" up a wall the room
     # condenses against.
-    LuminaireType(tag="ED-T-LT-SCONCE-SPOT-WET",
-                  name="Adjustable down-spot wall sconce, wet location",
-                  form=LuminaireForm.SCONCE, type_mark="J2",
-                  footprint=(inch(5), inch(5)), height=inch(7), plan_symbol="sconce-spot",
-                  lamp="LED integrated", watts=9.0, lumens=700.0, cct_k=3000, cri=90,
-                  dimmable=True, damp_rated=True, wet_rated=True, load_va=9.0,
-                  ports=_POWER_120,
-                  source="ED-T-LT-SCONCE-SPOT in a wet-location housing (notes/plant_room.md). "
+    luminaire_class("ED-T-LT-SCONCE-SPOT-WET").model_copy(update={"type_mark": "J2", "source": "ED-T-LT-SCONCE-SPOT in a wet-location housing (notes/plant_room.md). "
                          "** NOT UNUSED: ** placed once, as ED-S-PLANT-SPOT in "
                          "plan/placeables.py, not in a lighting*.py file. A review that "
                          "greps only the lighting files reads this row as dead and it is "
-                         "not."),
+                         "not."}),
     # ** J1 IS NOT A DUPLICATE OF J WITH A SWITCH ON IT. ** Both its uses are places that
     # deliberately CANNOT take a wall switch: a 43 sf attic nook with no wall on the way in
     # (plan/lighting_attic.py) and the under-stair closet (plan/lighting.py).
     # ``integral_switch=True`` is exactly what exempts both from
     # ``electrical.lighting_controls`` — deleting J1 means adding two switches with nowhere
     # to put them.
-    LuminaireType(tag="ED-T-LT-SPOT-SW", name="Down-spot wall sconce, switch on fixture",
-                  form=LuminaireForm.SCONCE, type_mark="J1",
-                  footprint=(inch(5), inch(4)), height=inch(9), plan_symbol="sconce-spot",
-                  lamp="LED integrated", watts=8.0, lumens=600.0, cct_k=3000, cri=90,
-                  integral_switch=True, load_va=8.0, ports=_POWER_120),
+    luminaire_class("ED-T-LT-SPOT-SW").model_copy(update={"type_mark": "J1"}),
     # ** V: THE SAUNA'S FIBRE-OPTIC KIT — CATALOG-ONLY SINCE 2026-09-13. NOT A LIVE
     # SPECIFICATION. ** Nothing references this type. RM-B-SAUNA is lit by two 24V
     # under-bench runs of ED-T-LT-STRIP24-SAUNA (mark X, plan/lighting_types.py) instead. It
@@ -189,16 +169,10 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # proprietary driver is the part that dies at 12-20 years and on an import there is no
     # replacement channel at all, so ** budget a spare driver with the order. ** Dim it on
     # its own Lutron DVELV-300P, never ganged with the kitchen cans.
-    LuminaireType(tag="ED-T-LT-PENDANT", name='48" linear dining chandelier',
-                  form=LuminaireForm.CHANDELIER, type_mark="M",
-                  footprint=(ft(4), inch(4)), height=ft(3, 6), plan_symbol="pendant",
-                  lamp="LED integrated, replaceable ELV/TRIAC driver", watts=36.0,
-                  lumens=2400.0, cct_k=3000, cri=90, dimmable=True, load_va=36.0,
-                  ports=_POWER_120,
-                  source="Owner selection 2026-09-06: an imported linear fixture, unit not "
+    luminaire_class("ED-T-LT-PENDANT").model_copy(update={"type_mark": "M", "source": "Owner selection 2026-09-06: an imported linear fixture, unit not "
                          "yet chosen. TARGET THE SPECS, NOT THE LOOK — ~48\" long, "
                          "2000-3500 lm, 3000 K, CRI 90+, dimmable, 120 V, and a REAL "
-                         "UL/ETL/cETLus mark on the fixture itself."),
+                         "UL/ETL/cETLus mark on the fixture itself."}),
 
     # M1: the attic studio's bar pendant (2026-09-06). A separate mark from M, not a second
     # instance of it: M is a 4'-0" dining fixture and this would have hung over a 4'-7" bar
@@ -227,17 +201,11 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # 2'-6" assembly, not M's 3'-6": the ceiling over the bar's ORIGINAL centre-wall station
     # was 8'-6 3/4" (the 6:12 plane at x=16'-9"), and a 3'-6" drop would have left the shade
     # bottom at 5'-0 3/4" — head height at a counter you stand at.
-    LuminaireType(tag="ED-T-LT-PENDANT-BAR", name='36" linear bar pendant',
-                  form=LuminaireForm.CHANDELIER, type_mark="M1",
-                  footprint=(ft(3), inch(4)), height=ft(2, 6), plan_symbol="pendant",
-                  lamp="LED integrated, replaceable ELV/TRIAC driver", watts=24.0,
-                  lumens=1800.0, cct_k=3000, cri=90, dimmable=True, load_va=24.0,
-                  ports=_POWER_120,
-                  source="Owner selection 2026-09-06 for the attic studio's bar, unit not "
+    luminaire_class("ED-T-LT-PENDANT-BAR").model_copy(update={"type_mark": "M1", "source": "Owner selection 2026-09-06 for the attic studio's bar, unit not "
                          "yet chosen. TARGET THE SPECS, NOT THE LOOK — ~36\" long, "
                          "1800 lm or better (a brightness choice since 2026-09-10, NOT "
                          "the code number it was), 3000 K, CRI 90+, dimmable, 120 V, and a REAL "
-                         "UL/ETL/cETLus mark on the fixture itself."),
+                         "UL/ETL/cETLus mark on the fixture itself."}),
 
     # --- N: ceiling fans with a light kit ---------------------------------------------
     # A fan-light is a luminaire here, not Equipment: there is no fan ``EquipmentKind``, no
@@ -279,33 +247,18 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # the SKU is unconfirmed rather than invent a datasheet. TARGET THE SPECS — 52",
     # flush/hugger mount, <= 11" overall, DC motor, 1400 lm 3000 K CRI 90 integrated light,
     # and the same constant-hot + wall-control wiring as N.
-    LuminaireType(tag="ED-T-LT-FAN52-FLUSH",
-                  name='52" flush-mount ceiling fan with LED light kit',
-                  form=LuminaireForm.CEILING_FAN_LIGHT, type_mark="N3",
-                  footprint=(inch(52), inch(52)), height=inch(11),
-                  plan_symbol="ceiling-fan-light",
-                  lamp="LED integrated light kit", watts=17.0, lumens=1400.0, cct_k=3000,
-                  cri=90, dimmable=False, load_va=60.0, ports=_POWER_120,
-                  source="Low-ceiling hugger for RM-B-GYM (no product_ref: no flush-mount "
+    luminaire_class("ED-T-LT-FAN52-FLUSH").model_copy(update={"type_mark": "N3", "source": "Low-ceiling hugger for RM-B-GYM (no product_ref: no flush-mount "
                          "SKU has been confirmed against a datasheet). ** <= 11\" OVERALL "
                          "IS THE SPECIFICATION: ** the room's 95 3/8\" clear leaves nothing "
                          "spare against the 7'-0\" blade-to-floor minimum. ** A DC FAN "
                          "CANNOT BE SPEED-CONTROLLED BY ANY CONVENTIONAL WALL DIMMER: ** "
-                         "constant hot plus the hardwired wall control, as mark N."),
+                         "constant hot plus the hardwired wall control, as mark N."}),
     # The plant room's fan. Same 52" fan as N, in a wet-location listed housing with a
     # corrosion-resistant (sealed, non-ferrous) motor and gasketed light kit. N2 rather than
     # a retype of N: this is a different product on the quote, and the reason it is here —
     # a room that runs at 70% RH and condenses on its own glass — is not a reason the
     # bedrooms' fans should cost more.
-    LuminaireType(tag="ED-T-LT-FAN52-WET",
-                  name='52" ceiling fan with LED light kit, wet location',
-                  form=LuminaireForm.CEILING_FAN_LIGHT, type_mark="N2",
-                  footprint=(inch(52), inch(52)), height=ft(1, 6),
-                  plan_symbol="ceiling-fan-light",
-                  lamp="LED integrated light kit", watts=17.0, lumens=1400.0, cct_k=3000,
-                  cri=90, dimmable=False, damp_rated=True, wet_rated=True, load_va=60.0,
-                  ports=_POWER_120,
-                  source="NEC 2023 damp/wet location; RM-S-PLANT is a damp location throughout and wet where it is misted (notes/plant_room.md)"),
+    luminaire_class("ED-T-LT-FAN52-WET").model_copy(update={"type_mark": "N2", "source": "NEC 2023 damp/wet location; RM-S-PLANT is a damp location throughout and wet where it is misted (notes/plant_room.md)"}),
     # The porch fan. Damp rated because it lives under the balcony deck, open on three
     # sides — not wet rated: nothing lands on it, the deck above is the roof.
     # ** UPGRADED FROM DAMP TO WET, 2026-09-06, AND IN MINNESOTA THAT IS NOT A
@@ -362,32 +315,15 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # R is the garage-door light: a shielded down-only wall sconce beside D-G-OVERHEAD.
     # `form=SCONCE` rather than a new enum kind — the enum docstring discourages new
     # kinds, and a wall pack is a sconce that grew a cutoff hood.
-    LuminaireType(tag="ED-T-LT-SCONCE-EXT", name="Exterior wall sconce, full cutoff, wet",
-                  form=LuminaireForm.SCONCE, type_mark="R",
-                  footprint=(inch(6), inch(5)), height=inch(9), plan_symbol="sconce",
-                  lamp="LED integrated", watts=12.0, lumens=900.0, cct_k=3000, cri=90,
-                  damp_rated=True, wet_rated=True, full_cutoff=True, load_va=12.0,
-                  ports=_POWER_120,
-                  source="WAC WS-W2506 full-cutoff outdoor wall light, black, 3000K"),
+    luminaire_class("ED-T-LT-SCONCE-EXT").model_copy(update={"type_mark": "R", "source": "WAC WS-W2506 full-cutoff outdoor wall light, black, 3000K"}),
     # S is the porch flood: a narrow-throw spot aimed down off the balcony's centre
     # pillar. Same reasoning on the form — an adjustable exterior spot is the sconce-spot
     # family in a wet housing — and the cutoff is in the aiming shroud, which is why the
     # narrow beam is the point: it lights the deck, not the neighbourhood.
-    LuminaireType(tag="ED-T-LT-FLOOD-NARROW",
-                  name="Narrow-throw LED flood, full cutoff shroud, wet",
-                  form=LuminaireForm.SCONCE, type_mark="S",
-                  footprint=(inch(5), inch(5)), height=inch(8), plan_symbol="sconce-spot",
-                  lamp="LED integrated, 25 deg beam", watts=20.0, lumens=1800.0,
-                  cct_k=3000, cri=90, damp_rated=True, wet_rated=True, full_cutoff=True,
-                  load_va=20.0, ports=_POWER_120,
-                  source="RAB LFLED26 narrow flood + full-cutoff visor, black, 3000K"),
+    luminaire_class("ED-T-LT-FLOOD-NARROW").model_copy(update={"type_mark": "S", "source": "RAB LFLED26 narrow flood + full-cutoff visor, black, 3000K"}),
 
     # --- P: mirror lighting -----------------------------------------------------------
-    LuminaireType(tag="ED-T-LT-MIRROR", name='24" LED mirror light bar, damp',
-                  form=LuminaireForm.MIRROR_LIGHT, type_mark="P",
-                  footprint=(inch(24), inch(2)), height=inch(3), plan_symbol="linear-light",
-                  lamp="LED integrated", watts=16.0, lumens=1300.0, cct_k=3000, cri=90,
-                  dimmable=True, damp_rated=True, load_va=16.0, ports=_POWER_120),
+    luminaire_class("ED-T-LT-MIRROR").model_copy(update={"type_mark": "P"}),
     # The primary bath's lit mirror — the owner's requirement is an integrated LED mirror,
     # not a plain mirror flanked by sconces.
     #

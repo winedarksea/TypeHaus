@@ -36,6 +36,8 @@ an ``integrity.millwork_standard`` error rather than a silent precedence rule.
 
 from __future__ import annotations
 
+from pydantic import model_validator
+
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import ShelfProcurement
 from typehaus.model.registry import register_constructor, register_element
@@ -163,14 +165,46 @@ class Countertop(Element):
     profile: str = "eased"
 
 
+class StairLandingMillwork(HausModel):
+    """How a stair landing's finish boards and exposed nosing are made.
+
+    The resolved landing remains one structural surface. This declaration gives the millwork
+    takeoff the board profile and coverage needed to expand that surface into a cut list.
+    Nosing depth comes from the resolved stair's physical tread depth, so the edge stays
+    aligned when stair geometry changes.
+    """
+
+    stair_refs: tuple[str, ...]
+    field_material_ref: str
+    field_thickness: Length
+    board_face_width: Length
+    board_coverage_width: Length
+    nosing_material_ref: str
+    nosing_thickness: Length
+    nosing_profile: str = "bullnose + groove"
+
+    @model_validator(mode="after")
+    def widths_are_buildable(self) -> StairLandingMillwork:
+        if not self.stair_refs or len(set(self.stair_refs)) != len(self.stair_refs):
+            raise ValueError("landing millwork needs unique stair_refs")
+        if (self.field_thickness.meters <= 0 or self.nosing_thickness.meters <= 0
+                or self.board_face_width.meters <= 0
+                or self.board_coverage_width.meters <= 0
+                or self.board_coverage_width.meters > self.board_face_width.meters):
+            raise ValueError(
+                "landing board widths must be positive and coverage cannot exceed face")
+        return self
+
+
 @register_element
 class MillworkStandard(Element):
-    """The house's millwork defaults, declared once and derived over every window in scope.
+    """The house's millwork defaults, declared once for its scoped derived work.
 
     ``stool_assemblies`` / ``stool_rooms`` are the scope: a window gets a derived stool when
     its host wall's assembly tag is listed (and, when ``stool_rooms`` is non-empty, when the
-    wall bounds one of those rooms). Empty ``stool_assemblies`` derives nothing — a house
-    that has not opted in gets no stools, rather than 45 of them.
+    wall bounds one of those rooms). ``landing_deck`` separately declares the board courses
+    and nosing for its named stair landings. Empty scopes derive nothing — a house that has
+    not opted in gets no stools or landing cut lists.
     """
 
     stool_material_ref: str
@@ -187,6 +221,9 @@ class MillworkStandard(Element):
     # scopes no stair, which is what a house with no hardwood treads should say.
     tread_material_ref: str | None = None
     tread_stairs: tuple[str, ...] = ()
+    # Explicit landing finish construction. Empty means the older whole-surface row for
+    # stairs that have not declared field boards and a separate nosing.
+    landing_deck: StairLandingMillwork | None = None
     # The widest board the supply can produce. An owner-supply fact, not an engine constant
     # and not a price, so it belongs in the house exactly as ``prices.toml`` numbers do
     # (plans/01-decisions.md #28). ``takeoff/hardwood.py`` reads it for the ``layup`` column:
@@ -199,6 +236,7 @@ for _name, _obj in (
     ("ShelfBay", ShelfBay),
     ("ShelfBank", ShelfBank),
     ("Countertop", Countertop),
+    ("StairLandingMillwork", StairLandingMillwork),
     ("MillworkStandard", MillworkStandard),
 ):
     register_constructor(_name, _obj)
