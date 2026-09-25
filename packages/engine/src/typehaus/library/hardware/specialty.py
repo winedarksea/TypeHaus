@@ -23,16 +23,15 @@ from typehaus.hardware.catalog import (
 )
 from typehaus.library.hardware._common import _SIMPSON
 
-HP3_RAIL_CAP_BOLT = StructuralHardware(
-    tag="generic-ss316-rail-cap-bolt-38",
+SS316_HEX_BOLT_38 = StructuralHardware(
+    tag="generic-ss316-hex-bolt-38",
     name="3/8 in Type 316 stainless through-bolt with nut and washer",
     role=ROLE_MODELED_CONNECTOR,
     manufacturer="generic",
     model="SS316-BOLT-38",
-    source=("Generic 3/8-16 Type 316 stainless hex bolt, nut and washer; length is to suit "
-            "the HP3 aluminum rail-cap joint. Bolt Depot's Type 316 catalog lists the "
-            "bolt, 3/8-16 nut and washer separately: boltdepot.com/Hex_bolts_Stainless_"
-            "steel_316_3_8-16"),
+    source=("Generic 3/8-16 Type 316 stainless hex bolt, nut and washer; length to suit the "
+            "joint. Bolt Depot's Type 316 catalog lists the bolt, 3/8-16 nut and washer "
+            "separately: boltdepot.com/Hex_bolts_Stainless_steel_316_3_8-16"),
 )
 
 KBS_BEAM_HOLD_DOWN = StructuralHardware(

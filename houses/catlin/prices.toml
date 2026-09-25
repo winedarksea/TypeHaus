@@ -3905,7 +3905,7 @@
 # The sauna liner's board by name since 2026-09-24 (DuPont Thermax Sheathing, CCRR-0435 §5.5 —
 # R316.4 passes on the listing). Same band as generic foil polyiso until a quote says otherwise.
 "polyiso-foil-thermax" = { material = { low = 1.3, high = 2.4 }, labour = { low = 1.3, high = 2.3 } }  # 297.4 SF
-"sauna-shiplap" = { material = { low = 4.5, high = 9 }, labour = { low = 6, high = 11 } }  # 297.4 SF — retagged from `sauna-tg` 2026-08-28 (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate
+"catlin-sauna-shiplap" = { material = { low = 4.5, high = 9 }, labour = { low = 6, high = 11 } }  # 297.4 SF — retagged from `sauna-tg` 2026-08-28, then `sauna-shiplap` -> `catlin-sauna-shiplap` when it went house-local (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate
 # ** THE BIGGEST LINE IN THE HOUSE, and as of 2026-08-20 it is FOUR lines. ** One
 # `standing-seam` row used to carry all 6,322 SF at one rate. That was wrong in a specific,
 # expensive way: it billed the whole house at the mechanically-seamed roof's labour, and
@@ -4921,7 +4921,7 @@
 # and the BOM says which by carrying `also_in_*`. Only `walnut-tg` is priced here, because
 # only `walnut-tg` is billed nowhere else.
 #   oak          also_in_floor_finishes  -> priced in [floor_finishes], 557 SF, same number
-#   sauna-shiplap also_in_envelope_layers -> priced in [envelope_layers]
+#   catlin-sauna-shiplap also_in_envelope_layers -> priced in [envelope_layers]
 #   elm-timber   also_in_structural_solids, and carries no order_area_sqft (bills as timber)
 #   tile         the RM-B-SAUNA override — see the correction below, it is NOT a mirror
 #   marble-look-panel  billed here and nowhere else, like pet-felt-panel
@@ -4931,7 +4931,7 @@
 # $/SF on the order quantity, by material tag
 # "elm-timber" =    # 0 SF — timber, bills in structural_solids
 # "oak" =    # 557 SF — billed in [floor_finishes]
-# "sauna-shiplap" =    # 278 SF — billed in [envelope_layers]
+# "catlin-sauna-shiplap" =    # 278 SF — billed in [envelope_layers]
 # ** THE "billed in [floor_finishes]" CLAIM ON THIS ROW WAS FALSE, and is corrected here
 # rather than repeated (2026-09-02). ** [floor_finishes]'s `tile` is FLOOR area in other
 # rooms; WP-B-SAUNA-SPLASH is 45 SF of WALL tile on the sauna pan's two closed sides, and

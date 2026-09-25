@@ -63,7 +63,8 @@ def test_roof_bands_and_members_and_decks_are_catalogued(catlin_model):
 def test_a_solid_reports_what_it_is_made_of_not_concrete(catlin_model):
     """``section._solid_material``'s walk, moved into the resolver. A solid that hatches as
     concrete is right for a footing, but category alone cannot identify what a solid is made
-    of: this house has crushed-stone footings and KDAT screen slats.
+    of: this house has crushed-stone footings, a framed platform, a sod roof band and KDAT
+    screen slats.
     """
     by_category: dict[str, set[str]] = {}
     for element in catlin_model.geometry.elements:
@@ -80,9 +81,11 @@ def test_a_solid_reports_what_it_is_made_of_not_concrete(catlin_model):
     # of them, and they hatch and bill as stone — which is the point of reading the
     # material rather than assuming it from the category.
     assert by_category.get("footing") == {"concrete", "footing-crushed-stone"}
-    # Catlin's slab category currently contains concrete pours only. Other categories still
-    # prove that a solid's material comes from its catalog parts rather than its category.
+    # Since Phase 6b a `slab` solid is a pour; the non-pour kinds resolve to their own
+    # slab-family categories, and those are what must not read as concrete.
     assert by_category.get("slab") == {"concrete"}
+    assert by_category.get("slab_platform", set()) - {"concrete"}
+    assert by_category.get("slab_band", set()) - {"concrete"}
     assert by_category.get("screen_slat") == {"kdat"}
     assert "concrete" not in by_category.get("glazing", set())
 

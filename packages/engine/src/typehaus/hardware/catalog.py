@@ -124,9 +124,9 @@ ROLE_TIE_BLOCK = "tie_block"
 # while a cap seats the beam and takes uplift in one part. Both serve a post/beam joint and
 # ``hardware_for_role`` holds exactly one product per role, so they cannot share.
 ROLE_POST_CAP = "post_cap"
-# A size-keyed record for an authored Connector that names a purchasable part directly and
-# has no derived hardware role. ``hardware_by_model`` can find it, but no take-off selects it
-# through ``hardware_for_role``.
+# Parts an authored Connector names by part number (``Connector.size``), with no derived
+# role. Looked up by ``hardware_by_model`` only: never call ``hardware_for_role`` on it — it
+# holds several products, and that lookup demands exactly one.
 ROLE_MODELED_CONNECTOR = "modeled_connector"
 # A post held DOWN to the FRAMING it stands on. Its own role and deliberately not
 # ROLE_POST_BASE: a base is a formed stirrup that a post sits INSIDE, selected by the post
