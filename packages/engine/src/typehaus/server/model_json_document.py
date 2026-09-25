@@ -131,8 +131,13 @@ def _building_science(
     """
     if preferences is None:
         return None
-    from typehaus.checks.building_science.condensation import analyze_assembly
+    from typehaus.checks.building_science.condensation import (
+        analyze_assembly,
+        conditioned_envelope_assemblies,
+    )
     from typehaus.checks.building_science.wwr import analyze_wwr
+    from typehaus.checks.registry import CheckContext
+    from typehaus.checks.run import resolve_profile
     from typehaus.energy import estimate_block_load
 
     heating = model.plan.project.site.design_temp_heating
@@ -145,10 +150,12 @@ def _building_science(
                 heating_design_temp_f=heating.fahrenheit if heating else None,
                 preferences=preferences,
             ).as_dict()
-            # Resolved: a variant carries its stack on its base (#35), so the raw
-            # record would be analysed as a wall with no layers.
-            for assembly in (model.plan.library.resolve_assembly(a.tag)
-                             for a in model.plan.library.assemblies)
+            # Gated as the check is: only the conditioned-envelope assemblies it grades.
+            # Resolved: a variant carries its stack on its base (#35).
+            for assembly in (model.plan.library.resolve_assembly(tag)
+                             for tag in conditioned_envelope_assemblies(CheckContext(
+                                 plan=model.plan, model=model, preferences=preferences,
+                                 profile=resolve_profile(preferences))))
         ],
     }
 
