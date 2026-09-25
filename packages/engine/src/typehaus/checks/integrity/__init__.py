@@ -12,6 +12,7 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     reveal_alignment,
     roof_clearance,
     sheet_notes,
+    slab_kind,
     wall_layer_material,
     wall_stack,
 )

@@ -84,3 +84,9 @@ def is_pour_category(category: str) -> bool:
     """A cast pour (``SolidCategory.is_pour``). Unregistered: no."""
     row = SOLID_CATEGORIES.get(category)
     return row is not None and row.is_pour
+
+
+def is_pour_slab(category: str) -> bool:
+    """A ``Slab`` of kind ``pour`` — slab family and cast. Footings and pads are not."""
+    row = SOLID_CATEGORIES.get(category)
+    return row is not None and row.is_pour and row.slab_family == "slab"

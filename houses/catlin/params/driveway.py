@@ -65,7 +65,7 @@ _ring = ring
 
 
 # The uid is minted by typehaus.model.ids.new_uid(): `haus fmt` never visits params/.
-SLAB = Slab(uid="BQB250N77B", tag="SL-DW-DRIVE", assembly=ASSEMBLY,
+SLAB = Slab(uid="BQB250N77B", tag="SL-DW-DRIVE", kind="pour", assembly=ASSEMBLY,
             outline=_ring(OUTLINE), thickness=inch(4.0), top_elevation=TOP)
 
 IMPERVIOUS = (

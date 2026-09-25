@@ -11,7 +11,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.assembly import Layer, LayerExtent
 from typehaus.model.enums import LayerDatum
 from typehaus.model.patterns import matches as _matches
-from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.resolve.solid_categories import is_pour_slab
 
 
 def _err(check_id: str, msg: str, tags: tuple[str, ...] = (), hint: str | None = None,
@@ -518,7 +518,7 @@ def concrete_finish_needs_concrete_deck(ctx: CheckContext) -> list[Finding]:
 
     slabs_by_storey: dict[str, list[Polygon]] = {}
     for solid in ctx.model.solids:
-        if not in_slab_family(solid.category) or len(solid.outline) < 3:
+        if not is_pour_slab(solid.category) or len(solid.outline) < 3:
             continue
         footprint = Polygon(solid.outline)
         if not footprint.is_valid:

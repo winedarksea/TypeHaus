@@ -124,7 +124,7 @@ _CEILING_SCOPES = ("roof ceiling", "ceiling")
 # out, it fell through to the siding branch below and the below-grade waterproofing
 # scheduled after the roof was on — with ``insp/foundation_backfill`` ("Waterproofing,
 # drainage and backfill") waiting on it from the other side.
-_POUR_SCOPES = ("slab", "footing", "foundation wall")
+_POUR_SCOPES = (*sorted(categories_where(is_pour=True)), "foundation wall")
 
 
 def layer_trade(function: str | None, scope: str | None = None,

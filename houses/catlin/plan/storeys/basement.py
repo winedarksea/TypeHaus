@@ -1465,7 +1465,7 @@ ALARMS = [
 # The electric radiant zones are all on the storeys above — main.py and second.py.
 
 SLABS = [
-    Slab(uid="CBS501AAAA", tag="SL-B-FLOOR",
+    Slab(uid="CBS501AAAA", tag="SL-B-FLOOR", kind="pour",
          outline=(pt(ft(0), ft(0)), pt(ft(36), ft(0)), pt(ft(36), ft(36)),
                   pt(ft(0), ft(36))),
          thickness=inch(3.5), assembly="SLAB_FLOOR",

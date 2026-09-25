@@ -27,7 +27,7 @@ from typehaus.resolve.rebar.mats import lay_mat
 from typehaus.resolve.rebar.records import ResolvedRebarSet
 from typehaus.resolve.rebar.stock import Sink
 from typehaus.resolve.rebar.walls import WallBase, lay_wall, structure_layer, wall_frame
-from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.resolve.solid_categories import is_pour_slab
 
 _IN = 0.0254
 DEFAULT_COVER_IN = 1.5
@@ -92,7 +92,7 @@ def resolve_rebar(model) -> list[ResolvedRebarSet]:
     # The larger pour keeps an overlap's mat; ties by tag. Columns and beams are unaffected.
     for solid in sorted(model.solids, key=lambda s: (-_plan_area(s.outline), s.tag)):
         if solid.derived or not (solid.category in _SOLID_SCOPES
-                                  or in_slab_family(solid.category)):
+                                  or is_pour_slab(solid.category)):
             continue
         element = plan.by_tag(solid.tag)
         spec = getattr(element, "reinforcement", None) if element is not None else None

@@ -1714,20 +1714,8 @@
 # Labour sits under the sidewalk's (no pocket forms) and carries the K8 joint at the grade
 # beam, ~16 LF of 1" 40 psi XPS under traffic-rated PU sealant. PROPOSED 2026-09-23, owner's call.
 "slab:DRIVEWAY_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 450, high = 850 } }  # 2.59 cy, 210 SF, one pour
-# The FPSF wings under the sunken-garden slab (IRC R403.3) are `Slab` elements because a
-# horizontal band of rigid foam has no other element kind to be — see
-# params/sunken_garden.FROST_WINGS. They are 1" and 2" XPS and nothing else, so pricing them
-# out of this section's $/cy would order 0.22 cy of concrete that does not exist. Zero here,
-# by qualified key; the foam bills by the square foot in [envelope_layers] as "xps", off the
-# same assembly the model draws.
-"slab:FROST_WING_XPS_1IN" = { low = 0, high = 0 }  # 0.08 cy of foam — bills in [envelope_layers]
-"slab:FROST_WING_XPS_2IN" = { low = 0, high = 0 }  # 0.14 cy of foam — bills in [envelope_layers]
-# ** THIS ZERO IS LOAD-BEARING. ** SL-SG-FIELD is the sunken-garden court's open centre —
-# 160 sf of sand, fabric and stone, 18" deep — and it is a `Slab` for the same reason the
-# frost wings are. Delete this row and `cli/prices.candidate_keys` falls back to the bare
-# "slab" $/cy above and orders **8.2 cy of concrete that does not exist**. The build-up
-# bills by the square foot in [envelope_layers], off the same assembly the model draws.
-"slab:GARDEN_PUTTING_GREEN" = { low = 0, high = 0 }  # 8.15 cy of sand, stone and fabric — bills in [envelope_layers]
+# The FPSF frost wings and SL-SG-FIELD are kind="band" slabs (category slab_band), so the
+# bare "slab" $/cy no longer reaches them; their layers bill in [envelope_layers].
 # RESEARCHED 2026-08-18 — the suspended main-floor deck, priced apart from every other
 # slab in the house. `structural_solids` keys on solid CATEGORY, and "slab" is one
 # category covering two completely different jobs: a slab-on-grade is screeded on the
@@ -2136,7 +2124,7 @@
 # The 3/4" plywood over it is NOT here. It bills by the square foot as struct-1-plywood in
 # [envelope_layers] (6.3 SF net of the tub cutout); pricing it again here would double-bill
 # the sheet. Nor is the tile: that is [floor_finishes].
-"slab:TUBDECK_INT_PLY_CAP" = { material = { low = 625, high = 1500 }, labour = { low = 2000, high = 5000 } }  # 0.04 cy = ~26 bf; $25-60 mat + $80-200 lab
+"slab_platform:TUBDECK_INT_PLY_CAP" = { material = { low = 625, high = 1500 }, labour = { low = 2000, high = 5000 } }  # 0.04 cy = ~26 bf; $25-60 mat + $80-200 lab
 
 # Mirrors and markers — billed in their own sections, or in no section at all:
 # "conduit_data" =    # 0.02 cy
@@ -3143,7 +3131,7 @@
 # [plumbing_specialties] or it is billed twice.
 # NOT in this row, and each is billed elsewhere: the deck box's framing and insulation
 # ([framing], [envelope_layers], via TUBDECK_INT_2X4), the plywood cap
-# ("slab:TUBDECK_INT_PLY_CAP" and [envelope_layers]), the deck tile ([floor_finishes]),
+# ("slab_platform:TUBDECK_INT_PLY_CAP" and [envelope_layers]), the deck tile ([floor_finishes]),
 # the dedicated circuit and its outlet, and the two access panels.
 "FX-KOHLER-UNDERSCORE-6036" = { material = { low = 2200, high = 3100 }, labour = { low = 430, high = 1050 } }  # 1 ea
 # 60x30 acrylic or gelcoat one-piece unit, or the 3-piece kit a finished second floor takes
@@ -3861,7 +3849,6 @@
 # `icf-eps` is used by nothing but GARAGE_ICF_6 (plan/assemblies.py; GARAGE_ICF_6_BRICKLEDGE
 # was deleted with the brick wainscot on 2026-09-03), so zeroing it here is complete. The deck's stay-in-place form is a
 # DIFFERENT material (`eps-deck-form`, assemblies.py:1856) and is untouched.
-# Same pattern as "slab:FROST_WING_XPS_1IN/2" above: priced in one section, zeroed in the other.
 "icf-eps" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }  # 952.5 SF — billed inside GARAGE_ICF_6 in [wall_structure]
 # The main floor's EPS deck forms (2026-08-21), the horizontal cousin of the row above and
 # split the same way: **forms only**, with the ready-mix, reinforcing, pump and finish in

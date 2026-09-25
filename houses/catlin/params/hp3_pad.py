@@ -32,6 +32,7 @@ _PAD_Y0_IN, _PAD_Y1_IN = 446.25, 471.0
 _PAD_TOP = ft(-2, -8)
 
 HP3_PAD = Slab(
+    kind="pour",
     uid="MHP3PADAAA", tag="SL-M-HP3PAD", assembly="HP_PAD_ON_GRADE",
     outline=(pt(inch(_PAD_X0_IN), inch(_PAD_Y0_IN)), pt(inch(_PAD_X1_IN), inch(_PAD_Y0_IN)),
              pt(inch(_PAD_X1_IN), inch(_PAD_Y1_IN)), pt(inch(_PAD_X0_IN), inch(_PAD_Y1_IN))),

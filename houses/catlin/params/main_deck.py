@@ -515,6 +515,7 @@ EAST_FLOOR = FloorSystem(
 # What is left of the concrete: 414 SF over the dining end. Same tag and same uid as the
 # 1,233 SF slab it replaces, so the IFC GlobalId survives (decision #16).
 DECK = Slab(
+    kind="pour",
     uid="CMS501AAAA", tag="SL-M-DECK",
     outline=_rect(_CENTRE_X, _BAND_Y, _HOUSE, _HOUSE),
     thickness=DECK_DEPTH, assembly="DECK_EPS_INT",

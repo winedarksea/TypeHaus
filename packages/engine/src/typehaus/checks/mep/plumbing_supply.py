@@ -16,7 +16,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import PipeAccessoryKind, PipeSystem, Service
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.resolve.solid_categories import in_slab_family, is_pour_slab
 
 # N1103.4.2's bore threshold for hot-water pipe insulation: 3/4" nominal and larger.
 _INSULATION_MIN_BORE_M = 0.01905
@@ -204,17 +204,6 @@ def hot_water_insulation(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-def _is_concrete_assembly(ctx: CheckContext, assembly_ref: str | None) -> bool:
-    """True when the named assembly has a concrete layer
-    (``resolve/construction_assemblies.py``)."""
-    if not assembly_ref:
-        return False
-    assembly = ctx.plan.library.resolve_assembly(assembly_ref)
-    if assembly is None:
-        return False
-    return any(layer.material_ref == "concrete" for layer in assembly.layers)
-
-
 def _ceiling_above(ctx: CheckContext, point: tuple[float, float],
                    z: float) -> tuple[str, bool] | None:
     """What is directly overhead at ``point``: ``(tag, is_concrete)``, or None.
@@ -234,7 +223,7 @@ def _ceiling_above(ctx: CheckContext, point: tuple[float, float],
         if not Polygon(solid.outline).contains(probe):
             continue
         if best is None or solid.z0_m < best[0]:
-            best = (solid.z0_m, solid.tag, _is_concrete_assembly(ctx, solid.assembly))
+            best = (solid.z0_m, solid.tag, is_pour_slab(solid.category))
     for floor in ctx.model.floors:
         underside = floor.deck_bottom_at(*point)  # at the probe, on a tilted deck
         if underside <= z + 1e-6 or len(floor.deck_outline) < 3:

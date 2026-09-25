@@ -189,7 +189,7 @@ TIER_RISE_IN = (DECK_FINISH_FT - STAIR_BASE_FT) * 12 / 5   # five equal risers; 
 # only the strip past the tier above it is walked on. The flight runs west (run_reversed),
 # so the lowest tier is the longest and the easternmost.
 TIER_SLABS = [
-    Slab(uid=f"BWTS0{_i + 1}AAA", tag=f"SL-BW-TIER{_i + 1}",
+    Slab(uid=f"BWTS0{_i + 1}AAA", tag=f"SL-BW-TIER{_i + 1}", kind="pour",
          outline=rectangle(LANDING_EAST_FT, STAIR_Y0_FT,
                            STAIR_FOOT_X_FT - _i * TREAD_DEPTH_FT, STAIR_Y1_FT),
          thickness=inch(TIER_RISE_IN),

@@ -174,7 +174,7 @@ OPENINGS: dict[str, list[FloorOpening]] = {
 
 
 def _slab(leg: str, ring, top=TOP) -> Slab:
-    return Slab(uid=f"WKSB{leg}00000", tag=f"SL-WK-{leg}", assembly=ASSEMBLY,
+    return Slab(uid=f"WKSB{leg}00000", tag=f"SL-WK-{leg}", kind="pour", assembly=ASSEMBLY,
                 outline=_ring(ring), thickness=inch(4.0), top_elevation=top,
                 openings=tuple(o.tag for o in OPENINGS.get(leg, ())))
 

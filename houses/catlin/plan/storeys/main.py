@@ -2010,7 +2010,7 @@ FLOOR_OPENINGS = [
 # it would emit a ResolvedFinishZone and bill the deck as its own floor area inside a room
 # whose field finish already IS tile.
 SLABS = [
-    Slab(uid="W92SX7DVJ0", tag="SL-M-TUBDK",
+    Slab(uid="W92SX7DVJ0", tag="SL-M-TUBDK", kind="platform",
          outline=(pt(ft(4, 4), ft(16, 2.375)), pt(ft(7, 10.615), ft(16, 2.375)),
                   pt(ft(7, 10.615), ft(22, 0.615)), pt(ft(4, 4), ft(22, 0.615))),
          thickness=inch(2.25), assembly="TUBDECK_INT_PLY_CAP",

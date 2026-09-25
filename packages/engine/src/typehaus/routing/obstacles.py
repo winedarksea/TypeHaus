@@ -33,7 +33,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.resolve.solid_categories import is_pour_slab
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
@@ -232,7 +232,7 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
     from typehaus.resolve.mep_queries import concrete_bands
 
     for solid in model.solids:
-        if not (solid.category == "footing" or in_slab_family(solid.category)):
+        if not (solid.category == "footing" or is_pour_slab(solid.category)):
             continue
         poly = _polygon(solid.outline)
         if poly is None:

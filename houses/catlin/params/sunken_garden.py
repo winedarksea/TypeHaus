@@ -1552,6 +1552,7 @@ WALL_N_END_Y_FT = _y_wall_end       # W1/E1's north end, at the closure break
 
 
 GARDEN_SLAB = Slab(
+    kind="pour",
     uid="SGS501AAAA", tag="SL-SG-FLOOR", assembly="GARDEN_COURT_SLAB",
     outline=(pt(ft(_x_in_w), ft(_y_in_s)), pt(ft(_x_in_e), ft(_y_in_s)),
              pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n))),
@@ -1679,6 +1680,7 @@ GARDEN_FLOOR_OPENINGS = [
 # SL-SG-FLOOR's outline already spans the whole court, and which removes the hazard of a
 # frost finding ever naming SL-SG-FIELD instead of SL-SG-FLOOR.
 GARDEN_FIELD = Slab(
+    kind="band",
     uid="SGS502AAAA", tag="SL-SG-FIELD", assembly="GARDEN_PUTTING_GREEN",
     outline=(pt(ft(_field_x_w), ft(_field_y_s)), pt(ft(_field_x_e), ft(_field_y_s)),
              pt(ft(_field_x_e), ft(_field_y_n)), pt(ft(_field_x_w), ft(_field_y_n))),
@@ -1747,20 +1749,20 @@ _WING_X_E = (_x_in_e + _half) - SPEC.footing_width_in / 24.0   # 24.5, FT-SG-E1'
 FROST_WINGS = [
     # The two re-entrant corners, where the garden's own east and west retaining walls meet
     # the house and frost drives in from two directions at once: C = 40" each way, 2" XPS.
-    Slab(uid="SGFW01AAAA", tag="SL-SG-FROST-W", assembly="FROST_WING_XPS_2IN",
+    Slab(uid="SGFW01AAAA", tag="SL-SG-FROST-W", kind="band", assembly="FROST_WING_XPS_2IN",
          outline=(pt(ft(_WING_X_W), ft(_y_in_n - _WING_CORNER_FT)),
                   pt(ft(_WING_X_W + _WING_CORNER_FT), ft(_y_in_n - _WING_CORNER_FT)),
                   pt(ft(_WING_X_W + _WING_CORNER_FT), ft(_y_in_n)),
                   pt(ft(_WING_X_W), ft(_y_in_n))),
          thickness=inch(2.0), top_elevation=_WING_TOP),
-    Slab(uid="SGFW02AAAA", tag="SL-SG-FROST-E", assembly="FROST_WING_XPS_2IN",
+    Slab(uid="SGFW02AAAA", tag="SL-SG-FROST-E", kind="band", assembly="FROST_WING_XPS_2IN",
          outline=(pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n - _WING_CORNER_FT)),
                   pt(ft(_WING_X_E), ft(_y_in_n - _WING_CORNER_FT)),
                   pt(ft(_WING_X_E), ft(_y_in_n)),
                   pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n))),
          thickness=inch(2.0), top_elevation=_WING_TOP),
     # The run between them, along the wall: B = 24", 1" XPS.
-    Slab(uid="SGFW03AAAA", tag="SL-SG-FROST-N", assembly="FROST_WING_XPS_1IN",
+    Slab(uid="SGFW03AAAA", tag="SL-SG-FROST-N", kind="band", assembly="FROST_WING_XPS_1IN",
          outline=(pt(ft(_WING_X_W + _WING_CORNER_FT), ft(_y_in_n - _WING_ALONG_FT)),
                   pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n - _WING_ALONG_FT)),
                   pt(ft(_WING_X_E - _WING_CORNER_FT), ft(_y_in_n)),
@@ -1836,6 +1838,7 @@ _HP_PAD_Y0, _HP_PAD_Y1 = -3.333333, -0.833333
 _HP_PAD_TOP = ft(-2, -8)
 
 HP_PAD = Slab(
+    kind="pour",
     uid="SGHPADAAAA", tag="SL-SG-HPPAD", assembly="HP_PAD_ON_GRADE",
     outline=(pt(ft(_HP_PAD_X0), ft(_HP_PAD_Y0)), pt(ft(_HP_PAD_X1), ft(_HP_PAD_Y0)),
              pt(ft(_HP_PAD_X1), ft(_HP_PAD_Y1)), pt(ft(_HP_PAD_X0), ft(_HP_PAD_Y1))),
@@ -2238,6 +2241,7 @@ _y_porch_guard_block = _y_ax_front + 2.0 / 12.0
 _STAIR_PAD_X1 = WALK_D_X0 - WALK_GAP_FT  # 36.66' — the walk's west edge, less the joint
 
 STAIR_PAD = Slab(
+    kind="pour",
     uid="SGSPADAAAA", tag="SL-SG-STAIRPAD", assembly="HP_PAD_ON_GRADE",
     outline=(pt(ft(_PORCH_STAIR_X0), ft(_PORCH_STAIR_Y1)),
              pt(ft(_STAIR_PAD_X1), ft(_PORCH_STAIR_Y1)),

@@ -24,7 +24,7 @@ from typehaus.model.enums import AIR_SERVICE_DUCT_SYSTEM
 from typehaus.resolve.assembly_material import is_cast_beam
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import ResolvedModel, Ring
-from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.resolve.solid_categories import is_pour_slab
 
 #: The concrete a sleeve can be cast into, and the solids :func:`concrete_crossings` walks.
 _CONCRETE_SOLID_CATEGORIES = ("slab", "footing")
@@ -32,7 +32,7 @@ _CONCRETE_SOLID_CATEGORIES = ("slab", "footing")
 
 def is_concrete_host(category: str) -> bool:
     """A solid a run is cast through: a footing or any slab."""
-    return category == "footing" or in_slab_family(category)
+    return category == "footing" or is_pour_slab(category)
 #: How much non-concrete a solid's section needs before :func:`concrete_bands` will split
 #: it. A bond break, a vapour retarder or a slip sheet is not a route for a 2" drain; the
 #: 10" foam beam in an EPS deck form is.

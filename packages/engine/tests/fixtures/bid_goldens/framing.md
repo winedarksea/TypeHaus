@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** c73082caaa7c0c1c
+**Model hash:** 1d87b7e68ed260c8  
 **Lines:** 140
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -144,7 +144,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
 | Column — POST_KDAT (column:POST_KDAT) | 42 | bf | 4 placed, 0.6 SF plan; 0.13 cy in the takeoff | main |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 19.2 | bf | 3 placed, 0.3 SF plan; 0.06 cy in the takeoff | main |
-| Slab — TUBDECK_INT_PLY_CAP (slab:TUBDECK_INT_PLY_CAP) | 7.3 | SF | 1 placed, 7.3 SF plan; 0.05 cy in the takeoff | main |
+| Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | 7.3 | SF | 1 placed, 7.3 SF plan; 0.05 cy in the takeoff | main |
 
 ## Member protection tape
 
@@ -179,7 +179,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,244 | SF net |  | building |
 | Structural 1 plywood sheathing, 5/8" — roof (struct-1-plywood:0.625) | 1,547.9 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — roof (struct-1-plywood:0.75) | 882.8 | SF net |  | building |
-| Structural 1 plywood sheathing, 3/4" — slab (struct-1-plywood:0.75) | 7.3 | SF net |  | building |
+| Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | 7.3 | SF net |  | building |
 
 ## Wall structure
 
@@ -324,7 +324,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | PT-M-HP1-L1, PT-M-HP1-L2, PT-M-HP1-L3, PT-M-HP1-L4, PT-M-HP3-L1, PT-M-HP3-L2, PT-M-HP3-L3, PT-M-HP3-L4, PT-SG-HPB1, PT-SG-HPB2, PT-SG-HPB3, PT-SG-HPB4 |
 | Column — POST_KDAT (column:POST_KDAT) | PT-BW-CNW, PT-BW-CW, PT-BW-IC, PT-BW-IE |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRLAND-SE, P-M-STRWELL-S, P-M-STRWELL-SS |
-| Slab — TUBDECK_INT_PLY_CAP (slab:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |
+| Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |
 | butyl-tape, 1 1/2" on beam (butyl-tape) | BM-SG-LDGE, BM-SG-LDGW |
 | butyl-tape, 1 1/4" on deck (butyl-tape) | FS-BW-FLOOR, FS-BW-GARAGE, FS-SG-DECK |
 | butyl-tape, 1 1/2" on deck (butyl-tape) | FS-BW-FLOOR, FS-BW-GARAGE, FS-SG-DECK, FS-SG-PORCH |
@@ -339,7 +339,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | — |
 | Structural 1 plywood sheathing, 5/8" — roof (struct-1-plywood:0.625) | — |
 | Structural 1 plywood sheathing, 3/4" — roof (struct-1-plywood:0.75) | — |
-| Structural 1 plywood sheathing, 3/4" — slab (struct-1-plywood:0.75) | — |
+| Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | — |
 | STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | W-B-WELL, W-M-WELL |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-M-PORCH-HYD |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-S-BALC-HYD |

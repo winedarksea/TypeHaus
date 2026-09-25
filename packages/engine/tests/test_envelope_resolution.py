@@ -94,7 +94,8 @@ def _envelope_plan() -> PlanModel:
                          # above and below — so the derived envelope scope rightly drops it,
                          # and the fixture was only ever reaching the slab branch because
                          # the old scope asked no such question.
-                         Slab(uid="SL00000001", tag="SL-1", outline=(
+                         # "EXT" has no concrete, so the pour is authored (resolve/slab_kind.py).
+                         Slab(uid="SL00000001", tag="SL-1", kind="pour", outline=(
                              pt(ft(0), ft(0)), pt(ft(20), ft(0)),
                              pt(ft(20), ft(14)), pt(ft(0), ft(14)),
                          ), thickness=inch(4), assembly="EXT"),

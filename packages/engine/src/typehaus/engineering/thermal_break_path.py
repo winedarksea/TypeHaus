@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from typehaus.engineering.item import LimitState
 from typehaus.engineering.thermal_break_board import CONCRETE_PCF, rated
-from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.resolve.solid_categories import in_slab_family, is_pour_slab
 
 REQUIRED_FS = 1.5
 #: ACI 318-19 Table 21.2.1, plain concrete; §14.5.6 bearing 0.85 f'c.
@@ -53,7 +53,7 @@ def house_slab(ctx, footings: list[str]):
     best = None
     for s in ctx.model.solids:
         el = ctx.plan.by_tag(s.tag)
-        if not in_slab_family(s.category) or not isinstance(el, Slab):
+        if not is_pour_slab(s.category) or not isinstance(el, Slab):
             continue
         poly = _poly(s.outline)
         touches = any(abs(s.z1_m * _IN - t) < 1.0 for t in tops) and any(

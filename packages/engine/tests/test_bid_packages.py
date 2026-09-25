@@ -68,8 +68,8 @@ def test_quantities_take_the_unit_a_sub_quotes_in(packages) -> None:
     assert by_key[("envelope_layers", "usga-choker-sand:2.0")].unit == "cy"
     footing = next(line for line in built["concrete"].lines if line.key.startswith("footing"))
     assert footing.unit == "cy"
-    assert by_key[("concrete", "slab:FROST_WING_XPS_1IN")].unit == "SF"
-    assert any(line.key == "slab:FROST_WING_XPS_1IN" for line in built["concrete"].lines)
+    assert by_key[("concrete", "slab_band:FROST_WING_XPS_1IN")].unit == "SF"
+    assert any(line.key == "slab_band:FROST_WING_XPS_1IN" for line in built["concrete"].lines)
     assert ("concrete", "pipe_drain") not in by_key
 
 

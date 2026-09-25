@@ -21,7 +21,7 @@ from typehaus.emit.trades import (
     TRADE_LABELS,
     sequence_rank,
 )
-from typehaus.resolve.solid_categories import categories_where
+from typehaus.resolve.solid_categories import categories_where, is_pour_category
 from typehaus.takeoff.bid_recipes import Recipe, recipe_for, shape_for
 from typehaus.takeoff.bom_walk import BomRow, walk_bom
 from typehaus.takeoff.cost_codes import cost_code
@@ -61,8 +61,8 @@ def _shaped_quantity(item: BomRow, trade: str, default_unit: str) -> tuple[float
     key = item.key
     material = str(item.material or row.get("material") or "").lower()
     if item.section in ("concrete", "timber"):
-        if material == "concrete" or (not material and key in ("slab", "footing", "pad",
-                                                                "thermal_break", "dowel")):
+        if material == "concrete" or (not material and (
+                is_pour_category(key) or key in ("thermal_break", "dowel"))):
             if key == "dowel":
                 return float(row.get("count") or 0), "ea"
             if key == "thermal_break":

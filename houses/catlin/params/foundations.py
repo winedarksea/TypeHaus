@@ -691,6 +691,7 @@ GARAGE_SLAB_EDGE_BREAK = dict(
            "(PDS 07 21 13.13.OCC)")
 
 GARAGE_SLAB = Slab(
+    kind="pour",
     uid="CGS501AAAA", tag="SL-G-FLOOR",
     outline=(pt(_slab_x_w, _slab_y_s), pt(_slab_x_e, _slab_y_s),
              pt(_slab_x_e, _slab_y_n), pt(_door_x_e, _slab_y_n),
