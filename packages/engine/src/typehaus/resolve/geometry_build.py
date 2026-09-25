@@ -51,6 +51,7 @@ from typehaus.resolve.model import (
     ResolvedSolid,
     ResolvedWall,
 )
+from typehaus.resolve.placeable_bodies import bodied, body_prism
 from typehaus.resolve.site_earth import earth_plane_void_rings, site_grade_elevation_m
 from typehaus.resolve.sweep import sweep_legs
 
@@ -262,6 +263,20 @@ def _solar_geometry(panel) -> ElementGeometry:
     )
 
 
+def _equipment_geometry(obj) -> ElementGeometry | None:
+    """A placeable's body box (→ placeable_bodies). The glTF skips it: canvas_objects.py
+    already draws the viewer's own massing, and one node per placeable is the contract."""
+    prism = body_prism(obj)
+    if prism is None:
+        return None
+    return ElementGeometry(
+        uid=obj.uid, kind="equipment", trades=("mechanical",),
+        parts=(GPart(key="body", solids=(prism,), material_key=normalize("equipment"),
+                     layer_group="other",
+                     catalog=PartCatalogRef(role="equipment", name=obj.tag)),),
+    )
+
+
 def build_geometry(model: ResolvedModel) -> GeometryModel:
     """Derive the whole building's geometry once."""
     elements: list[ElementGeometry] = []
@@ -308,6 +323,11 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
         elements.append(_solid_geometry(solid, model.plan))
     for panel in getattr(model, "solar_panels", ()):
         elements.append(_solar_geometry(panel))
+
+    for obj in bodied(model):
+        body = _equipment_geometry(obj)
+        if body is not None:
+            elements.append(body)
 
     earth = _earth_geometry(model)
     if earth is not None:

@@ -1091,17 +1091,22 @@ def test_hp3_stands_on_a_pad_at_the_same_top_and_height_as_the_pocket_pair(catli
 
     legs = [s for s in catlin_model.solids if s.tag.startswith("PT-M-HP3-L")]
     assert len(legs) == 4, [s.tag for s in legs]
+    rails = [s for s in catlin_model.solids if s.tag.startswith("BM-M-HP3-R")]
+    assert len(rails) == 2, [s.tag for s in rails]
     for leg in legs:
         assert leg.z0_m == pytest.approx(pad.z1_m), leg.tag
-        assert (leg.z1_m - leg.z0_m) / INCH == pytest.approx(_HP_STAND_IN), leg.tag
         assert leg.assembly == "EQUIP_STAND_ALUM", leg.tag
+    # HP3's 18" is leg + rail: the cabinet bears on the rails, not the leg tops.
+    for rail in rails:
+        assert rail.z0_m == pytest.approx(max(leg.z1_m for leg in legs)), rail.tag
+        assert (rail.z1_m - pad.z1_m) / INCH == pytest.approx(_HP_STAND_IN), rail.tag
 
     storeys = {s.tag: s for s in catlin_model.plan.storeys}
     unit = next(e for s in catlin_model.plan.storeys
                 for e in catlin_model.plan.storey_elements(s.tag)
                 if getattr(e, "tag", "") == "EQ-M-HP3-OD")
     base = resolved_mount_elevation(storeys["main"], unit)
-    assert base == pytest.approx(max(leg.z1_m for leg in legs))
+    assert base == pytest.approx(max(rail.z1_m for rail in rails))
     assert base / FT == pytest.approx(-1 - 2 / 12.0)
     # Grade units drip onto their own pad, like the pocket pair.
     assert not getattr(unit, "drain_pan", False)

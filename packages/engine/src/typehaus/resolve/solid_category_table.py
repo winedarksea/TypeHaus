@@ -15,15 +15,16 @@ _ACC = "IfcDiscreteAccessory"
 _PIPE = "IfcPipeSegment"
 _CHAMBER = "IfcDistributionChamberElement"
 _GEO = "IfcGeographicElement"
+_HARD = "hard"  # a placeable body may not enter it
 
 
 def _pipe(system: str) -> C:
     """A routed pipe run: exported as segments by ``emit/ifc/mep.py``, billed by the foot."""
-    return C(f"pipe_{system}", trade="plumbing", billed_elsewhere=True)
+    return C(f"pipe_{system}", trade="plumbing", billed_elsewhere=True, collision=_HARD)
 
 
 def _duct(system: str) -> C:
-    return C(f"duct_{system}", trade="mechanical", billed_elsewhere=True)
+    return C(f"duct_{system}", trade="mechanical", billed_elsewhere=True, collision=_HARD)
 
 
 def _accessory(kind: str, trade: str | None = "plumbing") -> C:
@@ -48,9 +49,9 @@ def _drain(name: str, ifc: str, predefined: str, object_type: str | None = None,
 ROWS: tuple[C, ...] = (
     # Standalone structure: same lumber as the studs; a concrete pier re-files by material.
     C("beam", trade="framing", ifc_class="IfcBeam", elevation_family="body",
-      finish_group="element", material_refile="cast"),
+      finish_group="element", material_refile="cast", supports_on_top=True, collision=_HARD),
     C("column", trade="framing", ifc_class="IfcColumn", elevation_family="body",
-      finish_group="element", material_refile="cast"),
+      finish_group="element", material_refile="cast", supports_on_top=True, collision=_HARD),
     # Routed plumbing, one category per PipeSystem.
     *(_pipe(s) for s in ("drain", "vent", "water_hot", "water_cold", "gas", "radon",
                          "sump_discharge")),
@@ -63,8 +64,8 @@ ROWS: tuple[C, ...] = (
     # A cast-in block-out, graded by the plumbing rough-in rules.
     C("pipe_sleeve", trade="plumbing", ifc_class=_FOOTING),
     # Raceways, split power vs comms for colour.
-    C("conduit_power", trade="electrical", billed_elsewhere=True),
-    C("conduit_data", trade="electrical", billed_elsewhere=True),
+    C("conduit_power", trade="electrical", billed_elsewhere=True, collision=_HARD),
+    C("conduit_data", trade="electrical", billed_elsewhere=True, collision=_HARD),
     # Vent terminals and routed air.
     _trim("vent", "mechanical", ifc="IfcBuildingElementProxy"),
     *(_duct(s) for s in ("supply", "return", "exhaust", "dryer", "transfer", "outdoor_air")),
@@ -110,21 +111,25 @@ ROWS: tuple[C, ...] = (
       material_refile="layer"),
     # The drywaller's overhead surfaces.
     C("soffit", trade="drywall", ifc_class=_COVER, elevation_family="body",
-      finish_group="accessory", billed_elsewhere=True),
+      finish_group="accessory", billed_elsewhere=True, collision=_HARD),
     C("ceiling", trade="drywall", ifc_class=_COVER, ifc_predefined="CEILING",
       billed_elsewhere=True),
     # Pours, and what is cast into them.
     C("slab", trade="concrete", ifc_class="IfcSlab", elevation_family="body",
-      finish_group="element", material_refile="laid", is_pour=True, slab_family="slab"),
+      finish_group="element", material_refile="laid", is_pour=True, slab_family="slab",
+      supports_on_top=True, collision=_HARD),
     # A Slab that is not a pour (resolve/slab_kind.py): laid decking, a wall-carried
     # platform, a ground band. Routed as a slab; the material re-files its trade.
     *(C(f"slab_{kind}", trade="concrete", ifc_class="IfcSlab", elevation_family="body",
-        finish_group="element", material_refile="laid", slab_family="slab")
+        finish_group="element", material_refile="laid", slab_family="slab",
+        supports_on_top=True, collision=_HARD)
       for kind in ("deck", "platform", "band")),
     C("footing", trade="concrete", ifc_class=_FOOTING, elevation_family="body",
-      finish_group="element", material_refile="laid", is_pour=True),
+      finish_group="element", material_refile="laid", is_pour=True, supports_on_top=True,
+      collision=_HARD),
     C("pad", trade="concrete", ifc_class=_FOOTING, elevation_family="body",
-      finish_group="element", material_refile="laid", is_pour=True),
+      finish_group="element", material_refile="laid", is_pour=True, supports_on_top=True,
+      collision=_HARD),
     C("dowel", trade="concrete", ifc_class="IfcReinforcingBar", finish_group="accessory"),
     C("thermal_break", trade="concrete", ifc_class="IfcBuildingElementProxy",
       finish_group="accessory"),
@@ -140,12 +145,16 @@ ROWS: tuple[C, ...] = (
     _trim("connector_embedded", "framing", ifc=_FOOTING, elevation=None, finish=None),
     _trim("connector_hanger", "framing", ifc=_FOOTING, elevation=None, finish=None),
     # Geometry-IR kinds that are not ResolvedSolid categories.
-    C("wall", elevation_family="body", non_solid=True),
-    C("floor", elevation_family="body", finish_group="element", non_solid=True),
+    C("wall", elevation_family="body", non_solid=True, collision=_HARD),
+    C("floor", elevation_family="body", finish_group="element", non_solid=True,
+      supports_on_top=True, collision=_HARD),
     C("roof", elevation_family="roof", finish_group="element", non_solid=True),
     C("solar_panel", elevation_family="roof", non_solid=True),
     C("earth", finish_group="element", non_solid=True),
     C("framing", non_solid=True),
+    # A placeable's body (resolve/placeable_bodies.py). The glTF draws it from canvas_objects.
+    C("equipment", trade="mechanical", elevation_family="body", non_solid=True,
+      collision=_HARD),
     # Drawn by elevation_project's own part split (glass / door / sash), not by family.
     C("opening", non_solid=True),
 )

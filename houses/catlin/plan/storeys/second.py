@@ -385,8 +385,10 @@ WALLS = [
          assembly="INT_2X4_RC", interior_room="RM-S-BED2", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
     # North-centre closet (source 30.853 / 21.898), off the hall's north end.
+    # Stops at SF-S-HP1's underside (7'-3 1/4"): the box runs across it wall to wall, and
+    # EQ-S-HP1-AH's 43 1/2" case straddles this line inside the box.
     Wall(uid="CSW141AAAA", tag="W-S-CLN-S", start_node="N-S-C3D", end_node="N-S-B4",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION", top=inch(87.25)),
     # --- west block: walk-in, suite, suite bath, vanity alcove ------------------
     Wall(uid="CSW129AAAA", tag="W-S-DC1", start_node="N-S-D1", end_node="N-S-D2",
          assembly="INT_2X4_PARTITION", top=ft(9)),

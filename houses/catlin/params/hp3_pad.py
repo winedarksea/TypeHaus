@@ -8,7 +8,7 @@ See notes/hp3_north_relocation.md for the coordinated service and refrigerant ro
 
 from __future__ import annotations
 
-from typehaus import Connector, ConnectorKind, Post, Slab, ft, inch, pt
+from typehaus import Beam, Connector, ConnectorKind, Node, Post, Slab, ft, inch, pt
 
 # SAP09HP230V1R32AO cabinet dimensions, Gree Sapphire R32 service manual p. 3.
 _CAB_W_IN = 34.375
@@ -50,11 +50,14 @@ _HP3_STAND_AT = (
 )
 # As on the other two stands, cabinet base is 20" above nominal site grade. Keep snow
 # cleared below the coil; stand height does not guarantee clearance above drifting snow.
+# The 18" is legs + rail: the cabinet bears on the RAILS, which are modelled so that
+# `structural.equipment_support` can find them (the legs fall just outside the casing).
 _HP3_STAND_HEIGHT_IN = 18.0
+_RAIL_DEPTH_IN = 1.5
 HP3_STAND_LEGS = [
     Post(uid=f"MHP3L{_i}AAAA", tag=f"PT-M-HP3-L{_i}",
          position=pt(inch(_x), inch(_y)), size="2.0x2.0",
-         height=inch(_HP3_STAND_HEIGHT_IN),
+         height=inch(_HP3_STAND_HEIGHT_IN - _RAIL_DEPTH_IN),
          supported_by="SL-M-HP3PAD", assembly="EQUIP_STAND_ALUM")
     for _i, _x, _y in _HP3_STAND_AT
 ]
@@ -67,4 +70,32 @@ HP3_STAND_ANCHORS = [
     for _i, _x, _y in _HP3_STAND_AT
 ]
 
-MAIN_ELEMENTS = [HP3_PAD, *HP3_STAND_LEGS, *HP3_STAND_ANCHORS]
+# The two depthwise rails, leg to leg, top at the cabinet base (-1'-2"), each end bolted
+# through its leg's cap plate. (rail, south leg, north leg, beam uid, node uids)
+_RAILS = ((1, 1, 2, "KSR9MVVWXH", "PXNC1RB7EH", "57A5MXFS9Y"),
+          (2, 3, 4, "MZSK5S9KWG", "KFHPJDAA5T", "0RCMAGCKXK"))
+_LEG_XY = {_i: (_x, _y) for _i, _x, _y in _HP3_STAND_AT}
+_RAIL_TOP = _PAD_TOP + inch(_HP3_STAND_HEIGHT_IN)
+HP3_RAIL_NODES = [
+    Node(uid=_uid, tag=f"N-M-HP3-R{_r}{_end}",
+         position=pt(inch(_LEG_XY[_leg][0]), inch(_LEG_XY[_leg][1])))
+    for _r, _s, _n, _b, _su, _nu in _RAILS
+    for _end, _leg, _uid in (("S", _s, _su), ("N", _n, _nu))
+]
+HP3_RAILS = [
+    Beam(uid=_b, tag=f"BM-M-HP3-R{_r}", start_node=f"N-M-HP3-R{_r}S",
+         end_node=f"N-M-HP3-R{_r}N", size="1.5x1.5", assembly="EQUIP_STAND_ALUM",
+         top_elevation=_RAIL_TOP, bearing_refs=(f"PT-M-HP3-L{_s}", f"PT-M-HP3-L{_n}"))
+    for _r, _s, _n, _b, _su, _nu in _RAILS
+]
+_CAP_UIDS = ("3YN7X1FEQJ", "50BHWST132", "WBC8H5T5F8", "6YZ33WQNQH")
+HP3_RAIL_CAPS = [
+    Connector(uid=_CAP_UIDS[_i - 1], tag=f"CN-M-HP3-C{_i}", kind=ConnectorKind.POST_CAP,
+              position=pt(inch(_x), inch(_y)),
+              elevation=_RAIL_TOP - inch(_RAIL_DEPTH_IN), size="SS316-BOLT-38",
+              connects=(f"BM-M-HP3-R{1 if _i <= 2 else 2}", f"PT-M-HP3-L{_i}"))
+    for _i, _x, _y in _HP3_STAND_AT
+]
+
+MAIN_ELEMENTS = [HP3_PAD, *HP3_STAND_LEGS, *HP3_STAND_ANCHORS, *HP3_RAIL_NODES, *HP3_RAILS,
+                 *HP3_RAIL_CAPS]

@@ -24,6 +24,7 @@ from typehaus.checks.structural import (
     masonry_interference,  # noqa: F401 - registers checks
     masonry_joint,  # noqa: F401 - registers checks
     partition_fasteners,  # noqa: F401 - registers checks
+    placeable_interference,  # noqa: F401 - registers checks
     post_base_interference,  # noqa: F401 - registers checks
     rake_overhang,  # noqa: F401 - registers checks
     ridge,  # noqa: F401 - registers checks

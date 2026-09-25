@@ -141,14 +141,18 @@ from typehaus import (
 # to x=10'-0" at these y's, and EQ-B-ESS-BATT's separation zone starts at y=31'-6", eight
 # inches north of the supply box's north face.
 EQUIPMENT_ERV_BASEMENT = [
+    # y=30'-5 1/2", not 30'-6": at 30'-6" the box's north face stood 3/8" inside
+    # W-B-ESS-S's gypsum (structural.placeable_interference). Collars move 1/2", in tolerance.
     Equipment(uid="QGMYDXSMKH", tag="EQ-B-ERV-MAN-SUP", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(6, 6), ft(30, 6)), footprint=(inch(36), inch(8)),
+              position=pt(ft(6, 6), ft(30, 5.5)), footprint=(inch(36), inch(8)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV-PLENUM-B-SUP",
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 2))),
+    # 5/8" lower than its twin: PR-B-SAUNA-VENT's y=28'-8" leg crosses over this box at
+    # 7'-10 7/16" and its top stood in the pipe (structural.placeable_interference).
     Equipment(uid="CRN5GT0ECP", tag="EQ-B-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
               position=pt(ft(6, 6), ft(28, 6)), footprint=(inch(36), inch(8)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV-PLENUM-B-EXH",
-              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 2))),
+              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.375))),
 ]
 # ============================== LEVEL 1 — BASEMENT RADIALS ============================
 #

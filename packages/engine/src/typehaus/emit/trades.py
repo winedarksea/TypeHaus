@@ -76,7 +76,8 @@ FALLBACK_TRADE = "concrete"
 #: Material overrides (a cast column, a laid deck) are
 #: :func:`typehaus.emit.trade_rules.solid_trades`.
 SOLID_CATEGORY_TRADE: dict[str, str] = {
-    row.name: row.trade for row in SOLID_CATEGORIES.values() if row.trade is not None}
+    row.name: row.trade for row in SOLID_CATEGORIES.values()
+    if row.trade is not None and not row.non_solid}
 
 
 #: Stormwater, derived from the table so the two can never disagree (``emit/ifc/mep.py``).

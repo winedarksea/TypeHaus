@@ -389,8 +389,11 @@ EQUIPMENT_TYPES = (
                   aux_lockout_above_f=-22.0,
                   supplemental_heat=True,
                   source="Gree FLEXA2LHTR05KWD factory electric heat kit for the FLEXX Ultra air handler: 4.6 kW at 240 V (4.6 x 3,412 = 15,695 Btu/h, no cold-weather derate), MCA 29.9 A, maximum overcurrent device 35 A. It mounts INSIDE the EQ-T-GREE-FLEXX-ULTRA-24-AH cabinet on the discharge side of the coil and is staged by the air handler's own 24 VAC control, which is the whole point of the retype: the EQ-T-DUCT-HEATER-2KW it replaces was a generic inline element in the supply plenum, and the DUC24 it was drawn against had no aux-heat terminal to interlock it with. Its job also changed. It is no longer covering a design-temperature shortfall — the outdoor unit makes 21,000 Btu/h at -15 F against a 15,164 Btu/h zone load unaided — but is true backup for defrost recovery and for the hours below the -22 F compressor lockout. `supplemental_heat` like the fireplace: it counts toward its room's zone and opens none of its own.",
+                  # It sits in the supply air stream: DU-S-HP-SUP passes through it.
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                     position=(ft(0), ft(0), ft(0))),)),
+                                     position=(ft(0), ft(0), ft(0))),
+                         ServicePort(tag="discharge", service=Service.SUPPLY_AIR,
+                                     position=(ft(0), ft(0), ft(0))))),
     # Garage infrared heater lamp — same 1,500 W / 120V / 20A arithmetic as the fireplace.
     # It is hard-wired equipment rather than a fan-forced unit; RM-GARAGE stays
     # `conditioned=False` and therefore out of the 3 VA/ft2 general-lighting area.

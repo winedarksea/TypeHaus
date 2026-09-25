@@ -241,7 +241,9 @@ each modelled as four legs, one 3/8" x 3" 316 stainless wedge anchor per leg (pa
 
 `PT-SG-HPA1..4` and `CN-SG-HPA1..4` are gone — they were HP1's, and they moved to
 `params/hp1_north_pad.py` with the unit. The cross-rails are in the price row, not in the
-geometry — only the legs resolve as solids.
+geometry — only the legs resolve as solids — except HP3's two rails, which are modelled
+(`BM-M-HP3-R1/R2` on 16 1/2" legs, 2026-09-25): its legs fall outside the casing, so without
+them `structural.equipment_support` finds nothing under the cabinet.
 
 **On a pad the legs ARE the feet.** This is the one thing the move simplifies outright. On
 the balcony the leg positions belonged to the deck — bay centres, six inches off every beam
@@ -666,7 +668,8 @@ of this.
   (about 60 LF of unmodelled home run down to about 45). Adding it drags in a
   `SleevePenetration` through `W-B-N1` and a below-grade riser transition — a raceway design
   pass, not a geometry move. Named here as a sized gap rather than left implicit.
-- **The stands' cross-rails** — in `column:EQUIP_STAND_ALUM`'s price row, not in geometry.
+- **The stands' cross-rails** — in `column:EQUIP_STAND_ALUM`'s price row, not in geometry
+  (HP3's two depthwise rails are geometry since 2026-09-25; still billed in that row).
 - **Every pad's fall** — each `Slab` is flat at its high edge; the fall is the
   `ImperviousSurface` in `plan/site.py`. Four of them now.
 - **A discharge-side baffle on the north face.** The prevailing winter wind here is NW and

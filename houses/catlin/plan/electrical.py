@@ -238,7 +238,9 @@ ESS_EQUIPMENT = [
               footprint=(inch(27), inch(12)),
               type_ref="EQ-T-EG4-12KPV",
               room="RM-B-FURNACE", circuit="CKT-ESS-GRID",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(4)),
+              # Base 2'-9", not 4'-0": at 4'-0" the 35" case stood through DU-ERV-EA (bottom
+              # 71.6" AFF) and PR-B-KITCH-DRAIN (structural.placeable_interference).
+              mount=Mount(kind=MountKind.WALL, elevation=inch(33)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-B-N4", face="left", distance_from_start=inch(18.625),
                   normal_gap=inch(0.375), rotation_offset=deg(-180)))),

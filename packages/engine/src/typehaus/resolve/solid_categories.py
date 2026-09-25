@@ -38,9 +38,10 @@ class SolidCategory:
     is_pour: bool = False
     #: ``"slab"`` for every category a ``Slab`` resolves to (``resolve/slab_kind.py``).
     slab_family: str | None = None
-    # Reserved for the placeable-collision phase.
+    #: Its top face carries a floor-mounted body (``structural.equipment_support``).
     supports_on_top: bool = False
-    collision: bool = False
+    #: ``"hard"``: a placeable body may not enter it (``structural.placeable_interference``).
+    collision: str | None = None
     #: A geometry-IR element kind that is not a ``ResolvedSolid`` category.
     non_solid: bool = False
 

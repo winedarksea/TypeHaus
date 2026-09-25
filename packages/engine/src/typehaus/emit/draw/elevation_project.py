@@ -439,7 +439,7 @@ def _tag_index(model: ResolvedModel) -> dict[str, str]:
     """uid -> authored tag, over every resolved record that owns IR geometry."""
     index: dict[str, str] = {}
     for group in (model.walls, model.openings, model.solids, model.roofs, model.floors,
-                  model.soffits):
+                  model.soffits, model.canvas_objects):
         for record in group:
             index[record.uid] = record.tag
     return index
