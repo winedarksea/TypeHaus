@@ -21,9 +21,22 @@ would do; one circuit is the honest minimum and the panel has the spaces for the
 
 from __future__ import annotations
 
+from library.electrical import panel_type
+
 from typehaus import Circuit
 
 _PANEL = "ED-PANEL"
+
+# The panel: the library's 100A row under this house's own tag. Here, not in the editable
+# plan/electrical.py, because that dialect has no ``model_copy``.
+PANEL_TYPES = (
+    # `service_amps` is what the 220.82 demand estimate is compared against, and `spaces`
+    # is what `electrical.panel_spaces` reconciles the circuit slots against. A 20-space
+    # 100A load centre is the smallest enclosure this house could be built on, and it
+    # leaves spare positions for the radon fan's future circuit and for the kitchen and
+    # bathroom this template does not yet have.
+    panel_type("ED-T-PANEL-100A", tag="ED-T-PANEL"),
+)
 
 CIRCUITS = (
     Circuit(tag="CKT-LIGHTS", slot=1, panel_ref=_PANEL, breaker_amps=15, poles=1,

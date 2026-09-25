@@ -26,28 +26,12 @@
 from typehaus import (
     DeviceKind,
     ElectricalDevice,
-    ElectricalDeviceType,
     Mount,
     MountKind,
-    Service,
-    ServicePort,
     deg,
     ft,
     inch,
     pt,
-)
-
-DEVICE_TYPES = (
-    # `service_amps` is what the 220.82 demand estimate is compared against, and `spaces`
-    # is what `electrical.panel_spaces` reconciles the circuit slots against. A 20-space
-    # 100A load centre is the smallest enclosure this house could be built on, and it
-    # leaves spare positions for the radon fan's future circuit and for the kitchen and
-    # bathroom this template does not yet have.
-    ElectricalDeviceType(tag="ED-T-PANEL", name="100A load centre, 20 spaces",
-                         footprint=(inch(14), inch(4)), height=ft(2),
-                         plan_symbol="panel", spaces=20, service_amps=100,
-                         ports=(ServicePort(tag="service", service=Service.POWER_240,
-                                            position=(ft(0), ft(0), ft(0))),)),
 )
 
 # --- main storey -------------------------------------------------------------------

@@ -215,3 +215,11 @@ PANEL_TYPES = (
     _panel("ED-T-PANEL-225A", "225A bus, 200A main, 54 spaces", inch(20), ft(3),
            spaces=54, main=200, bus=225),
 )
+
+_PANEL_BY_TAG = {t.tag: t for t in PANEL_TYPES}
+
+
+def panel_type(row: str, /, **update) -> ElectricalDeviceType:
+    """The library panel row ``row``, with ``update`` (a house's own tag, name, ports)
+    applied — keyword arguments because the editable dialect has no dict or ``model_copy``."""
+    return _PANEL_BY_TAG[row].model_copy(update=update)

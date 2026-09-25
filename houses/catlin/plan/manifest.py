@@ -30,7 +30,7 @@ from params import (breezeway, driveway, foundations, hp1_north_pad, hp3_pad, la
                     landscape_walk, main_deck, raised_garden, roof_trim, second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, braced_walls,
-                  circuits, countertops,
+                  circuits, countertops, panel_types,
                   electrical, electrical_attic, equipment_types,
                   fixture_types, fixtures, furniture_types, landscape, lighting,
                   lighting_attic, lighting_types, masonry_joints, mep, millwork, placeables,
@@ -86,7 +86,8 @@ _library = Library(
     duct_product_types=ALL_DUCT_PRODUCT_TYPES,
     equipment_types=(*ALL_VENTILATION_EQUIPMENT_TYPES, *mep.EQUIPMENT_TYPES,
                      *equipment_types.EQUIPMENT_TYPES),
-    electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *mep.ELECTRICAL_DEVICE_TYPES,
+    electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *panel_types.PANEL_TYPES,
+                             *mep.ELECTRICAL_DEVICE_TYPES,
                              *electrical.DEVICE_TYPES, *lighting_types.LIGHTING_TYPES),
     circuits=circuits.CIRCUITS,
     # No ``load_managements``: retired 2026-09-12 with the Class 320 service. See the
