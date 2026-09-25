@@ -12,6 +12,7 @@ from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction, StructuralRole
 from typehaus.model.structure import Footing, FoundationWall
+from typehaus.resolve.solid_categories import in_slab_family
 
 # Simplified allowable joist spans (ft) at 16" o.c., residential floor (40 psf live).
 # I-joists by depth; dimensional lumber per IRC R502.3.1(1), SPF #2.
@@ -303,7 +304,7 @@ def _frost_protection_footprints(ctx: CheckContext) -> list[tuple[str, object]]:
 
     out: list[tuple[str, object]] = []
     for solid in ctx.model.solids:
-        if solid.category != "slab" or len(solid.outline) < 3:
+        if not in_slab_family(solid.category) or len(solid.outline) < 3:
             continue
         if not _is_frost_insulation(ctx, solid.assembly):
             continue

@@ -52,6 +52,7 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.assembly_material import is_cast_beam, is_flatwork
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.solid_categories import in_slab_family
 
 #: The placeable domains an ARCHITECTURAL plan draws. Electrical (``E-POWR``) and mechanical
 #: (``M-EQPT``) devices are excluded even though ``emit_fixtures`` can draw them: they have
@@ -255,7 +256,7 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str,
     # Flatwork (walks, drives) is site work: C-101 draws it, and a drive running to the lot
     # line would otherwise set this sheet's extent and drop its scale.
     for slab in sorted((s for s in model.solids
-                        if s.category == "slab" and s.storey == storey
+                        if in_slab_family(s.category) and s.storey == storey
                         and not is_flatwork(model.plan, s)),
                        key=lambda s: s.uid):
         _draw(slab.outline, slab.uid, slab.tag)

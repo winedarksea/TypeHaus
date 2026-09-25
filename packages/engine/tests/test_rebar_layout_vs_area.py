@@ -17,6 +17,7 @@ from collections import defaultdict
 
 from typehaus.model.enums import LayerFunction
 from typehaus.resolve.geometry import polygon_area
+from typehaus.resolve.solid_categories import in_slab_family
 
 _M_TO_FT = 1.0 / 0.3048
 _SPACED = {"vertical", "horizontal", "top-x", "top-y", "bottom-x", "bottom-y"}
@@ -46,7 +47,7 @@ def _solid_area_m2(model, solid) -> float:
     reinforced = {s.host_tag for s in model.rebar}
     for other in model.solids:
         if (other.tag != solid.tag and other.tag in reinforced and not other.derived
-                and other.category in ("footing", "pad", "slab")
+                and (other.category in ("footing", "pad") or in_slab_family(other.category))
                 and other.z0_m < solid.z1_m and solid.z0_m < other.z1_m
                 and (Polygon(other.outline).area, other.tag) > (own.area, solid.tag)):
             area -= own.intersection(Polygon(other.outline)).area

@@ -42,6 +42,7 @@ from typehaus.model import (
 )
 from typehaus.quantities import inch
 from typehaus.resolve import resolve
+from typehaus.resolve.solid_categories import in_slab_family
 
 FIXTURES = Path(__file__).parent / "fixtures" / "catlin_reference"
 
@@ -443,7 +444,7 @@ def test_slab_on_grade_is_read_from_rooms_below_not_the_assembly_name(catlin_mod
     """
     from typehaus.emit.draw.detail_components import slab_is_on_grade
 
-    slabs = {s.tag: s for s in catlin_model.solids if s.category == "slab"}
+    slabs = {s.tag: s for s in catlin_model.solids if in_slab_family(s.category)}
     assert slab_is_on_grade(catlin_model, slabs["SL-G-FLOOR"]), (
         "the garage slab has nothing but earth beneath it")
     assert not slab_is_on_grade(catlin_model, slabs["SL-M-DECK"]), (
@@ -886,7 +887,7 @@ def test_thermal_break_spec_reads_the_slab_source(catlin_model):
     the other side of its edge to insulate from."""
     from typehaus.emit.draw.detail_components.wall_base import thermal_break_spec
 
-    slabs = {s.tag: s for s in catlin_model.solids if s.category == "slab"}
+    slabs = {s.tag: s for s in catlin_model.solids if in_slab_family(s.category)}
     assert slabs
     # FOAMULAR 1000 starts at 1.5"; the garage edge carries no court thrust and keeps 1".
     for tag, thickness in (("SL-B-FLOOR", 1.5), ("SL-G-FLOOR", 1.0)):

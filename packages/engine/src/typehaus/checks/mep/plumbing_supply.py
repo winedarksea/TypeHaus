@@ -16,6 +16,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import PipeAccessoryKind, PipeSystem, Service
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.solid_categories import in_slab_family
 
 # N1103.4.2's bore threshold for hot-water pipe insulation: 3/4" nominal and larger.
 _INSULATION_MIN_BORE_M = 0.01905
@@ -228,7 +229,7 @@ def _ceiling_above(ctx: CheckContext, point: tuple[float, float],
     probe = Point(point)
     best: tuple[float, str, bool] | None = None
     for solid in ctx.model.solids:
-        if solid.category != "slab" or solid.z0_m <= z + 1e-6 or not solid.outline:
+        if not in_slab_family(solid.category) or solid.z0_m <= z + 1e-6 or not solid.outline:
             continue
         if not Polygon(solid.outline).contains(probe):
             continue

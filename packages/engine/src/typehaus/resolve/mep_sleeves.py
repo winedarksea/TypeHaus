@@ -25,7 +25,7 @@ from typehaus.model.spatial import Appliance, Fixture
 from typehaus.resolve.assembly_material import is_cast_beam
 from typehaus.resolve.framing.carriers import backing_wall
 from typehaus.resolve.geometry import circle_outline, length, sub
-from typehaus.resolve.mep_queries import _CONCRETE_SOLID_CATEGORIES
+from typehaus.resolve.mep_concrete import is_concrete_host
 from typehaus.resolve.model import (
     ResolvedModel,
     ResolvedSleeve,
@@ -43,7 +43,7 @@ def _sleeve_host(model: ResolvedModel, host_ref: str):
     A slab, footing or cast beam is a ResolvedSolid; a foundation/concrete wall is a
     ResolvedWall whose structure layer supplies the footprint."""
     solid = next((s for s in model.solids
-                  if s.tag == host_ref and s.category in _CONCRETE_SOLID_CATEGORIES), None)
+                  if s.tag == host_ref and is_concrete_host(s.category)), None)
     if solid is not None:
         return solid.outline, solid.z0_m, solid.z1_m, solid.category, solid.tag
     beam = next((s for s in model.solids if s.tag == host_ref and s.category == "beam"), None)

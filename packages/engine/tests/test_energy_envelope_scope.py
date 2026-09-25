@@ -31,6 +31,7 @@ from typehaus.resolve.envelope_geometry import (
     carries_a_weather_skin,
     envelope_geometry,
 )
+from typehaus.resolve.solid_categories import in_slab_family
 
 # --- the pinned result ---------------------------------------------------------------------
 
@@ -250,7 +251,7 @@ def test_an_interior_floor_between_two_conditioned_storeys_carries_no_ua(
     """
     geometry = envelope_geometry(catlin_model_ro)
     by_tag = {solid.tag: solid for solid in catlin_model_ro.solids
-              if solid.category == "slab"}
+              if in_slab_family(solid.category)}
     for tag in ("SL-M-DECK", "SL-M-TUBDK"):
         is_envelope, reason = geometry.is_envelope_slab(by_tag[tag])
         assert not is_envelope, tag

@@ -72,6 +72,7 @@ from typehaus.resolve.site_earth import (
     open_excavation_floors,
     strip_grade_elevation_m,
 )
+from typehaus.resolve.solid_categories import in_slab_family
 
 # Component kinds whose exterior boundary is the ground, not the outdoor design air.
 # ``foundation_walls_above_grade`` is deliberately NOT here: the band of a foundation wall
@@ -454,7 +455,7 @@ def estimate_block_load(
     roofs = [roof for roof in model.roofs if roof.storey in conditioned_storeys
              and geometry.is_envelope_roof(roof)[0]]
     slabs = [solid for solid in model.solids
-             if solid.category == "slab" and solid.storey in conditioned_storeys
+             if in_slab_family(solid.category) and solid.storey in conditioned_storeys
              and geometry.is_envelope_slab(solid)[0]]
     roof_fraction = {roof.tag: _polygon_scope_fraction(roof.footprint, roof.storey, scope)
                      for roof in roofs}

@@ -56,6 +56,7 @@ from typehaus.emit.draw.structural_common import (
     outline_center,
     wall_center,
 )
+from typehaus.resolve.solid_categories import in_slab_family
 
 if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
@@ -77,7 +78,8 @@ def has_foundation_content(model: ResolvedModel) -> bool:
     """Whether S-100 has anything real to show (starter has none — sheet omitted)."""
     return (
         any(wall.is_foundation for wall in model.walls)
-        or any(solid.category in {"footing", "pad", "slab"} for solid in model.solids)
+        or any(solid.category in {"footing", "pad"} or in_slab_family(solid.category)
+               for solid in model.solids)
     )
 
 

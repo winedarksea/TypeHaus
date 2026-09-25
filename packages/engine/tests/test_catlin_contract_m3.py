@@ -17,16 +17,18 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _helpers import CATLIN as CATLIN_DIR
+from _helpers import catlin_params, frames_structure
 
+from typehaus.checks import run
+from typehaus.findings import Result
 from typehaus.quantities import ft, inch
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import RIDGE_BEAM_DEFAULT, cross_section
 from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.geometry_members import member_solid
+from typehaus.resolve.solid_categories import in_slab_family
 from typehaus.source import load_plan
-from typehaus.checks import run
-from typehaus.findings import Result
-from _helpers import CATLIN as CATLIN_DIR, catlin_params, frames_structure
 
 # Old CatlinHouseSpec contract values.
 HOUSE_SIZE_FT = 36.0
@@ -1199,13 +1201,12 @@ def test_deck_slabs_render_on_their_storey_plans(catlin_model):
     thresholds, which a derived sheet cannot express. The Slab path is still live and still
     covered — the garden floor and the garage slab both draw from ``model.solids`` — but no
     exterior WALKING deck uses it any more."""
-    from typehaus.emit.draw.floorplan import build_floorplan
-    from typehaus.emit.draw.scene import Polyline
-
     # Built per LEVEL, the way the A-1xx sheet is: the balcony deck stands on `court-upper`
     # and the porch on `court-main`, their own building's storeys at the house's datums, so
     # the raw model filtered on one storey tag draws neither (→ emit/draw/datum).
     from typehaus.emit.draw.datum import model_at_level
+    from typehaus.emit.draw.floorplan import build_floorplan
+    from typehaus.emit.draw.scene import Polyline
 
     for storey, tag in (("second", "FS-SG-DECK"), ("main", "FS-SG-PORCH"),
                         ("main", "FS-BW-FLOOR")):
@@ -1970,7 +1971,7 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
         system = catlin_model.plan.by_tag(tag)
         assert system.subfloor is not None and system.subfloor.material_ref == material
     assert not [s for s in catlin_model.solids
-                if s.category == "slab" and s.tag.startswith("SL-SG-DECK")]
+                if in_slab_family(s.category) and s.tag.startswith("SL-SG-DECK")]
 
 
 def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):

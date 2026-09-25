@@ -97,6 +97,9 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "floor": (0.82, 0.80, 0.76, 1.0),
     "roof": (0.35, 0.37, 0.40, 1.0),
     "slab": (0.55, 0.56, 0.57, 1.0),
+    "slab_deck": (0.55, 0.56, 0.57, 1.0),
+    "slab_platform": (0.55, 0.56, 0.57, 1.0),
+    "slab_band": (0.55, 0.56, 0.57, 1.0),
     "footing": (0.48, 0.49, 0.50, 1.0),
     "pad": (0.50, 0.51, 0.52, 1.0),
     "column": (0.60, 0.60, 0.62, 1.0),  # concrete/wood posts (sonotube, 6x6 pillars)

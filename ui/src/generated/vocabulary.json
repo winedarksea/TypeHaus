@@ -143,6 +143,9 @@
     "sill": 11041356,
     "sister_joist": 11041356,
     "slab": 9211793,
+    "slab_band": 9211793,
+    "slab_deck": 9211793,
+    "slab_platform": 9211793,
     "snow_guard": 12106431,
     "soffit": 14737625,
     "solar": 1713223,
@@ -309,6 +312,9 @@
     "sill": 11041356,
     "sister_joist": 11041356,
     "slab": 9211793,
+    "slab_band": 9211793,
+    "slab_deck": 9211793,
+    "slab_platform": 9211793,
     "snow_guard": 12106431,
     "soffit": 14737625,
     "solar": 1713223,
@@ -513,6 +519,15 @@
     "slab": [
       "concrete"
     ],
+    "slab_band": [
+      "concrete"
+    ],
+    "slab_deck": [
+      "concrete"
+    ],
+    "slab_platform": [
+      "concrete"
+    ],
     "snow_guard": [
       "roofing"
     ],
@@ -604,6 +619,9 @@
     "seam_clamp": "roofing",
     "shutoff": "plumbing",
     "slab": "concrete",
+    "slab_band": "concrete",
+    "slab_deck": "concrete",
+    "slab_platform": "concrete",
     "snow_guard": "roofing",
     "soffit": "drywall",
     "sub_slab": "earth",

@@ -32,6 +32,7 @@ from typehaus.resolve.model import (
     ResolvedModel,
     ResolvedWall,
 )
+from typehaus.resolve.solid_categories import in_slab_family
 
 #: The compressed, in-place sill-seal thickness used when an assembly's ``FramingSpec``
 #: does not state one. Matches ``BasementToFramedWallConfig.sill_gasket_in`` — the drawing
@@ -268,7 +269,7 @@ def _framed_on_slab(model: ResolvedModel, rule: ConstructionRule,
     from shapely.geometry import Point, Polygon
 
     slabs = [solid for solid in model.solids
-             if solid.category == "slab" and len(solid.outline) >= 3
+             if in_slab_family(solid.category) and len(solid.outline) >= 3
              and _is_concrete_ref(model, solid.assembly)]
     if not slabs:
         return

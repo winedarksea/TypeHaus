@@ -327,6 +327,10 @@ class Slab(Element):
     # and ``checks/structural/slab_span.py``, which grades it. Only a SUSPENDED slab
     # (a room underneath) spans anything; a slab-on-grade authors none.
     published_span: PublishedSpan | None = None
+    # What this sheet IS: a cast ``pour``, a laid ``deck``, a wall-carried ``platform`` or a
+    # ground ``band`` (sod, frost-wing foam). ``None`` derives it (``resolve/slab_kind.py``);
+    # authored, ``integrity.slab_kind_matches_assembly`` holds it to the derivation.
+    kind: Literal["pour", "deck", "platform", "band"] | None = None
 
 
 class SoffitOpening(HausModel):

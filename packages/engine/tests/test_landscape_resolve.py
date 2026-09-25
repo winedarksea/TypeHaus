@@ -11,6 +11,7 @@ from typehaus.resolve.landscape import (
     trellis_post_stations,
 )
 from typehaus.resolve.site_earth import earth_plane_void_rings
+from typehaus.resolve.solid_categories import in_slab_family
 
 _M = 0.3048
 
@@ -90,7 +91,7 @@ def test_plant_and_trellis_solids_are_display_only(catlin_model_ro) -> None:
 
 
 def test_a_pocket_plant_stands_on_its_slab(catlin_model_ro) -> None:
-    tops = {s.tag: s.z1_m for s in catlin_model_ro.solids if s.category == "slab"}
+    tops = {s.tag: s.z1_m for s in catlin_model_ro.solids if in_slab_family(s.category)}
     pockets = [p for p in catlin_model_ro.plants if p.source_ref == "PB-WK-POCKETS"]
     assert len(pockets) == 18
     walk_tops = {tops[t] for t in ("SL-WK-A", "SL-WK-B", "SL-WK-D")}

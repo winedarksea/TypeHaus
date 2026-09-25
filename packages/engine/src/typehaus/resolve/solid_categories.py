@@ -36,8 +36,9 @@ class SolidCategory:
     material_refile: str | None = None
     #: A pour, for ``checks/structural/concrete_interference.py``.
     is_pour: bool = False
-    # Reserved for the Slab.kind and placeable-collision phases.
+    #: ``"slab"`` for every category a ``Slab`` resolves to (``resolve/slab_kind.py``).
     slab_family: str | None = None
+    # Reserved for the placeable-collision phase.
     supports_on_top: bool = False
     collision: bool = False
     #: A geometry-IR element kind that is not a ``ResolvedSolid`` category.
@@ -71,3 +72,15 @@ def categories_where(**match: object) -> frozenset[str]:
     """Names of every row whose fields equal ``match``."""
     return frozenset(row.name for row in SOLID_CATEGORIES.values()
                      if all(getattr(row, key) == value for key, value in match.items()))
+
+
+def in_slab_family(category: str) -> bool:
+    """Any category a ``Slab`` resolves to — pour, deck, platform or band. Unregistered: no."""
+    row = SOLID_CATEGORIES.get(category)
+    return row is not None and row.slab_family == "slab"
+
+
+def is_pour_category(category: str) -> bool:
+    """A cast pour (``SolidCategory.is_pour``). Unregistered: no."""
+    row = SOLID_CATEGORIES.get(category)
+    return row is not None and row.is_pour

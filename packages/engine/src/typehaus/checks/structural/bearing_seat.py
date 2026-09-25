@@ -39,6 +39,7 @@ from typehaus.model.structure import FoundationWall
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedSolid
+from typehaus.resolve.solid_categories import in_slab_family
 
 # One flat seat means one plane. A sixteenth is the tolerance a form crew works to and the
 # tolerance the arithmetic upstream is authored in.
@@ -74,7 +75,7 @@ def _adjacent(a: list[tuple[float, float]], b: list[tuple[float, float]]) -> boo
 @check(Tier.STRUCTURAL, "structural.mixed_deck_bearing_seat")
 def mixed_deck_bearing_seat(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
-    solids = {s.tag: s for s in ctx.model.solids if s.category == "slab" and s.tag}
+    solids = {s.tag: s for s in ctx.model.solids if in_slab_family(s.category) and s.tag}
     for storey in ctx.plan.storeys:
         elements = list(ctx.plan.storey_elements(storey.tag))
         slabs = [e for e in elements if isinstance(e, Slab) and e.tag in solids]

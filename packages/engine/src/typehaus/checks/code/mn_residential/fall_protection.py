@@ -25,6 +25,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.ownership import children_of
+from typehaus.resolve.solid_categories import in_slab_family
 
 # --- R312.1 guards at stair-well openings ----------------------------------------------
 # The heights and the coverage derivation live in ``edge_coverage``; these are this
@@ -227,7 +228,7 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
     surfaces += [(solid.tag, list(solid.outline), solid.z1_m,
                   lambda _x, _y, z=solid.z1_m: z)
                  for solid in ctx.model.solids
-                 if solid.category == "slab" and len(solid.outline) >= 3]
+                 if in_slab_family(solid.category) and len(solid.outline) >= 3]
     if not surfaces:
         return [_unknown(cid, "no floor decks or slabs resolve, so there is no raised "
                          "walking surface to measure", (), code)]

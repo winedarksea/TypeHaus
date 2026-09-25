@@ -55,6 +55,7 @@ from typehaus.resolve.model import (
     ResolvedSolid,
 )
 from typehaus.resolve.railings import resolve_railing
+from typehaus.resolve.solid_categories import in_slab_family
 
 # Round-section faceting lives in resolve/round_solids.py, shared with pipe runs.
 # ``_PIPE_SWEEP_BANDS`` is re-exported rather than used here: ``test_accessories.py`` imports
@@ -640,7 +641,8 @@ def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:
     resolve later and inherit the void."""
     cx, cy = el.position.xy_m
     index = next((i for i, s in enumerate(model.solids)
-                  if s.tag == el.host_ref and s.category == "slab"), None) if el.host_ref else None
+                  if s.tag == el.host_ref and in_slab_family(s.category)),
+                 None) if el.host_ref else None
     host = model.solids[index] if index is not None else None
     z1 = host.z1_m if host is not None else storey.elevation.meters
     z0 = (host.z0_m if host is not None else z1) - el.depth.meters

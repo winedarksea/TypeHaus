@@ -8,7 +8,8 @@ from typehaus.resolve.model import ResolvedModel
 
 # The solid categories that ARE a surface someone stands on or that covers a void. A
 # footing, a pier and a pipe are not, and neither is a railing around a hole.
-_COVERING_SOLID_CATEGORIES = frozenset({"slab", "ceiling", "soffit"})
+_COVERING_SOLID_CATEGORIES = frozenset({
+    "slab", "slab_deck", "slab_platform", "slab_band", "ceiling", "soffit"})
 
 
 def build_space_summary(model: ResolvedModel) -> dict[str, object]:

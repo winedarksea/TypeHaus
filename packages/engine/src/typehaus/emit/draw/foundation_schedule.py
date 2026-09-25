@@ -36,6 +36,7 @@ from typehaus.emit.draw.structural_common import (
 from typehaus.hardware.config import FT_TO_M
 from typehaus.resolve.assembly_material import is_flatwork
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, ResolvedWall
+from typehaus.resolve.solid_categories import in_slab_family
 
 if TYPE_CHECKING:
     from typehaus.model.assembly import ConcreteSpec
@@ -110,7 +111,7 @@ def slabs_on_grade(model: ResolvedModel) -> list[ResolvedSolid]:
     storey_elevation = {storey.tag: storey.elevation.meters for storey in model.plan.storeys}
     out: list[ResolvedSolid] = []
     for solid in model.solids:
-        if solid.category != "slab" or is_flatwork(model.plan, solid):
+        if not in_slab_family(solid.category) or is_flatwork(model.plan, solid):
             continue
         if (_carried_by_deck(model, solid) or _carried_by_walls(model, solid)
                 or _room_below(model, solid, storey_elevation)):

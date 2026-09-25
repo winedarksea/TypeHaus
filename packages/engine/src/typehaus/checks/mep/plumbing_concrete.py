@@ -29,6 +29,7 @@ from typehaus.findings import Finding
 from typehaus.model.enums import Service
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedSolid
+from typehaus.resolve.solid_categories import in_slab_family
 
 _ALIGNMENT_TOLERANCE_M = 0.0127  # 1/2"
 _UNDER_SLAB_COVER_M = 0.0254  # pipe crown clears the slab underside by >= 1" bedding
@@ -104,7 +105,7 @@ def _missing_sleeve_findings(ctx: CheckContext) -> list[Finding]:
 
     out: list[Finding] = []
     slabs = [solid for solid in ctx.model.solids
-             if solid.category == "slab" and not _is_non_concrete_slab(ctx, solid)]
+             if in_slab_family(solid.category) and not _is_non_concrete_slab(ctx, solid)]
     served = {(sleeve.serves_fixture, sleeve.host_slab) for sleeve in ctx.model.sleeves
              if sleeve.serves_fixture is not None}
     types = {t.tag: t for t in ctx.plan.library.fixture_types}
@@ -215,7 +216,7 @@ def under_slab_burial(ctx: CheckContext) -> list[Finding]:
                   for room in ctx.model.rooms if len(room.clear_face) >= 3]
     slabs = []
     for s in ctx.model.solids:
-        if (s.category != "slab" or len(s.outline) < 3
+        if (not in_slab_family(s.category) or len(s.outline) < 3
                 or _is_non_concrete_slab(ctx, s)):
             continue
         footprint = Polygon(s.outline)

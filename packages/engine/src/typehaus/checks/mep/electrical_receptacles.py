@@ -26,6 +26,7 @@ from typehaus.checks.mep.electrical_code import (
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
+from typehaus.resolve.solid_categories import in_slab_family
 
 # 210.52(D)'s reach, measured to the OUTSIDE EDGE of the basin.
 _BASIN_REACH_M = 36 * 0.0254
@@ -253,7 +254,7 @@ def _enclosures(ctx: CheckContext) -> dict[str, list]:
 
     out: dict[str, list] = {}
     for solid in ctx.model.solids:
-        if solid.category not in {"slab", "pad"}:
+        if not (solid.category == "pad" or in_slab_family(solid.category)):
             continue
         if len(solid.outline) < 3:
             continue

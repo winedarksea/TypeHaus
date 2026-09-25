@@ -46,6 +46,7 @@ from typehaus.quantities import M_PER_IN, m, pt
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals, slice_part
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_plane_z
+from typehaus.resolve.solid_categories import in_slab_family
 
 # ``section.py`` is the name every caller — the CLI, the server, the detail package and the
 # tests — imports a cut from, so the pieces split out of it stay reachable here.
@@ -411,7 +412,7 @@ def _emit_solid_cut(b, model, solid, plane: CutPlane, crop) -> None:
     element = model.geometry.by_uid(solid.uid)
     if element is None:
         return
-    layer = "S-FNDN" if solid.category != "slab" else "A-SLAB"
+    layer = "S-FNDN" if not in_slab_family(solid.category) else "A-SLAB"
     for part in element.parts:
         material = part.catalog.material_ref if part.catalog is not None else None
         for profile in slice_part(part, plane):

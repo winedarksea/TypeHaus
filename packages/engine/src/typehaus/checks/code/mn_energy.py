@@ -19,6 +19,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.envelope_geometry import envelope_geometry
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.solid_categories import in_slab_family
 
 
 @dataclass(frozen=True)
@@ -92,7 +93,7 @@ def evaluate_envelope(model: ResolvedModel, plan: PlanModel,
     # the interior floors (catlin's 9" main-floor deck, conditioned above and below), the
     # yard pads and the porch decks in one geometric test; the retired
     # ``_FREESTANDING_SLAB_PREFIXES`` was a list of this house's names for them.
-    for slab in sorted((s for s in model.solids if s.category == "slab"
+    for slab in sorted((s for s in model.solids if in_slab_family(s.category)
                        and geometry.is_envelope_slab(s)[0]), key=lambda s: s.tag):
         if slab.assembly is None:
             rows.append(PrescriptiveRow(slab.tag, "slab", f"R-{envelope.slab_r:.0f}",

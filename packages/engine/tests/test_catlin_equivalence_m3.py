@@ -37,6 +37,7 @@ from typehaus.diff.equivalence import (
 )
 from typehaus.diff.semantic import semantic_model_from_ifc
 from typehaus.quantities import ft
+from typehaus.resolve.solid_categories import in_slab_family
 
 REFERENCE_ARCHIVE = (Path(__file__).parent / "fixtures" / "catlin_reference"
                      / "catlin_house_reference.ifc.gz")
@@ -519,7 +520,7 @@ def test_the_categories_the_reference_modelled_are_all_still_modelled(equivalenc
     # Floor/ceiling finish slabs became IfcCovering (declared above), which the semantic
     # model censuses under its own category rather than as slabs.
     emptied = [row for row in emptied
-               if not (row["category"] == "slab" and row["storey"] in ("attic", "garage"))]
+               if not (in_slab_family(row["category"]) and row["storey"] in ("attic", "garage"))]
     assert not emptied, emptied
 
 

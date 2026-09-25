@@ -26,6 +26,7 @@ from typehaus.findings import Finding
 from typehaus.model.enums import SLEEPING_OCCUPANCIES, Occupancy
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import wall_frame
+from typehaus.resolve.solid_categories import in_slab_family
 
 _MIN_EGRESS_WIDTH = inch(20)
 _MIN_EGRESS_HEIGHT = inch(24)
@@ -334,7 +335,7 @@ def _landing_surfaces(ctx: CheckContext, *, union: bool = False):
             # on; the far edge is lower by the 2% fall R401.3 requires of it.
             out.append((f"'{surface.label}'", Polygon(verts), surface.near_elevation.meters))
     for solid in ctx.model.solids:
-        if solid.category == "slab" and len(solid.outline) >= 3:
+        if in_slab_family(solid.category) and len(solid.outline) >= 3:
             out.append((solid.tag, Polygon(solid.outline), solid.z1_m))
     for floor in ctx.model.floors:
         if floor.deck_outline and len(floor.deck_outline) >= 3:

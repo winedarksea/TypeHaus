@@ -24,6 +24,7 @@ from typehaus.emit.draw.detail_components.config import LAYER
 from typehaus.emit.draw.scene import Hatch, IRNode, Polyline
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
+from typehaus.resolve.solid_categories import in_slab_family
 
 
 def closed_region(points, tag: str, material: str | None, pattern: str | None,
@@ -313,7 +314,7 @@ def slab_at_junction(model, crop, direction, station, face_u_m):
     plane = CutPlane(axis=direction, station_m=station)
     best = None
     for solid in model.solids:
-        if solid.category != "slab" or not (lo_z <= solid.z1_m < mid_z):
+        if not in_slab_family(solid.category) or not (lo_z <= solid.z1_m < mid_z):
             continue
         for (a, b) in ring_intervals(solid.outline, plane):
             lo, hi = min(a, b), max(a, b)

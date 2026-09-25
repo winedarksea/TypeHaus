@@ -8,12 +8,39 @@ from typehaus.checks.registry import Preferences
 from typehaus.emit.draw import build_floorplan
 from typehaus.energy import estimate_block_load
 from typehaus.model import (
-    Assembly, Beam, Building, FloorOpening, FloorSystem, Footing, FoundationWall, FramingSpec,
-    JoistSpec, Layer, LayerFunction, Library, Material, Node, PlanModel, Project, Roof, RoofForm,
-    Occupancy, Room, Site, Slab, Stair, Storey, Wall, degF, ft, inch, pt,
+    Assembly,
+    Beam,
+    Building,
+    FloorOpening,
+    FloorSystem,
+    Footing,
+    FoundationWall,
+    FramingSpec,
+    JoistSpec,
+    Layer,
+    LayerFunction,
+    Library,
+    Material,
+    Node,
+    Occupancy,
+    PlanModel,
+    Project,
+    Roof,
+    RoofForm,
+    Room,
+    Site,
+    Slab,
+    Stair,
+    Storey,
+    Wall,
+    degF,
+    ft,
+    inch,
+    pt,
 )
 from typehaus.quantities import Pitch
 from typehaus.resolve import resolve
+from typehaus.resolve.solid_categories import in_slab_family
 
 
 def _envelope_plan() -> PlanModel:
@@ -111,7 +138,7 @@ def test_envelope_surfaces_feed_energy_and_stair_symbol() -> None:
     model, findings = resolve(_envelope_plan())
     assert not findings
     assert model.roofs and model.roofs[0].surface_area_m2 > 0
-    assert any(solid.category == "slab" for solid in model.solids)
+    assert any(in_slab_family(solid.category) for solid in model.solids)
     assert model.stairs and model.stairs[0].riser_count > 0
     assert len(model.stairs[0].members) > model.stairs[0].riser_count
     report = estimate_block_load(model, Preferences())

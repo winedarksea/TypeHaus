@@ -28,6 +28,7 @@ from dataclasses import dataclass
 from shapely.geometry import Point, Polygon
 
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.solid_categories import in_slab_family
 
 # Deck covers shrink by this before containment. Stair edges and room boundaries are
 # authored on the very lines a deck's outline and voids are cut to, so a boundary probe
@@ -123,7 +124,7 @@ def _covers(model: ResolvedModel, point: tuple[float, float]):
         if not cover.is_empty and cover.contains(probe):
             yield floor.tag, floor.storey, floor.deck_top_at(*point)
     for solid in model.solids:
-        if (solid.category != "slab" or len(solid.outline) < 3
+        if (not in_slab_family(solid.category) or len(solid.outline) < 3
                 or _bbox_misses(point, solid.outline)):
             continue
         cover = Polygon(solid.outline,
@@ -218,6 +219,6 @@ def deck_owning_opening(model: ResolvedModel, storey: str,
                 cy = sum(p[1] for p in ring) / len(ring)
                 return floor.tag, floor.deck_top_at(cx, cy)
         for solid in model.solids:
-            if solid.tag == element.tag and solid.category == "slab":
+            if solid.tag == element.tag and in_slab_family(solid.category):
                 return solid.tag, solid.z1_m
     return None

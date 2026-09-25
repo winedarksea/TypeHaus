@@ -24,6 +24,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import EquipmentKind
 from typehaus.quantities import inch
+from typehaus.resolve.solid_categories import in_slab_family
 
 # Minn. R. 4714.0608 (UPC 608.5)(3): within 18" of the floor, through an air gap; (5): no
 # part trapped — it runs downhill the whole way.
@@ -148,7 +149,7 @@ def _stands_on_slab(ctx: CheckContext, heater) -> bool:
 
     probe = Point(heater.position.xy_m)
     for solid in ctx.model.solids:
-        if (solid.category == "slab" and len(solid.outline) >= 3
+        if (in_slab_family(solid.category) and len(solid.outline) >= 3
                 and Polygon(solid.outline).covers(probe)):
             return True
     return False

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from typehaus.model.enums import LayerFunction
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
+from typehaus.resolve.solid_categories import in_slab_family
 
 CATEGORY = "sub_slab"
 _DRAWN = frozenset({LayerFunction.SHEATHING, LayerFunction.INSULATION, LayerFunction.MEMBRANE})
@@ -27,7 +28,7 @@ _TOL_M = 1e-4
 
 def resolve_slab_layers(model: ResolvedModel) -> None:
     """Append one derived ``sub_slab`` solid per drawable layer under each slab."""
-    slabs = [s for s in model.solids if s.category == "slab" and s.assembly and not s.derived]
+    slabs = [s for s in model.solids if in_slab_family(s.category) and s.assembly and not s.derived]
     for slab in slabs:
         assembly = model.plan.library.resolve_assembly(slab.assembly)
         if assembly is None:

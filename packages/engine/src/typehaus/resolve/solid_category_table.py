@@ -115,7 +115,12 @@ ROWS: tuple[C, ...] = (
       billed_elsewhere=True),
     # Pours, and what is cast into them.
     C("slab", trade="concrete", ifc_class="IfcSlab", elevation_family="body",
-      finish_group="element", material_refile="laid", is_pour=True),
+      finish_group="element", material_refile="laid", is_pour=True, slab_family="slab"),
+    # A Slab that is not a pour (resolve/slab_kind.py): laid decking, a wall-carried
+    # platform, a ground band. Routed as a slab; the material re-files its trade.
+    *(C(f"slab_{kind}", trade="concrete", ifc_class="IfcSlab", elevation_family="body",
+        finish_group="element", material_refile="laid", slab_family="slab")
+      for kind in ("deck", "platform", "band")),
     C("footing", trade="concrete", ifc_class=_FOOTING, elevation_family="body",
       finish_group="element", material_refile="laid", is_pour=True),
     C("pad", trade="concrete", ifc_class=_FOOTING, elevation_family="body",

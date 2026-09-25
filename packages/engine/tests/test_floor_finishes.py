@@ -15,8 +15,9 @@ from __future__ import annotations
 import pytest
 from shapely.geometry import Polygon
 
-from typehaus.emit.gltf.palette import _color, _room_floor_color, _hex_rgba
 from typehaus.emit.draw.palette import material_color
+from typehaus.emit.gltf.palette import _color, _hex_rgba, _room_floor_color
+from typehaus.resolve.solid_categories import in_slab_family
 
 # Every finish string that reaches a floor anywhere in houses/catlin — the field finishes
 # authored on Rooms plus the zone finishes, which include one taken from a Slab
@@ -133,8 +134,21 @@ def test_finish_zones_survive_resolve(catlin_model, project):
     clipped to the room, so a hearth pad drawn proud of the wall cannot bill more tile than
     the room has floor."""
     from typehaus.model import (
-        Assembly, FinishZone, Layer, LayerFunction, Library, Material, Node, Occupancy,
-        PlanModel, Room, Storey, Wall, ft, inch, pt,
+        Assembly,
+        FinishZone,
+        Layer,
+        LayerFunction,
+        Library,
+        Material,
+        Node,
+        Occupancy,
+        PlanModel,
+        Room,
+        Storey,
+        Wall,
+        ft,
+        inch,
+        pt,
     )
     from typehaus.resolve import resolve
 
@@ -453,7 +467,7 @@ def test_the_garage_slab_is_not_reported_though_it_is_not_fully_covered(catlin_m
     assert garage.floor_finish == "sealed-concrete"
     face = Polygon(garage.clear_face)
     slabs = unary_union([Polygon(solid.outline) for solid in catlin_model.solids
-                         if solid.category == "slab" and solid.storey == garage.storey])
+                         if in_slab_family(solid.category) and solid.storey == garage.storey])
     fraction = face.intersection(slabs).area / face.area
     assert 0.8 < fraction < 0.95, fraction
     assert not any("RM-GARAGE" in f.element_tags

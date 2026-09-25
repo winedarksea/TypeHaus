@@ -27,6 +27,7 @@ from typing import Any
 
 from typehaus.model.enums import LayerFunction
 from typehaus.resolve.assembly_weight import KG_PER_M_TO_PLF, dead_load_plf
+from typehaus.resolve.solid_categories import in_slab_family
 
 #: A support's top is "under" the wall when the two are this close in Z. Same slop the rest
 #: of the stacking logic uses — a storey's walls land exactly on the one below.
@@ -58,7 +59,7 @@ def support_at(ctx: Any, wall: Any, point: tuple[float, float]) -> tuple[str | N
             continue
         return (wall_support_kind(ctx, other), other.tag)
     for solid in ctx.model.solids:
-        if solid.category not in ("footing", "pad", "slab"):
+        if not (solid.category in ("footing", "pad") or in_slab_family(solid.category)):
             continue
         if abs(solid.z1_m - base) > BEARING_Z_TOL_M or len(solid.outline) < 3:
             continue

@@ -37,6 +37,7 @@ from typehaus.resolve.plant_models import (
     role_materials,
 )
 from typehaus.resolve.rain_garden import surface_z_m
+from typehaus.resolve.solid_categories import in_slab_family
 
 PLANT_CATEGORY = "plant"
 TRELLIS_CATEGORY = "trellis"
@@ -97,7 +98,7 @@ def field_ref(bed: PlantingBed, i: int, j: int) -> str:
 def pocket_centres(model: ResolvedModel, slab_refs) -> list[tuple[str, float, float, float]]:
     """``(opening tag, x, y, slab top z)`` for every PLANTING opening in the named slabs."""
     plan = model.plan
-    tops = {s.tag: s.z1_m for s in model.solids if s.category == "slab"}
+    tops = {s.tag: s.z1_m for s in model.solids if in_slab_family(s.category)}
     out = []
     for slab_tag in slab_refs:
         slab = plan.by_tag(slab_tag)

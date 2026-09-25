@@ -22,13 +22,13 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, Ring
+from typehaus.resolve.solid_categories import in_slab_family
 
 # A slab-on-grade tops out level with the finished exterior grade, and rounding through
 # feet → meters leaves it a hair either side. Treat that band as "at grade": the slab still
 # sits in a hole that was dug for it.
 EARTH_PLANE_SLAB_TOP_TOLERANCE_M = 0.02
 
-_EARTH_DISPLACING_SLAB_CATEGORY = "slab"
 # A rain garden's media sits in a dug basin; its rim ring is the depression in the sheet.
 # Deliberately NOT an excavation floor for frost cover: a planted basin is backfilled soil.
 _EARTH_DISPLACING_BASIN_CATEGORY = "rain_garden_media"
@@ -53,8 +53,8 @@ def earth_plane_void_rings(model: ResolvedModel) -> list[Ring]:
     ceiling = grade_z + EARTH_PLANE_SLAB_TOP_TOLERANCE_M
     footprints = []
     for solid in sorted(model.solids, key=lambda item: item.uid):
-        if solid.category not in (_EARTH_DISPLACING_SLAB_CATEGORY,
-                                  _EARTH_DISPLACING_BASIN_CATEGORY):
+        if not (in_slab_family(solid.category)
+                or solid.category == _EARTH_DISPLACING_BASIN_CATEGORY):
             continue
         if solid.z1_m > ceiling:  # a raised deck sits *on* the earth, it does not displace it
             continue
@@ -157,7 +157,7 @@ def _below_grade_floors(
     open_floors: list[tuple[str, Any, float]] = []
     heated: list[Any] = []
     for solid in sorted(model.solids, key=lambda item: item.uid):
-        if solid.category != _EARTH_DISPLACING_SLAB_CATEGORY:
+        if not in_slab_family(solid.category):
             continue
         if solid.z1_m >= ceiling:  # at or above grade — not an excavation that lowers grade
             continue

@@ -37,6 +37,7 @@ from typehaus.emit.draw.lineweights import LIGHT, PROFILE
 from typehaus.emit.draw.scene import IRNode, Polyline
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
+from typehaus.resolve.solid_categories import in_slab_family
 
 
 def sauna_liner_base(model, wall, crop, direction, station) -> list[IRNode]:
@@ -131,7 +132,7 @@ def ceiling_underside_over(model, crop, direction, station, u_lo_in, u_hi_in):
                 return
 
     for solid in model.solids:
-        if solid.category == "slab":
+        if in_slab_family(solid.category):
             _consider(solid.z0_m, solid.outline)
     for floor in model.floors:
         joists = [m for m in floor.members if m.category == "joist"]

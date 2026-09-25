@@ -70,7 +70,8 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
   // Resolved slabs on the active storey, drawn as concrete outlines under the walls — the
   // plan's mirror of the sheet emitters' slab pass (emit/draw/foundationplan.py::_emit_slabs).
   const slabsOnStorey = useMemo(
-    () => (model.solids ?? []).filter((solid) => solid.category === "slab" &&
+    () => (model.solids ?? []).filter((solid) =>
+      (solid.category === "slab" || solid.category.startsWith("slab_")) &&
       onLevel(solid.storey) && solid.outline.length >= 3),
     [model.solids, onLevel],
   );

@@ -18,6 +18,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.quantities import inch
 from typehaus.resolve.model import FramedMember, ResolvedStair
+from typehaus.resolve.solid_categories import in_slab_family
 
 # IRC R311.7.5.2.1: a winder tread must be at least 6" deep at every point within the
 # stairway's clear width, which includes its narrow end against the newel — and at least
@@ -41,7 +42,7 @@ _BEARING_TOLERANCE_M = inch(1.0).meters
 # its own supports, so anywhere inside one has a load path) and the beams/columns a post
 # stacks straight down onto. A *framed* deck is deliberately absent — see
 # ``_bearing_element_under``.
-_BEARING_SOLID_CATEGORIES = frozenset({"slab", "footing", "pad", "beam", "column"})
+_BEARING_SOLID_CATEGORIES = frozenset({"footing", "pad", "beam", "column"})
 
 _LANDING_POST_PREFIX = "landing-post-"
 
@@ -79,7 +80,7 @@ def _bearing_element_under(ctx: CheckContext, point: tuple[float, float],
     the check.
     """
     for solid in ctx.model.solids:
-        if (solid.category in _BEARING_SOLID_CATEGORIES
+        if ((solid.category in _BEARING_SOLID_CATEGORIES or in_slab_family(solid.category))
                 and abs(solid.z1_m - base_z) <= _BEARING_TOLERANCE_M
                 and _point_in_ring(point, solid.outline)):
             return solid.tag

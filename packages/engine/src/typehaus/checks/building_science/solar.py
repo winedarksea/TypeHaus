@@ -43,6 +43,7 @@ import math
 from dataclasses import dataclass
 
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.solid_categories import in_slab_family
 
 # The four orientations, and the surface azimuth of each measured from SOUTH, positive west.
 # A vertical surface faces outward, so a south-facing wall's surface azimuth is 0.
@@ -339,7 +340,7 @@ def _shade_planes(model: ResolvedModel, wall: ResolvedWall, opening,
         if len(roof.footprint) >= 3:
             candidates.append((roof.tag, roof.eave_z_m, Polygon(roof.footprint), None))
     for solid in model.solids:
-        if solid.category == "slab" and len(solid.outline) >= 3:
+        if in_slab_family(solid.category) and len(solid.outline) >= 3:
             candidates.append((solid.tag, solid.z1_m, Polygon(solid.outline), None))
     for floor in model.floors:
         if len(floor.deck_outline) >= 3:

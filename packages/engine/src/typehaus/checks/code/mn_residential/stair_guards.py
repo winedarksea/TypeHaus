@@ -40,6 +40,7 @@ from typehaus.checks.code.mn_residential.fall_protection import _GUARD_TRIGGER_D
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import inch
+from typehaus.resolve.solid_categories import in_slab_family
 
 #: R312.1.2 exception 1: a guard on the open side of a stair is measured from the line
 #: joining the nosings and may stand 34", where every other guard owes 36". Those two inches
@@ -361,7 +362,7 @@ def wall_top_landing_width(ctx: CheckContext) -> list[Finding]:
                 if floor.deck_outline and len(floor.deck_outline) >= 3]
     modelled += [(Polygon(solid.outline), lambda _x, _y, z=solid.z1_m: z)
                  for solid in ctx.model.solids
-                 if solid.category == "slab" and len(solid.outline) >= 3]
+                 if in_slab_family(solid.category) and len(solid.outline) >= 3]
     out: list[Finding] = []
     for stair in ctx.model.stairs:
         arrival = _arrival_of(stair)

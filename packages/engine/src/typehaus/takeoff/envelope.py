@@ -38,6 +38,7 @@ from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
 from typehaus.resolve.sheathing_corner import layer_run_m
+from typehaus.resolve.solid_categories import in_slab_family
 from typehaus.takeoff.derived_paint import derived_paint_rows
 
 _M2_TO_FT2 = 10.7639104
@@ -56,7 +57,7 @@ _M_TO_FT = 3.280839895
 # and W-B-CS's liner strapping over concrete was ordered by nobody.
 #: Solid categories whose assembly layers bill here. Horizontal solids, all of them: their
 #: STRUCTURE bills by the cubic yard in ``structural_solids`` and everything else by area.
-_LAYERED_SOLID_SCOPES = ("slab", "footing", "pad")
+_LAYERED_SOLID_SCOPES = ("footing", "pad")
 
 _BILLABLE = (
     LayerFunction.INSULATION,
@@ -248,7 +249,8 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # out for the wall path's reason: concrete is bought by the yard, and
     # ``structural_solids`` already bills it.
     for solid in model.solids:
-        if solid.category not in _LAYERED_SOLID_SCOPES or solid.assembly is None:
+        if solid.assembly is None or not (solid.category in _LAYERED_SOLID_SCOPES
+                                           or in_slab_family(solid.category)):
             continue
         assembly = model.plan.library.resolve_assembly(solid.assembly)
         if assembly is None:
@@ -279,7 +281,7 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
          # has never walked a slab, so a slab's base course is billed here and nowhere else,
          # and flagging it as an overlap would point a reader at a row that does not exist.
          "also_in_sheet_goods": (function == LayerFunction.SHEATHING.value
-                                 and scope != "slab")}
+                                 and not in_slab_family(scope))}
         for (scope, function, material, thickness), area in sorted(areas.items())
     ]
     # The paint no assembly authors, on exposed gypsum facing a used room.

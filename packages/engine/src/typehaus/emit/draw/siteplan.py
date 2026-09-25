@@ -30,6 +30,7 @@ from typehaus.emit.draw.siteplan_planting import emit_site_planting
 from typehaus.emit.draw.typography import DIM_TEXT_PT, TEXT_PT
 from typehaus.resolve.assembly_material import is_flatwork
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.solid_categories import in_slab_family
 
 _DRAINAGE_RADIUS_FT = 40.0
 
@@ -200,7 +201,7 @@ def _emit_foundation_and_post_supports(builder: SceneBuilder, model: ResolvedMod
 def _emit_flatwork(builder: SceneBuilder, model: ResolvedModel) -> None:
     """Walks and drives, with their planting voids: site work, drawn here and on no floor plan."""
     for solid in sorted(model.solids, key=lambda s: s.uid):
-        if solid.category != "slab" or not is_flatwork(model.plan, solid):
+        if not in_slab_family(solid.category) or not is_flatwork(model.plan, solid):
             continue
         builder.add(Polyline(points=tuple(_in(p) for p in solid.outline), closed=True,
                              layer="A-SLAB", lineweight=PROFILE, uid=solid.uid, tag=solid.tag))

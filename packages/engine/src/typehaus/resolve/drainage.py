@@ -21,6 +21,7 @@ from typehaus.resolve.geometry import circle_outline, rect_between
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.overlay import difference, union_all
 from typehaus.resolve.rain_garden import floor_z_m
+from typehaus.resolve.solid_categories import in_slab_family
 
 #: Overlap a basin may leave outside its slab and still count as inside it: grid noise.
 _BASIN_SLACK_M2 = 1e-8
@@ -63,7 +64,7 @@ def _resolve_area_drain(model: ResolvedModel, el: AreaDrain, storey: str) -> lis
     The basin voids its host slab, so the pour is billed and drawn net of the hole.
     """
     index = next((i for i, s in enumerate(model.solids)
-                  if s.tag == el.host_ref and s.category == "slab"), None)
+                  if s.tag == el.host_ref and in_slab_family(s.category)), None)
     if index is None:
         return [element_error("integrity.area_drain_host",
                               f"area drain {el.tag} is set in {el.host_ref!r}, which is not "
