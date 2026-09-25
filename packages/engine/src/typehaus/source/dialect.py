@@ -94,6 +94,12 @@ class _DialectVisitor(cst.CSTVisitor):
     def _check_import(self, node: cst.Import | cst.ImportFrom) -> None:
         if isinstance(node, cst.ImportFrom):
             mod = _dotted(node.module) if node.module else ""
+            if node.relative:
+                # A sibling in the same plan package (``from .mixes import BURIED_MIX``):
+                # house data split across files, still names only.
+                if isinstance(node.names, cst.ImportStar):
+                    self._err(node, "star imports are not allowed")
+                return
             if not (mod == "typehaus" or mod.startswith("typehaus.")
                     or mod == "library" or mod.startswith("library.")):
                 self._err(node, f"import from '{mod}' not allowed; only typehaus.* / library.*")

@@ -86,7 +86,7 @@ def record(results):
 
 
 def _variant(tmp_path, edit):
-    """catlin with one edit to ``plan/assemblies.py``, resolved — the ablation harness."""
+    """catlin with one edit to ``plan/assemblies/envelope_walls.py``, resolved (ablation)."""
     from _helpers import copy_house
 
     from typehaus.engineering import EngineeringContext, EngineeringResults
@@ -94,7 +94,7 @@ def _variant(tmp_path, edit):
     from typehaus.source import load_plan
 
     house = copy_house(_CATLIN, tmp_path / "house")
-    source = house / "plan" / "assemblies.py"
+    source = house / "plan" / "assemblies" / "envelope_walls.py"
     source.write_text(edit(source.read_text()))
     loaded = load_plan(house)
     assert loaded.plan is not None, [f.message for f in loaded.findings]
@@ -312,7 +312,7 @@ def test_half_an_authored_screw_is_refused_at_load(tmp_path):
     from typehaus.source import load_plan
 
     house = copy_house(_CATLIN, tmp_path / "house")
-    source = house / "plan" / "assemblies.py"
+    source = house / "plan" / "assemblies" / "envelope_walls.py"
     source.write_text(source.read_text().replace(
         "standoff_fastener_pull_through_lb=200.0,\n", "", 1))
     loaded = load_plan(house)

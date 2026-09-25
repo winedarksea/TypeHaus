@@ -76,14 +76,14 @@ def wind_findings(catlin_ctx):
 
 
 def _variant(tmp_path, edit):
-    """catlin with one edit to ``plan/assemblies.py`` — the ablation harness."""
+    """catlin with one edit to ``plan/assemblies/materials_metal.py`` — the ablation harness."""
     from _helpers import copy_house
 
     from typehaus.checks.run import build_context
     from typehaus.source import load_plan
 
     house = copy_house(_CATLIN, tmp_path / "house")
-    source = house / "plan" / "assemblies.py"
+    source = house / "plan" / "assemblies" / "materials_metal.py"
     source.write_text(edit(source.read_text()))
     loaded = load_plan(house)
     assert loaded.plan is not None, [f.message for f in loaded.findings]

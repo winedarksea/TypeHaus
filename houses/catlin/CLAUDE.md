@@ -45,7 +45,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   same reason (`lighting.py` was 1,158 lines, `electrical.py` 1,700). Split
   by STOREY, which is how `plan/manifest.py` already consumes both. An editable file cannot
   `from plan import ...`, so the manifest composes; nothing imports across.
-- `plan/assemblies.py`, `plan/site.py`, `plan/placeables.py` — editable assemblies/site/placeables.
+- `plan/assemblies/` (a package: materials, mixes, envelope_*, foundation, footings, site*, interior*, and `catalog.py` holding the ordered `ASSEMBLIES`), `plan/site.py`, `plan/placeables.py` — editable assemblies/site/placeables.
 - ⚠ **`params/sunken_garden.py` is ~4,480 lines against `AGENTS.md`'s 500, and it is the
   largest single violation in this house.** Logged 2026-09-14 rather than fixed: the file is
   under concurrent edit by more than one session, and a 4,000-line move is the one change

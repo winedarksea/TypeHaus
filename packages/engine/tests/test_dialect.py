@@ -19,6 +19,7 @@ CASES = {
     "def": "def make():\n    return ft(1)\n",
     "plain_import": "import os\n",
     "bad_import": "from numpy import array\n",
+    "relative_star": "from .mixes import *\n",
 }
 
 
@@ -36,6 +37,11 @@ def test_valid_plan_has_no_findings() -> None:
         'end_node="N-2", assembly="X", top=ft(9))]\n'
     )
     assert lint_source("good.py", good) == []
+
+
+def test_sibling_import_is_allowed() -> None:
+    """A split plan package names its siblings' constants: ``from .mixes import X``."""
+    assert lint_source("walls.py", HEADER + "from .mixes import BURIED_MIX\n") == []
 
 
 def test_missing_uid_is_flagged() -> None:
