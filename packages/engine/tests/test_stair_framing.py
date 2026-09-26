@@ -63,7 +63,7 @@ def basement_stair(catlin_model):
 
 @pytest.fixture(scope="module")
 def main_stair(catlin_model):
-    """ST-M2S: a u_split_landing springing off a *framed* deck, not concrete."""
+    """ST-M2S: a level U landing springing off a framed deck."""
     return next(stair for stair in catlin_model.stairs if stair.tag == "ST-M2S")
 
 

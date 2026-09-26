@@ -22,6 +22,7 @@ import {
 } from "../planGeometry";
 import { ALL_TRADES, type EarthTone, type Trade } from "../../state/vocabulary";
 import { buildLightRun } from "./lightRun";
+import { buildWindowStool } from "./millwork";
 import { buildPlants, instancedPlantUids } from "./plants";
 import type { RebarLayer } from "./rebar";
 import { tagStorey as tagStoreyChildren, tagTrades } from "./registry";
@@ -189,6 +190,11 @@ export function populateScene(options: PopulateSceneOptions) {
         mode, palette, doorType?.operation, registry.picks, registry.byUid,
         doorType?.glazed ?? false, doorType?.trimless ?? false));
     }
+  }
+  for (const stool of model.window_stools ?? []) {
+    build(["millwork"], stool.storey, () => buildWindowStool(
+      tradeGroups.millwork, stool, center, mode, palette, model.catalog?.materials,
+      registry.picks, registry.byUid));
   }
   // The site sheet is context, not an element: it has no uid in model.json, so it stays out
   // of the raycast set and a click through it falls to whatever building geometry is behind.

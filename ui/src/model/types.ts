@@ -295,6 +295,19 @@ export interface Opening {
   flip_swing: boolean;
 }
 
+export interface WindowStool {
+  uid: string;
+  tag: string;
+  window_ref: string;
+  opening_uid: string;
+  storey: string;
+  material_ref: string;
+  profile: string;
+  outline: Vec2[];
+  z0_m: number;
+  z1_m: number;
+}
+
 export interface PlanNode {
   tag: string;
   storey: string;
@@ -1691,6 +1704,7 @@ export interface Model {
   junctions?: Junction[];
   nodes?: PlanNode[]; // authored wall-graph vertices (→ _catalog sibling); absent on older json
   openings: Opening[];
+  window_stools?: WindowStool[];
   roofs?: Roof[];
   solids?: Solid[];
   plant_models?: PlantModel[]; // absent on older model.json: plants draw as their prisms

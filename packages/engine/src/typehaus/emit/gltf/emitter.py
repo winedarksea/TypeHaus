@@ -74,6 +74,7 @@ from typehaus.emit.gltf.walls import (
 from typehaus.emit.trade_rules import RECORD_FAMILY_TRADES, assembly_trades, solid_trades
 from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry import light_run_band_shells
+from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.resolve.geometry_build import wall_trades
 from typehaus.resolve.geometry_ir import GBox
 from typehaus.resolve.model import FramedMember, ResolvedModel
@@ -143,6 +144,20 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                              bookcase_door=(door_type.bookcase_door
                                             if door_type is not None else None))
         scene.add_object(mb, ("openings",), kind="opening", uid=op.uid)
+
+    openings_by_tag = {opening.tag: opening for opening in model.openings}
+    for stool in sorted(model.window_stools, key=lambda item: item.uid):
+        opening = openings_by_tag.get(stool.window_ref)
+        host = walls_by_tag.get(stool.wall_tag)
+        if opening is None or host is None:
+            continue
+        prism = window_stool_prism(host, opening, stool)
+        if prism is None:
+            continue
+        mb = _MeshBuilder()
+        mb.add_prism(list(prism.ring), prism.z0_m, prism.z1_m,
+                     _material_finish_color(stool.material_ref, "millwork", authored))
+        scene.add_object(mb, ("millwork",), kind="opening", uid=opening.uid)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:

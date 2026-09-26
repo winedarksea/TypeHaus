@@ -40,6 +40,7 @@ from typehaus.resolve.geometry_ir import (
     PartCatalogRef,
 )
 from typehaus.resolve.geometry_members import member_part_key, member_solid, member_uid
+from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.geometry_roofs import roof_parts
 from typehaus.resolve.geometry_walls import layer_solids
@@ -310,6 +311,24 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
         host = walls_by_tag.get(opening.host_wall)
         if host is not None:
             elements.append(_opening_geometry(host, opening, door_types))
+
+    openings_by_tag = {opening.tag: opening for opening in model.openings}
+    for stool in model.window_stools:
+        opening = openings_by_tag.get(stool.window_ref)
+        host = walls_by_tag.get(stool.wall_tag)
+        if opening is None or host is None:
+            continue
+        prism = window_stool_prism(host, opening, stool)
+        if prism is None:
+            continue
+        elements.append(ElementGeometry(
+            uid=stool.uid, kind="window_stool", trades=("millwork",),
+            parts=(GPart(
+                key="body", solids=(prism,), material_key="lumber",
+                catalog=PartCatalogRef(material_ref=stool.material_ref,
+                                       role="window_stool", name=stool.tag,
+                                       profile=stool.profile)),),
+        ))
 
     for roof in model.roofs:
         elements.append(_roof_geometry(roof, model))

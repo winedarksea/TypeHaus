@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { Member, Vec2 } from "../model/types";
+import type { Member, Vec2, WindowStool } from "../model/types";
 import { swingArcSweepFlag } from "../model/geometry";
 import { buildMembers, categoryColor, disposeGroup, isRoofFramingMember, memberColor } from "./members";
 import {
@@ -15,6 +15,7 @@ import {
 } from "./planGeometry";
 import { applyDeckBoardUv, applyStandingSeamWallUv, DECK_BOARD_WIDTH_M, SEAM_PAN_WIDTH_M } from "./materials";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
+import { buildWindowStool } from "./builders/millwork";
 
 const PALETTE = RESOLVED_NORDIC_PALETTE.light;
 
@@ -72,6 +73,28 @@ export function runPlanGeometryTests() {
   closeTo(bounds.min.y, 1.25, "Prism starts at authored z0");
   closeTo(bounds.max.y, 2.75, "Prism ends at authored z1");
   geometry.dispose();
+
+  const stool: WindowStool = {
+    uid: "window-1-stool", tag: "STOOL-WIN-1", window_ref: "WIN-1",
+    opening_uid: "window-1", storey: "main", material_ref: "oak-stool",
+    profile: "eased", outline: [[3, 7], [8, 7], [8, 11], [3, 11]],
+    z0_m: 1.25, z1_m: 1.2881,
+  };
+  const stoolGroup = new THREE.Group();
+  const stoolPicks: THREE.Mesh[] = [];
+  const stoolMaterials = new Map<string, THREE.Material[]>();
+  buildWindowStool(stoolGroup, stool, [0, 0], "nordic", PALETTE, undefined,
+    stoolPicks, stoolMaterials);
+  if (stoolPicks.length !== 1 || stoolPicks[0].userData.uid !== stool.opening_uid
+      || stoolPicks[0].userData.selectionKind !== "opening"
+      || !stoolMaterials.has(stool.opening_uid)) {
+    throw new Error("Window stool must render and select its window");
+  }
+  const stoolBounds = boundsForObject(stoolGroup);
+  closeTo(stoolBounds.max.y - stoolBounds.min.y, 0.0381,
+    "Window stool renders at its resolved thickness");
+  stoolPicks[0].geometry.dispose();
+  stoolMaterials.get(stool.opening_uid)?.forEach((material) => material.dispose());
 
   const center: [number, number] = [10, 20];
   const centeredPoint = projectPointToScene([13.25, 28.5], 1.75, center);

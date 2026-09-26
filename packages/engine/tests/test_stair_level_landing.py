@@ -83,6 +83,18 @@ def test_basement_stair_clears_level_landing_framing(catlin_model_ro):
     assert gaps, "the stacked stairs must overlap in plan for this clearance check to count"
     assert min(gaps) >= inch(80).meters
 
+    # Landing supports must stay out of the basement stair's walking surfaces.
+    posts = [member for member in upper.members
+             if member.child_key.startswith("landing-post-")]
+    for post in posts:
+        post_footprint = Polygon(member_footprint(post))
+        for walking_surface in (member for member in basement.members
+                                if member.category in {"tread", "landing"}):
+            if post.z0_m < walking_surface.z1_m and post.z1_m > walking_surface.z0_m:
+                assert not post_footprint.intersects(
+                    Polygon(member_footprint(walking_surface))), (
+                        f"{post.child_key} obstructs {walking_surface.child_key}")
+
 
 def test_basement_stair_keeps_its_split_turn(catlin_model_ro):
     stair = _stair(catlin_model_ro, "ST-B2M")

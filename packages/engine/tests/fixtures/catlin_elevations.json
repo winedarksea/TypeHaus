@@ -30098,10 +30098,10 @@
 "75db4ffd5557"
 ],
 "geometry/CSRL04AAAA-r00/body": [
-2.6348995,
+2.6387095,
 3.8121895,
-48,
-"142ae7c9dcc9"
+16,
+"5d0acb4ec90a"
 ],
 "geometry/CST701AAAA::framing/member:hanger-W-B-CN-landing-rim-lower-1": [
 -1.6994236,
@@ -30404,34 +30404,28 @@
 "68c48ba7eeff"
 ],
 "geometry/CST702AAAA::framing/member:landing-joist-upper-000": [
-1.5172995,
-1.7014495,
+1.3267995,
+1.5109495,
 8,
-"43332248554b"
+"68c48ba7eeff"
 ],
 "geometry/CST702AAAA::framing/member:landing-joist-upper-001": [
-1.5172995,
-1.7014495,
+1.3267995,
+1.5109495,
 8,
-"43332248554b"
+"68c48ba7eeff"
 ],
 "geometry/CST702AAAA::framing/member:landing-joist-upper-002": [
-1.5172995,
-1.7014495,
+1.3267995,
+1.5109495,
 8,
-"43332248554b"
+"68c48ba7eeff"
 ],
 "geometry/CST702AAAA::framing/member:landing-joist-upper-003": [
-1.5172995,
-1.7014495,
+1.3267995,
+1.5109495,
 8,
-"43332248554b"
-],
-"geometry/CST702AAAA::framing/member:landing-joist-upper-004": [
-1.5172995,
-1.7014495,
-8,
-"43332248554b"
+"68c48ba7eeff"
 ],
 "geometry/CST702AAAA::framing/member:landing-lower": [
 1.5109495,
@@ -30441,17 +30435,11 @@
 ],
 "geometry/CST702AAAA::framing/member:landing-post-000": [
 0.0250495,
-1.5172995,
-8,
-"b3e6a3d7d9fb"
-],
-"geometry/CST702AAAA::framing/member:landing-post-001": [
-0.0250495,
 1.3267995,
 8,
 "d60159ea4299"
 ],
-"geometry/CST702AAAA::framing/member:landing-post-002": [
+"geometry/CST702AAAA::framing/member:landing-post-001": [
 0.0250495,
 1.3267995,
 8,
@@ -30470,22 +30458,16 @@
 "68c48ba7eeff"
 ],
 "geometry/CST702AAAA::framing/member:landing-rim-upper-0": [
-1.5172995,
-1.7014495,
+1.3267995,
+1.5109495,
 8,
-"43332248554b"
-],
-"geometry/CST702AAAA::framing/member:landing-rim-upper-1": [
-1.5172995,
-1.7014495,
-8,
-"43332248554b"
+"68c48ba7eeff"
 ],
 "geometry/CST702AAAA::framing/member:landing-upper": [
-1.7014495,
-1.7395495,
+1.5109495,
+1.5490495,
 8,
-"eda2b8090e9a"
+"9fb3bd96f1cd"
 ],
 "geometry/CST702AAAA::framing/member:ledger-W-M-C5-stringer-lower-1": [
 0.0250495,
@@ -30505,23 +30487,23 @@
 8,
 "dfffa94a7961"
 ],
-"geometry/CST702AAAA::framing/member:ledger-W-M-N2-landing-joist-upper-004": [
-1.4664995,
-1.7014495,
+"geometry/CST702AAAA::framing/member:ledger-W-M-N2-landing-joist-upper-003": [
+1.2759995,
+1.5109495,
 8,
-"7b79718ce880"
+"dfffa94a7961"
 ],
 "geometry/CST702AAAA::framing/member:ledger-W-M-STRW-landing-rim-upper-0": [
-1.4664995,
-1.7014495,
+1.2759995,
+1.5109495,
 8,
-"7b79718ce880"
+"dfffa94a7961"
 ],
 "geometry/CST702AAAA::framing/member:ledger-W-M-STRW-stringer-upper-0": [
-1.6569995,
+1.4664995,
 2.9277932,
 8,
-"490a57a7b965"
+"36abc4a66bca"
 ],
 "geometry/CST702AAAA::framing/member:stringer-lower-0": [
 0.0250495,
@@ -30536,16 +30518,16 @@
 "d0af70a9f347"
 ],
 "geometry/CST702AAAA::framing/member:stringer-upper-0": [
-1.6061995,
+1.4156995,
 3.0349495,
 8,
-"4c7eeca38f66"
+"ae9a8a5bae84"
 ],
 "geometry/CST702AAAA::framing/member:stringer-upper-1": [
-1.6061995,
+1.4156995,
 3.0349495,
 8,
-"4c7eeca38f66"
+"ae9a8a5bae84"
 ],
 "geometry/CST702AAAA::framing/member:tread-lower-000": [
 0.1774495,
@@ -30590,36 +30572,42 @@
 "d969f095caa2"
 ],
 "geometry/CST702AAAA::framing/member:tread-upper-000": [
+1.7014495,
+1.7395495,
+8,
+"eda2b8090e9a"
+],
+"geometry/CST702AAAA::framing/member:tread-upper-001": [
 1.8919495,
 1.9300495,
 8,
 "614b2036b19d"
 ],
-"geometry/CST702AAAA::framing/member:tread-upper-001": [
+"geometry/CST702AAAA::framing/member:tread-upper-002": [
 2.0824495,
 2.1205495,
 8,
 "ef6aaa9dd79f"
 ],
-"geometry/CST702AAAA::framing/member:tread-upper-002": [
+"geometry/CST702AAAA::framing/member:tread-upper-003": [
 2.2729495,
 2.3110495,
 8,
 "739ee0bb1546"
 ],
-"geometry/CST702AAAA::framing/member:tread-upper-003": [
+"geometry/CST702AAAA::framing/member:tread-upper-004": [
 2.4634495,
 2.5015495,
 8,
 "d22b478c31bb"
 ],
-"geometry/CST702AAAA::framing/member:tread-upper-004": [
+"geometry/CST702AAAA::framing/member:tread-upper-005": [
 2.6539495,
 2.6920495,
 8,
 "2359e8499348"
 ],
-"geometry/CST702AAAA::framing/member:tread-upper-005": [
+"geometry/CST702AAAA::framing/member:tread-upper-006": [
 2.8444495,
 2.8825495,
 8,
@@ -30656,6 +30644,12 @@
 "6158557bd5a3"
 ],
 "geometry/CST702AAAA::framing/member:well-partition-stud-003": [
+0.0631495,
+3.0349495,
+8,
+"6158557bd5a3"
+],
+"geometry/CST702AAAA::framing/member:well-partition-stud-004": [
 0.0631495,
 3.0349495,
 8,
@@ -70314,34 +70308,28 @@
 "86391dc71903"
 ],
 "member/CST702AAAA/landing-joist-upper-000": [
-1.5172995,
-1.7014495,
+1.3267995,
+1.5109495,
 2,
-"eeaf7e5e02f5"
+"86391dc71903"
 ],
 "member/CST702AAAA/landing-joist-upper-001": [
-1.5172995,
-1.7014495,
+1.3267995,
+1.5109495,
 2,
-"eeaf7e5e02f5"
+"86391dc71903"
 ],
 "member/CST702AAAA/landing-joist-upper-002": [
-1.5172995,
-1.7014495,
+1.3267995,
+1.5109495,
 2,
-"eeaf7e5e02f5"
+"86391dc71903"
 ],
 "member/CST702AAAA/landing-joist-upper-003": [
-1.5172995,
-1.7014495,
+1.3267995,
+1.5109495,
 2,
-"eeaf7e5e02f5"
-],
-"member/CST702AAAA/landing-joist-upper-004": [
-1.5172995,
-1.7014495,
-2,
-"eeaf7e5e02f5"
+"86391dc71903"
 ],
 "member/CST702AAAA/landing-lower": [
 1.5109495,
@@ -70351,17 +70339,11 @@
 ],
 "member/CST702AAAA/landing-post-000": [
 0.0250495,
-1.5172995,
-2,
-"7a7174f8cfc4"
-],
-"member/CST702AAAA/landing-post-001": [
-0.0250495,
 1.3267995,
 2,
 "9d63446cc0d2"
 ],
-"member/CST702AAAA/landing-post-002": [
+"member/CST702AAAA/landing-post-001": [
 0.0250495,
 1.3267995,
 2,
@@ -70380,22 +70362,16 @@
 "86391dc71903"
 ],
 "member/CST702AAAA/landing-rim-upper-0": [
-1.5172995,
-1.7014495,
+1.3267995,
+1.5109495,
 2,
-"eeaf7e5e02f5"
-],
-"member/CST702AAAA/landing-rim-upper-1": [
-1.5172995,
-1.7014495,
-2,
-"eeaf7e5e02f5"
+"86391dc71903"
 ],
 "member/CST702AAAA/landing-upper": [
-1.7014495,
-1.7395495,
+1.5109495,
+1.5490495,
 2,
-"ae225899d949"
+"01b4fe136a84"
 ],
 "member/CST702AAAA/ledger-W-M-C5-stringer-lower-1": [
 0.0250495,
@@ -70415,23 +70391,23 @@
 4,
 "d1037b8310d5"
 ],
-"member/CST702AAAA/ledger-W-M-N2-landing-joist-upper-004": [
-1.4664995,
-1.7014495,
+"member/CST702AAAA/ledger-W-M-N2-landing-joist-upper-003": [
+1.2759995,
+1.5109495,
 4,
-"d631faba7a73"
+"d1037b8310d5"
 ],
 "member/CST702AAAA/ledger-W-M-STRW-landing-rim-upper-0": [
-1.4664995,
-1.7014495,
+1.2759995,
+1.5109495,
 4,
-"d631faba7a73"
+"d1037b8310d5"
 ],
 "member/CST702AAAA/ledger-W-M-STRW-stringer-upper-0": [
-1.6569995,
+1.4664995,
 2.9277932,
 4,
-"c93b20826f38"
+"9780e5e2d9c9"
 ],
 "member/CST702AAAA/stringer-lower-0": [
 0.0250495,
@@ -70446,16 +70422,16 @@
 "be98eda1a85b"
 ],
 "member/CST702AAAA/stringer-upper-0": [
-1.6061995,
+1.4156995,
 3.0349495,
 4,
-"5e1156339347"
+"5a4bfcfab6e7"
 ],
 "member/CST702AAAA/stringer-upper-1": [
-1.6061995,
+1.4156995,
 3.0349495,
 4,
-"5e1156339347"
+"5a4bfcfab6e7"
 ],
 "member/CST702AAAA/tread-lower-000": [
 0.1774495,
@@ -70500,36 +70476,42 @@
 "b22ff585f667"
 ],
 "member/CST702AAAA/tread-upper-000": [
+1.7014495,
+1.7395495,
+2,
+"ae225899d949"
+],
+"member/CST702AAAA/tread-upper-001": [
 1.8919495,
 1.9300495,
 2,
 "734aa875da3f"
 ],
-"member/CST702AAAA/tread-upper-001": [
+"member/CST702AAAA/tread-upper-002": [
 2.0824495,
 2.1205495,
 2,
 "155d719c27ba"
 ],
-"member/CST702AAAA/tread-upper-002": [
+"member/CST702AAAA/tread-upper-003": [
 2.2729495,
 2.3110495,
 2,
 "766fc72323a1"
 ],
-"member/CST702AAAA/tread-upper-003": [
+"member/CST702AAAA/tread-upper-004": [
 2.4634495,
 2.5015495,
 2,
 "a87f5a51781b"
 ],
-"member/CST702AAAA/tread-upper-004": [
+"member/CST702AAAA/tread-upper-005": [
 2.6539495,
 2.6920495,
 2,
 "735b3583e4d6"
 ],
-"member/CST702AAAA/tread-upper-005": [
+"member/CST702AAAA/tread-upper-006": [
 2.8444495,
 2.8825495,
 2,
@@ -70566,6 +70548,12 @@
 "f8cf720f3b63"
 ],
 "member/CST702AAAA/well-partition-stud-003": [
+0.0631495,
+3.0349495,
+2,
+"f8cf720f3b63"
+],
+"member/CST702AAAA/well-partition-stud-004": [
 0.0631495,
 3.0349495,
 2,
@@ -87081,7 +87069,7 @@
 "solids/RL-S-HANDRAIL-W-BRACKET2/z1_m": 3.2254495,
 "solids/RL-S-HANDRAIL-W-BRACKET3/z0_m": 3.7207495,
 "solids/RL-S-HANDRAIL-W-BRACKET3/z1_m": 3.7969495,
-"solids/RL-S-HANDRAIL-W-RAIL1/z0_m": 2.6348995,
+"solids/RL-S-HANDRAIL-W-RAIL1/z0_m": 2.6387095,
 "solids/RL-S-HANDRAIL-W-RAIL1/z1_m": 3.8121895,
 "solids/RL-S-STAIR-BAL1/z0_m": 3.06705,
 "solids/RL-S-STAIR-BAL1/z1_m": 4.09575,

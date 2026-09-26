@@ -18,6 +18,7 @@ from typehaus.emit.trade_rules import (
     solid_trades,
 )
 from typehaus.model.floors import FloorOpening, FloorSystem
+from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.model.spatial import Stair
 from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry_build import wall_trades
@@ -71,6 +72,23 @@ def wall_graph_json(
     model: ResolvedModel, provenance: Provenance | None
 ) -> dict[str, Any]:
     """Walls, their solved junctions, the openings hosted in them, and the plan nodes."""
+    walls_by_tag = {wall.tag: wall for wall in model.walls}
+    openings_by_tag = {opening.tag: opening for opening in model.openings}
+    stools = []
+    for stool in model.window_stools:
+        opening = openings_by_tag.get(stool.window_ref)
+        wall = walls_by_tag.get(stool.wall_tag)
+        prism = (window_stool_prism(wall, opening, stool)
+                 if wall is not None and opening is not None else None)
+        if prism is None:
+            continue
+        stools.append({
+            "uid": stool.uid, "tag": stool.tag, "window_ref": stool.window_ref,
+            "opening_uid": opening.uid, "storey": stool.storey,
+            "material_ref": stool.material_ref, "profile": stool.profile,
+            "outline": [list(point) for point in prism.ring],
+            "z0_m": prism.z0_m, "z1_m": prism.z1_m,
+        })
     return {
         "walls": [
             {
@@ -147,6 +165,7 @@ def wall_graph_json(
              "flip_swing": bool(getattr(model.plan.by_tag(o.tag), "flip_swing", False))}
             for o in model.openings
         ],
+        "window_stools": stools,
         # Authored plan nodes: the editor addresses stretch / heal / draw-snap by node *tag*
         # (uids are minted, positions round-trip), so the wall-graph vertices ride along with
         # their tag + storey. Positions are the same project-north SI metres as wall axes.

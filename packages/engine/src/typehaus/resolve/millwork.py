@@ -19,10 +19,8 @@ what the cladding lands on" (notes/outie_window_truss_detail.md), and on a wall 
 furring it is the sheathing. See :func:`interior_return_m` for why the rule is stated as
 an exclusion rather than as "the outermost furring layer".
 
-Records are dimensional, not drawn. A stool is a 4"-deep board on the room side of a
-reveal; giving it a ``ResolvedSolid`` would put a new category in the 3D Inspector and a
-new row in ``structural_solids`` for something whose value is entirely in the schedule
-``takeoff/hardwood.py`` builds from these records.
+Stools have their own derived geometry (``geometry_millwork.py``) without pretending to be
+structural solids. Their dimensional records still drive the hardwood cut list.
 
 A ``Countertop`` is not drawn either, and for a stronger reason than the stool's: the slab
 is drawn ALREADY. ``model/placeable_symbols/_families.py::counter_case`` puts a counter box
@@ -168,7 +166,7 @@ def _resolve_stools(plan: PlanModel, model: ResolvedModel,
             depth = interior_return - frame_depth + overhang
 
         model.window_stools.append(ResolvedWindowStool(
-            uid=stool.uid if stool else "",
+            uid=stool.uid if stool else f"{opening.uid}-stool",
             tag=stool.tag if stool else f"STOOL-{opening.tag}",
             storey=storey_of_wall.get(wall.tag, ""),
             window_ref=opening.tag,
