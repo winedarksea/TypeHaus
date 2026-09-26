@@ -21,14 +21,24 @@ strings nobody can author. When one of those patterns lands, name its shape here
 
 from __future__ import annotations
 
+from typing import TypedDict
+
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 
 _FT_PER_IN = 1.0 / 12.0
 
 #: ``CrossSection.shape`` values billed by this table. See the module docstring.
 STEEL_SHAPES = frozenset({"angle"})
+
+
+class _SteelMemberTotals(TypedDict):
+    size: str
+    shape: str
+    count: int
+    length_ft: float
+    tags: list[str]
 
 
 def _sizes_by_tag(model: ResolvedModel) -> dict[str, str]:
@@ -42,13 +52,14 @@ def _sizes_by_tag(model: ResolvedModel) -> dict[str, str]:
     return out
 
 
-def _length_m(solid) -> float:
+def _length_m(solid: ResolvedSolid) -> float:
     """The member's long dimension: a beam runs in plan, a post runs in z."""
     xs = [x for x, _y in solid.outline]
     ys = [y for _x, y in solid.outline]
     if not xs:
         return 0.0
-    return max(max(xs) - min(xs), max(ys) - min(ys), solid.z1_m - solid.z0_m)
+    length: float = max(max(xs) - min(xs), max(ys) - min(ys), solid.z1_m - solid.z0_m)
+    return length
 
 
 def steel_member_rows(model: ResolvedModel) -> list[tuple[str, str, float]]:
@@ -79,7 +90,7 @@ def steel_members_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     on an angle is about 7x the steel. Steel is quoted by the foot of a named section here
     for exactly that reason; a fabricator converts to weight off the section name.
     """
-    groups: dict[str, dict[str, object]] = {}
+    groups: dict[str, _SteelMemberTotals] = {}
     for tag, size, length_m in steel_member_rows(model):
         row = groups.get(size)
         if row is None:
@@ -91,5 +102,5 @@ def steel_members_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         assert isinstance(tags, list)
         tags.append(tag)
     return [{**groups[size], "length_ft": round(float(groups[size]["length_ft"]), 2),
-             "tags": sorted(groups[size]["tags"])}  # type: ignore[arg-type]
+             "tags": sorted(groups[size]["tags"])}
             for size in sorted(groups)]

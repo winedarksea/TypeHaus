@@ -11,9 +11,14 @@ layer function, a domain, a member category — never a display name.
 from __future__ import annotations
 
 import fnmatch
+from collections.abc import Iterable
+from typing import cast
 
 from typehaus.emit.trades import FALLBACK_TRADE, TRADES, sequence_rank, solid_trade
+from typehaus.model.assembly import Layer
 from typehaus.model.layer_functions import by_value
+from typehaus.model.plan import PlanModel
+from typehaus.resolve.model import ResolvedLayer
 from typehaus.resolve.solid_categories import categories_where
 
 # --- materials --------------------------------------------------------------------------
@@ -99,7 +104,7 @@ def material_trade(material_ref: str | None) -> str | None:
 #: Layer function -> the trade it takes when neither material nor scope says otherwise.
 #: Every ``LayerFunction`` (``model/layer_functions``) plus the spellings the takeoff and
 #: the IR emit.
-_TRADE = by_value("trade")
+_TRADE = cast(dict[str, str], by_value("trade"))
 LAYER_FUNCTION_TRADE: dict[str, str] = {
     **{k: _TRADE[k] for k in ("structure", "sheathing", "membrane", "drainage", "insulation")},
     "insulation (cavity)": "insulation",
@@ -147,21 +152,24 @@ def layer_trade(function: str | None, scope: str | None = None,
     return LAYER_FUNCTION_TRADE.get(key, FALLBACK_TRADE)
 
 
-def layer_trades(layers, scope: str = "wall") -> tuple[str, ...]:
+def layer_trades(layers: Iterable[Layer | ResolvedLayer],
+                 scope: str = "wall") -> tuple[str, ...]:
     """The trade SET of a layer stack, in sequence order, deduplicated. ``layers`` are
     resolved layers (``function``/``material_ref``) or catalog layers (``function`` is an
     enum)."""
     found: set[str] = set()
     for layer in layers:
         function = getattr(layer, "function", None)
-        function = function.value if hasattr(function, "value") else function
+        if function is not None and hasattr(function, "value"):
+            function = function.value
         found.add(layer_trade(function, scope, getattr(layer, "material_ref", None)))
     # Sequence order, framing last: the sticks are their own node, so a body's primary
     # trade should be the skin a reader sees (siding, drywall, roofing), not the studs.
     return tuple(sorted(found, key=lambda t: (t == "framing", sequence_rank(t))))
 
 
-def assembly_trades(plan, assembly_tag: str | None, scope: str) -> tuple[str, ...]:
+def assembly_trades(plan: PlanModel, assembly_tag: str | None,
+                    scope: str) -> tuple[str, ...]:
     """The trade set of a catalog assembly's layer stack (a roof, whose resolved record
     carries no layers)."""
     assembly = plan.library.resolve_assembly(assembly_tag) if assembly_tag else None
@@ -238,7 +246,7 @@ MEMBER_CATEGORY_TRADE: dict[str, str] = {
 }
 
 
-def member_types_trade(types) -> str:
+def member_types_trade(types: Iterable[str]) -> str:
     """The trade of a lumber row from the member categories it rolls up."""
     trades = {MEMBER_CATEGORY_TRADE.get(str(t).lower(), "framing") for t in (types or ())}
     return trades.pop() if len(trades) == 1 else "framing"

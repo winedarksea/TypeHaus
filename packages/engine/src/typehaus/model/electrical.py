@@ -9,11 +9,15 @@ the circuit list.
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal, cast
 
 from typehaus.model.base import Element
 from typehaus.model.enums import BackupTier
 from typehaus.model.registry import register_constructor, register_element
+from typehaus.model.types import LuminaireType
+
+if TYPE_CHECKING:
+    from typehaus.model.plan import Library
 
 
 @register_element
@@ -110,7 +114,7 @@ class LoadManagement(Element):
 register_constructor("LoadManagement", LoadManagement)
 
 
-def luminaire_types(library: object) -> dict[str, object]:
+def luminaire_types(library: Library) -> dict[str, LuminaireType]:
     """The ``LuminaireType`` subset of ``Library.electrical_device_types``.
 
     A luminaire is the electrical-device type that carries a ``LuminaireForm``; there is
@@ -118,6 +122,6 @@ def luminaire_types(library: object) -> dict[str, object]:
     rather than the plan so the check tier (which holds a ``CheckContext``) and the draw
     and take-off tiers (which hold a model) can share one answer.
     """
-    return {product.tag: product
-            for product in library.electrical_device_types  # type: ignore[attr-defined]
+    return {product.tag: cast(LuminaireType, product)
+            for product in library.electrical_device_types
             if getattr(product, "form", None) is not None}

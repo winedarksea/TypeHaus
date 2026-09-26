@@ -34,18 +34,28 @@ Runs after ``resolve_mep`` (the boxes need the runs), and replaces each blocked
 from __future__ import annotations
 
 import dataclasses
+from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import cast
 
 from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 from typehaus.hardware.plan_geometry import point_in_ring
+from typehaus.model.floors import FloorSystem, JoistSpec
 from typehaus.quantities import inch
-from typehaus.resolve.floor_ends import structure_span
+from typehaus.resolve.floor_ends import FloorEnds, structure_span
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel
+from typehaus.resolve.model import (
+    FramedMember,
+    ResolvedFloor,
+    ResolvedModel,
+    ResolvedWall,
+    Vec2,
+)
 from typehaus.resolve.partition import framing_top_z_m
 from typehaus.resolve.partition_fasteners import (
     BETWEEN_MEMBERS,
     PARTITION_BLOCK_PREFIX,
+    PartitionTopJoint,
     partition_top_joints,
 )
 
@@ -88,6 +98,10 @@ _PARTITION_TOP_WINDOW_M = inch(2).meters
 #: two plies is not a nailer.
 _MIN_PARTITION_BAY_M = inch(6).meters
 
+_Span = tuple[float, float]
+_RunBand = tuple[str, tuple[Vec2, ...], tuple[float, ...], float]
+_Crossing = tuple[str, float, float, float, float]
+
 
 def resolve_bearing_blocking(model: ResolvedModel) -> None:
     runs = _run_bands(model)
@@ -95,6 +109,7 @@ def resolve_bearing_blocking(model: ResolvedModel) -> None:
         system = model.plan.by_tag(floor.tag)
         if system is None or floor.ends is None:
             continue
+        system = cast(FloorSystem, system)
         members, conflicts = _floor_blocking(model, floor, system, runs)
         if members or conflicts:
             model.floors[index] = dataclasses.replace(
@@ -113,6 +128,7 @@ def resolve_bearing_blocking(model: ResolvedModel) -> None:
         system = model.plan.by_tag(floor.tag)
         if system is None or floor.ends is None:
             continue
+        system = cast(FloorSystem, system)
         members, _unframed = _partition_top_blocking(model, floor, system, runs, joints)
         if members:
             model.floors[index] = dataclasses.replace(
@@ -120,7 +136,12 @@ def resolve_bearing_blocking(model: ResolvedModel) -> None:
                 members=(*model.floors[index].members, *members))
 
 
-def _floor_blocking(model, floor: ResolvedFloor, system, runs):
+def _floor_blocking(
+    model: ResolvedModel,
+    floor: ResolvedFloor,
+    system: FloorSystem,
+    runs: list[_RunBand],
+) -> tuple[list[FramedMember], list[BlockingConflict]]:
     spec = system.joists
     along_x = floor.direction == "x"
     axis_i, perp_i = (0, 1) if along_x else (1, 0)
@@ -135,7 +156,7 @@ def _floor_blocking(model, floor: ResolvedFloor, system, runs):
                    and abs(w.z0_m - z1) <= _BASE_TOL_M]
     edges = [m for m in floor.members if m.category in _BAY_EDGES
              and abs(m.p0[perp_i] - m.p1[perp_i]) <= 1e-6]
-    ends = floor.ends
+    ends = cast(FloorEnds, floor.ends)  # guarded by the resolver entry point
 
     members: list[FramedMember] = []
     conflicts: list[BlockingConflict] = []
@@ -180,7 +201,13 @@ def _floor_blocking(model, floor: ResolvedFloor, system, runs):
     return members, conflicts
 
 
-def _partition_top_blocking(model, floor: ResolvedFloor, system, runs, joints):
+def _partition_top_blocking(
+    model: ResolvedModel,
+    floor: ResolvedFloor,
+    system: FloorSystem,
+    runs: list[_RunBand],
+    joints: list[PartitionTopJoint],
+) -> tuple[list[FramedMember], list[str]]:
     """Blocks between joists over every partition standing IN a bay of this deck.
 
     The mirror of the bearing pass: there the wall is under the line and the block carries
@@ -264,8 +291,9 @@ def _partition_top_blocking(model, floor: ResolvedFloor, system, runs, joints):
     return members, unframed
 
 
-def _bay_lines(edges, axis_i: int, perp_i: int, lo: float,
-               hi: float) -> list[tuple[float, float]]:
+def _bay_lines(
+    edges: Sequence[FramedMember], axis_i: int, perp_i: int, lo: float, hi: float,
+) -> list[_Span]:
     """Sorted ``(perp, width)`` of the bay edges that run beside ``lo``..``hi``."""
     lines: dict[float, float] = {}
     for member in edges:
@@ -277,7 +305,7 @@ def _bay_lines(edges, axis_i: int, perp_i: int, lo: float,
     return sorted(lines.items())
 
 
-def _straddling_bay(lines, perp: float, spacing: float):
+def _straddling_bay(lines: Sequence[_Span], perp: float, spacing: float) -> _Span | None:
     """The clear bay between the two bay edges either side of ``perp``, or ``None``."""
     below = [entry for entry in lines if entry[0] <= perp]
     above = [entry for entry in lines if entry[0] > perp]
@@ -290,7 +318,7 @@ def _straddling_bay(lines, perp: float, spacing: float):
     return gap if gap[1] - gap[0] >= _MIN_PARTITION_BAY_M else None
 
 
-def _line_coords(model, spec, axis_i: int) -> list[float]:
+def _line_coords(model: ResolvedModel, spec: JoistSpec, axis_i: int) -> list[float]:
     """Axis coordinates of the floor's bearing lines, walls and beams alike."""
     coords = []
     for tag in spec.bearing_refs:
@@ -301,7 +329,7 @@ def _line_coords(model, spec, axis_i: int) -> list[float]:
     return coords
 
 
-def _beam_axis(model, tag: str):
+def _beam_axis(model: ResolvedModel, tag: str) -> tuple[Vec2, Vec2] | None:
     from typehaus.hardware.plan_geometry import centerline_endpoints
 
     solid = next((s for s in model.solids if s.tag == tag), None)
@@ -310,14 +338,20 @@ def _beam_axis(model, tag: str):
     return centerline_endpoints(list(solid.outline))
 
 
-def _walls_below(model, storey: str, coords: list[float], z0: float, axis_i: int,
-                 perp_i: int) -> list[tuple[float, float, float]]:
+def _walls_below(
+    model: ResolvedModel,
+    storey: str,
+    coords: list[float],
+    z0: float,
+    axis_i: int,
+    perp_i: int,
+) -> list[tuple[float, float, float]]:
     """``(structure centre, perp lo, perp hi)`` of every wall under a bearing line.
 
     By geometry, not ``bearing_refs``: a line names one of its collinear walls and bears on
     all of them (catlin's W-M-C3 carries FS-S-* and neither deck names it).
     """
-    out = []
+    out: list[tuple[float, float, float]] = []
     for wall in model.walls:
         if wall.storey == storey:
             continue
@@ -335,7 +369,9 @@ def _walls_below(model, storey: str, coords: list[float], z0: float, axis_i: int
     return sorted(out)
 
 
-def _merge_lines(lines):
+def _merge_lines(
+    lines: Sequence[tuple[float, float, float]],
+) -> list[tuple[float, list[_Span]]]:
     """Collinear walls under one line, their perp extents merged: one course per line.
 
     Two walls overlapping in plan on one line (catlin's x=18' basement run) would otherwise
@@ -356,9 +392,15 @@ def _merge_lines(lines):
     return merged
 
 
-def _overlap_above(walls_above, coord: float, lo: float, hi: float,
-                   axis_i: int, perp_i: int) -> list[tuple[float, float]]:
-    out = []
+def _overlap_above(
+    walls_above: Sequence[ResolvedWall],
+    coord: float,
+    lo: float,
+    hi: float,
+    axis_i: int,
+    perp_i: int,
+) -> list[_Span]:
+    out: list[_Span] = []
     for wall in walls_above:
         (a, b) = wall.axis
         if abs(a[axis_i] - b[axis_i]) > 1e-6 or abs(a[axis_i] - coord) > _LINE_TOL_M:
@@ -369,7 +411,9 @@ def _overlap_above(walls_above, coord: float, lo: float, hi: float,
     return out
 
 
-def _bay_edges_at(edges, coord: float, axis_i: int, perp_i: int):
+def _bay_edges_at(
+    edges: Sequence[FramedMember], coord: float, axis_i: int, perp_i: int,
+) -> list[_Span]:
     """Sorted ``(perp, width)`` of the members bounding bays at this line.
 
     Joists, sister plies and opening trimmers all close a bay; a block is cut to their faces.
@@ -384,10 +428,11 @@ def _bay_edges_at(edges, coord: float, axis_i: int, perp_i: int):
     return sorted(lines.items())
 
 
-def _carrier_spans(model, coord: float, z0: float, z1: float, axis_i: int,
-                   perp_i: int) -> list[tuple[float, float]]:
+def _carrier_spans(
+    model: ResolvedModel, coord: float, z0: float, z1: float, axis_i: int, perp_i: int,
+) -> list[_Span]:
     """Perp extents of beams on this line in the joist depth: no plate under them."""
-    out = []
+    out: list[_Span] = []
     for solid in model.solids:
         if solid.category != "beam" or solid.z1_m <= z0 or solid.z0_m >= z1:
             continue
@@ -398,7 +443,7 @@ def _carrier_spans(model, coord: float, z0: float, z1: float, axis_i: int,
     return out
 
 
-def _clip(gap, blocked):
+def _clip(gap: _Span, blocked: Sequence[_Span]) -> _Span | None:
     """The longest part of ``gap`` clear of every blocked span, or ``None``."""
     if gap[1] - gap[0] < _MIN_BAY_M:
         return None  # plies face to face
@@ -411,7 +456,16 @@ def _clip(gap, blocked):
     return max(pieces, key=lambda piece: piece[1] - piece[0]) if pieces else None
 
 
-def _member(floor, key, profile, along_x, centre, gap, z0, z1):
+def _member(
+    floor: ResolvedFloor,
+    key: str,
+    profile: str,
+    along_x: bool,
+    centre: float,
+    gap: _Span,
+    z0: float,
+    z1: float,
+) -> FramedMember:
     if along_x:
         p0, p1 = (centre, gap[0]), (centre, gap[1])
     else:
@@ -419,7 +473,16 @@ def _member(floor, key, profile, along_x, centre, gap, z0, z1):
     return FramedMember(floor.uid, key, "blocking", profile, p0, p1, z0, z1, gap[1] - gap[0])
 
 
-def _box(floor, key, along_x, centre, gap, z0, z1, crossing):
+def _box(
+    floor: ResolvedFloor,
+    key: str,
+    along_x: bool,
+    centre: float,
+    gap: _Span,
+    z0: float,
+    z1: float,
+    crossing: Sequence[_Crossing],
+) -> tuple[list[FramedMember], list[BlockingConflict]]:
     """A 2x6 box around every run crossing this bay, and a conflict for each misfit.
 
     The bottom rail is drawn only when every run clears it: a run resting on the plate takes
@@ -432,7 +495,7 @@ def _box(floor, key, along_x, centre, gap, z0, z1, crossing):
     rail_top = z1 - _BOX_T_M
     bottom_rail = min(c[3] for c in crossing) >= z0 + _BOX_T_M - _FIT_TOL_M
     base = z0 + _BOX_T_M if bottom_rail else z0
-    conflicts = {}
+    conflicts: dict[str, BlockingConflict] = {}
     for tag, p_lo, p_hi, _r_lo, r_hi in crossing:
         if r_hi > rail_top + _FIT_TOL_M:
             conflicts[tag] = BlockingConflict(
@@ -441,28 +504,32 @@ def _box(floor, key, along_x, centre, gap, z0, z1, crossing):
         elif p_lo < gap[0] - _FIT_TOL_M or p_hi > gap[1] + _FIT_TOL_M:
             conflicts[tag] = BlockingConflict(
                 tag, key, "runs into the joist or beam face that closes the bay")
-    box = [_member(floor, f"{key}-rail-top", BOX_PROFILE, along_x, centre, gap, rail_top, z1)]
+    box_members = [
+        _member(floor, f"{key}-rail-top", BOX_PROFILE, along_x, centre, gap, rail_top, z1)
+    ]
     if bottom_rail:
-        box.append(_member(floor, f"{key}-rail-bottom", BOX_PROFILE, along_x, centre, gap,
-                           z0, base))
+        box_members.append(_member(floor, f"{key}-rail-bottom", BOX_PROFILE, along_x, centre,
+                                   gap, z0, base))
     orient = (0.0, 1.0) if along_x else (1.0, 0.0)
     for side, perp in (("lo", open_lo - _BOX_T_M / 2.0), ("hi", open_hi + _BOX_T_M / 2.0)):
         if not gap[0] + _BOX_T_M / 2.0 <= perp <= gap[1] - _BOX_T_M / 2.0:
             continue  # the joist or beam face is that side of the box
         point = (centre, perp) if along_x else (perp, centre)
-        box.append(FramedMember(floor.uid, f"{key}-cheek-{side}", "blocking", BOX_PROFILE,
-                                point, point, base, rail_top, rail_top - base, orient=orient))
-    return box, list(conflicts.values())
+        box_members.append(
+            FramedMember(floor.uid, f"{key}-cheek-{side}", "blocking", BOX_PROFILE,
+                         point, point, base, rail_top, rail_top - base, orient=orient)
+        )
+    return box_members, list(conflicts.values())
 
 
-def _run_bands(model) -> list[tuple[str, tuple, tuple, float]]:
+def _run_bands(model: ResolvedModel) -> list[_RunBand]:
     """``(tag, plan path, per-vertex centreline z, outside radius)`` for every routed run."""
     from typehaus.resolve.pipe_sections import (
         pipe_outside_diameter_m,
         raceway_outside_diameter_m,
     )
 
-    out = []
+    out: list[_RunBand] = []
     for run in model.pipe_runs:
         if run.z_m and len(run.z_m) == len(run.path):
             out.append((run.tag, tuple(run.path), tuple(run.z_m),
@@ -480,11 +547,19 @@ def _run_bands(model) -> list[tuple[str, tuple, tuple, float]]:
     return out
 
 
-def _crossing_runs(runs, along_x: bool, centre: float, width: float, gap, z0, z1):
+def _crossing_runs(
+    runs: Sequence[_RunBand],
+    along_x: bool,
+    centre: float,
+    width: float,
+    gap: _Span,
+    z0: float,
+    z1: float,
+) -> list[_Crossing]:
     """``(tag, perp lo, perp hi, z lo, z hi)`` of the run surfaces inside this block."""
     from shapely.geometry import LineString, Point, box
 
-    out = []
+    out: list[_Crossing] = []
     for tag, path, z, radius in runs:
         a0, a1 = centre - width / 2.0 - radius, centre + width / 2.0 + radius
         block = box(a0, gap[0], a1, gap[1]) if along_x else box(gap[0], a0, gap[1], a1)

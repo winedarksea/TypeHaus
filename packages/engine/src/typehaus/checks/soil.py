@@ -13,21 +13,24 @@ that builds its own profile green.
 
 from __future__ import annotations
 
-from typing import Any
+from typehaus.checks.jurisdiction import JurisdictionProfile
+from typehaus.model.plan import PlanModel
+from typehaus.model.project import Site
+from typehaus.model.site import SoilBasis
 
 
-def _site(plan: Any) -> Any:
-    return getattr(getattr(plan, "project", None), "site", None)
+def _site(plan: PlanModel) -> Site | None:
+    return plan.project.site
 
 
-def site_soil_class(plan: Any, profile: Any) -> str | None:
+def site_soil_class(plan: PlanModel, profile: JurisdictionProfile | None) -> str | None:
     """The soil class governing this building: the site's, else the profile's, else None."""
     site = _site(plan)
-    return (getattr(site, "soil_class", None)
-            or (getattr(profile, "soil_class", None) if profile is not None else None))
+    return ((site.soil_class if site is not None else None)
+            or (profile.soil_class if profile is not None else None))
 
 
-def site_soil_basis(plan: Any, profile: Any) -> Any:
+def site_soil_basis(plan: PlanModel, profile: JurisdictionProfile | None) -> SoilBasis | None:
     """Where the governing soil class came from, or ``None`` if nobody has said.
 
     Only the SITE can carry this: a profile's class is regional by construction, so a house
@@ -36,15 +39,17 @@ def site_soil_basis(plan: Any, profile: Any) -> Any:
     downstream (``engineering/soil.soil_is_presumed``).
     """
     site = _site(plan)
-    if getattr(site, "soil_class", None) is None:
+    if site is None or site.soil_class is None:
         return None  # the profile's class is governing, and a profile's class is regional
-    return getattr(site, "soil_basis", None)
+    return site.soil_basis
 
 
-def site_soil_bearing_psf(plan: Any, profile: Any) -> float | None:
+def site_soil_bearing_psf(
+    plan: PlanModel, profile: JurisdictionProfile | None,
+) -> float | None:
     """The presumptive bearing value: the site's, else the profile's, else None."""
     site = _site(plan)
-    value = getattr(site, "soil_bearing_psf", None)
+    value = site.soil_bearing_psf if site is not None else None
     if value is not None:
         return value
-    return getattr(profile, "soil_bearing_psf", None) if profile is not None else None
+    return profile.soil_bearing_psf if profile is not None else None

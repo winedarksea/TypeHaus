@@ -14,8 +14,14 @@ replacing it (→ takeoff/electrical.service_load_summary, which is unchanged).
 
 from __future__ import annotations
 
+from typing import TypedDict, TypeGuard
+
+from typehaus.model.base import Element
 from typehaus.model.electrical import luminaire_types
-from typehaus.resolve.model import ResolvedModel
+from typehaus.model.mep import ElectricalDevice
+from typehaus.model.placeables import Mount
+from typehaus.model.types import ElectricalDeviceType, LuminaireType
+from typehaus.resolve.model import ResolvedLightRun, ResolvedModel
 
 _M_TO_FT = 3.280839895013123
 _M2_TO_FT2 = 10.7639104167
@@ -29,19 +35,55 @@ GENERAL_LIGHTING_VA_PER_FT2 = 3.0
 PSU_SIZING_FACTOR = 1.25
 
 
-def _device_types(model: ResolvedModel) -> dict:
+class _RunTypeTotals(TypedDict):
+    type: str
+    mark: str
+    runs: int
+    length_ft: float
+    watts: float
+
+
+class _SupplyTotals(TypedDict):
+    psu: str
+    runs: list[str]
+    length_ft: float
+    watts: float
+
+
+class _RunMaterialTotals(TypedDict):
+    type: str
+    mark: str
+    runs: int
+    length_ft: float
+    end_caps: int
+    corner_connectors: int
+
+
+class _CircuitTotals(TypedDict):
+    circuit: str
+    fixtures: int
+    runs: int
+    connected_va: float
+
+
+def _device_types(model: ResolvedModel) -> dict[str, ElectricalDeviceType]:
     return {product.tag: product for product in model.plan.library.electrical_device_types}
 
 
-def _luminaires(model: ResolvedModel) -> list:
+def _is_electrical_device(element: Element) -> TypeGuard[ElectricalDevice]:
+    # The element registry assigns this discriminator to ElectricalDevice instances.
+    return element.element_kind == "ElectricalDevice"
+
+
+def _luminaires(model: ResolvedModel) -> list[ElectricalDevice]:
     return [element for storey in model.plan.storeys
             for element in model.plan.storey_elements(storey.tag)
-            if element.element_kind == "ElectricalDevice"
+            if _is_electrical_device(element)
             and element.kind.value == "light"]
 
 
-def _mount_label(element: object) -> str:
-    mount = getattr(element, "mount", None)
+def _mount_label(element: ElectricalDevice) -> str:
+    mount: Mount | None = getattr(element, "mount", None)
     if mount is None:
         return "floor"
     kind = mount.kind.value
@@ -52,7 +94,7 @@ def _mount_label(element: object) -> str:
     return kind
 
 
-def _rating_label(product: object) -> str:
+def _rating_label(product: LuminaireType) -> str:
     if product.wet_rated:
         return "wet"
     if product.damp_rated:
@@ -60,7 +102,7 @@ def _rating_label(product: object) -> str:
     return "dry"
 
 
-def _run_watts(run: object, product: object) -> float:
+def _run_watts(run: ResolvedLightRun, product: ElectricalDeviceType | None) -> float:
     """One run's connected watts: its type's per-foot draw over its *resolved* length.
 
     The single place that product is formed — the authored ``LightRun`` carries a ``path``,
@@ -94,7 +136,7 @@ def luminaire_schedule(model: ResolvedModel) -> list[dict[str, object]]:
     """
     types = luminaire_types(model.plan.library)
     counts: dict[str, int] = {}
-    rooms: dict[str, set] = {}
+    rooms: dict[str, set[str]] = {}
     for element in _luminaires(model):
         if element.type_ref not in types:
             continue
@@ -105,7 +147,7 @@ def luminaire_schedule(model: ResolvedModel) -> list[dict[str, object]]:
         run_feet[run.type_ref] = run_feet.get(run.type_ref, 0.0) + run.length_m * _M_TO_FT
         rooms.setdefault(run.type_ref, set()).add(run.room or "(unassigned)")
 
-    mount_by_type: dict[str, set] = {}
+    mount_by_type: dict[str, set[str]] = {}
     for element in _luminaires(model):
         if element.type_ref in types:
             mount_by_type.setdefault(element.type_ref, set()).add(_mount_label(element))
@@ -147,10 +189,12 @@ def lighting_controls(model: ResolvedModel) -> list[dict[str, object]]:
     device_types = _device_types(model)
     switches = {element.tag: element for storey in model.plan.storeys
                 for element in model.plan.storey_elements(storey.tag)
-                if element.element_kind == "ElectricalDevice"
+                if _is_electrical_device(element)
                 and element.kind.value == "switch"}
 
-    loads: list[tuple[object, str]] = [(element, "fixture") for element in _luminaires(model)]
+    loads: list[tuple[ElectricalDevice | ResolvedLightRun, str]] = [
+        (element, "fixture") for element in _luminaires(model)
+    ]
     loads.extend((run, "run") for run in model.light_runs)
 
     rows: list[dict[str, object]] = []
@@ -192,8 +236,8 @@ def light_run_takeoff(model: ResolvedModel) -> dict[str, object]:
     supply has to be bought above, not the number it draws.
     """
     types = _device_types(model)
-    by_type: dict[str, dict[str, object]] = {}
-    by_psu: dict[str, dict[str, object]] = {}
+    by_type: dict[str, _RunTypeTotals] = {}
+    by_psu: dict[str, _SupplyTotals] = {}
     runs: list[dict[str, object]] = []
 
     for run in sorted(model.light_runs, key=lambda item: item.tag):
@@ -218,13 +262,13 @@ def light_run_takeoff(model: ResolvedModel) -> dict[str, object]:
             continue
         supply = by_psu.setdefault(run.psu_ref, {
             "psu": run.psu_ref, "runs": [], "length_ft": 0.0, "watts": 0.0})
-        supply["runs"].append(run.tag)  # type: ignore[union-attr]
+        supply["runs"].append(run.tag)
         supply["length_ft"] = float(supply["length_ft"]) + length_ft
         supply["watts"] = float(supply["watts"]) + watts
 
     devices = {element.tag: element for storey in model.plan.storeys
                for element in model.plan.storey_elements(storey.tag)
-               if element.element_kind == "ElectricalDevice"}
+               if _is_electrical_device(element)}
     supplies = []
     for psu_tag in sorted(by_psu):
         supply = by_psu[psu_tag]
@@ -234,7 +278,7 @@ def light_run_takeoff(model: ResolvedModel) -> dict[str, object]:
         supplies.append({
             "psu": psu_tag,
             "type": getattr(device, "type_ref", None),
-            "runs": sorted(supply["runs"]),  # type: ignore[arg-type]
+            "runs": sorted(supply["runs"]),
             "length_ft": round(float(supply["length_ft"]), 1),
             "connected_watts": round(float(supply["watts"]), 1),
             "required_watts": round(required, 1),
@@ -262,7 +306,7 @@ def light_run_materials(model: ResolvedModel) -> list[dict[str, object]]:
     interior path vertex, the fitting a straight length of stock cannot become on its own.
     """
     types = _device_types(model)
-    by_type: dict[str, dict[str, object]] = {}
+    by_type: dict[str, _RunMaterialTotals] = {}
     for run in model.light_runs:
         product = types.get(run.type_ref)
         row = by_type.setdefault(run.type_ref, {
@@ -301,15 +345,15 @@ def connected_lighting_va(model: ResolvedModel) -> dict[str, object]:
     luminaire_tags = set(luminaire_types(model.plan.library))
     psu_tags = {run.psu_ref for run in model.light_runs if run.psu_ref}
 
-    by_circuit: dict[str, dict[str, object]] = {}
+    by_circuit: dict[str, _CircuitTotals] = {}
 
-    def _row(circuit: str) -> dict[str, object]:
+    def _row(circuit: str) -> _CircuitTotals:
         return by_circuit.setdefault(circuit, {"circuit": circuit, "fixtures": 0, "runs": 0,
                                                "connected_va": 0.0})
 
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
-            if element.element_kind != "ElectricalDevice":
+            if not _is_electrical_device(element):
                 continue
             if not (element.type_ref in luminaire_tags or element.tag in psu_tags):
                 continue

@@ -8,15 +8,29 @@ the project was part of the order.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+from typing import TypedDict
+
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import ResolvedFootingBedding, ResolvedModel
 
 _M_TO_FT = 3.280839895
 _M3_TO_CY = 1.30795062
 _M2_TO_FT2 = 10.7639104
 
 
-def _ring_area(ring) -> float:
+_DrainTileKey = tuple[bool, float, str, bool, str]
+
+
+class _BeddingTotals(TypedDict):
+    volume_m3: float
+    fabric_m2: float
+    tile_m: float
+    count: int
+    tags: list[str]
+
+
+def _ring_area(ring: Sequence[tuple[float, float]]) -> float:
     """Shoelace area of a closed ring, unsigned."""
     if len(ring) < 3:
         return 0.0
@@ -27,12 +41,13 @@ def _ring_area(ring) -> float:
     return abs(total) / 2.0
 
 
-def _ring_perimeter(ring) -> float:
+def _ring_perimeter(ring: Sequence[tuple[float, float]]) -> float:
     if len(ring) < 2:
         return 0.0
-    return sum(((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
-               for (x0, y0), (x1, y1) in zip(ring, list(ring[1:]) + [ring[0]],
-                                             strict=True))
+    perimeter: float = sum(((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+                           for (x0, y0), (x1, y1) in zip(
+                               ring, list(ring[1:]) + [ring[0]], strict=True))
+    return perimeter
 
 
 def footing_bedding_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -43,7 +58,7 @@ def footing_bedding_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     excavation's plan area plus its walls, which is what actually gets lined; drain tile runs
     the bedding's perimeter.
     """
-    groups: dict[tuple[str, bool, tuple], dict[str, object]] = {}
+    groups: dict[tuple[str, bool, _DrainTileKey], _BeddingTotals] = {}
     for bedding in model.footing_beddings:
         area = _ring_area(bedding.outline)
         depth = max(bedding.z1_m - bedding.stone_z0_m, 0.0)  # the flood course is stone too
@@ -63,7 +78,7 @@ def footing_bedding_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     rows = []
     for (aggregate, geotextile, tile_key), entry in sorted(groups.items()):
         has_tile, diameter_m, material, sock, discharge = tile_key
-        diameter_m = diameter_m if diameter_m >= 0.0 else None
+        billed_diameter_m = diameter_m if diameter_m >= 0.0 else None
         rows.append({
             "aggregate": aggregate,
             "beddings": int(entry["count"]),
@@ -75,8 +90,8 @@ def footing_bedding_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             # What is actually being ordered. A row that says only "1,240 ft of drain tile"
             # cannot be priced or bought: 4" sock-wrapped HDPE to daylight and 6" bare pipe
             # to a sump are two deliveries, and grouping them together said they were one.
-            "drain_tile_diameter_in": (round(diameter_m / M_PER_IN, 2)
-                                       if diameter_m is not None else None),
+            "drain_tile_diameter_in": (round(billed_diameter_m / M_PER_IN, 2)
+                                       if billed_diameter_m is not None else None),
             "drain_tile_material": material,
             "drain_tile_sock": sock,
             "drain_tile_discharge": discharge,
@@ -85,7 +100,7 @@ def footing_bedding_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     return rows
 
 
-def _tile_key(bedding) -> tuple:
+def _tile_key(bedding: ResolvedFootingBedding) -> _DrainTileKey:
     """The drain-tile group key: the bool, then the product spec where one is authored.
 
     Every slot is the same type across beddings so the row sort never compares a ``None``

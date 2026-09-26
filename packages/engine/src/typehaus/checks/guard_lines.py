@@ -26,9 +26,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from typehaus.model.plan import PlanModel
 from typehaus.model.screens import SlatScreen
 from typehaus.model.structure import Railing
-from typehaus.quantities import Length
+from typehaus.quantities import Length, Point2D
 
 __all__ = ["GuardLine", "guard_lines"]
 
@@ -43,7 +44,7 @@ class GuardLine:
     """
 
     tag: str
-    path: tuple
+    path: tuple[Point2D, ...]
     height: Length
     base_elevation: Length
     infill: str | None
@@ -69,7 +70,7 @@ def _from_screen(element: SlatScreen) -> GuardLine:
                      source=element)
 
 
-def guard_lines(plan) -> list[GuardLine]:
+def guard_lines(plan: PlanModel) -> list[GuardLine]:
     """Every authored line element that guards a raised edge, in authoring order.
 
     ``Railing`` in any role — a stair rail still covers the edge it runs along — plus every

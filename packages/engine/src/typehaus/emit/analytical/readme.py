@@ -68,8 +68,11 @@ def analysis_readme(model: AnalyticalModel, *, house: str, has_ifc: bool = True)
         node_n = sum(1 for load in model.node_loads if load.case is case.kind)
         lines.append(f"- `{case.name}` — {case.description}; {member_n} line, {point_n} point, "
                      f"{node_n} nodal load(s)")
-    sources = sorted({load.source for load in (*model.member_loads, *model.member_point_loads,
-                                                *model.node_loads) if load.source})
+    sources = sorted(
+        {load.source for load in model.member_loads if load.source}
+        | {load.source for load in model.member_point_loads if load.source}
+        | {load.source for load in model.node_loads if load.source}
+    )
     if sources:
         lines += ["", "Where each load came from:", ""]
         lines += [f"- {source}" for source in sources]

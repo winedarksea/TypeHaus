@@ -89,9 +89,9 @@ def analyze_wwr(model: ResolvedModel) -> tuple[FacadeWWR, ...]:
         # here would put 5 sf of "east glazing" on a facade that gained no glass.
         if opening.is_blind:
             continue
-        wall = wall_by_tag.get(opening.host_wall)
-        if wall is not None:
-            buckets[_facade_for_wall(wall, model)][1] += opening.width_m * opening.height_m
+        host_wall = wall_by_tag.get(opening.host_wall)
+        if host_wall is not None:
+            buckets[_facade_for_wall(host_wall, model)][1] += opening.width_m * opening.height_m
     return tuple(FacadeWWR(name, *buckets[name]) for name in ("N", "E", "S", "W"))
 
 

@@ -104,17 +104,18 @@ def _line_load_plf(model: AnalyticalModel, member: Member, case: str) -> float:
 def _point_load_lb(model: AnalyticalModel, member: Member, case: str) -> float:
     """Resultant magnitude of the point loads on the member and at its two end nodes."""
     fx = fy = fz = 0.0
-    for load in model.member_point_loads:
-        if load.member == member.id and load.case.value == case:
-            fx += load.p_n if load.direction == "GX" else 0.0
-            fy += load.p_n if load.direction == "GY" else 0.0
-            fz += load.p_n if load.direction == "GZ" else 0.0
-    for load in model.node_loads:
-        if load.node in (member.n0, member.n1) and load.case.value == case:
-            fx += load.fx_n
-            fy += load.fy_n
-            fz += load.fz_n
-    return (fx * fx + fy * fy + fz * fz) ** 0.5 * N_TO_LB
+    for point_load in model.member_point_loads:
+        if point_load.member == member.id and point_load.case.value == case:
+            fx += point_load.p_n if point_load.direction == "GX" else 0.0
+            fy += point_load.p_n if point_load.direction == "GY" else 0.0
+            fz += point_load.p_n if point_load.direction == "GZ" else 0.0
+    for node_load in model.node_loads:
+        if node_load.node in (member.n0, member.n1) and node_load.case.value == case:
+            fx += node_load.fx_n
+            fy += node_load.fy_n
+            fz += node_load.fz_n
+    magnitude_lb: float = (fx * fx + fy * fy + fz * fz) ** 0.5 * N_TO_LB
+    return magnitude_lb
 
 
 def _num(value: float) -> str:

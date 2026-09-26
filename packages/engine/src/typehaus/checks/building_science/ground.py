@@ -39,6 +39,8 @@ from __future__ import annotations
 
 import math
 
+from typehaus.model.site import MonthlyNormal
+
 # Thermal conductivity of soil, Btu/h·ft·°F. ASHRAE Fundamentals Ch. 18's value for the
 # below-grade method, and the one Latta & Boileau's charts are drawn at. Not authored per
 # house: it is the constant the *method* is calibrated with, and a house that knows its own
@@ -46,7 +48,7 @@ import math
 SOIL_CONDUCTIVITY_BTU_PER_HR_FT_F = 0.8
 
 
-def annual_mean_outdoor_f(monthly_normals) -> float | None:
+def annual_mean_outdoor_f(monthly_normals: tuple[MonthlyNormal, ...]) -> float | None:
     """Mean annual outdoor dry-bulb from the twelve published monthly normals.
 
     ``None`` where a house authors none. Deliberately the plain twelve-month mean rather
@@ -60,7 +62,7 @@ def annual_mean_outdoor_f(monthly_normals) -> float | None:
 
 
 def ground_design_temp_f(
-    monthly_normals, amplitude_f: float | None,
+    monthly_normals: tuple[MonthlyNormal, ...], amplitude_f: float | None,
 ) -> tuple[float | None, str | None]:
     """``(design ground-surface temperature °F, the gap that stopped it)``.
 
@@ -78,7 +80,7 @@ def ground_design_temp_f(
 
 
 def ground_summer_temp_f(
-    monthly_normals, amplitude_f: float | None,
+    monthly_normals: tuple[MonthlyNormal, ...], amplitude_f: float | None,
 ) -> tuple[float | None, str | None]:
     """The other end of the same swing, for the cooling season: ``annual_mean + amplitude``.
 

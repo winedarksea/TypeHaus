@@ -221,7 +221,8 @@ def _fitting(key: str, system: str) -> str | None:
 
 def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) -> str | None:
     """The readable half, or ``None`` when the id is already the best there is."""
-    g = lambda name: row.get(name)  # noqa: E731
+    def g(name: str) -> Any:
+        return row.get(name)
     if section in ("placeables", "furnishings"):
         return str(g("name") or labels.types.get(bare) or "") or None
     if section == "framing":
@@ -321,9 +322,9 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
     if section == "allowances":
         return bare.replace("-", " ").capitalize()
     if section == "openings":
-        width, height = g("width_in"), g("height_in")
-        size = (f", {_fraction_in(width)} x {_fraction_in(height)}"
-                if width is not None and height is not None else "")
+        opening_width, opening_height = g("width_in"), g("height_in")
+        size = (f", {_fraction_in(opening_width)} x {_fraction_in(opening_height)}"
+                if opening_width is not None and opening_height is not None else "")
         return f"Rough opening, no product assigned{size}" if bare in ("None", "") else None
     if section == "data_raceways":
         size = f", {_fraction_in(g('trade_size_in'))}" if g("trade_size_in") else ""
