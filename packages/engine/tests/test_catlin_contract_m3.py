@@ -106,17 +106,19 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     assert east_spans == {EAST_BAY_FT}
     west_spans = {round(m.length_m / ft(1).meters, 3) for m in west_joists}
     assert WEST_TRUSS_FT in west_spans
-    # FO-S-STAIR is drawn to the finished well, so the clip lands on W-M-STRW's
-    # stair-side face at x=10'-3 3/8" rather than on its centreline. 8 lines clip here,
+    # FO-S-STAIR is drawn to the finished well and lined in 5/8" gypsum, so the clip lands
+    # 5/8" behind W-M-STRW's stair-side face, at x=10'-2 3/4". 8 lines clip here,
     # not the 7 that only cross the opening's own y-range: the doubled trimmer pair
     # along the opening's long edge (a floor truss's 3 1/2" chord is wider than an
     # I-joist's 2 1/2" flange at this depth) reaches past the opening into the next
     # regular joist line's own footprint, so that line is clipped too rather than left
     # to interpenetrate the trimmer (structural.member_interference).
     # Five since 2026-09-24: FO-S-ERV-CHASE's trimmer pack and header took the other three.
-    assert 10.135 in west_spans
+    # Six since 2026-09-25: the south pack stands outboard of its edge, and the y=25'-4"
+    # line beside it is absorbed over the opening rather than lapping it.
+    assert 10.083 in west_spans
     assert sum(1 for s in (round(m.length_m / ft(1).meters, 3) for m in west_joists)
-              if s == 10.135) == 5
+              if s == 10.083) == 6
 
 
 def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(

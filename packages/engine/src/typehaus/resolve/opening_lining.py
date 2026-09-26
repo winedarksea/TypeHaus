@@ -3,8 +3,9 @@
 Inside a house the platform lap has nothing to lap: a wall's finish stops at its plate
 (``layer_bands.clamp_to_plates``), and a stair well shows the truss ends and trimmers
 between that plate and the deck above. ``FloorOpening.lining`` closes the band in the plane
-of the finished hole — the outline — from the ceiling below to the deck top. The framing
-behind it has already stepped back by the stack's thickness (``floor_openings``).
+of the finished hole — the outline — from the ceiling below to the joist tops, where the
+deck sheet runs over it to that same edge. The framing behind it has already stepped back
+by the stack's thickness (``floor_openings``).
 """
 
 from __future__ import annotations

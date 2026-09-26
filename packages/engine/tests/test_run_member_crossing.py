@@ -93,12 +93,13 @@ def test_the_envelope_would_have_failed_three_real_runs(
     """Two more that flip FAIL -> PASS for the same reason, so the choice is not a one-off.
 
     ``PR-M-S-BATH1-TUB-DRAIN`` reads -0.200" on the envelope and +0.148" per-crossing;
-    ``PR-M-S-SUITE-LAV-DRAIN`` -0.013" and +0.294". The tub drain reads +0.048" at
+    ``PR-M-S-SUITE-LAV-DRAIN`` -0.013" and +0.294". The tub drain reads +0.093" at
     FO-S-ERV-CHASE's trimmer, a truss line graded in the web since 2026-09-24 (it read
-    +0.465" at the tightest joist before).
+    +0.465" at the tightest joist before, and +0.048" until the pack stood outboard of the
+    chase, 2026-09-25).
     """
     findings = _findings(catlin_plan, catlin_model_ro)
-    for tag, crown in (("PR-M-S-BATH1-TUB-DRAIN", 0.048),
+    for tag, crown in (("PR-M-S-BATH1-TUB-DRAIN", 0.093),
                        ("PR-M-S-SUITE-LAV-DRAIN", 0.294)):
         finding = _for(findings, tag, "FS-S-WEST")
         assert finding.result is Result.PASS, finding.message

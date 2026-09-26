@@ -41,7 +41,7 @@ def test_the_truss_is_the_length_it_is_fabricated_to(catlin):
     west = _floor(catlin, "FS-S-WEST")
     full = [m for m in west.members
             if m.category == "joist" and m.length_m > 4.0]
-    assert len(full) == 20
+    assert len(full) == 19  # the y=25'-4" line is FO-S-STAIR's trimmer pack over the well
     assert {_inches(m.length_m) for m in full} == {215.0}
     assert _inches(west.ends.tip_lo) == 1.75
     assert _inches(west.ends.tip_hi) == 216.75
@@ -83,7 +83,7 @@ def test_the_fabrication_schedule_states_span_and_bearing(catlin):
 
     rows = [row for row in fabricated_member_schedule(catlin)
             if row["floor"] == "FS-S-WEST" and row["category"] == "joist"]
-    full = next(row for row in rows if row["pieces"] == 20)
+    full = next(row for row in rows if row["pieces"] == 19)
     assert full["overall_length_ft_in"] == "17'-11\""
     assert full["clear_span_ft_in"] == "17'-3.25\""
     assert (full["bearing_low_in"], full["bearing_high_in"]) == (4.25, 3.5)

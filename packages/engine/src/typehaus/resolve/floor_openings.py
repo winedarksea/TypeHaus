@@ -5,7 +5,8 @@ Split out of ``resolve/floors.py``. Two rules the old inline block got wrong:
 * **A trimmer runs bearing to bearing.** At an edge closed by a generated header, the
   trimmer pack carries that header's end, so it must reach the bearing line beyond it —
   a pack that stopped at the opening edge bore on nothing but the header it was carrying.
-  At an edge a declared wall carries, the trimmer stops at the edge.
+  At an edge a declared wall carries, the pack stops on that wall's line — but only where
+  the wall runs under the PACK, not merely under the edge beside it.
 * **Framing stands behind the opening line.** The outline is the finished hole, so a
   header or trimmer ply 0 has its inner face on it — never half a ply into the well. An
   authored ``FloorOpening.lining`` pushes that line out by its own thickness.
@@ -99,9 +100,12 @@ class OpeningFrame:
     axis1: float
     #: Which axis edges (lo, hi) get a generated header — no declared bearing under them.
     headers: tuple[bool, bool]
-    #: The trimmer run: extended to the bearing line beyond each header edge.
-    trim0: float
-    trim1: float
+    #: Each pack's run, (lo-perp pack, hi-perp pack), as (axis lo, axis hi).
+    runs: tuple[tuple[float, float], tuple[float, float]]
+    #: Per axis edge, the declared walls under it: ``(line, along lo, along hi)``.
+    carriers: tuple[tuple, tuple]
+    #: Each pack's perpendicular extent, lo side then hi side, inside the deck.
+    packs: tuple[tuple[float, float], tuple[float, float]]
     #: 0 when the opening sits inside one bay: no framing, see :func:`within_one_bay`.
     plies: int
     trimmer_profile: str
@@ -115,7 +119,7 @@ class OpeningFrame:
     line_half_width: float = 0.0
 
     def framed_ring(self, along_x: bool):
-        """The rough opening in plan: what the framing and the sheet stop at."""
+        """The rough opening in plan: what the framing stops at."""
         (x0, x1), (y0, y1) = ((self.axis0, self.axis1), (self.perp0, self.perp1)) if along_x \
             else ((self.perp0, self.perp1), (self.axis0, self.axis1))
         return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
@@ -135,12 +139,15 @@ class OpeningFrame:
             return segments
         reach = self.trim_band + self.line_half_width
         if self.perp0 - reach - 1e-9 < perp < self.perp1 + reach + 1e-9:
-            return _subtract_interval(segments, self.trim0, self.trim1)
+            run = self.runs[0 if perp < (self.perp0 + self.perp1) / 2.0 else 1]
+            return _subtract_interval(segments, *run)
         return segments
 
 
+
 def opening_frames(model: ResolvedModel, system: FloorSystem, along_x: bool,
-                   boundaries: list[float], ends, depth_m: float):
+                   boundaries: list[float], ends, depth_m: float,
+                   deck: tuple[float, float] = (-1e9, 1e9)):
     """``(frames, findings)`` for every opening of ``system``; ``frames`` is None on error."""
     member = system.joists.member
     trimmer_profile = opening_trimmer_profile(member, depth_m)
@@ -164,37 +171,63 @@ def opening_frames(model: ResolvedModel, system: FloorSystem, along_x: bool,
         axis0, axis1 = (minx, maxx) if along_x else (miny, maxy)
         perp0, perp1, axis0, axis1 = perp0 - setback, perp1 + setback, axis0 - setback, \
             axis1 + setback
-        headers = tuple(not _opening_edge_has_declared_bearing(model, opening, p0, p1)
-                        for p0, p1 in _header_edges(box, along_x))
-        trim0 = _bearing_beyond(axis0, boundaries, ends.tip_lo, lo=True) if headers[0] else axis0
-        trim1 = _bearing_beyond(axis1, boundaries, ends.tip_hi, lo=False) if headers[1] else axis1
+        edges = _header_edges(box, along_x)
+        carriers = tuple(_edge_carriers(model, opening, p0, p1) for p0, p1 in edges)
+        headers = tuple(not _covers(found, *sorted((p0[1 if along_x else 0],
+                                                    p1[1 if along_x else 0])))
+                        for found, (p0, p1) in zip(carriers, edges, strict=True))
         # Ply count is a property of the header span (across the joists), not trimmer length.
         plies = _trimmer_plies(perp1 - perp0, member)
+        band = plies * ply_width
+        # A ply past the deck's edge is never laid (opening_members), so it bears on nothing.
+        packs = ((max(perp0 - band, deck[0]), perp0), (perp1, min(perp1 + band, deck[1])))
+        runs = tuple(
+            (_run_end(carriers[0], headers[0], axis0, band_lo, band_hi, boundaries, ends, lo=True),
+             _run_end(carriers[1], headers[1], axis1, band_lo, band_hi, boundaries, ends,
+                      lo=False))
+            for band_lo, band_hi in packs)
         header_width = cross_section(
             opening_header_profile(perp1 - perp0, depth_m, member)).width_m
         frames.append(OpeningFrame(
-            opening, minx, maxx, miny, maxy, perp0, perp1, axis0, axis1, headers,
-            trim0, trim1, plies, trimmer_profile, plies * ply_width, header_width, setback,
+            opening, minx, maxx, miny, maxy, perp0, perp1, axis0, axis1, headers, runs,
+            carriers, packs, plies, trimmer_profile, band, header_width, setback,
             cross_section(member).width_m / 2.0))
     return [_stop_at_neighbour_bearing(frame, frames) for frame in frames], []
 
 
-def _stop_at_neighbour_bearing(frame: OpeningFrame, frames: list[OpeningFrame]) -> OpeningFrame:
-    """Stop an extended trimmer at a neighbouring opening's declared bearing edge.
+def _run_end(carriers, headed: bool, edge: float, band_lo: float, band_hi: float,
+             boundaries: list[float], ends, *, lo: bool) -> float:
+    """Where a pack ends past one axis edge: on the wall under it, else bearing to bearing."""
+    if not headed and _covers(carriers, band_lo, band_hi, reach=True):
+        line = carriers[0][0]
+        if abs(line - boundaries[0]) < 1e-6:
+            line = ends.tip_lo
+        elif abs(line - boundaries[-1]) < 1e-6:
+            line = ends.tip_hi
+        return min(line, edge) if lo else max(line, edge)
+    tip = ends.tip_lo if lo else ends.tip_hi
+    return _bearing_beyond(edge, boundaries, tip, lo=lo)
 
-    The joists that opening cuts bear on that wall, so it is a bearing line on this
-    trimmer's line too — running on to the deck's own boundary crossed the other well.
-    """
-    trim0, trim1 = frame.trim0, frame.trim1
-    for other in frames:
-        if other is frame or not (other.perp0 - other.trim_band < frame.perp1
-                                  and frame.perp0 < other.perp1 + other.trim_band):
-            continue
-        if not other.headers[0] and frame.axis1 - 1e-9 <= other.axis0 < trim1:
-            trim1 = other.axis0
-        if not other.headers[1] and trim0 < other.axis1 <= frame.axis0 + 1e-9:
-            trim0 = other.axis1
-    return replace(frame, trim0=trim0, trim1=trim1)
+
+def _stop_at_neighbour_bearing(frame: OpeningFrame, frames: list[OpeningFrame]) -> OpeningFrame:
+    """Stop an extended pack on a neighbouring opening's declared wall, where that wall
+    runs under the pack: the joists that opening cuts bear on it, and running on to the
+    deck's own boundary crossed the other well."""
+    runs = []
+    for (run0, run1), (band_lo, band_hi) in zip(frame.runs, frame.packs, strict=True):
+        for other in frames:
+            if other is frame:
+                continue
+            if not other.headers[0] and _covers(other.carriers[0], band_lo, band_hi, reach=True):
+                line = other.carriers[0][0][0]
+                if frame.axis1 - 1e-9 <= line < run1:
+                    run1 = line
+            if not other.headers[1] and _covers(other.carriers[1], band_lo, band_hi, reach=True):
+                line = other.carriers[1][0][0]
+                if run0 < line <= frame.axis0 + 1e-9:
+                    run0 = line
+        runs.append((run0, run1))
+    return replace(frame, runs=tuple(runs))
 
 
 def within_one_bay(frames: list[OpeningFrame], lines: list[float]) -> list[OpeningFrame]:
@@ -259,19 +292,19 @@ def opening_members(system: FloorSystem, frames: list[OpeningFrame], along_x: bo
             ))
         width = frame.trim_band / frame.plies
         for edge_index, (edge, sign) in enumerate(((frame.perp0, -1.0), (frame.perp1, 1.0))):
+            run0, run1 = frame.runs[edge_index]
             for ply in range(frame.plies):
                 centre = edge + sign * (ply + 0.5) * width
                 if centre - width / 2.0 < deck[0] - 1e-6 or centre + width / 2.0 > deck[1] + 1e-6:
                     continue
                 shared = next((laid for laid in plies
                                if abs(laid[2] - centre) < (laid[3] + width) / 2.0 - 1e-6
-                               and laid[4] < frame.trim1 - 1e-9
-                               and frame.trim0 < laid[5] - 1e-9), None)
+                               and laid[4] < run1 - 1e-9 and run0 < laid[5] - 1e-9), None)
                 if shared is not None:
-                    shared[4], shared[5] = min(shared[4], frame.trim0), max(shared[5], frame.trim1)
+                    shared[4], shared[5] = min(shared[4], run0), max(shared[5], run1)
                     continue
                 plies.append([f"trimmer-{frame.opening.tag}-{edge_index}-{ply}",
-                              frame.trimmer_profile, centre, width, frame.trim0, frame.trim1])
+                              frame.trimmer_profile, centre, width, run0, run1])
     members = headers
     for key, profile, centre, _width, run0, run1 in plies:
         p0, p1 = ((run0, centre), (run1, centre)) if along_x else ((centre, run0), (centre, run1))
@@ -304,17 +337,23 @@ def _subtract_interval(intervals: list[tuple[float, float]], cut0: float,
     return out
 
 
-def _opening_edge_has_declared_bearing(model: ResolvedModel, opening: FloorOpening,
-                                       p0: tuple[float, float], p1: tuple[float, float]) -> bool:
-    """Does a declared bearing wall carry this whole opening edge?
+def _edge_carriers(model: ResolvedModel, opening: FloorOpening,
+                   p0: tuple[float, float], p1: tuple[float, float]) -> tuple:
+    """The declared bearing walls under an opening edge: ``(line, axis lo, axis hi, reach
+    lo, reach hi)`` — the axis extent says whether the EDGE is carried, the reach whether a
+    trimmer pack beside it is.
 
     Tested against each wall's plan *footprint*, not its centreline: an opening drawn to the
     finished well never coincides with a wall axis (plans/TODO.md D3).
     """
     # Lazy: floors.py imports this module.
-    from typehaus.resolve.floors import _bearing_axis, _bearing_footprint_span
+    from typehaus.resolve.floors import (
+        _bearing_axis,
+        _bearing_footprint_span,
+        _wall_footprint_span,
+    )
 
-    covered: list[tuple[float, float]] = []
+    found = []
     vertical = abs(p0[0] - p1[0]) < 1e-9
     across, along = (0, 1) if vertical else (1, 0)
     for tag in opening.bearing_refs:
@@ -327,13 +366,24 @@ def _opening_edge_has_declared_bearing(model: ResolvedModel, opening: FloorOpeni
         footprint = _bearing_footprint_span(model, tag, across)
         if footprint is None or not (footprint[0] - 1e-9 <= p0[across] <= footprint[1] + 1e-9):
             continue
-        covered.append((min(a0[along], a1[along]), max(a0[along], a1[along])))
-    if not covered:
-        return False
-    target0, target1 = min(p0[along], p1[along]), max(p0[along], p1[along])
+        # Its real reach along the edge: a wall's polygons carry its junctions, and a beam
+        # runs onto its bearings by half its own width.
+        lo, hi = min(a0[along], a1[along]), max(a0[along], a1[along])
+        wall = model.wall(tag)
+        reach = _wall_footprint_span(wall, along) if wall is not None else None
+        if reach is None:
+            half = (footprint[1] - footprint[0]) / 2.0
+            reach = (lo - half, hi + half)
+        found.append((a0[across], lo, hi, min(lo, reach[0]), max(hi, reach[1])))
+    return tuple(sorted(found, key=lambda entry: entry[1]))
+
+
+def _covers(carriers, target0: float, target1: float, *, reach: bool = False) -> bool:
+    """Do these walls, end to end, run under the whole of ``target0..target1``?"""
     cursor = target0
-    for start, end in sorted(covered):
+    spans = sorted((c[3], c[4]) if reach else (c[1], c[2]) for c in carriers)
+    for start, end in spans:
         if start > cursor + 1e-9:
             return False
         cursor = max(cursor, end)
-    return cursor >= target1 - 1e-9
+    return bool(carriers) and cursor >= target1 - 1e-9

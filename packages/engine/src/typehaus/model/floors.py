@@ -140,7 +140,7 @@ class FloorOpening(Element):
     #: only because a pipe goes through it.
     penetration_for: tuple[str, ...] = ()
     #: The finish run across the joist band on every edge, well side first — gypsum
-    #: closing the truss ends and trimmers from the ceiling below to the deck top. The
+    #: closing the truss ends and trimmers from the ceiling below to the joist tops. The
     #: outline stays the finished hole; the framing steps back by this stack's thickness.
     lining: tuple[Layer, ...] = ()
 

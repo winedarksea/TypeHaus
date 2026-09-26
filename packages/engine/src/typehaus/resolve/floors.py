@@ -124,7 +124,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                       perp0, perp1, cross_section(rim_profile).width_m,
                       cant_start_m, cant_end_m)
     opening_boxes, opening_findings = opening_frames(
-        model, system, along_x, boundaries, ends, depth)
+        model, system, along_x, boundaries, ends, depth, (perp0, perp1))
     if opening_boxes is None:
         return None, opening_findings
 
@@ -263,18 +263,20 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         lift_lo, lift_hi = _plane_range(deck_plane, deck_outline)
         through_walls = through_deck_walls(model, system, z0 + lift_lo, deck_z1_m + lift_hi,
                                            deck_outline)
-        # The rough opening, not the outline: a lining's gypsum covers the sheet's edge.
-        deck_voids = tuple(f.framed_ring(along_x) for f in opening_boxes
-                           ) + through_deck_cuts(through_walls, members, deck_outline)
+        deck_voids = tuple(
+            [(f.minx, f.miny), (f.maxx, f.miny), (f.maxx, f.maxy), (f.minx, f.maxy)]
+            for f in opening_boxes
+        ) + through_deck_cuts(through_walls, members, deck_outline)
 
-    # A lined well: gypsum from the ceiling plane below to the deck top (opening_lining.py).
+    # A lined well: gypsum from the ceiling plane below to the joist tops; the sheet runs
+    # over it to the finished edge (opening_lining.py).
     ceiling_m = sum(layer.thickness.meters for layer in system.ceiling_below)
     linings: list[tuple[str, float]] = []
     for frame in opening_boxes:
         if not frame.opening.lining:
             continue
         lo, hi = _plane_range(deck_plane, frame.framed_ring(along_x))
-        solids, area = lining_solids(frame, storey.tag, z0 - ceiling_m + lo, deck_z1_m + hi)
+        solids, area = lining_solids(frame, storey.tag, z0 - ceiling_m + lo, z1 + hi)
         model.solids.extend(solids)
         linings.append((frame.opening.tag, area))
 
