@@ -53,8 +53,8 @@ ACCENT_GWB_LINING = (
 # face as `paint-a`/`paint-b`. Both faces separate conditioned rooms, so there's no vapour
 # drive to control — the paint is here purely for the finish takeoff. Deliberately unpainted
 # elsewhere: SAUNA_* (T&G/foil-polyiso is already the vapour/air control, no paint in a
-# löyly room), INT_2X6_BRG_EXPOSED_PLY (exposed wood faces, already hardwax-oil
-# finished), the masonry/concrete/deck/glazing assemblies (no gypsum face), POST_WHITE_PAINT
+# löyly room), INT_2X6_BRG_EXPOSED_PLY's stud side (exposed wood, hardwax-oil
+# finished; its plywood stair face IS painted, `paint-stair`), the masonry/concrete/deck/glazing assemblies (no gypsum face), POST_WHITE_PAINT
 # (its own exterior-paint material), and INT_2X4_PARTITION (a tested STC assembly — see
 # library/assemblies/ for why it doesn't get layers added). A gypsum face left bare and
 # facing a room is still billed paint, by takeoff/derived_paint.py.
@@ -388,9 +388,12 @@ INT_2X6_BRG_EXPOSED_PLY = Assembly(
                                   layout_origin="line")),
         Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
               function=LayerFunction.FINISH),
+        # The stair face is painted; only the stud side shows raw wood.
+        Layer(name="paint-stair", material_ref="latex-paint", thickness=inch(0.01),
+              function=LayerFunction.FINISH),
     ),
     interfaces=(STUD_BEARING,),
-    source="catlin stair-line bearing wall (W-B-STR2/STR3B basement, W-M-STRW/STRW2 main): 2x6 bearing studs at 16 in. o.c. on a gasketed PT sill, 3/4 in. cabinet-grade plywood on the stair face. The mudroom pair carries exposed Select Structural S4S DF studs (open bays = coat nooks) via Wall.layer_materials; everything below is plain spf, where nothing is exposed to a finished room.",
+    source="catlin stair-line bearing wall (W-B-STR2/STR3B basement, W-M-STRW/STRW2 main): 2x6 bearing studs at 16 in. o.c. on a gasketed PT sill, 3/4 in. cabinet-grade plywood on the stair face, painted. The mudroom pair carries exposed Select Structural S4S DF studs (open bays = coat nooks) via Wall.layer_materials; everything below is plain spf, where nothing is exposed to a finished room.",
 )
 
 # ** The same wall where it walls the under-stair storage (2026-09-05). ** W-B-STR3's

@@ -150,7 +150,25 @@ def opening_frames(model: ResolvedModel, system: FloorSystem, along_x: bool,
         frames.append(OpeningFrame(
             opening, minx, maxx, miny, maxy, perp0, perp1, axis0, axis1, headers,
             trim0, trim1, plies, trimmer_profile, plies * ply_width))
-    return frames, []
+    return [_stop_at_neighbour_bearing(frame, frames) for frame in frames], []
+
+
+def _stop_at_neighbour_bearing(frame: OpeningFrame, frames: list[OpeningFrame]) -> OpeningFrame:
+    """Stop an extended trimmer at a neighbouring opening's declared bearing edge.
+
+    The joists that opening cuts bear on that wall, so it is a bearing line on this
+    trimmer's line too — running on to the deck's own boundary crossed the other well.
+    """
+    trim0, trim1 = frame.trim0, frame.trim1
+    for other in frames:
+        if other is frame or not (other.perp0 - other.trim_band < frame.perp1
+                                  and frame.perp0 < other.perp1 + other.trim_band):
+            continue
+        if not other.headers[0] and frame.axis1 - 1e-9 <= other.axis0 < trim1:
+            trim1 = other.axis0
+        if not other.headers[1] and trim0 < other.axis1 <= frame.axis0 + 1e-9:
+            trim0 = other.axis1
+    return replace(frame, trim0=trim0, trim1=trim1)
 
 
 def within_one_bay(frames: list[OpeningFrame], lines: list[float]) -> list[OpeningFrame]:

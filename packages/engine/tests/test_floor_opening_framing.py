@@ -42,6 +42,17 @@ def test_trimmer_plies_are_not_coincident(catlin_model):
     assert len({_endpoints(member) for member in trimmers}) == len(trimmers)
 
 
+def test_an_extended_trimmer_stops_at_a_neighbouring_wells_bearing(catlin_model):
+    # FO-S-ERV-CHASE's header-edge trimmers once ran to x=18', across FO-S-STAIR's well,
+    # and folded the stair's north pack out to the same 17'-6 3/4".
+    members = {m.child_key: m for floor in catlin_model.floors if floor.tag == "FS-S-WEST"
+               for m in floor.members if m.category == "trimmer"}
+    stair_west = ft(10, 3.375).meters
+    for key in ("trimmer-FO-S-ERV-CHASE-0-0", "trimmer-FO-S-ERV-CHASE-1-0"):
+        assert members[key].p1[0] == pytest.approx(stair_west), key
+    assert members["trimmer-FO-S-STAIR-1-0"].p0[0] == pytest.approx(stair_west)
+
+
 def test_trimmer_plies_lie_face_to_face_outboard_of_the_opening(catlin_model):
     """Ply 0 keeps the authored opening line (the header ends bear on it); ply 1 steps
     exactly one ply thickness *away* from the hole, which is where the second trimmer of
