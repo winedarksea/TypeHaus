@@ -1438,7 +1438,7 @@ MAIN_DATA_TRUNKS = [
     # only fires on JOIST_BAY routing.
     #
     # KITCH goes SOUTH of the well instead (2026-09-23). The north bay it used at y=35'-6"
-    # is not a bay: FO-S-STAIR's truss trimmer pack fills y 35'-3 5/8"..35'-10 5/8" and the
+    # is not a bay: FO-S-STAIR's truss trimmer fills y 35'-6"..35'-9 1/2" and the
     # floor ends at 36'-0" (`mep.run_through_floor_member`). So it drops down x=2'-2" (2" off
     # CD-M-DATA-PORCH's x=2'-0" lane at the same z), crosses east through the open webs in
     # the bay at y=22'-0", between trusses 018 and 019, then north to the AP. ~+11.6 LF.
@@ -1499,8 +1499,8 @@ MAIN_DATA_TRUNKS = [
                # Out of the chase along its south trimmer and south in the 1'-4 1/2" truss
                # opening on the upper tier, over PR-M-S-BATH1-TUB-DRAIN and DU-M-ERV-R-BATH1, to
                # the 1'-0" bay south of DU-M-ERV-EXH-TRUNK's end (2026-09-24).
-               path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(402.3)),
-                     pt(inch(29.5), inch(402.3)), pt(inch(29.5), ft(1)),
+               path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(401.4)),
+                     pt(inch(29.5), inch(401.4)), pt(inch(29.5), ft(1)),
                      pt(inch(29.5), ft(1)),
                      pt(ft(17, 6), ft(1)), pt(ft(17, 6), inch(-2)), pt(ft(17, 6), inch(-6)),
                      pt(ft(17, 6), inch(-6)), pt(ft(17, 6), ft(-4.833)),

@@ -107,6 +107,7 @@
     "movement_joint": 7561556,
     "newel": 10054466,
     "opening_frame": 11765071,
+    "opening_lining": 15592419,
     "outlooker": 12094556,
     "overhead_door": 3816768,
     "pad": 8422021,
@@ -279,6 +280,7 @@
     "movement_joint": 7561556,
     "newel": 10054466,
     "opening_frame": 11765071,
+    "opening_lining": 15592419,
     "outlooker": 12094556,
     "overhead_door": 3816768,
     "pad": 8422021,
@@ -459,6 +461,9 @@
     "movement_joint": [
       "masonry"
     ],
+    "opening_lining": [
+      "drywall"
+    ],
     "pad": [
       "concrete"
     ],
@@ -612,6 +617,7 @@
     "leader_extension": "drainage",
     "main_shutoff": "plumbing",
     "movement_joint": "masonry",
+    "opening_lining": "drywall",
     "pad": "concrete",
     "panel_strap": "roofing",
     "penetration_seal": "plumbing",

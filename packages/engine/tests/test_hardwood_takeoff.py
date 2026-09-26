@@ -216,7 +216,7 @@ def test_a_shelf_deeper_than_it_is_wide_is_milled_front_to_back(rows):
 
 
 def test_the_elm_posts_are_sawn_to_section_not_laminated_from_boards(rows):
-    """The tudor posts are milled 6-1/8" square out of an elm log. They are not a stack.
+    """The tudor posts are milled 6-1/4" square out of an elm log. They are not a stack.
 
     Regression: the row builder had one boolean for "bigger than the stock" and could turn
     a sawn piece into a glue-up. Laminating an 8/4 stack is a real way to make a post — it
@@ -232,7 +232,7 @@ def test_the_elm_posts_are_sawn_to_section_not_laminated_from_boards(rows):
     # The only loss is the skim that takes the saw marks off, on both cross-section faces.
     from typehaus.takeoff.hardwood import _TIMBER_DRESS_ALLOWANCE_IN
 
-    assert post["rough_width_in"] == pytest.approx(6.125 + _TIMBER_DRESS_ALLOWANCE_IN)
+    assert post["rough_width_in"] == pytest.approx(6.25 + _TIMBER_DRESS_ALLOWANCE_IN)
     assert "sawn" in post["stock_note"] and "dressed back" in post["stock_note"]
     # Still more rough than finished — but by the skim, not by a factor of five.
     assert post["finished_board_feet"] < post["rough_board_feet"]

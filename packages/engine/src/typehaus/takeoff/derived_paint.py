@@ -10,6 +10,8 @@ only the part of its face that bounds a ``Room`` that is not UNCONDITIONED. A ch
 or the outdoors takes no paint. A stack ending in a coating (paint, primer) is authored and
 left alone, so nothing bills twice.
 
+A ``FloorOpening.lining`` is billed the same way, its well face standing in for the room.
+
 Also bills a coating AUTHORED as a deck's ``ceiling_below`` or a room's ``ceiling_lining``:
 ``sheet_goods`` walks those stacks as sheets and skips coatings, so it is billed here by
 area instead. A roof's lining coating is already in ``envelope_layers``' ``roof ceiling``.
@@ -73,6 +75,14 @@ def derived_paint_rows(model: ResolvedModel,
             areas[("ceiling (derived)", PAINT)] += area
         elif _is_coating(model, face.material_ref) and _sheet_billed(model, room, decked):
             areas[("ceiling", face.material_ref)] += area
+
+    for floor in model.floors:
+        for tag, area in floor.linings:
+            face = model.plan.by_tag(tag).lining[0]
+            if _is_gypsum(model, face.material_ref):
+                areas[("opening lining (derived)", PAINT)] += area
+            elif _is_coating(model, face.material_ref):
+                areas[("opening lining", face.material_ref)] += area
 
     return [
         {"scope": scope, "function": LayerFunction.FINISH.value, "material": material,

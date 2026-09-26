@@ -92,16 +92,16 @@ POST_WHITE_PAINT_DF = Assembly(
 # metal-dark-exterior here is what darkens the railings in both renderers.
 # The suite bedroom's two elm tudor posts (plans/TODO.md §Hardwood): same pattern as
 # POST_WHITE_PAINT — the STRUCTURE material colours the solid and names the species for the
-# wood_surfaces takeoff. 6.125" body = the custom timber, sheathing to drywall face, a
+# wood_surfaces takeoff. 6.25" body = the custom timber, sheathing to 1/8" proud of drywall, a
 # deviation within W-S-W3's stud line, deliberately not a change to EXT_2X6. Stud height:
 # only the sole plate is cut, the double top plate runs over the posts.
 ELM_TIMBER = Assembly(
     tag="ELM_TIMBER",
     layers=(
-        Layer(name="elm-timber", material_ref="elm-timber", thickness=inch(6.125),
+        Layer(name="elm-timber", material_ref="elm-timber", thickness=inch(6.25),
               function=LayerFunction.STRUCTURE),
     ),
-    source="plans/TODO.md — suite tudor posts, elm 6-1/8\" square",
+    source="plans/TODO.md — suite tudor posts, elm 6-1/4\" square",
 )
 
 # --- structural members that are NOT concrete -----------------------------------

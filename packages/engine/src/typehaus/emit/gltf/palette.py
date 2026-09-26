@@ -208,6 +208,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # ceiling states its own FINISH material and wins over this fallback (see _solid_color),
     # so this is only what an unpainted/uncoloured ceiling material falls back to.
     "ceiling": (0.93, 0.92, 0.89, 1.0),
+    "opening_lining": (0.93, 0.92, 0.89, 1.0),  # a well's band of the same board
     "gutter": (0.85, 0.86, 0.87, 1.0),     # metal gutter
     # stormwater below the gutter (→ emit/trades.py, trade "drainage")
     "downspout": (0.85, 0.86, 0.87, 1.0),  # the gutter's own aluminium, drawn down the wall

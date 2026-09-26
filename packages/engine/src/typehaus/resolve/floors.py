@@ -22,6 +22,7 @@ from typehaus.resolve.floor_openings import (
 )
 from typehaus.resolve.floor_tilt import joist_lift, twisted
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.opening_lining import lining_solids
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
 from typehaus.resolve.through_deck import through_deck_cuts, through_deck_walls
 
@@ -187,7 +188,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
 
     # Opening framing after clipping: headers on edges with no declared bearing, trimmer
     # packs bearing to bearing (resolve/floor_openings.py).
-    members.extend(opening_members(system, opening_boxes, along_x, z0, z1, depth))
+    members.extend(opening_members(system, opening_boxes, along_x, z0, z1, depth,
+                                   (perp0, perp1)))
 
     # Rim (band) boards cap the joist ends — perpendicular to the joists, not a duplicate
     # of the parallel edge joists above. When the outer spans cantilever, the band rides
@@ -261,10 +263,20 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         lift_lo, lift_hi = _plane_range(deck_plane, deck_outline)
         through_walls = through_deck_walls(model, system, z0 + lift_lo, deck_z1_m + lift_hi,
                                            deck_outline)
-        deck_voids = tuple(
-            [(f.minx, f.miny), (f.maxx, f.miny), (f.maxx, f.maxy), (f.minx, f.maxy)]
-            for f in opening_boxes
-        ) + through_deck_cuts(through_walls, members, deck_outline)
+        # The rough opening, not the outline: a lining's gypsum covers the sheet's edge.
+        deck_voids = tuple(f.framed_ring(along_x) for f in opening_boxes
+                           ) + through_deck_cuts(through_walls, members, deck_outline)
+
+    # A lined well: gypsum from the ceiling plane below to the deck top (opening_lining.py).
+    ceiling_m = sum(layer.thickness.meters for layer in system.ceiling_below)
+    linings: list[tuple[str, float]] = []
+    for frame in opening_boxes:
+        if not frame.opening.lining:
+            continue
+        lo, hi = _plane_range(deck_plane, frame.framed_ring(along_x))
+        solids, area = lining_solids(frame, storey.tag, z0 - ceiling_m + lo, deck_z1_m + hi)
+        model.solids.extend(solids)
+        linings.append((frame.opening.tag, area))
 
     chases = tuple(
         (f.opening.tag, [(f.minx, f.miny), (f.maxx, f.miny),
@@ -287,7 +299,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     return ResolvedFloor(
         uid=system.uid, tag=system.tag, storey=storey.tag, web_panels=panels,
         direction=spec.direction, members=tuple(members), chases=chases,
-        penetrations=penetrations,
+        penetrations=penetrations, linings=tuple(linings),
         deck_outline=deck_outline, deck_voids=deck_voids,
         deck_z0_m=deck_z0_m, deck_z1_m=deck_z1_m, deck_plane=deck_plane, ends=ends,
         through_walls=tuple(w.tag for w in through_walls),

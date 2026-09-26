@@ -117,6 +117,9 @@ ROWS: tuple[C, ...] = (
       finish_group="accessory", billed_elsewhere=True, collision=_HARD),
     C("ceiling", trade="drywall", ifc_class=_COVER, ifc_predefined="CEILING",
       billed_elsewhere=True),
+    # A floor opening's well lining: sheet_goods / derived_paint bill it off ResolvedFloor.
+    C("opening_lining", trade="drywall", ifc_class=_COVER, ifc_predefined="CLADDING",
+      billed_elsewhere=True),
     # Pours, and what is cast into them.
     C("slab", trade="concrete", ifc_class="IfcSlab", elevation_family="body",
       finish_group="element", material_refile="laid", is_pour=True, slab_family="slab",

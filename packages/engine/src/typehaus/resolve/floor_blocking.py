@@ -233,6 +233,8 @@ def _partition_top_blocking(
     z0, z1 = min(m.z0_m for m in joists), max(m.z1_m for m in joists)
     spacing = spec.spacing.meters if spec.spacing is not None else inch(16).meters
     width = cross_section(spec.member).width_m
+    tip_lo = min(min(m.p0[axis_i], m.p1[axis_i]) for m in joists)
+    tip_hi = max(max(m.p0[axis_i], m.p1[axis_i]) for m in joists)
     # Every member that closes a bay, not the joists alone: an opening's trimmers and a
     # flush beam bound one too, and a block cut to a joist line through either of them is
     # an interpenetration ``structural.member_interference`` reports (and did).
@@ -261,6 +263,11 @@ def _partition_top_blocking(
         if not floor.deck_outline or not point_in_ring(midpoint, floor.deck_outline):
             continue
         lo, hi = sorted((a[axis_i], b[axis_i]))
+        # A block stays inside this deck's own joists: centred on a bearing line two decks
+        # share, half of it stood in the neighbour's joist ends.
+        lo, hi = max(lo, tip_lo + width / 2.0), min(hi, tip_hi - width / 2.0)
+        if hi < lo:
+            continue
         # Only bay edges that actually run beside this wall bound its bay: a member whose
         # own extent misses the wall names no face to cut a block to.
         bay = _straddling_bay(_bay_lines(edges, axis_i, perp_i, lo, hi), a[perp_i], spacing)

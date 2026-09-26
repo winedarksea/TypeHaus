@@ -126,6 +126,13 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 areas[("ceiling", layer.material_ref, layer.thickness.meters,
                        layer_sheet_length_in(layer))] += ceiling
 
+    # A lined well: the same board run down the joist band on every edge.
+    for floor in model.floors:
+        for tag, area in floor.linings:
+            for layer in _sheets(model, model.plan.by_tag(tag).lining):
+                areas[("opening lining", layer.material_ref, layer.thickness.meters,
+                       layer_sheet_length_in(layer))] += area
+
     # A structural Slab's own ceiling_below (a room sitting under a cast deck) bills the
     # same way, net of its floor openings — meaningless, and left unauthored, on a
     # slab-on-grade with no occupied space below it.

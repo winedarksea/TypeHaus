@@ -309,7 +309,7 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     # geometric only (the framer cuts the plates around the post), so it says nothing about
     # whether the base joint is made. PT-BW-CW / -CNW now carry it — they stand in
     # W-BW-SCREEN's stud line — and still stand on their own authored ABU66SS bases. The
-    # tudor timbers, which also carry it, stay out of this set on their 6.125x6.125 section.
+    # tudor timbers, which also carry it, stay out of this set on their 6.25x6.25 section.
     wood = {e.tag for e in catlin_model_ro.plan.all_elements()
             if isinstance(e, Post) and e.supported_by
             and e.size in {"6x6", "4x4"}}

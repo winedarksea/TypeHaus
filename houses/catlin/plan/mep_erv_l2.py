@@ -127,8 +127,8 @@ EQUIPMENT_ERV_MAIN = [
 # radial reported a straddle it did not have.
 #
 # Bay centres are 8" + n*16". **Two of them are unusable and the check is what said so:**
-# FO-S-STAIR's trimmers land at y=26'-0 3/8" and y=35'-5 3/8", so a duct centred on the
-# 26'-0" or 35'-4" bay straddles one.
+# FO-S-STAIR's trimmers stand behind its lining, at y 25'-4 3/4"..25'-11 3/4" and
+# 35'-6"..35'-9 1/2", so a duct centred on the 26'-0" or 35'-4" bay reaches one.
 #
 # WHAT THE REDESIGN LEFT BEHIND, measured rather than claimed: **no duct-against-duct pair
 # on this level at all**, where thirteen radials on 2" centres had seven. Every remaining

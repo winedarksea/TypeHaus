@@ -555,8 +555,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     it (`takeoff/framing.py::_order_length_ft`). The shared x=18' plate splits 3½" to the
     truss / 2" to the I-joist (`params/second_deck.py`, also holds the shared depth constant
     `params/main_deck.py` imports) — don't centreline-split it, it shorts the truss's seat
-    (`integrity.floor_end_bearing` grades this). `FO-S-STAIR` clips 8 joist lines in the
-    west half to 10'-1⅝", outside the trimmable range, fabricated to length.
+    (`integrity.floor_end_bearing` grades this). `FO-S-STAIR` clips five joist lines in the
+    west half to 10'-1" (behind its 5/8" gypsum lining), outside the trimmable range,
+    fabricated to length; a sixth is headed off again at `FO-S-ERV-CHASE`.
   - Truss price row in `prices.toml` is a placeholder pending a fabricator quote; the
     borrowed I-joist span-table row (`checks/structural/checks.py::_IJOIST_SPAN_FT`) is
     advisory only at 18'-0" — the fabricator's table governs.
@@ -1039,9 +1040,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     keyed on the AISC section string and priced by the LINEAL FOOT, with `takeoff/steel.py`
     taking these members OUT of `structural_solids` so nothing bills twice.
   - `FO-M-FIRE` is **RETIRED (2026-09-19)** — see the pier split above. Its two live engine
-    traps are salvaged onto `FO-M-ERV-OA`'s note, which already cross-referenced them: the
-    **first trimmer ply's AXIS sits on the opening edge** (draw an outline at the size of the
-    thing passing through and the ply stands inside the hole), and **`header_size` branches
+    traps are salvaged onto `FO-M-ERV-OA`'s note. The first (a trimmer ply centred on the
+    opening edge, half inside the hole) is fixed since 2026-09-25 — framing stands outboard
+    of the outline, and a `FloorOpening.lining` steps it back further. **`header_size` branches
     on `w_ft <= 4.0`**, so 48.0" arriving as `4.0000000000000009` after a metre round trip
     takes the wrong branch silently. (`haus check` grades floor-opening headers at EIGHT feet,
     gated on a sawn-joist profile, so an I-joist opening draws the same header at any span.)

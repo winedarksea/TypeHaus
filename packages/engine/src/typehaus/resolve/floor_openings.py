@@ -6,6 +6,9 @@ Split out of ``resolve/floors.py``. Two rules the old inline block got wrong:
   trimmer pack carries that header's end, so it must reach the bearing line beyond it —
   a pack that stopped at the opening edge bore on nothing but the header it was carrying.
   At an edge a declared wall carries, the trimmer stops at the edge.
+* **Framing stands behind the opening line.** The outline is the finished hole, so a
+  header or trimmer ply 0 has its inner face on it — never half a ply into the well. An
+  authored ``FloorOpening.lining`` pushes that line out by its own thickness.
 * **Trimmer stock matches the band.** An I-joist deck trims in 1.75" LVL plies (a 2x12 is
   11 1/4" and would sit 5/8" low); a sawn or truss deck trims in its own joist stock.
 """
@@ -84,6 +87,8 @@ class OpeningFrame:
     """One rectangular opening, in deck coordinates (``axis`` = along the joists)."""
 
     opening: FloorOpening
+    #: The authored (finished) hole. ``perp*``/``axis*`` are the FRAMED lines: this box
+    #: grown by the lining's thickness.
     minx: float
     maxx: float
     miny: float
@@ -102,6 +107,18 @@ class OpeningFrame:
     trimmer_profile: str
     #: How far the trimmer pack reaches outboard of each parallel edge.
     trim_band: float
+    #: The header's width, outboard of each headed axis edge; the cut tails end past it.
+    header_width: float = 0.0
+    #: The lining's total thickness between the authored and the framed lines.
+    setback: float = 0.0
+    #: Half the deck's own joist width: a line closer than this to the pack would lap it.
+    line_half_width: float = 0.0
+
+    def framed_ring(self, along_x: bool):
+        """The rough opening in plan: what the framing and the sheet stop at."""
+        (x0, x1), (y0, y1) = ((self.axis0, self.axis1), (self.perp0, self.perp1)) if along_x \
+            else ((self.perp0, self.perp1), (self.axis0, self.axis1))
+        return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
 
     def clip(self, segments: list[tuple[float, float]], perp: float):
         """A regular joist line's segments with this opening's framing taken out.
@@ -111,10 +128,13 @@ class OpeningFrame:
         only the opening's own interval left a stub beside the extended trimmer.
         """
         if self.perp0 + 1e-9 < perp < self.perp1 - 1e-9:
-            return _subtract_interval(segments, self.axis0, self.axis1)
+            reach = self.header_width if self.plies else 0.0
+            return _subtract_interval(segments, self.axis0 - reach * self.headers[0],
+                                      self.axis1 + reach * self.headers[1])
         if not self.plies:
             return segments
-        if self.perp0 - self.trim_band - 1e-9 <= perp <= self.perp1 + self.trim_band + 1e-9:
+        reach = self.trim_band + self.line_half_width
+        if self.perp0 - reach - 1e-9 < perp < self.perp1 + reach + 1e-9:
             return _subtract_interval(segments, self.trim0, self.trim1)
         return segments
 
@@ -139,17 +159,23 @@ def opening_frames(model: ResolvedModel, system: FloorSystem, along_x: bool,
                 element_tags=(system.tag, opening.tag), result=Result.FAIL,
             )]
         minx, maxx, miny, maxy = box
+        setback = sum(layer.thickness.meters for layer in opening.lining)
         perp0, perp1 = (miny, maxy) if along_x else (minx, maxx)
         axis0, axis1 = (minx, maxx) if along_x else (miny, maxy)
+        perp0, perp1, axis0, axis1 = perp0 - setback, perp1 + setback, axis0 - setback, \
+            axis1 + setback
         headers = tuple(not _opening_edge_has_declared_bearing(model, opening, p0, p1)
                         for p0, p1 in _header_edges(box, along_x))
         trim0 = _bearing_beyond(axis0, boundaries, ends.tip_lo, lo=True) if headers[0] else axis0
         trim1 = _bearing_beyond(axis1, boundaries, ends.tip_hi, lo=False) if headers[1] else axis1
         # Ply count is a property of the header span (across the joists), not trimmer length.
         plies = _trimmer_plies(perp1 - perp0, member)
+        header_width = cross_section(
+            opening_header_profile(perp1 - perp0, depth_m, member)).width_m
         frames.append(OpeningFrame(
             opening, minx, maxx, miny, maxy, perp0, perp1, axis0, axis1, headers,
-            trim0, trim1, plies, trimmer_profile, plies * ply_width))
+            trim0, trim1, plies, trimmer_profile, plies * ply_width, header_width, setback,
+            cross_section(member).width_m / 2.0))
     return [_stop_at_neighbour_bearing(frame, frames) for frame in frames], []
 
 
@@ -202,13 +228,16 @@ def _bearing_beyond(coord: float, boundaries: list[float], tip: float, *, lo: bo
 
 
 def opening_members(system: FloorSystem, frames: list[OpeningFrame], along_x: bool,
-                    z0: float, z1: float, depth_m: float) -> list[FramedMember]:
+                    z0: float, z1: float, depth_m: float,
+                    deck: tuple[float, float] = (-1e9, 1e9)) -> list[FramedMember]:
     """Headers on the undeclared-bearing edges, then the trimmer packs.
 
-    Headers stay *on* the authored opening line and the cut joists land on them. Trimmer
-    ply 0 sits on the parallel edge; later plies step outboard, face to face. A ply that
-    would overlap one already laid — two chases in one span, or two a pack-width apart —
-    is folded into it: bearing to bearing, one pack serves both openings.
+    Each header stands outboard of its framed edge and the cut joists land on its far face.
+    Trimmer ply 0 has its inner face on the parallel edge; later plies step outboard, face
+    to face. A ply that would pass the deck's edge (``deck``, perpendicular extent) is not
+    laid: the wall under that edge carries the line. A ply that would overlap one already
+    laid — two chases in one span, or two a pack-width apart — is folded into it: bearing
+    to bearing, one pack serves both openings.
     """
     headers: list[FramedMember] = []
     #: [key, profile, perp centre, width, run lo, run hi]
@@ -216,11 +245,13 @@ def opening_members(system: FloorSystem, frames: list[OpeningFrame], along_x: bo
     for frame in frames:
         if not frame.plies:
             continue
-        box = (frame.minx, frame.maxx, frame.miny, frame.maxy)
-        for edge_index, (p0, p1) in enumerate(_header_edges(box, along_x)):
+        span = frame.perp1 - frame.perp0
+        half = frame.header_width / 2.0
+        for edge_index, line in enumerate((frame.axis0 - half, frame.axis1 + half)):
             if not frame.headers[edge_index]:
                 continue
-            span = frame.perp1 - frame.perp0
+            p0, p1 = (((line, frame.perp0), (line, frame.perp1)) if along_x
+                      else ((frame.perp0, line), (frame.perp1, line)))
             headers.append(FramedMember(
                 system.uid, f"header-{frame.opening.tag}-{edge_index}", "header",
                 opening_header_profile(span, depth_m, system.joists.member),
@@ -229,7 +260,9 @@ def opening_members(system: FloorSystem, frames: list[OpeningFrame], along_x: bo
         width = frame.trim_band / frame.plies
         for edge_index, (edge, sign) in enumerate(((frame.perp0, -1.0), (frame.perp1, 1.0))):
             for ply in range(frame.plies):
-                centre = edge + sign * ply * width
+                centre = edge + sign * (ply + 0.5) * width
+                if centre - width / 2.0 < deck[0] - 1e-6 or centre + width / 2.0 > deck[1] + 1e-6:
+                    continue
                 shared = next((laid for laid in plies
                                if abs(laid[2] - centre) < (laid[3] + width) / 2.0 - 1e-6
                                and laid[4] < frame.trim1 - 1e-9

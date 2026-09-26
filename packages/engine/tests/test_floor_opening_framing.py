@@ -47,7 +47,7 @@ def test_an_extended_trimmer_stops_at_a_neighbouring_wells_bearing(catlin_model)
     # and folded the stair's north pack out to the same 17'-6 3/4".
     members = {m.child_key: m for floor in catlin_model.floors if floor.tag == "FS-S-WEST"
                for m in floor.members if m.category == "trimmer"}
-    stair_west = ft(10, 3.375).meters
+    stair_west = (ft(10, 3.375) - inch(0.625)).meters  # the well's framed line, behind its lining
     for key in ("trimmer-FO-S-ERV-CHASE-0-0", "trimmer-FO-S-ERV-CHASE-1-0"):
         assert members[key].p1[0] == pytest.approx(stair_west), key
     assert members["trimmer-FO-S-STAIR-1-0"].p0[0] == pytest.approx(stair_west)
@@ -250,7 +250,7 @@ def test_catlin_is_unchanged_by_the_short_opening_allowance(catlin_model):
 # A 24'x12' I-joist deck in x on three bearing lines (x = 0, 12', 24'); the opening sits in
 # the east span at y 4'-0"..7'-4", so the y=4'-0" joist line is ON its south edge and the
 # 5'-4"/6'-8" lines are inside it.
-def _deck_plan(*, east_edge=None, opening_bearing=(), member="11.875 I-joist"):
+def _deck_plan(*, east_edge=None, opening_bearing=(), member="11.875 I-joist", lining=False):
     import uuid
 
     from typehaus.model import (
@@ -292,12 +292,15 @@ def _deck_plan(*, east_edge=None, opening_bearing=(), member="11.875 I-joist"):
         walls.append(Wall(uid=f"W{index:09d}", tag=f"W-{x}", start_node=south,
                           end_node=north, assembly="EXT", top=ft(9)))
     plan = PlanModel(project=project, library=Library(
-        materials=(Material(tag="wood", name="Wood", r_per_inch=1.25),),
+        materials=(Material(tag="wood", name="Wood", r_per_inch=1.25),
+                   Material(tag="gwb", name="Gypsum", r_per_inch=0.9)),
         assemblies=(stud,)), storeys=(main, second))
     deck = (
         FloorOpening(uid="FO00000001", tag="FO-1", bearing_refs=opening_bearing, outline=(
             pt(ft(14), ft(4)), pt(east_edge, ft(4)), pt(east_edge, ft(7, 4)),
-            pt(ft(14), ft(7, 4)))),
+            pt(ft(14), ft(7, 4))), lining=(
+                Layer(name="gwb-well", material_ref="gwb", thickness=inch(0.625),
+                      function=LayerFunction.FINISH),) if lining else ()),
         FloorSystem(uid="FS00000001", tag="FS-1", openings=("FO-1",), joists=JoistSpec(
             member=member, spacing=inch(16), direction="x",
             bearing_refs=("W-0", "W-12", "W-24"))),
@@ -343,7 +346,8 @@ def test_an_absorbed_joist_line_leaves_no_stub_and_inside_lines_keep_tails():
     tails = sorted((round(m.p0[0] / inch(1).meters, 3), round(m.p1[0] / inch(1).meters, 3))
                    for m in members.values() if m.category == "joist"
                    and m.p0[1] == pytest.approx(ft(5, 4).meters) and m.p1[0] > east_span[0])
-    assert tails[0] == (144.0, 168.0) and tails[1][0] == 240.0
+    # Cut tails end on the headers' far faces, a 3 1/2" 2-ply LVL outboard of each edge.
+    assert tails[0] == (144.0, 164.5) and tails[1][0] == 243.5
 
 
 def test_i_joist_trimmers_are_band_deep_lvl_and_sawn_decks_keep_their_stock():
@@ -401,3 +405,36 @@ def test_a_short_sawn_opening_is_end_nailed_not_hung():
     assert "header-FO-1-0" in members
     assert not [c for c in hung_connections(model, HangerDetectionRules())
                 if c.carrier_tag.split(":")[1].startswith(("header-", "trimmer-"))]
+
+
+# ------------------------------------------------------------------ behind the opening line
+def test_framing_stands_outboard_of_the_opening_line():
+    _model, members = _deck()
+    ply, header = members["trimmer-FO-1-0-0"], members["header-FO-1-0"]
+    assert ply.p0[1] + cross_section(ply.profile).width_m / 2 == pytest.approx(ft(4).meters)
+    assert header.p0[0] + cross_section(header.profile).width_m / 2 == pytest.approx(
+        ft(14).meters)
+
+
+def test_a_lining_steps_the_framing_back_and_closes_every_edge():
+    from shapely.geometry import Polygon
+
+    from typehaus.takeoff.sheet_goods import sheet_goods_takeoff
+
+    t = inch(0.625).meters
+    model, members = _deck(lining=True)
+    ply = members["trimmer-FO-1-0-0"]
+    assert ply.p0[1] + cross_section(ply.profile).width_m / 2 == pytest.approx(ft(4).meters - t)
+    floor = model.floors[0]
+    strips = [Polygon(s.outline) for s in model.solids if s.category == "opening_lining"]
+    assert len(strips) == 4
+    rough = (ft(6).meters + 2 * t) * (ft(3, 4).meters + 2 * t)
+    ring = rough - ft(6).meters * ft(3, 4).meters
+    assert sum(strip.area for strip in strips) == pytest.approx(ring)  # tiled, no overlap
+    assert strips[0].union(strips[1]).union(strips[2]).union(strips[3]).area == pytest.approx(ring)
+    joists = [m for m in floor.members if m.category == "joist"]
+    height = max(m.z1_m for m in joists) - min(m.z0_m for m in joists)
+    area = 2 * (ft(6).meters + ft(3, 4).meters) * height
+    assert floor.linings == (("FO-1", pytest.approx(area)),)
+    row = next(r for r in sheet_goods_takeoff(model) if r["scope"] == "opening lining")
+    assert row["net_area_sqft"] == pytest.approx(area * 10.7639104, abs=0.05)

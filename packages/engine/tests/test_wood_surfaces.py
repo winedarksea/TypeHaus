@@ -218,7 +218,7 @@ def test_the_two_elm_posts_bill_as_ten_foot_sections(catlin_model, bom):
     assert int(elm["count"]) == 2
     assert elm["tags"] == ["P-S-TUDOR1", "P-S-TUDOR2"]
     assert int(elm["order_length_ft"]) == 20
-    assert float(elm["board_feet"]) == pytest.approx(6.125 * 6.125 / 12.0 * 20.0, abs=0.05)
+    assert float(elm["board_feet"]) == pytest.approx(6.25 * 6.25 / 12.0 * 20.0, abs=0.05)
     assert elm["also_in_structural_solids"] is True
     # The primary billing: the posts stay in structural_solids under their assembly.
     solids = [row for row in bom["structural_solids"]

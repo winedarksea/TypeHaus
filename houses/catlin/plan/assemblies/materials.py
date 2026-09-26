@@ -302,17 +302,17 @@ MATERIALS = [
     # `paneling._band_thickness_m`, and leaving it unset draws the band at the 1/2" default,
     # which is exactly the panel thickness. Bills into prices.toml `[wood_surfaces]` on the
     # material tag, the same join WP-B-SAUNA-SPLASH's tile takes.
-    # The suite's two 6-1/8\" square tudor posts, ordered as 10' sections and cut down.
+    # The suite's two 6-1/4\" square tudor posts, ordered as 10' sections and cut down.
     # `nominal_quarters=8` is not decoration: a clear 6\" elm timber would check badly
     # drying, so these are GLUED UP from 8/4 board stock (prices.toml records the same
-    # thing in prose). Five laminations of a 1-1/2\" dressed board make the 6-1/8\" face,
+    # thing in prose). Five laminations of a 1-1/2\" dressed board make the 6-1/4\" face,
     # and `takeoff/hardwood.py` derives that count from this field rather than scheduling
     # two timbers nobody can saw.
     # NO `nominal_quarters`: this is a SAWN TIMBER, cut 6-5/8" square out of an elm log and
-    # dressed back to 6-1/8", not a stack of board stock. Authoring 8/4 here would read as
+    # dressed back to 6-1/4", not a stack of board stock. Authoring 8/4 here would read as
     # "five laminations of 1-1/2"" on the milling schedule, which is a real way to make a
     # post and is not how these two are made.
-    Material(tag="elm-timber", name="Elm timber 6-1/8\" square, S4S, sawn to section",
+    Material(tag="elm-timber", name="Elm timber 6-1/4\" square, S4S, sawn to section",
              r_per_inch=1.1,
              density=560.0, hatch="lumber", color="#b08d5e",
              finish="clear-satin-hardwax-oil", species="elm",

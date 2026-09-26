@@ -1937,27 +1937,14 @@ FLOOR_OPENINGS = [
     # the south one is under W-M-MECH-S while the north one is crossed by the y=34'-6" vent
     # bundle — see the run's own note in plan/mep_erv_l2.py).
     #
-    # ** THE OUTLINE IS THE DUCT PLUS THE FRAMING, NOT THE DUCT. ** `resolve/floors.py` puts
-    # the first trimmer ply's AXIS on the y edges and the header's axis on the x edges, so a
-    # hole drawn at the duct's own 8" would have 1 1/4" of trimmer and 1 3/4" of header
-    # standing inside it. The east edge x=3'-11" and y 33'-5 1/2"..34'-4 1/2" leave the 8"
-    # duct 1 1/4" of air once both allowances are made (the west edge moved; see below).
+    # ** THE OUTLINE WAS DRAWN WITH THE FRAMING'S INTRUSION ALLOWED FOR. ** Until 2026-09-25
+    # the first trimmer ply and the header were centred on the edges, 1 1/4" and 1 3/4" into
+    # the hole. They stand outboard of the outline now (`resolve/floor_openings.py`), so the
+    # 8" duct has that much more air than the 1 1/4" these edges were drawn for.
     #
-    # ** SALVAGED FROM FO-M-FIRE'S NOTE (retired 2026-09-19). ** Two live engine traps that
-    # outlive that opening and belong on whichever opening is still authored:
-    #
-    #   1. THE FIRST TRIMMER PLY'S AXIS SITS ON THE OPENING EDGE. `resolve/floors.py`:
-    #      "the trimmer pair's first ply retains its ends there. Only the second trimmer ply
-    #      moves, and it moves outboard." So a ply centred on the edge reaches HALF ITS OWN
-    #      WIDTH into the hole at each end, top to bottom of the joist zone. FO-M-FIRE was
-    #      first drawn at the brick's own 45 1/2" — the natural thing to write, "the hole is
-    #      the size of the thing going through it" — and the brick's last inch at each end
-    #      stood in the same air as a trimmer for the full 11 7/8" of depth. Nothing caught
-    #      it: `structural.member_interference` walks FRAMING against FRAMING and a wall's
-    #      masonry layer is not a member, so it sat at 0 FAIL until the resolved member boxes
-    #      were read by hand. (`structural.through_deck_clearance` grades that class of clash
-    #      now, but only for a wall passing through a deck.) Draw the outline off the
-    #      MEMBERS, never off the thing passing through.
+    # ** SALVAGED FROM FO-M-FIRE'S NOTE (retired 2026-09-19). ** Its first trap — a trimmer
+    # ply centred on the opening edge, half a ply inside the hole — is gone since 2026-09-25:
+    # the outline is the finished hole and the framing stands behind it. The other is live:
     #
     #   2. `header_size` BRANCHES ON `w_ft <= 4.0`, AND 48.0" IS ON THE BOUNDARY. A span
     #      arriving as 4.0000000000000009 after a metre round trip takes the wrong branch

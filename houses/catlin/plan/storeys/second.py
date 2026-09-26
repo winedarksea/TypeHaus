@@ -1358,9 +1358,8 @@ FLOOR_OPENINGS = [
     # ** THE NW CHASE, FRAMED THROUGH FS-S-WEST (2026-09-23). ** Two ERV risers, DU-ERV-EA,
     # the radon/vent bundle and three conduits stand in W-S-CH-W/-CH-S's 2'-0" x 2'-2"
     # chase; the y=34'-5.8" truss was running straight through it. The fabricator shortens
-    # it onto a header under W-S-CH-W (x=2'-9"); the west edge is the exterior wall. The y
-    # edges ARE the y=33'-4" truss and FO-S-STAIR's y=35'-5.4" trimmer line, because the
-    # resolver frames an opening's trimmers bearing to bearing across the whole deck.
+    # it onto a header outboard of x=2'-9" (W-S-CH-W); the west edge is the exterior wall.
+    # Its trimmers run from that wall to FO-S-STAIR's west edge, where W-M-STRW carries them.
     FloorOpening(uid="GV6JQNDH5D", tag="FO-S-ERV-CHASE", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(6), inch(400)), pt(inch(33), inch(400)),
                           pt(inch(33), inch(425.4)), pt(inch(6), inch(425.4))),
@@ -1397,7 +1396,13 @@ FLOOR_OPENINGS = [
                  # reads as unsupported, and structural.floor_opening_header emits a full
                  # LVL header for it rather than the 5 3/8" that actually went missing — see
                  # W-M-STRW2's comment in main.py.
-                 bearing_refs=("W-M-STRW", "W-M-STRW2", "W-M-C5", "W-M-C5B")),
+                 bearing_refs=("W-M-STRW", "W-M-STRW2", "W-M-C5", "W-M-C5B"),
+                 # The truss band closed in the ceiling's own 5/8" board on all four edges,
+                 # flush with the finish below; the framing steps back behind it.
+                 lining=(
+                     Layer(name="gwb-well", material_ref="gwb", thickness=inch(0.625),
+                           function=LayerFunction.FINISH),
+                 )),
 ]
 
 # The beam that lets the centre line be open. Per CLAUDE.md, x=18' is a
@@ -1499,20 +1504,21 @@ STAIR_HANDRAILS = [
 # unchanged. Precedent: STACK_SLEEVES in plan/mep_sleeves.py.
 FLOOR = []
 
-# The suite bedroom's two "tudor" posts (plans/TODO.md §Hardwood): custom 6-1/8" square
-# elm timbers standing in W-S-W3's stud line, flush with the drywall plane. Deliberately
+# The suite bedroom's two "tudor" posts (plans/TODO.md §Hardwood): custom 6-1/4" square
+# elm timbers standing in W-S-W3's stud line, sheathing face to 1/8" proud of the drywall
+# (a flush face z-fights in the viewer and reads as a glitch). Deliberately
 # NOT a change to EXT_2X6 — each post is a deviation within the stud line, so the
-# wall assembly is untouched. Centre x=3-9/16" off the sheathing-ext plane. One each side
+# wall assembly is untouched. Centre x=3-5/8" off the sheathing-ext plane. One each side
 # of the pier between SUITE1's and SUITE2's jamb packs (king faces y 12'-0 1/2" /
 # 18'-7 1/2"): ~10 7/8" off each king face, symmetric about the pair. Each lands over a
 # W-M-W3 stud (160/208") and replaces the module stud it lands on. Cut 8'-8 1/4": it stands
 # on the deck through the cut sole plate and stops under W-S-W3's continuous double top plate.
 POSTS = [
-    Post(uid="CSK901AAAA", tag="P-S-TUDOR1", position=pt(inch(3.5625), ft(13, 2.4375)),
-         size="6.125x6.125", height=ft(8, 8.25), supported_by="FS-S-WEST",
+    Post(uid="CSK901AAAA", tag="P-S-TUDOR1", position=pt(inch(3.625), ft(13, 2.4375)),
+         size="6.25x6.25", height=ft(8, 8.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
-    Post(uid="CSK904AAAA", tag="P-S-TUDOR2", position=pt(inch(3.5625), ft(17, 5.5625)),
-         size="6.125x6.125", height=ft(8, 8.25), supported_by="FS-S-WEST",
+    Post(uid="CSK904AAAA", tag="P-S-TUDOR2", position=pt(inch(3.625), ft(17, 5.5625)),
+         size="6.25x6.25", height=ft(8, 8.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
 ]
 
@@ -1548,7 +1554,7 @@ PANELING = [
     # there is no double-billing trap: both bands are wall area on the same table.)
     #
     # ** `walls=` IS NOT OPTIONAL. ** `room=` alone panels every bounding wall of the L —
-    # all eight, ~50 lineal feet — including the window wall with its two flush elm tudor
+    # all eight, ~50 lineal feet — including the window wall with its two elm tudor
     # posts (P-S-TUDOR1/2, `within_wall="W-S-W3"`), which the model cannot scribe around.
     #
     # ** `height` IS A BAND HEIGHT ADDED TO `offset`, NOT A TOP ELEVATION ** — see

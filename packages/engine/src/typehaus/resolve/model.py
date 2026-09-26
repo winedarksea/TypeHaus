@@ -717,6 +717,9 @@ class ResolvedFloor:
     #: exists only because THESE runs pass through it and a different run standing in it is
     #: still a defect. ``mep.riser_through_deck`` is the reader.
     penetrations: tuple[tuple[str, Ring, tuple[str, ...]], ...] = ()
+    #: ``(opening tag, well-face area m²)`` per ``FloorOpening.lining``; its solids are in
+    #: ``model.solids`` as ``opening_lining`` (``resolve/opening_lining.py``).
+    linings: tuple[tuple[str, float], ...] = ()
     #: ``(pitch, clear opening, offset)`` in metres for an open-web deck whose ``JoistSpec``
     #: states its panel layout; ``None`` where it does not. Carried rather than re-read off
     #: the plan because ``checks``, ``resolve/mep_crossings`` and ``routing/obstacles`` all
