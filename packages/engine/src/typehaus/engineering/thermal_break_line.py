@@ -92,7 +92,8 @@ def near_line(ctx, facing: list[str], ax: int, toward: float):
         chain = sorted((_span(o, ax), o.tag) for o in rest if runs_across(o)
                        and abs(_span(o, 1 - ax)[0] - a0) < CONTACT_IN
                        and abs(_span(o, 1 - ax)[1] - a1) < CONTACT_IN)
-        reach, used = inner, []
+        reach = inner
+        used: list[str] = []
         for (c0, c1), tag in (chain if toward > 0 else chain[::-1]):
             if toward > 0 and c0 <= reach + CONTACT_IN and c1 > reach:
                 reach, used = c1, used + [tag]
@@ -177,7 +178,8 @@ def share(ctx, found, loads, bed, edge: tuple[float, float]) -> dict:
     mids = [(xs[e] + xs[e + 1]) / 2.0 for e in range(len(xs) - 1)]
     q = [sum(w for a, b, w in loads if a <= x <= b) for x in mids]
     on_edge = [bed if edge[0] <= x <= edge[1] else 0.0 for x in mids]
-    off, live = set(), list(supports)
+    off: set[int] = set()
+    live = list(supports)
     for _ in range(40):
         k_bed = [0.0 if e in off else k for e, k in enumerate(on_edge)]
         v, moment, shear = solve(xs, ei, k_bed, {nodes[s[0]]: s[1] for s in live}, q)

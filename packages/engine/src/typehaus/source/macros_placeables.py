@@ -518,7 +518,7 @@ def _infer_register_kind(plan: PlanModel, type_ref: str) -> DuctSystem:
     hit = next((system for token, system in _REGISTER_KIND_TOKENS if token in words), None)
     if hit is not None:
         return hit
-    needs = getattr(product, "needs", frozenset()) or frozenset()
+    needs: frozenset[Service] = getattr(product, "needs", frozenset()) or frozenset()
     if Service.RETURN_AIR in needs:
         return DuctSystem.RETURN
     if Service.EXHAUST_AIR in needs:

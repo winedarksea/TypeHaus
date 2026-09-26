@@ -158,7 +158,7 @@ class MeshBuilder:
                 points.append((centre[0] + u[0] * ca + v[0] * sa,
                                centre[1] + u[1] * ca + v[1] * sa,
                                centre[2] + u[2] * ca + v[2] * sa))
-        tris = []
+        tris: list[tuple[int, int, int]] = []
         for s in range(sides):
             t = (s + 1) % sides
             tris.extend(((s, t, sides + t), (s, sides + t, sides + s)))

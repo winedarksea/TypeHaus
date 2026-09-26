@@ -30,7 +30,14 @@ from typehaus.engineering import thermal_break_house as house
 from typehaus.engineering import thermal_break_line as line
 from typehaus.engineering import thermal_break_path as path
 from typehaus.engineering import thermal_break_winter as winter
-from typehaus.engineering.item import EngineeringRecord, Oracle, Quantity, Status, item_id
+from typehaus.engineering.item import (
+    EngineeringRecord,
+    LimitState,
+    Oracle,
+    Quantity,
+    Status,
+    item_id,
+)
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.retaining_system import footing_shortfalls, loop_free_bodies
 
@@ -150,7 +157,9 @@ def _grade(ctx, boards, products, bodies, e_scale) -> dict:
 
 
 def _one(ctx, board, sh):
-    states, missing, notes = [], [], list(_NOTES)
+    states: list[LimitState] = []
+    missing: list[str] = []
+    notes = list(_NOTES)
     inputs = [Quantity("board_t", board.t_in, "in", 0.01),
               Quantity("board_h", board.h_in, "in", 0.01),
               Quantity("board_L", board.length_in, "in", 0.01)]

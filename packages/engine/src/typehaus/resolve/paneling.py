@@ -162,7 +162,7 @@ def _net_cells(lo: float, hi: float, z0: float, z1: float, openings) -> list:
         if min(hi, b) - max(lo, a) > 1e-6 and min(z1, s1) - max(z0, s0) > 1e-6:
             holes.append((a, b, s0, s1))
     cuts = sorted({lo, hi, *(u for a, b, _, _ in holes for u in (a, b) if lo < u < hi)})
-    cells = []
+    cells: list[tuple[float, float, float, float]] = []
     for u0, u1 in zip(cuts, cuts[1:], strict=False):
         mid = (u0 + u1) / 2.0
         spans = [(z0, z1)]

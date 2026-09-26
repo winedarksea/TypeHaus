@@ -109,7 +109,7 @@ def _emit_overhangs(b: SceneBuilder, model: ResolvedModel, roof: ResolvedRoof,
                if w is not None]
     if not bearing:
         return
-    clad_pts = []
+    clad_pts: list[tuple[float, float]] = []
     for wall in bearing:
         layers = wall.depth_layers()
         clad_pts.extend(layers[-1].polygon if layers else wall.axis)

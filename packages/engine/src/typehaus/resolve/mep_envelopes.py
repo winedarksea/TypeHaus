@@ -151,7 +151,7 @@ def vent_risers(model: ResolvedModel
     from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
     from typehaus.resolve.vent_termination import riser_polylines
 
-    out = []
+    out: list[tuple[str, tuple[tuple[float, float], ...], tuple[float, ...], float]] = []
     for element in model.plan.all_elements():
         if not isinstance(element, VentRun):
             continue

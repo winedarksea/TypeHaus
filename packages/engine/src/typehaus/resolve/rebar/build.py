@@ -252,7 +252,7 @@ def _beam_joints(model, spec, wall, cover: float):
         return None
     frame, _ext = wall_frame(wall, structure_layer(wall))
     _inner, z = _beam_z(spec, frame, cover)
-    out = []
+    out: list[tuple[float, float, float] | None] = []
     for s_end, inward in ((frame.s0 + cover, 1.0), (frame.s1 - cover, -1.0)):
         x, y, _ = frame.world(s_end, (frame.t0 + frame.t1) / 2, z)
         footing = next((s for s in model.solids if s.category == "footing"

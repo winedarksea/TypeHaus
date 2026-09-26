@@ -88,7 +88,10 @@ def _authored(plan, cache: dict):
     from typehaus.model.elements import Wall
     from typehaus.model.structure import Beam, Post
 
-    within, ledgers, bearings, mineral = set(), set(), set(), set()
+    within: set[tuple[str, str]] = set()
+    ledgers: set[tuple[str, str]] = set()
+    bearings: set[tuple[str, str]] = set()
+    mineral: set[str] = set()
     if plan is None:
         return within, ledgers, bearings, mineral
     for el in plan.all_elements():
