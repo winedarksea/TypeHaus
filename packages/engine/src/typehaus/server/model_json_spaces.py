@@ -40,9 +40,14 @@ def spaces_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str
              "finish_zones": [
                  {"outline": [list(p) for p in z.outline],
                   "material_ref": z.material_ref, "area_m2": z.area_m2,
-                  "source_ref": z.source_ref}
+                  "source_ref": z.source_ref,
+                  "parts": _finish_parts(z.parts)}
                  for z in r.finish_zones
              ],
+             # The floor the field finish covers: clear face less zones and stair wells
+             # (resolve/room_finish.py). The viewer draws this; takeoff bills its area.
+             "field_finish": _finish_parts(r.field_finish),
+             "field_area_m2": r.field_area_m2,
              # Derived head and glazing: facts about the room (read by
              # code.R305_ceiling_height and code.R303_1_light_and_ventilation), so they ride
              # on the room rather than living only inside a check's message string.
@@ -103,3 +108,10 @@ def spaces_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str
             for line in model.layout_lines
         ],
     }
+
+
+def _finish_parts(parts) -> list[dict[str, Any]]:
+    """``FinishPart`` tuples as ``{outline, holes}`` objects."""
+    return [{"outline": [list(p) for p in outline],
+             "holes": [[list(p) for p in hole] for hole in holes]}
+            for outline, holes in parts]

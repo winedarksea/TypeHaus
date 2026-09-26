@@ -351,6 +351,20 @@ export interface Room {
    * under the hole is already the surface.
    */
   finish_zones?: FinishZone[];
+  /**
+   * The floor the field finish covers: `clear_face` less the zones and the deck voids (stair
+   * wells, chases) at the room's level (resolve/room_finish.py). Every hole is interior to its
+   * part. Absent on an older model.json.
+   */
+  field_finish?: FinishPart[];
+  /** Area of `field_finish` — what the takeoff bills. */
+  field_area_m2?: number;
+}
+
+/** One polygon of a finished floor: an outline and the holes strictly inside it. */
+export interface FinishPart {
+  outline: Vec2[];
+  holes: Vec2[][];
 }
 
 export interface FinishZone {
@@ -359,6 +373,8 @@ export interface FinishZone {
   area_m2: number;
   /** Tag of the slab this zone was derived from; null when authored on the room. */
   source_ref: string | null;
+  /** The zone net of the deck voids at its level. */
+  parts?: FinishPart[];
 }
 
 export interface Alarm {

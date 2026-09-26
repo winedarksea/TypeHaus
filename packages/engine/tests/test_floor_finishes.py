@@ -365,7 +365,9 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # it and gave up 2" across its ~62 3/4" width = 0.87 sf. RM-M-BATH2 took the same 2" and
     # is tile, so the plank total falls rather than moving sideways.
     # 647.7 between finish faces (722.5 while the clear face was axis-derived).
-    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(647.7, abs=0.5)
+    # 508.4 net of the stair wells (2026-09-25): RM-S-HALL -70.1 over FO-S-STAIR and
+    # RM-M-LIVING -69.1 over FO-M-STAIR were billed as plank laid over the treads.
+    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(508.4, abs=0.5)
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
     # The oak is the two studies plus the suite pair. It reached 555.9 across three rooms
@@ -376,8 +378,9 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # it again on the merits, and the second storey alone now carries ~341 sf of it.
     assert set(rows["oak-floor-custom"]["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2",
                                          "RM-S-SUITE", "RM-S-CLOSET"}
-    # 453.9 between finish faces (507.6 axis-derived).
-    assert float(rows["oak-floor-custom"]["net_area_sqft"]) == pytest.approx(453.9, abs=0.5)
+    # 453.9 between finish faces (507.6 axis-derived); 408.8 net of FO-A-STAIR's well in
+    # RM-A-STUDY (-45.1, 2026-09-25).
+    assert float(rows["oak-floor-custom"]["net_area_sqft"]) == pytest.approx(408.8, abs=0.5)
     # ** vinyl-sheet has left the main storey entirely. ** What is left is the rooms that are
     # genuinely wet or genuinely cheap-and-washable, on three different storeys: RM-S-PLANT
     # (the spec that started it), RM-A-STUBATH, RM-B-BATH — and, since 2026-09-09,

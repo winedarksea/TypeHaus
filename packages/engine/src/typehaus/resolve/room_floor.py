@@ -133,10 +133,9 @@ def _underfoot(model: ResolvedModel, point: tuple[float, float], structural: flo
 def _floored_point(model: ResolvedModel, room: ResolvedRoom, structural: float):
     """A point of the room clear of every void in the decks at its own level, or None."""
     from typehaus.resolve.overlay import union_all
+    from typehaus.resolve.room_finish import level_voids
 
-    voids = [Polygon(ring) for floor in model.floors
-             if abs(floor.deck_z1_m - structural) < SLAB_MATCH_TOLERANCE_M
-             for ring in floor.deck_voids if len(ring) >= 3]
+    voids = level_voids(model, structural)
     solid = Polygon(room.clear_face).difference(union_all(voids)) if voids else None
     if solid is None or solid.is_empty:
         return None

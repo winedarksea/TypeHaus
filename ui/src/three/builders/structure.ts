@@ -6,7 +6,7 @@
 // resolved outline or lay out a member list, and none carries an editing path.
 import * as THREE from "three";
 import type {
-  Brace, Catalog, FootingBedding, Floor, Member, Paneling, Roof, Room, Solid,
+  Brace, Catalog, FinishPart, FootingBedding, Floor, Member, Paneling, Roof, Room, Solid,
   SoffitFraming, SolarPanel, Stair, Vec2,
 } from "../../model/types";
 import { layerTrades, memberTrades, primaryTrade, type VisibilityKey } from "../../model/tradeVisibility";
@@ -219,10 +219,12 @@ export function storeyFloorTopM(floors: readonly Floor[], storeyTag: string,
  * key off; the surface (roughness) comes from `floorSurface`, because four flat fills of
  * similar value are hard to tell apart under one light and the sheen is what separates them.
  *
- * Openings in the storey's deck are cut out of the finish too — otherwise the finish caps
- * the stair well the subfloor correctly leaves open.
+ * The engine derives what the finish covers (`room.field_finish`, resolve/room_finish.py): the
+ * clear face less the zones and the deck voids at the room's level, every hole strictly inside
+ * its part. Cutting every storey opening out of every room here instead capped a well flush
+ * with a room edge (Earcut can't cut it) and bridged one outside the room into its neighbour.
  *
- * `Room.finish_zones` are cut out the same way, and for the same reason. A zone is an *override*
+ * `Room.finish_zones` are cut out of the field, not laid over it. A zone is an *override*
  * — a hearth pad, or the band of a room sitting on a slab whose cap is itself the finished floor
  * — so the field finish stops at its edge rather than running under it. Cutting rather than
  * covering is what makes a COATING zone right: polished concrete has no plane of its own, so the
@@ -230,23 +232,29 @@ export function storeyFloorTopM(floors: readonly Floor[], storeyTag: string,
  * condition. A covering zone draws its own slab in the hole.
  */
 export function buildRoomFloor(parent: THREE.Group, room: Room, floorTopM: number,
-  openings: readonly Vec2[][], center: PlanCenter, mode: "nordic" | "schematic",
+  center: PlanCenter, mode: "nordic" | "schematic",
   palette: ResolvedNordicPalette, materials: readonly MaterialAppearance[] | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   if (room.clear_face.length < 3) return;
   const zones = (room.finish_zones ?? []).filter((zone) => zone.outline.length >= 3);
-  const holes = zones.length ? [...openings, ...zones.map((zone) => zone.outline)] : openings;
+  // An older model.json has no `field_finish`: the clear face cut by its zones, no wells.
+  const field: FinishPart[] = room.field_finish
+    ?? [{ outline: room.clear_face, holes: zones.map((zone) => zone.outline) }];
   // A coating (sealed concrete) is a sealer on the deck, not a covering over it: it has no
   // thickness of its own, so drawing a plane for it would put a second floor a hair above
   // the slab that already carries the colour. It still bills — takeoff/finishes.py.
   if (room.floor_finish && !authoredAppearance(room.floor_finish, materials)?.coating) {
-    addFinishPlane(parent, room, room.floor_finish, room.clear_face, holes, floorTopM,
-      center, mode, palette, materials, picks, byUid);
+    for (const part of field) {
+      addFinishPlane(parent, room, room.floor_finish, part.outline, part.holes, floorTopM,
+        center, mode, palette, materials, picks, byUid);
+    }
   }
   for (const zone of zones) {
     if (authoredAppearance(zone.material_ref, materials)?.coating) continue;
-    addFinishPlane(parent, room, zone.material_ref, zone.outline, openings, floorTopM,
-      center, mode, palette, materials, picks, byUid);
+    for (const part of zone.parts ?? [{ outline: zone.outline, holes: [] }]) {
+      addFinishPlane(parent, room, zone.material_ref, part.outline, part.holes, floorTopM,
+        center, mode, palette, materials, picks, byUid);
+    }
   }
 }
 

@@ -240,17 +240,13 @@ export function populateScene(options: PopulateSceneOptions) {
     build(family("floor_deck"), floor.storey, () => buildFloor(tradeGroups.framing, floor, center, mode,
       palette, registry.picks, registry.byUid, tradeGroups.framing, model.catalog?.materials));
   }
-  // Room finishes go over the decks, so they build after every floor is in. Deck openings are
-  // per storey, not per floor system, so they are gathered once and cut out of each finish —
-  // without that a stair well ends up capped by the finish above it.
+  // Room finishes go over the decks, so they build after every floor is in. Each room's
+  // `field_finish` is already cut by the wells at its level (resolve/room_finish.py).
   for (const room of model.rooms ?? []) {
     const floors = model.floors ?? [];
-    const openings = floors.filter((floor) => floor.storey === room.storey)
-      .flatMap((floor) => floor.openings);
     const top = storeyFloorTopM(floors, room.storey, placeableElevationM(model, room.storey));
     build(family("room_floor"), room.storey, () => buildRoomFloor(container(family("room_floor")), room, top,
-      openings, center, mode, palette, model.catalog?.materials, registry.picks,
-      registry.byUid));
+      center, mode, palette, model.catalog?.materials, registry.picks, registry.byUid));
   }
   // The facade datums every wall's cladding is framed on (builders/walls.ts uses the same
   // `layout_axis ?? axis`), handed to the roofs so a wall→roof closure band's panel module

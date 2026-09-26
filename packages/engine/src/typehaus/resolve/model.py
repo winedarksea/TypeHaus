@@ -25,6 +25,8 @@ if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-onl
 
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
 Ring = list[tuple[float, float]]
+# One polygon of a finished floor: ``(outline, holes)`` (→ resolve/room_finish.py).
+FinishPart = tuple[Ring, tuple[Ring, ...]]
 
 # One point of a swept run's 3D path, and one point of its section (→ resolve/sweep.py).
 Vec3 = tuple[float, float, float]
@@ -819,6 +821,8 @@ class ResolvedFinishZone:
     # its own reason. Carried so the Inspector and the takeoff can say *why* a band of a room
     # is a different finish than the room is.
     source_ref: str | None = None
+    # The zone net of the deck voids at its level; ``area_m2`` is their area.
+    parts: tuple[FinishPart, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -983,6 +987,10 @@ class ResolvedRoom:
     # reached no viewer, emitter or takeoff. ``area_m2`` is the zone clipped to the room, so
     # a takeoff can subtract it from the room's field finish without re-intersecting.
     finish_zones: tuple[ResolvedFinishZone, ...] = ()
+    # The floor the field finish covers: ``clear_face`` less the zones and the deck voids
+    # (stair wells) at the room's level. ``area_m2`` stays gross; takeoff bills this.
+    field_finish: tuple[FinishPart, ...] = ()
+    field_area_m2: float = 0.0
     # --- derived head and glazing ----------------------------------------------------------
     # ``clear_height_m`` is floor to the LOWEST thing over the room — deck, slab, or SOFFIT.
     # The soffit is the part that was missing everywhere: ``ceiling_over._is_ceiling_deck``

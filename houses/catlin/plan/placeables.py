@@ -1232,7 +1232,7 @@ SECOND_PLACEABLES = [
     # y — which is why this one is authored apart from them. The south side zone runs into
     # the south wall by design: the bed is pushed to that wall and walked on the north side.
     Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-QUEEN-BED", room="RM-S-BED1",
-              position=pt(m(9.7996), m(3.71898)), rotation=deg(270)),
+              position=pt(m(9.92317), m(4.24498)), rotation=deg(0)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
               position=pt(m(9.68788), m(6.90099)), rotation=deg(-90)),
     Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",
@@ -1304,7 +1304,7 @@ SECOND_PLACEABLES = [
     # BED1's and BED2's wardrobes sit over ED-S-BED1-RC1 / ED-S-BED2-RC1 (north-wall general
     # receptacles, 16"-18" AFF) — not a code problem, but worth knowing before boxes are set.
     Furniture(uid="CSB704AAAA", tag="FURN-S-BED1-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED1", position=pt(m(8.12003), m(5.03458)), rotation=deg(0)),
+              room="RM-S-BED1", position=pt(m(8.4499), m(5.00697)), rotation=deg(0)),
     Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED2", position=pt(m(7.35693), m(7.74426)), rotation=deg(0)),
     # BED3's slot is EXACT, not approximate: resolved x 293.5..341.5, y 322.5..346.5 on the

@@ -5,7 +5,7 @@
 // that can drift; and four flat fills of similar value are hard to tell apart under one
 // light, so the surface has to differ too.
 import * as THREE from "three";
-import type { FinishZone, Floor, Member, Room, Vec2 } from "../../model/types";
+import type { FinishPart, FinishZone, Floor, Member, Room, Vec2 } from "../../model/types";
 import {
   buildRoomFloor, ROOM_FINISH_THICKNESS_M, storeyFloorTopM,
 } from "./structure";
@@ -55,12 +55,33 @@ function registry() {
   return { picks: [] as THREE.Mesh[], byUid: new Map<string, THREE.Material[]>() };
 }
 
-function build(r: Room, top = 3, openings: Vec2[][] = []) {
+function build(r: Room, top = 3) {
   const group = new THREE.Group();
   const reg = registry();
-  buildRoomFloor(group, r, top, openings, [0, 0], "nordic", PALETTE, MATERIALS,
-    reg.picks, reg.byUid);
+  buildRoomFloor(group, r, top, [0, 0], "nordic", PALETTE, MATERIALS, reg.picks, reg.byUid);
   return { group, reg };
+}
+
+// The plan area a group's finish planes cover: every top-face triangle, projected.
+function topArea(group: THREE.Group): number {
+  let area = 0;
+  for (const child of group.children) {
+    const position = (child as THREE.Mesh).geometry.getAttribute("position");
+    const index = (child as THREE.Mesh).geometry.getIndex();
+    const at = (i: number) => new THREE.Vector3().fromBufferAttribute(position, i);
+    const count = index ? index.count : position.count;
+    const top = new THREE.Box3().setFromBufferAttribute(position as THREE.BufferAttribute).max.y;
+    for (let i = 0; i < count; i += 3) {
+      const [a, b, c] = [0, 1, 2].map((k) => at(index ? index.getX(i + k) : i + k));
+      if ([a, b, c].some((v) => Math.abs(v.y - top) > 1e-6)) continue;
+      area += Math.abs((b.x - a.x) * (c.z - a.z) - (c.x - a.x) * (b.z - a.z)) / 2;
+    }
+  }
+  return area;
+}
+
+function withField(r: Room, field: FinishPart[]): Room {
+  return { ...r, field_finish: field };
 }
 
 export function runRoomFloorTests() {
@@ -139,14 +160,29 @@ export function runRoomFloorTests() {
   assert(Math.abs((box.max.y - box.min.y) - ROOM_FINISH_THICKNESS_M) < 1e-6,
     "It draws at the same thickness the .glb extrudes its room prism");
 
-  // A deck opening is cut out of the finish too. Without this the finish caps the stair well
-  // the subfloor correctly leaves open.
-  const hole: Vec2[] = [[1, 1], [3, 1], [3, 3], [1, 3]];
-  const solid = build(room("oak")).group.children[0] as THREE.Mesh;
-  const holed = build(room("oak"), 3, [hole]).group.children[0] as THREE.Mesh;
+  // The engine's `field_finish` is what gets drawn: RM-S-HALL's well is flush with three of
+  // its edges, so it arrives as a notch in the outline, not as a hole Earcut cannot cut.
+  const notched = build(withField(room("lvp"), [{
+    outline: [[0, 0], [4, 0], [4, 4], [3, 4], [3, 2], [1, 2], [1, 4], [0, 4]] as Vec2[],
+    holes: [],
+  }]));
+  assert(Math.abs(topArea(notched.group) - 12) < 1e-4,
+    "A flush-edge well notch draws the room less the well — the stair is not capped");
   const count = (mesh: THREE.Mesh) => mesh.geometry.getAttribute("position").count;
-  assert(count(holed) > count(solid),
-    "A deck opening is cut out of the finish, not drawn over");
+
+  // An interior well is a hole strictly inside its part, and is cut.
+  const hole: Vec2[] = [[1, 1], [3, 1], [3, 3], [1, 3]];
+  const holed = build(withField(room("oak"), [{ outline: room("oak").clear_face, holes: [hole] }]));
+  assert(Math.abs(topArea(holed.group) - 12) < 1e-4,
+    "An interior deck opening is cut out of the finish, not drawn over");
+
+  // Regression: every storey opening used to be handed to every room, and one OUTSIDE the
+  // room was bridged by Earcut into a plane across the neighbour (RM-M-BATH1 drew 76.9 sf for
+  // 19). The field is the room's own now, so the plane stays on the room.
+  const neighbour = build(withField(room("lvp"), [{ outline: room("lvp").clear_face, holes: [] }]));
+  const extent = new THREE.Box3().setFromObject(neighbour.group);
+  assert(Math.abs(topArea(neighbour.group) - 16) < 1e-4 && extent.min.x > -1e-6
+    && extent.max.x < 4 + 1e-6, "A room's finish never reaches past its own clear face");
 
   // --- 5. the deck elevation the finish lands on ----------------------------------------
 
@@ -195,6 +231,15 @@ export function runRoomFloorTests() {
     "The zone takes its OWN material's colour, not the room's");
   assert(inlaid.reg.picks.every((mesh) => mesh.userData.uid === "RM-lvp"),
     "Clicking a zone selects the room it is in, not a nameless plane");
+
+  // A zone laid over a well draws its `parts` — the zone net of the voids — not its outline.
+  const overWell = build(room("sealed-concrete", "second", [{
+    ...zone("tile"),
+    parts: [{ outline: [[0, 0], [4, 0], [4, 1.5], [0, 1.5]] as Vec2[],
+      holes: [[[1, 0.5], [2, 0.5], [2, 1], [1, 1]] as Vec2[]] }],
+  }]));
+  assert(Math.abs(topArea(overWell.group) - 5.5) < 1e-4,
+    "A zone over a well is cut by it, as the field is");
 
   // A zone under a room whose field finish is itself a coating still draws: the early
   // return used to give up on the whole room before it ever looked at the zones.

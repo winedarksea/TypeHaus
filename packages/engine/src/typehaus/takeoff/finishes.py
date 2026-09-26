@@ -87,11 +87,11 @@ def floor_finish_rows(model: ResolvedModel) -> list[dict[str, object]]:
     unfinished: list[str] = []
 
     for room in model.rooms:
-        zone_area = sum(zone.area_m2 for zone in room.finish_zones)
         for zone in room.finish_zones:
             areas[zone.material_ref] += zone.area_m2
             rooms_by_finish[zone.material_ref].append(room.tag)
-        field_area = max(room.area_m2 - zone_area, 0.0)
+        # Net of zones AND deck voids: a stair well is not floored (resolve/room_finish.py).
+        field_area = room.field_area_m2
         if not room.floor_finish:
             if field_area > 0.0:
                 unfinished.append(room.tag)

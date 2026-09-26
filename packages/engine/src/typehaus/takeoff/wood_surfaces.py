@@ -171,8 +171,7 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         material = materials.get(room.floor_finish) if room.floor_finish else None
         if material is None or material.species is None:
             continue
-        zone_area = sum(zone.area_m2 for zone in room.finish_zones)
-        floor_area[material.tag] += max(room.area_m2 - zone_area, 0.0)
+        floor_area[material.tag] += room.field_area_m2
         floor_rooms[material.tag].append(room.tag)
     for ref in sorted(floor_area):
         rows.append(_area_row(materials, ref, floor_area[ref], kind="floor",

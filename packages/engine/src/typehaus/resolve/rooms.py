@@ -13,6 +13,7 @@ from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedFinishZone, ResolvedModel, ResolvedRoom
 from typehaus.resolve.overlay import union_all
 from typehaus.resolve.roof_geometry import room_head_limited_area_m2
+from typehaus.resolve.room_finish import with_field_finish
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.room_openings import room_glazing_areas
 from typehaus.resolve.wall_faces import clear_cell, storey_wall_mass
@@ -187,6 +188,7 @@ def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 exposed_services=room.exposed_services,
                 closed_to_services=room.closed_to_services,
             )
+            resolved = with_field_finish(model, resolved, clear)
             glazing = room_glazing_areas(plan, model, resolved)
             if glazing is not None:
                 resolved = replace(resolved, glazed_area_m2=glazing[0],

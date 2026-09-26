@@ -211,8 +211,13 @@ def test_floor_finishes_reconcile_against_the_houses_own_floor_area(catlin_model
     area-total reconciliation catches and a per-row assertion does not."""
     field_rows = [row for row in bom["floor_finishes"] if "under" not in row]
     billed = sum(float(row["net_area_sqft"]) for row in field_rows)
-    resolved = sum(room.area_m2 for room in catlin_model.rooms) * _M2_TO_FT2
+    # The finished floor, not the gross room: stair wells and chases take no finish
+    # (resolve/room_finish.py), which is ~200 sf of wells the rooms wrap.
+    resolved = sum(room.field_area_m2 + sum(zone.area_m2 for zone in room.finish_zones)
+                   for room in catlin_model.rooms) * _M2_TO_FT2
     assert billed == pytest.approx(resolved, rel=1e-3)
+    gross = sum(room.area_m2 for room in catlin_model.rooms) * _M2_TO_FT2
+    assert billed < gross
 
 
 def test_every_finish_row_resolved_a_real_material(bom):
@@ -247,8 +252,9 @@ def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
     any one of the three alone would read a real change as a saving."""
     row = next(row for row in bom["floor_finishes"] if row["finish"] is None)
     assert row["rooms"] == ["RM-A-EAST-UNFIN", "RM-A-POCKET"]
-    # 564.1 between finish faces (607.6 while the clear face was axis-derived).
-    assert float(row["net_area_sqft"]) == pytest.approx(564.1, abs=0.5)
+    # 564.1 between finish faces (607.6 while the clear face was axis-derived); 559.0 net
+    # of the ERV/vent/radon chases through RM-A-POCKET's and RM-A-EAST-UNFIN's floor.
+    assert float(row["net_area_sqft"]) == pytest.approx(559.0, abs=0.5)
     assert float(row["order_area_sqft"]) == 0.0
 
 
@@ -275,11 +281,10 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
                                  "RM-S-VANITY",
                                  "RM-M-LIVING", "RM-M-STUDY", "RM-M-PANTRY",
                                  "RM-M-BATH1", "RM-M-LAUNDRY", "RM-S-NCLOSET"}
-    # NET of in-room finish zones. RM-M-LIVING is the reason: 411 SF of it sits on
-    # SL-M-DECK, whose coated cap is the finished floor there, so the plank stops at the
-    # band. Summing room areas alone would order LVP for a floor nobody covers.
-    lvp_area = sum(room.area_m2 - sum(zone.area_m2 for zone in room.finish_zones)
-                   for room in catlin_model.rooms
+    # NET of in-room finish zones AND stair wells: 411 SF of RM-M-LIVING sits on
+    # SL-M-DECK, whose coated cap is the finished floor there, and it and RM-S-HALL wrap
+    # ~70 sf of well each. Summing room areas alone orders LVP for floor nobody covers.
+    lvp_area = sum(room.field_area_m2 for room in catlin_model.rooms
                    if room.floor_finish == "lvp") * _M2_TO_FT2
     # Rows round to a tenth of a square foot, which is the tolerance here.
     assert float(lvp["net_area_sqft"]) == pytest.approx(lvp_area, abs=0.05)
