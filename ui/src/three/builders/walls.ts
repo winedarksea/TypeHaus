@@ -533,6 +533,11 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   const exterior = exteriorFace(wall);
   const frameMaterial = standardMaterial(
     exterior ? categoryColor("window_trim") : palette.member.wood, mode);
+  // A solid leaf is white enamel indoors and the charcoal frame tone in a clad wall. Mirrors
+  // resolve/geometry_openings.py::_DOOR_LEAF_KEY. Satin, not the walls' matte, so the leaf
+  // catches a highlight the flat gypsum around it does not.
+  const solidLeafMaterial = exterior ? frameMaterial
+    : standardMaterial(categoryColor("door_leaf"), mode, { roughness: 0.45 });
   let frameDepth = depth, frameOffset = 0;
   if (exterior) {
     const outerEdge = exterior.plane + exterior.sign * WINDOW_TRIM_PROUD_DEPTH_M;
@@ -566,7 +571,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     const leafWidth = Math.max(0.01, (opening.width_m - 2 * frameWidth - mullionWidth) / 2);
     const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
     addBox(mullionWidth, availableHeight, depth, 0, midElevation, frameMaterial);
-    const leafMaterial = isGlazed ? glassMaterial : frameMaterial;
+    const leafMaterial = isGlazed ? glassMaterial : solidLeafMaterial;
     const leafThickness = isGlazed ? 0.015 : 0.045;
     addBox(leafWidth, panelHeight, leafThickness, -mullionWidth / 2 - leafWidth / 2, panelElevation, leafMaterial);
     addBox(leafWidth, panelHeight, leafThickness, mullionWidth / 2 + leafWidth / 2, panelElevation, leafMaterial);
@@ -579,7 +584,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     const panelOffset = stileWidth / 2 + panelWidth / 2;
     const trackHeight = Math.min(0.02, panelHeight);
     const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
-    const panelMaterial = isGlazed ? glassMaterial : frameMaterial;
+    const panelMaterial = isGlazed ? glassMaterial : solidLeafMaterial;
     const panelThickness = isGlazed ? 0.015 : 0.045;
     addBox(stileWidth, panelHeight, depth, 0, panelElevation, frameMaterial);
     addBox(clearWidth, trackHeight, depth, 0,
@@ -596,7 +601,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
     for (let index = 0; index < 4; index++) {
       addBox(leafWidth, panelHeight, 0.045,
-        firstLeafCenter + index * (leafWidth + foldGap), panelElevation, frameMaterial);
+        firstLeafCenter + index * (leafWidth + foldGap), panelElevation, solidLeafMaterial);
     }
   } else if (opening.kind === "door" && operation === "pocket") {
     // Closed and coplanar, like the slider above. The wall over a pocket is drywalled on
@@ -608,7 +613,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     const leafHeight = Math.max(0.01, panelHeight - trackHeight);
     const base = baseRefZ(wall) + opening.sill_m + frameWidth;
     addBox(clearWidth, trackHeight, depth, 0, base + panelHeight - trackHeight / 2, frameMaterial);
-    addBox(clearWidth, leafHeight, 0.045, 0, base + leafHeight / 2, frameMaterial);
+    addBox(clearWidth, leafHeight, 0.045, 0, base + leafHeight / 2, solidLeafMaterial);
   } else if (opening.kind === "door") {
     // A sectional overhead door's panel is a factory-finished product in its own charcoal,
     // not the wood leaf of an interior door nor the near-black trim coil its frame is drawn
@@ -619,7 +624,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
       : operation === "overhead"
         ? standardMaterial(categoryColor("overhead_door"), mode,
           { roughness: NORDIC_ROUGHNESS.matte })
-        : frameMaterial;
+        : solidLeafMaterial;
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, isGlazed ? 0.015 : 0.045, 0,
       baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2, leafMaterial);
   } else {

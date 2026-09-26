@@ -35,9 +35,10 @@ ELEMENT_KEYS = categories_where(finish_group="element") | frozenset({
 # Accessory and trim products: the registry's ``accessory`` rows plus part keys that are not
 # categories. ``corner_trim``; exterior window casing (resolve/geometry_openings.py), whose
 # colour is authored in both palettes; and a sectional overhead door's panel, split from its
-# frame because it is a factory-finished product in its own colour.
+# frame because it is a factory-finished product in its own colour; and an interior door's
+# painted leaf.
 ACCESSORY_KEYS = categories_where(finish_group="accessory") | frozenset({
-    "corner_trim", "window_trim", "overhead_door",
+    "corner_trim", "window_trim", "overhead_door", "door_leaf",
 })
 
 # Material families, inferred from a material ref by `emit/draw/palette.family_of` (mirrored

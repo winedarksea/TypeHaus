@@ -122,6 +122,10 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # dimmed, because a flat panel this size takes far more of the viewer's ambient than a
     # 1 1/4" casing face does. Mirrored into ui/src/three via the vocabulary manifest.
     "overhead_door": (0.227, 0.239, 0.251, 1.0),
+    # An interior door's solid leaf: white enamel. A cool white, set apart from the warm
+    # gypsum (0xefeae2) so the leaf does not vanish into its wall. Mirrored into
+    # ui/src/three via the vocabulary manifest.
+    "door_leaf": (0.973, 0.976, 0.980, 1.0),
     # accessories (→ resolve/accessories.py)
     "railing": (0.80, 0.81, 0.83, 1.0),   # aluminum guard — posts + rails, the frame
     # Guard infill, split from the frame because the frame's tone and metalness are wrong for
