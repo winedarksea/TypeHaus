@@ -43,13 +43,15 @@ def front_zone(width: Length, depth: Length, reach: Length, purpose: str,
 
 
 def side_zone(width: Length, depth: Length, reach: Length, purpose: str,
-              sign: int = 1, *, head_inset: Length = m(0),
+              sign: int = 1, *, head_inset: Length | None = None,
               occupant_types: tuple[str, ...] = ()) -> ClearanceZone:
     """The band alongside the object — bed side access, appliance service space.
 
     ``head_inset`` leaves room for furniture near the back (+y) end while retaining an
     access band from the front. ``occupant_types`` names what the band exists to hold.
     """
+    if head_inset is None:
+        head_inset = m(0)
     edge = sign * width.meters / 2
     far = edge + sign * reach.meters
     half_depth = depth.meters / 2

@@ -74,9 +74,9 @@ from typehaus.emit.gltf.walls import (
 from typehaus.emit.trade_rules import RECORD_FAMILY_TRADES, assembly_trades, solid_trades
 from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry import light_run_band_shells
-from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.resolve.geometry_build import wall_trades
 from typehaus.resolve.geometry_ir import GBox
+from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.sweep import sweep_legs

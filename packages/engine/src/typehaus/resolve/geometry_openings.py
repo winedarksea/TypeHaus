@@ -47,8 +47,8 @@ _FRAME_KEY = "opening_frame"
 _GLASS_KEY = "glass"
 # A sectional overhead door's panel. The leaf of every other door takes _DOOR_LEAF_KEY
 # (interior white paint) or the clad wall's charcoal frame tone; a garage door is neither.
-# It is a painted steel product with its own factory colour, and at 16' wide it is one of the largest single
-# surfaces on the elevation — carrying the trim coil's near-black made it read matte black.
+# It is a painted steel product with its own factory colour. At 16' wide it is one of the
+# largest surfaces on the elevation; the trim coil's near-black made it read matte black.
 # The colour is authored in emit/gltf/palette.py and reaches the viewer through the
 # generated vocabulary manifest, so a recolour stays a palette-only edit.
 _OVERHEAD_KEY = "overhead_door"

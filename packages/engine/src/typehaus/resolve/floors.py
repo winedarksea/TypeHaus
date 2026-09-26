@@ -22,8 +22,8 @@ from typehaus.resolve.floor_openings import (
 )
 from typehaus.resolve.floor_tilt import joist_lift, twisted
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.opening_lining import lining_solids
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
+from typehaus.resolve.opening_lining import lining_solids
 from typehaus.resolve.through_deck import through_deck_cuts, through_deck_walls
 
 _DEFAULT_SPACING_M = inch(16).meters

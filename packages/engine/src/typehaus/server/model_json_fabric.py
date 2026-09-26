@@ -18,10 +18,10 @@ from typehaus.emit.trade_rules import (
     solid_trades,
 )
 from typehaus.model.floors import FloorOpening, FloorSystem
-from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.model.spatial import Stair
 from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry_build import wall_trades
+from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json_plants import plants_json

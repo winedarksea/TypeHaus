@@ -163,4 +163,6 @@ ROWS: tuple[C, ...] = (
       collision=_HARD),
     # Drawn by elevation_project's own part split (glass / door / sash), not by family.
     C("opening", non_solid=True),
+    # Window stools have their own millwork takeoff and IFC emitter.
+    C("window_stool", non_solid=True),
 )
