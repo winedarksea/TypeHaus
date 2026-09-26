@@ -7,6 +7,7 @@ which chairs belong to which table.
 
 from __future__ import annotations
 
+from typehaus.library.placeables.furniture import NIGHTSTAND, QUEEN_BED, WARDROBE_48
 from typehaus.model import (
     Building,
     ClearancePolicy,
@@ -21,6 +22,7 @@ from typehaus.model import (
     Project,
     Site,
     Storey,
+    inch,
     m,
     pt,
 )
@@ -150,6 +152,34 @@ def test_every_clearance_zone_is_compared_not_just_the_first() -> None:
     _, findings = resolve(plan)
 
     assert _conflicts(findings) == [("BED", "BOX")]
+
+
+def test_bed_allows_head_end_furniture_but_reports_blocked_side_access() -> None:
+    """The usable side lane remains guarded after leaving room beside the headboard."""
+    wardrobe_x = -(QUEEN_BED.footprint[0].meters / 2
+                   + WARDROBE_48.footprint[0].meters / 2 + inch(2).meters)
+    nightstand_x = (QUEEN_BED.footprint[0].meters / 2
+                    + NIGHTSTAND.footprint[0].meters / 2 + inch(2).meters)
+    for wardrobe_y, expected in ((inch(30), []), (m(0), [("BED", "WARDROBE")])):
+        plan = PlanModel(
+            project=Project(name="test", project_uuid="00000000-0000-0000-0000-000000000044",
+                            building=Building(name="test"),
+                            site=Site(lat=0, lon=0, elevation=m(0))),
+            storeys=(Storey(tag="main", elevation=m(0), default_ceiling_height=m(3)),),
+            library=Library(furniture_types=(QUEEN_BED, WARDROBE_48, NIGHTSTAND)),
+            elements={"main": (
+                Furniture(uid="bed-1", tag="BED", type_ref=QUEEN_BED.tag,
+                          position=pt(m(0), m(0))),
+                Furniture(uid="wardrobe-1", tag="WARDROBE", type_ref=WARDROBE_48.tag,
+                          position=pt(m(wardrobe_x), wardrobe_y)),
+                Furniture(uid="nightstand-1", tag="NIGHTSTAND", type_ref=NIGHTSTAND.tag,
+                          position=pt(m(nightstand_x), inch(30))),
+            )},
+        )
+        model, findings = resolve(plan)
+        assert _conflicts(findings) == expected
+        groups = {item.tag: item.placement_group for item in model.canvas_objects}
+        assert groups == {"BED": "BED", "WARDROBE": None, "NIGHTSTAND": "BED"}
 
 
 def test_a_pendant_over_the_table_it_lights_is_not_in_the_table_s_zone() -> None:

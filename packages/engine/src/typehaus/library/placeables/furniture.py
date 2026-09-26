@@ -82,18 +82,23 @@ TV_98 = FurnitureType(
 _BED_HEIGHT = ft(3, 4)
 
 
-#: A bedside table is what a bed's side access is FOR, so it joins the bed's group instead
-#: of reporting against it — the dining-chair rule applied to the other universal pairing.
-#: The FOOT zone deliberately does not name it: a nightstand at the foot of a bed is not an
-#: arrangement, it is something in the way.
+#: A bedside table joins the bed's group throughout the side, including the head-end
+#: allowance. The FOOT zone does not name it: a nightstand at the foot is in the way.
 NIGHTSTAND_TAG = "FURN-NIGHTSTAND-24"
+
+# Side access is needed where someone enters the bed, not across the full length beside the
+# headboard. A 30" head-end allowance leaves room for a nightstand or adjacent storage while
+# keeping at least 49" of side access on even the shortest bed in this catalog.
+_BED_HEAD_SIDE_INSET = ft(2, 6)
 
 
 def _bed_clearances(width, depth):
-    """Compact side access both sides plus foot access — how a bed is actually used."""
+    """Side access from the foot toward the head, plus full-width foot access."""
     return (side_zone(width, depth, ft(1, 6), "bed side access", sign=1,
+                      head_inset=_BED_HEAD_SIDE_INSET,
                       occupant_types=(NIGHTSTAND_TAG,)),
             side_zone(width, depth, ft(1, 6), "bed side access", sign=-1,
+                      head_inset=_BED_HEAD_SIDE_INSET,
                       occupant_types=(NIGHTSTAND_TAG,)),
             front_zone(width, depth, ft(1, 6), "bed foot access"))
 

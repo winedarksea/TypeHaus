@@ -17,11 +17,14 @@ PLANNING_SOURCE = "planning standard"
 
 
 def _zone(points, purpose: str, source: str = PLANNING_SOURCE,
-          occupant_types: tuple[str, ...] = ()) -> ClearanceZone:
+          occupant_types: tuple[str, ...] = (), occupant_points=None) -> ClearanceZone:
     return ClearanceZone(
         footprint=Footprint2D(points=tuple(pt(m(x), m(y)) for x, y in points)),
         purpose=purpose, policy=ClearancePolicy.RECOMMENDED, source=source,
         occupant_types=occupant_types,
+        occupant_footprint=(Footprint2D(points=tuple(pt(m(x), m(y))
+                                                for x, y in occupant_points))
+                            if occupant_points is not None else None),
     )
 
 
@@ -40,19 +43,23 @@ def front_zone(width: Length, depth: Length, reach: Length, purpose: str,
 
 
 def side_zone(width: Length, depth: Length, reach: Length, purpose: str,
-              sign: int = 1, *, occupant_types: tuple[str, ...] = ()) -> ClearanceZone:
+              sign: int = 1, *, head_inset: Length = m(0),
+              occupant_types: tuple[str, ...] = ()) -> ClearanceZone:
     """The band alongside the object — bed side access, appliance service space.
 
-    ``occupant_types`` names what the band exists to hold, the same way ``front_zone`` and
-    ``surround_zone`` do: a nightstand in a bed's side access is the arrangement working,
-    not an encroachment on it.
+    ``head_inset`` leaves room for furniture near the back (+y) end while retaining an
+    access band from the front. ``occupant_types`` names what the band exists to hold.
     """
     edge = sign * width.meters / 2
     far = edge + sign * reach.meters
     half_depth = depth.meters / 2
+    full_side = ((min(edge, far), -half_depth), (max(edge, far), -half_depth),
+                 (max(edge, far), half_depth), (min(edge, far), half_depth))
     return _zone(((min(edge, far), -half_depth), (max(edge, far), -half_depth),
-                  (max(edge, far), half_depth), (min(edge, far), half_depth)), purpose,
-                 occupant_types=occupant_types)
+                  (max(edge, far), half_depth - head_inset.meters),
+                  (min(edge, far), half_depth - head_inset.meters)), purpose,
+                 occupant_types=occupant_types,
+                 occupant_points=full_side if head_inset.meters and occupant_types else None)
 
 
 def surround_zone(width: Length, depth: Length, reach: Length, purpose: str,

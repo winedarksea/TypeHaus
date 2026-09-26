@@ -132,7 +132,13 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             ))
             anchor_zones.extend(
                 PlacementGroupAnchorZone(anchor_uid=item.uid, anchor_tag=item.tag,
-                                         storey=storey.tag, zone_polygon=ring,
+                                         storey=storey.tag,
+                                         zone_polygon=(
+                                             _transformed_polygon(
+                                                 [point.xy_m for point in
+                                                  zone.occupant_footprint.points],
+                                                 center, rotation)
+                                             if zone.occupant_footprint is not None else ring),
                                          occupant_types=frozenset(zone.occupant_types))
                 for zone, ring in zones if zone.occupant_types and not _is_required(zone))
     model.canvas_objects.extend(assign_placement_groups(resolved_objects, anchor_zones))

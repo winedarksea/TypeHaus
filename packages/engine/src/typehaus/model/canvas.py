@@ -202,9 +202,14 @@ def _polygon(footprint: Any) -> list[list[float]] | None:
 
 
 def _clearance(zone: Any) -> dict[str, Any]:
-    return {"footprint_m": _polygon(zone.footprint), "purpose": zone.purpose,
-            "policy": zone.policy.value, "source": zone.source,
-            "code_profile": zone.code_profile}
+    record = {"footprint_m": _polygon(zone.footprint), "purpose": zone.purpose,
+              "policy": zone.policy.value, "source": zone.source,
+              "code_profile": zone.code_profile}
+    if zone.occupant_types:
+        record["occupant_types"] = list(zone.occupant_types)
+    if zone.occupant_footprint is not None:
+        record["occupant_footprint_m"] = _polygon(zone.occupant_footprint)
+    return record
 
 
 def _suspension(item: Any, product: Any) -> dict[str, Any] | None:

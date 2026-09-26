@@ -1214,13 +1214,9 @@ GARAGE_PLACEABLES = [
 # x=30' clears the RC1/RC2 outlets; beds sit 9'-7" apart (not the 9'-0" room pitch) so each
 # foot zone stops short of the headboard below it — heads float 5"-6" off the north wall.
 SECOND_PLACEABLES = [
-    # BED1 does not share the other two's station. It sits 14 1/8" further south (head still
-    # against the east wall, foot still west) so its FOOT zone drops clear of the wardrobe on
-    # the north wall, and its west face is then held on that wardrobe's east end at
-    # x 28'-7 11/16" so the NORTH side-access zone clears it too. Both zones are 18" and the
-    # room is only 8'-6 3/4" deep, so the pair cannot both be satisfied at the other beds'
-    # y — which is why this one is authored apart from them. The south side zone runs into
-    # the south wall by design: the bed is pushed to that wall and walked on the north side.
+    # BED1 sits farther south than the other beds. Its foot zone clears the wardrobe on the
+    # north wall, while the wardrobe occupies the allowed head-end part of the west side.
+    # The remaining 18" west-side access band is open from the foot toward the head.
     Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-QUEEN-BED", room="RM-S-BED1",
               position=pt(m(9.92317), m(4.24498)), rotation=deg(0)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
@@ -1288,8 +1284,8 @@ SECOND_PLACEABLES = [
     # stands in since 2026-09-06, when the case came off the north wall to make room for
     # WIN-S-HALL-N's move west and swapped slots with FURN-S-DESK3 above. BED1 did not:
     # its door swing (y 13'-11"..16'-5") left only 3'-5 3/4" of clear wall, too short for the
-    # case. Fixed by moving both the bed (7" east, head now 1/2" off the east wall) and the
-    # case (15" east, 2" north) — clears the swing, foot zone and side zones outright.
+    # case. The case's eastward placement clears the swing, and the bed's head-end side
+    # allowance leaves the usable side and foot access open.
     #
     # BED1's and BED2's wardrobes sit over ED-S-BED1-RC1 / ED-S-BED2-RC1 (north-wall general
     # receptacles, 16"-18" AFF) — not a code problem, but worth knowing before boxes are set.

@@ -49,6 +49,9 @@ class ClearanceZone(HausModel):
     # meaningful on a RECOMMENDED zone — a code-required clearance is never "for" whatever
     # happens to be standing in it.
     occupant_types: tuple[str, ...] = ()
+    # The group can reach beyond the clear floor zone. A nightstand at the head of a bed
+    # remains its companion even when side access starts farther toward the foot.
+    occupant_footprint: Footprint2D | None = None
 
 
 class PortCertainty(str, Enum):

@@ -138,7 +138,10 @@ def _clearances(value: object) -> tuple[ClearanceZone, ...]:
         zones.append(ClearanceZone(footprint=footprint, purpose=str(record["purpose"]),
                                    policy=ClearancePolicy(record.get("policy", "recommended")),
                                    source=record.get("source"),
-                                   code_profile=record.get("code_profile")))
+                                   code_profile=record.get("code_profile"),
+                                   occupant_types=tuple(record.get("occupant_types", ())),
+                                   occupant_footprint=_footprint(
+                                       record.get("occupant_footprint_m"))))
     return tuple(zones)
 
 
