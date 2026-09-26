@@ -19,6 +19,7 @@ import {
   applyDeckBoardUv, createDeckBoardMaterial, createStandingSeamMaterial,
   isAluminumDeckBoard, isStandingSeam, metalPanelProfileForFinish, SEAM_PROFILE,
 } from "../materials";
+import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
 import { buildMembers, isRoofFramingMember, memberColor, type SkinLine } from "../members";
 import {
   applyPlankPlaneUv, applyPlankWallUv, createPlankMaterial, isWoodPlank, planLongAxis,
@@ -270,19 +271,25 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
   const firstChildIndex = parent.children.length;
   const surface = floorSurface(finish);
   // A plank floor is boards, not a sheet. Oak strip and (later) LVP take the board treatment;
-  // carpet, tile and sheet vinyl stay a flat fill, which is what they are. The boards run
-  // along the room's long axis — a floor is laid the long way.
-  const plankStyle = isWoodPlank(finish)
-    ? plankStyleFor(finish, authoredAppearance(finish, materials)?.finish) : null;
+  // a veined-marble print takes one world-fixed tile, so the pattern runs on unbroken from
+  // room to room as one sheet would. Carpet and tile stay a flat fill. Boards run along the
+  // room's long axis — a floor is laid the long way.
+  const declared = authoredAppearance(finish, materials)?.finish;
+  const plankStyle = isWoodPlank(finish) ? plankStyleFor(finish, declared) : null;
+  const marble = !plankStyle && isVeinedMarble(declared);
   if (plankStyle) {
     applyPlankPlaneUv(geometry, center, planLongAxis(outline), plankTileSizeM(plankStyle));
+  } else if (marble) {
+    applyPlankPlaneUv(geometry, center, [1, 0], [MARBLE_TILE_M, MARBLE_TILE_M]);
   }
+  const roughness = mode === "nordic" ? surface.roughness : 1;
   const mesh = new THREE.Mesh(geometry,
     plankStyle
-      ? createPlankMaterial(mode, plankStyle,
-        materialColor(finish, palette, materials), mode === "nordic" ? surface.roughness : 1)
+      ? createPlankMaterial(mode, plankStyle, materialColor(finish, palette, materials), roughness)
+      : marble
+      ? createMarbleMaterial(mode, materialColor(finish, palette, materials), roughness)
       : standardMaterial(new THREE.Color(materialColor(finish, palette, materials)), mode, {
-        roughness: mode === "nordic" ? surface.roughness : 1,
+        roughness,
         metalness: mode === "nordic" ? surface.metalness : 0,
       }));
   // Receives but does not cast: a 20 mm finish laid on the deck has nothing to cast onto.

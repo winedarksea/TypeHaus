@@ -58,6 +58,8 @@ export const FLOOR_FINISH_SURFACE: Record<string, FloorSurface> = {
   // (`polished-concrete` is deliberately still absent and falls to the default — a polish
   // is its own entry and nobody has measured one.)
   "coated-concrete": { roughness: 0.6, metalness: 0 },
+  // Luxury sheet's urethane wear layer: low gloss, a shade under LVP's sheen.
+  "vinyl-sheet": { roughness: 0.5, metalness: 0 },
 };
 
 /** The lighting response for a floor finish; never undefined. */

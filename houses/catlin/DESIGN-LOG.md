@@ -3916,3 +3916,17 @@ surface that reaches the court, so the water goes there.
 - **`RM-B-ESS` joins `EQ-B-HP2-GYM`'s zone** for its load only. It gets no register, and a
   supply boot into the sealed Type X closet is still wrong. Every conditioned room is now in a
   zone (`notes/heat_pump_turndown.md` addendum).
+
+## 2026-09-25 — Sheet vinyl is a Calacatta luxury sheet
+
+- **`vinyl-sheet` is re-specified in place** to Tarkett First Class, Monaco Calacatta
+  (TK1387071) or equal: 120 mil, 16 mil wear layer, 12' rolls, glue-down. It replaces the 2.0 mm
+  heat-welded commercial sheet. All four rooms keep the tag: RM-S-PLANT, RM-B-BATH,
+  RM-A-STUDIO and RM-A-STUBATH. The finished floor is now 0.12" above the deck, not 0.0787".
+  **Declined:** Mannington Platinum Carrara. It is a 12" hexagon look, not a continuous slab.
+- **The viewer draws it** as a warm white (`#f0ede7`) with a procedural `veined-marble`
+  print. The print is one world-fixed 12' tile, so the pattern runs unbroken from room to room.
+- **Plant room:** at 17'-0" x 8'-1" clear, one sheet covers it with no seam, so heat-welding
+  is no longer needed. The 6" flash cove stays the waterproofing, pending confirmation that
+  First Class may be coved (`plans/TODO.md`). The `prices.toml` row was set for the old
+  product and needs re-pricing.

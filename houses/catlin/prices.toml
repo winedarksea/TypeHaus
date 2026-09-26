@@ -3387,6 +3387,9 @@
 # is defensible" clause above is retired with that — 257 sf split three ways is a
 # mobilisation-dominated scope again, and the resilient crew is walking a stair between each
 # one. Expect a LUMP, and read the $/SF below as a floor on it, not as the price.
+# ** 2026-09-25: the product changed; these figures did not. ** `vinyl-sheet` is now Tarkett
+# First Class, Monaco Calacatta (120 mil residential luxury sheet, glue-down), not the
+# heat-welded commercial sheet the range above was set for. Re-price before relying on it.
 "vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 655 SF — RM-A-STUDIO's ~357 joined it 2026-09-09
 # ** TOMBSTONE: `walnut-floor`, rated and retired 2026-09-05. ** For a few hours RM-S-SUITE
 # and RM-S-CLOSET were 181.7 SF net of the family's own site-milled 4/4 walnut T&G, rated

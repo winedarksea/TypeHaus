@@ -973,8 +973,8 @@ ROOMS = [
     # is >= +10 F and reset down to about 55% at -15 F. The model carries the design
     # figure, which is the one the assemblies have to survive.
     #
-    # `floor_finish` leaves "tile" for heat-welded sheet vinyl with a 6" integral flash
-    # cove that laps up the wall and dies behind the wall membrane, so floor and wall are
+    # `floor_finish` is one seamless 12' sheet of luxury vinyl (the room is 8'-1" wide),
+    # flash-coved 6" up the wall and dying behind the wall membrane, so floor and wall are
     # one tray with no base joint. Nothing impermeable goes under it — a second Class I
     # layer beneath sheet vinyl sandwiches the plywood subfloor with no drying path either
     # way. The cove IS the waterproofing.

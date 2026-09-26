@@ -33,14 +33,14 @@ source:
 - Room design condition: 75 F at 70% RH. Dew point 64.4 F.
 - Liner, inside out: 1/2" PVC panel, 3/4" furring, membrane. Walls and ceiling.
 - The membrane is the air and vapour barrier. Continuous on all six sides.
-- Floor: heat-welded sheet vinyl, 6" integral flash cove, sloped to a drain.
+- Floor: one seamless 12' sheet of luxury vinyl, flash-coved 6" up the wall, sloped to a drain.
 - Glazing: fixed units only, U-0.14, warm-edge spacer, thermally broken frame.
 - No suspended ceiling. No roofing membrane under the vinyl.
 - Ventilation: 25 cfm in, 25 cfm out, both dampered. Extract high, far end.
 - Damp location throughout; wet location wherever misted or hosed.
 
 ### Keyed
-- [K1] Lap the floor cove up the wall and terminate it behind the wall membrane.
+- [K1] Flash-cove the sheet 6" up the wall on a cove stick and terminate it behind the wall membrane.
 - [K2 @ host#layer:humid-membrane:out] Membrane continuous from wall to ceiling at the perimeter; seal each penetration.
 - [K3] Drained sill pan under each unit: sloped, flashed into the wall membrane, draining to the room and never into framing.
 - [K4 @ host#layer:liner-furring:out] Keep the 3/4" furring gap open behind the panel; it is the drying path.
@@ -52,7 +52,7 @@ source:
 - If this wall is ever built with board insulation, use glass-faced or unfaced polyiso. Never foil-faced.
 
 ### Spec 09 65 16
-- Heat-weld each vinyl seam. The cove is the waterproofing; add no second impermeable layer under it.
+- Lay one sheet across the room's 8'-1" width: no seam. The cove is the waterproofing; add no second impermeable layer under it.
 
 ### Spec 23 00 00
 - Hold the room neutral to slightly negative, -0.05 to -0.15 in. w.g. against adjacent spaces.
@@ -213,11 +213,17 @@ as they grade the walls.
 
 ### Floor
 
-Heat-welded sheet vinyl (`vinyl-sheet`, new) with a **6" integral flash cove** that laps up
-the wall and terminates *behind* the wall membrane, so floor and wall become one tray. This
-is the single highest-value detail in the room: it eliminates the base joint, the most
-failure-prone interface in any wet room. Slope to a floor drain — the room should be
-hoseable.
+Luxury sheet vinyl (`vinyl-sheet`: Tarkett First Class, Monaco Calacatta, 120 mil, 12'
+rolls), **flash-coved 6"** up the wall and terminated *behind* the wall membrane, so floor
+and wall become one tray. This is the single highest-value detail in the room: it eliminates
+the base joint, the most failure-prone interface in any wet room. Slope to a floor drain —
+the room should be hoseable.
+
+**No seam, so nothing to weld (2026-09-25).** The room is 17'-0" x 8'-1" clear, so one
+sheet laid across the 8'-1" width covers it whole. That is what retired the earlier
+homogeneous commercial sheet and its heat-welded seams. The cove is still the detail that
+matters: confirm that the First Class install guide permits flash coving on a cove stick;
+if it does not, the fallback is a sealed perimeter under a cove base.
 
 **Do not put roofing membrane under the vinyl.** Sheet vinyl is already effectively Class I;
 a second impermeable layer beneath it creates a classic moisture sandwich around the plywood
@@ -400,7 +406,7 @@ misted or hosed.
      `FS-S-WEST`'s trusses for a fixture the need does not want. It would also have put a
      trap in a room nobody uses in February — the dry-trap problem `TRAP_PRIMER` exists for.
      Deleting the requirement deletes the drain line, the primer and the slope in
-     `FS-SECOND` that this item used to ask for. **The vinyl's 6" integral flash cove stays**
+     `FS-SECOND` that this item used to ask for. **The vinyl's 6" flash cove stays**
      — it is the waterproofing whether or not anything drains, and with no drain it is the
      *only* thing between a spill and the plywood.
    - **Backflow is already bought, and irrigation is exactly why it matters.** Tubing lying

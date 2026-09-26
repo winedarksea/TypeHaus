@@ -431,25 +431,23 @@ MATERIALS: tuple[Material, ...] = (
         'flooring is sold in for a home gym; 3/8" and 1/2" rolls exist for '
         "free-weight platforms and a house laying one has to say so",
     ),
-    # Homogeneous sheet vinyl with heat-welded seams — the wet-room floor. Ordered with a
-    # 6" integral flash cove where it laps up the wall, which is what makes floor and wall
-    # one tray with no base joint; the cove is the waterproofing, so nothing impermeable
-    # goes *under* the sheet (a second Class I layer there sandwiches the subfloor with no
-    # drying path either way). Like the PVC panel above, no maker in this class publishes an
-    # ASTM E96 number — and unlike the panel, nothing needs one, because a floor finish is
-    # never a layer in a rated assembly.
+    # Residential luxury sheet vinyl on 12' rolls — the wet-room floor. A room no wider
+    # than the roll takes one seamless sheet; the floor–wall joint is turned up as a flash
+    # cove where the maker allows it (houses/catlin/notes/plant_room.md). Nothing
+    # impermeable goes *under* the sheet (a second Class I layer there sandwiches the
+    # subfloor with no drying path either way). No ASTM E96 number is published, and none is
+    # needed: a floor finish is never a layer in a rated assembly.
     Material(
         tag="vinyl-sheet",
-        name="Heat-welded sheet vinyl, integral flash cove",
+        name="Luxury sheet vinyl, 12' roll, glue-down",
         hatch="membrane",
-        color="#8a9a86",
-        finish_thickness_in=0.0787,
+        color="#f0ede7",
+        finish="veined-marble",
+        finish_thickness_in=0.120,
         source="finish covering, not an assembly layer; thermal/vapour fields unset. "
-        "`finish_thickness_in` is 2.0 mm, the homogeneous commercial sheet "
-        "gauge this detail is built on — the whole sheet is wear layer, which "
-        "is what lets it be welded and coved. "
-        'Heat-welded seams and a 6" integral flash cove lapped behind the wall '
-        "membrane — see houses/catlin/notes/plant_room.md for why the cove "
-        "replaces a separate waterproofing layer",
+        "Tarkett Home First Class, Monaco Calacatta (TK1387071) or equal: 120 mil "
+        "total, 16 mil urethane wear layer, 12' wide rolls, glue-down or loose-lay. "
+        "A continuous white Calacatta marble print with no tile or grout lines, "
+        "which the viewer draws as the `veined-marble` recipe",
     ),
 )

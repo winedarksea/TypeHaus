@@ -10,6 +10,11 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   retypes through a centre-holding macro. Re-affirmed deferred 2026-08-07.
 ## Remaining Work
 
+- **Confirm First Class sheet vinyl can be flash-coved** (Tarkett install guide). RM-S-PLANT's
+  waterproofing is a 6" cove behind the wall membrane (`houses/catlin/notes/plant_room.md`).
+  If coving is not allowed, fall back to a sealed perimeter under a cove base. Re-price
+  the `vinyl-sheet` row in `prices.toml` for the new product.
+
 - **~220 sf of gypsum is still billed through the joist band** on every storey-line partition.
   `resolve/partition_top.py` deliberately moves only the FRAMING top: cutting the body at the
   joist soffit as well costs four FAILs (`code.R312_1_1_stair_open_side` on `ST-S2A`,

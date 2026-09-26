@@ -29,6 +29,8 @@ const MATERIALS: MaterialAppearance[] = [
   // Sealed concrete is a *coating*: a sealer on the slab, no thickness of its own.
   { tag: "sealed-concrete", color: "#b3b1ad", coating: true },
   { tag: "rubber", color: "#54585c" },
+  // A printed marble sheet: the texture tints, so the authored colour still round-trips.
+  { tag: "vinyl-sheet", color: "#f0ede7", finish: "veined-marble" },
 ];
 
 // The coverings — everything the builder is expected to draw a plane for.

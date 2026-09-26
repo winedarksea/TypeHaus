@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
 import { familyOf } from "../nordic/palette";
+import { tiledFbm } from "./valueNoise";
 
 /**
  * Standing-seam metal — the finish that actually reads as a building, not a massing study.
@@ -743,37 +744,13 @@ function buildWashMaps(): { colorMap: THREE.Texture; roughnessMap: THREE.Texture
   cx.fillRect(0, 0, size, size);
   rx.fillStyle = "#f0f0f0"; // dead matte everywhere, mottled a little darker where thicker
   rx.fillRect(0, 0, size, size);
-  // Deterministic value noise at three octaves — no Math.random, so the tile is reproducible
-  // across reloads exactly as the masonry jitter is.
-  const hash = (x: number, y: number): number => {
-    const h = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
-    return h - Math.floor(h);
-  };
+  // Deterministic tileable value noise at three octaves (valueNoise.ts).
   const octaves: Array<[number, number]> = [[4, 0.055], [11, 0.03], [29, 0.016]];
   const image = cx.getImageData(0, 0, size, size);
   const rough = rx.getImageData(0, 0, size, size);
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
-      let value = 0;
-      for (const [frequency, amplitude] of octaves) {
-        // Bilinear value noise on a wrapping lattice, so the tile is seamless.
-        const fx = (x / size) * frequency;
-        const fy = (y / size) * frequency;
-        const x0 = Math.floor(fx);
-        const y0 = Math.floor(fy);
-        const tx = fx - x0;
-        const ty = fy - y0;
-        const sx = tx * tx * (3 - 2 * tx);
-        const sy = ty * ty * (3 - 2 * ty);
-        const wrap = (n: number) => ((n % frequency) + frequency) % frequency;
-        const n00 = hash(wrap(x0), wrap(y0));
-        const n10 = hash(wrap(x0 + 1), wrap(y0));
-        const n01 = hash(wrap(x0), wrap(y0 + 1));
-        const n11 = hash(wrap(x0 + 1), wrap(y0 + 1));
-        const top = n00 + (n10 - n00) * sx;
-        const bottom = n01 + (n11 - n01) * sx;
-        value += (top + (bottom - top) * sy - 0.5) * amplitude;
-      }
+      const value = tiledFbm(x / size, y / size, octaves);
       const index = (y * size + x) * 4;
       // Lighten AND darken around the authored tone: a wash is thin in places and pooled in
       // others, and only modulating one way reads as dirt rather than as coverage.
