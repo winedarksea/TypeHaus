@@ -94,9 +94,8 @@ _TRUSS_KINDS = frozenset({"roof_truss"})
 # band mitres at an outside corner like every other skin layer, and at a corner where two
 # such bands meet they can share a fraction of a square inch of plan — an air gap
 # overlapping an air gap, which is not a bug about wood.
-# "ridge_cap" is the vented ridge cap riding the roofing at the peak; "corner_trim" is the
-# formed angle capping a wrapped standing-seam edge; "gutter" is the three-band hung
-# channel outboard of the fascia — all pure trim.
+# "ridge_cap", "corner_trim", "drip_edge" (the formed piece over the deck edge) and
+# "gutter" (the three-band hung channel) are all pure trim.
 # "strapping" is the member category ``resolve/framing/furring.py`` actually mints for a
 # FURRING layer's batten grid ("furring" beside it is the layer *function*, and was the
 # category before that module existed). It belongs here for the reason the paragraph above
@@ -116,7 +115,8 @@ _TRUSS_KINDS = frozenset({"roof_truss"})
 # that already clears every stud and plate below — so a contact there reports that datum, not
 # the elevation-arithmetic bug this check exists to catch.
 _ENVELOPE_SKIN_KINDS = values_where(interference_skin=True) | frozenset({
-    "strapping", "fascia", "soffit", "gutter", "ridge_cap", "corner_trim"}) | TRUSS_CATEGORIES
+    "strapping", "fascia", "soffit", "gutter", "ridge_cap", "corner_trim", "drip_edge"}) \
+    | TRUSS_CATEGORIES
 # Rake framing (resolve/framing/roof_gable.py): outlookers run *over* the dropped gable
 # truss and land on the barge rafter. Interpenetration there is the joint the drop creates.
 _RAKE_KINDS = frozenset({"outlooker", "barge_rafter"})

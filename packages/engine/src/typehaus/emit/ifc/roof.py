@@ -28,6 +28,7 @@ from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_
 from typehaus.resolve.geometry_ir import GSweep
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.geometry_roofs import roof_parts
+from typehaus.resolve.geometry_slice import sweep_mesh
 from typehaus.resolve.model import FramedMember, ResolvedRoof
 
 # The no-layers-above-structure fallback skin lives once, in `resolve/geometry_roofs.py`.
@@ -60,7 +61,7 @@ _COVERING_PREDEFINED_TYPE = {
     "fascia": "MOLDING", "soffit": "CEILING", "cladding": "CLADDING",
     "sheathing": "CLADDING", "furring": "CLADDING", "airgap": "CLADDING",
     "membrane": "MEMBRANE", "insulation": "INSULATION",
-    "ridge_cap": "MOLDING", "corner_trim": "MOLDING",
+    "ridge_cap": "MOLDING", "corner_trim": "MOLDING", "drip_edge": "MOLDING",
     # The Larsen/Swinburne plywood corner box closes a cladding void, not a load path —
     # a covering, like the sheathing and cladding it sits beside, rather than an IfcMember.
     "truss_corner_cap": "CLADDING",
@@ -186,10 +187,10 @@ def member_representation(f: Any, body: Any, member: FramedMember) -> Any | None
     bands grow from the heel to the ridge — and gets a faceted solid instead of a section
     stretched to a wrong constant depth.
     """
-    if member.seat is not None:
-        seated = _seated_representation(f, body, member)
-        if seated is not None:
-            return seated
+    if member.seat is not None or member.section_ring is not None:
+        swept = _swept_representation(f, body, member)
+        if swept is not None:
+            return swept
     section = cross_section(member.profile)
     height = max(member.z1_m - member.z0_m, _MINIMUM_EXTENT_M)
     # A horizontal member's swept section is `height` tall, so the dimension across its run is
@@ -227,35 +228,60 @@ def member_representation(f: Any, body: Any, member: FramedMember) -> Any | None
     )
 
 
-def _seated_representation(f: Any, body: Any, member: FramedMember) -> Any | None:
-    """A birdsmouthed rafter as its true notched profile, swept across its own width.
+def _swept_representation(f: Any, body: Any, member: FramedMember) -> Any | None:
+    """A member whose solid is a ``GSweep`` — a birdsmouthed rafter, a formed drip edge.
 
-    The IR already holds the shape (``geometry_members.member_solid`` returns a ``GSweep``
-    for a member with a ``SeatCut``); this maps it onto the entity IFC has for exactly that —
-    ``IfcExtrudedAreaSolid`` over an ``IfcArbitraryClosedProfileDef``. The notch is *more*
-    idiomatic in IFC than the box it replaces, not less.
+    The IR already holds the shape (``geometry_members.member_solid``); this maps it onto
+    ``IfcExtrudedAreaSolid`` over an ``IfcArbitraryClosedProfileDef`` when the extrusion is
+    the profile's own normal. An oblique one (a formed piece climbing a rake) is faceted
+    instead, since importers read an oblique extrusion inconsistently.
     """
     solid = member_solid(member)
     if not isinstance(solid, GSweep):
         return None
-    ox, oy, oz = solid.profile[0]
     ex, ey, ez = solid.extrude
     depth = math.sqrt(ex * ex + ey * ey + ez * ez)
     if depth < _MINIMUM_EXTENT_M:
         return None
-    # The profile stands in a vertical plane: its local X runs along the member's plan axis
-    # and its local Y is world z, so the extrusion axis is the profile's own normal.
-    ax, ay, _az = solid.profile[1]
-    run = math.hypot(ax - ox, ay - oy)
-    if run < 1e-9:
+    axis = (ex / depth, ey / depth, ez / depth)
+    normal = _plane_normal(solid.profile)
+    along = 0.0 if normal is None else sum(a * b for a, b in zip(normal, axis, strict=True))
+    if abs(abs(along) - 1.0) > 1e-6:
+        mesh = sweep_mesh(solid)
+        return ll.add_faceted_solids(f, body, [[[mesh.positions[index] for index in tri]
+                                                for tri in mesh.triangles]])
+    ox, oy, oz = solid.profile[0]
+    # Local X is horizontal in the profile's plane (the member's plan axis for a birdsmouth,
+    # the run's normal for a formed section); local Y is Z x X, as IFC places it.
+    hx, hy = solid.profile[1][0] - ox, solid.profile[1][1] - oy
+    if math.hypot(hx, hy) < 1e-9 or abs(hx * axis[0] + hy * axis[1]) > 1e-6:
+        hx, hy = -axis[1], axis[0]
+    length = math.hypot(hx, hy)
+    if length < 1e-9:
         return None
-    ref = ((ax - ox) / run, (ay - oy) / run, 0.0)
-    points = [((x - ox) * ref[0] + (y - oy) * ref[1], z - oz)
+    # Pick X's sign so that Y (= Z x X) points up: the profile then reads right way up.
+    sign = 1.0 if axis[0] * hy - axis[1] * hx >= 0.0 else -1.0
+    ref = (sign * hx / length, sign * hy / length, 0.0)
+    y_axis = (axis[1] * ref[2] - axis[2] * ref[1], axis[2] * ref[0] - axis[0] * ref[2],
+              axis[0] * ref[1] - axis[1] * ref[0])
+    points = [(sum(d * r for d, r in zip((x - ox, y - oy, z - oz), ref, strict=True)),
+               sum(d * r for d, r in zip((x - ox, y - oy, z - oz), y_axis, strict=True)))
               for (x, y, z) in solid.profile]
     return ll.add_swept_profile(
         f, body, profile_points=points, origin_m=(ox, oy, oz),
-        axis=(ex / depth, ey / depth, ez / depth), ref_direction=ref, depth_m=depth,
+        axis=axis, ref_direction=ref, depth_m=depth,
     )
+
+
+def _plane_normal(ring) -> tuple[float, float, float] | None:
+    """Newell's unit normal of a planar ring, or ``None`` when it is degenerate."""
+    nx = ny = nz = 0.0
+    for (x0, y0, z0), (x1, y1, z1) in zip(ring, ring[1:] + ring[:1], strict=True):
+        nx += (y0 - y1) * (z0 + z1)
+        ny += (z0 - z1) * (x0 + x1)
+        nz += (x0 - x1) * (y0 + y1)
+    norm = math.sqrt(nx * nx + ny * ny + nz * nz)
+    return None if norm < 1e-12 else (nx / norm, ny / norm, nz / norm)
 
 
 def _is_tapered(member: FramedMember) -> bool:

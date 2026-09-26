@@ -359,9 +359,9 @@ def test_the_legend_names_the_flashing_it_drew(catlin_model):
     sheet metal at a schematic 0.5" against the real ~0.025", and printing that number would
     put one twenty-fold lie on a sheet of true ones.
     """
-    # The garage eave: the house eave's corner trim replaces the schematic apron.
+    # A foundation detail: eave metal is cut geometry now, and the base flashings are not.
     detail = next(d for d in derive_detail_slices(catlin_model)
-                  if d.key.startswith("wall_roof:GARAGE_ROOF"))
+                  if d.key.startswith("wall_foundation:BASEMENT_12"))
     scene = build_detail(catlin_model, detail)[0]
     assert any(isinstance(n, Hatch) and n.material == "flashing" for n in scene.nodes)
     labels = {t.content for t in scene.nodes if isinstance(t, Text) and t.space == "paper"}

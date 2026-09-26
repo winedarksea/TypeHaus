@@ -4,7 +4,7 @@ import { isMemberUid, locateMember, memberUid, parseMemberUid } from "../model/m
 import { buildMembers } from "./members";
 import { buildRebarMeshes, isStraightBar, tubePath } from "./rebar";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
-import { seatedProfileVertices, TRIANGLES_PER_MEMBER_BOX } from "./memberBox";
+import { sectionRingVertices, seatedProfileVertices, TRIANGLES_PER_MEMBER_BOX } from "./memberBox";
 import {
   buildMemberHighlight, carriesMemberIdentity, memberIndexForTriangle, resolveMemberPickUid,
 } from "./memberPicking";
@@ -123,6 +123,35 @@ function checkSeatedRafterIsNotchedAndPickable() {
   assert(verts && verts.length === 12, "A seated member is a six-point profile, twice");
   const onSeat = verts!.filter(([, y]) => Math.abs(y - 3) < 1e-9);
   assert(onSeat.length === 4, "Two profile corners sit on the plate, on each face");
+}
+
+// A formed drip-edge leg sweeps its own ring (resolve/geometry_members.py::_ring_sweep): the
+// ring at p0 in the run's (left-normal, up) frame, again at p1 risen by the run's rise.
+function checkSectionRingIsSweptAndPickable() {
+  const ring: [number, number][] = [[0.1, 0], [-0.1, 0], [-0.1, 0.02], [0.1, 0.05]];
+  const leg = member({
+    key: "rake-hi-0-drip-edge-face", category: "drip_edge", p0: [0, 0], p1: [0, 3],
+    z0_m: 2, z1_m: 2.05, z0_end_m: 3.5, z1_end_m: 3.55, orient: null, section_ring: ring,
+  });
+  const verts = sectionRingVertices(leg, CENTER);
+  assert(verts && verts.length === 8, "A four-point ring, twice");
+  // The run goes +y, whose left normal is -x, so the ring's +s lands at smaller scene x.
+  const near = verts!.slice(0, 4);
+  assert(near.some(([x, y, z]) => Math.abs(x + 0.1) < 1e-9 && Math.abs(y - 2) < 1e-9
+    && Math.abs(z) < 1e-9), "The ring's +s corner sits on the left normal at z0");
+  const far = verts!.slice(4);
+  assert(far.every(([, , z]) => Math.abs(z + 3) < 1e-9), "The far ring sits at p1");
+  assert(Math.min(...far.map(([, y]) => y)) === 3.5, "…risen by the rake's own rise");
+
+  const group = new THREE.Group();
+  buildMembers(group, [leg], CENTER, "schematic", RESOLVED_NORDIC_PALETTE.light, "RF1");
+  const merged = group.children.find(
+    (child) => child instanceof THREE.Mesh && carriesMemberIdentity(child)) as THREE.Mesh;
+  assert(merged, "A ringed member draws in the merged sweep bucket");
+  const starts = merged.userData.triangleStarts as number[];
+  assert(starts[1] === 12, "Two fan caps of two triangles plus four side quads");
+  assert(resolveMemberPickUid(merged, null, 11) === "RF1::rake-hi-0-drip-edge-face",
+    "Every triangle of the leg picks the leg");
 }
 
 // All three i-joist plies share one instance index per member, so clicking a flange and
@@ -281,6 +310,7 @@ export function runMemberPickingTests() {
   checkMergedBucketResolvesPerBox();
   checkPrefixSumHandlesMixedShapes();
   checkSeatedRafterIsNotchedAndPickable();
+  checkSectionRingIsSweptAndPickable();
   checkIJoistPliesShareOneIdentity();
   checkSkippedMemberDoesNotShiftIdentities();
   checkHighlightOutlineMatchesTheMember();

@@ -37,12 +37,20 @@ TRANSITIONS = (
     # a partition dying into the ceiling plane has no eave at all: no soffit, no fascia, no
     # vent, and none of the three control layers to hand off. It is framing, and it is
     # drawn on S-101.3.
+    # The garage's overhung eave: fascia, vented soffit, formed drip edge and K-gutter, all
+    # derived from its EaveTrim. BEFORE TR-CATLIN-EAVE because matching is first-match. Water
+    # only: the garage wall carries no foam face for an air or thermal claim to hand off.
+    Transition(uid="BKK603N875", tag="TR-CATLIN-GARAGE-EAVE",
+               condition_pattern="wall_roof:GARAGE_ROOF|*",
+               notes="notes/garage_eave_detail.md", overlay="overhang-eave",
+               continuity=(Continuity(control="water", from_face="cdx-ext",
+                                      to_face="membrane-ext"),),
+               star=True),
     Transition(uid="CATR001AAAA", tag="TR-CATLIN-EAVE", condition_pattern="wall_roof:*",
                notes="notes/roof_wall_eave_detail.md", overlay="zero-overhang-eave",
                continuity=AIR_WATER_THERMAL, star=False,
                starred_conditions=(
                    "wall_roof:EXT_2X6|ROOF",
-                   "wall_roof:GARAGE_ROOF|GARAGE_WALL_2X6",
                )),
     # The envelope crossing — concrete to framed wall, where the thermal, air and water
     # layers all have to hand off. Named keys rather than a pattern-wide star, and two of the five: the perimeter

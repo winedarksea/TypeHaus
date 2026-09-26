@@ -30,21 +30,19 @@ def _tags(scene):
     return {n.tag for n in scene.nodes if isinstance(n, Polyline) and n.tag}
 
 
-def test_eave_overlay_defers_to_the_authored_gutter(catlin_model):
-    """The house eave carries an authored Gutter + drip (params/roof_trim.py) riding the
-    roofing plane, so the overlay must NOT add its schematic pair a storey of roof stack
-    lower — one eave, one gutter. The derived corner trim caps the panel heads, so no
-    schematic apron either; the gutter's support is drawn off the resolved girt."""
+def test_eave_overlay_draws_only_the_cut_metal(catlin_model):
+    """The house eave's metal is real geometry: the authored box gutter and the derived
+    formed drip edge are cut into the drawing, and the overlay draws no metal of its own —
+    no schematic drip, gutter or apron. The gutter's support is drawn off the resolved girt."""
     scene, findings = build_detail(catlin_model, _eave(catlin_model))
     assert not findings
     tags = _tags(scene)
     assert any(t.startswith("TR-RF-GUTTER") for t in tags), \
         "the authored box gutter should be cut into the eave detail"
-    assert any(t.startswith("TR-RF-DRIP") for t in tags)
-    assert "detail-component:box-gutter" not in tags, \
-        "overlay must defer to the authored gutter, not double it"
-    assert "detail-component:drip-edge" not in tags
-    assert "detail-component:apron-flashing" not in tags, "the corner trim caps the head"
+    assert {f"eave-hi-drip-edge-{leg}" for leg in ("flange", "nose", "face", "kick")} <= tags
+    assert not any(t.startswith("TR-RF-DRIP") for t in tags), "no level authored drip"
+    for schematic in ("box-gutter", "drip-edge", "apron-flashing"):
+        assert f"detail-component:{schematic}" not in tags
     assert {"detail-component:girt-standoff", "detail-component:tlok08",
             "detail-component:gutter-hanger"} <= tags
     # Flashings are polyline+hatch geometry, never a bare Symbol.
@@ -159,11 +157,19 @@ def _garage_eave(model):
                 if d.key.startswith("wall_roof:GARAGE_ROOF"))
 
 
-def test_eave_overlay_emits_apron_flashing(catlin_model):
-    """Where no corner trim caps the cladding head (the garage), the apron draws."""
-    scene, _ = build_detail(catlin_model, _garage_eave(catlin_model))
-    assert "detail-component:apron-flashing" in _tags(scene), (
-        "apron flashing is a named component distinct from the drip/Z/L flashings")
+def test_garage_cut_holds_fascia_drip_and_gutter(catlin_model):
+    """The garage eave draws its real overhang: the crop holds the fascia, the formed drip
+    edge and the K-gutter whole, under its own transition, and no schematic metal."""
+    derived = _garage_eave(catlin_model)
+    assert derived.transition.tag == "TR-CATLIN-GARAGE-EAVE"
+    scene, findings = build_detail(catlin_model, derived)
+    assert not findings
+    tags = _tags(scene)
+    assert {"eave-hi-fascia-0", "eave-hi-fascia-1", "eave-hi-soffit", "eave-hi-gutter-back",
+            "eave-hi-gutter-front", "eave-hi-drip-edge-face", "eave-hi-drip-edge-kick"} <= tags
+    assert not any(t.startswith("detail-component:") for t in tags)
+    labels = " ".join(n.text for n in scene.nodes if getattr(n, "text", None))
+    assert "drip edge" in labels and "fascia" in labels and "gutter" in labels
 
 
 def test_the_gutter_support_is_drawn_off_the_resolved_members(catlin_model):

@@ -30,6 +30,13 @@ from typehaus.model.trim import EaveGutter, EaveTrim
 from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.framing.profiles import panel_profile
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof, ResolvedWall
+from typehaus.resolve.roof_drip_edge import (
+    deck_edge_m,
+    deck_top_m,
+    drip_spec,
+    fascia_drip_edge,
+    wrapped_drip_edge,
+)
 from typehaus.resolve.roof_edge_geometry import (
     CLOSURE_TOLERANCE_M,
     EdgeRun,
@@ -39,10 +46,11 @@ from typehaus.resolve.roof_edge_geometry import (
     roof_edge_runs,
     roof_ridge_run,
     roof_slope,
+    skin_layers,
     wall_face_inset,
 )
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
-from typehaus.resolve.trim_bands import formed_edge_bands, open_channel_bands
+from typehaus.resolve.trim_bands import GUTTER_SHELL_M, formed_edge_bands, open_channel_bands
 
 # A fascia board is envelope trim by category, but it is also the nailer the carpenter hangs
 # off the rafter tails — so it has to show up under a framing view toggle too.
@@ -103,15 +111,25 @@ def _eave_trim_members(
     layers = above_structure_layers(assembly)
     slope_factor = math.hypot(1.0, roof_slope(roof))
     fascia_rise = mating_faces(layers).foam_under * slope_factor if layers else 0.0
+    # A wrapped edge takes its drip edge in place of the corner trim (_corner_trim_members).
+    drip = None
+    if trim.drip_edge is not None and not continuous_skin_cladding(model, roof, walls):
+        drip = (layers, slope_factor, _edge_trim_material(element, _roofing_material(layers)))
     members: list[FramedMember] = []
     for run in roof_edge_runs(roof):
-        members.extend(_edge_trim(roof, trim, run, walls, fascia_rise))
+        members.extend(_edge_trim(roof, trim, run, walls, fascia_rise, drip))
     return tuple(members)
+
+
+def _roofing_material(layers) -> str | None:
+    roofing = next((layer for layer in reversed(layers)
+                    if layer.function is LayerFunction.CLADDING), None)
+    return roofing.material_ref if roofing is not None else None
 
 
 def _edge_trim(
     roof: ResolvedRoof, trim: EaveTrim, run: EdgeRun, walls: tuple[ResolvedWall, ...],
-    fascia_rise_m: float,
+    fascia_rise_m: float, drip=None,
 ) -> tuple[FramedMember, ...]:
     members: list[FramedMember] = []
     # Boards stack outward from the roof edge: the first (a wood nailer) hangs directly under
@@ -148,6 +166,13 @@ def _edge_trim(
     # anything else hung off the stack registers against.
     soffit = _soffit_member(roof, trim, run, walls)
     gutters = _gutter_members(roof, trim, run, fascia_outer_m=inner)
+    spec = drip_spec(trim, run) if drip is not None else None
+    if spec is not None:
+        layers, slope_factor, material = drip
+        members.extend(fascia_drip_edge(
+            roof, run, spec, trim, slope=roof_slope(roof),
+            deck_top=deck_top_m(layers, slope_factor), bend=deck_edge_m(roof, layers, run),
+            fascia_outer=inner, fascia_rise=fascia_rise_m, material=material))
     return tuple(members) + tuple(m for m in (soffit,) if m is not None) + gutters
 
 
@@ -269,7 +294,7 @@ def _edge_cladding_members(
     # roofing underside, and the joint gets a corner trim piece instead of a drip-edge band.
     if continuous_skin_cladding(model, roof, walls):
         return _corner_trim_members(roof, cladding, mating, slope_factor,
-                                    model.plan.by_tag(roof.tag))
+                                    model.plan.by_tag(roof.tag), layers, walls)
     base = mating.foam_under * slope_factor          # where the wall cladding stops
     height = mating.cladding_under * slope_factor - base
     if height <= CLOSURE_TOLERANCE_M:
@@ -315,7 +340,7 @@ def _edge_trim_material(element, default: str | None) -> str | None:
 
 def _corner_trim_members(
     roof: ResolvedRoof, cladding, mating, slope_factor: float,
-    element=None,
+    element=None, layers=(), walls: tuple[ResolvedWall, ...] = (),
 ) -> tuple[FramedMember, ...]:
     """The formed cleat-and-hemmed-drip capping a wrapped roof edge, per eave/rake run.
 
@@ -331,12 +356,31 @@ def _corner_trim_members(
     :func:`_gutter_members` gets its open-top U from ``open_channel_bands``. The whole piece
     still mitres as one — the corner is resolved on the trim's *envelope*, so the bands share
     a span and cannot tile a rake corner differently from each other.
+
+    A declared ``EaveTrim.drip_edge`` replaces this piece on its edges with the formed drip
+    edge (:mod:`typehaus.resolve.roof_drip_edge`), on the same face plane and leg.
     """
     top = (mating.cladding_under + cladding.thickness.meters) * slope_factor
     z_lo = mating.cladding_under * slope_factor - _CORNER_TRIM_LEG_M
     bands = formed_edge_bands(_CORNER_TRIM_THICKNESS_M, top - z_lo)
+    material = _edge_trim_material(element, cladding.material_ref)
+    trim = element.eave_trim if isinstance(element, Roof) else None
+    slope = roof_slope(roof)
+    shell = min(GUTTER_SHELL_M, _CORNER_TRIM_THICKNESS_M / 3.0)
     members: list[FramedMember] = []
     for run in roof_edge_runs(roof):
+        spec = drip_spec(trim, run)
+        if spec is not None:
+            # The nose clears the wall cladding's closure head, which is level at its own
+            # centreline's height (resolve/roof_edge.py::_closure_segment).
+            head = mating.cladding_under * slope_factor + (
+                slope * _wall_cladding_m(walls) / 2.0 if run.is_eave else 0.0)
+            members.extend(wrapped_drip_edge(
+                roof, run, spec, slope=slope, deck_top=deck_top_m(layers, slope_factor),
+                bend=deck_edge_m(roof, layers, run), nose_floor=head,
+                face_in=_CORNER_TRIM_THICKNESS_M - shell, face_bottom=z_lo, shell=shell,
+                material=material))
+            continue
         # Inner face on the footprint edge (the wall cladding's outer face), outer face
         # clear of the roofing edge. ``mitred_span`` measures faces *inboard*-positive, so
         # the outboard face reads negative there; ``_offset`` measures along the outward
@@ -362,9 +406,15 @@ def _corner_trim_members(
                 z0_end_m=span.z1_m + top - bottom_drop,
                 z1_end_m=span.z1_m + top - top_drop,
                 connection="roof:corner-trim",
-                material=_edge_trim_material(element, cladding.material_ref),
+                material=material,
             ))
     return tuple(members)
+
+
+def _wall_cladding_m(walls: tuple[ResolvedWall, ...]) -> float:
+    """The thickest wall cladding layer under the roof — the closure head's width."""
+    return max((layer.thickness_m for wall in walls for layer in skin_layers(wall)
+                if layer.function == LayerFunction.CLADDING.value), default=0.0)
 
 
 # --- vented ridge cap --------------------------------------------------------------------

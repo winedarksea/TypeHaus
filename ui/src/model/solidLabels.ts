@@ -66,6 +66,7 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   opening_frame: "Opening frame",
   ridge_cap: "Ridge cap",
   corner_trim: "Corner trim",
+  drip_edge: "Drip edge",
 };
 
 export function solidCategoryLabel(category: string | null | undefined): string {

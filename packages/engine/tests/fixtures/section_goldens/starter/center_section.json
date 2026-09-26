@@ -4995,7 +4995,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -4.22375,
+          -4.0675,
           54.0
         ],
         "name": "HOUSE_WALL_2X6_WITH_ZIPR"
@@ -5005,7 +5005,7 @@
         54.0
       ],
       "to": [
-        -4.22375,
+        -4.0675,
         54.0
       ],
       "text": "HOUSE_WALL_2X6_WITH_ZIPR",

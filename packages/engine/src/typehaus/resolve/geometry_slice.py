@@ -308,7 +308,9 @@ def _sweep_profiles(solid: GSweep, plane: CutPlane) -> list[SectionProfile]:
     The case worth having is the one the birdsmouth is: a profile standing in a vertical
     plane, extruded straight across the cut. Then every plane between the two ends meets the
     solid in *the profile itself*, so the cut is one projection and no chaining. Anything
-    else falls back to the mesh path, which is correct but slower and has to weld.
+    else falls back to the mesh path, which is correct but slower and has to weld. An
+    extrusion that also rises or drifts in u (a formed rake piece) translates the profile by
+    the fraction of it the station has reached.
     """
     perps = {round(plane.perp_of(point), 9) for point in solid.profile}
     across = plane.perp_of((solid.extrude[0], solid.extrude[1]))
@@ -317,8 +319,10 @@ def _sweep_profiles(solid: GSweep, plane: CutPlane) -> list[SectionProfile]:
         lo, hi = sorted((start, start + across))
         if not lo < plane.station_m < hi:
             return []
+        fraction = (plane.station_m - start) / across
+        du, dz = plane.u_of(solid.extrude) * fraction, solid.extrude[2] * fraction
         return [SectionProfile(outline=tuple(
-            (plane.u_of(point), point[2]) for point in solid.profile))]
+            (plane.u_of(point) + du, point[2] + dz) for point in solid.profile))]
     profiles, _open = _mesh_profiles(sweep_mesh(solid), plane)
     return profiles
 

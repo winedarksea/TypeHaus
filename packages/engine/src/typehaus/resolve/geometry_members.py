@@ -104,15 +104,40 @@ def member_box(member: FramedMember) -> GBox | None:
 
 
 def member_solid(member: FramedMember) -> GSolid | None:
-    """The member's solid — a box, or a swept profile when it carries a birdsmouth.
+    """The member's solid — a box, or a swept profile for a birdsmouth or a formed section.
 
-    The guard is ``member.seat is not None`` and **nothing else**. No ``cross_section()``
-    call may precede it: this runs 15,160 times per resolve, and ``member_box`` stays
-    untouched below (the parity test pins it, and it is the hot path).
+    The guards are two attribute reads (``seat``, then ``section_ring``) and **nothing
+    else**. No ``cross_section()`` call may precede them: this runs 15,160 times per resolve,
+    and ``member_box`` stays untouched below (the parity test pins it, and it is the hot path).
     """
-    if member.seat is None:
+    if member.seat is not None:
+        return _seated_sweep(member, member.seat)
+    if member.section_ring is not None:
+        return _ring_sweep(member, member.section_ring)
+    return member_box(member)
+
+
+def _ring_sweep(member: FramedMember,
+                ring: tuple[tuple[float, float], ...]) -> GSolid | None:
+    """A formed section swept along the run: the ring placed at ``p0``, extruded to ``p1``.
+
+    The ring is in the run's (left-normal, up) frame from the axis at ``z0_m``; the extrusion
+    carries the run's rise (``z0_end_m - z0_m``), so a rake piece climbs with the rake. The
+    ring is wound counter-clockwise about the run so the caps face outward.
+    """
+    (ax, ay), (bx, by) = member.p0, member.p1
+    dx, dy = bx - ax, by - ay
+    run = math.hypot(dx, dy)
+    if run < 1e-9 or len(ring) < 3:
         return member_box(member)
-    return _seated_sweep(member, member.seat)
+    nx, ny = _unit_normal(dx, dy, run)
+    area = sum(s0 * t1 - s1 * t0
+               for (s0, t0), (s1, t1) in zip(ring, ring[1:] + ring[:1], strict=True))
+    points = ring if area > 0.0 else tuple(reversed(ring))
+    z0 = member.z0_m
+    rise = (member.z0_m if member.z0_end_m is None else member.z0_end_m) - z0
+    profile = tuple((ax + nx * s, ay + ny * s, z0 + t) for s, t in points)
+    return GSweep(profile=profile, extrude=(dx, dy, rise))
 
 
 def _seated_sweep(member: FramedMember, seat: SeatCut) -> GSolid | None:

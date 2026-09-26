@@ -122,15 +122,15 @@ def _solid_z(solid: object) -> list[float]:
     out: list[float] = []
     for name in ("z0_m", "z1_m", "top"):
         out.extend(_numbers(getattr(solid, name, None)))
-    for name in ("corners_bottom", "corners_top", "vertices"):
+    for name in ("corners_bottom", "corners_top", "vertices", "profile"):
         ring = getattr(solid, name, None)
         if ring is None:
             continue
         for point in ring:
             if isinstance(point, (tuple, list)) and len(point) == 3:
                 out.append(float(point[2]))
-    # GSweep: a profile swept along ``extrude`` from ``origin``.
-    for name in ("origin", "extrude"):
+    # GSweep: a ``profile`` (read above) swept along ``extrude``.
+    for name in ("extrude",):
         vec = getattr(solid, name, None)
         if isinstance(vec, (tuple, list)) and len(vec) == 3:
             out.append(float(vec[2]))

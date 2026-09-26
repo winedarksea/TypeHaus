@@ -57,6 +57,9 @@ is already parallel.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure
   furniture and areas off `clear_face`. For "which room is this in", use
   `resolve/room_lookup.room_owning`.
+- **A pitched cross-section is `FramedMember.section_ring`**: a ring in the run's
+  (left-normal, up) frame that `member_solid` sweeps (the formed drip edge). The box fields
+  only bound it; every emitter and the viewer read the sweep.
 - **Wall mounts are hosted** (decision #83): a `WallAttachment` and no `position`. Read a
   placeable's plan point through `resolve/placeables.placed_xy`, never `.position`.
 - **Equipment collides** (decision #84): only an authored relation pardons a contact.

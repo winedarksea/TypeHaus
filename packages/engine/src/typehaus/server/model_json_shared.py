@@ -61,6 +61,10 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         # than a bounding box across the plate it bears on.
         "seat": ({"plate_top_z_m": m.seat.plate_top_z_m, "heel": list(m.seat.heel),
                   "seat_run_m": m.seat.seat_run_m} if m.seat is not None else None),
+        # A formed section (the pitched drip edge): a ring in the run's (left-normal, up)
+        # frame from the axis at ``z0_m``, which the viewer sweeps exactly as the engine does.
+        "section_ring": ([list(point) for point in m.section_ring]
+                         if m.section_ring is not None else None),
         # The truss inside a ``roof_truss`` member's envelope — the raised heel, the eave
         # tails, and whether it is a studded gable end. Null on every other member; the
         # viewer draws chords and webs from it, which no model here resolves.

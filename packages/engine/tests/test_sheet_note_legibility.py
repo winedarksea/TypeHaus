@@ -27,8 +27,8 @@ def test_catlin_passes_on_every_bound_note(catlin_model_ro):
     assert findings
     bad = [f for f in findings if f.result is not Result.PASS]
     assert not bad, [f.message for f in bad]
-    # Six files, not thirty-eight: the subject is what a Transition BINDS.
-    assert len(findings) == 6
+    # Seven files, not thirty-eight: the subject is what a Transition BINDS.
+    assert len(findings) == 7
 
 
 def test_a_note_file_nothing_binds_is_out_of_subject(catlin_model_ro):

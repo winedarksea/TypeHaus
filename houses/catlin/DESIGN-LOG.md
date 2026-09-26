@@ -751,6 +751,35 @@ never emitted on it at all; and 15/16" of brick does stand below the gym's ceili
 
 ## Attic and roof
 
+### One formed drip edge per edge, pitched, and the sheets draw only its cut (2026-09-26)
+
+The eave metal did not follow the pitch. The corner trim, the authored drip `Flashing` and
+the rake stubs were all level boxes; on the house the drip and the corner trim were two
+pieces of metal doing one job; and A-585 drew a schematic level drip, apron and box gutter
+over a garage that has none of them, while its crop cut off the real fascia and K-gutter.
+
+- **`EaveTrim.drip_edge`** (`EaveDripEdge`, opt-in) derives one formed piece per edge in
+  `resolve/roof_drip_edge.py` from `trim_bands.formed_drip_legs`: a flange on the deck at the
+  pitch, a nose over the deck edge, a face, a 45° kick. Each leg is a `FramedMember` with a
+  true `section_ring`, swept by `member_solid` — so the glTF, the viewer, IFC (extruded on
+  eaves, faceted on rakes) and every section cut draw the same shape. The 1/2" nominal shell
+  stays, deliberately exaggerated.
+- **House:** the piece REPLACES the corner trim on all four edges, on the same face plane and
+  4" leg, so the gutter and leader numbers did not move. The level `TR-RF-DRIP-W/E` and the
+  four `TR-RF-DRIP-S/N*` rake stubs are gone. **Garage and canopy:** it laps the metal
+  fascia; on a guttered eave the face stops at the rim and the kick starts past the gutter's
+  back sheet.
+- **FORTIFIED §4.5** credits the derived piece by side and grades its flange: 2" on the deck
+  PASSes, less FAILs. Billing is once per run, along the face, as `drip_flashing`
+  (`corner_trim` fell to 0 LF; `drip_flashing` rose to 421 LF with the garage and canopy
+  pieces, which carried no drip at all before).
+- **A-585** got its own transition (`TR-CATLIN-GARAGE-EAVE`, `overhang-eave`, garage notes),
+  and `detail_derive` widens a wall→roof crop to hold the roof's trim. The eave overlays now
+  draw no metal: labels are anchored on the sliced members.
+- Found on the way: the IFC birdsmouth profile was written with its local Y pointing DOWN
+  (a vertically mirrored notch); the generalised sweep now orients Y up, pinned by a bbox
+  parity test. The elevation golden also never read a `GSweep`'s profile z.
+
 - **Knee walls to a hot roof.** The attic used to be 5'-0" knee walls at 4:12, from a
   MISREADING of R305 — that every square foot of a sloped-ceiling room needs 5'-0" of
   headroom. Minn. R.1309.0305 R305.1 Exception 1 and IRC R304.1/R304.3 scope both clauses

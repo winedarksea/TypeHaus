@@ -134,8 +134,9 @@
 #   `insulation` strip, and the five stair members (treads, landing decks, hanger, winder).
 #
 #   Left blank ON PURPOSE, because [edge_trim] already bills the same members by the foot
-#   and pricing both would double-count: the three `corner_trim` profiles, both `fascia`
-#   profiles, the `ridge_cap` and the `soffit` profile. Their edge_trim rows carry
+#   and pricing both would double-count: the fourteen `drip_edge` leg profiles (flange /
+#   nose / face / kick on three roofs, billed once per run as `drip_flashing`), both
+#   `fascia` profiles, the `ridge_cap` and the `soffit` profile. Their edge_trim rows carry
 #   `also_in_framing: true`, which is the flag that says so.
 #
 #   `0.5x0.5 panel` was left blank last pass as unresolvable; 2026-08-08b resolves it.
@@ -164,8 +165,9 @@
 # Zip-R). The row is kept rather than deleted so the rate survives if the furring ever comes
 # back, and so nobody re-derives it from scratch: it is a plywood rip, not milled batten.
 # "0.375x0.375 panel" = { low = 0.05, high = 0.1 }  # was 108 LF — 3/8" furring, plywood rip
-# "0.416667x0.416667 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
-# "0.416667x4.11038 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
+# 2026-09-26: the three `corner_trim` profiles are gone — RF-HOUSE's formed drip edge
+# replaced the corner trim on all four edges. Every `* panel drip_edge` profile is billed in
+# [edge_trim] `drip_flashing` and is left blank here on purpose.
 # 2026-09-06: **176 LF, not 498.** The `sheathing` half of this profile (96 LF, material
 # `struct-1-plywood`) is a genuine plywood rip and left for `sheet_goods` scope
 # "sheathing rip" with the bucks and the stiffeners — 3.3 SF of strip, one 1/2" sheet. What
@@ -208,7 +210,6 @@
 # nailed off. The two are not the same hour.
 "0.75x48.0" = { material = { low = 3.38, high = 5.25 }, labour = { low = 2.5, high = 5 } }  # 0 LF — RETIRED, was the 48" wet-wall band
 "0.75x24.0" = { material = { low = 1.69, high = 2.63 }, labour = { low = 1.25, high = 2.5 } }  # 0 LF — RETIRED, was W-A-STU-W's knee-wall band
-# "1.25x0.416667 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
 "1.25x11.875 rim" = { material = { low = 3, high = 4.75 }, labour = { low = 1.1, high = 2.1 } }  # 72 LF — FS-ATTIC's two went to LSL on 2026-08-29, see below
 # FS-ATTIC's two rims, 2026-08-29. They are the perimeter bearing line under the attic's
 # rafter plates now rather than a band board capping joist ends, and a 1 1/4" OSB rim on that
@@ -5673,10 +5674,11 @@
 #   only trim colour on the building now, so both blends are single-coil and sit a little
 #   lower inside the ranges below rather than at their metallic-blended middle. No number
 #   moved — but a quote taken while the metallic stood is now HIGH, not low.
-#   drip_flashing 21.5 LF plain aluminium + 78.4 LF dark formed metal + 76.5 LF of the
-#   garage's PVDF aluminium (STEM_TOP_Z_FLASHING, new 2026-09-03 — the Z at the stem-top
-#   band/corrugated-panel junction, which until then was modelled by nothing). It replaced
-#   15.5 LF of wainscot cap in the same row, so the row grew by 61.0 LF net.
+#   drip_flashing 19.5 LF plain aluminium + 80.0 LF of the garage's PVDF aluminium
+#   (STEM_TOP_Z_FLASHING, the Z at the stem-top band/corrugated-panel junction) + 321.6 LF of
+#   DERIVED formed drip edge since 2026-09-26: 149.7 LF round RF-HOUSE's four edges (one
+#   piece doing the old corner trim's and drip's two jobs, so `corner_trim` fell to 0 LF) and
+#   171.9 LF over the garage and canopy fascias, which carried no drip at all before.
 # Basis: aluminium soffit material $0.50-2.00/LF and fascia $7-22/LF installed against
 # $10-24/LF total (so material is the lower third); aluminium drip edge $0.50-1.00/LF
 # material; formed and colour-matched metal trim runs well over plain stock.
@@ -5698,7 +5700,7 @@
 # run, and the fitting is real: the lip has to bear evenly on a cladding line the closure is
 # scribed to, or the gap it exists to close is still open.
 "bug_screen" = { material = { low = 3, high = 7 }, labour = { low = 10.50, high = 18.50 } }  # 17.0 LF — TR-SG-SLOT, the porch enclosure's north deck-slot closure. 1 piece, 17'-0"
-"corner_trim" = { material = { low = 3, high = 8 }, labour = { low = 2.5, high = 5 } }  # 147.8 LF — corner boards are the easy trim. MAY NOT BE A LINE AT ALL if the siding sub carries them in their $/SF
+"corner_trim" = { material = { low = 3, high = 8 }, labour = { low = 2.5, high = 5 } }  # 0 LF since 2026-09-26 (the formed drip edge replaced it; kept priced) — corner boards are the easy trim. MAY NOT BE A LINE AT ALL if the siding sub carries them in their $/SF
 # NEW 2026-08-31, and a category the engine could not measure before. `corner_trim` above is
 # exclusively the ROOF-edge piece derived from the ROOF's cladding; `wall_corner` is the
 # WALL-to-WALL closure at the four building corners, where the north/south board & batten meets
@@ -5719,7 +5721,7 @@
 # and 7.9 LF buys TWO sticks, which is what the high end carries. Labour is a mason's small
 # lump, not a per-foot rate. notes/sunken_garden_veneer_beam.md §6g.
 "movement_joint" = { material = { low = 70, high = 125 }, labour = { low = 6, high = 15 } }  # 15.7 LF — MJ-B-BRICK-E/-W
-"drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 176.4 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
+"drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 421.1 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 "edge_cladding" = { material = { low = 3, high = 8 }, labour = { low = 3.5, high = 7 } }  # 243.9 LF — add $2-4/LF if it is site-brake-formed rather than shop stock
 # ** TR-SG-FASCIA IS 13" SINCE 2026-09-22 ** — the balcony rim is a 2x12, so the board is ripped
 # from cellular PVC SHEET (trim board stops at 11 1/4"), ~$9-15/LF material for that 38.8 LF, over

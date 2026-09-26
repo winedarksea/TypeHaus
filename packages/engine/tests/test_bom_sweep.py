@@ -463,14 +463,16 @@ def test_edge_trim_bills_the_authored_runs_and_the_derived_roof_trim_by_the_foot
     # A derived gutter must NOT appear here: `drainage` bills it, and one channel on two
     # orders is double-billing.
     assert not any(row["category"] == "gutter" for row in rows)
-    # The house's formed corner trim is composed of three bands sharing one span; billing
-    # every band would treble the order, so each run counts once.
-    corner = [row for row in rows if row["category"] == "corner_trim"]
-    if corner:
-        member_lf = sum(m.length_m for roof in catlin_model.roofs for m in roof.members
-                        if m.category == "corner_trim") * 3.280839895
-        billed_lf = sum(float(row["length_ft"]) for row in corner)
-        assert billed_lf < member_lf * 0.5, "banded corner trim must bill one band per run"
+    # The formed drip edge is four legs sharing one run; billing every leg would quadruple
+    # the order, so each run counts once — along its face — and it bills as drip_flashing.
+    assert not any(row["category"] == "drip_edge" for row in rows)
+    faces = [m for roof in catlin_model.roofs for m in roof.members
+             if m.category == "drip_edge" and m.child_key.endswith("-face")]
+    assert faces
+    billed = {tag for row in rows if row["category"] == "drip_flashing"
+              for tag in row["tags"] if "-drip-edge-" in tag}
+    assert billed == {f"{roof.tag}:{m.child_key}" for roof in catlin_model.roofs
+                      for m in roof.members if m in faces}
 
 
 # --- openings, envelope, stairs -----------------------------------------------------------

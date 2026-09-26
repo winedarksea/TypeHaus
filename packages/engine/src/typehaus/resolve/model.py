@@ -225,6 +225,10 @@ class FramedMember:
     # The birdsmouth, when this member has one. ``geometry_members.member_solid`` reads it and
     # nothing else does: its guard is a single attribute read, because it sits on the hot path.
     seat: SeatCut | None = None
+    # A true cross-section for formed metal (the pitched drip edge), as a convex ring in the
+    # run's (left-normal, up) frame, metres, measured from the axis at ``z0_m``. The box
+    # fields still bound it, so box-only readers stay conservative; ``member_solid`` sweeps it.
+    section_ring: tuple[tuple[float, float], ...] | None = None
     # Held up along its WHOLE length rather than reaching between supports — derived from the
     # bearings actually reaching, never assumed from a category. Two things read it and they
     # are why it names the fact rather than either consequence: the takeoff buys such a member

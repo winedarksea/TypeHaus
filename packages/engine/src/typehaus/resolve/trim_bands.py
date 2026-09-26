@@ -9,6 +9,8 @@ rolled its own the two would drift into different-looking gutters on the same ho
 
 from __future__ import annotations
 
+import math
+
 from typehaus.quantities import inch
 
 # The gutter channel is modelled as three thin bands (back / bottom / front) so it reads as
@@ -91,6 +93,52 @@ def formed_edge_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band, B
         ("face", thickness_m - shell, shell, depth_m, shell),
         ("hem", thickness_m - shell - hem, hem, depth_m, depth_m - shell),
     )
+
+
+# A leg of a formed section: four (u, z) corners, convex, in the edge's own frame.
+Quad = tuple[tuple[float, float], tuple[float, float], tuple[float, float], tuple[float, float]]
+
+
+def formed_drip_legs(
+    *, slope: float, deck_top_at_edge_m: float, flange_back_m: float, bend_m: float,
+    nose_floor_m: float, face_in_m: float, face_bottom_m: float, kick_m: float,
+    kick_in_m: float | None = None, shell_m: float = GUTTER_SHELL_M,
+) -> dict[str, Quad]:
+    """One formed drip edge as four convex legs: flange, nose, face, kick.
+
+    Frame: ``u`` runs outboard of the footprint edge, ``z`` up from the roof plane at the
+    edge. The deck top falls ``slope`` per unit ``u`` (0 on a rake, which is level across).
+
+    * ``flange`` lies ON the deck at the pitch, ``flange_back_m`` to the bend, a shell thick
+      measured square to the slope;
+    * ``nose`` runs from the bend over the deck edge to the face's outer side. Its underside
+      never rises outward and never dips below ``nose_floor_m`` (what it must clear);
+    * ``face`` hangs from the nose's underside down to ``face_bottom_m``;
+    * ``kick`` turns 45° out and down off the face's foot (``kick_in_m`` moves its start
+      outboard, e.g. past a gutter back sheet standing under the face).
+    """
+    thick = shell_m * math.hypot(1.0, slope)
+
+    def deck(u: float) -> float:
+        return deck_top_at_edge_m - slope * u
+
+    face_out = face_in_m + shell_m
+    flange = ((flange_back_m, deck(flange_back_m)), (bend_m, deck(bend_m)),
+              (bend_m, deck(bend_m) + thick), (flange_back_m, deck(flange_back_m) + thick))
+    under_in = max(deck(bend_m), nose_floor_m)
+    under_out = max(nose_floor_m, under_in - slope * (face_out - bend_m))
+
+    def under(u: float) -> float:
+        return under_in + (under_out - under_in) * (u - bend_m) / (face_out - bend_m)
+
+    nose = ((bend_m, under_in), (face_out, under_out),
+            (face_out, under_out + thick), (bend_m, under_in + thick))
+    face = ((face_in_m, face_bottom_m), (face_out, face_bottom_m),
+            (face_out, under(face_out)), (face_in_m, under(face_in_m)))
+    start = face_in_m if kick_in_m is None else kick_in_m
+    kick = ((start, face_bottom_m), (start + kick_m, face_bottom_m - kick_m),
+            (start + shell_m + kick_m, face_bottom_m - kick_m), (start + shell_m, face_bottom_m))
+    return {"flange": flange, "nose": nose, "face": face, "kick": kick}
 
 
 # A cove-lighting channel is a small extruded reveal, not formed sheet — but the same "clamp

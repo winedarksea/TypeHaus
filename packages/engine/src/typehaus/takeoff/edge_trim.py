@@ -11,9 +11,9 @@ Two sources, exactly like the gutters:
   ``Flashing`` elements, billed along the path they are authored on. (``Gutter`` and
   ``Downspout`` belong to ``drainage``; ``GlazingTrim`` to ``glazing_trim``.)
 * **derived roof trim** — the fascia boards, soffit panels, formed corner/rake trim,
-  drip-edge band and vented ridge cap :mod:`typehaus.resolve.roof_trim` hangs off a resolved
-  roof plane. The derived *gutter* members are deliberately absent here — ``drainage``
-  already bills them, and one channel must not appear on two orders.
+  drip-edge band, formed drip edge and vented ridge cap :mod:`typehaus.resolve.roof_trim`
+  hangs off a resolved roof plane. The derived *gutter* members are deliberately absent
+  here — ``drainage`` already bills them, and one channel must not appear on two orders.
 
 Mirror flags, following ``wood_surfaces``' convention: an authored run also resolves as
 solids (counted by ``structural_solids``) and a derived member is a ``FramedMember`` under
@@ -33,12 +33,17 @@ _M_TO_FT = 3.280839895013123
 #: Derived roof-trim member categories billed here by the foot. ``gutter`` is excluded on
 #: purpose (``drainage`` bills it); everything else the roof derives along an edge is trim
 #: somebody orders in sticks or brake-formed lengths.
-_DERIVED_CATEGORIES = frozenset({"fascia", "soffit", "cladding", "corner_trim", "ridge_cap"})
+_DERIVED_CATEGORIES = frozenset({"fascia", "soffit", "cladding", "corner_trim", "ridge_cap",
+                                 "drip_edge"})
 
 #: Banded derived categories resolve one run as several thin bands sharing a span; billing
 #: every band would multiply the order. Per run, only the named band's length is counted —
 #: the same dedupe ``takeoff/drainage.py::_add_derived_eave_gutters`` does with ``bottom``.
-_BANDED_MEASURE = {"corner_trim": "face"}
+_BANDED_MEASURE = {"corner_trim": "face", "drip_edge": "face"}
+
+#: The order line a derived category bills under, where it is not its own name: the formed
+#: drip edge is the same brake-formed piece an authored ``drip_flashing`` run is.
+_BILLED_AS = {"cladding": "edge_cladding", "drip_edge": "drip_flashing"}
 
 
 class _Rows:
@@ -127,7 +132,8 @@ def _add_derived_roof_trim(model: ResolvedModel, rows: _Rows) -> None:
 
     The drip-edge band member carries category ``cladding`` (it closes the stack edge in
     the roof's own cladding metal); it is renamed ``edge_cladding`` on the order so it
-    cannot be read as a wall-cladding row.
+    cannot be read as a wall-cladding row. The formed drip edge (``drip_edge``, four legs
+    per run) bills once per run as ``drip_flashing``, measured along its face.
     """
     for roof in model.roofs:
         for member in roof.members:
@@ -138,7 +144,7 @@ def _add_derived_roof_trim(model: ResolvedModel, rows: _Rows) -> None:
             # One band per run reaches the order: the composed piece mitres as one.
             if band is not None and member.child_key.rpartition("-")[2] != band:
                 continue
-            billed = "edge_cladding" if category == "cladding" else category
+            billed = _BILLED_AS.get(category, category)
             rows.add(billed, member.profile, member.material or "",
                      tag=f"{roof.tag}:{member.child_key}", length_m=member.length_m,
                      mirror="framing")

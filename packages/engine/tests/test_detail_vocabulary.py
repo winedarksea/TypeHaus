@@ -213,12 +213,8 @@ def test_no_detail_component_is_ever_a_symbol(catlin_model):
 
 
 @pytest.mark.parametrize("key_prefix,name", [
-    # The house eave defers to its authored gutter/drip (params/roof_trim.py), so the
-    # schematic pair is exercised on the garage eave, which has no authored trim yet.
-    ("wall_roof:GARAGE_ROOF", "box-gutter"),
-    ("wall_roof:GARAGE_ROOF", "drip-edge"),
-    # The house eave's corner trim caps the head, so the apron is exercised on the garage.
-    ("wall_roof:GARAGE_ROOF", "apron-flashing"),
+    # No eave rows: eave metal (drip edge, gutter, fascia) is real derived geometry the
+    # section cuts, and the eave overlays draw no schematic metal of their own.
     # There is no ``insect-screen`` row here, which is a coverage loss worth stating rather
     # than quietly dropping. The screen closes the eave end of an OVER-DECK VENT CHANNEL,
     # and no assembly in this house has one: ROOF has no vent mat, and the garage is

@@ -55,27 +55,13 @@ PERIMETER_DRAIN = PerimeterDrainConfig()
 
 @dataclass(frozen=True)
 class SheetMetalConfig:
-    """How sheet metal is drawn: thickness and the stand-offs its legs take.
+    """How applied sheet metal is drawn (eave metal is real geometry and is only cut).
 
     All drawing convention. Real flashing is ~0.025" thick, which vanishes at detail scale;
     the profiles are drawn at a schematic thickness so the leg directions read.
     """
 
     thickness_in: float = 0.5
-    #: Gutter trough: depth (outboard run) x height (drop below the fascia head).
-    gutter_depth_in: float = 5.0
-    gutter_height_in: float = 5.0
-    gutter_wall_thickness_in: float = 0.6
-    #: Standoff of the gutter's back pan from the cladding face.
-    gutter_standoff_in: float = 0.6
-    #: Drip edge: how far back onto the deck it starts, and how far down the fascia it turns.
-    drip_edge_back_in: float = 0.5
-    drip_edge_run_in: float = 1.6
-    drip_edge_drop_in: float = 2.4
-    #: Apron flashing over the head of the wall cladding, behind the drip edge.
-    apron_back_in: float = 2.6
-    apron_run_in: float = 2.4
-    apron_drop_in: float = 3.0
     #: Insect-screen band height at a vent opening.
     screen_band_in: float = 0.6
 

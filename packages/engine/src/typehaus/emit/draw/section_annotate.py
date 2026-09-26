@@ -174,6 +174,10 @@ def _drawn_spans(nodes: tuple[IRNode, ...]) -> dict[str, _DrawnExtent]:
     """
     boxes: dict[str, tuple[float, float, float, float]] = {}
     edges: dict[str, tuple[float, list[float]]] = {}
+    # Every drawn node's (u_lo, z_lo, z_hi) per element: the averaged edge z is anchored on
+    # an edge node that spans it, or clamped onto the leftmost one, so a stepped edge (a drip
+    # kick beside its face) still lands ON what is drawn rather than in the air between.
+    lefts: dict[str, list[tuple[float, float, float]]] = {}
     for node in nodes:
         uid = getattr(node, "uid", None)
         points = getattr(node, "points", None) or getattr(node, "boundary", None)
@@ -182,6 +186,7 @@ def _drawn_spans(nodes: tuple[IRNode, ...]) -> dict[str, _DrawnExtent]:
         us = [point[0] for point in points]
         zs = [point[1] for point in points]
         box = (min(us), min(zs), max(us), max(zs))
+        lefts.setdefault(uid, []).append((box[0], box[1], box[3]))
         current = boxes.get(uid)
         boxes[uid] = box if current is None else (
             min(current[0], box[0]), min(current[1], box[1]),
@@ -195,9 +200,21 @@ def _drawn_spans(nodes: tuple[IRNode, ...]) -> dict[str, _DrawnExtent]:
     out: dict[str, _DrawnExtent] = {}
     for uid, box in boxes.items():
         edge_u, edge_zs = edges[uid]
-        out[uid] = _DrawnExtent(box=box,
-                                anchor=(edge_u, sum(edge_zs) / len(edge_zs)))
+        out[uid] = _DrawnExtent(box=box, anchor=_edge_anchor(
+            edge_u, sum(edge_zs) / len(edge_zs), lefts[uid]))
     return out
+
+
+def _edge_anchor(edge_u: float, edge_z: float,
+                 nodes: list[tuple[float, float, float]]) -> tuple[float, float]:
+    """``(u, z)`` on the element's left edge: on an edge node spanning ``edge_z`` when one
+    does (at that node's own face), else clamped onto the leftmost node."""
+    edge = [n for n in nodes if n[0] <= edge_u + _EDGE_TOLERANCE_IN]
+    spanning = [n for n in edge if n[1] <= edge_z <= n[2]]
+    if spanning:
+        return (min(spanning)[0] if min(n[0] for n in spanning) > edge_u else edge_u, edge_z)
+    u_lo, z_lo, z_hi = min(edge)
+    return (u_lo, min(max(edge_z, z_lo), z_hi))
 
 
 def _geometry_bounds(scene: Scene) -> tuple[float, float, float, float] | None:

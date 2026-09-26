@@ -2093,6 +2093,234 @@
       "node": "polyline",
       "points": [
         [
+          58.000000000000014,
+          96.87390274837544
+        ],
+        [
+          56.00000000000001,
+          96.20723608170879
+        ],
+        [
+          56.00000000000001,
+          96.7342823584035
+        ],
+        [
+          58.000000000000014,
+          97.40094902507016
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "YX2GDZJMBV",
+      "tag": "eave-lo-drip-edge-flange"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          58.000000000000014,
+          96.87390274837544
+        ],
+        [
+          56.00000000000001,
+          96.20723608170879
+        ],
+        [
+          56.00000000000001,
+          96.7342823584035
+        ],
+        [
+          58.000000000000014,
+          97.40094902507016
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "YX2GDZJMBV",
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          54.50000000000001,
+          96.22831793277656
+        ],
+        [
+          56.00000000000001,
+          96.22831793277656
+        ],
+        [
+          56.00000000000001,
+          96.75536420947128
+        ],
+        [
+          54.50000000000001,
+          96.75536420947128
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "YX2GDZJMBV",
+      "tag": "eave-lo-drip-edge-nose"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          54.50000000000001,
+          96.22831793277656
+        ],
+        [
+          56.00000000000001,
+          96.22831793277656
+        ],
+        [
+          56.00000000000001,
+          96.75536420947128
+        ],
+        [
+          54.50000000000001,
+          96.75536420947128
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          54.50000000000001,
+          94.91666666666667
+        ],
+        [
+          55.0,
+          94.91666666666667
+        ],
+        [
+          55.0,
+          96.22831793277656
+        ],
+        [
+          54.50000000000001,
+          96.22831793277656
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "YX2GDZJMBV",
+      "tag": "eave-lo-drip-edge-face"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          54.50000000000001,
+          94.91666666666667
+        ],
+        [
+          55.0,
+          94.91666666666667
+        ],
+        [
+          55.0,
+          96.22831793277656
+        ],
+        [
+          54.50000000000001,
+          96.22831793277656
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          54.500000000000014,
+          94.91666666666667
+        ],
+        [
+          53.750000000000014,
+          94.16666666666667
+        ],
+        [
+          53.25000000000001,
+          94.16666666666667
+        ],
+        [
+          54.00000000000001,
+          94.91666666666667
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "YX2GDZJMBV",
+      "tag": "eave-lo-drip-edge-kick"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          54.500000000000014,
+          94.91666666666667
+        ],
+        [
+          53.750000000000014,
+          94.16666666666667
+        ],
+        [
+          53.25000000000001,
+          94.16666666666667
+        ],
+        [
+          54.00000000000001,
+          94.91666666666667
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "YX2GDZJMBV",
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           54.50000000000001,
           89.91666666666669
         ],
@@ -2369,6 +2597,234 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          374.00000000000006,
+          97.40094902507016
+        ],
+        [
+          376.0,
+          96.7342823584035
+        ],
+        [
+          376.0,
+          96.20723608170879
+        ],
+        [
+          374.00000000000006,
+          96.87390274837544
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "YX2GDZJMBV",
+      "tag": "eave-hi-drip-edge-flange"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          374.00000000000006,
+          97.40094902507016
+        ],
+        [
+          376.0,
+          96.7342823584035
+        ],
+        [
+          376.0,
+          96.20723608170879
+        ],
+        [
+          374.00000000000006,
+          96.87390274837544
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "YX2GDZJMBV",
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          376.0,
+          96.22831793277656
+        ],
+        [
+          377.5,
+          96.22831793277656
+        ],
+        [
+          377.5,
+          96.75536420947128
+        ],
+        [
+          376.0,
+          96.75536420947128
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "YX2GDZJMBV",
+      "tag": "eave-hi-drip-edge-nose"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          376.0,
+          96.22831793277656
+        ],
+        [
+          377.5,
+          96.22831793277656
+        ],
+        [
+          377.5,
+          96.75536420947128
+        ],
+        [
+          376.0,
+          96.75536420947128
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          377.0,
+          94.91666666666667
+        ],
+        [
+          377.5,
+          94.91666666666667
+        ],
+        [
+          377.5,
+          96.22831793277656
+        ],
+        [
+          377.0,
+          96.22831793277656
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "YX2GDZJMBV",
+      "tag": "eave-hi-drip-edge-face"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          377.0,
+          94.91666666666667
+        ],
+        [
+          377.5,
+          94.91666666666667
+        ],
+        [
+          377.5,
+          96.22831793277656
+        ],
+        [
+          377.0,
+          96.22831793277656
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          377.99999999999994,
+          94.91666666666667
+        ],
+        [
+          378.74999999999994,
+          94.16666666666667
+        ],
+        [
+          378.25,
+          94.16666666666667
+        ],
+        [
+          377.5,
+          94.91666666666667
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "YX2GDZJMBV",
+      "tag": "eave-hi-drip-edge-kick"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          377.99999999999994,
+          94.91666666666667
+        ],
+        [
+          378.74999999999994,
+          94.16666666666667
+        ],
+        [
+          378.25,
+          94.16666666666667
+        ],
+        [
+          377.5,
+          94.91666666666667
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "YX2GDZJMBV",
       "material": "metal-dark-exterior",
       "fill": "#1c1f24"
     },

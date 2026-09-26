@@ -240,6 +240,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "sub_slab": (0.56, 0.55, 0.53, 1.0),
     "ridge_cap": (0.85, 0.86, 0.87, 1.0),  # vented standing-seam ridge cap
     "corner_trim": (0.85, 0.86, 0.87, 1.0),  # eave corner trim (continuous skin)
+    "drip_edge": (0.75, 0.77, 0.80, 1.0),  # formed drip edge (pitched section)
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing
     "wall_corner": (0.75, 0.77, 0.80, 1.0),  # formed-metal wall corner closure
     "movement_joint": (0.45, 0.38, 0.33, 1.0),  # brick-matched silicone joint

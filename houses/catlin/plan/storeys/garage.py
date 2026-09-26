@@ -13,6 +13,7 @@ from typehaus import (
     Door,
     DischargeExtension,
     Downspout,
+    EaveDripEdge,
     EaveGutter,
     EaveTrim,
     FasciaBoard,
@@ -377,6 +378,7 @@ _GARAGE_EAVE_TRIM = EaveTrim(
                       top_drop=inch(0.5), edges=("east", "west"),
                       slope="1/16 in/ft north on both eaves — east to TR-G-LEADER-E, west to TR-G-LEADER-W",
                       downspout_ref=("TR-G-LEADER-E", "TR-G-LEADER-W")),
+    drip_edge=EaveDripEdge(kick=inch(0.75)),
 )
 
 # ** THE CANOPY'S OWN EDGE, AND IT IS THE GARAGE'S EDGE CONTINUED, NOT A SECOND DETAIL. **
@@ -417,6 +419,7 @@ _CANOPY_EAVE_TRIM = EaveTrim(
                       top_drop=inch(0.5), edges=("east", "west"),
                       slope="1/16 in/ft north on both eaves — CONTINUOUS with RF-GARAGE's trough, falling to TR-G-LEADER-E / -W at the garage's north end; no leader at the canopy's south end, which would discharge onto the entry landing",
                       downspout_ref=("TR-G-LEADER-E", "TR-G-LEADER-W")),
+    drip_edge=EaveDripEdge(kick=inch(0.75)),
 )
 
 # One leader per eave. 3" round, not the house's 4": each slope sheds ~290 sq ft against

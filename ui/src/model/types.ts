@@ -136,6 +136,10 @@ export interface Member {
   // over `seat_run_m` from the plumb `heel` toward the member's nearer end. Its depth is not
   // carried because it is not independent — it is the run times the member's own slope.
   seat?: MemberSeat | null;
+  // A formed section (the pitched drip edge): a ring in the run's (left-normal, up) frame,
+  // metres, from the axis at z0_m. Swept along p0->p1 with the run's rise; the box fields
+  // still bound it.
+  section_ring?: Vec2[] | null;
   // The truss inside a fabricated roof truss's envelope; null on every other member.
   truss?: MemberTruss | null;
   shape: MemberShape;

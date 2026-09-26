@@ -12,8 +12,9 @@ are even modeled — and that is all three sub-checks below do:
   assembly, on a roof steep enough for it to apply? Presence, not ASTM/tape compliance —
   that is a documentation fact, not a modeled one, so presence tops out at UNKNOWN.
 * **drip edge (§4.5)** — does every footprint edge (eave *and* rake) carry a
-  ``Flashing(kind=DRIP_FLASHING)``? The standard wants both; a house that only trims its
-  eaves is missing half the line item.
+  ``Flashing(kind=DRIP_FLASHING)`` or a derived formed drip edge (``EaveTrim.drip_edge``)?
+  The standard wants both; a house that only trims its eaves is missing half the line item.
+  A derived piece is graded on its geometry: its flange must run 2" onto the deck.
 * **continuous load path (Silver §5.5.1 / Gold §6.4-adjacent, surfaced here because the
   owner asked for it even though it sits outside Roof-level scope)** — a re-labeling of
   ``uplift_path``'s own roof-bearing findings. This does not re-derive coverage: it imports
@@ -41,6 +42,9 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ControlLayer, LayerFunction, RoofForm, TrimKind
 from typehaus.model.spatial import Roof
 from typehaus.model.trim import Flashing
+from typehaus.quantities import M_PER_IN, inch
+from typehaus.resolve.roof_drip_edge import CATEGORY as _DRIP_CATEGORY
+from typehaus.resolve.roof_drip_edge import flange_on_deck_m
 
 _ADVISORY = "[advisory, not engineering] "
 
@@ -149,6 +153,46 @@ def _flashing_side(flashing: Flashing, centroid: tuple[float, float]) -> str:
     return "S" if mid_y < centroid[1] else "N"
 
 
+#: FORTIFIED §4.5's drip edge flange: 2" onto the deck.
+_MIN_FLANGE_M = inch(2).meters
+_FLANGE_TOL_M = 1e-6
+
+
+def _derived_flanges(roof, centroid: tuple[float, float]) -> dict[str, float]:
+    """Side -> the shortest derived drip-edge flange on the deck along that side."""
+    out: dict[str, float] = {}
+    for member in roof.members:
+        if member.category != _DRIP_CATEGORY or not member.child_key.endswith("-flange"):
+            continue
+        (ax, ay), (bx, by) = member.p0, member.p1
+        mid_x, mid_y = (ax + bx) / 2.0, (ay + by) / 2.0
+        if abs(by - ay) >= abs(bx - ax):
+            side = "W" if mid_x < centroid[0] else "E"
+        else:
+            side = "S" if mid_y < centroid[1] else "N"
+        length = flange_on_deck_m(member)
+        out[side] = min(out.get(side, length), length)
+    return out
+
+
+def _derived_finding(roof, side: str, label: str, flange_m: float) -> Finding:
+    inches = f'{flange_m / M_PER_IN:.2f}"'
+    if flange_m >= _MIN_FLANGE_M - _FLANGE_TOL_M:
+        return Finding(
+            severity=Severity.WARN, check_id=_CHECK_DRIP_EDGE, result=Result.PASS,
+            message=(f"{_ADVISORY}{roof.tag}'s {side} {label} edge carries a formed drip "
+                     f"edge (derived), {inches} on the deck — flange length graded; gauge "
+                     "and fastener spacing are documentation facts this model does not "
+                     "carry"),
+            element_tags=(roof.tag,))
+    return Finding(
+        severity=Severity.WARN, check_id=_CHECK_DRIP_EDGE, result=Result.FAIL,
+        message=(f"{_ADVISORY}{roof.tag}'s {side} {label} edge carries a formed drip edge "
+                 f"(derived) with only {inches} on the deck — FORTIFIED §4.5 wants 2\""),
+        element_tags=(roof.tag,),
+        fix_hint="lengthen EaveDripEdge.flange to at least 2\"")
+
+
 def _eave_rake_sides(ridge_direction: str) -> tuple[frozenset[str], frozenset[str]]:
     """``(eave sides, rake sides)`` — eaves run parallel to the ridge, rakes perpendicular."""
     if ridge_direction == "y":
@@ -163,6 +207,11 @@ def fortified_roof_drip_edge(ctx: CheckContext) -> list[Finding]:
                  if isinstance(e, Flashing) and e.kind is TrimKind.DRIP_FLASHING]
     for roof in _conditioned_roofs(ctx):
         hosted = [f for f in flashings if f.host_ref == roof.tag]
+        centroid = _centroid(roof.footprint)
+        derived = _derived_flanges(roof, centroid)
+        if roof.form != RoofForm.GABLE.value and derived and not hosted:
+            out.append(_derived_finding(roof, "every", "roof", min(derived.values())))
+            continue
         if roof.form != RoofForm.GABLE.value:
             # A shed/other form has no rake-vs-eave pair to name individually; grade only
             # whether the roof carries a drip edge at all rather than inventing a 4-edge
@@ -182,12 +231,13 @@ def fortified_roof_drip_edge(ctx: CheckContext) -> list[Finding]:
                     element_tags=(roof.tag,),
                     fix_hint="author a Flashing(kind=TrimKind.DRIP_FLASHING, host_ref=...)"))
             continue
-        centroid = _centroid(roof.footprint)
         covered = {_flashing_side(f, centroid) for f in hosted}
         eave_sides, rake_sides = _eave_rake_sides(roof.ridge_direction)
         for side in ("N", "S", "E", "W"):
             label = "eave" if side in eave_sides else "rake"
-            if side in covered:
+            if side not in covered and side in derived:
+                out.append(_derived_finding(roof, side, label, derived[side]))
+            elif side in covered:
                 out.append(Finding(
                     severity=Severity.WARN, check_id=_CHECK_DRIP_EDGE, result=Result.PASS,
                     message=(f"{_ADVISORY}{roof.tag}'s {side} {label} edge carries a drip "

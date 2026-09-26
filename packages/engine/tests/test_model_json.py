@@ -120,13 +120,14 @@ def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
     members = list(_all_members(catlin_payload))
     assert all("material" in member for member in members)
     house = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
-    # The house edge is a continuous standing-seam wrap (flush edge, one skin wall→roof):
-    # the drip-edge band gave way to a corner trim piece, ordered in RF-HOUSE's own
-    # `edge_trim_material` rather than the roofing's stock — the charcoal accent coil that
-    # makes a zero-overhang rake legible. What matters here: it names *a* material, so
-    # neither renderer falls back to category grey.
-    trims = [m for m in house["members"] if "-corner-trim-" in m["key"]]
+    # The house edge is a continuous standing-seam wrap (flush edge, one skin wall→roof)
+    # capped by the formed drip edge, ordered in RF-HOUSE's own `edge_trim_material` rather
+    # than the roofing's stock — the charcoal accent coil that makes a zero-overhang rake
+    # legible. What matters here: it names *a* material, so neither renderer falls back to
+    # category grey — and it carries the ring the viewer sweeps.
+    trims = [m for m in house["members"] if "-drip-edge-" in m["key"]]
     assert trims and all(m["material"] == "metal-dark-exterior" for m in trims)
+    assert all(len(m["section_ring"]) == 4 for m in trims)
     # The ridge cap is part of the same outline, so it follows the same coil — and the
     # garage orders its own, in a different colour, for the same reason.
     house_cap = [m for m in house["members"] if m["category"] == "ridge_cap"]

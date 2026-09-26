@@ -61,11 +61,10 @@ from typehaus.emit.draw.detail_components.dispatch import (
     build_overlay_components,
 )
 from typehaus.emit.draw.detail_components.eave import (
-    box_gutter,
-    eave_labels,
     eave_vent_intake,
     zero_overhang_eave,
 )
+from typehaus.emit.draw.detail_components.eave_overhang import overhang_eave
 from typehaus.emit.draw.detail_components.geometry import (
     condition_opening,
     condition_walls,
@@ -153,7 +152,6 @@ __all__ = [
     "STACK_WIDTH_SHELF",
     "UNDRAWN_RECIPES",
     "basement_framed_wall",
-    "box_gutter",
     "breather_tape",
     "glazed_roof_components",
     "glazed_roof_overlay_for_slice",
@@ -168,7 +166,6 @@ __all__ = [
     "condition_opening",
     "condition_walls",
     "dimension_strings",
-    "eave_labels",
     "eave_vent_intake",
     "faces_soil",
     "flashing_nodes",
@@ -203,4 +200,5 @@ __all__ = [
     "thicken_polyline",
     "window_head_jamb_sill",
     "zero_overhang_eave",
+    "overhang_eave",
 ]

@@ -19,7 +19,7 @@ from typing import Literal
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import TrimKind
 from typehaus.model.registry import register_constructor, register_element
-from typehaus.quantities import Length, Point2D
+from typehaus.quantities import Length, Point2D, inch
 
 
 class _EdgeRun(Element):
@@ -227,6 +227,24 @@ class MovementJoint(_EdgeRun):
     source: str | None = None  # the product sheets the seal and backer are read off
 
 
+class EaveDripEdge(HausModel):
+    """One formed drip-edge piece derived along a roof's eaves and rakes.
+
+    A flange on the deck at the roof's pitch, a bend over the deck edge, a face down over the
+    wall panel heads or the fascia, and a kick out into the gutter — one piece of metal
+    doing the job a level drip and a separate edge trim used to split. Opt-in: a roof that
+    declares none keeps its derived edge trim unchanged.
+    """
+
+    material: str = ""  # empty = the roof's ``edge_trim_material``, else its roofing
+    flange: Length = inch(2)  # on the deck, back from the bend
+    kick: Length = inch(0.5)  # 45° out and down at the face's foot
+    # Face below the fascia top on a rake or an unguttered edge; ``None`` = 1.5". A guttered
+    # eave's face stops at the gutter rim instead.
+    face_drop: Length | None = None
+    edges: tuple[str, ...] = ()  # footprint edges ("east"/...); empty = every eave and rake
+
+
 class EaveTrim(HausModel):
     """A roof's edge closure, declared once and derived along every eave and rake.
 
@@ -246,6 +264,7 @@ class EaveTrim(HausModel):
     soffit_nfva_in2_per_ft: float | None = None
     ridge_vent_nfva_in2_per_ft: float | None = None
     gutter: EaveGutter | None = None
+    drip_edge: EaveDripEdge | None = None
 
 
 for _name, _obj in (
@@ -259,6 +278,7 @@ for _name, _obj in (
     ("MovementJoint", MovementJoint),
     ("FasciaBoard", FasciaBoard),
     ("EaveGutter", EaveGutter),
+    ("EaveDripEdge", EaveDripEdge),
     ("EaveTrim", EaveTrim),
 ):
     register_constructor(_name, _obj)

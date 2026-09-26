@@ -2443,211 +2443,19 @@
       "node": "polyline",
       "points": [
         [
-          423.62500000000006,
+          396.5,
           108.125
         ],
         [
-          427.125,
+          400.0,
           108.125
         ],
         [
-          427.125,
+          400.0,
           120.0
         ],
         [
-          423.62500000000006,
-          120.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "1JXQ975X9E",
-      "tag": "trimmer-FO-S-STAIR-1-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          423.62500000000006,
-          108.125
-        ],
-        [
-          427.125,
-          108.125
-        ],
-        [
-          427.125,
-          120.0
-        ],
-        [
-          423.62500000000006,
-          120.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          423.62500000000006,
-          109.625
-        ],
-        [
-          427.125,
-          109.625
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "1JXQ975X9E",
-      "tag": "trimmer-FO-S-STAIR-1-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          423.62500000000006,
-          118.5
-        ],
-        [
-          427.125,
-          118.5
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "1JXQ975X9E",
-      "tag": "trimmer-FO-S-STAIR-1-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          427.125,
-          108.125
-        ],
-        [
-          430.625,
-          108.125
-        ],
-        [
-          430.625,
-          120.0
-        ],
-        [
-          427.125,
-          120.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "1JXQ975X9E",
-      "tag": "trimmer-FO-S-STAIR-1-1"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          427.125,
-          108.125
-        ],
-        [
-          430.625,
-          108.125
-        ],
-        [
-          430.625,
-          120.0
-        ],
-        [
-          427.125,
-          120.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          427.125,
-          109.625
-        ],
-        [
-          430.625,
-          109.625
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "1JXQ975X9E",
-      "tag": "trimmer-FO-S-STAIR-1-1/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          427.125,
-          118.5
-        ],
-        [
-          430.625,
-          118.5
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "1JXQ975X9E",
-      "tag": "trimmer-FO-S-STAIR-1-1/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          398.25000000000006,
-          108.125
-        ],
-        [
-          401.75,
-          108.125
-        ],
-        [
-          401.75,
-          120.0
-        ],
-        [
-          398.25000000000006,
+          396.5,
           120.0
         ]
       ],
@@ -2663,19 +2471,19 @@
       "node": "hatch",
       "boundary": [
         [
-          398.25000000000006,
+          396.5,
           108.125
         ],
         [
-          401.75,
+          400.0,
           108.125
         ],
         [
-          401.75,
+          400.0,
           120.0
         ],
         [
-          398.25000000000006,
+          396.5,
           120.0
         ]
       ],
@@ -2691,11 +2499,11 @@
       "node": "polyline",
       "points": [
         [
-          398.25000000000006,
+          396.5,
           109.625
         ],
         [
-          401.75,
+          400.0,
           109.625
         ]
       ],
@@ -2711,11 +2519,11 @@
       "node": "polyline",
       "points": [
         [
-          398.25000000000006,
+          396.5,
           118.5
         ],
         [
-          401.75,
+          400.0,
           118.5
         ]
       ],
@@ -2731,19 +2539,19 @@
       "node": "polyline",
       "points": [
         [
-          394.75,
+          393.00000000000006,
           108.125
         ],
         [
-          398.25000000000006,
+          396.5,
           108.125
         ],
         [
-          398.25000000000006,
+          396.5,
           120.0
         ],
         [
-          394.75,
+          393.00000000000006,
           120.0
         ]
       ],
@@ -2759,19 +2567,19 @@
       "node": "hatch",
       "boundary": [
         [
-          394.75,
+          393.00000000000006,
           108.125
         ],
         [
-          398.25000000000006,
+          396.5,
           108.125
         ],
         [
-          398.25000000000006,
+          396.5,
           120.0
         ],
         [
-          394.75,
+          393.00000000000006,
           120.0
         ]
       ],
@@ -2787,11 +2595,11 @@
       "node": "polyline",
       "points": [
         [
-          394.75,
+          393.00000000000006,
           109.625
         ],
         [
-          398.25000000000006,
+          396.5,
           109.625
         ]
       ],
@@ -2807,11 +2615,11 @@
       "node": "polyline",
       "points": [
         [
-          394.75,
+          393.00000000000006,
           118.5
         ],
         [
-          398.25000000000006,
+          396.5,
           118.5
         ]
       ],
@@ -2821,6 +2629,102 @@
       "closed": false,
       "uid": "1JXQ975X9E",
       "tag": "trimmer-FO-S-ERV-CHASE-0-1/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          425.40000000000003,
+          108.125
+        ],
+        [
+          428.9,
+          108.125
+        ],
+        [
+          428.9,
+          120.0
+        ],
+        [
+          425.40000000000003,
+          120.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "trimmer-FO-S-ERV-CHASE-1-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          425.40000000000003,
+          108.125
+        ],
+        [
+          428.9,
+          108.125
+        ],
+        [
+          428.9,
+          120.0
+        ],
+        [
+          425.40000000000003,
+          120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          425.40000000000003,
+          109.625
+        ],
+        [
+          428.9,
+          109.625
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "1JXQ975X9E",
+      "tag": "trimmer-FO-S-ERV-CHASE-1-0/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          425.40000000000003,
+          118.5
+        ],
+        [
+          428.9,
+          118.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "1JXQ975X9E",
+      "tag": "trimmer-FO-S-ERV-CHASE-1-0/flange"
     },
     {
       "space": "model",

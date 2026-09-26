@@ -18,7 +18,7 @@ from typehaus.resolve.model import FramedMember
 # counts as framing here. Mirrored by ``ROOF_SKIN_CATEGORIES`` in ui/src/three/members.ts —
 # keep the two in step.
 ROOF_SKIN_CATEGORIES = values_where(roof_skin=True) | frozenset({
-    "air_gap", "lining", "soffit", "gutter", "ridge_cap", "corner_trim",
+    "air_gap", "lining", "soffit", "gutter", "ridge_cap", "corner_trim", "drip_edge",
 })
 
 

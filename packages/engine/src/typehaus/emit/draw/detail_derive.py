@@ -16,7 +16,8 @@ from typehaus.model.enums import SliceKind
 from typehaus.model.patterns import matches
 from typehaus.model.views import Slice
 from typehaus.quantities import m, pt
-from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
+from typehaus.resolve.geometry_members import member_solid
+from typehaus.resolve.geometry_slice import CutPlane, ring_intervals, slice_solid
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel
 
 
@@ -168,6 +169,29 @@ def _junction_z(model, cond, wall) -> float:
     return (wall.z0_m + top) / 2.0
 
 
+_TRIM_CATEGORIES = frozenset({"fascia", "soffit", "gutter", "drip_edge", "corner_trim"})
+_TRIM_NEAR_M = 1.0
+_TRIM_MARGIN_M = 0.08
+
+
+def _trim_reach(model, cond, direction: str, station: float, u_lo: float,
+                u_hi: float) -> tuple[float, float]:
+    """The u extent of the condition's roof trim cut at ``station`` within 1 m of the wall."""
+    plane = CutPlane(axis=direction, station_m=station)
+    us = [u_lo, u_hi]
+    for roof in model.roofs:
+        if roof.tag not in cond.element_tags:
+            continue
+        for member in roof.members:
+            if member.category not in _TRIM_CATEGORIES:
+                continue
+            solid = member_solid(member)
+            for profile in slice_solid(solid, plane) if solid is not None else ():
+                us += [u for u, _z in profile.outline
+                       if u_lo - _TRIM_NEAR_M <= u <= u_hi + _TRIM_NEAR_M]
+    return min(us), max(us)
+
+
 def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
     (x0, y0), (x1, y1) = wall.axis
     opening = (_condition_opening(model, cond)
@@ -201,6 +225,12 @@ def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
     # sheathing plane is nowhere near centred on its axis, so an axis-centred window leaves
     # a wide empty band on one side and clips the drawing on the other.
     u_lo, u_hi = _wall_u_extent(wall, direction, station, center_u)
+    if cond.kind.value == "wall_roof":
+        # Hold the roof's eave trim (fascia, soffit, drip edge, gutter) whole: an overhung
+        # eave reaches well past a fixed margin, and a crop through the fascia hides it.
+        reach_lo, reach_hi = _trim_reach(model, cond, direction, station, u_lo, u_hi)
+        outboard = max(outboard, reach_hi - u_hi + _TRIM_MARGIN_M)
+        inboard = max(inboard, u_lo - reach_lo + _TRIM_MARGIN_M)
     view = Slice(
         uid="", tag=f"D-{_key_slug(cond.key)}", kind=SliceKind.DETAIL,
         title=(tr.tag if tr is not None else cond.key),

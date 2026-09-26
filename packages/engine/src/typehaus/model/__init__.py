@@ -216,6 +216,7 @@ from typehaus.model.structure import (
 from typehaus.model.trim import (
     DischargeExtension,
     Downspout,
+    EaveDripEdge,
     EaveGutter,
     EaveSoffit,
     EaveTrim,
@@ -322,7 +323,8 @@ __all__ = [
     "Dowel", "IsolationBoard", "Connector", "PlateTie", "KneeBrace", "Wedge", "Railing",
     "Fascia", "Gutter",
     "Flashing", "MovementJoint",
-    "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveTrim", "GlazingPanel", "GlazingTrim",
+    "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveDripEdge", "EaveTrim", "GlazingPanel",
+    "GlazingTrim",
     "Downspout", "DischargeExtension",
     "PlantType", "Plant", "PlantingBed", "GridLayout", "PocketLayout", "AccentRule",
     "Trellis", "RainGarden",

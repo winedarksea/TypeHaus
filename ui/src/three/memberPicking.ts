@@ -119,7 +119,7 @@ export function buildMemberHighlight(
 ): THREE.Object3D | null {
   const group = new THREE.Group();
   let geometry: THREE.BufferGeometry;
-  if (isRakedMember(member)) {
+  if (isRakedMember(member) || member.section_ring) {
     const raked = rakedBoxGeometry(member, center);
     if (!raked) return null;
     geometry = raked;

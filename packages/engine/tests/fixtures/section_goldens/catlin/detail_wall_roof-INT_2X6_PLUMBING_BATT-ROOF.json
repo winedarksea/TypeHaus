@@ -2020,10 +2020,10 @@
     "K2  Foam first lift 1-1/2\" min. Lap onto ridge beam and hanger flanges in one pass.",
     "K3  2x6 eave block on edge on the plate, every bay. ccSPF over it.",
     "K4  Roof-to-wall foam angle: closed-cell fill. No high-expansion foam.",
-    "K5  Drip flange 2\" onto the deck, underside 0.70\" up. Face tight to the trim.",
+    "K5  Formed drip edge, one piece: flange 2\" on the deck at 6:12, nose over the deck edge.",
     "K6  Lap the membrane over the drip. Nothing else reaches that plane.",
-    "K7  6\" box gutter, rim 2.76\" below the deck datum, back sheet behind the trim.",
-    "K8  Corner trim, not fascia and soffit.",
+    "K7  6\" box gutter, rim 2.76\" below the deck datum, back sheet behind the drip face.",
+    "K8  Drip face 4\" over the wall panel heads, kick into the gutter. No fascia, no soffit.",
     "K9  2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Gutter hanger at each standoff."
   ],
   "frame": {

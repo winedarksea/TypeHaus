@@ -132,17 +132,21 @@ not instruction: when it disagrees with this file or the model, it is the one th
   family over minting a letter. Marks must stay unique; the E-602 schedule is keyed on
   them. Also holds the two 24V supply types and the dimmer/timer switch types.
 - `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
-- `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves: drip edge →
+- `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves: roofing →
+  formed drip edge (DERIVED, `RF-HOUSE.eave_trim.drip_edge` → `resolve/roof_drip_edge.py`) →
   box gutter → downspout, each piece's position derived from the one above it so the laps
-  hold. RF-HOUSE has **no fascia** (continuous metal skin ⇒ the resolver's corner trim), so
-  every offset is measured off the corner trim's face, never a fascia's. "Continuous" is
+  hold. One formed piece per edge — pitched flange on the deck, nose, face, kick — replaced
+  both the level authored `TR-RF-DRIP-*` runs and the corner trim (2026-09-26); it is also
+  FORTIFIED §4.5's drip at every eave and rake, graded on its 2" flange. RF-HOUSE has **no
+  fascia**, so every offset is measured off the drip edge's face (the old corner trim's
+  plane, 1.25" out), never a fascia's. "Continuous" is
   `Material.skin_family`, not tag equality — the walls are exposed-fastener PBR and the roof
   is mechanically seamed, and they read as one skin because both declare
   `skin_family="standing-seam"`. Drop that on either and the flush edge silently reverts to
   a fascia-and-drip-edge detail nobody has drawn. The lap
   order is enforced by `packages/engine/tests/test_catlin_eave_water.py` — read it before
   moving any of these numbers. All three pieces are ordered in `_CHAIN_MATERIAL`, the
-  house's one exterior dark, so the eave line matches the rake's corner trim.
+  house's one exterior dark, so the eave line matches the rake's drip edge.
 - `typehaus/library/placeables/*.py` (inside the engine, not this directory) — the shared FixtureType/
   ApplianceType/FurnitureType *catalog*, wired in by `plan/manifest.py`. NOT editable: it
   uses `frozenset(...)`, which the dialect forbids. Type libraries stay non-editable;
@@ -1852,9 +1856,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   assertion (`test_model_json.py`).**
   - Fascia (6 pieces: 2 eaves + 4 rakes) is named on `FasciaBoard` inside `_GARAGE_EAVE_TRIM`
     (`plan/storeys/garage.py`). Ridge cap is `Roof.edge_trim_material` on `RF-GARAGE`, which
-    also drives corner trim (`resolve/roof_trim.py::_edge_trim_material`) — this roof's 16"
-    overhang frames fascia+soffit and no corner trim, the only reason naming it recolours
-    exactly one member. A zero-overhang roof would spread the colour to corner trim too.
+    also drives the formed drip edge (`resolve/roof_trim.py::_edge_trim_material`) — so the
+    garage's and canopy's `EaveDripEdge` legs (24 each) take the same dark as the cap and
+    the fascia they lap. A spec'd `EaveDripEdge.material` would override it.
   - **Changing the accent colour is a two-place edit** — miss one and the cap and fascia
     drift apart, reading as a mistake.
   - Fascia substrate is formed metal over a wood nailer, not 5/4 cellular PVC — dark colour on
@@ -1877,6 +1881,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - Both bands are banded, not full height; the band pushes the stem's exterior face 0.30"
     east (inside `_axis_match`'s 1/2" tolerance). **Do not recess the EPS to hold the face
     still** — that re-opens the old rain shelf.
+
+- **A-585 is `TR-CATLIN-GARAGE-EAVE`** (overlay `overhang-eave`, `notes/garage_eave_detail.md`),
+  listed BEFORE `TR-CATLIN-EAVE` because transition matching is first-match. The sheet only
+  names the derived fascia, soffit, drip edge and K-gutter the cut draws — no schematic metal.
 
 ### Exterior colour, balcony and veneer
 

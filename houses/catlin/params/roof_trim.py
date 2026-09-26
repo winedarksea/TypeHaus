@@ -6,25 +6,20 @@ edges) get the water-management pieces the derived roof-edge trim does NOT provi
 **RF-HOUSE has no fascia at all**, and that is the fact every offset here is measured from.
 Its standing-seam siding and standing-seam roofing are one continuous skin over a flush
 zero-overhang edge, so ``resolve/roof_trim.py`` takes the ``continuous_skin_cladding`` path:
-no fascia boards, no soffit, no drip-edge cladding band — just a **corner trim** angle,
-1.25" thick, hung outboard of the footprint edge, its top flush with the roofing and a 2"
-leg lapping down over the head of the wall panels. That angle is the derived counterpart of
-the reference's "stainless steel flashing behind gutter over wall furring": it already caps
-the wall cladding's head from outboard, so authoring a counter-flashing here would put two
-pieces of metal in one place. What it does *not* do is get the water into a trough, and
-that is the job left for this module.
+no fascia boards, no soffit, no edge band. ``RF-HOUSE.eave_trim.drip_edge`` then derives
+ONE formed drip edge per edge (``resolve/roof_drip_edge.py``): a flange on the deck at the
+6:12 pitch, a nose over the deck edge, a face on the old corner trim's plane (1.25" out,
+its sheet 0.42" thick) with a 4" leg down over the wall panel heads, and a kick into the
+trough. It is derived because it has to rake: an authored ``Flashing`` has one elevation.
 
 The chain, in which **every higher piece sheds onto the next lower one** so water can never
 get behind the siding:
 
-    roofing → corner trim (derived) → drip edge → box gutter → downspout
+    roofing → formed drip edge (derived) → box gutter → downspout
 
-- a DRIP EDGE whose flange lies ON the top deck, under the field underlayment, and whose
-  turn-down hangs tight outside the corner trim's face and drops below the gutter rim, so
-  runoff lands in the trough and never behind its back sheet;
-- a 6" BOX GUTTER hung **tight to the wall plane** — its back sheet tucked *behind* the
-  corner trim's outer face rather than standing off in mid-air, which is what closes the
-  open slot that used to run the length of the eave;
+- a 6" BOX GUTTER hung **tight to the wall plane** — its back sheet tucked *behind* the drip
+  edge's face rather than standing off in mid-air, which is what closes the open slot that
+  used to run the length of the eave; the drip's kick lands inside the trough;
 - a DOWNSPOUT per eave, because the gutters slope to one, plus the S-5! securement clamps
   (plan/mep.py) that steady it.
 
@@ -36,8 +31,8 @@ The reference mounts the gutter the same way: `gutter_back_x = x_fur1 + furring_
 puts the back sheet essentially *on* the cladding plane, with the roofing running out past
 it so the water has to fall inside.
 
-RF-HOUSE has zero authored overhang, so no soffit exists or is needed. Garage gutter/
-drip stay deferred with the garage/truss roof work.
+RF-HOUSE has zero authored overhang, so no soffit exists or is needed. The garage's drip
+edge and K-gutter derive from its own ``EaveTrim`` (plan/storeys/garage.py).
 
 Not `# haus: editable`: trim runs are not UI-movable elements (only params-generated
 geometry lives here), so the editable-writeback rule does not apply.
@@ -63,19 +58,12 @@ The roof is 5/8" plywood straight on the I-joists with a fully-adhered butyl mem
 and the panel clipped to that (plan/assemblies.py ROOF, flash-and-batt in the bay
 under IRC R806.5 item 5.1.3).
 
-**The chain itself does not change — only the plane it hangs from.** The drip flashing lies
-ON the structural deck and the membrane laps OVER it, so nothing else in the chain may reach
-that plane; the plane is 0.625" above the deck. Every piece below rides that number down,
-which is the point of deriving each from the one above it. Two consequences worth stating,
-because both look wrong at a glance and are not:
-
-- the corner trim's bottom edge and the gutter's rim are BELOW the deck plane
-  (``_TRIM_BOTTOM_IN`` is negative). That is correct: the trim's 4" leg laps DOWN over the
-  wall panel heads, and with only 0.67" of roof stack left above the deck there is nowhere
-  else for 4" of leg to go;
-- the drip edge's turn-down is 5.5" and reaches well past the trough's rim, because the
-  flange it hangs from is set by the deck plane. It lands inside the trough and well clear
-  of its floor, which is all the piece has to do.
+**The chain hangs from the deck top, 0.625" above the deck plane.** The drip edge's flange
+lies ON the structural deck and the membrane laps OVER it. One consequence worth stating,
+because it looks wrong at a glance and is not: the drip edge's foot and the gutter's rim are
+BELOW the deck plane (``_TRIM_BOTTOM_IN`` is negative). The face's 4" leg laps DOWN over
+the wall panel heads, and with only 0.67" of roof stack above the deck there is nowhere else
+for 4" of leg to go.
 """
 
 from __future__ import annotations
@@ -112,89 +100,53 @@ _EAVE_DECK = _PLATE_TOP + inch(_DECK_RISE_IN)  # deck plane at the eave edge (ea
 
 # The roof stack is offset perpendicular to the slope; an authored elevation is vertical.
 _SLOPE_FACTOR = math.hypot(1.0, 6.0 / 12.0)  # 6:12 -> 1.1180
-# The top deck's upper surface: the drip flashing lies on it and the underlayment laps over
-# the flashing, so nothing in the chain may stand above this plane or the underlayment
-# cannot bond to the deck it is sealing.
-#: The values these two have had, kept beside them so the revert is a line and not a
-#: re-derivation: 7.165 / 7.475 under the screwed nailbase over 6" of polyiso, and
-#: 0.5 / 4.25 under the vented batten roof before it.
-_DRIP_CEILING_IN = 0.625 * _SLOPE_FACTOR     # 0.70" — plywood deck surface, vertical
+#: The values this has had, kept beside it so the revert is a line and not a
+#: re-derivation: 7.475 under the screwed nailbase over 6" of polyiso, 4.25 under the vented
+#: batten roof before it.
 _CLADDING_HEAD_IN = 0.665 * _SLOPE_FACTOR    # 0.74" — roofing underside == wall panel heads
 
-# The derived corner trim (resolve/roof_trim.py::_corner_trim_members): a formed angle 1.25"
-# deep in plan, hung outboard of the footprint edge, with a leg down over the wall panel
-# heads. Its sheet's *inner* face and its lower edge are the two faces everything below
-# registers against.
+# The derived drip edge's FACE (resolve/roof_drip_edge.py, on the plane the corner trim it
+# replaced stood on): 1.25" out from the footprint edge, one sheet thick at the outboard side
+# of that, with a 4" leg down over the wall panel heads. Its sheet's *inner* face and its
+# foot are the two faces everything below registers against.
 #
-# **Both numbers are transcriptions of the resolver's, and both were wrong.** The leg was
-# read as 2" — it went to 4" when the rake trim had to double as a barge board — so every
-# piece hung below it sat 2" high, and the trough's rim ended up above the trim's lower edge
-# instead of a lap under it. And the trim was read as a solid 1.25" billet, when
-# ``trim_bands.formed_edge_bands`` makes it sheet metal: the face is one shell thick at the
-# *outboard* side of that 1.25", which left the whole 0.42" of it for the gutter's back sheet
-# to be drawn inside of. Two pieces of metal, one place.
-_TRIM_FACE_IN = 1.25
+# **Both numbers are transcriptions of the resolver's.** Reading the leg as 2" once hung
+# every piece below it 2" high, and reading the face as a solid 1.25" billet drew the
+# gutter's back sheet inside it. Two pieces of metal, one place.
+_TRIM_FACE_IN = 1.25                         # resolve/roof_trim.py::_CORNER_TRIM_THICKNESS_M
 _TRIM_LEG_IN = 4.0                           # resolve/roof_trim.py::_CORNER_TRIM_LEG_M
-#: The formed face's own thickness — ``trim_bands``' shell rule, which at a 4" leg is only
-#: ever bounded by the plan depth.
+#: The formed face's own thickness — ``trim_bands``' shell rule, bounded by the plan depth.
 _TRIM_SHEET_IN = min(0.5, _TRIM_FACE_IN / 3.0)          # 0.42"
 #: NEGATIVE, and correctly so: a 4" leg hung from a roofing underside only 0.74" above the
 #: deck reaches 3.26" BELOW it, lapping down over the wall panel heads.
-_TRIM_BOTTOM_IN = _CLADDING_HEAD_IN - _TRIM_LEG_IN      # -3.26" (was +3.88")
+_TRIM_BOTTOM_IN = _CLADDING_HEAD_IN - _TRIM_LEG_IN      # -3.26"
 
-#: The coil the whole chain is ordered in. The derived corner trim above it is
-#: already `RF-HOUSE.edge_trim_material` — the house's one exterior dark — and the gutter hangs
-#: directly under it on the eaves, 6" of it, so leaving the trough in mill aluminium put a pale
-#: grey band along the two edges where the dark outline is supposed to be continuous: the rakes
-#: read black and the eaves read weak grey. The leader takes the same coil, as a gutter's leader
-#: does. Ordinary stock — every gutter manufacturer's colour card carries the roof coil's darks.
+#: The coil the whole chain is ordered in — `RF-HOUSE.edge_trim_material`, the house's one
+#: exterior dark, which the derived drip edge is already in. A mill-aluminium trough under it
+#: put a pale band along the eaves where the dark outline is supposed to be continuous. The
+#: leader takes the same coil, as a gutter's leader does.
 _CHAIN_MATERIAL = "metal-dark-exterior"
 
-#: The overlap every joint in the chain takes. Half an inch is also the thickness the
-#: boxes-only IR draws sheet metal at (resolve/trim_bands.py::GUTTER_SHELL_M), so a lap of
-#: one nominal shell is the smallest one that still reads as a lap in the model.
+#: The overlap every joint in the chain takes. Half an inch is also the thickness the IR
+#: draws sheet metal at (resolve/trim_bands.py::GUTTER_SHELL_M), so a lap of one nominal
+#: shell is the smallest one that still reads as a lap in the model.
 _LAP_IN = 0.5
 
 # --- Box gutter ---------------------------------------------------------------------------
-# 6" of trough, hung with its back sheet tucked a lap *behind* the corner trim's outer face,
-# so the trim's lower leg sheds onto the back sheet rather than past it into the gap. The rim
-# rides a lap above the trim's bottom edge — high enough to make that lap, low enough to
-# stay clear of the top deck (the rim must stay under _DRIP_CEILING_IN, or the gutter lifts
-# the underlayment off the deck it has to bond to).
+# 6" of trough, hung with its back sheet tucked a lap *behind* the drip edge's face, so the
+# face and its kick shed into the trough rather than past it into the gap. The rim rides a
+# lap above the face's foot — high enough to make that lap, low enough to stay clear of the
+# deck top (or the gutter lifts the underlayment off the deck it has to bond to).
 _GUTTER_THICK_IN = 6.0                       # channel width, out from the back sheet's face
 _GUTTER_DEPTH = inch(5)                      # channel height
-#: Inner face of the back sheet. A lap *behind* the trim's face means behind the face's own
-#: sheet, not behind the plan depth that sheet hangs at the end of.
+#: Inner face of the back sheet. A lap *behind* the face means behind the face's own sheet,
+#: not behind the plan depth that sheet hangs at the end of.
 _GUTTER_BACK_IN = _TRIM_FACE_IN - _TRIM_SHEET_IN - _LAP_IN   # 0.33"
-_GUTTER_RIM_IN = _TRIM_BOTTOM_IN + _LAP_IN                   # -2.76" (was +4.38")
+_GUTTER_RIM_IN = _TRIM_BOTTOM_IN + _LAP_IN                   # -2.76"
 
 #: Mid-width of the trough, where the leader takes its outlet. The shell closes a half-shell
 #: at each side.
 _TROUGH_MID_IN = _GUTTER_BACK_IN + _LAP_IN + (_GUTTER_THICK_IN - 2.0 * _LAP_IN) / 2.0
-
-# --- Drip edge ---------------------------------------------------------------------------
-# A bent angle (resolve/trim_bands.py::drip_edge_bands): a flat leg lying **on the top deck**
-# and a turn-down at its outboard end. Nailed to the deck, membrane lapped over the flange,
-# then the turn-down drops into the trough.
-#
-# **Where the turn-down hangs is the published detail, not the trough's mid-width.** Both
-# manufacturer eave-with-gutter details (Best Buy Metals install guide p.26, Western States
-# WSD-D4) hang the drip face tight to the fascia line, the gutter back tucked behind it and
-# only the kick inside the trough. It used to hang at the trough mid-width, 3.3" out past the
-# cladding with a 5" flange cantilevered over nothing. Now it hugs the corner trim's face.
-#: The deck stops at the girt layer's face; the PBR panel stands 1 1/4" beyond it.
-_DECK_EDGE_IN = -1.25
-#: Flange bearing ON the plywood, measured off the deck edge — not off the cladding face,
-#: which left 1/4" of it on wood.
-_DRIP_DECK_BEARING_IN = 2.0
-_DRIP_INNER_IN = _DECK_EDGE_IN - _DRIP_DECK_BEARING_IN        # -3.25"
-#: The turn-down's inner face on the corner trim's outer face.
-_DRIP_THICK_IN = _TRIM_FACE_IN + _LAP_IN - _DRIP_INNER_IN     # 5.0"
-#: The flange's *underside* is the deck surface; the drawn shell is a lap thick, so the top
-#: face — the one the underlayment bonds over — stands exactly one nominal sheet above it.
-_DRIP_TOP_IN = _DRIP_CEILING_IN + _LAP_IN
-#: Reaches 2" below the trough's rim and stops 2.4" above its floor.
-_DRIP_DEPTH = inch(5.5)
 
 
 def _above_deck(vertical_in: float):
@@ -214,13 +166,12 @@ def _run(x):
 
 
 def _eave_water(side: str, index: int, eave_x, outward: float):
-    """One eave edge's drip edge and box gutter; ``outward`` is -1 west / +1 east.
+    """One eave edge's box gutter; ``outward`` is -1 west / +1 east.
 
     Both runs go south→north (+y), whose left-hand normal (resolve/geometry.py::normal,
     90 deg CCW) points west (-x). The house is east of the west eave and west of the east
     eave, so the building is on the *right* of the west run and on the *left* of the east
-    run — which is what tells the gutter which sheet is its back, and the drip edge which
-    end its turn-down hangs off. Get it wrong on the drip and it points back at the wall.
+    run — which is what tells the gutter which sheet is its back.
     """
     back_side = "right" if outward < 0 else "left"
 
@@ -228,13 +179,7 @@ def _eave_water(side: str, index: int, eave_x, outward: float):
         offset = inch(inches_val)
         return eave_x + offset if outward > 0 else eave_x - offset
 
-    drip = Flashing(
-        uid=f"RTFF0{index}AAAA", tag=f"TR-RF-DRIP-{side}", kind=TrimKind.DRIP_FLASHING,
-        path=_run(out(_DRIP_INNER_IN + _DRIP_THICK_IN / 2.0)),
-        top_elevation=_above_deck(_DRIP_TOP_IN), depth=_DRIP_DEPTH,
-        thickness=inch(_DRIP_THICK_IN), material=_CHAIN_MATERIAL,
-        host_ref="RF-HOUSE", back_side=back_side)
-    gutter = Gutter(
+    return Gutter(
         uid=f"RTGT0{index}AAAA", tag=f"TR-RF-GUTTER-{side}", kind=TrimKind.GUTTER,
         path=_run(out(_GUTTER_BACK_IN + _GUTTER_THICK_IN / 2.0)),
         top_elevation=_above_deck(_GUTTER_RIM_IN), depth=_GUTTER_DEPTH,
@@ -242,7 +187,6 @@ def _eave_water(side: str, index: int, eave_x, outward: float):
         slope=f'1/16 in/ft to the north-end {side} downspout',
         downspout_ref=f"TR-RF-LEADER-{side}",
         back_side=back_side)
-    return [drip, gutter]
 
 
 # --- Downspouts ---------------------------------------------------------------------------
@@ -303,57 +247,11 @@ def _discharge(side: str, leader_x) -> dict:
             inlet_invert=inlet, outlet_invert=outlet))
 
 
-# --- Rake drip edge (FORTIFIED Roof §4.5 wants one at every eave AND every rake) -----------
-# The corner trim (resolve/roof_trim.py::_corner_trim_members) already follows the roof
-# slope up the two gable rakes to the ridge; this module's authored ``Flashing`` has one
-# elevation per run and cannot re-derive a sloped member, so it is not trying to. What it
-# gives each rake instead is a short drip-edge return at EACH of its two corners — where the
-# rake meets the west eave and where it meets the east eave — at the same deck-plane
-# elevation the eave piece already bears at: a modeled part of record for FORTIFIED's rake
-# line item, coexisting with the sloped corner trim above it rather than replacing it.
-#
-# **A single run the full 36'+ width of the gable would be wrong twice over.** The whole
-# span sits at the low eave elevation, so past the two corners — under the rest of the rake,
-# where the roof climbs to the ridge — it would read as a bar cut straight across the middle
-# of the triangular gable rather than a return hugging its edge. And running the full width
-# would sit both ends exactly on top of the west/east eave runs' own footprint, the same
-# square inches of metal modeled twice at all four house corners. Two short stubs, one per
-# corner, fix both: short enough to read as a return and not a rake run, long enough to lap
-# onto the eave piece it meets.
-_RAKE_RETURN_IN = 12.0  # 1'-0" — a token corner return; the sloped corner trim already
-                        # carries the rake's real water-shedding job.
-
-
-def _rake_corner_drips(side: str, w_index: int, e_index: int, y):
-    outward = -1.0 if side == "S" else 1.0
-    # ** THE RETURNS RUN ALONG X, THE EAVES ALONG Y, SO THEY CANNOT SHARE `_eave_water`'s
-    # FORMULA. ** `back_side` names the side of p0->p1 facing the BUILDING, and both corners
-    # below are authored west->east (x0 < x1), so d = (+1, 0) and the left-hand normal
-    # `normal(d) = (-dy, dx)` is (0, +1) — north. On the S rake the building is north of the
-    # run, so back_side is "left"; on the N rake it is south, so "right". That is the
-    # opposite of the eaves, whose paths run along +y with `outward` along x. Carrying the
-    # eave formula here inverted all four returns and pointed every turn-down at the wall.
-    back_side = "left" if outward < 0 else "right"
-    top_elevation = _above_deck(_DRIP_TOP_IN)
-    corners = (
-        (w_index, "", _EAVE_X_W, _EAVE_X_W + inch(_RAKE_RETURN_IN)),
-        (e_index, "-E", _EAVE_X_E - inch(_RAKE_RETURN_IN), _EAVE_X_E),
-    )
-    return [
-        Flashing(
-            uid=f"RTFR0{index}AAAA", tag=f"TR-RF-DRIP-{side}{suffix}",
-            kind=TrimKind.DRIP_FLASHING, path=(pt(x0, y), pt(x1, y)),
-            top_elevation=top_elevation, depth=_DRIP_DEPTH,
-            thickness=inch(_DRIP_THICK_IN), material=_CHAIN_MATERIAL,
-            host_ref="RF-HOUSE", back_side=back_side)
-        for index, suffix, x0, x1 in corners
-    ]
-
-
+# FORTIFIED Roof §4.5's drip at every eave AND rake is the derived drip edge on all four
+# RF-HOUSE edges (checks/structural/fortified_roof.py grades its flange on the deck).
 ATTIC_ELEMENTS = [
-    *_eave_water("W", 1, _EAVE_X_W, -1.0), *_eave_water("E", 2, _EAVE_X_E, 1.0),
+    _eave_water("W", 1, _EAVE_X_W, -1.0), _eave_water("E", 2, _EAVE_X_E, 1.0),
     _leader("W", 1, _EAVE_X_W, -1.0), _leader("E", 2, _EAVE_X_E, 1.0),
-    *_rake_corner_drips("S", 1, 3, _EAVE_Y0), *_rake_corner_drips("N", 2, 4, _EAVE_Y1),
 ]
 
 

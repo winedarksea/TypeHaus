@@ -44,11 +44,16 @@ def emit_framing_cuts(b, model, hosts, plane, crop, representative_roles=()) -> 
             continue
         missed: dict[str, list] = {}
         cut: set[str] = set()
+        trusses = _trusses_by_uid(host)
         for part in element.parts:
             catalog = part.catalog
             if catalog is None:
                 continue
             profiles = slice_part(part, plane)
+            if part.member_uid in trusses and _emit_truss(
+                    b, trusses[part.member_uid], part, plane, crop, host.uid,
+                    model.plan.library, bool(profiles)):
+                continue
             if not profiles and catalog.role in representative_roles:
                 if _u_span_overlaps_crop(part, plane, crop):
                     missed.setdefault(catalog.role, []).append(part)
@@ -67,6 +72,27 @@ def emit_framing_cuts(b, model, hosts, plane, crop, representative_roles=()) -> 
             for part in parts:
                 _emit_part_profiles(b, slice_part(part, stand_in), crop, host.uid,
                                     part.catalog, model.plan.library)
+
+
+def _trusses_by_uid(host) -> dict:
+    """The host's roof trusses that carry a ``TrussShape``, keyed as their IR part is."""
+    from typehaus.resolve.framing.roof_gable import ROOF_TRUSS_CATEGORY
+    from typehaus.resolve.geometry_members import member_uid
+
+    return {member_uid(member): member for member in getattr(host, "members", ())
+            if member.category == ROOF_TRUSS_CATEGORY and member.truss is not None}
+
+
+def _emit_truss(b, member, part, plane, crop, uid, library, is_cut) -> bool:
+    """A truss as its chords and webs, not its envelope box (``section_truss``)."""
+    from typehaus.emit.draw.section_truss import emit_truss_cut
+    from typehaus.resolve.framing.profiles import cross_section
+
+    catalog = part.catalog
+    material = catalog.material_ref
+    pattern = (library_hatch(library, material) or "metal") if material else "lumber"
+    return emit_truss_cut(b, member, cross_section(member.profile), plane, crop, uid,
+                          catalog.name, pattern, material, is_cut)
 
 
 def emit_floor_deck_cuts(b, model, plane, crop) -> None:

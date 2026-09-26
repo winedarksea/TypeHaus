@@ -1,10 +1,10 @@
 """``Transition.overlay`` recipe id → detail component vocabulary.
 
-An overlay id (``zero-overhang-eave``, ``basement-framed-wall``, ``rim-band-air-seal``,
-``stack-width-shelf`` …) is authored on a ``Transition`` in the house's plan source. This
-module is where those ids stop being inert strings printed in a title block and start
-selecting what gets drawn: it is the single dispatch point for the whole per-detail
-vocabulary, and every recipe below hangs off it.
+An overlay id (``zero-overhang-eave``, ``overhang-eave``, ``basement-framed-wall``,
+``rim-band-air-seal``, ``stack-width-shelf`` …) is authored on a ``Transition`` in the
+house's plan source. This module is where those ids stop being inert strings printed in a
+title block and start selecting what gets drawn: it is the single dispatch point for the
+whole per-detail vocabulary, and every recipe below hangs off it.
 
 Two rules keep the registry honest:
 
@@ -19,6 +19,7 @@ Two rules keep the registry honest:
 from __future__ import annotations
 
 from typehaus.emit.draw.detail_components.eave import zero_overhang_eave
+from typehaus.emit.draw.detail_components.eave_overhang import overhang_eave
 from typehaus.emit.draw.detail_components.geometry import condition_opening, condition_walls
 from typehaus.emit.draw.detail_components.opening import (
     concrete_opening_bucks,
@@ -46,6 +47,15 @@ def _recipe_zero_overhang_eave(model, context) -> list[IRNode]:
         return []
     return zero_overhang_eave(model, wall, context.crop, context.direction, context.station,
                               context.scale)
+
+
+def _recipe_overhang_eave(model, context) -> list[IRNode]:
+    """Overhung eave: leaders over the derived fascia, soffit, drip edge and gutter."""
+    wall = next((w for w in context.walls if not w.is_foundation), None)
+    if wall is None:
+        return []
+    return overhang_eave(model, wall, context.crop, context.direction, context.station,
+                         context.scale)
 
 
 def _recipe_basement_framed_wall(model, context) -> list[IRNode]:
@@ -128,6 +138,7 @@ def _recipe_lvl_ridge_hanger(model, context) -> list[IRNode]:
 #: overlay id → recipe. Every id Catlin authors that has drawable vocabulary appears here.
 OVERLAY_RECIPES = {
     "zero-overhang-eave": _recipe_zero_overhang_eave,
+    "overhang-eave": _recipe_overhang_eave,
     "basement-framed-wall": _recipe_basement_framed_wall,
     "rim-band-air-seal": _recipe_rim_band_air_seal,
     "stack-width-shelf": _recipe_stack_width_shelf,

@@ -64,7 +64,8 @@ def test_every_finding_is_advisory_and_says_what_it_did_not_grade(
     for findings in (sealed_deck, drip_edge):
         for finding in findings:
             if finding.result is Result.PASS:
-                assert "presence only" in finding.message
+                assert ("presence only" in finding.message
+                        or "flange length graded" in finding.message)
                 assert "documentation facts this model does not carry" in finding.message
 
 
@@ -101,41 +102,55 @@ def test_the_house_roof_has_a_drip_edge_on_every_footprint_edge(drip_edge) -> No
     assert len(rake_msgs) == 2, "the north/south rakes"
 
 
-def test_removing_a_rake_flashing_fails_that_edge_only(ctx) -> None:
-    """The branch must still bite. Strip catlin's south rake flashing back off and the
-    check reports exactly that edge broken, not the whole roof.
+def _with_house_drip(ctx, keep):
+    """``ctx`` with RF-HOUSE's derived drip-edge members filtered/edited by ``keep``."""
+    import dataclasses
 
-    The south rake is two short corner returns (params/roof_trim.py::_rake_corner_drips,
-    ``TR-RF-DRIP-S`` at the west corner and ``TR-RF-DRIP-S-E`` at the east), so both have to
-    go — leaving either one behind still covers the S side, which is the point of authoring
-    two of them."""
-    from typehaus.model.trim import Flashing
+    roofs = [dataclasses.replace(roof, members=tuple(
+        m for m in (keep(m) if m.category == "drip_edge" else m for m in roof.members)
+        if m is not None)) if roof.tag == "RF-HOUSE" else roof for roof in ctx.model.roofs]
 
-    by_tag = {e.tag: e for e in ctx.plan.all_elements()}
-    del by_tag["TR-RF-DRIP-S"]
-    del by_tag["TR-RF-DRIP-S-E"]
-
-    class _Plan:
-        def __init__(self, real):
-            self._real = real
-
-        def all_elements(self):
-            return list(by_tag.values())
-
+    class _Model:
         def __getattr__(self, name):
-            return getattr(self._real, name)
+            return roofs if name == "roofs" else getattr(ctx.model, name)
 
-    stripped_ctx = type(ctx)(plan=_Plan(ctx.plan), model=ctx.model,
-                             preferences=ctx.preferences, profile=ctx.profile,
-                             resolve_findings=ctx.resolve_findings)
-    findings = fortified_roof_drip_edge(stripped_ctx)
-    house = [f for f in findings if f.element_tags[:1] == ("RF-HOUSE",)]
+    stripped = type(ctx)(plan=ctx.plan, model=_Model(), preferences=ctx.preferences,
+                         profile=ctx.profile, resolve_findings=ctx.resolve_findings)
+    return [f for f in fortified_roof_drip_edge(stripped)
+            if f.element_tags[:1] == ("RF-HOUSE",)]
+
+
+def test_the_house_drip_edge_is_the_derived_formed_piece(drip_edge) -> None:
+    """All four RF-HOUSE edges are credited to the one formed piece, graded on its flange."""
+    house = [f for f in drip_edge if f.element_tags[:1] == ("RF-HOUSE",)]
+    assert all('formed drip edge (derived), 2.00" on the deck' in f.message for f in house)
+
+
+def test_removing_a_rake_drip_edge_fails_that_edge_only(ctx) -> None:
+    """The branch must still bite: strip the south rake's derived piece (``rake-lo-*``; the
+    ridge runs N-S, so the low rake is the south one) and exactly that edge FAILs."""
+    house = _with_house_drip(
+        ctx, lambda m: None if m.child_key.startswith("rake-lo-") else m)
     broken = [f for f in house if f.result is Result.FAIL]
     assert len(broken) == 1
     assert "S rake edge" in broken[0].message
-    still_ok = [f for f in house if f.result is Result.PASS]
-    assert len(still_ok) == 3
-    assert Flashing  # imported for readability of the fixture setup above
+    assert len([f for f in house if f.result is Result.PASS]) == 3
+
+
+def test_a_short_flange_fails_on_geometry_not_presence(ctx) -> None:
+    """A piece that is present but laps only 1" onto the deck is not §4.5's drip edge."""
+    import dataclasses
+
+    def shorten(m):
+        if not (m.child_key.startswith("eave-hi-") and m.child_key.endswith("-flange")):
+            return m
+        ring = tuple((s * 0.5, t) for s, t in m.section_ring)
+        return dataclasses.replace(m, section_ring=ring)
+
+    house = _with_house_drip(ctx, shorten)
+    broken = [f for f in house if f.result is Result.FAIL]
+    assert len(broken) == 1
+    assert "E eave edge" in broken[0].message and '1.00" on the deck' in broken[0].message
 
 
 def test_the_load_path_check_re_presents_uplift_paths_roof_findings(load_path) -> None:

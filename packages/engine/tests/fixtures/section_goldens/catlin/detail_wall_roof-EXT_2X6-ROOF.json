@@ -513,120 +513,6 @@
       "node": "polyline",
       "points": [
         [
-          436.00000000000006,
-          252.0737712429687
-        ],
-        [
-          441.0,
-          252.0737712429687
-        ],
-        [
-          441.0,
-          252.5737712429687
-        ],
-        [
-          436.00000000000006,
-          252.5737712429687
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "RTFF02AAAA-00-lap",
-      "tag": "TR-RF-DRIP-E-1-LAP"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          436.00000000000006,
-          252.0737712429687
-        ],
-        [
-          441.0,
-          252.0737712429687
-        ],
-        [
-          441.0,
-          252.5737712429687
-        ],
-        [
-          436.00000000000006,
-          252.5737712429687
-        ]
-      ],
-      "pattern": "metal-dark-exterior",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "metal-dark-exterior",
-      "fill": "#1c1f24"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          440.50000000000006,
-          247.07377124296866
-        ],
-        [
-          441.0,
-          247.07377124296866
-        ],
-        [
-          441.0,
-          252.0737712429687
-        ],
-        [
-          440.50000000000006,
-          252.0737712429687
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "RTFF02AAAA-00-drip",
-      "tag": "TR-RF-DRIP-E-1-DRIP"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          440.50000000000006,
-          247.07377124296866
-        ],
-        [
-          441.0,
-          247.07377124296866
-        ],
-        [
-          441.0,
-          252.0737712429687
-        ],
-        [
-          440.50000000000006,
-          252.0737712429687
-        ]
-      ],
-      "pattern": "metal-dark-exterior",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "metal-dark-exterior",
-      "fill": "#1c1f24"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           439.58333334645675,
           243.61849260251867
         ],
@@ -1948,55 +1834,55 @@
       "node": "polyline",
       "points": [
         [
-          439.25,
-          252.260842930227
+          436.0000000000001,
+          254.16461873828115
         ],
         [
-          440.50000000000006,
-          252.260842930227
+          438.00000000000006,
+          253.16461873828112
         ],
         [
-          440.50000000000006,
-          252.67750959689366
+          438.00000000000006,
+          252.6987712429687
         ],
         [
-          439.25,
-          252.67750959689366
+          436.0000000000001,
+          253.6987712429687
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.18,
+      "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CARF01AAAA",
-      "tag": "eave-hi-corner-trim-cleat"
+      "tag": "eave-hi-drip-edge-flange"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          439.25,
-          252.260842930227
+          436.0000000000001,
+          254.16461873828115
         ],
         [
-          440.50000000000006,
-          252.260842930227
+          438.00000000000006,
+          253.16461873828112
         ],
         [
-          440.50000000000006,
-          252.67750959689366
+          438.00000000000006,
+          252.6987712429687
         ],
         [
-          439.25,
-          252.67750959689366
+          436.0000000000001,
+          253.6987712429687
         ]
       ],
       "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
-      "uid": null,
+      "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
       "fill": "#1c1f24"
     },
@@ -2005,55 +1891,55 @@
       "node": "polyline",
       "points": [
         [
-          440.08333314960635,
-          248.1184926025187
+          438.00000000000006,
+          253.16461873828118
         ],
         [
-          440.5000001574803,
-          248.1184926025187
+          440.5000000000001,
+          252.89684009783113
         ],
         [
-          440.5000001574803,
-          252.260842930227
+          440.5000000000001,
+          252.4309926025187
         ],
         [
-          440.08333314960635,
-          252.260842930227
+          438.00000000000006,
+          252.6987712429687
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.18,
+      "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CARF01AAAA",
-      "tag": "eave-hi-corner-trim-face"
+      "tag": "eave-hi-drip-edge-nose"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          440.08333314960635,
-          248.1184926025187
+          438.00000000000006,
+          253.16461873828118
         ],
         [
-          440.5000001574803,
-          248.1184926025187
+          440.5000000000001,
+          252.89684009783113
         ],
         [
-          440.5000001574803,
-          252.260842930227
+          440.5000000000001,
+          252.4309926025187
         ],
         [
-          440.08333314960635,
-          252.260842930227
+          438.00000000000006,
+          252.6987712429687
         ]
       ],
       "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
-      "uid": null,
+      "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
       "fill": "#1c1f24"
     },
@@ -2062,55 +1948,112 @@
       "node": "polyline",
       "points": [
         [
-          439.666666496063,
+          440.0833333333335,
+          252.475622375927
+        ],
+        [
+          440.5000000000001,
+          252.4309926025187
+        ],
+        [
+          440.5000000000001,
           248.1184926025187
         ],
         [
-          440.083333503937,
+          440.0833333333335,
           248.1184926025187
-        ],
-        [
-          440.083333503937,
-          248.53515926918539
-        ],
-        [
-          439.666666496063,
-          248.53515926918539
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.18,
+      "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CARF01AAAA",
-      "tag": "eave-hi-corner-trim-hem"
+      "tag": "eave-hi-drip-edge-face"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          439.666666496063,
+          440.0833333333335,
+          252.475622375927
+        ],
+        [
+          440.5000000000001,
+          252.4309926025187
+        ],
+        [
+          440.5000000000001,
           248.1184926025187
         ],
         [
-          440.083333503937,
+          440.0833333333335,
           248.1184926025187
-        ],
-        [
-          440.083333503937,
-          248.53515926918539
-        ],
-        [
-          439.666666496063,
-          248.53515926918539
         ]
       ],
       "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
-      "uid": null,
+      "uid": "CARF01AAAA",
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          440.5000000000001,
+          248.1184926025187
+        ],
+        [
+          441.00000000000006,
+          247.6184926025187
+        ],
+        [
+          440.5833333333334,
+          247.6184926025187
+        ],
+        [
+          440.0833333333335,
+          248.1184926025187
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CARF01AAAA",
+      "tag": "eave-hi-drip-edge-kick"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          440.5000000000001,
+          248.1184926025187
+        ],
+        [
+          441.00000000000006,
+          247.6184926025187
+        ],
+        [
+          440.5833333333334,
+          247.6184926025187
+        ],
+        [
+          440.0833333333335,
+          248.1184926025187
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "CARF01AAAA",
       "material": "metal-dark-exterior",
       "fill": "#1c1f24"
     },
@@ -2822,7 +2765,7 @@
       },
       "at": [
         454.2500000000001,
-        251.49973181911585
+        252.25391721284714
       ],
       "to": [
         433.2500000000001,
@@ -2840,20 +2783,45 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          438.5000000000001,
-          249.8237712429687
+          437.0000000000001,
+          253.43169499062492
         ],
         "name": ""
       },
       "at": [
         454.2500000000001,
-        246.85250959689364
+        247.60669499062493
       ],
       "to": [
-        438.5000000000001,
-        249.8237712429687
+        437.0000000000001,
+        253.43169499062492
       ],
-      "text": "drip edge ON the deck, face tight to the\ntrim; membrane laps OVER it",
+      "text": "formed drip edge: flange ON the deck,\nmembrane laps OVER it",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          440.2916666666668,
+          250.29705748922285
+        ],
+        "name": ""
+      },
+      "at": [
+        454.2500000000001,
+        242.95947276840272
+      ],
+      "to": [
+        440.2916666666668,
+        250.29705748922285
+      ],
+      "text": "drip edge face caps the wall panel\nheads, kick into the gutter",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2872,38 +2840,13 @@
       },
       "at": [
         454.2500000000001,
-        242.20528737467143
+        238.3122505461805
       ],
       "to": [
         442.5833333333334,
         246.11849260251867
       ],
-      "text": "box gutter, back sheet tucked BEHIND the\ntrim face",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          440.0833333333334,
-          250.39800109970616
-        ],
-        "name": ""
-      },
-      "at": [
-        454.2500000000001,
-        238.6469540413381
-      ],
-      "to": [
-        440.0833333333334,
-        250.39800109970616
-      ],
-      "text": "corner trim caps the wall panel heads",
+      "text": "box gutter, back sheet tucked BEHIND the\ndrip edge face",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2922,7 +2865,7 @@
       },
       "at": [
         454.2500000000001,
-        235.08862070800475
+        233.6650283239583
       ],
       "to": [
         430.75000000000006,
@@ -2947,7 +2890,7 @@
       },
       "at": [
         454.2500000000001,
-        230.44139848578254
+        229.01780610173608
       ],
       "to": [
         437.25000000000006,
@@ -2972,7 +2915,7 @@
       },
       "at": [
         454.2500000000001,
-        226.8830651524492
+        225.45947276840275
       ],
       "to": [
         434.25,
@@ -2997,7 +2940,7 @@
       },
       "at": [
         454.2500000000001,
-        223.32473181911587
+        221.9011394350694
       ],
       "to": [
         442.5833333333334,
@@ -4065,10 +4008,10 @@
     "K2  Foam first lift 1-1/2\" min. Lap onto ridge beam and hanger flanges in one pass.",
     "K3  2x6 eave block on edge on the plate, every bay. ccSPF over it.",
     "K4  Roof-to-wall foam angle: closed-cell fill. No high-expansion foam.",
-    "K5  Drip flange 2\" onto the deck, underside 0.70\" up. Face tight to the trim.",
+    "K5  Formed drip edge, one piece: flange 2\" on the deck at 6:12, nose over the deck edge.",
     "K6  Lap the membrane over the drip. Nothing else reaches that plane.",
-    "K7  6\" box gutter, rim 2.76\" below the deck datum, back sheet behind the trim.",
-    "K8  Corner trim, not fascia and soffit.",
+    "K7  6\" box gutter, rim 2.76\" below the deck datum, back sheet behind the drip face.",
+    "K8  Drip face 4\" over the wall panel heads, kick into the gutter. No fascia, no soffit.",
     "K9  2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Gutter hanger at each standoff."
   ],
   "frame": {

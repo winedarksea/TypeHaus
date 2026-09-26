@@ -65,6 +65,7 @@ ROLE_GLOSSARY: dict[str, str] = {
     "newel": "newel post", "winder": "winder tread", "hanger": "hanger board",
     "bearing_stiffener": "bearing stiffener", "seat_cut": "seat cut", "roof_truss": "roof truss",
     "ridge_beam": "ridge beam", "ridge_cap": "ridge cap", "corner_trim": "corner trim",
+    "drip_edge": "drip edge",
     "trimmer": "trimmer", **by_value("role_label"),  # type: ignore[dict-item]
 }
 

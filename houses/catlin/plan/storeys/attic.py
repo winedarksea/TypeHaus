@@ -9,6 +9,8 @@ from typehaus import (
     Beam,
     Door,
     DeckLayer,
+    EaveDripEdge,
+    EaveTrim,
     FloorOpening,
     FloorOpeningEdgeInterval,
     FloorOpeningPurpose,
@@ -576,9 +578,8 @@ ALARMS = [
 # eave dropped 4'-11" and the extra rise only bought back 3'-1 1/2".
 # No fascia: the standing-seam siding and roofing are one continuous skin over the flush
 # edge — the resolver carries the wall metal to the roofing underside and caps the joint
-# with corner trim (resolve/roof_trim.py), and the ridge cap derives from the roof's vent
-# channel. The box gutter and drip edge ride in params/roof_trim.py (authored runs, not
-# derivable from a plane).
+# with one formed drip edge per edge (resolve/roof_drip_edge.py), and the ridge cap derives
+# from the roof's vent channel. The box gutter rides in params/roof_trim.py.
 
 ROOFS = [
     Roof(uid="CARF01AAAA", tag="RF-HOUSE", form=RoofForm.GABLE,
@@ -648,6 +649,10 @@ ROOFS = [
          # down both rakes, round both eaves and along the ridge: one outline, no new
          # geometry, no custom fabrication, just a second coil colour.
          edge_trim_material="metal-dark-exterior",
+         # One formed drip edge per edge (resolve/roof_drip_edge.py): flange on the deck at
+         # 6:12, nose over the deck edge, face down over the panel heads, kick into the box
+         # gutter. It replaces the corner trim on all four edges and is FORTIFIED §4.5's drip.
+         eave_trim=EaveTrim(drip_edge=EaveDripEdge(kick=inch(0.5))),
          # 2x6 on edge on the plate, tight to the sheathing: lateral restraint at bearing and
          # the back-nailer for the gutter girt. Lower bay only, so the ccSPF fills over it.
          eave_blocking="2x6"),

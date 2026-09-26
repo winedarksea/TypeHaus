@@ -1004,6 +1004,71 @@ def test_a_mixed_material_flush_edge_keeps_the_band(flush):
     assert not [m for m in _roof(flush).members if m.category == "corner_trim"]
 
 
+# --- 13b. a declared formed drip edge (EaveTrim.drip_edge) ---------------------------------
+
+def _drip_section(roof, run, leg):
+    """A drip leg's true section as ``(u outboard, z over the plane at the edge)``."""
+    from typehaus.resolve.geometry_members import member_solid
+
+    member = next(m for m in roof.members if m.child_key == f"{run.key}-drip-edge-{leg}")
+    sweep = member_solid(member)
+    nx, ny = run.normal
+    dx, dy = run.p1[0] - run.p0[0], run.p1[1] - run.p0[1]
+    length_sq = dx * dx + dy * dy
+
+    def plane(x, y):  # the edge's own height at this station (a rake climbs)
+        t = ((x - run.p0[0]) * dx + (y - run.p0[1]) * dy) / length_sq
+        return run.z0_m + (run.z1_m - run.z0_m) * t
+
+    return [((x - run.p0[0]) * nx + (y - run.p0[1]) * ny, z - plane(x, y))
+            for x, y, z in sweep.profile]
+
+
+def test_a_wrapped_edge_with_a_drip_spec_replaces_the_corner_trim():
+    """The formed drip edge takes the corner trim's place, on its face plane, every edge."""
+    from typehaus.model import EaveDripEdge
+    from typehaus.resolve.roof_edge_geometry import roof_edge_runs
+
+    model, _ = resolve(_plan(roof_layers=_WRAPPED_LAYERS, overhang=inch(0),
+                             eave_trim=EaveTrim(drip_edge=EaveDripEdge())))
+    roof = _roof(model)
+    assert not [m for m in roof.members if m.category == "corner_trim"]
+    drip = [m for m in roof.members if m.category == "drip_edge"]
+    assert len(drip) == 24 and all(m.section_ring for m in drip)
+    for run in roof_edge_runs(roof):
+        face = _drip_section(roof, run, "face")
+        assert max(u for u, _ in face) == pytest.approx(inch(1.25).meters, abs=1e-9)
+        flange = _drip_section(roof, run, "flange")
+        us = [u for u, _ in flange]
+        assert max(us) - min(us) == pytest.approx(inch(2).meters, abs=1e-9)
+
+
+def test_an_overhung_edge_with_a_drip_spec_laps_the_fascia_into_the_gutter():
+    """Over a fascia the face stops at the gutter rim on the guttered eave, the kick starts
+    past the back sheet, and on every other edge the face drops 1-1/2" over the fascia."""
+    from typehaus.model import EaveDripEdge
+    from typehaus.resolve.roof_edge_geometry import roof_edge_runs
+
+    trim = _EAVE_TRIM.model_copy(update={"gutter": _GUTTER,
+                                         "drip_edge": EaveDripEdge(kick=inch(0.75))})
+    model, _ = resolve(_plan(roof_layers=_STACK_LAYERS, eave_trim=trim))
+    roof = _roof(model)
+    fascia_outer = inch(1.0).meters     # 1.5" nailer under the deck edge, then 1" cover
+    shell = min(inch(0.5).meters, _GUTTER.depth.meters / 3.0, _GUTTER.thickness.meters / 3.0)
+    for run in roof_edge_runs(roof):
+        face = _drip_section(roof, run, "face")
+        kick = _drip_section(roof, run, "kick")
+        nose = _drip_section(roof, run, "nose")
+        assert min(u for u, _ in face) == pytest.approx(fascia_outer, abs=1e-9)
+        if run.is_eave and run.edge_name == "south":
+            assert min(z for _, z in face) == pytest.approx(-_GUTTER.top_drop.meters)
+            assert min(u for u, _ in kick) == pytest.approx(fascia_outer + shell, abs=1e-9)
+        else:
+            floor = min(z for _, z in nose)
+            assert min(z for _, z in face) == pytest.approx(floor - inch(1.5).meters)
+        assert max(u for u, _ in kick) > max(u for u, _ in face), "the kick throws outboard"
+
+
 # --- 14. the gable end is one purchased assembly ------------------------------------------
 
 def test_a_gable_end_bills_as_one_assembly_not_a_truss_plus_loose_studs(resolved):

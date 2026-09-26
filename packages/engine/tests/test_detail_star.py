@@ -176,10 +176,11 @@ def test_per_condition_override_writes_back_to_source(tmp_path):
     house = tmp_path / "catlin"
     copy_house(CATLIN_DIR, house)
     coordinator = ProjectCoordinator(house)
-    # TR-CATLIN-EAVE is `star=False` with two named `starred_conditions` — catlin curates
-    # by key, not by pattern (the four interior-partition-to-roof keys are not drawings).
-    # The toggle under test is therefore the other direction: unstar one of the two.
-    key = "wall_roof:GARAGE_ROOF|GARAGE_WALL_2X6"
+    # TR-CATLIN-EAVE is `star=False` with one named `starred_conditions` — catlin curates
+    # by key, not by pattern (the four interior-partition-to-roof keys are not drawings; the
+    # garage eave has its own transition). The toggle under test is the other direction:
+    # unstar that key.
+    key = "wall_roof:EXT_2X6|ROOF"
     coordinator.apply_patch(
         [PatchOp("update", "Transition", "TR-CATLIN-EAVE",
                  {"starred_conditions": [], "unstarred_conditions": [key]})],
@@ -190,6 +191,3 @@ def test_per_condition_override_writes_back_to_source(tmp_path):
     assert eave.unstarred_conditions == (key,)
     assert eave.starred_conditions == ()
     assert eave.star is False and eave.stars(key) is False
-    # The other key was starred BY NAME, and the patch cleared that list, so it goes too —
-    # which is the round trip working: both list fields wrote back.
-    assert eave.stars("wall_roof:EXT_2X6|ROOF") is False

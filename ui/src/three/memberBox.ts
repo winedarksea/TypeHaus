@@ -175,6 +175,38 @@ export function seatedProfileVertices(
 }
 
 /**
+ * The corners of a formed section (`Member.section_ring`): the ring at `p0`, then again at
+ * `p1` risen by the run's own rise. Mirrors `resolve/geometry_members.py::_ring_sweep` — the
+ * ring is in the run's (left-normal, up) frame from the axis at `z0_m`, wound
+ * counter-clockwise about the run. Null when the member has no ring or no plan run.
+ */
+export function sectionRingVertices(
+  m: Member, center: PlanCenter,
+): [number, number, number][] | null {
+  const ring = m.section_ring;
+  if (!ring || ring.length < 3) return null;
+  const dx = m.p1[0] - m.p0[0], dy = m.p1[1] - m.p0[1];
+  const run = Math.hypot(dx, dy);
+  if (run < MIN_PLAN_RUN_M) return null;
+  const nx = -dy / run, ny = dx / run;
+  let area = 0;
+  for (let i = 0; i < ring.length; i++) {
+    const [s0, t0] = ring[i], [s1, t1] = ring[(i + 1) % ring.length];
+    area += s0 * t1 - s1 * t0;
+  }
+  const points = area > 0 ? ring : [...ring].reverse();
+  const rise = (m.z0_end_m ?? m.z0_m) - m.z0_m;
+  const at = (x: number, y: number, s: number, t: number): [number, number, number] => {
+    const v = projectPointToScene([x + nx * s, y + ny * s], m.z0_m + t, center);
+    return [v.x, v.y, v.z];
+  };
+  return [
+    ...points.map(([s, t]) => at(m.p0[0], m.p0[1], s, t)),
+    ...points.map(([s, t]) => at(m.p1[0], m.p1[1], s, t + rise)),
+  ];
+}
+
+/**
  * Triangles for a swept profile laid out as [near ring, far ring]: two fan caps plus one quad
  * per profile edge. Returns how many triangles it pushed, which is what the picking table
  * needs — a seated member is not a 12-triangle box.
@@ -193,16 +225,21 @@ export function pushSweepIndices(indices: number[], base: number, profileCount: 
   return (indices.length - before) / 3;
 }
 
-/** A standalone BufferGeometry for one raked box — the pick highlight's outline source. */
+/**
+ * A standalone BufferGeometry for one raked box — the pick highlight's outline source. A
+ * formed section outlines its own swept ring rather than its bounding box.
+ */
 export function rakedBoxGeometry(
   m: Member, center: PlanCenter,
 ): THREE.BufferGeometry | null {
-  const verts = rakedBoxVertices(m, center);
+  const ringed = sectionRingVertices(m, center);
+  const verts = ringed ?? rakedBoxVertices(m, center);
   if (!verts) return null;
   const positions: number[] = [];
   for (const v of verts) positions.push(v[0], v[1], v[2]);
   const indices: number[] = [];
-  pushBoxIndices(indices, 0);
+  if (ringed) pushSweepIndices(indices, 0, verts.length / 2);
+  else pushBoxIndices(indices, 0);
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
   geo.setIndex(indices);

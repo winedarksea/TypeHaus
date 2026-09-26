@@ -112,8 +112,8 @@ def _rafter_plan_span(roof, direction: str) -> tuple[float, float] | None:
 
     A zero-overhang roof's structure layer stops at the rafters' plumb-cut tails (the
     bearing wall's stud face), well inboard of a footprint edge that laps the wall
-    cladding. ``None`` when the roof has no rafter members (truss roofs keep the
-    uniform footprint band).
+    cladding. ``None`` when the roof has no rafter members (a truss roof's structure
+    band keeps the footprint; its fill is ``_truss_attic``'s).
     """
     axis = 0 if direction == "x" else 1
     coords = [point[axis] for member in roof.members if member.category == "rafter"
@@ -121,6 +121,43 @@ def _rafter_plan_span(roof, direction: str) -> tuple[float, float] | None:
     if not coords:
         return None
     return min(coords), max(coords)
+
+def _truss_attic(roof, plane: CutPlane):
+    """``(u_lo, u_hi, ceiling_z, chord_drop)`` for a truss roof's attic; ``None`` for rafters.
+
+    The attic is the box the trusses bound: bearing to bearing (the tails are overhang, not
+    attic) and first truss to last. Its floor is the bottom chord's underside (the plate
+    top), which the ceiling hangs from; ``chord_drop`` is the top chord's plumb depth under
+    the roof plane. ``()`` for a station outside that box: a truss roof, nothing to fill.
+    """
+    from typehaus.emit.draw.section_truss import top_chord_frame
+    from typehaus.resolve.framing.profiles import cross_section
+    from typehaus.resolve.framing.roof_gable import ROOF_TRUSS_CATEGORY
+
+    trusses = [m for m in roof.members
+               if m.category == ROOF_TRUSS_CATEGORY and m.truss is not None]
+    if not trusses:
+        return None
+    points = [point for m in trusses for point in (m.p0, m.p1)]
+    perps = [plane.perp_of(point) for point in points]
+    if not min(perps) <= plane.station_m <= max(perps):
+        return ()
+    us = [plane.u_of(point) for point in points]
+    drop = top_chord_frame(trusses[0], cross_section(trusses[0].profile))[3]
+    return min(us), max(us), min(m.z0_m for m in trusses), drop
+
+
+def _level_fill(a, b_, z0, z1, underside, ridge_u):
+    """Blown fill is LEVEL: ``z0..z1`` from ``a`` to ``b_``, capped by the roof's underside."""
+    knots = [a] + ([ridge_u] if ridge_u is not None and a < ridge_u < b_ else []) + [b_]
+    us = set(knots)
+    for (p, q) in zip(knots, knots[1:], strict=False):
+        zp, zq = underside(p), underside(q)
+        if (zp - z1) * (zq - z1) < 0:  # the fill's top meets the chord here
+            us.add(p + (q - p) * (z1 - zp) / (zq - zp))
+    top = [(u, max(z0, min(z1, underside(u)))) for u in sorted(us)]
+    return [(a, z0), (b_, z0)] + list(reversed(top))
+
 
 def roof_cavity_bands(asm):
     """``(layer, d0, d1)`` for each cavity fill, in the same datum frame.
@@ -189,6 +226,9 @@ def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop,
                      library=None) -> list[DrawnBand]:
     """The bay fill, as a sloped band under the structure datum, clipped to the rafters.
 
+    A truss roof's fill is blown onto the ceiling instead: level, and held to the attic
+    the trusses bound (``_truss_attic``).
+
     Returns what it drew, so the ladder can aim at the outlines rather than at a second
     derivation of where they ought to be.
     """
@@ -207,14 +247,17 @@ def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop,
         or (roof.ridge_direction == "x" and plane.axis == "y")
     )
     structure_span = _rafter_plan_span(roof, plane.axis)
+    attic = _truss_attic(roof, plane) if any(fill for (_band, fill) in bands) else None
+    fill_base = max((d1 for ((_layer, _d0, d1), fill) in bands if fill), default=0.0)
     drawn: list[DrawnBand] = []
 
+    def plane_z(u: float) -> float:
+        return roof_plane_z(roof, u if slope_along_cut else plane.station_m)
+
     def top_line(a: float, b_: float) -> list[tuple[float, float]]:
-        if slope_along_cut:
-            fold = [ridge_u] if ridge_u is not None and a < ridge_u < b_ else []
-            return [(u, roof_plane_z(roof, u)) for u in ([a] + fold + [b_])]
-        z = roof_plane_z(roof, plane.station_m)
-        return [(a, z), (b_, z)]
+        fold = ([ridge_u] if slope_along_cut and ridge_u is not None and a < ridge_u < b_
+                else [])
+        return [(u, plane_z(u)) for u in ([a] + fold + [b_])]
 
     for (u0, u1) in intervals:
         for ((layer, d0, d1), fill) in bands:
@@ -223,9 +266,21 @@ def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop,
                 a, b_ = max(a, structure_span[0]), min(b_, structure_span[1])
             if b_ - a < 1e-9:
                 continue
-            top = top_line(a, b_)
-            polygon = ([(u, z - d0) for (u, z) in top]
-                       + [(u, z - d1) for (u, z) in reversed(top)])
+            if fill and attic is not None:
+                # Blown attic fill: level on the ceiling, bearing to bearing, never sloped.
+                if not attic:
+                    continue
+                a, b_ = max(u0, attic[0]), min(u1, attic[1])
+                if b_ - a < 1e-9:
+                    continue
+                base = attic[2] + fill_base - d1
+                polygon = _level_fill(a, b_, base, base + d1 - d0,
+                                      lambda u: plane_z(u) - attic[3],
+                                      ridge_u if slope_along_cut else None)
+            else:
+                top = top_line(a, b_)
+                polygon = ([(u, z - d0) for (u, z) in top]
+                           + [(u, z - d1) for (u, z) in reversed(top)])
             clipped = clip_polygon(polygon, crop)
             if len(clipped) < 3:
                 continue

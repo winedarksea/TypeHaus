@@ -654,52 +654,44 @@ def test_catlin_sump_sits_below_the_basement_slab(catlin_model) -> None:
 
 
 def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
-    """Tier 2 roof-eave closure on RF-HOUSE: fascia is *derived* from Roof.eave_trim
-    (resolve/roof_edge.py, so it rides the deck-plane datum on every edge); the 6" box
-    gutter + drip edge are authored runs along both eave edges (west/east — the ridge
-    runs N-S), at elevations tied to the deck plane per the golden eave detail. Garage
-    gutter/drip stay deferred with the truss roof."""
+    """Tier 2 roof-eave closure on RF-HOUSE: one formed drip edge per edge is *derived* from
+    ``Roof.eave_trim.drip_edge`` (resolve/roof_drip_edge.py, so it rides the deck plane on
+    every edge); the 6" box gutter and its leaders are authored runs along both eaves
+    (west/east — the ridge runs N-S), at elevations tied to the deck plane."""
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
-    eave, plate = roof.eave_z_m, roof.bearing_z_m
+    eave = roof.eave_z_m
     # The house eave has no fascia: siding and roofing are one continuous standing-seam
-    # skin over the flush edge, so the resolver emits corner trim at the joint instead of
-    # fascia boards and an edge-cladding band.
-    assert not [m for m in roof.members if m.category == "fascia"]
-    corner_trim = [m for m in roof.members if m.category == "corner_trim"]
-    # Six runs (two eaves + four rake halves), each a formed section of cleat / face / hem.
-    assert len(corner_trim) == 18
-    assert {m.child_key.rsplit("-", 1)[1] for m in corner_trim} == {"cleat", "face", "hem"}
-    # ** THE HEM REACHES BELOW THE DECK PLANE, AND THAT IS THE DETAIL. ** With no outsulation,
-    # the roofing underside sits 0.74" above the deck and the trim's 4" leg — which doubles as
-    # the barge board at the rake — hangs 3.26" BELOW it, lapping down over the wall panel
-    # heads. What is invariant is the closure: the trim brackets the roof stack, its top at or
-    # above the roofing and its hem below the deck, so there is no open joint between the two
-    # runs of metal.
-    tops = {round(m.z1_m, 6) for m in corner_trim}
-    assert max(tops) > eave, (max(tops), eave)
-    assert min(m.z0_m for m in corner_trim) < eave
-    # No hand-authored fascia solids — that would double the derived band.
-    assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-FASCIA")]
+    # skin over the flush edge, and the drip edge replaces the corner trim at the joint.
+    assert not [m for m in roof.members if m.category in ("fascia", "corner_trim")]
+    drip = [m for m in roof.members if m.category == "drip_edge"]
+    # Six runs (two eaves + four rake halves), each one formed piece of four legs.
+    assert len(drip) == 24
+    assert {m.child_key.rsplit("-", 1)[1] for m in drip} == {"flange", "nose", "face", "kick"}
+    assert all(m.section_ring for m in drip)
+    # ** THE FACE REACHES BELOW THE DECK PLANE, AND THAT IS THE DETAIL. ** Its 4" leg — the
+    # barge board at the rake — hangs 3.26" below a roofing underside only 0.74" up, lapping
+    # down over the wall panel heads, while the flange lies on the deck above the plane.
+    assert max(m.z1_m for m in drip) > eave
+    assert min(m.z0_m for m in drip) < eave
+    # No hand-authored fascia or drip solids — that would double the derived piece.
+    assert not [s for s in catlin_model.solids
+                if s.tag.startswith(("TR-RF-FASCIA", "TR-RF-DRIP"))]
     for side in ("W", "E"):
-        # Both runs are *formed* metal, so each resolves into its section's bands rather than
-        # one solid bar: the gutter into an open-top U, the drip edge into a lap leg and a
-        # turn-down. Where those bands sit relative to each other — the lap chain the eave
-        # depends on — is pinned in test_catlin_eave_water.py; this is the envelope.
+        # The gutter is formed metal, so it resolves into an open-top U rather than one
+        # solid bar. The lap chain is pinned in test_catlin_eave_water.py; this is the
+        # envelope.
         bands = [s for s in catlin_model.solids
                  if s.tag.startswith(f"TR-RF-GUTTER-{side}-1-")]
         assert {s.tag.rsplit("-", 1)[1] for s in bands} == {"BACK", "BOTTOM", "FRONT"}
-        drip = [s for s in catlin_model.solids if s.tag.startswith(f"TR-RF-DRIP-{side}-1-")]
-        assert {s.tag.rsplit("-", 1)[1] for s in drip} == {"LAP", "DRIP"}
         assert {s.category for s in bands} == {"gutter"}
-        assert {s.category for s in drip} == {"flashing"}
         gutter_top, gutter_bottom = max(s.z1_m for s in bands), min(s.z0_m for s in bands)
-        # 5" of channel, its rim high enough to lap behind the corner trim's 2" leg and low
-        # enough to leave the eave end of the roof's vent channel open.
         assert gutter_top - gutter_bottom == pytest.approx(inch(5.0).meters)
         vent_slot = eave + inch(7.25 * math.hypot(1.0, 4.0 / 12.0)).meters
         assert gutter_top < vent_slot, "the rim would dam the eave vent slot"
-        # The drip's turn-down ends inside the trough, below the rim it empties over.
-        assert min(s.z0_m for s in drip) < gutter_top
+        # The drip's face ends inside the trough, below the rim it empties over.
+        key = "eave-lo" if side == "W" else "eave-hi"
+        face = next(m for m in drip if m.child_key == f"{key}-drip-edge-face")
+        assert face.z0_m < gutter_top
     # Each eave drains to a leader, so the gutters' slope notes point somewhere real.
     leaders = [s for s in catlin_model.solids if s.tag.startswith("TR-RF-LEADER-")
                and s.category == "downspout"]

@@ -28,10 +28,10 @@ source:
 - [K2] Foam first lift 1-1/2" min. Lap onto ridge beam and hanger flanges in one pass.
 - [K3] 2x6 eave block on edge on the plate, every bay. ccSPF over it.
 - [K4] Roof-to-wall foam angle: closed-cell fill. No high-expansion foam.
-- [K5] Drip flange 2" onto the deck, underside 0.70" up. Face tight to the trim.
+- [K5] Formed drip edge, one piece: flange 2" on the deck at 6:12, nose over the deck edge.
 - [K6] Lap the membrane over the drip. Nothing else reaches that plane.
-- [K7] 6" box gutter, rim 2.76" below the deck datum, back sheet behind the trim.
-- [K8] Corner trim, not fascia and soffit.
+- [K7] 6" box gutter, rim 2.76" below the deck datum, back sheet behind the drip face.
+- [K8] Drip face 4" over the wall panel heads, kick into the gutter. No fascia, no soffit.
 - [K9] 2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Gutter hanger at each standoff.
 
 ### Spec 07 21 00
@@ -39,8 +39,8 @@ source:
 - Hold point: inspect every bay for voids before the batts go in.
 
 ### Spec 07 61 00
-- Measure every eave offset off the corner trim face.
-- Build order: block, girt, deck, drip edge, membrane, standing seam, gutter. Insulate from inside after.
+- Measure every eave offset off the drip edge face, 1-1/4" outside the panel face.
+- Build order: block, girt, deck, gutter, drip edge, membrane, standing seam. Insulate from inside after.
 
 # Notes
 
@@ -111,13 +111,13 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
 
 - Foam interface: leave the angled mismatch between roof foam and wall foam; fill with closed-cell spray polyurethane foam. Avoid high-expansion foams — they lift the roof foam off the deck barrier.
 
-- Drip edge: its flange lies ON the structural deck (underside at 0.70" vertical above the deck datum), bearing 2" on the plywood inboard of the deck edge (the deck stops at the girt face, 1-1/4" inside the cladding face), with the adhered membrane lapped OVER it. Nothing ELSE in the eave chain may reach that plane. The turn-down lies tight on the corner trim's face and drops 2" below the gutter rim. Until 2026-09-16 it hung at the trough mid-width, 3.3" past the cladding with 1/4" of flange on wood.
+- Drip edge (since 2026-09-26 ONE formed piece per edge, derived by `resolve/roof_drip_edge.py` from `RF-HOUSE.eave_trim.drip_edge`; it replaced both the level authored drip and the corner trim): a flange lying ON the structural deck at the 6:12 pitch (underside 0.70" vertical above the deck datum at the edge), bearing 2" on the plywood inboard of the deck edge (the deck stops at the girt face, 1-1/4" inside the cladding face), with the adhered membrane lapped OVER it; a nose bent over the deck edge, clearing the wall panel heads; a face 1-1/4" outside the panel face with a 4" leg down over the panel heads; and a 1/2" kick out and down into the trough. The same piece runs up both rakes, where it is the barge board.
 
-- Gutter: 6" box gutter, back sheet tucked a lap BEHIND the corner trim's formed face — behind the sheet itself, not merely inboard of the 1.25" of plan depth it hangs at the end of. Rim 2.76" BELOW the deck datum, because the 4" trim leg it laps under hangs 3.26" below a roofing underside only 0.74" up, a lap under the trim's lower edge. Downspout steadied with conduit pipe clamps (not primary support).
+- Gutter: 6" box gutter, back sheet tucked a lap BEHIND the drip edge's face — behind the sheet itself, not merely inboard of the 1.25" of plan depth it hangs at the end of. Rim 2.76" BELOW the deck datum, because the 4" leg it laps under hangs 3.26" below a roofing underside only 0.74" up. Downspout steadied with conduit pipe clamps (not primary support).
 
-- No fascia and no soffit: roof and wall are one continuous standing-seam skin over a flush zero-overhang edge, so the resolver draws a corner trim angle instead. Every eave offset is measured off that trim's face.
+- No fascia and no soffit: roof and wall are one continuous standing-seam skin over a flush zero-overhang edge. Every eave offset is measured off the drip edge's face.
 
-- Build order (water laps downhill, so the eave chain is the part that gets built backwards): frame and block the eave bays -> 5/8" CDX deck, oversailing the girts -> **moisture-meter hold point, < 16% MC** -> DRIP EDGE -> adhered butyl membrane lapped OVER the drip, full field -> standing seam -> gutter, back sheet behind the trim; then, from inside, 5" ccSPF against the deck underside -> **void inspection, every bay** -> R-30C batt -> 5/8" gypsum -> paint. The drip edge goes on before the membrane, not after. **The insulation is an INTERIOR operation and follows the roof being closed in**: the deck can be dried in on day one and the foam sprayed against a dry deck weeks later.
+- Build order (water laps downhill, so the eave chain is the part that gets built backwards): frame and block the eave bays -> 5/8" CDX deck, oversailing the girts -> **moisture-meter hold point, < 16% MC** -> gutter, back sheet up behind where the drip face will hang -> DRIP EDGE -> adhered butyl membrane lapped OVER the drip, full field -> standing seam; then, from inside, 5" ccSPF against the deck underside -> **void inspection, every bay** -> R-30C batt -> 5/8" gypsum -> paint. The drip edge goes on before the membrane, not after. **The insulation is an INTERIOR operation and follows the roof being closed in**: the deck can be dried in on day one and the foam sprayed against a dry deck weeks later.
 
 - Eave references (2026-09-16), what set the drip and gutter:
   - Best Buy Metals, *Standing Seam Architectural Install Guide* p.26, "Eave Detail (with gutter)": extended eave drip edge on the deck, panel hemmed around its kick, gutter back flange up behind the drip face, hidden hanger fixed at the fascia line.
