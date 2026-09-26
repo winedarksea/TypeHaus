@@ -454,28 +454,18 @@ MAIN_PLACEABLES = [
               install_parts=("Frigidaire TWINSPAIRKIT twin pairing kit (anti-condensation heater, power supply, cord, clips)",)),
     Appliance(uid="ZH6G4SNPWT", tag="APPL-M-FREEZER", type_ref="APPL-FRIG-PRO-ALLFREEZER", room="RM-M-LIVING",
               position=pt(ft(19, 4.875), ft(28, 9.3125)), rotation=deg(90)),
-    # PANTRYC closes straight up against the freezer now that the filler is gone. It stands
-    # 9 1/8" past W-M-C5's south end at y=25'-10", pre-existing, and draws no finding.
-    # Do not "fix" it.
-    Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="SEKT-HIGH24-90", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(26, 4.875)), rotation=deg(90)),
+    # PANTRYC closes straight up against the freezer now that the filler is gone.
+    # ** 18" WIDE, NOT 24" (owner, 2026-09-25). ** The 24" box oversailed W-M-C5's south end
+    # at y=25'-10" by 5 1/8" into the passage. At 18" its south end is y=25'-10 7/8", 7/8"
+    # inside the wall's end and flush with the PANTRYC-ST stacker over it.
+    Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="SEKT-HIGH18-90", room="RM-M-LIVING",
+              position=pt(ft(19, 3.375), ft(26, 7.875)), rotation=deg(90)),
     # ** THE TALL UNITS GO TO THE CEILING TOO (owner's call). ** The stacker is a 24"-DEEP
     # box: a tall cabinet's carcass is base depth, so the 15"-deep wall family would float
     # a shallow box over it and put the step back in a different place. 3" toe + 90" frame
     # tops at 93", and the 15" course closes it: SEKT-TS18-15 at 93".
     #
-    # ** BUT NOT THE FULL 24" WIDE (owner's call). ** PANTRYC oversails the south end
-    # of W-M-C5 at y=25'-10" — accepted at floor level (see its note above), because a
-    # cabinet end standing in a 4'-wide passage is a jamb you walk past. Carrying that same
-    # oversail up as a 24"-deep box floating at 8'-0" is a different object: it is a soffit
-    # over the passage, and it reads as one from the living room. So the stacker is sized to
-    # stop where the WALL stops, not where the cabinet does.
-    #
-    # The oversail is 5 1/8", so the stacker is the 18" box: south end on y=25'-10 7/8",
-    # 7/8" clear of the wall's end. Above 7'-9" the passage is clear to the ceiling.
-    #
-    # The 6 1/8" of PANTRYC's top left uncovered is a finished cabinet top, not a hole: it
-    # is the same detail as the top of any 96" tall that stops short of a ceiling.
+    # 18" wide to match PANTRYC: south end on y=25'-10 7/8", 7/8" clear of W-M-C5's end.
     Furniture(uid="ZMBSYYRCX5", tag="FURN-M-KIT-PANTRYC-ST", type_ref="SEKT-TS18-15", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(93)),
               location=Location(attachment=WallAttachment(
