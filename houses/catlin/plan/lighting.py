@@ -770,7 +770,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.CEILING)),
     # ** NOT ON W-M-C5, and that is worth stating. ** That wall's east face has no free wall
-    # left on it at all: FURN-M-KIT-PANTRYC covers y 25'-4 7/8"..27'-4 7/8" and the cold
+    # left on it at all: FURN-M-KIT-PANTRYC covers y 25'-10 7/8"..27'-4 7/8" and the cold
     # pair covers 27'-4 7/8"..32'-10 5/8" (both extents RE-MEASURED 2026-09-06 — the
     # figures here were 4" south of the model, stale since PANTRYC last moved), leaving
     # 2 3/8" of corner stud pack out of 87". This one goes on W-M-PAN-E's EAST face at the

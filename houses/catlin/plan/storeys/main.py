@@ -284,8 +284,8 @@ NODES = [
     # The owner then spent 4" of the PANTRY to buy it back for the PASSAGE. Every inch this
     # wall moves north comes out of the 6" of standing floor in front of the shelves and
     # goes to the south end of the cold run, where FURN-M-KIT-PANTRYC oversails W-M-C5's end
-    # at y=25'-10" and hangs into the walk-through. That oversail was 9 1/8" and is 5 1/8"
-    # now; the pantry is a 26" reach-in with 2" of floor, and FURN-M-KIT-PANTRYC-ST grew
+    # at y=25'-10" and hangs into the walk-through. That oversail was 9 1/8", then 5 1/8",
+    # and is gone since PANTRYC narrowed to 18" (2026-09-25); the pantry is a 26" reach-in with 2" of floor, and FURN-M-KIT-PANTRYC-ST grew
     # 15" -> 18" because its box no longer has to stop as short.
     #
     # ** 24" SHELVES ARE FIXED, so this wall cannot go much further. ** At 6" north the floor
