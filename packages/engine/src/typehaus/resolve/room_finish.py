@@ -8,7 +8,9 @@ so RM-S-HALL billed ~70 sf of LVP over its stair. Derived once here; everyone re
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
 from dataclasses import replace
+from typing import Any
 
 from shapely.geometry import Polygon
 
@@ -30,11 +32,11 @@ def level_voids(model: ResolvedModel, structural: float) -> list[Polygon]:
             for ring in floor.deck_voids if len(ring) >= 3]
 
 
-def _ring(coords) -> list[tuple[float, float]]:
+def _ring(coords: Iterable[Sequence[float]]) -> list[tuple[float, float]]:
     return [(x, y) for x, y in list(coords)[:-1]]
 
 
-def finish_parts(geometry) -> tuple[FinishPart, ...]:
+def finish_parts(geometry: Any) -> tuple[FinishPart, ...]:
     """``(outline, holes)`` for each polygon piece of ``geometry`` above the noise floor."""
     parts: list[FinishPart] = []
     for piece in getattr(geometry, "geoms", (geometry,)):
@@ -45,7 +47,7 @@ def finish_parts(geometry) -> tuple[FinishPart, ...]:
     return tuple(parts)
 
 
-def _valid(ring) -> Polygon:
+def _valid(ring: Sequence[tuple[float, float]]) -> Polygon:
     polygon = Polygon(ring)
     return polygon if polygon.is_valid else polygon.buffer(0)
 
@@ -84,4 +86,4 @@ def with_field_finish(model: ResolvedModel, room: ResolvedRoom,
 
 def _area(part: FinishPart) -> float:
     outline, holes = part
-    return Polygon(outline, holes=[list(hole) for hole in holes]).area
+    return float(Polygon(outline, holes=[list(hole) for hole in holes]).area)

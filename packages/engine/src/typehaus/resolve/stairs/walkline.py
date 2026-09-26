@@ -23,6 +23,32 @@ from typehaus.resolve.framing.profiles import cross_section
 RAIL_LATERAL_REACH_M = 2.0
 
 
+def level_landing_is_complete(stair) -> bool:
+    """A level turn has exactly its two named decks at the same finished height."""
+    if stair.layout != "u_level_landing":
+        return True
+    landings = [member for member in stair.members if member.category == "landing"]
+    return ({member.child_key for member in landings}
+            == {"landing-lower", "landing-upper"}
+            and len(landings) == 2
+            and abs(landings[0].z1_m - landings[1].z1_m) <= 1e-6)
+
+
+def intermediate_step_elevations(stair) -> list[float]:
+    """Finished step levels, counting a level U landing's two decks once.
+
+    Only the specifically paired landing decks may share a step. A missing or uneven
+    half remains visible to the built-stair checks rather than being silently deduped.
+    """
+    walking = [member for member in stair.members
+               if member.category in {"tread", "winder", "landing"}]
+    if not level_landing_is_complete(stair) or stair.layout != "u_level_landing":
+        return sorted(member.z1_m for member in walking)
+    landings = [member for member in walking if member.category == "landing"]
+    return sorted([member.z1_m for member in walking if member.category != "landing"]
+                  + [landings[0].z1_m])
+
+
 def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
                                                    tuple[float, float], float]]]:
     """Per flight, the nosing stations of the sloped walking line, in climb order.
@@ -78,7 +104,7 @@ def headroom_stations(stair) -> dict[str, list[tuple[tuple[float, float],
                                                      tuple[float, float], float]]]:
     """:func:`flight_stations` with each landing cut to R311.7.6's 36" from its flight edge.
 
-    The only landings generated are U-turn half-landings (``u_split.py``), entered and left
+    U-turn half-landings (``u_split.py``) are entered and left
     across the edge their flight meets (the deck's ``p0``); depth past 36" from it is a
     dead end the walk never crosses. R311.7.2 keeps the stairway's REQUIRED parts clear, so
     a pipe over that excess does not shrink the landing below code — it just is not

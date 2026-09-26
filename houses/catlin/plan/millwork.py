@@ -46,7 +46,7 @@ MILLWORK = [
         stool_horn=inch(1),
         stool_profile="eased",
         stool_assemblies=("EXT_2X6",),
-        # 28 oak treads: ST-M2S (13) and ST-S2A (15, three of them winders). ST-B2M is the
+        # 29 oak treads: ST-M2S (14) and ST-S2A (15, three of them winders). ST-B2M is the
         # basement flight and is carpeted, ST-G-SERVICE is the garage's.
         tread_material_ref="oak-tread",
         tread_stairs=("ST-M2S", "ST-S2A"),

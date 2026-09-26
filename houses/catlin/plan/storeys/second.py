@@ -1531,11 +1531,12 @@ STAIRS = [
     # `landing_depth` is DERIVED: both half-landings run to W-M-N2's gypsum face
     # (y=35'-5 3/8"), less the start, the 70" lower flight and half the far 2x8, which
     # `bearing_refs` ledgers to that wall — so no post stands at the north corners. 7" short
-    # at ft(3) until 2026-09-24.
+    # at ft(3) until 2026-09-24. The turn is level at 60.9862" with 7 tread boards on
+    # each run; the former split turn put one of the 16 risers between the half-decks.
     Stair(uid="CST702AAAA", tag="ST-M2S", floor_opening="FO-S-STAIR",
           from_storey="main", to_storey="second", width=ft(3, 6.375),
           base_elevation=inch(0.9862), top_elevation=inch(120.9862),
-          layout="u_split_landing", run_direction="y", turn_direction="left",
+          layout="u_level_landing", run_direction="y", turn_direction="left",
           start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3, 6.25),
           bearing_refs=("W-M-N2",)),
 ]

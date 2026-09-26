@@ -254,10 +254,10 @@ def test_the_elm_material_does_not_claim_to_be_board_stock(catlin_model_ro):
 # --- stairs ------------------------------------------------------------------------------
 
 def test_only_the_two_oak_flights_are_scheduled(rows, catlin_model_ro):
-    """28 treads: ST-M2S's 13 and ST-S2A's 15. ST-B2M is carpeted and the garage flight is
+    """29 treads: ST-M2S's 14 and ST-S2A's 15. ST-B2M is carpeted and the garage flight is
     KDAT, and until ``MillworkStandard`` said so that split lived in a price comment."""
     treads = _use(rows, "stair tread")
-    assert sum(row["pieces"] for row in treads) == 28
+    assert sum(row["pieces"] for row in treads) == 29
     scheduled = {tag for row in treads for tag in row["tags"]}
     assert scheduled == {"ST-M2S", "ST-S2A"}
     assert all(row["milling_profile"] == "bullnose" for row in treads)
@@ -286,31 +286,23 @@ def test_the_landing_decks_are_scheduled_and_flagged(rows):
 
     assert len(boards) == 2
     assert {row["location"]: row["pieces"] for row in boards} == {
-        "landing-lower": 10, "landing-upper": 13}
+        "landing-lower": 10, "landing-upper": 10}
     assert all(row["material"] == "oak-floor-custom" for row in boards)
     assert all(row["finished_thickness_in"] == pytest.approx(0.75) for row in boards)
     assert all(row["finished_width_in"] == pytest.approx(3.5) for row in boards)
     assert all(row["finished_length_in"] == pytest.approx(44.625) for row in boards)
     assert all(row["milling_profile"] == "T&G" for row in boards)
 
-    assert len(closers) == 1
-    closing = closers[0]
-    assert closing["location"] == "landing-upper"
-    assert closing["pieces"] == 1 and closing["layup"] == "one board"
-    assert closing["finished_width_in"] == pytest.approx(3.5)  # full stock blank ordered
-    assert "rip to 1.00\" face" in closing["stock_note"]
-    assert "0.625\" coverage" in closing["stock_note"]
-    assert closing["rough_board_feet"] == pytest.approx(
-        boards[0]["rough_board_feet"] / boards[0]["pieces"], abs=0.05)
+    assert not closers
 
-    # The landing rectangles are 42-1/4" and 52-1/4" deep. The nosing occupies 11";
-    # board courses cover the remainder, including the 5/8" closing-course coverage.
+    # Both landing halves are 42-1/4" deep. The nosing occupies 11";
+    # ten board courses cover the remaining 31-1/4" on each side.
     field_depth_by_location = {
         "landing-lower": 10 * 3.125,
-        "landing-upper": 13 * 3.125 + 0.625,
+        "landing-upper": 10 * 3.125,
     }
     assert field_depth_by_location["landing-lower"] == pytest.approx(31.25)
-    assert field_depth_by_location["landing-upper"] == pytest.approx(41.25)
+    assert field_depth_by_location["landing-upper"] == pytest.approx(31.25)
     assert not _use(rows, "stair landing deck")
 
 
@@ -351,7 +343,7 @@ def test_the_csv_and_the_markdown_carry_the_same_rows_and_the_species(rows, tmp_
         str(entry["species"]) for entry in flat]
     landing_indexes = [index for index, row in enumerate(rows)
                        if str(row["use"]).startswith("stair landing ")]
-    assert len(landing_indexes) == 5
+    assert len(landing_indexes) == 4
     for index in landing_indexes:
         for column in ("use", "location", "milling_profile", "stock_note", "element_tags"):
             expected = "" if flat[index][column] is None else str(flat[index][column])
@@ -366,4 +358,4 @@ def test_the_csv_and_the_markdown_carry_the_same_rows_and_the_species(rows, tmp_
     assert "Rough board feet by species" in text
     assert "sawn timber" in text and "edge-glued panel" in text
     assert "landing-lower" in text and "landing-upper" in text
-    assert "rip to 1.00\" face" in text and "0.625\" coverage" in text
+    assert "rip to 1.00\" face" not in text

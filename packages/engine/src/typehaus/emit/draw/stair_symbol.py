@@ -294,6 +294,17 @@ def _emit_landings(b: SceneBuilder, stair, flights: dict[str, list],
     The deck member is a board with a real width, and one centreline down the middle of a
     platform is the "weird split on the landing".
     """
+    if stair.layout == "u_level_landing":
+        decks = [member for members in flights.values() for member in members
+                 if member.category == "landing"]
+        if {member.child_key for member in decks} == {"landing-lower", "landing-upper"}:
+            footprint = union_all([Polygon(member_footprint(member)) for member in decks])
+            ring = list(footprint.exterior.coords)[:-1]
+            b.add(Polyline(points=tuple(_in(point) for point in ring), closed=True,
+                           layer="A-STAIR", lineweight=LIGHT, uid=stair.uid,
+                           tag="landing-level"))
+            ledger.claim_ring(ring)
+            return
     for key in sorted(flights):
         for member in flights[key]:
             if member.category != "landing":

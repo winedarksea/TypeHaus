@@ -4,6 +4,7 @@ by colour so each object becomes one mesh of a few primitives."""
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 from typehaus.emit.gltf.geometry import (
@@ -146,7 +147,7 @@ class _MeshBuilder:
         self.add_triangles(triangles, color)
 
     def add_prism_with_rectangular_voids(self, ring: list[tuple[float, float]],
-                                         voids: tuple[tuple[tuple[float, float], ...], ...],
+                                         voids: Sequence[Sequence[tuple[float, float]]],
                                          z0: float, z1: float,
                                          color: tuple[float, float, float, float]) -> None:
         """Extrude ``ring`` with every void cut through it.

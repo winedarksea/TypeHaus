@@ -117,7 +117,8 @@ def _resolve_stair(
     along_x = stair.run_direction == "x"
     run = (0.0 if opening is None else
            ((max(xs) - min(xs)) if along_x else (max(ys) - min(ys))))
-    if stair.layout not in {"straight", "u_split_landing", "right_angle_winder"}:
+    if stair.layout not in {"straight", "u_split_landing", "u_level_landing",
+                            "right_angle_winder"}:
         return None, [_error("integrity.stair_layout", f"stair {stair.tag} has unknown layout "
                              f"{stair.layout!r}", stair.tag)]
     if stair.layout == "right_angle_winder":
@@ -130,7 +131,8 @@ def _resolve_stair(
     elif stair.winder_count:
         return None, [_error("integrity.stair_winders", f"stair {stair.tag} only accepts "
                              "winders in right_angle_winder layout", stair.tag)]
-    if (stair.layout == "u_split_landing" and stair.turn_direction is not None
+    if (stair.layout in {"u_split_landing", "u_level_landing"}
+            and stair.turn_direction is not None
             and stair.turn_direction not in {"left", "right"}):
         return None, [_error("integrity.stair_turn", f"stair {stair.tag} has unknown turn "
                              f"direction {stair.turn_direction!r}", stair.tag)]
@@ -169,13 +171,10 @@ def _resolve_stair(
                        if stair.landing_depth is not None else stair.width.meters)
     # A winder turn consumes a square whose side is the stair width. The remaining treads
     # must still meet the 10 in. minimum on their straight walking line.
-    if stair.layout == "u_split_landing":
-        # Split-landing riser budget: lower treads, the lower landing, the upper landing
-        # one riser above (that riser IS the "step" between the half-width landings),
-        # upper treads, then the arrival deck — so the flights share ``risers - 3``
-        # treads, with an odd extra tread going to the lower flight. The parallel
-        # flights use the opening length less the landing depth.
-        flight_treads = max(0, risers - 3)
+    if stair.layout in {"u_split_landing", "u_level_landing"}:
+        # The paired decks consume one riser on arrival; a split landing also consumes
+        # one between them. The destination deck consumes the final riser.
+        flight_treads = max(0, risers - (2 if stair.layout == "u_level_landing" else 3))
         lower_treads = (flight_treads + 1) // 2
         straight_run = run - landing_depth_m
         available_going = straight_run / lower_treads if lower_treads else 0.0
@@ -295,7 +294,7 @@ def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: in
     if stair.layout == "right_angle_winder":
         return _winder_stair_members(stair, minx, miny, z0, risers, riser, going,
                                      tread_depth, nosing)
-    if stair.layout == "u_split_landing":
+    if stair.layout in {"u_split_landing", "u_level_landing"}:
         return _u_split_landing_members(stair, minx, miny, z0, risers, riser, going,
                                         tread_depth, nosing,
                                         landing_depth_m, head_z)
@@ -312,11 +311,12 @@ def _stair_fits_opening(stair: Stair, minx: float, maxx: float, miny: float, max
     under intact deck, even when its scalar run and width each fit the opening in isolation.
     """
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
-    if stair.layout == "u_split_landing":
-        # Mirrors _u_split_landing_members: flights share risers - 3 treads, and the
-        # (longer) lower flight takes the odd extra one, and the two lanes are held apart
+    if stair.layout in {"u_split_landing", "u_level_landing"}:
+        # Mirrors _u_split_landing_members: the longer flight takes an odd extra tread,
+        # and the two lanes are held apart
         # by the well partition — so the cross-run budget is 2 flights *plus* partition.
-        lower_treads = (max(0, risers - 3) + 1) // 2
+        flight_treads = max(0, risers - (2 if stair.layout == "u_level_landing" else 3))
+        lower_treads = (flight_treads + 1) // 2
         required_run = landing_depth_m + tread * lower_treads
         required_cross = 2 * stair.width.meters + _WELL_PARTITION_THICKNESS_M
         if stair.run_direction == "x":

@@ -1608,10 +1608,10 @@ export interface Stair {
   width_m: number;
   run_direction: "x" | "y";
   run_reversed: boolean;
-  layout: "straight" | "u_split_landing" | "right_angle_winder";
+  layout: "straight" | "u_split_landing" | "u_level_landing" | "right_angle_winder";
   turn_direction: "left" | "right" | null;
   winder_count: number;
-  // Authored turn-landing depth (u_split_landing only); null reproduces the historical
+  // Authored turn-landing depth (either U layout); null reproduces the historical
   // "reserve one stair width" behaviour. The resolver floors it at the stair width
   // (IRC R311.7.6).
   landing_depth_m: number | null;

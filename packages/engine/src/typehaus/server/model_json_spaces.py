@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import FinishPart, ResolvedModel
 from typehaus.server.model_json_shared import _provenance
 from typehaus.source.provenance import Provenance
 
@@ -110,7 +110,7 @@ def spaces_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str
     }
 
 
-def _finish_parts(parts) -> list[dict[str, Any]]:
+def _finish_parts(parts: tuple[FinishPart, ...]) -> list[dict[str, Any]]:
     """``FinishPart`` tuples as ``{outline, holes}`` objects."""
     return [{"outline": [list(p) for p in outline],
              "holes": [[list(p) for p in hole] for hole in holes]}

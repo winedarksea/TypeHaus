@@ -198,9 +198,9 @@ NODES = [
     # own segment here regardless of how short W-M-STRW2 south of it gets.
     Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 6))),
     # W-M-WELL's ends: FO-M-STAIR's south edge (the stairhead) and the south face of
-    # ST-M2S's upper-landing joist (its axis is the landing edge, 31'-0 3/8"). Both free.
+    # ST-M2S's level-landing joist (its axis is the landing edge, 31'-10 3/8"). Both free.
     Node(uid="4YBM7GZBJZ", tag="N-M-WELL-S", position=pt(ft(14), ft(26, 0.375)), open_end=True),
-    Node(uid="0RW1TEC7JH", tag="N-M-WELL-N", position=pt(ft(14), ft(30, 11.625)), open_end=True),
+    Node(uid="0RW1TEC7JH", tag="N-M-WELL-N", position=pt(ft(14), ft(31, 9.625)), open_end=True),
     # W-M-BAE shifts 2' east; the mudroom door remains at its existing
     # 6" tee clearance.
     #

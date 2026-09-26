@@ -19,6 +19,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.quantities import inch
 from typehaus.resolve.model import FramedMember, ResolvedStair
 from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.resolve.stairs.walkline import intermediate_step_elevations, level_landing_is_complete
 
 # IRC R311.7.5.2.1: a winder tread must be at least 6" deep at every point within the
 # stairway's clear width, which includes its narrow end against the newel — and at least
@@ -34,7 +35,6 @@ MAX_RISER_VARIATION_IN = 0.375
 # deck. The joists, rims and posts under a platform are ``landing_framing`` and are excluded
 # by category — a single frozenset test, not a child-key prefix list, since walking surface
 # and framing are separate categories.
-_WALKING_SURFACE_CATEGORIES = frozenset({"tread", "winder", "landing"})
 
 # How close a supporting element's top has to be to a post's base to be carrying it.
 _BEARING_TOLERANCE_M = inch(1.0).meters
@@ -140,9 +140,7 @@ def _walking_surfaces(stair: ResolvedStair) -> list[float]:
     landing joist/rim/post tops out at the deck's *underside*, so counting one would read
     as a step where there is none.
     """
-    tops = [member.z1_m for member in stair.members
-            if member.category in _WALKING_SURFACE_CATEGORIES]
-    return sorted(tops)
+    return intermediate_step_elevations(stair)
 
 
 @check(Tier.STRUCTURAL, "structural.stair_riser_uniformity")
@@ -171,6 +169,12 @@ def stair_riser_uniformity(ctx: CheckContext) -> list[Finding]:
     allowed_m = inch(MAX_RISER_VARIATION_IN).meters
     out: list[Finding] = []
     for stair in ctx.model.stairs:
+        if not level_landing_is_complete(stair):
+            out.append(_advisory(
+                "structural.stair_riser_uniformity",
+                f"stair {stair.tag} has a missing or uneven level landing half",
+                (stair.tag,), Result.FAIL))
+            continue
         surfaces = _walking_surfaces(stair)
         if not surfaces:
             continue

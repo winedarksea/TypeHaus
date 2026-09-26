@@ -24,7 +24,12 @@ from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.overhead import OverheadIndex
 from typehaus.resolve.stair_headroom import STAIR_HEADROOM, run_clearances
-from typehaus.resolve.stairs.walkline import flight_stations, headroom_stations
+from typehaus.resolve.stairs.walkline import (
+    flight_stations,
+    headroom_stations,
+    intermediate_step_elevations,
+    level_landing_is_complete,
+)
 
 _MAX_STAIR_RISER = inch(7.75)
 _MIN_STAIR_GOING = inch(10)
@@ -58,8 +63,7 @@ def stair_geometry(ctx: CheckContext) -> list[Finding]:
             out.append(_unknown("code.R311_7_stair_geometry", "unresolved stair storey",
                                 (stair.tag,), "R311.7"))
             continue
-        walking = sorted(member.z1_m for member in stair.members
-                         if member.category in {"tread", "winder", "landing"})
+        walking = intermediate_step_elevations(stair)
         # The flight's own ends where it states them. A run between two storeys states
         # nothing and the storey table is the answer, exactly as before; a step-down within
         # one storey states both, and re-deriving them from ``from_storey``/``to_storey``
@@ -74,7 +78,8 @@ def stair_geometry(ctx: CheckContext) -> list[Finding]:
         # overhead structure, made by code.R311_7_2_stair_headroom. Reporting the arrival
         # storey's nominal ceiling height here — as this check once did — is not headroom.
         valid = (
-            stair.riser_height_m <= _MAX_STAIR_RISER.meters + 1e-9
+            level_landing_is_complete(stair)
+            and stair.riser_height_m <= _MAX_STAIR_RISER.meters + 1e-9
             and stair.going_depth_m >= _MIN_STAIR_GOING.meters - 1e-9
             and len(walking) == len(expected)
             and all(abs(actual - wanted) <= 1e-6

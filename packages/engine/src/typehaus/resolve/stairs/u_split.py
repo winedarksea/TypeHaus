@@ -1,4 +1,4 @@
-"""The U split-landing layout: two parallel flights, two half-width landings, well wall."""
+"""U-stair layouts: two parallel flights, paired landing decks, and a well wall."""
 
 from __future__ import annotations
 
@@ -24,12 +24,10 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
                              tread_depth: float, nosing: float,
                              landing_depth_m: float,
                              head_z: float | None = None) -> tuple[FramedMember, ...]:
-    """Generate two parallel flights joined by two half-width landings one riser apart.
+    """Generate two parallel flights joined by paired half-width landings.
 
-    Riser budget (split-landing semantics): ``lower`` treads, the lower landing, the
-    upper landing one riser above it (that riser IS the "step" between the landings),
-    ``upper`` treads, then the arrival deck — ``lower + upper + 3 == risers``. Both
-    landings sit in the landing zone beyond the flight ends, ``landing_depth_m`` deep.
+    Split landings spend one riser crossing between the decks; level landings spend none.
+    Both reserve one riser onto the landing and one onto the arrival floor.
 
     Cross-run the well is ``width + partition + width``: the two flight lanes are held
     apart by the well partition rather than butting against each other.
@@ -42,7 +40,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     run — so mirroring a stair never changes the opening it needs.
     """
     width = stair.width.meters
-    flight_treads = max(0, risers - 3)
+    middle_risers = 0 if stair.layout == "u_level_landing" else 1
+    flight_treads = max(0, risers - 2 - middle_risers)
     lower_treads = (flight_treads + 1) // 2  # odd extra tread goes to the lower flight
     upper_treads = flight_treads - lower_treads
     sign = -1 if stair.run_reversed else 1
@@ -82,7 +81,7 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # ``notes/u_stair_split_landing.md``.
     upper_flight_len = tread * upper_treads
     lower_landing_z = z0 + riser * (lower_treads + 1)
-    upper_landing_z = lower_landing_z + riser
+    upper_landing_z = lower_landing_z + riser * middle_risers
     arrival = z0 + riser * risers
     out: list[FramedMember] = []
     # Stringers, raked: at the springing end the top meets the first tread's top; at the
@@ -125,7 +124,7 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # walker steps up at to reach tread ``index``, so the drawn grid stays flush at both
     # ends and the top nosing lands exactly on the arrival deck edge at s=0.
     for index in range(upper_treads):
-        top = z0 + riser * (lower_treads + 3 + index)
+        top = z0 + riser * (lower_treads + 2 + middle_risers + index)
         s = upper_flight_len - tread * (index + 1) + (tread - nosing) / 2.0
         out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", tread_profile,
                                 at(s, upper_lane), at(s, upper_lane + width),
@@ -144,7 +143,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     out.extend(_landing_platform(stair, "upper", at, upper_flight_len,
                                  flight_len + landing_depth_m - upper_flight_len,
                                  *upper_half, upper_landing_z, thickness,
-                                 partition_centre))
+                                 partition_centre,
+                                 omit_partition_rim=middle_risers == 0))
     # Well partition between the up and down flights: generated stud framing (not an
     # authored Wall) centred in the gap the two lanes leave, bearing on the subfloor the
     # stair springs from and rising to the arrival deck — never past the subfloor into the
@@ -185,7 +185,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
 
 def _landing_platform(stair: Stair, name: str, at, s0: float, depth: float,
                       lane_lo: float, width: float, landing_z: float,
-                      thickness: float, partition: float) -> list[FramedMember]:
+                      thickness: float, partition: float,
+                      omit_partition_rim: bool = False) -> list[FramedMember]:
     """One half-width landing platform: full-width deck + joists + perimeter rims.
 
     The deck is a single ``deck WxT`` member (a parseable profile, so it renders at the
@@ -222,6 +223,8 @@ def _landing_platform(stair: Stair, name: str, at, s0: float, depth: float,
     # (``_stringer_offsets``); the partition-side one stays on the bearing centreline.
     ply = cross_section(_LANDING_JOIST_PROFILE).width_m
     for index, cross in enumerate((lane_lo, lane_lo + width)):
+        if omit_partition_rim and abs(cross - partition) <= 1e-9:
+            continue  # one shared rim carries the flush seam, not two coincident boards
         if abs(cross - partition) > 1e-9:
             cross += ply / 2.0 if index == 0 else -ply / 2.0
         out.append(FramedMember(stair.uid, f"landing-rim-{name}-{index}", "landing_framing",

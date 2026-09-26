@@ -199,12 +199,12 @@ class Stair(Element):
     width: Length
     run_direction: str = "x"
     run_reversed: bool = False
-    # ``straight`` | ``u_split_landing`` | ``right_angle_winder``.
+    # ``straight`` | ``u_split_landing`` | ``u_level_landing`` | ``right_angle_winder``.
     # The explicit vocabulary prevents a non-zero winder count from silently meaning a
     # particular turn shape.
     layout: str = "straight"
     # Relative to ascent. Required for a right-angle winder. Optional for a
-    # ``u_split_landing``, where it names the hand of the 180° turn: ``"right"`` (the
+    # either U landing layout, where it names the hand of the 180° turn: ``"right"`` (the
     # default) puts the springing flight in the lane nearest the ``start`` corner and the
     # arriving flight beyond the well partition, ``"left"`` mirrors the pair across the
     # well so the stair springs from the far lane and arrives in the near one.
@@ -216,11 +216,11 @@ class Stair(Element):
     # promotes an otherwise non-bearing wall to a valid host, and a tag that names no wall
     # on ``from_storey`` is an ``integrity.stair_bearing`` error.
     bearing_refs: tuple[str, ...] = ()
-    # Depth of the turn landing (in the run direction) for a ``u_split_landing``.
+    # Depth of the turn landing (in the run direction) for either U layout.
     # ``None`` keeps the historical behaviour of reserving one stair width for the
-    # 180° turn; authoring a value renders a deeper walk-off platform and shortens the
-    # flights to suit. IRC R311.7.6 wants a landing at least the stair width deep, so a
-    # sub-width value is treated as the width floor by the resolver.
+    # 180° turn; authoring a value sets the platform depth and the flight run to suit.
+    # IRC R311.7.6 requires 36" in the direction of travel; shorter values are floored
+    # to 36" by the resolver. Cross-run width still matches the stair lane.
     landing_depth: Length | None = None
     # Nominal newel-post profile at the winder turn (e.g. "4x4", "6x6"). A wider newel
     # widens the well the winders wrap, moving their narrow ends apart — the sanctioned

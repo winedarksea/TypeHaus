@@ -129,6 +129,14 @@ def test_an_arriving_only_plan_has_no_break_line(catlin_model):
                     if node.tag.startswith(f"{tag}-break")], (tag, storey)
 
 
+def test_level_turn_draws_one_landing_outline(catlin_model):
+    stair = _stair(catlin_model, "ST-M2S")
+    tags = [node.tag for node in _polys(catlin_model, "second", stair.uid)]
+    assert tags.count("landing-level") == 1
+    assert "landing-lower" not in tags and "landing-upper" not in tags
+    assert tags.count("ST-M2S-travel") == 1
+
+
 # ----------------------------------------------------------------- 3. occlusion
 def test_an_arriving_flight_is_hidden_under_the_departing_one(catlin_model):
     """From above, the flight coming up hides the one going down where they overlap.

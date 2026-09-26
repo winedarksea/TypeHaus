@@ -2426,7 +2426,7 @@ def test_stairs_resolve_with_code_risers(catlin_model):
         [attic.base_elevation_m + attic.riser_height_m * step for step in (1, 2, 3)])
     for tag in ("ST-B2M", "ST-M2S"):
         stair = stairs[tag]
-        assert stair.layout == "u_split_landing"
+        assert stair.layout == ("u_level_landing" if tag == "ST-M2S" else "u_split_landing")
         keys = {member.child_key for member in stair.members}
         # Split-landing semantics: the riser between the two half-width landing
         # platforms IS the step, so there is no separate step-between-landings member.
@@ -2456,7 +2456,7 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     # edge is and where FO-S-STAIR's already was.
     assert stairs["ST-B2M"]["start"] == pytest.approx(
         [ft(10, 3.375).meters, ft(26, 0.375).meters])
-    assert stairs["ST-M2S"]["layout"] == "u_split_landing"
+    assert stairs["ST-M2S"]["layout"] == "u_level_landing"
     # Both U-stairs turn left, so each springs from the east lane and arrives in the west
     # one.
     for tag in ("ST-B2M", "ST-M2S"):

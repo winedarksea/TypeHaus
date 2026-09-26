@@ -53,6 +53,7 @@ from typehaus.model.enums import StructuralRole
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.stairs.walkline import intermediate_step_elevations
 
 
 @pytest.fixture(scope="module")
@@ -654,19 +655,19 @@ def test_a_u_split_upper_flight_lands_on_the_storey_edge_it_meets(catlin_model, 
 
 
 @pytest.mark.parametrize("tag", ["ST-B2M", "ST-M2S"])
-def test_the_upper_half_landing_absorbs_the_odd_tread(catlin_model, tag):
-    """The two half-landings stay flush at the FAR end; the upper one gets the slack.
+def test_paired_landings_share_the_far_edge(catlin_model, tag):
+    """The two half-landings stay flush at the far end of their shared well.
 
     That flushness is what makes the 180° crossing work and what holds the opening budget
     fixed — ``_stair_fits_opening`` still binds on ``landing_depth + going * lower_treads``.
-    So an odd tread split buys the upper half-landing exactly one going of extra depth, and
-    both stay at or over R311.7.6's 36".
+    An odd tread split buys the upper half-landing one going of extra depth; a level
+    landing with equal runs gives both halves equal depth.
     """
     stair = next(s for s in catlin_model.stairs if s.tag == tag)
     along = 1 if stair.run_direction == "y" else 0
     decks = {m.child_key: m for m in stair.members if m.category == "landing"}
     lower, upper = decks["landing-lower"], decks["landing-upper"]
-    odd = (stair.riser_count - 3) % 2
+    odd = (stair.riser_count - (2 if stair.layout == "u_level_landing" else 3)) % 2
     assert upper.length_m - lower.length_m == pytest.approx(
         stair.going_depth_m * odd, abs=1e-9), stair.tag
     assert min(lower.length_m, upper.length_m) >= inch(36).meters - 1e-9
@@ -837,8 +838,7 @@ def test_every_stair_walks_from_its_source_floor_to_its_destination_floor(catlin
                      else source.elevation.meters)
         arrival = (stair.arrival_elevation_m if stair.arrival_elevation_m is not None
                    else target.elevation.meters)
-        surfaces = sorted(member.z1_m for member in stair.members
-                          if member.category in {"tread", "winder", "landing"})
+        surfaces = intermediate_step_elevations(stair)
         expected = [springing + stair.riser_height_m * step
                     for step in range(1, stair.riser_count)]
         assert surfaces == pytest.approx(expected, abs=1e-6), stair.tag
