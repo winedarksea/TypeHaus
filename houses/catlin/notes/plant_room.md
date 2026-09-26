@@ -33,14 +33,14 @@ source:
 - Room design condition: 75 F at 70% RH. Dew point 64.4 F.
 - Liner, inside out: 1/2" PVC panel, 3/4" furring, membrane. Walls and ceiling.
 - The membrane is the air and vapour barrier. Continuous on all six sides.
-- Floor: one seamless 12' sheet of luxury vinyl, flash-coved 6" up the wall, sloped to a drain.
+- Floor: one seamless sheet vinyl, 6" flash cove, sloped to a drain.
 - Glazing: fixed units only, U-0.14, warm-edge spacer, thermally broken frame.
 - No suspended ceiling. No roofing membrane under the vinyl.
 - Ventilation: 25 cfm in, 25 cfm out, both dampered. Extract high, far end.
 - Damp location throughout; wet location wherever misted or hosed.
 
 ### Keyed
-- [K1] Flash-cove the sheet 6" up the wall on a cove stick and terminate it behind the wall membrane.
+- [K1] Lap the floor cove up the wall and terminate it behind the wall membrane.
 - [K2 @ host#layer:humid-membrane:out] Membrane continuous from wall to ceiling at the perimeter; seal each penetration.
 - [K3] Drained sill pan under each unit: sloped, flashed into the wall membrane, draining to the room and never into framing.
 - [K4 @ host#layer:liner-furring:out] Keep the 3/4" furring gap open behind the panel; it is the drying path.
@@ -52,7 +52,7 @@ source:
 - If this wall is ever built with board insulation, use glass-faced or unfaced polyiso. Never foil-faced.
 
 ### Spec 09 65 16
-- Lay one sheet across the room's 8'-1" width: no seam. The cove is the waterproofing; add no second impermeable layer under it.
+- One sheet, no seam. The cove is the waterproofing; add no second impermeable layer under it.
 
 ### Spec 23 00 00
 - Hold the room neutral to slightly negative, -0.05 to -0.15 in. w.g. against adjacent spaces.

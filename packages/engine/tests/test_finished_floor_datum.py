@@ -44,7 +44,7 @@ def _build_up_in(model, tag) -> float:
     ("RM-S-HALL", 0.2362),    # lvp, 6 mm nominal
     ("RM-A-STUDY", 0.75),     # 4/4 oak
     ("RM-S-BED2", 0.5),       # carpet over a 1/4" cushion
-    ("RM-A-STUBATH", 0.0787), # 2 mm sheet vinyl
+    ("RM-A-STUBATH", 0.120),  # 120 mil luxury sheet vinyl
 ])
 def test_a_floored_room_walks_above_its_storey_datum(catlin_model, tag, finish_in):
     """Datum → subfloor → covering, and the sum is what a height is measured from."""

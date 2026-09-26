@@ -422,15 +422,15 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     # carry this assertion, and the assertion is about the rake either way.
     #
     # A stated elevation is an AFF number, so it is measured from the FINISHED floor — the
-    # 2 mm of sheet vinyl in RM-A-STUBATH included. That is the whole of the 2026-09-11
+    # 120 mil of sheet vinyl in RM-A-STUBATH included. That is the whole of the 2026-09-11
     # change (``room_finished_floor_elevation``); before it, every stated height in the house
     # was short by its room's covering, up to 1 1/2" on oak.
     stubath = next(room for room in model.rooms if room.tag == "RM-A-STUBATH")
     stubath_build_up = (room_finished_floor_elevation(model, stubath)
                         - room_floor_elevation(model, stubath))
-    # 3/4" of subfloor plus 2 mm of sheet vinyl: the structural answer is the wall base, so
+    # 3/4" of subfloor plus 120 mil of sheet vinyl: the structural answer is the wall base, so
     # it misses the sheet as well as the covering (→ resolve/room_floor.py).
-    assert stubath_build_up == pytest.approx(inch(0.75 + 0.0787).meters)
+    assert stubath_build_up == pytest.approx(inch(0.75 + 0.120).meters)
     assert above_floor("ED-A-STUBATH-CAN1") == pytest.approx(
         stubath_build_up + ft(7).meters)
 
