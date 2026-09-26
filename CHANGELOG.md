@@ -4,6 +4,8 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+## 0.1.2 — 2026-09-26
+
 - **A partition's top plate stops 3/4" clear of the structure above it, and an SDPW holds it
   there.** The attic's seven partitions resolved **11-7/8" too tall**:
   `resolve/roof_geometry.apply_to_roof_wall_tops` rakes a `ToRoof` wall to the roof **deck**

@@ -2056,7 +2056,7 @@ source = { virtual = "." }
 
 [[package]]
 name = "typehaus"
-version = "0.1.0a0"
+version = "0.1.2"
 source = { editable = "packages/engine" }
 dependencies = [
     { name = "ezdxf" },

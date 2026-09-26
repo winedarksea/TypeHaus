@@ -1,7 +1,7 @@
 {
   "name": "typehaus-ui",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.2",
   "type": "module",
   "description": "Type:Haus M2 editor — SVG 2D editor + three.js 3D panel over model.json (→ 21).",
   "scripts": {
