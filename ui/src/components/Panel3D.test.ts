@@ -14,8 +14,9 @@ import {
   buildCanvasObjectParts, canvasObjectFallbackGeometry, earthElevation, earthOutline, earthVoids,
   EARTH_FALLBACK_HALF_SIZE_M,
 } from "../three/builders/site";
+import { buildOpening } from "../three/builders/openings";
 import {
-  archSoffitCircle, archSoffitSample, archSoffitSegmentCount, buildOpening, buildWall,
+  archSoffitCircle, archSoffitSample, archSoffitSegmentCount, buildWall,
   createSmoothArchedWallLayerGeometry, wallLayerPieces, withoutCollinearVertices,
 } from "../three/builders/walls";
 import {

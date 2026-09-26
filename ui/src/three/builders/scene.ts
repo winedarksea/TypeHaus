@@ -27,7 +27,8 @@ import { buildPlants, instancedPlantUids } from "./plants";
 import type { RebarLayer } from "./rebar";
 import { tagStorey as tagStoreyChildren, tagTrades } from "./registry";
 import { buildCanvasObject, buildEarth, buildSuspension } from "./site";
-import { buildOpening, buildWall } from "./walls";
+import { buildOpening } from "./openings";
+import { buildWall } from "./walls";
 import {
   buildBrace, buildFloor, buildFootingBedding, buildRoof, buildRoomFloor,
   buildPaneling, buildSoffitFraming, buildSolarPanel, buildSolid, buildStair,

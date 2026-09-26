@@ -325,12 +325,13 @@ def test_only_swinging_leaves_carry_a_lever_set(catlin_model):
             walls[opening.host_wall], opening, door_type.operation,
             is_glazed=door_type.glazed, is_trimless=door_type.trimless,
             bookcase_door=door_type.bookcase_door)}
-        leaves = {"swing": 1, "double_swing": 2}.get(str(door_type.operation), 0)
+        operation = DoorOperation(door_type.operation).value
+        leaves = {"swing": 1, "double_swing": 2}.get(operation, 0)
         if door_type.bookcase_door is not None:
             leaves = 0
         count = len(parts["hardware"].solids) if "hardware" in parts else 0
         assert count == leaves * _LEVER_SET_BOXES, opening.tag
-        seen.add(str(door_type.operation))
+        seen.add(operation)
     assert {"swing", "pocket"} <= seen, "fixture regression: catlin lost a swing or pocket door"
 
 
