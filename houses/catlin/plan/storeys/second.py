@@ -1499,25 +1499,19 @@ STAIR_HANDRAILS = [
 # unchanged. Precedent: STACK_SLEEVES in plan/mep_sleeves.py.
 FLOOR = []
 
-# The suite bedroom's four "tudor" posts (plans/TODO.md §Hardwood): custom 6-1/8" square
+# The suite bedroom's two "tudor" posts (plans/TODO.md §Hardwood): custom 6-1/8" square
 # elm timbers standing in W-S-W3's stud line, flush with the drywall plane. Deliberately
 # NOT a change to EXT_2X6 — each post is a deviation within the stud line, so the
-# wall assembly is untouched. Centre x=3-9/16" off the sheathing-ext plane. Spaced evenly
-# between SUITE1's and SUITE2's jamb packs (king faces y 12'-0 1/2" / 18'-7 1/2"): five
-# ~10 7/8" gaps, symmetric about the pair. Each post lands over a W-M-W3 stud (160/176/
-# 192/208") and replaces the module stud it lands on. Cut 8'-8 1/4": it stands on the deck
-# through the cut sole plate and stops under W-S-W3's continuous double top plate.
+# wall assembly is untouched. Centre x=3-9/16" off the sheathing-ext plane. One each side
+# of the pier between SUITE1's and SUITE2's jamb packs (king faces y 12'-0 1/2" /
+# 18'-7 1/2"): ~10 7/8" off each king face, symmetric about the pair. Each lands over a
+# W-M-W3 stud (160/208") and replaces the module stud it lands on. Cut 8'-8 1/4": it stands
+# on the deck through the cut sole plate and stops under W-S-W3's continuous double top plate.
 POSTS = [
     Post(uid="CSK901AAAA", tag="P-S-TUDOR1", position=pt(inch(3.5625), ft(13, 2.4375)),
          size="6.125x6.125", height=ft(8, 8.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
-    Post(uid="CSK902AAAA", tag="P-S-TUDOR2", position=pt(inch(3.5625), ft(14, 7.5)),
-         size="6.125x6.125", height=ft(8, 8.25), supported_by="FS-S-WEST",
-         within_wall="W-S-W3", assembly="ELM_TIMBER"),
-    Post(uid="CSK903AAAA", tag="P-S-TUDOR3", position=pt(inch(3.5625), ft(16, 0.5)),
-         size="6.125x6.125", height=ft(8, 8.25), supported_by="FS-S-WEST",
-         within_wall="W-S-W3", assembly="ELM_TIMBER"),
-    Post(uid="CSK904AAAA", tag="P-S-TUDOR4", position=pt(inch(3.5625), ft(17, 5.5625)),
+    Post(uid="CSK904AAAA", tag="P-S-TUDOR2", position=pt(inch(3.5625), ft(17, 5.5625)),
          size="6.125x6.125", height=ft(8, 8.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
 ]
@@ -1553,8 +1547,8 @@ PANELING = [
     # there is no double-billing trap: both bands are wall area on the same table.)
     #
     # ** `walls=` IS NOT OPTIONAL. ** `room=` alone panels every bounding wall of the L —
-    # all eight, ~50 lineal feet — including the window wall with its four flush elm tudor
-    # posts (P-S-TUDOR1..4, `within_wall="W-S-W3"`), which the model cannot scribe around.
+    # all eight, ~50 lineal feet — including the window wall with its two flush elm tudor
+    # posts (P-S-TUDOR1/2, `within_wall="W-S-W3"`), which the model cannot scribe around.
     #
     # ** `height` IS A BAND HEIGHT ADDED TO `offset`, NOT A TOP ELEVATION ** — see
     # resolve/paneling.py, which computes `offset + height` and clamps to the wall top.

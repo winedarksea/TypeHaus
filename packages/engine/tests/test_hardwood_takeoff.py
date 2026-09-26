@@ -220,11 +220,11 @@ def test_the_elm_posts_are_sawn_to_section_not_laminated_from_boards(rows):
 
     Regression: the row builder had one boolean for "bigger than the stock" and could turn
     a sawn piece into a glue-up. Laminating an 8/4 stack is a real way to make a post — it
-    is simply not how these four are made, and the difference is 93 rough board feet of
+    is simply not how these two are made, and the difference is 93 rough board feet of
     elm.
     """
     post = next(row for row in _use(rows, "timber post"))
-    assert post["material"] == "elm-timber" and post["pieces"] == 4
+    assert post["material"] == "elm-timber" and post["pieces"] == 2
     assert post["layup"] == "sawn timber"
     assert post["boards_per_piece"] == 1
     assert post["nominal_stock"] == "timber", "a timber has no nominal quarter stock"

@@ -1943,16 +1943,16 @@
 # SL-SG-DECK stopped being a Slab and became FS-SG-DECK's `subfloor`. Same boards, same
 # money, an honest unit: 182.0 SF / 6 sheets instead of 0.84 cubic yards of plank.
 #
-# ELM TIMBER COLUMNS — the four suite tudor posts, 6-1/8" square S4S, 40 LF / 125 bf. There is
+# ELM TIMBER COLUMNS — the two suite tudor posts, 6-1/8" square S4S, 20 LF / 62.5 bf. There is
 # no published market for this: a solid clear 6" elm timber is effectively unobtainable and would
 # check badly drying, so the realistic article is a glued-up blank from 8/4 kiln-dried stock.
 # Twin Cities urban salvage is real supply (Wood From The Hood publishes 8/4 at $7-14/bf and has
 # elm as a stock species from Dutch-elm removals), but a 28/4 timber is off their price list
 # entirely — it is a phone quote. Two independent build-ups landed at $46-184/LF and $53-128/LF;
-# this takes $50-150/LF = $2,000-6,000 for the package, including hardwax oil on 81.6 SF of face
-# and setting four interior posts. ** SOFTEST NUMBER IN THIS FILE. ** One call to Wood From The
+# this takes $50-150/LF = $1,000-3,000 for the package, including hardwax oil on 40.8 SF of face
+# and setting two interior posts. ** SOFTEST NUMBER IN THIS FILE. ** One call to Wood From The
 # Hood or Siwek Millwork would collapse the range further than any more desk research.
-"column:ELM_TIMBER" = { material = { low = 3250, high = 9700 }, labour = { low = 2650, high = 7950 } }  # 0.34 cy = 40 LF
+"column:ELM_TIMBER" = { material = { low = 3250, high = 9700 }, labour = { low = 2650, high = 7950 } }  # 0.17 cy = 20 LF
 #
 # PAINTED 6x6 BALCONY PILLARS — 51.4 LF over six posts. $22-55/LF installed: post material
 # $6-14/LF (PT at the bottom, clear cedar or FJ paint-grade at the top), bases/caps/structural

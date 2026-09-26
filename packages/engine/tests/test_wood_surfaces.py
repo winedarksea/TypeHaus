@@ -187,7 +187,7 @@ def test_the_study_wainscot_reconciles_with_the_rooms_bounding_walls(catlin_mode
 def test_the_suite_headboard_band_is_the_sound_walls_full_run_to_six_feet(catlin_model):
     """WP-S-SUITE-HEADBOARD: the walnut that used to be the suite FLOOR, stood up behind
     the bed. Two walls only (`walls=` is not optional — `room=` alone would panel all eight
-    bounding walls of the L, including the window wall and its four flush elm tudor posts),
+    bounding walls of the L, including the window wall and its two flush elm tudor posts),
     a band 0 to 6'-0", and no opening deductions: neither W-S-SN1 nor W-S-SN2 is punched
     inside the band. Pinned separately from the study's so the two cannot cover for each
     other in the shared `walnut-tg` row."""
@@ -209,21 +209,21 @@ def test_the_suite_headboard_band_is_the_sound_walls_full_run_to_six_feet(catlin
 
 # --- the elm tudor posts -------------------------------------------------------------------
 
-def test_the_four_elm_posts_bill_as_ten_foot_sections(catlin_model, bom):
-    """Four 6-1/8" square posts, each cut just under 9' and ordered as a 10' section:
-    40 LF ordered, board feet off the actual section over the ordered length."""
+def test_the_two_elm_posts_bill_as_ten_foot_sections(catlin_model, bom):
+    """Two 6-1/8" square posts, each cut just under 9' and ordered as a 10' section:
+    20 LF ordered, board feet off the actual section over the ordered length."""
     elm = next(row for row in bom["wood_surfaces"] if row["material"] == "elm-timber")
     assert elm["kind"] == "timber"
     assert elm["species"] == "elm"
-    assert int(elm["count"]) == 4
-    assert elm["tags"] == ["P-S-TUDOR1", "P-S-TUDOR2", "P-S-TUDOR3", "P-S-TUDOR4"]
-    assert int(elm["order_length_ft"]) == 40
-    assert float(elm["board_feet"]) == pytest.approx(6.125 * 6.125 / 12.0 * 40.0, abs=0.05)
+    assert int(elm["count"]) == 2
+    assert elm["tags"] == ["P-S-TUDOR1", "P-S-TUDOR2"]
+    assert int(elm["order_length_ft"]) == 20
+    assert float(elm["board_feet"]) == pytest.approx(6.125 * 6.125 / 12.0 * 20.0, abs=0.05)
     assert elm["also_in_structural_solids"] is True
     # The primary billing: the posts stay in structural_solids under their assembly.
     solids = [row for row in bom["structural_solids"]
               if row["category"] == "column" and row["assembly"] == "ELM_TIMBER"]
-    assert len(solids) == 1 and int(solids[0]["count"]) == 4
+    assert len(solids) == 1 and int(solids[0]["count"]) == 2
 
 
 def test_a_custom_actual_profile_parses_as_stated_dimensions() -> None:

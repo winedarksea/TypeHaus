@@ -2974,8 +2974,8 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
 
 
 def test_the_suite_tudor_posts_space_evenly_between_the_windows_over_studs(catlin_model):
-    """P-S-TUDOR1..4 in W-S-W3 (storeys/second.py): five equal gaps from SUITE1's king face
-    to SUITE2's, symmetric about the pair, each post clear of both jamb packs and over a
+    """P-S-TUDOR1/2 in W-S-W3 (storeys/second.py): equal gaps off SUITE1's and SUITE2's king
+    faces, symmetric about the pair, each post clear of both jamb packs and over a
     W-M-W3 stud. The two checks in ``checks/structural/wall_posts.py`` grade the clearance
     and the bearing; this pins the rhythm, which no check asks about.
     """
@@ -2988,15 +2988,14 @@ def test_the_suite_tudor_posts_space_evenly_between_the_windows_over_studs(catli
     posts = sorted(
         (min(p[1] for p in s.outline) / 0.0254, max(p[1] for p in s.outline) / 0.0254)
         for s in catlin_model.solids if s.tag.startswith("P-S-TUDOR"))
-    assert len(posts) == 4
+    assert len(posts) == 2
     # SUITE1's north king face and SUITE2's south king face bound the zone.
     zone_lo = max(y for y in king_ys if y < posts[0][0])
     zone_hi = min(min(p[1] for p in ring) / 0.0254 for ring in kings
                   if min(p[1] for p in ring) / 0.0254 > posts[-1][1])
-    edges = [zone_lo, *(y for post in posts for y in post), zone_hi]
-    gaps = [edges[i + 1] - edges[i] for i in range(0, len(edges), 2)]
-    assert max(gaps) - min(gaps) <= 1 / 16 + 1e-6, gaps
-    assert gaps[0] > 0 and gaps[-1] > 0, "a post stands in a jamb pack"
+    gaps = [posts[0][0] - zone_lo, zone_hi - posts[-1][1]]
+    assert abs(gaps[0] - gaps[1]) <= 1 / 16 + 1e-6, gaps
+    assert min(gaps) > 0, "a post stands in a jamb pack"
     centres = [(lo + hi) / 2 for lo, hi in posts]
     mid = (zone_lo + zone_hi) / 2
     for a, b in zip(centres, reversed(centres), strict=True):

@@ -144,7 +144,7 @@ def test_an_enclosure_with_no_room_in_it_is_not_floor_area(catlin_model) -> None
 #
 # ``[concrete]`` in a prices.toml prices the whole ``structural_solids`` scope, not "the
 # concrete". Until ``cost_codes._solid_code`` existed, every row in it inherited
-# ``SECTION_CODES["concrete"]``, so four solid elm timbers, six painted 6x6 pillars, the
+# ``SECTION_CODES["concrete"]``, so the solid elm timbers, six painted 6x6 pillars, the
 # breezeway's multiwall polycarbonate, 4.35 cy of #57 washed stone and two framed-and-taped
 # duct soffits all exported under NAHB 1300 / CSI 03 30 00 CAST-IN-PLACE CONCRETE — and
 # ``haus tasks`` scheduled them into the concrete sub's work package.

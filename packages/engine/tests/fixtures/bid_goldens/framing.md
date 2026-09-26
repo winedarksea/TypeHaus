@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** ce0483dd54ecc35a  
+**Model hash:** dbe0bde6c44c299b  
 **Lines:** 142
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -43,7 +43,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.6 LF cut | building |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,676 | LF ordered | 633 pcs, 3943.6 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,814 | LF ordered | 462 pcs, 2437.4 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,814 | LF ordered | 1371 pcs, 7614.6 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,842 | LF ordered | 1371 pcs, 7633.0 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | 88 | LF ordered | 9 pcs, 72.0 LF cut | building |
 | 2x8 — header, jack stud, joist, king stud, landing framing, plate, stud (2x8) | 280 | LF ordered | 47 pcs, 217.8 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 576 | LF ordered | 100 pcs, 478.7 LF cut | building |
@@ -110,7 +110,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 19 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 7 | ea |  | building |
 | LTP4 lateral tie plate, gable-end truss to top plate | 2 | ea |  | building |
-| LTP4 lateral tie plate | 120 | ea |  | building |
+| LTP4 lateral tie plate | 124 | ea |  | building |
 | LUS face-mount joist hanger | 1 | ea |  | building |
 | LUS face-mount joist hanger | 2 | ea |  | building |
 | LUS face-mount joist hanger | 2 | ea |  | building |
@@ -124,7 +124,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 99 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 10 | ea |  | building |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
-| SP6 stud plate tie (2x6) | 316 | ea |  | building |
+| SP6 stud plate tie (2x6) | 318 | ea |  | building |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | 4 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 10 | ea |  | building |
 | THA422 top-flange floor truss hanger | 3 | ea |  | building |
@@ -139,7 +139,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Beam — EQUIP_STAND_ALUM (beam:EQUIP_STAND_ALUM) | 2 | ea | 2 placed, 0.4 SF plan | main |
-| Column — ELM_TIMBER (column:ELM_TIMBER) | 109.2 | bf | 4 placed, 1.0 SF plan; 0.34 cy in the takeoff | second |
+| Column — ELM_TIMBER (column:ELM_TIMBER) | 54 | bf | 2 placed, 0.5 SF plan; 0.17 cy in the takeoff | second |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 19.2 | bf | 3 placed, 0.3 SF plan; 0.06 cy in the takeoff | main |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | 7.3 | SF | 1 placed, 7.3 SF plan; 0.05 cy in the takeoff | main |
@@ -326,7 +326,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | Beam — EQUIP_STAND_ALUM (beam:EQUIP_STAND_ALUM) | BM-M-HP3-R1, BM-M-HP3-R2 |
-| Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2, P-S-TUDOR3, P-S-TUDOR4 |
+| Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2 |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | PT-M-HP1-L1, PT-M-HP1-L2, PT-M-HP1-L3, PT-M-HP1-L4, PT-M-HP3-L1, PT-M-HP3-L2, PT-M-HP3-L3, PT-M-HP3-L4, PT-SG-HPB1, PT-SG-HPB2, PT-SG-HPB3, PT-SG-HPB4 |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRLAND-SE, P-M-STRWELL-S, P-M-STRWELL-SS |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |

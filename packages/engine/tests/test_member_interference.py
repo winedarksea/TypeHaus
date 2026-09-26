@@ -155,7 +155,7 @@ def test_catlin_framing_interference_stays_near_zero(catlin_ctx):
 
 
 def test_tudor_posts_within_their_wall_are_not_a_clash(catlin_ctx):
-    """The suite's four elm timbers stand in W-S-W3's stud line (``Post.within_wall``):
+    """The suite's two elm timbers stand in W-S-W3's stud line (``Post.within_wall``):
     the framer cuts the plates and studs around them, so their shared volume with that
     one wall's framing is the cut, not an elevation bug. The clearance is authored —
     remove ``within_wall`` and the same posts report against all three plates."""

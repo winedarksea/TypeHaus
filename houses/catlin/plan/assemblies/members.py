@@ -90,7 +90,7 @@ POST_WHITE_PAINT_DF = Assembly(
 # 6x6 pillars/knee braces, which must stay white) — same 5.5" body, only the colour differs.
 # Metal, not painted PT: `_solid_color` reads the STRUCTURE layer's material, so
 # metal-dark-exterior here is what darkens the railings in both renderers.
-# The suite bedroom's four elm tudor posts (plans/TODO.md §Hardwood): same pattern as
+# The suite bedroom's two elm tudor posts (plans/TODO.md §Hardwood): same pattern as
 # POST_WHITE_PAINT — the STRUCTURE material colours the solid and names the species for the
 # wood_surfaces takeoff. 6.125" body = the custom timber, sheathing to drywall face, a
 # deviation within W-S-W3's stud line, deliberately not a change to EXT_2X6. Stud height:

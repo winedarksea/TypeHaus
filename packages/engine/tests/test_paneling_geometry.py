@@ -209,7 +209,7 @@ def test_the_catlin_bands_are_the_six_authored_ones(bands):
     # RM-S-SUITE's headboard band (2026-09-05): the walnut that was briefly the suite FLOOR,
     # stood up behind the bed on the two staggered-stud sound walls between the suite and the
     # vanity. Two walls and not the room's other six — `walls=` is what keeps the band off
-    # W-S-W3, whose four flush elm tudor posts the model cannot scribe around — and the band
+    # W-S-W3, whose two flush elm tudor posts the model cannot scribe around — and the band
     # is 0 to 6'-0", `height` again being a band height and not a top elevation.
     assert len(by_tag["WP-S-SUITE-HEADBOARD"]) == 2
     assert {b.wall_tag for b in by_tag["WP-S-SUITE-HEADBOARD"]} == {"W-S-SN1", "W-S-SN2"}
