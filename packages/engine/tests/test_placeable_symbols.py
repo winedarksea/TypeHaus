@@ -195,3 +195,20 @@ def test_a_box_part_carries_no_ring_and_a_ringed_part_carries_its_bounding_box()
                 assert cy == pytest.approx((min(ys) + max(ys)) / 2, abs=TOLERANCE)
                 assert sx == pytest.approx(max(xs) - min(xs), abs=TOLERANCE)
                 assert sy == pytest.approx(max(ys) - min(ys), abs=TOLERANCE)
+
+
+def test_wave_chandelier_is_five_weaving_strips_on_one_canopy() -> None:
+    """Each strip is a concave plan ring (a wave, not a box), lit under a gold body."""
+    width, depth, height = 1.2192, 0.4064, 1.0668  # 48" x 16", 3'-6" assembly
+    canopy, *rest = model_parts("wave-chandelier", width, depth, height)
+    assert canopy["color"] == "brass"
+    assert canopy["center"][2] + canopy["size"][2] / 2 == pytest.approx(height)
+    rings = [p for p in rest if p["points"]]
+    assert [p["color"] for p in rings] == ["lamp", "brass"] * 5
+    assert min(p["center"][2] - p["size"][2] / 2 for p in rings) == 0.0
+    cables = [p for p in rest if not p["points"]]
+    assert len(cables) == 10 and all(abs(c["center"][1]) < 1e-12 for c in cables)
+    ring = rings[0]["points"]
+    area = sum(x0 * y1 - x1 * y0 for (x0, y0), (x1, y1) in zip(ring, ring[1:] + ring[:1], strict=True)) / 2
+    size_x, size_y, _ = rings[0]["size"]
+    assert abs(area) < 0.5 * size_x * size_y  # a snaking band, far from its bbox

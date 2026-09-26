@@ -89,6 +89,8 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     # neutral, matching the black baffle trim the house actually specifies.
     "lamp": (0.98, 0.95, 0.86, 1.0),
     "luminaire-housing": (0.22, 0.22, 0.23, 1.0),
+    # Brushed gold/brass: a decorative fixture body, where ``metal`` would read as steel.
+    "brass": (0.78, 0.60, 0.30, 1.0),
     # The lamp face, binned by correlated colour temperature. Each is the Planckian locus
     # colour for that nominal CCT, pulled 45% of the way to white and then scaled to the
     # same 0.98 peak the plain ``lamp`` role uses: a raw 2700K blackbody is orange, and an

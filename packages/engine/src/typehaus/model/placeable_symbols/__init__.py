@@ -86,7 +86,7 @@ SYMBOL_NAMES = frozenset({
     # same plan glyph but its own 3D cable-suspension massing.
     "recessed-can", "panel-light", "sconce", "sconce-updown", "sconce-spot",
     "pendant", "chandelier", "cluster-pendant", "ceiling-fan-light", "linear-light",
-    "suspended-linear-light",
+    "suspended-linear-light", "wave-chandelier",
 })
 
 # Names in the vocabulary with no builder yet. Kept explicit so "not implemented" is a

@@ -10,11 +10,48 @@ const MARBLE_TEX_PX = 1024;
 /** One repeat = the 12' roll width, so the print repeats at the scale the product does. */
 export const MARBLE_TILE_M = 3.6576;
 
-// Octaves for the turbulence that bends the veins, and for the fade that makes them come
-// and go along their length. Integer frequencies keep both seamless.
-const TURBULENCE: ReadonlyArray<readonly [number, number]> = [[2, 1], [4, 0.5], [8, 0.25], [16, 0.12]];
-const FADE: ReadonlyArray<readonly [number, number]> = [[2, 1], [5, 0.5]];
-const CLOUD: ReadonlyArray<readonly [number, number]> = [[3, 0.05], [9, 0.025], [27, 0.012]];
+// Integer frequencies keep every octave seamless across the tile. Turbulence bends the
+// veins; FADE lets them thin and vanish along their length; CLOUD is the ground's shading.
+const TURBULENCE: ReadonlyArray<readonly [number, number]> = [[1, 1], [2, 0.6], [4, 0.3], [8, 0.12]];
+const FINE_TURBULENCE: ReadonlyArray<readonly [number, number]> = [[2, 1], [4, 0.5], [8, 0.25], [16, 0.1]];
+const FADE: ReadonlyArray<readonly [number, number]> = [[2, 1], [3, 0.5]];
+const CLOUD: ReadonlyArray<readonly [number, number]> = [[3, 0.04], [9, 0.02], [27, 0.01]];
+
+const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
+const smoothstep = (a: number, b: number, x: number) => {
+  const t = clamp01((x - a) / (b - a));
+  return t * t * (3 - 2 * t);
+};
+
+/** A line where `phase` crosses zero: 1 on the vein, falling off by `sharpness`. */
+function vein(phase: number, sharpness: number): number {
+  return Math.pow(1 - Math.abs(Math.sin(phase)), sharpness);
+}
+
+/**
+ * Luminance of the tile at `u, v` in [0, 1): ~1 on the ground, darker on a vein. Pure, so the
+ * pattern can be previewed and tested without a canvas.
+ */
+export function marbleLuminance(u: number, v: number): number {
+  const tau = Math.PI * 2;
+  const turb = tiledFbm(u, v, TURBULENCE);
+  // Primary: two long veins per tile on the diagonal (wave vector (1, 1)), bent by the
+  // turbulence and swelling and pinching along their length — crisp edges, a faint halo.
+  const primaryPhase = tau * (u + v) + 2.6 * turb;
+  // Band half-width in |sin| units: pinches to a thread, swells to a finger's width.
+  const width = 0.02 + 0.22 * clamp01(0.5 + 2.5 * tiledFbm(u + 0.53, v + 0.71, FADE));
+  const near = 1 - Math.abs(Math.sin(primaryPhase));
+  const core = smoothstep(1 - width, 1 - width * 0.35, near);
+  const primaryFade = clamp01(1.1 + 2.5 * tiledFbm(u + 0.37, v + 0.11, FADE));
+  const primary = (0.85 * core + 0.15 * vein(primaryPhase, 6)) * primaryFade;
+  // Secondary: a web of fine veins branching off at other angles.
+  const fine = tiledFbm(v, u, FINE_TURBULENCE);
+  const secondary = Math.max(
+    vein(tau * (2 * u - v) + 5 * fine, 45) * clamp01(0.6 + 3 * tiledFbm(v + 0.61, u, FADE)),
+    vein(tau * (u + 3 * v) + 6 * fine, 60) * clamp01(0.4 + 3 * tiledFbm(u + 0.83, v + 0.29, FADE)),
+  );
+  return 1 + tiledFbm(u, v + 0.19, CLOUD) - 0.6 * primary - 0.3 * secondary;
+}
 
 /** True when a material's declared finish is the veined-marble print. */
 export function isVeinedMarble(finish: string | null | undefined): boolean {
@@ -22,11 +59,6 @@ export function isVeinedMarble(finish: string | null | undefined): boolean {
 }
 
 let marbleMap: THREE.Texture | null = null;
-
-/** A thin line where `phase` crosses zero: 1 on the vein, falling off by `sharpness`. */
-function vein(phase: number, sharpness: number): number {
-  return Math.pow(1 - Math.abs(Math.sin(phase)), sharpness);
-}
 
 /**
  * The shared marble tile, or null where there is no 2D canvas (SSR, the headless geometry
@@ -40,20 +72,9 @@ export function buildMarbleMap(): THREE.Texture | null {
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
   const image = ctx.createImageData(MARBLE_TEX_PX, MARBLE_TEX_PX);
-  const tau = Math.PI * 2;
   for (let y = 0; y < MARBLE_TEX_PX; y++) {
-    const v = y / MARBLE_TEX_PX;
     for (let x = 0; x < MARBLE_TEX_PX; x++) {
-      const u = x / MARBLE_TEX_PX;
-      const turb = tiledFbm(u, v, TURBULENCE);
-      // Primary: bold veins on a shallow diagonal (integer wave vector (1, 2) wraps the tile).
-      const primary = vein(tau * (u + 2 * v) + 5 * turb, 10)
-        * Math.max(0, Math.min(1, 0.55 + 2.2 * tiledFbm(u + 0.37, v, FADE)));
-      // Secondary: finer, fainter, crossing at another angle.
-      const secondary = vein(tau * (3 * u - 2 * v) + 7 * tiledFbm(v, u, TURBULENCE), 40)
-        * Math.max(0, Math.min(1, 0.4 + 2 * tiledFbm(v + 0.61, u, FADE)));
-      const lum = 1 + tiledFbm(u, v + 0.19, CLOUD) - 0.42 * primary - 0.16 * secondary;
-      const level = Math.max(0, Math.min(255, Math.round(250 * lum)));
+      const level = Math.round(250 * clamp01(marbleLuminance(x / MARBLE_TEX_PX, y / MARBLE_TEX_PX)));
       const index = (y * MARBLE_TEX_PX + x) * 4;
       image.data[index] = image.data[index + 1] = image.data[index + 2] = level;
       image.data[index + 3] = 255;

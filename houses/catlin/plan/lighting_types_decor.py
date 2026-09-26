@@ -169,10 +169,18 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # proprietary driver is the part that dies at 12-20 years and on an import there is no
     # replacement channel at all, so ** budget a spare driver with the order. ** Dim it on
     # its own Lutron DVELV-300P, never ganged with the kitchen cans.
-    luminaire_class("ED-T-LT-PENDANT").model_copy(update={"type_mark": "M", "source": "Owner selection 2026-09-06: an imported linear fixture, unit not "
-                         "yet chosen. TARGET THE SPECS, NOT THE LOOK — ~48\" long, "
-                         "2000-3500 lm, 3000 K, CRI 90+, dimmable, 120 V, and a REAL "
-                         "UL/ETL/cETLus mark on the fixture itself."}),
+    #
+    # The look (2026-09-26): a WAVE chandelier — five flat LED strips snaking in plan and
+    # weaving through each other off one linear canopy, brushed gold. The gold must be PVD or
+    # lacquered, never raw brass, for the grease reason above. 16" is the weave's spread.
+    luminaire_class("ED-T-LT-PENDANT").model_copy(update={
+        "type_mark": "M", "name": '48" LED wave chandelier', "plan_symbol": "wave-chandelier",
+        "footprint": (ft(4), inch(16)),
+        "source": "Owner selection 2026-09-26: an imported LED wave chandelier "
+                  "(five plan-wave strips, brushed gold PVD/lacquer), unit not "
+                  "yet chosen. TARGET THE SPECS, NOT THE LOOK — ~48\" long, "
+                  "2000-3500 lm, 3000 K, CRI 90+, dimmable, 120 V, and a REAL "
+                  "UL/ETL/cETLus mark on the fixture itself."}),
 
     # M1: the attic studio's bar pendant (2026-09-06). A separate mark from M, not a second
     # instance of it: M is a 4'-0" dining fixture and this would have hung over a 4'-7" bar

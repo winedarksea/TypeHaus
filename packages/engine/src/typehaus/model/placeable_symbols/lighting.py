@@ -35,6 +35,7 @@ from typehaus.model.placeable_symbols._frame import (
     clamp,
     line,
     polygon,
+    prism,
     rect,
 )
 
@@ -345,6 +346,59 @@ def suspended_linear_light() -> Builder:
     return build
 
 
+def wave_chandelier(*, strips: int = 5, waves: float = 2.0, samples: int = 48) -> Builder:
+    """Flat LED strips that snake in plan and weave through one another, hung at staggered heights.
+
+    Every strip is a sine about the long centreline with its own phase and amplitude, so they
+    cross rather than stack; each is one concave plan ring swept a thin band (gold body over a
+    lit underside). Its cables drop where it crosses the centreline, so they land on the one
+    linear canopy. Height is the whole assembly, as ``suspended_linear_light``.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        import math
+
+        band_t = min(0.019, depth * 0.06)  # 3/4" strip, seen from above
+        half_l = width / 2 - band_t
+        amp_max = depth / 2 - band_t
+        canopy_h = min(height * 0.04, 0.0254)
+        canopy_d = max(band_t, min(0.0508, depth * 0.25))
+        body_h = min(0.0254, height * 0.06)
+        lamp_h = body_h * 0.3
+        stagger = min(0.1524, height * 0.2)
+        cable_t = min(0.003175, band_t * 0.3)
+        omega = 2 * math.pi * waves / (2 * half_l)
+        strokes: list[Stroke] = [rect(0, 0, 2 * half_l, canopy_d, weight=DETAIL_WEIGHT)]
+        parts: list[Part] = [box(0, 0, height - canopy_h, height, 2 * half_l, canopy_d, "brass")]
+        count = max(1, strips)
+        for index in range(count):
+            phase = index * math.pi / count
+            amp = amp_max * (0.7 + 0.3 * ((index * 0.6180339887) % 1.0))
+            left, right = [], []
+            for step in range(samples + 1):
+                x = -half_l + 2 * half_l * step / samples
+                y = amp * math.sin(omega * x + phase)
+                slope = amp * omega * math.cos(omega * x + phase)
+                norm = math.hypot(slope, 1.0)
+                nx, ny = -slope / norm * band_t / 2, 1.0 / norm * band_t / 2
+                left.append((x + nx, y + ny))
+                right.append((x - nx, y - ny))
+            ring = left + right[::-1]
+            strokes.append(polygon(ring, fill="brass", weight=DETAIL_WEIGHT))
+            z0 = ((index * 0.6180339887) % 1.0) * stagger
+            parts.append(prism(ring, z0, z0 + lamp_h, "lamp"))
+            parts.append(prism(ring, z0 + lamp_h, z0 + body_h, "brass"))
+            # A cable at the zero crossing nearest each end, so it rises onto the canopy.
+            for target in (-0.7 * half_l, 0.7 * half_l):
+                n = round((omega * target + phase) / math.pi)
+                x = min(max((n * math.pi - phase) / omega, -half_l), half_l)
+                parts.append(box(x, 0, z0 + body_h, height - canopy_h, cable_t, cable_t,
+                                 "brass"))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 LIGHTING_SYMBOLS: dict[str, Builder] = {
     "recessed-can": recessed_can(),
     "panel-light": panel_light(),
@@ -357,4 +411,5 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "ceiling-fan-light": ceiling_fan_light(blades=4),
     "linear-light": linear_light(),
     "suspended-linear-light": suspended_linear_light(),
+    "wave-chandelier": wave_chandelier(strips=5),
 }
