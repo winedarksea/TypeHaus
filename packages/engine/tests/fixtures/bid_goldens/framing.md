@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 48daf8486ec06271  
+**Model hash:** 065ae6b370decd80  
 **Lines:** 142
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -21,10 +21,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.25x7.25 rim — rim board (1.25x7.25 rim) | 16 | LF ordered | 4 pcs, 11.9 LF cut | building |
 | 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 1 pcs, 1.9 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
-| 1.75x11.875 LVL — trimmer (1.75x11.875 LVL) | 184 | LF ordered | 16 pcs, 168.7 LF cut | building |
+| 1.75x11.875 LVL — trimmer (1.75x11.875 LVL) | 192 | LF ordered | 16 pcs, 176.4 LF cut | building |
 | 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,388 | LF ordered | 216 pcs, 2143.2 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
-| 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 47 | ea | 47 pcs, 474.5 LF cut; 497.0 LF in the takeoff | building |
+| 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 46 | ea | 46 pcs, 486.1 LF cut; 507.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | 414 | LF ordered | 56 pcs, 367.4 LF cut | building |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | 280 | LF ordered | 42 pcs, 231.4 LF cut | building |
 | 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 8 | LF ordered | 3 pcs, 7.6 LF cut | building |
@@ -120,9 +120,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 4 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 4 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 74 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 99 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 10 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 71 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 106 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 12 | ea |  | building |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 318 | ea |  | building |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | 4 | ea |  | building |

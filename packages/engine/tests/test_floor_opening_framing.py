@@ -44,10 +44,11 @@ def test_trimmer_plies_are_not_coincident(catlin_model):
 
 def test_an_extended_trimmer_stops_at_a_neighbouring_wells_bearing(catlin_model):
     # FO-S-ERV-CHASE's header-edge trimmers once ran to x=18', across FO-S-STAIR's well,
-    # and folded the stair's north pack out to the same 17'-6 3/4".
+    # and folded the stair's north pack out to the same 17'-6 3/4". Both now end on
+    # W-M-STRW's line, x=10'-0", which carries the stair's west edge.
     members = {m.child_key: m for floor in catlin_model.floors if floor.tag == "FS-S-WEST"
                for m in floor.members if m.category == "trimmer"}
-    stair_west = (ft(10, 3.375) - inch(0.625)).meters  # the well's framed line, behind its lining
+    stair_west = ft(10).meters
     for key in ("trimmer-FO-S-ERV-CHASE-0-0", "trimmer-FO-S-ERV-CHASE-1-0"):
         assert members[key].p1[0] == pytest.approx(stair_west), key
     assert members["trimmer-FO-S-STAIR-1-0"].p0[0] == pytest.approx(stair_west)
@@ -333,7 +334,8 @@ def test_trimmers_stop_at_a_declared_bearing_edge():
     assert "header-FO-1-1" not in members
     trimmer = members["trimmer-FO-1-0-0"]
     assert trimmer.p0[0] == pytest.approx(ft(12).meters)
-    assert trimmer.p1[0] == pytest.approx(edge.meters)
+    # Onto W-24 like the joists beside it: the deck's outermost line, so to their tip.
+    assert trimmer.p1[0] == pytest.approx(_model.floors[0].ends.tip_hi)
 
 
 def test_an_absorbed_joist_line_leaves_no_stub_and_inside_lines_keep_tails():

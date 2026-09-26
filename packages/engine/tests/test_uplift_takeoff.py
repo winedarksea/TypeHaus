@@ -185,7 +185,8 @@ def test_a_floor_is_tied_along_its_whole_bearing_line(catlin_model_ro) -> None:
     joists = [m for m in floor.members if m.category == "joist"]
     trussed = [c for c in wall_ties if c.member_profile == "11.875 floor truss"]
     # Less one tie: the y=34'-5 3/4" truss's west end hangs on FO-S-ERV-CHASE's header.
-    assert len(trussed) == len(joists) - 1 == 25
+    # The y=25'-4" line is FO-S-STAIR's full-span south trimmer pack since 2026-09-25.
+    assert len(trussed) == len(joists) - 1 == 24
     assert len({c.support_tag for c in trussed}) > 1, \
         "the west bearing line is more than one wall; a single support means _bearing_line died"
 

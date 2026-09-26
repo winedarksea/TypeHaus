@@ -338,8 +338,9 @@ class PartitionDeflectionRules:
     #: How far below the design gap a measured crossing may read and still be that joint —
     #: float slack plus the sub-1/32" a rake accumulates over a 20' wall.
     gap_search_tolerance_in: float = 0.05
-    #: Resolved floor-member categories a screw may land in.
-    screwable_floor_categories: tuple = ("joist", "rim", "blocking")
+    #: Resolved floor-member categories a screw may land in. A trimmer is a joist line of
+    #: the deck's own stock; the partition under it is the same joint.
+    screwable_floor_categories: tuple = ("joist", "rim", "blocking", "trimmer")
     #: And roof-member categories. A rafter and the ridge/eave blocking between them.
     screwable_roof_categories: tuple = ("rafter", "blocking", "top_chord")
     #: |sin| between the wall axis and the member above, under which the two are PARALLEL
