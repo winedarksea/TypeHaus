@@ -1452,11 +1452,17 @@ STAIR_GUARDS = [
         # opening the 4"-sphere rule admits.
         infill="balusters", baluster_spacing=inch(4),
     ),
-    # 3'-6 7/8" from the west jamb of the throat — the well partition's west face — to the
-    # well's east edge, where RL-S-STAIR turns the corner.
+    # Across the well head to the east edge, where RL-S-STAIR turns the corner — and, since
+    # 2026-09-25, a leg north along the well partition's top. That top is flush with the
+    # deck, so the upper flight's top four nosings stand 7 1/2"-30" under it over a 60"-98"
+    # fall into the lower lane (R312.1.1). The leg ends at nosing 5, the first the partition
+    # stands 34" over. Level at 42", like every guard round this well. x=13'-10 3/4" puts a
+    # 2x2 post flush with the partition's stair face: centred on it (14'-0") the head edge
+    # opens 2 1/4" west of the corner (code.R312_1_guard).
     Railing(
         uid="CSRL02AAAA", tag="RL-S-STAIRHEAD", type_ref="RAILING-INT-STAIR-GUARD", path=(
-            pt(ft(13, 9.75), ft(26, 0.375)),
+            pt(ft(13, 10.75), ft(30, 2.375)),
+            pt(ft(13, 10.75), ft(26, 0.375)),
             pt(ft(17, 8.625), ft(26, 0.375)),
         ),
         kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),

@@ -100,7 +100,8 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # stopped overlapping — RL-A-FLIGHT-GUARD ends at the 26'-5 3/8" newel (10'-0" -> 6'-0")
     # and RL-A-STAIR starts at the head (x 22'-5 3/8", plus a 5 5/8" return).
     # 22.1 since 2026-09-23: RL-M-STAIRHEAD's 0.4 LF left with it.
-    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(22.1, abs=0.1)
+    # 26.2 since 2026-09-25: RL-S-STAIRHEAD's 4'-2" leg along ST-M2S's well partition.
+    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(26.2, abs=0.1)
     # 45.6 over four storey groups, and this is the catch-all: every guard or handrail that
     # names no `type_ref` lands here. RL-A-HANDRAIL's 13.0 runs beside ST-S2A's winder fan as
     # well as its straight flight (per R311.7.8.2, measured by `code.R311_7_8_handrail`

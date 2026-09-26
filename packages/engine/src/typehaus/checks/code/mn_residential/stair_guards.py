@@ -14,7 +14,10 @@ south side for 10'-0", at a clean 0-FAIL report.
 The two rules divide on one line, and it is the stair's own ``outline`` — the well. Inside
 it, an unguarded edge is the well's and ``code.R312_1_guard`` adjudicates it edge by edge.
 Outside it, the flight has left the shaft and stands in a room, which is this rule. No
-overlap, no seam.
+overlap, no seam — with one exception, the switchback's inner side: that faces the other
+lane across the well partition, which ``code.R312_1_guard`` never sees, so this rule grades
+it (``_stair_partition``). ST-M2S's arriving lane stood 7 1/2"-30" under a flush partition
+top over a 60"-98" fall into the departing lane, at a clean report.
 
 ``code.R311_7_1_wall_top_landing`` is the other half of the same idea, one storey up: a
 flight springing from the top of a concrete wall crosses a threshold that no element models
@@ -35,6 +38,12 @@ from typehaus.checks.code.mn_residential._common import (
     _na,
     _pass,
     _unknown,
+)
+from typehaus.checks.code.mn_residential._stair_partition import (
+    closure_top,
+    crossed,
+    lane_surface,
+    partition_solids,
 )
 from typehaus.checks.code.mn_residential.fall_protection import _GUARD_TRIGGER_DROP
 from typehaus.checks.registry import CheckContext, Tier, check
@@ -91,11 +100,12 @@ def stair_open_side_guard(ctx: CheckContext) -> list[Finding]:
     them:
 
     * **Is it still in the shaft?** A step outboard that lands inside the stair's own
-      outline is looking at the stairway, not at a room — a switchback lane facing its own
-      other lane across the well partition's reservation, a winder's inner corner. That void
+      outline is looking at the stairway, not at a room — a winder's inner corner. That void
       is the well's, and ``code.R312_1_guard`` already grades it edge by edge. The probe has
       to stay in the shaft a foot out, too: a flight narrower than its well faces a void
-      strip whose deck-edge guard stands a storey up.
+      strip whose deck-edge guard stands a storey up. **Unless the step crosses the well
+      partition**: then the fall is into the other lane, and the partition (with any wall
+      stacked on it) closes the side only where it stands 34" over the nosing.
     * **How far is the fall?** :func:`_landing_below`. 30" or under and the rule does not
       reach, which is why ST-S2A's three winders and the five-riser garage stair are silent
       here rather than exempted by a special case.
@@ -132,11 +142,13 @@ def stair_open_side_guard(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for stair in ctx.model.stairs:
         shaft = Polygon(stair.outline) if len(stair.outline) >= 3 else None
+        partition = partition_solids(stair)
+        flights = flight_stations(stair)
         open_sides: list[tuple[float, tuple[float, float]]] = []  # (drop, plan point)
         short: set[str] = set()
         standing: set[str] = set()
         unmeasured = 0
-        for key, stations in flight_stations(stair).items():
+        for key, stations in flights.items():
             # The synthetic arrival station a tread flight is extended by is the deck past
             # the top riser, not a tread — the same station ``_unserved_nosings`` drops for
             # the same reason. Measuring it would read the arrival floor as a 30" fall.
@@ -145,20 +157,37 @@ def stair_open_side_guard(ctx: CheckContext) -> list[Finding]:
             for a, b, z in used:
                 for near, far in ((a, b), (b, a)):
                     probe = Point(near)
-                    if shaft is not None and all(
+                    across = _outboard(near, far, _SHAFT_REACH_M)
+                    bands = crossed(partition, near, across)
+                    if not bands and shaft is not None and all(
                             shaft.covers(_outboard(near, far, step))
                             for step in (_OUTBOARD_STEP_M, _SHAFT_REACH_M)):
                         continue
-                    landing = _landing_below(decks, probe, z, stair.riser_height_m,
-                                             stair.base_elevation_m)
+                    landing = (lane_surface(flights, key, across, z, stair.riser_height_m)
+                               if bands else None)
+                    if landing is None:
+                        landing = _landing_below(decks, probe, z, stair.riser_height_m,
+                                                 stair.base_elevation_m)
                     if landing is None:
                         unmeasured += 1
                         continue
                     drop = z - landing
                     if drop <= _GUARD_TRIGGER_DROP.meters + 1e-9:
                         continue
-                    if any(line.distance(probe) <= wall.thickness_m / 2.0 + _WALL_FACE_TOL_M
-                           and wall.z0_m <= z + 0.05 < wall.z1_m for line, wall in walls):
+                    closure = z
+                    if bands:
+                        # The partition and any wall stacked on it are one solid, and it
+                        # closes the side only at a guard's height over the nosing.
+                        bands += [(w.z0_m, w.z1_m) for line, w in walls
+                                  if line.distance(probe)
+                                  <= w.thickness_m / 2.0 + _WALL_FACE_TOL_M]
+                        solid_top = closure_top(bands, z)
+                        if solid_top is not None and (solid_top - z + 1e-9
+                                                      >= _STAIR_GUARD_MIN_HEIGHT.meters):
+                            continue
+                        closure = max(z, solid_top or z)
+                    elif any(line.distance(probe) <= wall.thickness_m / 2.0 + _WALL_FACE_TOL_M
+                             and wall.z0_m <= z + 0.05 < wall.z1_m for line, wall in walls):
                         continue
                     near_guards = [(line, g) for line, g in guards
                                    if line.distance(probe) <= _RAIL_PLANE_TOL_M]
@@ -167,13 +196,16 @@ def stair_open_side_guard(ctx: CheckContext) -> list[Finding]:
                                or abs(g.base_elevation.meters - z) <= _RAIL_PLANE_TOL_M]
                     # A level guard on a deck edge above the flight stands over the nosing by
                     # its top, where the deck's framing — down to a raked skirt under it, if
-                    # one runs this line — closes the band beneath its base.
-                    closed_to = max((z + h for g, h in running if g.serves_stair), default=z)
+                    # one runs this line — or the well partition it stands on closes the band
+                    # beneath its base.
+                    closed_to = max([closure, *(z + h for g, h in running if g.serves_stair)])
                     deck = [(g, g.base_elevation.meters + g.height.meters - z)
                             for line, g in near_guards
                             if not g.serves_stair
                             and g.base_elevation.meters - z > _RAIL_PLANE_TOL_M
-                            and _deck_closes_band(framed, line, g, closed_to)]
+                            and (_deck_closes_band(framed, line, g, closed_to)
+                                 or (bands and g.base_elevation.meters - closure
+                                     <= _SPHERE_M + 1e-9))]
                     if deck:
                         top = max(h for _g, h in deck)
                         running = deck + [(g, max(h, top)) for g, h in running]
