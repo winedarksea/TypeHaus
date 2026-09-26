@@ -1284,8 +1284,11 @@ OPENINGS = [
     # side. 4'-7" of wall still stands north of it. STILL TRIMLESS — the type is the only
     # place that flag lives, which is why DT-INT-SWING36-TRIMLESS had to be minted above
     # rather than reusing DT-INT-SWING36.
+    # ** SWINGS INTO THE LIVING ROOM SINCE 2026-09-26. ** A concealed (EzyJamb-type) frame
+    # is flush on its PULL side, where the hidden hinges are: this puts the flush face,
+    # reveal and lever in the living room, and the rebated frame depth in the bedroom.
     Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING36-TRIMLESS",
-         position=from_node("N-M-S1", ft(5, 5))),
+         position=from_node("N-M-S1", ft(5, 5)), flip_swing=True),
     # O-M-HALL (the old cased pass-through) retired 2026-07-28 with its host wall W-M-C4:
     # the full 4'-2" is open now. Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass) so
     # every main/second head on the west face lands on one shared 6'-0" line (27" units at

@@ -18,6 +18,14 @@ from __future__ import annotations
 
 from typehaus.model.enums import DoorOperation
 from typehaus.resolve.geometry import opening_center, wall_frame
+from typehaus.resolve.geometry_door_products import (
+    concealed_frame_parts,
+    concealed_leaf,
+    finish_faces,
+    handing,
+    hardware_part,
+    lever_solids,
+)
 from typehaus.resolve.geometry_ir import GPart, GPrism
 from typehaus.resolve.geometry_walls import is_raked, wall_top_at
 from typehaus.resolve.model import ResolvedWall
@@ -38,8 +46,8 @@ _SLIDING_TRACK_HEIGHT_M = 0.02
 _FRAME_KEY = "opening_frame"
 _GLASS_KEY = "glass"
 # A sectional overhead door's panel. The leaf of every other door takes _DOOR_LEAF_KEY
-# (interior white paint) or the clad wall's charcoal frame tone; a garage door is neither. It is a painted
-# steel product with its own factory colour, and at 16' wide it is one of the largest single
+# (interior white paint) or the clad wall's charcoal frame tone; a garage door is neither.
+# It is a painted steel product with its own factory colour, and at 16' wide it is one of the largest single
 # surfaces on the elevation — carrying the trim coil's near-black made it read matte black.
 # The colour is authored in emit/gltf/palette.py and reaches the viewer through the
 # generated vocabulary manifest, so a recolour stays a palette-only edit.
@@ -100,9 +108,9 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                   bookcase_door=None) -> tuple[GPart, ...]:
     """Every solid the product inside ``opening`` contributes, grouped into named parts.
 
-    A rough opening is a bare void with no product and yields nothing. A ``trimless`` door
-    (drywall return jamb, no applied casing) suppresses the four frame boxes but still sizes
-    its leaf as if they were there, so the reveal reads the same.
+    A rough opening is a bare void with no product and yields nothing. A ``trimless`` swing
+    door is a concealed frame (→ ``geometry_door_products``): no casing, the leaf flush with
+    the face it swings toward. Every swing leaf carries a lever set, appended last.
     """
     if opening.kind == "rough_opening":
         return ()
@@ -160,6 +168,17 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
 
     parts: list[GPart] = []
     mid_elev = z0 + sill + available_height / 2.0
+    hinge_sign, swing_sign = handing(opening)
+    faces = finish_faces(wall)
+    if (is_trimless and opening.kind == "door" and faces is not None
+            and operation in (None, DoorOperation.SWING)):
+        parts.extend(concealed_frame_parts(box, faces, swing_sign, width, z0 + sill,
+                                           available_height))
+        leaf_w, _h, _z, flush, back = concealed_leaf(faces, swing_sign, width, z0 + sill,
+                                                     available_height)
+        hardware = hardware_part(lever_solids(box, -hinge_sign * leaf_w / 2.0, hinge_sign,
+                                              (flush, back), z0 + sill))
+        return tuple(parts) + ((hardware,) if hardware is not None else ())
     if not is_trimless:
         parts.append(GPart(key="frame", material_key=frame_key, solids=(
             box(frame_width, available_height, frame_depth,
@@ -201,6 +220,7 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         )))
         return tuple(parts)
     panel_height = max(_OPENING_MIN_PANEL_DIMENSION_M, available_height - 2.0 * frame_width)
+    lever_list: list[GPrism] = []
     panel_elev = z0 + sill + frame_width + panel_height / 2.0
     clear_width = width - 2.0 * frame_width  # between the two jamb faces
     if opening.kind == "door" and operation is DoorOperation.DOUBLE_SWING:
@@ -218,6 +238,10 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
             solids=(box(leaf_width, panel_height, leaf_thickness, -leaf_offset, panel_elev),
                     box(leaf_width, panel_height, leaf_thickness, leaf_offset, panel_elev)),
         ))
+        lever_list = (lever_solids(box, -mullion_width / 2.0, -1.0,
+                                   (-leaf_thickness / 2.0, leaf_thickness / 2.0), z0 + sill)
+                      + lever_solids(box, mullion_width / 2.0, 1.0,
+                                     (-leaf_thickness / 2.0, leaf_thickness / 2.0), z0 + sill))
     elif opening.kind == "door" and operation is DoorOperation.SLIDE:
         # A closed slider stays coplanar in the product view: the two glazed panels meet at
         # a narrow stile and a low track, which distinguishes it from a French pair without
@@ -282,10 +306,18 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         parts.append(GPart(key="leaf", material_key=leaf_key, solids=(
             box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), panel_height,
                 _DOOR_LEAF_THICKNESS_M, 0.0, panel_elev),)))
+        if operation in (None, DoorOperation.SWING):
+            lever_list = lever_solids(box, -hinge_sign * clear_width / 2.0, hinge_sign,
+                                      (-_DOOR_LEAF_THICKNESS_M / 2.0,
+                                       _DOOR_LEAF_THICKNESS_M / 2.0), z0 + sill)
     else:
         parts.append(GPart(key="glass", material_key=_GLASS_KEY, solids=(
             box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), panel_height,
                 _WINDOW_GLAZING_THICKNESS_M, 0.0, panel_elev),)))
+        if opening.kind == "door" and operation in (None, DoorOperation.SWING):
+            lever_list = lever_solids(box, -hinge_sign * clear_width / 2.0, hinge_sign,
+                                      (-_WINDOW_GLAZING_THICKNESS_M / 2.0,
+                                       _WINDOW_GLAZING_THICKNESS_M / 2.0), z0 + sill)
     if opening.kind == "window" and exterior is not None:
         # Picture-frame casing on the cladding plane: two jambs beside the RO, a head
         # band over it, an apron under the sill, each a flat board sitting proud of the
@@ -318,4 +350,7 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         if trim_solids:
             parts.append(GPart(key="exterior_trim", material_key=_WINDOW_TRIM_KEY,
                                solids=tuple(trim_solids)))
+    hardware = hardware_part(lever_list)
+    if hardware is not None:
+        parts.append(hardware)
     return tuple(parts)

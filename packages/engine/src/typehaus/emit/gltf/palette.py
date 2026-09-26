@@ -126,6 +126,11 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # gypsum (0xefeae2) so the leaf does not vanish into its wall. Mirrored into
     # ui/src/three via the vocabulary manifest.
     "door_leaf": (0.973, 0.976, 0.980, 1.0),
+    # Concealed-frame reveal (resolve/geometry_door_products.py): the stop face seen only
+    # through the 1/8" gap, dark so the line survives a renderer with no ambient occlusion.
+    "shadow_gap": (0.180, 0.180, 0.188, 1.0),
+    # Lever sets on swing leaves: satin nickel (619).
+    "door_hardware": (0.690, 0.690, 0.671, 1.0),
     # accessories (→ resolve/accessories.py)
     "railing": (0.80, 0.81, 0.83, 1.0),   # aluminum guard — posts + rails, the frame
     # Guard infill, split from the frame because the frame's tone and metalness are wrong for

@@ -277,6 +277,8 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                     pocket_run_m=pocket_run, pocket_sign=pocket_sign,
                     depth_m=_blind_depth(el, rw, findings),
                     depth_from=str(getattr(el, "depth_from", "interior") or "interior"),
+                    flip_hinge=bool(getattr(el, "flip_hinge", False)),
+                    flip_swing=bool(getattr(el, "flip_swing", False)),
                 )
             )
             model.conditions.append(

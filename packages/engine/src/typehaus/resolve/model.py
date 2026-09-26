@@ -419,6 +419,10 @@ class ResolvedOpening:
     # ``RoughOpening.depth_from``: which face ``depth_m`` is measured from, and so which
     # side the recess opens on. Meaningless while ``depth_m`` is ``None``.
     depth_from: str = "interior"
+    # Authored handing, carried so product geometry can place the flush face and hardware.
+    # Unflipped: hinge on the END-node jamb, leaf sweeps toward the wall's left normal.
+    flip_hinge: bool = False
+    flip_swing: bool = False
 
     @property
     def is_blind(self) -> bool:

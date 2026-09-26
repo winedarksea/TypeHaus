@@ -17,6 +17,7 @@ from typing import NamedTuple
 import pytest
 
 from typehaus.emit.gltf import emit_gltf_dict
+from typehaus.emit.gltf.emitter import _PALETTE
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.openings import (
     _DOOR_LEAF_THICKNESS_M,
@@ -30,7 +31,14 @@ from typehaus.emit.gltf.openings import (
 )
 from typehaus.model.enums import DoorOperation
 from typehaus.resolve import resolve
+from typehaus.resolve.geometry import wall_frame
+from typehaus.resolve.geometry_door_products import (
+    _CONCEALED_JAMB_M,
+    _SHADOW_GAP_M,
+    finish_faces,
+)
 from typehaus.resolve.geometry_openings import opening_parts
+from typehaus.resolve.room_lookup import room_owning
 from typehaus.resolve.model import ResolvedLayer, ResolvedOpening, ResolvedWall
 from typehaus.source import load_plan
 
@@ -123,6 +131,21 @@ def _solids_of_node(gltf: dict, blob: bytes, node: dict) -> list[_Solid]:
     return solids
 
 
+def _split_hardware(gltf: dict, solids: list[_Solid]) -> tuple[list[_Solid], list[_Solid]]:
+    """``(product, hardware)``: lever sets are appended to every swing leaf and counted apart."""
+    rgba = list(_PALETTE["door_hardware"])
+
+    def is_hardware(solid: _Solid) -> bool:
+        color = gltf["materials"][solid.material_index]["pbrMetallicRoughness"]["baseColorFactor"]
+        return all(abs(a - b) < 1e-6 for a, b in zip(color, rgba, strict=True))
+
+    return ([x for x in solids if not is_hardware(x)], [x for x in solids if is_hardware(x)])
+
+
+# A lever set is a rose, a neck and a lever on each face of the leaf.
+_LEVER_SET_BOXES = 6
+
+
 def _opening_node(gltf: dict, uid: str) -> dict:
     node = next((n for n in gltf["nodes"] if n["extras"].get("uid") == uid
                  and n["extras"]["trade"] == "openings"), None)
@@ -202,10 +225,12 @@ def test_a_single_operation_door_ships_one_full_width_panel(starter_model):
     opening = _first_opening(starter_model, "door")
     wall = _host_wall(starter_model, opening)
     gltf, blob = emit_gltf_dict(starter_model)
-    solids = _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid))
+    solids, hardware = _split_hardware(
+        gltf, _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid)))
 
     panels = [s for s in solids if s.has_thickness(_DOOR_LEAF_THICKNESS_M)]
     assert len(solids) == _FRAME_PIECE_COUNT + 1, "a plain door is four frame pieces plus a panel"
+    assert len(hardware) == _LEVER_SET_BOXES, "a swing leaf carries one lever set"
     assert len(panels) == 1, "a single-operation door is one leaf, not two"
     available_height = min(opening.height_m, wall.z1_m - wall.z0_m - opening.sill_m)
     frame_width = _frame_width_m(opening, available_height)
@@ -233,26 +258,80 @@ def test_catlin_plant_room_door_ships_translucent_glazing(catlin_model):
 
 # --- trimless door -----------------------------------------------------------------------
 
-def test_catlin_trimless_bedroom_door_ships_a_leaf_and_no_frame(catlin_model):
-    """DT-INT30-TRIMLESS (drywall return jamb) is the one door the four-frame-piece rule
-    deliberately does not apply to: the export ships only the leaf."""
+def test_catlin_trimless_door_is_flush_on_its_pull_side(catlin_model):
+    """DT-INT-SWING36-TRIMLESS is a concealed (EzyJamb-type) frame: no casing, the leaf flush
+    with the finish face it swings toward, a 1/8" reveal, and the rebated stop showing on the
+    push side only. D-M-BED2 swings into the living room, so that is the flush face."""
     opening = next(op for op in catlin_model.openings if op.tag == "D-M-BED2")
     door_type = next(dt for dt in catlin_model.plan.library.door_types
                      if dt.tag == opening.type_ref)
-    assert door_type.trimless
+    assert door_type.trimless and opening.flip_swing
     wall = _host_wall(catlin_model, opening)
-    gltf, blob = emit_gltf_dict(catlin_model)
-    solids = _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid))
+    (x0, y0), _t, (nx, ny), _len = wall_frame(wall)
 
-    assert len(solids) == 1, "a trimless door is a bare leaf — no jambs, head, or sill"
-    leaf = solids[0]
-    assert leaf.has_thickness(_DOOR_LEAF_THICKNESS_M)
-    # The leaf keeps its framed size so the drywall reveal reads the same as a cased door.
-    available_height = min(opening.height_m, wall.z1_m - wall.z0_m - opening.sill_m)
-    frame_width = _frame_width_m(opening, available_height)
-    assert leaf.plan_dimensions_m[1] == pytest.approx(
-        opening.width_m - 2 * frame_width, abs=_DIMENSION_TOLERANCE_M)
-    assert gltf["materials"][leaf.material_index]["alphaMode"] == "OPAQUE"
+    def offset(x: float, y: float) -> float:
+        return (x - x0) * nx + (y - y0) * ny
+
+    # The resolved swing ring is the oracle for which side the leaf sweeps.
+    ring = opening.swing_clearance
+    cx, cy = sum(p[0] for p in ring) / len(ring), sum(p[1] for p in ring) / len(ring)
+    assert room_owning(catlin_model, wall.storey, (cx, cy)).tag == "RM-M-LIVING"
+    swing_side = 1.0 if offset(cx, cy) > offset(*opening_center_xy(wall, opening)) else -1.0
+
+    parts = {part.key: part for part in opening_parts(
+        wall, opening, door_type.operation, is_trimless=True)}
+    assert "frame" not in parts, "no applied casing"
+    lo, hi = finish_faces(wall)
+    flush, push = (hi, lo) if swing_side > 0 else (lo, hi)
+
+    def span(solid) -> tuple[float, float]:
+        offsets = [offset(x, y) for x, y in solid.ring]
+        return min(offsets), max(offsets)
+
+    (leaf,) = parts["leaf"].solids
+    leaf_lo, leaf_hi = span(leaf)
+    assert (leaf_hi if swing_side > 0 else leaf_lo) == pytest.approx(flush, abs=1e-3)
+    along = [(x - x0) * -ny + (y - y0) * nx for x, y in leaf.ring]
+    assert max(along) - min(along) == pytest.approx(
+        opening.width_m - 2 * (_CONCEALED_JAMB_M + _SHADOW_GAP_M), abs=_DIMENSION_TOLERANCE_M)
+    for key in ("jamb_liner", "leaf", "stop", "shadow_gap"):
+        for solid in parts[key].solids:
+            a, b = span(solid)
+            assert lo - 1e-6 <= a and b <= hi + 1e-6, f"{key} stands proud of the wall"
+    leaf_back = leaf_lo if swing_side > 0 else leaf_hi
+    for solid in parts["stop"].solids:
+        a, b = span(solid)
+        assert (b <= leaf_back + 1e-6) if swing_side > 0 else (a >= leaf_back - 1e-6), (
+            "the stop belongs on the push side, behind the leaf")
+    assert min(abs(v - push) for v in (a, b)) < 1e-6, "the stop runs out to the push face"
+    assert len(parts["hardware"].solids) == _LEVER_SET_BOXES
+
+
+def opening_center_xy(wall, opening) -> tuple[float, float]:
+    (x0, y0), (tx, ty), _n, _len = wall_frame(wall)
+    return x0 + tx * opening.center_along_m, y0 + ty * opening.center_along_m
+
+
+def test_only_swinging_leaves_carry_a_lever_set(catlin_model):
+    """A lever set per swing leaf; a pocket, slider, bifold or overhead door carries none."""
+    door_types = {dt.tag: dt for dt in catlin_model.plan.library.door_types}
+    walls = {wall.tag: wall for wall in catlin_model.walls}
+    seen = set()
+    for opening in catlin_model.openings:
+        door_type = door_types.get(opening.type_ref)
+        if not opening.is_door or door_type is None or opening.host_wall not in walls:
+            continue
+        parts = {part.key: part for part in opening_parts(
+            walls[opening.host_wall], opening, door_type.operation,
+            is_glazed=door_type.glazed, is_trimless=door_type.trimless,
+            bookcase_door=door_type.bookcase_door)}
+        leaves = {"swing": 1, "double_swing": 2}.get(str(door_type.operation), 0)
+        if door_type.bookcase_door is not None:
+            leaves = 0
+        count = len(parts["hardware"].solids) if "hardware" in parts else 0
+        assert count == leaves * _LEVER_SET_BOXES, opening.tag
+        seen.add(str(door_type.operation))
+    assert {"swing", "pocket"} <= seen, "fixture regression: catlin lost a swing or pocket door"
 
 
 # --- French / double-swing door ----------------------------------------------------------
@@ -270,7 +349,9 @@ def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_m
     assert opening is not None, "fixture regression: catlin lost its French doors"
     wall = _host_wall(catlin_model, opening)
     gltf, blob = emit_gltf_dict(catlin_model)
-    solids = _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid))
+    solids, hardware = _split_hardware(
+        gltf, _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid)))
+    assert len(hardware) == 2 * _LEVER_SET_BOXES, "a lever set on each leaf of the pair"
 
     available_height = min(opening.height_m, wall.z1_m - wall.z0_m - opening.sill_m)
     frame_width = _frame_width_m(opening, available_height)
@@ -318,7 +399,8 @@ def test_the_balcony_door_ships_the_french_door_solid_shape(catlin_model):
     gltf, blob = emit_gltf_dict(catlin_model)
     balcony = next(op for op in catlin_model.openings if op.tag == "D-M-BALC")
     wall = _host_wall(catlin_model, balcony)
-    solids = _solids_of_node(gltf, blob, _opening_node(gltf, balcony.uid))
+    solids, _hardware = _split_hardware(
+        gltf, _solids_of_node(gltf, blob, _opening_node(gltf, balcony.uid)))
 
     available_height = min(balcony.height_m, wall.z1_m - wall.z0_m - balcony.sill_m)
     frame_width = _frame_width_m(balcony, available_height)
