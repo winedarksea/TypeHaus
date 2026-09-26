@@ -149,15 +149,18 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # authored Wall) centred in the gap the two lanes leave, bearing on the subfloor the
     # stair springs from and rising to the arrival deck — never past the subfloor into the
     # foundation (the flight-clip guard is the backstop). Both flights' inner stringers
-    # bear on it. It stops at the flight end; the landing platforms take over beyond. The
-    # 0.20 m inset holds its ends off the opening perimeter framing.
-    # It stops at the SHORTER flight's end: its studs run z0 → arrival, so carrying it to
-    # the longer flight's line drives them straight through the upper landing's deck.
-    # At the stairhead (s=0) only the TOP is held off: ``head_z`` is the underside of the
-    # arrival deck's framing, and an end stud stands under it on a bottom plate run to the
-    # edge, so the well's end is framed rather than 0.20 m of bare board.
-    inset = 0.20
-    lo_s, hi_s = inset, min(flight_len, upper_flight_len) - inset
+    # bear on it. It stops at the SHORTER flight's end: its studs run z0 → arrival, so
+    # carrying it to the longer flight's line drives them straight through the upper
+    # landing's deck. There the landings' shared corner stands on a 4x4 post
+    # (``bearing.py``) on this line, so the end stud stands face-to-face against it.
+    # At the stairhead (s=0) only the TOP is held off the opening perimeter framing:
+    # ``head_z`` is the underside of the arrival deck's framing, and an end stud stands
+    # under it on a bottom plate run to the edge.
+    head_inset = 0.20
+    post_half = cross_section("4x4").width_m / 2.0
+    stud_half = cross_section("2x4").width_m / 2.0
+    lo_s = head_inset
+    hi_s = min(flight_len, upper_flight_len) - post_half - stud_half
     if hi_s > lo_s:
         plate = 0.0381  # a 2x4 plate laid flat
         head = head_z is not None and head_z > z0 + 2 * plate

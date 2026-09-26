@@ -467,10 +467,9 @@ STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
 # INT_2X4_PARTITION is 4 3/4" on its 5/8" leaves and would push 1/8" into each inner
 # stringer. 1/2" gwb is already precedented in the library.
 #
-# Honest about the seam: the generated partition is inset 0.20 m from each flight end
-# (u_split.py), so it runs y 26'-8 1/4"..30'-4 1/2" while this wall runs 25'-6"..31'-0".
-# About 8" at each end is board with no generated stud behind it. The framer blocks it; the
-# model cannot say so, because the engine owns the sticks and the house owns the faces.
+# The seam: the generated partition runs from a stud-head at the stairhead edge to an end
+# stud face-to-face with the landing's 4x4 corner post (u_split.py), so the board is backed
+# at both ends. Only the top plate still starts 0.20 m in, off the opening's header.
 STAIRWELL_PARTITION_4H = Assembly(
     tag="STAIRWELL_PARTITION_4H",
     layers=(
