@@ -4478,10 +4478,10 @@
 "9d8df78270b2"
 ],
 "geometry/82WVR597PA-stool/body": [
-1.1037,
+1.11005,
 1.1418,
 2,
-"78810de2a6da"
+"5066d4ac3288"
 ],
 "geometry/82WVR597PA/exterior_trim": [
 1.0348,
@@ -4958,10 +4958,10 @@
 "371594fad627"
 ],
 "geometry/A4BAA399PA-stool/body": [
-4.3041,
+4.31045,
 4.3422,
 2,
-"b441a4404e34"
+"d4b5741b77f2"
 ],
 "geometry/A4BAA399PA/exterior_trim": [
 4.2352,
@@ -11378,10 +11378,10 @@
 "165ade7f8323"
 ],
 "geometry/CAX302AAAA-stool/body": [
-6.9457,
+6.95205,
 6.9838,
 2,
-"46109d06cbbb"
+"a354ef831839"
 ],
 "geometry/CAX302AAAA/exterior_trim": [
 6.8768,
@@ -11402,10 +11402,10 @@
 "dfe541063dbc"
 ],
 "geometry/CAX303AAAA-stool/body": [
-6.9457,
+6.95205,
 6.9838,
 2,
-"46109d06cbbb"
+"a354ef831839"
 ],
 "geometry/CAX303AAAA/exterior_trim": [
 6.8768,
@@ -11426,10 +11426,10 @@
 "dfe541063dbc"
 ],
 "geometry/CAX304AAAA-stool/body": [
-6.7425,
+6.74885,
 6.7806,
 2,
-"3e90876f0f59"
+"a70f0088fc48"
 ],
 "geometry/CAX304AAAA/exterior_trim": [
 6.6736,
@@ -11450,10 +11450,10 @@
 "35a874ac9aa2"
 ],
 "geometry/CAX305AAAA-stool/body": [
-6.7425,
+6.74885,
 6.7806,
 2,
-"3e90876f0f59"
+"a70f0088fc48"
 ],
 "geometry/CAX305AAAA/exterior_trim": [
 6.6736,
@@ -11474,10 +11474,10 @@
 "35a874ac9aa2"
 ],
 "geometry/CAX311AAAA-stool/body": [
-6.9457,
+6.95205,
 6.9838,
 2,
-"46109d06cbbb"
+"a354ef831839"
 ],
 "geometry/CAX311AAAA/exterior_trim": [
 6.8768,
@@ -11498,10 +11498,10 @@
 "1c4facd753a8"
 ],
 "geometry/CAX312AAAA-stool/body": [
-6.9457,
+6.95205,
 6.9838,
 2,
-"46109d06cbbb"
+"a354ef831839"
 ],
 "geometry/CAX312AAAA/exterior_trim": [
 6.8768,
@@ -28916,10 +28916,10 @@
 "5b1c8c335af3"
 ],
 "geometry/CMX301AAAA-stool/body": [
-0.9513,
+0.95765,
 0.9894,
 2,
-"a366d725322c"
+"461d821d73d7"
 ],
 "geometry/CMX301AAAA/exterior_trim": [
 0.8824,
@@ -28940,10 +28940,10 @@
 "5d716f06ba8f"
 ],
 "geometry/CMX302AAAA-stool/body": [
-0.9513,
+0.95765,
 0.9894,
 2,
-"a366d725322c"
+"461d821d73d7"
 ],
 "geometry/CMX302AAAA/exterior_trim": [
 0.8824,
@@ -28964,10 +28964,10 @@
 "5d716f06ba8f"
 ],
 "geometry/CMX303AAAA-stool/body": [
-0.8497,
+0.85605,
 0.8878,
 2,
-"4a7750ce313f"
+"50c65b2e6cf7"
 ],
 "geometry/CMX303AAAA/exterior_trim": [
 0.7808,
@@ -28988,10 +28988,10 @@
 "2c6bd1c60cd9"
 ],
 "geometry/CMX304AAAA-stool/body": [
-0.8497,
+0.85605,
 0.8878,
 2,
-"4a7750ce313f"
+"50c65b2e6cf7"
 ],
 "geometry/CMX304AAAA/exterior_trim": [
 0.7808,
@@ -29012,10 +29012,10 @@
 "2c6bd1c60cd9"
 ],
 "geometry/CMX305AAAA-stool/body": [
-0.9513,
+0.95765,
 0.9894,
 2,
-"a366d725322c"
+"461d821d73d7"
 ],
 "geometry/CMX305AAAA/exterior_trim": [
 0.8824,
@@ -29036,10 +29036,10 @@
 "5d716f06ba8f"
 ],
 "geometry/CMX306AAAA-stool/body": [
-1.1037,
+1.11005,
 1.1418,
 2,
-"78810de2a6da"
+"5066d4ac3288"
 ],
 "geometry/CMX306AAAA/exterior_trim": [
 1.0348,
@@ -29060,10 +29060,10 @@
 "36e41e50a5dd"
 ],
 "geometry/CMX307AAAA-stool/body": [
-0.8497,
+0.85605,
 0.8878,
 2,
-"4a7750ce313f"
+"50c65b2e6cf7"
 ],
 "geometry/CMX307AAAA/exterior_trim": [
 0.7808,
@@ -29084,10 +29084,10 @@
 "2c6bd1c60cd9"
 ],
 "geometry/CMX309AAAA-stool/body": [
-0.8497,
+0.85605,
 0.8878,
 2,
-"4a7750ce313f"
+"50c65b2e6cf7"
 ],
 "geometry/CMX309AAAA/exterior_trim": [
 0.7808,
@@ -29108,10 +29108,10 @@
 "2c6bd1c60cd9"
 ],
 "geometry/CMX310AAAA-stool/body": [
-0.8497,
+0.85605,
 0.8878,
 2,
-"4a7750ce313f"
+"50c65b2e6cf7"
 ],
 "geometry/CMX310AAAA/exterior_trim": [
 0.7808,
@@ -29132,10 +29132,10 @@
 "2c6bd1c60cd9"
 ],
 "geometry/CMX313AAAA-stool/body": [
-1.1037,
+1.11005,
 1.1418,
 2,
-"78810de2a6da"
+"5066d4ac3288"
 ],
 "geometry/CMX313AAAA/exterior_trim": [
 1.0348,
@@ -42416,10 +42416,10 @@
 "50ef2552dcd5"
 ],
 "geometry/CSX301AAAA-stool/body": [
-3.9993,
+4.00565,
 4.0374,
 2,
-"ffdf8e59432e"
+"050bbef5016c"
 ],
 "geometry/CSX301AAAA/exterior_trim": [
 3.9304,
@@ -42440,10 +42440,10 @@
 "9067f3f62816"
 ],
 "geometry/CSX302AAAA-stool/body": [
-3.9993,
+4.00565,
 4.0374,
 2,
-"ffdf8e59432e"
+"050bbef5016c"
 ],
 "geometry/CSX302AAAA/exterior_trim": [
 3.9304,
@@ -42464,10 +42464,10 @@
 "9067f3f62816"
 ],
 "geometry/CSX303AAAA-stool/body": [
-4.3041,
+4.31045,
 4.3422,
 2,
-"b441a4404e34"
+"d4b5741b77f2"
 ],
 "geometry/CSX303AAAA/exterior_trim": [
 4.2352,
@@ -42488,10 +42488,10 @@
 "108e602d8294"
 ],
 "geometry/CSX304AAAA-stool/body": [
-3.9993,
+4.00565,
 4.0374,
 2,
-"ffdf8e59432e"
+"050bbef5016c"
 ],
 "geometry/CSX304AAAA/exterior_trim": [
 3.9304,
@@ -42512,10 +42512,10 @@
 "8c561a5267e5"
 ],
 "geometry/CSX305AAAA-stool/body": [
-3.9993,
+4.00565,
 4.0374,
 2,
-"ffdf8e59432e"
+"050bbef5016c"
 ],
 "geometry/CSX305AAAA/exterior_trim": [
 3.9304,
@@ -42590,10 +42590,10 @@
 "8c561a5267e5"
 ],
 "geometry/CSX309AAAA-stool/body": [
-3.8977,
+3.90405,
 3.9358,
 2,
-"f1703d226f0b"
+"4e1cb849cfe8"
 ],
 "geometry/CSX309AAAA/exterior_trim": [
 3.8288,
@@ -42614,10 +42614,10 @@
 "40f20a0134fa"
 ],
 "geometry/CSX310AAAA-stool/body": [
-3.8977,
+3.90405,
 3.9358,
 2,
-"f1703d226f0b"
+"4e1cb849cfe8"
 ],
 "geometry/CSX310AAAA/exterior_trim": [
 3.8288,
@@ -42638,10 +42638,10 @@
 "40f20a0134fa"
 ],
 "geometry/CSX312AAAA-stool/body": [
-4.1517,
+4.15805,
 4.1898,
 2,
-"115627c3c5cc"
+"0ff8356763fd"
 ],
 "geometry/CSX312AAAA/exterior_trim": [
 4.0828,
@@ -42662,10 +42662,10 @@
 "5f120137a607"
 ],
 "geometry/CSX313AAAA-stool/body": [
-4.1009,
+4.10725,
 4.139,
 2,
-"bf1510cf39cc"
+"95a6d5157425"
 ],
 "geometry/CSX313AAAA/exterior_trim": [
 4.032,
@@ -42686,10 +42686,10 @@
 "88ca3a07d400"
 ],
 "geometry/CSX314AAAA-stool/body": [
-3.9993,
+4.00565,
 4.0374,
 2,
-"ffdf8e59432e"
+"050bbef5016c"
 ],
 "geometry/CSX314AAAA/exterior_trim": [
 3.9304,
@@ -42710,10 +42710,10 @@
 "9067f3f62816"
 ],
 "geometry/CSX315AAAA-stool/body": [
-4.1009,
+4.10725,
 4.139,
 2,
-"bf1510cf39cc"
+"95a6d5157425"
 ],
 "geometry/CSX315AAAA/exterior_trim": [
 4.032,
@@ -42854,10 +42854,10 @@
 "fb73e146c3a0"
 ],
 "geometry/FGWPV572DB-stool/body": [
-1.1037,
+1.11005,
 1.1418,
 2,
-"78810de2a6da"
+"5066d4ac3288"
 ],
 "geometry/FGWPV572DB/exterior_trim": [
 1.0348,
@@ -42926,10 +42926,10 @@
 "dbe020883c57"
 ],
 "geometry/G0Y75W9ZS1-stool/body": [
-1.1037,
+1.11005,
 1.1418,
 2,
-"78810de2a6da"
+"5066d4ac3288"
 ],
 "geometry/G0Y75W9ZS1/exterior_trim": [
 1.0348,
@@ -47024,10 +47024,10 @@
 "aa213eb4a0bd"
 ],
 "geometry/QPNDT7TF6G-stool/body": [
-0.8497,
+0.85605,
 0.8878,
 2,
-"4a7750ce313f"
+"50c65b2e6cf7"
 ],
 "geometry/QPNDT7TF6G/exterior_trim": [
 0.7808,
@@ -47792,10 +47792,10 @@
 "504c0d54350b"
 ],
 "geometry/RGC7QGVF7Y-stool/body": [
-4.1517,
+4.15805,
 4.1898,
 2,
-"115627c3c5cc"
+"0ff8356763fd"
 ],
 "geometry/RGC7QGVF7Y/exterior_trim": [
 4.0828,

@@ -2,7 +2,7 @@
 # Catlin house millwork — the owner-milled white oak.
 #
 # The owner has white oak off family land in southern Minnesota at roughly $2/sf rough
-# milled, in 4/4 and 8/4, with boards commonly 12"+ wide and some to 18". That supply wins
+# milled, in 4/4, 6/4 and 8/4, with boards commonly 12"+ wide and some to 18". That supply wins
 # on WIDTH and FLATNESS and loses on PROFILE: a one-piece stool, shelf or tread is worth
 # milling, and a knife grind plus a molder setup for baseboard or casing cannot amortise
 # over one house. So this file takes off the winners and nothing else —
@@ -38,9 +38,10 @@ MILLWORK = [
     MillworkStandard(
         uid="8YE8Y9SRFP", tag="MW-STANDARD",
         stool_material_ref="oak-stool",
-        # 8/4 dressed. A 3/4" board this wide would cup: the interior return on an outie
+        # 6/4 dressed. A 3/4" board this wide would cup: the interior return on an outie
         # window runs 12 5/8" less the frame depth, which is most of a foot of board.
-        stool_thickness=inch(1.5),
+        # 1 1/4" holds it flat; 8/4 was bulk the stool carries no load for.
+        stool_thickness=inch(1.25),
         stool_overhang=inch(0.75),
         # 1" of horn each side. The apron and the casing legs die onto it.
         stool_horn=inch(1),
@@ -66,13 +67,13 @@ MILLWORK = [
 
 # --- the attic study built-in -----------------------------------------------------------
 # The furniture specification is the physical carcass and the single source for geometry.
-# This ShelfBank retains the owner-stock fabrication takeoff: twelve 1 1/2 in. oak boards
-# at the explicit 9 7/8 in. finished shelf depth. The purchased door shelves are outside
+# This ShelfBank retains the owner-stock fabrication takeoff: twelve 1 1/4 in. (6/4) oak
+# boards at the explicit 9 7/8 in. finished shelf depth — books, not people. The purchased door shelves are outside
 # this bank and therefore cannot enter the hardwood quantity.
 ATTIC_SHELVES = [
     ShelfBank(
         uid="ZSR38F5C8F", tag="SB-A-STUDY", host="FURN-A-STUDY-BUILTIN",
-        material_ref="oak-shelf-8q", thickness=inch(1.5), depth=inch(9.875), profile="S4S",
+        material_ref="oak-shelf-6q", thickness=inch(1.25), depth=inch(9.875), profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(
             ShelfBay(width=inch(31.25), clear_height=inch(60), shelf_count=5),
@@ -207,7 +208,7 @@ MAIN_SHELVES = [
     # 2 at 10" for the top. That is correct and is how a solid top this wide is actually made.
     #
     # `clear_height` is the void under each board: 18" of bench less the 1 1/2" seat, and
-    # 29 1/2" of desk less the 1 1/2" top — i.e. the knee space.
+    # 29 1/2" of desk less the 1 1/4" top — i.e. the knee space.
     ShelfBank(
         uid="MJ0P713ABN", tag="SB-M-STUDY-BENCH",
         host="FURN-M-STUDY-BENCH",
@@ -220,11 +221,11 @@ MAIN_SHELVES = [
     ShelfBank(
         uid="AFXM3DJGX4", tag="SB-M-STUDY-DESK",
         host="FURN-M-STUDY-DESK",
-        material_ref="walnut-shelf-8q",
-        thickness=inch(1.5),
+        material_ref="walnut-shelf-6q",
+        thickness=inch(1.25),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(29), clear_height=inch(28), shelf_count=1),),
+        bays=(ShelfBay(width=inch(29), clear_height=inch(28.25), shelf_count=1),),
     ),
     # The fold-down leaf's board. Same stock, same thickness, same lay-up as the
     # desk it butts, out of the SAME FLITCH as SB-M-STUDY-DESK's two boards: the two tops meet
@@ -249,9 +250,9 @@ MAIN_SHELVES = [
     # Board feet are unaffected (same area, same thickness), so nothing downstream is wrong —
     # only the cutting instruction is, and only for this one row.
     #
-    # `clear_height` is the void under the deployed leaf, the same 28" as the desk. That is
+    # `clear_height` is the void under the deployed leaf, the same 28 1/4" as the desk. That is
     # what the ADA 306 / OSHA knee envelope is measured against and it clears the 27" minimum
-    # with 1" to spare — but the number that actually decides it is the BRACKET, not the
+    # with 1 1/4" to spare — but the number that actually decides it is the BRACKET, not the
     # board. A Hebgo 287.43.419 is 7 1/16" tall; hung under the leaf at the wall it eats down
     # to ~21" of clear at the back, which is fine over a knee and NOT fine if the arm reaches
     # forward over one. Set the brackets tight to the wall and check the arm against a seated
@@ -259,11 +260,11 @@ MAIN_SHELVES = [
     ShelfBank(
         uid="T0BJ1M256G", tag="SB-M-STUDY-LEAF",
         host="FURN-M-STUDY-DESK-LEAF",
-        material_ref="walnut-shelf-8q",
-        thickness=inch(1.5),
+        material_ref="walnut-shelf-6q",
+        thickness=inch(1.25),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(18), clear_height=inch(28), shelf_count=1),),
+        bays=(ShelfBay(width=inch(18), clear_height=inch(28.25), shelf_count=1),),
     ),
     # --- the mudroom bench's seat, FURN-M-MUD-BENCH -----------------------------------
     #

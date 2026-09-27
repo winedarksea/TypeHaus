@@ -263,9 +263,9 @@ MATERIALS = [
     # If it ever comes back it needs its own tag again, `finish="strip-floor"`, and a
     # `STRIP_FLOOR_REFS` needle in ui/src/three/plankMaterial.ts.
     # The call booth's bench seat and desk top, the same walnut as the wainscot
-    # they sit against. ** `nominal_quarters=8` IS REQUIRED, not decoration: ** both pieces
-    # finish 1-1/2", 4/4 dresses to 3/4", and `takeoff/hardwood.py` flags a finished piece
-    # that cannot come out of the stock it names.
+    # they sit against. ** `nominal_quarters` IS REQUIRED, not decoration: ** the seat
+    # finishes 1-1/2" (8/4), the desk 1-1/4" (6/4), and `takeoff/hardwood.py` flags a
+    # finished piece that cannot come out of the stock it names.
     #
     # Deliberately no `stock_bf_per_sqft`: like the oak below, these are PIECE goods cut to a
     # finished T x W x L, not a coverage good. Unlike the oak below, this walnut is BOUGHT —
@@ -276,7 +276,14 @@ MATERIALS = [
              density=610.0, color="#5d4433", finish="clear-satin-hardwax-oil",
              species="walnut", nominal_quarters=8, milling_profile="S4S",
              requires_custom_milling=True,
-             source="plans/TODO.md — RM-M-STUDY call booth. 8/4 because both pieces are structural millwork on a 45-5/8\" and a 30-5/8\" span with no stiffener: a bench seat someone sits on and a fixed desk top someone leans on"),
+             source="plans/TODO.md — RM-M-STUDY call booth. 8/4 because the bench seat is structural millwork someone sits on, over a 45-5/8\" span with no stiffener"),
+    # The desk top and its leaf: 6/4, dressing to 1 1/4". A 29" span someone leans on is a
+    # normal desk at that thickness; the bench's 47" seat is what still wants 8/4.
+    Material(tag="walnut-shelf-6q", name="Black walnut shelving, 6/4 S4S", hatch="lumber",
+             density=610.0, color="#5d4433", finish="clear-satin-hardwax-oil",
+             species="walnut", nominal_quarters=6, milling_profile="S4S",
+             requires_custom_milling=True,
+             source="RM-M-STUDY call booth desk top and fold-down leaf; 6/4 over a 30-5/8\" span, one flitch for both"),
     # RM-M-LIVING's fireplace mantel, SB-M-FIRE-MANTEL. Same species, same finish and same
     # bought-not-milled accounting as the walnut above; ** 12/4 AND NOT 8/4, WHICH IS THE
     # WHOLE REASON IT IS A SEPARATE MATERIAL. ** The mantel finishes 2 1/4" — one brick bed
@@ -342,14 +349,18 @@ MATERIALS = [
              finish="shiplap", species="basswood", stock_bf_per_sqft=1.375,
              nominal_quarters=5, milling_profile="shiplap", requires_custom_milling=True,
              source="Catlin site-milled sauna liner; local rather than the factory library product so this coverage reaches the custom milling schedule."),
-    Material(tag="oak-stool", name="White oak window stool, 8/4 S4S", hatch="lumber",
+    Material(tag="oak-stool", name="White oak window stool, 6/4 S4S", hatch="lumber",
              color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
-             nominal_quarters=8, milling_profile="eased", requires_custom_milling=True,
-             source="owner-milled white oak, ~$2/sf rough. 8/4 because the interior return on an outie window runs most of a 13 7/8\" wall and a 3/4\" board that wide will cup; the front edge is eased, not moulded (see the profile note above)"),
+             nominal_quarters=6, milling_profile="eased", requires_custom_milling=True,
+             source="owner-milled white oak, ~$2/sf rough. 6/4 because the interior return on an outie window runs most of a 13 7/8\" wall and a 3/4\" board that wide will cup; 1 1/4\" holds flat without the bulk of 8/4. The front edge is eased, not moulded (see the profile note above)"),
     Material(tag="oak-shelf-8q", name="White oak shelving, 8/4 S4S", hatch="lumber",
              color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
              nominal_quarters=8, milling_profile="S4S", requires_custom_milling=True,
              source="owner-milled white oak. 8/4 wherever the shelf is visible or LOADED: 1-1/2\" needs no stiffener and no edge banding at a 2'-6\" bay, and it is the thickness a climbable shelf wants (notes/pantry_climbable_shelving.md)"),
+    Material(tag="oak-shelf-6q", name="White oak shelving, 6/4 S4S", hatch="lumber",
+             color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
+             nominal_quarters=6, milling_profile="S4S", requires_custom_milling=True,
+             source="owner-milled white oak. 6/4 for a visible built-in that carries books: 1-1/4\" holds a ~31\" bay without the sag of 4/4 or the bulk of 8/4"),
     Material(tag="oak-shelf-4q", name="White oak shelving, 4/4 S4S", hatch="lumber",
              color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,

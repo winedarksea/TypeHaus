@@ -2819,7 +2819,7 @@
 #
 # ** THE WALNUT IS IN THESE TWO ROWS AND NOWHERE ELSE — THIS IS THE INVERSE OF
 # `FT-KIT-PANTRY-SHELVES-70` ABOVE. ** SB-M-STUDY-BENCH and SB-M-STUDY-DESK put the seat and
-# the top on `haus millwork` (13.4 and 9.7 bf of 8/4 walnut, each an edge-glued panel of two
+# the top on `haus millwork` (13.4 bf of 8/4 and ~7.3 bf of 6/4 walnut, each an edge-glued panel of two
 # boards), and that section is an UNPRICED VIEW. The pantry's oak may carry $0 because it
 # comes off the owner's own ~$2/sf stock; ** THIS WALNUT IS BOUGHT ** at roughly $12-20/bf
 # S4S, so the boards are inside the material low/high here — about $160-270 of the bench and
@@ -7166,9 +7166,9 @@ finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.c
 # STOCK, apron, jamb extension and the carpenter's hour.
 # ** REDUCED TO ITS LABOUR/FABRICATION SHARE, 2026-08-28. ** The stool stock is modelled now:
 # `MillworkStandard` (plan/millwork.py) derives one `WindowStool` per EXT_2X6 window —
-# 39 of the 45 — and `haus millwork` orders the 8/4 white oak they are cut from. Leaving this
+# 39 of the 45 — and `haus millwork` orders the 6/4 white oak they are cut from. Leaving this
 # row whole would bill that board twice. The same split the vent-mat row above documents:
-#   stool board, 39 windows, ~10 1/8" x 8/4 oak      -> modelled, ordered by `haus millwork`
+#   stool board, 39 windows, ~10 1/8" x 6/4 oak      -> modelled, ordered by `haus millwork`
 #   apron, jamb extension, mitres, scribe, install   -> here, and still real
 #   the 6 out-of-scope stools (plant/sauna/garage)   -> here, bought not milled; their board
 #                                                       is the residual at the top of the band

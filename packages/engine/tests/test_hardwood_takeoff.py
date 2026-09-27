@@ -103,18 +103,18 @@ def test_rough_stock_always_exceeds_the_finished_piece(rows):
         assert row["rough_board_feet"] > row["finished_board_feet"], row["use"]
 
 
-def test_a_stool_is_scheduled_at_its_rough_size_from_eight_quarter_stock(rows):
+def test_a_stool_is_scheduled_at_its_rough_size_from_six_quarter_stock(rows):
     stools = _use(rows, "window stool")
     # See test_millwork.py for which windows have no stool (the plant room's liner, the
     # sauna's, and the garage).
     assert stools and sum(row["pieces"] for row in stools) == 33
     for row in stools:
-        assert row["nominal_stock"] == "8/4"
-        assert row["nominal_quarters"] == 8
+        assert row["nominal_stock"] == "6/4"
+        assert row["nominal_quarters"] == 6
         assert row["milling_profile"] == "eased"
         assert row["layup"] == "one board"
         assert row["boards_per_piece"] == 1
-        assert row["finished_thickness_in"] == pytest.approx(1.5)
+        assert row["finished_thickness_in"] == pytest.approx(1.25)
         assert row["stock_note"] is None, "a 10\" stool comes off one 18\" board"
 
 
