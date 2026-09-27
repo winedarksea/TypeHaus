@@ -18,8 +18,8 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
     walls = {wall.tag: wall for wall in catlin_model_ro.walls}
     openings = {opening.tag: opening for opening in catlin_model_ro.openings}
     stools = catlin_model_ro.window_stools
-    assert len(stools) == 33
-    assert len({stool.uid for stool in stools}) == 33
+    assert len(stools) == 34
+    assert len({stool.uid for stool in stools}) == 34
     for stool in stools:
         opening = openings[stool.window_ref]
         wall = walls[stool.wall_tag]
@@ -50,7 +50,7 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
 def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     payload = model_to_dict(catlin_model_ro)
     rows = payload["window_stools"]
-    assert len(rows) == 33
+    assert len(rows) == 34
     assert {row["profile"] for row in rows} == {"eased"}
     assert {row["material_ref"] for row in rows} == {"oak-stool"}
     openings = {opening.uid for opening in catlin_model_ro.openings}
@@ -60,7 +60,7 @@ def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     nodes = [node for node in gltf["nodes"]
              if node["extras"].get("trade") == "millwork"
              and node["extras"].get("kind") == "opening"]
-    assert len(nodes) == 33
+    assert len(nodes) == 34
     assert {node["extras"]["uid"] for node in nodes} == {
         row["opening_uid"] for row in rows}
     for node in nodes:
@@ -81,7 +81,7 @@ def test_stools_export_as_oak_ifc_moldings(catlin_model_ro, catlin_ifc_path):
     payload = {row["tag"]: row for row in model_to_dict(catlin_model_ro)["window_stools"]}
     stools = {item.Name: item for item in file.by_type("IfcCovering")
               if item.Name.startswith("STOOL-")}
-    assert len(stools) == 33
+    assert len(stools) == 34
     assert set(stools) == {stool.tag for stool in catlin_model_ro.window_stools}
     for stool in catlin_model_ro.window_stools:
         product = stools[stool.tag]

@@ -4,7 +4,22 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
-## 0.1.2 — 2026-09-26
+## 0.1.2 — 2026-09-27
+
+- **Water-heater supply clearance is graded.** `mep.pex_water_heater_clearance` checks the
+  Minnesota Plumbing Code's 18-inch no-PEX zone at each water-heater port, including runs
+  that tee off above a tap. The check is included in permit coverage and final plumbing.
+- **Drain inlet spacing uses published fitting geometry.** Charlotte Pipe dimensions let
+  `mep.drain_inlet_spacing` pass a buildable combo 501 plus street sanitary tee 403 stack
+  and fail branches closer than a catalogued fitting pair can accommodate. Uncatalogued
+  sizes and reductions remain UNKNOWN.
+- **Catlin plumbing, ventilation, lighting, and window details were corrected.** Supply
+  connections and drain routes were reconciled with their checks and golden drawings;
+  the restored living-room window has matching bracing and relocated porch controls and
+  fixtures. New regression tests cover the changed connections and house contract.
+- **Catlin's millwork schedule now distinguishes 6/4 from 8/4 stock.** The oak window
+  stools and study shelves, and the walnut desk and leaf, use 6/4 stock; the loaded walnut
+  bench retains 8/4. Quantities, prices, and elevation fixtures follow the selected stock.
 
 - **A partition's top plate stops 3/4" clear of the structure above it, and an SDPW holds it
   there.** The attic's seven partitions resolved **11-7/8" too tall**:

@@ -1,7 +1,7 @@
 # Fenestration solar gain, hour by hour
 
 **House:** catlin
-**Structure:** all 41 pieces of glass in the thermal envelope — 207.3 sf south, 58.7 east,
+**Structure at the 2026-09-18 review:** 41 pieces of glass in the thermal envelope — 207.3 sf south, 58.7 east,
 49.8 west, 42.9 north — plus the roof, which is the other solar-dominated surface.
 **Written:** 2026-09-18, by hand, after `notes/block_load_basis.md` established that the
 solar term was the one thing that pass deliberately did **not** touch.
@@ -284,3 +284,10 @@ mean south irradiance is 85.1: −69.5 off the average (8,752 → 8,683). At its
 (161.4): −132 (8,695 → 8,563). Excursion follows, 894 → 866. Sensible cooling −153.2
 (21,021.1 → 20,867.9) = glass −118 + excursion −28 + conduction −0.53 UA × 15 °F = −8.
 
+## Revision 2026-09-27 — restored south living-room window
+
+`WIN-M-LIV-S2` adds about 10 ft² of tempered south glass. The house still peaks at 10:30;
+its coincident gain is now **12,313 Btu/h**, including **7,895 Btu/h** from the south face.
+The 08:00–20:00 average is **8,798 Btu/h**, yielding an AED excursion of **875 Btu/h**.
+The block load is **21,010 Btu/h sensible + 1,400 latent = 1.867 tons**. The earlier
+tables in §§2 and 4 and the 2026-09-23 revision record the former window layout.

@@ -7161,19 +7161,19 @@ finish-wall-tile-material = { low = 900, high = 1800 }
 # type before a per-function count means anything. Until both are done this stays one lump
 # at the researched rate — the same money, and the same 34 openings.
 finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.count[takes_hardware=True]" }
-# DRIVEN 2026-08-27 off the window count — 45 (the "41 windows" this comment used to claim was
-# already four out of date, which is the point). It was $73-164 per window covering stool
+# DRIVEN 2026-08-27 off the window count; 41 are authored as of 2026-09-27. It was
+# $73-164 per window covering stool
 # STOCK, apron, jamb extension and the carpenter's hour.
 # ** REDUCED TO ITS LABOUR/FABRICATION SHARE, 2026-08-28. ** The stool stock is modelled now:
 # `MillworkStandard` (plan/millwork.py) derives one `WindowStool` per EXT_2X6 window —
-# 39 of the 45 — and `haus millwork` orders the 6/4 white oak they are cut from. Leaving this
+# 34 of the 41 — and `haus millwork` orders the 6/4 white oak they are cut from. Leaving this
 # row whole would bill that board twice. The same split the vent-mat row above documents:
-#   stool board, 39 windows, ~10 1/8" x 6/4 oak      -> modelled, ordered by `haus millwork`
+#   stool board, 34 windows, ~10 1/8" x 6/4 oak      -> modelled, ordered by `haus millwork`
 #   apron, jamb extension, mitres, scribe, install   -> here, and still real
-#   the 6 out-of-scope stools (plant/sauna/garage)   -> here, bought not milled; their board
+#   the 7 out-of-scope stools (plant/sauna/garage)   -> here, bought not milled; their board
 #                                                       is the residual at the top of the band
 # ~$18-45 of the old band was stool stock, so the row goes to $55-125. It stays PER WINDOW
-# and stays on all 45: the fabrication is the same work whoever sawed the board.
+# and stays on all 41: the fabrication is the same work whoever sawed the board.
 finish-window-stools-and-aprons = { low = 55, high = 125, unit = "ea", driver = "openings.count[kind=window]" }
 # DRIVEN 2026-08-27 off stair tread length — 143.4 LF over four stairs, which is what a nosing
 # is bought by. `stair_finish` is one of the two tables UNPRICED_VIEWS declares: the tread and

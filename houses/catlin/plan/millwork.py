@@ -10,7 +10,7 @@
 #
 # Nothing here authors a stool. `MillworkStandard` declares the scope and the resolver
 # derives one per in-scope window, exactly as `EaveTrim` derives fascia off the roof plane:
-# the 45 windows sit in four assemblies of four different thicknesses (13.885" / 14.540" /
+# the 41 windows sit in four assemblies of four different thicknesses (13.885" / 14.540" /
 # 14.050" / 8.135"), so a single authored depth would be wrong for three of them and would
 # go wrong again the first time a foam lift or a girt depth moved.
 
@@ -23,8 +23,8 @@ from typehaus.model import (
     StairLandingMillwork,
 )
 
-# The one declaration. Scope is EXT_2X6 alone — 39 of the 45 windows:
-#   * PLANT_EXT_2X6_HUMID (3) is the plant room, which runs at 70% RH by design. Oak in
+# The one declaration. Scope is EXT_2X6 alone — 34 of the 41 windows:
+#   * PLANT_EXT_2X6_HUMID (4) is the plant room, which runs at 70% RH by design. Oak in
 #     that room is a cupped stool and a black tannin stain, not millwork.
 #   * SAUNA_LINER_ON_GARDEN_FRAMED (1) is lined in basswood for a burn-safety reason
 #     (low-conductivity species, plan/assemblies.py) that a hardwood stool would defeat.

@@ -20518,50 +20518,50 @@
 "geometry/CMW102AAAA/layer:cladding": [
 -0.3413125,
 3.048,
-14,
-"48da53ca2e03"
+20,
+"55db174b30f6"
 ],
 "geometry/CMW102AAAA/layer:gwb-int": [
 0.0,
 2.7432,
-12,
-"0bc63e6cdd93"
+18,
+"2d96bc16c487"
 ],
 "geometry/CMW102AAAA/layer:outer-girt": [
 -0.3413125,
 3.048,
-14,
-"48da53ca2e03"
+20,
+"55db174b30f6"
 ],
 "geometry/CMW102AAAA/layer:paint": [
 0.0,
 2.7432,
-12,
-"0bc63e6cdd93"
+18,
+"2d96bc16c487"
 ],
 "geometry/CMW102AAAA/layer:sheathing": [
 -0.3413125,
 3.048,
-14,
-"48da53ca2e03"
+20,
+"55db174b30f6"
 ],
 "geometry/CMW102AAAA/layer:spray-foam": [
 -0.3413125,
 3.048,
-14,
-"48da53ca2e03"
+20,
+"55db174b30f6"
 ],
 "geometry/CMW102AAAA/layer:stud": [
 -0.3413125,
 3.048,
-14,
-"48da53ca2e03"
+20,
+"55db174b30f6"
 ],
 "geometry/CMW102AAAA/layer:vent-gap": [
 -0.3413125,
 3.048,
-14,
-"48da53ca2e03"
+20,
+"55db174b30f6"
 ],
 "geometry/CMW102AAAA::framing/member:backing-0-000": [
 2.0828,
@@ -20576,6 +20576,12 @@
 "8458aa6a7b11"
 ],
 "geometry/CMW102AAAA::framing/member:backing-0-002": [
+2.0828,
+2.26695,
+8,
+"8458aa6a7b11"
+],
+"geometry/CMW102AAAA::framing/member:backing-0-003": [
 2.0828,
 2.26695,
 8,
@@ -20707,12 +20713,6 @@
 8,
 "19886e90c8e0"
 ],
-"geometry/CMW102AAAA::framing/member:block-2-003-03": [
-1.2192,
-1.3081,
-8,
-"19886e90c8e0"
-],
 "geometry/CMW102AAAA::framing/member:block-2-004-00": [
 1.8288,
 1.9177,
@@ -20726,12 +20726,6 @@
 "ffe5005f6991"
 ],
 "geometry/CMW102AAAA::framing/member:block-2-004-02": [
-1.8288,
-1.9177,
-8,
-"ffe5005f6991"
-],
-"geometry/CMW102AAAA::framing/member:block-2-004-03": [
 1.8288,
 1.9177,
 8,
@@ -20840,6 +20834,12 @@
 "1d3e00337e5a"
 ],
 "geometry/CMW102AAAA::framing/member:block-2-head-001-00": [
+2.032,
+2.1209,
+8,
+"1d3e00337e5a"
+],
+"geometry/CMW102AAAA::framing/member:block-2-head-002-00": [
 2.032,
 2.1209,
 8,
@@ -20965,6 +20965,54 @@
 8,
 "1d3e00337e5a"
 ],
+"geometry/CMW102AAAA::framing/member:block-2-jamb-002-0-00": [
+0.7239,
+0.8128,
+8,
+"c6b5dd60991c"
+],
+"geometry/CMW102AAAA::framing/member:block-2-jamb-002-0-01": [
+1.2192,
+1.3081,
+8,
+"19886e90c8e0"
+],
+"geometry/CMW102AAAA::framing/member:block-2-jamb-002-0-02": [
+1.8288,
+1.9177,
+8,
+"ffe5005f6991"
+],
+"geometry/CMW102AAAA::framing/member:block-2-jamb-002-0-03": [
+2.032,
+2.1209,
+8,
+"1d3e00337e5a"
+],
+"geometry/CMW102AAAA::framing/member:block-2-jamb-002-1-00": [
+0.7239,
+0.8128,
+8,
+"c6b5dd60991c"
+],
+"geometry/CMW102AAAA::framing/member:block-2-jamb-002-1-01": [
+1.2192,
+1.3081,
+8,
+"19886e90c8e0"
+],
+"geometry/CMW102AAAA::framing/member:block-2-jamb-002-1-02": [
+1.8288,
+1.9177,
+8,
+"ffe5005f6991"
+],
+"geometry/CMW102AAAA::framing/member:block-2-jamb-002-1-03": [
+2.032,
+2.1209,
+8,
+"1d3e00337e5a"
+],
 "geometry/CMW102AAAA::framing/member:block-2-sill-000-00": [
 -0.0889,
 0.0,
@@ -20977,6 +21025,12 @@
 8,
 "c6b5dd60991c"
 ],
+"geometry/CMW102AAAA::framing/member:block-2-sill-002-00": [
+0.7239,
+0.8128,
+8,
+"c6b5dd60991c"
+],
 "geometry/CMW102AAAA::framing/member:buck-head-000": [
 2.022475,
 2.032,
@@ -20984,6 +21038,12 @@
 "a3c1860e46c2"
 ],
 "geometry/CMW102AAAA::framing/member:buck-head-001": [
+2.022475,
+2.032,
+8,
+"a3c1860e46c2"
+],
+"geometry/CMW102AAAA::framing/member:buck-head-002": [
 2.022475,
 2.032,
 8,
@@ -21013,6 +21073,18 @@
 8,
 "493984f27483"
 ],
+"geometry/CMW102AAAA::framing/member:buck-jamb-002-0": [
+0.822325,
+2.022475,
+8,
+"493984f27483"
+],
+"geometry/CMW102AAAA::framing/member:buck-jamb-002-1": [
+0.822325,
+2.022475,
+8,
+"493984f27483"
+],
 "geometry/CMW102AAAA::framing/member:buck-sill-000": [
 0.0,
 0.009525,
@@ -21020,6 +21092,12 @@
 "a6bc9895f269"
 ],
 "geometry/CMW102AAAA::framing/member:buck-sill-001": [
+0.8128,
+0.822325,
+8,
+"f709e1b385bf"
+],
+"geometry/CMW102AAAA::framing/member:buck-sill-002": [
 0.8128,
 0.822325,
 8,
@@ -21049,7 +21127,19 @@
 8,
 "dcb16b4147dc"
 ],
+"geometry/CMW102AAAA::framing/member:cripple-head-2-01": [
+2.21615,
+2.667,
+8,
+"dcb16b4147dc"
+],
 "geometry/CMW102AAAA::framing/member:cripple-sill-1-01": [
+0.0381,
+0.7747,
+8,
+"bfd1ff37888e"
+],
+"geometry/CMW102AAAA::framing/member:cripple-sill-2-01": [
 0.0381,
 0.7747,
 8,
@@ -21062,6 +21152,12 @@
 "42c25d7294a5"
 ],
 "geometry/CMW102AAAA::framing/member:header-1": [
+2.032,
+2.21615,
+8,
+"f4cd014e10b0"
+],
+"geometry/CMW102AAAA::framing/member:header-2": [
 2.032,
 2.21615,
 8,
@@ -21091,6 +21187,18 @@
 8,
 "38a4e97dab02"
 ],
+"geometry/CMW102AAAA::framing/member:jack-2-l0": [
+0.0381,
+2.032,
+8,
+"38a4e97dab02"
+],
+"geometry/CMW102AAAA::framing/member:jack-2-r0": [
+0.0381,
+2.032,
+8,
+"38a4e97dab02"
+],
 "geometry/CMW102AAAA::framing/member:king-0-l0": [
 0.0381,
 2.667,
@@ -21115,6 +21223,18 @@
 8,
 "1ce2bb9fca09"
 ],
+"geometry/CMW102AAAA::framing/member:king-2-l0": [
+0.0381,
+2.667,
+8,
+"1ce2bb9fca09"
+],
+"geometry/CMW102AAAA::framing/member:king-2-r0": [
+0.0381,
+2.667,
+8,
+"1ce2bb9fca09"
+],
 "geometry/CMW102AAAA::framing/member:ladder-head-outer-girt-000": [
 2.032,
 2.1209,
@@ -21127,6 +21247,12 @@
 8,
 "1d3e00337e5a"
 ],
+"geometry/CMW102AAAA::framing/member:ladder-head-outer-girt-002": [
+2.032,
+2.1209,
+8,
+"1d3e00337e5a"
+],
 "geometry/CMW102AAAA::framing/member:ladder-sill-outer-girt-000": [
 -0.0889,
 0.0,
@@ -21134,6 +21260,12 @@
 "683653b83f44"
 ],
 "geometry/CMW102AAAA::framing/member:ladder-sill-outer-girt-001": [
+0.7239,
+0.8128,
+8,
+"c6b5dd60991c"
+],
+"geometry/CMW102AAAA::framing/member:ladder-sill-outer-girt-002": [
 0.7239,
 0.8128,
 8,
@@ -21163,6 +21295,12 @@
 8,
 "3fd66d906a7f"
 ],
+"geometry/CMW102AAAA::framing/member:sill-2": [
+0.7747,
+0.8128,
+8,
+"3fd66d906a7f"
+],
 "geometry/CMW102AAAA::framing/member:strapping-jamb-outer-girt-000-0": [
 -0.0889,
 2.1209,
@@ -21182,6 +21320,18 @@
 "4068814010fd"
 ],
 "geometry/CMW102AAAA::framing/member:strapping-jamb-outer-girt-001-1": [
+0.7239,
+2.1209,
+8,
+"4068814010fd"
+],
+"geometry/CMW102AAAA::framing/member:strapping-jamb-outer-girt-002-0": [
+0.7239,
+2.1209,
+8,
+"4068814010fd"
+],
+"geometry/CMW102AAAA::framing/member:strapping-jamb-outer-girt-002-1": [
 0.7239,
 2.1209,
 8,
@@ -21236,10 +21386,10 @@
 "19886e90c8e0"
 ],
 "geometry/CMW102AAAA::framing/member:strapping-outer-girt-008": [
-1.8288,
-1.9177,
+1.2192,
+1.3081,
 8,
-"ffe5005f6991"
+"19886e90c8e0"
 ],
 "geometry/CMW102AAAA::framing/member:strapping-outer-girt-009": [
 1.8288,
@@ -21254,12 +21404,24 @@
 "ffe5005f6991"
 ],
 "geometry/CMW102AAAA::framing/member:strapping-outer-girt-011": [
+1.8288,
+1.9177,
+8,
+"ffe5005f6991"
+],
+"geometry/CMW102AAAA::framing/member:strapping-outer-girt-012": [
+1.8288,
+1.9177,
+8,
+"ffe5005f6991"
+],
+"geometry/CMW102AAAA::framing/member:strapping-outer-girt-013": [
 2.4384,
 2.5273,
 8,
 "a670b3c43692"
 ],
-"geometry/CMW102AAAA::framing/member:strapping-outer-girt-012": [
+"geometry/CMW102AAAA::framing/member:strapping-outer-girt-014": [
 2.9591,
 3.048,
 8,
@@ -21278,24 +21440,6 @@
 "1ce2bb9fca09"
 ],
 "geometry/CMW102AAAA::framing/member:stud-002": [
-0.0381,
-2.667,
-8,
-"1ce2bb9fca09"
-],
-"geometry/CMW102AAAA::framing/member:stud-003": [
-0.0381,
-2.667,
-8,
-"1ce2bb9fca09"
-],
-"geometry/CMW102AAAA::framing/member:stud-004": [
-0.0381,
-2.667,
-8,
-"1ce2bb9fca09"
-],
-"geometry/CMW102AAAA::framing/member:stud-005": [
 0.0381,
 2.667,
 8,
@@ -29072,6 +29216,30 @@
 "585f0e5cce42"
 ],
 "geometry/CMX307AAAA/glass": [
+0.8878,
+1.957,
+2,
+"2c6bd1c60cd9"
+],
+"geometry/CMX308AAAA-stool/body": [
+0.85605,
+0.8878,
+2,
+"50c65b2e6cf7"
+],
+"geometry/CMX308AAAA/exterior_trim": [
+0.7808,
+2.064,
+8,
+"cc613418fe98"
+],
+"geometry/CMX308AAAA/frame": [
+0.8128,
+2.032,
+8,
+"585f0e5cce42"
+],
+"geometry/CMX308AAAA/glass": [
 0.8878,
 1.957,
 2,
@@ -62837,6 +63005,12 @@
 2,
 "a1a479d66f95"
 ],
+"member/CMW102AAAA/backing-0-003": [
+2.0828,
+2.26695,
+2,
+"a1a479d66f95"
+],
 "member/CMW102AAAA/block-2-000-00": [
 -0.3413125,
 -0.2524125,
@@ -62963,12 +63137,6 @@
 2,
 "f98ec513ac80"
 ],
-"member/CMW102AAAA/block-2-003-03": [
-1.2192,
-1.3081,
-2,
-"f98ec513ac80"
-],
 "member/CMW102AAAA/block-2-004-00": [
 1.8288,
 1.9177,
@@ -62982,12 +63150,6 @@
 "68e8886675d9"
 ],
 "member/CMW102AAAA/block-2-004-02": [
-1.8288,
-1.9177,
-2,
-"68e8886675d9"
-],
-"member/CMW102AAAA/block-2-004-03": [
 1.8288,
 1.9177,
 2,
@@ -63096,6 +63258,12 @@
 "2e338a8a2966"
 ],
 "member/CMW102AAAA/block-2-head-001-00": [
+2.032,
+2.1209,
+2,
+"2e338a8a2966"
+],
+"member/CMW102AAAA/block-2-head-002-00": [
 2.032,
 2.1209,
 2,
@@ -63221,6 +63389,54 @@
 2,
 "2e338a8a2966"
 ],
+"member/CMW102AAAA/block-2-jamb-002-0-00": [
+0.7239,
+0.8128,
+2,
+"c083e0a92094"
+],
+"member/CMW102AAAA/block-2-jamb-002-0-01": [
+1.2192,
+1.3081,
+2,
+"f98ec513ac80"
+],
+"member/CMW102AAAA/block-2-jamb-002-0-02": [
+1.8288,
+1.9177,
+2,
+"68e8886675d9"
+],
+"member/CMW102AAAA/block-2-jamb-002-0-03": [
+2.032,
+2.1209,
+2,
+"2e338a8a2966"
+],
+"member/CMW102AAAA/block-2-jamb-002-1-00": [
+0.7239,
+0.8128,
+2,
+"c083e0a92094"
+],
+"member/CMW102AAAA/block-2-jamb-002-1-01": [
+1.2192,
+1.3081,
+2,
+"f98ec513ac80"
+],
+"member/CMW102AAAA/block-2-jamb-002-1-02": [
+1.8288,
+1.9177,
+2,
+"68e8886675d9"
+],
+"member/CMW102AAAA/block-2-jamb-002-1-03": [
+2.032,
+2.1209,
+2,
+"2e338a8a2966"
+],
 "member/CMW102AAAA/block-2-sill-000-00": [
 -0.0889,
 0.0,
@@ -63233,6 +63449,12 @@
 2,
 "c083e0a92094"
 ],
+"member/CMW102AAAA/block-2-sill-002-00": [
+0.7239,
+0.8128,
+2,
+"c083e0a92094"
+],
 "member/CMW102AAAA/buck-head-000": [
 2.022475,
 2.032,
@@ -63240,6 +63462,12 @@
 "ac80a14a2488"
 ],
 "member/CMW102AAAA/buck-head-001": [
+2.022475,
+2.032,
+2,
+"ac80a14a2488"
+],
+"member/CMW102AAAA/buck-head-002": [
 2.022475,
 2.032,
 2,
@@ -63269,6 +63497,18 @@
 2,
 "5fbe38e8103c"
 ],
+"member/CMW102AAAA/buck-jamb-002-0": [
+0.822325,
+2.022475,
+2,
+"5fbe38e8103c"
+],
+"member/CMW102AAAA/buck-jamb-002-1": [
+0.822325,
+2.022475,
+2,
+"5fbe38e8103c"
+],
 "member/CMW102AAAA/buck-sill-000": [
 0.0,
 0.009525,
@@ -63276,6 +63516,12 @@
 "bcc66c42863b"
 ],
 "member/CMW102AAAA/buck-sill-001": [
+0.8128,
+0.822325,
+2,
+"279f2dbd9358"
+],
+"member/CMW102AAAA/buck-sill-002": [
 0.8128,
 0.822325,
 2,
@@ -63305,7 +63551,19 @@
 2,
 "cc5034aea423"
 ],
+"member/CMW102AAAA/cripple-head-2-01": [
+2.21615,
+2.667,
+2,
+"cc5034aea423"
+],
 "member/CMW102AAAA/cripple-sill-1-01": [
+0.0381,
+0.7747,
+2,
+"1e28bfad1025"
+],
+"member/CMW102AAAA/cripple-sill-2-01": [
 0.0381,
 0.7747,
 2,
@@ -63318,6 +63576,12 @@
 "6e5864ff14e1"
 ],
 "member/CMW102AAAA/header-1": [
+2.032,
+2.21615,
+2,
+"5a9ffca0cc9f"
+],
+"member/CMW102AAAA/header-2": [
 2.032,
 2.21615,
 2,
@@ -63347,6 +63611,18 @@
 2,
 "d5f814261ca4"
 ],
+"member/CMW102AAAA/jack-2-l0": [
+0.0381,
+2.032,
+2,
+"d5f814261ca4"
+],
+"member/CMW102AAAA/jack-2-r0": [
+0.0381,
+2.032,
+2,
+"d5f814261ca4"
+],
 "member/CMW102AAAA/king-0-l0": [
 0.0381,
 2.667,
@@ -63371,6 +63647,18 @@
 2,
 "eebc11b3c6f0"
 ],
+"member/CMW102AAAA/king-2-l0": [
+0.0381,
+2.667,
+2,
+"eebc11b3c6f0"
+],
+"member/CMW102AAAA/king-2-r0": [
+0.0381,
+2.667,
+2,
+"eebc11b3c6f0"
+],
 "member/CMW102AAAA/ladder-head-outer-girt-000": [
 2.032,
 2.1209,
@@ -63383,6 +63671,12 @@
 2,
 "2e338a8a2966"
 ],
+"member/CMW102AAAA/ladder-head-outer-girt-002": [
+2.032,
+2.1209,
+2,
+"2e338a8a2966"
+],
 "member/CMW102AAAA/ladder-sill-outer-girt-000": [
 -0.0889,
 0.0,
@@ -63390,6 +63684,12 @@
 "f31f36c7a90b"
 ],
 "member/CMW102AAAA/ladder-sill-outer-girt-001": [
+0.7239,
+0.8128,
+2,
+"c083e0a92094"
+],
+"member/CMW102AAAA/ladder-sill-outer-girt-002": [
 0.7239,
 0.8128,
 2,
@@ -63419,6 +63719,12 @@
 2,
 "6522a14fd200"
 ],
+"member/CMW102AAAA/sill-2": [
+0.7747,
+0.8128,
+2,
+"6522a14fd200"
+],
 "member/CMW102AAAA/strapping-jamb-outer-girt-000-0": [
 -0.0889,
 2.1209,
@@ -63438,6 +63744,18 @@
 "00c79cde5778"
 ],
 "member/CMW102AAAA/strapping-jamb-outer-girt-001-1": [
+0.7239,
+2.1209,
+2,
+"00c79cde5778"
+],
+"member/CMW102AAAA/strapping-jamb-outer-girt-002-0": [
+0.7239,
+2.1209,
+2,
+"00c79cde5778"
+],
+"member/CMW102AAAA/strapping-jamb-outer-girt-002-1": [
 0.7239,
 2.1209,
 2,
@@ -63492,10 +63810,10 @@
 "f98ec513ac80"
 ],
 "member/CMW102AAAA/strapping-outer-girt-008": [
-1.8288,
-1.9177,
+1.2192,
+1.3081,
 2,
-"68e8886675d9"
+"f98ec513ac80"
 ],
 "member/CMW102AAAA/strapping-outer-girt-009": [
 1.8288,
@@ -63510,12 +63828,24 @@
 "68e8886675d9"
 ],
 "member/CMW102AAAA/strapping-outer-girt-011": [
+1.8288,
+1.9177,
+2,
+"68e8886675d9"
+],
+"member/CMW102AAAA/strapping-outer-girt-012": [
+1.8288,
+1.9177,
+2,
+"68e8886675d9"
+],
+"member/CMW102AAAA/strapping-outer-girt-013": [
 2.4384,
 2.5273,
 2,
 "bb27eba390a0"
 ],
-"member/CMW102AAAA/strapping-outer-girt-012": [
+"member/CMW102AAAA/strapping-outer-girt-014": [
 2.9591,
 3.048,
 2,
@@ -63534,24 +63864,6 @@
 "eebc11b3c6f0"
 ],
 "member/CMW102AAAA/stud-002": [
-0.0381,
-2.667,
-2,
-"eebc11b3c6f0"
-],
-"member/CMW102AAAA/stud-003": [
-0.0381,
-2.667,
-2,
-"eebc11b3c6f0"
-],
-"member/CMW102AAAA/stud-004": [
-0.0381,
-2.667,
-2,
-"eebc11b3c6f0"
-],
-"member/CMW102AAAA/stud-005": [
 0.0381,
 2.667,
 2,

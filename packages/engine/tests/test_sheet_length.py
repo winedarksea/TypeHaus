@@ -72,7 +72,7 @@ def test_eight_foot_sheets_fail_three_lines(catlin_model_ro):
     x1.40 non-gypsum factor (0.82 -> 1.14)."""
     ratios = _ratios(_with_sheets(catlin_model_ro, ft(8)))
     failing = {key: round(r, 2) for key, r in ratios.items() if r < 1.0}
-    assert failing == {("main", "BWL-W-A-E1"): 0.78, ("main", "BWL-W-A-S1"): 0.94,
+    assert failing == {("main", "BWL-W-A-E1"): 0.78, ("main", "BWL-W-A-S1"): 0.77,
                        ("garage", "BWL-W-G-N"): 0.94}
     e1 = next(ev for ev in evaluate_storey(_with_sheets(catlin_model_ro, ft(8)), "main")
               if ev.line.tag == "BWL-W-A-E1")

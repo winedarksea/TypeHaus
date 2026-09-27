@@ -37,31 +37,34 @@ from typehaus.resolve.solid_categories import in_slab_family
 
 # 31,672.5 -> 31,057.0 (2026-09-24): conditioned volume is finish-face area x height now,
 # 46,159 -> 41,291 ft3, which takes 610 Btu/h off infiltration (note §6).
-_HEATING_BTUH = 31_057.0
+# WIN-M-LIV-S2 (2026-09-27) replaces 10 sf of insulated wall with tempered glass:
+# windows gain 2.50 UA, walls lose 0.29 UA, and heating rises to 31,250 Btu/h.
+_HEATING_BTUH = 31_250.0
 # SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
 # (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
 # latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2
 # kBtu/h off the glass, the internal gains put 2.8 back, the latent 1.4, and the roof's
 # sol-air term — live once the owner stated the panel colour — put 329 back on top.
 # WIN-A-S2/-S3 WT-1436 -> WT-1424 (c3c46cff): -2.33 sf glass, 21,021.1 -> 20,867.9.
-_COOLING_SENSIBLE_BTUH = 20_867.9
+# Restoring WIN-M-LIV-S2 raises the 10:30 glass peak and the cooling result below.
+_COOLING_SENSIBLE_BTUH = 21_009.5
 _LATENT_BTUH = 1_400.0
-_COOLING_TONS = 1.8557
-_SOLAR_PEAK_BTUH = 12_154.0
+_COOLING_TONS = 1.8675
+_SOLAR_PEAK_BTUH = 12_313.3
 _SOLAR_PEAK_HOUR = 10.5
-_AED_EXCURSION_BTUH = 866.0
+_AED_EXCURSION_BTUH = 875.4
 _INTERNAL_SENSIBLE_BTUH = 2_810.0
 
 # ``(kind, area_ft2, ua_btu_per_hour_f)`` in the order the report emits them.
 # The 17'-0" court (2026-09-22): W-B-S2-FR/-S3-FR lost 1' each (2 x 8.52' = -17.0 sf), the
 # concrete W-B-S1/-S4 gained 1' each (+12.2 sf buried, +2.6 sf proud).
 _COMPONENTS = (
-    ("walls", 3219.1, 73.378),
+    ("walls", 3209.0, 73.085),
     ("foundation_walls", 775.5, 28.604),
     ("foundation_walls_above_grade", 255.7, 11.676),
     ("roof", 1547.9, 29.103),
     ("slab", 1296.0, 25.468),
-    ("windows", 258.7, 60.624),
+    ("windows", 268.7, 63.124),
     ("doors", 120.0, 24.000),
 )
 

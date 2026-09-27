@@ -113,7 +113,7 @@ def test_the_house_has_one_peak_hour_not_four(catlin_model_ro) -> None:
     walls, openings = _house_glazing(catlin_model_ro)
     result = fenestration_gain(catlin_model_ro, walls, openings)
     assert result.peak_hour == pytest.approx(10.5)
-    assert result.peak_btu_per_hour == pytest.approx(12_154.0, rel=0.01)
+    assert result.peak_btu_per_hour == pytest.approx(12_313.0, rel=0.01)
     assert result.unknown_inputs == ()
     # Every facade contributes at the peak hour, and south leads it — but at 64% of the
     # total, not the 100% the weights implied by putting it at 1.00 alone.

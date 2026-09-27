@@ -45,7 +45,7 @@ _CATLIN = {
     # 15,365 before the plant room's R316.4 gypsum, and 15,359 before room volume became
     # finish-face volume (both 2026-09-24; the note's second addendum).
     "EQ-M-HP1-OD": (15_137, 14_000, 5.0, 0.92, -7.1, _ADVISED),
-    "EQ-M-HP2-OD": (14_542, 8_800, 5.0, 0.61, 26.7, not _ADVISED),
+    "EQ-M-HP2-OD": (14_735, 8_800, 5.0, 0.60, 27.5, not _ADVISED),
     "EQ-M-HP3-OD": (1_016, 2_800, 17.0, 2.76, None, _ADVISED),
 }
 

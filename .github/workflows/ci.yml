@@ -141,12 +141,13 @@ jobs:
         run: node smoke.mjs houses/catlin
         working-directory: scripts/pyodide
 
-  # PyPI Trusted Publishing: no API token lives in this repo. Runs only after `engine` and
-  # `ui` are green, and only on a published release — 0.1.0a0 was uploaded without either
-  # gate and shipped a wheel that could not load a house.
+  # PyPI Trusted Publishing: no API token lives in this repo. Runs only after `engine`,
+  # `ui`, and the browser's pinned Pyodide/GEOS smoke are green, and only on a published
+  # release — 0.1.0a0 was uploaded without the engine/UI gates and shipped a wheel that
+  # could not load a house.
   publish:
     if: github.event_name == 'release' && github.event.action == 'published'
-    needs: [engine, ui]
+    needs: [engine, ui, pyodide-geos]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:

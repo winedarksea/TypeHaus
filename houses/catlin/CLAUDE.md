@@ -245,13 +245,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   are rafter plates, so neither carries a braced wall line. **The attic still costs
   something** — the eave-to-ridge factor is measured from the second storey's top plate to
   the ridge (11'-3", the 15-foot row at x1.15 / x1.30), not from the roof's own 9'-4" eave.
-  Worst line is main E1 at 19'-7" provided against 12'-7" required; every line clears.
+  Worst line is main S1 at 19'-5" provided against 12'-7" required; every line clears.
   - **Two factors are the ones to watch.** Table R602.10.3(2) item 6's **x1.40** IS taken on
     the second storey's south and west lines, because the plant room's PVC liner is not
     gypsum — line `W-S-S1`/`W-S-W4` in gypsum and both lines drop from 10.37' to 7.41'.
     Item 8's **x2.00** (horizontal blocking omitted) turns on the sheathing layer's
     `sheet_length` against the plates: **unstated is UNKNOWN**, and at 8-foot sheets FOUR
-    lines FAIL (main E1 0.78, main S1 0.94, second S1 0.82, garage N 0.94). **The house
+    lines FAIL (main E1 0.78, main S1 0.77, second S1 0.82, garage N 0.94). **The house
     is 4x10 Structural-1 (OSB of the same size is the fallback), the garage 4x9 CDX**
     (owner, 2026-09-22; `notes/wall_bracing_layout.md` §4). Item 5's x0.80 hold-down credit cannot be taken at all — it is published for the
     intermittent methods, so the NE corner's devices buy an end condition, never length.

@@ -263,19 +263,24 @@ q_vent = 1.08 × 0.9704 × 73.5 × 85          =  6,547 Btu/h
 
 | component | area | UA | heating ΔT | Btu/h |
 |---|---|---|---|---|
-| `walls` | 3,219.1 ft² | 73.38 | 85 | 6,237 |
+| `walls` | 3,209.0 ft² | 73.08 | 85 | 6,212 |
 | `foundation_walls` | 775.5 ft² | 28.60 | 45.14 | 1,291 |
 | `foundation_walls_above_grade` | 255.7 ft² | 11.68 | 85 | 992 |
 | `roof` | 1,547.9 ft² | 29.10 | 85 | 2,474 |
 | `slab` | 1,296.0 ft² | 25.47 | 45.14 | 1,150 |
-| `windows` | 258.7 ft² | 60.62 | 85 | 5,153 |
+| `windows` | 268.7 ft² | 63.12 | 85 | 5,366 |
 | `doors` | 120.0 ft² | 24.00 | 85 | 2,040 |
 | infiltration | — | — | 85 | 5,178 |
 | ERV ventilation air | — | — | 85 | 6,547 |
-| | | | | **31,062** |
+| | | | | **31,250** |
 
-The table is current to 2026-09-24 (finish-face volume; the engine reads 31,057, the walls'
-UA having moved 0.06 with the plant room's gypsum); the prose after it is the 2026-09-18 pass.
+The table is current to 2026-09-27. Restoring `WIN-M-LIV-S2` replaces about 10 ft² of
+insulated wall with glass; the engine reads 31,250 Btu/h. The prose after it is the
+2026-09-18 pass.
+
+The current cooling result is **21,010 Btu/h sensible + 1,400 latent = 1.867 tons**. Its
+solar peak is 12,313 Btu/h at 10:30, with a further 875 Btu/h AED excursion. The earlier
+calculation below records the method's development.
 
 Cooling: **22,154 Btu/h, 1.846 tons**, of which 17,435 is the window-and-door solar term —
 and that term is the one §0's warning is about.
@@ -315,4 +320,3 @@ which is the same lesson again.
 - **2026-09-23, WIN-A-S2/-S3 WT-1436 → WT-1424 (c3c46cff).** −2.33 sf of U-0.25 glass
   (UA −0.583) became wall (+2.33 sf × 0.0228 = UA +0.053): net UA −0.530 × 85 = −45 Btu/h.
   31,718 → **31,672**. Sensible cooling is `solar_gain_basis.md`'s, now 20,868 (1.856 tons).
-

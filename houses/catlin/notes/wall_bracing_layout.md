@@ -106,7 +106,7 @@ penalty is taken. Line up the plant room in gypsum and both lines drop to 7.41'.
   Whether a panel HAS a horizontal joint is read off each sheathing layer's own
   `sheet_length` against its wall's plates (108" house, 100" garage) — the same number the
   sheet order bills — and an unstated length is UNKNOWN, not a pass. **At 8-foot sheets
-  FOUR lines fail**, not one: main E1 0.78, main S1 0.94, second S1 0.82 and garage N 0.94
+  FOUR lines fail**, not one: main E1 0.78, main S1 0.77, second S1 0.82 and garage N 0.94
   (a 96" sheet joints the 100" garage wall too). At 4x9 or 4x10 no panel has a joint and
   none of them is close. That is the single most expensive thing anybody could change about
   this wall.
@@ -119,7 +119,7 @@ penalty is taken. Line up the plant room in gypsum and both lines drop to 7.41'.
 
 | Line | Wall, plate to plate | Band above | 8' | 9' | 10' |
 |---|---|---|---|---|---|
-| main E1 / N1 / S1 / W1 | 108.0" | 11-7/8" rim (to 120") | **0.78** / 1.12 / **0.94** / 1.07 | 1.56 / 2.24 / 1.87 / 2.14 | same |
+| main E1 / N1 / S1 / W1 | 108.0" | 11-7/8" rim (to 120") | **0.78** / 1.12 / **0.77** / 1.07 | 1.56 / 2.24 / 1.55 / 2.14 | same |
 | second E1 / N1 / S1 / W1 | 108.0" | 11-7/8" attic rim | 1.80 / 1.95 / **0.82** / 1.30 | 3.60 / 3.90 / 1.63 / 2.60 | same |
 | garage N / E / W / S | 100.0" | none (trusses) | **0.94** / 2.81 / 2.53 / 2.39 | 1.87 / 5.61 / 5.07 / 4.78 | same |
 

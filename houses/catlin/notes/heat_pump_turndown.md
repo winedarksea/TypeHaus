@@ -365,3 +365,10 @@ reads the axis cells, so HP2's ground-coupled stays **2,441**. Only the air side
 | HP3 | 1,043 → **1,016** | 2,800 / 1,016 = **2.76** | **813 Btu/h** | never |
 
 No verdict moves.
+
+## Addendum 2026-09-27 — restored south living-room window
+
+`WIN-M-LIV-S2` replaces about 10 ft² of insulated wall with glass in HP2's zone. Its
+design load is now **14,735 Btu/h**, so the 8,800 Btu/h published minimum is a **0.60**
+sizing factor against a **11,788 Btu/h** Manual S cap. The crossover moves to **27.5 °F**.
+HP1 and HP3 are unchanged; all three verdicts remain as above.

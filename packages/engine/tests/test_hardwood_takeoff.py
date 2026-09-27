@@ -107,7 +107,7 @@ def test_a_stool_is_scheduled_at_its_rough_size_from_six_quarter_stock(rows):
     stools = _use(rows, "window stool")
     # See test_millwork.py for which windows have no stool (the plant room's liner, the
     # sauna's, and the garage).
-    assert stools and sum(row["pieces"] for row in stools) == 33
+    assert stools and sum(row["pieces"] for row in stools) == 34
     for row in stools:
         assert row["nominal_stock"] == "6/4"
         assert row["nominal_quarters"] == 6
