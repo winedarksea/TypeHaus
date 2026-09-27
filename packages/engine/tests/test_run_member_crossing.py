@@ -79,12 +79,13 @@ def test_per_crossing_beats_the_envelope_on_the_bld05_run(
 
     If anyone ever "simplifies" this check to band a whole leg, this fails.
 
-    +1.209" since 0db0c103 re-laned the suite stack out of the master closet.
+    +1.209" since 0db0c103 re-laned the suite stack out of the master closet; +1.477" since
+    its tie dropped to 9'-3" (2026-09-26), the leg's 0.268" fall at the 240" truss.
     """
     findings = _findings(catlin_plan, catlin_model_ro)
     finding = _for(findings, "PR-M-S-SUITE-WC-DRAIN", "FS-S-WEST")
     assert finding.result is Result.PASS
-    assert _crown_in(finding.message) == pytest.approx(1.209, abs=0.001)
+    assert _crown_in(finding.message) == pytest.approx(1.477, abs=0.001)
     assert "joist-0-015-0" in finding.message
 
 

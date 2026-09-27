@@ -29,7 +29,9 @@ def test_catlin_names_the_suite_stack_inlets_and_the_datum_it_lacks(catlin_ctx) 
     assert len(named) == 1, "the pair the authored comment makes a claim about"
     finding = named[0]
     assert finding.result.value == "unknown"
-    assert '2.50" apart' in finding.message
+    # 3.50" since 2026-09-26: a combo with a street sanitary tee in its top hub, the
+    # tightest pair Charlotte Pipe publishes. Still UNKNOWN: the check reads no fitting.
+    assert '3.50" apart' in finding.message
     assert "center_to_face_in" in finding.message
     assert "PR-M-S-SUITE-DRAIN" in finding.element_tags, "the barrel is named too"
 

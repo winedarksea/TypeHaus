@@ -146,16 +146,22 @@ def test_a_wall_no_move_can_fix_is_unknown_not_fail(findings):
 
 def test_catlin_carries_exactly_one_decided_advisory(catlin_model):
     """With the house's own preferences loaded, the report is clean — and it is clean because
-    ONE finding is suppressed by tag with its reason written beside it, not because the check
-    was silenced. The UNKNOWNs all survive."""
+    each finding is suppressed BY TAG with its reason written beside it, not because the
+    check was silenced. The owner accepted the last seven UNKNOWNs on 2026-09-26, so none
+    survive; the check still runs and still passes everything else."""
     from typehaus.checks.run import load_preferences
 
     prefs = load_preferences(Path(catlin_model.plan.source_root))
     report = run_from_model(catlin_model, [], preferences=prefs, only=_CID)
     mine = [f for f in report.findings if f.check_id == _CID]
-    assert not [f for f in mine if f.result is Result.FAIL]
-    assert [f for f in mine if f.result is Result.UNKNOWN]
-    assert "structural.door_framing_module:D-G-OVERHEAD" in prefs.suppressed
+    assert not [f for f in mine if f.result in (Result.FAIL, Result.UNKNOWN)]
+    assert "structural.door_framing_module" not in prefs.suppressed  # never the bare id
+    # Every door the bare check still names is accepted by its own tag, one by one.
+    raw = run_from_model(catlin_model, [], only=_CID).findings
+    named = {f.element_tags[0] for f in raw
+             if f.check_id == _CID and f.result is not Result.PASS and f.element_tags}
+    assert named, "the check still has something to say without the house's preferences"
+    assert all(f"{_CID}:{tag}" in prefs.suppressed for tag in named)
 
 
 # --- the mechanism the decided advisory rides on -------------------------------------------

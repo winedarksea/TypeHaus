@@ -153,6 +153,10 @@ def test_catlin_reports_the_suite_stack_head_crossing(catlin_ctx) -> None:
     9'-5 3/8" along x=11'-2.81". Where they cross the two centrelines are about 1.1" apart
     in z, so two 3.50" OD pipes share about 2.4" — 2.44" as measured at the station. It was
     2.64" with the stack at (13'-0", 16'-10.8").
+
+    **1.83" since 2026-09-26**, when PR-M-S-SUITE-WC-DRAIN's entry dropped to 9'-3" (a
+    buildable fitting stack): leg 2 now falls 9'-8 1/2" -> 9'-4 1/2", so at the crossing
+    the centrelines are 9'-7.2" and 9'-5.5", about 1.6" apart in z.
     """
     message = next(
         (f.message for f in run_interference(catlin_ctx)
@@ -160,10 +164,10 @@ def test_catlin_reports_the_suite_stack_head_crossing(catlin_ctx) -> None:
          and "PR-A-STUBATH-DRAIN" in f.element_tags
          and "PR-M-S-SUITE-WC-DRAIN" in f.element_tags), None)
     assert message is not None, "the crossing at the suite stack head is reported"
-    assert '2.44" inside each other in plan' in message
-    assert '2.44" in elevation' in message
+    assert '1.83" inside each other in plan' in message
+    assert '1.83" in elevation' in message
     # Both centrelines, at the station — the two numbers a plan file authors.
-    assert "runs at 9'-7.2\"" in message and "at 9'-6.1\"" in message
+    assert "runs at 9'-7.2\"" in message and "at 9'-5.5\"" in message
     # Leg for leg, as it was measured by hand. The legs are named in PAIR order, which the
     # message did not do: it hung the first run's leg number off the second run's name.
     assert "leg 3 of PR-A-STUBATH-DRAIN" in message

@@ -178,12 +178,15 @@ def test_a_run_carries_its_material_finish_and_insulation_into_the_file(catlin_m
                    if s.Name.startswith(f"{insulated.tag}/"))
     assert _pset(segment, "TypeHaus_Pipe")["insulation"] == insulated.insulation
 
-    lacquered = next((r for r in catlin_model_ro.pipe_runs if r.finish), None)
-    assert lacquered is not None, "fixture regression: no run authors a finish"
+    # catlin authors no pipe finish since its supply went PEX (2026-09-26); material is
+    # the half of this pair the reference house still carries.
+    stated = next((r for r in catlin_model_ro.pipe_runs if r.material), None)
+    assert stated is not None, "fixture regression: no run authors a material"
     segment = next(s for s in catlin_ifc.by_type("IfcPipeSegment")
-                   if s.Name.startswith(f"{lacquered.tag}/"))
+                   if s.Name.startswith(f"{stated.tag}/"))
     pset = _pset(segment, "TypeHaus_Pipe")
-    assert (pset["material"], pset["finish"]) == (lacquered.material, lacquered.finish)
+    assert pset["material"] == stated.material
+    assert pset.get("finish") in (None, "", stated.finish)
 
 
 def test_a_routed_run_exports_once_and_never_as_a_footing(catlin_model_ro, catlin_ifc):

@@ -299,11 +299,15 @@ def _copper_prefs(base):
             visible_basement_finish="lacquered"))
 
 
-def test_supply_on_concrete_is_lacquered_copper(catlin_plan, catlin_model, catlin_prefs):
+def test_a_restated_copper_rule_grades_the_trunks_under_concrete(
+        catlin_plan, catlin_model, catlin_prefs):
+    """catlin's supply went PEX on 2026-09-26, so restating the retired rule now flags the
+    trunks under the concrete band — which is the rule doing its job."""
     findings = pipe_material_preference(
         _context(catlin_plan, catlin_model, _copper_prefs(catlin_prefs)))
     assert findings, "the rule is stated; the check must grade something"
-    assert not _fails(findings), [f.message for f in _fails(findings)]
+    assert {"PR-B-CW-TRUNK", "PR-B-HW-KITCH"} <= {f.element_tags[0]
+                                                 for f in _fails(findings)}
     graded = {f.element_tags[0] for f in findings}
     # The trunks hung under the surviving concrete band are what the rule is about. The
     # band is x 18'-36', y 13'-36', so the trunks that still qualify are the ones whose
@@ -340,7 +344,7 @@ def test_the_rule_re_derives_from_what_is_overhead_not_from_a_tag_list(
         "basement", (*catlin_plan.storey_elements("basement"),
                      under_joists, under_concrete))
     findings = pipe_material_preference(_context(plan, _resolved(plan), prefs))
-    assert [f.element_tags[0] for f in _fails(findings)] == ["PR-B-CW-NEW2"]
+    assert "PR-B-CW-NEW2" in [f.element_tags[0] for f in _fails(findings)]
     assert "PR-B-CW-NEW" not in {f.element_tags[0] for f in findings}
 
 

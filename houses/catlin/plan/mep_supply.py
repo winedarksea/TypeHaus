@@ -427,12 +427,15 @@ SUPPLY = [
             # (2x6), so a 3/4" PEX 2" off the axis is still 3/10" clear of the stud face
             # with 1 5/8" to the standpipe, which is what the two need between them. The
             # riser stays in the same bay; only the station inside it moved.
-            path=(pt(ft(8, 4), ft(16)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)),),
+            # The riser tops out at the run's own +2'-8" and turns north; the washer valve at
+            # +3'-0" is a tee off it, which a supply run does not draw. Overshooting to 3'-0"
+            # and dropping back drew that tee as a 180-degree reversal.
+            path=(pt(ft(8, 4), ft(16)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)),),
             diameter=inch(0.75), material="pex",
-            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(12, 1.4375),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375),
                         ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375),
                         ft(10, 9.4375)),
-            wall_refs=(None, None, "W-M-BA2E", "W-M-BA2E", "W-M-BA2E", None,
+            wall_refs=(None, None, "W-M-BA2E", "W-M-BA2E", None,
                        "W-M-CLN", "W-M-CLN"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW38AAAA", tag="PR-B-HW-WASH", system=PipeSystem.WATER_HOT,
@@ -476,10 +479,12 @@ SUPPLY = [
     # SP-B-CS2-HW moves with it (plan/mep_sleeves.py) — the y=15'-6" hole it was cast for
     # no longer has a pipe in it.
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
+            # Both steps are plumb (2026-09-26): a 3" jog over 2" of plan was a 58-degree
+            # bend a 3/4" PEX cannot make in that little tube.
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(13, 6), ft(15, 6)),
-                  pt(ft(13, 6), ft(16, 3)), pt(ft(13, 6), ft(16, 5)),
+                  pt(ft(13, 6), ft(16, 5)), pt(ft(13, 6), ft(16, 5)),
                   pt(ft(17, 6), ft(16, 5)), pt(ft(17, 6), ft(16, 5)),
-                  pt(ft(18, 9), ft(16, 5)), pt(ft(18, 9), ft(16, 3)),
+                  pt(ft(18, 9), ft(16, 5)), pt(ft(18, 9), ft(16, 5)),
                   pt(ft(18, 9), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
                   pt(ft(30, 3.6), ft(33, 7.2)), pt(ft(30, 3.6), ft(33, 7.2))),
             diameter=inch(0.75), material="pex", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',

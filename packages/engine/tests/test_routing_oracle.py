@@ -80,14 +80,14 @@ def test_the_collector_profile_is_the_note_s_arithmetic(catlin_model_ro) -> None
 
     assert z[0] == pytest.approx(120.75, abs=0.001)   # the finished floor
     assert z[1] == pytest.approx(116.5, abs=0.001)    # the drop bottom, under the chord
-    assert z[-1] == pytest.approx(112.0, abs=0.001)   # on the stack barrel
+    assert z[-1] == pytest.approx(111.0, abs=0.001)   # on the stack barrel
 
     south = math.dist(path[1], path[2])
     east = math.dist(path[2], path[3])
     assert south == pytest.approx(34.625, abs=0.001)
     assert east == pytest.approx(15.19, abs=0.001)
-    assert (z[1] - z[2]) / (south / 12.0) == pytest.approx(1.083, abs=0.001)
-    assert (z[2] - z[3]) / (east / 12.0) == pytest.approx(1.086, abs=0.001)
+    assert (z[1] - z[2]) / (south / 12.0) == pytest.approx(1.386, abs=0.001)
+    assert (z[2] - z[3]) / (east / 12.0) == pytest.approx(1.185, abs=0.001)
 
     developed_ft = (south + east) / 12.0
     assert developed_ft == pytest.approx(4.1513, abs=0.001)

@@ -60,12 +60,14 @@ drop, south across the trusses, east onto the stack.
 | leg | from → to | plan length | fall | slope |
 |---|---|---|---|---|
 | flange drop | (134.81, 250.625) 120.75 → 116.5 | 0 | 4.25" | vertical |
-| south | → (134.81, 216) 113.375 | 250.625 − 216 = 34.625" = 2.8854 ft | 3.125" | 1.083"/ft |
-| east | → (150, 216) 112.0 | 150 − 134.81 = 15.19" = 1.2658 ft | 1.375" | 1.086"/ft |
+| south | → (134.81, 216) 112.5 | 250.625 − 216 = 34.625" = 2.8854 ft | 4.0" | 1.386"/ft |
+| east | → (150, 216) 111.0 | 150 − 134.81 = 15.19" = 1.2658 ft | 1.5" | 1.185"/ft |
 
-Developed plan length 49.815" = 4.1513 ft; total fall 4.5"; **mean 1.084"/ft**, and the
-flattest segment is 1.083"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum, which asks
-1.0378" of it. `mep.drain_slope` grades the flattest and reports it.
+Developed plan length 49.815" = 4.1513 ft; total fall 5.5"; **mean 1.325"/ft**, and the
+flattest segment is 1.185"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum, which asks
+1.0378" of it. (2026-09-26: the tie dropped 112.0 → 111.0 so the attic branch's street
+sanitary tee can spigot into this branch's combo, 3 1/2" apart — Charlotte Pipe
+SUB-PAC-PVC-DWV, parts 501 and 403.) `mep.drain_slope` grades the flattest and reports it.
 
 **The rest of this note is the 2026-09-07 geometry, and it stays that way on purpose.** The
 stack left the master closet on 2026-09-23 — head (156, 202.8) → (150, 216) — and the
@@ -89,7 +91,7 @@ and it is the whole argument of §5.
 **What that 0.0622" is NOT is this run's build margin**, and the distinction matters because
 the number has been read the other way. It is measured to the stack **head** at 115.5,
 because that is the arrival a *search* must assume before it knows where on the barrel the
-tie will land. The authored run ties at **112.0**, 3.5" lower, so what the pipe as drawn
+tie will land. The authored run tied at **112.0** (111.0 since 2026-09-26), 3.5" lower, so what the pipe as drawn
 actually holds is **3.062" of surplus fall** — 0.779"/ft flattest against 0.25"/ft, a 3.1×
 margin. `mep.drain_slope_margin` is the check that reports the build number; `slack_in` is
 an ordering key and reports the search number. Had the stack head stayed at 115.5 with the

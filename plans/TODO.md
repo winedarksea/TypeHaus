@@ -12,8 +12,30 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 - **Confirm First Class sheet vinyl can be flash-coved** (Tarkett install guide). RM-S-PLANT's
   waterproofing is a 6" cove behind the wall membrane (`houses/catlin/notes/plant_room.md`).
-  If coving is not allowed, fall back to a sealed perimeter under a cove base. Re-price
-  the `vinyl-sheet` row in `prices.toml` for the new product.
+  Researched 2026-09-26: the current FiberFloor guide (03/2024) is SILENT on coving, and its
+  loose-lay option wants a 1/4" wall gap a cove cannot have. The 2014/2016 guides allowed it
+  only fully adhered (QBOND-ONE). Get Tarkett Technical Services ((800) 899-8916) to confirm
+  in writing, or fall back to a sealed perimeter under a cove base, or switch to a
+  homogeneous sheet whose guide does allow it (Tarkett iQ Granit/iQ Optima, CFS-00-A cove
+  filler strip). Re-price the `vinyl-sheet` row in `prices.toml` for the product chosen.
+
+- **`mep.drain_inlet_spacing` cannot read a fitting.** It is UNKNOWN whenever two inlets land
+  within 3 barrel diameters and never opens `library/fittings.py`; one `center_to_face_in`
+  is the wrong shape anyway (a tee's upper and lower run sides differ; a combo's upper is
+  negative). Charlotte Pipe SUB-PAC-PVC-DWV (06/2026) pp. 34-41 publishes every letter
+  dimension, and the tightest 3" pair is a combo (501) with a street sanitary tee (403) in
+  its top hub, 3 1/2" c/l to c/l. `PR-M-S-SUITE-WC-DRAIN` was moved to exactly that on
+  2026-09-26; teaching the check a stack pitch would turn its UNKNOWN into a PASS. The
+  catalog also lacks combo, long-sweep and street patterns.
+
+- **Nothing grades UPC 604.13** (no PEX in the first 18" of piping on a water heater, any
+  type). Catlin holds it by keeping the seven runs on `EQ-B-WH`'s taps copper
+  (`plan/mep_supply.py` header); a PEX run landing on a heater tap would pass silently.
+
+- **Two drain turns are boxed in:** `PR-B-SINK2-DRAIN`'s 70.8-degree turn (a 60 needs the turn
+  in FS-M-WEST's joist band, where the leg cuts I-joist flanges; a 90 drops it into the x=2'-0"
+  ERV corridor), and `PR-M-DRYER-COND`'s 58 degrees in 3/4" PVC (every squared-off version
+  reads as a run hanging in RM-M-LAUNDRY). Both stay `mep.fitting_pattern` UNKNOWNs.
 
 - **~220 sf of gypsum is still billed through the joist band** on every storey-line partition.
   `resolve/partition_top.py` deliberately moves only the FRAMING top: cutting the body at the

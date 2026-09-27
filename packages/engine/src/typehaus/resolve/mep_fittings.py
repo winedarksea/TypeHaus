@@ -242,8 +242,12 @@ def _bend(path: Sequence[tuple[float, float, float]], index: int, angle_deg: flo
         shared = min(a, b) > 0 and max(a, b) < len(path) - 1
         return length / M_PER_IN / (2.0 if shared else 1.0)
 
+    if angle_deg > 179.0:
+        return None, (f"a {angle_deg:.1f} degree reversal in {nominal:g}\" {material} is not "
+                      f"one bend — it is two, with at least {2 * radius_in:.1f}\" "
+                      f"(2 x the {radius_in:.2f}\" minimum radius) between the legs")
     room_in = min(leg(index - 1, index), leg(index, index + 1))
-    half = math.radians(min(angle_deg, 179.9)) / 2.0
+    half = math.radians(angle_deg) / 2.0
     tangent_in = radius_in * math.tan(half)
     if tangent_in > room_in:
         return None, (f"a {angle_deg:.1f} degree bend in {nominal:g}\" {material} needs a "

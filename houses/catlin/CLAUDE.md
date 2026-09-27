@@ -2282,8 +2282,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   pit share overflow through the house footing tile (bed floor -124 7/16", pit inlet -123
   7/16"), so `SM-B-RADON` relieves at its inlet and the tile surcharges 3-4" first. That lip is
   36" inside the drained section — the frost section floods before relief;
-  `drainage.soakaway_storage` says so as an UNKNOWN. A true one-invert tie is a dedicated
-  pit-to-court pipe (plans/TODO.md).
+  `drainage.soakaway_storage` says so as an UNKNOWN, **accepted by the owner (2026-09-26)**:
+  storage passes on volume, and a dedicated pit-to-court pipe is the one-invert fix if it is
+  ever wanted.
 - **`SM-B-RADON` is back in the NW corner at (1'-9", 34'-3") (2026-09-24)**, tangent to FT-B-W1
   and FT-B-N4 and outside both pours. `mep.pit_footing_clearance` is an INTEGRITY clash (the pit
   may not cut footing concrete), not UPC 314.1's trench line. The pit voids `SL-B-FLOOR` and
@@ -2484,6 +2485,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     deep (3 5/8"), 3/16" proud each face. Door extrados crowns at 81 5/8", window's at
     52 5/8". **Viewer-only** — an exported `.glb` still shows a plain spandrel.
 
+
+### Water supply
+
+- **Supply is PEX-A, except the seven runs on `EQ-B-WH`'s taps** (owner, 2026-09-26). UPC
+  604.13 keeps PEX out of the first 18" of piping on any water heater, and nothing in the
+  engine grades that, so those seven stay copper end to end (`plan/mep_supply.py` header).
+  A PEX turn off a stock elbow is a BEND graded against Uponor's 6 x OD
+  (`library/fittings.TUBE_BEND_RULES`); a short jog wants a plumb step, not a diagonal.
 
 ### Electrical service
 
