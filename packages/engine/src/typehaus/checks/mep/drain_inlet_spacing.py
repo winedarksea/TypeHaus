@@ -1,44 +1,64 @@
-"""``mep.drain_inlet_spacing`` — two branches landing on one stack, and what is not known.
+"""``mep.drain_inlet_spacing`` — two branches landing on one stack, graded on fittings.
 
-``houses/catlin/plan/mep_drainage.py`` carries an authored claim: that the attic branch and
-the suite WC branch are "two inlets on one barrel, not a double fitting at one point". They
-land 2½" apart on the same vertical. Nothing in the engine tested that claim —
-``mep.drain_tie_in`` grades that a branch lands *on* the pipe and ``mep.fitting_pattern``
-grades that a turn names an orderable part, and neither measures the spacing between two
-inlets.
+Two drain runs ending on one vertical barrel a few inches apart are two fittings stacked,
+and whether they fit is a question about where each pattern's branch centreline sits
+between its socket stops. ``library/fittings.py`` carries those stations for the full-size
+(N x N x N) sanitary tee, wye, combo and street tee/wye, read off Charlotte Pipe
+SUB-PAC-PVC-DWV. For a close pair the check takes the tightest catalogued stack —
+the lower fitting's branch-to-top, the upper's branch-to-bottom, and a nipple of two socket
+depths unless the upper is a street pattern whose spigot seats in the lower's hub — and
+grades the authored spacing against it: PASS at or above it, FAIL below.
 
-**This check can only ever be UNKNOWN, and that is correct.** Whether two wyes fit 2½" apart
-is a question about their laying length, and every ``center_to_face_in`` in
-``library/fittings.py`` is ``None`` with a ``data_note`` saying no manufacturer submittal has
-been read. The engine can say that it cannot say, and name the pair and the spacing so that
-somebody opening a submittal knows exactly which number to look up. Inventing a dimension to
-turn this into a FAIL would be worse than the silence it replaces.
+Which patterns may serve an inlet follows how it arrives: a branch within 22.5 degrees of
+level takes a sanitary pattern (tee, combo, street tee), one near 45 degrees a wye. A
+reducing pair, an uncatalogued size or any other approach stays UNKNOWN, named with the
+spacing so somebody opening a submittal knows which number to look up.
 
 ``Tier.STRUCTURAL`` and **no ``PermitItemSpec``**, the same footing as
-``mep.run_interference`` and ``mep.fitting_pattern``: no IRC section states a laying length,
+``mep.run_interference`` and ``mep.fitting_pattern``: no code section states a laying length,
 and a CODE tier would trip the coverage test and the ``code_ref`` requirement dishonestly.
 """
 
 from __future__ import annotations
 
+import math
+
+from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
+from typehaus.hardware.fittings import (
+    KIND_COMBO,
+    KIND_STREET_TEE,
+    KIND_STREET_WYE,
+    KIND_TEE,
+    KIND_WYE,
+    SERVICE_DRAIN,
+    FittingSpec,
+    fitting_catalog,
+)
 from typehaus.quantities import M_PER_IN
 
 _CID = "mep.drain_inlet_spacing"
 
-#: Two inlets further apart than this many BARREL DIAMETERS raise no question: three
-#: diameters clears a full-sweep fitting body on the larger pipe, which is the same
-#: convention ``run_interference.JOINT_REACH_FACTOR`` states and for the same reason — the
-#: catalog records no laying length, so the reach around a fitting is a stated convention
-#: rather than a dimension read off a submittal.
+#: Two inlets further apart than this many BARREL DIAMETERS raise no question unless the
+#: catalog says the tightest stack needs more: three diameters clears a full-sweep fitting
+#: body on the larger pipe, the convention ``run_interference.JOINT_REACH_FACTOR`` states.
 INLET_SCREEN_DIAMETERS = 3.0
 
 #: A plan offset under this is "on the same vertical". A sixteenth of an inch is the grid
 #: every coordinate in this repo is authored on.
 SAME_BARREL_M = 0.0015875
+
+#: The same sixteenth, as the slack a spacing may fall short of a published stack.
+_SLACK_IN = 1.0 / 16.0
+
+#: The patterns an inlet may be, by how it arrives (degrees off level, inclusive bands).
+_SANITARY = (KIND_TEE, KIND_COMBO, KIND_STREET_TEE)
+_WYES = (KIND_WYE, KIND_STREET_WYE)
+_LABEL = {KIND_TEE: "sanitary tee 400", KIND_WYE: "wye 600", KIND_COMBO: "combo 501",
+          KIND_STREET_TEE: "street sanitary tee 403", KIND_STREET_WYE: "street wye 602"}
 
 
 @check(Tier.STRUCTURAL, _CID)
@@ -47,40 +67,111 @@ def drain_inlet_spacing(ctx: CheckContext) -> list[Finding]:
 
     A barrel is a vertical segment of a drain run — a repeated plan point at two
     elevations. An inlet is another drain run's END on that plan point, within the barrel's
-    own z span. Two inlets closer than :data:`INLET_SCREEN_DIAMETERS` barrel diameters are
-    named with their spacing and with the datum that would settle them.
+    own z span. Each consecutive pair is graded against the tightest catalogued stack.
     """
     barrels = _barrels(ctx)
     if not barrels:
         return [_pass(_CID, "no drain run resolves a vertical barrel, so no two branches "
                             "can land on one", ())]
 
+    runs = {r.tag: r for r in ctx.model.pipe_runs}
     out: list[Finding] = []
     for tag, point, z0_m, z1_m, diameter_m in barrels:
         inlets = sorted(_inlets_on(ctx, tag, point, z0_m, z1_m))
-        screen = INLET_SCREEN_DIAMETERS * diameter_m
+        screen_in = INLET_SCREEN_DIAMETERS * diameter_m / M_PER_IN
         for (low_z, low_tag), (high_z, high_tag) in zip(inlets[:-1], inlets[1:], strict=False):
-            gap = high_z - low_z
-            if gap > screen:
+            gap_in = (high_z - low_z) / M_PER_IN
+            tags = (tag, low_tag, high_tag)
+            stack = _tightest_stack(runs[tag], runs[low_tag], runs[high_tag], point)
+            if stack is None:
+                if gap_in <= screen_in:
+                    out.append(_unknown(
+                        _CID,
+                        f"{low_tag} and {high_tag} both land on {tag}'s vertical barrel "
+                        f"{gap_in:.2f}\" apart, and no catalogued stack covers the pair "
+                        f"(sizes {_nominal(runs[low_tag]):g}/{_nominal(runs[high_tag]):g} on "
+                        f"{_nominal(runs[tag]):g}\", or an approach that is neither level "
+                        f"nor 45 degrees) — the screen is {INLET_SCREEN_DIAMETERS:.0f} "
+                        f"barrel diameters ({screen_in:.2f}\"), a stated convention",
+                        tags,
+                        fix="read the stack stations off the two fittings' submittal into "
+                            "library/fittings.py — or move one branch so the question does "
+                            "not arise"))
                 continue
-            out.append(_unknown(
-                _CID,
-                f"{low_tag} and {high_tag} both land on {tag}'s vertical barrel "
-                f"{gap / M_PER_IN:.2f}\" apart, and whether two fittings fit that close on a "
-                f"{diameter_m / M_PER_IN:.0f}\" barrel is NOT KNOWN: every center_to_face_in "
-                "in library/fittings.py is None, with a data_note saying no manufacturer "
-                "submittal has been read. The screen is "
-                f"{INLET_SCREEN_DIAMETERS:.0f} barrel diameters "
-                f"({screen / M_PER_IN:.2f}\"), a stated convention and not a dimension",
-                (tag, low_tag, high_tag),
-                fix="read the laying length off the two fittings' submittals and author it "
-                    "as center_to_face_in in library/fittings.py — or move one branch so "
-                    "the question does not arise"))
+            pitch, lower, upper = stack
+            pages = ", ".join(dict.fromkeys(_page(f.source) for f in (lower, upper)))
+            pair = (f"{_LABEL[lower.kind]} + {_LABEL[upper.kind]}, "
+                    f"Charlotte SUB-PAC-PVC-DWV {pages}")
+            if gap_in + _SLACK_IN < pitch:
+                out.append(_fail(
+                    _CID,
+                    f"{low_tag} and {high_tag} land on {tag}'s vertical barrel "
+                    f"{gap_in:.2f}\" apart; no catalogued fitting pair stacks two "
+                    f"{_nominal(runs[tag]):g}\" branches closer than {pitch:.2f}\" "
+                    f"({pair})", tags,
+                    fix=f"move one branch to at least {pitch:.2f}\" from the other"))
+            elif gap_in <= screen_in:
+                out.append(_pass(_CID, f"{low_tag} and {high_tag} land on {tag} "
+                                       f"{gap_in:.2f}\" apart; the tightest stack is "
+                                       f"{pitch:.2f}\" c/l ({pair})", ()))
 
     if not out:
         out.append(_pass(_CID, f"{len(barrels)} vertical drain barrel(s) carry no two "
                                "branch inlets within a fitting's reach of each other", ()))
     return out
+
+
+def _page(source: str) -> str:
+    """The ``p. NN`` a catalog row's source cites."""
+    return next((part.split(":")[0].strip() for part in source.split(", ")
+                 if part.startswith("p. ")), source)
+
+
+def _nominal(run) -> float:
+    """A run's nominal size in inches, to the sixteenth the catalog is keyed on."""
+    return round(run.diameter_m / M_PER_IN * 16) / 16
+
+
+def _tightest_stack(barrel, low, high, point
+                    ) -> tuple[float, FittingSpec, FittingSpec] | None:
+    """``(pitch in, lower, upper)`` for the closest catalogued stack, or None."""
+    size = _nominal(barrel)
+    if _nominal(low) != size or _nominal(high) != size:
+        return None
+    lowers, uppers = _candidates(low, point, size), _candidates(high, point, size)
+    best = None
+    for lower in lowers:
+        for upper in uppers:
+            nipple = 0.0 if upper.spigot_bottom else 2 * upper.socket_depth_in
+            pitch = lower.branch_to_top_in + upper.branch_to_bottom_in + nipple
+            if best is None or pitch < best[0]:
+                best = (pitch, lower, upper)
+    return best
+
+
+def _candidates(run, point, size: float) -> list[FittingSpec]:
+    """The catalogued full-size patterns this inlet may be, by how it arrives."""
+    slope = _approach_deg(run, point)
+    if slope is None:
+        return []
+    kinds = _SANITARY if slope <= 22.5 else _WYES if slope <= 67.5 else ()
+    return [f for f in fitting_catalog()
+            if f.service == SERVICE_DRAIN and f.kind in kinds and f.nominal_in == size
+            and f.branch_in == size and f.branch_to_top_in is not None
+            and f.branch_to_bottom_in is not None
+            and (f.spigot_bottom or f.socket_depth_in is not None)]
+
+
+def _approach_deg(run, point) -> float | None:
+    """Degrees off level of the segment by which ``run`` arrives at ``point``."""
+    for end, prev in ((0, 1), (-1, -2)):
+        x, y = run.path[end]
+        if abs(x - point[0]) > SAME_BARREL_M or abs(y - point[1]) > SAME_BARREL_M:
+            continue
+        px, py = run.path[prev]
+        rise = abs(run.z_m[prev] - run.z_m[end])
+        return math.degrees(math.atan2(rise, math.hypot(px - x, py - y)))
+    return None
 
 
 def _barrels(ctx: CheckContext

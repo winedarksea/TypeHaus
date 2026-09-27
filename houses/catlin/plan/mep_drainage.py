@@ -489,9 +489,9 @@ SECOND_BRANCH_DRAINS = [
     # (2026-09-26; it was 2 1/2", which no fittings make.) Charlotte Pipe SUB-PAC-PVC-DWV
     # (06/2026): a 3" combo (501, C = 7 9/16" branch c/l to bottom stop, B = 6 1/2") with a
     # street sanitary tee (403, C = 4 9/16" branch c/l to spigot end) spigoted into its top
-    # hub puts the two branch centrelines 4 9/16 - 1 1/16 = 3 1/2" apart, the tightest pair
-    # published. Two plain sanitary tees need 4 7/8" plus a nipple, which the truss band
-    # does not have. The final leg lies in the y=18'-0" bay, so nothing under it but the
+    # hub puts the two branch centrelines 4 9/16 - 1 1/16 = 3 1/2" apart, the tightest
+    # sanitary pair published; `mep.drain_inlet_spacing` grades it. Two plain sanitary tees
+    # need 4 7/8" plus a nipple, which the truss band does not have. The final leg lies in the y=18'-0" bay, so nothing under it but the
     # ceiling; its crown at the 240" truss is 117.0" against the web window's 118.5".
     PipeRun(uid="885X4850FE", tag="PR-M-S-SUITE-WC-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(134.81), inch(250.625)), pt(inch(134.81), inch(250.625)),

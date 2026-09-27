@@ -41,6 +41,11 @@ SERVICE_RACEWAY = "raceway"
 KIND_ELBOW = "elbow"
 KIND_WYE = "wye"
 KIND_TEE = "tee"
+# Stack-branch patterns kept as their own kinds so ``fitting_for``'s wye/tee matching is
+# unchanged: a combination wye & 1/8 bend, and the street (spigot-bottom) tee and wye.
+KIND_COMBO = "combo"
+KIND_STREET_TEE = "street_tee"
+KIND_STREET_WYE = "street_wye"
 
 
 @dataclass(frozen=True)
@@ -73,6 +78,16 @@ class FittingSpec:
     center_to_face_in: float | None = None
     #: Centre to the face of the branch socket, inches. Wye and tee only.
     branch_to_face_in: float | None = None
+    #: Along the RUN from the branch centreline to the top socket stop, inches. Signed: a
+    #: combo's branch centreline sits above its top stop, so its value is negative.
+    branch_to_top_in: float | None = None
+    #: Along the RUN from the branch centreline to the bottom socket stop, or to the spigot
+    #: end where ``spigot_bottom``, inches.
+    branch_to_bottom_in: float | None = None
+    #: A street pattern: the bottom is a spigot that seats in the fitting below's hub.
+    spigot_bottom: bool = False
+    #: Socket depth of this size's hubs, inches — what a nipple between two hubs fills.
+    socket_depth_in: float | None = None
     #: Equivalent length of this fitting in feet, where the source publishes one.
     equivalent_length_ft: float | None = None
     #: The pattern standard or submittal the row was read out of. Never a retailer listing.

@@ -19,15 +19,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   homogeneous sheet whose guide does allow it (Tarkett iQ Granit/iQ Optima, CFS-00-A cove
   filler strip). Re-price the `vinyl-sheet` row in `prices.toml` for the product chosen.
 
-- **`mep.drain_inlet_spacing` cannot read a fitting.** It is UNKNOWN whenever two inlets land
-  within 3 barrel diameters and never opens `library/fittings.py`; one `center_to_face_in`
-  is the wrong shape anyway (a tee's upper and lower run sides differ; a combo's upper is
-  negative). Charlotte Pipe SUB-PAC-PVC-DWV (06/2026) pp. 34-41 publishes every letter
-  dimension, and the tightest 3" pair is a combo (501) with a street sanitary tee (403) in
-  its top hub, 3 1/2" c/l to c/l. `PR-M-S-SUITE-WC-DRAIN` was moved to exactly that on
-  2026-09-26; teaching the check a stack pitch would turn its UNKNOWN into a PASS. The
-  catalog also lacks combo, long-sweep and street patterns.
-
 - **Two drain turns are boxed in:** `PR-B-SINK2-DRAIN`'s 70.8-degree turn (a 60 needs the turn
   in FS-M-WEST's joist band, where the leg cuts I-joist flanges; a 90 drops it into the x=2'-0"
   ERV corridor), and `PR-M-DRYER-COND`'s 58 degrees in 3/4" PVC (every squared-off version

@@ -1,15 +1,16 @@
-"""``mep.drain_inlet_spacing`` — and what an honest UNKNOWN looks like.
+"""``mep.drain_inlet_spacing`` — two inlets on one barrel, graded on published fittings.
 
 catlin's ``mep_drainage.py`` claims the attic branch and the suite WC branch are "two inlets
-on one barrel, not a double fitting at one point". They land 2½" apart. Nothing tested the
-claim, and nothing CAN settle it: every ``center_to_face_in`` in ``library/fittings.py`` is
-``None`` with a ``data_note`` saying no manufacturer submittal has been read.
-
-So these pin two things, and the second is the important one: that the pair is found, and
-that the verdict never hardens into a FAIL on a dimension the engine invented.
+on one barrel, not a double fitting at one point". They land 3 1/2" apart: a combo (501)
+with a street sanitary tee (403) in its top hub, the tightest sanitary stack Charlotte Pipe
+SUB-PAC-PVC-DWV publishes. These pin that the pair is found and PASSes on those two parts,
+and that a spacing below the published minimum FAILs.
 """
 
 from __future__ import annotations
+
+from dataclasses import replace
+from types import SimpleNamespace
 
 import pytest
 
@@ -17,30 +18,84 @@ from typehaus.checks.mep.drain_inlet_spacing import (
     INLET_SCREEN_DIAMETERS,
     drain_inlet_spacing,
 )
+from typehaus.hardware.fittings import fitting_catalog
+from typehaus.resolve.model import ResolvedPipeRun
 
 pytestmark = pytest.mark.slow
 
+_IN = 0.0254
 
-def test_catlin_names_the_suite_stack_inlets_and_the_datum_it_lacks(catlin_ctx) -> None:
+
+def _drain(tag, pts, diameter_in=3.0) -> ResolvedPipeRun:
+    return ResolvedPipeRun(
+        uid=tag, tag=tag, storey="S", system="drain",
+        path=tuple((x * _IN, y * _IN) for x, y, _ in pts), diameter_m=diameter_in * _IN,
+        z_start_m=pts[0][2] * _IN, z_end_m=pts[-1][2] * _IN, length_m=1.0,
+        z_m=tuple(z * _IN for *_, z in pts))
+
+
+def _stack(gap_in, *, rise_in=0.25):
+    """A 3" barrel with two level-ish 3" branches ending on it ``gap_in`` apart."""
+    barrel = _drain("BARREL", [(0, 0, 120), (0, 0, 0)])
+    low = _drain("LOW", [(48, 0, 60 + rise_in * 4), (0, 0, 60)])
+    high = _drain("HIGH", [(0, 48, 60 + gap_in + rise_in * 4), (0, 0, 60 + gap_in)])
+    return SimpleNamespace(model=SimpleNamespace(pipe_runs=[barrel, low, high]))
+
+
+def test_catlin_suite_stack_passes_on_combo_and_street_tee(catlin_ctx) -> None:
     findings = drain_inlet_spacing(catlin_ctx)
     named = [f for f in findings
-             if "PR-A-STUBATH-DRAIN" in f.element_tags
-             and "PR-M-S-SUITE-WC-DRAIN" in f.element_tags]
+             if "PR-A-STUBATH-DRAIN" in f.message and "PR-M-S-SUITE-WC-DRAIN" in f.message]
     assert len(named) == 1, "the pair the authored comment makes a claim about"
     finding = named[0]
-    assert finding.result.value == "unknown"
-    # 3.50" since 2026-09-26: a combo with a street sanitary tee in its top hub, the
-    # tightest pair Charlotte Pipe publishes. Still UNKNOWN: the check reads no fitting.
+    assert finding.result.value == "pass"
     assert '3.50" apart' in finding.message
-    assert "center_to_face_in" in finding.message
-    assert "PR-M-S-SUITE-DRAIN" in finding.element_tags, "the barrel is named too"
+    assert "combo 501 + street sanitary tee 403" in finding.message
+    assert "PR-M-S-SUITE-DRAIN" in finding.message, "the barrel is named too"
 
 
-def test_it_is_NEVER_a_fail(catlin_ctx) -> None:
-    """Whether two wyes fit 2½" apart is a question about laying length, and the catalog
-    records none. The engine can say that it cannot say. Inventing a dimension to turn this
-    into a FAIL would be worse than the silence it replaces."""
-    assert not [f for f in drain_inlet_spacing(catlin_ctx) if f.result.value == "fail"]
+def test_catlin_carries_no_inlet_spacing_fail_or_unknown(catlin_ctx) -> None:
+    assert {f.result.value for f in drain_inlet_spacing(catlin_ctx)} == {"pass"}
+
+
+def test_it_fails_below_the_published_minimum() -> None:
+    findings = drain_inlet_spacing(_stack(2.5))
+    assert [f.result.value for f in findings] == ["fail"]
+    assert 'closer than 3.50"' in findings[0].message
+    assert findings[0].element_tags == ("BARREL", "LOW", "HIGH")
+
+
+def test_it_passes_at_the_published_minimum() -> None:
+    findings = drain_inlet_spacing(_stack(3.5))
+    assert [f.result.value for f in findings] == ["pass"]
+    assert "combo 501 + street sanitary tee 403" in findings[0].message
+
+
+def test_a_45_degree_inlet_is_graded_as_a_wye() -> None:
+    """Two branches arriving at 45 degrees stack as wyes: 5 + 3 1/8 with a street wye."""
+    ctx = _stack(6.0, rise_in=12.0)  # 48" run, 48" rise: 45 degrees
+    findings = drain_inlet_spacing(ctx)
+    assert [f.result.value for f in findings] == ["fail"]
+    assert 'closer than 8.12"' in findings[0].message
+
+
+def test_a_reducing_pair_stays_unknown() -> None:
+    ctx = _stack(2.5)
+    low = ctx.model.pipe_runs[1]
+    ctx.model.pipe_runs[1] = replace(low, diameter_m=2 * _IN)
+    assert [f.result.value for f in drain_inlet_spacing(ctx)] == ["unknown"]
+
+
+def test_every_stack_row_cites_a_part_and_page() -> None:
+    """A stack station is a submittal measurement: name the part number and its page."""
+    import re
+
+    rows = [f for f in fitting_catalog()
+            if f.branch_to_top_in is not None or f.branch_to_bottom_in is not None]
+    assert rows, "the Charlotte stack rows are gone"
+    for row in rows:
+        assert re.search(r"part \d{3}, p\. \d+", row.source or ""), row.tag
+        assert row.branch_to_top_in is not None and row.branch_to_bottom_in is not None
 
 
 def test_the_screen_is_a_stated_convention_not_a_read_dimension() -> None:

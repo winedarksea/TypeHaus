@@ -9,6 +9,9 @@ is what makes a 1/4 bend a 90 degree fitting and a 1/16 bend a 22.5 degree one, 
 that is not a measurement. A pattern's *laying length* (centre-to-face) is a measurement off
 one manufacturer's submittal, it differs between makers at one pattern, and **this repo has
 read none**: every ``center_to_face_in`` below is ``None`` with a ``data_note`` saying so.
+One submittal HAS been read for a narrower question — where a stack branch's centreline sits
+between its two socket stops (Charlotte Pipe, ``_STACK_DIMS``), which is what
+``mep.drain_inlet_spacing`` grades two inlets on one barrel against.
 
 That absence has a consequence worth stating plainly, because it is the reason Phase 5 of
 the routing roadmap draws no fitting bodies: without a laying length there is no way to turn
@@ -29,7 +32,10 @@ coverage gap rather than matching a part that is not made.
 from __future__ import annotations
 
 from typehaus.hardware.fittings import (
+    KIND_COMBO,
     KIND_ELBOW,
+    KIND_STREET_TEE,
+    KIND_STREET_WYE,
     KIND_TEE,
     KIND_WYE,
     SERVICE_DRAIN,
@@ -83,6 +89,65 @@ def _dwv_elbows() -> list[FittingSpec]:
     return out
 
 
+#: Charlotte Pipe SUB-PAC-PVC-DWV (06/2026), PVC rows at full size (N x N x N), inches, as
+#: (branch to top stop, branch to bottom stop or spigot end), each derived from the page's
+#: letter dimensions as noted. Read off the drawings 2026-09-26.
+_CHARLOTTE = "Charlotte Pipe SUB-PAC-PVC-DWV (06/2026)"
+_STACK_DIMS: dict[str, tuple[str, dict[float, tuple[float, float]]]] = {
+    # 400 Sanitary Tee, p. 37: A = branch c/l to bottom stop, B = stop to stop.
+    KIND_TEE: ("part 400, p. 37: below = A, above = B - A",
+               {1.5: (1.0, 1.75), 2.0: (1.375, 2.3125), 3.0: (1.8125, 3.0625),
+                4.0: (2.25, 3.875)}),
+    # 600 Wye, p. 41: A = stop to stop, B = bottom stop to branch c/l intersection.
+    KIND_WYE: ("part 600, p. 41: below = B, above = A - B",
+               {1.5: (2.875, 1.125), 2.0: (3.625, 1.375), 3.0: (5.0, 1.625),
+                4.0: (6.375, 1.875)}),
+    # 501 Combination Wye & 1/8 Bend, p. 40: B = stop to stop, C = branch outlet c/l to
+    # bottom stop — the outlet sits ABOVE the top stop.
+    KIND_COMBO: ("part 501, p. 40: below = C, above = B - C",
+                 {1.5: (-0.4375, 3.9375), 2.0: (-0.6875, 5.125), 3.0: (-1.0625, 7.5625),
+                  4.0: (-1.5, 10.0)}),
+    # 403 Sanitary Tee, Street, p. 37: B = spigot end to top stop, C = branch c/l to spigot end.
+    KIND_STREET_TEE: ("part 403, p. 37: below = C (to spigot end), above = B - C",
+                      {1.5: (1.0, 2.5), 2.0: (1.34375, 3.21875), 3.0: (1.8125, 4.5625),
+                       4.0: (2.25, 5.625)}),
+    # 602 Wye, Street, p. 41: A = spigot end to top stop, B = spigot end to branch c/l.
+    KIND_STREET_WYE: ("part 602, p. 41: below = B (to spigot end), above = A - B",
+                      {1.5: (2.875, 1.875), 2.0: (3.625, 2.25), 3.0: (5.0, 3.125),
+                       4.0: (6.3125, 3.625)}),
+}
+#: Socket depth: part 116 Cap, p. 32, dimension C (PVC) — a socket with no stop, so its
+#: whole depth is what a pipe end fills. The one socket depth the submittal publishes.
+_SOCKET_DEPTH: dict[float, float] = {1.5: 1.3125, 2.0: 1.375, 3.0: 1.90625, 4.0: 2.03125}
+_STACK_NOTE = ("center_to_face_in not recorded: the submittal row is read as stack stations "
+               "(branch_to_top_in / branch_to_bottom_in), not a laying length")
+_STACK_LABELS = {KIND_COMBO: ("COMBO", "combination wye & 1/8 bend", 90.0),
+                 KIND_STREET_TEE: ("STTEE", "street sanitary tee", 90.0),
+                 KIND_STREET_WYE: ("STWYE", "street wye", 45.0)}
+
+
+def _stack_fields(kind: str, size: float) -> dict:
+    """The Charlotte stack stations for a full-size row, or nothing where none was read."""
+    note, rows = _STACK_DIMS.get(kind, ("", {}))
+    if size not in rows:
+        return {"source": _DWV_SOURCE, "data_note": _NO_SUBMITTAL}
+    top, bottom = rows[size]
+    return {"branch_to_top_in": top, "branch_to_bottom_in": bottom,
+            "spigot_bottom": kind in (KIND_STREET_TEE, KIND_STREET_WYE),
+            "socket_depth_in": _SOCKET_DEPTH[size],
+            "source": f"{_CHARLOTTE} {note}", "data_note": _STACK_NOTE}
+
+
+def _dwv_stack_patterns() -> list[FittingSpec]:
+    """The combo and the two street patterns, full size only — what the submittal was read for."""
+    return [FittingSpec(
+        tag=f"FIT-DWV-{code}-{size:g}x{size:g}", name=f"{size:g}\" DWV {label}",
+        service=SERVICE_DRAIN, kind=kind, nominal_in=size, angle_deg=angle,
+        branch_in=size, snap_deg=10.0, **_stack_fields(kind, size))
+        for kind, (code, label, angle) in _STACK_LABELS.items()
+        for size in sorted(_STACK_DIMS[kind][1])]
+
+
 def _dwv_branches() -> list[FittingSpec]:
     """Wyes and sanitary tees, every branch size up to the run size.
 
@@ -102,7 +167,8 @@ def _dwv_branches() -> list[FittingSpec]:
                     name=f"{run_size:g}x{branch:g}\" DWV {label}",
                     service=SERVICE_DRAIN, kind=kind, nominal_in=run_size,
                     angle_deg=angle, branch_in=branch, snap_deg=10.0,
-                    source=_DWV_SOURCE, data_note=_NO_SUBMITTAL))
+                    **(_stack_fields(kind, run_size) if branch == run_size
+                       else {"source": _DWV_SOURCE, "data_note": _NO_SUBMITTAL})))
     return out
 
 
@@ -186,5 +252,6 @@ TUBE_BEND_RULES: dict[str, tuple[float, str]] = {"pex": _PEX_BEND, "pex-a": _PEX
 #: Every catalogued fitting. Sorted by tag so a take-off's row order never depends on the
 #: order the helpers above happen to run in.
 MEP_FITTINGS: tuple[FittingSpec, ...] = tuple(sorted(
-    [*_dwv_elbows(), *_dwv_branches(), *_supply_elbows(), *_supply_tees(), *_duct_elbows()],
+    [*_dwv_elbows(), *_dwv_branches(), *_dwv_stack_patterns(), *_supply_elbows(),
+     *_supply_tees(), *_duct_elbows()],
     key=lambda item: item.tag))
