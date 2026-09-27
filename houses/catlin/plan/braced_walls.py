@@ -80,7 +80,7 @@ MAIN_BRACED_WALLS = [
     BracedWallPanel(uid="F90FQFJGXV", tag="BWP-M-N1-0031", wall_ref="W-M-N1", start=inch(31.0),
                     width=inch(35.5), hold_down_ref="CN-M-BWHD-NE-N",
                     note="R602.10.7 end condition 5 at the NE corner"),
-    # BWL-W-A-S1 — 23'-6" provided.
+    # BWL-W-A-S1 — 19'-5" provided; the restored living window ends at S2 station 119".
     BracedWallPanel(uid="E93FHN22AB", tag="BWP-M-S1-0000", wall_ref="W-M-S1", start=inch(0.0),
                     width=inch(33.0), note="SW corner; return for BWL-W-A-W1's south end"),
     BracedWallPanel(uid="G47B3JDPK5", tag="BWP-M-S1-0063", wall_ref="W-M-S1", start=inch(63.0),
@@ -90,8 +90,8 @@ MAIN_BRACED_WALLS = [
                     width=inch(25.0)),
     BracedWallPanel(uid="ZH2V7AW8PA", tag="BWP-M-S2-0000", wall_ref="W-M-S2", start=inch(0.0),
                     width=inch(10.0)),
-    BracedWallPanel(uid="YSEYF7GF0J", tag="BWP-M-S2-0070", wall_ref="W-M-S2", start=inch(70.0),
-                    width=inch(83.0)),
+    BracedWallPanel(uid="YSEYF7GF0J", tag="BWP-M-S2-0119", wall_ref="W-M-S2", start=inch(119.0),
+                    width=inch(34.0)),
     BracedWallPanel(uid="VX1VGVJS1D", tag="BWP-M-S2-0183", wall_ref="W-M-S2", start=inch(183.0),
                     width=inch(33.0), note="SE corner return"),
     # BWL-W-A-W1 — 26'-11" provided.

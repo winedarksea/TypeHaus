@@ -829,6 +829,45 @@ def test_catlin_window_openings_follow_their_walls_framing_module(catlin_check_r
     assert not findings, [finding.message for finding in findings]
 
 
+def test_south_living_windows_stack_under_study_without_cutting_bracing(
+        catlin_plan, catlin_model_ro, catlin_check_report):
+    openings = {opening.tag: opening for opening in catlin_model_ro.openings}
+    for main_tag, study_tag, expected_x in (
+            ("WIN-M-LIV-S2", "WIN-S-STUDY1", ft(26, 8).meters),
+            ("WIN-M-LIV-S1", "WIN-S-STUDY2", ft(32).meters)):
+        main = openings[main_tag]
+        study = openings[study_tag]
+        main_center = opening_center(catlin_model_ro.wall(main.host_wall), main)
+        study_center = opening_center(catlin_model_ro.wall(study.host_wall), study)
+        assert main_center is not None and study_center is not None
+        assert main_center[0] == pytest.approx(expected_x, abs=1e-6)
+        assert study_center[0] == pytest.approx(expected_x, abs=1e-6)
+        assert main_center[1] == pytest.approx(study_center[1], abs=1e-6)
+        assert main.width_m == pytest.approx(inch(30).meters, abs=1e-6)
+        assert main.height_m == pytest.approx(ft(4).meters, abs=1e-6)
+        assert main.sill_m == pytest.approx(ft(2, 8).meters, abs=1e-6)
+        assert (expected_x / inch(16).meters) == pytest.approx(
+            round(expected_x / inch(16).meters), abs=1e-6)
+
+    restored = openings["WIN-M-LIV-S2"]
+    assert restored.type_ref == "WT-3048-T"
+    assert next(window_type for window_type in catlin_plan.library.window_types
+                if window_type.tag == restored.type_ref).tempered
+    panel = catlin_plan.by_tag("BWP-M-S2-0119")
+    assert panel is not None and panel.wall_ref == restored.host_wall
+    assert panel.start.meters == pytest.approx(
+        restored.center_along_m + restored.width_m / 2, abs=1e-6)
+    assert panel.width.meters == pytest.approx(inch(34).meters, abs=1e-6)
+
+    findings = catlin_check_report().findings
+    assert any(f.check_id == "code.R308_4_safety_glazing"
+               and f.result is Result.PASS and restored.tag in f.message for f in findings)
+    assert not [f.message for f in findings
+                if f.result is Result.FAIL and f.check_id in (
+                    "structural.window_framing_module", "structural.braced_wall_panels",
+                    "structural.braced_wall_panel_rules")]
+
+
 def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_height(
         catlin_model, catlin_check_report):
     """The gable peak's composition: two 27x64 casements symmetric about the x=18' ridge.

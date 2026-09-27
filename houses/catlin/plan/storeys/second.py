@@ -808,16 +808,13 @@ OPENINGS = [
     # 1'-3" restores y=25'-3" and with it the exact pairing with WIN-M-BATH1-W below.
     Window(uid="RGC7QGVF7Y", tag="WIN-S-VANITY-W", host="W-S-W2", type_ref="WT-1424-T",
            position=from_node("N-S-W1", ft(1, 3)), sill_height=ft(3, 6)),       # y 24'-4"
-    # Study 2's south pair: centres 27'-4" and 32'-8" are stud lines on W-S-S2's grid,
-    # STUDY1 stacking exactly over WIN-M-LIV-S1 (STUDY2's partner below, WIN-M-LIV-S2, was
-    # deleted 2026-08-24, so STUDY2 no longer columns with anything). Moved 8" west off the old bay centres with the
-    # WT-3048 narrowing (2026-08-01, see WIN-M-BED-S1/2); the two south segments stay 8"
-    # out of phase, the same unavoidable mirror miss as always. Sill 2'-8" is the shared
-    # 6'-8" head line; D-S-DECK-E's RO stays clear by 1'-3".
+    # Study 2's south pair: resolved centres x=26'-8"/32'-0" are stud lines on the shared
+    # facade grid and stack over WIN-M-LIV-S2/S1. Their 2'-8" sills hold the 6'-8" head line.
+    # The west unit is tempered for its proximity to D-S-DECK-E.
     Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3048-T",
-           position=from_node("N-S-S1", ft(7, 5)), sill_height=ft(2, 8)),     # x 27'-4"
+           position=from_node("N-S-S1", ft(7, 5)), sill_height=ft(2, 8)),     # x 26'-8"
     Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3048",
-           position=from_node("N-S-S1", ft(12, 9)), sill_height=ft(2, 8)),    # x 32'-8"
+           position=from_node("N-S-S1", ft(12, 9)), sill_height=ft(2, 8)),    # x 32'-0"
     # Baths + north. WIN-S-BATH-N/W have no source counterpart, kept for hall-bath daylight.
     # Re-hosted off W-S-N3: W-S-N3B is now the chase's own wall, not the
     # bathroom's. Nudged to 8" off N-S-CH2: at 1' the RO straddled the module

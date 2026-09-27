@@ -1251,7 +1251,7 @@ SECOND_PLACEABLES = [
     Furniture(uid="CHR703AAAA", tag="FURN-S-DESK-CHAIR3", type_ref="FURN-DESK-CHAIR", room="RM-S-BED3",
               position=pt(m(7.6327), m(10.1621)), rotation=deg(-90)),
     # Compact two-person table in Study 2, against the south wall. It sits partly under
-    # WIN-S-STUDY1 (centre 28'-0", sill 2'-8" — a
+    # WIN-S-STUDY1 (resolved centre 26'-8", sill 2'-8" — a
     # couple inches above the table top, which is the pleasant place for a table). Its
     # west edge stays 8" clear of D-S-DECK-E's east jamb; the two chairs sit on the
     # north side, so neither the table nor its usable seating is in the door opening.

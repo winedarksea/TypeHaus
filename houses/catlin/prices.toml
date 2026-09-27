@@ -5131,7 +5131,7 @@
 "WT-2748" = { material = { low = 670, high = 1265 }, labour = { low = 168, high = 358 } }  # 4 ea — 75 UI
 "WT-2748-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 2 ea
 "WT-3048" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 7 ea — 78 UI, over the band; two-man set
-"WT-3048-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 2 ea — was 3 until WIN-M-LIV-S2 was deleted (2026-08-24)
+"WT-3048-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 2 ea — WIN-M-LIV-S2 and WIN-S-STUDY1
 # The plant room's U-0.14 units, FIXED sash. Same dimensions as their parents, a different
 # MANUFACTURER. Not an upgrade the owner may decline: `building_science.glazing_dew_point`
 # FAILs these at U-0.25 — the glass condenses below about +13 F outdoors. The fixed sash is

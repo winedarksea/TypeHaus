@@ -1370,15 +1370,12 @@ OPENINGS = [
     Window(uid="CMX306AAAA", tag="WIN-M-MUD", host="W-M-W1",
            type_ref="WT-1424-FIX", position=from_node("N-M-MECH1", ft(1, 5)),
            sill_height=ft(3, 6)),
-    # South face, living room: one unit at 32'-8", a stud line on W-M-S2's grid, stacking
-    # exactly under WIN-S-STUDY1. Moved 8" west off the old 33'-4" bay centre with the
-    # WT-3048 narrowing (see WIN-M-BED-S1/2). The two south segments are 8" out of phase, so
-    # it carries the same phase miss off the bedroom pair's mirror as it always has.
-    # D-M-BALC's french-door RO (18'-10"..23'-10") stays clear by 8'-10".
-    #
-    # Its partner WIN-M-LIV-S2 (27'-4", WT-3048-T, under WIN-S-STUDY2) was deleted
-    # 2026-08-24: the south face reads as a column now, not a pair of pairs — see
-    # WIN-M-BED-S2, which moved east to 13'-8" to stand under what is now WIN-S-PLANT4.
+    # South living pair: centres x=26'-8"/32'-0" stack under WIN-S-STUDY1/2 on the shared
+    # 16" stud grid. S2 restores the west column retired in 2026; its RO x=25'-5"..27'-11"
+    # is 19" from D-M-BALC's east jamb, so it takes the tempered twin WT-3048-T.
+    Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
+           type_ref="WT-3048-T", position=from_node("N-M-S1", ft(7, 5)),
+           sill_height=ft(2, 8)),
     Window(uid="CMX307AAAA", tag="WIN-M-LIV-S1", host="W-M-S2",
            type_ref="WT-3048", position=from_node("N-M-SE", ft(2, 9)),
            sill_height=ft(2, 8)),

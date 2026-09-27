@@ -1306,7 +1306,7 @@ MAIN_LIGHTING = [
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-S2", face="left", distance_from_start=inch(82),
+                         wall_ref="W-M-S2", face="left", distance_from_start=inch(78),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # The porch flood (2026-08-02): mark S, narrow-throw full-cutoff spot. It hung on the
@@ -1324,12 +1324,13 @@ MAIN_LIGHTING = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Own switch, second gang beside ED-M-PORCH-SW — separate leg, not shared: the fan
     # runs whole evenings, the flood is the you-heard-something light, and sharing one
-    # switch would glare the flood on every night the fan spins.
+    # switch would glare the flood on every night the fan spins. Both switches move 4" west
+    # of their old stations to clear WIN-M-LIV-S2's west jamb pack.
     ElectricalDevice(uid="QTM001FAAA", tag="ED-M-PORCH-FLOOD-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-S2", face="left", distance_from_start=inch(86),
+                         wall_ref="W-M-S2", face="left", distance_from_start=inch(82),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # ST-SG-PORCH's top-landing light (2026-09-03). R303.8 wants a luminaire at the top
@@ -1352,17 +1353,9 @@ MAIN_LIGHTING = [
     # it; this fitting is the one at the head of the flight, and it is no longer load-bearing
     # for the verdict.
     #
-    # ** 25'-8", NOT THE 30'-0" IT HELD BEFORE 2026-09-04. ** The lane between D-M-BALC's
-    # RO (18'-10"..23'-10") and WIN-M-LIV-S1's (32'-8"..) STRADDLES the porch's east edge:
-    # FS-SG-PORCH stops at x=27'-6", and everything east of that on this wall is over the
-    # equipment pocket — W-SG-E1's top, SL-SG-HPPAD and EQ-M-HP2-OD. The old 30'-0" is in
-    # the lane and over the pocket, which is the one part of this elevation that wants no
-    # light on it, and it is off the landing, so R303.8 would not count the fitting either.
-    # 25'-8" is the middle of the half of the lane that is over the porch: 1'-10" clear of
-    # D-M-BALC's RO and 1'-10" clear of the deck edge, on the deck the flight arrives on.
-    #
-    # 6" east of ED-M-PORCH-FLOOD-SW (x=25'-2", interior face) rather than back-to-back with
-    # it: same stud bay for the feed, different bay for the box.
+    # x=24'-8" keeps the 6" sconce body between D-M-BALC's east jamb at 23'-10" and
+    # WIN-M-LIV-S2's west jamb at 25'-5". It remains over FS-SG-PORCH's top landing and
+    # 2" west of ED-M-PORCH-FLOOD-SW on the opposite wall face.
     #
     # y is -0'-9 3/4": W-M-S2's cladding face is at -0'-7 1/4" at this station (board-batten
     # over 1 1/2" furring over the air barrier — read the STRUCTURE layer's polygon, not
@@ -1393,7 +1386,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-FLOOD-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-S2", face="right", distance_from_start=inch(92),
+                         wall_ref="W-M-S2", face="right", distance_from_start=inch(80),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
