@@ -654,8 +654,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - `DU-A-ERV-R-STUBATH`'s riser is at y=21'-8 1/2" in `W-A-STU-W` — the bath's ONLY 5 1/2"
     cavity, and the suite's wet wall. Both drains hold the axis south of 21'-4 5/8", so that
     station is the first one north of them; it lands between the 21'-4" and 22'-0" studs and
-    bores nothing. The two VENTS run that axis end to end at 23'-5"..23'-6", so the riser
-    still crosses one and no duct-side move fixes it — it is Phase 3's.
+    bores nothing. The two VENTS run that axis end to end at 3'-5"..3'-9" above the attic
+    floor, so the grille (`REG-A-STUBATH-EXH`) sits at 3'-0" and the riser stops under them
+    (2026-09-26). Raising it again re-opens the crossing.
   - `DU-M-ERV-R-PLANT` (was `-A-`): LEVEL-2 manifold, south through `FS-S-WEST`'s open-web
     trusses at x=2'-10", east along y=4'-8", up inside `W-S-C1` to a high sidewall grille
     at 8'-6" (humid air stratifies). `W-S-C1` is `PLANT_INT_2X6_BRG_HUMID` (5 1/2" cavity

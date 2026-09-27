@@ -19,9 +19,9 @@ pytestmark = pytest.mark.slow
 
 _WATCHED = re.compile(r"^DU-.*ERV|-VENT$|^VR-")
 
-#: Open with its reason. Both stand in W-A-STU-W's one 5 1/2" cavity; the fix is the grille,
-#: REG-A-STUBATH-EXH below 3'-2" (plan/mep_registers.py). Shrink this set, never grow it.
-_KNOWN = {frozenset({"DU-A-ERV-R-STUBATH", "PR-A-STUBATH-VENT"})}
+#: Pairs still open, each with its reason. Empty since REG-A-STUBATH-EXH came down to 3'-0"
+#: (2026-09-26). Shrink this set, never grow it.
+_KNOWN: set[frozenset[str]] = set()
 
 
 def _watched(finding) -> bool:

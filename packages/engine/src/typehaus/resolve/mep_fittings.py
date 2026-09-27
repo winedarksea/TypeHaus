@@ -30,6 +30,7 @@ Stdlib only, like the rest of ``resolve/``.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
@@ -47,8 +48,10 @@ from typehaus.hardware.fittings import (
     catalogued_sizes,
     fitting_catalog,
     fitting_for,
+    tube_bend_rule,
 )
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
 from typehaus.resolve.sweep import clean_path, sweep_turns
 
 if TYPE_CHECKING:
@@ -219,9 +222,46 @@ RECTANGULAR_DUCT_GAP = ("a rectangular duct elbow is fabricated to the duct, not
                         "drawing and nothing here can stand in for one")
 
 
+def _bend(path: Sequence[tuple[float, float, float]], index: int, angle_deg: float,
+          size_m: float, material: str | None) -> tuple[FittingSpec | None, str | None]:
+    """A bendable tube's off-pattern turn, graded as a BEND against the maker's radius.
+
+    The bend's tangent length ``R tan(theta/2)`` has to fit on the straight tube either side
+    — all of a leg that ends the run, half of one shared with another turn. ``(None, None)``
+    where the material publishes no rule, so the caller keeps its catalog answer.
+    """
+    rule = tube_bend_rule(material)
+    if rule is None:
+        return None, None
+    ratio, source = rule
+    nominal = _nominal_in(size_m)
+    radius_in = ratio * pipe_outside_diameter_m(size_m, material) / M_PER_IN
+
+    def leg(a: int, b: int) -> float:
+        length = sum((pa - pb) ** 2 for pa, pb in zip(path[a], path[b], strict=True)) ** 0.5
+        shared = min(a, b) > 0 and max(a, b) < len(path) - 1
+        return length / M_PER_IN / (2.0 if shared else 1.0)
+
+    room_in = min(leg(index - 1, index), leg(index, index + 1))
+    half = math.radians(min(angle_deg, 179.9)) / 2.0
+    tangent_in = radius_in * math.tan(half)
+    if tangent_in > room_in:
+        return None, (f"a {angle_deg:.1f} degree bend in {nominal:g}\" {material} needs a "
+                      f"{radius_in:.2f}\" radius ({ratio:g} x OD, the maker's minimum) and "
+                      f"{tangent_in:.1f}\" of straight tube each side, and the run gives "
+                      f"{room_in:.1f}\" — lengthen the leg or fit an elbow")
+    return FittingSpec(
+        tag=f"BEND-{(material or '').upper()}-{nominal:g}",
+        name=f"{nominal:g}\" {material} field bend, {radius_in:.2f}\" min. radius",
+        service=SERVICE_SUPPLY, kind=KIND_ELBOW, nominal_in=nominal,
+        angle_deg=round(angle_deg, 1), bend_radius_in=radius_in, source=source,
+        data_note="a field bend in the tube, not a part"), None
+
+
 def polyline_fittings(tag: str, family: str, system: str,
                       points: Sequence[tuple[float, float, float]], size_m: float,
-                      *, rectangular: bool = False) -> list[FittingRecord]:
+                      *, rectangular: bool = False,
+                      material: str | None = None) -> list[FittingRecord]:
     """The elbows a bare 3D polyline takes — for a run that is not in the model yet.
 
     The router proposes geometry before anybody has pasted it, and "what parts does this
@@ -236,7 +276,8 @@ def polyline_fittings(tag: str, family: str, system: str,
                       else _pipe_service(system, _nominal_in(size_m)))
     bendable = service in BENDABLE_SERVICES
     nominal = _nominal_in(size_m)
-    sweep = SolidSweep(path=clean_path(list(points)), profile=((size_m / 2.0, 0.0),))
+    cleaned = clean_path(list(points))
+    sweep = SolidSweep(path=cleaned, profile=((size_m / 2.0, 0.0),))
     out: list[FittingRecord] = []
     for turn in sweep_turns(sweep):
         if turn.angle_deg < MIN_FITTING_TURN_DEG:
@@ -246,6 +287,10 @@ def polyline_fittings(tag: str, family: str, system: str,
         else:
             spec, gap = _match(service, KIND_ELBOW, turn.angle_deg, nominal, None,
                                bendable, bonus)
+            if spec is None and bendable:
+                bent, why = _bend(cleaned, turn.index, turn.angle_deg, size_m, material)
+                if bent is not None or why is not None:
+                    spec, gap = bent, why
         out.append(FittingRecord(
             run_tag=tag, family=family, kind=KIND_ELBOW, service=service, system=system,
             index=turn.index, point=tuple(turn.point), angle_deg=turn.angle_deg,
@@ -263,7 +308,7 @@ def _turn_records(run: Any, family: str, *, size_m: float,
     return polyline_fittings(
         run.tag, family, run.system,
         [(x, y, zz) for (x, y), zz in zip(run.path, z, strict=True)], size_m,
-        rectangular=rectangular)
+        rectangular=rectangular, material=getattr(run, "material", None))
 
 
 def _pipe_service(system: str, nominal_in: float) -> tuple[str, float]:

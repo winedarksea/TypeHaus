@@ -165,7 +165,8 @@ DRAINS = [
             path=(pt(ft(2, 6), ft(20, 10.615)), pt(ft(2, 6), ft(20, 10.615)),
                   pt(ft(2, 6), ft(16, 6)), pt(ft(3), ft(16, 6))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(9, 1.4375), ft(7, 9.4375), ft(6, 11.4375), ft(6, 9.4375)),
+            # 5" over the 4'-4 5/8" leg keeps the turn at the drop's foot within a 1/4 bend.
+            elevations=(ft(9, 1.4375), ft(7, 4.4375), ft(6, 11.4375), ft(6, 9.4375)),
             serves=("FX-M-BATH2-WC",)),
     # ** BATH1's WALL-HUNG WC, ON ITS OWN BRANCH, NOT PR-B-MAIN-DRAIN'S FIRST VERTEX. **
     #   * a wall-hung carrier connects at 3" (Geberit Duofix / TOTO DuoFit both call out
@@ -207,7 +208,9 @@ DRAINS = [
             path=(pt(ft(7, 4), ft(19, 4.8)), pt(ft(7, 4), ft(19, 4.8)),
                   pt(ft(6), ft(19, 4.8))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 4.6375)),
+            # The leg lies in the 224"..240" joist bay, so the turn can sit up in the band:
+            # 9 1/4" of fall over its 16" run is a 30-degree leg, a stock 1/6 bend.
+            elevations=(ft(9, 1.4375), inch(97.875), ft(7, 4.6375)),
             serves=("FX-M-BATH2-TUB",)),
     PipeRun(uid="CBPD04AAAA", tag="PR-B-SH2-DRAIN", system=PipeSystem.DRAIN,
             # y=17'-1 3/8", not the grate's 17'-3": that stood 1.44" in joist-0-013's flange.
@@ -481,13 +484,20 @@ SECOND_BRANCH_DRAINS = [
     # high end (y=250.625) sits in the 241.75..254.25 clear bay, where there is no truss.
     # Graded at the three truss lines the leg actually crosses, and at 3" PVC's real 3.500"
     # OD, `mep.run_member_crossing` reports **+0.944"** of crown at `joist-0-015-0`, the
-    # tightest of them. It lands at 9'-4" on the stack's vertical, 3 1/2" below where the
-    # attic branch enters it.
+    # tightest of them.
+    # ** IT LANDS AT 9'-3", 3 1/2" BELOW THE ATTIC BRANCH, AND 3 1/2" IS A FITTING STACK. **
+    # (2026-09-26; it was 2 1/2", which no fittings make.) Charlotte Pipe SUB-PAC-PVC-DWV
+    # (06/2026): a 3" combo (501, C = 7 9/16" branch c/l to bottom stop, B = 6 1/2") with a
+    # street sanitary tee (403, C = 4 9/16" branch c/l to spigot end) spigoted into its top
+    # hub puts the two branch centrelines 4 9/16 - 1 1/16 = 3 1/2" apart, the tightest pair
+    # published. Two plain sanitary tees need 4 7/8" plus a nipple, which the truss band
+    # does not have. The final leg lies in the y=18'-0" bay, so nothing under it but the
+    # ceiling; its crown at the 240" truss is 117.0" against the web window's 118.5".
     PipeRun(uid="885X4850FE", tag="PR-M-S-SUITE-WC-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(134.81), inch(250.625)), pt(inch(134.81), inch(250.625)),
                   pt(inch(134.81), ft(18)), pt(ft(12, 6), ft(18))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(10, 0.75), ft(9, 8.5), ft(9, 5.375), ft(9, 4)),
+            elevations=(ft(10, 0.75), ft(9, 8.5), inch(112.5), ft(9, 3)),
             serves=("FX-S-SUITEBATH-WC",)),
     # The 30" vanity's 1 1/2" arm: down inside W-S-SN3 (the staggered wet wall this bath was
     # laid out around), south across one truss, then west on the y=246" bay to the collector.
@@ -878,9 +888,9 @@ STUDIO_DRAINS = [
     # 0.36"/ft, clear of 708.0's 1/4" — and its 3" crown sits at 9'-9 1/2", inside the
     # 8 7/8" chord-to-chord window a leg crossing FS-S-WEST's trusses has to stay in. That
     # window is what took PR-M-S-SUITE-DRAIN's head down 1 1/2" (below); the two profiles
-    # move together or neither moves. It lands at 9'-6 1/2" on the stack's vertical, 2 1/2"
-    # above where PR-M-S-SUITE-WC-DRAIN enters it — two inlets on one barrel, not a double
-    # fitting at one point.
+    # move together or neither moves. It lands at 9'-6 1/2" on the stack's vertical, 3 1/2"
+    # above where PR-M-S-SUITE-WC-DRAIN enters it — a street sanitary tee spigoted into that
+    # branch's combo (see its note), not a double fitting at one point.
     PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(11, 0.875), ft(19, 4)), pt(ft(9, 7.5), ft(19, 4)),
                   pt(ft(9, 7.5), ft(19, 4)), pt(ft(12, 6), ft(18))),

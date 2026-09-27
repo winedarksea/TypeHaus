@@ -47,17 +47,10 @@ def test_catlin_has_no_stale_host_reference(findings) -> None:
         f.message for f in findings if f.result is Result.FAIL]
 
 
-def test_a_floor_system_host_is_unknown_and_says_why(findings) -> None:
-    """FS-SG-DECK and FS-SG-PORCH resolve to no solid AND a zero-point outline.
-
-    Three runs name them. Silently skipping those would make the check quietly narrower
-    than it reads — the honest answer is that the model cannot say, and the missing
-    geometry is a real finding about the model either way.
-    """
-    unknowns = [f for f in findings if f.result is Result.UNKNOWN]
-    assert {f.element_tags[0] for f in unknowns} == {
-        "TR-SG-FASCIA", "TR-SG-SLOT", "TR-SG-WRB-FLASH"}
-    assert all("resolves to no solid" in f.message for f in unknowns)
+def test_catlin_floor_system_hosts_are_graded_in_plan(findings) -> None:
+    """FS-SG-DECK and FS-SG-PORCH resolve no solid, but their authored outlines place them:
+    the three runs naming them are graded, not left UNKNOWN."""
+    assert [f.result for f in findings] == [Result.PASS], [f.message for f in findings]
 
 
 def test_a_tilted_beam_is_graded_over_its_range_not_its_box(catlin_model_ro) -> None:
@@ -127,7 +120,7 @@ def test_the_gutter_hangs_below_its_fascia_and_that_is_not_a_defect(findings) ->
                 if f.result is Result.FAIL and "TR-SG-GUTTER" in f.element_tags]
 
 
-def _one_flashing_plan(host_ref: str | None):
+def _one_flashing_plan(host_ref: str | None, extra=()):
     """The smallest plan that carries one hosted trim run and nothing else.
 
     Built rather than borrowed from catlin: the reference model is a session-scoped
@@ -150,13 +143,13 @@ def _one_flashing_plan(host_ref: str | None):
     plan = PlanModel(project=project, library=Library(),
                      storeys=(Storey(uid="STMAIN0001", tag="main", elevation=ft(0),
                                      default_ceiling_height=ft(9)),))
-    return plan.with_elements("main", (run,))
+    return plan.with_elements("main", (run, *extra))
 
 
-def _verdicts(host_ref: str | None):
+def _verdicts(host_ref: str | None, extra=()):
     from typehaus.resolve import resolve
 
-    model, resolve_findings = resolve(_one_flashing_plan(host_ref))
+    model, resolve_findings = resolve(_one_flashing_plan(host_ref, extra))
     return [f for f in run_from_model(model, resolve_findings, only=_CHECK_ID).findings
             if f.check_id == _CHECK_ID]
 
@@ -179,3 +172,23 @@ def test_a_run_naming_no_host_is_out_of_subject() -> None:
     and with no hosted run anywhere the check earns N/A instead of returning []."""
     findings = _verdicts(None)
     assert [f.result for f in findings] == [Result.NOT_APPLICABLE]
+
+
+def _floor(outline_y_ft: float | None):
+    from typehaus.model import FloorSystem, ft, pt
+    from typehaus.model.floors import JoistSpec
+
+    outline = () if outline_y_ft is None else tuple(
+        pt(ft(x), ft(y)) for x, y in ((0, outline_y_ft), (10, outline_y_ft),
+                                      (10, outline_y_ft + 8), (0, outline_y_ft + 8)))
+    return FloorSystem(uid="FLOOR00001", tag="FS-TEST", joists=JoistSpec(), outline=outline)
+
+
+@pytest.mark.parametrize(("outline_y_ft", "expected"), [
+    (0.0, Result.PASS),        # the run follows the floor's south edge
+    (5.0, Result.FAIL),        # five feet off: the reference has drifted
+    (None, Result.UNKNOWN),    # no outline: nothing to compare against
+])
+def test_a_floor_system_host_is_graded_against_its_outline(outline_y_ft, expected) -> None:
+    findings = _verdicts("FS-TEST", extra=(_floor(outline_y_ft),))
+    assert [f.result for f in findings] == [expected], [f.message for f in findings]

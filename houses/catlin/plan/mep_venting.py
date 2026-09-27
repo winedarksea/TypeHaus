@@ -250,10 +250,8 @@ VENT_BRANCHES_ATTIC = [
     # and the lowest vertex here is 23'-5". It rises monotonically into the stack, so condensate
     # drains back to the fixtures and there is no pocket to hold water. The last vertex at
     # 23'-9" ties in 1" BELOW the riser's 23'-10" exit, on the vertical part of the stack.
-    # ** IT STILL CROSSES DU-A-ERV-R-STUBATH'S RISER (2026-09-24). ** Both stand in W-A-STU-W's
-    # one 5 1/2" cavity, which cannot hold them side by side, and over the duct's elbow into
-    # its 4'-4" grille the vent would be in the partition's top plates. The fix is the grille:
-    # REG-A-STUBATH-EXH below 3'-2" (plan/mep_registers.py) lets this pass over the duct.
+    # It passes OVER DU-A-ERV-R-STUBATH's riser, which stops at REG-A-STUBATH-EXH's 3'-0"
+    # grille (plan/mep_registers.py) — both stand in W-A-STU-W's one 5 1/2" cavity.
     PipeRun(uid="STFQKR8Q95", tag="PR-A-STUBATH-VENT", system=PipeSystem.VENT,
             # Ends ON the vent riser at the stack's upper station (2026-09-23), the south one
             # of the pair; the radon riser 6.2" north is no longer in its way.

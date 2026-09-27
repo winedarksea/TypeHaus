@@ -672,13 +672,13 @@ REGISTERS_ATTIC = [
     # house runs at — 50 cfm intermittent would pass the same check and would be the odd one
     # out on a balanced machine whose whole attic side is continuous extract.
     #
-    # A WALL MOUNT IS WHAT MAKES A HIGH PICKUP POSSIBLE HERE, AND 4'-4" IS AS HIGH AS THE
-    # WALL GOES. There is no ceiling plenum under a cathedral: the room follows the roof.
-    # W-A-STU-W's 5 1/2" staggered cavity is the only place a duct can drop from a high
-    # grille into the FS-ATTIC bay, which is exactly why the wet wall carries this as well
-    # as every drain in the suite. That wall is `ToRoof`, so its own top is the rake: at
-    # x=9'-7 1/2" the 6:12 underside is 4'-11 1/4" above the deck. 4'-4" leaves 7 1/4" of
-    # wall over the boot — the highest pickup this room can have.
+    # A WALL MOUNT, AND AT 3'-0" RATHER THAN THE 4'-4" THE WALL WOULD ALLOW (2026-09-26).
+    # There is no ceiling plenum under a cathedral: the room follows the roof, and
+    # W-A-STU-W's 5 1/2" staggered cavity is the only place a duct can drop into the
+    # FS-ATTIC bay. PR-A-STUBATH-VENT runs that same cavity at 3'-5"..3'-9", so a riser to a
+    # higher grille crosses it; at 3'-0" the 4" boot tops out at 3'-2" and the vent passes
+    # over it. A lower pickup gives up some stratified moist air, which the 20 cfm
+    # continuous rate absorbs.
     Register(uid="N989VQP3T8", tag="REG-A-STUBATH-EXH", kind=DuctSystem.EXHAUST, room="RM-A-STUBATH",
             # y=21'-8 1/2" is where DU-A-ERV-R-STUBATH can actually stand: the wet wall's
             # axis carries the suite's two drains south of 21'-4 5/8", and this is the first
@@ -694,7 +694,7 @@ REGISTERS_ATTIC = [
             # WALL-mounted extract, and on the ceiling type the resolver read its 7" face as
             # 7" of projection into the room. See plan/mep_hvac.py.
             type_ref="REG-T-ERV-EXH-WALL", design_cfm=20,
-            mount=Mount(kind=MountKind.WALL, elevation=ft(4, 4)),
+            mount=Mount(kind=MountKind.WALL, elevation=ft(3)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-A-STU-W", face="right", distance_from_start=inch(52.5),
                  normal_gap=inch(0), rotation_offset=deg(0)))),

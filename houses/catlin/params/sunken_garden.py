@@ -2270,7 +2270,8 @@ PORCH_STAIR = Stair(
 # the house this same pair was authored for a subtler reason (W-M-S2's band starts at 0'-0"
 # and every nosing but the last runs below it), and the pair is unchanged.
 #
-# A 36" tread past two 1 1/2" sections leaves 33" clear against R311.7.1's 27" for two rails.
+# A 36" tread less two 1 1/2" posts centred on the stringers leaves 31 1/2" clear against
+# R311.7.1's 27" for two rails.
 #
 # These two stop at the flight — x 28'-6", the head — and the threshold beyond it is guarded
 # by PORCH_STAIR_THRESHOLD_RAILS below rather than by extending these. A `serves_stair`
@@ -2284,6 +2285,7 @@ PORCH_STAIR = Stair(
 # the wall top; along the rake the posts stand on the stringers instead, which is the
 # RL-G-SERVICE condition and is what the price row's own note has to say (a raked post on a
 # wood stringer is not the 5x5-on-concrete the surface row's rate is built from).
+_STRINGER_HALF_FT = 0.75 / 12.0
 PORCH_STAIR_RAILS = [
     Railing(uid=f"SGRA0{_si}AAAA", tag=f"RL-SG-PSTAIR-{_sh}",
             type_ref="RAILING-EXT-ALUMINUM-SURFACE",
@@ -2294,7 +2296,9 @@ PORCH_STAIR_RAILS = [
             role="guard_and_handrail", serves_stair="ST-SG-PORCH", top_height=inch(36),
             graspable_profile="1.5in round — Type I",
             infill="balusters", baluster_spacing=inch(4))
-    for _si, _sh, _sy in ((3, "S", _PORCH_STAIR_Y1), (4, "N", _PORCH_STAIR_Y0))
+    # Centred on the 1 1/2" outer stringers, which stand inside the flight's edges.
+    for _si, _sh, _sy in ((3, "S", _PORCH_STAIR_Y1 + _STRINGER_HALF_FT),
+                          (4, "N", _PORCH_STAIR_Y0 - _STRINGER_HALF_FT))
 ]
 
 # ** THE THRESHOLD'S TWO CHEEKS. ** The 12" of W-SG-E1 wall top between the porch plank and
@@ -3148,7 +3152,7 @@ BALCONY_RUNNEL = Gutter(
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
     top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(3),
-    material="aluminum", host_ref="TR-SG-GUTTER")
+    material="aluminum", host_ref="FS-SG-DECK")
 # Rear (north, house-side) counter-flashing tucked up into the house WRB.
 _REAR_PATH = (pt(ft(_deck_x_w), ft(_y_in_n)), pt(ft(_deck_x_e), ft(_y_in_n)))
 BALCONY_REAR_FLASH = Flashing(

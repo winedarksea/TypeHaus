@@ -172,6 +172,17 @@ def _duct_elbows() -> list[FittingSpec]:
         for angle in (90.0, 45.0, 30.0) for size in _DUCT_SIZES]
 
 
+#: Tube that turns by being BENT, by material: (minimum centreline radius as a multiple of the
+#: tube's OD, source). Minn. R. 4714.0609 allows flexible tubing to change direction without
+#: fittings "in accordance with the manufacturer's instructions", so the maker's rule governs.
+#: Uponor's 6 x OD is the tightest-reading of the three PEX-a makers (REHAU and Viega publish
+#: 5 x OD cold or with a bend support), so a bend that passes here passes for any of them.
+_PEX_BEND = (6.0, "Uponor Professional Plumbing Installation Guide (PLU_InsG_P731_0213) "
+                  "p. 9: \"The minimum bend radius of Uponor AquaPEX tubing in any direction "
+                  "is six times the outside diameter (6 x OD).\"")
+TUBE_BEND_RULES: dict[str, tuple[float, str]] = {"pex": _PEX_BEND, "pex-a": _PEX_BEND}
+
+
 #: Every catalogued fitting. Sorted by tag so a take-off's row order never depends on the
 #: order the helpers above happen to run in.
 MEP_FITTINGS: tuple[FittingSpec, ...] = tuple(sorted(

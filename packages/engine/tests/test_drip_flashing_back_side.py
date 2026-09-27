@@ -84,3 +84,19 @@ def test_a_lone_run_cannot_be_judged_and_says_so() -> None:
     only_south = plan.elements["main"][:1]
     assert _results(plan.model_copy(update={"elements": {"main": only_south}})) == {
         "TR-S": Result.UNKNOWN}
+
+
+def test_a_lone_run_on_a_deck_edge_is_judged_against_the_deck() -> None:
+    """A deck's drip has no siblings, but its FloorSystem host's outline names the inside."""
+    from typehaus.model import FloorSystem
+    from typehaus.model.floors import JoistSpec
+
+    deck = FloorSystem(uid="deck-1", tag="FS-DECK", joists=JoistSpec(),
+                       outline=tuple(pt(m(x), m(y)) for x, y in
+                                     ((0, 0), (_SIDE_M, 0), (_SIDE_M, 4), (0, 4))))
+    plan = _loop_plan(dict.fromkeys("SENW", "left"))
+    for back_side, expected in (("left", Result.PASS), ("right", Result.FAIL)):
+        south = plan.elements["main"][0].model_copy(
+            update={"host_ref": "FS-DECK", "back_side": back_side})
+        lone = plan.model_copy(update={"elements": {"main": (south, deck)}})
+        assert list(_results(lone).values()) == [expected]

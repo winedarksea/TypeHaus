@@ -263,15 +263,17 @@ permit_drop = ["A-502", "A-506"]
 # element itself.
 [checks]
 suppress = [
-  # ** mep.run_interference: 17 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-24. NOT A
+  # ** mep.run_interference: 15 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-26. NOT A
   # DECISION — AN OPEN CAMPAIGN, AND WHAT IS LEFT OF IT IS PLUMBING AND RACEWAYS. **
+  #
+  # ** 17 -> 15 (2026-09-26). ** DU-A-ERV-R-STUBATH x PR-A-STUBATH-VENT closed when
+  # REG-A-STUBATH-EXH came down to 3'-0"; PR-B-TUB2-DRAIN x PR-B-WASH-DRAIN closed when the
+  # tub's turn went up into its joist bay as a stock 1/6 bend.
   #
   # ** 65 -> 96 -> 17 (2026-09-23/24). ** The check's eyes improved first: a joint only
   # between runs that can join, a sleeve only inside its own hole, a vent riser at its OD
   # (96). The ERV/vent clearance campaign then took out every pair naming an ERV duct, a
-  # vent or the radon riser but one — DU-A-ERV-R-STUBATH x PR-A-STUBATH-VENT, both in
-  # W-A-STU-W's one 5 1/2" cavity; its fix is REG-A-STUBATH-EXH below 3'-2"
-  # (plan/mep_registers.py). `tests/test_catlin_erv_clearance.py` pins the rest at zero.
+  # vent or the radon riser but one. `tests/test_catlin_erv_clearance.py` pins them at zero.
   #
   # ** 69 -> 65 BY 2026-09-23, AND THE TABLE BELOW SUMS TO IT AGAIN. ** The 69 headline sat
   # over a 67-row table. Re-classified off each run's own system (a VentRun's radon and vent
@@ -328,24 +330,24 @@ suppress = [
   #
   # The class breakdown, and it is the line that goes stale first:
   #
-  #                        09-18  Ph1 exit  D1-D3  P1-P3  09-23  09-23 A1-A4  09-24
-  #     duct <-> duct            37      37       0      0      0        9          0
-  #     duct <-> vent            28      22      14     14     14       20          1
-  #     conduit <-> vent          0      18      18     15      6        6          0
-  #     drain <-> duct           33      22       7      7      8        8          0
-  #     drain <-> supply         32      11      11      7      6        8          5
-  #     conduit <-> duct          0       3       6      6     11       17          0
-  #     duct <-> supply          12       7       7      5      5        5          0
-  #     conduit <-> conduit       0       4       4      4      4        4          3
-  #     conduit <-> supply        0       4       4      4      4        4          2
-  #     conduit <-> drain         -       -       -      -      1        1          1
-  #     drain <-> drain           -       4       4      3      4        4          4
-  #     supply <-> supply        18      10      10      1      1        1          1
-  #     drain <-> vent            -       5       5      1      1        1          0
-  #     supply <-> vent          12       2       2      0      0        0          0
-  #     vent <-> vent             -       1       1      0      0        8          0
-  #                             ---     ---     ---    ---    ---      ---        ---
-  #                             188     150      93     67     65       96         17
+  #                        09-18  Ph1 exit  D1-D3  P1-P3  09-23  09-23 A1-A4  09-24  09-26
+  #     duct <-> duct            37      37       0      0      0        9          0      0
+  #     duct <-> vent            28      22      14     14     14       20          1      0
+  #     conduit <-> vent          0      18      18     15      6        6          0      0
+  #     drain <-> duct           33      22       7      7      8        8          0      0
+  #     drain <-> supply         32      11      11      7      6        8          5      5
+  #     conduit <-> duct          0       3       6      6     11       17          0      0
+  #     duct <-> supply          12       7       7      5      5        5          0      0
+  #     conduit <-> conduit       0       4       4      4      4        4          3      3
+  #     conduit <-> supply        0       4       4      4      4        4          2      2
+  #     conduit <-> drain         -       -       -      -      1        1          1      1
+  #     drain <-> drain           -       4       4      3      4        4          4      3
+  #     supply <-> supply        18      10      10      1      1        1          1      1
+  #     drain <-> vent            -       5       5      1      1        1          0      0
+  #     supply <-> vent          12       2       2      0      0        0          0      0
+  #     vent <-> vent             -       1       1      0      0        8          0      0
+  #                             ---     ---     ---    ---    ---      ---        ---    ---
+  #                             188     150      93     67     65       96         17     15
   # The rows sum to the headline; if they stop summing, one of them went stale. The four
   # rows that start blank were inside the older column's "everything else" (which held the
   # two radon pairs, drain<->vent 6, drain<->drain 3 and five singles) and are broken out
@@ -622,6 +624,18 @@ suppress = [
   # Same shape of trade as D-M-BATH2 used to be — that entry was retired on 2026-09-20
   # after the door stopped tripping the check at all.
   "structural.door_framing_module:D-M-BATH1",
+
+  # Owner accepts (2026-09-26): each of these cuts one stud more than a module-true station
+  # would, and on each the wall is too short for ANY station to fix it — only re-phasing the
+  # wall's grid could. One extra stud per door is cheaper than re-phasing a short partition
+  # (or, for D-M-ENTRY and D-B-GYM, a layout line other walls share).
+  "structural.door_framing_module:D-B-GYM",
+  "structural.door_framing_module:D-M-ENTRY",
+  "structural.door_framing_module:D-M-PANTRY",
+  "structural.door_framing_module:D-S-BED3",
+  "structural.door_framing_module:D-S-STUDY2",
+  "structural.door_framing_module:D-S-BATH1",
+  "structural.door_framing_module:D-S-NCLOSET",
 
   # ** TWO ENTRIES WERE DELETED HERE ON 2026-09-20 BECAUSE THEY MATCHED NOTHING. **
   # `structural.door_framing_module:D-M-BATH2` and `:AO-M-FIRE-NICHE` both produced no

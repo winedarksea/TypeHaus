@@ -207,13 +207,14 @@ DUCTS_ERV_ATTIC = [
     # DU-A-ERV-R-STUBATH x PR-A-STUBATH-VENT; the fix is on the vent (jog its north leg off
     # the axis for the 20" it is inside this wall, or drop the grille below 3'-6"), and the
     # two BAR pairs this station DID clear are the measure of what the duct could do.
+    # ** CLOSED 2026-09-26: the grille came down to 3'-0", so the riser stops under the vent. **
     DuctRun(uid="WCH6Z4DZX0", tag="DU-A-ERV-R-STUBATH", system=DuctSystem.EXHAUST,
             path=(pt(ft(4, 6), ft(34, 2)), pt(ft(4, 6), ft(33, 1)),
                   pt(ft(2), ft(33, 1)), pt(ft(2), ft(21, 8.5)),
                   pt(ft(2), ft(21, 8.5)), pt(ft(9, 7.5), ft(21, 8.5)),
                   pt(ft(9, 7.5), ft(21, 8.5))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
-                        _ATTIC_BAY_HIGH_Z, _ATTIC_BAY_HIGH_Z, inch(52)),
+                        _ATTIC_BAY_HIGH_Z, _ATTIC_BAY_HIGH_Z, inch(36)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=20),
     DuctRun(uid="DYNQDC9ZMJ", tag="DU-A-ERV-R-ATTIC", system=DuctSystem.EXHAUST,

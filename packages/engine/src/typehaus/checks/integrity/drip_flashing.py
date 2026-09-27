@@ -25,6 +25,8 @@ wall's four faces — so that centroid is the inside of the loop, and "toward it
 the building" for every run in it. The host is deliberately *not* consulted: a run's
 ``host_ref`` names a roof or a gutter, and at plan level neither carries a plan footprint to
 take a centroid of, while a gutter runs parallel to the drip and so names no side at all.
+The one exception is a ``FloorSystem`` host with an authored ``outline``: that IS the body
+the drip trims, so a lone deck-edge drip is judged against the deck's own centroid.
 
 **What is deliberately not graded.** A ``vertical`` run's path spans the cladding thickness
 rather than travelling along the building, so its plan normal means nothing. And a run whose
@@ -66,6 +68,14 @@ def _back_normal(p0: tuple[float, float], p1: tuple[float, float],
     return (-dy, dx) if back_side == "left" else (dy, -dx)
 
 
+def _host_outline(plan, run) -> list[tuple[float, float]]:
+    """A FloorSystem host's authored outline points, or [] for any other host."""
+    host = plan.by_tag(run.host_ref) if run.host_ref else None
+    if type(host).__name__ != "FloorSystem":
+        return []
+    return [_xy(p) for p in host.outline]
+
+
 @check(Tier.INTEGRITY, _CHECK_ID)
 def drip_flashing_back_side(ctx: CheckContext) -> list[Finding]:
     runs = [e for e in ctx.plan.all_elements()
@@ -100,7 +110,7 @@ def drip_flashing_back_side(ctx: CheckContext) -> list[Finding]:
                                     tags=(run.tag,)))
             continue
 
-        points = by_storey.get(storey_of.get(run.tag)) or []
+        points = _host_outline(ctx.plan, run) or by_storey.get(storey_of.get(run.tag)) or []
         if len(points) < 4:
             findings.append(unknown(
                 _CHECK_ID, f"{run.tag} has too few sibling drip runs on its storey to form a "

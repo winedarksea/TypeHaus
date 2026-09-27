@@ -6,6 +6,11 @@
 #
 # The in-line valves, hammer arrestors and stops on these runs are authored separately in
 # plan/mep_supply_devices.py.
+#
+# ** ALL SUPPLY IS PEX-A SINCE 2026-09-26 (owner). ** The lacquered-PEX runs were left over
+# from the visible-PEX rule `preferences.toml` retired on 2026-08-21. PEX is built to
+# PEX tube size, so every OD, clearance and bore quoted below holds; its off-angle turns
+# are bends graded against the maker's minimum radius, not missing fittings.
 
 from typehaus import (
     PipeRun,
@@ -70,7 +75,7 @@ WATER_SUPPLY = [
 #   HOT    ft(8, 1.4375) basement-relative  =  -1'-0.0" project
 #
 # ** WHY TWO. ** They used to be 1.2" apart — cold at 7'-10 5/8", hot at 7'-9 7/16" — and a
-# bare 3/4" copper cold is 0.4375" from centre to surface while a hot inside a 1" fiberglass
+# bare 3/4" PEX cold is 0.4375" from centre to surface while a hot inside a 1" fiberglass
 # sleeve with an ASJ jacket is 1.4375". The pair therefore needs 1.875" between centres to
 # be two pipes at all, and it had 1.2". ** EVERY cold-over-hot crossing in this house
 # overlapped by 0.675" by construction ** — which is the 0.68" `mep.run_interference`
@@ -85,7 +90,7 @@ WATER_SUPPLY = [
 #     crown +6.737", invert +1.013" in the 9.12" web window, clear of both 1.38" flanges.
 #     Each of those is a DRILLED WEB HOLE, and the check says out loud what it cannot
 #     settle: the hole's diameter and its allowable zone along the span come off the
-#     fabricator's chart, which this engine does not hold. 1 1/4" copper through an 11 7/8"
+#     fabricator's chart, which this engine does not hold. 1 1/4" PEX through an 11 7/8"
 #     I-joist web is inside every published chart; it is still the builder's to confirm.
 #   * the HOT band is BELOW the joists, its 2 7/8" jacket tucked 0.1" under the bottom
 #     flange. An insulated line is not drilled through a web — the sleeve would have to be
@@ -124,7 +129,7 @@ WATER_SUPPLY = [
 #   cold +6"  hot +4.25"   146, and +11 mep.run_member_crossing
 #
 # and then 147 -> 146 once the two runs under SL-M-DECK were stepped back down, which is
-# the honest figure: the 147 row was measured with a 1 1/4" copper trunk drawn inside a
+# the honest figure: the 147 row was measured with a 1 1/4" PEX trunk drawn inside a
 # cast slab.
 #
 # One eighth of an inch of hot is all that is left: at +4.25" the jacket clips the joists'
@@ -173,7 +178,7 @@ SUPPLY = [
     # the band sits 3.07" off the bottom face (zone starts 3.96"). So the leg drops to
     # 8'-0 1/4" at y=34'-10", runs under both packs (top 5/8" below the joists) in
     # RM-B-FURNACE's open service ceiling, and climbs back at y=33'-0", mid-bay south of the
-    # packs. Four copper 90s; nothing bored.
+    # packs. Four PEX 90s; nothing bored.
     PipeRun(uid="CBPW30AAAA", tag="PR-B-CW-TRUNK", system=PipeSystem.WATER_COLD,
             path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(35, 6)), pt(ft(11), ft(34, 10)),
                   pt(ft(9, 6), ft(34, 10)), pt(ft(9, 6), ft(34, 10)),
@@ -183,7 +188,7 @@ SUPPLY = [
                   pt(ft(17, 5), ft(16, 2.25)), pt(ft(17, 5), ft(16)),
                   pt(ft(29, 9.6), ft(16)),
                   pt(ft(29, 9.6), ft(34, 1.2)), pt(ft(29, 9.6), ft(34, 1.2))),
-            diameter=inch(1.25), material="copper", finish="lacquered",
+            diameter=inch(1.25), material="pex",
             elevations=(inch(2), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
                         ft(8, 4.6375), ft(8, 4.6375), inch(93.44), inch(93.44),
                         ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
@@ -233,7 +238,7 @@ SUPPLY = [
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(4, 9), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(19, 2.4)),
                   pt(ft(5, 2), ft(24)), pt(ft(5, 2), ft(24))),
-            diameter=inch(1), material="copper", finish="lacquered",
+            diameter=inch(1), material="copper",
             # Two inches OVER the cold band from the water-heater end of the tee onward, and
             # its drop stays ON the tank. Both are the same defect seen
             # twice: this run and PR-B-CW-BATH1 shared -0'-8.8" where they cross at
@@ -255,7 +260,7 @@ SUPPLY = [
             # TOP of the tank, instead of running 22 1/2" down INSIDE it to the old 3'-9.4"
             # mid-body elevation: these are top connections (HP-400-SO REV. 1).
             # The cold band rides INSIDE FS-M-WEST's I-joist
-            # web, whose window is -10 1/2" to -1 3/8"; two inches down puts a 1" copper's
+            # web, whose window is -10 1/2" to -1 3/8"; two inches down puts a 1" PEX's
             # invert 7/8" into the bottom flange and `mep.run_member_crossing` says so. Two
             # inches up is the same 2" of separation in the half of the window that is
             # empty.
@@ -265,7 +270,7 @@ SUPPLY = [
     # THE BATH1 PAIR ROUTES AROUND D-M-BATH1'S DOORWAY, WHICH IS THE ONE DEFECT
     # `mep.wet_wall_occupancy` CANNOT SEE: a riser inside a wall's FOOTPRINT is inside the
     # wall, and a hole in that footprint (a door) is still footprint. A riser standing in
-    # the door itself — 42" of copper in a 24" opening with no stud within a foot and a
+    # the door itself — 42" of PEX in a 24" opening with no stud within a foot and a
     # 2-2x8 header overhead that cannot be bored — passes that check.
     # `mep.run_through_opening` is what catches it, which is why the pair below is routed
     # to clear the door entirely.
@@ -281,7 +286,7 @@ SUPPLY = [
     # undrawn — so both have to fit the SAME bay, and neither bay takes them:
     #   * SOUTH BAY. The nearer one, and not empty: PR-B-LAV1-DRAIN (plan/mep_drainage.py)
     #     drops at y=275.94" and a 1 1/2" DWV pipe is 1.9" over the pipe, leaving 2 3/32"
-    #     between its south side and the end stud. A bare 3/4" copper fits that. The hot line
+    #     between its south side and the end stud. A bare 3/4" PEX fits that. The hot line
     #     carries a 1" fiberglass sleeve — 2 7/8" over the pipe — and does not, at any
     #     station and at any depth in the cavity: to pass the drain in x it would have to
     #     centre outside the 5 1/2" stud space entirely.
@@ -327,7 +332,7 @@ SUPPLY = [
             path=(pt(ft(4, 9), ft(16)), pt(ft(7, 4.8), ft(16, 9.6)),
                   pt(ft(7, 4.8), ft(19, 2.4)), pt(ft(5), ft(21)),
                   pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4))),
-            diameter=inch(0.75), material="copper", finish="lacquered",
+            diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
                         ft(8, 4.6375), ft(9, 1.4375), ft(12, 7.4375)),
             wall_refs=(None, None, None, None, None, "W-M-HS1"),
@@ -350,7 +355,7 @@ SUPPLY = [
             wall_refs=(None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH1-LAV",)),
     # ** THE COLD RISER IS IN W-M-HS1 SINCE 2026-09-09, NOT STANDING IN THE ROOM. ** It came
-    # up at (2'-3", 17'-2.4") and stopped at 3'-0" — three feet of bare copper in the middle
+    # up at (2'-3", 17'-2.4") and stopped at 3'-0" — three feet of bare PEX in the middle
     # of a bathroom floor, 2'-2" from the nearest thing it feeds, which is what
     # `mep.run_in_finished_volume` reported at the room's full 107 1/2". It now does what
     # PR-B-CW-BATH1 does twenty lines up: runs west under the deck to W-M-HS1 — BATH2's own
@@ -365,7 +370,7 @@ SUPPLY = [
             path=(pt(ft(4, 9), ft(16)), pt(ft(1), ft(16)),
                   pt(ft(1), ft(22, 4)), pt(ft(1), ft(22, 4)),
                   pt(ft(1), ft(22, 4))),
-            diameter=inch(0.75), material="copper", finish="lacquered",
+            diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
                         ft(9, 1.4375), ft(12, 1.4375)),
             wall_refs=(None, None, None, "W-M-HS1"),
@@ -374,7 +379,7 @@ SUPPLY = [
     PipeRun(uid="CBPW36AAAA", tag="PR-B-HW-BATH2", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(2, 3), ft(15, 6)),
                   pt(ft(2, 3), ft(16, 9.6)), pt(ft(2, 3), ft(16, 9.6))),
-            diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
+            diameter=inch(0.75), material="pex", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(12, 1.4375)),
             serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK")),
     # The laundry pair riser splits at the deck top (ft(9) basement-relative = 0'-0"
@@ -419,11 +424,11 @@ SUPPLY = [
             # standpipe stands at (8'-2", 20'-0") and PR-B-WASH-DRAIN's riser under it, and
             # this run went straight through both — below the deck on its way north, and
             # again at +2'-8" on its way back south inside W-M-BA2E. The wall is 6 3/4"
-            # (2x6), so a 3/4" copper 2" off the axis is still 3/10" clear of the stud face
+            # (2x6), so a 3/4" PEX 2" off the axis is still 3/10" clear of the stud face
             # with 1 5/8" to the standpipe, which is what the two need between them. The
             # riser stays in the same bay; only the station inside it moved.
             path=(pt(ft(8, 4), ft(16)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)),),
-            diameter=inch(0.75), material="copper", finish="lacquered",
+            diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(12, 1.4375),
                         ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375),
                         ft(10, 9.4375)),
@@ -477,7 +482,7 @@ SUPPLY = [
                   pt(ft(18, 9), ft(16, 5)), pt(ft(18, 9), ft(16, 3)),
                   pt(ft(18, 9), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
                   pt(ft(30, 3.6), ft(33, 7.2)), pt(ft(30, 3.6), ft(33, 7.2))),
-            diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
+            diameter=inch(0.75), material="pex", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             # ** THE x=18'-9" STEP GOES 1 1/4" DEEPER THAN THE BAND (P3, 2026-09-19). **
             # This run crosses PR-B-CW-TRUNK's own y=16'-0" lane there, and at the hot band's
             # -1'-4" the two were 1.2" apart against the 2 1/8" a 1 1/4" cold and this run's
@@ -505,7 +510,7 @@ SUPPLY = [
                   pt(ft(5, 3), ft(26, 2)), pt(ft(5, 3), ft(26, 5.25)),
                   pt(ft(5, 3), ft(26, 5.25)),
                   pt(ft(5, 3), ft(26, 5.25)), pt(ft(5, 3), ft(26, 5.25))),
-            diameter=inch(0.75), material="copper", finish="lacquered",
+            diameter=inch(0.75), material="pex",
             # Two inches OVER the band for the length of the branch: its y=26'-6" leg has to
             # cross the cold trunk's own north-south lane, and two 3/4" pipes on one
             # elevation is a lap rather than a crossing.
@@ -560,7 +565,7 @@ SUPPLY = [
                   pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(22, 4)),
                   pt(ft(13, 7.2), ft(22, 4)), pt(ft(13, 7.2), ft(22, 4)),
                   pt(ft(13, 7.2), ft(22, 4))),
-            diameter=inch(0.75), material="copper", finish="lacquered",
+            diameter=inch(0.75), material="pex",
             # +5/16" on 2026-09-16 (7.1875 -> 7.5): the 4" ERV ducts' crowns are at 9'-5 5/8",
             # and KITCH/BED2 now cross this jog at y=21'-10"/22'-2". 5/16" left under the tub drain.
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(18, 1.3125),
@@ -578,7 +583,7 @@ SUPPLY = [
                   pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(22, 4)),
                   pt(ft(14, 3.6), ft(22, 4)), pt(ft(14, 3.6), ft(22, 4)),
                   pt(ft(14, 3.6), ft(22, 4))),
-            diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
+            diameter=inch(0.75), material="pex", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375),
                         ft(18, 1.3125), ft(18, 11.4375), ft(18, 11.4375), ft(18, 11.4375),
                         ft(19, 1.4375), ft(21, 7.4375)),
@@ -592,24 +597,31 @@ SUPPLY = [
     # (3.25 WSFU), hot the lavatory alone.
     # ** THE TWO DROPS STOP SHORT OF THE VENT RISER, 3" AND 1 1/2" (P1, 2026-09-19). **
     # All three used to end on one point — (13'-10 11/16", 19'-3"), which is
-    # PR-B-BATH-VENT's riser station — so a 1 1/2" vent and two 1/2" copper drops were drawn
+    # PR-B-BATH-VENT's riser station — so a 1 1/2" vent and two 1/2" PEX drops were drawn
     # through each other in one stud bay. They stay in the bay: the offset is along
     # W-B-BA-E's own line and not across it, because 2" off the axis is outside a 2x4's
     # stud and the pipes would be in the room. Cold takes the north end of the bay, hot the
     # middle, the vent the south, and the fixtures they serve are two feet away either way.
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5, 2), ft(24)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
+            # North, east, then south: two stock 90s off the tap, where one diagonal made a
+            # 137-degree hairpin no elbow turns.
+            path=(pt(ft(5, 2), ft(24)), pt(ft(5, 2), ft(26)), pt(ft(7), ft(26)),
+                  pt(ft(7), ft(20, 3)),
                   pt(inch(166.6875), ft(20, 3)), pt(inch(166.6875), ft(19, 10)),
                   pt(inch(166.6875), ft(19, 10))),
-            diameter=inch(0.5), material="copper", finish="lacquered",
-            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(2, 3.4375)),
+            diameter=inch(0.5), material="copper",
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 6.6375),
+                        ft(8, 6.6375), ft(8, 6.6375), ft(2, 3.4375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(5, 10), ft(24)), pt(ft(7, 3.6), ft(26)),
+            # The same two 90s as the cold, on its own line 4" south so the pair hangs side
+            # by side rather than stacked.
+            path=(pt(ft(5, 10), ft(24)), pt(ft(5, 10), ft(25, 8)), pt(ft(7, 3.6), ft(25, 8)),
                   pt(ft(7, 3.6), ft(19, 9)), pt(inch(166.6875), ft(19, 9)),
                   pt(inch(166.6875), ft(19, 4.5)), pt(inch(166.6875), ft(19, 4.5))),
-            diameter=inch(0.5), material="copper", finish="lacquered",
-            elevations=(ft(8, 1.4375), ft(7, 11.4375), ft(7, 11.4375), ft(7, 11.4375), ft(7, 11.4375), ft(2, 3.4375)),
+            diameter=inch(0.5), material="copper",
+            elevations=(ft(8, 1.4375), ft(7, 11.4375), ft(7, 11.4375), ft(7, 11.4375),
+                        ft(7, 11.4375), ft(7, 11.4375), ft(2, 3.4375)),
             serves=("FX-B-BATH-LAV",)),
     # Sauna shower mixer, the first supply this room ever had. Both legs tee off the existing
     # trunks and run south — cold down x=17'-4" (2" clear of W-B-CS2's face at 17'-6"), hot
@@ -644,7 +656,7 @@ SUPPLY = [
     #
     # ** THE DROPS ARE IN THE WALL SINCE 2026-09-07, WHICH IS WHERE THIS NOTE ALWAYS SAID
     # THE VALVE WAS. ** Both legs used to turn down at x=17'-4"/17'-3", 1 3/4" and 2 3/4"
-    # WEST of W-B-CS's liner face — three and a half feet of bare copper standing in a sauna
+    # WEST of W-B-CS's liner face — three and a half feet of bare PEX standing in a sauna
     # on its way to a mixer that is inside the wall. `mep.run_in_finished_volume` called both
     # at 31.6" for 2.64 ft once the ceiling came down. Each now jogs east at its own y and
     # drops inside W-B-CS's stud cavity (x 213 1/4"..218 3/4"), on x=18'-0" — dead centre of
@@ -656,13 +668,13 @@ SUPPLY = [
     PipeRun(uid="CBPW46AAAA", tag="PR-B-CW-SAUNA", system=PipeSystem.WATER_COLD,
             path=(pt(ft(17, 4), ft(16)), pt(ft(17, 4), ft(6, 6)),
                   pt(ft(18), ft(6, 6)), pt(ft(18), ft(6, 6))),
-            diameter=inch(0.5), material="copper", finish="lacquered",
+            diameter=inch(0.5), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(4, 3.4375)),
             serves=("FX-B-SAUNA-SH",)),
     PipeRun(uid="CBPW47AAAA", tag="PR-B-HW-SAUNA", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(17, 3), ft(15, 6)),
                   pt(ft(17, 3), ft(6, 2)), pt(ft(18), ft(6, 2)), pt(ft(18), ft(6, 2))),
-            diameter=inch(0.5), material="copper", finish="lacquered",
+            diameter=inch(0.5), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
                         ft(4, 3.4375)),
             serves=("FX-B-SAUNA-SH",)),
@@ -681,12 +693,11 @@ SUPPLY = [
 # The riser stands in W-M-BDN1, a 2x4 partition (3.5" cavity, ample for 3/4" PEX) whose
 # deck crossing (SP-M-CW-HYD) lands in open slab at x=6', not on a wall below.
 HYDRANT_BRANCH_BASEMENT = [
-    # Two runs, one branch: material changes at the deck. Ceiling leg is exposed lacquered
-    # copper like everything else down here; slab-up it's inside wall/joist bays, hidden, so
-    # PEX's freeze tolerance matters more than finish.
+    # Two runs, one branch, split at the deck: the ceiling leg and the slab-up leg inside the
+    # wall/joist bays.
     PipeRun(uid="X4M2QP7B0K", tag="PR-B-CW-HYD", system=PipeSystem.WATER_COLD,
             path=(pt(ft(6), ft(16)), pt(ft(6), ft(13))),
-            diameter=inch(0.75), material="copper", finish="lacquered",
+            diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375)),
             serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
     PipeRun(uid="Z5NB8QMK2H", tag="PR-B-CW-HYD-RISER", system=PipeSystem.WATER_COLD,
@@ -707,7 +718,7 @@ HYDRANT_BRANCH_BASEMENT = [
 # Joist-space distribution, filed on ``main`` (datum 0'-0") so 9'-3" reads as the ceiling
 # height it is. The E-W leg runs *along* a joist bay at y=0'-9"; the riser crosses joists at
 # x=6' drilled through their webs — 3/4" PEX in an 11 7/8" I-joist web is within every
-# manufacturer's hole chart, which is why this branch stays PEX rather than becoming copper.
+# manufacturer's hole chart.
 HYDRANT_BRANCH_MAIN = [
     # The east end stops at x=12'-0", the porch tee — extending further would be 4'-8" of
     # dead leg on a cold line feeding nothing, stagnant water on a branch used a handful of
@@ -758,7 +769,7 @@ HYDRANT_BRANCH_MAIN = [
     # at y=-5". PEX stops at the seat so the thermal bridge doesn't extend into the room.
     PipeRun(uid="T8WQ3E5AZC", tag="PR-M-CW-PORCH-HYD-CU", system=PipeSystem.WATER_COLD,
             path=(pt(ft(12, 8), ft(0, 3.25)), pt(ft(12, 8), inch(-5))),
-            diameter=inch(0.75), material="copper",
+            diameter=inch(0.75), material="pex",
             insulation='1/2" closed-cell elastomeric sleeve, foil-faced, over the barrel',
             elevations=(ft(2), ft(2)),
             serves=("FX-M-PORCH-HYD",)),
@@ -782,8 +793,7 @@ HYDRANT_BRANCH_MAIN = [
 # west along the north run, then south down the west run. No penetration, no sleeve, no
 # concrete, and every inch of it behind a removable cabinet back.
 #
-# PEX rather than copper for the same reason HYDRANT_BRANCH_MAIN is: it is a cold branch
-# threading a built assembly, not a trunk. 1/2" stubbed and reduced at the stop, so the tee
+# A cold branch threading a built assembly, not a trunk. 1/2" stubbed and reduced at the stop, so the tee
 # suits a filtered tap as well as the 1/4" an ice maker wants.
 #
 # Threading the stub through the 1 3/4" between W-M-C5B's stud band and D-M-PANTRY's door
@@ -822,7 +832,7 @@ KITCHEN_STUB_MAIN = [
 HYDRANT_BRANCH_SECOND = [
     PipeRun(uid="G7YB4XN2SD", tag="PR-S-CW-BALC-HYD-CU", system=PipeSystem.WATER_COLD,
             path=(pt(ft(7, 4), ft(0, 3.25)), pt(ft(7, 4), inch(-5))),
-            diameter=inch(0.75), material="copper",
+            diameter=inch(0.75), material="pex",
             insulation='1/2" closed-cell elastomeric sleeve, foil-faced, over the barrel',
             elevations=(inch(24.829), inch(24.829)),
             serves=("FX-S-BALC-HYD",)),
@@ -845,7 +855,7 @@ HYDRANT_BRANCH_SECOND = [
 # A 2 1/2" hole centred on each hydrant leaves 5" and 4 3/4" of clear framing to the nearer
 # stud face — it is a drilled hole in a bay, not a framed opening, and no pack is generated.
 #
-# ** 2 1/2" IS THE HOLE SAW, NOT THE ARITHMETIC. ** The barrel is 3/4" copper inside a 1/2"
+# ** 2 1/2" IS THE HOLE SAW, NOT THE ARITHMETIC. ** The barrel is 3/4" PEX inside a 1/2"
 # elastomeric sleeve, so 1 7/8" over the sleeve, and `PA-*-HYD-SEAL` foams a 1/4" annulus:
 # 2 3/8" is the computed minimum and 2 1/2" is the size that exists. The extra 1/16" of
 # annulus per side is foam, which is what the seal's install_parts already buy.
@@ -857,7 +867,7 @@ HYDRANT_BRANCH_SECOND = [
 # finished floor, and both rooms build up over the structure: RM-M-BED by 1 1/4" and
 # RM-S-PLANT by 0.8287". So a sill of 1'-10 3/4" on both (barrel centre 2'-0" minus half a
 # 2 1/2" hole) put each hole BELOW its own barrel by exactly its room's build-up, and the
-# copper came through the gypsum rather than the hole. The sills carry the build-up now:
+# PEX came through the gypsum rather than the hole. The sills carry the build-up now:
 # 2'-0" here and 1'-11.579" on the balcony, each = build-up + 24" - 1 1/4".
 #
 # ** BOTH ARE BLIND FROM THE YARD, AND THAT CLOSED A DELIBERATE OVER-CUT (2026-09-20). **
@@ -909,7 +919,7 @@ PENETRATIONS_HYDRANT_SECOND = [
 # --- the attic guest studio -------------------------------------------------------------
 # Both runs TEE OFF THE EXISTING SUITE RISERS at their heads and carry on up W-S-DC2 into
 # W-A-STU-W — the same 5 1/2" staggered cavity the drain and the vent use, and the reason the
-# bath is on the x=9'-7 1/2" line at all. 3/4" copper, matching PR-B-CW-SUITE/PR-B-HW-SUITE
+# bath is on the x=9'-7 1/2" line at all. 3/4" PEX, matching PR-B-CW-SUITE/PR-B-HW-SUITE
 # rather than stepping down: the run is short and the pair already carries a three-fixture
 # bath, so there is nothing to gain by narrowing and a pressure-drop argument to lose.
 #
@@ -927,7 +937,7 @@ PENETRATIONS_HYDRANT_SECOND = [
 # ** THE TEE IS IN THE TRUSS FLOOR, NOT AT THE RISER HEAD, AND THAT IS NOT A REFINEMENT. **
 # PR-B-CW-SUITE/-HW-SUITE surface at (13'-7.2"/14'-2.4", 16'-10.8") at 12'-6" — 2'-6" above the
 # second floor, inside RM-S-SUITEBATH. Teeing there and running west to the W-S-DC2 axis meant
-# 4'-5" of exposed copper across that bathroom at chest height. So the branch tees LOWER, where
+# 4'-5" of exposed PEX across that bathroom at chest height. So the branch tees LOWER, where
 # the suite risers are already passing through FS-S-WEST, and makes the whole east-west jog in
 # the truss floor — through the open webs, boring nothing. That is the same crossing
 # PR-A-STUBATH-DRAIN makes, in the same floor, for the same reason.
@@ -947,7 +957,7 @@ STUDIO_SUPPLY = [
             # ** THE RISER IS 2" WEST OF THE WALL'S AXIS AND THE FEED IS 5 3/5" HIGHER
             # (P3, 2026-09-19). ** It used to stand ON x=9'-7 1/2", which is
             # PR-A-STUBATH-LAV-DRAIN's own lane down the same wet wall — two pipes on one
-            # line for two feet. W-A-STU-W is 2x6, so 2" off the axis keeps a 7/8" copper
+            # line for two feet. W-A-STU-W is 2x6, so 2" off the axis keeps a 7/8" PEX
             # 3/10" inside the stud face and puts 1 5/8" between it and the drain, which is
             # what the two want. The feed leg went +9'-4" -> +9'-9 3/5" for a different
             # reason: at the old height it ran through PR-M-S-SUITE-WC-DRAIN's fall inside
@@ -956,7 +966,7 @@ STUDIO_SUPPLY = [
             # 117.19"..118.06"; this sits in it.
             path=(pt(ft(13, 7.2), ft(22, 4)), pt(ft(9, 5.5), ft(20, 6)),
                   pt(ft(9, 5.5), ft(20, 6))),
-            diameter=inch(0.75), material="copper", finish="lacquered",
+            diameter=inch(0.75), material="pex",
             elevations=(ft(9, 6.0625), ft(9, 6.0625), ft(22, 6)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
@@ -974,7 +984,7 @@ STUDIO_SUPPLY = [
             # and the sleeve is an energy-code question (R403.5.3), not a clearance one.
             path=(pt(ft(14, 3.6), ft(22, 4)), pt(ft(9, 7.5), ft(21)),
                   pt(ft(9, 7.5), ft(21))),
-            diameter=inch(0.75), material="copper",
+            diameter=inch(0.75), material="pex",
             insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(9, 9.8), ft(9, 9.8), ft(22, 6)),
             serves=("FX-A-STUBATH-LAV", "FX-A-STUBATH-SH", "FX-A-STUDIO-BAR-SINK")),

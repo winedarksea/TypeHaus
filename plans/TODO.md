@@ -35,12 +35,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   now carry `ResolvedJunction.sheathing_through`, which a layout pass would read. Cladding, WRB,
   foam and finish layers still bill off the node axis.
 
-- **Follow-ups from the outer-stringer inset (2026-09-23):**
-  - `ST-SG-PORCH`'s rail lines (`RL-SG-PSTAIR-S/N`, y −108"/−72") still sit on the stair
-    edges, so a 1 1/2" post now oversails its stringer's outer face by 3/4". Moving both 3/4"
-    in (`params/sunken_garden.py` `PORCH_STAIR_RAILS`) re-centres them; clear width ~33" ->
-    31 1/2", still over the 27" minimum.
-
 ### From the 2026-09-10 `plans/notes.md` triage
 
 - **No low-voltage security or sensing devices exist anywhere** (cameras, video doorbell,
@@ -93,11 +87,6 @@ with every suppression lifted.
   `plan/mep_registers.py`) in an 18'x9' room, leaving the west end unswept by the room's only
   moisture-removal extract. A middle station (~x 12'-6") would shorten the duct run if the
   saving is wanted.
-- **`DU-A-ERV-R-STUBATH` x `PR-A-STUBATH-VENT` is the last ERV/vent pair** (catlin,
-  2026-09-24): both stand in `W-A-STU-W`'s one 5 1/2" cavity, and over the duct's elbow into
-  its 4'-4" grille the vent would be in the partition's plates. Lower `REG-A-STUBATH-EXH`
-  below 3'-2" (`plan/mep_registers.py`, held by another session during the reroute) and drop
-  the duct's top to match; `tests/test_catlin_erv_clearance.py` then empties its `_KNOWN`.
 - **The ERV SUPPLY manifold has no drawn feed and cannot have one where it stands.** Its
   extract twin got `DU-M-ERV-EXH-FEED` on 2026-09-20. RM-M-MECH's true inside faces are
   **63"x23"**, the supply riser sits west of the exhaust riser, and every gate to it measures

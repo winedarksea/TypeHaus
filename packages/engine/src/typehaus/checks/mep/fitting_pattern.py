@@ -85,5 +85,6 @@ def fitting_pattern(ctx: CheckContext) -> list[Finding]:
         out.append(_pass(
             _CID,
             f"{graded} of {len(records)} fittings name a catalogued pattern with its source "
-            "(ASTM D3311 for DWV, ASME B16.22 for copper, SMACNA for round duct)", ()))
+            "(ASTM D3311 for DWV, ASME B16.22 for copper, SMACNA for round duct, the "
+            "maker's minimum radius for a bent PEX tube)", ()))
     return out

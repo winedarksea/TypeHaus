@@ -28,11 +28,11 @@ so it is not the rule:
 * **Another edge run.** ``TR-SG-GUTTER`` names ``TR-SG-FASCIA`` and is authored 3" below it
   ON PURPOSE — that is what a gutter does. Plan only, for the same reason.
 
-**A ``FloorSystem`` host is UNKNOWN, and reporting it is the point.** ``FS-SG-DECK`` and
-``FS-SG-PORCH`` resolve to no solid *and* to a zero-point outline, so there is nothing to
-compare a run against in either plan or elevation. Silently skipping those three runs would
-make this check quietly narrower than it reads; the honest answer is that the model cannot
-say, and that is a real finding about the model either way.
+**A ``FloorSystem`` host is graded in plan against its authored outlines.** It resolves to
+no solid of its own tag, but ``outline`` (the joist field) and ``subfloor_outline`` (the
+sheet) say where its edges are. Plan only: ``FS-SG-DECK`` is tilted, and a WRB counter-
+flashing stands above the deck by design. A floor system with neither outline stays
+UNKNOWN — silently skipping it would make this check quietly narrower than it reads.
 
 **Plan tolerance is generous on purpose.** A gutter legitimately hangs 3.33" outboard of
 the roof footprint and a drip edge 1.04", because that is where those parts go. The error
@@ -91,6 +91,15 @@ class _WallHost:
         self.outline = (list(hull.exterior.coords)[:-1]
                         if hull is not None and hull.geom_type == "Polygon" else None)
         self.z1_m = wall.z1_m
+
+
+def _floor_outline(floor) -> list[tuple[float, float]] | None:
+    """The plan hull of a floor system's joist field and sheet, or ``None`` if unauthored."""
+    points = [p.xy_m for p in (*floor.outline, *floor.subfloor_outline)]
+    hull = MultiPoint(points).convex_hull if len(points) >= 3 else None
+    if hull is None or hull.geom_type != "Polygon":
+        return None
+    return list(hull.exterior.coords)[:-1]
 
 
 def _plan_gap(path, boundary) -> float | None:
@@ -186,6 +195,21 @@ def edge_run_host(ctx: CheckContext) -> list[Finding]:
             graded += 1
             continue
 
+        if type(host).__name__ == "FloorSystem":
+            outline = _floor_outline(host)
+            if outline is not None:
+                gap = _plan_gap(run.path, outline)
+                if gap is not None and gap > _PLAN_TOLERANCE_M:
+                    findings.append(failed(
+                        _CHECK_ID,
+                        f"{run.tag} runs {gap / M_PER_IN:.1f}\" clear of {host_tag}'s "
+                        f"outline, the floor it says it trims",
+                        tags=(run.tag, host_tag),
+                        fix="re-point host_ref at the floor the path actually follows"))
+                    continue
+                graded += 1
+                continue
+
         other = run_paths.get(host_tag)
         if other is not None and other.tag != run.tag:
             # Plan only, and for a stated reason: a gutter is authored below the fascia it
@@ -211,8 +235,8 @@ def edge_run_host(ctx: CheckContext) -> list[Finding]:
             f"outline — there is nothing to compare the run against in either plan or "
             f"elevation, so the model cannot say whether the reference is still true",
             tags=(run.tag, host_tag),
-            fix=("a FloorSystem carries no geometry of its own; give the host a resolved "
-                 "outline, or host the run on the beam or deck edge it really follows")))
+            fix=("give the host an `outline`, or host the run on the beam or deck edge it "
+                 "really follows")))
 
     if not findings:
         return [passed(_CHECK_ID,
