@@ -1,4 +1,5 @@
-"""UPC 608.5 (as Minn. R. 4714.0608 amends it) relief discharge, and UPC 507.5 the pan.
+"""UPC 608.5 (as Minn. R. 4714.0608 amends it) relief discharge, UPC 507.5 the pan, and
+UPC 604.13 the PEX clearance.
 
 **Not IRC P2804 / P2801.6.** Minn. R. 1309.0010 subp. 3.D strikes IRC chapters 25-33, so
 what governs a water heater here is the UPC as incorporated at Minn. R. 4714.0050 —
@@ -144,3 +145,143 @@ def _stands_on_slab(ctx: CheckContext, heater) -> bool:
                 and Polygon(solid.outline).covers(probe)):
             return True
     return False
+
+
+# --- UPC 604.13: no PEX in the first 18" of piping on a water heater ---------------------
+
+#: Minn. R. 4714.0050 incorporates UPC 604.13 unamended; a heat-pump heater is a water
+#: heater, so it is not exempt.
+_PEX_CODE = ("MN Plumbing Code (ch. 4714) 604.13 — no PEX within the first 18 in. of piping "
+             "connected to a water heater")
+_PEX_ZONE_M = inch(18).meters
+_PEX_MATERIALS = frozenset({"pex", "pex-a", "pex-b"})
+_JOINT_TOL_M = 0.0127  # 1/2": a run end is on a 3/4" stub or it is not
+_WATER = frozenset({"water_hot", "water_cold"})
+
+
+@check(Tier.CODE, "mep.pex_water_heater_clearance")
+def pex_water_heater_clearance(ctx: CheckContext) -> list[Finding]:
+    """UPC 604.13 — no PEX within 18" of developed piping from a water heater's taps.
+
+    Distance is walked through the piping from each exact water port, run to run, so a branch
+    teeing off the trunk 29" above the tap is outside the zone and one teeing 6" up is not.
+    """
+    from typehaus.resolve.mep_ports import placed_ports
+
+    cid = "mep.pex_water_heater_clearance"
+    heaters = [e.tag for e in ctx.plan.all_elements()
+               if e.element_kind == "Equipment" and e.kind is EquipmentKind.WATER_HEATER]
+    runs = [r for r in ctx.model.pipe_runs if r.system in _WATER and len(r.path) >= 2]
+    if not heaters:
+        # N/A is earned only by a house with no hot water at all; hot piping and no heater
+        # is a gap in the model, not an absence in the building.
+        if any(r.system == "water_hot" for r in runs):
+            return [by_result(cid, Result.UNKNOWN, "hot-water piping is modeled but no water "
+                              "heater is", (), _PEX_CODE)]
+        return [by_result(cid, Result.NOT_APPLICABLE, "no water heater and no hot-water "
+                          "piping is modeled", (), _PEX_CODE)]
+    ports = [p for p in placed_ports(ctx.model) if p.service in _WATER]
+
+    out: list[Finding] = []
+    for tag in heaters:
+        taps = [p for p in ports if p.equipment_tag == tag and p.exact]
+        if not taps:
+            out.append(by_result(cid, Result.UNKNOWN,
+                                 f"{tag} declares no exact water port, so the piping "
+                                 "connected to it cannot be located", (tag,), _PEX_CODE,
+                                 "dimension the heater type's hot and cold ports"))
+            continue
+        reached = _reach(runs, [p.point for p in taps])
+        if not reached:
+            out.append(by_result(cid, Result.UNKNOWN,
+                                 f"no supply run reaches {tag}'s water ports", (tag,),
+                                 _PEX_CODE))
+            continue
+        bad = [(r, d) for r, d in reached.values()
+               if d < _PEX_ZONE_M and (r.material or "").strip().lower() in _PEX_MATERIALS]
+        for run, d in sorted(bad, key=lambda b: b[0].tag):
+            out.append(by_result(
+                cid, Result.FAIL,
+                f"{run.tag} is PEX {d / .0254:.0f}\" along the piping from {tag}; UPC 604.13 "
+                "allows none in the first 18\"", (run.tag, tag), _PEX_CODE,
+                "make this run copper/CPVC for its first 18\", or split it at 18\" into a "
+                "copper stub and a PEX run"))
+        if not bad:
+            near = sorted(r.tag for r, d in reached.values() if d < _PEX_ZONE_M)
+            far = [d for _, d in reached.values() if d >= _PEX_ZONE_M]
+            msg = f"{tag}: no PEX within 18\" — {', '.join(near)} non-PEX"
+            if far:
+                msg += f"; the nearest branch tees on {min(far) / .0254:.0f}\" out"
+            out.append(by_result(cid, Result.PASS, msg, (), _PEX_CODE))
+    return out
+
+
+def _pts(run) -> list[tuple[float, float, float]]:
+    """A run's vertices in 3D; a run with no inverts is taken as level at its start."""
+    if run.z_m:
+        return [(x, y, z) for (x, y), z in zip(run.path, run.z_m, strict=True)]
+    z = run.z_start_m or 0.0
+    return [(x, y, z) for x, y in run.path]
+
+
+def _project(pts, q) -> tuple[float, float] | None:
+    """(distance from vertex 0 along ``pts``, miss) of the closest point to ``q``."""
+    best, along = None, 0.0
+    for a, b in zip(pts, pts[1:], strict=False):
+        seg = [b[i] - a[i] for i in range(3)]
+        n2 = sum(c * c for c in seg)
+        t = 0.0 if n2 == 0 else max(0.0, min(1.0, sum((q[i] - a[i]) * seg[i]
+                                                        for i in range(3)) / n2))
+        miss = sum((a[i] + t * seg[i] - q[i]) ** 2 for i in range(3)) ** 0.5
+        if best is None or miss < best[1]:
+            best = (along + t * n2 ** 0.5, miss)
+        along += n2 ** 0.5
+    return best
+
+
+def _reach(runs, sources) -> dict[str, tuple]:
+    """Every run within 18" of piping of ``sources``: tag -> (run, developed distance).
+
+    Two runs join where a vertex of one lies on the other (end-to-end or a tee, either way
+    round); a source joins a run anywhere along it. A relaxation walk, cut at the zone: a run
+    first met beyond it is returned but not walked.
+    """
+    geo = {r.tag: (r, _pts(r)) for r in runs}
+    sta = {tag: [0.0] + _cumulative(pts) for tag, (_, pts) in geo.items()}
+    entries: dict[str, list[tuple[float, float]]] = {}  # tag -> [(distance, station)]
+    todo: list[tuple[str, float, float]] = []
+    for q in sources:
+        for tag, (_, pts) in geo.items():
+            hit = _project(pts, q)
+            if hit and hit[1] <= _JOINT_TOL_M:
+                todo.append((tag, 0.0, hit[0]))
+    while todo:
+        tag, d0, s0 = todo.pop()
+        seen = entries.setdefault(tag, [])
+        if any(d + abs(s0 - s) <= d0 for d, s in seen):
+            continue
+        seen.append((d0, s0))
+        if d0 >= _PEX_ZONE_M:
+            continue  # named as teeing on beyond the zone, never walked
+        pts = geo[tag][1]
+        for other, (_, opts) in geo.items():
+            if other == tag:
+                continue
+            for v, sv in zip(opts, sta[other], strict=True):  # other's vertex on this run
+                hit = _project(pts, v)
+                if hit and hit[1] <= _JOINT_TOL_M:
+                    todo.append((other, d0 + abs(hit[0] - s0), sv))
+            for v, sv in zip(pts, sta[tag], strict=True):  # this run's vertex on other
+                hit = _project(opts, v)
+                if hit and hit[1] <= _JOINT_TOL_M:
+                    todo.append((other, d0 + abs(sv - s0), hit[0]))
+    return {tag: (geo[tag][0], min(d for d, _ in seen))
+            for tag, seen in entries.items() if seen}
+
+
+def _cumulative(pts) -> list[float]:
+    out, total = [], 0.0
+    for a, b in zip(pts, pts[1:], strict=False):
+        total += sum((b[i] - a[i]) ** 2 for i in range(3)) ** 0.5
+        out.append(total)
+    return out

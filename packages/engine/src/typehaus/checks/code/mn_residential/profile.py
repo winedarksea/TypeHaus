@@ -288,9 +288,11 @@ MN_2020 = JurisdictionProfile(
         # the relief discharge and 507.5 the pan (Minn. R. 4714.0507 deletes 507.6-507.11
         # and 507.14-507.23, leaving 507.5 standing). The id spells Minn. R. 4714.0608,
         # which rewrites 608.5 (renamed from `code.P2804_...` 2026-09-23).
-        PermitItemSpec("Water-heater relief and pan", ("code.MN_4714_0608_water_heater_relief",),
+        PermitItemSpec("Water-heater relief and pan", ("code.MN_4714_0608_water_heater_relief",
+                                                       "mep.pex_water_heater_clearance"),
                        ("MN Plumbing Code (ch. 4714) 608.5",
-                        "MN Plumbing Code (ch. 4714) 507.5"), blocking=False),
+                        "MN Plumbing Code (ch. 4714) 507.5",
+                        "MN Plumbing Code (ch. 4714) 604.13"), blocking=False),
         PermitItemSpec("Smoke / CO alarm placement",
                        ("code.R314_R315_alarms", "code.R315_garage_alarms"),
                        ("IRC R314", "IRC R315")),

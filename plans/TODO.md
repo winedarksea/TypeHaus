@@ -28,10 +28,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   2026-09-26; teaching the check a stack pitch would turn its UNKNOWN into a PASS. The
   catalog also lacks combo, long-sweep and street patterns.
 
-- **Nothing grades UPC 604.13** (no PEX in the first 18" of piping on a water heater, any
-  type). Catlin holds it by keeping the seven runs on `EQ-B-WH`'s taps copper
-  (`plan/mep_supply.py` header); a PEX run landing on a heater tap would pass silently.
-
 - **Two drain turns are boxed in:** `PR-B-SINK2-DRAIN`'s 70.8-degree turn (a 60 needs the turn
   in FS-M-WEST's joist band, where the leg cuts I-joist flanges; a 90 drops it into the x=2'-0"
   ERV corridor), and `PR-M-DRYER-COND`'s 58 degrees in 3/4" PVC (every squared-off version

@@ -2489,8 +2489,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Water supply
 
 - **Supply is PEX-A, except the seven runs on `EQ-B-WH`'s taps** (owner, 2026-09-26). UPC
-  604.13 keeps PEX out of the first 18" of piping on any water heater, and nothing in the
-  engine grades that, so those seven stay copper end to end (`plan/mep_supply.py` header).
+  604.13 keeps PEX out of the first 18" of piping on any water heater, graded by
+  `mep.pex_water_heater_clearance` along the developed piping. The trunk and feed are the
+  only runs inside 18" (the five branches tee on 29" up), but all seven stay copper.
   A PEX turn off a stock elbow is a BEND graded against Uponor's 6 x OD
   (`library/fittings.TUBE_BEND_RULES`); a short jog wants a plumb step, not a diagonal.
 
