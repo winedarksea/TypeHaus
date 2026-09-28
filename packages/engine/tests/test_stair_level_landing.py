@@ -24,7 +24,7 @@ def test_main_stair_has_two_equal_flights_and_one_level_turn(catlin_model_ro):
     stair = _stair(catlin_model_ro, "ST-M2S")
     assert stair.layout == "u_level_landing"
     assert stair.riser_count == 16
-    assert stair.riser_height_m == pytest.approx(inch(7.5).meters)
+    assert stair.riser_height_m == pytest.approx(inch((121.5 - 0.9862) / 16).meters)
     assert stair.going_depth_m == pytest.approx(inch(10).meters)
     members = {member.child_key: member for member in stair.members}
     for flight in ("lower", "upper"):
@@ -32,7 +32,7 @@ def test_main_stair_has_two_equal_flights_and_one_level_turn(catlin_model_ro):
     lower, upper = members["landing-lower"], members["landing-upper"]
     assert lower.length_m == pytest.approx(inch(42.25).meters)
     assert upper.length_m == pytest.approx(lower.length_m)
-    assert lower.z1_m == pytest.approx(inch(60.9862).meters)
+    assert lower.z1_m == pytest.approx(inch((121.5 + 0.9862) / 2).meters)
     assert upper.z1_m == pytest.approx(lower.z1_m)
     assert lower.p0[1] == pytest.approx(upper.p0[1])
     assert lower.p1[1] == pytest.approx(upper.p1[1])

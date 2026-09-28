@@ -884,7 +884,8 @@ def test_every_stair_walks_from_its_source_floor_to_its_destination_floor(catlin
 def test_a_tread_stacked_on_its_step_elevation_fails_riser_uniformity(catlin_model):
     """The defect ``_notch_z`` fixes, reconstructed: put every board back *on* its step
     elevation instead of dropping it to it, and the first riser grows by the board
-    thickness while the last shrinks by the same — 9" and 6" against a 7.5" design riser.
+    thickness while the last shrinks by the same — 9.03" and 6.03" against
+    a 7.5321" design riser.
 
     Without this the check could be satisfied by a stair with no boards at all.
     """
@@ -902,7 +903,7 @@ def test_a_tread_stacked_on_its_step_elevation_fails_riser_uniformity(catlin_mod
         stairs=[stacked])))
     assert [finding.result for finding in findings] == [Result.FAIL]
     assert "R311.7.5.1" in findings[0].message
-    assert "9.00" in findings[0].message and "6.00" in findings[0].message
+    assert "9.03" in findings[0].message and "6.03" in findings[0].message
 
 
 # ------------------------------------------------------------ 10. synthetic bearing

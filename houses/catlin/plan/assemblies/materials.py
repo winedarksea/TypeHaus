@@ -9,6 +9,7 @@ from library import (
 )
 from .materials_ishtar import MATERIALS_ISHTAR
 from .materials_metal import MATERIALS_METAL
+from .materials_flooring import MATERIALS_FLOORING
 
 
 MATERIALS = [
@@ -371,4 +372,5 @@ MATERIALS = [
              source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. Tread and landing nosings share the bullnose setup; the landing nosing also gets a groove to meet the T&G field"),
     *MATERIALS_METAL,
     *MATERIALS_ISHTAR,
+    *MATERIALS_FLOORING,
 ]

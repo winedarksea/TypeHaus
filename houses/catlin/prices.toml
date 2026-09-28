@@ -2150,22 +2150,15 @@
 "slab_platform:TUBDECK_INT_PLY_CAP" = { material = { low = 625, high = 1500 }, labour = { low = 2000, high = 5000 } }  # 0.04 cy = ~26 bf; $25-60 mat + $80-200 lab
 
 [floor_heat]
-# RESEARCHED 2026-08-08 — [low, high] $/LF of heating CABLE, material only, thermostat
-# excluded (the stats bill separately as placeables:ED-T-FLOOR-STAT). Derivation: electric
-# radiant material is quoted per square foot of floor, $5-12/SF; cable at 3" o.c. is 4 LF
-# per SF, so $/LF = $/SF / 4 = $1.25-3.00. The 381.5 LF now billed works out to 103.2 SF of
-# heated floor across the two baths and the dining area, which is the right order of magnitude.
-# Sources: homeguide.com radiant floor heating cost 2026, homewyse.com radiant floor heat,
-# heattechproducts.com per-SF system cost.
-# ** 2026-09-05: THE $/SF THIS WAS DERIVED FROM IS A SYSTEM PRICE, AND SYSTEM USUALLY MEANS
-# MEMBRANE-AND-CABLE. ** Read against [floor_finishes]'s `tile-uncoupling-membrane` note,
-# which does the arithmetic: the overlap is at most the 45.2 SF of cable that is actually
-# under tile (FH-M-BATH2 + FH-S-BATH1), ~$160-230, and the membrane row is short $640-820 the
-# other way, so the pair is NET UNDER-BILLED. The other 232 LF is FH-M-DINING, embedded in
-# the SL-M-DECK pour with no membrane at all — for which a per-SF surface-system price is
-# simply the wrong basis. Split the quote cable-only vs. kit before this row is trusted.
-# $/LF of element/wire, by system
-"electric" = { material = { low = 1.25, high = 3 }, labour = { low = 1.5, high = 3.25 } }  # 381.5 LF. NOT IN THIS LINE: the 3 floor sensors/thermostats at $150-300 each — ED-T-FLOOR-STAT covers the stat but not its sensor install
+# Cable only, no membrane: [floor_finishes] bills DITRA-HEAT once over the
+# entire heated bathroom floor. The $1.90/ft lower end is Schluter's published
+# $804.49 MSRP for 425.8 ft (large 240 V cable); $4.70/ft covers the short
+# DHEHK12016 cable at $243.75 for 52.9 ft. The dining loop is slab embedded,
+# with no tile membrane. Thermostats are billed as placeables. Confirm exact
+# cable-only SKUs and installation quote before ordering.
+# https://www.schluter.com/schluter-us/es_US/projects/print/0a7a93c1-b415-42d1-a0e2-afd3d4f41cf51700324834181
+# https://www.lowes.com/pd/schluter-systems-0-188-in-x-634-8-in-grey-120-volt-warming-wire/50201647
+"electric" = { material = { low = 1.9, high = 4.7 }, labour = { low = 1.5, high = 3.25 } }
 
 [placeables]
 # RESEARCHED 2026-08-08, LABOUR ADDED 2026-08-20, FX-* REPRICED 2026-08-21 — [low, high] $
@@ -3197,13 +3190,12 @@
 # Sources: homeguide.com 2026 LVP / carpet / carpet-padding / tile-flooring cost charts,
 # dgfloors.com carpet grade table, angi.com oak flooring 2026, homeadvisor.com rubber floor.
 # $/SF on the ORDER quantity (waste included), by finish
-# ** 2026-09-05c: 1295 -> 1074 SF ordered. ** RM-S-SUITE (154.3 sf net) and RM-S-CLOSET (27.4)
-# left carpet — briefly for a site-milled walnut floor, and by the end of the day for `oak`
-# (see that row, and the tombstone at the bottom of this section). Neither room is coming
-# back to carpet, so this quantity stands. What is left is the three second-storey bedrooms,
-# RM-M-BED and its closet, and RM-B-PLAY-N.
-"carpet" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }  # 1074 SF — labour INCLUDES pad and tack strip
-"carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 1074 SF — labour is 0 ON PURPOSE: laying the pad is inside the carpet rate above
+# RM-B-PLAY-N keeps the basic carpet (310 SF ordered). The three east bedrooms,
+# main bedroom and its closet use the raised variant (648 SF ordered).
+"carpet" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }  # 310 SF — labour includes pad and tack strip
+"carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 958 SF over both carpet stacks; pad labour is inside the carpet rates
+"catlin-carpet-raised" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }
+"catlin-carpet-underlayment" = { material = { low = 0.65, high = 1.5 }, labour = { low = 0.75, high = 1.5 } }
 # 2026-09-12: SL-M-DECK's cap, COATED. This is the finish BLD-03's resolution moved the deck
 # to — see plans/buildability.md and notes/mixed_deck_movement_joint.md. The cap is billed in
 # [concrete] exactly as `sealed-concrete` and `polished-concrete` say, so this is the
@@ -3222,47 +3214,18 @@
 # two-day return for primer-then-topcoat arrive for a day each either way. Treat the $/SF
 # below as a BUDGET FIGURE and expect a LUMP -- the same caution the polish row carries.
 "coated-concrete" = { material = { low = 1.25, high = 3 }, labour = { low = 2.75, high = 7 } }  # 414 SF — grind to CSP 2-3 + moisture-mitigating primer + matte 2K PU; the cap is in [concrete]
-# ** 2026-09-05b: 889 -> 796 SF ordered. ** RM-S-BATH1 left for tile — it is the one
-# second-storey floor with a radiant mat under it (FH-S-BATH1), and plank caps that mat at
-# 80-85 F. Everything below still describes the two moves that got the row to 889.
-# 2026-09-05: 766 -> 889 SF ordered (694.3 -> 808.2 net). The plank GAINED, in two moves:
-# most of the vinyl spine arrived (+94.5 net: the hall band's deleted FinishZone, plus
-# RM-M-BATH1 and RM-M-LAUNDRY), and the living room's south bay came back (+231.7 net) after
-# a few hours as oak — oak stood 9/16" proud of the polished cap and LVP lands 1/64" proud of
-# it, which is flush (plan/storeys/main.py, RM-M-LIVING).
-# RM-M-MECH and RM-M-MUD-CLOSET were briefly in that list and went to tile the same day —
-# both open into RM-M-MUDROOM, so plank in them would have cut the entry's tile field into
-# an island with three transition strips through it.
-# ** 889 SF is the largest single row in this section after carpet, and it is now ONE
-# continuous field per storey rather than several. ** That is worth quoting as such: a
-# floating click-lock floor is priced per square foot but installed per run, and 889 SF in
-# two big fields is a cheaper day than 889 SF in nine rooms.
-"lvp" = { material = { low = 2, high = 5.5 }, labour = { low = 1.5, high = 3.25 } }  # 796 SF — click-lock floating; glue-down or herringbone would be +$1.00-2.50
+# 417 SF ordered: main circulation, mudroom and both mud closets. The second
+# hall/linen moved to oak. Keep one floating field with manufacturer edge gaps.
+"lvp" = { material = { low = 2, high = 5.5 }, labour = { low = 1.5, high = 3.25 } }  # 417 SF — click-lock floating; glue-down or herringbone would be +$1.00-2.50
 # ** POSSIBLE DOUBLE-COUNT, flagged not resolved. ** Most 5-8mm SPC/rigid-core plank ships with
 # an attached IXPE pad, in which case this layer should not exist at all and the row is buying
 # a product the floor does not need. The plan carries it as an explicit layer, so it is priced
 # — but the labour floor is 0 because when a separate pad IS used it rolls out ahead of the
 # plank at almost no marginal time. Resolve the spec before ordering.
-"lvp-underlayment" = { material = { low = 0.25, high = 0.75 }, labour = { low = 0, high = 0.25 } }  # 796 SF
-# ** 2026-09-05: 351 -> 612 -> 357 -> 557 SF, AND THE MOBILISATION ARGUMENT REVERSES. **
-# Two moves in one day, in this order:
-#   1. RM-M-LIVING's south bay (231.7 sf net over FS-M-EAST) joined the two studies and was
-#      then reverted to LVP: oak tops 9/16" above the polished cap it meets at y=13' and the
-#      cap cannot be raised to it (`structural.mixed_deck_bearing_seat`), so the bay bought
-#      a reducer along its whole north edge. That took the row to 357 and put it back UNDER
-#      the $1,200-1,800 sand-and-finish mobilisation minimum it had briefly cleared.
-#   2. RM-S-SUITE and RM-S-CLOSET arrived (181.7 sf net) off the reverted walnut floor —
-#      see the tombstone at the bottom of this section — and 557 SF clears that minimum
-#      again on the merits.
-# ** So the LUMP warning this row used to carry is retired. ** The quantity is not the whole
-# of it: the SECOND STOREY ALONE now goes from RM-S-STUDY2's 159 SF to ~341 (STUDY2 + SUITE +
-# CLOSET), which is one sander set-up and one trip per coat for that storey instead of a
-# mobilisation for a single room. RM-A-STUDY's ~165 SF up in the attic is still its own trip;
-# ask for it to be scheduled with the second storey's coats rather than quoted separately.
-# (557, not the 351 this note used to carry before the bay: the two studies' own clear faces
-# have drifted since that figure was blessed. Re-blessed from `haus takeoff`, like every
-# other quantity here — 506 sf net, 557 ordered at the 10% waste.)
-"oak-floor-custom" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 557 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00)
+"lvp-underlayment" = { material = { low = 0.25, high = 0.75 }, labour = { low = 0, high = 0.25 } }  # 417 SF
+# 596 SF ordered: second hall/linen join the suite, walk-in and study; the
+# attic study remains a separate trip. Labour includes sanding and site finish.
+"oak-floor-custom" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 596 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00)
 # RETIRED 2026-09-12 as the deck's finish, kept priced per the glazed-green-brick
 # convention — and kept for a second reason: the cream polish is the NAMED FALLBACK the
 # owner may revert to at pour time (notes/mixed_deck_movement_joint.md), so this is a live
@@ -3283,113 +3246,22 @@
 "polished-concrete" = { material = { low = 0.75, high = 2 }, labour = { low = 3.5, high = 7 } }  # 0 SF (was 411) — RETIRED 2026-09-12; cream polish over the EPS-deck cap, kept as the costed fallback. Grinding only, the cap is in [concrete]
 "rubber" = { material = { low = 3, high = 8 }, labour = { low = 1.5, high = 3.5 } }  # 357 SF — adhesive-set; substrate prep is NOT in this number
 "sealed-concrete" = { material = { low = 0.35, high = 1.2 }, labour = { low = 0.75, high = 2 } }  # 1190 SF — densifier + 2 coats, NO grinding. A real polish is a separate specialty contract at $3-7/SF more
-# 2026-08-25: the tile scope collapsed from 495 SF to 119. RM-B-SAUNA went to sealed
-# concrete (its shower is a curbed liner pan, which brings its own waterproof floor), and
-# RM-M-BATH1 and RM-M-LAUNDRY went to sheet vinyl with the hall. What is left is RM-B-BATH
-# ** 2026-09-02: 119 -> 84 SF. ** RM-B-BATH's 30.2 sf went to `vinyl-sheet` below — 3'-0"
-# of floor under a stair with no radiant zone under it, which is the whole test for tile in
-# this house. What is left is RM-M-BATH2's floor, which stays tile because FH-M-BATH2 is its
-# only heat source at 98% of the room's load and tile is that emitter's mass, plus
-# RM-B-SAUNA's WP-B-SAUNA-SPLASH wall override.
-# ** 84 SF is still well under any tile sub's minimum: expect a LUMP of $1,500-2,500 rather
-# than the $/SF arithmetic, the same mobilisation argument the oak and vinyl-sheet rows make.
-# The tile trade is NOT deleted by this change and should not be presented as if it were —
-# only the stucco scope deletes a trade. ** The rate is kept so the line is not zero.
-# ** 2026-09-05: 84 -> 189 SF. ** The whole mudroom suite came in off `vinyl-sheet` —
-# RM-M-MUDROOM (58.2 sf), RM-M-MECH (15.1) and RM-M-MUD-CLOSET (17.8). The spine went to
-# LVP and the part that should not be plank is where people walk in off the breezeway in
-# boots; the two closets are inside that footprint and open into it, so they are tiled with
-# it rather than cutting the field into an island. The mobilisation caveat above stands —
-# 189 SF is still under a tile sub's minimum and is still the same one day on site, which
-# is exactly why the last 33 sf of it cost so little (+$298-627 delivered, measured
-# line-to-line on `haus takeoff --csv`).
-# ** 2026-09-05b: 189 -> 287 SF, and the mobilisation caveat finally retires. ** RM-S-BATH1
-# came off LVP: it is the only second-storey floor with a radiant mat under it, and plank
-# caps that mat's surface at 80-85 F, so the one room where the covering matters was the one
-# throttling it. 84.9 SF net, 98 ordered. Same cheap porcelain as the mudroom suite — this is a builder-grade field
-# tile spec, not a designer one, and the rate below is unchanged. ** But the membrane under
-# RM-S-BATH1 is NOT the plain sheet the companion row prices: see that row. ** 287 SF on two
-# storeys is a real day and a bit for a tile sub, which is the first time this row has been
-# worth bidding by the foot.
-"tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }  # 287 SF — labour INCLUDES thinset and grout, which is the trade convention. Backer board and waterproofing are NOT in this rate — and since 2026-09-05 the uncoupling membrane under it IS, as its own row below
-# 2026-09-05, the companion under it (`takeoff/finishes._COMPANIONS`). Schluter DITRA or
-# equivalent: a 1/8" polyethylene dimpled sheet bedded in thinset, which is what lets
-# porcelain go over a wood deck without a crack-isolation gamble. BOTH tile floors in this
-# house are over a wood deck — RM-M-BATH2 over FS-M-WEST with radiant in it, and the
-# mudroom suite (RM-M-MUDROOM/MECH/MUD-CLOSET) over FS-M-MECH — and neither billed this
-# layer before, so this row closes a pre-existing gap as well as covering the new tile.
-# ** Labour is near zero ON PURPOSE, the same argument the carpet pad and the LVP
-# underlayment rows make: ** the membrane goes down in the tile setter's own thinset, on the
-# same day, and is inside the rate above. The high end carries the case where it is a
-# separate mobilisation. Material: DITRA is $1.50-2.20/SF at the big boxes in 2026; the
-# generic dimpled sheets run lower and the DITRA-XL/HEAT variants much higher — this is the
-# plain 1/8" sheet rate. It was written believing the heated variant was already priced in
-# [floor_heat]; that was never verified and is mostly not true — see the next note.
-# ** 2026-09-05b, AND THE 287 SF IS NOT ALL THE SAME PRODUCT — MOST OF IT IS THE HEATED ONE. **
-# `takeoff/finishes._COMPANIONS` maps the finish `tile` to ONE membrane row and cannot split
-# it, so this row prices every tile floor in the house at the plain sheet's rate. Two of the
-# five are over an electric mat and want the DITRA-HEAT variant instead — the same dimpled
-# sheet with cable-retaining studs, which is the heating cable's own BASE rather than an
-# underlayment beneath it:
-#   RM-M-BATH2   72.8 SF net, over FH-M-BATH2 (17.9 SF of cable)   — heated since long
-#                                                                    before the tile row existed
-#   RM-S-BATH1   84.9 SF net, over FH-S-BATH1 (27.3 SF of cable)   — new 2026-09-05
-#   ------------------------------------------------------------
-#   157.7 SF net, ** 182 SF ordered at tile's 15% — 63% of this row **, leaving 105 SF of
-#   plain sheet for the mudroom suite (RM-M-MUDROOM/MECH/MUD-CLOSET).
-# It is the whole room each time, not the zone: an uncoupling membrane goes wall to wall and
-# is not patched around the cable, so all 182 SF is DITRA-HEAT even though only 45.2 SF of it
-# carries wire. UNDER-BILLED by $3.50-4.50/SF against DITRA-HEAT's $5-7 — call it $640-820.
-#
-# ** The double-count worry is real but a QUARTER the size, and it is bounded. ** [floor_heat]'s
-# `electric` row is $/LF derived from a $5-12/SF SYSTEM price divided by 4 LF/SF, so whatever
-# membrane is baked into that number rides the CABLE ZONE only — 45.2 SF here, not 182. And of
-# that row's 381.5 LF, 232 LF is FH-M-DINING: cable embedded in the SL-M-DECK pour under
-# POLISHED CONCRETE, with no membrane and no tile within it (which is also why
-# advisory.floor_finish_over_radiant is silent about it — the loop is inside the slab band's
-# FinishZone, not on RM-M-LIVING's plank). Only 149.5 LF of the row is under tile at all.
-# So the overlap is at most 45.2 SF, ~$160-230, against a $640-820 shortfall: net still
-# ** short $400-660 **, and the two rows are reconcilable rather than contradictory.
-# Before ordering:
-#   1. Quote 182 SF of DITRA-HEAT (or -HEAT-DUO) and 105 SF of plain DITRA, not 287 of either.
-#   2. Take the cable for those two baths as CABLE ONLY, net of its base, so the membrane is
-#      paid once. `electric`'s $5-12/SF derivation is the wrong basis for FH-M-DINING's 232 LF
-#      regardless — slab-embed cable is a different product and a different install.
-"tile-uncoupling-membrane" = { material = { low = 1.5, high = 2.5 }, labour = { low = 0, high = 0.5 } }  # 287 SF at the plain 1/8" sheet rate; 182 SF of it is really DITRA-HEAT, ~$400-660 short, see above
-# 2026-08-18: RM-S-PLANT. Sheet vinyl itself is cheap — commercial homogeneous sheet runs
-# $2.50-5/SF — but this floor is not just the goods: the seams are heat-welded and it turns
-# a 6" integral flash cove up every wall, which is a specialist install and roughly doubles
-# the material-side number a plank floor carries. Priced at the top of the sheet range
-# accordingly; the welding rod and cove stick are in it.
-# Sources: homeguide.com 2026 sheet-vinyl chart, commercial resilient-flooring surveys for
-# the heat-weld/flash-cove adder.
-# 2026-08-20 labour: plain glue-down sheet vinyl is $1.50-3.00/SF to lay. Heat-welded seams
-# with a 6" integral flash cove is a COMMERCIAL RESILIENT scope — cove stick, cap strip,
-# scribing, hot-air welding with a grooved seam and a skiving pass — and runs 3-4x that.
-# 2026-08-25: 179 SF -> 385. The finish is no longer just RM-S-PLANT and the mudroom
-# closets — RM-M-BATH1, RM-M-LAUNDRY and the hall band FinishZone in RM-M-LIVING joined it,
-# so the main floor now carries one continuous washable spine from the entry to the laundry.
-# ** The old "LUMP of $1,500-2,500, never bid by the foot" caveat is retired with that.
-# 385 SF is a real day's work for a resilient crew and the $/SF arithmetic is defensible —
-# but confirm the SCOPE of the cove before pricing: a 6" flash cove up every wall of six
-# rooms plus a corridor is a lot more welded linear foot than the RM-S-PLANT number was
-# researched against, and a plain glue-down with a vinyl base would be half this rate. **
-# 2026-09-02: +30.2 sf as RM-B-BATH retyped off tile. The `# 385 SF` this row carried was
-# stale before that (the attic-studio pass had already taken it to 432); 466 SF is the
-# blessed post-change figure off `haus takeoff`. The cove-scope caveat above stands and
-# grows with it.
-# ** 2026-09-05: 466 -> 257 SF, and the mobilisation caveat COMES BACK. ** Sheet vinyl left
-# the main storey entirely — the hall band's FinishZone was deleted, RM-M-BATH1 and
-# RM-M-LAUNDRY went to the plank the hall now carries, and RM-M-MUDROOM with both its
-# closets went to tile. What is left is RM-S-PLANT, RM-A-STUBATH and RM-B-BATH: three
-# rooms on THREE DIFFERENT STOREYS. The "385 SF is a real day's work and the $/SF arithmetic
-# is defensible" clause above is retired with that — 257 sf split three ways is a
-# mobilisation-dominated scope again, and the resilient crew is walking a stair between each
-# one. Expect a LUMP, and read the $/SF below as a floor on it, not as the price.
-# ** 2026-09-25: the product changed; these figures did not. ** `vinyl-sheet` is now Tarkett
-# First Class, Monaco Calacatta (120 mil residential luxury sheet, glue-down), not the
-# heat-welded commercial sheet the range above was set for. Re-price before relying on it.
-"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 655 SF — RM-A-STUDIO's ~357 joined it 2026-09-09
+# Tile is now limited to the two heated bathrooms and the nonheated suite bath
+# and vanity. The mudroom and both closets moved to LVP. Setters should quote the
+# four baths together; membranes are separate rows immediately below.
+# Generic tile remains available for rooms not assigned one of Catlin's coordinated stacks.
+"tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }
+"tile-uncoupling-membrane" = { material = { low = 1.5, high = 2.5 }, labour = { low = 0, high = 0.5 } }
+# Porcelain finish pricing; the membrane is a separately measured companion.
+"catlin-tile-oak-height" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }
+"catlin-tile-heated" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }
+"catlin-ditra-xl" = { material = { low = 2.5, high = 4.5 }, labour = { low = 0, high = 0.75 } }
+"catlin-ditra-heat" = { material = { low = 5, high = 7 }, labour = { low = 0, high = 0.75 } }
+# 589 SF ordered across RM-S-PLANT, RM-A-STUBATH, RM-A-STUDIO and RM-B-BATH.
+# Plant-room flash-cove compatibility for the selected Tarkett First Class sheet is
+# unresolved (plans/TODO.md); its welded/coved labour allowance is provisional.
+# Re-price the row against the approved sheet and doorway detail before buying.
+"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 589 SF ordered; cove scope provisional
 # ** TOMBSTONE: `walnut-floor`, rated and retired 2026-09-05. ** For a few hours RM-S-SUITE
 # and RM-S-CLOSET were 181.7 SF net of the family's own site-milled 4/4 walnut T&G, rated
 # here at $3-8 material (stock valued at $2/sf plus kiln drying and a moulder run) over
@@ -4922,7 +4794,7 @@
 # mirrors: this table shares three of its five materials with tables that already price them,
 # and the BOM says which by carrying `also_in_*`. Only `walnut-tg` is priced here, because
 # only `walnut-tg` is billed nowhere else.
-#   oak          also_in_floor_finishes  -> priced in [floor_finishes], 557 SF, same number
+#   oak          also_in_floor_finishes  -> priced in [floor_finishes], 596 SF, same number
 #   catlin-sauna-shiplap also_in_envelope_layers -> priced in [envelope_layers]
 #   elm-timber   also_in_structural_solids, and carries no order_area_sqft (bills as timber)
 #   tile         the RM-B-SAUNA override — see the correction below, it is NOT a mirror
@@ -4932,7 +4804,7 @@
 # designtransitionstudio.com walnut price guide, homewyse.com wall paneling 2026.
 # $/SF on the order quantity, by material tag
 # "elm-timber" =    # 0 SF — timber, bills in structural_solids
-# "oak" =    # 557 SF — billed in [floor_finishes]
+# "oak" =    # 596 SF — billed in [floor_finishes]
 # "catlin-sauna-shiplap" =    # 278 SF — billed in [envelope_layers]
 # ** THE "billed in [floor_finishes]" CLAIM ON THIS ROW WAS FALSE, and is corrected here
 # rather than repeated (2026-09-02). ** [floor_finishes]'s `tile` is FLOOR area in other

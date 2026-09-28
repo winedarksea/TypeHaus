@@ -1532,12 +1532,9 @@ ROOMS = [
     # off it, RM-M-BATH1 and RM-M-LAUNDRY. The spine from the hall to the laundry is one
     # plank floor with no zone and no threshold, and `vinyl-sheet` leaves the main storey.
     #
-    # ** THE ENTRY IS ITS OWN FIELD, and it is a field rather than a room. ** RM-M-MUDROOM
-    # goes to porcelain over an uncoupling membrane — dirt containment where people come in
-    # off the breezeway in boots — and so do RM-M-MECH and RM-M-MUD-CLOSET, because both
-    # are carved out of the mudroom and both of their doors open INTO it (see each room's
-    # own note). Tiling all three is what leaves exactly ONE tile-to-plank transition, at
-    # D-M-MUD; tiling only the mudroom would have left three.
+    # The entry and both closets now take the hall's LVP at one interior height.
+    # D-M-ENTRY retains its own weather sill and flashing detail (notes/floor_heights.md).
+    # The mud-closet bypass guide bears on a flat floor without a reducer.
     #
     # ** THE SOUTH BAY IS LVP, AND THAT IS THE POINT. ** It carried 3/4" solid oak for part
     # of 2026-09-05 and was reverted the same day, to remove a height difference rather
@@ -1550,19 +1547,9 @@ ROOMS = [
     # Oak is still the two studies' floor (RM-A-STUDY, RM-S-STUDY2); it is this room that
     # does not want it.
     #
-    # ** THE JUNCTIONS. ** Finishes have no thickness in the model (``model/floors.py``), so
-    # no check sees any of these — they are stated here because nothing else states them:
-    #   * y = 13', ~17.9 lf, and x = 18', ~13.6 lf — LVP at +0.986" against the polished cap
-    #     at +0.9375" on both legs: 1/64", a flush T. The x=18' leg IMPROVED even against
-    #     the old scheme; sheet vinyl sat low here and notes/mixed_deck_movement_joint.md
-    #     called it a real step. The y=13' leg still needs its movement joint — the two
-    #     structures deflect differently whatever is laid over them — but the joint is now
-    #     a flush T rather than a reducer, and a T is what that note always assumed.
-    #   * D-M-MUD, the mudroom-to-hall doorway — tile at ~+1.3125" down to LVP at +0.986":
-    #     a ~5/16" transition strip, the ONLY threshold on this storey, and a dirt step is
-    #     what an entry wants. It is the only one because the mudroom's two closets are
-    #     tiled with it; leave either on plank and this strip is bought three times, one of
-    #     them under a bypass slider's bottom guide.
+    # The LVP/coated-cap boundary remains a flush movement joint on both legs;
+    # the y=13' leg still separates structures that deflect differently.
+    # Doorway heights and profiles are scheduled in notes/floor_heights.md.
     #
     # ** NO FinishZone IS AUTHORED HERE, and prefer to keep it that way. ** The polished band
     # is DERIVED — SL-M-DECK carries its own ``floor_finish`` and ``resolve/rooms.py`` claims
@@ -1576,7 +1563,7 @@ ROOMS = [
     Room(uid="CMR401AAAA", tag="RM-M-LIVING", seed=pt(ft(27), ft(12)),
          occupancy=Occupancy.LIVING, floor_finish="lvp"),
     Room(uid="CMR402AAAA", tag="RM-M-BED", seed=pt(ft(9), ft(6)),
-         occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
+         occupancy=Occupancy.BEDROOM, floor_finish="catlin-carpet-raised"),
     # RM-M-BATH1 and RM-M-LAUNDRY were sheet vinyl and are LVP since 2026-09-05: both open
     # off the hall, which no longer carries a FinishZone of its own, so the plank simply
     # runs through — one floor, one product, no zone, no threshold and no grout to keep.
@@ -1586,13 +1573,13 @@ ROOMS = [
     Room(uid="CMR403AAAA", tag="RM-M-BATH1", seed=pt(ft(2), ft(24, 6)),
          occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
     Room(uid="CMR404AAAA", tag="RM-M-BATH2", seed=pt(ft(4), ft(18)),
-         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-heated"),
     Room(uid="CMR405AAAA", tag="RM-M-LAUNDRY", seed=pt(ft(10, 6), ft(20)),
          occupancy=Occupancy.LAUNDRY, floor_finish="lvp"),
     Room(uid="CMR406AAAA", tag="RM-M-STUDY", seed=pt(ft(15, 8), ft(20)),
          occupancy=Occupancy.OFFICE, floor_finish="lvp"),
     Room(uid="CMR407AAAA", tag="RM-M-CLOSET", seed=pt(ft(13), ft(15, 4)),
-         occupancy=Occupancy.STORAGE, floor_finish="carpet",
+         occupancy=Occupancy.STORAGE, floor_finish="catlin-carpet-raised",
          closed_to_services="the master suite's walk-in closet is dressed in, not a store room: no pipe or duct stands or hangs in it"),
     # Retagged from RM-M-STORAGE with the mudroom conversion: entry vestibule
     # now, not bulk storage, but still Occupancy.STORAGE — there is no MUDROOM occupancy in
@@ -1606,51 +1593,28 @@ ROOMS = [
     # (checks/integrity/checks.py) is still what fails the build if that ever drifts back,
     # and it is the reason this room cannot simply carry the polish the dining end does.
     #
-    # 2026-09-05: vinyl-sheet -> tile. It was sheet vinyl because the whole spine was; the
-    # spine is LVP now, and the part of this floor that should not be plank is where people
-    # walk in off the breezeway in boots. Porcelain over an uncoupling membrane, ~5/16"
-    # proud of the LVP at D-M-MUD — a deliberate dirt step, and the only new threshold the
-    # change creates. ** The tile field is this room PLUS its two closets ** (RM-M-MECH,
-    # RM-M-MUD-CLOSET): both are carved out of this footprint and both open into it, so
-    # tiling them is what keeps that one strip from being three. Tile is safe on the deck:
-    # all three sit wholly on FS-M-MECH, a 10'-0" span at ~L/2280 against tile's L/360 bar
-    # (params/main_deck.py).
+    # LVP matches the hall and both closets. The exterior sill is a separate
+    # weather detail; keep boot water away from plank edges at D-M-ENTRY.
     Room(uid="CMR409AAAA", tag="RM-M-MUDROOM", seed=pt(ft(5), ft(31)),
-         occupancy=Occupancy.STORAGE, floor_finish="tile"),
+         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
     # Framed MEP shaft closet, replacing FURN-M-MUD-CLOSET-N: the
     # radon+plumbing riser rides its SW corner. STORAGE is the closed enum's closest fit
     # for a mechanical closet, same reasoning as RM-M-MUDROOM above.
     #
-    # ** TILE, WITH THE MUDROOM, AND THE REASON IS THE DOOR IT OPENS OFF. ** This closet and
-    # RM-M-MUD-CLOSET below took LVP with the spine for a few hours on 2026-09-05, on the
-    # argument that 33 SF is not worth its own finish. That argument was made against the
-    # wrong adjacency: BOTH closets are carved out of RM-M-MUDROOM's own footprint and BOTH
-    # doors open into it — D-M-MECH is hosted on this room's south wall W-M-MECH-S, and
-    # D-M-MUDC on W-M-MUDC-N, each facing the mudroom. Neither opens off the hall. So a
-    # plank floor in here does not join the spine; it cuts the mudroom's tile into an island
-    # with THREE transition strips through it instead of the one at D-M-MUD.
-    #
-    # This one is the weaker half of the pair on its own merits — a hinged utility door
-    # opened twice a year, and plank is marginally easier to open up around the riser
-    # penetration than tile is. It is tiled anyway, because 15 SF is thin ground on which to
-    # break a dirt-containment field. The strong half is the bypass slider next door.
+    # The utility closet follows the mudroom LVP at D-M-MECH.
     Room(uid="CMR411AAAA", tag="RM-M-MECH", seed=pt(ft(3), ft(34, 6)),
-         occupancy=Occupancy.STORAGE, floor_finish="tile"),
+         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
     # Framed south mudroom closet, replacing FURN-M-MUD-CLOSET-S: the last
     # furniture closet becomes a real reach-in — 32 3/4" deep clear since W-M-STOS moved
     # north on 2026-08-29 (34 3/4" before), bypass slider in its north partition. Tagged RM-M-MUD-CLOSET because RM-M-CLOSET (CMR407AAAA) already
     # names the dressing corridor. STORAGE, the same closed-enum reasoning as
     # RM-M-MUDROOM/RM-M-MECH above — and the same wood deck under it (FS-M-MECH, the same
-    # 10'-0" span the mudroom's tile is safe on).
+    # 10'-0" span beneath the mudroom).
     #
-    # ** TILE, AND THE BYPASS SLIDER IS WHY. ** This is the boot closet — it opens into the
-    # mudroom, it is inside the dirty zone, and D-M-MUDC is a DT-INT-BYPASS48. A bypass
-    # slider runs on a BOTTOM GUIDE, and a 5/16" tile-to-plank transition strip under a
-    # sliding track is a detail nobody wants to build: the guide wants one flat plane across
-    # the opening. A hinged door takes a strip happily and a sliding one does not, which is
-    # what makes this closet the clearer half of the pair (see RM-M-MECH above).
+    # The boot closet follows the mudroom LVP. Its bypass bottom guide
+    # is mounted on one flat plane at D-M-MUDC.
     Room(uid="G01HFSH967", tag="RM-M-MUD-CLOSET", seed=pt(ft(3), ft(28)),
-         occupancy=Occupancy.STORAGE, floor_finish="tile"),
+         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
     # The kitchen's framed reach-in pantry, replacing FURN-M-KIT-PANTRY-E,
     # -TALL-N and -TALL-S. STORAGE for the same closed-enum reason as RM-M-MECH and
     # RM-M-MUD-CLOSET above; 14.6 SF clear, 5'-10 1/4" x 2'-6".

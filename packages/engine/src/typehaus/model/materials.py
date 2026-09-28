@@ -229,6 +229,12 @@ class Material(HausModel):
     # no plane of its own; readers must treat a coating as 0.0 without needing a number
     # here.
     finish_thickness_in: float | None = None
+    # Extra materials ordered over the same floor area. The installed height above already
+    # includes these layers; this tuple exists only for the priced takeoff.
+    floor_companion_refs: tuple[str, ...] = ()
+    # Project-specific waste allowance for a finish whose cut pattern differs from the
+    # generic tag defaults. None uses the takeoff's default schedule.
+    floor_waste_fraction: float | None = None
     # The chosen product this material *is*, by ``Product.tag`` (model/product.py).
     # ``None`` is the ordinary case: "5/8\" type X gypsum board" is a specification, and a
     # specification is what most of a house is bought against. Naming a product narrows it

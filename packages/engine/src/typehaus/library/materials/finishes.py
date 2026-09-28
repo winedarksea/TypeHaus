@@ -318,6 +318,7 @@ MATERIALS: tuple[Material, ...] = (
         color="#c0ae94",
         finish="lvp-plank",
         finish_thickness_in=0.2362,
+        floor_companion_refs=("lvp-underlayment",),
         source="a white-oak-look print, 7x48 plank. "
         "finish covering over its own underlayment; thermal/vapour fields unset "
         "for the same reason as the other floor finishes. "
@@ -342,6 +343,7 @@ MATERIALS: tuple[Material, ...] = (
         hatch="batt",
         color="#9c8f80",
         finish_thickness_in=0.5,
+        floor_companion_refs=("carpet-pad",),
         source="finish covering, not an assembly layer; thermal/vapour fields unset. "
         '`finish_thickness_in` is the carpet AND its pad, 1/4" of '
         'commercial-weight cut pile over a 1/4" high-density rebond cushion. '
@@ -364,13 +366,12 @@ MATERIALS: tuple[Material, ...] = (
         hatch="masonry",
         color="#dfe3e5",
         finish_thickness_in=0.5,
+        floor_companion_refs=("tile-uncoupling-membrane",),
         source="finish covering, not an assembly layer; thermal/vapour fields unset. "
-        "`finish_thickness_in` is the whole tray over the subfloor — tile, its "
-        'thinset beds and the 1/8" uncoupling membrane under it — because a '
-        "room names only the tile. 1/2\" is what catlin's own mudroom "
-        'arithmetic resolves to (params/main_deck.py puts that floor ~5/16" '
-        'proud of a concrete cap standing +15/16" over a +3/4" subfloor), '
-        "and it is an ordinary porcelain-over-DITRA build",
+        "`finish_thickness_in` is a nominal whole tray over the subfloor — tile, "
+        'thinset beds and a 1/8" uncoupling membrane — because a room names '
+        "only the tile. Rooms with coordinated tile heights should use a local "
+        "variant with its own installed build-up rather than changing this default",
     ),
     Material(
         tag="sealed-concrete",

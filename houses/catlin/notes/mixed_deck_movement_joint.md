@@ -132,28 +132,11 @@ cap top moves with it — `structural.mixed_deck_bearing_seat` allows a quarter 
 which is roughly a floor finish, and FAILs past it. Check the resolved elevations before
 ordering the moulding, not this paragraph.
 
-**The one junction that is NOT flush, off this L entirely: the mudroom doorway.** `RM-M-MUDROOM` went to
-porcelain over a 1/8" uncoupling membrane in the same change, so its walking surface is
-~**+1.3125"** where the hall's plank is +0.986" — a ~5/16" **transition strip** at `D-M-MUD`,
-and with the south bay back on plank it is the **only** threshold left on this storey. It is wanted: a dirt step at the door people
-come in through in boots.
-
-**That "only" is bought by tiling the two closets, and it was nearly missed.** `RM-M-MECH`
-and `RM-M-MUD-CLOSET` are carved out of the mudroom's own footprint and **both of their
-doors open into it** — `D-M-MECH` is hosted on `W-M-MECH-S` and `D-M-MUDC` on `W-M-MUDC-N`,
-each facing the mudroom, and neither opens off the hall. So plank in either does not join
-the LVP spine; it cuts this tile field into an island with **three** strips through it. Both
-are tiled. The decisive one is `D-M-MUDC`, a `DT-INT-BYPASS48`: a bypass slider runs on a
-**bottom guide**, and a 5/16" ramp under a sliding track is a detail nobody wants to build.
-`RM-M-MECH` is the weaker case on its own — a hinged utility door opened twice a year, and
-plank is marginally easier to open up around its riser penetration — and is tiled anyway,
-because 15 SF is thin ground on which to break a dirt-containment field. Delivered cost of
-the pair, measured line-to-line on `haus takeoff --csv`: **+$298 to +$627**.
-
-The change also improves the *exterior* side, which no check can see — `FS-BW-FLOOR`'s
-composite plank tops at +1.000", so the mudroom floor now stands 5/16" **above** the
-breezeway deck instead of ~1/6" below it, and water runs out rather than in. R311.3.1's
-1 1/2" is untouched.
+**The mudroom interior junction is now flush.** `RM-M-MUDROOM`, `RM-M-MECH` and
+`RM-M-MUD-CLOSET` use the hall's LVP at +0.9862". The bypass guide at `D-M-MUDC`
+sits on one plane. `D-M-ENTRY` needs a separate flashed weather sill because the
+breezeway decking is about +1.000"; see [the floor height schedule](floor_heights.md).
+The LVP/coated cap joint remains a flush T with a movement break on its y=13' leg.
 
 **And a second step, in the ceiling below — 2 1/16".** The gypsum
 is continuous across the boundary but the two faces are not coplanar: on the wood side the

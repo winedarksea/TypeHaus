@@ -534,14 +534,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     and nothing is currently authored on it. Prefer a derived zone over authoring one here —
     an authored zone's drawn ring must be clipped to the room, same as its area (fixed
     2026-09-05).
-  - `RM-M-MUDROOM` + its closets (`RM-M-MECH`, `RM-M-MUD-CLOSET`) are porcelain over an
-    uncoupling membrane (`integrity.concrete_finish_needs_concrete_deck` keeps them off
-    concrete since `FS-M-MECH` is I-joist/plywood) — tiled because their doors open INTO the
-    mudroom, not because they're wet; don't put either back on plank, it islands the tile.
-  - Two walking planes meet flush (plank +0.986" vs the coated cap's +15/16") on both legs of
-    the L; only the mudroom breaks it (~+1 5/16", ~5/16" strip at `D-M-MUD`, the one
-    threshold on the storey). Oak (+1 1/2") is the two studies' floor only — never extend it
-    to a cap edge (→ DESIGN-LOG.md, "Bearing lines and floor decks"). Junction detail is in
+  - `RM-M-MUDROOM` + its closets (`RM-M-MECH`, `RM-M-MUD-CLOSET`) share the hall LVP
+    plane at +0.9862". Their doors open into the mudroom, and the bypass guide at
+    `D-M-MUDC` needs one level field. The exterior `D-M-ENTRY` has a separate flashed
+    weather sill; see `notes/floor_heights.md`.
+  - LVP +0.9862" and the coated cap +15/16" meet flush on both legs of the living-room
+    L. The main bedroom entry and second-storey plant room retain reducers. Oak +1 1/2"
+    now runs through the second hall and linen closet as well as the suite and studies;
+    never extend it to a cap edge. Junction detail is in
     `notes/mixed_deck_movement_joint.md`; mix is `DECK_CAP_MIX` (micro-monofilament PP, no
     macro fibre or steel — macro would be re-exposed by the coating's CSP 2-3 grind).
     The finish is a **coating**, not a cream polish, since 2026-09-12: light steel trowel,

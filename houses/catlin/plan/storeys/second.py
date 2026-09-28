@@ -1001,7 +1001,7 @@ ROOMS = [
     # paint differs). Re-stated inline, not imported, because the editable dialect can't
     # import a sibling plan module — keep in step with ACCENT_GWB_LINING by hand.
     Room(uid="CSR403AAAA", tag="RM-S-BED1", seed=pt(ft(29), ft(13, 6)),
-         occupancy=Occupancy.BEDROOM, floor_finish="carpet",
+         occupancy=Occupancy.BEDROOM, floor_finish="catlin-carpet-raised",
          wall_lining_exceptions=(
              WallLiningException(
                  uid="CSL501AAAA", tag="LX-S-BED1-E", wall_ref="W-S-E2",
@@ -1014,9 +1014,9 @@ ROOMS = [
                  )),
          )),
     Room(uid="CSR404AAAA", tag="RM-S-BED2", seed=pt(ft(29), ft(22, 6)),
-         occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
+         occupancy=Occupancy.BEDROOM, floor_finish="catlin-carpet-raised"),
     Room(uid="CSR405AAAA", tag="RM-S-BED3", seed=pt(ft(29), ft(31, 6)),
-         occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
+         occupancy=Occupancy.BEDROOM, floor_finish="catlin-carpet-raised"),
     # The suite is the source's L: the full west strip plus the arm that reaches the centre
     # line between the walk-in and the suite bath.
     # ** 2026-09-05: CARPET -> WALNUT -> OAK, AND THE WALNUT WENT UP THE WALL. ** The suite
@@ -1045,25 +1045,14 @@ ROOMS = [
          exposed_services="owner accepts exposed duct in the primary suite: the supply branch runs on the face of the ceiling rather than inside it"),
     Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(14), ft(10, 8)),
          occupancy=Occupancy.STORAGE, floor_finish="oak-floor-custom"),
-    # LVP through the unheated wet rooms and the circulation: one continuous plank floor
-    # from the stair head through both hallways and into the two baths with no radiant in
-    # them, so the traffic route has no thresholds in it and those baths get a waterproof
-    # plank instead of tile.
+    # Nonheated porcelain matches the oak plane at the suite bath and vanity.
+    # DITRA-XL and mortar are coordinated as one 3/4" stack above subfloor.
     Room(uid="CSR412AAAA", tag="RM-S-SUITEBATH", seed=pt(ft(14), ft(19)),
-         occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-oak-height"),
     Room(uid="CSR413AAAA", tag="RM-S-VANITY", seed=pt(ft(3), ft(24, 4)),
-         occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
-    # ** RM-S-BATH1 IS TILE, NOT PLANK (2026-09-05), AND FH-S-BATH1 IS THE WHOLE REASON. **
-    # It carried the hall's LVP over the electric radiant zone, which
-    # advisory.floor_finish_over_radiant flagged: plank is surface-temperature limited at
-    # 80-85 F, so the one heated floor on this storey was the one covering that throttles
-    # the heat it is there to deliver. Tile has no such cap and is the mat's mass.
-    # Spec is the mudroom's cheap porcelain (prices.toml [floor_finishes] `tile`), not a
-    # designer tile — with one difference the mudroom does not have: the uncoupling
-    # membrane under a heated floor is the DITRA-HEAT variant, the cable's own base, not
-    # the plain 1/8" sheet the takeoff's companion row prices. See that row's note.
-    # The cost of the change is one threshold at D-S-BATH1, tile ~5/16" proud of the hall
-    # plank — the same dirt-step detail D-M-MUD already builds downstairs.
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-oak-height"),
+    # The heated bath uses DITRA-HEAT with the cable in its studs, matched
+    # to the hall oak at D-S-BATH1. This is not ordinary DITRA-XL.
     #
     # ** THE DECK UNDER IT IS THE SHORT END OF FS-S-WEST, NOT THE 18' BAY. ** FO-S-STAIR
     # takes x 10'-3 1/4"..17'-8 5/8" out of this deck from y=26'-0 3/8" north, so the eight
@@ -1078,17 +1067,16 @@ ROOMS = [
     # roughly the mudroom's own 9.9' span, and at half the table limit the L/360 basis
     # is no longer the binding number it would have been out in the 18' field.
     Room(uid="CSR408AAAA", tag="RM-S-BATH1", seed=pt(ft(5), ft(31)),
-         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-heated"),
     # RM-S-HALL is the source's single 181.02 sf "Hallway" again: taking the centre line
     # out between y 22'-4" and 30'-10" left one polygonized face spanning the old hall,
     # landing and open stair well, so RM-S-LANDING/RM-S-STAIR were retired into this claim
     # rather than billing the same face three times. RL-S-STAIR guards the well's east edge.
     Room(uid="CSR409AAAA", tag="RM-S-HALL", seed=pt(ft(20), ft(20)),
-         occupancy=Occupancy.HALLWAY, floor_finish="lvp"),
-    # RM-S-NCLOSET opens off the hall, not a bedroom (D-S-NCLOSET hosts on W-S-CLN-S), so
-    # the hall's LVP runs straight in — no threshold, and the linen shelving sits on plank.
+         occupancy=Occupancy.HALLWAY, floor_finish="oak-floor-custom"),
+    # The linen closet continues the hall oak through D-S-NCLOSET.
     Room(uid="CSR415AAAA", tag="RM-S-NCLOSET", seed=pt(ft(20), ft(33)),
-         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
+         occupancy=Occupancy.STORAGE, floor_finish="oak-floor-custom"),
 ]
 
 ALARMS = [
@@ -1112,8 +1100,8 @@ ALARMS = [
 #
 # The covering over it is TILE as of 2026-09-05 (see RM-S-BATH1 above) — it was plank, and
 # plank caps the surface at 80-85 F. That also names the base: DITRA-HEAT, the dimpled
-# membrane whose studs hold the cable, rather than the plain uncoupling sheet the takeoff's
-# companion row prices for the mudroom's unheated tile. See prices.toml's note on that row.
+# membrane whose studs hold the cable. Its whole-room companion row is priced
+# separately from the nonheated DITRA-XL in the suite bath and vanity.
 #
 # The zone is drawn to the fixtures (plan/fixtures.py's de-overlapped WC/lav/shower
 # positions), not the room outline, holding 3" off every fixture: total 31.6 ft2 across a
@@ -1530,21 +1518,17 @@ STAIRS = [
     # R311.7.6 36" minimum. `turn_direction="left"`, same hand as ST-B2M below: the flight
     # springs east lane on main, arrives west lane on second, so the stack alternates sides
     # as one continuous run.
-    # Both ends are WALKING SURFACES, not storey data — see the note over ST-B2M in
-    # main.py. Wood-deck to wood-deck with the same plank at both ends (RM-M-LIVING and
-    # RM-S-HALL are both `lvp`), so the 15/16" build-up cancels and the rise, riser count
-    # and going are exactly what the storey table gave: 120", 16 risers, 7 1/2". Stating it
-    # anyway is not decoration — derived from the datums the whole flight drew 15/16" low,
-    # its bottom tread 6 1/2" over the floor a foot actually leaves and its top tread 8 1/2"
-    # under the one it reaches, which is the drawing a framer would build from.
+    # Both ends are walking surfaces: main LVP at +0.9862" and second hall oak
+    # at +121.5". Sixteen equal risers are (121.5 - 0.9862)/16 = 7.5321";
+    # the level turn is at their midpoint, +61.2431".
     # `landing_depth` is DERIVED: both half-landings run to W-M-N2's gypsum face
     # (y=35'-5 3/8"), less the start, the 70" lower flight and half the far 2x8, which
     # `bearing_refs` ledgers to that wall — so no post stands at the north corners. 7" short
-    # at ft(3) until 2026-09-24. The turn is level at 60.9862" with 7 tread boards on
+    # at ft(3) until 2026-09-24. The turn is level at 61.2431" with 7 tread boards on
     # each run; the former split turn put one of the 16 risers between the half-decks.
     Stair(uid="CST702AAAA", tag="ST-M2S", floor_opening="FO-S-STAIR",
           from_storey="main", to_storey="second", width=ft(3, 6.375),
-          base_elevation=inch(0.9862), top_elevation=inch(120.9862),
+          base_elevation=inch(0.9862), top_elevation=inch(121.5),
           layout="u_level_landing", run_direction="y", turn_direction="left",
           start=pt(ft(10, 3.25), ft(26, 0.375)), landing_depth=ft(3, 6.25),
           bearing_refs=("W-M-N2",)),

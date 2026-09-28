@@ -464,11 +464,10 @@ def _emit_space(f: Any, body: Any, room: Any, storeys: dict[str, Any],
     space.GlobalId = derive_guid(project_uuid, room.uid)
     if room.clear_face:
         # Geometry is authored in the world frame (see ``ensure_local_placement``), so the
-        # space's floor has to be given its real elevation here — it is not automatically
-        # inherited from the containing IfcBuildingStorey's placement. Matches the glTF
-        # viewer's floor mesh (``emit/gltf/emitter.py``): both read
-        # ``room_finished_floor_elevation``, the plane a foot lands on and up to 1 1/2" over
-        # the joist tops, so neither the two exports nor the garage's off-storey slab drift.
+        # space's floor has to be given its representative finished elevation here — it is
+        # not inherited from the containing IfcBuildingStorey's placement. A room that
+        # spans two decks (RM-M-LIVING) has one IfcSpace floor at its centroid; the glTF
+        # covering mesh samples each finish part separately to preserve both actual planes.
         rep = ll.add_prism_from_profile(f, body, room.clear_face, 2.7,
                                         room_finished_floor_elevation(model, room))
         ll.assign_representation(f, space, rep)

@@ -1316,6 +1316,7 @@ export interface MaterialSpec {
   // adds no thickness, so `buildRoomFloor` draws no finish plane for it. Without this a
   // sealed slab renders as two floors: the slab and a finish plane on the same face.
   coating?: boolean | null;
+  finish_thickness_in?: number | null;
   // The chosen product (`Catalog.products`), or null where this is still a specification
   // rather than a picked item. Resolve it with `productFor` (components/ProductRows.tsx).
   product_ref?: string | null;

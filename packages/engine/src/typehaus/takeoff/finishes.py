@@ -53,20 +53,6 @@ _WASTE: dict[str, float] = {
 }
 _DEFAULT_WASTE = 0.10
 
-# The layer a finish implies under it. ``Material`` has no field for this — adding one would
-# mean a schema change for a fact only an estimator needs — so the relationship lives here,
-# beside the waste factors it keeps company with. Each companion must exist in the library
-# or its row reports UNKNOWN like any other missing material.
-_COMPANIONS: dict[str, str] = {
-    "carpet": "carpet-pad",
-    "lvp": "lvp-underlayment",
-    # Every tile floor in this house is over a wood deck, and none of them billed the
-    # uncoupling membrane that puts it there safely — RM-M-BATH2's tile over radiant as much as
-    # RM-M-MUDROOM's. It is not in the tile row's $/SF (that rate covers thinset and grout,
-    # the trade convention), so without this line it was simply missing from the schedule.
-    "tile": "tile-uncoupling-membrane",
-}
-
 
 def _order_area(net_ft2: float, waste: float) -> float:
     """Net area plus waste, rounded up to the whole square foot an estimator orders in."""
@@ -104,7 +90,9 @@ def floor_finish_rows(model: ResolvedModel) -> list[dict[str, object]]:
     for finish in sorted(key for key in areas if key != "\0unfinished"):
         net_ft2 = areas[finish] * _M2_TO_FT2
         material = materials.get(finish)
-        waste = _WASTE.get(finish, _DEFAULT_WASTE)
+        waste = (material.floor_waste_fraction
+                 if material is not None and material.floor_waste_fraction is not None
+                 else _WASTE.get(finish, _DEFAULT_WASTE))
         rows.append({
             "finish": finish,
             "material": material.name if material is not None else "UNKNOWN",
@@ -118,24 +106,21 @@ def floor_finish_rows(model: ResolvedModel) -> list[dict[str, object]]:
             "order_area_sqft": _order_area(net_ft2, waste),
             "rooms": sorted(set(rooms_by_finish[finish])),
         })
-        companion = _COMPANIONS.get(finish)
-        if companion is None:
-            continue
-        companion_material = materials.get(companion)
-        rows.append({
-            "finish": companion,
-            "material": (companion_material.name if companion_material is not None
-                         else "UNKNOWN"),
-            "known": companion_material is not None,
-            "coating": False,
-            "net_area_sqft": round(net_ft2, 1),
-            # A pad or underlayment is roll goods laid under the covering: it is cut to the
-            # room the same way, so it carries the covering's own waste.
-            "waste_pct": round(waste * 100.0, 1),
-            "order_area_sqft": _order_area(net_ft2, waste),
-            "rooms": sorted(set(rooms_by_finish[finish])),
-            "under": finish,
-        })
+        companion_refs = material.floor_companion_refs if material is not None else ()
+        for companion in companion_refs:
+            companion_material = materials.get(companion)
+            rows.append({
+                "finish": companion,
+                "material": (companion_material.name if companion_material is not None
+                             else "UNKNOWN"),
+                "known": companion_material is not None,
+                "coating": False,
+                "net_area_sqft": round(net_ft2, 1),
+                "waste_pct": round(waste * 100.0, 1),
+                "order_area_sqft": _order_area(net_ft2, waste),
+                "rooms": sorted(set(rooms_by_finish[finish])),
+                "under": finish,
+            })
 
     if unfinished:
         rows.append({

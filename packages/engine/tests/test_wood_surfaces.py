@@ -252,11 +252,12 @@ def test_the_oak_floor_mirrors_floor_finishes_room_for_room(catlin_model, bom):
     and the next species zone anyone authors will need it."""
     oak = next(row for row in bom["wood_surfaces"] if row["material"] == "oak-floor-custom")
     assert oak["kind"] == "floor"
-    assert oak["tags"] == ["RM-A-STUDY", "RM-S-CLOSET", "RM-S-STUDY2", "RM-S-SUITE"]
+    assert oak["tags"] == ["RM-A-STUDY", "RM-S-CLOSET", "RM-S-HALL",
+                           "RM-S-NCLOSET", "RM-S-STUDY2", "RM-S-SUITE"]
     assert oak["also_in_floor_finishes"] is True
     primary = next(row for row in bom["floor_finishes"] if row["finish"] == "oak-floor-custom")
     assert set(primary["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2",
-                                     "RM-S-SUITE", "RM-S-CLOSET"}
+                                     "RM-S-SUITE", "RM-S-CLOSET", "RM-S-HALL", "RM-S-NCLOSET"}
     assert float(oak["net_area_sqft"]) == pytest.approx(
         float(primary["net_area_sqft"]), abs=0.05)
 

@@ -68,6 +68,8 @@ const FLOOR_RECIPE_SURFACE: Record<string, FloorSurface> = {
   "strip-floor": FLOOR_FINISH_SURFACE.oak,
   "plank-floor": FLOOR_FINISH_SURFACE.oak,
   "lvp-plank": FLOOR_FINISH_SURFACE.lvp,
+  "carpet-pile": FLOOR_FINISH_SURFACE.carpet,
+  "porcelain-tile": FLOOR_FINISH_SURFACE.tile,
 };
 
 /** The lighting response for a floor finish (tag, then declared recipe); never undefined. */
@@ -207,6 +209,7 @@ export interface MaterialAppearance {
   // A sealer/stain rather than a covering: it colours what it is applied over and adds no
   // thickness, so nothing draws a plane for it (see `buildRoomFloor`).
   readonly coating?: boolean | null;
+  readonly finish_thickness_in?: number | null;
 }
 
 /**

@@ -7,7 +7,7 @@
 import * as THREE from "three";
 import type { FinishPart, FinishZone, Floor, Member, Room, Vec2 } from "../../model/types";
 import {
-  buildRoomFloor, ROOM_FINISH_THICKNESS_M, storeyFloorTopM,
+  buildRoomFloor, storeyFloorTopM,
 } from "./structure";
 import { plankTileSizeM, WOOD_PLANK_STYLES } from "../plankMaterial";
 import {
@@ -23,7 +23,7 @@ const PALETTE = RESOLVED_NORDIC_PALETTE.light;
 
 // The floor-finish slice of library/materials.py, as the catalog ships it.
 const MATERIALS: MaterialAppearance[] = [
-  { tag: "oak", color: "#c9b08c", finish: "strip-floor" },
+  { tag: "oak", color: "#c9b08c", finish: "strip-floor", finish_thickness_in: 0.75 },
   { tag: "lvp", color: "#c0ae94", finish: "lvp-plank" },
   // A house-local floor: no needle matches its tag, so only its declared recipe boards it.
   { tag: "house-oak", color: "#c9b08c", finish: "plank-floor" },
@@ -94,6 +94,9 @@ export function runRoomFloorTests() {
 
   const oak = build(room("oak"));
   assert(oak.group.children.length === 1, "A finished room builds exactly one slab");
+  const oakTop = new THREE.Box3().setFromObject(oak.group).max.y;
+  assert(Math.abs(oakTop - (3 + 0.75 * 0.0254)) < 1e-6,
+    "The viewer draws the actual installed oak surface above the deck");
   assert(oak.reg.picks.length === 1 && oak.reg.picks[0].userData.uid === "RM-oak",
     "The finish slab is pickable and resolves to its room, not to the floor under it");
   assert(oak.reg.picks[0].userData.selectionKind === "room",
@@ -180,8 +183,8 @@ export function runRoomFloorTests() {
   // Box3.setFromObject measures Float32 vertex data, so ~1e-7 is the available precision.
   const box = new THREE.Box3().setFromObject(build(room("oak"), 3).group);
   assert(Math.abs(box.min.y - 3) < 1e-6, "The finish sits on the deck it was given, not on 0");
-  assert(Math.abs((box.max.y - box.min.y) - ROOM_FINISH_THICKNESS_M) < 1e-6,
-    "It draws at the same thickness the .glb extrudes its room prism");
+  assert(Math.abs((box.max.y - box.min.y) - 0.75 * 0.0254) < 1e-6,
+    "It draws the installed oak assembly thickness");
 
   // The engine's `field_finish` is what gets drawn: RM-S-HALL's well is flush with three of
   // its edges, so it arrives as a notch in the outline, not as a hole Earcut cannot cut.

@@ -41,9 +41,9 @@ def _build_up_in(model, tag) -> float:
 
 # ------------------------------------------------------------------ 1. the three planes
 @pytest.mark.parametrize(("tag", "finish_in"), [
-    ("RM-S-HALL", 0.2362),    # lvp, 6 mm nominal
+    ("RM-S-HALL", 0.75),    # site-milled oak
     ("RM-A-STUDY", 0.75),     # 4/4 oak
-    ("RM-S-BED2", 0.5),       # carpet over a 1/4" cushion
+    ("RM-S-BED2", 0.75),    # carpet, cushion and rigid underlayment
     ("RM-A-STUBATH", 0.120),  # 120 mil luxury sheet vinyl
 ])
 def test_a_floored_room_walks_above_its_storey_datum(catlin_model, tag, finish_in):
@@ -86,13 +86,14 @@ def test_a_stated_mount_height_is_measured_from_the_finished_floor(catlin_model)
 def test_a_ceiling_mount_does_not_ride_the_floor_covering_up(catlin_model):
     """The joists do not move when the carpet gets thicker — the clear height shrinks.
 
-    RM-S-BED2 carries 1/2" of carpet-over-cushion. A recessed can in it hangs off the storey
+    RM-S-BED2 carries 3/4" of carpet, cushion and rigid underlayment. A recessed can
+    hangs off the storey
     ceiling plane, which is built on the STRUCTURAL floor; measuring it from the finished
     floor instead would push every ceiling fitting on the storey up into the bay above.
     """
     bed = _room(catlin_model, "RM-S-BED2")
     assert _build_up_in(catlin_model, "RM-S-BED2") == pytest.approx(
-        _SUBFLOOR_IN + 0.5, abs=1e-4)
+        _SUBFLOOR_IN + 0.75, abs=1e-4)
     storey = catlin_model.plan.storey("second")
     can = next(item for item in catlin_model.canvas_objects
                if item.tag == "ED-S-BED2-CAN2")

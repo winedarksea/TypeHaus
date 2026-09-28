@@ -23,8 +23,9 @@ from typehaus.resolve.solid_categories import in_slab_family
 # authored on Rooms plus the zone finishes, which include one taken from a Slab
 # (SL-M-DECK's coated cap) rather than authored on a room at all. Kept explicit rather
 # than derived so that adding a finish to a storey without adding its material trips here.
-_CATLIN_FINISHES = {"oak-floor-custom", "lvp", "carpet", "tile", "sealed-concrete", "rubber",
-                    "vinyl-sheet", "coated-concrete"}
+_CATLIN_FINISHES = {"oak-floor-custom", "lvp", "carpet", "sealed-concrete", "rubber",
+                    "vinyl-sheet", "coated-concrete", "catlin-carpet-raised",
+                    "catlin-tile-oak-height", "catlin-tile-heated"}
 
 
 def _library(catlin_model):
@@ -93,37 +94,21 @@ def test_an_unfinished_or_unknown_finish_falls_back_rather_than_raising(catlin_m
 
 # --- 3. the second storey the user asked for ----------------------------------------------
 
-def test_the_second_storey_circulation_and_baths_run_one_lvp_floor(catlin_model):
-    """LVP through both hallways, the stair landing and the two UNHEATED baths — one
-    continuous plank floor with no thresholds on the traffic route.
-
-    RM-S-BATH1 left it on 2026-09-05: it is the one floor on this storey with a radiant mat
-    under it (FH-S-BATH1), and plank caps that mat's surface at 80-85 F. It is tile now, and
-    the one threshold that buys is at D-S-BATH1."""
-    finishes = {room.tag: room.floor_finish
-                for room in catlin_model.rooms if room.storey == "second"}
-    # RM-S-LANDING and RM-S-STAIR are gone as separate claims: with the centre line open
-    # under BM-S-HALL between y 22'-4" and 30'-10", the hall, the landing and the stair
-    # well polygonize as one face, and RM-S-HALL is the seed that claims it.
-    assert {tag for tag, finish in finishes.items() if finish == "lvp"} == {
-        "RM-S-HALL", "RM-S-SUITEBATH", "RM-S-VANITY", "RM-S-NCLOSET"}
-    assert finishes["RM-S-BATH1"] == "tile"
+def test_second_storey_finishes_match_the_doorway_assemblies(catlin_model):
+    finishes = {room.tag: room.floor_finish for room in catlin_model.rooms
+                if room.storey == "second"}
+    assert {tag for tag, finish in finishes.items() if finish == "oak-floor-custom"} == {
+        "RM-S-HALL", "RM-S-NCLOSET", "RM-S-SUITE", "RM-S-CLOSET", "RM-S-STUDY2"}
+    assert {tag for tag, finish in finishes.items()
+            if finish == "catlin-carpet-raised"} == {
+        "RM-S-BED1", "RM-S-BED2", "RM-S-BED3"}
+    assert {tag for tag, finish in finishes.items()
+            if finish == "catlin-tile-oak-height"} == {
+        "RM-S-SUITEBATH", "RM-S-VANITY"}
+    assert finishes["RM-S-BATH1"] == "catlin-tile-heated"
+    assert finishes["RM-S-PLANT"] == "vinyl-sheet"
     assert "RM-S-LANDING" not in finishes
     assert "RM-S-STAIR" not in finishes
-    # The suite and its walk-in are one continuous oak field (2026-09-05, was carpet, then
-    # site-milled walnut for a few hours — walnut photo-lightens under the suite's west
-    # windows and is soft for a floor; it went to WP-S-SUITE-HEADBOARD instead). The closet
-    # opens off the bedroom, so the floor continues in rather than changing species for
-    # 27 SF. RM-S-NCLOSET is not a walk-in off a bedroom: it opens onto the hall, so it takes
-    # the hall's plank.
-    assert finishes["RM-S-SUITE"] == "oak-floor-custom"
-    assert finishes["RM-S-CLOSET"] == "oak-floor-custom"
-    assert finishes["RM-S-NCLOSET"] == "lvp"
-    # Everything else on the storey is untouched. RM-S-PLANT left tile for heat-welded
-    # sheet vinyl — the plant room's floor and walls are one coved tray (notes/plant_room.md),
-    # which tile cannot be.
-    assert finishes["RM-S-PLANT"] == "vinyl-sheet"
-    assert finishes["RM-S-STUDY2"] == "oak-floor-custom"
 
 
 # --- 4. FinishZone reaches the IR ---------------------------------------------------------
@@ -345,75 +330,27 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     assert rows["coated-concrete"]["waste_pct"] == 0.0
     # 384.9 since the clear face became the finish face (410.2 axis-derived).
     assert float(rows["coated-concrete"]["net_area_sqft"]) == pytest.approx(384.9, abs=0.5)
-    # ** 2026-09-05, the main-floor finishes. ** 694.3 -> 808.2 of LVP. The plank GAINED,
-    # in three moves:
-    #   * +48.5   the hall band's vinyl-sheet zone was DELETED, so the corridor falls back
-    #             to the room's own field finish
-    #   * +46.0   RM-M-BATH1 and RM-M-LAUNDRY retyped off vinyl-sheet onto the plank the
-    #             hall now carries
-    #   * +231.7  the south bay, which went to an authored oak zone earlier the same day and
-    #             came back — oak stood 9/16" proud of the coated cap and LVP lands 1/64"
-    #             proud of it, which is flush (main.py, RM-M-LIVING)
-    # The mudroom SUITE went the other way, to tile — see the tile assertion below for why
-    # its two closets are not in this list.
-    # Then +19.3 off the second storey: RM-S-NCLOSET, the hall linen closet, left carpet.
-    # Then -84.9 back off it later the same day: RM-S-BATH1 went to tile, the one second-
-    # storey floor with a radiant mat under it. 808.2 -> 723.3.
-    #
-    # ** 723.3 -> 722.5 on 2026-09-09, and it is one room's worth of one wall move. ** The
-    # bath2 east line went 2" east onto a single axis; RM-M-LAUNDRY sits on the far side of
-    # it and gave up 2" across its ~62 3/4" width = 0.87 sf. RM-M-BATH2 took the same 2" and
-    # is tile, so the plank total falls rather than moving sideways.
-    # 647.7 between finish faces (722.5 while the clear face was axis-derived).
-    # 508.4 net of the stair wells (2026-09-25): RM-S-HALL -70.1 over FO-S-STAIR and
-    # RM-M-LIVING -69.1 over FO-M-STAIR were billed as plank laid over the treads.
-    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(508.4, abs=0.5)
+    assert "RM-M-MUDROOM" in rows["lvp"]["rooms"]
+    assert {"RM-M-MECH", "RM-M-MUD-CLOSET"} <= set(rows["lvp"]["rooms"])
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
-    # The oak is the two studies plus the suite pair. It reached 555.9 across three rooms
-    # for part of 2026-09-05, when the living room's south bay was oak — enough to clear the
-    # sand-and-finish mobilisation minimum that houses/catlin/prices.toml warned this row was
-    # under; reverting the bay to LVP put that warning back at 324.2. RM-S-SUITE and
-    # RM-S-CLOSET arriving later the same day (+181.7, off the reverted walnut floor) clears
-    # it again on the merits, and the second storey alone now carries ~341 sf of it.
-    assert set(rows["oak-floor-custom"]["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2",
-                                         "RM-S-SUITE", "RM-S-CLOSET"}
-    # 453.9 between finish faces (507.6 axis-derived); 408.8 net of FO-A-STAIR's well in
-    # RM-A-STUDY (-45.1, 2026-09-25).
-    assert float(rows["oak-floor-custom"]["net_area_sqft"]) == pytest.approx(408.8, abs=0.5)
-    # ** vinyl-sheet has left the main storey entirely. ** What is left is the rooms that are
-    # genuinely wet or genuinely cheap-and-washable, on three different storeys: RM-S-PLANT
-    # (the spec that started it), RM-A-STUBATH, RM-B-BATH — and, since 2026-09-09,
-    # RM-A-STUDIO, whose ~356 sf took the same product over a plain plywood deck instead of
-    # walking on a sanded panel under a sealer allowance (storeys/attic_studio.py). That one
-    # room is most of the 228.8 -> 584.7.
+    assert {"RM-S-HALL", "RM-S-NCLOSET"} <= set(rows["oak-floor-custom"]["rooms"])
     assert set(rows["vinyl-sheet"]["rooms"]) == {"RM-A-STUBATH", "RM-A-STUDIO",
                                                  "RM-B-BATH", "RM-S-PLANT"}
     # 525.5 between finish faces (584.7 axis-derived).
     assert float(rows["vinyl-sheet"]["net_area_sqft"]) == pytest.approx(525.5, abs=0.5)
-    # Tile is RM-M-BATH2 (its radiant zone's mass) plus the whole mudroom SUITE — the
-    # mudroom itself and BOTH its closets.
-    #
-    # ** THE CLOSETS ARE THE POINT OF THIS ASSERTION. ** RM-M-MECH and RM-M-MUD-CLOSET took
-    # LVP with the spine for a few hours on 2026-09-05, on the argument that 33 SF is not
-    # worth its own finish. That argument was made against the wrong adjacency: both closets
-    # are carved out of RM-M-MUDROOM's footprint and both doors open INTO it (D-M-MECH on
-    # W-M-MECH-S, D-M-MUDC on W-M-MUDC-N), so plank in them cut the entry's tile into an
-    # island with THREE transition strips instead of the one at D-M-MUD — one of them under
-    # a bypass slider's bottom guide. Put either back on lvp and this test is what says so.
-    # RM-B-BATH is NOT in it — 30.2 sf under the basement stair with no radiant
-    # zone went to vinyl-sheet on 2026-09-02, and that decision is untouched here.
-    #
-    # RM-S-BATH1 joined them later on 2026-09-05, and for the same reason RM-M-BATH2 is
-    # here: its radiant zone. Plank over FH-S-BATH1 was surface-temperature limited, which
-    # is a covering throttling the only heat the room's floor has.
-    assert set(rows["tile"]["rooms"]) == {"RM-M-BATH2", "RM-M-MUDROOM", "RM-M-MECH",
-                                          "RM-M-MUD-CLOSET", "RM-S-BATH1"}
-    # And the membrane follows the tile, one for one. Both tile floors in this house are
-    # over a wood deck, and neither billed an uncoupling layer before 2026-09-05 —
-    # ``takeoff/finishes._COMPANIONS``.
-    assert rows["tile-uncoupling-membrane"]["net_area_sqft"] == rows["tile"]["net_area_sqft"]
-    assert rows["tile-uncoupling-membrane"]["rooms"] == rows["tile"]["rooms"]
+    assert set(rows["catlin-tile-oak-height"]["rooms"]) == {
+        "RM-S-SUITEBATH", "RM-S-VANITY"}
+    assert set(rows["catlin-tile-heated"]["rooms"]) == {
+        "RM-M-BATH2", "RM-S-BATH1"}
+    assert rows["catlin-ditra-xl"]["net_area_sqft"] == rows[
+        "catlin-tile-oak-height"]["net_area_sqft"]
+    assert rows["catlin-ditra-heat"]["net_area_sqft"] == rows[
+        "catlin-tile-heated"]["net_area_sqft"]
+    assert all(rows[tag]["known"] for tag in (
+        "catlin-carpet-raised", "catlin-carpet-underlayment",
+        "catlin-tile-oak-height", "catlin-tile-heated",
+        "catlin-ditra-xl", "catlin-ditra-heat"))
 
 
 # --- 5. a sealer needs a slab to seal ----------------------------------------------------
@@ -446,7 +383,7 @@ def test_the_three_retyped_mudroom_rooms_carry_a_hard_finish_over_their_wood_dec
     retyped = {"RM-M-MUDROOM", "RM-M-MECH", "RM-M-MUD-CLOSET"}
     finishes = {room.tag: room.floor_finish for room in catlin_model.rooms
                 if room.tag in retyped}
-    assert finishes == {tag: "tile" for tag in retyped}
+    assert finishes == {tag: "lvp" for tag in retyped}
 
 
 def test_a_sealer_over_a_wood_deck_fails(catlin_model):

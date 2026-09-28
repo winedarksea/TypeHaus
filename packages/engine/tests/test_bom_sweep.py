@@ -233,8 +233,9 @@ def test_every_finish_row_resolved_a_real_material(bom):
                if not row["known"] and row["finish"] is not None]
     assert unknown == [], unknown
     assert {row["finish"] for row in bom["floor_finishes"] if "under" not in row} == {
-        "carpet", "lvp", "oak-floor-custom", "tile", "sealed-concrete", "coated-concrete", "rubber",
-        "vinyl-sheet", None}
+        "carpet", "catlin-carpet-raised", "lvp", "oak-floor-custom",
+        "catlin-tile-heated", "catlin-tile-oak-height", "sealed-concrete",
+        "coated-concrete", "rubber", "vinyl-sheet", None}
 
 
 def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
@@ -259,47 +260,20 @@ def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
     assert float(row["order_area_sqft"]) == 0.0
 
 
-def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_model, bom):
-    """S3 moved five second-storey rooms to LVP and one closet to carpet; S6 has to bill
-    exactly those. The two halves are only useful together."""
-    lvp = next(row for row in bom["floor_finishes"] if row["finish"] == "lvp")
-    # RM-S-LANDING folded into RM-S-HALL when the centre line opened up under BM-S-HALL, so
-    # the one hall row bills what used to be two rooms; solid oak retreated to the studies
-    # (§Hardwood).
-    # RM-M-PANTRY contributes ZERO area: it stands entirely on
-    # SL-M-DECK, so its whole floor derives coated-concrete and its authored "lvp" is the
-    # intent if that slab outline ever moves, not a field finish. It is in the room list
-    # because the list is by authored finish; the sqft assertions elsewhere are what pin
-    # that it adds nothing.
-    # 2026-09-05: the two main-floor rooms off the hall — RM-M-BATH1 and RM-M-LAUNDRY —
-    # retyped off `vinyl-sheet` onto this plank when the hall's own vinyl FinishZone was
-    # deleted, so the spine bills as one floor. RM-M-MECH and RM-M-MUD-CLOSET were in that
-    # list for a few hours the same day and are TILE: they open into RM-M-MUDROOM, not onto
-    # the hall (see test_floor_finishes). RM-S-BATH1 left the same day and for a different
-    # reason again — FH-S-BATH1's radiant mat, which plank caps at 80-85 F — so the second
-    # storey's plank is the circulation plus the two baths with no heat in the floor.
-    assert set(lvp["rooms"]) == {"RM-S-HALL", "RM-S-SUITEBATH",
-                                 "RM-S-VANITY",
-                                 "RM-M-LIVING", "RM-M-STUDY", "RM-M-PANTRY",
-                                 "RM-M-BATH1", "RM-M-LAUNDRY", "RM-S-NCLOSET"}
-    # NET of in-room finish zones AND stair wells: 411 SF of RM-M-LIVING sits on
-    # SL-M-DECK, whose coated cap is the finished floor there, and it and RM-S-HALL wrap
-    # ~70 sf of well each. Summing room areas alone orders LVP for floor nobody covers.
+def test_floor_finish_rows_match_the_authored_room_groups(catlin_model, bom):
+    rows = {row["finish"]: row for row in bom["floor_finishes"] if "under" not in row}
+    assert set(rows["lvp"]["rooms"]) == {
+        "RM-M-LIVING", "RM-M-STUDY", "RM-M-PANTRY", "RM-M-BATH1",
+        "RM-M-LAUNDRY", "RM-M-MUDROOM", "RM-M-MECH", "RM-M-MUD-CLOSET"}
     lvp_area = sum(room.field_area_m2 for room in catlin_model.rooms
                    if room.floor_finish == "lvp") * _M2_TO_FT2
-    # Rows round to a tenth of a square foot, which is the tolerance here.
-    assert float(lvp["net_area_sqft"]) == pytest.approx(lvp_area, abs=0.05)
-    carpet = next(row for row in bom["floor_finishes"] if row["finish"] == "carpet")
-    # 2026-09-05: NO closet is on carpet any more, and no second-storey bedroom but the three
-    # on the east. RM-S-SUITE and RM-S-CLOSET left as one field — briefly for a site-milled
-    # walnut floor, and by the end of the day for the oak asserted below; RM-S-NCLOSET opens
-    # onto the hall and took the hall's plank, so it is in the lvp row above.
-    assert set(carpet["rooms"]) == {"RM-B-PLAY-N", "RM-M-BED", "RM-M-CLOSET",
-                                    "RM-S-BED1", "RM-S-BED2", "RM-S-BED3"}
-    # The oak is now two storeys plus the attic study: the suite pair joined RM-S-STUDY2 and
-    # RM-A-STUDY, which is what puts the second storey on one sand-and-finish set-up.
-    oak = next(row for row in bom["floor_finishes"] if row["finish"] == "oak-floor-custom")
-    assert set(oak["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2", "RM-S-SUITE", "RM-S-CLOSET"}
+    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(lvp_area, abs=0.05)
+    assert set(rows["carpet"]["rooms"]) == {"RM-B-PLAY-N"}
+    assert set(rows["catlin-carpet-raised"]["rooms"]) == {
+        "RM-M-BED", "RM-M-CLOSET", "RM-S-BED1", "RM-S-BED2", "RM-S-BED3"}
+    assert set(rows["oak-floor-custom"]["rooms"]) == {
+        "RM-A-STUDY", "RM-S-STUDY2", "RM-S-SUITE", "RM-S-CLOSET",
+        "RM-S-HALL", "RM-S-NCLOSET"}
 
 
 def test_a_finish_is_ordered_with_its_waste_not_at_bare_polygon_area(bom):
@@ -307,25 +281,27 @@ def test_a_finish_is_ordered_with_its_waste_not_at_bare_polygon_area(bom):
     the most — every perimeter cut is scrap — and sealed concrete carries none, because a
     sealer is measured by coverage rate rather than cut to fit."""
     rows = {row["finish"]: row for row in bom["floor_finishes"]}
-    assert float(rows["tile"]["waste_pct"]) > float(rows["oak-floor-custom"]["waste_pct"])
+    assert float(rows["catlin-tile-heated"]["waste_pct"]) > float(rows["oak-floor-custom"]["waste_pct"])
     assert float(rows["sealed-concrete"]["waste_pct"]) == 0.0
     for row in bom["floor_finishes"]:
         if row["finish"] is None:
             continue
         expected = float(row["net_area_sqft"]) * (1 + float(row["waste_pct"]) / 100.0)
-        assert float(row["order_area_sqft"]) >= expected - 1e-9, row["finish"]
+        # Net area is displayed to 0.1 SF; ordering uses the unrounded area.
+        assert float(row["order_area_sqft"]) >= expected - 0.15, row["finish"]
 
 
 def test_a_finish_brings_the_layer_it_implies(bom):
-    """Carpet needs pad and LVP needs underlayment; a schedule that bills the covering alone
-    is not orderable."""
-    companions = {row["finish"]: row for row in bom["floor_finishes"] if "under" in row}
-    # And tile needs an uncoupling membrane, since 2026-09-05: both tile floors in this
-    # house are over a wood deck, and the tile row's own $/SF is thinset and grout only.
-    assert set(companions) == {"carpet-pad", "lvp-underlayment", "tile-uncoupling-membrane"}
-    assert companions["carpet-pad"]["under"] == "carpet"
-    assert companions["lvp-underlayment"]["under"] == "lvp"
-    assert companions["tile-uncoupling-membrane"]["under"] == "tile"
+    companions = {(row["under"], row["finish"]): row for row in bom["floor_finishes"]
+                  if "under" in row}
+    assert set(companions) == {
+        ("carpet", "carpet-pad"),
+        ("catlin-carpet-raised", "carpet-pad"),
+        ("catlin-carpet-raised", "catlin-carpet-underlayment"),
+        ("lvp", "lvp-underlayment"),
+        ("catlin-tile-heated", "catlin-ditra-heat"),
+        ("catlin-tile-oak-height", "catlin-ditra-xl"),
+    }
     for row in companions.values():
         assert row["known"], row
         assert float(row["order_area_sqft"]) > 0

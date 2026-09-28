@@ -130,6 +130,7 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
              "vapor_permeance_perms": mat.vapor_permeance_perms,
              "density": mat.density, "source": mat.source,
              "color": mat.color, "finish": mat.finish, "coating": mat.coating,
+             "finish_thickness_in": mat.finish_thickness_in,
              "product_ref": mat.product_ref}
             for mat in lib.materials
         ],

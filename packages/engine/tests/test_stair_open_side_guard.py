@@ -161,7 +161,7 @@ def test_the_inner_side_over_a_flush_partition_is_an_open_side(ctx):
     finding = _by_stair(stair_open_side_guard(_with(ctx, _head_only)))["ST-M2S"]
     assert finding.result is Result.FAIL
     assert "4 nosing end(s)" in finding.message
-    assert "97\" fall" in finding.message
+    assert "98\" fall" in finding.message
 
 
 def test_a_short_guard_on_the_partition_fails_on_height(ctx):

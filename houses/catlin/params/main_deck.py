@@ -16,8 +16,8 @@ and the basement wall comes out at exactly 8'-0".
 ::
 
                     WOOD BAY                          EPS DECK BAY
-      +1 5/16" 5/16" porcelain + 1/8" uncoupling membrane (RM-M-MUDROOM)
-      +0.95"..0.99" 6 mm SPC LVP (5 mm + 1 mm IXPE)   -- everywhere else
+      +0.9862" 6 mm SPC LVP (RM-M-MUDROOM and both closets)
+      +0.9862" 6 mm SPC LVP (5 mm + 1 mm IXPE)   -- wood bays
       +15/16" ------------------------------------  cap top, coated   <- finished floor
       +3/4"   3/4" plywood subfloor
       0'-0"   ------------------------------------  STOREY DATUM (top of joists)
@@ -190,9 +190,9 @@ MAIN_FINISHED_FLOOR_LVP = inch(MAIN_FINISHED_FLOOR.inches + _LVP.inches)
 # ``structural.mixed_deck_bearing_seat`` holds cap-top within 1/4" of the subfloor top, so
 # the cap has 1/16" of lift in it, not 9/16". The step was acceptable or it was not, and it
 # was not — so there is no MAIN_FINISHED_FLOOR_OAK here. Oak is still the two studies'
-# floor; it is this bay, against this cap, that does not want it. Nothing on this storey is
-# proud of the cap by more than 1/64" now except the mudroom's tile-over-membrane, whose
-# ~5/16" is a deliberate dirt step at its own doorway.
+# floor; it is this bay, against this cap, that does not want it. The mudroom
+# and its closets now share the hall LVP plane. The bedroom carpet and heated
+# bath are at +1 1/2", with a reducer at the bedroom entry.
 
 # --- the plane the whole exercise turns on ----------------------------------------
 #

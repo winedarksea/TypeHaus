@@ -189,7 +189,7 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
   registerSelectable(framingGroup, framingFirstChildIndex, floor.uid, "floor", picks, byUid);
 }
 
-/** How thick a floor finish draws. Matches the room prism emit/gltf/emitter.py extrudes. */
+/** Legacy display depth for catalogs without installed assembly thickness. */
 export const ROOM_FINISH_THICKNESS_M = 0.02;
 
 /**
@@ -265,8 +265,11 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
   center: PlanCenter, mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
   materials: readonly MaterialAppearance[] | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  const installedDepthIn = authoredAppearance(finish, materials)?.finish_thickness_in;
+  const finishDepthM = installedDepthIn == null
+    ? ROOM_FINISH_THICKNESS_M : installedDepthIn * 0.0254;
   const geometry = createPlanPrismGeometry(
-    outline, floorTopM, floorTopM + ROOM_FINISH_THICKNESS_M, holes, center);
+    outline, floorTopM, floorTopM + finishDepthM, holes, center);
   if (!geometry) return;
   const firstChildIndex = parent.children.length;
   // A plank floor is boards, not a sheet: oak, owner-milled plank and LVP take the board
@@ -293,7 +296,7 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
         roughness,
         metalness: mode === "nordic" ? surface.metalness : 0,
       }));
-  // Receives but does not cast: a 20 mm finish laid on the deck has nothing to cast onto.
+  // The walking plane uses the declared installed depth; it receives shadows from the room.
   mesh.receiveShadow = true;
   parent.add(mesh);
   // A zone belongs to its room: clicking the band selects RM-M-LIVING, not a nameless plane.

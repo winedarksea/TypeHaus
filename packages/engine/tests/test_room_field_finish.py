@@ -57,7 +57,7 @@ def test_the_takeoff_bills_the_field_not_the_gross_room(catlin_model_ro):
     gross = sum(room.area_m2 - sum(zone.area_m2 for zone in room.finish_zones)
                 for room in catlin_model_ro.rooms if room.floor_finish == "lvp") * _M2_TO_FT2
     # RM-S-HALL and RM-M-LIVING each wrap ~70 sf of well; the underlayment follows the plank.
-    assert gross - float(rows["lvp"]["net_area_sqft"]) == pytest.approx(139.2, abs=1.0)
+    assert gross - float(rows["lvp"]["net_area_sqft"]) == pytest.approx(75.8, abs=1.0)
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
 
 

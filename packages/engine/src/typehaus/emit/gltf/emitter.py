@@ -19,6 +19,8 @@ import struct
 from collections.abc import Container
 from pathlib import Path
 
+from shapely.geometry import Polygon
+
 # Re-exported for callers that reach past the entry point (tests pinning palette parity, the
 # arch-soffit tessellation, the wall/roof builders). Import them from their own modules in new
 # code; this list keeps ``from typehaus.emit.gltf.emitter import ...`` working unchanged.
@@ -80,11 +82,23 @@ from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.sweep import sweep_legs
+from typehaus.resolve.walking_surface import surfaces_at
 
 
 def _solid_trades(model: ResolvedModel, solid) -> tuple[str, ...]:
     """The solid's trade set: its category, re-filed by what it is made of."""
     return solid_trades(solid.category, solid_material_ref(model.plan, solid))
+
+
+def _finish_top_at_part(model: ResolvedModel, room, finish: str,
+                        outline, holes, default_m: float) -> float:
+    """Read the part's own deck: a room centroid may sit on another finish zone."""
+    probe = Polygon(outline, holes).representative_point()
+    for surface in surfaces_at(model, (probe.x, probe.y)):
+        if surface.room_tag == room.tag and surface.finish_ref == finish \
+                and surface.surface_m is not None:
+            return surface.surface_m
+    return default_m
 
 
 def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes]:
@@ -161,10 +175,9 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:
-            # The FINISHED floor, not the structural datum: this prism IS the floor
-            # covering, so drawing it on the subfloor sank it under the plane every
-            # placeable in the room stands on. Must stay in step with the IFC space
-            # (``emit/ifc/architectural.py``), which reads the same function.
+            # The room's representative finished elevation anchors the fallback. Each
+            # actual covering part is sampled below: RM-M-LIVING's centroid lies on
+            # coated concrete while its LVP field lies on the adjoining wood deck.
             storey_z = room_finished_floor_elevation(model, room)
             mb = _MeshBuilder()
             # The field finish is CUT by its zones rather than covered by them, matching
@@ -172,9 +185,16 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             # makes a coating zone right: polished concrete has no plane of its own, so the
             # hole is the whole drawing and the slab solid below shows through it.
             # ``field_finish`` is already net of zones and deck voids (resolve/room_finish.py).
+            finish_material = next((material for material in model.plan.library.materials
+                                    if material.tag == room.floor_finish), None)
+            finish_depth_m = (finish_material.finish_thickness_in * 0.0254
+                              if finish_material is not None
+                              and finish_material.finish_thickness_in is not None else 0.02)
             for outline, holes in room.field_finish:
+                field_top_m = _finish_top_at_part(
+                    model, room, room.floor_finish, outline, holes, storey_z)
                 mb.add_prism_with_rectangular_voids(
-                    outline, holes, storey_z, storey_z + 0.02,
+                    outline, holes, field_top_m - finish_depth_m, field_top_m,
                     _room_floor_color(model, room.floor_finish))
             # A covering zone (a tile inlay, a hearth pad) fills its own hole, a hair proud
             # of the field so it wins the depth test instead of z-fighting with it.
@@ -183,8 +203,15 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                     continue
                 zb = _MeshBuilder()
                 for outline, holes in zone.parts:
+                    zone_material = next((material for material in model.plan.library.materials
+                                          if material.tag == zone.material_ref), None)
+                    zone_depth_m = (zone_material.finish_thickness_in * 0.0254
+                                    if zone_material is not None
+                                    and zone_material.finish_thickness_in is not None else 0.021)
+                    zone_top_m = _finish_top_at_part(
+                        model, room, zone.material_ref, outline, holes, storey_z)
                     zb.add_prism_with_rectangular_voids(
-                        outline, holes, storey_z, storey_z + 0.021,
+                        outline, holes, zone_top_m - zone_depth_m, zone_top_m,
                         _room_floor_color(model, zone.material_ref))
                 scene.add_object(zb, ("flooring",), kind="room", uid=room.uid)
             scene.add_object(mb, ("flooring",), kind="room", uid=room.uid)
