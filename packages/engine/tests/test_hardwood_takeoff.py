@@ -203,12 +203,12 @@ def test_a_shelf_inside_the_board_width_stays_one_board(rows):
 
 
 def test_a_shelf_deeper_than_it_is_wide_is_milled_front_to_back(rows):
-    """RM-S-BATH1's alcove is 18-1/2" wide in a 30"-deep carcass — the one shelf in the
-    house whose depth is its LONGER plan dimension. Grain runs the long way, so the board's
-    width is 18-1/2" and the layup is two boards, not a 30" panel."""
+    """RM-S-BATH1's alcove is 18-1/2" wide in a 30"-deep carcass (29-1/4" of shelf inside
+    its back) — the one shelf in the house whose depth is its LONGER plan dimension. Grain
+    runs the long way, so the board's width is 18-1/2" and the layup is two boards."""
     bath = next(row for row in _use(rows, "shelf") if "SB-S-BATH1" in row["tags"])
     assert bath["finished_width_in"] == pytest.approx(18.5)
-    assert bath["finished_length_in"] == pytest.approx(30.0)
+    assert bath["finished_length_in"] == pytest.approx(29.25)
     # And the rule is derived, not authored for this one case: every shelf in the house
     # has its width on the shorter of the two plan dimensions.
     for row in _use(rows, "shelf"):
@@ -256,7 +256,7 @@ def test_the_elm_material_does_not_claim_to_be_board_stock(catlin_model_ro):
 def test_only_the_two_oak_flights_are_scheduled(rows, catlin_model_ro):
     """29 treads: ST-M2S's 14 and ST-S2A's 15. ST-B2M is carpeted and the garage flight is
     KDAT, and until ``MillworkStandard`` said so that split lived in a price comment."""
-    treads = _use(rows, "stair tread")
+    treads = _use(rows, "stair tread") + _use(rows, "stair winder")
     assert sum(row["pieces"] for row in treads) == 29
     scheduled = {tag for row in treads for tag in row["tags"]}
     assert scheduled == {"ST-M2S", "ST-S2A"}

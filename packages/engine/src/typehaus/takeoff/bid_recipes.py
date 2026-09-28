@@ -50,6 +50,13 @@ def _bar(row: Row) -> str:
             f"{row.get('hook_length_ft')} LF hooks")
 
 
+def _tread(row: Row) -> str:
+    """Who supplies the stock, and the face area it covers."""
+    supply = row.get("supply")
+    area = row.get("area_sqft")
+    return f"{supply}, {area} SF" if supply is not None else ""
+
+
 def _runs(row: Row) -> str:
     runs = row.get("runs")
     return f"{runs} run(s)" if runs is not None else ""
@@ -119,6 +126,7 @@ SHAPES: dict[str, Shape] = {
     "wood_surfaces": Shape("Wood surfaces", None, "SF ordered"),
     "shelving": Shape("Purchased shelving", None, "SF ordered"),
     "countertops": Shape("Countertops", None, "SF"),
+    "stair_treads": Shape("Treads, winders and landings, by the piece", _tread, "pcs"),
     "railings": Shape("Guards and handrails", _railing, "LF"),
     "allowances": Shape("Owner allowances"),
     "timber": Shape("Timber", _solid),
@@ -176,7 +184,8 @@ RECIPES: dict[str, Recipe] = {
                        "envelope_layers", "wall_structure"),
                       ("S-100", "S-101", "S-201", "A-301", "A-401")),
     "stairs": Recipe("Stairs and guards", "Stringers, treads, risers and newels, and every "
-                     "guard and handrail.", ("framing", "railings", "solids"),
+                     "guard and handrail. Owner-milled treads are install only.",
+                     ("stair_treads", "framing", "railings", "solids"),
                      ("A-301", "A-401")),
     "roofing": Recipe("Roofing", "Standing seam, underlayment, drip and ridge, and the snow "
                       "retention and clamps fastened into the skin.",

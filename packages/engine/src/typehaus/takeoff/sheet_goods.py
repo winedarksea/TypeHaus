@@ -18,7 +18,6 @@ from typehaus.resolve.ceiling_over import (
     deck_structure_underside_m,
     deck_void_face,
 )
-from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
@@ -43,13 +42,9 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     sheet estimate auditable instead of silently grouping unlike panel products. The size is
     the layer's ``sheet_length`` (``resolve/sheet_stock``), 4x8 where it states none.
     """
-    from typehaus.takeoff.stairs import separate_stair_wear_members
-
+    # Stair walking surfaces are not sheet goods: they bill by the piece in
+    # ``takeoff/stairs.stair_tread_takeoff``.
     areas: dict[tuple[str, str, float, float | None], float] = defaultdict(float)
-    for member in separate_stair_wear_members(model):
-        section = cross_section(member.profile)
-        areas[("stair wear surface", member.material, section.depth_m, None)] += (
-            member.length_m * section.width_m)
     openings_by_wall: dict[str, list] = defaultdict(list)
     for opening in model.openings:
         openings_by_wall[opening.host_wall].append(opening)

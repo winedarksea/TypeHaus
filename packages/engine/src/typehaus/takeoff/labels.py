@@ -26,7 +26,7 @@ SECTION_LABELS: dict[str, str] = {
     "floor_heat": "Radiant floor heat", "placeables": "Fixtures, equipment and casework",
     "floor_finishes": "Floor finishes", "envelope_layers": "Assembly layers",
     "wood_surfaces": "Wood surfaces", "countertops": "Countertops",
-    "shelving": "Purchased shelving",
+    "shelving": "Purchased shelving", "stair_treads": "Stair treads and landings",
     "openings": "Windows and doors", "footing_bedding": "Footing bedding",
     "pipe_runs": "Pipe", "pipe_fittings": "Pipe fittings", "ducts": "Ducts",
     "duct_fittings": "Duct fittings", "duct_insulation": "Duct insulation",
@@ -158,13 +158,17 @@ def _profile_label(profile: str) -> str:
 
 
 def _fraction_in(value: object) -> str:
-    """``0.75`` -> ``3/4"``, ``1.5`` -> ``1 1/2"``, ``3`` -> ``3"``."""
+    """``0.75`` -> ``3/4"``, ``1.5`` -> ``1 1/2"``, ``3`` -> ``3"``.
+
+    On the tape's grid — the nearest 1/32", reduced — never ``limit_denominator``'s nearest
+    rational, which printed 23/32" plywood as 5/7" and a 44 5/8" landing as 44 8/13".
+    """
     try:
         number = float(value)  # type: ignore[arg-type]
     except (TypeError, ValueError):
         return str(value)
-    whole = int(number)
-    part = Fraction(number - whole).limit_denominator(16)
+    whole, remainder = divmod(round(number * 32), 32)
+    part = Fraction(remainder, 32)
     text = f"{whole}" if whole or not part else ""
     if part:
         text = f"{text} {part}".strip()

@@ -138,8 +138,12 @@ PORCH_TRACK_102 = FurnitureType(
 # the two front faces land on one line, and 84" is the tub surround's head, so the north
 # wall reads as a single built element from floor to 7'-0" instead of a box beside a tub.
 #
-# ``plan_symbol="bookcase"`` is not an approximation here — ``shelving(shelves=5)`` builds
-# two side panels, a back and five shelves, which is literally what this is.
+# CLOSED BELOW THE COUNTER (owner, 2026-09-28). FX-S-BATH1-LAV's north end panel stands
+# 0.6" in front of this case's whole open face, so nothing under the 36" counter line can be
+# reached. A fixed 3/4" plywood front panel (carcass, hidden behind the vanity end; no oak)
+# closes floor to 35 1/4"; the lowest open shelf's top is flush with the counter at 36", so
+# things slide across. Oak boards top at 36/48/60/72/84" — 11 1/4" clear each — and none
+# stands in the closed base. SB-S-BATH1 bills those five.
 #
 # No ``clearances``: per the casework rule, a built-in's back is the wall and its ends are
 # its neighbours, and the floor in front of it is the same floor you stand on to use the
@@ -147,7 +151,13 @@ PORCH_TRACK_102 = FurnitureType(
 BATH1_SHELF_2030 = FurnitureType(
     tag="FT-BATH1-SHELF-2030", name='Bath 1 alcove shelf, 20" x 30"',
     footprint=(inch(20), inch(30)), height=inch(84),
-    storage=True, work_surface=False, plan_symbol="bookcase",
+    storage=True, work_surface=False,
+    built_in_bookcase=BuiltInBookcaseSpec(
+        bays=(BuiltInBookcaseBay(clear_width=inch(18.5), height=inch(84),
+                                 horizontal_board_count=5, closed_base_height=inch(35.25)),),
+        shelf_depth=inch(29.25), horizontal_board_thickness=inch(0.75),
+        divider_thickness=inch(0.75), back_thickness=inch(0.75),
+    ),
     wood_material_ref="oak-shelf-4q",
     source="Site-built millwork, not a catalogue bookcase: a 3/4\" plywood carcass scribed "
            "to the east end of RM-S-BATH1's tub alcove, whose WEST panel carries "

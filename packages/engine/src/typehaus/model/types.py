@@ -162,6 +162,9 @@ class BuiltInBookcaseBay(HausModel):
     clear_width: Length
     height: Length
     horizontal_board_count: int
+    # A fixed carcass-thickness front panel closing the bay from the floor to here (the
+    # underside of its lowest board): the boards distribute above it, none below.
+    closed_base_height: Length = m(0)
 
     @model_validator(mode="after")
     def _has_usable_geometry(self) -> BuiltInBookcaseBay:
@@ -169,11 +172,13 @@ class BuiltInBookcaseBay(HausModel):
             raise ValueError("built-in bookcase bay width and height must be positive")
         if self.horizontal_board_count < 2:
             raise ValueError("built-in bookcase bay needs a base and top board")
+        if not 0 <= self.closed_base_height.meters < self.height.meters:
+            raise ValueError("built-in bookcase closed base must lie inside the bay height")
         return self
 
 
 class BuiltInBookcaseSpec(HausModel):
-    """Explicit fabrication geometry for wall-attached, open fitted bookcases.
+    """Explicit fabrication geometry for fitted open bookcases, optionally closed at the base.
 
     ``FurnitureType.footprint`` remains the placement and collision envelope.  This spec
     describes the boards inside it so sheets, GLB, and IFC do not reduce fitted work to a
@@ -200,8 +205,8 @@ class BuiltInBookcaseSpec(HausModel):
             raise ValueError("built-in bookcase thicknesses and shelf depth must be positive")
         if self.west_filler_width.meters < 0:
             raise ValueError("built-in bookcase west filler width cannot be negative")
-        if any(bay.height.meters < self.horizontal_board_thickness.meters
-               for bay in self.bays):
+        if any(bay.height.meters - bay.closed_base_height.meters
+               < self.horizontal_board_thickness.meters for bay in self.bays):
             raise ValueError("built-in bookcase bay is shorter than its boards")
         return self
 

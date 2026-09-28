@@ -252,6 +252,8 @@ over TPO/EPDM. **The cove *is* the waterproofing.**
   and no room on this storey's SW corner carries an egress duty.
 - **Drained sill pan** under each unit: sloped, flashed into the wall membrane, draining to
   the room, never into framing. Drawn by `TR-CATLIN-PLANT-OPENING`.
+- **Window stools are 3 cm quartz remnants, not oak** (owner, 2026-09-28; `PLANT_STOOLS` in
+  `plan/countertops.py`): the pan laps over the stool's back edge, so the stone discharges it.
 - **Keep the glass-wash airflow.** `REG-S-HP-PLANT`'s throw washes the south glass, and that
   function survives the damper retype below.
 - **`D-S-DECK-W` IS DELETED (2026-09-03), and `WIN-S-PLANT4` stands on its centre.** A 60"

@@ -247,7 +247,8 @@ def test_the_sink_base_carries_a_billable_shelf():
     # A Fixture hosting casework is legal — `resolve/millwork.py` builds its placeable map
     # from `canvas_objects`, which carries Fixtures — but the depth cannot be DERIVED from a
     # FixtureType, so it must be authored or the bank resolves with no depth at all.
-    assert round(bank.depth_m / M_PER_IN, 2) == 18.5
+    # 18" carcass less a 3/4" back and a 1 3/4" set-off (it read 18 1/2" off the old 21").
+    assert round(bank.depth_m / M_PER_IN, 2) == 15.5
 
 
 # --- the radiant floor -----------------------------------------------------------------

@@ -10,7 +10,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.stairs.dispatch import _resolve_stair
 from typehaus.takeoff.framing import framing_takeoff, sheet_goods_takeoff
-from typehaus.takeoff.stairs import stair_finish_takeoff
+from typehaus.takeoff.stairs import stair_finish_takeoff, stair_tread_takeoff
 
 
 def _tiers(**overrides):
@@ -29,6 +29,8 @@ def _resolve(stair):
     storey = SimpleNamespace(tag="main", elevation=ft(0))
     plan = SimpleNamespace(storey=lambda tag: storey, storeys=[storey],
                            storey_elements=lambda tag: [stair],
+                           all_elements=lambda: [stair],
+                           library=SimpleNamespace(materials=[]),
                            by_tag=lambda tag: stair if tag == stair.tag else None)
     model = ResolvedModel(plan)
     resolved, findings = _resolve_stair(model, stair, "main")
@@ -74,11 +76,12 @@ def test_composite_tiers_bill_area_once_and_keep_framing_separate():
     assert finish["tread_material"] == "composite-deck"
     assert finish["tread_run_in"] == 24
     assert finish["tread_area_sqft"] == 48  # four tiers, each 6 x 2 feet
-    sheets = sheet_goods_takeoff(model)
-    assert len(sheets) == 1
-    assert sheets[0]["net_area_sqft"] == 48
-    assert sheets[0]["material"] == "composite-deck"
-    assert sheets[0]["thickness_in"] == 1
+    # By the piece, never by the sheet: a wear surface is not a 4x8 panel.
+    assert not sheet_goods_takeoff(model)
+    [pieces] = stair_tread_takeoff(model)
+    assert (pieces["material"], pieces["use"], pieces["pieces"]) == ("composite-deck", "tread", 4)
+    assert (pieces["thickness_in"], pieces["width_in"], pieces["length_in"]) == (1, 24, 72)
+    assert pieces["area_sqft"] == 48 and pieces["supply"] == "purchased"
     lumber = framing_takeoff(model)
     assert sum(row["pieces"] for row in lumber) == 7
     assert {row["material"] for row in lumber} == {"kdat"}

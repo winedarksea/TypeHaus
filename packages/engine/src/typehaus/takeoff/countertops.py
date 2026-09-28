@@ -5,6 +5,12 @@ a material at $/SF fabricated and installed, and the number of pieces it is cut 
 fabricator's problem, not a line on the estimate. The rows carry which runs they came from
 so a reader can see the derivation rather than take the total on faith.
 
+A window stool cut from a material some countertop in the house is cut from joins that
+material's row: it is a remnant off the same slab order, cut by the same yard at the same
+rate. Its area is its finished board, length x depth. It adds to ``net_area_sqft`` and is
+listed under ``stools``, never ``tops`` or ``length_ft`` (a stool is not part of a run).
+``takeoff/hardwood.py`` admits only custom-milled stools, so no stool bills in both.
+
 Waste is deliberately NOT applied here, unlike ``floor_finishes`` and ``wood_surfaces``.
 A slab yard quotes the finished square footage of the top; the yield loss between a 57" x
 120" slab and a 25"-deep strip is inside the fabricated rate, and adding a percentage on top
@@ -24,16 +30,23 @@ _M_TO_IN = 39.37007874
 
 
 def countertop_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """One row per countertop material: net area, run length, and the tops it covers."""
+    """One row per countertop material: net area, run length, the tops and stools it covers."""
     area: dict[str, float] = defaultdict(float)
     length: dict[str, float] = defaultdict(float)
     tops: dict[str, list[str]] = defaultdict(list)
+    stools: dict[str, list[str]] = defaultdict(list)
     thicknesses: dict[str, set[float]] = defaultdict(set)
     for top in model.countertops:
         area[top.material_ref] += top.area_m2
         length[top.material_ref] += top.length_m
         tops[top.material_ref].append(top.tag)
         thicknesses[top.material_ref].add(round(top.thickness_m * _M_TO_IN, 3))
+    for stool in model.window_stools:
+        if stool.material_ref not in tops or stool.depth_m is None:
+            continue
+        area[stool.material_ref] += stool.length_m * stool.depth_m
+        stools[stool.material_ref].append(stool.tag)
+        thicknesses[stool.material_ref].add(round(stool.thickness_m * _M_TO_IN, 3))
 
     materials = {material.tag: material for material in model.plan.library.materials}
     rows: list[dict[str, object]] = []
@@ -48,5 +61,6 @@ def countertop_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             # mixes two, which is a fabrication fact and not a rounding artefact.
             "thickness_in": sorted(thicknesses[ref]),
             "tops": sorted(tops[ref]),
+            "stools": sorted(stools[ref]),
         })
     return rows

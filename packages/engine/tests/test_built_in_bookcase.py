@@ -75,3 +75,30 @@ def test_optional_west_filler_closes_return_without_becoming_a_bay(stepped_spec)
     assert width * 12 / .3048 == pytest.approx(99.375)
     assert len(fillers) == 1
     assert fillers[0].size[0] * 12 / .3048 == pytest.approx(2.625)
+
+
+def test_closed_base_emits_a_front_panel_and_lifts_every_board_above_it() -> None:
+    """The bath 1 case: carcass front panel to 35-1/4", boards topping 36..84" on a 12" pitch."""
+    spec = BuiltInBookcaseSpec(
+        bays=(BuiltInBookcaseBay(clear_width=inch(18.5), height=inch(84),
+                                 horizontal_board_count=5, closed_base_height=inch(35.25)),),
+        shelf_depth=inch(29.25), horizontal_board_thickness=inch(.75),
+        divider_thickness=inch(.75), back_thickness=inch(.75),
+    )
+    parts = built_in_bookcase_parts(spec)
+    to_in = 12 / .3048
+    (panel,) = [part for part in parts if part.role == "front_panel"]
+    assert panel.z0_m == pytest.approx(0) and panel.z1_m * to_in == pytest.approx(35.25)
+    assert panel.size[0] * to_in == pytest.approx(18.5)
+    assert panel.size[1] * to_in == pytest.approx(.75)
+    # Flush with the shelf fronts, which are the carcass front.
+    _width, depth, _height = built_in_bookcase_dimensions(spec)
+    assert panel.center[1] - panel.size[1] / 2 == pytest.approx(-depth / 2)
+    tops = [part.z1_m * to_in for part in parts if part.role == "horizontal_board"]
+    assert tops == pytest.approx([36, 48, 60, 72, 84])
+
+
+def test_a_closed_base_must_sit_inside_its_bay() -> None:
+    with pytest.raises(ValueError):
+        BuiltInBookcaseBay(clear_width=inch(18), height=inch(30), horizontal_board_count=2,
+                           closed_base_height=inch(30))

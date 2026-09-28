@@ -172,7 +172,8 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                                 narrow, nosing_point, _notch_z(top, thickness), top,
                                 math.hypot(nosing_point[0] - narrow[0],
                                            nosing_point[1] - narrow[1]),
-                                plan_outline=_clean_ring(outline)))
+                                plan_outline=_clean_ring(outline),
+                                nosing_line=(previous_narrow, previous_nosing)))
         previous_nosing, previous_narrow = nosing_point, narrow
     tread_profile = _tread_board_profile(tread_depth, thickness)
     for index in range(straight_treads):

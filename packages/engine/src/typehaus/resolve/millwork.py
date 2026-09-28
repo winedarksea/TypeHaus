@@ -319,7 +319,7 @@ def _pocket_depth_m(wall: ResolvedWall) -> float | None:
 
 def _carcass_depth_m(placeable: ResolvedCanvasObject | None,
                      furniture_types: dict[str, FurnitureType]) -> float | None:
-    """A carcass's shelf depth: its type's footprint depth.
+    """A carcass's shelf depth: its fitted spec's shelf depth, else its footprint depth.
 
     Inherited rather than restated on the bank: the carcass already states how deep it is,
     and a second authored number is the one that goes stale.
@@ -329,6 +329,8 @@ def _carcass_depth_m(placeable: ResolvedCanvasObject | None,
     ftype = furniture_types.get(placeable.type_ref or "")
     if ftype is None:
         return None
+    if ftype.built_in_bookcase is not None:
+        return float(ftype.built_in_bookcase.shelf_depth.meters)
     return float(ftype.footprint[1].meters)
 
 

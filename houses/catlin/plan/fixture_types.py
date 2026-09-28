@@ -100,7 +100,7 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
 # the drawer bank to the basin rim rather than being cut in half by a second bowl. The
 # basin centreline lands at y=16'-3 5/8" -- 39" off W-M-BDN1's face, comfortably past
 # NKBA G5's recommended 20" to a sidewall. The sink base's interior shelf is authored as
-# SB-M-BATH2-VAN in plan/millwork.py, because a shelf the owner will stand things on is
+# SB-M-BATH2-VAN in plan/millwork_vanities.py, because a shelf the owner will stand things on is
 # worth billing; the drawer boxes are not modelled (the engine has no drawer vocabulary)
 # and live in the cabinet breakdown below and in prices.toml.
 #
@@ -205,7 +205,7 @@ BATH2_VANITY_48 = FixtureType(
 # sink base VSB2121L $551.61 against drawer base VBD2121 $818.48 -- +$267 on one cabinet).
 # Under a sink the top drawer is a false front anyway, because the trap is in the way, so
 # the premium buys even less there than it does in a kitchen. Each of these carries a
-# full-depth adjustable interior shelf instead (the ``SB-*-VAN`` banks in plan/millwork.py,
+# full-depth adjustable interior shelf instead (the ``SB-*-VAN`` banks in plan/millwork_vanities.py,
 # cut from the owner's own oak), which roughly doubles usable volume for the price of a
 # board. Only the 48" hall-bath unit gets a drawer bank, because it is the one wall wide
 # enough to hold a 30" sink base AND an 18" bank without giving up the sink base.

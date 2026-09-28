@@ -41,6 +41,8 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids",
              "floor_finishes", "envelope_layers", "wood_surfaces", "shelving", "openings",
              # Work surfaces by the square foot, keyed on material tag.
              "countertops",
+             # Finish treads, winders and landings by the piece, keyed material:use.
+             "stair_treads",
              "footing_bedding",
              "pipe_runs", "pipe_fittings", "ducts",
              # Duct elbows by the piece and duct wrap by the foot — the air-side mirrors of
@@ -257,6 +259,9 @@ class Prices:
     # a slab yard quotes the finished top, so the slab yield loss is inside the rate and the
     # takeoff applies no waste on top of it (→ takeoff/countertops.py).
     countertops: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Stair finish pieces (→ takeoff/stairs.stair_tread_takeoff), keyed ``material:use``.
+    # An owner-milled piece is labour only; its stock is the ``haus millwork`` cut list.
+    stair_treads: Mapping[str, PriceRange] = field(default_factory=dict)
     openings: Mapping[str, PriceRange] = field(default_factory=dict)
     footing_bedding: Mapping[str, PriceRange] = field(default_factory=dict)
     pipe_runs: Mapping[str, PriceRange] = field(default_factory=dict)

@@ -556,6 +556,9 @@
 "4x0.5 panel" = { low = 1.5, high = 5 }  # 28 LF — formed gutter stock
 "4x4" = { material = { low = 2.2, high = 3.6 }, labour = { low = 1.5, high = 3 } }  # 32 LF
 "6x6" = { material = { low = 5, high = 8.5 }, labour = { low = 2.5, high = 5 } }  # 8 LF
+# ** SUPERSEDED 2026-09-28 for the oak: ** the oak treads now bill in [stair_treads] by the
+# piece, and ST-B2M resolves `deck 11x1`, so `deck 11x1.5` below now prices ONLY the two
+# exterior PT flights' 32 LF — at a blend that reads high for PT. History kept below.
 # The stair members, repriced 2026-08-08b now that species is settled: RED OAK everywhere
 # except the basement flight (ST-B2M), which is heavy-duty carpet over a plain substrate.
 # `stair_finish` splits the three house flights — ST-B2M 12 treads, ST-M2S 13, ST-S2A 15 —
@@ -577,16 +580,10 @@
 # mills the treads rather than buying them, the MATERIAL half of this row is what falls
 # away, not the labour half.
 "deck 11x1.5" = { material = { low = 7, high = 14.5 }, labour = { low = 11.5, high = 23 } }  # 288 LF — stair treads (blend: 28 oak, 12 carpet); the 32 LF kdat half is the two EXTERIOR flights, ST-G-SERVICE and ST-SG-PORCH (4 treads at 3'-0" each, 2026-09-03), which are neither oak nor carpeted and sit at the low end of this blend
-# The two landing platforms, one per flight that has one. These existing `deck WxT` framing
-# rows retain the platform pricing driver. ST-B2M's 1" substrate carries carpet and pad;
-# ST-M2S's 1-1/2" assembly is 3/4" plywood plus 3/4" owner-milled oak T&G, with a solid
-# 8/4 nosing. `haus millwork` gives the oak field and nosing cut list; it remains an unpriced
-# view, while these rows keep the existing platform estimate.
+# ST-B2M's carpeted landing platform. The oak flights' treads, winders and ST-M2S's landing
+# left this table 2026-09-28 for [stair_treads], by the piece.
 "deck 42x1.5" = { material = { low = 8, high = 16 }, labour = { low = 9.5, high = 25 } }  # 16 LF — ST-B2M landing, carpeted
-"deck 44.625x1.5" = { material = { low = 22, high = 48 }, labour = { low = 9.5, high = 25 } }  # 16 LF — ST-M2S landing, oak
 "hanger" = { material = { low = 1.5, high = 4 }, labour = { low = 1.3, high = 2.6 } }  # 32 LF — stair hanger board, 2x stock
-# Winders are on ST-S2A (oak). A tapered blank is wider stock and more waste per tread.
-"tapered tread" = { material = { low = 12.5, high = 25 }, labour = { low = 19, high = 50 } }  # 24 LF — winder treads, red oak
 
 [sheet_goods]
 # RESEARCHED 2026-08-07 — [low, high] $/4x8 sheet, material only. Basis: 1/2" drywall
@@ -3006,7 +3003,8 @@
 # same-width sink base $552), and that is inside its band.
 #
 # ** THE OAK SHELVES ARE NOT IN ANY OF THESE ROWS. ** SB-B-BATH-VAN, SB-M-BATH1-VAN,
-# SB-S-BATH1-VAN, SB-S-SUITEBATH-VAN and SB-S-VANITY-VAN1/2 bill as owner-milled hardwood in
+# SB-S-BATH1-VAN, SB-S-SUITEBATH-VAN, SB-S-VANITY-VAN1/2 and SB-A-STUBATH-VAN bill as
+# owner-milled hardwood in
 # [hardwood]. Counting them here would double-bill the one part of each cabinet the owner is
 # making, exactly as the 54" row's note says.
 #
@@ -5011,6 +5009,9 @@
 #   CT-M-KIT-PENINSULA    20.00 SF  the peninsula's 24" work surface, 10'-0"
 #   CT-M-BATH2-VANITY      6.33 SF  48 x 19
 #   CT-S-BATH1-VANITY      7.33 SF  48 x 22
+#   STOOL-WIN-S-PLANT1..4  9.26 SF  the plant room's four 3 cm window stools (2026-09-28),
+#                                   remnants of this slab order, stone not oak, so absent
+#                                   from `haus millwork` (takeoff/countertops.py). 70.59 SF.
 # The other four vanity tops are one-piece solid surface moulded with their bowls and bought
 # boxed with the cabinet: they bill in [placeables] and must never appear here.
 #
@@ -5026,7 +5027,7 @@
 # $3,067-5,827 against that lump's $3,200-6,000, which is the same money now attached to a
 # quantity. See plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the
 # showroom — silica exposure control is the thing to buy here.
-"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 61.34 SF
+"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 70.59 SF
 # The bar top, and the rate is not a countertop rate at all: the stock is the owner's own
 # white oak at ~$2/SF in 8/4, and everything above that is a joiner's time — milling to
 # 1 3/16" so it sits flush with 3 cm stone, strips the long way on slotted screws or
@@ -5035,6 +5036,18 @@
 # end is a cabinetmaker. 10 SF x $40-110 is the $400-1,100 the retired
 # `finish-peninsula-oak-bar-top` allowance carried, now attached to the slab it pays for.
 "oak-counter" = { material = { low = 4, high = 10 }, labour = { low = 36, high = 100 } }  # 10.00 SF
+
+[stair_treads]
+# The oak flights' walking surfaces by the piece (2026-09-28), moved out of [framing] where
+# they billed as `deck 11x1.5` / `tapered tread` / `deck 44.625x1.5` lumber. The stock is
+# owner-milled (`haus millwork` is its cut list), so MATERIAL IS ZERO and each rate is the
+# old row's labour half carried over per piece: $11.5-23/LF x ~3.5 ft, $19-50/LF x ~3.2 ft,
+# $9.5-25/LF x 8 LF.
+"oak-tread:tread" = { material = { low = 0, high = 0 }, labour = { low = 40, high = 80 } }  # 26 ea — ST-M2S 14, ST-S2A 12
+# A winder is a two-board glue-up scribed to a fan line and a skirt: the most fitting per tread.
+"oak-tread:winder" = { material = { low = 0, high = 0 }, labour = { low = 60, high = 160 } }  # 3 ea — ST-S2A
+# 3/4" T&G field over the landing ply, plus the grooved 8/4 nosing it tongues into.
+"oak-floor-custom:landing" = { material = { low = 0, high = 0 }, labour = { low = 76, high = 200 } }  # 2 ea — ST-M2S
 
 [openings]
 # ** RE-SOURCED FROM PRE-TAX LIST PRICES, 2026-08-20b. ** This section previously derived its
@@ -7170,8 +7183,11 @@ finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.c
 # row whole would bill that board twice. The same split the vent-mat row above documents:
 #   stool board, 34 windows, ~10 1/8" x 6/4 oak      -> modelled, ordered by `haus millwork`
 #   apron, jamb extension, mitres, scribe, install   -> here, and still real
-#   the 7 out-of-scope stools (plant/sauna/garage)   -> here, bought not milled; their board
+#   the 3 out-of-scope stools (sauna/garage)         -> here, bought not milled; their board
 #                                                       is the residual at the top of the band
+#   the 4 plant-room stools, 3 cm quartz remnants     -> [countertops] "quartz-counter", as
+#                                                       area (takeoff/countertops.py); their
+#                                                       apron/jamb/casing work stays here
 # ~$18-45 of the old band was stool stock, so the row goes to $55-125. It stays PER WINDOW
 # and stays on all 41: the fabrication is the same work whoever sawed the board.
 finish-window-stools-and-aprons = { low = 55, high = 125, unit = "ea", driver = "openings.count[kind=window]" }
@@ -7514,6 +7530,7 @@ wood_surfaces        = "material"
 # Both rows spell their own split, so the section default governs nothing here —
 # it is stated because every priced section needs one.
 countertops          = "material"
+stair_treads         = "material"
 openings             = "material"
 footing_bedding      = "material"
 pipe_runs            = "material"

@@ -18,6 +18,9 @@ from typehaus.takeoff.sheet_rips import rip_stock
 
 from _helpers import frames_structure
 
+# Walking-surface materials that bill somewhere other than the lumber order.
+_NOT_LUMBER = {"composite-deck", "concrete", "oak-tread", "oak-floor-custom"}
+
 
 def test_order_length_rounds_up_to_stock() -> None:
     assert _order_length_ft(7.5) == 8
@@ -58,13 +61,12 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     ripped = [m for m in members if rip_stock(m.profile, m.material) is not None]
     assert ripped, "catlin has plywood bucks and web stiffeners; this should not be empty"
     # And the other family it does not bill: a stair whose walking surface is not lumber.
-    # A composite tread is ordered by the SHEET (`separate_stair_wear_members`); a CAST one
+    # A finish tread is ordered by the PIECE (`separate_stair_wear_members`); a CAST one
     # is not ordered at all, because the pour that is the tier is a `Slab` with its own row.
     # Both still resolve as members — every code rule that grades a stair measures them.
-    # The oak flights (`tread_material="oak-tread"`) bill their treads, winders and landings
-    # by area as a stair wear surface, the same way.
+    # The oak flights' treads, winders and landings are finish pieces the same way.
     not_lumber = [m for m in members if m.category in {"tread", "winder", "landing"}
-                  and m.material in {"composite-deck", "concrete", "oak-tread"}]
+                  and m.material in _NOT_LUMBER]
     assert not_lumber, "catlin has composite and cast treads; this should not be empty"
     assert sum(int(row["pieces"]) for row in rows) == (
         len(members) - len(ripped) - len(not_lumber))
@@ -210,6 +212,8 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "data_devices", "data_raceways", "poe_budget",
                         # Resolved-but-unbilled families.
                         "floor_finishes", "envelope_layers", "openings", "stair_finish",
+                        # Finish treads, winders and landings by the piece.
+                        "stair_treads",
                         # Species wood rollup: sauna liner, panelings,
                         # timber posts and species floors in sf/bf.
                         "wood_surfaces",
@@ -273,7 +277,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     members = catlin_model.all_members()
     ripped = sum(1 for m in members if rip_stock(m.profile, m.material) is not None)
     not_lumber = sum(1 for m in members if m.category in {"tread", "winder", "landing"}
-                     and m.material in {"composite-deck", "concrete", "oak-tread"})
+                     and m.material in _NOT_LUMBER)
     assert not_lumber, "catlin has treads that are not lumber; this should not be zero"
     assert sum(int(row["pieces"]) for row in bom["framing"]) == (
         len(members) - ripped - not_lumber)
@@ -316,7 +320,8 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
     "roofs": "same split as walls — `framing` for the sticks, `envelope_layers` and "
              "`sheet_goods` for the skin",
     "floors": "same split — joists in `framing`, subfloor and ceiling in `sheet_goods`",
-    "stairs": "carriage in `framing`, walking surfaces in `stair_finish`",
+    "stairs": "carriage in `framing`, walking surfaces in `stair_finish` and, where they "
+              "are a finish material, by the piece in `stair_treads`",
     "light_runs": "billed as `light_runs` by the lineal foot (a dict, not a row list)",
     "solar_panels": "billed as `solar` (a dict summary of installed wattage)",
     "geometry": "the derived-geometry IR: a second view of collections already billed "
@@ -355,7 +360,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # Derived interior millwork — the stools and the shelf banks — scheduled as a cut list
     # in rough stock. Unpriced by design (see ``UNPRICED_VIEWS``), but not unread: this is
     # the section that says how much oak the mill has to saw.
-    "window_stools": ("hardwood",),
+    # A stone stool is the slab yard's, so the stools reach both (→ takeoff/countertops.py).
+    "window_stools": ("hardwood", "countertops"),
     "shelf_banks": ("hardwood",),
     # The work surfaces, by the square foot a slab yard quotes. Not "hardwood": a
     # countertop is a purchased fabricated top, not stock the owner's mill saws.

@@ -33,7 +33,8 @@ from plan import (appliance_types, assemblies, backing, backing_wet, braced_wall
                   circuits, countertops, panel_types,
                   electrical, electrical_attic, equipment_types,
                   fixture_types, fixtures, furniture_types, landscape, lighting,
-                  lighting_attic, lighting_types, masonry_joints, mep, millwork, placeables,
+                  lighting_attic, lighting_types, masonry_joints, mep, millwork,
+                  millwork_vanities, placeables,
                   plant_types, plate_ties,
                   products,
                   site, transitions, views, wind_clamps)
@@ -329,6 +330,7 @@ PLAN = (
          *mep.BASEMENT_ELEMENTS, *electrical.BASEMENT_ELEMENTS,
          *lighting.BASEMENT_LIGHTING,
          *placeables.BASEMENT_PLACEABLES, *millwork.BASEMENT_SHELVES,
+         *millwork_vanities.BASEMENT_VANITY_SHELVES,
          *backing.BASEMENT_BACKING, *backing_wet.BASEMENT_WET_BACKING],
     )
     .with_elements(
@@ -346,6 +348,7 @@ PLAN = (
          *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING,
          *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES,
          *millwork.MILLWORK, *millwork.MAIN_SHELVES,
+         *millwork_vanities.MAIN_VANITY_SHELVES,
          *countertops.MAIN_COUNTERTOPS,
          *backing.MAIN_BACKING, *backing_wet.MAIN_WET_BACKING,
          *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS,
@@ -359,7 +362,9 @@ PLAN = (
                                 *placeables.SECOND_PLACEABLES,
                                 *second_deck.SECOND_ELEMENTS,
                                 *millwork.SECOND_SHELVES,
+                                *millwork_vanities.SECOND_VANITY_SHELVES,
                                 *countertops.SECOND_COUNTERTOPS,
+                                *countertops.PLANT_STOOLS,
                                 *backing.SECOND_BACKING,
                                 *backing_wet.SECOND_WET_BACKING,
                                 *braced_walls.SECOND_BRACED_WALLS,
@@ -373,6 +378,7 @@ PLAN = (
                              *electrical_attic.NEC_FILL_ATTIC,
                              *placeables.ATTIC_PLACEABLES,
                              *millwork.ATTIC_SHELVES,
+                             *millwork_vanities.ATTIC_VANITY_SHELVES,
                              *backing.ATTIC_BACKING,
                              *backing_wet.ATTIC_WET_BACKING])
     # --- garage ----------------------------------------------------------------------------

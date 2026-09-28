@@ -210,7 +210,7 @@ def _resolve_stair(
     # borne on the walls beside it — posted down wherever none reaches.
     members = _clip_stair_to_subfloor(members, z0)
     members = _bear_stair_on_walls(model, stair, members, z0)
-    members = _in_stair_material(stair, members)
+    members = _in_stair_material(stair, members, _finish_materials(model, stair))
     # A stair declaration lives with its destination deck so it can own the opening, but
     # its resolved plan-storey identity is the floor it rises *from*.
     return ResolvedStair(stair.uid, stair.tag, stair.from_storey, stair.to_storey, outline,
@@ -221,23 +221,49 @@ def _resolve_stair(
                          base_elevation_m=z0, arrival_elevation_m=z_top), []
 
 
-def _in_stair_material(stair: Stair, members: tuple[FramedMember, ...]
+def _finish_materials(model: ResolvedModel, stair: Stair) -> tuple[str | None, str | None]:
+    """``(tread, landing)`` finish refs: the flight's own ``tread_material``, else the house
+    ``MillworkStandard`` that scopes it — so the treads the viewer textures are the ones
+    ``haus millwork`` cuts, declared once."""
+    from typehaus.model.millwork import MillworkStandard
+
+    standard = next((el for el in model.plan.all_elements()
+                     if isinstance(el, MillworkStandard)), None)
+    tread = stair.tread_material
+    if tread is None and standard is not None and stair.tag in standard.tread_stairs:
+        tread = standard.tread_material_ref
+    deck = standard.landing_deck if standard is not None else None
+    # A declared landing deck is a floor-board field; its nosing is a millwork detail.
+    landing = (deck.field_material_ref if deck is not None and stair.tag in deck.stair_refs
+               else tread)
+    return tread, landing
+
+
+def _in_stair_material(stair: Stair, members: tuple[FramedMember, ...],
+                       finish: tuple[str | None, str | None] = (None, None),
                        ) -> tuple[FramedMember, ...]:
-    """Stamp the flight's material onto every member it generated.
+    """Stamp the flight's materials onto every member it generated.
 
     Applied here, once, rather than threaded through twenty ``FramedMember`` constructions
     across ``straight`` / ``u_split`` / ``winder`` / ``bearing``: the material is a property
     of the flight, not of any one stringer, and a member the *bearing* pass posts down under
     a PT flight is PT for the same reason its stringers are. A generator that has already
     named a material for a member keeps it — nothing here overrides a more specific answer.
+    Walking surfaces take ``finish`` (tread, landing) where one is declared.
     """
-    if stair.material is None and stair.tread_material is None:
+    tread, landing = finish
+    if stair.material is None and tread is None and landing is None:
         return members
+
+    def material(member: FramedMember) -> str | None:
+        if member.category in ("tread", "winder"):
+            return tread or stair.material
+        if member.category == "landing":
+            return landing or stair.material
+        return stair.material
+
     return tuple(member if member.material is not None
-                 else replace(member, material=(stair.tread_material or stair.material)
-                              if member.category in {"tread", "winder", "landing"}
-                              else stair.material)
-                 for member in members)
+                 else replace(member, material=material(member)) for member in members)
 
 
 def _flight_footprint(stair: Stair, going_m: float, risers: int) -> list[tuple[float, float]]:

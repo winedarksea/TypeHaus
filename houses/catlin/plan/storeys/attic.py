@@ -968,8 +968,7 @@ STAIRS = [
           # them the box corners post down onto bare I-joist deck, which
           # `structural.landing_post_bearing` correctly refuses.
           bearing_refs=("W-S-E1", "W-S-SS2"),
-          start=pt(ft(35, 5.375), ft(5, 9.625)),
-          tread_material="oak-tread"),
+          start=pt(ft(35, 5.375), ft(5, 9.625))),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *ROOFS, *BEAMS, *FLOOR_OPENINGS,

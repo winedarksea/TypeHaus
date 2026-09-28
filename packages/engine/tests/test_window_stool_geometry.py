@@ -18,8 +18,9 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
     walls = {wall.tag: wall for wall in catlin_model_ro.walls}
     openings = {opening.tag: opening for opening in catlin_model_ro.openings}
     stools = catlin_model_ro.window_stools
-    assert len(stools) == 34
-    assert len({stool.uid for stool in stools}) == 34
+    # 34 derived oak + the plant room's 4 authored quartz (plan/countertops.py).
+    assert len(stools) == 38
+    assert len({stool.uid for stool in stools}) == 38
     for stool in stools:
         opening = openings[stool.window_ref]
         wall = walls[stool.wall_tag]
@@ -50,9 +51,10 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
 def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     payload = model_to_dict(catlin_model_ro)
     rows = payload["window_stools"]
-    assert len(rows) == 34
+    assert len(rows) == 38
     assert {row["profile"] for row in rows} == {"eased"}
-    assert {row["material_ref"] for row in rows} == {"oak-stool"}
+    assert {row["material_ref"] for row in rows} == {"oak-stool", "quartz-counter"}
+    material_of = {row["opening_uid"]: row["material_ref"] for row in rows}
     openings = {opening.uid for opening in catlin_model_ro.openings}
     assert all(row["opening_uid"] in openings for row in rows)
 
@@ -60,14 +62,18 @@ def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     nodes = [node for node in gltf["nodes"]
              if node["extras"].get("trade") == "millwork"
              and node["extras"].get("kind") == "opening"]
-    assert len(nodes) == 34
+    assert len(nodes) == 38
     assert {node["extras"]["uid"] for node in nodes} == {
         row["opening_uid"] for row in rows}
+    oak = [201 / 255, 176 / 255, 140 / 255, 1.0]
     for node in nodes:
         mesh = gltf["meshes"][node["mesh"]]
         material = gltf["materials"][mesh["primitives"][0]["material"]]
-        assert material["pbrMetallicRoughness"]["baseColorFactor"] == pytest.approx(
-            [201 / 255, 176 / 255, 140 / 255, 1.0])
+        color = material["pbrMetallicRoughness"]["baseColorFactor"]
+        if material_of[node["extras"]["uid"]] == "oak-stool":
+            assert color == pytest.approx(oak)
+        else:  # the stone draws in its own authored colour, never as oak
+            assert color != pytest.approx(oak)
 
 
 def test_stools_export_as_oak_ifc_moldings(catlin_model_ro, catlin_ifc_path):
@@ -81,7 +87,7 @@ def test_stools_export_as_oak_ifc_moldings(catlin_model_ro, catlin_ifc_path):
     payload = {row["tag"]: row for row in model_to_dict(catlin_model_ro)["window_stools"]}
     stools = {item.Name: item for item in file.by_type("IfcCovering")
               if item.Name.startswith("STOOL-")}
-    assert len(stools) == 34
+    assert len(stools) == 38
     assert set(stools) == {stool.tag for stool in catlin_model_ro.window_stools}
     for stool in catlin_model_ro.window_stools:
         product = stools[stool.tag]
@@ -102,4 +108,4 @@ def test_stools_export_as_oak_ifc_moldings(catlin_model_ro, catlin_ifc_path):
         materials = [relation.RelatingMaterial.Name
                      for relation in file.by_type("IfcRelAssociatesMaterial")
                      if product in relation.RelatedObjects]
-        assert materials == ["oak-stool"]
+        assert materials == [stool.material_ref]

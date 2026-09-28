@@ -51,7 +51,8 @@ def built_in_bookcase_parts(spec: BuiltInBookcaseSpec) -> tuple[BuiltInBookcaseP
     """Return stepped backs, full-height dividers, and evenly distributed boards.
 
     A divider shared by two bays rises to their maximum height.  Board centers include both
-    the base and top, with their outer faces exactly inside the stated bay height.
+    the base and top, with their outer faces exactly inside the stated bay height.  A bay
+    with a ``closed_base_height`` gets a front panel below it and its boards above it.
     """
     width, depth, _ = built_in_bookcase_dimensions(spec)
     divider = spec.divider_thickness.meters
@@ -79,9 +80,17 @@ def built_in_bookcase_parts(spec: BuiltInBookcaseSpec) -> tuple[BuiltInBookcaseP
             "back", index, (cursor + clear_width / 2, back_center_y, height / 2),
             (clear_width, back, height),
         ))
+        base = bay.closed_base_height.meters
+        if base > 0:
+            # Carcass stock, inset between the dividers, flush with the shelf fronts.
+            parts.append(BuiltInBookcasePart(
+                "front_panel", index,
+                (cursor + clear_width / 2, -depth / 2 + divider / 2, base / 2),
+                (clear_width, divider, base),
+            ))
         count = bay.horizontal_board_count
         for board_index in range(count):
-            center_z = board / 2 + board_index * (height - board) / (count - 1)
+            center_z = base + board / 2 + board_index * (height - base - board) / (count - 1)
             parts.append(BuiltInBookcasePart(
                 "horizontal_board", index,
                 (cursor + clear_width / 2, shelf_center_y, center_z),

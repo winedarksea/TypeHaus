@@ -89,12 +89,12 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict
         parts = built_in_bookcase_parts(bookcase)
         return {
             # Board outlines let plan outputs show the stepped run and bay divisions instead
-            # of a furniture bounding box.  Horizontal boards coincide in plan, so only backs
-            # and dividers carry the drafting signal.
+            # of a furniture bounding box.  Horizontal boards coincide in plan, so only backs,
+            # dividers and closed-base fronts carry the drafting signal.
             "plan_strokes": [
                 {"points": [list(point) for point in part.outline], "closed": True,
                  "weight": 0.18, "fill": None}
-                for part in parts if part.role in {"back", "divider"}
+                for part in parts if part.role in {"back", "divider", "front_panel"}
             ],
             "model_parts": [
                 {"center": list(part.center), "size": list(part.size),

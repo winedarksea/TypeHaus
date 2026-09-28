@@ -64,7 +64,8 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // its rows carry `also_in_*` where they mirror another section — so it adds nothing to
     // the estimate.
     sections: ["envelope_layers", "wood_surfaces", "hardwood", "glazing_panels", "glazing_trim",
-      "edge_trim", "bug_screens", "openings", "floor_finishes", "stair_finish", "railings"],
+      "edge_trim", "bug_screens", "openings", "floor_finishes", "stair_finish", "stair_treads",
+      "railings"],
   },
   {
     id: "mep",

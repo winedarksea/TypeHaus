@@ -8,6 +8,9 @@
 # over one house. So this file takes off the winners and nothing else —
 # `finish-interior-trim-and-baseboard` stays a prices.toml lump on purpose.
 #
+# The bath vanities' sink-base shelves are in plan/millwork_vanities.py; the plant room's
+# quartz stools are in plan/countertops.py (stone, the slab yard's, not the sawyer's).
+#
 # Nothing here authors a stool. `MillworkStandard` declares the scope and the resolver
 # derives one per in-scope window, exactly as `EaveTrim` derives fascia off the roof plane:
 # the 41 windows sit in four assemblies of four different thicknesses (13.885" / 14.540" /
@@ -23,9 +26,10 @@ from typehaus.model import (
     StairLandingMillwork,
 )
 
-# The one declaration. Scope is EXT_2X6 alone — 34 of the 41 windows:
+# The one declaration. Scope is EXT_2X6 alone — 34 of the 41 windows get oak:
 #   * PLANT_EXT_2X6_HUMID (4) is the plant room, which runs at 70% RH by design. Oak in
-#     that room is a cupped stool and a black tannin stain, not millwork.
+#     that room is a cupped stool and a black tannin stain, so those four are authored
+#     3 cm quartz remnants instead (PLANT_STOOLS, plan/countertops.py).
 #   * SAUNA_LINER_ON_GARDEN_FRAMED (1) is lined in basswood for a burn-safety reason
 #     (low-conductivity species, plan/assemblies.py) that a hardwood stool would defeat.
 #   * GARAGE_WALL_2X6 (2) is a garage.
@@ -48,7 +52,9 @@ MILLWORK = [
         stool_profile="eased",
         stool_assemblies=("EXT_2X6",),
         # 29 oak treads: ST-M2S (14) and ST-S2A (15, three of them winders). ST-B2M is the
-        # basement flight and is carpeted, ST-G-SERVICE is the garage's.
+        # basement flight and is carpeted, ST-G-SERVICE is the garage's. This scope is also
+        # what stamps the resolved treads oak and the landings `oak-floor-custom` (the 3D and
+        # `haus takeoff`'s [stair_treads]); no Stair repeats it.
         tread_material_ref="oak-tread",
         tread_stairs=("ST-M2S", "ST-S2A"),
         landing_deck=StairLandingMillwork(
@@ -112,67 +118,7 @@ ATTIC_SHELVES = [
 #
 # Six boards per bay, the case top included, on the graduated pitch the type specifies —
 # ~20" bottom bay, 12"-14" middle, 8"-10" top — over the 7'-0" carcass.
-# --- RM-M-BATH2's vanity sink base, FX-M-BATH2-SINK ------------------------------------
-#
-# One shelf inside the 30" sink base at the north end of the 54" vanity. The owner asked
-# for drawer AND shelf space; the drawers are the 24" bank at the south end and
-# are NOT modelled — the engine has no drawer vocabulary, and inventing one for six boxes is
-# not the trade. The shelf is, because a shelf IS a board: it has a species, a thickness, a
-# cut length and a mill day, and `takeoff/hardwood.py` bills it with the rest of the
-# owner-milled white oak instead of disappearing into a cabinetry lump.
-#
-# ** `host` IS A FIXTURE, WHICH IS LEGAL AND IS WORTH KNOWING. ** `ShelfBank.host` reads
-# "a wall tag or a placeable tag", and `resolve/millwork.py` builds its placeable map from
-# `model.canvas_objects` — which carries Fixtures alongside Furniture. So a vanity can host
-# its own casework without a shadow FurnitureType standing inside it.
-#
-# ** `depth` IS AUTHORED, AND MUST BE. ** The derivation for a placeable host runs through
-# `_carcass_depth_m(placeable, furniture_types)`, and this host is a FixtureType, which is
-# not in that map — an underived depth is a hard finding, not a silent zero. 18 1/2" is the
-# honest clear anyway: 21" of carcass less a 3/4" back and a 1 3/4" scribe/trap set-off.
-# One board wide (supply runs to 18"+ and this is 18 1/2" long-grain across a 28 1/2" span),
-# 4/4 like the bookcases — it carries towels and bottles, not people.
-#
-# `clear_height` is the sink base's interior: 34 1/2" of carcass less a 4 1/2" toe kick and
-# the 3/4" counter substrate. The shelf sits below the trap, which is why there is ONE and
-# not two — `shelf_count=2` is that shelf plus the case top, the convention `ShelfBay`
-# documents ("the number of HORIZONTAL BOARDS in the bay, the case top included").
-# THE FIVE OTHER BATHROOMS' VANITY SHELVES: same reasoning as SB-M-BATH2-VAN above,
-# applied to the cabinets that replaced this house's bare lavatories.
-# Each is the ONE adjustable shelf inside a sink base -- `shelf_count=2` is that shelf plus
-# the case top, per ShelfBay's own convention -- and each is why those vanities could be
-# bought as plain two-door boxes instead of drawer banks. A drawer base runs about 1.5x a
-# door base of the same width, and a full-depth shelf recovers most of the usable volume
-# for the price of a board the owner already owns.
-#
-# `depth` is authored on every one, and must be: the derivation for a placeable host runs
-# through `_carcass_depth_m`, which is keyed on FurnitureTypes, and every host here is a
-# FixtureType. The number is the carcass less a 3/4" back and a 1 3/4" scribe/trap set-off
-# -- 18 1/2" clear in a 21" cabinet, 15 1/2" in an 18" one. `width` is the carcass less
-# 1 1/2" of case sides. All 4/4 white oak, S4S: these carry towels and bottles.
-
 MAIN_SHELVES = [
-    ShelfBank(
-        uid="3EWQ9BGVH8", tag="SB-M-BATH1-VAN",
-        # 24" x 18" carcass, the smallest vanity in the house.
-        host="FX-M-BATH1-LAV",
-        material_ref="oak-shelf-4q",
-        thickness=inch(0.75),
-        depth=inch(15.5),
-        profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(22.5), clear_height=inch(29.25), shelf_count=2),),
-    ),
-    ShelfBank(
-        uid="830F8WP640", tag="SB-M-BATH2-VAN",
-        host="FX-M-BATH2-SINK",
-        material_ref="oak-shelf-4q",
-        thickness=inch(0.75),
-        depth=inch(18.5),
-        profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
-    ),
     ShelfBank(
         uid="E97F8XSSZ5", tag="SB-M-PANTRY",
         host="FURN-M-PANTRY-SHELVES",
@@ -411,17 +357,6 @@ MAIN_SHELVES = [
 # `shelving(shelves=5)` symbol plus the case top.
 BASEMENT_SHELVES = [
     ShelfBank(
-        uid="6BNKG0ZT0K", tag="SB-B-BATH-VAN",
-        # 36" x 18" carcass; the depth is the door swing's, not a preference.
-        host="FX-B-BATH-LAV",
-        material_ref="oak-shelf-4q",
-        thickness=inch(0.75),
-        depth=inch(15.5),
-        profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(34.5), clear_height=inch(29.25), shelf_count=2),),
-    ),
-    ShelfBank(
         uid="ZJQHBYNFZ3", tag="SB-B-PLAY-BOOK-W1",
         host="FURN-B-PLAY-BOOK-W1",
         material_ref="oak-shelf-4q",
@@ -464,69 +399,27 @@ BASEMENT_SHELVES = [
 # 4/4 like the bookcases, and for the same reason. Its DEPTH is the one surprise: the
 # carcass is scribed to the tub alcove and is 30" deep to match the tub, not 20" — the
 # footprint reads (20" wide, 30" deep), so this is the one shelf in the house that is
-# DEEPER THAN IT IS WIDE. The boards therefore run FRONT TO BACK: grain along the 30", a
-# glue-up 18 1/2" wide rather than a 30" panel, which is two boards with one narrow rip
-# instead of a full-width layup. `takeoff/hardwood.py` derives that orientation rather than
+# DEEPER THAN IT IS WIDE. The boards therefore run FRONT TO BACK: grain along the 29 1/4"
+# (30" less the 3/4" back), a glue-up 18 1/2" wide rather than a 30" panel, which is two
+# boards with one narrow rip instead of a full-width layup. `takeoff/hardwood.py` derives that orientation rather than
 # taking it on faith — it mills every shelf with the grain on the longer plan dimension —
 # so nothing here authors it. It still lays up as a panel — 18 1/2" finished wants a 19 1/4"
 # rough face and the supply is 18" — and that is a fact worth seeing on the schedule rather
 # than at the mill.
 SECOND_SHELVES = [
     ShelfBank(
-        uid="FT01G11CY0", tag="SB-S-BATH1-VAN",
-        # The 30" SINK BASE half of the 48" vanity; the north 18" is a drawer
-        # bank and is not shelved. 21" carcass, so 18 1/2" clear.
-        host="FX-S-BATH1-LAV",
-        material_ref="oak-shelf-4q",
-        thickness=inch(0.75),
-        depth=inch(18.5),
-        profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
-    ),
-    ShelfBank(
-        uid="XT028WRQR2", tag="SB-S-SUITEBATH-VAN",
-        host="FX-S-SUITEBATH-LAV",
-        material_ref="oak-shelf-4q",
-        thickness=inch(0.75),
-        depth=inch(18.5),
-        profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
-    ),
-    ShelfBank(
-        uid="Q97KQAVZHT", tag="SB-S-VANITY-VAN1",
-        # The alcove's two 30" bases under one 61" double top: two cabinets,
-        # so two banks. 18" carcasses, so 15 1/2" clear.
-        host="FX-S-VANITY-LAV1",
-        material_ref="oak-shelf-4q",
-        thickness=inch(0.75),
-        depth=inch(15.5),
-        profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
-    ),
-    ShelfBank(
-        uid="BHTA4WVJDW", tag="SB-S-VANITY-VAN2",
-        host="FX-S-VANITY-LAV2",
-        material_ref="oak-shelf-4q",
-        thickness=inch(0.75),
-        depth=inch(15.5),
-        profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
-    ),
-    ShelfBank(
         uid="JBAEDPFV5Q", tag="SB-S-BATH1",
+        # Closed below the vanity counter (2026-09-28): five boards over the 48 3/4" open
+        # section, the lowest flush with the counter. Depth is the spec's 29 1/4".
         host="FURN-S-BATH1-SHELF",
         material_ref="oak-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(18.5), clear_height=ft(7), shelf_count=6),),
+        bays=(ShelfBay(width=inch(18.5), clear_height=inch(48.75), shelf_count=5),),
     ),
-    # The suite bath's return tower (2026-09-06). Same oak, same 3/4" stock, same six
-    # shelves in a 7'-0" bay as SB-S-BATH1 — a 28 1/2" bay this time (30" carcass less two
+    # The suite bath's return tower (2026-09-06). Same oak and 3/4" stock as SB-S-BATH1,
+    # six shelves in a 7'-0" bay — a 28 1/2" bay this time (30" carcass less two
     # 3/4" panels) in a box only 11 1/4" deep, which is what makes it a linen tower rather
     # than the hall bath's 20"-deep shelf. `depth` is left to the host's footprint, as there.
     ShelfBank(

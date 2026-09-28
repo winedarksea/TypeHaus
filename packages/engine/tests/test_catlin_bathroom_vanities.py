@@ -295,15 +295,24 @@ def test_every_vanity_carries_a_billable_shelf():
     which is what recovers the volume without paying the drawer premium.
     """
     model = _model()
-    banks = {b.host: b for b in model.shelf_banks}
-    for tag in VANITIES:
-        assert tag in banks, f"{tag} has no shelf bank -- its cabinet bills as an empty box"
-        bank = banks[tag]
+    plan = model.plan
+    types = {t.tag: t for t in plan.library.fixture_types}
+    # Every FX-VANITY-* instance in the house, not only the VANITIES table: RM-M-BATH2's and
+    # RM-A-STUBATH's are vanities too, and the second one had no shelf until 2026-09-28.
+    vanities = [el for el in plan.all_elements() if type(el).__name__ == "Fixture"
+                and (el.type_ref or "").startswith("FX-VANITY-")]
+    assert set(VANITIES) <= {v.tag for v in vanities}
+    for fixture in vanities:
+        banks = [b for b in model.shelf_banks if b.host == fixture.tag]
+        assert len(banks) == 1, f"{fixture.tag} has {len(banks)} shelf banks, wants one"
+        bank = banks[0]
         assert bank.material_ref == "oak-shelf-4q"
         # depth is AUTHORED on every one: the derivation is keyed on FurnitureTypes and
-        # every host here is a FixtureType, so an underived depth is a hard finding.
+        # every host here is a FixtureType, so it is checked here against the carcass —
+        # the carcass less a 3/4" back and a 1 3/4" scribe/trap set-off.
+        carcass_depth = types[fixture.type_ref].footprint[1].meters
         for shelf in bank.shelves:
-            assert shelf.depth_m > 0, f"{bank.tag} derived a zero depth"
+            assert shelf.depth_m == pytest.approx(carcass_depth - 2.5 * IN), bank.tag
             assert shelf.count == 2, "one shelf plus the case top"
 
 

@@ -1,5 +1,6 @@
-// Solid-wood millwork: window stools (resolved geometry, drawn as their oak) and the stair
-// members whose material declares a board recipe (oak treads, winders, landings).
+// Millwork: window stools (resolved geometry, drawn in their own material — oak boards, or a
+// stone stool's flat colour) and the stair members whose material declares a board recipe
+// (oak treads and winders; a landing's plank-floor field).
 import * as THREE from "three";
 import type { Member, WindowStool } from "../../model/types";
 import {

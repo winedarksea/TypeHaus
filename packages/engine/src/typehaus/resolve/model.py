@@ -253,6 +253,9 @@ class FramedMember:
     # ``header-0``: it is a per-wall index and every section golden is keyed on it, which is
     # why the tag rides beside it rather than inside it.
     opening_tag: str | None = None
+    # A winder's LEADING edge — the nosing its grain runs along, which the millwork blank is
+    # measured off. Not ``riser_line``: every plan draws that, and a winder marks its fan line.
+    nosing_line: tuple[tuple[float, float], tuple[float, float]] | None = None
 
 
 @dataclass(frozen=True)

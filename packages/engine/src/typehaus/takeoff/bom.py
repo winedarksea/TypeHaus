@@ -69,7 +69,7 @@ from typehaus.takeoff.railings import railing_takeoff
 from typehaus.takeoff.reinforcement import reinforcement_takeoff
 from typehaus.takeoff.shelving import shelving_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
-from typehaus.takeoff.stairs import stair_finish_takeoff
+from typehaus.takeoff.stairs import stair_finish_takeoff, stair_tread_takeoff
 from typehaus.takeoff.steel import steel_members_takeoff
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
@@ -162,6 +162,8 @@ def bill_of_materials(
         "bug_screens": bug_screen_takeoff(model),
         "openings": opening_takeoff(model),
         "stair_finish": stair_finish_takeoff(model),
+        # Finish treads, winder blanks and landings by the piece (→ takeoff/stairs.py).
+        "stair_treads": stair_tread_takeoff(model),
         "footing_bedding": footing_bedding_takeoff(model),
         # Stormwater by the foot and the piece — gutter and leader were billed only as
         # cubic feet of aluminium, which is not how either is bought.

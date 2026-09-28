@@ -23,7 +23,7 @@
 # FABRICATED vanity decks below are the exception, and are the reason the split exists.
 
 from typehaus import ft, inch
-from typehaus.model import Countertop
+from typehaus.model import Countertop, WindowStool
 
 MAIN_COUNTERTOPS = [
     # The north run, pantry wall to the corner: B15, the dishwasher, the 36" sink base, B30,
@@ -107,4 +107,30 @@ SECOND_COUNTERTOPS = [
         thickness=inch(1.181),
         overhang=inch(1),
     ),
+]
+
+# --- RM-S-PLANT's window stools: quartz remnants (owner decision 2026-09-28) -------------
+#
+# The four plant-room windows sit in PLANT_EXT_2X6_HUMID, which MW-STANDARD leaves out: oak
+# cups and tannin-stains at 70% RH (plan/millwork.py). So each gets a 3 cm remnant of the
+# vanity stone instead, cut by the same yard — which is why they live here and not with the
+# oak. They bill as quartz in [countertops]; `haus millwork` skips them (not custom-milled).
+#
+# `depth` is derived from the wall, as the oak ones are. Same 3/4" overhang and 1" horn.
+# DRAINAGE: the sill pan (TR-CATLIN-PLANT-OPENING) laps OVER the stool's back edge and the
+# stone is set with a slight fall to the room, no sealant bead at the back — the impervious
+# stool is the pan's discharge surface, not a dam. Kerf a drip under the eased front edge.
+PLANT_STOOLS = [
+    WindowStool(uid="XP74RX3EKK", tag="STOOL-WIN-S-PLANT1", window_ref="WIN-S-PLANT1",
+                material_ref="quartz-counter", thickness=inch(1.181),
+                overhang=inch(0.75), horn=inch(1), profile="eased"),
+    WindowStool(uid="TCHNPGC1RT", tag="STOOL-WIN-S-PLANT2", window_ref="WIN-S-PLANT2",
+                material_ref="quartz-counter", thickness=inch(1.181),
+                overhang=inch(0.75), horn=inch(1), profile="eased"),
+    WindowStool(uid="W86GNRQ4ZW", tag="STOOL-WIN-S-PLANT3", window_ref="WIN-S-PLANT3",
+                material_ref="quartz-counter", thickness=inch(1.181),
+                overhang=inch(0.75), horn=inch(1), profile="eased"),
+    WindowStool(uid="YRS03M2AJW", tag="STOOL-WIN-S-PLANT4", window_ref="WIN-S-PLANT4",
+                material_ref="quartz-counter", thickness=inch(1.181),
+                overhang=inch(0.75), horn=inch(1), profile="eased"),
 ]

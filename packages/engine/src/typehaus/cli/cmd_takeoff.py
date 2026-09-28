@@ -133,6 +133,7 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
                "hardwood": bom["hardwood"],
                "openings": bom["openings"],
                "stair_finish": bom["stair_finish"],
+               "stair_treads": bom["stair_treads"],
                "footing_bedding": bom["footing_bedding"],
                "pipe_runs": bom["pipe_runs"],
                "pipe_fittings": bom["pipe_fittings"],
@@ -296,8 +297,10 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
     if payload["countertops"]:
         console.print("[bold]Countertops[/bold]  (material · net area · the run it covers)")
         for item in payload["countertops"]:
+            stools = item.get("stools") or []
+            extra = f" + stools {', '.join(stools)}" if stools else ""
             console.print(f"  {item['net_area_sqft']:>7} sf   {item['material']:<16} "
-                          f"{item['length_ft']} LF · {', '.join(item['tops'])}")
+                          f"{item['length_ft']} LF · {', '.join(item['tops'])}{extra}")
     if payload["wood_surfaces"]:
         console.print("[bold]Wood surfaces by species[/bold]  (species · material · kind)")
         for item in payload["wood_surfaces"]:

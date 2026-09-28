@@ -56,18 +56,39 @@ def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
 # --- the derivation ------------------------------------------------------------------------
 
 def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catlin_model_ro):
-    """34 of 41 windows. The plant room, the sauna and the garage are deliberately out."""
-    assert {stool.assembly for stool in stools} == {"EXT_2X6"}
-    # Seven of the 41 are out of scope, and each is out because of the wall it sits in
-    # rather than because of anything about the window: WIN-S-PLANT1..4 in the plant room's
-    # sealed PLANT_EXT_2X6_HUMID liner, WIN-B-SAUNA in the sauna's, and WIN-G-N1/S1 in
-    # GARAGE_WALL_2X6. Oak on a humid liner or in an unconditioned garage is the wrong
-    # material, so the standard scopes itself to EXT_2X6 and those seven get none.
-    assert len(stools) == 34
+    """34 of 41 windows get derived oak. The plant room's four are authored quartz."""
+    derived = [stool for stool in stools if stool.derived]
+    assert {stool.assembly for stool in derived} == {"EXT_2X6"}
+    # Seven of the 41 are out of the standard's scope, and each is out because of the wall
+    # it sits in: WIN-S-PLANT1..4 in the plant room's humid liner, WIN-B-SAUNA in the
+    # sauna's, and WIN-G-N1/S1 in GARAGE_WALL_2X6. Oak there is the wrong material.
+    assert len(derived) == 34
     windows = [o for o in catlin_model_ro.openings if o.kind == "window"]
     assert len(windows) == 41, "the seven out-of-scope windows still exist; they get no oak"
-    assert all(stool.derived for stool in stools)
-    assert all(stool.material_ref == "oak-stool" for stool in stools)
+    assert all(stool.material_ref == "oak-stool" for stool in derived)
+    # The plant room's four are authored per window in 3 cm quartz (plan/countertops.py).
+    authored = {stool.window_ref: stool for stool in stools if not stool.derived}
+    assert set(authored) == {f"WIN-S-PLANT{n}" for n in range(1, 5)}
+    assert all(stool.material_ref == "quartz-counter"
+               and stool.assembly == "PLANT_EXT_2X6_HUMID" for stool in authored.values())
+
+
+def test_quartz_stools_bill_with_the_stone_not_the_mill(catlin_model_ro):
+    """A stone stool is the slab yard's: in [countertops] by area, never on the oak list."""
+    from typehaus.takeoff.countertops import countertop_takeoff
+    from typehaus.takeoff.hardwood import hardwood_takeoff
+
+    quartz = [s for s in catlin_model_ro.window_stools if s.material_ref == "quartz-counter"]
+    row = next(r for r in countertop_takeoff(catlin_model_ro)
+               if r["material"] == "quartz-counter")
+    assert row["stools"] == sorted(s.tag for s in quartz)
+    tops = sum(t.area_m2 for t in catlin_model_ro.countertops
+               if t.material_ref == "quartz-counter")
+    stools = sum(s.length_m * s.depth_m for s in quartz)
+    assert row["net_area_sqft"] == pytest.approx((tops + stools) * 10.7639104, abs=0.01)
+    milled = {tag for r in hardwood_takeoff(catlin_model_ro) if r["use"] == "window stool"
+              for tag in r["tags"]}
+    assert milled.isdisjoint(s.window_ref for s in quartz)
 
 
 def test_a_stools_depth_is_derived_from_its_host_wall_not_authored(stools):
@@ -132,9 +153,10 @@ def test_a_stools_length_is_the_opening_plus_two_horns(stools, catlin_model_ro):
 
 def test_the_stool_cut_list_collapses_to_the_three_window_widths(stools):
     """34 stools, three sizes — which is what makes them worth milling from few setups."""
-    sizes = {round(stool.length_m * M_TO_IN, 2) for stool in stools}
+    oak = [stool for stool in stools if stool.material_ref == "oak-stool"]
+    sizes = {round(stool.length_m * M_TO_IN, 2) for stool in oak}
     assert len(sizes) == 3
-    counts = _by_assembly(stools)
+    counts = _by_assembly(oak)
     assert sum(len(v) for v in counts.values()) == 34
 
 
@@ -319,3 +341,29 @@ def test_the_house_as_built_is_inside_every_published_limit(catlin_model_ro):
     assert findings and all(f.result is Result.PASS for f in findings)
     # Only the stone is graded: the bar top is wood and the slab limits do not reach it.
     assert not any("BAR" in f.message for f in findings)
+
+
+def test_a_bank_on_a_fitted_bookcase_bills_the_boards_its_spec_draws(catlin_plan,
+                                                                    catlin_model_ro):
+    """The shelf bank is the takeoff and the spec is the geometry; they must be one case.
+
+    Per bay: clear width, board count, and the height the boards divide (the bay less any
+    closed base). Depth comes off the spec. Thickness is not compared: SB-A-STUDY mills
+    6/4 stock while its spec draws 1-1/2" boards.
+    """
+    types = {t.tag: t for t in catlin_plan.library.furniture_types}
+    hosts = {o.tag: o.type_ref for o in catlin_model_ro.canvas_objects}
+    checked = []
+    for bank in catlin_model_ro.shelf_banks:
+        spec = getattr(types.get(hosts.get(bank.host) or ""), "built_in_bookcase", None)
+        if spec is None:
+            continue
+        checked.append(bank.tag)
+        assert bank.depth_m == pytest.approx(spec.shelf_depth.meters), bank.tag
+        assert len(bank.shelves) == len(spec.bays), bank.tag
+        for shelf, bay in zip(bank.shelves, spec.bays, strict=True):
+            assert shelf.width_m == pytest.approx(bay.clear_width.meters), bank.tag
+            assert shelf.count == bay.horizontal_board_count, bank.tag
+            assert shelf.clear_height_m == pytest.approx(
+                bay.height.meters - bay.closed_base_height.meters), bank.tag
+    assert {"SB-A-STUDY", "SB-S-BATH1"} <= set(checked)

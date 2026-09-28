@@ -200,6 +200,8 @@ SECTION_CODES: dict[str, CostCode] = {
     "shelving": CostCode("4100", "06 41 00", "millwork"),
     # 12 36 00 Countertops: fabricated off site and set by the yard that cut it.
     "countertops": CostCode("4100", "12 36 00", "millwork"),
+    # 06 43 00 Wood Stairs and Railings: the stair installer sets the treads.
+    "stair_treads": CostCode("2700", "06 43 00", "stairs"),
     "openings": CostCode("2400", "08 00 00", "openings"),
     # Washed stone under a footing, tile bedded in it: placed by the excavator BEFORE the
     # pour, so it files ahead of concrete in the sequence (drainage follows concrete, and a

@@ -94,6 +94,7 @@ ESTIMATE_PLANS = (
     # Net area, not an order quantity: a countertop's slab yield is inside the fabricated
     # rate, so there is no waste to add (→ takeoff/countertops.py).
     ("countertops", "countertops", "material", "net_area_sqft", "SF"),
+    ("stair_treads", "stair_treads", "material", "pieces", "ea"),
     ("openings", "openings", "type", "count", "ea"),
     ("footing_bedding", "footing_bedding", "aggregate", "volume_cubic_yards", "cy"),
     ("pipe_runs", "pipe_runs", "system", "length_ft", "LF"),
@@ -241,6 +242,8 @@ QUALIFIED_KEY_FIELD: dict[str, str | tuple[str, ...]] = {
     # saw and a pile of ribbons nobody re-uses. A house that keeps its bare material key
     # keeps one rate over hung and ripped alike.
     "sheet_goods": "scope",
+    # A winder blank is not a straight tread, and a landing is not either.
+    "stair_treads": "use",
     # A damp-location exterior extrusion, a sauna-rated silicone tape and a 24V cove tape
     # are all ``item = "tape"``/``"channel"``, and they are not one rate. A house that
     # prices the bare item keeps one blended rate over every run.
@@ -340,10 +343,11 @@ UNPRICED_VIEWS: dict[str, str] = {
     "glazing_panels": "priced in [solids] as glazing:<assembly> (structural_solids)",
     "glazing_trim": "priced in [solids] as glazing_trim (structural_solids)",
     "bug_screens": "priced in [solids] as bug_screen:<assembly> (structural_solids)",
-    # Tread and riser stock is lumber; the nosings and transitions are an allowance DRIVEN
-    # off this very table's ``tread_lf``, so the quantity is not unread, only unpriced by a
-    # section of its own.
-    "stair_finish": "treads bill in [framing]; nosings drive the finish-transitions allowance",
+    # Treads bill in [stair_treads] (finish) or [framing] (lumber); the nosings and
+    # transitions are an allowance DRIVEN off this table's ``tread_lf``, so the quantity is
+    # not unread, only unpriced by a section of its own.
+    "stair_finish": ("treads bill in [stair_treads] or [framing]; nosings drive the "
+                     "finish-transitions allowance"),
     # The milling schedule. Everything it shares with another section says so (``also_in_*``)
     # and bills there; what is only here — the stool and shelf boards — is deliberately
     # unpriced: the stock is owner-milled at a rate that is not a market price, and the
