@@ -1648,7 +1648,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `resolve/stairs/common._WELL_PARTITION_THICKNESS_M` (4 1/2"). Its north end is open
     (`open_end=True` on `N-B-CL-NE`) — the only honest way to model a partition dying
     mid-well; `integrity.wall_loop_open` reads it.
-  - `W-B-STR3` is `STAIRWALL_INT_2X6_BRG_UNDERSTAIR` (5/8" Type X in place of 3/4" stair
+  - `W-B-STR3` is `STAIRWALL_INT_2X6_BRG_UNDERSTAIR` (5/8" Type X in place of 5/8" painted stair
     plywood, per R302.7) — costs the exposed-plywood stair face on this segment. **Do not
     retype it back**: `code.R302_7_under_stair_protection` now passes on "no enclosed usable
     space" (`STAIR` is not in `_UNDER_STAIR_OCCUPANCIES`), but the Type X's reason didn't go

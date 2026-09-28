@@ -77,13 +77,13 @@
 # continue across the x=18' split at a given y, so reaching the east half is a straight ride.
 #
 # Hard exclusions, all of them checked: W-M-HS4 (the laundry pocket) takes nothing ever;
-# FO-S-STAIR (x 10'-3 3/8"..17'-8 5/8", y 26'-0 3/8"..35'-5 3/8") blocks every FS-S bay
+# FO-S-STAIR (x 10'-3 1/4"..17'-8 5/8", y 26'-0 3/8"..35'-5 3/8") blocks every FS-S bay
 # between those y values across the middle of the house; FO-A-STAIR (x 22'-5 3/8"..35'-5 3/8",
 # y 5'-4"..8'-9 5/8"); FS-ATTIC's trimmer pack at y=5'-2 1/4"/5'-4" runs x 18'..35'-5 3/8".
 #
 # **One forced deviation from the port budget: REG-S-RET-BED3.** It was to be a level-2
 # floor boot like BED1 and BED2. It cannot be: FO-S-STAIR blocks EVERY FS-S bay between
-# y=26'-0 3/8" and y=35'-5 3/8" across x 10'-3 3/8"..17'-8 5/8", BED3 spans y 27'-36', and
+# y=26'-0 3/8" and y=35'-5 3/8" across x 10'-3 1/4"..17'-8 5/8", BED3 spans y 27'-36', and
 # FS-S-EAST is I-joist so there is no north-south travel on the far side of the well. It is
 # fed from **level 3** instead and becomes a ceiling grille rather than a floor boot — which
 # for an extract is the better end of the room anyway. Nothing else moved cavity.

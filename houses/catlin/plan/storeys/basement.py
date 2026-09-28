@@ -51,10 +51,10 @@ from typehaus import (
 # 7'-10". Both rooms only gain. The playroom (16'-6", between the centre line and the east
 # wall, both 12") is unchanged, which is why the architect's dimension still holds.
 #
-# **The shaft is 7'-2 5/8" since 2026-08-24**, and the furnace room 9'-1 1/8": framing
-# W-B-STR/W-B-STR3 (see WALLS) put the well's west face on x=10'-3 3/8" instead of
+# **The shaft is 7'-2 3/4" with 5/8" plywood**, and the furnace room 9'-1 1/8": framing
+# W-B-STR/W-B-STR3 (see WALLS) put the well's west face on x=10'-3 1/4" instead of
 # 10'-6", and the mechanical room took the other 3 1/8" of what the pour used to occupy.
-# Both flights widened to 3'-5 1/16" to keep the well full, so the code minimum is cleared
+# Both flights widened to 3'-5 1/16" in 2026; the final 1/8" is fitting clearance, so the code minimum is cleared
 # by more than it was, not less.
 # `clear_face` (the finish face) reports it.
 #
@@ -77,7 +77,7 @@ from typehaus import (
 #     12'-2" box straddling two substrates; ROUND TWO the same afternoon pulled the west
 #     wall onto N-B-S1 — see the node block below.)
 #   * **The bathroom rotated** to run north-south along the framed stair wall
-#     (W-B-STR3B/W-B-STR2), 3'-3 15/16" x 7'-1 1/4" clear, with its door on a new east wall.
+#     (W-B-STR3B/W-B-STR2), 3'-4 1/16" x 7'-1 1/4" clear, with its door on a new east wall.
 #   * **A hall** runs west of W-B-CN2 from the stair foot south — 3'-3 15/16" clear, part
 #     of RM-B-STAIR's own loop. It stopped at the y=18' line on 2026-09-05 and crossed into
 #     the workshop through a cased opening; **on 2026-09-07 it runs the rest of the way to
@@ -819,13 +819,13 @@ WALLS = [
     #
     # The way through is neither: align these studs plumb UNDER W-M-STRW's studs and move
     # the well's west face down to match the wall above (main.py's FO-M-STAIR is now at
-    # x=10'-3 3/8"). `_axis_offset_from_interior` measures from the interior face, so
+    # x=10'-3 1/4"). `_axis_offset_from_interior` measures from the interior face, so
     # pinning the STUD layer's outboard face 2 5/8" east of the node puts the studs at
     # 9'-9 1/8"..10'-2 5/8" on both segments — the identical band W-M-STRW occupies above —
     # no matter what is added on the west, which is why both assemblies below can use the
     # same offset. That leaves 2 7/8" of structure west of the axis and 2 5/8" east, and a
-    # full layer footprint reaching exactly x=10'-3 3/8", where the opening edge now stops.
-    # The shaft goes 7'-0" -> 7'-2 5/8"; the thickness that came off goes to the mechanical
+    # full layer footprint reaching exactly x=10'-3 1/4", where the opening edge now stops.
+    # The shaft goes 7'-0" -> 7'-2 3/4"; the thickness that came off goes to the mechanical
     # room. Set `interior_room` explicitly on both — do not let the component winding
     # decide which side layer 0 faces.
     #
@@ -844,7 +844,7 @@ WALLS = [
     # the basement storey is the same -109 7/16" the pour authored (params/foundations.py
     # says so in as many words).
     # ** RETYPED 2026-09-05 to the UNDERSTAIR variant. ** Same uid, same alignment, same
-    # interior_room, same BEARING role — only the finish leaf changes, from 3/4" stair
+    # interior_room, same BEARING role — only the finish leaf changes, from 5/8" stair
     # plywood to 5/8" Type X, because this whole run walls the storage under the arriving
     # flight and R302.7 wants gypsum on that side. See plan/assemblies.py for what it costs.
     # The closet stopped being its own `Room` later the same day (ROOMS) and the check went
@@ -872,7 +872,7 @@ WALLS = [
     # `structural_role` is deliberately NOT copied: the wall type is shared, the load is not.
     #
     # Same reason as W-B-CW3: steel bearing against wood left N-B-BA-W and N-B-STR as
-    # mixed-assembly junctions with no interface rule. The 3/4" plywood face now lands on the
+    # mixed-assembly junctions with no interface rule. The 5/8" plywood face now lands on the
     # bathroom rather than the stair, and the bathroom's west face moves 1" east; its three
     # ceiling-level crossings (vent, hot, cold) are bored, as they have been since the pour
     # went away.
@@ -1338,7 +1338,7 @@ ROOMS = [
     # nosing line. The rake is recorded here, in prose, because that is the only place the
     # model can hold it.
     # Stair-foot bathroom, ROTATED NORTH-SOUTH 2026-09-05: it runs down the framed stair
-    # wall (x 10'-3 3/8"..13'-7 5/16", y 18'-2 3/8"..25'-3 5/8", 3'-3 15/16" x 7'-1 1/4"
+    # wall (x 10'-3 1/4"..13'-7 5/16", y 18'-2 3/8"..25'-3 5/8", 3'-4 1/16" x 7'-1 1/4"
     # between finish faces) rather than across the shaft's south 3'-0". It is still under
     # ST-B2M's flight (bottom riser at y=26'-0 3/8"), and it is still one fixture at each
     # end so each one's depth runs across the room's short dimension: WC north, vanity
@@ -1515,7 +1515,7 @@ PANELING = [
 # reached 2-3" INTO every wall around it, so a box drawn to it put
 # the ladder's rails through W-B-CW2's top plates and W-B-STR2's studs — 22 hits of
 # `structural.member_interference`, all of them real. These four numbers are read off the
-# resolved layer polygons instead: W-B-STR2's east face at 123 3/8", W-B-BA-E's west face at
+# resolved layer polygons instead: W-B-STR2's east face at 123 1/4", W-B-BA-E's west face at
 # 163.303", W-B-CW2's south face at 218 3/8".
 #
 # The LONG axis is x, which is what the three runs travel along, so the clear section is

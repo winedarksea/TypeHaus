@@ -591,16 +591,15 @@ WALLS = [
     # header it does not need for 90% of its length — see FO-S-STAIR in second.py.
     #
     # Both segments are INT_2X6_BRG_EXPOSED_PLY with `layer_materials` swapping the stud to
-    # appearance-grade DF: the studs are open to the mudroom (coat nooks) and 3/4" cabinet
+    # appearance-grade DF: the studs are open to the mudroom (coat nooks) and 5/8" painted
     # plywood closes the stair face — `interior_room` picks the mudroom side as layer 0.
     # Until 2026-07-30 the mudroom segment was plain INT_2X6_BRG (spf vs. df-select-s4s),
     # which `integrity.junction_fallback` flagged at N-M-STRJ. The species was its own tag
     # (MUDROOM_INT_2X6_EXPOSED) until 2026-09-12; a material is not a wall (#70).
     #
-    # ALIGNMENT: this stack is 6 1/4" vs. INT_2X6_BRG's 6 3/4". The axis is pinned
-    # 3 3/8" inboard of the plywood's stair face (not centred) because FO-S-STAIR's west edge
-    # and both flights' stringers are authored off that exact face (second.py) — the 1/2"
-    # thickness change is taken entirely out of the mudroom side (9'-8 5/8" -> 9'-9 1/8").
+    # ALIGNMENT: pin the stud face, matching the basement wall below at
+    # 9'-9 1/8"..10'-2 5/8". The nominal 5/8" plywood ends at x=10'-3 1/4", level with
+    # the under-stair Type X and the adjacent drywall; the bearing band does not move.
     #
     # MEP: keep wiring/plumbing out — a bored stud shows. One exception: REG-M-XFER-MUD, a
     # 12" transfer-louver cut centred y=34'-0" in the clear bay between studs at 33'-4" and
@@ -608,7 +607,7 @@ WALLS = [
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
          end_node="N-M-STRJ", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(9),
          layer_materials=(LayerMaterial(layer="stud", material="df-select-s4s"),),
-         alignment=face("ply-stair-ext", offset=inch(-3.375)),
+         alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
     # 5 3/8" — trimmed 2026-08-30 from the old 8" (freed end at 25'-10", a jamb return past
@@ -624,7 +623,7 @@ WALLS = [
     Wall(uid="CMW134AAAA", tag="W-M-STRW2", start_node="N-M-STRJ",
          end_node="N-M-STR1", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(9),
          layer_materials=(LayerMaterial(layer="stud", material="df-select-s4s"),),
-         alignment=face("ply-stair-ext", offset=inch(-3.375)),
+         alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR3"),
     # The wall at the top of the stairs is gone, and with it D-M-STAIR and node
@@ -1841,18 +1840,14 @@ FLOOR_HEAT = [
 # climbs; the u-split resolver anchors flights to its near corner. East is the basement's
 # 12" concrete face (W-B-CW/CW2 at x=17'-6", which stayed 12" through the 2026-08-21
 # thinning precisely because things are dimensioned off it; narrower than the 2x6 wall
-# above, so it sizes the flights). West came down to x=10'-3 3/8" on 2026-08-24, when
+# above, so it sizes the flights). West came down near x=10'-3 3/8" on 2026-08-24, when
 # W-B-STR/W-B-STR3 stopped being 12" pours and became 2x6 bearing studs plumb under
 # W-M-STRW's (basement.py): the well's west face is now the plywood face of that framed
-# wall, one continuous plane from the basement floor to the main-storey ceiling, and the
-# shaft reads 7'-2 5/8" rather than 7'-0". The edge lands *exactly* on the layer
-# footprint's east limit, which is what `_opening_edge_has_declared_bearing` tests to a
-# 1e-9 tolerance; if a header ever emits here, back it off to ft(10, 3.25) — 1/8" of deck
-# lip is framing, not a design change. **It emitted on 2026-09-05 and the west edge is
-# ft(10, 3.25) now**: W-B-STR3 was retyped to STAIRWALL_INT_2X6_BRG_UNDERSTAIR so its
-# closet face could carry Type X instead of stair plywood (R302.7), and 5/8" board finishes
-# 1/8" shy of where 3/4" ply did. `structural.floor_opening_header` FAILed with a 9'-0" LVL
-# within the same build, as promised. North
+# wall, one continuous plane from the basement floor to the main-storey ceiling. The
+# 5/8" plywood and under-stair Type X now both finish at x=10'-3 1/4", matching the
+# opening's west edge. `_opening_edge_has_declared_bearing` tests this to 1e-9; the
+# 2026-09-05 Type X substitution originally required this edge to retreat 1/8" from
+# the former 3/4" plywood face to avoid a spurious 9'-0" LVL. North
 # is y=35'-4 7/8" (2026-09-23): W-B-N2's concrete face is 35'-4", and the edge sits one half
 # trimmer ply past it so the 2-ply LVL pack (35'-4"..35'-7 1/2") bears on the wall's sill,
 # flush with the pour. At 35'-0" the pack hung in the basement air, and PR-B-KITCH-DRAIN ran
@@ -2001,14 +1996,14 @@ SLABS = [
          top_elevation=inch(22.25), openings=("FO-M-TUBDK",)),
 ]
 
-# 7'-2 5/8" well = 3'-5 1/16" + 4 1/2" well partition + 3'-5 1/16", each flight clearing
+# 7'-2 3/4" well = two 3'-5 1/16" flights + 4 1/2" partition + 1/8" fit clearance, each flight clearing
 # IRC R311.7.1's 36" minimum above the handrail; landing is R311.7.6's 36" minimum.
 # It read 7'-0" = two 3'-3 3/4" flights until 2026-08-24, when W-B-STR/W-B-STR3 stopped
-# being 12" pours and the well's west face came down to x=10'-3 3/8" (basement.py). The
-# 2 5/8" is absorbed into the two flights rather than left as a slot beside the west wall
-# or handed to the partition: the flights are still the well's full width, they are wider
-# than they were, and the shaft now reads exactly as FO-S-STAIR does one storey up — same
-# west face, same anchor corner, 3'-1/4" narrower only because W-M-C5 is 2x6 where W-B-CN
+# being 12" pours and the well's west face came down to x=10'-3 1/4" (basement.py). The
+# wall moves another 1/8" west with the thinner plywood; the stair start follows it while
+# the flight widths stay fixed, leaving 1/8" fit clearance at the east wall. The shaft
+# now reads exactly as FO-S-STAIR does one storey up — same west face and anchor corner,
+# narrower only because W-M-C5 is 2x6 where W-B-CN
 # is 12" concrete.
 # `turn_direction="left"`: the basement flight springs in the east lane and
 # arrives in the west (D-M-STAIR's lane until 2026-08-24; the lane is open now); ST-M2S is
@@ -2065,7 +2060,7 @@ STAIRS = [
           base_elevation=inch(-109.4375), top_elevation=inch(0.9862),
           tread_thickness=inch(1),
           layout="u_split_landing", run_direction="y", turn_direction="left",
-          start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(4, 2.875)),
+          start=pt(ft(10, 3.25), ft(26, 0.375)), landing_depth=ft(4, 2.875)),
 ]
 
 # ST-B2M handrails (R311.7.8): one wall-mounted rail per flight, `serves_stair` rakes each
@@ -2073,7 +2068,7 @@ STAIRS = [
 # continuity and graspability. Same authoring as ST-M2S one storey up (second.py
 # STAIR_HANDRAILS): each rail sits 2" off its lane's wall face and runs the flight's span.
 # The west rail moved 2 5/8" west on 2026-08-24 with the wall face it is mounted to
-# (x=10'-3 3/8" now); the east one is on W-B-CN's concrete and did not move.
+# (x=10'-3 1/4" now); the east one is on W-B-CN's concrete and did not move.
 STAIR_HANDRAILS = [
     Railing(
         uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", path=(
@@ -2088,8 +2083,8 @@ STAIR_HANDRAILS = [
     ),
     Railing(
         uid="CMRL02AAAA", tag="RL-M-HANDRAIL-W", path=(
-            pt(ft(10, 5.375), ft(31, 0.375)),
-            pt(ft(10, 5.375), ft(26, 10.375)),
+            pt(ft(10, 5.25), ft(31, 0.375)),
+            pt(ft(10, 5.25), ft(26, 10.375)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
         base_elevation=ft(0), post_spacing=inch(48), post_size="2x2", rail_count=1,

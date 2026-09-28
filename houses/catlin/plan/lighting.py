@@ -1828,7 +1828,7 @@ SECOND_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(5, 6))),
     # On W-S-SN3's north face at y=22'-6 1/4", the wall you walk straight at off the
     # flight — a two-gang box with ED-S-LANDING-SW. x=12' is inside the well's west lane
-    # (x 10'-3 3/8"..13'-9 3/4"), where ST-M2S turns left, and is where you arrive. A plain
+    # (x 10'-3 1/4"..13'-9 3/4"), where ST-M2S turns left, and is where you arrive. A plain
     # switch, not a dimmer: the chandelier dims by its own remote (mark L).
     ElectricalDevice(uid="QTS001BAAA", tag="ED-S-STAIR-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",

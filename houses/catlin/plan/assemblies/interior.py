@@ -359,7 +359,8 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 
 # --- the stair-line bearing wall, exposed studs one face and plywood the other --------
 # W-M-STRW/W-M-STRW2 (mudroom, main) and W-B-STR3B/W-B-STR2 (basement) are ONE wall: 2x6
-# bearing studs at 16" o.c. on a gasketed sill, 3/4" cabinet plywood on the stair face. It
+# bearing studs at 16" o.c. on a gasketed sill, 5/8" paint-grade veneer-core plywood on
+# the stair face. It
 # was authored twice, as MUDROOM_INT_2X6_EXPOSED and STAIRWALL_INT_2X6_BRG, and the only
 # difference between the two stacks was the stud species. That is a material, not a wall
 # (#70), so the mudroom's exposed Select Structural DF is `Wall.layer_materials` on those
@@ -370,6 +371,12 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 # cavity fill either — insulating them would fill the nooks, and both sides are conditioned
 # anyway. The plywood is stair finish and screw-anywhere hook backing at once, and it runs
 # as one plane from the basement floor to the main-storey ceiling.
+# At a drywall edge, use a finished drywall J/reveal trim and a narrow flexible joint;
+# joint compound across plywood would bridge materials that move differently. Measure the
+# delivered plywood and drywall before installation and shim the plywood flush as needed
+# (19/32" stock next to true 5/8" board needs about 1/32"). Prime and paint the plywood;
+# fasten handrails and heavy loads to studs or dedicated backing, not the finish sheet.
+# The trade detail and field check are in notes/stair_wall_finish.md.
 #
 # "INT" in the tag is load-bearing (see FOUNDATION_WALL_12_INT, INT_2X6_PLUMBING,
 # _is_interior_assembly in mn_energy.py) — without it the uninsulated bays would fail as an
@@ -386,24 +393,23 @@ INT_2X6_BRG_EXPOSED_PLY = Assembly(
               framing=FramingSpec(member="2x6", spacing=inch(16),
                                   sill_gasket=inch(0.0625),
                                   layout_origin="line")),
-        Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
+        Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.625),
               function=LayerFunction.FINISH),
         # The stair face is painted; only the stud side shows raw wood.
         Layer(name="paint-stair", material_ref="latex-paint", thickness=inch(0.01),
               function=LayerFunction.FINISH),
     ),
     interfaces=(STUD_BEARING,),
-    source="catlin stair-line bearing wall (W-B-STR2/STR3B basement, W-M-STRW/STRW2 main): 2x6 bearing studs at 16 in. o.c. on a gasketed PT sill, 3/4 in. cabinet-grade plywood on the stair face, painted. The mudroom pair carries exposed Select Structural S4S DF studs (open bays = coat nooks) via Wall.layer_materials; everything below is plain spf, where nothing is exposed to a finished room.",
+    source="catlin stair-line bearing wall (W-B-STR2/STR3B basement, W-M-STRW/STRW2 main): 2x6 bearing studs at 16 in. o.c. on a gasketed PT sill, nominal 5/8 in. paint-grade veneer-core plywood on the stair face, painted. The mudroom pair carries exposed Select Structural S4S DF studs (open bays = coat nooks) via Wall.layer_materials; everything below is plain spf, where nothing is exposed to a finished room.",
 )
 
 # ** The same wall where it walls the under-stair storage (2026-09-05). ** W-B-STR3's
 # whole 5'-6" run is that closet now, and R302.7 asks for gypsum on the ENCLOSED side of an
-# enclosed usable space under a stair — which is precisely where this family puts its 3/4"
-# cabinet plywood. A layer cannot be added over it: the wall pins `face("stud-ext",
-# offset=inch(-2.625))`, so the ply already finishes at x=123 3/8", which IS the flight's
-# west edge, and another 1/2" goes into the stringer. So the leaf is SWAPPED, not stacked:
-# 5/8" Type X in place of the ply, the stud band held by the alignment, the face retreating
-# to 123 1/4" and clearing the stringer by 1/8".
+# enclosed usable space under a stair — which is precisely where this family puts its
+# painted plywood. A layer cannot be added over it: the wall pins `face("stud-ext",
+# offset=inch(-2.625))`, so both the 5/8" ply and 5/8" Type X finish at x=123 1/4",
+# the well's west edge. Another 1/2" would project into the stringer, so the leaf is
+# SWAPPED, not stacked; the stud band and finished face stay aligned.
 #
 # ** What this costs: the exposed-plywood stair face, on this segment only. ** A triangular
 # strip of ply — about 32" tall at the landing end, dying out around y=27'-1" where the
@@ -427,7 +433,7 @@ STAIRWALL_INT_2X6_BRG_UNDERSTAIR = Assembly(
             ),
         ),
     ),
-    source="catlin basement stair wall where it encloses the under-stair storage (W-B-STR3), 2026-09-05: INT_2X6_BRG_EXPOSED_PLY with 5/8 in. Type X on the closet face in place of the 3/4 in. stair plywood, per IRC R302.7",
+    source="catlin basement stair wall where it encloses the under-stair storage (W-B-STR3), 2026-09-05: INT_2X6_BRG_EXPOSED_PLY with 5/8 in. Type X on the closet face in place of the 5/8 in. painted stair plywood, per IRC R302.7",
 )
 
 # The same wall where it forms RM-B-ESS's west side: one 5/8" Type X leaf ADDED on the

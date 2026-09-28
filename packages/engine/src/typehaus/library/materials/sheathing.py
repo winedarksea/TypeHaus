@@ -67,14 +67,15 @@ MATERIALS: tuple[Material, ...] = (
     ),
     Material(
         tag="cabinet-plywood",
-        name='Cabinet-grade hardwood plywood (3/4")',
+        name='Paint-grade veneer-core hardwood plywood (nominal 5/8")',
         r_per_inch=1.25,
         density=610.0,
         perm_rating=0.30,
         hatch="lumber",
         color="#c8a97a",
-        finish="clear-satin-hardwax-oil",
-        source="Hardwood plywood catalog properties; permeance per APA plywood data.",
+        source=("Paint-grade veneer-core hardwood plywood catalog properties; "
+                "permeance per APA plywood data. Measure delivered panels and shim "
+                "to the adjacent 5/8 in. drywall finish plane."),
     ),
     Material(
         tag="cdx-plywood",

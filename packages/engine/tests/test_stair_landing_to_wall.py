@@ -69,3 +69,22 @@ def test_runs_over_the_excess_landing_are_an_advisory_not_a_fail(catlin_ctx):
     assert "ADVISORY" in finding.message
     for run in ("CD-B-GARAGE", "PR-B-CW-TRUNK", "PR-B-KITCH-DRAIN"):
         assert run in finding.message
+
+
+def test_stair_wall_studs_remain_plumb_beneath_the_flush_finish(catlin_model_ro):
+    """The 5/8" plywood and under-stair Type X share a face without moving bearing studs."""
+    wall_tags = (
+        "W-B-STR", "W-B-STR3", "W-B-STR3B", "W-B-STR2",
+        "W-M-STRW", "W-M-STRW2",
+    )
+    walls = {wall.tag: wall for wall in catlin_model_ro.walls}
+    for tag in wall_tags:
+        layers = {layer.name: layer for layer in walls[tag].depth_layers()}
+        stud_x = [point[0] / _INCH for point in layers["stud"].polygon]
+        assert min(stud_x) == pytest.approx(117.125)
+        assert max(stud_x) == pytest.approx(122.625)
+        stair_finish = layers.get("ply-stair", layers.get("gwb-x"))
+        assert stair_finish is not None
+        finish_x = [point[0] / _INCH for point in stair_finish.polygon]
+        assert min(finish_x) == pytest.approx(122.625)
+        assert max(finish_x) == pytest.approx(123.25)

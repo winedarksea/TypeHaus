@@ -74,9 +74,9 @@ def test_stair_opening_clips_joists_and_uses_declared_west_bearing(catlin_model)
                        and min(ys) - 1e-9 <= member.p0[1] <= max(ys) + 1e-9]
     assert crossing_joists
     # The opening is drawn to the finished well, so the clip is W-M-STRW's stair-side face
-    # (x=10'-3 3/8"); joists resume at the centre bearing line. Nothing is emitted for the
+    # (x=10'-3 1/4"); joists resume at the centre bearing line. Nothing is emitted for the
     # 3 3/8" of deck between the well's east edge and that line — that is bearing seat.
-    assert west_face / 0.3048 == pytest.approx(10 + 3.375 / 12)
+    assert west_face / 0.3048 == pytest.approx(10 + 3.25 / 12)
     assert all(member.p1[0] <= west_face + 1e-9 or member.p0[0] >= 18 * 0.3048 - 1e-9
                for member in crossing_joists)
     headers = [member for member in floor.members if member.category == "header"

@@ -300,7 +300,7 @@ BASEMENT_DEVICES = [
                          wall_ref="W-SG-W1", face="left", distance_from_start=inch(59.3125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RM-B-BATH's NEC 210.52(D) receptacle: GFCI within 3'-0" of the basin's edge (1'-9"
-    # here), on W-B-STR2's bath face at x=10'-3 3/8" — beside the vanity across the room's
+    # here), on W-B-STR2's bath face at x=10'-3 1/4" — beside the vanity across the room's
     # short dimension, with no wall between plate and basin. Rides CKT-RC-BSMT rather than
     # its own 20A circuit (the panel-slot trade recorded in plans/TODO.md's panel_spaces
     # item).
@@ -1427,7 +1427,7 @@ DATA_TRUNKS = [
 MAIN_DATA_TRUNKS = [
     # ** NEITHER RUN CROSSES THE STAIRWELL. ** Routed straight east at +9'-2" from the
     # chase at y=34'-6", they would be inside FS-S-WEST — the SECOND storey's floor, whose
-    # joists run 9'-0 1/8" to 10'-0" — and FS-S-WEST's deck void is x 10'-3 3/8"..17'-8 5/8",
+    # joists run 9'-0 1/8" to 10'-0" — and FS-S-WEST's deck void is x 10'-3 1/4"..17'-8 5/8",
     # y 26'-0 3/8"..35'-5 3/8". KITCH would span **7.27 ft** of that opening and PORCH
     # **15.52 ft**, because PORCH's south leg would run down x=17'-6", which is 2 5/8"
     # INSIDE the second floor's trimmer even though it is exactly ON the main floor's —

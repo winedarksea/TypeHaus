@@ -3592,7 +3592,7 @@
 "usga-bridging-gravel" = { material = { low = 0.9, high = 1.7 }, labour = { low = 0.4, high = 0.9 } }  # 160.3 SF — 4" of 3/8" USGA coarse gravel, screeded. Washed, gradation-tested stone, roughly double a #57 base rate
 "geotextile-separation" = { material = { low = 0.2, high = 0.45 }, labour = { low = 0.25, high = 0.6 } }  # 160.3 SF — non-woven, lapped 12", on the clay subgrade only
 "kbg-sod" = { material = { low = 0.75, high = 1.4 }, labour = { low = 0.6, high = 1.4 } }  # 160.3 SF — Kentucky bluegrass sod, laid and rolled. USGA Step 7 requires it washed or sand-grown, which is the premium over field-grown sod. Irrigation is an [allowances] line, not a layer
-"cabinet-plywood" = { material = { low = 2.5, high = 4.5 }, labour = { low = 4, high = 8 } }  # 101.2 SF — casework fabrication hours, not a sheet-goods rate
+"cabinet-plywood" = { material = { low = 2.5, high = 4.5 }, labour = { low = 4, high = 8 } }  # nominal 5/8" paint-grade veneer-core stair paneling; fabrication/fit labor, not a sheet-goods rate
 # RETIRED 2026-08-23, kept as a row rather than deleted. The 3,515.7 SF was the outer 2" of
 # EXT_2X6's rigid-CI stack, which the truss wall replaced with spray foam; EPS is now
 # used nowhere in this house, so the row bills nothing. It stays because the rate is

@@ -108,16 +108,16 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     west_spans = {round(m.length_m / ft(1).meters, 3) for m in west_joists}
     assert WEST_TRUSS_FT in west_spans
     # FO-S-STAIR is drawn to the finished well and lined in 5/8" gypsum, so the clip lands
-    # 5/8" behind W-M-STRW's stair-side face, at x=10'-2 3/4". 8 lines clip here,
+    # 5/8" behind W-M-STRW's stair-side face, at x=10'-2 5/8". 8 lines clip here,
     # not the 7 that only cross the opening's own y-range: the doubled trimmer pair
     # along the opening's long edge (a floor truss's 3 1/2" chord is wider than an
     # I-joist's 2 1/2" flange at this depth) reaches past the opening into the next
     # regular joist line's own footprint, so that line is clipped too rather than left
     # to interpenetrate the trimmer (structural.member_interference).
     # Five since 2026-09-24: FO-S-ERV-CHASE's trimmer pack and header took the other three.
-    assert 10.083 in west_spans
+    assert 10.073 in west_spans
     assert sum(1 for s in (round(m.length_m / ft(1).meters, 3) for m in west_joists)
-              if s == 10.083) == 5
+              if s == 10.073) == 5
 
 
 def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
@@ -2485,17 +2485,15 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     # ST-SG-PORCH (2026-09-03) is the second of those: the porch's only way down to grade,
     # five risers from the heat-pump pad at -2'-8" to the composite plank at +0'-1".
     assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"}
-    # 3'-5 1/16" is the flight the basement's 7'-2 5/8" well leaves either side of the
-    # 4 1/2" well partition, measured to W-B-STR/W-B-STR3's stud-line plywood face. The outer
-    # stringers sit inside it (``_stringer_offsets``), flush on the wall faces.
+    # 3'-5 1/16" flights and the 4 1/2" partition occupy the 7'-2 3/4" well with 1/8"
+    # fit clearance. The west stringer follows W-B-STR/W-B-STR3's plywood face.
     assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 5.0625).meters, abs=1e-9)
     assert stairs["ST-B2M"]["floor_opening"] == "FO-M-STAIR"
     assert stairs["ST-B2M"]["run_direction"] == "y"
     assert stairs["ST-B2M"]["layout"] == "u_split_landing"
-    # x=10'-3 3/8" — the framed stair wall's plywood face, which is where FO-M-STAIR's west
-    # edge is and where FO-S-STAIR's already was.
+    # x=10'-3 1/4" — the framed stair wall's plywood face and both openings' west edges.
     assert stairs["ST-B2M"]["start"] == pytest.approx(
-        [ft(10, 3.375).meters, ft(26, 0.375).meters])
+        [ft(10, 3.25).meters, ft(26, 0.375).meters])
     assert stairs["ST-M2S"]["layout"] == "u_level_landing"
     # Both U-stairs turn left, so each springs from the east lane and arrives in the west
     # one.

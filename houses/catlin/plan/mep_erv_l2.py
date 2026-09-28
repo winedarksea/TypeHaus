@@ -100,7 +100,7 @@ EQUIPMENT_ERV_MAIN = [
 #
 # ** THE TRUNK RUNS SOUTH, NOT ALONG A BAY, AND FO-S-STAIR IS WHY. ** A trunk in the 35'-4"
 # bay crosses no member at all and would have been better in every other way. The stair well
-# is x 10'-3 3/8"..17'-8 5/8", y 26'-0 3/8"..35'-5 3/8", and a trunk in that bay spans 7.18
+# is x 10'-3 1/4"..17'-8 5/8", y 26'-0 3/8"..35'-5 3/8", and a trunk in that bay spans 7.18
 # ft of it with nothing to strap to; `mep.run_over_void` said so the first time it was drawn
 # that way. South means it lives in ONE opening for its whole length, and 8" of the 15"
 # leaves 5" beside it for DU-M-ERV-R-STUDY.
@@ -173,7 +173,7 @@ DUCTS_ERV_LEVEL2 = [
     #
     # ** IT RUNS SOUTH AND NOT ALONG A BAY, AND FO-S-STAIR IS WHY. ** A trunk in the
     # 35'-4" bay would have been better in every other way — a bay leg crosses no member at
-    # all — but the stair well is x 10'-3 3/8"..17'-8 5/8", y 26'-0 3/8"..35'-5 3/8", and a
+    # all — but the stair well is x 10'-3 1/4"..17'-8 5/8", y 26'-0 3/8"..35'-5 3/8", and a
     # trunk in that bay spans 7.18 ft of it with nothing to strap to. `mep.run_over_void`
     # said so the first time it was drawn that way.
     #

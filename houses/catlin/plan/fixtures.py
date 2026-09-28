@@ -42,8 +42,8 @@ BASEMENT_FIXTURES = (
     Fixture(uid="CBQ803AAAA", tag="FX-B-SAUNA-FD", type_ref="FX-FLOOR-DRAIN",
             room="RM-B-SAUNA", position=pt(ft(13, 6), inch(98.1875)),
             wall_ref="W-B-CS"),
-    # **RM-B-BATH rotated north-south on 2026-09-05** and is **3'-3 15/16" x 7'-1 1/4"**
-    # between finish faces (x 10'-3 3/8"..13'-7 5/16" off W-B-STR2/W-B-STR3B and W-B-BA-E,
+    # **RM-B-BATH rotated north-south on 2026-09-05** and is **3'-4 1/16" x 7'-1 1/4"**
+    # between finish faces (x 10'-3 1/4"..13'-7 5/16" off W-B-STR2/W-B-STR3B and W-B-BA-E,
     # y 18'-2 3/8"..25'-3 5/8" off W-B-CW2 and W-B-BA-N). It lost 1 5/16" of width later the
     # same day, when W-B-BA-E slid onto the stair well's partition line so the two would be
     # one plane; nothing in the room had to move for it. One fixture at each end again, so

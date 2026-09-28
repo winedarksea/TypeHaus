@@ -339,7 +339,7 @@ REGISTERS = [
             type_ref="REG-T-ERV-EXH", design_cfm=2,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # BED3 IS A CEILING GRILLE, AND ITS TWO NEIGHBOURS ARE NOT: FO-S-STAIR blocks every
-    # FS-S bay between y=26'-0 3/8" and y=35'-5 3/8" across x 10'-3 3/8"..17'-8 5/8", BED3
+    # FS-S bay between y=26'-0 3/8" and y=35'-5 3/8" across x 10'-3 1/4"..17'-8 5/8", BED3
     # spans y 27'-36', and FS-S-EAST is I-joist so nothing travels north-south on the far
     # side of the well. So this one is fed from the ATTIC sub-manifold instead of the
     # RM-M-MECH one (DU-A-ERV-R-BED3), which makes it a grille in the ceiling rather than a
@@ -547,7 +547,7 @@ REGISTERS_MAIN = [
     # REG-M-RET-MUD is what actually drives airflow through it: the mudroom is the main
     # storey's low-pressure end by design, so the ERV pulls stair air through this louver.
     #
-    # Geometry: x=10'-3 7/8" backs onto W-M-STRW's stair face (10'-3 3/8"), facing east —
+    # Geometry: x=10'-3 3/4" backs onto W-M-STRW's stair face (10'-3 1/4"), facing east —
     # the mudroom side is bare 2x6 bay, no opening needed there. y=34'-0" is the only bay
     # wide enough (14 1/2" clear) on this BEARING wall; the bay north is 7 1/8", too narrow
     # for the 12" face without cutting and heading a stud. z=3'-6" (top 4'-4") since

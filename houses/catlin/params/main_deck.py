@@ -476,7 +476,7 @@ MECH_FLOOR = FloorSystem(
 # edge is a bearing edge, which is why W-B-STR3 has to stay a declared bearing ref —
 # ``structural.floor_opening_header`` reads FO-M-STAIR's own refs and would otherwise size
 # that edge a 9'-0" engineered header. That edge sits on the framed wall's plywood face at
-# x=10'-3 3/8" rather than the pour's at 10'-6"; the refs did not change, because
+# x=10'-3 1/4" rather than the pour's at 10'-6"; the refs did not change, because
 # ``_opening_edge_has_declared_bearing`` reads the named walls' full layer footprints and
 # this one reaches exactly that face.
 STAIR_FLOOR = FloorSystem(

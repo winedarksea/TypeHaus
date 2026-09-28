@@ -1066,7 +1066,7 @@ ROOMS = [
     # plank — the same dirt-step detail D-M-MUD already builds downstairs.
     #
     # ** THE DECK UNDER IT IS THE SHORT END OF FS-S-WEST, NOT THE 18' BAY. ** FO-S-STAIR
-    # takes x 10'-3 3/8"..17'-8 5/8" out of this deck from y=26'-0 3/8" north, so the eight
+    # takes x 10'-3 1/4"..17'-8 5/8" out of this deck from y=26'-0 3/8" north, so the eight
     # trusses over this room land on that opening's west header instead of running through
     # to the x=18' line: 10'-1 5/8" tip to tip, ~9'-9" clear, against the 17'-11" the twenty
     # trusses south of the well really do span. `structural.ijoist_span` grades a deck by its
@@ -1373,10 +1373,10 @@ FLOOR_OPENINGS = [
                           pt(inch(25.2), inch(347.5)), pt(inch(19), inch(347.5))),
                  penetration_for=("PR-M-S-BATH1-WC-DRAIN",)),
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
-                 outline=(pt(ft(10, 3.375), ft(26, 0.375)),
+                 outline=(pt(ft(10, 3.25), ft(26, 0.375)),
                           pt(ft(17, 8.625), ft(26, 0.375)),
                           pt(ft(17, 8.625), ft(35, 5.375)),
-                          pt(ft(10, 3.375), ft(35, 5.375))),
+                          pt(ft(10, 3.25), ft(35, 5.375))),
                  # East edge is carried by bearing wall, so it needs no header: W-M-C5
                  # (which since 2026-07-28 starts at N-M-C3 on the stair wall's line, so it
                  # still reaches this edge's south end even though W-M-C4B under it is gone),
@@ -1490,8 +1490,8 @@ STAIR_HANDRAILS = [
     ),
     Railing(
         uid="CSRL04AAAA", tag="RL-S-HANDRAIL-W", path=(
-            pt(ft(10, 5.375), ft(31, 10.375)),
-            pt(ft(10, 5.375), ft(26, 10.375)),
+            pt(ft(10, 5.25), ft(31, 10.375)),
+            pt(ft(10, 5.25), ft(26, 10.375)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
         base_elevation=ft(10), post_spacing=inch(48), post_size="2x2", rail_count=1,
@@ -1526,7 +1526,7 @@ POSTS = [
 ]
 
 STAIRS = [
-    # 7'-5 1/4" well = 3'-6 3/8" + 4 1/2" well partition + 3'-6 3/8". Landing is the
+    # 7'-5 3/8" well = two 3'-6 3/8" flights + 4 1/2" partition + 1/8" fit clearance. Landing is the
     # R311.7.6 36" minimum. `turn_direction="left"`, same hand as ST-B2M below: the flight
     # springs east lane on main, arrives west lane on second, so the stack alternates sides
     # as one continuous run.
@@ -1546,7 +1546,7 @@ STAIRS = [
           from_storey="main", to_storey="second", width=ft(3, 6.375),
           base_elevation=inch(0.9862), top_elevation=inch(120.9862),
           layout="u_level_landing", run_direction="y", turn_direction="left",
-          start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3, 6.25),
+          start=pt(ft(10, 3.25), ft(26, 0.375)), landing_depth=ft(3, 6.25),
           bearing_refs=("W-M-N2",),
           tread_material="oak-tread"),
 ]
