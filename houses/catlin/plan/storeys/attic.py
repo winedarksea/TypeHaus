@@ -968,7 +968,23 @@ STAIRS = [
           # them the box corners post down onto bare I-joist deck, which
           # `structural.landing_post_bearing` correctly refuses.
           bearing_refs=("W-S-E1", "W-S-SS2"),
-          start=pt(ft(35, 5.375), ft(5, 9.625))),
+          start=pt(ft(35, 5.375), ft(5, 9.625)),
+          # The straight flight runs 10'-0", past sawn 2x12's 6'-0" (DCA 6), so it is carried
+          # on three 1 3/4" LSL stringers read off the maker's table
+          # (notes/stair_stringer_basis.md).
+          stringer_profile="1.75x11.875 LSL", stringer_material="lsl",
+          stringer_spacing=inch(18),
+          published_stringer_span=PublishedSpan(
+              source="Weyerhaeuser #9010 TimberStrand LSL Stair Stringers and SturdiStep Stair Treads Specifier's Guide (June 2021) p.4, \"1-Ply TimberStrand LSL Stringers, IRC Maximum Stringer Run - 40 psf Live Load/12 psf Dead Load\"",
+              table="1 3/4\" 1.55E TimberStrand LSL, 11 7/8\", 36\" tread width, 3 stringers, without reinforcement: 11'-8\"",
+              member="1.75x11.875 LSL",
+              span=ft(11, 8),
+              spacing=inch(18),
+              carried_span=ft(3),
+              load_psf=52.0,
+              deflection_limit="L/360",
+              min_throat_in=5.75,
+              condition="1.55E TimberStrand LSL only; riser 7 3/4\" max and tread 10\" min, story 151\" max; ledger and top attachment per the guide p.3; deflection L/360 live, L/240 total")),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *ROOFS, *BEAMS, *FLOOR_OPENINGS,

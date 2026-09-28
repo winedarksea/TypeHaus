@@ -1464,7 +1464,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     - **`AO-S-HP1-AP` (30" x 29" clear) must stay gasketed.** Leaving the soffit's bottom
       open in the closet makes the closet itself the return plenum, which IMC 601.5(7)
       forbids.
-    - Where the box passes under `ST-S2A`'s flight, `ledger-W-S-SS2-stringer-1` (the 2x10 on
+    - Where the box passes under `ST-S2A`'s flight, `ledger-W-S-SS2-stringer-2` (the 2x10 on
       `W-S-SS2` at y 104 1/8"..105 5/8") may NOT be lapped — `structural.member_interference`
       excuses treads/stringers over a soffit but not that ledger.
 - **`W-M-HS4` is a pocket wall and nothing may ever go in it again** — no outlet, switch,

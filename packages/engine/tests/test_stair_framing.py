@@ -438,7 +438,7 @@ def test_framed_wall_bearing_picks_the_longest_host(main_stair):
     down to W-B-CN — see its note.
     """
     members = {m.child_key: m for m in main_stair.members}
-    assert members["stringer-lower-1"].connection == "framed-wall-ledger:W-M-C5"
+    assert members["stringer-lower-2"].connection == "framed-wall-ledger:W-M-C5"
     assert members["landing-rim-lower-1"].connection == "framed-wall-ledger:W-M-C5B"
     for key in ("stringer-upper-0", "landing-rim-upper-0"):
         assert members[key].connection == "framed-wall-ledger:W-M-STRW", key
@@ -814,7 +814,7 @@ def test_straight_flight_lands_on_the_top_winder_box(catlin_model, winder_stair)
     subfloor, riser, count = _winder_reference(catlin_model, winder_stair)
     tread_thickness = inch(1.5).meters
     stringers = [m for m in winder_stair.members if m.child_key.startswith("stringer-")]
-    assert len(stringers) == 2
+    assert len(stringers) == 3  # three LSL stringers, notes/stair_stringer_basis.md
     spring_notch = subfloor + riser * (count + 1) - tread_thickness
     for stringer in stringers:
         assert stringer.z1_m == pytest.approx(spring_notch)

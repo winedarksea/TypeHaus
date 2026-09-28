@@ -2024,7 +2024,10 @@ STAIRS = [
           base_elevation=inch(-109.4375), top_elevation=inch(0.9862),
           tread_thickness=inch(1),
           layout="u_split_landing", run_direction="y", turn_direction="left",
-          start=pt(ft(10, 3.25), ft(26, 0.375)), landing_depth=ft(4, 2.875)),
+          start=pt(ft(10, 3.25), ft(26, 0.375)), landing_depth=ft(4, 2.875),
+          # A centre stringer per flight: two at the lane edges left the treads a 39" clear
+          # span (structural.stair_tread_span).
+          stringer_spacing=inch(22)),
 ]
 
 # ST-B2M handrails (R311.7.8): one wall-mounted rail per flight, `serves_stair` rakes each

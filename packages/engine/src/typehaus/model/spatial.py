@@ -154,12 +154,18 @@ class Stair(Element):
     # An exterior composite wear surface and its PT carriage are different orders.
     # None preserves the framing material on the treads and the existing lumber bill.
     tread_material: str | None = None
-    # Straight flights only: manufacturer maximum support spacing, evenly divided
-    # across the width, including both edge stringers. None retains two edge stringers.
-    # The outer stringers sit INSIDE ``width`` (inset half a ply), which stays the clear
-    # tread width.
+    # Maximum support spacing, evenly divided across the width (per flight on a U; the
+    # straight flight on a winder), including both edge stringers. None retains two edge
+    # stringers. The outer stringers sit INSIDE ``width`` (inset half a ply), which stays
+    # the clear tread width.
     stringer_spacing: Length | None = None
-    # How the flight is carried: ``stringer`` (raked, notched 2x12s running the whole run)
+    # The raked carriage's section and stock: ``"2x12"`` is sawn and graded against DCA 6's
+    # 6'-0" / 5" throat; anything else (``"1.75x11.875 LSL"``) is graded against
+    # ``published_stringer_span`` (``checks/structural/stair_stringers.py``).
+    stringer_profile: str = "2x12"
+    stringer_material: str | None = None
+    published_stringer_span: PublishedSpan | None = None
+    # How the flight is carried: ``stringer`` (raked, notched stringers running the whole run)
     # or ``box`` (one framed box per tread, stacked). Straight flights only.
     #
     # ** A CUT STRINGER HAS TWO PRESCRIPTIVE LIMITS AND A BROAD SHALLOW FLIGHT BREAKS BOTH. **

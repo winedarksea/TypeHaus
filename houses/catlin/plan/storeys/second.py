@@ -305,7 +305,7 @@ WALLS = [
     #
     # ** WHICH FACE GETS THE CHANNEL IS NOT A COIN FLIP HERE — IT IS THE STAIR. ** Everything
     # on this wall's SOUTH face is spoken for: ST-S2A's flight runs along it (its north face
-    # IS this wall), `ledger-W-S-SS2-stringer-1` is a 2x10 lag-fastened to it, the R311.7.8
+    # IS this wall), `ledger-W-S-SS2-stringer-2` is a 2x10 lag-fastened to it, the R311.7.8
     # handrail is mounted on it, and `plan/storeys/attic.py` defines a void boundary as
     # literally "W-S-SS2's south gwb face". Two things follow, and either alone settles it:
     #   1. The channel-side face moves outboard 1/2". On the south that is INTO a stair well
@@ -1531,7 +1531,10 @@ STAIRS = [
           base_elevation=inch(0.9862), top_elevation=inch(121.5),
           layout="u_level_landing", run_direction="y", turn_direction="left",
           start=pt(ft(10, 3.25), ft(26, 0.375)), landing_depth=ft(3, 6.25),
-          bearing_refs=("W-M-N2",)),
+          bearing_refs=("W-M-N2",),
+          # A centre stringer per flight: two at the lane edges left the treads a 39" clear
+          # span (structural.stair_tread_span).
+          stringer_spacing=inch(22)),
 ]
 
 PANELING = [

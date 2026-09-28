@@ -213,6 +213,8 @@ class PublishedSpan(HausModel):
     #: Whether the row is for a member loaded from BOTH sides. A beam tabulated with load on
     #: one side, used where load arrives on two, is carrying twice what the row assumed.
     loads_both_sides: bool | None = None
+    #: The least notch throat a stringer row allows (Weyerhaeuser #9010: 5 3/4" at 11 7/8").
+    min_throat_in: float | None = None
 
 
 class PublishedCapacity(HausModel):

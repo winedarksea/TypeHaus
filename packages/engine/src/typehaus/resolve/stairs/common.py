@@ -109,6 +109,11 @@ def _grid_positions(span: float, spacing: float) -> list[float]:
     return out
 
 
+def _spacing(stair: Stair) -> float | None:
+    """``Stair.stringer_spacing`` in metres, or ``None`` for two edge stringers."""
+    return stair.stringer_spacing.meters if stair.stringer_spacing is not None else None
+
+
 def _stringer_offsets(width: float, spacing: float | None,
                       thickness: float) -> list[float]:
     """Cross-run carriage centrelines, measured from the flight's ``0`` edge.

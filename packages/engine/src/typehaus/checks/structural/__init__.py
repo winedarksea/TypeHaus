@@ -31,6 +31,7 @@ from typehaus.checks.structural import (
     slab_span,  # noqa: F401 - registers checks
     snow,  # noqa: F401 - registers checks
     soffit,  # noqa: F401 - registers checks
+    stair_stringers,  # noqa: F401 - registers checks
     stairs,  # noqa: F401 - registers checks
     subfloor_oversail,  # noqa: F401 - registers checks
     through_deck,  # noqa: F401 - registers checks

@@ -30877,7 +30877,7 @@
 8,
 "d0210adb546a"
 ],
-"geometry/CST701AAAA::framing/member:hanger-W-B-CN-stringer-lower-1": [
+"geometry/CST701AAAA::framing/member:hanger-W-B-CN-stringer-lower-2": [
 -2.7797125,
 -1.4962236,
 8,
@@ -31021,6 +31021,12 @@
 8,
 "634a918b8efe"
 ],
+"geometry/CST701AAAA::framing/member:stringer-lower-2": [
+-2.7797125,
+-1.4962236,
+8,
+"634a918b8efe"
+],
 "geometry/CST701AAAA::framing/member:stringer-upper-0": [
 -1.4080053,
 -0.0003505,
@@ -31028,6 +31034,12 @@
 "2df24c6b7ef6"
 ],
 "geometry/CST701AAAA::framing/member:stringer-upper-1": [
+-1.4080053,
+-0.0003505,
+8,
+"2df24c6b7ef6"
+],
+"geometry/CST701AAAA::framing/member:stringer-upper-2": [
 -1.4080053,
 -0.0003505,
 8,
@@ -31243,7 +31255,7 @@
 8,
 "2a677c656ba2"
 ],
-"geometry/CST702AAAA::framing/member:ledger-W-M-C5-stringer-lower-1": [
+"geometry/CST702AAAA::framing/member:ledger-W-M-C5-stringer-lower-2": [
 0.0250495,
 1.5174747,
 8,
@@ -31291,6 +31303,12 @@
 8,
 "e9a7b0e95cf3"
 ],
+"geometry/CST702AAAA::framing/member:stringer-lower-2": [
+0.0250495,
+1.5174747,
+8,
+"e9a7b0e95cf3"
+],
 "geometry/CST702AAAA::framing/member:stringer-upper-0": [
 1.4230404,
 3.048,
@@ -31298,6 +31316,12 @@
 "c00544d4aaed"
 ],
 "geometry/CST702AAAA::framing/member:stringer-upper-1": [
+1.4230404,
+3.048,
+8,
+"c00544d4aaed"
+],
+"geometry/CST702AAAA::framing/member:stringer-upper-2": [
 1.4230404,
 3.048,
 8,
@@ -31549,7 +31573,7 @@
 8,
 "8531b3bd4ccd"
 ],
-"geometry/CST703AAAA::framing/member:ledger-W-S-SS2-stringer-1": [
+"geometry/CST703AAAA::framing/member:ledger-W-S-SS2-stringer-2": [
 3.57505,
 6.096,
 8,
@@ -31562,16 +31586,22 @@
 "abf1551fbfd8"
 ],
 "geometry/CST703AAAA::framing/member:stringer-0": [
-3.52425,
+3.508375,
 6.096,
 8,
-"baef70b9509e"
+"faceffc55757"
 ],
 "geometry/CST703AAAA::framing/member:stringer-1": [
-3.52425,
+3.508375,
 6.096,
 8,
-"baef70b9509e"
+"faceffc55757"
+],
+"geometry/CST703AAAA::framing/member:stringer-2": [
+3.508375,
+6.096,
+8,
+"faceffc55757"
 ],
 "geometry/CST703AAAA::framing/member:tread-000": [
 3.81,
@@ -71333,7 +71363,7 @@
 2,
 "e3918b10e3ea"
 ],
-"member/CST701AAAA/hanger-W-B-CN-stringer-lower-1": [
+"member/CST701AAAA/hanger-W-B-CN-stringer-lower-2": [
 -2.7797125,
 -1.4962236,
 4,
@@ -71477,6 +71507,12 @@
 4,
 "981dce8c36be"
 ],
+"member/CST701AAAA/stringer-lower-2": [
+-2.7797125,
+-1.4962236,
+4,
+"981dce8c36be"
+],
 "member/CST701AAAA/stringer-upper-0": [
 -1.4080053,
 -0.0003505,
@@ -71484,6 +71520,12 @@
 "a7652d179b18"
 ],
 "member/CST701AAAA/stringer-upper-1": [
+-1.4080053,
+-0.0003505,
+4,
+"a7652d179b18"
+],
+"member/CST701AAAA/stringer-upper-2": [
 -1.4080053,
 -0.0003505,
 4,
@@ -71699,7 +71741,7 @@
 2,
 "3980fcdcf66e"
 ],
-"member/CST702AAAA/ledger-W-M-C5-stringer-lower-1": [
+"member/CST702AAAA/ledger-W-M-C5-stringer-lower-2": [
 0.0250495,
 1.5174747,
 4,
@@ -71747,6 +71789,12 @@
 4,
 "7fc509cad506"
 ],
+"member/CST702AAAA/stringer-lower-2": [
+0.0250495,
+1.5174747,
+4,
+"7fc509cad506"
+],
 "member/CST702AAAA/stringer-upper-0": [
 1.4230404,
 3.048,
@@ -71754,6 +71802,12 @@
 "09e1c65c409d"
 ],
 "member/CST702AAAA/stringer-upper-1": [
+1.4230404,
+3.048,
+4,
+"09e1c65c409d"
+],
+"member/CST702AAAA/stringer-upper-2": [
 1.4230404,
 3.048,
 4,
@@ -72005,7 +72059,7 @@
 4,
 "12826e2e0327"
 ],
-"member/CST703AAAA/ledger-W-S-SS2-stringer-1": [
+"member/CST703AAAA/ledger-W-S-SS2-stringer-2": [
 3.57505,
 6.096,
 4,
@@ -72018,16 +72072,22 @@
 "902448d29432"
 ],
 "member/CST703AAAA/stringer-0": [
-3.52425,
+3.508375,
 6.096,
 4,
-"a81294179915"
+"9ad728fd0c08"
 ],
 "member/CST703AAAA/stringer-1": [
-3.52425,
+3.508375,
 6.096,
 4,
-"a81294179915"
+"9ad728fd0c08"
+],
+"member/CST703AAAA/stringer-2": [
+3.508375,
+6.096,
+4,
+"9ad728fd0c08"
 ],
 "member/CST703AAAA/tread-000": [
 3.81,

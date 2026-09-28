@@ -217,7 +217,8 @@
 # board's material: TimberStrand 1.75x11.875 runs about $5.50-8.00/LF against $3.00-4.75 for
 # the 1 1/4" stock. Labour is unchanged — it is the same nailing, the same crew, the same
 # 72 LF, and it is set with the deck either way.
-"1.75x11.875 LSL" = { material = { low = 5.5, high = 8 }, labour = { low = 1.1, high = 2.1 } }  # 72 LF
+# ST-S2A's three stringers (2026-09-28) bill here too: 42 LF, 3 x 14'.
+"1.75x11.875 LSL" = { material = { low = 5.5, high = 8 }, labour = { low = 1.1, high = 2.1 } }  # 114 LF
 "1.25x7.25 rim" = { material = { low = 2, high = 3.25 }, labour = { low = 0.9, high = 1.7 } }  # 8 LF — the breezeway's two short bands, and all that is left bare on this key since the porch joined the balcony in paint (2026-09-05)
 # The balcony's two rim bands (FS-SG-DECK) AND the porch's two (FS-SG-PORCH), by
 # `JoistSpec.rim_material`: 20 LF of that same stock, WHITE-PAINTED — FS-SG-DECK's two
@@ -391,7 +392,7 @@
 "2x10" = { material = { low = 1.5, high = 2 }, labour = { low = 1.3, high = 2.4 } }  # 172 LF — 58 hanger + 114 wet-wall -MID courses (2026-09-12)
 # ST-SG-PORCH's stringers are 2x12:kdat and bill on the "2x12:kdat" row below (32 LF ordered),
 # not here. The 3.7 LF plan run of each is 4.6 LF of stick on the rake; the cut list has it.
-"2x12" = { material = { low = 1.85, high = 2.6 }, labour = { low = 1.4, high = 2.6 } }  # 92 LF spf — ST-G-SERVICE's stringers
+"2x12" = { material = { low = 1.85, high = 2.6 }, labour = { low = 1.4, high = 2.6 } }  # 96 LF spf — ST-B2M and ST-M2S, three stringers a flight (2026-09-28)
 # KDAT southern pine 2x12, the garden's two deck fields (12" o.c.) and ST-SG-PORCH's stringers.
 # The porch ledgers are Beams and bill in [timber] "beam:BEAM_KDAT". Treated 2x12 runs ~25-40%
 # over the SPF stick above, and 20' lengths carry a further premium.

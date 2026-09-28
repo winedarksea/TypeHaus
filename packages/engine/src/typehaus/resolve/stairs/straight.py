@@ -8,6 +8,7 @@ from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
 from typehaus.resolve.stairs.common import (
+    _spacing,
     _stringer_offsets,
     _tread_board_profile,
     _tread_thickness,
@@ -26,10 +27,9 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     width = stair.width.meters
     sign = -1 if stair.run_reversed else 1
-    # A box's joists are 2x8, a stringer 2x12: both 1 1/2" thick, so one inset serves both.
-    offsets = _stringer_offsets(
-        width, stair.stringer_spacing.meters if stair.stringer_spacing is not None else None,
-        cross_section("2x12").width_m)
+    # A box's 2x8 joists and a sawn stringer are both 1 1/2" thick, so one inset serves both.
+    offsets = _stringer_offsets(width, _spacing(stair),
+                                cross_section(stair.stringer_profile).width_m)
     if along_x:
         end_x, end_y = start_x + sign * going * (risers - 1), start_y
         strings = [((start_x, start_y + offset), (end_x, end_y + offset))
@@ -50,7 +50,7 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     if stair.carriage == "box":
         return _box_tier_members(stair, start_x, start_y, z0, risers, riser, going,
                                  tread_depth, nosing, width, sign, along_x, offsets)
-    stringer_depth = cross_section("2x12").depth_m
+    stringer_depth = cross_section(stair.stringer_profile).depth_m
     # Both ends are notch lines — the first tread board and the arrival subfloor sit *on*
     # them (``_notch_z``), which is what keeps the rake straight and the first and last
     # risers the same height as the rest.
@@ -58,7 +58,7 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     spring_notch = z0 + riser - thickness
     arrival_notch = z0 + riser * risers - thickness
     out = [
-        FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12", a, b,
+        FramedMember(stair.uid, f"stringer-{index}", "stringer", stair.stringer_profile, a, b,
                      spring_notch - stringer_depth, spring_notch,
                      math.hypot(going, riser) * (risers - 1),
                      z0_end_m=arrival_notch - stringer_depth, z1_end_m=arrival_notch)

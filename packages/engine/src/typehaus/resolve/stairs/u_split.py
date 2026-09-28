@@ -13,6 +13,7 @@ from typehaus.resolve.stairs.common import (
     _WELL_PARTITION_THICKNESS_M,
     _grid_positions,
     _notch_z,
+    _spacing,
     _stringer_offsets,
     _tread_board_profile,
     _tread_thickness,
@@ -67,8 +68,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         absolute cross-run coordinate ``cross``."""
         return (start + sign * s, cross) if along_x else (cross, start + sign * s)
 
-    stringer_depth = cross_section("2x12").depth_m
-    stringer_ply = cross_section("2x12").width_m
+    stringer_depth = cross_section(stair.stringer_profile).depth_m
+    stringer_ply = cross_section(stair.stringer_profile).width_m
     # One stock thickness for every walking surface this flight builds — treads and both
     # landing decks. See ``_notch_z``.
     thickness = _tread_thickness(stair)
@@ -98,10 +99,11 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         # deck it bears into on the other (see ``_notch_z``).
         spring_notch = _notch_z(spring_z + riser, thickness)
         bear_notch = _notch_z(bear_z, thickness)
-        for index, offset in enumerate(_stringer_offsets(width, None, stringer_ply)):
+        for index, offset in enumerate(_stringer_offsets(width, _spacing(stair),
+                                                              stringer_ply)):
             cross = lane_lo + offset
             out.append(FramedMember(
-                stair.uid, f"stringer-{prefix}-{index}", "stringer", "2x12",
+                stair.uid, f"stringer-{prefix}-{index}", "stringer", stair.stringer_profile,
                 at(s_lo, cross), at(s_hi, cross),
                 spring_notch - stringer_depth, spring_notch,
                 math.hypot(tread * count, bear_z - spring_z),

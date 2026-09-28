@@ -176,6 +176,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         gates=("insulation",),
         check_ids=("structural.ijoist_span", "structural.rafter_span",
                    "structural.header_prescriptive", "structural.ridge_beam_depth",
+                   "structural.stair_stringer",
                    "structural.member_interference", "structural.floor_opening_header",
                    "structural.uplift_path_coverage", "code.R302_5_garage_separation",
                    "code.R302_13_floor_protection"),

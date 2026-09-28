@@ -54,15 +54,12 @@ def _resolve_stair(
     if rise <= 0:
         return None, [_error("integrity.stair_rise", f"stair {stair.tag} does not rise to "
                              "its destination", stair.tag)]
-    # ``stringer_spacing`` is still straight-only: it is read by ``straight.py``'s box
-    # carriage and by nothing else, and a U-split's landing joists and a winder box's
-    # blocking are laid out by their own rules. ``tread_thickness`` is honoured by every
-    # layout — every generator drops its walking surfaces by the flight's own stock.
-    if stair.stringer_spacing is not None and (stair.stringer_spacing.meters <= 0
-                                               or stair.layout != "straight"):
+    # ``stringer_spacing`` lays out every raked carriage: a straight flight's (or its box
+    # tiers'), each U flight's, and a winder's straight flight. Landing joists and winder
+    # boxes keep their own rules. ``tread_thickness`` is honoured by every layout.
+    if stair.stringer_spacing is not None and stair.stringer_spacing.meters <= 0:
         return None, [_error("integrity.stair_geometry", f"stair {stair.tag} "
-                             "stringer_spacing must be positive and is supported only for "
-                             "straight flights", stair.tag)]
+                             "stringer_spacing must be positive", stair.tag)]
     if stair.tread_thickness is not None and stair.tread_thickness.meters <= 0:
         return None, [_error("integrity.stair_geometry", f"stair {stair.tag} "
                              "tread_thickness must be positive", stair.tag)]
@@ -252,7 +249,8 @@ def _in_stair_material(stair: Stair, members: tuple[FramedMember, ...],
     Walking surfaces take ``finish`` (tread, landing) where one is declared.
     """
     tread, landing = finish
-    if stair.material is None and tread is None and landing is None:
+    if (stair.material is None and stair.stringer_material is None and tread is None
+            and landing is None):
         return members
 
     def material(member: FramedMember) -> str | None:
@@ -260,6 +258,8 @@ def _in_stair_material(stair: Stair, members: tuple[FramedMember, ...],
             return tread or stair.material
         if member.category == "landing":
             return landing or stair.material
+        if member.category == "stringer":
+            return stair.stringer_material or stair.material
         return stair.material
 
     return tuple(member if member.material is not None

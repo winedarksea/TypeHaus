@@ -67,6 +67,7 @@ def graded_against_published(
     bearing_in: float | None = None,
     deflection_limit: str | None = None,
     loads_both_sides: bool | None = None,
+    throat_in: float | None = None,
     fix: str | None = None,
 ) -> Finding:
     """One member, graded against the row authored on it. Always returns exactly one finding."""
@@ -80,7 +81,8 @@ def graded_against_published(
     drift = _drift(published, member, spacing_in, carried_span_ft, demand_psf,
                    service_condition=service_condition, species_grade=species_grade,
                    treatment=treatment, bearing_in=bearing_in,
-                   deflection_limit=deflection_limit, loads_both_sides=loads_both_sides)
+                   deflection_limit=deflection_limit, loads_both_sides=loads_both_sides,
+                   throat_in=throat_in)
     if drift is not None:
         return structural_advisory(
             cid, f"{subject}: the authored published row no longer describes this "
@@ -340,7 +342,8 @@ def _drift(published: PublishedSpan, member: str | None, spacing_in: float | Non
            service_condition: str | None = None, species_grade: str | None = None,
            treatment: str | None = None, bearing_in: float | None = None,
            deflection_limit: str | None = None,
-           loads_both_sides: bool | None = None) -> str | None:
+           loads_both_sides: bool | None = None,
+           throat_in: float | None = None) -> str | None:
     """What stops this row from describing the model, or ``None`` when nothing does.
 
     ** A GUARD THE CALLER CANNOT ANSWER IS A MISMATCH, NOT AGREEMENT — AND THAT IS THE
@@ -408,6 +411,12 @@ def _drift(published: PublishedSpan, member: str | None, spacing_in: float | Non
         if bool(loads_both_sides) and not published.loads_both_sides:
             return ("the row is published for load from ONE side and this member picks up "
                     "load from both")
+    if published.min_throat_in is not None:
+        if throat_in is None:
+            return _unanswered("a minimum throat", f"{published.min_throat_in:g}\"")
+        if throat_in + 0.01 < published.min_throat_in:
+            return (f"the row needs a {published.min_throat_in:g}\" throat and this "
+                    f"stringer is notched to {throat_in:.2f}\"")
     return None
 
 

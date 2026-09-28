@@ -9,6 +9,7 @@ from typehaus.quantities import ft, inch, pt
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.stairs.dispatch import _resolve_stair
+from typehaus.resolve.stairs.winder import _winder_stair_members
 from typehaus.takeoff.framing import framing_takeoff, sheet_goods_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff, stair_tread_takeoff
 
@@ -109,13 +110,14 @@ def test_nonpositive_support_or_board_dimensions_report_integrity(name, value):
     assert findings[0].check_id == "integrity.stair_geometry"
 
 
-def test_stringer_spacing_does_not_silently_apply_to_a_winder():
-    """``stringer_spacing`` is read by the box carriage in ``straight.py`` and nowhere else.
-
-    A winder's boxes and a U-split's landing are laid out by their own rules, so accepting
-    the field on one would be accepting a number nothing reads.
-    """
-    model, findings = _resolve(_tiers(layout="right_angle_winder", winder_count=3,
-                                      turn_direction="right"))
-    assert not model.stairs
-    assert "only for straight" in findings[0].message
+def test_stringer_spacing_lays_out_a_winder_straight_flight():
+    """A winder's straight flight takes ``stringer_spacing`` and the stringer's own stock."""
+    stair = _tiers(layout="right_angle_winder", winder_count=3, turn_direction="right",
+                   width=ft(3), stringer_spacing=inch(18),
+                   stringer_profile="1.75x11.875 LSL")
+    members = _winder_stair_members(stair, 0.0, 0.0, 0.0, 16, inch(7.5).meters,
+                                    inch(10).meters, inch(11).meters, inch(1).meters)
+    strings = [m for m in members if m.category == "stringer"]
+    assert len(strings) == 3
+    assert {m.profile for m in strings} == {"1.75x11.875 LSL"}
+    assert strings[0].z1_m - strings[0].z0_m == pytest.approx(inch(11.875).meters)

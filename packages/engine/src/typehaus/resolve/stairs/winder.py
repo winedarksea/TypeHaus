@@ -12,6 +12,7 @@ from typehaus.resolve.model import FramedMember
 from typehaus.resolve.stairs.common import (
     _TREAD_THICKNESS_M,
     _notch_z,
+    _spacing,
     _stringer_offsets,
     _tread_board_profile,
     _tread_thickness,
@@ -112,7 +113,7 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     # one riser above that box's deck up to the arrival deck. Both ends are *notch* lines —
     # the tread boards and the arrival subfloor sit on them (see ``_notch_z``), which is
     # what keeps the rake straight and every finished riser equal.
-    stringer_depth = cross_section("2x12").depth_m
+    stringer_depth = cross_section(stair.stringer_profile).depth_m
     # One stock thickness for every walking surface this flight builds — the winder
     # panels, the straight treads and the box decks under them. See ``_notch_z``.
     thickness = _tread_thickness(stair)
@@ -122,9 +123,10 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     inside = P(width, 0.0)  # the turn's inside corner: where the straight flight springs
     outer_corner = P(0.0, width)  # the outer corner the turn sweeps around
     turn = P(width, width)  # the departing corner, where the box's outer rim takes over
-    for index, cross in enumerate(_stringer_offsets(width, None,
-                                                    cross_section("2x12").width_m)):
-        out.append(FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12",
+    for index, cross in enumerate(_stringer_offsets(
+            width, _spacing(stair), cross_section(stair.stringer_profile).width_m)):
+        out.append(FramedMember(stair.uid, f"stringer-{index}", "stringer",
+                                stair.stringer_profile,
                                 offset(inside, 0.0, cross),
                                 offset(inside, tread * straight_treads, cross),
                                 spring_notch - stringer_depth, spring_notch,
