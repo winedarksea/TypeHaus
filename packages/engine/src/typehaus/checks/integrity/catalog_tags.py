@@ -88,6 +88,27 @@ def unknown_product_ref(ctx: CheckContext) -> list[Finding]:
     return findings
 
 
+@check(Tier.INTEGRITY, "integrity.unknown_wood_material_ref")
+def unknown_wood_material_ref(ctx: CheckContext) -> list[Finding]:
+    """``FurnitureType.wood_material_ref`` names a real material, or the shelves go generic.
+
+    Read defensively by the viewer and the glTF export alike, so a typo draws the stock
+    furniture wood with nothing anywhere saying the oak was lost.
+    """
+    library = ctx.plan.library
+    known = {m.tag for m in library.materials}
+    return [Finding(
+        severity=Severity.ERROR,
+        check_id="integrity.unknown_wood_material_ref",
+        message=(f"furniture type {entry.tag!r} names wood_material_ref "
+                 f"{entry.wood_material_ref!r}, which no entry in library.materials defines"),
+        element_tags=(entry.tag,),
+        fix_hint="correct the reference, or add the Material to the house catalog",
+        result=Result.FAIL,
+    ) for entry in library.furniture_types
+        if entry.wood_material_ref is not None and entry.wood_material_ref not in known]
+
+
 @check(Tier.INTEGRITY, "integrity.register_duct_ref")
 def register_duct_ref(ctx: CheckContext) -> list[Finding]:
     """``Register.duct_ref`` names a real ``DuctRun``, or the register says why it needs none.

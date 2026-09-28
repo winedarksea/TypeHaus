@@ -307,7 +307,7 @@ export function populateScene(options: PopulateSceneOptions) {
     const elevation = item.z_m ?? placeableElevationM(model, item.storey);
     const before = snapshot(tradeGroups);
     const fallback = buildCanvasObject(group, item, type, center, mode, palette, elevation,
-      registry.picks, registry.byUid);
+      registry.picks, registry.byUid, model.catalog?.materials);
     buildSuspension(group, item, center, mode, registry.picks, registry.byUid);
     tagNew(tradeGroups, before, trades);
     tagStorey(tradeGroups, before, item.storey ?? null);

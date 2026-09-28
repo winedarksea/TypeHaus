@@ -254,6 +254,10 @@ class FurnitureType(HausModel):
     # ``None`` is ordinary catalog furniture.  A value makes this a fitted, generated
     # assembly: exact board geometry is shared by drawings, browser, GLB, and IFC.
     built_in_bookcase: BuiltInBookcaseSpec | None = None
+    # The catalog ``Material`` its generic ``wood`` parts are made of (a shelf, a side, every
+    # board of a built-in). Colour and 3D texture then follow that material; the darker
+    # ``wood-dark`` back keeps its shadow tone. ``None`` draws the generic furniture wood.
+    wood_material_ref: str | None = None
 
 
 class RailingType(HausModel):

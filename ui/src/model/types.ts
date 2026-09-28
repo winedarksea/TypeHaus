@@ -540,6 +540,8 @@ export interface ModelPart {
   center: [number, number, number];
   size: [number, number, number];
   color: string;
+  /** The catalog material a `wood` part is made of (`FurnitureType.wood_material_ref`). */
+  material_ref?: string;
   /**
    * The plan ring this part sweeps, for the solids a box cannot state — a neo-angle shower
    * pan is a pentagon. Absent on the box parts, which is nearly all of them; `center`/`size`

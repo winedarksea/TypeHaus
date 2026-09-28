@@ -6,12 +6,17 @@
 // glb (or a parametric massing) placed by position + rotation rather than resolved geometry.
 import * as THREE from "three";
 import type { CanvasObject, CanvasObjectType, Model, ModelPart } from "../../model/types";
-import type { ResolvedNordicPalette } from "../../nordic/palette";
+import type { MaterialAppearance, ResolvedNordicPalette } from "../../nordic/palette";
 import {
   createPlanPrismGeometry, projectPlanRotationToSceneRadians, projectPointToScene,
   type PlanCenter,
 } from "../planGeometry";
+import {
+  applyPlankPlaneUv, createPlankMaterial, planLongAxis, plankTileSizeM,
+} from "../plankMaterial";
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
+import { boardBoxGeometry, pieceSeed, seatPieceUv } from "../woodPiece";
+import { boardStyleFor } from "./millwork";
 import {
   DEFAULT_EARTH_OPACITY, DEFAULT_EARTH_TONE, EARTH_TONE_HEX, type EarthTone,
 } from "../../state/vocabulary";
@@ -116,13 +121,15 @@ export function buildCanvasObject(
   elevation: number,
   picks: THREE.Mesh[],
   byUid: Map<string, THREE.Material[]>,
+  materials?: readonly MaterialAppearance[],
 ): THREE.Object3D | null {
   if (!item.position_m) return null;
   const [width, depth] = type?.footprint_m ?? [0.45, 0.45];
   const height = type?.height_m ?? 0.25;
   const parts = type?.model_parts ?? [];
   if (parts.length) {
-    return buildCanvasObjectParts(parent, item, parts, center, mode, elevation, picks, byUid);
+    return buildCanvasObjectParts(parent, item, parts, center, mode, elevation, picks, byUid,
+      materials);
   }
   const color = item.domain === "electrical" ? 0xd69e2e
     : item.domain === "plumbing" ? 0x4299e1 : item.domain === "mechanical" ? 0x718096 : palette.member.wood;
@@ -175,7 +182,8 @@ export function buildSuspension(
 
 /**
  * A generated multi-part massing: one BoxGeometry mesh per part, one material per distinct
- * colour, all under a single group. Every mesh carries the object's uid and lands in `picks`
+ * colour (a part made of a board material — oak shelving — is textured as that board), all
+ * under a single group. Every mesh carries the object's uid and lands in `picks`
  * and `byUid`, so clicking any part selects the whole object and highlights all of it — the
  * same contract the GLB-loaded branch honours.
  *
@@ -191,15 +199,19 @@ export function buildCanvasObjectParts(
   elevation: number,
   picks: THREE.Mesh[],
   byUid: Map<string, THREE.Material[]>,
+  catalog?: readonly MaterialAppearance[],
 ): THREE.Object3D {
   const group = new THREE.Group();
-  const materials = new Map<string, THREE.MeshStandardMaterial>();
-  for (const part of parts) {
-    let material = materials.get(part.color);
+  const materials = new Map<string, THREE.Material>();
+  for (const [index, part] of parts.entries()) {
+    const board = boardStyleFor(part.material_ref, catalog);
+    const key = board ? `${board.key}|${part.color}` : part.color;
+    let material = materials.get(key);
     if (!material) {
-      material = standardMaterial(new THREE.Color(part.color), mode,
-        { roughness: mode === "nordic" ? NORDIC_ROUGHNESS.massing : 1 });
-      materials.set(part.color, material);
+      material = board ? createPlankMaterial(mode, board, part.color)
+        : standardMaterial(new THREE.Color(part.color), mode,
+          { roughness: mode === "nordic" ? NORDIC_ROUGHNESS.massing : 1 });
+      materials.set(key, material);
     }
     const [sx, sy, sz] = part.size;
     // Scene axes are (plan x, height, -plan y); projectPointToScene owns that mapping for the
@@ -210,8 +222,17 @@ export function buildCanvasObjectParts(
     // lands in the scene frame at the local origin, so only the box branch offsets its mesh.
     const ring = part.points && part.points.length >= 3
       ? createPlanPrismGeometry(part.points, cz - sz / 2, cz + sz / 2) : null;
-    const mesh = makeSurfaceMesh(ring ?? new THREE.BoxGeometry(sx, sz, sy), material);
-    if (!ring) mesh.position.set(cx, cz, -cy);
+    const seed = pieceSeed(`${item.uid}|${index}`);
+    if (ring && board) {
+      applyPlankPlaneUv(ring, [0, 0], planLongAxis(part.points!), plankTileSizeM(board));
+      seatPieceUv(ring, board, seed);
+    }
+    // A board part bakes its placement into the geometry, so its grain can follow its
+    // longest side; a plain box keeps the shared unit geometry and a mesh offset.
+    const box = board && !ring ? boardBoxGeometry(new THREE.Matrix4().makeTranslation(cx, cz, -cy)
+      .scale(new THREE.Vector3(sx, sz, sy)), board, seed) : null;
+    const mesh = makeSurfaceMesh(ring ?? box ?? new THREE.BoxGeometry(sx, sz, sy), material);
+    if (!ring && !box) mesh.position.set(cx, cz, -cy);
     mesh.userData.uid = item.uid;
     mesh.userData.selectionKind = "canvas_object";
     group.add(mesh);

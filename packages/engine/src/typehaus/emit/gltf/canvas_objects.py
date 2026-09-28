@@ -7,11 +7,11 @@ from pathlib import Path
 
 from typehaus.emit.gltf.geometry import _to_gltf
 from typehaus.emit.gltf.mesh import _MeshBuilder
-from typehaus.emit.gltf.palette import _color
+from typehaus.emit.gltf.palette import _color, _hex_rgba
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.model.built_in_bookcase import built_in_bookcase_parts
-from typehaus.model.canvas import canvas_object_types
+from typehaus.model.canvas import canvas_object_types, wood_material
 from typehaus.model.placeable_symbols import PART_COLORS, lamp_role, model_parts, place_local
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
 from typehaus.resolve.suspension import suspension_draw
@@ -39,6 +39,7 @@ def _add_canvas_objects(scene: _SceneBuilder, model: ResolvedModel) -> None:
     types = {item.tag: item for name in _PLACEABLE_TYPE_COLLECTIONS
              for item in getattr(model.plan.library, name)}
     heights = {t["tag"]: t.get("height_m") for t in canvas_object_types(model.plan)}
+    materials = {m.tag: m for m in model.plan.library.materials}
     root = Path(model.plan.source_root or ".")
     for item in sorted(model.canvas_objects, key=lambda co: co.uid):
         if item.domain == "opening":
@@ -49,7 +50,7 @@ def _add_canvas_objects(scene: _SceneBuilder, model: ResolvedModel) -> None:
         if product_type is not None and getattr(product_type, "mesh", None) is not None:
             drawn = _add_mesh_sidecar(mb, root / product_type.mesh.path, item.position, item.z_m)
         if not drawn:
-            drawn = _add_canvas_parts(mb, item, product_type)
+            drawn = _add_canvas_parts(mb, item, product_type, materials)
         if not drawn:
             _add_canvas_box(mb, item, heights.get(item.type_ref))
         _add_suspension(mb, item, product_type)
@@ -84,7 +85,7 @@ def _add_mesh_sidecar(mb: _MeshBuilder, path: Path, position: tuple[float, float
 
 
 def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
-                      product_type: object | None) -> bool:
+                      product_type: object | None, materials: dict[str, object]) -> bool:
     """Extrude a type's generated massing parts, one prism each. False when it has no symbol.
 
     The parts are in the symbol's **local** frame: the resolver bakes rotation into
@@ -93,11 +94,16 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     directly — the viewer reads the hex the serializer derives from those same numbers, so
     the two cannot disagree.
     """
+    # A type naming its wood takes that material's authored colour on its ``wood`` parts,
+    # exactly as model/canvas._wood_part hands the viewer.
+    wood = wood_material(product_type, materials)
+    wood_color = _hex_rgba(wood.color) if wood is not None else None
     bookcase = getattr(product_type, "built_in_bookcase", None)
     if bookcase is not None:
         for part in built_in_bookcase_parts(bookcase):
             mb.add_prism(place_local(part.outline, item.position, item.rotation_degrees),
-                         item.z_m + part.z0_m, item.z_m + part.z1_m, _color("furniture"))
+                         item.z_m + part.z0_m, item.z_m + part.z1_m,
+                         wood_color or _color("furniture"))
         return True
     symbol = getattr(product_type, "plan_symbol", None)
     footprint = getattr(product_type, "footprint", None)
@@ -118,7 +124,8 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
             (cx + sx / 2, cy + sy / 2), (cx - sx / 2, cy + sy / 2)]
         mb.add_prism(place_local(ring, item.position, item.rotation_degrees),
                      item.z_m + cz - sz / 2, item.z_m + cz + sz / 2,
-                     PART_COLORS[lamp if part["color"] == "lamp" else part["color"]])
+                     wood_color if wood_color and part["color"] == "wood"
+                     else PART_COLORS[lamp if part["color"] == "lamp" else part["color"]])
     return bool(parts)
 
 

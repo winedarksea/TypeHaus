@@ -52,6 +52,7 @@ STUDY_BUILT_IN_BOOKCASE = FurnitureType(
         divider_thickness=inch(0.75), back_thickness=inch(0.75),
         west_filler_width=inch(2.625),
     ),
+    wood_material_ref="oak-shelf-6q",
     source="Catlin study fixed casework: front y=105 5/8 in.; x=272..368 3/4 in.; three 31 1/4 in. clear bays with 60/42/30 in. tops and 5/4/3 horizontal boards; 2 5/8 in. west filler closes to W-A-SN-WR.",
 )
 
@@ -147,6 +148,7 @@ BATH1_SHELF_2030 = FurnitureType(
     tag="FT-BATH1-SHELF-2030", name='Bath 1 alcove shelf, 20" x 30"',
     footprint=(inch(20), inch(30)), height=inch(84),
     storage=True, work_surface=False, plan_symbol="bookcase",
+    wood_material_ref="oak-shelf-4q",
     source="Site-built millwork, not a catalogue bookcase: a 3/4\" plywood carcass scribed "
            "to the east end of RM-S-BATH1's tub alcove, whose WEST panel carries "
            "FX-S-BATH1-SH's east flange over a framed 2x4 and is what makes that insert a "
@@ -175,6 +177,7 @@ SUITEBATH_RETURN_3011 = FurnitureType(
     tag="FT-SUITEBATH-RETURN-3011", name='Suite bath alcove return, 30" x 11 1/4"',
     footprint=(inch(30), inch(11.25)), height=inch(84),
     storage=True, work_surface=False, plan_symbol="bookcase",
+    wood_material_ref="oak-shelf-4q",
     source="Site-built millwork, not a catalogue tower: a 3/4\" plywood carcass scribed to "
            "the south end of RM-S-SUITEBATH's tub alcove, whose NORTH panel carries "
            "FX-S-SUITEBATH-TUBSH's south flange over a framed 2x4 and is what makes that "
@@ -422,6 +425,7 @@ THEATER_BOOKCASE = FurnitureType(
     tag="FT-BOOKCASE-32-90", name='Bookcase, 2\'-8" x 7\'-6"',
     footprint=(ft(2, 8), ft(1)), height=ft(7, 6),
     plan_symbol="bookcase", storage=True,
+    wood_material_ref="oak-shelf-4q",
     source=("owner, 2026-08-24 — the theatre's shelving taken up near the ceiling. The "
             "library's FURN-BOOKCASE-32 at 6'-0\" in the same 2'-8\" x 1'-0\" footprint, "
             "stretched to 7'-6\": a 6\" reveal under RM-B-PLAY-N's measured 8'-0\" clear, "
@@ -510,6 +514,7 @@ PANTRY_SHELVES_70 = FurnitureType(
     tag="FT-KIT-PANTRY-SHELVES-70", name='Pantry shelf stack, 70 1/4" x 18"',
     footprint=(inch(70.25), inch(18)), height=ft(7),
     storage=True, work_surface=False, plan_symbol="bookcase",
+    wood_material_ref="oak-shelf-8q",
     source="Site-built millwork, DESIGNED TO BE CLIMBED — see "
            "notes/pantry_climbable_shelving.md. 1 1/2\" solid white oak shelves (owner "
            "stock, scheduled in plan/millwork.py as SB-M-PANTRY) on continuous 1x3 cleats "

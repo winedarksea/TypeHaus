@@ -21,9 +21,10 @@ import {
 } from "../materials";
 import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
 import { buildMembers, isRoofFramingMember, memberColor, type SkinLine } from "../members";
+import { buildBoardMembers } from "./millwork";
 import {
-  applyPlankPlaneUv, applyPlankWallUv, createPlankMaterial, isWoodPlank, planLongAxis,
-  plankStyleFor, plankTileSizeM,
+  applyPlankPlaneUv, applyPlankWallUv, createPlankMaterial, planLongAxis, plankStyleOrNull,
+  plankTileSizeM,
 } from "../plankMaterial";
 import {
   createPlanPrismGeometry, createProjectedSurfaceGeometry, type PlanCenter,
@@ -61,9 +62,8 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
   // straight on the solid, so the sauna's shiplap arrives here as `material: "sauna-shiplap"` with no
   // assembly to walk. Boards run along the room's long axis — a ceiling's furring is
   // authored "horizontal", which says nothing about which horizontal.
-  const plankStyle = !deckBoards && isWoodPlank(solid.material)
-    ? plankStyleFor(solid.material, authoredAppearance(solid.material, materials)?.finish)
-    : null;
+  const plankStyle = deckBoards ? null
+    : plankStyleOrNull(solid.material, authoredAppearance(solid.material, materials)?.finish);
   if (plankStyle && !solid.sweep) {
     applyPlankPlaneUv(geo, center, planLongAxis(solid.outline), plankTileSizeM(plankStyle));
   }
@@ -269,13 +269,14 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
     outline, floorTopM, floorTopM + ROOM_FINISH_THICKNESS_M, holes, center);
   if (!geometry) return;
   const firstChildIndex = parent.children.length;
-  const surface = floorSurface(finish);
-  // A plank floor is boards, not a sheet. Oak strip and (later) LVP take the board treatment;
-  // a veined-marble print takes one world-fixed tile, so the pattern runs on unbroken from
+  // A plank floor is boards, not a sheet: oak, owner-milled plank and LVP take the board
+  // treatment, by declared recipe first so a house-local tag needs no needle (#57). A
+  // veined-marble print takes one world-fixed tile, so the pattern runs on unbroken from
   // room to room as one sheet would. Carpet and tile stay a flat fill. Boards run along the
   // room's long axis — a floor is laid the long way.
   const declared = authoredAppearance(finish, materials)?.finish;
-  const plankStyle = isWoodPlank(finish) ? plankStyleFor(finish, declared) : null;
+  const surface = floorSurface(finish, declared);
+  const plankStyle = plankStyleOrNull(finish, declared);
   const marble = !plankStyle && isVeinedMarble(declared);
   if (plankStyle) {
     applyPlankPlaneUv(geometry, center, planLongAxis(outline), plankTileSizeM(plankStyle));
@@ -322,9 +323,8 @@ export function buildPaneling(parent: THREE.Group, band: Paneling, center: PlanC
   const bandZ0 = band.z0_m;
   // `pieces` is the band net of its openings — the gross outline runs across a door.
   const pieces = band.pieces ?? [{ outline: band.outline, z0_m: bandZ0, z1_m: band.z1_m }];
-  const plankStyle = isWoodPlank(band.material_ref)
-    ? plankStyleFor(band.material_ref, authoredAppearance(band.material_ref, materials)?.finish)
-    : null;
+  const plankStyle = plankStyleOrNull(band.material_ref,
+    authoredAppearance(band.material_ref, materials)?.finish);
   const material = plankStyle
     ? createPlankMaterial(mode, plankStyle, materialColor(band.material_ref, palette, materials))
     : standardMaterial(
@@ -509,14 +509,15 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
 }
 
 // A stair is nothing but its generated members (stringers, treads, risers), so its whole
-// framing bucket is what a click has to land on.
+// framing bucket is what a click has to land on. Oak treads draw as boards; the rest bucket.
 export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
   materials?: readonly MaterialAppearance[]) {
   const firstChildIndex = parent.children.length;
-  buildMembers(parent, stair.members, center, mode, palette, stair.uid, materials);
-  for (const member of stair.members) {
+  const rest = buildBoardMembers(parent, stair.members, center, mode, palette, materials, stair.uid);
+  buildMembers(parent, rest, center, mode, palette, stair.uid, materials);
+  for (const member of rest) {
     if (!member.plan_outline || member.plan_outline.length < 3) continue;
     const geo = createPlanPrismGeometry(member.plan_outline, member.z0_m, member.z1_m, [], center);
     if (!geo) continue;

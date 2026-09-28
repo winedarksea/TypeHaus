@@ -9,6 +9,7 @@ import type { FinishPart, FinishZone, Floor, Member, Room, Vec2 } from "../../mo
 import {
   buildRoomFloor, ROOM_FINISH_THICKNESS_M, storeyFloorTopM,
 } from "./structure";
+import { plankTileSizeM, WOOD_PLANK_STYLES } from "../plankMaterial";
 import {
   DEFAULT_FLOOR_SURFACE, FLOOR_FINISH_SURFACE, floorSurface, materialColor,
   RESOLVED_NORDIC_PALETTE, type MaterialAppearance,
@@ -22,8 +23,10 @@ const PALETTE = RESOLVED_NORDIC_PALETTE.light;
 
 // The floor-finish slice of library/materials.py, as the catalog ships it.
 const MATERIALS: MaterialAppearance[] = [
-  { tag: "oak", color: "#c69c6d" },
-  { tag: "lvp", color: "#a08a72" },
+  { tag: "oak", color: "#c9b08c", finish: "strip-floor" },
+  { tag: "lvp", color: "#c0ae94", finish: "lvp-plank" },
+  // A house-local floor: no needle matches its tag, so only its declared recipe boards it.
+  { tag: "house-oak", color: "#c9b08c", finish: "plank-floor" },
   { tag: "carpet", color: "#9c8f80" },
   { tag: "tile", color: "#dfe3e5" },
   // Sealed concrete is a *coating*: a sealer on the slab, no thickness of its own.
@@ -112,7 +115,7 @@ export function runRoomFloorTests() {
   // --- 2. colour comes off the catalog material, not a second table -----------------------
 
   const colors = new Map<string, string>();
-  for (const { tag, color } of COVERINGS) {
+  for (const { tag, color } of COVERINGS.filter((m) => m.tag !== "house-oak")) {
     const built = build(room(tag));
     const material = (built.group.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
     assert("#" + material.color.getHexString() === color,
@@ -153,6 +156,24 @@ export function runRoomFloorTests() {
   assert(floorSurface("no-such-finish") === DEFAULT_FLOOR_SURFACE,
     "An unlisted finish gets a plausible matte default rather than undefined");
   assert(floorSurface(null) === DEFAULT_FLOOR_SURFACE, "A null finish never throws");
+
+  // A house-tagged floor is boards by its declared recipe: plank UVs, and oak's sheen
+  // rather than the matte default an unlisted tag would get.
+  const houseOak = build(room("house-oak")).group.children[0] as THREE.Mesh;
+  const uv = houseOak.geometry.getAttribute("uv");
+  const [acrossM, alongM] = plankTileSizeM(WOOD_PLANK_STYLES["plank-floor"]);
+  const span = (get: (i: number) => number) => {
+    const values = Array.from({ length: uv.count }, (_, i) => get(i));
+    return Math.max(...values) - Math.min(...values);
+  };
+  assert(Math.abs(span((i) => uv.getX(i)) - 4 / acrossM) < 1e-4
+    && Math.abs(span((i) => uv.getY(i)) - 4 / alongM) < 1e-4,
+    "A declared plank-floor recipe lays that recipe's board UVs, whatever the tag");
+  assert((houseOak.material as THREE.MeshStandardMaterial).roughness
+    === FLOOR_FINISH_SURFACE.oak.roughness,
+    "…and takes oak's roughness through its recipe, not the default");
+  assert("#" + (houseOak.material as THREE.MeshStandardMaterial).color.getHexString()
+    === "#c9b08c", "…in its own authored colour");
 
   // --- 4. geometry: over the deck, and not capping the stair well ------------------------
 

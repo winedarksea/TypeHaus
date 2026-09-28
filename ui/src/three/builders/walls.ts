@@ -17,7 +17,7 @@ import {
   metalPanelProfileForFinish, type MetalPanelProfile, SEAM_PROFILE,
 } from "../materials";
 import {
-  applyPlankWallUv, createPlankMaterial, isWoodPlank, plankStyleFor, plankTileSizeM,
+  applyPlankWallUv, createPlankMaterial, plankStyleOrNull, plankTileSizeM,
 } from "../plankMaterial";
 import {
   createPlanPrismGeometry, createRakedPlanPrismGeometry, type PlanCenter,
@@ -138,8 +138,8 @@ export function buildWall(
     // and the study's walnut wainscot are boards, and a flat fill made a lined room read as
     // tan drywall. `ly.board_run` is derived by the engine from the furring behind the layer
     // (resolve/topology.py `_board_run`), so the boards land the way they are fastened.
-    const plankStyle = !seam && !wash && !masonryStyle && isWoodPlank(ly.material)
-      ? plankStyleFor(ly.material, appearance?.finish) : null;
+    const plankStyle = !seam && !wash && !masonryStyle
+      ? plankStyleOrNull(ly.material, appearance?.finish) : null;
     // The coil white is the DEFAULT, not the only option. A metal panel that
     // declares a finish naming its own paint gets that paint; everything else keeps
     // 0xE8E8E2, which is what all five of the house's white skins author (their catalog

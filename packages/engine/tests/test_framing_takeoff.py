@@ -61,8 +61,10 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     # A composite tread is ordered by the SHEET (`separate_stair_wear_members`); a CAST one
     # is not ordered at all, because the pour that is the tier is a `Slab` with its own row.
     # Both still resolve as members — every code rule that grades a stair measures them.
-    not_lumber = [m for m in members if m.category == "tread"
-                  and m.material in {"composite-deck", "concrete"}]
+    # The oak flights (`tread_material="oak-tread"`) bill their treads, winders and landings
+    # by area as a stair wear surface, the same way.
+    not_lumber = [m for m in members if m.category in {"tread", "winder", "landing"}
+                  and m.material in {"composite-deck", "concrete", "oak-tread"}]
     assert not_lumber, "catlin has composite and cast treads; this should not be empty"
     assert sum(int(row["pieces"]) for row in rows) == (
         len(members) - len(ripped) - len(not_lumber))
@@ -270,8 +272,8 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     # `test_framing_takeoff_reconciles_and_groups`).
     members = catlin_model.all_members()
     ripped = sum(1 for m in members if rip_stock(m.profile, m.material) is not None)
-    not_lumber = sum(1 for m in members if m.category == "tread"
-                     and m.material in {"composite-deck", "concrete"})
+    not_lumber = sum(1 for m in members if m.category in {"tread", "winder", "landing"}
+                     and m.material in {"composite-deck", "concrete", "oak-tread"})
     assert not_lumber, "catlin has treads that are not lumber; this should not be zero"
     assert sum(int(row["pieces"]) for row in bom["framing"]) == (
         len(members) - ripped - not_lumber)

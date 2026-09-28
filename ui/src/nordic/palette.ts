@@ -62,9 +62,20 @@ export const FLOOR_FINISH_SURFACE: Record<string, FloorSurface> = {
   "vinyl-sheet": { roughness: 0.5, metalness: 0 },
 };
 
-/** The lighting response for a floor finish; never undefined. */
-export function floorSurface(finish: string | null | undefined): FloorSurface {
-  return (finish && FLOOR_FINISH_SURFACE[finish]) || DEFAULT_FLOOR_SURFACE;
+// By declared 3D recipe (`Material.finish`), for a floor whose tag is house-local: the
+// owner-milled `oak-floor-custom` is oak's sheen because it declares `plank-floor`.
+const FLOOR_RECIPE_SURFACE: Record<string, FloorSurface> = {
+  "strip-floor": FLOOR_FINISH_SURFACE.oak,
+  "plank-floor": FLOOR_FINISH_SURFACE.oak,
+  "lvp-plank": FLOOR_FINISH_SURFACE.lvp,
+};
+
+/** The lighting response for a floor finish (tag, then declared recipe); never undefined. */
+export function floorSurface(
+  finish: string | null | undefined, declared?: string | null,
+): FloorSurface {
+  return (finish && FLOOR_FINISH_SURFACE[finish])
+    || (declared && FLOOR_RECIPE_SURFACE[declared]) || DEFAULT_FLOOR_SURFACE;
 }
 
 const FALLBACK = "var(--material-fallback)";

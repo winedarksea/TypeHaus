@@ -24,8 +24,17 @@ _TYPE_COLLECTIONS = (
 )
 
 
+def wood_material(item: Any, materials: dict[str, Any]) -> Any | None:
+    """The catalog material a type's ``wood`` parts are built from, when it names one with a
+    colour. The viewer and the glTF export both read the part colour through this."""
+    ref = getattr(item, "wood_material_ref", None)
+    material = materials.get(ref) if ref else None
+    return material if material is not None and material.color else None
+
+
 def canvas_object_types(plan: PlanModel) -> list[dict[str, Any]]:
     """Return all catalog types with a uniform placement declaration."""
+    materials = {material.tag: material for material in plan.library.materials}
     result: list[dict[str, Any]] = []
     for collection, domain, kind, default_strategy in _TYPE_COLLECTIONS:
         for item in getattr(plan.library, collection):
@@ -55,12 +64,19 @@ def canvas_object_types(plan: PlanModel) -> list[dict[str, Any]]:
                 "model_primitive": (
                     item.model_representation.primitive
                     if getattr(item, "model_representation", None) is not None else None),
-                **_symbol_geometry(item, footprint),
+                **_symbol_geometry(item, footprint, wood_material(item, materials)),
             })
     return result
 
 
-def _symbol_geometry(item: Any, footprint: Any) -> dict[str, Any]:
+def _wood_part(role: str, wood: Any | None) -> dict[str, Any]:
+    """A part's colour, and the material it is made of when it is the type's named wood."""
+    if role == "wood" and wood is not None:
+        return {"color": wood.color[:7], "material_ref": wood.tag}
+    return {"color": part_hex(role)}
+
+
+def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict[str, Any]:
     """Project a type's generated plan glyph and 3D massing into the wire contract.
 
     Colours resolve to hex *here*, so the UI needs no palette table of its own — the viewer
@@ -82,7 +98,7 @@ def _symbol_geometry(item: Any, footprint: Any) -> dict[str, Any]:
             ],
             "model_parts": [
                 {"center": list(part.center), "size": list(part.size),
-                 "color": part_hex("wood"),
+                 **_wood_part("wood", wood),
                  "role": part.role, "bay_index": part.bay_index}
                 for part in parts
             ],
@@ -102,7 +118,7 @@ def _symbol_geometry(item: Any, footprint: Any) -> dict[str, Any]:
         # ``points`` rides along only when the part is a ring rather than a box, so the wire
         # stays as small as it was for the ~30 symbols that are all boxes.
         "model_parts": [{"center": list(part["center"]), "size": list(part["size"]),
-                         "color": part_hex(_lamp(part["color"], lamp)),
+                         **_wood_part(_lamp(part["color"], lamp), wood),
                          **({"points": [list(point) for point in part["points"]]}
                             if part["points"] else {})}
                         for part in model_parts(symbol, width_m, depth_m, height_m)],

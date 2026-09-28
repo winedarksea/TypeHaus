@@ -1,93 +1,113 @@
-// ── Wood planks (T&G paneling / strip flooring) ───────────────────────────────────────
+// ── Wood planks (T&G paneling / plank and strip flooring / LVP) ──────────────────────────
 // Same trick as the masonry section of `materials.ts`: the board module, the joint and the
 // per-board tone variation ride shared procedural maps (colour + normal), world-scaled so
 // boards sit at true size. No external texture, so the offline PWA still renders it, and —
 // like brick — no per-board geometry (plans/01-decisions.md #23 keeps placed members
-// wood-framing-only).
+// wood-framing-only). The board layout and figure live in `plankLayout.ts`.
 //
-// Two recipes, because a paneling board and a floor strip are not the same product:
+// The recipes, because a paneling board, a milled floor board and a printed plank are not
+// the same product:
 //   • `tg-board` — 3½" exposed face, a V-groove at each joint, continuous runs. The sauna
 //     liner is 7'-6" and the wainscot 3', so neither has end joints worth drawing.
 //   • `shiplap` — 5½" exposed face, a wider reveal at each joint, continuous runs. The sauna
 //     liner is shiplap, not T&G, so the `*-tg` ref inference below cannot see it — a profile
 //     change that renames the tag needs its own needle.
-//   • `strip-floor` — 2¼" strip with butt end joints on a hashed stagger, and the highest
-//     tone jitter in the house: strip oak is genuinely that variegated.
+//   • `strip-floor` — 2¼" strip, random 1'–4' lengths, butt joints, white-oak figure.
+//   • `plank-floor` — owner-milled 3⅛" face, random 1'–7' lengths, butt joints (sanded
+//     flush), every board its own wood.
+//   • `lvp-plank` — 7"×48" click-lock, micro-bevelled on all four edges, and a print that
+//     repeats every six boards: format, bevel and repeat are how LVP reads as LVP.
+//   • `oak-board` — solid oak millwork: one jointless board per piece, no seams.
 //
-// Unlike the masonry recipes, neither carries a fixed unit colour. Every wood material in
-// the library authors its own `Material.color` (basswood #e6d4ae, walnut #5d4433, oak
-// #c69c6d), and that is the colour a species *is* — a recipe that overrode it would make
-// walnut and basswood render identically.
+// None carries a fixed unit colour. Every wood material authors its own `Material.color`
+// (basswood #e6d4ae, walnut #5d4433, white oak under a water-based clear #c9b08c), and that
+// is the colour a species *is* — a recipe that overrode it would make walnut and basswood
+// render identically.
 import * as THREE from "three";
 import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
+import {
+  boardShade, drawBoardFigure, layoutPlankTile, type PlankStyle,
+} from "./plankLayout";
 
-const PLANK_TEX_PX = 512;
+export type { PlankStyle } from "./plankLayout";
 
-/**
- * The recipe for one wood finish: the board module, how many boards/lengths a repeat tile
- * spans, the joint profile, and the per-board HSL jitter magnitude. `key` seeds the map cache
- * so distinct styles never collide.
- *
- * `boardLenM` is 0 for a continuous run (no end joints drawn); anything else is the mean
- * board length, staggered per row so a floor does not read as a grid.
- */
-export interface PlankStyle {
-  readonly key: string;
-  readonly faceWidthM: number; // exposed face of one board, across the run
-  readonly boardsPerTile: number;
-  readonly boardLenM: number; // 0 = continuous run
-  readonly lengthsPerTile: number; // ignored when boardLenM is 0
-  readonly jointFraction: number; // joint width ÷ face width
-  readonly jointProfile: "vee" | "butt";
-  // Per-board tone spread, as a fraction of full brightness. LIGHTNESS ONLY: the maps are
-  // luminance (see buildPlankMaps), so hue and saturation cannot vary per board the way the
-  // masonry recipes vary them. That is a fair trade — board-to-board variation in a run of
-  // one species reads almost entirely as lightness anyway, and keeping the map neutral is
-  // what lets `material.color` stay the species colour.
-  readonly jitter: number;
-  readonly grain: number; // lengthwise figure amplitude, 0..1
-}
+const INCH = 0.0254;
 
 // 5/4 and 4/4 tongue-and-groove paneling: a 1x4/5/4x4 board shows ~3½" of face once the
 // tongue is buried. The V-groove is the only joint a T&G board has — there is no mortar to
 // draw and no stagger, because these runs are short enough to be single boards.
 const TG_BOARD_STYLE: PlankStyle = {
-  key: "tg-board", faceWidthM: 0.0889, boardsPerTile: 6, boardLenM: 0, lengthsPerTile: 1,
-  jointFraction: 0.045, jointProfile: "vee", jitter: 0.07, grain: 0.35,
+  key: "tg-board", faceWidthM: 0.0889, boardsPerTile: 6, lengths: { kind: "continuous" },
+  tileAlongM: 0.0889 * 6, pxPerM: 960, jointFraction: 0.045, jointProfile: "vee",
+  jitter: 0.07, grain: 0.35, figure: "streak", printRepeat: 0, reliefScale: 0.6,
+};
+
+// 5/4 shiplap: a 1x6 board shows ~5½" of face once the rabbet is lapped, so the module is
+// wider than the T&G's and the reveal at each joint is a broader shadow line. Drawn with the
+// same `vee` joint the T&G uses — a square reveal and a V-groove are the same channel at this
+// scale.
+const SHIPLAP_STYLE: PlankStyle = {
+  key: "shiplap", faceWidthM: 0.1397, boardsPerTile: 4, lengths: { kind: "continuous" },
+  tileAlongM: 0.1397 * 4, pxPerM: 920, jointFraction: 0.045, jointProfile: "vee",
+  jitter: 0.07, grain: 0.35, figure: "streak", printRepeat: 0, reliefScale: 0.6,
 };
 
 // 2¼" white-oak strip. Butt joints rather than a groove (a strip floor is sanded flat, so
-// the joint is a line, not a channel), staggered lengths, and the widest tone spread here:
-// a strip floor laid from mixed boards is the most variegated surface in the house.
+// the joint is a line, not a channel), short random lengths, and the widest tone spread: a
+// strip floor laid from mixed boards is the most variegated surface in the house.
 const STRIP_FLOOR_STYLE: PlankStyle = {
-  key: "strip-floor", faceWidthM: 0.0572, boardsPerTile: 8, boardLenM: 0.9144,
-  lengthsPerTile: 2, jointFraction: 0.02, jointProfile: "butt", jitter: 0.13, grain: 0.5,
+  key: "strip-floor", faceWidthM: 2.25 * INCH, boardsPerTile: 12,
+  lengths: { kind: "random", minM: 12 * INCH, maxM: 48 * INCH }, tileAlongM: 96 * INCH,
+  pxPerM: 800, jointFraction: 0.02, jointProfile: "butt", jitter: 0.13, grain: 0.5,
+  figure: "oak", printRepeat: 0, reliefScale: 0.6,
+};
+
+// Owner-milled white oak: the 3⅛" exposed face `takeoff/hardwood.py` covers with, random
+// 1'–7' lengths off the mill, sanded flush.
+const PLANK_FLOOR_STYLE: PlankStyle = {
+  key: "plank-floor", faceWidthM: 3.125 * INCH, boardsPerTile: 10,
+  lengths: { kind: "random", minM: 12 * INCH, maxM: 84 * INCH }, tileAlongM: 120 * INCH,
+  pxPerM: 700, jointFraction: 0.02, jointProfile: "butt", jitter: 0.12, grain: 0.5,
+  figure: "oak", printRepeat: 0, reliefScale: 0.5,
+};
+
+// White-oak-look click-lock LVP, 7"×48". Low jitter (a print is colour-managed), a shallow
+// embossed relief, and the bevel carries the joint instead.
+const LVP_PLANK_STYLE: PlankStyle = {
+  key: "lvp-plank", faceWidthM: 7 * INCH, boardsPerTile: 6,
+  lengths: { kind: "fixed", lenM: 48 * INCH }, tileAlongM: 96 * INCH, pxPerM: 700,
+  jointFraction: 0.012, jointProfile: "bevel", jitter: 0.05, grain: 0.45, figure: "oak",
+  printRepeat: 6, reliefScale: 0.45,
+};
+
+// Solid white-oak millwork (stools, treads, shelves): no joints at all, four 16" boards of
+// distinct tone across the tile so each piece can take its own (→ woodPiece.ts).
+const OAK_BOARD_STYLE: PlankStyle = {
+  key: "oak-board", faceWidthM: 16 * INCH, boardsPerTile: 4, lengths: { kind: "continuous" },
+  tileAlongM: 96 * INCH, pxPerM: 600, jointFraction: 0, jointProfile: "butt", jitter: 0.08,
+  grain: 0.5, figure: "oak", printRepeat: 0, reliefScale: 0.3,
 };
 
 /**
  * The finish recipes a wood material can name via its authored `Material.finish`. Keys are the
  * engine's finish vocabulary (model/materials.py), the same contract MASONRY_STYLES follows.
  */
-// 5/4 shiplap: a 1x6 board shows ~5½" of face once the rabbet is lapped, so the module is
-// wider than the T&G's and the reveal at each joint is a broader shadow line. Drawn with the
-// same `vee` joint the T&G uses — a square reveal and a V-groove are the same channel at this
-// scale, and adding a third joint profile to `buildPlankMaps` would buy nothing visible.
-const SHIPLAP_STYLE: PlankStyle = {
-  key: "shiplap", faceWidthM: 0.1397, boardsPerTile: 4, boardLenM: 0, lengthsPerTile: 1,
-  jointFraction: 0.045, jointProfile: "vee", jitter: 0.07, grain: 0.35,
-};
-
 export const WOOD_PLANK_STYLES: Readonly<Record<string, PlankStyle>> = {
   "tg-board": TG_BOARD_STYLE,
   "shiplap": SHIPLAP_STYLE,
   "strip-floor": STRIP_FLOOR_STYLE,
+  "plank-floor": PLANK_FLOOR_STYLE,
+  "lvp-plank": LVP_PLANK_STYLE,
+  "oak-board": OAK_BOARD_STYLE,
 };
 
-// Flooring refs that are laid as strips rather than as paneling. Deliberately explicit: the
-// `familyOf` substring table in nordic/palette.ts has no wood-species needles at all (it
-// returns null for `oak`, `sauna-shiplap`, `walnut-tg` and `cedar-tg` alike), and adding some there
-// would move colour resolution too — plus its Python mirror in emit/draw/palette.py.
-const STRIP_FLOOR_REFS = new Set(["oak", "lvp"]);
+// Flooring refs inferred without an authored recipe. Deliberately explicit: the `familyOf`
+// substring table in nordic/palette.ts has no wood-species needles at all, and adding some
+// there would move colour resolution too — plus its Python mirror in emit/draw/palette.py.
+const FLOOR_REF_STYLES: Readonly<Record<string, PlankStyle>> = {
+  oak: STRIP_FLOOR_STYLE,
+  lvp: LVP_PLANK_STYLE,
+};
 
 /**
  * True when a solid-board paneling ref. The library names T&G `<species>-tg` by convention;
@@ -100,19 +120,19 @@ function isBoardPanelingRef(materialRef: string | null | undefined): boolean {
   return s.endsWith("-tg") || s.includes("tongue") || s.includes("shiplap");
 }
 
-/** True when a surface's material should be finished as wood boards. */
+/** True when a surface's material should be finished as wood boards, judged by ref alone. */
 export function isWoodPlank(materialRef: string | null | undefined): boolean {
   if (!materialRef) return false;
   const s = materialRef.toLowerCase();
   if (WOOD_PLANK_STYLES[s]) return true;
-  return isBoardPanelingRef(s) || STRIP_FLOOR_REFS.has(s);
+  return isBoardPanelingRef(s) || s in FLOOR_REF_STYLES;
 }
 
 /**
  * Pick the wood finish recipe. An authored `finish` from the catalog is definitive — that is
  * the material declaring its own appearance. Absent one (or naming a recipe this build does
- * not know, as `walnut-tg`'s "clear-satin-hardwax-oil" does), infer from the ref: a flooring
- * strip, else T&G paneling.
+ * not know, as `walnut-tg`'s "clear-satin-hardwax-oil" does), infer from the ref: a known
+ * flooring ref, else T&G paneling.
  */
 export function plankStyleFor(
   materialRef: string | null | undefined, finish?: string | null,
@@ -120,20 +140,26 @@ export function plankStyleFor(
   const declared = finish ? WOOD_PLANK_STYLES[finish] : undefined;
   if (declared) return declared;
   const ref = (materialRef ?? "").toLowerCase();
-  if (STRIP_FLOOR_REFS.has(ref)) return STRIP_FLOOR_STYLE;
+  const floor = FLOOR_REF_STYLES[ref];
+  if (floor) return floor;
   return ref.includes("shiplap") ? SHIPLAP_STYLE : TG_BOARD_STYLE;
 }
 
 /**
- * World size (metres) of one repeat tile: [across the boards, along them]. A continuous-run
- * style has no end joints, so its along-run extent is arbitrary — one board width keeps the
- * tile square-ish and the grain from stretching.
+ * The recipe, or null when the surface is not boards. A declared recipe wins whatever the
+ * tag — a house-local floor (`oak-floor-custom`) is boards because it says so, not because
+ * its name matches a needle. Without one, only a ref `isWoodPlank` recognises is boarded.
  */
+export function plankStyleOrNull(
+  materialRef: string | null | undefined, finish?: string | null,
+): PlankStyle | null {
+  if (finish && WOOD_PLANK_STYLES[finish]) return WOOD_PLANK_STYLES[finish];
+  return isWoodPlank(materialRef) ? plankStyleFor(materialRef, finish) : null;
+}
+
+/** World size (metres) of one repeat tile: [across the boards, along them]. */
 export function plankTileSizeM(style: PlankStyle): readonly [number, number] {
-  const along = style.boardLenM > 0
-    ? style.boardLenM * style.lengthsPerTile
-    : style.faceWidthM * style.boardsPerTile;
-  return [style.faceWidthM * style.boardsPerTile, along];
+  return [style.faceWidthM * style.boardsPerTile, style.tileAlongM];
 }
 
 // Keyed by recipe alone. Unlike the masonry maps, these bake in no colour: they are pure
@@ -144,18 +170,15 @@ export function plankTileSizeM(style: PlankStyle): readonly [number, number] {
 // argument and `roomFloor.test.ts` both rest on.
 const plankMapCache = new Map<string, { colorMap: THREE.Texture; normalMap: THREE.Texture }>();
 
-// Deterministic per-board jitter — no Math.random, so the maps stay reproducible across
-// reloads. Same hash as materials.ts `hashUnit`, kept local so neither file owns the other's
-// texture generation.
-function hashBoard(row: number, board: number): number {
-  const h = Math.sin(row * 12.9898 + board * 78.233) * 43758.5453;
-  return h - Math.floor(h);
+/** A luminance fill — the maps are greyscale, so one value fills R, G and B. */
+function lumFill(value: number): string {
+  const b = Math.max(0, Math.min(255, Math.round(value * 255)));
+  return `rgb(${b},${b},${b})`;
 }
 
-/** A luminance byte, clamped — the maps are greyscale, so one value fills R, G and B. */
-function lum(value: number): number {
-  return Math.max(0, Math.min(255, Math.round(value * 255)));
-}
+// Normal-map depth of each joint profile: a V-groove is a channel, a factory bevel nearly
+// as deep, and a butt seam on a sanded floor barely a line.
+const JOINT_DEPTH = { vee: 40, bevel: 34, butt: 14 } as const;
 
 /**
  * One tile of boards, as luminance. `u` runs ACROSS the boards (so board edges are vertical
@@ -170,69 +193,71 @@ function buildPlankMaps(
   const cached = plankMapCache.get(style.key);
   if (cached) return cached;
   if (typeof document === "undefined") return null;
+  const [acrossM, alongM] = plankTileSizeM(style);
+  const width = Math.max(16, Math.round(acrossM * style.pxPerM));
+  const height = Math.max(16, Math.round(alongM * style.pxPerM));
   const colorCanvas = document.createElement("canvas");
   const normalCanvas = document.createElement("canvas");
-  colorCanvas.width = colorCanvas.height = PLANK_TEX_PX;
-  normalCanvas.width = normalCanvas.height = PLANK_TEX_PX;
+  colorCanvas.width = normalCanvas.width = width;
+  colorCanvas.height = normalCanvas.height = height;
   const cctx = colorCanvas.getContext("2d");
   const nctx = normalCanvas.getContext("2d");
   if (!cctx || !nctx) return null;
 
-  const boardW = PLANK_TEX_PX / style.boardsPerTile;
-  const rows = style.boardLenM > 0 ? style.lengthsPerTile : 1;
-  const rowH = PLANK_TEX_PX / rows;
-  const jointPx = Math.max(1.5, boardW * style.jointFraction);
+  const boardW = width / style.boardsPerTile;
+  const pxAlong = height / alongM; // exact, so a wrapped board meets itself
+  const jointPx = style.jointFraction > 0 ? Math.max(1, boardW * style.jointFraction) : 0;
+  const ends = style.lengths.kind !== "continuous";
+  const depth = JOINT_DEPTH[style.jointProfile];
+  const bevel = style.jointProfile === "bevel";
 
-  // The joint is the board in shadow, not a separate material: a T&G groove and a butt seam
-  // are both a shadow line in the same wood, unlike a mortar joint.
-  const jointLum = 0.62;
-  cctx.fillStyle = `rgb(${lum(jointLum)},${lum(jointLum)},${lum(jointLum)})`;
-  cctx.fillRect(0, 0, PLANK_TEX_PX, PLANK_TEX_PX);
+  // The joint is the board in shadow, not a separate material: a groove, a bevel and a butt
+  // seam are all a shadow line in the same wood, unlike a mortar joint.
+  cctx.fillStyle = lumFill(bevel ? 0.5 : 0.62);
+  cctx.fillRect(0, 0, width, height);
   nctx.fillStyle = "rgb(128,128,255)";
-  nctx.fillRect(0, 0, PLANK_TEX_PX, PLANK_TEX_PX);
+  nctx.fillRect(0, 0, width, height);
 
-  for (let row = 0; row < rows; row++) {
-    // Stagger each row by a hashed fraction of a board length so end joints never line up.
-    const stagger = rows > 1 ? hashBoard(row, 0) * rowH : 0;
-    const y = row * rowH + stagger;
-    for (let board = -1; board < style.boardsPerTile + 1; board++) {
-      const x = board * boardW;
-      // Centred on 1.0 so the tinted result averages to the authored species colour rather
-      // than drifting darker than the material says it is.
-      const shade = 1 - style.jitter / 2 + hashBoard(row, board) * style.jitter;
-      const faceX = x + jointPx / 2;
-      const faceW = boardW - jointPx;
-      const faceY = y + jointPx / 2;
-      const faceH = rowH - jointPx;
-      const wrapY = rows > 1 ? rowH : 0;
-      cctx.fillStyle = `rgb(${lum(shade)},${lum(shade)},${lum(shade)})`;
-      cctx.fillRect(faceX, faceY, faceW, faceH);
-      if (rows > 1) cctx.fillRect(faceX, faceY - rowH, faceW, faceH); // wrap the stagger
-
-      // Lengthwise grain: a few darker streaks running ALONG the board (down the canvas).
-      // Cheap, and it is what stops a wide board reading as a painted panel.
-      for (let streak = 0; streak < 3; streak++) {
-        const g = hashBoard(row * 31 + streak, board * 17);
-        const grainLum = shade * (1 - 0.09 * style.grain * (0.4 + g));
-        cctx.fillStyle = `rgb(${lum(grainLum)},${lum(grainLum)},${lum(grainLum)})`;
-        cctx.fillRect(faceX + g * faceW, faceY - wrapY,
-          Math.max(1, faceW * 0.06), faceH + wrapY);
-      }
-
-      // Normal map. A V-groove is two opposing slopes falling into the joint (a channel); a
-      // butt seam on a sanded floor is a much shallower version of the same thing.
-      const depth = style.jointProfile === "vee" ? 40 : 14;
-      nctx.fillStyle = `rgb(${128 + depth},128,235)`; // faces +U on the left edge
-      nctx.fillRect(faceX, faceY - wrapY, jointPx, faceH + wrapY);
-      nctx.fillStyle = `rgb(${128 - depth},128,235)`; // faces -U on the right edge
-      nctx.fillRect(x + boardW - jointPx * 1.5, faceY - wrapY, jointPx, faceH + wrapY);
-      if (rows > 1) {
-        // End joints only exist on a staggered style, and they are always shallow butts.
-        nctx.fillStyle = "rgb(128,142,235)";
-        nctx.fillRect(faceX, faceY, faceW, jointPx);
+  layoutPlankTile(style).forEach((lane, index) => {
+    const x = index * boardW;
+    for (const board of lane) {
+      const shade = boardShade(board.printId, style);
+      // A board past the tile's end wraps: draw it again one tile back.
+      for (const shift of board.v1 > alongM ? [0, -alongM] : [0]) {
+        const y0 = (board.v0 + shift) * pxAlong;
+        const y1 = (board.v1 + shift) * pxAlong;
+        const face = {
+          x: x + jointPx / 2, w: boardW - jointPx,
+          y: ends ? y0 + jointPx / 2 : y0, h: ends ? y1 - y0 - jointPx : y1 - y0,
+        };
+        cctx.fillStyle = lumFill(shade);
+        cctx.fillRect(face.x, face.y, face.w, face.h);
+        drawBoardFigure(cctx, face, board.printId, style);
+        // Normal map: each edge slopes down into its joint. A bevel also darkens its band.
+        const band = bevel ? jointPx * 1.5 : jointPx;
+        if (bevel) {
+          cctx.fillStyle = "rgba(0,0,0,0.18)";
+          cctx.fillRect(face.x, face.y, band, face.h);
+          cctx.fillRect(face.x + face.w - band, face.y, band, face.h);
+          if (ends) {
+            cctx.fillRect(face.x, face.y, face.w, band);
+            cctx.fillRect(face.x, face.y + face.h - band, face.w, band);
+          }
+        }
+        nctx.fillStyle = `rgb(${128 - depth},128,235)`;
+        nctx.fillRect(face.x, face.y, band, face.h);
+        nctx.fillStyle = `rgb(${128 + depth},128,235)`;
+        nctx.fillRect(face.x + face.w - band, face.y, band, face.h);
+        if (ends) {
+          // Canvas y runs down while texture v runs up (flipY), so the top edge faces +v.
+          nctx.fillStyle = `rgb(128,${128 + depth},235)`;
+          nctx.fillRect(face.x, face.y, face.w, band);
+          nctx.fillStyle = `rgb(128,${128 - depth},235)`;
+          nctx.fillRect(face.x, face.y + face.h - band, face.w, band);
+        }
       }
     }
-  }
+  });
 
   const colorMap = new THREE.CanvasTexture(colorCanvas);
   colorMap.wrapS = colorMap.wrapT = THREE.RepeatWrapping;
@@ -273,7 +298,7 @@ export function createPlankMaterial(
     color,
     map: maps.colorMap,
     normalMap: maps.normalMap,
-    normalScale: new THREE.Vector2(0.6, 0.6),
+    normalScale: new THREE.Vector2(style.reliefScale, style.reliefScale),
     roughness,
     metalness: 0,
   });

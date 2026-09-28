@@ -33,6 +33,8 @@ try {
   const { runSweepParityTests, runSweepFrameTests, runSweepMeshTests } = await server.ssrLoadModule("/src/three/tubeGeometry.test.ts");
   const { runMaterialGeometryTests, runMemberColorTests, runSkinBandUvTests } = await server.ssrLoadModule("/src/three/materials.test.ts");
   const { runPlankMaterialTests } = await server.ssrLoadModule("/src/three/plankMaterial.test.ts");
+  const { runPlankLayoutTests } = await server.ssrLoadModule("/src/three/plankLayout.test.ts");
+  const { runWoodPieceTests } = await server.ssrLoadModule("/src/three/woodPiece.test.ts");
   const { runMarbleMaterialTests } = await server.ssrLoadModule("/src/three/marbleMaterial.test.ts");
   const { runDetailAnnotationTests } = await server.ssrLoadModule("/src/components/DetailCanvas.test.ts");
   const { runMemberPickingTests } = await server.ssrLoadModule("/src/three/memberPicking.test.ts");
@@ -105,6 +107,8 @@ try {
   runSweepMeshTests();
   runMaterialGeometryTests();
   runPlankMaterialTests();
+  runPlankLayoutTests();
+  runWoodPieceTests();
   runMarbleMaterialTests();
   runMemberColorTests();
   runSkinBandUvTests();

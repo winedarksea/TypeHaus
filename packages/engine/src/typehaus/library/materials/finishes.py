@@ -300,7 +300,7 @@ MATERIALS: tuple[Material, ...] = (
         tag="oak",
         name='3/4" white-oak strip flooring',
         hatch="lumber",
-        color="#c69c6d",
+        color="#c9b08c",
         species="oak",
         finish="strip-floor",
         finish_thickness_in=0.75,
@@ -315,9 +315,11 @@ MATERIALS: tuple[Material, ...] = (
         tag="lvp",
         name="Luxury vinyl plank, click-lock",
         hatch="lumber",
-        color="#a08a72",
+        color="#c0ae94",
+        finish="lvp-plank",
         finish_thickness_in=0.2362,
-        source="finish covering over its own underlayment; thermal/vapour fields unset "
+        source="a white-oak-look print, 7x48 plank. "
+        "finish covering over its own underlayment; thermal/vapour fields unset "
         "for the same reason as the other floor finishes. "
         "`finish_thickness_in` is 6 mm nominal — the mainstream click-lock "
         "plank, 5 mm rigid core plus a 1 mm attached IXPE pad. A separate "

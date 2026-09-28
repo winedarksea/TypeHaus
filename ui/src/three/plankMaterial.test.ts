@@ -5,6 +5,7 @@ import {
   isWoodPlank,
   planLongAxis,
   plankStyleFor,
+  plankStyleOrNull,
   plankTileSizeM,
   WOOD_PLANK_STYLES,
 } from "./plankMaterial";
@@ -42,6 +43,16 @@ export function runPlankMaterialTests() {
     "a `-tg` ref infers tongue-and-groove paneling");
   assert(plankStyleFor("oak").key === "strip-floor",
     "a flooring ref infers strip flooring even with no authored finish");
+  assert(plankStyleFor("lvp", "lvp-plank").key === "lvp-plank",
+    "LVP's authored recipe selects the printed plank");
+  assert(plankStyleFor("lvp").key === "lvp-plank",
+    "a bare `lvp` infers the printed plank, not 2 1/4in oak strip");
+  // A house-local tag matches no needle; its declared recipe is what makes it boards.
+  assert(plankStyleOrNull("house-oak", "plank-floor")?.key === "plank-floor",
+    "a declared recipe boards a house-local floor whatever its tag");
+  assert(plankStyleOrNull("gwb", null) === null, "an undeclared sheet good is not boards");
+  assert(plankStyleOrNull("walnut-tg", "clear-satin-hardwax-oil")?.key === "tg-board",
+    "an unknown declared finish still falls through to ref inference");
 
   const tg = WOOD_PLANK_STYLES["tg-board"];
   const strip = WOOD_PLANK_STYLES["strip-floor"];
@@ -49,9 +60,9 @@ export function runPlankMaterialTests() {
   assert(tg.faceWidthM > strip.faceWidthM * 1.4,
     "a paneling board shows a markedly wider face than a floor strip");
   assert(Math.abs(tg.faceWidthM - 0.0889) < 1e-6, "the T&G face is 3 1/2in in meters");
-  assert(Math.abs(strip.faceWidthM - 0.0572) < 1e-6, "the strip face is 2 1/4in in meters");
-  assert(tg.boardLenM === 0 && strip.boardLenM > 0,
-    "paneling runs continuous; a strip floor has staggered end joints");
+  assert(Math.abs(strip.faceWidthM - 2.25 * 0.0254) < 1e-9, "the strip face is 2 1/4in in meters");
+  assert(tg.lengths.kind === "continuous" && strip.lengths.kind === "random",
+    "paneling runs continuous; a strip floor has random-length end joints");
   assert(tg.jointProfile === "vee" && strip.jointProfile === "butt",
     "a T&G joint is a groove; a sanded floor joint is a butt seam");
 

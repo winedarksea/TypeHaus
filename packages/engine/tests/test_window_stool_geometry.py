@@ -67,7 +67,7 @@ def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
         mesh = gltf["meshes"][node["mesh"]]
         material = gltf["materials"][mesh["primitives"][0]["material"]]
         assert material["pbrMetallicRoughness"]["baseColorFactor"] == pytest.approx(
-            [198 / 255, 156 / 255, 109 / 255, 1.0])
+            [201 / 255, 176 / 255, 140 / 255, 1.0])
 
 
 def test_stools_export_as_oak_ifc_moldings(catlin_model_ro, catlin_ifc_path):

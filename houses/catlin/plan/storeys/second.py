@@ -1547,7 +1547,8 @@ STAIRS = [
           base_elevation=inch(0.9862), top_elevation=inch(120.9862),
           layout="u_level_landing", run_direction="y", turn_direction="left",
           start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3, 6.25),
-          bearing_refs=("W-M-N2",)),
+          bearing_refs=("W-M-N2",),
+          tread_material="oak-tread"),
 ]
 
 PANELING = [
