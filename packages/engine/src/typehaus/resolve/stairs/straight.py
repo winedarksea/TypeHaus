@@ -11,6 +11,7 @@ from typehaus.resolve.stairs.common import (
     _spacing,
     _stringer_offsets,
     _tread_board_profile,
+    _tread_risers,
     _tread_thickness,
 )
 
@@ -64,8 +65,10 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                      z0_end_m=arrival_notch - stringer_depth, z1_end_m=arrival_notch)
         for index, (a, b) in enumerate(strings)
     ]
-    out.extend(_tread_members(stair, start_x, start_y, z0, risers, riser, going,
-                              tread_depth, nosing, width, sign, along_x))
+    treads = _tread_members(stair, start_x, start_y, z0, risers, riser, going,
+                            tread_depth, nosing, width, sign, along_x)
+    out.extend(treads)
+    out.extend(_tread_risers(stair, list(treads), riser, going))
     return tuple(out)
 
 

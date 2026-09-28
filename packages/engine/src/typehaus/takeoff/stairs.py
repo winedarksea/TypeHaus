@@ -7,9 +7,8 @@ and a riser is a finished board, both counted by the piece and priced by the run
 as 2x stock by the lineal foot.
 
 Counting is off the resolved members rather than off ``riser_count``, so a stair with winders
-bills the winders it actually generated. A riser is billed per tread — the vertical face
-below it — because the model has no riser member: it is the gap between two treads, and a
-closed-riser stair still buys a board for every one of them.
+bills the winders it actually generated. A closed riser is a ``riser`` member
+(``Stair.riser_thickness``) and bills like a tread; an open-riser flight buys none.
 """
 
 from __future__ import annotations
@@ -28,10 +27,11 @@ _M2_TO_FT2 = 10.7639104
 # The walking surfaces a stair buys as finish goods, and what each is ordered as.
 _TREAD_CATEGORIES = ("tread", "winder")
 _LANDING_CATEGORY = "landing"
+_RISER_CATEGORY = "riser"
 
 
 def separate_stair_wear_members(model: ResolvedModel):
-    """Walking surfaces in a finish material, ordered by the piece rather than as lumber.
+    """Walking surfaces and risers in a finish material, ordered by the piece, not as lumber.
 
     A tread, winder or landing is a finish good when it carries a material other than its
     flight's carriage — an oak tread over SPF stringers, or a composite tier over a PT box.
@@ -47,7 +47,7 @@ def _wear_members(model: ResolvedModel):
         if not isinstance(authored, Stair) or authored.carriage == "cast":
             continue
         for member in stair.members:
-            if (member.category in (*_TREAD_CATEGORIES, _LANDING_CATEGORY)
+            if (member.category in (*_TREAD_CATEGORIES, _LANDING_CATEGORY, _RISER_CATEGORY)
                     and member.material is not None and member.material != authored.material):
                 yield stair, member
 
@@ -184,6 +184,7 @@ def stair_finish_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     for stair in sorted(model.stairs, key=lambda item: item.tag):
         treads = [m for m in stair.members if m.category in _TREAD_CATEGORIES]
         landings = [m for m in stair.members if m.category == _LANDING_CATEGORY]
+        risers = [m for m in stair.members if m.category == _RISER_CATEGORY]
         if not treads and not landings:
             continue
         tread_lf = sum(m.length_m for m in treads)
@@ -203,11 +204,9 @@ def stair_finish_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                               or getattr(authored, "material", None),
             "tread_area_sqft": round(tread_area * _M2_TO_FT2, 1),
             "widest_tread_ft": round(widest * _M_TO_FT, 2),
-            # One riser board per tread: the face below it. The model has no riser member —
-            # a riser is the gap between two treads — but a closed-riser stair buys one.
-            "risers": len(treads),
+            "risers": len(risers),
             "riser_height_in": round(stair.riser_height_m / 0.0254, 2),
-            "riser_lf": round(tread_lf * _M_TO_FT, 1),
+            "riser_lf": round(sum(m.length_m for m in risers) * _M_TO_FT, 1),
             "landing_decks": len(landings),
             "landing_area_sqft": round(landing_area * _M2_TO_FT2, 1),
         })

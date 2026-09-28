@@ -32,6 +32,7 @@ each is kept because the *rule* it established usually outlives the design that 
 | Note | Oracles | Status |
 |---|---|---|
 | `board_batten_girt_span.md` | `checks/structural/cladding.py` + `cladding_fastener.py` — a manufacturer read since 2026-09-22, no longer an engineering item (`tests/test_cladding_read.py`); §2-§4 also oracle `engineering/girt_screw.py`'s demand | live |
+| `stair_riser_basis.md` | `checks/code/mn_residential/open_risers.py` — R311.7.5.1's 4" sphere over 30", every flight's opening, and the closed risers' stock (`tests/test_stair_risers.py`) | live |
 | `stair_stringer_basis.md` | `checks/structural/stair_stringers.py` — sawn stringers against DCA 6's 6'-0" / 5", ST-S2A's LSL against Weyerhaeuser #9010 p.4, and the clear tread span (`tests/test_stair_stringers.py`) | live |
 | `analytical_model_basis.md` | `analytical/supports.py` + `loads.py` + `solve.py` — the fixity and load-case CLAIMS of the exported analytical model, hand-solved for the balcony bent (`tests/test_analytical_oracle.py`) | live |
 | `balcony_moment_columns.md` | `engineering/deck_post.py`; §5 is now the NDS cross-check beside a published-table read, not an oracle (`tests/test_pier_calcs.py`) | live |

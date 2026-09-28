@@ -22,6 +22,7 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     foundation_protection,
     glazing,
     illumination,
+    open_risers,
     radon,
     rules,
     stair_arrival,

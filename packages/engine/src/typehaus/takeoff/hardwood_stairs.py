@@ -1,4 +1,4 @@
-"""The stair half of the milling schedule: treads, winder blanks and landing finishes.
+"""The stair half of the milling schedule: treads, winder blanks, risers and landings.
 
 Split out of ``takeoff/hardwood.py``, which assembles it with the stools, shelves and
 coverage rows under the same row shape (``_piece_row``).
@@ -29,7 +29,9 @@ def stair_rows(model: ResolvedModel, materials: Mapping[str, object],
     from typehaus.takeoff.stairs import winder_blank_in
 
     material_ref = standard.tread_material_ref
-    scope = set(standard.tread_stairs) if material_ref is not None else set()
+    riser_ref = standard.riser_material_ref
+    scope = (set(standard.tread_stairs)
+             if material_ref is not None or riser_ref is not None else set())
     landing_spec = standard.landing_deck
     landing_scope = set(landing_spec.stair_refs) if landing_spec is not None else set()
     if not scope and not landing_scope:
@@ -37,12 +39,16 @@ def stair_rows(model: ResolvedModel, materials: Mapping[str, object],
     also = {"also_in_stair_treads": True, "also_in_stair_finish": True}
     tread_groups: dict[tuple[object, ...], tuple[int, list[str]]] = {}
     deck_groups: dict[tuple[float, ...], tuple[int, list[str]]] = {}
+    riser_groups: dict[tuple[object, ...], tuple[int, list[str]]] = {}
     landing_rows: list[dict[str, object]] = []
     for stair in model.stairs:
         if stair.tag not in scope and stair.tag not in landing_scope:
             continue
         for member in stair.members:
-            if member.category not in ("tread", "winder", "landing"):
+            if member.category not in ("tread", "winder", "landing", "riser"):
+                continue
+            if member.category == "riser" and (riser_ref is None
+                                               or member.material != riser_ref):
                 continue
             if member.category != "landing" and stair.tag not in scope:
                 continue
@@ -73,6 +79,11 @@ def stair_rows(model: ResolvedModel, materials: Mapping[str, object],
                     max_board_width_in=max_board_width_in,
                     also=also))
                 continue
+            if member.category == "riser":
+                use_key = ("stair riser", *key)
+                count, tags = riser_groups.get(use_key, (0, []))
+                riser_groups[use_key] = (count + 1, tags + [stair.tag])
+                continue
             if material_ref is None:
                 continue
             if member.category == "landing":
@@ -85,6 +96,9 @@ def stair_rows(model: ResolvedModel, materials: Mapping[str, object],
     rows = []
     for (use, thickness, run, width), (count, tags) in tread_groups.items():
         rows.append(_piece_row(use, material_ref, materials, count,
+                               thickness, run, width, max_board_width_in, tags, also))
+    for (use, thickness, run, width), (count, tags) in riser_groups.items():
+        rows.append(_piece_row(use, riser_ref, materials, count,
                                thickness, run, width, max_board_width_in, tags, also))
     for (thickness, depth, length), (count, tags) in deck_groups.items():
         # Legacy landing declarations remain an area-like field row. A house that supplies

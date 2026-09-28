@@ -669,6 +669,8 @@ STAIRS = [
           width=ft(3), start=pt(ft(6, 11.625), ft(50, 9.625)),
           run_direction="y", run_reversed=True,
           tread_depth=inch(11), nosing_depth=inch(0),
+          # The top step's open riser tops out 32.5" over the slab (R311.7.5.1).
+          riser_thickness=inch(0.75),
           material="kdat"),
 ]
 

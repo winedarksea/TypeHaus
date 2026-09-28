@@ -12,9 +12,11 @@ from typehaus.resolve.model import FramedMember
 from typehaus.resolve.stairs.common import (
     _TREAD_THICKNESS_M,
     _notch_z,
+    _riser_member,
     _spacing,
     _stringer_offsets,
     _tread_board_profile,
+    _tread_risers,
     _tread_thickness,
 )
 
@@ -187,10 +189,31 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                                 _notch_z(top, thickness), top, width,
                                 riser_line=(offset(inside, tread * index, 0.0),
                                             offset(inside, tread * index, width))))
+    out.extend(_winder_risers(stair, out, z0, riser))
+    out.extend(_tread_risers(stair, [m for m in out if m.category == "tread"], riser, tread))
     out.extend(_winder_box_framing(stair, z0, riser, fan, P(0.0, 0.0), inside,
                                    outer_corner, turn, (float(run_u[0]), float(run_u[1])),
                                    thickness))
     return tuple(out)
+
+
+def _winder_risers(stair: Stair, members: list[FramedMember], z0: float,
+                   riser: float) -> list[FramedMember]:
+    """A riser on each winder's leading fan line, in front of the box rim it nails to."""
+    out: list[FramedMember] = []
+    for index, winder in enumerate(m for m in members if m.category == "winder"):
+        (ax, ay), (bx, by) = winder.nosing_line
+        ring = winder.plan_outline
+        cx = sum(p[0] for p in ring) / len(ring) - (ax + bx) / 2.0
+        cy = sum(p[1] for p in ring) / len(ring) - (ay + by) / 2.0
+        nx, ny = -(by - ay), bx - ax
+        norm = math.hypot(nx, ny) * (1.0 if nx * cx + ny * cy >= 0 else -1.0)
+        member = _riser_member(stair, f"riser-winder-{index:03d}", winder.nosing_line,
+                               (nx / norm, ny / norm), winder.z1_m - riser, winder.z0_m,
+                               behind=False)
+        if member is not None:
+            out.append(member)
+    return out
 
 
 def _box_perimeter(line: _FanLine, outer_corner: tuple[float, float],

@@ -154,6 +154,10 @@ class Stair(Element):
     # An exterior composite wear surface and its PT carriage are different orders.
     # None preserves the framing material on the treads and the existing lumber bill.
     tread_material: str | None = None
+    # A closed riser: the board's stock thickness, face on the riser line. ``None`` is an
+    # open riser, graded by ``code.R311_7_5_1_open_risers``.
+    riser_thickness: Length | None = None
+    riser_material: str | None = None
     # Maximum support spacing, evenly divided across the width (per flight on a U; the
     # straight flight on a winder), including both edge stringers. None retains two edge
     # stringers. The outer stringers sit INSIDE ``width`` (inset half a ply), which stays

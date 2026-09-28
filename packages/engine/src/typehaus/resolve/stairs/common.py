@@ -6,6 +6,7 @@ import math
 from typing import TYPE_CHECKING
 
 from typehaus.quantities import inch
+from typehaus.resolve.model import FramedMember
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.model.spatial import Stair
@@ -128,3 +129,55 @@ def _stringer_offsets(width: float, spacing: float | None,
     offsets[0] += thickness / 2.0
     offsets[-1] -= thickness / 2.0
     return offsets
+
+
+Line = tuple[tuple[float, float], tuple[float, float]]
+
+
+def _riser_member(stair: Stair, key: str, line: Line, ascent: tuple[float, float],
+                  bottom: float, top: float, behind: bool = True) -> FramedMember | None:
+    """A closed riser board standing on ``line`` from ``bottom`` to ``top``, or ``None`` for
+    an open-riser flight (``Stair.riser_thickness``).
+
+    ``behind`` sets it back from the riser face along ``ascent``, under the nosing of the
+    tread it carries. A riser against framing (a winder box's fan rim, a landing's edge
+    joist) stands in front of it, on the step below.
+    """
+    if stair.riser_thickness is None or top - bottom <= 1e-6:
+        return None
+    thick = stair.riser_thickness.meters
+    shift = thick / 2.0 if behind else -thick / 2.0
+    (ax, ay), (bx, by) = line
+    dx, dy = ascent[0] * shift, ascent[1] * shift
+    profile = f"{thick / 0.0254:.3f}x{(top - bottom) / 0.0254:.3f}"
+    return FramedMember(stair.uid, key, "riser", profile, (ax + dx, ay + dy),
+                        (bx + dx, by + dy), bottom, top, math.hypot(bx - ax, by - ay))
+
+
+def _ascent(tread: FramedMember) -> tuple[float, float]:
+    """The unit plan direction up the flight at a straight tread: riser face to board axis."""
+    (ax, ay), (bx, by) = tread.riser_line
+    mx = (tread.p0[0] + tread.p1[0] - ax - bx) / 2.0
+    my = (tread.p0[1] + tread.p1[1] - ay - by) / 2.0
+    norm = math.hypot(mx, my)
+    return (mx / norm, my / norm)
+
+
+def _tread_risers(stair: Stair, treads: list[FramedMember], riser: float, going: float,
+                  prefix: str = "", head: bool = True) -> list[FramedMember]:
+    """A riser under every straight tread (``treads`` in ascent order), and with ``head`` one
+    more a going past the last, under the landing or arrival edge. That one stands in front
+    of the framing it faces (``behind=False``)."""
+    out: list[FramedMember] = []
+    for index, tread in enumerate(treads):
+        out.append(_riser_member(stair, f"riser{prefix}-{index:03d}", tread.riser_line,
+                                 _ascent(tread), tread.z1_m - riser, tread.z0_m))
+    if head and treads:
+        last = treads[-1]
+        ux, uy = _ascent(last)
+        (ax, ay), (bx, by) = last.riser_line
+        line = ((ax + ux * going, ay + uy * going), (bx + ux * going, by + uy * going))
+        out.append(_riser_member(stair, f"riser{prefix}-{len(treads):03d}", line, (ux, uy),
+                                 last.z1_m, last.z1_m + riser - _tread_thickness(stair),
+                                 behind=False))
+    return [member for member in out if member is not None]

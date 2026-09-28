@@ -221,6 +221,8 @@ class MillworkStandard(Element):
     # scopes no stair, which is what a house with no hardwood treads should say.
     tread_material_ref: str | None = None
     tread_stairs: tuple[str, ...] = ()
+    # The closed risers of the same ``tread_stairs``.
+    riser_material_ref: str | None = None
     # Explicit landing finish construction. Empty means the older whole-surface row for
     # stairs that have not declared field boards and a separate nosing.
     landing_deck: StairLandingMillwork | None = None

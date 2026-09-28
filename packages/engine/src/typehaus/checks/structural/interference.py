@@ -40,7 +40,7 @@ _PLATE_KINDS = frozenset({"plate", "raked_plate"})
 # Vertical wall members a piece of blocking legitimately nails into.
 _STUD_KINDS = frozenset({"stud", "corner", "king", "jack", "cripple"})
 # Stair carriage/infill categories, and the members a stair frame bears on or butts.
-_STAIR_HOUSED = frozenset({"tread", "winder"})
+_STAIR_HOUSED = frozenset({"tread", "winder", "riser"})
 # ``partition`` (the U-stair well wall between the up/down runs), ``newel`` (the winder
 # newel every winder's narrow end converges on) and ``hanger`` (the ledger let into a
 # concrete foundation wall that carries a basement stringer) are stair carriage members:

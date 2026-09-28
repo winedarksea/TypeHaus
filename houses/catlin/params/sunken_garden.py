@@ -2256,6 +2256,8 @@ PORCH_STAIR = Stair(
     width=ft(3), start=pt(ft(_PORCH_STAIR_X1), ft(_PORCH_STAIR_Y1)),
     run_direction="x", run_reversed=True,
     tread_depth=inch(11), nosing_depth=inch(0),
+    # The top step's open riser tops out 31.5" over the pad (R311.7.5.1).
+    riser_thickness=inch(0.75),
     material="kdat")
 
 # ** A GUARD ON EACH SIDE, AND EACH ONE IS ALSO THE HANDRAIL. ** The total rise is 33", over

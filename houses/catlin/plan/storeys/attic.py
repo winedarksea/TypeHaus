@@ -974,6 +974,8 @@ STAIRS = [
           # (notes/stair_stringer_basis.md).
           stringer_profile="1.75x11.875 LSL", stringer_material="lsl",
           stringer_spacing=inch(18),
+          # Closed risers, oak-riser via MW-STANDARD (notes/stair_riser_basis.md).
+          riser_thickness=inch(0.75),
           published_stringer_span=PublishedSpan(
               source="Weyerhaeuser #9010 TimberStrand LSL Stair Stringers and SturdiStep Stair Treads Specifier's Guide (June 2021) p.4, \"1-Ply TimberStrand LSL Stringers, IRC Maximum Stringer Run - 40 psf Live Load/12 psf Dead Load\"",
               table="1 3/4\" 1.55E TimberStrand LSL, 11 7/8\", 36\" tread width, 3 stringers, without reinforcement: 11'-8\"",

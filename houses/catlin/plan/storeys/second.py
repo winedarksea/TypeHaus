@@ -1534,7 +1534,9 @@ STAIRS = [
           bearing_refs=("W-M-N2",),
           # A centre stringer per flight: two at the lane edges left the treads a 39" clear
           # span (structural.stair_tread_span).
-          stringer_spacing=inch(22)),
+          stringer_spacing=inch(22),
+          # Closed risers, oak-riser via MW-STANDARD (notes/stair_riser_basis.md).
+          riser_thickness=inch(0.75)),
 ]
 
 PANELING = [

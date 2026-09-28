@@ -57,6 +57,8 @@ MILLWORK = [
         # `haus takeoff`'s [stair_treads]); no Stair repeats it.
         tread_material_ref="oak-tread",
         tread_stairs=("ST-M2S", "ST-S2A"),
+        # Closed risers, 3/4" off 4/4 (notes/stair_riser_basis.md).
+        riser_material_ref="oak-riser",
         landing_deck=StairLandingMillwork(
             stair_refs=("ST-M2S",),
             field_material_ref="oak-floor-custom",

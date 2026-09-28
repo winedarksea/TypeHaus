@@ -177,6 +177,8 @@ MN_2020 = JurisdictionProfile(
                         # building is. The second is the one a plan reviewer would find by
                         # hand, and until 2026-09-11 nothing here did.
                         "code.R311_7_5_1_stair_end_risers",
+                        # ...and the gap between the treads: an open riser (open_risers.py).
+                        "code.R311_7_5_1_open_risers",
                         # ...and a third question neither of those asks: the end-riser rule
                         # reads the arrival deck through the WELL, so a flight that stops
                         # short of its own opening edge arrives at the right height over

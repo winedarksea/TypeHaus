@@ -13,9 +13,11 @@ from typehaus.resolve.stairs.common import (
     _WELL_PARTITION_THICKNESS_M,
     _grid_positions,
     _notch_z,
+    _riser_member,
     _spacing,
     _stringer_offsets,
     _tread_board_profile,
+    _tread_risers,
     _tread_thickness,
 )
 
@@ -134,6 +136,20 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
                                 riser_line=(at(upper_flight_len - tread * index, upper_lane),
                                             at(upper_flight_len - tread * index,
                                                upper_lane + width))))
+    lower = [m for m in out if m.child_key.startswith("tread-lower-")]
+    upper = [m for m in out if m.child_key.startswith("tread-upper-")]
+    out.extend(_tread_risers(stair, lower, riser, tread, "-lower"))
+    out.extend(_tread_risers(stair, upper, riser, tread, "-upper"))
+    if middle_risers:
+        # The split landing's own step, up across the partition onto the upper half.
+        side = 1.0 if upper_lane > lower_lane else -1.0
+        cross = partition_centre
+        step = _riser_member(stair, "riser-landing", (at(flight_len, cross),
+                             at(flight_len + landing_depth_m, cross)),
+                             (0.0, side) if along_x else (side, 0.0), lower_landing_z,
+                             upper_landing_z - thickness, behind=False)
+        if step is not None:
+            out.append(step)
     # Two landing platforms in the landing zone beyond the flight ends, each on its own
     # flight's side of the well partition.
     out.extend(_landing_platform(stair, "lower", at, flight_len, landing_depth_m,
