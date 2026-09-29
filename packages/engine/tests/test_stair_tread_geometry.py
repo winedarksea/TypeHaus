@@ -198,7 +198,10 @@ def test_riser_grid_is_flush_at_the_springing_and_the_landing_zone(catlin_model)
             # ARRIVE on it (lower) is exactly one going from its near edge.
             adjacent = treads[-1] if flight == "lower" else treads[0]
             gap = abs(near_edge - adjacent.riser_line[0][along])
-            expected = going if flight == "lower" else 0.0
+            # ...plus, arriving, the head riser's board (and its carpet), which stands past
+            # its line against the landing edge (notes/stair_nosing_basis.md).
+            board = stair.finish_thickness_m + 0.75 * 0.0254
+            expected = going + board if flight == "lower" else 0.0
             assert gap == pytest.approx(expected, abs=1e-9), (stair.tag, flight)
 
 

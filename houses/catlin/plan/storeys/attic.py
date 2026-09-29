@@ -722,8 +722,9 @@ BEAMS = [
 # on — an earlier version had this edge on the sheathing plane, with the ledger resolving
 # outside the building. Lands in RM-S-STUDY2 below, matching the source's flight.
 #
-# West edge = stair head, 22'-5 3/8" (moved 2026-09-15 from 21'-2"): the flight tops out at
-# 35'-5 3/8" - 3'-0" winder box - 10'-0" of goings. North edge: W-A-SN's face, unchanged.
+# West edge = stair head, 22'-4 5/8" (moved 2026-09-15 from 21'-2"): the flight tops out at
+# 35'-5 3/8" - 3'-0" winder box - 10'-0" of goings, and the header stands one 3/4" head
+# riser board past that line (2026-09-28) so the top tread is a full going. North edge: W-A-SN's face, unchanged.
 # South edge ON the y=5'-4" joist line (2026-09-16), 5 5/8" south of the 3'-0" stair: the
 # trimmer pack takes that joist's place instead of crowding it 5/8" away. East edge bears on
 # W-S-E1, the stair's own box wall, so no header stands 4 5/8" off the rim.
@@ -777,20 +778,20 @@ FLOOR_OPENINGS = [
                           pt(inch(119), inch(432)), pt(inch(112), inch(432))),
                  penetration_for=("VR-M-RADON-VENT-radon",)),
     FloorOpening(uid="CAF601AAAA", tag="FO-A-STAIR",
-                 outline=(pt(ft(22, 5.375), ft(5, 4)),
+                 outline=(pt(ft(22, 4.625), ft(5, 4)),
                           pt(ft(35, 5.375), ft(5, 4)),
                           pt(ft(35, 5.375), ft(8, 9.625)),
-                          pt(ft(22, 5.375), ft(8, 9.625))),
+                          pt(ft(22, 4.625), ft(8, 9.625))),
                  bearing_refs=("W-S-E1",)),
     FloorOpeningPocketClosure(
         uid="P8A4POCK01", tag="PC-A-STAIR-BOOKCASE", opening_ref="FO-A-STAIR",
-        edge_interval=FloorOpeningEdgeInterval(edge="north", start=inch(0), end=inch(99.375)),
+        edge_interval=FloorOpeningEdgeInterval(edge="north", start=inch(0), end=inch(100.125)),
         wall_refs=("W-A-SN-WR", "W-A-SN-REAR", "W-A-SN-ER"),
         pocket_outline=(
-            pt(ft(22, 5.375), ft(8, 9.625)),
+            pt(ft(22, 4.625), ft(8, 9.625)),
             pt(ft(30, 8.75), ft(8, 9.625)),
             pt(ft(30, 8.75), ft(9, 8.25)),
-            pt(ft(22, 5.375), ft(9, 8.25)),
+            pt(ft(22, 4.625), ft(9, 8.25)),
         ),
         source="The west return, rear partition, and east return form the connected non-walkable stair-edge pocket behind the fixed study bookcase. Only these walls, never the furniture, provide enclosure. Verify floor blocking beneath the rear and return plates; the former bookshelf-wall axis was not a supporting-joist datum.",
     ),
@@ -867,8 +868,8 @@ FLOOR = [
 STAIR_GUARD = Railing(
     uid="CARL01AAAA", tag="RL-A-STAIR", type_ref="RAILING-INT-STAIR-GUARD", path=(
         # Return across the head edge's 5 5/8" strip south of the flight, to the head newel.
-        pt(ft(22, 5.375), ft(5, 9.625)),
-        pt(ft(22, 5.375), ft(5, 4)),
+        pt(ft(22, 4.625), ft(5, 9.625)),
+        pt(ft(22, 4.625), ft(5, 4)),
         pt(ft(29, 4.5), ft(5, 4)),
     ),
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
@@ -939,7 +940,7 @@ FLIGHT_SKIRT = Railing(
 STAIR_HANDRAIL = Railing(
     uid="CARL02AAAA", tag="RL-A-HANDRAIL", path=(
         pt(ft(35, 5), ft(8, 7.625)),
-        pt(ft(22, 5.375), ft(8, 7.625)),
+        pt(ft(22, 5.375), ft(8, 7.625)),  # the top riser's face; the header is 3/4" west
     ),
     kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
     base_elevation=ft(20), post_spacing=inch(48), post_size="2x2", rail_count=1,

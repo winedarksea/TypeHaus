@@ -280,9 +280,11 @@ def test_landing_platforms_have_unique_joists_edge_joists_deck_and_rims(basement
                   if m.child_key.startswith(f"landing-joist-{name}-")]
         positions = sorted(round(joist.p0[1], 6) for joist in joists)
         assert len(positions) == len(set(positions)), f"duplicate {name} landing joists"
-        span_lo = min(positions)
+        # The near edge joist stands inside the deck, its face on the edge the head riser
+        # board is fastened to; the far one stays centred on its bearing.
+        span_lo = min(deck.p0[1], deck.p1[1])
         offsets = [position - span_lo for position in positions]
-        assert offsets[0] == pytest.approx(0.0)
+        assert offsets[0] == pytest.approx(inch(0.75).meters)
         assert offsets[-1] == pytest.approx(depth)
         spacings = [b - a for a, b in zip(offsets, offsets[1:])]
         assert all(spacing <= inch(16).meters + 1e-9 for spacing in spacings)
@@ -640,12 +642,15 @@ def test_tread_marks_are_flush_with_the_flight_ends(catlin_model, flight, storey
     assert len(marks) >= 2, (flight, storey)
     landing = next(m for m in stair.members if m.child_key == f"landing-{flight}")
     near_edge = landing.p0[along] / M_PER_IN     # the landing's edge toward its flight
+    # A head riser's board and carpet stand past its line, against the landing edge or the
+    # arrival header (notes/stair_nosing_basis.md).
+    board = 0.75 + stair.finish_thickness_m / M_PER_IN
     if flight == "lower":
         springing = min(point[along] for point in stair.outline) / M_PER_IN
         # The first mark sits ON the springing edge and the last one a going before the
         # landing it climbs onto.
         assert min(marks) == pytest.approx(springing, abs=1e-6)
-        assert max(marks) == pytest.approx(near_edge - going, abs=1e-6)
+        assert max(marks) == pytest.approx(near_edge - board - going, abs=1e-6)
     else:
         # The upper flight leaves its own landing's near edge. That first riser face is
         # DRAWN BY THE LANDING RECTANGLE — one line per riser face, one owner per line —
@@ -654,7 +659,7 @@ def test_tread_marks_are_flush_with_the_flight_ends(catlin_model, flight, storey
         # ...and its arrival nosing is the well ring's own edge, so the last mark is one
         # going short of the deck edge rather than on it.
         arrival = min(point[along] for point in stair.outline) / M_PER_IN
-        assert min(marks) == pytest.approx(arrival + going, abs=1e-6)
+        assert min(marks) == pytest.approx(arrival + board + going, abs=1e-6)
 
 
 # ------------------------------------- 8c. each flight meets the storey edge it arrives at
@@ -679,9 +684,12 @@ def test_a_u_split_upper_flight_lands_on_the_storey_edge_it_meets(catlin_model, 
                     if m.child_key.startswith("tread-upper-")),
                    key=lambda m: m.z1_m)
     arrival_edge = min(point[along] for point in stair.outline)
-    # The top tread's riser face is one going in from the deck edge; the walking line runs
-    # that last going out onto the deck itself.
-    assert upper[-1].riser_line[0][along] == pytest.approx(arrival_edge + going, abs=1e-9)
+    # The top tread's riser face is one going in from the head riser's face, and that board
+    # (and its carpet) stands against the deck edge: the walking line runs the last going
+    # out to the stairhead nosing (notes/stair_nosing_basis.md).
+    board = 0.75 * 0.0254 + stair.finish_thickness_m
+    assert upper[-1].riser_line[0][along] == pytest.approx(arrival_edge + board + going,
+                                                           abs=1e-9)
 
 
 @pytest.mark.parametrize("tag", ["ST-B2M", "ST-M2S"])

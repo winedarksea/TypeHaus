@@ -124,3 +124,83 @@ def _nearest_edge_offset(ring: list[tuple[float, float]],
         if gap < best[0]:
             best = (gap, (cx - px, cy - py))
     return best[1]
+
+
+#: R311.7.6: a landing at the top of each stairway, at least as wide as the stairway and 36"
+#: in the direction of travel.
+_HEAD_LANDING_M = 36 * 0.0254
+_SAMPLE_STEP_M = 3 * 0.0254
+_EDGE_INSET_M = 1 * 0.0254
+
+
+@check(Tier.CODE, "code.R311_7_6_stair_head_landing")
+def stair_head_landing(ctx: CheckContext) -> list[Finding]:
+    """R311.7.6 at the head: 36" of floor past the top nosing, the full stair width.
+
+    ``stair_arrival_floor`` asks whether a foot lands on something; this asks whether the
+    whole landing is there — a floor at the arrival elevation under every sample of the
+    36" x width rectangle past the top nosing, and no wall standing in it. A header moved
+    back to seat the head riser board eats into exactly this rectangle. Scope is the same
+    as the sibling rule: a flight through a floor opening.
+    """
+    from typehaus.resolve.stairs.walkline import stair_walk_stations
+    from typehaus.resolve.walking_surface import surfaces_at as _surfaces_at
+
+    cid, code = "code.R311_7_6_stair_head_landing", "R311.7.6"
+    if not ctx.model.stairs:
+        return [_unknown(cid, "no resolved stairs", (), code)]
+    out: list[Finding] = []
+    for stair in ctx.model.stairs:
+        tags = (stair.tag,)
+        route = stair_walk_stations(stair)
+        if not getattr(ctx.plan.by_tag(stair.tag), "floor_opening", None) or len(route) < 2:
+            out.append(not_applicable(cid, f"{stair.tag} perforates no floor opening, so "
+                                      "its head is not a floor landing", tags, code))
+            continue
+        (ax, ay), (bx, by), arrival_z = route[-1]
+        (px, py), (qx, qy), _ = route[-2]
+        dx = (ax + bx - px - qx) / 2.0
+        dy = (ay + by - py - qy) / 2.0
+        span = math.hypot(dx, dy)
+        width = math.hypot(bx - ax, by - ay)
+        if span < 1e-9 or width < 1e-9:
+            out.append(_unknown(cid, f"{stair.tag}'s arrival station has no direction",
+                                tags, code))
+            continue
+        ux, uy = dx / span, dy / span
+        cx, cy = (bx - ax) / width, (by - ay) / width
+        rect = Polygon([(ax, ay), (bx, by), (bx + ux * _HEAD_LANDING_M,
+                                             by + uy * _HEAD_LANDING_M),
+                        (ax + ux * _HEAD_LANDING_M, ay + uy * _HEAD_LANDING_M)])
+        band = stair.riser_height_m / 2.0
+        missing = []
+        depth = _SAMPLE_STEP_M
+        while depth <= _HEAD_LANDING_M + 1e-9:
+            for across in (_EDGE_INSET_M, width / 2.0, width - _EDGE_INSET_M):
+                point = (ax + cx * across + ux * depth, ay + cy * across + uy * depth)
+                if not any(abs((s.surface_m if s.surface_m is not None else s.deck_top_m)
+                               - arrival_z) <= band for s in _surfaces_at(ctx.model, point)):
+                    missing.append(depth)
+            depth += _SAMPLE_STEP_M
+        inside = rect.buffer(-_EDGE_INSET_M)
+        walls = sorted(wall.tag for wall in ctx.model.walls
+                       if wall.z0_m < arrival_z + 0.05 < wall.z1_m
+                       and _wall_polygon(wall) is not None
+                       and _wall_polygon(wall).intersects(inside))
+        if walls:
+            out.append(_fail(cid, f"{stair.tag}'s head landing is not 36\" deep x "
+                             f"{width / .0254:.2f}\" clear: {', '.join(walls)} stands in it",
+                             (stair.tag, *walls), code))
+        elif missing:
+            out.append(_fail(cid, f"{stair.tag}'s head landing has no floor at the arrival "
+                             f"elevation {min(missing) / .0254:.1f}\" past the top nosing, "
+                             "inside R311.7.6's 36\"", tags, code))
+        else:
+            out.append(_pass(cid, f"{stair.tag} heads onto 36\" x {width / .0254:.2f}\" of "
+                             "clear floor past its top nosing", code))
+    return out
+
+
+def _wall_polygon(wall) -> Polygon | None:
+    points = [point for layer in wall.layers for point in layer.polygon]
+    return Polygon(points).convex_hull if len(points) >= 3 else None

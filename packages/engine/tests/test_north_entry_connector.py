@@ -68,7 +68,9 @@ def test_interior_landing_has_three_clear_feet_and_real_continuing_beams(catlin_
     y_end = max(p.y.meters for p in floor.subfloor_outline)
     assert y_end - ft(43, 13.625).meters == pytest.approx(ft(3).meters)
     stair = next(s for s in model.stairs if s.tag == "ST-G-SERVICE")
-    assert min(m.p1[1] for m in stair.members if m.category == "stringer") == pytest.approx(y_end)
+    # The stringers stop at the head riser's board, which stands against the landing edge.
+    assert min(m.p1[1] for m in stair.members if m.category == "stringer") == pytest.approx(
+        y_end + ft(0, 0.75).meters)
     for tag in floor.joists.bearing_refs:
         beam = model.plan.by_tag(tag)
         # No `engineering_note` any more: the escape that turned one into a delegated

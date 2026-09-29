@@ -46,6 +46,21 @@ def stair_rows(model: ResolvedModel, materials: Mapping[str, object],
     for stair in model.stairs:
         if stair.tag not in scope and stair.tag not in landing_scope:
             continue
+        head = next((part for part in stair.finish_parts
+                     if part.key == "stairhead:nosing" and part.material_ref == material_ref),
+                    None)
+        if head is not None and landing_spec is not None and stair.tag in scope:
+            # The stairhead's landing tread: the floor edge's own nosing (R311.7.5.3), milled
+            # like the landing's from a tread-thick blank.
+            length_in = max(math.dist(head.outline[0], head.outline[1]),
+                            math.dist(head.outline[1], head.outline[2])) * _M_TO_IN
+            row = _piece_row("stair landing nosing", material_ref, materials, 1,
+                             (head.z1_m - head.z0_m) * _M_TO_IN,
+                             landing_spec.nosing_depth.inches, length_in,
+                             max_board_width_in, [stair.tag], also,
+                             profile=landing_spec.nosing_profile)
+            row["location"] = "stairhead"
+            landing_rows.append(row)
         for member in stair.members:
             if member.category not in ("tread", "winder", "landing", "riser"):
                 continue

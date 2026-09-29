@@ -184,8 +184,15 @@ MN_2020 = JurisdictionProfile(
                         # short of its own opening edge arrives at the right height over
                         # open air. `code.R311_7_6_stair_arrival_floor` asks in plan.
                         "code.R311_7_6_stair_arrival_floor",
+                        # ...and 36" of it past the top nosing, not only a footfall.
+                        "code.R311_7_6_stair_head_landing",
+                        # The going the resolver was asked for is not the depth it built:
+                        # a head riser in front of its framing made every last tread 3/4"
+                        # short. Measured nosing to nosing, landings and floors included.
+                        "code.R311_7_5_2_tread_depth",
                         "structural.stair_riser_uniformity"),
-                       ("IRC R311.7", "IRC R311.7.5.1")),
+                       ("IRC R311.7", "IRC R311.7.5.1", "IRC R311.7.5.2",
+                        "IRC R311.7.5.3")),
         PermitItemSpec("Guards at stair-well openings", ("code.R312_1_guard",),
                        ("IRC R312.1",)),
         # The well rule above grades the *opening's* four edges against the deck that hosts

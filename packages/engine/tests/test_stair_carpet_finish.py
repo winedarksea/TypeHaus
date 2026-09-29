@@ -22,8 +22,15 @@ def test_carpet_covers_every_stair_surface_without_entering_takeoff(catlin_model
                for role in ("walking", "nosing", "riser")}
     assert {role: len(parts) for role, parts in by_role.items()} == {
         "walking": 14, "nosing": 12, "riser": 15}
-    assert all(part.material_ref == "carpet" and part.z1_m > part.z0_m
-               for part in stair.finish_parts)
+    # The landing edges' lips are carpet over the nose; the stairhead's is a flush LVP stair
+    # nose on the main floor (notes/stair_nosing_basis.md).
+    lips = {part.key: part.material_ref for part in stair.finish_parts
+            if part.role == "landing-nosing"}
+    assert lips == {"landing-lower:nosing": "carpet", "landing-upper:nosing": "carpet",
+                    "stairhead:nosing": "lvp"}
+    assert all(part.z1_m > part.z0_m for part in stair.finish_parts)
+    assert all(part.material_ref == "carpet" for part in stair.finish_parts
+               if part.key != "stairhead:nosing")
     assert {part.key for part in by_role["walking"]} == {
         f"{member.child_key}:top" for member in stair.members
         if member.category in {"tread", "landing"}}
@@ -55,7 +62,7 @@ def test_carpet_surfaces_reach_model_json_and_geometry_ir(catlin_model_ro):
     [element] = [element for element in geometry.elements
                  if element.uid == f"{stair.uid}::finish"]
     assert len(element.parts) == len(stair.finish_parts)
-    assert all(part.catalog.material_ref == "carpet" for part in element.parts)
+    assert {part.catalog.material_ref for part in element.parts} == {"carpet", "lvp"}
 
 
 def test_carpet_is_in_gltf_stair_mesh(catlin_model_ro):
@@ -79,6 +86,6 @@ def test_carpet_is_ifc_covering_under_stair(catlin_ifc_path):
     [stair] = [item for item in model.by_type("IfcStair") if item.Name == "ST-B2M"]
     children = [item for relation in stair.IsDecomposedBy for item in relation.RelatedObjects]
     coverings = [item for item in children if item.is_a("IfcCovering")]
-    assert len(coverings) == 41
+    assert len(coverings) == 44  # 41 carpet faces + two carpet lips + the LVP stairhead nose
     assert any(item.Name == "ST-B2M/riser-landing:face" for item in coverings)
     assert all(item.Representation is not None for item in coverings)

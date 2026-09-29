@@ -158,6 +158,10 @@ class Stair(Element):
     # open riser, graded by ``code.R311_7_5_1_open_risers``.
     riser_thickness: Length | None = None
     riser_material: str | None = None
+    # The nosing at the arrival floor's edge (R311.7.5.3 counts it): a lip over the head
+    # riser, tread-deep, projecting the flight's nosing. ``None`` falls back to the house
+    # ``MillworkStandard``'s tread stock for a flight it scopes, else no stairhead nosing.
+    head_nosing_material: str | None = None
     # Maximum support spacing, evenly divided across the width (per flight on a U; the
     # straight flight on a winder), including both edge stringers. None retains two edge
     # stringers. The outer stringers sit INSIDE ``width`` (inset half a ply), which stays

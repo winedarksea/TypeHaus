@@ -101,7 +101,9 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # and RL-A-STAIR starts at the head (x 22'-5 3/8", plus a 5 5/8" return).
     # 22.1 since 2026-09-23: RL-M-STAIRHEAD's 0.4 LF left with it.
     # 26.2 since 2026-09-25: RL-S-STAIRHEAD's 4'-2" leg along ST-M2S's well partition.
-    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(26.2, abs=0.1)
+    # 26.3 since 2026-09-28: FO-A-STAIR's header went 3/4" west for ST-S2A's head riser
+    # board, and RL-A-STAIR with it.
+    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(26.3, abs=0.1)
     # 45.6 over four storey groups, and this is the catch-all: every guard or handrail that
     # names no `type_ref` lands here. RL-A-HANDRAIL's 13.0 runs beside ST-S2A's winder fan as
     # well as its straight flight (per R311.7.8.2, measured by `code.R311_7_8_handrail`
@@ -115,7 +117,9 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # is what says so.
     #
     # 47.3 since 2026-09-16: RL-A-FLIGHT-SKIRT's 1'-8 3/8" raked panel under the attic deck.
-    assert by_type["(untyped railing)"] == pytest.approx(47.3, abs=0.1)
+    # 47.5 since 2026-09-28: RL-G-SERVICE and the two upper-flight rails reach their lowest
+    # riser, one head riser board further out (3/4" + 3/4" + 1 1/4").
+    assert by_type["(untyped railing)"] == pytest.approx(47.5, abs=0.1)
 
 
 def test_the_untyped_group_key_is_also_what_gets_emitted(bom):

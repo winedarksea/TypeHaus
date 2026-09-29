@@ -34,6 +34,7 @@ from typehaus.resolve.stairs.finish import (
     lower_stair_substrates,
     set_landing_stack,
     stair_finish_parts,
+    stairhead_nosing_part,
 )
 from typehaus.resolve.stairs.straight import _straight_stair_members
 from typehaus.resolve.stairs.u_split import _u_split_landing_members
@@ -216,7 +217,7 @@ def _resolve_stair(
         origin_x, origin_y = stair.start.xy_m
     members = _stair_members(stair, origin_x, origin_y, z0, risers, riser,
                              going_m, physical_tread_m, nosing_m, landing_depth_m,
-                             _deck_underside(model, stair, opening))
+                             _deck_underside(model, stair, opening), finish_thickness_m)
     members = lower_stair_substrates(members, finish_thickness_m)
     deck = _landing_deck(model, stair)
     if deck is not None:
@@ -231,13 +232,32 @@ def _resolve_stair(
     # borne on the walls beside it — posted down wherever none reaches.
     members = _clip_stair_to_subfloor(members, z0)
     members = _bear_stair_on_walls(model, stair, members, z0)
-    members = _in_stair_material(stair, members, _finish_materials(model, stair))
+    surfaces = _finish_materials(model, stair)
+    members = _in_stair_material(stair, members, surfaces)
     finish_parts = (stair_finish_parts(members, stair.finish_material,
                                       finish_thickness_m, _tread_thickness(stair))
                     if stair.finish_material is not None else ())
-    if deck is not None:
-        finish_parts += landing_nosing_parts(members, deck.nosing_material_ref,
-                                             _tread_thickness(stair), nosing_m)
+    # R311.7.5.3 counts the nosings at landings and floors: a lip over each riser that
+    # climbs onto one, so the last tread is as deep as the rest.
+    lips: tuple = ()
+    if nosing_m > 1e-9:
+        landing_lip = (deck.nosing_material_ref if deck is not None
+                       else stair.finish_material or surfaces[1])
+        if landing_lip is not None:
+            lips = landing_nosing_parts(members, landing_lip, _tread_thickness(stair),
+                                        nosing_m, finish_thickness_m)
+        head_material = _head_nosing_material(model, stair)
+        head = (stairhead_nosing_part(members, head_material, z_top, nosing_m,
+                                      finish_thickness_m)
+                if head_material is not None else None)
+        lips += (head,) if head is not None else ()
+    for lip in lips:
+        # A covering on the riser under a lip stops beneath it.
+        finish_parts = tuple(
+            replace(part, z1_m=lip.z0_m) if part.role == "riser"
+            and part.z0_m < lip.z0_m < part.z1_m - 1e-9
+            and _same_riser(part, lip) else part for part in finish_parts)
+    finish_parts += lips
     # A stair declaration lives with its destination deck so it can own the opening, but
     # its resolved plan-storey identity is the floor it rises *from*.
     return ResolvedStair(stair.uid, stair.tag, stair.from_storey, stair.to_storey, outline,
@@ -263,6 +283,23 @@ def _landing_deck(model: ResolvedModel, stair: Stair):
     standard = _millwork_standard(model)
     deck = standard.landing_deck if standard is not None else None
     return deck if deck is not None and stair.tag in deck.stair_refs else None
+
+
+def _same_riser(face, lip) -> bool:
+    """A riser's covering and a lip over it share their plan edge."""
+    from shapely.geometry import Polygon
+
+    return Polygon(face.outline).distance(Polygon(lip.outline)) < 1e-4
+
+
+def _head_nosing_material(model: ResolvedModel, stair: Stair) -> str | None:
+    """The authored stairhead nosing, else the house tread stock for a flight it scopes."""
+    if stair.head_nosing_material is not None:
+        return stair.head_nosing_material
+    standard = _millwork_standard(model)
+    if standard is not None and stair.tag in standard.tread_stairs:
+        return standard.tread_material_ref
+    return None
 
 
 def _finish_materials(model: ResolvedModel,
@@ -367,14 +404,15 @@ def _deck_underside(model: ResolvedModel, stair: Stair,
 def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: int,
                    riser: float, going: float, tread_depth: float, nosing: float,
                    landing_depth_m: float,
-                   head_z: float | None = None) -> tuple[FramedMember, ...]:
+                   head_z: float | None = None,
+                   finish_m: float = 0.0) -> tuple[FramedMember, ...]:
     if stair.layout == "right_angle_winder":
         return _winder_stair_members(stair, minx, miny, z0, risers, riser, going,
                                      tread_depth, nosing)
     if stair.layout in {"u_split_landing", "u_level_landing"}:
         return _u_split_landing_members(stair, minx, miny, z0, risers, riser, going,
                                         tread_depth, nosing,
-                                        landing_depth_m, head_z)
+                                        landing_depth_m, head_z, finish_m)
     return _straight_stair_members(stair, minx, miny, z0, risers, riser, going,
                                   tread_depth, nosing)
 

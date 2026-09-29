@@ -198,9 +198,10 @@ NODES = [
     # own segment here regardless of how short W-M-STRW2 south of it gets.
     Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 6))),
     # W-M-WELL's ends: FO-M-STAIR's south edge (the stairhead) and the south face of
-    # ST-M2S's level-landing joist (its axis is the landing edge, 31'-10 3/8"). Both free.
+    # ST-M2S's level-landing joist (its axis is the landing edge, 31'-11 1/8": one head riser
+    # board past the lower flight's last riser line). Both free.
     Node(uid="4YBM7GZBJZ", tag="N-M-WELL-S", position=pt(ft(14), ft(26, 0.375)), open_end=True),
-    Node(uid="0RW1TEC7JH", tag="N-M-WELL-N", position=pt(ft(14), ft(31, 9.625)), open_end=True),
+    Node(uid="0RW1TEC7JH", tag="N-M-WELL-N", position=pt(ft(14), ft(31, 10.375)), open_end=True),
     # W-M-BAE shifts 2' east; the mudroom door remains at its existing
     # 6" tee clearance.
     #
@@ -2022,6 +2023,8 @@ STAIRS = [
           base_elevation=inch(-109.4375), top_elevation=inch(0.9862),
           tread_thickness=inch(1),
           finish_material="carpet",
+          # A flush LVP stair nose at the main-floor stairhead (R311.7.5.3 counts it).
+          head_nosing_material="lvp",
           layout="u_split_landing", run_direction="y", turn_direction="left",
           start=pt(ft(10, 3.25), ft(26, 0.375)), landing_depth=ft(4, 2.875),
           # A centre stringer per flight: two at the lane edges left the treads a 39" clear
@@ -2051,7 +2054,7 @@ STAIR_HANDRAILS = [
     ),
     Railing(
         uid="CMRL02AAAA", tag="RL-M-HANDRAIL-W", path=(
-            pt(ft(10, 5.25), ft(31, 0.375)),
+            pt(ft(10, 5.25), ft(31, 1.625)),
             pt(ft(10, 5.25), ft(26, 10.375)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
@@ -2282,28 +2285,27 @@ POSTS = [
     # Now that the bearing is declared, `takeoff/uplift.py::post_base_rows` derives an ABU44
     # under each — the 4x4 rung of the same size ladder the ten ABU66SS outside sit on, ZMAX
     # rather than stainless because this is a dry interior slab.
-    Post(uid="A9J80KK6AE", tag="P-M-STRWELL-S", position=pt(ft(14), ft(31, 10.374)), size="4x4",
+    Post(uid="A9J80KK6AE", tag="P-M-STRWELL-S", position=pt(ft(14), ft(31, 11.124)), size="4x4",
          height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
-    # A THIRD one on the well centreline, 2026-09-15, and it is the visible half of the
-    # `resolve/stairs/u_split.py` arrival fix (notes/u_stair_split_landing.md). ST-M2S
-    # carries 13 treads over two flights — 7 lower, 6 upper — so its two half-landings are
-    # no longer the same rectangle: the upper one starts one going FURTHER SOUTH, at
-    # y=31'-0 3/8", because that is where its own flight springs from. That south-west
-    # corner is a rim end no host wall reaches, `bearing.py` stands a 4x4 on it, and it is
-    # over FO-M-STAIR's hole — so, like the two above and unlike P-M-STRLAND-SE, it is a
-    # full-height column to the basement slab rather than a squash block in a joist bay.
-    Post(uid="H8TV2XS6B2", tag="P-M-STRWELL-SS", position=pt(ft(14), ft(31, 0.375)), size="4x4",
+    # A THIRD one on the well centreline, 2026-09-15 (notes/u_stair_split_landing.md), under
+    # ST-B2M's half-landings, which start at y=31'-1 5/8": its 60" flights plus the head
+    # riser board and carpet (1 1/4") the landing edge stands past (2026-09-28,
+    # notes/stair_nosing_basis.md). That corner is a rim end no host wall reaches,
+    # `bearing.py` stands a 4x4 on it, and it is over FO-M-STAIR's hole — so, like the two
+    # above and unlike P-M-STRLAND-SE, it is a full-height column to the basement slab rather
+    # than a squash block in a joist bay.
+    Post(uid="H8TV2XS6B2", tag="P-M-STRWELL-SS", position=pt(ft(14), ft(31, 1.625)), size="4x4",
          height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
     # ST-M2S's lower landing gained a THIRD corner post on 2026-08-24, and it is a direct
     # consequence of splitting W-M-C5 for RM-M-PANTRY.
     #
     # ``resolve/stairs/bearing.py`` ledgers a landing rim to ONE host wall — the segment it
     # shares the longest run with — and marks only the rim ends that host actually reaches
-    # as supported. landing-rim-lower-1 runs y 31'-10 3/8"..34'-10 3/8" against the centre
+    # as supported. landing-rim-lower-1 runs y 31'-11 1/8"..34'-10 3/8" against the centre
     # line; before the split one W-M-C5 covered all 36" of it. Now W-M-C5B covers the north
     # 25 3/8" and W-M-C5 the south 10 5/8", the longer one wins the ledger, and the SOUTH
     # end falls out of the interval — so the resolver stands landing-post-002 there.
-    # ** There is no pantry depth that avoids this ** (the rim occupies y 31'-10 3/8"..
+    # ** There is no pantry depth that avoids this ** (the rim occupies y 31'-11 1/8"..
     # 34'-10 3/8" and a split anywhere inside that range cuts it), and moving the split
     # south of the rim would push FURN-M-KIT-PANTRYC 19 3/4" past the end of the wall it
     # backs onto — a worse trade than a 4x4.
@@ -2320,7 +2322,7 @@ POSTS = [
     #
     # x=17'-7 1/2" puts its EAST face on W-M-C5's stud face (17'-9 1/4") — it laps only the
     # 5/8" gypsum, which is scribed to it, and touches no stud — while still containing the
-    # rim end at 17'-8 5/8". Move ST-M2S and this moves with it, exactly as the note above
+    # rim end at 17'-8 5/8" (y 31'-11 1/8"). Move ST-M2S and this moves with it, as the note above
     # says of the other two.
     #
     # ``supported_by="W-B-CN"`` is the concrete this delivers into, named above in prose
@@ -2334,7 +2336,7 @@ POSTS = [
     # column, so `UpliftTieRules.blocking_max_height_ft` reads it as the squash block the
     # paragraph above calls it. A block bears; it needs no base to bear through, and
     # `structural.uplift_load_path` says exactly that rather than reporting it un-gradeable.
-    Post(uid="0Q6WK11T26", tag="P-M-STRLAND-SE", position=pt(ft(17, 7.5), ft(31, 10.374)),
+    Post(uid="0Q6WK11T26", tag="P-M-STRLAND-SE", position=pt(ft(17, 7.5), ft(31, 11.124)),
          size="4x4", height=inch(13.4375), assembly="POST_WHITE_PAINT",
          supported_by="W-B-CN"),
 ]

@@ -19,6 +19,7 @@ from typehaus.resolve.stairs.common import (
     _tread_board_profile,
     _tread_risers,
     _tread_thickness,
+    head_board,
 )
 
 
@@ -26,7 +27,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
                              risers: int, riser: float, tread: float,
                              tread_depth: float, nosing: float,
                              landing_depth_m: float,
-                             head_z: float | None = None) -> tuple[FramedMember, ...]:
+                             head_z: float | None = None,
+                             finish_m: float = 0.0) -> tuple[FramedMember, ...]:
     """Generate two parallel flights joined by paired half-width landings.
 
     Split landings spend one riser crossing between the decks; level landings spend none.
@@ -83,6 +85,10 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # leaving a ``tread``-wide strip of open floor opening at the head of the stair. See
     # ``notes/u_stair_split_landing.md``.
     upper_flight_len = tread * upper_treads
+    # A head riser's board stands past its line (``_tread_risers``): the lower flight's
+    # landing and the arrival header both sit one board beyond, so the upper flight hangs
+    # that far off the header and both half-landings start that far past their flights.
+    board = head_board(stair, finish_m)
     lower_landing_z = z0 + riser * (lower_treads + 1)
     upper_landing_z = lower_landing_z + riser * middle_risers
     arrival = z0 + riser * risers
@@ -92,7 +98,7 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # flight → the arrival deck). The subfloor clip clamps the springing dip.
     for prefix, lane_lo, s_lo, s_hi, spring_z, bear_z, count in (
         ("lower", lower_lane, 0.0, flight_len, z0, lower_landing_z, lower_treads),
-        ("upper", upper_lane, upper_flight_len, 0.0,
+        ("upper", upper_lane, board + upper_flight_len, board,
          upper_landing_z, arrival, upper_treads),
     ):
         if not count:
@@ -124,17 +130,20 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
                                             at(tread * index, lower_lane + width))))
     # Upper flight climbs back toward the start edge; its first tread leaves the upper
     # landing, and its top tread ends one riser below the arrival deck. Its riser faces run
-    # back from ITS OWN landing edge — ``upper_flight_len - tread * index`` is the face a
-    # walker steps up at to reach tread ``index``, so the drawn grid stays flush at both
-    # ends and the top nosing lands exactly on the arrival deck edge at s=0.
+    # back from ITS OWN landing edge — ``board + upper_flight_len - tread * index`` is the
+    # face a walker steps up at to reach tread ``index`` — so the grid stays flush at both
+    # ends, the head riser's board against the arrival header at s=0.
     for index in range(upper_treads):
         top = z0 + riser * (lower_treads + 2 + middle_risers + index)
-        s = upper_flight_len - tread * (index + 1) + (tread - nosing) / 2.0
+        # The board runs back one going from its riser and noses one nosing past it — the
+        # lower flight's span, mirrored (it sat one nosing toward the head until 2026-09-28).
+        s = board + upper_flight_len - tread * index - (tread - nosing) / 2.0
         out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", tread_profile,
                                 at(s, upper_lane), at(s, upper_lane + width),
                                 _notch_z(top, thickness), top, width,
-                                riser_line=(at(upper_flight_len - tread * index, upper_lane),
-                                            at(upper_flight_len - tread * index,
+                                riser_line=(at(board + upper_flight_len - tread * index,
+                                               upper_lane),
+                                            at(board + upper_flight_len - tread * index,
                                                upper_lane + width))))
     lower = [m for m in out if m.child_key.startswith("tread-lower-")]
     upper = [m for m in out if m.child_key.startswith("tread-upper-")]
@@ -144,7 +153,7 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         # The split landing's own step, up across the partition onto the upper half.
         side = 1.0 if upper_lane > lower_lane else -1.0
         cross = partition_centre
-        step = _riser_member(stair, "riser-landing", (at(flight_len, cross),
+        step = _riser_member(stair, "riser-landing", (at(flight_len + board, cross),
                              at(flight_len + landing_depth_m, cross)),
                              (0.0, side) if along_x else (side, 0.0), lower_landing_z,
                              upper_landing_z - thickness, behind=False)
@@ -152,14 +161,15 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
             out.append(step)
     # Two landing platforms in the landing zone beyond the flight ends, each on its own
     # flight's side of the well partition.
-    out.extend(_landing_platform(stair, "lower", at, flight_len, landing_depth_m,
+    out.extend(_landing_platform(stair, "lower", at, flight_len + board,
+                                 landing_depth_m - board,
                                  *lower_half, lower_landing_z, thickness,
                                  partition_centre))
     # The two half-landings stay FLUSH at the far end of the well — that is what makes the
     # 180° crossing work and keeps the opening budget unchanged — so the upper half simply
     # gets one going deeper when the flights carry different tread counts.
-    out.extend(_landing_platform(stair, "upper", at, upper_flight_len,
-                                 flight_len + landing_depth_m - upper_flight_len,
+    out.extend(_landing_platform(stair, "upper", at, board + upper_flight_len,
+                                 flight_len + landing_depth_m - upper_flight_len - board,
                                  *upper_half, upper_landing_z, thickness,
                                  partition_centre,
                                  omit_partition_rim=middle_risers == 0))
@@ -178,7 +188,7 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     post_half = cross_section("4x4").width_m / 2.0
     stud_half = cross_section("2x4").width_m / 2.0
     lo_s = head_inset
-    hi_s = min(flight_len, upper_flight_len) - post_half - stud_half
+    hi_s = min(flight_len, upper_flight_len) + board - post_half - stud_half
     if hi_s > lo_s:
         plate = 0.0381  # a 2x4 plate laid flat
         head = head_z is not None and head_z > z0 + 2 * plate
@@ -235,14 +245,17 @@ def _landing_platform(stair: Stair, name: str, at, s0: float, depth: float,
                         f"deck {width / 0.0254:g}x{thickness / 0.0254:g}",
                         at(s0, mid), at(s0 + depth, mid),
                         deck_bottom, landing_z, depth)]
+    ply = cross_section(_LANDING_JOIST_PROFILE).width_m
     for index, offset in enumerate(_grid_positions(depth, _FRAMING_SPACING_M)):
+        # The edge joist toward the flight stands INSIDE the deck, its face on the edge the
+        # head riser board is fastened to; the far one stays centred on its bearing.
+        offset = max(offset, ply / 2.0)
         out.append(FramedMember(stair.uid, f"landing-joist-{name}-{index:03d}",
                                 "landing_framing",
                                 _LANDING_JOIST_PROFILE, at(s0 + offset, lane_lo),
                                 at(s0 + offset, lane_lo + width), z_bot, z_top, width))
     # The wall-side rim sits inside the lane, as a flight's outer stringer does
     # (``_stringer_offsets``); the partition-side one stays on the bearing centreline.
-    ply = cross_section(_LANDING_JOIST_PROFILE).width_m
     for index, cross in enumerate((lane_lo, lane_lo + width)):
         if omit_partition_rim and abs(cross - partition) <= 1e-9:
             continue  # one shared rim carries the flush seam, not two coincident boards

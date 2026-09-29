@@ -647,7 +647,8 @@ ALARMS = [
 # The elevations are literals because this file is `# haus: editable` and may hold only
 # literals; -2'-10" is `params/foundations.SITE_GRADE`, which `plan/site.py` repeats as
 # `Site.grade` and `plan/manifest.py` asserts the two agree. `start` is the foot of the
-# flight — the landing's north edge at 47'-1 5/8" plus 4 x 11" of tread = 50'-9 5/8" — and
+# flight — the landing's north edge at 47'-1 5/8", plus the 3/4" head riser board that
+# stands against it, plus 4 x 11" of tread = 50'-10 3/8" — and
 # it climbs south (`run_reversed`) back to the landing. The y literals below move with
 # GARAGE_Y_SOUTH.
 #
@@ -666,7 +667,7 @@ STAIRS = [
     Stair(uid="X99TD38ZS3", tag="ST-G-SERVICE",
           from_storey="garage", to_storey="garage",
           base_elevation=ft(-2, -10), top_elevation=ft(0),
-          width=ft(3), start=pt(ft(6, 11.625), ft(50, 9.625)),
+          width=ft(3), start=pt(ft(6, 11.625), ft(50, 10.375)),
           run_direction="y", run_reversed=True,
           tread_depth=inch(11), nosing_depth=inch(0),
           # The top step's open riser tops out 32.5" over the slab (R311.7.5.1).
@@ -704,7 +705,7 @@ STAIRS = [
 
 RAILINGS = [
     Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE",
-            path=(pt(ft(6, 9), ft(50, 9.625)), pt(ft(6, 9), ft(47, 2.625))),
+            path=(pt(ft(6, 9), ft(50, 10.375)), pt(ft(6, 9), ft(47, 2.625))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
             base_elevation=ft(-2, -10), post_spacing=inch(48), post_size="2x2",
             rail_count=1, mount="wall", assembly="RAILING_DARK_METAL",

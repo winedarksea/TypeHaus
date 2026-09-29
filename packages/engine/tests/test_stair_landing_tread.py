@@ -27,10 +27,12 @@ def test_the_landing_deck_is_the_floor_stack_and_its_framing_meets_it(catlin_mod
     assert tread.z1_m - tread.z0_m == pytest.approx(inch(1.75).meters)
 
 
-def test_only_the_arrival_edge_carries_a_lip_over_its_riser(catlin_model_ro):
+def test_only_an_arrival_edge_carries_a_lip_over_its_riser(catlin_model_ro):
     stair = _stair(catlin_model_ro)
-    [lip] = [part for part in stair.finish_parts if part.role == "landing-nosing"]
-    assert lip.key == "landing-lower:nosing" and lip.material_ref == "oak-tread"
+    lips = {part.key: part for part in stair.finish_parts if part.role == "landing-nosing"}
+    assert set(lips) == {"landing-lower:nosing", "stairhead:nosing"}
+    lip = lips["landing-lower:nosing"]
+    assert lip.material_ref == "oak-tread"
     deck = _member(stair, "landing-lower")
     # Tread depth down from the walking face: the riser below tops out at its underside.
     assert lip.z1_m == pytest.approx(deck.z1_m)
@@ -47,4 +49,4 @@ def test_only_the_arrival_edge_carries_a_lip_over_its_riser(catlin_model_ro):
 def test_the_lip_reaches_the_viewer(catlin_model_ro):
     stairs = framing_json(catlin_model_ro, None)["stairs"]
     stair = next(s for s in stairs if s["tag"] == "ST-M2S")
-    assert [part["role"] for part in stair["finish_parts"]] == ["landing-nosing"]
+    assert [part["role"] for part in stair["finish_parts"]] == ["landing-nosing"] * 2

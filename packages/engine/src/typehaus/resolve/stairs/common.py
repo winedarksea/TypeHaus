@@ -155,6 +155,12 @@ def _riser_member(stair: Stair, key: str, line: Line, ascent: tuple[float, float
                         orient=ascent)
 
 
+def head_board(stair: Stair, finish_m: float = 0.0) -> float:
+    """What a head riser puts between its line and the framing it faces: the board, plus a
+    covering on its face, which ``lower_stair_substrates`` pushes the board back behind."""
+    return stair.riser_thickness.meters + finish_m if stair.riser_thickness is not None else 0.0
+
+
 def _ascent(tread: FramedMember) -> tuple[float, float]:
     """The unit plan direction up the flight at a straight tread: riser face to board axis."""
     (ax, ay), (bx, by) = tread.riser_line
@@ -167,8 +173,12 @@ def _ascent(tread: FramedMember) -> tuple[float, float]:
 def _tread_risers(stair: Stair, treads: list[FramedMember], riser: float, going: float,
                   prefix: str = "", head: bool = True) -> list[FramedMember]:
     """A riser under every straight tread (``treads`` in ascent order), and with ``head`` one
-    more a going past the last, under the landing or arrival edge. That one stands in front
-    of the framing it faces (``behind=False``)."""
+    more a going past the last, under the landing or arrival edge.
+
+    The head board stands like every other, face on its riser line and the board beyond it,
+    so the last tread is one going deep (IRC R311.7.5.2.1). The framing it faces therefore
+    sits one board past the line: the layouts set landings back and hang flights off an
+    arrival header by ``head_board``."""
     out: list[FramedMember] = []
     for index, tread in enumerate(treads):
         out.append(_riser_member(stair, f"riser{prefix}-{index:03d}", tread.riser_line,
@@ -179,6 +189,5 @@ def _tread_risers(stair: Stair, treads: list[FramedMember], riser: float, going:
         (ax, ay), (bx, by) = last.riser_line
         line = ((ax + ux * going, ay + uy * going), (bx + ux * going, by + uy * going))
         out.append(_riser_member(stair, f"riser{prefix}-{len(treads):03d}", line, (ux, uy),
-                                 last.z1_m, last.z1_m + riser - _tread_thickness(stair),
-                                 behind=False))
+                                 last.z1_m, last.z1_m + riser - _tread_thickness(stair)))
     return [member for member in out if member is not None]

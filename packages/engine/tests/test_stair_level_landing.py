@@ -30,7 +30,8 @@ def test_main_stair_has_two_equal_flights_and_one_level_turn(catlin_model_ro):
     for flight in ("lower", "upper"):
         assert len([key for key in members if key.startswith(f"tread-{flight}-")]) == 7
     lower, upper = members["landing-lower"], members["landing-upper"]
-    assert lower.length_m == pytest.approx(inch(42.25).meters)
+    # 42 1/4" less the head riser board the landing edge stands past (2026-09-28).
+    assert lower.length_m == pytest.approx(inch(41.5).meters)
     assert upper.length_m == pytest.approx(lower.length_m)
     assert lower.z1_m == pytest.approx(inch((121.5 + 0.9862) / 2).meters)
     assert upper.z1_m == pytest.approx(lower.z1_m)

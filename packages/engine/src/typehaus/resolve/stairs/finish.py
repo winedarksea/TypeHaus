@@ -129,13 +129,25 @@ def set_landing_stack(members: tuple[FramedMember, ...], stack_m: float,
     return tuple(out)
 
 
+def nosing_lip(riser: FramedMember, key: str, material_ref: str, top_z: float,
+               nosing_m: float, finish_m: float = 0.0) -> StairFinishPart:
+    """A nosing over ``riser``: from its board's back face (the edge it meets) out past its
+    finished face by the flight's nosing, from the board's top up to ``top_z``."""
+    ux, uy = riser.orient
+    half = cross_section(riser.profile).width_m / 2
+    back = [(x + ux * half, y + uy * half) for x, y in (riser.p0, riser.p1)]
+    reach = 2 * half + finish_m + nosing_m
+    front = [(x - ux * reach, y - uy * reach) for x, y in back]
+    return StairFinishPart(key, "landing-nosing", material_ref,
+                           (back[0], back[1], front[1], front[0]), riser.z1_m, top_z)
+
+
 def landing_nosing_parts(members: tuple[FramedMember, ...], material_ref: str,
-                         tread_m: float, nosing_m: float) -> tuple[StairFinishPart, ...]:
+                         tread_m: float, nosing_m: float,
+                         finish_m: float = 0.0) -> tuple[StairFinishPart, ...]:
     """The lip of each landing tread: over the riser that climbs onto the landing edge.
 
-    Only an arrival edge has one. The riser a flight leaves a landing by stands ON it. The
-    lip runs from the riser's back face (the landing edge) out past its front face by the
-    flight's nosing, from tread depth below the walking face up to it.
+    Only an arrival edge has one. The riser a flight leaves a landing by stands ON it.
     """
     parts: list[StairFinishPart] = []
     risers = [m for m in members if m.category == "riser" and m.orient is not None]
@@ -149,10 +161,17 @@ def landing_nosing_parts(members: tuple[FramedMember, ...], material_ref: str,
             back = [(x + ux * half, y + uy * half) for x, y in (riser.p0, riser.p1)]
             if any(edge.distance(Point(point)) > 1e-3 for point in back):
                 continue
-            reach = 2 * half + nosing_m
-            front = [(x - ux * reach, y - uy * reach) for x, y in back]
-            parts.append(StairFinishPart(
-                f"{landing.child_key}:nosing", "landing-nosing", material_ref,
-                (back[0], back[1], front[1], front[0]),
-                landing.z1_m - tread_m, landing.z1_m))
+            parts.append(nosing_lip(riser, f"{landing.child_key}:nosing", material_ref,
+                                    landing.z1_m + finish_m, nosing_m, finish_m))
     return tuple(parts)
+
+
+def stairhead_nosing_part(members: tuple[FramedMember, ...], material_ref: str,
+                          arrival_z: float, nosing_m: float,
+                          finish_m: float) -> StairFinishPart | None:
+    """The arrival floor's nosing, over the flight's topmost riser."""
+    risers = [m for m in members if m.category == "riser" and m.orient is not None]
+    if not risers:
+        return None
+    head = max(risers, key=lambda m: m.z1_m)
+    return nosing_lip(head, "stairhead:nosing", material_ref, arrival_z, nosing_m, finish_m)

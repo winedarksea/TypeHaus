@@ -157,6 +157,12 @@ def _in_conditioned_space(model: ResolvedModel, stair: ResolvedStair) -> bool:
     return True
 
 
+def _lip_length_m(part) -> float:
+    """A lip's run: the longer side of its plan rectangle."""
+    (a, b, c, *_rest) = part.outline
+    return max(math.dist(a, b), math.dist(b, c))
+
+
 def stair_finish_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """One row per stair: treads and risers by the piece, landing decking by the square foot.
 
@@ -209,5 +215,8 @@ def stair_finish_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             "riser_lf": round(sum(m.length_m for m in risers) * _M_TO_FT, 1),
             "landing_decks": len(landings),
             "landing_area_sqft": round(landing_area * _M2_TO_FT2, 1),
+            # Nosings on landing and floor edges (R311.7.5.3): the resolved lips' run.
+            "lip_lf": round(sum(_lip_length_m(p) for p in stair.finish_parts
+                                if p.role == "landing-nosing") * _M_TO_FT, 1),
         })
     return rows

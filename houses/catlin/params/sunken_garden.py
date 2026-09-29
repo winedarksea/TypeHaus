@@ -2121,7 +2121,9 @@ _PORCH_JOIST_OUTLINE = (pt(ft(_x_in_w), ft(_porch_y0)), pt(ft(_x_in_e), ft(_porc
 # face against its published 24", and -9'-0" leaves 9 1/4" to BF3 for the south rail's
 # baseplates. Sliding it north crowds the machines; sliding it south crowds the column.
 _PORCH_STAIR_X0 = _x_in_e + 1.0  # 28.5' — W-SG-E1's east face, where the stringers land
-_PORCH_STAIR_X1 = _PORCH_STAIR_X0 + 4 * 11.0 / 12.0  # 32.167' — four 11" treads east of it
+# Four 11" treads east of it, plus the 3/4" head riser board standing against the wall face.
+_PORCH_STAIR_X1 = _PORCH_STAIR_X0 + (4 * 11.0 + 0.75) / 12.0  # 32.229'
+
 _PORCH_STAIR_Y0 = -6.0   # the flight's NORTH side, and the opening's north edge
 _PORCH_STAIR_Y1 = -9.0   # its SOUTH side — a 36" flight
 
