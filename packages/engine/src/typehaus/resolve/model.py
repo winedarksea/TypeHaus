@@ -641,6 +641,18 @@ class ResolvedRoof:
 
 
 @dataclass(frozen=True)
+class StairFinishPart:
+    """One separately rendered stair covering, never a framing/takeoff member."""
+
+    key: str
+    role: str
+    material_ref: str
+    outline: Ring
+    z0_m: float
+    z1_m: float
+
+
+@dataclass(frozen=True)
 class ResolvedStair:
     """A code-sized stair and its generated framing members."""
 
@@ -673,6 +685,9 @@ class ResolvedStair:
     # synthetic stair built without the resolver; callers fall back to the storey table there.
     base_elevation_m: float | None = None
     arrival_elevation_m: float | None = None
+    finish_material: str | None = None
+    finish_thickness_m: float = 0.0
+    finish_parts: tuple[StairFinishPart, ...] = ()
 
 
 @dataclass(frozen=True)

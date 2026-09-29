@@ -27,7 +27,9 @@ from typehaus.resolve.stairs.common import (
     _MIN_NOSING_DEPTH_M,
     _MIN_TREAD_M,
     _WELL_PARTITION_THICKNESS_M,
+    _tread_thickness,
 )
+from typehaus.resolve.stairs.finish import lower_stair_substrates, stair_finish_parts
 from typehaus.resolve.stairs.straight import _straight_stair_members
 from typehaus.resolve.stairs.u_split import _u_split_landing_members
 from typehaus.resolve.stairs.winder import _winder_stair_members
@@ -63,6 +65,16 @@ def _resolve_stair(
     if stair.tread_thickness is not None and stair.tread_thickness.meters <= 0:
         return None, [_error("integrity.stair_geometry", f"stair {stair.tag} "
                              "tread_thickness must be positive", stair.tag)]
+    finish_thickness_m = 0.0
+    if stair.finish_material is not None:
+        finish = next((material for material in model.plan.library.materials
+                       if material.tag == stair.finish_material), None)
+        depth_in = getattr(finish, "finish_thickness_in", None)
+        if depth_in is None or depth_in <= 0:
+            return None, [_error("integrity.stair_finish", f"stair {stair.tag} finish "
+                                 f"{stair.finish_material!r} needs a positive installed "
+                                 "finish_thickness_in", stair.tag)]
+        finish_thickness_m = inch(depth_in).meters
 
     if stair.floor_opening is None:
         # A run that passes through no floor — a step-down within one storey. There is no
@@ -200,6 +212,7 @@ def _resolve_stair(
     members = _stair_members(stair, origin_x, origin_y, z0, risers, riser,
                              going_m, physical_tread_m, nosing_m, landing_depth_m,
                              _deck_underside(model, stair, opening))
+    members = lower_stair_substrates(members, finish_thickness_m)
     if opening is None:
         outline = _flight_footprint(stair, going_m, risers)
     # Structural guards: the flight never drops below the subfloor it springs from (so a
@@ -208,6 +221,9 @@ def _resolve_stair(
     members = _clip_stair_to_subfloor(members, z0)
     members = _bear_stair_on_walls(model, stair, members, z0)
     members = _in_stair_material(stair, members, _finish_materials(model, stair))
+    finish_parts = (stair_finish_parts(members, stair.finish_material,
+                                      finish_thickness_m, _tread_thickness(stair))
+                    if stair.finish_material is not None else ())
     # A stair declaration lives with its destination deck so it can own the opening, but
     # its resolved plan-storey identity is the floor it rises *from*.
     return ResolvedStair(stair.uid, stair.tag, stair.from_storey, stair.to_storey, outline,
@@ -215,7 +231,10 @@ def _resolve_stair(
                          physical_tread_m, stair.run_direction, stair.run_reversed, stair.layout,
                          stair.turn_direction, stair.winder_count, members,
                          going_depth_m=going_m, nosing_depth_m=nosing_m,
-                         base_elevation_m=z0, arrival_elevation_m=z_top), []
+                         base_elevation_m=z0, arrival_elevation_m=z_top,
+                         finish_material=stair.finish_material,
+                         finish_thickness_m=finish_thickness_m,
+                         finish_parts=finish_parts), []
 
 
 def _finish_materials(model: ResolvedModel,

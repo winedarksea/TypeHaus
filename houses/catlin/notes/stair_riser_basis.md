@@ -15,7 +15,7 @@ No flight resolved a riser, so every one was an open-riser stair. Nothing graded
 IRC R311.7.5.1: open risers are allowed where the opening does not pass a 4" sphere, but
 only if it is more than 30" above the floor or grade below.
 
-- **Opening** = riser − the board above it. A nosing overlaps in plan and closes nothing
+- **Opening** = riser − the board and any covering above it. A nosing overlaps in plan and closes nothing
   vertically.
 - **Above 30"** is read at the opening's TOP (conservative), over the flight's springing
   floor.
@@ -23,9 +23,9 @@ only if it is more than 30" above the floor or grade below.
 
 ## 3. By hand, as open risers
 
-| Flight | R | board | opening | top step's opening top | open steps over 30" |
+| Flight | R | board + covering | opening | top step's opening top | open steps over 30" |
 |---|---|---|---|---|---|
-| ST-B2M | 110.4237/15 = 7.3616" | 1" | **6.36"** | 110.42 − 1 = 109.4" | 11 |
+| ST-B2M | 110.4237/15 = 7.3616" | 1" + 1/2" | **5.86"** | 110.42 − 1.5 = 108.9" | 11 |
 | ST-M2S | 120.5138/16 = 7.5321" | 1.5" | **6.03"** | 120.51 − 1.5 = 119.0" | 12 |
 | ST-S2A | 120/16 = 7.5" | 1.5" | **6.00"** | 120 − 1.5 = 118.5" | 12 |
 | ST-G-SERVICE | 34/5 = 6.8" | 1.5" | **5.30"** | 34 − 1.5 = 32.5" | 1 |
@@ -46,8 +46,9 @@ framing it faces instead.
 |---|---|---|---|
 | ST-M2S | oak-riser, 4/4 S4S, owner-milled | 16 | 3/4 × 6.03 × 42 3/8" |
 | ST-S2A | oak-riser | 14 + 2 | 3/4 × 6.00 × 36", two fan risers × 38.42" (√(24² + 30²)) |
-| ST-B2M | plywood-subfloor, under carpet | 14 + 1 | 3/4 × 6.36 × 41 1/16", and the split-landing step × 50 7/8" |
+| ST-B2M | plywood-subfloor, under carpet | 14 + 1 | 3/4 × 5.86 × 41 1/16", and the split-landing step × 50 7/8" |
 | ST-G-SERVICE / ST-SG-PORCH | kdat | 5 + 5 | 3/4 × 5.30 / 5.10 × 36" |
 
-Board height = R − the board above (the riser's top is that board's underside). 6.03" off
+Board height = R − the board and any separate covering above (the riser's top is the
+substrate's underside). 6.03" off
 4/4 rough is one board well inside MW-STANDARD's 18" supply.

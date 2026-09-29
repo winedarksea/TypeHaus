@@ -314,6 +314,14 @@ def framing_json(model: ResolvedModel, provenance: Provenance | None) -> dict[st
              "tread_depth_m": stair.tread_depth_m,
              "going_depth_m": stair.going_depth_m,
              "nosing_depth_m": stair.nosing_depth_m,
+             "finish_material": stair.finish_material,
+             "finish_thickness_m": stair.finish_thickness_m,
+             "finish_parts": [
+                 {"key": part.key, "role": part.role,
+                  "material_ref": part.material_ref,
+                  "outline": [list(point) for point in part.outline],
+                  "z0_m": part.z0_m, "z1_m": part.z1_m}
+                 for part in stair.finish_parts],
              "members": [_member_json(member) for member in stair.members],
              "provenance": _provenance(provenance, stair.tag)}
             for stair in sorted(model.stairs, key=lambda item: item.uid)

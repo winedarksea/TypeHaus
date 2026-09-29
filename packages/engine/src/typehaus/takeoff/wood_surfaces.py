@@ -27,6 +27,7 @@ import math
 from collections import defaultdict
 
 from typehaus.model.enums import LayerFunction
+from typehaus.model.spatial import Room
 from typehaus.model.structure import Post
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import ResolvedModel
@@ -90,6 +91,24 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     for ref in sorted(liner_area):
         rows.append(_area_row(materials, ref, liner_area[ref],
                               kind="wall-assembly-finish", where=liner_tags[ref],
+                              also={"also_in_envelope_layers": True}))
+
+    ceiling_area: dict[str, float] = defaultdict(float)
+    ceiling_rooms: dict[str, list[str]] = defaultdict(list)
+    for room in model.rooms:
+        plan_room = model.plan.by_tag(room.tag)
+        if not isinstance(plan_room, Room):
+            continue
+        for layer in plan_room.ceiling_lining:
+            material = materials.get(layer.material_ref)
+            if (layer.function != LayerFunction.FINISH or material is None
+                    or material.species is None):
+                continue
+            ceiling_area[layer.material_ref] += room.area_m2
+            ceiling_rooms[layer.material_ref].append(room.tag)
+    for ref in sorted(ceiling_area):
+        rows.append(_area_row(materials, ref, ceiling_area[ref],
+                              kind="ceiling-assembly-finish", where=ceiling_rooms[ref],
                               also={"also_in_envelope_layers": True}))
 
     # --- WallPaneling bands (wainscot; overrides like the tile splash) --------------

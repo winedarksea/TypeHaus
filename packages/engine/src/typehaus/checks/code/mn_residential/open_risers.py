@@ -30,7 +30,8 @@ def steps(stair: ResolvedStair) -> list[tuple[float, float, float, bool]]:
     boards = [m for m in stair.members if m.category in _WALKING]
     if not boards:
         return []
-    thick = {round(m.z1_m, 4): m.z1_m - m.z0_m for m in boards}
+    thick = {round(m.z1_m + stair.finish_thickness_m, 4):
+             m.z1_m - m.z0_m + stair.finish_thickness_m for m in boards}
     faces = sorted(thick)
     base = (stair.base_elevation_m if stair.base_elevation_m is not None
             else faces[0] - stair.riser_height_m)

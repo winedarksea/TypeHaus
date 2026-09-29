@@ -22,6 +22,7 @@ import {
 import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
 import { buildMembers, isRoofFramingMember, memberColor, type SkinLine } from "../members";
 import { buildBoardMembers } from "./millwork";
+import { addStairFinishParts } from "./stairFinish";
 import {
   applyPlankPlaneUv, applyPlankWallUv, createPlankMaterial, planLongAxis, plankStyleOrNull,
   plankTileSizeM,
@@ -528,6 +529,7 @@ export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter
     mesh.userData.memberKey = member.key;
     parent.add(mesh);
   }
+  addStairFinishParts(parent, stair.finish_parts ?? [], center, mode, palette, materials);
   registerSelectable(parent, firstChildIndex, stair.uid, "stair", picks, byUid);
 }
 

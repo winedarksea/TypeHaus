@@ -231,6 +231,19 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                            lining_layer.material_ref,
                            lining_layer.thickness.meters)] += net_ceiling_m2
 
+    # A room's explicit ceiling replaces the deck or roof lining over its clear face.
+    # Sheet goods has its own ceiling override walk, but finish and membrane layers also
+    # need an area row: the sauna's basswood and the plant room's PVC/membrane are bought
+    # by the square foot, not as sheets.
+    for room in model.rooms:
+        plan_room = model.plan.by_tag(room.tag)
+        if not isinstance(plan_room, Room):
+            continue
+        for lining_layer in plan_room.ceiling_lining:
+            if lining_layer.function in _BILLABLE:
+                areas[("ceiling", lining_layer.function.value, lining_layer.material_ref,
+                       lining_layer.thickness.meters)] += room.area_m2
+
     # A slab, footing or pad is a ``ResolvedSolid``: ``structural_solids_takeoff`` bills its
     # gross volume as concrete, but every *other* layer of its assembly — below-slab XPS, an
     # EPS stay-in-place deck form, the furring rib, the gypsum thermal barrier, foam under a

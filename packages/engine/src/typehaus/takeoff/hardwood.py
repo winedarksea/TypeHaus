@@ -88,7 +88,7 @@ _FLAT_FACE_FACTOR = 1.0
 _USE_ORDER = ("window stool", "shelf", "stair tread", "stair winder", "stair riser",
               "stair landing nosing",
               "stair landing board", "stair landing closing board", "stair landing deck",
-              "floor", "wainscot", "wall liner", "timber post")
+              "floor", "wainscot", "wall liner", "ceiling liner", "timber post")
 
 
 def hardwood_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -328,6 +328,8 @@ _COVERAGE_KINDS = {
     "override": ("wainscot", {"also_in_wood_surfaces": True}),
     "wall-assembly-finish": ("wall liner", {"also_in_envelope_layers": True,
                                             "also_in_wood_surfaces": True}),
+    "ceiling-assembly-finish": ("ceiling liner", {"also_in_envelope_layers": True,
+                                               "also_in_wood_surfaces": True}),
 }
 
 

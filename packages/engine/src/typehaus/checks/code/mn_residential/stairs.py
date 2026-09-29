@@ -563,7 +563,9 @@ def stair_end_risers(ctx: CheckContext) -> list[Finding]:
         return [_unknown(cid, "no resolved stairs", (), code)]
     out: list[Finding] = []
     for stair in ctx.model.stairs:
-        walking = sorted(member.z1_m for member in stair.members
+        from typehaus.resolve.stairs.walkline import finished_step_elevation
+
+        walking = sorted(finished_step_elevation(stair, member) for member in stair.members
                          if member.category in _WALKING_CATEGORIES)
         if len(walking) < 2:
             out.append(not_applicable(cid, f"{stair.tag} resolves fewer than two walking "

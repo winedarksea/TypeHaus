@@ -39,6 +39,7 @@ try {
   const { runDetailAnnotationTests } = await server.ssrLoadModule("/src/components/DetailCanvas.test.ts");
   const { runMemberPickingTests } = await server.ssrLoadModule("/src/three/memberPicking.test.ts");
   const { runRoomFloorTests } = await server.ssrLoadModule("/src/three/builders/roomFloor.test.ts");
+  const { runStairFinishTests } = await server.ssrLoadModule("/src/three/builders/stairFinish.test.ts");
   const { runArchRingTests } = await server.ssrLoadModule("/src/three/builders/archRing.test.ts");
   const { runPlantBuilderTests } = await server.ssrLoadModule("/src/three/builders/plants.test.ts");
   const { runWallBandShapeTests } = await server.ssrLoadModule("/src/three/builders/wallBandShape.test.ts");
@@ -115,6 +116,7 @@ try {
   runDetailAnnotationTests();
   runMemberPickingTests();
   runRoomFloorTests();
+  runStairFinishTests();
   runArchRingTests();
   runPlantBuilderTests();
   runWallBandShapeTests();

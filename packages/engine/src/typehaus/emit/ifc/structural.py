@@ -337,5 +337,22 @@ def _emit_stair(f: Any, body: Any, stair: Any, storeys: dict[str, Any], project_
         return
     members = [_emit_framed_member(f, body, stair.tag, stair.uid, member, project_uuid)
                for member in sorted(stair.members, key=lambda item: item.child_key)]
-    if members:
-        ll.aggregate(f, element, members)
+    coverings = []
+    finish_material = None
+    for part in stair.finish_parts:
+        covering = ll.create_entity(f, "IfcCovering", name=f"{stair.tag}/{part.key}")
+        covering.GlobalId = derive_child_guid(project_uuid, stair.uid, part.key)
+        covering.PredefinedType = "FLOORING" if part.role == "walking" else "CLADDING"
+        ll.assign_representation(f, covering, ll.add_prisms_from_profiles(
+            f, body, [list(part.outline)], part.z1_m - part.z0_m, part.z0_m))
+        if finish_material is None:
+            finish_material = f.create_entity("IfcMaterial", Name=part.material_ref)
+        f.create_entity("IfcRelAssociatesMaterial", GlobalId=ll.new_guid(),
+                        RelatedObjects=[covering], RelatingMaterial=finish_material)
+        ll.ensure_pset(f, covering, PSET_SOURCE, {
+            "uid": stair.uid, "tag": f"{stair.tag}/{part.key}",
+            "category": "stair_finish", "material": part.material_ref,
+        })
+        coverings.append(covering)
+    if members or coverings:
+        ll.aggregate(f, element, [*members, *coverings])

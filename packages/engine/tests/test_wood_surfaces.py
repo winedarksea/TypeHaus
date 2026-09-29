@@ -16,6 +16,8 @@ from typehaus.model.enums import LayerFunction
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, sub
 from typehaus.takeoff.bom import bill_of_materials
+from typehaus.takeoff.cost_codes import cost_code
+from typehaus.takeoff.hardwood import hardwood_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
 _M2_TO_FT2 = 10.7639104
@@ -146,7 +148,9 @@ def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):
     """The overlap contract from the other side: ``envelope_layers`` keeps billing the
     liner at the full assembly-truth area, and only ``wood_surfaces`` nets the splash —
     the ``also_in_envelope_layers`` flag is what says the two rows overlap on purpose."""
-    liner_rows = [row for row in bom["envelope_layers"] if row["material"] == "catlin-sauna-shiplap"]
+    liner_rows = [row for row in bom["envelope_layers"]
+                  if row["material"] == "catlin-sauna-shiplap"
+                  and row["scope"] in ("wall", "foundation wall")]
     assert liner_rows, "the liner must keep its envelope_layers billing"
     liner_walls = [w for w in catlin_model.walls
                    if any(ly.function == LayerFunction.FINISH.value
@@ -154,6 +158,32 @@ def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):
     gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
     assert sum(float(r["net_area_sqft"]) for r in liner_rows) == pytest.approx(
         gross, abs=0.1)
+
+
+def test_sauna_ceiling_basswood_is_priced_and_on_the_mill_order(catlin_model, bom):
+    sauna = next(room for room in catlin_model.rooms if room.tag == "RM-B-SAUNA")
+    expected_area = sauna.area_m2 * _M2_TO_FT2
+    priced = next(row for row in bom["envelope_layers"]
+                  if row["scope"] == "ceiling"
+                  and row["function"] == LayerFunction.FINISH.value
+                  and row["material"] == "catlin-sauna-shiplap")
+    assert float(priced["net_area_sqft"]) == pytest.approx(expected_area, abs=0.05)
+    assert cost_code("envelope_layers", "catlin-sauna-shiplap", row=priced).trade == "millwork"
+
+    surface = next(row for row in bom["wood_surfaces"]
+                   if row["kind"] == "ceiling-assembly-finish"
+                   and row["material"] == "catlin-sauna-shiplap")
+    assert float(surface["net_area_sqft"]) == pytest.approx(expected_area, abs=0.05)
+    assert surface["tags"] == ["RM-B-SAUNA"]
+    assert surface["also_in_envelope_layers"] is True
+
+    mill_row = next(row for row in hardwood_takeoff(catlin_model)
+                    if row["use"] == "ceiling liner"
+                    and row["material"] == "catlin-sauna-shiplap")
+    assert mill_row["tags"] == ["RM-B-SAUNA"]
+    assert mill_row["coverage_sqft"] == surface["order_area_sqft"]
+    assert mill_row["rough_board_feet"] == surface["board_feet"]
+    assert mill_row["also_in_envelope_layers"] is True
 
 
 # --- the walnut wainscot -------------------------------------------------------------------

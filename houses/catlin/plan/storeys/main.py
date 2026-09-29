@@ -1998,18 +1998,16 @@ SLABS = [
 # ** THE CARPET DOES NOT MOVE ANY OF THAT. ** This is the carpeted flight (prices.toml
 # [framing]; MW-STANDARD gives the oak to ST-M2S and ST-S2A instead): 1/4" of
 # commercial-weight cut pile over a 1/4" high-density rebond cushion, 1/2" in all, selected
-# 2026-09-11. A tread member's top IS the finished walking surface in this engine — the
-# stringer is notched DOWN by the board thickness (`resolve/stairs/common.py::_notch_z`) so
-# the finished faces land on the theoretical line — so the carpet lives inside the 1 1/2"
-# the member already occupies and the substrate under it is 1", not 1 1/2". Every riser,
-# the two end ones included, is where it is drawn, which
+# 2026-09-11. The resolver now draws the 1" substrate below a separate 1/2" carpet
+# covering, with the finished faces on the theoretical line. Every riser,
+# the two end ones included, meets that finished line, which
 # `code.R311_7_5_1_stair_end_risers` now measures rather than assumes.
 #
 # `tread_thickness` states the bought board/substrate depth and every layout honours it. On
-# this carpeted flight, the 1" substrate plus 1/2" carpet and pad fills the 1-1/2" member.
+# this carpeted flight, the 1" substrate plus 1/2" carpet and pad make a 1-1/2" stack.
 # The oak ST-M2S landing uses the same 1-1/2" geometry as 3/4" plywood plus 3/4" oak T&G,
-# with a solid nosing at the exposed edge. `_notch_z` drops each resolved walking surface by
-# its declared thickness, so no riser moves and the end risers
+# with a solid nosing at the exposed edge. The stair finish resolver lowers the substrate
+# and its supports by the covering depth, so no finished riser moves and the end risers
 # `code.R311_7_5_1_stair_end_risers` measures are the ones above.
 #
 # `landing_depth` is DERIVED, not R311.7.6's 36": it runs both half-landings to W-B-N2's
@@ -2023,6 +2021,7 @@ STAIRS = [
           from_storey="basement", to_storey="main", width=ft(3, 5.0625),
           base_elevation=inch(-109.4375), top_elevation=inch(0.9862),
           tread_thickness=inch(1),
+          finish_material="carpet",
           layout="u_split_landing", run_direction="y", turn_direction="left",
           start=pt(ft(10, 3.25), ft(26, 0.375)), landing_depth=ft(4, 2.875),
           # A centre stringer per flight: two at the lane edges left the treads a 39" clear

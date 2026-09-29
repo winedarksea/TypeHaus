@@ -50,8 +50,8 @@ def _tread_thickness(stair: Stair) -> float:
     ``Stair.tread_thickness`` is how a flight says "the substrate is thinner than the
     default 1 1/2" because a finish makes up the rest" — 1" of ply under 1/2" of
     carpet-over-cushion, say. It is the *bought* thickness, so it is what the takeoff must
-    bill; ``_notch_z`` drops the board by exactly this much, which is why stating it moves
-    no riser.
+    bill. A declared covering is subsequently placed above this stock and the substrate
+    and support are lowered by its depth, preserving the finished riser elevations.
     """
     return (stair.tread_thickness.meters if stair.tread_thickness is not None
             else _TREAD_THICKNESS_M)
@@ -151,7 +151,8 @@ def _riser_member(stair: Stair, key: str, line: Line, ascent: tuple[float, float
     dx, dy = ascent[0] * shift, ascent[1] * shift
     profile = f"{thick / 0.0254:.3f}x{(top - bottom) / 0.0254:.3f}"
     return FramedMember(stair.uid, key, "riser", profile, (ax + dx, ay + dy),
-                        (bx + dx, by + dy), bottom, top, math.hypot(bx - ax, by - ay))
+                        (bx + dx, by + dy), bottom, top, math.hypot(bx - ax, by - ay),
+                        orient=ascent)
 
 
 def _ascent(tread: FramedMember) -> tuple[float, float]:

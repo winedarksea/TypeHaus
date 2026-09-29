@@ -23,6 +23,11 @@ from typehaus.resolve.framing.profiles import cross_section
 RAIL_LATERAL_REACH_M = 2.0
 
 
+def finished_step_elevation(stair, member) -> float:
+    """Top of a walking member's separate finish, or its own top when bare."""
+    return member.z1_m + stair.finish_thickness_m
+
+
 def level_landing_is_complete(stair) -> bool:
     """A level turn has exactly its two named decks at the same finished height."""
     if stair.layout != "u_level_landing":
@@ -43,10 +48,11 @@ def intermediate_step_elevations(stair) -> list[float]:
     walking = [member for member in stair.members
                if member.category in {"tread", "winder", "landing"}]
     if not level_landing_is_complete(stair) or stair.layout != "u_level_landing":
-        return sorted(member.z1_m for member in walking)
+        return sorted(finished_step_elevation(stair, member) for member in walking)
     landings = [member for member in walking if member.category == "landing"]
-    return sorted([member.z1_m for member in walking if member.category != "landing"]
-                  + [landings[0].z1_m])
+    return sorted([finished_step_elevation(stair, member) for member in walking
+                   if member.category != "landing"]
+                  + [finished_step_elevation(stair, landings[0])])
 
 
 def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
@@ -62,11 +68,13 @@ def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
     flights: dict[str, list] = {}
     for member in stair.members:
         if member.category == "winder":
-            flights.setdefault("winder", []).append((member.p0, member.p1, member.z1_m))
+            flights.setdefault("winder", []).append((
+                member.p0, member.p1, finished_step_elevation(stair, member)))
         elif member.category == "tread" and member.riser_line is not None:
             a, b = member.riser_line
             key = member.child_key.rsplit("-", 1)[0]
-            flights.setdefault(key, []).append((a, b, member.z1_m))
+            flights.setdefault(key, []).append((a, b,
+                                                finished_step_elevation(stair, member)))
         elif member.category == "landing":
             # A landing's walking surface: its two end edges at the deck face, swept from
             # the member axis by the profile's true half-width.
@@ -78,8 +86,10 @@ def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
             half = cross_section(member.profile).width_m / 2.0
             px, py = -uy * half, ux * half
             flights[member.child_key] = [
-                ((x0 - px, y0 - py), (x0 + px, y0 + py), member.z1_m),
-                ((x1 - px, y1 - py), (x1 + px, y1 + py), member.z1_m),
+                ((x0 - px, y0 - py), (x0 + px, y0 + py),
+                 finished_step_elevation(stair, member)),
+                ((x1 - px, y1 - py), (x1 + px, y1 + py),
+                 finished_step_elevation(stair, member)),
             ]
     for key, stations in flights.items():
         stations.sort(key=lambda station: station[2])

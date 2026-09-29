@@ -126,9 +126,9 @@ def test_u_stair_landings_split_one_riser_apart_inside_the_landing_zone(
     members = {member.child_key: member for member in stair.members}
     lower, upper = members["landing-lower"], members["landing-upper"]
     lower_treads = (stair.riser_count - 3 + 1) // 2
-    # ``z1_m`` is the landing's finished walking face; the deck board is dropped below it
-    # (``_notch_z``) so the risers onto and off the platform are the flight's own.
-    assert lower.z1_m == pytest.approx(subfloor + riser * (lower_treads + 1))
+    # A separately finished landing's substrate sits below its walking face.
+    assert lower.z1_m + stair.finish_thickness_m == pytest.approx(
+        subfloor + riser * (lower_treads + 1))
     assert upper.z1_m - lower.z1_m == pytest.approx(riser)
     zone_lo, zone_hi = _landing_zone(stair)
     for landing in (lower, upper):
@@ -140,7 +140,7 @@ def test_u_stair_landings_split_one_riser_apart_inside_the_landing_zone(
     arrival = subfloor + riser * stair.riser_count
     top_tread = max((m for m in stair.members if m.child_key.startswith("tread-upper-")),
                     key=lambda m: m.z0_m)
-    assert top_tread.z1_m == pytest.approx(arrival - riser)
+    assert top_tread.z1_m + stair.finish_thickness_m == pytest.approx(arrival - riser)
 
 
 # ---------------------------------------------------------------- 3. raked stringers
@@ -200,8 +200,8 @@ def test_lower_flight_stringers_top_out_at_the_landing_bearing(catlin_model,
     lower_treads = (stair.riser_count - 3 + 1) // 2
     landing_z = subfloor + stair.riser_height_m * (lower_treads + 1)
     # The stringer tops out at the landing's *notch* line — the deck it carries sits on it,
-    # dropped by the flight's OWN stock. ST-B2M states 1" (it buys ply under carpet, not a
-    # 1 1/2" tread board), and the deck and the treads must be dropped by the same amount or
+    # dropped by its stock and covering. ST-B2M buys 1" ply and adds 1/2" carpet; the
+    # deck and the treads must be dropped by the same total amount or
     # the two risers at the landing differ by the difference. Read off the deck rather than
     # off the authored number: the member is the output this pins.
     deck = next(m for m in stair.members if m.child_key.startswith("landing-lower"))
@@ -209,7 +209,8 @@ def test_lower_flight_stringers_top_out_at_the_landing_bearing(catlin_model,
     assert stock == pytest.approx(inch(1).meters)
     for stringer in (m for m in stair.members
                      if m.child_key.startswith("stringer-lower-")):
-        assert stringer.z1_end_m == pytest.approx(landing_z - stock)
+        assert stringer.z1_end_m == pytest.approx(
+            landing_z - stock - stair.finish_thickness_m)
 
 
 # ----------------------------------------------------------------- 4. well partition
@@ -303,14 +304,9 @@ def test_basement_lower_hanger_bears_at_the_landing(catlin_model, basement_stair
         assert hanger.connection.startswith("concrete-wall-hanger:")
         # A framed-wall bearing is annotation-only; a hanger band is concrete-only.
         assert not hanger.connection.startswith("framed-wall-ledger:")
-        # -1.496 m: the flat bearing seat puts the slab at -9'-1 7/16" and the landing
-        # rides the flight off it. It was -1.521 m while ST-B2M derived its rise from the
-        # storey table and stopped at the main JOIST TOPS; the flight now states its own
-        # ends (walking surface to walking surface, houses/catlin/plan/storeys/main.py),
-        # so every riser grew 1/16" and the landing came up with them — and another 1/2"
-        # when the flight stated the 1" stock it buys under its carpet, because the band
-        # bears under a deck that got thinner while its walking face stayed put.
-        assert hanger.z1_end_m == pytest.approx(-1.496, abs=0.01)
+        # The hanger follows the landing substrate down by the carpet depth while its
+        # finished walking face stays on the original riser schedule.
+        assert hanger.z1_end_m == pytest.approx(-1.509, abs=0.001)
     # The annotated stringer carries the same connection tag.
     tagged = [m for m in stair.members if m.category == "stringer"
               and m.connection is not None]
@@ -337,7 +333,7 @@ def test_a_u_split_buys_the_stock_it_states_and_moves_no_riser(catlin_model,
     assert {round(m.z1_m - m.z0_m, 6) for m in default} == {round(inch(1.5).meters, 6)}
     # The faces are still one design riser apart, springing included — the thing the drop
     # exists to protect. ``arrival_elevation_m`` is the floor the flight was drawn to meet.
-    faces = sorted(m.z1_m for m in stated)
+    faces = sorted(m.z1_m + basement_stair.finish_thickness_m for m in stated)
     rise = basement_stair.riser_height_m
     for lower, upper in zip(faces, faces[1:], strict=False):
         assert upper - lower == pytest.approx(rise) or upper == pytest.approx(lower)
@@ -365,14 +361,13 @@ def test_riser_walk_is_continuous_one_riser_steps(catlin_model, basement_stair):
     """Walking the flight bottom-to-top hits every riser exactly once: treads, lower
     landing, upper landing, upper treads, arrival — no 2-riser jump anywhere.
 
-    The walk is measured on the *finished faces* (``z1_m``): a board's top is what a foot
-    lands on, and it is dropped to the step elevation rather than stacked on it, so the
+    The walk is measured on the finished faces above each substrate, so the
     first and last risers match the flight's own. ``structural.stair_riser_uniformity``
     makes the same measurement for every stair in the model.
     """
     stair = basement_stair
     subfloor = _subfloor(catlin_model, stair)
-    walk = sorted(m.z1_m for m in stair.members
+    walk = sorted(m.z1_m + stair.finish_thickness_m for m in stair.members
                   if m.category == "tread" or m.child_key in ("landing-lower",
                                                               "landing-upper"))
     arrival = subfloor + stair.riser_height_m * stair.riser_count

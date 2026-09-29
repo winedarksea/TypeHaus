@@ -201,11 +201,14 @@ class Stair(Element):
     carriage: str = "stringer"
     # The stock BOUGHT for this flight's walking surfaces — treads, winder panels and
     # landing decks alike. It is what says "1" of ply under 1/2" of carpet-over-cushion"
-    # instead of the ordinary 1 1/2" tread board, and it is a takeoff fact, not a
-    # dimensional one: every generator drops its boards by exactly this much
-    # (``resolve/stairs/common.py::_notch_z``), so the finished rises do not move. Every
+    # instead of the ordinary 1 1/2" tread board, and it is a takeoff fact. A separate
+    # ``finish_material`` lowers its substrate and support by the covering's depth so the
+    # completed walking faces stay on the design riser schedule. Every
     # layout honours it. ``None`` retains the 1 1/2" board.
     tread_thickness: Length | None = None
+    # A covering over the tread, landing and riser substrates. Its installed depth comes
+    # from Material.finish_thickness_in; the resolver keeps the finished step elevations.
+    finish_material: str | None = None
     width: Length
     run_direction: str = "x"
     run_reversed: bool = False

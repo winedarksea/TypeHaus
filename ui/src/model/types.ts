@@ -1643,8 +1643,20 @@ export interface Stair {
   tread_depth_m: number;
   going_depth_m: number;
   nosing_depth_m: number;
+  finish_material?: string | null;
+  finish_thickness_m?: number;
+  finish_parts?: StairFinishPart[];
   members: Member[];
   provenance: Provenance | null;
+}
+
+export interface StairFinishPart {
+  key: string;
+  role: "walking" | "nosing" | "riser";
+  material_ref: string;
+  outline: Vec2[];
+  z0_m: number;
+  z1_m: number;
 }
 
 export type Severity = "error" | "warn" | "info";

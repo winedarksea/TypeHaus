@@ -299,6 +299,19 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
                     parts=parts,
                 ))
 
+    for stair in model.stairs:
+        if stair.finish_parts:
+            elements.append(ElementGeometry(
+                uid=f"{stair.uid}::finish", kind="stair", trades=("stairs",),
+                parts=tuple(GPart(
+                    key=part.key,
+                    solids=(GPrism(tuple(part.outline), part.z0_m, part.z1_m),),
+                    material_key="finish", layer_group="finish",
+                    catalog=PartCatalogRef(material_ref=part.material_ref,
+                                           role=part.role, name=part.key),
+                ) for part in stair.finish_parts),
+            ))
+
     openings_by_wall: dict[str, list] = {}
     for opening in model.openings:
         openings_by_wall.setdefault(opening.host_wall, []).append(opening)

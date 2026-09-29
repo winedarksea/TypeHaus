@@ -305,6 +305,9 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         mb = _MeshBuilder()
         for member in stair.members:
             _add_member(mb, member, authored)
+        for part in stair.finish_parts:
+            mb.add_prism(part.outline, part.z0_m, part.z1_m,
+                         _material_finish_color(part.material_ref, "finish", authored))
         scene.add_object(mb, ("stairs",), kind="stair", uid=stair.uid)
 
     for brace in sorted(model.braces, key=lambda item: item.uid):
