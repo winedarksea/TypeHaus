@@ -47,15 +47,12 @@ from typehaus import WallBacking, ft, inch
 # a shim; a 42"-tall box's TOP rail lands in the next band up, which is why 54" and 96" both
 # get one and the run between them does not.
 #
-# ** THE WHOLE SCHEME MOVED 2026-09-11 WITH THE SEKTION RETYPE ** (plan/placeables.py,
-# notes/ikea_sektion_ladder.md). A 3" toe kick and 40"/15" wall frames put the uppers at 53"
-# and the stacker course at 93", where they were 54" and 96"; the over-cold boxes went from
-# 75" to 78". So: 53" is the upper run (NKBA's 36" counter plus a 17" backsplash, inside its
-# range), 93" is the stacker course, 68" and 78" are this kitchen's own two odd hangs, 76" is
-# the mixer garage's upper box, and 84" is the living-room curtain rods on the same wall.
+# ** THE SCHEME MOVED WITH THE 2026-09-29 FINISHED-CEILING CORRECTION. ** Counter uppers
+# now start at 53 1/2", their top course at 83 1/2", and the over-cold boxes at 73 1/2".
+# The mixer garage's upper box remains at 76"; living-room curtain rods remain at 84".
 #
-# A 2x8 laid flat is 7 1/4", so one band covers a spread of hangs: BK-M-E1-MID at 64" runs to
-# 71 1/4" and answers the range hood at 66" AND FURN-M-KIT-WN1 at 68" with one rail.
+# A 2x8 laid flat is 7 1/4", so one band covers a spread of hangs. The east-wall curtain
+# band also covers the top cabinet course, avoiding an overlapping blocking band.
 #
 # ** W-M-E1's FOUR CABINET BANDS STOP AT THE KITCHEN. ** The wall is 36 ft and the four ran
 # all of it, because `start`/`length` left None is the wall's whole run. Kitchen cabinetry on
@@ -125,8 +122,8 @@ MAIN_BACKING = [
                 material_ref="spf",
                 purpose="north wall corner filler and any future 66-68 in. hang"),
     WallBacking(uid="PVJ3823KWR", tag="BK-M-N1-HIGH", wall_ref="W-M-N1",
-                elevation=inch(91), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="stacker course rail (93 in.)"),
+                elevation=inch(81.5), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="stacker course rail (83 1/2 in.)"),
     WallBacking(uid="70856QPNT4", tag="BK-M-E1-LOW", wall_ref="W-M-E1",
                 start=ft(20), length=ft(16),
                 elevation=inch(51), height=inch(7.25), profile="2x8",
@@ -145,11 +142,7 @@ MAIN_BACKING = [
                 material_ref="spf", purpose="mixer garage upper box bottom rail (76 in.)"),
     WallBacking(uid="VXX1ME3YWS", tag="BK-M-E1-ROD", wall_ref="W-M-E1",
                 elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="curtain rod brackets (84 in.)"),
-    WallBacking(uid="8PFKG4320V", tag="BK-M-E1-HIGH", wall_ref="W-M-E1",
-                start=ft(20), length=ft(16),
-                elevation=inch(91), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="stacker course rail (93 in.)"),
+                material_ref="spf", purpose="curtain rod brackets (84 in.) and kitchen stacker rail (83 1/2 in.)"),
     # ** HOSTING SURFACED THESE, 2026-09-25. ** Until the wall-mounted bodies were hosted on
     # their faces, `advisory.wall_backing_present` could not square them onto a wall and
     # said UNKNOWN; hosted, it names the wall and there was nothing behind them.
@@ -178,11 +171,11 @@ MAIN_BACKING = [
                 elevation=inch(34), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="mixer garage lower box (36 in.)"),
     WallBacking(uid="SBE1761N5C", tag="BK-M-C5-MID", wall_ref="W-M-C5",
-                elevation=inch(76), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="over-fridge and over-freezer cabinets (78 in.)"),
+                elevation=inch(71.5), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="over-fridge and over-freezer cabinets (73 1/2 in.)"),
     WallBacking(uid="WVN7RFKJP6", tag="BK-M-C5-HIGH", wall_ref="W-M-C5",
-                elevation=inch(91), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="tall cabinet top course rail (93 in.)"),
+                elevation=inch(81.5), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="tall cabinet top course rail (83 1/2 in.)"),
     WallBacking(uid="Y8RV51SN69", tag="BK-M-CLN-ROD", wall_ref="W-M-CLN",
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="closet shelf and rod (66 in.)"),

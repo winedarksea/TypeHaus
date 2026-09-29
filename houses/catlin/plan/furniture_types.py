@@ -456,17 +456,13 @@ THEATER_BOOKCASE = FurnitureType(
 
 # FT-KIT-OVER-COLD-3278 (32 7/8" x 24" x 21", hung at 75" over the Frigidaire columns) and
 # FT-KIT-MIXER-GARAGE-24 (24" x 24" x 72", standing on the peninsula at 36") are both
-# RETIRED, 2026-09-11, with the kitchen's move onto the IKEA SEKTION frame ladder
-# (library/placeables/sektion.py, notes/ikea_sektion_ladder.md). Both existed because a
-# number was unreachable on the generic CASE-* catalog, and both numbers are reachable now:
+# RETIRED, 2026-09-11, during the kitchen's move onto the IKEA SEKTION frame ladder.
+# The later catalog review found that the replacement deep wall frames are not sold in
+# these dimensions either. The 2026-09-29 correction reintroduced explicit house-local
+# deep upper types in plan/kitchen_deep_cabinets.py:
 #
-#  * the over-cold boxes are two SEKT-TW30-30 at 78", with a 2 7/8" scribe at each end of
-#    the 65 3/4" bay. 78 + 30 = 108, so the CASE-TS3278-12 stackers went with them and four
-#    boxes became two. 78" still clears the columns' 72 1/2" hinge by the manufacturer's 1"
-#    and then some.
-#  * the mixer garage is SEKT-TW24-40 at 36" under SEKT-TW24-30 at 76", topping at 106"
-#    with 2" of scribe under the ceiling — 72" is not reachable on a ladder whose frames are
-#    all multiples of five, which is the one place in this kitchen a filler survives.
+#  * two FT-KIT-DEEP30-30 over-cold boxes start at 73 1/2", one inch above the hinge;
+#  * the mixer garage is FT-KIT-DEEP24-40 under FT-KIT-DEEP24-30, topping at 106".
 #
 # Deleted rather than left unused, per FT-KIT-COLDSTORE-FILLER's rule above: an
 # unreferenced house-local type reads as a size someone might reach for. The fit-out prose
@@ -643,14 +639,14 @@ SOFA_84_SEAT_BAND = FurnitureType(
 # floor, and a bathroom is not a graded room.
 BATH2_CAB_4506 = FurnitureType(
     tag="FT-BATH2-CAB-4506", name='Bath 2 over-toilet cabinet, 45" x 6"',
-    footprint=(inch(45), inch(6)), height=inch(60),
+    footprint=(inch(45), inch(6)), height=inch(57),
     storage=True, work_surface=False, plan_symbol="wall-cabinet",
     source="Site-built millwork, not a catalogue unit: a 3/4\" paint-grade plywood carcass "
            "screwed to W-M-HS1's studs (a staggered wall gives a fastening point every 8\") "
-           "and faced with three 15\" x 60\" flush 5/8\" MDF slabs on push-to-open touch "
+           "and faced with three 15\" x 57\" flush 5/8\" MDF slabs on push-to-open touch "
            "latches, painted out in the wall colour -- no pulls, hairline reveals only, so it "
            "reads as a shallow paneled wall rather than a box over the toilet. 4 adjustable "
-           "shelves, ~22 linear feet. Bottom at 4'-0\" AFF, top at 9'-0\" = the ceiling.",
+           "shelves, ~22 linear feet. Bottom at 4'-0\" AFF, top at 8'-9\" with room to install below the finished ceiling.",
 )
 
 

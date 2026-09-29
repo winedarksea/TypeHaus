@@ -257,14 +257,17 @@ permit_drop = ["A-502", "A-506"]
 # --- decided advisories -------------------------------------------------------------------
 #
 # `suppress` takes a bare `check.id` (silence the rule everywhere) or `check.id:ELEMENT-TAG`
-# (silence it on ONE element). Only the second form is used here, and it is used sparingly:
-# an entry means the finding is real, was measured, and was decided against for a reason the
-# model cannot carry. The reason goes here, beside the entry, and in the plan source at the
-# element itself.
+# (silence it on ONE element). The run-interference campaign below uses the blanket form;
+# other findings are itemised. An entry names a measured, documented open item.
 [checks]
 suppress = [
-  # ** mep.run_interference: 15 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-26. NOT A
+  # ** mep.run_interference: 11 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-29. NOT A
   # DECISION — AN OPEN CAMPAIGN, AND WHAT IS LEFT OF IT IS PLUMBING AND RACEWAYS. **
+  #
+  # ** 15 -> 11 (2026-09-29). ** CD-B-DATA-SHOP now follows the west wall rather than
+  # crossing the PV and spare risers at its head and the spa feed at its tail (three pairs).
+  # PR-B-HW-BATH1 turns north of the heater's cold inlet before heading to its wall bay
+  # (one pair). Both routes were checked with suppression lifted; neither added a FAIL.
   #
   # ** 17 -> 15 (2026-09-26). ** DU-A-ERV-R-STUBATH x PR-A-STUBATH-VENT closed when
   # REG-A-STUBATH-EXH came down to 3'-0"; PR-B-TUB2-DRAIN x PR-B-WASH-DRAIN closed when the
@@ -330,24 +333,24 @@ suppress = [
   #
   # The class breakdown, and it is the line that goes stale first:
   #
-  #                        09-18  Ph1 exit  D1-D3  P1-P3  09-23  09-23 A1-A4  09-24  09-26
-  #     duct <-> duct            37      37       0      0      0        9          0      0
-  #     duct <-> vent            28      22      14     14     14       20          1      0
-  #     conduit <-> vent          0      18      18     15      6        6          0      0
-  #     drain <-> duct           33      22       7      7      8        8          0      0
-  #     drain <-> supply         32      11      11      7      6        8          5      5
-  #     conduit <-> duct          0       3       6      6     11       17          0      0
-  #     duct <-> supply          12       7       7      5      5        5          0      0
-  #     conduit <-> conduit       0       4       4      4      4        4          3      3
-  #     conduit <-> supply        0       4       4      4      4        4          2      2
-  #     conduit <-> drain         -       -       -      -      1        1          1      1
-  #     drain <-> drain           -       4       4      3      4        4          4      3
-  #     supply <-> supply        18      10      10      1      1        1          1      1
-  #     drain <-> vent            -       5       5      1      1        1          0      0
-  #     supply <-> vent          12       2       2      0      0        0          0      0
-  #     vent <-> vent             -       1       1      0      0        8          0      0
-  #                             ---     ---     ---    ---    ---      ---        ---    ---
-  #                             188     150      93     67     65       96         17     15
+  #                        09-18  Ph1 exit  D1-D3  P1-P3  09-23  09-23 A1-A4  09-24  09-26  09-29
+  #     duct <-> duct            37      37       0      0      0        9          0      0      0
+  #     duct <-> vent            28      22      14     14     14       20          1      0      0
+  #     conduit <-> vent          0      18      18     15      6        6          0      0      0
+  #     drain <-> duct           33      22       7      7      8        8          0      0      0
+  #     drain <-> supply         32      11      11      7      6        8          5      5      5
+  #     conduit <-> duct          0       3       6      6     11       17          0      0      0
+  #     duct <-> supply          12       7       7      5      5        5          0      0      0
+  #     conduit <-> conduit       0       4       4      4      4        4          3      3      0
+  #     conduit <-> supply        0       4       4      4      4        4          2      2      2
+  #     conduit <-> drain         -       -       -      -      1        1          1      1      1
+  #     drain <-> drain           -       4       4      3      4        4          4      3      3
+  #     supply <-> supply        18      10      10      1      1        1          1      1      0
+  #     drain <-> vent            -       5       5      1      1        1          0      0      0
+  #     supply <-> vent          12       2       2      0      0        0          0      0      0
+  #     vent <-> vent             -       1       1      0      0        8          0      0      0
+  #                             ---     ---     ---    ---    ---      ---        ---    ---    ---
+  #                             188     150      93     67     65       96         17     15     11
   # The rows sum to the headline; if they stop summing, one of them went stale. The four
   # rows that start blank were inside the older column's "everything else" (which held the
   # two radon pairs, drain<->vent 6, drain<->drain 3 and five singles) and are broken out
@@ -477,16 +480,9 @@ suppress = [
   #     not a duct decision taken after it.
   #
   # Itemised, not blanket: a NEW run in a pour anywhere in the house still reports.
-  # ** mep.run_interference: ONE ITEMISED RUN, AND IT IS THE WATER HEATER (P3, 2026-09-19). **
-  # PR-B-CW-WH's last vertex, PR-B-HW-TRUNK's first and PR-B-HW-BATH1's first are one point:
-  # (5'-6", 24'-0"), which is EQ-B-WH. A tank that states a position and no port layout has
-  # nowhere else to put them, and `tests/test_water_heater_connections.py` requires a vertex
-  # ON that position — so the two pairs this makes are the tank, not a clash. Moving the cold
-  # 2 2/5" clear was tried on 2026-09-19 and silenced the check by disconnecting the heater.
-  # ** THE REAL FIX IS A DIMENSIONED TANK TYPE ** with a cold inlet and a hot outlet at their
-  # own stations, exactly the move D1 and D3 made for the five ERV plenums; until then this
-  # entry carries the argument. Itemised on the COLD because it is the run that would move.
-  "mep.run_interference:PR-B-CW-WH",
+  # The former PR-B-CW-WH interference suppression came off on 2026-09-29: the heater has
+  # dimensioned ports and PR-B-HW-BATH1 now travels north of the cold inlet before heading
+  # to its wall bay. With suppression lifted, the cold/hot pair no longer meets.
   # ** AND ONE THAT IS 0.0038" OF WALL (P3, 2026-09-19). ** PR-A-HW-STUBATH carries a 1"
   # fiberglass sleeve, so what stands in W-A-STU-W is 2.88" across; PR-A-STUBATH-LAV-DRAIN
   # beside it is 2.375". Side by side they want 2.627" between centres, which puts the hot's
@@ -648,26 +644,4 @@ suppress = [
   # is approximate by design, and the door opens to heated rooms.
   "mep.room_heat_source:RM-M-BATH2",
 
-  # ** OPEN OWNER QUESTION (2026-09-25): THE 108" CABINET LINE DOES NOT FIT UNDER THE
-  # FINISHED CEILING. ** `integrity.wall_mount_below_ceiling` (new) grades the BODY top: every
-  # kitchen stack tops out at 9'-0" above the finished floor, and CEIL-RM-M-LIVING's underside
-  # is 8'-10 9/16" above it (the 15/16" floor covering and the ceiling lining both spend
-  # height). 1 7/16" of interference, every stack; BATH2's 60" cabinet 1 3/4". Not a move:
-  # the tall pantries stand on the floor, so lowering the wall run alone breaks the course.
-  # Options: shorter legs under the talls with the wall run dropped 1 1/2", a lower stacker,
-  # or a scribe-cut ceiling detail. Suppressed per element so the report stays clean while it
-  # is decided; `--no-suppress` shows them.
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-PANTRYC-ST",
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-OVER-FRIDGE",
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-OVER-FREEZER",
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-WE1-ST",
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-WE2-ST",
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-WE4-ST",
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-WE5-ST",
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-PANTRY-S1-ST",
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-PANTRY-S2-ST",
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-WN1",
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-WN3-ST",
-  "integrity.wall_mount_below_ceiling:FURN-M-KIT-WN4-ST",
-  "integrity.wall_mount_below_ceiling:FURN-M-BATH2-CAB",
 ]

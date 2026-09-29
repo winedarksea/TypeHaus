@@ -339,20 +339,18 @@ SUPPLY = [
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
             # Riser at (4'-4", 22'-4") — the west bay, 1.81" of clear each side of the
-            # 2 7/8" jacket. Off the trunk's end at the water heater, west along y=24'-0"
-            # and then straight south to the wall: the leg passes over PR-B-WH-TPR's drop at
-            # (4'-4", 24'-0"), which starts 4'-7" lower, and clears PR-M-S-BATH1-DRAIN's
-            # diagonal by 8.1" where it crosses at y=24'-0" (x=4'-10.5", crown -1'-9.6").
-            # Both numbers are the pre-2026-09-19 ones plus the hot band's 4": neither the
-            # T&P drop nor the drain moved, so the whole of the change is this run's rise.
+            # 2 7/8" jacket. The feed goes north of the water heater's cold inlet before
+            # turning west; crossing y=24'-0" would cut through its vertical drop.
             # Nothing here shares a lane with PR-B-CW-BATH1, which is why the two risers
             # land in this order — and since 2026-09-19 they are also 3.2" apart in z
             # wherever their ceiling legs cross, which is what the convention is for.
-            path=(pt(ft(5, 10), ft(24)), pt(ft(4, 4), ft(24)), pt(ft(4, 4), ft(22, 4)),
+            path=(pt(ft(5, 10), ft(24)), pt(ft(5, 10), ft(24, 2.5)),
+                  pt(ft(4, 4), ft(24, 2.5)), pt(ft(4, 4), ft(22, 4)),
                   pt(ft(4, 4), ft(22, 4)), pt(ft(4, 4), ft(22, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375), ft(12, 7.4375)),
-            wall_refs=(None, None, None, "W-M-HS1"),
+            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375),
+                        ft(9, 1.4375), ft(12, 7.4375)),
+            wall_refs=(None, None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH1-LAV",)),
     # ** THE COLD RISER IS IN W-M-HS1 SINCE 2026-09-09, NOT STANDING IN THE ROOM. ** It came
     # up at (2'-3", 17'-2.4") and stopped at 3'-0" — three feet of bare PEX in the middle

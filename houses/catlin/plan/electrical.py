@@ -1567,7 +1567,7 @@ MAIN_DATA_DEVICES = [
 # foot clear of the workshop's west wall. The PIPE is not shareable: NEC 800.133(A)(1)(c) and
 # 725.136 forbid communications and Class 2 circuits sharing a raceway with power conductors,
 # and the model already encodes it — ``ConduitRun.service`` is one value, never a set. So
-# CD-B-DATA-SHOP runs PARALLEL, 6" east of it, in its own pipe. The E-603 sheet's own note
+# CD-B-DATA-SHOP runs beside the west wall, in its own pipe. The E-603 sheet's own note
 # draws the same line: shared *penetrations* are permitted, shared raceways are not, which is
 # the precedent CD-M-DATA-PORCH already sets by sharing SP-SG-PORCH-ELEC with a supply.
 #
@@ -1609,12 +1609,14 @@ MAIN_DATA_DEVICES_STUDY = [
 ]
 
 BASEMENT_DATA_TRUNKS = [
-    # Workshop: south down x=2'-6" at -4'-0", six inches east of CD-B-SPA and parallel to it
-    # the whole way, then west to the jack and down the wall to 42" over the slab. Stays
-    # inside the basement box — no crossing, no sleeve.
+    # Workshop: south beside the west wall at x=10", clear of the spa feed and the two
+    # north risers at x=1'-7 3/5" and x=2'-6". The last inch turns into the jack before
+    # dropping to 42" over the slab. Stays inside the basement box — no sleeve.
     ConduitRun(uid="F2D3CT89ZV", tag="CD-B-DATA-SHOP", trade_size=inch(0.75), service=Service.DATA,
-               path=(pt(inch(10), ft(31)), pt(ft(2, 6), ft(31)), pt(ft(2, 6), ft(8, 6)), pt(inch(9), ft(8, 6)), pt(inch(9), ft(8, 6))),
-               start_elevation=ft(-4), end_elevation=ft(-5, -10), elevations=(ft(-4), ft(-4), ft(-4), ft(-4), ft(-5, -10)),
+               path=(pt(inch(10), ft(31)), pt(inch(10), ft(8, 6)),
+                     pt(inch(9), ft(8, 6)), pt(inch(9), ft(8, 6))),
+               start_elevation=ft(-4), end_elevation=ft(-5, -10),
+               elevations=(ft(-4), ft(-4), ft(-4), ft(-5, -10)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-B-WORKSHOP-DATA1"),
     # Media room: east along the basement ceiling at -1'-4", through the stair shaft's west
     # wall and the centre wall, then north to the jack behind the television. Held at y=30'

@@ -88,6 +88,8 @@ with every suppression lifted.
   exists (main is at 85"+ where it crosses x=13'-6", best a 21.6" unit can manage under the
   basement ceiling is ~75"). The mechanical-room-sink alternative still has no drain.
 - **The FS-S-WEST truss panel layout is a PROVISIONAL placeholder and the owner replaces it.**
+  Owner confirmed on 2026-09-29 that no fabricator panel drawing is available yet. The six
+  remaining `mep.run_member_crossing` errors stay open until the actual panel geometry arrives.
   `params/second_deck.py` authors `web_panel_pitch=24"`, `web_opening_width=15"`,
   `web_panel_offset=12"` on FS-S-WEST, derived in its own `#:` from an ordinary Warren
   layout rather than read off a submittal. Ask the truss fabricator for the panel drawing,

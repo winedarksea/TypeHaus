@@ -18,13 +18,17 @@ x from 6.635" to 52.0"** — over the toilet.
 | West stop | W-M-W3's finish face, **x = 6.635"** (the plane `FX-M-BATH2-SINK` is struck off) |
 | East stop | W-M-TUBDK-W's west face, **x = 52.0"** — 54.25" axis less half of a 2x4 wall |
 | Free run | **45 3/8"** |
-| Carcass | **45" W x 6" D x 60" H**, 3/16" of scribe each end |
-| Elevation | bottom **4'-0" AFF**, top **9'-0"** — the ceiling |
-| Doors | **3 x 15" x 60"** flush overlay MDF, push-to-open latches, painted out |
-| Shelves | 4 adjustable — ~22 linear feet, 7.8 cu ft |
+| Carcass | **45" W x 6" D x 57" H**, 3/16" of scribe each end |
+| Elevation | bottom **4'-0" AFF**, top **8'-9"**; 1" below the actual finished ceiling |
+| Doors | **3 x 15" x 57"** flush overlay MDF, push-to-open latches, painted out |
+| Shelves | 4 adjustable — ~22 linear feet, approximately 7.4 cu ft |
 
 45" is not a rounding: it is exactly three 15" doors, and stopping on the tub deck's west face
 puts the east end plane on an edge already in the room.
+
+The 57" height replaced the former 60" on 2026-09-29. The drawn 9'-0" top had entered
+the finished ceiling by 2"; the shorter custom carcass gives the installer 1" of space
+without changing the 4'-0" bottom or the room clearances.
 
 ## Why 4'-0" — this is the compliance line, not a comfort choice
 

@@ -1044,18 +1044,18 @@ OPENINGS = [
     # put this at 1'-6 1/16", and `from_node` offsets the NEAR JAMB, not the centre
     # (resolve/pipeline.py), so the 32" opening ran x 1'-6 1/16"..4'-2 1/16" — straight
     # across all three services in this wall. `mep.run_through_opening` FAILed three times:
-    # CD-B-SPA at x=2'-0" and CD-B-DATA-SHOP at x=2'-6", both 61" over the slab, and
-    # PR-B-ERV-COND at x=2'-11", 49 7/8" up.
+    # CD-B-SPA at x=2'-0" and CD-B-DATA-SHOP then at x=2'-6", both 61" over the slab,
+    # and PR-B-ERV-COND at x=2'-11", 49 7/8" up. The data run moved to x=10" on
+    # 2026-09-29; the door's controlling condensate line has not moved.
     #
-    # None of the three can move. `ConduitRun` carries ONE flat elevation for its whole
-    # polyline (model/mep.py), and CD-B-SPA's south end is pinned at -4'-0" by two concrete
-    # sleeves, so it cannot be lifted over the head. PR-B-ERV-COND is a gravity condensate
-    # drain that already starts at 54" under an 80" head. And the bay west of the opening is
-    # 5 9/16" clear, which takes two of the three and not all three.
+    # CD-B-SPA's south end is pinned at -4'-0" by two concrete sleeves, so it cannot be
+    # lifted over the head. PR-B-ERV-COND is a gravity condensate drain that already starts
+    # at 54" under an 80" head. The data run found the west-wall lane, but moving it does
+    # not buy back the opening's old position: the condensate line still binds.
     #
     # So the door moves. The binding constraint is the condensate line at x=2'-11": the king
     # stud occupies [jamb-3", jamb-1 1/2"], so a jamb at 3'-3" puts the king's west face at
-    # 3'-0" and clears the pipe's surface by 0.475". Both conduits clear by 6"-12". 1" west
+    # 3'-0" and clears the pipe's surface by 0.475". Both conduits clear the opening. 1" west
     # of the 3'-4" this door was authored at before the drag, which is why
     # mep_drainage.py's routing note (measured against 40") was restruck with it.
     #

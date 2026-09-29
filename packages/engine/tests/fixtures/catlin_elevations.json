@@ -1164,7 +1164,7 @@
 "canvas_objects/FURN-M-BATH1-AP/body_z1_m": 1.3712495,
 "canvas_objects/FURN-M-BATH1-AP/z_m": 0.6346495,
 "canvas_objects/FURN-M-BATH2-CAB/body_z0_m": 1.2573,
-"canvas_objects/FURN-M-BATH2-CAB/body_z1_m": 2.7813,
+"canvas_objects/FURN-M-BATH2-CAB/body_z1_m": 2.7051,
 "canvas_objects/FURN-M-BATH2-CAB/z_m": 1.2573,
 "canvas_objects/FURN-M-BATH2-TUBDK-AP/body_z0_m": 0.1143,
 "canvas_objects/FURN-M-BATH2-TUBDK-AP/body_z1_m": 0.4699,
@@ -1232,29 +1232,29 @@
 "canvas_objects/FURN-M-KIT-N4/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-KIT-N4/body_z1_m": 0.9382125,
 "canvas_objects/FURN-M-KIT-N4/z_m": 0.0238125,
-"canvas_objects/FURN-M-KIT-OVER-FREEZER/body_z0_m": 2.0050125,
-"canvas_objects/FURN-M-KIT-OVER-FREEZER/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-OVER-FREEZER/z_m": 2.0050125,
-"canvas_objects/FURN-M-KIT-OVER-FRIDGE/body_z0_m": 2.0050125,
-"canvas_objects/FURN-M-KIT-OVER-FRIDGE/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-OVER-FRIDGE/z_m": 2.0050125,
-"canvas_objects/FURN-M-KIT-PANTRY-S1-ST/body_z0_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-PANTRY-S1-ST/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-PANTRY-S1-ST/z_m": 2.3860125,
+"canvas_objects/FURN-M-KIT-OVER-FREEZER/body_z0_m": 1.8907125,
+"canvas_objects/FURN-M-KIT-OVER-FREEZER/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-OVER-FREEZER/z_m": 1.8907125,
+"canvas_objects/FURN-M-KIT-OVER-FRIDGE/body_z0_m": 1.8907125,
+"canvas_objects/FURN-M-KIT-OVER-FRIDGE/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-OVER-FRIDGE/z_m": 1.8907125,
+"canvas_objects/FURN-M-KIT-PANTRY-S1-ST/body_z0_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-PANTRY-S1-ST/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-PANTRY-S1-ST/z_m": 2.1447125,
 "canvas_objects/FURN-M-KIT-PANTRY-S1/body_z0_m": 0.0238125,
-"canvas_objects/FURN-M-KIT-PANTRY-S1/body_z1_m": 2.3860125,
+"canvas_objects/FURN-M-KIT-PANTRY-S1/body_z1_m": 2.1447125,
 "canvas_objects/FURN-M-KIT-PANTRY-S1/z_m": 0.0238125,
-"canvas_objects/FURN-M-KIT-PANTRY-S2-ST/body_z0_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-PANTRY-S2-ST/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-PANTRY-S2-ST/z_m": 2.3860125,
+"canvas_objects/FURN-M-KIT-PANTRY-S2-ST/body_z0_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-PANTRY-S2-ST/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-PANTRY-S2-ST/z_m": 2.1447125,
 "canvas_objects/FURN-M-KIT-PANTRY-S2/body_z0_m": 0.0238125,
-"canvas_objects/FURN-M-KIT-PANTRY-S2/body_z1_m": 2.3860125,
+"canvas_objects/FURN-M-KIT-PANTRY-S2/body_z1_m": 2.1447125,
 "canvas_objects/FURN-M-KIT-PANTRY-S2/z_m": 0.0238125,
-"canvas_objects/FURN-M-KIT-PANTRYC-ST/body_z0_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-PANTRYC-ST/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-PANTRYC-ST/z_m": 2.3860125,
+"canvas_objects/FURN-M-KIT-PANTRYC-ST/body_z0_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-PANTRYC-ST/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-PANTRYC-ST/z_m": 2.1447125,
 "canvas_objects/FURN-M-KIT-PANTRYC/body_z0_m": 0.0238125,
-"canvas_objects/FURN-M-KIT-PANTRYC/body_z1_m": 2.3860125,
+"canvas_objects/FURN-M-KIT-PANTRYC/body_z1_m": 2.1447125,
 "canvas_objects/FURN-M-KIT-PANTRYC/z_m": 0.0238125,
 "canvas_objects/FURN-M-KIT-PENINSULA/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-KIT-PENINSULA/body_z1_m": 0.9382125,
@@ -1271,42 +1271,42 @@
 "canvas_objects/FURN-M-KIT-STOOL3/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-KIT-STOOL3/body_z1_m": 0.7858125,
 "canvas_objects/FURN-M-KIT-STOOL3/z_m": 0.0238125,
-"canvas_objects/FURN-M-KIT-WE1-ST/body_z0_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WE1-ST/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-WE1-ST/z_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WE1/body_z0_m": 1.3700125,
-"canvas_objects/FURN-M-KIT-WE1/body_z1_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WE1/z_m": 1.3700125,
-"canvas_objects/FURN-M-KIT-WE2-ST/body_z0_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WE2-ST/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-WE2-ST/z_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WE2/body_z0_m": 1.3700125,
-"canvas_objects/FURN-M-KIT-WE2/body_z1_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WE2/z_m": 1.3700125,
-"canvas_objects/FURN-M-KIT-WE4-ST/body_z0_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WE4-ST/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-WE4-ST/z_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WE5-ST/body_z0_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WE5-ST/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-WE5-ST/z_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WE5/body_z0_m": 1.3700125,
-"canvas_objects/FURN-M-KIT-WE5/body_z1_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WE5/z_m": 1.3700125,
-"canvas_objects/FURN-M-KIT-WN1/body_z0_m": 1.7510125,
-"canvas_objects/FURN-M-KIT-WN1/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-WN1/z_m": 1.7510125,
-"canvas_objects/FURN-M-KIT-WN3-ST/body_z0_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WN3-ST/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-WN3-ST/z_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WN3/body_z0_m": 1.3700125,
-"canvas_objects/FURN-M-KIT-WN3/body_z1_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WN3/z_m": 1.3700125,
-"canvas_objects/FURN-M-KIT-WN4-ST/body_z0_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WN4-ST/body_z1_m": 2.7670125,
-"canvas_objects/FURN-M-KIT-WN4-ST/z_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WN4/body_z0_m": 1.3700125,
-"canvas_objects/FURN-M-KIT-WN4/body_z1_m": 2.3860125,
-"canvas_objects/FURN-M-KIT-WN4/z_m": 1.3700125,
+"canvas_objects/FURN-M-KIT-WE1-ST/body_z0_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WE1-ST/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-WE1-ST/z_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WE1/body_z0_m": 1.3827125,
+"canvas_objects/FURN-M-KIT-WE1/body_z1_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WE1/z_m": 1.3827125,
+"canvas_objects/FURN-M-KIT-WE2-ST/body_z0_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WE2-ST/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-WE2-ST/z_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WE2/body_z0_m": 1.3827125,
+"canvas_objects/FURN-M-KIT-WE2/body_z1_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WE2/z_m": 1.3827125,
+"canvas_objects/FURN-M-KIT-WE4-ST/body_z0_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WE4-ST/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-WE4-ST/z_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WE5-ST/body_z0_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WE5-ST/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-WE5-ST/z_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WE5/body_z0_m": 1.3827125,
+"canvas_objects/FURN-M-KIT-WE5/body_z1_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WE5/z_m": 1.3827125,
+"canvas_objects/FURN-M-KIT-WN1/body_z0_m": 1.8907125,
+"canvas_objects/FURN-M-KIT-WN1/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-WN1/z_m": 1.8907125,
+"canvas_objects/FURN-M-KIT-WN3-ST/body_z0_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WN3-ST/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-WN3-ST/z_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WN3/body_z0_m": 1.3827125,
+"canvas_objects/FURN-M-KIT-WN3/body_z1_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WN3/z_m": 1.3827125,
+"canvas_objects/FURN-M-KIT-WN4-ST/body_z0_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WN4-ST/body_z1_m": 2.6527125,
+"canvas_objects/FURN-M-KIT-WN4-ST/z_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WN4/body_z0_m": 1.3827125,
+"canvas_objects/FURN-M-KIT-WN4/body_z1_m": 2.1447125,
+"canvas_objects/FURN-M-KIT-WN4/z_m": 1.3827125,
 "canvas_objects/FURN-M-LAUNDRY-RACK/body_z0_m": 1.2442495,
 "canvas_objects/FURN-M-LAUNDRY-RACK/body_z1_m": 2.0062495,
 "canvas_objects/FURN-M-LAUNDRY-RACK/z_m": 1.2442495,
@@ -1851,8 +1851,8 @@
 "conduits/CD-B-DATA-SHOP/z_m": [
 -1.778,
 -1.2192,
-5,
-"c4965c930491"
+4,
+"b16e53406908"
 ],
 "conduits/CD-B-DATA-SHOP/z_start_m": -1.2192,
 "conduits/CD-B-DATA-STUDY/z_end_m": 0.8128,
@@ -11800,8 +11800,8 @@
 "geometry/CBPW34AAAA-run/body": [
 -0.314325,
 1.0668,
-96,
-"6cedb033b616"
+120,
+"0666cee70042"
 ],
 "geometry/CBPW35AAAA-run/body": [
 -0.233045,
@@ -21607,12 +21607,6 @@
 8,
 "8458aa6a7b11"
 ],
-"geometry/CMW103AAAA::framing/member:backing-5-000": [
-2.3114,
-2.49555,
-8,
-"5f846a6ec1ff"
-],
 "geometry/CMW103AAAA::framing/member:block-2-000-00": [
 -0.3413125,
 -0.2524125,
@@ -23120,10 +23114,16 @@
 "654891f0dccb"
 ],
 "geometry/CMW105AAAA::framing/member:backing-4-000": [
-2.3114,
-2.49555,
+2.0701,
+2.25425,
 8,
-"5f846a6ec1ff"
+"be5d8e333dc4"
+],
+"geometry/CMW105AAAA::framing/member:backing-4-001": [
+2.0701,
+2.25425,
+8,
+"be5d8e333dc4"
 ],
 "geometry/CMW105AAAA::framing/member:block-2-000-00": [
 -0.3413125,
@@ -26486,16 +26486,16 @@
 "08fa410dc44f"
 ],
 "geometry/CMW116AAAA::framing/member:backing-0-000": [
-1.9304,
-2.11455,
+1.8161,
+2.00025,
 8,
-"92a6637f0640"
+"45a7526fe6c9"
 ],
 "geometry/CMW116AAAA::framing/member:backing-1-000": [
-2.3114,
-2.49555,
+2.0701,
+2.25425,
 8,
-"5f846a6ec1ff"
+"be5d8e333dc4"
 ],
 "geometry/CMW116AAAA::framing/member:plate-bottom": [
 0.0,
@@ -43600,8 +43600,8 @@
 "geometry/F2D3CT89ZV-run/body": [
 -1.778,
 -1.209675,
-96,
-"cee31b650003"
+72,
+"e88916cf315f"
 ],
 "geometry/F3ZC6TWL9N/body": [
 -0.29972,
@@ -64655,12 +64655,6 @@
 2,
 "a1a479d66f95"
 ],
-"member/CMW103AAAA/backing-5-000": [
-2.3114,
-2.49555,
-2,
-"93cb9a9b3b3b"
-],
 "member/CMW103AAAA/block-2-000-00": [
 -0.3413125,
 -0.2524125,
@@ -66114,10 +66108,16 @@
 "425a339899d8"
 ],
 "member/CMW105AAAA/backing-4-000": [
-2.3114,
-2.49555,
+2.0701,
+2.25425,
 2,
-"93cb9a9b3b3b"
+"d37108fff0d4"
+],
+"member/CMW105AAAA/backing-4-001": [
+2.0701,
+2.25425,
+2,
+"d37108fff0d4"
 ],
 "member/CMW105AAAA/block-2-000-00": [
 -0.3413125,
@@ -69030,16 +69030,16 @@
 "eebc11b3c6f0"
 ],
 "member/CMW116AAAA/backing-0-000": [
-1.9304,
-2.11455,
+1.8161,
+2.00025,
 2,
-"1ad781f34a9c"
+"7cdce48ed1c5"
 ],
 "member/CMW116AAAA/backing-1-000": [
-2.3114,
-2.49555,
+2.0701,
+2.25425,
 2,
-"93cb9a9b3b3b"
+"d37108fff0d4"
 ],
 "member/CMW116AAAA/plate-bottom": [
 0.0,
@@ -85161,8 +85161,8 @@
 "pipe_runs/PR-B-HW-BATH1/z_m": [
 -0.3048,
 1.0668,
-5,
-"f2a22d1b49b5"
+6,
+"f402753d725f"
 ],
 "pipe_runs/PR-B-HW-BATH1/z_start_m": -0.3048,
 "pipe_runs/PR-B-HW-BATH2/z_end_m": 0.9144,
