@@ -44,6 +44,10 @@ echo "== checks-as-tests on the starter house =="
 TYPEHAUS_HOUSE=houses/starter "$VPY" -m pytest -p no:typehaus_checks \
   packages/engine/src/typehaus/checks/pytest_plugin.py -q
 
+echo "== checks-as-tests on the catlin house =="
+TYPEHAUS_HOUSE=houses/catlin "$VPY" -m pytest -p no:typehaus_checks \
+  packages/engine/src/typehaus/checks/pytest_plugin.py -q
+
 echo "== starter build =="
 "$VHAUS" build houses/starter
 

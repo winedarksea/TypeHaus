@@ -38,6 +38,10 @@ jobs:
         env:
           TYPEHAUS_HOUSE: houses/starter
         run: uv run pytest -p no:typehaus_checks packages/engine/src/typehaus/checks/pytest_plugin.py -q
+      - name: Checks-as-tests on the Catlin house
+        env:
+          TYPEHAUS_HOUSE: houses/catlin
+        run: uv run pytest -p no:typehaus_checks packages/engine/src/typehaus/checks/pytest_plugin.py -q
       - name: Starter-house build smoke test
         run: uv run haus build houses/starter
       # The reference house was never built in CI, so a break in it was only ever found by

@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from typehaus.checks.registry import CheckContext, registered
+from typehaus.checks.registry import CheckContext, _suppressed, registered
 from typehaus.checks.run import build_context
 from typehaus.findings import Result, Severity
 from typehaus.source import load_plan
@@ -48,7 +48,11 @@ def test_registered_check(registered_check, _check_context) -> None:  # type: ig
     """Each registered check runs; ERROR-severity FAIL findings fail the test."""
     if _check_context is None:
         pytest.skip("set TYPEHAUS_HOUSE to run engine checks as tests")
-    findings = registered_check(_check_context)
+    # Match run_checks: a house's authored suppressions apply to each rule's findings.
+    findings = [
+        finding for finding in registered_check(_check_context)
+        if not _suppressed(finding, _check_context.preferences.suppressed)
+    ]
     hard = [
         f for f in findings
         if f.severity is Severity.ERROR and f.result is Result.FAIL
