@@ -30871,341 +30871,587 @@
 16,
 "409518d3cdb5"
 ],
+"geometry/CST701AAAA::finish/landing-lower:top": [
+-1.4835236,
+-1.4708236,
+2,
+"7c4d0f833a76"
+],
+"geometry/CST701AAAA::finish/landing-upper:top": [
+-1.2965394,
+-1.2838394,
+2,
+"eb2d32c86068"
+],
+"geometry/CST701AAAA::finish/riser-landing:face": [
+-1.4708236,
+-1.2838394,
+2,
+"f87946402122"
+],
+"geometry/CST701AAAA::finish/riser-lower-000:face": [
+-2.7797125,
+-2.5927284,
+2,
+"a3107bb0c19d"
+],
+"geometry/CST701AAAA::finish/riser-lower-001:face": [
+-2.5927284,
+-2.4057442,
+2,
+"2af2482ddec5"
+],
+"geometry/CST701AAAA::finish/riser-lower-002:face": [
+-2.4057442,
+-2.2187601,
+2,
+"1d6cba457796"
+],
+"geometry/CST701AAAA::finish/riser-lower-003:face": [
+-2.2187601,
+-2.031776,
+2,
+"826350def7be"
+],
+"geometry/CST701AAAA::finish/riser-lower-004:face": [
+-2.031776,
+-1.8447918,
+2,
+"1bc296ed8b41"
+],
+"geometry/CST701AAAA::finish/riser-lower-005:face": [
+-1.8447918,
+-1.6578077,
+2,
+"1f0378be21f5"
+],
+"geometry/CST701AAAA::finish/riser-lower-006:face": [
+-1.6578077,
+-1.4708236,
+2,
+"04d869d93540"
+],
+"geometry/CST701AAAA::finish/riser-upper-000:face": [
+-1.2838394,
+-1.0968553,
+2,
+"1c456e8ed9f6"
+],
+"geometry/CST701AAAA::finish/riser-upper-001:face": [
+-1.0968553,
+-0.9098712,
+2,
+"4c0eedf6d834"
+],
+"geometry/CST701AAAA::finish/riser-upper-002:face": [
+-0.9098712,
+-0.722887,
+2,
+"6bc4e882ce3e"
+],
+"geometry/CST701AAAA::finish/riser-upper-003:face": [
+-0.722887,
+-0.5359029,
+2,
+"89e208bee526"
+],
+"geometry/CST701AAAA::finish/riser-upper-004:face": [
+-0.5359029,
+-0.3489188,
+2,
+"4d91e398a314"
+],
+"geometry/CST701AAAA::finish/riser-upper-005:face": [
+-0.3489188,
+-0.1619347,
+2,
+"cb8430bc919c"
+],
+"geometry/CST701AAAA::finish/riser-upper-006:face": [
+-0.1619347,
+0.0250495,
+2,
+"45337eaa7287"
+],
+"geometry/CST701AAAA::finish/tread-lower-000:nosing": [
+-2.6308284,
+-2.5927284,
+2,
+"f7afd52a3bae"
+],
+"geometry/CST701AAAA::finish/tread-lower-000:top": [
+-2.6054284,
+-2.5927284,
+2,
+"3620946cf652"
+],
+"geometry/CST701AAAA::finish/tread-lower-001:nosing": [
+-2.4438442,
+-2.4057442,
+2,
+"f492c3a3f999"
+],
+"geometry/CST701AAAA::finish/tread-lower-001:top": [
+-2.4184442,
+-2.4057442,
+2,
+"055fc4e8183e"
+],
+"geometry/CST701AAAA::finish/tread-lower-002:nosing": [
+-2.2568601,
+-2.2187601,
+2,
+"7cfb57c0b6d0"
+],
+"geometry/CST701AAAA::finish/tread-lower-002:top": [
+-2.2314601,
+-2.2187601,
+2,
+"128f22d1a56f"
+],
+"geometry/CST701AAAA::finish/tread-lower-003:nosing": [
+-2.069876,
+-2.031776,
+2,
+"236b7532f5db"
+],
+"geometry/CST701AAAA::finish/tread-lower-003:top": [
+-2.044476,
+-2.031776,
+2,
+"0ebf8c3d5733"
+],
+"geometry/CST701AAAA::finish/tread-lower-004:nosing": [
+-1.8828918,
+-1.8447918,
+2,
+"92fedeb73690"
+],
+"geometry/CST701AAAA::finish/tread-lower-004:top": [
+-1.8574918,
+-1.8447918,
+2,
+"1d75d4254d7e"
+],
+"geometry/CST701AAAA::finish/tread-lower-005:nosing": [
+-1.6959077,
+-1.6578077,
+2,
+"a9b666e47221"
+],
+"geometry/CST701AAAA::finish/tread-lower-005:top": [
+-1.6705077,
+-1.6578077,
+2,
+"f015d6babb71"
+],
+"geometry/CST701AAAA::finish/tread-upper-000:nosing": [
+-1.1349553,
+-1.0968553,
+2,
+"4a35e670c2a5"
+],
+"geometry/CST701AAAA::finish/tread-upper-000:top": [
+-1.1095553,
+-1.0968553,
+2,
+"84310c155c13"
+],
+"geometry/CST701AAAA::finish/tread-upper-001:nosing": [
+-0.9479712,
+-0.9098712,
+2,
+"5d9a3d7afa9a"
+],
+"geometry/CST701AAAA::finish/tread-upper-001:top": [
+-0.9225712,
+-0.9098712,
+2,
+"9acf13941279"
+],
+"geometry/CST701AAAA::finish/tread-upper-002:nosing": [
+-0.760987,
+-0.722887,
+2,
+"b7d20c321adf"
+],
+"geometry/CST701AAAA::finish/tread-upper-002:top": [
+-0.735587,
+-0.722887,
+2,
+"54f8f1af25cb"
+],
+"geometry/CST701AAAA::finish/tread-upper-003:nosing": [
+-0.5740029,
+-0.5359029,
+2,
+"1410059c0633"
+],
+"geometry/CST701AAAA::finish/tread-upper-003:top": [
+-0.5486029,
+-0.5359029,
+2,
+"91189131614d"
+],
+"geometry/CST701AAAA::finish/tread-upper-004:nosing": [
+-0.3870188,
+-0.3489188,
+2,
+"1651e31bd119"
+],
+"geometry/CST701AAAA::finish/tread-upper-004:top": [
+-0.3616188,
+-0.3489188,
+2,
+"07f90a2b1720"
+],
+"geometry/CST701AAAA::finish/tread-upper-005:nosing": [
+-0.2000347,
+-0.1619347,
+2,
+"5e92ffbec80a"
+],
+"geometry/CST701AAAA::finish/tread-upper-005:top": [
+-0.1746347,
+-0.1619347,
+2,
+"875b17c468a6"
+],
 "geometry/CST701AAAA::framing/member:hanger-W-B-CN-landing-rim-lower-1": [
--1.6994236,
--1.4962236,
+-1.7121236,
+-1.5089236,
 8,
-"d0210adb546a"
+"0cbcca2b2a82"
 ],
 "geometry/CST701AAAA::framing/member:hanger-W-B-CN-stringer-lower-2": [
 -2.7797125,
--1.4962236,
+-1.5089236,
 8,
-"69c2c3da658d"
+"34693cf9bf85"
 ],
 "geometry/CST701AAAA::framing/member:hanger-W-B-N2-landing-joist-lower-004": [
--1.6994236,
--1.4962236,
+-1.7121236,
+-1.5089236,
 8,
-"d0210adb546a"
+"0cbcca2b2a82"
 ],
 "geometry/CST701AAAA::framing/member:hanger-W-B-N2-landing-joist-upper-004": [
--1.5124394,
--1.3092394,
+-1.5251394,
+-1.3219394,
 8,
-"2f5908379db8"
+"5eb2a500ba89"
 ],
 "geometry/CST701AAAA::framing/member:landing-joist-lower-000": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 8,
-"98f3cde6b996"
+"b9d8e8109c27"
 ],
 "geometry/CST701AAAA::framing/member:landing-joist-lower-001": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 8,
-"98f3cde6b996"
+"b9d8e8109c27"
 ],
 "geometry/CST701AAAA::framing/member:landing-joist-lower-002": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 8,
-"98f3cde6b996"
+"b9d8e8109c27"
 ],
 "geometry/CST701AAAA::framing/member:landing-joist-lower-003": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 8,
-"98f3cde6b996"
+"b9d8e8109c27"
 ],
 "geometry/CST701AAAA::framing/member:landing-joist-lower-004": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 8,
-"98f3cde6b996"
+"b9d8e8109c27"
 ],
 "geometry/CST701AAAA::framing/member:landing-joist-upper-000": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 8,
-"3818ec3caf1e"
+"6fb415241a70"
 ],
 "geometry/CST701AAAA::framing/member:landing-joist-upper-001": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 8,
-"3818ec3caf1e"
+"6fb415241a70"
 ],
 "geometry/CST701AAAA::framing/member:landing-joist-upper-002": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 8,
-"3818ec3caf1e"
+"6fb415241a70"
 ],
 "geometry/CST701AAAA::framing/member:landing-joist-upper-003": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 8,
-"3818ec3caf1e"
+"6fb415241a70"
 ],
 "geometry/CST701AAAA::framing/member:landing-joist-upper-004": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 8,
-"3818ec3caf1e"
+"6fb415241a70"
 ],
 "geometry/CST701AAAA::framing/member:landing-lower": [
--1.4962236,
--1.4708236,
+-1.5089236,
+-1.4835236,
 8,
-"0c2dd020e992"
+"b49cfae8c2b6"
 ],
 "geometry/CST701AAAA::framing/member:landing-post-000": [
 -2.7797125,
--1.4933894,
+-1.5060894,
 8,
-"7132f873ecfc"
+"ab8a67453d0e"
 ],
 "geometry/CST701AAAA::framing/member:landing-rim-lower-0": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 8,
-"98f3cde6b996"
+"b9d8e8109c27"
 ],
 "geometry/CST701AAAA::framing/member:landing-rim-lower-1": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 8,
-"98f3cde6b996"
+"b9d8e8109c27"
 ],
 "geometry/CST701AAAA::framing/member:landing-rim-upper-0": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 8,
-"3818ec3caf1e"
+"6fb415241a70"
 ],
 "geometry/CST701AAAA::framing/member:landing-rim-upper-1": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 8,
-"3818ec3caf1e"
+"6fb415241a70"
 ],
 "geometry/CST701AAAA::framing/member:landing-upper": [
--1.3092394,
--1.2838394,
+-1.3219394,
+-1.2965394,
 8,
-"8f14763f125e"
+"8d0bfa1c9049"
 ],
 "geometry/CST701AAAA::framing/member:ledger-W-B-STR-landing-rim-upper-0": [
--1.5441894,
--1.3092394,
+-1.5568894,
+-1.3219394,
 8,
-"66e19176a530"
+"48d45a487218"
 ],
 "geometry/CST701AAAA::framing/member:ledger-W-B-STR3-stringer-upper-0": [
--1.3501934,
--0.0003505,
+-1.3628934,
+-0.0130505,
 8,
-"ca66d35483f7"
+"f760268c2be8"
 ],
 "geometry/CST701AAAA::framing/member:riser-landing": [
 -1.4708236,
--1.3092394,
+-1.3219394,
 8,
-"a8d8b9096d3f"
+"b2046f02d899"
 ],
 "geometry/CST701AAAA::framing/member:riser-lower-000": [
 -2.7797125,
--2.6181284,
+-2.6308284,
 8,
-"5bf8949aade5"
+"256e17974053"
 ],
 "geometry/CST701AAAA::framing/member:riser-lower-001": [
 -2.5927284,
--2.4311442,
+-2.4438442,
 8,
-"a01f03e8ccb2"
+"5a521d5b389e"
 ],
 "geometry/CST701AAAA::framing/member:riser-lower-002": [
 -2.4057442,
--2.2441601,
+-2.2568601,
 8,
-"39686648c3eb"
+"5bc278f6a82b"
 ],
 "geometry/CST701AAAA::framing/member:riser-lower-003": [
 -2.2187601,
--2.057176,
+-2.069876,
 8,
-"cb1dcc741a47"
+"40b6fefa3452"
 ],
 "geometry/CST701AAAA::framing/member:riser-lower-004": [
 -2.031776,
--1.8701918,
+-1.8828918,
 8,
-"faecc9c12207"
+"56cdd733d41f"
 ],
 "geometry/CST701AAAA::framing/member:riser-lower-005": [
 -1.8447918,
--1.6832077,
+-1.6959077,
 8,
-"025b4098aaea"
+"8538467354fc"
 ],
 "geometry/CST701AAAA::framing/member:riser-lower-006": [
 -1.6578077,
--1.4962236,
+-1.5089236,
 8,
-"b998ff3b975e"
+"db2a3c49f9e0"
 ],
 "geometry/CST701AAAA::framing/member:riser-upper-000": [
 -1.2838394,
--1.1222553,
+-1.1349553,
 8,
-"da866182f764"
+"fed985df8152"
 ],
 "geometry/CST701AAAA::framing/member:riser-upper-001": [
 -1.0968553,
--0.9352712,
+-0.9479712,
 8,
-"555858b664eb"
+"6bffcb4746db"
 ],
 "geometry/CST701AAAA::framing/member:riser-upper-002": [
 -0.9098712,
--0.748287,
+-0.760987,
 8,
-"f03d430b2690"
+"ec5470a3ff7a"
 ],
 "geometry/CST701AAAA::framing/member:riser-upper-003": [
 -0.722887,
--0.5613029,
+-0.5740029,
 8,
-"c768524d6d25"
+"d58aa66b5539"
 ],
 "geometry/CST701AAAA::framing/member:riser-upper-004": [
 -0.5359029,
--0.3743188,
+-0.3870188,
 8,
-"b9cc0095a384"
+"99b9a9ed1e6b"
 ],
 "geometry/CST701AAAA::framing/member:riser-upper-005": [
 -0.3489188,
--0.1873347,
+-0.2000347,
 8,
-"ba01722eedc4"
+"09427752329e"
 ],
 "geometry/CST701AAAA::framing/member:riser-upper-006": [
 -0.1619347,
--0.0003505,
+-0.0130505,
 8,
-"49fcfa663782"
+"0804e144014e"
 ],
 "geometry/CST701AAAA::framing/member:stringer-lower-0": [
 -2.7797125,
--1.4962236,
+-1.5089236,
 8,
-"634a918b8efe"
+"9c3cee2b2f5a"
 ],
 "geometry/CST701AAAA::framing/member:stringer-lower-1": [
 -2.7797125,
--1.4962236,
+-1.5089236,
 8,
-"634a918b8efe"
+"9c3cee2b2f5a"
 ],
 "geometry/CST701AAAA::framing/member:stringer-lower-2": [
 -2.7797125,
--1.4962236,
+-1.5089236,
 8,
-"634a918b8efe"
+"9c3cee2b2f5a"
 ],
 "geometry/CST701AAAA::framing/member:stringer-upper-0": [
--1.4080053,
--0.0003505,
+-1.4207053,
+-0.0130505,
 8,
-"2df24c6b7ef6"
+"c6a0678c590c"
 ],
 "geometry/CST701AAAA::framing/member:stringer-upper-1": [
--1.4080053,
--0.0003505,
+-1.4207053,
+-0.0130505,
 8,
-"2df24c6b7ef6"
+"c6a0678c590c"
 ],
 "geometry/CST701AAAA::framing/member:stringer-upper-2": [
--1.4080053,
--0.0003505,
+-1.4207053,
+-0.0130505,
 8,
-"2df24c6b7ef6"
+"c6a0678c590c"
 ],
 "geometry/CST701AAAA::framing/member:tread-lower-000": [
--2.6181284,
--2.5927284,
+-2.6308284,
+-2.6054284,
 8,
-"767d2596c6b0"
+"a8d6f2379b50"
 ],
 "geometry/CST701AAAA::framing/member:tread-lower-001": [
--2.4311442,
--2.4057442,
+-2.4438442,
+-2.4184442,
 8,
-"29a29d11f5c0"
+"b7ca27afa495"
 ],
 "geometry/CST701AAAA::framing/member:tread-lower-002": [
--2.2441601,
--2.2187601,
+-2.2568601,
+-2.2314601,
 8,
-"07776158ea54"
+"3959e785529e"
 ],
 "geometry/CST701AAAA::framing/member:tread-lower-003": [
--2.057176,
--2.031776,
+-2.069876,
+-2.044476,
 8,
-"08bd9dfac157"
+"29fdf2a396f6"
 ],
 "geometry/CST701AAAA::framing/member:tread-lower-004": [
--1.8701918,
--1.8447918,
+-1.8828918,
+-1.8574918,
 8,
-"71b9a4915e43"
+"f7617344ccb1"
 ],
 "geometry/CST701AAAA::framing/member:tread-lower-005": [
--1.6832077,
--1.6578077,
+-1.6959077,
+-1.6705077,
 8,
-"9c9868791ba9"
+"7fc44b70cf37"
 ],
 "geometry/CST701AAAA::framing/member:tread-upper-000": [
--1.1222553,
--1.0968553,
+-1.1349553,
+-1.1095553,
 8,
-"32247bc10165"
+"440fde19b8a4"
 ],
 "geometry/CST701AAAA::framing/member:tread-upper-001": [
--0.9352712,
--0.9098712,
+-0.9479712,
+-0.9225712,
 8,
-"7e48b3845a8b"
+"3df1b591b350"
 ],
 "geometry/CST701AAAA::framing/member:tread-upper-002": [
--0.748287,
--0.722887,
+-0.760987,
+-0.735587,
 8,
-"d058aa31bc7a"
+"2aca32f094d3"
 ],
 "geometry/CST701AAAA::framing/member:tread-upper-003": [
--0.5613029,
--0.5359029,
+-0.5740029,
+-0.5486029,
 8,
-"4c0dec38d28c"
+"4ae2870f6339"
 ],
 "geometry/CST701AAAA::framing/member:tread-upper-004": [
--0.3743188,
--0.3489188,
+-0.3870188,
+-0.3616188,
 8,
-"34b830d1a593"
+"831757721676"
 ],
 "geometry/CST701AAAA::framing/member:tread-upper-005": [
--0.1873347,
--0.1619347,
+-0.2000347,
+-0.1746347,
 8,
-"c689a757a1cd"
+"dffc4bdde495"
 ],
 "geometry/CST701AAAA::framing/member:well-partition-plate-bottom": [
 -2.7797125,
@@ -71700,340 +71946,340 @@
 "e76b7cb538bf"
 ],
 "member/CST701AAAA/hanger-W-B-CN-landing-rim-lower-1": [
--1.6994236,
--1.4962236,
+-1.7121236,
+-1.5089236,
 2,
-"e3918b10e3ea"
+"8efbe566b672"
 ],
 "member/CST701AAAA/hanger-W-B-CN-stringer-lower-2": [
 -2.7797125,
--1.4962236,
+-1.5089236,
 4,
-"cbb71e82c13e"
+"0bb9aeabf81a"
 ],
 "member/CST701AAAA/hanger-W-B-N2-landing-joist-lower-004": [
--1.6994236,
--1.4962236,
+-1.7121236,
+-1.5089236,
 2,
-"e3918b10e3ea"
+"8efbe566b672"
 ],
 "member/CST701AAAA/hanger-W-B-N2-landing-joist-upper-004": [
--1.5124394,
--1.3092394,
+-1.5251394,
+-1.3219394,
 2,
-"883097931ed3"
+"43f0265576e1"
 ],
 "member/CST701AAAA/landing-joist-lower-000": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 2,
-"6947d468fc13"
+"2141142b7ae1"
 ],
 "member/CST701AAAA/landing-joist-lower-001": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 2,
-"6947d468fc13"
+"2141142b7ae1"
 ],
 "member/CST701AAAA/landing-joist-lower-002": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 2,
-"6947d468fc13"
+"2141142b7ae1"
 ],
 "member/CST701AAAA/landing-joist-lower-003": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 2,
-"6947d468fc13"
+"2141142b7ae1"
 ],
 "member/CST701AAAA/landing-joist-lower-004": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 2,
-"6947d468fc13"
+"2141142b7ae1"
 ],
 "member/CST701AAAA/landing-joist-upper-000": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 2,
-"d59192e8f599"
+"134c3795bf97"
 ],
 "member/CST701AAAA/landing-joist-upper-001": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 2,
-"d59192e8f599"
+"134c3795bf97"
 ],
 "member/CST701AAAA/landing-joist-upper-002": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 2,
-"d59192e8f599"
+"134c3795bf97"
 ],
 "member/CST701AAAA/landing-joist-upper-003": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 2,
-"d59192e8f599"
+"134c3795bf97"
 ],
 "member/CST701AAAA/landing-joist-upper-004": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 2,
-"d59192e8f599"
+"134c3795bf97"
 ],
 "member/CST701AAAA/landing-lower": [
--1.4962236,
--1.4708236,
+-1.5089236,
+-1.4835236,
 2,
-"220120a10c2c"
+"dc7526219816"
 ],
 "member/CST701AAAA/landing-post-000": [
 -2.7797125,
--1.4933894,
+-1.5060894,
 2,
-"dcf25051f37b"
+"6bce2da5c9b9"
 ],
 "member/CST701AAAA/landing-rim-lower-0": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 2,
-"6947d468fc13"
+"2141142b7ae1"
 ],
 "member/CST701AAAA/landing-rim-lower-1": [
--1.6803736,
--1.4962236,
+-1.6930736,
+-1.5089236,
 2,
-"6947d468fc13"
+"2141142b7ae1"
 ],
 "member/CST701AAAA/landing-rim-upper-0": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 2,
-"d59192e8f599"
+"134c3795bf97"
 ],
 "member/CST701AAAA/landing-rim-upper-1": [
--1.4933894,
--1.3092394,
+-1.5060894,
+-1.3219394,
 2,
-"d59192e8f599"
+"134c3795bf97"
 ],
 "member/CST701AAAA/landing-upper": [
--1.3092394,
--1.2838394,
+-1.3219394,
+-1.2965394,
 2,
-"756a2c413d6e"
+"5c54a59b2dc5"
 ],
 "member/CST701AAAA/ledger-W-B-STR-landing-rim-upper-0": [
--1.5441894,
--1.3092394,
+-1.5568894,
+-1.3219394,
 4,
-"9af8aca9a426"
+"af7fb7af8055"
 ],
 "member/CST701AAAA/ledger-W-B-STR3-stringer-upper-0": [
--1.3501934,
--0.0003505,
+-1.3628934,
+-0.0130505,
 4,
-"b2dfbc28e1e7"
+"1ed71d1ee871"
 ],
 "member/CST701AAAA/riser-landing": [
 -1.4708236,
--1.3092394,
+-1.3219394,
 2,
-"d6accac925eb"
+"2ab717dcca43"
 ],
 "member/CST701AAAA/riser-lower-000": [
 -2.7797125,
--2.6181284,
+-2.6308284,
 2,
-"b82d08340b8a"
+"fd54918d5691"
 ],
 "member/CST701AAAA/riser-lower-001": [
 -2.5927284,
--2.4311442,
+-2.4438442,
 2,
-"42b5b40f0841"
+"2d1c51838800"
 ],
 "member/CST701AAAA/riser-lower-002": [
 -2.4057442,
--2.2441601,
+-2.2568601,
 2,
-"81a7eeb5c3ef"
+"20b309bfb2f4"
 ],
 "member/CST701AAAA/riser-lower-003": [
 -2.2187601,
--2.057176,
+-2.069876,
 2,
-"5449f687c6dd"
+"8b951f7df7f8"
 ],
 "member/CST701AAAA/riser-lower-004": [
 -2.031776,
--1.8701918,
+-1.8828918,
 2,
-"3d8cceb027ca"
+"32156896c43e"
 ],
 "member/CST701AAAA/riser-lower-005": [
 -1.8447918,
--1.6832077,
+-1.6959077,
 2,
-"e6e1d47b0c35"
+"7c4a40a0b264"
 ],
 "member/CST701AAAA/riser-lower-006": [
 -1.6578077,
--1.4962236,
+-1.5089236,
 2,
-"f8f4bd63fac3"
+"4182d444dca5"
 ],
 "member/CST701AAAA/riser-upper-000": [
 -1.2838394,
--1.1222553,
+-1.1349553,
 2,
-"1eaa80655d2a"
+"c9ff1a678fe1"
 ],
 "member/CST701AAAA/riser-upper-001": [
 -1.0968553,
--0.9352712,
+-0.9479712,
 2,
-"4d2d2f4462dd"
+"3cd2428008d3"
 ],
 "member/CST701AAAA/riser-upper-002": [
 -0.9098712,
--0.748287,
+-0.760987,
 2,
-"82bd3f928f82"
+"dd535fb9ce35"
 ],
 "member/CST701AAAA/riser-upper-003": [
 -0.722887,
--0.5613029,
+-0.5740029,
 2,
-"779503775a39"
+"c81b6ce9cac8"
 ],
 "member/CST701AAAA/riser-upper-004": [
 -0.5359029,
--0.3743188,
+-0.3870188,
 2,
-"4ac37b90a6f7"
+"cf4ad6048be5"
 ],
 "member/CST701AAAA/riser-upper-005": [
 -0.3489188,
--0.1873347,
+-0.2000347,
 2,
-"2adbd1af9620"
+"f44787ff0586"
 ],
 "member/CST701AAAA/riser-upper-006": [
 -0.1619347,
--0.0003505,
+-0.0130505,
 2,
-"60027ffcb01d"
+"a159448aafc1"
 ],
 "member/CST701AAAA/stringer-lower-0": [
 -2.7797125,
--1.4962236,
+-1.5089236,
 4,
-"981dce8c36be"
+"3db7511523fa"
 ],
 "member/CST701AAAA/stringer-lower-1": [
 -2.7797125,
--1.4962236,
+-1.5089236,
 4,
-"981dce8c36be"
+"3db7511523fa"
 ],
 "member/CST701AAAA/stringer-lower-2": [
 -2.7797125,
--1.4962236,
+-1.5089236,
 4,
-"981dce8c36be"
+"3db7511523fa"
 ],
 "member/CST701AAAA/stringer-upper-0": [
--1.4080053,
--0.0003505,
+-1.4207053,
+-0.0130505,
 4,
-"a7652d179b18"
+"8c258c35928e"
 ],
 "member/CST701AAAA/stringer-upper-1": [
--1.4080053,
--0.0003505,
+-1.4207053,
+-0.0130505,
 4,
-"a7652d179b18"
+"8c258c35928e"
 ],
 "member/CST701AAAA/stringer-upper-2": [
--1.4080053,
--0.0003505,
+-1.4207053,
+-0.0130505,
 4,
-"a7652d179b18"
+"8c258c35928e"
 ],
 "member/CST701AAAA/tread-lower-000": [
--2.6181284,
--2.5927284,
+-2.6308284,
+-2.6054284,
 2,
-"50023ccaf6be"
+"43de9029481a"
 ],
 "member/CST701AAAA/tread-lower-001": [
--2.4311442,
--2.4057442,
+-2.4438442,
+-2.4184442,
 2,
-"1ddf3bb47622"
+"a7289afb6081"
 ],
 "member/CST701AAAA/tread-lower-002": [
--2.2441601,
--2.2187601,
+-2.2568601,
+-2.2314601,
 2,
-"7306ee65c51a"
+"eb47c014d5c7"
 ],
 "member/CST701AAAA/tread-lower-003": [
--2.057176,
--2.031776,
+-2.069876,
+-2.044476,
 2,
-"21f237c3d5f8"
+"b904abd42d82"
 ],
 "member/CST701AAAA/tread-lower-004": [
--1.8701918,
--1.8447918,
+-1.8828918,
+-1.8574918,
 2,
-"858d43acd4e4"
+"52cc1180ba1f"
 ],
 "member/CST701AAAA/tread-lower-005": [
--1.6832077,
--1.6578077,
+-1.6959077,
+-1.6705077,
 2,
-"58d80b063020"
+"a440f7bab5c3"
 ],
 "member/CST701AAAA/tread-upper-000": [
--1.1222553,
--1.0968553,
+-1.1349553,
+-1.1095553,
 2,
-"56367640aa30"
+"7644dc057c75"
 ],
 "member/CST701AAAA/tread-upper-001": [
--0.9352712,
--0.9098712,
+-0.9479712,
+-0.9225712,
 2,
-"7ff0aa34058e"
+"7e47fa7bf483"
 ],
 "member/CST701AAAA/tread-upper-002": [
--0.748287,
--0.722887,
+-0.760987,
+-0.735587,
 2,
-"960dd1df8a03"
+"b302b523584f"
 ],
 "member/CST701AAAA/tread-upper-003": [
--0.5613029,
--0.5359029,
+-0.5740029,
+-0.5486029,
 2,
-"3a20881da55c"
+"5453243ba0ea"
 ],
 "member/CST701AAAA/tread-upper-004": [
--0.3743188,
--0.3489188,
+-0.3870188,
+-0.3616188,
 2,
-"8cfc78bf1eff"
+"e99fa995e194"
 ],
 "member/CST701AAAA/tread-upper-005": [
--0.1873347,
--0.1619347,
+-0.2000347,
+-0.1746347,
 2,
-"ce0282e1b68d"
+"f81cdddf8b2a"
 ],
 "member/CST701AAAA/well-partition-plate-bottom": [
 -2.7797125,

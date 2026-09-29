@@ -25,7 +25,8 @@ RAIL_LATERAL_REACH_M = 2.0
 
 def finished_step_elevation(stair, member) -> float:
     """Top of a walking member's separate finish, or its own top when bare."""
-    return member.z1_m + stair.finish_thickness_m
+    # Small synthetic stairs in railing tests predate the resolved finish field.
+    return member.z1_m + getattr(stair, "finish_thickness_m", 0.0)
 
 
 def level_landing_is_complete(stair) -> bool:

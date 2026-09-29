@@ -55,15 +55,25 @@ def test_the_schedule_is_declared_unpriced(rows):
 
 def test_coverage_rows_reconcile_with_wood_surfaces_to_the_digit(rows, catlin_model_ro):
     """Area and board feet come straight off the ``wood_surfaces`` row, never re-derived."""
+    from collections import defaultdict
+
+    from typehaus.takeoff.hardwood import _COVERAGE_KINDS
     from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
-    source = {row["material"]: row for row in wood_surfaces_takeoff(catlin_model_ro)}
+    source = defaultdict(list)
+    for row in wood_surfaces_takeoff(catlin_model_ro):
+        entry = _COVERAGE_KINDS.get(row["kind"])
+        if entry is not None:
+            source[(row["material"], entry[0])].append(
+                (row["order_area_sqft"], row["board_feet"]))
     coverage = [row for row in rows if row["pieces"] is None]
     assert coverage
+    actual = defaultdict(list)
     for row in coverage:
-        origin = source[row["material"]]
-        assert row["coverage_sqft"] == origin["order_area_sqft"]
-        assert row["rough_board_feet"] == origin["board_feet"]
+        actual[(row["material"], row["use"])].append(
+            (row["coverage_sqft"], row["rough_board_feet"]))
+    for key, quantities in actual.items():
+        assert sorted(quantities) == sorted(source[key]), key
 
 
 def test_a_panelling_band_with_no_species_stays_out(rows):

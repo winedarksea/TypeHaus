@@ -158,6 +158,7 @@ ROWS: tuple[C, ...] = (
     C("solar_panel", elevation_family="roof", non_solid=True),
     C("earth", finish_group="element", non_solid=True),
     C("framing", non_solid=True),
+    C("stair", non_solid=True),
     # A placeable's body (resolve/placeable_bodies.py). The glTF draws it from canvas_objects.
     C("equipment", trade="mechanical", elevation_family="body", non_solid=True,
       collision=_HARD),
