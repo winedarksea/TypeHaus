@@ -148,7 +148,7 @@ def _point_connection(f: Any, node: Node, model: AnalyticalModel, project_uuid: 
         support = supports[0]
         rotations = support.restrained_rotations()
         connection.AppliedCondition = _boundary_condition(
-            f, support.fixity.value, (True, True, True, *rotations))
+            f, support.fixity.value, (*support.restrained_translations(), *rotations))
         properties = {"fixity": support.fixity.value, "basis": support.basis,
                       "item_id": support.item_id or "", "element_tag": support.element_tag,
                       "restrained_rotations": ";".join(

@@ -126,3 +126,22 @@ def catlin_params(*names: str):
         finally:
             sys.path.remove(str(CATLIN))
     return mods[0] if len(mods) == 1 else mods
+
+
+#: The one line `tests/test_catlin_east_post_variants.py` rewrites (`params/north_entry_frame.py`).
+EAST_POST_SWITCH = Path("params") / "north_entry_frame.py"
+
+
+def east_variant_house(dst: Path, variant: str) -> Path:
+    """A sandbox copy of catlin with ``EAST_POST_SYSTEM`` set to ``variant``.
+
+    Refuses a copy whose switch line is not exactly where the house says it is, so a renamed
+    constant cannot silently leave every variant test grading the default.
+    """
+    house = copy_house(CATLIN, dst)
+    path = house / EAST_POST_SWITCH
+    text = path.read_text(encoding="utf-8")
+    line = next((ln for ln in text.splitlines() if ln.startswith("EAST_POST_SYSTEM = ")), None)
+    assert line is not None, "params/north_entry_frame.py lost its EAST_POST_SYSTEM line"
+    path.write_text(text.replace(line, f'EAST_POST_SYSTEM = "{variant}"', 1), encoding="utf-8")
+    return house

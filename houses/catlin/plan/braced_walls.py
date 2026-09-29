@@ -260,4 +260,11 @@ GARAGE_BRACED_CONNECTORS = [
     Connector(uid="EXWYG5FPB1", tag="CN-G-BWHD-SW", kind=ConnectorKind.HOLD_DOWN,
               position=pt(ft(6, 3.25), ft(43, 5.5)), elevation=inch(-11.25),
               size="STHD14", connects=("W-G-W", "W-GF-W")),
+    # The canopy's E-W shear lands on W-G-S (notes/canopy_garage_diaphragm.md §3f): 271 lb of
+    # end tension at BWP-G-S-0043's west end, beside D-G-SERVICE's east jamb, outside what a
+    # CS-WSP line asks there. Cast into W-GF-S-DR's 6" core like the SW device. The SE end is
+    # R602.10.7 end condition 1 (BWP-G-E-0000, a 144" return) and takes no device.
+    Connector(uid="NEVC5ZWBXS", tag="CN-G-BWHD-S-DR", kind=ConnectorKind.HOLD_DOWN,
+              position=pt(ft(9, 7.75), ft(43, 5.5)), elevation=inch(-11.25),
+              size="STHD14", connects=("W-G-S", "W-GF-S-DR")),
 ]

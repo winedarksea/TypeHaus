@@ -88,6 +88,11 @@ class _Pier:
     #: pad is hooked and bounded by the pad; one into a WALL is straight and bounded by the
     #: authored ``BarSpec.embedment``, which the stem height bounds in turn.
     base_kind: str = ""
+    #: The tag of a PINNED (non-concrete) roof post standing on this pier, or ``None``. Such
+    #: a pier is a short pole under a post base (``canopy_garage_diaphragm.md`` §6): its
+    #: head is the post's base plate, graded with the post, so ``column_head_joint`` and
+    #: ``base_rotation`` — which are about a moment column's head and base — skip it.
+    pinned_head: str | None = None
     #: ROOF area this post carries — a framed field over it (see :func:`_rafter_fields`),
     #: kept apart from ``tributary_ft2`` because a roof is not a deck. A deck carries IRC
     #: Table R301.5's 40 psf occupancy live load; a roof carries SNOW, which on this site is
@@ -1080,6 +1085,11 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
                 handed_wall_basis[tag] = "; ".join(
                     filter(None, (handed_wall_basis.get(tag), arrived)))
 
+    from typehaus.engineering.roof_lateral import current_winds
+
+    # `_base_moments` above ran the roof pass, which filled the winds.
+    pinned_on = {p.below: p.tag for wind in current_winds().values()
+                 for p in wind.pinned if p.below}
     out: list[_Pier] = []
     for post in ctx.plan.all_elements():
         if not isinstance(post, Post) or post.height is None:
@@ -1142,6 +1152,7 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             footing_depth_in=footing.depth.inches if footing is not None else 0.0,
             base_thickness_in=base_thickness,
             base_kind=base_kind,
+            pinned_head=pinned_on.get(post.tag),
             vertical_reinforcement=getattr(post, "vertical_reinforcement", None),
             unmodelled_load=unmodelled.get(post.tag, ()),
             reinforcement=getattr(post, "reinforcement", None),

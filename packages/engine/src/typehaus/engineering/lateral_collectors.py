@@ -146,6 +146,11 @@ def _strap_line(ctx: Any, roof: Any, cases: list[FrameCase], torsions: dict[str,
     from typehaus.hardware.catalog import allowable_for_model
     from typehaus.model.enums import ConnectorKind
 
+    # A declared delivery grades the same straps at 100% of the shear, both ways across the
+    # joint (`diaphragm_delivery`); a second, smaller row here would be two answers.
+    spec = getattr(ctx.plan.by_tag(roof.tag), "diaphragm", None)
+    if getattr(spec, "delivers_to", None) is not None:
+        return
     ties = [e for e in ctx.plan.all_elements()
             if getattr(e, "kind", None) is ConnectorKind.TENSION_TIE
             and roof.tag in (getattr(e, "connects", ()) or ())

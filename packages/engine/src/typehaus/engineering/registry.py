@@ -46,6 +46,12 @@ class EngineeringContext:
     #: off the class flags ``soil_presumed`` and prints the sentence. A site that has said
     #: nothing is presumed.
     soil_basis: object = None
+    #: ``wall tag -> BracingSurplus | None`` — what IRC R602.10 asks of the braced wall line
+    #: a wall stands on, and what its panels provide. Read by ``diaphragm_delivery`` to grade
+    #: a DELIVERED shear on the surplus alone. The arithmetic is ``checks``' (``bracing_eval``)
+    #: and this package may not import it, so ``checks/run.build_engineering`` hands a reader
+    #: in, as it hands the soil class in. ``None`` here makes those rows INCOMPLETE, by name.
+    bracing: object = None
 
 
 #: ``kind`` -> the function that enumerates and computes every item of that kind.

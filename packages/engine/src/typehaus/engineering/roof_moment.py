@@ -28,7 +28,12 @@ from dataclasses import dataclass, field, replace
 from typing import Any
 
 from typehaus.engineering.diaphragm_basis import Distribution, distribute
-from typehaus.engineering.lateral_lines import column_lines, panel_line, panels_under
+from typehaus.engineering.lateral_lines import (
+    column_lines,
+    panel_line,
+    panels_under,
+    receiving_lines,
+)
 from typehaus.engineering.registry import EngineeringContext
 from typehaus.engineering.torsion import column_forces_lb
 
@@ -89,6 +94,9 @@ class FrameCase:
     #: (``torsion.column_forces_lb``). ``k/Σk`` alone is not in moment equilibrium, so this,
     #: not ``columns_governing.shares``, is what every column reader grades.
     column_forces_lb: dict[str, float] = field(default_factory=dict)
+    #: Receiving walls of a neighbouring structure stationed as lines of THIS deck — the
+    #: ones on its boundary that its ``delivers_to`` names (``lateral_lines.receiving_lines``).
+    receiving_tags: tuple[str, ...] = ()
 
 
 #: How many passes the panel share/stiffness fixed point gets, and how still it has to be.
@@ -142,42 +150,36 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
 
     ** NO GUARD CASE. ** A roof header is not a guard, so the guard moment is 0.0.
     """
-    from typehaus.engineering.balcony_wind import Demand, ground_below_ft, solid_bands
     from typehaus.engineering.pier_basis import knee_braced
+    from typehaus.engineering.roof_lateral import (
+        bearing_beams,
+        column_drag_bands,
+        roof_winds,
+    )
     from typehaus.model.elements import Wall
     from typehaus.model.spatial import Roof
-    from typehaus.model.structure import Beam, Post
+    from typehaus.model.structure import Post
     from typehaus.resolve.assembly_material import assembly_structure_material
-    from typehaus.wind import velocity_pressure_psf, wind_basis
-    from typehaus.wind_tables import MAX_VERIFIED_CASE_AB
 
     _FRAMES.clear()
     posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
-    basis = wind_basis(ctx.plan.project.site)
-    if basis is None:
-        return {}
-    ground_ft = ground_below_ft(ctx.plan)
-    # The site's own finished grade, for the exposed length of a shaft — NOT ``ground_ft``,
-    # which is the whole site's minimum and on catlin is the sunken court nine feet down
-    # and half a house away. It stays the q_h datum, where erring tall is the safe way to
-    # err; it is exactly the wrong number for "how much of this column stands in the wind".
-    site_grade = getattr(ctx.plan.project.site, "grade", None)
-    grade_ft = float(site_grade.inches) / 12.0 if site_grade is not None else ground_ft
+    winds = roof_winds(ctx)
 
     out: dict[str, tuple[float, float, str]] = {}
     for roof in sorted(ctx.model.roofs, key=lambda r: r.tag):
         element = ctx.plan.by_tag(roof.tag)
-        if not isinstance(element, Roof):
+        wind = winds.get(roof.tag)
+        if not isinstance(element, Roof) or wind is None:
             continue
-        beams = [b for b in (ctx.plan.by_tag(r) for r in element.bearing_refs)
-                 if isinstance(b, Beam)]
-        if not beams:
-            continue
+        beams = bearing_beams(ctx, element)
         # A header landing in a wall means a shear wall carries this roof — the same gate
         # the deck path applies, and for the same reason.
         if any(isinstance(ctx.plan.by_tag(t), Wall)
                for beam in beams for t in beam.bearing_refs or ()):
             continue
+        # ** A PINNED POST'S BASE HALF GOES DOWN ITS PIER, WHATEVER CARRIES THE ROOF. **
+        # Graded as a short pole by `column_base` (canopy_garage_diaphragm.md §6).
+        out.update(_pinned_piers(ctx, posts, wind))
         columns = sorted({t for beam in beams for t in beam.bearing_refs or ()
                           if t in posts
                           and assembly_structure_material(
@@ -187,20 +189,15 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
         if knee_braced(ctx.plan, {*columns, *(b.tag for b in beams), roof.tag}):
             continue
 
-        rise_ft = (roof.ridge_z_m - roof.eave_z_m) / _M_PER_FT
         top_ft = roof.ridge_z_m / _M_PER_FT
-        if rise_ft <= 0.0 or top_ft <= ground_ft:
-            continue
-        q_h = velocity_pressure_psf(basis, top_ft - ground_ft)
-        member_tags = {b.tag for b in beams}
-        drag_bands = _column_drag_bands(posts, columns, roof, grade_ft)
+        q_h = wind.q_h_psf
+        drag_bands = column_drag_bands(posts, columns, roof, wind.grade_ft)
         exposed_ft = max((b.depth_ft for b in drag_bands), default=0.0)
 
         # ** TWO SHEARS AT TWO LEVER ARMS, NOT ONE AT THE WORSE OF THEM. ** The roof and
         # the headers deliver their force at the roof plane; drag on the columns resolves
         # near the mid-height of the exposed shaft. Carrying the drag up to the roof plane
-        # would roughly double its arm, and on this canopy the columns are about a third of
-        # the projected area — too large a share to overstate and call it rounding.
+        # would roughly double its arm.
         #
         # ** AND THE WORST AXIS IS CHOSEN PER COLUMN, NOT ONCE FOR THE FRAME. ** Under a
         # rigidity split a stiff short column can govern on the axis with the SMALLER total.
@@ -211,14 +208,11 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
         arms = {tag: max(h - exposed_ft / 2.0, 0.0) for tag, h in shafts.items()}
         loads: dict[str, tuple[float, float]] = {}
         frames: dict[str, FrameCase] = {}
+        drag_area = sum(b.area_sf for b in drag_bands)
         for axis in ("x", "y"):
-            top_bands = (*_roof_projection_bands(roof, axis, rise_ft),
-                         *solid_bands(ctx.plan, axis, member_tags, None))
-            top_shear = Demand(axis=axis, q_h_psf=q_h, height_ft=top_ft - ground_ft,
-                               bands=top_bands).storey_shear_lb(MAX_VERIFIED_CASE_AB)
-            drag_shear = Demand(axis=axis, q_h_psf=q_h, height_ft=top_ft - ground_ft,
-                                bands=_drag_for(drag_bands, axis)
-                                ).storey_shear_lb(MAX_VERIFIED_CASE_AB)
+            # The pinned posts' head halves join the roof plane's own shear.
+            top_shear = wind.delivered_lb(axis)
+            drag_shear = wind.pressure_psf * drag_area
             if top_shear + drag_shear <= 0.0:
                 continue
             loads[axis] = (top_shear, drag_shear)
@@ -234,8 +228,8 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
             frames[axis] = replace(frame, column_forces_lb=forces.get(axis, {}))
             _FRAMES.setdefault(roof.tag, []).append(frames[axis])
         per_axis = {axis: _axis_case(roof, len(columns), shafts, arms, axis, top, drag,
-                                     frames.get(axis), exposed_ft, q_h, top_ft - ground_ft,
-                                     basis.describe())
+                                     frames.get(axis), exposed_ft, q_h,
+                                     wind.height_ft, wind.basis_text)
                     for axis, (top, drag) in loads.items()}
         if not per_axis:
             continue
@@ -250,6 +244,59 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
                             case.moment_lb_ft / case.shear_lb if case.shear_lb > 0.0
                             else 0.0)
             out[tag] = (case.moment_lb_ft, 0.0, case.basis)
+    return out
+
+
+def _pinned_piers(ctx: EngineeringContext, posts: dict[str, Any],
+                  wind: Any) -> dict[str, tuple[float, float, str]]:
+    """The cast pier under each PINNED roof post: a short pole, not a moment column.
+
+    ``notes/canopy_garage_diaphragm.md`` §6. The post returns half its own drag to its base
+    (``roof_lateral.PinnedPost``) and the pier adds its own drag over the length it stands
+    out of grade. Both are applied to the pier as a cantilever off its pad top, which is the
+    ``(moment, arm)`` factorisation ``column_base`` turns back into ``P`` at ``h`` above
+    grade for IBC 1807.3.2.1 — the arm less the buried shaft is exactly the short-pole
+    height. No guard case: a roof post is not a guard.
+    """
+    from typehaus.engineering.pier_basis import _round_size
+    from typehaus.model.structure import Pad
+    from typehaus.resolve.assembly_material import assembly_structure_material
+
+    out: dict[str, tuple[float, float, str]] = {}
+    for post in wind.pinned:
+        pier = posts.get(post.below or "")
+        if pier is None or pier.height is None:
+            continue
+        if assembly_structure_material(ctx.plan, pier.assembly) != "concrete":
+            continue
+        pad = ctx.plan.by_tag(pier.supported_by or "")
+        size = _round_size(pier.size)
+        if not isinstance(pad, Pad) or pad.bottom_elevation is None or size is None:
+            continue
+        height_ft = pier.height.inches / 12.0
+        top_ft = (pad.bottom_elevation.inches + pad.thickness.inches) / 12.0 + height_ft
+        exposed_ft = min(max(top_ft - wind.grade_ft, 0.0), height_ft)
+        pier_drag = wind.pressure_psf * size[0] / 12.0 * exposed_ft
+        shear = post.base_lb + pier_drag
+        moment = post.base_lb * height_ft + pier_drag * (height_ft - exposed_ft / 2.0)
+        if shear <= 0.0:
+            continue
+        _SHEARS[pier.tag] = (shear, moment / shear)
+        basis = (
+            f"wind on {wind.roof_tag}: q_h {wind.q_h_psf:.1f} psf ({wind.basis_text}), "
+            f"{wind.pressure_psf:.3f} psf ASD on any band at the §29.3 solid-sign "
+            f"surrogate. {post.tag} is PINNED at both ends, so it resists no storey shear "
+            f"and returns half its own drag ({post.drag_lb:,.2f} lb on a "
+            f"{post.width_ft * 12.0:.2f}\" face over {post.length_ft:.3f}') to this pier's "
+            f"top: {post.base_lb:,.2f} lb. The pier adds its own drag over the "
+            f"{exposed_ft:.3f}' it stands out of grade, {pier_drag:,.2f} lb at mid-height. "
+            f"{shear:,.2f} lb of ASD shear at an effective {moment / shear:.3f}' above the "
+            f"pad top — a SHORT POLE in the soil, graded by `column_base`; the roof's own "
+            f"shear goes to the structure the deck delivers to, not here. "
+            f"GUARD: none — a roof post is not a guard")
+        previous = out.get(pier.tag)
+        if previous is None or moment > previous[0]:
+            out[pier.tag] = (moment, 0.0, basis)
     return out
 
 
@@ -353,6 +400,9 @@ def _split(ctx: EngineeringContext, element: Any, roof: Any, posts: dict[str, An
         return None
 
     panels = panels_under(ctx, roof)
+    receiving = receiving_lines(ctx, element, roof, axis)
+    if receiving is None:
+        return None
     depth_ft = _footprint_extent(roof, axis)
     if depth_ft is None or depth_ft <= 0.0:
         return None
@@ -376,6 +426,7 @@ def _split(ctx: EngineeringContext, element: Any, roof: Any, posts: dict[str, An
                                   diaphragm_shear * trial.get(wall.tag, opening))
                 if line is not None:
                     lines.append(line)
+            lines.extend(receiving)
             stations = sorted({line.station_ft for line in lines})
             span_ft = (stations[-1] - stations[0]) if len(stations) > 1 else 0.0
             if span_ft <= 0.0:
@@ -402,7 +453,8 @@ def _split(ctx: EngineeringContext, element: Any, roof: Any, posts: dict[str, An
         columns_governing=cases[0][2], panels_governing=cases[1][2],
         panel_tags=tuple(sorted(w.tag for w in panels)),
         column_tags=tuple(sorted(shafts)),
-        top_shear_lb=top_shear, head_reactions=dict(head_reactions))
+        top_shear_lb=top_shear, head_reactions=dict(head_reactions),
+        receiving_tags=tuple(sorted(line.tag for line in receiving)))
     return frame
 
 
@@ -429,69 +481,3 @@ def _footprint_extent(roof: Any, axis: str) -> float | None:
     index = 0 if axis == "x" else 1
     values = [p[index] / _M_PER_FT for p in roof.footprint]
     return (max(values) - min(values)) if values else None
-
-
-def _drag_for(bands: tuple[Any, ...], axis: str) -> tuple[Any, ...]:
-    """The column-drag bands, unchanged by direction.
-
-    A round shaft presents the same diameter to wind from any quarter, so unlike a beam
-    there is nothing to filter: both plan directions see every column. Kept as a named
-    function so the symmetry is a stated fact rather than a missing line.
-    """
-    del axis
-    return bands
-
-
-def _roof_projection_bands(roof: Any, axis: str, rise_ft: float) -> tuple[Any, ...]:
-    """The roof's own vertical projection, as one :class:`balcony_wind.Band`.
-
-    A gable seen ALONG its ridge is the gable triangle — half the base times the rise.
-    Seen ACROSS the ridge it is the slope band, the rise over the run along the ridge, once
-    rather than twice: the leeward slope stands in the windward slope's own shadow, and
-    counting both would be projecting the same rise twice onto one plane.
-    """
-    from typehaus.engineering.balcony_wind import Band
-
-    xs = [p[0] / _M_PER_FT for p in roof.footprint]
-    ys = [p[1] / _M_PER_FT for p in roof.footprint]
-    # Wind along y meets the E-W run; wind along x meets the N-S run.
-    run_ft = (max(xs) - min(xs)) if axis == "y" else (max(ys) - min(ys))
-    if run_ft <= 0.0:
-        return ()
-    along_ridge = axis == roof.ridge_direction
-    depth_ft = rise_ft / 2.0 if along_ridge else rise_ft
-    label = "gable-end triangle" if along_ridge else "slope rise"
-    return (Band(f"{roof.tag} {label}", depth_ft, run_ft, roof.tag),)
-
-
-def _column_drag_bands(posts: dict[str, Any], columns: list[str], roof: Any,
-                       grade_ft: float) -> tuple[Any, ...]:
-    """Each cast column's own face, diameter by exposed height.
-
-    ``notes/north_entry_structure.md`` §1a names "column drag" as part of the canopy's
-    demand, and until this existed nothing in the engine held it.
-
-    ** THE EXPOSED HEIGHT IS SITE GRADE TO THE EAVE, AND IT IS A BOUND. ** What catches
-    wind is the shaft between the ground and the roof; ``Site.grade`` is the only ground
-    elevation this module holds that is not the sunken court nine feet down
-    (``balcony_wind.ground_below_ft`` takes the whole site's minimum, which is right for the
-    balcony and absurd here). Eave rather than header soffit makes it an over-count: on the
-    canopy it reads 10.8' against the 9.2' of shaft actually standing out of the ground.
-    Bounded by the shaft's own length, so a column shorter than its own exposure — a
-    modelling error — cannot inflate the demand instead of being noticed.
-    """
-    from typehaus.engineering.balcony_wind import Band
-    from typehaus.engineering.pier_basis import _round_size
-
-    out = []
-    for tag in columns:
-        post = posts[tag]
-        size = _round_size(post.size)
-        if size is None or post.height is None:
-            continue
-        exposed_ft = min(post.height.inches / 12.0,
-                         (roof.eave_z_m / _M_PER_FT) - grade_ft)
-        if exposed_ft <= 0.0:
-            continue
-        out.append(Band(f"{tag} drag", exposed_ft, size[0] / 12.0, tag))
-    return tuple(out)

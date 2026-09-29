@@ -138,6 +138,15 @@ _RE_PANEL = re.compile(
 _RE_ANGLE = re.compile(
     r"^L(?P<leg_a>\d+(?:\.\d+)?)x(?P<leg_b>\d+(?:\.\d+)?)x(?P<thk>\d+(?:\.\d+)?)$"
 )
+# A hollow structural section, decimal like the angle: "HSS4x4x0.25" (B x H x nominal wall)
+# and "HSS4.5x0.237" (round: OD x wall). "HSS4x4x1/4" is REFUSED, not read: an unread string
+# is reported by ``integrity.member_profile_parses`` rather than falling to 1 1/2" x 5 1/2".
+_RE_HSS = re.compile(
+    r"^HSS(?P<b>\d+(?:\.\d+)?)x(?P<h>\d+(?:\.\d+)?)x(?P<t>\d+(?:\.\d+)?)$"
+)
+_RE_HSS_ROUND = re.compile(r"^HSS(?P<od>\d+(?:\.\d+)?)x(?P<t>\d+(?:\.\d+)?)$")
+#: AISC 360-16 §B4.2: an ERW (A500) section's DESIGN wall thickness is 0.93 of nominal.
+HSS_DESIGN_WALL_FACTOR = 0.93
 
 
 def is_sawn_lumber(profile: str) -> bool:
@@ -187,7 +196,7 @@ class CrossSection:
     every shape, including ``"i_joist"`` (there, ``width_m`` is the flange width).
     """
 
-    shape: str  # "rect" | "i_joist" | "round" | "angle" | "floor_truss" | "roof_truss"
+    shape: str  # "rect" | "i_joist" | "round" | "angle" | "hss" | "hss_round" | trusses
     width_m: float  # for "round": the diameter (width_m == depth_m)
     depth_m: float
     flange_width_m: float | None = None
@@ -354,6 +363,19 @@ def cross_section(profile: str) -> CrossSection:
         dia_m = inch(float(match["dia"])).meters
         return CrossSection(shape="round", width_m=dia_m, depth_m=dia_m)
 
+    if match := _RE_HSS.match(text):
+        # Outer dimensions bound it; ``web_thickness_m`` is the NOMINAL wall (x
+        # ``HSS_DESIGN_WALL_FACTOR`` for properties). Drawn as its bounding box, as the angle.
+        return CrossSection(
+            shape="hss", width_m=inch(float(match["b"])).meters,
+            depth_m=inch(float(match["h"])).meters,
+            web_thickness_m=inch(float(match["t"])).meters)
+
+    if match := _RE_HSS_ROUND.match(text):
+        od_m = inch(float(match["od"])).meters
+        return CrossSection(shape="hss_round", width_m=od_m, depth_m=od_m,
+                            web_thickness_m=inch(float(match["t"])).meters)
+
     if text == "engineered-LVL":
         return _rect(*_ENGINEERED_LVL_ACTUAL_IN)
 
@@ -386,6 +408,7 @@ def cross_section(profile: str) -> CrossSection:
 _PARSED_PATTERNS = (
     _RE_MULTI_LVL, _RE_SINGLE_LVL, _RE_RIM, _RE_LSL, _RE_DECK, _RE_TJI, _RE_IJOIST,
     _RE_FLOOR_TRUSS, _RE_ROOF_TRUSS, _RE_ACTUAL, _RE_PANEL, _RE_ROUND, _RE_ANGLE, _RE_BAR,
+    _RE_HSS, _RE_HSS_ROUND,
 )
 #: The profile strings :func:`cross_section` answers by literal comparison rather than by
 #: pattern. Kept beside the branches that spell them so the two cannot drift apart.
@@ -468,7 +491,7 @@ def post_outline(center: tuple[float, float], section: CrossSection) -> list[tup
     somewhere other than the face the reader sees.
     """
     cx, cy = center
-    if section.shape == "round":
+    if section.shape in ("round", "hss_round"):
         return circle_outline(center, section.width_m / 2.0, COLUMN_FACETS)
     hw, hd = section.width_m / 2.0, section.depth_m / 2.0
     return [(cx - hw, cy - hd), (cx + hw, cy - hd), (cx + hw, cy + hd), (cx - hw, cy + hd)]

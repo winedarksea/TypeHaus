@@ -41,6 +41,10 @@ class Fixity(str, Enum):
 
     FIXED = "fixed"      # all six DOF — a cast column doweled into its pad
     PINNED = "pinned"    # translations only — a post on a base, a beam on a wall
+    # The two HORIZONTAL translations only — a deck that DELIVERS its shear across a joint
+    # to a neighbour's diaphragm (``DiaphragmSpec.delivers_to``). No gravity crosses the
+    # joint, so vertical translation stays free; the neighbour is not a member here.
+    LATERAL = "lateral"
 
 
 class LoadCaseKind(str, Enum):
@@ -131,6 +135,10 @@ class Support:
     #: so its support restrains rotation about the beam's own axis and nothing else. Without
     #: that a moment-released beam between two pins is a mechanism, and every solver says so.
     rotations: tuple[bool, bool, bool] | None = None
+
+    def restrained_translations(self) -> tuple[bool, bool, bool]:
+        """DX, DY, DZ. Every fixity holds all three except LATERAL, which frees Z."""
+        return (True, True, False) if self.fixity is Fixity.LATERAL else (True, True, True)
 
     def restrained_rotations(self) -> tuple[bool, bool, bool]:
         if self.rotations is not None:

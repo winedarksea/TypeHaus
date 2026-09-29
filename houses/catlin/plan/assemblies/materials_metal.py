@@ -9,6 +9,13 @@ from typehaus import (
 
 
 MATERIALS_METAL = [
+    # The canopy's east posts when EAST_POST_SYSTEM = "steel" (2026-09-29): ASTM A500 Gr C
+    # HSS, galvanized AFTER fabrication (ASTM A123) and powder-coated — a "duplex" system —
+    # in the house's one exterior dark so it reads with the guards and the trim coil.
+    Material(tag="steel-hss-duplex", name="HSS, hot-dip galvanized + powder-coated (duplex)",
+             r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
+             color="#1c1f24",
+             source="PT-BW-RE/-RNE steel variant — ASTM A500 Gr C, ASTM A123 then powder coat (notes/canopy_garage_diaphragm.md §5)"),
     # --- the metal skins --------------------------------------------------------
     # The house is clad in metal in FIVE specifications. They are all the same white PVDF
     # steel to look at; what separates them is SEAM PROFILE and GAUGE, and both are labour

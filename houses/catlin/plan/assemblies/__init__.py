@@ -35,6 +35,7 @@ from .footings import (
     FOOTING_EXPOSED_20,
     PIER_BASE_12,
     PIER_CONCRETE_12,
+    POST_STEEL_HSS,
 )
 from .foundation import (
     BASEMENT_8,
@@ -129,6 +130,7 @@ __all__ = [
     "EXT_2X6_SWINBURNE",
     "GARAGE_WALL_2X6",
     "PIER_CONCRETE_12",
+    "POST_STEEL_HSS",
     "COURT_FOOTING_12",
     "FOOTING_20",
     "PIER_BASE_12",

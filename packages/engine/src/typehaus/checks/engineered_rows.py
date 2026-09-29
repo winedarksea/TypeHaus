@@ -56,6 +56,14 @@ ROWS: tuple[ItemRow, ...] = (
             "no cast column in this plan is a lateral system",
             "Cast column head joint (connector, shear, torsion)",
             ("ACI 318-19 §22.5", "ACI 318-19 §22.7", "ACI 318-19 §22.8")),
+    ItemRow("steel_post", "steel_post",
+            "A steel HSS post pinned under a roof header: section, saddle and base anchors.",
+            "the steel post — flexural buckling, wall slenderness, the saddle's bolts in "
+            "the header and the base plate's anchors in the pier",
+            "AISC 360-16 §E3, §E7, §H1; AWC NDS 2018 §12.3; ACI 318-19 Ch. 17",
+            "no steel post in this plan carries a roof header",
+            "Steel HSS roof post (section, saddle, base)",
+            ("AISC 360-16 §E3", "AWC NDS 2018 §12.3", "ACI 318-19 Ch. 17")),
     ItemRow("veneer_beam", "veneer_beam",
             "A cast beam carrying a masonry wythe between two walls.",
             "a cast beam carrying a masonry wythe — flexure, shear, torsion, "

@@ -264,7 +264,8 @@ def walls_on_deck(ctx: EngineeringContext, deck: Any) -> list[tuple[Any, tuple, 
 def loads_on(ctx: EngineeringContext, deck: Any, wind: DeckWind
              ) -> tuple[dict[str, list[Load]], list[Load]]:
     """``({axis: wind loads}, guard loads)`` — every force the tie line must take."""
-    from typehaus.engineering.roof_moment import frame_cases_of, roof_base_moments
+    from typehaus.engineering.roof_lateral import panel_forces
+    from typehaus.engineering.roof_moment import roof_base_moments
     from typehaus.model.spatial import Roof
     from typehaus.wind import ASD_WIND_FACTOR, velocity_pressure_psf, wind_basis
     from typehaus.wind_tables import GUST_EFFECT_RIGID, MAX_VERIFIED_CASE_AB
@@ -283,15 +284,16 @@ def loads_on(ctx: EngineeringContext, deck: Any, wind: DeckWind
     for roof in ctx.plan.all_elements():
         if not isinstance(roof, Roof) or roof.diaphragm is None:
             continue
-        for case in frame_cases_of(roof.tag):
-            for tag, share in case.panels_governing.shares.items():
+        # The panel's graded share: the frame split, or the 100% envelope where the roof
+        # delivers to a neighbour (`roof_lateral.panel_forces`, canopy note §4e).
+        for axis, here in sorted(panel_forces(ctx, roof.tag).items()):
+            for tag, force in sorted(here.items()):
                 if tag not in panels:
                     continue
                 (x0, y0), (x1, y1) = panels[tag]
-                force = share * case.diaphragm_shear_lb
-                wind_loads[case.axis].append(Load(
+                wind_loads[axis].append(Load(
                     f"{tag} panel share of {roof.tag}",
-                    force if case.axis == "x" else 0.0, force if case.axis == "y" else 0.0,
+                    force if axis == "x" else 0.0, force if axis == "y" else 0.0,
                     (x0 + x1) / 2, (y0 + y1) / 2))
 
     for wall, (x0, y0), (x1, y1) in on_deck:

@@ -57,7 +57,7 @@ it would order 144 sf of R-38 blown fiberglass and 5/8" gypsum nobody installs.
 | truss-to-header | `CN-BW-TRTIE-W1..3`, `-E1..3` | One **stainless `H2.5ASS`** each end of every truss. Six, not eight, since the fourth truss went. Not the galvanized H2.5A the rest of the house buys: these land on treated southern pine at an entry that is salted every winter. |
 | `BM-BW-RW` / `-RE` | `PT-BW-CW`/`-CNW` and `PT-BW-RE`/`-RNE` | 3-ply 2x12 KDAT, top at +7'-4" = the garage plate. 4'-11 3/4" between columns, running 8 7/8" past the north column so the roof plane reaches the garage wall. That tail carries **no truss** — it backs the deck edge and the fascia return and nothing else. **The two headers do not land on the same thing.** |
 | `PT-BW-CW` / `-CNW` | `PT-BW-W` / `PT-BW-GW` | 6x6 KDAT, 7'-8 1/4", the WEST pair. `ABU66SS` standoff base on a cast-in `AB-058-10-SS`; `CCQ46SDS2.5` cap at the header. `PT-BW-CNW` shares its pier with the garage-side seat beam exactly as `PT-BW-CW` shares one with the house-side seat. |
-| `PT-BW-RE` / `-RNE` | `FT-BW-RE` / `FT-BW-RNE` | The EAST pair, and they are **not** columns on piers — they are one 12" cast concrete pour each, footing to header soffit, **fixed at the base**. No wood on this side at all, so the top joint is an `SS316-SHIM-35` pack and a cast-in `HETA20Z` tie pair, never a post cap. |
+| `PT-BW-RE` / `-RNE` | `PT-BW-PE` / `-PNE` on `PD-BW-RE` / `-RNE` (steel, kdat) or `PD-BW-RE` / `-RNE` direct (cast) | The EAST pair, and **what they are is `EAST_POST_SYSTEM`** (2026-09-29): pinned HSS 4x4x1/4 steel posts on 3'-0" piers by default, 6x6 KDAT on the same piers, or the 2026-09-10 design — one 12" cast pour each, pad to header soffit, fixed at the base, with an `SS316-SHIM-35` pack and a cast-in `HETA20Z` pair at the top. `notes/canopy_garage_diaphragm.md`. (This row named `FT-BW-RE`/`-RNE` until 2026-09-29; they became `Pad`s `PD-BW-*` on 2026-09-14.) |
 
 > ⚠ **NEITHER END OF THE CANOPY IS A GABLE END, and the engine used to think both were.**
 > A gable-end frame is plated with verticals at stud spacing, has no engineered web joints,
@@ -75,6 +75,15 @@ it would order 144 sf of R-38 blown fiberglass and 5/8" gypsum nobody installs.
 > the engine framed both until `_FLUSH_RAKE_TOLERANCE_M` went from 1/2" to 6".
 
 ## 1a. The lateral system (owner, 2026-09-10)
+
+> ⛔ **SUPERSEDED 2026-09-29 — the canopy braces off the GARAGE now (owner, option A).** The
+> east posts are pinned by default (`EAST_POST_SYSTEM`), so the canopy has no E-W line of
+> its own: its deck delivers across the tied joint into `RF-GARAGE` and `W-G-S` / `W-G-E` /
+> `W-G-W`, every part graded at 100% (`notes/canopy_garage_diaphragm.md`). The three
+> objections below are answered there, not dropped: the movement joint moved to the HOUSE
+> end on 2026-09-22; the chords and collectors are designed, graded parts; and the canopy's
+> north line bears on the garage's own plane. This section is kept as the record of the
+> 2026-09-10 design, which survives as the `cast` variant.
 
 > ⚠ **This section said the canopy had no lateral system of its own and borrowed the
 > garage's roof diaphragm. That is withdrawn, and it was indefensible on its own terms.**
@@ -113,8 +122,10 @@ quote.** `engineering/roof_moment.roof_base_moments` will not read Fig. 27.3-4's
 copyrighted, and this repository holds no cell of it — so it bounds the demand instead,
 taking the roof's vertical projection as a solid sign at Fig. 29.3-1's Case A/B ceiling.
 That is **2.1x** the §27.3.2 hand pass below in the same direction, and it grades the
-north-south case rather than this one. `PT-BW-RE` lands at **d/c 0.71** magnified and
-`PT-BW-RNE` at **0.55**, both OK, on the ACI minimum cage and with no section change.
+north-south case rather than this one. `PT-BW-RE` landed at **d/c 0.71** magnified and
+`PT-BW-RNE` at **0.55** on 2026-09-10; after §6a's common plane (2026-09-20) both read
+0.57 magnified under the §2.3.1 envelope, and since 2026-09-29 only the `cast` variant has
+them at all (`canopy_garage_diaphragm.md` §7).
 `notes/north_entry_piers.md` §8 is the hand pass and §8c is the arithmetic of the gap.
 
 **West — a sheathed shear panel.** `W-BW-SCREEN`, KDAT 2x4 at 16" o.c., deck to +4'-0",
@@ -133,7 +144,8 @@ the canopy no longer depends on it. **The movement joint that remains is at the 
 which is where two independently founded structures actually meet (§5).
 
 > ⚠ **NOT GRADED HERE, and both belong to the engineer of record.** (1) The fixed-base
-> assumption itself: `PT-BW-RNE` has 4'-2" of embedment below grade against roughly 5'-6"
+> assumption itself: `PT-BW-RNE` had 4'-2" of embedment below grade (7.33' since the common
+> −10'-2" plane of 2026-09-20, graded by `column_base`) against roughly 5'-6"
 > that IBC 1807.3.2.1's non-constrained formula wants for this moment in presumptive sand,
 > and the 2'-0" pad's contribution is not in that formula at all. (2) Slenderness as a SWAY
 > column: k·l_u/r is about 74 on the 9'-2 3/4" exposed length, where the pier calc's
@@ -414,8 +426,9 @@ treated member in this assembly and repeating it per element invites drift.
 
 ## 7. Excavation and release conditions
 
-> ⚠ **Sequencing, and it is worth more than any dimension in this note.** All five north
-> entry piers bottom at −9'-9 7/16", the same elevation as the house footing, about ten
+> ⚠ **Sequencing, and it is worth more than any dimension in this note.** The three
+> HOUSE-side north entry piers (`PT-BW-W`, `-E` and the east-line pier) bottom on the house
+> footing's own plane (their 12" moment pads to −9'-9 7/16" and below), about ten
 > inches away. Cast in the open basement excavation — the owner's stated premise, and the
 > only reason reaching that depth is cheap — that is a non-issue. Cast **after** the house
 > footing is in and backfilled, a shaft ten inches away bearing at the same depth is
@@ -432,6 +445,11 @@ exists), and the truss fabricator's design — **quoted against the drift case, 
 snow**. See `notes/north_entry_piers.md` §7 for what the calculations themselves exclude.
 
 ## 8. The rest of the canopy's lateral path — SPLIT OUT
+
+> ⛔ **2026-09-29:** the E-W north-line path below is no longer a collector row on a
+> self-bracing canopy — it is the whole E-W delivery, graded at 100% with the straps both
+> ways, the gable-frame clips and `W-G-S`'s surplus in `notes/canopy_garage_diaphragm.md`
+> §3. "Freestanding" now holds for gravity only.
 
 §8 (the chord's delegation, the three collectors, the hold-down's concrete anchorage and the
 torsional term) is in **`notes/north_entry_canopy_lateral.md`**, because this file was already

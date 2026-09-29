@@ -209,8 +209,11 @@ GARAGE_ROOF = Assembly(
 # BM-BW-RW/RE, which are southward extensions of the garage's own two truss bearing lines,
 # so the two roof planes are ONE plane: change this layer's depth, spacing or heel and the
 # canopy steps off the garage roof at the joint. The sheathing runs continuous across the
-# garage south wall line even though the `Roof` elements are separate — that continuity is
-# the canopy's whole lateral system (AN-BW-ROOF says so, and so must the drawings).
+# garage south wall line even though the `Roof` elements are separate, and since 2026-09-29
+# it is again the canopy's lateral path — but now a DESIGNED one: seven LSTA24 straps across
+# the joint, LTP4 clips from the gable frame into W-G-S, and every part graded at 100% on
+# lateral_system/RF-BW-CANOPY (RF-BW-CANOPY.diaphragm.delivers_to,
+# notes/canopy_garage_diaphragm.md). AN-BW-ROOF says so, and so must the drawings.
 #
 # ** WHAT IS DELETED IS THE WHOLE REASON IT IS A SEPARATE ASSEMBLY. ** No `cavity` and no
 # `default_lining`. `roof_ceiling_area_m2` bills off the BEARING footprint, so extending

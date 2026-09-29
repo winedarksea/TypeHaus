@@ -16,6 +16,12 @@ carries the prose a reviewer disagrees with. There are exactly three claims here
 * **A beam bearing on a wall or a foundation is a PINNED support node.** The wall is not a
   member in this version (see ``scope.py``); the bearing is real and is where the load goes
   to ground.
+* **A deck that delivers its shear to a neighbour is held LATERALLY where its beams meet
+  the joint** (2026-09-29, ``DiaphragmSpec.delivers_to``). Each bearing beam's end on the
+  joint line gets a :attr:`Fixity.LATERAL` support — both horizontal translations held,
+  vertical free, because no gravity crosses the joint — whose basis names the receiving
+  roof and walls. The neighbour's diaphragm and walls are not members here; the support is
+  where the canopy's shear leaves this graph, graded at 100% on ``lateral_system/<roof>``.
 
 **Rotations are part of the claim, not a consequence of the fixity.** A pin that freed all
 three rotations would let a beam roll about its own axis and spin about Z, and a solver
@@ -87,7 +93,54 @@ def derive_supports(ctx: Any, scope: Any, graph: Any) -> tuple[Support, ...]:
             basis=(f"{beam_tag} bears on {ref}: pinned — free to rotate in bending over "
                    f"the bearing — and the bearing plate holds the beam against ROLL about "
                    f"its own axis (global {roll}). {ref} is not a member in this model")))
+    out.extend(_delivery_supports(ctx, graph, seen))
     return tuple(sorted(out, key=lambda s: (s.node, s.element_tag)))
+
+
+#: How far a beam's end node may stand off the joint line and still be ON it, metres.
+_JOINT_TOLERANCE_M = 0.05
+
+
+def _delivery_supports(ctx: Any, graph: Any, seen: set[str]) -> list[Support]:
+    """A LATERAL support at every in-scope bearing beam's end on a delivering deck's joint."""
+    from typehaus.model.spatial import Roof
+
+    positions = {node.id: node for node in graph.nodes}
+    out: list[Support] = []
+    for roof in sorted((e for e in ctx.plan.all_elements() if isinstance(e, Roof)),
+                       key=lambda r: r.tag):
+        delivery = getattr(getattr(roof, "diaphragm", None), "delivers_to", None)
+        if delivery is None:
+            continue
+        joints = [ctx.plan.by_tag(t) for t in delivery.joint_refs]
+        points = [j.position.xy_m for j in joints if j is not None and j.position is not None]
+        if len(points) < 2:
+            continue
+        xs, ys = [p[0] for p in points], [p[1] for p in points]
+        along_x = (max(xs) - min(xs)) >= (max(ys) - min(ys))
+        line = sum(ys) / len(ys) if along_x else sum(xs) / len(xs)
+        walls = ", ".join(row.wall for row in delivery.lines) or "no wall"
+        for beam in roof.bearing_refs:
+            pieces = graph.beam_spans.get(beam, ())
+            ends = {n for member in graph.members if member.id in pieces
+                    for n in (member.n0, member.n1)}
+            for node_id in sorted(ends):
+                node = positions.get(node_id)
+                if node is None or node_id in seen:
+                    continue
+                across = node.y_m if along_x else node.x_m
+                if abs(across - line) > _JOINT_TOLERANCE_M:
+                    continue
+                seen.add(node_id)
+                out.append(Support(
+                    node=node_id, fixity=Fixity.LATERAL, element_tag=beam,
+                    item_id=f"lateral_system/{roof.tag}",
+                    basis=(f"{roof.tag} delivers its shear across the joint to "
+                           f"{delivery.roof} ({walls}): {beam}'s end on the joint line is "
+                           f"held in both horizontal directions and free vertically — no "
+                           f"gravity crosses the joint. The receiving roof and walls are not "
+                           f"members here; lateral_system/{roof.tag} grades them at 100%")))
+    return out
 
 
 def _base_rotations(carried: list[tuple[float, float]]

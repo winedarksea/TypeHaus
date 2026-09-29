@@ -211,3 +211,82 @@ def _height_ft(wall) -> float | None:
     top = getattr(wall, "top", None)
     inches = getattr(top, "inches", None)
     return None if inches is None else float(inches) / 12.0
+
+
+def panel_runs_along(ctx, wall, axis: str) -> bool:
+    """Whether a wall's own run is parallel to ``axis`` — the only direction it resists."""
+    ends = _ends_ft(ctx, wall)
+    if ends is None:
+        return False
+    (x0, y0), (x1, y1) = ends
+    length = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+    if length <= 0.0:
+        return False
+    along = abs(y1 - y0) / length if axis == "y" else abs(x1 - x0) / length
+    return along >= 1.0 - _PARALLEL_TOLERANCE
+
+
+#: How far off a deck's footprint edge a receiving wall's axis may stand and still be the
+#: deck's BOUNDARY line — the joint is drawn to the sheathing plane, the wall to its node.
+_BOUNDARY_TOLERANCE_FT = 0.5
+
+
+def on_boundary(ctx, wall, resolved_roof) -> bool:
+    """A wall running along one edge of a deck's plan footprint, within the tolerance."""
+    ends = _ends_ft(ctx, wall)
+    if ends is None or not resolved_roof.footprint:
+        return False
+    xs = [p[0] / _M_PER_FT for p in resolved_roof.footprint]
+    ys = [p[1] / _M_PER_FT for p in resolved_roof.footprint]
+    (x0, y0), (x1, y1) = ends
+    tol = _BOUNDARY_TOLERANCE_FT
+    if abs(y1 - y0) <= tol:
+        return any(abs(y0 - edge) <= tol for edge in (min(ys), max(ys)))
+    if abs(x1 - x0) <= tol:
+        return any(abs(x0 - edge) <= tol for edge in (min(xs), max(xs)))
+    return False
+
+
+def receiving_lines(ctx, element, resolved_roof, axis: str) -> list[Line] | None:
+    """The receiving walls on this deck's own boundary, as lines, for a §1604.4 split.
+
+    Only where the deck ``delivers_to`` a neighbour AND the wall stands on the deck's own
+    boundary (the joint); a wall under the receiving roof is reached through that roof's
+    diaphragm, not stationed here. The stiffness is SDPWS 4.3-1's shear term on the
+    SURPLUS braced length — ``1000 G_a L / h`` — the required length being spent on the
+    receiving building's own wind (``notes/canopy_garage_diaphragm.md`` §7). Returns
+    ``None`` (refuse the split) where a stationed wall's surplus cannot be read.
+    """
+    spec = getattr(element, "diaphragm", None)
+    delivery = getattr(spec, "delivers_to", None)
+    if delivery is None:
+        return []
+    reader = getattr(ctx, "bracing", None)
+    out: list[Line] = []
+    for row in delivery.lines:
+        wall = ctx.plan.by_tag(row.wall)
+        if wall is None or not panel_runs_along(ctx, wall, axis):
+            continue
+        if not on_boundary(ctx, wall, resolved_roof):
+            continue
+        surplus = reader(row.wall) if callable(reader) else None
+        resolved = ctx.model.wall(row.wall)
+        if surplus is None or resolved is None:
+            return None
+        _line_tag, provided, required = surplus
+        length_ft = max(provided - required, 0.0)
+        height_ft = (resolved.z1_m - resolved.z0_m) / _M_PER_FT
+        if length_ft <= 0.0 or height_ft <= 0.0:
+            return None
+        stiffness = 1000.0 * row.apparent_stiffness_kips_per_in * length_ft / height_ft
+        (x0, y0), (x1, y1) = _ends_ft(ctx, wall)
+        out.append(Line(
+            tag=row.wall, kind="receiving wall",
+            station_ft=(x0 + x1) / 2.0 if axis == "y" else (y0 + y1) / 2.0,
+            x_ft=(x0 + x1) / 2.0, y_ft=(y0 + y1) / 2.0,
+            stiffness_lb_per_in=stiffness, element_tags=(row.wall,),
+            how=(f"SDPWS 4.3-1's shear term on the {length_ft:.3f}' of surplus braced "
+                 f"length ({provided:.2f}' provided less {required:.2f}' required), "
+                 f"h {height_ft:.3f}', G_a {row.apparent_stiffness_kips_per_in:.0f} "
+                 f"kips/in: the STIFF reading, which is why the garage rows keep 100%")))
+    return out

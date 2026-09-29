@@ -57,7 +57,8 @@ def apply_post_caps(graph: Any, supports: tuple[Support, ...]) -> tuple[str, ...
             gaps.append(f"{post}: the post cap is left a RIGID knee — {why}; its frame "
                         f"moments are not a claim any record makes")
             continue
-        if not _base_holds(graph.post_base.get(post), axis, held, at_node, z):
+        if not (_base_holds(graph.post_base.get(post), axis, held, at_node, z)
+                or _laterally_held(continuous, graph, supports)):
             gaps.append(f"{post}: the post cap is left a RIGID knee — its base is free about "
                         f"global {axis}, so a hinged cap would make the column pin-pin in "
                         f"{continuous[0]}'s plane; what braces that frame is not modelled")
@@ -71,6 +72,19 @@ def apply_post_caps(graph: Any, supports: tuple[Support, ...]) -> tuple[str, ...
             graph.assumptions = (*graph.assumptions, _CAP_ASSUMPTION)
     graph.members = tuple(sorted(members.values(), key=lambda m: m.id))
     return tuple(gaps)
+
+
+def _laterally_held(beams: list[str], graph: Any, supports: tuple[Support, ...]) -> bool:
+    """A continuous beam held horizontally by a delivered-joint support braces its frame, so
+    a pin-pin column under it is a column in a braced frame and not a mechanism."""
+    from typehaus.analytical.graph import Fixity
+
+    lateral = {s.node for s in supports if s.fixity is Fixity.LATERAL}
+    for tag in beams:
+        pieces = graph.beam_spans.get(tag, ())
+        if any(n in lateral for m in graph.members if m.id in pieces for n in (m.n0, m.n1)):
+            return True
+    return False
 
 
 def _released_at(member: Member, node: str) -> bool:

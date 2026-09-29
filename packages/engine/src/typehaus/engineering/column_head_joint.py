@@ -86,7 +86,8 @@ def enumerate_heads(ctx: EngineeringContext) -> list[str]:
     grades in bending, whether it stands on a pad, a footing or a wall."""
     from typehaus.engineering.pier_basis import cast_piers
 
-    return sorted(pier.tag for pier in cast_piers(ctx) if pier.lateral_system)
+    return sorted(pier.tag for pier in cast_piers(ctx)
+                  if pier.lateral_system and pier.pinned_head is None)
 
 
 @calc(KIND)
@@ -94,7 +95,8 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
     from typehaus.engineering.lateral_system import column_head_reactions
     from typehaus.engineering.pier_basis import cast_piers
 
-    piers = [pier for pier in cast_piers(ctx) if pier.lateral_system]
+    piers = [pier for pier in cast_piers(ctx)
+             if pier.lateral_system and pier.pinned_head is None]
     heads = column_head_reactions(ctx)
     return [_one(ctx, pier, heads.get(pier.tag)) for pier in piers]
 

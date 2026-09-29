@@ -14,9 +14,11 @@ one part. The rows are EXCLUDED from ``structural_solids`` (``framing.py`` calls
 :func:`steel_member_tags`), because a member that bills here must not also bill there.
 
 WHAT COUNTS AS STEEL, and it is deliberately narrow: a profile whose ``cross_section``
-resolves ``shape == "angle"``. That is the only rolled shape this engine's profile grammar
-parses today — there is no W, C or HSS pattern — so widening the test would be guessing at
-strings nobody can author. When one of those patterns lands, name its shape here.
+resolves to a shape named in :data:`STEEL_SHAPES` — the angle, and since 2026-09-29 the
+hollow structural section (``"HSS4x4x0.25"``, square or round). There is no W or C pattern,
+so widening the test would be guessing at strings nobody can author. A fabricated HSS post
+(saddle and base plate welded on, galvanized and powder-coated) is bought as ONE PIECE, so
+its ``[steel_members]`` row is priced ``ea`` against ``count``, not by the foot.
 """
 
 from __future__ import annotations
@@ -30,7 +32,7 @@ from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 _FT_PER_IN = 1.0 / 12.0
 
 #: ``CrossSection.shape`` values billed by this table. See the module docstring.
-STEEL_SHAPES = frozenset({"angle"})
+STEEL_SHAPES = frozenset({"angle", "hss", "hss_round"})
 
 
 class _SteelMemberTotals(TypedDict):

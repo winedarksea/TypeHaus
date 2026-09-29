@@ -9,6 +9,7 @@
 from typehaus import (
     Alarm,
     AlarmKind,
+    DiaphragmDelivery,
     DiaphragmSpec,
     Door,
     DischargeExtension,
@@ -25,6 +26,7 @@ from typehaus import (
     PublishedSpan,
     Railing,
     RailingKind,
+    ReceivingLine,
     Roof,
     RoofForm,
     Room,
@@ -509,6 +511,23 @@ ROOFS = [
          # headers on two columns. This roof stops at its own gable end.
          edge_overhangs=(("south", ft(0)),),
          edge_trim_material="metal-dark-exterior",
+         # ** IT RECEIVES THE CANOPY'S N-S SHEAR SINCE 2026-09-29, SO IT IS A DIAPHRAGM. **
+         # RF-BW-CANOPY delivers across the joint into this deck's south gable, and the deck
+         # carries it to W-G-E / W-G-W by the lever rule — 22 plf of increment against the
+         # UNBLOCKED row (notes/canopy_garage_diaphragm.md §3d). No blocking is required, so
+         # the drift trusses truss-000/-001 are untouched. Graded on
+         # lateral_system/RF-BW-CANOPY, not on an item of its own.
+         diaphragm=DiaphragmSpec(
+             sheathing_layer="deck",
+             fastening='8d common (0.131" x 2 1/2") at 6" o.c. at the boundary and panel edges, 12" o.c. in the field; UNBLOCKED, Case 1',
+             source="AWC SDPWS-2015 Table 4.2A, UNBLOCKED wood structural panel diaphragm, Case 1, 15/32in Structural I with 8d at 6in boundary and edges — quoted conservatively for this 3/4in deck, v_w 335 plf nominal / 2.0",
+             unit_shear_asd_plf=167.5,
+             apparent_stiffness_kips_per_in=7.0,
+             blocked=False,
+             chords="the 2x6 double top plates of W-G-E and W-G-W, lapped per R602.3.2",
+             chord_member="2x6", chord_plies=2,
+             collector_refs=("W-G-E", "W-G-W"),
+         ),
          eave_trim=_GARAGE_EAVE_TRIM),
     # ** THE PASSAGE CANOPY, AND IT IS ITS OWN `Roof` FOR A TAKEOFF REASON, NOT A FRAMING ONE. **
     # `roof_ceiling_area_m2` bills off the BEARING footprint, so extending RF-GARAGE over the
@@ -575,6 +594,23 @@ ROOFS = [
              chord_member="2x4", chord_plies=1,
              chord_splice_slip=inch(0.03),
              collector_refs=("BM-BW-RW", "BM-BW-RE"),
+             # ** THE CANOPY BRACES OFF THE GARAGE (owner, 2026-09-29, option A). ** The east
+             # posts are pinned in two of the three EAST_POST_SYSTEM variants, so the deck
+             # hands its shear across the joint: E-W to W-G-S through RF-GARAGE's gable
+             # frame, N-S through RF-GARAGE to W-G-E / W-G-W. Every part below is graded at
+             # 100% on lateral_system/RF-BW-CANOPY (notes/canopy_garage_diaphragm.md).
+             delivers_to=DiaphragmDelivery(
+                 roof="RF-GARAGE",
+                 lines=(
+                     ReceivingLine(wall="W-G-S", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panel sheathing, 15/32in with 8d at 6in edges (the 5/8in CDX quoted conservatively), v_w 365 plf nominal / 2.0"),
+                     ReceivingLine(wall="W-G-E", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panel sheathing, 15/32in with 8d at 6in edges (the 5/8in CDX quoted conservatively), v_w 365 plf nominal / 2.0"),
+                     ReceivingLine(wall="W-G-W", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panel sheathing, 15/32in with 8d at 6in edges (the 5/8in CDX quoted conservatively), v_w 365 plf nominal / 2.0"),
+                 ),
+                 joint_refs=("CN-BW-JOINT-1", "CN-BW-JOINT-2", "CN-BW-JOINT-3", "CN-BW-JOINT-4", "CN-BW-JOINT-5", "CN-BW-JOINT-6", "CN-BW-JOINT-7"),
+                 plate_clip_refs=("CN-BW-GCLIP-1", "CN-BW-GCLIP-2", "CN-BW-GCLIP-3", "CN-BW-GCLIP-4", "CN-BW-GCLIP-5", "CN-BW-GCLIP-6", "CN-BW-GCLIP-7"),
+                 open_front=True,
+                 differential_movement="the canopy's north line (PT-BW-RNE, PT-BW-GW) bears on the garage's own -7ft 0in plane and its south line on the house-side -9ft 9-7/16in plane; the headers are simple spans between them, so a differential rotates each as a rigid body. Tolerance 3/16in (L/360 of the 5.72ft header), what the H2.5ASS ties and the LSTA24 strap line take without distress. The soil is presumed; a soils report predicting more reopens canopy_garage_diaphragm.md §8",
+             ),
          ),
          # ** NEITHER END OF THIS ROOF IS A GABLE END, AND ONE OF THEM LOOKS LIKE ONE. **
          # A gable-end frame is plated with verticals at stud spacing and no engineered web

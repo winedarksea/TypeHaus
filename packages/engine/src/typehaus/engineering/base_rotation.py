@@ -66,9 +66,13 @@ oracled_by(KIND, Oracle(note="column_base_rotation.md", test="tests/test_base_ro
 
 
 def _pole_tags(ctx: EngineeringContext) -> list[str]:
+    """``column_base``'s set less the short poles under PINNED posts: a second-order sway
+    increment is a moment column's question, and a pier under a post base has no head
+    moment for P-delta to magnify (``notes/canopy_garage_diaphragm.md`` §6)."""
     from typehaus.engineering.column_base import enumerate_column_bases
 
-    return enumerate_column_bases(ctx)
+    pinned = {p.tag for p in cast_piers(ctx) if p.pinned_head is not None}
+    return [tag for tag in enumerate_column_bases(ctx) if tag not in pinned]
 
 
 def _wall_borne(ctx: EngineeringContext) -> list[_Pier]:

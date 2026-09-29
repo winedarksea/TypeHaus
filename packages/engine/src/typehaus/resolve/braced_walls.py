@@ -19,6 +19,14 @@ carrying a light-frame wall on the weather envelope. Its ``kind`` is MEASURED, a
   the concrete box around it.
 - ``braced`` — everything else.
 
+**A braced line may ALSO receive a delivered shear** (``delivered_by``, 2026-09-29): a
+neighbouring deck with no lateral line of its own names this line's walls in its
+``DiaphragmSpec.delivers_to``. The line keeps its prescriptive grade for its own
+building's wind; the delivered load is graded on the delivering roof's
+``lateral_system/<roof>`` item, on the line's surplus length (IRC R301.1.3). That is the
+third state — prescriptive + delivered — and it is a field, not a kind, because every
+reader that counts braced lines must still count it.
+
 **A panel is never derived from sheathed length.** Sheathing a wall is not bracing it — a
 panel has a minimum length, and at a line's end a return, a hold-down or a minimum-length
 panel. Counting sheathed feet would pass a house with no hold-downs in it.
@@ -81,6 +89,8 @@ class BracedWallLine:
     method: str                        #: what the sheathing COULD support, not what it is
     wall_tags: tuple[str, ...]
     kind: str = KIND_BRACED
+    #: Roof tags whose ``DiaphragmSpec.delivers_to`` names a wall on this line.
+    delivered_by: tuple[str, ...] = ()
 
     @property
     def length_ft(self) -> float:
@@ -163,6 +173,8 @@ def braced_wall_lines(model, storey: str) -> list[BracedWallLine]:
             p0=p0, p1=p1, length_m=length, method=_method(members), wall_tags=tags))
     lines = [_with_kind(model, line, walls) for line in raw]
     lines = _mark_gable_ends(model, storey, lines)
+    lines = [_replace_delivered(line, delivering_roofs(model.plan, line.wall_tags))
+             for line in lines]
     return sorted(lines, key=lambda item: (-item.length_m, item.tag))
 
 
@@ -189,6 +201,50 @@ def _with_kind(model, line: BracedWallLine, walls) -> BracedWallLine:
     else:
         kind = KIND_BRACED
     return _replace(line, kind)
+
+
+def delivering_roofs(plan, wall_tags) -> tuple[str, ...]:
+    """Roofs whose declared delivery names any of these walls as a receiving line."""
+    from typehaus.model.spatial import Roof
+
+    wanted = set(wall_tags)
+    out = []
+    for roof in plan.all_elements():
+        spec = getattr(roof, "diaphragm", None) if isinstance(roof, Roof) else None
+        delivery = getattr(spec, "delivers_to", None)
+        if delivery is not None and wanted & {line.wall for line in delivery.lines}:
+            out.append(roof.tag)
+    return tuple(sorted(out))
+
+
+def diaphragm_roof_over(model, wall_tags) -> str | None:
+    """The roof carrying a ``DiaphragmSpec`` whose plan footprint these walls stand under.
+
+    What an ENGINEERED line (every wall a ``ShearPanelSpec``) hands its verdict to. By
+    geometry, never by tag: the wall's midpoint inside the roof's footprint box.
+    """
+    from typehaus.model.spatial import Roof
+
+    for roof in sorted(model.roofs, key=lambda r: r.tag):
+        element = model.plan.by_tag(roof.tag)
+        if not isinstance(element, Roof) or element.diaphragm is None or not roof.footprint:
+            continue
+        xs = [p[0] for p in roof.footprint]
+        ys = [p[1] for p in roof.footprint]
+        for tag in wall_tags:
+            wall = model.wall(tag)
+            if wall is None:
+                continue
+            (ax, ay), (bx, by) = wall.axis
+            mx, my = (ax + bx) / 2.0, (ay + by) / 2.0
+            if min(xs) - 1e-6 <= mx <= max(xs) + 1e-6 and min(ys) - 1e-6 <= my <= max(ys) + 1e-6:
+                return roof.tag
+    return None
+
+
+def _replace_delivered(line: BracedWallLine, roofs: tuple[str, ...]) -> BracedWallLine:
+    from dataclasses import replace
+    return replace(line, delivered_by=roofs) if roofs else line
 
 
 def _replace(line: BracedWallLine, kind: str) -> BracedWallLine:

@@ -50,16 +50,21 @@ from typehaus.engineering.item import (
 from typehaus.engineering.lateral_collectors import collector_rows, torsion_rows
 from typehaus.engineering.lateral_lines import panel_geometry_ft
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
+from typehaus.engineering.diaphragm_delivery import delivery_rows
+from typehaus.engineering.roof_lateral import panel_forces, wind_of
 from typehaus.engineering.roof_moment import FrameCase, frame_cases_of, roof_base_moments
 from typehaus.engineering.torsion import Torsion, torsion_for
 
 KIND = "lateral_system"
 
-BASIS = ("AWC SDPWS-2015 §4.2 (diaphragms) and §4.3 (shear walls); IBC 2018 §1604.4 "
-         "(distribution in proportion to rigidity); ASCE 7-16 §26.2 (flexible diaphragm)")
+BASIS = ("AWC SDPWS-2015 §4.2 (diaphragms, §4.2.5.2 open front) and §4.3 (shear walls); "
+         "IBC 2018 §1604.4 (distribution in proportion to rigidity); ASCE 7-16 §26.2 "
+         "(flexible diaphragm); IRC R301.1.3 (a delivered load on a prescriptive line)")
 
 #: 1: the kind as introduced, 2026-09-19.
-BASIS_VERSION = "1"
+#: 2: a declared ``delivers_to`` is graded (joint, receiver, receiving lines) and every panel
+#: is taken at the 100% envelope where a deck delivers — 2026-09-29.
+BASIS_VERSION = "2"
 
 oracled_by(
     KIND,
@@ -69,6 +74,9 @@ oracled_by(
     # its own file because `north_entry_structure.md` was already 429 lines.
     Oracle(note="north_entry_canopy_lateral.md", section="§8",
            test="tests/test_lateral_system_calcs.py"),
+    # §3/§4 — the delivery to a neighbour (`diaphragm_delivery`), and the envelope.
+    Oracle(note="canopy_garage_diaphragm.md", section="§3-§4",
+           test="tests/test_diaphragm_delivery_calcs.py"),
 )
 
 
@@ -76,8 +84,14 @@ def _declared(ctx: EngineeringContext) -> list[str]:
     """Roof tags carrying a ``DiaphragmSpec`` — the ones that made the claim."""
     from typehaus.model.spatial import Roof
 
-    return sorted(e.tag for e in ctx.plan.all_elements()
-                  if isinstance(e, Roof) and e.diaphragm is not None)
+    roofs = [e for e in ctx.plan.all_elements()
+             if isinstance(e, Roof) and e.diaphragm is not None]
+    # A roof that only RECEIVES a neighbour's delivery is graded on the delivering roof's
+    # item — one design, one seal — and has no item of its own unless it delivers too.
+    receivers = {r.diaphragm.delivers_to.roof for r in roofs
+                 if r.diaphragm.delivers_to is not None}
+    return sorted(r.tag for r in roofs
+                  if r.tag not in receivers or r.diaphragm.delivers_to is not None)
 
 
 @keys(KIND)
@@ -98,14 +112,17 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
     element = ctx.plan.by_tag(tag)
     spec = element.diaphragm
     cases = frame_cases_of(tag)
-    if not cases:
+    wind = wind_of(tag)
+    delivery = spec.delivers_to
+    if not cases and (delivery is None or wind is None):
         return EngineeringRecord(
             item_id=ident, kind=KIND, key=tag,
             basis_version=BASIS_VERSION, basis=BASIS, status=Status.INCOMPLETE,
             summary=f"{tag}: a diaphragm is declared and no distribution could be built on it",
             missing=("a frame shear to distribute — `engineering/roof_moment` derived none "
-                     "for this roof, so either no wind basis resolves, no cast column "
-                     "carries it, or every resisting line stands on one station",),
+                     "for this roof and it declares no `delivers_to`, so either no wind "
+                     "basis resolves, no cast column carries it, or every resisting line "
+                     "stands on one station",),
             element_tags=(tag,))
 
     states: list[LimitState] = []
@@ -114,19 +131,22 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
     inputs: list[Quantity] = []
 
     limit = DIAPHRAGM_ASPECT_BLOCKED if spec.blocked else DIAPHRAGM_ASPECT_UNBLOCKED
-    worst_aspect = max(cases, key=lambda c: c.span_ft / c.depth_ft if c.depth_ft else 0.0)
-    states.append(LimitState(
-        "diaphragm span-to-depth", worst_aspect.span_ft / worst_aspect.depth_ft, limit, "",
-        f"SDPWS Table 4.2.4, wood structural panel "
-        f"{'blocked' if spec.blocked else 'UNBLOCKED'} — "
-        f"{worst_aspect.span_ft:.1f}' between the lines over {worst_aspect.depth_ft:.1f}' "
-        f"of depth on the {_direction(worst_aspect.axis)} case"))
+    if cases:
+        worst_aspect = max(cases,
+                           key=lambda c: c.span_ft / c.depth_ft if c.depth_ft else 0.0)
+        states.append(LimitState(
+            "diaphragm span-to-depth", worst_aspect.span_ft / worst_aspect.depth_ft, limit,
+            "", f"SDPWS Table 4.2.4, wood structural panel "
+                f"{'blocked' if spec.blocked else 'UNBLOCKED'} — "
+                f"{worst_aspect.span_ft:.1f}' between the lines over "
+                f"{worst_aspect.depth_ft:.1f}' of depth on the "
+                f"{_direction(worst_aspect.axis)} case"))
 
-    boundary = max((_boundary_shear_plf(case), case) for case in cases)
-    states.append(LimitState(
-        "diaphragm unit shear", boundary[0], spec.unit_shear_asd_plf, "plf",
-        f"{spec.source}; the larger line reaction on the "
-        f"{_direction(boundary[1].axis)} case over {boundary[1].depth_ft:.1f}' of depth"))
+        boundary = max((_boundary_shear_plf(case), case) for case in cases)
+        states.append(LimitState(
+            "diaphragm unit shear", boundary[0], spec.unit_shear_asd_plf, "plf",
+            f"{spec.source}; the larger line reaction on the "
+            f"{_direction(boundary[1].axis)} case over {boundary[1].depth_ft:.1f}' of depth"))
 
     for case in cases:
         inputs.extend((
@@ -139,13 +159,41 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
             inputs.append(Quantity(f"chord_force_{case.axis}", chord, "lb", 1.0))
         notes.append(f"{_direction(case.axis)}: {case.columns_governing.basis}.")
 
-    for wall_tag in sorted({t for case in cases for t in case.panel_tags}):
-        _panel(ctx, wall_tag, cases, states, notes, missing, inputs)
+    forces = panel_forces(ctx, tag)
+    panel_tags = sorted({t for here in forces.values() for t in here})
+    for wall_tag in panel_tags:
+        _panel(ctx, wall_tag, forces, states, notes, missing, inputs)
+        if delivery is not None:
+            _panel_boundary(ctx, tag, wall_tag, forces, spec, states)
+
+    extra: list[str] = []
+    resolved_roof = next((r for r in ctx.model.roofs if r.tag == tag), None)
+    if delivery is not None and resolved_roof is not None and wind is not None:
+        by_axis = {case.axis: case for case in cases}
+        shears = {axis: (by_axis[axis].diaphragm_shear_lb if axis in by_axis
+                         else wind.delivered_lb(axis)) for axis in ("x", "y")}
+        resultants = {axis: _resultant(ctx, resolved_roof, wind, by_axis.get(axis), axis)
+                      for axis in ("x", "y")}
+        rows = delivery_rows(ctx, element, resolved_roof, wind, shears, resultants)
+        states.extend(rows.states)
+        inputs.extend(rows.inputs)
+        notes.extend(rows.notes)
+        missing.extend(rows.missing)
+        # The collectors and the pinned posts carry this record's load path in the
+        # analytical graph; without them the item has no member there.
+        extra = [*rows.element_tags, *spec.collector_refs, *(p.tag for p in wind.pinned)]
+        if wind.pinned:
+            notes.append(
+                "PINNED POSTS: " + "; ".join(
+                    f"{p.tag} {p.width_ft * 12.0:.2f}\" x {p.length_ft:.3f}' returns "
+                    f"{p.head_lb:,.2f} lb of its own drag to the deck and {p.base_lb:,.2f} lb "
+                    f"to {p.below or 'its base'}" for p in wind.pinned)
+                + ". They resist no storey shear.")
 
     # ** THE LOAD PATH BETWEEN THE DECK AND THE LINES, AND THE MOMENT THE SPLIT LEFT OVER. **
     resolved_roof = next((r for r in ctx.model.roofs if r.tag == tag), None)
     torsions: dict[str, Torsion] = {}
-    if resolved_roof is not None:
+    if resolved_roof is not None and cases:
         for case in cases:
             result = torsion_for(ctx, resolved_roof, case, cases)
             if result is not None:
@@ -155,7 +203,7 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
         states.extend(torsion_states)
         inputs.extend(torsion_inputs)
         notes.extend(torsion_notes)
-    else:
+    elif resolved_roof is None:
         missing.append(f"a resolved roof for {tag}: the collector and torsion rows read its "
                        "plan footprint to place the load resultant")
 
@@ -200,7 +248,7 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
             basis_version=BASIS_VERSION, basis=BASIS, status=Status.INCOMPLETE,
             summary=f"{tag}: the declared diaphragm could not be graded to the end",
             inputs=tuple(inputs), limit_states=tuple(states), missing=tuple(missing),
-            notes=tuple(notes), element_tags=_tags(tag, cases))
+            notes=tuple(notes), element_tags=_tags(tag, cases, forces, extra))
 
     over = any(not state.ok for state in states)
     worst = max(states, key=lambda s: s.demand / s.capacity if s.capacity else 0.0)
@@ -208,14 +256,15 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
         item_id=ident, kind=KIND, key=tag,
         basis_version=BASIS_VERSION, basis=BASIS,
         status=Status.OVER if over else Status.OK,
-        summary=(f"{tag}: the declared diaphragm and the {len(_panels(cases))} panel(s) it "
-                 f"delivers to, graded — {worst.name} governs at "
+        summary=(f"{tag}: the declared diaphragm, its {len(panel_tags)} panel(s)"
+                 + (f" and its delivery to {delivery.roof}" if delivery is not None else "")
+                 + f", graded — {worst.name} governs at "
                  f"{worst.demand / worst.capacity:.2f}"),
         inputs=tuple(inputs), limit_states=tuple(states), notes=tuple(notes),
-        element_tags=_tags(tag, cases))
+        element_tags=_tags(tag, cases, forces, extra))
 
 
-def _panel(ctx: EngineeringContext, wall_tag: str, cases: list[FrameCase],
+def _panel(ctx: EngineeringContext, wall_tag: str, forces: dict[str, dict[str, float]],
            states: list[LimitState], notes: list[str], missing: list[str],
            inputs: list[Quantity]) -> None:
     """One shear panel's three limit states, at the axis that loads it worst."""
@@ -230,13 +279,9 @@ def _panel(ctx: EngineeringContext, wall_tag: str, cases: list[FrameCase],
     length_ft, height_ft = geometry
     worst = 0.0
     axis = ""
-    for case in cases:
-        share = case.panels_governing.shares.get(wall_tag)
-        if share is None:
-            continue
-        here = share * case.diaphragm_shear_lb
-        if here > worst:
-            worst, axis = here, case.axis
+    for here_axis, here in forces.items():
+        if here.get(wall_tag, 0.0) > worst:
+            worst, axis = here[wall_tag], here_axis
     if worst <= 0.0 or length_ft <= 0.0:
         missing.append(f"a share of the frame shear for {wall_tag}")
         return
@@ -360,13 +405,55 @@ def column_head_reactions(ctx: EngineeringContext) -> dict[str, dict[str, float]
     return out
 
 
-def _panels(cases: list[FrameCase]) -> set[str]:
-    return {t for case in cases for t in case.panel_tags}
+def _tags(tag: str, cases: list[FrameCase], forces: dict[str, dict[str, float]],
+          extra: list[str]) -> tuple[str, ...]:
+    panels = {t for here in forces.values() for t in here}
+    columns = {t for case in cases for t in case.column_tags}
+    rest = [t for t in dict.fromkeys(extra) if t not in panels | columns | {tag}]
+    return (tag, *sorted(panels), *sorted(columns), *rest)
 
 
-def _tags(tag: str, cases: list[FrameCase]) -> tuple[str, ...]:
-    return (tag, *sorted(_panels(cases)),
-            *sorted({t for case in cases for t in case.column_tags}))
+def _resultant(ctx: EngineeringContext, roof: object, wind: object,
+               case: FrameCase | None, axis: str) -> float:
+    """Where the deck-level shear resolves ACROSS the wind — with the props where cast
+    columns share the frame, off the pinned-post demand where they do not."""
+    from typehaus.engineering.torsion import load_resultant_ft
+
+    if case is None:
+        return wind.resultant_ft(axis)  # type: ignore[attr-defined]
+    index = 0 if axis == "y" else 1
+    stations = {}
+    for column in case.column_tags:
+        post = ctx.plan.by_tag(column)
+        if post is not None:
+            stations[column] = post.position.xy_m[index] / 0.3048
+    found = load_resultant_ft(case.top_shear_lb, wind.centre_ft[index],  # type: ignore[attr-defined]
+                              case.head_reactions, stations)
+    return found if found is not None else wind.resultant_ft(axis)  # type: ignore[attr-defined]
+
+
+def _panel_boundary(ctx: EngineeringContext, roof_tag: str, wall_tag: str,
+                    forces: dict[str, dict[str, float]], spec: object,
+                    states: list[LimitState]) -> None:
+    """The deck along a panel's line, at the envelope share (canopy note §4d)."""
+    from typehaus.engineering.lateral_lines import panel_geometry_ft
+
+    wall = ctx.plan.by_tag(wall_tag)
+    roof = next((r for r in ctx.model.roofs if r.tag == roof_tag), None)
+    for axis, here in sorted(forces.items()):
+        if wall_tag not in here or roof is None or wall is None:
+            continue
+        index = 1 if axis == "y" else 0
+        values = [p[index] / 0.3048 for p in roof.footprint]
+        depth = max(values) - min(values)
+        geometry = panel_geometry_ft(ctx, wall)
+        edge = min(depth, geometry[0]) if geometry else depth
+        states.append(LimitState(
+            f"diaphragm unit shear at {wall_tag}", here[wall_tag] / edge,
+            spec.unit_shear_asd_plf, "plf",  # type: ignore[attr-defined]
+            f"{spec.source}; the envelope: {wall_tag} at 100% of the "  # type: ignore[attr-defined]
+            f"{_direction(axis)} shear, {here[wall_tag]:,.1f} lb delivered along {edge:.3f}' "
+            f"of the deck's boundary on its line"))
 
 
 def _boundary_shear_plf(case: FrameCase) -> float:

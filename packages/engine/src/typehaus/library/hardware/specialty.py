@@ -16,6 +16,8 @@ from typehaus.hardware.catalog import (
     ROLE_LEDGER_ANCHOR,
     ROLE_MODELED_CONNECTOR,
     ROLE_POCKET_DOOR_FRAME_KIT,
+    ROLE_POST_BASE,
+    ROLE_POST_CAP,
     ROLE_PV_SEAM_CLAMP,
     ROLE_THROUGH_PANEL_PIPE_STRAP,
     AllowableLoads,
@@ -367,4 +369,40 @@ POCKET_FRAME_KIT_HEAVY = StructuralHardware(
            "(cavitysliders.com/cavislider/cavity-slider-pocket-door-frame/2x4-stud/) — "
            "published to 4'0\" x 8'0\", above the 36\"/125 lb ceiling of the commodity "
            "series.",
+)
+
+
+# ** THE STEEL POST'S TWO WELDED ENDS (2026-09-29). ** A fabricated HSS post is bought as one
+# piece with its saddle and base plate on it, so neither end is ordered or selected by role —
+# both are capacity-only records, here for what ``resolve/envelope._post_connector_insets``
+# reads: how much of the clear pier-to-header height the plates take off the tube. The joint
+# itself is graded by ``engineering/steel_post`` (NDS §12.3 bolts, ACI 318-19 Ch. 17 anchors),
+# not by a published allowable, so ``allowable`` is deliberately absent.
+HSS_SADDLE_HDG = StructuralHardware(
+    tag="fabricated-hss4-u-saddle-hdg",
+    name="welded U-saddle on an HSS 4x4 post, 3/8 in seat and 1/4 in side plates, HDG",
+    role=ROLE_POST_CAP,
+    manufacturer="shop-fabricated",
+    model="HSS4-SADDLE-HDG",
+    source="shop-fabricated U-saddle welded to the HSS post (AWS D1.1, fabricator's shop "
+           "drawing): 3/8 in seat plate, 1/4 in side plates each side of the 4-1/2 in header, "
+           "two 5/8 in HDG through-bolts; galvanized after fabrication (ASTM A123) and "
+           "powder-coated with the post, butyl isolation between the steel and the KDAT — "
+           "houses/catlin/notes/canopy_garage_diaphragm.md §5",
+    seat_thickness_in=0.375,
+)
+
+HSS_BASE_PLATE_HDG = StructuralHardware(
+    tag="fabricated-hss4-base-plate-hdg",
+    name="welded base plate on an HSS 4x4 post, 1/2 in, on levelling nuts over a drained gap",
+    role=ROLE_POST_BASE,
+    manufacturer="shop-fabricated",
+    model="HSS4-BASEPL-HDG",
+    source="shop-fabricated 1/2 in base plate welded to the HSS post, two 5/8 in ASTM F1554 "
+           "Gr 36 HDG cast-in anchors on levelling nuts, the gap under the plate left OPEN "
+           "and drained (the house standoff rule — never grouted); galvanized after "
+           "fabrication (ASTM A123) and powder-coated — "
+           "houses/catlin/notes/canopy_garage_diaphragm.md §5",
+    #: 1/2 in of plate over 1 in of open gap on the levelling nuts.
+    bearing_standoff_in=0.5 + 1.0,
 )

@@ -1,0 +1,181 @@
+"""The canopy's EAST supports, in whichever of three systems `EAST_POST_SYSTEM` names.
+
+`params/north_entry_frame.py` owns the one switch — `EAST_POST_SYSTEM`, one of
+`"steel" | "kdat" | "cast"` — and calls `east_supports` once; `params/breezeway.py` calls
+`east_head_parts` once for the joints. Everything that differs between the three lives in
+`_EAST_VARIANTS`, beside its siblings, so a switch is "change one word, `haus fmt`,
+`haus check`" and lands on a state `tests/test_catlin_east_post_variants.py` has already
+graded at 0 FAIL. The arithmetic for all three is `notes/canopy_garage_diaphragm.md`.
+
+**Tags and uids are stable across variants.** `BM-BW-RE` always bears on `PT-BW-RE` /
+`PT-BW-RNE` (uids `BWPT03AAAA` / `BWPT04AAAA`), whatever they are made of, so the header's
+`bearing_refs` and the IFC GlobalIds never move. The pads keep `PD-BW-RE` / `-RNE`. What
+exists in one variant only — the two piers under a post, and each variant's head and base
+parts — carries a uid minted once with `typehaus.model.ids.new_uid()` and pasted into the
+table; `haus fmt` never visits `params/`.
+
+**steel** (the default, owner 2026-09-29): HSS 4x4x1/4 A500 Gr C, galvanized after
+fabrication (ASTM A123) and powder-coated, pinned at both ends on a 12" pier whose top is
+3'-0" above grade — clear of the salted walk's splash and the snow pile. A welded U-saddle
+with HDG through-bolts and a butyl isolation layer at the head; a welded base plate on
+cast-in HDG anchors and levelling nuts over an open, drained gap at the foot — the house's
+standoff rule, no grout pad. Stainless and galvanized never share a joint.
+**kdat**: a 6x6 KDAT post as `PT-BW-CW`, on the same pier, `CCQ46SDS2.5` / `ABU66SS`.
+**cast**: the 2026-09-20 design — 12" rounds poured full height from a common −10'-2" plane,
+fixed at the base, shim pack + cast-in `HETA20Z` pair at the head.
+"""
+
+from typehaus import Connector, ConnectorKind, Pad, Post, ft, pt
+
+from params.column_heads import ABU66SS_HEAD, HETA20Z_PAIR_HEAD
+
+#: The pier top under a pinned east post: 3'-0" over `Site.grade` (−2'-10"), i.e. +0'-2".
+PIER_TOP_FT = 2 / 12
+
+#: Variant-specific values only. Every uid here was minted once and must never be re-typed.
+_EAST_VARIANTS = {
+    "steel": dict(
+        post_size="HSS4x4x0.25", post_assembly="POST_STEEL_HSS",
+        piers={"RE": ("34ET0SKQAZ", "PT-BW-PE"), "RNE": ("1NKNZQCQTQ", "PT-BW-PNE")},
+        moment_piers=frozenset(),
+        head=("POST_CAP", "HSS4-SADDLE-HDG",
+              {"RE": ("ESY785KNZ4", "CN-BW-SADDLE-RE"), "RNE": ("QN548ZBCM5", "CN-BW-SADDLE-RNE")}),
+        base=("POST_BASE", "HSS4-BASEPL-HDG",
+              {"RE": ("FPZXKCRQH6", "CN-BW-SBASE-RE"), "RNE": ("3E7T1DXNSZ", "CN-BW-SBASE-RNE")}),
+        pier_head=None,
+        prices=('"HSS4x4x0.25"', "HSS4-SADDLE-HDG", "HSS4-BASEPL-HDG"),
+        roof_note=("EAST header lands on PT-BW-RE and PT-BW-RNE, HSS 4x4x1/4 A500 Gr C STEEL "
+                   "POSTS, galvanized after fabrication (ASTM A123) + powder-coated, PINNED "
+                   "both ends: welded U-saddle with 2 - 5/8in HDG through-bolts over butyl at "
+                   "the head; welded base plate on 2 - 5/8in F1554 Gr 36 HDG cast-in anchors "
+                   "and levelling nuts over an OPEN, DRAINED gap at the foot — NEVER GROUT "
+                   "IT. The posts stand on 12in piers PT-BW-PE / -PNE whose tops are 3ft 0in "
+                   "above grade. Stainless and galvanized never share a joint"),
+        landing_note=("PT-BW-PE (house plane) and PT-BW-PNE (garage plane) are 12in piers "
+                      "to +0ft 2in under the pinned steel east posts"),
+    ),
+    "kdat": dict(
+        post_size="6x6", post_assembly="POST_KDAT",
+        piers={"RE": ("34ET0SKQAZ", "PT-BW-PE"), "RNE": ("1NKNZQCQTQ", "PT-BW-PNE")},
+        moment_piers=frozenset(),
+        head=("POST_CAP", "CCQ46SDS2.5",
+              {"RE": ("X0QPPRBG1X", "CN-BW-CAP-E"), "RNE": ("11X4C8QHB6", "CN-BW-CAP-NE")}),
+        base=("POST_BASE", "ABU66SS",
+              {"RE": ("5WR0KMFPJJ", "CN-BW-BASE-E"), "RNE": ("T1V9W4G4TW", "CN-BW-BASE-NE")}),
+        pier_head=ABU66SS_HEAD,
+        prices=("CCQ46SDS2.5", "ABU66SS", "AB-058-10-SS"),
+        roof_note=("EAST header lands on PT-BW-RE and PT-BW-RNE, 6x6 KDAT posts PINNED both "
+                   "ends on CCQ46SDS2.5 caps and ABU66SS stainless standoff bases, on 12in "
+                   "piers PT-BW-PE / -PNE whose tops are 3ft 0in above grade"),
+        landing_note=("PT-BW-PE (house plane) and PT-BW-PNE (garage plane) are 12in piers "
+                      "to +0ft 2in under the pinned KDAT east posts"),
+    ),
+    "cast": dict(
+        post_size="12 round", post_assembly="PIER_CONCRETE_12", piers={},
+        # The one common plane both shafts bear on (entry_column_base_fixity.md §6a): equal
+        # shafts are equal stiffness, 50/50 E-W whatever the diaphragm does.
+        deep_base_ft=-(10 + 2 / 12),
+        moment_piers=frozenset({"PT-BW-RE", "PT-BW-RNE"}),
+        head=None, base=None, pier_head=HETA20Z_PAIR_HEAD,
+        prices=("SS316-SHIM-35", "HETA20Z"),
+        roof_note=("EAST header lands on PT-BW-RE and PT-BW-RNE, 12in CAST CONCRETE COLUMNS "
+                   "running unbroken from a common -10ft 2in pad plane to the header soffit, "
+                   "FIXED at the base, sharing E-W with W-G-S by rigidity; a shim pack + a "
+                   "cast-in HETA20Z strap pair at the top, NOT a post cap. Cast each pad "
+                   "BEFORE the strip beside it bears (house side 1ft 4-9/16in below "
+                   "FT-B-N1..N4; garage side 3ft 2in below FT-GF-S1/-S3)"),
+        landing_note=("EXCEPT the east line: PT-BW-RE and PT-BW-RNE bottom at -11ft 2in on "
+                      "their own common plane and carry on ABOVE the bearing plane as "
+                      "full-height columns — one continuous pour each, pad to header soffit"),
+    ),
+}
+
+#: `head` / `base` connector kinds, by name, so the table stays a plain literal.
+_KINDS = {"POST_CAP": ConnectorKind.POST_CAP, "POST_BASE": ConnectorKind.POST_BASE}
+
+
+def variant(system):
+    if system not in _EAST_VARIANTS:
+        raise ValueError(f"EAST_POST_SYSTEM must be one of {sorted(_EAST_VARIANTS)}, "
+                         f"not {system!r}")
+    return _EAST_VARIANTS[system]
+
+
+def full_height_columns(system):
+    """The east supports that are cast columns running footing to header — `cast` only."""
+    return ("PT-BW-RE", "PT-BW-RNE") if system == "cast" else ()
+
+
+def moment_piers(system):
+    return variant(system)["moment_piers"]
+
+
+def east_supports(system, *, x_ft, stations, header_soffit_ft, moment_cage, house_pad,
+                  garage_pad):
+    """``(posts, piers, pads)`` for the east line.
+
+    ``stations`` maps ``"RE"``/``"RNE"`` to ``(uid, y_ft)`` of the post the header bears on;
+    ``house_pad`` / ``garage_pad`` are ``(pad uid, outline factory, moment-pad top ft,
+    thickness ft)`` — the plane each side's pad sits on in the pinned variants.
+    """
+    spec = variant(system)
+    posts, piers, pads = [], [], []
+    for key, (uid, y_ft) in stations.items():
+        pad_uid, outline, pad_top_ft, pad_thick_ft = house_pad if key == "RE" else garage_pad
+        pad_tag = f"PD-BW-{key}"
+        if system == "cast":
+            base_ft = spec["deep_base_ft"]
+            posts.append(Post(
+                uid=uid, tag=f"PT-BW-{key}", position=pt(ft(x_ft), ft(y_ft)),
+                head_connector=spec["pier_head"], size="12 round",
+                height=ft(header_soffit_ft - base_ft), assembly="PIER_CONCRETE_12",
+                vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
+                reinforcement=moment_cage, supported_by=pad_tag))
+            pads.append(Pad(uid=pad_uid, tag=pad_tag, outline=outline(y_ft),
+                            thickness=ft(1.0), assembly="PIER_BASE_12",
+                            bottom_elevation=ft(base_ft - 1.0)))
+            continue
+        pier_uid, pier_tag = spec["piers"][key]
+        piers.append(Post(
+            uid=pier_uid, tag=pier_tag, position=pt(ft(x_ft), ft(y_ft)),
+            head_connector=spec["pier_head"], size="12 round",
+            height=ft(PIER_TOP_FT - pad_top_ft), assembly="PIER_CONCRETE_12",
+            vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
+            reinforcement=moment_cage, supported_by=pad_tag))
+        pads.append(Pad(uid=pad_uid, tag=pad_tag, outline=outline(y_ft),
+                        thickness=ft(pad_thick_ft), assembly="PIER_BASE_12",
+                        bottom_elevation=ft(pad_top_ft - pad_thick_ft)))
+        posts.append(Post(
+            uid=uid, tag=f"PT-BW-{key}", position=pt(ft(x_ft), ft(y_ft)),
+            size=spec["post_size"], height=ft(header_soffit_ft - PIER_TOP_FT),
+            assembly=spec["post_assembly"], supported_by=pier_tag))
+    return posts, piers, pads
+
+
+def east_head_parts(system, *, x_ft, stations, header_soffit_ft, cast_parts):
+    """The head and base connectors of the east line. ``cast_parts`` builds today's pack +
+    HETA pair and is called only for `cast`, so its uids stay where they always were."""
+    spec = variant(system)
+    if system == "cast":
+        return cast_parts()
+    out = []
+    for part, elevation in ((spec["head"], header_soffit_ft), (spec["base"], PIER_TOP_FT)):
+        kind, size, by_key = part
+        for key, (uid, tag) in by_key.items():
+            post = f"PT-BW-{key}"
+            below = spec["piers"][key][1]
+            out.append(Connector(
+                uid=uid, tag=tag, kind=_KINDS[kind],
+                position=pt(ft(x_ft), ft(stations[key])), elevation=ft(elevation), size=size,
+                connects=(("BM-BW-RE", post) if kind == "POST_CAP" else (post, below))))
+    return out
+
+
+def roof_note(system):
+    """The east-line sentence `AN-BW-ROOF` prints, so the drawing follows the switch."""
+    return variant(system)["roof_note"]
+
+
+def landing_note(system):
+    """The east-pier sentence `AN-BW-STRUCTURE` prints."""
+    return variant(system)["landing_note"]

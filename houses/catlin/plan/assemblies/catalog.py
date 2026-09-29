@@ -42,6 +42,7 @@ from .footings import (
     FOOTING_EXPOSED_20,
     PIER_BASE_12,
     PIER_CONCRETE_12,
+    POST_STEEL_HSS,
 )
 from .foundation import BASEMENT_12, BASEMENT_8, DECK_EPS_INT, GARAGE_ICF_6, SLAB_FLOOR
 from .interior import (
@@ -217,6 +218,7 @@ ASSEMBLIES = [
     BEAM_WHITE_PAINT,
     BEAM_GLULAM_TREATED,
     POST_KDAT,
+    POST_STEEL_HSS,
     PIER_CONCRETE_12,
     RAILING_DARK_METAL,
     GARAGE_ICF_6,

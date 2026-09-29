@@ -10,10 +10,13 @@ piers and headers are structure, not a thing the UI drags.
 The bearing map is `notes/north_entry_structure.md`; the arithmetic is
 `notes/north_entry_piers.md`, which oracles `engineering/roof_beam.py` and the pier calcs.
 
-**The landing touches nothing on the house, and since 2026-09-10 the canopy touches nothing
-on the garage either.** Grep this file for `W-B-` or `W-G-` and expect nothing but comments.
-The landing's house-side bearing is two cast piers on the pier line at y=37'-6"; the canopy
-stands on four columns of its own and shares only the sheathing plane with `RF-GARAGE`.
+**The landing touches nothing on the house, and the canopy bears on nothing of the
+garage — but since 2026-09-29 it BRACES off it.** Grep this file for `W-B-` or `W-G-` and
+expect nothing but comments. The landing's house-side bearing is two cast piers on the pier
+line at y=37'-6"; the canopy stands on four supports of its own for gravity, and its
+lateral load crosses the tied joint into `RF-GARAGE` and the garage's walls
+(`RF-BW-CANOPY.diaphragm.delivers_to`, notes/canopy_garage_diaphragm.md). What stands
+under the east header is `EAST_POST_SYSTEM` below.
 
 **Two pier depths, on purpose.** The house-side three reach -9'-9 7/16" because the basement
 excavation is already open to it, so the shaft is the only cost -- and they must be cast
@@ -36,10 +39,17 @@ from typehaus import (
 )
 
 from params.column_heads import ABU66SS_HEAD, HETA20Z_PAIR_HEAD
+from params.east_posts import east_supports, full_height_columns, moment_piers
 from params.foundations import SITE_GRADE
 from plan.storeys.garage import (
     GARAGE_X_WEST, GARAGE_Y_SOUTH, SERVICE_DOOR_OFFSET, SERVICE_DOOR_WIDTH,
 )
+
+# ** THE ONE SWITCH (owner, 2026-09-29): what stands under BM-BW-RE. ** "steel" | "kdat" |
+# "cast" — see params/east_posts.py and notes/canopy_garage_diaphragm.md. All three are
+# graded at 0 FAIL by tests/test_catlin_east_post_variants.py; change the word, `haus fmt`,
+# `haus check`.
+EAST_POST_SYSTEM = "steel"
 
 HOUSE_CLADDING_Y_FT = 36 + 7.25 / 12
 GARAGE_CLADDING_Y_FT = GARAGE_Y_SOUTH.feet - 0.875 / 12
@@ -348,9 +358,9 @@ beam(11, "BM-BW-LAND-HDR", GARAGE_STEM_INSIDE_X_FT, LANDING_HEADER_Y_FT,
 beam(6, "BM-BW-RW", LANDING_WEST_FT, PIER_LINE_Y_FT,
      LANDING_WEST_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
      "3-2x12")
-# ** THE EAST HEADER LANDS ON CONCRETE, NOT ON WOOD (owner, 2026-09-10). ** PT-BW-RE and
-# PT-BW-RNE run unbroken from their footings to this soffit, so there are no 6x6 columns on
-# this side at all -- see FULL_HEIGHT_COLUMNS below for why, and for what it buys.
+# ** WHAT THE EAST HEADER LANDS ON IS EAST_POST_SYSTEM (2026-09-29). ** Pinned steel HSS on
+# 3'-0" piers by default; 6x6 KDAT or the 2026-09-10 full-height cast columns are one word
+# away (params/east_posts.py). The tag and uid it names never change.
 beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT,
      ROOF_COLUMN_EAST_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-RE", "PT-BW-RNE"), HEADER_TOP_FT,
      "3-2x12")
@@ -503,8 +513,8 @@ ENTRY_MOMENT_CAGE = ReinforcementSpec(
 #: 0.759 governed by dowel anchorage: `PT-BW-GE`'s own number, the twin they should always
 #: have matched. Because the tops hold, `column_base`'s embedment (measured from grade to the
 #: PAD TOP) does not move and the §1806.3.4 claim above is undisturbed.
-_MOMENT_PIERS = frozenset({"PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE",
-                           "PT-BW-RE", "PT-BW-RNE"})
+_MOMENT_PIERS = frozenset({"PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE"}
+                          | moment_piers(EAST_POST_SYSTEM))
 #: ** 12" UNDER EVERY MOMENT PIER, AND THE BOTTOM GOES DOWN (owner, 2026-09-17). ** The #5 dowel
 #: foot rests at 3" bottom cover, so embedment is thickness - 3": 10" gave 7.00", 8" gave 5.00",
 #: against ACI 318-19 §25.4.3.1 ldh 7.11". 12" gives 9.00". Tops stay put -- pier heights, the
@@ -512,44 +522,21 @@ _MOMENT_PIERS = frozenset({"PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE",
 #: notes/north_entry_piers.md, 2026-09-17 addendum.
 MOMENT_PAD_DEPTH_FT = 1.0
 
-#: ** THE TWO ROOF COLUMNS BEAR ON ONE COMMON PLANE, AND THE SYMMETRY IS THE CALCULATION. **
-#: `PT-BW-RE` and `PT-BW-RNE` are the only two lines resisting E-W wind on `RF-BW-CANOPY`,
-#: and IBC 2018 §1604.4 shares that wind between them in proportion to `3EI/h³` — where `h`
-#: is the FULL shaft, base to header soffit, buried length included. That is the coupling
-#: `notes/entry_column_base_fixity.md` §6a missed until 2026-09-20: deepening the short
-#: garage-side column makes it SOFTER, which hands the house-side one a larger share, and
-#: `PT-BW-RE` went from d/c 1.02 to 1.19 under the §6a proposal rather than closing.
+#: ** THE EAST SUPPORTS ARE A SWITCH NOW, AND THE −10'-2" PLANE LIVES IN ONE VARIANT OF IT
+#: (2026-09-29). ** `ROOF_COLUMN_BASE_FT` and `_DEEP_BASE_COLUMNS` put `PT-BW-RE`/`-RNE` on a
+#: common −10'-2" plane because, as the canopy's only E-W lateral system, each needed 7.07'
+#: of embedment (entry_column_base_fixity.md §6a). With the canopy braced off the garage
+#: (notes/canopy_garage_diaphragm.md) the default east posts are PINNED steel on 3'-0" piers
+#: whose pads sit on the plane each side already has: `PD-BW-RE` on the house-side
+#: `FOOTING_TOP_FT` beside `FT-B-N1`..`-N4` (no undermining step, and no lateral capacity
+#: resting on the overdig's backfill), `PD-BW-RNE` on the garage strip's own plane (no 3'-2"
+#: drop under the stone). The deep plane survives only as `_EAST_VARIANTS["cast"]`, with its
+#: two sequencing notes, because that variant is the 2026-09-20 design unchanged:
 #:
-#: Put both bases on ONE elevation and the two columns are the same column: equal `h`, equal
-#: stiffness, 50/50 on E-W whatever the diaphragm does, 496 lb of base shear each needing
-#: 7.07' of embedment against the 7.33' this plane gives (d/c 0.96). Three things come with
-#: that and each is worth more than the depth: the E-W verdict no longer depends on §7d's
-#: rigid/flexible call, which sits at 0.99x and was a factor of two from flipping; §1806.3.4's
-#: isolated-pole doubling is not claimed anywhere, so neither record straddles the band and
-#: both publish; and the two pads share a bearing elevation, so `_pad_key` mints ONE new
-#: S-100 row rather than two on a sheet that is 0.18" from its schedule governing its height.
-#:
-#: -10'-2" is the SHALLOWEST clean elevation clearing 0.96, and shallowest is the one to want:
-#: the concrete is pennies and the excavation is not. See the sequencing note below.
-ROOF_COLUMN_BASE_FT = -(10 + 2 / 12)
-#: ** AND IT IS A SEQUENCING NOTE BEFORE IT IS A DETAIL NOTE, TWICE OVER. ** Both pads bottom
-#: at -11'-2" now, and on each side that is below something standing beside it:
-#:
-#: * House side: `FT-B-N1`..`-N4` bottom at -9'-9 7/16" and reach to within 7/8" of `PD-BW-RE`
-#:   in plan, so the pad bears 1'-4 9/16" below a footing an inch away. Cast in the open
-#:   basement excavation — the owner's premise, and the same argument `PIER_BOTTOM_FT` above
-#:   already carries — the deep pocket is dug and the pad cast BEFORE the strip bears beside
-#:   it. Cast after, it is undermining and the answer is benching or a local step in the
-#:   strip. It belongs on the drawings.
-#: * Garage side: `PD-BW-RNE` laps about 7 1/2" UNDER `FT-GF-S1`/`-S3` in plan and now sits
-#:   3'-2" below them. Those are consolidated crushed stone under R403.5, not a pour, so
-#:   there is no cold joint and nothing monolithic to break — but a stone strip placed over a
-#:   backfilled pocket is a settlement question, not a non-issue. The pad goes in first and
-#:   the stone is compacted around and over it in the 8" lifts R403.4.1 already requires.
-#:
-#: Neither is a modelling gap the engine can grade; both are drawing notes, named here so the
-#: next reader does not rediscover them from the elevations.
-_DEEP_BASE_COLUMNS = frozenset({"PT-BW-RE", "PT-BW-RNE"})
+#: * House side: the pad bears 1'-4 9/16" below `FT-B-N1`..`-N4` about 7/8" away in plan —
+#:   dig the pocket and cast the pad BEFORE the strip bears beside it.
+#: * Garage side: `PD-BW-RNE` laps ~7 1/2" under `FT-GF-S1`/`-S3` and sits 3'-2" below them;
+#:   the pad goes in first and the stone is compacted round it in R403.4.1's 8" lifts.
 
 #: ** NO COLUMN HERE CLAIMS IBC §1806.3.4, AND THE LANDING PAIR USED TO. ** `PT-BW-GW`/`-GE`
 #: carried the owner's isolated-pole judgement (2026-09-20) while their embedment was measured
@@ -585,8 +572,7 @@ def _pad_outline(x_ft, y_ft, side_in, along_in=None):
 #: What ties each head to its beam (`params/column_heads.py`). The west pair carry a 6x6
 #: canopy column on an ABU66SS and hang the seat beam off it; the rest take the HETA20Z pair.
 _HEAD_CONNECTORS = {"PT-BW-W": ABU66SS_HEAD, "PT-BW-GW": ABU66SS_HEAD,
-                    "PT-BW-E": HETA20Z_PAIR_HEAD, "PT-BW-GE": HETA20Z_PAIR_HEAD,
-                    "PT-BW-RE": HETA20Z_PAIR_HEAD, "PT-BW-RNE": HETA20Z_PAIR_HEAD}
+                    "PT-BW-E": HETA20Z_PAIR_HEAD, "PT-BW-GE": HETA20Z_PAIR_HEAD}
 
 FOOTINGS = []
 #: The house-side pads run 18" north-south rather than the 24" their square drew, because
@@ -613,11 +599,6 @@ for _uid, _tag, _x, _height, _top in (
      BEARING_TOP_FT),
     ("BWPT02AAAA", "PT-BW-E", LANDING_EAST_FT, BEARING_TOP_FT - FOOTING_TOP_FT,
      BEARING_TOP_FT),
-    # The east one is a COLUMN, not a pier: it does not stop at the bearing plane, it runs
-    # on to the header soffit. Everything else about it -- section, cage, mix, footing -- is
-    # unchanged, which is the point.
-    ("BWPT03AAAA", "PT-BW-RE", ROOF_COLUMN_EAST_X_FT,
-     HEADER_SOFFIT_FT - ROOF_COLUMN_BASE_FT, HEADER_SOFFIT_FT),
 ):
     PIERS.append(Post(
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(PIER_LINE_Y_FT)),
@@ -641,9 +622,7 @@ for _uid, _tag, _x, _height, _top in (
         assembly="PIER_BASE_12",
         # PT-BW-W/-E keep FOOTING_TOP_FT: their 0.73 d/c is fine and the hydrant clearance
         # argument at PIER_BOTTOM_FT is written against that plane. Only the roof column moves.
-        bottom_elevation=ft(ROOF_COLUMN_BASE_FT - MOMENT_PAD_DEPTH_FT
-                            if _tag in _DEEP_BASE_COLUMNS
-                            else FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
+        bottom_elevation=ft(FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
                             else PIER_BOTTOM_FT)))
 
 # ** THE GARAGE SIDE IS THE MIRROR: TWO PIERS OF ITS OWN, NOT A PLATE ON THE STEM. **
@@ -704,14 +683,11 @@ PEDESTALS = []
 for _uid, _tag, _x, _pad_in, _top in (
     ("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT, 24.0, BEARING_TOP_FT),
     ("BWPT06AAAA", "PT-BW-GE", LANDING_EAST_FT, 18.0, BEARING_TOP_FT),
-    # Again a COLUMN, the north half of the east pair (FULL_HEIGHT_COLUMNS below).
-    ("BWPT04AAAA", "PT-BW-RNE", ROOF_COLUMN_EAST_X_FT, 24.0, HEADER_SOFFIT_FT),
 ):
     PEDESTALS.append(Post(
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(GARAGE_SEAT_Y_FT)), size="12 round",
         head_connector=_HEAD_CONNECTORS[_tag],
-        height=ft(_top - (ROOF_COLUMN_BASE_FT if _tag in _DEEP_BASE_COLUMNS
-                          else GARAGE_FOOTING_TOP_FT)), assembly="PIER_CONCRETE_12",
+        height=ft(_top - GARAGE_FOOTING_TOP_FT), assembly="PIER_CONCRETE_12",
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
@@ -750,11 +726,8 @@ for _uid, _tag, _x, _pad_in, _top in (
         thickness=ft(MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
                      else GARAGE_FOOTING_THICKNESS_FT),
         assembly="PIER_BASE_12",
-        # PT-BW-GE's moment pad keeps the strip's top and drops its bottom 4" below the
-        # strip's plane. PT-BW-RNE leaves that plane entirely -- see ROOF_COLUMN_BASE_FT.
-        bottom_elevation=ft(ROOF_COLUMN_BASE_FT - MOMENT_PAD_DEPTH_FT
-                            if _tag in _DEEP_BASE_COLUMNS
-                            else GARAGE_FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT
+        # PT-GE's moment pad keeps the strip's top and drops its bottom 4" below its plane.
+        bottom_elevation=ft(GARAGE_FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT
                             if _tag in _MOMENT_PIERS else GARAGE_PIER_BOTTOM_FT)))
 
 # The two roof columns. Pier/pedestal top -0'-8 1/4" to header soffit +6'-4 3/4" = 7'-1".
@@ -768,7 +741,20 @@ for _uid, _tag, _x, _pad_in, _top in (
 # header against 720 lb of dead. Under 0.6D + 0.6W the net is ~230 lb per column, well inside
 # the standoff-base-plus-cast-in-bolt detail. Stated, not left open.
 COLUMN_HEIGHT_FT = HEADER_SOFFIT_FT - BEARING_TOP_FT
-FULL_HEIGHT_COLUMNS = ("PT-BW-RE", "PT-BW-RNE")
+FULL_HEIGHT_COLUMNS = full_height_columns(EAST_POST_SYSTEM)
+
+# ** THE EAST LINE, FROM THE ONE FACTORY. ** params/east_posts.py; the pads keep their tags
+# and uids in every variant, on the house-side and garage planes their neighbours use.
+_EAST_POSTS, _EAST_PIERS, _EAST_PADS = east_supports(
+    EAST_POST_SYSTEM, x_ft=ROOF_COLUMN_EAST_X_FT,
+    stations={"RE": ("BWPT03AAAA", PIER_LINE_Y_FT), "RNE": ("BWPT04AAAA", GARAGE_SEAT_Y_FT)},
+    header_soffit_ft=HEADER_SOFFIT_FT, moment_cage=ENTRY_MOMENT_CAGE,
+    house_pad=("BWF03AAAA",
+               lambda y: _pad_outline(ROOF_COLUMN_EAST_X_FT, y, _PAD_WIDE_IN, _PAD_DEPTH_IN),
+               FOOTING_TOP_FT, MOMENT_PAD_DEPTH_FT),
+    garage_pad=("BWFG04AAAA", lambda y: _pad_outline(ROOF_COLUMN_EAST_X_FT, y, 24.0),
+                GARAGE_FOOTING_TOP_FT, MOMENT_PAD_DEPTH_FT))
+FOOTINGS.extend(_EAST_PADS)
 ROOF_COLUMNS = [
     # Both stand ON the screen panel's line, interior to its run, so the panel's plates and
     # studs are cut around them and the 2x4 infill butts the column faces (``Post
@@ -829,4 +815,4 @@ INTERIOR_POSTS = [
 
 
 FRAME_ELEMENTS = [*NODES, *BEAMS, *PIERS, *FOOTINGS, *PEDESTALS, *ROOF_COLUMNS,
-                  *INTERIOR_POSTS]
+                  *_EAST_PIERS, *_EAST_POSTS, *INTERIOR_POSTS]

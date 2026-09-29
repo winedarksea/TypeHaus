@@ -744,7 +744,7 @@
 # which stands the derived rule down and puts the real part number on both. The ABU66 row
 # stays at the galvanized rate, at 0 ea, as the revert.
 "ABU66" = { low = 40, high = 70 }  # 0 ea — the DERIVED galvanized row, stood down by CN-BW-BASE-*. Kept priced (the glazed-green-brick convention) so deleting an authored base does not silently drop the part
-"ABU66SS" = { low = 150, high = 230 }  # 2 ea authored — CN-BW-BASE-W / -NW, the canopy's two WEST columns. CN-SG-BASE-R2 / -F2 retired with the balcony's centre pillars, 2026-09-22
+"ABU66SS" = { low = 150, high = 230 }  # 2 ea authored — CN-BW-BASE-W / -NW, the canopy's two WEST columns (4 under EAST_POST_SYSTEM = "kdat": CN-BW-BASE-E / -NE). CN-SG-BASE-R2 / -F2 retired with the balcony's centre pillars, 2026-09-22
 # What replaced two of those, at PT-SG-BR2 and PT-SG-BF2: a base TIE built from stock
 # sheet-metal parts — one 12" strap on the flush west face of each pillar, plus an L angle
 # on every face that has joist pack beside it (BR2 north and south, BF2 north alone).
@@ -796,7 +796,7 @@
 # a pack is inside the framing rate either way. A custom tapered stainless shim would be a
 # rate change and is deliberately not what this specifies — see
 # notes/balcony_differential_movement.md §3.
-"SS316-SHIM-35" = { low = 9, high = 22 }  # 10 ea — 4 balcony column tops, 4 north entry seat-beam bearings, 2 under the east canopy header on its cast columns. The 2 porch-column packs retired with the centre line, 2026-09-22
+"SS316-SHIM-35" = { low = 9, high = 22 }  # 8 ea — 4 balcony column tops, 4 north entry seat-beam bearings. The 2 under the east canopy header are "cast"-variant only (10 ea then); the 2 porch-column packs retired with the centre line, 2026-09-22
 # Four modeled 3/8-in Type 316 bolts pin the HP3 aluminum rails to their leg cap plates.
 # Bolt Depot lists 3/8-16 Type 316 bolts at $0.89 (1-1/2 in) to $2.36 (4 in), plus a 3/8
 # Type 316 nut ($0.22) and washer ($0.20). The model has not fixed the bolt length, so this
@@ -903,8 +903,9 @@
 "H10ASS" = { low = 6.0, high = 14.0 }  # 20 ea — CN-SG-TIE-W02..W11 / -E02..E11
 "H2.5ASS" = { low = 3.0, high = 6.5 }  # 10 ea — all authored: CN-BW-TRTIE-W1..3 / -E1..3 (canopy), and CN-SG-TIE-W01/-W12/-E01/-E12, the balcony's END joists on BM-SG-BLW/BLE (owner, 2026-09-22)
 # The beam tie at the eight cast-column seats: a PAIR of cast-in HETA20Z embedded anchors per
-# joint (ZMAX, G185), 16 ea — the four balcony corners (CN-SG-SEAT-R1/R3/F1/F3, A and B), the
-# north entry's E/GE seat beams and the canopy's east header on PT-BW-RE/-RNE (CN-BW-TIE-*).
+# joint (ZMAX, G185), 12 ea — the four balcony corners (CN-SG-SEAT-R1/R3/F1/F3, A and B) and
+# the north entry's E/GE seat beams; the canopy's east header on cast PT-BW-RE/-RNE takes
+# four more only in the "cast" variant (params/east_posts.py, 2026-09-29).
 # ** THIS WAS "HGAM10", 16 ea, UNTIL 2026-09-21, AND THE PART WAS WRONG FOR THE JOINT. **
 # Simpson (C-C-2021 p.252): "Products shall be installed such that the Titen Turbo screws ...
 # are not exposed to the exterior environment", and all eight joints are exterior; the HGAM
@@ -912,7 +913,7 @@
 # concrete screw exists to expose. Retail ~$3.79 ea (fastenersplus, HETA20Z, 2026-09-21),
 # banded; HDG 16d nails are inside the framing rate. Backups and their prices:
 # notes/column_head_connector_options.md.
-"HETA20Z" = { low = 3.0, high = 6.0 }  # 16 ea, all authored — eight joints, a pair each (FL11473 Table 3 rates the pair)
+"HETA20Z" = { low = 3.0, high = 6.0 }  # 12 ea, all authored — six joints, a pair each (FL11473 Table 3 rates the pair): the four balcony corners and PT-BW-E/-GE. The canopy's east pair (CN-BW-TIE-RE*/RNE*) is 4 more ONLY under EAST_POST_SYSTEM = "cast" (16 ea)
 # The landing's two tie lines (params/landing_tie.py), 2026-09-21: the four stem-tie HGAM10s
 # are RETIRED (Titen Turbo exterior bar, G90 only) and their row with them. Owner's second
 # call the same day: HL35HDG at the stem (CN-BW-STEMTIE-F{C,E}-{A,B}), HL33HDG kept for
@@ -939,7 +940,15 @@
 # than ZMAX because it stands in the weather over a sunken garden with no enclosure above
 # it. ~$168 ea is the Simpson list band for the SDS-screw CCQ at this size, screws included
 # (they ship with the connector, which is why there is no separate fastener row).
-"CCQ46SDS2.5" = { low = 140, high = 200 }  # 2 ea — CN-BW-CAP-W/-NW. CN-SG-CAP-R2/-F2 retired with the balcony's centre pillars, 2026-09-22
+"CCQ46SDS2.5" = { low = 140, high = 200 }  # 2 ea — CN-BW-CAP-W/-NW (4 under EAST_POST_SYSTEM = "kdat": CN-BW-CAP-E/-NE). CN-SG-CAP-R2/-F2 retired with the balcony's centre pillars, 2026-09-22
+# The steel east posts' two welded ends (EAST_POST_SYSTEM = "steel"). The PLATES are in the
+# fabricated [steel_members] piece; these rows are what is bought for the joint on site: the
+# saddle's two 5/8" HDG through-bolts with washers and the butyl isolation strip, and the
+# base's two 5/8" x 10" ASTM F1554 Gr 36 HDG cast-in anchors with levelling nuts and a
+# setting template (the concrete sub sets them; never grouted). 0 instances in the other two
+# variants, kept for the switch.
+"HSS4-SADDLE-HDG" = { low = 18, high = 40 }  # 2 ea — CN-BW-SADDLE-RE / -RNE
+"HSS4-BASEPL-HDG" = { low = 40, high = 95 }  # 2 ea — CN-BW-SBASE-RE / -RNE, two HDG anchors each
 # ** THE HUCQ ROWS ARE RETIRED, 2026-09-12, AND THE COMMENT BELOW IS WHY IT TOOK SO LONG. **
 # Both rows priced a part that could not be installed at the joint it was billed into, and
 # this file's own note argued the wrong way round: "HUCQ410 takes a 4x seat, and 3 x 1 1/2"
@@ -1496,11 +1505,13 @@
 # ticket as SUNKEN_GARDEN_WALL, so the SAME RATE: re-rate both together. An unpriced key drops
 # from the takeoff silently.
 "beam:SUNKEN_GARDEN_GRADE_BEAM_12" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 0.97 CY — no wash, nothing of it shows
-# The six 12" round shafts of the NORTH ENTRY: PT-BW-W/E/RE bottoming at -9'-9 7/16" and
-# PT-BW-GW/GE/RNE at -7'-0". **Two of the six are not piers** — PT-BW-RE (15.35 LF) and
-# PT-BW-RNE (12.73 LF) do not stop at the bearing plane, they run on to the canopy header
-# soffit as full-height cast columns, one continuous pour each. Same tube, same cage, same
-# mix, so they stay on this row; what they add is length, and 53.5 LF of it in total.
+# The six 12" round shafts of the NORTH ENTRY, and which six depends on EAST_POST_SYSTEM
+# (params/east_posts.py, 2026-09-29). Under "steel" (and "kdat") they are PT-BW-W/E/PE on the
+# house-side plane and PT-BW-GW/GE/PNE on the garage plane, all SIX piers — PE/PNE stop 3'-0"
+# above grade under the pinned east posts. Under "cast" PT-BW-PE/PNE do not exist and
+# PT-BW-RE/-RNE run 16'-6 3/4" from a common -10'-2" plane to the header soffit, one pour
+# each, which is what this row carried until today (53.5 LF, 1.51 cy). Same tube, same cage,
+# same mix in every variant; the line scales by the yard.
 #
 # PT-SG-COL left this row on 2026-09-10 for the garden-column row above, which is the mix
 # and cage it is actually poured with.
@@ -1549,7 +1560,7 @@
 # 1.131 in2 on a 12" round, 29% short, and a plain column at h/d past 3 is not permitted at
 # any stress under §14.1.5** — so it is stated here once instead of being reconstructed
 # from two obituaries. notes/north_entry_piers.md §6 is the live derivation.
-"column:PIER_CONCRETE_12" = { material = { low = 506, high = 949 }, labour = { low = 638, high = 1348 } }  # 1.51 cy = 53.5 LF over six shafts, two of which run full height as canopy columns; $/cy, so the line scales
+"column:PIER_CONCRETE_12" = { material = { low = 506, high = 949 }, labour = { low = 638, high = 1348 } }  # six shafts; "steel": six piers, ~0.9 cy — "cast": 1.51 cy = 53.5 LF with two full-height canopy columns; $/cy, so the line scales
 # "dowel" =    # 0 cy
 # A 16"x8" footing is 0.0329 cy/LF, so this is $9.20-14.80/LF. Inch Calculator's dimension
 # table back-solves to a consistent $256-267/cy but on a $137/cy ready-mix basis; Twin Cities
@@ -4791,8 +4802,10 @@
 # are all in [hardware] already and are NOT in this rate.
 #
 #   * PT-BW-CW and PT-BW-CNW, the canopy's two WEST 6x6 columns, 7.69 LF each. Their two
-#     EAST counterparts went on 2026-09-10 when PT-BW-RE/-RNE became full-height cast
-#     concrete, which is the east lateral system (notes/north_entry_structure.md §1a).
+#     EAST counterparts are a switch since 2026-09-29 (EAST_POST_SYSTEM): steel HSS by
+#     default, billed in [steel_members]; under "kdat" PT-BW-RE/-RNE are 6x6s on 3'-0" piers
+#     and add ~12.5 LF here; under "cast" they are full-height concrete columns
+#     (notes/canopy_garage_diaphragm.md).
 #   * PT-BW-IC and PT-BW-IE, two 4x4 interior landing posts at 2.15 LF each, authored
 #     2026-09-11 under BM-BW-FC/-FE's tips on ABU44 standoff bases.
 #
@@ -7361,6 +7374,16 @@ solar_modules = true
 # clause is the half that went.
 [steel_members]
 "L3.5x3.5x0.25" = { material = { low = 14, high = 24 }, labour = { low = 20, high = 45 } }  # 3.79 LF — BM-M-FIRE-LINTEL, A36 HDG angle
+# The canopy's two EAST posts when EAST_POST_SYSTEM = "steel" (2026-09-29): HSS 4x4x1/4 A500 Gr
+# C, 6'-2 3/4" each, with the U-saddle and the base plate WELDED ON, galvanized after
+# fabrication (ASTM A123) and powder-coated. ONE fabricated piece, so it is priced `ea`
+# (cli/price_file.ALTERNATE_UNITS) — stock by the foot would miss the two welded ends, the
+# galvanizer's minimum and the coater's set-up, which are most of the cost at a quantity of
+# two. Material $420-750 ea (~$15-20/LF of tube, two 1/2" / 3/8" plates, shop labour, HDG
+# minimum spread over two pieces, powder coat); labour $150-300 ea to set on levelling nuts,
+# plumb, bolt through the header and pack the butyl. At 0 instances under "kdat"/"cast" the
+# row stays (the `glazed-green-brick` convention) so a switch back prices at once.
+"HSS4x4x0.25" = { unit = "ea", material = { low = 420, high = 750 }, labour = { low = 150, high = 300 } }  # 2 ea — PT-BW-RE / PT-BW-RNE, steel variant
 
 # --- rebar_inclusive -------------------------------------------------------------------
 #

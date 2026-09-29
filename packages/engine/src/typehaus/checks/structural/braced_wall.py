@@ -46,16 +46,17 @@ from typehaus.resolve.braced_walls import (
     KIND_INTERIOR,
     KIND_PLATE,
     braced_wall_lines,
+    diaphragm_roof_over,
     resolved_braced_wall_panels,
 )
 
 _SPACING_ID = "structural.braced_wall_line_spacing"
 _PANELS_ID = "structural.braced_wall_panels"
 
-#: The engineered lateral system catlin's one shear-panel line belongs to. A line whose
-#: walls all carry ``Wall.shear_panel`` hands its verdict to that item rather than to a
-#: prescriptive table (decision #79 (2)).
-_ENGINEERED_ITEM = "lateral_system/RF-BW-CANOPY"
+#: A line whose walls all carry ``Wall.shear_panel`` hands its verdict to the
+#: ``lateral_system`` item of the diaphragm it stands under rather than to a prescriptive
+#: table (decision #79 (2)) — derived by geometry (``diaphragm_roof_over``), never named.
+_LATERAL_KIND = "lateral_system"
 
 
 def _storeys(ctx: CheckContext) -> list[str]:
@@ -132,15 +133,18 @@ def braced_wall_panels(ctx: CheckContext) -> list[Finding]:
         panels, _unplaced = resolved_braced_wall_panels(ctx.model, storey, lines)
         for line in lines:
             if line.kind == KIND_ENGINEERED:
+                roof = diaphragm_roof_over(ctx.model, line.wall_tags)
+                item = f"{_LATERAL_KIND}/{roof}" if roof else None
                 findings.append(Finding(
                     severity=Severity.WARN, check_id=_PANELS_ID,
                     message=(f"N/A — {storey}: {line.tag} carries a ShearPanelSpec on every "
                              f"wall, so it is an engineered shear wall and not a "
                              f"prescriptive braced wall line; its capacity belongs to "
-                             f"`{_ENGINEERED_ITEM}`"),
+                             + (f"`{item}`" if item else
+                                "the diaphragm over it, and no roof over it declares one")),
                     element_tags=(line.tag, *line.wall_tags), code_ref="IRC R602.10",
                     result=Result.NOT_APPLICABLE, authority=Authority.ENGINEERED,
-                    engineering_item=_ENGINEERED_ITEM))
+                    engineering_item=item))
                 continue
             if line.kind == KIND_INFILL:
                 findings.append(not_applicable(
@@ -182,11 +186,22 @@ def _graded(ctx: CheckContext, storey: str, line, lines, panels) -> Finding:
             fix="author the missing input named above")
     message = f"{storey}: {line.tag} — {evaluation.describe()}. {report(evaluation)}"
     tags = (line.tag, *[t for p in evaluation.panels for t in p.panel.tags])
-    if evaluation.ok:
-        return passed(_PANELS_ID, message, tags, code="IRC R602.10.3")
-    return failed(_PANELS_ID, message, tags, code="IRC R602.10.3",
-                  fix="lengthen a panel, add one, or take a factor the model has not "
-                      "claimed (the rows read are printed above)")
+    if line.delivered_by:
+        # ** PRESCRIPTIVE + DELIVERED. ** The line's own grade stands; the shear a
+        # neighbouring deck hands it is graded on that deck's item, on the SURPLUS.
+        items = ", ".join(f"`{_LATERAL_KIND}/{roof}`" for roof in line.delivered_by)
+        message += (f". It ALSO receives the lateral load of {', '.join(line.delivered_by)} "
+                    f"(IRC R301.1.3): that delivered shear is graded on the "
+                    f"{evaluation.provided_ft - (evaluation.required_ft or 0.0):.2f} ft of "
+                    f"surplus this line provides, on {items}")
+    finding = (passed(_PANELS_ID, message, tags, code="IRC R602.10.3") if evaluation.ok
+               else failed(_PANELS_ID, message, tags, code="IRC R602.10.3",
+                           fix="lengthen a panel, add one, or take a factor the model has "
+                               "not claimed (the rows read are printed above)"))
+    if line.delivered_by:
+        finding = finding.model_copy(
+            update={"engineering_item": f"{_LATERAL_KIND}/{line.delivered_by[0]}"})
+    return finding
 
 
 def report(evaluation: LineEvaluation) -> str:

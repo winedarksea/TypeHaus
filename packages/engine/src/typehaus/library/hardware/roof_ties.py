@@ -22,6 +22,22 @@ from typehaus.library.hardware._common import _SIMPSON
 from typehaus.library.hardware.simpson_hangers import _C_C_H_TIES
 from typehaus.library.hardware.simpson_post_bases import _L_F_SSNAILS
 
+#: One row, two records: the same part catalogued for two joints. Load directions G and H
+#: are the report figure's two in-plane directions; ``lateral_f1_lb``/``_f2_lb`` carry them
+#: so a reader who does not know the direction takes the lower (canopy_garage_diaphragm.md
+#: §3c). SPF/HF, because the garage frames SPF.
+_LTP4_ALLOWABLE = AllowableLoads(
+    lateral_f1_lb=540.0,
+    lateral_f2_lb=450.0,
+    load_duration_factor=1.6,
+    species="SPF/HF (DF/SP publishes 625 / 525)",
+    fasteners="(12) 0.131 in x 1 1/2 in. Footnote 3: over 1/2 in sheathing with 1 1/2 in nails "
+              "the plate carries 0.64 of these; 2 1/2 in nails restore 100%",
+    citation=("Simpson Strong-Tie Wood Construction Connectors C-C-2019 p.280, "
+              "LTP4/LTP5/A34/A35 table, LTP4 row (connection 6), load directions G / H, "
+              "SPF/HF (160) column: 540 / 450 lb; read 2026-09-29"),
+)
+
 LTP4_LATERAL_TIE_PLATE = StructuralHardware(
     tag="simpson-ltp4-lateral-tie-plate",
     name="LTP4 lateral tie plate",
@@ -30,6 +46,7 @@ LTP4_LATERAL_TIE_PLATE = StructuralHardware(
     model="LTP4",
     source="Simpson Strong-Tie LTP4 lateral tie plate (strongtie.com/ltp) — transfers "
            "lateral load between a plate and the framing or rim under it",
+    allowable=_LTP4_ALLOWABLE,
 )
 
 # A threaded rod set in wet concrete, plus the square plate washer that IRC R602.11.1 makes
@@ -213,6 +230,7 @@ LTP4_GABLE_TRUSS_ANCHOR = StructuralHardware(
            "on each gable-end truss, bottom chord to the wall's top plate. Lateral only: "
            "uplift is the H2.5A at each heel, which the bearing rule already derives. "
            "Replaced the HGA10 on 2026-09-16 (owner).",
+    allowable=_LTP4_ALLOWABLE,
 )
 
 #: The heavier stainless tie on a joist crossing a beam: H10A geometry in Type 316 (owner,

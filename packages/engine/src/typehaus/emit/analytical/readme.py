@@ -16,6 +16,8 @@ from typehaus.analytical.graph import AnalyticalModel, Fixity
 def analysis_readme(model: AnalyticalModel, *, house: str, has_ifc: bool = True) -> str:
     fixed = sorted(s.element_tag or s.node for s in model.supports if s.fixity is Fixity.FIXED)
     pinned = sorted(s.element_tag or s.node for s in model.supports if s.fixity is Fixity.PINNED)
+    lateral = sorted(s.element_tag or s.node for s in model.supports
+                     if s.fixity is Fixity.LATERAL)
     lines = [
         f"# {house} — the analytical model",
         "",
@@ -57,6 +59,9 @@ def analysis_readme(model: AnalyticalModel, *, house: str, has_ifc: bool = True)
         lines.append(f"- FIXED ({len(fixed)}): {', '.join(f'`{t}`' for t in fixed)}")
     if pinned:
         lines.append(f"- PINNED ({len(pinned)}): {', '.join(f'`{t}`' for t in pinned)}")
+    if lateral:
+        lines.append(f"- LATERAL, horizontal translations only ({len(lateral)}): "
+                     f"{', '.join(f'`{t}`' for t in lateral)}")
     for support in sorted(model.supports, key=lambda s: (s.fixity.value, s.element_tag, s.node)):
         who = support.element_tag or support.node
         item = f" ({support.item_id})" if support.item_id else ""

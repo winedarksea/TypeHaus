@@ -163,3 +163,17 @@ FOOTING_EXPOSED_20 = Assembly(
     ),
     source="the 20\" x 8\" plain strip under the four sunken-garden-face walls (FT-B-S1..S4), on the 7\" washed-stone bedding; frost-protected under IRC R403.3 by the horizontal wings FROST_WING_XPS_1IN/2 under the garden slab, EXPOSED_MIX because the strip is inside the frost zone",
 )
+
+
+# The steel east posts (params/east_posts.py, EAST_POST_SYSTEM = "steel"). A fabricated
+# piece: HSS 4x4x1/4 with its U-saddle and base plate welded on, galvanized after fabrication
+# and powder-coated, bought as ONE part (prices.toml [steel_members], ea). The layer is the
+# section's bounding width; the member itself is `Post.size = "HSS4x4x0.25"`.
+POST_STEEL_HSS = Assembly(
+    tag="POST_STEEL_HSS",
+    layers=(
+        Layer(name="hss", material_ref="steel-hss-duplex", thickness=inch(4.0),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="HSS4x4x1/4 ASTM A500 Gr C post, welded saddle and base plate, ASTM A123 hot-dip galvanized then powder-coated; pinned at both ends (notes/canopy_garage_diaphragm.md §5)",
+)

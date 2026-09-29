@@ -1,5 +1,13 @@
 # Base fixity of the cast columns — IBC 1807.3.2.1, hand-worked
 
+> ⛔ **2026-09-29 — the canopy's east columns are a SWITCH now, and cast is not the default.**
+> `EAST_POST_SYSTEM = "steel"` puts pinned HSS posts on 3'-0" piers under `BM-BW-RE`, and the
+> canopy braces off the garage (`notes/canopy_garage_diaphragm.md`). This note's arithmetic
+> is unchanged and still oracles `column_base` / `pole_embedment` / the diaphragm split — for
+> the `cast` variant, graded by `tests/test_catlin_east_post_variants.py`. One thing moved in
+> that variant: `W-G-S` is stationed as a third E-W line (`canopy_garage_diaphragm.md` §7),
+> so §7e's 50/50 E-W split is 6.4% per column and N-S governs both at ~0.79.
+
 **Oracle for** `engineering/column_base.py` and `engineering/spread_base.py` (§§1-6, §8),
 `engineering/pole_embedment.py` (§9), and for `engineering/diaphragm_basis.py`,
 `engineering/lateral_lines.py` and `engineering/lateral_system.py` (§7). Reproduced by

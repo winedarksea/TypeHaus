@@ -128,6 +128,7 @@ from typehaus.model.published_cladding import PublishedCladdingLoad
 from typehaus.model.rebar import BarSpec, HookConfinement, ReinforcementSpec, RibLayout
 from typehaus.model.refs import (
     Arch,
+    DiaphragmDelivery,
     DiaphragmSpec,
     Embed,
     FaceRef,
@@ -141,6 +142,7 @@ from typehaus.model.refs import (
     PublishedHole,
     PublishedReaction,
     PublishedSpan,
+    ReceivingLine,
     ShearPanelSpec,
     ToRoof,
     centered,
@@ -296,6 +298,7 @@ for _name, _obj in (
     ("SegmentalWallSpec", SegmentalWallSpec), ("SrwDrainageZone", SrwDrainageZone),
     ("EndRestraint", EndRestraint),
     ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
+    ("DiaphragmDelivery", DiaphragmDelivery), ("ReceivingLine", ReceivingLine),
     ("HeadConnector", HeadConnector), ("InServiceMoisture", InServiceMoisture),
     ("Library", Library), ("PlanModel", PlanModel),
     ("BookcaseDoorSpec", BookcaseDoorSpec),
@@ -354,7 +357,7 @@ __all__ = [
     "FaceRef", "face", "LayerMaterial", "ToRoof", "FollowRoof", "Arch", "LayerSpan",
     "OpeningPosition", "PublishedSpan", "PublishedCapacity", "PublishedReaction",
     "PublishedCladdingLoad", "PublishedHole",
-    "ShearPanelSpec", "DiaphragmSpec", "HeadConnector", "InServiceMoisture",
+    "ShearPanelSpec", "DiaphragmSpec", "DiaphragmDelivery", "ReceivingLine", "HeadConnector", "InServiceMoisture",
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",
     "PipeRun", "PipeAccessory", "DrainCleanout", "SleevePenetration", "DuctRun",

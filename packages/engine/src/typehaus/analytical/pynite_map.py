@@ -91,6 +91,9 @@ def section_properties(section: CrossSection) -> tuple[float, float, float, floa
     if section.shape == "i_joist":
         return _i_joist_properties(section)
 
+    if section.shape in ("hss", "hss_round"):
+        return _hss_properties(section)
+
     raise ValueError(
         f"no section properties for shape {section.shape!r}; add a branch rather than "
         "letting it fall through to a rectangle"
@@ -134,6 +137,35 @@ def _angle_properties(section: CrossSection) -> tuple[float, float, float, float
     iz = (t * a**3 / 12.0 + a * t * (a / 2.0 - u_bar) ** 2
           + (b - t) * t**3 / 12.0 + (b - t) * t * (u_bar - t / 2.0) ** 2)
     j = t**3 * (a + b - t) / 3.0
+    return (area, iy, iz, j)
+
+
+def _hss_properties(section: CrossSection) -> tuple[float, float, float, float]:
+    """A hollow section at its DESIGN wall (AISC 360-16 §B4.2, 0.93 t for ERW), sharp corners.
+
+    Computed, not transcribed: the sharp-corner tube omits the corner radii, so it reads
+    HIGH on both A and I — HSS4x4x1/4 gives A 3.50 in2 and I 8.32 in4 against AISC Table
+    1-12's 3.37 and 7.80. ``engineering/steel_post`` grades against the PUBLISHED values; this
+    is the analysis model's section, which only has to be a stiffness. ``J`` is Bredt's
+    closed-section ``2 t A_m^2 / p_m`` on the mid-wall line.
+    """
+    from typehaus.resolve.framing.profiles import HSS_DESIGN_WALL_FACTOR
+
+    if not section.web_thickness_m:
+        raise ValueError("HSS section is missing its wall thickness (web_thickness_m)")
+    t = section.web_thickness_m * M_TO_IN * HSS_DESIGN_WALL_FACTOR
+    b = section.width_m * M_TO_IN
+    h = section.depth_m * M_TO_IN
+    if section.shape == "hss_round":
+        inner = b - 2.0 * t
+        area = math.pi / 4.0 * (b * b - inner * inner)
+        i = math.pi / 64.0 * (b**4 - inner**4)
+        return (area, i, i, 2.0 * i)
+    bi, hi = b - 2.0 * t, h - 2.0 * t
+    area = b * h - bi * hi
+    iy = (b * h**3 - bi * hi**3) / 12.0
+    iz = (h * b**3 - hi * bi**3) / 12.0
+    j = 2.0 * t * ((b - t) * (h - t)) ** 2 / ((b - t) + (h - t))
     return (area, iy, iz, j)
 
 
@@ -267,7 +299,8 @@ def build_inputs(model: AnalyticalModel) -> PyniteInputs:
         for m in model.members
     ))
     supports = tuple(sorted(
-        (s.node, True, True, True, *s.restrained_rotations()) for s in model.supports
+        (s.node, *s.restrained_translations(), *s.restrained_rotations())
+        for s in model.supports
     ))
     releases = tuple(sorted(
         (m.id, _release_flags(m, model)) for m in model.members if m.releases.any
@@ -353,8 +386,9 @@ def _combos(model: AnalyticalModel) -> tuple[tuple[str, tuple[tuple[str, float],
     return tuple(combos)
 
 
-#: ``def_support``'s six flags are DX, DY, DZ, RX, RY, RZ. Translations are always
-#: restrained — a support that let a member fall is not a support — and the three
+#: ``def_support``'s six flags are DX, DY, DZ, RX, RY, RZ. Translations come from
+#: ``Support.restrained_translations()`` — all three, except a LATERAL (delivered-joint)
+#: support, which carries no gravity and frees DZ — and the three
 #: rotations come from ``Support.restrained_rotations()``, never from the fixity here.
 #: A PINNED beam end that cannot roll about its own axis restrains one rotation and stays
 #: pinned for bending; deriving the flags from ``Fixity`` alone would drop that and leave a

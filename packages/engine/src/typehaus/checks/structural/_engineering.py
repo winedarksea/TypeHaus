@@ -21,7 +21,10 @@ def engineering_context(ctx) -> EngineeringContext:  # type: ignore[no-untyped-d
     context = getattr(getattr(ctx, "engineering", None), "context", None)
     if isinstance(context, EngineeringContext):
         return context
+    from typehaus.checks.structural.bracing_surplus import surplus_reader
+
     return EngineeringContext(plan=ctx.plan, model=ctx.model,
                               preferences=getattr(ctx, "preferences", None),
                               soil_class=getattr(ctx, "soil_class", None),
-                              soil_basis=getattr(ctx, "soil_basis", None))
+                              soil_basis=getattr(ctx, "soil_basis", None),
+                              bracing=surplus_reader(ctx.model))

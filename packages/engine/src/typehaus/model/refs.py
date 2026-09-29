@@ -19,6 +19,9 @@ from typehaus.model.base import HausModel
 # sibling published-read types are. The redundant alias is the explicit-re-export spelling
 # ruff keeps (a bare import here has been autofixed away before).
 from typehaus.model.refs_holes import PublishedHole as PublishedHole
+from typehaus.model.diaphragm import DiaphragmDelivery as DiaphragmDelivery
+from typehaus.model.diaphragm import DiaphragmSpec as DiaphragmSpec
+from typehaus.model.diaphragm import ReceivingLine as ReceivingLine
 from typehaus.quantities import Length
 
 
@@ -375,53 +378,6 @@ class ShearPanelSpec(HausModel):
     holdown: str | None = None
     #: SDPWS Table 4.3.4's maximum height-to-width ratio for this construction.
     aspect_ratio_limit: float = 3.5
-
-
-class DiaphragmSpec(HausModel):
-    """The same read for a ROOF or FLOOR deck asked to act as a diaphragm.
-
-    ** A DIAPHRAGM IS NOT SHEATHING; IT IS SHEATHING PLUS TWO CHORDS AND A COLLECTOR. **
-    Declaring one is a design decision with parts in it, which is exactly why the north
-    entry canopy's 2026-09-10 revision demoted its strap line to "a tie, not the lateral
-    system": no chord and no collector had ever been drawn, so there was nothing to call a
-    diaphragm. This type is what it takes to say so, and every field on it is a part
-    somebody has to build.
-
-    ** WHAT IT UNLOCKS, AND WHAT THAT COSTS. ** With a diaphragm the shear at the roof plane
-    reaches every resisting line, and ``engineering/roof_moment.py`` may share it out. Two
-    obligations come with that and both are graded: the diaphragm's own unit shear and
-    aspect ratio (SDPWS 4.2.4 — 4:1 blocked, 3:1 unblocked, and the ratio is derived from
-    the model's own footprint), and the chord force at midspan.
-    """
-
-    #: The deck layer carrying the shear, by name — the same drift guard as above.
-    sheathing_layer: str
-    #: Nail size, boundary/edge spacing, field spacing, and blocking.
-    fastening: str
-    source: str
-    #: ASD unit shear, plf, from SDPWS Table 4.2A at the row named in ``fastening``.
-    unit_shear_asd_plf: float
-    #: ``G_a`` for the same row, kips/inch.
-    apparent_stiffness_kips_per_in: float
-    #: Whether the panel edges are blocked. It sets the aspect-ratio limit and it is the
-    #: difference between a 4:1 deck and a 3:1 one.
-    blocked: bool = True
-    #: The member acting as the diaphragm CHORD, in words — what it is, where it runs, and
-    #: how it is made continuous across its splices. Prose because on a trussed deck the
-    #: chord is a derived member with no authored tag, and a reference that cannot resolve
-    #: is worse than a sentence that can be read.
-    chords: str = ""
-    #: The chord's nominal section and ply count, for the bending term of SDPWS 4.2.2 and
-    #: for the chord-force limit state.
-    chord_member: str = "2x6"
-    chord_plies: int = 1
-    #: The members that drag the deck's shear into each resisting line, by TAG. These must
-    #: resolve: a collector is a real member with a real connection at each end, and naming
-    #: one that is not in the model is the failure this whole type exists to prevent.
-    collector_refs: tuple[str, ...] = ()
-    #: Σ(Δ_c x) / (2W) — the chord-splice slip term of SDPWS 4.2.2, inches. Zero where the
-    #: chord is continuous over the span and has no splice to slip.
-    chord_splice_slip: Length | None = None
 
 
 class HeadConnector(HausModel):

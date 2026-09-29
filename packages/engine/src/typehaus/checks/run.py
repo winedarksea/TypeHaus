@@ -147,9 +147,12 @@ def build_engineering(model: ResolvedModel, prefs: Preferences, house_dir: Path 
 
     The results map is lazy: constructing it computes nothing.
     """
+    from typehaus.checks.structural.bracing_surplus import surplus_reader
+
     results = EngineeringResults(
         EngineeringContext(plan=model.plan, model=model, preferences=prefs,
-                           soil_class=soil_class, soil_basis=soil_basis))
+                           soil_class=soil_class, soil_basis=soil_basis,
+                           bracing=surplus_reader(model)))
     return results, load_register(house_dir)
 
 

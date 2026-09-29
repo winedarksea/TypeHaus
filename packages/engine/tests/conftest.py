@@ -368,6 +368,24 @@ def catlin_ctx(catlin_plan):
 
 
 @pytest.fixture(scope="session")
+def catlin_cast_ctx(tmp_path_factory):
+    """``build_context`` on catlin with ``EAST_POST_SYSTEM = "cast"`` — once per worker,
+    **read-only**. The fixed-base canopy columns' oracles (``entry_column_base_fixity.md``,
+    ``north_entry_piers.md`` §8/§9, ``north_entry_canopy_lateral.md`` §8) grade that variant
+    since the default went to pinned steel on 2026-09-29."""
+    from _helpers import east_variant_house
+
+    from typehaus.checks.run import build_context
+    from typehaus.source import load_plan
+
+    house = east_variant_house(tmp_path_factory.mktemp("catlin-cast") / "house", "cast")
+    loaded = load_plan(house)
+    assert loaded.plan is not None, [f.message for f in loaded.findings]
+    ctx, _ = build_context(loaded.plan, house)
+    return ctx
+
+
+@pytest.fixture(scope="session")
 def catlin_check_report(catlin_ctx):
     """A ``report(tier=None)`` **factory**, memoised per tier — once per worker.
 

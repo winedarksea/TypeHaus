@@ -26,6 +26,7 @@ from typing import Any
 #: Suffixes in a ``Beam.size`` / member profile that name an engineered product, mapped to
 #: the material name a reviewer expects to read. Order matters: the longest match wins.
 _ENGINEERED = (
+    ("hss", "structural steel HSS, ASTM A500 Gr C"),
     ("24f-v5m1", "structural glulam 24F-V5M1/SP"),
     ("glb", "structural glulam"),
     ("lvl", "laminated veneer lumber"),
@@ -141,6 +142,19 @@ def _profile_def(f: Any, name: str) -> Any | None:
     if section.shape == "round":
         return f.create_entity("IfcCircleProfileDef", ProfileType="AREA", ProfileName=name,
                                Radius=float(section.width_m) / 2.0)
+    # A tube is written as the HOLLOW profile, not its box: WallThickness is the DESIGN wall
+    # (AISC 360-16 §B4.2, 0.93 of nominal for ERW), the number an analysis tool computes with.
+    if section.shape in ("hss", "hss_round"):
+        from typehaus.resolve.framing.profiles import HSS_DESIGN_WALL_FACTOR
+
+        wall = float(section.web_thickness_m or 0.0) * HSS_DESIGN_WALL_FACTOR
+        if section.shape == "hss_round":
+            return f.create_entity("IfcCircleHollowProfileDef", ProfileType="AREA",
+                                   ProfileName=name, Radius=float(section.width_m) / 2.0,
+                                   WallThickness=wall)
+        return f.create_entity("IfcRectangleHollowProfileDef", ProfileType="AREA",
+                               ProfileName=name, XDim=float(section.width_m),
+                               YDim=float(section.depth_m), WallThickness=wall)
     if section.shape in ("rect", "i_joist"):
         return f.create_entity("IfcRectangleProfileDef", ProfileType="AREA",
                                ProfileName=name, XDim=float(section.width_m),

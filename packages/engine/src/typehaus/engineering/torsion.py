@@ -196,6 +196,13 @@ def _lines(ctx: Any, case: FrameCase) -> list[Line]:
         line = panel_line(ctx, wall, case.axis, share * case.diaphragm_shear_lb)
         if line is not None:
             lines.append(line)
+    if case.receiving_tags:
+        from typehaus.engineering.lateral_lines import receiving_lines
+
+        element = ctx.plan.by_tag(case.roof_tag)
+        resolved = next((r for r in ctx.model.roofs if r.tag == case.roof_tag), None)
+        lines.extend(receiving_lines(ctx, element, resolved, case.axis) or ()
+                     if resolved is not None else ())
     return lines
 
 
