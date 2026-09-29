@@ -3959,3 +3959,21 @@ surface that reaches the court, so the water goes there.
   is no longer needed. The 6" flash cove stays the waterproofing, pending confirmation that
   First Class may be coved (`plans/TODO.md`). The `prices.toml` row was set for the old
   product and needs re-pricing.
+
+## 2026-09-29 — East canopy posts: 6x6 KDAT with PVC wraps
+
+- The owner selected `EAST_POST_SYSTEM = "kdat"` after the garage-braced design in
+  `a11eb5f2`. `PT-BW-RE`/`-RNE` are pinned 6x6 treated Southern Pine posts over the
+  existing 3'-0" pier tops. `CCQ46SDS2.5` caps, `ABU66SS` stainless standoff bases and
+  stainless cast-in anchors replace the steel variant's saddle, plate and galvanized
+  anchors. The garage diaphragm remains the canopy's lateral path.
+- `notes/canopy_garage_diaphragm.md` §5a hand-checks the wood at wet-service NDS Table 4D
+  values. `wood_roof_post` grades each post, cap, base and pier anchor; the governing east
+  ratio is about 0.23 for axial plus its own drag. The former steel and cast variants
+  remain selectable and are still exercised by `test_catlin_east_post_variants.py`.
+- The PVC column wrap is a nonstructural finish. Detail it as an accessible, screw-fastened
+  jacket with an open drained bottom above the pier top and a vented, outward-shedding top
+  below the cap. Verify KDAT moisture at or below ESR-2604 §3.2.2's 19% limit before the
+  cap is fastened or the wrap is closed. This detail responds to the moisture-trap objection
+  in `notes/beam_water_protection.md` for the different, open balcony posts; it does not
+  claim PVC itself keeps the wood dry.

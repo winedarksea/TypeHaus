@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 74d2a4266876e80b  
-**Lines:** 142
+**Model hash:** 89083d63ed989c97
+**Lines:** 144
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -77,8 +77,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
-| ABU66SS standoff post base (6x6), 316L stainless | 2 | ea |  | building |
-| CCQ46SDS2.5 column cap (4x beam on 6x6 post) | 2 | ea |  | building |
+| ABU66SS standoff post base (6x6), 316L stainless | 4 | ea |  | building |
+| CCQ46SDS2.5 column cap (4x beam on 6x6 post) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
 | DTT2Z screw hold-down / tension tie | 2 | ea |  | building |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT) | 1 | ea |  | building |
@@ -89,7 +89,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5A hurricane/seismic tie | 10 | ea |  | building |
 | H2.5ASS stainless hurricane/seismic tie | 10 | ea |  | building |
 | H2.5AZ ZMAX hurricane/seismic tie | 8 | ea |  | building |
-| HETA20Z embedded truss anchor (ZMAX), installed in pairs | 16 | ea |  | building |
+| HETA20Z embedded truss anchor (ZMAX), installed in pairs | 12 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 1 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 1 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 1 | ea |  | building |
@@ -111,6 +111,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 7 | ea |  | building |
 | LTP4 lateral tie plate, gable-end truss to top plate | 2 | ea |  | building |
 | LTP4 lateral tie plate | 124 | ea |  | building |
+| LTP4 lateral tie plate | 7 | ea |  | building |
 | LUS face-mount joist hanger | 1 | ea |  | building |
 | LUS face-mount joist hanger | 2 | ea |  | building |
 | LUS face-mount joist hanger | 2 | ea |  | building |
@@ -126,7 +127,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 317 | ea |  | building |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | 4 | ea |  | building |
-| 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 10 | ea |  | building |
+| 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 8 | ea |  | building |
 | THA422 top-flange floor truss hanger | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 1 | ea |  | building |
@@ -152,6 +153,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | 139.2 | bf | 10 placed, 14.9 SF plan; 0.43 cy in the takeoff | main |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 84 | bf | 3 placed, 7.1 SF plan; 0.26 cy in the takeoff | main, second |
 | Column — POST_KDAT (column:POST_KDAT) | 42 | bf | 4 placed, 0.6 SF plan; 0.13 cy in the takeoff | main |
+| Column — POST_KDAT_WRAPPED_PVC (column:POST_KDAT_WRAPPED_PVC) | 31.2 | bf | 2 placed, 0.4 SF plan; 0.1 cy in the takeoff | main |
 
 ## Member protection tape
 
@@ -303,6 +305,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | — |
 | LTP4 lateral tie plate, gable-end truss to top plate | — |
 | LTP4 lateral tie plate | — |
+| LTP4 lateral tie plate | — |
 | LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |
@@ -334,6 +337,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | BM-BW-FC, BM-BW-FE, BM-BW-GARAGE-SEAT, BM-BW-HOUSE-SEAT, BM-BW-LAND-HDR, BM-BW-RE, BM-BW-RW, BM-BW-SCSILL, BM-SG-LDGE, BM-SG-LDGW |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | BM-M-HALL, BM-S-BATH-E, BM-S-HALL |
 | Column — POST_KDAT (column:POST_KDAT) | PT-BW-CNW, PT-BW-CW, PT-BW-IC, PT-BW-IE |
+| Column — POST_KDAT_WRAPPED_PVC (column:POST_KDAT_WRAPPED_PVC) | PT-BW-RE, PT-BW-RNE |
 | butyl-tape, 1 1/2" on beam (butyl-tape) | BM-SG-LDGE, BM-SG-LDGW |
 | butyl-tape, 1 1/4" on deck (butyl-tape) | FS-BW-FLOOR, FS-BW-GARAGE, FS-SG-DECK |
 | butyl-tape, 1 1/2" on deck (butyl-tape) | FS-BW-FLOOR, FS-BW-GARAGE, FS-SG-DECK, FS-SG-PORCH |

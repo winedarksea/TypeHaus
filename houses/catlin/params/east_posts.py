@@ -14,13 +14,15 @@ exists in one variant only — the two piers under a post, and each variant's he
 parts — carries a uid minted once with `typehaus.model.ids.new_uid()` and pasted into the
 table; `haus fmt` never visits `params/`.
 
-**steel** (the default, owner 2026-09-29): HSS 4x4x1/4 A500 Gr C, galvanized after
+**steel**: HSS 4x4x1/4 A500 Gr C, galvanized after
 fabrication (ASTM A123) and powder-coated, pinned at both ends on a 12" pier whose top is
 3'-0" above grade — clear of the salted walk's splash and the snow pile. A welded U-saddle
 with HDG through-bolts and a butyl isolation layer at the head; a welded base plate on
 cast-in HDG anchors and levelling nuts over an open, drained gap at the foot — the house's
 standoff rule, no grout pad. Stainless and galvanized never share a joint.
-**kdat**: a 6x6 KDAT post as `PT-BW-CW`, on the same pier, `CCQ46SDS2.5` / `ABU66SS`.
+**kdat** (owner 2026-09-29): a 6x6 KDAT post as `PT-BW-CW`, on the same pier,
+`CCQ46SDS2.5` / `ABU66SS`, with a removable, drained PVC column wrap. The wrap is
+nonstructural and is kept clear of both the cap and standoff base.
 **cast**: the 2026-09-20 design — 12" rounds poured full height from a common −10'-2" plane,
 fixed at the base, shim pack + cast-in `HETA20Z` pair at the head.
 """
@@ -55,7 +57,7 @@ _EAST_VARIANTS = {
                       "to +0ft 2in under the pinned steel east posts"),
     ),
     "kdat": dict(
-        post_size="6x6", post_assembly="POST_KDAT",
+        post_size="6x6", post_assembly="POST_KDAT_WRAPPED_PVC",
         piers={"RE": ("34ET0SKQAZ", "PT-BW-PE"), "RNE": ("1NKNZQCQTQ", "PT-BW-PNE")},
         moment_piers=frozenset(),
         head=("POST_CAP", "CCQ46SDS2.5",
@@ -66,7 +68,11 @@ _EAST_VARIANTS = {
         prices=("CCQ46SDS2.5", "ABU66SS", "AB-058-10-SS"),
         roof_note=("EAST header lands on PT-BW-RE and PT-BW-RNE, 6x6 KDAT posts PINNED both "
                    "ends on CCQ46SDS2.5 caps and ABU66SS stainless standoff bases, on 12in "
-                   "piers PT-BW-PE / -PNE whose tops are 3ft 0in above grade"),
+                   "piers PT-BW-PE / -PNE whose tops are 3ft 0in above grade. Each east post "
+                   "has a NONSTRUCTURAL removable PVC column wrap: leave its bottom OPEN "
+                   "above the pier wash so the 1in standoff and post end drain and can be "
+                   "inspected; vent at the top below the cap, flash the wrap top outward, "
+                   "and do not fasten the wrap through the cap or base"),
         landing_note=("PT-BW-PE (house plane) and PT-BW-PNE (garage plane) are 12in piers "
                       "to +0ft 2in under the pinned KDAT east posts"),
     ),

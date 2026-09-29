@@ -1,7 +1,7 @@
 # Base fixity of the cast columns — IBC 1807.3.2.1, hand-worked
 
 > ⛔ **2026-09-29 — the canopy's east columns are a SWITCH now, and cast is not the default.**
-> `EAST_POST_SYSTEM = "steel"` puts pinned HSS posts on 3'-0" piers under `BM-BW-RE`, and the
+> `EAST_POST_SYSTEM = "kdat"` puts pinned 6x6 posts on 3'-0" piers under `BM-BW-RE`, and the
 > canopy braces off the garage (`notes/canopy_garage_diaphragm.md`). This note's arithmetic
 > is unchanged and still oracles `column_base` / `pole_embedment` / the diaphragm split — for
 > the `cast` variant, graded by `tests/test_catlin_east_post_variants.py`. One thing moved in

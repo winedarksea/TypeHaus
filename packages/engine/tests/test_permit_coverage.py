@@ -247,7 +247,8 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 # `lateral_system/RF-BW-CANOPY` — an item that is already on the checklist under its own
 # line. The permit item BLOCKS and is green, so no gate moved; what rose is the count of
 # lines a reviewer can follow to an engineer's work.
-MAX_UNSEALED_ITEMS = {"mn-2020": 17}
+# The KDAT roof-post calculation adds one separately traceable engineered item.
+MAX_UNSEALED_ITEMS = {"mn-2020": 18}
 
 
 def _engineered_labels(profile) -> set[str]:

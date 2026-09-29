@@ -35,6 +35,7 @@ from .envelope_masonry import (
     FIREPLACE_BRICK_WYTHE,
 )
 from .envelope_roofs import CANOPY_ROOF, GARAGE_ROOF, ROOF
+from .entry_posts import POST_KDAT_WRAPPED_PVC
 from .envelope_walls import EXT_2X6, EXT_2X6_SWINBURNE, GARAGE_WALL_2X6, RAFTER_PLATE
 from .footings import (
     COURT_FOOTING_12,
@@ -218,6 +219,7 @@ ASSEMBLIES = [
     BEAM_WHITE_PAINT,
     BEAM_GLULAM_TREATED,
     POST_KDAT,
+    POST_KDAT_WRAPPED_PVC,
     POST_STEEL_HSS,
     PIER_CONCRETE_12,
     RAILING_DARK_METAL,

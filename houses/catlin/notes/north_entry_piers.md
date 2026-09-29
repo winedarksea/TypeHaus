@@ -1,5 +1,10 @@
 # North entry canopy, piers and headers — hand-worked basis
 
+> **Current east pair, 2026-09-29:** `PT-BW-RE`/`-RNE` are 6x6 KDAT posts on 3'-0"
+> piers with stainless standoff bases and drained PVC wraps. Their current wood check and
+> the switchable steel/cast alternatives are in `canopy_garage_diaphragm.md` §5a. The
+> full-height east-column passages below record the earlier cast design.
+
 **House:** catlin
 **Structure:** `PT-BW-W`, `PT-BW-E`, `PT-BW-RE`, `PT-BW-GW`, `PT-BW-GE`, `PT-BW-RNE` (cast
 piers, of which `PT-BW-RE` and `PT-BW-RNE` run on up as full-height cast **columns**) and

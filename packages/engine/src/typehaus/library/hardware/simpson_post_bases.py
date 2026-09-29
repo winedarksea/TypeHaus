@@ -418,8 +418,9 @@ PC6Z_POST_CAP = StructuralHardware(
 # params/sunken_garden.py and engineering/post_bearing.py), so unlike the cast columns there
 # is no doweled lap in a pour to hold the beam down, and the cap is the hold-down.
 #
-# ** READ THE SPECIES CONDITION BELOW BEFORE QUOTING THIS PART'S NUMBER. ** ESR-2604 §3.2.2
-# governs every connector in this report, and it is not met by catlin's frame.
+# ** READ THE WOOD CONDITION BELOW BEFORE QUOTING THIS PART'S NUMBER. ** ESR-2604 §3.2.2
+# governs every connector in this report. The KDAT east posts meet its species threshold;
+# moisture must still be verified at installation and during service.
 CCQ46SDS_POST_CAP = StructuralHardware(
     tag="simpson-ccq46sds25-column-cap",
     name="CCQ46SDS2.5 column cap (4x beam on 6x6 post)",
@@ -449,7 +450,7 @@ CCQ46SDS_POST_CAP = StructuralHardware(
     allowable=AllowableLoads(
         uplift_lb=6_785.0,
         load_duration_factor=1.6,
-        species="NOT MET BY THIS HOUSE — see citation; the table is not species-indexed",
+        species="wood specific gravity >= 0.50 and moisture content <= 19%; see ESR-2604 §3.2.2",
         fasteners="factory-supplied 1/4 in x 2-1/2 in SDS Heavy-Duty Connector screws, "
                   "16 into the BEAM and 14 into the POST (Table 2's own two columns; "
                   "this record previously said 16 and 8)",
@@ -457,13 +458,11 @@ CCQ46SDS_POST_CAP = StructuralHardware(
                   "Table 2, CCQ46SDS2.5 row — read 2026-09-03. Uplift 6,785 lbf at "
                   "C_D 1.6 (already carries the wind/seismic increase; no further "
                   "duration increase applies), download 24,065 lbf at C_D 1.0. "
-                  "THE CONDITION THAT RIDES WITH IT, and it is not met as catlin frames "
-                  "today: §3.2.2 requires the wood members to be sawn or engineered "
-                  "lumber of specific gravity >= 0.50 at a maximum moisture content of "
-                  "19 percent, and these pillars are SPF at 0.42 standing open to the "
-                  "weather. The report carries no reduction factor to SPF for this "
-                  "series, so there is no published value for the joint as built — the "
-                  "same gap ESR-1622 leaves for the ABU66SS above. Note also that "
+                  "§3.2.2 requires sawn or engineered wood of specific gravity >= 0.50 "
+                  "and moisture content <= 19 percent; there is no published reduction "
+                  "for wood outside that condition. Catlin's KDAT Southern Pine east posts "
+                  "meet the specific-gravity threshold, and the removable drained wrap "
+                  "allows the moisture condition to be checked. Note also that "
                   "ESR-2604 says nothing about installing a CCQ inverted, so the "
                   "cap-at-the-top orientation used here is the tabulated one and any "
                   "base-side use of this family would be outside the report's figures."),

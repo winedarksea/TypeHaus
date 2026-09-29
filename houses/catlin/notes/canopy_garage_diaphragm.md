@@ -49,8 +49,8 @@ except the canopy deck's boundary at the screen line under the envelope (§4d).
 
 | variant | above the pier | pier | pad plane | end fixity |
 |---|---|---|---|---|
-| `steel` (default) | HSS 4x4x1/4 A500 Gr C, 74.75" | 12" round to +0'-2" | house −9'-9 7/16" / garage −7'-0" | pinned-pinned |
-| `kdat` | 6x6 KDAT, as `PT-BW-CW` | the same pier | the same pads | pinned-pinned |
+| `steel` | HSS 4x4x1/4 A500 Gr C, 74.75" | 12" round to +0'-2" | house −9'-9 7/16" / garage −7'-0" | pinned-pinned |
+| `kdat` (current) | 6x6 KDAT, as `PT-BW-CW`, with nonstructural PVC wrap | the same pier | the same pads | pinned-pinned |
 | `cast` | 12" round, full height, one pour | none | −10'-2" (both, as 2026-09-20) | fixed base |
 
 ## 2. The demand the canopy delivers (oracles `roof_lateral.py`)
@@ -305,6 +305,45 @@ the tension row reads 722.1 / 4,528 = 0.159 either way.
 
 The anchors stand in the drained gap and see bending under shear (AISC Design Guide 1 §3.5);
 at 29 lb it is not a row, and it is named so the gap is never grouted to "fix" it.
+
+### 5a. The 6x6 KDAT east posts (oracle `wood_roof_post.py`)
+
+The east pair are 6x6 Southern Pine No. 2 KDAT on `CCQ46SDS2.5` heads and `ABU66SS`
+stainless standoff bases. The PVC column wrap is a finish, never a brace or a larger wood
+section. The 2018 NDS Supplement Table 4D's **wet-service Southern Pine timber row** gives
+F_c 525 psi, F_b 850 psi and E_min 440,000 psi; the dry row must not be substituted. The
+post is 5.5" square and 74.75" long between its pinned connectors (6.2292').
+
+```
+roof share        40 ft² x (10 + 73.7) psf + 6.2292' x 7.87 plf = 3,397 lb  (D + S)
+slenderness       K l_u/d = 1.0 x 74.75 / 5.5 = 13.59 < NDS §3.7.1.4's 50
+Fc*               525 x C_D 1.15 = 603.75 psi (snow)
+FcE               0.822 x 440,000 / 13.59² = 1,958 psi
+Cp                [(1+r)/(2c)] - sqrt([(1+r)/(2c)]² - r/c) = 0.926,
+                  r = FcE/Fc* = 3.244, c = 0.8 (sawn lumber)
+axial             Fc' A = 603.75 x 0.926 x 5.5² = 16,910 lb; d/c = 0.201
+own drag          16.8315 psf x 5.5/12 x 6.2292 = 48.05 lb, half at each end
+bending           w L²/8 = 37.4 lb-ft; f_b = 16.2 psi vs wet Fb x C_D 1.6 = 1,360 psi
+interaction       (f_c/Fc' + f_b/Fb') / (1 - f_c/FcE) = 0.226
+                  conservative uniaxial screen of NDS §3.9; D + S with full 0.6W
+IRC R507.4        6.229' < 14' 6x6 limit (cross-check; the roof's drift snow needs NDS)
+```
+
+The head cap has 6,785 lb uplift and 24,065 lb download in ICC-ES ESR-2604 Table 2;
+the KDAT's SYP G 0.55 meets §3.2.2's 0.50 minimum. The base's bolted ABU66SS row,
+transferred by Simpson L-F-SSNAILS from the ABU66, is 2,190 lb uplift and 18,205 lb
+download. Net uplift is 433.3 lb (d/c 0.064 head, 0.198 base); download is 3,397 lb
+(0.141 head, 0.187 base). The **stainless 5/8" cast-in base anchor** is separate from the
+ABU rating: §8f's 12"-round arithmetic bounds it at 4,528 lb tension and 3,661 lb shear
+against 722 lb and 40 lb factored demand (d/c 0.159 and 0.011).
+
+**Product and moisture condition.** ESR-2604 §3.2.2 caps the wood moisture content at 19%
+at the head connector. Install KDAT dry and verify that limit before closing the wrap. The
+PVC must be a nonstructural, screw-fastened four-sided jacket with an accessible panel,
+open at the bottom above the pier wash and vented at the top below the cap; its top sheds
+water outward. Keep the `ABU66SS`'s 1" clear standoff visible and draining. These are
+detailing requirements, not an assertion that a sealed PVC sleeve keeps wood dry. If the
+specified wrap cannot dry or permit inspection, the cap's published rating is not earned.
 
 ## 6. The pier under a pinned post (oracles the pinned path into `column_base`)
 

@@ -264,6 +264,8 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
                 f"{good[0].duration:g}; {worst[1]}"))
     groups: list[anchor.Group] = []
     states += _concrete_states(ctx, joints, good, demands, missing, groups)
+    inputs.extend(Quantity(f"anchor_fc_{state.name.split()[0]}", state.capacity, "psi", 1.0)
+                  for state in states if "f'c for the tie's concrete anchors" in state.name)
 
     notes = [
         "NOT GRADED — the concrete member under the anchors (out-of-plane bending of the "

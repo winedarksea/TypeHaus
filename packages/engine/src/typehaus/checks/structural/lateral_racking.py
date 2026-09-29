@@ -60,7 +60,7 @@ from typehaus.engineering.balcony_wind import (
     solid_bands,
 )
 from typehaus.engineering.item import item_id
-from typehaus.findings import Finding, Result
+from typehaus.findings import Finding, Result, not_applicable
 from typehaus.hardware.catalog import ROLE_KNEE_BRACE, allowable_for_model
 from typehaus.model.structure import KneeBrace, Post, Railing
 from typehaus.model.trim import Fascia
@@ -429,7 +429,27 @@ def column_base_fixity(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for _kind, carrier, tag in _moment_column_carriers(ctx):
         out.extend(_base_fixity(ctx, tag, carrier))
-    return out
+    # A roof on pinned wood or steel posts still pushes each concrete pier as a short
+    # pole. Its two calculated items must reach this permit line even though the post
+    # above it has no fixed base moment of its own.
+    from typehaus.engineering.roof_lateral import roof_winds
+
+    for wind in roof_winds(ctx.engineering.context).values():
+        for post in wind.pinned:
+            if not post.below:
+                continue
+            for kind in ("column_base", "deck_post"):
+                item = item_id(kind, post.below)
+                if item in ctx.engineering:
+                    out.append(engineered(
+                        ctx, _BASE_CID, item,
+                        f"{wind.roof_tag}'s pinned {post.tag} delivers gravity and base drag "
+                        f"to concrete pier {post.below}",
+                        (wind.roof_tag, post.tag, post.below),
+                        code="IBC 2018 §1807.3.2.1"))
+    return out or [not_applicable(_BASE_CID,
+                                  "no freestanding roof or deck in this plan relies on a "
+                                  "fixed cast column base")]
 
 
 _DIAPHRAGM_CID = "structural.roof_diaphragm"

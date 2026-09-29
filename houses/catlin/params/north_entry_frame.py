@@ -49,7 +49,7 @@ from plan.storeys.garage import (
 # "cast" — see params/east_posts.py and notes/canopy_garage_diaphragm.md. All three are
 # graded at 0 FAIL by tests/test_catlin_east_post_variants.py; change the word, `haus fmt`,
 # `haus check`.
-EAST_POST_SYSTEM = "steel"
+EAST_POST_SYSTEM = "kdat"
 
 HOUSE_CLADDING_Y_FT = 36 + 7.25 / 12
 GARAGE_CLADDING_Y_FT = GARAGE_Y_SOUTH.feet - 0.875 / 12
@@ -358,8 +358,8 @@ beam(11, "BM-BW-LAND-HDR", GARAGE_STEM_INSIDE_X_FT, LANDING_HEADER_Y_FT,
 beam(6, "BM-BW-RW", LANDING_WEST_FT, PIER_LINE_Y_FT,
      LANDING_WEST_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
      "3-2x12")
-# ** WHAT THE EAST HEADER LANDS ON IS EAST_POST_SYSTEM (2026-09-29). ** Pinned steel HSS on
-# 3'-0" piers by default; 6x6 KDAT or the 2026-09-10 full-height cast columns are one word
+# ** WHAT THE EAST HEADER LANDS ON IS EAST_POST_SYSTEM (2026-09-29). ** Pinned 6x6 KDAT on
+# 3'-0" piers by default; steel HSS or the 2026-09-10 full-height cast columns are one word
 # away (params/east_posts.py). The tag and uid it names never change.
 beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT,
      ROOF_COLUMN_EAST_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-RE", "PT-BW-RNE"), HEADER_TOP_FT,
@@ -526,7 +526,7 @@ MOMENT_PAD_DEPTH_FT = 1.0
 #: (2026-09-29). ** `ROOF_COLUMN_BASE_FT` and `_DEEP_BASE_COLUMNS` put `PT-BW-RE`/`-RNE` on a
 #: common −10'-2" plane because, as the canopy's only E-W lateral system, each needed 7.07'
 #: of embedment (entry_column_base_fixity.md §6a). With the canopy braced off the garage
-#: (notes/canopy_garage_diaphragm.md) the default east posts are PINNED steel on 3'-0" piers
+#: (notes/canopy_garage_diaphragm.md) the default east posts are PINNED KDAT on 3'-0" piers
 #: whose pads sit on the plane each side already has: `PD-BW-RE` on the house-side
 #: `FOOTING_TOP_FT` beside `FT-B-N1`..`-N4` (no undermining step, and no lateral capacity
 #: resting on the overdig's backfill), `PD-BW-RNE` on the garage strip's own plane (no 3'-2"

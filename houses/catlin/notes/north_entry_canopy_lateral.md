@@ -112,7 +112,7 @@ about.
 
 ## 8e. The north line — no canopy member, so the collector is the strap line
 
-> ⛔ **2026-09-29:** superseded for the default (`EAST_POST_SYSTEM = "steel"`). With pinned
+> ⛔ **2026-09-29:** superseded for the pinned east variants (`EAST_POST_SYSTEM = "kdat"` or `"steel"`). With pinned
 > east posts the strap line is not the collector of one column's reaction — it carries the
 > canopy's WHOLE E-W shear (664.3 lb, 94.9 lb per strap, 0.077) and its whole N-S shear
 > across the joint (147.5 lb, 0.119), plus the rotation couple, graded in

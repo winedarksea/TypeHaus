@@ -64,6 +64,13 @@ ROWS: tuple[ItemRow, ...] = (
             "no steel post in this plan carries a roof header",
             "Steel HSS roof post (section, saddle, base)",
             ("AISC 360-16 §E3", "AWC NDS 2018 §12.3", "ACI 318-19 Ch. 17")),
+    ItemRow("wood_roof_post", "wood_roof_post",
+            "A pinned KDAT roof post: wet-service column, head cap, stainless base, pier anchor.",
+            "the wood post's axial and drag capacity and its head, base and pier-anchor loads",
+            "AWC NDS 2018 §3.7, §3.9; ICC-ES ESR-2604; ACI 318-19 Ch. 17",
+            "no KDAT post in this plan carries a roof header",
+            "KDAT roof post (column, cap, base, anchor)",
+            ("AWC NDS 2018 §3.7", "ICC-ES ESR-2604", "ACI 318-19 Ch. 17")),
     ItemRow("veneer_beam", "veneer_beam",
             "A cast beam carrying a masonry wythe between two walls.",
             "a cast beam carrying a masonry wythe — flexure, shear, torsion, "

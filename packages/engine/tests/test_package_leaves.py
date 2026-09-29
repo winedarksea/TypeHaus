@@ -102,6 +102,10 @@ _EXCUSED: dict[str, set[str]] = {
     # The same excuse for the same reason: a deck tie grades against the tie part's own
     # published F1/F2, which live in the catalog and nowhere else.
     "engineering/deck_tie.py": {"hardware"},
+    # These roof delivery and wood-post checks read the same published connector catalog;
+    # a second local copy of a product's allowable would drift after a catalog revision.
+    "engineering/diaphragm_delivery.py": {"hardware"},
+    "engineering/wood_roof_post.py": {"library"},
     # And again: the break's thrust reaches the house wall's sill anchors, graded on their
     # published F2 (free body §11d).
     "engineering/thermal_break_house.py": {"hardware"},

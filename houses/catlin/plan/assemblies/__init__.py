@@ -23,6 +23,7 @@ from .envelope_roofs import (
     GARAGE_ROOF,
     ROOF,
 )
+from .entry_posts import POST_KDAT_WRAPPED_PVC
 from .envelope_walls import (
     EXT_2X6,
     EXT_2X6_SWINBURNE,

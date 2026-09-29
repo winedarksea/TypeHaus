@@ -81,7 +81,7 @@ def _laterally_held(beams: list[str], graph: Any, supports: tuple[Support, ...])
 
     lateral = {s.node for s in supports if s.fixity is Fixity.LATERAL}
     for tag in beams:
-        pieces = graph.beam_spans.get(tag, ())
+        pieces = getattr(graph, "beam_spans", {}).get(tag, ())
         if any(n in lateral for m in graph.members if m.id in pieces for n in (m.n0, m.n1)):
             return True
     return False

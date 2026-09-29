@@ -28,7 +28,7 @@ _PINNED_PIERS = {"column_base/PT-BW-PE", "column_base/PT-BW-PNE",
 #: ``variant -> the north entry's engineering items``, per the note's §5-§7.
 EXPECTED = {
     "steel": _COMMON | _PINNED_PIERS | {"steel_post/PT-BW-RE", "steel_post/PT-BW-RNE"},
-    "kdat": _COMMON | _PINNED_PIERS,
+    "kdat": _COMMON | _PINNED_PIERS | {"wood_roof_post/PT-BW-RE", "wood_roof_post/PT-BW-RNE"},
     "cast": _COMMON | {
         "base_rotation/PT-BW-RE", "base_rotation/PT-BW-RNE",
         "column_base/PT-BW-RE", "column_base/PT-BW-RNE",

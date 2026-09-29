@@ -4802,8 +4802,9 @@
 # are all in [hardware] already and are NOT in this rate.
 #
 #   * PT-BW-CW and PT-BW-CNW, the canopy's two WEST 6x6 columns, 7.69 LF each. Their two
-#     EAST counterparts are a switch since 2026-09-29 (EAST_POST_SYSTEM): steel HSS by
-#     default, billed in [steel_members]; under "kdat" PT-BW-RE/-RNE are 6x6s on 3'-0" piers
+#     EAST counterparts are a switch since 2026-09-29 (EAST_POST_SYSTEM): 6x6 KDAT by
+#     default, with nonstructural PVC wraps; under "steel" HSS is billed in [steel_members];
+#     PT-BW-RE/-RNE are 6x6s on 3'-0" piers
 #     and add ~12.5 LF here; under "cast" they are full-height concrete columns
 #     (notes/canopy_garage_diaphragm.md).
 #   * PT-BW-IC and PT-BW-IE, two 4x4 interior landing posts at 2.15 LF each, authored
@@ -7096,6 +7097,12 @@ finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.c
 # ~$18-45 of the old band was stool stock, so the row goes to $55-125. It stays PER WINDOW
 # and stays on all 41: the fabrication is the same work whoever sawed the board.
 finish-window-stools-and-aprons = { low = 55, high = 125, unit = "ea", driver = "openings.count[kind=window]" }
+# Two east-canopy PVC column wraps, each around a 6x6 KDAT post. This is a schematic
+# installed allowance for site-built, screw-fastened 8x8 nominal cellular PVC with a
+# removable inspection face, drained foot and vented head. The structural wood already
+# bills under [timber]; this buys only the jacket and its installation. The unique post
+# assembly keeps the allowance at zero when EAST_POST_SYSTEM switches to steel or cast.
+finish-canopy-east-pvc-column-wrap = { material = { low = 200, high = 450 }, labour = { low = 150, high = 350 }, unit = "ea", driver = "structural_solids.count[assembly=POST_KDAT_WRAPPED_PVC]" }
 # DRIVEN 2026-08-27 off stair tread length — 143.4 LF over four stairs, which is what a nosing
 # is bought by. `stair_finish` is one of the two tables UNPRICED_VIEWS declares: the tread and
 # riser STOCK bills in [framing], and this is the nosing on its edge. $7-21/LF; the seven

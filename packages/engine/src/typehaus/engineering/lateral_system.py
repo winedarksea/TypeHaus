@@ -324,11 +324,11 @@ def _panel(ctx: EngineeringContext, wall_tag: str, forces: dict[str, dict[str, f
         f"{allowable.citation.split(':')[0]}. The row above is the overturning couple ALONE, "
         f"because that is the panel's own limit state; the anchor rows add the column's net "
         f"roof uplift, which crosses the same bolt in the same gust.")
-    _anchorage(ctx, wall, tension, worst, states, notes)
+    _anchorage(ctx, wall, tension, worst, states, notes, inputs)
 
 
 def _anchorage(ctx: EngineeringContext, wall: object, tension_lb: float, shear_lb: float,
-               states: list[LimitState], notes: list[str]) -> None:
+               states: list[LimitState], notes: list[str], inputs: list[Quantity]) -> None:
     """The cast-in anchor under each end of a panel, graded in the pier it stands in.
 
     ** THE PANEL'S END POST NAMES ITS OWN PIER BY STANDING ON IT. ** A post framed into the
@@ -357,6 +357,8 @@ def _anchorage(ctx: EngineeringContext, wall: object, tension_lb: float, shear_l
                     key=lambda row: (row[1][0], row[0].specified_fc_psi or 0.0))
     if ranked:
         pier, size = ranked[0]
+        inputs.append(Quantity(f"panel_anchor_fc_{wall.tag}",
+                               pier.specified_fc_psi or 3000.0, "psi", 1.0))
         uplift = _net_uplift(ctx, pier, notes=[]) or 0.0
         anchor = round_pier_anchor(pier.tag, size[0], pier.specified_fc_psi or 3000.0)
         states.extend(anchor_states(
