@@ -5,6 +5,8 @@ from __future__ import annotations
 import math
 from dataclasses import replace
 
+from shapely.geometry import Point, Polygon
+
 from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, StairFinishPart
@@ -95,3 +97,62 @@ def _nosing_return(member: FramedMember, outline, depth: float):
     return (first, second,
             (second[0] - ux * depth, second[1] - uy * depth),
             (first[0] - ux * depth, first[1] - uy * depth))
+
+
+def set_landing_stack(members: tuple[FramedMember, ...], stack_m: float,
+                      tread_m: float) -> tuple[FramedMember, ...]:
+    """Thin each landing deck to its floor stack and lift its own framing to meet it.
+
+    The layouts build a landing deck at tread thickness. A hardwood landing is field over
+    subfloor instead; its walking face stays put and the difference goes to the framing.
+    """
+    lift = tread_m - stack_m
+    if abs(lift) <= 1e-9:
+        return members
+    names = [m.child_key.removeprefix("landing-") for m in members
+             if m.category == "landing"]
+    own = tuple(f"landing-{part}-{name}-" for name in names for part in ("joist", "rim"))
+    out: list[FramedMember] = []
+    for member in members:
+        if member.category == "landing":
+            section = cross_section(member.profile)
+            width_in = max(section.width_m, section.depth_m) / 0.0254
+            out.append(replace(member, profile=f"deck {width_in:g}x{stack_m / 0.0254:g}",
+                               z0_m=member.z1_m - stack_m))
+        elif member.category == "landing_framing" and member.child_key.startswith(own):
+            out.append(replace(
+                member, z0_m=member.z0_m + lift, z1_m=member.z1_m + lift,
+                z0_end_m=member.z0_end_m + lift if member.z0_end_m is not None else None,
+                z1_end_m=member.z1_end_m + lift if member.z1_end_m is not None else None))
+        else:
+            out.append(member)
+    return tuple(out)
+
+
+def landing_nosing_parts(members: tuple[FramedMember, ...], material_ref: str,
+                         tread_m: float, nosing_m: float) -> tuple[StairFinishPart, ...]:
+    """The lip of each landing tread: over the riser that climbs onto the landing edge.
+
+    Only an arrival edge has one. The riser a flight leaves a landing by stands ON it. The
+    lip runs from the riser's back face (the landing edge) out past its front face by the
+    flight's nosing, from tread depth below the walking face up to it.
+    """
+    parts: list[StairFinishPart] = []
+    risers = [m for m in members if m.category == "riser" and m.orient is not None]
+    for landing in (m for m in members if m.category == "landing"):
+        edge = Polygon(member_footprint(landing)[0]).exterior
+        for riser in risers:
+            if abs(riser.z1_m - (landing.z1_m - tread_m)) > 1e-4:
+                continue
+            ux, uy = riser.orient
+            half = cross_section(riser.profile).width_m / 2
+            back = [(x + ux * half, y + uy * half) for x, y in (riser.p0, riser.p1)]
+            if any(edge.distance(Point(point)) > 1e-3 for point in back):
+                continue
+            reach = 2 * half + nosing_m
+            front = [(x - ux * reach, y - uy * reach) for x, y in back]
+            parts.append(StairFinishPart(
+                f"{landing.child_key}:nosing", "landing-nosing", material_ref,
+                (back[0], back[1], front[1], front[0]),
+                landing.z1_m - tread_m, landing.z1_m))
+    return tuple(parts)

@@ -234,7 +234,9 @@ def test_the_house_declares_exactly_one_millwork_standard(catlin_plan) -> None:
     assert standard.landing_deck.board_face_width.inches == pytest.approx(3.5)
     assert standard.landing_deck.board_coverage_width.inches == pytest.approx(3.125)
     assert standard.landing_deck.nosing_material_ref == "oak-tread"
-    assert standard.landing_deck.nosing_profile == "bullnose + groove"
+    assert standard.landing_deck.nosing_depth.inches == pytest.approx(3.5)
+    assert standard.landing_deck.stack_thickness_m == pytest.approx(1.5 * 0.0254)
+    assert standard.landing_deck.nosing_profile == "landing tread"
 
 
 def test_a_second_millwork_standard_is_an_error_not_a_winner(catlin_plan) -> None:

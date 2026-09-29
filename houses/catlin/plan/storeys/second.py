@@ -1532,6 +1532,9 @@ STAIRS = [
           layout="u_level_landing", run_direction="y", turn_direction="left",
           start=pt(ft(10, 3.25), ft(26, 0.375)), landing_depth=ft(3, 6.25),
           bearing_refs=("W-M-N2",),
+          # 8/4 oak S2S to 1 3/4". The landing is 3/4" + 3/4" and its nosing's lip makes
+          # up the difference (MW-STANDARD's landing_deck).
+          tread_thickness=inch(1.75),
           # A centre stringer per flight: two at the lane edges left the treads a 39" clear
           # span (structural.stair_tread_span).
           stringer_spacing=inch(22),

@@ -62,8 +62,7 @@ def _liner_net_ft2(catlin_model, wall, material_ref="catlin-sauna-shiplap") -> f
 # --- the sauna liner and its tile splash ---------------------------------------------------
 
 def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
-    """Basswood = the three liner walls' envelope area minus the two 3' x 7'-6" tile
-    bands; the tile bills beside it as an override. Recomputed, not hard-coded."""
+    """The combined basswood order covers the walls, less tile, and the ceiling."""
     rows = bom["wood_surfaces"]
     basswood = next(row for row in rows if row["material"] == "catlin-sauna-shiplap")
     liner_walls = [w for w in catlin_model.walls
@@ -95,14 +94,15 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
                  if p.replaces_wall_finish
                  and p.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
     assert splash == pytest.approx(2 * 3.0 * 7.5, rel=1e-3)  # two 3' bands x 7'-6"
-    assert float(basswood["net_area_sqft"]) == pytest.approx(gross - splash, abs=0.05)
+    sauna = next(room for room in catlin_model.rooms if room.tag == "RM-B-SAUNA")
+    assert float(basswood["net_area_sqft"]) == pytest.approx(
+        gross - splash + sauna.area_m2 * _M2_TO_FT2, abs=0.05)
     assert basswood["species"] == "basswood"
     assert basswood["also_in_envelope_layers"] is True
     # 5/4 shiplap: 1.375 bf per ordered square foot — 5/4 thickness x a 5-1/2" face over 5"
     # of coverage. It was 1.25 while the liner was T&G, which was the bare stock thickness
     # with no face allowance at all; the 2026-08-28 profile change re-derived it
-    # (plan/assemblies.py). The wall AREA did not move and must not: this assertion pairs
-    # with the net-area one above precisely so a profile change cannot smuggle one in.
+    # (plan/assemblies.py). A profile change must not alter the covered area.
     # The tolerance is 0.06, not 0.05: the
     # takeoff rounds board_feet to one decimal, so half a rounding step is 0.05 exactly and
     # a tolerance of 0.05 fails on float slop whenever the true value lands on the step —
@@ -170,17 +170,21 @@ def test_sauna_ceiling_basswood_is_priced_and_on_the_mill_order(catlin_model, bo
     assert float(priced["net_area_sqft"]) == pytest.approx(expected_area, abs=0.05)
     assert cost_code("envelope_layers", "catlin-sauna-shiplap", row=priced).trade == "millwork"
 
-    surface = next(row for row in bom["wood_surfaces"]
-                   if row["kind"] == "ceiling-assembly-finish"
-                   and row["material"] == "catlin-sauna-shiplap")
-    assert float(surface["net_area_sqft"]) == pytest.approx(expected_area, abs=0.05)
-    assert surface["tags"] == ["RM-B-SAUNA"]
+    surfaces = [row for row in bom["wood_surfaces"]
+                if row["material"] == "catlin-sauna-shiplap"]
+    assert len(surfaces) == 1
+    [surface] = surfaces
+    assert surface["kind"] == "wall-and-ceiling-assembly-finish"
+    assert "RM-B-SAUNA" in surface["tags"]
+    assert "W-B-CS" in surface["tags"]
     assert surface["also_in_envelope_layers"] is True
 
-    mill_row = next(row for row in hardwood_takeoff(catlin_model)
-                    if row["use"] == "ceiling liner"
-                    and row["material"] == "catlin-sauna-shiplap")
-    assert mill_row["tags"] == ["RM-B-SAUNA"]
+    mill_rows = [row for row in hardwood_takeoff(catlin_model)
+                 if row["material"] == "catlin-sauna-shiplap"]
+    assert len(mill_rows) == 1
+    [mill_row] = mill_rows
+    assert mill_row["use"] == "wall and ceiling liner"
+    assert mill_row["tags"] == surface["tags"]
     assert mill_row["coverage_sqft"] == surface["order_area_sqft"]
     assert mill_row["rough_board_feet"] == surface["board_feet"]
     assert mill_row["also_in_envelope_layers"] is True

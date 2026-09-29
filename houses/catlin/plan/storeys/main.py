@@ -2005,8 +2005,8 @@ SLABS = [
 #
 # `tread_thickness` states the bought board/substrate depth and every layout honours it. On
 # this carpeted flight, the 1" substrate plus 1/2" carpet and pad make a 1-1/2" stack.
-# The oak ST-M2S landing uses the same 1-1/2" geometry as 3/4" plywood plus 3/4" oak T&G,
-# with a solid nosing at the exposed edge. The stair finish resolver lowers the substrate
+# The oak ST-M2S landing is 3/4" plywood plus 3/4" oak T&G under 1-3/4" oak treads; its
+# landing tread's lip makes up the difference over the riser below (MW-STANDARD). The stair finish resolver lowers the substrate
 # and its supports by the covering depth, so no finished riser moves and the end risers
 # `code.R311_7_5_1_stair_end_risers` measures are the ones above.
 #

@@ -1652,7 +1652,7 @@ export interface Stair {
 
 export interface StairFinishPart {
   key: string;
-  role: "walking" | "nosing" | "riser";
+  role: "walking" | "nosing" | "riser" | "landing-nosing";
   material_ref: string;
   outline: Vec2[];
   z0_m: number;

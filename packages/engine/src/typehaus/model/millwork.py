@@ -168,26 +168,34 @@ class Countertop(Element):
 class StairLandingMillwork(HausModel):
     """How a stair landing's finish boards and exposed nosing are made.
 
-    The resolved landing remains one structural surface. This declaration gives the millwork
-    takeoff the board profile and coverage needed to expand that surface into a cut list.
-    Nosing depth comes from the resolved stair's physical tread depth, so the edge stays
-    aligned when stair geometry changes.
+    The landing is a floor stack: ``field_thickness`` of T&G over ``subfloor_thickness``,
+    which sets its deck depth and so where its framing sits. The nosing is a stock-style
+    landing tread (Stairtek NSWO3548 is the pattern): ``nosing_depth`` wide, rabbeted to the
+    field thickness and grooved for its tongue, with a lip that drops to the flight's own
+    tread thickness over the riser below. The lip thickness is read off the flight, never
+    authored, so every visible nosing matches.
     """
 
     stair_refs: tuple[str, ...]
     field_material_ref: str
     field_thickness: Length
+    subfloor_thickness: Length
     board_face_width: Length
     board_coverage_width: Length
     nosing_material_ref: str
-    nosing_thickness: Length
-    nosing_profile: str = "bullnose + groove"
+    nosing_depth: Length
+    nosing_profile: str = "landing tread"
+
+    @property
+    def stack_thickness_m(self) -> float:
+        return self.field_thickness.meters + self.subfloor_thickness.meters
 
     @model_validator(mode="after")
     def widths_are_buildable(self) -> StairLandingMillwork:
         if not self.stair_refs or len(set(self.stair_refs)) != len(self.stair_refs):
             raise ValueError("landing millwork needs unique stair_refs")
-        if (self.field_thickness.meters <= 0 or self.nosing_thickness.meters <= 0
+        if (self.field_thickness.meters <= 0 or self.subfloor_thickness.meters < 0
+                or self.nosing_depth.meters <= 0
                 or self.board_face_width.meters <= 0
                 or self.board_coverage_width.meters <= 0
                 or self.board_coverage_width.meters > self.board_face_width.meters):

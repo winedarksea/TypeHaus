@@ -45,9 +45,10 @@ _SQIN_PER_BF_IN = 144.0  # board foot = T(in) x W(in) x L(in) / 144
 # --- rough-stock yield (AGENTS.md §1.3 — named, documented, not inline magic) -----------
 
 #: Finished thickness a nominal quarter-stock thickness dresses down to, in inches. 4/4
-#: rough (1") planes to 3/4"; 8/4 (2") to 1-1/2". The loss is two faces of planer skim plus
-#: the cup a board dries with, and it is why a "1-inch" shelf is never an inch.
-_FINISHED_FROM_QUARTERS: dict[int, float] = {4: 0.75, 5: 1.0, 6: 1.25, 8: 1.5, 12: 2.5}
+#: rough (1") planes to 3/4"; 8/4 (2") to 1-3/4", the NHLA S2S standard. The loss is two
+#: faces of planer skim plus the cup a board dries with, and it is why a "1-inch" shelf
+#: is never an inch.
+_FINISHED_FROM_QUARTERS: dict[int, float] = {4: 0.75, 5: 1.0, 6: 1.25, 8: 1.75, 12: 2.5}
 
 #: How a finished piece is made up. Not a style — each is a different rough quantity and a
 #: different sentence to the mill. See the module docstring for why this replaced a
@@ -88,7 +89,8 @@ _FLAT_FACE_FACTOR = 1.0
 _USE_ORDER = ("window stool", "shelf", "stair tread", "stair winder", "stair riser",
               "stair landing nosing",
               "stair landing board", "stair landing closing board", "stair landing deck",
-              "floor", "wainscot", "wall liner", "ceiling liner", "timber post")
+              "floor", "wainscot", "wall liner", "ceiling liner",
+              "wall and ceiling liner", "timber post")
 
 
 def hardwood_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -330,6 +332,9 @@ _COVERAGE_KINDS = {
                                             "also_in_wood_surfaces": True}),
     "ceiling-assembly-finish": ("ceiling liner", {"also_in_envelope_layers": True,
                                                "also_in_wood_surfaces": True}),
+    "wall-and-ceiling-assembly-finish": (
+        "wall and ceiling liner", {"also_in_envelope_layers": True,
+                                   "also_in_wood_surfaces": True}),
 }
 
 

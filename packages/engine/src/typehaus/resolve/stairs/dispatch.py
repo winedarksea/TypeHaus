@@ -29,7 +29,12 @@ from typehaus.resolve.stairs.common import (
     _WELL_PARTITION_THICKNESS_M,
     _tread_thickness,
 )
-from typehaus.resolve.stairs.finish import lower_stair_substrates, stair_finish_parts
+from typehaus.resolve.stairs.finish import (
+    landing_nosing_parts,
+    lower_stair_substrates,
+    set_landing_stack,
+    stair_finish_parts,
+)
 from typehaus.resolve.stairs.straight import _straight_stair_members
 from typehaus.resolve.stairs.u_split import _u_split_landing_members
 from typehaus.resolve.stairs.winder import _winder_stair_members
@@ -213,6 +218,12 @@ def _resolve_stair(
                              going_m, physical_tread_m, nosing_m, landing_depth_m,
                              _deck_underside(model, stair, opening))
     members = lower_stair_substrates(members, finish_thickness_m)
+    deck = _landing_deck(model, stair)
+    if deck is not None:
+        if deck.stack_thickness_m > _tread_thickness(stair) + 1e-9:
+            return None, [_error("integrity.stair_landing_deck", f"stair {stair.tag}'s landing "
+                                 "stack is thicker than its treads", stair.tag)]
+        members = set_landing_stack(members, deck.stack_thickness_m, _tread_thickness(stair))
     if opening is None:
         outline = _flight_footprint(stair, going_m, risers)
     # Structural guards: the flight never drops below the subfloor it springs from (so a
@@ -224,6 +235,9 @@ def _resolve_stair(
     finish_parts = (stair_finish_parts(members, stair.finish_material,
                                       finish_thickness_m, _tread_thickness(stair))
                     if stair.finish_material is not None else ())
+    if deck is not None:
+        finish_parts += landing_nosing_parts(members, deck.nosing_material_ref,
+                                             _tread_thickness(stair), nosing_m)
     # A stair declaration lives with its destination deck so it can own the opening, but
     # its resolved plan-storey identity is the floor it rises *from*.
     return ResolvedStair(stair.uid, stair.tag, stair.from_storey, stair.to_storey, outline,
@@ -237,15 +251,26 @@ def _resolve_stair(
                          finish_parts=finish_parts), []
 
 
+def _millwork_standard(model: ResolvedModel):
+    from typehaus.model.millwork import MillworkStandard
+
+    return next((el for el in model.plan.all_elements()
+                 if isinstance(el, MillworkStandard)), None)
+
+
+def _landing_deck(model: ResolvedModel, stair: Stair):
+    """The house's hardwood landing declaration when it names this flight."""
+    standard = _millwork_standard(model)
+    deck = standard.landing_deck if standard is not None else None
+    return deck if deck is not None and stair.tag in deck.stair_refs else None
+
+
 def _finish_materials(model: ResolvedModel,
                       stair: Stair) -> tuple[str | None, str | None, str | None]:
     """``(tread, landing, riser)`` finish refs: the flight's own ``tread_material``, else the house
     ``MillworkStandard`` that scopes it — so the treads the viewer textures are the ones
     ``haus millwork`` cuts, declared once."""
-    from typehaus.model.millwork import MillworkStandard
-
-    standard = next((el for el in model.plan.all_elements()
-                     if isinstance(el, MillworkStandard)), None)
+    standard = _millwork_standard(model)
     tread = stair.tread_material
     scoped = standard is not None and stair.tag in standard.tread_stairs
     if tread is None and scoped:

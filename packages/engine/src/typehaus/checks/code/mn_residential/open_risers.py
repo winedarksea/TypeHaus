@@ -32,6 +32,11 @@ def steps(stair: ResolvedStair) -> list[tuple[float, float, float, bool]]:
         return []
     thick = {round(m.z1_m + stair.finish_thickness_m, 4):
              m.z1_m - m.z0_m + stair.finish_thickness_m for m in boards}
+    # A landing tread's lip hangs to tread depth over the riser below the landing edge.
+    for part in stair.finish_parts:
+        face = round(part.z1_m, 4)
+        if part.role == "landing-nosing" and face in thick:
+            thick[face] = max(thick[face], part.z1_m - part.z0_m)
     faces = sorted(thick)
     base = (stair.base_elevation_m if stair.base_elevation_m is not None
             else faces[0] - stair.riser_height_m)

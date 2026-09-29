@@ -34,8 +34,8 @@ def test_catlin_closes_every_riser(catlin_model_ro):
 
 
 @pytest.mark.parametrize(("tag", "count", "opening_in", "top_in", "over_30"), [
-    ("ST-B2M", 15, 5.86, 108.9, 11), ("ST-M2S", 16, 6.03, 119.0, 12),
-    ("ST-S2A", 16, 6.00, 118.5, 12), ("ST-G-SERVICE", 5, 5.30, 32.5, 1),
+    ("ST-B2M", 15, 5.86, 108.9, 11), ("ST-M2S", 16, 5.78, 118.76, 12),
+    ("ST-S2A", 16, 5.75, 118.25, 12), ("ST-G-SERVICE", 5, 5.30, 32.5, 1),
     ("ST-SG-PORCH", 5, 5.10, 31.5, 1)])
 def test_hand_numbers_open(catlin_model_ro, tag, count, opening_in, top_in, over_30):
     """§3: each flight's openings as it stood, with no riser boards."""
@@ -58,8 +58,8 @@ def test_an_open_flight_fails(catlin_model_ro, tag):
 
 
 @pytest.mark.parametrize(("tag", "material", "heights"), [
-    ("ST-B2M", "plywood-subfloor", {5.862}), ("ST-M2S", "oak-riser", {6.032}),
-    ("ST-S2A", "oak-riser", {6.0}), ("ST-G-SERVICE", "kdat", {5.3})])
+    ("ST-B2M", "plywood-subfloor", {5.862}), ("ST-M2S", "oak-riser", {5.782}),
+    ("ST-S2A", "oak-riser", {5.75}), ("ST-G-SERVICE", "kdat", {5.3})])
 def test_riser_boards(catlin_model_ro, tag, material, heights):
     """§4: every step carries a 3/4" board of the flight's riser stock."""
     stair = _stair(catlin_model_ro, tag)

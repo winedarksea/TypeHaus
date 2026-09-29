@@ -88,11 +88,6 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             liner_area[layer.material_ref] += max(
                 0.0, layer_net - override_by_wall[wall.tag])
             liner_tags[layer.material_ref].append(wall.tag)
-    for ref in sorted(liner_area):
-        rows.append(_area_row(materials, ref, liner_area[ref],
-                              kind="wall-assembly-finish", where=liner_tags[ref],
-                              also={"also_in_envelope_layers": True}))
-
     ceiling_area: dict[str, float] = defaultdict(float)
     ceiling_rooms: dict[str, list[str]] = defaultdict(list)
     for room in model.rooms:
@@ -106,10 +101,17 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 continue
             ceiling_area[layer.material_ref] += room.area_m2
             ceiling_rooms[layer.material_ref].append(room.tag)
-    for ref in sorted(ceiling_area):
-        rows.append(_area_row(materials, ref, ceiling_area[ref],
-                              kind="ceiling-assembly-finish", where=ceiling_rooms[ref],
-                              also={"also_in_envelope_layers": True}))
+    for ref in sorted(liner_area.keys() | ceiling_area.keys()):
+        if ref in liner_area and ref in ceiling_area:
+            kind = "wall-and-ceiling-assembly-finish"
+        elif ref in liner_area:
+            kind = "wall-assembly-finish"
+        else:
+            kind = "ceiling-assembly-finish"
+        rows.append(_area_row(
+            materials, ref, liner_area[ref] + ceiling_area[ref], kind=kind,
+            where=liner_tags[ref] + ceiling_rooms[ref],
+            also={"also_in_envelope_layers": True}))
 
     # --- WallPaneling bands (wainscot; overrides like the tile splash) --------------
     paneling_area: dict[tuple[str, bool], float] = defaultdict(float)

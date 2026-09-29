@@ -62,12 +62,15 @@ MILLWORK = [
         landing_deck=StairLandingMillwork(
             stair_refs=("ST-M2S",),
             field_material_ref="oak-floor-custom",
+            # 3/4" oak T&G on 3/4" subfloor, like the halls either end of the flight.
             field_thickness=inch(0.75),
+            subfloor_thickness=inch(0.75),
             board_face_width=inch(3.5),
             board_coverage_width=inch(3.125),
+            # A landing tread off the tread stock: 3/4" behind the nose, grooved for the
+            # field's tongue, its lip the flights' 1 3/4" over the riser below.
             nosing_material_ref="oak-tread",
-            nosing_thickness=inch(1.5),
-            nosing_profile="bullnose + groove",
+            nosing_depth=inch(3.5),
         ),
         max_board_width=inch(18),
     ),
