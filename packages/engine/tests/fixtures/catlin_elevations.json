@@ -875,30 +875,30 @@
 "canvas_objects/ED-S-PLANT-LT/body_z0_m": 5.334,
 "canvas_objects/ED-S-PLANT-LT/body_z1_m": 5.7912,
 "canvas_objects/ED-S-PLANT-LT/z_m": 5.334,
-"canvas_objects/ED-S-PLANT-RC1/body_z0_m": 3.476498,
-"canvas_objects/ED-S-PLANT-RC1/body_z1_m": 3.552698,
-"canvas_objects/ED-S-PLANT-RC1/z_m": 3.476498,
-"canvas_objects/ED-S-PLANT-RC2/body_z0_m": 3.476498,
-"canvas_objects/ED-S-PLANT-RC2/body_z1_m": 3.552698,
-"canvas_objects/ED-S-PLANT-RC2/z_m": 3.476498,
-"canvas_objects/ED-S-PLANT-RC3/body_z0_m": 3.476498,
-"canvas_objects/ED-S-PLANT-RC3/body_z1_m": 3.552698,
-"canvas_objects/ED-S-PLANT-RC3/z_m": 3.476498,
-"canvas_objects/ED-S-PLANT-RC4/body_z0_m": 3.476498,
-"canvas_objects/ED-S-PLANT-RC4/body_z1_m": 3.552698,
-"canvas_objects/ED-S-PLANT-RC4/z_m": 3.476498,
-"canvas_objects/ED-S-PLANT-RC5/body_z0_m": 3.476498,
-"canvas_objects/ED-S-PLANT-RC5/body_z1_m": 3.552698,
-"canvas_objects/ED-S-PLANT-RC5/z_m": 3.476498,
-"canvas_objects/ED-S-PLANT-SPOT/body_z0_m": 4.898898,
-"canvas_objects/ED-S-PLANT-SPOT/body_z1_m": 5.076698,
-"canvas_objects/ED-S-PLANT-SPOT/z_m": 4.898898,
-"canvas_objects/ED-S-PLANT-SW-TIMER/body_z0_m": 4.238498,
-"canvas_objects/ED-S-PLANT-SW-TIMER/body_z1_m": 4.289298,
-"canvas_objects/ED-S-PLANT-SW-TIMER/z_m": 4.238498,
-"canvas_objects/ED-S-PLANT-SW/body_z0_m": 4.289298,
-"canvas_objects/ED-S-PLANT-SW/body_z1_m": 4.340098,
-"canvas_objects/ED-S-PLANT-SW/z_m": 4.289298,
+"canvas_objects/ED-S-PLANT-RC1/body_z0_m": 3.482848,
+"canvas_objects/ED-S-PLANT-RC1/body_z1_m": 3.559048,
+"canvas_objects/ED-S-PLANT-RC1/z_m": 3.482848,
+"canvas_objects/ED-S-PLANT-RC2/body_z0_m": 3.482848,
+"canvas_objects/ED-S-PLANT-RC2/body_z1_m": 3.559048,
+"canvas_objects/ED-S-PLANT-RC2/z_m": 3.482848,
+"canvas_objects/ED-S-PLANT-RC3/body_z0_m": 3.482848,
+"canvas_objects/ED-S-PLANT-RC3/body_z1_m": 3.559048,
+"canvas_objects/ED-S-PLANT-RC3/z_m": 3.482848,
+"canvas_objects/ED-S-PLANT-RC4/body_z0_m": 3.482848,
+"canvas_objects/ED-S-PLANT-RC4/body_z1_m": 3.559048,
+"canvas_objects/ED-S-PLANT-RC4/z_m": 3.482848,
+"canvas_objects/ED-S-PLANT-RC5/body_z0_m": 3.482848,
+"canvas_objects/ED-S-PLANT-RC5/body_z1_m": 3.559048,
+"canvas_objects/ED-S-PLANT-RC5/z_m": 3.482848,
+"canvas_objects/ED-S-PLANT-SPOT/body_z0_m": 4.905248,
+"canvas_objects/ED-S-PLANT-SPOT/body_z1_m": 5.083048,
+"canvas_objects/ED-S-PLANT-SPOT/z_m": 4.905248,
+"canvas_objects/ED-S-PLANT-SW-TIMER/body_z0_m": 4.244848,
+"canvas_objects/ED-S-PLANT-SW-TIMER/body_z1_m": 4.295648,
+"canvas_objects/ED-S-PLANT-SW-TIMER/z_m": 4.244848,
+"canvas_objects/ED-S-PLANT-SW/body_z0_m": 4.295648,
+"canvas_objects/ED-S-PLANT-SW/body_z1_m": 4.346448,
+"canvas_objects/ED-S-PLANT-SW/z_m": 4.295648,
 "canvas_objects/ED-S-PLANT-TUBE1/body_z0_m": 5.1054,
 "canvas_objects/ED-S-PLANT-TUBE1/body_z1_m": 5.7912,
 "canvas_objects/ED-S-PLANT-TUBE1/z_m": 5.1054,
@@ -1439,18 +1439,18 @@
 "canvas_objects/FURN-S-NCLOSET-SHELF/body_z0_m": 4.7625,
 "canvas_objects/FURN-S-NCLOSET-SHELF/body_z1_m": 4.7879,
 "canvas_objects/FURN-S-NCLOSET-SHELF/z_m": 4.7625,
-"canvas_objects/FURN-S-PLANT-CHAIR/body_z0_m": 3.070098,
-"canvas_objects/FURN-S-PLANT-CHAIR/body_z1_m": 3.959098,
-"canvas_objects/FURN-S-PLANT-CHAIR/z_m": 3.070098,
-"canvas_objects/FURN-S-PLANT-POT1/body_z0_m": 3.070098,
-"canvas_objects/FURN-S-PLANT-POT1/body_z1_m": 4.136898,
-"canvas_objects/FURN-S-PLANT-POT1/z_m": 3.070098,
-"canvas_objects/FURN-S-PLANT-POT2/body_z0_m": 3.070098,
-"canvas_objects/FURN-S-PLANT-POT2/body_z1_m": 4.136898,
-"canvas_objects/FURN-S-PLANT-POT2/z_m": 3.070098,
-"canvas_objects/FURN-S-PLANT-ROCKER/body_z0_m": 3.070098,
-"canvas_objects/FURN-S-PLANT-ROCKER/body_z1_m": 4.035298,
-"canvas_objects/FURN-S-PLANT-ROCKER/z_m": 3.070098,
+"canvas_objects/FURN-S-PLANT-CHAIR/body_z0_m": 3.076448,
+"canvas_objects/FURN-S-PLANT-CHAIR/body_z1_m": 3.965448,
+"canvas_objects/FURN-S-PLANT-CHAIR/z_m": 3.076448,
+"canvas_objects/FURN-S-PLANT-POT1/body_z0_m": 3.076448,
+"canvas_objects/FURN-S-PLANT-POT1/body_z1_m": 4.143248,
+"canvas_objects/FURN-S-PLANT-POT1/z_m": 3.076448,
+"canvas_objects/FURN-S-PLANT-POT2/body_z0_m": 3.076448,
+"canvas_objects/FURN-S-PLANT-POT2/body_z1_m": 4.143248,
+"canvas_objects/FURN-S-PLANT-POT2/z_m": 3.076448,
+"canvas_objects/FURN-S-PLANT-ROCKER/body_z0_m": 3.076448,
+"canvas_objects/FURN-S-PLANT-ROCKER/body_z1_m": 4.041648,
+"canvas_objects/FURN-S-PLANT-ROCKER/z_m": 3.076448,
 "canvas_objects/FURN-S-STUDY-CHAIR1/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-STUDY-CHAIR1/body_z1_m": 4.0513,
 "canvas_objects/FURN-S-STUDY-CHAIR1/z_m": 3.0861,
@@ -1532,9 +1532,9 @@
 "canvas_objects/FX-M-PORCH-HYD/body_z0_m": 0.6477,
 "canvas_objects/FX-M-PORCH-HYD/body_z1_m": 0.8509,
 "canvas_objects/FX-M-PORCH-HYD/z_m": 0.6477,
-"canvas_objects/FX-S-BALC-HYD/body_z0_m": 3.679698,
-"canvas_objects/FX-S-BALC-HYD/body_z1_m": 3.882898,
-"canvas_objects/FX-S-BALC-HYD/z_m": 3.679698,
+"canvas_objects/FX-S-BALC-HYD/body_z0_m": 3.686048,
+"canvas_objects/FX-S-BALC-HYD/body_z1_m": 3.889248,
+"canvas_objects/FX-S-BALC-HYD/z_m": 3.686048,
 "canvas_objects/FX-S-BATH1-LAV/body_z0_m": 3.0861,
 "canvas_objects/FX-S-BATH1-LAV/body_z1_m": 4.1402,
 "canvas_objects/FX-S-BATH1-LAV/z_m": 3.0861,
@@ -1622,9 +1622,9 @@
 "canvas_objects/REG-M-XFER-MUD/body_z0_m": 1.0906125,
 "canvas_objects/REG-M-XFER-MUD/body_z1_m": 1.3446125,
 "canvas_objects/REG-M-XFER-MUD/z_m": 1.0906125,
-"canvas_objects/REG-S-ERV-PLANT-EXH/body_z0_m": 5.660898,
-"canvas_objects/REG-S-ERV-PLANT-EXH/body_z1_m": 5.686298,
-"canvas_objects/REG-S-ERV-PLANT-EXH/z_m": 5.660898,
+"canvas_objects/REG-S-ERV-PLANT-EXH/body_z0_m": 5.667248,
+"canvas_objects/REG-S-ERV-PLANT-EXH/body_z1_m": 5.692648,
+"canvas_objects/REG-S-ERV-PLANT-EXH/z_m": 5.667248,
 "canvas_objects/REG-S-EXH1/body_z0_m": 5.8293,
 "canvas_objects/REG-S-EXH1/body_z1_m": 5.8547,
 "canvas_objects/REG-S-EXH1/z_m": 5.8293,
@@ -1643,9 +1643,9 @@
 "canvas_objects/REG-S-HP-BED3/body_z0_m": 5.78485,
 "canvas_objects/REG-S-HP-BED3/body_z1_m": 5.81025,
 "canvas_objects/REG-S-HP-BED3/z_m": 5.78485,
-"canvas_objects/REG-S-HP-PLANT/body_z0_m": 5.813298,
-"canvas_objects/REG-S-HP-PLANT/body_z1_m": 5.838698,
-"canvas_objects/REG-S-HP-PLANT/z_m": 5.813298,
+"canvas_objects/REG-S-HP-PLANT/body_z0_m": 5.819648,
+"canvas_objects/REG-S-HP-PLANT/body_z1_m": 5.845048,
+"canvas_objects/REG-S-HP-PLANT/z_m": 5.819648,
 "canvas_objects/REG-S-HP-RET/body_z0_m": 5.2451,
 "canvas_objects/REG-S-HP-RET/body_z1_m": 5.2705,
 "canvas_objects/REG-S-HP-RET/z_m": 5.2451,
@@ -31009,6 +31009,96 @@
 8,
 "ca66d35483f7"
 ],
+"geometry/CST701AAAA::framing/member:riser-landing": [
+-1.4708236,
+-1.3092394,
+8,
+"a8d8b9096d3f"
+],
+"geometry/CST701AAAA::framing/member:riser-lower-000": [
+-2.7797125,
+-2.6181284,
+8,
+"5bf8949aade5"
+],
+"geometry/CST701AAAA::framing/member:riser-lower-001": [
+-2.5927284,
+-2.4311442,
+8,
+"a01f03e8ccb2"
+],
+"geometry/CST701AAAA::framing/member:riser-lower-002": [
+-2.4057442,
+-2.2441601,
+8,
+"39686648c3eb"
+],
+"geometry/CST701AAAA::framing/member:riser-lower-003": [
+-2.2187601,
+-2.057176,
+8,
+"cb1dcc741a47"
+],
+"geometry/CST701AAAA::framing/member:riser-lower-004": [
+-2.031776,
+-1.8701918,
+8,
+"faecc9c12207"
+],
+"geometry/CST701AAAA::framing/member:riser-lower-005": [
+-1.8447918,
+-1.6832077,
+8,
+"025b4098aaea"
+],
+"geometry/CST701AAAA::framing/member:riser-lower-006": [
+-1.6578077,
+-1.4962236,
+8,
+"b998ff3b975e"
+],
+"geometry/CST701AAAA::framing/member:riser-upper-000": [
+-1.2838394,
+-1.1222553,
+8,
+"da866182f764"
+],
+"geometry/CST701AAAA::framing/member:riser-upper-001": [
+-1.0968553,
+-0.9352712,
+8,
+"555858b664eb"
+],
+"geometry/CST701AAAA::framing/member:riser-upper-002": [
+-0.9098712,
+-0.748287,
+8,
+"f03d430b2690"
+],
+"geometry/CST701AAAA::framing/member:riser-upper-003": [
+-0.722887,
+-0.5613029,
+8,
+"c768524d6d25"
+],
+"geometry/CST701AAAA::framing/member:riser-upper-004": [
+-0.5359029,
+-0.3743188,
+8,
+"b9cc0095a384"
+],
+"geometry/CST701AAAA::framing/member:riser-upper-005": [
+-0.3489188,
+-0.1873347,
+8,
+"ba01722eedc4"
+],
+"geometry/CST701AAAA::framing/member:riser-upper-006": [
+-0.1619347,
+-0.0003505,
+8,
+"49fcfa663782"
+],
 "geometry/CST701AAAA::framing/member:stringer-lower-0": [
 -2.7797125,
 -1.4962236,
@@ -31290,6 +31380,102 @@
 2.9403849,
 8,
 "db1090627c49"
+],
+"geometry/CST702AAAA::framing/member:riser-lower-000": [
+0.0250495,
+0.1782651,
+8,
+"3e19a591b7a3"
+],
+"geometry/CST702AAAA::framing/member:riser-lower-001": [
+0.2163651,
+0.3695808,
+8,
+"0f5d5f3d5a38"
+],
+"geometry/CST702AAAA::framing/member:riser-lower-002": [
+0.4076808,
+0.5608965,
+8,
+"b6a0ff696b68"
+],
+"geometry/CST702AAAA::framing/member:riser-lower-003": [
+0.5989965,
+0.7522121,
+8,
+"948e2dc216d6"
+],
+"geometry/CST702AAAA::framing/member:riser-lower-004": [
+0.7903121,
+0.9435278,
+8,
+"b06fda53ef5f"
+],
+"geometry/CST702AAAA::framing/member:riser-lower-005": [
+0.9816278,
+1.1348434,
+8,
+"5118fa207e57"
+],
+"geometry/CST702AAAA::framing/member:riser-lower-006": [
+1.1729434,
+1.3261591,
+8,
+"a3da56eaaf58"
+],
+"geometry/CST702AAAA::framing/member:riser-lower-007": [
+1.3642591,
+1.5174747,
+8,
+"0c70b12a3865"
+],
+"geometry/CST702AAAA::framing/member:riser-upper-000": [
+1.5555747,
+1.7087904,
+8,
+"c1c969a9169b"
+],
+"geometry/CST702AAAA::framing/member:riser-upper-001": [
+1.7468904,
+1.9001061,
+8,
+"e72d7dda3a16"
+],
+"geometry/CST702AAAA::framing/member:riser-upper-002": [
+1.9382061,
+2.0914217,
+8,
+"593ac918489b"
+],
+"geometry/CST702AAAA::framing/member:riser-upper-003": [
+2.1295217,
+2.2827374,
+8,
+"36874dd7a40d"
+],
+"geometry/CST702AAAA::framing/member:riser-upper-004": [
+2.3208374,
+2.474053,
+8,
+"e12529265996"
+],
+"geometry/CST702AAAA::framing/member:riser-upper-005": [
+2.512153,
+2.6653687,
+8,
+"e3f366f9640e"
+],
+"geometry/CST702AAAA::framing/member:riser-upper-006": [
+2.7034687,
+2.8566843,
+8,
+"7c08e84aa59d"
+],
+"geometry/CST702AAAA::framing/member:riser-upper-007": [
+2.8947843,
+3.048,
+8,
+"2aaaee4e2cbf"
 ],
 "geometry/CST702AAAA::framing/member:stringer-lower-0": [
 0.0250495,
@@ -31584,6 +31770,102 @@
 3.6576,
 8,
 "abf1551fbfd8"
+],
+"geometry/CST703AAAA::framing/member:riser-000": [
+3.6576,
+3.81,
+8,
+"cf2f2f186da6"
+],
+"geometry/CST703AAAA::framing/member:riser-001": [
+3.8481,
+4.0005,
+8,
+"7d3dfb321072"
+],
+"geometry/CST703AAAA::framing/member:riser-002": [
+4.0386,
+4.191,
+8,
+"f2bde6e5bc16"
+],
+"geometry/CST703AAAA::framing/member:riser-003": [
+4.2291,
+4.3815,
+8,
+"9473b3728294"
+],
+"geometry/CST703AAAA::framing/member:riser-004": [
+4.4196,
+4.572,
+8,
+"452edddede7f"
+],
+"geometry/CST703AAAA::framing/member:riser-005": [
+4.6101,
+4.7625,
+8,
+"d9956252bb19"
+],
+"geometry/CST703AAAA::framing/member:riser-006": [
+4.8006,
+4.953,
+8,
+"53790faa5068"
+],
+"geometry/CST703AAAA::framing/member:riser-007": [
+4.9911,
+5.1435,
+8,
+"82cc96b2e380"
+],
+"geometry/CST703AAAA::framing/member:riser-008": [
+5.1816,
+5.334,
+8,
+"a581a4939f44"
+],
+"geometry/CST703AAAA::framing/member:riser-009": [
+5.3721,
+5.5245,
+8,
+"15cad78752ca"
+],
+"geometry/CST703AAAA::framing/member:riser-010": [
+5.5626,
+5.715,
+8,
+"acff4929be15"
+],
+"geometry/CST703AAAA::framing/member:riser-011": [
+5.7531,
+5.9055,
+8,
+"98534f85d35e"
+],
+"geometry/CST703AAAA::framing/member:riser-012": [
+5.9436,
+6.096,
+8,
+"11d2b8722995"
+],
+"geometry/CST703AAAA::framing/member:riser-winder-000": [
+3.0861,
+3.2385,
+8,
+"17678cfa4acc"
+],
+"geometry/CST703AAAA::framing/member:riser-winder-001": [
+3.2766,
+3.429,
+8,
+"f82872e0a7d0"
+],
+"geometry/CST703AAAA::framing/member:riser-winder-002": [
+3.4671,
+3.6195,
+8,
+"a7e8ea3e4fec"
 ],
 "geometry/CST703AAAA::framing/member:stringer-0": [
 3.508375,
@@ -50677,6 +50959,36 @@
 2,
 "4b64cafaaa94"
 ],
+"geometry/SGST01AAAA::framing/member:riser-000": [
+-0.8128,
+-0.68326,
+8,
+"3369d2b01b6b"
+],
+"geometry/SGST01AAAA::framing/member:riser-001": [
+-0.64516,
+-0.51562,
+8,
+"084918a928b7"
+],
+"geometry/SGST01AAAA::framing/member:riser-002": [
+-0.47752,
+-0.34798,
+8,
+"98076b8e3121"
+],
+"geometry/SGST01AAAA::framing/member:riser-003": [
+-0.30988,
+-0.18034,
+8,
+"7b926cab7da8"
+],
+"geometry/SGST01AAAA::framing/member:riser-004": [
+-0.14224,
+-0.0127,
+8,
+"5075fe6507f8"
+],
 "geometry/SGST01AAAA::framing/member:stringer-0": [
 -0.8128,
 -0.0127,
@@ -52146,6 +52458,36 @@
 3.7104066,
 24,
 "46af677ff501"
+],
+"geometry/X99TD38ZS3::framing/member:riser-000": [
+-0.8636,
+-0.72898,
+8,
+"c96c7a342259"
+],
+"geometry/X99TD38ZS3::framing/member:riser-001": [
+-0.69088,
+-0.55626,
+8,
+"c9b084687ab0"
+],
+"geometry/X99TD38ZS3::framing/member:riser-002": [
+-0.51816,
+-0.38354,
+8,
+"8307f78e300c"
+],
+"geometry/X99TD38ZS3::framing/member:riser-003": [
+-0.34544,
+-0.21082,
+8,
+"dd3f37e9ab90"
+],
+"geometry/X99TD38ZS3::framing/member:riser-004": [
+-0.17272,
+-0.0381,
+8,
+"04964a810e3b"
 ],
 "geometry/X99TD38ZS3::framing/member:stringer-0": [
 -0.8636,
@@ -71495,6 +71837,96 @@
 4,
 "b2dfbc28e1e7"
 ],
+"member/CST701AAAA/riser-landing": [
+-1.4708236,
+-1.3092394,
+2,
+"d6accac925eb"
+],
+"member/CST701AAAA/riser-lower-000": [
+-2.7797125,
+-2.6181284,
+2,
+"b82d08340b8a"
+],
+"member/CST701AAAA/riser-lower-001": [
+-2.5927284,
+-2.4311442,
+2,
+"42b5b40f0841"
+],
+"member/CST701AAAA/riser-lower-002": [
+-2.4057442,
+-2.2441601,
+2,
+"81a7eeb5c3ef"
+],
+"member/CST701AAAA/riser-lower-003": [
+-2.2187601,
+-2.057176,
+2,
+"5449f687c6dd"
+],
+"member/CST701AAAA/riser-lower-004": [
+-2.031776,
+-1.8701918,
+2,
+"3d8cceb027ca"
+],
+"member/CST701AAAA/riser-lower-005": [
+-1.8447918,
+-1.6832077,
+2,
+"e6e1d47b0c35"
+],
+"member/CST701AAAA/riser-lower-006": [
+-1.6578077,
+-1.4962236,
+2,
+"f8f4bd63fac3"
+],
+"member/CST701AAAA/riser-upper-000": [
+-1.2838394,
+-1.1222553,
+2,
+"1eaa80655d2a"
+],
+"member/CST701AAAA/riser-upper-001": [
+-1.0968553,
+-0.9352712,
+2,
+"4d2d2f4462dd"
+],
+"member/CST701AAAA/riser-upper-002": [
+-0.9098712,
+-0.748287,
+2,
+"82bd3f928f82"
+],
+"member/CST701AAAA/riser-upper-003": [
+-0.722887,
+-0.5613029,
+2,
+"779503775a39"
+],
+"member/CST701AAAA/riser-upper-004": [
+-0.5359029,
+-0.3743188,
+2,
+"4ac37b90a6f7"
+],
+"member/CST701AAAA/riser-upper-005": [
+-0.3489188,
+-0.1873347,
+2,
+"2adbd1af9620"
+],
+"member/CST701AAAA/riser-upper-006": [
+-0.1619347,
+-0.0003505,
+2,
+"60027ffcb01d"
+],
 "member/CST701AAAA/stringer-lower-0": [
 -2.7797125,
 -1.4962236,
@@ -71776,6 +72208,102 @@
 2.9403849,
 4,
 "d61cdd5fcc36"
+],
+"member/CST702AAAA/riser-lower-000": [
+0.0250495,
+0.1782651,
+2,
+"33dcaa919549"
+],
+"member/CST702AAAA/riser-lower-001": [
+0.2163651,
+0.3695808,
+2,
+"d03bf9b815ef"
+],
+"member/CST702AAAA/riser-lower-002": [
+0.4076808,
+0.5608965,
+2,
+"1670e8e5a285"
+],
+"member/CST702AAAA/riser-lower-003": [
+0.5989965,
+0.7522121,
+2,
+"f1ba69db873b"
+],
+"member/CST702AAAA/riser-lower-004": [
+0.7903121,
+0.9435278,
+2,
+"5b9db9ff4178"
+],
+"member/CST702AAAA/riser-lower-005": [
+0.9816278,
+1.1348434,
+2,
+"dde34eff7e63"
+],
+"member/CST702AAAA/riser-lower-006": [
+1.1729434,
+1.3261591,
+2,
+"8230710a23a2"
+],
+"member/CST702AAAA/riser-lower-007": [
+1.3642591,
+1.5174747,
+2,
+"c38629d71bfb"
+],
+"member/CST702AAAA/riser-upper-000": [
+1.5555747,
+1.7087904,
+2,
+"98467137b54e"
+],
+"member/CST702AAAA/riser-upper-001": [
+1.7468904,
+1.9001061,
+2,
+"e60ac929e624"
+],
+"member/CST702AAAA/riser-upper-002": [
+1.9382061,
+2.0914217,
+2,
+"6c61856b2ea2"
+],
+"member/CST702AAAA/riser-upper-003": [
+2.1295217,
+2.2827374,
+2,
+"b427714ed06f"
+],
+"member/CST702AAAA/riser-upper-004": [
+2.3208374,
+2.474053,
+2,
+"c5ba7c6035b6"
+],
+"member/CST702AAAA/riser-upper-005": [
+2.512153,
+2.6653687,
+2,
+"15babe85d441"
+],
+"member/CST702AAAA/riser-upper-006": [
+2.7034687,
+2.8566843,
+2,
+"58222b902750"
+],
+"member/CST702AAAA/riser-upper-007": [
+2.8947843,
+3.048,
+2,
+"e1241872e45a"
 ],
 "member/CST702AAAA/stringer-lower-0": [
 0.0250495,
@@ -72070,6 +72598,102 @@
 3.6576,
 2,
 "902448d29432"
+],
+"member/CST703AAAA/riser-000": [
+3.6576,
+3.81,
+2,
+"c5ad0c8b4009"
+],
+"member/CST703AAAA/riser-001": [
+3.8481,
+4.0005,
+2,
+"9616ed18650d"
+],
+"member/CST703AAAA/riser-002": [
+4.0386,
+4.191,
+2,
+"b79353f28691"
+],
+"member/CST703AAAA/riser-003": [
+4.2291,
+4.3815,
+2,
+"77d6aaa107db"
+],
+"member/CST703AAAA/riser-004": [
+4.4196,
+4.572,
+2,
+"150a41637060"
+],
+"member/CST703AAAA/riser-005": [
+4.6101,
+4.7625,
+2,
+"d4b4f5c50672"
+],
+"member/CST703AAAA/riser-006": [
+4.8006,
+4.953,
+2,
+"680119937e2f"
+],
+"member/CST703AAAA/riser-007": [
+4.9911,
+5.1435,
+2,
+"319c1eb59380"
+],
+"member/CST703AAAA/riser-008": [
+5.1816,
+5.334,
+2,
+"4d8d3b2fda3a"
+],
+"member/CST703AAAA/riser-009": [
+5.3721,
+5.5245,
+2,
+"fb2a4ed36874"
+],
+"member/CST703AAAA/riser-010": [
+5.5626,
+5.715,
+2,
+"6c362cac737b"
+],
+"member/CST703AAAA/riser-011": [
+5.7531,
+5.9055,
+2,
+"d6d42dcdebcb"
+],
+"member/CST703AAAA/riser-012": [
+5.9436,
+6.096,
+2,
+"c25a7b11fe77"
+],
+"member/CST703AAAA/riser-winder-000": [
+3.0861,
+3.2385,
+2,
+"19c838c83789"
+],
+"member/CST703AAAA/riser-winder-001": [
+3.2766,
+3.429,
+2,
+"df9f6986ad66"
+],
+"member/CST703AAAA/riser-winder-002": [
+3.4671,
+3.6195,
+2,
+"6261ea0b9fad"
 ],
 "member/CST703AAAA/stringer-0": [
 3.508375,
@@ -83189,6 +83813,36 @@
 4,
 "759694dcde8c"
 ],
+"member/SGST01AAAA/riser-000": [
+-0.8128,
+-0.68326,
+2,
+"1ea5aba358f1"
+],
+"member/SGST01AAAA/riser-001": [
+-0.64516,
+-0.51562,
+2,
+"41debdcdf608"
+],
+"member/SGST01AAAA/riser-002": [
+-0.47752,
+-0.34798,
+2,
+"b370d4810338"
+],
+"member/SGST01AAAA/riser-003": [
+-0.30988,
+-0.18034,
+2,
+"e903957845e8"
+],
+"member/SGST01AAAA/riser-004": [
+-0.14224,
+-0.0127,
+2,
+"3756841708a5"
+],
 "member/SGST01AAAA/stringer-0": [
 -0.8128,
 -0.0127,
@@ -83500,6 +84154,36 @@
 2.5146,
 2,
 "f16deafda480"
+],
+"member/X99TD38ZS3/riser-000": [
+-0.8636,
+-0.72898,
+2,
+"c5cf7750520d"
+],
+"member/X99TD38ZS3/riser-001": [
+-0.69088,
+-0.55626,
+2,
+"6d2817913063"
+],
+"member/X99TD38ZS3/riser-002": [
+-0.51816,
+-0.38354,
+2,
+"c308ff1cce10"
+],
+"member/X99TD38ZS3/riser-003": [
+-0.34544,
+-0.21082,
+2,
+"47140b7be8db"
+],
+"member/X99TD38ZS3/riser-004": [
+-0.17272,
+-0.0381,
+2,
+"68ed65134a3c"
 ],
 "member/X99TD38ZS3/stringer-0": [
 -0.8636,

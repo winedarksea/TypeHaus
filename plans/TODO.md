@@ -15,9 +15,11 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   Researched 2026-09-26: the current FiberFloor guide (03/2024) is SILENT on coving, and its
   loose-lay option wants a 1/4" wall gap a cove cannot have. The 2014/2016 guides allowed it
   only fully adhered (QBOND-ONE). Get Tarkett Technical Services ((800) 899-8916) to confirm
-  in writing, or fall back to a sealed perimeter under a cove base, or switch to a
-  homogeneous sheet whose guide does allow it (Tarkett iQ Granit/iQ Optima, CFS-00-A cove
-  filler strip). Re-price the `vinyl-sheet` row in `prices.toml` for the product chosen.
+  in writing, including use at the room's 70% design RH and the adhesive over SurePly.
+  The guide specifies 40–60% RH around installation. If First Class is not approved,
+  select a sheet whose guide permits the cove and operating humidity, then coordinate
+  its depth, doorway water stop and price before construction. The room has no drain;
+  the 1/4" SurePly layer leaves a nominal 0.380" drop to the study.
 
 - **Two drain turns are boxed in:** `PR-B-SINK2-DRAIN`'s 70.8-degree turn (a 60 needs the turn
   in FS-M-WEST's joist band, where the leg cuts I-joist flanges; a 90 drops it into the x=2'-0"

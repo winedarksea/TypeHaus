@@ -19,7 +19,8 @@ from typehaus.takeoff.sheet_rips import rip_stock
 from _helpers import frames_structure
 
 # Walking-surface materials that bill somewhere other than the lumber order.
-_NOT_LUMBER = {"composite-deck", "concrete", "oak-tread", "oak-floor-custom"}
+_NOT_LUMBER = {"composite-deck", "concrete", "oak-tread", "oak-floor-custom", "oak-riser",
+               "plywood-subfloor"}
 
 
 def test_order_length_rounds_up_to_stock() -> None:
@@ -65,7 +66,7 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     # is not ordered at all, because the pour that is the tier is a `Slab` with its own row.
     # Both still resolve as members — every code rule that grades a stair measures them.
     # The oak flights' treads, winders and landings are finish pieces the same way.
-    not_lumber = [m for m in members if m.category in {"tread", "winder", "landing"}
+    not_lumber = [m for m in members if m.category in {"tread", "winder", "landing", "riser"}
                   and m.material in _NOT_LUMBER]
     assert not_lumber, "catlin has composite and cast treads; this should not be empty"
     assert sum(int(row["pieces"]) for row in rows) == (
@@ -276,7 +277,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     # `test_framing_takeoff_reconciles_and_groups`).
     members = catlin_model.all_members()
     ripped = sum(1 for m in members if rip_stock(m.profile, m.material) is not None)
-    not_lumber = sum(1 for m in members if m.category in {"tread", "winder", "landing"}
+    not_lumber = sum(1 for m in members if m.category in {"tread", "winder", "landing", "riser"}
                      and m.material in _NOT_LUMBER)
     assert not_lumber, "catlin has treads that are not lumber; this should not be zero"
     assert sum(int(row["pieces"]) for row in bom["framing"]) == (

@@ -5511,6 +5511,286 @@
       "node": "polyline",
       "points": [
         [
+          608.875,
+          -34.0
+        ],
+        [
+          609.625,
+          -34.0
+        ],
+        [
+          609.625,
+          -28.700000000000003
+        ],
+        [
+          608.875,
+          -28.700000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "riser-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          608.875,
+          -34.0
+        ],
+        [
+          609.625,
+          -34.0
+        ],
+        [
+          609.625,
+          -28.700000000000003
+        ],
+        [
+          608.875,
+          -28.700000000000003
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          597.875,
+          -27.2
+        ],
+        [
+          598.625,
+          -27.2
+        ],
+        [
+          598.625,
+          -21.9
+        ],
+        [
+          597.875,
+          -21.9
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "riser-001"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          597.875,
+          -27.2
+        ],
+        [
+          598.625,
+          -27.2
+        ],
+        [
+          598.625,
+          -21.9
+        ],
+        [
+          597.875,
+          -21.9
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          586.875,
+          -20.4
+        ],
+        [
+          587.625,
+          -20.4
+        ],
+        [
+          587.625,
+          -15.1
+        ],
+        [
+          586.875,
+          -15.1
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "riser-002"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          586.875,
+          -20.4
+        ],
+        [
+          587.625,
+          -20.4
+        ],
+        [
+          587.625,
+          -15.1
+        ],
+        [
+          586.875,
+          -15.1
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          575.875,
+          -13.6
+        ],
+        [
+          576.625,
+          -13.6
+        ],
+        [
+          576.625,
+          -8.299999999999999
+        ],
+        [
+          575.875,
+          -8.299999999999999
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "riser-003"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          575.875,
+          -13.6
+        ],
+        [
+          576.625,
+          -13.6
+        ],
+        [
+          576.625,
+          -8.299999999999999
+        ],
+        [
+          575.875,
+          -8.299999999999999
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          565.625,
+          -6.8
+        ],
+        [
+          566.375,
+          -6.8
+        ],
+        [
+          566.375,
+          -1.4999999999999987
+        ],
+        [
+          565.625,
+          -1.4999999999999987
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "riser-004"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          565.625,
+          -6.8
+        ],
+        [
+          566.375,
+          -6.8
+        ],
+        [
+          566.375,
+          -1.4999999999999987
+        ],
+        [
+          565.625,
+          -1.4999999999999987
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           408.00000000000006,
           0.0
         ],

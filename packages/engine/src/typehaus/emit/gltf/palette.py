@@ -28,6 +28,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "stringer": (0.60, 0.42, 0.26, 1.0),
     "tread": (0.70, 0.52, 0.33, 1.0),
     "winder": (0.70, 0.52, 0.33, 1.0),
+    "riser": (0.70, 0.52, 0.33, 1.0),
     # Opening framing. These existed in ui/src/three/members.ts CATEGORY_COLOR only, so a
     # header's king/jack/cripple studs read as lumber in the browser and as the grey fallback
     # in the GLB. Same tones as their whole-stud/plate/header siblings, as the viewer has.

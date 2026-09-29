@@ -44,6 +44,7 @@ def _build_up_in(model, tag) -> float:
     ("RM-S-HALL", 0.75),    # site-milled oak
     ("RM-A-STUDY", 0.75),     # 4/4 oak
     ("RM-S-BED2", 0.75),    # carpet, cushion and rigid underlayment
+    ("RM-S-PLANT", 0.370),  # sheet vinyl and one nominal 1/4-in SurePly panel
     ("RM-A-STUBATH", 0.120),  # 120 mil luxury sheet vinyl
 ])
 def test_a_floored_room_walks_above_its_storey_datum(catlin_model, tag, finish_in):

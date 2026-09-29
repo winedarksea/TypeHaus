@@ -279,7 +279,8 @@ def humid_liner_opening_return(model, wall, opening, crop, direction,
 
     The sill gets a pan as well as a return. It drains *into the room*, which is the whole
     point of it: water that gets past a frame here has to be given somewhere to go that is
-    not framing, and the room below the sill is a coved vinyl tray with a floor drain.
+    not framing, and the room below the sill is a coved vinyl tray with a sealed
+    reducer at its doorway and no floor drain.
     """
     intervals = layer_intervals(wall, direction, station)
     bands = [intervals[name] for name in _HUMID_LINER_LAYERS if name in intervals]

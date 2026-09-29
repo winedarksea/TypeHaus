@@ -33,7 +33,7 @@ source:
 - Room design condition: 75 F at 70% RH. Dew point 64.4 F.
 - Liner, inside out: 1/2" PVC panel, 3/4" furring, membrane. Walls and ceiling.
 - The membrane is the air and vapour barrier. Continuous on all six sides.
-- Floor: one seamless sheet vinyl, 6" flash cove, sloped to a drain.
+- Floor: 1/4" SurePly + seamless vinyl; 6" cove pending approval. No drain.
 - Glazing: fixed units only, U-0.14, warm-edge spacer, thermally broken frame.
 - No suspended ceiling. No roofing membrane under the vinyl.
 - Ventilation: 25 cfm in, 25 cfm out, both dampered. Extract high, far end.
@@ -179,7 +179,8 @@ rating. Neither does any sheet-vinyl maker. So the vapour control layer is a **s
 continuous, sealed membrane behind the panel**, chosen because it *has* a published ASTM E96
 number.
 
-The model says so in the only way that is honest: `pvc-panel` and `vinyl-sheet` carry **no**
+The model says so in the only way that is honest: `pvc-panel`, `vinyl-sheet`, and the
+plant-only `catlin-plant-vinyl-raised` finish carry **no**
 `vapor_permeance_perms` at all (per the convention in `library/materials/`), and
 `humid-room-membrane` carries 0.05 perm with its basis in `source=`. That value is authored
 as a **specification** — the loosest the submitted product may test at and still be Class I
@@ -213,17 +214,37 @@ as they grade the walls.
 
 ### Floor
 
-Luxury sheet vinyl (`vinyl-sheet`: Tarkett First Class, Monaco Calacatta, 120 mil, 12'
-rolls), **flash-coved 6"** up the wall and terminated *behind* the wall membrane, so floor
-and wall become one tray. This is the single highest-value detail in the room: it eliminates
-the base joint, the most failure-prone interface in any wet room. Slope to a floor drain —
-the room should be hoseable.
+The plant-only `catlin-plant-vinyl-raised` finish is Tarkett First Class, Monaco
+Calacatta, 120 mil, 12' rolls, fully adhered over one nominal 1/4" SurePly plywood
+underlayment. Its modeled 0.370" build-up above the 3/4" subfloor puts the walking
+surface at +1.120" relative to the second-storey datum, 0.380" below the study oak.
+The underlayment is a smooth base for the sheet and closes part of the doorway gap;
+it is not waterproof. Its exterior-glue bond does not make the wood safe for exposure
+to water. Install on a dry, sound subfloor and follow Patriot's panel layout,
+acclimation, fastening and joint-preparation instructions. Measure the installed
+stack before fabricating the threshold.
+
+The proposed floor waterproofing remains a single seamless sheet **flash-coved 6"**
+up the wall and terminated *behind* the wall membrane. The cove removes the base
+joint, but Tarkett's current FiberFloor guide is silent on coving and its 40–60% RH
+installation condition does not cover this room's 70% design RH. Obtain written
+approval for the product, full-spread adhesive, cove and operating humidity before
+construction. The room has **no floor drain or slope**; it is not hoseable.
+
+At `D-S-PLANT`, fit a restrained, shallow solid-surface reducer from the study oak
+plane down to the vinyl over roughly 4 1/2" of run. Turn the vinyl up against a
+continuous water-stop riser under the reducer and seal the turn and both ends into
+the jamb membrane returns, so a spill cannot pass under the profile. The final
+profile follows measured installed planes and the delivered door's swing clearance.
+The nominal 0.380" drop offers limited passive spill storage; a floor leak sensor
+that shuts off the plant-room water supply is still needed.
 
 **No seam, so nothing to weld (2026-09-25).** The room is 17'-0" x 8'-1" clear, so one
 sheet laid across the 8'-1" width covers it whole. That is what retired the earlier
 homogeneous commercial sheet and its heat-welded seams. The cove is still the detail that
 matters: confirm that the First Class install guide permits flash coving on a cove stick;
-if it does not, the fallback is a sealed perimeter under a cove base.
+if it does not, select a sheet with an approved cove and redesign the sealed perimeter
+and threshold together before construction.
 
 **Do not put roofing membrane under the vinyl.** Sheet vinyl is already effectively Class I;
 a second impermeable layer beneath it creates a classic moisture sandwich around the plywood

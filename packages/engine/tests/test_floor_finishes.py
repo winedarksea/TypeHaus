@@ -24,7 +24,8 @@ from typehaus.resolve.solid_categories import in_slab_family
 # (SL-M-DECK's coated cap) rather than authored on a room at all. Kept explicit rather
 # than derived so that adding a finish to a storey without adding its material trips here.
 _CATLIN_FINISHES = {"oak-floor-custom", "lvp", "carpet", "sealed-concrete", "rubber",
-                    "vinyl-sheet", "coated-concrete", "catlin-carpet-raised",
+                    "vinyl-sheet", "catlin-plant-vinyl-raised", "coated-concrete",
+                    "catlin-carpet-raised",
                     "catlin-tile-oak-height", "catlin-tile-heated"}
 
 
@@ -106,7 +107,7 @@ def test_second_storey_finishes_match_the_doorway_assemblies(catlin_model):
             if finish == "catlin-tile-oak-height"} == {
         "RM-S-SUITEBATH", "RM-S-VANITY"}
     assert finishes["RM-S-BATH1"] == "catlin-tile-heated"
-    assert finishes["RM-S-PLANT"] == "vinyl-sheet"
+    assert finishes["RM-S-PLANT"] == "catlin-plant-vinyl-raised"
     assert "RM-S-LANDING" not in finishes
     assert "RM-S-STAIR" not in finishes
 
@@ -335,10 +336,19 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
     assert {"RM-S-HALL", "RM-S-NCLOSET"} <= set(rows["oak-floor-custom"]["rooms"])
-    assert set(rows["vinyl-sheet"]["rooms"]) == {"RM-A-STUBATH", "RM-A-STUDIO",
-                                                 "RM-B-BATH", "RM-S-PLANT"}
-    # 525.5 between finish faces (584.7 axis-derived).
-    assert float(rows["vinyl-sheet"]["net_area_sqft"]) == pytest.approx(525.5, abs=0.5)
+    assert set(rows["vinyl-sheet"]["rooms"]) == {
+        "RM-A-STUBATH", "RM-A-STUDIO", "RM-B-BATH"}
+    assert rows["catlin-plant-vinyl-raised"]["rooms"] == ["RM-S-PLANT"]
+    assert rows["catlin-plant-sureply"]["rooms"] == ["RM-S-PLANT"]
+    assert rows["catlin-plant-sureply"]["under"] == "catlin-plant-vinyl-raised"
+    assert rows["catlin-plant-sureply"]["net_area_sqft"] == rows[
+        "catlin-plant-vinyl-raised"]["net_area_sqft"]
+    assert rows["catlin-plant-sureply"]["order_area_sqft"] == rows[
+        "catlin-plant-vinyl-raised"]["order_area_sqft"]
+    # The original 525.5 SF of sheet vinyl is split by assembly, not changed in area.
+    assert (float(rows["vinyl-sheet"]["net_area_sqft"])
+            + float(rows["catlin-plant-vinyl-raised"]["net_area_sqft"])) == pytest.approx(
+                525.5, abs=0.5)
     assert set(rows["catlin-tile-oak-height"]["rooms"]) == {
         "RM-S-SUITEBATH", "RM-S-VANITY"}
     assert set(rows["catlin-tile-heated"]["rooms"]) == {
@@ -349,6 +359,7 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
         "catlin-tile-heated"]["net_area_sqft"]
     assert all(rows[tag]["known"] for tag in (
         "catlin-carpet-raised", "catlin-carpet-underlayment",
+        "catlin-plant-vinyl-raised", "catlin-plant-sureply",
         "catlin-tile-oak-height", "catlin-tile-heated",
         "catlin-ditra-xl", "catlin-ditra-heat"))
 

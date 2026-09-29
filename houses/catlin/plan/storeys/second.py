@@ -970,11 +970,11 @@ ROOMS = [
     # is >= +10 F and reset down to about 55% at -15 F. The model carries the design
     # figure, which is the one the assemblies have to survive.
     #
-    # `floor_finish` is one seamless 12' sheet of luxury vinyl (the room is 8'-1" wide),
-    # flash-coved 6" up the wall and dying behind the wall membrane, so floor and wall are
-    # one tray with no base joint. Nothing impermeable goes under it — a second Class I
-    # layer beneath sheet vinyl sandwiches the plywood subfloor with no drying path either
-    # way. The cove IS the waterproofing.
+    # The plant-only finish adds one 1/4" SurePly layer below the seamless 12' sheet,
+    # retaining a nominal 3/8" drop to the study as spill containment. The proposed 6"
+    # flash cove and sealed doorway reducer still require Tarkett's written approval.
+    # Nothing impermeable goes under the sheet: a second Class I layer would trap the
+    # plywood subfloor between barriers with no drying path.
     # Ceiling: PVC panel on furring over the same membrane as the walls, continuous with
     # them at the perimeter (notes/plant_room.md "Ceiling — specified, not yet modelled").
     # Restated rather than imported — assemblies.py's `_HUMID_LINER` is the same three
@@ -983,7 +983,7 @@ ROOMS = [
     Room(uid="CSR401AAAA", tag="RM-S-PLANT", seed=pt(ft(9), ft(4)),
          occupancy=Occupancy.LIVING, humidity_class=HumidityClass.HUMID,
          design_relative_humidity=0.70, design_temperature_f=75.0,
-         floor_finish="vinyl-sheet",
+         floor_finish="catlin-plant-vinyl-raised",
          ceiling_lining=(
              Layer(name="pvc-panel", material_ref="pvc-panel", thickness=inch(0.5),
                    function=LayerFunction.FINISH),

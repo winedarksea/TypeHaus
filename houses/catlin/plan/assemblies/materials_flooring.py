@@ -8,6 +8,19 @@ from typehaus import Material
 
 
 MATERIALS_FLOORING = [
+    Material(tag="catlin-plant-vinyl-raised", name="Plant-room sheet vinyl over SurePly",
+             hatch="membrane", color="#f2ede6", finish="veined-marble",
+             finish_thickness_in=0.370, floor_waste_fraction=0.12,
+             floor_companion_refs=("catlin-plant-sureply",),
+             source='Tarkett First Class 0.120" fully adhered sheet over one nominal '
+                    '1/4" SurePly resilient-flooring underlayment panel. The combined '
+                    'height is provisional until the installed stack is measured; '
+                    'Tarkett must approve flash coving and 70% design RH in writing.'),
+    Material(tag="catlin-plant-sureply", name='SurePly plywood underlayment, nominal 1/4"',
+             hatch="lumber", color="#d5c4a6",
+             source="Patriot Timber SurePly, nominal 1/4 in, exterior-glue, "
+                    "sanded resilient-flooring underlayment. Interior weather-protected "
+                    "use only; fasten per Patriot instructions over the existing subfloor."),
     Material(tag="catlin-carpet-raised", name="Cut-pile carpet over rigid underlayment",
              hatch="batt", color="#9d9080", finish="carpet-pile",
              finish_thickness_in=0.75,

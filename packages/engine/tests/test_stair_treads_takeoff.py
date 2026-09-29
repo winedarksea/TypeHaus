@@ -19,8 +19,14 @@ def test_the_oak_flights_bill_owner_furnished_pieces(catlin_model_ro) -> None:
     count = {use: sum(r["pieces"] for r in rows if r["use"] == use)
              for use in ("tread", "winder", "landing")}
     assert count == {"tread": 26, "winder": 3, "landing": 2}
-    assert {r["stair"] for r in rows} == {"ST-M2S", "ST-S2A"}
-    assert all(r["supply"] == "owner-milled" for r in rows)
+    oak = [r for r in rows if r["stair"] != "ST-B2M"]
+    assert {r["stair"] for r in oak} == {"ST-M2S", "ST-S2A"}
+    assert all(r["supply"] == "owner-milled" for r in oak)
+    # The carpeted flight's only finish pieces are its bought ply risers, never oak.
+    b2m = [r for r in rows if r["stair"] == "ST-B2M"]
+    assert {(r["use"], r["material"], r["supply"]) for r in b2m} == {
+        ("riser", "plywood-subfloor", "purchased")}
+    assert sum(r["pieces"] for r in b2m) == 15
     # The landing field is the floor oak, 3/4" — its nosing is a millwork detail.
     [landing] = [r for r in rows if r["use"] == "landing"]
     assert (landing["material"], landing["thickness_in"]) == ("oak-floor-custom", 0.75)

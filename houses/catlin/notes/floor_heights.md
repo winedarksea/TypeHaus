@@ -15,7 +15,7 @@ measure compressed carpet edges and set tile elevations before fixing thresholds
 | `catlin-carpet-raised`, east bedrooms and main bedroom/closet | 1/4-in rigid plywood underlayment + 1/4-in dense bonded cushion + 1/4-in nominal cut pile | +1.5000 |
 | `catlin-tile-oak-height`, suite bath/vanity | 5/16-in nominal DITRA-XL + 5/16-in Marazzi Modern Formation MF01 24x24 matte porcelain + nominal 1/8-in combined mortar beds | +1.5000 |
 | `catlin-tile-heated`, both heated baths | 1/4-in nominal DITRA-HEAT + same 5/16-in MF01 porcelain + nominal 3/16-in combined mortar beds, cable in studs | +1.5000 |
-| `vinyl-sheet`, second plant | 0.120-in fully adhered sheet; local slope to drain is additional geometry | +0.8700 at doorway |
+| `catlin-plant-vinyl-raised`, second plant | Nominal 1/4-in SurePly underlayment + 0.120-in fully adhered sheet; no floor drain or slope | +1.1200 at doorway |
 | `lvp`, main circulation/mudroom/closets | 0.2362-in SPC plank including attached pad; separately billed acoustic underlayment needs product approval and an installed height check | +0.9862 |
 | `coated-concrete`, main living zone | cast cap top, coating adds no appreciable height | +0.9375 |
 
@@ -52,7 +52,7 @@ movement joint may be required even where the height difference is zero.
 | `D-S-BATH1` | hall oak +1.5000 | heated porcelain +1.5000 | 0 | Flush tile edge and movement joint |
 | `D-S-NCLOSET` | hall oak +1.5000 | oak +1.5000 | 0 | Continuous oak field |
 | `D-S-STUDY2` | hall oak +1.5000 | oak +1.5000 | 0 | Continuous oak field |
-| `D-S-PLANT` | study oak +1.5000 | sheet vinyl +0.8700 | 0.6300 | Drain-side wet-room doorway, reducer/raised water stop; coordinate cove and drain |
+| `D-S-PLANT` | study oak +1.5000 | raised sheet vinyl +1.1200 | 0.3800 | Solid-surface reducer over a sealed water stop; no drain |
 | `D-M-MUD`, `D-M-MECH`, `D-M-MUDC` | LVP +0.9862 | LVP +0.9862 | 0 | One level field; keep expansion gaps; bottom guide at `D-M-MUDC` on flat substrate |
 | `D-M-BED2` | hall LVP +0.9862 | bedroom carpet +1.5000 | 0.5138 | One internal reducer, carpet edge securely retained |
 | `D-M-BED` | bedroom carpet +1.5000 | closet carpet +1.5000 | 0 | Continuous carpet stack |
@@ -61,10 +61,26 @@ movement joint may be required even where the height difference is zero.
 | `ST-S2A` lower head | second oak +1.5000 (+121.5000 absolute) | oak stair | 0 at head | Retain existing authored 121.5-in start |
 | `D-M-ENTRY` exterior | mudroom LVP +0.9862 | breezeway deck +1.0000 | 0.0138 | Weather sill, **not** an interior reducer |
 
-Use a tapered, securely retained profile for the 0.6300-in plant and 0.5138-in bedroom
-changes, with no exposed sharp lip. Confirm its run fits each door swing and the
-plant-room water stop. Material-change edges at the level bath doors still need the
-selected tile/carpet/oak manufacturer's termination and movement detail.
+Use a restrained, shallow solid-surface reducer at the 0.3800-in plant change, sloping
+down toward the vinyl over roughly 4 1/2 in of run. The wet-side sheet must turn up
+and seal to a continuous water-stop riser beneath the reducer; seal its ends into the
+jamb returns. A reducer without this sealed upturn provides no dependable spill
+containment. Set the final profile from measured installed heights and check the
+delivered glass door's swing and clearance. Use a securely retained tapered profile
+at the 0.5138-in bedroom change, with no exposed sharp lip. Material-change edges
+at the level bath doors still need the selected tile/carpet/oak manufacturer's
+termination and movement detail.
+
+```text
+study oak +1.5000  ─────────┐  solid-surface reducer ↘  plant vinyl +1.1200
+                            │  ~4 1/2-in run for nominal 0.3800-in drop
+sealed water-stop riser  ───┘  vinyl turns up beneath reducer and seals to riser
+                                 seal both ends to jamb membrane returns
+```
+
+Anchor the reducer from the dry side or beneath its sealed cap; fasteners must not
+puncture the wet-side vinyl upturn. This section is schematic until the delivered
+door, subfloor and installed finish depths have been measured.
 The resolved rooms on either side of `D-M-BED2` are `RM-M-LIVING` and `RM-M-BED`;
 the earlier implementation plan described it as a closet-to-hall opening.
 
@@ -97,10 +113,13 @@ being nominally 0.0138 in higher than the LVP is precisely why the water path mu
 on the sill and pan, not floor-level fall alone. Use a removable boot mat or tray inside
 the mudroom so standing snowmelt does not sit at floating plank seams.
 
-`RM-S-PLANT` stays fully adhered sheet vinyl. The [plant-room note](plant_room.md) and
-`plans/TODO.md` still require written confirmation that the selected Tarkett First Class
-sheet may be flash-coved. Do not raise its substrate or remove the doorway reducer until
-drain, cove, adhesive and threshold compatibility have been detailed together.
+`RM-S-PLANT` stays fully adhered sheet vinyl over one nominal 1/4-in SurePly layer.
+The nominal remaining drop contains only incidental spills, and the room has no drain;
+the planned leak sensor and supply shutoff are still required. SurePly is an interior,
+weather-protected underlayment, not a waterproof layer. Do not order the reducer until
+the delivered underlayment and vinyl stack has been measured. The [plant-room note](plant_room.md)
+and `plans/TODO.md` require Tarkett's written approval for First Class flash coving,
+the adhesive and the 70%-RH design condition before construction.
 
 ## Estimate comparison
 
@@ -116,15 +135,18 @@ same engine, gave the following net/order areas in square feet:
 | Porcelain, all stacks combined | 205.4 / 237 | 202.2 / 233 |
 | DITRA-HEAT | included at plain membrane rate | 137.9 / 159 |
 | DITRA-XL | — | 64.3 / 74 |
+| Plant-room SurePly | — | 137.5 / 155 |
 
-The floor-finish subtotal rises from **$22,718.90–$50,364.70** to
-**$25,353.35–$54,725.20**, a change of **+$2,634.45–$4,360.50** at the authored unit
-rates. The corresponding whole-house estimate moves from
-**$831,599.98–$1,717,088.39** to **$834,480.65–$1,722,092.85**. The whole-house
-change is **+$2,880.67–$5,004.46**, including the revised cable-only heating rate.
-These are estimate
-comparisons, not bids. Every new companion row is priced; existing unrelated unpriced
-groups and unfinished room area remain in the house estimate.
+The plant-room amendment adds **$217–$465** for 155 ordered SF of SurePly. Splitting
+the same sheet vinyl into plant and shared rows adds one ordered square foot through
+rounding, **$10–$20** at the existing rate. Together these add **$227–$485** to the
+earlier floor-height optimization comparison. The current floor-finish subtotal is
+**$25,580.35–$55,210.20**, versus **$22,718.90–$50,364.70** before that optimization.
+The current whole-house takeoff is **$835,933.65–$1,725,035.25**; it also includes
+other house changes since the original comparison and should not be attributed wholly
+to this flooring amendment. These are estimate comparisons, not bids. Every new
+companion row is priced; existing unrelated unpriced groups and unfinished room area
+remain in the house estimate.
 
 ## Model review
 

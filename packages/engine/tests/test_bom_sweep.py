@@ -235,7 +235,7 @@ def test_every_finish_row_resolved_a_real_material(bom):
     assert {row["finish"] for row in bom["floor_finishes"] if "under" not in row} == {
         "carpet", "catlin-carpet-raised", "lvp", "oak-floor-custom",
         "catlin-tile-heated", "catlin-tile-oak-height", "sealed-concrete",
-        "coated-concrete", "rubber", "vinyl-sheet", None}
+        "coated-concrete", "rubber", "vinyl-sheet", "catlin-plant-vinyl-raised", None}
 
 
 def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
@@ -298,6 +298,7 @@ def test_a_finish_brings_the_layer_it_implies(bom):
         ("carpet", "carpet-pad"),
         ("catlin-carpet-raised", "carpet-pad"),
         ("catlin-carpet-raised", "catlin-carpet-underlayment"),
+        ("catlin-plant-vinyl-raised", "catlin-plant-sureply"),
         ("lvp", "lvp-underlayment"),
         ("catlin-tile-heated", "catlin-ditra-heat"),
         ("catlin-tile-oak-height", "catlin-ditra-xl"),
@@ -536,8 +537,8 @@ def test_stair_finish_bills_treads_risers_and_landings(catlin_model, bom):
         row = rows[stair.tag]
         surfaces = len([m for m in stair.members if m.category in ("tread", "winder")])
         assert int(row["treads"]) == surfaces
-        # One riser board per tread — the face below it. The model has no riser member.
-        assert int(row["risers"]) == int(row["treads"])
+        # The riser boards the flight actually resolved (Stair.riser_thickness).
+        assert int(row["risers"]) == len([m for m in stair.members if m.category == "riser"])
     # The U-stairs have landing decks; the winder stair's boxes are winder treads instead.
     assert int(rows["ST-B2M"]["landing_decks"]) == 2
     assert int(rows["ST-S2A"]["landing_decks"]) == 0

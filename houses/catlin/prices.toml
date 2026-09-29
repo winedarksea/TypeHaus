@@ -3262,11 +3262,14 @@
 "catlin-tile-heated" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }
 "catlin-ditra-xl" = { material = { low = 2.5, high = 4.5 }, labour = { low = 0, high = 0.75 } }
 "catlin-ditra-heat" = { material = { low = 5, high = 7 }, labour = { low = 0, high = 0.75 } }
-# 589 SF ordered across RM-S-PLANT, RM-A-STUBATH, RM-A-STUDIO and RM-B-BATH.
+# The shared sheet serves RM-A-STUBATH, RM-A-STUDIO and RM-B-BATH. RM-S-PLANT has a
+# separate finish row so its SurePly companion is billed only in that room.
 # Plant-room flash-cove compatibility for the selected Tarkett First Class sheet is
-# unresolved (plans/TODO.md); its welded/coved labour allowance is provisional.
-# Re-price the row against the approved sheet and doorway detail before buying.
-"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 589 SF ordered; cove scope provisional
+# unresolved (plans/TODO.md); the coved labour allowance is provisional.
+# Re-price the plant row against the approved sheet and doorway detail before buying.
+"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }
+"catlin-plant-vinyl-raised" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # cove and doorway scope provisional
+"catlin-plant-sureply" = { material = { low = 0.65, high = 1.5 }, labour = { low = 0.75, high = 1.5 } }  # provisional plywood panel allowance; confirm with SurePly quote
 # ** TOMBSTONE: `walnut-floor`, rated and retired 2026-09-05. ** For a few hours RM-S-SUITE
 # and RM-S-CLOSET were 181.7 SF net of the family's own site-milled 4/4 walnut T&G, rated
 # here at $3-8 material (stock valued at $2/sf plus kiln drying and a moulder run) over

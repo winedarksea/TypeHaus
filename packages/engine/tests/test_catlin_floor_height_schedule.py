@@ -22,7 +22,7 @@ FLUSH_TOLERANCE_IN = 1 / 16  # Catlin design target, notes/floor_heights.md
     ("D-S-BATH1", "RM-S-HALL", "RM-S-BATH1", 0),
     ("D-S-NCLOSET", "RM-S-HALL", "RM-S-NCLOSET", 0),
     ("D-S-STUDY2", "RM-S-HALL", "RM-S-STUDY2", 0),
-    ("D-S-PLANT", "RM-S-STUDY2", "RM-S-PLANT", 0.63),
+    ("D-S-PLANT", "RM-S-STUDY2", "RM-S-PLANT", 0.38),
     ("D-M-MUD", "RM-M-LIVING", "RM-M-MUDROOM", 0),
     ("D-M-MECH", "RM-M-MUDROOM", "RM-M-MECH", 0),
     ("D-M-MUDC", "RM-M-MUD-CLOSET", "RM-M-MUDROOM", 0),
