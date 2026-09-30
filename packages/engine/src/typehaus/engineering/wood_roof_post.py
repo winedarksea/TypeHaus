@@ -176,4 +176,8 @@ def _one(ctx: EngineeringContext, post, wind) -> EngineeringRecord:
                 Quantity("uplift_lb", uplift, "lb", 1.0)),
         limit_states=tuple(states), element_tags=tags,
         notes=("The PVC wrap is a nonstructural finish. It needs an open, drained base and "
-               "an inspectable/removable panel; it contributes no column capacity.",))
+               "an inspectable/removable panel; it contributes no column capacity.",
+               "The CCQ46SDS2.5 and ABU66SS catalog records publish no lateral capacity. "
+               "This calculation grades the post's own bending and the concrete anchor's "
+               "shear, but a positive detail transferring the 24 lb reaction at each end "
+               "through the cap and base remains to be engineered."))

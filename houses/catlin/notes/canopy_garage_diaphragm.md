@@ -345,6 +345,15 @@ water outward. Keep the `ABU66SS`'s 1" clear standoff visible and draining. Thes
 detailing requirements, not an assertion that a sealed PVC sleeve keeps wood dry. If the
 specified wrap cannot dry or permit inspection, the cap's published rating is not earned.
 
+**Limit of the wood moment check.** The 37.4 lb-ft bending row is each post's own wind drag,
+not the canopy's storey moment: the head and base are pinned, so the 6x6 posts do not brace
+the canopy. Each end receives 24.03 lb of post drag, but neither the `CCQ46SDS2.5` cap nor
+the `ABU66SS` base has a published lateral capacity in the catalog. The concrete anchor's
+shear row does not establish transfer through either connector. A positive cap/base shear
+detail is still required. The diaphragm record grades the 2,043 lb-ft joint couple and
+listed shear paths, but the pinned variant computes no chord force or edge drift; the end
+truss chord, peak splice and joint deformation remain for the truss/system designer.
+
 ## 6. The pier under a pinned post (oracles the pinned path into `column_base`)
 
 A pinned post hands its base drag to the pier top; the pier adds its own drag over the 3.0'

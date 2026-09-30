@@ -222,7 +222,7 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
             "a collector: DiaphragmSpec.collector_refs names none, and the deck's shear has "
             "to reach each resisting line through a member somebody builds")
 
-    notes.extend((
+    chord_note = (
         "THE CHORD FORCE IS PRINTED HERE AND DESIGNED BY THE FABRICATOR. A diaphragm chord "
         "is a wood member in tension with a splice in it; where the chord is a TRUSS's own "
         "top chord it is the component designer's chart, because the axial force has to be "
@@ -232,7 +232,15 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
         f"above: {spec.chords or 'no chord is described'}. The assumed splice slip "
         f"({spec.chord_splice_slip.inches if spec.chord_splice_slip else 0.0:.3f}\") is the "
         f"third term of SDPWS 4.2.2 and it decides the rigid/flexible call — a fabricator's "
-        f"splice detail that slips materially more moves every share on this record.",
+        f"splice detail that slips materially more moves every share on this record."
+        if cases else
+        "PINNED DELIVERY: this record computes no chord force because it has no frame case. "
+        "The truss designer must establish the diaphragm chord and peak-splice force, "
+        "combine it with roof gravity, and verify the assumed 0.03in splice slip. "
+        "The passing unit-shear and joint-couple rows do not grade chord strength or drift."
+    )
+    notes.extend((
+        chord_note,
         "THE COLLECTOR IS A CLAIM WITH TAGS ON IT: "
         + (", ".join(spec.collector_refs) or "none named")
         + ". Those members drag the deck's shear into each resisting line; the check that "

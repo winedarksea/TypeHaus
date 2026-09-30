@@ -29,3 +29,10 @@ def test_east_wood_post_carries_roof_and_owns_its_connections(catlin_ctx) -> Non
     assert states["ABU66SS base uplift"].capacity == 2190
     anchor = states["PT-BW-RE base anchor tension (breakout / pullout / steel)"]
     assert anchor.ratio == pytest.approx(0.159, abs=0.001)
+    assert any("publish no lateral capacity" in note for note in record.notes)
+
+
+def test_pinned_canopy_does_not_claim_a_calculated_chord_force(catlin_ctx) -> None:
+    record = catlin_ctx.engineering["lateral_system/RF-BW-CANOPY"]
+    assert not any(value.name.startswith("chord_force_") for value in record.inputs)
+    assert any("computes no chord force" in note for note in record.notes)
