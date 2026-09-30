@@ -105,7 +105,12 @@ _EXCUSED: dict[str, set[str]] = {
     # These roof delivery and wood-post checks read the same published connector catalog;
     # a second local copy of a product's allowable would drift after a catalog revision.
     "engineering/diaphragm_delivery.py": {"hardware"},
-    "engineering/wood_roof_post.py": {"library"},
+    "engineering/wood_roof_post.py": {"library", "hardware"},
+    "engineering/wood_roof_post_joints.py": {"hardware"},
+    "engineering/open_front.py": {"hardware"},
+    # The canopy band: straps, clips and bases on their published rows; the coil-strap rows
+    # (steel + nail capacity) live beside the caps and bases they are read with.
+    "engineering/lateral_band.py": {"hardware", "library"},
     # And again: the break's thrust reaches the house wall's sill anchors, graded on their
     # published F2 (free body §11d).
     "engineering/thermal_break_house.py": {"hardware"},

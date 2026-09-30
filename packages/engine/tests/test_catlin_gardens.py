@@ -70,11 +70,11 @@ def test_sidewalk_quantities(catlin_model_ro) -> None:
     bom = bill_of_materials(catlin_model_ro)
     walk = next(r for r in bom["structural_solids"] if r.get("assembly") == "SIDEWALK_FRC_CLASS5")
     assert walk["count"] == 4
-    assert walk["plan_area_sqft"] == pytest.approx(578.3, abs=0.2)
-    assert walk["volume_cubic_yards"] == pytest.approx(7.14, abs=0.01)
+    assert walk["plan_area_sqft"] == pytest.approx(577.8, abs=0.2)
+    assert walk["volume_cubic_yards"] == pytest.approx(7.13, abs=0.01)
     base = next(r for r in bom["envelope_layers"]
                 if r["material"] == "mndot-class-5-base" and r["thickness_in"] == 6.0)
-    assert base["net_area_sqft"] == pytest.approx(578.3, abs=0.2)
+    assert base["net_area_sqft"] == pytest.approx(577.8, abs=0.2)
     pockets = Counter(e.tag.split("-")[2][0] for e in catlin_model_ro.plan.all_elements()
                       if e.tag.startswith("FO-WK-"))
     assert pockets == {"A": 3, "B": 6, "D": 9}   # FO-WK-A01 struck at the leader

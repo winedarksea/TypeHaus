@@ -161,7 +161,7 @@ def delivery_rows(ctx: Any, element: Any, resolved_roof: Any, wind: Any,
            if not on and panel_runs_along(ctx, w, across)]
     total_len = 0.0
     readings = {}
-    for wall, line in boundary:
+    for _wall, line in boundary:
         reading = _surplus(ctx, rows, line.wall)
         if reading is not None:
             readings[line.wall] = reading

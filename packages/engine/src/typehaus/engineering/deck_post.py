@@ -74,7 +74,8 @@ KIND = "deck_post"
 #: and started being a derived LINE load in the dead term (``pier_basis.wall_line_loads``);
 #: to "8" when a WALL-borne column's dowels started being graded for straight development
 #: against the authored ``BarSpec.embedment``; to "9" on 2026-09-30, when an axially loaded
-#: column larger than its load needs took ACI 318-19 §10.3.1.2's reduced area for the 1% floor.
+#: column larger than its load needs, and whose cage misses the gross 1% floor, took ACI 318-19
+#: §10.3.1.2's reduced area for it.
 BASIS_VERSION = "9"
 BASIS = "IRC R507.4 (no row); ACI 318-19 Ch. 10, 22.4, 25.7 (reinforced) / 14.5 (plain)"
 
@@ -346,10 +347,11 @@ def _one(pier: _Pier) -> EngineeringRecord:
     # ** ACI 318-19 §10.3.1.2: A COLUMN LARGER THAN ITS LOAD NEEDS. ** The minimum steel may
     # be based on a reduced effective area, not less than half the gross — and never less than
     # the concrete the factored load actually needs. Claimed only here, where the demand is
-    # stated and the column is not anyone's lateral system.
+    # stated and the column is not anyone's lateral system, and only where the cage misses
+    # the gross floor: a permission, never taken by a column that does not need it.
     needed = demand / (PHI_COMPRESSION_TIED * TIED_AXIAL_CAP * 0.85 * PRESUMPTIVE_FC_PSI)
     effective = max(area / 2.0, needed)
-    if effective < area:
+    if effective < area and cage.area_in2 < minimum_steel:
         minimum_steel = COLUMN_MIN_REINFORCEMENT_RATIO * effective
         common = common + (
             f"ACI 318-19 §10.3.1.2: the 1% floor is taken on an effective area of "
@@ -778,10 +780,11 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
     # ACI 318-19 §10.3.1.2 with a MOMENT on it: the reduced area has to carry the strength
     # rows too (axial and moment; a development LENGTH is not a section strength), so it is
     # claimed only while every one is at or under a quarter on the gross
-    # section — half the area keeps far more than a quarter of both axial and moment.
+    # section — half the area keeps far more than a quarter of both axial and moment — and
+    # only where the cage misses the gross floor.
     strength = max((st.ratio for st in states
                     if not st.is_detailing and st.unit in ("lb", "lb-ft")), default=1.0)
-    if strength <= _REDUCED_AREA_STRENGTH_CAP and area / 2.0 < area:
+    if strength <= _REDUCED_AREA_STRENGTH_CAP and cage.area_in2 < minimum_steel:
         minimum_steel = COLUMN_MIN_REINFORCEMENT_RATIO * area / 2.0
         common = common + (
             f"ACI 318-19 §10.3.1.2: the 1% floor is taken on half the {area:.1f} in2 gross — "

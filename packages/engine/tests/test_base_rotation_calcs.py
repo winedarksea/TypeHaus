@@ -33,9 +33,10 @@ _WORKED = {
     # half-bay strip: the landing's deck share fell 17.03 -> 9.93 ft2 (W/E), 9.60 (GW/GE).
     # Seat beams from the column's east face, 2026-09-23 (addendum 2026-09-23c): 3.3542' long.
     # Carriers 4.5" shorter at the landing header, 2026-09-24 (addendum 2026-09-24).
-    "PT-BW-W": (1.1011, 1.3967, Status.INCOMPLETE),
+    # W/GW 14" round since 2026-09-30 (the CBSQ's 3" side cover, canopy_west_band.md §5e).
+    "PT-BW-W": (1.0820, 1.3413, Status.INCOMPLETE),
     "PT-BW-E": (1.0259, 1.0792, Status.OK),
-    "PT-BW-GW": (1.4043, None, Status.OVER),
+    "PT-BW-GW": (1.3510, None, Status.OVER),
     "PT-BW-GE": (1.0678, 1.3246, Status.INCOMPLETE),
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->
     # 4,855 lb (front), 4,877 (rear); wall-top k_θ unchanged. Front R 6.616 / 6.242.

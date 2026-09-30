@@ -49,7 +49,9 @@ def attach_engineering_psets(f: Any, model: Any, element_entities: dict[str, Any
                 # this is an annotation pass, not a completeness check, and `haus calcs`
                 # is where an item's absence would be a finding.
                 continue
-            ll.ensure_pset(f, element, f"{_PREFIX}{record.kind}", properties)
+            # A copy each: ``pset.edit_pset`` consumes the dict when the element already
+            # holds this pset (a header two posts name), emptying it for the next element.
+            ll.ensure_pset(f, element, f"{_PREFIX}{record.kind}", dict(properties))
             written += 1
         _attach_common(f, record, element_entities, done)
     return written

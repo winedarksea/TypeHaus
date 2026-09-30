@@ -227,7 +227,6 @@ the future.
 - The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
 - Cleanout caps likely need a double check on the plumbing
 - DT-INT-BOOKCASE36 needs a 3d model that actually looks like a bookcase door
-- Double check the headroom above the toilet and the bar sink in the attic level bedroom suite
 - See if we can move EQ-T-WATER-HEATER up against the wall, it's rather awkwardly in the middle of the room now
 - Make the window stool for WIN-M-KITCH quart as well (like the plant room)
 

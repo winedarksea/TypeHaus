@@ -189,7 +189,6 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
         if knee_braced(ctx.plan, {*columns, *(b.tag for b in beams), roof.tag}):
             continue
 
-        top_ft = roof.ridge_z_m / _M_PER_FT
         q_h = wind.q_h_psf
         drag_bands = column_drag_bands(posts, columns, roof, wind.grade_ft)
         exposed_ft = max((b.depth_ft for b in drag_bands), default=0.0)

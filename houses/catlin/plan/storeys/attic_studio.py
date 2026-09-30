@@ -445,9 +445,11 @@ ROOMS = [
     # ED-A-STUBATH- and ED-A-POCKET- must stay disjoint.
     #
     # `vinyl-sheet` is already the house's cheap waterproof answer (RM-M-BATH1, RM-M-LAUNDRY, the
-    # main hall band): no grout, no backer, no threshold. R305 is not close here — across
-    # x 9'-10 7/8"..17'-8 5/8" the roof underside runs 8'-3" to 11'-0" and 100% of the floor clears
-    # 7'-0".
+    # main hall band): no grout, no backer, no threshold. R305.1 Exception 1 is a VERY CLOSE pass
+    # on the finished ceiling face (rafter underside less paint and 5/8" GWB): RM-A-STUBATH has
+    # 35.30 sf total, 17.97 sf (50.9%) at or above 7'-0", and all 35.30 sf at or above 5'-0".
+    # The 7-foot share clears the 50% threshold by only 0.32 sf. The prior 8'-3"..11'-0" /
+    # 100% note measured the wrong roof plane and omitted the sloped ceiling lining.
     Room(uid="ACQ0FY2BZD", tag="RM-A-STUBATH", seed=pt(ft(13), ft(20)),
          occupancy=Occupancy.BATHROOM, floor_finish="vinyl-sheet",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),

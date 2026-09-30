@@ -348,6 +348,62 @@
       "points": [
         [
           341.4289763779527,
+          88.0
+        ],
+        [
+          353.24,
+          88.0
+        ],
+        [
+          353.24,
+          102.5
+        ],
+        [
+          341.4289763779527,
+          102.5
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CGR401AAAA-ceiling-insulation-1",
+      "tag": "INSUL-CEIL-RM-GARAGE-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          341.4289763779527,
+          88.0
+        ],
+        [
+          353.24,
+          88.0
+        ],
+        [
+          353.24,
+          102.5
+        ],
+        [
+          341.4289763779527,
+          102.5
+        ]
+      ],
+      "pattern": "blown-fiberglass",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "blown-fiberglass"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          341.4289763779527,
           106.9403412073491
         ],
         [

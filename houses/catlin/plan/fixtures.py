@@ -652,17 +652,19 @@ GARAGE_FIXTURES = (
 # What is still ungraded is whether the envelope FITS THE ROOM: `_clearance_conflicts`
 # compares a zone against peer placeable FOOTPRINTS only, never against a wall. Every
 # distance-to-a-wall figure below was measured by hand off the resolved layer polygons.
-# `code.R305_ceiling_height` grades the ROOM (78% of required floor area at 7'-0") and
-# nothing grades a fixture against the rake, so the headroom figures are hand-measured too.
+# `code.R305_ceiling_height` grades the ROOM, not a fixture against the rake. On the finished
+# ceiling face (rafter underside less paint and 5/8" GWB), the attic bath has 17.97 of its
+# 35.30 sf (50.9%) at or above 7'-0", and all 35.30 sf is at or above 5'-0". That R305.1
+# Exception 1 pass is only 0.32 sf over the 50% line. The fixture measurements below are
+# therefore checked separately against R305.1 Exception 2.
 #
 # ** THE WATER CLOSET GOES BACK ON THE WET WALL, WHICH IS THE ONLY WALL IT CAN PLUMB INTO. **
 # Back to W-A-STU-W's east face at x 9'-10 7/8", facing east, c/l at y 20'-8" -> 19'-4". The
-# roof underside (measured off the resolved model, which runs ~7/8" more generous than the
-# `1 1/2" + x/2` rule of thumb) is 5'-1 13/16" at its back and 5'-8 3/8" over the seat — you
-# SIT there, and Exception 2's usability test is satisfied by a fixture you use seated. What
-# the exception actually measures is the centre of the 24" front clearance, at x 13'-2 7/8",
-# where the model reads ** 6'-9 13/16" **. An inch and thirteen sixteenths of margin, and it
-# is the whole reason this fixture can be on this wall at all.
+# finished ceiling face is about 5'-8" over the seat — you SIT there, and Exception 2's usability
+# test is satisfied by a fixture you use seated. What the exception actually measures is the
+# centre of the 24" front clearance, at x 13'-3 1/16", where the resolved finish-face height is
+# ** about 6'-9 1/16" **. That clears 6'-8" by about 1 1/16", and it is the whole reason this
+# fixture can be on this wall at all. These heights include the sloped paint/GWB lining.
 #
 #   WC  c/l (11'-0 7/8", 19'-4"), rot -90.  footprint x 9'-10 7/8"..12'-2 7/8",
 #       y 18'-6"..20'-2".  UPC 402.5 zone (15" each side, 24" in front)
@@ -794,6 +796,13 @@ ATTIC_FIXTURES = (
     # ** THE 27" MOUNT IS THE KITCHEN-SINK IDIOM AND IS THE THIRD OPEN MEASUREMENT. ** If the
     # SUNNERSTA's worktop measures nearer 36", raise it — and re-check that the revent's
     # horizontal still clears the flood rim by P3104.4's 6".
+    #
+    # ** HEADROOM DOUBLE-CHECKED 2026-09-30. ** At the bowl centre (x 12'-8 1/2"), the resolved
+    # finished ceiling face is 77.80" AFF (about 6'-5 13/16"). This is a wet bar in RM-A-STUDIO,
+    # not a bathroom, so Minn. R. 1309.0305 R305.1 Exception 2's 6'-8" sink station does not apply.
+    # The studio's sloped-ceiling test has 65.59 sf at or above 7'-0" and 131.58 sf at or above
+    # 5'-0", enough for 35 sf and 70 sf respectively under Exception 1 / R304.1. The sink station
+    # is in the allowed 5-to-7-foot band.
     Fixture(uid="11TZJE81BZ", tag="FX-A-STUDIO-BAR-SINK", type_ref="FX-LAV-COMPACT", room="RM-A-STUDIO",
             wall_ref="W-A-STU-W",
             mount=Mount(kind=MountKind.WALL, elevation=inch(27)),

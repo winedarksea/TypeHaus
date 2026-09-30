@@ -1400,7 +1400,7 @@ def test_a_wall_on_a_beam_is_a_line_load_and_reaches_the_piers_under_it(catlin_p
 
     screen = next(w for w in model.walls if w.tag == "W-BW-SCREEN")
     plf, basis = wall_line_plf(ctx, screen)
-    assert plf == pytest.approx(43.48, abs=0.05), basis
+    assert plf == pytest.approx(43.20, abs=0.05), basis
     assert "SC-BW-WEST" in basis, "the slat clerestory is a third of this line"
 
     # The DIRECT delivery is to the two 6x6 KDAT canopy columns the sill hangs off, and the
@@ -1409,14 +1409,14 @@ def test_a_wall_on_a_beam_is_a_line_load_and_reaches_the_piers_under_it(catlin_p
     raw, accounted = wall_line_loads(ctx)
     assert accounted == {"BM-BW-SCSILL"}
     assert set(raw) == {"PT-BW-CW", "PT-BW-CNW"}
-    assert all(v == pytest.approx(98.3, abs=0.1) for v in raw.values())
+    assert all(v == pytest.approx(97.7, abs=0.1) for v in raw.values())
 
     # And it lands on the CAST piers, through `supported_by`. Those two are the pair that
     # reported UNKNOWN until 2026-09-20; no other pier in the house moves.
     piers = {p.tag: p for p in cast_piers(ctx)}
     carrying = {tag: p.wall_dead_lb for tag, p in piers.items() if p.wall_dead_lb}
     assert set(carrying) == {"PT-BW-W", "PT-BW-GW"}
-    assert all(v == pytest.approx(98.3, abs=0.1) for v in carrying.values())
+    assert all(v == pytest.approx(97.7, abs=0.1) for v in carrying.values())
     assert not piers["PT-BW-W"].unmodelled_load, "the gap this closes"
     assert not piers["PT-BW-GW"].unmodelled_load
     # The basis travels with the pounds, through the wood column that keeps none of them.

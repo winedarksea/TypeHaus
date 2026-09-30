@@ -42,12 +42,12 @@ joints fall on the same stations.
 |---|---|---|---|---|
 | A garage north | x 24.04..35.45 × y 67.33..75.00, less the 5.96 sf taper notch (§2a) | 11.40 × 7.67 = 87.4 − 5.96 = 81.4 | 3 | 77.3 |
 | B garage east | x 30.11..35.45 × y 43.02..67.33 | 5.33 × 24.31 = 129.7 | 6 | 121.5 |
-| C entry walk | three rectangles, §2b | 83.58 + 4.22 + 44.76 = 132.6 | 0 | 132.6 |
+| C entry walk | three rectangles, §2b | 83.08 + 4.66 + 44.25 = 132.0 | 0 | 132.0 |
 | D house east | x 36.70..42.04 × y −9.00..39.60 | 5.33 × 48.60 = 259.2 | 9 | 247.0 |
-| **total** | | **602.9** | **18** | **578.4** |
+| **total** | | **602.3** | **18** | **577.8** |
 
-18 pockets at 1.3605 sf = 24.5 sf. Concrete at 4": 578.4 / 3 / 27 = **7.14 cy**. Class 5 at
-6" bills by the net slab area, **578.4 sf**. Impervious area counts the GROSS 602.9 sf — the
+18 pockets at 1.3605 sf = 24.5 sf. Concrete at 4": 577.8 / 3 / 27 = **7.13 cy**. Class 5 at
+6" bills by the net slab area, **577.8 sf**. Impervious area counts the GROSS 602.3 sf — the
 pockets are not subtracted, which is conservative for the coverage table.
 
 ### 2b. Leg C under the canopy (2026-09-23)
@@ -55,12 +55,13 @@ pockets are not subtracted, which is conservative for the coverage table.
 C replaced the drained paver landing. Under the canopy it is the passage's full width, 3" off
 both claddings (y 36.854..42.896, the flight's own width), from `SL-BW-TIER1`'s east face at
 x = 15.583 plus the 1/2" joint. The canopy's east columns `PT-BW-RE` (y 37.0..38.0) and
-`PT-BW-RNE` (y 41.98..42.98), both 12" round on x = 30.0, force the neck: 1/2" off each.
+`PT-BW-RNE` stand on 14" round piers on x = 30.0 (`PT-BW-PE` / `-PNE`, 14" since 2026-09-30
+for the cast-in CBSQ's 3" side cover), and force the neck: 1/2" off each.
 
-- canopy: x 15.625..29.458 × y 36.854..42.896 = 13.833 × 6.042 = **83.58**
-- neck between the columns: x 29.458..30.542 × y 38.042..41.938 = 1.083 × 3.896 = **4.22**
-- east: x 30.542..42.035 × y 39.600..43.022 = 11.493 × 3.422 = 39.33, plus the widening
-  south to the HP1 pad, x 30.542..32.521 × y 36.854..39.600 = 1.979 × 2.746 = 5.43 → **44.76**
+- canopy: x 15.625..29.375 × y 36.854..42.896 = 13.750 × 6.042 = **83.08**
+- neck between the piers: x 29.375..30.625 × y 38.125..41.855 = 1.250 × 3.730 = **4.66**
+- east: x 30.625..42.035 × y 39.600..43.022 = 11.410 × 3.422 = 39.04, plus the widening
+  south to the HP1 pad, x 30.625..32.521 × y 36.854..39.600 = 1.896 × 2.746 = 5.21 → **44.25**
 
 The widening wraps `PT-BW-RE` on three sides and stops 3" short of `SL-M-HP1PAD`'s west edge,
 the same gravel drip strip the pad keeps on its north edge.

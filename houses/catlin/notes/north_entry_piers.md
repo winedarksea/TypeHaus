@@ -311,7 +311,7 @@ Six piers on **two** bearing planes, and the split is the first thing to read.
 > joined `north_entry_frame._MOMENT_PIERS` — 12" pads where they had 10" and 8", tops held
 > at `FOOTING_TOP_FT` and the garage strip's plane — so the shafts, the stations and
 > `column_base`'s embedment are all untouched. The d/c rises because `W-BW-SCREEN`'s line
-> load is in the demand now (§2's wall table above, 1.97 ft² of equivalent R507.3.1
+> load is in the demand now (§2's wall table above, 1.95 ft² of equivalent R507.3.1
 > tributary), not because the pads changed: `PD-BW-W` is at **0.95** and is the tightest
 > landing pad in the house, on presumptive soil with **no boring log**. Worth flagging.
 >
@@ -369,11 +369,14 @@ never needed a tributary area: it is a plf times a run.
 | term | working | value |
 |---|---|---|
 | `W-BW-SCREEN` | its own resolved layer stack over its 4.08' height | 30.54 plf |
-| `SC-BW-WEST` | 26 slats, 1 1/2" × 3 1/2" × 2.40', kdat at 600 kg/m³, over 6.57' | 12.94 plf |
-| line | | **43.48 plf** |
+| `SC-BW-WEST` | 26 slats, 1 1/2" × 3 1/2" × 2.34', kdat at 600 kg/m³, over 6.57' | 12.66 plf |
+| line | | **43.20 plf** |
 | run | the wall's axis inside `BM-BW-SCSILL`'s own footprint | 4.52' |
-| total | | **196.6 lb** |
-| each column | two bearings | **98.3 lb** |
+| total | | **195.3 lb** |
+| each column | two bearings | **97.7 lb** |
+
+(2026-09-30: the slats shortened 2.40' → 2.34' when the header became an 11 7/8" glulam,
+`canopy_west_band.md` §7; the line was 43.48 plf, 98.3 lb a column.)
 
 The slat clerestory is a third of it, and leaving it out would understate the sill by 30% —
 the same partial-stack failure `resolve/assembly_weight.dead_load_plf` refuses one layer
@@ -381,7 +384,7 @@ down. The plf is the one `checks/structural/guards.py` already printed ("guard w
 `W-BW-SCREEN` weighs 31 plf") in the same run that called this load unknown; it moved to
 `resolve/assembly_weight.py` so a calc could read it, because `engineering` may not import
 `checks`. `checks/structural/deck.py` divides the same pounds into R507.3.1's currency —
-98.3 / 50 psf = 1.97 ft² — rather than holding a second answer about one load.
+97.7 / 50 psf = 1.95 ft² — rather than holding a second answer about one load.
 
 > ⚠ **WITHDRAWN 2026-09-21 as a DEMAND, kept as built.** With the landing tied to the garage (§10)
 > the four landing piers lean: `deck_post` grades them "axial, tied column" (d/c 0.007-0.027)

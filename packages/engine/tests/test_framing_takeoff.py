@@ -12,6 +12,7 @@ from typehaus.takeoff import (
     framing_takeoff,
     structural_solids_takeoff,
 )
+from typehaus.resolve.strap_braces import STRAP_CATEGORY
 from typehaus.takeoff.framing import _bucket_cut_lengths
 from typehaus.takeoff.steel import steel_members_takeoff
 from typehaus.takeoff.sheet_rips import rip_stock
@@ -69,8 +70,10 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     not_lumber = [m for m in members if m.category in {"tread", "winder", "landing", "riser"}
                   and m.material in _NOT_LUMBER]
     assert not_lumber, "catlin has composite and cast treads; this should not be empty"
+    # And steel straps, which are hardware (`takeoff/strap_braces.py`).
+    straps = [m for m in members if m.category == STRAP_CATEGORY]
     assert sum(int(row["pieces"]) for row in rows) == (
-        len(members) - len(ripped) - len(not_lumber))
+        len(members) - len(ripped) - len(not_lumber) - len(straps))
     assert not any(rip_stock(str(row["profile"]), row["material"]) for row in rows)
 
     for row in rows:
@@ -280,8 +283,9 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     not_lumber = sum(1 for m in members if m.category in {"tread", "winder", "landing", "riser"}
                      and m.material in _NOT_LUMBER)
     assert not_lumber, "catlin has treads that are not lumber; this should not be zero"
+    straps = sum(1 for m in members if m.category == STRAP_CATEGORY)
     assert sum(int(row["pieces"]) for row in bom["framing"]) == (
-        len(members) - ripped - not_lumber)
+        len(members) - ripped - not_lumber - straps)
 
 
 # Every collection on ``ResolvedModel`` is either billed by a BOM section or waived here with

@@ -38,9 +38,8 @@ RULES = CONFIG.uplift
 #: CONCRETE. See ``houses/catlin/notes/balcony_moment_columns.md``.
 # The canopy's two WEST columns, authored as ABU66SS on 2026-09-10 so the order names the
 # stainless part the house actually buys rather than the galvanized one the section-based
-# derivation reaches for. The east pair is not here because it no longer exists: PT-BW-RE and
-# PT-BW-RNE run full height in cast concrete and carry no wood column at all.
-# The canopy's two west columns on ABU66SS, and since 2026-09-11 the two interior landing
+# derivation reaches for. Since 2026-09-30 all four canopy posts (kdat) are on authored
+# CBSQ66-SDS2 cast-in bases. And since 2026-09-11 the two interior landing
 # posts on ABU44 (CN-BW-IBASE-C/-E): 4x4 KDAT standing 25 3/4" on the garage slab, authored
 # so the 1" standoff is on the drawings — and so the base can say `anchored=False`, which no
 # derived base can. There is no cast-in bolt under those two; see
@@ -50,7 +49,10 @@ RULES = CONFIG.uplift
 #: They were covered by an authored TENSION_TIE until then, and the kind moved with the joint
 #: rather than with the part: ``model/enums.py`` reads TENSION_TIE as "a post on FRAMING" and
 #: POST_BASE as "a stirrup on CONCRETE", so a pillar that now stands on a pour takes a base.
-AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW", "PT-BW-IC", "PT-BW-IE"}
+#: The canopy's four 6x6 KDAT posts stand on authored CBSQ66-SDS2 cast-in bases (2026-09-30,
+#: EAST_POST_SYSTEM = "kdat"); the landing's two 4x4s on authored ABU44.
+AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-IC",
+                       "PT-BW-IE"}
 
 #: **Empty since 2026-09-14, and kept rather than deleted.** ``post_base_rows`` reads BOTH
 #: kinds — a post whose joint is already made must not be bought a base — and while the two
@@ -316,7 +318,7 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
             and e.size in {"6x6", "4x4"}}
     assert wood == AUTHORED_POST_BASES | AUTHORED_TENSION_TIES | {
         "P-M-STRWELL-S", "P-M-STRWELL-SS", "P-M-STRLAND-SE",
-        "PT-BW-CW", "PT-BW-CNW", "PT-BW-IC", "PT-BW-IE"}
+        "PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-IC", "PT-BW-IE"}
 
 
 def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
@@ -343,8 +345,8 @@ def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
 def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> None:
     """Simpson ship the ABU without the 5/8" bolt its published capacity is taken through.
 
-    Five of catlin's bases land on concrete AND take a bolt — the canopy's two west columns on
-    their 12" piers, and the three stairwell 4x4s on the basement slab. The sunken garden has
+    Two of catlin's bases land on concrete AND take a bolt — the stairwell 4x4s on the
+    basement slab. The canopy's CBSQ66-SDS2 bases are cast in and take none. The sunken garden has
     none left: its four balcony corners are cast columns, and its two wood centre pillars
     retired with the centre support line (2026-09).
 
@@ -386,16 +388,18 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
     # 7 -> 5 in 2026-09: the centre pillars and their anchored CN-SG-BASE-R2 / -F2 retired.
     #
     # 5 -> 4 on 2026-09-24: P-M-STRWELL-N retired once the landings reached the north wall.
-    assert row["count"] == 4
+    #
+    # 4 -> 2 on 2026-09-30: the canopy's bases became CBSQ66-SDS2, CAST IN — the part is its
+    # own anchorage, so no bolt is bought under it (``joints/authored.cast_in_post_tags``).
+    assert row["count"] == 2
     # The population is the union of DERIVED and AUTHORED bases, stated as that sum rather
     # than as one number, because the two halves move independently: the derived rows are the
-    # 2 ABU44 ladder rungs, and the authored-and-anchored-on-concrete half is 2 — the
-    # canopy's CN-BW-BASE-W / -NW. (The other two
-    # authored bases, CN-BW-IBASE-C / -E, are on concrete and ``anchored=False``, so they are
-    # in neither half; that is the interesting case above.)
+    # 2 ABU44 ladder rungs, and the authored-and-anchored-on-concrete half is 0 — every
+    # authored base on concrete is either cast in (CN-BW-BASE-*) or ``anchored=False``
+    # (CN-BW-IBASE-C / -E, the interesting case above).
     derived = sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES))
     assert derived == 2
-    assert row["count"] == derived + 2
+    assert row["count"] == derived
     assert "PT-BW-IC" not in row["basis"] and "PT-BW-IE" not in row["basis"], \
         "a bearing-only base must not be billed a cast-in anchor"
 
@@ -408,8 +412,8 @@ def test_a_base_on_a_pour_is_bought_its_cast_in_bolt_and_a_bare_pier_is_not(
     flat property of the PART: it would bill a cast-in bolt wherever the part appears,
     including into decking. The balcony centre pillars proved it from both sides (on the porch
     deck, no bolt; on the cast columns, one each) until they retired in 2026-09. The canopy's
-    PT-BW-CW / -CNW are the positive witness now: authored ABU66SS on their 12" piers,
-    anchored, one bolt each.
+    posts are a fourth side since 2026-09-30: their CBSQ66-SDS2 bases are cast in, so the
+    part IS the anchorage and no bolt is bought. The stairwell posts are the positive witness.
 
     The four sonotube piers are the same trap from the other side. ``CN-BW-BASE-*`` names
     both members of its joint, so ``tags_covered_by`` returns PR-BW-1..4 as well as the
@@ -423,8 +427,10 @@ def test_a_base_on_a_pour_is_bought_its_cast_in_bolt_and_a_bare_pier_is_not(
     from typehaus.takeoff.uplift_joints import post_base_anchor_rows
 
     basis = post_base_anchor_rows(catlin_model_ro, RULES)[0]["basis"]
-    for tag in ("PT-BW-CW", "PT-BW-CNW"):
-        assert tag in basis, f"{tag} stands on a cast pier and its base is anchored"
+    for tag in ("P-M-STRWELL-S", "P-M-STRWELL-SS"):
+        assert tag in basis, f"{tag} stands on the slab and its base is anchored"
+    for cast_in in ("PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE"):
+        assert cast_in not in basis, f"{cast_in}'s CBSQ is cast in; it takes no bolt"
     for pier in ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4"):
         assert pier not in basis, f"{pier} is a cast pier, not a based post"
     for bearing_only in ("PT-BW-IC", "PT-BW-IE"):

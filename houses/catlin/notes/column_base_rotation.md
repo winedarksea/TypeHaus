@@ -412,3 +412,23 @@ Worked, `PT-BW-W`: `D = 9.412 × 10 + 400 + 902.6 + 56.5 + 98.3 = 1,551.5`, `L =
 40 × 73.7 = 3,324.5`, `P_u = 7,181.0`, `EI = 1.6410e9 / 1.2593 = 1.3031e9`, `Pc,rigid =
 345,029`; at 1.0", `R = 0.32488`, `Pc,flex = 345,029 / 10.2342 = 33,713`, `δ = 1 / (1 − 7,181.0
 / 25,285) = 1.3967`. No verdict moves.
+
+## Addendum 2026-09-30 — `PT-BW-W` / `-GW` at 14" round
+
+The west landing piers went 12" → 14" round for the cast-in CBSQ66-SDS2's 3" side cover
+(`canopy_west_band.md` §5e). Three terms move: the shaft self weight (× 196/144), I_g
+(`π × 14⁴ / 64 = 1,885.7` in⁴, 0.4 E_c I_g = 3.0402e9), and the pole's k_θ, which is §3a's
+solve with b = 14/12'. The wall line load is 97.7 lb (`north_entry_piers.md` §2). L unchanged.
+
+| column | D | P_u | β | EI | k_θ 0.25" / 1.0" | R 0.25" / 1.0" | δ 0.25" | δ 1.0" |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `PT-BW-W` | 1,876.4 | 7,570.9 | 0.2974 | 2.3433e9 | 2.0893e7 / 5.2233e6 | 0.8197 / 0.2049 | 1.0820 | 1.3413 |
+| `PT-BW-GW` | 1,453.2 | 7,042.9 | 0.2476 | 2.4368e9 | 3.0044e6 / 7.5111e5 | 0.0746 / 0.0186 | 1.3510 | mechanism |
+
+Worked, `PT-BW-W` at 1.0": `P_u = 1.2 × 1,876.4 + 1.6 × 3,324.5 = 7,570.9`, `EI = 3.0402e9 /
+1.2974 = 2.3433e9`, `Pc,rigid = π² × 2.3433e9 / (2.1 × 91.94)² = 620,436`, `R = 5.2233e6 ×
+91.94 / 2.3433e9 = 0.2049`, `Pc,flex = 620,436 / (1 + 3/0.2049) = 39,673`, `δ = 1 / (1 −
+7,570.9 / (0.75 × 39,673)) = 1.3413`. `PT-BW-GW` at 0.25": `Pc,flex = 1,489,963 / (1 +
+3/0.0746) = 36,148`, `δ = 1 / (1 − 7,042.9 / 27,111) = 1.3510`; at 1.0" `0.75 × 9,204 = 6,903
+< P_u`, a mechanism. No verdict moves: the landing is tied (`north_entry_piers.md` §10), and
+these rows stay arithmetic only.

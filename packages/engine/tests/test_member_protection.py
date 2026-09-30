@@ -23,15 +23,16 @@ from typehaus.takeoff.member_protection import member_protection_takeoff
 #: because the common "double joist" roll is 3 1/8" and would leave a 3 1/2" top uncovered
 #: at both arrises. (The centre beam BM-SG-BLC left with the centre support line, 2026-09.)
 GLULAM_BEAMS = {"BM-SG-BLW", "BM-SG-BLE"}
-#: The north entry canopy's two headers, added with RF-BW-CANOPY on 2026-09-10: 3-ply 2x12
-#: KDAT, so 4 1/2" across and two open ply seams each — the site-built beam this section
-#: was written for. Since the porch's four 3-ply beams were retired (2026-09) they are the
-#: only ply beams left.
-PLY_BEAMS = {"BM-BW-RW", "BM-BW-RE", "BM-BW-LAND-HDR"}
+#: The canopy's two headers, 5 1/2" treated glulam since 2026-09-30 (the AC6 heads want the
+#: full 6x6 width; notes/canopy_west_band.md §7): no seam, wide roll at their own width.
+CANOPY_GLULAMS = {"BM-BW-RW", "BM-BW-RE"}
+#: The garage landing's 3-ply 2x12 header, 4 1/2" across with two open ply seams — the
+#: site-built beam this section was written for, and the only ply beam left.
+PLY_BEAMS = {"BM-BW-LAND-HDR"}
 #: The porch's two single-2x12 ledgers (2026-09), on the COMMON roll at 1 1/2": no seam.
 LEDGERS = {"BM-SG-LDGW", "BM-SG-LDGE"}
 #: Every beam on the wide roll, whatever its width.
-BUILT_UP_BEAMS = PLY_BEAMS | GLULAM_BEAMS
+BUILT_UP_BEAMS = PLY_BEAMS | GLULAM_BEAMS | CANOPY_GLULAMS
 
 
 @pytest.fixture(scope="module")
@@ -65,6 +66,9 @@ def test_the_beams_take_the_wide_roll_at_their_own_widths(rows):
     for tag in GLULAM_BEAMS:
         assert by_tag[tag]["material"] == "butyl-tape-beam", tag
         assert by_tag[tag]["width_in"] == pytest.approx(3.5), tag
+    for tag in CANOPY_GLULAMS:
+        assert by_tag[tag]["material"] == "butyl-tape-beam", tag
+        assert by_tag[tag]["width_in"] == pytest.approx(5.5), tag
     for tag in LEDGERS:
         assert by_tag[tag]["material"] == "butyl-tape", tag
         assert by_tag[tag]["width_in"] == pytest.approx(1.5), tag
@@ -77,13 +81,16 @@ def test_beam_length_is_the_axis_length(rows):
     """
     wide = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 4.5]
     assert len(wide) == 1
-    # The canopy's two 3-2x12 headers at 5'-8 5/8" each — PIER_LINE_Y_FT 37'-6" to
-    # GARAGE_Y_SOUTH 43'-2 5/8" — for 11.4', plus the garage landing's 3'-0" header
-    # (BM-BW-LAND-HDR, 2026-09-24): 14.4'. The porch's four ply beams (50.5' with the
-    # headers) left with the centre support line in 2026-09; a beam's billed length is its
-    # AXIS, so the tape followed the retirement exactly, which is the property pinned here.
-    assert wide[0]["length_ft"] == pytest.approx(14.4, abs=0.1)
-    assert wide[0]["count"] == 3
+    # The garage landing's 3'-0" header (BM-BW-LAND-HDR, 2026-09-24). A beam's billed length
+    # is its AXIS, so the tape follows a retirement or a retype exactly.
+    assert wide[0]["length_ft"] == pytest.approx(3.0, abs=0.1)
+    assert wide[0]["count"] == 1
+    canopy = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 5.5]
+    assert len(canopy) == 1
+    # The two glulam headers from the south post's face (HEADER_SOUTH_Y_FT) to the garage
+    # face: 2 x 5.94' = 11.9'.
+    assert canopy[0]["length_ft"] == pytest.approx(11.9, abs=0.1)
+    assert canopy[0]["count"] == 2
 
     glulam = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 3.5]
     assert len(glulam) == 1

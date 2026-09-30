@@ -569,10 +569,12 @@ ALARMS = [
 # describe. With the eave down on a 1 1/2" plate, the pitch is free to be whatever the
 # headroom wants, and 6:12 is the shallowest standard pitch that carries the attic rooms:
 #
-#     roof underside above the attic finished floor:  H(x) = 1 1/2" + x/2
+#     rafter underside above the attic finished floor:  H(x) = 1 1/2" + x/2
 #
 # mirrored past x=18'. 9'-1 1/2" at the ridge, 7'-0" at x=13'-9", 5'-0" at x=9'-9".
-# ** EVERY ATTIC STATION ANSWERS TO THAT ONE LINE ** — window heads, can lights, the
+# The sloped paint + 5/8" GWB lining hangs about 0.71" lower vertically; R305 headroom is
+# measured to that finished face, not to this framing line. ** EVERY ATTIC STATION ANSWERS TO
+# THAT ONE LINE ** — window heads, can lights, the
 # receptacle band, the ERV manifold, both vent runs. The building also got 1'-9 1/2"
 # SHORTER than it was at 4:12 with 5' knee walls (ridge 32'-0 5/8" -> 30'-3"), because the
 # eave dropped 4'-11" and the extra rise only bought back 3'-1 1/2".
