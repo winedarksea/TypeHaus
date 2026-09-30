@@ -57,7 +57,7 @@ windows stayed on `W-G-W` and `D-G-SERVICE` stayed on `W-G-S` at x=8'-0", concen
 | stem walls / footings | 10 / 10 | **9 / 9** |
 | Z-flash runs | S 6'-3"+14'-3", E 4'-0"x2, N 24'-0", W 24'-0" | S unchanged, **E one 24'-0"**, **N 4'-0"x2**, W unchanged |
 | Z-flash total | 76.5 LF | **76.5 LF** |
-| snow guards | 6 x S-5! ColorGard on the south slope | **none** — see §4 |
+| south-slope snow guards | 6 x S-5! ColorGard on the south slope | **none** — see §4 |
 | roof seam clamps | 12 `S-5-N`, eaves at y 39'-2 7/8" / 65'-10 7/8" | 12 `S-5-N`, eaves at x 2'-6 1/4" / 29'-5 3/4" |
 | `ED-G-EXT-LT` (see §6) | one light, `W-G-E` cladding face, `rotation=deg(90)`, 8'-10" over the apron | **a pair**, `ED-G-EXT-LT-E` + `-W` on the `W-G-N` cladding face at x 28'/8', `rotation=deg(0)`, 7'-6" over the apron |
 
@@ -66,7 +66,7 @@ other element re-used an existing uid — `N-GF-N-BRICK` was retagged `N-GF-N-DR
 place**, at the coordinate it already had, because (26', `GARAGE_Y_NORTH`) is exactly the
 new door's east jamb. A relic of the deleted brick wainscot became a real jamb node.
 
-## 4. The snow guards are gone, and that is earned
+## 4. The former south-slope guards were removed, and that is earned
 
 Six `S-5! ColorGard` guards stood on the south slope for one target: the garage shed south
 onto the breezeway's polycarbonate canopy `GL-BW-ROOF`, 3.0' below the eave in the discharge
@@ -75,8 +75,11 @@ discharges over the breezeway. The two slopes face east (open ground and the HP1
 is a cabinet at grade, not a roof) and west (the window wall and the walk, nothing below).
 
 `structural.sliding_snow` only sees ROOFS below a slope, so it reports nothing either way —
-the absence of a target is the design fact, not the check's silence. If the ridge ever turns
-back, the guards come back with it; their row is written out in `plan/storeys/garage.py`.
+the absence of a target is the design fact, not the check's silence. This removes only the
+former south-slope rails. The separate north-entry system keeps the east pair over the
+entrance and tier approach; the west side has no entrance or walking route beneath it
+(`notes/north_entry_structure.md` §5). If the garage ridge ever turns back, re-author the six
+south-slope rails against the roof condition in `plan/storeys/garage.py`.
 
 ## 5. The 4'-0" offset travelled unchanged, on purpose
 

@@ -387,9 +387,10 @@ deliberately does not continue: there is no wall under either canopy eave for a 
 into, an open canopy's underside is exposed framing by design, and the garage's white PVC
 soffit is there to feed a vented attic this roof does not have.
 
-Snow retention is required along the east/west roof zones over the screen, tier approach and
-equipment circulation; the supplier sizes crossbars and clamps for the **drift** case, not
-the ground load. **Wind seam clamps are not a substitute for snow retention.**
+Snow retention is required along the **east eave over the entrance and tier approach**. The
+west side has no entrance or walking route beneath it, so it needs no guard pair. The supplier
+sizes crossbars and clamps for the **drift** case, not the ground load. **Wind seam clamps are
+not a substitute for snow retention.**
 
 ## 6. KDAT longevity — the house-wide spec (owner, 2026-09-10)
 

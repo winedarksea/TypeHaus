@@ -650,10 +650,11 @@ ROOFS = [
          eave_trim=_CANOPY_EAVE_TRIM),
 ]
 
-# --- NO SNOW RETENTION, AND THAT IS EARNED (2026-09-07) ---------------------------------
+# --- NO SOUTH-SLOPE SNOW RETENTION, AND THAT IS EARNED (2026-09-07) ----------------------
 #
-# Entry-zone snow retention is authored by params/breezeway.py. Its rail/clamp layout
-# is a supplier-design allowance; north leaders keep meltwater off the east tiers.
+# The former six-rail south-slope system was removed because south is a rake. The separate
+# east-eave entrance pair is authored by params/breezeway.py, with supplier-sized rail/clamp
+# layout; north leaders keep meltwater off the east tiers.
 
 ALARMS = [
     # A garage gets a *heat* detector, not smoke: exhaust, dust and outdoor-swing temps would

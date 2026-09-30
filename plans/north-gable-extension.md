@@ -102,6 +102,8 @@ make them second choice. Do not silently restore four concrete pads and piers.
   south leaders would discharge beside the new stairs and wall.
 - Put snow retention on the roof zones that can release onto the west screen/wall, tiers,
   HP3 or the east approach. Size it with the metal-roof supplier.
+  **Owner decision, 2026-09-30:** retain only the east pair over the entrance and tier
+  approach; the west side has no entrance or walking route beneath it.
 - Keep the roof structurally independent from the house. At the south rake use a formed,
   positively sloped closure fixed to the garage extension only, ending at the house with a
   replaceable compressible or brush seal. Preserve the house rainscreen drainage path.

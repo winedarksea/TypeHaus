@@ -4018,3 +4018,10 @@ surface that reaches the court, so the water goes there.
   cap is fastened or the wrap is closed. This detail responds to the moisture-trap objection
   in `notes/beam_water_protection.md` for the different, open balcony posts; it does not
   claim PVC itself keeps the wood dry.
+
+## 2026-09-30 — North-entry snow retention is east-side only
+
+- The owner removed `CN-BW-SNOW-W-1` and `CN-BW-SNOW-W-2`: there is no entrance or walking
+  route under the west eave. Keep `CN-BW-SNOW-E-1` and `CN-BW-SNOW-E-2` over the east-side
+  entrance and tier approach. The supplier sizes the remaining rails and clamps for drift;
+  see `notes/north_entry_structure.md` §5.

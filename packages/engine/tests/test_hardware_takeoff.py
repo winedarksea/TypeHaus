@@ -631,19 +631,20 @@ def test_a_part_that_mounts_on_another_also_bills_that_carrier(catlin_model) -> 
 
     ColorGard is this house's only ``requires_role`` part, and it left and came back. The
     six rails on RF-GARAGE's south slope were deleted on 2026-09-07 when that slope became a
-    rake and stopped shedding onto the breezeway canopy. The four here are a different rail
-    for a different reason: they sit on the EAST AND WEST EAVES over the screen, the tier
-    approach and the equipment circulation, which ``notes/north_entry_structure.md`` §5
-    requires snow retention along. The target is a walking surface rather than a roof, so
-    ``sliding_snow`` cannot see it and the note is the only thing that asks for it.
+    rake and stopped shedding onto the breezeway canopy. The east pair here is a different
+    rail for a different reason: it sits on the EAST EAVE over the entrance and tier approach,
+    which ``notes/north_entry_structure.md`` §5 requires snow retention along. There is no
+    entrance or walking route beneath the west side. The target is a walking surface rather
+    than a roof, so ``sliding_snow`` cannot see it and the note is the only thing that asks for
+    it.
 
-    Four rails, four carried clamps, one apiece — and no bare seam clamp authored anywhere,
+    Two rails, two carried clamps, one apiece — and no bare seam clamp authored anywhere,
     which is the other half of the rule: every S-5! in this house is implied by a rail.
     """
     rows = hardware_takeoff(catlin_model)
     rails = sum(row["count"] for row in rows if row["role"] == "snow_retention")
     seam = [row for row in rows if row["role"] == "standing_seam_clamp"]
-    assert rails == 4, "the four CN-BW-SNOW eave rails over the entry zone"
+    assert rails == 2, "the east pair of CN-BW-SNOW rails over the entrance"
     assert not [row for row in seam if row["scope"] == "modeled connector"], \
         "no bare seam clamp is authored any more; every S-5! is implied by the rail"
     carried = [row for row in seam

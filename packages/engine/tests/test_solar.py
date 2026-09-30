@@ -180,10 +180,10 @@ def test_pv_mounting_kits_are_billed(catlin_model):
     #
     # The CARRIED half came back on 2026-09-10 with the extruded garage. It is NOT the old
     # rail returning: those guards stood on RF-GARAGE's south slope over the polycarbonate
-    # canopy, and that slope is a rake now. These four are on the EAST AND WEST EAVES over
-    # the screen, the tier approach and the equipment circulation, which
-    # `notes/north_entry_structure.md` §5 requires snow retention along — a walking surface,
-    # not a roof, so `sliding_snow` never sees it and the note is the only authority.
+    # canopy, and that slope is a rake now. These two are on the EAST EAVE over the entrance
+    # and tier approach, which `notes/north_entry_structure.md` §5 requires snow retention
+    # along — a walking surface, not a roof, so `sliding_snow` never sees it and the note is
+    # the only authority. The west side has no entrance or walking route beneath it.
     #
     # `S-5-PVKIT` above is a different part and is unaffected: it clamps the PV array to
     # RF-HOUSE's standing seam, which is untouched.
@@ -191,7 +191,7 @@ def test_pv_mounting_kits_are_billed(catlin_model):
     modeled = sum(row["count"] for row in s5_rows if row["scope"] == "modeled connector")
     carried = sum(row["count"] for row in s5_rows if row["scope"] == "carried-mount")
     assert modeled == 0, "an S-5! needs a seam; the walls are exposed-fastener panel now"
-    assert carried == 4, "four CN-BW-SNOW rails, each carried on its own clamp"
+    assert carried == 2, "the east pair of CN-BW-SNOW rails, each carried on its own clamp"
 
 
 def test_model_json_serializes_solar(catlin_model):

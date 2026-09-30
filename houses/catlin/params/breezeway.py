@@ -749,15 +749,17 @@ GABLE_CLIPS = [
     for _i, _uid in enumerate(GABLE_CLIP_UIDS)
 ]
 
-# Procurement allowance at the two eaves over the entry zone. Supplier must size rail
+# Procurement allowance on the east eave over the entrance. Supplier must size rail
 # lengths, row spacing and clamp demand for the actual drift load and roof profile.
+SNOW_RETENTION_EAST_X_FT = 30.5
+SNOW_RETENTION_STATIONS_FT = (38.5, 42.5)
 SNOW_RETENTION = [
-    Connector(uid=f"BWNS{side}{i}AAAA", tag=f"CN-BW-SNOW-{side}-{i}",
-              kind=ConnectorKind.SNOW_GUARD, position=pt(ft(x), ft(y)),
+    Connector(uid=f"BWNSE{index}AAAA", tag=f"CN-BW-SNOW-E-{index}",
+              kind=ConnectorKind.SNOW_GUARD,
+              position=pt(ft(SNOW_RETENTION_EAST_X_FT), ft(station_y)),
               elevation=ft(8, 2), size="S-5! ColorGard", connects=("RF-GARAGE",),
-              source="north_entry_structure.md — provisional entry-zone snow-rail layout")
-    for side, x in (("W", 5.5), ("E", 30.5))
-    for i, y in enumerate((38.5, 42.5), 1)
+              source="north_entry_structure.md — provisional east entrance snow-rail layout")
+    for index, station_y in enumerate(SNOW_RETENTION_STATIONS_FT, 1)
 ]
 
 MAIN_ELEMENTS = [*FRAME_ELEMENTS, FLOOR, GARAGE_FLOOR, TIERS, *TIER_SLABS,
