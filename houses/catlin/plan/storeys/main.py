@@ -186,6 +186,9 @@ NODES = [
     # now BM-M-HALL's north bearing and W-M-C5's south end. `open_end` is honest here since
     # BM-M-HALL, not another wall, carries the centre line south of it.
     Node(uid="CMN014AAAA", tag="N-M-C3", position=pt(ft(18), ft(25, 10)), open_end=True),
+    # BM-M-HALL runs 3" past this wall-line junction so its north end bears on W-M-C5
+    # instead of stopping flush at the wall's south end. Keep N-M-C3 as the wall junction.
+    Node(uid="CMN141AAAA", tag="N-M-C3-BM-N", position=pt(ft(18), ft(26, 1))),
     # Interior tees
     # N-M-STR1 moved 25'-10" -> 26'-0 3/8", onto FO-S-STAIR's own south edge
     # exactly — the last of the wall past that edge was a jamb return with no bearing job,
@@ -2078,12 +2081,13 @@ STAIR_HANDRAILS = [
 # LVL give Sx = 123 in^3 (26.7 ft-k) and 62 in^2 shear area (11.8 k) — shear, not moment,
 # governs. Same section/ply count as BM-S-HALL and RB-HOUSE (one LVL depth on the job).
 #
-# Bears on the ends of the walls it replaced (W-M-C3/W-M-C5), each stacking onto W-B-CN and
-# the footings. Framed FLUSH (`top_elevation` at the joist datum) so FS-S-WEST and
+# Bears on W-M-C3 at the south and overlaps W-M-C5 by 3" at the north, each stacking onto
+# W-B-CN and the footings. The north bearing overlap is along the beam axis into the wall's
+# top plate; N-M-C3 remains the wall junction. Framed FLUSH (`top_elevation` at the joist datum) so FS-S-WEST and
 # FS-S-EAST both hang off it and the 9' ceiling stays unbroken — a dropped beam would hang
 # its full 11-7/8" into it.
 BEAMS = [
-    Beam(uid="CMBM01AAAA", tag="BM-M-HALL", start_node="N-M-C2", end_node="N-M-C3",
+    Beam(uid="CMBM01AAAA", tag="BM-M-HALL", start_node="N-M-C2", end_node="N-M-C3-BM-N",
          size="3-1.75x11.875 LVL", bearing_refs=("W-M-C3", "W-M-C5"),
          assembly="BEAM_LVL", top_elevation=ft(10)),
     # IUS2.56/11.88 at every hung end of FS-S-EAST in this beam: a level I-joist face-mount
