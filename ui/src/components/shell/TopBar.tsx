@@ -16,6 +16,7 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
   const model = useStore((s) => s.model);
   const offline = useStore((s) => s.offline);
   const offlineHouse = useStore((s) => s.offlineHouse);
+  const engineReady = useStore((s) => s.engineReady);
   const activePanel = useStore((s) => s.activePanel);
   const setActivePanel = useStore((s) => s.setActivePanel);
   const setCommandPaletteOpen = useStore((s) => s.setCommandPaletteOpen);
@@ -90,10 +91,10 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
 
       {!isCompact && (
         <>
-          <button className="btn icon-btn" onClick={() => void undo()} title="Undo (⌘Z)">
+          <button className="btn icon-btn" onClick={() => void undo()} title="Undo (⌘Z)" disabled={!engineReady}>
             <Icon name="undo" />
           </button>
-          <button className="btn icon-btn" onClick={() => void redo()} title="Redo (⇧⌘Z)">
+          <button className="btn icon-btn" onClick={() => void redo()} title="Redo (⇧⌘Z)" disabled={!engineReady}>
             <Icon name="redo" />
           </button>
           <button

@@ -29,7 +29,7 @@
 # The engine tarball and the bundled house are large but NOT content-hashed: a new deploy reuses
 # the same URLs. `immutable` here would pin returning visitors to a stale engine for a year, so
 # revalidate instead — the ETag makes the steady-state cost a 304, and the service worker serves
-# the cached copy immediately while the revalidation runs (stale-while-revalidate in sw.js).
+# a fresh response wins when online, with the cached copy available offline (network-first in sw.js).
 # Content-Type is pinned so no host decides a `.gz` warrants `Content-Encoding: gzip`: the
 # browser would then transparently inflate it and the worker's unpackArchive(…, "gztar") would
 # be handed a plain tar.
@@ -39,6 +39,8 @@
 /app/typehaus-ifc-ext.tar
   Cache-Control: public, max-age=0, must-revalidate
 /app/catlin-house.json
+  Cache-Control: public, max-age=0, must-revalidate
+/app/catlin-model.json
   Cache-Control: public, max-age=0, must-revalidate
 
 # The app shell and the service worker itself must never be served stale, or a deploy can never

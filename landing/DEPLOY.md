@@ -14,6 +14,7 @@ site/
 ## Build
 
 ```bash
+npm ci --prefix scripts/pyodide             # pinned build-time Pyodide for the model snapshot
 .venv/bin/haus print houses/catlin --fmt pdf   # -> houses/catlin/out/permit_set.{pdf,json}
 node landing/build-site.mjs                    # -> ./site
 ```
@@ -32,6 +33,8 @@ bundled house in the in-browser engine), `VITE_PUBLIC_SITE=1` (hide the Estimate
 the BOM's cost columns) and `HAUS_PUBLIC=1` (keep `prices.toml`, `costs.toml` and `tasks.toml`
 out of the bundled house entirely). The last two are a pair: the first hides the pages, the
 second means the numbers are not in the download at all.
+The build resolves that filtered bundle under pinned Pyodide and writes `catlin-model.json`;
+the build fails if it cannot resolve the house.
 
 `site/` is gitignored. The script fails loudly if `site/app/` is missing the engine tarball,
 the bundled Catlin house or the sheet manifest, because those only break in the browser, never
@@ -123,7 +126,7 @@ directory `site`. `_headers` and `_redirects` are read from the publish director
 Worth knowing before you debug a "why am I still seeing the old build" report:
 
 - `/app/assets/*` is content-hashed by Vite and served `immutable` for a year.
-- `/app/typehaus-engine.tar.gz` and `/app/catlin-house.json` are **not** hashed — the same URL
+- `/app/typehaus-engine.tar.gz`, `/app/catlin-house.json`, and `/app/catlin-model.json` are **not** hashed — the same URL
   gets new bytes on every deploy. They are served `max-age=0, must-revalidate`, and the service
   worker fetches them **network-first**, falling back to the cache only when the network is
   unreachable. They used to be stale-while-revalidate, which meant a returning visitor ran the
@@ -131,7 +134,7 @@ Worth knowing before you debug a "why am I still seeing the old build" report:
   their last visit. Any skew between the two boots to "Cannot reach engine" for exactly the
   people who have been here before, and works in a browser that has never visited — which is how
   it presented in 2026-09. The steady-state cost of going to the network first is a 304, because
-  both files are byte-deterministic.
+  these assets are byte-deterministic.
 - The engine tarball ships **gzipped**. Cloudflare does not compress `application/x-tar`, so the
   plain tar crossed the wire at its full ~8 MB on every cold boot against ~2.3 MB now. Its
   `Content-Type` is pinned to `application/octet-stream` in `_headers` so no host adds a

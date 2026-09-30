@@ -14,6 +14,7 @@ export function ToolRailSection() {
   const tool = useStore((s) => s.tool);
   const setTool = useStore((s) => s.setTool);
   const offline = useStore((s) => s.offline);
+  const engineReady = useStore((s) => s.engineReady);
   const selection = useStore((s) => s.selection);
   const deleteSelection = useStore((s) => s.deleteSelection);
   const duplicateSelection = useStore((s) => s.duplicateSelection);
@@ -23,7 +24,7 @@ export function ToolRailSection() {
 
   const renderGroup = (group: ToolGroupSpec) => {
     // Authoring is gated offline (→ 40); only Select survives.
-    const disabled = offline && group.id !== "select";
+    const disabled = (offline || !engineReady) && group.id !== "select";
     const active = activeGroup === group.id;
     const hint = disabled ? "Editing needs `haus serve` — unavailable offline" : group.label;
 

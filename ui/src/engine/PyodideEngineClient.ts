@@ -74,7 +74,7 @@ export class PyodideEngineClient implements EngineClient {
   private initialized: Promise<void>;
   private statusListeners = new Set<(up: boolean) => void>();
 
-  constructor(private files: HouseFiles, private readonly root = "/house") {
+  constructor(private files: HouseFiles | Promise<HouseFiles>, private readonly root = "/house") {
     this.worker = new PyodideWorker();
     this.worker.onmessage = (e: MessageEvent) => this.onMessage(e.data);
     this.worker.onerror = (e) => this.failAll(new Error(e.message || "worker error"));
@@ -110,7 +110,8 @@ export class PyodideEngineClient implements EngineClient {
       ifcExtTarUrl: new URL(IFC_EXT_TAR, document.baseURI).href,
       ifcWasmUrl: IFC_WASM_URL,
     });
-    await this.call("loadHouse", { root: this.root, files: this.files });
+    const files = await this.files;
+    await this.call("loadHouse", { root: this.root, files });
     for (const l of this.statusListeners) l(true);
   }
 

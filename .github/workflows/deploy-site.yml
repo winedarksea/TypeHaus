@@ -50,6 +50,10 @@ jobs:
         run: npm ci
         working-directory: ui
 
+      - name: Install pinned Pyodide for the public model snapshot
+        run: npm ci
+        working-directory: scripts/pyodide
+
       - name: Typecheck
         run: npm run typecheck
         working-directory: ui

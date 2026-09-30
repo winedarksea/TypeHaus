@@ -60,6 +60,7 @@ export function usePanZoom(args: {
     if (!points.length) { fittedStorey.current = activeStorey; return; }
 
     const fit = () => {
+      if (fittedStorey.current === activeStorey) return;
       const { width, height } = svg.getBoundingClientRect();
       if (width <= 0 || height <= 0) return;
       const xs = points.map(([x]) => x);

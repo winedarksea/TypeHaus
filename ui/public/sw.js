@@ -97,9 +97,8 @@ async function cacheFirst(request, cacheName) {
   return response;
 }
 
-// Serve the cached copy at once, refresh it in the background. Used for same-origin assets whose
-// URL is stable across deploys (engine tarballs, the bundled house, manifest, icons) — offline
-// still works, and the *next* boot picks up whatever the last deploy published.
+// Serve the cached copy at once, refresh it in the background. Used for small same-origin
+// assets such as the manifest and icons; the engine and house assets use networkFirst below.
 async function staleWhileRevalidate(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
@@ -123,7 +122,7 @@ function isImmutableBuildAsset(url) {
 // and the published site. In steady state these cost two conditional requests, not their bulk:
 // both are `max-age=0, must-revalidate` with a stable ETag, so an unchanged deploy answers 304
 // and `fetch` resolves out of the browser's own HTTP cache.
-const RUNTIME_BUNDLES = ["typehaus-engine.tar.gz", "typehaus-ifc-ext.tar", "catlin-house.json"];
+const RUNTIME_BUNDLES = ["typehaus-engine.tar.gz", "typehaus-ifc-ext.tar", "catlin-house.json", "catlin-model.json"];
 
 function isRuntimeBundle(url) {
   return RUNTIME_BUNDLES.some((name) => url.pathname.endsWith("/" + name));

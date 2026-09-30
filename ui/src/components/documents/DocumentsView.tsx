@@ -27,6 +27,7 @@ const TABS: { id: DocumentsTab; label: string }[] = [
 
 export function DocumentsView() {
   const model = useStore((s) => s.model);
+  const engineReady = useStore((s) => s.engineReady);
   const tab = useStore((s) => s.documentsTab);
   const setDocumentsTab = useStore((s) => s.setDocumentsTab);
   const setDetailView = useStore((s) => s.setDetailView);
@@ -81,7 +82,8 @@ export function DocumentsView() {
     >
       <div role="tabpanel" id={`doc-panel-${tab}`} aria-labelledby={`doc-tab-${tab}`}>
         {tab === "drawings" && <DrawingsTab />}
-        {tab === "notes" && <NotesTab filter={filter} />}
+        {tab === "notes" && (engineReady ? <NotesTab filter={filter} /> :
+          <div className="muted" role="status">Preparing engine for notes…</div>)}
         {tab === "reports" && <ReportsTab />}
       </div>
     </ReaderShell>

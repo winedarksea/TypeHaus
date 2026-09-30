@@ -63,7 +63,7 @@ async function init(msg: InitMsg): Promise<void> {
   pyodide = await loadPyodide({ indexURL: msg.pyodideIndexUrl });
   // pydantic (+ pydantic-core) and shapely ship in the pyodide distribution — the only
   // third-party imports the offline compute path reaches.
-  await pyodide.loadPackage(["micropip", "pydantic", "shapely"]);
+  await pyodide.loadPackage(["pydantic", "shapely"]);
 
   // Unpack the engine source tree onto sys.path.
   const res = await fetch(msg.engineTarUrl);

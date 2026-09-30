@@ -28,6 +28,7 @@ export function OverflowMenu({ pwa, compact = false }: { pwa: PwaState; compact?
   const { preference: themePreference, setPreference: setThemePreference } = useTheme();
   const { density, setDensity } = useDensity();
   const connected = useStore((s) => s.connected);
+  const engineReady = useStore((s) => s.engineReady);
   const detailView = useStore((s) => s.detailView);
   const setDetailView = useStore((s) => s.setDetailView);
   const openDocuments = useStore((s) => s.openDocuments);
@@ -61,8 +62,10 @@ export function OverflowMenu({ pwa, compact = false }: { pwa: PwaState; compact?
             id: "actions",
             label: "Edit",
             items: [
-              { id: "undo", label: "Undo", icon: "undo" as IconName, onSelect: () => { void undo(); } },
-              { id: "redo", label: "Redo", icon: "redo" as IconName, onSelect: () => { void redo(); } },
+              { id: "undo", label: "Undo", icon: "undo" as IconName, disabled: !engineReady,
+                onSelect: () => { void undo(); } },
+              { id: "redo", label: "Redo", icon: "redo" as IconName, disabled: !engineReady,
+                onSelect: () => { void redo(); } },
               { id: "search", label: "Command palette", icon: "search" as IconName,
                 onSelect: () => setCommandPaletteOpen(true) },
             ],

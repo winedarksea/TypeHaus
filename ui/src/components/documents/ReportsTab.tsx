@@ -15,6 +15,7 @@ import { HIDDEN_REPORTS } from "../../state/public";
  * canvas — the reader itself is unchanged and does not know where it was opened from.
  */
 export function ReportsTab() {
+  const engineReady = useStore((s) => s.engineReady);
   const setDetailView = useStore((s) => s.setDetailView);
   const setReaderOrigin = useStore((s) => s.setReaderOrigin);
 
@@ -25,6 +26,8 @@ export function ReportsTab() {
       {shown.map((report) => (
         <button
           key={report.id}
+          disabled={!engineReady}
+          title={!engineReady ? "Preparing engine" : report.hint}
           className="doc-card"
           onClick={() => { setReaderOrigin("documents"); setDetailView(report.id); }}
         >

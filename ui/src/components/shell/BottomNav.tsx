@@ -23,6 +23,7 @@ export function BottomNav() {
   const tool = useStore((s) => s.tool);
   const setTool = useStore((s) => s.setTool);
   const offline = useStore((s) => s.offline);
+  const engineReady = useStore((s) => s.engineReady);
   const detailView = useStore((s) => s.detailView);
   const setDetailView = useStore((s) => s.setDetailView);
   const openDocuments = useStore((s) => s.openDocuments);
@@ -78,6 +79,7 @@ export function BottomNav() {
       <button
         className="rail-item"
         title={SITE_DESTINATION.hint}
+        disabled={!engineReady}
         onClick={() => useStore.getState().setSurface("site")}
       >
         <span className="rail-indicator">
@@ -108,7 +110,7 @@ export function BottomNav() {
             icon: t.icon,
             hint: t.hint,
             selected: tool === t.id,
-            disabled: offline && group.id !== "select",
+            disabled: (offline || !engineReady) && group.id !== "select",
             onSelect: () => setTool(t.id),
           })),
         }))}

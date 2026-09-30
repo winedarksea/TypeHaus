@@ -19,6 +19,7 @@ export function NavigationRail() {
   const activePanel = useStore((s) => s.activePanel);
   const setActivePanel = useStore((s) => s.setActivePanel);
   const model = useStore((s) => s.model);
+  const engineReady = useStore((s) => s.engineReady);
   const detailView = useStore((s) => s.detailView);
   const setDetailView = useStore((s) => s.setDetailView);
   const openDocuments = useStore((s) => s.openDocuments);
@@ -83,6 +84,7 @@ export function NavigationRail() {
       <button
         className="rail-item"
         title={SITE_DESTINATION.hint}
+        disabled={!engineReady}
         onClick={() => useStore.getState().setSurface("site")}
       >
         <span className="rail-indicator">

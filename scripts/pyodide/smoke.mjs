@@ -26,7 +26,7 @@ const step = (m) => console.log(`[${((Date.now() - t0) / 1000).toFixed(1)}s] ${m
 // --- dynamic half: the real overlay/union code under GEOS 3.12 --------------------------
 const py = await loadPyodide();
 step("pyodide booted");
-await py.loadPackage(["micropip", "pydantic", "shapely"]); // exactly what worker.ts loads
+await py.loadPackage(["pydantic", "shapely"]); // exactly what worker.ts loads
 step("packages loaded");
 
 py.FS.mkdirTree("/repo");

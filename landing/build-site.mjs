@@ -27,7 +27,7 @@ const NOT_SHIPPED = new Set(["build-site.mjs", "DEPLOY.md", "node_modules"]);
 // the bundled house a first-time visitor lands in. A missing one only fails in the browser, so
 // assert here instead of shipping a deploy that boots to "Cannot reach engine".
 const REQUIRED_APP_FILES = ["index.html", "sw.js", "manifest.webmanifest", "typehaus-engine.tar.gz",
-  "catlin-house.json", "sheets/permit_set.json"];
+  "catlin-house.json", "catlin-model.json", "sheets/permit_set.json"];
 
 // The permit set the app's Drawings tab reads. Composed by `haus print` (in CI, before this
 // script runs — see landing/DEPLOY.md), never here: matplotlib cannot run in Pyodide, so the

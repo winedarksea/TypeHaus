@@ -13,7 +13,8 @@ import { create } from "zustand";
 import type { EngineClient, EngineEvent, ProjectInfo } from "../engine/EngineClient";
 import { HttpEngineClient } from "../engine/HttpEngineClient";
 import { PyodideEngineClient } from "../engine/PyodideEngineClient";
-import { loadBundledHouse, pickHouseDirectory } from "../engine/openHouse";
+import { pickHouseDirectory } from "../engine/openHouse";
+import { createBundledClient } from "../engine/bundledClient";
 
 // The standalone PWA (built for type-house.com/app) has no local server: it boots the bundled
 // Catlin house in the in-browser pyodide engine by default. `haus serve` builds leave this unset
@@ -44,6 +45,7 @@ export interface StoreState extends MutationActions, SiteSlice, PendingSlice, Pl
   offlineHouse: string | null;
   connected: boolean;
   loading: boolean;
+  engineReady: boolean;
   model: Model | null;
   error: string | null;
 
@@ -109,6 +111,7 @@ export interface StoreState extends MutationActions, SiteSlice, PendingSlice, Pl
 
   // actions
   init: () => Promise<void>;
+  retryEngine: () => Promise<void>;
   reload: () => Promise<void>;
   // Revision-deduped reload: skips the fetch when the model already matches `revision`,
   // and coalesces the mutation-action reload with the WS-echo reload into one GET /model.
@@ -191,6 +194,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
   offlineHouse: null,
   connected: false,
   loading: true,
+  engineReady: false,
   model: null,
   error: null,
 
@@ -236,18 +240,22 @@ export const useStore = create<StoreState>((set, get, store) => ({
     // engine seeded with the bundled Catlin house, so new visitors get a working editor with no
     // server and no folder pick.
     if (PWA_STANDALONE && !get().offline) {
-      try {
-        const opened = await loadBundledHouse();
-        set({
-          client: new PyodideEngineClient(opened.files),
-          offline: true,
-          offlineHouse: opened.name,
-          model: null,
-          loading: true,
-        });
-      } catch (err) {
-        get().toast(`offline demo failed: ${(err as Error).message}`, "error");
-      }
+      // Both fetches begin before the worker starts loading Pyodide. A late snapshot cannot
+      // replace an engine model; this also lets a failed snapshot fall through silently.
+      const previewClient = createBundledClient((model, client) => {
+        if (!get().engineReady && get().client === client) {
+          set((state) => ({ model, loading: false, activeStorey: state.activeStorey ??
+            model.storeys.find((storey) => storey.tag === "main")?.tag ??
+            model.storeys[0]?.tag ?? null }));
+        }
+      });
+      set({
+        client: previewClient,
+        offline: true,
+        offlineHouse: "Catlin house (demo)",
+        loading: true,
+        engineReady: false,
+      });
     }
     const { client } = get();
     set({ sessionEdits: emptySessionEdits(), pendingTransforms: {}, saveState: "idle", savedRevision: null });
@@ -263,6 +271,12 @@ export const useStore = create<StoreState>((set, get, store) => ({
     await get().reload();
   },
 
+  retryEngine: async () => {
+    if (!PWA_STANDALONE) return get().reload();
+    set({ client: createBundledClient(), engineReady: false, error: null, loading: true });
+    await get().init();
+  },
+
   // Switch to the offline in-browser engine (→ 40): pick a house folder via the File System
   // Access API and run the pyodide EngineClient. No server required.
   openOfflineHouse: async () => {
@@ -276,6 +290,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
         offlineHouse: opened.name,
         connected: false,
         loading: true,
+        engineReady: false,
         error: null,
         model: null,
       });
@@ -290,10 +305,12 @@ export const useStore = create<StoreState>((set, get, store) => ({
     set({ loading: true, error: null });
     try {
       const model = await client.getModel();
+      if (get().client !== client) return;
       const prev = get();
       set({
         model,
         loading: false,
+        engineReady: true,
         conflict: null,
         activeStorey:
           prev.activeStorey ??
@@ -302,7 +319,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
           null,
       });
     } catch (err) {
-      set({ loading: false, error: (err as Error).message });
+      if (get().client === client) set({ loading: false, error: (err as Error).message });
     }
   },
 
@@ -350,7 +367,10 @@ export const useStore = create<StoreState>((set, get, store) => ({
   setActiveWorkspace: (activeWorkspace) => set({ activeWorkspace }),
   setWorkbench: (workbench) => set({ workbench }),
   setActiveLens: (activeLens) => set({ activeLens }),
-  setPreview3DOpen: (preview3DOpen) => set({ preview3DOpen }),
+  setPreview3DOpen: (preview3DOpen) => {
+    if (preview3DOpen && !get().engineReady) return;
+    set({ preview3DOpen });
+  },
   setViewMode: (viewMode) => set({ viewMode }),
   setThreeMode: (threeMode) => set({ threeMode }),
   setLabelMode: (labelMode) => set({ labelMode }),

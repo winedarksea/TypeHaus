@@ -73,8 +73,11 @@ export function App() {
   const init = useStore((s) => s.init);
   const viewMode = useStore((s) => s.viewMode);
   const model = useStore((s) => s.model);
+  const offline = useStore((s) => s.offline);
   const loading = useStore((s) => s.loading);
   const error = useStore((s) => s.error);
+  const engineReady = useStore((s) => s.engineReady);
+  const retryEngine = useStore((s) => s.retryEngine);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
   const openOfflineHouse = useStore((s) => s.openOfflineHouse);
@@ -123,6 +126,7 @@ export function App() {
         setCommandPaletteOpen(!useStore.getState().commandPaletteOpen);
       } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") {
         e.preventDefault();
+        if (!useStore.getState().engineReady) return;
         if (e.shiftKey) void redo();
         else void undo();
       } else if (e.key === "Escape" && !typing) {
@@ -177,8 +181,9 @@ export function App() {
               ) : error && !model ? (
                 <div style={{ padding: 24, color: "var(--error)" }}>
                   Cannot reach engine: {error}
+                  <button className="btn" onClick={() => void retryEngine()}>Retry engine</button>
                   <br />
-                  <span className="muted">Run `haus serve` in the house directory.</span>
+                  {!offline && <span className="muted">Run `haus serve` in the house directory.</span>}
                   {fsAccessSupported() && (
                     <div style={{ marginTop: 16 }}>
                       <button className="btn" onClick={() => void openOfflineHouse()}>
@@ -197,12 +202,21 @@ export function App() {
               <ConflictBanner />
               <EngineStaleBanner />
               <LoadErrorBanner />
+              {model && !engineReady && (
+                <div className="banner" role="status">
+                  {error ? <>Engine startup failed: {error} <button className="btn" onClick={() => void retryEngine()}>Retry engine</button></>
+                    : "Preparing engine… Viewing and navigation are available."}
+                </div>
+              )}
               <ExtentsHUD />
             </div>
           )}
           {viewMode !== "2d" && (
             <div className="pane">
-              <Panel3D />
+              {engineReady ? <Panel3D /> : <div className="muted" style={{ padding: 24 }}>
+                {error ? <>Engine startup failed: {error} <button className="btn" onClick={() => void retryEngine()}>Retry engine</button></>
+                  : "Preparing engine for 3D…"}
+              </div>}
             </div>
           )}
         </div>
@@ -226,14 +240,16 @@ export function App() {
           screen, and a spinner over it would read as the canvas breaking. */}
       <ReaderErrorBoundary key={detailView} onClose={() => setDetailView("none")}>
         <Suspense fallback={null}>
-          {detailView === "assembly" && <AssemblyDetailsView />}
-          {detailView === "bom" && <BomView />}
-          {detailView === "circuits" && <CircuitsView />}
-          {detailView === "lighting" && <LightingView />}
-          {detailView === "hvac" && <HvacView />}
-          {detailView === "plumbing" && <PlumbingView />}
-          {detailView === "data" && <DataView />}
-          {detailView === "estimate" && <EstimateView />}
+          {!engineReady && detailView !== "none" && detailView !== "documents" &&
+            <div className="banner" role="status">Preparing engine for this report…</div>}
+          {engineReady && detailView === "assembly" && <AssemblyDetailsView />}
+          {engineReady && detailView === "bom" && <BomView />}
+          {engineReady && detailView === "circuits" && <CircuitsView />}
+          {engineReady && detailView === "lighting" && <LightingView />}
+          {engineReady && detailView === "hvac" && <HvacView />}
+          {engineReady && detailView === "plumbing" && <PlumbingView />}
+          {engineReady && detailView === "data" && <DataView />}
+          {engineReady && detailView === "estimate" && <EstimateView />}
           {detailView === "documents" && <DocumentsView />}
         </Suspense>
       </ReaderErrorBoundary>

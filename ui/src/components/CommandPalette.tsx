@@ -57,6 +57,7 @@ export function CommandPalette() {
   const openDocuments = useStore((s) => s.openDocuments);
   const reload = useStore((s) => s.reload);
   const offline = useStore((s) => s.offline);
+  const engineReady = useStore((s) => s.engineReady);
   const setSurface = useStore((s) => s.setSurface);
   const setSitePage = useStore((s) => s.setSitePage);
 
@@ -66,13 +67,13 @@ export function CommandPalette() {
 
   const commands = useMemo<Command[]>(() => {
     const list: Command[] = [
-      { id: "undo", title: "Undo", group: "Edit", shortcut: "⌘Z", run: () => void undo() },
-      { id: "redo", title: "Redo", group: "Edit", shortcut: "⇧⌘Z", run: () => void redo() },
+      { id: "undo", title: "Undo", group: "Edit", shortcut: "⌘Z", disabled: !engineReady, run: () => void undo() },
+      { id: "redo", title: "Redo", group: "Edit", shortcut: "⇧⌘Z", disabled: !engineReady, run: () => void redo() },
       { id: "tool-select", title: "Tool: Select", group: "Tools", run: () => setTool("select") },
-      { id: "tool-wall", title: "Tool: Draw Wall", group: "Tools", disabled: offline, run: () => setTool("wall") },
-      { id: "tool-opening", title: "Tool: Place Opening", group: "Tools", disabled: offline, run: () => setTool("opening") },
-      { id: "tool-room", title: "Tool: Claim Room", group: "Tools", disabled: offline, run: () => setTool("room") },
-      { id: "tool-dimension", title: "Tool: Dimension", group: "Tools", disabled: offline, run: () => setTool("dimension") },
+      { id: "tool-wall", title: "Tool: Draw Wall", group: "Tools", disabled: offline || !engineReady, run: () => setTool("wall") },
+      { id: "tool-opening", title: "Tool: Place Opening", group: "Tools", disabled: offline || !engineReady, run: () => setTool("opening") },
+      { id: "tool-room", title: "Tool: Claim Room", group: "Tools", disabled: offline || !engineReady, run: () => setTool("room") },
+      { id: "tool-dimension", title: "Tool: Dimension", group: "Tools", disabled: offline || !engineReady, run: () => setTool("dimension") },
       { id: "view-2d", title: "View: 2D plan", group: "View", run: () => setViewMode("2d") },
       { id: "view-split", title: "View: Split 2D / 3D", group: "View", run: () => setViewMode("split") },
       { id: "view-3d", title: "View: 3D", group: "View", run: () => setViewMode("3d") },
@@ -88,23 +89,23 @@ export function CommandPalette() {
       { id: "lens-water", title: "Lens: Water", group: "Lens", run: () => setActiveLens("water") },
       { id: "lens-thermal", title: "Lens: Thermal", group: "Lens", run: () => setActiveLens("thermal") },
       { id: "lens-vapor", title: "Lens: Vapour (permeance)", group: "Lens", run: () => setActiveLens("vapor") },
-      { id: "run-checks", title: "Run checks (reload model)", group: "Model", run: () => void reload() },
-      { id: "reader-assembly", title: "Assembly details (transitions)", group: "Model", run: () => setDetailView("assembly") },
-      { id: "reader-bom", title: "Bill of materials", group: "Model", run: () => setDetailView("bom") },
-      { id: "reader-circuits", title: "Circuits (panel schedule)", group: "Model", run: () => setDetailView("circuits") },
-      { id: "reader-lighting", title: "Lighting (luminaire schedule)", group: "Model", run: () => setDetailView("lighting") },
-      { id: "reader-plumbing", title: "Plumbing (riser, fixture units)", group: "Model", run: () => setDetailView("plumbing") },
-      { id: "reader-data", title: "Data (low-voltage schedule)", group: "Model", run: () => setDetailView("data") },
-      { id: "reader-estimate", title: "Estimate (priced rows, bid ladder)", group: "Model", run: () => setDetailView("estimate") },
+      { id: "run-checks", title: "Run checks (reload model)", group: "Model", disabled: !engineReady, run: () => void reload() },
+      { id: "reader-assembly", disabled: !engineReady, title: "Assembly details (transitions)", group: "Model", run: () => setDetailView("assembly") },
+      { id: "reader-bom", disabled: !engineReady, title: "Bill of materials", group: "Model", run: () => setDetailView("bom") },
+      { id: "reader-circuits", disabled: !engineReady, title: "Circuits (panel schedule)", group: "Model", run: () => setDetailView("circuits") },
+      { id: "reader-lighting", disabled: !engineReady, title: "Lighting (luminaire schedule)", group: "Model", run: () => setDetailView("lighting") },
+      { id: "reader-plumbing", disabled: !engineReady, title: "Plumbing (riser, fixture units)", group: "Model", run: () => setDetailView("plumbing") },
+      { id: "reader-data", disabled: !engineReady, title: "Data (low-voltage schedule)", group: "Model", run: () => setDetailView("data") },
+      { id: "reader-estimate", disabled: !engineReady, title: "Estimate (priced rows, bid ladder)", group: "Model", run: () => setDetailView("estimate") },
       { id: "documents-drawings", title: "Drawings (the permit set)", group: "Model", run: () => openDocuments("drawings") },
-      { id: "documents-notes", title: "Notes (design and product notes)", group: "Model", run: () => openDocuments("notes") },
+      { id: "documents-notes", disabled: !engineReady, title: "Notes (design and product notes)", group: "Model", run: () => openDocuments("notes") },
       { id: "documents-reports", title: "Reports (assembly, BOM, circuits, HVAC…)", group: "Model", run: () => openDocuments("reports") },
       { id: "show-everything", title: "Show everything (clear visibility filters)", group: "Isolate", run: showEverything },
       // The site surface replaces the whole workbench rather than opening over it, so these
       // are a different kind of command from the readers above — hence their own group.
-      { id: "site-board", title: "Open site board (visits, what is ready)", group: "Site",
+      { id: "site-board", title: "Open site board (visits, what is ready)", group: "Site", disabled: !engineReady,
         run: () => { setSitePage("board"); setSurface("site"); } },
-      { id: "site-inspections", title: "Open inspections", group: "Site",
+      { id: "site-inspections", title: "Open inspections", group: "Site", disabled: !engineReady,
         run: () => { setSitePage("inspections"); setSurface("site"); } },
     ]
       // The published build does not offer every reader (state/public.ts). Filtering the
@@ -139,7 +140,7 @@ export function CommandPalette() {
   }, [undo, redo, setTool, setViewMode, setThreeMode, threeMode, setTradeVisible, visibleTrades,
     setActivePanel, setActiveWorkspace, setActiveLens,
     setTradesVisible, showEverything, setDetailView, openDocuments,
-    reload, offline, setSurface, setSitePage]);
+    reload, offline, engineReady, setSurface, setSitePage]);
 
   const results = useMemo(() => {
     if (!query) {
