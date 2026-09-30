@@ -215,6 +215,14 @@ the future.
   (2) a wall coating draws a plane (polygonOffset, see the wash); (3) whether paint belongs in
   an STC preset's tested core; (4) authored paint makes gypsum Class III, which moves Glaser.
 - the dimple board of the sunken garden retaining wall should probably be moved under the concrete view toggle (because it's assembled in that lens, not because it is made of concrete).
+- Make D-B-BATH a pocket door. It would slide into W-B-HALL-W which the engine isn't really designed to handle right now.
+- The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
+- Cleanout caps likely need a double check on the plumbing
+- The LS30 gable end connectors are showing through the roof in 3d. Likely the 3d model for them needs to be a slightly different shape or a little bit lower
+- The concrete driveway narrows from 16' to 12' (or approximately this). It might be nice if this narrowing happened more gradually, if possible.
+- DT-INT-BOOKCASE36 needs a 3d model that actually looks like a bookcase door
+- Double check the headroom above the toilet and the bar sink in the attic level bedroom suite
+- See if we can move EQ-T-WATER-HEATER up against the wall, it's rather awkwardly in the middle of the room now
 
 # Project Management
 
