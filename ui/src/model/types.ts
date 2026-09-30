@@ -40,10 +40,12 @@ export interface Layer {
   function: string;
   material: string;
   thickness_m: number;
-  // The trade this band belongs to (→ emit/trade_rules.py layer_trade). The viewer draws
-  // the band iff any of them is visible; absent on an older payload, which falls back to
-  // the function map in generated/vocabulary.json.
+  // The construction trade this band belongs to (→ emit/trade_rules.py layer_trade). The
+  // viewer uses it by default; `view_trade` may set a separate assembly lens.
   trades?: string[];
+  // Viewer-only lens authored for a layer reviewed as part of another assembly. Construction
+  // classification remains in `trades`.
+  view_trade?: string | null;
   polygon: Vec2[];
   control: string[];
   // Insulation filling a STRUCTURE layer's framing bays: shares that layer's polygon and

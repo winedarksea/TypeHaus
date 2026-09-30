@@ -226,6 +226,17 @@ export function layerTrades(layer: Pick<Layer, "function" | "trades">): Visibili
   return withFacets(stamped, key, ["layerFunctions"]) as VisibilityKey[];
 }
 
+/** The visibility lens for one band. `view_trade` changes only viewer grouping; the
+ *  construction trade remains available through `layerTrades` for every other consumer. */
+export function layerVisibilityKeys(
+  layer: Pick<Layer, "function" | "trades" | "view_trade">,
+): VisibilityKey[] {
+  if (layer.view_trade && (ALL_TRADES as readonly string[]).includes(layer.view_trade)) {
+    return [layer.view_trade as Trade];
+  }
+  return layerTrades(layer);
+}
+
 /** A skin member (a derived closure band) continues the layer whose function is its category.
  *
  *  Not every category IS a layer function, though: the derived eave trim (fascia, soffit,

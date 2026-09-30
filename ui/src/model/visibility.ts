@@ -5,7 +5,7 @@
 import type { Trade } from "../state/vocabulary";
 import type { CanvasObject, Layer } from "./types";
 import {
-  anyTradeVisible, baseTrade, canvasObjectTrades, layerTrades, type VisibleTrades,
+  anyTradeVisible, baseTrade, canvasObjectTrades, layerVisibilityKeys, type VisibleTrades,
 } from "./tradeVisibility";
 
 export {
@@ -27,9 +27,9 @@ export {
  * representations that draw no members.
  */
 export function isLayerVisible(
-  layer: Pick<Layer, "function" | "trades">, visibleTrades: VisibleTrades,
+  layer: Pick<Layer, "function" | "trades" | "view_trade">, visibleTrades: VisibleTrades,
 ): boolean {
-  return anyTradeVisible(layerTrades(layer).map(baseTrade), visibleTrades);
+  return anyTradeVisible(layerVisibilityKeys(layer).map(baseTrade), visibleTrades);
 }
 
 /** The primary trade of a placeable, for consumers that file under one. */

@@ -5,7 +5,7 @@
 // real geometry of its own (arch tessellation, the piece decomposition around openings, the
 // raked top of a gable or ToRoof wall) rather than a straight extrusion of a resolved polygon.
 import * as THREE from "three";
-import { layerTrades, primaryTrade, wallTrades } from "../../model/tradeVisibility";
+import { layerVisibilityKeys, primaryTrade, wallTrades } from "../../model/tradeVisibility";
 import type { Layer, MaterialSpec, Opening, Wall } from "../../model/types";
 import {
   authoredAppearance, finishBaseColor, materialColor, type ResolvedNordicPalette,
@@ -108,7 +108,7 @@ export function buildWall(
   // "only insulation" keeps the foam and drops the cladding around it.
   const body = tradeGroups[primaryTrade(wallTrades(w))];
   for (const ly of w.layers) {
-    const bandTrades = layerTrades(ly);
+    const bandTrades = layerVisibilityKeys(ly);
     const layerFirstChildIndex = body.children.length;
     if (ly.polygon.length < 3) continue;
     if (!layerDrawsBandSolid(ly)) continue;

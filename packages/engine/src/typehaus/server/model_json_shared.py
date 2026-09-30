@@ -100,6 +100,7 @@ def _layer_json(layer, scope: str = "wall") -> dict[str, Any]:
     return {"name": layer.name, "material": layer.material_ref, "function": layer.function,
             "thickness_m": layer.thickness_m, "polygon": [list(point) for point in layer.polygon],
             "control": sorted(layer.control),
+            "view_trade": layer.view_trade,
             "is_cavity": layer.is_cavity, "cavity_host": layer.cavity_host,
             "z0_m": layer.z0_m, "z1_m": layer.z1_m,
             "board_run": layer.board_run,

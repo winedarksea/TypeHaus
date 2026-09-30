@@ -87,6 +87,8 @@ class ResolvedLayer:
     # draws the band AND the members at the same time: an extruded prism over girts it stands
     # for both hides them and seals the vent gap behind them (→ ui builders/walls.ts).
     framed: bool = False
+    # Optional viewer lens authored on the source assembly layer; distinct from bid trade.
+    view_trade: str | None = None
 
     def band(self, wall: ResolvedWall) -> tuple[float, float]:
         """This layer's absolute (z0, z1), falling back to the wall's where unbanded."""

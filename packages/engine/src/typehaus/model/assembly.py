@@ -378,6 +378,9 @@ class Layer(HausModel):
     # ``resolve/concrete.py::concrete_spec_for`` — a consumer that walks layers itself is
     # a second spelling of the same rule, and that is how the two come to disagree.
     concrete: ConcreteSpec | None = None
+    # Viewer-only lens for a layer reviewed with another assembly. This does not change
+    # the construction trade, which remains derived from function and material.
+    view_trade: str | None = None
     control: frozenset[ControlLayer] = frozenset()
     # Insulation in this layer's framing bays (non-additive, → CavityFill). STRUCTURE
     # layers (a batt between studs) and FURRING layers alike: a furring band's fill resolves
