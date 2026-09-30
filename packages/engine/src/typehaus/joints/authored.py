@@ -42,6 +42,22 @@ def tags_covered_by(model: ResolvedModel, kinds: frozenset) -> set:
 
 
 
+def _cast_in(size: str | None) -> bool:
+    """A cast-in base (``StructuralHardware.anchorage_in_rating``) brings its own anchorage."""
+    from typehaus.hardware.catalog import hardware_by_model
+
+    item = hardware_by_model(size or "") if size else None
+    return bool(getattr(item, "anchorage_in_rating", False))
+
+
+def cast_in_post_tags(model: ResolvedModel) -> set:
+    """Tags named by an authored POST_BASE that is itself cast in: it buys no separate bolt,
+    and unlike ``anchored=False`` it still develops uplift (through its own rating)."""
+    return {tag for element in authored_connectors(model)
+            if element.kind is ConnectorKind.POST_BASE and _cast_in(element.size)
+            for tag in element.connects}
+
+
 def unanchored_post_tags(model: ResolvedModel) -> set:
     """Tags named by an authored POST_BASE that declares ``anchored=False``.
 

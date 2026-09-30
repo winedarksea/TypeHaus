@@ -23,6 +23,7 @@ from typehaus.takeoff.fasteners import (
 from typehaus.takeoff.glazing import glazing_fastener_rows
 from typehaus.takeoff.hangers import joist_hanger_rows, ridge_tie_strap_rows
 from typehaus.takeoff.partition_fasteners import partition_deflection_screw_rows
+from typehaus.takeoff.strap_braces import strap_brace_rows
 from typehaus.takeoff.uplift import uplift_rows
 
 
@@ -42,6 +43,7 @@ def hardware_takeoff(model: ResolvedModel,
         *ridge_tie_strap_rows(model, config.hanger_detection),
         *uplift_rows(model, config.uplift, config.gable_end_ties),
         *anchorage_rows(model, config),
+        *strap_brace_rows(model, config.wall_ties),
         *glazing_fastener_rows(model),
         *door_hardware_rows(model),
     ]

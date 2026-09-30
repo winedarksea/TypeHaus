@@ -18,7 +18,8 @@ terminals, and guards. Deliberately *not* in scope, each because something else 
   ``interference`` grades framing against framing;
 * roof trim and roof-mounted parts (fascia, gutter, snow guard, seam clamp) — they live on
   the roof by definition;
-* anything below the storey the roof covers, and anything outside the roof's plan footprint.
+* anything below the storey the roof covers, anything outside the roof's plan footprint,
+  and anything wholly above the roof's ridge — it passes over that roof, not under it.
 
 **Measure.** The roof's *structural* underside at the element's own plan position
 (``roof_underside_at``) — what a wall below must reach, not the exterior plane. The finish
@@ -106,8 +107,13 @@ def _bearing_boxes(ctx: CheckContext) -> list:
     return out
 
 
-def _lowest_roof_over(ctx: CheckContext, point: tuple[float, float], boxes: list):
+def _lowest_roof_over(ctx: CheckContext, point: tuple[float, float], boxes: list,
+                      bottom_z: float = float("-inf")):
     """The lowest roof structure over a plan point, as ``(roof, underside_z)``.
+
+    A roof whose ridge is BELOW the element's own bottom is not over it: the element passes
+    above that roof (a house vent outlet over a canopy on the next structure), and only a
+    roof it could come up against is in the question.
 
     Bearing footprint rather than ``ResolvedRoof.footprint``: the latter is expanded by the
     overhang and the cladding lap, so it reaches past the wall to ground a duct has every
@@ -118,6 +124,8 @@ def _lowest_roof_over(ctx: CheckContext, point: tuple[float, float], boxes: list
     best = None
     for roof, (minx, miny, maxx, maxy) in boxes:
         if not (minx <= point[0] <= maxx and miny <= point[1] <= maxy):
+            continue
+        if roof.ridge_z_m <= bottom_z:
             continue
         underside = roof_underside_at(ctx.model, roof, point)
         if best is None or underside < best[1]:
@@ -152,7 +160,7 @@ def element_above_roof(ctx: CheckContext) -> list[Finding]:
         graded += 1
         for x, y, top in probes:
             point = (x, y)
-            over_roof = _lowest_roof_over(ctx, point, boxes)
+            over_roof = _lowest_roof_over(ctx, point, boxes, solid.z0_m)
             if over_roof is None:
                 continue
             roof, underside = over_roof

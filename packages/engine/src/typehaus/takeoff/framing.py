@@ -11,6 +11,7 @@ from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.framing.profiles import _RE_PANEL, cross_section
 from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.strap_braces import STRAP_CATEGORY
 from typehaus.takeoff.fabrication import FABRICATED_SHAPES
 from typehaus.takeoff.sheet_rips import rip_stock
 from typehaus.takeoff.steel import steel_member_tags
@@ -198,6 +199,8 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     for member in model.all_members():
         if (member.parent_uid, member.child_key) in wear_members:
             continue  # separately specified wear boards bill by area in sheet_goods
+        if member.category == STRAP_CATEGORY:
+            continue  # steel strap: hardware, billed in takeoff/strap_braces
         if rip_stock(member.profile, member.material) is not None:
             # A plywood rip is ordered by the SHEET (``takeoff/sheet_rips``) and bills in
             # ``sheet_goods``. Leaving it here as well would order the same wood twice, once

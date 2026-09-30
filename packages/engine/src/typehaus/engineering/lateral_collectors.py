@@ -6,12 +6,13 @@ end of it, the concrete under the hold-down, and the torsional term a rigid spli
 This module computes those rows and hands them back; the record they land on is still one
 item per roof, because they are one design (``lateral_system``'s own doctrine).
 
-** A COLLECTOR'S MEMBER IS NEVER THE QUESTION. ** A 3-ply 2x12 dragging a few hundred pounds
+** A COLLECTOR'S MEMBER IS NEVER THE QUESTION. ** A header dragging a few hundred pounds
 of axial force is 0.007 ksi. The joint at its end is where a collector fails, so what is
 graded here is the connection: the published interaction of the tie that holds it, at the
 line reaction the deck actually delivers — with the torsional increment in it.
 
-**Oracle.** ``houses/catlin/notes/north_entry_canopy_lateral.md`` §8c-§8g;
+**Oracle.** ``houses/catlin/notes/north_entry_canopy_lateral.md`` §8c-§8g (§8c corrected by
+``canopy_west_band.md`` §2);
 ``tests/test_lateral_system_calcs.py`` reproduces it.
 """
 
@@ -69,7 +70,12 @@ def collector_rows(ctx: Any, roof: Any, cases: list[FrameCase],
 
 def _panel_collector(ctx: Any, roof: Any, case: FrameCase, wall_tag: str,
                      states: list[LimitState]) -> None:
-    """A panel that spans the deck's whole depth needs no drag strut, and this says so."""
+    """A panel that spans the deck's whole depth IN PLAN needs no drag strut along the line.
+
+    Plan only. Whether the shear can get DOWN to the panel — a panel whose top stops short of
+    its collector leaves a band the deck must cross — is ``lateral_band``'s question, and a
+    band nothing bridges makes the record INCOMPLETE there, not zero here.
+    """
     from typehaus.engineering.lateral_lines import _ends_ft
 
     wall = ctx.plan.by_tag(wall_tag)
@@ -89,8 +95,8 @@ def _panel_collector(ctx: Any, roof: Any, case: FrameCase, wall_tag: str,
         f"the deck's {case.depth_ft:.3f}' of boundary on this line against "
         f"{overlap:.3f}' of panel under it, so the drag length is {drag_length:.3f}' and "
         f"the drag force {unit_shear:.1f} plf x {drag_length:.3f}' = "
-        f"{unit_shear * drag_length:,.0f} lb — the panel's own top plate is the collector "
-        f"over the length it covers",
+        f"{unit_shear * drag_length:,.0f} lb in PLAN; the band between the panel's top and "
+        f"the collector, if any, is graded on its own rows",
         is_detailing=True))
 
 

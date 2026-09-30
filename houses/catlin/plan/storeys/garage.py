@@ -8,6 +8,7 @@
 # the revert recipe.
 from typehaus import (
     Alarm,
+    Annotation,
     AlarmKind,
     DiaphragmDelivery,
     DiaphragmSpec,
@@ -588,9 +589,9 @@ ROOFS = [
              # N-S wind: the first and last TRUSS, whose 2x4 top chord runs the full 24'
              # between the headers and splices once at the peak — that splice is
              # `chord_splice_slip`, a plated joint and not a continuous member. E-W wind:
-             # BM-BW-RW and BM-BW-RE themselves, 3-2x12 each, six times this section;
+             # BM-BW-RW and BM-BW-RE themselves, 5-1/2x11-7/8 glulam each, many times this section;
              # quoting the 2x4 for both axes is the conservative half of that pair.
-             chords="N-S: the end trusses' 2x4 top chords, continuous 24ft with one plated splice at the peak. E-W: the 3-2x12 headers BM-BW-RW/-RE. The 2x4 is quoted for both. TRUSS ORDER: the design assumes the peak splice slips 0.03in at most, 30% of the deck's N-S deflection and the rigid/flexible call at 0.68x of the 2.0 threshold; the fabricator confirms 0.03in or supplies its value",
+             chords="N-S: the end trusses' 2x4 top chords, continuous 24ft with one plated splice at the peak. E-W: the 5-1/2x11-7/8 glulam headers BM-BW-RW/-RE, whose chord force (the open front's 2,094 lb-ft couple over 24ft) is graded on lateral_system/RF-BW-CANOPY. The 2x4 is quoted for both. TRUSS ORDER: the design assumes the peak splice slips 0.03in at most, 30% of the deck's N-S deflection and the rigid/flexible call at 0.68x of the 2.0 threshold; the fabricator confirms 0.03in or supplies its value",
              chord_member="2x4", chord_plies=1,
              chord_splice_slip=inch(0.03),
              collector_refs=("BM-BW-RW", "BM-BW-RE"),
@@ -634,12 +635,13 @@ ROOFS = [
          # North butts the garage gable; south stops flush at the house, which is the whole
          # point of the scheme -- the landing, the four tiers and the paver landing all end up
          # under roof, so none of them carries snow.
-         # South oversails the pier line by 3 3/8", leaving a 7 3/8" gap to the house
+         # South oversails the headers' south ends by 5/8" -- the pier line by 3 3/8", as
+         # before the headers grew 2 3/4" south onto their ACE6 end caps -- leaving a 7 3/8" gap to the house
          # cladding at y=36'-7 1/4" -- the joint plans/north-gable-extension.md specifies: a
          # formed, positively sloped closure fixed to the CANOPY only, dying at the house in a
          # replaceable compressible or brush seal, inspectable from below, never filled with
          # rigid foam or sealant. The two buildings move independently and the joint has to.
-         edge_overhangs=(("north", ft(0)), ("south", ft(0, 3.375))),
+         edge_overhangs=(("north", ft(0)), ("south", ft(0, 0.625))),
          edge_trim_material="metal-dark-exterior",
          eave_trim=_CANOPY_EAVE_TRIM),
 ]
@@ -749,6 +751,16 @@ RAILINGS = [
             graspable_profile="1.5in round — Type I"),
 ]
 
+# ** THE TRUSS ORDER, FOR BOTH ROOFS (2026-09-30). ** `rafter/RF-BW-CANOPY`, `rafter/RF-GARAGE`,
+# `structural.truss_reactions` and `uplift_capacity` stay UNKNOWN until the fabricator's SEALED
+# drawings exist; this is what the order has to ask for so they can close. When they arrive:
+# author `Roof.published_reactions` on both roofs and record the component seal in
+# engineering.toml (notes/canopy_west_band.md §9, canopy_garage_diaphragm.md §10).
+TRUSS_ORDER = [
+    Annotation(uid="7FTJXBJ6NP", tag="AN-G-TRUSS-ORDER", position=pt(ft(18), ft(55)),
+               text="TRUSS ORDER — RF-GARAGE and RF-BW-CANOPY, one fabricator, SEALED component design and reaction schedule. (1) A reaction at EVERY bearing, gravity and uplift, stating its basis: ground snow 50 psf, flat 42 psf balanced, the roof-step DRIFT surcharge of 50 psf peak over 9.8ft off the house gable (ASCE 7-16 §7.7), wind V_ult 115 mph Exposure B Risk Category II, 10 psf dead. (2) DRIFT TRUSSES: all three canopy trusses and RF-GARAGE's two southernmost (truss-000/-001) carry the drift case, not ground snow. (3) The canopy's SOUTH-END truss stands at the open south edge with no wall under it: design it for the out-of-plane wind on the gable-end triangle (2.22ft x 26.67ft, 16.8 psf ASD) braced at the deck, and say how it is braced. (4) The N-S diaphragm CHORD: both canopy end trusses' top chords, combined with gravity, and the peak splice's slip — the lateral design assumes 0.03in. (5) The heel ties are H2.5ASS stainless on the canopy (CN-BW-TRTIE-*) and H2.5A on the garage; confirm or supersede from the uplift reactions"),
+]
+
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS,
             _GARAGE_LEADER_E, _GARAGE_LEADER_W, *ALARMS, *STAIRS, *RAILINGS,
-            *STEM_TOP_Z_FLASHING]
+            *STEM_TOP_Z_FLASHING, *TRUSS_ORDER]

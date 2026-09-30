@@ -22,6 +22,7 @@ from typehaus.hardware.catalog import (
 from typehaus.hardware.config import UpliftTieRules
 from typehaus.joints.authored import (
     authored_joints,
+    cast_in_post_tags,
     tags_covered_by,
     unanchored_post_tags,
 )
@@ -136,7 +137,7 @@ def post_base_anchor_joints(model: ResolvedModel, rules: UpliftTieRules) -> list
     order.
     """
     covered = tags_covered_by(model, frozenset({ConnectorKind.POST_BASE}))
-    unanchored = unanchored_post_tags(model)
+    unanchored = unanchored_post_tags(model) | cast_in_post_tags(model)
     stocked = catalogued_post_sizes()
     found = []
     for storey, post in posts(model):
@@ -163,6 +164,7 @@ def post_base_anchor_joints(model: ResolvedModel, rules: UpliftTieRules) -> list
             continue
         # A base the plan declares bearing-only has no bolt to buy: download crosses the
         # plate into the pour, and the joint gives up the uplift and lateral the bolt buys.
+        # A cast-in base (CBSQ) is the other case: its anchorage is inside its own rating.
         if post.tag in unanchored:
             continue
         found.append((storey, post))

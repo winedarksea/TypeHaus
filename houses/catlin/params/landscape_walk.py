@@ -35,7 +35,10 @@ from typehaus import (
 from params.breezeway import STAIR_FOOT_X_FT, STAIR_Y0_FT, STAIR_Y1_FT
 from params.driveway import DRIVE_X, FLARE, Y0 as DRIVE_Y0
 from params.hp1_north_pad import HP1_PAD
-from params.north_entry_frame import GARAGE_SEAT_Y_FT, PIER_LINE_Y_FT, ROOF_COLUMN_EAST_X_FT
+from params.east_posts import east_radius_ft
+from params.north_entry_frame import (
+    EAST_POST_SYSTEM, GARAGE_SEAT_Y_FT, PIER_LINE_Y_FT, ROOF_COLUMN_EAST_X_FT,
+)
 
 ASSEMBLY = "SIDEWALK_FRC_CLASS5"
 TOP = ft(-2, -9)                 # 1" over grade
@@ -82,7 +85,7 @@ A = _rect(24.0 + GAP_FT, 67.29 + GAP_FT, B_X1, 67.29 + GAP_FT + 92.0 / 12.0)
 B = _rect(B_X0, 42.98 + GAP_FT, B_X1, A[0][1])
 D_X0 = 36.66 + GAP_FT
 D_X1 = D_X0 + 64.0 / 12.0
-_COL_R_FT = 0.5                  # PT-BW-RE/-RNE are "12 round"
+_COL_R_FT = east_radius_ft(EAST_POST_SYSTEM)   # the east pier (or cast column) at grade
 _COL_W = ROOF_COLUMN_EAST_X_FT - _COL_R_FT - GAP_FT
 _COL_E = ROOF_COLUMN_EAST_X_FT + _COL_R_FT + GAP_FT
 _RE_N = PIER_LINE_Y_FT + _COL_R_FT + GAP_FT

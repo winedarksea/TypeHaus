@@ -52,12 +52,16 @@ from typehaus.engineering.registry import (
     keys,
     oracled_by,
 )
+from typehaus.engineering.roof_beam_glulam import glulam as _glulam
+from typehaus.engineering.roof_beam_glulam import glulam_section as _glulam_section
 
 KIND = "roof_beam"
 
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "1"
-BASIS = "AWC NDS 2018 Ch. 3 and 4 (sawn); design snow authored per ASCE 7 §7.7"
+#: 2: a GLULAM section is graded (``roof_beam_glulam``), 2026-09-30.
+BASIS_VERSION = "2"
+BASIS = ("AWC NDS 2018 Ch. 3 and 4 (sawn) and Ch. 5 (glulam); design snow authored per "
+         "ASCE 7 §7.7")
 
 #: A built-up sawn section: ``"3-2x12"`` is three 2x12 plies. ``"2x10"`` is one.
 _SECTION = re.compile(r"^(?:(\d+)-)?2x(\d+)$")
@@ -168,6 +172,8 @@ def _incomplete(beam: Any, roof: Any, missing: str, summary: str) -> Engineering
 def _one(ctx: EngineeringContext, roof: Any, beam: Any,
          tributary_ft2: float, span_ft: float) -> EngineeringRecord:
     section = _section(beam.size)
+    if section is None and _glulam_section(beam) is not None:
+        return _glulam(ctx, roof, beam, tributary_ft2, span_ft)
     if section is None:
         return _incomplete(
             beam, roof, "published design values for the section as sold",
@@ -248,6 +254,8 @@ oracled_by(
     KIND,
     Oracle(note="north_entry_piers.md", section="§5",
            test="tests/test_north_entry_piers.py"),
+    Oracle(note="canopy_west_band.md", section="§7",
+           test="tests/test_canopy_west_band_calcs.py"),
 )
 
 

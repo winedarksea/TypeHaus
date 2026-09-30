@@ -6,6 +6,8 @@ Oracle: houses/catlin/notes/canopy_garage_diaphragm.md §5a.
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
+from typing import Any
 
 from typehaus.engineering.item import (
     EngineeringRecord,
@@ -18,12 +20,15 @@ from typehaus.engineering.item import (
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 
 KIND = "wood_roof_post"
-BASIS_VERSION = "1"
+#: 2: head and base lateral rows in both directions; the panel chords join (2026-09-30).
+BASIS_VERSION = "2"
 BASIS = ("AWC NDS 2018 Supplement Table 4D, Southern Pine No. 2 timbers, wet-service row; "
-         "NDS §3.7 column stability and §3.9 combined stress; ICC-ES ESR-2604 Table 2; "
-         "Simpson L-F-SSNAILS / ICC-ES ESR-1622; ACI 318-19 Ch. 17")
+         "NDS §3.7 column stability and §3.9 combined stress; ICC-ES ESR-2604 Table 3 "
+         "(AC/ACE); ICC-ES ESR-3096 Table 5 (A35); ICC-ES ESR-3050 Table 1 (CBSQ)")
 oracled_by(KIND, Oracle(note="canopy_garage_diaphragm.md", section="§5a",
-                        test="tests/test_wood_roof_post_calcs.py"))
+                        test="tests/test_wood_roof_post_calcs.py"),
+           Oracle(note="canopy_west_band.md", section="§5",
+                  test="tests/test_canopy_west_band_calcs.py"))
 
 # Table 4D explicitly publishes these Southern Pine timber values for WET service.
 SIDE_IN = 5.5
@@ -35,10 +40,6 @@ CD_WIND = 1.60
 SAWN_C = 0.8
 SLENDERNESS_LIMIT = 50.0
 R507_4_HEIGHT_FT = 14.0
-# ESR-2604 Table 2's CCQ download and ESR-1622's ABU66 download are recorded
-# in the catalog citation but its AllowableLoads leaves download unset.
-CCQ_DOWNLOAD_LB = 24_065.0
-ABU_DOWNLOAD_LB = 18_205.0
 
 
 def column_stability(length_in: float, fc_star_psi: float) -> tuple[float, float]:
@@ -50,134 +51,226 @@ def column_stability(length_in: float, fc_star_psi: float) -> tuple[float, float
     return fce, cp
 
 
-def _posts(ctx: EngineeringContext):
-    from typehaus.engineering.roof_lateral import roof_winds
+@dataclass(frozen=True)
+class _Case:
+    """One wood roof post and what it sees: its drag, and a framed panel's plate, if any."""
 
-    return sorted(((post, wind) for wind in roof_winds(ctx).values() for post in wind.pinned
-                   if getattr(ctx.plan.by_tag(post.tag), "assembly", None)
-                   in {"POST_KDAT", "POST_KDAT_WRAPPED_PVC"}),
-                  key=lambda row: row[0].tag)
+    tag: str
+    width_ft: float
+    length_ft: float
+    below: str | None
+    pressure_psf: float
+    wind: Any
+    wall: Any = None
+
+
+def _posts(ctx: EngineeringContext) -> list[_Case]:
+    """Every KDAT post a roof's bearing beam names — pinned posts, and the chords a shear
+    panel is framed around (``within_wall``), which the roof's demand leaves out but which
+    carry the panel's out-of-plane load and their own ends' reactions all the same."""
+    from typehaus.engineering.roof_lateral import bearing_beams, roof_winds
+    from typehaus.model.structure import Post
+    from typehaus.resolve.framing.profiles import cross_section
+
+    out: dict[str, _Case] = {}
+    for wind in roof_winds(ctx).values():
+        roof = ctx.plan.by_tag(wind.roof_tag)
+        for beam in bearing_beams(ctx, roof):
+            for ref in beam.bearing_refs or ():
+                post = ctx.plan.by_tag(ref)
+                if not isinstance(post, Post) or post.height is None or ref in out \
+                        or post.assembly not in _KDAT:
+                    continue
+                wall = ctx.plan.by_tag(post.within_wall) if post.within_wall else None
+                out[ref] = _Case(ref, (cross_section(post.size).width_m or 0.0) / 0.3048,
+                                 post.height.inches / 12.0, post.supported_by,
+                                 wind.pressure_psf, wind, wall)
+    return sorted(out.values(), key=lambda c: c.tag)
+
+
+_KDAT = {"POST_KDAT", "POST_KDAT_WRAPPED_PVC"}
 
 
 @keys(KIND)
 def enumerate_posts(ctx: EngineeringContext) -> list[str]:
-    return [post.tag for post, _ in _posts(ctx)]
+    return [case.tag for case in _posts(ctx)]
 
 
 @calc(KIND)
 def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
-    return [_one(ctx, post, wind) for post, wind in _posts(ctx)]
+    return [_one(ctx, case) for case in _posts(ctx)]
 
 
-def _one(ctx: EngineeringContext, post, wind) -> EngineeringRecord:
+def _plate_load(ctx: EngineeringContext, case: _Case, header: Any, base_ft: float
+                ) -> tuple[float, float, str]:
+    """``(P lb, a ft above the base, basis)`` — a framed panel's top-plate reaction.
+
+    The panel spans vertically from its sill to its top plate and the band over it from that
+    plate to the header soffit; the plate's line load between the chord faces, half to each
+    chord, as a point load at the plate. Taken on the full solid face (the slats are ~50%
+    open, so this is the conservative end).
+    """
+    from typehaus.engineering.lateral_band import _beam_z_ft
+    from typehaus.engineering.lateral_lines import panel_chords_ft
+
+    wall = case.wall
+    chords = panel_chords_ft(ctx, wall) if wall is not None else None
+    if chords is None or wall.top is None or wall.base_elevation is None:
+        return 0.0, 0.0, ""
+    panel_top = (wall.base_elevation.inches + wall.top.inches) / 12.0
+    soffit, _top = _beam_z_ft(header)
+    band = max(soffit - panel_top, 0.0)
+    clear = chords[0] - case.width_ft
+    line = case.pressure_psf * (wall.top.inches / 24.0 + band / 2.0)
+    load = line * clear / 2.0
+    return load, panel_top - base_ft, (
+        f"{wall.tag}'s top plate: {case.pressure_psf:.2f} psf x ({wall.top.inches / 12:.3f}'/2 "
+        f"+ {band:.3f}'/2) = {line:.2f} plf over {clear:.3f}' clear, half = {load:.1f} lb at "
+        f"+{panel_top:.3f}'")
+
+
+def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
     from typehaus.engineering.holdown_anchor import round_pier_anchor
     from typehaus.engineering.holdown_anchor import states as anchor_states
+    from typehaus.engineering.lateral_lines import panel_chords_ft, panel_runs_along
     from typehaus.engineering.pier_basis import (
         DECK_DEAD_LOAD_PSF,
         _round_size,
         design_roof_snow_psf,
         roof_tributaries,
     )
-    from typehaus.library.hardware.simpson_post_bases import (
-        ABU66SS_POST_BASE,
-        CCQ46SDS_POST_CAP,
-    )
-    from typehaus.model.structure import Beam
+    from typehaus.engineering.roof_lateral import bearing_beams
+    from typehaus.engineering.wood_roof_post_joints import EndDemands, joint_rows
+    from typehaus.hardware.catalog import hardware_by_model
+    from typehaus.model.enums import ConnectorKind
     from typehaus.resolve.concrete import concrete_spec_for, fc_psi
+    from typehaus.resolve.framing.profiles import cross_section
 
-    element = ctx.plan.by_tag(post.tag)
-    header = next((e.tag for e in ctx.plan.all_elements()
-                   if isinstance(e, Beam) and post.tag in (e.bearing_refs or ())), None)
-    connectors = [e for e in ctx.plan.all_elements()
-                  if getattr(e, "connects", ()) and post.tag in e.connects]
-    cap = next((e for e in connectors if e.size == "CCQ46SDS2.5"), None)
-    base = next((e for e in connectors if e.size == "ABU66SS"), None)
-    pier = ctx.plan.by_tag(post.below or "")
+    element = ctx.plan.by_tag(case.tag)
+    header = next((b for b in bearing_beams(ctx, ctx.plan.by_tag(case.wind.roof_tag))
+                   if case.tag in (b.bearing_refs or ())), None)
+    base = next((e for e in ctx.plan.all_elements()
+                 if getattr(e, "kind", None) is ConnectorKind.POST_BASE
+                 and case.tag in (getattr(e, "connects", ()) or ())), None)
+    pier = ctx.plan.by_tag(case.below or "")
     pier_size = _round_size(getattr(pier, "size", "") or "") if pier else None
-    trib = roof_tributaries(ctx)[0].get(post.tag, 0.0)
+    trib = roof_tributaries(ctx)[0].get(case.tag, 0.0)
     missing = [text for ok, text in (
         (element.size == "6x6", f"NDS wet-service values for {element.size!r}"),
         (trib > 0, "a roof tributary on the post"),
         (header is not None, "a roof header bearing on the post"),
-        (cap is not None, "a CCQ46SDS2.5 head cap"),
-        (base is not None, "an ABU66SS stainless standoff base"),
+        (base is not None and base.elevation is not None, "an authored post base"),
         (pier_size is not None, "a round concrete pier under the base"),
     ) if not ok]
-    tags = tuple(t for t in (post.tag, header, post.below,
-                              getattr(cap, "tag", None), getattr(base, "tag", None)) if t)
+    tags = tuple(t for t in (case.tag, getattr(header, "tag", None), case.below,
+                              getattr(base, "tag", None)) if t)
     if missing:
-        return EngineeringRecord(item_id=item_id(KIND, post.tag), kind=KIND, key=post.tag,
-                                 basis_version=BASIS_VERSION, basis=BASIS,
-                                 status=Status.INCOMPLETE,
-                                 summary=f"{post.tag}: wood roof post cannot be graded",
-                                 missing=tuple(missing), element_tags=tags)
+        return _incomplete(case.tag, tags, missing)
 
     snow, snow_basis = design_roof_snow_psf(ctx)
-    length_in = post.length_ft * 12.0
+    length_in = case.length_ft * 12.0
     area = SIDE_IN ** 2
     section_modulus = SIDE_IN ** 3 / 6.0
     # The KDAT material is 600 kg/m³ in the catalog; the actual 5.5-inch square is 7.87 plf.
     weight_plf = 600.0 * (SIDE_IN * 0.0254) ** 2 * 0.3048 * 2.20462262185
-    axial = trib * (DECK_DEAD_LOAD_PSF + snow) + weight_plf * post.length_ft
+    axial = trib * (DECK_DEAD_LOAD_PSF + snow) + weight_plf * case.length_ft
     fc_star = FC_WET_PSI * CD_SNOW
     fce, cp = column_stability(length_in, fc_star)
     fc_prime = fc_star * cp
     fc_actual = axial / area
-    drag_plf = wind.pressure_psf * post.width_ft
-    moment_lb_in = drag_plf * post.length_ft ** 2 / 8.0 * 12.0
-    fb_actual = moment_lb_in / section_modulus
+    drag_plf = case.pressure_psf * case.width_ft
+    own_half = drag_plf * case.length_ft / 2.0
+    base_ft = base.elevation.inches / 12.0
+    plate, a_ft, plate_basis = _plate_load(ctx, case, header, base_ft)
+    b_ft = case.length_ft - a_ft
+    moment_lb_ft = drag_plf * case.length_ft ** 2 / 8.0
+    if plate:
+        moment_lb_ft += plate * a_ft * b_ft / case.length_ft
+    fb_actual = moment_lb_ft * 12.0 / section_modulus
     # This exceeds the NDS §3.9 compression-squared term for fc/Fc' < 1 and retains
     # the §3.9 second-order amplification, so it is a conservative uniaxial screen.
     interaction = fc_actual / fc_prime + fb_actual / (FB_WET_PSI * CD_WIND)
     interaction /= 1.0 - fc_actual / fce
-    uplift = max(trib * (wind.pressure_psf - 0.6 * DECK_DEAD_LOAD_PSF), 0.0)
-    cap_allow = CCQ46SDS_POST_CAP.allowable
-    base_allow = ABU66SS_POST_BASE.allowable
-    assert cap_allow and base_allow and pier_size
+    uplift = max(trib * (case.pressure_psf - 0.6 * DECK_DEAD_LOAD_PSF), 0.0)
+    head_uplift = uplift
+    couple_note = ""
+    chords = panel_chords_ft(ctx, case.wall) if case.wall is not None else None
+    if chords is not None:
+        axis = "y" if panel_runs_along(ctx, case.wall, "y") else "x"
+        shear = case.wind.delivered_lb(axis)
+        depth_ft = (cross_section(header.size).depth_m or 0.0) / 0.3048
+        head_uplift += shear * depth_ft / chords[0]
+        couple_note = (f" plus the band's couple {shear:,.1f} lb x {depth_ft:.3f}' header "
+                       f"depth / {chords[0]:.3f}'")
+    beam_axis = _beam_axis(ctx, header)
+    demands = EndDemands(
+        head_along=own_half, base_along=own_half,
+        head_across=own_half + (plate * a_ft / case.length_ft if plate else 0.0),
+        base_across=own_half + (plate * b_ft / case.length_ft if plate else 0.0),
+        head_uplift=head_uplift, base_uplift=uplift, plate_lb=plate)
     states = [
         LimitState("NDS column slenderness", length_in / SIDE_IN, SLENDERNESS_LIMIT, "",
                    "NDS 2018 §3.7.1.4, pinned K = 1", is_detailing=True),
         LimitState("NDS wet-service axial", axial, fc_prime * area, "lb",
                    f"Table 4D Fc {FC_WET_PSI:g} psi (wet row) x C_D {CD_SNOW:g} x "
                    f"C_P {cp:.3f}; FcE {fce:.0f} psi, D + S ({snow_basis})"),
-        LimitState("NDS combined axial and own drag", interaction, 1.0, "",
+        LimitState("NDS combined axial and bending", interaction, 1.0, "",
                    f"§3.9 conservative uniaxial screen; axial stress {fc_actual:.1f} psi, "
-                   f"drag moment {moment_lb_in / 12:.1f} lb-ft, bending stress "
+                   f"moment {moment_lb_ft:.1f} lb-ft (own drag"
+                   + (f" + {plate_basis}" if plate else "") + f"), bending stress "
                    f"{fb_actual:.1f} psi, wet Fb {FB_WET_PSI:g} x C_D {CD_WIND:g}"),
-        LimitState("IRC R507.4 height cross-check", post.length_ft, R507_4_HEIGHT_FT, "ft",
+        LimitState("IRC R507.4 height cross-check", case.length_ft, R507_4_HEIGHT_FT, "ft",
                    "2018 IRC Table R507.4, 6x6; the NDS snow check governs this roof",
                    is_detailing=True),
-        LimitState("CCQ46SDS2.5 head uplift", uplift, cap_allow.uplift_lb, "lb",
-                   "ICC-ES ESR-2604 Table 2; SYP G 0.55 meets §3.2.2 minimum 0.50"),
-        LimitState("CCQ46SDS2.5 head download", axial, CCQ_DOWNLOAD_LB, "lb",
-                   "ICC-ES ESR-2604 Table 2, C_D 1.0 lower-bound download"),
-        LimitState("ABU66SS base uplift", uplift, base_allow.uplift_lb, "lb",
-                   "Simpson L-F-SSNAILS parity to ESR-1622 bolted ABU66 row"),
-        LimitState("ABU66SS base download", axial, ABU_DOWNLOAD_LB, "lb",
-                   "Simpson L-F-SSNAILS parity to ESR-1622 ABU66 row"),
     ]
+    states += joint_rows(ctx, case.tag, beam_axis, demands, missing)
+    base_item = hardware_by_model(base.size or "")
     pier_fc = fc_psi(concrete_spec_for(ctx.plan, pier)) or 3000.0
-    anchor = round_pier_anchor(f"{post.tag} base", pier_size[0], pier_fc)
-    states += anchor_states(anchor, uplift, post.base_lb,
-                            f"net 0.6D + 0.6W uplift {uplift:.1f} lb",
-                            f"own post drag {post.base_lb:.1f} lb")
+    if not getattr(base_item, "anchorage_in_rating", False):
+        anchor = round_pier_anchor(f"{case.tag} base", pier_size[0], pier_fc)
+        states += anchor_states(anchor, uplift, own_half,
+                                f"net 0.6D + 0.6W uplift {uplift:.1f} lb",
+                                f"own post drag {own_half:.1f} lb")
+    if missing:
+        return _incomplete(case.tag, tags, missing)
     governing = max((s for s in states if not s.is_detailing),
                     key=lambda s: s.demand / s.capacity if s.capacity else float("inf"))
     return EngineeringRecord(
-        item_id=item_id(KIND, post.tag), kind=KIND, key=post.tag,
+        item_id=item_id(KIND, case.tag), kind=KIND, key=case.tag,
         basis_version=BASIS_VERSION, basis=BASIS,
         status=Status.OVER if any(not s.ok for s in states) else Status.OK,
-        summary=f"{post.tag}: wet-service 6x6 KDAT, {governing.name} governs at "
+        summary=f"{case.tag}: wet-service 6x6 KDAT, {governing.name} governs at "
                 f"{governing.demand / governing.capacity:.2f}",
         inputs=(Quantity("roof_tributary_ft2", trib, "ft2", 0.01),
                 Quantity("post_length_in", length_in, "in", 0.01),
                 Quantity("pier_fc_psi", pier_fc, "psi", 1.0),
                 Quantity("axial_lb", axial, "lb", 1.0),
-                Quantity("uplift_lb", uplift, "lb", 1.0)),
+                Quantity("uplift_lb", uplift, "lb", 1.0),
+                Quantity("head_uplift_lb", head_uplift, "lb", 1.0),
+                Quantity("plate_load_lb", plate, "lb", 1.0)),
         limit_states=tuple(states), element_tags=tags,
-        notes=("The PVC wrap is a nonstructural finish. It needs an open, drained base and "
-               "an inspectable/removable panel; it contributes no column capacity.",
-               "The CCQ46SDS2.5 and ABU66SS catalog records publish no lateral capacity. "
-               "This calculation grades the post's own bending and the concrete anchor's "
-               "shear, but a positive detail transferring the 24 lb reaction at each end "
-               "through the cap and base remains to be engineered."))
+        notes=(("The PVC wrap is a nonstructural finish. It needs an open, drained base and "
+                "an inspectable/removable panel; it contributes no column capacity."
+                if element.assembly == "POST_KDAT_WRAPPED_PVC" else
+                f"{case.tag} is a chord of {case.wall.tag}; its IN-PLANE hold-down and base "
+                f"shear are graded on the lateral_system record, and this one grades its "
+                f"out-of-plane (E-W) ends." if case.wall is not None else ""),
+               f"Head uplift is the net roof uplift {uplift:.1f} lb{couple_note}.",
+               "DRY SERVICE at every connector: the caps, angles and base are rated for wood "
+               "at or under 19% moisture (ESR-2604 §3.2.2, ESR-3050 §4.1). The posts stand "
+               "on 1in drained standoffs under the roof; verify MC before the parts go on. "
+               "The column itself is graded on the WET row."))
+
+
+def _beam_axis(ctx: EngineeringContext, beam: Any) -> str:
+    ends = [ctx.plan.by_tag(beam.start_node), ctx.plan.by_tag(beam.end_node)]
+    (x0, y0), (x1, y1) = (e.position.xy_m for e in ends)
+    return "y" if abs(y1 - y0) >= abs(x1 - x0) else "x"
+
+
+def _incomplete(tag: str, tags: tuple, missing: list[str]) -> EngineeringRecord:
+    return EngineeringRecord(item_id=item_id(KIND, tag), kind=KIND, key=tag,
+                             basis_version=BASIS_VERSION, basis=BASIS,
+                             status=Status.INCOMPLETE,
+                             summary=f"{tag}: wood roof post cannot be graded",
+                             missing=tuple(missing), element_tags=tags)

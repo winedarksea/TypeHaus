@@ -34,3 +34,14 @@ ABU66SS_HEAD = HeadConnector(
     bearing="SS316-SHIM-35", bearing_width_in=3.5, bearing_length_in=3.5,
     source="ICC-ES ESR-1622 Table 2, ABU66 row (bolted, 2,190 lb uplift at C_D 1.6), "
            "extended to ABU66SS by Simpson letter L-F-SSNAILS; no lateral value published")
+
+CBSQ66_HEAD = HeadConnector(
+    tie="CBSQ66-SDS2", tie_count=1, uplift_lb=3060.0, lateral_lb=485.0,
+    load_duration_factor=1.6,
+    bearing="CBSQ66-SDS2", bearing_width_in=5.5, bearing_length_in=5.5,
+    source="ICC-ES ESR-3050 Table 1, CBSQ66-SDS2, Wind and SDC A & B, CRACKED uplift 3,060 lb "
+           "at C_D 1.6 (4,375 uncracked); lateral F1 485 / F2 1,270 lb from Simpson C-C-2024, "
+           "the lower quoted — the report publishes none",
+    interaction_rule="Simpson C-C-2024 general notes: a connector loaded in more than one "
+                     "direction is checked as the sum of each design load over its allowable, "
+                     "<= 1.0")

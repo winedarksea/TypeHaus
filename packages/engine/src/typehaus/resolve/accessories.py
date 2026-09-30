@@ -14,6 +14,7 @@ from collections.abc import Sequence
 from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity, element_error
+from typehaus.model.braces import StrapBrace
 from typehaus.model.enums import ConnectorKind, LayerFunction, TrimKind
 from typehaus.model.mep import Sump, VentRun
 from typehaus.model.structure import (
@@ -56,6 +57,7 @@ from typehaus.resolve.model import (
 )
 from typehaus.resolve.railings import resolve_railing
 from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.resolve.strap_braces import resolve_strap_brace
 
 # Round-section faceting lives in resolve/round_solids.py, shared with pipe runs.
 # ``_PIPE_SWEEP_BANDS`` is re-exported rather than used here: ``test_accessories.py`` imports
@@ -120,6 +122,8 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                 _resolve_connector(model, el, storey.tag)
             elif isinstance(el, KneeBrace):
                 _resolve_knee_brace(model, el, storey.tag)
+            elif isinstance(el, StrapBrace):
+                findings.extend(resolve_strap_brace(model, el, storey.tag))
             elif isinstance(el, Wedge):
                 _resolve_wedge(model, el, storey.tag)
             elif isinstance(el, Railing):

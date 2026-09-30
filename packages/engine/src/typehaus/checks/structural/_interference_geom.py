@@ -11,6 +11,7 @@ from __future__ import annotations
 import math
 
 from typehaus.resolve.framing.footprint import member_footprint
+from typehaus.resolve.strap_braces import STRAP_CATEGORY
 from typehaus.resolve.sweep import straight_sweep_band
 
 # Minimum shared plan area (m²) for a real interference. A face/side abutment
@@ -102,6 +103,8 @@ def framing_candidates(model) -> list[_Candidate]:
 
     out: list[_Candidate] = []
     for member in model.all_members():
+        if member.category == STRAP_CATEGORY:
+            continue  # sheet steel nailed flat across what it braces: never a clash
         ring, z_lo, z_hi = member_footprint(member)
         poly = Polygon(ring)
         if poly.is_valid and poly.area > _TOL_AREA:

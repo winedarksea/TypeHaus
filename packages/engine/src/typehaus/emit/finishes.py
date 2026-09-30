@@ -57,6 +57,7 @@ MEMBER_KEYS = frozenset({
     "stud", "plate", "header", "raked_plate", "corner", "stringer", "tread", "winder",
     "king", "jack", "cripple", "sill", "bearing_stiffener", "landing", "landing_framing",
     "newel", "partition", "trimmer", "hanger", "joist", "rim", "ridge_beam", "brace",
+    "strap",
     "rafter", "blocking", "outlooker", "barge_rafter", "roof_truss", "seat_cut",
 })
 

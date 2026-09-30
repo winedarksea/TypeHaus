@@ -152,6 +152,9 @@ def panel_line(ctx, wall, axis: str, shear_lb: float) -> Line | None:
     along = run_y / length_ft if axis == "y" else run_x / length_ft
     if along < 1.0 - _PARALLEL_TOLERANCE:
         return None
+    chords = panel_chords_ft(ctx, wall)
+    if chords is not None:
+        length_ft = chords[1]
     height_ft = _height_ft(wall)
     if height_ft is None or height_ft <= 0.0:
         return None
@@ -179,13 +182,42 @@ def panel_line(ctx, wall, axis: str, shear_lb: float) -> Line | None:
 
 
 def panel_geometry_ft(ctx, wall) -> tuple[float, float] | None:
-    """``(length ft, height ft)`` of a shear panel, or ``None``."""
+    """``(length ft, height ft)`` of a shear panel, or ``None``.
+
+    The length is the chords' OUT-TO-OUT where ``ShearPanelSpec.chord_refs`` names them: a
+    wall run that oversails its end posts is sheathing, not shear-wall length, because
+    nothing holds the oversail down (``notes/canopy_west_band.md`` §4).
+    """
     ends = _ends_ft(ctx, wall)
     height_ft = _height_ft(wall)
     if ends is None or height_ft is None:
         return None
+    chords = panel_chords_ft(ctx, wall)
+    if chords is not None:
+        return chords[1], height_ft
     (x0, y0), (x1, y1) = ends
     return ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5, height_ft
+
+
+def panel_chords_ft(ctx, wall) -> tuple[float, float] | None:
+    """``(centre-to-centre lever ft, out-to-out length ft)`` of a panel's two chord posts.
+
+    ``None`` unless ``ShearPanelSpec.chord_refs`` names exactly two posts that resolve with
+    a position and a section. The lever is what the overturning couple acts over; the
+    out-to-out length is what the sheathing is held down along.
+    """
+    from typehaus.resolve.framing.profiles import cross_section
+
+    refs = getattr(getattr(wall, "shear_panel", None), "chord_refs", ()) or ()
+    posts = [ctx.plan.by_tag(tag) for tag in refs]
+    if len(posts) != 2 or any(getattr(p, "position", None) is None for p in posts):
+        return None
+    (ax, ay), (bx, by) = (p.position.xy_m for p in posts)
+    lever = ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5 / _M_PER_FT
+    widths = [(cross_section(p.size).width_m or 0.0) / _M_PER_FT for p in posts]
+    if lever <= 0.0 or min(widths) <= 0.0:
+        return None
+    return lever, lever + (widths[0] + widths[1]) / 2.0
 
 
 def _ends_ft(ctx, wall) -> tuple[tuple[float, float], tuple[float, float]] | None:

@@ -362,6 +362,11 @@ class ShearPanelSpec(HausModel):
     #: rather than a stud the framing solver derives, and a reference that cannot resolve is
     #: worse than a sentence that can be read.
     chords: str = ""
+    #: The two chord members BY TAG, where they are posts the panel is framed around. When
+    #: set, the unit shear and aspect ratio are read over the chords' out-to-out length and
+    #: the overturning over their centre-to-centre lever — not the wall's node-to-node run,
+    #: which may oversail a chord (``engineering/lateral_lines.panel_chords_ft``).
+    chord_refs: tuple[str, ...] = ()
     #: The end-post (chord) member and how many plies, for SDPWS 4.3.2's bending term.
     chord_member: str = "2x4"
     chord_plies: int = 2

@@ -63,6 +63,12 @@ from typehaus.library.hardware.s5 import (
     S5_S_SNAP_LOCK_CLAMP,
     S5_SEAM_CLAMP,
 )
+from typehaus.library.hardware.simpson_caps_bases import (
+    A35Z_FRAMING_ANGLE,
+    AC6Z_POST_CAP,
+    ACE6Z_POST_CAP,
+    CBSQ66_COLUMN_BASE,
+)
 from typehaus.library.hardware.simpson_hangers import (
     HHUS410_SCL_FACE_MOUNT_HANGER,
     HU28_2Z_FACE_MOUNT_HANGER,
@@ -192,6 +198,10 @@ STRUCTURAL_HARDWARE: tuple = (
 #: lookup and price row exactly where it was.
 CAPACITY_ONLY_RECORDS: tuple = (
     ABU66SS_POST_BASE,
+    AC6Z_POST_CAP,
+    ACE6Z_POST_CAP,
+    A35Z_FRAMING_ANGLE,
+    CBSQ66_COLUMN_BASE,
     HSS_SADDLE_HDG,
     HSS_BASE_PLATE_HDG,
     STHD14RJ_STRAP_HOLDOWN,

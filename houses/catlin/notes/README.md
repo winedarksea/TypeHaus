@@ -38,6 +38,7 @@ each is kept because the *rule* it established usually outlives the design that 
 | `balcony_moment_columns.md` | `engineering/deck_post.py`; §5 is now the NDS cross-check beside a published-table read, not an oracle (`tests/test_pier_calcs.py`) | live |
 | `breezeway_piers.md` | superseded by foundation bridge | retired 2026-09-10 |
 | `north_entry_structure.md` | the north entry bearing map and what carries what | live |
+| `canopy_west_band.md` | the canopy's west band brace, panel re-read, all four heads and bases, the open front's chord/couple/drift and the glulam headers: `engineering/lateral_band.py`, `wood_roof_post.py` + `wood_roof_post_joints.py`, `open_front.py`, `roof_beam_glulam.py` (`tests/test_canopy_west_band_calcs.py`) | live |
 | `canopy_garage_diaphragm.md` | garage lateral delivery and all three east-post variants; §5a oracles `engineering/wood_roof_post.py` (`tests/test_wood_roof_post_calcs.py`) | live |
 | `north_entry_canopy_lateral.md` | `engineering/lateral_system.py` §8 (collectors, hold-down anchorage, torsion) with `engineering/holdown_anchor.py` and `engineering/torsion.py` (`tests/test_lateral_system_calcs.py`) | live |
 | `north_entry_piers.md` | `engineering/roof_beam.py` §5, `engineering/pier_basis.py` / `deck_post.py` / `spread_footing.py` §6 (`tests/test_north_entry_piers.py`) | live |

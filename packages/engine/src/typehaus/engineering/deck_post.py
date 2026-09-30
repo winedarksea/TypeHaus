@@ -73,8 +73,9 @@ KIND = "deck_post"
 #: to "7" on 2026-09-20, when a WALL bearing along a beam stopped being an unmodelled load
 #: and started being a derived LINE load in the dead term (``pier_basis.wall_line_loads``);
 #: to "8" when a WALL-borne column's dowels started being graded for straight development
-#: against the authored ``BarSpec.embedment``.
-BASIS_VERSION = "8"
+#: against the authored ``BarSpec.embedment``; to "9" on 2026-09-30, when an axially loaded
+#: column larger than its load needs took ACI 318-19 §10.3.1.2's reduced area for the 1% floor.
+BASIS_VERSION = "9"
 BASIS = "IRC R507.4 (no row); ACI 318-19 Ch. 10, 22.4, 25.7 (reinforced) / 14.5 (plain)"
 
 #: ACI 318-19 §2.3 defines a PEDESTAL as a member with a ratio of height to least lateral
@@ -92,6 +93,8 @@ PEDESTAL_HEIGHT_RATIO = 3.0
 #: column at d/c 0.04 does not get to carry less than it.
 COLUMN_MIN_REINFORCEMENT_RATIO = 0.01
 COLUMN_MAX_REINFORCEMENT_RATIO = 0.08
+#: A moment column claims §10.3.1.2's half-area floor only while its strength rows are here.
+_REDUCED_AREA_STRENGTH_CAP = 0.25
 
 #: ACI 318-19 §10.7.3.1(b): the minimum number of longitudinal bars is "four within
 #: rectangular or circular ties". Six is §10.7.3.1(c)'s SPIRAL case and three is (a)'s
@@ -340,6 +343,20 @@ def _one(pier: _Pier) -> EngineeringRecord:
         # the axial comparison is not, and is left out rather than printed against a number
         # the model cannot make. See ``_detailing_only``.
         return _detailing_only(pier, area, ratio, shape, minimum_steel, cage, common)
+    # ** ACI 318-19 §10.3.1.2: A COLUMN LARGER THAN ITS LOAD NEEDS. ** The minimum steel may
+    # be based on a reduced effective area, not less than half the gross — and never less than
+    # the concrete the factored load actually needs. Claimed only here, where the demand is
+    # stated and the column is not anyone's lateral system.
+    needed = demand / (PHI_COMPRESSION_TIED * TIED_AXIAL_CAP * 0.85 * PRESUMPTIVE_FC_PSI)
+    effective = max(area / 2.0, needed)
+    if effective < area:
+        minimum_steel = COLUMN_MIN_REINFORCEMENT_RATIO * effective
+        common = common + (
+            f"ACI 318-19 §10.3.1.2: the 1% floor is taken on an effective area of "
+            f"{effective:.1f} in2 — half the {area:.1f} in2 gross, the least the section may "
+            f"claim, and more than the {needed:.1f} in2 the factored {demand:,.0f} lb needs at "
+            f"f'c {PRESUMPTIVE_FC_PSI:,.0f} psi. The column is larger than its load requires.",
+        )
     return _reinforced_column(pier, area, ratio, shape, demand, minimum_steel, cage, common)
 
 
@@ -757,8 +774,22 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
                    "much lap can physically exist ABOVE the joint. The AUTHORED lap is in "
                    "the assembly's source and on the drawing"),
         *((anchorage,) if (anchorage := _dowel_anchorage(pier, cage, fc_psi)) else ()),
-        *_detailing_states(pier, area, minimum_steel, cage),
     )
+    # ACI 318-19 §10.3.1.2 with a MOMENT on it: the reduced area has to carry the strength
+    # rows too (axial and moment; a development LENGTH is not a section strength), so it is
+    # claimed only while every one is at or under a quarter on the gross
+    # section — half the area keeps far more than a quarter of both axial and moment.
+    strength = max((st.ratio for st in states
+                    if not st.is_detailing and st.unit in ("lb", "lb-ft")), default=1.0)
+    if strength <= _REDUCED_AREA_STRENGTH_CAP and area / 2.0 < area:
+        minimum_steel = COLUMN_MIN_REINFORCEMENT_RATIO * area / 2.0
+        common = common + (
+            f"ACI 318-19 §10.3.1.2: the 1% floor is taken on half the {area:.1f} in2 gross — "
+            f"the least the section may claim — because every strength row above is at or "
+            f"under {_REDUCED_AREA_STRENGTH_CAP:.2f} (worst {strength:.3f}); the column is "
+            f"larger than its loads require.",
+        )
+    states = states + _detailing_states(pier, area, minimum_steel, cage)
     over = any(not state.ok for state in states)
     which = "the guard load" if guard_mu >= wind_mu else "wind"
     # How many columns the demand was divided among, read back out of the basis sentence

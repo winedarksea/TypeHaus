@@ -21,6 +21,9 @@ _COMMON = {
     "deck_post/PT-BW-E", "deck_post/PT-BW-GE", "deck_post/PT-BW-GW", "deck_post/PT-BW-W",
     "deck_tie/FS-BW-FLOOR", "lateral_system/RF-BW-CANOPY", "rafter/RF-BW-CANOPY",
     "roof_beam/BM-BW-RE", "roof_beam/BM-BW-RW",
+    # The west chords are 6x6 KDAT in every variant: their heads and bases are graded both
+    # ways since 2026-09-30 (notes/canopy_west_band.md §5).
+    "wood_roof_post/PT-BW-CNW", "wood_roof_post/PT-BW-CW",
 }
 _PINNED_PIERS = {"column_base/PT-BW-PE", "column_base/PT-BW-PNE",
                  "deck_post/PT-BW-PE", "deck_post/PT-BW-PNE"}

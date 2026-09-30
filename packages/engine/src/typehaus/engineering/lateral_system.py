@@ -39,6 +39,7 @@ from typehaus.engineering.diaphragm_basis import (
     DIAPHRAGM_ASPECT_UNBLOCKED,
     chord_force_lb,
 )
+from typehaus.engineering.diaphragm_delivery import delivery_rows
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
@@ -50,7 +51,6 @@ from typehaus.engineering.item import (
 from typehaus.engineering.lateral_collectors import collector_rows, torsion_rows
 from typehaus.engineering.lateral_lines import panel_geometry_ft
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
-from typehaus.engineering.diaphragm_delivery import delivery_rows
 from typehaus.engineering.roof_lateral import panel_forces, wind_of
 from typehaus.engineering.roof_moment import FrameCase, frame_cases_of, roof_base_moments
 from typehaus.engineering.torsion import Torsion, torsion_for
@@ -162,7 +162,7 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
     forces = panel_forces(ctx, tag)
     panel_tags = sorted({t for here in forces.values() for t in here})
     for wall_tag in panel_tags:
-        _panel(ctx, wall_tag, forces, states, notes, missing, inputs)
+        _panel(ctx, tag, wall_tag, forces, states, notes, missing, inputs)
         if delivery is not None:
             _panel_boundary(ctx, tag, wall_tag, forces, spec, states)
 
@@ -234,10 +234,11 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
         f"third term of SDPWS 4.2.2 and it decides the rigid/flexible call — a fabricator's "
         f"splice detail that slips materially more moves every share on this record."
         if cases else
-        "PINNED DELIVERY: this record computes no chord force because it has no frame case. "
-        "The truss designer must establish the diaphragm chord and peak-splice force, "
-        "combine it with roof gravity, and verify the assumed 0.03in splice slip. "
-        "The passing unit-shear and joint-couple rows do not grade chord strength or drift."
+        "PINNED DELIVERY: the open front's chord force (its couple over the chords' "
+        "spacing) is graded above in the chords and the end straps; the drift limit is "
+        "SDPWS 4.2.5.2's seismic one. What stays with the truss designer is the N-S chord — "
+        "the end trusses' top chords combined with roof gravity — and the 0.03in splice "
+        "slip the rigid/flexible call assumes."
     )
     notes.extend((
         chord_note,
@@ -272,11 +273,13 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
         element_tags=_tags(tag, cases, forces, extra))
 
 
-def _panel(ctx: EngineeringContext, wall_tag: str, forces: dict[str, dict[str, float]],
-           states: list[LimitState], notes: list[str], missing: list[str],
-           inputs: list[Quantity]) -> None:
-    """One shear panel's three limit states, at the axis that loads it worst."""
-    from typehaus.hardware.catalog import allowable_for_model
+def _panel(ctx: EngineeringContext, roof_tag: str, wall_tag: str,
+           forces: dict[str, dict[str, float]], states: list[LimitState], notes: list[str],
+           missing: list[str], inputs: list[Quantity]) -> None:
+    """One shear panel's limit states, at the axis that loads it worst — and the band over
+    it where its top stops short of its collector (``lateral_band``)."""
+    from typehaus.engineering.lateral_band import band_rows
+    from typehaus.hardware.catalog import allowable_for_model, hardware_by_model
 
     wall = ctx.plan.by_tag(wall_tag)
     spec = getattr(wall, "shear_panel", None)
@@ -303,6 +306,11 @@ def _panel(ctx: EngineeringContext, wall_tag: str, forces: dict[str, dict[str, f
         f"{wall_tag} aspect ratio", height_ft / length_ft, spec.aspect_ratio_limit, "",
         f"SDPWS Table 4.3.4 — {height_ft:.2f}' tall over {length_ft:.2f}' long"))
 
+    element = ctx.plan.by_tag(roof_tag)
+    band = band_rows(ctx, roof_tag, wall, getattr(element, "diaphragm", None), worst,
+                     states, notes, missing, inputs)
+    if band.handled:
+        return
     # ** NO DEAD LOAD IS CREDITED AGAINST UPLIFT, AND THAT IS THE WHOLE COUPLE. ** The
     # resisting moment of a panel's own weight would reduce this, and deriving it needs the
     # layer-by-layer walk that lives in `checks/` where this package may not reach. Taking
@@ -325,6 +333,8 @@ def _panel(ctx: EngineeringContext, wall_tag: str, forces: dict[str, dict[str, f
         f"{wall_tag} hold-down tension", tension, capacity, "lb",
         f"{spec.holdown} published uplift; the overturning couple {worst:,.0f} lb x "
         f"{height_ft:.2f}' over {length_ft:.2f}', with NO dead load credited against it"))
+    if getattr(hardware_by_model(spec.holdown), "anchorage_in_rating", False):
+        return
     notes.append(
         f"{wall_tag}'s hold-down is {spec.holdown}, whose own report puts the anchor under it "
         f"out of scope (ICC-ES ESR-1622 §5.6) — so the CONCRETE ANCHORAGE is graded here as "
@@ -446,7 +456,8 @@ def _panel_boundary(ctx: EngineeringContext, roof_tag: str, wall_tag: str,
                     forces: dict[str, dict[str, float]], spec: object,
                     states: list[LimitState]) -> None:
     """The deck along a panel's line, at the envelope share (canopy note §4d)."""
-    from typehaus.engineering.lateral_lines import panel_geometry_ft
+    from typehaus.engineering.lateral_band import collector_on
+    from typehaus.engineering.lateral_lines import _ends_ft, panel_geometry_ft
 
     wall = ctx.plan.by_tag(wall_tag)
     roof = next((r for r in ctx.model.roofs if r.tag == roof_tag), None)
@@ -458,6 +469,10 @@ def _panel_boundary(ctx: EngineeringContext, roof_tag: str, wall_tag: str,
         depth = max(values) - min(values)
         geometry = panel_geometry_ft(ctx, wall)
         edge = min(depth, geometry[0]) if geometry else depth
+        # A collector on the panel's line takes the boundary shear along the whole deck edge.
+        line = _ends_ft(ctx, wall)
+        if line is not None and collector_on(ctx, spec, line) is not None:
+            edge = depth
         states.append(LimitState(
             f"diaphragm unit shear at {wall_tag}", here[wall_tag] / edge,
             spec.unit_shear_asd_plf, "plf",  # type: ignore[attr-defined]

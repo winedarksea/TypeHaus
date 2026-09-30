@@ -58,22 +58,15 @@ Two things ride with it and are stated on the order, not assumed:
   call at 0.68× of the 2.0× threshold. A fabricator's splice detail that slips materially
   more moves §7d, and §7d moves the shares. It cannot be quietly relaxed.
 
-## 8c. The west collector — zero drag, and it is geometry that makes it zero
+## 8c. The west collector — WRONG as written, corrected 2026-09-30
 
-A collector drags the deck's boundary shear along the support line into the part of the line
-that actually resists. The west line's resisting element is `W-BW-SCREEN`, which runs from
-y = 36.646 to y = 43.219: **6.573' long against a 6.000' deck depth**, and the 6.000' of deck
-edge lies entirely within it. Every foot of the deck's west boundary lands directly on the
-panel's top plate, so the drag length is zero and the drag force is
-
-```
-drag = v x (W - L_panel over W) = 150.8 plf x 0.000' = 0 lb
-```
-
-Graded at zero, and the row is a **detailing** row (deck edge covered / panel run overlapping
-it, 6.000' / 6.000' = 1.00) rather than a force, because there is no force. The panel's own
-top plate is the chord and the collector both, and the shear enters it through the same
-boundary nailing §7 already graded.
+This section said the west line's drag was zero because "every foot of the deck's west boundary
+lands directly on the panel's top plate". It does not: the top plate is at +4'-0" and the deck
+bears on the header at +7'-4". The 2'-4 1/8" band between held only slats and two pinned 6x6s,
+and the shear had to bend them to reach the panel. The collector is the header itself, fed by
+the eave clips; the band is braced by CS16 X-straps and the panel is read over its chords. All
+of it is `canopy_west_band.md` §2-§4; `engineering/lateral_band.py` makes an unbridged band
+INCOMPLETE rather than zero.
 
 ## 8d. The east collector — the connection, not the member
 

@@ -27,4 +27,7 @@ def engineering_context(ctx) -> EngineeringContext:  # type: ignore[no-untyped-d
                               preferences=getattr(ctx, "preferences", None),
                               soil_class=getattr(ctx, "soil_class", None),
                               soil_basis=getattr(ctx, "soil_basis", None),
-                              bracing=surplus_reader(ctx.model))
+                              bracing=surplus_reader(ctx.model),
+                              seismic_design_category=getattr(
+                                  getattr(ctx, "profile", None), "seismic_design_category",
+                                  None))

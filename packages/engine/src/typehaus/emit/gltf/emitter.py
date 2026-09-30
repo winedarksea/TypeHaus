@@ -316,7 +316,9 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             _add_member(mb, member, authored)
         # ``brace.kind`` rather than the literal: ResolvedBrace hosts wedges too, and the
         # Inspector should not label six drainage shims as knee braces.
-        scene.add_object(mb, ("framing",), kind=brace.kind, uid=brace.uid)
+        # A strap selects as a brace (it is one); the Inspector reads "strap" off model.json.
+        scene.add_object(mb, ("framing",), kind="brace" if brace.kind == "strap" else brace.kind,
+                         uid=brace.uid)
 
     # Soffit ladder framing. ``ResolvedModel.all_members()`` has collected these since the
     # soffit generator landed, so they are in the BOM and in

@@ -21,6 +21,7 @@ from typehaus.cli.takeoff_report import (
     _unpriced_note,
 )
 from typehaus.findings import Severity
+from typehaus.resolve.strap_braces import STRAP_CATEGORY
 
 
 @app.command()
@@ -80,7 +81,8 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
     if any(finding.severity is Severity.ERROR for finding in findings):
         _print_findings(findings)
         raise typer.Exit(1)
-    framing = Counter(f"{member.category}:{member.profile}" for member in model.all_members())
+    framing = Counter(f"{member.category}:{member.profile}" for member in model.all_members()
+                      if member.category != STRAP_CATEGORY)
     bom = bill_of_materials(model)
     framing_bom = bom["framing"]
     framing_by_size = bom["framing_by_size"]

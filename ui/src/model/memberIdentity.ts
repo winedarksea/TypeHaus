@@ -19,11 +19,11 @@ import type {
 // key, so this separator can never be ambiguous with the parts it joins.
 export const MEMBER_UID_SEPARATOR = "::";
 
-// "brace" and "wedge" are one pool (a ResolvedBrace hosts both) but two owner kinds: the
-// Inspector says "select the wedge", not "select the brace", for a drainage shim.
+// "brace", "wedge" and "strap" are one pool (a ResolvedBrace hosts all three) but distinct owner
+// kinds: the Inspector says "select the wedge", not "select the brace", for a drainage shim.
 // "rebar" is a host (wall, footing, slab, post) whose bars came from the lazy rebar payload.
 export type MemberOwnerKind =
-  "wall" | "roof" | "floor" | "stair" | "soffit" | "brace" | "wedge" | "rebar";
+  "wall" | "roof" | "floor" | "stair" | "soffit" | "brace" | "wedge" | "strap" | "rebar";
 
 export function memberUid(ownerUid: string, memberKey: string): string {
   return `${ownerUid}${MEMBER_UID_SEPARATOR}${memberKey}`;

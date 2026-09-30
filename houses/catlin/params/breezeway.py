@@ -42,6 +42,7 @@ from params.north_entry_frame import (
     GARAGE_LANDING_WEST_FT,
     GARAGE_SEAT_Y_FT,
     HEADER_SOFFIT_FT,
+    HEADER_SOUTH_Y_FT,
     HEADER_TOP_FT,
     HOUSE_CLADDING_Y_FT,
     HOUSE_SEAT_Y_FT,
@@ -251,7 +252,7 @@ NOTES = [
     Annotation(uid="BWAN03AAAA", tag="AN-BW-ROOF", position=pt(ft(22), ft(40)),
                text=("CANOPY RF-BW-CANOPY BEARS ON ITS OWN FOUR SUPPORTS AND BRACES OFF THE GARAGE: 3 trusses @24in span 24ft on BM-BW-RW/RE. "
                      + roof_note(EAST_POST_SYSTEM) + ". "
-                     + "WEST header on two 6x6 KDAT columns PT-BW-CW/CNW over 12in piers; W-BW-SCREEN, the sheathed panel under the slats, is graded at 100% of N-S. LATERAL LOAD crosses the joint into RF-GARAGE: E-W through the 7 LSTA24 straps and 7 LTP4 clips (CN-BW-GCLIP-1..7) from RF-GARAGE's south gable frame into W-G-S (STHD14 CN-G-BWHD-S-DR at D-G-SERVICE's east jamb); N-S through RF-GARAGE to W-G-E / W-G-W (notes/canopy_garage_diaphragm.md). NO gravity bearing on W-G-W/W-G-E or on any garage framing. Each truss ties to its header with a stainless H2.5ASS both ends (CN-BW-TRTIE-*). Headers run 8in past the north columns so the roof plane reaches the garage wall, and carry NO truss on that tail -- the deck bridges the last 1ft 9-3/8in to RF-GARAGE's own gable truss, leaving the garage south wall plane clear for its cladding and the fire/draft closure; sheathing CONTINUOUS across the garage south wall line and TIED with 7 LSTA24 straps @4ft o.c. (CN-BW-JOINT-1..7) — the two roofs are ONE plane and move together; the strap line carries in-plane shear and tension only, never gravity. Both eaves get the garage's own fascia and a CONTINUOUS 5in trough falling north to TR-G-LEADER-E/-W; NO leader at the canopy south end. No soffit — open tails. South gable of RF-GARAGE and both ends of RF-BW-CANOPY are CLOSE RAKES (sheathing cantilever + fascia), no ladder framing, no barge rafter. NEITHER END OF THE CANOPY IS A GABLE END: all three canopy trusses are ordinary FIELD trusses spanning 24ft, NOT gable-end frames -- a gable-end frame is supported continuously by the wall under its bottom chord and does not span, and there is no wall under either canopy end. Design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses\"")),
+                     + "HEADERS are 5-1/2x11-7/8 treated glulam (24F-V4 DF), starting at each south post's south face. WEST header on two 6x6 KDAT columns PT-BW-CW/CNW on 14in piers: ACE6Z end cap (CW) and AC6Z (CNW), MAX nailing, A35Z angles on the free post faces; cast-in CBSQ66-SDS2 bases, F2 along the screen, straps >= 3in from the pier edge, the four #5 on the cage diagonals. W-BW-SCREEN, the sheathed panel under the slats, is graded at 100% of N-S: 8d at 4in edges, nailed to both 6x6 chords. THE BAND OVER IT is braced by a CS16 X on EACH face (SB-BW-BAND-*), flush with the post and glulam faces, 6 - 10d x 2-1/2 HDG at each end, and the deck's shear reaches the header through 6 LTP4 on the eave blocking (CN-BW-EAVE-*). LATERAL LOAD crosses the joint into RF-GARAGE: E-W through the 7 LSTA24 straps and 7 LTP4 clips (CN-BW-GCLIP-1..7) from RF-GARAGE's south gable frame into W-G-S (STHD14 CN-G-BWHD-S-DR at D-G-SERVICE's east jamb); N-S through RF-GARAGE to W-G-E / W-G-W (notes/canopy_garage_diaphragm.md). NO gravity bearing on W-G-W/W-G-E or on any garage framing. Each truss ties to its header with a stainless H2.5ASS both ends (CN-BW-TRTIE-*). Headers run 8in past the north columns so the roof plane reaches the garage wall, and carry NO truss on that tail -- the deck bridges the last 1ft 9-3/8in to RF-GARAGE's own gable truss, leaving the garage south wall plane clear for its cladding and the fire/draft closure; sheathing CONTINUOUS across the garage south wall line and TIED with 7 LSTA24 straps @4ft o.c. (CN-BW-JOINT-1..7) — the two roofs are ONE plane and move together; the strap line carries in-plane shear and tension only, never gravity. Both eaves get the garage's own fascia and a CONTINUOUS 5in trough falling north to TR-G-LEADER-E/-W; NO leader at the canopy south end. No soffit — open tails. South gable of RF-GARAGE and both ends of RF-BW-CANOPY are CLOSE RAKES (sheathing cantilever + fascia), no ladder framing, no barge rafter. NEITHER END OF THE CANOPY IS A GABLE END: all three canopy trusses are ordinary FIELD trusses spanning 24ft, NOT gable-end frames -- a gable-end frame is supported continuously by the wall under its bottom chord and does not span, and there is no wall under either canopy end. Design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses\"")),
 
     Annotation(uid="BWAN01AAAA", tag="AN-BW-STRUCTURE", position=pt(ft(7), ft(39)),
                text=("LANDING: ONE tier of beams. Two seat beams east-west on the piers at -0ft 8-1/4in; 2x8 joists @12in o.c. run NORTH-SOUTH straight on them, cantilevering 9-1/2in south and 7-1/4in north. BM-BW-FC/FE run north-south in the SAME plane (not a second tier) and exist only to reach the interior landing under D-G-SERVICE's sill, 3-3/4in over the continuous ICF stem; they hang (HU28-2Z) in BM-BW-LAND-HDR, a 3-2x12 KDAT header across the full 36in flight at the landing's north edge, which stands on PT-BW-IC and PT-BW-IE, 4x4 KDAT 21-3/4in tall on ABU44 standoff bases bearing on SL-G-FLOOR as cast: NO anchor bolt and NO slab thickening (~405 lb per post, about 5 psi on the 40 psi under-slab XPS; the bolt was what wanted the thickening). The bases claim no uplift and no lateral (north_entry_structure.md). The interior landing's west edge is closed by W-G-W; ST-G-SERVICE's stringers hang on the header's north face on LSCZ; its handrail is wall-mounted on 2x blocking (BK-G-W-RAIL-*). No bearing on the house and none on the garage. TWO PIER DEPTHS ON PURPOSE: the three HOUSE-side piers (PT-BW-W/E and the east-line pier) bottom at -9ft 9-7/16in and must be cast WITH the basement excavation while it is open — casting them after backfill undermines the house footing, and the depth costs shaft only because the hole is already there. The three GARAGE-side piers (PT-BW-GW/GE and the east-line pier) bottom at -7ft 0in, coplanar with the garage strip footings, and are cast with the garage foundation in the same pour. " + landing_note(EAST_POST_SYSTEM) + ". Hold deck boards 1/2in off the house cladding and let the gap drain")),
@@ -360,29 +361,27 @@ SCREEN_PANEL = Wall(
     alignment=face("stud-ext", offset=inch(-1.75)),
     shear_panel=ShearPanelSpec(
         sheathing_layer="cdx-out",
-        fastening=('8d common (0.131" x 2 1/2") at 6" o.c. at every panel edge and 12" '
-                   'o.c. in the field, panel edges BLOCKED; 2x4 KDAT framing at 16" o.c. '
-                   '— the WEST face alone, the east 303 ply is finish and is not counted'),
-        source=("AWC SDPWS-2015 Table 4.3A, wood structural panel shear wall, 15/32\" "
-                "sheathing with 8d at 6\" edge spacing — quoted for this 5/8\" panel "
-                "because thicker sheathing at the same schedule is not weaker, and the "
-                "PLYWOOD G_a rather than the OSB one for the same reason"),
-        unit_shear_asd_plf=182.5,
+        fastening=('8d common (0.131" x 2 1/2") at 4" o.c. at every panel edge and 12" '
+                   'o.c. in the field, panel edges BLOCKED, the sheet nailed to both 6x6 '
+                   'chords; 2x4 KDAT framing at 16" o.c. — the WEST face alone, the east '
+                   '303 ply is finish and is not counted'),
+        source=("AWC SDPWS-2015 Table 4.3A, wood structural panels - sheathing, 15/32\" "
+                "with 8d at 4\" edges, v_w 530 plf nominal / 2.0 — quoted for this 5/8\" "
+                "panel because thicker sheathing at the same schedule is not weaker; G_a "
+                "kept at the 6\" plywood row's 11.0, the softer end"),
+        unit_shear_asd_plf=265.0,
         apparent_stiffness_kips_per_in=11.0,
         chords=("PT-BW-CW and PT-BW-CNW, the two 6x6 KDAT columns this wall is framed "
-                "around (`within_wall`), down through BM-BW-SCSILL and the two seat beams "
-                "to the cast piers directly under them. NO hold-down device: the panel's "
-                "own dead load is claimed to hold it, and `lateral_system` grades that "
-                "claim rather than taking it"),
-        chord_member="2x4", chord_plies=2,
+                "around (`within_wall`), 4.979ft centre to centre, each on a cast-in "
+                "CBSQ66-SDS2 in its 12in pier; the band over the panel is braced by the "
+                "CS16 X-straps of params/entry_band_brace.py (notes/canopy_west_band.md)"),
+        chord_refs=("PT-BW-CW", "PT-BW-CNW"),
+        chord_member="6x6", chord_plies=1,
         anchorage_slip=inch(0.0625),
-        # The hold-down is the standoff base already under each 6x6, and it is already in
-        # this model and already in the BOM: an ABU66SS on a cast-in AB-058-10-SS, 2,190 lb
-        # of published uplift per Simpson letter L-F-SSNAILS23 against the ABU66 row of
-        # ESR-1622. What that report does NOT cover is the anchor bolt and the concrete
-        # under it (§5.6 puts both outside its scope), and `lateral_system` says so on the
-        # record rather than letting the 2,190 stand for the whole link.
-        holdown="ABU66SS",
+        # The hold-down is the base under each chord post: a cast-in CBSQ66-SDS2 whose
+        # CRACKED uplift (ESR-3050 Table 1, 3,060 lb) is measured through the concrete, so
+        # no separate bolt and no ACI Ch. 17 row stands in for it.
+        holdown="CBSQ66-SDS2",
         aspect_ratio_limit=3.5,
     ),
 )
@@ -391,7 +390,7 @@ GARAGE_STOREY_ELEMENTS.extend([*SCREEN_PANEL_NODES, SCREEN_PANEL])
 # ** THE BAND BELOW THE PANEL IS CLOSED AFTER ALL (owner, 2026-09-11). ** The paragraph above
 # leaves 7 1/4" of deck framing and the seat beams over their piers on show, "both meant to be
 # seen and both reachable to inspect". That is reversed. What sits in that band is BM-BW-SCSILL,
-# the two seat beams, and the two ABU66SS standoff bases under PT-BW-CW/-CNW -- treated wood and
+# the two seat beams, and the two CBSQ66-SDS2 cast-in bases under PT-BW-CW/-CNW -- treated wood and
 # a stainless base in the splash zone off a 4'-0" wall with no gutter over it. Running the west
 # skin down over it keeps bulk water off the column bases, which is worth more than the
 # inspection access: the bases are still reachable from the east, where nothing covers them.
@@ -430,7 +429,7 @@ SCREEN = SlatScreen(
     height=ft(HEADER_SOFFIT_FT - SCREEN_PANEL_TOP_FT),
     slat_face=inch(1.5), slat_depth=inch(3.5), clear_gap=inch(1.5),
     assembly="POST_KDAT", supported_by="W-BW-SCREEN",
-    engineering_note="In-fill only, and above the guard line: the slats carry IRC Table R301.5 fn. f's 50 lb over 1 sqft (d/c ~0.33) over a 2ft 4-3/4in span between W-BW-SCREEN's top plate and BM-BW-RW's soffit. The guard is W-BW-SCREEN below them, and the 200 lb guard load never reaches a slat.",
+    engineering_note="In-fill only, and above the guard line: the slats carry IRC Table R301.5 fn. f's 50 lb over 1 sqft (d/c ~0.33) over a 2ft 4-1/8in span between W-BW-SCREEN's top plate and BM-BW-RW's soffit, and NO shear: the band is braced by the CS16 X-straps SB-BW-BAND-* on both post faces, 1in outboard of the slats (params/entry_band_brace.py). Diagonal slats as SDPWS diagonal lumber are the recorded alternative (notes/canopy_west_band.md §8).",
 )
 
 # ** THE FOUR SEAT-BEAM BEARINGS ARE REAL HARDWARE NOW, NOT SIX INVENTED PART NUMBERS. **
@@ -465,7 +464,7 @@ for _i, (_t, _x, _y, _beam) in enumerate((
         elevation=ft(BEARING_TOP_FT), size="SS316-SHIM-35",
         connects=(_beam, f"PT-BW-{_t}")))
     # ** NONE ON THE WEST PIERS (owner, 2026-09-16). ** At W and GW the seat beam hangs off
-    # PT-BW-CW/-CNW on an HU28-2Z, and that column's anchored ABU66SS already ties it to the
+    # PT-BW-CW/-CNW on an HU28-2Z, and that column's cast-in CBSQ66-SDS2 already ties it to the
     # pier, so a tie there restrains nothing the hanger does not.
     if _t in ("W", "GW"):
         continue
@@ -484,16 +483,16 @@ for _i, (_t, _x, _y, _beam) in enumerate((
             elevation=ft(BEARING_TOP_FT), size="HETA20Z",
             connects=(_beam, f"PT-BW-{_t}")))
 
-# The two header caps. A 3-ply 2x12 is 4 1/2" wide, which is the "4x beam" the CCQ46 is
-# published for, on the 6x6 it names. `structural.uplift_path_coverage` would otherwise take
-# a DERIVED KBS1Z strap here -- a knee brace standing in for a cap, which is not the detail.
+# The two header caps (2026-09-30): the glulam ENDS on PT-BW-CW, so an ACE6Z end cap, and runs
+# on past PT-BW-CNW, so an AC6Z (ESR-2604 §3.1.3). Uids are the CCQ caps' own, re-typed. The
+# across-beam direction is the A35Z angles of params/entry_band_brace.py.
 COLUMN_CAPS = [
     Connector(uid=f"BWCC{_i}AAAAAA"[:10], tag=f"CN-BW-CAP-{_s}",
               kind=ConnectorKind.POST_CAP, position=pt(ft(_x), ft(_y)),
-              elevation=ft(HEADER_SOFFIT_FT), size="CCQ46SDS2.5",
+              elevation=ft(HEADER_SOFFIT_FT), size=_size,
               connects=("BM-BW-RW", f"PT-BW-C{_s}"))
-    for _i, (_s, _x, _y) in enumerate((("W", LANDING_WEST_FT, PIER_LINE_Y_FT),
-                                       ("NW", LANDING_WEST_FT, GARAGE_SEAT_Y_FT)))
+    for _i, (_s, _x, _y, _size) in enumerate((("W", LANDING_WEST_FT, PIER_LINE_Y_FT, "ACE6Z"),
+                                              ("NW", LANDING_WEST_FT, GARAGE_SEAT_Y_FT, "AC6Z")))
 ]
 
 # ** THE TWO SEAT BEAMS HANG OFF THE CANOPY COLUMNS (owner, 2026-09-15). ** Each seat beam is
@@ -505,7 +504,7 @@ COLUMN_CAPS = [
 # ** HU28-2Z, NOT HUC (owner). ** An HUC is the concealed-flange twin, made for screwing into
 # a POUR; the carrying member here is wood. ZMAX (G185) rather than stainless, also the
 # owner's call: the beam is effectively bearing on the column below it already, so a coating
-# failure at this joint is not catastrophic — which is not true of the ABU66SS bases at grade.
+# failure at this joint is not catastrophic — which is not true of the CBSQ bases at grade.
 #
 # ** THE HANGER FIXES THE RECORD, NOT THE GEOMETRY, AND THAT IS THE POINT. ** A hanger's
 # flange has no representation in the model, so the beam is carried to its authored joint
@@ -551,8 +550,8 @@ SEAT_BEAM_HANGERS = [
 # Why the sill hangs at all is arithmetic, and it lives on the beam in params/north_entry_frame.py.
 
 # ** THE EAST HEADER LANDS ON A CAST TOP, WHICH IS A DIFFERENT JOINT AND A DIFFERENT PART. **
-# A CCQ46SDS2.5 is a post cap: it joins a 4x beam to a 6x6 WOOD post and is fastened into
-# wood on both legs. There is no wood under BM-BW-RE any more. The joint here is the one the
+# An AC/ACE cap joins a beam to a 6x6 WOOD post and is fastened into wood on both legs. In
+# the `cast` variant there is no wood under BM-BW-RE. The joint here is the one the
 # porch columns and the two seat beams already use, and for the same two reasons: a stainless
 # shim pack holds the treated soffit clear of the pour so water cannot stand in the joint and
 # the copper treatment never touches concrete, and a cast-in HETA20Z pair -- spoons in the
@@ -568,11 +567,11 @@ def _cast_east_head_parts():
             position=pt(ft(ROOF_COLUMN_EAST_X_FT), ft(_y)),
             elevation=ft(HEADER_SOFFIT_FT), size="SS316-SHIM-35",
             connects=("BM-BW-RE", f"PT-BW-R{'E' if _t == 'E' else 'NE'}")))
-        # Paired, for the reason at SEAT_BEARINGS above. 2-1/4" is half the 4-1/2" header,
+        # Paired, for the reason at SEAT_BEARINGS above. 2-3/4" is half the 5-1/2" glulam,
         # and the header runs NORTH-SOUTH, so the offset is in x. On a 12" round each spoon
-        # sits 2-1/4" off the axis, 3-3/4" from the edge against FL11473's 1-1/2" minimum.
+        # sits 2-3/4" off the axis, 3-1/4" from the edge against FL11473's 1-1/2" minimum.
         # Prefix BWQ, not BWE: "BWEB0AAAAA" is CN-BW-STDF-RE's uid.
-        for _side, _dx in (("A", -2.25), ("B", 2.25)):
+        for _side, _dx in (("A", -2.75), ("B", 2.75)):
             out.append(Connector(
                 uid=f"BWQ{_side}{_i}AAAAAA"[:10], tag=f"CN-BW-TIE-R{_t}{_side}",
                 kind=ConnectorKind.HURRICANE_TIE,
@@ -584,42 +583,25 @@ def _cast_east_head_parts():
 
 # ** WHAT BM-BW-RE LANDS ON IS THE SWITCH (2026-09-29). ** `steel`: a welded HSS saddle with
 # HDG through-bolts over a butyl layer, and a base plate on HDG anchors and levelling nuts
-# over a drained gap. `kdat`: CCQ46SDS2.5 / ABU66SS, as the west pair. `cast`: the pack and
+# over a drained gap. `kdat`: ACE6Z / AC6Z caps and CBSQ66-SDS2 bases, as the west pair. `cast`: the pack and
 # HETA pair above. params/east_posts.py holds all three.
 EAST_HEADER_BEARINGS = east_head_parts(
     EAST_POST_SYSTEM, x_ft=ROOF_COLUMN_EAST_X_FT,
     stations={"RE": PIER_LINE_Y_FT, "RNE": GARAGE_SEAT_Y_FT},
     header_soffit_ft=HEADER_SOFFIT_FT, cast_parts=_cast_east_head_parts)
 
-# ** THE FOUR COLUMN BASES, AUTHORED FOR THE SAME REASON THE TRUSS TIES ARE. **
-# `takeoff/uplift_joints.py::post_base_rows` derives a base from the post's SECTION and names
-# the catalog model for it, which is the galvanized ABU66 -- there is no field on a `Post`
-# that says "buy the stainless variant". So the order said ABU66 while prices.toml carried a
-# note pricing that row at the stainless rate, which is a lie told twice: the BOM named the
-# wrong part and the drawings named none at all.
-#
-# These four columns are treated southern pine standing 25 3/4" out of the ground at a salted
-# entry, on the wet side of a house that buys 304/316 stainless at every KDAT joint. Authoring
-# the base stands the derived rule down (`tags_covered_by` is by tag for a post base, and a
-# post has exactly one) and puts ABU66SS on the schedule. The cast-in bolt is NOT stood down
-# with it -- `post_base_anchor_rows` unions the authored and derived populations on purpose,
-# so all four keep their AB-058-10-SS.
-#
-# ** THE STAINLESS BASE IS RATED AT THE GALVANIZED BASE'S NUMBERS (2026-09-11). ** ESR-1622
-# Table 2 still lists no SS model, and this file said for a day that the ABU66SS was therefore
-# unrated. Simpson engineering letter L-F-SSNAILS answers it directly: a stainless connector
-# carries the carbon connector's allowables, and the only thing that reduces them is stainless
-# SMOOTH-shank nail withdrawal, which a Strong-Drive SCNR ring-shank substitution buys back.
-# These bases are BOLTED, so the nail mechanism never touches the governing number: 2,190 lb
-# uplift, 18,205 lb download. Net 0.6D+0.6W is ~230 lb per column (north_entry_frame.py).
-#
-# Two conditions come with the letter and both are drawing items: every fastener at a
-# stainless connector is stainless (the 1/2" through-bolts included, not only the anchor),
-# and the 16d nails into the post are SSA16D. See `library/hardware/::ABU66SS_POST_BASE`.
+# ** THE TWO WEST COLUMN BASES ARE CAST-IN CBSQ66-SDS2 (2026-09-30). ** They are the panel's
+# hold-downs as well as the posts' bases, so the uplift has to be a published row THROUGH the
+# concrete: ESR-3050 Table 1, 3,060 lb cracked. An ABU on a cast-in bolt left that link to an
+# ACI Ch. 17 design (ESR-1622 §5.6), and no bolt is bought now. Galvanized (HDG straps, ZMAX
+# screws), matching the AC/ACE caps, the A35Zs and the CS16s; nothing stainless at these
+# joints. `axis="y"` puts F2 (1,270 lb, C-C-2024) along the screen, where the in-plane base
+# shear arrives; F1 is 485. Straps >= 3" from the pier edge (fn. 4) and the pier cage turned
+# so its four bars sit on the diagonals, clear of the straps (notes/canopy_west_band.md §5).
 COLUMN_BASES = [
     Connector(uid=f"BWCB{_i}AAAAAA"[:10], tag=f"CN-BW-BASE-{_s}",
               kind=ConnectorKind.POST_BASE, position=pt(ft(_x), ft(_y)),
-              elevation=ft(BEARING_TOP_FT), size="ABU66SS",
+              elevation=ft(BEARING_TOP_FT), size="CBSQ66-SDS2", axis="y",
               connects=(f"PT-BW-C{_s}", _pier))
     for _i, (_s, _x, _y, _pier) in enumerate((
         ("W", LANDING_WEST_FT, PIER_LINE_Y_FT, "PT-BW-W"),
@@ -646,7 +628,7 @@ COLUMN_BASES = [
 # It is honest here because the demand is gravity and nothing else. These posts stand inside
 # a garage under a landing that weighs more than any wind on it; uplift is nil. The landing's
 # lateral -- a 200 lb guard load on RL-BW-GARAGE-E -- reaches ground through the seat beams
-# on PT-BW-GW/GE, whose ABU66SS bases ARE anchored. **What nothing grades is that path**, and
+# on PT-BW-GW/GE, whose cast-in CBSQ bases ARE anchored. **What nothing grades is that path**, and
 # `notes/north_entry_structure.md` carries it as an ungraded item rather than a claim.
 #
 # The slab itself was never the question: 8.1 ft2 tributary at IRC R507.1's 50 psf is ~405 lb
@@ -685,7 +667,9 @@ INTERIOR_POST_BASES = [
 # clear. `RF-BW-CANOPY` authors `gable_ends=()`: neither end of this roof is a gable line,
 # and the engine now drops an off-module end station that is not one. The deck bridges the
 # last 1'-9 3/8" to RF-GARAGE's own gable truss, one ordinary bay.
-TRUSS_STATION_Y_FT = (PIER_LINE_Y_FT, PIER_LINE_Y_FT + 2.0, PIER_LINE_Y_FT + 4.0)
+# The layout walks from the headers' SOUTH ENDS, which moved 2 3/4" south onto the posts'
+# faces with the glulam (2026-09-30); the ties follow the trusses, not the pier line.
+TRUSS_STATION_Y_FT = (HEADER_SOUTH_Y_FT, HEADER_SOUTH_Y_FT + 2.0, HEADER_SOUTH_Y_FT + 4.0)
 TRUSS_TIES = [
     Connector(uid=f"BWTT{_i}{_s}AAAA"[:10], tag=f"CN-BW-TRTIE-{_s}{_i + 1}",
               kind=ConnectorKind.HURRICANE_TIE, position=pt(ft(_x), ft(_y)),

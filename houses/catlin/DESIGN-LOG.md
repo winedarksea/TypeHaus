@@ -16,6 +16,47 @@ bottom has no constraint-index section of its own — the constraints live in
 
 ## Site and the four structures
 
+### The canopy's west band was a moment nobody graded, and now it is a braced frame (2026-09-30)
+
+`W-BW-SCREEN` tops out at +4'-0" and the header's soffit was +6'-4 3/4". The lateral note §8c
+said the deck's west edge "lands directly on the panel's top plate"; in elevation it landed on
+two pinned 6x6s whose CCQ caps publish no lateral row, and the N-S shear bent them ~1,250 lb-ft
+to reach the panel. `lateral_lines` picks a panel by plan footprint alone, so nothing saw it.
+
+What was built instead (owner's calls in planning, engineered 2026-09-30):
+
+- **A CS16 X on each face of the band**, flush with the 6x6 and glulam faces, 1" off the slats.
+  The geometry is set by the POST END: a strap crosses a 6x6 face in 5 1/2"/cos θ and CS16 holds
+  about a nail an inch, so the tops stand 9 1/2" either side of midspan (θ 42.4°) to fit six
+  nails. Over the posts (θ ≈ 26°) five fit, and five do not carry it. 707.5 lb per strap
+  against 1,134 (0.624).
+- **The panel read over its chords.** The 182.5 plf row was right; the 6.573' length was not —
+  the run oversails both chords. Over the 5.4375' out-to-out the 6" nailing was OVER (1.05), so
+  the panel is nailed at 4" edges (265 plf, 0.725). `ShearPanelSpec.chord_refs` names the posts.
+- **The chord hold-down is graded over the full height, deck to base, 8.625'**, not the plan's
+  6.48' (which stopped at the header soffit and started at the panel base): 2,243.5 lb against
+  the CBSQ's cracked 3,060 (0.733). The plan's 0.586 was optimistic by that lever.
+- **The base shear lands on ONE base.** The plates and the sill bear end-on against the chords in
+  compression only, so all 1,045 lb reaches one CBSQ (F2 1,270, 0.823). Shared it would read 0.41.
+- **5-1/2" glulam headers**, reversing 2026-09-12's refusal, for the joints: AC6 MAX where the
+  header runs on (2,815 / 2,075 — the plan's 2,920 / 2,125 is not in ESR-2604), and ACE6 MAX
+  where it ENDS on the south post, which is ESR-2604 §3.1.3's own end cap. Extending the header
+  past the south post for an AC would have put its end 7/8" outside the rake. `roof_beam`
+  learned a glulam section (bearing governs, 0.355).
+- **14" piers under every CBSQ.** ESR-3050 fn. 4 wants 3" of side cover; on a 12" round the
+  strap corners get 2 3/4". The same 8" cage fits at 3" cover; `deck_post` took ACI 318-19
+  §10.3.1.2's reduced effective area for the 1% floor, since each column is far larger than its
+  load. This was not in the plan; it is what the plan's "check the embedded strap against the
+  cage and top cover" found.
+- **The open front's chord force** (M/W' = 87.3 lb, graded in the glulam and the end straps), its
+  couple into `W-G-E`/`W-G-W` (0.03), and the drift limit's N/A earned from SDC A through a new
+  `EngineeringContext.seismic_design_category`. §3f's "the joint closes the couple" is deleted.
+
+Rejected, and recorded in `notes/canopy_west_band.md` §8: diagonal slats as DWB / SDPWS diagonal
+lumber (no studs, gapped boards — the future option), `PLATE-TOP-0-1` as a moment cross-beam (no
+published moment rating), horizontal slats, a heavier panel alone, TWB12 (a let-in brace for
+studs the band does not have). The truss items stay open on `AN-G-TRUSS-ORDER`.
+
 ### The soil is presumed, and now it is a field rather than a paragraph (2026-09-22)
 
 `plan/site.py` has said "IT IS STILL PRESUMPTIVE, NOT A SOILS REPORT" in a comment since the

@@ -19,6 +19,9 @@ credited (``notes/canopy_garage_diaphragm.md``'s envelope):
 Every reference must resolve and the geometry must agree; otherwise the row is refused and
 the reason goes in ``missing`` by name — a delivery with a part missing is not graded.
 
+The open front's chord force, its couple into the far lines and its drift N/A are
+``open_front``'s (``notes/canopy_west_band.md`` §6).
+
 **Oracle.** ``houses/catlin/notes/canopy_garage_diaphragm.md`` §3 and §4;
 ``tests/test_diaphragm_delivery_calcs.py`` reproduces it.
 """
@@ -171,6 +174,12 @@ def delivery_rows(ctx: Any, element: Any, resolved_roof: Any, wind: Any,
     if far:
         _receiving_roof(ctx, rows, receiver, receiver_resolved, far, v_across,
                         resultants.get(across), across)
+    if delivery.open_front:
+        from typehaus.engineering.open_front import open_front_rows
+
+        far_readings = {ln.wall: r for _w, ln in far
+                        if (r := _surplus(ctx, rows, ln.wall)) is not None}
+        open_front_rows(ctx, rows, element, joints, v_along, along, far, far_readings)
 
     rows.states.append(LimitState(
         "torsional stability, delivered", 0.0 if (boundary and len(far) >= 2) else 1.0, 1.0,

@@ -77,6 +77,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "buck": (0.788, 0.694, 0.549, 1.0),           # 0xc9b18c
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
     "brace": (0.639, 0.463, 0.247, 1.0),         # 0xa3763f — as blocking
+    "strap": (0.35, 0.36, 0.38, 1.0),            # galvanized steel strap brace, as "hanger"
     # Stick-framed roof lumber + the blocking that fills between it. Values chosen to
     # round-trip exactly to the hex literals in ui/src/three/members.ts CATEGORY_COLOR.
     "rafter": (0.678, 0.498, 0.310, 1.0),        # 0xad7f4f

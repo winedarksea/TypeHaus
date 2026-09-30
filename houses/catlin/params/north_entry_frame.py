@@ -38,7 +38,7 @@ from typehaus import (
     ft, inch, pt,
 )
 
-from params.column_heads import ABU66SS_HEAD, HETA20Z_PAIR_HEAD
+from params.column_heads import CBSQ66_HEAD, HETA20Z_PAIR_HEAD
 from params.east_posts import east_supports, full_height_columns, moment_piers
 from params.foundations import SITE_GRADE
 from plan.storeys.garage import (
@@ -122,10 +122,12 @@ SEAT_TOP_FT = DECK_JOIST_TOP_FT - JOIST_DEPTH_IN / 12      # -0'-8 1/4"
 BEARING_TOP_FT = SEAT_TOP_FT - JOIST_DEPTH_IN / 12         # -1'-3 1/2", 18 1/2" above grade
 
 # The headers top out at the GARAGE PLATE, +7'-4" (W-G-E/W-G-W z1). That is what makes
-# RF-BW-CANOPY one plane with RF-GARAGE rather than a roof stepping off it. A 3-ply 2x12 is
-# 11 1/4" deep, so the soffit lands at +6'-4 3/4" -- which is also where SC-BW-WEST stops.
+# RF-BW-CANOPY one plane with RF-GARAGE rather than a roof stepping off it. The 5-1/2" x
+# 11-7/8" glulam (2026-09-30) puts the soffit at +6'-4 1/8" -- where SC-BW-WEST stops.
 HEADER_TOP_FT = 7 + 4 / 12
-HEADER_SOFFIT_FT = HEADER_TOP_FT - 11.25 / 12
+HEADER_DEPTH_IN = 11.875
+HEADER_SIZE = "5.5x11.875"
+HEADER_SOFFIT_FT = HEADER_TOP_FT - HEADER_DEPTH_IN / 12
 ROOF_COLUMN_EAST_X_FT = 30.0
 
 # ** THE SLAT CLERESTORY'S SILL IS THE PANEL'S TOP PLATE, AND THERE ARE NO RAILS. **
@@ -329,41 +331,28 @@ beam(11, "BM-BW-LAND-HDR", GARAGE_STEM_INSIDE_X_FT, LANDING_HEADER_Y_FT,
 # roof header; what bounds this tail is the header's own bending and shear, which
 # `engineering/roof_beam.py` grades.
 #
-# ** PLY COUNT IS THE LEVER, NOT DEPTH. ** Each header carries a 12' half-span of a 24' truss
-# over the 5'-8 5/8" bay = 80 sf, under the roof-step drift case (42 psf balanced + up to
-# 50 psf drift + 10 dead = 73.7 psf authored design snow), which is ~6,700 lb and a
-# 4,787 lb-ft moment. A 2-ply 2x10 KDAT at C_M 0.85 is d/c 1.57 and fails outright; a 2-ply
-# 2x12 reaches d/c 1.06 in bending and 0.76 in shear. 3-ply 2x12 is d/c 0.71 bending, 0.51
-# shear, deflection 0.037" against L/240 = 0.286". `engineering/roof_beam.py` publishes all
-# of it and notes/north_entry_piers.md Sec 5 is the hand-worked oracle.
+# ** 5-1/2" x 11-7/8" GLULAM, FLUSH WITH THE 6x6 FACES (owner, 2026-09-30). ** It replaced a
+# 3-ply 2x12 for the joints, not for bending: an AC6/ACE6 cap is published for a 5-1/2" beam
+# on a 6x6 (ESR-2604 Table 3), it is the only post cap with a lateral row along the beam, and a
+# flush face is what the band brace's straps nail across (params/entry_band_brace.py). The
+# 2026-09-12 refusal rested on `roof_beam` reading only sawn sections; it grades a glulam now
+# (24F-V4 DF, wet, snow C_D -- notes/canopy_west_band.md §7). The retired ply-seam argument
+# is moot: one member, no seam.
 #
-# ** AND THE GLULAM ALTERNATIVE IS REFUSED (owner, 2026-09-12). ** BEAM_GLULAM_TREATED would
-# carry this easily. What it would not do is stay in the register: `roof_beam.py`'s `_SECTION`
-# matches a sawn N-2xM and nothing else, so a "3.5x11.875" makes both these records go
-# INCOMPLETE, and nothing picks them up -- `engineering/glulam_beam.py` left the
-# registered-kind tuple on 2026-09-11 and is deck-only besides, 40 psf live at C_D 1.0, which
-# cannot carry this drift case. A d/c of 0.71 traded for a gap in the register is the whole
-# argument, and cost only confirms it: ~$325-450 more over these 11.4 LF, at a material rate
-# nearer 3x than the 4x this comment used to quote (prices.toml BEAM_GLULAM_TREATED/BEAM_KDAT).
-#
-# ** THE PLY SEAM, THE ONE REAL DURABILITY ARGUMENT, DOES NOT REACH THESE TWO. ** Both headers
-# ARE the canopy's eave bearing lines: the trusses land on their TOPS, so both seams sit
-# inside the roof assembly under the deck, 1'-4" inboard of the drip line (RF-BW-CANOPY's own
-# overhang). FPInnovations' mass-timber durability guidance carves out exactly this case --
-# avoid appressed parallel beams holding a capillary UNLESS the beams are preservative
-# treated, and KDAT is. This is NOT the porch's 2026-09-06 refusal repeated: that one rested
-# on butyl tape plus a formed cap, and the IRC commentary to R317.1.5 says outright that
-# capping an exposed glulam with metal is not sufficient. Neither argument transfers, so the
-# absence of a cap here is not a gap. (-> DESIGN-LOG.md, "Site and the four structures")
-beam(6, "BM-BW-RW", LANDING_WEST_FT, PIER_LINE_Y_FT,
+# ** EACH HEADER STARTS AT ITS SOUTH POST'S SOUTH FACE, NOT ITS CENTRE. ** An ACE6 end cap wants
+# the beam end over the whole post; the 2 3/4" comes out of the roof's south edge overhang,
+# so the rake does not move (plan/storeys/garage.py). The north end runs 8 7/8" past its post,
+# the AC6's continuous-beam condition with 4 5/8" to spare.
+HEADER_SOUTH_Y_FT = PIER_LINE_Y_FT - COLUMN_HALF_FT
+beam(6, "BM-BW-RW", LANDING_WEST_FT, HEADER_SOUTH_Y_FT,
      LANDING_WEST_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
-     "3-2x12")
+     HEADER_SIZE, "BEAM_GLULAM_TREATED")
 # ** WHAT THE EAST HEADER LANDS ON IS EAST_POST_SYSTEM (2026-09-29). ** Pinned 6x6 KDAT on
 # 3'-0" piers by default; steel HSS or the 2026-09-10 full-height cast columns are one word
 # away (params/east_posts.py). The tag and uid it names never change.
-beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT,
+beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOUTH_Y_FT,
      ROOF_COLUMN_EAST_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-RE", "PT-BW-RNE"), HEADER_TOP_FT,
-     "3-2x12")
+     HEADER_SIZE, "BEAM_GLULAM_TREATED")
 
 # ** THE SCREEN PANEL'S SILL, WHICH IT CANNOT DO WITHOUT AND NEARLY DID. **
 # W-BW-SCREEN stands on the column line at x=6'-0" and weighs 77 plf. Nothing was under it
@@ -570,9 +559,16 @@ def _pad_outline(x_ft, y_ft, side_in, along_in=None):
 
 
 #: What ties each head to its beam (`params/column_heads.py`). The west pair carry a 6x6
-#: canopy column on an ABU66SS and hang the seat beam off it; the rest take the HETA20Z pair.
-_HEAD_CONNECTORS = {"PT-BW-W": ABU66SS_HEAD, "PT-BW-GW": ABU66SS_HEAD,
+#: canopy column on a cast-in CBSQ66-SDS2 and hang the seat beam off it; the rest take the
+#: HETA20Z pair.
+_HEAD_CONNECTORS = {"PT-BW-W": CBSQ66_HEAD, "PT-BW-GW": CBSQ66_HEAD,
                     "PT-BW-E": HETA20Z_PAIR_HEAD, "PT-BW-GE": HETA20Z_PAIR_HEAD}
+
+#: ** 14" UNDER A CAST-IN CBSQ (2026-09-30). ** ESR-3050 Table 1 fn. 4 wants 3" of side cover
+#: to the embedded straps, and on a 12" round their corners get 2 3/4" (3.25" off the axis).
+#: 14" gives 3 3/4", keeps the same 8" cage at 3" of cover, and gives the seat beam 4 1/4" of
+#: bearing on the pier instead of 3 1/4" (notes/canopy_west_band.md §5).
+_PIER_SIZE = {"PT-BW-W": "14 round", "PT-BW-GW": "14 round"}
 
 FOOTINGS = []
 #: The house-side pads run 18" north-south rather than the 24" their square drew, because
@@ -605,7 +601,7 @@ for _uid, _tag, _x, _height, _top in (
         head_connector=_HEAD_CONNECTORS[_tag],
         # `"12 round"`. Never a nominal form like "12x12": that matches `_RE_NOMINAL` in
         # resolve/framing/profiles.py, misses LUMBER_ACTUAL and silently resolves to 1.5x5.5.
-        size="12 round", height=ft(_height), assembly="PIER_CONCRETE_12",
+        size=_PIER_SIZE.get(_tag, "12 round"), height=ft(_height), assembly="PIER_CONCRETE_12",
         # A_g = 113.10 in2, so ACI 318-19 Sec 10.6.1.1's 1% floor is 1.131 in2; (4) #5 =
         # 1.24 in2 (rho 1.096%) clears it and is the Code's own four-bar minimum for a
         # circular tie (Sec 10.7.3.1(b)). Ties are #3 at the Sec 25.7.2.2 maximum, the least
@@ -685,7 +681,8 @@ for _uid, _tag, _x, _pad_in, _top in (
     ("BWPT06AAAA", "PT-BW-GE", LANDING_EAST_FT, 18.0, BEARING_TOP_FT),
 ):
     PEDESTALS.append(Post(
-        uid=_uid, tag=_tag, position=pt(ft(_x), ft(GARAGE_SEAT_Y_FT)), size="12 round",
+        uid=_uid, tag=_tag, position=pt(ft(_x), ft(GARAGE_SEAT_Y_FT)),
+        size=_PIER_SIZE.get(_tag, "12 round"),
         head_connector=_HEAD_CONNECTORS[_tag],
         height=ft(_top - GARAGE_FOOTING_TOP_FT), assembly="PIER_CONCRETE_12",
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
@@ -730,11 +727,10 @@ for _uid, _tag, _x, _pad_in, _top in (
         bottom_elevation=ft(GARAGE_FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT
                             if _tag in _MOMENT_PIERS else GARAGE_PIER_BOTTOM_FT)))
 
-# The two roof columns. Pier/pedestal top -0'-8 1/4" to header soffit +6'-4 3/4" = 7'-1".
-# k*lu/d = 15.5, nowhere near NDS Sec 3.7.1.4's limit of 50. Standoff base ABU66SS on a
-# cast-in AB-058-10-SS, CCQ cap at the header -- all three are live rows in prices.toml, and
-# the counts are DERIVED by `takeoff/uplift_joints.py::post_base_anchor_rows`, so authoring
-# the posts is what makes them reappear.
+# The two west roof columns. Pier top -1'-3 1/2" to header soffit +6'-4 1/8" = 7'-7 5/8".
+# k*lu/d under 17, nowhere near NDS Sec 3.7.1.4's limit of 50. A cast-in CBSQ66-SDS2 base
+# (no separate bolt) and an ACE6Z/AC6Z cap at the header, all live rows in prices.toml;
+# `engineering/wood_roof_post` grades both posts, `lateral_system` their chord role.
 #
 # ** UPLIFT IS NOT A GOVERNING CASE, AND THIS IS THE NUMBER THAT SAYS SO. ** At 115 mph
 # Exposure B, q_h ~ 16.4 psf; a free-roof coefficient near 1.3 gives ~1,500 lb of uplift per
@@ -759,7 +755,7 @@ ROOF_COLUMNS = [
     # Both stand ON the screen panel's line, interior to its run, so the panel's plates and
     # studs are cut around them and the 2x4 infill butts the column faces (``Post
     # .within_wall``). The field is geometric only: these two still stand on their own
-    # authored ABU66SS bases over cast piers, and still buy their cast-in bolts.
+    # authored cast-in CBSQ66-SDS2 bases over cast piers (no separate bolt).
     Post(uid=_uid, tag=_tag, position=pt(ft(_x), ft(_y)),
          size="6x6", height=ft(COLUMN_HEIGHT_FT), assembly="POST_KDAT", supported_by=_pier,
          within_wall="W-BW-SCREEN")

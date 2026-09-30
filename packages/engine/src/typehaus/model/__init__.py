@@ -23,6 +23,7 @@ from typehaus.model.assembly import (
 from typehaus.model.backing import WallBacking
 from typehaus.model.base import Element, HausModel
 from typehaus.model.braced_wall import BracedWallPanel
+from typehaus.model.braces import StrapBrace
 from typehaus.model.concrete_materials import AsrSpec, CementSpec, ScmFractions
 from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
@@ -323,7 +324,8 @@ __all__ = [
     "SegmentalWallSpec", "SrwDrainageZone", "EndRestraint",
     "Post", "Beam", "SlatScreen",
     "FrenchDrain", "Drywell", "AreaDrain",
-    "Dowel", "IsolationBoard", "Connector", "PlateTie", "KneeBrace", "Wedge", "Railing",
+    "Dowel", "IsolationBoard", "Connector", "PlateTie", "KneeBrace", "StrapBrace", "Wedge",
+    "Railing",
     "Fascia", "Gutter",
     "Flashing", "MovementJoint",
     "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveDripEdge", "EaveTrim", "GlazingPanel",

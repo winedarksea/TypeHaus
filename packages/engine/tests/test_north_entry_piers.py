@@ -208,15 +208,14 @@ def test_the_module_agrees_with_this_note(catlin_engineering):
     records = {results[item].key: results[item] for item in results
                if item.startswith("roof_beam/")}
     assert set(records) == {"BM-BW-RW", "BM-BW-RE"}
+    # §5 worked the 3-ply 2x12; since 2026-09-30 the headers are 5-1/2" x 11-7/8" glulam and
+    # canopy_west_band.md §7 is the hand pass (bearing on the post governs, 0.355).
     for record in records.values():
         states = {state.name: state for state in record.limit_states}
-        assert set(states) == {"bending", "shear", "deflection"}
-        assert states["bending"].demand == pytest.approx(4787.0, abs=15.0)
-        assert states["bending"].capacity == pytest.approx(6766.0, abs=15.0)
-        assert states["bending"].ratio == pytest.approx(0.71, abs=0.01)
-        assert states["shear"].ratio == pytest.approx(0.51, abs=0.01)
-        assert states["deflection"].ratio == pytest.approx(0.13, abs=0.01)
-        assert max(s.ratio for s in states.values()) == states["bending"].ratio
+        assert set(states) == {"bending", "shear", "bearing on the post", "deflection"}
+        assert states["bending"].ratio == pytest.approx(0.146, abs=0.002)
+        assert states["bearing on the post"].ratio == pytest.approx(0.355, abs=0.002)
+        assert max(s.ratio for s in states.values()) == states["bearing on the post"].ratio
 
 
 def test_the_pad_hook_is_graded_against_the_pads_own_cover(catlin_engineering):
@@ -225,7 +224,8 @@ def test_the_pad_hook_is_graded_against_the_pads_own_cover(catlin_engineering):
     ldh = 60_000 * (5_000 / 15_000 + 0.6) / (55 * math.sqrt(5_000)) * db ** 1.5
     available = 12.0 - 3.0 - db   # the engine also deducts one bar diameter
     results = catlin_engineering.engineering
-    for tag in ("PT-BW-RE", "PT-BW-RNE"):
+    # The pinned east posts' piers carry the moment cage in `kdat` (the `cast` columns did).
+    for tag in ("PT-BW-PE", "PT-BW-PNE"):
         state = next(s for s in results[f"deck_post/{tag}"].limit_states
                      if s.name == "dowel anchorage into the base")
         assert state.demand == pytest.approx(ldh, abs=0.01)

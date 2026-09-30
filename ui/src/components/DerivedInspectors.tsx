@@ -231,7 +231,7 @@ function sectionSummary(located: LocatedMember): string {
 // "select the soffit" has to ask for the solid, or the click resolves to nothing.
 const OWNER_SELECTION_KIND: Record<MemberOwnerKind, SelectionKind> = {
   wall: "wall", roof: "roof", floor: "floor", stair: "stair", soffit: "solid",
-  brace: "brace", wedge: "wedge", rebar: "solid",
+  brace: "brace", wedge: "wedge", strap: "brace", rebar: "solid",
 };
 
 /** A picked member uid, resolved against the model and the lazily loaded rebar pool. */

@@ -26,8 +26,9 @@ from library import (
     WINDOW_TYPES_16_INCH_MODULE,
 )
 
-from params import (breezeway, driveway, foundations, hp1_north_pad, hp3_pad, landscape_gardens,
-                    landscape_walk, main_deck, raised_garden, roof_trim, second_deck, solar,
+from params import (breezeway, driveway, entry_band_brace, foundations, hp1_north_pad, hp3_pad,
+                    landscape_gardens, landscape_walk, main_deck, raised_garden, roof_trim,
+                    second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, braced_walls,
                   circuits, countertops, panel_types,
@@ -415,7 +416,7 @@ PLAN = (
     # is `[]` at line 288 and `.extend()`ed twice further down the module, so read it at
     # import time, not at its assignment.
     .with_elements("entry-low", [*breezeway.GARAGE_STOREY_ELEMENTS])
-    .with_elements("entry", [*breezeway.MAIN_ELEMENTS])
+    .with_elements("entry", [*breezeway.MAIN_ELEMENTS, *entry_band_brace.ELEMENTS])
     # --- yard (sitework) -------------------------------------------------------------------
     .with_elements("yard-grade", [*hp3_pad.MAIN_ELEMENTS, *hp1_north_pad.MAIN_ELEMENTS,
                                   *landscape_gardens.MAIN_ELEMENTS, *landscape.APPLES,

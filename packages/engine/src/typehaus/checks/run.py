@@ -137,7 +137,9 @@ def resolve_profile(preferences: Preferences,
 
 def build_engineering(model: ResolvedModel, prefs: Preferences, house_dir: Path | None,
                       soil_class: str | None = None,
-                      soil_basis: object = None) -> tuple[EngineeringResults,
+                      soil_basis: object = None,
+                      seismic_design_category: str | None = None,
+                      ) -> tuple[EngineeringResults,
                                                           EngineeringRegister]:
     """The suite's result map and the house's seal register, for one CheckContext.
 
@@ -152,7 +154,8 @@ def build_engineering(model: ResolvedModel, prefs: Preferences, house_dir: Path 
     results = EngineeringResults(
         EngineeringContext(plan=model.plan, model=model, preferences=prefs,
                            soil_class=soil_class, soil_basis=soil_basis,
-                           bracing=surplus_reader(model)))
+                           bracing=surplus_reader(model),
+                           seismic_design_category=seismic_design_category))
     return results, load_register(house_dir)
 
 
@@ -167,7 +170,8 @@ def build_context(plan: PlanModel, house_dir: Path | None = None,
     # against another.
     engineering, register = build_engineering(model, prefs, house_dir,
                                               site_soil_class(plan, jurisdiction),
-                                              site_soil_basis(plan, jurisdiction))
+                                              site_soil_basis(plan, jurisdiction),
+                                              jurisdiction.seismic_design_category)
     ctx = CheckContext(
         plan=plan, model=model, preferences=prefs,
         profile=jurisdiction, resolve_findings=resolve_findings,
@@ -209,7 +213,8 @@ def run_from_model(model: ResolvedModel, resolve_findings: list[Finding],
     jurisdiction = resolve_profile(prefs, profile)
     engineering, register = build_engineering(model, prefs, house_dir,
                                               site_soil_class(model.plan, jurisdiction),
-                                              site_soil_basis(model.plan, jurisdiction))
+                                              site_soil_basis(model.plan, jurisdiction),
+                                              jurisdiction.seismic_design_category)
     ctx = CheckContext(plan=model.plan, model=model, preferences=prefs,
                        profile=jurisdiction,
                        resolve_findings=resolve_findings,

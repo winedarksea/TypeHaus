@@ -10,6 +10,15 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   retypes through a centre-holding macro. Re-affirmed deferred 2026-08-07.
 ## Remaining Work
 
+- **Order the canopy and garage trusses from a fabricator who seals them** — the last four
+  canopy UNKNOWNs (`rafter/RF-BW-CANOPY`, `rafter/RF-GARAGE`, `structural.truss_reactions`,
+  `structural.uplift_capacity`) close only on those drawings. The ask is `AN-G-TRUSS-ORDER` in
+  `houses/catlin/plan/storeys/garage.py`: reactions per bearing with their snow/drift/wind
+  basis, the five drift trusses, the canopy's open south-end truss out of plane, and the N-S
+  chord with its 0.03" splice slip. On receipt, author `Roof.published_reactions` on both
+  roofs and record the component seal in `engineering.toml`. Also confirm the retail price
+  ranges for AC6Z / ACE6Z / A35Z / CBSQ66-SDS2 in `prices.toml` (marked UNCONFIRMED).
+
 - **Confirm First Class sheet vinyl can be flash-coved** (Tarkett install guide). RM-S-PLANT's
   waterproofing is a 6" cove behind the wall membrane (`houses/catlin/notes/plant_room.md`).
   Researched 2026-09-26: the current FiberFloor guide (03/2024) is SILENT on coving, and its

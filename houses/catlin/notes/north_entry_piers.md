@@ -229,6 +229,11 @@ pine at an entry salted every winter, and the house buys stainless at every KDAT
 
 ## 5. The headers — `BM-BW-RW` / `BM-BW-RE` (oracles `engineering/roof_beam.py`)
 
+> **Superseded for these two headers on 2026-09-30.** They are 5-1/2" x 11-7/8" glulam now,
+> for the AC/ACE caps and the band brace, and `canopy_west_band.md` §7 is their hand pass
+> (bearing on the post governs, 0.355). This section stays as the oracle for a SAWN built-up
+> roof beam, which is still the rule `roof_beam` applies to an `N-2xM` section.
+
 3-ply 2x12 KDAT, southern yellow pine No. 2.
 
 | term | working | value |

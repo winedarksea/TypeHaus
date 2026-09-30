@@ -52,6 +52,10 @@ class EngineeringContext:
     #: and this package may not import it, so ``checks/run.build_engineering`` hands a reader
     #: in, as it hands the soil class in. ``None`` here makes those rows INCOMPLETE, by name.
     bracing: object = None
+    #: The seismic design category the site is built to (IRC R301.2.2), or ``None``. A site
+    #: fact like the soil class; what a calc may do with it is EARN a NOT-APPLICABLE on a
+    #: provision that is seismic-only (SDPWS 4.2.5.2's drift limit), never branch arithmetic.
+    seismic_design_category: str | None = None
 
 
 #: ``kind`` -> the function that enumerates and computes every item of that kind.
