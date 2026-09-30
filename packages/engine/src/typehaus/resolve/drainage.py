@@ -18,10 +18,12 @@ from typehaus.model.structure import Drywell, FrenchDrain
 from typehaus.model.trim import Downspout
 from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
 from typehaus.resolve.geometry import circle_outline, rect_between
-from typehaus.resolve.model import ResolvedModel, ResolvedSolid
+from typehaus.resolve.model import ResolvedModel, ResolvedSolid, SolidSweep
 from typehaus.resolve.overlay import difference, union_all
 from typehaus.resolve.rain_garden import floor_z_m
+from typehaus.resolve.round_solids import PIPE_FACETS
 from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.resolve.sweep import clean_path, round_profile, sweep_plan_silhouette, sweep_z_extent
 
 #: Overlap a basin may leave outside its slab and still count as inside it: grid noise.
 _BASIN_SLACK_M2 = 1e-8
@@ -134,22 +136,36 @@ def _resolve_rain_garden(model: ResolvedModel, el: RainGarden, storey: str) -> l
 
 
 def _resolve_leader_extension(model: ResolvedModel, el: Downspout, storey: str) -> None:
-    """The buried pipe on its fall, plus the riser from the leader's foot down to it."""
+    """One swept buried pipe on its fall, plus the riser to the leader's foot."""
     ext = el.extension
     assert ext is not None
+    # A downspout belongs to its roof storey, but the buried run belongs with the
+    # foundation-level site work so the level filter does not hide it with the roof.
+    extension_storey = _lowest_building_storey(model, storey)
     path = [point.xy_m for point in ext.path]
     if len(path) < 2:
         return
     diameter = ext.diameter.meters
-    path, inverts = _densified(path, ext.inlet_invert.meters, ext.outlet_invert.meters)
-    model.solids.extend(drain_tile_solids(
-        el.uid, f"{el.tag}-EXT", storey, path, ext.inlet_invert.meters, _pipe_spec(ext),
-        closed=False, segment_floor_z_m=inverts, category="leader_extension", bedding_m=0.0))
+    inverts = _segment_inverts(path, ext.inlet_invert.meters, ext.outlet_invert.meters)
+    # The authored elevations are pipe inverts. Sweeps are centred, so lift each vertex
+    # by the radius; intermediate authored bends keep their distance-weighted fall.
+    sweep_path = clean_path([
+        (x, y, invert + diameter / 2.0)
+        for (x, y), invert in zip(path, inverts, strict=True)
+    ])
+    if len(sweep_path) >= 2:
+        sweep = SolidSweep(path=sweep_path,
+                           profile=round_profile(diameter / 2.0, PIPE_FACETS))
+        z0, z1 = sweep_z_extent(sweep)
+        model.solids.append(ResolvedSolid(
+            uid=f"{el.uid}-EXT", tag=f"{el.tag}-EXT", storey=extension_storey,
+            category="leader_extension", outline=sweep_plan_silhouette(sweep),
+            z0_m=z0, z1_m=z1, material=ext.material, sweep=sweep))
     x, y = path[0]
     half = diameter / 2.0
     if el.bottom_elevation.meters > ext.inlet_invert.meters:
         model.solids.append(ResolvedSolid(
-            uid=f"{el.uid}-RS", tag=f"{el.tag}-EXT-RISER", storey=storey,
+            uid=f"{el.uid}-RS", tag=f"{el.tag}-EXT-RISER", storey=extension_storey,
             category="leader_extension",
             outline=[(x - half, y - half), (x + half, y - half), (x + half, y + half),
                      (x - half, y + half)],
@@ -157,11 +173,12 @@ def _resolve_leader_extension(model: ResolvedModel, el: Downspout, storey: str) 
             material=ext.material))
 
 
-def _pipe_spec(ext):
-    from typehaus.resolve.model import ResolvedDrainTile
-
-    return ResolvedDrainTile(diameter_m=ext.diameter.meters, material=ext.material,
-                             sock=False, discharge=None, rock_width_m=None, rock_depth_m=None)
+def _lowest_building_storey(model: ResolvedModel, storey: str) -> str:
+    """Place below-grade work on the lowest storey of its owning building."""
+    candidates = model.plan.storeys_of(model.plan.building_of(storey))
+    if not candidates:
+        return storey
+    return min(candidates, key=lambda candidate: candidate.elevation.meters).tag
 
 
 def _resolve_french_drain(model: ResolvedModel, el: FrenchDrain,
