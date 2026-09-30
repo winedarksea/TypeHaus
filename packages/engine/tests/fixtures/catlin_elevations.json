@@ -15224,10 +15224,10 @@
 "3fffe598b188"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-lo-0-drip-edge-face": [
-1.3631333,
-2.4357326,
+1.3546667,
+2.4436638,
 5,
-"c657a93db1a6"
+"6215b9866ff3"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-lo-0-drip-edge-flange": [
 1.3546667,
@@ -15236,34 +15236,22 @@
 "489c3bdfdeba"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-lo-0-drip-edge-kick": [
-1.3631333,
-2.3976326,
+1.3546667,
+2.4055638,
 5,
-"61cdcd4f4e78"
+"79ee251428e9"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-lo-0-drip-edge-nose": [
 1.3546667,
-2.4568993,
+2.4563638,
 5,
-"4b65d82be0d5"
-],
-"geometry/CGRF01AAAA::framing/member:rake-lo-0-fascia-0": [
-2.2965833,
-3.77825,
-8,
-"1d0a2fa372e8"
-],
-"geometry/CGRF01AAAA::framing/member:rake-lo-0-fascia-1": [
-2.2711833,
-3.7988659,
-8,
-"b867792f5a82"
+"489c3bdfdeba"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-lo-1-drip-edge-face": [
--1.3631333,
-3.7988659,
+-1.3546667,
+3.7983305,
 5,
-"3275e0d5eb69"
+"891679bf61d9"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-lo-1-drip-edge-flange": [
 -1.3546667,
@@ -15272,28 +15260,16 @@
 "d3f078b2a398"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-lo-1-drip-edge-kick": [
--1.3631333,
-3.7607659,
+-1.3546667,
+3.7602305,
 5,
-"0afa13fb1d89"
+"0042b2714c1a"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-lo-1-drip-edge-nose": [
 -1.3546667,
-3.8115659,
+3.8110305,
 5,
-"d4a7ba3fccb5"
-],
-"geometry/CGRF01AAAA::framing/member:rake-lo-1-fascia-0": [
-2.2965833,
-3.77825,
-8,
-"9cf611064ba6"
-],
-"geometry/CGRF01AAAA::framing/member:rake-lo-1-fascia-1": [
-2.2711833,
-3.7988659,
-8,
-"aa1db5dac810"
+"d3f078b2a398"
 ],
 "geometry/CGRF01AAAA::framing/member:ridge-vent-cap": [
 3.7614529,
@@ -53114,10 +53090,10 @@
 "d24318931c1e"
 ],
 "geometry/YX2GDZJMBV::framing/member:rake-hi-0-drip-edge-face": [
-1.3631333,
-2.4357326,
+1.3546667,
+2.4436638,
 5,
-"4640c3739625"
+"e75197619a90"
 ],
 "geometry/YX2GDZJMBV::framing/member:rake-hi-0-drip-edge-flange": [
 1.3546667,
@@ -53126,34 +53102,22 @@
 "f64c91734454"
 ],
 "geometry/YX2GDZJMBV::framing/member:rake-hi-0-drip-edge-kick": [
-1.3631333,
-2.3976326,
+1.3546667,
+2.4055638,
 5,
-"61cdcd4f4e78"
+"79ee251428e9"
 ],
 "geometry/YX2GDZJMBV::framing/member:rake-hi-0-drip-edge-nose": [
 1.3546667,
-2.4568993,
+2.4563638,
 5,
-"ba1b4ab30c0c"
-],
-"geometry/YX2GDZJMBV::framing/member:rake-hi-0-fascia-0": [
-2.2965833,
-3.77825,
-8,
-"1d0a2fa372e8"
-],
-"geometry/YX2GDZJMBV::framing/member:rake-hi-0-fascia-1": [
-2.2711833,
-3.7988659,
-8,
-"b867792f5a82"
+"f64c91734454"
 ],
 "geometry/YX2GDZJMBV::framing/member:rake-hi-1-drip-edge-face": [
--1.3631333,
-3.7988659,
+-1.3546667,
+3.7983305,
 5,
-"98aae2893df0"
+"510122805684"
 ],
 "geometry/YX2GDZJMBV::framing/member:rake-hi-1-drip-edge-flange": [
 -1.3546667,
@@ -53162,28 +53126,16 @@
 "07992d9bdcfc"
 ],
 "geometry/YX2GDZJMBV::framing/member:rake-hi-1-drip-edge-kick": [
--1.3631333,
-3.7607659,
+-1.3546667,
+3.7602305,
 5,
-"0afa13fb1d89"
+"0042b2714c1a"
 ],
 "geometry/YX2GDZJMBV::framing/member:rake-hi-1-drip-edge-nose": [
 -1.3546667,
-3.8115659,
+3.8110305,
 5,
-"43f1172ddfde"
-],
-"geometry/YX2GDZJMBV::framing/member:rake-hi-1-fascia-0": [
-2.2965833,
-3.77825,
-8,
-"9cf611064ba6"
-],
-"geometry/YX2GDZJMBV::framing/member:rake-hi-1-fascia-1": [
-2.2711833,
-3.7988659,
-8,
-"aa1db5dac810"
+"07992d9bdcfc"
 ],
 "geometry/YX2GDZJMBV::framing/member:rake-lo-0-drip-edge-face": [
 1.3631333,
@@ -61326,10 +61278,10 @@
 "1a5fcaba6304"
 ],
 "member/CGRF01AAAA/rake-lo-0-drip-edge-face": [
-2.3976326,
-3.7988659,
+2.4055638,
+3.7983305,
 4,
-"314c58fd3f3c"
+"825d3fb1e9b0"
 ],
 "member/CGRF01AAAA/rake-lo-0-drip-edge-flange": [
 2.4436638,
@@ -61338,34 +61290,22 @@
 "2d6916991122"
 ],
 "member/CGRF01AAAA/rake-lo-0-drip-edge-kick": [
-2.3785826,
-3.7607659,
+2.3865138,
+3.7602305,
 4,
-"491385ea0c76"
+"4bece919bba0"
 ],
 "member/CGRF01AAAA/rake-lo-0-drip-edge-nose": [
-2.4441993,
-3.8115659,
+2.4436638,
+3.8110305,
 4,
-"98875c68184a"
-],
-"member/CGRF01AAAA/rake-lo-0-fascia-0": [
-2.2965833,
-3.77825,
-4,
-"c7854121006c"
-],
-"member/CGRF01AAAA/rake-lo-0-fascia-1": [
-2.2711833,
-3.7988659,
-4,
-"fb59c5d7b608"
+"2d6916991122"
 ],
 "member/CGRF01AAAA/rake-lo-1-drip-edge-face": [
-2.3976326,
-3.7988659,
+2.4055638,
+3.7983305,
 4,
-"77ab94d81f24"
+"baf248f43a92"
 ],
 "member/CGRF01AAAA/rake-lo-1-drip-edge-flange": [
 2.4436638,
@@ -61374,28 +61314,16 @@
 "e88faa77c435"
 ],
 "member/CGRF01AAAA/rake-lo-1-drip-edge-kick": [
-2.3785826,
-3.7607659,
+2.3865138,
+3.7602305,
 4,
-"b1a494b24111"
+"0f01b849e7ec"
 ],
 "member/CGRF01AAAA/rake-lo-1-drip-edge-nose": [
-2.4441993,
-3.8115659,
+2.4436638,
+3.8110305,
 4,
-"58cc42327461"
-],
-"member/CGRF01AAAA/rake-lo-1-fascia-0": [
-2.2965833,
-3.77825,
-4,
-"48d673ed6be4"
-],
-"member/CGRF01AAAA/rake-lo-1-fascia-1": [
-2.2711833,
-3.7988659,
-4,
-"eb6b27153a3d"
+"e88faa77c435"
 ],
 "member/CGRF01AAAA/ridge-vent-cap": [
 3.7614529,
@@ -84672,10 +84600,10 @@
 "e72a18ef5c87"
 ],
 "member/YX2GDZJMBV/rake-hi-0-drip-edge-face": [
-2.3976326,
-3.7988659,
+2.4055638,
+3.7983305,
 4,
-"314c58fd3f3c"
+"825d3fb1e9b0"
 ],
 "member/YX2GDZJMBV/rake-hi-0-drip-edge-flange": [
 2.4436638,
@@ -84684,34 +84612,22 @@
 "2d6916991122"
 ],
 "member/YX2GDZJMBV/rake-hi-0-drip-edge-kick": [
-2.3785826,
-3.7607659,
+2.3865138,
+3.7602305,
 4,
-"491385ea0c76"
+"4bece919bba0"
 ],
 "member/YX2GDZJMBV/rake-hi-0-drip-edge-nose": [
-2.4441993,
-3.8115659,
+2.4436638,
+3.8110305,
 4,
-"98875c68184a"
-],
-"member/YX2GDZJMBV/rake-hi-0-fascia-0": [
-2.2965833,
-3.77825,
-4,
-"c7854121006c"
-],
-"member/YX2GDZJMBV/rake-hi-0-fascia-1": [
-2.2711833,
-3.7988659,
-4,
-"fb59c5d7b608"
+"2d6916991122"
 ],
 "member/YX2GDZJMBV/rake-hi-1-drip-edge-face": [
-2.3976326,
-3.7988659,
+2.4055638,
+3.7983305,
 4,
-"77ab94d81f24"
+"baf248f43a92"
 ],
 "member/YX2GDZJMBV/rake-hi-1-drip-edge-flange": [
 2.4436638,
@@ -84720,28 +84636,16 @@
 "e88faa77c435"
 ],
 "member/YX2GDZJMBV/rake-hi-1-drip-edge-kick": [
-2.3785826,
-3.7607659,
+2.3865138,
+3.7602305,
 4,
-"b1a494b24111"
+"0f01b849e7ec"
 ],
 "member/YX2GDZJMBV/rake-hi-1-drip-edge-nose": [
-2.4441993,
-3.8115659,
+2.4436638,
+3.8110305,
 4,
-"58cc42327461"
-],
-"member/YX2GDZJMBV/rake-hi-1-fascia-0": [
-2.2965833,
-3.77825,
-4,
-"48d673ed6be4"
-],
-"member/YX2GDZJMBV/rake-hi-1-fascia-1": [
-2.2711833,
-3.7988659,
-4,
-"eb6b27153a3d"
+"e88faa77c435"
 ],
 "member/YX2GDZJMBV/rake-lo-0-drip-edge-face": [
 2.3976326,

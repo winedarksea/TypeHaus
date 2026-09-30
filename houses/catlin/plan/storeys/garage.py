@@ -348,10 +348,11 @@ ROOMS = [
 # its cladding material straight off the host wall's own layers — so a `Wall.layer_materials`
 # override on one of these walls would carry into its gable triangle with nothing authored
 # for the closure itself. None is authored today; W-G-E's green was reverted.
-# Eave + rake trim is two-layer: a 2x6 wood sub-fascia (structural nailer) lapped by the
-# weather face — brake-formed PVDF metal in the house's near-black `metal-dark-exterior`,
-# six pieces, two eaves and four rakes, THE SAME COIL AS THE RIDGE CAP. One coil and one
-# order for both: a cap in a different colour from the fascia under it reads as a
+# Eave + exposed rake trim is two-layer: a 2x6 wood sub-fascia (structural nailer) lapped by
+# the weather face — brake-formed PVDF metal in the house's near-black `metal-dark-exterior`.
+# Both eaves and the north gable get fascia; the south gable is covered by RF-BW-CANOPY and
+# gets none. This is THE SAME COIL AS THE RIDGE CAP. One coil and one order for both: a cap
+# in a different colour from the fascia under it reads as a
 # mistake rather than as a choice. It wore "Copper Penny" metallic from 2026-08-26 until
 # 2026-09-08; the garage now follows the house's ONE exterior dark like every other dark
 # metal element on the envelope. The substrate stays METAL and that half is not reverted —
@@ -376,6 +377,7 @@ ROOMS = [
 _GARAGE_EAVE_TRIM = EaveTrim(
     fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),
             FasciaBoard(material="metal-dark-exterior", thickness=inch(1), depth=inch(6))),
+    fascia_edges=("east", "west", "north"),
     soffit_material="pvc-cellular", soffit_thickness=inch(0.5), soffit_vented=True,
     gutter=EaveGutter(material="metal-dark-kstyle", depth=inch(5), thickness=inch(5),
                       top_drop=inch(0.5), edges=("east", "west"),
@@ -388,8 +390,9 @@ _GARAGE_EAVE_TRIM = EaveTrim(
 # RF-BW-CANOPY carried NO eave trim at all until 2026-09-10: bare sheathing edges on both
 # eaves, no fascia, no soffit, no gutter — over the one walking surface between the two
 # buildings. The two roof planes are ONE plane (same 4:12, same +7'-4" bearing, same 16"
-# overhang), so every piece here is dimensionally identical to the garage's and is ordered
-# off the same coil and the same stock.
+# overhang), so the pieces on exposed edges here are dimensionally identical to the garage's
+# and are ordered off the same coil and the same stock. The canopy's north gable faces the
+# garage and is covered there, so it gets no fascia.
 #
 # ** ONE TROUGH, AND THE CANOPY DOES NOT GET A LEADER OF ITS OWN. ** The channel runs
 # continuous from the canopy's south end to the garage's north end and falls north into
@@ -407,8 +410,8 @@ _GARAGE_EAVE_TRIM = EaveTrim(
 # 5'-9 5/8" panel, which is the measure running away rather than a piece anyone would cut.
 # An open canopy has nothing to close anyway: the underside between the headers is exposed
 # framing by design, and the garage's white PVC soffit is there to feed a VENTED ATTIC this
-# roof does not have. So the tails are exposed, and the fascia and the trough — the two
-# pieces the eye actually reads across the joint — are identical to the garage's.
+# roof does not have. So the tails are exposed, and the fascia and trough on exposed edges
+# match the garage's.
 #
 # ** THE CAPACITY IS THE ONE NUMBER TO WATCH, AND IT STILL CLEARS. ** Each garage slope
 # sheds ~290 sq ft; the canopy adds ~80 (13'-4" of horizontal projection over a 6'-0" run),
@@ -418,6 +421,7 @@ _GARAGE_EAVE_TRIM = EaveTrim(
 _CANOPY_EAVE_TRIM = EaveTrim(
     fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),
             FasciaBoard(material="metal-dark-exterior", thickness=inch(1), depth=inch(6))),
+    fascia_edges=("east", "west", "south"),
     gutter=EaveGutter(material="metal-dark-kstyle", depth=inch(5), thickness=inch(5),
                       top_drop=inch(0.5), edges=("east", "west"),
                       slope="1/16 in/ft north on both eaves — CONTINUOUS with RF-GARAGE's trough, falling to TR-G-LEADER-E / -W at the garage's north end; no leader at the canopy's south end, which would discharge onto the entry landing",

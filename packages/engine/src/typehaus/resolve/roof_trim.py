@@ -117,7 +117,10 @@ def _eave_trim_members(
         drip = (layers, slope_factor, _edge_trim_material(element, _roofing_material(layers)))
     members: list[FramedMember] = []
     for run in roof_edge_runs(roof):
-        members.extend(_edge_trim(roof, trim, run, walls, fascia_rise, drip))
+        edge_trim = (trim.model_copy(update={"fascia": ()})
+                     if trim.fascia_edges and run.edge_name not in trim.fascia_edges
+                     else trim)
+        members.extend(_edge_trim(roof, edge_trim, run, walls, fascia_rise, drip))
     return tuple(members)
 
 

@@ -246,7 +246,7 @@ class EaveDripEdge(HausModel):
 
 
 class EaveTrim(HausModel):
-    """A roof's edge closure, declared once and derived along every eave and rake.
+    """A roof's edge closure, declared once and derived along its eaves and rakes.
 
     The fascia/soffit elevations follow the roof plane — including a truss roof's raised-heel
     lift — so they are *derived* from this declaration rather than authored as absolute
@@ -254,6 +254,7 @@ class EaveTrim(HausModel):
     """
 
     fascia: tuple[FasciaBoard, ...] = ()
+    fascia_edges: tuple[str, ...] = ()  # footprint edges ("south"/"north"/...); empty = all
     soffit_material: str = ""
     soffit_thickness: Length | None = None
     soffit_vented: bool = False
