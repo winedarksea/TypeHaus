@@ -223,6 +223,8 @@ the future.
 - DT-INT-BOOKCASE36 needs a 3d model that actually looks like a bookcase door
 - Double check the headroom above the toilet and the bar sink in the attic level bedroom suite
 - See if we can move EQ-T-WATER-HEATER up against the wall, it's rather awkwardly in the middle of the room now
+- When a user visits type https://type-haus.com/app/ the app is very slow to load and show the house, something like 15 seconds. Is there any way we can speed up the initial load? Perhaps lazy load more items?
+- Make the window stool for WIN-M-KITCH quart as well (like the plant room)
 
 # Project Management
 
