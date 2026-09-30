@@ -70,40 +70,40 @@ def test_sidewalk_quantities(catlin_model_ro) -> None:
     bom = bill_of_materials(catlin_model_ro)
     walk = next(r for r in bom["structural_solids"] if r.get("assembly") == "SIDEWALK_FRC_CLASS5")
     assert walk["count"] == 4
-    assert walk["plan_area_sqft"] == pytest.approx(582.3, abs=0.2)
-    assert walk["volume_cubic_yards"] == pytest.approx(7.19, abs=0.01)
+    assert walk["plan_area_sqft"] == pytest.approx(578.3, abs=0.2)
+    assert walk["volume_cubic_yards"] == pytest.approx(7.14, abs=0.01)
     base = next(r for r in bom["envelope_layers"]
                 if r["material"] == "mndot-class-5-base" and r["thickness_in"] == 6.0)
-    assert base["net_area_sqft"] == pytest.approx(582.3, abs=0.2)
+    assert base["net_area_sqft"] == pytest.approx(578.3, abs=0.2)
     pockets = Counter(e.tag.split("-")[2][0] for e in catlin_model_ro.plan.all_elements()
                       if e.tag.startswith("FO-WK-"))
     assert pockets == {"A": 3, "B": 6, "D": 9}   # FO-WK-A01 struck at the leader
 
 
 def test_driveway_quantities(catlin_model_ro) -> None:
-    """notes/driveway_layout.md §2: the flared outline, 4" of concrete on 8" of Class 5."""
+    """notes/driveway_layout.md §2: the tapered outline, 4" of concrete on 8" of Class 5."""
     from typehaus.takeoff.bom import bill_of_materials
 
     bom = bill_of_materials(catlin_model_ro)
     drive = next(r for r in bom["structural_solids"]
                  if r.get("assembly") == "DRIVEWAY_FRC_CLASS5")
     assert drive["tags"] == ["SL-DW-DRIVE"]
-    assert drive["plan_area_sqft"] == pytest.approx(210.38, abs=0.1)
-    assert drive["volume_cubic_yards"] == pytest.approx(2.60, abs=0.01)
+    assert drive["plan_area_sqft"] == pytest.approx(218.38, abs=0.1)
+    assert drive["volume_cubic_yards"] == pytest.approx(2.70, abs=0.01)
     base = next(r for r in bom["envelope_layers"]
                 if r["material"] == "mndot-class-5-base" and r["thickness_in"] == 8.0)
-    assert base["net_area_sqft"] == pytest.approx(210.4, abs=0.1)
+    assert base["net_area_sqft"] == pytest.approx(218.4, abs=0.1)
 
 
-def test_walk_a_clears_the_driveway_flare(catlin_plan) -> None:
-    """notes/sidewalk_layout.md §2a: A is notched 1/2" off the flare, no lap anywhere."""
+def test_walk_a_clears_the_driveway_taper(catlin_plan) -> None:
+    """notes/sidewalk_layout.md §2a: A is notched 1/2" off the taper, no lap anywhere."""
     driveway, landscape_walk = catlin_params("driveway", "landscape_walk")
     from shapely.geometry import Polygon
 
     walk, drive = Polygon(landscape_walk.A_RING), Polygon(driveway.OUTLINE)
     assert walk.intersection(drive).area == 0.0
     assert walk.distance(drive) * 12 == pytest.approx(0.5, abs=1e-6)
-    assert Polygon(landscape_walk.A).area - walk.area == pytest.approx(1.98, abs=0.01)
+    assert Polygon(landscape_walk.A).area - walk.area == pytest.approx(5.96, abs=0.01)
 
 
 def test_every_pocket_is_on_the_grid(catlin_model_ro) -> None:

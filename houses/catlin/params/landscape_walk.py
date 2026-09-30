@@ -33,7 +33,7 @@ from typehaus import (
 )
 
 from params.breezeway import STAIR_FOOT_X_FT, STAIR_Y0_FT, STAIR_Y1_FT
-from params.driveway import DRIVE_X, FLARE, Y0 as DRIVE_Y0
+from params.driveway import DRIVE_X, DOOR_X, TAPER_SLOPE, Y0 as DRIVE_Y0
 from params.hp1_north_pad import HP1_PAD
 from params.east_posts import east_radius_ft
 from params.north_entry_frame import (
@@ -63,7 +63,7 @@ def _rect(x0, y0, x1, y1):
 # --- legs -------------------------------------------------------------------------------
 # A: in front of the garage, from the driveway's east edge (x=24') to leg B's east edge,
 #    92" deep off the garage face (stem Z-flashing at y=67'-3 1/2" plus 1/2").
-#    Its SW corner is notched round the drive's 45° flare, 1/2" off it (`A_RING`).
+#    Its SW corner is notched round the drive's 1:3 taper, 1/2" off it (`A_RING`).
 # B: down the garage east side, one-sided 64" off the stem flashing at x=30'-0 7/8" plus
 #    1/2", to clear of the canopy column PT-BW-RNE (y 41'-11 3/4"..42'-11 3/4"). It was the
 #    full 92" until 2026-09-23; its east 28" is where RG-E-BASIN (x 37'..42') mirrors the
@@ -98,9 +98,11 @@ C = ((_C_FOOT_X, STAIR_Y0_FT), (_COL_W, STAIR_Y0_FT), (_COL_W, _RE_N), (_COL_E, 
      (_COL_W, _RNE_S), (_COL_W, STAIR_Y1_FT), (_C_FOOT_X, STAIR_Y1_FT))
 D = _rect(D_X0, -9.0, D_X1, 39.6)
 
-# The flare's east edge is the line x + y = K; offset 1/2" square to it, K grows by GAP*√2.
-_K = DRIVE_X[1] + FLARE + DRIVE_Y0 + GAP_FT * math.sqrt(2.0)
-A_RING = ((_K - A[0][1], A[0][1]), A[1], A[2], A[3], (A[0][0], _K - A[0][0]))
+# The taper's east edge is x + slope*y = K. Offset it 1/2" square into the walk.
+_K = (DOOR_X[1] + TAPER_SLOPE * DRIVE_Y0
+      + GAP_FT * math.sqrt(1.0 + TAPER_SLOPE ** 2))
+A_RING = ((_K - TAPER_SLOPE * A[0][1], A[0][1]), A[1], A[2], A[3],
+          (A[0][0], (_K - A[0][0]) / TAPER_SLOPE))
 
 # NO POCKET SITS AT A LEADER'S FOOT, and neither east leader can have one: TR-RF-LEADER-E
 # stands at x=36'-10 9/16", over leg D's 36" walking band, where a 16" void would leave

@@ -2644,11 +2644,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   flight springs from its -2'-9" top: 6.6" risers, not 6.8".
   `notes/sidewalk_layout.md`.
 - **Driveway `SL-DW-DRIVE`** (`params/driveway.py`, 2026-09-23): `DRIVEWAY_FRC_CLASS5`, 4"
-  fibre-only concrete on 8" Class 5, no foam. 16' at the door (x 10'..26'), a 45° flare to the
-  12' ordinance width 2' out, to the lot line: 210 SF, 2.60 cy. It starts 1" off `SL-G-FLOOR`'s door
+  fibre-only concrete on 8" Class 5, no foam. 16' at the door (x 10'..26'), a 1:3 taper to the
+  12' ordinance width 6' out, to the lot line: 218 SF, 2.70 cy. It starts 1" off `SL-G-FLOOR`'s door
   edge; that gap IS the K8 joint (1" 40 psi XPS + PU sealant), deliberately not an
   `IsolationBoard`, which would open a `thermal_break_transfer` item. Flat at -2'-11"; the 2.18%
-  fall is on its impervious surface. Walk A is notched 1/2" off the flare and stands
+  fall is on its impervious surface. Walk A is notched 1/2" off the taper and stands
   1"-1 3/4" proud of it, accepted (`notes/sidewalk_layout.md` §2a). Its uid was minted by
   `typehaus.model.ids.new_uid()`, because fmt never visits `params/`. **Flatwork draws on
   C-101 only**: floor plans skip `role="flatwork"` slabs and their pockets, or the drive would

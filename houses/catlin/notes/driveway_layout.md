@@ -2,7 +2,7 @@
 
 **House:** catlin
 **Structure:** `SL-DW-DRIVE` (`params/driveway.py`) and the `driveway` impervious surface.
-**Written:** 2026-09-23, by hand from the outline.
+**Written:** 2026-09-23; taper and quantities updated 2026-09-30.
 **Oracle for:** the `slab:DRIVEWAY_FRC_CLASS5` and `mndot-class-5-base:8.0` takeoff rows and
 the C-101 driveway/paving lines; reproduced by `tests/test_catlin_gardens.py`.
 **What is asked of the reviewer:** §2's area and §4's joint layout.
@@ -21,19 +21,19 @@ same with a 6" base; the extra 2" is for wheel loads.
 - `SL-G-FLOOR` runs out to the node line at the door, 67'-2 5/8". (Until 2026-09-23 the
   grade beam `W-GF-N-DR` stood there and its banded face, 67'-2.925", set the edge.)
 - K8 joint: 1". So `Y0` = 67 + 3.625/12 = **67.3021**.
-- Door jambs x 10'..26' (16'), then a 45° flare to x 12'..24' (12') at `Y0 + 2'` = 69.3021,
+- Door jambs x 10'..26' (16'), then a 1:3 taper to x 12'..24' (12') at `Y0 + 6'` = 73.3021,
   then 12' wide to the front lot line at y = 84.5.
 
 | piece | arithmetic | sf |
 |---|---|---|
-| flare trapezoid | (16 + 12) / 2 × 2.000 | 28.00 |
-| 12' run | 12 × (84.5 − 69.3021) = 12 × 15.1979 | 182.38 |
-| **total** | | **210.38** |
+| taper trapezoid | (16 + 12) / 2 × 6.000 | 84.00 |
+| 12' run | 12 × (84.5 − 73.3021) = 12 × 11.1979 | 134.38 |
+| **total** | | **218.38** |
 
-(Read the trapezoid as a 12 × 2 rectangle, 24.00 sf, plus two ½ · 2 · 2 triangles, 4.00 sf.)
+(The taper area includes the 12 × 6 rectangle plus two ½ × 2 × 6 triangles.)
 
-Concrete at 4": 210.38 / 3 / 27 = **2.60 cy**. Class 5 at 8": 210.38 × 8/12 / 27 =
-**5.19 cy** compacted, billed as **210.4 sf** on the `:8.0` row.
+Concrete at 4": 218.38 / 3 / 27 = **2.70 cy**. Class 5 at 8": 218.38 × 8/12 / 27 =
+**5.39 cy** compacted, billed as **218.4 sf** on the `:8.0` row.
 
 ## 3. Fall
 
@@ -49,17 +49,17 @@ against the garage's foundation enclosure, which it abuts.
   1" gap in the outline and is not an element (see the module docstring).
 - **Longitudinal:** one on the centreline, x = 18'. A 12' panel is over ACI 332's
   30 × t = 10' spacing.
-- **Transverse sawcuts, ≤ 10' o.c.:** the first on the flare line, y = 69.30, so the flare's
-  corners are not re-entrant cracks. The second is at y ≈ 77.0, halving the 15.20' run to
-  7.6' panels, each about 6 × 7.6.
-- **East edge, x = 24':** 1/2" isolation to walk A, whose SW corner follows the flare
+- **Transverse sawcuts, ≤ 10' o.c.:** the first at the taper end, y = 73.30, so the taper's
+  corners are not re-entrant cracks. The second is at y ≈ 78.90, midway through the 11.20'
+  straight run, keeping both straight panels about 5.6' long.
+- **East edge, x = 24':** 1/2" isolation to walk A, whose SW corner follows the taper
   (notes/sidewalk_layout.md §2a).
 
 ## 5. Paving cap (C-101, display only)
 
 Ord. 23-43 caps driveway and parking paving at the lesser of 15% of the lot and 1,000 sf.
 15% of 6,650 sf = **997.5 sf** governs. The drive plus the three `kind="pad"` surfaces is
-210 + 25 = **235 sf**, 3.5% of the lot, under a quarter of the cap. No check grades it.
+218.4 + 25 = **243.4 sf**, 3.7% of the lot, under a quarter of the cap. No check grades it.
 
 ## Sources
 

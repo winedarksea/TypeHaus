@@ -7,10 +7,10 @@ lives on the matching `ImperviousSurface(kind="driveway")` because a `Slab` cann
 and `plan/manifest.py` merges that surface into the site. notes/driveway_layout.md is the
 quantity oracle.
 
-** SHAPE. ** It is 16'-0" wide at the door (x 10'..26', the jambs) and tapers at 45° both
-sides to 12'-0" (x 12'..24') `FLARE` out, holding 12' to the lot line at y = 84'-6".
-12' is the ORDINANCE width: Ord. 23-43 caps a front-yard driveway at 12'-0", and the flare
-is what lets a car leave a 16' door. The drive is ~210 sf. Ord. 23-43's paving cap is the
+** SHAPE. ** It is 16'-0" wide at the door (x 10'..26', the jambs) and tapers both sides
+to 12'-0" (x 12'..24') over a 6' run (a 1:3 taper), holding 12' to the lot line at y = 84'-6".
+12' is the ORDINANCE width: Ord. 23-43 caps a front-yard driveway at 12'-0", and the taper
+lets a car leave a 16' door. The drive is ~218 sf. Ord. 23-43's paving cap is the
 lesser of 15% of the 6,650 sf lot and 1,000 sf, so 15% = 997.5 sf governs. The drive plus
 the three `kind="pad"` surfaces sit well under that. `emit/draw/site_metrics.py` shows the
 cap in the C-101 coverage table, and no check grades it.
@@ -25,8 +25,8 @@ and a flatwork joint needs none. The price row carries the strip.
 
 ** CONTROL JOINTS ARE NOT AN ENGINE CONCEPT, SO THEY ARE HERE. ** ACI 332 limits joint
 spacing to ~30 x t, or 10' for 4". The 12' panel needs one longitudinal joint on the
-centreline, x = 18'. Transverse sawcuts go at <= 10' o.c., two across the 17' run, the
-first on the taper line (Y0 + FLARE) so the flare's corners are not re-entrant cracks.
+centreline, x = 18'. Transverse sawcuts go at <= 10' o.c., first at the end of the taper
+and then midway through the straight run so the taper's corners are not re-entrant cracks.
 
 ** WHY IT EXISTS. ** Saint Paul DSI will not review a garage a car cannot reach, and the drive
 is the only way a vehicle leaves the site, so `plan/site.py`'s rock construction entrance
@@ -52,12 +52,13 @@ Y0 = SLAB_EDGE_Y + JOINT_FT
 Y_LOT = 84.5                         # front (north) lot line
 DOOR_X = (10.0, 26.0)                # D-G-OVERHEAD's jambs
 DRIVE_X = (12.0, 24.0)               # the 12' ordinance width, centred on x = 18'
-FLARE = 2.0                          # 45°: the taper's run equals its 2' step-in
+TAPER_RUN = 6.0                      # 16' door width narrows to 12' over a gradual 6' run
+TAPER_SLOPE = (DOOR_X[1] - DRIVE_X[1]) / TAPER_RUN  # 1' lateral change per 3' forward
 
 OUTLINE = (
     (DOOR_X[0], Y0), (DOOR_X[1], Y0),
-    (DRIVE_X[1], Y0 + FLARE), (DRIVE_X[1], Y_LOT),
-    (DRIVE_X[0], Y_LOT), (DRIVE_X[0], Y0 + FLARE),
+    (DRIVE_X[1], Y0 + TAPER_RUN), (DRIVE_X[1], Y_LOT),
+    (DRIVE_X[0], Y_LOT), (DRIVE_X[0], Y0 + TAPER_RUN),
 )
 
 

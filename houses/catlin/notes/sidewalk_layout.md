@@ -12,8 +12,9 @@
 > ⚠ Every slab is modelled FLAT at its high edge, -2'-9". Leg D's south end meets
 > SL-SG-STAIRPAD (-2'-8") at a 1/2" isolation joint, 1" low; the stair pad, not a walk
 > leg, carries the walk from D to the porch flight. The fall is on the impervious surfaces only. Two joints are therefore
-> not flush in the field and are set by the finisher: walk A's west edge stands 1 3/4" over
-> the driveway at the flare, falling to 1" at its north end (on the two impervious falls;
+> not flush in the field and are set by the finisher: walk A's west edge stands about 1 1/4"
+> over the driveway at the taper's north end, falling to 1" at the walk's north edge (on the two
+> impervious falls;
 > 2" in the flat model), a curb at the drive's edge that is ACCEPTED (§2a). Grade it by hand
 > at the pour; it is not modelled. Walk C's high edge is the foot of `ST-BW-ENTRY`, which
 > springs from -2'-9" for exactly that reason (§2b).
@@ -39,14 +40,14 @@ joints fall on the same stations.
 
 | leg | outline | gross sf | pockets | net sf |
 |---|---|---|---|---|
-| A garage north | x 24.04..35.45 × y 67.33..75.00, less the 2.0 sf flare notch (§2a) | 11.40 × 7.67 = 87.4 − 2.0 = 85.4 | 4 | 80.0 |
+| A garage north | x 24.04..35.45 × y 67.33..75.00, less the 5.96 sf taper notch (§2a) | 11.40 × 7.67 = 87.4 − 5.96 = 81.4 | 3 | 77.3 |
 | B garage east | x 30.11..35.45 × y 43.02..67.33 | 5.33 × 24.31 = 129.7 | 6 | 121.5 |
 | C entry walk | three rectangles, §2b | 83.58 + 4.22 + 44.76 = 132.6 | 0 | 132.6 |
 | D house east | x 36.70..42.04 × y −9.00..39.60 | 5.33 × 48.60 = 259.2 | 9 | 247.0 |
-| **total** | | **606.9** | **18** | **582.4** |
+| **total** | | **602.9** | **18** | **578.4** |
 
-18 pockets at 1.3605 sf = 24.5 sf. Concrete at 4": 582.4 / 3 / 27 = **7.19 cy**. Class 5 at
-6" bills by the net slab area, **582.4 sf**. Impervious area counts the GROSS 606.9 sf — the
+18 pockets at 1.3605 sf = 24.5 sf. Concrete at 4": 578.4 / 3 / 27 = **7.14 cy**. Class 5 at
+6" bills by the net slab area, **578.4 sf**. Impervious area counts the GROSS 602.9 sf — the
 pockets are not subtracted, which is conservative for the coverage table.
 
 ### 2b. Leg C under the canopy (2026-09-23)
@@ -68,20 +69,21 @@ The flight springs from the walk. Slabs are flat at -2'-9", so `ST-BW-ENTRY` sta
 five risers of 33/5 = **6.6"**, not 6.8" off the -2'-10" grade. At grade, the first riser off
 the walk would be 5.8", 1" out against R311.7.5.1's 3/8".
 
-### 2a. Leg A against the driveway (2026-09-23)
+### 2a. Leg A against the driveway (2026-09-23; taper updated 2026-09-30)
 
-The drive (`params/driveway.py`, notes/driveway_layout.md) flares 45° from x = 26' at its
-south edge to x = 24' two feet north. A's SW corner is cut on that line offset 1/2" square
-to it: the line x + y = 26 + Y0 + 0.5/12·√2 = 93.361 (Y0 = 67.302 since the garage slab
-took the grade beam's place, 2026-09-23), so A's south edge starts at
-x = 93.361 − 67.332 = **26.029** and its west edge at y = 93.361 − 24.042 = **69.319**. The
-notch is ½ · 1.9876 · 1.9876 = **1.98 sf**.
+The drive (`params/driveway.py`, notes/driveway_layout.md) tapers 1:3 from x = 26' at its
+south edge to x = 24' six feet north. A's SW corner is cut on that line offset 1/2" square
+to it: the line x + y/3 = 26 + Y0/3 + 0.5/12·√(1 + 1/9) = 48.478 (Y0 = 67.302 since
+the garage slab took the grade beam's place, 2026-09-23), so A's south edge starts at
+x = 48.478 − 67.332/3 = **26.034** and its west edge at y = 3 × (48.478 − 24.042) = **73.309**.
+The notch is ½ · 1.992 · 5.977 = **5.96 sf**.
 A's westmost pocket, (29.445, 69.00), is 3.58' from that line, past the 2'-0" end inset, so
 `_A_STATIONS` does not move.
 
-**The step is kept.** Along x = 24' the drive's fall reaches −35.5" at y = 69.34 and −37.0"
-at y = 75.00; A's reaches −33.8" and −36.0". That is 1 3/4" to 1" with the walk high. A flush
-A at −2'-11" would open a 2" lip where A meets leg B, on the walking line, and the flare puts
+**The step is kept.** At the taper's north end, about y = 73.31, the drive falls to −36.6"
+and A to −35.3"; by y = 75.00 they reach −37.0" and −36.0". That is about 1 1/4" to 1"
+with the walk high. A flush A at −2'-11" would open a 2" lip where A meets leg B, on the
+walking line, and the taper puts
 a tyre leaving the door's east 2' on drive, not on A.
 
 ## 3. Pocket stations
