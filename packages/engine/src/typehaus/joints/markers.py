@@ -53,12 +53,15 @@ class MarkerRule:
     ``Joint.axis``, ``across`` crosses it. ``half_h`` is half the prism's height where it is
     a number; ``None`` means the height comes from the joint (a hanger is as deep as the
     member it carries) and :mod:`typehaus.resolve.connector_markers` supplies it.
+    ``center_z_offset_in`` moves a fixed-height marker's center from the joint elevation.
     """
 
     draw: bool
     along_in: float = 1.0
     across_in: float = 0.25
     half_h_in: float | None = 2.25
+    #: Moves the marker's vertical center relative to the joint's connection elevation.
+    center_z_offset_in: float = 0.0
     category: str = CATEGORY_CONNECTOR
 
 
@@ -87,8 +90,10 @@ MARKER_RULES: dict[str, MarkerRule] = {
                                             half_h_in=10.00,
                                             category=CATEGORY_CONNECTOR_EMBEDDED),
     # Drawn: it is roof-level, visible, and the whole point of adding the leg was that
-    # nobody could see it was missing. An LS30: 3-3/8" across the wall, 2-1/4" legs.
-    ROLE_GABLE_END_TIE: MarkerRule(draw=True, along_in=1.13, across_in=1.69, half_h_in=1.13),
+    # nobody could see it was missing. The LS30's marker is centered at the bottom flange
+    # of the 11-7/8" TJI, below the wall-top joint elevation.
+    ROLE_GABLE_END_TIE: MarkerRule(draw=True, along_in=1.13, across_in=1.69, half_h_in=1.13,
+                                  center_z_offset_in=-11.875),
     # An LTP4 flat across the chord and the plate, sized as the band's LTP4.
     ROLE_GABLE_TRUSS_ANCHOR: MarkerRule(draw=True, along_in=1.50, across_in=0.25,
                                         half_h_in=1.50),

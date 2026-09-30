@@ -98,8 +98,9 @@ def resolve_connector_markers(model: ResolvedModel) -> list[Finding]:
             depth_m = joint.height_m or inch(1.5).meters
             z0_m, z1_m = joint.z_m, joint.z_m + depth_m
         else:
+            marker_center_z_m = joint.z_m + inch(rule.center_z_offset_in).meters
             half_h_m = inch(rule.half_h_in).meters
-            z0_m, z1_m = joint.z_m - half_h_m, joint.z_m + half_h_m
+            z0_m, z1_m = marker_center_z_m - half_h_m, marker_center_z_m + half_h_m
         model.solids.append(ResolvedSolid(
             uid=uid,
             tag=f"CN~{joint.part}~{anchor}~{ordinals[joint.part]:02d}",
