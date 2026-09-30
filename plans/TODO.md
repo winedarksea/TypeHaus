@@ -223,12 +223,11 @@ the future.
   it as 0.0, and the 1/8" silicate wash / foundation coating alignments depend on that depth;
   (2) a wall coating draws a plane (polygonOffset, see the wash); (3) whether paint belongs in
   an STC preset's tested core; (4) authored paint makes gypsum Class III, which moves Glaser.
-- Make D-B-BATH a pocket door. It would slide into W-B-HALL-W which the engine isn't really designed to handle right now.
+- Make D-B-BATH a pocket door. It would slide into W-B-HALL-W which the engine isn't really designed to handle right now. This is like how D-M-LAUN of type DT-POCKET-INT-48 already slides into wall W-M-HS4
 - The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
 - Cleanout caps likely need a double check on the plumbing
 - DT-INT-BOOKCASE36 needs a 3d model that actually looks like a bookcase door
 - See if we can move EQ-T-WATER-HEATER up against the wall, it's rather awkwardly in the middle of the room now
-- Make the window stool for WIN-M-KITCH quart as well (like the plant room)
 
 
 # Project Management

@@ -56,21 +56,24 @@ def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
 # --- the derivation ------------------------------------------------------------------------
 
 def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catlin_model_ro):
-    """34 of 41 windows get derived oak. The plant room's four are authored quartz."""
+    """33 windows get derived oak; the plant room's four and kitchen sink window are quartz."""
     derived = [stool for stool in stools if stool.derived]
     assert {stool.assembly for stool in derived} == {"EXT_2X6"}
-    # Seven of the 41 are out of the standard's scope, and each is out because of the wall
-    # it sits in: WIN-S-PLANT1..4 in the plant room's humid liner, WIN-B-SAUNA in the
-    # sauna's, and WIN-G-N1/S1 in GARAGE_WALL_2X6. Oak there is the wrong material.
-    assert len(derived) == 34
+    # Seven of the 41 are out of scope because of their host wall: the four plant-room
+    # windows, sauna, and two garage windows. WIN-M-KITCH is in scope but authored as quartz.
+    assert len(derived) == 33
     windows = [o for o in catlin_model_ro.openings if o.kind == "window"]
     assert len(windows) == 41, "the seven out-of-scope windows still exist; they get no oak"
     assert all(stool.material_ref == "oak-stool" for stool in derived)
-    # The plant room's four are authored per window in 3 cm quartz (plan/countertops.py).
+    # The plant room's four and the kitchen sink window are authored in 3 cm quartz.
     authored = {stool.window_ref: stool for stool in stools if not stool.derived}
-    assert set(authored) == {f"WIN-S-PLANT{n}" for n in range(1, 5)}
+    assert set(authored) == {*(f"WIN-S-PLANT{n}" for n in range(1, 5)), "WIN-M-KITCH"}
     assert all(stool.material_ref == "quartz-counter"
-               and stool.assembly == "PLANT_EXT_2X6_HUMID" for stool in authored.values())
+               for stool in authored.values())
+    assert {stool.window_ref: stool.assembly for stool in authored.values()} == {
+        **{f"WIN-S-PLANT{n}": "PLANT_EXT_2X6_HUMID" for n in range(1, 5)},
+        "WIN-M-KITCH": "EXT_2X6",
+    }
 
 
 def test_quartz_stools_bill_with_the_stone_not_the_mill(catlin_model_ro):

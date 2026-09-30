@@ -4926,8 +4926,10 @@
 #   CT-M-BATH2-VANITY      6.33 SF  48 x 19
 #   CT-S-BATH1-VANITY      7.33 SF  48 x 22
 #   STOOL-WIN-S-PLANT1..4  9.26 SF  the plant room's four 3 cm window stools (2026-09-28),
-#                                   remnants of this slab order, stone not oak, so absent
-#                                   from `haus millwork` (takeoff/countertops.py). 70.59 SF.
+#   STOOL-WIN-M-KITCH      2.04 SF  the kitchen sink window's 3 cm quartz stool,
+#                                   matching the plant-room spec. Both are stone, not oak,
+#                                   so absent from `haus millwork` (takeoff/countertops.py).
+#                                   Total: 72.63 SF.
 # The other four vanity tops are one-piece solid surface moulded with their bowls and bought
 # boxed with the cabinet: they bill in [placeables] and must never appear here.
 #
@@ -4939,11 +4941,12 @@
 # it (a 120 x 39 seamless top needs a jumbo at 35-45% waste on a slab paid for in full).
 #
 # $50-95/SF is fabricated-and-installed low-silica quartz with an eased edge, the same band
-# the retired `finish-countertops-quartz` allowance carried: 61.34 SF x $50-95 is
-# $3,067-5,827 against that lump's $3,200-6,000, which is the same money now attached to a
-# quantity. See plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the
-# showroom — silica exposure control is the thing to buy here.
-"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 70.59 SF
+# the retired `finish-countertops-quartz` allowance carried. The five tops total 61.34 SF,
+# or $3,067-5,827 against that lump's $3,200-6,000. Five quartz window stools add 11.30 SF
+# (the plant room's four, then WIN-M-KITCH), so this row now prices 72.63 SF. See
+# plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the showroom — silica
+# exposure control is the thing to buy here.
+"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 72.63 SF
 # The bar top, and the rate is not a countertop rate at all: the stock is the owner's own
 # white oak at ~$2/SF in 8/4, and everything above that is a joiner's time — milling to
 # 1 3/16" so it sits flush with 3 cm stone, strips the long way on slotted screws or
@@ -6983,14 +6986,14 @@ finish-tile-backer-and-waterproofing = { low = 2000, high = 4500 }
 # `finish-countertops-quartz` ($3,200-6,000) and `finish-peninsula-oak-bar-top` ($400-1,100)
 # stood here from 2026-09-06. They were allowances for one stated reason — "a countertop is
 # still not a modelled ELEMENT: there is no surface in the model to measure" — and that
-# reason is gone: `Countertop` is an element, the resolver derives 61.34 SF of quartz and
-# 10.00 SF of oak off the cabinets they sit on, and both now price as $/SF in [countertops]
-# against a quantity instead of as a lump against a hand figure.
+# reason is gone: `Countertop` is an element, the resolver derives 61.34 SF of quartz tops
+# and 10.00 SF of oak off the cabinets they sit on, and both now price as $/SF in [countertops]
+# against a quantity instead of as a lump against a hand figure. The five quartz window
+# stools were added to the quartz area later and are priced there by their own area.
 #
-# THE MONEY IS THE SAME BY CONSTRUCTION. The rates in [countertops] were set from these two
-# bands divided by the derived areas, so the estimate moves by the 2.6% the hand figure was
-# off and by nothing else. ** If you are diffing totals across this date, that is the whole
-# story ** — no scope left the bill.
+# At the 2026-09-11 move, the rates in [countertops] were set from these two bands divided by
+# the derived areas, so the countertop estimate moved by the 2.6% the hand figure was off.
+# Later quartz window stools add 11.30 SF to the quartz row, as noted above.
 # ** CABINET PULLS WERE ALSO UNPRICED. ** ~50 pulls, Top Knobs Solid Bar SS304 at $14.20 list
 # with 20-30% off at a dealer. SS304 is the same alloy as the appliances, so it matches
 # without a finish-code hunt, and there is NO PLATING TO WEAR THROUGH — budget plated-brass
@@ -7100,13 +7103,13 @@ finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.c
 # STOCK, apron, jamb extension and the carpenter's hour.
 # ** REDUCED TO ITS LABOUR/FABRICATION SHARE, 2026-08-28. ** The stool stock is modelled now:
 # `MillworkStandard` (plan/millwork.py) derives one `WindowStool` per EXT_2X6 window —
-# 34 of the 41 — and `haus millwork` orders the 6/4 white oak they are cut from. Leaving this
+# 33 of the 41 — and `haus millwork` orders the 6/4 white oak they are cut from. Leaving this
 # row whole would bill that board twice. The same split the vent-mat row above documents:
-#   stool board, 34 windows, ~10 1/8" x 6/4 oak      -> modelled, ordered by `haus millwork`
+#   stool board, 33 windows, ~10 1/8" x 6/4 oak      -> modelled, ordered by `haus millwork`
 #   apron, jamb extension, mitres, scribe, install   -> here, and still real
 #   the 3 out-of-scope stools (sauna/garage)         -> here, bought not milled; their board
 #                                                       is the residual at the top of the band
-#   the 4 plant-room stools, 3 cm quartz remnants     -> [countertops] "quartz-counter", as
+#   the 5 quartz stools, 3 cm remnants                -> [countertops] "quartz-counter", as
 #                                                       area (takeoff/countertops.py); their
 #                                                       apron/jamb/casing work stays here
 # ~$18-45 of the old band was stool stock, so the row goes to $55-125. It stays PER WINDOW

@@ -209,17 +209,19 @@ def test_a_routed_run_exports_once_and_never_as_a_footing(catlin_model_ro, catli
 def test_every_routed_run_category_is_declared(catlin_model_ro):
     """``ROUTED_RUN_CATEGORIES`` is assembled from the enums; this is the check that the
     categories ``resolve/mep.py`` actually mints are the ones it names."""
-    from typehaus.emit.trades import ROUTED_RUN_CATEGORIES
+    from typehaus.emit.trades import DRAINAGE_CATEGORIES, ROUTED_RUN_CATEGORIES
 
     # "railing" sweeps and is not a run. Neither is "beam": a member out of level is not a
     # prism either, so a TILTED beam (``Beam.top_rise_end`` — catlin's three balcony glulams
     # fall 2" south for drainage) resolves through the same ``SolidSweep``. The sweep is a
     # GEOMETRY fact, not a trade one, and this assertion is about the trade vocabulary. A
     # horizontal cast sleeve and the three parts of an authored cleanout are fittings,
-    # not routed runs, although all four use the sweep geometry primitive.
+    # not routed runs, although all four use the sweep geometry primitive. Drainage solids
+    # have their own category family and are also outside this routed-run registry.
     minted = {(s.category or "").lower() for s in catlin_model_ro.solids if s.sweep is not None}
     fittings = {"cleanout_fitting", "cleanout_extension", "cleanout_cap"}
-    assert minted - {"railing", "beam", "pipe_sleeve"} - fittings <= ROUTED_RUN_CATEGORIES
+    assert (minted - {"railing", "beam", "pipe_sleeve"} - fittings - DRAINAGE_CATEGORIES
+            <= ROUTED_RUN_CATEGORIES)
 
 
 def test_the_runs_are_still_in_the_file_as_segments(catlin_model_ro, catlin_ifc):

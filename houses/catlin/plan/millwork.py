@@ -26,7 +26,8 @@ from typehaus.model import (
     StairLandingMillwork,
 )
 
-# The one declaration. Scope is EXT_2X6 alone — 34 of the 41 windows get oak:
+# The one declaration. Scope is EXT_2X6 alone — 34 of the 41 windows are in scope:
+# 33 derive oak and WIN-M-KITCH is authored quartz (plan/countertops.py).
 #   * PLANT_EXT_2X6_HUMID (4) is the plant room, which runs at 70% RH by design. Oak in
 #     that room is a cupped stool and a black tannin stain, so those four are authored
 #     3 cm quartz remnants instead (PLANT_STOOLS, plan/countertops.py).

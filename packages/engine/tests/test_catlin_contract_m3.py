@@ -319,10 +319,10 @@ def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_
             and abs(w.axis[0][0] - center_x) < 1e-6 and abs(w.axis[1][0] - center_x) < 1e-6
         ]
         assert segments, storey
-        length = sum(
-            abs(w.axis[1][1] - w.axis[0][1]) + abs(w.axis[1][0] - w.axis[0][0])
+        spans = [
+            (min(w.axis[0][1], w.axis[1][1]), max(w.axis[0][1], w.axis[1][1]))
             for w in segments
-        )
+        ]
         # The second storey carries 8'-6" of that line as BM-S-HALL — three plies of
         # 11-7/8" LVL over the open hall/landing/stair — rather than as studs. The stack
         # is still continuous gable to gable; part of it is just a beam.
@@ -341,8 +341,15 @@ def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_
             # and this x, but they are a separate structure south of the south wall.
             if min(ys) < -1e-6 or max(ys) > ft(HOUSE_SIZE_FT).meters + 1e-6:
                 continue
-            length += max(ys) - min(ys)
-        assert length == pytest.approx(ft(HOUSE_SIZE_FT).meters, abs=1e-6)
+            spans.append((min(ys), max(ys)))
+        merged = []
+        for start, end in sorted(spans):
+            if not merged or start > merged[-1][1] + 1e-6:
+                merged.append([start, end])
+            else:
+                merged[-1][1] = max(merged[-1][1], end)
+        assert len(merged) == 1, f"{storey} bearing line has a gap: {merged}"
+        assert merged[0] == pytest.approx((0.0, ft(HOUSE_SIZE_FT).meters), abs=1e-6)
         # The centerline is the old 5.5" (2x6) wall on every framed storey.
         for wall in segments:
             structure = next(l for l in wall.layers if l.function == "structure")

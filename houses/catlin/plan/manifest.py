@@ -353,6 +353,7 @@ PLAN = (
          *millwork.MILLWORK, *millwork.MAIN_SHELVES,
          *millwork_vanities.MAIN_VANITY_SHELVES,
          *countertops.MAIN_COUNTERTOPS,
+         *countertops.KITCHEN_STOOLS,
          *backing.MAIN_BACKING, *backing_wet.MAIN_WET_BACKING,
          *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS,
          *plate_ties.MAIN_PLATE_TIES],
