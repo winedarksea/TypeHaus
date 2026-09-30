@@ -117,6 +117,10 @@ ROWS: tuple[C, ...] = (
       finish_group="accessory", billed_elsewhere=True, collision=_HARD),
     C("ceiling", trade="drywall", ifc_class=_COVER, ifc_predefined="CEILING",
       billed_elsewhere=True),
+    # A horizontal attic fill rendered above a room ceiling. Its material carries the face
+    # colour (fiberglass is pink), and its trade puts it under Walls → Insulation in the viewer.
+    C("insulation", trade="insulation", ifc_class=_COVER, ifc_predefined="INSULATION",
+      billed_elsewhere=True),
     # A floor opening's well lining: sheet_goods / derived_paint bill it off ResolvedFloor.
     C("opening_lining", trade="drywall", ifc_class=_COVER, ifc_predefined="CLADDING",
       billed_elsewhere=True),

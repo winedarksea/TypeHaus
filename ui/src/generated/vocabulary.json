@@ -463,6 +463,9 @@
     "gutter": [
       "drainage"
     ],
+    "insulation": [
+      "insulation"
+    ],
     "leader_extension": [
       "drainage"
     ],
@@ -625,6 +628,7 @@
     "glazing": "openings",
     "glazing_trim": "openings",
     "gutter": "drainage",
+    "insulation": "insulation",
     "leader_extension": "drainage",
     "main_shutoff": "plumbing",
     "movement_joint": "masonry",

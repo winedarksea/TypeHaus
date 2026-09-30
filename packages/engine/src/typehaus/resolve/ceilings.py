@@ -89,6 +89,51 @@ def resolve_ceilings(plan: PlanModel, model: ResolvedModel) -> None:
                         uid, tag, host, "ceiling", outline, z0, z1,
                         material=finish.material_ref if finish is not None else None,
                     ))
+                    model.solids.extend(_roof_cavity_insulation(
+                        plan, storey.tag, room, uid, tag, host, outline, z1))
+
+
+def _roof_cavity_insulation(plan: PlanModel, storey_tag: str, room: Any,
+                            ceiling_uid: str, ceiling_tag: str, host: str,
+                            outline: Ring, ceiling_top_m: float) -> list[ResolvedSolid]:
+    """Render trussed roof cavity fills as insulation blankets above a flat ceiling.
+
+    Cavity fills normally share their host layer's geometry, so they do not make a second
+    solid. That is right for wall bays and roof slopes, but leaves a truss attic's loose fill
+    invisible when the room's horizontal ceiling is the geometry the viewer shows.
+    """
+    if host != storey_tag:
+        return []
+    roof = room_roof_over(plan, storey_tag, room)
+    if roof is None or not roof.assembly:
+        return []
+    assembly = plan.library.resolve_assembly(roof.assembly)
+    if assembly is None:
+        return []
+    structure = next((layer for layer in assembly.layers
+                      if layer.framing is not None
+                      and layer.framing.roof_frame == "truss"), None)
+    if structure is None:
+        return []
+
+    solids: list[ResolvedSolid] = []
+    z0_m = ceiling_top_m
+    for index, fill in enumerate(structure.cavity_fills, start=1):
+        thickness_m = (fill.thickness or structure.thickness).meters
+        if thickness_m <= 0:
+            continue
+        solids.append(ResolvedSolid(
+            uid=f"{ceiling_uid}-insulation-{index}",
+            tag=f"INSUL-{ceiling_tag}-{index}",
+            storey=host,
+            category="insulation",
+            outline=outline,
+            z0_m=z0_m,
+            z1_m=z0_m + thickness_m,
+            material=fill.material_ref,
+        ))
+        z0_m += thickness_m
+    return solids
 
 
 def _pieces(plan: PlanModel, storey_tag: str, room: Any, face: Polygon,
