@@ -50,14 +50,17 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
     assert _input(record, "x:W-BW-SCREEN-SKIRT face") == pytest.approx(112.27, abs=0.01)
     # Seat beams 3.3542' from the column's east face (§10b addendum 2026-09-23).
     assert _input(record, "y:FS-BW-FLOOR deck wind") == pytest.approx(98.94, abs=0.01)
-    assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(980.74, abs=0.01)
+    assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(1045.05, abs=0.1)
+    canopy = catlin_ctx.engineering["lateral_system/RF-BW-CANOPY"]
+    delivered = next(q.value for q in canopy.inputs if q.name == "delivered_shear_y")
+    assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(delivered)
 
 
 def test_the_verdicts_reproduce_section_10c(catlin_ctx):
     """§10c/§10d: every row passes; E-W wind at BM-BW-FE governs at 0.966."""
     record = catlin_ctx.engineering[_ITEM]
     assert record.status is Status.OK
-    assert _state(record, "tie interaction, N-S wind").ratio == pytest.approx(0.6387, abs=5e-4)
+    assert _state(record, "tie interaction, N-S wind").ratio == pytest.approx(0.6795, abs=5e-4)
     ew = _state(record, "tie interaction, E-W wind")
     assert ew.ratio == pytest.approx(0.9665, abs=5e-4)
     assert record.governing.name == ew.name
@@ -131,7 +134,7 @@ def test_the_tie_takes_the_landing_piers_out_of_every_lateral_register(catlin_ct
     ectx = catlin_ctx.engineering.context
     lateral = {p.tag for p in cast_piers(ectx) if p.lateral_system}
     assert not lateral & set(_LANDING)
-    assert {"PT-BW-RE", "PT-BW-RNE"} <= lateral
+    assert {"PT-BW-PE", "PT-BW-PNE"} <= lateral
     for kind in ("base_rotation", "column_base", "column_head_joint"):
         assert not set(keys_of(kind, ectx)) & set(_LANDING), kind
     # The interior landing rides the same carriers but relieved no column: no item.

@@ -35,8 +35,8 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: W-SG-BRKBM's cage, SL-M-DECK's BuildDeck schedule, dowels), and the deck cap is the one
 #: BLACK pour because DECK_CAP_MIX says so — a new scope, not a second coating in an old one.
 _SCHEDULE = {
-    ("column", "#3", "hdg-a767"): (114, 139.8),
-    ("column", "#5", "hdg-a767"): (80, 545.3),
+    ("column", "#3", "hdg-a767"): (93, 121.1),
+    ("column", "#5", "hdg-a767"): (80, 472.3),
     ("footing", "#4", "hdg-a767"): (31, 270.1),
     ("footing", "#5", "hdg-a767"): (156, 1051.0),
     ("foundation wall", "#3", "hdg-a767"): (44, 70.6),
@@ -74,8 +74,11 @@ _SCHEDULE = {
 # −4.2 lb on 2026-09-23: the balcony 3" lower, 4 columns x 4 #5 x 3" (note addendum).
 # −94.9 lb, −24 pieces the same day: W-GF-N-DR retired (21 bars), W-GF-N 17 -> 14 at its
 # new open end (note addendum).
-_TOTAL_LB = 6471.4
-_TOTAL_PIECES = 1148
+# The active KDAT east supports replace two full-height cast columns with shorter pier
+# cages: 114 -> 93 #3 ties, and the 80 #5 pieces shorten by 73.0 lb. The immediately
+# preceding 6,471.4 lb / 1,148-piece schedule thus becomes 6,379.7 lb / 1,127 pieces.
+_TOTAL_LB = 6379.7
+_TOTAL_PIECES = 1127
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
 #: authoring steel may lift the tonnage into the register's band without opening it. Opening
@@ -175,7 +178,7 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     walls_cy = sum(row["volume_cubic_yards"] for row in wall_structure_takeoff(catlin_model)
                    if row.get("material") == "concrete")
     total_cy = concrete_cy + walls_cy
-    assert total_cy == pytest.approx(143.58, rel=0.02), (
+    assert total_cy == pytest.approx(141.45, rel=0.02), (
         f"the concrete volume moved to {total_cy:.2f} cy; notes/rebar_backout.md §2 and the "
         f"lb/cy figure in §3 both need re-working")
 
@@ -221,4 +224,4 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # nowhere, laps and hooks out of [waste], the fencepost. No concrete moved. 46.9 is inside
     # the 40-80 a lightly reinforced residential foundation runs. 46.0 after the same day's
     # detailing review (note §1): the stems continuous at #5 @ 7", one mat per overlap.
-    assert total_lb / total_cy == pytest.approx(45.98, rel=0.03)
+    assert total_lb / total_cy == pytest.approx(45.10, rel=0.02)

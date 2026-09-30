@@ -277,24 +277,30 @@ def _mutated(tmp_path, replacements):
 
 
 @pytest.fixture(scope="module")
-def results(catlin_plan):
-    from typehaus.engineering import EngineeringContext, EngineeringResults
-    from typehaus.resolve import resolve
-
-    model, _ = resolve(catlin_plan)
-    return EngineeringResults(EngineeringContext(
-        plan=catlin_plan, model=model, soil_class="GM"))
+def results(catlin_cast_ctx):
+    """The fixed east-column oracle belongs to the cast variant."""
+    return catlin_cast_ctx.engineering
 
 
 @pytest.fixture(scope="module")
-def piers(catlin_plan):
+def piers(catlin_cast_ctx):
     from typehaus.engineering.pier_basis import cast_piers
-    from typehaus.engineering.registry import EngineeringContext
-    from typehaus.resolve import resolve
 
-    model, _ = resolve(catlin_plan)
-    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
-    return {pier.tag: pier for pier in cast_piers(ctx)}
+    return {pier.tag: pier for pier in cast_piers(catlin_cast_ctx.engineering.context)}
+
+
+def test_active_kdat_roof_posts_stand_on_separate_pinned_piers(catlin_ctx) -> None:
+    from typehaus.engineering.pier_basis import cast_piers
+
+    active = {pier.tag: pier for pier in cast_piers(catlin_ctx.engineering.context)}
+    assert {"PT-BW-PE", "PT-BW-PNE"} <= set(active)
+    assert not {"PT-BW-RE", "PT-BW-RNE"} & set(active)
+    for tag in ("PT-BW-PE", "PT-BW-PNE"):
+        pier = active[tag]
+        assert pier.lateral_system
+        assert pier.diameter_in == pytest.approx(14.0)
+        assert pier.wind_base_moment_lb_ft > 0.0, "the pinned post still sends base drag"
+        assert "RF-BW-CANOPY" in pier.moment_basis
 
 
 def test_every_cast_concrete_pier_on_its_own_base_is_in_scope(piers) -> None:
@@ -331,15 +337,16 @@ def test_every_cast_concrete_pier_on_its_own_base_is_in_scope(piers) -> None:
                 "PT-BW-IC", "PT-BW-IE"} & set(piers)
 
 
-def test_the_gate_is_concrete_not_a_round_section(catlin_plan, piers) -> None:
+def test_the_gate_is_concrete_not_a_round_section(catlin_cast_ctx, piers) -> None:
     """``size="12 round"`` is a SHAPE. A 12" round wood column is an ordinary thing, and
     ACI 318 has nothing to say about it — the material is what puts a post in this module."""
     from typehaus.model.structure import Post
     from typehaus.resolve.assembly_material import assembly_structure_material
 
-    for element in catlin_plan.all_elements():
+    plan = catlin_cast_ctx.plan
+    for element in plan.all_elements():
         if isinstance(element, Post) and element.tag in piers:
-            assert assembly_structure_material(catlin_plan, element.assembly) == "concrete"
+            assert assembly_structure_material(plan, element.assembly) == "concrete"
     # The wood posts standing on the breezeway piers are not themselves piers.
     assert not {"PT-BW-1", "PT-BW-2", "PT-BW-3", "PT-BW-4"} & set(piers)
 
@@ -709,7 +716,7 @@ def _deck_posts_everywhere(plan):
     return [post for deck in _decks(ctx) for post in _deck_posts(ctx, deck)]
 
 
-def test_the_roof_tributary_rule_is_single_sourced_and_reaches_both_halves(catlin_ctx) -> None:
+def test_the_roof_tributary_rule_is_single_sourced_and_reaches_both_halves(catlin_cast_ctx) -> None:
     """``_roof_borne_posts`` IS ``pier_basis.landed_roof_tributaries``, scaled.
 
     ** WHAT THIS REPLACES, AND THE TWO DEFECTS THE REPLACEMENT CLOSED. **
@@ -746,7 +753,7 @@ def test_the_roof_tributary_rule_is_single_sourced_and_reaches_both_halves(catli
 
     # The house's OWN context, not ``check_context``'s empty ``Preferences``: the authored
     # design snow is the input under test, and a default-preferences context cannot see it.
-    ctx = catlin_ctx
+    ctx = catlin_cast_ctx
     ectx = engineering_context(ctx)
 
     snow, basis = design_roof_snow_psf(ectx)
@@ -1142,48 +1149,32 @@ def test_the_glulam_record_carries_its_wet_service_factors_in_the_fingerprint(
     assert record.oracle and record.oracle[0].note == "balcony_moment_columns.md"
 
 
-# --- the north entry canopy: a ROOF-carrying moment column ------------------------------
+# --- the north entry canopy: cast-variant roof-carrying moment columns -------------------
 #
 # `notes/north_entry_piers.md` §8 is the hand pass these reproduce. Until 2026-09-11 both
 # columns published `SCREENING: axial only, no moment and no lateral case.` while
 # `notes/north_entry_structure.md` §1a called them the canopy's east lateral system in
 # print — a false claim the tests did not catch because nothing asked.
 _CANOPY_COLUMNS = ("PT-BW-RE", "PT-BW-RNE")
-#: ** THE SECOND ORACLE FOR THESE TWO IS NOW `entry_column_base_fixity.md` §7, AND IT MOVED
-#: EVERY NUMBER ON THIS PAGE. ** `north_entry_piers.md` §8 still derives the wind and the
-#: bands; what changed on 2026-09-19 is who carries the result. The canopy's deck is a
-#: declared diaphragm and `W-BW-SCREEN` a declared shear panel, so the shear is distributed
-#: in proportion to rigidity (IBC 2018 §1604.4) instead of being loaded wholly onto the two
-#: cast columns, and each column's own drag is a PROPPED-cantilever load rather than a
-#: free-cantilever one now that the deck holds its head.
-#:
-#: Three consequences, and the first is the one a reader will not expect: **E-W governs
-#: both columns now**. The panel runs north-south, so it takes 62% of the N-S case and none
-#: of the E-W one, and the case with the smaller total is the case the columns keep.
-# ** ONE ROW, TWICE, AND THAT IS §6a's WHOLE RESULT. ** Both canopy bases went onto one plane
-# at -10'-2" on 2026-09-20, so the two columns have the same shaft, the same 3EI/h³ and the
-# same 50% of the E-W case. Until then they read 15.349'/0.3632/523.4/4,940 and
-# 12.729'/0.6368/444.6/6,866 — the SHORT column stiff and taking the larger share of exactly
-# the case the panel does not resist, which is why deepening it alone could not close it.
+#: These two are cast columns only under EAST_POST_SYSTEM="cast". The active KDAT
+#: house has wood roof posts on separate pinned concrete piers. The cast variant still
+#: exercises the base-moment and propped-shaft arithmetic, but its garage receiving line
+#: now shares the N-S shear (canopy_garage_diaphragm.md §7).
 _CANOPY_ORACLE = {
-    # §7b/§7e: 0.500 x 821.3 x 16.563' + 552.6 lb-ft of propped drag.
-    "PT-BW-RE": {"height_ft": 16.563, "drag_arm_ft": 11.170, "share": 0.500,
-                 "drag_moment_lb_ft": 552.6, "wind_asd_lb_ft": 7_354.0},
-    "PT-BW-RNE": {"height_ft": 16.563, "drag_arm_ft": 11.170, "share": 0.500,
-                  "drag_moment_lb_ft": 552.6, "wind_asd_lb_ft": 7_354.0},
+    # The cast variant's N-S line: 338.77 lb after the garage receiving-line split,
+    # over 16.5104' of shaft, plus 551.2 lb-ft of its own propped drag.
+    "PT-BW-RE": {"height_ft": 16.5104, "drag_arm_ft": 11.12,
+                 "drag_moment_lb_ft": 551.2, "wind_asd_lb_ft": 6_144.8},
+    "PT-BW-RNE": {"height_ft": 16.5104, "drag_arm_ft": 11.12,
+                  "drag_moment_lb_ft": 551.2, "wind_asd_lb_ft": 6_144.8},
 }
 #: §7a: 0.6 x 18.335 psf x 0.85 x 1.80, the ASD pressure every band below is multiplied by.
 _CANOPY_ASD_PRESSURE_PSF = 16.831
-#: §7a: the E-W case, which is the one the columns keep — the slope rise (6.000' x 4.444' =
-#: 26.67 ft2) plus both headers' section depths seen end-on (5.36 ft2 each).
+#: Cast-variant wind bands retained for the propped-shaft arithmetic below.
 _CANOPY_TOP_SHEAR_LB = 629.3
-#: §7a: the N-S case, the gable-end triangle 26.667' x 4.444'/2 = 59.26 ft2. Shared.
 _CANOPY_TOP_SHEAR_NS_LB = 997.4
-#: Two 12" shafts, each 10.78' of exposed length (eave +7.951' down to Site.grade -2.833').
 _CANOPY_DRAG_SHEAR_LB = 363.0
-#: §7b: the two propped-cantilever head reactions, which join the deck and are distributed
-#: with everything else. 821.3 = 629.3 + 192.0 on the E-W case.
-_CANOPY_DIAPHRAGM_SHEAR_LB = 821.3
+_CANOPY_DIAPHRAGM_SHEAR_LB = 1_188.91
 
 
 @pytest.mark.parametrize("tag", _CANOPY_COLUMNS)
@@ -1201,13 +1192,11 @@ def test_a_roof_carrying_column_is_a_lateral_system_too(tag, piers) -> None:
 
 @pytest.mark.parametrize("tag", _CANOPY_COLUMNS)
 def test_the_canopy_base_moment_reproduces_the_note(tag, piers) -> None:
-    """`entry_column_base_fixity.md` §7e term by term: this column's SHARE of the deck's
-    shear on the full shaft, plus the propped-cantilever moment from its own drag."""
+    """The cast variant's garage-aware head reaction plus its own propped drag."""
     want = _CANOPY_ORACLE[tag]
     pier = piers[tag]
     assert pier.height_in / 12.0 == pytest.approx(want["height_ft"], abs=0.01)
-    hand = (want["share"] * _CANOPY_DIAPHRAGM_SHEAR_LB * want["height_ft"]
-            + want["drag_moment_lb_ft"])
+    hand = 338.77 * want["height_ft"] + want["drag_moment_lb_ft"]
     assert hand == pytest.approx(want["wind_asd_lb_ft"], rel=0.005)
     assert pier.wind_base_moment_lb_ft == pytest.approx(want["wind_asd_lb_ft"], rel=0.005)
 
@@ -1230,37 +1219,28 @@ def test_the_propped_shaft_is_not_a_cantilever(tag, piers) -> None:
     assert "PROPPED cantilever" in piers[tag].moment_basis
 
 
-def test_the_shear_is_shared_with_the_west_panel_and_the_split_is_stated(piers) -> None:
-    """The frame's shear is distributed by rigidity, IBC 2018 §1604.4.
+def test_the_shear_is_shared_with_the_garage_and_the_split_is_stated(
+        piers, catlin_cast_ctx) -> None:
+    """The cast variant's N-S case shares shear with the garage receiving line.
 
-    ** THIS TEST ASSERTED THE OPPOSITE UNTIL 2026-09-19, AND BOTH VERSIONS ARE RIGHT ABOUT
-    THEIR OWN MODEL. ** While no `Roof.diaphragm` and no `Wall.shear_panel` were authored,
-    the whole shear DID go east: there was no horizontal member to share it through and no
-    declared line to share it with, and taking it all on the columns was the honest answer
-    rather than a conservatism. Authoring both is what changed the structure.
-
-    What the basis has to keep saying is which case is which — the panel runs north-south,
-    so the E-W case is still the columns' alone, and it is now the one that governs them.
-
-    ** AND IT GOVERNS AGAINST THE EQUILIBRIUM-CONSISTENT N-S CASE, NOT THE k/Σk ONE. ** The
-    rigidity split gave each column 142.3 lb N-S (2,908 lb-ft), which left M_t = V e
-    unbalanced. With torsion (canopy_lateral §8g/§8h) each takes 342.5 lb, 6,225 lb-ft — still
-    under E-W's 7,354, so E-W governs by 15%, not by 2.5x.
+    Both columns take 338.77 lb at their heads after the rigid-deck and torsional
+    distribution; their own propped drag contributes the rest of the base moment.
     """
-    from typehaus.engineering.roof_moment import frame_cases_of
+    from typehaus.engineering.roof_moment import frame_cases_of, roof_base_moments
 
+    roof_base_moments(catlin_cast_ctx.engineering.context)
     north_south = next(c for c in frame_cases_of("RF-BW-CANOPY") if c.axis == "y")
     for tag in _CANOPY_COLUMNS:
         basis = piers[tag].moment_basis
         assert "shared by relative rigidity (IBC 2018 §1604.4)" in basis
-        assert "E-W wind on RF-BW-CANOPY" in basis, "the unshared case governs"
-        assert "W-BW-SCREEN" not in basis, "the panel resists N-S and takes no E-W share"
+        assert "N-S wind on RF-BW-CANOPY" in basis
+        assert "3 line(s)" in basis, "the garage receiving line shares the shear"
         want = _CANOPY_ORACLE[tag]
         force = north_south.column_forces_lb[tag]
-        assert force == pytest.approx(342.5, rel=0.005)
+        assert force == pytest.approx(338.77, rel=0.005)
         ns_moment = force * want["height_ft"] + want["drag_moment_lb_ft"]
-        assert ns_moment == pytest.approx(6_225.0, rel=0.005)
-        assert piers[tag].wind_base_moment_lb_ft > 1.1 * ns_moment
+        assert ns_moment == pytest.approx(6_144.8, rel=0.005)
+        assert piers[tag].wind_base_moment_lb_ft == pytest.approx(ns_moment, rel=0.005)
     # And the west line's own columns are wood, so they never reach this module at all.
     assert "PT-BW-CW" not in piers and "PT-BW-CNW" not in piers
 
@@ -1281,12 +1261,8 @@ def test_the_canopy_column_is_graded_in_bending_and_it_checks_out(tag, results) 
     # a guard and almost no wind area.
     assert wind.demand > states["bending at base, guard"].demand
     magnified = states["magnified moment (sway)"]
-    # ** THE FLOOR CAME DOWN 0.40 -> 0.30 ON 2026-09-19 AND THE CEILING DID NOT MOVE. **
-    # The shear split (entry_column_base_fixity.md §7) roughly halved PT-BW-RE's base moment
-    # and its sway ratio fell to 0.37, while PT-BW-RNE — which takes the larger share of the
-    # one case the panel does not resist — stayed high. The demand is still a deliberate
-    # over-read (§8's 2.1x against the §27.3.2 hand pass); if this ever reaches 1.0 the
-    # note's wood alternate is back on the table.
+    # The cast variant still grades the magnified N-S moment after the garage receives
+    # its share; the upper bound catches loss of sway stability.
     assert 0.3 < magnified.demand / magnified.capacity < 0.85
     assert "no moment and no lateral case" not in " ".join(record.notes)
 

@@ -54,17 +54,17 @@ def test_the_saddle_bolt_yield_modes_match_the_note() -> None:
 
 
 @pytest.fixture(scope="module")
-def record(catlin_ctx):
-    return catlin_ctx.engineering["steel_post/PT-BW-RE"]
+def record(catlin_steel_ctx):
+    return catlin_steel_ctx.engineering["steel_post/PT-BW-RE"]
 
 
 def test_the_landed_record_reproduces_section_5(record) -> None:
     assert record.status is Status.OK, record.summary
     states = {s.name: s for s in record.limit_states}
     rows = {
-        "slenderness KL/r, §E2": (49.18, 200.0),
-        "axial, flexural buckling §E3": (3424.1, 84544.9),
-        "combined axial and drag, §H1.1": (0.0226, 1.0),
+        "slenderness KL/r, §E2": (48.77, 200.0),
+        "axial, flexural buckling §E3": (3423.4, 84794.2),
+        "combined axial and drag, §H1.1": (0.02247, 1.0),
         "saddle bolts, uplift": (433.26, 3390.0),
         "PT-BW-RE base anchor tension (breakout / pullout / steel)": (722.1, 4528.2),
     }
@@ -73,18 +73,28 @@ def test_the_landed_record_reproduces_section_5(record) -> None:
         assert states[name].capacity == pytest.approx(capacity, rel=2e-3), name
 
 
-def test_both_east_posts_are_graded_and_nothing_else_is_steel(catlin_ctx) -> None:
-    keys = {k for k in catlin_ctx.engineering if k.startswith("steel_post/")}
+def test_both_east_posts_are_graded_and_nothing_else_is_steel(catlin_steel_ctx) -> None:
+    keys = {k for k in catlin_steel_ctx.engineering if k.startswith("steel_post/")}
     assert keys == {"steel_post/PT-BW-RE", "steel_post/PT-BW-RNE"}
 
 
-def test_an_unpublished_section_is_incomplete_not_guessed(catlin_ctx) -> None:
+def test_active_kdat_east_posts_are_wood_not_steel(catlin_ctx) -> None:
+    assert not {key for key in catlin_ctx.engineering if key.startswith("steel_post/")}
+    for tag, head in (("PT-BW-RE", "ACE6Z"), ("PT-BW-RNE", "AC6Z")):
+        record = catlin_ctx.engineering[f"wood_roof_post/{tag}"]
+        assert record.status is Status.OK, record.summary
+        assert {state.name for state in record.limit_states} >= {
+            "NDS wet-service axial", f"{head} head uplift",
+            "CBSQ66-SDS2 base, uplift + lateral along the beam"}
+
+
+def test_an_unpublished_section_is_incomplete_not_guessed(catlin_steel_ctx) -> None:
     from dataclasses import replace
 
     from typehaus.engineering.roof_lateral import roof_winds
     from typehaus.engineering.steel_post import _one
 
-    ctx = catlin_ctx.engineering.context
+    ctx = catlin_steel_ctx.engineering.context
     post = next(p for p in roof_winds(ctx)["RF-BW-CANOPY"].pinned if p.tag == "PT-BW-RE")
     wind = roof_winds(ctx)["RF-BW-CANOPY"]
     element = ctx.plan.by_tag("PT-BW-RE").model_copy(update={"size": "HSS5x5x0.3125"})

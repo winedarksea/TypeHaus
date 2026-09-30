@@ -363,20 +363,15 @@ def test_the_corner_columns_are_delegated_not_graded_here(catlin_findings,
     decks = {t for f in catlin_findings for t in f.element_tags if t.startswith("FS-")}
     assert decks == {"FS-SG-DECK"}
 
-    # The ground's half of the same column is `structural.column_base`'s since 2026-09-20,
-    # and it walks the SAME members — a shared `_moment_column_carriers`, because two copies
-    # of the traversal is how the section's question and the ground's would start being
-    # asked about different columns.
+    # The active KDAT canopy posts are pinned gravity supports. Their concrete piers
+    # receive base drag, while the canopy diaphragm delivers lateral load to the garage.
     ground = catlin_base_findings
     assert ground
     for finding in ground:
-        assert finding.engineering_item.startswith("column_base/")
-        assert "what makes a base fixed is the ground, not the section" in finding.message
-        assert "1807.3.2.1" in finding.message
-    # The balcony pillars stand on walls, so they raise no `column_base` item at all:
-    # `column_support/<wall>` owns that joint.
-    assert not [f for f in ground
-                if f.engineering_item.startswith("column_base/PT-SG-")]
-    assert ({t for f in ground for t in f.element_tags if t.startswith("PT-")}
-            == {t for f in section for t in f.element_tags if t.startswith("PT-")}
-               - {"PT-SG-BR1", "PT-SG-BR3", "PT-SG-BF1", "PT-SG-BF3"})
+        assert finding.engineering_item.startswith(("column_base/", "deck_post/"))
+        assert "pinned" in finding.message
+        if finding.engineering_item.startswith("column_base/"):
+            assert "1807.3.2.1" in finding.message
+    assert {f.engineering_item for f in ground} == {
+        "column_base/PT-BW-PE", "column_base/PT-BW-PNE",
+        "deck_post/PT-BW-PE", "deck_post/PT-BW-PNE"}

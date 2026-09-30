@@ -27,8 +27,8 @@ from typehaus.model.registry import constructor_names
 #: register; the band-end reproductions still run on them, the record tests do not.
 #: RE/RNE straddle the band and CLOSE on catlin's presumed n_h (§10), hence OK.
 _WORKED = {
-    "PT-BW-RE": (1.305, 1.953, Status.OK),
-    "PT-BW-RNE": (1.295, 1.868, Status.OK),
+    "PT-BW-RE": (1.3019, 1.9431, Status.OK),
+    "PT-BW-RNE": (1.2922, 1.8592, Status.OK),
     # ** RE-WORKED 2026-09-23 (note addendum 2026-09-23) ** with each deck beam on its own
     # half-bay strip: the landing's deck share fell 17.03 -> 9.93 ft2 (W/E), 9.60 (GW/GE).
     # Seat beams from the column's east face, 2026-09-23 (addendum 2026-09-23c): 3.3542' long.
@@ -51,8 +51,8 @@ _ORACLE = {tag: row for tag, row in _WORKED.items() if tag not in _LANDING}
 
 
 @pytest.fixture(scope="module")
-def ectx(catlin_ctx):
-    return engineering_context(catlin_ctx)
+def ectx(catlin_cast_ctx):
+    return engineering_context(catlin_cast_ctx)
 
 
 def _points(ectx, tag):
@@ -128,8 +128,8 @@ def test_both_band_ends_reproduce_the_note(tag, ectx) -> None:
 
 
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
-def test_the_record_reproduces_the_notes_verdict(tag, catlin_ctx) -> None:
-    record = catlin_ctx.engineering[f"{KIND}/{tag}"]
+def test_the_record_reproduces_the_notes_verdict(tag, catlin_cast_ctx) -> None:
+    record = catlin_cast_ctx.engineering[f"{KIND}/{tag}"]
     assert record.status is _ORACLE[tag][2], (record.summary, record.missing)
     inputs = {q.name: q.value for q in record.inputs}
     assert inputs["subgrade_modulus_measured"] == 0.0
@@ -140,15 +140,15 @@ def test_the_record_reproduces_the_notes_verdict(tag, catlin_ctx) -> None:
 
 
 #: §10: Terzaghi's loose dry sand, 7 tons/ft³ = 8.10 pci, the pole at unit width.
-_PRESUMED = {"PT-BW-RE": (2.7747e7, 4.618, 41_012.0, 1.3246),
-             "PT-BW-RNE": (2.7747e7, 4.618, 41_012.0, 1.3246)}
+_PRESUMED = {"PT-BW-RE": (2.7764e7, 4.6046, 41_241.0, 1.3218),
+             "PT-BW-RNE": (2.7764e7, 4.6046, 41_241.0, 1.3218)}
 
 
 @pytest.mark.parametrize("tag", sorted(_PRESUMED))
-def test_the_presumed_n_h_reproduces_section_10(tag, catlin_ctx) -> None:
+def test_the_presumed_n_h_reproduces_section_10(tag, catlin_cast_ctx) -> None:
     """§10: both canopy columns close on the presumed n_h — the pad earns no width."""
     k_theta, r, pc, delta = _PRESUMED[tag]
-    record = catlin_ctx.engineering[f"{KIND}/{tag}"]
+    record = catlin_cast_ctx.engineering[f"{KIND}/{tag}"]
     inputs = {q.name: q.value for q in record.inputs}
     assert inputs["subgrade_modulus_pci"] == pytest.approx(8.10)
     assert inputs["base_spring"] == pytest.approx(k_theta, rel=2e-3)
@@ -160,16 +160,24 @@ def test_the_presumed_n_h_reproduces_section_10(tag, catlin_ctx) -> None:
     assert any("THE SOIL IS PRESUMED" in n for n in record.notes)
 
 
-def test_the_keys_are_column_bases_plus_the_wall_borne_columns(catlin_ctx, ectx) -> None:
+def test_the_keys_are_column_bases_plus_the_wall_borne_columns(catlin_cast_ctx, ectx) -> None:
     from typehaus.engineering import keys_of
 
     assert set(keys_of(KIND, ectx)) == set(_ORACLE)
     assert set(keys_of("column_base", ectx)) < set(keys_of(KIND, ectx))
 
 
-def test_the_pole_residue_names_the_shaft_pad_split(catlin_ctx) -> None:
+def test_active_kdat_pinned_east_posts_need_no_cast_column_rotation(catlin_ctx) -> None:
+    from typehaus.engineering import keys_of
+
+    keys = set(keys_of(KIND, catlin_ctx.engineering.context))
+    assert keys == {"PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3"}
+    assert not {"PT-BW-RE", "PT-BW-RNE"} & keys
+
+
+def test_the_pole_residue_names_the_shaft_pad_split(catlin_cast_ctx) -> None:
     """Plan rule 12: the deferral's residue must not vanish with it."""
-    notes = " ".join(catlin_ctx.engineering[f"{KIND}/PT-BW-RE"].notes)
+    notes = " ".join(catlin_cast_ctx.engineering[f"{KIND}/PT-BW-RE"].notes)
     assert "HOW THE BASE MOMENT SPLITS" in notes
     assert "W-BW-SCREEN" in notes and "§1604.4" in notes
 

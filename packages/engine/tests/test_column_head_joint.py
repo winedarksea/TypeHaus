@@ -39,19 +39,30 @@ def _input(record, name):
     return next(q.value for q in record.inputs if q.name == name)
 
 
-def test_every_lateral_column_is_computed_and_none_is_deferred(catlin_ctx):
+def test_every_lateral_column_is_computed_and_none_is_deferred(catlin_cast_ctx):
     from typehaus.engineering.deferred import DEFERRALS
     from typehaus.engineering.registry import keys_of
 
     assert "column_head_joint" not in DEFERRALS
-    assert tuple(keys_of("column_head_joint", catlin_ctx.engineering.context)) == _HEADS
+    assert tuple(keys_of("column_head_joint", catlin_cast_ctx.engineering.context)) == _HEADS
     for tag in _HEADS:
-        assert _record(catlin_ctx, tag).status != Status.NO_CALC
+        assert _record(catlin_cast_ctx, tag).status != Status.NO_CALC
 
 
-def test_section_capacities_reproduce_9d_9e_9f(catlin_ctx):
+def test_active_kdat_heads_are_wood_connectors_not_cast_joints(catlin_ctx):
+    from typehaus.engineering.registry import keys_of
+
+    keys = set(keys_of("column_head_joint", catlin_ctx.engineering.context))
+    assert keys == {"PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3"}
+    for tag, head in (("PT-BW-RE", "ACE6Z"), ("PT-BW-RNE", "AC6Z")):
+        wood = catlin_ctx.engineering[f"wood_roof_post/{tag}"]
+        assert wood.status is Status.OK
+        assert any(state.name == f"{head} head uplift" for state in wood.limit_states)
+
+
+def test_section_capacities_reproduce_9d_9e_9f(catlin_cast_ctx):
     """φV_c, A_v,min, φT_th and φB_n — the note's arithmetic, one column's worth."""
-    record = _record(catlin_ctx, "PT-SG-BR1")
+    record = _record(catlin_cast_ctx, "PT-SG-BR1")
     assert _state(record, "column shear").capacity == pytest.approx(12_218.8, abs=0.1)
     assert _state(record, "A_v,min").demand == pytest.approx(0.10607, abs=1e-5)
     assert _state(record, "A_v,min").capacity == pytest.approx(0.22)
@@ -59,65 +70,66 @@ def test_section_capacities_reproduce_9d_9e_9f(catlin_ctx):
     assert _state(record, "bearing at the seat").capacity == pytest.approx(67_681.25)
 
 
-def test_the_head_is_asked_for_no_moment_and_says_so(catlin_ctx):
-    state = _state(_record(catlin_ctx, "PT-BW-RE"), "head moment")
+def test_the_head_is_asked_for_no_moment_and_says_so(catlin_cast_ctx):
+    state = _state(_record(catlin_cast_ctx, "PT-BW-RE"), "head moment")
     assert state.is_detailing and state.ratio == pytest.approx(0.952, abs=1e-3)
     assert "R6.2.5" in state.citation
 
 
-def test_canopy_columns_reproduce_9b_9c_9e(catlin_ctx):
+def test_canopy_columns_reproduce_9b_9c_9e(catlin_cast_ctx):
     # E-W with torsion (§9b): RNE takes the +0.40 lb increment, RE's -0.40 relief is not
     # credited. Column shear is the base shear / 0.6 (§9d).
-    for tag, e_w, shear in (("PT-BW-RE", 410.66, 826.95), ("PT-BW-RNE", 411.06, 827.63)):
-        record = _record(catlin_ctx, tag)
+    for tag, e_w, shear in (("PT-BW-RE", 338.77, 707.56),
+                            ("PT-BW-RNE", 338.77, 707.56)):
+        record = _record(catlin_cast_ctx, tag)
         assert record.status == Status.OK
         lateral = _state(record, "connector lateral, wind")
         assert lateral.demand == pytest.approx(e_w, abs=0.05)
-        assert lateral.capacity == 1350.0 and lateral.ratio == pytest.approx(0.304, abs=1e-3)
+        assert lateral.capacity == 1350.0 and lateral.ratio == pytest.approx(0.251, abs=1e-3)
         assert _state(record, "connector uplift").demand == pytest.approx(433.25, abs=0.1)
         assert _state(record, "connector uplift").capacity == 2560.0
         assert "the rated set" in _state(record, "connector uplift").citation
         assert _state(record, "column shear").demand == pytest.approx(shear, abs=0.1)
         # N-S head force 342.52 lb ASD with torsion, not the 142.27 k/Σk share (§9e).
         torsion = _state(record, "column torsion")
-        assert torsion.demand == pytest.approx(107.04, abs=0.01)
-        assert _input(record, "torsion_lever") == pytest.approx(2.25)
+        assert torsion.demand == pytest.approx(129.39, abs=0.02)
+        assert _input(record, "torsion_lever") == pytest.approx(2.75)
         combined = _state(record, "connector combined")
-        assert combined.ratio == pytest.approx(0.473, abs=1e-3)
+        assert combined.ratio == pytest.approx(0.420, abs=1e-3)
         assert "§9 Limitations item 4" in combined.citation
         assert "combined_unity_unverified" not in {q.name for q in record.inputs}
-    assert _input(_record(catlin_ctx, "PT-BW-RE"), "seat_eccentricity") == pytest.approx(0.875)
-    assert _input(_record(catlin_ctx, "PT-BW-RNE"), "seat_eccentricity") == pytest.approx(0.0)
+    assert _input(_record(catlin_cast_ctx, "PT-BW-RE"), "seat_eccentricity") == pytest.approx(0.0)
+    assert _input(_record(catlin_cast_ctx, "PT-BW-RNE"), "seat_eccentricity") == pytest.approx(0.0)
 
 
-def test_guard_columns_grade_the_guard_at_cd_one(catlin_ctx):
+def test_guard_columns_grade_the_guard_at_cd_one(catlin_cast_ctx):
     for tag in ("PT-SG-BF1", "PT-SG-BR3"):
-        record = _record(catlin_ctx, tag)
+        record = _record(catlin_cast_ctx, tag)
         assert record.status == Status.OK
         guard = _state(record, "connector lateral, guard")
         assert guard.capacity == pytest.approx(843.75)
         assert guard.ratio == pytest.approx(0.2370, abs=1e-4)
         assert not any(s.name == "connector uplift" for s in record.limit_states)
-    sg = _record(catlin_ctx, "PT-SG-BR1")
+    sg = _record(catlin_cast_ctx, "PT-SG-BR1")
     assert _state(sg, "column torsion").demand == pytest.approx(46.67, abs=0.01)
 
 
-def test_bearing_demand_is_the_head_reaction(catlin_ctx):
+def test_bearing_demand_is_the_head_reaction(catlin_cast_ctx):
     from typehaus.engineering.pier_basis import cast_piers
 
-    piers = {p.tag: p for p in cast_piers(catlin_ctx.engineering.context)}
+    piers = {p.tag: p for p in cast_piers(catlin_cast_ctx.engineering.context)}
     for tag in _HEADS:
         pier = piers[tag]
         expected = 1.2 * (pier.dead_lb - pier.self_weight_lb) + 1.6 * pier.live_lb
-        assert _state(_record(catlin_ctx, tag), "bearing").demand == pytest.approx(expected)
+        assert _state(_record(catlin_cast_ctx, tag), "bearing").demand == pytest.approx(expected)
 
 
-def test_the_prop_reaction_is_exported_not_back_solved(catlin_ctx):
+def test_the_prop_reaction_is_exported_not_back_solved(catlin_cast_ctx):
     """The torsion-corrected force ``roof_moment`` grades the base on, never below k/Σk."""
     from typehaus.engineering.lateral_system import column_head_reactions
     from typehaus.engineering.roof_moment import frame_cases_of
 
-    heads = column_head_reactions(catlin_ctx.engineering.context)
+    heads = column_head_reactions(catlin_cast_ctx.engineering.context)
     for case in frame_cases_of("RF-BW-CANOPY"):
         for tag in ("PT-BW-RE", "PT-BW-RNE"):
             direct = case.columns_governing.shares[tag] * case.diaphragm_shear_lb

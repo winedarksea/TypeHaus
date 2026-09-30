@@ -39,7 +39,10 @@ _WORKED = {
     "PT-BW-GW": (3.50, 4.50, 2.0, 4.33, 3.21, Status.OK),
     "PT-BW-GE": (3.50, 4.50, 1.5, 4.39, 3.30, Status.OK),
 }
-_ORACLE = {tag: _WORKED[tag] for tag in ("PT-BW-RE", "PT-BW-RNE")}
+_ORACLE = {
+    "PT-BW-RE": (7.33, 8.33, 2.5, 6.52, 4.90, Status.OK),
+    "PT-BW-RNE": (7.33, 8.33, 2.0, 6.54, 4.94, Status.OK),
+}
 
 #: The columns that claim IBC §1806.3.4's doubling: NONE since basis 4. The mechanism and its
 #: two refusals are still tested below; the house simply no longer needs it.
@@ -95,10 +98,10 @@ def test_a_deeper_pole_needs_more_not_less() -> None:
 
 
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
-def test_the_record_reproduces_the_notes_verdict(tag, catlin_ctx) -> None:
+def test_the_record_reproduces_the_notes_verdict(tag, catlin_cast_ctx) -> None:
     """§4's table, on the landed house."""
     shaft, pole, width, needs, needs_doubled, status = _ORACLE[tag]
-    record = catlin_ctx.engineering[f"{KIND}/{tag}"]
+    record = catlin_cast_ctx.engineering[f"{KIND}/{tag}"]
     assert record.status is status, record.summary
     assert not record.missing, record.missing
     inputs = {q.name: q.value for q in record.inputs}
@@ -119,20 +122,21 @@ def test_the_record_reproduces_the_notes_verdict(tag, catlin_ctx) -> None:
     assert "credited as part of the pole" in state.citation
 
 
-def test_h_is_measured_off_the_shaft_and_the_capacity_is_the_pole(catlin_ctx) -> None:
+def test_h_is_measured_off_the_shaft_and_the_capacity_is_the_pole(catlin_cast_ctx) -> None:
     """§9d's trap. The arm runs from the pad TOP, so `h` takes the SHAFT's buried length off
     it; the capacity is the TOTAL. Collapse the two and `h` drops a foot on every column."""
-    from typehaus.engineering.roof_moment import base_shear_of
+    from typehaus.engineering.roof_moment import base_shear_of, roof_base_moments
 
+    roof_base_moments(catlin_cast_ctx.engineering.context)
     for tag in _ORACLE:
-        inputs = {q.name: q.value for q in catlin_ctx.engineering[f"{KIND}/{tag}"].inputs}
+        inputs = {q.name: q.value for q in catlin_cast_ctx.engineering[f"{KIND}/{tag}"].inputs}
         _shear, arm = base_shear_of(tag)
         assert inputs["shear_height_above_grade"] == pytest.approx(
             arm - inputs["shaft_embedment"], abs=1e-9), tag
         assert inputs["embedment"] - inputs["shaft_embedment"] == pytest.approx(1.0), tag
 
 
-def test_the_pad_is_reported_as_not_being_the_mechanism(catlin_ctx) -> None:
+def test_the_pad_is_reported_as_not_being_the_mechanism(catlin_cast_ctx) -> None:
     """§8, and the reason it is a NOTE on this house and not a limit state.
 
     An embedded shaft and a spread base are alternative paths for one moment. `PD-BW-RE`
@@ -141,9 +145,9 @@ def test_the_pad_is_reported_as_not_being_the_mechanism(catlin_ctx) -> None:
     lift at one edge before it did anything about the moment — and the embedment is what is
     graded. Grading both would count one moment twice.
     """
-    record = catlin_ctx.engineering[f"{KIND}/PT-BW-RE"]
+    record = catlin_cast_ctx.engineering[f"{KIND}/PT-BW-RE"]
     inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["eccentricity"] == pytest.approx(1.25, abs=0.02)
+    assert inputs["eccentricity"] == pytest.approx(1.05, abs=0.02)
     assert any("NOT WHAT MAKES THIS COLUMN FIXED" in note for note in record.notes)
     assert not [s for s in record.limit_states
                 if s.name in ("eccentricity", "bearing", "overturning")]
@@ -210,12 +214,24 @@ def test_two_pours_that_do_not_touch_are_not_one_footing() -> None:
     assert union_footprint([near, far], "x") is None
 
 
-def test_a_column_on_a_wall_raises_no_item(catlin_ctx) -> None:
+def test_a_column_on_a_wall_raises_no_item(catlin_cast_ctx) -> None:
     """One question, one item. The balcony's four pillars are doweled into `W-SG-W1`/`-E1`
     and `structural.foundation` already raises `column_support/<wall>` for that joint."""
-    keys = {k for k in catlin_ctx.engineering if k.startswith(f"{KIND}/")}
+    keys = {k for k in catlin_cast_ctx.engineering if k.startswith(f"{KIND}/")}
     assert keys == {f"{KIND}/{tag}" for tag in _ORACLE}
     assert not [k for k in keys if "PT-SG-" in k]
+
+
+def test_active_kdat_grades_the_pinned_piers_below_the_wood_posts(catlin_ctx) -> None:
+    keys = {key for key in catlin_ctx.engineering if key.startswith(f"{KIND}/")}
+    assert keys == {f"{KIND}/PT-BW-PE", f"{KIND}/PT-BW-PNE"}
+    for tag in ("PT-BW-PE", "PT-BW-PNE"):
+        record = catlin_ctx.engineering[f"{KIND}/{tag}"]
+        assert record.status is Status.OK, record.summary
+        inputs = {q.name: q.value for q in record.inputs}
+        assert inputs["column_diameter"] == pytest.approx(14.0)
+        assert inputs["lateral_shear_asd"] > 0.0
+        assert inputs["lateral_shear_asd"] < 100.0
 
 
 # --- the §1806.3.4 claim is GRADED, which means it can be refused --------------------------
@@ -309,18 +325,18 @@ def test_a_sustained_lateral_case_refuses_the_claim() -> None:
     assert _pole_claim(_StubCtx(post), quiet) == ("the owner says so", None)
 
 
-def test_no_column_claims_the_doubling(catlin_ctx) -> None:
+def test_no_column_claims_the_doubling(catlin_cast_ctx) -> None:
     """§6a's plane was chosen so the canopy would not need §1806.3.4, and §6e WITHDREW the
     landing pair's claim once basis 4 made it buy nothing. A claim left where it does no work
     is a stale declaration, so no column may carry one."""
     for tag in _ORACLE:
-        record = catlin_ctx.engineering[f"{KIND}/{tag}"]
+        record = catlin_cast_ctx.engineering[f"{KIND}/{tag}"]
         assert any("is NOT claimed" in note for note in record.notes), tag
         state = next(s for s in record.limit_states if s.name.startswith("embedment"))
         assert "CLAIMED BY THIS HOUSE" not in state.citation, tag
         inputs = {q.name: q.value for q in record.inputs}
         assert inputs["isolated_pole_doubling"] == 0.0, tag
-        assert getattr(catlin_ctx.plan.by_tag(tag), "isolated_pole_basis", None) is None, tag
+        assert getattr(catlin_cast_ctx.plan.by_tag(tag), "isolated_pole_basis", None) is None, tag
 
 
 # --- §9: the pad as part of the pole --------------------------------------------------------
@@ -375,7 +391,7 @@ def test_no_verdict_flips_across_the_wider_pivot_band(tag) -> None:
         assert needs <= pole, (tag, pivot, needs)
 
 
-def test_the_pad_credit_is_refused_without_the_dowel_anchorage(catlin_ctx, monkeypatch) -> None:
+def test_the_pad_credit_is_refused_without_the_dowel_anchorage(catlin_cast_ctx, monkeypatch) -> None:
     """§6g: the pad is part of the pole only because the dowels develop in it. Over or
     ungraded, the credit is refused and the shaft is graded alone — never silently kept."""
     from typehaus.engineering import deck_post
@@ -383,16 +399,16 @@ def test_the_pad_credit_is_refused_without_the_dowel_anchorage(catlin_ctx, monke
     from typehaus.engineering.item import LimitState
     from typehaus.engineering.pier_basis import cast_piers
 
-    pier = next(p for p in cast_piers(catlin_ctx) if p.tag == "PT-BW-GW")
-    pad = _pad_of(catlin_ctx, pier)
-    assert _pole(catlin_ctx, pier, pad, 1.0).credited
+    pier = next(p for p in cast_piers(catlin_cast_ctx) if p.tag == "PT-BW-GW")
+    pad = _pad_of(catlin_cast_ctx, pier)
+    assert _pole(catlin_cast_ctx, pier, pad, 1.0).credited
 
     monkeypatch.setattr(deck_post, "_dowel_anchorage", lambda *_a: LimitState(
         "dowel anchorage into the base", 10.0, 8.0, "in", "stub"))
-    refused = _pole(catlin_ctx, pier, pad, 1.0)
+    refused = _pole(catlin_cast_ctx, pier, pad, 1.0)
     assert not refused.credited and "do not develop" in (refused.refusal or "")
     assert refused.needs(200.0, 4.54, _S1_PSF_PER_FT) == (
         required_embedment_ft(200.0, 4.54, 1.0, _S1_PSF_PER_FT),) * 2
 
     monkeypatch.setattr(deck_post, "_dowel_anchorage", lambda *_a: None)
-    assert "no dowel anchorage" in (_pole(catlin_ctx, pier, pad, 1.0).refusal or "")
+    assert "no dowel anchorage" in (_pole(catlin_cast_ctx, pier, pad, 1.0).refusal or "")

@@ -5,10 +5,9 @@ wind bands of §7a, the propped-cantilever influence coefficients of §7b, the t
 stiffnesses of §7c, the flexible/rigid test of §7d, the shares of §7e and the deck's and
 panel's own limit states in §7f. A calc that only agrees with itself is not verified.
 
-The pure functions are exercised on the note's own inputs rather than on the house, so a
-model change moves the landed assertions at the foot and leaves the algebra alone — which is
-the point of the split: an arithmetic regression and a geometry change should not look the
-same.
+The pure functions retain the cast-column hand calculations. Landed assertions use the
+active KDAT design's open-front delivery to the garage, plus the cast variant where its
+column collectors still exist (``canopy_garage_diaphragm.md`` §3-§7).
 """
 
 from __future__ import annotations
@@ -275,142 +274,76 @@ def test_the_chord_force_reproduces_the_note() -> None:
     assert chord_force_lb(1_000.0, 10.0, 0.0) is None
 
 
-# --- the landed house ---------------------------------------------------------------------
+# --- the active KDAT house and the cast calculation variant -------------------------------
 
 
-def test_the_canopy_record_reproduces_section_7f(catlin_ctx) -> None:
-    """§7f's table, on the model. PASS, and one row of it passes by exactly nothing."""
+def _states(record):
+    return {state.name: state for state in record.limit_states}
+
+
+def _inputs(record):
+    return {quantity.name: quantity.value for quantity in record.inputs}
+
+
+def test_the_kdat_canopy_delivers_both_axes_to_the_garage(catlin_ctx) -> None:
+    """The pinned east posts cannot supply the cast variant's second lateral line."""
     record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
+    states = _states(record)
+    inputs = _inputs(record)
     assert record.status is Status.OK, record.summary
-    states = {state.name: state for state in record.limit_states}
-
-    aspect = states["diaphragm span-to-depth"]
-    assert aspect.demand == pytest.approx(4.0, abs=0.01)
-    assert aspect.capacity == pytest.approx(DIAPHRAGM_ASPECT_BLOCKED, abs=1e-9)
-    assert aspect.ok, "at the limit, not past it"
-    # ** THE BLOCKING IS LOAD-BEARING IN THE LITERAL SENSE. ** Unblocked the limit is 3.0
-    # and this deck is a FAIL, and there is nothing to trade: the depth is the passage and
-    # the span is the columns.
-    assert aspect.demand > DIAPHRAGM_ASPECT_UNBLOCKED
-
-    assert states["diaphragm unit shear"].demand == pytest.approx(150.8, rel=0.01)
-    assert states["W-BW-SCREEN unit shear"].demand == pytest.approx(149.2, rel=0.01)
-    assert states["W-BW-SCREEN aspect ratio"].demand == pytest.approx(0.621, abs=0.005)
-    holdown = states["W-BW-SCREEN hold-down tension"]
-    assert holdown.demand == pytest.approx(609.3, rel=0.01)
-    assert holdown.capacity == pytest.approx(2_190.0, abs=1.0), "the ABU66SS already there"
+    assert inputs["delivered_shear_x"] == pytest.approx(694.6, abs=0.2)
+    assert inputs["delivered_shear_y"] == pytest.approx(1045.1, abs=0.2)
+    assert states["open front, L'"].ratio == pytest.approx(0.24)
+    assert states["open front, L'/W'"].ratio == pytest.approx(0.225)
+    assert states["joint boundary nailing, along"].demand == pytest.approx(28.94, abs=0.05)
+    assert states["W-G-S delivered shear on the surplus"].ok
+    assert states["RF-GARAGE unit-shear increment"].ok
+    assert states["torsional stability, delivered"].ok
+    assert not any(state.name == "diaphragm span-to-depth" for state in record.limit_states)
 
 
-def test_the_chord_force_is_printed_and_not_graded(catlin_ctx) -> None:
-    """A chord is a wood member in tension with a splice in it and this engine holds no NDS
-    reference design values for one. Printed as an input and named in the notes — not put in
-    ``missing``, because the calculation ran; this is a state it does not reach. Since
-    2026-09-22 the note also says WHO designs it (§8b, and the test below)."""
+def test_the_screen_and_garage_are_both_graded_at_the_full_kdat_load(catlin_ctx) -> None:
+    """The garage delivery does not buy an unproved reduction at the screen line."""
     record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
-    inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["chord_force_y"] == pytest.approx(594.7, rel=0.01)
-    assert not record.missing
-    assert any("PRINTED HERE AND DESIGNED BY THE FABRICATOR" in note
-               for note in record.notes)
-    assert not [s for s in record.limit_states if "chord" in s.name]
+    states = _states(record)
+    inputs = _inputs(record)
+    assert inputs["panel_shear_W-BW-SCREEN"] == pytest.approx(
+        inputs["delivered_shear_y"], rel=1e-9)
+    assert states["W-BW-SCREEN chord hold-down, full height"].ok
+    assert states["W-BW-SCREEN chord base shear, one base"].ok
+    assert states["W-G-S overturning, delivered increment"].ok
+    assert record.governing.name == "diaphragm unit shear at W-BW-SCREEN"
+    assert record.governing.ratio == pytest.approx(0.917, abs=0.005)
 
 
-def test_the_collectors_are_named_and_they_resolve(catlin_ctx) -> None:
-    """A collector that is not in the model is a load path that is not drawn.
-
-    The whole reduction the declaration buys rests on the deck's shear reaching each
-    resisting line, and what carries it there is a real member with a real connection at
-    each end. catlin names the two headers; both resolve, and if either stopped the record
-    would go INCOMPLETE rather than keep publishing a reduced demand.
-    """
+def test_the_kdat_collectors_and_open_front_chord_are_drawn(catlin_ctx) -> None:
     roof = catlin_ctx.plan.by_tag("RF-BW-CANOPY")
     assert roof.diaphragm.collector_refs == ("BM-BW-RW", "BM-BW-RE")
-    assert all(catlin_ctx.plan.by_tag(t) is not None
-               for t in roof.diaphragm.collector_refs)
+    assert all(catlin_ctx.plan.by_tag(tag) is not None
+               for tag in roof.diaphragm.collector_refs)
     record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
-    assert not record.missing
-    assert any("COLLECTOR IS A CLAIM WITH TAGS ON IT" in note for note in record.notes)
+    states = _states(record)
+    assert _inputs(record)["chord_force_open_front_lb"] == pytest.approx(87.3, abs=0.2)
+    assert states["BM-BW-RW chord tension, open front"].ok
+    assert states["BM-BW-RE chord tension, open front"].ok
+    assert states["LSTA24 end straps, chord force + along share"].ok
 
 
-def test_a_roof_with_no_declared_diaphragm_raises_no_item(catlin_ctx) -> None:
-    """The claim is what creates the obligation. A deck whose sheathing is only sheathing
-    carries none, and inventing one for it would report a defect in an ordinary roof."""
-    keys = {k for k in catlin_ctx.engineering if k.startswith(f"{KIND}/")}
-    assert keys == {f"{KIND}/RF-BW-CANOPY"}
+def test_cast_variant_keeps_its_column_collectors_and_delivers_to_garage(
+        catlin_cast_ctx) -> None:
+    record = catlin_cast_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
+    states = _states(record)
+    assert record.status is Status.OK, record.summary
+    assert "PT-BW-RE collector end connection, N-S" in states
+    assert "PT-BW-RNE collector end connection, N-S" in states
+    assert states["W-G-S delivered shear on the surplus"].ok
+    assert states["RF-GARAGE unit-shear increment"].ok
+    assert _inputs(record)["delivered_shear_y"] == pytest.approx(1188.9, abs=0.5)
 
 
-# --- §8b: the chord is delegated, not graded ---------------------------------------------
-
-
-def test_the_chord_force_goes_on_the_truss_order(catlin_ctx) -> None:
-    """§8b. A truss's own top chord is the chord, so the axial force is the FABRICATOR's.
-
-    Combined axial and bending at a plated section is the component designer's chart, and
-    this engine holds no NDS reference design values for a chord anyway — so the 595 lb rides
-    the existing ``rafter/<roof>`` deferral rather than becoming a limit state here. What the
-    record must still do is print the number and name where it went.
-    """
-    from typehaus.engineering.deferred import DEFERRALS
-
-    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
-    inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["chord_force_y"] == pytest.approx(594.7, rel=0.01)
-    assert not [s for s in record.limit_states if "chord" in s.name.lower()]
-    delegated = [n for n in record.notes if "DESIGNED BY THE FABRICATOR" in n]
-    assert delegated and "rafter/RF-BW-CANOPY" in delegated[0]
-    assert "0.030" in delegated[0], "the splice slip the rigid/flexible call rests on"
-    deliverable = DEFERRALS["rafter"].deliverable
-    assert "TOP CHORDS" in deliverable and "chord_splice_slip" in deliverable
-
-
-# --- §8c-§8e: the three collectors --------------------------------------------------------
-
-
-def test_the_west_line_needs_no_drag_strut(catlin_ctx) -> None:
-    """§8c. The panel is LONGER than the deck's depth, so the drag length is zero."""
-    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
-    row = next(s for s in record.limit_states
-               if s.name.startswith("W-BW-SCREEN collector"))
-    assert row.demand == pytest.approx(6.0, abs=0.01), "the deck's depth on that line"
-    assert row.capacity >= row.demand - 1e-9, "the panel runs the whole of it"
-    assert "0.000' and the drag force" in row.citation
-    assert row.is_detailing, "a zero force is not a governing state"
-
-
-def test_the_east_collector_grades_the_connection_not_the_member(catlin_ctx) -> None:
-    """§8d. The HETA20Z pair's three-term interaction at the head, N-S, torsion included."""
-    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
-    row = next(s for s in record.limit_states
-               if s.name == "PT-BW-RE collector end connection, N-S")
-    assert row.demand == pytest.approx(0.443, abs=0.01)
-    assert row.capacity == pytest.approx(1.0, abs=1e-9)
-    assert "FL11473" in row.citation and "2,560" in row.citation
-    # The in-plane force is the DIRECT share with the torsional increment on it, not either
-    # on its own: 142.3 + 200.2 = 342.5 lb.
-    inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["collector_reaction_PT-BW-RE_y"] == pytest.approx(342.5, rel=0.01)
-
-
-def test_the_north_line_collector_is_the_strap_line(catlin_ctx) -> None:
-    """§8e. No canopy member stands on the north line, so seven LSTA24s collect it.
-
-    17.1 plf and 58.7 lb per strap against ESR-2105 Table 3's 1,235 lb — the "near 18 plf"
-    the authoring comment estimated, computed. The record must also SAY that this path
-    crosses into the neighbouring roof, because it is the one direction in which the canopy
-    is not freestanding.
-    """
-    from typehaus.hardware.catalog import allowable_for_model
-
-    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
-    row = next(s for s in record.limit_states if s.name.startswith("LSTA24 strap line"))
-    assert row.demand == pytest.approx(58.7, abs=0.5)
-    assert row.capacity == pytest.approx(allowable_for_model("LSTA24").uplift_lb, abs=1.0)
-    assert row.capacity == pytest.approx(1_235.0, abs=1.0), "ESR-2105 Table 3, LSTA24 row"
-    assert "17.1 plf" in row.citation
-    assert any("CROSSES INTO RF-GARAGE" in note for note in record.notes)
-
-
-# --- §8f: the concrete under the hold-down ------------------------------------------------
+def test_only_the_declared_canopy_has_a_lateral_system_item(catlin_ctx) -> None:
+    assert {key for key in catlin_ctx.engineering if key.startswith(f"{KIND}/")} == {
+        f"{KIND}/RF-BW-CANOPY"}
 
 
 def test_the_holdown_anchor_is_edge_limited_and_that_is_the_calculation() -> None:
@@ -442,32 +375,6 @@ def test_the_holdown_anchor_is_edge_limited_and_that_is_the_calculation() -> Non
     assert not side_face_blowout_applies(anchor), "§17.6.4 wants h_ef > 2.5 c_a1"
 
 
-def test_the_anchor_rows_land_on_the_record(catlin_ctx) -> None:
-    """§8f's demands: the overturning couple PLUS the column's net roof uplift, at 0.6W."""
-    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
-    tension = next(s for s in record.limit_states if "anchor tension" in s.name)
-    shear = next(s for s in record.limit_states if "anchor shear" in s.name)
-    both = next(s for s in record.limit_states if "interaction" in s.name)
-    assert tension.demand == pytest.approx((609.3 + 433.2) / 0.6, rel=0.01)
-    assert shear.demand == pytest.approx(980.7 / 2 / 0.6, rel=0.01)
-    assert tension.ratio == pytest.approx(0.384, abs=0.01)
-    assert shear.ratio == pytest.approx(0.223, abs=0.01)
-    assert both.demand == pytest.approx((tension.ratio + shear.ratio) / 1.2, abs=0.005)
-    assert both.ratio < 1.0
-    assert any("ESR-1622 §5.6" in note or "out of scope" in note for note in record.notes)
-
-
-# --- §8g: torsion --------------------------------------------------------------------------
-
-
-def test_the_centre_of_rigidity_is_not_under_the_load(catlin_ctx) -> None:
-    """§8g. e = 8.20', M_t = 9,751 lb-ft — the moment the rigidity split left over."""
-    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
-    inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["torsion_eccentricity_y"] == pytest.approx(8.20, abs=0.05)
-    assert inputs["torsion_moment_y"] == pytest.approx(9_751.0, rel=0.01)
-    # E-W is nearly centred, and that is a fact about the geometry rather than an omission.
-    assert abs(inputs["torsion_eccentricity_x"]) < 0.25
 
 
 def test_torsion_is_carried_by_the_pair_itself_and_takes_the_split_back_to_statics() -> None:
@@ -543,14 +450,3 @@ def test_two_lines_on_one_station_with_nothing_across_are_a_mechanism() -> None:
     # exactly what the canopy has and is why its torsion row is a number rather than a red.
     stable = torsional_distribution("y", 1_000.0, 18.0, along, along)
     assert stable is not None and stable.stable
-
-
-def test_the_canopy_record_still_passes_with_every_new_row_on_it(catlin_ctx) -> None:
-    """The verdict, stated: nothing added here governs, and span-to-depth still does."""
-    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
-    assert record.status is Status.OK, record.summary
-    governing = record.governing
-    assert governing is not None and governing.name == "diaphragm span-to-depth"
-    assert governing.ratio == pytest.approx(1.0, abs=0.01)
-    graded = [s for s in record.limit_states if not s.is_detailing]
-    assert all(s.ratio <= 1.0 for s in graded), [s.name for s in graded if s.ratio > 1.0]

@@ -40,6 +40,18 @@ to: *a back-out that only agrees with itself is not verified.*
 
 ## 1. What is billed today
 
+**Active KDAT variant, 2026-09-30.** The east roof supports are 6x6 KDAT posts on
+`PT-BW-PE`/`-PNE`, not continuous cast columns `PT-BW-RE`/`-RNE`. The pinned-pier
+scheme removes 21 #3 ties and 18.7 lb from the column tie row; the #5 row keeps
+80 pieces but loses 73.0 lb of cut length. All other schedule rows are unchanged
+from the immediately preceding 6,471.4 lb takeoff. `tests/test_rebar_backout.py`
+pins the current row values: **1,127 pieces, 6,379.7 lb** (45.1 lb/cy against the
+141.45 cy concrete denominator). The price back-out gate remains closed
+by the decision in §3.
+
+The detailed layout table below records the earlier cast-column pass; its pieces and
+weights are historical and must not be read as the active KDAT purchase schedule.
+
 `haus takeoff houses/catlin`, section `reinforcement`, **as laid out** (decision #75,
 2026-09-17). Lengths are **cut** lengths — placed + laps + hooks, by counted piece — so laps
 no longer ride in `[waste]`; chairs, bolsters and tie wire still ride inside the $/lb rate.
