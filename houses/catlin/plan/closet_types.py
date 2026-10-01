@@ -94,13 +94,13 @@ CLOSET_ROD_32 = FurnitureType(
 CLOSET_VALANCE = FurnitureType(
     tag="FT-M-CLOSET-VALANCE", name='Custom bay top: white cap board with 3" fascia',
     footprint=(inch(32), inch(22.875)), height=inch(3),
-    plan_symbol=None, mount=_WALL,
+    plan_symbol="closet-board", mount=_WALL,
     source="Painted poplar or white melamine, top flush with the PAX frames' top line.",
 )
 CLOSET_PLINTH = FurnitureType(
     tag="FT-M-CLOSET-PLINTH", name='Custom bay bottom: white shoe deck, 3" fascia',
     footprint=(inch(32), inch(22.875)), height=inch(3),
-    storage=True, work_surface=False, plan_symbol=None, mount=_WALL,
+    storage=True, work_surface=False, plan_symbol="closet-board", mount=_WALL,
     source="As the valance; the bottom board on the PAX bottom line, a deck for shoes.",
 )
 

@@ -26,7 +26,12 @@ from typehaus.model.placeable_symbols._families import (
                                                         shelving,
                                                         slab,
 )
-from typehaus.model.placeable_symbols._wardrobe import HANG_INTERIOR, SHOW_INTERIOR, wardrobe
+from typehaus.model.placeable_symbols._wardrobe import (
+                                                        HANG_INTERIOR,
+                                                        SHOW_INTERIOR,
+                                                        closet_board,
+                                                        wardrobe,
+)
 from typehaus.quantities import inch
 
 __all__ = ["FURNITURE_SYMBOLS", "sectional_points"]
@@ -65,6 +70,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "bookcase": shelving(shelves=5),
     "wardrobe-show": wardrobe(SHOW_INTERIOR),
     "wardrobe-hang": wardrobe(HANG_INTERIOR),
+    "closet-board": closet_board,
     # Wall-hung utility joinery, not a case: a plate and a ladder of bars. It shares the
     # casegoods' stained ``wood`` because that is what a folding rack is made of.
     "wall-rack": drying_rack(bars=5),

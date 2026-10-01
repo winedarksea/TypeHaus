@@ -1,4 +1,4 @@
-"""Open PAX interiors shared by the browser and glTF symbol consumers.
+"""Open PAX interiors and matching closet boards shared by browser and glTF consumers.
 
 Heights are representative layouts, not a KOMPLEMENT drilling schedule. They scale from
 the 92 7/8-inch frame so the low drawer leaves a dress-length hanging space.
@@ -10,7 +10,7 @@ import math
 from dataclasses import dataclass
 
 from typehaus.model.placeable_symbols._families import Builder, Geometry, shelving
-from typehaus.model.placeable_symbols._frame import box
+from typehaus.model.placeable_symbols._frame import box, rect
 
 FRAME_HEIGHT_INCHES = 92.875
 PANEL_THICKNESS_M = 0.01905
@@ -33,6 +33,11 @@ class WardrobeInterior:
 
 SHOW_INTERIOR = WardrobeInterior(2, 44, 5, (3, 4), (46, 66, 80))
 HANG_INTERIOR = WardrobeInterior(2, 10, 1, (), (78, 86), rod_height_inches=72)
+
+
+def closet_board(width: float, depth: float, height: float) -> Geometry:
+    """Keep the valance/plinth massing box but match the wardrobe's wood palette role."""
+    return (rect(0, 0, width, depth),), (box(0, 0, 0, height, width, depth, WOOD),)
 
 
 def wardrobe(interior: WardrobeInterior) -> Builder:
