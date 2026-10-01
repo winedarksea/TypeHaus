@@ -24,6 +24,7 @@ Product references live in ``source`` so a substitution is a one-line, reviewabl
 
 from __future__ import annotations
 
+from plan.closet_types import CLOSET_LUMINAIRE_TYPES, CLOSET_SUPPLY_TYPES
 from plan.lighting_types_decor import DECORATIVE_LUMINAIRE_TYPES
 from library.lighting import luminaire_class
 from typehaus import ElectricalDeviceType, LuminaireForm, Service, ServicePort, ft, inch
@@ -365,6 +366,7 @@ LIGHTING_DEVICE_TYPES = (
 
 # Part 1 (this file) then part 2 (plan/lighting_types_decor.py), then the supplies and
 # switches. One catalog to the E-602 schedule; two files only for the 500-line rule.
-LUMINAIRE_TYPES = (*AMBIENT_LUMINAIRE_TYPES, *DECORATIVE_LUMINAIRE_TYPES)
+LUMINAIRE_TYPES = (*AMBIENT_LUMINAIRE_TYPES, *DECORATIVE_LUMINAIRE_TYPES,
+                   *CLOSET_LUMINAIRE_TYPES)
 
-LIGHTING_TYPES = (*LUMINAIRE_TYPES, *LIGHTING_DEVICE_TYPES)
+LIGHTING_TYPES = (*LUMINAIRE_TYPES, *LIGHTING_DEVICE_TYPES, *CLOSET_SUPPLY_TYPES)

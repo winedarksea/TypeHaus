@@ -2835,8 +2835,24 @@
 # CONFIDENCE: MEDIUM — big-box shelf-and-rod kit pricing, not a quote.
 "FT-CLOSET-SHELFROD-60" = { material = { low = 30, high = 70 }, labour = { low = 40, high = 110 } }  # 1 ea
 "FT-CLOSET-SHELFROD-84" = { material = { low = 42, high = 100 }, labour = { low = 50, high = 130 } }  # 1 ea
-"FT-CLOSET-SHELFROD-96" = { material = { low = 50, high = 115 }, labour = { low = 55, high = 145 } }  # 1 ea
+"FT-CLOSET-SHELFROD-96" = { material = { low = 50, high = 115 }, labour = { low = 55, high = 145 } }  # 0 ea — RM-M-CLOSET's, retired 2026-10-01 for the PAX fit-out below
 "FT-CLOSET-SHELF-36" = { material = { low = 15, high = 40 }, labour = { low = 30, high = 80 } }  # 1 ea
+# RM-M-CLOSET'S FIT-OUT, 2026-10-01 (plan/closet.py, plan/closet_types.py). IKEA US list
+# read 2026-10-01: PAX wall-mounted frame 39 3/8x22 7/8x92 7/8 $200; BESTA 60x40x38 frame
+# $45, drawer frame $20 each. KOMPLEMENT drawers $40-70 with fronts, glass-front $60-90,
+# shelves $15-25. Labour is assembly plus hanging the PAX rail into BK-M-CLN(2)-PAX.
+# SHOW: four drawers (two glass-front) and three shelves. HANG: one drawer, a rail, two
+# shelves. The custom bay's boards are site-cut white melamine or painted poplar.
+# CONFIDENCE: MEDIUM for the IKEA rows (list prices); LOW for the mirror (no SKU chosen).
+"FURN-M-PAX-SHOW" = { material = { low = 480, high = 820 }, labour = { low = 120, high = 320 } }  # 1 ea
+"FURN-M-PAX-HANG" = { material = { low = 290, high = 450 }, labour = { low = 100, high = 260 } }  # 1 ea
+"FURN-M-BESTA-DRAWER" = { material = { low = 130, high = 230 }, labour = { low = 45, high = 120 } }  # 2 ea
+"FT-M-CLOSET-ROD-32" = { material = { low = 15, high = 45 }, labour = { low = 20, high = 50 } }  # 2 ea
+"FT-M-CLOSET-VALANCE" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 1 ea
+"FT-M-CLOSET-PLINTH" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 1 ea
+"FT-M-PEG-RAIL-42" = { material = { low = 25, high = 90 }, labour = { low = 30, high = 80 } }  # 1 ea
+"ED-T-LT-MIRROR-CLOSET" = { material = { low = 300, high = 900 }, labour = { low = 90, high = 200 } }  # 1 ea — hardwired, so an electrician's box and trim
+"ED-T-LT-PSU-TRADFRI-30" = { material = { low = 57, high = 75 }, labour = { low = 0, high = 20 } }  # 1 ea — $45 driver + $12 ANSLUTA cord + connection cords; plug-in
 # RM-M-STUDY'S CALL BOOTH, 2026-08-29 — two built articles, priced the way the bath alcove
 # shelf and the sauna benches are: what the piece costs in materials and shop time.
 # [placeables] and not [furnishings] because neither can be carried out of the room; both are
@@ -5997,6 +6013,13 @@ channel = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
 tape = { material = { low = 5, high = 13 }, labour = { low = 3, high = 7 } }
 end_cap = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
 corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 5, high = 11 } }
+# Mark E2, RM-M-CLOSET's two IKEA OVERSIDAN 38" strips (2026-10-01): a finished fixture
+# bought by the piece ($36 per 38"), so the strip is billed as tape and the channel, caps
+# and connectors are $0 — they ship in the box. $36 / 3.17 ft = $11.40/LF.
+"channel:ED-T-LT-PAX-STRIP" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
+"tape:ED-T-LT-PAX-STRIP" = { material = { low = 10.5, high = 12 }, labour = { low = 3, high = 8 } }
+"end_cap:ED-T-LT-PAX-STRIP" = { unit = "EA", material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
+"corner_connector:ED-T-LT-PAX-STRIP" = { unit = "EA", material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 # Mark W, the garage's three exterior linear runs (two eave soffits + the north gable's
 # rakes), 73.5 LF over 3 runs. Dearer than the bare rows on both halves: a damp-location
 # extrusion and gasketed lens, and hanging it at the eaves and up a rake off a ladder with
@@ -7448,6 +7471,7 @@ wall_structure = true
 "solids:glazing:GLAZED_WALL_MULTIWALL_16MM" = "the breezeway canopy's 16mm multiwall stack, retired 2026-09-10 for RF-BW-CANOPY"
 "solids:bug_screen:GARAGE_WALL_2X6" = "reads 0 SF for a corrugated wall by design — the closures bill as an allowance"
 "floor_finishes:polished-concrete" = "the costed fallback to the 2K PU coating on SL-M-DECK (2026-09-12)"
+"placeables:FT-CLOSET-SHELFROD-96" = "RM-M-CLOSET's shelf-and-rod until the 2026-10-01 PAX fit-out; a library size, kept priced"
 
 [basis]
 framing              = "material"

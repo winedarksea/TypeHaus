@@ -38,6 +38,8 @@ not instruction: when it disagrees with this file or the model, it is the one th
   forced — `W-A-C2`/`W-A-C2M`/`W-A-C2B`, `W-A-N2`/`W-A-N2B`, `W-A-W1`/`W-A-W1B` — so nobody
   reading a line has to look in two files for a segment of it, and `RB-HOUSE.bearing_refs`
   sits beside the walls it names.
+- `plan/closet.py` — `# haus: editable`, everything in RM-M-CLOSET (PAX, BESTA, rods, pegs,
+  mirror, cans, switch, PAX strips); types and IKEA products in `plan/closet_types.py`.
 - `plan/lighting_attic.py`, `plan/electrical_attic.py` — `# haus: editable`, split off for the
   same reason (`lighting.py` was 1,158 lines, `electrical.py` 1,700). Split
   by STOREY, which is how `plan/manifest.py` already consumes both. An editable file cannot

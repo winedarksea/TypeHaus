@@ -1044,44 +1044,7 @@ MAIN_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BA2E", face="left", distance_from_start=inch(14),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # ** A SECOND CAN, AND THE FIRST ONE MOVES, 2026-09-06. ** 48.4 sf, 8'-11 1/2" clear,
-    # on ONE 650 lm CAN3 at mid-span: 6.4 fc at the engine's own CU 0.60 x LLF 0.80,
-    # for a room whose whole job is telling navy from black. ** NOTHING EVER LOOKED AT IT: **
-    # `electrical.room_lighting` only grades _HABITABLE occupancies and RM-M-CLOSET is
-    # Occupancy.STORAGE.
-    #
-    # FURN-M-CLOSET-SHELF is a 96" rod centred at x=13'-0", spanning x 9'-0"..17'-0". One
-    # can mid-span lights the rod's centre and leaves both ends dim, so the pair sits on
-    # the rod's quarter points (11'-0" and 15'-0"). y stays at 15'-8", which the resolved
-    # footprint puts 8 5/8" clear in front of the shelf's own front edge (y=16'-4 5/8") —
-    # lighting the hanging clothes' FACES rather than the top of the shelf. Measure that
-    # off the shelf, not off the wall's finish face (`Room.clear_face`).
-    # 1,300 lm over 48.4 sf = 12.9 fc.
-    #
-    # ** MEP CHECKED, AND THE MOVE WEST IS THE TIGHT HALF OF IT. ** Four services cross this
-    # ceiling: PR-B-HW-SUITE-RUN, PR-B-CW-SUITE-RUN, PR-M-S-SUITE-DRAIN-RUN and
-    # DU-M-ERV-R-BED1-RUN. Measured off the resolved plan solids, CAN1 at x=11'-0" is
-    # 7 5/16" from the hot run against 11 5/8" at its old x=13'-0" — the move HALVED that
-    # clearance, and it is still ~5" of clear round a 4" housing. CAN2 at x=15'-0" is
-    # 1'-5 1/4" clear of the nearest. ** Nothing grades a can against a pipe **, so if
-    # either can ever moves west again, re-measure rather than assume.
-    ElectricalDevice(uid="QTM000VAAA", tag="ED-M-CLOSET-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(11), ft(15, 8)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
-                     controlled_by=("ED-M-CLOSET-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="1N2XSTDANE", tag="ED-M-CLOSET-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(15), ft(15, 8)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
-                     controlled_by=("ED-M-CLOSET-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTM000WAAA", tag="ED-M-CLOSET-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(14),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # RM-M-CLOSET's cans, switch, mirror and PAX strips are in plan/closet.py.
     # Centred in RM-M-MUD-CLOSET's 63" x 32 3/4" clear footprint, between the resolved
     # interior faces of W-M-W1C/W-M-MUDC-E and W-M-STOS/W-M-MUDC-N.
     ElectricalDevice(uid="QTM000XAAA", tag="ED-M-STORAGE-CAN1", kind=DeviceKind.LIGHT,

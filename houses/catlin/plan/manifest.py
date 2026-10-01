@@ -31,7 +31,7 @@ from params import (breezeway, driveway, entry_band_brace, foundations, hp1_nort
                     second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, braced_walls,
-                  circuits, countertops, panel_types,
+                  circuits, closet, closet_types, countertops, panel_types,
                   electrical, electrical_attic, equipment_types,
                   fixture_types, fixtures, furniture_types, kitchen_deep_cabinets,
                   landscape, lighting,
@@ -69,6 +69,7 @@ _library = Library(
     # `integrity.duplicate_catalog_tag` now proves it rather than asserting it.
     furniture_types=(*STARTER_FURNITURE_TYPES, *STARTER_CASEWORK_TYPES,
                      *SEKTION_CASEWORK_TYPES, *furniture_types.FURNITURE_TYPES,
+                     *closet_types.CLOSET_FURNITURE_TYPES,
                      *kitchen_deep_cabinets.KITCHEN_DEEP_CABINET_TYPES),
     # The library's fascia guard plus the house's own surface-mounted one — the porch
     # guard's baseplates land on concrete wall tops and buy no bracket kit, which is a
@@ -347,7 +348,7 @@ PLAN = (
          # PBR. Filed on `main` (the run starts below the main datum) though the module
          # that derives them is the roof eave's — it owns the cladding-face constant.
          *roof_trim.MAIN_ELEMENTS,
-         *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING,
+         *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING, *closet.MAIN_CLOSET,
          *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES,
          *millwork.MILLWORK, *millwork.MAIN_SHELVES,
          *millwork_vanities.MAIN_VANITY_SHELVES,

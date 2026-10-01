@@ -4049,3 +4049,24 @@ surface that reaches the court, so the water goes there.
   route under the west eave. Keep `CN-BW-SNOW-E-1` and `CN-BW-SNOW-E-2` over the east-side
   entrance and tier approach. The supplier sizes the remaining rails and clamps for drift;
   see `notes/north_entry_structure.md` §5.
+
+## 2026-10-01 — RM-M-CLOSET fitted out: two PAX frames, BESTA drawers, pegs, a lit mirror
+
+- The 96" shelf-and-rod (`FURN-M-CLOSET-SHELF`) and `BK-M-CLN-ROD` are gone. Everything in
+  the closet now lives in `plan/closet.py`, with its types in `plan/closet_types.py`.
+- North wall: a 32" custom bay (rods at 80"/40", valance and shoe deck on the PAX lines),
+  then two open 39 3/8" x 92 7/8" **wall-mounted** PAX frames. Three 39" frames do not fit
+  the 111 1/4" wall. They are open frames because the aisle is ~31" and an east door would
+  swing over the mirror.
+- The frames hang on IKEA's rail, but they are authored `MountKind.FLOOR`.
+  `advisory.wall_backing_present` grades a WALL mount at the body's bottom, and a 93" frame
+  fastens at its top. `BK-M-CLN-PAX`/`-CLN2-PAX` at 86" are the real rail backing.
+- West wall: two BESTA drawer units, south-justified. The north unit sits under the lower
+  rod's west ~16"; the owner accepted that.
+- South wall: a 42" peg rail. The switch moved there from the west wall, where it would
+  have been behind the hanging clothes. East wall: a 24" x 60" hardwired lit mirror with
+  its own switch.
+- Both cans moved from y 15'-8" to 15'-0" for NEC 410.16(C)(3)'s 6" clearance to closet
+  storage space. Nothing grades that rule.
+- The PAX strips (IKEA OVERSIDAN, mark E2) run off a TRADFRI driver plugged into
+  `ED-M-CLOSET-RC1`, which is switched with the cans.

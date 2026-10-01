@@ -1175,17 +1175,7 @@ MAIN_PLACEABLES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-STOS", face="left", distance_from_start=inch(37.84375),
                   normal_gap=inch(0.78125), rotation_offset=deg(0)))),
-    # RM-M-CLOSET: 111 1/4" of clear wall on the north side (W-M-CLN/W-M-CLN2, face
-    # y 17'-8 5/8"), measured from W-M-BA2E2's closet face at x=8'-5 3/8" to W-M-CLN2's end.
-    # A 96" run leaves 6 5/8" west and 8 5/8" east — the walk-in's turn-in space, 2" of it
-    # spent on the west end when W-M-BA2E/BA2E2's line moved 2" east on 2026-09-09 (it read
-    # 113 1/4" and a symmetric 8 5/8" both ends before that). The rod is not re-centred for
-    # 2": moving it buys nothing anyone can stand in.
-    Furniture(uid="TM01W8E003", tag="FURN-M-CLOSET-SHELF", type_ref="FT-CLOSET-SHELFROD-96",
-              room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(66)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-CLN", face="right", distance_from_start=inch(58),
-                  normal_gap=inch(0), rotation_offset=deg(0)))),
+    # RM-M-CLOSET's fit-out is plan/closet.py.
 ]
 GARAGE_PLACEABLES = [
     # The 60"-wide work surface runs along the west wall directly below the infrared
