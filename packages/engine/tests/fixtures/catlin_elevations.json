@@ -455,6 +455,15 @@
 "canvas_objects/ED-M-CLOSET-CAN2/body_z0_m": 2.7432,
 "canvas_objects/ED-M-CLOSET-CAN2/body_z1_m": 2.8702,
 "canvas_objects/ED-M-CLOSET-CAN2/z_m": 2.7432,
+"canvas_objects/ED-M-CLOSET-LT-PSU/body_z0_m": 2.40665,
+"canvas_objects/ED-M-CLOSET-LT-PSU/body_z1_m": 2.4384,
+"canvas_objects/ED-M-CLOSET-LT-PSU/z_m": 2.40665,
+"canvas_objects/ED-M-CLOSET-MIRROR/body_z0_m": 0.3937,
+"canvas_objects/ED-M-CLOSET-MIRROR/body_z1_m": 1.9177,
+"canvas_objects/ED-M-CLOSET-MIRROR/z_m": 0.3937,
+"canvas_objects/ED-M-CLOSET-RC1/body_z0_m": 2.4765,
+"canvas_objects/ED-M-CLOSET-RC1/body_z1_m": 2.5273,
+"canvas_objects/ED-M-CLOSET-RC1/z_m": 2.4765,
 "canvas_objects/ED-M-CLOSET-SW/body_z0_m": 1.2065,
 "canvas_objects/ED-M-CLOSET-SW/body_z1_m": 1.2573,
 "canvas_objects/ED-M-CLOSET-SW/z_m": 1.2065,
@@ -1208,9 +1217,33 @@
 "canvas_objects/FURN-M-CHAIR-S3/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-CHAIR-S3/body_z1_m": 0.9890125,
 "canvas_objects/FURN-M-CHAIR-S3/z_m": 0.0238125,
-"canvas_objects/FURN-M-CLOSET-SHELF/body_z0_m": 1.7145,
-"canvas_objects/FURN-M-CLOSET-SHELF/body_z1_m": 1.7399,
-"canvas_objects/FURN-M-CLOSET-SHELF/z_m": 1.7145,
+"canvas_objects/FURN-M-CLOSET-BESTA-N/body_z0_m": 0.0381,
+"canvas_objects/FURN-M-CLOSET-BESTA-N/body_z1_m": 0.53975,
+"canvas_objects/FURN-M-CLOSET-BESTA-N/z_m": 0.0381,
+"canvas_objects/FURN-M-CLOSET-BESTA-S/body_z0_m": 0.0381,
+"canvas_objects/FURN-M-CLOSET-BESTA-S/body_z1_m": 0.53975,
+"canvas_objects/FURN-M-CLOSET-BESTA-S/z_m": 0.0381,
+"canvas_objects/FURN-M-CLOSET-PAX-HANG/body_z0_m": 0.04445,
+"canvas_objects/FURN-M-CLOSET-PAX-HANG/body_z1_m": 2.403475,
+"canvas_objects/FURN-M-CLOSET-PAX-HANG/z_m": 0.04445,
+"canvas_objects/FURN-M-CLOSET-PAX-SHOW/body_z0_m": 0.04445,
+"canvas_objects/FURN-M-CLOSET-PAX-SHOW/body_z1_m": 2.403475,
+"canvas_objects/FURN-M-CLOSET-PAX-SHOW/z_m": 0.04445,
+"canvas_objects/FURN-M-CLOSET-PEGS/body_z0_m": 1.6637,
+"canvas_objects/FURN-M-CLOSET-PEGS/body_z1_m": 1.7526,
+"canvas_objects/FURN-M-CLOSET-PEGS/z_m": 1.6637,
+"canvas_objects/FURN-M-CLOSET-PLINTH/body_z0_m": 0.0381,
+"canvas_objects/FURN-M-CLOSET-PLINTH/body_z1_m": 0.1143,
+"canvas_objects/FURN-M-CLOSET-PLINTH/z_m": 0.0381,
+"canvas_objects/FURN-M-CLOSET-ROD-HI/body_z0_m": 2.0447,
+"canvas_objects/FURN-M-CLOSET-ROD-HI/body_z1_m": 2.0780375,
+"canvas_objects/FURN-M-CLOSET-ROD-HI/z_m": 2.0447,
+"canvas_objects/FURN-M-CLOSET-ROD-LO/body_z0_m": 1.0287,
+"canvas_objects/FURN-M-CLOSET-ROD-LO/body_z1_m": 1.0620375,
+"canvas_objects/FURN-M-CLOSET-ROD-LO/z_m": 1.0287,
+"canvas_objects/FURN-M-CLOSET-VALANCE/body_z0_m": 2.327275,
+"canvas_objects/FURN-M-CLOSET-VALANCE/body_z1_m": 2.403475,
+"canvas_objects/FURN-M-CLOSET-VALANCE/z_m": 2.327275,
 "canvas_objects/FURN-M-DINING/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-DINING/body_z1_m": 0.7858125,
 "canvas_objects/FURN-M-DINING/z_m": 0.0238125,
@@ -26312,6 +26345,18 @@
 2,
 "08fa410dc44f"
 ],
+"geometry/CMW113AAAA::framing/member:backing-0-000": [
+0.3048,
+0.48895,
+8,
+"0cc47cce53bd"
+],
+"geometry/CMW113AAAA::framing/member:backing-1-000": [
+1.7272,
+1.91135,
+8,
+"0e88dac9b627"
+],
 "geometry/CMW113AAAA::framing/member:plate-bottom": [
 0.0,
 0.0381,
@@ -27807,10 +27852,10 @@
 "60bb5ae5568c"
 ],
 "geometry/CMW129AAAA::framing/member:backing-1-000": [
-1.6256,
-1.80975,
+2.1844,
+2.36855,
 8,
-"654891f0dccb"
+"b54616096b91"
 ],
 "geometry/CMW129AAAA::framing/member:plate-bottom": [
 0.0,
@@ -27925,6 +27970,12 @@
 2.727325,
 2,
 "4cd3770f4a5a"
+],
+"geometry/CMW130AAAA::framing/member:backing-0-000": [
+2.1844,
+2.36855,
+8,
+"b54616096b91"
 ],
 "geometry/CMW130AAAA::framing/member:plate-bottom": [
 0.0,
@@ -28141,6 +28192,12 @@
 2.727325,
 6,
 "279d618cde3c"
+],
+"geometry/CMW132AAAA::framing/member:backing-0-000": [
+1.5748,
+1.75895,
+8,
+"a747e18e2b9d"
 ],
 "geometry/CMW132AAAA::framing/member:cripple-head-0-01": [
 2.21615,
@@ -53558,6 +53615,8 @@
 3,
 "0fca7da78ed6"
 ],
+"light_runs/LR-M-CLOSET-PAX-HANG/z_m": 2.3114,
+"light_runs/LR-M-CLOSET-PAX-SHOW/z_m": 2.3114,
 "light_runs/LR-M-KIT-E-WN1/z_m": 1.7272,
 "light_runs/LR-M-KIT-E-WN3/z_m": 1.3462,
 "light_runs/LR-M-KIT-N-WE1/z_m": 1.3462,
@@ -68790,6 +68849,18 @@
 2,
 "f16deafda480"
 ],
+"member/CMW113AAAA/backing-0-000": [
+0.3048,
+0.48895,
+2,
+"bd45bb8d3034"
+],
+"member/CMW113AAAA/backing-1-000": [
+1.7272,
+1.91135,
+2,
+"c533c008a99b"
+],
 "member/CMW113AAAA/plate-bottom": [
 0.0,
 0.0381,
@@ -69961,10 +70032,10 @@
 "6fea13255c6e"
 ],
 "member/CMW129AAAA/backing-1-000": [
-1.6256,
-1.80975,
+2.1844,
+2.36855,
 2,
-"425a339899d8"
+"d0b899982b66"
 ],
 "member/CMW129AAAA/plate-bottom": [
 0.0,
@@ -70061,6 +70132,12 @@
 2.5146,
 2,
 "f16deafda480"
+],
+"member/CMW130AAAA/backing-0-000": [
+2.1844,
+2.36855,
+2,
+"d0b899982b66"
 ],
 "member/CMW130AAAA/plate-bottom": [
 0.0,
@@ -70241,6 +70318,12 @@
 2.5146,
 2,
 "f16deafda480"
+],
+"member/CMW132AAAA/backing-0-000": [
+1.5748,
+1.75895,
+2,
+"45cb4db07bd2"
 ],
 "member/CMW132AAAA/cripple-head-0-01": [
 2.21615,

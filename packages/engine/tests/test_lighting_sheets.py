@@ -118,12 +118,12 @@ def test_psu_leader_connects_a_run_to_its_shared_supply(catlin_model):
               and any(pt == pytest.approx(psu_in, abs=1e-6) for pt in node.points)]
     living_runs = [r for r in catlin_model.light_runs if r.psu_ref == "ED-M-LIVING-LT-PSU"]
     assert len(leaders) == len(living_runs) == 2
-    # Two supplies on the sheet now, so two markers — and still exactly one per PSU, which
-    # is what "not one per run" means against six runs.
+    # Three supplies on the sheet now (RM-M-CLOSET's PAX driver joined on 2026-10-01, with two
+    # runs of its own), so three markers — still exactly one per PSU against eight runs.
     psu_labels = [node for node in scene.nodes if isinstance(node, Text) and node.content == "PSU"]
     supplies = {r.psu_ref for r in catlin_model.light_runs if r.storey == "main"}
-    assert len(supplies) == 2
-    assert len(psu_labels) == 2, "one shared PSU should get one marker, not one per run"
+    assert len(supplies) == 3
+    assert len(psu_labels) == 3, "one shared PSU should get one marker, not one per run"
 
 
 def test_switch_legs_are_dashed_and_only_drawn_where_both_ends_are_on_the_sheet(catlin_model):

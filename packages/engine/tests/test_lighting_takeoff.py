@@ -214,11 +214,13 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     # ceiling fan at 60 VA (motor AND light kit — that is what `load_va` carries on a fan).
     # Its switch is ED-T-SWITCH, which like the dimmers below carries no `load_va`.
     # 44 fixtures / 1,121.6 VA since 2026-09-30: ED-M-MUDROOM-CAN3 adds 9 VA over the bench.
-    assert row["runs"] == 3 and row["fixtures"] == 44
-    assert row["connected_va"] == pytest.approx(1121.6, abs=0.05)
+    # 46 / 1,191.6 VA since 2026-10-01: RM-M-CLOSET's lit mirror (40 VA) and the TRADFRI
+    # driver for its PAX strips (30 VA, the supply's rating).
+    assert row["runs"] == 3 and row["fixtures"] == 46
+    assert row["connected_va"] == pytest.approx(1191.6, abs=0.05)
 
     panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-MAIN"]
-    assert panel["connected_va"] == pytest.approx(1121.6, abs=0.5)
+    assert panel["connected_va"] == pytest.approx(1191.6, abs=0.5)
     # 1,113 VA of a 15A branch: under the 1,440 VA an NEC 210.19(A)(1) continuous load may
     # take. The three switches added with those fixtures are all ED-T-SWITCH-DIM, which
     # carries no load_va — a dimmer is free on the circuit and costs only on the estimate.

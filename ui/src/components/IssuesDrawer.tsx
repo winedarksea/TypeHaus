@@ -34,6 +34,7 @@ export function IssuesDrawer() {
   const openIssues = useStore((s) => s.openIssues);
   const model = useStore((s) => s.model);
   const zoomToUid = useStore((s) => s.zoomToUid);
+  const toast = useStore((s) => s.toast);
   const [states, setStates] = useState<Record<string, IssueState>>(loadStates);
 
   if (!open) return null;
@@ -60,14 +61,33 @@ export function IssuesDrawer() {
       sev,
       items: findings.filter((f) => f.severity === sev),
     })).filter((g) => g.items.length > 0);
+  const displayedFindings = grouped.flatMap((group) => group.items);
+
+  const copyFindings = async (items: Finding[], label: string) => {
+    const text = items.map(formatFinding).join("\n\n");
+    try {
+      await navigator.clipboard.writeText(text);
+      toast(`${label} copied`);
+    } catch (err) {
+      const reason = err instanceof Error ? err.message : "clipboard unavailable";
+      toast(`Could not copy ${label.toLowerCase()}: ${reason}`, "error");
+    }
+  };
 
   return (
     <div className="issues-drawer" role="region" aria-label="Issues">
       <div className="issues-header">
         <h3 style={{ margin: 0 }}>Issues · {findings.length}</h3>
-        <button className="btn" onClick={() => setActivePanel(null)} title="Collapse issues">
-          <Icon name="close" />
-        </button>
+        <div className="issues-header-actions">
+          {displayedFindings.length > 0 && (
+            <button className="btn" onClick={() => void copyFindings(displayedFindings, "Issues")}>
+              Copy all
+            </button>
+          )}
+          <button className="btn" onClick={() => setActivePanel(null)} title="Collapse issues">
+            <Icon name="close" />
+          </button>
+        </div>
       </div>
       {severityFilter && (
         <div className="issues-filter">
@@ -82,7 +102,14 @@ export function IssuesDrawer() {
         {grouped.map((g) => (
           <div key={g.sev} className="issues-group">
             <div className={`issues-group-head sev-${g.sev}`}>
-              {SEVERITY_LABEL[g.sev]} · {g.items.length}
+              <span>{SEVERITY_LABEL[g.sev]} · {g.items.length}</span>
+              <button
+                className="btn issues-group-copy"
+                onClick={() => void copyFindings(g.items, SEVERITY_LABEL[g.sev])}
+                aria-label={`Copy all ${SEVERITY_LABEL[g.sev].toLowerCase()}`}
+              >
+                Copy
+              </button>
             </div>
             {g.items.map((f, i) => {
               const st = stateOf(f);
@@ -94,6 +121,13 @@ export function IssuesDrawer() {
                       {f.code && <b>{f.code} </b>}
                       {f.message}
                     </span>
+                  </button>
+                  <button
+                    className="btn issue-copy"
+                    onClick={() => void copyFindings([f], "Issue")}
+                    aria-label={`Copy issue: ${f.code ?? f.message}`}
+                  >
+                    Copy
                   </button>
                   <select
                     className="issue-state"
@@ -115,4 +149,20 @@ export function IssuesDrawer() {
       </div>
     </div>
   );
+}
+
+function formatFinding(finding: Finding): string {
+  const severity = finding.severity === "warn"
+    ? "WARNING"
+    : finding.severity === "info" ? "ADVISORY" : "ERROR";
+  const lines = [`[${severity}]${finding.code ? ` ${finding.code}` : ""}: ${finding.message}`];
+  const elements = [...new Set([
+    ...(finding.element ? [finding.element] : []),
+    ...(finding.elements ?? []),
+  ])];
+  if (elements.length) lines.push(`Element${elements.length === 1 ? "" : "s"}: ${elements.join(", ")}`);
+  if (finding.file) {
+    lines.push(`Source: ${finding.file}${finding.line != null ? `:${finding.line}` : ""}`);
+  }
+  return lines.join("\n");
 }
