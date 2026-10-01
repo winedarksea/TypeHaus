@@ -366,7 +366,7 @@ DUCTS_ERV_BASEMENT = [
     #     x=1'-9", negative east of that; x=2'-4" (tried) lands 1.6"-3.2" inside SINK2, SH2
     #     and WC2 at once, and x=1'-8" straight lands inside SINK2 at y=15'-4".
     #   * Jogging east at any station between y=16'-2" and the wall crosses
-    #     `PR-B-WC2-DRAIN`'s x=2'-6" lane at the same elevation — every half-inch of it.
+    #     `PR-B-WC2-DRAIN`'s x=2'-4 1/2" lane at the same elevation — every half-inch of it.
     #   * Dropping under the drains in the wide bay runs into `DU-B-ERV-R-BENCH` at
     #     x=2'-0"/-27.94"; rising over them puts the duct in the deck.
     #   * The cripple zone over the header would pass this engine and must not be used:

@@ -20,8 +20,8 @@ export const BIFOLD_LEADING_EDGE_FRACTION = 0.6;
 
 // A surface-mounted bypass leaf hangs clear of the wall face on rollers instead of filling
 // the opening, so its panel draws *outside* the wall depth — half the host thickness plus
-// this hardware clearance (2", mirroring `SLIDING_PANEL_CLEARANCE_IN` on the engine side).
-export const SLIDING_PANEL_CLEARANCE_M = 0.0508;
+// this hardware clearance (1.5", mirroring `SLIDING_PANEL_CLEARANCE_IN` on the engine side).
+export const SLIDING_PANEL_CLEARANCE_M = 0.0381;
 
 // The far leaf of a bypass pair rides its own roller track, set slightly deeper off the
 // wall than the near leaf's (1.5", mirroring `BYPASS_TRACK_SPACING_IN`) — that depth split

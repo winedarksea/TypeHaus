@@ -231,9 +231,8 @@ NODES = [
     # y=31'. This node splits W-B-SA-N so the new partition tees into it rather than dying
     # in the middle of a wall.
     Node(uid="XE20Z4ZSS6", tag="N-B-HALL-S", position=pt(inch(166.6875), ft(10))),
-    # W-B-CW's east end. The split here is real (W-B-CW3 carries a different assembly from
-    # W-B-CW) though the room it was minted for has since moved off this corner; uid
-    # unchanged.
+    # W-B-CW's east end. Keep the split so the ESS partition tees into the south wall here;
+    # W-B-CW3 now continues W-B-CW's assembly at the same 2x4 stud depth. Its uid is unchanged.
     Node(uid="CBN017AAAA", tag="N-B-CW-E", position=pt(ft(6, 9), ft(18))),
     # ESS closet, NE corner of the furnace room. Two sides come free here — W-B-N3 on the
     # north (concrete, inner face y=35'-4") and W-B-STR on the east (inner face
@@ -893,7 +892,7 @@ WALLS = [
     # ** THE HALL'S WEST SIDE, NEW 2026-09-07. ** x=13'-10 11/16" from the y=18' line south
     # to the sauna's north wall, walling the workshop off the hall and hosting D-B-SHOP.
     #
-    # INT_2X6_PLUMBING and not INT_2X6_STAGGERED_PLUMBING — the same wall W-B-CW carries —
+    # INT_2X6_PLUMBING and not INT_2X6_STAGGERED_PLUMBING — continuous full-depth studs —
     # for one measured reason: two services cross this line at y~10'-6", DU-B-ERV-R-GYM
     # (3" round, el 7'-6") and PR-B-SAUNA-VENT (2", el ~7'-4 1/2"). Both already bore
     # W-B-CS3's 2x6 studs at the same station, so the crossing is an established pattern

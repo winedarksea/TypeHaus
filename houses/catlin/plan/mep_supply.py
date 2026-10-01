@@ -402,9 +402,9 @@ SUPPLY = [
     #     be one pipe inside the other; stacked is how the pair is actually run in a cavity.
     #   * the hot rides 42", over the cold riser's 36" head and the standpipe's 36" top, on
     #     W-M-BA2E's axis (see PR-B-HW-WASH).
-    #   * the cold stops 8" short of the hot (x=11'-6 1/2" against 12'-2 1/2", the bowl
+    #   * the cold stops 8" short of the hot (x=11'-7 1/2" against 12'-3 1/2", the bowl
     #     centre +/-4", hot on the LEFT of someone facing the faucet). So the hot's drop at
-    #     12'-2 1/2" comes down past 32" east of where the cold's leg ends, and misses it.
+    #     12'-3 1/2" comes down past 32" east of where the cold's leg ends, and misses it.
     #   * THE CORNER SEGMENT NAMES NO WALL, DELIBERATELY. W-M-BA2E ends at y=18'-0" and
     #     W-M-CLN starts at x=8'-5 3/8": the two only TOUCH, so no point is inside both and a
     #     leg claiming either one leaves its structure footprint — `mep.wet_wall_occupancy` is
@@ -428,7 +428,7 @@ SUPPLY = [
             # The riser tops out at the run's own +2'-8" and turns north; the washer valve at
             # +3'-0" is a tee off it, which a supply run does not draw. Overshooting to 3'-0"
             # and dropping back drew that tee as a 180-degree reversal.
-            path=(pt(ft(8, 4), ft(16)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)),),
+            path=(pt(ft(8, 4), ft(16)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(ft(11, 7.5), ft(18, 1)), pt(ft(11, 7.5), ft(18, 1)),),
             diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375),
                         ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375),
@@ -445,8 +445,8 @@ SUPPLY = [
             path=(pt(ft(5, 10), ft(24)), pt(ft(8, 2), ft(20, 9.25)),
                   pt(ft(8, 2), ft(20, 9.25)), pt(ft(8, 2), ft(20, 9.25)),
                   pt(ft(8, 2), ft(18, 1)),
-                  pt(ft(8, 6.5), ft(18, 1)), pt(ft(12, 2.5), ft(18, 1)),
-                  pt(ft(12, 2.5), ft(18, 1))),
+                  pt(ft(8, 6.5), ft(18, 1)), pt(ft(12, 3.5), ft(18, 1)),
+                  pt(ft(12, 3.5), ft(18, 1))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375), ft(12, 7.4375),
                         ft(12, 7.4375), ft(12, 7.4375), ft(12, 7.4375),

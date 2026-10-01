@@ -858,20 +858,21 @@ MAIN_LIGHTING = [
     # RM-S-SUITE carries as ED-S-SUITE-LAMP, at the same 5'-6". No new type and no new
     # prices.toml row.
     #
-    # Over the bed's EAST half, the side FURN-M-BED-NIGHTSTAND-E is now on: centred x=10'-4"
-    # puts the bar at x 8'-10"..11'-10", stopping 2" short of the nightstand and 28" short of
-    # D-M-BED's rough opening. y=12'-8 1/8" backs it onto W-M-BDN2's face at 12'-9 5/8".
+    # Centred on the clear north-wall run between D-M-BATH2 and D-M-BED: the openings leave
+    # x=56 5/8"..170", whose midpoint is x=9'-5 5/16". The bar spans x=7'-11 5/16"..10'-11
+    # 5/16", ending 3'-2 11/16" west of D-M-BED's rough opening. y=12'-8 1/8" backs it onto
+    # W-M-BDN2's face at 12'-9 5/8".
     #
     # ** SWITCHED LOCALLY, NOT OFF THE ROOM SWITCH. ** A reading lamp wired to the 3-way is
     # only ever on when the cans are, which is the opposite of what it is for. Its own
-    # switch stands beside it at x=12'-4", between the bar's end and ED-M-BED-RC2 — 4" clear
-    # of each, reachable lying down, and over a 26" nightstand at 46".
+    # switch stands at x=12'-4", reachable lying down and over a 26" nightstand at 46". The
+    # westward lamp move leaves 16 11/16" between the bar's end and the switch.
     ElectricalDevice(uid="FVEG6VJPGG", tag="ED-M-BED-LAMP", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-WALL-LINEAR",
                      circuit="CKT-LT-MAIN", room="RM-M-BED", controlled_by=("ED-M-BED-LAMP-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BDN2", face="right", distance_from_start=inch(26),
+                         wall_ref="W-M-BDN2", face="right", distance_from_start=inch(15),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="4MYVGDXN3Y", tag="ED-M-BED-LAMP-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH-DIM",

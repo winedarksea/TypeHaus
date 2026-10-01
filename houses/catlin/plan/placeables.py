@@ -919,7 +919,7 @@ MAIN_PLACEABLES = [
     Furniture(uid="XJSV712BWZ", tag="FURN-M-LAUNDRY-RACK", type_ref="FURN-WALL-RACK-24", room="RM-M-LAUNDRY",
               mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-CLN", face="left", distance_from_start=inch(56.03125),
+                  wall_ref="W-M-CLN", face="left", distance_from_start=inch(57.03125),
                   normal_gap=inch(0), rotation_offset=deg(90)))),
 
     # --- RM-M-STUDY, the call booth -----------------------------------------------------

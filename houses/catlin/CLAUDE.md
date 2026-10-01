@@ -386,13 +386,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - Knowingly left uninsulated (fix, if wanted, is a retype to `INT_2X4_RC`, not a batt):
     `W-A-BATH-S`, `W-M-HS3`. `W-M-HS3` (laundry ↔ living) is a decision, not an oversight
     — see DESIGN-LOG.md, "The laundry is not acoustically treated".
-  - **`W-S-SBS` and `W-M-BDN1` left this list on 2026-09-15**, both retyped to `INT_2X4_RC`:
-    each is a wall between a bed and a bathroom, which is the case the STC 34 preset is
-    worst at. On `W-M-BDN1` the channel faces the BEDROOM (RM-M-BATH2's face carries the
-    shower, the vanity, the floor-heat stat and the bath switch, all flush; the bedroom's
-    face carries nothing), leaving a 1/2" step at x=8'-2" behind the king's headboard where
-    `W-M-BDN2` stays plain. On `W-S-SBS` the channel faces the BATH and `interior_room` does
-    not select it — the alignment does, and both spellings resolve identically.
+  - **`W-S-SBS` left this list on 2026-09-15**, retyped to `INT_2X4_RC`: the channel faces the
+    BATH and `interior_room` does not select it — the alignment does, and both spellings
+    resolve identically.
+  - **`W-M-BDN1` returned to `INT_2X4_PARTITION` on 2026-09-30.** The ensuite serves this
+    bedroom's occupants; removing the channel avoids a 1/2" face step where it meets
+    `W-M-BDN2`. Its bathroom face and the 3 1/2" plumbing cavity remain in place.
 - `INT_2X6_BRG` also has an EMPTY cavity and no channel, and two segments of it stand
   between a sleeping room and something noisy: **`W-S-C2C`** (RM-S-SUITE ↔ the second
   storey's east rooms) and **`W-M-C2`** (RM-M-BED's line continued north past N-M-C1).

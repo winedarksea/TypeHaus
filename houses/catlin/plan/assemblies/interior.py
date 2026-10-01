@@ -199,7 +199,7 @@ ACCENT_GWB_LINING = (
 # lithium pack and 5/8" Type X both faces; a variant keeps both and changes only the web.
 # Retyping to wood would have thrown the standard away to clear a bore, and would also have
 # made this a mixed-material junction against W-B-ESS-S — the `integrity.junction_fallback`
-# trap W-B-CW3 was widened to avoid (see plan/storeys/basement.py).
+# trap W-B-CW3 was re-specified as a wood wet wall to avoid (see plan/storeys/basement.py).
 #
 # W-B-ESS-S stays 3 1/2": nothing bores it. Only the plates are crossed, and
 # `mep.run_through_plate` is suppressed house-wide for a reason `preferences.toml` states

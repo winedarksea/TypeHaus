@@ -48,7 +48,7 @@ BIFOLD_LEADING_EDGE_FRACTION = 0.6
 # the opening, so its panel is drawn *outside* the wall depth — half the host thickness plus
 # this hardware clearance. Drawn any nearer the axis it would land inside the wall and
 # read as a fixed panel rather than a bypassing leaf.
-SLIDING_PANEL_CLEARANCE_IN = 2.0
+SLIDING_PANEL_CLEARANCE_IN = 1.5
 
 # The far leaf of a bypass pair rides its own roller track, set slightly deeper off the
 # wall than the near leaf's — that depth split is what lets the plan read as two distinct

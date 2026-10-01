@@ -14,6 +14,15 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## W-M-BDN1 returns to the plain partition (2026-09-30)
+
+`W-M-BDN1` changed from `INT_2X4_RC` back to `INT_2X4_PARTITION`. The ensuite is used by
+the occupants of the adjoining bedroom, so the channel's acoustic benefit did not justify
+the 1/2" face step where BDN1 meets `W-M-BDN2`. Removing the channel restores a symmetric
+section and leaves the bathroom face in place for the shower, vanity, floor-heat stat and
+switch. The 3 1/2" cavity still carries the 3/4" PEX riser. The bedroom/bath wall is again
+uninsulated, with the plain preset's published STC 34.
+
 ## Two 36-inch pocket doors (2026-09-30)
 
 `D-B-BATH` now slides south from `W-B-BA-E` into `W-B-HALL-W`. Their wall assemblies differ

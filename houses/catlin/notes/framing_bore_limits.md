@@ -41,10 +41,12 @@ hole**, whatever the fraction says.
   says which it is, so the check reads `JoistSpec.bearing_refs` — the model's own statement
   of what carries what — rather than guessing from "exterior".
 
-**And a 3" drain**, 3.500" outside: 3.500 > 3.300, so a 3" drain is over the limit in a
-non-bearing 2x6 by two-tenths of an inch. `PR-B-WC2-DRAIN` is that case. A 3" drain in a
-2x6 is at the line in every house; the honest fixes are a 2x8 wet wall or a furred chase,
-and neither is something an engine may pick.
+**And a 3" drain**, 3.500" outside: 3.500 > 3.300, so a 3" drain through a non-bearing
+2x6 stud is over the limit by two-tenths of an inch. `PR-B-WC2-DRAIN` was that case at its
+original x=2'-6" crossing of `W-B-CW`; on 2026-09-30 the route shifted 1 1/2" west into a
+clear stud bay, so it no longer bores a stud and the wall no longer needs a deeper assembly.
+The 2x8 wet-wall / furred-chase choice applies only when a 3" drain actually has to cross
+through a 2x6 stud.
 
 **And a 4" ERV radial**, 4.000" outside: over the non-bearing 2x6's 3.300" by seven-tenths
 of an inch and over a bearing 2x6's 2.200" by nearly two. Three of catlin's basement
@@ -431,7 +433,7 @@ takes the 5 1/4" of free bay at x 16 3/4"..22". Everything below turns on that.
 **`DU-B-ERV-R-SAUNA-EXH`** (3 1/4" notch). Its own tier, -23.44", is inside
 `PR-B-SINK2-DRAIN`'s rake: measured clearance 0.43" at x=1'-8", 0.00" at x=1'-9", negative
 east of that, and x=2'-4" lands 1.6"-3.2" inside SINK2, SH2 and WC2 at once. Jogging east at
-**any** station between y=16'-2" and the wall crosses `PR-B-WC2-DRAIN`'s x=2'-6" lane at the
+**any** station between y=16'-2" and the wall crosses `PR-B-WC2-DRAIN`'s x=2'-4 1/2" lane at the
 same elevation. Under the drains is BENCH; over them is the deck. The supply took the west
 bay and only one 4" duct fits it.
 
@@ -441,7 +443,7 @@ The squared route the reroute pass tried — west at y=26'-6", south down x=1'-7
 developed length at all** (178" either way: an L and its diagonal differ only in the corner).
 It still fails, and the reason is structural rather than incidental: **the bay is west of
 x=2'-0" and the tie is at x=3'-0"**, so any route reaching it crosses `DU-B-ERV-R-BENCH`'s
-x=2'-0" lane and `PR-B-WC2-DRAIN`'s x=2'-6" lane **twice**, in the four feet where every
+x=2'-0" lane and `PR-B-WC2-DRAIN`'s x=2'-4 1/2" lane **twice**, in the four feet where every
 basement service converges on one tie point. Measured, it adds four `mep.run_interference`
 FAILs. Clearing them would want the drain above -22" (it is already under the deck) or below
 -31" (it ties in at -28"), and a gravity drain cannot do either. The diagonal is clean

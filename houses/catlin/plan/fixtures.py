@@ -252,7 +252,7 @@ MAIN_FIXTURES = (
     # would sit 1/100" inside the finish. y is untouched, so the north face still shares
     # W-M-TUBDK-S's line. The aisle to the vanity is 33 11/16".
     Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36-DIVERTED", room="RM-M-BATH2",
-            position=pt(ft(6, 4.615), ft(14, 8.375)), wall_ref="W-M-BA2E",
+            position=pt(ft(6, 4.615), ft(14, 8.375)), rotation=deg(-90), wall_ref="W-M-BA2E",
             drain_position=pt(ft(1, 9), ft(17, 3))),
     # ** THE KOHLER K-5713-W1-0 UNDERSCORE, AND IT IS A DROP-IN. ** The bath has no skirt:
     # it drops through SL-M-TUBDK and sits on a 1"-2" mortar bed on the subfloor, and Kohler
@@ -365,7 +365,7 @@ MAIN_FIXTURES = (
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-LG-WASHTOWER",
               room="RM-M-LAUNDRY", position=pt(m(2.9421), m(6.01059)), rotation=deg(180),
               wall_ref="W-M-BA2E"),
-    # Utility tub, 1" east of the stack — also the *receptor*: PR-M-DRYER-COND air-gaps
+    # Utility tub, 2 1/4" east of the stack — also the *receptor*: PR-M-DRYER-COND air-gaps
     # over its 34" rim, why the dryer needs no vent or condensate pump line.
     #
     # `drain_position` at y=18'-9" — offset 3" to clear W-B-CW2 (12" concrete on the y=18'
@@ -382,8 +382,8 @@ MAIN_FIXTURES = (
     # is on W-M-CLN. Left as authored because `wall_ref` is what the supply pair names as
     # its riser wall and repointing it would move the risers, not the sink.
     Fixture(uid="J7VY2GZ062", tag="FX-M-LAUNDRY-SINK", type_ref="FX-LAUNDRY-SINK-24", room="RM-M-LAUNDRY",
-            position=pt(m(3.62083), m(5.86920)), rotation=deg(180), wall_ref="W-M-BA2E",
-            drain_position=pt(ft(11, 9), ft(18, 9))),
+            position=pt(m(3.64623), m(5.86920)), rotation=deg(180), wall_ref="W-M-BA2E",
+            drain_position=pt(ft(11, 10), ft(18, 9))),
     # x=29'-4": dead-centred under WIN-M-KITCH, which moved its own column onto this station
     # when the base run was re-composed (storeys/main.py's OPENINGS, plan/placeables.py's
     # kitchen header). y=34'-5 3/8" is 24" counter depth. W-M-N1 is the wet wall

@@ -247,7 +247,7 @@ DRAINS = [
     # collector's invert — a top tee-in, not a side one.
     PipeRun(uid="ZK49S63X8X", tag="PR-B-LSINK-DRAIN", system=PipeSystem.DRAIN,
             # 18'-10 5/8", clear of joist-0-014's flange at 18'-9 1/4"; at 18'-9" it took 1.44".
-            path=(pt(ft(11, 9), ft(18, 10.625)), pt(ft(11, 9), ft(18, 10.625)),
+            path=(pt(ft(11, 10), ft(18, 10.625)), pt(ft(11, 10), ft(18, 10.625)),
                   pt(ft(6), ft(18, 10.625))),
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 2.4375)),
@@ -346,7 +346,7 @@ SECOND_DRAINS = [
     # (178" either way; an L and its diagonal differ only in the corner). It was tried and it
     # fails, structurally rather than incidentally: **the bay is west of x=2'-0" and this tie
     # is at x=3'-0"**, so any route reaching it crosses `DU-B-ERV-R-BENCH`'s x=2'-0" lane and
-    # `PR-B-WC2-DRAIN`'s x=2'-6" lane TWICE, in the four feet where every basement service
+    # `PR-B-WC2-DRAIN`'s x=2'-4 1/2" lane TWICE, in the four feet where every basement service
     # converges — four new `mep.run_interference` FAILs, measured. Clearing them wants the
     # drain above -22" (it is already under the deck) or below -31" (it ties in at -28"), and
     # a gravity drain does neither. **The diagonal is clean exactly because it never goes
@@ -577,8 +577,8 @@ LAUNDRY_MAIN = [
     # Both ends ride their fixtures — it leaves the dryer's east face and turns south over
     # the tub.
     PipeRun(uid="5NYN0SKYSV", tag="PR-M-DRYER-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(ft(10, 8), ft(19, 8.635)), pt(ft(11, 9), ft(19, 8.635)),
-                  pt(ft(11, 9), ft(18, 11.135))),
+            path=(pt(ft(10, 8), ft(19, 8.635)), pt(ft(11, 10), ft(19, 8.635)),
+                  pt(ft(11, 10), ft(18, 11.135))),
             diameter=inch(0.75), material="pvc",
             elevations=(ft(5), ft(4), ft(3))),
 ]
@@ -635,7 +635,7 @@ LAUNDRY_MAIN = [
 # drag (this note was struck against that 3'-4", where the king's west face was 3'-1" and
 # the bay 4 1/4"). Any move of that door east re-opens the clash this line was routed around.
 # The bigger western bay was declined: it costs another 1'-11" of jog each way and puts the
-# line into the lane PR-B-WC2-DRAIN (x=2'-6") and the BATH2 supply pair (x=2'-3") share.
+# line into the lane PR-B-WC2-DRAIN (x=2'-4 1/2") and the BATH2 supply pair (x=2'-3") share.
 #
 # The one thing in the new lane is PR-B-MAIN-DRAIN, whose 4" trunk runs x=3'-0" between
 # y=16'-6" and y=15'-6". Their plan lanes overlap by about half an inch there and their
@@ -677,7 +677,7 @@ ERV_CONDENSATE = [
             # 2'-11" it ran one inch from PR-B-MAIN-DRAIN's 4" vertical at (3'-0", 15'-6"),
             # which drops from -2'-5" to the footing — and a 4" main and a 3/4" condensate
             # want 2 3/4" between centres. Four inches west is five, and there is nothing
-            # else in that lane at this depth: PR-B-WC2-DRAIN's riser at x=2'-6" is thirty
+            # else in that lane at this depth: PR-B-WC2-DRAIN's riser at x=2'-4 1/2" is thirty
             # inches higher and the basement raceway bundle is at -4'-0".
             path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 7), ft(30, 9)),
                   pt(ft(2, 7), ft(13, 3)),
