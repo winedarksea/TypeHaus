@@ -208,15 +208,17 @@ SUPPLY = [
                     "FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
     # ** THE FIRST POINT IS THE MOVED HOT PORT (2026-09-30). ** The top ports remain
     # 8" apart; the heater is turned so hot is west and cold east. Against W-B-STR3 at
-    # (8'-9", 28'-0"), the hot port and its short riser sit at x=8'-5", clear of the east
-    # service lane where the sauna vent and ERV branch occupy x=9'. The trunk offsets west and
-    # south over the tank top, then rises to 7'-4" at (7'-6", 26'-6"). It stays below the branch band to y=20'-6", steps to the hot
+    # (8'-9 1/8", 28'-0"), the hot port and its short riser sit at x=8'-5 1/8", clear of the
+    # east service lane where the sauna vent and ERV branch occupy x=9'. The trunk offsets
+    # west and south over the tank top, then drops to 7'-4" at (7'-6", 25'-6"). It stays below
+    # the branch band to y=20'-6", steps to the hot
     # branch band to cross the cold bath pair, then rises to 8'-6 5/8" east of the bath2 tub
     # drain and above the laundry-sink drain. South of the suite branch it drops below the cold
     # bath1 riser, crosses west, rises, and returns north to the suite tee. The connection test
     # grades the first point against EQ-B-WH.hot as resolved, rather than a copied coordinate.
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(8, 5), ft(28)), pt(ft(8, 5), ft(28)), pt(ft(8, 5), ft(28)),
+            path=(pt(ft(8, 5.125), ft(28)), pt(ft(8, 5.125), ft(28)),
+                  pt(ft(8, 5.125), ft(28)),
                   pt(ft(7, 6), ft(25, 6)), pt(ft(7, 6), ft(25, 6)),
                   pt(ft(7, 6), ft(20, 6)), pt(ft(7, 9), ft(20)),
                   pt(ft(7, 9), ft(20)), pt(ft(7, 9), ft(20)),
@@ -244,34 +246,22 @@ SUPPLY = [
     # Cold feed to the water heater itself (equipment, not a fixture — no fixture units).
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(4, 9), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(19, 2.4)),
-                  pt(ft(7), ft(27)), pt(ft(7), ft(27)), pt(ft(9, 1), ft(28))),
+                  pt(ft(7), ft(27, 6)), pt(ft(7), ft(27, 6)),
+                  pt(ft(9, 1.125), ft(29)), pt(ft(9, 1.125), ft(28))),
             diameter=inch(1), material="copper",
-            # Two inches OVER the cold band from the water-heater end of the tee onward, and
-            # its drop stays ON the tank. Both are the same defect seen
-            # twice: this run and PR-B-CW-BATH1 shared -0'-8.8" where they cross at
-            # (5'-6", 20'-7 1/2"). A supply has no head to protect, so a branch steps and
-            # the trunk does not — but it steps UP.
-            #
-            # ** THE TANK TYPE IS DIMENSIONED NOW, AND THE DROP MOVED ONTO ITS OWN TAP
-            # (2026-09-20). ** It used to share its last vertex with PR-B-HW-TRUNK's riser
-            # and PR-B-HW-BATH1's first leg, because `EQ-T-WATER-HEATER` stated one position
-            # and not a port layout and the test required a vertex ON it — three pipes of two
-            # services drawn through one point, which is the coincidence that made
-            # `mep.run_interference` shout and made any nudge look like a disconnection.
-            # That was named here as the wrong trade and as wanting "a dimensioned tank type,
-            # the same move D1 and D3 made for the ERV plenums", and that is the move this
-            # The moved endpoint is EQ-B-WH.cold at x=9'-1", y=28'-0", with the hot tap 8" west
-            # on the same tank top. The ceiling run drops outside the tank's southwest corner,
-            # then crosses the tank top at the 5'-8" connection elevation to the cold tap. This
-            # keeps the ceiling drop west of the sauna vent and avoids PR-B-HW-WASH's hot riser.
-            # The tank-end vertex remains at 5'-8", the TOP connection specified by HP-400-SO REV. 1.
+            # ** THE TANK-END CONNECTION IS THE RESOLVED COLD PORT. ** The heater is rotated so
+            # that port sits east at (9'-1 1/8", 28'-0"); the hot port is 8" west. The ceiling
+            # run drops outside the tank's southwest corner at (7'-0", 27'-6"), then crosses
+            # the tank top at 5'-8" to the cold tap. This keeps its high drop clear of the
+            # east service lane and avoids the hot branch risers. The tank-end vertex is at
+            # 5'-8", the top connection elevation specified by HP-400-SO REV. 1.
             # The cold band rides INSIDE FS-M-WEST's I-joist
             # web, whose window is -10 1/2" to -1 3/8"; two inches down puts a 1" PEX's
             # invert 7/8" into the bottom flange and `mep.run_member_crossing` says so. Two
             # inches up is the same 2" of separation in the half of the window that is
             # empty.
             elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375),
-                        ft(8, 6.6375), ft(5, 8), ft(5, 8))),
+                        ft(8, 6.6375), ft(5, 8), ft(5, 8), ft(5, 8))),
     # Main-storey groups.
     #
     # THE BATH1 PAIR ROUTES AROUND D-M-BATH1'S DOORWAY, WHICH IS THE ONE DEFECT
@@ -345,13 +335,12 @@ SUPPLY = [
             wall_refs=(None, None, None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
-            # Riser at (4'-4", 22'-4") — the west bay, 1.81" of clear each side of the
-            # 2 7/8" jacket. The feed goes north of the water heater's cold inlet before
-            # turning west; crossing y=24'-0" would cut through its vertical drop.
+            # Leaves the west-facing hot tap, then runs southwest to the riser at (4'-4",
+            # 22'-4") — the west bay, 1.81" of clear each side of the 2 7/8" jacket.
             # Nothing here shares a lane with PR-B-CW-BATH1, which is why the two risers
             # land in this order — and since 2026-09-19 they are also 3.2" apart in z
             # wherever their ceiling legs cross, which is what the convention is for.
-            path=(pt(ft(8, 5), ft(28)), pt(ft(5, 10), ft(24, 2.5)),
+            path=(pt(ft(8, 5.125), ft(28)), pt(ft(5, 10), ft(24, 2.5)),
                   pt(ft(4, 4), ft(24, 2.5)), pt(ft(4, 4), ft(22, 4)),
                   pt(ft(4, 4), ft(22, 4)), pt(ft(4, 4), ft(22, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
@@ -449,7 +438,7 @@ SUPPLY = [
             # through PR-M-WASH-STANDPIPE, which tops out at 3'-0", so the leg rides 3'-6"
             # (12'-7 7/16" basement-rel). The riser is at y=20'-9 1/4", the bay south of
             # joist-0-016 — at 21'-2.4" the jacket took its flanges.
-            path=(pt(ft(8, 5), ft(28)), pt(ft(8, 2), ft(20, 9.25)),
+            path=(pt(ft(8, 5.125), ft(28)), pt(ft(8, 2), ft(20, 9.25)),
                   pt(ft(8, 2), ft(20, 9.25)), pt(ft(8, 2), ft(20, 9.25)),
                   pt(ft(8, 2), ft(18, 1)),
                   pt(ft(8, 6.5), ft(18, 1)), pt(ft(12, 5.5), ft(18, 1)),
@@ -532,7 +521,7 @@ SUPPLY = [
     # 8" west of D-S-BATH1's above); x=6'-2.4" would leave half the pipe in W-M-STOS2's
     # corner pack after W-M-MUDC-E tees in. SP-M-HW-SBATH follows the same station.
     PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(8, 5), ft(28)), pt(ft(6, 4), ft(26, 6)),
+            path=(pt(ft(8, 5.125), ft(28)), pt(ft(6, 4), ft(26, 6)),
                   pt(ft(6, 4), ft(26, 6)), pt(ft(6, 4), ft(26, 6)),
                   pt(ft(6, 4), ft(26, 6))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
@@ -599,13 +588,13 @@ SUPPLY = [
                         ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, "W-M-CLN2", None, None, None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
-    # The bathroom's 36" pocket occupies the east wall south of its opening. Cold and hot
-    # now drop in W-B-STR2 on the west, at separate stations north of the vent riser;
-    # their ceiling routes already approached that wall from the west.
+    # The bathroom's 36" pocket occupies the east wall south of its opening. The cold branch
+    # leaves the tank's cold port at top elevation, turns south and west over the tank, then
+    # rises at x=6'-6", y=26'-0" before following its existing ceiling route to the bathroom.
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
-            # North, east, then south: two stock 90s off the tap, where one diagonal made a
-            # 137-degree hairpin no elbow turns.
-            path=(pt(ft(9, 1), ft(28)), pt(ft(9, 1), ft(26)), pt(ft(6, 6), ft(26)),
+            # It leaves the east-side cold tap southbound over the tank top, turns west to
+            # its riser, and then enters the existing route to the bath group.
+            path=(pt(ft(9, 1.125), ft(28)), pt(ft(9, 1.125), ft(26)), pt(ft(6, 6), ft(26)),
                   pt(ft(6, 6), ft(26)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
                   pt(ft(7), ft(20, 3)), pt(ft(10), ft(20, 3)),
                   pt(ft(10), ft(19, 10)), pt(ft(10), ft(19, 10))),
@@ -617,7 +606,7 @@ SUPPLY = [
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
             # The same two 90s as the cold, on its own line 4" south so the pair hangs side
             # by side rather than stacked.
-            path=(pt(ft(8, 5), ft(28)), pt(ft(5, 10), ft(25, 8)), pt(ft(7, 3.6), ft(25, 8)),
+            path=(pt(ft(8, 5.125), ft(28)), pt(ft(5, 10), ft(25, 8)), pt(ft(7, 3.6), ft(25, 8)),
                   pt(ft(7, 3.6), ft(19, 9)), pt(ft(10), ft(19, 9)),
                   pt(ft(10), ft(19, 4.5)), pt(ft(10), ft(19, 4.5))),
             diameter=inch(0.5), material="copper",

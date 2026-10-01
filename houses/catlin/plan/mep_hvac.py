@@ -179,10 +179,10 @@ EQUIPMENT_TYPES = (
                   # inlet and outlet — and silent about where on the 24 1/4" top each one
                   # lands. So the FACE is published and the STATIONS BELOW ARE DERIVED: a
                   # symmetric pair 8" on centre about the tank axis, cold WEST and hot
-                  # EAST, chosen for the side each service approaches on (PR-B-CW-WH
-                  # arrives up x=5'-6" from the south; every hot branch but PR-B-HW-BATH1
-                  # leaves east). Re-derive them, do not trust them, if a submittal ever
-                  # gives the real layout.
+                  # EAST in the unrotated product frame. EQ-B-WH is rotated 180° in the
+                  # room so hot lands west, clear of the east service lane; cold lands east
+                  # and its approach crosses the tank top at connection height. Re-derive
+                  # these stations if a submittal ever gives the real layout.
                   #
                   # `certainty=EXACT` is right ANYWAY, and the reason is what the field is
                   # for: this is not a datasheet being transcribed loosely, it is the
@@ -477,21 +477,21 @@ DUCTS_HVAC_SECOND = [
 # "this storey has no horizontal duct" is a fact worth stating where the list would be.
 DUCTS_HVAC_ATTIC = []
 
-# The tank sits against W-B-STR3 at (8'-9", 28'-0"), with a nominal 1/8" gap to the resolved
-# east interior face, and service access facing west into RM-B-FURNACE. This open wall bay is
+# The tank sits against W-B-STR3 at (8'-9 1/8", 28'-0"), flush to the resolved east interior
+# face, and service access facing west into RM-B-FURNACE. This open wall bay is
 # below the ESS closet (the battery's 48" x 41" required separation zone begins at
-# y=31'-6") and north of the inverter; its north edge is 2'-6" south of that zone. The tank
-# clears D-B-FURN's leaf (which sweeps to y=20'-8"), the vent/service lane, and the 36" NEC
-# 110.26 working spaces along the west wall. Its 24" footprint remains inside the room face.
+# y=31'-6") and southeast of the inverter; its north edge is 2'-6" south of that zone. The
+# tank clears D-B-FURN's leaf (which sweeps to y=20'-8"), the vent/service lane, and the 36" NEC
+# 110.26 working spaces along the west wall. Its footprint remains inside the room face.
 #
 # **Eight connection datums move with the tank.** EQ-T-WATER-HEATER's exact top ports stay
-# 4" either side of its axis, cold west and hot east. The seven supply run endpoints in
-# plan/mep_supply.py now follow those resolved port stations, and PR-B-WH-TPR in
-# plan/mep_drainage.py follows the tank's west face. The water-heater connection test grades
+# 4" either side of its product axis; instance rotation places hot west and cold east. The
+# seven supply run endpoints in plan/mep_supply.py follow those resolved port stations, and
+# PR-B-WH-TPR in plan/mep_drainage.py follows the tank's west face. The connection test grades
 # every run against its service-specific resolved port and checks relief proximity.
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(ft(8, 9), ft(28)), rotation=deg(180),
+             position=pt(ft(8, 9.125), ft(28)), rotation=deg(180),
              footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",
              relief_discharge_ref="PR-B-WH-TPR"),
 ]

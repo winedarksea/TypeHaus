@@ -419,8 +419,10 @@ MAIN_FIXTURES = (
 # with a 2x4 framed behind it for the flange to nail to. The west side is also real: the
 # chase's south corners run the tub's full 30" (storeys/second.py, NODES).
 SECOND_FIXTURES = (
+    # Moved 3" north for closet clearance; its drain's first two vertices follow in
+    # plan/mep_drainage.py.
     Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOTO-AQUIA-IV", room="RM-S-BATH1",
-            position=pt(m(0.560313), m(9.2783)), rotation=deg(90), wall_ref="W-S-W1"),
+            position=pt(m(0.560313), m(9.3545)), rotation=deg(90), wall_ref="W-S-W1"),
     # ** A 48" VANITY -- THE BIGGEST IN THE HOUSE AFTER RM-M-BATH2'S. ** The bowl backs the
     # EAST wall, so `rotation=deg(-90)` — `deg(90)` points a fixture's back at -x, the wrong
     # way here.

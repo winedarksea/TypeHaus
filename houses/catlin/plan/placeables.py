@@ -1194,46 +1194,32 @@ GARAGE_PLACEABLES = [
     Furniture(uid="CGF601AAAA", tag="FURN-G-WORKBENCH", type_ref="FURN-G-WORKBENCH",
               room="RM-GARAGE", position=pt(m(2.449983), m(19.3941)), rotation=deg(90)),
 ]
-# The three east bedrooms are the same 13'-11 3/4" x 8'-10 3/4" clear box: queen, head
-# north, 2' side-access zones running the long (14') way. Head-against-east-wall (under the
-# window) doesn't fit — the 5'-4" width needs 9'-4" across the 8'-10 3/4" dimension once
-# side zones are counted, pushing zones through the wall onto the NEC 210.52 receptacles at
-# 16". Turning the beds fixes it; only the 2'-6" foot zone comes up short, into open room.
-# x=30' clears the RC1/RC2 outlets; beds sit 9'-7" apart (not the 9'-0" room pitch) so each
-# foot zone stops short of the headboard below it — heads float 5"-6" off the north wall.
+# The beds are placed per room: BED1 and BED2 face north; BED3 faces east. Each keeps its
+# modeled 18" side and foot access zones clear of the other bedroom furniture. The integration
+# assertion in test_catlin_source_alignment checks those zones alongside the door swings.
 SECOND_PLACEABLES = [
-    # BED1 sits farther south than the other beds. Its foot zone clears the wardrobe on the
-    # north wall, while the wardrobe occupies the allowed head-end part of the west side.
-    # The remaining 18" west-side access band is open from the foot toward the head.
+    # BED1 stays in the southern part of its bay; its west-side wardrobe and north-side desk
+    # leave the bed's modeled access zones open.
     Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-QUEEN-BED", room="RM-S-BED1",
               position=pt(m(9.92317), m(4.24498)), rotation=deg(0)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
               position=pt(m(9.95572), m(6.98818)), rotation=deg(0)),
+    # Six inches north leaves the wardrobe clear of BED3's foot-access zone.
     Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",
-              position=pt(m(9.73747), m(9.97198)), rotation=deg(-90)),
-    # Each regular bedroom gets the same compact study pair in the west-side strip. The
-    # desk's back is against the west wall (rotation 90), leaving its pull-out zone toward
-    # the room; the dining chair keeps the lighter dining-room plan and 3D appearance.
+              position=pt(m(9.73747), m(10.12438)), rotation=deg(-90)),
+    # BED1 and BED2 have desks on their north walls with chairs to the south. BED3's desk
+    # stays on the west wall with its chair to the east. The dining chair keeps the lighter
+    # dining-room plan and 3D appearance.
     Furniture(uid="DSK701AAAA", tag="FURN-S-DESK1", type_ref="FURN-DESK-48", room="RM-S-BED1",
               position=pt(m(8.44158), m(5.00697)), rotation=deg(0)),
     Furniture(uid="CHR701AAAA", tag="FURN-S-DESK-CHAIR1", type_ref="FURN-DESK-CHAIR", room="RM-S-BED1",
               position=pt(m(8.39216), m(4.60918)), rotation=deg(-180)),
     Furniture(uid="DSK702AAAA", tag="FURN-S-DESK2", type_ref="FURN-DESK-48", room="RM-S-BED2",
               position=pt(m(8.49481), m(7.75018)), rotation=deg(0)),
-    Furniture(uid="CHR702AAAA", tag="FURN-S-DESK-CHAIR2", type_ref="FURN-DESK-CHAIR", room="RM-S-BED2",
-              position=pt(m(8.49954), m(7.44471)), rotation=deg(-180)),
-    # BED3's pair SWAPPED SLOTS WITH THE WARDROBE, 2026-09-06, to clear the north wall for
-    # WIN-S-HALL-N, which moved west to ctr x 24'-0" (RO 22'-9"..25'-3", sill 3'-0") when
-    # the north facade was squared up — see second.py. The room has exactly two 48" slots
-    # off that wall and two objects wanting them, so the swap is forced: the 6'-6" case takes
-    # the slot furthest from glass and the 30" desk goes under a window, which is where a desk
-    # belongs — and it makes BED3's study pair match BED1's, back to back on the west wall.
-    # The desk takes the wardrobe's authored numbers verbatim; resolved it is
-    # x 265.5..289.5, y 376.1..424.1. North wall is then clear across x 273..303 — exactly
-    # the new rough opening — above 30" AFF, and the 3'-0" sill clears the desk top
-    # outright. The case stood over x 22'-1.5"..24'-1.5" and 6'-6" tall, so it covered the
-    # opening's west half; nothing in the engine grades a wardrobe against a window, and it
-    # would have been discovered on site.
+    # Four inches west of the desk centre keeps the chair outside BED2's side-access zone.
+    Furniture(uid="CHR702AAAA", tag="FURN-S-DESK-CHAIR2", type_ref="FURN-DESK-CHAIR",
+              room="RM-S-BED2", position=pt(m(8.39794), m(7.44471)), rotation=deg(-180)),
+    # BED3's desk stays on the west wall, clear of the north-wall glazing.
     Furniture(uid="DSK703AAAA", tag="FURN-S-DESK3", type_ref="FURN-DESK-48", room="RM-S-BED3",
               position=pt(m(7.04819), m(10.1621)), rotation=deg(90)),
     Furniture(uid="CHR703AAAA", tag="FURN-S-DESK-CHAIR3", type_ref="FURN-DESK-CHAIR", room="RM-S-BED3",
@@ -1264,27 +1250,15 @@ SECOND_PLACEABLES = [
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
               room="RM-S-SUITE", position=pt(m(1.52182), m(5.57379)), rotation=deg(0)),
 
-    # Hanging storage for the three east bedrooms (no built-in closet): one 48" sliding-door
-    # wardrobe each, on a north or south partition. Neither the east wall (bed heads against
-    # it) nor the west/hall wall (doors own the only long runs) can take one; every candidate
-    # 4'-0 x 2'-0 slot was checked against resolved footprints, clearance rings and door
-    # swings. BED2 north and BED3 south each had a clean slot — BED3's is the one it actually
-    # stands in since 2026-09-06, when the case came off the north wall to make room for
-    # WIN-S-HALL-N's move west and swapped slots with FURN-S-DESK3 above. BED1 did not:
-    # its door swing (y 13'-11"..16'-5") left only 3'-5 3/4" of clear wall, too short for the
-    # case. The case's eastward placement clears the swing, and the bed's head-end side
-    # allowance leaves the usable side and foot access open.
-    #
-    # BED1's and BED2's wardrobes sit over ED-S-BED1-RC1 / ED-S-BED2-RC1 (north-wall general
-    # receptacles, 16"-18" AFF) — not a code problem, but worth knowing before boxes are set.
+    # The three bedrooms have no built-in closets, so each gets a 48" sliding-door wardrobe.
+    # BED1 and BED2 use west-side slots; BED3 uses the south-side slot. Resolved door-swing
+    # and furniture-clearance checks keep them clear of the doors and bed access zones.
     Furniture(uid="CSB704AAAA", tag="FURN-S-BED1-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED1", position=pt(m(7.04533), m(3.46448)), rotation=deg(90)),
     Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED2", position=pt(m(7.08147), m(6.05473)), rotation=deg(90)),
-    # BED3's slot is EXACT, not approximate: resolved x 293.5..341.5, y 322.5..346.5 on the
-    # south wall, with 0.500" to D-S-BED3's swing arc and 0.524" to the bed's west side zone.
-    # Any later move of FURN-S-BED3, D-S-BED3 or the 18" zones re-opens
-    # integrity.door_swing_conflict / integrity.placeable_recommended_clearance_conflict.
+    # BED3's south-side wardrobe slot stays fixed. Moving the bed 6" north leaves 2.3" to its
+    # nearest side-access zone; the bedroom integration test checks this and the door swings.
     Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED3", position=pt(m(10.1772), m(8.49313)), rotation=deg(180)),
 

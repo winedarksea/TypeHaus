@@ -417,13 +417,13 @@ SECOND_DRAINS = [
 # 9'-0 1/8" the underside of the trusses.
 SECOND_BRANCH_DRAINS = [
     # ** THE HALL BATH'S 3" COLLECTOR. THE CLOSET BEND IS OFFSET AND THAT IS NOT A ROUNDING. **
-    # FX-S-BATH1-WC's flange is at y=365.29" and the truss line at 368" occupies
-    # 366.25"..369.75", so a 3" pipe dropping on the flange centre would notch a chord by
-    # 0.54". A closet bend is a fitting with 5 1/4" of translation in it: the pipe leaves the
-    # flange at the floor plane and is on the y=360" bay centre 5 1/4" later, 3'-0" below.
+    # FX-S-BATH1-WC moved 3" north: its flange is now at y=368.29", on the truss line whose
+    # chord occupies 366.25"..369.75". A 3" pipe dropping there would notch the chord by
+    # 0.54", so the closet bend carries the first routed point south to y=364.61" before the
+    # run continues to the y=344" vertical drop.
     # That first leg falls 8.5"/ft, which is a bend and not a slant — `mep.drain_offset_
     # geometry` grades it on the conjunction and 3 3/4" of fall is nowhere near its 18".
-    # ** SINCE 2026-09-24 IT DROPS INTO RM-M-MUD-CLOSET AND NEVER CROSSES THE TRUSS FIELD. **
+    # ** SINCE 2026-09-24 THE VERTICAL DROP LANDS IN RM-M-MUD-CLOSET. **
     # It used to run east on the 30'-0" bay to x=5'-0", and that line crossed the lane of
     # DU-M-ERV-EXH-TRUNK and DU-M-ERV-R-STUDY: 3 1/2" of drain and an 8" trunk do not share an
     # 8 7/8" web window, and the WC is west of the trunk while the stack is east of it, so no
@@ -431,7 +431,7 @@ SECOND_BRANCH_DRAINS = [
     # hole (FO-S-BATH1-WC-DRAIN) into the closet ceiling — STORAGE, where exposed pipe is by
     # design — and east at 8'-4" onto the stack's side. Dropping early only gains head.
     PipeRun(uid="K28BQ29KCW", tag="PR-M-S-BATH1-WC-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(m(0.560313), m(9.2783)), pt(m(0.560313), inch(361.61)),
+            path=(pt(m(0.560313), m(9.3545)), pt(m(0.560313), m(9.26109)),
                   pt(m(0.560313), inch(344)), pt(m(0.560313), inch(344)),
                   pt(ft(5), inch(344)), pt(ft(5), ft(26, 6))),
             diameter=inch(3), material="pvc",
@@ -744,13 +744,13 @@ CONDENSATE = [
 # rather than assumed to. Flagged in plans/TODO.md.
 # ** THE RELIEF LINE MOVED WITH THE TANK (2026-09-30). ** Its factory-installed valve has no
 # published station, so the type declares no relief `ServicePort`. The run starts 2" west of
-# the tank's west face, at x=7'-7", then drops and discharges one foot south at the same
+# the tank's west face, at x=7'-7 1/8", then drops and discharges one foot south at the same
 # elevations as before. `test_water_heater_connections` grades this by proximity to the tank
 # centre; the seven supply runs are graded against their service-specific ports.
 TPR_DISCHARGE = [
     PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(ft(7, 7), ft(28)), pt(ft(7, 7), ft(28)),
-                  pt(ft(7, 7), ft(27))),
+            path=(pt(ft(7, 7.125), ft(28)), pt(ft(7, 7.125), ft(28)),
+                  pt(ft(7, 7.125), ft(27))),
             diameter=inch(0.75), material="copper",
             elevations=(ft(3, 6), ft(0, 8), ft(0, 6))),
 ]

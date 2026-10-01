@@ -14,8 +14,6 @@ load-bearing and none of them is dimensioned on a sheet.
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
 from typehaus.quantities import ft, inch
@@ -184,7 +182,27 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     """
     from typehaus.resolve import resolve
 
-    model, _ = resolve(catlin_plan)
+    model, findings = resolve(catlin_plan)
+    bedroom_tags = {"D-S-BED1", "D-S-BED2", "D-S-BED3",
+                    "FURN-S-BED1", "FURN-S-BED2", "FURN-S-BED3",
+                    "FURN-S-BED1-WARD", "FURN-S-BED2-WARD", "FURN-S-BED3-WARD",
+                    "FURN-S-DESK1", "FURN-S-DESK2", "FURN-S-DESK3",
+                    "FURN-S-DESK-CHAIR1", "FURN-S-DESK-CHAIR2", "FURN-S-DESK-CHAIR3"}
+    bedroom_conflicts = [finding.message for finding in findings
+                         if finding.check_id in {
+                             "integrity.door_swing_conflict",
+                             "integrity.placeable_required_clearance_conflict",
+                             "integrity.placeable_recommended_clearance_conflict",
+                         } and bedroom_tags.intersection(finding.element_tags)]
+    assert not bedroom_conflicts, bedroom_conflicts
+    from typehaus.checks import Tier
+    from typehaus.checks.run import run_from_model
+
+    door_module = run_from_model(
+        model, [], tier=Tier.STRUCTURAL, only="structural.door_framing_module")
+    bed2_module_findings = [finding.message for finding in door_module.findings
+                            if "D-S-BED2" in finding.element_tags]
+    assert not bed2_module_findings, bed2_module_findings
     centres = {}
     for opening in model.openings:
         wall = model.wall(opening.host_wall)
@@ -203,7 +221,8 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     # the surveyed 24'-1" centre; the flipped hinge keeps the leaf clear of the rearranged
     # furniture.
     #
-    # D-S-BED1 is the second such departure with a reason rather than a loosened tolerance.
+    # D-S-BED1 is the other departure from its exact survey centre, with a reason rather than
+    # a loosened tolerance.
     # Its source centre is 15'-2", 6" off W-S-BW1's stud module, so it cuts two stud lines
     # where one would do and `structural.door_framing_module` names 15'-8" as the nearest
     # legal station. The move is not free: at 15'-8" the west wall space between

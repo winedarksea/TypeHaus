@@ -160,11 +160,14 @@ def test_pipe_invert_at_is_unchanged_by_the_split(catlin_model_ro) -> None:
 
 def test_a_riser_is_visible_to_a_supply_caller_and_not_to_a_drain_one(
         catlin_model_ro) -> None:
-    """A zero-length plan segment is how every vertical leg here is authored. PR-B-CW-WH
-    ends at (5'-6", 24'-0") at the water heater's outlet AND passes it at the ceiling; a
-    supply tee sees both, a drain's invert reading sees only the sloping leg."""
+    """A zero-length plan segment is how every vertical leg here is authored. The moved
+    cold feed drops outside the tank's southwest corner before crossing its top to the tap;
+    a supply caller sees both elevations at that riser, while a drain sees only the sloping
+    leg."""
     run = next(r for r in catlin_model_ro.pipe_runs if r.tag == "PR-B-CW-WH")
-    point = run.path[-1]
+    point = next(run.path[index] for index in range(len(run.path) - 1)
+                 if run.path[index] == run.path[index + 1]
+                 and run.z_m[index] != run.z_m[index + 1])
     assert len(pipe_elevations_at(run, point)) > len(
         pipe_elevations_at(run, point, risers=False))
 
