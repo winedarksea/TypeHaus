@@ -294,7 +294,8 @@ def round_slab(*, pedestal: bool = True) -> Builder:
 
 
 def case(*, rows: int = 3, cols: int = 1, pulls: bool = True, color: str = "wood",
-         face_color: str = "wood-dark") -> Builder:
+         face_color: str = "wood-dark",
+         single_door_max_width_m: float | None = None) -> Builder:
     """Casegoods — dressers, chests, nightstands, media consoles, fitted wall/tall cabinets.
 
     Plan view of a case piece is its top; the drawer grid is drawn as the front-face band so
@@ -306,6 +307,9 @@ def case(*, rows: int = 3, cols: int = 1, pulls: bool = True, color: str = "wood
     """
 
     def build(width: float, depth: float, height: float) -> Geometry:
+        column_count = max(1, cols)
+        if single_door_max_width_m is not None and width <= single_door_max_width_m:
+            column_count = 1
         face_d = clamp(DRAWER_FACE_DEPTH_M, 0.015, depth * 0.2)
         front = -depth / 2
         face_cy = front + HANDLE_DEPTH_M + face_d / 2
@@ -317,9 +321,9 @@ def case(*, rows: int = 3, cols: int = 1, pulls: bool = True, color: str = "wood
         parts = [box(0, front + HANDLE_DEPTH_M + face_d + carcass_d / 2, 0.0, height - top_t,
                      width, carcass_d, color),
                  box(0, 0, height - top_t, height, width, depth, color)]
-        cell_w = width / max(1, cols)
+        cell_w = width / column_count
         cell_h = height * 0.94 / max(1, rows)
-        for col in range(max(1, cols)):
+        for col in range(column_count):
             cx = -width / 2 + cell_w * (col + 0.5)
             if col:
                 strokes.append(line((cx - cell_w / 2, front), (cx - cell_w / 2, depth / 2)))

@@ -25,12 +25,15 @@ from typehaus.model.placeable_symbols._families import (
                                                         shelving,
                                                         slab,
 )
+from typehaus.quantities import inch
 
 __all__ = ["FURNITURE_SYMBOLS", "sectional_points"]
 
 # The painted-casework pair, named once so a change of kitchen colour is a one-line edit.
 CABINET = "cabinet-cream"
 CABINET_SHADE = "cabinet-cream-dark"
+# An 18" front stays usable as one door instead of splitting into two narrow leaves.
+CABINET_SINGLE_DOOR_MAX_WIDTH_M = inch(18).meters
 
 FURNITURE_SYMBOLS: dict[str, Builder] = {
     # Seating. Seat count is what separates a sofa from a loveseat from an armchair.
@@ -68,8 +71,8 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "potted-plant": potted_plant(leaves=5),
     # Fitted casework. A base cabinet is a carcass under a counter slab, so it is the one
     # family that draws its top rather than its doors; wall and tall units are cases whose
-    # cell grid says how the front divides — two doors side by side, or one full-height
-    # pull-out. The same three symbols cover every catalog width.
+    # cell grid says how the front divides. Narrow cabinets get one door; wider units keep
+    # their paired or triple fronts. The same symbols cover every catalog width.
     #
     # Painted cream rather than the stained ``wood`` the casegoods wear: fitted millwork is
     # finished on site as one run, and the light cream is what puts the grey counter slab and
@@ -80,19 +83,23 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # than the sink — a drop-in's flange laps *over* the counter — which is what leaves real
     # bearing all round instead of a hairline the two edges fight over.
     "sink-base": counter_case(body=CABINET, kick_color=CABINET_SHADE, cutout=(0.83, 0.78)),
-    "wall-cabinet": case(rows=1, cols=2, pulls=True, color=CABINET, face_color=CABINET_SHADE),
+    "wall-cabinet": case(
+        rows=1, cols=2, pulls=True, color=CABINET, face_color=CABINET_SHADE,
+        single_door_max_width_m=CABINET_SINGLE_DOOR_MAX_WIDTH_M),
     "tall-cabinet": case(rows=1, cols=1, pulls=True, color=CABINET, face_color=CABINET_SHADE),
     # Past about 24" a full-height door stops being a door — it racks on its own weight and
     # needs half its width of swing — so wide tall units carry a pair. Same carcass as
     # ``tall-cabinet``; the cell grid is the whole difference, which is what this registry
     # distinguishes symbols by.
-    "tall-cabinet-double": case(rows=1, cols=2, pulls=True, color=CABINET,
-                                face_color=CABINET_SHADE),
+    "tall-cabinet-double": case(
+        rows=1, cols=2, pulls=True, color=CABINET, face_color=CABINET_SHADE,
+        single_door_max_width_m=CABINET_SINGLE_DOOR_MAX_WIDTH_M),
     # Three bays is where a tall unit stops being a cabinet and becomes a wall of storage:
     # 72" of carcass behind three 24" doors, which is the widest front that still divides on
     # the 24" module the doubles use.
-    "tall-cabinet-triple": case(rows=1, cols=3, pulls=True, color=CABINET,
-                                face_color=CABINET_SHADE),
+    "tall-cabinet-triple": case(
+        rows=1, cols=3, pulls=True, color=CABINET, face_color=CABINET_SHADE,
+        single_door_max_width_m=CABINET_SINGLE_DOOR_MAX_WIDTH_M),
     "besta": besta(),
     # Sauna joinery. Not casegoods and not tables: a bench is a platform on end supports, and
     # the two-tier version is the one piece of furniture whose *height* is a code-of-practice

@@ -1229,7 +1229,7 @@ OPENINGS = [
     # `office` is not a sleeping occupancy, so there is no R310 exposure — and since the
     # 2026-08-29 `exterior_only` fix there could not be one anyway.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED",
-         position=from_node("N-M-E4", inch(9)), flip_swing=True),
+         position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True),
     # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15, WAS 4'-8", AND THE BED IS WHY. ** `from_node`
     # resolves to the NEAR JAMB, so the old offset put the RO at x 154"..186" and left
     # 10 1/8" between it and FURN-M-BED's east face at 143 7/8" — a king with nowhere to
