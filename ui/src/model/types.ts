@@ -1297,6 +1297,7 @@ export interface DoorTypeSpec {
     body_depth_m: number;
     casing_overall_width_m: number;
     mounting_face: "negative_normal" | "positive_normal";
+    material_ref?: string | null;
   } | null;
 }
 

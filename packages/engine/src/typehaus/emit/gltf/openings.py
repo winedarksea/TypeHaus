@@ -13,7 +13,7 @@ cross-language mirrored pair with ``ui/src/three/builders/walls.ts::buildOpening
 from __future__ import annotations
 
 from typehaus.emit.gltf.mesh import _MeshBuilder
-from typehaus.emit.gltf.palette import _color
+from typehaus.emit.gltf.palette import _color, _material_finish_color
 from typehaus.model.enums import DoorOperation
 from typehaus.resolve.geometry_openings import (  # noqa: F401
     _DOOR_LEAF_THICKNESS_M,
@@ -33,7 +33,8 @@ from typehaus.resolve.model import ResolvedWall
 
 def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
                          operation: DoorOperation | None, is_glazed: bool = False,
-                         is_trimless: bool = False, bookcase_door=None) -> None:
+                         is_trimless: bool = False, bookcase_door=None,
+                         authored: dict | None = None) -> None:
     """Draw the product standing in ``opening`` — frame + panel/leaf/glass — as boxes.
 
     Emitted regardless of LOD so the leaf geometry shows for both the core wall prism and the
@@ -41,6 +42,8 @@ def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
     """
     for part in opening_parts(wall, opening, operation, is_glazed=is_glazed,
                               is_trimless=is_trimless, bookcase_door=bookcase_door):
-        color = _color(part.material_key)
+        color = (_material_finish_color(part.catalog.material_ref, "millwork", authored)
+                 if part.catalog is not None and part.catalog.material_ref
+                 else _color(part.material_key))
         for solid in part.solids:
             mb.add_prism(list(solid.ring), solid.z0_m, solid.z1_m, color)

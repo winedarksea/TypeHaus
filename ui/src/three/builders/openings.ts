@@ -3,6 +3,7 @@
 // resolve/geometry_openings.py; split out of ./walls.
 import * as THREE from "three";
 import type { DoorOperation, DoorTypeSpec, Opening, Wall } from "../../model/types";
+import { materialColor, type MaterialAppearance } from "../../nordic/palette";
 import type { ResolvedNordicPalette } from "../../nordic/palette";
 import { categoryColor } from "../members";
 import { projectPointToScene, type PlanCenter } from "../planGeometry";
@@ -14,6 +15,9 @@ import { registerSelectable } from "./registry";
 import { baseRefZ } from "./wallFrame";
 import { buildBookcaseDoor } from "./bookcaseDoor";
 import { rakedTopAt } from "./walls";
+import { boardBoxGeometry, pieceSeed } from "../woodPiece";
+import { boardStyleFor } from "./millwork";
+import { createPlankMaterial } from "../plankMaterial";
 
 // Exterior window casing — mirrors the exterior_trim part in resolve/geometry_openings.py
 // (constants _WINDOW_TRIM_FACE_WIDTH_M / _WINDOW_TRIM_PROUD_DEPTH_M): a picture-frame of
@@ -51,7 +55,8 @@ function exteriorFace(wall: Wall): { plane: number; sign: number } | null {
 export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, operation: DoorOperation | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, isGlazed = false, isTrimless = false,
-  bookcaseDoor?: DoorTypeSpec["bookcase_door"]) {
+  bookcaseDoor?: DoorTypeSpec["bookcase_door"],
+  materials?: readonly MaterialAppearance[]) {
   if (opening.kind === "rough_opening") return;
   const firstChildIndex = parent.children.length;
   const [[x0, y0], [x1, y1]] = wall.axis;
@@ -120,9 +125,32 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     return;
   }
   if (opening.kind === "door" && bookcaseDoor) {
-    const backMaterial = standardMaterial(categoryColor("bookcase_back"), mode);
-    buildBookcaseDoor(addBox, bookcaseDoor, opening.width_m, availableHeight, floorZ,
-      frameMaterial, backMaterial);
+    const materialRef = bookcaseDoor.material_ref;
+    const color = materialColor(materialRef, palette, materials);
+    const boardStyle = boardStyleFor(materialRef, materials);
+    const boardMaterial = boardStyle
+      ? createPlankMaterial(mode, boardStyle, color)
+      : standardMaterial(new THREE.Color(color), mode);
+    let boardIndex = 0;
+    const addOakBox = (boxWidth: number, boxHeight: number, thickness: number, along: number,
+      elevation: number, material: THREE.Material, normalOffset: number) => {
+      if (!boardStyle || material !== boardMaterial) {
+        addBox(boxWidth, boxHeight, thickness, along, elevation, material, normalOffset);
+        return;
+      }
+      const boardPosition = projectPointToScene([
+        position[0] + direction[0] * along - direction[1] * normalOffset,
+        position[1] + direction[1] * along + direction[0] * normalOffset], elevation, center);
+      const transform = new THREE.Matrix4().compose(
+        boardPosition,
+        new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotation),
+        new THREE.Vector3(boxWidth, boxHeight, thickness));
+      const geometry = boardBoxGeometry(transform, boardStyle,
+        pieceSeed(`${opening.uid}|bookcase-board-${boardIndex++}`));
+      parent.add(new THREE.Mesh(geometry, material));
+    };
+    buildBookcaseDoor(addOakBox, bookcaseDoor, opening.width_m, availableHeight, floorZ,
+      boardMaterial, boardMaterial);
     registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
     return;
   }

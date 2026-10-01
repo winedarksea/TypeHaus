@@ -128,8 +128,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # gypsum (0xefeae2) so the leaf does not vanish into its wall. Mirrored into
     # ui/src/three via the vocabulary manifest.
     "door_leaf": (0.973, 0.976, 0.980, 1.0),
-    # Recessed back of the Murphy shelf, shaded below its painted/wood board faces.
-    "bookcase_back": (0.54, 0.40, 0.25, 1.0),
+    # White oak default for the Murphy cabinet if no authored house wood material is present.
+    "oak_bookcase": (0.788, 0.690, 0.549, 1.0),  # #c9b08c, same as the house's oak shelving
     # Concealed-frame reveal (resolve/geometry_door_products.py): the stop face seen only
     # through the 1/8" gap, dark so the line survives a renderer with no ambient occlusion.
     "shadow_gap": (0.180, 0.180, 0.188, 1.0),

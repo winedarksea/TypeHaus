@@ -93,6 +93,7 @@ DOOR_TYPES = [
                  body_width=inch(34.75), body_height=inch(78.5), body_depth=inch(8.25),
                  casing_overall_width=inch(42.5), clear_passage_width=inch(30.25),
                  hinge_side_clearance=inch(1.5), mounting_face="negative_normal",
+                 material_ref="oak-shelf-4q",
                  source="Murphy Door measurement charts and instruction manuals, read 2026-09-19; published installation clearance, not a calculated pivot sweep",
              ),
              source="Murphy Door 36 x 80 nominal flush-mount bookcase door; 38 x 82 rough opening. West-hinged in-swing at D-A-STUDY. Threshold anchorage, jamb fastening and final connection design require verification against the delivered unit and supporting floor blocking; exact pivot-axis sweep remains deferred."),

@@ -44,6 +44,9 @@ class BookcaseDoorSpec(HausModel):
     casing_overall_width: Length
     clear_passage_width: Length
     hinge_side_clearance: Length
+    # Catalog wood used for the visible cabinet boards; selects both color and the 3D board
+    # finish in the viewer. A factory finish can omit this where no house material is chosen.
+    material_ref: str | None = None
     # Which face of the host wall receives the factory cabinet.  This is a placement
     # datum, not a claim about its hinge/pivot axis or opening sweep.
     mounting_face: Literal["negative_normal", "positive_normal"] = "negative_normal"

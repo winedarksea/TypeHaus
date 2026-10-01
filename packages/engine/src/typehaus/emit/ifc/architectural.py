@@ -458,6 +458,7 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
                 "ClearPassageWidth": product.clear_passage_width.meters,
                 "HingeSideClearance": product.hinge_side_clearance.meters,
                 "MountingFace": product.mounting_face,
+                "CabinetMaterialRef": product.material_ref or "",
                 "ClearanceEnvelope": (
                     "published installation clearance; not a calculated pivot sweep"),
                 "Source": product.source,

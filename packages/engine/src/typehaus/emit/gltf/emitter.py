@@ -156,7 +156,8 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                              is_trimless=(op.is_door and door_type is not None
                                            and door_type.trimless),
                              bookcase_door=(door_type.bookcase_door
-                                            if door_type is not None else None))
+                                            if door_type is not None else None),
+                             authored=authored)
         scene.add_object(mb, ("openings",), kind="opening", uid=op.uid)
 
     openings_by_tag = {opening.tag: opening for opening in model.openings}

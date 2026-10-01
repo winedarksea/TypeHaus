@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from typehaus.model.types import BookcaseDoorSpec
-from typehaus.resolve.geometry_ir import GPart, GPrism
+from typehaus.resolve.geometry_ir import GPart, GPrism, PartCatalogRef
 
 
 _INCH_M = 0.0254
@@ -70,10 +70,14 @@ def bookcase_door_parts(
                     for index in range(1, _INTERIOR_SHELF_COUNT + 1))
     cabinet_back = box(shelf_width, height - 2 * top_bottom, back, 0.0,
                        floor + height / 2, sign * back / 2)
+    catalog = PartCatalogRef(material_ref=spec.material_ref, role="millwork")
     return (
-        GPart(key="bookcase_casing", material_key="opening_frame", solids=casing_solids),
-        GPart(key="bookcase_sides", material_key="opening_frame", solids=sides),
-        GPart(key="bookcase_caps", material_key="opening_frame", solids=caps),
-        GPart(key="bookcase_shelves", material_key="opening_frame", solids=shelves),
-        GPart(key="bookcase_back", material_key="bookcase_back", solids=(cabinet_back,)),
+        GPart(key="bookcase_casing", material_key="oak_bookcase", solids=casing_solids,
+              catalog=catalog),
+        GPart(key="bookcase_sides", material_key="oak_bookcase", solids=sides, catalog=catalog),
+        GPart(key="bookcase_caps", material_key="oak_bookcase", solids=caps, catalog=catalog),
+        GPart(key="bookcase_shelves", material_key="oak_bookcase", solids=shelves,
+              catalog=catalog),
+        GPart(key="bookcase_back", material_key="oak_bookcase", solids=(cabinet_back,),
+              catalog=catalog),
     )

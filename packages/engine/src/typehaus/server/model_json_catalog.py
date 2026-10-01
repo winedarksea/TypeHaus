@@ -98,6 +98,7 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
                      "calculated_pivot_sweep": False,
                  },
                  "mounting_face": dt.bookcase_door.mounting_face,
+                 "material_ref": dt.bookcase_door.material_ref,
                  "source": dt.bookcase_door.source,
              })}
             for dt in lib.door_types
