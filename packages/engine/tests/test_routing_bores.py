@@ -64,9 +64,9 @@ def test_R602_6_1_reaches_exterior_and_bearing_walls_only(catlin_ctx) -> None:
 def test_catlin_bores_no_stud_past_its_limit_any_more(catlin_ctx) -> None:
     """The wet-wall retype closed every one of them on 2026-09-20.
 
-    Five walls moved: three 2" vent walls and `PR-B-WC2-DRAIN`'s, plus the staggered attic
-    wall whose studs were 2x4 on 2x6 plates all along. This is the assertion that keeps them
-    closed — an over-bore reappearing here is a regression, not a new finding.
+    Three 2" vent walls and the staggered attic wall were retyped; `PR-B-WC2-DRAIN` now
+    crosses W-B-CW through a clear bay instead. This is the assertion that keeps over-bores
+    closed — one reappearing here is a regression, not a new finding.
     """
     # Per-member over-bores only: a run standing BESIDE a wall (``wall_cavity``) is a
     # different finding, and catlin carries several since 2026-09-23.
@@ -78,18 +78,24 @@ def test_an_over_size_bore_names_the_member_the_limit_and_the_actual(catlin_ctx)
     """A builder with a finding needs to know WHICH stud. "The run is tight somewhere" is
     not an instruction.
 
-    Catlin bores nothing past its limit since the retype, so the over-bore is made here:
-    `PR-B-WC2-DRAIN` blown up to 4" in the 2x8 that was widened to take it at 3".
+    Catlin bores nothing past its limit since the route moved to a clear bay, so the
+    over-bore is made here by putting a 2.5" branch back through a stud in its old lane.
     """
     from dataclasses import replace
 
     model = catlin_ctx.model
-    runs = [replace(r, diameter_m=0.1016) if r.tag == "PR-B-WC2-DRAIN" else r
-            for r in model.pipe_runs]
+    runs = []
+    for run in model.pipe_runs:
+        if run.tag != "PR-B-WC2-DRAIN":
+            runs.append(run)
+            continue
+        old_lane = tuple((inch(30.5).meters, point[1]) if index in (2, 3) else point
+                         for index, point in enumerate(run.path))
+        runs.append(replace(run, diameter_m=inch(2.5).meters, path=old_lane))
     ctx = replace(catlin_ctx, model=replace(model, pipe_runs=tuple(runs)))
     findings = [f for f in run_through_stud(ctx) if f.result.value == "fail"
                 and f.element_tags[0] == "PR-B-WC2-DRAIN"]
-    assert findings, "a 4\" drain through a 2x8 is over R602.6"
+    assert findings, "a 2.5\" bore through a 2x4 is over R602.6"
     for finding in findings:
         assert "the worst is" in finding.message
         assert "may not exceed" in finding.message

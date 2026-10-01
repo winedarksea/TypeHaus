@@ -1,5 +1,5 @@
 # haus: editable
-# Catlin assemblies — the plant room's humid walls and the tub deck.
+# Catlin assemblies — wet-room walls, basement utility walls and the tub deck.
 # Split out of plan/assemblies.py verbatim.
 from typehaus import (
     Assembly,
@@ -13,8 +13,30 @@ from typehaus import (
     layers,
 )
 from library import (
+    INT_2X6_PLUMBING,
     STUD_BEARING,
     PAINT_FINISH_B,
+)
+
+
+# Same painted gypsum faces and bearing interface as the library wet wall, with 2x4 studs.
+# Catlin's basement south line routes its 3" WC drain through a clear bay, so the deeper
+# studs are no longer needed to make a legal bore. Kept distinct from INT_2X4_PARTITION to
+# retain the longer segments' painted finish specification.
+INT_2X4_PLUMBING = Assembly(
+    tag="INT_2X4_PLUMBING",
+    variant_of="INT_2X6_PLUMBING",
+    substitute=(
+        Substitution(
+            span=layers("stud", "stud"),
+            replacement=(
+                Layer(name="stud", material_ref="spf", thickness=inch(3.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x4")),
+            ),
+        ),
+    ),
+    source="INT_2X6_PLUMBING with 2x4 studs; services cross through clear bays",
 )
 
 

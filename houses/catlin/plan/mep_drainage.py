@@ -163,10 +163,15 @@ DRAINS = [
     # run's first two points ARE the fixture's drain convention, under the bowl.
     PipeRun(uid="CBPD01AAAA", tag="PR-B-WC2-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(2, 6), ft(20, 10.615)), pt(ft(2, 6), ft(20, 10.615)),
-                  pt(ft(2, 6), ft(16, 6)), pt(ft(3), ft(16, 6))),
+                  pt(inch(28.5), ft(20, 10.615)), pt(inch(28.5), ft(16, 6)),
+                  pt(ft(3), ft(16, 6))),
             diameter=inch(3), material="pvc",
+            # Keep the outlet under the bowl at x=30"; a 1 1/2" lateral offset puts the
+            # W-B-CW crossing at x=28 1/2", in its 14 1/2" clear stud bay. It clears the
+            # stud beginning at x=31 1/4" by 1", so the wall needs no stud bore.
             # 5" over the 4'-4 5/8" leg keeps the turn at the drop's foot within a 1/4 bend.
-            elevations=(ft(9, 1.4375), ft(7, 4.4375), ft(6, 11.4375), ft(6, 9.4375)),
+            elevations=(ft(9, 1.4375), ft(7, 4.4375), ft(7, 4.4375),
+                        ft(6, 11.4375), ft(6, 9.4375)),
             serves=("FX-M-BATH2-WC",)),
     # ** BATH1's WALL-HUNG WC, ON ITS OWN BRANCH, NOT PR-B-MAIN-DRAIN'S FIRST VERTEX. **
     #   * a wall-hung carrier connects at 3" (Geberit Duofix / TOTO DuoFit both call out
@@ -534,8 +539,8 @@ SECOND_BRANCH_DRAINS = [
 # already inside RM-B-SAUNA, whose ceiling is 14" lower than the rest of the basement's, so
 # everything above -2'-2 5/8" there is in a service void nobody sees. The run now stays in
 # it: straight north on x=17'-6" to PR-B-COND's y=9'-0" leg, tying in on the trunk instead
-# of at its head. 2" clear of PR-B-CW-SAUNA (x=17'-4") and PR-B-SAUNA-VENT (x=17'-4"), and
-# it crosses nothing else — DU-B-ERV-R-GYM is at y=10'-6 5/8", north of the tie.
+# of at its head. 2" clear of PR-B-CW-SAUNA (x=17'-4") and 3" from PR-B-SAUNA-VENT
+# (x=17'-3"), and it crosses nothing else — DU-B-ERV-R-GYM is at y=10'-6 5/8", north of the tie.
 CONDENSATE_MAIN = [
     PipeRun(uid="CMPC02AAAA", tag="PR-M-COND-HEADS", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(9))),

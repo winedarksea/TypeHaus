@@ -58,6 +58,7 @@ from .interior import (
     STAIRWELL_PARTITION_4H,
 )
 from .interior_wet import (
+    INT_2X4_PLUMBING,
     PLANT_EXT_2X6_HUMID,
     PLANT_INT_2X4_HUMID,
     PLANT_INT_2X6_BRG_HUMID,
@@ -152,6 +153,7 @@ __all__ = [
     "STAIRWALL_INT_2X6_BRG_TYPEX",
     "STAIRWELL_PARTITION_4H",
     "PLANT_EXT_2X6_HUMID",
+    "INT_2X4_PLUMBING",
     "PLANT_INT_2X6_BRG_HUMID",
     "PLANT_INT_2X4_HUMID",
     "TUBDECK_INT_2X4",

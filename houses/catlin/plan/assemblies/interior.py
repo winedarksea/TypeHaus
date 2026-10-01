@@ -167,26 +167,16 @@ ACCENT_GWB_LINING = (
 # A VARIANT of INT_2X6_BRG (#70): only the stud differs, and it differs in exactly the two
 # ways the note above argues for — the batt, and no `layout_origin`.
 
-# --- wet walls that had to grow, 2026-09-20 --------------------------------------
-# Three walls in this house carried a 2" vent (2 3/8" outside) or a 3" drain (3 1/2")
-# through studs that R602.6 will not let anyone drill that far, and `mep.run_through_stud`
-# was suppressed BY RUN in `preferences.toml` for every one of them. The file said what the
-# fix was: "the fix is the wall assembly rather than the pipe" and "the honest fixes are a
-# 2x8 wet wall or a furred chase". These are those assemblies.
+# --- basement south line wet-wall framing -----------------------------------------
+# W-B-CW and W-B-CW3 use the 2x4-depth painted variant `INT_2X4_PLUMBING` (interior_wet.py).
+# The 3" WC branch shifts 1 1/2" into W-B-CW's clear stud bay, and the ERV radial already
+# crosses another clear bay. Neither service needs a stud bore, so the previous 2x8 thickening
+# is no longer needed. The generic 2x8 library assembly remains available for other plans.
 
 # W-A-STU-W uses the stock INT_2X6_PLUMBING assembly. Its continuous 2x6 studs allow the
 # studio's two 2" vents' 2.38" bores (2.10" is the 2x4 limit); the wall retains its 5.5"
 # plumbing cavity. The 3.5" batt variant remains a library option, but this conditioned
 # interior partition has no specified thermal or rated acoustic requirement for it.
-
-# W-B-CW's replacement, and the one assembly here that is a real thickening. A 3" drain is
-# 3.500" outside and 60% of a 2x6's 5.50" is 3.300" — over by two tenths of an inch, which
-# is where a 3" drain sits in a 2x6 in every house. 60% of a 2x8's 7.25" is 4.350", so the
-# drain clears with an inch to spare and so does the one 4" ERV radial that crosses this
-# wall (DU-B-ERV-R-SAUNA-SUP, 4.00"), which `preferences.toml` had filed as unfixable by
-# routing. The furnace room's south face moves ~7/8" north and the corridor's ~7/8" south.
-# A VARIANT of INT_2X6_PLUMBING (#70): only the stud depth differs, so the paint/gypsum
-# leaves and the bearing interface track the base forever.
 
 # --- energy storage closet -------------------------------------------------------
 # The ESS closet's partitions (notes/backup_power.md), an owner decision not a
@@ -274,13 +264,9 @@ SAUNA_2X4 = Assembly(
     source="catlin-house sauna_basement_wall_detail.py + notes/sauna_basement_wall_detail.md",
 )
 
-# The same sauna partition on 2x6 studs, for W-B-SA-N2 — the sauna's face onto the hall's
-# dead end, which PR-B-SAUNA-VENT crosses at 2 3/8". 60% of a 2x4's 3 1/2" is 2.10" and the
-# vent was over it; 2x6 allows 3.30". The liner stack is untouched, so the HOT face does not
-# move at all — the whole 2" goes to the cold (hall) side, which is where there is room for
-# it. The cavity keeps its mineral wool (unspecified thickness, as SAUNA_2X4 has it) because
-# this is the wall between a 190 F room and a corridor.
-# A VARIANT of SAUNA_2X4 (#70): only the stud differs, so the liner, its ceiling band and the
+# Optional deeper sauna partition variant. The basement north wall uses SAUNA_2X4 throughout;
+# PR-B-SAUNA-VENT's riser was moved into a clear stud bay so this variant is not needed there.
+# A variant of SAUNA_2X4 (#70): only the stud differs, so the liner, its ceiling band and the
 # bearing interface track the base.
 SAUNA_2X6 = Assembly(
     tag="SAUNA_2X6",
@@ -296,7 +282,7 @@ SAUNA_2X6 = Assembly(
             ),
         ),
     ),
-    source="catlin-house sauna partition on 2x6 studs: SAUNA_2X4 with a 5.5 in. stud so PR-B-SAUNA-VENT's 2.375 in. bore clears IRC R602.6's 60% of 5.50 in. = 3.30 in.",
+    source="Optional deeper sauna partition: SAUNA_2X4 with a 5.5 in. stud.",
 )
 
 # W-B-CS, the sauna's east face on the x=18' bearing line — **framed**, where it was 12"

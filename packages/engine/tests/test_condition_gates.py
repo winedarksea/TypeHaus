@@ -297,13 +297,12 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
 
     Three of the keys were INT_ESS_CLOSET_STEEL leftovers from the ESS closet's move to the
     NE corner — W-B-CW3 and W-B-STR2 kept its steel studs and Type X while serving nothing.
-    Re-specified to their neighbours (W-B-CW3 -> W-B-CW's INT_2X6_PLUMBING, W-B-STR2 ->
+    Re-specified to their neighbours (W-B-CW3 -> W-B-CW's INT_2X4_PLUMBING, W-B-STR2 ->
     W-B-STR3's family tag, INT_2X6_BRG_EXPOSED_PLY since 2026-09-12, alignment and all), N-B-CW-E and N-B-BA-W stop
     being changes of construction at all — one wall type down each line — and
     `integrity.junction_fallback` stops reporting three unsupported mixed junctions with it.
-    N-B-STR is still a change and still one key, INT_2X4_PARTITION against
-    INT_2X6_PLUMBING: the playroom partition meeting the furnace room's wet wall is a real
-    4 3/4"-to-6 3/4" jog on one line whatever the studs on either side are made of.
+    N-B-STR is still a finish/specification change between INT_2X4_PARTITION and
+    INT_2X4_PLUMBING, but both use 2x4 studs and their wall faces stay essentially flush.
 
     **The garage stem no longer contributes a key at all, and losing one is the
     point.** (The tags below are the pre-2026-09-07 east-facing garage — that wall is one
@@ -373,8 +372,8 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         "assembly_change:INT_2X4_PARTITION|INT_2X4_RC",
         "assembly_change:INT_2X4_PARTITION|INT_2X6_BRG|PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID",
         # N-B-STR, the y=18' line's surviving change: W-B-CW2's playroom partition against
-        # W-B-CW3's wet wall.
-        "assembly_change:INT_2X4_PARTITION|INT_2X6_PLUMBING",
+        # W-B-CW3's painted wet-wall finish, on the same 2x4 stud depth.
+        "assembly_change:INT_2X4_PARTITION|INT_2X4_PLUMBING",
         "assembly_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
         # N-S-D4, W-S-SN2 -> W-S-SN3 (see the docstring above): a wet wall meeting a
         # staggered sound wall, the one node where this key still fires against a plain

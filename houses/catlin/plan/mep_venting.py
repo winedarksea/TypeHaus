@@ -425,9 +425,9 @@ VENT_BRANCHES_BASEMENT = [
             # 1.699"/ft rise keeps the riser head below W-B-STR2's top plate.
             elevations=(ft(1, 3.4375), inch(91.551), ft(7, 9.25)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
-    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-4", 8'-2 3/16") — inside
+    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-3", 8'-2 3/16") — inside
     # W-B-CS's 3 1/2" liner build-up, in the pan's own east wall, on the pan-and-floor-drain
-    # centre line and clear of the mixer's two supply drops. That is both fixtures' declared
+    # y centreline and clear of the mixer's two supply drops. That is both fixtures' declared
     # wet wall (plan/fixtures.py) and the one basement wet wall that carries a framed wall on
     # the storey above, so the vent has a true stack path as well as this drawn one.
     #
@@ -440,8 +440,10 @@ VENT_BRANCHES_BASEMENT = [
     # the backup enclosure's 110.26 dedicated space, over the supply duct's leg — and north
     # onto the vent riser at x=10". PR-B-BATH-VENT ties into it at (9'-0", 19'-3").
     PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(17, 4), inch(98.1875)), pt(ft(17, 4), inch(98.1875)),
-                  pt(ft(17, 4), ft(10, 6)), pt(ft(9), ft(10, 6)),
+            # The riser moved west 1" from x=17'-4" to clear W-B-SA-N2's stud-003 at
+            # x=17'-5"; the short jog into the same westbound run stays above the wall.
+            path=(pt(ft(17, 3), inch(98.1875)), pt(ft(17, 3), inch(98.1875)),
+                  pt(ft(17, 3), ft(10, 6)), pt(ft(9), ft(10, 6)),
                   pt(ft(9), ft(19)), pt(ft(9), ft(28, 8)), pt(inch(51.5), ft(28, 8)),
                   pt(inch(51.5), inch(400)), pt(inch(10), inch(400)),
                   pt(inch(10), inch(412.9))),

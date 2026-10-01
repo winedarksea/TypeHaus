@@ -434,19 +434,19 @@ suppress = [
   "mep.run_through_plate:DU-S-HP-SUITE",
   "mep.run_through_plate:DU-S-HP-SOUTH",
 
-  # ** mep.run_through_stud: CLOSED 2026-09-20 BY RETYPING THE WALLS. NOTHING SUPPRESSED. **
+  # ** mep.run_through_stud: CLOSED 2026-09-30 BY ROUTING AND RETYPING. NOTHING SUPPRESSED. **
   #
   # This list held 7 over-bores on 5 runs, itemised, each entry saying its honest fix was a
   # wall-assembly change rather than a route. That change was made, so the entries are gone
   # rather than re-argued — five walls, and the fifth was a surprise:
   #
   #   * the three 2" vents through 2x4 studs (60% of 3 1/2" is 2.10", a 2" vent is 2.375"
-  #     outside). `W-A-BATH-S` 2x4 -> 2x6 and `W-B-SA-N2` / `W-B-ESS-W` to their 6" variants.
-  #   * `PR-B-WC2-DRAIN`'s 3" through a non-bearing 2x6, over by two-tenths. `W-B-CW` 2x6 ->
-  #     2x8, the authorized wet-wall change.
-  #   * `DU-B-ERV-R-SAUNA-SUP`, which this file argued at length could NOT be fixed by
-  #     routing and would need a framing decision. It was right, and the 2x8 above closes it
-  #     for free: 4.00" against 4.35" allowed. No duct moved.
+  #     outside). `W-A-BATH-S` and `W-B-ESS-W` were widened; `W-B-SA-N2` returned to 2x4
+  #     on 2026-09-30 after PR-B-SAUNA-VENT moved west 1" into its clear stud bay.
+  #   * `PR-B-WC2-DRAIN`'s 3" branch used to bore W-B-CW. It now shifts 1 1/2" into the
+  #     clear stud bay at x=28 1/2", so W-B-CW and W-B-CW3 can use 2x4 studs.
+  #   * `DU-B-ERV-R-SAUNA-SUP` crosses W-B-CW in its west clear bay; it does not bore a stud
+  #     and no longer sets the wall depth.
   #   * `W-A-STU-W` was never a 2x6 wall. `INT_2X6_STAGGERED_PLUMBING` is 2x4 studs on 2x6
   #     plates, so every bore graded at 2.10" while the prose everywhere called it a 2x6.
   #     It is now `INT_2X6_PLUMBING`: continuous 2x6 studs allow the vent bores, and the

@@ -736,38 +736,21 @@ WALLS = [
     # W-B-STR made for the bathroom. W-B-CW keeps tag/uid and the west 6'-9" (D-B-FURN
     # unchanged); W-B-CW3 is the 3'-3" stub forming the closet's south wall.
     #
-    # W-B-CW is the furnace room's south wall and carries the 4" building drain, so it takes
-    # a wet-wall assembly rather than a 2x4.
-    #
-    # ** INT_2X6_PLUMBING -> INT_2X8_PLUMBING, 2026-09-20. ** Two runs cross this wall that a
-    # 2x6 cannot legally take. PR-B-WC2-DRAIN is 3" (3.500" outside) against R602.6's 60% of
-    # 5.50" = 3.30" — over by two tenths, which is where a 3" drain sits in a 2x6 in every
-    # house — and DU-B-ERV-R-SAUNA-SUP is a 4" radial `preferences.toml` had already argued
-    # could not be moved into a clear stud bay on this line. 60% of a 2x8's 7.25" is 4.35" and
-    # both clear it. The wall grows 1 3/4": the furnace room's south face moves ~7/8" north and
-    # the corridor face ~7/8" south, on a wall whose two neighbours down this line
-    # (W-B-CW2/W-B-CW3) stay 2x6 — a 7/8" jog at N-B-CW-E, which is a wall end, not a face a
-    # room polygonizes along.
+    # W-B-CW, W-B-CW3 and W-B-CW2 now all use 2x4 studs. PR-B-WC2-DRAIN shifts 1 1/2" west
+    # at its W-B-CW crossing (mep_drainage.py), landing in the clear bay at x=28 1/2". Other
+    # services also cross in clear bays, so no service bores a stud on this line. The two
+    # longer walls keep their painted gypsum finish in the 2x4 plumbing assembly.
     #
     # ** NONBEARING, stated (2026-09-22). ** FS-M-WEST's I-joists run east-west, parallel to
     # this wall, on the y=208"/224" lines either side of it; no floor names it in
     # `bearing_refs`, nothing `stacks_on` it, and its plate stops 3/4" under the bay's
     # blocking. Saying so is what lets D-B-FURN take R602.7.4's flat header.
     Wall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
-         end_node="N-B-CW-E", assembly="INT_2X8_PLUMBING", top=ft(8),
+         end_node="N-B-CW-E", assembly="INT_2X4_PLUMBING", top=ft(8),
          structural_role=StructuralRole.NONBEARING),
-    # This was the ESS closet's south wall until the closet moved to the NE corner; it is
-    # now simply W-B-CW continued: same INT_2X6_PLUMBING, one wall type down the whole
-    # furnace-room south line.
-    #
-    # What forced it was `integrity.junction_fallback`. A steel stud and a wood stud are two
-    # different bearing materials, so N-B-CW-E (this stub against W-B-CW) and N-B-STR (this
-    # stub, W-B-CW2 and W-B-STR2) both resolved as mixed-assembly junctions the solver has no
-    # interface rule for — three UNKNOWNs bought by a leftover. The stub widens 2" and the
-    # furnace room's south face moves an inch north over this 3'-3" run; that is the price,
-    # and it was named here before it was paid.
+    # Former ESS-closet return; it now matches W-B-CW's stud depth and painted gypsum faces.
     Wall(uid="CBW123AAAA", tag="W-B-CW3", start_node="N-B-CW-E",
-         end_node="N-B-STR", assembly="INT_2X6_PLUMBING", top=ft(8)),
+         end_node="N-B-STR", assembly="INT_2X4_PLUMBING", top=ft(8)),
     # Nothing runs in this one and nothing bears on it — a plain 2x4 partition. Keep the
     # tag: W-M-CLN and W-M-CLN2 name it in `stacks_on`.
     Wall(uid="CBW119AAAA", tag="W-B-CW2", start_node="N-B-STR",
@@ -901,12 +884,11 @@ WALLS = [
     Wall(uid="CBW118AAAA", tag="W-B-SA-N", start_node="N-B-SA-NW",
          end_node="N-B-HALL-S", assembly="SAUNA_2X4", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
-    # ** W-B-SA-N2 RETYPED SAUNA_2X4 -> SAUNA_2X6, 2026-09-20 ** and W-B-SA-N did NOT: only
-    # the east segment is crossed. PR-B-SAUNA-VENT's 2" (2 3/8" outside) bored stud-003 here
-    # against R602.6's 60% of 3 1/2" = 2.10"; 2x6 allows 3.30". The liner stack is unchanged,
-    # so the sauna's own hot face does not move — the whole 2" goes onto the hall side.
+    # PR-B-SAUNA-VENT used to rise at x=17'-4", one inch from stud-003 at x=17'-5". Move
+    # the riser one inch west into the clear stud bay; neither north segment needs deeper
+    # framing. The liner stack stays the same, so both the sauna hot face and hall face align.
     Wall(uid="CM3FCDT2ST", tag="W-B-SA-N2", start_node="N-B-HALL-S",
-         end_node="N-B-SA-NE", assembly="SAUNA_2X6", top=ft(7, 6),
+         end_node="N-B-SA-NE", assembly="SAUNA_2X4", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
     # ** THE HALL'S WEST SIDE, NEW 2026-09-07. ** x=13'-10 11/16" from the y=18' line south
     # to the sauna's north wall, walling the workshop off the hall and hosting D-B-SHOP.
