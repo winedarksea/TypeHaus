@@ -46,37 +46,12 @@ def test_the_file_is_byte_deterministic(tmp_path: Path):
 
 
 @pytest.mark.slow
-def test_haus_print_stays_blocked_by_the_visible_pending_truss_finding(tmp_path: Path):
-    """The owner wants the WC/truss conflict visible until the fabricator drawing arrives."""
-    from typer.testing import CliRunner
-
-    from typehaus.cli.app import app
-
-    house = tmp_path / "catlin"
-    copy_house(CATLIN, house)
-    result = CliRunner().invoke(app, ["print", str(house), "--fmt", "pdf"])
-    assert result.exit_code == 1, result.output
-    assert "permit print blocked" in result.output
-    assert "PR-M-S-BATH1-WC-DRAIN" in result.output
-    assert "FS-S-WEST" in result.output
-    assert not (house / "out" / "permit_set.pdf").exists()
-
-
-@pytest.mark.slow
-def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path, monkeypatch):
-    """End to end on the real house — the sandbox print, then the JSON next to it.
-
-    ** THE GATE IS STUBBED AGAIN, SINCE 2026-09-20. ** catlin does not reach draft (the test
-    above), and patching ``PermitChecklist.ok`` is what keeps the composition, the writer
-    and the file format under test while it does not. Remove the stub the day catlin passes.
-    """
+def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path):
+    """The WC drain clears the floor truss, so the real draft gate admits this print."""
     pytest.importorskip("matplotlib")
     from typer.testing import CliRunner
 
-    from typehaus.checks.permit import PermitChecklist
     from typehaus.cli.app import app
-
-    monkeypatch.setattr(PermitChecklist, "ok", property(lambda self: True))
 
     house = tmp_path / "catlin"
     copy_house(CATLIN, house)

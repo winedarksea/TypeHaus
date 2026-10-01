@@ -419,10 +419,10 @@ SECOND_DRAINS = [
 # 9'-0 1/8" the underside of the trusses.
 SECOND_BRANCH_DRAINS = [
     # ** THE HALL BATH'S 3" COLLECTOR. THE CLOSET BEND IS OFFSET AND THAT IS NOT A ROUNDING. **
-    # FX-S-BATH1-WC moved 3" north: its flange is now at y=368.29", on the truss line whose
-    # chord occupies 366.25"..369.75". A 3" pipe dropping there would notch the chord by
-    # 0.54", so the closet bend carries the first routed point south to y=364.61" before the
-    # run continues to the y=344" vertical drop.
+    # FX-S-BATH1-WC moved 4.79" south on 2026-10-01: its flange is at y=363.5", where the
+    # 3.5" pipe envelope ends at y=365.25", 1" clear of the FS-S-WEST chord face at y=366.25".
+    # The closet bend shifts south to y=359.82" before the run crosses the trusses to the
+    # y=344" vertical drop.
     # That first leg falls 8.5"/ft, which is a bend and not a slant — `mep.drain_offset_
     # geometry` grades it on the conjunction and 3 3/4" of fall is nowhere near its 18".
     # ** SINCE 2026-09-24 THE VERTICAL DROP LANDS IN RM-M-MUD-CLOSET. **
@@ -433,7 +433,7 @@ SECOND_BRANCH_DRAINS = [
     # hole (FO-S-BATH1-WC-DRAIN) into the closet ceiling — STORAGE, where exposed pipe is by
     # design — and east at 8'-4" onto the stack's side. Dropping early only gains head.
     PipeRun(uid="K28BQ29KCW", tag="PR-M-S-BATH1-WC-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(m(0.560313), m(9.3545)), pt(m(0.560313), m(9.26109)),
+            path=(pt(m(0.560313), inch(363.5)), pt(m(0.560313), inch(359.82)),
                   pt(m(0.560313), inch(344)), pt(m(0.560313), inch(344)),
                   pt(ft(5), inch(344)), pt(ft(5), ft(26, 6))),
             diameter=inch(3), material="pvc",

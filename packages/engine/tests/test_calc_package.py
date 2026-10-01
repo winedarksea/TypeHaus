@@ -427,16 +427,16 @@ def test_print_sealed_exits_one_while_nothing_is_sealed(catlin_engineering):
     assert checklist.unsealed
 
 
-def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineering):
-    """The gates are independent. catlin reaches neither since the porch went onto ledgers
-    (2026-09-22): draft is shut on one named line, sealed on the missing register.
+def test_the_two_gates_are_separate_and_catlin_reaches_draft_only(catlin_engineering):
+    """The gates are independent. catlin reaches draft since the porch went onto ledgers
+    (2026-09-22), and the WC drain moved into a clear truss bay; sealed still needs its
+    missing register.
 
     It reached draft and not sealed until 2026-09-18, missed BOTH for two days while
     `engineering/column_base.py` graded an embedment its north entry did not have, and
     reaches draft again since 2026-09-20 — `notes/entry_column_base_fixity.md` §6a put the
     canopy pair on one plane at -10'-2" and §6e claimed §1806.3.4's doubling for the landing
-    pair. The blocked list is pinned to the user's visible WC-drain / floor-truss failure
-    while the final drawing is pending. A second blocking item still fails this assertion.
+    pair. The blocking list must stay empty; a second blocking item fails this assertion.
 
     The separation is what the pair below pins: `sealed` is false for a reason that has
     nothing to do with any calculation — catlin carries no `engineering.toml` at all — so it
@@ -444,8 +444,7 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
 
     ** IT MISSED DRAFT FROM 2026-09-20 ON NAMED LINES, AND REACHES IT AGAIN ON 2026-09-22. **
     Every deferred kind became a registered calculation and its line blocks; the last of them
-    to close was the thermal break (basis 7). The truss intersection now holds draft shut; any
-    additional blocker or a missing truss finding fails here. The veneer beam
+    to close was the thermal break (basis 7). Any new blocker fails here. The veneer beam
     closed 2026-09-21 (hook ties and footing dowels, `notes/sunken_garden_veneer_beam.md`
     §6e); the thermal break on 2026-09-22 (`notes/sunken_garden_court_free_body.md` §11j).
     """
@@ -457,15 +456,8 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     # own (deck_tie/FS-BW-FLOOR at 0.966, north_entry_piers.md §10); base rotation CLOSED as
     # draft on the presumed n_h (column_base_rotation.md §10), and the SRW apron CLOSED on AB
     # Stones (raised_garden_srw.md §3b).
-    # ** ONLY THE PENDING TRUSS DRAWING LINE IS OPEN. ** The other deferred items closed on
-    # their calculations; the user chose to keep this physical intersection visible.
-    assert blocked == ["Resolved-model and transition integrity"], blocked
-    integrity = next(item for item in checklist.items
-                     if item.label == "Resolved-model and transition integrity")
-    assert integrity.result is Result.FAIL
-    assert "PR-M-S-BATH1-WC-DRAIN" in integrity.detail
-    assert "FS-S-WEST" in integrity.detail
-    assert not checklist.ok
+    assert blocked == [], blocked
+    assert checklist.ok
     assert not checklist.sealed
     assert checklist.unsealed
     # Shut for its own reason: every engineered item is unsealed because the house carries

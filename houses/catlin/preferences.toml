@@ -575,11 +575,11 @@ suppress = [
   #     of them have to take another opening, another tier or another lane. The second
   #     finding is the same shape at opening 0: PR-M-WC-VENT, DU-M-ERV-R-PLANT and
   #     CD-M-DATA-PORCH want 24.97" of 15.00".
-  #   * mep.run_member_crossing, 17 NEW findings, all of the form "that is ON A WEB, not in
+  #   * mep.run_member_crossing, 16 NEW findings, all of the form "that is ON A WEB, not in
   #     an opening". With a 24" pitch and a 9" web band, a station chosen against a
   #     continuous slot lands on a web better than a third of the time — so this number is
   #     a measure of how little the old reading constrained anything, not of seventeen new
-  #     mistakes. Eight ERV radials, five second-storey drains, two studio supply risers,
+  #     mistakes. Eight ERV radials, four second-storey drains, two studio supply risers,
   #     the kitchen vent and the WC vent.
   #
   # Itemised throughout: on the HOST DECK for open_web_panel (both findings are FS-S-WEST's
@@ -592,7 +592,6 @@ suppress = [
   "mep.run_member_crossing:PR-M-KITCH-VENT",
   "mep.run_member_crossing:PR-M-S-BATH1-LAV-DRAIN",
   "mep.run_member_crossing:PR-M-S-BATH1-TUB-DRAIN",
-  "mep.run_member_crossing:PR-M-S-BATH1-WC-DRAIN",
   "mep.run_member_crossing:PR-M-S-SUITE-WC-DRAIN",
   "mep.run_member_crossing:PR-M-WC-VENT",
 

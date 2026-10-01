@@ -218,22 +218,11 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # guard in this house is filled with a glass panel — a resolved requirement, not an
     # unresolved one, and lettering it as a gate failure would be a false statement.
     #
-    # ** ONE OWNER-DECIDED LINE IS OPEN WHILE THE FINAL TRUSS DRAWING IS PENDING. ** The
-    # `PR-M-S-BATH1-WC-DRAIN` / `FS-S-WEST` intersection is left visible by owner direction;
-    # no final truss drawing is available to establish an engineered opening or reroute.
-    # Every other gating item still passes. Before this item appeared, the set was empty
-    # since 2026-09-20. It held "Fixed
-    # column base embedment" from 2026-09-18, when `engineering/column_base.py` began grading
-    # the IBC 1807.3.2.1 embedment every `deck_post` record had been naming as an ungraded
-    # assumption — a real design gap in the reference house, not a checklist defect. It
-    # closed in two halves, both in `notes/entry_column_base_fixity.md`: §6a put the canopy
-    # pair on one bearing plane at -10'-2", and §6e claimed IBC §1806.3.4's isolated-pole
-    # doubling for the landing pair as a GRADED authored claim rather than pouring 2' of
-    # concrete to dodge a question the owner had already answered.
+    # The hall-bath WC drain now lands in the adjacent clear truss bay, so it no longer holds
+    # the draft gate open. All other blocking lines still have to resolve as before.
     #
-    # The mechanism stays because the mechanism is the point: a gating item may be open here
-    # deliberately, named once, while every OTHER gating item is still asserted as tightly as
-    # before. The open item is pinned to its specific reported members below.
+    # Keep the empty set explicit: a new blocking item must not silently become an accepted
+    # exception.
     #
     # ** FIVE OPEN SINCE 2026-09-20, AND EACH IS THE ANSWER A CALCULATION GAVE. ** The
     # deferred engineering kinds were registered and their lines flipped to blocking; on
@@ -260,7 +249,7 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     #
     # The porch LEDGERS were open for an evening; their Titen HDs grade on Simpson's
     # L-A-THDSSLDGR23 row now.
-    OPEN: set[str] = {"Resolved-model and transition integrity"}
+    OPEN: set[str] = set()
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}
     unresolved = [item for item in gating
@@ -270,11 +259,7 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     still_open = {item.label for item in gating if item.result not in resolved}
     assert still_open == OPEN, (
         "an open item was fixed and left in the set, or a new one appeared", still_open)
-    open_integrity = next(item for item in gating
-                          if item.label == "Resolved-model and transition integrity")
-    assert open_integrity.result is Result.FAIL
-    assert "PR-M-S-BATH1-WC-DRAIN" in open_integrity.detail
-    assert "FS-S-WEST" in open_integrity.detail
+    assert checklist.ok
     frost = [item for item in gating if item.label == "Foundation frost depth"]
     assert len(frost) == 1, [item.label for item in gating]
     assert frost[0].result is Result.PASS

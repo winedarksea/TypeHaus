@@ -46,11 +46,7 @@ TYPEHAUS_HOUSE=houses/starter $PY -m pytest -p no:typehaus_checks \
   packages/engine/src/typehaus/checks/pytest_plugin.py
 
 echo "== catlin house checks-as-tests =="
-# The final truss drawing is unavailable, and the user chose to keep the resulting WC drain
-# intersection visible. Share this exact identity with the JSON report gate below: it permits
-# the test harness to pass only while that same finding remains in the report.
-CATLIN_ACCEPTED_CHECK_FINDINGS='[{"check_id":"mep.run_through_floor_member","element_tags":["FS-S-WEST","PR-M-S-BATH1-WC-DRAIN"]}]'
-TYPEHAUS_HOUSE=houses/catlin TYPEHAUS_ACCEPTED_CHECK_FINDINGS="$CATLIN_ACCEPTED_CHECK_FINDINGS" \
+TYPEHAUS_HOUSE=houses/catlin \
   $PY -m pytest -p no:typehaus_checks \
   packages/engine/src/typehaus/checks/pytest_plugin.py
 
@@ -86,17 +82,8 @@ if [[ -n "$BASELINE_DIR" ]]; then
 fi
 
 echo "== haus check: catlin =="
-# The user chose to keep `PR-M-S-BATH1-WC-DRAIN` through `FS-S-WEST` visible while the final
-# truss drawing is unavailable. Gate on JSON and allow exactly that finding, matching
-# `test_catlin_carries_only_the_pending_truss_failure`; new failures still stop the build.
-#
-# `--exit-on error` is the wrong loosening — it lets *any* FAIL through. Gate on the JSON
-# instead, subtracting the identical allow-list, so a real regression still stops the build.
-# Keep this list and the test's `accepted` set in step. This entry records the user's decision,
-# and does not suppress the finding from normal or `--no-suppress` output.
-#
-# `--exit-on none` is what hands the verdict to that JSON. Without it `haus check` exits 1
-# on the visible FAIL and `set -e` kills the script before the gate below ever runs.
+# Keep the check gate strict: every FAIL stops the build. `--exit-on none` lets the JSON
+# assertion report all failures together instead of stopping at the first one.
 #
 # It spent 2026-08-23 on the looser `--exit-on error` while three `structural.deck_beam_span`
 # advisories stood against BM-SG-BLW/BLC/BLE, and is back to the strict gate now that they
@@ -104,51 +91,18 @@ echo "== haus check: catlin =="
 # R507.5(1) at the 10' joist-span row.
 CATLIN_CHECK="$(mktemp -t catlin-check)"
 $HAUS check houses/catlin --json --exit-on none > "$CATLIN_CHECK"
-CATLIN_ACCEPTED_CHECK_FINDINGS="$CATLIN_ACCEPTED_CHECK_FINDINGS" \
-  $PY - "$CATLIN_CHECK" <<'PYEOF'
-import json, os, sys
-
-# `code.site_parcel_is_surveyed`
-# sat here while the parcel was a drawn placeholder; the owner's stated 50' x 133' lot made
-# the basis "plat", which grades UNKNOWN rather than FAIL.
-# ** THE ONLY CURRENT OPEN CHECK IS THE OWNER-REQUESTED VISIBLE TRUSS INTERSECTION. ** The
-# accepted identity below does not hide the finding in the model report. (Historical note,
-# 2026-09-18, the engineering gap
-# review.) `engineering/column_base.py` grades what every `deck_post` record has been
-# NAMING and not grading since 2026-09-11 — the embedment IBC 1807.3.2.1 needs for a
-# column free to translate at grade — and the north entry canopy's cast columns did not
-# have it. `notes/entry_column_base_fixity.md` works it by hand; §6 there works the
-# closures.
-#
-# ** THE OLD CANOPY DESIGN GAP CLOSED ON 2026-09-20. ** The canopy's
-# deck became a declared diaphragm and `W-BW-SCREEN` a declared shear panel, so the frame
-# shear is shared in proportion to rigidity (IBC 2018 §1604.4) instead of being loaded wholly
-# onto the two cast columns; §7 of that note is the hand-working. That took PT-BW-RE's required
-# embedment 8.08' -> 6.25' against the 6.12' it had, inside §1806.3.4's judgement band, and
-# left PT-BW-RNE at 2.21 — it wants 7.74' and had 3.50'.
-#
-# §6a then closed both at once by putting BOTH bases on one plane at -10'-2". That is the whole
-# point of the closure and not a detail: the split is by 3EI/h³ on the FULL shaft, so deepening
-# one column softens it and sheds its share onto the other. Equal shafts, 50/50, 7.07' needed
-# against 7.33' — both publish a graded verdict with §1806.3.4's doubling unclaimed.
-ACCEPTED = {
-    (finding["check_id"], tuple(sorted(finding["element_tags"])))
-    for finding in json.loads(os.environ["CATLIN_ACCEPTED_CHECK_FINDINGS"])
-}
+$PY - "$CATLIN_CHECK" <<'PYEOF'
+import json, sys
 
 payload = json.load(open(sys.argv[1]))
 failures = {
     (f["check_id"], tuple(sorted(f["element_tags"] or ())))
     for f in payload["findings"] if f["result"] == "fail"
 }
-stale = ACCEPTED - failures
-if stale:
-    sys.exit(f"an accepted advisory stopped firing — delete it from the list: {sorted(stale)}")
-unexpected = sorted(failures - ACCEPTED)
-if unexpected:
-    sys.exit(f"catlin FAILs: {unexpected}")
-print(f"{payload['pass']} pass, {payload['fail']} fail "
-      f"({len(ACCEPTED)} accepted), {payload['unknown']} not evaluable, "
+if failures:
+    sys.exit(f"catlin FAILs: {sorted(failures)}")
+print(f"{payload['pass']} pass, {payload['fail']} fail, "
+      f"{payload['unknown']} not evaluable, "
       f"{payload['not_applicable']} not applicable")
 PYEOF
 rm -f "$CATLIN_CHECK"
