@@ -441,7 +441,11 @@ def test_a_supply_proposal_lands_on_the_trunks_LINE_not_its_endpoint(runner) -> 
     result = runner.invoke(app, ["route", str(_CATLIN), "--run", "PR-B-HW-BATH2"])
     assert result.exit_code == 0, result.output
     assert "PR-B-HW-BATH2-PROPOSED" in result.output
-    assert "vent" not in result.output.lower()
+    # The fixed terminal is inside the route-clearance envelope of the existing bath vent.
+    # The router reports that obstruction and still proposes a route; it does not treat the
+    # vent as the trunk.
+    assert "PR-M-BATH2-VENT" in result.output
+    assert "routed anyway" in result.output
     assert _plan_digest() == before
 
 
@@ -486,8 +490,13 @@ def test_a_port_rooted_trunk_proposal_starts_on_the_port(runner) -> None:
     before = _plan_digest()
     result = runner.invoke(app, ["route", str(_CATLIN), "--run", "PR-B-HW-TRUNK", "--json"])
     assert result.exit_code == 0, result.output
-    # Problem lines (the trunk's riser end stands inside a duct) print ahead of the JSON.
-    proposal = json.loads(result.output[result.output.index("\n{") + 1:])["proposals"][0]
+    # Diagnostics, when present, precede the JSON; with none, JSON starts at byte zero.
+    output = result.output.lstrip()
+    if not output.startswith("{"):
+        json_start = output.find("\n{")
+        assert json_start >= 0, result.output
+        output = output[json_start + 1:]
+    proposal = json.JSONDecoder().raw_decode(output)[0]["proposals"][0]
     assert proposal["tag"] == "PR-B-HW-TRUNK-PROPOSED"
     model, _ = resolve(load_plan(_CATLIN).plan)
     port = next(p for p in placed_ports(model)

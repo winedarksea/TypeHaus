@@ -99,10 +99,6 @@ with every suppression lifted.
 - **The FS-S-WEST truss panel layout is a PROVISIONAL placeholder and the owner replaces it.**
   Owner confirmed on 2026-09-29 that no fabricator panel drawing is available yet. The six
   remaining `mep.run_member_crossing` errors stay open until the actual panel geometry arrives.
-  A separate `mep.run_through_floor_member` FAIL also remains visible: `PR-M-S-BATH1-WC-DRAIN`
-  intersects `FS-S-WEST`'s joist. Owner direction on 2026-10-01 is to keep it unsuppressed until
-  the final truss drawing arrives, then verify the actual member layout and reroute the drain if
-  needed.
   `params/second_deck.py` authors `web_panel_pitch=24"`, `web_opening_width=15"`,
   `web_panel_offset=12"` on FS-S-WEST, derived in its own `#:` from an ordinary Warren
   layout rather than read off a submittal. Ask the truss fabricator for the panel drawing,

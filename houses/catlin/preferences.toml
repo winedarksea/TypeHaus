@@ -261,8 +261,21 @@ permit_drop = ["A-502", "A-506"]
 # other findings are itemised. An entry names a measured, documented open item.
 [checks]
 suppress = [
-  # ** mep.run_interference: 11 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-29. NOT A
-  # DECISION — AN OPEN CAMPAIGN, AND WHAT IS LEFT OF IT IS PLUMBING AND RACEWAYS. **
+  # ** mep.run_interference: 11 REAL INTERPENETRATIONS, RE-MEASURED 2026-10-01. THE THREE
+  # BASEMENT ERV PAIRS FROM THIS PASS ARE CLEARED; THE WIDER CAMPAIGN REMAINS OPEN. **
+  #
+  # ** 11 -> 14 (2026-10-01). ** The gym radial rose to 88 1/2" to clear D-B-BATH's pocket
+  # header. That clears the header and intersects DU-B-ERV-R-BATH by 1.38" and
+  # PR-B-LSINK-DRAIN by 1.11". DU-B-ERV-R-PLAY also meets the laundry sink drain at the
+  # riser: 0.19" in plan and 0.40" vertically. The owner deferred these three pairs to a
+  # later MEP pass; the clearance ratchet tracked their identities until the reroute below.
+  # The same re-measure closed one drain<->drain pair and one conduit<->supply pair, and
+  # found two additional drain<->supply pairs after the supply routing changes.
+  #
+  # ** 14 -> 11 (2026-10-01). ** The gym radial stays at 84" through both crossings, then
+  # rises from y=18'-8" to its 88 1/2" hall crossing to keep the pocket-header clearance.
+  # That closes its bath-extract and laundry-sink-drain pairs. A 1/2" drop on the play
+  # radial clears the sink-drain riser. The ERV clearance ratchet now accepts no known pairs.
   #
   # ** 15 -> 11 (2026-09-29). ** CD-B-DATA-SHOP now follows the west wall rather than
   # crossing the PV and spare risers at its head and the spa feed at its tail (three pairs).
@@ -276,7 +289,8 @@ suppress = [
   # ** 65 -> 96 -> 17 (2026-09-23/24). ** The check's eyes improved first: a joint only
   # between runs that can join, a sleeve only inside its own hole, a vent riser at its OD
   # (96). The ERV/vent clearance campaign then took out every pair naming an ERV duct, a
-  # vent or the radon riser but one. `tests/test_catlin_erv_clearance.py` pins them at zero.
+  # vent or the radon riser but one. `tests/test_catlin_erv_clearance.py` keeps new ERV,
+  # vent and radon pairs out of the open set.
   #
   # ** 69 -> 65 BY 2026-09-23, AND THE TABLE BELOW SUMS TO IT AGAIN. ** The 69 headline sat
   # over a 67-row table. Re-classified off each run's own system (a VentRun's radon and vent
@@ -293,9 +307,10 @@ suppress = [
   # took level 2 trunk-and-branch, D2 split the attic chase into four lanes, D3 re-laid the
   # basement on the four corridors that are actually clear and put each radial on its own
   # dimensioned collar; then P1/P2/P3 moved the vents, the cold lane and three supply
-  # branches. **duct <-> duct is now ZERO in this house** — it was 37 at the Phase 1 exit,
-  # and every one of them was two branches leaving one plenum on one line. So is
-  # supply <-> vent, and supply <-> supply is down to one.
+  # branches. Duct<->duct was zero on 2026-09-29, down from 37 at the Phase 1 exit, and every
+  # one of those early pairs was two branches leaving one plenum on one line. The later gym
+  # rise briefly introduced one new duct pair, closed in the 10-01 reroute above.
+  # Supply<->vent and supply<->supply remain zero.
   #
   # ** WHAT IS LEFT IS NOT ONE KIND OF THING, AND THAT IS THE USEFUL PART. ** 26 of the 65
   # are conduit, which is laid LAST in `routing/campaign.TRADE_ORDER` because a raceway
@@ -333,24 +348,24 @@ suppress = [
   #
   # The class breakdown, and it is the line that goes stale first:
   #
-  #                        09-18  Ph1 exit  D1-D3  P1-P3  09-23  09-23 A1-A4  09-24  09-26  09-29
-  #     duct <-> duct            37      37       0      0      0        9          0      0      0
-  #     duct <-> vent            28      22      14     14     14       20          1      0      0
-  #     conduit <-> vent          0      18      18     15      6        6          0      0      0
-  #     drain <-> duct           33      22       7      7      8        8          0      0      0
-  #     drain <-> supply         32      11      11      7      6        8          5      5      5
-  #     conduit <-> duct          0       3       6      6     11       17          0      0      0
-  #     duct <-> supply          12       7       7      5      5        5          0      0      0
-  #     conduit <-> conduit       0       4       4      4      4        4          3      3      0
-  #     conduit <-> supply        0       4       4      4      4        4          2      2      2
-  #     conduit <-> drain         -       -       -      -      1        1          1      1      1
-  #     drain <-> drain           -       4       4      3      4        4          4      3      3
-  #     supply <-> supply        18      10      10      1      1        1          1      1      0
-  #     drain <-> vent            -       5       5      1      1        1          0      0      0
-  #     supply <-> vent          12       2       2      0      0        0          0      0      0
-  #     vent <-> vent             -       1       1      0      0        8          0      0      0
-  #                             ---     ---     ---    ---    ---      ---        ---    ---    ---
-  #                             188     150      93     67     65       96         17     15     11
+  #                        09-18  Ph1 exit  D1-D3  P1-P3  09-23  09-23 A1-A4  09-24  09-26  09-29  10-01a 10-01b
+  #     duct <-> duct            37      37       0      0      0        9          0      0      0      1      0
+  #     duct <-> vent            28      22      14     14     14       20          1      0      0      0      0
+  #     conduit <-> vent          0      18      18     15      6        6          0      0      0      0      0
+  #     drain <-> duct           33      22       7      7      8        8          0      0      0      2      2
+  #     drain <-> supply         32      11      11      7      6        8          5      5      5      7      5
+  #     conduit <-> duct          0       3       6      6     11       17          0      0      0      0      0
+  #     duct <-> supply          12       7       7      5      5        5          0      0      0      0      0
+  #     conduit <-> conduit       0       4       4      4      4        4          3      3      0      0      0
+  #     conduit <-> supply        0       4       4      4      4        4          2      2      2      1      1
+  #     conduit <-> drain         -       -       -      -      1        1          1      1      1      1      1
+  #     drain <-> drain           -       4       4      3      4        4          4      3      3      2      2
+  #     supply <-> supply        18      10      10      1      1        1          1      1      0      0      0
+  #     drain <-> vent            -       5       5      1      1        1          0      0      0      0      0
+  #     supply <-> vent          12       2       2      0      0        0          0      0      0      0      0
+  #     vent <-> vent             -       1       1      0      0        8          0      0      0      0      0
+  #                             ---     ---     ---    ---    ---      ---        ---    ---    ---    ---
+  #                             188     150      93     67     65       96         17     15     11     14     11
   # The rows sum to the headline; if they stop summing, one of them went stale. The four
   # rows that start blank were inside the older column's "everything else" (which held the
   # two radon pairs, drain<->vent 6, drain<->drain 3 and five singles) and are broken out
@@ -358,12 +373,11 @@ suppress = [
   # supply<->supply 9 and "everything else" 1 are one row here: PR-B-ERV-COND reads as a
   # drain under the classifier the third column was taken with.
   #
-  # ** THE AIR IS DONE AND THE WATER IS MOSTLY DONE. ** duct<->duct, supply<->vent and
-  # vent<->vent are all zero; supply<->supply went 18 -> 1 when the cold lane moved off
-  # PR-M-S-BATH1-DRAIN's riser and the same-band crossings stepped into the empty half of
-  # the I-joist web. conduit<->duct holds the three CD-A-DATA-NE pairs D2 made and deferred
-  # on purpose. The two rows that have not moved since the Phase 1 exit are duct<->vent
-  # (one vent, one rule) and drain<->duct, and both are argued by name in plans/TODO.md.
+  # ** 10-01 RE-MEASURE. ** `duct<->duct`, `drain<->duct`, `drain<->supply` and
+  # `conduit<->supply` now include the dated changes above. `supply<->vent` and `vent<->vent`
+  # remain zero; `supply<->supply` remains zero after the cold lane moved off
+  # PR-M-S-BATH1-DRAIN's riser. The 10-01 basement route change closes the three deferred ERV
+  # pairs; eleven other measured interpenetrations remain in the campaign.
   #
   # This is the one blanket entry in this file about run-against-run geometry, and it is
   # the only one that is not about a single element. The check is right: it compares every
@@ -385,7 +399,7 @@ suppress = [
   # answer, and `mep.open_web_panel` (below) is now able to price the level-2 one.
   #
   # ** WHY IT IS SUPPRESSED RATHER THAN FIXED TODAY. ** Fixing it is a design campaign, not
-  # an edit: every one of the 150 is a pair of authored lanes, and moving either end of
+  # an edit: every one of the 11 is a pair of authored lanes, and moving either end of
   # either run re-opens its own head budget, its bay occupancy and its member crossings.
   # Landing the check red instead would take `haus print`, the handoff bundle and the CI
   # gate down with it and teach everyone to ignore a red report, which is worse than either

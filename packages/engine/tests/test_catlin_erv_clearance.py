@@ -1,8 +1,8 @@
-"""The ERV/vent clearance campaign's ratchet on catlin (2026-09-24).
+"""The ERV/vent clearance campaign's ratchet on catlin (updated 2026-10-01).
 
 ``mep.run_interference`` and ``mep.riser_through_deck`` are blanket-suppressed in catlin's
-``preferences.toml`` for the plumbing and raceway pairs still open. These call the checks
-directly, so suppression cannot hide an ERV duct, a vent or the radon riser coming back.
+``preferences.toml`` for the pairs still open. These call the checks directly, so suppression
+cannot hide an unexpected ERV duct, vent or radon-riser clash.
 """
 
 from __future__ import annotations
@@ -19,8 +19,8 @@ pytestmark = pytest.mark.slow
 
 _WATCHED = re.compile(r"^DU-.*ERV|-VENT$|^VR-")
 
-#: Pairs still open, each with its reason. Empty since REG-A-STUBATH-EXH came down to 3'-0"
-#: (2026-09-26). Shrink this set, never grow it.
+#: No watched run interpenetrations are accepted on catlin. This direct-check ratchet bypasses
+#: the blanket preference suppression on the wider, still-open MEP campaign.
 _KNOWN: set[frozenset[str]] = set()
 
 
@@ -28,7 +28,7 @@ def _watched(finding) -> bool:
     return any(_WATCHED.search(tag) for tag in finding.element_tags)
 
 
-def test_no_erv_duct_vent_or_radon_riser_interpenetrates_anything(catlin_ctx) -> None:
+def test_no_new_erv_duct_vent_or_radon_riser_interpenetrations(catlin_ctx) -> None:
     pairs = {frozenset(f.element_tags) for f in run_interference(catlin_ctx)
              if f.result is Result.FAIL and _watched(f)}
     assert pairs <= _KNOWN, sorted(sorted(pair) for pair in pairs - _KNOWN)

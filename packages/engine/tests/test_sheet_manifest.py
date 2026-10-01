@@ -46,13 +46,8 @@ def test_the_file_is_byte_deterministic(tmp_path: Path):
 
 
 @pytest.mark.slow
-def test_haus_print_opens_for_catlin(tmp_path: Path):
-    """The draft gate, end to end — open for catlin again since 2026-09-22 (late).
-
-    It shut that evening when the porch went onto concrete ledgers, and opened when their
-    anchors were graded against Simpson's L-A-THDSSLDGR23 row. The day a line reopens this
-    test fails and tells somebody to invert it back.
-    """
+def test_haus_print_stays_blocked_by_the_visible_pending_truss_finding(tmp_path: Path):
+    """The owner wants the WC/truss conflict visible until the fabricator drawing arrives."""
     from typer.testing import CliRunner
 
     from typehaus.cli.app import app
@@ -60,9 +55,11 @@ def test_haus_print_opens_for_catlin(tmp_path: Path):
     house = tmp_path / "catlin"
     copy_house(CATLIN, house)
     result = CliRunner().invoke(app, ["print", str(house), "--fmt", "pdf"])
-    assert result.exit_code == 0, result.output
-    assert "permit print blocked" not in result.output
-    assert (house / "out" / "permit_set.pdf").is_file()
+    assert result.exit_code == 1, result.output
+    assert "permit print blocked" in result.output
+    assert "PR-M-S-BATH1-WC-DRAIN" in result.output
+    assert "FS-S-WEST" in result.output
+    assert not (house / "out" / "permit_set.pdf").exists()
 
 
 @pytest.mark.slow
