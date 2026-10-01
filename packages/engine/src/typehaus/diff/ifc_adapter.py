@@ -19,6 +19,7 @@ from typehaus.resolve.geometry import (
     opening_center,
     wall_frame,
 )
+from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
@@ -65,6 +66,7 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
     puid = model.plan.project.project_uuid
     elems: list[DiffElem] = []
     wall_by_tag = {w.tag: w for w in model.walls}
+    door_types = {door_type.tag: door_type for door_type in model.plan.library.door_types}
     for w in model.walls:
         centroid, bbox, direction = _wall_geometry(w)
         elems.append(DiffElem(
@@ -76,9 +78,18 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         host = wall_by_tag.get(o.host_wall)
         if host is None:
             continue
-        frame_points = _opening_frame_bounds(host, o)
-        centroid, bbox = _bounds(frame_points, host.base_ref_z_m + o.sill_m,
-                                 host.base_ref_z_m + o.sill_m + o.height_m)
+        door_type = door_types.get(o.type_ref)
+        if o.is_door and door_type is not None and door_type.bookcase_door is not None:
+            boards = [solid for part in opening_parts(
+                host, o, door_type.operation, bookcase_door=door_type.bookcase_door)
+                for solid in part.solids]
+            centroid, bbox = _bounds([point for board in boards for point in board.ring],
+                                     min(board.z0_m for board in boards),
+                                     max(board.z1_m for board in boards))
+        else:
+            frame_points = _opening_frame_bounds(host, o)
+            centroid, bbox = _bounds(frame_points, host.base_ref_z_m + o.sill_m,
+                                     host.base_ref_z_m + o.sill_m + o.height_m)
         elems.append(DiffElem(
             global_id=(derive_child_guid(puid, o.uid, "void") if o.kind == "rough_opening"
                        else _guid(puid, o.uid)),

@@ -53,6 +53,17 @@ def test_filling_guid_matches_diff_adapter_prediction(catlin_model, catlin_ifc):
         assert derive_guid(puid, opening.uid) in emitted
 
 
+def test_bookcase_door_ifc_body_contains_separate_cabinet_boards(catlin_ifc):
+    import ifcopenshell
+
+    f = ifcopenshell.open(str(catlin_ifc))
+    door = next(door for door in f.by_type("IfcDoor") if door.Name == "D-A-STUDY")
+    body = door.Representation.Representations[0]
+    assert body.RepresentationType == "SweptSolid"
+    assert len(body.Items) == 12
+    assert all(item.is_a("IfcExtrudedAreaSolid") for item in body.Items)
+
+
 def test_opening_occurrences_are_assigned_to_stable_product_types(catlin_model, catlin_ifc):
     import ifcopenshell
 

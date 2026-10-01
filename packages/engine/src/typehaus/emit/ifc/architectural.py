@@ -28,6 +28,7 @@ from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.envelope_geometry import envelope_geometry
 from typehaus.resolve.geometry import rect_between
+from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.geometry_walls import layer_solids
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
@@ -420,8 +421,20 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     filling.GlobalId = derive_guid(project_uuid, opening.uid)
     filling.OverallWidth = opening.width_m
     filling.OverallHeight = opening.height_m
-    ll.assign_representation(f, filling, ll.add_prism_from_profile(
-        f, body, frame_profile, opening.height_m, z0))
+    door_type = next((item for item in model.plan.library.door_types
+                      if item.tag == opening.type_ref), None) if opening.is_door else None
+    product = door_type.bookcase_door if door_type is not None else None
+    if product is None:
+        filling_body = ll.add_prism_from_profile(
+            f, body, frame_profile, opening.height_m, z0)
+    else:
+        parts = opening_parts(rw, opening, door_type.operation,
+                              bookcase_door=product)
+        filling_body = ll.add_prisms_at_elevations(f, body, [
+            (list(solid.ring), solid.z0_m, solid.z1_m)
+            for part in parts for solid in part.solids
+        ])
+    ll.assign_representation(f, filling, filling_body)
     is_external = is_external_wall(model, rw)
     ll.ensure_pset(f, filling, PSET_SOURCE, {
         "uid": opening.uid, "tag": opening.tag, "type": opening.type_ref or "",
@@ -430,9 +443,6 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     ll.ensure_pset(f, filling, "Pset_DoorCommon" if opening.is_door else "Pset_WindowCommon",
                    {"IsExternal": is_external})
     if opening.is_door:
-        door_type = next((item for item in model.plan.library.door_types
-                          if item.tag == opening.type_ref), None)
-        product = door_type.bookcase_door if door_type is not None else None
         if product is not None:
             # This carries the ordered product's dimensions without repurposing IFC's
             # OverallWidth/Height, which remain the rough-opening dimensions throughout.

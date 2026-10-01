@@ -6349,17 +6349,29 @@
 6,
 "91387cbcfa88"
 ],
-"geometry/CAD203AAAA/bookcase_leaf": [
+"geometry/CAD203AAAA/bookcase_back": [
+6.1341,
+8.0518,
+2,
+"cb453304ef82"
+],
+"geometry/CAD203AAAA/bookcase_caps": [
 6.096,
 8.0899,
-2,
-"22cf4b83cf8f"
+4,
+"11ec0560973b"
 ],
-"geometry/CAD203AAAA/frame": [
-6.096,
-8.1788,
+"geometry/CAD203AAAA/bookcase_shelves": [
+6.508115,
+7.677785,
 8,
-"1557bf3fe351"
+"d7411f3f79b7"
+],
+"geometry/CAD203AAAA/bookcase_sides": [
+6.096,
+8.0899,
+4,
+"589bb64c39fb"
 ],
 "geometry/CAF602AAAA/deck": [
 6.096,

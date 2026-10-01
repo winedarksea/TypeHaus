@@ -226,7 +226,6 @@ the future.
 - Make D-B-BATH a pocket door. It would slide into W-B-HALL-W which the engine isn't really designed to handle right now. This is like how D-M-LAUN of type DT-POCKET-INT-48 already slides into wall W-M-HS4
 - The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
 - Cleanout caps likely need a double check on the plumbing
-- DT-INT-BOOKCASE36 needs a 3d model that actually looks like a bookcase door
 - See if we can move EQ-T-WATER-HEATER up against the wall, it's rather awkwardly in the middle of the room now
 
 

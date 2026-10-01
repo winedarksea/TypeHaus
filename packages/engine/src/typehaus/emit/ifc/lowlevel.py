@@ -182,6 +182,23 @@ def add_prisms_from_profiles(f: Any, body_ctx: Any,
     return f.createIfcShapeRepresentation(body_ctx, "Body", "SweptSolid", solids)
 
 
+def add_prisms_at_elevations(f: Any, body_ctx: Any,
+                             prisms: list[tuple[list[tuple[float, float]], float, float]]) -> Any:
+    """One filling body assembled from rectangular boards at different elevations."""
+    solids = []
+    for ring, z0_m, z1_m in prisms:
+        if len(ring) < 3 or z1_m <= z0_m:
+            continue
+        points = [f.createIfcCartesianPoint(point) for point in ring]
+        profile = f.createIfcArbitraryClosedProfileDef(
+            "AREA", None, f.createIfcPolyline(points + [points[0]]))
+        placement = f.createIfcAxis2Placement3D(
+            f.createIfcCartesianPoint((0.0, 0.0, z0_m)), None, None)
+        solids.append(f.createIfcExtrudedAreaSolid(
+            profile, placement, f.createIfcDirection((0.0, 0.0, 1.0)), z1_m - z0_m))
+    return f.createIfcShapeRepresentation(body_ctx, "Body", "SweptSolid", solids)
+
+
 Vec3 = tuple[float, float, float]
 
 

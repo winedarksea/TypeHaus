@@ -695,6 +695,19 @@ export function runSelectionRegistrationTests() {
     "A closed slider renders its frame, stile, track, and two panels");
   assert(new Set(sliderGroup.children.map((child) => child.position.z.toFixed(9))).size === 1,
     "Closed slider panels remain in the wall plane rather than posing open");
+
+  const bookcaseGroup = new THREE.Group();
+  const bookcaseRegistry = registry();
+  buildOpening(bookcaseGroup, { ...door, width_m: 0.9652, height_m: 2.0828 },
+    wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
+    "swing", bookcaseRegistry.picks, bookcaseRegistry.byUid, false, false, {
+      body_width_m: 0.88265, body_height_m: 1.9939, body_depth_m: 0.20955,
+      casing_overall_width_m: 1.0795, mounting_face: "negative_normal",
+    });
+  assert(bookcaseGroup.children.length === 12,
+    "Bookcase door renders casing, two sides, two caps, four shelves, and a back");
+  assert(bookcaseRegistry.picks.length === 12,
+    "Every cabinet board selects the bookcase door");
 }
 
 export function runCanvasObjectGeometryTests() {

@@ -189,7 +189,7 @@ export function populateScene(options: PopulateSceneOptions) {
       const doorType = model.catalog?.door_types.find((type) => type.tag === opening.type_ref);
       build(family("opening"), wall.storey, () => buildOpening(tradeGroups.openings, opening, wall, center,
         mode, palette, doorType?.operation, registry.picks, registry.byUid,
-        doorType?.glazed ?? false, doorType?.trimless ?? false));
+        doorType?.glazed ?? false, doorType?.trimless ?? false, doorType?.bookcase_door));
     }
   }
   for (const stool of model.window_stools ?? []) {

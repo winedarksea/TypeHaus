@@ -2,7 +2,7 @@
 // casing, and (→ ./doorProducts) the concealed frame and lever sets. Mirrors
 // resolve/geometry_openings.py; split out of ./walls.
 import * as THREE from "three";
-import type { DoorOperation, Opening, Wall } from "../../model/types";
+import type { DoorOperation, DoorTypeSpec, Opening, Wall } from "../../model/types";
 import type { ResolvedNordicPalette } from "../../nordic/palette";
 import { categoryColor } from "../members";
 import { projectPointToScene, type PlanCenter } from "../planGeometry";
@@ -12,6 +12,7 @@ import {
 } from "./doorProducts";
 import { registerSelectable } from "./registry";
 import { baseRefZ } from "./wallFrame";
+import { buildBookcaseDoor } from "./bookcaseDoor";
 import { rakedTopAt } from "./walls";
 
 // Exterior window casing — mirrors the exterior_trim part in resolve/geometry_openings.py
@@ -49,7 +50,8 @@ function exteriorFace(wall: Wall): { plane: number; sign: number } | null {
 
 export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, operation: DoorOperation | undefined,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, isGlazed = false, isTrimless = false) {
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, isGlazed = false, isTrimless = false,
+  bookcaseDoor?: DoorTypeSpec["bookcase_door"]) {
   if (opening.kind === "rough_opening") return;
   const firstChildIndex = parent.children.length;
   const [[x0, y0], [x1, y1]] = wall.axis;
@@ -114,6 +116,13 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     const [leafW, , , flush, back] = concealedLeaf(faces, swingSign, opening.width_m, floorZ,
       availableHeight);
     buildLeverSet(addHardware, -hingeSign * leafW / 2, hingeSign, [flush, back], floorZ);
+    registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
+    return;
+  }
+  if (opening.kind === "door" && bookcaseDoor) {
+    const backMaterial = standardMaterial(categoryColor("bookcase_back"), mode);
+    buildBookcaseDoor(addBox, bookcaseDoor, opening.width_m, availableHeight, floorZ,
+      frameMaterial, backMaterial);
     registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
     return;
   }
@@ -238,4 +247,3 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   // them selects the opening record, which the Inspector already knows how to edit.
   registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
 }
-

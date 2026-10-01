@@ -1291,6 +1291,13 @@ export interface DoorTypeSpec {
   // The chosen product (`Catalog.products`), or null where this is still a specification
   // rather than a picked item. Resolve it with `productFor` (components/ProductRows.tsx).
   product_ref?: string | null;
+  bookcase_door?: {
+    body_width_m: number;
+    body_height_m: number;
+    body_depth_m: number;
+    casing_overall_width_m: number;
+    mounting_face: "negative_normal" | "positive_normal";
+  } | null;
 }
 
 export interface MaterialSpec {
