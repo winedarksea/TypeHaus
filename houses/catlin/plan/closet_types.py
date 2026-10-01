@@ -119,10 +119,11 @@ BESTA_DRAWER = FurnitureType(
 # --- south wall: robe pegs ----------------------------------------------------------------
 
 PEG_RAIL_42 = FurnitureType(
-    tag="FT-M-PEG-RAIL-42", name='Shaker peg rail, 42", six pegs',
+    tag="FT-M-PEG-RAIL-42", name='Solid oak peg rail, 42", six knobs',
     footprint=(inch(42), inch(4)), height=inch(3.5),
-    plan_symbol=None, mount=_WALL,
-    source="Hardwood rail with 4\" pegs for robes, screwed through into BK-M-BDN2-PEGS.",
+    plan_symbol="peg-rail", mount=_WALL,
+    source=("42\" solid-oak backplate with six rounded, projecting oak knobs, inspired by the "
+            "linked IKEA HÖVOLM rack. Screwed through into BK-M-BDN2-PEGS."),
 )
 
 CLOSET_FURNITURE_TYPES = (PAX_SHOW, PAX_HANG, CLOSET_ROD_32, CLOSET_VALANCE, CLOSET_PLINTH,

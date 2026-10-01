@@ -3,6 +3,7 @@ imported .glb sidecar, or a plain massing box, routed to the trade its domain be
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 
 from typehaus.emit.gltf.geometry import _to_gltf
@@ -86,7 +87,7 @@ def _add_mesh_sidecar(mb: _MeshBuilder, path: Path, position: tuple[float, float
 
 def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
                       product_type: object | None, materials: dict[str, object]) -> bool:
-    """Extrude a type's generated massing parts, one prism each. False when it has no symbol.
+    """Emit a type's generated massing parts. False when it has no symbol.
 
     The parts are in the symbol's **local** frame: the resolver bakes rotation into
     ``footprint`` but not into symbol geometry, so each box ring goes through the same
@@ -117,6 +118,16 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     lamp = lamp_role(getattr(product_type, "cct_k", None))
     for part in parts:
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
+        color = (wood_color if wood_color and part["color"] == "wood"
+                 else PART_COLORS[lamp if part["color"] == "lamp" else part["color"]])
+        if part["shape"] == "cylinder-depth":
+            world_center = place_local([(cx, cy)], item.position, item.rotation_degrees)[0]
+            angle = math.radians(item.rotation_degrees)
+            mb.add_plan_depth_cylinder(
+                (world_center[0], world_center[1], item.z_m + cz), sx / 2.0, sy,
+                (-math.sin(angle), math.cos(angle)), color,
+            )
+            continue
         # A ringed part carries its own plan outline (a neo-angle pan is a pentagon); a box
         # part's ring is its bounding rectangle, which for a box is the same statement.
         ring = list(part["points"]) or [
@@ -124,8 +135,7 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
             (cx + sx / 2, cy + sy / 2), (cx - sx / 2, cy + sy / 2)]
         mb.add_prism(place_local(ring, item.position, item.rotation_degrees),
                      item.z_m + cz - sz / 2, item.z_m + cz + sz / 2,
-                     wood_color if wood_color and part["color"] == "wood"
-                     else PART_COLORS[lamp if part["color"] == "lamp" else part["color"]])
+                     color)
     return bool(parts)
 
 

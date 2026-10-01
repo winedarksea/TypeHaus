@@ -42,13 +42,15 @@ class Part(TypedDict):
     ``points`` is the plan ring an extrusion sweeps; ``()`` means "the box ``center``/``size``
     describe", which is what nearly every part is. ``center``/``size`` are filled in for a
     ringed part too — they are its bounding box — so a consumer that has not learned about
-    rings yet degrades to the box rather than drawing nothing.
+    rings yet degrades to the box rather than drawing nothing. ``cylinder-depth`` is the
+    oriented primitive: its axis runs along local plan depth and its cross-section is round.
     """
 
     center: tuple[float, float, float]
     size: tuple[float, float, float]
     color: str  # a PART_COLORS role
     points: tuple[Point, ...]
+    shape: str  # box, prism, or a supported oriented primitive
 
 
 # Linear RGBA, matching the convention ``emit/gltf/emitter._PALETTE`` already uses: the same
@@ -204,7 +206,15 @@ def polygon(points: Sequence[Point], *, closed: bool = True,
 def box(cx: float, cy: float, z0: float, z1: float, w: float, d: float, color: str) -> Part:
     """One massing box, spanning ``z0``..``z1`` and centred on ``(cx, cy)`` in plan."""
     return {"center": (cx, cy, (z0 + z1) / 2.0), "size": (abs(w), abs(d), abs(z1 - z0)),
-            "color": color, "points": ()}
+            "color": color, "points": (), "shape": "box"}
+
+
+def depth_cylinder(cx: float, cy: float, cz: float, radius: float, length: float,
+                   color: str) -> Part:
+    """A cylinder whose axis runs along plan depth, for pegs projecting from a wall."""
+    diameter = abs(radius) * 2.0
+    return {"center": (cx, cy, cz), "size": (diameter, abs(length), diameter),
+            "color": color, "points": (), "shape": "cylinder-depth"}
 
 
 def prism(points: Sequence[Point], z0: float, z1: float, color: str) -> Part:
@@ -219,7 +229,7 @@ def prism(points: Sequence[Point], z0: float, z1: float, color: str) -> Part:
     ys = [y for _, y in ring]
     return {"center": ((min(xs) + max(xs)) / 2.0, (min(ys) + max(ys)) / 2.0, (z0 + z1) / 2.0),
             "size": (max(xs) - min(xs), max(ys) - min(ys), abs(z1 - z0)),
-            "color": color, "points": ring}
+            "color": color, "points": ring, "shape": "prism"}
 
 
 def part_hex(role: str) -> str:

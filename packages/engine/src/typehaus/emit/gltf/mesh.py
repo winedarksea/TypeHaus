@@ -1,4 +1,4 @@
-"""Triangle accumulation for one source object: prisms, boxes and arched spandrels, bucketed
+"""Triangle accumulation for one source object: prisms, cylinders and arched spandrels, bucketed
 by colour so each object becomes one mesh of a few primitives."""
 
 from __future__ import annotations
@@ -112,6 +112,50 @@ class _MeshBuilder:
         for i in range(1, n - 1):
             indices += [base, base + i + 1, base + i]                 # bottom (down)
             indices += [base + n, base + n + i, base + n + i + 1]     # top (up)
+
+    def add_plan_depth_cylinder(self, center: tuple[float, float, float], radius: float,
+                                length: float, axis: tuple[float, float],
+                                color: tuple[float, float, float, float],
+                                segments: int = 16) -> None:
+        """Add a cylinder along a plan-plane axis, with its circular section vertical.
+
+        Pegs and knobs are the first placeable parts that project horizontally from a wall.
+        This keeps their round profile in the live viewer and exported glTF without turning
+        them into approximate boxes.
+        """
+        axis_length = math.hypot(*axis)
+        if radius <= 0 or length <= 0 or axis_length == 0 or segments < 3:
+            return
+        ux, uy = axis[0] / axis_length, axis[1] / axis_length
+        px, py = uy, -ux
+        cx, cy, cz = center
+        start_y, end_y = -length / 2.0, length / 2.0
+        start: list[tuple[float, float, float]] = []
+        end: list[tuple[float, float, float]] = []
+        for index in range(segments):
+            angle = 2.0 * math.pi * index / segments
+            radial_x, radial_y = px * math.cos(angle), py * math.cos(angle)
+            vertical = radius * math.sin(angle)
+            start.append((cx + ux * start_y + radial_x * radius,
+                          cy + uy * start_y + radial_y * radius, cz + vertical))
+            end.append((cx + ux * end_y + radial_x * radius,
+                        cy + uy * end_y + radial_y * radius, cz + vertical))
+        start_center = (cx + ux * start_y, cy + uy * start_y, cz)
+        end_center = (cx + ux * end_y, cy + uy * end_y, cz)
+        triangles: list[tuple[Vec3, Vec3, Vec3]] = []
+
+        def gltf(point: tuple[float, float, float]) -> Vec3:
+            return _to_gltf(*point)
+
+        for index in range(segments):
+            following = (index + 1) % segments
+            triangles.extend((
+                (gltf(start[index]), gltf(end[index]), gltf(end[following])),
+                (gltf(start[index]), gltf(end[following]), gltf(start[following])),
+                (gltf(start_center), gltf(start[index]), gltf(start[following])),
+                (gltf(end_center), gltf(end[following]), gltf(end[index])),
+            ))
+        self.add_triangles(triangles, color)
 
     def add_raked_prism(self, ring: list[tuple[float, float]], z0: float,
                         top_at, color: tuple[float, float, float, float]) -> None:

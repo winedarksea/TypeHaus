@@ -181,7 +181,7 @@ export function buildSuspension(
 }
 
 /**
- * A generated multi-part massing: one BoxGeometry mesh per part, one material per distinct
+ * A generated multi-part massing: one mesh per part, one material per distinct
  * colour (a part made of a board material — oak shelving — is textured as that board), all
  * under a single group. Every mesh carries the object's uid and lands in `picks`
  * and `byUid`, so clicking any part selects the whole object and highlights all of it — the
@@ -219,9 +219,11 @@ export function buildCanvasObjectParts(
     const [cx, cy, cz] = part.center;
     // A ringed part sweeps its own plan outline — a neo-angle shower pan is a pentagon, and a
     // box would draw a square where the room's diagonal is. `createPlanPrismGeometry` already
-    // lands in the scene frame at the local origin, so only the box branch offsets its mesh.
+    // lands in the scene frame at the local origin; boxes and cylinders use their center.
     const ring = part.points && part.points.length >= 3
       ? createPlanPrismGeometry(part.points, cz - sz / 2, cz + sz / 2) : null;
+    const depthCylinder = part.shape === "cylinder-depth"
+      ? new THREE.CylinderGeometry(sx / 2, sx / 2, sy, 16).rotateX(Math.PI / 2) : null;
     const seed = pieceSeed(`${item.uid}|${index}`);
     if (ring && board) {
       applyPlankPlaneUv(ring, [0, 0], planLongAxis(part.points!), plankTileSizeM(board));
@@ -229,9 +231,11 @@ export function buildCanvasObjectParts(
     }
     // A board part bakes its placement into the geometry, so its grain can follow its
     // longest side; a plain box keeps the shared unit geometry and a mesh offset.
-    const box = board && !ring ? boardBoxGeometry(new THREE.Matrix4().makeTranslation(cx, cz, -cy)
-      .scale(new THREE.Vector3(sx, sz, sy)), board, seed) : null;
-    const mesh = makeSurfaceMesh(ring ?? box ?? new THREE.BoxGeometry(sx, sz, sy), material);
+    const box = board && !ring && !depthCylinder
+      ? boardBoxGeometry(new THREE.Matrix4().makeTranslation(cx, cz, -cy)
+        .scale(new THREE.Vector3(sx, sz, sy)), board, seed) : null;
+    const mesh = makeSurfaceMesh(ring ?? depthCylinder ?? box
+      ?? new THREE.BoxGeometry(sx, sz, sy), material);
     if (!ring && !box) mesh.position.set(cx, cz, -cy);
     mesh.userData.uid = item.uid;
     mesh.userData.selectionKind = "canvas_object";

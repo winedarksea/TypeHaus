@@ -14,6 +14,7 @@ from typehaus.model.placeable_symbols._families import (
                                                         case,
                                                         counter_case,
                                                         drying_rack,
+                                                        peg_rail,
                                                         pedestal_seat,
                                                         potted_plant,
                                                         round_slab,
@@ -64,6 +65,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # Wall-hung utility joinery, not a case: a plate and a ladder of bars. It shares the
     # casegoods' stained ``wood`` because that is what a folding rack is made of.
     "wall-rack": drying_rack(bars=5),
+    "peg-rail": peg_rail(pegs=6),
     "bed": bed(pillows=2, headboard=True),
     "tv": screen(stand=True),
     # The one furnishing that is not joinery: a pot with leaves over it. Five blades is the

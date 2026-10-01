@@ -578,7 +578,7 @@ suppress = [
   #   * mep.run_member_crossing, 16 NEW findings, all of the form "that is ON A WEB, not in
   #     an opening". With a 24" pitch and a 9" web band, a station chosen against a
   #     continuous slot lands on a web better than a third of the time — so this number is
-  #     a measure of how little the old reading constrained anything, not of seventeen new
+  #     a measure of how little the old reading constrained anything, not of sixteen new
   #     mistakes. Eight ERV radials, four second-storey drains, two studio supply risers,
   #     the kitchen vent and the WC vent.
   #

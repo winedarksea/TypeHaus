@@ -54,7 +54,7 @@ SYMBOL_NAMES = frozenset({
     "sofa", "loveseat", "sectional", "armchair", "dining-chair", "office-chair",
     "dining-table", "round-table", "coffee-table", "end-table", "desk", "wall-desk",
     "dresser", "chest", "nightstand", "media-console", "bookcase",
-    "bed", "tv", "potted-plant", "wall-rack",
+    "bed", "tv", "potted-plant", "wall-rack", "peg-rail",
     # sauna joinery — benches are fitted to the room, not bought as a set
     "sauna-bench", "sauna-bench-tiered",
     # kitchen/bath casework — the fitted millwork a room is built around
@@ -115,7 +115,7 @@ def plan_symbol_strokes(symbol: str | None, width_m: float,
 
 def model_parts(symbol: str | None, width_m: float, depth_m: float,
                 height_m: float) -> tuple[Part, ...]:
-    """The 3D massing boxes for ``symbol`` at a W×D×H size, in the local frame."""
+    """The generated 3D parts for ``symbol`` at a W×D×H size, in the local frame."""
     return symbol_geometry(symbol, width_m, depth_m, height_m)[1]
 
 

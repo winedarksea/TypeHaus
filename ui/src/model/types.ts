@@ -542,6 +542,8 @@ export interface ModelPart {
   center: [number, number, number];
   size: [number, number, number];
   color: string;
+  /** A horizontal cylinder along plan depth, for pegs projecting from a wall. */
+  shape?: "cylinder-depth";
   /** The catalog material a `wood` part is made of (`FurnitureType.wood_material_ref`). */
   material_ref?: string;
   /**

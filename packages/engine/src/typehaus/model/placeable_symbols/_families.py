@@ -28,6 +28,7 @@ from typehaus.model.placeable_symbols._frame import (
     box,
     circle,
     clamp,
+    depth_cylinder,
     line,
     polygon,
     rect,
@@ -443,6 +444,43 @@ def drying_rack(*, bars: int = 5) -> Builder:
             cz = clamp(height * (index + 0.5) / count, bar_t / 2, height - bar_t / 2)
             parts.append(box(0, bar_cy, cz - bar_t / 2, cz + bar_t / 2, width * 0.94, bar_t,
                              "wood"))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
+def peg_rail(*, pegs: int = 6) -> Builder:
+    """A wall plate with a row of round pegs projecting toward the room."""
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        plate_depth = min(clamp(depth * 0.22, 0.012, 0.025), depth * 0.4)
+        plate_cy = depth / 2 - plate_depth / 2
+        head_length = min(height * 0.18, depth * 0.15, (depth - plate_depth) * 0.4)
+        head_radius = min(height * 0.11, width / max(2, pegs) * 0.12, depth * 0.12)
+        shaft_radius = head_radius * 0.62
+        count = max(2, pegs)
+        margin = width * 0.075
+        spacing = (width - 2 * margin) / (count - 1)
+        peg_z = height * 0.52
+        plate_front = depth / 2 - plate_depth
+        head_cy = -depth / 2 + head_length / 2
+        shaft_front = head_cy + head_length / 2
+        shaft_length = max(0.0, plate_front - shaft_front)
+        shaft_cy = (plate_front + shaft_front) / 2
+
+        strokes = [rect(0, plate_cy, width, plate_depth, fill="wood")]
+        parts = [box(0, plate_cy, 0.0, height, width, plate_depth, "wood")]
+        for index in range(count):
+            peg_x = -width / 2 + margin + spacing * index
+            strokes.append(line((peg_x, head_cy + head_length / 2),
+                                (peg_x, plate_front), weight=DETAIL_WEIGHT))
+            strokes.append(circle(peg_x, head_cy, head_radius, fill="wood",
+                                 weight=DETAIL_WEIGHT))
+            if shaft_length > 0:
+                parts.append(depth_cylinder(peg_x, shaft_cy, peg_z, shaft_radius,
+                                            shaft_length, "wood"))
+            parts.append(depth_cylinder(peg_x, head_cy, peg_z, head_radius,
+                                        head_length, "wood"))
         return tuple(strokes), tuple(parts)
 
     return build
