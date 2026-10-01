@@ -1516,9 +1516,10 @@ SOFFITS = [
     Soffit(uid="CEWX9GPQMQ", tag="SF-B-BATH",
            outline=(pt(inch(123.375), inch(218.375)), pt(inch(163.303), inch(218.375)),
                     pt(inch(163.303), inch(243)), pt(inch(123.375), inch(243))),
-           # 7'-2 15/16" since 2026-09-22 (was 7'-4 7/16"): DU-B-ERV-R-PLAY crosses W-B-STR2
-           # under its top plate at 7'-7 1/4" and needs the cavity floor below 7'-5 1/4".
-           underside_elevation=inch(86.9375),
+           # 7'-2 9/16" since 2026-10-01 (was 7'-2 15/16"): the playroom ERV duct's
+           # lower edge sat 0.276" below the derived clear cavity, so the box drops 3/8".
+           # The earlier 2026-09-22 drop from 7'-4 7/16" clears W-B-STR2's top plate.
+           underside_elevation=inch(86.5625),
            framing=FramingSpec(member="2x2", spacing=inch(16))),
     # --- SF-B-GYM IS RETIRED (2026-09-13) ---------------------------------------------
     #

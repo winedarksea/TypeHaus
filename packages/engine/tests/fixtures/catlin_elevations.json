@@ -2025,14 +2025,14 @@
 "ducts/DU-B-ERV-R-GYM/z_m": [
 -0.6461125,
 -0.4905375,
-9,
-"71e96ef71a89"
+10,
+"d5c7e80076c7"
 ],
 "ducts/DU-B-ERV-R-PLAY/z_m": [
 -0.6461125,
 -0.4619625,
 10,
-"d4560bd7196c"
+"9fd43f3ca146"
 ],
 "ducts/DU-B-ERV-R-SAUNA-EXH/z_m": [
 -2.6781125,
@@ -14013,10 +14013,10 @@
 "fc987201b3b0"
 ],
 "geometry/CEWX9GPQMQ/body": [
--0.5715,
+-0.581025,
 -0.301625,
 2,
-"b436e68d0fba"
+"aa1a4a9ffe42"
 ],
 "geometry/CF001AAAAA/body": [
 -2.9829125,
@@ -29261,8 +29261,8 @@
 "geometry/CND5TE40W0-run/body": [
 -0.6969125,
 -0.4397375,
-192,
-"81afe5b4d659"
+216,
+"3a7082d28202"
 ],
 "geometry/CNS008AAAA-sleeve/body": [
 -1.2446,
@@ -43486,9 +43486,9 @@
 ],
 "geometry/DMEQ946YAX-run/body": [
 -0.6969125,
--0.4111625,
+-0.4111683,
 216,
-"d122409a6773"
+"f7eb0a74bdd7"
 ],
 "geometry/DPAS57TPCG-run/body": [
 2.784475,
@@ -60883,28 +60883,28 @@
 "acb389d9be3e"
 ],
 "member/CEWX9GPQMQ/soffit-end-e": [
--0.517525,
+-0.52705,
 -0.3556,
 2,
-"520d877b29c1"
+"ca632a195932"
 ],
 "member/CEWX9GPQMQ/soffit-end-w": [
--0.517525,
+-0.52705,
 -0.3556,
 2,
-"520d877b29c1"
+"ca632a195932"
 ],
 "member/CEWX9GPQMQ/soffit-plate-bottom-n": [
--0.555625,
--0.517525,
+-0.56515,
+-0.52705,
 2,
-"de93e64bf8ad"
+"7667746f9b66"
 ],
 "member/CEWX9GPQMQ/soffit-plate-bottom-s": [
--0.555625,
--0.517525,
+-0.56515,
+-0.52705,
 2,
-"de93e64bf8ad"
+"7667746f9b66"
 ],
 "member/CEWX9GPQMQ/soffit-plate-top-n": [
 -0.3556,
@@ -60919,64 +60919,64 @@
 "451fe48b55ad"
 ],
 "member/CEWX9GPQMQ/soffit-rung-001": [
--0.555625,
--0.517525,
+-0.56515,
+-0.52705,
 2,
-"de93e64bf8ad"
+"7667746f9b66"
 ],
 "member/CEWX9GPQMQ/soffit-rung-002": [
--0.555625,
--0.517525,
+-0.56515,
+-0.52705,
 2,
-"de93e64bf8ad"
+"7667746f9b66"
 ],
 "member/CEWX9GPQMQ/soffit-stud-000-n": [
--0.517525,
+-0.52705,
 -0.3556,
 2,
-"520d877b29c1"
+"ca632a195932"
 ],
 "member/CEWX9GPQMQ/soffit-stud-000-s": [
--0.517525,
+-0.52705,
 -0.3556,
 2,
-"520d877b29c1"
+"ca632a195932"
 ],
 "member/CEWX9GPQMQ/soffit-stud-001-n": [
--0.517525,
+-0.52705,
 -0.3556,
 2,
-"520d877b29c1"
+"ca632a195932"
 ],
 "member/CEWX9GPQMQ/soffit-stud-001-s": [
--0.517525,
+-0.52705,
 -0.3556,
 2,
-"520d877b29c1"
+"ca632a195932"
 ],
 "member/CEWX9GPQMQ/soffit-stud-002-n": [
--0.517525,
+-0.52705,
 -0.3556,
 2,
-"520d877b29c1"
+"ca632a195932"
 ],
 "member/CEWX9GPQMQ/soffit-stud-002-s": [
--0.517525,
+-0.52705,
 -0.3556,
 2,
-"520d877b29c1"
+"ca632a195932"
 ],
 "member/CEWX9GPQMQ/soffit-stud-003-n": [
--0.517525,
+-0.52705,
 -0.3556,
 2,
-"520d877b29c1"
+"ca632a195932"
 ],
 "member/CEWX9GPQMQ/soffit-stud-003-s": [
--0.517525,
+-0.52705,
 -0.3556,
 2,
-"520d877b29c1"
+"ca632a195932"
 ],
 "member/CGRF01AAAA/eave-hi-drip-edge-face": [
 2.4108833,
@@ -85986,7 +85986,7 @@
 "sleeves/SP-SG-W1-CD-SPA/center_z_m": -1.2192,
 "sleeves/SP-SG-W1-CD-SPA/z0_m": -2.7797125,
 "sleeves/SP-SG-W1-CD-SPA/z1_m": 0.0,
-"soffits/SF-B-BATH/z0_m": -0.5715,
+"soffits/SF-B-BATH/z0_m": -0.581025,
 "soffits/SF-B-BATH/z1_m": -0.301625,
 "soffits/SF-S-DUCT/z0_m": 5.4356,
 "soffits/SF-S-DUCT/z1_m": 5.794375,
@@ -87415,7 +87415,7 @@
 "solids/DU-B-ERV-R-GYM-RUN/z0_m": -0.6969125,
 "solids/DU-B-ERV-R-GYM-RUN/z1_m": -0.4397375,
 "solids/DU-B-ERV-R-PLAY-RUN/z0_m": -0.6969125,
-"solids/DU-B-ERV-R-PLAY-RUN/z1_m": -0.4111625,
+"solids/DU-B-ERV-R-PLAY-RUN/z1_m": -0.4111683,
 "solids/DU-B-ERV-R-SAUNA-EXH-RUN/z0_m": -2.7289125,
 "solids/DU-B-ERV-R-SAUNA-EXH-RUN/z1_m": -0.4429125,
 "solids/DU-B-ERV-R-SAUNA-SUP-RUN/z0_m": -0.6969125,
@@ -90006,7 +90006,7 @@
 "solids/SC-BW-WEST-SLAT-24/z1_m": 1.933575,
 "solids/SC-BW-WEST-SLAT-25/z0_m": 1.2192,
 "solids/SC-BW-WEST-SLAT-25/z1_m": 1.933575,
-"solids/SF-B-BATH/z0_m": -0.5715,
+"solids/SF-B-BATH/z0_m": -0.581025,
 "solids/SF-B-BATH/z1_m": -0.301625,
 "solids/SF-S-DUCT/z0_m": 5.4356,
 "solids/SF-S-DUCT/z1_m": 5.794375,
