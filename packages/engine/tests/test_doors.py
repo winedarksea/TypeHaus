@@ -109,14 +109,14 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         "DT-INT-CLOSET24": (24.0, DoorOperation.SWING, False, False),
     }
     # The house catalog is its own types plus the ONE library pocket size it hangs —
-    # DT-POCKET-INT-48, which is what D-M-LAUN is typed from. It is not the whole 1500PF
+    # DT-POCKET-INT-36, shared by D-M-LAUN and D-B-BATH. It is not the whole pocket
     # ladder: until 2026-09-12 the manifest spliced all six `POCKET_DOOR_TYPES` in and five
     # of them had no door, no price row and nothing to bill. A catalog entry is a size this
     # house hangs, and that is what this asserts.
     #
     # The house and library tag sets must still stay disjoint — `integrity.duplicate_catalog_tag`
     # proves it at load time, and this pins that the promotion did not shadow a house type.
-    house_pockets = {"DT-POCKET-INT-48"}
+    house_pockets = {"DT-POCKET-INT-36"}
     library_pockets = {door_type.tag for door_type in POCKET_DOOR_TYPES}
     assert house_pockets < library_pockets
     assert set(types) == set(expected) | house_pockets
@@ -690,6 +690,26 @@ def test_a_pocket_stops_at_a_corner_and_at_an_assembly_change():
         segments, shortfall = pocket_segments(plan, model, _pocket_opening())
         assert shortfall > 0.0, f"the run must stop: {kwargs}"
         assert [segment.wall_tag for segment in segments] == ["W-A"]
+
+
+def test_catlin_bath_pocket_crosses_into_the_matching_section(catlin_model_ro):
+    """The bathroom and hall use different stud layouts inside the same 2x6 wall section."""
+    from typehaus.takeoff.doors import door_hardware_rows
+
+    model = catlin_model_ro
+    bath = next(op for op in model.openings if op.tag == "D-B-BATH")
+    laundry = next(op for op in model.openings if op.tag == "D-M-LAUN")
+    assert bath.type_ref == laundry.type_ref == "DT-POCKET-INT-36"
+    assert bath.pocket_sign == 1 and not bath.swing_clearance
+    segments, shortfall = pocket_segments(model.plan, model, bath)
+    assert shortfall == pytest.approx(0)
+    assert [segment.wall_tag for segment in segments] == ["W-B-BA-E", "W-B-HALL-W"]
+    splits = [member for member in model.wall("W-B-BA-E").members
+              if member.child_key.startswith("pocketsplit-")]
+    assert splits and {member.profile for member in splits} == {"2-1x6"}
+    frames = {row["part_number"]: row for row in door_hardware_rows(model)}
+    assert frames["153068PF"]["count"] == 1
+    assert frames["15603068"]["count"] == 1
 
 
 def test_catlin_murphy_door_keeps_published_dimensions_and_hinge_clearance(catlin_model_ro):

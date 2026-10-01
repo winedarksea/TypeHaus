@@ -18,7 +18,7 @@ from typehaus.checks._authoring import passed as _pass
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.resolve.framing.pockets import pocket_segments
-from typehaus.resolve.geometry import length, sub, unit
+from typehaus.resolve.geometry import length, normal, pocket_centerline_offset, sub, unit
 from typehaus.resolve.placeables import placed_xy
 
 _CID = "mep.pocket_occupancy"
@@ -52,8 +52,12 @@ def _pocket_bands(ctx: CheckContext):
             if axis_len <= 1e-9:
                 continue
             ux, uy = unit(sub((ex, ey), (sx, sy)))
-            low = (sx + ux * segment.low_m, sy + uy * segment.low_m)
-            high = (sx + ux * segment.high_m, sy + uy * segment.high_m)
+            nx, ny = normal((ux, uy))
+            offset = pocket_centerline_offset(wall)
+            low = (sx + ux * segment.low_m + nx * offset,
+                   sy + uy * segment.low_m + ny * offset)
+            high = (sx + ux * segment.high_m + nx * offset,
+                    sy + uy * segment.high_m + ny * offset)
             half_depth = structure.thickness_m / 2.0 + _BAND_TOLERANCE_M
             # Flat caps: the band is the cavity's own length, not a rounded sweep past it.
             # The z band is the leaf's own travel: from the wall's base (the floor track)
@@ -67,7 +71,7 @@ def _pocket_bands(ctx: CheckContext):
 
 @check(Tier.CODE, _CID)
 def pocket_occupancy(ctx: CheckContext) -> list[Finding]:
-    """A pocket's cavity must hold no pipe, no wall-mounted device, and no register.
+    """A pocket's cavity must hold no pipe, duct, wall-mounted device, or register.
 
     **A pocket is a hole in a wall, not a hole in a storey.** The plan band alone reported a
     second-storey lavatory branch running in the floor trusses 32" above ``D-M-LAUN``'s
@@ -85,8 +89,10 @@ def pocket_occupancy(ctx: CheckContext) -> list[Finding]:
     from shapely.geometry import LineString, Point
 
     out: list[Finding] = []
+    resolved_storeys = {object_.tag: object_.storey for object_ in ctx.model.canvas_objects}
     for op, wall_tag, band, (low, high) in _pocket_bands(ctx):
         hits: list[tuple[str, str]] = []
+        pocket_wall = ctx.model.wall(wall_tag)
 
         for run in ctx.model.pipe_runs:
             z = run.z_m if run.z_m and len(run.z_m) == len(run.path) else None
@@ -99,9 +105,30 @@ def pocket_occupancy(ctx: CheckContext) -> list[Finding]:
                     hits.append((run.tag, "pipe run"))
                     break
 
+        for duct in ctx.model.ducts:
+            if duct.storey != pocket_wall.storey:
+                continue
+            elevations = duct.z_m if duct.z_m and len(duct.z_m) == len(duct.path) else None
+            vertical_radius = duct.depth_m / 2.0
+            horizontal_radius = duct.width_m / 2.0
+            for index in range(len(duct.path) - 1):
+                if elevations is not None and (
+                        min(elevations[index], elevations[index + 1]) - vertical_radius > high
+                        or max(elevations[index], elevations[index + 1]) + vertical_radius < low):
+                    continue
+                segment = LineString([duct.path[index], duct.path[index + 1]])
+                if segment.buffer(horizontal_radius).intersects(band):
+                    hits.append((duct.tag, "duct run"))
+                    break
+
         for element in ctx.plan.all_elements():
             kind = element.element_kind
             if kind not in ("ElectricalDevice", "Register"):
+                continue
+            # Mount elevations are relative to a storey; a main-floor device cannot
+            # occupy a basement pocket at the same plan coordinates.
+            device_storey = resolved_storeys.get(element.tag)
+            if device_storey is not None and device_storey != pocket_wall.storey:
                 continue
             mount = getattr(element, "mount", None)
             mount_kind = getattr(getattr(mount, "kind", None), "value", None)
@@ -116,7 +143,7 @@ def pocket_occupancy(ctx: CheckContext) -> list[Finding]:
         if not hits:
             out.append(_pass(
                 _CID,
-                f"{op.tag}'s pocket in {wall_tag} is clear — no pipe, device or register "
+                f"{op.tag}'s pocket in {wall_tag} is clear — no pipe, duct, device or register "
                 f"in the leaf's travel", (op.tag, wall_tag)))
             continue
         for tag, what in sorted(set(hits)):

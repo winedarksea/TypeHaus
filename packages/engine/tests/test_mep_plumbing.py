@@ -384,10 +384,7 @@ def test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other(catlin_model
 
 
 def test_laundry_goods_fit_the_alcove_and_clear_each_other(catlin_model):
-    """RM-M-LAUNDRY is 62 3/4" x 56 3/4" of clear floor holding 28" of stacked washer/dryer
-    plus a 24" utility tub, so there is no slack to lose. Both bodies have to stay inside the
-    room and off each other, and the fold-down rack has to hang over the tub without the two
-    ever meeting — it clears vertically (48" mount over a 43" fixture), not in plan."""
+    """The 36" opening still gives hall access to both the washer and utility tub."""
     from shapely.geometry import Polygon
 
     room = Polygon(next(r for r in catlin_model.rooms if r.tag == "RM-M-LAUNDRY").clear_face)
@@ -408,6 +405,15 @@ def test_laundry_goods_fit_the_alcove_and_clear_each_other(catlin_model):
     overlap = Polygon(objects["FX-M-LAUNDRY"].footprint).intersection(
         Polygon(objects["FX-M-LAUNDRY-SINK"].footprint))
     assert overlap.area <= 1e-9, f"{overlap.area * 10.7639:.2f} ft2 of laundry overlap"
+    opening = next(o for o in catlin_model.openings if o.tag == "D-M-LAUN")
+    host = next(w for w in catlin_model.walls if w.tag == opening.host_wall)
+    opening_left = host.axis[0][0] + opening.center_along_m - opening.width_m / 2
+    opening_right = opening_left + opening.width_m
+    for tag in ("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK"):
+        assert opening_left < objects[tag].position[0] < opening_right, tag
+    sink_front = max(y for _, y in objects["FX-M-LAUNDRY-SINK"].footprint)
+    doorway_inside_face = max(y for _, y in room.exterior.coords)
+    assert (doorway_inside_face - sink_front) / 0.0254 >= 24
     # The rack is the one pair that *does* overlap in plan, and must, since it hangs over the
     # tub. It is a shelf rather than a collision only because it starts above the tub's box.
     tub_height = next(t.height.meters for t in catlin_model.plan.library.fixture_types

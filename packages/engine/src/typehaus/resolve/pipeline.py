@@ -29,7 +29,7 @@ from typehaus.resolve.framing.roof import frame_roofs
 from typehaus.resolve.framing.soffit import frame_soffits
 from typehaus.resolve.framing.solver import frame_model
 from typehaus.resolve.framing.truss_wall import frame_truss_walls
-from typehaus.resolve.geometry import length, sub
+from typehaus.resolve.geometry import length, pocket_centerline_offset, sub
 from typehaus.resolve.layout_lines import lines_by_wall, resolve_layout_lines
 from typehaus.resolve.mep import resolve_mep
 from typehaus.resolve.millwork import resolve_millwork
@@ -262,10 +262,12 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
             operation = _door_operation(plan, el) if is_door else None
             swing_clearance = (_door_swing_clearance(rw, center, width, el, operation)
                                if is_door else ())
-            framing_bumper = _opening_framing_bumper(rw, center, width)
+            pocket_run, pocket_sign = _door_pocket(plan, el, rw, operation, width)
+            framing_bumper = _opening_framing_bumper(
+                rw, center, width, normal_offset_m=(pocket_centerline_offset(rw)
+                                                    if pocket_run else 0.0))
             arch = getattr(el, "arch", None)
             arch_rise = arch.rise.meters if arch is not None else 0.0
-            pocket_run, pocket_sign = _door_pocket(plan, el, rw, operation, width)
             model.openings.append(
                 ResolvedOpening(
                     uid=el.uid, tag=el.tag, host_wall=el.host, type_ref=type_ref,
@@ -374,14 +376,15 @@ def _opening_sill(el) -> float:
 
 
 def _opening_framing_bumper(
-    wall, center_along_m: float, width_m: float,
+    wall, center_along_m: float, width_m: float, normal_offset_m: float = 0.0,
 ) -> list[tuple[float, float]]:
     """A thin resolved overlay around a rough opening for framing-aware placement preview."""
     (sx, sy), (ex, ey) = wall.axis
     length = math.hypot(ex - sx, ey - sy) or 1.0
     tangent = ((ex - sx) / length, (ey - sy) / length)
     normal = (-tangent[1], tangent[0])
-    center = (sx + tangent[0] * center_along_m, sy + tangent[1] * center_along_m)
+    center = (sx + tangent[0] * center_along_m + normal[0] * normal_offset_m,
+              sy + tangent[1] * center_along_m + normal[1] * normal_offset_m)
     half_width = width_m / 2 + .05
     half_depth = wall.thickness_m / 2 + .05
     return [(center[0] + sign_u * tangent[0] * half_width + sign_n * normal[0] * half_depth,

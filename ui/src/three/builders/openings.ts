@@ -52,6 +52,15 @@ function exteriorFace(wall: Wall): { plane: number; sign: number } | null {
   return { plane: sign > 0 ? Math.max(...outer) : Math.min(...outer), sign };
 }
 
+function pocketCenterlineOffset(wall: Wall, nx: number, ny: number): number {
+  const structure = wall.layers.find((layer) => layer.function === "structure");
+  if (!structure?.polygon.length) return 0;
+  const [origin] = wall.axis;
+  const offsets = structure.polygon.map(([x, y]) =>
+    (x - origin[0]) * nx + (y - origin[1]) * ny);
+  return (Math.min(...offsets) + Math.max(...offsets)) / 2;
+}
+
 export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, operation: DoorOperation | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, isGlazed = false, isTrimless = false,
@@ -63,7 +72,13 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   const length = Math.hypot(x1 - x0, y1 - y0);
   if (length < 1e-9) return;
   const direction: [number, number] = [(x1 - x0) / length, (y1 - y0) / length];
-  const position: [number, number] = [x0 + direction[0] * opening.center_along_m, y0 + direction[1] * opening.center_along_m];
+  const normal: [number, number] = [-direction[1], direction[0]];
+  const pocketOffset = operation === "pocket"
+    ? pocketCenterlineOffset(wall, normal[0], normal[1]) : 0;
+  const position: [number, number] = [
+    x0 + direction[0] * opening.center_along_m + normal[0] * pocketOffset,
+    y0 + direction[1] * opening.center_along_m + normal[1] * pocketOffset,
+  ];
   const availableHeight = Math.max(0, Math.min(opening.height_m,
     rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m - opening.width_m / 2), y0 + direction[1] * (opening.center_along_m - opening.width_m / 2)) - baseRefZ(wall) - opening.sill_m,
     rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m + opening.width_m / 2), y0 + direction[1] * (opening.center_along_m + opening.width_m / 2)) - baseRefZ(wall) - opening.sill_m));

@@ -257,7 +257,7 @@ WALLS = [
     # (BM-S-BATH-E, hung on it by joist hanger) and the x=18' point ride it to wherever the joist
     # itself already bears, not down through whatever wall happens to sit under a point along its
     # span. It remains true, and worth keeping, that the east half of W-S-SN3 sits over W-M-HS4 —
-    # D-M-LAUN's 4'-0" pocket, which could not have taken a continuous line load at all — so even
+    # D-M-LAUN's 3'-0" pocket, which could not have taken a continuous line load at all — so even
     # the earlier (2026-08-29 to 2026-08-30) reading, which did send BM-S-BATH-E's reaction into
     # W-S-SN3, was never going to land it over the pocket.
     #
@@ -283,29 +283,23 @@ WALLS = [
          assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING),
     # ** THE WET WALL — the only 2x6 in this suite, and the reason the bath is where it is. **
-    # It gives the 5.5" cavity `preferences.toml`'s `drain_stack_required_structure_in` wants
-    # behind a stack. It stays NONBEARING.
+    # Its 5.5" cavity is the plumbing chase. It stays NONBEARING.
     #
-    # ** RETYPED INT_2X6_STAGGERED_PLUMBING -> INT_2X6_PLUMBING_BATT, 2026-09-20. ** The staggered
-    # wall was chosen so "the drop passes without a single stud bored", and for the DROP that is
-    # true — but the two 2" VENTS that leave this wall horizontally bore eleven studs between
-    # them (PR-A-STUBATH-VENT five, PR-A-BAR-VENT six), and a staggered wall's studs are 2x4:
-    # 60% of 3 1/2" is 2.10" against a 2 3/8" outside diameter, so every one of the eleven was
-    # an R602.6 over-bore and `mep.run_through_stud` was suppressed by name in
-    # `preferences.toml` for it. Real 2x6 studs allow 3.30" and the eleven bores are legal.
+    # ** RETYPED INT_2X6_STAGGERED_PLUMBING -> INT_2X6_PLUMBING, 2026-09-20; BATT REMOVED
+    # 2026-09-30. ** The staggered wall used 2x4 studs, allowing only a 2.10" bore; the two
+    # 2" vents need 2 3/8" holes through eleven studs. Continuous 2x6 studs allow 3.30", so
+    # the vents pass without the old over-bore suppressions.
     #
     # ** THE FACES DO NOT MOVE. ** Both assemblies are paint/gwb/5.5" stud/gwb/paint — identical
-    # overall thickness — so every fixture station, every backing band and every room face on
-    # this wall is untouched. What is paid is the decoupling and the 3 1/2" sound batt the
-    # staggered layup carried — INT_2X6_PLUMBING_BATT rather than plain INT_2X6_PLUMBING keeps
-    # the 3 1/2" batt, which is the trade INT_2X6_BRG_PLUMBING already made one storey down.
-    # No STC was claimed for either assembly, so nothing rated is lost.
+    # overall thickness — so every fixture station, backing band and room face is unchanged.
+    # This internal wall separates the conditioned bath and studio; no thermal boundary or
+    # rated acoustic assembly calls for a batt. It now uses standard INT_2X6_PLUMBING.
     #
     # Everything that drains in this suite is on this wall — the water closet, the lavatory and the
     # shower on its east face, the wet-bar sink back-to-back on its WEST face — so one stack, one
     # vent and one cavity serve the whole storey addition.
     Wall(uid="ZEF56D047J", tag="W-A-STU-W", start_node="N-A-WW-S", end_node="N-A-WW-N",
-         assembly="INT_2X6_PLUMBING_BATT", top=ToRoof(roof_ref="RF-HOUSE"),
+         assembly="INT_2X6_PLUMBING", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING),
     # STUDIO | BATH, y=17'-4" — a joist line (208" = 13 x 16), so this plate has a joist under it
     # and needs no blocking. Hosts D-A-STUBATH.

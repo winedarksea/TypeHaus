@@ -27,7 +27,7 @@ from typehaus.emit.ifc.structural import _emit_framed_member
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.envelope_geometry import envelope_geometry
-from typehaus.resolve.geometry import rect_between
+from typehaus.resolve.geometry import opening_center, rect_between
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.geometry_walls import layer_solids
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
@@ -292,6 +292,10 @@ def _opening_segment(rw: ResolvedWall, opening: Any) -> tuple[tuple[float, float
     ux, uy = (ex - sx) / length, (ey - sy) / length
     c0 = opening.center_along_m - opening.width_m / 2
     c1 = opening.center_along_m + opening.width_m / 2
+    center = opening_center(rw, opening)
+    if center is not None and opening.pocket_run_m:
+        sx += center[0] - (sx + ux * opening.center_along_m)
+        sy += center[1] - (sy + uy * opening.center_along_m)
     thickness = rw.thickness_m or 0.15
     return (sx + ux * c0, sy + uy * c0), (sx + ux * c1, sy + uy * c1), thickness
 

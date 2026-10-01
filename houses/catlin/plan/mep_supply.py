@@ -592,26 +592,16 @@ SUPPLY = [
                         ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, "W-M-CLN2", None, None, None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
-    # Stair-foot bathroom, fed off the same pair of runs (same uids) that fed FX-1 until
-    # 2026-07-30. They bore W-B-STR2 at their own y (cold 20'-3", hot 19'-9") and now stop
-    # at x=13'-10 11/16" — **W-B-BA-E, the rotated room's wet wall** — dropping to the pair
-    # of stops at (13'-10 11/16", 19'-3") beside the vent riser. That x is the wall's own,
-    # and the wall slid 1 5/16" west onto the stair well's partition line on 2026-09-05. Cold carries the WC and lavatory
-    # (3.25 WSFU), hot the lavatory alone.
-    # ** THE TWO DROPS STOP SHORT OF THE VENT RISER, 3" AND 1 1/2" (P1, 2026-09-19). **
-    # All three used to end on one point — (13'-10 11/16", 19'-3"), which is
-    # PR-B-BATH-VENT's riser station — so a 1 1/2" vent and two 1/2" PEX drops were drawn
-    # through each other in one stud bay. They stay in the bay: the offset is along
-    # W-B-BA-E's own line and not across it, because 2" off the axis is outside a 2x4's
-    # stud and the pipes would be in the room. Cold takes the north end of the bay, hot the
-    # middle, the vent the south, and the fixtures they serve are two feet away either way.
+    # The bathroom's 36" pocket occupies the east wall south of its opening. Cold and hot
+    # now drop in W-B-STR2 on the west, at separate stations north of the vent riser;
+    # their ceiling routes already approached that wall from the west.
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
             # North, east, then south: two stock 90s off the tap, where one diagonal made a
             # 137-degree hairpin no elbow turns.
             path=(pt(ft(5, 2), ft(24)), pt(ft(5, 2), ft(26)), pt(ft(7), ft(26)),
                   pt(ft(7), ft(20, 3)),
-                  pt(inch(166.6875), ft(20, 3)), pt(inch(166.6875), ft(19, 10)),
-                  pt(inch(166.6875), ft(19, 10))),
+                  pt(ft(10), ft(20, 3)), pt(ft(10), ft(19, 10)),
+                  pt(ft(10), ft(19, 10))),
             diameter=inch(0.5), material="copper",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 6.6375),
                         ft(8, 6.6375), ft(8, 6.6375), ft(2, 3.4375)),
@@ -620,8 +610,8 @@ SUPPLY = [
             # The same two 90s as the cold, on its own line 4" south so the pair hangs side
             # by side rather than stacked.
             path=(pt(ft(5, 10), ft(24)), pt(ft(5, 10), ft(25, 8)), pt(ft(7, 3.6), ft(25, 8)),
-                  pt(ft(7, 3.6), ft(19, 9)), pt(inch(166.6875), ft(19, 9)),
-                  pt(inch(166.6875), ft(19, 4.5)), pt(inch(166.6875), ft(19, 4.5))),
+                  pt(ft(7, 3.6), ft(19, 9)), pt(ft(10), ft(19, 9)),
+                  pt(ft(10), ft(19, 4.5)), pt(ft(10), ft(19, 4.5))),
             diameter=inch(0.5), material="copper",
             elevations=(ft(8, 1.4375), ft(7, 11.4375), ft(7, 11.4375), ft(7, 11.4375),
                         ft(7, 11.4375), ft(7, 11.4375), ft(2, 3.4375)),
@@ -921,7 +911,7 @@ PENETRATIONS_HYDRANT_SECOND = [
 
 # --- the attic guest studio -------------------------------------------------------------
 # Both runs TEE OFF THE EXISTING SUITE RISERS at their heads and carry on up W-S-DC2 into
-# W-A-STU-W — the same 5 1/2" staggered cavity the drain and the vent use, and the reason the
+# W-A-STU-W — the same 5 1/2" 2x6 cavity the drain and the vent use, and the reason the
 # bath is on the x=9'-7 1/2" line at all. 3/4" PEX, matching PR-B-CW-SUITE/PR-B-HW-SUITE
 # rather than stepping down: the run is short and the pair already carries a three-fixture
 # bath, so there is nothing to gain by narrowing and a pressure-drop argument to lose.

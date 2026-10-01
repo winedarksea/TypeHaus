@@ -189,15 +189,14 @@ SUPPLY_STOPS = [
                   model='3/4" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
     # RM-B-BATH, the stair-foot bathroom. 1/2" branches, so 1/2" valves — the only pair
-    # here that is not 3/4". Both arrive in W-B-BA-E's cavity at the same point, which is
-    # also PR-B-BATH-VENT's riser station.
+    # here that is not 3/4". Both stops moved to W-B-STR2, clear of the bath pocket.
     PipeAccessory(uid="F1M7RSZV67", tag="PA-B-BATH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-BATH", position=pt(inch(166.6875), ft(19, 3)),
+                  pipe_ref="PR-B-CW-BATH", position=pt(ft(10), ft(19, 10)),
                   accessible=True, room="RM-B-BATH",
                   model='1/2" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     PipeAccessory(uid="2DD9DEYNAS", tag="PA-B-BATH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-BATH", position=pt(inch(166.6875), ft(19, 3)),
+                  pipe_ref="PR-B-HW-BATH", position=pt(ft(10), ft(19, 4.5)),
                   accessible=True, room="RM-B-BATH",
                   model='1/2" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-B-BATH-LAV",)),

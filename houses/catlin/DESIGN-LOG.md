@@ -14,6 +14,21 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Two 36-inch pocket doors (2026-09-30)
+
+`D-B-BATH` now slides south from `W-B-BA-E` into `W-B-HALL-W`. Their wall assemblies differ
+in stud layout but have the same 2x6 layer section. The pocket resolver now carries a leaf
+across such a node and replaces the studs along its travel. The bathroom's supply, vent,
+fixture wall references, and grab-bar backing were moved or shortened to clear that cavity.
+The gym ERV duct rises over the bath pocket's header, then drops before the gym door header.
+
+Both this door and `D-M-LAUN` use 36-inch leaves. The laundry opening moved to
+x=9'-1"..12'-1", placing the washer and utility tub center lines within it. The tub keeps
+25.05 inches of space in front to the doorway after the HS3/HS4 northward alignment,
+so its drain, water, and dryer-condensate
+receptor remain. The hardware schedule uses the 2x6 Johnson 1560 frame for the bath and
+the 2x4 Johnson 1500PF frame for laundry.
+
 ## Site and the four structures
 
 ### The canopy's west band was a moment nobody graded, and now it is a braced frame (2026-09-30)

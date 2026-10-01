@@ -211,7 +211,7 @@ SUITEBATH_RETURN_3011 = FurnitureType(
 #      cantilevered slab on cleats, no leg or stretcher at the front.
 #   2. The bench is a floor-standing plinth, scribed to the wainscot at its back and the
 #      wall at each end — NOT fastened to its wall, W-M-HS4. That is the only legal answer:
-#      D-M-LAUN's leaf parks inside W-M-HS4 between x 12'-4" and 16'-5", and
+#      D-M-LAUN's leaf parks inside W-M-HS4 between x 12'-1" and 15'-2", and
 #      `mep.pocket_occupancy` refuses any fastener, device or pipe in that cavity. This
 #      bench covers x 13'-8 3/4"..17'-7 3/4", so a cleat screwed to the wall would FAIL.
 #

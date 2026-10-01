@@ -4,7 +4,7 @@ A pocket runs roughly a leaf-width past its rough opening, so on any wall that t
 has segmented at a tee it routinely crosses a node. That is not a modelling error. Wall
 segmentation at a tee is an authoring convention — ``classify_storey_junctions`` builds
 junctions from wall *endpoints*, so a partition teeing in has to split the wall it lands
-on — while the wall itself is one plane, one assembly and one pair of plates. The leaf
+on — while the wall itself can keep one plane and one layer section. The leaf
 really does travel across the node, and the framing has to say so.
 
 Two consumers need this and must not disagree: the solver, which keeps module studs out of
@@ -56,10 +56,9 @@ def pocket_segments(plan: PlanModel, model: ResolvedModel,
     the cavity fits. A non-zero shortfall means the leaf would have to pass through a
     corner, a tee, or open air, and no amount of framing makes that work.
 
-    A neighbour continues the run only if it shares the node, runs parallel, and carries
-    the *same assembly*. A different assembly is a different wall in every way that matters
-    here — a thickness change, a different stud depth, often a different trade — and a leaf
-    may not slide into one.
+    A neighbour continues the run only if it shares the node, runs parallel, and has the
+    same layer thicknesses and functions. Stud layout may change at the node: the pocket
+    frame replaces the studs in its travel on both sides of that seam.
     """
     if not opening.pocket_run_m or not opening.pocket_sign:
         return ((), 0.0)
@@ -110,7 +109,7 @@ def _colinear_neighbour(plan: PlanModel, model: ResolvedModel, authored, by_node
         if tag == wall.tag:
             continue
         neighbour, n_rw = authored.get(tag), model.wall(tag)
-        if neighbour is None or n_rw is None or neighbour.assembly != wall.assembly:
+        if neighbour is None or n_rw is None or not _same_pocket_section(plan, wall, neighbour):
             continue
         n_direction = unit(sub(n_rw.axis[1], n_rw.axis[0]))
         dot = n_direction[0] * direction[0] + n_direction[1] * direction[1]
@@ -122,6 +121,23 @@ def _colinear_neighbour(plan: PlanModel, model: ResolvedModel, authored, by_node
             return (neighbour, n_rw, 0.0, 1)
         return (neighbour, n_rw, n_len, -1)
     return None
+
+
+def _same_pocket_section(plan: PlanModel, first: Wall, second: Wall) -> bool:
+    """Require one continuous wall thickness and skin, while allowing a stud layout change."""
+    if first.assembly == second.assembly:
+        return True
+    if not hasattr(plan, "library"):
+        return False
+    first_assembly = plan.library.resolve_assembly(first.assembly)
+    second_assembly = plan.library.resolve_assembly(second.assembly)
+    if first_assembly is None or second_assembly is None:
+        return False
+    first_layers = tuple((layer.function, layer.thickness.meters, layer.material_ref)
+                         for layer in first_assembly.layers)
+    second_layers = tuple((layer.function, layer.thickness.meters, layer.material_ref)
+                          for layer in second_assembly.layers)
+    return first_layers == second_layers
 
 
 def pocket_keepouts(plan: PlanModel,

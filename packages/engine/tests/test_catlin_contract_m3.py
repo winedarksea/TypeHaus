@@ -2662,8 +2662,7 @@ def test_the_laundry_pocket_clears_the_bearing_corner_and_owns_its_wall(catlin_m
 
     1. **The closed end clears N-M-C2.** That node is where the BEARING ``W-M-C3`` corners
        in and ``BM-M-HALL`` starts, so the jamb pack that closes the cavity has to stop
-       short of its corner square. 4'-0" is the widest leaf that does; a wider one walks
-       the pack into the corner.
+       short of its corner square. The 36" leaf leaves generous clearance there.
     2. **The cavity crosses the W-M-LS tee.** This is legal because a pocket occupies only
        floor to 6'-8": the band's double top plate runs unbroken above it and its bottom
        plate below, so W-M-LS ties plate to plate and only its vertical edge floats. If a
@@ -2675,7 +2674,7 @@ def test_the_laundry_pocket_clears_the_bearing_corner_and_owns_its_wall(catlin_m
     from typehaus.resolve.framing.pockets import pocket_segments
 
     door = next(op for op in catlin_model.openings if op.tag == "D-M-LAUN")
-    assert door.type_ref == "DT-POCKET-INT-48"
+    assert door.type_ref == "DT-POCKET-INT-36"
     assert door.host_wall == "W-M-HS3" and door.pocket_sign == 1
 
     segments, shortfall = pocket_segments(catlin_model.plan, catlin_model, door)

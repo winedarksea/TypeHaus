@@ -120,7 +120,7 @@ DOOR_TYPES = [
     DT_INT_CLOSET24,
     # DT-INT-BIFOLD60 retired 2026-09-12: never hung. O-S-CLOSET is the house's only bifold
     # and W-S-CLN takes the 56" below; D-M-LAUN was the other candidate and became a pocket
-    # (DT-POCKET-INT-48) on 2026-08-21, which is what retired the second BIFOLD56 as well.
+    # (now DT-POCKET-INT-36), which is what retired the second BIFOLD56 as well.
     # RM-M-MUD-CLOSET's bypass pair: no floor for a swing, same reasoning as
     # FURN-WARDROBE-48. 48" is the largest standard bypass whose RO (50") still fits the
     # partition's 63 1/8" framed span with jamb packs to spare — 60" would leave 1 1/8" total.
@@ -658,7 +658,7 @@ WALLS = [
          end_node="N-M-STRJ", assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- powder bath west of hallway -------------------------------------------
     Wall(uid="CMW121AAAA", tag="W-M-BAE", start_node="N-M-BA1",
-         end_node="N-M-BA2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+         end_node="N-M-BA2", assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- hallway south wall band ------------------------------------------------
     # W-M-HS1 is a wet wall since 2026-08-29, not the 2x4 partition it was: the RM-M-BATH2
     # drop-in bath pass moved FX-M-BATH2-WC off the middle of the floor and backed it onto
@@ -694,10 +694,15 @@ WALLS = [
     # it, matching HS1 — the band reads as one wall, which it always did.
     Wall(uid="CMW123AAAA", tag="W-M-HS2", start_node="N-M-BA2",
          end_node="N-M-D1", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+    # The 2x4 sections are 2" thinner than HS2. Move their whole sections 1" north
+    # from the shared node line so the hall-side gypsum stays flush across the change.
+    # Keep the nodes on y=22'-4" for the bath/laundry/study tees and pocket travel.
     Wall(uid="CMW124AAAA", tag="W-M-HS3", start_node="N-M-D1",
-         end_node="N-M-E3", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-E3", assembly="INT_2X4_PARTITION", top=ft(9),
+         alignment=face("center", offset=inch(1))),
     Wall(uid="CMW125AAAA", tag="W-M-HS4", start_node="N-M-E3",
-         end_node="N-M-C2", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-C2", assembly="INT_2X4_PARTITION", top=ft(9),
+         alignment=face("center", offset=inch(1))),
     # --- bath2 / laundry / study / closet block ---------------------------------
     Wall(uid="CMW126AAAA", tag="W-M-BA2E", start_node="N-M-D1",
          end_node="N-M-D2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
@@ -1131,15 +1136,10 @@ OPENINGS = [
     # the room (hinged at the south jamb), so the 23.9 sf fixture layout is untouched by the
     # extra 6" — FX-M-BATH1-WC and -LAV are both west of W-M-BAE and the arc never reaches
     # them. `from_node` anchors the north jamb at 1'-0", so the RO grows SOUTH and
-    # ** AND IT STAYS AT 1'-0", OFF THE MODULE, SUPPRESSED — see preferences.toml. ** A 30"
-    # leaf costs one extra cut stud on this wall at EVERY station, and the stations that
-    # would save it are all worse for the room: W-M-BAE lays out from a 6" residue mod 8"
-    # (INT_2X6_STAGGERED_PLUMBING, non-bearing), and the check's own answer — centre 24",
-    # RO y 23'-3"..25'-9" — runs the opening straight through ED-M-BATH1-SW's box at
-    # y 25'-6 3/8"..25'-10 3/8". Centre 30" clears the switch but leaves 5" of wall at the
-    # south end. 1'-0" keeps the north jamb exactly where it has always been, 2 3/8" under
-    # that switch, and leaves 8" at the south end. One cut stud in a non-bearing plumbing
-    # wall is the price of the 6", and it is worth it.
+    # ** AND IT STAYS AT 1'-0", OFF THE MODULE, SUPPRESSED — see preferences.toml. ** This
+    # station keeps the north jamb where it has always been, 2 3/8" below the switch, and
+    # leaves 8" at the south end. W-M-BAE is now a standard 2x4 partition, so its framing
+    # module and the old extra-cut-stud rationale need to be re-evaluated.
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING30",
          position=from_node("N-M-BA1", ft(1))),
     # RM-M-MECH's hinged utility door, not the mudroom closets' bypass style.
@@ -1218,18 +1218,13 @@ OPENINGS = [
     # corner. Nothing over the pocket takes a fastener longer than 1"
     # (`tables.POCKET_MAX_FASTENER`) or it reaches the leaf.
     #
-    # 4'-0" is the widest leaf that fits. The pocket runs 49" east of the RO and its closed
-    # end carries the relocated jamb pack, which has to clear N-M-C2 — where the BEARING
-    # W-M-C3 corners in and BM-M-HALL starts. Strike jamb at 8'-4" puts the closed end at
-    # 16'-5", 1'-7" clear of that corner. It is also a real product size: the commodity kit
-    # ladder stops at 36"/125 lb, so this one is a heavy-duty frame (DT-POCKET-INT-48).
-    #
-    # Clear width barely moves. The 4-leaf bifold lost ~6" to its own stacked leaves and
-    # track, so it really gave ~50"; this gives 48", and hands back the 8 3/4" of floor the
-    # bifold track needed (see plan/fixtures.py). The cost is ~9" of the utility tub's east
-    # end sitting behind fixed wall — shifting the RO east only hides the stack instead.
-    Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-POCKET-INT-48",
-         position=from_node("N-M-D1", inch(8))),
+    # The 36" leaf starts at x=9'-1" and slides east across N-M-E3 into W-M-HS4.
+    # Its closed end remains well clear of N-M-C2, where bearing W-M-C3 corners in.
+    # The opening is centred between the stacked washer and utility tub: both fixture
+    # centre lines lie within it, and the tub has 25" of clear depth to the doorway.
+    # This keeps the original sink and condensate receptor usable from the hall.
+    Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-POCKET-INT-36",
+         position=from_node("N-M-D1", inch(11))),
     # Offset 6 11/16" off N-M-E4, not the 1'-2 11/16" it was: N-M-E4 moved north 8" with the
     # closet line, and this offset moved the same 8" so the door itself did not
     # move. 6 11/16" clears the corner stud pack (the D-M-MECH margin); the wall is only

@@ -375,7 +375,7 @@ def opening_fits_host(ctx: CheckContext) -> list[Finding]:
                 f"pocket door {op.tag} needs {op.pocket_run_m*39.37:.1f}\" of cavity past "
                 f"its opening but runs out of colinear wall in {chain} — "
                 f"{shortfall*39.37:.1f}\" short. A pocket may only continue into a wall "
-                f"that shares the node, runs parallel and carries the same assembly.",
+                f"that shares the node, runs parallel and has the same layer section.",
                 (op.tag,)))
     return out
 

@@ -20,7 +20,9 @@ from typehaus.resolve.framing.short_members import MIN_STUD_LINE_M
 from typehaus.resolve.framing.stud_module import OpeningStudModule, opening_stud_module
 from typehaus.resolve.framing.tables import (
     OVERHEAD_TRACK_MEMBER,
+    POCKET_SPLIT_STUD_2X6_MIN_DEPTH,
     POCKET_SPLIT_STUD_MEMBER,
+    POCKET_SPLIT_STUD_MEMBER_2X6,
     POCKET_SPLIT_STUD_SPACING,
     flat_header_member,
     header_depth,
@@ -466,6 +468,11 @@ def _append_pocket_cavity(out: list[FramedMember], rw, direction, wall_start,
     floating.
     """
     spacing = POCKET_SPLIT_STUD_SPACING.meters
+    structure = next((layer for layer in getattr(rw, "layers", ())
+                      if layer.function == "structure"), None)
+    split_member = (POCKET_SPLIT_STUD_MEMBER_2X6
+                    if structure and structure.thickness_m >= POCKET_SPLIT_STUD_2X6_MIN_DEPTH.meters
+                    else POCKET_SPLIT_STUD_MEMBER)
     count = int(abs(closed - mouth) // spacing)
     for index in range(1, count + 1):
         station = mouth + sign * index * spacing
@@ -475,7 +482,7 @@ def _append_pocket_cavity(out: list[FramedMember], rw, direction, wall_start,
             break
         point = add(wall_start, scale(direction, station))
         out.append(FramedMember(rw.uid, f"pocketsplit-{opening_index}-{index:02d}", "stud",
-                                POCKET_SPLIT_STUD_MEMBER, point, point, z0, header_bottom,
+                                split_member, point, point, z0, header_bottom,
                                 header_bottom - z0, orient=direction))
 
 

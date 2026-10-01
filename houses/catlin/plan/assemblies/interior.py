@@ -174,15 +174,10 @@ ACCENT_GWB_LINING = (
 # fix was: "the fix is the wall assembly rather than the pipe" and "the honest fixes are a
 # 2x8 wet wall or a furred chase". These are those assemblies.
 
-# W-A-STU-W's replacement. INT_2X6_STAGGERED_PLUMBING's 2x4 studs allow a 2.10" bore and the
-# studio's two 2" vents wanted 2.38" through eleven of them; continuous 2x6 studs allow
-# 3.30". The thickness is identical — 0.01 + 0.625 + 5.5 + 0.625 + 0.01 = 6.77" — so no face
-# moves, no fixture moves and no room face moves. This is the same trade
-# INT_2X6_BRG_PLUMBING above made on the second storey, and it keeps the batt for the same
-# reason that one did: plain INT_2X6_PLUMBING carries no `CavityFill`, so retyping to it
-# would silently strip a bath/studio party wall's 3 1/2" sound batt on top of its
-# decoupling. Same 3 1/2" fiberglass the staggered assembly had — like for like, not an
-# upgrade, so the `fiberglass` price row's 3 1/2" band still governs.
+# W-A-STU-W uses the stock INT_2X6_PLUMBING assembly. Its continuous 2x6 studs allow the
+# studio's two 2" vents' 2.38" bores (2.10" is the 2x4 limit); the wall retains its 5.5"
+# plumbing cavity. The 3.5" batt variant remains a library option, but this conditioned
+# interior partition has no specified thermal or rated acoustic requirement for it.
 
 # W-B-CW's replacement, and the one assembly here that is a real thickening. A 3" drain is
 # 3.500" outside and 60% of a 2x6's 5.50" is 3.300" — over by two tenths of an inch, which

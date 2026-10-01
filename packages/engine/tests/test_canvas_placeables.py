@@ -506,7 +506,7 @@ def test_an_authored_drain_position_pins_the_drain_while_the_fixture_moves() -> 
     assert plan is not None
     result = move_placeable(plan, "basement", tag="FX-B-BATH-LAV", position=(5.1, 6.2))
     assert [(op.type, op.tag) for op in result.ops] == [("Fixture", "FX-B-BATH-LAV")]
-    assert result.warnings == ()
+    assert len(result.warnings) == 1 and "W-B-STR2" in result.warnings[0]
 
 
 def test_coupled_drain_move_writes_source_that_reloads(tmp_path: Path) -> None:

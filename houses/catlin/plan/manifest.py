@@ -20,7 +20,7 @@ from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_bas
 
 from library import (
     ALL_DUCT_PRODUCT_TYPES, ALL_ELECTRICAL_DEVICE_TYPES, ALL_RAILING_TYPES,
-    ALL_REGISTER_TYPES, ALL_VENTILATION_EQUIPMENT_TYPES, DT_POCKET_INT_48,
+    ALL_REGISTER_TYPES, ALL_VENTILATION_EQUIPMENT_TYPES, DT_POCKET_INT_36,
     SEKTION_CASEWORK_TYPES, STANDARD_DOOR_TYPES, STARTER_APPLIANCE_TYPES,
     STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES,
     WINDOW_TYPES_16_INCH_MODULE,
@@ -61,9 +61,8 @@ _library = Library(
     # ** THE CATALOG CARRIES WHAT THE HOUSE HANGS, NOT THE WHOLE LADDER (2026-09-12). ** This
     # was the whole pocket ladder, which pulled all six Johnson 1500PF sizes in and left five of
     # them with no door, no price row and nothing to bill — the same dead weight the two
-    # retired house types in `main.DOOR_TYPES` carried. D-M-LAUN is the only pocket in the
-    # house. A second pocket door adds its size back here by name.
-    door_types=(DT_POCKET_INT_48, *STANDARD_DOOR_TYPES, *main.LOCAL_DOOR_TYPES),
+    # retired house types in `main.DOOR_TYPES` carried. Both house pockets use 36" frames.
+    door_types=(DT_POCKET_INT_36, *STANDARD_DOOR_TYPES, *main.LOCAL_DOOR_TYPES),
     window_types=WINDOW_TYPES_16_INCH_MODULE,
     # The shared catalogs supply every plumbing fixture, appliance, and railing this house
     # uses; only the wall-fitted mudroom closets stay house-local. Tags are disjoint, and

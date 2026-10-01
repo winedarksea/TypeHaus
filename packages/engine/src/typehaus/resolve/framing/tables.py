@@ -19,6 +19,7 @@ LUMBER_ACTUAL: dict[str, tuple[float, float]] = {
     "2x10": (1.5, 9.25),
     "2x12": (1.5, 11.25),
     "1x4": (0.75, 3.5),
+    "1x6": (0.75, 5.5),
     "4x4": (3.5, 3.5),  # dressed post (stair-landing corner posts)
     "6x6": (5.5, 5.5),  # dressed post (e.g. balcony pillars)
 }
@@ -177,6 +178,8 @@ POCKET_SPLIT_STUD_SPACING = inch(12)
 # dimensions and supplies them *in* the kit; the takeoff carries the kit as hardware, so a
 # house that buys one is over-billed by this lumber row and under-billed by nothing.
 POCKET_SPLIT_STUD_MEMBER = "2-1x4"
+POCKET_SPLIT_STUD_MEMBER_2X6 = "2-1x6"
+POCKET_SPLIT_STUD_2X6_MIN_DEPTH = inch(5.5)
 # The pocket's closed end is solid: ``frame_opening`` relocates that side's whole jamb pack
 # there, so the king and jack together are the post the leaf stops against. It is the only
 # solid framing along the run, and the only place a fixing may land in the wall's depth.

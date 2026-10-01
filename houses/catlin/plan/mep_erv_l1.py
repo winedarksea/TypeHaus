@@ -231,12 +231,13 @@ DUCTS_ERV_BASEMENT = [
     # headroom over the upper flight's nosings — `code.R311_7_2_stair_headroom` counts runs
     # now. The x=17'-0" "east chase" was only continuous by walking over the lower flight.
     #
-    # THE GYM RADIAL GOES THROUGH THE WORKSHOP. South at -25 7/16" on x=9'-0", directly
-    # under PR-B-SAUNA-VENT (which never comes below -21 7/8" here) and under the bath vent,
+    # THE GYM RADIAL GOES THROUGH THE WORKSHOP. South on x=9'-0", directly
+    # under PR-B-SAUNA-VENT and the bath vent,
     # HW-BATH and LSINK legs it crosses; through W-B-CW3 in its 8'-1"..9'-5" stud bay, over
     # the 2x8 backing (top 6'-7 1/4"); east on y=17'-4 3/4", 2 1/4" clear of
     # PR-M-S-SUITE-DRAIN's riser, through W-B-HALL-W's 16'-8"..18'-0" bay; then the hall's
-    # x=17'-0" lane south of the stair to y=13'-0" as before. Nothing is bored or headed.
+    # x=17'-0" lane south of the stair to y=13'-0" as before. It rises to 88 1/2" before
+    # crossing the hall so its lower face clears D-B-BATH's pocket header at 85 1/2".
     #
     # ** x=17'-0" AND NOT 17'-9", BECAUSE THE STRIP BESIDE THE STAIR IS THE POUR. **
     # W-B-CN / -CN2 / W-B-CS2 are one 12" cast wall on the x=18'-0" axis, so x 17'-6"..18'-6"
@@ -253,7 +254,7 @@ DUCTS_ERV_BASEMENT = [
                   pt(ft(7, 3), ft(29, 6)), pt(ft(9), ft(29, 6)),
                   pt(ft(9), ft(17, 4.75)), pt(ft(17), ft(17, 4.75)),
                   pt(ft(17), ft(13)), pt(ft(17), ft(13)), pt(ft(19), ft(13))),
-            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(84), inch(84),
+            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(88.5), inch(88.5), inch(84),
                         inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=18),
     # THE PLAY RADIAL GOES THROUGH SF-B-BATH. From the plenum's east end it drops to -25 7/16"

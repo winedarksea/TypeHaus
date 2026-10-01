@@ -66,7 +66,9 @@ DT_POCKET_INT_32 = DoorType(
     source=_JOHNSON_1500,
 )
 DT_POCKET_INT_36 = DoorType(
-    tag="DT-POCKET-INT-36", width=ft(3), height=ft(6, 8), operation="pocket", source=_JOHNSON_1500
+    tag="DT-POCKET-INT-36", width=ft(3), height=ft(6, 8), operation="pocket",
+    source=(_JOHNSON_1500 + "; Johnson 1560 series for 2x6 walls "
+            "(https://johnsonhardware.com/1560-series-36-x-80-pocket-door-frame)"),
 )
 # The heavy-duty end of the family. Not a 1500PF size: that series stops at 36"/125 lb, and
 # a 4'-0" solid-core leaf is past both. Keep the source distinct — a takeoff that orders a

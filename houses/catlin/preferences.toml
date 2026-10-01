@@ -449,8 +449,8 @@ suppress = [
   #     for free: 4.00" against 4.35" allowed. No duct moved.
   #   * `W-A-STU-W` was never a 2x6 wall. `INT_2X6_STAGGERED_PLUMBING` is 2x4 studs on 2x6
   #     plates, so every bore graded at 2.10" while the prose everywhere called it a 2x6.
-  #     De-staggered to `INT_2X6_PLUMBING_BATT`, which keeps the 3 1/2" batt the staggered
-  #     assembly carried. Total thickness is identical, so no face moved.
+  #     It is now `INT_2X6_PLUMBING`: continuous 2x6 studs allow the vent bores, and the
+  #     nonessential batt was removed without changing the 5 1/2" cavity or wall faces.
   #
   # `mep.run_through_stud` is 0 FAIL. A new over-bore anywhere in the house now reports,
   # which is what the per-run form was protecting.
@@ -582,6 +582,12 @@ suppress = [
   "mep.run_member_crossing:PR-M-S-SUITE-WC-DRAIN",
   "mep.run_member_crossing:PR-M-WC-VENT",
 
+  # These fixtures' wall_ref is their vent-reachability target, not a physical drain chase.
+  # FX-M-BATH1-WC's carrier and waste drop are in W-M-HS1; FX-M-BATH1-LAV drains through
+  # the deck, and their vent takeoff is above W-M-BAE. Keep W-M-BAE a dry 2x4 partition.
+  "advisory.wet_wall_depth:FX-M-BATH1-WC",
+  "advisory.wet_wall_depth:FX-M-BATH1-LAV",
+
   # D-G-OVERHEAD's centre is at 12'-0", 12" off the 24" module, and it cuts 9 stud lines
   # where 8 would do. The decision is unchanged from the 16"-module reading it was first
   # taken against (2026-08-26) and the arithmetic under it got WORSE, which is the reason to
@@ -610,13 +616,10 @@ suppress = [
   "structural.door_framing_module:D-G-OVERHEAD",
 
   # D-M-BATH1 went 2'-0" -> 2'-6" on 2026-09-15 (the aging-in-place pass): a 24" leaf was
-  # the narrowest thing in the house and this is the powder room every guest uses. A 30"
-  # RO on W-M-BAE cuts a fourth stud where three would do at EVERY position, so this is not
-  # a move that can be fixed by moving. The two legal stations the check names are both
-  # worse for the room — centre 24" runs the opening through ED-M-BATH1-SW's box, centre
-  # 30" leaves 5" of wall at the south end — so the opening keeps the station it has had,
-  # 2 3/8" under that switch with 8" to spare at the far end. W-M-BAE is
-  # INT_2X6_STAGGERED_PLUMBING and NONBEARING: one extra cut stud, not a header redesign.
+  # the narrowest thing in the house and this is the powder room every guest uses. The
+  # opening keeps its established station, 2 3/8" below ED-M-BATH1-SW with 8" to spare at
+  # the far end. W-M-BAE is now a standard non-bearing 2x4 partition; re-evaluate this
+  # suppression against its regular stud layout before treating the extra cut stud as settled.
   # Same shape of trade as D-M-BATH2 used to be — that entry was retired on 2026-09-20
   # after the door stopped tripping the check at all.
   "structural.door_framing_module:D-M-BATH1",

@@ -354,6 +354,22 @@ POCKET_FRAME_KIT_1500PF = StructuralHardware(
            "wall structure. Door, jambs, drywall and locks not included.",
 )
 
+# The Catlin bath wall is 2x6 throughout its cavity. A 1500PF frame is only 3-1/2" deep
+# and would leave the gypsum unsupported on both faces, so this is a distinct width/depth
+# selection even though the leaf has the same 36" nominal width as a 2x4-wall door.
+POCKET_FRAME_KIT_1560 = StructuralHardware(
+    tag="johnson-1560-pocket-frame-kit",
+    name="Pocket door frame kit, 2x6 wall (36\"/200 lb)",
+    role=ROLE_POCKET_DOOR_FRAME_KIT,
+    manufacturer="Johnson Hardware",
+    model="POCKET-FRAME-1560",
+    fits_nominal=("36-2x6",),
+    part_number_by_length_in={36: "15603068"},
+    source="Johnson Hardware 1560 series 36 x 80 pocket frame for 2x6 wall "
+           "(https://johnsonhardware.com/1560-series-36-x-80-pocket-door-frame); "
+           "200 lb maximum, 5-1/2\" structure depth.",
+)
+
 # Past the commodity ladder the frame, the track and the hangers all change. No published
 # SKU ladder is recorded here on purpose: the width families are published, the part
 # numbers are configured per order, and inventing one would be an estimate wearing a part

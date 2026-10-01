@@ -1490,14 +1490,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       `W-S-SS2` at y 104 1/8"..105 5/8") may NOT be lapped — `structural.member_interference`
       excuses treads/stringers over a soffit but not that ledger.
 - **`W-M-HS4` is a pocket wall and nothing may ever go in it again** — no outlet, switch,
-  pipe, register, blocking, or towel bar between 12'-4" and 16'-5" on y=22'-4" (no stud to
-  fasten to, no depth to recess into). `D-M-LAUN`'s 4'-0" pocket leaf parks there, crossing
+  pipe, register, blocking, or towel bar between 12'-1" and 15'-2" on the y=22'-4" datum
+  (the built cavity is 1" north of it; no stud to fasten to, no depth to recess into).
+  `D-M-LAUN`'s 3'-0" pocket leaf parks there, crossing
   node `N-M-E3`. Enforced by `mep.pocket_occupancy`.
   - **A split stud that ever reaches the top plate destroys the `W-M-LS` plate tie** — a
     pocket occupies floor to 6'-8" only, so the tie's plates run continuous over/under it and
     only its vertical edge floats.
-  - 4'-0" is the widest leaf that fits: the closing pack must clear `N-M-C2`, where bearing
-    `W-M-C3` corners in and `BM-M-HALL` starts. Full detail, including the 1" fastener limit:
+  - The closing pack must clear `N-M-C2`, where bearing `W-M-C3` corners in and
+    `BM-M-HALL` starts. Full detail, including the 1" fastener limit:
     `notes/pocket_door_at_laundry.md`.
 
 ### Basement
@@ -1606,10 +1607,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     CATALOG-ONLY as the named revert and its letter is NOT freed** — the replacement took X.
 
 - **Bathroom.** Rotated north-south along the framed stair wall (`W-B-STR3B`/`W-B-STR2`);
-  clear **3'-3 15/16" x 7'-1 1/4"**. Wet wall is `W-B-BA-E`, an `INT_2X6_STAGGERED_PLUMBING`
-  partition at `inch(166.6875)` on the stair well's centreline, carrying the shared vent
-  riser at (13'-10 11/16", 19'-3"); `W-B-BA-N` is a dry `INT_2X4_PARTITION`. `D-B-BATH`
-  swings out into the hall with `flip_swing=True` on this wall. Wall devices are hosted on
+  clear **3'-3 15/16" x 7'-1 1/4"**. The shared vent and supply drops run in `W-B-STR2`
+  at x=10'-0"; `W-B-BA-E` keeps its 2x6 section and now hosts the 36" pocket door. Its
+  cavity continues south into the matching 2x6 section of `W-B-HALL-W`. `W-B-BA-N` is a
+  dry `INT_2X4_PARTITION`. Wall devices are hosted on
   their face (`location.attachment`) and `integrity.wall_mount_on_face` grades the body.
 
 - **Hall and circulation.** The hall runs from the stair foot south, west of `W-B-CN2`, the

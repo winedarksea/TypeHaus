@@ -173,8 +173,8 @@ DRAINS = [
     #     Ø90 mm; Minn. R. 4714.0702 Table 702.1 gives a 1.6 gpf WC a 3" minimum trap at
     #     3.0 DFU), so 3" is the branch — see library/placeables/fixtures.py, which now
     #     carries the port that says so;
-    #   * the waste left at (6'-0", 22'-7"), on W-M-BAE's axis, 46" from the china it is
-    #     bolted to;
+    #   * the waste left at (6'-0", 22'-7"), aligned with W-M-BAE's axis, 46" from the
+    #     china it is bolted to;
     #   * and it started 3 5/16" BELOW the finished floor, which is a closet-flange invert.
     #     A wall-hung bowl's trap is integral and above the deck: there is no flange, the
     #     stub turns down inside the carrier frame, and the pipe crosses the floor plane —

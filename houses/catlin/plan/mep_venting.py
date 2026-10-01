@@ -21,9 +21,9 @@ from typehaus import (
 )
 
 # --- Vent branches: wet wall -> shared chase ----------------------------------------
-# None of the water-closet wet walls continues to the storey above (W-M-BAE and W-M-BA2E
-# die at the main-floor top plate; W-S-BD-N dies under the cathedral attic), so no vent can
-# simply rise inside them. They don't have to: VR-M-RADON-VENT below is already a shared
+# BATH1 is served by the vent above W-M-BAE; no riser runs down that wall. W-M-BA2E dies at
+# the main-floor top plate, and W-S-BD-N dies under the cathedral attic, so no vent can
+# simply rise inside those wet walls. They don't have to: VR-M-RADON-VENT is a shared
 # radon/plumbing chase running the full height of the house at (1', 35'-1.3"), inside
 # RM-M-MECH's framed closet and RM-S-BATH1's NW notch, and a vent may run horizontally once
 # it is above every served fixture's flood-level rim. These are the runs that get it
@@ -34,8 +34,9 @@ from typehaus import (
 # the I-joist webs, and fall ~1/8"/ft back toward the fixtures so condensate returns to the
 # drainage system rather than pooling in the horizontal leg.
 VENT_BRANCHES_MAIN = [
-    # W-M-BAE (x=6') and W-M-BA2E (x=8'-2") -> UP W-S-SN2 -> the hall-bath vent. 2" for
-    # the two water closets' worth of fixtures, plus the kitchen sink tied in below.
+    # BATH1's fixtures are served from the overhead run at x=6' and W-M-BA2E (x=8'-2")
+    # rises through W-S-SN2 to the hall-bath vent. 2" for the two water closets' worth of
+    # fixtures, plus the kitchen sink tied in below.
     # ** IT RISES THROUGH THE SECOND STOREY SINCE 2026-09-24. ** DU-M-ERV-EXH-TRUNK fills
     # FS-S-WEST's truss window at x=3'-10 1/2", so nothing crosses to the chase in-band. Upper
     # tier east on y=25'-0" to W-M-BA2E's line, south to 22'-4 7/8", up W-S-SN2's cavity, then
@@ -117,17 +118,12 @@ VENT_BRANCHES_SECOND = [
     # not for this run's. See plan/fixtures.py.
     #
     # THE HEADER IS 1 5/8" OFF THE WALL RATHER THAN ON ITS AXIS: y=22'-4" itself is the axis
-    # W-M-HS3/W-M-HS4 share ONE STOREY DOWN, and x 12'-4"..16'-5" of that line is D-M-LAUN's
-    # pocket, the cavity CLAUDE.md says nothing may ever enter. `mep.pocket_occupancy` is
-    # purely 2D — `_pocket_bands` buffers the pocket wall's axis in plan and tests every
-    # `PipeRun` segment against it with no storey and no elevation filter, so a vent sitting
-    # 9'-3" above the SECOND floor trips a pocket on the MAIN one. Physically there is no
-    # conflict whatever — but routing round it costs nothing and is the better line anyway
-    # (it is what takes the tub-shower's arm to 39"). If that check is ever made
-    # storey-aware, this header may go back on the axis.
+    # W-M-HS3/W-M-HS4 share ONE STOREY DOWN, and x 12'-1"..15'-2" of that line is D-M-LAUN's
+    # pocket. The vent is a floor above the leaf, so the now-height-aware pocket check
+    # sees no conflict. Keeping this offset still takes the tub-shower's arm to 39".
     #
     # It turns north on the x=9'-7 1/2" line rather than joining the hall bath's run at x=1',
-    # and at x=9'-7 1/2" that north leg is well clear of the pocket's x 12'-4"..16'-5" band.
+    # and at x=9'-7 1/2" that north leg is well clear of the pocket's x 12'-1"..15'-2" band.
     #
     # ** IT IS NOT BECAUSE "THE TWO BRANCHES MAY NEVER SHARE A LEG". ** That argument stood
     # here and it was wrong: two branch vents on a common vent is ordinary IRC P3104 work,
@@ -415,47 +411,19 @@ VENT_CLAMPS = [
 # Neither shares a leg with the other — the bathroom's runs north at x=7', the sauna's at
 # x=9' — the same rule PR-S-SUITEBATH-VENT follows against the hall bath's branch.
 VENT_BRANCHES_BASEMENT = [
-    # RM-B-BATH: same corridor north at x=7' to the chase. The riser stands in a real stud
-    # cavity — W-B-BA-E, the rotated bathroom's INT_2X6_STAGGERED_PLUMBING east partition,
-    # which is the room's one wet wall and the only 5 1/2" cavity it has. Both fixtures name
-    # it in `wall_ref`, and `mep.vent_reachability` reads that field rather than geometry.
-    #
-    # The riser stands at (13'-10 11/16", 19'-3"), between the two fixtures, 15" clear of
-    # N-B-STR
-    # and 2'-6" clear of N-B-BA-W, so the leg west at the same y bores W-B-STR2 mid-panel
-    # rather than at a node the wall tees into. Trap arms measured to it: 5'-3" from the
-    # water closet's flange and 2'-1" from the lavatory's trap, against Table 1002.2's
-    # 6'-0" for 3" and 3'-6" for 1 1/2".
+    # RM-B-BATH: the riser stands in W-B-STR2 at y=19'-3", clear of the east-wall pocket.
+    # Both fixtures name this service wall; the short west leg ties into the sauna vent.
     # ** A COMMON VENT INTO PR-B-SAUNA-VENT SINCE 2026-09-23. ** It ran north on x=7'-0"
     # and west on y=34'-6" to the chase; the re-packed chase leaves one lane in at the
     # basement ceiling, which the 2" sauna vent takes, and this 1 1/2" ties into that 2" line
     # at x=9'-0", rising all the way. The notes below describe the retired x=7' leg.
     PipeRun(uid="CBPV01AAAA", tag="PR-B-BATH-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(166.6875), ft(19, 3)), pt(inch(166.6875), ft(19, 3)),
+            path=(pt(ft(10), ft(19, 3)), pt(ft(10), ft(19, 3)),
                   pt(ft(9), ft(19, 3))),
             diameter=inch(1.5), material="pvc",
-            # ** IT RUNS TWO AND A HALF INCHES LOWER THAN THE SAUNA VENT SINCE 2026-09-19
-            # (P1), AND THAT IS THE WHOLE FIX. ** Both vents used to arrive at the chase on
-            # the y=34'-6" line at the same 7'-9 15/16", collinear for six feet, and both
-            # passed through PR-B-KITCH-DRAIN's x=4'-6" fall line on the way. This one drops
-            # under: 7'-5 7/16" through the laundry branch and 7'-7 7/16" at the chase,
-            # which puts it 2 1/2" under PR-B-SAUNA-VENT the whole way west and 4/5" under
-            # the kitchen drain where it crosses.
-            #
-            # The east leg goes flat-ish (7'-4 15/16" -> 7'-5 7/16", about 1/16"/ft) and the
-            # north leg carries the grade instead (2" over 15'-3", an eighth an inch a foot,
-            # which is what this file's header asks for). Staying deep through y=19'-5" and
-            # y=20'-0" is what clears PR-B-TUB2-DRAIN and PR-B-WASH-DRAIN, which fall west
-            # across this lane on their way to the stack — 1 1/3" and 1/3" of air now, where
-            # both were interpenetrating.
-            #
-            # ** THE EAST LEG DROPPED 1 1/2" ON 2026-09-22 ** so DU-B-ERV-R-PLAY can cross it
-            # flat inside SF-B-BATH (1 1/4" of air) instead of hopping over it on four
-            # elbows; the north leg's grade steepens to 4" over 15'-3". GYM passes under it at
-            # x=9' with 3/8" to spare, and the two drains above get 1 1/2" more air.
-            # Riser top 7'-0 15/16" since 2026-09-24, 2" lower: the straight rise west then
-            # passes 1/4" under DU-B-ERV-R-PLAY's x=12'-3" leg.
-            elevations=(ft(1, 3.4375), inch(84.94), ft(7, 9.25)),
+            # The one-foot west leg reaches the existing sauna vent at 7'-9 1/4". Its
+            # 1.699"/ft rise keeps the riser head below W-B-STR2's top plate.
+            elevations=(ft(1, 3.4375), inch(91.551), ft(7, 9.25)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-4", 8'-2 3/16") — inside
     # W-B-CS's 3 1/2" liner build-up, in the pan's own east wall, on the pan-and-floor-drain

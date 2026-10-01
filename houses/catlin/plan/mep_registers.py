@@ -674,7 +674,7 @@ REGISTERS_ATTIC = [
     #
     # A WALL MOUNT, AND AT 3'-0" RATHER THAN THE 4'-4" THE WALL WOULD ALLOW (2026-09-26).
     # There is no ceiling plenum under a cathedral: the room follows the roof, and
-    # W-A-STU-W's 5 1/2" staggered cavity is the only place a duct can drop into the
+    # W-A-STU-W's 5 1/2" 2x6 cavity is the only place a duct can drop into the
     # FS-ATTIC bay. PR-A-STUBATH-VENT runs that same cavity at 3'-5"..3'-9", so a riser to a
     # higher grille crosses it; at 3'-0" the 4" boot tops out at 3'-2" and the vent passes
     # over it. A lower pickup gives up some stratified moist air, which the 20 cfm

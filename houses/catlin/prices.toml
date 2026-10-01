@@ -366,6 +366,7 @@
 # carpenter hangs one thing. See library/hardware/: a house that buys the kit is over-billed
 # by this row and under-billed by nothing.
 "2-1x4" = { material = { low = 0.9, high = 1.4 }, labour = { low = 0.35, high = 0.7 } }  # 20 LF
+"2-1x6" = { material = { low = 1.4, high = 2.4 }, labour = { low = 0.35, high = 0.7 } }  # 2x6 pocket split studs
 # "1x6.81165 panel" =    # 112 LF — cellular-PVC fascia, billed in [edge_trim]
 # One ply of the row below: floor-opening trimmer packs on the I-joist decks run bearing to
 # bearing in band-deep LVL since 2026-09-16. Half the 2-ply material; labour per ply a bit over half.
@@ -1123,13 +1124,9 @@
 # includes its own seam clamp (which this one must, since no separate PV clamp is billed)
 # costs materially more than the bare grab.
 "S-5-PVKIT" = { low = 14, high = 35 }  # 48 ea
-# 2026-08-21 — D-M-LAUN's pocket frame. ** NOT RE-SOURCED IN THIS PASS ** — a heavy-duty
-# cavity frame is configured per order rather than shelf-priced, which is also why
-# library/hardware/ records no SKU ladder for it. The low end is roughly 3x a commodity
-# 1500PF kit (those sit near $90-130 retail); the high end is where a 4'-0" timber-framed
-# unit with soft-close hardware lands. This is the one line in this section standing on a
-# ratio instead of a quote — re-source it before it matters.
-"POCKET-FRAME-CS-WOOD" = { low = 300, high = 750 }  # 1 ea — D-M-LAUN
+# The 36" 1500 and 1560 frames are billed by their actual kit part numbers.
+"153068PF" = { low = 125, high = 220 }  # D-M-LAUN; listed at $149 (homesteadhardware.com)
+"15603068" = { low = 275, high = 400 }  # D-B-BATH; 1560 listed at $299 (doorclearancecenter.com)
 # 2026-08-20 — the wind-mitigation clamps (plan/wind_clamps.py). The PANEL PROFILE decides
 # the part: an S-5-S will not close on a nail-strip bulb and an S-5-N will not close on a
 # snap-lock leg. Priced per SKU rather than as a family:
@@ -3548,7 +3545,7 @@
 # cavity was EMPTIED outright (owner — where sound isolation matters the house uses
 # INT_2X4_RC), so those ~1,215 SF now bill no batt at all and its stc is the uninsulated,
 # USG-tested 34 (UL U305/U314 at 16" o.c.).
-"fiberglass" = { material = { low = 0.45, high = 0.9 }, labour = { low = 0.45, high = 0.85 } }  # 1346.4 SF @ 3-1/2" — fastest batt to install, bottom of the $0.50-1.30 band. Was commented 438.8 SF, stale since the 2026-08-30 INT_2X4_RC retype; briefly 2420.4 on 2026-08-31 before INT_2X4_PARTITION's cavity was emptied.
+"fiberglass" = { material = { low = 0.45, high = 0.9 }, labour = { low = 0.45, high = 0.85 } }  # Derived 3-1/2" cavity-batt quantity; fastest batt to install, bottom of the $0.50-1.30 band.
 # 2026-08-31 — the 5-1/2" stud bay, i.e. an R-21 batt. **This is the correct SKU for a 2x6
 # bay, not an upgrade**: the library `fiberglass` tag is 3.7/in, which the `fiberglass-r19`
 # material comment records as the HIGH-DENSITY value for an R-21 squeezed into 5-1/2" —
@@ -5123,12 +5120,9 @@
 # 56" needs a FOUR-panel bifold, not a two-panel — doornmore prices a 4-door at $302.40 against
 # $103.50-206.50 for a 2-door, which is why the old $150 floor was wrong.
 "DT-INT-BIFOLD56" = { material = { low = 175, high = 500 }, labour = { low = 105, high = 225 } }  # 1 ea — was 2 until D-M-LAUN became a pocket (2026-08-21); O-S-CLOSET is the last one
-# ** NOT RE-SOURCED IN THIS PASS ** — the slab only. The frame kit is a counted part in
-# [hardware], not folded in here, which is the point of billing it as hardware at all. A
-# 4'-0" x 6'-8" leaf is past every stock interior ladder, so this brackets off DT-INT-DOUBLE60,
-# the same 60"-class special order in solid core. Labour is high for a single leaf on purpose:
-# the frame goes in before the drywall and a pocket cannot be adjusted afterwards.
-"DT-POCKET-INT-48" = { material = { low = 400, high = 1100 }, labour = { low = 260, high = 560 } }  # 1 ea
+# The 36" slab is priced separately from the counted frame kits in [hardware]. Labour
+# includes setting the frame before drywall and hanging and adjusting each leaf.
+"DT-POCKET-INT-36" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 2 ea, slab and installation; frame kits above
 "DT-INT-BYPASS48" = { material = { low = 200, high = 500 }, labour = { low = 100, high = 220 } }  # 1 ea — stock molded pair + track, to solid-core or mirrored
 "DT-INT-BYPASS60" = { material = { low = 240, high = 600 }, labour = { low = 100, high = 220 } }  # 1 ea — RM-M-PANTRY. Two 30" leaves on one track; same hardware and same hang as the 48", wider leaves
 # ** NOT RE-SOURCED IN THIS PASS ** — a hidden-jamb reveal door has no shelf price, because it
@@ -6971,7 +6965,7 @@ finish-tile-backer-and-waterproofing = { low = 2000, high = 4500 }
 # ** TWO OF THE 37 TAKE NO DOOR HARDWARE. ** D-G-OVERHEAD is the sectional garage door — it has
 # no lockset and no butt hinges, and its operator is the `finish-garage-door-opener` row below.
 # D-M-LAUN is a pocket door: its hardware is the track, jamb kit and edge pull that come with
-# DT-POCKET-INT-48 (and `takeoff/doors.py`'s pocket frame kit bills that), not a passage set on
+# DT-POCKET-INT-36 (and `takeoff/doors.py`'s pocket frame kit bills that), not a passage set on
 # hinges. The true count is 35.
 # ** THE RATE IS BACK TO ITS RESEARCHED $84-306 (2026-09-01). ** From 2026-08-30 this row read
 # $79-289, which is $84-306 x 35/37 — two doors scaled out of a rate because the driver could

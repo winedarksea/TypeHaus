@@ -483,7 +483,7 @@ WALLS = [
     # below it, bearing or not, and this wall overlaps both W-M-HS3 and W-M-HS4 on the main
     # storey's unbroken y=22'-4" band — `integrity.stack_ambiguous` is a hard ERROR on that
     # overlap without a tiebreaker regardless of structural_role. W-M-HS3 runs x
-    # 8'-0"..13'-4", which is also where W-M-HS4 (D-M-LAUN's 4'-0" pocket, off-limits per
+    # 8'-0"..13'-4", which is also where W-M-HS4 (D-M-LAUN's 3'-0" pocket, off-limits per
     # CLAUDE.md) would otherwise have been the only other candidate.
     Wall(uid="CSW147AAAA", tag="W-S-SN3", start_node="N-S-D4", end_node="N-S-C2C",
          assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9), stacks_on="W-M-HS3"),

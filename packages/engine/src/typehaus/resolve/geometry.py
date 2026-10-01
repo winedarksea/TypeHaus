@@ -52,12 +52,32 @@ def wall_frame(wall) -> tuple[Vec, Vec, Vec, float]:  # noqa: ANN001 — avoids 
 
 
 def opening_center(wall, opening) -> Vec | None:  # noqa: ANN001 — avoids an import cycle
-    """The point on ``wall``'s axis at ``opening.center_along_m``, or ``None`` if the wall's
-    axis is degenerate (→ ``wall_frame``)."""
-    origin, tangent, _normal, axis_length = wall_frame(wall)
+    """Opening station on the axis, shifted into the physical cavity for a pocket."""
+    origin, tangent, cross, axis_length = wall_frame(wall)
     if axis_length <= 1e-9:
         return None
-    return add(origin, scale(tangent, opening.center_along_m))
+    center = add(origin, scale(tangent, opening.center_along_m))
+    if getattr(opening, "pocket_run_m", None):
+        center = add(center, scale(cross, pocket_centerline_offset(wall)))
+    return center
+
+
+def pocket_centerline_offset(wall) -> float:  # noqa: ANN001 — avoids an import cycle
+    """Normal offset from authored nodes to the structure bay a pocket leaf occupies.
+
+    A wall's ``alignment`` can move its layers without moving the node line. Door fillings,
+    pocket keepouts, and pocket occupancy must follow the built stud cavity, not the datum.
+    """
+    origin, _tangent, cross, axis_length = wall_frame(wall)
+    if axis_length <= 1e-9:
+        return 0.0
+    structure = next((layer for layer in wall.layers if layer.function == "structure"), None)
+    if structure is None or not structure.polygon:
+        return 0.0
+    offsets = [(point[0] - origin[0]) * cross[0]
+               + (point[1] - origin[1]) * cross[1]
+               for point in structure.polygon]
+    return (min(offsets) + max(offsets)) / 2.0
 
 
 def bbox(points: list[Vec]) -> tuple[Vec, Vec]:

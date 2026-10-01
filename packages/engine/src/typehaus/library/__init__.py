@@ -52,6 +52,7 @@ from typehaus.library.assemblies import (
 )
 from typehaus.library.doors import (
     ALL_DOOR_TYPES,
+    DT_POCKET_INT_36,
     DT_POCKET_INT_48,
     POCKET_DOOR_TYPES,
     STANDARD_DOOR_TYPES,
@@ -127,6 +128,7 @@ __all__ = [
     "POCKET_DOOR_TYPES",
     "STANDARD_DOOR_TYPES",
     "ALL_DOOR_TYPES",
+    "DT_POCKET_INT_36",
     "DT_POCKET_INT_48",
     "ALL_RAILING_TYPES",
     "WINDOW_TYPES_16_INCH_MODULE",

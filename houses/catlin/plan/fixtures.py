@@ -63,7 +63,7 @@ BASEMENT_FIXTURES = (
     # west face and 4 5/16" at the east, down from 5 5/8" when the east wall moved.
     Fixture(uid="CBQ801AAAA", tag="FX-B-BATH-WC", type_ref="FX-TOTO-DRAKE",
             room="RM-B-BATH", position=pt(ft(12), inch(289.625)),
-            wall_ref="W-B-BA-E"),
+            wall_ref="W-B-STR2"),
     # Relocated from the mechanical room's utility sink, so the IFC GlobalId follows the
     # fixture rather than being retired with the tag.
     #
@@ -73,7 +73,7 @@ BASEMENT_FIXTURES = (
     # 2026-09-05 and was not re-centred**: re-centring drags `drain_position` and
     # PR-B-BATH-LAV with it for 5/8" of symmetry nobody can see. 18" deep, not
     # 21", is now a straight cost call rather than a door-swing one (see fixture_types.py on
-    # the big-box combo depth) — D-B-BATH is on the east wall and swings out.
+    # the big-box combo depth) — D-B-BATH pockets south into the hall wall.
     #
     # Position is measured off the wall's own layer polygons, which `Room.clear_face` follows.
     # Carcass y 18'-2 3/8"..19'-8 3/8"; the 21" front zone reaches y=21'-5 3/8", clear of
@@ -83,7 +83,7 @@ BASEMENT_FIXTURES = (
     # over SP-B-BATH-LAV.
     Fixture(uid="5BBZTZNBWN", tag="FX-B-BATH-LAV", type_ref="FX-VANITY-36-SHALLOW",
             room="RM-B-BATH", position=pt(ft(12), inch(227.375)), rotation=deg(180),
-            wall_ref="W-B-BA-E", drain_position=pt(ft(12), inch(224.375))),
+            wall_ref="W-B-STR2", drain_position=pt(ft(12), inch(224.375))),
 )
 
 # ** RM-M-BATH1 IS 61.98" x 44.24" BETWEEN FINISH FACES, AND THAT IS WHY THE WALL-HUNG
@@ -129,17 +129,14 @@ BASEMENT_FIXTURES = (
 # china's back lands ON W-M-HS1's finish face at y=271.385" — hence y=281.035" for a bowl
 # 19.3" deep.
 #
-# ** THE CARRIER IS IN W-M-HS1 AND `wall_ref` STILL SAYS W-M-BAE, ON PURPOSE. ** That is
-# this file's documented idiom (see ATTIC_FIXTURES: wall_ref names the WET wall a fixture
-# plumbs into, not the wall it hangs on). The bowl bolts to a frame in W-M-HS1 — retyped to
-# INT_2X6_STAGGERED_PLUMBING for FX-M-BATH2-WC, which is what makes it a legal home for one —
-# and its 3" waste drops through the deck in that wall's own bay. From there PR-B-WC1-DRAIN
-# runs to the W-M-BAE stack, which is where the vent takeoff (PR-M-WC-VENT, 49.8" away
-# against Table 1002.2's 72" for 3") and the supply riser already are. Both walls are 5.5"
-# of structure, so `advisory.wet_wall_depth` is satisfied either way, and the HOST wall is
-# graded on its own by `advisory.carrier_bay_depth`, which reads the wall the body backs onto
-# rather than `wall_ref`, and reports W-M-HS1's 5 1/2" against the 5 1/2" a Duofix-class
-# frame wants.
+# ** THE CARRIER IS IN W-M-HS1 AND `wall_ref` STILL SAYS W-M-BAE. ** `wall_ref` feeds vent
+# reachability; it does not describe the backing wall or a pipe inside that wall. The bowl
+# bolts to a frame in W-M-HS1 — retyped to INT_2X6_STAGGERED_PLUMBING for FX-M-BATH2-WC — and
+# its 3" waste drops through that wall's own bay. PR-B-WC1-DRAIN then runs to the collector;
+# PR-M-WC-VENT serves the fixture from above W-M-BAE. No supply, waste or vent riser runs
+# down W-M-BAE. `advisory.wet_wall_depth` currently treats `wall_ref` as a physical service
+# chase, so its 5 1/2" expectation does not describe this route; the HOST wall is separately
+# graded by `advisory.carrier_bay_depth`, which reads where the body backs onto W-M-HS1.
 #
 # ** THE CARRIER BAY AND FX-M-BATH2-WC SHARE 16.3" OF THIS WALL, AND THAT IS THE DETAIL, NOT
 # A DEFECT. ** The frame's clear bay runs x 16.53"..36.28" (19 3/4", Geberit's 500 mm
@@ -175,13 +172,10 @@ BASEMENT_FIXTURES = (
 # eighth of an inch out through the drywall. The wall's own axis at y=22'-4" is where it
 # actually runs: centred in the 5 1/2" cavity, 1" of cover each side.
 #
-# ** W-M-BAE IS THE WET WALL AND IT IS NOT A TYPO. ** W-M-BAE is a *vertical* wall on the
-# x = 6'-0" line while this bowl stands at x 1'-6.9"..2'-9.9" and backs onto W-M-HS1 — but
-# `Fixture.wall_ref` is the fixture's WET WALL for venting
-# (`checks/mep/plumbing_dwv.vent_reachability` reads nothing else), not a backing wall the
-# body touches. W-M-BAE stops at its own ceiling, so this WC takes the offset path —
-# `PR-M-WC-VENT`, whose x = 6' leg is W-M-BAE's own stud bay (plan/mep_venting.py, and the
-# comment there names both WC wet walls).
+# `Fixture.wall_ref` remains W-M-BAE because `checks/mep/plumbing_dwv.vent_reachability`
+# reads it as the vent target; it is not a backing wall or a claim that pipe runs down the
+# partition. The fixture backs onto W-M-HS1, its waste drops through that wall's bay, and
+# PR-M-WC-VENT serves it from above W-M-BAE.
 #
 # Pointing it at W-M-HS1 does not fail: W-S-SN1 stacks over HS1, so the check reports the
 # in-wall path and PASSES — silently orphaning PR-M-WC-VENT's bath1 leg. What catches it is
@@ -354,11 +348,11 @@ MAIN_FIXTURES = (
             wall_ref="W-M-W3",
             drain_position=pt(ft(1), ft(14, 5.375))),
     # --- RM-M-LAUNDRY -------------------------------------------------------------------
-    # 62 3/4"x48 3/4" alcove behind D-M-LAUN (56" bifold spanning the north side) — a
+    # 56 1/4"x47 1/4" clear alcove behind D-M-LAUN's 36" pocket door — a
     # closet, not a room you stand in: both appliances back onto the south wall (rotation
-    # 180) and front north through the opening. 28"+1"+24"=53" fits the stack+tub inside
-    # the 56" opening; the stack's west face sits on the door opening (not the wall face)
-    # to centre the tower on x=9'-6", the dryer receptacle's location.
+    # 180) and front north through the opening. The 27" tower and 24" tub are wider than
+    # the opening together, but their centre lines both fall inside it. The tub has 25"
+    # clear in front to the doorway; the tower is used while standing in the hall.
     #
     # `wall_ref` W-M-BA2E is the *service* wall (carries the washer standpipe/supply box),
     # not the back wall — both wastes drop through SL-M-DECK to the basement, so there is
@@ -367,7 +361,7 @@ MAIN_FIXTURES = (
     # Stacked pair (uid/tag kept so mep.py's `serves=("FX-M-LAUNDRY",)` refs still resolve).
     # Heat-pump dryer is ventless; its condensate drains via PR-M-DRYER-COND to the tub
     # beside it. It is the LG WashTower (plan/appliance_types.py), 27"x32 3/4"x74 3/8",
-    # leaving 16" of clear floor to the door plane — the margin the bifold track needs.
+    # leaving 12 5/8" of clear floor to the door plane.
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-LG-WASHTOWER",
               room="RM-M-LAUNDRY", position=pt(m(2.9421), m(6.01059)), rotation=deg(180),
               wall_ref="W-M-BA2E"),
@@ -617,7 +611,7 @@ GARAGE_FIXTURES = (
 # ** `wall_ref="W-A-STU-W"` ON ALL THREE FIXTURES, INCLUDING THE SHOWER THAT BACKS W-A-C2. **
 # That is FX-B-BATH-WC/FX-B-BATH-LAV's exact idiom above ("it's the room's only stud cavity,
 # carries their shared vent"), and it is load-bearing for both `mep.vent_reachability` and
-# `mep.trap_arm_length`: W-A-STU-W is the 5 1/2" staggered wet wall stacked on W-S-DC2, and
+# `mep.trap_arm_length`: W-A-STU-W is the 5 1/2" 2x6 wet wall stacked on W-S-DC2, and
 # every drop in this suite lands in it.
 #
 # ** advisory.fixture_overlap PASSES, AND THE TIGHT DIMENSION IS 2". ** FX-TOILET-STD's one
@@ -706,7 +700,7 @@ GARAGE_FIXTURES = (
 # ** `wall_ref` STAYS `W-A-STU-W` ON ALL THREE, AND THAT IS NOT A LEFTOVER. ** In this file
 # wall_ref names the WET wall a fixture plumbs into, not the wall it physically hangs on —
 # the shower has read that way since the suite was authored ("including the shower that
-# backs W-A-C2", above). W-A-STU-W is still the one 5 1/2" staggered cavity in the attic and
+# backs W-A-C2", above). W-A-STU-W is still the one 5 1/2" 2x6 cavity in the attic and
 # every drop still lands in it; `mep.vent_reachability` and `mep.trap_arm_length` both key
 # off that, and PR-A-STUBATH-VENT still has a vertex on its axis. It is now literally true
 # of the water closet as well, which is new.
@@ -789,7 +783,7 @@ ATTIC_FIXTURES = (
     # gives that measurement room to move: without it the arm lands within an inch of 60".
     #
     # ** `wall_ref` STILL NAMES W-A-STU-W AND MUST. ** It names the WET WALL, not the host —
-    # the drain and both supplies still collect in that 5 1/2" staggered cavity. Pointing it
+    # the drain and both supplies still collect in that 5 1/2" 2x6 cavity. Pointing it
     # at W-A-BATH-S raises `advisory.wet_wall_depth`: a 2x4 partition is not a wet wall, even
     # though the 2" revent rises in it.
     #

@@ -454,10 +454,10 @@ def test_the_laundry_pocket_ships_one_leaf_on_a_head_track(catlin_model):
     track, so unlike the slider the rail sits at the top of the opening.
     """
     pocket = next(op for op in catlin_model.openings if op.tag == "D-M-LAUN")
-    assert pocket.type_ref == "DT-POCKET-INT-48"
+    assert pocket.type_ref == "DT-POCKET-INT-36"
     door_type = next(dt for dt in catlin_model.plan.library.door_types
-                     if dt.tag == "DT-POCKET-INT-48")
-    assert door_type.width.inches == pytest.approx(48.0)
+                     if dt.tag == "DT-POCKET-INT-36")
+    assert door_type.width.inches == pytest.approx(36.0)
 
     gltf, blob = emit_gltf_dict(catlin_model)
     solids = _solids_of_node(gltf, blob, _opening_node(gltf, pocket.uid))

@@ -16,6 +16,7 @@ from typehaus.hardware.catalog import (
     ROLE_POCKET_DOOR_FRAME_KIT,
     hardware_for_role_and_nominal,
 )
+from typehaus.resolve.framing.tables import POCKET_SPLIT_STUD_2X6_MIN_DEPTH
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_row import hardware_row
 
@@ -30,19 +31,27 @@ def door_hardware_rows(model: ResolvedModel) -> list[dict]:
     raises there rather than billing nothing, on the same principle as every other role —
     a BOM line without a part is not a bill of materials.
     """
-    widths: dict[str, list[str]] = {}
+    widths: dict[tuple[int, str], list[str]] = {}
     for opening in model.openings:
         if not opening.pocket_run_m:
             continue
-        widths.setdefault(f"{round(opening.width_m * _M_TO_IN)}", []).append(opening.tag)
+        width = round(opening.width_m * _M_TO_IN)
+        wall = model.wall(opening.host_wall)
+        structure = next((layer for layer in wall.layers
+                          if layer.function == "structure"), None) if wall else None
+        # The 1560 kit supports a 2x6 wall face to face; the 1500PF is a 2x4 kit.
+        nominal = f"{width}-2x6" if width == 36 and structure and \
+            structure.thickness_m >= POCKET_SPLIT_STUD_2X6_MIN_DEPTH.meters \
+            else str(width)
+        widths.setdefault((width, nominal), []).append(opening.tag)
 
     rows: list[dict] = []
-    for nominal, tags in sorted(widths.items(), key=lambda item: int(item[0])):
+    for (width, nominal), tags in sorted(widths.items()):
         item = hardware_for_role_and_nominal(ROLE_POCKET_DOOR_FRAME_KIT, nominal)
         rows.append(hardware_row(
             item, scope="pocket door frame kit", count=len(tags),
-            part_number=item.part_number_by_length_in.get(int(nominal)),
-            size=f'{nominal}" door',
-            basis=f"one kit per pocket door at {nominal}\" leaf: {', '.join(sorted(tags))}",
+            part_number=item.part_number_by_length_in.get(width),
+            size=f'{width}" door',
+            basis=f"one kit per pocket door at {width}\" leaf: {', '.join(sorted(tags))}",
         ))
     return rows

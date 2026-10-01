@@ -254,8 +254,8 @@ VANITY_30_SINGLE = _LIB_VANITY_30_SINGLE.model_copy(update={
 
 # RM-B-BATH (basement, 86.62" x 39.61") and RM-A-STUBATH (attic guest bath). Both have far
 # more wall than 36" -- the constraint in each is elsewhere. In the basement it is
-# D-B-BATH's swing: the door's arc reaches the east wall, and a 21"-deep cabinet is caught
-# by it at every position on that wall while an 18"-deep one clears from the north face on.
+# The basement vanity spans the south end of a narrow room, so 18" depth preserves its
+# front clearance; D-B-BATH now pockets south and has no swing arc.
 # In the attic the vanity is held east of the west-wall receptacle and west of the shower.
 VANITY_36_SHALLOW = _LIB_VANITY_36_SHALLOW.model_copy(update={
     "product_ref": "PROD-SWAN-CONTOUR",
@@ -314,4 +314,3 @@ FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_48,
                  VANITY_24_SHALLOW, VANITY_30_SHALLOW, VANITY_30_SINGLE,
                  VANITY_36_SHALLOW, VANITY_48_SINGLE,
                  *WC_AND_SHOWER_TYPES)
-
