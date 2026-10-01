@@ -247,7 +247,7 @@ DRAINS = [
     # collector's invert — a top tee-in, not a side one.
     PipeRun(uid="ZK49S63X8X", tag="PR-B-LSINK-DRAIN", system=PipeSystem.DRAIN,
             # 18'-10 5/8", clear of joist-0-014's flange at 18'-9 1/4"; at 18'-9" it took 1.44".
-            path=(pt(ft(11, 10), ft(18, 10.625)), pt(ft(11, 10), ft(18, 10.625)),
+            path=(pt(ft(12, 0), ft(18, 10.625)), pt(ft(12, 0), ft(18, 10.625)),
                   pt(ft(6), ft(18, 10.625))),
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 2.4375)),
@@ -577,8 +577,8 @@ LAUNDRY_MAIN = [
     # Both ends ride their fixtures — it leaves the dryer's east face and turns south over
     # the tub.
     PipeRun(uid="5NYN0SKYSV", tag="PR-M-DRYER-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(ft(10, 8), ft(19, 8.635)), pt(ft(11, 10), ft(19, 8.635)),
-                  pt(ft(11, 10), ft(18, 11.135))),
+            path=(pt(ft(10, 8), ft(19, 8.635)), pt(ft(12, 0), ft(19, 8.635)),
+                  pt(ft(12, 0), ft(18, 11.135))),
             diameter=inch(0.75), material="pvc",
             elevations=(ft(5), ft(4), ft(3))),
 ]
@@ -742,20 +742,15 @@ CONDENSATE = [
 # falls to SM-B-RADON" to be an argument on its own. The air gap is what UPC 608.5 actually
 # requires; the slope is a slab-pour question the pour has to be told to fall this way
 # rather than assumed to. Flagged in plans/TODO.md.
-# ** ITS DATUM IS THE TANK'S WEST FACE, AND IT DID NOT MOVE WITH THE PORTS (2026-09-20). **
-# EQ-T-WATER-HEATER gained a dimensioned cold/hot pair on the tank TOP that day, and seven
-# path literals in plan/mep_supply.py moved onto them. This run is the eighth literal and
-# the only one that is NOT port-referenced: the relief valve is factory-installed and
-# HP-400-SO REV. 1 gives no station for it, so the type declares no relief `ServicePort`
-# there is nothing to land on. x=4'-4" is 2" west of the tank's west FACE (x=4'-6"), which
-# did not move — the new pair is offset 4" either side of the tank AXIS, in x, on the top —
-# so the plan datum is unchanged and so is the 3'-6" start. `test_water_heater_connections`
-# grades this one by PROXIMITY to the tank centre for exactly that reason, while the other
-# seven are graded against a port by service.
+# ** THE RELIEF LINE MOVED WITH THE TANK (2026-09-30). ** Its factory-installed valve has no
+# published station, so the type declares no relief `ServicePort`. The run starts 2" west of
+# the tank's west face, at x=7'-7", then drops and discharges one foot south at the same
+# elevations as before. `test_water_heater_connections` grades this by proximity to the tank
+# centre; the seven supply runs are graded against their service-specific ports.
 TPR_DISCHARGE = [
     PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(ft(4, 4), ft(24)), pt(ft(4, 4), ft(24)),
-                  pt(ft(4, 4), ft(23))),
+            path=(pt(ft(7, 7), ft(28)), pt(ft(7, 7), ft(28)),
+                  pt(ft(7, 7), ft(27))),
             diameter=inch(0.75), material="copper",
             elevations=(ft(3, 6), ft(0, 8), ft(0, 6))),
 ]

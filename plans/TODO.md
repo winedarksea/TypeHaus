@@ -225,7 +225,6 @@ the future.
   an STC preset's tested core; (4) authored paint makes gypsum Class III, which moves Glaser.
 - The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
 - Cleanout caps likely need a double check on the plumbing
-- See if we can move EQ-T-WATER-HEATER up against the wall, it's rather awkwardly in the middle of the room now
 
 
 # Project Management

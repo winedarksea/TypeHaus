@@ -919,7 +919,7 @@ MAIN_PLACEABLES = [
     Furniture(uid="XJSV712BWZ", tag="FURN-M-LAUNDRY-RACK", type_ref="FURN-WALL-RACK-24", room="RM-M-LAUNDRY",
               mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-CLN", face="left", distance_from_start=inch(57.03125),
+                  wall_ref="W-M-CLN", face="left", distance_from_start=inch(59.03125),
                   normal_gap=inch(0), rotation_offset=deg(90)))),
 
     # --- RM-M-STUDY, the call booth -----------------------------------------------------
@@ -1208,20 +1208,20 @@ SECOND_PLACEABLES = [
     Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-QUEEN-BED", room="RM-S-BED1",
               position=pt(m(9.92317), m(4.24498)), rotation=deg(0)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
-              position=pt(m(9.68788), m(6.90099)), rotation=deg(-90)),
+              position=pt(m(9.95572), m(6.98818)), rotation=deg(0)),
     Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",
-              position=pt(m(9.95741), m(9.68733)), rotation=deg(0)),
+              position=pt(m(9.73747), m(9.97198)), rotation=deg(-90)),
     # Each regular bedroom gets the same compact study pair in the west-side strip. The
     # desk's back is against the west wall (rotation 90), leaving its pull-out zone toward
     # the room; the dining chair keeps the lighter dining-room plan and 3D appearance.
     Furniture(uid="DSK701AAAA", tag="FURN-S-DESK1", type_ref="FURN-DESK-48", room="RM-S-BED1",
-              position=pt(m(7.05463), m(3.4224)), rotation=deg(90)),
+              position=pt(m(8.44158), m(5.00697)), rotation=deg(0)),
     Furniture(uid="CHR701AAAA", tag="FURN-S-DESK-CHAIR1", type_ref="FURN-DESK-CHAIR", room="RM-S-BED1",
-              position=pt(m(7.61089), m(3.43304)), rotation=deg(-90)),
+              position=pt(m(8.39216), m(4.60918)), rotation=deg(-180)),
     Furniture(uid="DSK702AAAA", tag="FURN-S-DESK2", type_ref="FURN-DESK-48", room="RM-S-BED2",
-              position=pt(m(7.3692), m(5.88414)), rotation=deg(0)),
+              position=pt(m(8.49481), m(7.75018)), rotation=deg(0)),
     Furniture(uid="CHR702AAAA", tag="FURN-S-DESK-CHAIR2", type_ref="FURN-DESK-CHAIR", room="RM-S-BED2",
-              position=pt(m(7.38828), m(6.31867)), rotation=deg(0)),
+              position=pt(m(8.49954), m(7.44471)), rotation=deg(-180)),
     # BED3's pair SWAPPED SLOTS WITH THE WARDROBE, 2026-09-06, to clear the north wall for
     # WIN-S-HALL-N, which moved west to ctr x 24'-0" (RO 22'-9"..25'-3", sill 3'-0") when
     # the north facade was squared up — see second.py. The room has exactly two 48" slots
@@ -1278,15 +1278,15 @@ SECOND_PLACEABLES = [
     # BED1's and BED2's wardrobes sit over ED-S-BED1-RC1 / ED-S-BED2-RC1 (north-wall general
     # receptacles, 16"-18" AFF) — not a code problem, but worth knowing before boxes are set.
     Furniture(uid="CSB704AAAA", tag="FURN-S-BED1-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED1", position=pt(m(8.4499), m(5.00697)), rotation=deg(0)),
+              room="RM-S-BED1", position=pt(m(7.04533), m(3.46448)), rotation=deg(90)),
     Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED2", position=pt(m(7.35693), m(7.74426)), rotation=deg(0)),
+              room="RM-S-BED2", position=pt(m(7.08147), m(6.05473)), rotation=deg(90)),
     # BED3's slot is EXACT, not approximate: resolved x 293.5..341.5, y 322.5..346.5 on the
     # south wall, with 0.500" to D-S-BED3's swing arc and 0.524" to the bed's west side zone.
     # Any later move of FURN-S-BED3, D-S-BED3 or the 18" zones re-opens
     # integrity.door_swing_conflict / integrity.placeable_recommended_clearance_conflict.
     Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED3", position=pt(m(8.0645), m(8.4963)), rotation=deg(180)),
+              room="RM-S-BED3", position=pt(m(10.1772), m(8.49313)), rotation=deg(180)),
 
     # Linen/towel storage in the hall bath: a 72"x24"x96" pantry-closet carcass
     # (CASE-PANTRY-CLOSET-72) on the south wall, the only run RM-S-BATH1 has free (west has

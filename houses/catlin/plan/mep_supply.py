@@ -206,22 +206,29 @@ SUPPLY = [
                     # 1 1/4" trunk that carries 64 in Table 610.4's 46-60 psi column, so the
                     # tee costs nothing in size.
                     "FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
-    # ** x=5'-10" IS EQ-B-WH's HOT TAP, NOT THE TANK'S CENTRE. ** The type carries a
-    # dimensioned top pair since 2026-09-20 — cold 4" west of the axis, hot 4" east — so the
-    # hot riser and the four branches that tee off its head all stand on x=5'-10" and the two
-    # cold runs on x=5'-2". The riser starts at 5'-8", the tank TOP, not the old 3'-9 7/16"
-    # inside the tank body. `tests/test_water_heater_connections.py` grades every one of the
-    # seven against `resolve/mep_ports.placed_ports` BY SERVICE: a hot run that lands on the
-    # cold tap now fails, which the centroid test it replaced could not see.
+    # ** THE FIRST POINT IS THE MOVED HOT PORT (2026-09-30). ** The top ports remain
+    # 8" apart; the heater is turned so hot is west and cold east. Against W-B-STR3 at
+    # (8'-9", 28'-0"), the hot port and its short riser sit at x=8'-5", clear of the east
+    # service lane where the sauna vent and ERV branch occupy x=9'. The trunk offsets west and
+    # south over the tank top, then rises to 7'-4" at (7'-6", 26'-6"). It stays below the branch band to y=20'-6", steps to the hot
+    # branch band to cross the cold bath pair, then rises to 8'-6 5/8" east of the bath2 tub
+    # drain and above the laundry-sink drain. South of the suite branch it drops below the cold
+    # bath1 riser, crosses west, rises, and returns north to the suite tee. The connection test
+    # grades the first point against EQ-B-WH.hot as resolved, rather than a copied coordinate.
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(5, 10), ft(24)), pt(ft(5, 10), ft(24)), pt(inch(73.6), inch(262)),
-                  pt(ft(6, 6), ft(19, 2.4)), pt(ft(6, 6), ft(19, 2.4)),
+            path=(pt(ft(8, 5), ft(28)), pt(ft(8, 5), ft(28)), pt(ft(8, 5), ft(28)),
+                  pt(ft(7, 6), ft(25, 6)), pt(ft(7, 6), ft(25, 6)),
+                  pt(ft(7, 6), ft(20, 6)), pt(ft(7, 9), ft(20)),
+                  pt(ft(7, 9), ft(20)), pt(ft(7, 9), ft(20)),
+                  pt(ft(7, 9), ft(17)), pt(ft(7, 9), ft(16, 6)),
+                  pt(ft(7, 9), ft(16, 6)), pt(ft(6, 6), ft(16, 6)),
+                  pt(ft(6, 6), ft(16, 6)), pt(ft(6, 6), ft(17)),
                   pt(ft(6, 6), ft(15, 6))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            # The diagonal dips to 8'-0" from y=21'-10" to 19'-2.4": at the hot band its jacket
-            # took 1.31" of FS-M-WEST's sister-1 bottom flanges (mep.run_in_joist_flange).
-            elevations=(ft(5, 8), ft(8, 1.4375), ft(8), ft(8), ft(8, 1.4375),
-                        ft(8, 1.4375)),
+            elevations=(ft(5, 8), ft(5, 9.5), ft(8, 1.4375), ft(8, 1.4375),
+                        ft(7, 4), ft(7, 4), ft(7, 4), ft(8, 1.4375),
+                        ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(7, 4),
+                        ft(7, 4), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
                     "FX-M-KITCH-SINK",
@@ -237,7 +244,7 @@ SUPPLY = [
     # Cold feed to the water heater itself (equipment, not a fixture — no fixture units).
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(4, 9), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(19, 2.4)),
-                  pt(ft(5, 2), ft(24)), pt(ft(5, 2), ft(24))),
+                  pt(ft(7), ft(27)), pt(ft(7), ft(27)), pt(ft(9, 1), ft(28))),
             diameter=inch(1), material="copper",
             # Two inches OVER the cold band from the water-heater end of the tee onward, and
             # its drop stays ON the tank. Both are the same defect seen
@@ -253,18 +260,18 @@ SUPPLY = [
             # `mep.run_interference` shout and made any nudge look like a disconnection.
             # That was named here as the wrong trade and as wanting "a dimensioned tank type,
             # the same move D1 and D3 made for the ERV plenums", and that is the move this
-            # is: cold lands on EQ-B-WH.cold at x=5'-2", the hot side on .hot at x=5'-10",
-            # 8" apart on the tank's own top. The last 4'-9.6" of the north leg therefore
-            # drifts 4" west — the crossing with PR-B-CW-BATH1 at (5'-6", 20'-7 1/2") is
-            # unaffected, it is south of the drift. The drop itself now stops at 5'-8", the
-            # TOP of the tank, instead of running 22 1/2" down INSIDE it to the old 3'-9.4"
-            # mid-body elevation: these are top connections (HP-400-SO REV. 1).
+            # The moved endpoint is EQ-B-WH.cold at x=9'-1", y=28'-0", with the hot tap 8" west
+            # on the same tank top. The ceiling run drops outside the tank's southwest corner,
+            # then crosses the tank top at the 5'-8" connection elevation to the cold tap. This
+            # keeps the ceiling drop west of the sauna vent and avoids PR-B-HW-WASH's hot riser.
+            # The tank-end vertex remains at 5'-8", the TOP connection specified by HP-400-SO REV. 1.
             # The cold band rides INSIDE FS-M-WEST's I-joist
             # web, whose window is -10 1/2" to -1 3/8"; two inches down puts a 1" PEX's
             # invert 7/8" into the bottom flange and `mep.run_member_crossing` says so. Two
             # inches up is the same 2" of separation in the half of the window that is
             # empty.
-            elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(5, 8))),
+            elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375),
+                        ft(8, 6.6375), ft(5, 8), ft(5, 8))),
     # Main-storey groups.
     #
     # THE BATH1 PAIR ROUTES AROUND D-M-BATH1'S DOORWAY, WHICH IS THE ONE DEFECT
@@ -344,7 +351,7 @@ SUPPLY = [
             # Nothing here shares a lane with PR-B-CW-BATH1, which is why the two risers
             # land in this order — and since 2026-09-19 they are also 3.2" apart in z
             # wherever their ceiling legs cross, which is what the convention is for.
-            path=(pt(ft(5, 10), ft(24)), pt(ft(5, 10), ft(24, 2.5)),
+            path=(pt(ft(8, 5), ft(28)), pt(ft(5, 10), ft(24, 2.5)),
                   pt(ft(4, 4), ft(24, 2.5)), pt(ft(4, 4), ft(22, 4)),
                   pt(ft(4, 4), ft(22, 4)), pt(ft(4, 4), ft(22, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
@@ -402,9 +409,9 @@ SUPPLY = [
     #     be one pipe inside the other; stacked is how the pair is actually run in a cavity.
     #   * the hot rides 42", over the cold riser's 36" head and the standpipe's 36" top, on
     #     W-M-BA2E's axis (see PR-B-HW-WASH).
-    #   * the cold stops 8" short of the hot (x=11'-7 1/2" against 12'-3 1/2", the bowl
+    #   * the cold stops 8" short of the hot (x=11'-9 1/2" against 12'-5 1/2", the bowl
     #     centre +/-4", hot on the LEFT of someone facing the faucet). So the hot's drop at
-    #     12'-3 1/2" comes down past 32" east of where the cold's leg ends, and misses it.
+    #     12'-5 1/2" comes down past 32" east of where the cold's leg ends, and misses it.
     #   * THE CORNER SEGMENT NAMES NO WALL, DELIBERATELY. W-M-BA2E ends at y=18'-0" and
     #     W-M-CLN starts at x=8'-5 3/8": the two only TOUCH, so no point is inside both and a
     #     leg claiming either one leaves its structure footprint — `mep.wet_wall_occupancy` is
@@ -428,7 +435,7 @@ SUPPLY = [
             # The riser tops out at the run's own +2'-8" and turns north; the washer valve at
             # +3'-0" is a tee off it, which a supply run does not draw. Overshooting to 3'-0"
             # and dropping back drew that tee as a 180-degree reversal.
-            path=(pt(ft(8, 4), ft(16)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(ft(11, 7.5), ft(18, 1)), pt(ft(11, 7.5), ft(18, 1)),),
+            path=(pt(ft(8, 4), ft(16)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(ft(11, 9.5), ft(18, 1)), pt(ft(11, 9.5), ft(18, 1)),),
             diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375),
                         ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375),
@@ -442,11 +449,11 @@ SUPPLY = [
             # through PR-M-WASH-STANDPIPE, which tops out at 3'-0", so the leg rides 3'-6"
             # (12'-7 7/16" basement-rel). The riser is at y=20'-9 1/4", the bay south of
             # joist-0-016 — at 21'-2.4" the jacket took its flanges.
-            path=(pt(ft(5, 10), ft(24)), pt(ft(8, 2), ft(20, 9.25)),
+            path=(pt(ft(8, 5), ft(28)), pt(ft(8, 2), ft(20, 9.25)),
                   pt(ft(8, 2), ft(20, 9.25)), pt(ft(8, 2), ft(20, 9.25)),
                   pt(ft(8, 2), ft(18, 1)),
-                  pt(ft(8, 6.5), ft(18, 1)), pt(ft(12, 3.5), ft(18, 1)),
-                  pt(ft(12, 3.5), ft(18, 1))),
+                  pt(ft(8, 6.5), ft(18, 1)), pt(ft(12, 5.5), ft(18, 1)),
+                  pt(ft(12, 5.5), ft(18, 1))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375), ft(12, 7.4375),
                         ft(12, 7.4375), ft(12, 7.4375), ft(12, 7.4375),
@@ -525,7 +532,7 @@ SUPPLY = [
     # 8" west of D-S-BATH1's above); x=6'-2.4" would leave half the pipe in W-M-STOS2's
     # corner pack after W-M-MUDC-E tees in. SP-M-HW-SBATH follows the same station.
     PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(5, 10), ft(24)), pt(ft(6, 4), ft(26, 6)),
+            path=(pt(ft(8, 5), ft(28)), pt(ft(6, 4), ft(26, 6)),
                   pt(ft(6, 4), ft(26, 6)), pt(ft(6, 4), ft(26, 6)),
                   pt(ft(6, 4), ft(26, 6))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
@@ -598,18 +605,19 @@ SUPPLY = [
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
             # North, east, then south: two stock 90s off the tap, where one diagonal made a
             # 137-degree hairpin no elbow turns.
-            path=(pt(ft(5, 2), ft(24)), pt(ft(5, 2), ft(26)), pt(ft(7), ft(26)),
-                  pt(ft(7), ft(20, 3)),
-                  pt(ft(10), ft(20, 3)), pt(ft(10), ft(19, 10)),
-                  pt(ft(10), ft(19, 10))),
+            path=(pt(ft(9, 1), ft(28)), pt(ft(9, 1), ft(26)), pt(ft(6, 6), ft(26)),
+                  pt(ft(6, 6), ft(26)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
+                  pt(ft(7), ft(20, 3)), pt(ft(10), ft(20, 3)),
+                  pt(ft(10), ft(19, 10)), pt(ft(10), ft(19, 10))),
             diameter=inch(0.5), material="copper",
-            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 6.6375),
-                        ft(8, 6.6375), ft(8, 6.6375), ft(2, 3.4375)),
+            elevations=(ft(5, 8), ft(5, 8), ft(5, 8), ft(8, 4.6375),
+                        ft(8, 4.6375), ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375),
+                        ft(8, 6.6375), ft(2, 3.4375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
             # The same two 90s as the cold, on its own line 4" south so the pair hangs side
             # by side rather than stacked.
-            path=(pt(ft(5, 10), ft(24)), pt(ft(5, 10), ft(25, 8)), pt(ft(7, 3.6), ft(25, 8)),
+            path=(pt(ft(8, 5), ft(28)), pt(ft(5, 10), ft(25, 8)), pt(ft(7, 3.6), ft(25, 8)),
                   pt(ft(7, 3.6), ft(19, 9)), pt(ft(10), ft(19, 9)),
                   pt(ft(10), ft(19, 4.5)), pt(ft(10), ft(19, 4.5))),
             diameter=inch(0.5), material="copper",

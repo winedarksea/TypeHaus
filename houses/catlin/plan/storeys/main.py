@@ -1196,13 +1196,13 @@ OPENINGS = [
     # corner. Nothing over the pocket takes a fastener longer than 1"
     # (`tables.POCKET_MAX_FASTENER`) or it reaches the leaf.
     #
-    # The 36" leaf starts at x=8'-11" and slides east across N-M-E3 into W-M-HS4.
+    # The 36" leaf starts at x=9'-2" and slides east across N-M-E3 into W-M-HS4.
     # Its closed end remains well clear of N-M-C2, where bearing W-M-C3 corners in.
-    # Shifted 2" west to give the tower a wider diagonal path past the tub. Both fixture
-    # centre lines remain within the opening, and the tub has 25" of clear depth to the
-    # doorway. This keeps the original sink and condensate receptor usable from the hall.
+    # Shifted east to keep the sink's centre line within the opening after moving the tub
+    # against the east drywall. The tower still has a 34 3/8" diagonal path past the tub;
+    # the tub has 25" of clear depth to the doorway and remains usable from the hall.
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-POCKET-INT-36",
-         position=from_node("N-M-D1", inch(9))),
+         position=from_node("N-M-D1", inch(12))),
     # Offset 6 11/16" off N-M-E4, not the 1'-2 11/16" it was: N-M-E4 moved north 8" with the
     # closet line, and this offset moved the same 8" so the door itself did not
     # move. 6 11/16" clears the corner stud pack (the D-M-MECH margin); the wall is only

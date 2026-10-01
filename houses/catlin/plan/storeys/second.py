@@ -568,13 +568,12 @@ OPENINGS = [
     # fix ED-S-BED2-RC5 records for the same wall one bedroom north, for the same reason.
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B1", ft(5, 5)), flip_swing=True),           # y 15'-8"
-    # 8 15/16" north of the source gap (24'-1"), unlike its two neighbours, and the only
-    # opening on this storey that leaves the survey: `flip_swing` on 2026-08-24 turned the
-    # leaf toward FURN-S-BED2-WARD, and the wardrobe has nowhere to go — the bed's side zone
-    # bounds it east, the swing bounds it west whichever hand the leaf takes. Moving the door
-    # was the way out. Asserted at its real y in test_openings_land_on_the_source_gaps.
+    # BED2's wardrobe moved to the west-side slot, freeing the source gap. The door centre is
+    # at 24'-4", the nearest legal station on W-S-BW2's stud module and 3" from the surveyed
+    # 24'-1" centre. The flipped hinge keeps its sweep clear of the rearranged furniture.
+    # Asserted in test_openings_land_on_the_source_gaps.
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B2", ft(4, 1.0625)), flip_swing=True),          # y 23'-0 1/16"
+         position=from_node("N-S-B2", ft(5, 5)), flip_swing=True, flip_hinge=True),  # y 24'-4"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B3", ft(0, 8)), flip_swing=True),                        # y 28'-11"
     # Just an opening, framed the same as a 30" door: no leaf needed for this passthrough.

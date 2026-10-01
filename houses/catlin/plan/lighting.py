@@ -1082,11 +1082,10 @@ MAIN_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(14),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # room=RM-M-MUD-CLOSET: the closet conversion framed a room around this ceiling point,
-    # and the light's `room` has to name it or `integrity.placeable_room_mismatch` fires.
-    # Nothing moves — a label catching up with a wall.
+    # Centred in RM-M-MUD-CLOSET's 63" x 32 3/4" clear footprint, between the resolved
+    # interior faces of W-M-W1C/W-M-MUDC-E and W-M-STOS/W-M-MUDC-N.
     ElectricalDevice(uid="QTM000XAAA", tag="ED-M-STORAGE-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5), ft(29)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(3, 2.125), ft(28, 0.75)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-MAIN", room="RM-M-MUD-CLOSET",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -1160,7 +1159,9 @@ MAIN_LIGHTING = [
     # all: only CD-M-DATA-KITCH at 9'-2 1/4" and PR-M-S-BATH1-LAV-DRAIN's leg at
     # 9'-6 11/16"..9'-9 3/4", both above a 5" housing hung off a 106 1/4" ceiling.
     #
-    # So: the cans go on the walk, the bench gets a sconce instead. Two 3" cans at x=8'-0",
+    # The original layout kept cans on the walk and lit the bench with a sconce. A third
+    # 3" can is now centred over the bench below; its bay and housing depth need coordination
+    # with the ERV radials before installation. The two walk cans remain at x=8'-0",
     # which is D-M-ENTRY's RO centreline AND D-M-MUD's — the walk is one straight line and
     # the lights are on it. y=28'-8" and y=34'-0" are both mid-bay on the truss module
     # (chords at 16" off y=0, so 8" + n x 16"), 6" of clear chord either side of a 3 3/4"
@@ -1175,10 +1176,18 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      controlled_by=("ED-M-MUDROOM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The bench's own light, and a sconce rather than a can for two reasons: the ceiling
-    # over it is full of ERV radials (above), and a downlight puts light on the top of a
-    # bowed head. This is mark H, the up/down already bought 15 times in this house — no
-    # new type, no new prices.toml row. Centred y=31'-4" on the bench and on WIN-M-MUD,
+    # A third can centres over the 36" bench (position x=15 1/8", y=31'-4"). It joins the
+    # existing mudroom dimmer. The west ceiling band carries ERV radials; confirm a clear
+    # bay and the 3" fixture's actual housing depth during duct coordination before install.
+    ElectricalDevice(uid="MUDCAN00001", tag="ED-M-MUDROOM-CAN3", kind=DeviceKind.LIGHT,
+                     position=pt(inch(15.125), ft(31, 4)), type_ref="ED-T-LT-CAN3",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
+                     controlled_by=("ED-M-MUDROOM-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # The bench's wall light remains as layered light beside the new can. The can's ceiling
+    # location needs duct coordination (above), and the sconce avoids putting all bench light
+    # on the top of a bowed head. This is mark H, the up/down already bought 15 times in this
+    # house — no new type, no new prices.toml row. Centred y=31'-4" on the bench and WIN-M-MUD,
     # which the bench centreline fixes; at 6'-8" it clears the window's 5'-6" head by 8"
     # and the 106 1/4" ceiling by 20". x=8 11/16" is the face convention: W-M-W1's paint
     # plane is 6.635" and the 4"-deep body is centred on its own position.
@@ -1873,7 +1882,7 @@ GARAGE_LIGHTING = [
     ElectricalDevice(uid="4PQRD03TG8", tag="ED-G-LT3", kind=DeviceKind.LIGHT,
                      # x=8'-3" is the interior landing's centre (sheet 6'-7"..9'-11 5/8")
                      # since the service door moved into the SW corner on 2026-09-11.
-                     position=pt(ft(8, 3), ft(45, 6)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(m(2.6101), m(13.8606)), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),

@@ -29,6 +29,7 @@ from typehaus import (
     Service,
     ServicePort,
     SleevePenetration,
+    deg,
     ft,
     inch,
     pt,
@@ -476,32 +477,21 @@ DUCTS_HVAC_SECOND = [
 # "this storey has no horizontal duct" is a fact worth stating where the list would be.
 DUCTS_HVAC_ATTIC = []
 
-# The tank sits at (5'-6", 24'-0"), which frees the furnace room's NE corner for the ESS
-# closet (plan/storeys/basement.py). It is not a preference: EQ-B-ESS-BATT declares a
-# REQUIRED 48" x 41" separation zone all round (EQ-T-ESS-BATT, above),
-# `advisory.ess_clearance` grades it with no room-or-wall exemption. With the room only 10'
-# wide there is no room to buy the 48" in x — every foot west of x=3'-11" is the 36" NEC
-# 110.26 working space in front of ED-B-PANEL, ED-B-BACKUP-PANEL, ED-B-BACKUP-ENCL and
-# ED-B-NET-PATCH — so the 41" had to come out of y, south.
+# The tank sits against W-B-STR3 at (8'-9", 28'-0"), with a nominal 1/8" gap to the resolved
+# east interior face, and service access facing west into RM-B-FURNACE. This open wall bay is
+# below the ESS closet (the battery's 48" x 41" required separation zone begins at
+# y=31'-6") and north of the inverter; its north edge is 2'-6" south of that zone. The tank
+# clears D-B-FURN's leaf (which sweeps to y=20'-8"), the vent/service lane, and the 36" NEC
+# 110.26 working spaces along the west wall. Its 24" footprint remains inside the room face.
 #
-# (5'-6", 24'-0") is what is left once the room's other fixed points are honoured: north of
-# D-B-FURN's leaf (which sweeps to y=20'-8"), west of EQ-B-ESS-INV (x=7'-0 5/16"), south of
-# EQ-B-ERV (y=28'-1 5/8"), and starting at x=4'-6" so the panel wall's working space stays
-# clear. It also SHORTENS the plumbing: all three runs below leave the tank heading south,
-# and PR-B-CW-WH arrives straight up its own x=5'-6" line instead of doglegging.
-#
-# **Eight literals, two ports.** This coordinate is no longer what the pipes land on: since
-# the type gained a dimensioned cold/hot pair (above), seven path endpoints in
-# plan/mep_supply.py carry the PORT'S station — x=5'-2" for the two cold runs, x=5'-10" for
-# the five hot — and PR-B-WH-TPR (plan/mep_drainage.py) is dimensioned off the tank's WEST
-# FACE, which is the eighth. Move the tank without moving all eight and the hot trunk, the
-# cold feed and five branches silently disconnect — nothing in the resolver pulls a pipe
-# onto its equipment. `test_water_heater_connections.py` now asserts each run's tank end
-# lands on the RESOLVED port matching its SERVICE (resolve/mep_ports.placed_ports), so a
-# hot run that drifts onto the cold tap is caught too, which the old centroid test could
-# not see.
+# **Eight connection datums move with the tank.** EQ-T-WATER-HEATER's exact top ports stay
+# 4" either side of its axis, cold west and hot east. The seven supply run endpoints in
+# plan/mep_supply.py now follow those resolved port stations, and PR-B-WH-TPR in
+# plan/mep_drainage.py follows the tank's west face. The water-heater connection test grades
+# every run against its service-specific resolved port and checks relief proximity.
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(ft(5, 6), ft(24)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",
+             position=pt(ft(8, 9), ft(28)), rotation=deg(180),
+             footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",
              relief_discharge_ref="PR-B-WH-TPR"),
 ]

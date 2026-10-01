@@ -34,8 +34,8 @@ BASEMENT_CLEANOUTS = [
                   access="wall", wall_ref="W-B-STR",
                   clear_width=inch(24), clear_depth=inch(24)),
     DrainCleanout(uid="COB0000005", tag="CO-B-LSINK", pipe_ref="PR-B-LSINK-DRAIN",
-                  position=pt(ft(11, 10), ft(18, 10.625)), fitting_elevation=inch(94.04),
-                  cap_position=pt(ft(11, 10), ft(18, 2)), cap_elevation=inch(98.04),
+                  position=pt(ft(12, 0), ft(18, 10.625)), fitting_elevation=inch(94.04),
+                  cap_position=pt(ft(12, 0), ft(18, 2)), cap_elevation=inch(98.04),
                   access="wall", wall_ref="W-B-CW2",
                   clear_width=inch(18), clear_depth=inch(18)),
     # Buried branches use flush caps in the basement slab, away from their fixture drops.

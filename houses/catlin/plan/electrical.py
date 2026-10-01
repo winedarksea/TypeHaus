@@ -88,7 +88,7 @@ from typehaus import (
     inch,
     pt,
 )
-from typehaus.model import Location, WallAttachment
+from typehaus.model import Location, WallAttachment, m
 
 DEVICE_TYPES = (
     # `service_amps` is the service size as data: it's what 220.82 demand is compared
@@ -2407,9 +2407,7 @@ NEC_FILL_SECOND = [
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-E2", face="left", distance_from_start=inch(98.125),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                     location=Location(attachment=WallAttachment(wall_ref="W-S-E2", face="left", distance_from_start=m(1.83264), normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC031AAAA", tag="ED-S-BED1-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
@@ -2443,9 +2441,7 @@ NEC_FILL_SECOND = [
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-E3", face="left", distance_from_start=inch(103.125),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                     location=Location(attachment=WallAttachment(wall_ref="W-S-E3", face="left", distance_from_start=m(2.0189), normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC035AAAA", tag="ED-S-BED2-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",

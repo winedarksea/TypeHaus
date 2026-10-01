@@ -230,11 +230,11 @@ SUPPLY_STOPS = [
     # The water heater's cold inlet — the one stop in this list that IS at its branch's own
     # end rather than at a fixture, and the one the house most obviously lacked. P2903.9.2
     # wants a valve on the cold supply to a water heater; without it, changing an anode rod
-    # or a T&P valve means closing the main. It stands at the tank in the mechanical room at
-    # the run's own 4'-0" invert, with nothing over it — the most accessible valve in the
-    # house after the main itself.
+    # or a T&P valve means closing the main. It stands at the tank's moved cold port in the
+    # mechanical room, with nothing over it — the most accessible valve in the house after
+    # the main itself.
     PipeAccessory(uid="XTPXNZ8PRZ", tag="PA-B-WH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-WH", position=pt(ft(5, 6), ft(24)),
+                  pipe_ref="PR-B-CW-WH", position=pt(ft(9, 1), ft(28)),
                   accessible=True, room="RM-B-FURNACE",
                   model='1" full-port bronze ball valve, lever handle, at the tank inlet',
                   serves=("EQ-B-WH",)),

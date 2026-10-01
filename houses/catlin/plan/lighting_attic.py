@@ -19,7 +19,7 @@ from typehaus import (
     inch,
     pt,
 )
-from typehaus.model import Location, WallAttachment
+from typehaus.model import Location, WallAttachment, m
 
 # ** EVERY CEILING ELEVATION IN THIS FILE ANSWERS TO ONE LINE (2026-08-29). ** The attic
 # went 6:12 on a 1 1/2" rafter plate, so the roof underside above the attic finished floor is
@@ -379,10 +379,10 @@ ATTIC_LIGHTING = [
     # (3'-7 1/2" of ceiling) beside the ERV manifold, satisfying IRC M1305.1.3's light at
     # the appliance. No `recessed_into_host_surface`: this one is surface mounted.
     ElectricalDevice(uid="QTA000AAAA", tag="ED-A-POCKET-LT1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(7), ft(30)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(m(2.66693), m(9.14322)), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-UPPER", room="RM-A-POCKET",
                      controlled_by=("ED-A-POCKET-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(3, 4.5))),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(3, 4.5)), rotation=deg(90)),
     # ** IT SWITCHES THE POCKET AND IT LIVES IN THE STUDIO, 2026-09-09 — BOTH HALVES. **
     # `room=` names the room the device is IN, not the room it controls, and this box is
     # 1 1/8" off W-A-STU-N's studio-side gypsum (axis y=268", INT_2X4_PARTITION); RM-A-POCKET
