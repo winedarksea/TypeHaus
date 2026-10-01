@@ -315,6 +315,34 @@ def linear_light() -> Builder:
     return build
 
 
+def mirror_light() -> Builder:
+    """Full-height mirror with a slim illuminated perimeter, mounted against a wall."""
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        frame = min(width, height) * 0.0254  # one-inch frame/band
+        face_depth = depth * 0.12
+        strokes = [rect(0, 0, width, depth, fill="luminaire-housing"),
+                   rect(0, 0, width - 2 * frame, depth * 0.65, fill="mirror",
+                        weight=DETAIL_WEIGHT)]
+        # The integrated LED is a narrow luminous border, while most of the body remains
+        # reflective glass. Keeping the mirror face in front makes its identity legible.
+        face_y = -depth * 0.30
+        bar = frame * 0.35
+        parts = [box(0, 0, 0, height, width, depth, "luminaire-housing"),
+                 box(0, face_y, frame, height - frame, width - 2 * frame,
+                     face_depth, "mirror"),
+                 box(0, face_y, height - bar, height, width - 2 * frame,
+                     face_depth * 1.1, "lamp"),
+                 box(0, face_y, 0, bar, width - 2 * frame, face_depth * 1.1, "lamp"),
+                 box(-width / 2 + frame / 2, face_y, height / 2, height - 2 * frame,
+                     bar, face_depth * 1.1, "lamp"),
+                 box(width / 2 - frame / 2, face_y, height / 2, height - 2 * frame,
+                     bar, face_depth * 1.1, "lamp")]
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def suspended_linear_light() -> Builder:
     """A cable-hung linear tube: shallow body below, two supports above.
 
@@ -411,6 +439,7 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "cluster-pendant": cluster_pendant(globes=20),
     "ceiling-fan-light": ceiling_fan_light(blades=4),
     "linear-light": linear_light(),
+    "mirror-light": mirror_light(),
     "suspended-linear-light": suspended_linear_light(),
     "wave-chandelier": wave_chandelier(strips=5),
 }

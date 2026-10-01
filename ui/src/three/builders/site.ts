@@ -205,12 +205,16 @@ export function buildCanvasObjectParts(
   const materials = new Map<string, THREE.Material>();
   for (const [index, part] of parts.entries()) {
     const board = boardStyleFor(part.material_ref, catalog);
-    const key = board ? `${board.key}|${part.color}` : part.color;
+    const opacity = part.opacity ?? 1;
+    const key = `${board ? board.key : ""}|${part.color}|${opacity}`;
     let material = materials.get(key);
     if (!material) {
       material = board ? createPlankMaterial(mode, board, part.color)
         : standardMaterial(new THREE.Color(part.color), mode,
           { roughness: mode === "nordic" ? NORDIC_ROUGHNESS.massing : 1 });
+      material.opacity = opacity;
+      material.transparent = opacity < 1;
+      material.depthWrite = opacity >= 1;
       materials.set(key, material);
     }
     const [sx, sy, sz] = part.size;

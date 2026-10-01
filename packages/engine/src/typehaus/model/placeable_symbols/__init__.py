@@ -54,6 +54,7 @@ SYMBOL_NAMES = frozenset({
     "sofa", "loveseat", "sectional", "armchair", "dining-chair", "office-chair",
     "dining-table", "round-table", "coffee-table", "end-table", "desk", "wall-desk",
     "dresser", "chest", "nightstand", "media-console", "bookcase",
+    "wardrobe-show", "wardrobe-hang",
     "bed", "tv", "potted-plant", "wall-rack", "peg-rail",
     # sauna joinery — benches are fitted to the room, not bought as a set
     "sauna-bench", "sauna-bench-tiered",
@@ -84,7 +85,7 @@ SYMBOL_NAMES = frozenset({
     # a cove strip is a LightRun polyline, drawn by the lighting plan, not a placeable.
     # "linear-light" covers ordinary compact linear fixtures. The plant tube has the
     # same plan glyph but its own 3D cable-suspension massing.
-    "recessed-can", "panel-light", "sconce", "sconce-updown", "sconce-spot",
+    "recessed-can", "panel-light", "sconce", "sconce-updown", "sconce-spot", "mirror-light",
     "pendant", "chandelier", "cluster-pendant", "ceiling-fan-light", "linear-light",
     "suspended-linear-light", "wave-chandelier",
 })

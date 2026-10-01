@@ -72,14 +72,14 @@ PAX_SHOW = FurnitureType(
     tag="FURN-M-PAX-SHOW",
     name='PAX 39 3/8" open frame: drawers below (some glass-front for show), tall shelves above',
     footprint=(inch(39.375), inch(22.875)), height=inch(92.875),
-    storage=True, work_surface=False, plan_symbol="bookcase",
+    storage=True, work_surface=False, plan_symbol="wardrobe-show",
     product_ref="PROD-IKEA-PAX-WALL", source=_PAX_SOURCE,
 )
 PAX_HANG = FurnitureType(
     tag="FURN-M-PAX-HANG",
     name='PAX 39 3/8" open frame: one low drawer, dress-length rail, two shelves on top',
     footprint=(inch(39.375), inch(22.875)), height=inch(92.875),
-    storage=True, work_surface=False, plan_symbol="bookcase",
+    storage=True, work_surface=False, plan_symbol="wardrobe-hang",
     product_ref="PROD-IKEA-PAX-WALL", source=_PAX_SOURCE,
 )
 # The custom bay: two rods cut to the 32" between the west wall and the central frame's
@@ -136,7 +136,7 @@ CLOSET_LUMINAIRE_TYPES = (
                   name='24" x 60" front-lit full-length LED mirror, hardwired',
                   form=LuminaireForm.MIRROR_LIGHT, type_mark="P2",
                   footprint=(inch(24), inch(1.5)), height=inch(60),
-                  plan_symbol="linear-light",
+                  plan_symbol="mirror-light",
                   lamp="LED integrated, front-lit perimeter band", watts=36.0,
                   lumens=2400.0, cct_k=3000, cri=90, dimmable=True, integral_switch=True,
                   load_va=40.0, ports=_POWER_120,

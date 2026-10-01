@@ -7,7 +7,13 @@ from typing import Any
 
 from typehaus.model.built_in_bookcase import built_in_bookcase_parts
 from typehaus.model.electrical import luminaire_types
-from typehaus.model.placeable_symbols import lamp_role, model_parts, part_hex, plan_symbol_strokes
+from typehaus.model.placeable_symbols import (
+    PART_COLORS,
+    lamp_role,
+    model_parts,
+    part_hex,
+    plan_symbol_strokes,
+)
 from typehaus.model.placeables import PlacementStrategy
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.geometry import opening_center, wall_frame
@@ -73,7 +79,8 @@ def _wood_part(role: str, wood: Any | None) -> dict[str, Any]:
     """A part's colour, and the material it is made of when it is the type's named wood."""
     if role == "wood" and wood is not None:
         return {"color": wood.color[:7], "material_ref": wood.tag}
-    return {"color": part_hex(role)}
+    opacity = PART_COLORS[role][3]
+    return {"color": part_hex(role), **({"opacity": opacity} if opacity < 1 else {})}
 
 
 def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict[str, Any]:

@@ -772,6 +772,19 @@ export function runCanvasObjectPartsTests() {
   assert(Math.abs(back.position.x) < 1e-9 && Math.abs(back.position.y - 0.4) < 1e-9
     && Math.abs(back.position.z + 0.3) < 1e-9, "A part offset maps (x, y, z) -> (x, z, -y)");
   assert(back.rotation.y === 0, "Rotation is the group's job, never the part's");
+
+  const glassParts: ModelPart[] = [
+    { center: [0, 0, 0.3], size: [1, 0.01, 0.2], color: "#b8d1db", opacity: 0.55 },
+    { center: [0, 0, 0.6], size: [1, 0.01, 0.2], color: "#b8d1db" },
+  ];
+  const glassGroup = buildCanvasObjectParts(new THREE.Group(), item, glassParts, [0, 0],
+    "schematic", 0, [], new Map());
+  const glass = (glassGroup.children[0] as THREE.Mesh).material as THREE.Material;
+  const opaque = (glassGroup.children[1] as THREE.Mesh).material as THREE.Material;
+  assert(glass.transparent && glass.opacity === 0.55 && !glass.depthWrite,
+    "Glass drawer fronts retain palette alpha and do not occlude their drawer interiors");
+  assert(opaque !== glass && !opaque.transparent && opaque.opacity === 1 && opaque.depthWrite,
+    "Parts of the same colour with different opacity use separate materials");
 }
 
 // The whole-house glb only becomes the primary scene when its nodes map back to trades (and,
