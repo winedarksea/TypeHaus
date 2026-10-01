@@ -444,12 +444,14 @@ def test_catlin_s_real_plate_cuts_fail_for_want_of_a_tie(catlin_model_ro) -> Non
     None since 2026-09-23 (0db0c103): R602.6.1 reaches exterior and interior bearing walls
     only, and `W-B-ESS-S` is a nonbearing partition, so the sauna vent's cut there PASSes.
 
-    Six remain in the current plan: `PR-M-S-BATH1-DRAIN`, both sauna ERV ducts, and the
-    three heat-pump supply ducts still interrupt full-width plate sections with no graded tie.
+    Four UNKNOWNs remain in the current plan: `PR-M-S-BATH1-DRAIN` and the three heat-pump
+    supply ducts still interrupt full-width plate sections with no graded tie. Both sauna ERV
+    branches now pass through stud bays clear of the graded bearing plates.
     """
     from typehaus.checks.mep.routing_bores import run_through_plate
 
     findings = run_through_plate(_ctx(catlin_model_ro))
     results = [f.result.value for f in findings]
     assert results.count("fail") == 0
-    assert results.count("unknown") == 6
+    assert results.count("unknown") == 4, [f.element_tags for f in findings
+                                            if f.result.value == "unknown"]

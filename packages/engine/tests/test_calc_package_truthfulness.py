@@ -87,10 +87,10 @@ def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> N
     read nowhere, so the page a reviewer opens first was silent on the one fact that says
     whether this review unblocks anything.
 
-    catlin's gate is OPEN since 2026-09-22 — thermal break basis 7, then the porch ledgers'
-    Titen HDs graded on Simpson's published row — so the house exercises that branch and the
-    SHUT one is exercised below on a stub. Both are asserted, because a bundle whose README
-    said the wrong one would mislead the reviewer about the only fact they opened it for.
+    The draft gate is shut on the visible `PR-M-S-BATH1-WC-DRAIN` / `FS-S-WEST` intersection
+    until the final truss drawing is available. The house exercises that branch, and the OPEN
+    one remains exercised below on a stub. Both are asserted so a handoff cannot misstate the
+    review status.
     """
     from typehaus.takeoff.handoff import pe_readme
 
@@ -99,8 +99,10 @@ def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> N
                        content_hash="abc", records=[ctx.engineering[i] for i in item_ids],
                        notes=[], checklist=checklist, has_pdf=False)
     assert "## Where the permit gate stands" in readme
-    assert "The draft gate is OPEN" in readme
-    assert "The draft gate is SHUT" not in readme
+    assert "The draft gate is SHUT" in readme
+    assert "PR-M-S-BATH1-WC-DRAIN" in readme
+    assert "FS-S-WEST" in readme
+    assert "The draft gate is OPEN" not in readme
 
 
 def test_the_readme_names_every_open_blocking_item_when_the_gate_is_shut() -> None:

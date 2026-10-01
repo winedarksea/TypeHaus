@@ -155,12 +155,12 @@ def test_a_stools_length_is_the_opening_plus_two_horns(stools, catlin_model_ro):
 
 
 def test_the_stool_cut_list_collapses_to_the_three_window_widths(stools):
-    """34 stools, three sizes — which is what makes them worth milling from few setups."""
+    """33 oak stools, three sizes — which is what makes them worth milling from few setups."""
     oak = [stool for stool in stools if stool.material_ref == "oak-stool"]
     sizes = {round(stool.length_m * M_TO_IN, 2) for stool in oak}
     assert len(sizes) == 3
     counts = _by_assembly(oak)
-    assert sum(len(v) for v in counts.values()) == 34
+    assert sum(len(v) for v in counts.values()) == 33
 
 
 # --- shelf banks --------------------------------------------------------------------------

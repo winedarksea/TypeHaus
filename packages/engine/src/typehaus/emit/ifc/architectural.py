@@ -446,27 +446,26 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     })
     ll.ensure_pset(f, filling, "Pset_DoorCommon" if opening.is_door else "Pset_WindowCommon",
                    {"IsExternal": is_external})
-    if opening.is_door:
-        if product is not None:
-            # This carries the ordered product's dimensions without repurposing IFC's
-            # OverallWidth/Height, which remain the rough-opening dimensions throughout.
-            # The clearance is manufacturer installation guidance, explicitly not a
-            # calculated pivot/swing representation.
-            ll.ensure_pset(f, filling, "TypeHaus_BookcaseDoor", {
-                "NominalWidth": product.nominal_width.meters,
-                "NominalHeight": product.nominal_height.meters,
-                "CabinetBodyWidth": product.body_width.meters,
-                "CabinetBodyHeight": product.body_height.meters,
-                "CabinetBodyDepth": product.body_depth.meters,
-                "CasingOverallWidth": product.casing_overall_width.meters,
-                "ClearPassageWidth": product.clear_passage_width.meters,
-                "HingeSideClearance": product.hinge_side_clearance.meters,
-                "MountingFace": product.mounting_face,
-                "CabinetMaterialRef": product.material_ref or "",
-                "ClearanceEnvelope": (
-                    "published installation clearance; not a calculated pivot sweep"),
-                "Source": product.source,
-            })
+    if opening.is_door and product is not None:
+        # This carries the ordered product's dimensions without repurposing IFC's
+        # OverallWidth/Height, which remain the rough-opening dimensions throughout.
+        # The clearance is manufacturer installation guidance, explicitly not a
+        # calculated pivot/swing representation.
+        ll.ensure_pset(f, filling, "TypeHaus_BookcaseDoor", {
+            "NominalWidth": product.nominal_width.meters,
+            "NominalHeight": product.nominal_height.meters,
+            "CabinetBodyWidth": product.body_width.meters,
+            "CabinetBodyHeight": product.body_height.meters,
+            "CabinetBodyDepth": product.body_depth.meters,
+            "CasingOverallWidth": product.casing_overall_width.meters,
+            "ClearPassageWidth": product.clear_passage_width.meters,
+            "HingeSideClearance": product.hinge_side_clearance.meters,
+            "MountingFace": product.mounting_face,
+            "CabinetMaterialRef": product.material_ref or "",
+            "ClearanceEnvelope": (
+                "published installation clearance; not a calculated pivot sweep"),
+            "Source": product.source,
+        })
     ll.assign_container(f, filling, storeys[rw.storey])
     if opening.type_ref in opening_types:
         ll.assign_type(f, filling, opening_types[opening.type_ref])

@@ -226,13 +226,13 @@ def test_the_bands_still_bill_what_they_billed(bands):
     """Geometry is additive: the areas this pass draws are the areas it already ordered.
 
     51 SF of walnut and 45 SF of tile were the numbers before the polygon existed. If adding
-    geometry moved either, the band being drawn is not the band being bought. The walnut
-    reads 40.0 SF since the clear face became the finish face: the study's wainscoted runs
-    stop at each corner's finish face, not at the wall centrelines (190 1/4" less the door).
+    geometry moved either, the band being drawn is not the band being bought. After the
+    2026-09-30 study-wall edits, the walnut reads 40.75 SF: the wainscoted runs stop at each
+    corner's finish face, not at the wall centrelines, with the current clear-face lengths.
     """
     walnut = sum(b.area_m2 for b in bands if b.tag == "WP-M-STUDY-WAINSCOT") * _M2_TO_FT2
     tile = sum(b.area_m2 for b in bands if b.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
-    assert walnut == pytest.approx(40.0, abs=0.5)
+    assert walnut == pytest.approx(40.75, abs=0.05)
     assert tile == pytest.approx(45.0, abs=0.5)
 
 

@@ -6,12 +6,16 @@ row on a permit sheet. That is the one failure here that a reader could not spot
 
 from __future__ import annotations
 
-
 import pytest
 
-from typehaus.takeoff.lighting import (PSU_SIZING_FACTOR, connected_lighting_va,
-                                       light_run_materials, light_run_takeoff,
-                                       lighting_controls, luminaire_schedule)
+from typehaus.takeoff.lighting import (
+    PSU_SIZING_FACTOR,
+    connected_lighting_va,
+    light_run_materials,
+    light_run_takeoff,
+    lighting_controls,
+    luminaire_schedule,
+)
 
 _M_TO_FT = 3.280839895013123
 
@@ -150,7 +154,8 @@ def test_multiway_and_control_kinds_survive_into_the_schedule(catlin_model):
     assert rows["ED-S-PLANT-TUBE1"]["controls"] == ["timer"]
     assert rows["ED-B-PLAY-N-SCONCE1"]["controls"] == ["dimmer"]
     # The west loft's sconce is switched at the fixture and names nothing.
-    assert rows["ED-A-STUDIO-SCONCE"]["integral_switch"] and not rows["ED-A-STUDIO-SCONCE"]["switches"]
+    assert (rows["ED-A-STUDIO-SCONCE"]["integral_switch"]
+            and not rows["ED-A-STUDIO-SCONCE"]["switches"])
     # A 24V run reports its supply where a fixture reports a circuit.
     assert rows["LR-S-HALL-GAP"]["circuit"] is None
     assert rows["LR-S-HALL-GAP"]["psu"] == "ED-S-HALL-LT-PSU"
@@ -208,11 +213,12 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     # 43 fixtures / 1,112.6 VA since 2026-09-20: RM-M-BED gained ED-M-BED-FAN, a mark N
     # ceiling fan at 60 VA (motor AND light kit — that is what `load_va` carries on a fan).
     # Its switch is ED-T-SWITCH, which like the dimmers below carries no `load_va`.
-    assert row["runs"] == 3 and row["fixtures"] == 43
-    assert row["connected_va"] == pytest.approx(1112.6, abs=0.05)
+    # 44 fixtures / 1,121.6 VA since 2026-09-30: ED-M-MUDROOM-CAN3 adds 9 VA over the bench.
+    assert row["runs"] == 3 and row["fixtures"] == 44
+    assert row["connected_va"] == pytest.approx(1121.6, abs=0.05)
 
     panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-MAIN"]
-    assert panel["connected_va"] == pytest.approx(1112.6, abs=0.5)
+    assert panel["connected_va"] == pytest.approx(1121.6, abs=0.5)
     # 1,113 VA of a 15A branch: under the 1,440 VA an NEC 210.19(A)(1) continuous load may
     # take. The three switches added with those fixtures are all ED-T-SWITCH-DIM, which
     # carries no load_va — a dimmer is free on the circuit and costs only on the estimate.

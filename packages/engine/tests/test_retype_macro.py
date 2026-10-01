@@ -44,7 +44,10 @@ def test_retype_round_trips_through_source_and_reseats_the_back_face(tmp_path):
     plan = load_plan(house).plan
     shower = _fixture(plan, "FX-M-BATH2-SH")
     x, y = shower.position.xy_m
-    old_back_y = y + 0.9144 / 2.0
+    # This fixture sits against the east-west face at rotation=-90, so local +y (the back)
+    # points along project +x. The depth change moves the center east while preserving that
+    # back face; the along-wall y station stays fixed.
+    old_back_x = x + 0.9144 / 2.0
     result = retype_placeable(plan, "main", tag="FX-M-BATH2-SH",
                               type_ref="FX-TUBSHOWER-60")
     coordinator = ProjectCoordinator(house)
@@ -54,12 +57,10 @@ def test_retype_round_trips_through_source_and_reseats_the_back_face(tmp_path):
     swapped = _fixture(reloaded.plan, "FX-M-BATH2-SH")
     assert swapped.type_ref == "FX-TUBSHOWER-60"
     new_x, new_y = swapped.position.xy_m
-    # Both axes carry the 1/16" grid-snap tolerance rather than 1e-6: FX-M-BATH2-SH's x
-    # coordinate (6'-2 5/8" against the deck's bay) does not land exactly on the grid. The
-    # macro snaps what it writes; the claim being made here is that the ACROSS-the-wall
-    # coordinate does not move, and 1/16" is the resolution that claim can be made at.
-    assert new_x == pytest.approx(x, abs=2e-4)
-    assert new_y + 0.762 / 2.0 == pytest.approx(old_back_y, abs=2e-4)  # 1/16" grid snap
+    # Both axes carry the 1/16" grid-snap tolerance. Rotation puts the center shift across
+    # the wall on x; y remains the fixture's along-wall station.
+    assert new_y == pytest.approx(y, abs=2e-4)
+    assert new_x + 0.762 / 2.0 == pytest.approx(old_back_x, abs=2e-4)
 
 
 def test_retype_warns_about_every_authored_reference(catlin_plan):

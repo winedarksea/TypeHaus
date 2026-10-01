@@ -33,7 +33,7 @@ from typehaus.takeoff.hvac import heating_zones
 #
 # The factor's denominator is the DESIGN load, because that is what a Manual S sizing factor
 # is; walking the whole table is what finds the largest MINIMUM, which is rarely on the
-# design row. System 2 passes the cap at 0.59 and still cycles above 28 °F — the rule catches
+# design row. System 2 passes the cap at 0.60 and still cycles above 27.5 °F — the rule catches
 # gross over-size, the crossover describes the year, and they are not the same statement.
 # **Every verdict is PASS**: over the cap the message leads with ``ADVISORY —`` and the
 # result does not gate. Owner decision, 2026-09-18 — short-cycling costs efficiency, comfort
@@ -44,8 +44,8 @@ _CATLIN = {
     # HP1 was 15,410 / -5.9 °F before WIN-A-S2/-S3 went WT-1436 -> WT-1424 (c3c46cff), and
     # 15,365 before the plant room's R316.4 gypsum, and 15,359 before room volume became
     # finish-face volume (both 2026-09-24; the note's second addendum).
-    "EQ-M-HP1-OD": (15_137, 14_000, 5.0, 0.92, -7.1, _ADVISED),
-    "EQ-M-HP2-OD": (14_735, 8_800, 5.0, 0.60, 27.5, not _ADVISED),
+    "EQ-M-HP1-OD": (15_135, 14_000, 5.0, 0.92, -7.1, _ADVISED),
+    "EQ-M-HP2-OD": (14_739, 8_800, 5.0, 0.60, 27.5, not _ADVISED),
     "EQ-M-HP3-OD": (1_016, 2_800, 17.0, 2.76, None, _ADVISED),
 }
 
@@ -138,12 +138,12 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
-    """0.80 as a ratio is a number nobody can act on; ``12,287 Btu/h against this zone's
-    15,359`` is one an equipment selector can shop against."""
+    """0.80 as a ratio is a number nobody can act on; ``12,108 Btu/h against this zone's
+    15,135`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
-    assert f"{0.80 * 15_137:,.0f} Btu/h".replace(",", ",") in finding.message
+    assert f"{0.80 * 15_135:,.0f} Btu/h" in finding.message
 
 
 # --- §3. the crossover ------------------------------------------------------------------------

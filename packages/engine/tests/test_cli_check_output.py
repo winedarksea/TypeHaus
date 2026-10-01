@@ -11,6 +11,7 @@ which is why nothing scripted could use it as a gate.
 from __future__ import annotations
 
 import pytest
+from _helpers import CATLIN, STARTER
 from typer.testing import CliRunner
 
 from typehaus.checks.registry import Tier
@@ -18,8 +19,6 @@ from typehaus.cli._shared import ExitOn, TierName
 from typehaus.cli.app import app
 from typehaus.cli.cmd_build import _parse_only
 from typehaus.findings import Finding, Result, Severity
-
-from _helpers import CATLIN, STARTER
 
 runner = CliRunner()
 
@@ -133,34 +132,32 @@ def test_check_exits_1_on_a_fail() -> None:
 
 
 def test_exit_on_error_is_the_looser_gate() -> None:
-    """`scripts/verify.sh` uses this one. It is looser than the default by construction: an
+    """`scripts/verify.sh` uses a JSON allow-list instead. This CLI mode is looser than the
+    default by construction: an
     advisory FAIL is ``severity=WARN``, so ERROR-only lets it through where the default
     stops. starter is what shows the gap — it carries advisory FAILs and no ERROR-severity
     finding at all, so the default gate closes on it and ERROR-only opens.
 
-    ** CATLIN SHOWED BOTH GATES CLOSED FROM 2026-09-18 TO 2026-09-20, AND IT WAS NOT A TEST
-    BUG EITHER WAY. ** It carried an ENGINEERED FAIL in that window — ``engineered()`` gives a
-    computed-and-over item ``severity=ERROR``, because "this engine did the calculation and it
-    does not pass" is not an advisory — so ERROR-only closed on it too. `PT-BW-RNE`'s base
-    embedment closed on 2026-09-20 (`notes/entry_column_base_fixity.md` §6a) and this line
-    went back to 0, exactly as the previous version of this docstring said it would. Catlin is
-    the house held to a clean report; starter is the one that carries deliberate reds.
+    ** CATLIN'S TWO GATES CLOSE AGAIN ON A VISIBLE FLOOR-TRUSS FAILURE. ** The owner asked
+    to keep `PR-M-S-BATH1-WC-DRAIN` through `FS-S-WEST` visible until the final truss drawing
+    is available. Its ERROR severity means `--exit-on error` correctly exits 1 too.
     """
     assert runner.invoke(app, ["check", str(STARTER), "--plain"]).exit_code == 1
     assert runner.invoke(
         app, ["check", str(STARTER), "--exit-on", ExitOn.error.value]).exit_code == 0
     assert runner.invoke(
-        app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value]).exit_code == 0
+        app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value]).exit_code == 1
 
 
-def test_catlin_carries_no_failures(catlin_json) -> None:
-    """The reference house checks clean — 0 FAIL, not "0 errors", bar one accepted advisory.
+def test_catlin_carries_only_the_pending_truss_failure(catlin_json) -> None:
+    """Keep the unresolved WC-drain / floor-truss intersection visible until the drawing arrives.
 
     Asserted through the JSON surface rather than the exit code so the failure message
     names the offending finding instead of just saying 1 != 0.
 
-    `accepted` below is the allow-list for a real, owner-decided advisory FAIL — never add
-    one without a design-record citation beside it. (`structural.deck_joist_span` reads the
+    `accepted` below is an exact identity allow-list for the one owner-directed visible failure.
+    It is not a house suppression; `--no-suppress` must show it too.
+    (`structural.deck_joist_span` reads the
     back span per IRC Table R507.5(1); R507.6.1 bounds the overhang separately in
     `structural.deck_joist_cantilever` — do not conflate the two when reasoning about an
     entry here.) See `houses/catlin/CLAUDE.md` and
@@ -175,8 +172,9 @@ def test_catlin_carries_no_failures(catlin_json) -> None:
         for f in payload["findings"] if f["result"] == "fail"
     ]
     # Take an entry out rather than leaving it stale — that is what the assertion message
-    # below asks of the next person.
-    # EMPTY, and it is meant to stay that way. `code.site_parcel_is_surveyed` lived here
+    # below asks of the next person. The one live entry records the owner's decision on
+    # 2026-10-01: keep the drain/truss intersection visible until a final truss drawing arrives.
+    # `code.site_parcel_is_surveyed` lived here
     # while the parcel was a drawn placeholder; the owner has since stated the real
     # 50' x 133' lot, so the basis is "plat" and the check reports UNKNOWN rather than
     # FAIL (houses/catlin/plan/site.py's `parcel_basis` block).
@@ -194,9 +192,12 @@ def test_catlin_carries_no_failures(catlin_json) -> None:
     # governing E-W case 50/50 and needs 7.07' against the 7.33' they now have. Deepening them
     # independently does not work and the note shows why — stiffness is 3EI/h³ on the FULL
     # shaft, so the deeper column sheds share onto the other one.
-    accepted: set[tuple[str, tuple[str, ...]]] = set()
+    accepted: set[tuple[str, tuple[str, ...]]] = {
+        ("mep.run_through_floor_member",
+         tuple(sorted(("PR-M-S-BATH1-WC-DRAIN", "FS-S-WEST")))),
+    }
     assert accepted <= set(failures), (
-        "an accepted advisory stopped firing — delete it from `accepted` rather than "
+        "an accepted visible failure stopped firing — delete it from `accepted` rather than "
         "leaving a stale entry", sorted(accepted - set(failures)))
     failures = [item for item in failures if item not in accepted]
     assert not failures, sorted(failures)
@@ -232,7 +233,7 @@ def test_json_summary_agrees_with_json_on_the_counts_but_is_far_smaller(
     full, summary = catlin_json, catlin_json_summary
     # Compared rather than pinned to 0: what this test is about is that the two machine
     # surfaces AGREE, not what catlin's exit code happens to be — that is
-    # `test_catlin_carries_no_failures`'s job.
+    # `test_catlin_carries_only_the_pending_truss_failure`'s job.
     assert full.exit_code == summary.exit_code
     full_payload = json.loads(full.output)
     summary_payload = json.loads(summary.output)
@@ -290,10 +291,10 @@ def test_no_suppress_lifts_the_house_suppressions_and_writes_nothing() -> None:
     loud = json.loads(runner.invoke(
         app, ["check", str(CATLIN), "--json-summary", "--no-suppress"]).output)
 
-    # Back to 0 on 2026-09-20. It was 1 from 2026-09-18 (2 until 2026-09-19): `PT-BW-RNE` did
-    # not have the IBC 1807.3.2.1 embedment its assumed fixity needs, an open design gap rather
-    # than a suppression. `test_catlin_carries_no_failures` carries the citation and the fix.
-    assert quiet["fail"] == 0, "the reference house is held to a clean report"
+    # One visible truss failure is owner-directed and unsuppressed; `--no-suppress` adds the
+    # house's suppressed failures without changing preferences.
+    assert quiet["fail"] == 1, "the pending truss intersection stays visible"
+    assert "mep.run_through_floor_member" in quiet["failing_check_ids"]
     assert loud["fail"] > quiet["fail"], "the suppressed debt is real and is now visible"
     assert "mep.run_interference" in loud["failing_check_ids"]
     assert "mep.run_interference" not in quiet["failing_check_ids"]

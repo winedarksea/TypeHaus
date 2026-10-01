@@ -573,9 +573,9 @@ OPENINGS = [
     # 24'-1" centre. The flipped hinge keeps its sweep clear of the rearranged furniture.
     # Asserted in test_openings_land_on_the_source_gaps.
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B2", ft(5, 5)), flip_swing=True, flip_hinge=True),  # y 24'-4"
+         position=from_node("N-S-B2", ft(5, 5)), flip_swing=True, flip_hinge=False),  # y 24'-4"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B3", ft(0, 8)), flip_swing=True),  # y 28'-11"
+         position=from_node("N-S-B3", ft(0, 8)), flip_swing=True, flip_hinge=True),  # y 28'-11"
     # Just an opening, framed the same as a 30" door: no leaf needed for this passthrough.
     RoughOpening(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1",
                  position=from_node("N-S-C1", ft(1, 0.625)), width=ft(2, 6),

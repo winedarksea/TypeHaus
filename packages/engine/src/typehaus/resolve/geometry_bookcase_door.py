@@ -12,7 +12,6 @@ from collections.abc import Callable
 from typehaus.model.types import BookcaseDoorSpec
 from typehaus.resolve.geometry_ir import GPart, GPrism, PartCatalogRef
 
-
 _INCH_M = 0.0254
 _SIDE_THICKNESS_M = 0.75 * _INCH_M
 _SHELF_THICKNESS_M = 0.75 * _INCH_M

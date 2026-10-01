@@ -51,6 +51,18 @@ BASEMENT_CLEANOUTS = [
                   position=pt(ft(13, 6), ft(4)), fitting_elevation=inch(-10.58),
                   cap_position=pt(ft(13, 6), ft(4)), cap_elevation=inch(0),
                   access="floor", clear_width=inch(18), clear_depth=inch(18)),
+    # WC2's branch runs in the basement ceiling. Its upper terminal is below the fixture,
+    # and the second turn is another ceiling location; both caps need access panels.
+    DrainCleanout(uid="COB0000011", tag="CO-B-WC2-HEAD", pipe_ref="PR-B-WC2-DRAIN",
+                  position=pt(ft(2, 6), ft(20, 10.615)),
+                  fitting_elevation=ft(7, 4.4375),
+                  cap_position=pt(ft(2, 6), ft(20, 10.615)),
+                  cap_elevation=ft(8, 0.9375),
+                  access="ceiling", clear_width=inch(24), clear_depth=inch(24)),
+    DrainCleanout(uid="COB0000012", tag="CO-B-WC2-TURN", pipe_ref="PR-B-WC2-DRAIN",
+                  position=pt(inch(28.5), ft(16, 6)), fitting_elevation=ft(6, 11.4375),
+                  cap_position=pt(inch(28.5), ft(16, 6)), cap_elevation=ft(8, 0.9375),
+                  access="ceiling", clear_width=inch(24), clear_depth=inch(24)),
 ]
 
 

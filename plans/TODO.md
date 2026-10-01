@@ -99,6 +99,10 @@ with every suppression lifted.
 - **The FS-S-WEST truss panel layout is a PROVISIONAL placeholder and the owner replaces it.**
   Owner confirmed on 2026-09-29 that no fabricator panel drawing is available yet. The six
   remaining `mep.run_member_crossing` errors stay open until the actual panel geometry arrives.
+  A separate `mep.run_through_floor_member` FAIL also remains visible: `PR-M-S-BATH1-WC-DRAIN`
+  intersects `FS-S-WEST`'s joist. Owner direction on 2026-10-01 is to keep it unsuppressed until
+  the final truss drawing arrives, then verify the actual member layout and reroute the drain if
+  needed.
   `params/second_deck.py` authors `web_panel_pitch=24"`, `web_opening_width=15"`,
   `web_panel_offset=12"` on FS-S-WEST, derived in its own `#:` from an ordinary Warren
   layout rather than read off a submittal. Ask the truss fabricator for the panel drawing,
@@ -225,6 +229,9 @@ the future.
   an STC preset's tested core; (4) authored paint makes gypsum Class III, which moves Glaser.
 - The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
 - Cleanout caps likely need a double check on the plumbing
+- See if we can replace the diagonal straps (SB-BW-BAND-D2E and SB-BW-BAND-D1E) and vertical slats with diagonal slats of similar spacing but at 45 degrees. These slats would serve as knee braces. This would likely add a central stud (for the diagonal slats which can't reach the top beam) and would likely be framed out with a new top plate (separate from the top mean) and be split into two sides (slats going up from each side, and from the bottom plate). Another option might be to sheath more of the wall to the top, then make the widest possible opening as vertical slats (so a sheathing braced wall and an opening, post bases likely already provide the holddown)
+- It seems odd that the veneer beam W-SG-BRKBM has so much rebar and W-SG-ARCH has none. Could we design a bit less rebar out of W-SG-BRKBM? Also, could we make SL-SG-FLOOR thicker or otherwise have it replace W-SG-ARCH, it looks like it should be able to handle the same need.
+- FT-SBG-S has rebar that should tie into the walls W-SG-W2 and W-SG-E2. Really the interior portion of FT-SBG-S is the footing and cross bracing for W-SG-S, W-SG-W2, and W-SG-E2, and should be detailed appropriately (this should actually improve strength with a small amount of additional rebar).
 
 
 # Project Management

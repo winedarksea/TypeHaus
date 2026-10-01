@@ -435,9 +435,8 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     `engineering/column_base.py` graded an embedment its north entry did not have, and
     reaches draft again since 2026-09-20 — `notes/entry_column_base_fixity.md` §6a put the
     canopy pair on one plane at -10'-2" and §6e claimed §1806.3.4's doubling for the landing
-    pair. **The blocked list is asserted EMPTY rather than deleted**, the way the FAIL sets in
-    `test_lateral_racking.py` are: a blocking line silently going red is exactly what this
-    assertion is here to notice.
+    pair. The blocked list is pinned to the user's visible WC-drain / floor-truss failure
+    while the final drawing is pending. A second blocking item still fails this assertion.
 
     The separation is what the pair below pins: `sealed` is false for a reason that has
     nothing to do with any calculation — catlin carries no `engineering.toml` at all — so it
@@ -445,8 +444,8 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
 
     ** IT MISSED DRAFT FROM 2026-09-20 ON NAMED LINES, AND REACHES IT AGAIN ON 2026-09-22. **
     Every deferred kind became a registered calculation and its line blocks; the last of them
-    to close was the thermal break (basis 7). The list is pinned exactly and asserted EMPTY,
-    so a new line going red, or one of these closing unnoticed, fails here. The veneer beam
+    to close was the thermal break (basis 7). The truss intersection now holds draft shut; any
+    additional blocker or a missing truss finding fails here. The veneer beam
     closed 2026-09-21 (hook ties and footing dowels, `notes/sunken_garden_veneer_beam.md`
     §6e); the thermal break on 2026-09-22 (`notes/sunken_garden_court_free_body.md` §11j).
     """
@@ -458,10 +457,15 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     # own (deck_tie/FS-BW-FLOOR at 0.966, north_entry_piers.md §10); base rotation CLOSED as
     # draft on the presumed n_h (column_base_rotation.md §10), and the SRW apron CLOSED on AB
     # Stones (raised_garden_srw.md §3b).
-    # ** EMPTY SINCE 2026-09-22 (basis 7, free body §11j). ** The porch ledgers shut it for an
-    # evening and reopened it once their Titen HDs were graded on Simpson's published row.
-    assert blocked == [], blocked
-    assert checklist.ok
+    # ** ONLY THE PENDING TRUSS DRAWING LINE IS OPEN. ** The other deferred items closed on
+    # their calculations; the user chose to keep this physical intersection visible.
+    assert blocked == ["Resolved-model and transition integrity"], blocked
+    integrity = next(item for item in checklist.items
+                     if item.label == "Resolved-model and transition integrity")
+    assert integrity.result is Result.FAIL
+    assert "PR-M-S-BATH1-WC-DRAIN" in integrity.detail
+    assert "FS-S-WEST" in integrity.detail
+    assert not checklist.ok
     assert not checklist.sealed
     assert checklist.unsealed
     # Shut for its own reason: every engineered item is unsealed because the house carries

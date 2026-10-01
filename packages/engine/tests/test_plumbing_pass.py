@@ -3,7 +3,6 @@ fixture-unit tables, and the plumbing takeoff block."""
 
 from __future__ import annotations
 
-
 import pytest
 
 from typehaus.checks import run_from_model
@@ -35,7 +34,7 @@ def test_vertical_drops_count_in_developed_length(catlin_model):
     run = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-MAIN-DRAIN")
     plan_len = sum(
         ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
-        for a, b in zip(run.path[:-1], run.path[1:]))
+        for a, b in zip(run.path[:-1], run.path[1:], strict=False))
     assert run.length_m > plan_len + 0.2  # the ~1' drop at the sleeve
 
 
@@ -136,7 +135,7 @@ def test_building_drain_leaves_under_the_footing_not_through_the_wall(catlin_mod
     assert main.z_m[0] > slab.z1_m
     assert main.z_m[-1] < slab.z0_m
     # Monotonic fall the whole way — a building drain that ever rises is a blockage.
-    assert all(b <= a + 1e-9 for a, b in zip(main.z_m, main.z_m[1:]))
+    assert all(b <= a + 1e-9 for a, b in zip(main.z_m, main.z_m[1:], strict=False))
 
 
 def test_the_basement_slab_fixtures_drain_by_gravity(catlin_model):
@@ -211,8 +210,9 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     assert not unresolved
     assert load == 48.0
     # Every drain run discharges somewhere except the building drain itself and the runs
-    # that terminate at an air gap — the two condensate lines, and the water heater's TPR
-    # relief discharge, which Minn. R. 4714.0608 (UPC 608.5) requires to end within 18" of the floor and forbids
+    # that terminate at an air gap — the condensate lines and the water heater's TPR
+    # relief discharge, which Minn. R. 4714.0608 (UPC 608.5) requires to end within 18" of the
+    # floor and forbids
     # to be piped into a drain at all. A new run silently missing its tie-in would show up
     # here as an extra terminal, understating every load downstream of it.
     #
@@ -229,7 +229,7 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     # units moved to a ground pad on 2026-09-02 and drip onto it, so there is no pipe at all
     # any more — see houses/catlin/notes/heat_pump_ground_pad.md. The garden overflow's beam
     # pipe was the other sleeve termination until 2026-09-23; the leg is all FrenchDrain now.
-    assert terminals == {"PR-B-MAIN-DRAIN", "PR-M-DRYER-COND", "PR-B-WH-TPR",
+    assert terminals == {"PR-B-COND", "PR-B-MAIN-DRAIN", "PR-M-DRYER-COND", "PR-B-WH-TPR",
                          "PR-B-ERV-COND"}
 
 
@@ -304,7 +304,10 @@ def test_bearing_walls_stay_continuous_2x6(code_report):
 
 def test_dfu_table_sizing():
     from typehaus.takeoff.plumbing_calc import (
-        required_drain_diameter_in, required_supply_size_in, trap_arm_limit_in)
+        required_drain_diameter_in,
+        required_supply_size_in,
+        trap_arm_limit_in,
+    )
 
     assert required_drain_diameter_in(3) == 1.5
     assert required_drain_diameter_in(18) == 3.0

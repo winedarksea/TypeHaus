@@ -26,16 +26,17 @@ def test_catlin_is_clean(catlin_plan, catlin_model_ro) -> None:
     findings = drain_tie_in(check_context(plan=catlin_plan, model=catlin_model_ro))
     fails = [f for f in findings if f.result is Result.FAIL]
     assert not fails, [f.message for f in fails]
-    assert len(findings) == 29
+    assert len(findings) == 28
 
 
-def test_the_five_that_tie_into_nothing_are_not_graded(catlin_model_ro) -> None:
-    """Two sleeves, a receptor and two air gaps are terminations, not rejected junctions —
+def test_terminal_runs_are_not_graded_as_rejected_junctions(catlin_model_ro) -> None:
+    """Sleeves, condensate air gaps, a receptor and a relief discharge are terminations —
     reporting them would be reporting the building for being a building."""
     records = drain_tie_in_records(_drains(catlin_model_ro))
     orphans = {tie.child for tie in records if tie.parent is None}
     assert orphans == {
-        "PR-B-MAIN-DRAIN", "PR-B-ERV-COND", "PR-B-WH-TPR", "PR-M-DRYER-COND",
+        "PR-B-COND", "PR-B-MAIN-DRAIN", "PR-B-ERV-COND", "PR-B-WH-TPR",
+        "PR-M-DRYER-COND",
     }
     assert all(tie.drop_m is None for tie in records if tie.parent is None)
 

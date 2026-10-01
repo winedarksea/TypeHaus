@@ -8,6 +8,7 @@ real trunk.
 from __future__ import annotations
 
 import copy
+import math
 from dataclasses import replace
 
 import pytest
@@ -40,12 +41,27 @@ def _with(model, *runs):
     return model
 
 
-def _pex_branch(model, tag, z_off_in, plan_off_in=0.0):
-    """A PEX branch starting ``z_off_in`` above the hot tap and running 3' east."""
-    tap = _hot_tap(model)
+def _point_along_trunk(trunk, distance_in):
+    """Return the 3D point ``distance_in`` along the heater trunk from its exact tap."""
+    vertices = [(x, y, z) for (x, y), z in zip(trunk.path, trunk.z_m, strict=True)]
+    remaining_m = distance_in * _IN
+    for start, end in zip(vertices, vertices[1:], strict=False):
+        segment_m = math.dist(start, end)
+        if segment_m <= 1e-12:
+            continue
+        if remaining_m <= segment_m:
+            fraction = remaining_m / segment_m
+            return tuple(a + fraction * (b - a) for a, b in zip(start, end, strict=True))
+        remaining_m -= segment_m
+    raise AssertionError(f"{distance_in}\" lies beyond the heater trunk")
+
+
+def _pex_branch(model, tag, distance_in, plan_off_in=0.0):
+    """A PEX branch teeing ``distance_in`` along the real trunk and running 3' north."""
     trunk = next(r for r in model.pipe_runs if r.tag == "PR-B-HW-TRUNK")
-    x, y, z = tap.x_m + plan_off_in * _IN, tap.y_m, tap.z_m + z_off_in * _IN
-    return replace(trunk, uid=tag, tag=tag, path=((x, y), (x + 0.9144, y)),
+    x, y, z = _point_along_trunk(trunk, distance_in)
+    x += plan_off_in * _IN
+    return replace(trunk, uid=tag, tag=tag, path=((x, y), (x, y + 0.9144)),
                    z_m=(z, z), z_start_m=z, z_end_m=z, length_m=0.9144, material="pex")
 
 
@@ -54,7 +70,7 @@ def test_catlin_passes_and_names_its_tap_runs(catlin_model_ro) -> None:
     assert [f.result for f in findings] == [Result.PASS]
     msg = findings[0].message
     assert "PR-B-HW-TRUNK" in msg and "PR-B-CW-WH" in msg
-    assert "tees on 29\" out" in msg  # the five branches tee off the trunk 29" up
+    assert "tees on 147\" out" in msg  # hot branches tee at the trunk's south turn
 
 
 def test_a_pex_trunk_on_the_tap_fails(model) -> None:
@@ -66,7 +82,7 @@ def test_a_pex_trunk_on_the_tap_fails(model) -> None:
     assert "604.13" in fails[0].code_ref
 
 
-def test_a_pex_branch_teeing_six_inches_up_fails(model) -> None:
+def test_a_pex_branch_teeing_six_inches_from_the_tap_fails(model) -> None:
     fails = [f for f in _run(_with(model, _pex_branch(model, "PR-X-PEX", 6)))
              if f.result is Result.FAIL]
     assert [f.element_tags[0] for f in fails] == ["PR-X-PEX"]

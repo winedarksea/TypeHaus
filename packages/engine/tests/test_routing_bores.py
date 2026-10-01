@@ -13,6 +13,7 @@ from typehaus.checks.mep.routing_bores import (
     run_through_plate,
     run_through_stud,
 )
+from typehaus.model import inch
 
 pytestmark = pytest.mark.slow
 

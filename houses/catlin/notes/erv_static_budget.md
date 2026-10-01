@@ -114,7 +114,7 @@ Every radial is 4" galvanized. `Δp_duct` is §2's formula; `Δp_terminal` is §
 
 | run | Q (cfm) | developed (ft) | elbows | L_eff (ft) | V (fpm) | P_v (in.) | Re | f | Δp_duct (in.) |
 |---|---|---|---|---|---|---|---|---|---|
-| `DU-B-ERV-R-SAUNA-EXH` | 20 | 39.08 | 5 | 51.58 | 229 | 0.00327 | 7,811 | 0.0342 | **0.0173** |
+| `DU-B-ERV-R-SAUNA-EXH` | 20 | 45.50 | 7 | 63.00 | 229 | 0.00327 | 7,811 | 0.0342 | **0.0212** |
 | `DU-B-ERV-R-PLAY` | 30 | 25.48 | 8 | 45.48 | 344 | 0.00737 | 11,717 | 0.0311 | **0.0313** |
 | `DU-M-ERV-R-LIVING` | 20 | 44.93 | 5 | 57.43 | 229 | 0.00327 | 7,812 | 0.0342 | 0.0193 |
 | `DU-M-ERV-R-PLANT` | 5 | 23.32 | 1 | 25.82 | 57 | 0.00020 | 1,953 | — | ~0.0005 |
@@ -265,6 +265,13 @@ out of its way. It now drops out of the plenum's underside and runs straight wes
 down the middle of the drain field: 35.17 ft on two elbows becomes 39.08 on five, and
 **0.0135 -> 0.0173**. The five reported interpenetrations it walks away from cost
 0.0038 in. w.g., and D3 paid that on purpose.
+
+**2026-10-01: the sauna extract was moved west of D-B-FURN's header and into the sauna wall's
+stud cavity.** It now crosses W-B-CW at x=1'-0 1/2" in the west clear bay, shares that lane
+with supply at a separate tier, and enters W-B-SA-W between its studs. W-B-SA-W changes to
+SAUNA_2X6 so the 4" drop fits the 5 1/2" cavity without changing the sauna face. The new route
+is 45.50 ft on 7 elbows; its duct term is **0.0212 in. w.g.**, up from 0.0173. Extract rises
+about 0.0039 to 0.3303 in. w.g.; SUPPLY still governs at 0.3713 and 207 cfm delivered.
 
 **The column falls 0.3470 -> 0.3251 and the delivered figure rises 207.1 -> 207.5 cfm.**
 

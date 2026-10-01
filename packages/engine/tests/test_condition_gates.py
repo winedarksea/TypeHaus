@@ -20,7 +20,6 @@ from typehaus.model.views import Transition
 from typehaus.resolve.model import BoundaryCondition
 from typehaus.resolve.pipeline import _assembly_change_conditions, _layers_equivalent
 
-
 # --- scaffolding: a minimal fake plan/model the derivation can walk -----------
 
 def _length(meters: float):
@@ -298,8 +297,9 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     Three of the keys were INT_ESS_CLOSET_STEEL leftovers from the ESS closet's move to the
     NE corner — W-B-CW3 and W-B-STR2 kept its steel studs and Type X while serving nothing.
     Re-specified to their neighbours (W-B-CW3 -> W-B-CW's INT_2X4_PLUMBING, W-B-STR2 ->
-    W-B-STR3's family tag, INT_2X6_BRG_EXPOSED_PLY since 2026-09-12, alignment and all), N-B-CW-E and N-B-BA-W stop
-    being changes of construction at all — one wall type down each line — and
+    W-B-STR3's family tag, INT_2X6_BRG_EXPOSED_PLY since 2026-09-12, alignment and all),
+    N-B-CW-E and N-B-BA-W stop being changes of construction at all — one wall type down each
+    line — and
     `integrity.junction_fallback` stops reporting three unsupported mixed junctions with it.
     N-B-STR is still a finish/specification change between INT_2X4_PARTITION and
     INT_2X4_PLUMBING, but both use 2x4 studs and their wall faces stay essentially flush.
@@ -361,6 +361,9 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # (N-B-C1's key is INT_2X6_BRG|FOUNDATION_WALL_12_INT above since the
         # rotation. `integrity.junction_fallback` reports the same node UNKNOWN for the same
         # wood-against-concrete reason, and that key is the drawing which answers it.)
+        # N-B-STR, the y=18' line's surviving change: W-B-CW2's playroom partition against
+        # W-B-CW3's painted wet-wall finish, on the same 2x4 stud depth.
+        "assembly_change:INT_2X4_PARTITION|INT_2X4_PLUMBING",
         # N-S-B1 on the second storey: the sleeping-side partitions carry INT_2X4_RC
         # (STC 34 -> 48) and the plain partitions they meet do not. W-S-BW4 joined the RC
         # family on 2026-09-04 — SF-S-HP1 spans it and W-S-BW3 both, and a 1/2" jog in the
@@ -371,9 +374,6 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # shorted the acoustic wall by one leaf.
         "assembly_change:INT_2X4_PARTITION|INT_2X4_RC",
         "assembly_change:INT_2X4_PARTITION|INT_2X6_BRG|PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID",
-        # N-B-STR, the y=18' line's surviving change: W-B-CW2's playroom partition against
-        # W-B-CW3's painted wet-wall finish, on the same 2x4 stud depth.
-        "assembly_change:INT_2X4_PARTITION|INT_2X4_PLUMBING",
         "assembly_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
         # N-S-D4, W-S-SN2 -> W-S-SN3 (see the docstring above): a wet wall meeting a
         # staggered sound wall, the one node where this key still fires against a plain
@@ -417,4 +417,4 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # while the retaining U's membrane + composite jogged the face 0.46". Since 2026-09-16
         # both sides are one stack depth with dimpleboard outboard, and all that changes there
         # is the board's top edge stepping down to grade — a lap, not a change of construction.)
-    ]
+        ], keys

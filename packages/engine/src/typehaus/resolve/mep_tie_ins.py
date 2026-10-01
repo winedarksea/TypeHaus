@@ -54,8 +54,9 @@ def drain_tie_in_records(pipe_runs) -> list[TieIn]:
     """Every drain run's arrival, whether or not the geometry accepts it.
 
     The connection is the geometry itself — ``PipeRun`` carries no upstream/downstream refs.
-    A run ties into another when its *last* path vertex lies on a segment of the other's path
-    and arrives at or above the other's centreline there within
+    A run ties into another only when both runs belong to the same sanitary system, its *last*
+    path vertex lies on a segment of the other's path, and it arrives at or above the other's
+    centreline there within
     :data:`_TIE_IN_INVERT_TOL_M`. Runs without elevation data can't be judged and never tie
     in.
 
@@ -64,7 +65,7 @@ def drain_tie_in_records(pipe_runs) -> list[TieIn]:
     continues downstream, not each other's parents — which is also what keeps the derivation
     acyclic on real junctions.
 
-    **A run with no candidate at all is not a rejection.** On catlin the four drains that
+    **A run with no candidate at all is not a rejection.** On catlin the terminal drains that
     tie into nothing terminate at a sleeve, a receptor or an air gap; they get a record with
     ``parent=None`` so a check can tell "nothing to join" from "joined below the thing it
     joins", which are a non-event and a defect.
@@ -81,6 +82,10 @@ def drain_tie_in_records(pipe_runs) -> list[TieIn]:
         highest: tuple[float, str] | None = None
         for parent in drains:
             if parent.tag == child.tag or not parent.path:
+                continue
+            # Indirect wastes and relief discharges can cross sanitary geometry in plan; a
+            # projected crossing is not a plumbing connection between those systems.
+            if getattr(parent, "sanitary", True) != getattr(child, "sanitary", True):
                 continue
             if length(sub(end_point, parent.path[-1])) <= 1e-6:
                 continue  # the parent terminates here too — a sibling, not a receiver

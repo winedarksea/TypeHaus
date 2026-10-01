@@ -252,6 +252,36 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     assert "delivering 207 cfm" in message
 
 
+def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(
+        catlin_model_ro, catlin_model_report) -> None:
+    """Both sauna branches stay in the authored wall bays and clear the former header cut."""
+    from typehaus.takeoff.runs import run_schedule
+
+    sauna_wall = next(element for element in catlin_model_ro.plan.all_elements()
+                      if getattr(element, "tag", None) == "W-B-SA-W")
+    assert sauna_wall.assembly == "SAUNA_2X6"
+
+    schedule = {row["tag"]: row for row in run_schedule(catlin_model_ro)}
+    exhaust = schedule["DU-B-ERV-R-SAUNA-EXH"]
+    assert exhaust["developed_ft"] == pytest.approx(45.50)
+    assert exhaust["elbows"] == 7
+
+    routed_stud_passes = [finding for finding in catlin_model_report.findings
+                          if finding.check_id == "mep.run_through_stud"
+                          and finding.element_tags == ("DU-B-ERV-R-SAUNA-EXH", "W-B-SA-W")
+                          and finding.result is Result.PASS]
+    assert routed_stud_passes
+    assert "fits the 5.50\" stud plane" in routed_stud_passes[0].message
+
+    routed_tags = {"DU-B-ERV-R-SAUNA-SUP", "DU-B-ERV-R-SAUNA-EXH"}
+    geometry_checks = {"mep.run_through_stud", "mep.run_through_plate", "mep.run_interference"}
+    blockers = [finding for finding in catlin_model_report.findings
+                if finding.check_id in geometry_checks
+                and routed_tags.intersection(finding.element_tags)
+                and finding.result in {Result.FAIL, Result.UNKNOWN}]
+    assert not blockers, [finding.message for finding in blockers]
+
+
 def test_the_shortfall_against_the_design_rate_is_unknown_and_never_a_fail(
         catlin_model_ro) -> None:
     """``ventilation_cfm`` is 210, which is the curve's value at 0.2 in. w.g. — a design

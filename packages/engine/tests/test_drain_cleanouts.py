@@ -112,7 +112,11 @@ def test_two_way_grade_cleanout_substitutes_for_building_drain_terminal():
 
 def test_catlin_cleanouts_have_plan_schedule_and_three_solids(catlin_model_ro):
     model = catlin_model_ro
-    assert len(model.drain_cleanouts) == 12
+    assert len(model.drain_cleanouts) == 14
+    wc2_cleanouts = {item.tag: item for item in model.drain_cleanouts
+                     if item.pipe_ref == "PR-B-WC2-DRAIN"}
+    assert set(wc2_cleanouts) == {"CO-B-WC2-HEAD", "CO-B-WC2-TURN"}
+    assert all(item.access == "ceiling" for item in wc2_cleanouts.values())
     assert not any(r.pipe_ref.startswith("PR-A-")
                    for r in required_cleanout_locations(model))
     assert all(f.result.value == "pass"

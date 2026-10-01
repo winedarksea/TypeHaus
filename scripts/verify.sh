@@ -46,7 +46,12 @@ TYPEHAUS_HOUSE=houses/starter $PY -m pytest -p no:typehaus_checks \
   packages/engine/src/typehaus/checks/pytest_plugin.py
 
 echo "== catlin house checks-as-tests =="
-TYPEHAUS_HOUSE=houses/catlin $PY -m pytest -p no:typehaus_checks \
+# The final truss drawing is unavailable, and the user chose to keep the resulting WC drain
+# intersection visible. Share this exact identity with the JSON report gate below: it permits
+# the test harness to pass only while that same finding remains in the report.
+CATLIN_ACCEPTED_CHECK_FINDINGS='[{"check_id":"mep.run_through_floor_member","element_tags":["FS-S-WEST","PR-M-S-BATH1-WC-DRAIN"]}]'
+TYPEHAUS_HOUSE=houses/catlin TYPEHAUS_ACCEPTED_CHECK_FINDINGS="$CATLIN_ACCEPTED_CHECK_FINDINGS" \
+  $PY -m pytest -p no:typehaus_checks \
   packages/engine/src/typehaus/checks/pytest_plugin.py
 
 echo "== ruff =="
@@ -81,19 +86,17 @@ if [[ -n "$BASELINE_DIR" ]]; then
 fi
 
 echo "== haus check: catlin =="
-# catlin is held to a clean report, so this gates on any FAIL — but on the same terms as
-# `test_catlin_carries_no_failures` in the engine tests above, which allows exactly one
-# owner-decided advisory. The two were NOT in step: the test allowed that entry and this
-# stage allowed none, so the script could only ever go red here. It was invisible for as long
-# as the mypy stage above stopped the run before reaching this line.
+# The user chose to keep `PR-M-S-BATH1-WC-DRAIN` through `FS-S-WEST` visible while the final
+# truss drawing is unavailable. Gate on JSON and allow exactly that finding, matching
+# `test_catlin_carries_only_the_pending_truss_failure`; new failures still stop the build.
 #
 # `--exit-on error` is the wrong loosening — it lets *any* FAIL through. Gate on the JSON
 # instead, subtracting the identical allow-list, so a real regression still stops the build.
-# Keep this list and the test's `accepted` set in step; a new entry needs a design-record
-# citation in both.
+# Keep this list and the test's `accepted` set in step. This entry records the user's decision,
+# and does not suppress the finding from normal or `--no-suppress` output.
 #
 # `--exit-on none` is what hands the verdict to that JSON. Without it `haus check` exits 1
-# on the accepted FAIL and `set -e` kills the script before the gate below ever runs.
+# on the visible FAIL and `set -e` kills the script before the gate below ever runs.
 #
 # It spent 2026-08-23 on the looser `--exit-on error` while three `structural.deck_beam_span`
 # advisories stood against BM-SG-BLW/BLC/BLE, and is back to the strict gate now that they
@@ -101,21 +104,23 @@ echo "== haus check: catlin =="
 # R507.5(1) at the 10' joist-span row.
 CATLIN_CHECK="$(mktemp -t catlin-check)"
 $HAUS check houses/catlin --json --exit-on none > "$CATLIN_CHECK"
-$PY - "$CATLIN_CHECK" <<'PYEOF'
-import json, sys
+CATLIN_ACCEPTED_CHECK_FINDINGS="$CATLIN_ACCEPTED_CHECK_FINDINGS" \
+  $PY - "$CATLIN_CHECK" <<'PYEOF'
+import json, os, sys
 
-# Empty, and meant to stay that way: catlin is held to 0 FAIL. `code.site_parcel_is_surveyed`
+# `code.site_parcel_is_surveyed`
 # sat here while the parcel was a drawn placeholder; the owner's stated 50' x 133' lot made
 # the basis "plat", which grades UNKNOWN rather than FAIL.
-# ** THIS ONE IS NOT AN ACCEPTED ADVISORY. IT IS AN OPEN DESIGN GAP, PARKED HERE
-# DELIBERATELY SO THE REST OF THE GATE STILL RUNS. ** (2026-09-18, the engineering gap
+# ** THE ONLY CURRENT OPEN CHECK IS THE OWNER-REQUESTED VISIBLE TRUSS INTERSECTION. ** The
+# accepted identity below does not hide the finding in the model report. (Historical note,
+# 2026-09-18, the engineering gap
 # review.) `engineering/column_base.py` grades what every `deck_post` record has been
 # NAMING and not grading since 2026-09-11 — the embedment IBC 1807.3.2.1 needs for a
 # column free to translate at grade — and the north entry canopy's cast columns did not
 # have it. `notes/entry_column_base_fixity.md` works it by hand; §6 there works the
 # closures.
 #
-# ** IT WAS TWO UNTIL 2026-09-19, ONE UNTIL 2026-09-20, AND IT IS EMPTY NOW. ** The canopy's
+# ** THE OLD CANOPY DESIGN GAP CLOSED ON 2026-09-20. ** The canopy's
 # deck became a declared diaphragm and `W-BW-SCREEN` a declared shear panel, so the frame
 # shear is shared in proportion to rigidity (IBC 2018 §1604.4) instead of being loaded wholly
 # onto the two cast columns; §7 of that note is the hand-working. That took PT-BW-RE's required
@@ -126,7 +131,10 @@ import json, sys
 # point of the closure and not a detail: the split is by 3EI/h³ on the FULL shaft, so deepening
 # one column softens it and sheds its share onto the other. Equal shafts, 50/50, 7.07' needed
 # against 7.33' — both publish a graded verdict with §1806.3.4's doubling unclaimed.
-ACCEPTED = set()
+ACCEPTED = {
+    (finding["check_id"], tuple(sorted(finding["element_tags"])))
+    for finding in json.loads(os.environ["CATLIN_ACCEPTED_CHECK_FINDINGS"])
+}
 
 payload = json.load(open(sys.argv[1]))
 failures = {

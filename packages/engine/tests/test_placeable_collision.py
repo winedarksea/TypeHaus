@@ -65,6 +65,26 @@ def test_catlin_is_clear_and_carried(model) -> None:
         assert [f.result for f in check(ctx)] == [Result.PASS]
 
 
+def test_only_an_exact_service_matched_pipe_port_is_a_relation(model) -> None:
+    from dataclasses import replace
+    from types import SimpleNamespace
+
+    from typehaus.checks.structural.placeable_interference import relations
+
+    heater = "EQ-B-WH"
+    run = next(pipe for pipe in model.pipe_runs if pipe.tag == "PR-B-CW-WH")
+    ctx = _ctx(model)
+    assert "PR-B-CW-WH" in relations(ctx, {heater})[heater]
+
+    moved = replace(run, path=(*run.path[:-1],
+                               (run.path[-1][0], run.path[-1][1] + inch(0.25).meters)))
+    model_with_unconnected_end = SimpleNamespace(
+        plan=model.plan, canvas_objects=model.canvas_objects,
+        pipe_runs=[moved if pipe.tag == run.tag else pipe for pipe in model.pipe_runs])
+    moved_ctx = SimpleNamespace(plan=model.plan, model=model_with_unconnected_end)
+    assert "PR-B-CW-WH" not in relations(moved_ctx, {heater})[heater]
+
+
 def test_a_unit_pushed_into_a_wall_is_an_advisory_fail(model) -> None:
     index = _index(model, "EQ-B-ESS-INV")
     obj = model.canvas_objects[index]

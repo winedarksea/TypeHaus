@@ -427,8 +427,8 @@ suppress = [
   # modelled — and until then it would sit as nine permanent UNKNOWNs in front of every
   # reader of the report and in the way of `haus print`, which teaches people to skip the
   # unknowns: the one habit a report cannot survive.
-  "mep.run_through_plate:DU-B-ERV-R-SAUNA-SUP",
-  "mep.run_through_plate:DU-B-ERV-R-SAUNA-EXH",
+  # The two sauna radials moved into clear wall bays on 2026-10-01 and now produce no
+  # run_through_plate finding, so their old tag suppressions are removed.
   "mep.run_through_plate:DU-S-HP-SUP",
   "mep.run_through_plate:DU-S-HP-RET",
   "mep.run_through_plate:DU-S-HP-SUITE",
@@ -614,6 +614,11 @@ suppress = [
   # between them. Left suppressed so the report stays clean while it is decided; re-open it
   # deliberately, do not let a cleanup silently keep it.
   "structural.door_framing_module:D-G-OVERHEAD",
+
+  # Owner confirmed 2026-10-01 that D-M-LAUN stays at its authored position. That station
+  # leaves one extra interrupted stud on W-M-HS3; the nearest module station would move the
+  # opening, so keep the advisory visible in the raw report but accept it by tag.
+  "structural.door_framing_module:D-M-LAUN",
 
   # D-M-BATH1 went 2'-0" -> 2'-6" on 2026-09-15 (the aging-in-place pass): a 24" leaf was
   # the narrowest thing in the house and this is the powder room every guest uses. The

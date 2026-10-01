@@ -127,10 +127,10 @@ def test_the_derivation_is_acyclic(catlin_model_ro) -> None:
             cursor = ties[cursor]
 
 
-def test_a_manifold_at_the_trunks_first_vertex_is_not_a_sibling(catlin_model_ro) -> None:
-    """Four hot branches tee off PR-B-HW-TRUNK's FIRST vertex at the water heater — a
-    drain never has that. A bare same-origin sibling test leaves the whole hot tree
-    parentless, which is why the guard also asks who carries whose load."""
+def test_a_manifold_at_the_trunks_south_turn_is_not_a_sibling(catlin_model_ro) -> None:
+    """Four hot branches tee off PR-B-HW-TRUNK's south turn, clear of the ERV service lane.
+    A bare same-origin sibling test leaves the whole hot tree parentless, which is why the
+    guard also asks who carries whose load."""
     ties = supply_tie_ins(catlin_model_ro.pipe_runs)
     at_the_heater = ("PR-B-HW-BATH1", "PR-B-HW-WASH", "PR-B-HW-SBATH", "PR-B-HW-BATH")
     assert all(ties.get(tag) == "PR-B-HW-TRUNK" for tag in at_the_heater), \

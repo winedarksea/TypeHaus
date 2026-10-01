@@ -469,7 +469,10 @@ def run_checks(ctx: CheckContext, tier: Tier | None = None, *,
         if unknown:
             raise ValueError(f"only= names unregistered check ids: {sorted(unknown)}")
         checks = [pair for pair in checks if pair[0] in wanted]
-    findings: list[Finding] = list(ctx.resolve_findings)
+    # Resolve findings are outside the registered tiers. When a caller selects registered
+    # ids, keep the result scoped to those ids instead of leaking unrelated integrity
+    # findings into an otherwise filtered report.
+    findings: list[Finding] = [] if only is not None else list(ctx.resolve_findings)
     ran: list[str] = []
     token = _RUN_SCOPE.set({})
     try:

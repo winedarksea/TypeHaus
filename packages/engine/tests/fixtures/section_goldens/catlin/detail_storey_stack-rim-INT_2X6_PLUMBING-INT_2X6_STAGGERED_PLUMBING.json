@@ -1,5 +1,5 @@
 {
-  "name": "detail-D-storey_stack-rim-INT_2X6_PLUMBING-ec564f",
+  "name": "detail-D-storey_stack-rim-INT_2X6_PLUMBING-05461e",
   "units": "in",
   "nodes": [
     {
@@ -477,34 +477,6 @@
       "closed": true,
       "uid": "ZEF56D047J",
       "tag": "W-A-STU-W/paint-b"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          112.75000000000001,
-          240.0
-        ],
-        [
-          118.25000000000003,
-          240.0
-        ],
-        [
-          118.25000000000003,
-          261.65354330708664
-        ],
-        [
-          112.75000000000001,
-          261.65354330708664
-        ]
-      ],
-      "pattern": "batt",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "fiberglass"
     },
     {
       "space": "model",

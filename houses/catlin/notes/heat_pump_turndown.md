@@ -38,12 +38,12 @@ load(T) = ground_coupled_btuh + air_coupled_ua × (setpoint − T)
 
 | zone | air-coupled UA | ground-coupled | at −15 °F | at 5 °F | at 17 °F | at 47 °F |
 |---|---|---|---|---|---|---|
-| HP1 upstairs + attic | 180.76 | **0** | 15,365 | 11,750 | 9,580 | **4,158** |
-| HP2 basement + main | 144.37 | **2,392** | 14,664 | 11,776 | 10,044 | **5,713** |
-| HP3 mudroom + mech + closet | 12.27 | 0 | 1,043 | 797 | 650 | **282** |
+| HP1 upstairs + attic | 178.06 | **0** | 15,135 | 11,574 | 9,437 | **4,095** |
+| HP2 basement + main | 144.69 | **2,441** | 14,739 | 11,845 | 10,109 | **5,769** |
+| HP3 mudroom + mech + closet | 11.95 | 0 | 1,016 | 777 | 633 | **275** |
 
 HP1's zone is the second storey and the attic, so it has **no** ground-coupled term at all
-and its load is pure air. HP2's holds the basement, and its 2,392 Btu/h is the floor the air
+and its load is pure air. HP2's holds the basement, and its 2,441 Btu/h is the floor the air
 term sits on — at the interior setpoint the air ΔT is zero and only the ground remains,
 because the soil does not know what the air is doing.
 
@@ -79,7 +79,7 @@ zone as a whole must absorb however the heads stage.
 
 **HP3 — Sapphire 9k**, NEEP 393164, AHRI 214802444: minimum 2,600 @ −22, 2,600 @ 5,
 2,800 @ 17, **2,700 @ 47**; turndown ratio 4.26 — the best of the three, and still nowhere
-near enough for a 1,043 Btu/h zone.
+near enough for a 1,016 Btu/h zone.
 
 Three notes on the data, each of which the schema exists to hold:
 
@@ -115,9 +115,9 @@ Two halves, and they are easy to run together:
 
 | | largest minimum, and where | design load | **sizing factor** | Manual S cap | verdict |
 |---|---|---|---|---|---|
-| HP1 | 14,000 @ **5 °F** | 15,365 | **0.91** | 12,292 Btu/h | **advisory** |
-| HP2 | 8,800 @ **5 °F** | 14,664 | **0.60** | 11,731 Btu/h | pass |
-| HP3 | 2,800 @ **17 °F** | 1,043 | **2.69** | 834 Btu/h | **advisory** |
+| HP1 | 14,000 @ **5 °F** | 15,135 | **0.92** | 12,108 Btu/h | **advisory** |
+| HP2 | 8,800 @ **5 °F** | 14,739 | **0.60** | 11,791 Btu/h | pass |
+| HP3 | 2,800 @ **17 °F** | 1,016 | **2.76** | 813 Btu/h | **advisory** |
 
 **None of the three binds at the design row**, which is the whole argument for the table
 over a scalar. A check reading only −15 °F would report HP1's minimum as 13,556 Btu/h
@@ -149,20 +149,19 @@ The first flip is between −22 and 5:
 T = −22 + 27 × 3,230 / (3,230 + 2,250) = −22 + 27 × 0.5894 = −22 + 15.9 = −6.1 °F
 ```
 
-**HP1 modulates continuously only below −6.1 °F.** In Minneapolis that is on the order of
+**HP1 modulates continuously only below −7.1 °F.** In Minneapolis that is on the order of
 150 hours a year; the other 5,000 heating hours it cycles.
 
 (Note the difference flips *back* negative at 17 °F, because the minimum column dips to
 7,100 there. The solve takes the FIRST bracket, which is the conservative reading: the
 warmest temperature at which the unit is certainly still cycling is what the owner feels.)
 
-**HP2's crossover is 27.0 °F** — `17 + 30 × 1,244 / (1,244 + 2,487)` — and this is the case
-worth dwelling on. **It passes the Manual S cap at 0.60 and cycles above 27 °F anyway**,
-because its load falls faster than its floor does: its zone carries 2,392 Btu/h of
-ground-coupled load that does not move with the weather, so at 47 °F the load is still
-5,713 Btu/h while the compressor's floor is 8,200. A published cap and a physical
-description are not the same statement, and the check prints both — on a PASS as well as on
-a FAIL — precisely so nobody reads 0.60 as "this one is fine".
+**HP2's crossover is 27.5 °F**, and this is the case worth dwelling on. **It passes the
+Manual S cap at 0.60 and cycles above 27.5 °F anyway**, because its load falls faster than
+its floor does: its zone carries 2,441 Btu/h of ground-coupled load that does not move with
+the weather, so at 47 °F the load is still 5,769 Btu/h while the compressor's floor is 8,200.
+A published cap and a physical description are not the same statement, and the check prints
+both — on a PASS as well as on a FAIL — precisely so nobody reads 0.60 as "this one is fine".
 
 **HP3's difference is positive at every published temperature**: its minimum never reaches
 its load, and the check says so rather than extrapolating a crossover out of the table.
@@ -227,7 +226,7 @@ than shopping around indefinitely. The real answers are therefore structural:
   Costs a second outdoor unit, a second pad and a second circuit.
 * **Accept the cooling over-size and fix only the turndown.** A deeper-turndown unit of the
   same nominal size — the search space to shop, and the constraint to shop against is
-  "minimum at any published temperature under 12,292 Btu/h".
+  "minimum at any published temperature under 12,108 Btu/h".
 * **Accept both**, on the argument that the cooling season here is short. This is the
   do-nothing option and should be a decision rather than a default.
 
@@ -301,8 +300,8 @@ cooling load.
 
 ## 8. What is still open
 
-- **System 1's turndown**, at 0.91 against the 0.80 cap. The constraint to shop against, if
-  it is ever revisited: *a unit whose minimum at any published temperature is under 12,292
+- **System 1's turndown**, at 0.92 against the 0.80 cap. The constraint to shop against, if
+  it is ever revisited: *a unit whose minimum at any published temperature is under 12,108
   Btu/h*, with the soffit-depth consequence in §6.
 - **System 3's existence.** Kept for now, explicitly reversible.
 
@@ -372,3 +371,11 @@ No verdict moves.
 design load is now **14,735 Btu/h**, so the 8,800 Btu/h published minimum is a **0.60**
 sizing factor against a **11,788 Btu/h** Manual S cap. The crossover moves to **27.5 °F**.
 HP1 and HP3 are unchanged; all three verdicts remain as above.
+
+## Addendum 2026-10-01 — current resolved room model
+
+The current model resolves to air-coupled UA of 178.06 / 144.69 / 11.95 Btu/h·°F for
+HP1/HP2/HP3, with 2,441 Btu/h ground-coupled in HP2. The loads above and the sizing summary
+in §2 reflect this model. HP1's factor is now 0.92 against a 12,108 Btu/h cap; HP2's is
+0.60 against 11,791 Btu/h; HP3's is 2.76 against 813 Btu/h. The crossovers and owner verdicts
+are unchanged.

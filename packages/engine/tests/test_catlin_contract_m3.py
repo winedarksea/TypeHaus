@@ -218,7 +218,11 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # guard in this house is filled with a glass panel — a resolved requirement, not an
     # unresolved one, and lettering it as a gate failure would be a false statement.
     #
-    # ** THE SET IS EMPTY AGAIN SINCE 2026-09-20, AND IT STAYS HERE EMPTY. ** It held "Fixed
+    # ** ONE OWNER-DECIDED LINE IS OPEN WHILE THE FINAL TRUSS DRAWING IS PENDING. ** The
+    # `PR-M-S-BATH1-WC-DRAIN` / `FS-S-WEST` intersection is left visible by owner direction;
+    # no final truss drawing is available to establish an engineered opening or reroute.
+    # Every other gating item still passes. Before this item appeared, the set was empty
+    # since 2026-09-20. It held "Fixed
     # column base embedment" from 2026-09-18, when `engineering/column_base.py` began grading
     # the IBC 1807.3.2.1 embedment every `deck_post` record had been naming as an ungraded
     # assumption — a real design gap in the reference house, not a checklist defect. It
@@ -229,7 +233,7 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     #
     # The mechanism stays because the mechanism is the point: a gating item may be open here
     # deliberately, named once, while every OTHER gating item is still asserted as tightly as
-    # before. An empty set is the strongest form of that — nothing is excused.
+    # before. The open item is pinned to its specific reported members below.
     #
     # ** FIVE OPEN SINCE 2026-09-20, AND EACH IS THE ANSWER A CALCULATION GAVE. ** The
     # deferred engineering kinds were registered and their lines flipped to blocking; on
@@ -249,14 +253,14 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # the SRW apron are still OVER after the owner's fixes. The tie then CLOSED at 0.966
     # (HL35HDG at the stem, the anchored hole on the core centreline, W dry; §10d), and the
     # SRW apron closed on AB Stones (notes/raised_garden_srw.md §3b).
-    # ** EMPTY SINCE 2026-09-22. ** The thermal break was the last blocking line that was
+    # ** THE OTHER LINES WERE EMPTY SINCE 2026-09-22. ** The thermal break was the last blocking line that was
     # not PASS: basis 7 grades all five items OK (free body §11j) and the five suppressions
     # came off with it, so the DRAFT permit print opens. The sealed gate stays shut for its
     # own reason — no `engineering.toml` exists.
     #
     # The porch LEDGERS were open for an evening; their Titen HDs grade on Simpson's
     # L-A-THDSSLDGR23 row now.
-    OPEN: set[str] = set()
+    OPEN: set[str] = {"Resolved-model and transition integrity"}
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}
     unresolved = [item for item in gating
@@ -266,6 +270,11 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     still_open = {item.label for item in gating if item.result not in resolved}
     assert still_open == OPEN, (
         "an open item was fixed and left in the set, or a new one appeared", still_open)
+    open_integrity = next(item for item in gating
+                          if item.label == "Resolved-model and transition integrity")
+    assert open_integrity.result is Result.FAIL
+    assert "PR-M-S-BATH1-WC-DRAIN" in open_integrity.detail
+    assert "FS-S-WEST" in open_integrity.detail
     frost = [item for item in gating if item.label == "Foundation frost depth"]
     assert len(frost) == 1, [item.label for item in gating]
     assert frost[0].result is Result.PASS

@@ -1,14 +1,12 @@
-"""EQ-B-WH's connections are PORTS now, and eight literals still have to find them.
+"""EQ-B-WH's direct supply connections land on service-specific ports.
 
-``houses/catlin`` authors the water heater's coordinate once as ``Equipment.position``
-(``plan/mep_hvac.py``) and then again, verbatim, as a path endpoint in every supply run that
-leaves or arrives at the tank (``plan/mep_supply.py``) — seven of them — plus as the datum
-for the T&P relief discharge (``plan/mep_drainage.py``). Those files are ``# haus: editable``,
-whose dialect allows only literals: no shared constant can reach across them, and nothing in
-the resolver pulls a pipe onto its equipment. So moving the tank without moving all of them
-silently disconnects the hot trunk, the cold feed and five branches, and the model still
-resolves, still builds, and still passes every MEP check — it just describes plumbing that
-does not connect.
+``houses/catlin`` authors the water heater's coordinate as ``Equipment.position``
+(``plan/mep_hvac.py``) and repeats its port stations in the hot trunk, the cold feed, the
+cold bath branch, and the T&P relief datum. Those files are ``# haus: editable``, whose
+dialect allows only literals, and nothing in the resolver pulls a pipe onto its equipment.
+So moving the tank without moving its connected runs can silently disconnect them while the
+model still resolves and builds. The four hot fixture branches tee off the hot trunk's south
+turn, clear of the ERV manifold; they do not connect at the tank.
 
 That is exactly what happened on 2026-08-23, when the tank moved from (6'-2 1/4", 32'-9 7/8")
 to (5'-6", 24'-0") to clear ``EQ-B-ESS-BATT``'s REQUIRED separation zone. The move was fine;
@@ -43,10 +41,6 @@ _TPR_MAX_OFFSET_M = 0.6096  # 2'-0" — anything further is not "beside the tank
 _RUNS_BY_PORT = {
     "hot": (
         "PR-B-HW-TRUNK",   # the hot trunk out of the tank
-        "PR-B-HW-BATH1",
-        "PR-B-HW-WASH",
-        "PR-B-HW-SBATH",
-        "PR-B-HW-BATH",
     ),
     "cold": (
         "PR-B-CW-WH",      # the cold feed into it
@@ -135,7 +129,7 @@ def test_every_run_that_names_the_tank_lands_on_its_own_tap(catlin_model, wh_por
 
 def test_the_two_runs_that_really_connect_land_at_the_tap_elevation(catlin_model,
                                                                     wh_ports) -> None:
-    """The trunk and the feed END on the tank; the other five tee off above it.
+    """The hot trunk and cold feed connect at the tank's top ports.
 
     These are top connections, so the one vertex that is the connection sits at the port's
     own z. Before the ports were dimensioned both ran to a mid-tank 3'-9 7/16" — 22 1/2" of

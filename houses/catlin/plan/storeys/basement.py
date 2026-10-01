@@ -864,10 +864,11 @@ WALLS = [
          interior_room="RM-B-FURNACE"),
     # Sauna partitions — SAUNA_2X4 carries the hot-side liner (T&G/furring/foil-faced
     # polyiso) as part of the wall type, not a room finish override; the east wall (the
-    # x=18' bearing line) takes it via SAUNA_LINER_INT_2X6_BRG. Both are interior walls, so
-    # `interior_room` is what names which side the liner lands on.
+    # x=18' bearing line) takes it via SAUNA_LINER_INT_2X6_BRG. `interior_room` names the
+    # liner face. W-B-SA-W is 2x6 so the 4" exhaust radial can drop inside its stud cavity;
+    # the added depth goes to the cold/workshop side and preserves the sauna's clear face.
     Wall(uid="CBW117AAAA", tag="W-B-SA-W", start_node="N-B-S1",
-         end_node="N-B-SA-NW", assembly="SAUNA_2X4", top=ft(7, 6),
+         end_node="N-B-SA-NW", assembly="SAUNA_2X6", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
     # The sauna's cold north face, x 8'-10"..18'-0" at y=10'-0" since 2026-09-05 round
     # three (9'-5" between the shrink and that; see the node block for what fixes 10'-0").

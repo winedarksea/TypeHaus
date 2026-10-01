@@ -6,6 +6,7 @@ import copy
 import dataclasses
 
 import pytest
+from _helpers import CATLIN
 
 from typehaus.checks import run_from_model
 from typehaus.checks.registry import Tier
@@ -352,15 +353,16 @@ def test_basement_slab_fixtures_drain_through_their_own_slab_stub_ups(catlin_mod
         assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9), tag
 
 
-def test_catlin_wet_wall_depth_has_no_findings(catlin_model):
-    """``advisory.wet_wall_depth`` reports only problems, so silence is the pass. It fires
-    on a drain fixture with no ``wall_ref`` at all.
+def test_catlin_wet_wall_depth_uses_documented_house_exceptions(catlin_model):
+    """The plan documents two accepted wet-wall-depth exceptions in its preferences.
 
-    Note what this does *not* assert: that 5 1/2" is a code minimum. It is not — the number is
-    ``preferences.toml``'s own planning allowance and the check is ADVISORY tier, in no item of
-    the mn-2020 permit profile. This test holds the house to its own preference, nothing more.
+    Without the house preferences, the 5 1/2" planning allowance reports both the WC's vent
+    target and lavatory wall. Neither is a permit requirement; the WC's carrier/waste is in
+    W-M-HS1, while the lavatory branch drops through the deck. The house explicitly keeps
+    W-M-BAE as a dry 2x4 partition and suppresses these two reviewed findings.
     """
-    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY, only="advisory.wet_wall_depth")
+    report = run_from_model(catlin_model, [], house_dir=CATLIN, tier=Tier.ADVISORY,
+                            only="advisory.wet_wall_depth")
     matched = [f for f in report.findings if f.check_id == "advisory.wet_wall_depth"]
     assert not matched, [f.message for f in matched]
 
@@ -405,6 +407,9 @@ def test_laundry_goods_fit_the_alcove_and_clear_each_other(catlin_model):
     overlap = Polygon(objects["FX-M-LAUNDRY"].footprint).intersection(
         Polygon(objects["FX-M-LAUNDRY-SINK"].footprint))
     assert overlap.area <= 1e-9, f"{overlap.area * 10.7639:.2f} ft2 of laundry overlap"
+    rack_overlap = Polygon(objects["FURN-M-LAUNDRY-RACK"].footprint).intersection(
+        Polygon(objects["FX-M-LAUNDRY-SINK"].footprint))
+    assert rack_overlap.area > 1e-9, "the wall rack still shelves over the utility tub"
     opening = next(o for o in catlin_model.openings if o.tag == "D-M-LAUN")
     host = next(w for w in catlin_model.walls if w.tag == opening.host_wall)
     opening_left = host.axis[0][0] + opening.center_along_m - opening.width_m / 2

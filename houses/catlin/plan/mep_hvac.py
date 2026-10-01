@@ -477,12 +477,13 @@ DUCTS_HVAC_SECOND = [
 # "this storey has no horizontal duct" is a fact worth stating where the list would be.
 DUCTS_HVAC_ATTIC = []
 
-# The tank sits against W-B-STR3 at (8'-9 1/8", 28'-0"), flush to the resolved east interior
+# The tank sits against W-B-STR3 at (8'-9 1/8", 29'-6"), flush to the resolved east interior
 # face, and service access facing west into RM-B-FURNACE. This open wall bay is
 # below the ESS closet (the battery's 48" x 41" required separation zone begins at
-# y=31'-6") and southeast of the inverter; its north edge is 2'-6" south of that zone. The
-# tank clears D-B-FURN's leaf (which sweeps to y=20'-8"), the vent/service lane, and the 36" NEC
-# 110.26 working spaces along the west wall. Its footprint remains inside the room face.
+# y=31'-6") and southeast of the inverter; its north edge is 1'-0" south of that zone. The
+# tank clears D-B-FURN's leaf (which sweeps to y=20'-8"), D-B-CLOSET's swing, the vent/service
+# lane, and the 36" NEC 110.26 working spaces along the west wall. Its footprint remains inside
+# the room face.
 #
 # **Eight connection datums move with the tank.** EQ-T-WATER-HEATER's exact top ports stay
 # 4" either side of its product axis; instance rotation places hot west and cold east. The
@@ -491,7 +492,7 @@ DUCTS_HVAC_ATTIC = []
 # every run against its service-specific resolved port and checks relief proximity.
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(ft(8, 9.125), ft(28)), rotation=deg(180),
+             position=pt(ft(8, 9.125), ft(29, 6)), rotation=deg(180),
              footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",
              relief_discharge_ref="PR-B-WH-TPR"),
 ]

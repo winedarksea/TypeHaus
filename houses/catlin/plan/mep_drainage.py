@@ -169,8 +169,10 @@ DRAINS = [
             # Keep the outlet under the bowl at x=30"; a 1 1/2" lateral offset puts the
             # W-B-CW crossing at x=28 1/2", in its 14 1/2" clear stud bay. It clears the
             # stud beginning at x=31 1/4" by 1", so the wall needs no stud bore.
-            # 5" over the 4'-4 5/8" leg keeps the turn at the drop's foot within a 1/4 bend.
-            elevations=(ft(9, 1.4375), ft(7, 4.4375), ft(7, 4.4375),
+            # The 1 1/2" west offset falls 1/32" (1/4" per foot); the south leg falls 5"
+            # over 4'-4 5/8", and the short collector leg falls 2". Ceiling-access cleanouts
+            # serve the upper terminal and the second horizontal turn (mep_cleanouts.py).
+            elevations=(ft(9, 1.4375), ft(7, 4.4375), ft(7, 4.40625),
                         ft(6, 11.4375), ft(6, 9.4375)),
             serves=("FX-M-BATH2-WC",)),
     # ** BATH1's WALL-HUNG WC, ON ITS OWN BRANCH, NOT PR-B-MAIN-DRAIN'S FIRST VERTEX. **
@@ -742,15 +744,15 @@ CONDENSATE = [
 # falls to SM-B-RADON" to be an argument on its own. The air gap is what UPC 608.5 actually
 # requires; the slope is a slab-pour question the pour has to be told to fall this way
 # rather than assumed to. Flagged in plans/TODO.md.
-# ** THE RELIEF LINE MOVED WITH THE TANK (2026-09-30). ** Its factory-installed valve has no
+# ** THE RELIEF LINE MOVED WITH THE TANK (2026-10-01). ** Its factory-installed valve has no
 # published station, so the type declares no relief `ServicePort`. The run starts 2" west of
 # the tank's west face, at x=7'-7 1/8", then drops and discharges one foot south at the same
 # elevations as before. `test_water_heater_connections` grades this by proximity to the tank
 # centre; the seven supply runs are graded against their service-specific ports.
 TPR_DISCHARGE = [
     PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(ft(7, 7.125), ft(28)), pt(ft(7, 7.125), ft(28)),
-                  pt(ft(7, 7.125), ft(27))),
+            path=(pt(ft(7, 7.125), ft(29, 6)), pt(ft(7, 7.125), ft(29, 6)),
+                  pt(ft(7, 7.125), ft(28, 6))),
             diameter=inch(0.75), material="copper",
             elevations=(ft(3, 6), ft(0, 8), ft(0, 6))),
 ]

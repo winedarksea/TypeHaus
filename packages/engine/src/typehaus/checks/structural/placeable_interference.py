@@ -5,8 +5,8 @@ stands on.
   entering a hard obstacle (``SolidCategory.collision == "hard"``: walls, decks, pours,
   beams, posts, runs, soffits, other bodies). WARN severity, FAIL result. Touching is not
   entering: the body is shrunk by 1/4" first. The only other pardon is a **relation** — the
-  host wall, the ``soffit_ref``, a ``Connector.connects``, or any authored ``*_ref`` between
-  the two — never a proximity guess.
+  host wall, the ``soffit_ref``, a ``Connector.connects``, an authored ``*_ref``, or an exact
+  service-matched pipe endpoint at a declared Equipment port — never a proximity guess.
 * ``structural.equipment_support`` — a FLOOR-mounted body's underside, probed at its four
   plan quadrants against every ``supports_on_top`` top and every room's finished floor at
   the body's base. PASS at 3+ quadrants carried, FAIL at none, UNKNOWN in between.
@@ -35,6 +35,7 @@ _TOL_M = inch(0.25).meters
 _SEAT_TOL_M = inch(0.5).meters
 _MIN_AREA_M2 = inch(1).meters ** 2
 _SEAT_MIN_M2 = inch(0.25).meters ** 2
+_EXACT_PORT_TOLERANCE_M = inch(0.125).meters
 
 
 @dataclass(frozen=True)
@@ -123,7 +124,7 @@ def _ref_values(element) -> Iterator[str]:
 
 
 def relations(ctx: CheckContext, tags: set[str]) -> dict[str, set[str]]:
-    """tag -> every tag an authored reference ties it to, in either direction."""
+    """tag -> references and exact service-port connections, in either direction."""
     out: dict[str, set[str]] = {tag: set() for tag in tags}
     for element in ctx.plan.all_elements():
         refs = set(_ref_values(element))
@@ -137,6 +138,35 @@ def relations(ctx: CheckContext, tags: set[str]) -> dict[str, set[str]]:
         for tag in refs & tags:
             if own:
                 out[tag].add(own)
+
+    # A pipe endpoint placed on an exact, service-matched equipment port is a declared
+    # physical connection. The product station and pipe endpoint must agree in all three
+    # axes; proximity to the body alone never pardons a pipe that crosses it.
+    from typehaus.resolve.mep_ports import placed_ports
+
+    ports = [port for port in placed_ports(ctx.model)
+             if port.exact and port.equipment_tag in out]
+    for run in ctx.model.pipe_runs:
+        system = str(getattr(run.system, "value", run.system))
+        if not run.path:
+            continue
+        endpoints = []
+        if run.z_m:
+            endpoints.extend(((run.path[0][0], run.path[0][1], run.z_m[0]),
+                              (run.path[-1][0], run.path[-1][1], run.z_m[-1])))
+        else:
+            if run.z_start_m is not None:
+                endpoints.append((*run.path[0], run.z_start_m))
+            if run.z_end_m is not None:
+                endpoints.append((*run.path[-1], run.z_end_m))
+        for port in ports:
+            if port.service != system:
+                continue
+            for endpoint in endpoints:
+                if max(abs(endpoint[axis] - port.point[axis]) for axis in range(3)) \
+                        <= _EXACT_PORT_TOLERANCE_M:
+                    out[port.equipment_tag].add(run.tag)
+                    break
     return out
 
 
