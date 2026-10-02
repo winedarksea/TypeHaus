@@ -96,6 +96,15 @@ MAIN_COUNTERTOPS = [
         thickness=inch(1.181),
         overhang=inch(1),
     ),
+    # One slab over the two 24" SEKTION drawer units in RM-M-CLOSET. The 1" front
+    # oversail takes the 15 1/2" cabinet depth to 16 1/2" finished depth (5.50 SF).
+    Countertop(
+        uid="R4C1Q7N8PV", tag="CT-M-CLOSET",
+        hosts=("FURN-M-CLOSET-SEKTION-N", "FURN-M-CLOSET-SEKTION-S"),
+        material_ref="quartz-counter",
+        thickness=inch(1.181),
+        overhang=inch(1),
+    ),
 ]
 
 # RM-S-BATH1's deck — the other fabricated one, 22" over the 21" carcass, as its type says.

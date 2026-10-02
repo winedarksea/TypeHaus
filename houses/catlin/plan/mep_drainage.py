@@ -334,12 +334,13 @@ DRAINS = [
     # separately (not as a vertex on the branch) so `mep.sleeve_coverage` sees a run actually
     # passing through the cast stub rather than a stale or mis-routed sleeve.
     # Since 2026-10-01 the branch no longer passes under the drain, so the drop takes a
-    # 2'-4" arm south onto it. Under 5 ft and serving no sink, it needs no cleanout.
+    # 2'-4" arm south onto it, landing on the branch's centreline. Under 5 ft and serving
+    # no sink, it needs no cleanout.
     PipeRun(uid="CBPD10AAAA", tag="PR-B-SAUNA-FD-DROP", system=PipeSystem.DRAIN,
             path=(pt(ft(13, 6), inch(98.1875)), pt(ft(13, 6), inch(98.1875)),
                   pt(ft(13, 6), ft(5, 10.2))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(0), inch(-8.7), inch(-9.3)),
+            elevations=(ft(0), inch(-8.7), inch(-9.4344)),
             serves=("FX-B-SAUNA-FD",)),
 ]
 

@@ -4070,3 +4070,15 @@ surface that reaches the court, so the water goes there.
   storage space. Nothing grades that rule.
 - The PAX strips (IKEA OVERSIDAN, mark E2) run off a TRADFRI driver plugged into
   `ED-M-CLOSET-RC1`, which is switched with the cans.
+
+## 2026-10-01 — RM-M-CLOSET west wall changes to two SEKTION drawer cabinets
+
+- `FURN-M-CLOSET-BESTA-N` and `-S` are replaced by two IKEA SEKTION / MAXIMERA
+  24x15x30 three-drawer cabinets, SKU 296.240.12. Each is 24" wide, for a 48" run;
+  the 15" system-depth boxes measure 15 1/2" overall. Four 4 1/2" legs support each
+  cabinet, and a single low-silica quartz slab spans both with a 1" front oversail.
+- The nominal finished height is 36". At the 39" lower rod, the 15 1/2" directly over the
+  north cabinet is not usable for hanging clothes; the remaining clear rod section beyond
+  the cabinet face remains available for short hangs.
+- `CT-M-CLOSET` adds 5.50 SF to the quartz countertop takeoff. The furniture allowance
+  reflects the IKEA set plus legs, with rail and handles included in its high range.

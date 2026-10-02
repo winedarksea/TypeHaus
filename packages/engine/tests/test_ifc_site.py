@@ -33,7 +33,9 @@ def test_ifc_has_utility_proxies(catlin_model_ro, catlin_ifc_path: Path):
 
     proxies = [p for p in f.by_type("IfcBuildingElementProxy")
               if (p.Name or "").startswith("UTIL-")]
-    assert len(proxies) == len(catlin_model_ro.plan.project.site.utilities)
+    # One proxy per segment: the sewer bends round PD-BW-W on its way to the street.
+    assert len(proxies) == sum(len(u.path) - 1
+                               for u in catlin_model_ro.plan.project.site.utilities)
 
 
 def test_the_site_sheet_hangs_below_grade_rather_than_standing_on_it(catlin_model_ro,

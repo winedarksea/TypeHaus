@@ -72,21 +72,22 @@ MAIN_CLOSET = [
                   wall_ref="W-M-CLN2", face="right", distance_from_start=inch(31.4375),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # --- west wall: BESTA drawers, south-justified (owner, 2026-10-01) -------------------
-    # y 13'-2 3/8"..17'-1 5/8". The north unit sits under the west bay's lower rod, so the
-    # rod's west ~16" takes short hangs only. Its top (~20") is the lower clothes' floor.
-    Furniture(uid="RBXDWNQ5MB", tag="FURN-M-CLOSET-BESTA-N", type_ref="FURN-M-BESTA-DRAWER",
+    # --- west wall: SEKTION drawers, south-justified (owner, 2026-10-01) -----------------
+    # Two 24" units form one 48" run. The north unit is under the west bay's 39" rod: the
+    # rod's first 15 1/2" from the wall is directly over the 36" counter and cannot take
+    # hanging clothes; only its remaining length beyond the cabinet face stays usable.
+    Furniture(uid="RBXDWNQ5MB", tag="FURN-M-CLOSET-SEKTION-N", type_ref="FURN-M-SEKTION-24-DRAWER",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(22),
+                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(21.625),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(uid="3MCJXB7KKA", tag="FURN-M-CLOSET-BESTA-S", type_ref="FURN-M-BESTA-DRAWER",
+    Furniture(uid="3MCJXB7KKA", tag="FURN-M-CLOSET-SEKTION-S", type_ref="FURN-M-SEKTION-24-DRAWER",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(45.8125),
+                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(45.625),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # --- south wall: robe pegs, between the BESTA and the switch -------------------------
+    # --- south wall: robe pegs, between the SEKTION run and the switch -------------------
     # x 9'-9"..13'-3"; rail bottom 64", pegs at ~66", so a robe hem clears the floor.
     Furniture(uid="NTTF3DRZJ8", tag="FURN-M-CLOSET-PEGS", type_ref="FT-M-PEG-RAIL-42",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(64)),

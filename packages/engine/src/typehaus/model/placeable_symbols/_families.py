@@ -468,13 +468,17 @@ def peg_rail(*, pegs: int = 6) -> Builder:
         shaft_length = max(0.0, plate_front - shaft_front)
         shaft_cy = (plate_front + shaft_front) / 2
 
+        # The plan glyph is height-blind: size its heads off width and depth alone.
+        plan_head_length = min(depth * 0.15, (depth - plate_depth) * 0.4)
+        plan_head_radius = min(width / max(2, pegs) * 0.12, depth * 0.12)
+        plan_head_cy = -depth / 2 + plan_head_length / 2
         strokes = [rect(0, plate_cy, width, plate_depth, fill="wood")]
         parts = [box(0, plate_cy, 0.0, height, width, plate_depth, "wood")]
         for index in range(count):
             peg_x = -width / 2 + margin + spacing * index
-            strokes.append(line((peg_x, head_cy + head_length / 2),
+            strokes.append(line((peg_x, plan_head_cy + plan_head_length / 2),
                                 (peg_x, plate_front), weight=DETAIL_WEIGHT))
-            strokes.append(circle(peg_x, head_cy, head_radius, fill="wood",
+            strokes.append(circle(peg_x, plan_head_cy, plan_head_radius, fill="wood",
                                  weight=DETAIL_WEIGHT))
             if shaft_length > 0:
                 parts.append(depth_cylinder(peg_x, shaft_cy, peg_z, shaft_radius,

@@ -150,7 +150,6 @@ def test_exit_on_error_is_the_looser_gate() -> None:
 
 def test_catlin_has_no_unsuppressed_failures(catlin_json) -> None:
     """The moved WC drain clears its truss, and no other finding is left visible."""
-    """
     import json
 
     payload = json.loads(catlin_json.output)

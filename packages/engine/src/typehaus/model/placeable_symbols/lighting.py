@@ -321,8 +321,9 @@ def mirror_light() -> Builder:
     def build(width: float, depth: float, height: float) -> Geometry:
         frame = min(width, height) * 0.0254  # one-inch frame/band
         face_depth = depth * 0.12
+        # The plan glyph is height-blind, so its border reads off the width alone.
         strokes = [rect(0, 0, width, depth, fill="luminaire-housing"),
-                   rect(0, 0, width - 2 * frame, depth * 0.65, fill="mirror",
+                   rect(0, 0, width * (1 - 2 * 0.0254), depth * 0.65, fill="mirror",
                         weight=DETAIL_WEIGHT)]
         # The integrated LED is a narrow luminous border, while most of the body remains
         # reflective glass. Keeping the mirror face in front makes its identity legible.

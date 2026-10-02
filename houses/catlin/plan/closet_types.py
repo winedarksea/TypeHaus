@@ -1,4 +1,4 @@
-"""RM-M-CLOSET's fit-out catalog: two PAX frames, BESTA drawers, the custom bay, pegs, mirror.
+"""RM-M-CLOSET's fit-out catalog: two PAX frames, SEKTION drawers, the custom bay, pegs, mirror.
 
 House-local because each row is a CONFIGURATION fitted to this closet (a PAX frame with a
 stated interior, a rod cut to a 32" bay), not a bare product. The products themselves are
@@ -37,12 +37,17 @@ PAX_WALL_FRAME = Product(
            "contact; 93 1/8\" overall; needs 93 1/4\" ceiling to stand up. Interiors are "
            "KOMPLEMENT.",
 )
-BESTA_FRAME = Product(
-    tag="PROD-IKEA-BESTA-38", brand="IKEA", model="BESTA frame 60x40x38",
-    name='BESTA frame, white, 23 5/8 x 15 3/4 x 15"', sku="702.458.48",
-    url="https://www.ikea.com/us/en/p/besta-frame-white-70245848/",
-    source="IKEA US listing, read 2026-10-01. Two BESTA drawer frames (703.515.13, 5 7/8\" "
-           "each) per carcass, with fronts and legs bought to taste.",
+SEKTION_MAXIMERA_24_DRAWER = Product(
+    tag="PROD-IKEA-SEKTION-MAXIMERA-24-3D", brand="IKEA",
+    model="SEKTION / MAXIMERA 24x15x30, 3 drawers",
+    name="SEKTION / MAXIMERA base cabinet with 3 drawers, white/Aspudden matte white",
+    sku="296.240.12",
+    url=("https://www.ikea.com/us/en/p/sektion-maximera-base-cabinet-with-3-drawers-"
+         "white-aspudden-matte-white-s29624012/"),
+    source=("IKEA US listing, read 2026-10-01: 24\" W x 15\" system depth (15 1/2\" overall) "
+            "x 30\" frame, three MAXIMERA drawers with ASPUDDEN fronts. The four 4 1/2\" "
+            "legs, suspension rail and handles are separate; the linked set was listed at "
+            "$367.00."),
 )
 OVERSIDAN = Product(
     tag="PROD-IKEA-OVERSIDAN", brand="IKEA", model="OVERSIDAN",
@@ -59,7 +64,7 @@ TRADFRI_30 = Product(
            "plugs into an ordinary receptacle through the ANSLUTA cord (sold separately).",
 )
 
-CLOSET_PRODUCTS = (PAX_WALL_FRAME, BESTA_FRAME, OVERSIDAN, TRADFRI_30)
+CLOSET_PRODUCTS = (PAX_WALL_FRAME, SEKTION_MAXIMERA_24_DRAWER, OVERSIDAN, TRADFRI_30)
 
 # --- north wall: two PAX frames and the custom bay ---------------------------------------
 #
@@ -104,16 +109,18 @@ CLOSET_PLINTH = FurnitureType(
     source="As the valance; the bottom board on the PAX bottom line, a deck for shoes.",
 )
 
-# --- west wall: BESTA drawers -------------------------------------------------------------
+# --- west wall: SEKTION drawers ----------------------------------------------------------
 
-BESTA_DRAWER = FurnitureType(
-    tag="FURN-M-BESTA-DRAWER",
-    name='BESTA 23 5/8 x 15 3/4 x 15" frame, two drawers, fronts, on 4 3/4" legs',
-    footprint=(inch(23.625), inch(16.5)), height=inch(19.75),
-    storage=True, work_surface=False, plan_symbol="nightstand",
-    product_ref="PROD-IKEA-BESTA-38",
-    source=("15 3/4\" frame plus ~3/4\" fronts. On legs, so the top stays at ~20\" and under "
-            "the lower rod's short hang. Strapped to W-M-BA2E2 against tipping."),
+SEKTION_DRAWER_24 = FurnitureType(
+    tag="FURN-M-SEKTION-24-DRAWER",
+    name='SEKTION 24 x 15 x 30" frame, three MAXIMERA drawers, on 4 1/2" legs, with slab',
+    footprint=(inch(24), inch(15.5)), height=inch(36),
+    storage=True, work_surface=True, plan_symbol="drawer-cabinet-3",
+    product_ref="PROD-IKEA-SEKTION-MAXIMERA-24-3D",
+    source=("Two 24\" units make a 48\" run. IKEA lists 15\" system depth and 15 1/2\" "
+            "overall depth; the 36\" assembled height is the owner-stated nominal, including "
+            "the 30\" frame, 4 1/2\" legs and the shared slab. Anchor through the SEKTION "
+            "rail into W-M-BA2E2's 32\"..39 1/4\" backing band."),
 )
 
 # --- south wall: robe pegs ----------------------------------------------------------------
@@ -127,7 +134,7 @@ PEG_RAIL_42 = FurnitureType(
 )
 
 CLOSET_FURNITURE_TYPES = (PAX_SHOW, PAX_HANG, CLOSET_ROD_32, CLOSET_VALANCE, CLOSET_PLINTH,
-                          BESTA_DRAWER, PEG_RAIL_42)
+                          SEKTION_DRAWER_24, PEG_RAIL_42)
 
 # --- lighting: the lit mirror, the PAX strips and their driver ---------------------------
 

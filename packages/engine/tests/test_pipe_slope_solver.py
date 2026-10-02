@@ -169,10 +169,15 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 #: on it moves; the grade is still the one authored fact. SF-B-GYM boxed the pair out at the
 #: time and was retired on 2026-09-13 for RM-B-GYM's own declaration; NONE of these numbers
 #: moved with it, which is why they are still here unchanged.
+#:
+#: ** BATH AND SAUNA RE-PINNED 2026-10-01: the sewer leaves NORTH. ** Both now flow to the
+#: stack's base at (3', 16'-6") and the main carries them north. The bath's west leg moved to
+#: y=17'-4 3/4"; the sauna leaves its pan on a 1/8 bend, runs west on y=5'-10" clear of the
+#: bench, and turns north. Both hold 1/4"/ft, the sauna dropping from 0.3 to buy the length.
 _PINNED_FT = {
     "PR-B-COND": [-1.45313, -1.67813, -1.72604, -1.83854, -1.85896, -8.36979],
-    "PR-B-BATH-DRAIN": [-9.11979, -9.83646, -10.01636, -10.20396],
-    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.89677, -10.00133, -10.26379],
+    "PR-B-BATH-DRAIN": [-9.11979, -9.83646, -9.97687, -10.16479],
+    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.90495, -10.12474, -10.34896],
 }
 
 #: The grade each of the three declares in its own comment. PR-B-BATH-DRAIN went to
@@ -183,7 +188,7 @@ _PINNED_FT = {
 _GRADE_IN_PER_FT = {
     "PR-B-COND": 0.3,
     "PR-B-BATH-DRAIN": 0.25,
-    "PR-B-SAUNA-DRAIN": 0.3,
+    "PR-B-SAUNA-DRAIN": 0.25,
 }
 
 

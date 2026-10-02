@@ -1217,12 +1217,12 @@
 "canvas_objects/FURN-M-CHAIR-S3/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-CHAIR-S3/body_z1_m": 0.9890125,
 "canvas_objects/FURN-M-CHAIR-S3/z_m": 0.0238125,
-"canvas_objects/FURN-M-CLOSET-BESTA-N/body_z0_m": 0.0381,
-"canvas_objects/FURN-M-CLOSET-BESTA-N/body_z1_m": 0.53975,
-"canvas_objects/FURN-M-CLOSET-BESTA-N/z_m": 0.0381,
-"canvas_objects/FURN-M-CLOSET-BESTA-S/body_z0_m": 0.0381,
-"canvas_objects/FURN-M-CLOSET-BESTA-S/body_z1_m": 0.53975,
-"canvas_objects/FURN-M-CLOSET-BESTA-S/z_m": 0.0381,
+"canvas_objects/FURN-M-CLOSET-SEKTION-N/body_z0_m": 0.0381,
+"canvas_objects/FURN-M-CLOSET-SEKTION-N/body_z1_m": 0.9525,
+"canvas_objects/FURN-M-CLOSET-SEKTION-N/z_m": 0.0381,
+"canvas_objects/FURN-M-CLOSET-SEKTION-S/body_z0_m": 0.0381,
+"canvas_objects/FURN-M-CLOSET-SEKTION-S/body_z1_m": 0.9525,
+"canvas_objects/FURN-M-CLOSET-SEKTION-S/z_m": 0.0381,
 "canvas_objects/FURN-M-CLOSET-PAX-HANG/body_z0_m": 0.04445,
 "canvas_objects/FURN-M-CLOSET-PAX-HANG/body_z1_m": 2.403475,
 "canvas_objects/FURN-M-CLOSET-PAX-HANG/z_m": 0.04445,
@@ -2001,20 +2001,14 @@
 "drain_cleanouts/CO-B-KITCH-TURN/fitting_z_m": -0.3357563,
 "drain_cleanouts/CO-B-LSINK/cap_z_m": -0.2894965,
 "drain_cleanouts/CO-B-LSINK/fitting_z_m": -0.3910965,
-"drain_cleanouts/CO-B-MAIN-TURN/cap_z_m": -0.62992,
-"drain_cleanouts/CO-B-MAIN-TURN/fitting_z_m": -0.73152,
 "drain_cleanouts/CO-B-SAUNA-HEAD/cap_z_m": -2.7797125,
-"drain_cleanouts/CO-B-SAUNA-HEAD/fitting_z_m": -3.0369748,
-"drain_cleanouts/CO-B-SAUNA-TURN/cap_z_m": -2.7797125,
-"drain_cleanouts/CO-B-SAUNA-TURN/fitting_z_m": -3.0484445,
-"drain_cleanouts/CO-B-SEWER/cap_z_m": -0.8636,
-"drain_cleanouts/CO-B-SEWER/fitting_z_m": -3.2521525,
-"drain_cleanouts/CO-B-SLAB-TURN/cap_z_m": -2.7797125,
-"drain_cleanouts/CO-B-SLAB-TURN/fitting_z_m": -3.1149925,
+"drain_cleanouts/CO-B-SAUNA-HEAD/fitting_z_m": -3.0230445,
+"drain_cleanouts/CO-B-SEWER/cap_z_m": -2.7797125,
+"drain_cleanouts/CO-B-SEWER/fitting_z_m": -3.2718375,
+"drain_cleanouts/CO-B-STACK-BASE/cap_z_m": -2.7797125,
+"drain_cleanouts/CO-B-STACK-BASE/fitting_z_m": -3.1638875,
 "drain_cleanouts/CO-B-WC2-HEAD/cap_z_m": -0.3175,
 "drain_cleanouts/CO-B-WC2-HEAD/fitting_z_m": -0.5334,
-"drain_cleanouts/CO-B-WC2-TURN/cap_z_m": -0.3175,
-"drain_cleanouts/CO-B-WC2-TURN/fitting_z_m": -0.6604,
 "drain_cleanouts/CO-M-BATH1/cap_z_m": 0.6096,
 "drain_cleanouts/CO-M-BATH1/fitting_z_m": -0.5588,
 "drain_cleanouts/CO-M-SUITE/cap_z_m": 0.6096,
@@ -11757,7 +11751,7 @@
 -0.7480136,
 0.0,
 96,
-"0637308933b9"
+"4fed4a3b4a64"
 ],
 "geometry/CBPD02AAAA-run/body": [
 -0.4202693,
@@ -11790,16 +11784,16 @@
 "a96def47db77"
 ],
 "geometry/CBPD07AAAA-run/body": [
--3.1482582,
+-3.1363202,
 -2.7797125,
 72,
-"7cce49cbf660"
+"4d306ecc6bbc"
 ],
 "geometry/CBPD08AAAA-run/body": [
--3.1537958,
+-3.1797569,
 -2.7289125,
 96,
-"00437adb26d8"
+"1edc05e04adf"
 ],
 "geometry/CBPD09AAAA-run/body": [
 -2.9829125,
@@ -11808,10 +11802,10 @@
 "ce3e6a8c997a"
 ],
 "geometry/CBPD10AAAA-run/body": [
--3.0165421,
+-3.0447375,
 -2.7797125,
-24,
-"0e9661bdc1db"
+48,
+"1ec708bb61e5"
 ],
 "geometry/CBPT01AAAA-run/body": [
 -2.6367079,
@@ -11832,10 +11826,10 @@
 "7153ade1e919"
 ],
 "geometry/CBPW18AAAA-sleeve/body": [
--3.2691197,
--3.1167197,
+-3.3099375,
+-3.1575375,
 24,
-"ddf4c3cf870d"
+"c621080c5689"
 ],
 "geometry/CBPW20AAAA-sleeve/body": [
 -2.71145,
@@ -19422,10 +19416,10 @@
 "05422d9d8cae"
 ],
 "geometry/CMP905AAAA-run/body": [
--3.3029336,
+-3.3416765,
 -0.3562728,
-120,
-"46d64cea550c"
+96,
+"60af5500728c"
 ],
 "geometry/CMP906AAAA-run/body": [
 2.9184602,
@@ -29364,52 +29358,34 @@
 "ecc256920645"
 ],
 "geometry/COB0000001-CAP/body": [
--0.873125,
--0.854075,
+-2.7892375,
+-2.7701875,
 24,
-"732662e1957e"
+"0cdf2473ac81"
 ],
 "geometry/COB0000001-EXT/body": [
--3.1505525,
--0.8636,
+-3.1702375,
+-2.7797125,
 24,
-"3056f820768e"
+"f809f1295dd0"
 ],
 "geometry/COB0000001-FIT-DN/body": [
--3.3316893,
--3.1218157,
+-3.3513743,
+-3.1415007,
 24,
-"e62f27d71a33"
+"fbda674dddaa"
 ],
 "geometry/COB0000001-FIT-UP/body": [
--3.3316893,
--3.1218157,
+-3.3513743,
+-3.1415007,
 24,
-"e62f27d71a33"
+"fbda674dddaa"
 ],
 "geometry/COB0000001/body": [
--3.3029525,
--3.1505525,
+-3.3226375,
+-3.1702375,
 24,
-"30d96e6611ed"
-],
-"geometry/COB0000002-CAP/body": [
--0.688848,
--0.570992,
-24,
-"521a98850837"
-],
-"geometry/COB0000002-EXT/body": [
--0.67564,
--0.5842,
-24,
-"355c100ddbd8"
-],
-"geometry/COB0000002/body": [
--0.78232,
--0.62992,
-24,
-"a56c19186c8e"
+"7cc5f531ef60"
 ],
 "geometry/COB0000003-CAP/body": [
 0.295275,
@@ -29490,34 +29466,16 @@
 "0cdf2473ac81"
 ],
 "geometry/COB0000007-EXT/body": [
--2.9353748,
+-2.9214445,
 -2.7797125,
 24,
-"cefc0f1f52b8"
+"da063a78b4a1"
 ],
 "geometry/COB0000007/body": [
--3.0877748,
--2.9353748,
+-3.0738445,
+-2.9214445,
 24,
-"e259964d1d27"
-],
-"geometry/COB0000008-CAP/body": [
--2.7892375,
--2.7701875,
-24,
-"0cdf2473ac81"
-],
-"geometry/COB0000008-EXT/body": [
--2.9468445,
--2.7797125,
-24,
-"2b183c4ff3ae"
-],
-"geometry/COB0000008/body": [
--3.0992445,
--2.9468445,
-24,
-"b0f0eafdf938"
+"ad4eaa80688c"
 ],
 "geometry/COB0000009-CAP/body": [
 -0.673608,
@@ -29556,16 +29514,28 @@
 "0cdf2473ac81"
 ],
 "geometry/COB0000010-EXT/body": [
--3.0133925,
+-3.0622875,
 -2.7797125,
 24,
-"583a4037f567"
+"eb27b673188c"
+],
+"geometry/COB0000010-FIT-DN/body": [
+-3.2434243,
+-3.0335507,
+24,
+"c7a9971740f6"
+],
+"geometry/COB0000010-FIT-UP/body": [
+-3.2434243,
+-3.0335507,
+24,
+"c7a9971740f6"
 ],
 "geometry/COB0000010/body": [
--3.1657925,
--3.0133925,
+-3.2146875,
+-3.0622875,
 24,
-"ad57451a3d63"
+"7c327b1706e7"
 ],
 "geometry/COB0000011-CAP/body": [
 -0.327025,
@@ -29584,24 +29554,6 @@
 -0.4318,
 24,
 "f280d764a50f"
-],
-"geometry/COB0000012-CAP/body": [
--0.327025,
--0.307975,
-24,
-"ec146fa97302"
-],
-"geometry/COB0000012-EXT/body": [
--0.5588,
--0.3175,
-24,
-"90603d82e864"
-],
-"geometry/COB0000012/body": [
--0.7112,
--0.5588,
-24,
-"289d6e763ebf"
 ],
 "geometry/COM0000001-CAP/body": [
 0.565404,
@@ -46963,9 +46915,9 @@
 ],
 "geometry/K28BQ29KCW-run/body": [
 2.472195,
-3.0933667,
+3.0933758,
 120,
-"bbcdbd0be8a6"
+"6a9f2b9bbfc5"
 ],
 "geometry/K7XB2VDR5H/body": [
 -0.381,
@@ -84889,12 +84841,12 @@
 "59a26978b712"
 ],
 "pipe_runs/PR-A-STUBATH-VENT/z_start_m": 7.1374,
-"pipe_runs/PR-B-BATH-DRAIN/z_end_m": -3.1101665,
+"pipe_runs/PR-B-BATH-DRAIN/z_end_m": -3.0982285,
 "pipe_runs/PR-B-BATH-DRAIN/z_m": [
--3.1101665,
+-3.0982285,
 -2.7797125,
 4,
-"17c1bbde72ff"
+"9fdc7bab61fc"
 ],
 "pipe_runs/PR-B-BATH-DRAIN/z_start_m": -2.7797125,
 "pipe_runs/PR-B-BATH-LAV-DRAIN/z_end_m": -2.9829125,
@@ -85113,12 +85065,12 @@
 "0779f675a8a0"
 ],
 "pipe_runs/PR-B-LSINK-DRAIN/z_start_m": 0.0,
-"pipe_runs/PR-B-MAIN-DRAIN/z_end_m": -3.2521525,
+"pipe_runs/PR-B-MAIN-DRAIN/z_end_m": -3.2908875,
 "pipe_runs/PR-B-MAIN-DRAIN/z_m": [
--3.2521525,
+-3.2908875,
 -0.4064,
-6,
-"c1c598a412dc"
+5,
+"410d2722a3a0"
 ],
 "pipe_runs/PR-B-MAIN-DRAIN/z_start_m": -0.4064,
 "pipe_runs/PR-B-RADON-LEG/z_end_m": -2.6924,
@@ -85129,20 +85081,20 @@
 "c8516ebed66f"
 ],
 "pipe_runs/PR-B-RADON-LEG/z_start_m": -2.8813125,
-"pipe_runs/PR-B-SAUNA-DRAIN/z_end_m": -3.1284037,
+"pipe_runs/PR-B-SAUNA-DRAIN/z_end_m": -3.1543625,
 "pipe_runs/PR-B-SAUNA-DRAIN/z_m": [
--3.1284037,
+-3.1543625,
 -2.7289125,
 5,
-"e074af6cd367"
+"64ba18b4d4df"
 ],
 "pipe_runs/PR-B-SAUNA-DRAIN/z_start_m": -2.7289125,
-"pipe_runs/PR-B-SAUNA-FD-DROP/z_end_m": -3.0165421,
+"pipe_runs/PR-B-SAUNA-FD-DROP/z_end_m": -3.0193463,
 "pipe_runs/PR-B-SAUNA-FD-DROP/z_m": [
--3.0165421,
+-3.0193463,
 -2.7797125,
-2,
-"5bd185a91716"
+3,
+"7f109512f188"
 ],
 "pipe_runs/PR-B-SAUNA-FD-DROP/z_start_m": -2.7797125,
 "pipe_runs/PR-B-SAUNA-VENT/z_end_m": -0.33782,
@@ -85206,7 +85158,7 @@
 -0.7112,
 0.0,
 5,
-"6a06ad3f6418"
+"b88228cd142e"
 ],
 "pipe_runs/PR-B-WC2-DRAIN/z_start_m": 0.0,
 "pipe_runs/PR-B-WH-TPR/z_end_m": -2.6273125,
@@ -86040,7 +85992,7 @@
 "sleeves/SP-B-SAUNA-FD/z1_m": -2.7797125,
 "sleeves/SP-B-SAUNA-SH/z0_m": -2.8686125,
 "sleeves/SP-B-SAUNA-SH/z1_m": -2.7797125,
-"sleeves/SP-B-SEWER-EXIT/center_z_m": -3.1929197,
+"sleeves/SP-B-SEWER-EXIT/center_z_m": -3.2337375,
 "sleeves/SP-B-SEWER-EXIT/z0_m": -2.9829125,
 "sleeves/SP-B-SEWER-EXIT/z1_m": -2.7797125,
 "sleeves/SP-B-SLAB-MAIN/z0_m": -2.8686125,
@@ -87423,52 +87375,38 @@
 "solids/CO-B-LSINK-EXT/z1_m": -0.2666365,
 "solids/CO-B-LSINK/z0_m": -0.4418965,
 "solids/CO-B-LSINK/z1_m": -0.2894965,
-"solids/CO-B-MAIN-TURN-CAP/z0_m": -0.688848,
-"solids/CO-B-MAIN-TURN-CAP/z1_m": -0.570992,
-"solids/CO-B-MAIN-TURN-EXT/z0_m": -0.67564,
-"solids/CO-B-MAIN-TURN-EXT/z1_m": -0.5842,
-"solids/CO-B-MAIN-TURN/z0_m": -0.78232,
-"solids/CO-B-MAIN-TURN/z1_m": -0.62992,
 "solids/CO-B-SAUNA-HEAD-CAP/z0_m": -2.7892375,
 "solids/CO-B-SAUNA-HEAD-CAP/z1_m": -2.7701875,
-"solids/CO-B-SAUNA-HEAD-EXT/z0_m": -2.9353748,
+"solids/CO-B-SAUNA-HEAD-EXT/z0_m": -2.9214445,
 "solids/CO-B-SAUNA-HEAD-EXT/z1_m": -2.7797125,
-"solids/CO-B-SAUNA-HEAD/z0_m": -3.0877748,
-"solids/CO-B-SAUNA-HEAD/z1_m": -2.9353748,
-"solids/CO-B-SAUNA-TURN-CAP/z0_m": -2.7892375,
-"solids/CO-B-SAUNA-TURN-CAP/z1_m": -2.7701875,
-"solids/CO-B-SAUNA-TURN-EXT/z0_m": -2.9468445,
-"solids/CO-B-SAUNA-TURN-EXT/z1_m": -2.7797125,
-"solids/CO-B-SAUNA-TURN/z0_m": -3.0992445,
-"solids/CO-B-SAUNA-TURN/z1_m": -2.9468445,
-"solids/CO-B-SEWER-CAP/z0_m": -0.873125,
-"solids/CO-B-SEWER-CAP/z1_m": -0.854075,
-"solids/CO-B-SEWER-EXT/z0_m": -3.1505525,
-"solids/CO-B-SEWER-EXT/z1_m": -0.8636,
-"solids/CO-B-SEWER-FIT-DN/z0_m": -3.3316893,
-"solids/CO-B-SEWER-FIT-DN/z1_m": -3.1218157,
-"solids/CO-B-SEWER-FIT-UP/z0_m": -3.3316893,
-"solids/CO-B-SEWER-FIT-UP/z1_m": -3.1218157,
-"solids/CO-B-SEWER/z0_m": -3.3029525,
-"solids/CO-B-SEWER/z1_m": -3.1505525,
-"solids/CO-B-SLAB-TURN-CAP/z0_m": -2.7892375,
-"solids/CO-B-SLAB-TURN-CAP/z1_m": -2.7701875,
-"solids/CO-B-SLAB-TURN-EXT/z0_m": -3.0133925,
-"solids/CO-B-SLAB-TURN-EXT/z1_m": -2.7797125,
-"solids/CO-B-SLAB-TURN/z0_m": -3.1657925,
-"solids/CO-B-SLAB-TURN/z1_m": -3.0133925,
+"solids/CO-B-SAUNA-HEAD/z0_m": -3.0738445,
+"solids/CO-B-SAUNA-HEAD/z1_m": -2.9214445,
+"solids/CO-B-SEWER-CAP/z0_m": -2.7892375,
+"solids/CO-B-SEWER-CAP/z1_m": -2.7701875,
+"solids/CO-B-SEWER-EXT/z0_m": -3.1702375,
+"solids/CO-B-SEWER-EXT/z1_m": -2.7797125,
+"solids/CO-B-SEWER-FIT-DN/z0_m": -3.3513743,
+"solids/CO-B-SEWER-FIT-DN/z1_m": -3.1415007,
+"solids/CO-B-SEWER-FIT-UP/z0_m": -3.3513743,
+"solids/CO-B-SEWER-FIT-UP/z1_m": -3.1415007,
+"solids/CO-B-SEWER/z0_m": -3.3226375,
+"solids/CO-B-SEWER/z1_m": -3.1702375,
+"solids/CO-B-STACK-BASE-CAP/z0_m": -2.7892375,
+"solids/CO-B-STACK-BASE-CAP/z1_m": -2.7701875,
+"solids/CO-B-STACK-BASE-EXT/z0_m": -3.0622875,
+"solids/CO-B-STACK-BASE-EXT/z1_m": -2.7797125,
+"solids/CO-B-STACK-BASE-FIT-DN/z0_m": -3.2434243,
+"solids/CO-B-STACK-BASE-FIT-DN/z1_m": -3.0335507,
+"solids/CO-B-STACK-BASE-FIT-UP/z0_m": -3.2434243,
+"solids/CO-B-STACK-BASE-FIT-UP/z1_m": -3.0335507,
+"solids/CO-B-STACK-BASE/z0_m": -3.2146875,
+"solids/CO-B-STACK-BASE/z1_m": -3.0622875,
 "solids/CO-B-WC2-HEAD-CAP/z0_m": -0.327025,
 "solids/CO-B-WC2-HEAD-CAP/z1_m": -0.307975,
 "solids/CO-B-WC2-HEAD-EXT/z0_m": -0.4318,
 "solids/CO-B-WC2-HEAD-EXT/z1_m": -0.3175,
 "solids/CO-B-WC2-HEAD/z0_m": -0.5842,
 "solids/CO-B-WC2-HEAD/z1_m": -0.4318,
-"solids/CO-B-WC2-TURN-CAP/z0_m": -0.327025,
-"solids/CO-B-WC2-TURN-CAP/z1_m": -0.307975,
-"solids/CO-B-WC2-TURN-EXT/z0_m": -0.5588,
-"solids/CO-B-WC2-TURN-EXT/z1_m": -0.3175,
-"solids/CO-B-WC2-TURN/z0_m": -0.7112,
-"solids/CO-B-WC2-TURN/z1_m": -0.5588,
 "solids/CO-M-BATH1-CAP/z0_m": 0.565404,
 "solids/CO-M-BATH1-CAP/z1_m": 0.653796,
 "solids/CO-M-BATH1-EXT/z0_m": -0.4572,
@@ -89089,7 +89027,7 @@
 "solids/PR-A-STUBATH-SH-DRAIN-RUN/z1_m": 6.11505,
 "solids/PR-A-STUBATH-VENT-RUN/z0_m": 7.112002,
 "solids/PR-A-STUBATH-VENT-RUN/z1_m": 7.2643958,
-"solids/PR-B-BATH-DRAIN-RUN/z0_m": -3.1482582,
+"solids/PR-B-BATH-DRAIN-RUN/z0_m": -3.1363202,
 "solids/PR-B-BATH-DRAIN-RUN/z1_m": -2.7797125,
 "solids/PR-B-BATH-LAV-DRAIN-RUN/z0_m": -2.9829125,
 "solids/PR-B-BATH-LAV-DRAIN-RUN/z1_m": -2.3225125,
@@ -89145,13 +89083,13 @@
 "solids/PR-B-LAV1-DRAIN-RUN/z1_m": 0.0,
 "solids/PR-B-LSINK-DRAIN-RUN/z0_m": -0.6094597,
 "solids/PR-B-LSINK-DRAIN-RUN/z1_m": 0.0,
-"solids/PR-B-MAIN-DRAIN-RUN/z0_m": -3.3029336,
+"solids/PR-B-MAIN-DRAIN-RUN/z0_m": -3.3416765,
 "solids/PR-B-MAIN-DRAIN-RUN/z1_m": -0.3562728,
 "solids/PR-B-RADON-LEG-RUN/z0_m": -2.8813125,
 "solids/PR-B-RADON-LEG-RUN/z1_m": -2.6543186,
-"solids/PR-B-SAUNA-DRAIN-RUN/z0_m": -3.1537958,
+"solids/PR-B-SAUNA-DRAIN-RUN/z0_m": -3.1797569,
 "solids/PR-B-SAUNA-DRAIN-RUN/z1_m": -2.7289125,
-"solids/PR-B-SAUNA-FD-DROP-RUN/z0_m": -3.0165421,
+"solids/PR-B-SAUNA-FD-DROP-RUN/z0_m": -3.0447375,
 "solids/PR-B-SAUNA-FD-DROP-RUN/z1_m": -2.7797125,
 "solids/PR-B-SAUNA-VENT-RUN/z0_m": -2.6924,
 "solids/PR-B-SAUNA-VENT-RUN/z1_m": -0.3124208,
@@ -89200,7 +89138,7 @@
 "solids/PR-M-S-BATH1-TUB-DRAIN-RUN/z0_m": 2.9166894,
 "solids/PR-M-S-BATH1-TUB-DRAIN-RUN/z1_m": 3.06705,
 "solids/PR-M-S-BATH1-WC-DRAIN-RUN/z0_m": 2.472195,
-"solids/PR-M-S-BATH1-WC-DRAIN-RUN/z1_m": 3.0933667,
+"solids/PR-M-S-BATH1-WC-DRAIN-RUN/z1_m": 3.0933758,
 "solids/PR-M-S-SUITE-DRAIN-RUN/z0_m": -0.7431115,
 "solids/PR-M-S-SUITE-DRAIN-RUN/z1_m": 2.9337,
 "solids/PR-M-S-SUITE-LAV-DRAIN-RUN/z0_m": 2.9337057,
@@ -90191,8 +90129,8 @@
 "solids/SP-B-SAUNA-FD/z1_m": -2.7797125,
 "solids/SP-B-SAUNA-SH/z0_m": -2.8686125,
 "solids/SP-B-SAUNA-SH/z1_m": -2.7797125,
-"solids/SP-B-SEWER-EXIT/z0_m": -3.2691197,
-"solids/SP-B-SEWER-EXIT/z1_m": -3.1167197,
+"solids/SP-B-SEWER-EXIT/z0_m": -3.3099375,
+"solids/SP-B-SEWER-EXIT/z1_m": -3.1575375,
 "solids/SP-B-SLAB-MAIN/z0_m": -2.8686125,
 "solids/SP-B-SLAB-MAIN/z1_m": -2.7797125,
 "solids/SP-G-CD-GAR/z0_m": -0.9525,

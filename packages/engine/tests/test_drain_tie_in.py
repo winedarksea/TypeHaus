@@ -110,9 +110,12 @@ def test_an_accepted_but_low_entry_is_an_advisory_fail(
     model = copy.copy(catlin_model_ro)
     runs = list(model.pipe_runs)
     index, child = next((i, r) for i, r in enumerate(runs) if r.tag == "PR-B-BATH-DRAIN")
+    arrival = next(t.drop_m for t in drain_tie_in_records(_drains(catlin_model_ro))
+                   if t.child == child.tag)
     sunk = copy.copy(child)
     # A quarter inch under: inside the 1" the rollup tolerates, so still accepted.
-    object.__setattr__(sunk, "z_m", [*child.z_m[:-1], child.z_m[-1] - 0.25 * M_PER_IN])
+    object.__setattr__(sunk, "z_m", [*child.z_m[:-1],
+                                     child.z_m[-1] - arrival - 0.25 * M_PER_IN])
     runs[index] = sunk
     object.__setattr__(model, "pipe_runs", tuple(runs))
 

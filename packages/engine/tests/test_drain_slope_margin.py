@@ -41,8 +41,9 @@ def test_the_engine_default_is_a_sixteenth(catlin_plan, catlin_model_ro) -> None
     assert MepPreferences().min_drain_slope_margin_in_per_ft == 0.0625
     fails = [f for f in _run(catlin_plan, catlin_model_ro, 0.0625)
              if f.result is Result.FAIL]
-    # The current WC2 and second-storey WC routes add two more close-to-minimum slopes.
-    assert len(fails) == 14
+    # The current WC2 and second-storey WC routes add two more close-to-minimum slopes; the
+    # 2026-10-01 north sewer exit put the main and both slab branches at exactly 1/4"/ft.
+    assert len(fails) == 12
     assert all(f.severity is Severity.WARN for f in fails), "ADVISORY, not a permit blocker"
 
 
