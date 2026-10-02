@@ -14,6 +14,9 @@ from .materials_flooring import MATERIALS_FLOORING
 
 MATERIALS = [
     *ALL_MATERIALS,
+    Material(tag="pax-frame-white", name="White PAX frame and shelf panels",
+             color="#f0f0ed",
+             source="Owner selection 2026-10-02: BED1-3 PAX frames are white."),
     # `polyiso-foil-thermax` (the sauna liner's board) is a library row since 2026-09-24.
     # --- THE 2026-09-06 INTERIOR SELECTIONS PASS -----------------------------------------
     #

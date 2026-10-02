@@ -83,7 +83,7 @@ def sektion_tall(interior: SektionTallInterior) -> Builder:
             box(0, shelf_center_y, height - panel, height,
                 opening_width, shelf_depth, "appliance-white"),
             box(0, carcass_front_y + min(TOE_RECESS_M, carcass_depth / 4) + panel / 2,
-                0, leg_height, width, panel, "casework-shadow"),
+                0, leg_height, width, panel, "appliance-white"),
         ]
         for shelf_inches in (*interior.open_shelf_heights_inches,
                              *UPPER_SHELF_HEIGHTS_INCHES):

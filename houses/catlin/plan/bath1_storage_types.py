@@ -30,7 +30,7 @@ _WIDTH = inch(24)
 _DEPTH = inch(24.875)
 _HEIGHT = inch(94.5)
 _SOURCE = ("SEKTION 702.654.45; 4 1/2\" legs and white plinth. Upper VOXTORP doors "
-           "24x30 (102.733.30) + 24x20 (302.733.29), both right-hinged; shelf divider "
+           "24x30 (102.733.30) + 24x20 (302.733.29), both hinged at east edges; shelf divider "
            "at frame 40\", adjustable shelves at 55/70/80\". Rail offset is included "
            "in the 24\" mounting envelope, not an additional wall gap.")
 

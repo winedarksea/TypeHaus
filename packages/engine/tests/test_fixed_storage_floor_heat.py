@@ -18,7 +18,7 @@ def _context(gap_inches, *, attached=True, mount_kind=MountKind.FLOOR, storage=T
         attachment_wall="WALL" if attached else None, mount=Mount(kind=mount_kind),
     )
     zone = SimpleNamespace(
-        tag="HEAT", storey="main",
+        tag="HEAT", storey="main", system="electric",
         zone=tuple(box((24 + gap_inches) * INCH, 0, 60 * INCH, 24 * INCH).exterior.coords),
     )
     return SimpleNamespace(
@@ -53,3 +53,8 @@ def test_fixture_overlap_is_still_reported_without_storage_types():
     assert len(findings) == 1
     assert "overlaps fixture CAB" in findings[0].message
 
+
+def test_electric_cable_setback_is_not_imposed_on_hydronic_loops():
+    ctx = _context(1)
+    ctx.model.floor_heat[0].system = "hydronic"
+    assert not floor_heat_fixture_keepout(ctx)

@@ -95,8 +95,27 @@ def test_heating_keeps_its_cable_and_clearance_from_all_fixed_storage(catlin_pla
     assert authored_zone.watts == 338
     assert round(polygon.area / SQFT * 22.8) == 612
     for obj in objects.values():
-        if obj.room != "RM-S-BATH1" or obj.kind not in {"Fixture", "Furniture"}:
+        if obj.room != "RM-S-BATH1":
+            continue
+        if obj.kind != "Fixture" and not obj.tag.startswith("FURN-S-BATH1-CLOSET"):
             continue
         assert polygon.distance(Polygon(obj.footprint)) >= 2 * INCH - 1e-9, obj.tag
     # Schluter also requires seven inches from the drain. The drain stays at its WC centre.
     assert polygon.distance(Point(objects["FX-S-BATH1-WC"].position)) > 7 * INCH
+
+
+def test_tall_rail_is_backed_on_both_wall_segments_and_stays_below_the_ceiling(
+        catlin_plan, catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    room = next(room for room in catlin_model_ro.rooms if room.tag == "RM-S-BATH1")
+    for tag in CABINET_TAGS:
+        cabinet = objects[tag]
+        assert room.clear_height_m - (cabinet.body_z1_m - cabinet.body_z0_m) == pytest.approx(11.5 * INCH)
+    for tag, wall_tag in (("BK-S-BD-N-SEKTION", "W-S-BD-N"),
+                          ("BK-S-BD-N1B-SEKTION", "W-S-BD-N1B")):
+        band = catlin_plan.by_tag(tag)
+        assert band.wall_ref == wall_tag
+        assert band.face == "left"
+        # Installed rail band translated from the finished floor to the storey datum.
+        rail_screw_height = (94.25 + 1.5) * INCH
+        assert band.elevation.meters < rail_screw_height < band.elevation.meters + band.height.meters

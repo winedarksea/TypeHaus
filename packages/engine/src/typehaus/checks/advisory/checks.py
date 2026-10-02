@@ -130,7 +130,7 @@ _HEAT_GAP_TOLERANCE_M = 1e-9
 
 @check(Tier.ADVISORY, "advisory.floor_heat_fixture_keepout")
 def floor_heat_fixture_keepout(ctx: CheckContext) -> list[Finding]:
-    """Radiant wire avoids fixtures and floor-mounted, wall-attached storage.
+    """Radiant avoids fixtures; electric cable also avoids fixed floor storage.
 
     Reads the RESOLVED footprint off the canvas object, not a box rebuilt from the type's
     ``(width, depth)`` — that would ignore ``Fixture.rotation`` and grade the wrong
@@ -160,6 +160,8 @@ def floor_heat_fixture_keepout(ctx: CheckContext) -> list[Finding]:
                     "exclude the fixture footprint from the heating loop",
                     (zone.tag, fixture.tag),
                 ))
+        if zone.system != "electric":
+            continue
         for cabinet in fixed_storage:
             if cabinet.storey != zone.storey:
                 continue

@@ -4172,3 +4172,33 @@ surface that reaches the court, so the water goes there.
   length and field charge are installation measurements, not modelled geometry.
 - The assumption is recorded in plans/hp1-canopy-siting-study.md. Regression checks
   verify physical access and matching geometry without claiming manufacturer approval.
+
+## 2026-10-02 — BED1-3 PAX frames changed to white
+
+- The second-story bedroom PAX frames and shelves use `pax-frame-white` through their
+  furniture types' `wood_material_ref`, shared by the viewer and glTF export. The GRIMO
+  doors and AULI/MEHAMN sliding panels retain their existing colors.
+
+## 2026-10-02 — Hall-bath linen closet becomes three SEKTION high cabinets
+
+- `FURN-S-BATH1-CLOSET` retains its uid as the west 24x24x90 frame; `-C` and `-E` complete
+  the 72" run. All use matte white VOXTORP upper doors (30+20") on 4 1/2" legs: 94 1/2"
+  installed, with 24" frame/rail depth and 24 7/8" including fronts.
+- Owner keeps the toilet and plumbing exactly where they are. Its body overlaps the west
+  and centre lower drawer sweeps, so both lower 15" modules become OPEN shelf bays, without
+  a door or drawer. One 10" drawer remains above each, at 34 1/2" AFF, above the WC's
+  29 1/8" top. East keeps all three drawers; five visible drawers across the run.
+- Hollow symbol geometry models the shelves and drawer boxes. A 3D sweep regression checks
+  access because the model's individual clearance zones have no height. Upper doors also
+  clear the WC vertically. Required clearances pass; the east cabinet/end cover enter the
+  vanity's recommended rectangle by 0.38", left visible as two UNKNOWN advisories.
+- FÖRBÄTTRA matte white 005.678.37 closes the east end: actual 1/2" thickness, 24 5/8" depth,
+  front flush, rear 1/4" sealed gap. A 3/8" site scribe closes the west end. Two 2x8 backing
+  bands at storey elevations 90..97 1/4" carry the high rail across W-S-BD-N / -N1B.
+- The old heat polygon ran under the generic closet. Its replacement uses the clear floor
+  around and north of the toilet, holding 2" from fixed storage/fixtures/walls and over 7"
+  from the drain. 26.821 sf preserves DHEHK12027 (26.7 sf, 338 W) and 612 Btu/h against the
+  room's 606 Btu/h loss. The electric heat keepout check now recognizes fixed floor storage.
+- Configured price rows count two open units and one drawer unit, including shelves,
+  hinges, legs, rail and plinth. Trim is separate; material $3,312..3,900 and installation
+  $490..1,160. The retired generic row has no instance. Plan/order: plans/bath1-sektion-closet.md.

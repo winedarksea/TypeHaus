@@ -71,12 +71,14 @@ def _door_zone(x0: float, y0: float, x1: float, y1: float, purpose: str) -> Clea
 # The frame runs along the wall (+y) and the corner unit returns down the -x end, so the
 # return is on the LEFT seen from the room. One 19 1/2" GRIMO door on each inner face of
 # the L; each zone is that door's swing.
+# The material ref colors only frame/shelf wood parts; door and metal roles keep their colors.
 PAX_CORNER = FurnitureType(
     tag="FURN-S-PAX-CORNER",
     name='PAX/GRIMO corner wardrobe, 43 3/8" L both ways, two doors',
     footprint=(_CORNER, _CORNER), height=inch(93.125),
     footprint_shape=Footprint2D(points=tuple(pt(m(x), m(y)) for x, y in _ring)),
     storage=True, work_surface=False, plan_symbol="wardrobe-corner",
+    wood_material_ref="pax-frame-white",
     product_ref="PROD-IKEA-PAX-GRIMO-CORNER",
     clearances=(
         _door_zone(_inner_x, _inner_y - _DOOR.meters, _CORNER.meters / 2, _inner_y,
@@ -90,12 +92,14 @@ PAX_SHELF_20 = FurnitureType(
     tag="FURN-S-PAX-SHELF-20", name='PAX 19 5/8" open frame, six shelves',
     footprint=(inch(19.625), inch(22.875)), height=inch(92.875),
     storage=True, work_surface=False, plan_symbol="wardrobe-shelves",
+    wood_material_ref="pax-frame-white",
     product_ref="PROD-IKEA-PAX-WALL-20", source=_PAX_SOURCE,
 )
 PAX_SHELF_40 = FurnitureType(
     tag="FURN-S-PAX-SHELF-40", name='PAX 39 3/8" frame, six shelves, behind sliders',
     footprint=(inch(39.375), inch(22.875)), height=inch(92.875),
     storage=True, work_surface=False, plan_symbol="wardrobe-shelves",
+    wood_material_ref="pax-frame-white",
     product_ref="PROD-IKEA-PAX-WALL", source=_PAX_SOURCE,
 )
 PAX_DOUBLE_40 = FurnitureType(
@@ -103,6 +107,7 @@ PAX_DOUBLE_40 = FurnitureType(
     name='PAX 39 3/8" frame, two rails (38 3/4"/78 3/4"), shelf at 81 1/2", behind sliders',
     footprint=(inch(39.375), inch(22.875)), height=inch(92.875),
     storage=True, work_surface=False, plan_symbol="wardrobe-double-hang",
+    wood_material_ref="pax-frame-white",
     product_ref="PROD-IKEA-PAX-WALL", source=_PAX_SOURCE,
 )
 # No clearance zone: it slides. work_surface=None so the frames behind it break the wall

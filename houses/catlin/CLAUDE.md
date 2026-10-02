@@ -40,6 +40,11 @@ not instruction: when it disagrees with this file or the model, it is the one th
   sits beside the walls it names.
 - `plan/closet.py` — `# haus: editable`, everything in RM-M-CLOSET (PAX, SEKTION, rods, pegs,
   mirror, cans, switch, PAX strips); types and IKEA products in `plan/closet_types.py`.
+- `plan/bath1_storage.py` — `# haus: editable`, three 24x24x90 SEKTION frames in RM-S-BATH1;
+  types/products in `plan/bath1_storage_types.py`. Toilet stays: west/centre lower 30" are
+  open shelves, with a drawer above; east has three drawers. Upper VOXTORP doors match the
+  kitchen. Installed height 94 1/2", depth 24 7/8" including fronts. Rail backing spans
+  W-S-BD-N / -N1B. FH-S-BATH1 avoids the run, preserving its 338 W cable and 612 Btu/h output.
 - `plan/bedroom_wardrobes.py` — `# haus: editable`, BED1-3's PAX wardrobes; types and products
   in `plan/bedroom_wardrobe_types.py`. BED1/2's doors sit 2 1/2" off module for them (accepted).
 - `plan/lighting_attic.py`, `plan/electrical_attic.py` — `# haus: editable`, split off for the
