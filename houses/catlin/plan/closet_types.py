@@ -113,14 +113,16 @@ CLOSET_PLINTH = FurnitureType(
 
 SEKTION_DRAWER_24 = FurnitureType(
     tag="FURN-M-SEKTION-24-DRAWER",
-    name='SEKTION 24 x 15 x 30" frame, three MAXIMERA drawers, on 4 1/2" legs, with slab',
-    footprint=(inch(24), inch(15.5)), height=inch(36),
-    storage=True, work_surface=True, plan_symbol="drawer-cabinet-3",
+    name='SEKTION 24 x 15 x 30" frame, three drawers, four legs, 36" nominal with slab',
+    footprint=(inch(24), inch(16.5)), height=inch(35.681),
+    carcass_depth=inch(15.5), storage=True, work_surface=True,
+    plan_symbol="sektion-drawer-base",
     product_ref="PROD-IKEA-SEKTION-MAXIMERA-24-3D",
     source=("Two 24\" units make a 48\" run. IKEA lists 15\" system depth and 15 1/2\" "
-            "overall depth; the 36\" assembled height is the owner-stated nominal, including "
-            "the 30\" frame, 4 1/2\" legs and the shared slab. Anchor through the SEKTION "
-            "rail into W-M-BA2E2's 32\"..39 1/4\" backing band."),
+            "overall cabinet depth. The 30\" frame, 4 1/2\" legs and 3 cm slab total "
+            "35 11/16\" (36\" nominal). The slab projects 1\" beyond the drawer fronts. "
+            "Anchor through the SEKTION rail into W-M-BA2E2's 32\"..39 1/4\" backing band; "
+            "the unselected toe plinth is not modeled, so the four legs remain exposed."),
 )
 
 # --- south wall: robe pegs ----------------------------------------------------------------

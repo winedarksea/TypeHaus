@@ -1195,7 +1195,7 @@ SECOND_PLACEABLES = [
               position=pt(m(9.95572), m(6.98818)), rotation=deg(0)),
     # Six inches north leaves the wardrobe clear of BED3's foot-access zone.
     Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",
-              position=pt(m(9.73747), m(10.12438)), rotation=deg(-90)),
+              position=pt(m(9.73747), m(9.98253)), rotation=deg(-90)),
     # BED1 and BED2 have desks on their north walls with chairs to the south. BED3's desk
     # stays on the west wall with its chair to the east. The dining chair keeps the lighter
     # dining-room plan and 3D appearance.

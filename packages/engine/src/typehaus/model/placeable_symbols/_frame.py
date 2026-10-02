@@ -69,6 +69,10 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "screen": (0.14, 0.15, 0.17, 1.0),
     "appliance-white": (0.94, 0.94, 0.93, 1.0),
     "appliance-steel": (0.76, 0.78, 0.80, 1.0),
+    # Recessed joins in painted furniture. The shade is light enough to read as a real
+    # contact shadow at a narrow seam, without turning white drawer gaps into dark graphic
+    # lines when a model is viewed at room scale.
+    "casework-shadow": (0.78, 0.79, 0.80, 1.0),
     "porcelain": (0.97, 0.97, 0.96, 1.0),
     "counter": (0.52, 0.50, 0.48, 1.0),
     # Painted casework. Fitted kitchen millwork is finished, not stained: a warm off-white

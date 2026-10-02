@@ -32,6 +32,7 @@ from typehaus.model.placeable_symbols._wardrobe import (
                                                         closet_board,
                                                         wardrobe,
 )
+from typehaus.model.placeable_symbols._sektion import sektion_drawer_base
 from typehaus.quantities import inch
 
 __all__ = ["FURNITURE_SYMBOLS", "sectional_points"]
@@ -63,8 +64,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # keep open, and a fold-down leaf cannot have either and still fold.
     "wall-desk": slab(leg_inset_m=0.06, apron=True, modesty_panel=False, legs=False),
     # Casegoods, distinguished by their drawer grid.
-    "drawer-cabinet-3": case(rows=3, cols=1, pulls=True,
-                             color="appliance-white", face_color="appliance-white"),
+    "sektion-drawer-base": sektion_drawer_base(),
     "dresser": case(rows=3, cols=2),
     "chest": case(rows=5, cols=1),
     "nightstand": case(rows=2, cols=1),
