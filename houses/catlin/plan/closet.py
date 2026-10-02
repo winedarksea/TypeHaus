@@ -97,7 +97,7 @@ MAIN_CLOSET = [
 
     # --- south wall: robe pegs, between the SEKTION run and the switch -------------------
     # x 9'-9"..13'-3"; rail bottom 64", pegs at ~66", so a robe hem clears the floor.
-    Furniture(uid="NTTF3DRZJ8", tag="FURN-M-CLOSET-PEGS", type_ref="FT-M-PEG-RAIL-42",
+    Furniture(uid="NTTF3DRZJ8", tag="FURN-M-CLOSET-PEGS", type_ref="FURN-M-CLOSET-PEGS",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(64)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-BDN2", face="left", distance_from_start=inch(43),

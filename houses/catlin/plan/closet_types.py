@@ -1,4 +1,4 @@
-"""RM-M-CLOSET's fit-out catalog: three PAX frames, SEKTION drawers, the custom bay, pegs, mirror.
+"""RM-M-CLOSET's fit-out catalog: three PAX frames, SEKTION drawers, the custom bay, mirror.
 
 House-local because each row is a CONFIGURATION fitted to this closet (a PAX frame with a
 stated interior, a rod cut to a 32" bay), not a bare product. The products themselves are
@@ -142,18 +142,8 @@ SEKTION_DRAWER_24 = FurnitureType(
             "the unselected toe plinth is not modeled, so the four legs remain exposed."),
 )
 
-# --- south wall: robe pegs ----------------------------------------------------------------
-
-PEG_RAIL_42 = FurnitureType(
-    tag="FT-M-PEG-RAIL-42", name='Solid oak peg rail, 42", six knobs',
-    footprint=(inch(42), inch(4)), height=inch(3.5),
-    plan_symbol="peg-rail", mount=_WALL,
-    source=("42\" solid-oak backplate with six rounded, projecting oak knobs, inspired by the "
-            "linked IKEA HÖVOLM rack. Screwed through into BK-M-BDN2-PEGS."),
-)
-
 CLOSET_FURNITURE_TYPES = (PAX_SHOW, PAX_DRESS, PAX_DOUBLE, CLOSET_ROD_32, CLOSET_VALANCE,
-                          CLOSET_PLINTH, SEKTION_DRAWER_24, PEG_RAIL_42)
+                          CLOSET_PLINTH, SEKTION_DRAWER_24)
 
 # --- lighting: the lit mirror, the PAX strips and their driver ---------------------------
 

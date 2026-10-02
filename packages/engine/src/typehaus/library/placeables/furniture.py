@@ -11,7 +11,7 @@ The four original tags (``FURN-SOFA-84``, ``FURN-QUEEN-BED``, ``FURN-DINING-6``,
 from __future__ import annotations
 
 from typehaus.library.placeables._zones import front_zone, side_zone, surround_zone
-from typehaus.model import Footprint2D, FurnitureType, ft, inch, m, pt
+from typehaus.model import Footprint2D, FurnitureType, Mount, MountKind, ft, inch, m, pt
 from typehaus.model.placeable_symbols.furniture import sectional_points
 
 REFERENCE = "plans/furniture_size_reference.md (US residential averages)"
@@ -297,6 +297,17 @@ MUDROOM_BENCH_36 = FurnitureType(
     storage=False,
     source="Shoe-changing bench, 36 x 18 in",
 )
+# A standard wall-mounted robe rail with six rounded pegs. The placement is house-specific,
+# but the furniture type and its plan symbol are shared by every house catalog.
+CLOSET_PEG_RAIL_42 = FurnitureType(
+    tag="FURN-M-CLOSET-PEGS",
+    name='Solid oak wall-mounted peg rail, 42", six knobs',
+    footprint=(inch(42), inch(4)),
+    height=inch(3.5),
+    plan_symbol="peg-rail",
+    mount=Mount(kind=MountKind.WALL),
+    source="Solid-oak 42 in backplate with six rounded, projecting oak knobs.",
+)
 
 STARTER_FURNITURE_TYPES = (
     STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, ROCKING_CHAIR, POTTED_PLANT, COFFEE_TABLE,
@@ -308,5 +319,5 @@ STARTER_FURNITURE_TYPES = (
     WRITING_DESK, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
     SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_TIERED_48,
     SAUNA_BENCH_54, SAUNA_BENCH_48, SAUNA_BENCH_36,
-    WORKBENCH_60, MUDROOM_BENCH_36,
+    WORKBENCH_60, MUDROOM_BENCH_36, CLOSET_PEG_RAIL_42,
 )

@@ -2855,7 +2855,7 @@
 "FT-M-CLOSET-ROD-32" = { material = { low = 15, high = 45 }, labour = { low = 20, high = 50 } }  # 2 ea
 "FT-M-CLOSET-VALANCE" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 1 ea
 "FT-M-CLOSET-PLINTH" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 1 ea
-"FT-M-PEG-RAIL-42" = { material = { low = 25, high = 90 }, labour = { low = 30, high = 80 } }  # 1 ea
+"FURN-M-CLOSET-PEGS" = { material = { low = 25, high = 90 }, labour = { low = 30, high = 80 } }  # 1 ea
 "ED-T-LT-MIRROR-CLOSET" = { material = { low = 300, high = 900 }, labour = { low = 90, high = 200 } }  # 1 ea — hardwired, so an electrician's box and trim
 "ED-T-LT-PSU-TRADFRI-30" = { material = { low = 57, high = 75 }, labour = { low = 0, high = 20 } }  # 1 ea — $45 driver + $12 ANSLUTA cord + connection cords; plug-in
 # RM-M-STUDY'S CALL BOOTH, 2026-08-29 — two built articles, priced the way the bath alcove

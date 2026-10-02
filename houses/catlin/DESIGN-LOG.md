@@ -4093,3 +4093,10 @@ surface that reaches the court, so the water goes there.
 - Each frame gets an 18" OVERSIDAN (`LR-M-CLOSET-PAX-DRESS`/`-DOUBLE`) on the same TRADFRI
   driver: 74" of strip, 11.6 W of 30 W.
 - New plan symbols `wardrobe-dress` and `wardrobe-double-hang` replace `wardrobe-hang`.
+
+## 2026-10-02 — closet peg rail promoted to the shared furniture catalog
+
+- `FURN-M-CLOSET-PEGS` is now a `STARTER_FURNITURE_TYPES` entry in the engine library. Its
+  42" wall-mounted type is available to every house; Catlin still authors its room-specific
+  location in `plan/closet.py`.
+- The Catlin allowance stays keyed to `FURN-M-CLOSET-PEGS` in `prices.toml`.
