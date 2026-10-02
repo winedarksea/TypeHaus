@@ -9,6 +9,8 @@ from __future__ import annotations
 from typehaus.checks._authoring import advisory_fail, passed
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
+from typehaus.model.placeables import MountKind
+from typehaus.quantities import inch
 from typehaus.resolve.placeables import placed_xy
 
 # A red here is ``advisory_fail`` (WARN + FAIL, never a permit blocker); a fact the reader
@@ -122,9 +124,13 @@ def fixture_room_unassigned(ctx: CheckContext) -> list[Finding]:
             if obj.kind == "Fixture" and obj.room is None]
 
 
+_FIXED_STORAGE_HEAT_GAP_M = inch(2).meters
+_HEAT_GAP_TOLERANCE_M = 1e-9
+
+
 @check(Tier.ADVISORY, "advisory.floor_heat_fixture_keepout")
 def floor_heat_fixture_keepout(ctx: CheckContext) -> list[Finding]:
-    """Radiant wire zones must not run beneath a fixture's authored footprint.
+    """Radiant wire avoids fixtures and floor-mounted, wall-attached storage.
 
     Reads the RESOLVED footprint off the canvas object, not a box rebuilt from the type's
     ``(width, depth)`` — that would ignore ``Fixture.rotation`` and grade the wrong
@@ -134,6 +140,11 @@ def floor_heat_fixture_keepout(ctx: CheckContext) -> list[Finding]:
     """
     from shapely.geometry import Polygon
 
+    storage_types = {typ.tag for typ in ctx.plan.library.furniture_types if typ.storage}
+    fixed_storage = [obj for obj in ctx.model.canvas_objects
+                     if obj.kind == "Furniture" and obj.type_ref in storage_types
+                     and obj.attachment_wall is not None and obj.mount is not None
+                     and obj.mount.kind == MountKind.FLOOR and len(obj.footprint) >= 3]
     fixtures = [obj for obj in ctx.model.canvas_objects
                 if obj.kind == "Fixture" and len(obj.footprint) >= 3]
     out: list[Finding] = []
@@ -148,6 +159,19 @@ def floor_heat_fixture_keepout(ctx: CheckContext) -> list[Finding]:
                     f"floor-heat zone {zone.tag} overlaps fixture {fixture.tag}; "
                     "exclude the fixture footprint from the heating loop",
                     (zone.tag, fixture.tag),
+                ))
+        for cabinet in fixed_storage:
+            if cabinet.storey != zone.storey:
+                continue
+            # Schluter requires 2 inches from fixed cabinets, including open-front ones
+            # with a plinth. Loose furniture and suspended storage do not trap floor heat.
+            gap = zone_polygon.distance(Polygon(cabinet.footprint))
+            if gap < _FIXED_STORAGE_HEAT_GAP_M - _HEAT_GAP_TOLERANCE_M:
+                out.append(advisory_fail(
+                    "advisory.floor_heat_fixture_keepout",
+                    f"floor-heat zone {zone.tag} is {gap / inch(1).meters:.2f}\" from "
+                    f"fixed cabinet {cabinet.tag}; keep heating cable at least 2\" away",
+                    (zone.tag, cabinet.tag),
                 ))
     return out
 

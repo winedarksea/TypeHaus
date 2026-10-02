@@ -37,7 +37,7 @@ needs no decision.
 |---|---|---|
 | room | `RM-M-BATH2` | `RM-S-BATH1` |
 | room floor area | 64.9 ft² | 73.3 ft² |
-| heated zone polygon | **17.52 ft²** | **26.83 ft²** |
+| heated zone polygon | **17.52 ft²** | **26.82 ft²** |
 | fraction of floor heated | 27.0 % | 36.6 % |
 | cable SKU | Schluter DITRA-HEAT-E-HK **DHEHK12016** | **DHEHK12027** |
 | nameplate | 203 W, 1.7 A, 120 V, 16.0 ft² of coverage | 338 W, 2.8 A, 120 V, 26.7 ft² |
@@ -93,7 +93,7 @@ both rooms, which is the finding of §4.
 | | area term | watts term | binding | delivered |
 |---|---|---|---|---|
 | `FH-M-BATH2` | 17.52 × 22.8 = 399.5 | 203 × 3.412 = 692.6 | **area** | **399 Btu/h** |
-| `FH-S-BATH1` | 26.83 × 22.8 = 611.7 | 338 × 3.412 = 1,153.3 | **area** | **612 Btu/h** |
+| `FH-S-BATH1` | 26.82 × 22.8 = 611.5 | 338 × 3.412 = 1,153.3 | **area** | **612 Btu/h** |
 
 ## 3. What each room loses
 

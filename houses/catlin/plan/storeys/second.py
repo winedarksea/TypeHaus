@@ -1096,70 +1096,23 @@ ALARMS = [
           circuit="CKT-LT-BACKUP"),
 ]
 
-# Electric radiant floor in the NW bathroom: RM-S-BATH1 is the hall bath (see
-# header note), the only one heated on this storey. Same recipe as main.py's zones: 12 W/ft2
-# 120V mat at a 3" serpentine. `in_slab` is just the enum mode name — this floor is
-# FS-SECOND's I-joists/plywood, and the mat lies in the thinset above it. CKT-FH-BATH1 and
-# ED-S-BATH1-FH-STAT carry it.
-#
-# The covering over it is TILE as of 2026-09-05 (see RM-S-BATH1 above) — it was plank, and
-# plank caps the surface at 80-85 F. That also names the base: DITRA-HEAT, the dimpled
-# membrane whose studs hold the cable. Its whole-room companion row is priced
-# separately from the nonheated DITRA-XL in the suite bath and vanity.
-#
-# The zone is drawn to the fixtures (plan/fixtures.py's de-overlapped WC/lav/shower
-# positions), not the room outline, holding 3" off every fixture: total 31.6 ft2 across a
-# south band, an east step to the lav, and a centre panel between WC and shower. The strips
-# north of the WC and west of the pan are left unheated rather than run a 3"-wide corridor.
+# DITRA-HEAT is this hall bath's only heat source (REG-S-EXH1 is ERV exhaust).
+# The 2026-10-02 SEKTION run requires a new loop: the old south band ran beneath fixed
+# storage. This polygon keeps at least 2" from walls, cabinets and fixtures, including
+# the new east cover panel, and over 7" from the toilet drain centre. It uses the open
+# floor north of the toilet instead. Its 26.82 ft2 still takes the UNCUTTABLE DHEHK12027
+# cable (26.7 ft2 / 338 W / 2.8 A at 120 V), with a 0.12 ft2 buffer at 3-stud spacing.
+# Delivered heat at an 84 F floor / 72 F operative temperature remains 612 Btu/h against
+# the room's 606 Btu/h design loss; see notes/room_heat_loss_baths.md.
 FLOOR_HEAT = [
     FloorHeat(uid="CSH801AAAA", tag="FH-S-BATH1", room_ref="RM-S-BATH1",
-              # South edge 26'-11", not the 26'-9" it read until 2026-08-29: W-S-BD-N moved
-              # 2" north with the y=26'-6" line and at 26'-9" the mat would have run 3/8"
-              # under the wall's own bottom plate.
-              #
-              # ** THE EAST LOBE WAS CUT BACK ON 2026-08-30 FOR THE 48" VANITY. ** The
-              # cabinet stands x 95.62"..116.62", y 345.88"..393.88" and the mat used to run
-              # straight under it -- `advisory.floor_heat_fixture_keepout` FAILed the moment
-              # the vanity landed, and it is right to: heating cable under a closed-toe
-              # cabinet has no way to dump its heat, and Schluter's own instructions forbid
-              # it outright. The lobe now stops at y=343.88" and the middle at x=93.62",
-              # which is the manufacturer's ** 2" ** standoff from a fixed cabinet on both
-              # faces. 29.43 ft2 -> 27.31 ft2.
-              #
-              # ** THE 42.4 ft2 THIS COMMENT USED TO CLAIM WAS NEVER THE POLYGON'S AREA. **
-              # The eight points below enclosed 29.43 ft2, not 42.4, so the "42.4 x 12 W" that
-              # produced 510 W was wrong twice over -- wrong area, and `area x 12` is not a
-              # thing you can buy. See the wattage note below.
-              # West edge x=8 5/8", not 5": the west wall's finish face is x=6 5/8", so at
-              # 5" the mat ran 1 5/8" under it (caught once `clear_face` became the finish
-              # face); 8 5/8" is Schluter's 2" wall standoff. 27.31 ft2 -> 26.83 ft2.
-              zone=(pt(inch(8.625), ft(26, 11)), pt(ft(9, 7), ft(26, 11)),
-                    pt(ft(9, 7), inch(343.88)), pt(inch(93.62), inch(343.88)),
-                    pt(inch(93.62), ft(31, 3)), pt(ft(3, 3), ft(31, 3)),
-                    pt(ft(3, 3), ft(28, 6)), pt(inch(8.625), ft(28, 6))),
+              zone=(pt(inch(114.5), inch(323.5)), pt(inch(81.875), inch(323.5)),
+                    pt(inch(81.875), inch(348.375)), pt(inch(8.75), inch(348.375)),
+                    pt(inch(8.75), inch(353.75)), pt(inch(37.875), inch(353.75)),
+                    pt(inch(37.875), inch(373.25)), pt(inch(8.75), inch(373.25)),
+                    pt(inch(8.75), inch(392.1875)), pt(inch(93.5), inch(392.1875)),
+                    pt(inch(93.5), inch(343.875)), pt(inch(114.5), inch(343.875))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3.625), embed=in_slab(inch(0.5)),
-              # ** 338 W IS A PART NUMBER, NOT AN ARITHMETIC RESULT. ** Schluter
-              # DITRA-HEAT-E-HK cable is sold in fixed, UNCUTTABLE lengths, so this field is
-              # a purchased nameplate: DHEHK12027, 26.7 ft2 / 338 W / 2.8 A at 120 V, the
-              # largest unit that does not exceed the 26.83 ft2 zone. The surplus 0.13 ft2 is
-              # the buffer zone Schluter requires. `spacing` is 3 5/8" (3-stud), which is what
-              # puts 26.7 ft2 of cable at the 12.7 W/ft2 the ladder is rated at.
-              #
-              # ** RM-S-BATH1 HAS NO SUPPLY REGISTER EITHER. ** REG-S-EXH1 is ERV *exhaust*;
-              # there is no REG-S-HP-BATH1. So this mat, like RM-M-BATH2's, is the room's ONLY
-              # heat source — which `mep.room_heat_source` now grades rather than this comment
-              # wondering about.
-              #
-              # ** AND IT IS COMPUTED NOW (2026-09-12, BLD-08). ** This block used to say the
-              # room's design loss "has NOT been computed here" and quoted ~497 Btu/h off an
-              # 18.6 figure. Both halves are replaced: 18.6 was Schluter's 82 F EXAMPLE, and
-              # the design point is 84 F floor over 72 F operative, which their own
-              # Q = 8.92 x dT^1.1 W/m2 puts at 22.8 Btu/h/ft2. The load is worked in
-              # notes/room_heat_loss_baths.md and by `estimate_block_load(rooms=...)`:
-              #     delivered = min(26.83 ft2 x 22.8, 338 W x 3.412) = min(612, 1,153) = 612
-              #     load      = 606 Btu/h at -15 F (finish-face volume)
-              # so this room is covered with about 1% to spare. RM-M-BATH2 is NOT, and the
-              # reason is heated AREA, not wattage — see the note.
               watts=338, delivered_btuh_per_ft2=22.8,
               stat=pt(ft(1, 6), ft(32))),
 ]

@@ -23,6 +23,7 @@ saying a model number twice would churn every schedule and its tests for no gain
 
 from __future__ import annotations
 
+from plan.bath1_storage_types import BATH1_STORAGE_PRODUCTS
 from plan.bedroom_wardrobe_types import BEDROOM_WARDROBE_PRODUCTS
 from plan.closet_types import CLOSET_PRODUCTS
 from plan.products_interior import INTERIOR_PRODUCTS
@@ -255,5 +256,5 @@ PRODUCTS = (
     ERV_TERMINAL_4,
     KOHLER_UNDERSCORE_5713_W1, KOHLER_CLEARFLO_7272,
     LEVITON_EV_RECEPTACLE_1450R,
-    *INTERIOR_PRODUCTS, *CLOSET_PRODUCTS, *BEDROOM_WARDROBE_PRODUCTS,
+    *INTERIOR_PRODUCTS, *CLOSET_PRODUCTS, *BEDROOM_WARDROBE_PRODUCTS, *BATH1_STORAGE_PRODUCTS,
 )

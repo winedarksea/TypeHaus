@@ -75,8 +75,8 @@ def test_the_delivered_figure_is_capped_by_both_area_and_wattage() -> None:
     assert min(17.52 * _DELIVERED_BTUH_PER_FT2, 203 * _W_TO_BTUH) == pytest.approx(399, abs=1)
     assert pytest.approx(693, abs=1) == 203 * _W_TO_BTUH, \
         "the cable draws more than it delivers"
-    # FH-S-BATH1: 26.83 ft2 (2" off the west wall's finish face), DHEHK12027 at 338 W.
-    assert min(26.83 * _DELIVERED_BTUH_PER_FT2, 338 * _W_TO_BTUH) == pytest.approx(612, abs=1)
+    # FH-S-BATH1: 26.82 ft2 (2" off the new SEKTION run), DHEHK12027 at 338 W.
+    assert min(26.82 * _DELIVERED_BTUH_PER_FT2, 338 * _W_TO_BTUH) == pytest.approx(612, abs=1)
 
 
 def test_covering_bath2s_load_would_need_area_the_room_does_not_have() -> None:

@@ -226,6 +226,17 @@ MAIN_BACKING = [
 ]
 
 SECOND_BACKING = [
+    # SEKTION high rail: cabinet top 94 1/2" AFF, near-top rail, plus 1 1/2" of floor
+    # build-up above the storey datum. The 90"..97 1/4" course spans the mounting screws.
+    # Two bands because the rail crosses the staggered/bearing wall split at x=70 1/2".
+    WallBacking(uid="8T3FH878AV", tag="BK-S-BD-N-SEKTION", wall_ref="W-S-BD-N", face="left",
+                start=inch(7.385), length=inch(63.115), elevation=inch(90),
+                height=inch(7.25), profile="2x8", material_ref="spf",
+                purpose="SEKTION high-cabinet suspension rail, bathroom face"),
+    WallBacking(uid="KDV747MSCM", tag="BK-S-BD-N1B-SEKTION", wall_ref="W-S-BD-N1B", face="left",
+                start=inch(0), length=inch(11.25), elevation=inch(90),
+                height=inch(7.25), profile="2x8", material_ref="spf",
+                purpose="SEKTION rail continuation to the bathroom-door king"),
     WallBacking(uid="PKRGE2ZNBP", tag="BK-S-PS2-SHELF", wall_ref="W-S-PS2",
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="closet shelf and rod (66 in.)"),

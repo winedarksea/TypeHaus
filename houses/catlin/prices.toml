@@ -2324,8 +2324,8 @@
 # the IKEA SEKTION frame ladder (SEKT-* rows further down, library/placeables/sektion.py,
 # notes/ikea_sektion_ladder.md), which is the system the [placeables] basis note above has
 # specified and priced the whole time. The rows stay for the reason CASE-ISLAND-60's does:
-# they are shared-catalog products and the next house may want them. The two that keep
-# a count — CASE-PANTRY-CLOSET-72 and CASE-PENINSULA-120 — are not kitchen cabinets.
+# they are shared-catalog products and the next house may want them. CASE-PENINSULA-120
+# keeps its count; the hall-bath closet moved to configured SEKTION on 2026-10-02.
 "CASE-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 0 ea
 "CASE-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 0 ea
 "CASE-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 0 ea
@@ -2343,7 +2343,22 @@
 # boxes. If they are in fact wire/melamine closet systems they are 3-5x too high.
 "CASE-PANTRY-CLOSET-24" = { material = { low = 200, high = 550 }, labour = { low = 120, high = 300 } }  # 0 ea
 "CASE-PANTRY-CLOSET-48" = { material = { low = 350, high = 950 }, labour = { low = 120, high = 300 } }  # 1 ea
-"CASE-PANTRY-CLOSET-72" = { material = { low = 500, high = 1400 }, labour = { low = 120, high = 300 } }  # 1 ea
+"CASE-PANTRY-CLOSET-72" = { material = { low = 500, high = 1400 }, labour = { low = 120, high = 300 } }  # 0 ea — replaced by the three hall-bath SEKTION frames
+# Hall bath, 2026-10-02: configured SEKTION 702.654.45, matte white VOXTORP visible fronts.
+# IKEA US list core: frame $184, doors 24x30 $216 + 24x20 $185, medium drawer $50 +
+# 24x10 front $123 = $758. East adds two high drawers ($59 ea) + 24x15 fronts ($136 ea):
+# $1,148. Low includes UTRUSTA shelves ($26/2-pack: three packs per open unit, two east),
+# hinges ($32/unit), legs ($20/unit), rail share ($10/unit) and plinth allowance ($30/unit).
+# High covers fittings, trim/waste and price movement; no delivery, tax or optional organizers.
+# Frame https://www.ikea.com/us/en/p/sektion-high-cabinet-white-70265445/ ; stock fronts,
+# drawers and shelf links/quantities in plans/bath1-sektion-closet.md. Two lower 15" modules
+# are OPEN beside the unchanged toilet, so those four fronts/drawers are not billed.
+"FURN-S-SEKTION-LINEN-OPEN-24" = { material = { low = 928, high = 1100 }, labour = { low = 150, high = 350 } }  # 2 ea
+"FURN-S-SEKTION-LINEN-DRAWER-24" = { material = { low = 1292, high = 1500 }, labour = { low = 150, high = 350 } }  # 1 ea
+# Actual FÖRBÄTTRA 005.678.37 is 1/2 x 24 5/8 x 90", $154, matte white matching VOXTORP.
+# https://www.ikea.com/us/en/p/foerbaettra-cover-panel-matte-white-00567837/
+"FT-S-SEKTION-COVER-90" = { material = { low = 154, high = 175 }, labour = { low = 20, high = 60 } }  # 1 ea
+"FT-S-SEKTION-SCRIBE-90" = { material = { low = 10, high = 25 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut white filler
 "CASE-SINK-BASE-36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 0 ea
 # Both TALL-PANTRY rows lost their instances 2026-08-24: FURN-M-KIT-TALL-N/-S stood where
 # RM-M-PANTRY now is. Catalog rows, kept.

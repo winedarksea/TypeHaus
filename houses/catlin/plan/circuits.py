@@ -237,7 +237,7 @@ CIRCUITS = (
             # electric space heating at 100%, so this comes straight off the service demand.
             gfci=True, load_va=338,
             description="Radiant floor heat — NW bathroom, sole heat source "
-                        "(FH-S-BATH1, 27.31 ft2, Schluter DHEHK12027)"),
+                        "(FH-S-BATH1, 26.82 ft2, Schluter DHEHK12027)"),
     # 1,500W at 120V=12.5A, continuous: 12.5x1.25=15.6A fits a 20A breaker's 16A but not
     # a 15A one's 12A — why these two are 20A where the mats are 15A.
     #

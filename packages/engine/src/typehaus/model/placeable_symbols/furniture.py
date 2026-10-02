@@ -27,6 +27,12 @@ from typehaus.model.placeable_symbols._families import (
                                                         slab,
 )
 from typehaus.model.placeable_symbols._sektion import sektion_drawer_base
+from typehaus.model.placeable_symbols._sektion_tall import (
+    DRAWER_INTERIOR,
+    OPEN_LOWER_INTERIOR,
+    sektion_cover_panel,
+    sektion_tall,
+)
 from typehaus.model.placeable_symbols._wardrobe import (
                                                         DOUBLE_HANG_INTERIOR,
                                                         DRESS_INTERIOR,
@@ -70,6 +76,9 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "wall-desk": slab(leg_inset_m=0.06, apron=True, modesty_panel=False, legs=False),
     # Casegoods, distinguished by their drawer grid.
     "sektion-drawer-base": sektion_drawer_base(),
+    "sektion-tall-drawers": sektion_tall(DRAWER_INTERIOR),
+    "sektion-tall-open-lower": sektion_tall(OPEN_LOWER_INTERIOR),
+    "sektion-cover-panel": sektion_cover_panel,
     "dresser": case(rows=3, cols=2),
     "chest": case(rows=5, cols=1),
     "nightstand": case(rows=2, cols=1),

@@ -1243,18 +1243,8 @@ SECOND_PLACEABLES = [
     # The three bedrooms have no built-in closets; their PAX wardrobes (BED1/2 corner sets,
     # BED3's sliding pair) are in plan/bedroom_wardrobes.py.
 
-    # Linen/towel storage in the hall bath: a 72"x24"x96" pantry-closet carcass
-    # (CASE-PANTRY-CLOSET-72) on the south wall, the only run RM-S-BATH1 has free (west has
-    # the WC + WIN-S-BATH-W, north the shower pan, east the lav/mirror). Backed to the south
-    # wall out of the SW corner, occupying x 0'-0 5/8"..6'-0 5/8", y 26'-6 5/8"..28'-6 5/8":
-    # short of D-S-BATH1's opening (x=7'-3") and clear of the WC's REQUIRED zone. The 48" it
-    # replaced stopped at x 4'-0 5/8".
-    #
-    # y is +2" off the south wall it backs (W-S-BD-N, on the y=26'-6" line): a smaller offset
-    # would stand the carcass 1 5/8" INSIDE the wall. The 0.37" scribe off that face holds.
-    Furniture(uid="CSB707AAAA", tag="FURN-S-BATH1-CLOSET", type_ref="CASE-PANTRY-CLOSET-72",
-              room="RM-S-BATH1", position=pt(m(1.09343), m(8.47736)),
-              rotation=deg(180)),
+    # Hall-bath linen storage: three SEKTION units in plan/bath1_storage.py. Their open
+    # lower bays keep the existing toilet clear of drawers without moving its drain.
     # The tub alcove's east return, built as a shelf. FX-S-BATH1-SH is a
     # flanged 60x30 insert and was standing in two walls, not three: the chase face at
     # x 2'-11 3/8" west (0.36" of scribe), the north wall at y 35'-5 3/8", and its EAST end
