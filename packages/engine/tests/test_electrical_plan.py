@@ -130,6 +130,18 @@ def test_service_upgrade_devices_are_present(catlin_model):
     assert types["ED-T-EV-1450"].load_va == 9600
 
 
+def test_bedroom_three_north_receptacle_sits_east_of_window_at_sill_height(catlin_model):
+    """The moved outlet is at x=35'-0", east of WIN-S-BED3-N at x=34'-0"."""
+    outlet = next(element for storey in catlin_model.plan.storeys
+                  for element in catlin_model.plan.storey_elements(storey.tag)
+                  if getattr(element, "tag", None) == "ED-S-BED3-RC1")
+    outlet_xy = placed_xy(catlin_model, outlet)
+
+    assert outlet_xy is not None
+    assert outlet_xy[0] / 0.3048 == pytest.approx(35.0)
+    assert outlet.mount.elevation.inches == pytest.approx(48.0)
+
+
 def test_the_pocket_condenser_disconnect_clears_the_stair_and_reaches_from_grade(catlin_model):
     """ED-M-HP2-DISC on W-SG-E1's east face, y -4'-6" (2026-09-04).
 

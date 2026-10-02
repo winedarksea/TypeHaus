@@ -4140,8 +4140,12 @@ surface that reaches the court, so the water goes there.
   the east end, six shelves at the west). In front of them is an AULI/MEHAMN pair (095.603.08,
   78 3/4" x 92 7/8", 3 1/8" deep), mirror panel west. The wall-mounted 92 7/8" frame's own
   listing says it takes a sliding door at a 94 1/2" ceiling, and BED3 has 8'-10 1/4".
-  `FURN-S-BED3-WARD` keeps its uid as the pair. `ED-S-BED3-RC4` moved to x 27'-0", and
-  `ED-S-BED3-RC3` to y 29'-9". The bed's side-access zone now names the pair and both frames
-  (three UNKNOWNs, one compromise): 14 1/2" in front of the doors.
+  West of the pair stands a doorless 19 5/8" six-shelf frame, as in BED1/2
+  (`FURN-S-BED3-PAX-OPEN`, x 27'-2 3/8"..28'-10").
+  `FURN-S-BED3-WARD` keeps its uid as the pair. `ED-S-BED3-RC4` moved to x 25'-6", and
+  `ED-S-BED3-RC3` to y 29'-9". The bed's side-access zone now names the pair and all three frames
+  (four UNKNOWNs, one compromise): 14 1/2" in front of the doors.
 - New plan symbols are `wardrobe-shelves`, `wardrobe-corner` (an L ring shared with the
-  type's `footprint_shape`) and `wardrobe-sliding-pair`.
+  type's `footprint_shape`) and `wardrobe-sliding-pair`. The corner symbol's frame first
+  drew at 20 1/2" (clamped to the L's notch); it is the full 39 3/8" along the wall, its
+  corner-end half behind the corner unit's end.

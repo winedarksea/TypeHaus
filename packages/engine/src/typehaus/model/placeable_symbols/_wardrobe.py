@@ -166,14 +166,15 @@ def wardrobe_corner(width: float, depth: float, height: float) -> Geometry:
     """PAX/GRIMO corner set: a frame on the back wall, an add-on corner unit returning down
     the -x wall, one white door on each inner face of the L.
 
-    The frame stands off the corner wall by whatever the run leaves over (4" at 43 3/8"); the
-    corner unit reaches behind it. Doors sit inside the ring, so the carcass is a door
-    thickness shallower than the leg.
+    The frame runs its full 39 3/8" along the back wall, 4" off the corner wall at 43 3/8";
+    its corner-end half stands behind the corner unit's end, so its door covers only the
+    exposed half. Doors sit inside the ring, so the carcass is a door thickness shallower
+    than the leg.
     """
     hw, hd = width / 2, depth / 2
     leg = min(PAX_DEPTH_M, width * 0.75, depth * 0.75)
     carcass = leg - DOOR_THICKNESS_M
-    frame_w = min(PAX_FRAME_WIDTH_M, width - leg)
+    frame_w = min(PAX_FRAME_WIDTH_M, width)
     frame = wardrobe(DOUBLE_HANG_INTERIOR)(frame_w, carcass, height)[1]
     unit_w = depth - leg
     unit = wardrobe(CORNER_UNIT_INTERIOR)(unit_w, carcass, height)[1]

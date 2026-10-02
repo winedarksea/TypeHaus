@@ -2865,7 +2865,7 @@
 # assembly plus hanging the rail into BK-S-*-PAX; the sliders are rail and door alignment.
 # CONFIDENCE: MEDIUM (list prices).
 "FURN-S-PAX-CORNER" = { material = { low = 695, high = 760 }, labour = { low = 150, high = 350 } }  # 2 ea
-"FURN-S-PAX-SHELF-20" = { material = { low = 260, high = 320 }, labour = { low = 80, high = 200 } }  # 2 ea
+"FURN-S-PAX-SHELF-20" = { material = { low = 260, high = 320 }, labour = { low = 80, high = 200 } }  # 3 ea
 "FURN-S-PAX-SHELF-40" = { material = { low = 290, high = 350 }, labour = { low = 80, high = 200 } }  # 1 ea
 "FURN-S-PAX-DOUBLE-40" = { material = { low = 235, high = 280 }, labour = { low = 80, high = 200 } }  # 1 ea
 "FURN-S-PAX-SLIDE-79" = { material = { low = 470, high = 520 }, labour = { low = 120, high = 300 } }  # 1 ea

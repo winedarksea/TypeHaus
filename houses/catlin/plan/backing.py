@@ -248,8 +248,8 @@ SECOND_BACKING = [
                 material_ref="spf", purpose="wall hydrant seat (FX-S-BALC-HYD, 24 in.)"),
     # BED1-3's PAX rails (plan/bedroom_wardrobes.py), one 2x8 at 86" as BK-M-CLN-PAX. BW1/BW2
     # run the corner frame (4" off the south wall) plus the 19 5/8" frame, stud-000 to the
-    # door's king; it stays under the REG-S-HP-BED1/2 side collar at 97 1/8". BD2 runs the
-    # two frames from stud-005 to the east wall.
+    # door's king; it stays under the REG-S-HP-BED1/2 side collar at 97 1/8". BD2 runs all
+    # three frames from stud-004 to the east wall.
     WallBacking(uid="351NHAQ233", tag="BK-S-BW1-PAX", wall_ref="W-S-BW1", face="right",
                 start=inch(3.625), length=inch(62.25),
                 elevation=inch(86), height=inch(7.25), profile="2x8",
@@ -259,7 +259,7 @@ SECOND_BACKING = [
                 elevation=inch(86), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="PAX wall rail (93 in.)"),
     WallBacking(uid="XK6128ZS78", tag="BK-S-BD2-PAX", wall_ref="W-S-BD2", face="left",
-                start=inch(80), length=inch(82.375),
+                start=inch(64), length=inch(98.375),
                 elevation=inch(86), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="PAX wall rail (93 in.)"),
 ]

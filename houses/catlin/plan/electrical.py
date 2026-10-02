@@ -2468,7 +2468,7 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-E4", face="left", distance_from_start=inch(37),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # x 27'-0", west of the PAX run (x 28'-10"..35'-4 3/4", plan/bedroom_wardrobes.py),
+    # x 25'-6", west of the PAX run (x 27'-2 3/8"..35'-4 3/4", plan/bedroom_wardrobes.py),
     # 2026-10-02. At 29'-2" it was behind the shelf frame; the frames are work_surface=False,
     # so `electrical.receptacle_spacing` now breaks the wall space they cover.
     ElectricalDevice(uid="NEC040AAAA", tag="ED-S-BED3-RC4", kind=DeviceKind.RECEPTACLE,
@@ -2476,7 +2476,7 @@ NEC_FILL_SECOND = [
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD2", face="left", distance_from_start=inch(61),
+                         wall_ref="W-S-BD2", face="left", distance_from_start=inch(43),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # RC2 is on the suite's east wall, not the arm's south wall — x=13'-1" there is inside
     # O-S-CLOSET's 4'-8" cased opening (x 11'-5 1/2"..16'-1 1/2"), a box in a doorway. Here it

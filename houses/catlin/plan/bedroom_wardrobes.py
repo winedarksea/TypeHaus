@@ -15,7 +15,8 @@
 #
 # BED3: two 39 3/8" frames on the south wall (BD2, channel on the BED2 side) from 5/8" off
 # the east wall, behind an AULI/MEHAMN pair at x 28'-10"..35'-4 3/4", face y 29'-0 3/8".
-# The mirror is the west half. The frames may swap ends; the pair does not care.
+# The mirror is the west half. The frames may swap ends; the pair does not care. West of
+# the pair, a doorless 19 5/8" six-shelf frame as in BED1/2 (owner, 2026-10-02).
 
 from typehaus import Furniture, Location, Mount, MountKind, WallAttachment
 from typehaus.model import deg, inch
@@ -59,6 +60,12 @@ BEDROOM_WARDROBES = [
               room="RM-S-BED3", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.25)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-BD2", face="left", distance_from_start=inch(102.6875),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # x 27'-2 3/8"..28'-10", open, its front flush with the frames behind the pair.
+    Furniture(uid="QWC4J78CHV", tag="FURN-S-BED3-PAX-OPEN", type_ref="FURN-S-PAX-SHELF-20",
+              room="RM-S-BED3", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.25)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-BD2", face="left", distance_from_start=inch(73.1875),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The sliding pair on the frames' fronts; 1/4" up so its top meets theirs at 93 1/8".
     Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-S-PAX-SLIDE-79",

@@ -106,6 +106,12 @@ def test_corner_set_fills_its_l_and_hangs_two_doors_on_the_inner_faces() -> None
     assert len(doors) == 2
     widths = sorted(max(part["size"][:2]) for part in doors)
     assert widths == [pytest.approx(CORNER - DEPTH)] * 2
+    # The frame is the full 39 3/8" along the back wall, not the half its door covers.
+    back_run = [part for part in parts if part["color"] == "wood"
+                and part["center"][1] > CORNER / 2 - DEPTH]
+    xs = [part["center"][0] + sign * part["size"][0] / 2
+          for part in back_run for sign in (-1, 1)]
+    assert max(xs) - min(xs) == pytest.approx(inch(39.375).meters, abs=1e-6)
     # The frame's two rods (38 3/4" / 78 3/4") hang in the back run.
     assert _rod_centres(parts) == [pytest.approx(inch(38.75).meters, abs=1e-3),
                                    pytest.approx(inch(78.75).meters, abs=1e-3)]

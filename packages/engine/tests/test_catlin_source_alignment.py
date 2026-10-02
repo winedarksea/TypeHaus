@@ -187,7 +187,7 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
                     "FURN-S-BED1", "FURN-S-BED2", "FURN-S-BED3",
                     "FURN-S-BED1-WARD", "FURN-S-BED2-WARD", "FURN-S-BED3-WARD",
                     "FURN-S-BED1-PAX-SHELF", "FURN-S-BED2-PAX-SHELF",
-                    "FURN-S-BED3-PAX-HANG", "FURN-S-BED3-PAX-SHELF",
+                    "FURN-S-BED3-PAX-HANG", "FURN-S-BED3-PAX-SHELF", "FURN-S-BED3-PAX-OPEN",
                     "FURN-S-DESK1", "FURN-S-DESK2", "FURN-S-DESK3",
                     "FURN-S-DESK-CHAIR1", "FURN-S-DESK-CHAIR2", "FURN-S-DESK-CHAIR3"}
     bedroom_conflicts = [finding for finding in findings
@@ -207,12 +207,12 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     assert not door_swing_conflicts, door_swing_conflicts
     assert not required_clearance_conflicts, required_clearance_conflicts
     # BED3's one deliberate compromise: its bed's side-access zone reaches the PAX run on the
-    # south wall, so it names the sliding pair and both frames behind it — one conflict,
-    # reported once per body.
+    # south wall, so it names the sliding pair, both frames behind it and the open frame west
+    # of it — one conflict, reported once per body.
     assert sorted(tuple(sorted(finding.element_tags))
                   for finding in recommended_clearance_conflicts) == [
-        ("FURN-S-BED3", "FURN-S-BED3-PAX-HANG"), ("FURN-S-BED3", "FURN-S-BED3-PAX-SHELF"),
-        ("FURN-S-BED3", "FURN-S-BED3-WARD")], [
+        ("FURN-S-BED3", "FURN-S-BED3-PAX-HANG"), ("FURN-S-BED3", "FURN-S-BED3-PAX-OPEN"),
+        ("FURN-S-BED3", "FURN-S-BED3-PAX-SHELF"), ("FURN-S-BED3", "FURN-S-BED3-WARD")], [
         finding.message for finding in recommended_clearance_conflicts]
     from typehaus.checks import Tier
     from typehaus.checks.run import run_from_model
