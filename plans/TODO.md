@@ -228,8 +228,6 @@ the future.
 - See if we can replace the diagonal straps (SB-BW-BAND-D2E and SB-BW-BAND-D1E) and vertical slats with diagonal slats of similar spacing but at 45 degrees. These slats would serve as knee braces. This would likely add a central stud (for the diagonal slats which can't reach the top beam) and would likely be framed out with a new top plate (separate from the top mean) and be split into two sides (slats going up from each side, and from the bottom plate). Another option might be to sheath more of the wall to the top, then make the widest possible opening as vertical slats (so a sheathing braced wall and an opening, post bases likely already provide the holddown)
 - It seems odd that the veneer beam W-SG-BRKBM has so much rebar and W-SG-ARCH has none. Could we design a bit less rebar out of W-SG-BRKBM? Also, could we make SL-SG-FLOOR thicker or otherwise have it replace W-SG-ARCH, it looks like it should be able to handle the same need.
 - FT-SBG-S has rebar that should tie into the walls W-SG-W2 and W-SG-E2. Really the interior portion of FT-SBG-S is the footing and cross bracing for W-SG-S, W-SG-W2, and W-SG-E2, and should be detailed appropriately (this should actually improve strength with a small amount of additional rebar).
-- Closet north wall has the main storage, in three visual sections. The south wall will have a row of pegs for hanging clothes, ie robes. East wall have a large mirror. West wall has
-
 
 # Project Management
 
