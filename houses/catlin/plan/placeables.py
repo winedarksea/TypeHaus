@@ -1184,8 +1184,7 @@ GARAGE_PLACEABLES = [
               room="RM-GARAGE", position=pt(m(2.449983), m(19.3941)), rotation=deg(90)),
 ]
 # The beds are placed per room: BED1 and BED2 face north; BED3 faces east. The integration
-# assertion in test_catlin_source_alignment checks their required clearances and door swings,
-# plus BED3's one deliberate recommended-clearance conflict with its wardrobe.
+# assertion in test_catlin_source_alignment checks their clearances and door swings.
 SECOND_PLACEABLES = [
     # BED1 stays in the southern part of its bay; its west-side wardrobe and north-side desk
     # leave the bed's modeled access zones open.
@@ -1193,10 +1192,11 @@ SECOND_PLACEABLES = [
               position=pt(m(9.92317), m(4.24498)), rotation=deg(0)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
               position=pt(m(9.95572), m(6.98818)), rotation=deg(0)),
-    # BED3 is 5.6" south of its earlier position; its wardrobe now clips the recommended
-    # side-access zone, the one deliberate bedroom-clearance conflict pinned by the test.
-    Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",
-              position=pt(m(9.73747), m(9.98253)), rotation=deg(-90)),
+    # BED3 is a FULL (owner, 2026-10-02), tight to the east wall and 3/8" off the north: a
+    # queen's 18" side zone ran 5 3/8" into the PAX sliders (plan/bedroom_wardrobes.py) and
+    # neither could move. Its south side is 30'-8"; the zone stops 1 3/4" short of the doors.
+    Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-BED-FULL", room="RM-S-BED3",
+              position=pt(m(9.80100), m(10.07151)), rotation=deg(-90)),
     # BED1 and BED2 have desks on their north walls with chairs to the south. BED3's desk
     # stays on the west wall with its chair to the east. The dining chair keeps the lighter
     # dining-room plan and 3D appearance.

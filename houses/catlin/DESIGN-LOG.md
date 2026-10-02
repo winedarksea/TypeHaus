@@ -4143,8 +4143,14 @@ surface that reaches the court, so the water goes there.
   West of the pair stands a doorless 19 5/8" six-shelf frame, as in BED1/2
   (`FURN-S-BED3-PAX-OPEN`, x 27'-2 3/8"..28'-10").
   `FURN-S-BED3-WARD` keeps its uid as the pair. `ED-S-BED3-RC4` moved to x 25'-6", and
-  `ED-S-BED3-RC3` to y 29'-9". The bed's side-access zone now names the pair and all three frames
-  (four UNKNOWNs, one compromise): 14 1/2" in front of the doors.
+  `ED-S-BED3-RC3` to y 29'-9".
+- **BED3's bed is a FULL now (owner).** The queen's 18" side-access zone ran 5 3/8" into the
+  sliders, and neither the bed (3/8" off the north wall) nor the wardrobe could move. That was
+  four UNKNOWNs for one compromise. The full's south side is at 30'-8", and the zone stops
+  1 3/4" short of the doors: ~20" of floor in front of them.
+- **`ED-S-BED3-RC5` is new**, on W-S-BW4 at y 34'-0" behind the desk. ED-S-BED3-RC1 moved
+  from the NW corner to x 35'-0" (48", at the window sill), which left D-S-BED3's north
+  jamb more than 12' of wall from a receptacle: a `receptacle_spacing` FAIL on HEAD.
 - New plan symbols are `wardrobe-shelves`, `wardrobe-corner` (an L ring shared with the
   type's `footprint_shape`) and `wardrobe-sliding-pair`. The corner symbol's frame first
   drew at 20 1/2" (clamped to the L's notch); it is the full 39 3/8" along the wall, its

@@ -2478,6 +2478,16 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BD2", face="left", distance_from_start=inch(43),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # RM-S-BED3's west wall, y 34'-0", behind FURN-S-DESK3 (2026-10-02). ED-S-BED3-RC1 left
+    # the NW corner for x 35'-0", so the run from D-S-BED3's north jamb round to
+    # ED-S-BED3-RC2 grew past 210.52(A)(1)'s 12'. Here: 3'-10" to the jamb, 11'-8" to RC2.
+    ElectricalDevice(uid="1T4JDXFVH6", tag="ED-S-BED3-RC5", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-SECOND",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BW4", face="right", distance_from_start=inch(38),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # RC2 is on the suite's east wall, not the arm's south wall — x=13'-1" there is inside
     # O-S-CLOSET's 4'-8" cased opening (x 11'-5 1/2"..16'-1 1/2"), a box in a doorway. Here it
     # also closes the 8'-5" run 210.52 measured from the opening's west jamb round to RC3.

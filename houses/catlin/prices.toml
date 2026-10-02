@@ -6115,7 +6115,8 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 10 ea
 "FURN-MEDIA-60" = { low = 150, high = 800 }  # 1 ea
 "FURN-PLANT-18" = { low = 30, high = 150 }  # 2 ea
-"FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 4 ea
+"FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 3 ea
+"FURN-BED-FULL" = { low = 200, high = 1200 }  # 1 ea — BED3, a size down from the queen
 "FURN-ROCKING-CHAIR-30" = { low = 150, high = 700 }  # 2 ea
 # FURN-SOFA-84 is UNREFERENCED since 2026-09-06 — RM-M-LIVING's sofa was retyped to the shared
 # FT-SOFA-84-SEAT-BAND clearance variant when the seating turned onto the fire. Both rows are

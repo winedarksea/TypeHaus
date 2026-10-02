@@ -206,13 +206,9 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
                                        == "integrity.placeable_recommended_clearance_conflict"]
     assert not door_swing_conflicts, door_swing_conflicts
     assert not required_clearance_conflicts, required_clearance_conflicts
-    # BED3's one deliberate compromise: its bed's side-access zone reaches the PAX run on the
-    # south wall, so it names the sliding pair, both frames behind it and the open frame west
-    # of it — one conflict, reported once per body.
-    assert sorted(tuple(sorted(finding.element_tags))
-                  for finding in recommended_clearance_conflicts) == [
-        ("FURN-S-BED3", "FURN-S-BED3-PAX-HANG"), ("FURN-S-BED3", "FURN-S-BED3-PAX-OPEN"),
-        ("FURN-S-BED3", "FURN-S-BED3-PAX-SHELF"), ("FURN-S-BED3", "FURN-S-BED3-WARD")], [
+    # BED3 is a full bed since 2026-10-02 so its side-access zone stops short of the PAX
+    # sliders; a queen ran 5 3/8" into them. No bedroom carries a clearance compromise now.
+    assert not recommended_clearance_conflicts, [
         finding.message for finding in recommended_clearance_conflicts]
     from typehaus.checks import Tier
     from typehaus.checks.run import run_from_model
