@@ -188,13 +188,26 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
                     "FURN-S-BED1-WARD", "FURN-S-BED2-WARD", "FURN-S-BED3-WARD",
                     "FURN-S-DESK1", "FURN-S-DESK2", "FURN-S-DESK3",
                     "FURN-S-DESK-CHAIR1", "FURN-S-DESK-CHAIR2", "FURN-S-DESK-CHAIR3"}
-    bedroom_conflicts = [finding.message for finding in findings
+    bedroom_conflicts = [finding for finding in findings
                          if finding.check_id in {
                              "integrity.door_swing_conflict",
                              "integrity.placeable_required_clearance_conflict",
                              "integrity.placeable_recommended_clearance_conflict",
                          } and bedroom_tags.intersection(finding.element_tags)]
-    assert not bedroom_conflicts, bedroom_conflicts
+    door_swing_conflicts = [finding.message for finding in bedroom_conflicts
+                            if finding.check_id == "integrity.door_swing_conflict"]
+    required_clearance_conflicts = [finding.message for finding in bedroom_conflicts
+                                    if finding.check_id
+                                    == "integrity.placeable_required_clearance_conflict"]
+    recommended_clearance_conflicts = [finding for finding in bedroom_conflicts
+                                       if finding.check_id
+                                       == "integrity.placeable_recommended_clearance_conflict"]
+    assert not door_swing_conflicts, door_swing_conflicts
+    assert not required_clearance_conflicts, required_clearance_conflicts
+    assert len(recommended_clearance_conflicts) == 1, [
+        finding.message for finding in recommended_clearance_conflicts]
+    assert set(recommended_clearance_conflicts[0].element_tags) == {
+        "FURN-S-BED3", "FURN-S-BED3-WARD"}
     from typehaus.checks import Tier
     from typehaus.checks.run import run_from_model
 

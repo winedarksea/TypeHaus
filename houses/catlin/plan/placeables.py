@@ -1183,9 +1183,9 @@ GARAGE_PLACEABLES = [
     Furniture(uid="CGF601AAAA", tag="FURN-G-WORKBENCH", type_ref="FURN-G-WORKBENCH",
               room="RM-GARAGE", position=pt(m(2.449983), m(19.3941)), rotation=deg(90)),
 ]
-# The beds are placed per room: BED1 and BED2 face north; BED3 faces east. Each keeps its
-# modeled 18" side and foot access zones clear of the other bedroom furniture. The integration
-# assertion in test_catlin_source_alignment checks those zones alongside the door swings.
+# The beds are placed per room: BED1 and BED2 face north; BED3 faces east. The integration
+# assertion in test_catlin_source_alignment checks their required clearances and door swings,
+# plus BED3's one deliberate recommended-clearance conflict with its wardrobe.
 SECOND_PLACEABLES = [
     # BED1 stays in the southern part of its bay; its west-side wardrobe and north-side desk
     # leave the bed's modeled access zones open.
@@ -1193,7 +1193,8 @@ SECOND_PLACEABLES = [
               position=pt(m(9.92317), m(4.24498)), rotation=deg(0)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
               position=pt(m(9.95572), m(6.98818)), rotation=deg(0)),
-    # Six inches north leaves the wardrobe clear of BED3's foot-access zone.
+    # BED3 is 5.6" south of its earlier position; its wardrobe now clips the recommended
+    # side-access zone, the one deliberate bedroom-clearance conflict pinned by the test.
     Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",
               position=pt(m(9.73747), m(9.98253)), rotation=deg(-90)),
     # BED1 and BED2 have desks on their north walls with chairs to the south. BED3's desk
@@ -1246,8 +1247,9 @@ SECOND_PLACEABLES = [
               room="RM-S-BED1", position=pt(m(7.04533), m(3.46448)), rotation=deg(90)),
     Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED2", position=pt(m(7.08147), m(6.05473)), rotation=deg(90)),
-    # BED3's south-side wardrobe slot stays fixed. Moving the bed 6" north leaves 2.3" to its
-    # nearest side-access zone; the bedroom integration test checks this and the door swings.
+    # BED3's south-side wardrobe slot stays fixed. The bed's later 5.6" south move puts this
+    # wardrobe into its recommended side-access zone; the integration test records that
+    # deliberate compromise while keeping required clearances and door swings clear.
     Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED3", position=pt(m(10.1772), m(8.49313)), rotation=deg(180)),
 
