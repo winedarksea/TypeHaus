@@ -4114,3 +4114,34 @@ surface that reaches the court, so the water goes there.
   cushion, fabric or rust-prone fastener, and its arms serve as the side tables.
 - Existing type tags and Catlin price rows remain unchanged; `manifest.py` gets all three
   through the starter catalog tuple.
+
+## 2026-10-02 — BED1-3 wardrobes: IKEA PAX, as the master closet
+
+- The three free-standing 48" sliding wardrobes (`FURN-WARDROBE-48`) are PAX now, placed in
+  `plan/bedroom_wardrobes.py` with types in `plan/bedroom_wardrobe_types.py`. Every frame
+  hangs on its rail, authored FLOOR at 1/4" for the reason `plan/closet.py` gives, and
+  `BK-S-BW1/BW2/BD2-PAX` (2x8 at 86") are the rail backing, landing stud to stud.
+- **BED1 and BED2**: a PAX/GRIMO corner set (s89560818, 43 3/8" L both ways, two 19 1/2"
+  doors) in the SW corner, frame on the west wall, plus a doorless 19 5/8" six-shelf frame
+  up to the door. The frame's listing says to leave 7.6" from the corner wall to the rail
+  when a corner unit is fitted, and to set the corner unit first. `FURN-S-BED1/2-WARD` keep
+  their uids as the corner sets.
+- **The doors moved 2 1/2" north to make the 19 5/8" frame fit** (D-S-BED1 15'-10 1/2",
+  D-S-BED2 24'-6 1/2"). The south casing is omitted and the side panel scribed to the jamb.
+  Each now cuts one stud more than its module station, and
+  `structural.door_framing_module:D-S-BED1/2` are suppressed as accepted. Hinges stay north.
+  The switches moved to the north walls (x 24'-8"). `ED-S-BED1-RC4`/`ED-S-BED2-RC4` moved
+  east of the L (x 26'-7").
+- **Two receptacles are deleted, not moved.** `ED-S-BED1-RC5` stood behind the corner set,
+  and the cabinet run now breaks that wall space. `ED-S-BED2-RC5` landed inside D-S-BED2's
+  shifted rough opening, and nothing graded that. From today's north jamb, the run to
+  `ED-S-BED2-RC1` is ~4'-4". `electrical.receptacle_spacing` passes all three bedrooms.
+- **BED3**: two 39 3/8" frames on the south wall from 5/8" off the east wall (two rods at
+  the east end, six shelves at the west). In front of them is an AULI/MEHAMN pair (095.603.08,
+  78 3/4" x 92 7/8", 3 1/8" deep), mirror panel west. The wall-mounted 92 7/8" frame's own
+  listing says it takes a sliding door at a 94 1/2" ceiling, and BED3 has 8'-10 1/4".
+  `FURN-S-BED3-WARD` keeps its uid as the pair. `ED-S-BED3-RC4` moved to x 27'-0", and
+  `ED-S-BED3-RC3` to y 29'-9". The bed's side-access zone now names the pair and both frames
+  (three UNKNOWNs, one compromise): 14 1/2" in front of the doors.
+- New plan symbols are `wardrobe-shelves`, `wardrobe-corner` (an L ring shared with the
+  type's `footprint_shape`) and `wardrobe-sliding-pair`.

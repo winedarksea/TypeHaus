@@ -186,6 +186,8 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     bedroom_tags = {"D-S-BED1", "D-S-BED2", "D-S-BED3",
                     "FURN-S-BED1", "FURN-S-BED2", "FURN-S-BED3",
                     "FURN-S-BED1-WARD", "FURN-S-BED2-WARD", "FURN-S-BED3-WARD",
+                    "FURN-S-BED1-PAX-SHELF", "FURN-S-BED2-PAX-SHELF",
+                    "FURN-S-BED3-PAX-HANG", "FURN-S-BED3-PAX-SHELF",
                     "FURN-S-DESK1", "FURN-S-DESK2", "FURN-S-DESK3",
                     "FURN-S-DESK-CHAIR1", "FURN-S-DESK-CHAIR2", "FURN-S-DESK-CHAIR3"}
     bedroom_conflicts = [finding for finding in findings
@@ -204,18 +206,26 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
                                        == "integrity.placeable_recommended_clearance_conflict"]
     assert not door_swing_conflicts, door_swing_conflicts
     assert not required_clearance_conflicts, required_clearance_conflicts
-    assert len(recommended_clearance_conflicts) == 1, [
+    # BED3's one deliberate compromise: its bed's side-access zone reaches the PAX run on the
+    # south wall, so it names the sliding pair and both frames behind it — one conflict,
+    # reported once per body.
+    assert sorted(tuple(sorted(finding.element_tags))
+                  for finding in recommended_clearance_conflicts) == [
+        ("FURN-S-BED3", "FURN-S-BED3-PAX-HANG"), ("FURN-S-BED3", "FURN-S-BED3-PAX-SHELF"),
+        ("FURN-S-BED3", "FURN-S-BED3-WARD")], [
         finding.message for finding in recommended_clearance_conflicts]
-    assert set(recommended_clearance_conflicts[0].element_tags) == {
-        "FURN-S-BED3", "FURN-S-BED3-WARD"}
     from typehaus.checks import Tier
     from typehaus.checks.run import run_from_model
 
     door_module = run_from_model(
         model, [], tier=Tier.STRUCTURAL, only="structural.door_framing_module")
-    bed2_module_findings = [finding.message for finding in door_module.findings
-                            if "D-S-BED2" in finding.element_tags]
-    assert not bed2_module_findings, bed2_module_findings
+    # Owner, 2026-10-02: BED1/2's doors sit 2 1/2" off the module so a 19 5/8" PAX fits south
+    # of each; the extra stud cut is accepted (suppressed in preferences.toml), so the raw
+    # check names exactly those two.
+    module_fails = sorted(tag for finding in door_module.findings
+                          if finding.result.value == "fail"
+                          for tag in finding.element_tags if tag in {"D-S-BED1", "D-S-BED2"})
+    assert module_fails == ["D-S-BED1", "D-S-BED2"], module_fails
     centres = {}
     for opening in model.openings:
         wall = model.wall(opening.host_wall)
@@ -229,21 +239,12 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     # D-S-BED2/BED3 are authored off N-S-B2/N-S-B3, so the doors kept their position in
     # their own rooms; D-S-BED1 hangs off N-S-B1.
     #
-    # BED2's wardrobe moved off the hall wall, so its door returned to the source gap. Its
-    # resolved centre is 24'-4", the nearest legal station on its stud module and 3" from
-    # the surveyed 24'-1" centre; the flipped hinge keeps the leaf clear of the rearranged
-    # furniture.
-    #
-    # D-S-BED1 is the other departure from its exact survey centre, with a reason rather than
-    # a loosened tolerance.
-    # Its source centre is 15'-2", 6" off W-S-BW1's stud module, so it cuts two stud lines
-    # where one would do and `structural.door_framing_module` names 15'-8" as the nearest
-    # legal station. The move is not free: at 15'-8" the west wall space between
-    # RM-S-BED1's SW corner and the door's south jamb runs past NEC 210.52(A)(1)'s 6 ft, so
-    # ED-S-BED1-RC5 goes in with it — exactly the trade ED-S-BED2-RC5 records one bedroom
-    # north. Put the door back on 15'-2" and the stud comes back with it.
-    for tag, y_ft, tolerance in (("D-S-BED1", 15 + 8 / 12, TOL_M),
-                                 ("D-S-BED2", 24 + 1 / 12, ft(0, 4).meters),
+    # D-S-BED1/2 are departures from the survey with a reason (owner, 2026-10-02): each sat
+    # on its module station (15'-8", 24'-4") until the PAX fit-out, and moved 2 1/2" north so
+    # the 43 3/8" corner set plus a 19 5/8" frame fits between the south wall and the jamb
+    # (plan/bedroom_wardrobes.py). They are now 2 1/2" off the module, accepted above.
+    for tag, y_ft, tolerance in (("D-S-BED1", 15 + 10.5 / 12, TOL_M),
+                                 ("D-S-BED2", 24 + 6.5 / 12, TOL_M),
                                  ("D-S-BED3", 28 + 7 / 12, TOL_M)):
         x, y = centres[tag]
         assert x == pytest.approx(ft(21, 11).meters, abs=TOL_M), tag

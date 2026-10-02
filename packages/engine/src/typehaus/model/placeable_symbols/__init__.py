@@ -55,6 +55,7 @@ SYMBOL_NAMES = frozenset({
     "dining-table", "round-table", "coffee-table", "end-table", "desk", "wall-desk",
     "sektion-drawer-base", "dresser", "chest", "nightstand", "media-console", "bookcase",
     "wardrobe-show", "wardrobe-dress", "wardrobe-double-hang", "closet-board",
+    "wardrobe-shelves", "wardrobe-corner", "wardrobe-sliding-pair",
     "bed", "tv", "potted-plant", "wall-rack", "peg-rail",
     # sauna joinery — benches are fitted to the room, not bought as a set
     "sauna-bench", "sauna-bench-tiered",

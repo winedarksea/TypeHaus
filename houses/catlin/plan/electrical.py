@@ -2415,28 +2415,18 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SS2", face="left", distance_from_start=inch(135.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # x 26'-7", east of the PAX corner set (2026-10-02), 5 1/2" off ED-S-STUDY2-RC3's back.
     ElectricalDevice(uid="NEC032AAAA", tag="ED-S-BED1-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SS2", face="left", distance_from_start=inch(8.375),
+                         wall_ref="W-S-SS2", face="left", distance_from_start=inch(56),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # RM-S-BED1's west wall, SOUTH of D-S-BED1. The run from the room's SW corner to the
-    # door's south jamb exceeds NEC 210.52(A)(1)'s 6 ft without a receptacle in between —
-    # `electrical.receptacle_spacing` reports the gap at (22'-0", 14'-5") otherwise. y=11'-0"
-    # is 2'-0" from the corner and 3'-5" from the jamb, so both halves of the run are
-    # covered, and it is station 24" on W-S-BW1's grid:
-    # a bay centre, clear of the module studs at 16" and 32" and of the corner pack.
-    # x is the east gypsum face plus 1", the same offset ED-S-BED2-RC5 uses on this wall —
-    # the box is 2" deep and its back goes on the face.
-    ElectricalDevice(uid="1M621JFX16", tag="ED-S-BED1-RC5", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BW1", face="right", distance_from_start=inch(24),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    # ED-S-BED1-RC5 (BW1, y 11'-0") was deleted 2026-10-02: it stood behind the PAX corner
+    # set. The west wall south of D-S-BED1 is now all fixed cabinet (work_surface=False), so
+    # `electrical.receptacle_spacing` breaks the wall space there. If that wall ever loses
+    # the PAX, the 6 ft gap to the south jamb comes back and RC5 with it.
     ElectricalDevice(uid="NEC034AAAA", tag="ED-S-BED2-RC2", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
@@ -2449,33 +2439,19 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BD1", face="left", distance_from_start=inch(136.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # x 26'-7", east of the PAX corner set (2026-10-02).
     ElectricalDevice(uid="NEC036AAAA", tag="ED-S-BED2-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD1", face="left", distance_from_start=inch(9.375),
+                         wall_ref="W-S-BD1", face="left", distance_from_start=inch(56),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # RM-S-BED2's west wall, NORTH of D-S-BED2. The door's rough opening runs
-    # y 21'-9 1/16" .. 24'-3 1/16" and breaks the wall line there; the space that reopens at
-    # the north jamb runs 6'-2 5/8" round the NW corner to ED-S-BED2-RC1 before reaching a
-    # receptacle, which is the 210.52(A)(1) 6' rule by 2 5/8" — the one FAIL the house
-    # carried. x=22'-1 3/8" is W-S-BW2's east gypsum face: the wall carries 1/2" of
-    # resilient channel on the HALL side only and is datumed on its studs, so this face is
-    # 2 3/8" east of the 21'-11" axis (the wall is 5 1/4", not 4 1/2", and is no longer
-    # symmetric about that axis);
-    # y=25'-6" leaves 1'-2 15/16" of wall to the RO and 1'-2" to the corner, so the box lands
-    # in a stud bay and not in a corner pack. x is the face PLUS 1" — the box is 2" deep and
-    # its back goes on the face, which is the same offset ED-S-BED2-RC2 uses on the east
-    # wall (integrity.wall_mount_on_face grades the resolved body,
-    # and authoring the face itself buries half the box in the gypsum).
-    ElectricalDevice(uid="QBXTAARME9", tag="ED-S-BED2-RC5", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BW2", face="right", distance_from_start=inch(94),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    # ED-S-BED2-RC5 (BW2, y 25'-6") was deleted 2026-10-02: D-S-BED2's shift north for the
+    # PAX (plan/storeys/second.py) put it inside the rough opening (y 23'-3 1/2"..25'-9 1/2").
+    # It closed a 6'-2 5/8" run from an older, more southerly north jamb; from today's jamb the
+    # wall runs ~4'-4" round the NW corner to ED-S-BED2-RC1, inside 210.52(A)(1)'s 6 ft. Move
+    # the door south again and that run, and RC5, come back.
     ElectricalDevice(uid="NEC038AAAA", tag="ED-S-BED3-RC2", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
@@ -2483,26 +2459,24 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-N1", face="left", distance_from_start=inch(44),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # y 29'-9", between the PAX sliders' face (29'-0 3/8") and the bed (2026-10-02); at
+    # 28'-8 5/8" it was behind the east frame's side panel.
     ElectricalDevice(uid="NEC039AAAA", tag="ED-S-BED3-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-E4", face="left", distance_from_start=inch(24.625),
+                         wall_ref="W-S-E4", face="left", distance_from_start=inch(37),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # Slid 26'-9 7/8" -> 29'-2" east along the same south wall, 2026-09-06.
-    # FURN-S-BED3-WARD moved onto this wall (x 293.5..341.5) to clear the north wall for
-    # WIN-S-HALL-N's move west to 24'-0", and at 321 7/8" the box ended up BEHIND the case. Nothing would have
-    # caught it: `_fixed_cabinet_intervals` in checks/mep/electrical.py only breaks wall
-    # space for a placeable with `work_surface is False`, and FURN-WARDROBE-48 leaves it
-    # None, so electrical.receptacle_spacing passes either way and the room just quietly
-    # loses a usable outlet. 29'-2" (350") is 8 1/2" clear of the case's east end.
+    # x 27'-0", west of the PAX run (x 28'-10"..35'-4 3/4", plan/bedroom_wardrobes.py),
+    # 2026-10-02. At 29'-2" it was behind the shelf frame; the frames are work_surface=False,
+    # so `electrical.receptacle_spacing` now breaks the wall space they cover.
     ElectricalDevice(uid="NEC040AAAA", tag="ED-S-BED3-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD2", face="left", distance_from_start=inch(87),
+                         wall_ref="W-S-BD2", face="left", distance_from_start=inch(61),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # RC2 is on the suite's east wall, not the arm's south wall — x=13'-1" there is inside
     # O-S-CLOSET's 4'-8" cased opening (x 11'-5 1/2"..16'-1 1/2"), a box in a doorway. Here it

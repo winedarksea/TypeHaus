@@ -65,6 +65,8 @@ from typehaus.model import Location, WallAttachment, m
 # x is the face plus half the 1" body. The face's bottom is 97 1/8" storey, a 6" face centred
 # on the trunk's 100 1/8"; a WALL mount is measured off the finished floor, so it is authored
 # 95 7/8" over the carpet's 1 1/4". They throw east across the room, over the desk below.
+# Both are now over the PAX frame (plan/bedroom_wardrobes.py), whose top is 93 3/8" over the
+# carpet: 2 1/2" under the grille face. The throw clears it; nothing grades it.
 #
 # BED3 is a ceiling boot at its bay leg's end, at the room's resolved ceiling, 8'-10 1/4".
 # NOTHING GRADES A REGISTER AGAINST ITS HOST SURFACE — a Register resolves no solid, so

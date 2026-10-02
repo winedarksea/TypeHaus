@@ -654,6 +654,11 @@ suppress = [
   "structural.door_framing_module:D-S-BATH1",
   "structural.door_framing_module:D-S-NCLOSET",
 
+  # Owner accepts (2026-10-02): D-S-BED1/2 moved 2 1/2" north, off the module, so a real
+  # 19 5/8" PAX fits south of each (plan/bedroom_wardrobes.py). One extra stud cut each.
+  "structural.door_framing_module:D-S-BED1",
+  "structural.door_framing_module:D-S-BED2",
+
   # ** TWO ENTRIES WERE DELETED HERE ON 2026-09-20 BECAUSE THEY MATCHED NOTHING. **
   # `structural.door_framing_module:D-M-BATH2` and `:AO-M-FIRE-NICHE` both produced no
   # finding even under `--no-suppress`. A suppression that matches nothing is not free: a

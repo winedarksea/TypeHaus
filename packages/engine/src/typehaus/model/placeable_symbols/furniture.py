@@ -30,13 +30,17 @@ from typehaus.model.placeable_symbols._sektion import sektion_drawer_base
 from typehaus.model.placeable_symbols._wardrobe import (
                                                         DOUBLE_HANG_INTERIOR,
                                                         DRESS_INTERIOR,
+                                                        SHELVES_INTERIOR,
                                                         SHOW_INTERIOR,
                                                         closet_board,
                                                         wardrobe,
+                                                        wardrobe_corner,
+                                                        wardrobe_corner_points,
+                                                        wardrobe_sliding_pair,
 )
 from typehaus.quantities import inch
 
-__all__ = ["FURNITURE_SYMBOLS", "sectional_points"]
+__all__ = ["FURNITURE_SYMBOLS", "sectional_points", "wardrobe_corner_points"]
 
 # The painted-casework pair, named once so a change of kitchen colour is a one-line edit.
 CABINET = "cabinet-cream"
@@ -74,6 +78,9 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "wardrobe-show": wardrobe(SHOW_INTERIOR),
     "wardrobe-dress": wardrobe(DRESS_INTERIOR),
     "wardrobe-double-hang": wardrobe(DOUBLE_HANG_INTERIOR),
+    "wardrobe-shelves": wardrobe(SHELVES_INTERIOR),
+    "wardrobe-corner": wardrobe_corner,
+    "wardrobe-sliding-pair": wardrobe_sliding_pair,
     "closet-board": closet_board,
     # Wall-hung utility joinery, not a case: a plate and a ladder of bars. It shares the
     # casegoods' stained ``wood`` because that is what a folding rack is made of.

@@ -782,9 +782,6 @@
 "canvas_objects/ED-S-BED1-RC4/body_z0_m": 3.4925,
 "canvas_objects/ED-S-BED1-RC4/body_z1_m": 3.5433,
 "canvas_objects/ED-S-BED1-RC4/z_m": 3.4925,
-"canvas_objects/ED-S-BED1-RC5/body_z0_m": 3.4925,
-"canvas_objects/ED-S-BED1-RC5/body_z1_m": 3.5433,
-"canvas_objects/ED-S-BED1-RC5/z_m": 3.4925,
 "canvas_objects/ED-S-BED1-SW/body_z0_m": 4.3053,
 "canvas_objects/ED-S-BED1-SW/body_z1_m": 4.3561,
 "canvas_objects/ED-S-BED1-SW/z_m": 4.3053,
@@ -812,9 +809,6 @@
 "canvas_objects/ED-S-BED2-RC4/body_z0_m": 3.4925,
 "canvas_objects/ED-S-BED2-RC4/body_z1_m": 3.5433,
 "canvas_objects/ED-S-BED2-RC4/z_m": 3.4925,
-"canvas_objects/ED-S-BED2-RC5/body_z0_m": 3.4925,
-"canvas_objects/ED-S-BED2-RC5/body_z1_m": 3.5433,
-"canvas_objects/ED-S-BED2-RC5/z_m": 3.4925,
 "canvas_objects/ED-S-BED2-SW/body_z0_m": 4.3053,
 "canvas_objects/ED-S-BED2-SW/body_z1_m": 4.3561,
 "canvas_objects/ED-S-BED2-SW/z_m": 4.3053,
@@ -1433,21 +1427,33 @@
 "canvas_objects/FURN-S-BATH1-SHELF/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-BATH1-SHELF/body_z1_m": 5.2197,
 "canvas_objects/FURN-S-BATH1-SHELF/z_m": 3.0861,
-"canvas_objects/FURN-S-BED1-WARD/body_z0_m": 3.0861,
-"canvas_objects/FURN-S-BED1-WARD/body_z1_m": 5.0673,
-"canvas_objects/FURN-S-BED1-WARD/z_m": 3.0861,
+"canvas_objects/FURN-S-BED1-PAX-SHELF/body_z0_m": 3.09245,
+"canvas_objects/FURN-S-BED1-PAX-SHELF/body_z1_m": 5.451475,
+"canvas_objects/FURN-S-BED1-PAX-SHELF/z_m": 3.09245,
+"canvas_objects/FURN-S-BED1-WARD/body_z0_m": 3.09245,
+"canvas_objects/FURN-S-BED1-WARD/body_z1_m": 5.457825,
+"canvas_objects/FURN-S-BED1-WARD/z_m": 3.09245,
 "canvas_objects/FURN-S-BED1/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-BED1/body_z1_m": 4.1021,
 "canvas_objects/FURN-S-BED1/z_m": 3.0861,
-"canvas_objects/FURN-S-BED2-WARD/body_z0_m": 3.0861,
-"canvas_objects/FURN-S-BED2-WARD/body_z1_m": 5.0673,
-"canvas_objects/FURN-S-BED2-WARD/z_m": 3.0861,
+"canvas_objects/FURN-S-BED2-PAX-SHELF/body_z0_m": 3.09245,
+"canvas_objects/FURN-S-BED2-PAX-SHELF/body_z1_m": 5.451475,
+"canvas_objects/FURN-S-BED2-PAX-SHELF/z_m": 3.09245,
+"canvas_objects/FURN-S-BED2-WARD/body_z0_m": 3.09245,
+"canvas_objects/FURN-S-BED2-WARD/body_z1_m": 5.457825,
+"canvas_objects/FURN-S-BED2-WARD/z_m": 3.09245,
 "canvas_objects/FURN-S-BED2/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-BED2/body_z1_m": 4.1021,
 "canvas_objects/FURN-S-BED2/z_m": 3.0861,
-"canvas_objects/FURN-S-BED3-WARD/body_z0_m": 3.0861,
-"canvas_objects/FURN-S-BED3-WARD/body_z1_m": 5.0673,
-"canvas_objects/FURN-S-BED3-WARD/z_m": 3.0861,
+"canvas_objects/FURN-S-BED3-PAX-HANG/body_z0_m": 3.09245,
+"canvas_objects/FURN-S-BED3-PAX-HANG/body_z1_m": 5.451475,
+"canvas_objects/FURN-S-BED3-PAX-HANG/z_m": 3.09245,
+"canvas_objects/FURN-S-BED3-PAX-SHELF/body_z0_m": 3.09245,
+"canvas_objects/FURN-S-BED3-PAX-SHELF/body_z1_m": 5.451475,
+"canvas_objects/FURN-S-BED3-PAX-SHELF/z_m": 3.09245,
+"canvas_objects/FURN-S-BED3-WARD/body_z0_m": 3.09245,
+"canvas_objects/FURN-S-BED3-WARD/body_z1_m": 5.451475,
+"canvas_objects/FURN-S-BED3-WARD/z_m": 3.09245,
 "canvas_objects/FURN-S-BED3/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-BED3/body_z1_m": 4.1021,
 "canvas_objects/FURN-S-BED3/z_m": 3.0861,
@@ -39542,6 +39548,12 @@
 6,
 "e7d8ff18ab19"
 ],
+"geometry/CSW122AAAA::framing/member:backing-0-000": [
+5.2324,
+5.41655,
+8,
+"fb8efedc3501"
+],
 "geometry/CSW122AAAA::framing/member:cripple-head-0-01": [
 5.26415,
 5.699125,
@@ -39733,6 +39745,12 @@
 5.775325,
 6,
 "e7d8ff18ab19"
+],
+"geometry/CSW123AAAA::framing/member:backing-0-000": [
+5.2324,
+5.41655,
+8,
+"fb8efedc3501"
 ],
 "geometry/CSW123AAAA::framing/member:cripple-head-0-01": [
 5.26415,
@@ -40363,6 +40381,12 @@
 5.775325,
 2,
 "b7b31aff550e"
+],
+"geometry/CSW127AAAA::framing/member:backing-0-000": [
+5.2324,
+5.41655,
+8,
+"fb8efedc3501"
 ],
 "geometry/CSW127AAAA::framing/member:plate-bottom": [
 3.048,
@@ -79647,6 +79671,12 @@
 2,
 "015f08fd3431"
 ],
+"member/CSW122AAAA/backing-0-000": [
+5.2324,
+5.41655,
+2,
+"1e7958625010"
+],
 "member/CSW122AAAA/cripple-head-0-01": [
 5.26415,
 5.699125,
@@ -79814,6 +79844,12 @@
 5.5626,
 2,
 "b8f30a7575c5"
+],
+"member/CSW123AAAA/backing-0-000": [
+5.2324,
+5.41655,
+2,
+"1e7958625010"
 ],
 "member/CSW123AAAA/cripple-head-0-01": [
 5.26415,
@@ -80348,6 +80384,12 @@
 5.699125,
 2,
 "1c0200ec3328"
+],
+"member/CSW127AAAA/backing-0-000": [
+5.2324,
+5.41655,
+2,
+"1e7958625010"
 ],
 "member/CSW127AAAA/plate-bottom": [
 3.048,

@@ -13,7 +13,7 @@ import {
 import {
   applyMasonryWallUv, applyMineralWashUv, applyStandingSeamWallUv, createMasonryMaterial,
   createMineralWashMaterial, createStandingSeamMaterial, isMasonry, isMineralWashFinish,
-  isStandingSeam, masonryStyleFor, masonryTileSizeM,
+  isStandingSeam, masonryStyleFor, masonryTileSizeM, SURFACE_COATING_POLYGON_OFFSET,
   metalPanelProfileForFinish, type MetalPanelProfile, SEAM_PROFILE,
 } from "../materials";
 import {
@@ -160,7 +160,11 @@ export function buildWall(
         : plankStyle
           ? createPlankMaterial(mode, plankStyle,
             materialColor(ly.material, palette, materials))
-          : standardMaterial(new THREE.Color(materialColor(ly.material, palette, materials)), mode);
+          // Thin authored coatings (latex paint) sit just ahead of their host sheet. Give the
+          // coating the same small depth-test lead as mineral washes so the substrate cannot
+          // flicker through it as the camera moves.
+          : standardMaterial(new THREE.Color(materialColor(ly.material, palette, materials)), mode,
+            appearance?.coating ? SURFACE_COATING_POLYGON_OFFSET : {});
     mats.push(mat);
     // A banded layer (`Layer.extent`, or one region of a split row via `Layer.slot`) covers
     // only part of the wall's height, and BOTH geometry paths have to honour that. Clamping

@@ -2278,8 +2278,8 @@
 # eight FURN-* rows that are effectively built in — the EIGHT BESTA wall units, both sauna
 # benches, the mudroom bench, the garage workbench, the wall rack and the three wardrobes —
 # because those are bought once with the house and do not swing. A sofa does.
-# FURN-WARDROBE-48 is the borderline one: kept here on the reading that it is a PAX-style
-# fitted wardrobe rather than a freestanding piece.
+# The three bedroom wardrobes are PAX since 2026-10-02 (FURN-S-PAX-* below), fitted to the
+# wall rail, so they stay here; FURN-WARDROBE-48's row went with its last instance.
 #
 # Five of the six house-local FT-* types are from the 2026-08-07 batch. Rods are the rod,
 # brackets and finials — not the fabric, which is an owner selection with no useful range.
@@ -2858,6 +2858,17 @@
 "FURN-M-CLOSET-PEGS" = { material = { low = 25, high = 90 }, labour = { low = 30, high = 80 } }  # 1 ea
 "ED-T-LT-MIRROR-CLOSET" = { material = { low = 300, high = 900 }, labour = { low = 90, high = 200 } }  # 1 ea — hardwired, so an electrician's box and trim
 "ED-T-LT-PSU-TRADFRI-30" = { material = { low = 57, high = 75 }, labour = { low = 0, high = 20 } }  # 1 ea — $45 driver + $12 ANSLUTA cord + connection cords; plug-in
+# BED1-3'S WARDROBES, 2026-10-02 (plan/bedroom_wardrobes.py). IKEA US list read 2026-10-02:
+# PAX/GRIMO corner wardrobe s89560818 $695 (high end adds hinges/rails at list); the 19 5/8"
+# frame $170 + six KOMPLEMENT shelves; the 39 3/8" frame $200 + six shelves ($15-25), or two
+# 39 3/8" rails ($10-15) and one shelf; AULI/MEHAMN 78 3/4" pair 095.603.08 $470. Labour is
+# assembly plus hanging the rail into BK-S-*-PAX; the sliders are rail and door alignment.
+# CONFIDENCE: MEDIUM (list prices).
+"FURN-S-PAX-CORNER" = { material = { low = 695, high = 760 }, labour = { low = 150, high = 350 } }  # 2 ea
+"FURN-S-PAX-SHELF-20" = { material = { low = 260, high = 320 }, labour = { low = 80, high = 200 } }  # 2 ea
+"FURN-S-PAX-SHELF-40" = { material = { low = 290, high = 350 }, labour = { low = 80, high = 200 } }  # 1 ea
+"FURN-S-PAX-DOUBLE-40" = { material = { low = 235, high = 280 }, labour = { low = 80, high = 200 } }  # 1 ea
+"FURN-S-PAX-SLIDE-79" = { material = { low = 470, high = 520 }, labour = { low = 120, high = 300 } }  # 1 ea
 # RM-M-STUDY'S CALL BOOTH, 2026-08-29 — two built articles, priced the way the bath alcove
 # shelf and the sauna benches are: what the piece costs in materials and shop time.
 # [placeables] and not [furnishings] because neither can be carried out of the room; both are
@@ -2971,7 +2982,6 @@
 "FURN-SAUNA-BENCH-48" = { material = { low = 180, high = 710 }, labour = { low = 80, high = 300 } }  # 0 ea since 2026-09-22
 "FURN-SAUNA-BENCH-36" = { material = { low = 135, high = 530 }, labour = { low = 70, high = 250 } }  # 1 ea — the 48 cut 1'-0" shorter
 "FURN-WALL-RACK-24" = { material = { low = 30, high = 150 }, labour = { low = 30, high = 90 } }  # 1 ea
-"FURN-WARDROBE-48" = { material = { low = 250, high = 1200 }, labour = { low = 100, high = 300 } }  # 3 ea
 # One fixed stepped study run. Oak horizontal boards remain in [hardwood]; this row carries
 # its plywood backs/dividers/filler, dados, fabrication, finish, delivery and installation.
 "FT-A-STUDY-BUILTIN" = { material = { low = 500, high = 1100 }, labour = { low = 800, high = 1700 } }  # 1 ea

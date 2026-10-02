@@ -1240,18 +1240,8 @@ SECOND_PLACEABLES = [
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
               room="RM-S-SUITE", position=pt(m(1.52182), m(5.57379)), rotation=deg(0)),
 
-    # The three bedrooms have no built-in closets, so each gets a 48" sliding-door wardrobe.
-    # BED1 and BED2 use west-side slots; BED3 uses the south-side slot. Resolved door-swing
-    # and furniture-clearance checks keep them clear of the doors and bed access zones.
-    Furniture(uid="CSB704AAAA", tag="FURN-S-BED1-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED1", position=pt(m(7.04533), m(3.46448)), rotation=deg(90)),
-    Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED2", position=pt(m(7.08147), m(6.05473)), rotation=deg(90)),
-    # BED3's south-side wardrobe slot stays fixed. The bed's later 5.6" south move puts this
-    # wardrobe into its recommended side-access zone; the integration test records that
-    # deliberate compromise while keeping required clearances and door swings clear.
-    Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED3", position=pt(m(10.1772), m(8.49313)), rotation=deg(180)),
+    # The three bedrooms have no built-in closets; their PAX wardrobes (BED1/2 corner sets,
+    # BED3's sliding pair) are in plan/bedroom_wardrobes.py.
 
     # Linen/towel storage in the hall bath: a 72"x24"x96" pantry-closet carcass
     # (CASE-PANTRY-CLOSET-72) on the south wall, the only run RM-S-BATH1 has free (west has

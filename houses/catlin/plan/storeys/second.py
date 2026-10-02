@@ -566,14 +566,19 @@ OPENINGS = [
     # the wall space between the room's SW corner and the door's south jamb grows past NEC
     # 210.52(A)(1)'s 6 ft, so ED-S-BED1-RC5 goes in with it (plan/electrical.py). Exactly the
     # fix ED-S-BED2-RC5 records for the same wall one bedroom north, for the same reason.
+    # 5'-5" -> 5'-7 1/2" (owner, 2026-10-02), with D-S-BED2: the 19 5/8" PAX south of each
+    # door needs it (plan/bedroom_wardrobes.py). The south casing is omitted and the PAX side
+    # panel scribed to the jamb; the station is off the stud module, and the extra stud cut
+    # (`structural.door_framing_module`, suppressed in preferences.toml) is accepted.
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B1", ft(5, 5)), flip_swing=True),           # y 15'-8"
-    # BED2's wardrobe moved to the west-side slot, freeing the source gap. The door centre is
-    # at 24'-4", the nearest legal station on W-S-BW2's stud module and 3" from the surveyed
-    # 24'-1" centre. The flipped hinge keeps its sweep clear of the rearranged furniture.
+         position=from_node("N-S-B1", ft(5, 7.5)), flip_swing=True),       # y 15'-10 1/2"
+    # BED2's wardrobe is on the west wall, freeing the source gap. The door centre was 24'-4",
+    # 3" from the surveyed 24'-1"; the PAX shift above takes it to 24'-6 1/2". Both hinges
+    # stay on the north jamb; the latch jamb is now the PAX, so both switches are on the
+    # north wall (plan/electrical.py).
     # Asserted in test_openings_land_on_the_source_gaps.
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B2", ft(5, 5)), flip_swing=True, flip_hinge=False),  # y 24'-4"
+         position=from_node("N-S-B2", ft(5, 7.5)), flip_swing=True, flip_hinge=False),  # y 24'-6 1/2"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B3", ft(0, 8)), flip_swing=True, flip_hinge=True),  # y 28'-11"
     # Just an opening, framed the same as a 30" door: no leaf needed for this passthrough.

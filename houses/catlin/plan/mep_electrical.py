@@ -317,11 +317,13 @@ SECOND_DEVICES = [
                      position=pt(ft(25), ft(11, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-BED1", controlled_by=("ED-S-BED1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # On the north wall since 2026-10-02: the latch jamb is now the PAX side panel. x 24'-8",
+    # east of the open leaf (its ring ends at 24'-5"), west of the desk.
     ElectricalDevice(uid="CED006K2AA", tag="ED-S-BED1-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BW1", face="right", distance_from_start=inch(54),
+                         wall_ref="W-S-BD1", face="right", distance_from_start=inch(33),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # y follows W-S-BD1's south face: the wall is INT_2X4_RC (plan/storeys/second.py) with
     # the resilient channel on the BED1 side. The box's back sits ON the face and the box is
@@ -336,11 +338,12 @@ SECOND_DEVICES = [
                      position=pt(ft(25), ft(20, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-BED2", controlled_by=("ED-S-BED2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # As ED-S-BED1-SW, one bedroom north.
     ElectricalDevice(uid="CED007K2AA", tag="ED-S-BED2-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BW2", face="right", distance_from_start=inch(58),
+                         wall_ref="W-S-BD2", face="right", distance_from_start=inch(33),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Same 1/2" as ED-S-BED1-RC1, on W-S-BD2's south face, for the same reason.
     ElectricalDevice(uid="CED007K3AA", tag="ED-S-BED2-RC1", kind=DeviceKind.RECEPTACLE,

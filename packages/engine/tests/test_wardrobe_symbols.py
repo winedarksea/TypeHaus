@@ -9,6 +9,7 @@ from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.model import FurnitureType, inch
 from typehaus.model.canvas import _symbol_geometry
 from typehaus.model.placeable_symbols import PART_COLORS, model_parts, plan_symbol_strokes
+from typehaus.model.placeable_symbols.furniture import wardrobe_corner_points
 
 WIDTH = inch(39.375).meters
 DEPTH = inch(22.875).meters
@@ -78,8 +79,53 @@ def test_browser_receives_glass_alpha_and_keeps_the_existing_plan_glyph() -> Non
         plan_symbol_strokes("bookcase", WIDTH, DEPTH)
 
 
+def test_shelves_frame_has_six_shelves_and_no_rod() -> None:
+    parts = model_parts("wardrobe-shelves", NARROW, DEPTH, HEIGHT)
+    shelves = [part for part in parts if part["size"][0] > NARROW * 0.9
+               and part["size"][1] > DEPTH * 0.9
+               and inch(2).meters < part["center"][2] < inch(90).meters]
+    assert len(shelves) == 6
+    assert not any(part["color"] == "metal" for part in parts)
+
+
+CORNER = inch(43.375).meters
+
+
+def test_corner_set_fills_its_l_and_hangs_two_doors_on_the_inner_faces() -> None:
+    from shapely.geometry import Polygon
+    from shapely.geometry import box as shapely_box
+
+    ring = Polygon(wardrobe_corner_points(CORNER, CORNER))
+    assert ring.area == pytest.approx(CORNER**2 - (CORNER - DEPTH)**2)
+    parts = model_parts("wardrobe-corner", CORNER, CORNER, HEIGHT)
+    for part in parts:  # every solid stays inside the L, notch included
+        (cx, cy, _), (sx, sy, _) = part["center"], part["size"]
+        assert ring.buffer(1e-6).contains(shapely_box(cx - sx / 2, cy - sy / 2,
+                                                      cx + sx / 2, cy + sy / 2))
+    doors = [part for part in parts if part["color"] == "appliance-white"]
+    assert len(doors) == 2
+    widths = sorted(max(part["size"][:2]) for part in doors)
+    assert widths == [pytest.approx(CORNER - DEPTH)] * 2
+    # The frame's two rods (38 3/4" / 78 3/4") hang in the back run.
+    assert _rod_centres(parts) == [pytest.approx(inch(38.75).meters, abs=1e-3),
+                                   pytest.approx(inch(78.75).meters, abs=1e-3)]
+    outline = plan_symbol_strokes("wardrobe-corner", CORNER, CORNER)[0]
+    assert len(outline["points"]) == 6
+
+
+def test_sliding_pair_puts_the_mirror_on_the_right_in_the_front_track() -> None:
+    width, depth = inch(78.75).meters, inch(3.125).meters
+    parts = model_parts("wardrobe-sliding-pair", width, depth, HEIGHT)
+    mirror = [part for part in parts if part["color"] == "mirror"]
+    white = [part for part in parts if part["color"] == "appliance-white"]
+    assert len(mirror) == len(white) == 1
+    assert mirror[0]["center"][0] > 0 > white[0]["center"][0]
+    assert mirror[0]["center"][1] < white[0]["center"][1]  # front track is -y
+    assert mirror[0]["size"][0] == pytest.approx(width / 2)
+
+
 @pytest.mark.parametrize("symbol", ("wardrobe-show", "wardrobe-dress",
-                                    "wardrobe-double-hang"))
+                                    "wardrobe-double-hang", "wardrobe-corner"))
 def test_gltf_uses_the_same_wood_interior_and_glass_or_metal(symbol: str) -> None:
     furniture = FurnitureType(tag="PAX", name="Open wardrobe",
                               footprint=(inch(39.375), inch(22.875)), height=inch(92.875),
