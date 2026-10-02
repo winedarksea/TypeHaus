@@ -2842,12 +2842,15 @@
 # 24x15x30 three-drawer set $367 plus four 4 1/2" legs per unit ($12 per cabinet).
 # KOMPLEMENT drawers $40-70 with fronts, glass-front $60-90, shelves $15-25. Labour is
 # assembly plus hanging the PAX rail into BK-M-CLN(2)-PAX. SHOW: four drawers (two
-# glass-front) and three shelves. HANG: one drawer, a rail, two shelves. The custom bay's
+# glass-front) and three shelves. 2026-10-02: the 39 3/8" HANG frame split into two
+# 19 5/8" frames ($170 each, SKU 405.881.59) — DRESS: a rail and three shelves; DOUBLE: two
+# rails and one shelf. KOMPLEMENT 19 5/8" rail $8-12. The custom bay's
 # boards are site-cut white melamine or painted poplar. SEKTION rail/handle allowance is
 # included in the high end of the drawer-cabinet row; the quartz slab is in [countertops].
 # CONFIDENCE: MEDIUM for the IKEA rows (list prices); LOW for the mirror (no SKU chosen).
 "FURN-M-PAX-SHOW" = { material = { low = 480, high = 820 }, labour = { low = 120, high = 320 } }  # 1 ea
-"FURN-M-PAX-HANG" = { material = { low = 290, high = 450 }, labour = { low = 100, high = 260 } }  # 1 ea
+"FURN-M-PAX-DRESS" = { material = { low = 225, high = 300 }, labour = { low = 80, high = 200 } }  # 1 ea
+"FURN-M-PAX-DOUBLE" = { material = { low = 200, high = 260 }, labour = { low = 80, high = 200 } }  # 1 ea
 "FURN-M-SEKTION-24-DRAWER" = { material = { low = 379, high = 450 }, labour = { low = 45, high = 120 } }  # 2 ea
 "FT-M-CLOSET-ROD-32" = { material = { low = 15, high = 45 }, labour = { low = 20, high = 50 } }  # 2 ea
 "FT-M-CLOSET-VALANCE" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 1 ea

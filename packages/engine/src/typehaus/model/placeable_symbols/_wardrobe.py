@@ -1,7 +1,7 @@
 """Open PAX interiors and matching closet boards shared by browser and glTF consumers.
 
-Heights are representative layouts, not a KOMPLEMENT drilling schedule. They scale from
-the 92 7/8-inch frame so the low drawer leaves a dress-length hanging space.
+Heights are representative layouts, not a KOMPLEMENT drilling schedule. They are inches
+above the frame's bottom and scale with the frame's height.
 """
 
 from __future__ import annotations
@@ -28,11 +28,15 @@ class WardrobeInterior:
     drawer_count: int
     glass_drawer_indices: tuple[int, ...]
     shelf_heights_inches: tuple[float, ...]
-    rod_height_inches: float | None = None
+    rod_heights_inches: tuple[float, ...] = ()
 
 
 SHOW_INTERIOR = WardrobeInterior(2, 44, 5, (3, 4), (46, 66, 80))
-HANG_INTERIOR = WardrobeInterior(2, 10, 1, (), (78, 86), rod_height_inches=72)
+# Dress length: ~61" clear under the rod, three shelves above it. No drawers.
+DRESS_INTERIOR = WardrobeInterior(0, 0, 0, (), (64, 73.5, 83), rod_heights_inches=(61.5,))
+# Double hang on the custom bay's rod lines (79"/39" off the floor), one shelf on top.
+DOUBLE_HANG_INTERIOR = WardrobeInterior(0, 0, 0, (), (81.5,),
+                                        rod_heights_inches=(38.75, 78.75))
 
 
 def closet_board(width: float, depth: float, height: float) -> Geometry:
@@ -41,7 +45,7 @@ def closet_board(width: float, depth: float, height: float) -> Geometry:
 
 
 def wardrobe(interior: WardrobeInterior) -> Builder:
-    """Wood-colored open carcass with separate drawer boxes, fronts, shelves, and optional rod."""
+    """Wood-colored open carcass with separate drawer boxes, fronts, shelves, and rods."""
 
     def build(width: float, depth: float, height: float) -> Geometry:
         panel = min(PANEL_THICKNESS_M, width * 0.04, depth * 0.08, height * 0.008)
@@ -70,7 +74,7 @@ def wardrobe(interior: WardrobeInterior) -> Builder:
                              opening_width, shelf_depth, WOOD))
 
         drawer_pitch = elevation(interior.drawer_top_inches - interior.drawer_bottom_inches)
-        drawer_pitch /= interior.drawer_count
+        drawer_pitch /= max(interior.drawer_count, 1)
         drawer_width = opening_width - 2 * reveal
         drawer_depth = shelf_depth - 2 * panel
         drawer_center_y = front_y + panel + drawer_depth / 2
@@ -103,9 +107,9 @@ def wardrobe(interior: WardrobeInterior) -> Builder:
             else:
                 parts.append(box(0, face_y, z0, z1, drawer_width, panel, WOOD))
 
-        if interior.rod_height_inches is not None:
-            radius = min(ROD_RADIUS_M, depth * 0.03, height * 0.008)
-            rod_z = elevation(interior.rod_height_inches)
+        radius = min(ROD_RADIUS_M, depth * 0.03, height * 0.008)
+        for rod_height in interior.rod_heights_inches:
+            rod_z = elevation(rod_height)
             # Width-axis cylinders are represented by narrow bands of ordinary boxes so
             # every existing consumer can render the round profile without a new primitive.
             for band in range(ROD_CROSS_SECTION_BANDS):

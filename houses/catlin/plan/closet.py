@@ -9,8 +9,10 @@
 #
 # North wall, west to east (owner, 2026-10-01): a 32" custom bay of two rods (80"/40") with
 # a valance and a shoe deck on the PAX lines; FURN-M-PAX-SHOW (drawers below, shelves
-# above); FURN-M-PAX-HANG (low drawer, dress rail, two shelves), 1/2" off the east wall to
-# scribe. Open frames: the aisle is ~31", and the central drawers pull ~18" into it.
+# above); then two 19 5/8" frames (owner, 2026-10-02): FURN-M-PAX-DRESS (dress rail, ~60"
+# clear, three shelves above) and FURN-M-PAX-DOUBLE (rails on the bay's 79"/39" lines, a
+# shelf on top), 5/8" off the east wall to scribe. Open frames: the aisle is ~31", and the
+# central drawers pull ~18" into it.
 #
 # ** THE PAX FRAMES HANG ON A WALL RAIL AND ARE AUTHORED `MountKind.FLOOR`. ** The product
 # is IKEA's wall-mounted frame (no floor contact, so the raised carpet carries nothing). But
@@ -66,10 +68,16 @@ MAIN_CLOSET = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-CLN", face="right", distance_from_start=inch(55.0625),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    Furniture(uid="X1AG5PS5Y8", tag="FURN-M-CLOSET-PAX-HANG", type_ref="FURN-M-PAX-HANG",
+    # x 14'-4 3/4"..16'-0 3/8" and 16'-0 3/8"..17'-8".
+    Furniture(uid="X1AG5PS5Y8", tag="FURN-M-CLOSET-PAX-DRESS", type_ref="FURN-M-PAX-DRESS",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.25)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-CLN2", face="right", distance_from_start=inch(31.4375),
+                  wall_ref="W-M-CLN2", face="right", distance_from_start=inch(21.5625),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
+    Furniture(uid="88MG1P0R11", tag="FURN-M-CLOSET-PAX-DOUBLE", type_ref="FURN-M-PAX-DOUBLE",
+              room="RM-M-CLOSET", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.25)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-CLN2", face="right", distance_from_start=inch(41.1875),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # --- west wall: SEKTION drawers, south-justified (owner, 2026-10-01) -----------------
@@ -142,7 +150,7 @@ MAIN_CLOSET = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-CLN2", face="right", distance_from_start=inch(13),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # TRADFRI 30 W driver on top of the east frame, corded into ED-M-CLOSET-RC1. It names
+    # TRADFRI 30 W driver on top of the dress frame, corded into ED-M-CLOSET-RC1. It names
     # the circuit so its 30 VA lands on CKT-LT-MAIN; ED-T-RECEPTACLE carries no load_va, so
     # nothing counts twice.
     ElectricalDevice(uid="FB7ZP1MC75", tag="ED-M-CLOSET-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
@@ -152,15 +160,21 @@ MAIN_CLOSET = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-CLN2", face="right", distance_from_start=inch(19),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # One 38" OVERSIDAN per frame under its top panel, 1 1/2" behind the front edge
-    # (y 15'-11 1/4"). 76" at 1.5 W/ft is 9.5 W; x1.25 = 11.9 W on a 30 W driver.
+    # One OVERSIDAN per frame under its top panel, 1 1/2" behind the front edge
+    # (y 15'-11 1/4"): 38" + 18" + 18" = 74" at 1.5 W/ft is 9.3 W; x1.25 = 11.6 W on a 30 W
+    # driver, three of its nine sources.
     LightRun(uid="83CZ90GFSQ", tag="LR-M-CLOSET-PAX-SHOW", type_ref="ED-T-LT-PAX-STRIP",
              path=(pt(inch(134), inch(191.25)), pt(inch(172), inch(191.25))),
              room="RM-M-CLOSET", psu_ref="ED-M-CLOSET-LT-PSU",
              controlled_by=("ED-M-CLOSET-SW",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(91))),
-    LightRun(uid="81V49T7YB8", tag="LR-M-CLOSET-PAX-HANG", type_ref="ED-T-LT-PAX-STRIP",
-             path=(pt(inch(173.375), inch(191.25)), pt(inch(211.375), inch(191.25))),
+    LightRun(uid="81V49T7YB8", tag="LR-M-CLOSET-PAX-DRESS", type_ref="ED-T-LT-PAX-STRIP",
+             path=(pt(inch(173.5625), inch(191.25)), pt(inch(191.5625), inch(191.25))),
+             room="RM-M-CLOSET", psu_ref="ED-M-CLOSET-LT-PSU",
+             controlled_by=("ED-M-CLOSET-SW",),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(91))),
+    LightRun(uid="27DAVE1XP0", tag="LR-M-CLOSET-PAX-DOUBLE", type_ref="ED-T-LT-PAX-STRIP",
+             path=(pt(inch(193.1875), inch(191.25)), pt(inch(211.1875), inch(191.25))),
              room="RM-M-CLOSET", psu_ref="ED-M-CLOSET-LT-PSU",
              controlled_by=("ED-M-CLOSET-SW",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(91))),

@@ -1,4 +1,4 @@
-"""RM-M-CLOSET's fit-out catalog: two PAX frames, SEKTION drawers, the custom bay, pegs, mirror.
+"""RM-M-CLOSET's fit-out catalog: three PAX frames, SEKTION drawers, the custom bay, pegs, mirror.
 
 House-local because each row is a CONFIGURATION fitted to this closet (a PAX frame with a
 stated interior, a rod cut to a 32" bay), not a bare product. The products themselves are
@@ -37,6 +37,13 @@ PAX_WALL_FRAME = Product(
            "contact; 93 1/8\" overall; needs 93 1/4\" ceiling to stand up. Interiors are "
            "KOMPLEMENT.",
 )
+PAX_WALL_FRAME_20 = Product(
+    tag="PROD-IKEA-PAX-WALL-20", brand="IKEA", model="PAX wall-mounted storage frame",
+    name='PAX wall-mounted storage frame, white, 19 5/8 x 22 7/8 x 92 7/8"', sku="405.881.59",
+    url="https://www.ikea.com/us/en/p/pax-wall-mounted-storage-frame-white-40588159/",
+    source="IKEA US listing, read 2026-10-02: $170.00; the 39 3/8\" frame's rail and "
+           "adjustable feet. Two side by side are 39 1/4\".",
+)
 SEKTION_MAXIMERA_24_DRAWER = Product(
     tag="PROD-IKEA-SEKTION-MAXIMERA-24-3D", brand="IKEA",
     model="SEKTION / MAXIMERA 24x15x30, 3 drawers",
@@ -54,8 +61,8 @@ OVERSIDAN = Product(
     name="OVERSIDAN LED wardrobe lighting strip with sensor, dimmable white",
     url="https://www.ikea.com/us/en/p/oeversidan-led-wardrobe-lighting-strp-w-sensor-dimmable-white-60475019/",
     source="IKEA US listing, read 2026-10-01: 28\" is 3.5 W / 270 lm; the 38\" fits a 39 3/8\" "
-           "frame. The door sensor does nothing on an open frame, so the closet switch "
-           "is the control.",
+           "frame and the 18\" a 19 5/8\" one. The door sensor does nothing on an open "
+           "frame, so the closet switch is the control.",
 )
 TRADFRI_30 = Product(
     tag="PROD-IKEA-TRADFRI-30", brand="IKEA", model="TRADFRI driver 30 W", sku="603.426.61",
@@ -64,7 +71,8 @@ TRADFRI_30 = Product(
            "plugs into an ordinary receptacle through the ANSLUTA cord (sold separately).",
 )
 
-CLOSET_PRODUCTS = (PAX_WALL_FRAME, SEKTION_MAXIMERA_24_DRAWER, OVERSIDAN, TRADFRI_30)
+CLOSET_PRODUCTS = (PAX_WALL_FRAME, PAX_WALL_FRAME_20, SEKTION_MAXIMERA_24_DRAWER, OVERSIDAN,
+                   TRADFRI_30)
 
 # --- north wall: two PAX frames and the custom bay ---------------------------------------
 #
@@ -80,12 +88,21 @@ PAX_SHOW = FurnitureType(
     storage=True, work_surface=False, plan_symbol="wardrobe-show",
     product_ref="PROD-IKEA-PAX-WALL", source=_PAX_SOURCE,
 )
-PAX_HANG = FurnitureType(
-    tag="FURN-M-PAX-HANG",
-    name='PAX 39 3/8" open frame: one low drawer, dress-length rail, two shelves on top',
-    footprint=(inch(39.375), inch(22.875)), height=inch(92.875),
-    storage=True, work_surface=False, plan_symbol="wardrobe-hang",
-    product_ref="PROD-IKEA-PAX-WALL", source=_PAX_SOURCE,
+# The east 39 3/8" slot holds two 19 5/8" frames (owner, 2026-10-02): one long-hang,
+# one double-hang. Interiors: model/placeable_symbols/_wardrobe.py.
+PAX_DRESS = FurnitureType(
+    tag="FURN-M-PAX-DRESS",
+    name='PAX 19 5/8" open frame: dress-length rail (~60" clear below), three shelves above',
+    footprint=(inch(19.625), inch(22.875)), height=inch(92.875),
+    storage=True, work_surface=False, plan_symbol="wardrobe-dress",
+    product_ref="PROD-IKEA-PAX-WALL-20", source=_PAX_SOURCE,
+)
+PAX_DOUBLE = FurnitureType(
+    tag="FURN-M-PAX-DOUBLE",
+    name='PAX 19 5/8" open frame: two rails on the custom bay\'s 79"/39" lines, one shelf on top',
+    footprint=(inch(19.625), inch(22.875)), height=inch(92.875),
+    storage=True, work_surface=False, plan_symbol="wardrobe-double-hang",
+    product_ref="PROD-IKEA-PAX-WALL-20", source=_PAX_SOURCE,
 )
 # The custom bay: two rods cut to the 32" between the west wall and the central frame's
 # side panel, and a board top and bottom on the PAX lines so the wall reads as one piece.
@@ -135,8 +152,8 @@ PEG_RAIL_42 = FurnitureType(
             "linked IKEA HÖVOLM rack. Screwed through into BK-M-BDN2-PEGS."),
 )
 
-CLOSET_FURNITURE_TYPES = (PAX_SHOW, PAX_HANG, CLOSET_ROD_32, CLOSET_VALANCE, CLOSET_PLINTH,
-                          SEKTION_DRAWER_24, PEG_RAIL_42)
+CLOSET_FURNITURE_TYPES = (PAX_SHOW, PAX_DRESS, PAX_DOUBLE, CLOSET_ROD_32, CLOSET_VALANCE,
+                          CLOSET_PLINTH, SEKTION_DRAWER_24, PEG_RAIL_42)
 
 # --- lighting: the lit mirror, the PAX strips and their driver ---------------------------
 
@@ -151,7 +168,7 @@ CLOSET_LUMINAIRE_TYPES = (
                   load_va=40.0, ports=_POWER_120,
                   source="Allowance: no SKU chosen. Hardwired so no cord shows; its own "
                          "touch switch, so it names no wall switch."),
-    LuminaireType(tag="ED-T-LT-PAX-STRIP", name='IKEA OVERSIDAN 38" wardrobe LED strip',
+    LuminaireType(tag="ED-T-LT-PAX-STRIP", name="IKEA OVERSIDAN wardrobe LED strip",
                   form=LuminaireForm.STRIP, type_mark="E2",
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
                   lamp="LED strip, IKEA low-voltage", watts_per_ft=1.5, lumens=116.0,

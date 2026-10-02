@@ -15,20 +15,43 @@ DEPTH = inch(22.875).meters
 HEIGHT = inch(92.875).meters
 
 
-def test_hanging_frame_leaves_dress_length_space_between_drawer_and_rod() -> None:
-    parts = model_parts("wardrobe-hang", WIDTH, DEPTH, HEIGHT)
-    rod = [part for part in parts if part["color"] == "metal"]
-    assert rod
-    rod_bottom = min(part["center"][2] - part["size"][2] / 2 for part in rod)
-    rod_top = max(part["center"][2] + part["size"][2] / 2 for part in rod)
-    assert (rod_bottom + rod_top) / 2 == pytest.approx(inch(72).meters)
-    assert rod_bottom - inch(10).meters > inch(60).meters
-    # Full-width horizontal boards above the drawer are the two shelves and frame cap.
-    shelves = [part for part in parts if part["size"][0] > WIDTH * 0.9
-               and part["size"][1] > DEPTH * 0.9
-               and part["center"][2] > inch(10).meters]
-    assert len(shelves) == 3
+NARROW = inch(19.625).meters
+
+
+def _rod_centres(parts: list) -> list[float]:
+    zs = sorted(part["center"][2] for part in parts if part["color"] == "metal")
+    rods: list[list[float]] = []
+    for z in zs:
+        if rods and z - rods[-1][-1] < inch(2).meters:
+            rods[-1].append(z)
+        else:
+            rods.append([z])
+    return [sum(rod) / len(rod) for rod in rods]
+
+
+def _boards_above(parts: list, width: float, z_inches: float) -> list:
+    return [part for part in parts if part["size"][0] > width * 0.9
+            and part["size"][1] > DEPTH * 0.9 and part["center"][2] > inch(z_inches).meters]
+
+
+def test_dress_frame_hangs_sixty_inches_clear_under_three_shelves() -> None:
+    parts = model_parts("wardrobe-dress", NARROW, DEPTH, HEIGHT)
+    assert _rod_centres(parts) == [pytest.approx(inch(61.5).meters, abs=1e-3)]
+    # No drawers: nothing short-and-wood stands between the bottom panel and the rod.
+    assert not [part for part in parts if part["color"] == "wood"
+                and inch(2).meters < part["center"][2] < inch(60).meters
+                and part["size"][2] < inch(30).meters]
+    # Three shelves and the frame cap above the rod.
+    assert len(_boards_above(parts, NARROW, 62)) == 4
     assert not any(part["color"] == "glass" for part in parts)
+
+
+def test_double_hang_frame_has_two_rods_and_one_shelf() -> None:
+    parts = model_parts("wardrobe-double-hang", NARROW, DEPTH, HEIGHT)
+    rods = _rod_centres(parts)
+    assert rods == [pytest.approx(inch(38.75).meters, abs=1e-3),
+                    pytest.approx(inch(78.75).meters, abs=1e-3)]
+    assert len(_boards_above(parts, NARROW, 79)) == 2
 
 
 def test_display_frame_has_solid_lower_fronts_and_two_glass_upper_drawers() -> None:
@@ -55,7 +78,8 @@ def test_browser_receives_glass_alpha_and_keeps_the_existing_plan_glyph() -> Non
         plan_symbol_strokes("bookcase", WIDTH, DEPTH)
 
 
-@pytest.mark.parametrize("symbol", ("wardrobe-show", "wardrobe-hang"))
+@pytest.mark.parametrize("symbol", ("wardrobe-show", "wardrobe-dress",
+                                    "wardrobe-double-hang"))
 def test_gltf_uses_the_same_wood_interior_and_glass_or_metal(symbol: str) -> None:
     furniture = FurnitureType(tag="PAX", name="Open wardrobe",
                               footprint=(inch(39.375), inch(22.875)), height=inch(92.875),

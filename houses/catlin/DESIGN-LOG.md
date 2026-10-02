@@ -4082,3 +4082,14 @@ surface that reaches the court, so the water goes there.
   the cabinet face remains available for short hangs.
 - `CT-M-CLOSET` adds 5.50 SF to the quartz countertop takeoff. The furniture allowance
   reflects the IKEA set plus legs, with rail and handles included in its high range.
+
+## 2026-10-02 — RM-M-CLOSET east PAX split into two 19 5/8" frames
+
+- `FURN-M-CLOSET-PAX-HANG` (one 39 3/8" frame: low drawer, dress rail, two shelves) is now
+  two 19 5/8" wall-mounted PAX frames in the same slot, 5/8" off the east wall.
+  `FURN-M-CLOSET-PAX-DRESS` keeps its uid: a dress rail at 61 1/2" in the frame (~61" clear
+  below) and three shelves above, no drawer. `FURN-M-CLOSET-PAX-DOUBLE` has two rails on the
+  custom bay's 79"/39" lines and one shelf at 81 1/2", leaving a ~10" top cubby.
+- Each frame gets an 18" OVERSIDAN (`LR-M-CLOSET-PAX-DRESS`/`-DOUBLE`) on the same TRADFRI
+  driver: 74" of strip, 11.6 W of 30 W.
+- New plan symbols `wardrobe-dress` and `wardrobe-double-hang` replace `wardrobe-hang`.
