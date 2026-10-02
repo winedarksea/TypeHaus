@@ -567,8 +567,15 @@ SITE = Site(
     # it as ``grade_z - depth``), so these three follow grade down on their own and want no
     # re-basing.
     utilities=(
-        UtilityLine(kind=UtilityKind.SEWER, path=(pt(ft(3), ft(-20)), pt(ft(3), ft(0))),
-                    entry=pt(ft(3), ft(0)), depth=ft(5)),
+        # To the STREET, like the water (2026-10-01): it ran south into the rear yard,
+        # toward no main. Out under FT-B-N4 at x=3'-0", a 1/8 bend west past PD-BW-W, then
+        # north at x=1'-6" to the front line. That lane is 30" off RG-W-BASIN (the 24" locate
+        # zone) and 50" off FT-GF-W, outside its 45° line at this depth. ~8' deep at the
+        # house: the building drain leaves at -10'-9 5/16", 7'-11" under grade.
+        UtilityLine(kind=UtilityKind.SEWER,
+                    path=(pt(ft(1, 6), ft(84, 6)), pt(ft(1, 6), ft(38, 6)),
+                          pt(ft(3), ft(37)), pt(ft(3), ft(36))),
+                    entry=pt(ft(3), ft(36)), depth=ft(8)),
         # Enters at the FRONT, matching the street on the NORTH (SetbackSpec(edge=2,
         # label="FRONT")) and grade "at the street/north side") — a municipal water main
         # does not run behind the house. Terminates at the hydrant, the first thing it

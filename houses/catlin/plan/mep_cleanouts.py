@@ -4,26 +4,29 @@
 from typehaus import DrainCleanout, ft, inch, pt
 
 BASEMENT_CLEANOUTS = [
-    # Building drain / sewer connection. Local south grade is -2'-10" project datum.
+    # The building drain's cleanout at the sewer connection (UPC 719.1), INSIDE the wall:
+    # a two-way fitting 3'-0" short of FT-B-N4, capped flush in RM-B-FURNACE's floor beside
+    # SM-B-RADON. Two-way inside the wall is also 707.4 exception 4, so it stands in for an
+    # upper-terminal cleanout at the collector's head. It was a 94" riser to grade in the
+    # rear yard while the sewer left south.
     DrainCleanout(uid="COB0000001", tag="CO-B-SEWER", pipe_ref="PR-B-MAIN-DRAIN",
-                  position=pt(ft(3), ft(-1)), fitting_elevation=inch(-18.6),
-                  cap_position=pt(ft(3), ft(-1)), cap_elevation=inch(75.4375),
-                  direction="two_way", access="grade",
-                  clear_width=inch(24), clear_depth=inch(24)),
-    DrainCleanout(uid="COB0000002", tag="CO-B-MAIN-TURN", pipe_ref="PR-B-MAIN-DRAIN",
-                  position=pt(ft(3), ft(16, 6)), fitting_elevation=inch(80.6375),
-                  cap_position=pt(ft(3), ft(17, 9)), cap_elevation=inch(84.6375),
-                  access="wall", wall_ref="W-B-CW",
+                  position=pt(ft(3), ft(34)), fitting_elevation=inch(-19.375),
+                  cap_position=pt(ft(3), ft(34)), cap_elevation=inch(0),
+                  direction="two_way", access="floor",
                   clear_width=inch(24), clear_depth=inch(24)),
     DrainCleanout(uid="COB0000009", tag="CO-B-COLLECTOR", pipe_ref="PR-B-MAIN-DRAIN",
                   position=pt(ft(5, 3), ft(16, 6)), fitting_elevation=inch(81.2375),
                   cap_position=pt(ft(5, 3), ft(17, 9)), cap_elevation=inch(85.2375),
                   direction="two_way", access="wall", wall_ref="W-B-CW",
                   clear_width=inch(24), clear_depth=inch(24)),
-    DrainCleanout(uid="COB0000010", tag="CO-B-SLAB-TURN", pipe_ref="PR-B-MAIN-DRAIN",
-                  position=pt(ft(3), ft(15, 6)), fitting_elevation=inch(-13.2),
-                  cap_position=pt(ft(3), ft(15, 6)), cap_elevation=inch(0),
-                  access="floor", clear_width=inch(24), clear_depth=inch(24)),
+    # PR-B-BATH-DRAIN turns south, then west, and the main carries it north: 180° in
+    # aggregate at its tie, 4 3/4" downstream. Two-way, between the stack's base and that tie,
+    # capped flush in the workshop floor.
+    DrainCleanout(uid="COB0000010", tag="CO-B-STACK-BASE", pipe_ref="PR-B-MAIN-DRAIN",
+                  position=pt(ft(3), ft(17)), fitting_elevation=inch(-15.125),
+                  cap_position=pt(ft(3), ft(17)), cap_elevation=inch(0),
+                  direction="two_way", access="floor",
+                  clear_width=inch(24), clear_depth=inch(24)),
     DrainCleanout(uid="COB0000003", tag="CO-B-KITCH-HEAD", pipe_ref="PR-B-KITCH-DRAIN",
                   position=pt(ft(29, 4), ft(35)), fitting_elevation=inch(101.9375),
                   cap_position=pt(ft(29, 4), ft(35)), cap_elevation=inch(121.4375),
@@ -43,25 +46,19 @@ BASEMENT_CLEANOUTS = [
                   position=pt(ft(12), ft(21, 6)), fitting_elevation=inch(-9.258854),
                   cap_position=pt(ft(12), ft(21, 6)), cap_elevation=inch(0),
                   access="floor", clear_width=inch(24), clear_depth=inch(24)),
+    # On the sauna branch's west leg, 4" south of FURN-B-SAUNA-BENCH-E's front.
     DrainCleanout(uid="COB0000007", tag="CO-B-SAUNA-HEAD", pipe_ref="PR-B-SAUNA-DRAIN",
-                  position=pt(ft(13, 6), ft(5, 6)), fitting_elevation=inch(-10.1284375),
-                  cap_position=pt(ft(13, 6), ft(5, 6)), cap_elevation=inch(0),
+                  position=pt(ft(13), ft(5, 10.2)), fitting_elevation=inch(-9.58),
+                  cap_position=pt(ft(13), ft(5, 10.2)), cap_elevation=inch(0),
                   access="floor", clear_width=inch(18), clear_depth=inch(18)),
-    DrainCleanout(uid="COB0000008", tag="CO-B-SAUNA-TURN", pipe_ref="PR-B-SAUNA-DRAIN",
-                  position=pt(ft(13, 6), ft(4)), fitting_elevation=inch(-10.58),
-                  cap_position=pt(ft(13, 6), ft(4)), cap_elevation=inch(0),
-                  access="floor", clear_width=inch(18), clear_depth=inch(18)),
-    # WC2's branch runs in the basement ceiling. Its upper terminal is below the fixture,
-    # and the second turn is another ceiling location; both caps need access panels.
+    # WC2's branch runs in the basement ceiling. Its upper terminal is below the fixture;
+    # the cap needs an access panel. Its turn east into the stack is only 90° now that the
+    # collector drops at that corner, so it carries no turn cleanout.
     DrainCleanout(uid="COB0000011", tag="CO-B-WC2-HEAD", pipe_ref="PR-B-WC2-DRAIN",
                   position=pt(ft(2, 6), ft(20, 10.615)),
                   fitting_elevation=ft(7, 4.4375),
                   cap_position=pt(ft(2, 6), ft(20, 10.615)),
                   cap_elevation=ft(8, 0.9375),
-                  access="ceiling", clear_width=inch(24), clear_depth=inch(24)),
-    DrainCleanout(uid="COB0000012", tag="CO-B-WC2-TURN", pipe_ref="PR-B-WC2-DRAIN",
-                  position=pt(inch(28.5), ft(16, 6)), fitting_elevation=ft(6, 11.4375),
-                  cap_position=pt(inch(28.5), ft(16, 6)), cap_elevation=ft(8, 0.9375),
                   access="ceiling", clear_width=inch(24), clear_depth=inch(24)),
 ]
 

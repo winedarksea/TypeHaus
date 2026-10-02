@@ -76,7 +76,7 @@ SLAB_STUBS = [
     # Where the ceiling collector turns down to become the under-slab building drain; 4",
     # matching the building drain. `mep.sleeve_coverage` holds the crossing.
     SleevePenetration(uid="CBP902AAAA", tag="SP-B-SLAB-MAIN", host_ref="SL-B-FLOOR",
-                      position=pt(ft(3), ft(15, 6)), pipe_diameter=inch(4),
+                      position=pt(ft(3), ft(16, 6)), pipe_diameter=inch(4),
                       sleeve_diameter=inch(6)),
 ]
 
@@ -130,15 +130,16 @@ WALL_SLEEVES = [
     # PR-B-COND crosses W-B-CS (2x6 stud, not concrete) with a bored hole, not a sleeve —
     # same reasoning as the framed-wall crossings above.
     # Perimeter exits.
-    # Building drain leaves *under* FT-B-S1, not through W-B-S1 (2026-07-30): the walls stop
-    # at -9'-4" (the slab top), below the sewer connection, so this is an under-footing
-    # protection sleeve (UPC 314.1, `mep.footing_clearance`) at the footing centerline.
-    # center_elevation = invert (-10'-3 11/16") + half the 4" pipe = -125.7055", matched to
-    # within 1/2" by `mep.sewer_exit_invert`.
-    SleevePenetration(uid="CBPW18AAAA", tag="SP-B-SEWER-EXIT", host_ref="FT-B-S1",
-                      position=pt(ft(3), ft(0)), pipe_diameter=inch(4),
+    # Building drain leaves NORTH, *under* FT-B-N4, toward the street (2026-10-01; it left
+    # south under FT-B-S1 until then). The walls stop at the slab top, above the sewer
+    # connection, so this is an under-footing protection sleeve (UPC 314.1,
+    # `mep.footing_clearance`) on the wall line, the pipe 3 3/4" clear of SM-B-RADON.
+    # center_elevation = invert (-129.3125" project, the main's 1/4"/ft line at y=36')
+    # + half the 4" pipe = -127.3125", matched to within 1/2" by `mep.sewer_exit_invert`.
+    SleevePenetration(uid="CBPW18AAAA", tag="SP-B-SEWER-EXIT", host_ref="FT-B-N4",
+                      position=pt(ft(3), ft(36)), pipe_diameter=inch(4),
                       sleeve_diameter=inch(6), axis="horizontal",
-                      center_elevation=inch(-125.7055)),
+                      center_elevation=inch(-127.3125)),
     # The water service's one wall crossing. It follows PR-G-HYDRANT-CW down to -8'-10": the
     # run holds 6' under a grade of -2'-10", and a sleeve that stayed at -6'-0" would be a
     # bore the pipe misses by 2'-10". It sits 6" above the basement walls' own bottom, which

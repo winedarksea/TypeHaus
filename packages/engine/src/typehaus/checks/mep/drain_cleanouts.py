@@ -21,6 +21,9 @@ _SPACING_M = 100 * _FT_M
 _TURN_LIMIT_DEG = 135.0
 _LOCATION_TOLERANCE_M = 1 * _FT_M
 _TERMINAL_TOLERANCE_M = 4 * _FT_M
+# The building drain's authored end stands outside the wall; an inside cleanout is "near"
+# the connection within this reach of it.
+_INSIDE_WALL_REACH_M = 4 * _FT_M
 # A one-fifth bend is within 72 degrees of vertical, or at least tan(18) rise/run.
 _MIN_VERTICAL_SLOPE = math.tan(math.radians(18))
 
@@ -202,6 +205,15 @@ def required_cleanout_locations(model) -> list[CleanoutRequirement]:
     return list(dict.fromkeys(requirements))
 
 
+def _at_sewer_connection(cleanout, building) -> bool:
+    """707.4 exception 4: a two-way fitting outside at the drain's lower end, extended to
+    grade, or inside the building wall near the building drain/sewer connection."""
+    distance = math.dist(cleanout.position, building.path[-1])
+    if cleanout.access == "grade":
+        return distance <= _LOCATION_TOLERANCE_M + 1e-6
+    return cleanout.access in {"floor", "wall"} and distance <= _INSIDE_WALL_REACH_M + 1e-6
+
+
 @check(Tier.CODE, "mep.drain_cleanouts")
 def drain_cleanouts(ctx: CheckContext):
     requirements = required_cleanout_locations(ctx.model)
@@ -225,9 +237,7 @@ def drain_cleanouts(ctx: CheckContext):
                       and requirement.pipe_ref == building.tag
                       and requirement.reason == "upper terminal"
                       and c.pipe_ref == building.tag and c.direction == "two_way"
-                      and c.access == "grade"
-                      and math.dist(c.position, building.path[-1])
-                      <= _LOCATION_TOLERANCE_M + 1e-6]
+                      and _at_sewer_connection(c, building)]
         matched = direct or substitute
         if matched:
             findings.append(passed("mep.drain_cleanouts",

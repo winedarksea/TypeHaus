@@ -27,8 +27,8 @@ Posts are evenly spaced with no bay over 8'-0": bays = ⌈L / 8⌉, posts = bays
 The power service runs y=18' from the west line to the house at 3' deep. Nearest posts:
 TRL-W-S at y=14 → 4.0' less the 1 3/4" half post = 3.85'; TRL-W-N at y=25 → 6.85'. Apple
 planting holes (18" radius): PL-W-APPLE-2 at y=11 → 7 − 1.5 = 5.5'; PL-W-APPLE-3 at y=28 →
-10 − 1.5 = 8.5'; PL-W-APPLE-4 at y=35 → 15.5'. All clear 2'. The sewer (x=3') and water
-(x=11') are further.
+10 − 1.5 = 8.5'; PL-W-APPLE-4 at y=35 → 15.5'. All clear 2'. The sewer (x=1'-6", north of
+the house since 2026-10-01) and water (x=11') are further.
 
 ## 3. Espaliers
 

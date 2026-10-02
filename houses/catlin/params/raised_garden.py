@@ -133,10 +133,9 @@ A bed is not a walking surface, so the paragraph above stays true. The 12" wall-
 sits inside the fill prism, still unmodelled. **Grasses and perennials only, nothing woody**:
 roots stay off the dimpleboard and the block, and a tree is surcharge no free body carries.
 
-Known and accepted: the west leg (x ∈ [3.5, 4.5]) runs over the x = 3 sewer and beside the
-x = 5 water line for its whole length. Both are 5-6' below grade against a wall bottom that
-now sits *at* grade, so there is no physical conflict — and no check exists for utility
-clearance to catch one if a future change brought them together.
+The sewer that ran under the west leg at x = 3 left for the street on 2026-10-01
+(plan/site.py). ``site.utility_clearance`` grades trellis posts, trees and basins against
+utility lines, not walls, so nothing would catch a future line brought under this one.
 """
 
 from __future__ import annotations

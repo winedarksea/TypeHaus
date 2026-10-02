@@ -110,12 +110,34 @@ def test_two_way_grade_cleanout_substitutes_for_building_drain_terminal():
                for f in drain_cleanouts(SimpleNamespace(model=model)))
 
 
+def test_two_way_inside_the_wall_substitutes_for_the_upper_terminal():
+    """707.4 exception 4: inside the building wall near the drain/sewer connection."""
+    model = _model(((0, 0), (ft(10).meters, 0)), (0, -0.01))
+    inside = replace(_cleanout(), position=(ft(7).meters, 0), cap_position=(ft(7).meters, 0),
+                     fitting_z_m=-0.01, direction="two_way", access="floor")
+    for cleanout, substitutes in ((inside, True),
+                                  (replace(inside, direction="one_way"), False),
+                                  (replace(inside, position=(ft(5).meters, 0)), False)):
+        model.drain_cleanouts = [cleanout]
+        missing = any("missing upper terminal" in f.message
+                      for f in drain_cleanouts(SimpleNamespace(model=model)))
+        assert missing is not substitutes
+
+
+def test_catlin_sewer_cleanout_is_inside_by_the_north_exit(catlin_model_ro):
+    sewer = next(c for c in catlin_model_ro.drain_cleanouts if c.tag == "CO-B-SEWER")
+    main = next(r for r in catlin_model_ro.pipe_runs if r.tag == "PR-B-MAIN-DRAIN")
+    assert (sewer.access, sewer.direction) == ("floor", "two_way")
+    assert main.path[-1][1] > ft(36).meters  # leaves north, toward the street
+    assert sewer.position[1] < ft(36).meters  # inside FT-B-N4
+
+
 def test_catlin_cleanouts_have_plan_schedule_and_three_solids(catlin_model_ro):
     model = catlin_model_ro
-    assert len(model.drain_cleanouts) == 14
+    assert len(model.drain_cleanouts) == 11
     wc2_cleanouts = {item.tag: item for item in model.drain_cleanouts
                      if item.pipe_ref == "PR-B-WC2-DRAIN"}
-    assert set(wc2_cleanouts) == {"CO-B-WC2-HEAD", "CO-B-WC2-TURN"}
+    assert set(wc2_cleanouts) == {"CO-B-WC2-HEAD"}
     assert all(item.access == "ceiling" for item in wc2_cleanouts.values())
     assert not any(r.pipe_ref.startswith("PR-A-")
                    for r in required_cleanout_locations(model))
