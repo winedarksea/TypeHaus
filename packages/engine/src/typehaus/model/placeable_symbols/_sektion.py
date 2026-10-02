@@ -111,7 +111,6 @@ def sektion_drawer_base() -> Builder:
             parts.append(box(0, drawer_front_y, front_z1 - frame_border, front_z1,
                              face_width, drawer_front_depth, "appliance-white"))
             panel_width = face_width - 2 * frame_border
-            panel_height = drawer_front_height - 2 * frame_border
             parts.append(box(0, carcass_front_y - inset_panel_depth / 2,
                              front_z0 + frame_border, front_z1 - frame_border,
                              panel_width, inset_panel_depth, "porcelain"))
