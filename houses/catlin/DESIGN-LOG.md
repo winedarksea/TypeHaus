@@ -4100,3 +4100,17 @@ surface that reaches the court, so the water goes there.
   42" wall-mounted type is available to every house; Catlin still authors its room-specific
   location in `plan/closet.py`.
 - The Catlin allowance stays keyed to `FURN-M-CLOSET-PEGS` in `prices.toml`.
+
+## 2026-10-02 — clearance variants and porch lounge promoted to shared furniture catalog
+
+- `FT-DINING-8-OPEN-CORNERS` and `FT-SOFA-84-SEAT-BAND` now live in the engine's
+  `STARTER_FURNITURE_TYPES`. They preserve the full chair and walk-band reach while excluding
+  floor that chairs do not occupy: the dining table omits its corner squares, and the sofa's
+  30" walk band matches its approximately 60 1/2" seat span.
+- `FT-PORCH-LOUNGE-27` is also shared, with the Loll Lollygagger's manufacturer-cut dimensions
+  and all-weather construction in its source. The Catlin placements still identify the
+  selected product and its existing tag; no pricing change was made.
+- Catlin chose the 37 lb recycled-HDPE chair for the curtained, unheated porch: it needs no
+  cushion, fabric or rust-prone fastener, and its arms serve as the side tables.
+- Existing type tags and Catlin price rows remain unchanged; `manifest.py` gets all three
+  through the starter catalog tuple.

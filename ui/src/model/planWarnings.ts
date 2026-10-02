@@ -7,7 +7,8 @@
 // and the server findings that mention them — so a click can say what it is instead of just
 // glowing. Pure over model.json; the canvas only positions what comes back.
 
-import type { Finding, Junction, Model, Severity, Vec2, Wall } from "./types";
+import type { Finding, Junction, Model, PlanNode, Severity, Vec2, Wall } from "./types";
+import { nodeKey } from "./geometry";
 
 export interface PlanWarningMarker {
   key: string; // React key / marker identity
@@ -41,9 +42,17 @@ export function findingsForElements(model: Model, tags: string[], uids: string[]
 // `open_end: true` is a *deliberate* free end (a stair-well return, a garden wall stub), not a
 // modelling mistake — which is exactly the distinction the undifferentiated red dot was hiding.
 function nodeAt(model: Model, storey: string | null, point: Vec2, toleranceM: number) {
-  return (model.nodes ?? []).find((node) =>
-    (!storey || node.storey === storey) &&
-    Math.hypot(node.x_m - point[0], node.y_m - point[1]) <= toleranceM);
+  let nearest: PlanNode | undefined;
+  let nearestDistance = Infinity;
+  for (const node of model.nodes ?? []) {
+    if (storey && node.storey !== storey) continue;
+    const distance = Math.hypot(node.x_m - point[0], node.y_m - point[1]);
+    if (distance <= toleranceM && distance < nearestDistance) {
+      nearest = node;
+      nearestDistance = distance;
+    }
+  }
+  return nearest;
 }
 
 /**
@@ -59,7 +68,10 @@ export function openEndMarker(
   const id = node?.tag ?? `${point[0].toFixed(3)},${point[1].toFixed(3)}`;
   const where = wallTags.length ? ` of ${wallTags.join(", ")}` : "";
   return {
-    key: `open-end-${id}`,
+    // Several distinct open ends can sit within the screen-space snap radius. Their nearest
+    // authored nodes may still share a tag (or be ambiguous at the same point), so identity
+    // follows the geometry node that produced this marker rather than its display label.
+    key: `open-end-${storey ?? "all"}-${nodeKey(point)}`,
     id,
     code: OPEN_END_CODE,
     tier: declared ? "info" : "warn",

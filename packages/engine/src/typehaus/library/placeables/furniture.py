@@ -10,7 +10,12 @@ The four original tags (``FURN-SOFA-84``, ``FURN-QUEEN-BED``, ``FURN-DINING-6``,
 
 from __future__ import annotations
 
-from typehaus.library.placeables._zones import front_zone, side_zone, surround_zone
+from typehaus.library.placeables._zones import (
+    front_zone,
+    open_corner_zone,
+    side_zone,
+    surround_zone,
+)
 from typehaus.model import Footprint2D, FurnitureType, Mount, MountKind, ft, inch, m, pt
 from typehaus.model.placeable_symbols.furniture import sectional_points
 
@@ -73,6 +78,47 @@ TV_65 = FurnitureType(
 TV_98 = FurnitureType(
     tag="FURN-TV-98", name='98" television', footprint=(inch(85.3), inch(16.5)),
     height=inch(50.1), plan_symbol="tv", source=REFERENCE,
+)
+
+# This tag groups chairs tucked at any catalog dining table with that table's zone.
+DINING_CHAIR_TAG = "FURN-DINING-CHAIR"
+
+# A rectangular table's unused corner squares are not chair space. This keeps the full
+# 36-inch reach along the long and short sides without claiming the four diagonal corners.
+DINING_8_OPEN_CORNERS = FurnitureType(
+    tag="FT-DINING-8-OPEN-CORNERS",
+    name="Eight-seat dining table (open-corner chair zone)",
+    footprint=(ft(8), ft(3, 6)), height=ft(2, 6), plan_symbol="dining-table",
+    source=REFERENCE,
+    clearances=open_corner_zone(
+        ft(8), ft(3, 6), ft(3), "chair-use zone", source=REFERENCE,
+        occupant_types=(DINING_CHAIR_TAG,),
+    ),
+)
+
+# The same average 84-inch sofa, with its 30-inch walk band narrowed to the 60 1/2-inch
+# seat span. The reach stays intact; the type avoids reserving floor in front of the arms.
+_SOFA_84_SEAT_BAND_INSET = 0.72
+SOFA_84_SEAT_BAND = FurnitureType(
+    tag="FT-SOFA-84-SEAT-BAND", name="Standard sofa (seat-width walk band)",
+    footprint=(ft(7), ft(2, 11)), height=ft(2, 10), plan_symbol="sofa",
+    source=(f"{REFERENCE}; 84-inch sofa with an approximately 60 1/2-inch seat-width "
+            "band and a full 30-inch reach"),
+    clearances=(front_zone(
+        ft(7), ft(2, 11), ft(2, 6), "walk path in front of seating",
+        inset=_SOFA_84_SEAT_BAND_INSET,
+    ),),
+)
+
+# A named outdoor lounge chair specified to the manufacturer's dimensions, not a plan average.
+PORCH_LOUNGE_27 = FurnitureType(
+    tag="FT-PORCH-LOUNGE-27", name="Porch lounge chair (Loll Lollygagger)",
+    footprint=(inch(27), inch(29.5)), height=inch(29.5), plan_symbol="armchair",
+    source=("Loll Designs Lollygagger Lounge Chair, LL-LC-LL-CG; manufacturer cutsheet "
+            "27\" W x 29 1/2\" D x 29 1/2\" H, seat 21 1/2\" x 17\" at 11 3/4\", "
+            "arm 18 1/2\", 37 lbs, recycled HDPE with aluminium inserts and 304 stainless "
+            "bolts, rated to stay outdoors year-round. lolldesigns.com/products/"
+            "lollygagger-outdoor-lounge-chair"),
 )
 
 # --- Bedroom ----------------------------------------------------------------------------
@@ -151,7 +197,6 @@ NIGHTSTAND = FurnitureType(
 # The chair-use zone exists to be stood in by these — naming them makes a table and the chairs
 # tucked at it one furniture group, so the correct arrangement stops reporting as a conflict
 # while a sofa parked in the same zone still does (→ resolve/placeable_groups).
-DINING_CHAIR_TAG = "FURN-DINING-CHAIR"
 
 SIX_SEAT_DINING_TABLE = FurnitureType(
     tag="FURN-DINING-6", name="Six-seat dining table", footprint=(ft(6), ft(3)), height=ft(2, 6),
@@ -313,6 +358,7 @@ STARTER_FURNITURE_TYPES = (
     STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, ROCKING_CHAIR, POTTED_PLANT, COFFEE_TABLE,
     END_TABLE, MEDIA_CONSOLE,
     TV_65, TV_98,
+    DINING_8_OPEN_CORNERS, SOFA_84_SEAT_BAND, PORCH_LOUNGE_27,
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, CHEST, WARDROBE_48, NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,

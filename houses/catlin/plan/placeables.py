@@ -221,12 +221,12 @@ MAIN_PLACEABLES = [
     # ANY NUDGE HERE: ** the sofa's 30" front band against the armchairs' west edge, and
     # armchair N's north edge against the dining chairs' 36" use margin at y=148 1/2".
     #
-    # ** THE TYPE IS HOUSE-LOCAL AND THE INSET IS THE REASON. ** FT-SOFA-84-SEAT-BAND is
-    # FURN-SOFA-84 in every dimension and differs only in `front_zone(..., inset=0.72)`, which
-    # narrows the walk band to the width of the SEAT rather than the width of the arms — the
-    # FT-DINING-8-OPEN-CORNERS precedent (plan/furniture_types.py): retype, never reduce the
-    # reach. Without it the finding is `integrity.placeable_recommended_clearance_conflict` at
-    # WARN/UNKNOWN, which does not break the 0-FAIL gate but does put a line in a clean report.
+    # ** THE CLEARANCE VARIANT IS SHARED. ** FT-SOFA-84-SEAT-BAND is
+    # FURN-SOFA-84 in every dimension and narrows the walk band to the width of the seat, not
+    # the arms. Like FT-DINING-8-OPEN-CORNERS, it retypes the clearance shape instead of
+    # reducing the reach. Without it the finding is
+    # `integrity.placeable_recommended_clearance_conflict` at WARN/UNKNOWN, which does not
+    # break the 0-FAIL gate but does put a line in a clean report.
     #
     # ** NO COFFEE TABLE. ** Anything standing in the sofa's front band is an encroachment by
     # definition, and this band is now the walk lane to the fire.
@@ -349,7 +349,7 @@ MAIN_PLACEABLES = [
     # Only the six side chairs are drawn on this 8-place table — end chairs would block the
     # hall-to-east-windows walk, so those two places stay unset, brought in when needed.
     #
-    # ** THE ZONE LOST ITS CORNERS (owner's call), which is why the type is house-local. **
+    # ** THE SHARED TYPE DROPS ONLY THE UNUSED CORNERS (owner's call). **
     # FURN-M-KIT-PANTRY-S2's carcass (x from 33'-5 3/8", y from 21'-2 3/8") stood 7 1/8" x
     # 8 1/8" inside the NE corner of the library type's chair-use rectangle — 0.4 sf, and
     # the only recommended-clearance finding in the kitchen. It is a corner lap and nothing
@@ -1118,7 +1118,7 @@ MAIN_PLACEABLES = [
     # `plans/TODO.md` 241: the porch is roofed, fanned, lit, wired and curtained and has
     # NOTHING on it — 17'-0" x 8'-8" of deck (19'-0" until 2026-09-22) reading as empty in
     # the 3D. Two real chairs, a named product at its real size (`FT-PORCH-LOUNGE-27` in
-    # plan/furniture_types.py).
+    # the shared `library.placeables.furniture` catalog).
     #
     # ** THE WEST BAY. ** (A centre pillar split this porch until 2026-09-22.) The east half is
     # circulation: D-M-BALC lands at x 21'-4" and the porch's only route to grade is

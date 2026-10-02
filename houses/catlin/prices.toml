@@ -6099,19 +6099,18 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # Retyped 2026-08-24 to FT-DINING-8-OPEN-CORNERS below — same table, same money, a smaller
 # clearance zone. The row stays at 0 for catalog reuse.
 "FURN-DINING-8" = { low = 500, high = 3000 }  # 0 ea
-# The identical 8' table, house-local only because its chair-use zone drops the four corner
-# squares (plan/furniture_types.py). Nothing about the product differs, so nor does the price.
+# The identical 8' table with the shared open-corner clearance variant. Nothing about the
+# product differs, so its price matches the standard table.
 "FT-DINING-8-OPEN-CORNERS" = { low = 500, high = 3000 }  # 1 ea
 "FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 10 ea
 "FURN-MEDIA-60" = { low = 150, high = 800 }  # 1 ea
 "FURN-PLANT-18" = { low = 30, high = 150 }  # 2 ea
 "FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 4 ea
 "FURN-ROCKING-CHAIR-30" = { low = 150, high = 700 }  # 2 ea
-# FURN-SOFA-84 is UNREFERENCED since 2026-09-06 — RM-M-LIVING's sofa was retyped house-local to
-# FT-SOFA-84-SEAT-BAND when the seating turned onto the fire, and the retype is a clearance-zone
-# shape and nothing else (plan/furniture_types.py). Both rows are identical and both stay: an
-# unpriced type is SILENTLY DROPPED from the bill, so the day this row is the live one again it
-# has to already carry a number.
+# FURN-SOFA-84 is UNREFERENCED since 2026-09-06 — RM-M-LIVING's sofa was retyped to the shared
+# FT-SOFA-84-SEAT-BAND clearance variant when the seating turned onto the fire. Both rows are
+# identical and both stay: an unpriced type is SILENTLY DROPPED from the bill, so the day this
+# row is the live one again it has to already carry a number.
 "FURN-SOFA-84" = { low = 500, high = 3000 }  # 0 ea — kept live for the revert
 "FT-SOFA-84-SEAT-BAND" = { low = 500, high = 3000 }  # 1 ea — same sofa, seat-width walk band
 

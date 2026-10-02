@@ -7,7 +7,6 @@ shelving this house places are library rows (``library.placeables.allowances``).
 
 from __future__ import annotations
 
-from library.placeables import front_zone, open_corner_zone
 from library.placeables.allowances import (
     ACCESS_PANEL_1414,
     ACCESS_PANEL_1429,
@@ -542,53 +541,9 @@ PANTRY_SHELVES_70 = FurnitureType(
 
 
 
-# --- Dining -----------------------------------------------------------------------------
-
-_DINING_SOURCE = (
-    "library FURN-DINING-8, with the chair-use zone's four corner squares removed — see "
-    "FURN-M-DINING in plan/placeables.py for the decision"
-)
-_DINING_CHAIR = "FURN-DINING-CHAIR"
-
-
-# The house's dining table. Identical to library FURN-DINING-8 in every dimension — 8' x
-# 3'-6", 30" high, eight places — and differs only in the shape of its recommended zone.
-# It is house-local rather than a change to the shared type because the shared one is also
-# the round table's rule, and on a round table the corners are real (see ``open_corner_zone``).
-DINING_8_OPEN_CORNERS = FurnitureType(
-    tag="FT-DINING-8-OPEN-CORNERS", name="Eight-seat dining table (open-corner chair zone)",
-    footprint=(ft(8), ft(3, 6)), height=ft(2, 6), plan_symbol="dining-table",
-    source=_DINING_SOURCE,
-    clearances=open_corner_zone(ft(8), ft(3, 6), ft(3), "chair-use zone",
-                                source=_DINING_SOURCE, occupant_types=(_DINING_CHAIR,)),
-)
-
-
-# --- RM-M-LIVING's sofa, retyped for the turn onto the fire ---------------------------------
-#
-# Identical to library FURN-SOFA-84 in every dimension — 7'-0" x 2'-11", 2'-10" high — and
-# differs only in the shape of its recommended walk band. It is house-local rather than a
-# change to the shared type for FT-DINING-8-OPEN-CORNERS' reason above: the shared zone is
-# every sofa's and loveseat's rule, and the full-width band is right for a sofa in a corner.
-#
-# `inset=0.72` narrows the 30" front band from the width of the ARMS to the width of the SEAT
-# — 84" x 0.72 = 60 1/2", so with the sofa at y=8'-8" the band runs y 6'-1 3/4"..11'-2 1/4"
-# instead of y 5'-2"..12'-2". That is the walk path in front of where someone actually sits,
-# which is what the band is for; the two armchairs facing the fire either side of it are
-# seating in the circle, not obstructions in a corridor.
-#
-# ** RETYPE, DO NOT REDUCE THE REACH. ** Cutting 30" to 18" would clear the same conflict
-# while quietly unpolicing the walk path itself, which is the one thing this zone exists to
-# hold. Same discipline, same reason, as the dining table's open corners.
-SOFA_84_SEAT_BAND = FurnitureType(
-    tag="FT-SOFA-84-SEAT-BAND", name="Standard sofa (seat-width walk band)",
-    footprint=(ft(7), ft(2, 11)), height=ft(2, 10), plan_symbol="sofa",
-    source=("plans/furniture_size_reference.md (US residential averages) — FURN-SOFA-84's "
-            "dimensions with a seat-width rather than arm-width walk band, for "
-            "RM-M-LIVING's sitting circle on the fireplace"),
-    clearances=(front_zone(ft(7), ft(2, 11), ft(2, 6), "walk path in front of seating",
-                           inset=0.72),),
-)
+# --- Shared clearance variants ----------------------------------------------------------
+# The eight-seat table's open-corner chair zone and the 84" sofa's seat-width walk band are
+# in ``library.placeables.furniture``. Catlin authors only the room-specific placements.
 
 
 # --- Closet shelf-and-rod, the four dedicated closets --------------------------------------
@@ -710,46 +665,6 @@ MANTEL_WALNUT_46 = FurnitureType(
 )
 
 
-# --- the porch's two lounge chairs (2026-09-06) -----------------------------------------
-#
-# `plans/TODO.md` line 241: the porch "is roofed, fanned, lit, wired and curtained, and has
-# nothing on it". A named product, not a generic FURN-ARMCHAIR-35, because the whole point
-# is to read the real scale of two people lounging inside a 17'-0" x 8'-8" enclosure.
-#
-# ** THE PRODUCT: Loll Designs Lollygagger Lounge Chair, LL-LC-LL-CG (Charcoal Grey). **
-# Recycled-HDPE, made in Duluth. Chosen over the two obvious alternates for the one thing
-# this porch actually demands — it stays out all winter under a curtained, unheated roof:
-#   * no cushion to carry in, no fabric, no fastener to rust (aluminium inserts, 304 bolts);
-#   * 37 lbs, heavy enough not to walk in the wind that gets past the mesh;
-#   * arms wide enough to be the side table this pair does not have yet.
-# The alternates, both from the same maker and the same material, if the owner wants a
-# higher and more upright seat: Lago (30 x 25 3/4 x 28, seat 16 1/4", $795) and No. 9
-# (23 x 29 1/4 x 28 1/4, seat 11 3/4", arms 21"). Swapping is a one-line `type_ref` edit
-# plus the [furnishings] row; nothing else in the porch moves.
-#
-# Dimensions are the manufacturer's own cutsheet (lollygagger-outdoor-lounge-chair-
-# cutsheet.pdf), NOT a retailer listing — 2Modern publishes 38 x 35 x 33 for the sibling
-# Lago against Loll's own 30 x 25 3/4 x 28, and the retailer is the one that is wrong.
-# Overall 27" W x 29 1/2" D x 29 1/2" H; seat 21 1/2" x 17", 11 3/4" off the deck; arms
-# 18 1/2". The colour is an owner selection and costs nothing either way — all thirteen
-# HDPE colours are one price.
-#
-# ** NO CLEARANCE ZONE, deliberately. ** FURN-ARMCHAIR-35 carries none and neither does
-# this: the leg space in front of a reclined chair here is 4'-9" of open deck to the guard,
-# so a `front_zone` would only add a rectangle nothing can encroach on.
-PORCH_LOUNGE_27 = FurnitureType(
-    tag="FT-PORCH-LOUNGE-27", name="Porch lounge chair (Loll Lollygagger)",
-    footprint=(inch(27), inch(29.5)), height=inch(29.5),
-    plan_symbol="armchair",
-    source="Loll Designs Lollygagger Lounge Chair, LL-LC-LL-CG; manufacturer cutsheet "
-           "27\" W x 29 1/2\" D x 29 1/2\" H, seat 21 1/2\" x 17\" at 11 3/4\", arm "
-           "18 1/2\", 37 lbs, recycled HDPE with aluminium inserts and 304 stainless "
-           "bolts, rated to stay outdoors year-round. lolldesigns.com/products/"
-           "lollygagger-outdoor-lounge-chair",
-)
-
-
-
 # --- the balcony leader's splash basin (2026-09-23) --------------------------------------
 #
 # TR-SG-RUNNEL's spout lands in it: splash stone first, bird bath in season. A shallow dish
@@ -773,8 +688,8 @@ FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
                    BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, THEATER_BOOKCASE, SUITEBATH_RETURN_3011,
-                   PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS, SOFA_84_SEAT_BAND,
+                   PANTRY_SHELVES_70,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
                    CLOSET_SHELF_36, BATH2_CAB_4506, STUDIO_KITCHENETTE_4422,
-                   MANTEL_WALNUT_46, PORCH_LOUNGE_27, SPLASH_BASIN_GRANITE_24)
+                   MANTEL_WALNUT_46, SPLASH_BASIN_GRANITE_24)
