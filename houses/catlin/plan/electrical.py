@@ -511,27 +511,17 @@ MAIN_DEVICES = [
     # within sight of it in any sense 440.14 means.
     # ** ED-M-HP1-DISC LEFT THIS WALL WITH ITS UNIT (2026-09-04, later the same day). **
     # Everything above is now HP2's story alone; only ED-M-HP2-DISC stays on W-SG-E1.
-    # HP1's can goes to the house's NORTH face beside its own cabinet, at (32'-5",
+    # HP1's can remains on the house's NORTH face, east of its relocated cabinet, at (32'-5",
     # 36'-8 7/8") — 1 5/8" off the cladding for the can's 3 1/4" depth, and with NO
     # `rotation`, because a north face wants the depth in y where the pocket's east face
     # wanted it in x.
     # elevation 3'-6" reads 6'-4" above the -2'-10" grade it is operated from — inside NEC
     # 404.8(A)'s 6'-7" — and it is dry, at standing height, not in the plough line.
     #
-    # ** IT MOVED 32'-0" -> 32'-5" ON 2026-09-07 BECAUSE ITS CABINET LANDED ON IT. ** The
-    # old station sat in the clear band 30'-7 1/2"..33'-3" between WIN-M-KITCH's framing
-    # bumper and the next opening's; EQ-M-HP1-OD now occupies x 33'-0"..36'-3" — hard against
-    # the house's NE corner — so the can went WEST of the machine instead of east, into the
-    # 14" band between the garage's east gutter line (31'-10") and the cabinet. A 6 1/2" can
-    # centred at 32'-5" spans 32'-1 3/4"..32'-8 1/4": 3 3/4" clear each side, and clear of
-    # both WIN-M-KITCH's RO (28'-2 1/2"..30'-5 1/2") and WIN-M-KITCH-N's (33'-5"..34'-7").
-    #
-    # ** IT IS A 6 1/2" CAN IN A 14" SLOT AND IT HAS NO NEC 110.26 WORKING SPACE TO SPEAK
-    # OF. ** Nothing in this engine grades that. It is the accepted cost of centring the
-    # garage on the house ridge, recorded here rather than papered over, and it is a hard
-    # bound: the cabinet cannot move west (the gutter) or east (the corner), so this can has
-    # nowhere better on this face. If the working space is wanted back, the answer is to
-    # move EQ-M-HP1-OD off the north face entirely, not to shuffle this box.
+    # The 2026-10-02 west move clears its former 14" slot. A 30" wide working strip
+    # x 31'-2"..33'-8", extending 36" north from the can, is clear of the relocated pad
+    # and both canopy piers; the unit remains in sight about 7'-8" west of the can.
+    # Its wall attachment stays between the two kitchen windows' framing bumpers.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
                      type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP1", room=None,
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
@@ -707,27 +697,17 @@ MAIN_EQUIPMENT = [
     # are the same literal, written twice on purpose — the two files cannot import each
     # other — and `test_catlin_outdoor_structures.py` holds them together.
     #
-    # `rotation=deg(180)` faces the discharge NORTH, away from the wall. All four clearances
-    # are better than the south row's: back (S) 6" against the published 4"; discharge (N)
-    # 40" into open front yard; far end (W) 14" to the garage's east gutter face.
-    #
-    # ** IT WENT 6'-6" EAST ON 2026-09-07 (x 28'-1 1/2" -> 34'-7 1/2"). ** The garage moved
-    # 6'-0" east onto the house ridge and its own ridge turned, so the edge west of this
-    # cabinet stopped being a rake at x=25'-4" and became an EAVE with a gutter, face at
-    # 31'-10". 6'-6" is the smallest move that gives the 14" far-end clear back; the whole
-    # argument, including why it oversails the NE corner by 3" rather than giving up 3" of
-    # airflow clearance, is in params/hp1_north_pad.py, which moved with it.
-    #
-    # ** THE SERVICE SIDE IS GONE AS A NUMBER: 23 3/4" -> the open yard past the corner. **
-    # The cabinet's east face is at the house's NE corner, so the service side is unbounded
-    # by anything but the sky. `ED-M-HP1-DISC` moved to the WEST side, into the 14" band
-    # between the gutter line and the cabinet (its own note below). That is the honest cost
-    # of the garage move on this face.
+    # Owner decision, 2026-10-02: move 7'-10" WEST under the open-ended canopy, assuming
+    # Gree accepts that configuration. Cabinet x 25'-2"..28'-5", with 12" service space
+    # to PT-BW-PE, 6" rear gap and 57 15/16" north discharge distance to the garage.
+    # The stand/pad and its drainage outline move together; SL-WK-C reserves a gravel
+    # drip strip. The unchanged disconnect is east of the pier, with its working area
+    # cleared by this move. The acceptance assumption is recorded in the siting study.
     #
     # `mount.elevation` is UNCHANGED at -14": the pad tops out at the same -2'-8" under the
     # same 18" stand, so all three cabinets keep one base plane at -1'-2".
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(34, 7.5), ft(37, 8.53125)), footprint=(inch(39), inch(14.5625)),
+              position=pt(ft(26, 9.5), ft(37, 8.53125)), footprint=(inch(39), inch(14.5625)),
               rotation=deg(180), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-FLEXX-ULTRA-24-OD", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,

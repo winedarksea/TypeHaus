@@ -1,46 +1,23 @@
-"""System 1's ground pad and stand, on the north face east of the garage.
+"""System 1's north-face pad and stand, west of PT-BW-PE under the open-ended canopy.
 
-`EQ-M-HP1-OD` (Gree FLEXX Ultra R32 24k) stood on the shared south pad `SL-SG-HPPAD`
-beside `EQ-M-HP2-OD` until 2026-09-04, in a row 6" off the house under `WIN-M-LIV-S1`,
-oversailing the pocket's SE corner by 7 1/6". It crossed to the north face with the air
-handler, and this module is the ground it stands on. Same pad top, same 18" stand and the
-same anchor as both other units, so all three cabinets' bases resolve to one number.
+Owner decision, 2026-10-02: assume Gree accepts this open-ended canopy configuration.
+The north-facing cabinet moved 7'-10" west to x 25'-2"..28'-5", retaining its 6" rear
+gap and leaving 12" to the 14" pier's west face. The garage's northward shift provides
+57 15/16" from the discharge to its south cladding. This is an accepted design assumption,
+not a manufacturer approval obtained by the model; plans/hp1-canopy-siting-study.md
+records the obstruction-table distinction.
 
-** WHY THE NORTH FACE AT ALL. ** The move is not about the condenser; it is about where
-`SF-S-HP1` sits. The air handler came out of `RM-S-STUDY2`'s ceiling and went into
-`RM-S-NCLOSET`'s, at the north end of the storey, and a ~31 ft lineset up the north wall is
-the short way to reach it. What the south pocket gets back is a unit: one cabinet under
-`WIN-M-LIV-S1` instead of two, no oversail, and 8.96 sf of pour where there was 19.6.
+The pad falls north into a 3" gravel strip formed out of SL-WK-C. Beyond that strip,
+39 3/4" of paved entry walk remains. The cabinet overlaps WIN-M-KITCH's west edge by
+2 1/2" in plan, with 18 3/16" between cabinet top and sill. A pure west translation leaves
+the rear 1 3/8" beyond the canopy's south roof edge; its stand height and pad top remain
+the same as the other two units.
 
-** WHAT IT COSTS, PLAINLY: A CONDENSER UNDER THE KITCHEN SINK WINDOW. ** `WIN-M-KITCH` is
-centred x 29'-4", RO 28'-2 1/2"..30'-5 1/2", and the cabinet is 39" wide. There is no
-window-free band 39" wide anywhere on this wall — the widest is 34 1/2" west of the
-opening — so a north-face siting laps a window whatever is done. It laps this one. The
-discharge faces AWAY from the wall (`rotation=deg(180)`, north), and the sill clears the
-cabinet top by 18 3/16".
-
-** THE 40" DISCHARGE IS LEGAL ONLY BECAUSE THE CABINET STANDS EAST OF THE GARAGE. ** The
-garage occupies x 6'..30' with its roof to 31'-4" and its gutter face to 31'-10"; this
-cabinet is at x 33'-0"..36'-3", past its plan extent, discharging north into open front
-yard. The 48 1/2" slot between the house and the garage — where `SL-M-HP3PAD` sits — could
-never have given a 24k unit its discharge, and that, not the pad, is the load-bearing
-siting reason. It is also the sentence that moved this cabinet 6'-6" east on 2026-09-07:
-the garage moved under it, and the siting reason moved with the garage.
-
-** IT LAPS `WIN-M-KITCH-N` NOW, NOT `WIN-M-KITCH`, AND ONE OF THEM IS UNAVOIDABLE. ** The
-window-free band between the two ROs is 35 1/2" against a 39" cabinet, so a north-face
-siting laps a window wherever it goes — it always did. The new lap is 10" of a 14" RO
-against the 18 1/2" it took out of `WIN-M-KITCH`, so the trade is slightly better, and the
-sink window is clear.
-
-Not in `params/hp3_pad.py`, which owns the slot pad, and not in `params/sunken_garden.py`,
-which owns the pocket: three units, three pads, three modules.
-
-``Slab``/``Post``/``Connector`` are not UI-movable kinds, so a params home is legal and no
-``# haus: editable`` marker is wanted. The cabinet itself is authored in
-`plan/electrical.py`, which this module cannot import and which cannot import this one —
-the centre below is the same literal, written twice on purpose, and
-`test_catlin_outdoor_structures.py` is what holds the two together.
+The cabinet follows the north-end air handler in RM-S-NCLOSET. It left the shared south
+pad on 2026-09-04, stood east of the garage from 2026-09-07, and now occupies this bay.
+The electrical authoring file cannot import this params module: its matching literal
+centre, this pad's drainage outline in plan/site.py, and the stand are held together by
+test_catlin_outdoor_structures.py. Three units, three pads, three params modules.
 """
 
 from __future__ import annotations
@@ -68,29 +45,17 @@ _CLADDING_Y_IN = 36 * 12 + 7.25
 _BACK_CLEAR_IN = 6.0
 
 #: The cabinet centre, in inches from the project origin. **This pair is also written in
-#: plan/electrical.py** as ``pt(ft(34, 7.5), ft(37, 8.53125))`` and the two files cannot
+#: plan/electrical.py** as ``pt(ft(26, 9.5), ft(37, 8.53125))`` and the two files cannot
 #: import each other. The Y mirrors the centre the unit had in the pocket
 #: (``ft(-1, -8.53125)`` about the same cladding offset), which is not a coincidence: it is
 #: the same cabinet at the same back clearance off the same 7 1/4" cladding stack.
 #:
-#: ** X WENT 28'-1 1/2" -> 34'-7 1/2" ON 2026-09-07, AND IT IS THE SMALLEST MOVE THAT KEEPS
-#: THE CLEARANCE. ** The garage moved 6'-0" east onto the house ridge and its roof turned, so
-#: what stands west of this cabinet is no longer a rake at x=25'-4" but an EAVE at x=31'-4"
-#: carrying a gutter whose outer face is at 31'-10". The far-end clear was 14"; 33'-0" is the
-#: west face that gives 14" back, and 33'-0" + 19 1/2" is this centre.
-#:
-#: ** IT OVERSAILS THE HOUSE'S NE CORNER BY 3", AND THAT IS THE TRADE THAT WAS TAKEN. **
-#: The cabinet runs x 33'-0"..36'-3" against a north wall that ends at 36'-0", so its last
-#: 3" have open air behind them instead of cladding — the 6" back clearance holds over 36 of
-#: 39 inches. The alternative was to sit flush at 32'-9"..36'-0" and give the far end 11"
-#: instead of 14", which trades a published-unknown airflow clearance for a mounting
-#: cosmetic. Airflow won. There is no third option: 31'-10" to 36'-0" is 50" and the cabinet
-#: plus its clearance is 53".
-_CX_IN = 34 * 12 + 7.5                                      # 34'-7 1/2"
+#: Pier west face 29'-5", less 12" service space and half the 39" cabinet.
+_CX_IN = 26 * 12 + 9.5                                      # 26'-9 1/2"
 _CY_IN = _CLADDING_Y_IN + _BACK_CLEAR_IN + _CAB_D_IN / 2.0  # 37'-8 17/32"
 
 # --- the pad ---------------------------------------------------------------------------
-# x 32'-9 1/4"..36'-5 3/4", y 36'-10"..39'-4" — 9.27 sf, 0.114 cy at 4". Same assembly,
+# x 24'-11 1/4"..28'-7 3/4", y 36'-10"..39'-4" — 9.27 sf, 0.114 cy at 4". Same assembly,
 # same top and the same reasoning as the other two: 4" unreinforced on 4" of open-graded
 # stone, no XPS, no vapour retarder, no frost footing under 187 lb of cabinet.
 #

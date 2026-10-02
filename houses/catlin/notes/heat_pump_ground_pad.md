@@ -1,5 +1,16 @@
 # Heat pumps on a ground pad — siting, pad, stands, line sets
 
+**HP1 current siting, owner decision 2026-10-02:** moved 7'-10" west under the
+open-ended canopy, assuming Gree accepts that configuration. Centre
+(26'-9 1/2", 37'-8 17/32"), cabinet x 25'-2"..28'-5", pad x 24'-11 1/4"..28'-7 3/4".
+The north-facing fan has 57 15/16" to the garage; rear gap 6", service end 12" to
+PT-BW-PE. The stand/anchors and pad drainage outline moved with it. SL-WK-C now
+recesses round the pad with a 3" gravel strip, retaining 39 3/4" of passage.
+ED-M-HP1-DISC stays at x 32'-5" with clear working space. The earlier open-yard
+clearance argument and east-of-garage coordinates below describe former sitings.
+[The implemented siting study](../../../plans/hp1-canopy-siting-study.md) records the
+manufacturer-acceptance assumption and current geometry.
+
 Model: `params/sunken_garden.py` (`HP_PAD`, `_HP_STAND_AT`, `HP_STAND_LEGS`,
 `HP_STAND_ANCHORS`) for **system 2 alone in the pocket**, `params/hp3_pad.py` for system 3's
 slot pad and `params/hp1_north_pad.py` for **system 1's north-face pad** — both added
@@ -162,14 +173,14 @@ the three cabinets stand on three separate pads on three different sides of the 
 | west end | — | 6.0" to `W-SG-E1`'s east face |
 | east end | — | 3'-7 27/32" of open pocket to the house's SE corner, then open side yard |
 
-**HP1, on the north face** (`rotation=deg(180)`, discharge north — see its own section):
+**HP1, under the open-ended canopy** (`rotation=deg(180)`, discharge north):
 
 | | required | provided |
 |---|---|---|
-| discharge (N) | 40" | open front yard. Legal ONLY because the cabinet stands east of the garage's plan extent — see below |
+| discharge (N) | owner assumes acceptance of open-ended canopy | **57 15/16"** to garage south cladding; manufacturer obstruction-table exception is an assumption |
 | back (S) | 4" | **6.0"** to the house cladding |
-| service side (E) | 12" | **23 3/4"** |
-| west end | 4" | **14"** to the garage rake |
+| service side (E) | 12" | **12"** to PT-BW-PE's west face |
+| overhead | 40" | **64 3/16"** to canopy truss bottom |
 
 **HP3, in the slot**: unchanged, in its own section below.
 
@@ -591,14 +602,16 @@ the north face and no system needs a riser on this wall at all**, so the bay is 
 verified-and-available and nothing more.
 
 - **HP1** (3/8–3/4), **north face since 2026-09-04**: **~2 ft** south out of the casing at
-  (28'-1 1/2", 37'-8 17/32") to a band penetration on `W-M-N1` — the same detail as the
+  (26'-9 1/2", 37'-8 17/32") to a band penetration on `W-M-N1` — the same detail as the
   south one, sleeved, sloped out, flashed, expansion loop inside, and **not modelled** for
   the same reason. Then up an outside stud bay through the main top plates, the
   second-floor band and the second top plates into an `FS-ATTIC` bay, **~6'-4" west ALONG
   that bay** — along, so nothing is bored, `FS-ATTIC`'s I-joists spanning x — and down into
-  `SF-S-HP1` over `RM-S-NCLOSET`. About **31 ft of line and 21 ft of rise against 164 ft and
-  49 ft**: comfortable on both, and essentially AT the FXU24's 31 ft precharge, so no
-  meaningful field charge.
+  `SF-S-HP1` over `RM-S-NCLOSET`. The 2026-10-02 move retains that north-wall route but
+  shifts the penetration/riser with the cabinet; the earlier **31 ft of line / 21 ft of
+  rise** was an estimate for a previous siting. Measure the revised developed length
+  and apply the selected unit's charge instruction rather than carrying forward the
+  earlier claim of no meaningful field charge. Refrigerant geometry remains unmodelled.
   - **It was ~36 ft up the `W-M-S2` / `W-S-S2` bay** on the south face — an occupied
     second-storey stud bay in a bedroom-side wall, then 5'-0" west along an attic bay. Both
     ends of that route moved, so both the length and the acoustic exposure improved.

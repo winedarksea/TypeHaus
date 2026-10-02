@@ -1803,9 +1803,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     owner decision** — Gree wants 12"/6'-6", this position has only 8"/25 11/16", and the
     48 1/2" slot can never give more. `params/hp3_pad.py::_BACK_CLEAR_IN` is the only record;
     no check flags it. (→ DESIGN-LOG.md, "Decks and the garage")
-  - `EQ-M-HP1-OD` moved 6'-6" east; it oversails the house's NE corner by 3" to keep its 14"
-    clearance to the garage's east gutter. Its disconnect `ED-M-HP1-DISC` is a 6 1/2" can in
-    a 14" slot, **NEC 110.26 working space ungraded**. Neither can move further on this face.
+  - `EQ-M-HP1-OD` moved 7'-10" west under the open-ended canopy on 2026-10-02 (owner assumes
+    Gree accepts that configuration). Centre x 26'-9 1/2", north discharge, 6" rear gap,
+    12" service gap to PT-BW-PE and 57 15/16" to the garage wall. Its pad, stand, anchors
+    and drainage outline follow; walk C recesses round a 3" gravel strip and retains
+    39 3/4" of passage. ED-M-HP1-DISC stays at x 32'-5", with its 30" × 36" working strip
+    now clear. `plans/hp1-canopy-siting-study.md` records the assumption and geometry.
   - Aligning `ST-G-SERVICE` under its own landing fixed a standing `code.R312_1_guard_height`
     FAIL on `SL-G-STEP-0`. `ED-G-SW`/`ED-G-EXT-SW` sat inside `D-G-SERVICE`'s rough opening
     AND 12" above the landing (a garage device's `Mount.elevation` is off the SLAB); since

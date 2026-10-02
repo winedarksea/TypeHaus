@@ -42,7 +42,7 @@ joints fall on the same stations.
 |---|---|---|---|---|
 | A garage north | x 24.04..35.45 × y 67.33..75.00, less the 5.96 sf taper notch (§2a) | 11.40 × 7.67 = 87.4 − 5.96 = 81.4 | 3 | 77.3 |
 | B garage east | x 30.11..35.45 × y 43.02..67.33 | 5.33 × 24.31 = 129.7 | 6 | 121.5 |
-| C entry walk | three rectangles, §2b | 83.08 + 4.66 + 44.25 = 132.0 | 0 | 132.0 |
+| C entry walk | canopy less HP1 recess, neck, east connection, §2b | 71.59 + 4.66 + 55.73 = 132.0 | 0 | 132.0 |
 | D house east | x 36.70..42.04 × y −9.00..39.60 | 5.33 × 48.60 = 259.2 | 9 | 247.0 |
 | **total** | | **602.3** | **18** | **577.8** |
 
@@ -50,7 +50,7 @@ joints fall on the same stations.
 6" bills by the net slab area, **577.8 sf**. Impervious area counts the GROSS 602.3 sf — the
 pockets are not subtracted, which is conservative for the coverage table.
 
-### 2b. Leg C under the canopy (2026-09-23)
+### 2b. Leg C under the canopy (2026-10-02)
 
 C replaced the drained paver landing. Under the canopy it is the passage's full width, 3" off
 both claddings (y 36.854..42.896, the flight's own width), from `SL-BW-TIER1`'s east face at
@@ -58,13 +58,19 @@ x = 15.583 plus the 1/2" joint. The canopy's east columns `PT-BW-RE` (y 37.0..38
 `PT-BW-RNE` stand on 14" round piers on x = 30.0 (`PT-BW-PE` / `-PNE`, 14" since 2026-09-30
 for the cast-in CBSQ's 3" side cover), and force the neck: 1/2" off each.
 
-- canopy: x 15.625..29.375 × y 36.854..42.896 = 13.750 × 6.042 = **83.08**
+- canopy: x 15.625..29.375 × y 36.854..42.896 = 13.750 × 6.042 = **83.07**, less
+  the HP1 pad's gravel recess x 24.688..28.896 × y 36.854..39.583 =
+  4.208 × 2.729 = **11.49**, leaving **71.59**
 - neck between the piers: x 29.375..30.625 × y 38.125..41.855 = 1.250 × 3.730 = **4.66**
 - east: x 30.625..42.035 × y 39.600..43.022 = 11.410 × 3.422 = 39.04, plus the widening
-  south to the HP1 pad, x 30.625..32.521 × y 36.854..39.600 = 1.896 × 2.746 = 5.21 → **44.25**
+  south to leg D's west edge, x 30.625..36.702 × y 36.854..39.600 =
+  6.077 × 2.746 = 16.69 → **55.73**
 
-The widening wraps `PT-BW-RE` on three sides and stops 3" short of `SL-M-HP1PAD`'s west edge,
-the same gravel drip strip the pad keeps on its north edge.
+HP1 moved west of PT-BW-PE on 2026-10-02. The walk keeps 3" gravel beside the pad's
+west, north and east edges; y 39'-7"..42'-10 3/4" leaves **39 3/4"** of paved passage
+beyond its defrost outlet. The east widening replaces the vacated equipment pocket
+and meets leg D at its west edge. The slab and its impervious-surface record share
+the same notched outline. The net concrete quantity rounds to the same 577.8 sf.
 
 The flight springs from the walk. Slabs are flat at -2'-9", so `ST-BW-ENTRY` starts there:
 five risers of 33/5 = **6.6"**, not 6.8" off the -2'-10" grade. At grade, the first riser off

@@ -1189,7 +1189,7 @@ def test_hp3_has_open_yard_airflow_and_its_coordinated_pad(catlin_model):
 
 
 # ---------------------------------------------------------------------------------------
-# EQ-M-HP1-OD's pad and stand, north face east of the garage
+# EQ-M-HP1-OD's pad and stand, north face west of PT-BW-PE under the canopy
 # (params/hp1_north_pad.py, added 2026-09-04)
 # ---------------------------------------------------------------------------------------
 # System 1's condenser left the pocket the day its air handler left RM-S-STUDY2's ceiling
@@ -1200,16 +1200,6 @@ def test_hp3_has_open_yard_airflow_and_its_coordinated_pad(catlin_model):
 _HP1_PAD = "SL-M-HP1PAD"
 _HP1_CAB_W_IN, _HP1_CAB_D_IN = 39.0, 14.5625
 _HP1_CLADDING_Y_IN = 36 * 12 + 7.25   # params/roof_trim.py::_WALL_OUTBOARD_IN off y=36'
-#: The garage's plan extent, and it is the ROOF's, not the wall's. The discharge argument
-#: turns on the cabinet standing EAST of it: the 48 1/2" slot could never give a 24k unit
-#: 40" of throw.
-#:
-#: ** 31'-10" SINCE 2026-09-07 (was 24'-0"). ** Two things moved it. The garage went 6'-0"
-#: east onto the house ridge, and its own ridge turned north-south — so the edge facing this
-#: cabinet stopped being a rake at the wall line and became an EAVE carrying a gutter, whose
-#: outer face stands 1'-10" proud of the 30'-0" wall. Asserting the wall line here would let
-#: the cabinet sit under the trough and still pass. See notes/garage_orientation_lot.md.
-_GARAGE_EAST_X_FT = 31.0 + 10.0 / 12.0
 
 
 def test_hp1_stands_on_a_pad_at_the_same_top_and_height_as_the_other_two(catlin_model
@@ -1263,29 +1253,12 @@ def test_hp1s_four_anchors_name_their_leg_and_the_pad(catlin_model) -> None:
 
 
 def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
-    """The siting, in the four numbers that decide it.
+    """The accepted canopy position retains service, support and drainage access.
 
-    ``rotation=deg(180)`` faces the discharge NORTH, away from the wall — the opposite of the
-    deg(0) this unit carried in the pocket, where it discharged south into open yard. 6" of
-    back clearance against a published 4", 14" to the garage's east gutter face, and 40" of
-    throw.
-
-    ** THE 40" IS ONLY LEGAL BECAUSE THE CABINET STANDS EAST OF THE GARAGE. ** Since
-    2026-09-07 the garage occupies x 6'..30' with its roof to 31'-4" and its gutter to
-    31'-10"; this cabinet is at x 33'-0"..36'-3", past its plan extent, throwing into open
-    front yard. Assert that, not the 40", because the 40" is a consequence.
-
-    ** IT OVERSAILS THE HOUSE'S NE CORNER BY 3", DELIBERATELY. ** 31'-10" to 36'-0" is 50"
-    and the cabinet plus its 14" clearance is 53". The alternative was to sit flush and give
-    the far end 11" — trading a published-unknown airflow clearance for a mounting cosmetic.
-    Airflow won, and that is why this test does NOT assert the cabinet stays inside x=36'.
-
-    And the price, asserted so nobody discovers it on site: the cabinet laps a kitchen
-    window's rough opening in plan. There is no window-free band 39" wide on this wall — the
-    widest is 34 1/2" — so a north-face siting laps one wherever it goes. It used to be
-    WIN-M-KITCH over the sink; since the move east it is WIN-M-KITCH-N, and by less.
+    Owner assumes Gree accepts the open-ended canopy (2026-10-02). These assertions
+    verify physical geometry and cross-file coupling, not manufacturer acceptance.
     """
-    from shapely.geometry import Polygon
+    from shapely.geometry import LineString, Polygon, box
 
     unit = next(e for s in catlin_model.plan.storeys
                 for e in catlin_model.plan.storey_elements(s.tag)
@@ -1296,8 +1269,15 @@ def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
     cx_in, cy_in = (v / INCH for v in unit.position.xy_m)
     # 6" of back clearance to the house cladding, against Gree's published 4".
     assert (cy_in - _HP1_CAB_D_IN / 2.0) - _HP1_CLADDING_Y_IN == pytest.approx(6.0)
-    # East of the garage's plan extent, which is what gives the discharge somewhere to go.
-    assert cx_in - _HP1_CAB_W_IN / 2.0 > _GARAGE_EAST_X_FT * 12.0
+    cabinet = Polygon(next(o for o in catlin_model.canvas_objects
+                           if o.tag == unit.tag).footprint)
+    pier = Polygon(_solid(catlin_model, "PT-BW-PE").outline)
+    assert (pier.bounds[0] - cabinet.bounds[2]) / INCH == pytest.approx(12.0)
+    garage = _wall(catlin_model, "W-G-S")
+    garage_face_y = min(p[1] for layer in garage.layers for p in layer.polygon)
+    assert (garage_face_y - cabinet.bounds[3]) / INCH == pytest.approx(57.9375)
+    canopy = next(r for r in catlin_model.roofs if r.tag == "RF-BW-CANOPY")
+    assert Polygon(canopy.footprint).covers(cabinet.centroid)
     # It laps the kitchen sink window. Unavoidable, and stated rather than discovered.
     # W-M-N1 runs EAST to WEST, so the opening's `center_along_m` is subtracted from the
     # wall's start x rather than added to it.
@@ -1310,10 +1290,37 @@ def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
         ro_half = (window.width_m / INCH) / 2.0
         if abs(wx_in - cx_in) < _HP1_CAB_W_IN / 2.0 + ro_half:
             lapped.append(tag)
-    assert lapped, "a 39\" cabinet cannot miss both windows on this wall"
+    assert lapped == ["WIN-M-KITCH"]
 
     # Every leg's full 2" section lands on the pad, and on a published foot hole.
     pad = Polygon(_solid(catlin_model, _HP1_PAD).outline)
+    walk = Polygon(_solid(catlin_model, "SL-WK-C").outline)
+    assert walk.is_valid
+    assert not pad.intersects(walk)
+    assert pad.distance(walk) / INCH == pytest.approx(3.0)
+    lane_south = pad.bounds[3] + 3 * INCH
+    lane = box(pad.bounds[0] - 3 * INCH, lane_south,
+               pad.bounds[2] + 3 * INCH, lane_south + 36 * INCH)
+    assert walk.covers(lane), "the pad's gravel recess must retain a continuous 36-inch walk"
+    section = walk.intersection(LineString([(cabinet.centroid.x, lane_south),
+                                            (cabinet.centroid.x, garage_face_y)]))
+    assert section.length / INCH == pytest.approx(39.75)
+    drainage = next(surface for surface in catlin_model.plan.project.site.impervious_surfaces
+                    if surface.label == "hp1 pad")
+    assert Polygon([p.xy_m for p in drainage.outline]).equals_exact(pad, 1e-8, normalize=True)
+    walk_drainage = next(surface for surface in catlin_model.plan.project.site.impervious_surfaces
+                         if surface.label == "walk C, entry walk")
+    assert Polygon([p.xy_m for p in walk_drainage.outline]).equals_exact(walk, 1e-8, normalize=True)
+
+    # The former equipment pocket becomes part of the walk, clearing the disconnect's
+    # 30-inch-wide by 36-inch-deep working strip on the house's north wall.
+    disconnect = next(o for o in catlin_model.canvas_objects if o.tag == "ED-M-HP1-DISC")
+    can = Polygon(disconnect.footprint)
+    working_strip = box(disconnect.position[0] - 15 * INCH, can.bounds[3],
+                        disconnect.position[0] + 15 * INCH, can.bounds[3] + 36 * INCH)
+    assert walk.covers(working_strip)
+    for obstruction in (cabinet, pad, pier, Polygon(_solid(catlin_model, "PT-BW-PNE").outline)):
+        assert not working_strip.intersects(obstruction)
     legs = {s.tag: Polygon(s.outline) for s in catlin_model.solids
             if s.tag.startswith("PT-M-HP1-L")}
     cx, cy = unit.position.xy_m

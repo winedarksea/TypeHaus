@@ -71,9 +71,10 @@ def _rect(x0, y0, x1, y1):
 # C: the entry walk, walk only. Under the canopy it is the full passage width, 3" off both
 #    claddings, from ST-BW-ENTRY's foot (less the joint to SL-BW-TIER1) east to the two
 #    canopy columns; it passes between PT-BW-RE and PT-BW-RNE, notched round both. Just
-#    east of them it stays full width to the HP1 pad, wrapping PT-BW-RE, then narrows to run
-#    on east to leg D. Both pad edges it meets keep a 3" gravel drip strip, clear of the
-#    unit's defrost. It replaced the drained paver landing under the canopy on 2026-09-23;
+#    west of them it recesses round the HP1 pad, with a 3" gravel drip strip on the west,
+#    north and east edges. Its 39 3/4" passage beyond that strip keeps defrost off the walk.
+#    East of the piers it reaches leg D's west edge; the former HP1 location is walk now.
+#    It replaced the drained paver landing under the canopy on 2026-09-23;
 #    its top is the flight's springing (breezeway.py).
 # D: the house east side, one-sided 64", off the NE/SE corner trims (x=36'-7 7/8") plus 1/2".
 #    It absorbs the old side patio; no pockets along the patio's 12' (y 10'..22').
@@ -92,9 +93,15 @@ _RE_N = PIER_LINE_Y_FT + _COL_R_FT + GAP_FT
 _RNE_S = GARAGE_SEAT_Y_FT - _COL_R_FT - GAP_FT
 _C_FOOT_X = STAIR_FOOT_X_FT + GAP_FT
 _DRIP_FT = 3.0 / 12.0
-_HP1_W = min(v.x.feet for v in HP1_PAD.outline) - _DRIP_FT
-C = ((_C_FOOT_X, STAIR_Y0_FT), (_COL_W, STAIR_Y0_FT), (_COL_W, _RE_N), (_COL_E, _RE_N),
-     (_COL_E, STAIR_Y0_FT), (_HP1_W, STAIR_Y0_FT), (_HP1_W, 39.6), (D_X1, 39.6), (D_X1, B[0][1]), (_COL_E, B[0][1]), (_COL_E, _RNE_S),
+_HP1_PAD_WEST_FT = min(v.x.feet for v in HP1_PAD.outline) - _DRIP_FT
+_HP1_PAD_EAST_FT = max(v.x.feet for v in HP1_PAD.outline) + _DRIP_FT
+_HP1_PAD_NORTH_FT = max(v.y.feet for v in HP1_PAD.outline) + _DRIP_FT
+C = ((_C_FOOT_X, STAIR_Y0_FT), (_HP1_PAD_WEST_FT, STAIR_Y0_FT),
+     (_HP1_PAD_WEST_FT, _HP1_PAD_NORTH_FT), (_HP1_PAD_EAST_FT, _HP1_PAD_NORTH_FT),
+     (_HP1_PAD_EAST_FT, STAIR_Y0_FT), (_COL_W, STAIR_Y0_FT),
+     (_COL_W, _RE_N), (_COL_E, _RE_N), (_COL_E, STAIR_Y0_FT),
+     (D_X0, STAIR_Y0_FT), (D_X0, 39.6), (D_X1, 39.6),
+     (D_X1, B[0][1]), (_COL_E, B[0][1]), (_COL_E, _RNE_S),
      (_COL_W, _RNE_S), (_COL_W, STAIR_Y1_FT), (_C_FOOT_X, STAIR_Y1_FT))
 D = _rect(D_X0, -9.0, D_X1, 39.6)
 

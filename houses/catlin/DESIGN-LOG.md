@@ -4155,3 +4155,20 @@ surface that reaches the court, so the water goes there.
   type's `footprint_shape`) and `wardrobe-sliding-pair`. The corner symbol's frame first
   drew at 20 1/2" (clamped to the L's notch); it is the full 39 3/8" along the wall, its
   corner-end half behind the corner unit's end.
+
+## 2026-10-02 — HP1 under the open-ended north-entry canopy
+
+- Owner assumes Gree accepts the open-ended canopy configuration and selected the
+  studied north-facing position west of PT-BW-PE. EQ-M-HP1-OD moved 7'-10" west to
+  centre (26'-9 1/2", 37'-8 17/32"). The 6" rear gap, base at -14" and 18" stand remain;
+  its service end is 12" west of the pier and the fan is 57 15/16" from the garage wall.
+- SL-M-HP1PAD, its four stand legs and four anchors moved with the cabinet. The site
+  drainage rectangle follows the pad. Walk C recesses round it with a 3" gravel strip
+  for defrost, retaining 39 3/4" of passage, and extends through the vacated east pocket
+  to walk D. Net sidewalk quantity still rounds to 577.8 sf / 7.13 cy.
+- ED-M-HP1-DISC stays at x 32'-5". Its 30" × 36" working rectangle is now paved and
+  clear of the cabinet, pad and both canopy piers; it remains within sight of the unit.
+  The north-wall refrigerant penetration/riser follows the new cabinet; developed
+  length and field charge are installation measurements, not modelled geometry.
+- The assumption is recorded in plans/hp1-canopy-siting-study.md. Regression checks
+  verify physical access and matching geometry without claiming manufacturer approval.

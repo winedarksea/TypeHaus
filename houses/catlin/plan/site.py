@@ -532,19 +532,14 @@ SITE = Site(
             kind="walk",
         ),
         # SL-M-HP1PAD, the north-face pad under EQ-M-HP1-OD (params/hp1_north_pad.py),
-        # x 32'-9 1/4"..36'-5 3/4" by y 36'-10"..39'-4" — 9.27 sf, new 2026-09-04, moved
-        # 6'-6" east on 2026-09-07 with its cabinet. Same top, -2'-8", 2" proud of grade.
-        # It runs 5 3/4" past the house's NE corner, into open yard, as the cabinet does.
-        #
-        # ** IT FALLS STRAIGHT NORTH, unlike SL-M-HP3PAD's diagonal. ** That pad runs its
-        # fall on the diagonal only because the garage stem stands directly north of it and
-        # there is nowhere else for the sheet to go. The garage is x 6'..30'; this pad is at
-        # x 32'-9 1/4"..36'-5 3/4", with open front yard in front of it. 3/4" over 30" is
-        # 2.5% against R401.3's 2%, away from the house, and that is the whole story.
+        # x 24'-11 1/4"..28'-7 3/4" by y 36'-10"..39'-4" — 9.27 sf. Moved 7'-10" west
+        # with its cabinet on 2026-10-02, under the open-ended canopy west of PT-BW-PE.
+        # The pad falls north 3/4" over 30" (2.5%) into the 3" gravel strip formed out of
+        # SL-WK-C. The pad's low edge stays above the walk, so defrost has a gravel outlet.
         ImperviousSurface(
             label="hp1 pad",
-            outline=(pt(ft(32, 9.25), ft(36, 10)), pt(ft(36, 5.75), ft(36, 10)),
-                     pt(ft(36, 5.75), ft(39, 4)), pt(ft(32, 9.25), ft(39, 4))),
+            outline=(pt(ft(24, 11.25), ft(36, 10)), pt(ft(28, 7.75), ft(36, 10)),
+                     pt(ft(28, 7.75), ft(39, 4)), pt(ft(24, 11.25), ft(39, 4))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -8.75),
             kind="pad",
