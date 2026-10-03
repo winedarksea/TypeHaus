@@ -1464,11 +1464,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     - **`DU-S-ERV-HP-FEED` must name NO soffit.** It shares the box's y-band with the attic
       chase legs twenty feet west; naming the soffit would grade those as occupants of a
       cavity they never enter — a false FAIL.
-    - **`EQ-S-ERV-MIX` is a full return plenum** (12" x 29 1/2" x 18", x
-      20'-5 1/2"..21'-5 1/2", y 27'-10 1/2"..30'-4") — `REG-S-HP-RET`'s whole 336 in² face
+    - **`EQ-S-ERV-MIX` is a full return plenum** (12" x 29" x 18", x
+      20'-5 1/2"..21'-5 1/2", y 27'-11"..30'-4") — `REG-S-HP-RET`'s whole 336 in² face
       must sit inside it, or part of the return face draws from the bare soffit cavity
       (IMC 601.5's building-cavity-as-plenum, which no check here catches — see
       DESIGN-LOG.md).
+    - **BED1-3 use straight 6" side collars.** BED3 is at y=27'-6", centreline 100 1/8"
+      above the second-storey datum, through W-S-BW3 above D-S-BED3's header. Its collar
+      clears the south king by 1/2" and EQ-S-ERV-MIX by 2"; the plenum's south end was
+      trimmed 1/2" for that gap. Keep its whole return grille inside the plenum. The former
+      BED3 attic riser and ceiling boot are gone. Close the shadow gap and cut the local
+      resilient channel as for BED1/2 (plan/mep_hvac_branches.py).
     - **A wall grille on `W-S-C4B` is NOT buildable — do not re-propose it.** It is the
       x=18' bearing line (`RB-HOUSE`'s load path); the one bay overlapping the plenum band
       leaves 7 1/4" clear, and cutting the stud puts the plate at f≈1,940 psi against

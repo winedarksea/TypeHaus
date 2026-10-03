@@ -228,6 +228,8 @@ the future.
 - It seems odd that the veneer beam W-SG-BRKBM has so much rebar and W-SG-ARCH has none. Could we design a bit less rebar out of W-SG-BRKBM? Also, could we make SL-SG-FLOOR thicker or otherwise have it replace W-SG-ARCH, it looks like it should be able to handle the same need.
 - FT-SBG-S has rebar that should tie into the walls W-SG-W2 and W-SG-E2. Really the interior portion of FT-SBG-S is the footing and cross bracing for W-SG-S, W-SG-W2, and W-SG-E2, and should be detailed appropriately (this should actually improve strength with a small amount of additional rebar).
 - Move the ERV, EQ-B-ERV so we can keep a 11 meter lane from north to south clear (through D-B-FURN)
+- PR-A-STUBATH-VENT_RUN goes right through the middle of the bathroom RM-A-STUBATH
+- We need to investigate the gap and guard rail situation of the stair ST-S2A. The guard rail doesn't align correctly, and the 6" gap, designed to bring a bit more light between floors, may not be worth it.
 
 # Project Management
 

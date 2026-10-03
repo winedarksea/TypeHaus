@@ -96,8 +96,8 @@ REGISTER_TYPES = (
     # closed room pressurises it. Motorised so the RH controller owns it, interlocked with
     # REG-S-ERV-PLANT-EXH.
     REG_T_HP_SUP_DAMPERED,
-    # The SIDEWALL twin of REG-T-HP-SUP, and the house's only System 1 terminal that is not
-    # cut into a ceiling. It exists for REG-S-HP-STAIR, which was a ceiling diffuser dumping
+    # The SIDEWALL twin of REG-T-HP-SUP, used by the bedrooms and stair. It was introduced
+    # for REG-S-HP-STAIR, which was a ceiling diffuser dumping
     # 50 cfm straight down 6'-2" from a 650 cfm return in the same room — a short circuit that
     # no size of grille fixes, because the fault is the DIRECTION.
     #
@@ -121,7 +121,7 @@ REGISTER_TYPES = (
     # PLENUM. ** It was 480 in2 lapping three different things at once — 240 in2 into
     # DU-S-HP-RET, 120 in2 into the old mixing box, and 120 in2 into bare soffit cavity,
     # which is IMC 601.5's building-cavity-as-plenum and which no check in this engine
-    # grades. EQ-S-ERV-MIX is a full return plenum now (12" across the east lane by 29 1/2"
+    # grades. EQ-S-ERV-MIX is a full return plenum now (12" across the east lane by 29"
     # along), and this face is sized to sit WHOLLY inside it: 12" across after the instance's
     # deg(90), 28" along, 336 in2.
     #
@@ -312,7 +312,7 @@ DUCTS_HVAC_SECOND = [
     #
     # ** IT STARTS INSIDE THE PLENUM, NOT AT A GRILLE. ** REG-S-HP-RET opens into
     # EQ-S-ERV-MIX's underside and the ERV's fresh feed drops into the same box; this run is
-    # what leaves it. It begins at (21'-0", 29'-7"), inside the plenum's y 27'-10 1/2"..30'-4",
+    # what leaves it. It begins at (21'-0", 29'-7"), inside the plenum's y 27'-11"..30'-4",
     # runs north up the east lane past the cabinet, then west across the box's north end onto
     # the cabinet's return face at (19'-6", 34'-0"). `_pair_is_plumbed` excuses the
     # plenum<->duct overlap at the start — `mep.duct_connectivity` earns that, it is not a

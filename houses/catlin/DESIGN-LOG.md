@@ -4226,3 +4226,19 @@ surface that reaches the court, so the water goes there.
 - Configured price rows count two open units and one drawer unit, including shelves,
   hinges, legs, rail and plinth. Trim is separate; material $3,312..3,900 and installation
   $490..1,160. The retired generic row has no instance. Plan/order: plans/bath1-sektion-closet.md.
+
+## 2026-10-02 — BED3 heat-pump supply becomes a straight side collar
+
+- `DU-S-HP-BED3` retains its uid and runs straight east from the supply trunk at
+  y=27'-6", centreline 100 1/8" above the second-storey datum, matching BED1/2.
+  `DU-S-HP-BED3-RISE` is removed; `REG-S-HP-BED3` retains its uid as a 12x6 high
+  sidewall grille on W-S-BW3 above D-S-BED3's header. Diameter and flow stay 6" / 80 cfm.
+- The collar's south edge is 1/2" north of the door's south king; W-S-BD2's stud face
+  is farther south. EQ-S-ERV-MIX is trimmed 1/2" at its south end (29 1/2" to 29"
+  long, north end fixed), providing 2" to the supply branch. The unchanged 28" return
+  grille remains wholly inside the plenum, with 1/4" at its south edge; the ERV drop
+  and return-duct connection remain inside it.
+- The same field details as BED1/2 apply: close the shadow gap between the soffit and
+  wall, and cut the hall-face resilient channel locally around the collar. A regression
+  measures actual framing and plenum clearance, including the corner outside the
+  soffit check's clipped extent, and verifies full return-grille coverage.

@@ -81,12 +81,14 @@ EQUIPMENT_ERV_ATTIC = [
 #
 # ** THE THREE DIMENSIONS ARE EACH A CLEARANCE, NOT A CHOICE. ** 12" across is the east lane
 # less the 2" HANGER_GAP_M off DU-S-HP-SUP (which runs x 18'-9"..20'-3"), leaving 1/2" to the
-# cavity's east face. 29 1/2" along stops it clear of the cabinet's south face at
+# cavity's east face. 29" along stops it clear of the cabinet's south face at
 # y=30'-4 1/2": overlap the cabinet along the box by even an inch and the pair is graded
-# across it, where the gap is 7/8" and the check FAILs. 18" fills the 18 1/4" cavity.
+# across it, where the gap is 7/8" and the check FAILs. The south end is trimmed 1/2" for
+# BED3's straight supply collar, leaving 1/4" beyond the return grille's south edge.
+# 18" fills the 18 1/4" cavity.
 EQUIPMENT_ERV_SECOND = [
     Equipment(uid="8PE9E87JX5", tag="EQ-S-ERV-MIX", kind=EquipmentKind.MIXING_BOX,
-              position=pt(inch(251.5), inch(349.25)), footprint=(inch(12), inch(29.5)),
+              position=pt(inch(251.5), inch(349.5)), footprint=(inch(12), inch(29)),
               room="RM-S-HALL", type_ref="EQ-T-ERV-MIXING-BOX",
               soffit_ref="SF-S-HP1",
               mount=Mount(kind=MountKind.CEILING)),
@@ -307,7 +309,7 @@ DUCTS_ERV_MIX_FEED = [
             # on the deck for the same reason.
             #
             # ** THE DECK LEG TURNS DOWN AT y=28'-9", INSIDE THE PLENUM. ** It has to land
-            # within EQ-S-ERV-MIX's footprint (y 27'-10 1/2"..30'-4") for
+            # within EQ-S-ERV-MIX's footprint (y 27'-11"..30'-4") for
             # `mep.duct_connectivity` to read the joint, and 28'-9" is comfortably inside it
             # rather than on an edge. It was y=27'-9" while the plenum was a 12"-deep box.
             #

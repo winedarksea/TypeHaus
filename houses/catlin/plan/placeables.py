@@ -1354,8 +1354,9 @@ SECOND_PLACEABLES = [
     # 14x29 rather than the 14x14 the suite bath's tub takes: this is a reach-in into a
     # 2'-2 1/8" deep shaft that carries live pipe, not a look at one trap. Base 2'-0" puts
     # the opening at 2'-0"..4'-5" — the same band FURN-M-BATH1-AP uses on the WC carrier.
-    # Centred x 1'-4" (opening 0'-9"..1'-11"): 2 3/8" off the west corner, and the riser's
-    # own x=1'-0" sits 3" inside the west jamb rather than on it.
+    # Shifted 8" east: centred x 2'-0" (opening 1'-5"..2'-7"), leaving 2" to the shaft's
+    # southeast corner and 4 3/4" to the tub's west end. The x=1'-0" riser is now 5" west of
+    # the opening's west jamb; it remains reachable just inside the shaft.
     #
     # NOT sized for the ceiling: PR-S-BATH1-VENT and PR-S-SUITEBATH-VENT tie in at
     # elevation 9'-3"..9'-5", which no wall panel at standing height reaches. Those stay a
@@ -1365,7 +1366,7 @@ SECOND_PLACEABLES = [
     Furniture(uid="7MW8644E5H", tag="FURN-S-BATH1-CH-AP", type_ref="FT-ACCESS-PANEL-1429", room="RM-S-BATH1",
               mount=Mount(kind=MountKind.WALL, elevation=ft(2), recessed_into_host_surface=True),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-S-CH-S", face="left", distance_from_start=inch(17),
+                  wall_ref="W-S-CH-S", face="left", distance_from_start=inch(9),
                   normal_gap=inch(-0.5), rotation_offset=deg(-180)))),
 
     # ** THE AIR HANDLER'S SERVICE OPENING, AND THE OLD BOX HAD NOTHING LIKE IT. **

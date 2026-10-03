@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-
 import pytest
 
 from typehaus.checks import run_from_model
@@ -188,8 +187,7 @@ def test_a_machine_67_inches_above_the_end_is_not_a_joint(catlin_model):
 def test_each_bedroom_grille_is_fed_by_a_drawn_branch(catlin_plan, catlin_model, n):
     """REG-S-HP-BED1/2/3 named the trunk until 2026-09-23 and nothing reached them: the check
     tests run ENDS and `register_duct_ref` only that the tag exists. Each is now the boot at
-    the end of its own branch: BED1/BED2 a side collar straight off DU-S-HP-SUP's east face,
-    BED3 a bay leg whose riser tees into the trunk."""
+    the end of its own branch: a side collar straight off DU-S-HP-SUP's east face."""
     from typehaus.checks.mep.duct_connectivity import BOOT_REACH_M
 
     register = next(e for e in catlin_plan.all_elements() if e.tag == f"REG-S-HP-BED{n}")
@@ -199,5 +197,47 @@ def test_each_bedroom_grille_is_fed_by_a_drawn_branch(catlin_plan, catlin_model,
     end = leg.path[-1]
     assert ((at[0] - end[0]) ** 2 + (at[1] - end[1]) ** 2) ** 0.5 <= BOOT_REACH_M
     findings = {f.message for f in _connectivity(catlin_model) if f.result.value == "pass"}
-    tee = f"DU-S-HP-BED{n}" if n < 3 else f"DU-S-HP-BED{n}-RISE"
-    assert f"duct {tee} start lands on DU-S-HP-SUP" in findings
+    assert f"duct DU-S-HP-BED{n} start lands on DU-S-HP-SUP" in findings
+    assert len(leg.path) == 2
+    assert leg.z_m[0] == pytest.approx(leg.z_m[1])
+    assert leg.path[0][1] == pytest.approx(leg.path[1][1])
+    assert at[1] == pytest.approx(end[1])
+    assert register.location.attachment.wall_ref == f"W-S-BW{n}"
+
+
+def test_bed3_straight_branch_clears_framing_and_keeps_return_grille_in_plenum(
+    catlin_model_ro,
+):
+    """The soffit check clips at its end, so explicitly measure this tight corner too."""
+    from shapely.geometry import Polygon, box
+
+    from typehaus.quantities import inch
+    from typehaus.resolve.framing.profiles import cross_section
+    from typehaus.resolve.mep_bore_geometry import member_plan_shape
+    from typehaus.resolve.mep_soffit import HANGER_GAP_M
+
+    model = catlin_model_ro
+    assert not any(d.tag == "DU-S-HP-BED3-RISE" for d in model.ducts)
+    branch = next(d for d in model.ducts if d.tag == "DU-S-HP-BED3")
+    half_diameter = branch.diameter_m / 2
+    branch_body = box(branch.path[0][0], branch.path[0][1] - half_diameter,
+                      branch.path[1][0], branch.path[1][1] + half_diameter)
+    plenum = next(o for o in model.canvas_objects if o.tag == "EQ-S-ERV-MIX")
+    assert branch_body.distance(Polygon(plenum.footprint)) >= HANGER_GAP_M - 1e-9
+    structural_shapes = []
+    for wall in model.walls:
+        if wall.tag not in ("W-S-BD2", "W-S-BW3"):
+            continue
+        for member in wall.members:
+            if member.category == "strapping":
+                continue  # The collar's local resilient-channel cut is a field detail.
+            if (member.z0_m >= branch.z_m[0] + half_diameter
+                    or member.z1_m <= branch.z_m[0] - half_diameter):
+                continue
+            shape = member_plan_shape(member, cross_section(member.profile))
+            if shape is not None:
+                structural_shapes.append(shape)
+    assert structural_shapes
+    assert min(branch_body.distance(shape) for shape in structural_shapes) >= inch(.5).meters - 1e-9
+    return_grille = next(o for o in model.canvas_objects if o.tag == "REG-S-HP-RET")
+    assert Polygon(plenum.footprint).buffer(1e-9).covers(Polygon(return_grille.footprint))

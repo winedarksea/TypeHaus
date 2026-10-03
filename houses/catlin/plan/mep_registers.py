@@ -90,13 +90,14 @@ REGISTERS_HVAC_SECOND = [
              location=Location(attachment=WallAttachment(
                  wall_ref="W-S-BW2", face="right", distance_from_start=inch(24),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
-    # BED3 is fed along its SOUTH edge: north of 27'-8" the trunk is in SF-S-HP1 beside the
-    # return plenum. The 27'-4" bay's joist 020 bears on W-S-BD2, so the grille lands ~6"
-    # north of that wall's face (26'-10 3/8"), its 6" face clear of the joists either side.
+    # Above D-S-BED3's header, with the collar north of its south king; the straight
+    # branch passes south of the return plenum (see mep_hvac_branches.py).
     Register(uid="CSRH03AAAA", tag="REG-S-HP-BED3", kind=DuctSystem.SUPPLY, room="RM-S-BED3",
-             position=pt(ft(22, 9), ft(27, 4)), duct_ref="DU-S-HP-BED3",
-             type_ref="REG-T-HP-SUP", design_cfm=80,
-             mount=Mount(kind=MountKind.CEILING, elevation=inch(106.25))),
+             duct_ref="DU-S-HP-BED3", type_ref="REG-T-HP-SUP-SIDE", design_cfm=80,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(95.875)),
+             location=Location(attachment=WallAttachment(
+                 wall_ref="W-S-BW3", face="right", distance_from_start=inch(10),
+                 normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** IT IS A SIDEWALL GRILLE IN THE SOFFIT'S WEST FACE, AND IT WAS A SHORT CIRCUIT. **
     # Until 2026-09-04 this was a ceiling diffuser at (17'-6", 24'-0"), 6'-2" in plan from
     # REG-S-HP-RET — 50 cfm blown straight DOWN, in the same room, at a 650 cfm return sitting
@@ -223,7 +224,7 @@ REGISTERS_HVAC_SECOND = [
     # things at once. It is a filter-back grille in SF-S-HP1's underside at (20'-11 1/2",
     # 29'-1 1/4"), wholly inside EQ-S-ERV-MIX — the return plenum that fills the box's east
     # lane south of the cabinet — where the ERV's 100 cfm of fresh air enters through its own
-    # 6" drop and damper. Room air and outdoor air mix across 29 1/2" of plenum, then leave
+    # 6" drop and damper. Room air and outdoor air mix across 29" of plenum, then leave
     # north up DU-S-HP-RET to the coil. Upstream of the coil and of EQ-S-HP1-STRIP, which
     # sits south of the cabinet in the discharge.
     #
@@ -326,18 +327,19 @@ REGISTERS_HVAC_ATTIC = [
 # was always the anomaly: EQ-S-HP1-AH hangs in that room's own ceiling soffit, and a room
 # does not breathe by being next to the machine.
 REGISTERS = [
-    # One per bedroom now that the east bedrooms are equal 9'-0" bays: BED1 y 9'-18',
-    # BED2 y 18'-27', BED3 y 27'-36'. RM-S-BED2 had no terminal at all before the
-    # re-spacing (plans/TODO.md). All three sit at x=29', against the east wall and
-    # diagonally opposite the hall-side supply grille, so the room crossventilates.
+    # One per bedroom: BED1 y 9'-18', BED2 y 18'-27', BED3 y 27'-36'.
+    #
+    # BED1/BED2 ARE FLOOR BOOTS AGAINST THE SOUTH WALL (2026-10-02), not mid-floor at x=29'.
+    # x=27'-9" is the open floor between the SW PAX corner (to ~25'-9") and the bed's west
+    # side (~29'-11"); y is the FS-S-EAST bay beside the south wall (I-joists span x, so the
+    # boot cannot leave its bay). A low sidewall grille was rejected: the south walls are
+    # INT_2X4_RC, whose 3 1/2" cavity takes no 4" riser without a shop-made stack.
     Register(uid="CMR903AAAA", tag="REG-S-RET-BED1", kind=DuctSystem.RETURN, room="RM-S-BED1",
-            position=pt(ft(29), ft(14)), duct_ref="DU-M-ERV-R-BED1",
+            position=pt(ft(27, 9), ft(9, 9)), duct_ref="DU-M-ERV-R-BED1",
             type_ref="REG-T-ERV-EXH", design_cfm=2,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # y=22'-1 3/4" since 2026-09-16 (23'-4" ran DU-M-ERV-R-BED2 through BM-M-HALL). The boot follows
-    # its run: still x=29' against the east wall, still inside RM-S-BED2's y 18'-27'.
     Register(uid="CMR907AAAA", tag="REG-S-RET-BED2", kind=DuctSystem.RETURN, room="RM-S-BED2",
-            position=pt(ft(29), ft(22, 1.75)), duct_ref="DU-M-ERV-R-BED2",
+            position=pt(ft(27, 9), ft(18, 4)), duct_ref="DU-M-ERV-R-BED2",
             type_ref="REG-T-ERV-EXH", design_cfm=2,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # BED3 IS A CEILING GRILLE, AND ITS TWO NEIGHBOURS ARE NOT: FO-S-STAIR blocks every

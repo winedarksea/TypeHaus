@@ -232,7 +232,7 @@ DUCTS_ERV_LEVEL2 = [
 
     # --- THE TEN EXTRACT TAKEOFFS -------------------------------------------------------
     # Every one leaves the trunk at its own bay and rides that bay to its terminal, so with
-    # two exceptions below **a takeoff crosses no truss at all**. Every tag and uid is the
+    # three exceptions below **a takeoff crosses no truss at all**. Every tag and uid is the
     # radial's; only what feeds it changed.
     DuctRun(uid="K04AT15S97", tag="DU-M-ERV-R-BATH1", system=DuctSystem.EXHAUST,
             path=(pt(ft(3, 10.5), ft(24, 6)), pt(ft(1, 2), ft(24, 6))),
@@ -254,13 +254,20 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),
+    # BED1 and BED2 end at south-wall floor boots (2026-10-02; plan/mep_registers.py), each in
+    # the FS-S-EAST bay by that wall, because I-joists take no north-south run. BED1's 9'-9"
+    # bay is clear the whole way. BED2's 18'-4" bay is not, west of x=16' (LAUNDRY,
+    # SUITEBATH, the suite WC and STUBATH drains, KITCH-VENT), so it leaves the trunk in the
+    # 14'-0" bay BED1 vacated and crosses north on the upper tier in the 15'-4 1/2"..
+    # 16'-7 1/2" web opening — the third truss crossing among the takeoffs.
     DuctRun(uid="HGMQ4AWG3S", tag="DU-M-ERV-R-BED2", system=DuctSystem.RETURN,
-            path=(pt(ft(3, 10.5), ft(22, 1.75)), pt(ft(29), ft(22, 1.75))),
-            elevations=(_BAY_Z, _BAY_Z),
+            path=(pt(ft(3, 10.5), ft(14)), pt(ft(16), ft(14)), pt(ft(16), ft(14)),
+                  pt(ft(16), ft(18, 4)), pt(ft(16), ft(18, 4)), pt(ft(27, 9), ft(18, 4))),
+            elevations=(_BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),
     DuctRun(uid="XA7NRRGJ50", tag="DU-M-ERV-R-BED1", system=DuctSystem.RETURN,
-            path=(pt(ft(3, 10.5), ft(14)), pt(ft(29), ft(14))),
+            path=(pt(ft(3, 10.5), ft(9, 9)), pt(ft(27, 9), ft(9, 9))),
             elevations=(_BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),
