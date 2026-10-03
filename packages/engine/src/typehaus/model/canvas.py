@@ -132,6 +132,7 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict
                          **_wood_part(_lamp(part["color"], lamp), wood),
                          **({"shape": part["shape"], "radial_segments": DEPTH_CYLINDER_SEGMENTS}
                             if part["shape"] == "cylinder-depth" else {}),
+                         **({"shape": "mesh", "mesh": part["mesh"]} if "mesh" in part else {}),
                          **({"points": [list(point) for point in part["points"]]}
                             if part["points"] else {})}
                         for part in model_parts(symbol, width_m, depth_m, height_m)],

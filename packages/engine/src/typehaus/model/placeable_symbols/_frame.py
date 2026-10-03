@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Sequence
+from typing import NotRequired
 
 try:  # TypedDict moved out of typing_extensions in 3.8, but total=False support varies.
     from typing import TypedDict
@@ -36,6 +37,17 @@ class Stroke(TypedDict):
     weight: float
 
 
+class PartMesh(TypedDict):
+    """Indexed triangles and per-vertex normals, in the symbol's local plan frame.
+
+    Vertices are shared along smooth surfaces and split at sharp edges.
+    """
+
+    positions: tuple[tuple[float, float, float], ...]
+    triangles: tuple[tuple[int, int, int], ...]
+    normals: tuple[tuple[float, float, float], ...]
+
+
 class Part(TypedDict):
     """One massing solid of a 3D symbol, in the local frame (metres).
 
@@ -44,6 +56,8 @@ class Part(TypedDict):
     ringed part too — they are its bounding box — so a consumer that has not learned about
     rings yet degrades to the box rather than drawing nothing. ``cylinder-depth`` is the
     oriented primitive: its axis runs along local plan depth and its cross-section is round.
+    ``mesh`` carries continuous curved surfaces with authored normals; its ``center`` and
+    ``size`` still describe the actual bounding box, and its plan ``points`` are empty.
     """
 
     center: tuple[float, float, float]
@@ -51,6 +65,7 @@ class Part(TypedDict):
     color: str  # a PART_COLORS role
     points: tuple[Point, ...]
     shape: str  # box, prism, or a supported oriented primitive
+    mesh: NotRequired[PartMesh]
 
 
 # Linear RGBA, matching the convention ``emit/gltf/emitter._PALETTE`` already uses: the same

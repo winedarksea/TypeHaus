@@ -14,6 +14,7 @@ from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.model.built_in_bookcase import built_in_bookcase_parts
 from typehaus.model.canvas import canvas_object_types, wood_material
 from typehaus.model.placeable_symbols import PART_COLORS, lamp_role, model_parts, place_local
+from typehaus.resolve.geometry_ir import GMesh
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
 from typehaus.resolve.suspension import suspension_draw
 
@@ -120,6 +121,21 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         color = (wood_color if wood_color and part["color"] == "wood"
                  else PART_COLORS[lamp if part["color"] == "lamp" else part["color"]])
+        if "mesh" in part:
+            mesh = part["mesh"]
+            placed = place_local([(x, y) for x, y, _ in mesh["positions"]],
+                                 item.position, item.rotation_degrees)
+            rotated_normals = place_local([(x, y) for x, y, _ in mesh["normals"]],
+                                         (0.0, 0.0), item.rotation_degrees)
+            mb.add_mesh(GMesh(
+                positions=tuple((x, y, item.z_m + point[2])
+                                for (x, y), point in zip(placed, mesh["positions"], strict=True)),
+                triangles=mesh["triangles"],
+                normals=tuple((x, y, normal[2]) for (x, y), normal in
+                              zip(rotated_normals, mesh["normals"], strict=True)),
+                curved_vertices=frozenset(range(len(mesh["positions"]))),
+            ), color)
+            continue
         if part["shape"] == "cylinder-depth":
             world_center = place_local([(cx, cy)], item.position, item.rotation_degrees)[0]
             angle = math.radians(item.rotation_degrees)

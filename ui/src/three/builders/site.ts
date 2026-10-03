@@ -17,6 +17,7 @@ import {
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import { boardBoxGeometry, pieceSeed, seatPieceUv } from "../woodPiece";
 import { boardStyleFor } from "./millwork";
+import { createModelPartMeshGeometry } from "../modelPartMesh";
 import {
   DEFAULT_EARTH_OPACITY, DEFAULT_EARTH_TONE, EARTH_TONE_HEX, type EarthTone,
 } from "../../state/vocabulary";
@@ -222,6 +223,7 @@ export function buildCanvasObjectParts(
     // Scene axes are (plan x, height, -plan y); projectPointToScene owns that mapping for the
     // object's origin, so a part only needs its own local offset expressed the same way.
     const [cx, cy, cz] = part.center;
+    const curvedMesh = part.mesh ? createModelPartMeshGeometry(part.mesh) : null;
     // A ringed part sweeps its own plan outline — a neo-angle shower pan is a pentagon, and a
     // box would draw a square where the room's diagonal is. `createPlanPrismGeometry` already
     // lands in the scene frame at the local origin; boxes and cylinders use their center.
@@ -237,12 +239,12 @@ export function buildCanvasObjectParts(
     }
     // A board part bakes its placement into the geometry, so its grain can follow its
     // longest side; a plain box keeps the shared unit geometry and a mesh offset.
-    const box = board && !ring && !depthCylinder
+    const box = board && !ring && !depthCylinder && !curvedMesh
       ? boardBoxGeometry(new THREE.Matrix4().makeTranslation(cx, cz, -cy)
         .scale(new THREE.Vector3(sx, sz, sy)), board, seed) : null;
-    const mesh = makeSurfaceMesh(ring ?? depthCylinder ?? box
+    const mesh = makeSurfaceMesh(curvedMesh ?? ring ?? depthCylinder ?? box
       ?? new THREE.BoxGeometry(sx, sz, sy), material);
-    if (!ring && !box) mesh.position.set(cx, cz, -cy);
+    if (!ring && !box && !curvedMesh) mesh.position.set(cx, cz, -cy);
     mesh.userData.uid = item.uid;
     mesh.userData.selectionKind = "canvas_object";
     group.add(mesh);

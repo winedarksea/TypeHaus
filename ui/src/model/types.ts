@@ -547,8 +547,14 @@ export interface ModelPart {
   /** Surface properties supplied by the engine for polished mirror glass. */
   metalness?: number;
   roughness?: number;
-  /** A cylinder along plan depth, for wall pegs and circular mirror faces. */
-  shape?: "cylinder-depth";
+  /** Oriented primitives and continuous surfaces supplied by the engine. */
+  shape?: "cylinder-depth" | "mesh";
+  /** Indexed triangles in the local plan frame; split vertices retain sharp edges. */
+  mesh?: {
+    positions: [number, number, number][];
+    triangles: [number, number, number][];
+    normals: [number, number, number][];
+  };
   radial_segments?: number;
   /** The catalog material a `wood` part is made of (`FurnitureType.wood_material_ref`). */
   material_ref?: string;

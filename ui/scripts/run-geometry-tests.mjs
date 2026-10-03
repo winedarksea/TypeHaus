@@ -43,6 +43,7 @@ try {
   const { runArchRingTests } = await server.ssrLoadModule("/src/three/builders/archRing.test.ts");
   const { runPlantBuilderTests } = await server.ssrLoadModule("/src/three/builders/plants.test.ts");
   const { runMirrorBuilderTests } = await server.ssrLoadModule("/src/three/builders/mirrors.test.ts");
+  const { runCurvedPlaceableTests } = await server.ssrLoadModule("/src/three/builders/curvedPlaceables.test.ts");
   const { runWallBandShapeTests } = await server.ssrLoadModule("/src/three/builders/wallBandShape.test.ts");
   const { runWallBandSolidTests } = await server.ssrLoadModule("/src/three/builders/wallBandSolid.test.ts");
   const { runToolDispatchTests } = await server.ssrLoadModule("/src/components/plan/toolDispatch.test.ts");
@@ -121,6 +122,7 @@ try {
   runArchRingTests();
   runPlantBuilderTests();
   runMirrorBuilderTests();
+  runCurvedPlaceableTests();
   runWallBandShapeTests();
   runWallBandSolidTests();
   runToolDispatchTests();

@@ -38,6 +38,7 @@ from typehaus.model.placeable_symbols._frame import (
     rect,
 )
 from typehaus.model.placeable_symbols._mirrors import mirror_light
+from typehaus.model.placeable_symbols._wave_chandelier import wave_chandelier
 
 __all__ = ["LIGHTING_SYMBOLS"]
 
@@ -365,61 +366,6 @@ def suspended_linear_light() -> Builder:
         ]
         for x in (-width / 2 + support_inset, width / 2 - support_inset):
             parts.append(box(x, 0, body_h, height, cable_t, cable_t, "luminaire-housing"))
-        return tuple(strokes), tuple(parts)
-
-    return build
-
-
-def wave_chandelier(*, strips: int = 5, waves: float = 2.0, samples: int = 40) -> Builder:
-    """Flat LED strips side by side in plan, each undulating up and down, out of phase.
-
-    Every strip is a sine in ELEVATION along the long axis with its own phase and amplitude,
-    so neighbours crest where the other troughs. The parts are plan-extruded only, so a strip
-    is ``samples`` short boxes, each spanning its segment's rise plus the band (gold body over
-    a lit underside). Cables drop from each strip's crest nearest either end onto one
-    canopy. Height is the whole assembly, as ``suspended_linear_light``.
-    """
-
-    def build(width: float, depth: float, height: float) -> Geometry:
-        import math
-
-        count = max(1, strips)
-        strip_w = min(0.0254, depth / (count * 1.5))  # 1" flat strip
-        spread = depth - strip_w
-        half_l = width / 2
-        canopy_h = min(height * 0.04, 0.0254)
-        body_h = min(0.0254, height * 0.06)
-        lamp_h = body_h * 0.3
-        amp_max = min(0.1016, height * 0.1)  # 4" swing either side
-        cable_t = min(0.003175, strip_w * 0.3)
-        omega = 2 * math.pi * waves / width
-        xs = [-half_l + width * step / samples for step in range(samples + 1)]
-        strokes: list[Stroke] = [rect(0, 0, width, depth, weight=DETAIL_WEIGHT)]
-        parts: list[Part] = [box(0, 0, height - canopy_h, height, width, depth, "brass")]
-        profiles = []
-        for index in range(count):
-            y = 0.0 if count == 1 else -spread / 2 + spread * index / (count - 1)
-            phase = index * 2 * math.pi / count
-            amp = amp_max * (0.7 + 0.3 * ((index * 0.6180339887) % 1.0))
-            profiles.append((y, phase, amp, [amp * math.sin(omega * x + phase) for x in xs]))
-        floor = min(min(zs) for *_, zs in profiles) - body_h / 2
-        seg = width / samples
-        for y, phase, amp, zs in profiles:
-            strokes.append(rect(0, y, width, strip_w, fill="brass", weight=DETAIL_WEIGHT))
-            zs = [z - floor for z in zs]
-            for k in range(samples):
-                lo = min(zs[k], zs[k + 1]) - body_h / 2
-                hi = max(zs[k], zs[k + 1]) + body_h / 2
-                cx = (xs[k] + xs[k + 1]) / 2
-                parts.append(box(cx, y, lo, lo + lamp_h, seg, strip_w, "lamp"))
-                parts.append(box(cx, y, lo + lamp_h, hi, seg, strip_w, "brass"))
-            # A cable at the crest nearest each end, so it rises onto the canopy.
-            for target in (-0.7 * half_l, 0.7 * half_l):
-                n = round((omega * target + phase - math.pi / 2) / (2 * math.pi))
-                reach = half_l - cable_t / 2
-                x = min(max((math.pi / 2 + 2 * math.pi * n - phase) / omega, -reach), reach)
-                top = amp * math.sin(omega * x + phase) - floor + body_h / 2
-                parts.append(box(x, y, top, height - canopy_h, cable_t, cable_t, "brass"))
         return tuple(strokes), tuple(parts)
 
     return build

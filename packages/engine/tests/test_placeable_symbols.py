@@ -234,5 +234,6 @@ def test_wave_chandelier_is_five_strips_waving_in_elevation() -> None:
     rows = sorted({round(p["center"][1], 6) for p in bands})
     assert len(rows) == 5 and rows[-1] - rows[0] < depth
     first = [p for p in bands if round(p["center"][1], 6) == rows[0] and p["color"] == "lamp"]
-    bottoms = [p["center"][2] - p["size"][2] / 2 for p in first]
+    assert len(first) == 1 and "mesh" in first[0]
+    bottoms = [z for _, _, z in first[0]["mesh"]["positions"]]
     assert max(bottoms) - min(bottoms) > 0.1  # it undulates, not a flat bar
