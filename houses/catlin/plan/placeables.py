@@ -1139,16 +1139,23 @@ SECOND_PLACEABLES = [
     # approximation: it keeps the plan readable while the catalog type preserves the use.
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
               room="RM-S-SUITE", position=pt(m(1.52182), m(5.57379)), rotation=deg(0)),
-    # The south wall is 106 1/2" clear, short of the pair's 111" combined width.
-    # Turn the desk in the southeast corner (owner, 2026-10-03), with its back east
-    # and its south end beside the dresser. Both clear the bed's 18" foot-access band.
-    # The dresser occupies the south end of the desk's full-width chair-use zone;
-    # a chair must sit toward the desk's north end. Keep that catalog warning visible.
-    Furniture(uid="CSSDSK0001", tag="FURN-S-SUITE-DESK", type_ref="FURN-DESK-48",
-              room="RM-S-SUITE", position=pt(inch(100.625), inch(134.875)),
-              rotation=deg(-90)),
+    # Flush with the queen's sides; backs stop at the 3/4" walnut paneling face.
+    # The 16" depth stays within the bed's 30" head-end allowance for side access.
+    Furniture(uid="CSSNST0001", tag="FURN-S-SUITE-NIGHTSTAND-W", type_ref="FURN-NIGHTSTAND-16",
+              room="RM-S-SUITE", position=pt(m(0.43944), m(6.51828))),
+    Furniture(uid="CSSNST0002", tag="FURN-S-SUITE-NIGHTSTAND-E", type_ref="FURN-NIGHTSTAND-16",
+              room="RM-S-SUITE", position=pt(m(2.59763), m(6.51828))),
+    # The south wall is 106 1/2" clear: a 42" desk plus the 63" dresser leaves
+    # about 1/2" at each end and between them. Desk west, dresser east (owner,
+    # 2026-10-03), backs south; the chair clears the bed's 18" foot-access band.
+    Furniture(uid="CSSDSK0001", tag="FURN-S-SUITE-DESK", type_ref="FURN-DESK-42",
+              room="RM-S-SUITE", position=pt(m(0.711424), m(3.10858)),
+              rotation=deg(180)),
+    Furniture(uid="CSSCHR0001", tag="FURN-S-SUITE-DESK-CHAIR", type_ref="FURN-DESK-CHAIR",
+              room="RM-S-SUITE", position=pt(m(0.716363), m(3.36318)),
+              rotation=deg(0)),
     Furniture(uid="CSSDRS0001", tag="FURN-S-SUITE-DRESSER", type_ref="FURN-DRESSER-HEMNES-63",
-              room="RM-S-SUITE", position=pt(inch(38.625), inch(120.6875)),
+              room="RM-S-SUITE", position=pt(inch(81.125), inch(120.6875)),
               rotation=deg(180)),
 
     # The three bedrooms have no built-in closets; their PAX wardrobes (BED1/2 corner sets,

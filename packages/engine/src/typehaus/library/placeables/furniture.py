@@ -265,6 +265,12 @@ WRITING_DESK = FurnitureType(
     clearances=(front_zone(ft(4), ft(2), ft(3), "desk chair pull-out",
                            occupant_types=(OFFICE_CHAIR_TAG, "FURN-DESK-CHAIR")),),
 )
+WRITING_DESK_42 = FurnitureType(
+    tag="FURN-DESK-42", name='Writing desk, 42"', footprint=(inch(42), ft(2)), height=ft(2, 6),
+    plan_symbol="desk", source=REFERENCE,
+    clearances=(front_zone(inch(42), ft(2), ft(3), "desk chair pull-out",
+                           occupant_types=(OFFICE_CHAIR_TAG, "FURN-DESK-CHAIR")),),
+)
 HEMNES_DESK_61 = FurnitureType(
     tag="FURN-DESK-HEMNES-61", name='HEMNES-style wood desk, 61", drawers on both sides',
     footprint=(inch(61), inch(25.625)), height=inch(29.125),
@@ -405,7 +411,8 @@ STARTER_FURNITURE_TYPES = (
     CHEST, WARDROBE_48, NIGHTSTAND, NARROW_NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,
-    WRITING_DESK, HEMNES_DESK_61, MITTZON_SIT_STAND_DESK_47, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
+    WRITING_DESK, WRITING_DESK_42, HEMNES_DESK_61, MITTZON_SIT_STAND_DESK_47,
+    OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
     SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_TIERED_48,
     SAUNA_BENCH_54, SAUNA_BENCH_48, SAUNA_BENCH_36,
     WORKBENCH_60, MUDROOM_BENCH_36, CLOSET_PEG_RAIL_42,

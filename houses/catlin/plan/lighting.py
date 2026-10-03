@@ -1686,9 +1686,7 @@ SECOND_LIGHTING = [
                      type_ref="ED-T-LT-SCONCE-SPOT",
                      circuit="CKT-LT-UPPER", room="RM-S-STUDY2", controlled_by=("ED-S-STUDY2-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-S2", face="left", distance_from_start=inch(89.03125),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                     location=Location(attachment=WallAttachment(wall_ref="W-S-S2", face="left", distance_from_start=m(2.03137), normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="QTS000VAAA", tag="ED-S-STUDY2-SPOT2", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-SPOT",
                      circuit="CKT-LT-UPPER", room="RM-S-STUDY2", controlled_by=("ED-S-STUDY2-SW",),

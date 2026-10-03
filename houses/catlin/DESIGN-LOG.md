@@ -4371,3 +4371,14 @@ surface that reaches the court, so the water goes there.
 - Table centres are x=65.3175" and 161.3175", both y=145.625", backed onto the bedroom
   wall face. Resolved footprints clear both door swing sectors and the other furniture;
   both tables join the bed's placement group and count as two in the takeoff.
+
+## 2026-10-03 — Second-storey suite gets matching narrow nightstands
+
+- Add `FURN-S-SUITE-NIGHTSTAND-W/E` beside `FURN-S-SUITE-BED`, using the existing
+  generic 16" x 16" x 26" `FURN-NIGHTSTAND-16`. Each is flush with its bed side and
+  backs onto the walnut paneling at y=263.875", leaving 5.28" west and 4.20" east
+  to the side-wall finish faces. The bed keeps its position.
+- Both tables fit inside the room, clear the other furniture and join the bed's
+  placement group. The takeoff adds two second-storey tables; bed access stays clear.
+  The house check has zero failures and no new nonpassing findings; 23 existing
+  second-storey furniture and elevation tests pass. Rebuilt the JSON model.
