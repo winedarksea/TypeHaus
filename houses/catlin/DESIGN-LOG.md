@@ -4341,3 +4341,33 @@ surface that reaches the court, so the water goes there.
   the desktop at 48" AFF.
 - Resolved bedroom geometry and clearances pass; the full house check introduces no
   bedroom failures or advisories from this move.
+
+## 2026-10-03 — Fourth counter-height east window
+
+- Added `WIN-M-LIV-E3`, matching E2/EAST-MID's WT-2748 (27x48"), sill 2'-10",
+  head 6'-10", with its own 2" live-edge oak stool flush with the existing slab.
+- Owner chose E2 one 16" bay south and EAST-MID one bay north: centres 12'/16'/20'.
+  Each 21" RO pier leaves 15" between independent jack/king packs. E2 gives up its
+  BED1 column; its curtain rod follows. The pantry, cabinets and counter stay put.
+- E2's south king clears the fireplace brick by 3/4". RC14 moves onto the brick's
+  north jamb at y=124 1/8"; RC3/15 use the piers at 168"/216". RC16 at 258 1/8"
+  has a standard 2 3/4" single-gang plate, clearing the king and pantry by 1/4".
+  The four outlets cover the north slab within 24"; no countertop pop-ups are needed.
+  The dining thermostat moves to y=168", 54" AFF above RC3. Device uids/circuits persist.
+- Retired `BWP-M-E1-0174`: the new 21" piers cannot count as braced panels.
+  `BWP-M-E1-0238` becomes `BWP-M-E1-0254`, retaining its uid/NE hold-down, from
+  y=253 1/2" to 401". East bracing totals 15'-2" against 12.56' required (1.21x).
+  Geometry regressions measure actual jambs, device clearance, counter coverage and stool tops.
+
+## 2026-10-03 — Main bedroom bed centred between doors, matching narrow nightstands
+
+- Centre `FURN-M-BED` between D-M-BATH2's east rough-opening jamb at x=56.635" and
+  D-M-BED's west jamb at x=170": x=113.3175", an 8.5575" west move. Its north-south
+  position, king type and uid stay the same.
+- Each side has 16.6825" between bed and opening. Replace the 24" west table with a
+  generic 16" x 16" x 26" nightstand, preserving its uid, and add a matching east table.
+  This is the largest whole-inch width that fits, leaving 0.6825" to each opening when
+  flush with the bed. A retail product remains unselected.
+- Table centres are x=65.3175" and 161.3175", both y=145.625", backed onto the bedroom
+  wall face. Resolved footprints clear both door swing sectors and the other furniture;
+  both tables join the bed's placement group and count as two in the takeoff.

@@ -158,11 +158,11 @@ def test_every_braced_line_on_the_house_and_garage_passes(catlin_model_ro):
     assert braced_wall_panel_rules(_ctx(catlin_model_ro))[0].result is not Result.FAIL
 
 
-def test_the_census_is_twenty_seven_thirty_one_and_nine(catlin_model_ro):
+def test_the_census_is_twenty_six_thirty_one_and_nine(catlin_model_ro):
     counts = {storey: len([e for e in catlin_model_ro.plan.storey_elements(storey)
                            if isinstance(e, BracedWallPanel)])
               for storey in ("main", "second", "garage")}
-    assert counts == {"main": 27, "second": 31, "garage": 9}
+    assert counts == {"main": 26, "second": 31, "garage": 9}
 
 
 def test_the_garage_door_piers_need_no_portal_frame(catlin_model_ro):

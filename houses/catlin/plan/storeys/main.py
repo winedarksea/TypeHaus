@@ -1208,9 +1208,8 @@ OPENINGS = [
     # EAST jamb and the vanity detail survives untouched. Widening west would have put the
     # opening into the vanity.
     #
-    # The current bed west face is at 81 7/8", leaving 25 1/4" from this 32" RO's east jamb
-    # at 56 5/8". The west-side nightstand spans x=57 7/8"..81 7/8", with 1 1/4" to the
-    # jamb; the door swings out into the bathroom, so the leaf does not cross the table.
+    # The centred king leaves 16.6825" from this RO's east jamb to its west edge.
+    # The 16" west nightstand leaves 0.6825" to the jamb, outside the leaf's swing sector.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING32",
          position=from_node("N-M-W3", inch(24.635)), flip_swing=True, flip_hinge=True),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
@@ -1261,9 +1260,9 @@ OPENINGS = [
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED",
          position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True),
     # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15. ** `from_node` resolves to the NEAR JAMB, so
-    # the RO is x=170"..202". On 2026-10-03 the king moved 18" east and the nightstand moved
-    # to its west side: the bed's east face is now x=161 7/8", leaving 8 1/8" to the RO, and
-    # there is no bedside table on this door's side. The original 16" move still keeps the
+    # the RO is x=170"..202". The king is centred between this opening and D-M-BATH2:
+    # its east edge is x=153.3175", and the matching 16" east nightstand ends 0.6825"
+    # short of this RO, outside the leaf's swing sector. The original 16" move keeps the
     # opening at the same 16" residue off x=98", so it interrupts exactly the two studs any
     # 32" opening must and `structural.door_framing_module` reads the same as before. The
     # remnant to W-M-C1's bedroom face at 212 1/8" is 10 1/8", which is jamb-pack room.

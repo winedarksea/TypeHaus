@@ -51,7 +51,7 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
 def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     payload = model_to_dict(catlin_model_ro)
     rows = payload["window_stools"]
-    assert len(rows) == 38
+    assert len(rows) == 39
     assert {row["profile"] for row in rows} == {"eased"}
     assert {row["material_ref"] for row in rows} == {"oak-stool", "quartz-counter",
                                                     "live-edge-white-oak"}
@@ -63,7 +63,7 @@ def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     nodes = [node for node in gltf["nodes"]
              if node["extras"].get("trade") == "millwork"
              and node["extras"].get("kind") == "opening"]
-    assert len(nodes) == 38
+    assert len(nodes) == 39
     assert {node["extras"]["uid"] for node in nodes} == {
         row["opening_uid"] for row in rows}
     oak = [201 / 255, 176 / 255, 140 / 255, 1.0]

@@ -781,26 +781,17 @@ MAIN_PLACEABLES = [
     Furniture(uid="J49EW9WWTQ", tag="FURN-M-PANTRY-SHELVES", type_ref="FT-KIT-PANTRY-SHELVES-70",
               room="RM-M-PANTRY", position=pt(ft(21, 2.5), ft(34, 8.375))),
 
-    # The main-floor bedroom's KING — 6'-8" x 7'-0" — head north (rotation 0) against the
-    # interior wall, so the two window walls — west (WIN-M-BED-W1/W2) and south
-    # (WIN-M-BED-S1/S2) — stay free. This block said "queen" three times until 2026-09-15
-    # and cited x=5' / y=9'-3" against a position that had been x 8'-7 7/8", y 9'-2 1/2";
-    # the type_ref was always FURN-BED-KING. Shifted 18" east on 2026-10-03 to make room for
-    # a west-side nightstand. The bed now spans x 6'-9 7/8"..13'-5 7/8" and y
-    # 5'-8 1/2"..12'-8 1/2"; the west-side zone stays off ED-M-BED-RC7 and the foot zone
-    # stays clear of ED-M-BED-RC1/RC5 on the south wall.
+    # Centre the 80" king between D-M-BATH2's east RO jamb (56.635") and D-M-BED's
+    # west RO jamb (170"). The 113.3175" midpoint leaves 16.6825" beside each bed edge.
+    # Keep the north-south placement and head-north orientation, freeing the window walls.
     Furniture(uid="CMB701AAAA", tag="FURN-M-BED", type_ref="FURN-BED-KING", room="RM-M-BED",
-              position=pt(inch(121.875), m(2.80531))),
-    # ** THE WEST-SIDE BEDSIDE TABLE. ** The bed moved 18" east on 2026-10-03; this 24" table
-    # moved west to sit flush with its west face at x=6'-9 7/8". It spans x 4'-9 7/8"..
-    # 6'-9 7/8", leaving 1 1/4" to D-M-BATH2's east jamb at x=4'-8 5/8". Its x movement is
-    # deliberately larger than 60": the current center x=5'-9 7/8" is 86" west of its old
-    # center, because the bed also moved east and the two 24"/80" footprints must not overlap.
-    # The y coordinate is unchanged. Back to the wall: W-M-BDN1/2's bedroom face is
-    # 12'-9 5/8", so its 16" carcass stands at y 11'-5 5/8"..12'-9 5/8".
-    #
-    Furniture(uid="SM4T9MMNVP", tag="FURN-M-BED-NIGHTSTAND-W", type_ref="FURN-NIGHTSTAND-24", room="RM-M-BED",
-              position=pt(inch(69.875), inch(145.625))),
+              position=pt(inch(113.3175), m(2.80531))),
+    # Matching 16" tables are the largest whole-inch width that fits: flush with the bed,
+    # with 0.6825" to each RO. Their 16" depth backs onto the bedroom face at y=153.625".
+    Furniture(uid="SM4T9MMNVP", tag="FURN-M-BED-NIGHTSTAND-W", type_ref="FURN-NIGHTSTAND-16", room="RM-M-BED",
+              position=pt(inch(65.3175), inch(145.625))),
+    Furniture(uid="CMN702AAAA", tag="FURN-M-BED-NIGHTSTAND-E", type_ref="FURN-NIGHTSTAND-16", room="RM-M-BED",
+              position=pt(inch(161.3175), inch(145.625))),
 
     # Southeast corner since 2026-10-03: rotation -90 puts the back on the east wall,
     # with ~1/2" to its 212.115" finish face. D-M-BED2 moved one stud bay north, leaving

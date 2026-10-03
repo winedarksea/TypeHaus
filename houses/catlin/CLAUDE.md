@@ -276,14 +276,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Shell: framing module and envelope
 
 - **Wall bracing is prescriptive IRC R602.10, Method CS-WSP on every line** (2026-09-22,
-  decision #79; `plan/braced_walls.py`, `notes/wall_bracing_layout.md`). 67 panels — 27
+  decision #79; `plan/braced_walls.py`, `notes/wall_bracing_layout.md`). 66 panels — 26
   main, 31 second, 9 garage — each one a full-height run between openings, measured off the
   resolved model. **The dwelling is TWO STORIES and the count is derived**: the basement is
   an R404 concrete box and the attic is an R325.6 habitable attic whose east and west sides
   are rafter plates, so neither carries a braced wall line. **The attic still costs
   something** — the eave-to-ridge factor is measured from the second storey's top plate to
   the ridge (11'-3", the 15-foot row at x1.15 / x1.30), not from the roof's own 9'-4" eave.
-  Worst line is main S1 at 19'-5" provided against 12'-7" required; every line clears.
+  After the added east window (2026-10-03), the smallest margin is main E1 at 15'-2"
+  provided against 12'-7" required; every line clears.
   - **Two factors are the ones to watch.** Table R602.10.3(2) item 6's **x1.40** IS taken on
     the second storey's south and west lines, because the plant room's PVC liner is not
     gypsum — line `W-S-S1`/`W-S-W4` in gypsum and both lines drop from 10.37' to 7.41'.

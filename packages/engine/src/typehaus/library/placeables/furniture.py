@@ -131,6 +131,8 @@ _BED_HEIGHT = ft(3, 4)
 #: A bedside table joins the bed's group throughout the side, including the head-end
 #: allowance. The FOOT zone does not name it: a nightstand at the foot is in the way.
 NIGHTSTAND_TAG = "FURN-NIGHTSTAND-24"
+NARROW_NIGHTSTAND_TAG = "FURN-NIGHTSTAND-16"
+_NIGHTSTAND_OCCUPANT_TYPES = (NIGHTSTAND_TAG, NARROW_NIGHTSTAND_TAG)
 
 # Side access is needed where someone enters the bed, not across the full length beside the
 # headboard. A 30" head-end allowance leaves room for a nightstand or adjacent storage while
@@ -142,10 +144,10 @@ def _bed_clearances(width, depth):
     """Side access from the foot toward the head, plus full-width foot access."""
     return (side_zone(width, depth, ft(1, 6), "bed side access", sign=1,
                       head_inset=_BED_HEAD_SIDE_INSET,
-                      occupant_types=(NIGHTSTAND_TAG,)),
+                      occupant_types=_NIGHTSTAND_OCCUPANT_TYPES),
             side_zone(width, depth, ft(1, 6), "bed side access", sign=-1,
                       head_inset=_BED_HEAD_SIDE_INSET,
-                      occupant_types=(NIGHTSTAND_TAG,)),
+                      occupant_types=_NIGHTSTAND_OCCUPANT_TYPES),
             front_zone(width, depth, ft(1, 6), "bed foot access"))
 
 
@@ -201,6 +203,12 @@ WARDROBE_48 = FurnitureType(
 NIGHTSTAND = FurnitureType(
     tag=NIGHTSTAND_TAG, name="Nightstand", footprint=(ft(2), ft(1, 4)), height=ft(2, 2),
     plan_symbol="nightstand", storage=True, source=REFERENCE,
+)
+NARROW_NIGHTSTAND = FurnitureType(
+    tag=NARROW_NIGHTSTAND_TAG, name='Narrow nightstand, 16"',
+    footprint=(inch(16), inch(16)), height=ft(2, 2),
+    plan_symbol="nightstand", storage=True,
+    source='Generic narrow bedside-table planning envelope, 16" x 16" x 26"; product unselected.',
 )
 
 # --- Dining -----------------------------------------------------------------------------
@@ -394,7 +402,7 @@ STARTER_FURNITURE_TYPES = (
     TV_65, TV_98,
     DINING_8_OPEN_CORNERS, SOFA_84_SEAT_BAND, PORCH_LOUNGE_27,
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, HEMNES_DRESSER_63,
-    CHEST, WARDROBE_48, NIGHTSTAND,
+    CHEST, WARDROBE_48, NIGHTSTAND, NARROW_NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,
     WRITING_DESK, HEMNES_DESK_61, MITTZON_SIT_STAND_DESK_47, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,

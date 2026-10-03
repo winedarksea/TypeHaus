@@ -37,7 +37,7 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
         key=lambda member: member.p0[1],
     )
     assert len(jamb_members) == 12
-    for south, north in zip(jamb_members, jamb_members[1:]):
+    for south, north in zip(jamb_members, jamb_members[1:], strict=False):
         required_separation = (cross_section(south.profile).width_m
                                + cross_section(north.profile).width_m) / 2
         assert north.p0[1] - south.p0[1] >= required_separation - 1e-9
@@ -98,8 +98,10 @@ def test_counter_devices_clear_windows_framing_and_each_other(catlin_model_ro):
             if member.z1_m <= device.body_z0_m or member.z0_m >= device.body_z1_m:
                 continue
             half_thickness = cross_section(member.profile).width_m / 2
-            assert (device_north <= member.p0[1] - half_thickness
-                    or device_south >= member.p0[1] + half_thickness), (device.tag, member.child_key)
+            assert (
+                device_north <= member.p0[1] - half_thickness
+                or device_south >= member.p0[1] + half_thickness
+            ), (device.tag, member.child_key)
     thermostat, receptacle = objects["ED-M-DINING-FH-STAT"], objects["ED-M-LIVING-RC3"]
     assert thermostat.body_z0_m > receptacle.body_z1_m
     pantry_south = Polygon(objects["FURN-M-KIT-PANTRY-S2"].footprint).bounds[1]
@@ -113,7 +115,8 @@ def test_receptacles_cover_the_whole_north_counter(catlin_model_ro):
     receptacles = [objects[tag] for tag in NORTH_COUNTER_RECEPTACLES]
     assert all(west < obj.position[0] < east for obj in receptacles)
     stations = sorted(obj.position[1] for obj in receptacles)
-    coverage_samples = [south, north, *((a + b) / 2 for a, b in zip(stations, stations[1:]))]
+    midpoints = [(a + b) / 2 for a, b in zip(stations, stations[1:], strict=False)]
+    coverage_samples = [south, north, *midpoints]
     for sample in coverage_samples:
         if south <= sample <= north:
             assert min(abs(sample - station) for station in stations) <= 24 * INCH + 1e-9

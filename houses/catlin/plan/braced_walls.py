@@ -9,8 +9,8 @@
 # this house is sheathed in 1/2" struct-1 plywood over its whole face, above and below every
 # opening (the garage in 5/8" CDX), which is Method CS-WSP's own requirement (R602.10.4.2)
 # and is what the house builds anyway. Method WSP would ask 48" of every panel at these wall
-# heights (Table R602.10.5) — main E1's first qualifying run is 34 1/2" and its second is
-# 37", so the line's first 48" panel would not start until 19'-10", past R602.10.2.2's 10 ft.
+# heights (Table R602.10.5) — main E1's first qualifying run is 34 1/2", so the line's
+# first 48" panel would not start until 21'-1 1/2", past R602.10.2.2's 10 ft.
 # CS-WSP reads its minimum off the ADJACENT CLEAR OPENING HEIGHT instead (27"-35" here), and
 # the same sheathing then counts.
 #
@@ -18,8 +18,9 @@
 # station below is measured off the resolved model: the wall's own start node, the openings
 # on it, and Table R602.10.5's minimum at that opening height. A run under the minimum is
 # NOT authored — it contributes nothing and authoring it would only put a zero-length
-# contributor on the drawing (main E1's two 25 1/2" slivers beside the fire niche, the 17"
-# ends beside the two kitchen windows, second S1's 19" beside the deck door, the garage's 7"
+# contributor on the drawing (main E1's 25 1/2" and 9 1/2" slivers beside the fire niche,
+# its two 21" window piers, the 17" ends beside the two kitchen windows, second S1's 19"
+# beside the deck door, the garage's 7"
 # beside the service door). A run that crosses a wall butt is authored once per wall and
 # merged by `resolve/braced_walls.py`.
 #
@@ -54,14 +55,13 @@ _SECOND_HD_Z = inch(121)            # the same, one floor up (second datum +10'-
 # MAIN — first story of two. Table R602.10.3(1) at <=115 mph / 40' spacing / CS-WSP reads
 # 11.5 ft, x1.15 (eave-to-ridge) x0.95 (9'-0" story) = 12.56 ft per line.
 MAIN_BRACED_WALLS = [
-    # BWL-W-A-E1 — 19'-7" provided. The 163 1/2" run ends 2'-7" short of the NE corner and
-    # takes the hold-down.
+    # BWL-W-A-E1 — 15'-2" provided after E3 (2026-10-03), above the 12.56 ft requirement.
+    # The two new 21" piers do not meet the 27" minimum; retire the former 37" panel.
+    # The 147 1/2" north run ends 2'-7" short of the NE corner and keeps its hold-down.
     BracedWallPanel(uid="0BK3XPH9EX", tag="BWP-M-E1-0000", wall_ref="W-M-E1", start=inch(0.0),
                     width=inch(34.5), note="SE corner; return for BWL-W-A-S1's east end"),
-    BracedWallPanel(uid="0TRH4SAQSS", tag="BWP-M-E1-0174", wall_ref="W-M-E1", start=inch(173.5),
-                    width=inch(37.0)),
-    BracedWallPanel(uid="KZ7TYRTJKY", tag="BWP-M-E1-0238", wall_ref="W-M-E1", start=inch(237.5),
-                    width=inch(163.5), hold_down_ref="CN-M-BWHD-NE-E",
+    BracedWallPanel(uid="KZ7TYRTJKY", tag="BWP-M-E1-0254", wall_ref="W-M-E1", start=inch(253.5),
+                    width=inch(147.5), hold_down_ref="CN-M-BWHD-NE-E",
                     note="R602.10.7 end condition 5 at the NE corner"),
     # BWL-W-A-N1 — 28'-2" provided. The 78" run crosses the W-M-N3/W-M-N3B butt.
     BracedWallPanel(uid="58ACV3YPDF", tag="BWP-M-N3-0042", wall_ref="W-M-N3", start=inch(42.0),
