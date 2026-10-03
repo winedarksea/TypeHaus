@@ -31,6 +31,7 @@ from typehaus.model.placeable_symbols._frame import (
     depth_cylinder,
     line,
     polygon,
+    prism,
     rect,
 )
 
@@ -44,6 +45,7 @@ CUSHION_THICKNESS_M = 0.12
 ARM_WIDTH_M = 0.14
 BACK_DEPTH_M = 0.20
 TOP_THICKNESS_M = 0.04
+DINING_TABLE_CORNER_RADIUS_M = 0.05
 DRAWER_FACE_DEPTH_M = 0.03
 # Depth a pull/handle occupies at the front plane, and how far the door face sits behind it.
 HANDLE_DEPTH_M = 0.02
@@ -268,6 +270,56 @@ def slab(*, leg_inset_m: float = 0.06, apron: bool = True,
         return tuple(strokes), tuple(parts)
 
     return build
+
+
+def rounded_slab(*, leg_inset_m: float = 0.06, apron: bool = True,
+                 corner_radius_m: float = DINING_TABLE_CORNER_RADIUS_M) -> Builder:
+    """A rectangular table with a rounded top, optional apron, and four corner legs."""
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        inset = clamp(leg_inset_m, 0.02, min(width, depth) * 0.18)
+        leg = clamp(min(width, depth) * 0.09, 0.04, 0.09)
+        radius = clamp(corner_radius_m, 0.0, min(width, depth) * 0.25)
+        top_t = min(TOP_THICKNESS_M, height * 0.12)
+        outline = _rounded_rectangle_points(width, depth, radius)
+        strokes = [polygon(outline, fill="wood")]
+        parts = [prism(outline, height - top_t, height, "wood")]
+        if apron:
+            strokes.append(rect(0, 0, width - 2 * inset, depth - 2 * inset,
+                                weight=DETAIL_WEIGHT))
+            parts.append(box(0, 0, height - top_t - min(0.10, height * 0.14), height - top_t,
+                             width - 2 * inset, depth - 2 * inset, "wood-dark"))
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                cx = sx * (width / 2 - inset - leg / 2)
+                cy = sy * (depth / 2 - inset - leg / 2)
+                strokes.append(rect(cx, cy, leg, leg, fill="wood-dark", weight=DETAIL_WEIGHT))
+                parts.append(box(cx, cy, 0.0, height - top_t, leg, leg, "wood-dark"))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
+def _rounded_rectangle_points(width: float, depth: float, radius: float) -> tuple[Point, ...]:
+    """Polygonise a rounded rectangle for the shared plan and extrusion geometry."""
+    half_width, half_depth = width / 2, depth / 2
+    if radius <= 0:
+        return ((-half_width, -half_depth), (half_width, -half_depth),
+                (half_width, half_depth), (-half_width, half_depth))
+
+    corner_centres = (
+        (half_width - radius, -half_depth + radius, -math.pi / 2),
+        (half_width - radius, half_depth - radius, 0),
+        (-half_width + radius, half_depth - radius, math.pi / 2),
+        (-half_width + radius, -half_depth + radius, math.pi),
+    )
+    points: list[Point] = []
+    arc_segments = 6
+    for cx, cy, start_angle in corner_centres:
+        for segment in range(arc_segments + 1):
+            angle = start_angle + math.pi * segment / (2 * arc_segments)
+            points.append((cx + radius * math.cos(angle), cy + radius * math.sin(angle)))
+    return tuple(points)
 
 
 def round_slab(*, pedestal: bool = True) -> Builder:

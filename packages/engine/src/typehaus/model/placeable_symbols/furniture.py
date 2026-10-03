@@ -18,6 +18,7 @@ from typehaus.model.placeable_symbols._families import (
                                                         pedestal_seat,
                                                         peg_rail,
                                                         potted_plant,
+                                                        rounded_slab,
                                                         round_slab,
                                                         sauna_bench,
                                                         screen,
@@ -39,6 +40,7 @@ from typehaus.model.placeable_symbols._sektion_tall import (
     sektion_cover_panel,
     sektion_tall,
 )
+from typehaus.model.placeable_symbols._sit_stand_desk import sit_stand_desk
 from typehaus.model.placeable_symbols._wardrobe import (
                                                         DOUBLE_HANG_INTERIOR,
                                                         DRESS_INTERIOR,
@@ -72,11 +74,13 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # Tables and desks. The apron is what stops a dining table reading as a coffee table in
     # elevation, and the coffee/end tables deliberately skip it — they are open underneath.
     "dining-table": slab(leg_inset_m=0.09, apron=True),
+    "rounded-dining-table": rounded_slab(leg_inset_m=0.09, apron=True),
     "round-table": round_slab(pedestal=True),
     "coffee-table": slab(leg_inset_m=0.05, apron=False),
     "end-table": slab(leg_inset_m=0.04, apron=False),
     "desk": slab(leg_inset_m=0.06, apron=True, modesty_panel=True),
     "drawer-desk": drawer_desk,
+    "sit-stand-desk": sit_stand_desk,
     # A top the WALL carries — cleats, a ledger, or fold-down brackets. No legs and no
     # modesty panel, because both would stand in the knee space a wall-hung desk exists to
     # keep open, and a fold-down leaf cannot have either and still fold.

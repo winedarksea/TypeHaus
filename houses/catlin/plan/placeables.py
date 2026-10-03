@@ -1311,6 +1311,10 @@ SECOND_PLACEABLES = [
               room="RM-S-PLANT", position=pt(m(1.13772), m(1.8808)), rotation=deg(45)),
     Furniture(uid="RCK702AAAA", tag="FURN-S-PLANT-ROCKER", type_ref="FURN-ROCKING-CHAIR-30",
               room="RM-S-PLANT", position=pt(m(4.51571), m(1.96147)), rotation=deg(-45)),
+    # Centre on the finished north wall: x=(0.201041+5.383784)/2,
+    # y=2.665984 minus half the 23 5/8" depth. Rotation 0 faces south into the room.
+    Furniture(uid="PLTDESK001", tag="FURN-S-PLANT-DESK", type_ref="FURN-DESK-MITTZON-47",
+              room="RM-S-PLANT", position=pt(m(2.7924125), m(2.3659465)), rotation=deg(0)),
     # Wet-location spot, y=8'-6 3/8": the north partition carries the plant room's humid
     # liner, whose face sits 1 1/4" south of the bare-stud line. A fixture in a room that
     # condenses on purpose has to be wet-location listed rather than the ordinary interior

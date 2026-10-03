@@ -222,10 +222,10 @@ ROUND_DINING_TABLE = FurnitureType(
                               occupant_types=(DINING_CHAIR_TAG,)),),
 )
 # A compact square table for two: the 3' footprint is large enough for a chess board and
-# everyday work, while keeping the same apron-and-leg 2D/3D family as the dining tables.
+# everyday work. Its softened top corners are easier to move around in a tight room.
 TWO_PERSON_DINING_TABLE = FurnitureType(
     tag="FURN-DINING-2-36", name="Two-person dining table", footprint=(ft(3), ft(3)),
-    height=ft(2, 6), plan_symbol="dining-table", source=REFERENCE,
+    height=ft(2, 6), plan_symbol="rounded-dining-table", source=REFERENCE,
     clearances=(surround_zone(ft(3), ft(3), ft(3), "chair-use zone",
                               occupant_types=(DINING_CHAIR_TAG,)),),
 )
@@ -255,6 +255,18 @@ HEMNES_DESK_61 = FurnitureType(
             "side. Simplified planning model. "
             "https://www.ikea.com/us/en/p/hemnes-desk-white-stain-light-brown-20535044/"),
     clearances=(front_zone(inch(61), inch(25.625), ft(3), "desk chair and drawer pull-out",
+                           occupant_types=(OFFICE_CHAIR_TAG, "FURN-DESK-CHAIR")),),
+)
+MITTZON_SIT_STAND_DESK_47 = FurnitureType(
+    tag="FURN-DESK-MITTZON-47", name='IKEA MITTZON electric sit–stand desk, walnut/black',
+    footprint=(inch(47.25), inch(23.625)), height=inch(29.5),
+    plan_symbol="sit-stand-desk", work_surface=True,
+    source=("IKEA MITTZON 995.268.81; walnut-veneer top, black electric underframe; "
+            "47 1/4 x 23 5/8 in.; adjustable height 24 3/8–49 5/8 in. "
+            "Planning model shown at a seated height of 29 1/2 in. "
+            "https://www.ikea.com/us/en/p/"
+            "mittzon-desk-sit-stand-electric-walnut-veneer-black-s99526881/"),
+    clearances=(front_zone(inch(47.25), inch(23.625), ft(3), "desk chair pull-out",
                            occupant_types=(OFFICE_CHAIR_TAG, "FURN-DESK-CHAIR")),),
 )
 OFFICE_CHAIR = FurnitureType(
@@ -373,7 +385,7 @@ STARTER_FURNITURE_TYPES = (
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, CHEST, WARDROBE_48, NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,
-    WRITING_DESK, HEMNES_DESK_61, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
+    WRITING_DESK, HEMNES_DESK_61, MITTZON_SIT_STAND_DESK_47, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
     SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_TIERED_48,
     SAUNA_BENCH_54, SAUNA_BENCH_48, SAUNA_BENCH_36,
     WORKBENCH_60, MUDROOM_BENCH_36, CLOSET_PEG_RAIL_42,
