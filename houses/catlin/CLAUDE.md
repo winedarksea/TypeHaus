@@ -936,15 +936,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   even. East second storey: 4'-0"/13'-4"/22'-8"/32'-0", mirrored about y=18'-0" in station,
   width (27/30/30/27), and head (6'-0"/7'-0"/7'-0"/6'-0") over one 3'-0" sill — a 9'-4" beat
   three times over (→ DESIGN-LOG.md).
-  East main row: 4'-0"/13'-4"/18'-8"/34'-0" — the last gap deliberately ends a blank kitchen
-  stretch. First three: 27" units on one **2'-10" sill, 6'-10" head** (2026-10-02: the stool
+  East main row: 4'-0"/12'-0"/16'-0"/20'-0"/34'-0" — the last gap deliberately ends a blank kitchen
+  stretch. First four: 27" units on one **2'-10" sill, 6'-10" head** (2026-10-02: the stool
   top sits on the SEKTION slab top — sill + 2.953" frame rail = 36 15/16" above datum). `WIN-M-KIT-E` is a 14" unit
   at a 3'-6" sill (bay centre, 408" off `N-M-SE`) — joins neither beat nor head line, closes
   the row's north end as a service window (can never column with the 27"/30" family beside
   it — the 8" rule). `WIN-S-STUDY3` at 4'-0" columns with `WIN-M-LIV-E1`. **Check
   `out/render/elev_east.png` before touching this row.**
+  `WIN-M-LIV-E3` was added 2026-10-03: E2 moved one bay south and EAST-MID one north,
+  yielding 21" RO piers / 15" between jamb packs; E2 gave up its BED1 column. Pantry and
+  cabinets stayed put. RC14 is on the fireplace's north brick jamb; RC3/15 are at 14'/18',
+  RC16 at 21'-6 1/8" uses a standard 2 3/4" plate. The dining thermostat is at 14', 54" AFF.
   The fireplace pier sits between `WIN-M-LIV-E1`/`E2`: a 45 1/2" facebrick surround
-  centred y=8'-8", walnut mantel at 5'-4". No window moved for it — the pier centre is a bay
+  centred y=8'-8", walnut mantel at 5'-4". No window moved for its original installation — the pier centre is a bay
   centre on `W-M-E1`'s grid. **The firebox sill NO LONGER shares the east row's 2'-8" line**
   (2026-09-11): the owner reversed that morning's decision to raise it and it is back at
   **24" AFF**, so the one-datum-four-openings argument is retired and the fire does not

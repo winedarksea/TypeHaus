@@ -347,6 +347,8 @@ NODES = [
     # 29 1/2", plus one whole brick and one head joint each side (7 5/8" + 3/8" = 8"), gives
     # 45 1/2" with ZERO CUT CLOSERS. Centred on y=104" the panel spans y 81 1/4"..126 3/4",
     # clearing each king face by 16 3/4" and each RO by 19 3/4", symmetric to 0".
+    # 2026-10-03: E2 moved south for E3, so the north clearance is now 3 3/4" to RO,
+    # 3/4" to its king pack. The brick keeps its original width and station.
     # A 47 1/4" panel (two old BESTA modules) was considered and rejected: it leaves 8 7/8"
     # returns, i.e. a whole brick plus a 7/8" sliver on every course at the firebox edge
     # where the eye goes, recoverable only with a 1 1/8" steel reveal frame that throws away

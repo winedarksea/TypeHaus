@@ -26,6 +26,14 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment, m
 
 ELECTRICAL_DEVICE_TYPES = (
+    # The 3 1/4" pier beside EAST-MID takes a standard single-gang plate; the shared
+    # catalog's 4" schematic envelope would overlap its king or the pantry.
+    ElectricalDeviceType(tag="ED-T-RECEPTACLE-SINGLE-GANG",
+                          name="Duplex receptacle, standard 2 3/4 x 4 1/2 in. plate",
+                          footprint=(inch(2.75), inch(2)), height=inch(4.5),
+                          source="Standard single-gang wallplate envelope: https://leviton.com/content/dam/leviton/commercial-industrial/product_documents/solution_sheets/Wallplate%20Size%20Guide%20-%20Q-1289.pdf . Ordinary duplex on CKT-RC-MAIN, no special counter hardware.",
+                          ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),)),
     # Backup subpanel on the EG4's dedicated load output. 12 spaces for the 7
     # in use — the spare six are room for a second always-on circuit. No ``bus_amps``:
     # nothing backfeeds this bus, and a stated rating would wrongly get graded by the

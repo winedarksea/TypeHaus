@@ -560,25 +560,10 @@ MAIN_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BDN1", face="left", distance_from_start=inch(11.75),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # FH-M-DINING's thermostat: zone is free-standing mid-room, so control goes on the
-    # nearest real wall — east wall interior face x=35'-5 3/8" (EXT_2X6's inside face
-    # is 6 5/8" in from the 36' sheathing plane). ** WIN-M-DIN-E2 IS GONE, AND THE STRETCH IT
-    # NAMED WITH IT. ** It was retired 2026-08-24 with the old WIN-M-LIV-E2 and replaced by
-    # WIN-M-EAST-MID at y=18'-8" (plan/storeys/main.py), so the "5'-1" clear stretch between
-    # WIN-M-LIV-E2 and WIN-M-DIN-E2" this comment used to describe has not existed for two
-    # weeks. The real clear stretch is now y 14'-5 1/2"..17'-6 1/2", 3'-1" of it.
-    #
-    # ** MOVED 17'-9" -> 16'-0" (2026-09-06). ** At y=17'-9" it stood 2 1/2" INSIDE
-    # WIN-M-EAST-MID's rough opening (y 17'-6 1/2"..19'-10 1/2"), at 48" between that
-    # window's 32" sill and 80" head — a device specified in a hole. y=16'-0" centres it in
-    # the pier the corrected sentence above names: 16 1/2" of clear wall to WIN-M-LIV-E2's
-    # RO end (y=14'-5 1/2") and 16 1/2" to WIN-M-EAST-MID's RO start (y=17'-6 1/2"), the
-    # 37" pier taken dead centre. ** Then to y=16'-8" (2026-10-02): ** off stud-004 and
-    # between the pier's two counter receptacles (RC3 at 14'-10 1/2", RC15 at 17'-2"), 12"
-    # over their 42" line and over the 36" SEKTION slab.
-    # ** NOTHING IN `haus check` ASKED FOR THIS AND NOTHING WILL VERIFY IT: ** no rule
-    # grades a wall device against an opening, which is why the defect survived two weeks
-    # of clean reports. Re-measure by hand if either east window moves.
+    # FH-M-DINING's thermostat follows the 2026-10-03 east-window respacing: y=14'-0"
+    # in the E2/E3 pier, 54" AFF over RC3's 42" line. The old y=16'-8" station is
+    # inside E3. A geometry regression covers both the opening and stud clearances,
+    # since the registry does not grade a wall device against a window.
     # FX-M-BATH2-TUB's Bask outlet. Kohler: "A qualified electrician must
     # install a GFCI-protected, 120 V, 15 A, grounded outlet. Locate the outlet BEHIND THE
     # BATH and WITHIN 24 in. of the power supply." The bath ships cord-and-plug with its
@@ -625,10 +610,9 @@ MAIN_DEVICES = [
     ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-DINING", room="RM-M-LIVING",
-                     # y 192" -> 200" (2026-10-02): off stud-004 and clear of RC15's box.
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(200),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(168),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
@@ -1923,18 +1907,16 @@ NEC_FILL_MAIN = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C2", face="right", distance_from_start=inch(34.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # ** THE EAST WALL'S COUNTER RECEPTACLES (2026-10-02). ** The SEKTION line puts a 36"
-    # counter under counter-height glass, so the piers are the only wall left, and 210.52(C)
-    # wants no point of a counter more than 24" from a receptacle (not graded: the engine
-    # reports 210.52(C) UNKNOWN). Every box is 42" AFF, 6" over the slab, IN A STUD BAY:
+    # ** THE EAST WALL'S COUNTER RECEPTACLES (2026-10-03). ** The SEKTION line puts a 36"
+    # counter under counter-height glass. Coverage is measured along each slab: no point
+    # more than 24" from a receptacle (the registry still reports this UNKNOWN).
+    # Every device is 42" AFF, 6" over the slab:
     #   south bank (living)  y 22", 68"                 6 5/8"..81 1/4", gaps 15/46/13
-    #   north bank (dining)  y 141 1/2", 178 1/2", 206", 242"
-    #                                                    126 3/4"..259 3/4", gaps 15/37/28/36/18
-    # ** FOUR ON THE NORTH BANK, NOT THREE. ** Three only close with boxes <= 2 1/2" off the
-    # E2/EAST-MID RO edges, and that is where the 3" jack+king packs stand (kings at y 144"
-    # and 239 3/4", stud-004 at 192"). In the bays the span is 99" against three boxes' 96".
-    # Each box clears its king face by >= 1", so cased side reveals stay possible. The
-    # fallback is a listed pop-up receptacle in the slab (2023 NEC 210.52(C)(3)).
+    #   north bank (dining) y 124 1/8", 168", 216", 258 1/8"; slab 126 3/4"..259 3/4".
+    # RC14 moves onto the north masonry jamb: the 3/4" gap to E2's framing cannot hold
+    # a box. RC3/15 centre in the two 15" framing-clear piers. RC16 uses a standard
+    # 2 3/4" single-gang plate in the last 3 1/4", with 1/4" to king and pantry.
+    # Uids and circuits stay with the devices; no holes or pop-ups in the live-edge slab.
     ElectricalDevice(uid="VHY1DXBHG2", tag="ED-M-LIVING-RC13", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
@@ -1954,28 +1936,28 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(141.5),
+                         wall_ref="W-M-FIRE-JAMB-N", face="left", distance_from_start=inch(5.375),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC010AAAA", tag="ED-M-LIVING-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(178.5),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(168),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="HGFDJH852Y", tag="ED-M-LIVING-RC15", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(206),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(216),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="RB8M3Y2Q4N", tag="ED-M-LIVING-RC16", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE",
+                     type_ref="ED-T-RECEPTACLE-SINGLE-GANG",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(242),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(258.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RC5 is the only receptacle covering BOTH ends of the south run — D-M-BALC's east jamb
     # at 23'-10" and the far end near the SE corner, where RC4's coverage comes round the

@@ -2647,6 +2647,7 @@
 "ED-T-PANEL-2" = { material = { low = 150, high = 350 }, labour = { low = 500, high = 1000 } }  # 1 ea
 "ED-T-PV-JB" = { material = { low = 25, high = 80 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-RECEPTACLE" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 68 ea
+"ED-T-RECEPTACLE-SINGLE-GANG" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # ordinary duplex; standard plate envelope beside EAST-MID
 "ED-T-RECEPTACLE-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-RECEPTACLE-240" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-RECEPTACLE-520S" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
