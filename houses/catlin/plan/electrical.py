@@ -2216,8 +2216,8 @@ NEC_FILL_MAIN = [
     # outlet belongs — not behind the 80" flush headboard that makes RC2 above unusable. x=13'-0" is behind the 24" carcass (x 11'-11 7/8"..
     # 13'-11 7/8"), 4" clear of ED-M-BED-LAMP-SW at 12'-4" and 4" clear of ED-M-BED-SW at
     # 13'-8", the two devices that share this 26 1/8" of wall at 46" and 48" AFF.
-    ElectricalDevice(uid="M6KEXK18GY", tag="ED-M-BED-RC8", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-RECEPTACLE-GFCI",
+    ElectricalDevice(uid="M6KEXK18GY", tag="ED-M-BED-RC8", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(

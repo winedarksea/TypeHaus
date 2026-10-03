@@ -74,7 +74,10 @@ def test_main_bedroom_door_side_receptacle_is_in_electrical_plan(catlin_model):
                for element in catlin_model.plan.storey_elements("main")
                if element.element_kind == "ElectricalDevice"}
     outlet = devices["ED-M-BED-RC9"]
+    remote_bedroom_outlet = devices["ED-M-BED-RC8"]
 
+    assert remote_bedroom_outlet.kind.value == "receptacle"
+    assert remote_bedroom_outlet.type_ref == "ED-T-RECEPTACLE"
     assert outlet.kind.value == "gfci"
     assert outlet.type_ref == "ED-T-RECEPTACLE-GFCI"
     assert outlet.circuit == "CKT-RC-MAIN"
