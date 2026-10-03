@@ -544,8 +544,12 @@ export interface ModelPart {
   color: string;
   /** Palette alpha for glass and other translucent symbol parts. */
   opacity?: number;
-  /** A horizontal cylinder along plan depth, for pegs projecting from a wall. */
+  /** Surface properties supplied by the engine for polished mirror glass. */
+  metalness?: number;
+  roughness?: number;
+  /** A cylinder along plan depth, for wall pegs and circular mirror faces. */
   shape?: "cylinder-depth";
+  radial_segments?: number;
   /** The catalog material a `wood` part is made of (`FurnitureType.wood_material_ref`). */
   material_ref?: string;
   /**

@@ -14,6 +14,10 @@ from typehaus.model.placeable_symbols import (
     part_hex,
     plan_symbol_strokes,
 )
+from typehaus.model.placeable_symbols._frame import (
+    DEPTH_CYLINDER_SEGMENTS,
+    MIRROR_SURFACE_PROPERTIES,
+)
 from typehaus.model.placeables import PlacementStrategy
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.geometry import opening_center, wall_frame
@@ -80,7 +84,8 @@ def _wood_part(role: str, wood: Any | None) -> dict[str, Any]:
     if role == "wood" and wood is not None:
         return {"color": wood.color[:7], "material_ref": wood.tag}
     opacity = PART_COLORS[role][3]
-    return {"color": part_hex(role), **({"opacity": opacity} if opacity < 1 else {})}
+    return {"color": part_hex(role), **({"opacity": opacity} if opacity < 1 else {}),
+            **(MIRROR_SURFACE_PROPERTIES if role == "mirror" else {})}
 
 
 def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict[str, Any]:
@@ -125,7 +130,7 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict
         # Ring outlines and oriented primitives are opt-in, keeping ordinary box models small.
         "model_parts": [{"center": list(part["center"]), "size": list(part["size"]),
                          **_wood_part(_lamp(part["color"], lamp), wood),
-                         **({"shape": part["shape"]}
+                         **({"shape": part["shape"], "radial_segments": DEPTH_CYLINDER_SEGMENTS}
                             if part["shape"] == "cylinder-depth" else {}),
                          **({"points": [list(point) for point in part["points"]]}
                             if part["points"] else {})}

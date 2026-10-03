@@ -37,6 +37,7 @@ from typehaus.model.placeable_symbols._frame import (
     polygon,
     rect,
 )
+from typehaus.model.placeable_symbols._mirrors import mirror_light
 
 __all__ = ["LIGHTING_SYMBOLS"]
 
@@ -45,6 +46,9 @@ __all__ = ["LIGHTING_SYMBOLS"]
 TRIM_SHARE = 0.16
 # The plate a wall-mounted fixture is screwed to, as a share of the fixture's depth.
 BACKPLATE_SHARE = 0.22
+LIGHT_BAR_HOUSING_DEPTH_SHARE = 0.7
+LIGHT_BAR_LENS_WIDTH_SHARE = 0.88
+LIGHT_BAR_LENS_HEIGHT_SHARE = 0.62
 
 
 def _plan_size(width: float, depth: float) -> float:
@@ -295,9 +299,8 @@ def ceiling_fan_light(*, blades: int = 4) -> Builder:
 def linear_light() -> Builder:
     """A linear fixture: housing rectangle, lit field, centreline.
 
-    One builder covers the tube, the wall lamp and the mirror light — at plan scale all
-    three are a rectangle with a lit centre, and the difference between them is the
-    mounting and the schedule row, not the glyph.
+    Tubes and wall lamps share this plan convention. Over-mirror bars reuse its strokes
+    but use ``mirror_light_bar`` to put the diffuser on the room-facing side in 3D.
     """
 
     def build(width: float, depth: float, height: float) -> Geometry:
@@ -315,31 +318,24 @@ def linear_light() -> Builder:
     return build
 
 
-def mirror_light() -> Builder:
-    """Full-height mirror with a slim illuminated perimeter, mounted against a wall."""
+def mirror_light_bar() -> Builder:
+    """An over-mirror bar whose diffuser faces the room rather than the floor."""
+
+    # Keep the established light-bar plan convention while correcting its 3D mounting.
+    plan_builder = linear_light()
 
     def build(width: float, depth: float, height: float) -> Geometry:
-        frame = min(width, height) * 0.0254  # one-inch frame/band
-        face_depth = depth * 0.12
-        # The plan glyph is height-blind, so its border reads off the width alone.
-        strokes = [rect(0, 0, width, depth, fill="luminaire-housing"),
-                   rect(0, 0, width * (1 - 2 * 0.0254), depth * 0.65, fill="mirror",
-                        weight=DETAIL_WEIGHT)]
-        # The integrated LED is a narrow luminous border, while most of the body remains
-        # reflective glass. Keeping the mirror face in front makes its identity legible.
-        face_y = -depth * 0.30
-        bar = frame * 0.35
-        parts = [box(0, 0, 0, height, width, depth, "luminaire-housing"),
-                 box(0, face_y, frame, height - frame, width - 2 * frame,
-                     face_depth, "mirror"),
-                 box(0, face_y, height - bar, height, width - 2 * frame,
-                     face_depth * 1.1, "lamp"),
-                 box(0, face_y, 0, bar, width - 2 * frame, face_depth * 1.1, "lamp"),
-                 box(-width / 2 + frame / 2, face_y, height / 2, height - 2 * frame,
-                     bar, face_depth * 1.1, "lamp"),
-                 box(width / 2 - frame / 2, face_y, height / 2, height - 2 * frame,
-                     bar, face_depth * 1.1, "lamp")]
-        return tuple(strokes), tuple(parts)
+        strokes, _ = plan_builder(width, depth, height)
+        housing_depth = depth * LIGHT_BAR_HOUSING_DEPTH_SHARE
+        lens_depth = depth - housing_depth
+        lens_height = height * LIGHT_BAR_LENS_HEIGHT_SHARE
+        lens_base = (height - lens_height) / 2
+        parts = (
+            box(0, lens_depth / 2, 0, height, width, housing_depth, "luminaire-housing"),
+            box(0, -housing_depth / 2, lens_base, height - lens_base,
+                width * LIGHT_BAR_LENS_WIDTH_SHARE, lens_depth, "lamp"),
+        )
+        return strokes, parts
 
     return build
 
@@ -441,6 +437,8 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "ceiling-fan-light": ceiling_fan_light(blades=4),
     "linear-light": linear_light(),
     "mirror-light": mirror_light(),
+    "round-mirror-light": mirror_light(round_face=True),
+    "mirror-light-bar": mirror_light_bar(),
     "suspended-linear-light": suspended_linear_light(),
     "wave-chandelier": wave_chandelier(strips=5),
 }

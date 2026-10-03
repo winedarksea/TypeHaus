@@ -206,12 +206,13 @@ export function buildCanvasObjectParts(
   for (const [index, part] of parts.entries()) {
     const board = boardStyleFor(part.material_ref, catalog);
     const opacity = part.opacity ?? 1;
-    const key = `${board ? board.key : ""}|${part.color}|${opacity}`;
+    const key = `${board ? board.key : ""}|${part.color}|${opacity}|${part.metalness}|${part.roughness}`;
     let material = materials.get(key);
     if (!material) {
       material = board ? createPlankMaterial(mode, board, part.color)
         : standardMaterial(new THREE.Color(part.color), mode,
-          { roughness: mode === "nordic" ? NORDIC_ROUGHNESS.massing : 1 });
+          { roughness: mode === "nordic" ? (part.roughness ?? NORDIC_ROUGHNESS.massing) : 1,
+            metalness: mode === "nordic" ? (part.metalness ?? 0) : 0 });
       material.opacity = opacity;
       material.transparent = opacity < 1;
       material.depthWrite = opacity >= 1;
@@ -227,7 +228,8 @@ export function buildCanvasObjectParts(
     const ring = part.points && part.points.length >= 3
       ? createPlanPrismGeometry(part.points, cz - sz / 2, cz + sz / 2) : null;
     const depthCylinder = part.shape === "cylinder-depth"
-      ? new THREE.CylinderGeometry(sx / 2, sx / 2, sy, 16).rotateX(Math.PI / 2) : null;
+      ? new THREE.CylinderGeometry(sx / 2, sx / 2, sy, part.radial_segments ?? 16)
+        .rotateX(Math.PI / 2) : null;
     const seed = pieceSeed(`${item.uid}|${index}`);
     if (ring && board) {
       applyPlankPlaneUv(ring, [0, 0], planLongAxis(part.points!), plankTileSizeM(board));

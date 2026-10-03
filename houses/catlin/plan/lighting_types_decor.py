@@ -365,7 +365,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   name='30" round front-lit LED mirror with defogger',
                   form=LuminaireForm.MIRROR_LIGHT, type_mark="P1",
                   footprint=(inch(30), inch(1.75)), height=inch(30),
-                  plan_symbol="linear-light",
+                  plan_symbol="round-mirror-light",
                   lamp="LED integrated, front-lit etched perimeter band", watts=55.0,
                   lumens=2600.0, cct_k=3000, cri=90, dimmable=True, damp_rated=True,
                   load_va=85.0, ports=_POWER_120,

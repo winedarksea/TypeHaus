@@ -18,6 +18,7 @@ from typehaus.emit.gltf.geometry import (
     arch_soffit_circle,
 )
 from typehaus.emit.gltf.triangulate import HAS_CDT, fan_is_exact, polygon_parts, triangles
+from typehaus.model.placeable_symbols._frame import DEPTH_CYLINDER_SEGMENTS
 
 if TYPE_CHECKING:  # the IR types are annotations only — importing them at runtime would
     # make the glTF emitter depend on the resolver package it is fed from.
@@ -116,12 +117,11 @@ class _MeshBuilder:
     def add_plan_depth_cylinder(self, center: tuple[float, float, float], radius: float,
                                 length: float, axis: tuple[float, float],
                                 color: tuple[float, float, float, float],
-                                segments: int = 16) -> None:
+                                segments: int = DEPTH_CYLINDER_SEGMENTS) -> None:
         """Add a cylinder along a plan-plane axis, with its circular section vertical.
 
-        Pegs and knobs are the first placeable parts that project horizontally from a wall.
-        This keeps their round profile in the live viewer and exported glTF without turning
-        them into approximate boxes.
+        Wall pegs and circular mirrors need a round vertical profile in the live viewer
+        and exported glTF, rather than the default placeable bounding box.
         """
         axis_length = math.hypot(*axis)
         if radius <= 0 or length <= 0 or axis_length == 0 or segments < 3:

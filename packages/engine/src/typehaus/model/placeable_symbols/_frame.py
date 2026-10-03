@@ -150,6 +150,10 @@ OUTLINE_WEIGHT = 0.25
 DETAIL_WEIGHT = 0.18
 
 CIRCLE_SEGMENTS = 32
+# Wide mirror rims need finer tessellation than the small plan-symbol circles.
+DEPTH_CYLINDER_SEGMENTS = 64
+# The silvered backing is opaque and polished, unlike translucent window glass.
+MIRROR_SURFACE_PROPERTIES = {"metalness": 1.0, "roughness": 0.08}
 
 
 def clamp(value: float, low: float, high: float) -> float:
