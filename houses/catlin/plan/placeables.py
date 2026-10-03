@@ -784,22 +784,23 @@ MAIN_PLACEABLES = [
     # The main-floor bedroom's KING — 6'-8" x 7'-0" — head north (rotation 0) against the
     # interior wall, so the two window walls — west (WIN-M-BED-W1/W2) and south
     # (WIN-M-BED-S1/S2) — stay free. This block said "queen" three times until 2026-09-15
-    # and cited x=5' / y=9'-3" against a position that has been x 8'-7 7/8", y 9'-2 1/2"
-    # for some time; the type_ref was always FURN-BED-KING. The real figures: the bed spans
-    # x 5'-3 7/8"..11'-11 7/8" and y 5'-8 1/2"..12'-8 1/2", which keeps the west side zone
-    # off ED-M-BED-RC7 and the foot zone clear of ED-M-BED-RC1/RC5 on the south wall.
+    # and cited x=5' / y=9'-3" against a position that had been x 8'-7 7/8", y 9'-2 1/2";
+    # the type_ref was always FURN-BED-KING. Shifted 18" east on 2026-10-03 to make room for
+    # a west-side nightstand. The bed now spans x 6'-9 7/8"..13'-5 7/8" and y
+    # 5'-8 1/2"..12'-8 1/2"; the west-side zone stays off ED-M-BED-RC7 and the foot zone
+    # stays clear of ED-M-BED-RC1/RC5 on the south wall.
     Furniture(uid="CMB701AAAA", tag="FURN-M-BED", type_ref="FURN-BED-KING", room="RM-M-BED",
-              position=pt(m(2.63862), m(2.80531))),
-    # ** THE BEDSIDE TABLE THE ROOM DID NOT HAVE. ** D-M-BED moved 16" east on 2026-09-15
-    # (storeys/main.py) precisely to open this 26 1/8" of north wall between the king's east
-    # face at 11'-11 7/8" and the new rough opening at 14'-2". The nightstand is pushed tight
-    # to the bed rather than centred in the gap, which leaves 2 1/8" clear of the RO and
-    # keeps the door casing off its side. Back to the wall: W-M-BDN2's bedroom face is
-    # 12'-9 5/8", so a 16" carcass stands at y 11'-5 5/8"..12'-9 5/8".
+              position=pt(inch(121.875), m(2.80531))),
+    # ** THE WEST-SIDE BEDSIDE TABLE. ** The bed moved 18" east on 2026-10-03; this 24" table
+    # moved west to sit flush with its west face at x=6'-9 7/8". It spans x 4'-9 7/8"..
+    # 6'-9 7/8", leaving 1 1/4" to D-M-BATH2's east jamb at x=4'-8 5/8". Its x movement is
+    # deliberately larger than 60": the current center x=5'-9 7/8" is 86" west of its old
+    # center, because the bed also moved east and the two 24"/80" footprints must not overlap.
+    # The y coordinate is unchanged. Back to the wall: W-M-BDN1/2's bedroom face is
+    # 12'-9 5/8", so its 16" carcass stands at y 11'-5 5/8"..12'-9 5/8".
     #
-    # ONLY the east side. The west side of this bed is the walk to D-M-BATH2 and stays clear.
-    Furniture(uid="SM4T9MMNVP", tag="FURN-M-BED-NIGHTSTAND-E", type_ref="FURN-NIGHTSTAND-24", room="RM-M-BED",
-              position=pt(inch(155.875), inch(145.625))),
+    Furniture(uid="SM4T9MMNVP", tag="FURN-M-BED-NIGHTSTAND-W", type_ref="FURN-NIGHTSTAND-24", room="RM-M-BED",
+              position=pt(inch(69.875), inch(145.625))),
 
     # Southwest corner: rotation 90 puts the back against the west wall, drawers north/south.
     # Both finish faces are at 6.635"; leave ~1/2" for baseboard. The north end at 68 1/4"

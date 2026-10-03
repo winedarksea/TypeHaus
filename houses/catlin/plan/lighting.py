@@ -859,8 +859,9 @@ MAIN_LIGHTING = [
     #
     # ** SWITCHED LOCALLY, NOT OFF THE ROOM SWITCH. ** A reading lamp wired to the 3-way is
     # only ever on when the cans are, which is the opposite of what it is for. Its own
-    # switch stands at x=12'-4", reachable lying down and over a 26" nightstand at 46". The
-    # westward lamp move leaves 16 11/16" between the bar's end and the switch.
+    # switch stays at x=12'-4" on the east half of the headboard wall, 46" AFF and reachable
+    # from the bed's east side. The nightstand moved west on 2026-10-03, so the switch no
+    # longer reads over it. The westward lamp move leaves 16 11/16" between bar and switch.
     ElectricalDevice(uid="FVEG6VJPGG", tag="ED-M-BED-LAMP", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-WALL-LINEAR",
                      circuit="CKT-LT-MAIN", room="RM-M-BED", controlled_by=("ED-M-BED-LAMP-SW",),

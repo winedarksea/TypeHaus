@@ -4313,3 +4313,16 @@ surface that reaches the court, so the water goes there.
   from 17.9899606" to 18.0055856". The strict clearance regression is retained without
   an exception; no required/recommended clearance or door swing conflicts are introduced.
   The narrow PAX takeoff grows 3 → 5.
+
+## 2026-10-03 — Main bedroom bed and nightstand exchange sides
+
+- `FURN-M-BED` moves 18" east, from a 103 7/8" to a 121 7/8" x centre. Its north-south
+  position is unchanged. The bed now spans x=81 7/8"..161 7/8".
+- `FURN-M-BED-NIGHTSTAND-E` becomes `FURN-M-BED-NIGHTSTAND-W`, retaining its uid and
+  north-south position. It sits flush against the bed's west face, centred at x=69 7/8".
+  That is an 86" west move between object centres: a 60" move would put the 24" table
+  inside the shifted bed's 80" footprint. The table spans x=57 7/8"..81 7/8", with 1 1/4"
+  to D-M-BATH2's east jamb.
+- `ED-M-BED-RC8`, the table's dedicated outlet, moves onto W-M-BDN1 at the table centre.
+  `ED-M-BED-RC9` remains on that wall near the table's west edge; both 4" boxes have 7"
+  between their edges. The elevation fixture key follows the `-W` tag.

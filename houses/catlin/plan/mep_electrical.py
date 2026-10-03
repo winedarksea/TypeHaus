@@ -133,10 +133,11 @@ MAIN_DEVICES = [
     # The closet door's switch, and it follows D-M-BED. The door moved 16" east on
     # 2026-09-15 (storeys/main.py) and this box, 4" west of the OLD jamb at 12'-10", would
     # have been left orphaned mid-wall in the new bedside-table zone. 13'-8" keeps the same
-    # 4" of clear wall to the strike side of the new RO at 14'-2". It reads over
-    # FURN-M-BED-NIGHTSTAND-E, whose top is 26" — this is at 48". Half the 3-way with
-    # ED-M-BED-SW2 at D-M-BED2 (plan/lighting.py), both on CKT-LT-MAIN: a switch on another
-    # circuit than its load FAILs electrical.lighting_controls (NEC 210.7).
+    # 4" of clear wall to the strike side of the new RO at 14'-2". After the 2026-10-03 bed
+    # move, this switch sits 2 1/8" east of the bed's east face in the 8 1/8" strip before
+    # the RO; at 48" AFF it clears the furniture. Half the 3-way with ED-M-BED-SW2 at
+    # D-M-BED2 (plan/lighting.py), both on CKT-LT-MAIN: a switch on another circuit than its
+    # load FAILs electrical.lighting_controls (NEC 210.7).
     ElectricalDevice(uid="CED002K2AA", tag="ED-M-BED-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH-DIM", circuit="CKT-LT-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),

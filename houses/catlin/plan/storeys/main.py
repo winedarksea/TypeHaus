@@ -1206,9 +1206,9 @@ OPENINGS = [
     # EAST jamb and the vanity detail survives untouched. Widening west would have put the
     # opening into the vanity.
     #
-    # 32" and not 36": the east jamb lands at 56 5/8" and FURN-M-BED's west face is at
-    # 63 7/8", so 32" keeps 7 1/4" of wall between the casing and the bed where 36" would
-    # leave 3 1/4". That is the binding dimension on this door, not the wall run.
+    # The current bed west face is at 81 7/8", leaving 25 1/4" from this 32" RO's east jamb
+    # at 56 5/8". The west-side nightstand spans x=57 7/8"..81 7/8", with 1 1/4" to the
+    # jamb; the door swings out into the bathroom, so the leaf does not cross the table.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING32",
          position=from_node("N-M-W3", inch(24.635)), flip_swing=True, flip_hinge=True),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
@@ -1258,26 +1258,17 @@ OPENINGS = [
     # 2026-08-29 `exterior_only` fix there could not be one anyway.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED",
          position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True),
-    # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15, WAS 4'-8", AND THE BED IS WHY. ** `from_node`
-    # resolves to the NEAR JAMB, so the old offset put the RO at x 154"..186" and left
-    # 10 1/8" between it and FURN-M-BED's east face at 143 7/8" — a king with nowhere to
-    # stand a bedside table on the side people actually get out of it.
+    # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15. ** `from_node` resolves to the NEAR JAMB, so
+    # the RO is x=170"..202". On 2026-10-03 the king moved 18" east and the nightstand moved
+    # to its west side: the bed's east face is now x=161 7/8", leaving 8 1/8" to the RO, and
+    # there is no bedside table on this door's side. The original 16" move still keeps the
+    # opening at the same 16" residue off x=98", so it interrupts exactly the two studs any
+    # 32" opening must and `structural.door_framing_module` reads the same as before. The
+    # remnant to W-M-C1's bedroom face at 212 1/8" is 10 1/8", which is jamb-pack room.
     #
-    # The bed cannot solve it by moving. Its west face is 9 3/8" off D-M-BATH2's east jamb,
-    # so going west blocks the ensuite door; south and west are the two glazed walls; the
-    # east wall is 13'-0" with D-M-BED2 in it and takes no 80" headboard either. The north
-    # wall is the only headboard wall in this room and this door is the only lever on it.
-    #
-    # 16" east — one full stud bay — puts the RO at 170"..202" and opens 26 1/8" east of the
-    # bed, which takes a 24" FURN-NIGHTSTAND-24 with 2 1/8" to spare. It stays on the same
-    # 16" residue off x=98", so it still interrupts exactly the two studs any 32" opening
-    # must and `structural.door_framing_module` reads the same as before. The remnant to
-    # W-M-C1's bedroom face at 212 1/8" drops to 10 1/8", which is jamb-pack room and no
-    # more — going further east is not available, and does not need to be.
-    #
-    # The hinge stays at the EAST jamb: the open leaf tucks into that corner instead of
-    # sweeping the nightstand. Three devices moved with the opening — see ED-M-BED-SW
-    # (mep_electrical.py), ED-M-BED-RC2 (electrical.py) and ED-M-BED-SW2 (lighting.py).
+    # The hinge stays at the EAST jamb and the leaf swings into the living room. Three
+    # devices moved with the opening in 2026-09-15 — see ED-M-BED-SW (mep_electrical.py),
+    # ED-M-BED-RC2 (electrical.py) and ED-M-BED-SW2 (lighting.py).
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT-SWING32",
          position=from_node("N-M-D3", ft(6, 0)), flip_hinge=False, flip_swing=True),
     # Second bedroom <-> living connection, straight through the centre bearing wall.

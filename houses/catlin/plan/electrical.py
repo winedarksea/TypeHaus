@@ -2196,8 +2196,8 @@ NEC_FILL_MAIN = [
                          wall_ref="W-M-HS4", face="left", distance_from_start=inch(32.25),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** THIS ONE STAYS AT 8'-6 1/4", AND IT WAS TRIED THE OTHER WAY. ** It is behind
-    # FURN-M-BED's headboard (the king runs x 5'-3 7/8"..11'-11 7/8") and unreachable, which
-    # reads like a mistake to fix — but it is the box that holds the NEC ring. The north
+    # FURN-M-BED's headboard (the king now runs x 6'-9 7/8"..13'-5 7/8") and unreachable,
+    # which reads like a mistake to fix — but it is the box that holds the NEC ring. The north
     # wall's middle space runs x 54 5/8"..170" between D-M-BATH2's and D-M-BED's rough
     # openings: 115 3/8", so the ONE receptacle that keeps every point within 6' of an outlet
     # has to stand between x=98" and x=126 5/8", and the bed covers all of that. Moving it to
@@ -2211,23 +2211,22 @@ NEC_FILL_MAIN = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BDN2", face="right", distance_from_start=inch(4.25),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The nightstand's own outlet, new with FURN-M-BED-NIGHTSTAND-E on 2026-09-15. It sits
-    # behind a 16"-deep, 26"-tall carcass with a cord gap behind it, which is where a bedside
-    # outlet belongs — not behind the 80" flush headboard that makes RC2 above unusable. x=13'-0" is behind the 24" carcass (x 11'-11 7/8"..
-    # 13'-11 7/8"), 4" clear of ED-M-BED-LAMP-SW at 12'-4" and 4" clear of ED-M-BED-SW at
-    # 13'-8", the two devices that share this 26 1/8" of wall at 46" and 48" AFF.
+    # The nightstand's own outlet, moved with FURN-M-BED-NIGHTSTAND-W on 2026-10-03. It sits
+    # behind the 16"-deep, 26"-tall carcass with a cord gap, not behind the 80" headboard that
+    # makes RC2 above unusable. Centered at x=5'-9 7/8" on W-M-BDN1, it is 11" east of RC9;
+    # the two 4" boxes retain 7" between their edges.
     ElectricalDevice(uid="M6KEXK18GY", tag="ED-M-BED-RC8", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BDN2", face="right", distance_from_start=inch(58),
+                         wall_ref="W-M-BDN1", face="right", distance_from_start=inch(69.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # West of the king and just east of D-M-BATH2: the device centre is 4 1/4" east of the
-    # door's east jamb (x=4'-6 5/8") and 5" west of the bed's west face (x=5'-3 7/8").
-    # Even with its 4" box, that leaves 2 1/4" clear of the opening. The bedroom side is
-    # reachable from the bath sink through the doorway, so this one gets GFCI protection at
-    # the device while staying on the storey's non-GFCI general receptacle circuit.
+    # West of the king and just east of D-M-BATH2. The 2026-10-03 bed move puts this box
+    # within the west-side nightstand's footprint, near its west edge; RC8 above is centred
+    # behind the carcass. The bedroom side is reachable from the bath sink through the
+    # doorway, so this one keeps GFCI protection at the device while staying on the storey's
+    # non-GFCI general receptacle circuit.
     ElectricalDevice(uid="M62BV9TQ4Y", tag="ED-M-BED-RC9", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-MAIN", room="RM-M-BED",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
