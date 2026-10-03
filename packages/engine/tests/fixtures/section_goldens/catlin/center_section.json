@@ -1234,7 +1234,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "spf"
+      "material": "lsl"
     },
     {
       "space": "model",
@@ -1290,7 +1290,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "spf"
+      "material": "lsl"
     },
     {
       "space": "model",
@@ -2210,7 +2210,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "spf"
+      "material": "lsl"
     },
     {
       "space": "model",
@@ -2660,7 +2660,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "spf"
+      "material": "lsl"
     },
     {
       "space": "model",

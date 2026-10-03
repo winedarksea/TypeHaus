@@ -443,17 +443,27 @@ NODES = [
 # Note W-S-S1 is PLANT_EXT_2X6_HUMID and so is W-S-W4 on the east/west side: the plant room
 # straddles the split, and this override handles it without forking either assembly.
 #
-# ** The revert is deleting the `layer_materials=` lines. ** `pbr-panel-24` and its
+# ** The revert is deleting the `cladding` entries. ** `pbr-panel-24` and its
 # prices.toml row are still live on the east/west walls, so going back to one skin is a
 # twenty-line deletion with no price archaeology.
+#
+# --- LSL studs on the main storey ---------------------------------------------
+# Every exterior wall and the x=18' centreline below also carries `stud` -> `lsl`, by the
+# same mechanism and for the same reason: straight studs under the 9' glazing and cabinet
+# runs, with the stack unchanged. `resolve/framing/stud_stock.py` stamps it on the stud line
+# (studs, kings, jacks, cripples, corner packs); plates and headers stay SPF, and the
+# takeoff bills `2x6:lsl` apart. Engineering still reads the assembly's SPF (SG 0.42), the
+# conservative side for the girt screws.
 WALLS = [
     # --- exterior loop (CCW), sheathing-ext on the line -----------------------
     Wall(uid="CMW101AAAA", tag="W-M-S1", start_node="N-M-SW", end_node="N-M-S1",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
+                         LayerMaterial(layer="stud", material="lsl")),
          assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CMW102AAAA", tag="W-M-S2", start_node="N-M-S1", end_node="N-M-SE",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
+                         LayerMaterial(layer="stud", material="lsl")),
          assembly="EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
@@ -467,6 +477,7 @@ WALLS = [
     # fixed; re-splitting the second storey's own east wall to restore it would undo the
     # 2026-08-15 mirror-rhythm tuning that keeps WIN-S-BED1/BED2 on their stud lines.
     Wall(uid="CMW103AAAA", tag="W-M-E1", start_node="N-M-SE", end_node="N-M-NE",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING),
@@ -486,15 +497,18 @@ WALLS = [
     # — an ERROR, not an advisory. An authored tiebreaker on the upper wall is what it asks
     # for. Second storey: W-S-N1B is re-pointed to W-M-N1B for the same reason (second.py).
     Wall(uid="CMW105AAAA", tag="W-M-N1", start_node="N-M-NE", end_node="N-M-PAN3",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
+                         LayerMaterial(layer="stud", material="lsl")),
          assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N1"),
     Wall(uid="R0STSQM95Y", tag="W-M-N1B", start_node="N-M-PAN3", end_node="N-M-N1",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
+                         LayerMaterial(layer="stud", material="lsl")),
          assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N1"),
     Wall(uid="CMW106AAAA", tag="W-M-N2", start_node="N-M-N1", end_node="N-M-N2",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
+                         LayerMaterial(layer="stud", material="lsl")),
          assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # Split at N-M-MECH3, where RM-M-MECH's east wall tees into the north wall
@@ -502,7 +516,8 @@ WALLS = [
     # its four-stud pack now comes from the assembly's own ``corner_style``, not a
     # per-wall override (2026-08-25, see houses/catlin/CLAUDE.md's corner section).
     Wall(uid="CMW107AAAA", tag="W-M-N3", start_node="N-M-N2", end_node="N-M-MECH3",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
+                         LayerMaterial(layer="stud", material="lsl")),
          assembly="EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N3"),
@@ -510,13 +525,15 @@ WALLS = [
     # x=6'-0" line on 2026-08-23 (the ESS closet's west partition tees in there), so the
     # two storeys now break in the same place and each main segment has one wall under it.
     Wall(uid="CMW135AAAA", tag="W-M-N3B", start_node="N-M-MECH3", end_node="N-M-NW",
-         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),
+                         LayerMaterial(layer="stud", material="lsl")),
          assembly="EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N4"),
     # Split at N-M-MECH1, where RM-M-MECH's south wall tees into the west wall
     # (2026-07-28, MEP shaft closet).
     Wall(uid="CMW136AAAA", tag="W-M-W1B", start_node="N-M-NW", end_node="N-M-MECH1",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
     # Split again at N-M-MUDC1, where RM-M-MUD-CLOSET's north partition tees into the
@@ -525,18 +542,23 @@ WALLS = [
     # segment, and the segment's start node (N-M-MECH1) is unchanged, so its stud grid
     # and the window's bay position do not move.
     Wall(uid="CMW108AAAA", tag="W-M-W1", start_node="N-M-MECH1", end_node="N-M-MUDC1",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
     Wall(uid="WM8EB2TX38", tag="W-M-W1C", start_node="N-M-MUDC1", end_node="N-M-W1",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
     Wall(uid="CMW109AAAA", tag="W-M-W2", start_node="N-M-W1", end_node="N-M-W2",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
     Wall(uid="CMW110AAAA", tag="W-M-W3", start_node="N-M-W2", end_node="N-M-W3",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W2"),
     Wall(uid="CMW111AAAA", tag="W-M-W4", start_node="N-M-W3", end_node="N-M-SW",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W2"),
@@ -551,13 +573,16 @@ WALLS = [
     # axis slides 1/4" and W-S-C1's `stacks_on` is inside `_axis_match`'s tolerance of
     # dropping. Both are explained in full at the assembly (plan/assemblies.py).
     Wall(uid="CMW112AAAA", tag="W-M-C1", start_node="N-M-S1", end_node="N-M-C1",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="INT_2X6_BRG_RC", interior_room="RM-M-BED", top=ft(9),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS"),
     Wall(uid="CMW113AAAA", tag="W-M-C2", start_node="N-M-C1", end_node="N-M-E4",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS2"),
     Wall(uid="CMW114AAAA", tag="W-M-C3", start_node="N-M-E4", end_node="N-M-C2",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS2"),
     # y 21'-8" .. 25'-10" IS NOT A WALL — it is the BM-M-HALL flitch of LVL, the main-storey
@@ -573,9 +598,11 @@ WALLS = [
     # untouched — both halves are the same assembly, the same role and the same
     # ``stacks_on``, so the load path is unchanged and only the junction framing is new.
     Wall(uid="CMW116AAAA", tag="W-M-C5", start_node="N-M-C3", end_node="N-M-PAN1",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     Wall(uid="A5K4RVWPWW", tag="W-M-C5B", start_node="N-M-PAN1", end_node="N-M-N1",
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"),),
          assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     # --- stair / storage block --------------------------------------------------

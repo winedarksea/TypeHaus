@@ -58,6 +58,7 @@ from typehaus.resolve.framing.short_members import (
     is_stud_line_offcut,
     short_member_findings,
 )
+from typehaus.resolve.framing.stud_stock import stamp_stud_stock
 from typehaus.resolve.framing.tables import DEFAULT_SPACING, member_actual
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.layout_lines import layout_phase, lines_by_wall
@@ -909,6 +910,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                              continuation_start=continuations.get((rw.tag, "start")),
                              continuation_end=continuations.get((rw.tag, "end")),
                              line=lines_for_wall.get(rw.tag))
+        members = stamp_stud_stock(members, rw, authored)
         # ``replace`` rather than a field-by-field rebuild: this pass only adds members,
         # and respelling the constructor here silently drops any field added later.
         findings.extend(short_member_findings(rw.tag, members))

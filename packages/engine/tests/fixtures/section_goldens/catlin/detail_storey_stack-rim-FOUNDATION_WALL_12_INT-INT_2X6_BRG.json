@@ -196,7 +196,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "spf"
+      "material": "lsl"
     },
     {
       "space": "model",
@@ -1631,7 +1631,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "spf"
+      "material": "lsl"
     },
     {
       "space": "paper",
@@ -1668,7 +1668,7 @@
         0.7,
         1.058
       ],
-      "content": "spf  5.5\"",
+      "content": "lsl  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

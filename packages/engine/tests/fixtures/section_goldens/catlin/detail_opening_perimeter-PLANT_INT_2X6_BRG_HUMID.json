@@ -196,7 +196,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "spf"
+      "material": "lsl"
     },
     {
       "space": "model",
@@ -773,118 +773,6 @@
       "node": "polyline",
       "points": [
         [
-          222.50000000000003,
-          214.0
-        ],
-        [
-          229.2275196850394,
-          214.0
-        ],
-        [
-          229.2275196850394,
-          217.71653543307087
-        ],
-        [
-          222.50000000000003,
-          217.71653543307087
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSF601AAAA",
-      "tag": "SF-S-DUCT"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          222.50000000000003,
-          214.0
-        ],
-        [
-          229.2275196850394,
-          214.0
-        ],
-        [
-          229.2275196850394,
-          217.71653543307087
-        ],
-        [
-          222.50000000000003,
-          217.71653543307087
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          229.00000000000003,
-          216.12500000000003
-        ],
-        [
-          229.2275196850394,
-          216.12500000000003
-        ],
-        [
-          229.2275196850394,
-          217.71653543307087
-        ],
-        [
-          229.00000000000003,
-          217.71653543307087
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "27B8FKNDPB-run",
-      "tag": "DU-S-HP-SOUTH-RISE-RUN"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          229.00000000000003,
-          216.12500000000003
-        ],
-        [
-          229.2275196850394,
-          216.12500000000003
-        ],
-        [
-          229.2275196850394,
-          217.71653543307087
-        ],
-        [
-          229.00000000000003,
-          217.71653543307087
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           219.385,
           107.50000000000001
         ],
@@ -1018,7 +906,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "1JXQ975X9E",
-      "tag": "joist-0-003-0"
+      "tag": "joist-0-002-0"
     },
     {
       "space": "model",
@@ -1066,7 +954,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "1JXQ975X9E",
-      "tag": "joist-0-003-0/flange"
+      "tag": "joist-0-002-0/flange"
     },
     {
       "space": "model",
@@ -1086,7 +974,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "1JXQ975X9E",
-      "tag": "joist-0-003-0/flange"
+      "tag": "joist-0-002-0/flange"
     },
     {
       "space": "model",
@@ -1114,7 +1002,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSF603AAAA",
-      "tag": "joist-0-003-0"
+      "tag": "joist-0-002-0"
     },
     {
       "space": "model",
@@ -1162,7 +1050,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CSF603AAAA",
-      "tag": "joist-0-003-0/flange"
+      "tag": "joist-0-002-0/flange"
     },
     {
       "space": "model",
@@ -1182,7 +1070,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CSF603AAAA",
-      "tag": "joist-0-003-0/flange"
+      "tag": "joist-0-002-0/flange"
     },
     {
       "space": "model",
@@ -1434,7 +1322,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW112AAAA",
-      "tag": "stud-003"
+      "tag": "stud-002"
     },
     {
       "space": "model",
@@ -1462,7 +1350,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "lsl"
     },
     {
       "space": "model",

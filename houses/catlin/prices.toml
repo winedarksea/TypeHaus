@@ -534,7 +534,12 @@
 # "1.5x1.5 panel" (the girt), ~176 LF each; it was five runs on the two-tier wall. Retired
 # with the outrigger band it followed; restore with EXT_2X6_SWINBURNE.
 # "3.5x3.5 panel" = { material = { low = 3, high = 4.4 }, labour = { low = 0.8, high = 1.5 } }  # was 158 LF
-"2x6" = { material = { low = 0.85, high = 1.15 }, labour = { low = 0.9, high = 1.6 } }  # 9132 LF
+"2x6" = { material = { low = 0.85, high = 1.15 }, labour = { low = 0.9, high = 1.6 } }  # 7088 LF (2026-10-03, LSL stud line split out below)
+# Main-storey exterior + x=18' centreline stud line (studs, kings, jacks, cripples, corner
+# packs) is LSL via `layer_materials` (storeys/main.py); plates and headers stay on "2x6".
+# 1-1/2" x 5-1/2" LSL stud stock runs roughly 3-4x SPF by the foot (estimate, not a quote);
+# labour is the "2x6" row's, since it frames the same.
+"2x6:lsl" = { material = { low = 2.8, high = 4.2 }, labour = { low = 0.9, high = 1.6 } }  # 1646 LF (197 pc)
 # 2026-08-28: 492 -> 464 LF ordered (80 -> 76 pc). The porch joist reinforcement under
 # PT-SG-BR2 — 2 sister 2x8s and 2 blocks, 28 LF — came out when the rear balcony pillar row
 # moved onto the back-beam line and the pillar stopped standing on a cantilevered joist tip.

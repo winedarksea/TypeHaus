@@ -370,7 +370,7 @@ def test_every_slot_region_of_a_banded_wythe_draws_in_section(banded_model):
 # while every lifted ``EXT_2X6`` exports as a lining variant that is not a lining.
 
 _LIFTED_PARTITION = "W-B-CS3"   # INT_2X6_BRG, lifted, no authored band anywhere on it
-_LIFTED_ENVELOPE = "W-M-E1"     # EXT_2X6, lifted AND dropped, no lining override
+_LIFTED_ENVELOPE = "W-S-E1"     # EXT_2X6, lifted, no lining or layer_materials override
 
 
 def _wall(ifc, tag):
@@ -430,13 +430,14 @@ def test_a_lifted_envelope_wall_exports_its_interior_finishes_as_parts(catlin_mo
 
     wall_type = next(iter(_wall(catlin_ifc, _LIFTED_ENVELOPE).IsTypedBy)).RelatingType
     assert wall_type.Name == "EXT_2X6"
-    # House-wide: a ``~lining`` suffix on a lifted EXT_2X6 wall means a real
-    # ``Room.wall_lining`` override, never the trim. 14 of the 28 have no override at all
-    # and every one of them is on the bare type.
+    # House-wide: a ``~lining`` suffix on a lifted EXT_2X6 wall means a real override
+    # (``Room.wall_lining`` or ``Wall.layer_materials``: B&B cladding, main-storey LSL
+    # studs; W-S-E2's accent paint), never the trim. 7 of the 28 have no override at all and
+    # every one of them is on the bare type.
     lifted = [w for w in catlin_model_ro.walls
               if w.assembly == "EXT_2X6" and w.plate_top_z_m is not None]
     assert len(lifted) == 28
     bare = [w for w in lifted
             if next(iter(_wall(catlin_ifc, w.tag).IsTypedBy)).RelatingType.Name
             == "EXT_2X6"]
-    assert len(bare) == 14
+    assert len(bare) == 7

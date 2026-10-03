@@ -140,7 +140,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "spf"
+      "material": "lsl"
     },
     {
       "space": "model",
@@ -4033,7 +4033,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "df-select-s4s",
+      "fill": "#d9b077"
     },
     {
       "space": "model",

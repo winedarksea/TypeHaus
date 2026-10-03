@@ -17,11 +17,10 @@ from library import (
 
 
 # --- exterior wall family -----------------------------------------------------
-# One 2x6 exterior wall type for main, second and attic. Storey nuance that is a
-# purchasing note rather than a different assembly: the MAIN storey's studs are LSL
-# (straightness under the 9' first-floor glazing/cabinet runs); second + attic are
-# standard dimensional 2x6 SPF. Same 5.5" depth either way, so one assembly tells
-# the truth about the geometry and the source string records the material split.
+# One 2x6 exterior wall type for main, second and attic. The MAIN storey's studs are LSL
+# (straightness under the 9' first-floor glazing/cabinet runs), stated per wall as a
+# `layer_materials` override on `stud` (storeys/main.py), not as a second tag; second +
+# attic are standard dimensional 2x6 SPF. Same 5.5" depth either way.
 #
 # A SWINBURNE TRUSS WALL, not a rigid-CI wall: cladding stands off on an INTERMITTENT
 # WOODEN TRUSS — a 2x4 block flat on the sheathing, a 1/2" plywood tab on the block's

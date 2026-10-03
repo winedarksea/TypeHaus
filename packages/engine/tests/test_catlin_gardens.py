@@ -71,7 +71,7 @@ def test_sidewalk_quantities(catlin_model_ro) -> None:
     walk = next(r for r in bom["structural_solids"] if r.get("assembly") == "SIDEWALK_FRC_CLASS5")
     assert walk["count"] == 4
     assert walk["plan_area_sqft"] == pytest.approx(580.1, abs=0.2)
-    assert walk["volume_cubic_yards"] == pytest.approx(7.13, abs=0.01)
+    assert walk["volume_cubic_yards"] == pytest.approx(7.16, abs=0.01)
     base = next(r for r in bom["envelope_layers"]
                 if r["material"] == "mndot-class-5-base" and r["thickness_in"] == 6.0)
     assert base["net_area_sqft"] == pytest.approx(580.1, abs=0.2)

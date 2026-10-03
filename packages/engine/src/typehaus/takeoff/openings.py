@@ -70,14 +70,18 @@ def _host_structure(model: ResolvedModel, host_wall: str | None) -> str:
     The STRUCTURE layer's ``material_ref`` is the same discriminator
     ``takeoff/wall_structure.py`` groups its pours by, so the two tables name a wall's
     material the same way.
+
+    Read off the AUTHORED assembly: a ``Wall.layer_materials`` restock (LSL or DF studs in
+    place of SPF) is the same hole to make, and must not split an opening row by storey.
     """
     if not host_wall:
         return ""
     wall = model.wall(host_wall)
-    if wall is None:
+    assembly = model.plan.library.resolve_assembly(wall.assembly) if wall else None
+    if assembly is None:
         return ""
-    for layer in wall.layers:
-        if layer.function == LayerFunction.STRUCTURE.value:
+    for layer in assembly.layers:
+        if layer.function is LayerFunction.STRUCTURE:
             return layer.material_ref or ""
     return ""
 

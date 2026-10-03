@@ -54,7 +54,8 @@ def test_the_study_stair_sconce_is_counted_where_it_now_stands(ctx):
 
     message = _finding_for(stairway_illumination(ctx), STUDY_STAIR).message
     assert SC1 in message.split(" and switched")[0], message
-    assert "below the nosing line" not in message, message
+    # Another fixture may be discounted (ED-S-STUDY2-NOOK-SC is); SC1 must not be.
+    assert f"{SC1} sits" not in message, message
 
 
 def test_a_sconce_dropped_under_its_own_tread_stops_counting(ctx):

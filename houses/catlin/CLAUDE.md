@@ -308,8 +308,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     AO-M-PORCH-HYD depend on it.
 - 36'x36' at sheathing; everything on the 16" o.c. module; exterior walls carry
   `alignment=face("sheathing-ext")` as the vertical datum (#43). Side-wall stack is 2x6
-  throughout — one `EXT_2X6` on main, second and attic. Main-storey studs are LSL, upper
-  storeys dimensional 2x6 (a purchasing note in the assembly's `source`).
+  throughout — one `EXT_2X6` on main, second and attic. Main-storey exterior and x=18'
+  centreline studs are LSL via `layer_materials` `stud` -> `lsl` (stud line only, bills
+  `2x6:lsl`); upper storeys dimensional 2x6 SPF.
 - It is a CATLIN TRUSS WALL outboard of the sheathing, ONE girt tier: 4" ccSPF crossed only
   by the blocks, then the block's proud 1/2" as a continuous vent gap, then one tier of flat
   horizontal KDAT 2x4 girts at 24" o.c. in free air, then the panel. Each crossing: three

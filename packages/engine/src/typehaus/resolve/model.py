@@ -205,8 +205,9 @@ class FramedMember:
     # Catalog material ref, for members that are a *skin* rather than lumber: the wall→roof
     # closure bands carry their source layer's material, the derived trim its board material.
     # Without it both emitters fall back to the category palette, which paints a standing-seam
-    # cladding band the same generic grey as a plywood one. ``None`` for ordinary framing,
-    # which is coloured by category as before.
+    # cladding band the same generic grey as a plywood one. A wall whose ``layer_materials``
+    # restocks its stud layer carries it on the stud line (``framing/stud_stock.py``) so the
+    # takeoff bills it apart. ``None`` for ordinary framing, coloured by category as before.
     material: str | None = None
     # Visibility trade this member belongs to when its *category* alone would file it
     # elsewhere. A fascia is the case this exists for: it is envelope trim by category, but
