@@ -134,3 +134,28 @@ widths was already on the SEKTION ladder, so the retype vindicated the arithmeti
 than moving it. The peninsula is unchanged too: 120" of carcass is composed of SEKTION boxes
 behind one continuous top, which is a shop decision, and its 15" oak knee overhang is graded
 by `advisory.countertop_overhang` exactly as before.
+
+## The east wall, carousel corners and the SEKTION peninsula (2026-10-02)
+
+**15"-deep bases.** IKEA US lists SEKTION base frames at a 15" system depth (15 3/8" actual)
+in 15/18/24/30/36 widths, read 2026-10-02 (e.g. 24x15x30, 18x15x30 configured listings).
+The library carries them as `SEKT-B{15,18,24,30,36}-D15`, 15 1/2" with fronts, 36" nominal
+like every base. On the living-room run: 3 1/2" leg + 30" frame + 1/2" sub-top + 2" oak = 36".
+
+**The composition**, south to north on W-M-E1 (y in inches):
+
+    6 5/8   2 1/8 scribe | B24 8 3/4-32 3/4 | B30 -62 3/4 (E1 +1/4) | B18 -80 3/4 | 1/2 panel | brick 81 1/4
+    126 3/4 1/2 panel | B18 -145 1/4 | B30 -175 1/4 (E2 +1/4) | B30 -205 1/4 | B36 -241 1/4 (MID -3/4) | B18 -259 1/4 | 1/2 scribe
+
+The B18s sit at 104 -/+ 32 1/4 and the window B30s at 104 -/+ 56 1/4: mirrored about the brick.
+A B30 under EAST-MID too would leave 34" between it and E2's, which no stock width fills.
+
+**Corner base.** `SEKT-CORNER-B38`: 38x38, 24"-deep legs, a 14" notch, sold with a carousel and
+a 13"+13" bifold (IKEA s79582533 / s89506379). The type carries an L `footprint_shape` off the
+glyph's own ring (`sektion_corner_points`), and `carcass_depth` is a leg's 24".
+
+**Kitchen arithmetic after the corners.** North: 5/8 + B15 + DW + SINK-36 + B15 + 2 3/8 filler +
+38 leg. East: peninsula corner (outer corner y=317 3/8) + 1 + range 30 + 1 + NE corner 38 = to
+425 3/8. Landings 14" south / 38" north. Peninsula: 1/2 panel + B36 + B24 + B24 = 84 1/2, on the
+82 5/8" floor anchoring frame. Uppers: W24 between the garage (5/8 scribe) and the hood; WN1
+W30 -> `SEKT-W36-30`, 3" to the hood.

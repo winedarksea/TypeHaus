@@ -1,6 +1,6 @@
 """Study 2 window seat under ST-S2A: three SEKTION top frames and an 18" open high frame.
 
-All stand on a 3 1/2" 2x4 base like the living-room BESTA run, not on IKEA legs. IKEA sells
+All stand on a 3 1/2" 2x4 base, not on IKEA legs. IKEA sells
 no MAXIMERA drawer for the 24x24x15 top frame, so each seat unit opens with a lift-up
 front, as IKEA configures it. Configured material prices live in prices.toml.
 """
@@ -41,7 +41,7 @@ FORBATTRA_MATTE_WHITE_30 = Product(
 STUDY_NOOK_PRODUCTS = (SEKTION_TOP_FRAME_24_15, SEKTION_HIGH_FRAME_18_80,
                        FORBATTRA_MATTE_WHITE_80, FORBATTRA_MATTE_WHITE_30)
 
-_BASE = "3 1/2\" 2x4 base with a baseboard-matching kick, like FURN-BESTA-2358."
+_BASE = "3 1/2\" 2x4 base with a baseboard-matching kick."
 
 STUDY_NOOK_SEAT = FurnitureType(
     tag="FURN-S-STUDY-NOOK-SEAT-24", name='SEKTION 24x24x15 seat unit, lift-up front, 19 1/2" top',

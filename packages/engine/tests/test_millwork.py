@@ -56,23 +56,28 @@ def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
 # --- the derivation ------------------------------------------------------------------------
 
 def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catlin_model_ro):
-    """33 windows get derived oak; the plant room's four and kitchen sink window are quartz."""
+    """30 windows get derived oak; the plant room's four and the kitchen sink window are
+    quartz, and the east row's three are live-edge oak meeting the living-room slabs."""
     derived = [stool for stool in stools if stool.derived]
     assert {stool.assembly for stool in derived} == {"EXT_2X6"}
     # Seven of the 41 are out of scope because of their host wall: the four plant-room
-    # windows, sauna, and two garage windows. WIN-M-KITCH is in scope but authored as quartz.
-    assert len(derived) == 33
+    # windows, sauna, and two garage windows. WIN-M-KITCH and the east row are in scope but
+    # authored.
+    assert len(derived) == 30
     windows = [o for o in catlin_model_ro.openings if o.kind == "window"]
     assert len(windows) == 41, "the seven out-of-scope windows still exist; they get no oak"
     assert all(stool.material_ref == "oak-stool" for stool in derived)
-    # The plant room's four and the kitchen sink window are authored in 3 cm quartz.
+    # The plant room's four and the kitchen sink window are authored in 3 cm quartz; the east
+    # row's three in 2" live-edge oak, flush with the counter.
     authored = {stool.window_ref: stool for stool in stools if not stool.derived}
-    assert set(authored) == {*(f"WIN-S-PLANT{n}" for n in range(1, 5)), "WIN-M-KITCH"}
-    assert all(stool.material_ref == "quartz-counter"
-               for stool in authored.values())
+    assert set(authored) == {*(f"WIN-S-PLANT{n}" for n in range(1, 5)), "WIN-M-KITCH",
+                             "WIN-M-LIV-E1", "WIN-M-LIV-E2", "WIN-M-EAST-MID"}
+    east = {"WIN-M-LIV-E1", "WIN-M-LIV-E2", "WIN-M-EAST-MID"}
+    assert all(stool.material_ref == ("live-edge-white-oak" if ref in east else "quartz-counter")
+               for ref, stool in authored.items())
     assert {stool.window_ref: stool.assembly for stool in authored.values()} == {
         **{f"WIN-S-PLANT{n}": "PLANT_EXT_2X6_HUMID" for n in range(1, 5)},
-        "WIN-M-KITCH": "EXT_2X6",
+        "WIN-M-KITCH": "EXT_2X6", **{ref: "EXT_2X6" for ref in east},
     }
 
 
@@ -155,12 +160,12 @@ def test_a_stools_length_is_the_opening_plus_two_horns(stools, catlin_model_ro):
 
 
 def test_the_stool_cut_list_collapses_to_the_three_window_widths(stools):
-    """33 oak stools, three sizes — which is what makes them worth milling from few setups."""
+    """30 oak stools, three sizes — which is what makes them worth milling from few setups."""
     oak = [stool for stool in stools if stool.material_ref == "oak-stool"]
     sizes = {round(stool.length_m * M_TO_IN, 2) for stool in oak}
     assert len(sizes) == 3
     counts = _by_assembly(oak)
-    assert sum(len(v) for v in counts.values()) == 33
+    assert sum(len(v) for v in counts.values()) == 30
 
 
 # --- shelf banks --------------------------------------------------------------------------
@@ -262,6 +267,9 @@ def test_a_second_millwork_standard_is_an_error_not_a_winner(catlin_plan) -> Non
     assert findings[0].severity is Severity.ERROR
 
 
+_M2_TO_FT2 = 10.7639104
+
+
 # --- countertops -------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
@@ -278,29 +286,67 @@ def test_a_countertops_area_is_derived_from_the_cabinets_under_it(countertops):
     """
     M2_TO_FT2 = 10.7639104
     north = countertops["CT-M-KIT-N"]
-    # Five hosts: B15, the dishwasher, the 36" sink base, B30, and the corner B30. The
+    # Five hosts: B15, the dishwasher, the 36" sink base, B15, and the NE carousel. The
     # dishwasher is in the run because the slab runs over it.
     assert north.hosts == ("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE",
-                           "FURN-M-KIT-E2", "FURN-M-KIT-N4")
+                           "FURN-M-KIT-E2", "FURN-M-KIT-CORNER-NE")
     # 24" of carcass plus the 1" a top oversails its doors — nothing authored the 25".
     assert north.depth_m * M_TO_IN == pytest.approx(25.0, abs=1e-6)
-    # Area within a filler's worth of length x depth: the run turns a corner, so the slab is
-    # an L and its area is not simply its bounding box.
-    straight = north.length_m * north.depth_m * M2_TO_FT2
-    assert north.area_m2 * M2_TO_FT2 == pytest.approx(straight, rel=0.05)
+    # The run is straight up to the NE carousel, whose L adds its 13" east-leg tail beyond
+    # the 38" it contributes to the length: (length - 38") x 25" + the L's 38x25 + 13x25.
+    corner = 38.0 / M_TO_IN
+    l_slab = (38.0 * 25.0 + 13.0 * 25.0) / M_TO_IN**2
+    expected = ((north.length_m - corner) * north.depth_m + l_slab) * M2_TO_FT2
+    assert north.area_m2 * M2_TO_FT2 == pytest.approx(expected, rel=0.01)
 
 
-def test_the_peninsula_is_two_tops_meeting_at_the_carcass_face(countertops):
-    """The overhang decision, as geometry rather than as a paragraph."""
+def test_the_peninsula_is_two_tops_meeting_at_the_carcass_back(countertops):
+    """Quartz over the bases, oak on the seating cantilever BEHIND them (cantilever_side)."""
+    from shapely.geometry import Polygon
+
     stone, bar = countertops["CT-M-KIT-PENINSULA"], countertops["CT-M-KIT-PENINSULA-BAR"]
     assert stone.material_ref == "quartz-counter" and bar.material_ref == "oak-counter"
-    # The stone stops at the 24" carcass face and cantilevers nothing; the oak takes all 15".
-    assert stone.depth_m * M_TO_IN == pytest.approx(24.0, abs=1e-6)
-    assert stone.unsupported_overhang_m == pytest.approx(0.0, abs=1e-9)
-    assert bar.depth_m * M_TO_IN == pytest.approx(15.0, abs=1e-6)
-    assert bar.unsupported_overhang_m * M_TO_IN == pytest.approx(15.0, abs=1e-6)
-    # 96" of the peninsula's 120": the east 24" carries FURN-M-KIT-MIXER-GARAGE full depth.
-    assert bar.length_m * M_TO_IN == pytest.approx(96.0, abs=1e-6)
+    # The stone is 24" of carcass plus 1" over the drawer fronts; the oak is all cantilever.
+    assert stone.depth_m * M_TO_IN == pytest.approx(25.0, abs=1e-6)
+    assert bar.depth_m * M_TO_IN == pytest.approx(9.625, abs=1e-6)
+    assert bar.unsupported_overhang_m * M_TO_IN == pytest.approx(9.625, abs=1e-6)
+    # 98 1/2": past the last base, behind the carousel leg, to the mixer garage's support.
+    assert bar.length_m * M_TO_IN == pytest.approx(98.5, abs=1e-6)
+    s_x0, s_y0, s_x1, _ = Polygon(stone.outline).bounds
+    b_x0, _, b_x1, b_y1 = Polygon(bar.outline).bounds
+    # The drawers face north, so the bar's north edge IS the stone's south (back) edge.
+    assert b_y1 == pytest.approx(s_y0, abs=1e-9)
+    assert b_x0 == pytest.approx(s_x0, abs=1e-9)
+    assert (b_x1 - s_x1) * M_TO_IN == pytest.approx(14.0, abs=1e-6)
+
+
+def test_an_l_host_takes_the_slab_over_its_whole_l(countertops):
+    """A carousel corner's slab is its L, oversailing only the two notch faces."""
+    from shapely.geometry import Polygon
+
+    corner = countertops["CT-M-KIT-E"]
+    assert corner.hosts == ("FURN-M-KIT-CORNER-PEN",)
+    ring = Polygon(corner.outline)
+    # Two 24"-deep legs, 38" long, plus 1" on each of the two 14" notch faces.
+    expected = (38 * 25 + 13 * 25) / 144.0
+    assert ring.area * _M2_TO_FT2 == pytest.approx(expected, abs=1e-6)
+    assert len(corner.outline) == 6, "an L, not a rectangle"
+    x0, y0, x1, y1 = ring.bounds
+    # The backs and the leg ends stay on the 38" box; nothing oversails them.
+    assert ((x1 - x0) * M_TO_IN, (y1 - y0) * M_TO_IN) == pytest.approx((38.0, 38.0), abs=1e-6)
+
+
+def test_one_quartz_slab_over_the_sektion_peninsula_now_passes(countertops):
+    """9 5/8" on 34 5/8" is 28%: one-piece quartz is the recorded alternative to the oak."""
+    import dataclasses
+
+    from typehaus.checks.advisory.countertops import _grade
+    from typehaus.findings import Result
+
+    one_slab = dataclasses.replace(
+        countertops["CT-M-KIT-PENINSULA"], depth_m=34.625 / M_TO_IN,
+        unsupported_overhang_m=9.625 / M_TO_IN)
+    assert _grade(one_slab).result is Result.PASS
 
 
 def test_the_peninsula_type_states_how_much_of_its_depth_is_box(catlin_plan):

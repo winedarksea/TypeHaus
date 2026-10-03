@@ -402,6 +402,8 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
     standing free of every room boundary by more than ``_NEAR_WALL_M`` — a base run
     against a wall is the wall receptacles' problem and ``receptacle_spacing``'s beat. A
     peninsula (attached to a wall at one end) reads as near-wall here and is not graded.
+    The unit graded is the RUN — carcasses chained within the filler tolerance — so a
+    peninsula of several boxes is attached when any box of it is.
     """
     from shapely.geometry import LineString, Point, Polygon
 
@@ -427,6 +429,7 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     islands = 0
     work_surfaces = 0
+    carcasses: dict[str, list[tuple[str, Polygon]]] = {}
     for item in ctx.model.canvas_objects:
         item_type = furniture_types.get(item.type_ref or "")
         if item_type is None or item_type.work_surface is not True:
@@ -435,25 +438,26 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
         if item.z_m - floor_z.get(item.storey, 0.0) > _FIXED_CABINET_FLOOR_CONTACT_M:
             continue
         carcass = Polygon(item.footprint)
-        if not carcass.is_valid or carcass.is_empty:
-            continue
-        near_wall = any(carcass.distance(boundary) <= _NEAR_WALL_M
-                        for boundary in boundaries_by_storey.get(item.storey, []))
-        if near_wall:
-            continue
-        islands += 1
-        reach = carcass.buffer(_ISLAND_RECEPTACLE_MARGIN_M)
-        served = any(reach.contains(Point(placed_xy(ctx.model, device)))
-                     for device in receptacles_by_storey.get(item.storey, []))
-        if served:
-            out.append(_pass(cid, f"island {item.tag} has a receptacle at its footprint",
-                             (item.tag,)))
-        else:
-            out.append(_warn_fail(
-                cid, f"island {item.tag} has no receptacle within its footprint — "
-                     f"NEC 210.52(C)(2) wants one (or provisions for one), and "
-                     f"210.52(C)(3) wants any that serves the countertop on/above/in "
-                     f"the counter surface", (item.tag,)))
+        if carcass.is_valid and not carcass.is_empty:
+            carcasses.setdefault(item.storey, []).append((item.tag, carcass))
+    for storey, items in carcasses.items():
+        for tags, run in _work_surface_runs(items):
+            if any(run.distance(boundary) <= _NEAR_WALL_M
+                   for boundary in boundaries_by_storey.get(storey, [])):
+                continue
+            islands += 1
+            label = " + ".join(tags)
+            reach = run.buffer(_ISLAND_RECEPTACLE_MARGIN_M)
+            if any(reach.contains(Point(placed_xy(ctx.model, device)))
+                   for device in receptacles_by_storey.get(storey, [])):
+                out.append(_pass(cid, f"island {label} has a receptacle at its footprint",
+                                 tags))
+            else:
+                out.append(_warn_fail(
+                    cid, f"island {label} has no receptacle within its footprint — "
+                         f"NEC 210.52(C)(2) wants one (or provisions for one), and "
+                         f"210.52(C)(3) wants any that serves the countertop on/above/in "
+                         f"the counter surface", tags))
     if not islands:
         if work_surfaces:
             # Positive absence, not a missing input: the house's work-surface casework was
@@ -467,6 +471,22 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
         return [_unknown(cid, "no work-surface casework is modeled at all, so whether this "
                               "house has an island cannot be answered")]
     return out
+
+
+def _work_surface_runs(items: list[tuple[str, object]]) -> list[tuple[tuple[str, ...], object]]:
+    """Chain carcasses that abut within the filler tolerance into runs: (tags, union)."""
+    from typehaus.resolve.overlay import union_all
+    from typehaus.resolve.placeable_groups import RUN_GAP_TOLERANCE_M
+
+    pad = RUN_GAP_TOLERANCE_M / 2.0
+    merged = union_all([polygon.buffer(pad, join_style=2) for _, polygon in items])
+    parts = list(getattr(merged, "geoms", [merged]))
+    runs: list[tuple[tuple[str, ...], object]] = []
+    for part in parts:
+        members = [(tag, polygon) for tag, polygon in items if part.intersects(polygon)]
+        runs.append((tuple(tag for tag, _ in members),
+                     union_all([polygon for _, polygon in members])))
+    return runs
 
 
 @check(Tier.ADVISORY, "electrical.circuit_refs")

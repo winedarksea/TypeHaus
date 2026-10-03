@@ -2276,7 +2276,8 @@
 # FURNITURE SPLIT, 2026-08-08b. The loose furniture moved to furnishings, which is priced
 # and reported BESIDE the construction total rather than inside it. The line the owner drew
 # is fixed-and-price-stable vs loose-and-volatile, not the FURN- tag: what stays here is the
-# eight FURN-* rows that are effectively built in — the EIGHT BESTA wall units, both sauna
+# eight FURN-* rows that are effectively built in — the BESTA wall units (0 since the
+# SEKTION line, 2026-10-02, row kept for the shared catalog), both sauna
 # benches, the mudroom bench, the garage workbench, the wall rack and the three wardrobes —
 # because those are bought once with the house and do not swing. A sofa does.
 # The three bedroom wardrobes are PAX since 2026-10-02 (FURN-S-PAX-* below), fitted to the
@@ -2326,7 +2327,8 @@
 # notes/ikea_sektion_ladder.md), which is the system the [placeables] basis note above has
 # specified and priced the whole time. The rows stay for the reason CASE-ISLAND-60's does:
 # they are shared-catalog products and the next house may want them. CASE-PENINSULA-120
-# keeps its count; the hall-bath closet moved to configured SEKTION on 2026-10-02.
+# went to 0 ea on 2026-10-02 when the peninsula became SEKTION (FURN-M-KIT-PEN-*); the
+# hall-bath closet moved to configured SEKTION the same day.
 "CASE-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 0 ea
 "CASE-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 0 ea
 "CASE-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 0 ea
@@ -2336,7 +2338,7 @@
 "CASE-ISLAND-60" = { material = { low = 500, high = 1400 }, labour = { low = 250, high = 600 } }  # 0 ea
 # 10'-0" x 3'-3", so twice the carcass of the 60" island and a 15" overhang that needs a
 # counter substrate and brackets over open knee space. Priced at roughly 2x the island.
-"CASE-PENINSULA-120" = { material = { low = 950, high = 2600 }, labour = { low = 400, high = 950 } }  # 1 ea
+"CASE-PENINSULA-120" = { material = { low = 950, high = 2600 }, labour = { low = 400, high = 950 } }  # 0 ea
 # CASE-OVER-36 also has no instance since 2026-08-24 — both went to FT-KIT-OVER-COLD-3278
 # when the cold bay shrank to 65 3/4". Kept for the same catalog reason as the island.
 "CASE-OVER-36" = { material = { low = 150, high = 380 }, labour = { low = 90, high = 220 } }  # 0 ea
@@ -2426,24 +2428,40 @@
 # cabinet: they are [framing] and the countertop's own substrate.
 #
 # ** WHICH BOXES ARE DRAWER STACKS ** (the TODO's actual question, and the model has no
-# drawer vocabulary to answer it in): SEKT-B24 and SEKT-B30 on the north and east runs are
-# three-drawer MAXIMERA stacks; SEKT-B15 is a two-drawer; SEKT-SINK-B36 is doors, because
-# the bowls take the space. MAXIMERA fits every base and pantry width here EXCEPT a 12"
-# base, of which this kitchen has none.
+# drawer vocabulary to answer it in): the peninsula's SEKT-B36 and two SEKT-B24 are
+# three-drawer MAXIMERA stacks opening to the kitchen; SEKT-B15 is a two-drawer; SEKT-SINK-B36
+# is doors, because the bowls take the space; the two SEKT-CORNER-B38 are carousels behind a
+# bifold. Every living-room SEKT-B*-D15 is a MAXIMERA stack (15"-deep MAXIMERA is stock).
 
 # Bases. Same box at the same size as the CASE-B* rows, so the same material.
-"SEKT-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 1 ea
-"SEKT-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 1 ea
-"SEKT-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 0 ea
+"SEKT-B36" = { material = { low = 220, high = 550 }, labour = { low = 90, high = 220 } }  # 1 ea
+# The carousel corner (IKEA s79582533, carousel and 13"+13" bifold in the number). Labour
+# is a base and a half: two legs to level and the bifold to hang off the range side.
+"SEKT-CORNER-B38" = { material = { low = 380, high = 750 }, labour = { low = 130, high = 320 } }  # 2 ea
+# The east wall's 15"-deep living-room frames with MAXIMERA stacks (IKEA US configured,
+# read 2026-10-02: 24x15x30 $257-269, 18x15x30 $288 with fronts).
+"SEKT-B18-D15" = { material = { low = 170, high = 340 }, labour = { low = 90, high = 220 } }  # 3 ea
+"SEKT-B24-D15" = { material = { low = 180, high = 370 }, labour = { low = 90, high = 220 } }  # 1 ea
+"SEKT-B30-D15" = { material = { low = 200, high = 420 }, labour = { low = 90, high = 220 } }  # 3 ea
+"SEKT-B36-D15" = { material = { low = 230, high = 480 }, labour = { low = 90, high = 220 } }  # 1 ea
+# FÖRBÄTTRA-faced pieces (plan/living_east_run_types.py): site-cut 25x80 panels at $127.
+"FT-LIV-E-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 2 ea
+"FT-KIT-PEN-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 1 ea
+"FT-KIT-PEN-BACK-PANEL" = { material = { low = 380, high = 600 }, labour = { low = 120, high = 300 } }  # 1 ea, three panels and the connector rails
+"FT-KIT-PEN-SUPPORT-BOX" = { material = { low = 120, high = 300 }, labour = { low = 150, high = 350 } }  # 1 ea
 "SEKT-SINK-B36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 1 ea
 # Wall frames on the published SEKTION ladder. The 30" material bands scale from the 40"
 # references; the shorter carcasses keep the same per-box installation labour.
 "SEKT-W15-40" = { material = { low = 115, high = 290 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W24-40" = { material = { low = 140, high = 350 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W30-40" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 0 ea
-"SEKT-W15-30" = { material = { low = 90, high = 220 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-W15-30" = { material = { low = 90, high = 220 }, labour = { low = 90, high = 220 } }  # 1 ea
 "SEKT-W24-30" = { material = { low = 105, high = 265 }, labour = { low = 90, high = 220 } }  # 2 ea
-"SEKT-W30-30" = { material = { low = 120, high = 300 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-W30-30" = { material = { low = 120, high = 300 }, labour = { low = 90, high = 220 } }  # 1 ea
+"SEKT-W36-30" = { material = { low = 135, high = 335 }, labour = { low = 90, high = 220 } }  # 1 ea
 # The former 15" top course. The current 20" course scales material with its height;
 # labour does not scale at all, for the reason the CASE-WS* note above gives — every one of
 # these is hung off a ladder against a course that has to line up with the box under it.
@@ -2451,7 +2469,7 @@
 "SEKT-W24-15" = { material = { low = 95, high = 240 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W30-15" = { material = { low = 115, high = 280 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W36-15" = { material = { low = 140, high = 340 }, labour = { low = 90, high = 220 } }  # 0 ea
-"SEKT-W15-20" = { material = { low = 95, high = 235 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-W15-20" = { material = { low = 95, high = 235 }, labour = { low = 90, high = 220 } }  # 1 ea
 "SEKT-W24-20" = { material = { low = 125, high = 320 }, labour = { low = 90, high = 220 } }  # 2 ea
 "SEKT-W30-20" = { material = { low = 155, high = 375 }, labour = { low = 90, high = 220 } }  # 1 ea
 "SEKT-W36-20" = { material = { low = 185, high = 455 }, labour = { low = 90, high = 220 } }  # 1 ea
@@ -2472,7 +2490,7 @@
 "SEKT-HIGH18-80" = { material = { low = 145, high = 400 }, labour = { low = 120, high = 300 } }  # 1 ea
 # The stock 24x24x15 top cabinet is unused in this house.
 "SEKT-TS24-15" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 0 ea
-# The rest of the SEKTION ladder (SEKT-B12/B18/B36, the 12"/18"/36" wall frames,
+# The rest of the SEKTION ladder (SEKT-B12/B18, the 12"/18"/36" wall frames,
 # SEKT-HIGH18-90, SEKT-HIGH30-90, SEKT-TS30-15) has no instance in this house and no row
 # here. Add one when a box is added; an unpriced type is silently DROPPED from the takeoff
 # and the total falls, which looks like a cheaper kitchen and is not one.
@@ -2988,7 +3006,7 @@
 "FT-PORCH-TRACK-102" = { material = { low = 80, high = 145 }, labour = { low = 55, high = 140 } }  # 2 ea — the flanks, now 100 1/2" long, ending 1/4" off the cladding (tag kept for the row)
 # The eight fitted FURN-* rows that stay in the build number. The loose ones are in
 # [furnishings] at the bottom of the file.
-"FURN-BESTA-2358" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 160 } }  # 8 ea
+"FURN-BESTA-2358" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 160 } }  # 0 ea, retired 2026-10-02 for the SEKTION line; kept as the glazed-green-brick rows are
 "FURN-G-WORKBENCH" = { material = { low = 200, high = 900 }, labour = { low = 60, high = 200 } }  # 1 ea
 # The two mudroom and two sauna rows are millwork, not catalogue furniture — they are
 # built, and the range is what the built article costs in materials and shop time.
@@ -4973,10 +4991,11 @@
 # changed is not the number, it is that the number now follows the cabinets.
 #
 # THE DERIVATION, so the next reader can re-run it rather than trust it:
-#   CT-M-KIT-N            23.50 SF  the north run, B15 + dishwasher + 36" sink base + B30
-#                                   + the corner B30, 25" deep over 24" carcasses
-#   CT-M-KIT-E             4.17 SF  the one base south of the range
-#   CT-M-KIT-PENINSULA    20.00 SF  the peninsula's 24" work surface, 10'-0"
+#   CT-M-KIT-N            24.89 SF  the north run, B15 + dishwasher + 36" sink base + B15
+#                                   + the NE carousel's L, 25" deep over 24" carcasses
+#   CT-M-KIT-E             8.85 SF  the peninsula-corner carousel's L
+#   CT-M-KIT-PENINSULA    14.67 SF  the SEKTION peninsula's three bases + end panel, 84 1/2"
+#   (the three kitchen tops were 47.67 SF before the 2026-10-02 SEKTION corners; 48.41 now)
 #   CT-M-BATH2-VANITY      6.33 SF  48 x 19
 #   CT-S-BATH1-VANITY      7.33 SF  48 x 22
 #   STOOL-WIN-S-PLANT1..4  9.26 SF  the plant room's four 3 cm window stools (2026-09-28),
@@ -4998,10 +5017,10 @@
 # the retired `finish-countertops-quartz` allowance carried. The five existing tops total
 # 61.34 SF, or $3,067-5,827 against that lump's $3,200-6,000. CT-M-CLOSET adds 5.50 SF
 # (48 x 16 1/2). Five quartz window stools add 11.30 SF (the plant room's four, then
-# WIN-M-KITCH), so this row now prices 78.13 SF. See
+# WIN-M-KITCH), so this row priced 78.13 SF, and 78.88 SF since the 2026-10-02 corners. See
 # plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the showroom — silica
 # exposure control is the thing to buy here.
-"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 78.13 SF
+"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 78.88 SF
 # The bar top, and the rate is not a countertop rate at all: the stock is the owner's own
 # white oak at ~$2/SF in 8/4, and everything above that is a joiner's time — milling to
 # 1 3/16" so it sits flush with 3 cm stone, strips the long way on slotted screws or
@@ -5009,7 +5028,13 @@
 # fails on shop-built tops. The low end is the owner's mill and a good carpenter; the high
 # end is a cabinetmaker. 10 SF x $40-110 is the $400-1,100 the retired
 # `finish-peninsula-oak-bar-top` allowance carried, now attached to the slab it pays for.
-"oak-counter" = { material = { low = 4, high = 10 }, labour = { low = 36, high = 100 } }  # 10.00 SF
+# 6.58 SF since 2026-10-02: the SEKTION peninsula's knee is 9 5/8" x 98 1/2".
+"oak-counter" = { material = { low = 4, high = 10 }, labour = { low = 36, high = 100 } }  # 6.58 SF
+# The living room's two live-edge slabs and the three east-row stools in the same stock
+# (2026-10-02). BOUGHT, not the owner's mill: a 2" kiln-dried, flattened white oak flitch is
+# ~2.3 bf/SF at $20-40/bf, and the labour is scribing the back edge, slotted brackets and a
+# six-face hardwax-oil finish.
+"live-edge-white-oak" = { material = { low = 45, high = 95 }, labour = { low = 30, high = 80 } }  # 29.07 SF
 
 [stair_treads]
 # The oak flights' walking surfaces by the piece (2026-09-28), moved out of [framing] where
@@ -7237,6 +7262,9 @@ cabinet-pantry-swing-out-inserts = { low = 900, high = 2200 }  # 2 x Rev-A-Shelf
 # the lift was, and the reason is the door: a 72"-tall face over a counter cannot swing.
 # WIRE ED-M-LIVING-KGF4/KMX1 BEFORE THE BOX GOES IN.
 cabinet-mixer-garage-pullout-and-door = { low = 400, high = 1100 }
+# The SEKTION peninsula's free-standing 84": the floor anchoring frame 105.570.36 (82 5/8")
+# and the subfloor fixings it wants. The connector rails bill with FT-KIT-PEN-BACK-PANEL.
+cabinet-peninsula-floor-anchor = { low = 120, high = 300 }
 site-protection-final-clean-and-dumpsters = { low = 3500, high = 8500 }
 
 # --- general conditions and soft costs --------------------------------------------------------

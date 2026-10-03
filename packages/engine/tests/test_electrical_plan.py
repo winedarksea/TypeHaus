@@ -413,20 +413,15 @@ def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
     """``electrical.island_receptacle`` returns NOT_APPLICABLE on catlin, and that is correct.
 
     The check's population rule is "freestanding by more than ``_NEAR_WALL_M`` from every
-    room boundary" — FURN-M-KIT-PENINSULA reads as near-wall (its east end lands on the
-    east wall) and is deliberately not graded, because a carcass against a wall is
-    ``receptacle_spacing``'s beat, not this one. With no freestanding work-surface carcass
-    left in the house the check has nothing to grade and says so — as N/A rather than
-    UNKNOWN, and it earns that by counting: eight work-surface units were read and every
-    one of them stands against a boundary, so "this house has no island" is a fact about
-    the building. Had *no* work-surface casework been modeled at all the answer would
-    still be UNKNOWN, because then the question would be unanswerable rather than answered.
+    room boundary", judged per RUN of carcasses chained within the filler tolerance. The
+    SEKTION peninsula is four boxes (end panel, B36, B24, B24) that do not touch a wall on
+    their own; they abut FURN-M-KIT-CORNER-PEN, whose east leg stands on the east wall, so
+    the run is attached and is ``receptacle_spacing``'s beat. Graded box by box, all three
+    bases read as islands — the scope bug this test pins shut.
 
-    ** THIS IS AN HONEST REGRESSION IN COVERAGE, NOT A FIX. ** The peninsula still has
-    countertop-serving receptacles — ED-M-LIVING-KGF4 and KMX1, both inside
-    FURN-M-KIT-MIXER-GARAGE at 42", which is "above the counter surface" under
-    210.52(C)(3) — but nothing in the engine grades 210.52(C) at all, so it reports UNKNOWN
-    by design.
+    ** THIS IS AN HONEST REGRESSION IN COVERAGE, NOT A FIX. ** The peninsula's countertop
+    receptacles are ED-M-LIVING-KGF4 and KMX1, inside FURN-M-KIT-MIXER-GARAGE at 42", which
+    is "above the counter surface" under 210.52(C)(3) — but nothing grades 210.52(C).
     """
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Tier
@@ -437,16 +432,20 @@ def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
     assert [f.result.value for f in findings] == ["not_applicable"]
     assert "no freestanding island" in findings[0].message
     tags = {item.tag for item in catlin_model.canvas_objects}
-    assert "FURN-M-KIT-PENINSULA" in tags and "FURN-M-KIT-ISLAND" not in tags
+    assert {"FURN-M-KIT-PEN-B36", "FURN-M-KIT-CORNER-PEN"} <= tags
+
+
+_PENINSULA = ("FURN-M-KIT-PEN-END", "FURN-M-KIT-PEN-B36", "FURN-M-KIT-PEN-B24-W",
+              "FURN-M-KIT-PEN-B24-E")
 
 
 def test_an_island_with_no_receptacle_is_reported(catlin_model):
-    """Pull the peninsula off the wall and strip its receptacles: it fails, citing 210.52(C).
+    """Pull the peninsula's bases off the corner and strip its receptacles: one run fails.
 
-    There is no freestanding carcass in the house, so the fixture makes one by moving the
-    peninsula's resolved footprint — the check populates off ``model.canvas_objects``, not
-    off the plan — and stripping every receptacle on the storey is what makes the *finding*
-    rather than a pass.
+    The check populates off ``model.canvas_objects``, not off the plan, so the fixture moves
+    the bases' resolved footprints 4'-0" west — clear of the carousel and of every
+    RM-M-LIVING boundary — and strips every receptacle on the storey. The four boxes are
+    ONE island, named together, not four.
     """
     from dataclasses import replace
 
@@ -454,19 +453,10 @@ def test_an_island_with_no_receptacle_is_reported(catlin_model):
     from typehaus.checks.mep.electrical import island_receptacle
     from typehaus.checks.registry import CheckContext, Preferences
 
-    # Re-centred on (26'-0", 27'-0"), which is the ONE place a 10'-0" carcass stands clear
-    # of every RM-M-LIVING boundary by more than `_NEAR_WALL_M` (4.07', the widest margin
-    # the room offers a box this long). As built it is centred at (30'-5 3/8", 26'-9 7/8")
-    # with its east end ON the wall — hence the sibling test above.
-    peninsula = next(item for item in catlin_model.canvas_objects
-                     if item.tag == "FURN-M-KIT-PENINSULA")
-    xs = [x for x, _ in peninsula.footprint]
-    ys = [y for _, y in peninsula.footprint]
-    shift_x = 26 * 0.3048 - (min(xs) + max(xs)) / 2
-    shift_y = 27 * 0.3048 - (min(ys) + max(ys)) / 2
+    shift_x = -4 * 0.3048
     moved = [
-        replace(item, footprint=[(x + shift_x, y + shift_y) for x, y in item.footprint])
-        if item.tag == "FURN-M-KIT-PENINSULA" else item
+        replace(item, footprint=[(x + shift_x, y) for x, y in item.footprint])
+        if item.tag in _PENINSULA else item
         for item in catlin_model.canvas_objects
     ]
     model = replace(catlin_model, canvas_objects=moved)
@@ -476,7 +466,8 @@ def test_an_island_with_no_receptacle_is_reported(catlin_model):
     context = CheckContext(plan=patched, model=model, preferences=Preferences(),
                            profile=MN_2020)
     failures = [f for f in island_receptacle(context) if f.result.value == "fail"]
-    assert [f.element_tags for f in failures] == [("FURN-M-KIT-PENINSULA",)]
+    work_surface = tuple(tag for tag in _PENINSULA if tag != "FURN-M-KIT-PEN-END")
+    assert [f.element_tags for f in failures] == [work_surface]
     assert "210.52(C)" in failures[0].message
 
 

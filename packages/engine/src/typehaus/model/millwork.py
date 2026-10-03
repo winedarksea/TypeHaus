@@ -36,6 +36,8 @@ an ``integrity.millwork_standard`` error rather than a silent precedence rule.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import model_validator
 
 from typehaus.model.base import Element, HausModel
@@ -142,6 +144,14 @@ class Countertop(Element):
     derives it as ``depth - carcass depth``, which is right for a top that starts at the
     carcass back; author it for a slab that sits entirely off the box (that bar top is 15"
     deep and 15" of it is cantilever, and a derivation would report zero).
+
+    ``cantilever_side="back"`` hangs that cantilever behind the hosts' BACK face instead: a
+    peninsula whose drawers open to the kitchen seats its stools on the far side.
+
+    An authored ``length`` shorter than the run trims the last host; a longer one carries
+    the slab past the last host's far end, over an end panel or the support it lands on.
+    An L host (a type with a ``footprint_shape``) takes the slab over its whole L, with
+    ``overhang`` on the faces inside its bounding box and no ``depth``/``length`` override.
     """
 
     hosts: tuple[str, ...]
@@ -156,6 +166,8 @@ class Countertop(Element):
     length: Length | None = None
     # None = derived (depth - carcass depth, floored at zero).
     unsupported_overhang: Length | None = None
+    # Which host face the cantilever stands off: "front" (the doors) or "back".
+    cantilever_side: Literal["front", "back"] = "front"
     # What carries the cantilever: "none" (the slab alone), "corbels", "brackets",
     # "steel-plate". A supported overhang is not a cantilever, and the fabricators' limits
     # are cantilever limits — so this field is the difference between a finding and none,

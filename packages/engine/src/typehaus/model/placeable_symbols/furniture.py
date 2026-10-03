@@ -18,8 +18,8 @@ from typehaus.model.placeable_symbols._families import (
                                                         pedestal_seat,
                                                         peg_rail,
                                                         potted_plant,
-                                                        rounded_slab,
                                                         round_slab,
+                                                        rounded_slab,
                                                         sauna_bench,
                                                         screen,
                                                         seating,
@@ -28,17 +28,21 @@ from typehaus.model.placeable_symbols._families import (
                                                         shelving,
                                                         slab,
 )
-from typehaus.model.placeable_symbols._sektion import sektion_drawer_base
+from typehaus.model.placeable_symbols._sektion import (
+                                                        sektion_corner_base,
+                                                        sektion_corner_points,
+                                                        sektion_drawer_base,
+)
 from typehaus.model.placeable_symbols._sektion_seat import (
-    seat_cushion,
-    sektion_open_high,
-    sektion_seat_base,
+                                                        seat_cushion,
+                                                        sektion_open_high,
+                                                        sektion_seat_base,
 )
 from typehaus.model.placeable_symbols._sektion_tall import (
-    DRAWER_INTERIOR,
-    OPEN_LOWER_INTERIOR,
-    sektion_cover_panel,
-    sektion_tall,
+                                                        DRAWER_INTERIOR,
+                                                        OPEN_LOWER_INTERIOR,
+                                                        sektion_cover_panel,
+                                                        sektion_tall,
 )
 from typehaus.model.placeable_symbols._sit_stand_desk import sit_stand_desk
 from typehaus.model.placeable_symbols._wardrobe import (
@@ -54,7 +58,8 @@ from typehaus.model.placeable_symbols._wardrobe import (
 )
 from typehaus.quantities import inch
 
-__all__ = ["FURNITURE_SYMBOLS", "sectional_points", "wardrobe_corner_points"]
+__all__ = ["FURNITURE_SYMBOLS", "sectional_points", "sektion_corner_points",
+           "wardrobe_corner_points"]
 
 # The painted-casework pair, named once so a change of kitchen colour is a one-line edit.
 CABINET = "cabinet-cream"
@@ -128,6 +133,9 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # than the sink — a drop-in's flange laps *over* the counter — which is what leaves real
     # bearing all round instead of a hairline the two edges fight over.
     "sink-base": counter_case(body=CABINET, kick_color=CABINET_SHADE, cutout=(0.83, 0.78)),
+    # An L corner base (SEKTION carousel): drawn off ``sektion_corner_points``, the same ring
+    # its catalog ``footprint_shape`` states.
+    "corner-base": sektion_corner_base(),
     "wall-cabinet": case(
         rows=1, cols=2, pulls=True, color=CABINET, face_color=CABINET_SHADE,
         single_door_max_width_m=CABINET_SINGLE_DOOR_MAX_WIDTH_M),

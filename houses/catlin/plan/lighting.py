@@ -646,26 +646,21 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # CAN3 serves the NE corner and CAN4 the east run's FURN-M-KIT-N3, and both are now on a
-    # counter front edge rather than over the casework.
+    # CAN3 serves the NE carousel and CAN4 the peninsula carousel's 14" south landing, both on
+    # a counter front edge rather than over the casework (2026-10-02 layout).
     #
-    # CAN3 CANNOT sit over FURN-M-KIT-N4 at all: that corner block has cabinets on both
-    # adjoining runs, so there is no aisle above it, and the only clear line near it is the
-    # NORTH run's front edge. (33'-2", 33'-5 3/8") is the east end of that edge, over
-    # FURN-M-KIT-E2's last box; body 5 3/8" clear of APPL-M-HOOD, 9" clear of
-    # FURN-M-KIT-WE5. The corner counter itself is not left dark — LR-M-KIT-E-WN1 runs the
-    # whole of it, and LR-M-KIT-N-WE3 below is new for the 12" bridge box beside it.
+    # CAN3 at (33'-2", 33'-5 3/8") is on FURN-M-KIT-CORNER-NE's north-leg front edge, 9"
+    # clear of FURN-M-KIT-WE5. LR-M-KIT-E-WN1 lights the corner's east leg.
     #
-    # CAN4 goes where its comment always said it was: y=29'-5 3/8" is FURN-M-KIT-N3's own
-    # centre, x=33'-5 3/8" the east run's counter front edge. 10 1/16" clear of APPL-M-RANGE
-    # and 9" clear of the FURN-M-KIT-WN3 upper.
+    # CAN4 at (33'-5 3/8", 29'-0 3/8") is mid-landing on FURN-M-KIT-CORNER-PEN's east-leg
+    # front edge: 6" clear of APPL-M-RANGE and 7" clear of the FURN-M-KIT-WN3 upper.
     ElectricalDevice(uid="QTM000BAAA", tag="ED-M-KITCH-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(33, 2), ft(33, 5.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000CAAA", tag="ED-M-KITCH-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(33, 5.375), ft(29, 5.375)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(33, 5.375), ft(29, 0.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -732,7 +727,7 @@ MAIN_LIGHTING = [
     # FURN-M-KIT-WE3, a CASE-W12 bridge box over WIN-M-KITCH-N; WE3 is DELETED with the
     # SEKTION retype (plan/placeables.py) because a 15"-deep return left its slot at
     # 10 3/8", and that slot is a scribed filler panel now. The counter under it is still
-    # FURN-M-KIT-N4's corner top, and it is still the piece ED-M-KITCH-CAN3 used to light
+    # the NE corner's top (FURN-M-KIT-CORNER-NE since 2026-10-02), the piece ED-M-KITCH-CAN3 used to light
     # from above and shadow — CAN3 moved out to the counter-front line, so this run is what
     # lights it. The filler is built in the plane of the upper fronts, so there is a soffit
     # face to fasten to; there was going to be one either way.
@@ -745,24 +740,23 @@ MAIN_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(68))),
-    # Runs south to 27'-2 3/8" with FURN-M-KIT-WN4, the 15" box filling the gap the mixer
-    # garage left: the tape runs the whole continuous 15"-deep upper face from the garage's
-    # north side to the range, the whole of the peninsula's east counter and FURN-M-KIT-N3's
-    # top.
+    # Under FURN-M-KIT-WN3 alone since WN4 was deleted (2026-10-02): y 27'-8 3/8"..29'-8 3/8",
+    # over the peninsula carousel's east leg.
     LightRun(uid="N9243MWVM0", tag="LR-M-KIT-E-WN3", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(ft(34, 3.375), ft(27, 2.375)), pt(ft(34, 3.375), ft(30, 5.375))),
+             path=(pt(ft(34, 3.375), ft(27, 8.375)), pt(ft(34, 3.375), ft(29, 8.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
     # 68", not 53": this one is under FURN-M-KIT-WN1, which hangs above WIN-M-KIT-E's 66"
-    # head. On the run's own line it would be a strip of tape across the glass.
+    # head. On the run's own line it would be a strip of tape across the glass. Starts at
+    # y=32'-5 3/8" since WN1 went W30 -> W36 (2026-10-02).
     LightRun(uid="D1YNDEW7NK", tag="LR-M-KIT-E-WN1", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(ft(34, 3.375), ft(32, 11.375)), pt(ft(34, 3.375), ft(35, 4.375))),
+             path=(pt(ft(34, 3.375), ft(32, 5.375)), pt(ft(34, 3.375), ft(35, 4.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(68))),
-    # 12'-3 3/8" of tape at 5 W/ft = 61.4 W; x1.25 = 76.8 W — already past ED-T-LT-PSU-60's
-    # 60 VA, which is why the 200 W supply is specified. It loads to ~38%. NOT a share of
+    # 11'-6 3/8" of tape at 5 W/ft = 57.7 W; x1.25 = 72.1 W — already past ED-T-LT-PSU-60's
+    # 60 VA, which is why the 200 W supply is specified. It loads to ~36%. NOT a share of
     # ED-M-LIVING-LT-PSU: that one is on CKT-LT-MAIN, and electrical_notes.md line 24 puts
     # kitchen lighting behind the backup relay.
     ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.JUNCTION_BOX,

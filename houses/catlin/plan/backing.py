@@ -58,13 +58,11 @@ from typehaus import WallBacking, ft, inch
 # all of it, because `start`/`length` left None is the wall's whole run. Kitchen cabinetry on
 # it starts at y 21'-2 3/8"; everything south of that is living room, so roughly 59 LF of 2x8
 # ran south to back nothing. They start at station 20'-0" now and run the remaining 16 ft to
-# the wall's end. y 20'-0" is the gap between the last BESTA unit (ends 19'-5") and the first
-# pantry (starts 21'-2 3/8"), and 240" lands inside the jack of WIN-M-LIV-E2's north jamb
-# pack, so the run begins on framing rather than in the middle of a bay.
+# the wall's end; 240" lands on a jack pack, so the run begins on framing.
 #
-# BK-M-E1-ROD is the exception and keeps its full run: at 82" it backs the two LIVING-ROOM
-# curtain rods, at y 4'-0" and 13'-3 5/8", which are exactly the part of the wall the other
-# four just gave up.
+# BK-M-E1-ROD keeps its full run: at 82" it backs the two LIVING-ROOM curtain rods (86" since
+# the east row's heads rose 2", 2026-10-02) and the kitchen stacker rail at 83 1/2".
+# BK-M-E1-MIXER is full length too: it carries the SEKTION base rail the whole wall now.
 
 # --- closet rods and shelves ------------------------------------------------------------
 #
@@ -142,7 +140,7 @@ MAIN_BACKING = [
                 material_ref="spf", purpose="mixer garage upper box bottom rail (76 in.)"),
     WallBacking(uid="VXX1ME3YWS", tag="BK-M-E1-ROD", wall_ref="W-M-E1",
                 elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="curtain rod brackets (84 in.) and kitchen stacker rail (83 1/2 in.)"),
+                material_ref="spf", purpose="curtain rod brackets (86 in.) and kitchen stacker rail (83 1/2 in.)"),
     # ** HOSTING SURFACED THESE, 2026-09-25. ** Until the wall-mounted bodies were hosted on
     # their faces, `advisory.wall_backing_present` could not square them onto a wall and
     # said UNKNOWN; hosted, it names the wall and there was nothing behind them.
@@ -188,9 +186,12 @@ MAIN_BACKING = [
     WallBacking(uid="GWVBD431GV", tag="BK-M-N1-DISP", wall_ref="W-M-N1",
                 elevation=inch(12), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="disposal switch box and air-switch bracket (14 in.)"),
+    # Dropped 34" -> 31 1/2" (2026-10-02) so one band takes both the SEKTION base suspension
+    # rail at the frame top (33 1/2") down the whole wall and the mixer garage's box at 36".
     WallBacking(uid="GRFFVAA88Y", tag="BK-M-E1-MIXER", wall_ref="W-M-E1",
-                elevation=inch(34), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="mixer garage lower box (36 in.)"),
+                elevation=inch(31.5), height=inch(7.25), profile="2x8",
+                material_ref="spf",
+                purpose="SEKTION base suspension rail (33 1/2 in.), mixer garage lower box (36 in.)"),
     WallBacking(uid="SBE1761N5C", tag="BK-M-C5-MID", wall_ref="W-M-C5",
                 elevation=inch(71.5), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="over-fridge and over-freezer cabinets (73 1/2 in.)"),

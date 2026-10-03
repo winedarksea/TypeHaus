@@ -15,6 +15,9 @@ the order.
 The ladder (ikea.com/us, verified 2026-09-11):
 
 * base frames 30" high, 24" deep, widths 12/15/18/21/24/30/36/38/47
+* shallow base frames 30" high, 15" deep (15 3/8" actual), widths 15/18/24/30/36
+  (ikea.com/us, verified 2026-10-02)
+* corner base 38x38 with 24"-deep legs, sold with a carousel and a 13"+13" bifold door
 * shallow wall frames 15/20/30/40" high, 15" deep; selected 24"-deep top frames
 * high frames 80" and 90", in 15" and 24" depths
 * legs nominally 4 1/2" and adjustable from 3 1/2"; FÖRBÄTTRA toe kick is cut on site
@@ -34,7 +37,8 @@ a property of the room, not of any one box.
 
 from __future__ import annotations
 
-from typehaus.model import FurnitureType, ft, inch
+from typehaus.model import Footprint2D, FurnitureType, ft, inch, m, pt
+from typehaus.model.placeable_symbols.furniture import sektion_corner_points
 
 REFERENCE = ("IKEA SEKTION frame ladder (ikea.com/us, 2026-09-11). Frame sizes only — "
              "carcass supplier and door line are the house's own decision.")
@@ -45,6 +49,9 @@ _BASE_HEIGHT = ft(3)
 # face-frame convention and the frameless ladder does not have it.
 _WALL_DEPTH = inch(15)
 _DEEP = _BASE_DEPTH
+# The 15" system depth; the frame measures 15 3/8" and its front adds the rest of 15 1/2".
+_SHALLOW_BASE_DEPTH = inch(15.5)
+_CORNER = inch(38)
 # A 90" frame on a 3" leg. The tag names the FRAME, which is what is ordered; the height is
 # what the box occupies on the floor.
 _HIGH_90 = inch(93)
@@ -56,6 +63,14 @@ def _base(tag: str, width) -> FurnitureType:
     return FurnitureType(
         tag=tag, name=f'SEKTION {width.inches:.0f}" base cabinet',
         footprint=(width, _BASE_DEPTH), height=_BASE_HEIGHT, plan_symbol="base-cabinet",
+        storage=True, work_surface=True, source=REFERENCE,
+    )
+
+
+def _shallow_base(tag: str, width) -> FurnitureType:
+    return FurnitureType(
+        tag=tag, name=f'SEKTION {width.inches:.0f}x15" base cabinet',
+        footprint=(width, _SHALLOW_BASE_DEPTH), height=_BASE_HEIGHT, plan_symbol="base-cabinet",
         storage=True, work_surface=True, source=REFERENCE,
     )
 
@@ -92,6 +107,27 @@ SINK_BASE_36 = FurnitureType(
     source=REFERENCE,
 )
 
+# --- 15"-deep bases: the same frame height on the shallow wall depth ------------------
+BASE_15_D15 = _shallow_base("SEKT-B15-D15", inch(15))
+BASE_18_D15 = _shallow_base("SEKT-B18-D15", inch(18))
+BASE_24_D15 = _shallow_base("SEKT-B24-D15", ft(2))
+BASE_30_D15 = _shallow_base("SEKT-B30-D15", inch(30))
+BASE_36_D15 = _shallow_base("SEKT-B36-D15", ft(3))
+
+# --- the corner base: an L, not a rectangle ---------------------------------------------
+#
+# Two 24"-deep legs 38" long, the 14" notch open to the inside corner. ``footprint_shape``
+# comes off the glyph's own ring, so collision, countertop and symbol cannot disagree.
+# ``carcass_depth`` is a leg's depth: what a slab over it oversails from.
+CORNER_BASE_38 = FurnitureType(
+    tag="SEKT-CORNER-B38", name='SEKTION 38x38" corner base cabinet', footprint=(_CORNER, _CORNER),
+    height=_BASE_HEIGHT, plan_symbol="corner-base", storage=True, work_surface=True,
+    carcass_depth=_BASE_DEPTH, source=REFERENCE,
+    footprint_shape=Footprint2D(points=tuple(
+        pt(m(x), m(y)) for x, y in sektion_corner_points(_CORNER.meters, _CORNER.meters,
+                                                         _BASE_DEPTH.meters))),
+)
+
 # --- 15"-deep wall cabinets, 40" high -----------------------------------------------------
 #
 # 40" is the tallest wall frame. Catlin uses shorter frames below its finished ceiling.
@@ -107,6 +143,7 @@ WALL_36_40 = _wall("SEKT-W36-40", ft(3), inch(40), _WALL_DEPTH)
 WALL_15_30 = _wall("SEKT-W15-30", inch(15), inch(30), _WALL_DEPTH)
 WALL_24_30 = _wall("SEKT-W24-30", ft(2), inch(30), _WALL_DEPTH)
 WALL_30_30 = _wall("SEKT-W30-30", inch(30), inch(30), _WALL_DEPTH)
+WALL_36_30 = _wall("SEKT-W36-30", ft(3), inch(30), _WALL_DEPTH)
 WALL_15_20 = _wall("SEKT-W15-20", inch(15), inch(20), _WALL_DEPTH)
 WALL_24_20 = _wall("SEKT-W24-20", ft(2), inch(20), _WALL_DEPTH)
 WALL_30_20 = _wall("SEKT-W30-20", inch(30), inch(20), _WALL_DEPTH)
@@ -138,8 +175,9 @@ TS_30_15 = _wall("SEKT-TS30-15", inch(30), inch(15), _DEEP)
 
 SEKTION_CASEWORK_TYPES = (
     BASE_12, BASE_15, BASE_18, BASE_24, BASE_30, BASE_36, SINK_BASE_36,
+    BASE_15_D15, BASE_18_D15, BASE_24_D15, BASE_30_D15, BASE_36_D15, CORNER_BASE_38,
     WALL_12_40, WALL_15_40, WALL_18_40, WALL_24_40, WALL_30_40, WALL_36_40,
-    WALL_15_30, WALL_24_30, WALL_30_30,
+    WALL_15_30, WALL_24_30, WALL_30_30, WALL_36_30,
     WALL_15_20, WALL_24_20, WALL_30_20, WALL_36_20,
     WALL_12_15, WALL_15_15, WALL_18_15, WALL_24_15, WALL_30_15, WALL_36_15,
     HIGH_18_90, HIGH_24_90, HIGH_30_90, HIGH_18_80, HIGH_24_80,

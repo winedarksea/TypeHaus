@@ -13,9 +13,9 @@
 # with it (→ resolve/millwork.py).
 #
 # THE RUNS ARE AUTHORED RATHER THAN GROWN, and this kitchen is exactly why: the peninsula's
-# north face butts FURN-M-KIT-N3's south face, so a walk that merged everything it touched
-# would hand the fabricator one L-shaped slab crossing two orientations, two depths and two
-# materials. Which cabinets share a slab is a seam decision.
+# bases butt FURN-M-KIT-CORNER-PEN's leg, so a walk that merged everything it touched would
+# hand the fabricator one slab crossing two materials. Which cabinets share a slab is a seam
+# decision.
 #
 # Not here: the four one-piece solid-surface vanity tops (FX-VANITY-24/30/36-*), which are
 # moulded with their bowls and bought boxed with the cabinet — they bill in [placeables] as
@@ -26,63 +26,78 @@ from typehaus import ft, inch
 from typehaus.model import Countertop, WindowStool
 
 MAIN_COUNTERTOPS = [
-    # The north run, pantry wall to the corner: B15, the dishwasher, the 36" sink base, B30,
-    # and the B30 that turns the corner. The dishwasher is in the run because the slab runs
-    # over it — a countertop does not stop at an under-counter appliance — and the ~1 3/8"
-    # of filler between B30 and the corner box is cut straight across, not left as a hole.
-    #
-    # 25" deep: 24" of carcass and the 1" a top oversails its doors. Nothing here
-    # cantilevers, so the overhang rule has nothing to say about this run.
+    # The north run and the NE corner as one L slab: B15, the dishwasher, the 36" sink base,
+    # B15, the 2 3/8" filler (cut straight across), and FURN-M-KIT-CORNER-NE, whose east leg
+    # carries the slab to y=32'-3 3/8" beside the range. 25" deep: 24" of carcass and 1" of
+    # oversail; an L host oversails only its notch faces.
     Countertop(
         uid="GQ3B84T2WH", tag="CT-M-KIT-N",
         hosts=("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE", "FURN-M-KIT-E2",
-               "FURN-M-KIT-N4"),
+               "FURN-M-KIT-CORNER-NE"),
         material_ref="quartz-counter",
         thickness=inch(1.181),  # 3 cm
         overhang=inch(1),
     ),
-    # The east run's one surviving base, between the range and the peninsula. A separate
-    # slab because a slide-in range interrupts the stone: the two tops die into its sides.
+    # The peninsula-corner carousel, both legs: the east leg to the range's filler, the
+    # peninsula leg to the seam at x=32'-3 3/8". A separate slab because a slide-in range
+    # interrupts the stone, and the seam is where the free-standing bases start.
     Countertop(
         uid="WRDEA4N59W", tag="CT-M-KIT-E",
-        hosts=("FURN-M-KIT-N3",),
+        hosts=("FURN-M-KIT-CORNER-PEN",),
         material_ref="quartz-counter",
         thickness=inch(1.181),
         overhang=inch(1),
     ),
-    # ** THE PENINSULA IS TWO TOPS, AND THE SPLIT IS THE OVERHANG RULE MADE BUILDABLE. **
-    # CASE-PENINSULA-120 is 39" of footprint over 24" of carcass — a 15" knee. A single
-    # quartz slab over all 39" hangs 15" unsupported, 38% of its depth, against a published
-    # maximum of 1/3 and 14" unsupported in 3 cm: outside the fabricators' limits and
-    # outside the warranty (`advisory.countertop_overhang`, plan/assemblies.py's
-    # `quartz-counter` note). So the stone stops at the carcass face and the owner's own
-    # white oak takes the cantilever, milled to 1 3/16" to sit flush with 3 cm stone.
-    #
-    # `depth` is authored on both for that reason and no other: this is the one run in the
-    # house where the slab deliberately stops short of the footprint it stands on.
+    # ** THE PENINSULA IS TWO TOPS. ** Quartz over the end panel and the three free-standing
+    # bases, oversailing the drawer fronts 1" to the north; white oak on the 9 5/8" seating
+    # cantilever behind them. 9 5/8" on 34" is 28%, inside quartz's 1/3-and-14" rule, so ONE-
+    # PIECE QUARTZ IS AN AVAILABLE ALTERNATIVE; the split stays as the fewest changes.
     Countertop(
         uid="YNNE7K95XB", tag="CT-M-KIT-PENINSULA",
-        hosts=("FURN-M-KIT-PENINSULA",),
+        hosts=("FURN-M-KIT-PEN-END", "FURN-M-KIT-PEN-B36", "FURN-M-KIT-PEN-B24-W",
+               "FURN-M-KIT-PEN-B24-E"),
         material_ref="quartz-counter",
         thickness=inch(1.181),
-        # Zero: the stone's front edge IS the carcass face, where the movement joint is.
-        overhang=inch(0),
-        depth=inch(24),
+        overhang=inch(1),
     ),
-    # The bar top. `unsupported_overhang` is authored because the derivation cannot see this
-    # one: a 15" slab on a 24" carcass reads as fully supported by depth alone, and in fact
-    # every inch of it is cantilever — it starts where the stone stops. 96" of the 120",
-    # because the east 24" is not overhang at all (FURN-M-KIT-MIXER-GARAGE stands full-depth
-    # on it) and a counter-to-ceiling cabinet cannot stand on a cantilever.
+    # The bar top: every inch is cantilever behind the bases' backs, hence `cantilever_side`.
+    # 98 1/2" runs from the end panel past the corner leg to FURN-M-KIT-PEN-SUPPORT, which
+    # stands under the mixer garage where the overhang would otherwise be.
     Countertop(
         uid="7E97VPX9M2", tag="CT-M-KIT-PENINSULA-BAR",
-        hosts=("FURN-M-KIT-PENINSULA",),
+        hosts=("FURN-M-KIT-PEN-END", "FURN-M-KIT-PEN-B36", "FURN-M-KIT-PEN-B24-W",
+               "FURN-M-KIT-PEN-B24-E"),
         material_ref="oak-counter",
         thickness=inch(1.1875),  # 1 3/16", flush with 3 cm quartz
         overhang=inch(0),
-        depth=inch(15),
-        length=ft(8),
-        unsupported_overhang=inch(15),
+        depth=inch(9.625),
+        length=inch(98.5),
+        unsupported_overhang=inch(9.625),
+        cantilever_side="back",
+    ),
+    # The living room's two live-edge white oak slabs (plan/living_east_run.py), 2" over a
+    # 1/2" sub-top, 16 1/2" nominal: 1" over the fronts, the natural edge <= 1 1/2" at its
+    # widest. Each runs past its last base over the end filler: south to the south wall
+    # (2 1/8" scribe), north to the tall bank (1/2" scribe). The stools meet the back edge.
+    Countertop(
+        uid="N3E070DD41", tag="CT-M-LIV-E-S",
+        hosts=("FURN-M-LIV-E-END-S", "FURN-M-LIV-E-B18-S", "FURN-M-LIV-E-B30-E1",
+               "FURN-M-LIV-E-B24-S"),
+        material_ref="live-edge-white-oak",
+        thickness=inch(2),
+        overhang=inch(1),
+        length=inch(74.625),
+        profile="live-edge",
+    ),
+    Countertop(
+        uid="TPTH3QMGAY", tag="CT-M-LIV-E-N",
+        hosts=("FURN-M-LIV-E-END-N", "FURN-M-LIV-E-B18-N", "FURN-M-LIV-E-B30-E2",
+               "FURN-M-LIV-E-B30-PIER", "FURN-M-LIV-E-B36-MID", "FURN-M-LIV-E-B18-PAN"),
+        material_ref="live-edge-white-oak",
+        thickness=inch(2),
+        overhang=inch(1),
+        length=inch(133),
+        profile="live-edge",
     ),
     # RM-M-BATH2's deck. One of the two vanity tops in the house that is FABRICATED rather
     # than moulded with its bowl, which is what puts it in this list and the other four in

@@ -36,7 +36,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   circuits, closet, closet_types, countertops, panel_types,
                   electrical, electrical_attic, equipment_types,
                   fixture_types, fixtures, furniture_types, kitchen_deep_cabinets,
-                  landscape, lighting,
+                  landscape, lighting, living_east_run, living_east_run_types,
                   lighting_attic, lighting_types, masonry_joints, mep, millwork,
                   millwork_vanities, placeables,
                   plant_types, plate_ties,
@@ -75,6 +75,7 @@ _library = Library(
                      *bedroom_wardrobe_types.BEDROOM_WARDROBE_TYPES,
                      *bath1_storage_types.BATH1_STORAGE_TYPES,
                      *study_nook_types.STUDY_NOOK_TYPES,
+                     *living_east_run_types.LIVING_EAST_RUN_TYPES,
                      *kitchen_deep_cabinets.KITCHEN_DEEP_CABINET_TYPES),
     # The library's fascia guard plus the house's own surface-mounted one — the porch
     # guard's baseplates land on concrete wall tops and buy no bracket kit, which is a
@@ -359,6 +360,7 @@ PLAN = (
          *millwork_vanities.MAIN_VANITY_SHELVES,
          *countertops.MAIN_COUNTERTOPS,
          *countertops.KITCHEN_STOOLS,
+         *living_east_run.LIVING_EAST_RUN, *living_east_run.LIVING_EAST_STOOLS,
          *backing.MAIN_BACKING, *backing_wet.MAIN_WET_BACKING,
          *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS,
          *plate_ties.MAIN_PLATE_TIES],

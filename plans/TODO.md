@@ -231,6 +231,7 @@ the future.
 - PR-A-STUBATH-VENT_RUN goes right through the middle of the bathroom RM-A-STUBATH
 - We need to investigate the gap and guard rail situation of the stair ST-S2A. The guard rail doesn't align correctly, and the 6" gap, designed to bring a bit more light between floors, may not be worth it.
 - Extra light switches by beds
+- More plants for the plant room. Five of these on the north wall with plants https://www.ikea.com/us/en/p/skuggroena-wall-mounted-plant-stand-black-20562018/ then two decently large hanging planters (suspended from the joists) in the north east and north west corners with dangling vines. We need to consider how these are mounted through pvc panels and furring strips.
 
 # Project Management
 

@@ -573,8 +573,9 @@ MAIN_DEVICES = [
     # window's 32" sill and 80" head — a device specified in a hole. y=16'-0" centres it in
     # the pier the corrected sentence above names: 16 1/2" of clear wall to WIN-M-LIV-E2's
     # RO end (y=14'-5 1/2") and 16 1/2" to WIN-M-EAST-MID's RO start (y=17'-6 1/2"), the
-    # 37" pier taken dead centre. Clear of ED-M-LIVING-RC3 (y=16'-11 1/8") by 11" in plan
-    # and 12" in elevation, and 48" clears the BESTA run's 29 3/4" tops the whole way.
+    # 37" pier taken dead centre. ** Then to y=16'-8" (2026-10-02): ** off stud-004 and
+    # between the pier's two counter receptacles (RC3 at 14'-10 1/2", RC15 at 17'-2"), 12"
+    # over their 42" line and over the 36" SEKTION slab.
     # ** NOTHING IN `haus check` ASKED FOR THIS AND NOTHING WILL VERIFY IT: ** no rule
     # grades a wall device against an opening, which is why the defect survived two weeks
     # of clean reports. Re-measure by hand if either east window moves.
@@ -624,9 +625,10 @@ MAIN_DEVICES = [
     ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-DINING", room="RM-M-LIVING",
+                     # y 192" -> 200" (2026-10-02): off stud-004 and clear of RC15's box.
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(192),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(200),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
@@ -816,8 +818,10 @@ MAIN_EQUIPMENT = [
     # 45 1/2" facebrick surround, laid in the court's brown blend and WASHED WHITE since
     # 2026-09-13 (it was a white face brick until then) — W-M-FIRE-* in
     # plan/storeys/main.py carries the pier arithmetic and the whole elevation ladder, and
-    # SB-M-FIRE-MANTEL in plan/millwork.py is the shelf. The BESTA run was re-laid about it
-    # (all eight kept) and the seating turned onto it (plan/placeables.py).
+    # SB-M-FIRE-MANTEL in plan/millwork.py is the shelf. The east wall's SEKTION line
+    # (plan/living_east_run.py) dies into it with 1/2" end panels, and the seating turned onto
+    # it (plan/placeables.py). ** CHECK THE INSERT'S SIDE-CLEARANCE SPEC ** against those
+    # panels, 8" off the masonry opening each side.
     #
     # ** POSITION. ** x=35'-1 7/8" stands the 4 1/2"-deep body's FACE 1/4" PROUD of the brick
     # at x=34'-11 5/8", with its back at 35'-4 1/8" — 5/8" through the wythe's back face and
@@ -1919,23 +1923,59 @@ NEC_FILL_MAIN = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C2", face="right", distance_from_start=inch(34.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    ElectricalDevice(uid="NEC010AAAA", tag="ED-M-LIVING-RC3", kind=DeviceKind.RECEPTACLE,
+    # ** THE EAST WALL'S COUNTER RECEPTACLES (2026-10-02). ** The SEKTION line puts a 36"
+    # counter under counter-height glass, so the piers are the only wall left, and 210.52(C)
+    # wants no point of a counter more than 24" from a receptacle (not graded: the engine
+    # reports 210.52(C) UNKNOWN). Every box is 42" AFF, 6" over the slab, IN A STUD BAY:
+    #   south bank (living)  y 22", 68"                 6 5/8"..81 1/4", gaps 15/46/13
+    #   north bank (dining)  y 141 1/2", 178 1/2", 206", 242"
+    #                                                    126 3/4"..259 3/4", gaps 15/37/28/36/18
+    # ** FOUR ON THE NORTH BANK, NOT THREE. ** Three only close with boxes <= 2 1/2" off the
+    # E2/EAST-MID RO edges, and that is where the 3" jack+king packs stand (kings at y 144"
+    # and 239 3/4", stud-004 at 192"). In the bays the span is 99" against three boxes' 96".
+    # Each box clears its king face by >= 1", so cased side reveals stay possible. The
+    # fallback is a listed pop-up receptacle in the slab (2023 NEC 210.52(C)(3)).
+    ElectricalDevice(uid="VHY1DXBHG2", tag="ED-M-LIVING-RC13", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     # On the east wall's BESTA run; keep the plan position for spacing, but
-                     # raise it into the backsplash zone above the 29 3/4" cabinet line.
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(203.125),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(22),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC011AAAA", tag="ED-M-LIVING-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     # Same east-wall BESTA condition as RC3: 36" puts the box above the
-                     # countertop while preserving the receptacle's wall-space location.
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(66.375),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(68),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    ElectricalDevice(uid="8NYNJ818AX", tag="ED-M-LIVING-RC14", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(141.5),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    ElectricalDevice(uid="NEC010AAAA", tag="ED-M-LIVING-RC3", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(178.5),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    ElectricalDevice(uid="HGFDJH852Y", tag="ED-M-LIVING-RC15", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(206),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    ElectricalDevice(uid="RB8M3Y2Q4N", tag="ED-M-LIVING-RC16", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(242),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RC5 is the only receptacle covering BOTH ends of the south run — D-M-BALC's east jamb
     # at 23'-10" and the far end near the SE corner, where RC4's coverage comes round the

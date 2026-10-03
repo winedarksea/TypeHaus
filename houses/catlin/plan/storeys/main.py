@@ -331,7 +331,7 @@ NODES = [
     # Two nodes, one wall, no loop: a 45 1/2" panel of face brick standing IN FRONT OF
     # W-M-E1 in the pier between WIN-M-LIV-E1 and WIN-M-LIV-E2. Both ends are `open_end=True`
     # for N-M-TUBDK-N/-E's reason — `integrity.wall_loop_open` is an ERROR on a node with one
-    # wall edge, and these two genuinely stop in mid-room with the flanking BESTA banks hard
+    # wall edge, and these two genuinely stop in mid-room with the flanking SEKTION banks hard
     # against them.
     #
     # ** THE PIER, MEASURED. ** W-M-E1's interior finish face is x=35'-5 3/8".
@@ -347,10 +347,10 @@ NODES = [
     # 29 1/2", plus one whole brick and one head joint each side (7 5/8" + 3/8" = 8"), gives
     # 45 1/2" with ZERO CUT CLOSERS. Centred on y=104" the panel spans y 81 1/4"..126 3/4",
     # clearing each king face by 16 3/4" and each RO by 19 3/4", symmetric to 0".
-    # A 47 1/4" panel (two BESTA modules) was considered and rejected: it leaves 8 7/8"
+    # A 47 1/4" panel (two old BESTA modules) was considered and rejected: it leaves 8 7/8"
     # returns, i.e. a whole brick plus a 7/8" sliver on every course at the firebox edge
     # where the eye goes, recoverable only with a 1 1/8" steel reveal frame that throws away
-    # the trimless unit's one advantage. All eight BESTA units are kept either way.
+    # the trimless unit's one advantage.
     #
     # ** THE AXIS IS x=35'-1 11/16" AND THAT IS A CHECK DECISION, NOT A DIMENSION. **
     # FIREPLACE_BRICK_WYTHE is ONE 3 5/8" layer, so the centreline sits 3 11/16" off the
@@ -876,7 +876,7 @@ WALLS = [
     # courses to 8"):
     #
     #     firebox opening bottom                      24"          course 9
-    #     BESTA counter line                          29 3/4"      —
+    #     SEKTION slab top (since 2026-10-02)         36"          —
     #     flame centre                                34 3/16"     —
     #     opening top (20 3/8" unit)                  44 3/8"      —
     #     masonry head / lintel bearing               44 5/8"      cut course
@@ -895,7 +895,8 @@ WALLS = [
     # at 29 3/4" now crosses the opening rather than dying under it, and the flame centre is
     # 34 3/16" — you look well down at the fire. The argument and the cost both live in
     # plan/electrical.py's EQ-M-FIREPLACE block; 24" is still 9 whole courses, which is the
-    # one thing the drop did not spend.
+    # one thing the drop did not spend. (Since 2026-10-02 the counter is the SEKTION line's
+    # 36" slab and the east sills are 2'-10"; the BESTA figures above are history.)
     #
     # ** IT STOPS AT THE MANTEL, AND THAT IS THE OWNER'S CALL ABOUT WHAT THE OBJECT IS. ** A
     # breast running to the 9'-0" ceiling would be a chimney breast. One stopping 16" below
@@ -987,8 +988,8 @@ WALLS = [
     # 11 3/8" -> 19 3/8" so the panel's top stays at 64 15/16" absolute — and the same rule
     # ran in reverse on 2026-09-20, when the opening took 3 3/8" back off it (19 3/8" -> 16").
     # The panel top has not moved either time, which is what keeps
-    # FURN-M-FIRE-MANTEL on the brick, keeps the hand-measured 0" gaps against the two BESTA
-    # banks true (plan/placeables.py), and keeps the brick quantity flat — the opening moved,
+    # FURN-M-FIRE-MANTEL on the brick, keeps the hand-measured 0" gaps against the two SEKTION
+    # banks true (plan/living_east_run.py), and keeps the brick quantity flat — the opening moved,
     # the panel did not.
     #
     # ** THE HEAD IS ON A COURSE LINE SINCE 2026-09-20, AND THE CUT COURSE IS GONE. ** It was
@@ -1357,37 +1358,28 @@ OPENINGS = [
            type_ref="WT-3048", position=from_node("N-M-SE", ft(2, 9)),
            sill_height=ft(2, 8)),
     # East row respaced (2026-07-30 facade pass): the facade favors within-storey rhythm
-    # over between-storey stacking here, so this row runs as even as its own grid allows —
-    # 4'-0" / 12'-0" (the true-even 11'-8" middle isn't a stud line on W-M-E1). Both sills
-    # stay 2'-8": the BESTA run tops out at 29 3/4" (placeables.py), clearing the
-    # countertop by 2 1/4" — the old "1/4"" here was the 2'-6" sill's number and went stale
-    # with it (see WT-2748 in the catalog, `library` WINDOW_TYPES_16_INCH_MODULE).
+    # over between-storey stacking here, so this row runs as even as its own grid allows.
+    # 2026-08-27: retyped WT-2736 -> WT-2748 (36" -> 48"), same 27" bearing width, so the
+    # near-jamb offsets and the beat are untouched and the row carries one head line.
     #
-    # 2026-08-27: both retyped WT-2736 -> WT-2748, 36" -> 48" tall. Same 27" bearing width,
-    # so the near-jamb offsets and the row's 4'-0"/12'-0" beat are untouched; the head
-    # moves 5'-6" -> 6'-8", onto WIN-M-EAST-MID's line. The sill stays 2'-8" over the BESTA
-    # run, and the row now carries one head line where it carried two.
-    #
-    # ** 2026-09-06: E1'S SILL CONDITION CHANGED WITHOUT E1 MOVING. ** The fireplace left the
-    # SE corner for the pier between this window and E2 (W-M-FIRE-* in WALLS), and the BESTA run
-    # was re-laid over the freed corner — so this window goes from having 3 1/2" of counter
-    # under it to ALL 27", joining the condition E2 and WIN-M-EAST-MID already had. Clearance
-    # is the same 2 1/4" at all three (32" sill less the 29 3/4" counter top).
-    #
-    # ** WATCH THE STOOL, NOT THE SILL. ** out/milling.md schedules a 1 1/2" x 10.135" oak
-    # stool for all three east windows; on a 32" sill its underside is ~30 1/2", i.e. 3/4" over
-    # the BESTA counter, projecting 10" into a 16 1/2"-deep top. Buildable and ordinary — but
-    # now true at THREE windows instead of two, and nothing in `haus check` looks at it.
+    # ** 2026-10-02: E1, E2 AND WIN-M-EAST-MID ROSE 2'-8" -> 2'-10", HEADS 6'-8" -> 6'-10". **
+    # The east wall became one SEKTION line under a 36" live-edge slab (plan/living_east_run.py),
+    # and the owner wanted each STOOL TOP ON THE COUNTER TOP. The stool sits on the frame's
+    # lower rail, which is the sill + 2.953", and the slab top is 36 15/16" above the storey
+    # datum (the finished floor is 15/16" up), so 34" lands the rail 1/64" proud. The three
+    # authored live-edge stools meet the slab's back edge in one plane. The plan estimated
+    # ~36" and a 4" lift; the model said 34". The second storey's row heads at 7'-0", 2" over.
+    # Nothing grades stool-to-slab; re-measure if the leg, slab or window type changes.
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
            type_ref="WT-2748", position=from_node("N-M-SE", ft(2, 10.5)),
-           sill_height=ft(2, 8)),
+           sill_height=ft(2, 10)),
     # E2 moved one stud line north 2026-08-27, 12'-0" -> 13'-4" centre: it now stacks under
     # WIN-S-BED1. The row's within-storey beat goes 4'-0"/12'-0" -> 4'-0"/13'-4" (8'-0" ->
     # 9'-4" apart), which is the trade the 2026-07-30 note above priced the other way — a
     # two-storey column is worth more here now that E1 columns with WIN-S-STUDY3.
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
            type_ref="WT-2748", position=from_node("N-M-SE", ft(12, 2.5)),
-           sill_height=ft(2, 8)),
+           sill_height=ft(2, 10)),
     # WIN-M-LIV-E2 (old, 12'-0") and WIN-M-DIN-E2 (19'-4") retired 2026-08-24, replaced by
     # one WT-3048 unit centred as close as the 16" module allows to y=18'-0" — the exact
     # midpoint between WIN-S-BED1 (13'-0") and WIN-S-BED2 (23'-0") above. True centre falls
@@ -1402,7 +1394,7 @@ OPENINGS = [
     # list, and the rewritten Rows bullet, before reading the blank as still intended.
     # NARROWED 30" -> 27": W-M-E1 is a BEARING wall, and the bearing rung of
     # the RO ladder is 27" — a 30" RO there cannot take its jacks without pushing the kings
-    # off the module. Retype only: WT-2748 holds the 2'-8" sill and the 6'-8" head, so this
+    # off the module. Retype only: WT-2748 holds the row's sill and head line, so this
     # window's place in the east row is untouched. The near-jamb offset moved +1 1/2"
     # (17'-5" -> 17'-6 1/2") because ``from_node`` is the NEAR JAMB, not the centre: half
     # of 3" of lost width, which keeps the CENTRE on y=18'-8", the same stud line the
@@ -1412,7 +1404,7 @@ OPENINGS = [
     # a nominal 59.8 sf, short either way, and the exception is what carries it.
     Window(uid="QPNDT7TF6G", tag="WIN-M-EAST-MID", host="W-M-E1",
            type_ref="WT-2748", position=from_node("N-M-SE", ft(17, 6.5)),
-           sill_height=ft(2, 8)),
+           sill_height=ft(2, 10)),
     # Moved to the north wall 2026-07-30 with the sink (plan/placeables.py's kitchen header).
     # The north three-storey column moved 28'-0" -> 29'-4" so the window could
     # land dead-centre on FURN-M-KIT-SINKBASE: the counter run was exactly full and had no

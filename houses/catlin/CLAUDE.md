@@ -932,7 +932,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   width (27/30/30/27), and head (6'-0"/7'-0"/7'-0"/6'-0") over one 3'-0" sill — a 9'-4" beat
   three times over (→ DESIGN-LOG.md).
   East main row: 4'-0"/13'-4"/18'-8"/34'-0" — the last gap deliberately ends a blank kitchen
-  stretch. First three: 27" units on one 2'-8" sill, 6'-8" head. `WIN-M-KIT-E` is a 14" unit
+  stretch. First three: 27" units on one **2'-10" sill, 6'-10" head** (2026-10-02: the stool
+  top sits on the SEKTION slab top — sill + 2.953" frame rail = 36 15/16" above datum). `WIN-M-KIT-E` is a 14" unit
   at a 3'-6" sill (bay centre, 408" off `N-M-SE`) — joins neither beat nor head line, closes
   the row's north end as a service window (can never column with the 27"/30" family beside
   it — the 8" rule). `WIN-S-STUDY3` at 4'-0" columns with `WIN-M-LIV-E1`. **Check
@@ -1004,8 +1005,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     **The 8" the plinth lost went into the HEAD, not into the panel** — `W-M-FIRE-HEAD` went
     11 3/8" -> 19 3/8", and **back to 16" on 2026-09-20** when the opening took 3 3/8" of it.
     The rule is the same both times and it is the one to hold: the panel TOP never moves. It
-    is 64 15/16" absolute, so the mantel stays on the brick and the hand-measured 0" BESTA
-    gaps stay true. Brick 20.4 -> 19.6 SF (the pier split, 8" of width out of the buried
+    is 64 15/16" absolute, so the mantel stays on the brick and the hand-measured 0" gaps
+    to the SEKTION end panels stay true. Brick 20.4 -> 19.6 SF (the pier split, 8" of width out of the buried
     course) -> **18.9 SF** (the taller opening). Sill is 9 modular courses exactly; zero cut
     closers on the visible 45 1/2" opening; the head is **18 courses exactly** at 48" AFF.
     Steel angle lintel, not a rowlock, and since 2026-09-20 it bills by the foot of its
@@ -2614,6 +2615,24 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   was already all SEKTION widths.
 - **MAXIMERA is a product, not a geometry** (`PROD-IKEA-MAXIMERA`). The model has no drawer
   vocabulary; which boxes are drawer stacks is prose in `prices.toml` and `plan/placeables.py`.
+- **The east wall is one SEKTION line, less the brick** (2026-10-02, `plan/living_east_run.py`).
+  Living room: 15"-deep `SEKT-B*-D15` frames, 36" with a 2" live-edge white oak slab
+  (`CT-M-LIV-E-S`/`-N`), **keyed to the windows and mirrored about the brick at y=104"** — the
+  B30s centre on E1/E2, the B18s flank the brick. Fillers are gaps under 3", the kitchen's idiom.
+  `FURN-M-DINING` moved 2" west so its chair zone clears the live edge (spec: <= 1 1/2" past
+  the fronts).
+- **Two carousel corners, `SEKT-CORNER-B38`** (an L `footprint_shape`): `FURN-M-KIT-CORNER-NE`
+  and `-PEN`. A countertop over an L host takes the whole L and oversails only its notch faces
+  (`resolve/countertops.py`). Both bifolds hinge on the end AWAY from the range (3" proud).
+  Range centred y=30'-11 3/8" between 1" fillers; `FURN-M-KIT-E2` is a B15 + 2 3/8" filler.
+- **The peninsula is SEKTION**: corner leg + B36/B24/B24 (drawers north) on the floor anchoring
+  frame, a 1/2" west end panel, FÖRBÄTTRA on connector rails over the seating face, and a closed
+  support box under the mixer garage. The tall bank and garage moved 5 3/8" north, so the knee is
+  **9 5/8"** (under NKBA's 15", owner's call); the oak bar top is `cantilever_side="back"`.
+  One-piece quartz would now pass (28%) and is the recorded alternative.
+- **The east-wall counter receptacles are in stud bays**: 22"/68" south, 141 1/2"/178 1/2"/206"/
+  242" north at 42". Three north boxes only close ON the E2/EAST-MID king packs, so it is four;
+  the fallback is a pop-up in the slab. 210.52(C) is not graded — re-measure if a window moves.
 
 ### Gardens (2026-09-21)
 

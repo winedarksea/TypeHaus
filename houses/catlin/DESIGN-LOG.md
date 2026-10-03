@@ -14,6 +14,29 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## East wall: BESTA -> SEKTION, carousel corners, SEKTION peninsula (2026-10-02)
+
+The eight BESTA units (16 1/2" deep, 29 3/4" top) did not match the kitchen and left two
+defects beside it: `FURN-M-KIT-N4`'s front 80% blocked by `FURN-M-KIT-E2` at 1 3/8", and the
+peninsula as one opaque `CASE-PENINSULA-120`. Owner decisions: 36" counters in the living
+room, stool top = counter top, 15"-deep bases, carousels at NE and at the peninsula corner,
+no SE wrap, knee 15" -> ~10", 2" white oak slabs.
+
+- **Composition by search, not by guess.** 2xB36 / B36-B30-B30-B36 put a joint 3 1/4" off
+  E1's centre. The chosen split centres B30s on E1/E2 (1/4" off) and mirrors about the brick.
+- **The sill came out 34", not the planned ~36".** The stool sits on the frame's lower rail
+  (sill + 2.953"), and the slab top is 36 15/16" above datum. Heads rose 2", not 4", so the
+  east row does NOT share the second storey's 7'-0" head line; it is 2" under.
+- **Four north-bank receptacles, not three.** Three close only with boxes <= 2 1/2" off the RO
+  edges, which is where the king/jack packs stand (and stud-004 is at 192"). In the bays the
+  span is 99" against 96". Four boxes in bays keep cased reveals possible.
+- **Engine.** `SEKT-CORNER-B38` (L footprint), `SEKT-B*-D15`, `SEKT-W36-30`, a `corner-base`
+  symbol; countertops honour an L host and gained `cantilever_side` and an over-long `length`
+  (split into `resolve/countertops.py`); `electrical.island_receptacle` now judges RUNS — per
+  box, the peninsula's three bases read as islands although the run is wall-attached.
+- **Backing.** `BK-M-E1-MIXER` dropped 34" -> 31 1/2" to catch the base suspension rail too.
+  `BK-M-E1-ROD` stays at 82": it also carries the 83 1/2" stacker rail, and covers the rods at 86".
+
 ## Hall-bath toilet centres under the west window (2026-10-02)
 
 `FX-S-BATH1-WC` moved 12 1/2" north, from y=363 1/2" to y=376", matching

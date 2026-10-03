@@ -2904,7 +2904,12 @@ def test_the_centreline_bearing_wall_is_one_stud_grid_on_every_storey(catlin_mod
     # is doubled — what changed is that ``_facade_stations(..., "stud")`` counts members
     # whose child_key starts with "stud", and a king is not one. Lowered to the measured
     # value rather than widened; a real loss of a full-height line would take this below 9.
-    assert shared is not None and len(shared) >= 9, sorted(shared or ())
+    #
+    # 8, not 9, since D-S-PLANT moved to centre y=2'-8" (owner, 2026-10-02): its 30" RO is
+    # y 17"..47", so its jamb packs stand on stations 16 and 48 and the opening takes 32.
+    # Station 16 is now a king on the second storey, not a "stud"; the line is carried, not
+    # lost. The eight that run full height are 112/128/144/192/208/384/400/416.
+    assert shared is not None and len(shared) >= 8, sorted(shared or ())
 
 
 def test_upper_storey_studs_stand_over_studs(catlin_model):

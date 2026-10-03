@@ -1,9 +1,17 @@
-"""Generated geometry for the closet's SEKTION / MAXIMERA drawer base."""
+"""Generated geometry for SEKTION bases: the closet's MAXIMERA drawer base and the L corner."""
 
 from __future__ import annotations
 
 from typehaus.model.placeable_symbols._families import Builder, Geometry
-from typehaus.model.placeable_symbols._frame import DETAIL_WEIGHT, box, line, rect
+from typehaus.model.placeable_symbols._frame import (
+    DETAIL_WEIGHT,
+    Point,
+    box,
+    line,
+    polygon,
+    prism,
+    rect,
+)
 from typehaus.quantities import inch
 
 # Published product dimensions and the closet's countertop spec. The top's front oversail is
@@ -137,5 +145,64 @@ def sektion_drawer_base() -> Builder:
                              "metal"))
 
         return tuple(strokes), tuple(parts)
+
+    return build
+
+
+# The carousel corner base: two 24"-deep legs meeting in an L, the 14" notch open to the room.
+SEKTION_CORNER_LEG_M = inch(24).meters
+SEKTION_CORNER_KICK_M = inch(3.5).meters
+SEKTION_CORNER_TOP_M = inch(1.181).meters
+SEKTION_CORNER_FRONT_M = inch(0.75).meters
+
+
+def sektion_corner_points(width: float, depth: float,
+                          leg: float = SEKTION_CORNER_LEG_M) -> tuple[Point, ...]:
+    """The L ring the corner glyph draws and its catalog ``footprint_shape`` states.
+
+    Backs on +y and +x (the two walls of an inside corner); the notch at -x/-y is the floor
+    the bifold door opens into.
+    """
+    hw, hd = width / 2, depth / 2
+    leg = min(leg, width, depth)
+    return ((-hw, hd - leg), (hw - leg, hd - leg), (hw - leg, -hd), (hw, -hd), (hw, hd),
+            (-hw, hd))
+
+
+def _inset_l(width: float, depth: float, leg: float, inset: float) -> tuple[Point, ...]:
+    """The same L with its two notch faces pulled back by ``inset`` (the carcass behind the
+    door fronts)."""
+    hw, hd = width / 2, depth / 2
+    return ((-hw, hd - leg + inset), (hw - leg + inset, hd - leg + inset),
+            (hw - leg + inset, -hd), (hw, -hd), (hw, hd), (-hw, hd))
+
+
+def sektion_corner_base() -> Builder:
+    """An L corner base under its slab: carcass, door faces on the two notch sides, a kick."""
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        leg = min(SEKTION_CORNER_LEG_M, width * 0.8, depth * 0.8)
+        top_t = min(SEKTION_CORNER_TOP_M, height * 0.08)
+        kick = min(SEKTION_CORNER_KICK_M, height * 0.12)
+        front = min(SEKTION_CORNER_FRONT_M, leg * 0.1)
+        ring = sektion_corner_points(width, depth, leg)
+        carcass = _inset_l(width, depth, leg, front)
+        hw, hd = width / 2, depth / 2
+        notch_x, notch_y = hw - leg, hd - leg
+        strokes = (polygon(ring, fill="counter"),
+                   line((-hw, notch_y + front), (notch_x + front, notch_y + front),
+                        weight=DETAIL_WEIGHT),
+                   line((notch_x + front, notch_y + front), (notch_x + front, -hd),
+                        weight=DETAIL_WEIGHT))
+        parts = [prism(ring, height - top_t, height, "counter"),
+                 prism(carcass, kick, height - top_t, "cabinet-cream"),
+                 prism(_inset_l(width, depth, leg, front + inch(2).meters), 0.0, kick,
+                       "cabinet-cream-dark"),
+                 # The two bifold leaves, one on each notch face.
+                 box((-hw + notch_x) / 2, notch_y + front / 2, kick, height - top_t,
+                     notch_x + hw, front, "cabinet-cream"),
+                 box(notch_x + front / 2, (-hd + notch_y) / 2, kick, height - top_t,
+                     front, notch_y + hd, "cabinet-cream")]
+        return strokes, tuple(parts)
 
     return build

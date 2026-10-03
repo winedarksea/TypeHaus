@@ -64,8 +64,8 @@ SYMBOL_NAMES = frozenset({
     # sauna joinery — benches are fitted to the room, not bought as a set
     "sauna-bench", "sauna-bench-tiered",
     # kitchen/bath casework — the fitted millwork a room is built around
-    "base-cabinet", "sink-base", "wall-cabinet", "tall-cabinet", "tall-cabinet-double",
-    "tall-cabinet-triple", "besta",
+    "base-cabinet", "sink-base", "corner-base", "wall-cabinet", "tall-cabinet",
+    "tall-cabinet-double", "tall-cabinet-triple", "besta",
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
     "microwave", "hood",
