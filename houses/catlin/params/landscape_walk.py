@@ -12,7 +12,8 @@ Control joints fall on the same stations.
 Each slab is modelled flat at its high edge, 1" over the -2'-10" grade so it never cuts the
 earth sheet; the fall lives on a matching `ImperviousSurface(kind="walk")`, merged into
 the site by `plan/manifest.py`. 1/2" isolation gaps at the garage stem flashing, the
-canopy columns PT-BW-RE/-RNE, the entry tiers, the HP1 pad and the stair pad.
+canopy columns PT-BW-RE/-RNE, the entry tiers and the stair pad. Walk C meets the HP1 pad
+directly; they are one continuous pour.
 notes/sidewalk_layout.md.
 """
 
@@ -68,12 +69,12 @@ def _rect(x0, y0, x1, y1):
 #    1/2", to clear of the canopy column PT-BW-RNE (y 41'-11 3/4"..42'-11 3/4"). It was the
 #    full 92" until 2026-09-23; its east 28" is where RG-E-BASIN (x 37'..42') mirrors the
 #    west basin, 1'-7" of lawn off the slab.
-# C: the entry walk, walk only. Under the canopy it is the full passage width, 3" off both
-#    claddings, from ST-BW-ENTRY's foot (less the joint to SL-BW-TIER1) east to the two
-#    canopy columns; it passes between PT-BW-RE and PT-BW-RNE, notched round both. Just
-#    west of them it recesses round the HP1 pad, with a 3" gravel drip strip on the west,
-#    north and east edges. Its 39 3/4" passage beyond that strip keeps defrost off the walk.
-#    East of the piers it reaches leg D's west edge; the former HP1 location is walk now.
+# C: the entry walk. Under the canopy it is the full passage width, 3" off both claddings,
+#    from ST-BW-ENTRY's foot (less the joint to SL-BW-TIER1) east to the two canopy columns;
+#    it passes between PT-BW-RE and PT-BW-RNE, notched round both. Just west of them it meets
+#    the HP1 pad on its west, north and east edges. The pad and walk are one continuous pour;
+#    the heat pump is bolted on afterward. Defrost drains north onto the walk. East of the
+#    piers it reaches leg D's west edge; the former HP1 location is walk now.
 #    It replaced the drained paver landing under the canopy on 2026-09-23;
 #    its top is the flight's springing (breezeway.py).
 # D: the house east side, one-sided 64", off the NE/SE corner trims (x=36'-7 7/8") plus 1/2".
@@ -92,10 +93,9 @@ _COL_E = ROOF_COLUMN_EAST_X_FT + _COL_R_FT + GAP_FT
 _RE_N = PIER_LINE_Y_FT + _COL_R_FT + GAP_FT
 _RNE_S = GARAGE_SEAT_Y_FT - _COL_R_FT - GAP_FT
 _C_FOOT_X = STAIR_FOOT_X_FT + GAP_FT
-_DRIP_FT = 3.0 / 12.0
-_HP1_PAD_WEST_FT = min(v.x.feet for v in HP1_PAD.outline) - _DRIP_FT
-_HP1_PAD_EAST_FT = max(v.x.feet for v in HP1_PAD.outline) + _DRIP_FT
-_HP1_PAD_NORTH_FT = max(v.y.feet for v in HP1_PAD.outline) + _DRIP_FT
+_HP1_PAD_WEST_FT = min(v.x.feet for v in HP1_PAD.outline)
+_HP1_PAD_EAST_FT = max(v.x.feet for v in HP1_PAD.outline)
+_HP1_PAD_NORTH_FT = max(v.y.feet for v in HP1_PAD.outline)
 C = ((_C_FOOT_X, STAIR_Y0_FT), (_HP1_PAD_WEST_FT, STAIR_Y0_FT),
      (_HP1_PAD_WEST_FT, _HP1_PAD_NORTH_FT), (_HP1_PAD_EAST_FT, _HP1_PAD_NORTH_FT),
      (_HP1_PAD_EAST_FT, STAIR_Y0_FT), (_COL_W, STAIR_Y0_FT),

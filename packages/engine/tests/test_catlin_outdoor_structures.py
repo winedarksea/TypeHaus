@@ -1296,15 +1296,17 @@ def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
     pad = Polygon(_solid(catlin_model, _HP1_PAD).outline)
     walk = Polygon(_solid(catlin_model, "SL-WK-C").outline)
     assert walk.is_valid
-    assert not pad.intersects(walk)
-    assert pad.distance(walk) / INCH == pytest.approx(3.0)
-    lane_south = pad.bounds[3] + 3 * INCH
-    lane = box(pad.bounds[0] - 3 * INCH, lane_south,
-               pad.bounds[2] + 3 * INCH, lane_south + 36 * INCH)
-    assert walk.covers(lane), "the pad's gravel recess must retain a continuous 36-inch walk"
+    assert pad.intersection(walk).area == pytest.approx(0.0)
+    assert pad.distance(walk) == pytest.approx(0.0)
+    shared_edge = pad.boundary.intersection(walk.boundary)
+    assert shared_edge.length / INCH == pytest.approx(104.0)
+    lane_south = pad.bounds[3]
+    lane = box(pad.bounds[0], lane_south,
+               pad.bounds[2], lane_south + 36 * INCH)
+    assert walk.covers(lane), "the continuous pour must retain a 36-inch walk beyond the pad"
     section = walk.intersection(LineString([(cabinet.centroid.x, lane_south),
                                             (cabinet.centroid.x, garage_face_y)]))
-    assert section.length / INCH == pytest.approx(39.75)
+    assert section.length / INCH == pytest.approx(42.75)
     drainage = next(surface for surface in catlin_model.plan.project.site.impervious_surfaces
                     if surface.label == "hp1 pad")
     assert Polygon([p.xy_m for p in drainage.outline]).equals_exact(pad, 1e-8, normalize=True)

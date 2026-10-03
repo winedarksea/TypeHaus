@@ -7,9 +7,10 @@ gap and leaving 12" to the 14" pier's west face. The garage's northward shift pr
 not a manufacturer approval obtained by the model; plans/hp1-canopy-siting-study.md
 records the obstruction-table distinction.
 
-The pad falls north into a 3" gravel strip formed out of SL-WK-C. Beyond that strip,
-39 3/4" of paved entry walk remains. The cabinet overlaps WIN-M-KITCH's west edge by
-2 1/2" in plan, with 18 3/16" between cabinet top and sill. A pure west translation leaves
+The pad and SL-WK-C meet at their west, north and east edges as one continuous pour; the
+heat pump is bolted on afterward. Its northward drainage runs onto the walk, leaving 42 3/4"
+of paved entry beyond the pad. The cabinet overlaps WIN-M-KITCH's west edge by 2 1/2" in
+plan, with 18 3/16" between cabinet top and sill. A pure west translation leaves
 the rear 1 3/8" beyond the canopy's south roof edge; its stand height and pad top remain
 the same as the other two units.
 

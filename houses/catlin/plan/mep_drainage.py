@@ -429,12 +429,12 @@ SECOND_DRAINS = [
 # 9'-0 1/8" the underside of the trusses.
 SECOND_BRANCH_DRAINS = [
     # ** THE HALL BATH'S 3" COLLECTOR. THE CLOSET BEND IS OFFSET AND THAT IS NOT A ROUNDING. **
-    # FX-S-BATH1-WC moved 4.79" south on 2026-10-01: its flange is at y=363.5", where the
-    # 3.5" pipe envelope ends at y=365.25", 1" clear of the FS-S-WEST chord face at y=366.25".
-    # The closet bend shifts south to y=359.82" before the run crosses the trusses to the
-    # y=344" vertical drop.
-    # That first leg falls 8.5"/ft, which is a bend and not a slant — `mep.drain_offset_
-    # geometry` grades it on the conjunction and 3 3/4" of fall is nowhere near its 18".
+    # FX-S-BATH1-WC is centred under WIN-S-BATH-W at y=376" (2026-10-02). Its 3.5" pipe
+    # envelope clears both faces of the 369.75"..382.25" bay by 4 1/2". The closet bend
+    # shifts south to y=372.32", then crosses the 368" and 352" trusses to the existing
+    # y=344" vertical drop. The bend's 116.75" invert keeps the pipe crown below the new
+    # 368" crossing's 118.5" web ceiling; the next leg falls 3/4" in 28.32" (0.318"/ft),
+    # holding UPC 708.0's 1/4"/ft minimum. The closet-ceiling drop and stack inlet stay put.
     # ** SINCE 2026-09-24 THE VERTICAL DROP LANDS IN RM-M-MUD-CLOSET. **
     # It used to run east on the 30'-0" bay to x=5'-0", and that line crossed the lane of
     # DU-M-ERV-EXH-TRUNK and DU-M-ERV-R-STUDY: 3 1/2" of drain and an 8" trunk do not share an
@@ -443,11 +443,11 @@ SECOND_BRANCH_DRAINS = [
     # hole (FO-S-BATH1-WC-DRAIN) into the closet ceiling — STORAGE, where exposed pipe is by
     # design — and east at 8'-4" onto the stack's side. Dropping early only gains head.
     PipeRun(uid="K28BQ29KCW", tag="PR-M-S-BATH1-WC-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(m(0.560313), inch(363.5)), pt(m(0.560313), inch(359.82)),
+            path=(pt(m(0.560313), inch(376)), pt(m(0.560313), inch(372.32)),
                   pt(m(0.560313), inch(344)), pt(m(0.560313), inch(344)),
                   pt(ft(5), inch(344)), pt(ft(5), ft(26, 6))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(10, 0.75), inch(116.9), inch(116.44), inch(100.5), inch(99.51),
+            elevations=(ft(10, 0.75), inch(116.75), inch(116), inch(100.5), inch(99.51),
                         inch(98.83)),
             serves=("FX-S-BATH1-WC",)),
     # The tub-shower's 1 1/2" waste: straight down in its own bay at the west end, south

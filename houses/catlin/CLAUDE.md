@@ -41,8 +41,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
 - `plan/closet.py` — `# haus: editable`, everything in RM-M-CLOSET (PAX, SEKTION, rods, pegs,
   mirror, cans, switch, PAX strips); types and IKEA products in `plan/closet_types.py`.
 - `plan/bath1_storage.py` — `# haus: editable`, three 24x24x90 SEKTION frames in RM-S-BATH1;
-  types/products in `plan/bath1_storage_types.py`. Toilet stays: west/centre lower 30" are
-  open shelves, with a drawer above; east has three drawers. Upper VOXTORP doors match the
+  types/products in `plan/bath1_storage_types.py`. Toilet centres under WIN-S-BATH-W at
+  y=376"; west/centre lower 30" are open shelves, with a drawer above; east has three
+  drawers. Upper VOXTORP doors match the
   kitchen. Installed height 94 1/2", depth 24 7/8" including fronts. Rail backing spans
   W-S-BD-N / -N1B. FH-S-BATH1 avoids the run, preserving its 338 W cable and 612 Btu/h output.
 - `plan/bedroom_wardrobes.py` — `# haus: editable`, BED1-3's PAX wardrobes; types and products
@@ -1811,9 +1812,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - `EQ-M-HP1-OD` moved 7'-10" west under the open-ended canopy on 2026-10-02 (owner assumes
     Gree accepts that configuration). Centre x 26'-9 1/2", north discharge, 6" rear gap,
     12" service gap to PT-BW-PE and 57 15/16" to the garage wall. Its pad, stand, anchors
-    and drainage outline follow; walk C recesses round a 3" gravel strip and retains
-    39 3/4" of passage. ED-M-HP1-DISC stays at x 32'-5", with its 30" × 36" working strip
-    now clear. `plans/hp1-canopy-siting-study.md` records the assumption and geometry.
+    and drainage outline follow; walk C meets the pad on its west, north and east edges as
+    one continuous pour. Defrost drains north onto the walk, with 42 3/4" of paved passage
+    beyond the pad. ED-M-HP1-DISC stays at x 32'-5", with its 30" × 36" working strip now
+    clear. `plans/hp1-canopy-siting-study.md` records the assumption and geometry.
   - Aligning `ST-G-SERVICE` under its own landing fixed a standing `code.R312_1_guard_height`
     FAIL on `SL-G-STEP-0`. `ED-G-SW`/`ED-G-EXT-SW` sat inside `D-G-SERVICE`'s rough opening
     AND 12" above the landing (a garage device's `Mount.elevation` is off the SLAB); since

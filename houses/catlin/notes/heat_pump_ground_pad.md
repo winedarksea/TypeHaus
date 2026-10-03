@@ -4,8 +4,9 @@
 open-ended canopy, assuming Gree accepts that configuration. Centre
 (26'-9 1/2", 37'-8 17/32"), cabinet x 25'-2"..28'-5", pad x 24'-11 1/4"..28'-7 3/4".
 The north-facing fan has 57 15/16" to the garage; rear gap 6", service end 12" to
-PT-BW-PE. The stand/anchors and pad drainage outline moved with it. SL-WK-C now
-recesses round the pad with a 3" gravel strip, retaining 39 3/4" of passage.
+PT-BW-PE. The stand/anchors and pad drainage outline moved with it. SL-WK-C meets the pad
+on its west, north and east edges in one continuous pour; the heat pump is bolted down
+afterward. The pad drains north onto the walk, leaving 42 3/4" of paved passage beyond it.
 ED-M-HP1-DISC stays at x 32'-5" with clear working space. The earlier open-yard
 clearance argument and east-of-garage coordinates below describe former sitings.
 [The implemented siting study](../../../plans/hp1-canopy-siting-study.md) records the
@@ -298,9 +299,10 @@ the cold-climate guidance (18"–24") applies as written, and 18" is inside it.
 
 Both units carry a **factory base-pan heater** — confirmed in the submittals, which closes
 the open question the deck note left ("verify availability with Gree"). Defrost meltwater
-drips onto the pad and runs east onto gravel: no drain pan, no piped condensate, no heater
-cable, no `pan_drain_ref`. `EQ-M-HP3-OD` has stood at grade on the north side on exactly
-those terms since it was authored.
+drips onto each pad: HP2 runs east onto gravel, while HP1's pad joins walk C and drains
+north onto it. There is no drain pan, piped condensate, heater cable or `pan_drain_ref`.
+`EQ-M-HP3-OD` has stood at grade on the north side on exactly those terms since it was
+authored.
 
 ## System 1 crosses to the north face (2026-09-04)
 

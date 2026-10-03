@@ -32,15 +32,43 @@ def test_three_real_sektion_frames_replace_the_placeholder(catlin_plan, catlin_m
                    for obj in catlin_model_ro.canvas_objects)
 
 
-def test_toilet_position_and_its_required_clear_floor_remain_intact(catlin_model_ro):
+def test_toilet_centres_under_the_window_and_preserves_its_required_clear_floor(catlin_model_ro):
     objects = _objects(catlin_model_ro)
     toilet = objects["FX-S-BATH1-WC"]
+    window = next(opening for opening in catlin_model_ro.openings if opening.tag == "WIN-S-BATH-W")
+    window_center_y = Polygon(window.framing_bumper).centroid.y
     assert toilet.uid == "CSQ801AAAA"
-    assert toilet.position == pytest.approx((0.560313, 363.5 * INCH))
+    assert toilet.position == pytest.approx((0.560313, window_center_y))
+    tub_south_face = Polygon(objects["FX-S-BATH1-SH"].footprint).bounds[1]
+    vanity_west_face = Polygon(objects["FX-S-BATH1-LAV"].footprint).bounds[0]
+    toilet_front_face = Polygon(toilet.footprint).bounds[2]
+    assert tub_south_face - toilet.position[1] >= 15 * INCH
+    assert vanity_west_face - toilet_front_face >= 24 * INCH
+    assert all(not Polygon(objects["FX-S-BATH1-SH"].footprint).intersects(Polygon(zone))
+               for zone in toilet.required_clearances)
     for tag in (*CABINET_TAGS, "FURN-S-BATH1-CLOSET-COVER", "FURN-S-BATH1-CLOSET-SCRIBE"):
         cabinet = Polygon(objects[tag].footprint)
         assert not cabinet.intersects(Polygon(toilet.footprint))
         assert all(not cabinet.intersects(Polygon(zone)) for zone in toilet.required_clearances)
+
+
+def test_toilet_drain_follows_the_flange_into_the_next_clear_truss_bay(catlin_model_ro):
+    toilet = _objects(catlin_model_ro)["FX-S-BATH1-WC"]
+    drain = next(run for run in catlin_model_ro.pipe_runs if run.tag == "PR-M-S-BATH1-WC-DRAIN")
+    assert drain.path[0] == pytest.approx(toilet.position)
+    floor = next(floor for floor in catlin_model_ro.floors if floor.tag == "FS-S-WEST")
+    adjoining_truss_lines = sorted({member.p0[1] for member in floor.members
+                                   if member.category == "joist"})
+    south_line = max(y for y in adjoining_truss_lines if y < toilet.position[1])
+    north_line = min(y for y in adjoining_truss_lines if y > toilet.position[1])
+    # The drain's 3.5" envelope must fit between the 3.5" chords, with no chord cutting.
+    required_centerline_separation = 3.5 * INCH
+    assert toilet.position[1] - south_line >= required_centerline_separation
+    assert north_line - toilet.position[1] >= required_centerline_separation
+    # Moving only the flange would lengthen this leg below UPC 708.0's required grade.
+    south_run_in_inches = (drain.path[1][1] - drain.path[2][1]) / INCH
+    fall_in_inches = (drain.z_m[1] - drain.z_m[2]) / INCH
+    assert fall_in_inches / (south_run_in_inches / 12) >= 0.25
 
 
 def test_every_visible_drawer_can_fully_extend_past_the_toilet(catlin_plan, catlin_model_ro):
@@ -110,7 +138,8 @@ def test_tall_rail_is_backed_on_both_wall_segments_and_stays_below_the_ceiling(
     room = next(room for room in catlin_model_ro.rooms if room.tag == "RM-S-BATH1")
     for tag in CABINET_TAGS:
         cabinet = objects[tag]
-        assert room.clear_height_m - (cabinet.body_z1_m - cabinet.body_z0_m) == pytest.approx(11.5 * INCH)
+        cabinet_height = cabinet.body_z1_m - cabinet.body_z0_m
+        assert room.clear_height_m - cabinet_height == pytest.approx(11.5 * INCH)
     for tag, wall_tag in (("BK-S-BD-N-SEKTION", "W-S-BD-N"),
                           ("BK-S-BD-N1B-SEKTION", "W-S-BD-N1B")):
         band = catlin_plan.by_tag(tag)
@@ -118,4 +147,5 @@ def test_tall_rail_is_backed_on_both_wall_segments_and_stays_below_the_ceiling(
         assert band.face == "left"
         # Installed rail band translated from the finished floor to the storey datum.
         rail_screw_height = (94.25 + 1.5) * INCH
-        assert band.elevation.meters < rail_screw_height < band.elevation.meters + band.height.meters
+        band_top = band.elevation.meters + band.height.meters
+        assert band.elevation.meters < rail_screw_height < band_top

@@ -14,6 +14,23 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Hall-bath toilet centres under the west window (2026-10-02)
+
+`FX-S-BATH1-WC` moved 12 1/2" north, from y=363 1/2" to y=376", matching
+`WIN-S-BATH-W`'s resolved centre. The tub is 18 1/2" from the toilet centreline, the
+SEKTION fronts are 29.74" south, and the vanity leaves 59.78" in front of the bowl.
+These exceed UPC 402.5's 15" side and 24" front clearances.
+
+The flange's 3.5" drain envelope clears the next truss bay's faces by 4 1/2".
+`PR-M-S-BATH1-WC-DRAIN`'s bend follows it to y=372.32", with its invert lowered to
+116.75" and the next invert to 116" to hold 1/4"/ft. The existing closet-ceiling
+penetration and stack inlet remain. Crossings pass the model's provisional truss layout;
+the fabricator's panel drawing remains the authority for the eventual web openings.
+
+`FH-S-BATH1`'s toilet keepout moved with the bowl, retaining 26.82 ft2, the 338 W
+DHEHK12027 cable, 2" from the fixture and over 7" from its drain. Targeted regression
+tests pass; the full unsuppressed house check introduces no new failures.
+
 ## W-M-BDN1 returns to the plain partition (2026-09-30)
 
 `W-M-BDN1` changed from `INT_2X4_RC` back to `INT_2X4_PARTITION`. The ensuite is used by
@@ -4172,6 +4189,13 @@ surface that reaches the court, so the water goes there.
   length and field charge are installation measurements, not modelled geometry.
 - The assumption is recorded in plans/hp1-canopy-siting-study.md. Regression checks
   verify physical access and matching geometry without claiming manufacturer approval.
+
+## 2026-10-02 — HP1 pad joins the entry walk pour
+
+- At the owner's direction, SL-M-HP1PAD and SL-WK-C meet on the pad's west, north and east
+  edges as one continuous concrete pour. The heat pump is bolted down afterward; its
+  northward defrost drainage runs onto the walk. Walk C now leaves 42 3/4" of paving beyond
+  the pad, and the sidewalk takeoff is 580.1 sf / 7.16 cy.
 
 ## 2026-10-02 — BED1-3 PAX frames changed to white
 

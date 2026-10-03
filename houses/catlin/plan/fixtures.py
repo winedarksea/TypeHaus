@@ -404,8 +404,8 @@ MAIN_FIXTURES = (
 # suite's own bath (see storeys/second.py).
 #
 # Tub-shower stays centre-north (crosses x=5', the SL-D-SHOWER detail slice line). WC
-# backs west onto exterior 2x6 W-S-W1 (rotation -90), its REQUIRED clearance zone stopping
-# 3" south of the tub-shower. Lav backs east onto W-S-BA-E1B (INT_2X6_PLUMBING). All three
+# backs west onto exterior 2x6 W-S-W1 (rotation 90), its REQUIRED clearance zone stopping
+# 3 1/2" south of the tub-shower. Lav backs east onto W-S-BA-E1B (INT_2X6_PLUMBING). All three
 # footprints are pairwise disjoint with 9"+ clearance between any two.
 #
 # ALCOVE CHECK. FX-TUBSHOWER-60 is a 60"x30" flanged insert, which is exactly the standard
@@ -419,11 +419,12 @@ MAIN_FIXTURES = (
 # with a 2x4 framed behind it for the flange to nail to. The west side is also real: the
 # chase's south corners run the tub's full 30" (storeys/second.py, NODES).
 SECOND_FIXTURES = (
-    # Moved 3" north for closet clearance, then 4.79" south (2026-10-01) so the WC flange
-    # and its 3.5" drain envelope land in FS-S-WEST's clear truss bay; the drain's first two
-    # vertices follow in plan/mep_drainage.py.
+    # Centred under WIN-S-BATH-W at y=376" (2026-10-02), 12 1/2" north of the former bay.
+    # The 3.5" drain envelope clears FS-S-WEST's 369.75"..382.25" bay faces by 4 1/2";
+    # the tub is 18 1/2" from the WC centreline, against UPC 402.5's 15" minimum.
+    # The drain bend and radiant-floor keepout follow in mep_drainage.py / storeys/second.py.
     Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOTO-AQUIA-IV", room="RM-S-BATH1",
-            position=pt(m(0.560313), inch(363.5)), rotation=deg(90), wall_ref="W-S-W1"),
+            position=pt(m(0.560313), inch(376)), rotation=deg(90), wall_ref="W-S-W1"),
     # ** A 48" VANITY -- THE BIGGEST IN THE HOUSE AFTER RM-M-BATH2'S. ** The bowl backs the
     # EAST wall, so `rotation=deg(-90)` — `deg(90)` points a fixture's back at -x, the wrong
     # way here.

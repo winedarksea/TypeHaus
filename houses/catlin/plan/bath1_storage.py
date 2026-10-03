@@ -1,6 +1,6 @@
 # haus: editable
-# Three SEKTION 24x24x90 frames, south wall of RM-S-BATH1. Owner, 2026-10-02: WC stays
-# at y=363 1/2"; west and centre lower 30" are OPEN shelves, with no doors or drawers.
+# Three SEKTION 24x24x90 frames, south wall of RM-S-BATH1. Owner, 2026-10-02: WC is
+# centred under WIN-S-BATH-W at y=376"; west and centre lower 30" are OPEN shelves.
 # Their one drawer starts at 34 1/2" AFF, above the WC's 29 1/8" top. East has three drawers.
 # All units have 30+20" VOXTORP upper doors and a 4 1/2" plinth; installed top is 94 1/2".
 # South face y=321.385", fronts y=346.260"; x=7 1/8"..79 1/8" plus the 1/2" east cover.

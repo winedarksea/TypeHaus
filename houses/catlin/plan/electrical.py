@@ -688,8 +688,9 @@ MAIN_EQUIPMENT = [
     # to — sees no deck equipment at all.
     #
     # No `drain_pan` / `pan_drain_ref` on either, matching EQ-M-HP3-OD below: defrost
-    # meltwater off a unit at grade drips onto its own pad and runs east onto gravel. The
-    # piped, heat-traced condensate runs the balcony needed are deleted.
+    # meltwater drips onto each pad. HP2 runs east onto gravel; HP1's pad joins walk C, which
+    # carries its northward drainage. The piped, heat-traced condensate runs the balcony
+    # needed are deleted.
     # ** SYSTEM 1'S UNIT LEFT THE POCKET ON 2026-09-04 AND STANDS ON THE NORTH FACE. **
     # It follows its air handler, which moved to SF-S-HP1 over RM-S-NCLOSET at the north end
     # of the second storey; the whole argument is in `params/hp1_north_pad.py`, which carries
@@ -700,9 +701,10 @@ MAIN_EQUIPMENT = [
     # Owner decision, 2026-10-02: move 7'-10" WEST under the open-ended canopy, assuming
     # Gree accepts that configuration. Cabinet x 25'-2"..28'-5", with 12" service space
     # to PT-BW-PE, 6" rear gap and 57 15/16" north discharge distance to the garage.
-    # The stand/pad and its drainage outline move together; SL-WK-C reserves a gravel
-    # drip strip. The unchanged disconnect is east of the pier, with its working area
-    # cleared by this move. The acceptance assumption is recorded in the siting study.
+    # The stand/pad and its drainage outline move together; SL-WK-C meets the pad on its
+    # west, north and east edges in one continuous pour. The unchanged disconnect is east
+    # of the pier, with its working area cleared by this move. The acceptance assumption is
+    # recorded in the siting study.
     #
     # `mount.elevation` is UNCHANGED at -14": the pad tops out at the same -2'-8" under the
     # same 18" stand, so all three cabinets keep one base plane at -1'-2".

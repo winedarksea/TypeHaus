@@ -534,8 +534,8 @@ SITE = Site(
         # SL-M-HP1PAD, the north-face pad under EQ-M-HP1-OD (params/hp1_north_pad.py),
         # x 24'-11 1/4"..28'-7 3/4" by y 36'-10"..39'-4" — 9.27 sf. Moved 7'-10" west
         # with its cabinet on 2026-10-02, under the open-ended canopy west of PT-BW-PE.
-        # The pad falls north 3/4" over 30" (2.5%) into the 3" gravel strip formed out of
-        # SL-WK-C. The pad's low edge stays above the walk, so defrost has a gravel outlet.
+        # The pad falls north 3/4" over 30" (2.5%) onto SL-WK-C, which meets the pad on its
+        # west, north and east edges as one continuous pour. Defrost drains onto the walk.
         ImperviousSurface(
             label="hp1 pad",
             outline=(pt(ft(24, 11.25), ft(36, 10)), pt(ft(28, 7.75), ft(36, 10)),
