@@ -800,6 +800,18 @@ MAIN_PLACEABLES = [
     Furniture(uid="CMD701AAAA", tag="FURN-M-BED-DESK", type_ref="FURN-DESK-HEMNES-61",
               room="RM-M-BED", position=pt(inch(198.75), inch(37.75)), rotation=deg(-90)),
 
+    # The south window ROs end/start at x=63/161": centre the touching 70 3/4" pair
+    # on x=112", leaving 13 5/8" to either RO. Back edges follow W-M-S1's finish face;
+    # rotation 180 faces the shelves north. Floor-standing, with manufacturer wall anchors.
+    Furniture(uid="CMBOOK0001", tag="FURN-M-BED-BOOKCASE-W", type_ref="FURN-BOOKCASE-HEMNES-35",
+              room="RM-M-BED", location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-S1", face="left", distance_from_start=inch(94.3125),
+                  normal_gap=inch(0), rotation_offset=deg(180)))),
+    Furniture(uid="CMBOOK0002", tag="FURN-M-BED-BOOKCASE-E", type_ref="FURN-BOOKCASE-HEMNES-35",
+              room="RM-M-BED", location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-S1", face="left", distance_from_start=inch(129.6875),
+                  normal_gap=inch(0), rotation_offset=deg(180)))),
+
     # --- mudroom (RM-M-MUDROOM) --------------------------------------------------------
     # Both mudroom closets are framed rooms, not furniture (RM-M-MECH, RM-M-MUD-CLOSET,
     # storeys/main.py). Bench: back to the west wall, centred

@@ -306,6 +306,15 @@ BOOKCASE = FurnitureType(
     tag="FURN-BOOKCASE-32", name="Bookcase", footprint=(ft(2, 8), ft(1)), height=ft(6),
     plan_symbol="bookcase", storage=True, source=REFERENCE,
 )
+HEMNES_BOOKCASE_35 = FurnitureType(
+    tag="FURN-BOOKCASE-HEMNES-35", name="IKEA HEMNES bookcase, white stain/light brown",
+    footprint=(inch(35.375), inch(14.625)), height=inch(77.5),
+    plan_symbol="hemnes-bookcase", storage=True,
+    source=("IKEA HEMNES 604.135.02, white stain/light brown; solid pine with fiberboard "
+            "back; 35 3/8 x 14 5/8 x 77 1/2 in.; one stationary and four adjustable "
+            "shelves. Anchor to wall per manufacturer. Simplified planning model. "
+            "https://www.ikea.com/us/en/p/hemnes-bookcase-white-stain-light-brown-60413502/"),
+)
 
 # --- Sauna --------------------------------------------------------------------------------
 #
@@ -412,7 +421,7 @@ STARTER_FURNITURE_TYPES = (
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,
     WRITING_DESK, WRITING_DESK_42, HEMNES_DESK_61, MITTZON_SIT_STAND_DESK_47,
-    OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
+    OFFICE_CHAIR, DESK_CHAIR, BOOKCASE, HEMNES_BOOKCASE_35,
     SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_TIERED_48,
     SAUNA_BENCH_54, SAUNA_BENCH_48, SAUNA_BENCH_36,
     WORKBENCH_60, MUDROOM_BENCH_36, CLOSET_PEG_RAIL_42,

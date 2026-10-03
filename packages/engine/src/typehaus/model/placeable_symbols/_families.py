@@ -450,23 +450,24 @@ def besta() -> Builder:
     return build
 
 
-def shelving(*, shelves: int = 5) -> Builder:
+def shelving(*, shelves: int = 5, body_color: str = "wood",
+             back_color: str = "wood-dark", top_color: str = "wood") -> Builder:
     """A bookcase: two side panels, a back, and evenly spaced shelves."""
 
     def build(width: float, depth: float, height: float) -> Geometry:
         panel = min(clamp(depth * 0.12, 0.015, 0.03), depth * 0.3, width * 0.3,
                     height * 0.3)
-        strokes = [rect(0, 0, width, depth, fill="wood"),
+        strokes = [rect(0, 0, width, depth, fill=top_color),
                    rect(0, 0, width - 2 * panel, depth - 2 * panel, weight=DETAIL_WEIGHT)]
-        parts = [box(0, depth / 2 - panel / 2, 0.0, height, width, panel, "wood-dark")]
+        parts = [box(0, depth / 2 - panel / 2, 0.0, height, width, panel, back_color)]
         for sign in (-1, 1):
             parts.append(box(sign * (width / 2 - panel / 2), 0, 0.0, height, panel, depth,
-                             "wood"))
+                             body_color))
         count = max(2, shelves)
         for index in range(count):
             cz = clamp(height * index / (count - 1), panel / 2, height - panel / 2)
             parts.append(box(0, 0, cz - panel / 2, cz + panel / 2, width - 2 * panel, depth,
-                             "wood"))
+                             top_color if index == count - 1 else body_color))
         strokes.append(line((-width / 2 + panel, 0), (width / 2 - panel, 0)))
         return tuple(strokes), tuple(parts)
 

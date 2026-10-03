@@ -104,6 +104,9 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "nightstand": case(rows=2, cols=1),
     "media-console": case(rows=2, cols=3, pulls=False),
     "bookcase": shelving(shelves=5),
+    # Five interior shelves plus base and cap; only the cap has the light-brown stain.
+    "hemnes-bookcase": shelving(shelves=7, body_color="appliance-white",
+                               back_color="casework-shadow", top_color="wood"),
     "wardrobe-show": wardrobe(SHOW_INTERIOR),
     "wardrobe-dress": wardrobe(DRESS_INTERIOR),
     "wardrobe-double-hang": wardrobe(DOUBLE_HANG_INTERIOR),
