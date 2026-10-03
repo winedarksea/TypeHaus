@@ -246,6 +246,16 @@ WRITING_DESK = FurnitureType(
     clearances=(front_zone(ft(4), ft(2), ft(3), "desk chair pull-out",
                            occupant_types=(OFFICE_CHAIR_TAG, "FURN-DESK-CHAIR")),),
 )
+HEMNES_DESK_61 = FurnitureType(
+    tag="FURN-DESK-HEMNES-61", name='HEMNES-style wood desk, 61", two side drawers',
+    footprint=(inch(61), inch(25.625)), height=inch(29.125),
+    plan_symbol="drawer-desk", storage=True, work_surface=True,
+    source=("IKEA HEMNES 205.350.44, white stain/light brown; solid-pine top and frame, "
+            "61 x 25 5/8 x 29 1/8 in.; two-drawer side pedestal. Simplified planning model. "
+            "https://www.ikea.com/us/en/p/hemnes-desk-white-stain-light-brown-20535044/"),
+    clearances=(front_zone(inch(61), inch(25.625), ft(3), "desk chair and drawer pull-out",
+                           occupant_types=(OFFICE_CHAIR_TAG, "FURN-DESK-CHAIR")),),
+)
 OFFICE_CHAIR = FurnitureType(
     tag=OFFICE_CHAIR_TAG, name="Office chair", footprint=(ft(2, 2), ft(2, 2)),
     height=ft(3, 2), plan_symbol="office-chair", source=REFERENCE,
@@ -362,7 +372,7 @@ STARTER_FURNITURE_TYPES = (
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, CHEST, WARDROBE_48, NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,
-    WRITING_DESK, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
+    WRITING_DESK, HEMNES_DESK_61, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
     SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_TIERED_48,
     SAUNA_BENCH_54, SAUNA_BENCH_48, SAUNA_BENCH_36,
     WORKBENCH_60, MUDROOM_BENCH_36, CLOSET_PEG_RAIL_42,

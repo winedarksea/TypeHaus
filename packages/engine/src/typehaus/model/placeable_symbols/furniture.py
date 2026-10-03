@@ -7,6 +7,7 @@ needs no entry here at all: the same symbol renders at whatever W×D×H the type
 
 from __future__ import annotations
 
+from typehaus.model.placeable_symbols._desk import drawer_desk
 from typehaus.model.placeable_symbols._families import (
                                                         Builder,
                                                         bed,
@@ -75,6 +76,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "coffee-table": slab(leg_inset_m=0.05, apron=False),
     "end-table": slab(leg_inset_m=0.04, apron=False),
     "desk": slab(leg_inset_m=0.06, apron=True, modesty_panel=True),
+    "drawer-desk": drawer_desk,
     # A top the WALL carries — cleats, a ledger, or fold-down brackets. No legs and no
     # modesty panel, because both would stand in the knee space a wall-hung desk exists to
     # keep open, and a fold-down leaf cannot have either and still fold.

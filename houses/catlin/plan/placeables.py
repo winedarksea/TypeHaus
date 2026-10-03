@@ -895,6 +895,12 @@ MAIN_PLACEABLES = [
     Furniture(uid="SM4T9MMNVP", tag="FURN-M-BED-NIGHTSTAND-E", type_ref="FURN-NIGHTSTAND-24", room="RM-M-BED",
               position=pt(inch(155.875), inch(145.625))),
 
+    # Southwest corner: rotation 90 puts the back against the west wall and drawers north.
+    # Both finish faces are at 6.635"; leave ~1/2" for baseboard. The north end at 68 1/4"
+    # keeps the east-facing chair zone south of the king's foot at 68.445".
+    Furniture(uid="CMD701AAAA", tag="FURN-M-BED-DESK", type_ref="FURN-DESK-HEMNES-61",
+              room="RM-M-BED", position=pt(inch(20), inch(37.75)), rotation=deg(90)),
+
     # --- mudroom (RM-M-MUDROOM) --------------------------------------------------------
     # Both mudroom closets are framed rooms, not furniture (RM-M-MECH, RM-M-MUD-CLOSET,
     # storeys/main.py). Bench: back to the west wall, centred

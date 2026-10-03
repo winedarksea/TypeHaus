@@ -92,6 +92,22 @@ def test_every_colour_role_resolves_to_a_hex_string() -> None:
         assert part_hex(role).startswith("#") and len(part_hex(role)) == 7
 
 
+def test_drawer_desk_has_two_side_drawers_and_open_knee_space() -> None:
+    from typehaus.library.placeables import HEMNES_DESK_61
+
+    width, depth = (length.meters for length in HEMNES_DESK_61.footprint)
+    parts = model_parts("drawer-desk", width, depth, HEMNES_DESK_61.height.meters)
+    desktop, *supports = parts
+    pulls = [part for part in supports if part["color"] == "metal"]
+    assert len(pulls) == 2
+    assert all(part["center"][0] > 0 and part["center"][1] < 0 for part in pulls)
+    # Nothing below the desktop crosses the centre where the seated person's knees go.
+    assert all(abs(part["center"][0]) > part["size"][0] / 2 for part in supports)
+    desktop_bottom = desktop["center"][2] - desktop["size"][2] / 2
+    support_top = max(part["center"][2] + part["size"][2] / 2 for part in supports)
+    assert support_top == pytest.approx(desktop_bottom)
+
+
 def test_suspended_linear_light_has_a_shallow_body_and_two_end_cables() -> None:
     """A grow tube's declared height is its drop, not a 27-inch-deep lamp box."""
     width, depth, height = 1.8288, 0.0762, 0.6858  # 6 ft x 3 in., dropped 2 ft 3 in.
