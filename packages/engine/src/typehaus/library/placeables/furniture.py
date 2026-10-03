@@ -170,6 +170,17 @@ DRESSER = FurnitureType(
     plan_symbol="dresser", storage=True, source=REFERENCE,
     clearances=(front_zone(ft(5), ft(1, 8), ft(2), "drawer swing"),),
 )
+HEMNES_DRESSER_63 = FurnitureType(
+    tag="FURN-DRESSER-HEMNES-63", name="IKEA HEMNES 8-drawer dresser, white stain",
+    footprint=(inch(63), inch(19.625)), height=inch(37.75),
+    plan_symbol="dresser", storage=True,
+    source=("IKEA HEMNES 105.761.91, white stain; 63 x 19 5/8 x 37 3/4 in.; "
+            "drawer pull-out 9 7/8 in. Anchor to the wall using the included fittings. "
+            "Simplified dresser planning model. "
+            "https://www.ikea.com/us/en/p/hemnes-8-drawer-dresser-white-stain-10576191/"),
+    # Keep the catalog's 24-inch use band for the person opening the 9 7/8-inch drawers.
+    clearances=(front_zone(inch(63), inch(19.625), ft(2), "drawer access"),),
+)
 CHEST = FurnitureType(
     tag="FURN-CHEST-34", name="Chest of drawers", footprint=(ft(2, 10), ft(1, 7)),
     height=ft(4, 2), plan_symbol="chest", storage=True, source=REFERENCE,
@@ -382,7 +393,8 @@ STARTER_FURNITURE_TYPES = (
     END_TABLE, MEDIA_CONSOLE,
     TV_65, TV_98,
     DINING_8_OPEN_CORNERS, SOFA_84_SEAT_BAND, PORCH_LOUNGE_27,
-    QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, CHEST, WARDROBE_48, NIGHTSTAND,
+    QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, HEMNES_DRESSER_63,
+    CHEST, WARDROBE_48, NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,
     WRITING_DESK, HEMNES_DESK_61, MITTZON_SIT_STAND_DESK_47, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,

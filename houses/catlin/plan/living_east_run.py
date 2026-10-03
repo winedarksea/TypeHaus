@@ -51,11 +51,11 @@ LIVING_EAST_RUN = [
 LIVING_EAST_STOOLS = [
     WindowStool(uid="Y9025C8NTZ", tag="STOOL-WIN-M-LIV-E1", window_ref="WIN-M-LIV-E1",
                 material_ref="live-edge-white-oak", thickness=inch(2),
-                overhang=inch(0), horn=inch(0), profile="S4S"),
+                overhang=inch(0), horn=inch(0), profile="eased"),
     WindowStool(uid="7TK2C8BGBM", tag="STOOL-WIN-M-LIV-E2", window_ref="WIN-M-LIV-E2",
                 material_ref="live-edge-white-oak", thickness=inch(2),
-                overhang=inch(0), horn=inch(0), profile="S4S"),
+                overhang=inch(0), horn=inch(0), profile="eased"),
     WindowStool(uid="SKCRC41TEC", tag="STOOL-WIN-M-EAST-MID", window_ref="WIN-M-EAST-MID",
                 material_ref="live-edge-white-oak", thickness=inch(2),
-                overhang=inch(0), horn=inch(0), profile="S4S"),
+                overhang=inch(0), horn=inch(0), profile="eased"),
 ]

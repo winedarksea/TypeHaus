@@ -1146,6 +1146,17 @@ SECOND_PLACEABLES = [
     # approximation: it keeps the plan readable while the catalog type preserves the use.
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
               room="RM-S-SUITE", position=pt(m(1.52182), m(5.57379)), rotation=deg(0)),
+    # The south wall is 106 1/2" clear, short of the pair's 111" combined width.
+    # Turn the desk in the southeast corner (owner, 2026-10-03), with its back east
+    # and its south end beside the dresser. Both clear the bed's 18" foot-access band.
+    # The dresser occupies the south end of the desk's full-width chair-use zone;
+    # a chair must sit toward the desk's north end. Keep that catalog warning visible.
+    Furniture(uid="CSSDSK0001", tag="FURN-S-SUITE-DESK", type_ref="FURN-DESK-48",
+              room="RM-S-SUITE", position=pt(inch(100.625), inch(134.875)),
+              rotation=deg(-90)),
+    Furniture(uid="CSSDRS0001", tag="FURN-S-SUITE-DRESSER", type_ref="FURN-DRESSER-HEMNES-63",
+              room="RM-S-SUITE", position=pt(inch(38.625), inch(120.6875)),
+              rotation=deg(180)),
 
     # The three bedrooms have no built-in closets; their PAX wardrobes (BED1/2 corner sets,
     # BED3's sliding pair) are in plan/bedroom_wardrobes.py.

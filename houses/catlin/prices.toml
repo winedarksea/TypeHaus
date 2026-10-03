@@ -6154,7 +6154,9 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # move 5x after the house is built without a drawing changing.
 "FT-SECTIONAL-U-MEDIA" = { low = 1400, high = 8000 }  # 1 ea
 "FURN-BED-KING" = { low = 400, high = 2500 }  # 1 ea
-"FURN-DESK-48" = { low = 120, high = 600 }  # 4 ea
+"FURN-DESK-48" = { low = 120, high = 600 }  # 5 ea
+# IKEA HEMNES white stain, article 105.761.91; US listing checked 2026-10-03.
+"FURN-DRESSER-HEMNES-63" = { low = 449.99, high = 449.99 }  # 1 ea
 "FURN-DESK-CHAIR" = { low = 100, high = 600 }  # 4 ea
 "FURN-DINING-2-36" = { low = 120, high = 600 }  # 2 ea
 # Retyped 2026-08-24 to FT-DINING-8-OPEN-CORNERS below — same table, same money, a smaller
