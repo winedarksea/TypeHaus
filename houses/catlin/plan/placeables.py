@@ -790,6 +790,9 @@ MAIN_PLACEABLES = [
     # facing 36" chair zone stays south of the king's foot at 68.445".
     Furniture(uid="CMD701AAAA", tag="FURN-M-BED-DESK", type_ref="FURN-DESK-HEMNES-61",
               room="RM-M-BED", position=pt(inch(198.75), inch(37.75)), rotation=deg(-90)),
+    # Its chair faces east, centred on the desk and tucked ~1" under its front edge, as BED3's.
+    Furniture(uid="PJSHPJN6TV", tag="FURN-M-BED-DESK-CHAIR", type_ref="FURN-DESK-CHAIR", room="RM-M-BED",
+              position=pt(inch(175.75), inch(37.75)), rotation=deg(90)),
 
     # The south window ROs end/start at x=63/161": centre the touching 70 3/4" pair
     # on x=112", leaving 13 5/8" to either RO. Back edges follow W-M-S1's finish face;

@@ -51,7 +51,7 @@ STUDY_NOOK_SEAT = FurnitureType(
     clearances=(front_zone(inch(24), inch(24.875), inch(15), "VOXTORP lift-up front swing"),),
     source=("SEKTION 904.997.35 frame; one VOXTORP 24x15 matte white 602.733.42 front on "
             "UTRUSTA 804.654.15 horizontal hinges. " + _BASE + " One continuous 1\" white "
-            "top runs over all three units, flush with the fronts; the cushion must not "
+            "top runs over the whole run, flush with the fronts; the cushion must not "
             "overhang them or the fronts cannot lift. No drawer: IKEA offers no MAXIMERA "
             "for this frame."),
 )

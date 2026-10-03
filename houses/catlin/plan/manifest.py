@@ -32,6 +32,7 @@ from params import (breezeway, driveway, entry_band_brace, foundations, hp1_nort
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, bath1_storage,
                   bath1_storage_types, bedroom_wardrobe_types, study_nook, study_nook_types,
+                  bed_reading_corner, bed_reading_corner_types,
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, panel_types,
                   electrical, electrical_attic, equipment_types,
@@ -75,6 +76,7 @@ _library = Library(
                      *bedroom_wardrobe_types.BEDROOM_WARDROBE_TYPES,
                      *bath1_storage_types.BATH1_STORAGE_TYPES,
                      *study_nook_types.STUDY_NOOK_TYPES,
+                     *bed_reading_corner_types.BED_READING_CORNER_TYPES,
                      *living_east_run_types.LIVING_EAST_RUN_TYPES,
                      *kitchen_deep_cabinets.KITCHEN_DEEP_CABINET_TYPES),
     # The library's fascia guard plus the house's own surface-mounted one — the porch
@@ -355,6 +357,7 @@ PLAN = (
          # that derives them is the roof eave's — it owns the cladding-face constant.
          *roof_trim.MAIN_ELEMENTS,
          *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING, *closet.MAIN_CLOSET,
+         *bed_reading_corner.BED_READING_CORNER,
          *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES,
          *millwork.MILLWORK, *millwork.MAIN_SHELVES,
          *millwork_vanities.MAIN_VANITY_SHELVES,

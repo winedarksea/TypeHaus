@@ -1,0 +1,141 @@
+"""RM-M-BED reading corner on W-M-W4 and the SE desk's chair."""
+
+import pytest
+from shapely.geometry import Polygon
+
+from typehaus.resolve.geometry_millwork import window_stool_prism
+
+INCH = 0.0254
+WALL_FACE_X = 6.635 * INCH
+SOUTH_FACE_Y = 6.635 * INCH
+BOOKCASE = "FURN-M-BED-BOOKCASE-SW"
+COVERS = ("FURN-M-BED-NOOK-COVER-S", "FURN-M-BED-NOOK-COVER-N")
+CABINETS = ("FURN-M-BED-NOOK-END-S", "FURN-M-BED-NOOK-END-N")
+TOPS = ("CT-M-BED-NOOK-S", "CT-M-BED-NOOK-N")
+SEATS = ("FURN-M-BED-NOOK-SEAT-S", "FURN-M-BED-NOOK-SEAT-N")
+CHAIR = "FURN-M-BED-ARMCHAIR"
+RUN = (BOOKCASE, COVERS[0], CABINETS[0], *SEATS, CABINETS[1], COVERS[1])
+
+
+def _objects(model):
+    return {obj.tag: obj for obj in model.canvas_objects}
+
+
+def _bounds(objects, tag):
+    return Polygon(objects[tag].footprint).bounds
+
+
+def test_run_is_contiguous_on_w4_with_the_bookcase_in_the_sw_corner(catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    bounds = [_bounds(objects, tag) for tag in RUN]
+    for tag, bound in zip(RUN, bounds, strict=True):
+        assert objects[tag].room == "RM-M-BED"
+        assert bound[0] == pytest.approx(WALL_FACE_X, abs=1e-4), tag
+    # South to north, each piece butts the next.
+    for south, north in zip(bounds, bounds[1:], strict=False):
+        assert north[1] == pytest.approx(south[3], abs=1e-4)
+    assert bounds[0][1] == pytest.approx(SOUTH_FACE_Y, abs=1e-4)
+    assert bounds[-1][3] / INCH == pytest.approx(115.01, abs=1e-3)
+
+
+def test_north_end_clears_the_open_bath_door(catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    door = next(o for o in catlin_model_ro.openings if o.tag == "D-M-BATH2")
+    assert door.swing_clearance
+    swing = Polygon(door.swing_clearance)
+    leaf_south = swing.bounds[1]
+    for tag in RUN:
+        footprint = Polygon(objects[tag].footprint)
+        assert not footprint.intersects(swing), tag
+        assert leaf_south - footprint.bounds[3] >= 2 * INCH, tag
+
+
+def test_cabinet_tops_stand_under_both_window_stools(catlin_model_ro):
+    model = catlin_model_ro
+    objects = _objects(model)
+    openings = {opening.tag: opening for opening in model.openings}
+    stools = {stool.window_ref: stool for stool in model.window_stools}
+    top = max(objects[tag].body_z1_m for tag in CABINETS)
+    for tag in ("WIN-M-BED-W1", "WIN-M-BED-W2"):
+        stool = stools[tag]
+        prism = window_stool_prism(model.wall(stool.wall_tag), openings[tag], stool)
+        assert prism is not None, tag
+        assert prism.z0_m - top >= 1.5 * INCH, tag
+    # Symmetric ends; the south one is the backrest, 15" over the seat top.
+    assert _bounds(objects, CABINETS[0])[3] - _bounds(objects, CABINETS[0])[1] == pytest.approx(
+        _bounds(objects, CABINETS[1])[3] - _bounds(objects, CABINETS[1])[1])
+    assert objects[CABINETS[0]].body_z1_m == pytest.approx(objects[CABINETS[1]].body_z1_m)
+    assert objects[CABINETS[0]].body_z1_m - objects[SEATS[0]].body_z1_m == pytest.approx(
+        15 * INCH)
+
+
+def test_seat_front_swings_stay_inside_the_room(catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    room = next(r for r in catlin_model_ro.rooms if r.tag == "RM-M-BED")
+    clear = Polygon(room.clear_face).buffer(1e-4)
+    for tag in SEATS:
+        zones = objects[tag].recommended_clearances
+        assert zones, tag
+        for zone in zones:
+            assert clear.contains(Polygon(zone)), tag
+            # East of the run, not into the wall.
+            assert Polygon(zone).bounds[0] >= _bounds(objects, tag)[2] - 1e-4, tag
+
+
+def test_cushion_rests_on_the_seats_behind_the_fronts(catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    cushion = objects["FURN-M-BED-NOOK-CUSHION"]
+    back, y0, front, y1 = _bounds(objects, "FURN-M-BED-NOOK-CUSHION")
+    seats = [_bounds(objects, tag) for tag in SEATS]
+    assert (y0, y1) == pytest.approx((seats[0][1], seats[-1][3]), abs=1e-4)
+    assert back == pytest.approx(WALL_FACE_X, abs=1e-4)
+    assert seats[0][2] - front == pytest.approx(0.5 * INCH, abs=1e-4)
+    assert cushion.body_z0_m == pytest.approx(objects[SEATS[0]].body_z1_m)
+
+
+def test_armchair_clears_the_cover_the_bookcase_and_the_bed(catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    chair = Polygon(objects[CHAIR].footprint)
+    assert chair.bounds[1] == pytest.approx(SOUTH_FACE_Y, abs=1e-3)
+    for tag in (COVERS[0], BOOKCASE, "FURN-M-BED-BOOKCASE-W", "FURN-M-BED"):
+        assert chair.distance(Polygon(objects[tag].footprint)) >= 4 * INCH, tag
+    # Centred between the window seat's front and the south-wall pair.
+    west = chair.bounds[0] - _bounds(objects, SEATS[0])[2]
+    east = _bounds(objects, "FURN-M-BED-BOOKCASE-W")[0] - chair.bounds[2]
+    assert west == pytest.approx(east, abs=0.05 * INCH)
+
+
+def test_receptacle_rc7_moved_clear_of_the_end_cabinet(catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    receptacle = Polygon(objects["ED-M-BED-RC7"].footprint)
+    end = Polygon(objects[COVERS[1]].footprint)
+    assert receptacle.bounds[1] > end.bounds[3]
+
+
+def test_walnut_tops_cap_each_end_flush_with_the_seat_fronts(catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    tops = {top.tag: top for top in catlin_model_ro.countertops}
+    seat_front = _bounds(objects, SEATS[0])[2]
+    for tag, cabinet, cover in zip(TOPS, CABINETS, COVERS, strict=True):
+        top = tops[tag]
+        assert top.material_ref == "walnut-counter"
+        assert top.thickness_m == pytest.approx(1 * INCH)
+        x0, y0, x1, y1 = Polygon(top.outline).bounds
+        assert x0 == pytest.approx(WALL_FACE_X, abs=1e-4), tag
+        assert x1 == pytest.approx(seat_front, abs=1e-4), tag
+        # One rectangle over the cabinet and its cover.
+        span = Polygon(objects[cabinet].footprint).union(Polygon(objects[cover].footprint))
+        assert (y0, y1) == pytest.approx((span.bounds[1], span.bounds[3]), abs=1e-4), tag
+        assert Polygon(top.outline).area == pytest.approx((x1 - x0) * (y1 - y0)), tag
+
+
+def test_desk_chair_sits_in_the_desk_zone_clear_of_the_bed(catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    chair = Polygon(objects["FURN-M-BED-DESK-CHAIR"].footprint)
+    desk = objects["FURN-M-BED-DESK"]
+    zone = Polygon(desk.recommended_clearances[0])
+    assert zone.buffer(1e-4).contains(chair.difference(Polygon(desk.footprint)))
+    assert chair.centroid.y == pytest.approx(Polygon(desk.footprint).centroid.y, abs=1e-4)
+    bed = objects["FURN-M-BED"]
+    for footprint in (bed.footprint, *bed.recommended_clearances):
+        assert not chair.intersects(Polygon(footprint))

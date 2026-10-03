@@ -69,6 +69,12 @@ MATERIALS = [
              r_per_inch=1.0, density=750.0, hatch="lumber", color="#c9a978",
              finish="oak-board",  # the 3D recipe; the coat is hardwax oil
              source="Owner's own white oak, milled to match 3 cm quartz flush. The peninsula's 11 5/8\" seating overhang ONLY -- see the note above. The 36\" kitchen sink base stays quartz: do not put water and wood together."),
+    # RM-M-BED reading nook: the two 12" SEKTION end-cabinet tops (CT-M-BED-NOOK-S/-N).
+    Material(tag="walnut-counter", name='Black walnut top, 1", 6/4 S4S',
+             r_per_inch=1.0, density=610.0, hatch="lumber", color="#5d4433",
+             finish="clear-satin-hardwax-oil", species="walnut", nominal_quarters=6,
+             milling_profile="S4S", requires_custom_milling=True,
+             source="Two 12 1/2\" x 24 7/8\" x 1\" tops, each an edge-glued pair from one 6/4 board, oversailing 7/8\" to the seat fronts and capping the covers. Finish all six faces; fix on figure-8s."),
     # The east wall's living-room slabs and the three window stools that meet them in one
     # plane. Bought, not milled: a 2" live-edge slab is a sawyer's flitch, flattened and
     # kiln-dried, and the natural edge is specified at no more than 1 1/2" past the fronts.

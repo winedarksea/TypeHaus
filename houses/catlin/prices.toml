@@ -2371,12 +2371,19 @@
 # 904.997.35 $88 + VOXTORP 24x15 602.733.42 $136 + UTRUSTA horizontal hinges 804.654.15 $52
 # = $276; low adds a third of the 2x4 base and the 1" top. Shelf = SEKTION 002.654.44 $152
 # plus UTRUSTA shelves and rail. Covers: FÖRBÄTTRA 205.678.36 $127, 405.678.35 $53 (cut).
-"FURN-S-STUDY-NOOK-SEAT-24" = { material = { low = 320, high = 400 }, labour = { low = 80, high = 200 } }  # 3 ea
+"FURN-S-STUDY-NOOK-SEAT-24" = { material = { low = 320, high = 400 }, labour = { low = 80, high = 200 } }  # 3 e5 ea — 3 Study 2, 2 RM-M-BED reading corner
 "FURN-S-STUDY-NOOK-SHELF-18" = { material = { low = 230, high = 290 }, labour = { low = 80, high = 200 } }  # 1 ea
 "FT-S-STUDY-NOOK-COVER-80" = { material = { low = 127, high = 145 }, labour = { low = 20, high = 60 } }  # 1 ea
 "FT-S-STUDY-NOOK-SEAT-END" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut
 # Custom 72x24x3 HR-foam cushion, welted performance-fabric cover; a quote, not a listing.
 "FT-S-STUDY-NOOK-CUSHION" = { material = { low = 350, high = 750 }, labour = { low = 0, high = 0 } }  # 1 ea
+# RM-M-BED reading corner, 2026-10-03 (plan/bed_reading_corner_types.py). IKEA US list: SEKTION
+# base frame 102.653.92 $53, plus two UTRUSTA shelves and a share of the 2x4 base; the walnut
+# top bills in [countertops]. Covers are FÖRBÄTTRA 405.678.35 $53, full 30" panels.
+"FURN-M-BED-NOOK-END-12" = { material = { low = 90, high = 135 }, labour = { low = 60, high = 150 } }  # 2 ea
+"FT-M-BED-NOOK-COVER-30" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 60 } }  # 2 ea
+# Custom 48x24x3 cushion, the Study 2 spec at two-thirds the length; a quote, not a listing.
+"FT-M-BED-NOOK-CUSHION" = { material = { low = 250, high = 500 }, labour = { low = 0, high = 0 } }  # 1 ea
 "CASE-SINK-BASE-36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 0 ea
 # Both TALL-PANTRY rows lost their instances 2026-08-24: FURN-M-KIT-TALL-N/-S stood where
 # RM-M-PANTRY now is. Catalog rows, kept.
@@ -5045,6 +5052,9 @@
 # ~2.3 bf/SF at $20-40/bf, and the labour is scribing the back edge, slotted brackets and a
 # six-face hardwax-oil finish.
 "live-edge-white-oak" = { material = { low = 45, high = 95 }, labour = { low = 30, high = 80 } }  # 29.07 SF
+# The reading nook's two end-cabinet tops (2026-10-03): bought 6/4 walnut at ~$12-20/bf, ~2 bf
+# per SF with waste; labour is a joiner's glue-up, flattening and a six-face hardwax oil.
+"walnut-counter" = { material = { low = 25, high = 45 }, labour = { low = 40, high = 110 } }  # ~4.3 SF
 
 [stair_treads]
 # The oak flights' walking surfaces by the piece (2026-09-28), moved out of [framing] where
@@ -6168,7 +6178,9 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "FURN-DESK-42" = { low = 120, high = 600 }  # 1 ea; same planning allowance as the 48" desk
 # IKEA HEMNES white stain, article 105.761.91; US listing checked 2026-10-03.
 "FURN-DRESSER-HEMNES-63" = { low = 449.99, high = 449.99 }  # 1 ea
-"FURN-DESK-CHAIR" = { low = 100, high = 600 }  # 5 ea
+# IKEA STRANDMON wing chair, US listing checked 2026-10-03: $349 (Sulviken) to $399 (Kelinge).
+"FURN-ARMCHAIR-STRANDMON" = { low = 349, high = 399 }  # 1 ea, RM-M-BED reading corner
+"FURN-DESK-CHAIR" = { low = 100, high = 600 }  # 6 ea
 "FURN-DINING-2-36" = { low = 120, high = 600 }  # 2 ea
 # Retyped 2026-08-24 to FT-DINING-8-OPEN-CORNERS below — same table, same money, a smaller
 # clearance zone. The row stays at 0 for catalog reuse.

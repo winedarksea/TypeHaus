@@ -50,6 +50,10 @@ not instruction: when it disagrees with this file or the model, it is the one th
   SEKTION shelf frame by the door plus three 24x24x15 SEKTION seat units with lift-up fronts on
   a 2x4 base, 19 1/2" top, under one 3" cushion held 1/2" behind the fronts. Types/products are in `plan/study_nook_types.py`. ED-S-STUDY2-RC3 is
   at 26" AFF above the seat; the mark-K reading sconce and its seat-side dimmer live in this file.
+- `plan/bed_reading_corner.py` — `# haus: editable`, RM-M-BED's west wall: a HEMNES in the SW
+  corner, a STRANDMON chair facing north, and a two-seat SEKTION window seat between two 12"
+  open cabinets under 1" walnut countertops (`walnut-counter`, 36" tops, 1.70" under the W1/W2
+  stools). Ends at y=115", 9" short of D-M-BATH2's open leaf. Types in `_types.py`.
 - `plan/bedroom_wardrobes.py` — `# haus: editable`, BED1-3's PAX wardrobes; types and products
   in `plan/bedroom_wardrobe_types.py`. BED1/2's doors sit 2 1/2" off module for them (accepted).
   BED1/2 each have an open 19 5/8" six-shelf frame at both ends of the L (2026-10-03).
