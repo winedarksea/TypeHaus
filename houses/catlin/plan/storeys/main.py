@@ -1273,18 +1273,16 @@ OPENINGS = [
          position=from_node("N-M-D3", ft(6, 0)), flip_hinge=False, flip_swing=True),
     # Second bedroom <-> living connection, straight through the centre bearing wall.
     # Trimless (drywall return jamb, no casing) so it reads as a slot in the wall from
-    # both rooms. W-M-C1 is BEARING, so the solver's framing tables put a structural
-    # header over the 2'-6" opening on their own — nothing extra to author here.
-    # ** 3'-0" SINCE 2026-09-15, WAS 2'-6". ** `from_node` anchors the SOUTH jamb at
-    # y=5'-5", so the RO grows north to 8'-5" and ED-M-BED-SW2 stays 4" clear of the latch
-    # side. 4'-7" of wall still stands north of it. STILL TRIMLESS — the type is the only
-    # place that flag lives, which is why DT-INT-SWING36-TRIMLESS had to be minted above
-    # rather than reusing DT-INT-SWING36.
+    # both rooms. W-M-C1 is BEARING, so the solver's framing tables supply the header.
+    # Widened to 3'-0" on 2026-09-15; moved one 16" stud bay NORTH on 2026-10-03 for
+    # FURN-M-BED-DESK on the east wall. `from_node` anchors the SOUTH jamb at y=6'-9";
+    # the RO ends at 9'-9", leaving 3'-3" north and 12 3/4" to the desk's north end.
+    # ED-M-BED-SW2 / ED-M-BED-FAN-SW follow the move, keeping their latch-side spacing.
     # ** SWINGS INTO THE LIVING ROOM SINCE 2026-09-26. ** A concealed (EzyJamb-type) frame
     # is flush on its PULL side, where the hidden hinges are: this puts the flush face,
     # reveal and lever in the living room, and the rebated frame depth in the bedroom.
     Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING36-TRIMLESS",
-         position=from_node("N-M-S1", ft(5, 5)), flip_swing=True),
+         position=from_node("N-M-S1", ft(6, 9)), flip_swing=True),
     # O-M-HALL (the old cased pass-through) retired 2026-07-28 with its host wall W-M-C4:
     # the full 4'-2" is open now. Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass) so
     # every main/second head on the west face lands on one shared 6'-0" line (27" units at
@@ -1391,12 +1389,15 @@ OPENINGS = [
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
            type_ref="WT-2748", position=from_node("N-M-SE", ft(2, 10.5)),
            sill_height=ft(2, 10)),
-    # E2 moved one stud line north 2026-08-27, 12'-0" -> 13'-4" centre: it now stacks under
-    # WIN-S-BED1. The row's within-storey beat goes 4'-0"/12'-0" -> 4'-0"/13'-4" (8'-0" ->
-    # 9'-4" apart), which is the trade the 2026-07-30 note above priced the other way — a
-    # two-storey column is worth more here now that E1 columns with WIN-S-STUDY3.
+    # 2026-10-03: E2 returns one stud bay south to 12'-0", trading its BED1 column
+    # for a new matching E3 at 16'-0". EAST-MID moves one bay north to 20'-0".
+    # The 4'-0" beat leaves 21" RO piers and 15" between independent jack+king packs;
+    # inserting E3 between the old stations would leave overlapping kings.
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
-           type_ref="WT-2748", position=from_node("N-M-SE", ft(12, 2.5)),
+           type_ref="WT-2748", position=from_node("N-M-SE", ft(10, 10.5)),
+           sill_height=ft(2, 10)),
+    Window(uid="WMLVE3AAAA", tag="WIN-M-LIV-E3", host="W-M-E1",
+           type_ref="WT-2748", position=from_node("N-M-SE", ft(14, 10.5)),
            sill_height=ft(2, 10)),
     # WIN-M-LIV-E2 (old, 12'-0") and WIN-M-DIN-E2 (19'-4") retired 2026-08-24, replaced by
     # one WT-3048 unit centred as close as the 16" module allows to y=18'-0" — the exact
@@ -1420,8 +1421,10 @@ OPENINGS = [
     # artificially lit (15.7 fc) and mechanically ventilated — so the exactly 1 sf of glass
     # this gives up (10.0 -> 9.0) changes no result: the room reads 44.9 -> 43.9 sf against
     # a nominal 59.8 sf, short either way, and the exception is what carries it.
+    # 2026-10-03 overrides the historic station above: centre 20'-0", RO north jamb
+    # 21'-1 1/2", still 6 1/4" south of FURN-M-KIT-PANTRY-S2's unchanged end.
     Window(uid="QPNDT7TF6G", tag="WIN-M-EAST-MID", host="W-M-E1",
-           type_ref="WT-2748", position=from_node("N-M-SE", ft(17, 6.5)),
+           type_ref="WT-2748", position=from_node("N-M-SE", ft(18, 10.5)),
            sill_height=ft(2, 10)),
     # Moved to the north wall 2026-07-30 with the sink (plan/placeables.py's kitchen header).
     # The north three-storey column moved 28'-0" -> 29'-4" so the window could

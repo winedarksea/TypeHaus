@@ -7,9 +7,10 @@
 # 15 1/2" with fronts, so fronts at x=34'-1 7/8". The kitchen's 3 1/2" leg + 30" frame +
 # 1/2" sub-top + 2" live-edge oak = 36", one toe-kick line down the whole wall.
 #
-# ** KEYED TO THE WINDOWS, MIRRORED ABOUT THE BRICK (y=104"). ** The B30s centre 1/4" off
-# WIN-M-LIV-E1/-E2 at 104 -/+ 56 1/4"; the B18s flank the brick at 104 -/+ 32 1/4". The B36
-# centres 3/4" off WIN-M-EAST-MID. A plain 2xB36 split put a joint 3 1/4" off E1's centre,
+# ** KEYED TO THE ORIGINAL WINDOWS, MIRRORED ABOUT THE BRICK (y=104"). ** The B30s centre
+# at 104 -/+ 56 1/4"; the B18s flank the brick at 104 -/+ 32 1/4". The 2026-10-03 added
+# window respaces the north glass to 12'/16'/20'; the continuous slab and cabinets stay put.
+# A plain 2xB36 split put a joint 3 1/4" off E1's centre,
 # which reads as a mistake under counter-height glass. Eight units (BESTA was eight).
 #   south  y 6 5/8"..81 1/4":  2 1/8" scribe, B24, B30, B18, 1/2" end panel to the brick
 #   north  y 126 3/4"..259 3/4": 1/2" end panel, B18, B30, B30, B36, B18, 1/2" scribe
@@ -17,7 +18,7 @@
 # MAXIMERA drawers in every unit. The 0" gaps to the brick are hand-measured; nothing grades
 # two bodies in one volume.
 #
-# Stools: the three east windows' sills rose to 2'-10" so the frame rail, and so the stool
+# Stools: all four east windows share a 2'-10" sill so the frame rail, and so the stool
 # top, meets the slab top (36 15/16" above the storey datum; the rail lands 1/64" proud).
 # overhang=0 and horn=0, so each stool meets the slab's back edge in one plane.
 
@@ -39,7 +40,7 @@ LIVING_EAST_RUN = [
               position=pt(ft(34, 9.625), ft(11, 4.25)), rotation=deg(-90)),
     Furniture(uid="P7S6W1H6EP", tag="FURN-M-LIV-E-B30-E2", type_ref="SEKT-B30-D15", room="RM-M-LIVING",
               position=pt(ft(34, 9.625), ft(13, 4.25)), rotation=deg(-90)),
-    # The pier unit between E2 and EAST-MID: the only wall the north bank's receptacles get.
+    # The original pier unit now sits under E3; the counter remains continuous.
     Furniture(uid="TKX5EHYSZW", tag="FURN-M-LIV-E-B30-PIER", type_ref="SEKT-B30-D15", room="RM-M-LIVING",
               position=pt(ft(34, 9.625), ft(15, 10.25)), rotation=deg(-90)),
     Furniture(uid="15FPP4DBD8", tag="FURN-M-LIV-E-B36-MID", type_ref="SEKT-B36-D15", room="RM-M-LIVING",
@@ -53,6 +54,9 @@ LIVING_EAST_STOOLS = [
                 material_ref="live-edge-white-oak", thickness=inch(2),
                 overhang=inch(0), horn=inch(0), profile="eased"),
     WindowStool(uid="7TK2C8BGBM", tag="STOOL-WIN-M-LIV-E2", window_ref="WIN-M-LIV-E2",
+                material_ref="live-edge-white-oak", thickness=inch(2),
+                overhang=inch(0), horn=inch(0), profile="eased"),
+    WindowStool(uid="WMLIVE3STL", tag="STOOL-WIN-M-LIV-E3", window_ref="WIN-M-LIV-E3",
                 material_ref="live-edge-white-oak", thickness=inch(2),
                 overhang=inch(0), horn=inch(0), profile="eased"),
     WindowStool(uid="SKCRC41TEC", tag="STOOL-WIN-M-EAST-MID", window_ref="WIN-M-EAST-MID",

@@ -57,22 +57,22 @@ def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
 
 def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catlin_model_ro):
     """30 windows get derived oak; the plant room's four and the kitchen sink window are
-    quartz, and the east row's three are live-edge oak meeting the living-room slabs."""
+    quartz, and the east row's four are live-edge oak meeting the living-room slabs."""
     derived = [stool for stool in stools if stool.derived]
     assert {stool.assembly for stool in derived} == {"EXT_2X6"}
-    # Seven of the 41 are out of scope because of their host wall: the four plant-room
+    # Seven of the 42 are out of scope because of their host wall: the four plant-room
     # windows, sauna, and two garage windows. WIN-M-KITCH and the east row are in scope but
     # authored.
     assert len(derived) == 30
     windows = [o for o in catlin_model_ro.openings if o.kind == "window"]
-    assert len(windows) == 41, "the seven out-of-scope windows still exist; they get no oak"
+    assert len(windows) == 42, "the seven out-of-scope windows still exist; they get no oak"
     assert all(stool.material_ref == "oak-stool" for stool in derived)
     # The plant room's four and the kitchen sink window are authored in 3 cm quartz; the east
-    # row's three in 2" live-edge oak, flush with the counter.
+    # row's four in 2" live-edge oak, flush with the counter.
     authored = {stool.window_ref: stool for stool in stools if not stool.derived}
     assert set(authored) == {*(f"WIN-S-PLANT{n}" for n in range(1, 5)), "WIN-M-KITCH",
-                             "WIN-M-LIV-E1", "WIN-M-LIV-E2", "WIN-M-EAST-MID"}
-    east = {"WIN-M-LIV-E1", "WIN-M-LIV-E2", "WIN-M-EAST-MID"}
+                             "WIN-M-LIV-E1", "WIN-M-LIV-E2", "WIN-M-LIV-E3", "WIN-M-EAST-MID"}
+    east = {"WIN-M-LIV-E1", "WIN-M-LIV-E2", "WIN-M-LIV-E3", "WIN-M-EAST-MID"}
     assert all(stool.material_ref == ("live-edge-white-oak" if ref in east else "quartz-counter")
                for ref, stool in authored.items())
     assert {stool.window_ref: stool.assembly for stool in authored.values()} == {

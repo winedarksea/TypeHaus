@@ -4326,3 +4326,18 @@ surface that reaches the court, so the water goes there.
 - `ED-M-BED-RC8`, the table's dedicated outlet, moves onto W-M-BDN1 at the table centre.
   `ED-M-BED-RC9` remains on that wall near the table's west edge; both 4" boxes have 7"
   between their edges. The elevation fixture key follows the `-W` tag.
+
+## 2026-10-03 — Main bedroom desk moves to the east wall
+
+- `D-M-BED2` moves north one 16" stud bay on W-M-C1, preserving its uid, 36" width,
+  trimless type and swing into the living room. Its opening now runs y=6'-9"..9'-9",
+  leaving 3'-3" of wall north of it. A second bay is unnecessary.
+- `FURN-M-BED-DESK` retains its uid and HEMNES 61" type, moves to x=16'-6 3/4" and
+  rotates to -90 degrees, with its back toward the east wall. Its y centre stays
+  3'-1 3/4", so the 36" chair/drawer zone remains south of the king's foot. The desk
+  ends at y=5'-8 1/4", 12 3/4" south of the doorway, with about 1/2" at the wall.
+- `ED-M-BED-SW2` and `ED-M-BED-FAN-SW` follow the doorway 16" north to y=6'-3" and
+  5'-11". The fan-switch box clears the desk's north end by 3/4"; both remain above
+  the desktop at 48" AFF.
+- Resolved bedroom geometry and clearances pass; the full house check introduces no
+  bedroom failures or advisories from this move.

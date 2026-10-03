@@ -802,11 +802,12 @@ MAIN_PLACEABLES = [
     Furniture(uid="SM4T9MMNVP", tag="FURN-M-BED-NIGHTSTAND-W", type_ref="FURN-NIGHTSTAND-24", room="RM-M-BED",
               position=pt(inch(69.875), inch(145.625))),
 
-    # Southwest corner: rotation 90 puts the back against the west wall, drawers north/south.
-    # Both finish faces are at 6.635"; leave ~1/2" for baseboard. The north end at 68 1/4"
-    # keeps the east-facing chair zone south of the king's foot at 68.445".
+    # Southeast corner since 2026-10-03: rotation -90 puts the back on the east wall,
+    # with ~1/2" to its 212.115" finish face. D-M-BED2 moved one stud bay north, leaving
+    # 12 3/4" from the desk's north end to its south jamb. Keep y unchanged so the west-
+    # facing 36" chair zone stays south of the king's foot at 68.445".
     Furniture(uid="CMD701AAAA", tag="FURN-M-BED-DESK", type_ref="FURN-DESK-HEMNES-61",
-              room="RM-M-BED", position=pt(inch(20), inch(37.75)), rotation=deg(90)),
+              room="RM-M-BED", position=pt(inch(198.75), inch(37.75)), rotation=deg(-90)),
 
     # --- mudroom (RM-M-MUDROOM) --------------------------------------------------------
     # Both mudroom closets are framed rooms, not furniture (RM-M-MECH, RM-M-MUD-CLOSET,
@@ -908,7 +909,7 @@ MAIN_PLACEABLES = [
     Furniture(uid="94TRP24ZX6", tag="FURN-M-LIV-ROD-E2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7, 2)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(159.5625),
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(144),
                   normal_gap=inch(1.15625), rotation_offset=deg(-180)))),
     # "Master bedroom" is read as RM-M-BED, the main-storey bedroom — not the second-storey
     # suite. Flag if that was the wrong room: the four rods move, nothing else does.

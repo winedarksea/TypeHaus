@@ -75,7 +75,7 @@ MATERIALS = [
     Material(tag="live-edge-white-oak", name='Live-edge white oak slab, 2"',
              r_per_inch=1.0, density=750.0, hatch="lumber", color="#c4a272",
              finish="hardwax-oil",
-             source="Two slabs on the living-room SEKTION banks (CT-M-LIV-E-S/-N) and the stools of WIN-M-LIV-E1/-E2/WIN-M-EAST-MID, 2\" finished, 16 1/2\" nominal depth. Back edge straight and scribed to the gwb; live edge <= 1 1/2\" past the drawer fronts at its widest, so the dining chair zone still clears. Fix on slotted brackets and finish all six faces: 16\" of flat-sawn oak moves."),
+             source="Two slabs on the living-room SEKTION banks (CT-M-LIV-E-S/-N) and the stools of WIN-M-LIV-E1/-E2/-E3/WIN-M-EAST-MID, 2\" finished, 16 1/2\" nominal depth. Back edge straight and scribed to the gwb; live edge <= 1 1/2\" past the drawer fronts at its widest, so the dining chair zone still clears. Fix on slotted brackets and finish all six faces: 16\" of flat-sawn oak moves."),
     # ** THE FLOOR TILE, AND THE SELECTION IS ARITHMETIC BEFORE IT IS TASTE. ** Grout length
     # per square foot is 144 x (1/a + 1/b): a 24x24 gives 1.0 lineal ft/sf, a 3x12 subway
     # gives 5.0, a penny round gives 24+. Large-format is ~3x easier to keep clean than

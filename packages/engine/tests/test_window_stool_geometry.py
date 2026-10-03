@@ -19,8 +19,8 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
     openings = {opening.tag: opening for opening in catlin_model_ro.openings}
     stools = catlin_model_ro.window_stools
     # 33 derived oak + five authored quartz (plan/countertops.py).
-    assert len(stools) == 38
-    assert len({stool.uid for stool in stools}) == 38
+    assert len(stools) == 39
+    assert len({stool.uid for stool in stools}) == 39
     for stool in stools:
         opening = openings[stool.window_ref]
         wall = walls[stool.wall_tag]
@@ -88,7 +88,7 @@ def test_stools_export_as_ifc_moldings(catlin_model_ro, catlin_ifc_path):
     payload = {row["tag"]: row for row in model_to_dict(catlin_model_ro)["window_stools"]}
     stools = {item.Name: item for item in file.by_type("IfcCovering")
               if item.Name.startswith("STOOL-")}
-    assert len(stools) == 38
+    assert len(stools) == 39
     assert set(stools) == {stool.tag for stool in catlin_model_ro.window_stools}
     for stool in catlin_model_ro.window_stools:
         product = stools[stool.tag]
