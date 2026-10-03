@@ -14,11 +14,11 @@ Interior clear **5'-10 1/4" (E-W) x 2'-2" (N-S)**, 9'-0" to the ceiling.
 | face | what it is | station |
 |---|---|---|
 | west | `W-M-C5B`'s east gypsum | x = 18'-3 3/8" |
-| east | `W-M-PAN-E`'s west gypsum | x = 24'-1 5/8" |
+| east | `W-M-PAN-E`'s west gypsum | x = 24'-2 1/4" (moved 5/8" east 2026-10-03) |
 | north | `W-M-N1B`'s interior gypsum | y = 35'-5 3/8" |
 | south | `W-M-PAN-S`'s north gypsum, with `D-M-PANTRY`'s 60" bypass in it | y = 33'-3 3/8" |
 
-Shelves are **70 1/4" wide** — wall face to wall face, the room's whole clear span — and
+Shelves are **70 7/8" wide** — wall face to wall face, the room's whole clear span — and
 **18" deep** against the north wall (owner's decision, replacing 24"; see *Depth* below).
 
 ## Why a 3/4" plywood shelf cannot span this room
@@ -32,9 +32,9 @@ For a 3/4" shelf carrying a 250 lb adult at midspan (E ~ 1.3 x 10^6 psi):
 |---|---|---|
 | `S = b*d^2/6` | 1.6875 in^3 | 1.5 in^3 |
 | `I = b*d^3/12` | 0.6328 in^4 | 0.5625 in^4 |
-| `M = P*L/4` (L = 70.25") | 4,391 in-lb | 4,391 in-lb |
-| `f = M/S` | **≈ 2,600 psi** | **≈ 2,900 psi** |
-| `d = P*L^3/(48*E*I)` | **≈ 2.1"** | **≈ 2.4"** |
+| `M = P*L/4` (L = 70.875") | 4,430 in-lb | 4,430 in-lb |
+| `f = M/S` | **≈ 2,630 psi** | **≈ 2,950 psi** |
+| `d = P*L^3/(48*E*I)` | **≈ 2.3"** | **≈ 2.5"** |
 
 Against a flatwise allowable of roughly **1,500–2,000 psi**, both are breaks, and both fail
 outright on deflection. Note which way depth cuts: **going deeper HELPS**, because `b` grows
@@ -49,27 +49,27 @@ loads, and says to derate 30–50% for a point load.
 Owner stock, scheduled as `SB-M-PANTRY` in `plan/millwork.py` and milled 8/4. Same
 arithmetic, `b` = 18", `d` = 1.5", E ~ 1.6 x 10^6 psi:
 
-| | full 70 1/4" span | gabled to ~34 3/4" |
+| | full 70 7/8" span | gabled to ~35 1/16" |
 |---|---|---|
 | `S = b*d^2/6` | 6.75 in^3 | 6.75 in^3 |
 | `I = b*d^3/12` | 5.06 in^4 | 5.06 in^4 |
-| `M = P*L/4` | 4,391 in-lb | 2,172 in-lb |
-| `f = M/S` | **≈ 650 psi** | **≈ 322 psi** |
-| `d = P*L^3/(48*E*I)` | **≈ 0.223"** | **≈ 0.027"** |
+| `M = P*L/4` | 4,430 in-lb | 2,191 in-lb |
+| `f = M/S` | **≈ 656 psi** | **≈ 325 psi** |
+| `d = P*L^3/(48*E*I)` | **≈ 0.229"** | **≈ 0.028"** |
 
-**Strength is no longer the argument, and the gable stays anyway.** 650 psi is well inside
+**Strength is no longer the argument, and the gable stays anyway.** 656 psi is well inside
 any grade of white oak. But this shelf is graded as a *floor* (see *Design load* below), so
-the deflection criterion is **L/360 = 0.195"**, and the ungabled span misses it at 0.223".
-Uniform load lands in the same place: 40 psf over 18" x 70 1/4" is w ≈ 4.9 lb/in and
-`5wL^4/384EI` ≈ 0.20". Both cases sit right on the limit unsupported and nowhere near it
-gabled.
+the deflection criterion is **L/360 = 0.197"**, and the ungabled span misses it at 0.229".
+Uniform load lands in the same place: 40 psf over 18" x 70 7/8" is w = 5.0 lb/in and
+`5wL^4/384EI` ≈ 0.20". Both cases sit on or past the limit unsupported and nowhere near
+it gabled. (The 2026-10-03 5/8" widening moved every figure here by under 3%.)
 
 ## What makes it standable
 
 ### 1. A full-height centre gable at mid-span — NOT OPTIONAL
 
 A 3/4" ply gable, floor to top shelf, notched around the cleats, splitting the run into two
-~34 3/4" bays. It is what takes the shelf from L/315 to L/1300, and it is the member the
+~35 1/16" bays. It is what takes the shelf from L/310 to L/1265, and it is the member the
 cleat and blocking layout is built around. It is structure, not joinery, and it must not be
 "opened up" later for a wider shelf.
 
@@ -87,7 +87,7 @@ of hardwood that nothing in the model counted.
 Shelf screwed **down onto** the cleats, so the load path is **cleat → fastener → stud**
 and never **shelf → pin**.
 
-**Not glued, and the side-cleat holes are slotted.** Boards run the 34 3/4" bay, so the
+**Not glued, and the side-cleat holes are slotted.** Boards run the 35 1/16" bay, so the
 grain is along the bay and the shelf's 18" of seasonal movement is **front to back** —
 along the side cleats, across their line of screws. That is roughly 1/4" of tangential
 movement in white oak over a Minnesota RH swing. Screw tight at the **front** only and

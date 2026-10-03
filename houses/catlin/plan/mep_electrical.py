@@ -196,10 +196,11 @@ MAIN_DEVICES = [
                      type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(347.375),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(349.25),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The NE carousel's east leg (y 32'-3 3/8"..35'-5 3/8"); KGF2 serves its north leg.
-    # KGF3 at 28'-11 3/8" serves the peninsula corner's 14" south landing. Nothing in the
+    # KGF3 at 29'-1 1/4" serves the 14" landing between the mixer garage and the range,
+    # its box on the south side of the 29'-4" stud. Nothing in the
     # engine checks 210.52(C) — the counter rule reports UNKNOWN by design.
     # y=34'-8" clears WIN-M-KIT-E's north jamb at 34'-7".
     ElectricalDevice(uid="DCP5ZCJVTK", tag="ED-M-LIVING-KGF7", kind=DeviceKind.RECEPTACLE_GFCI,
@@ -217,8 +218,9 @@ MAIN_DEVICES = [
     # 42": 6" above the peninsula's 36" top, so a cord reaches an appliance standing on the
     # pull-out shelf and coils clear of it when the shelf travels. x=35'-4 3/8" is the east
     # wall's finish face plus 1" — the garage's back IS that wall, so these are ordinary
-    # wall-hosted boxes, not floating in-cabinet ones. y=26'-2 3/8" and 27'-1 3/8" are inside
-    # the garage's y 25'-7 3/4"..27'-7 3/4" (both moved north 5 3/8" with it, 2026-10-02).
+    # wall-hosted boxes, not floating in-cabinet ones. y=27'-2" and 28'-2 3/4" (KMX1's box
+    # beside the 28'-0" stud) are inside the garage's y 26'-7 3/8"..28'-7 3/8" (both moved
+    # north with it onto the carousel, 2026-10-03).
     #
     # ** GFCI, and it is not merely belt-and-braces here. ** These sit ~10'-7" from
     # FX-M-KITCH-SINK, outside E3902.10's 6' reach, and CKT-KITCH-SA1 is a GFCI breaker
@@ -241,7 +243,7 @@ MAIN_DEVICES = [
                      circuit="CKT-KITCH-SA2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(314.375),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(326.0),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The mixer's own outlet, on the SMALL-APPLIANCE partner circuit so a 1,000 W machine
     # and whatever else is plugged in up here are not on one 20 A branch.
@@ -250,15 +252,15 @@ MAIN_DEVICES = [
                      circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(325.375),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(338.75),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Behind the range at 6": the whip drops to the floor box, not to a counter height. x is
-    # the wall-face constant (35'-4"); y is the range's centre, 30'-11 3/8" since 2026-10-02.
+    # the wall-face constant (35'-4"); y is the range's centre, 31'-0 3/8" since 2026-10-03.
     ElectricalDevice(uid="S8DH5FRQQA", tag="ED-M-LIVING-KRG1", kind=DeviceKind.RECEPTACLE_240,
                      type_ref="ED-T-RECEPTACLE-240", circuit="CKT-RANGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(371.375),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(372.375),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # On the centre bearing wall's east face, behind APPL-M-FRIDGE, at 48" — above the
     # coil deck, so the plug is reachable without pulling the whole cabinet out. Fridge is

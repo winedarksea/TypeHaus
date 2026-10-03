@@ -2448,15 +2448,17 @@
 "SEKT-CORNER-B38" = { material = { low = 380, high = 750 }, labour = { low = 130, high = 320 } }  # 2 ea
 # The east wall's 15"-deep living-room frames with MAXIMERA stacks (IKEA US configured,
 # read 2026-10-02: 24x15x30 $257-269, 18x15x30 $288 with fronts).
-"SEKT-B18-D15" = { material = { low = 170, high = 340 }, labour = { low = 90, high = 220 } }  # 3 ea
-"SEKT-B24-D15" = { material = { low = 180, high = 370 }, labour = { low = 90, high = 220 } }  # 1 ea
-"SEKT-B30-D15" = { material = { low = 200, high = 420 }, labour = { low = 90, high = 220 } }  # 3 ea
-"SEKT-B36-D15" = { material = { low = 230, high = 480 }, labour = { low = 90, high = 220 } }  # 1 ea
+"SEKT-B15-D15" = { material = { low = 160, high = 320 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-B30-D15" = { material = { low = 200, high = 420 }, labour = { low = 90, high = 220 } }  # 1 ea
+"SEKT-B36-D15" = { material = { low = 230, high = 480 }, labour = { low = 90, high = 220 } }  # 4 ea
 # FÖRBÄTTRA-faced pieces (plan/living_east_run_types.py): site-cut 25x80 panels at $127.
 "FT-LIV-E-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 2 ea
 "FT-KIT-PEN-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 1 ea
 "FT-KIT-PEN-BACK-PANEL" = { material = { low = 380, high = 600 }, labour = { low = 120, high = 300 } }  # 1 ea, three panels and the connector rails
-"FT-KIT-PEN-SUPPORT-BOX" = { material = { low = 120, high = 300 }, labour = { low = 150, high = 350 } }  # 1 ea
+# Fillers: an offcut each, so the money is the scribe-and-fit labour.
+"FT-KIT-FILLER-2375" = { material = { low = 15, high = 40 }, labour = { low = 30, high = 80 } }  # 1 ea
+"FT-LIV-E-FILLER-2125" = { material = { low = 15, high = 40 }, labour = { low = 30, high = 80 } }  # 1 ea
+"FT-LIV-E-FILLER-050" = { material = { low = 10, high = 30 }, labour = { low = 30, high = 80 } }  # 1 ea
 "SEKT-SINK-B36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 1 ea
 # Wall frames on the published SEKTION ladder. The 30" material bands scale from the 40"
 # references; the shorter carcasses keep the same per-box installation labour.

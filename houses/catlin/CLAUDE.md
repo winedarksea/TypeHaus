@@ -283,7 +283,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   are rafter plates, so neither carries a braced wall line. **The attic still costs
   something** — the eave-to-ridge factor is measured from the second storey's top plate to
   the ridge (11'-3", the 15-foot row at x1.15 / x1.30), not from the roof's own 9'-4" eave.
-  After the added east window (2026-10-03), the smallest margin is main E1 at 15'-2"
+  After the added east window and E1's move north (2026-10-03), main E1 has 16'-6"
   provided against 12'-7" required; every line clears.
   - **Two factors are the ones to watch.** Table R602.10.3(2) item 6's **x1.40** IS taken on
     the second storey's south and west lines, because the plant room's PVC liner is not
@@ -929,28 +929,30 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `WIN-S-BED3-N` (WT-1424, x 34'-0", sill 4'-0") sits over `WIN-M-KITCH-N`, completing a
   **corner pair** with `WIN-S-BED3` (east wall y=34'-0", each 2'-0" off the corner) — a
   two-storey column — and satisfies R303.1 Exception 1 for `RM-S-BED3` (12.2 sf glazed/6.1
-  sf openable against 10.32 required). The kitchen counter run (5/8" scribe + B15 + DW +
-  SINK-36 + B30) has no slack; the window column follows the sink, never the reverse
-  (`plan/placeables.py` kitchen header).
+  sf openable against 10.32 required). The kitchen counter run (B15 + DW + SINK-36 + B15 +
+  2 3/8" filler, from the pantry wall) has no slack; the window column follows the sink,
+  never the reverse (`plan/placeables.py` kitchen header).
 
 - **Rows.** Where a column is impossible, the storey's rhythm must be centred, not merely
   even. East second storey: 4'-0"/13'-4"/22'-8"/32'-0", mirrored about y=18'-0" in station,
   width (27/30/30/27), and head (6'-0"/7'-0"/7'-0"/6'-0") over one 3'-0" sill — a 9'-4" beat
   three times over (→ DESIGN-LOG.md).
-  East main row: 4'-0"/12'-0"/16'-0"/20'-0"/34'-0" — the last gap deliberately ends a blank kitchen
+  East main row: 5'-4"/12'-0"/16'-0"/20'-0"/34'-0" — the last gap deliberately ends a blank kitchen
   stretch. First four: 27" units on one **2'-10" sill, 6'-10" head** (2026-10-02: the stool
   top sits on the SEKTION slab top — sill + 2.953" frame rail = 36 15/16" above datum). `WIN-M-KIT-E` is a 14" unit
   at a 3'-6" sill (bay centre, 408" off `N-M-SE`) — joins neither beat nor head line, closes
   the row's north end as a service window (can never column with the 27"/30" family beside
-  it — the 8" rule). `WIN-S-STUDY3` at 4'-0" columns with `WIN-M-LIV-E1`. **Check
+  it — the 8" rule). `WIN-M-LIV-E1` moved 16" north on 2026-10-03 to mirror E2 about the
+  brick, so it no longer columns with `WIN-S-STUDY3` (4'-0"). **Check
   `out/render/elev_east.png` before touching this row.**
   `WIN-M-LIV-E3` was added 2026-10-03: E2 moved one bay south and EAST-MID one north,
   yielding 21" RO piers / 15" between jamb packs; E2 gave up its BED1 column. Pantry and
   cabinets stayed put. RC14 is on the fireplace's north brick jamb; RC3/15 are at 14'/18',
   RC16 at 21'-6 1/8" uses a standard 2 3/4" plate. The dining thermostat is at 14', 54" AFF.
   The fireplace pier sits between `WIN-M-LIV-E1`/`E2`: a 45 1/2" facebrick surround
-  centred y=8'-8", walnut mantel at 5'-4". No window moved for its original installation — the pier centre is a bay
-  centre on `W-M-E1`'s grid. **The firebox sill NO LONGER shares the east row's 2'-8" line**
+  centred y=8'-8", walnut mantel at 5'-4". The brick centre is a bay centre on `W-M-E1`'s
+  grid, and E1/E2 are mirrored about it at 5'-4"/12'-0", each RO 3 3/4" off the brick.
+  RC17/RC14 sit mirrored on the brick's south/north jambs, and RC4 at 44" in the south pier. **The firebox sill NO LONGER shares the east row's 2'-8" line**
   (2026-09-11): the owner reversed that morning's decision to raise it and it is back at
   **24" AFF**, so the one-datum-four-openings argument is retired and the fire does not
   column with `WIN-M-LIV-E1`/`-E2`. That is a preference call overruling a design argument,
@@ -2617,32 +2619,46 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Uppers are 15" deep and hang at 53"; the stacker course is 93".** Not 13"/54"/96". The
   backsplash is 17", inside NKBA's range. Backing rails moved with them
   (`plan/backing.py`), as did the under-cabinet tape (`plan/lighting.py`).
+- **Fillers are elements** (2026-10-03): FÖRBÄTTRA strips faced to match, priced, and
+  countertop hosts (`FT-KIT-FILLER-2375`, `FT-LIV-E-FILLER-2125`/`-050`). A scribe is only
+  where nothing else can move.
 - **Two odd hangs and two fillers, all deliberate.** `FURN-M-KIT-WN1` hangs at 68" above
   `WIN-M-KIT-E`'s 66" head; the over-cold pair hangs at 78" to clear the Frigidaire hinge.
   The mixer garage scribes 2" at the ceiling (72" is unreachable) and the cold bay carries
   2 7/8" at each end (65 3/4" is not two SEKTION widths). Do not try to close either.
-- **The north sink run did not move.** `5/8" scribe + B15 + DW + SINK-36 + B30 = 105 5/8"`
-  was already all SEKTION widths.
+- **The north sink run did not move.** `B15 + DW + SINK-36 + B15 + 2 3/8" filler` runs from
+  `W-M-PAN-E`, which moved 5/8" east on 2026-10-03 instead of scribing (the pantry is
+  70 7/8" clear; `FT-KIT-PANTRY-SHELVES-70` widened with it).
 - **MAXIMERA is a product, not a geometry** (`PROD-IKEA-MAXIMERA`). The model has no drawer
   vocabulary; which boxes are drawer stacks is prose in `prices.toml` and `plan/placeables.py`.
 - **The east wall is one SEKTION line, less the brick** (2026-10-02, `plan/living_east_run.py`).
   Living room: 15"-deep `SEKT-B*-D15` frames, 36" with a 2" live-edge white oak slab
-  (`CT-M-LIV-E-S`/`-N`), **keyed to the windows and mirrored about the brick at y=104"** — the
-  B30s centre on E1/E2, the B18s flank the brick. Fillers are gaps under 3", the kitchen's idiom.
+  (`CT-M-LIV-E-S`/`-N`), **mirrored about the brick at y=104"** (2026-10-03): a B36 under each
+  of E1/E2 centred 1 1/4" off the window away from the brick, and the north bank B15/B30/B15
+  symmetric about E3. South `2 1/8 filler + B36 + B36`, north `B36 + B15 + B30 + B15 + B36 +
+  1/2 filler`, 0" joints throughout.
   `FURN-M-DINING` moved 2" west so its chair zone clears the live edge (spec: <= 1 1/2" past
   the fronts).
 - **Two carousel corners, `SEKT-CORNER-B38`** (an L `footprint_shape`): `FURN-M-KIT-CORNER-NE`
   and `-PEN`. A countertop over an L host takes the whole L and oversails only its notch faces
   (`resolve/countertops.py`). Both bifolds hinge on the end AWAY from the range (3" proud).
-  Range centred y=30'-11 3/8" between 1" fillers; `FURN-M-KIT-E2` is a B15 + 2 3/8" filler.
+  The range is flush between them, centred y=31'-0 3/8"; `FURN-M-KIT-E2` is a B15 + the
+  2 3/8" `FURN-M-KIT-E2-FILLER`.
 - **The peninsula is SEKTION**: corner leg + B36/B24/B24 (drawers north) on the floor anchoring
-  frame, a 1/2" west end panel, FÖRBÄTTRA on connector rails over the seating face, and a closed
-  support box under the mixer garage. The tall bank and garage moved 5 3/8" north, so the knee is
-  **9 5/8"** (under NKBA's 15", owner's call); the oak bar top is `cantilever_side="back"`.
-  One-piece quartz would now pass (28%) and is the recorded alternative.
-- **The east-wall counter receptacles are in stud bays**: 22"/68" south, 141 1/2"/178 1/2"/206"/
-  242" north at 42". Three north boxes only close ON the E2/EAST-MID king packs, so it is four;
-  the fallback is a pop-up in the slab. 210.52(C) is not graded — re-measure if a window moves.
+  frame, a 1/2" west end panel, and FÖRBÄTTRA on connector rails over the 122 1/2" seating face
+  to the east wall. It moved 2" north on 2026-10-03 (carcass y 26'-7 3/8"..28'-7 3/8", north
+  aisle 4'-10"), so the knee is **11 5/8"** (34%, under NKBA's 15", owner's call) and the oak
+  bar top (`cantilever_side="back"`) runs to the tall bank's north side. The mixer garage
+  stands wholly on the peninsula carousel's corner square; the support box and
+  `FURN-M-KIT-WN3` (a 14" slot was left) are deleted. Stools stay on the west 98 1/2".
+- **Countertops are drawn** (`resolve/geometry_countertops.py`): each slab in its own material
+  in the viewer and the GLB, the hosted cabinet's grey symbol counter skipped. A sink base or
+  vanity keeps its own cut-out counter and the slab is cut back to it.
+- **The east-wall counter receptacles are clear of the framing**, all at 42": south 22"/44"
+  plus RC17 on the south brick jamb (83 7/8"); north RC14 on the north jamb (124 1/8"), then
+  168"/216"/258 1/8". Kitchen east wall: KGF4/KMX1 inside the mixer garage (326"/338 3/4"),
+  KGF3 in the 14" landing (349 1/4"), each box beside a stud. 210.52(C) is not graded —
+  re-measure if a window or stud moves.
 
 ### Gardens (2026-09-21)
 

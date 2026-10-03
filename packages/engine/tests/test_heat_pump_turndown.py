@@ -33,7 +33,7 @@ from typehaus.takeoff.hvac import heating_zones
 #
 # The factor's denominator is the DESIGN load, because that is what a Manual S sizing factor
 # is; walking the whole table is what finds the largest MINIMUM, which is rarely on the
-# design row. System 2 passes the cap at 0.60 and still cycles above 27.5 °F — the rule catches
+# design row. System 2 passes the cap at 0.59 and still cycles above 28.2 °F — the rule catches
 # gross over-size, the crossover describes the year, and they are not the same statement.
 # **Every verdict is PASS**: over the cap the message leads with ``ADVISORY —`` and the
 # result does not gate. Owner decision, 2026-09-18 — short-cycling costs efficiency, comfort
@@ -45,7 +45,8 @@ _CATLIN = {
     # 15,365 before the plant room's R316.4 gypsum, and 15,359 before room volume became
     # finish-face volume (both 2026-09-24; the note's second addendum).
     "EQ-M-HP1-OD": (15_135, 14_000, 5.0, 0.92, -7.1, _ADVISED),
-    "EQ-M-HP2-OD": (14_739, 8_800, 5.0, 0.60, 27.5, not _ADVISED),
+    # WIN-M-LIV-E3 adds 9 sf of glass to System 2's main-storey zone (2026-10-03).
+    "EQ-M-HP2-OD": (14_913, 8_800, 5.0, 0.59, 28.2, not _ADVISED),
     "EQ-M-HP3-OD": (1_016, 2_800, 17.0, 2.76, None, _ADVISED),
 }
 
@@ -153,7 +154,7 @@ def test_the_crossover_is_the_sentence_an_owner_can_act_on(catlin_ctx) -> None:
     building's year; "minimum sizing factor 0.91" is one nobody can act on.
 
     **Reported on a PASS as well**, and System 2 is why: it passes the Manual S cap at 0.59
-    and still cycles above 28.0 °F, which is most of a Minnesota heating season. The rule
+    and still cycles above 28.2 °F, which is most of a Minnesota heating season. The rule
     catches gross over-size; the crossover describes the year.
     """
     zones = {z.equipment_tag: z for z in heating_zones(

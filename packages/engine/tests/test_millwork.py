@@ -286,10 +286,9 @@ def test_a_countertops_area_is_derived_from_the_cabinets_under_it(countertops):
     """
     M2_TO_FT2 = 10.7639104
     north = countertops["CT-M-KIT-N"]
-    # Five hosts: B15, the dishwasher, the 36" sink base, B15, and the NE carousel. The
-    # dishwasher is in the run because the slab runs over it.
+    # Six hosts: the slab covers the dishwasher and the corner filler as well as the bases.
     assert north.hosts == ("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE",
-                           "FURN-M-KIT-E2", "FURN-M-KIT-CORNER-NE")
+                           "FURN-M-KIT-E2", "FURN-M-KIT-E2-FILLER", "FURN-M-KIT-CORNER-NE")
     # 24" of carcass plus the 1" a top oversails its doors — nothing authored the 25".
     assert north.depth_m * M_TO_IN == pytest.approx(25.0, abs=1e-6)
     # The run is straight up to the NE carousel, whose L adds its 13" east-leg tail beyond
@@ -308,16 +307,16 @@ def test_the_peninsula_is_two_tops_meeting_at_the_carcass_back(countertops):
     assert stone.material_ref == "quartz-counter" and bar.material_ref == "oak-counter"
     # The stone is 24" of carcass plus 1" over the drawer fronts; the oak is all cantilever.
     assert stone.depth_m * M_TO_IN == pytest.approx(25.0, abs=1e-6)
-    assert bar.depth_m * M_TO_IN == pytest.approx(9.625, abs=1e-6)
-    assert bar.unsupported_overhang_m * M_TO_IN == pytest.approx(9.625, abs=1e-6)
-    # 98 1/2": past the last base, behind the carousel leg, to the mixer garage's support.
-    assert bar.length_m * M_TO_IN == pytest.approx(98.5, abs=1e-6)
+    assert bar.depth_m * M_TO_IN == pytest.approx(11.625, abs=1e-6)
+    assert bar.unsupported_overhang_m * M_TO_IN == pytest.approx(11.625, abs=1e-6)
+    # The seating slab reaches the east wall behind the carousel's whole 38" leg.
+    assert bar.length_m * M_TO_IN == pytest.approx(122.5, abs=1e-6)
     s_x0, s_y0, s_x1, _ = Polygon(stone.outline).bounds
     b_x0, _, b_x1, b_y1 = Polygon(bar.outline).bounds
     # The drawers face north, so the bar's north edge IS the stone's south (back) edge.
     assert b_y1 == pytest.approx(s_y0, abs=1e-9)
     assert b_x0 == pytest.approx(s_x0, abs=1e-9)
-    assert (b_x1 - s_x1) * M_TO_IN == pytest.approx(14.0, abs=1e-6)
+    assert (b_x1 - s_x1) * M_TO_IN == pytest.approx(38.0, abs=1e-6)
 
 
 def test_an_l_host_takes_the_slab_over_its_whole_l(countertops):

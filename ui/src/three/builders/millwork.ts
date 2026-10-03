@@ -2,7 +2,7 @@
 // stone stool's flat colour) and the stair members whose material declares a board recipe
 // (oak treads and winders; a landing's plank-floor field).
 import * as THREE from "three";
-import type { Member, WindowStool } from "../../model/types";
+import type { Countertop, Member, WindowStool } from "../../model/types";
 import {
   authoredAppearance, materialColor, type MaterialAppearance, type ResolvedNordicPalette,
 } from "../../nordic/palette";
@@ -42,6 +42,34 @@ export function buildWindowStool(parent: THREE.Group, stool: WindowStool, center
   parent.add(makeSurfaceMesh(geometry, style
     ? createPlankMaterial(mode, style, color) : standardMaterial(color, mode)));
   registerSelectable(parent, firstChildIndex, stool.opening_uid, "opening", picks, byUid);
+}
+
+/**
+ * A countertop slab in its own material: oak takes plank grain along the slab's long axis,
+ * stone its flat colour. It selects its first host cabinet, as a stool selects its window.
+ */
+export function buildCountertop(parent: THREE.Group, top: Countertop, center: PlanCenter,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  materials: readonly MaterialAppearance[] | undefined,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  if (top.z1_m <= top.z0_m) return;
+  const firstChildIndex = parent.children.length;
+  const color = materialColor(top.material_ref, palette, materials);
+  const style = boardStyleFor(top.material_ref, materials);
+  const material = style ? createPlankMaterial(mode, style, color) : standardMaterial(color, mode);
+  for (const [index, part] of top.parts.entries()) {
+    const geometry = createPlanPrismGeometry(part.outline, top.z0_m, top.z1_m, part.holes,
+      center);
+    if (!geometry) continue;
+    if (style) {
+      applyPlankPlaneUv(geometry, center, planLongAxis(part.outline), plankTileSizeM(style));
+      seatPieceUv(geometry, style, pieceSeed(`${top.uid}|${index}`));
+    }
+    parent.add(makeSurfaceMesh(geometry, material));
+  }
+  if (top.host_uid) {
+    registerSelectable(parent, firstChildIndex, top.host_uid, "canvas_object", picks, byUid);
+  }
 }
 
 /**

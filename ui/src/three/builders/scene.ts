@@ -22,7 +22,7 @@ import {
 } from "../planGeometry";
 import { ALL_TRADES, type EarthTone, type Trade } from "../../state/vocabulary";
 import { buildLightRun } from "./lightRun";
-import { buildWindowStool } from "./millwork";
+import { buildCountertop, buildWindowStool } from "./millwork";
 import { buildPlants, instancedPlantUids } from "./plants";
 import type { RebarLayer } from "./rebar";
 import { tagStorey as tagStoreyChildren, tagTrades } from "./registry";
@@ -196,6 +196,11 @@ export function populateScene(options: PopulateSceneOptions) {
   for (const stool of model.window_stools ?? []) {
     build(["millwork"], stool.storey, () => buildWindowStool(
       tradeGroups.millwork, stool, center, mode, palette, model.catalog?.materials,
+      registry.picks, registry.byUid));
+  }
+  for (const top of model.countertops ?? []) {
+    build(["millwork"], top.storey, () => buildCountertop(
+      tradeGroups.millwork, top, center, mode, palette, model.catalog?.materials,
       registry.picks, registry.byUid));
   }
   // The site sheet is context, not an element: it has no uid in model.json, so it stays out

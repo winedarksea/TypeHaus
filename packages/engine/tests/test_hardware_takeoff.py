@@ -304,7 +304,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # ** 224 -> 198 ON 2026-09-23: W-GF-N-DR's 2" coil strip (grade to slab top) went with
     # the grade beam, and this row grids fasteners per wall run. **
     # WIN-M-LIV-S2 restores the west living-room window and its packed girt stations.
-    assert row["count"] == 1138 and furring[0]["count"] == 198
+    # E1's 16" move north adds four packed girt stations at its head and sill (2026-10-03).
+    assert row["count"] == 1142 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

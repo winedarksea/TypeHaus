@@ -314,6 +314,24 @@ export interface WindowStool {
   z1_m: number;
 }
 
+/**
+ * A fabricated slab over a run of base cabinets, drawn in its own material
+ * (→ resolve/geometry_countertops.py). A sink host is cut out of it, so a part may carry holes.
+ */
+export interface Countertop {
+  uid: string;
+  tag: string;
+  storey: string;
+  material_ref: string;
+  profile: string;
+  hosts: string[];
+  /** The first host's uid: a slab selects its host, as a stool selects its window. */
+  host_uid: string | null;
+  parts: { outline: Vec2[]; holes: Vec2[][] }[];
+  z0_m: number;
+  z1_m: number;
+}
+
 export interface PlanNode {
   tag: string;
   storey: string;
@@ -501,6 +519,8 @@ export interface CanvasObject {
   // plan file hosts it, so dragging it could never be written back — the 2D canvas blocks
   // the drag rather than letting it apply and snap back.
   provenance?: Provenance | null;
+  /** The countertop drawn over this host; its symbol's `counter` parts are then skipped. */
+  countertop_ref?: string | null;
 }
 
 export interface CanvasObjectType {
@@ -558,6 +578,8 @@ export interface ModelPart {
   radial_segments?: number;
   /** The catalog material a `wood` part is made of (`FurnitureType.wood_material_ref`). */
   material_ref?: string;
+  /** `counter` marks a symbol's own counter, which a drawn countertop slab replaces. */
+  role?: string;
   /**
    * The plan ring this part sweeps, for the solids a box cannot state — a neo-angle shower
    * pan is a pentagon. Absent on the box parts, which is nearly all of them; `center`/`size`
@@ -1748,6 +1770,7 @@ export interface Model {
   nodes?: PlanNode[]; // authored wall-graph vertices (→ _catalog sibling); absent on older json
   openings: Opening[];
   window_stools?: WindowStool[];
+  countertops?: Countertop[]; // absent on older model.json: cabinet symbols draw the counter
   roofs?: Roof[];
   solids?: Solid[];
   plant_models?: PlantModel[]; // absent on older model.json: plants draw as their prisms

@@ -4382,3 +4382,36 @@ surface that reaches the court, so the water goes there.
   placement group. The takeoff adds two second-storey tables; bed access stays clear.
   The house check has zero failures and no new nonpassing findings; 23 existing
   second-storey furniture and elevation tests pass. Rebuilt the JSON model.
+
+## 2026-10-03 — East wall, take two: symmetric fireplace, fillers, peninsula 2" north
+
+- **Fireplace.** E3 had left the brick off-centre between its windows (E1 19 3/4" south of
+  it, E2 3 3/4" north). `WIN-M-LIV-E1` moved 16" north to 5'-4", the mirror of E2 about
+  y=104"; both ROs are 3 3/4" off the brick, and E1 no longer columns with `WIN-S-STUDY3`.
+  Its rod followed, `BWP-M-E1-0000` grew 34 1/2" -> 50 1/2" (east line 16'-6" provided),
+  RC4 moved 68" -> 44" in the south pier and RC17 mirrors RC14 on the south brick jamb.
+- **Living run.** Re-composed about the brick: B36 under each of E1/E2 centred 1 1/4" off
+  its window away from the brick; the north bank B15/B30/B15 symmetric about E3. Uids
+  follow the elements in order; one surplus south unit is deleted.
+- **Fillers are elements.** Three FÖRBÄTTRA filler types (2 3/8", 2 1/8", 1/2"), priced,
+  and countertop hosts, so no void shows in 3D between cabinets.
+- **North run.** `W-M-PAN-E` moved 5/8" east rather than scribe `FURN-M-KIT-E1`; the pantry
+  is 70 7/8" clear and its climbable shelving widened with it (gabled ~35 1/16", 0.028").
+  `BWP-M-N1-0094`/`BWP-M-N1B-0000` re-split at the moved tee, same total.
+- **Peninsula 2" north**, so the range sits flush between the two carousels. The mixer
+  garage now stands wholly on the peninsula carousel's corner square; the support box is
+  deleted. The bar top is 11 5/8" x 122 1/2" to the tall bank (34%, so quartz is no longer an
+  alternative). `FURN-M-KIT-WN3`/`-WN3-ST`, `LR-M-KIT-E-WN3` and `BK-M-E1-LOW` are deleted:
+  only a 14" slot was left between the garage and the hood. CAN4 re-centred on the landing.
+- **Deviation from the plan, measured:** the stools did NOT re-centre on the 122 1/2" bar.
+  `FURN-M-KIT-STOOL3` at +12" would have stood inside `FURN-M-KIT-PANTRY-S1`; they keep
+  their x on the west 98 1/2" and moved only the 2" north.
+- **Receptacles.** KGF4/KMX1 moved with the garage (326"/338 3/4"), KGF3 into the landing
+  (349 1/4"). KMX1 and KGF3 were nudged off the plan's 337"/350 3/8" because both
+  stations put the box on the 28'-0"/29'-4" studs; each is now beside its stud.
+- **Engine: countertops are drawn** (`resolve/geometry_countertops.py`). The slab draws in
+  its own material in the viewer and the GLB, and a hosted cabinet skips its symbol's grey
+  `counter` parts. A `sink-base` or `vanity` host keeps its own cut-out counter and the slab
+  is cut back to its footprint. `oak-counter`/`live-edge-white-oak` name the `oak-board` 3D
+  recipe, so the slabs and stools draw with grain. Known residue: the sink base's own
+  counter bands stay in the symbol's grey.

@@ -652,15 +652,15 @@ MAIN_LIGHTING = [
     # CAN3 at (33'-2", 33'-5 3/8") is on FURN-M-KIT-CORNER-NE's north-leg front edge, 9"
     # clear of FURN-M-KIT-WE5. LR-M-KIT-E-WN1 lights the corner's east leg.
     #
-    # CAN4 at (33'-5 3/8", 29'-0 3/8") is mid-landing on FURN-M-KIT-CORNER-PEN's east-leg
-    # front edge: 6" clear of APPL-M-RANGE and 7" clear of the FURN-M-KIT-WN3 upper.
+    # CAN4 at (33'-5 3/8", 29'-2 3/8") is mid-landing on FURN-M-KIT-CORNER-PEN's east-leg
+    # front edge, 7" clear of both the mixer garage and APPL-M-RANGE (2026-10-03).
     ElectricalDevice(uid="QTM000BAAA", tag="ED-M-KITCH-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(33, 2), ft(33, 5.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000CAAA", tag="ED-M-KITCH-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(33, 5.375), ft(29, 0.375)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(33, 5.375), ft(29, 2.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -702,9 +702,8 @@ MAIN_LIGHTING = [
     # ED-T-LT-STRIP24-TASK (mark U, 5 W/ft, ~400 lm/ft) — same 24V family, different
     # product. See its note in plan/lighting_types.py.
     #
-    # ** FOUR RUNS, NOT ONE, AND THE PATHS ARE 1" BEHIND THE UPPERS' FRONT EDGE. ** Four
-    # because the north pair is broken by WIN-M-KITCH over the sink and the east pair by the
-    # range and APPL-M-HOOD. Front-mounted because front-mounted tape lights the WORK
+    # ** SEVERAL RUNS, NOT ONE, AND THE PATHS ARE 1" BEHIND THE UPPERS' FRONT EDGE. ** The
+    # north pair is broken by WIN-M-KITCH over the sink, and the east wall has only WN1. Front-mounted because front-mounted tape lights the WORK
     # SURFACE — back-mounted tape lights the backsplash and puts your own shadow on the
     # board. (On a 13" upper over a 24" base the two land within an inch of each other, so
     # the reason has to be the thing written down, not the coordinate.) The light rail and
@@ -740,13 +739,8 @@ MAIN_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(68))),
-    # Under FURN-M-KIT-WN3 alone since WN4 was deleted (2026-10-02): y 27'-8 3/8"..29'-8 3/8",
-    # over the peninsula carousel's east leg.
-    LightRun(uid="N9243MWVM0", tag="LR-M-KIT-E-WN3", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(ft(34, 3.375), ft(27, 8.375)), pt(ft(34, 3.375), ft(29, 8.375))),
-             room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
-             controlled_by=("ED-M-KITCH-SW-UC",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+    # LR-M-KIT-E-WN3 went with FURN-M-KIT-WN3 (2026-10-03): the 14" landing between the
+    # mixer garage and the range has no upper to mount under, and ED-M-KITCH-CAN4 lights it.
     # 68", not 53": this one is under FURN-M-KIT-WN1, which hangs above WIN-M-KIT-E's 66"
     # head. On the run's own line it would be a strip of tape across the glass. Starts at
     # y=32'-5 3/8" since WN1 went W30 -> W36 (2026-10-02).
@@ -755,8 +749,8 @@ MAIN_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(68))),
-    # 11'-6 3/8" of tape at 5 W/ft = 57.7 W; x1.25 = 72.1 W — already past ED-T-LT-PSU-60's
-    # 60 VA, which is why the 200 W supply is specified. It loads to ~36%. NOT a share of
+    # 9'-6 3/8" of tape at 5 W/ft = 47.7 W; x1.25 = 59.6 W — a hair under ED-T-LT-PSU-60's
+    # 60 VA, with no margin, so the 200 W supply stays. It loads to ~30%. NOT a share of
     # ED-M-LIVING-LT-PSU: that one is on CKT-LT-MAIN, and electrical_notes.md line 24 puts
     # kitchen lighting behind the backup relay.
     ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.JUNCTION_BOX,

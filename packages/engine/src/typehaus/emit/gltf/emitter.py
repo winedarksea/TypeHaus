@@ -25,7 +25,7 @@ from shapely.geometry import Polygon
 # arch-soffit tessellation, the wall/roof builders). Import them from their own modules in new
 # code; this list keeps ``from typehaus.emit.gltf.emitter import ...`` working unchanged.
 from typehaus.emit.gltf.buffers import _deindex_with_normals  # noqa: F401
-from typehaus.emit.gltf.canvas_objects import _add_canvas_objects
+from typehaus.emit.gltf.canvas_objects import _add_canvas_objects, _add_countertops
 from typehaus.emit.gltf.geometry import (  # noqa: F401
     _ARCH_SOFFIT_CHORD_TOLERANCE_M,
     _ARCH_SOFFIT_MAX_SEGMENTS,
@@ -344,6 +344,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
     add_plants(scene, model)
     _add_canvas_objects(scene, model)
+    _add_countertops(scene, model, authored)
     add_rebar(scene, model)
 
     earth = _MeshBuilder()

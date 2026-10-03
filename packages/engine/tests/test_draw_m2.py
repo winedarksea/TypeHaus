@@ -248,7 +248,8 @@ def test_room_blocks_say_name_area_and_ceiling_height() -> None:
     printed = {node.content for node in build_floorplan(model, "main").nodes
                if isinstance(node, Text) and node.layer == "A-AREA-IDEN"}
     assert room_display_name("RM-M-LIVING") == "LIVING"
-    assert {"LIVING", "700 SF", 'CLG 8\'-10 9/16"'} <= printed
+    # 699 since W-M-PAN-E moved 5/8" east into the room (2026-10-03).
+    assert {"LIVING", "699 SF", 'CLG 8\'-10 9/16"'} <= printed
 
 
 def test_a_room_over_two_ceiling_planes_labels_both() -> None:

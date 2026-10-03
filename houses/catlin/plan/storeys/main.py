@@ -297,8 +297,8 @@ NODES = [
     # is gone entirely and the bypass leaves land on the shelf noses. The next move after
     # this one is a shelf-depth decision, not a wall decision.
     Node(uid="BVTKY7EE89", tag="N-M-PAN1", position=pt(ft(18), ft(33, 1))),
-    Node(uid="4B6ND7KATA", tag="N-M-PAN2", position=pt(ft(24, 4), ft(33, 1))),
-    Node(uid="HTWHAAG4SF", tag="N-M-PAN3", position=pt(ft(24, 4), ft(36))),
+    Node(uid="4B6ND7KATA", tag="N-M-PAN2", position=pt(ft(24, 4.625), ft(33, 1))),
+    Node(uid="HTWHAAG4SF", tag="N-M-PAN3", position=pt(ft(24, 4.625), ft(36))),
     # --- RM-M-BATH2 drop-in tub deck -------------------------------
     # Three nodes, two walls, an L in RM-M-BATH2's north-east corner. They carry the knee
     # walls of the box FX-M-BATH2-TUB drops into; the box's other two sides are the room's
@@ -335,20 +335,19 @@ NODES = [
     # against them.
     #
     # ** THE PIER, MEASURED. ** W-M-E1's interior finish face is x=35'-5 3/8".
-    # WIN-M-LIV-E1's RO is y 34.5"..61.5" (centre 4'-0"), WIN-M-LIV-E2's is y 146.5"..173.5"
-    # (centre 13'-4"); both are 27" because W-M-E1 is BEARING (preferences.toml
-    # `max_window_ro_bearing_in`), so each carries a 3" jack+king pack and the framing-clear
-    # pier is y 64.5"..143.5" = 6'-7". Its centre is y=104" = 8'-8", and 104 mod 16 = 8 — a
-    # BAY CENTRE on this wall's own grid off N-M-SE. ** NO WINDOW MOVES FOR THIS. **
+    # The brick is centred on y=104" = 8'-8" (104 mod 16 = 8, a BAY CENTRE on this wall's own
+    # grid off N-M-SE), which was the centre of the original 4'-0"/13'-4" pier. Since
+    # 2026-10-03 the windows are mirrored about it instead: WIN-M-LIV-E1's RO is
+    # y 50 1/2"..77 1/2" (centre 5'-4"), WIN-M-LIV-E2's y 130 1/2"..157 1/2" (centre 12'-0").
+    # Both are 27" because W-M-E1 is BEARING (preferences.toml `max_window_ro_bearing_in`),
+    # so each carries a 3" jack+king pack; the packs meet the niche kings at 80" and 128".
     #
     # ** WIDTH IS SET BY THE BRICK MODULE AND COMES OUT EXACT. ** The Amantii
     # BI-30-XTRASLIM is trimless (its face is only 3/8" wider than its body), so the brick
     # runs to the glass edge, which is the whole point of a masonry surround: masonry opening
     # 29 1/2", plus one whole brick and one head joint each side (7 5/8" + 3/8" = 8"), gives
     # 45 1/2" with ZERO CUT CLOSERS. Centred on y=104" the panel spans y 81 1/4"..126 3/4",
-    # clearing each king face by 16 3/4" and each RO by 19 3/4", symmetric to 0".
-    # 2026-10-03: E2 moved south for E3, so the north clearance is now 3 3/4" to RO,
-    # 3/4" to its king pack. The brick keeps its original width and station.
+    # 3 3/4" off each RO and 3/4" off each king pack, symmetric to 0".
     # A 47 1/4" panel (two old BESTA modules) was considered and rejected: it leaves 8 7/8"
     # returns, i.e. a whole brick plus a 7/8" sliver on every course at the firebox edge
     # where the eye goes, recoverable only with a 1 1/8" steel reveal frame that throws away
@@ -1387,8 +1386,11 @@ OPENINGS = [
     # authored live-edge stools meet the slab's back edge in one plane. The plan estimated
     # ~36" and a 4" lift; the model said 34". The second storey's row heads at 7'-0", 2" over.
     # Nothing grades stool-to-slab; re-measure if the leg, slab or window type changes.
+    # 2026-10-03 (take two): E1 moves 16" north to 5'-4", the mirror of E2 about the
+    # brick's y=104"; both ROs now stand 3 3/4" off the brick. It no longer columns with
+    # WIN-S-STUDY3.
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
-           type_ref="WT-2748", position=from_node("N-M-SE", ft(2, 10.5)),
+           type_ref="WT-2748", position=from_node("N-M-SE", ft(4, 2.5)),
            sill_height=ft(2, 10)),
     # 2026-10-03: E2 returns one stud bay south to 12'-0", trading its BED1 column
     # for a new matching E3 at 16'-0". EAST-MID moves one bay north to 20'-0".

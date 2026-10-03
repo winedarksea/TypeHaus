@@ -57,24 +57,24 @@ MATERIALS = [
              source="Silestone Et Calacatta Gold, 3 cm, eased edge (owner selection 2026-09-06). Kitchen perimeter and sink run, the 48\" and 51\" vanity tops, and the peninsula's 24\" work surface. ** NEVER CLEAN IT WITH ANYTHING HIGH-pH: ** bleach, ammonia, glass cleaner, degreasers, scouring powder and melamine sponges are the #1 cause of light quartz yellowing across every brand — not UV. #2 is heat scorch, which is irreversible; induction helps (no flame spill, no hot grate) but a 400 F pan is still a 400 F pan. Put that in the owner's manual."),
     # ** THE PENINSULA'S BAR TOP IS OAK, AND IT STARTED AS AN ENGINEERING LIMIT. ** The old
     # 15" knee on a 24" carcass was 38% of depth, outside Caesarstone's 1/3-and-14" rule for 3 cm
-    # quartz. Since the 2026-10-02 SEKTION peninsula the knee is 9 5/8" (28%), inside the rule,
-    # so ONE-PIECE QUARTZ IS NOW AN AVAILABLE ALTERNATIVE; the split is kept as the fewest
-    # changes. The owner mills white oak off family land in southern Minnesota (~$2/sf, 4/4
-    # and 8/4 up to 18" wide).
+    # quartz. Since the peninsula moved 2" north (2026-10-03) the knee is 11 5/8" (34%), just
+    # past the rule, so one-piece quartz would want brackets; the oak bar top is the design.
+    # The owner mills white oak off family land in southern Minnesota (~$2/sf, 4/4 and 8/4 up
+    # to 18" wide).
     #
     # ** MILL IT TO 1 3/16" SO THE TWO TOPS ARE FLUSH ** — 3 cm is 1.181". Strips run the LONG
     # way on slotted screws or figure-8s, ** all six faces finished equally **, and the joint
     # to the stone is a colour-matched silicone MOVEMENT joint, never grout or hard caulk.
     Material(tag="oak-counter", name='White oak bar top, 1 3/16", site-milled',
              r_per_inch=1.0, density=750.0, hatch="lumber", color="#c9a978",
-             finish="hardwax-oil",
-             source="Owner's own white oak, milled to match 3 cm quartz flush. The peninsula's 9 5/8\" seating overhang ONLY -- see the note above. The 36\" kitchen sink base stays quartz: do not put water and wood together."),
+             finish="oak-board",  # the 3D recipe; the coat is hardwax oil
+             source="Owner's own white oak, milled to match 3 cm quartz flush. The peninsula's 11 5/8\" seating overhang ONLY -- see the note above. The 36\" kitchen sink base stays quartz: do not put water and wood together."),
     # The east wall's living-room slabs and the three window stools that meet them in one
     # plane. Bought, not milled: a 2" live-edge slab is a sawyer's flitch, flattened and
     # kiln-dried, and the natural edge is specified at no more than 1 1/2" past the fronts.
     Material(tag="live-edge-white-oak", name='Live-edge white oak slab, 2"',
              r_per_inch=1.0, density=750.0, hatch="lumber", color="#c4a272",
-             finish="hardwax-oil",
+             finish="oak-board",  # the 3D recipe; the coat is hardwax oil
              source="Two slabs on the living-room SEKTION banks (CT-M-LIV-E-S/-N) and the stools of WIN-M-LIV-E1/-E2/-E3/WIN-M-EAST-MID, 2\" finished, 16 1/2\" nominal depth. Back edge straight and scribed to the gwb; live edge <= 1 1/2\" past the drawer fronts at its widest, so the dining chair zone still clears. Fix on slotted brackets and finish all six faces: 16\" of flat-sawn oak moves."),
     # ** THE FLOOR TILE, AND THE SELECTION IS ARITHMETIC BEFORE IT IS TASTE. ** Grout length
     # per square foot is 144 x (1/a + 1/b): a 24x24 gives 1.0 lineal ft/sf, a 3x12 subway

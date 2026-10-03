@@ -487,7 +487,7 @@ THEATER_BOOKCASE = FurnitureType(
 
 # --- RM-M-PANTRY's shelf stack --------------------------------------------------------
 #
-# House-local by the test at the top of this file: 70 1/4" is this room's clear span, wall
+# House-local by the test at the top of this file: 70 7/8" is this room's clear span, wall
 # face to wall face, and nothing else.
 #
 # ** IT IS DESIGNED TO BE STOOD ON, AND THAT IS A STRUCTURAL CLAIM, NOT A FINISH. ** There
@@ -501,10 +501,10 @@ THEATER_BOOKCASE = FurnitureType(
 # FT-BATH1-SHELF-2030 precedent) and in notes/pantry_climbable_shelving.md.
 #
 # ** THE MID-SPAN GABLE IS NOT OPTIONAL, AND STRENGTH IS NO LONGER THE ARGUMENT. ** Shelves
-# are 1 1/2" solid white oak (plan/millwork.py, owner stock); the full 70 1/4" span carries
-# 250 lb at midspan at only ~650 psi (S = 6.75 in^3), well under a 1,500-2,000 psi flatwise
-# allowable. Deflection still fails it: I = 5.06 in^4 gives ~0.223" full-span against this
-# shelf's L/360 = 0.195" floor criterion. Gabled to ~34 3/4" it is ~322 psi and ~0.027", not
+# are 1 1/2" solid white oak (plan/millwork.py, owner stock); the full 70 7/8" span carries
+# 250 lb at midspan at only ~656 psi (S = 6.75 in^3), well under a 1,500-2,000 psi flatwise
+# allowable. Deflection still fails it: I = 5.06 in^4 gives ~0.229" full-span against this
+# shelf's L/360 = 0.197" floor criterion. Gabled to ~35 1/16" it is ~325 psi and ~0.028", not
 # close to any limit. The gable also stays because the cleat/blocking layout is built around
 # it, and it makes the bottom bay a step rather than a plank.
 #
@@ -512,7 +512,7 @@ THEATER_BOOKCASE = FurnitureType(
 # the spring out of gabled ply sag; solid oak needs none of it, and it also closes a
 # quantity gap — the nose was ~41 LF of hardwood nothing in the model counted.
 #
-# ** SOLID WOOD ON CLEATS MOVES, AND THE FASTENING HAS TO LET IT. ** Boards run the 34 3/4"
+# ** SOLID WOOD ON CLEATS MOVES, AND THE FASTENING HAS TO LET IT. ** Boards run the 35 1/16"
 # bay (grain along it), so seasonal movement is FRONT TO BACK — along the side cleats,
 # across their screw line — roughly 1/4" of tangential movement across 18" of white oak over
 # a Minnesota RH swing. Screw tight at the FRONT only; elongate every side- and back-cleat
@@ -531,8 +531,8 @@ THEATER_BOOKCASE = FurnitureType(
 # volume, and since every shelf is rated to be stood on regardless of pitch, climbing does
 # not need even rungs.
 PANTRY_SHELVES_70 = FurnitureType(
-    tag="FT-KIT-PANTRY-SHELVES-70", name='Pantry shelf stack, 70 1/4" x 18"',
-    footprint=(inch(70.25), inch(18)), height=ft(7),
+    tag="FT-KIT-PANTRY-SHELVES-70", name='Pantry shelf stack, 70 7/8" x 18"',
+    footprint=(inch(70.875), inch(18)), height=ft(7),
     storage=True, work_surface=False, plan_symbol="bookcase",
     wood_material_ref="oak-shelf-8q",
     source="Site-built millwork, DESIGNED TO BE CLIMBED — see "
@@ -543,8 +543,8 @@ PANTRY_SHELVES_70 = FurnitureType(
            "pin carries a jar, not a person. Screwed tight at the FRONT only, with every "
            "side- and back-cleat hole elongated rearward so 18\" of solid oak can move "
            "without splitting. A full-height 3/4\" ply centre gable at mid-span, notched "
-           "around the cleats, floor to top shelf, halves the span to ~34 3/4\" and is not "
-           "optional — the full span deflects ~0.223\" under 250 lb, past the L/360 this "
+           "around the cleats, floor to top shelf, halves the span to ~35 1/16\" and is not "
+           "optional — the full span deflects ~0.229\" under 250 lb, past the L/360 this "
            "is graded to as a floor. Two #10 x 3\" structural screws per cleat into solid "
            "wood at EVERY bay, over flat 2x4 blocking laid in each bay BEFORE the gypsum. "
            "Design load: treat as floor, not shelf — 40 psf uniform PLUS a 250-300 lb "

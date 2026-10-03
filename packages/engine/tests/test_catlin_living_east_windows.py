@@ -8,7 +8,7 @@ from typehaus.resolve.geometry_millwork import window_stool_prism
 
 INCH = 0.0254
 EAST_WINDOW_CENTRES_IN = {
-    "WIN-M-LIV-E1": 48,
+    "WIN-M-LIV-E1": 64,
     "WIN-M-LIV-E2": 144,
     "WIN-M-LIV-E3": 192,
     "WIN-M-EAST-MID": 240,

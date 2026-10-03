@@ -21,6 +21,7 @@ from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.spatial import Stair
 from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry_build import wall_trades
+from typehaus.resolve.geometry_countertops import countertop_prisms
 from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
@@ -166,6 +167,22 @@ def wall_graph_json(
             for o in model.openings
         ],
         "window_stools": stools,
+        # Slabs drawn in their own material (→ resolve/geometry_countertops.py), one ring per
+        # part; a sink host's footprint is cut out of the ring, so it may carry holes.
+        "countertops": [
+            {"uid": top.uid, "tag": top.tag, "storey": top.storey,
+             "material_ref": top.material_ref, "profile": top.profile,
+             # A slab selects its first host, as a stool selects its window.
+             "hosts": list(top.hosts),
+             "host_uid": next((obj.uid for obj in model.canvas_objects
+                               if obj.tag == top.hosts[0]), None),
+             "parts": [{"outline": [list(point) for point in prism.ring],
+                        "holes": [[list(point) for point in hole] for hole in prism.voids]}
+                       for prism in prisms],
+             "z0_m": prisms[0].z0_m, "z1_m": prisms[0].z1_m}
+            for top in sorted(model.countertops, key=lambda item: item.uid)
+            if (prisms := countertop_prisms(model, top))
+        ],
         # Authored plan nodes: the editor addresses stretch / heal / draw-snap by node *tag*
         # (uids are minted, positions round-trip), so the wall-graph vertices ride along with
         # their tag + storey. Positions are the same project-north SI metres as wall axes.

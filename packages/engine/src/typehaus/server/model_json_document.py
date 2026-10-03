@@ -20,6 +20,7 @@ from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.findings import Finding
 from typehaus.model.canvas import resolved_canvas_objects
 from typehaus.resolve import site_earth
+from typehaus.resolve.geometry_countertops import slab_hosts
 from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json_catalog import catalog_json
 from typehaus.server.model_json_fabric import framing_json, shell_json, wall_graph_json
@@ -51,8 +52,12 @@ def _document_header(
         # signal `npm run shots` needs to tell "the house changed" from "the server restarted".
         "contentHash": content_hash,
         "units": "imperial",
+        # ``countertop_ref``: the slab drawn over this host (``countertops``), so the viewer
+        # skips the symbol's own grey counter. Null on a sink base, which keeps its cut-out.
         "canvas_objects": [
-            {**item, "trades": [CANVAS_DOMAIN_TRADE.get(str(item.get("domain")), "furniture")]}
+            {**item, "trades": [CANVAS_DOMAIN_TRADE.get(str(item.get("domain")), "furniture")],
+             "countertop_ref": hosted.get(str(item.get("tag")))}
+            for hosted in (slab_hosts(model),)
             for item in resolved_canvas_objects(
                 model, lambda tag: _provenance(provenance, tag))
         ],

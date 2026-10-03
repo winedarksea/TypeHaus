@@ -27,19 +27,18 @@ from typehaus.model import Countertop, WindowStool
 
 MAIN_COUNTERTOPS = [
     # The north run and the NE corner as one L slab: B15, the dishwasher, the 36" sink base,
-    # B15, the 2 3/8" filler (cut straight across), and FURN-M-KIT-CORNER-NE, whose east leg
-    # carries the slab to y=32'-3 3/8" beside the range. 25" deep: 24" of carcass and 1" of
-    # oversail; an L host oversails only its notch faces.
+    # B15, the 2 3/8" filler, and FURN-M-KIT-CORNER-NE, whose east leg carries the slab to
+    # y=32'-3 3/8" beside the range. 25" deep: 24" of carcass and 1" of oversail; an L host
+    # oversails only its notch faces.
     Countertop(
         uid="GQ3B84T2WH", tag="CT-M-KIT-N",
         hosts=("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE", "FURN-M-KIT-E2",
-               "FURN-M-KIT-CORNER-NE"),
+               "FURN-M-KIT-E2-FILLER", "FURN-M-KIT-CORNER-NE"),
         material_ref="quartz-counter",
         thickness=inch(1.181),  # 3 cm
         overhang=inch(1),
     ),
-    # The peninsula-corner carousel, both legs: the east leg to the range's filler, the
-    # peninsula leg to the seam at x=32'-3 3/8". A separate slab because a slide-in range
+    # The peninsula-corner carousel, both legs: the east leg to the range, the peninsula leg to the seam at x=32'-3 3/8". A separate slab because a slide-in range
     # interrupts the stone, and the seam is where the free-standing bases start.
     Countertop(
         uid="WRDEA4N59W", tag="CT-M-KIT-E",
@@ -49,9 +48,9 @@ MAIN_COUNTERTOPS = [
         overhang=inch(1),
     ),
     # ** THE PENINSULA IS TWO TOPS. ** Quartz over the end panel and the three free-standing
-    # bases, oversailing the drawer fronts 1" to the north; white oak on the 9 5/8" seating
-    # cantilever behind them. 9 5/8" on 34" is 28%, inside quartz's 1/3-and-14" rule, so ONE-
-    # PIECE QUARTZ IS AN AVAILABLE ALTERNATIVE; the split stays as the fewest changes.
+    # bases, oversailing the drawer fronts 1" to the north; white oak on the 11 5/8" seating
+    # cantilever behind them. 11 5/8" on 34" is 34%, just past quartz's 1/3 rule, so one-piece
+    # quartz would want brackets; the oak bar top is the design.
     Countertop(
         uid="YNNE7K95XB", tag="CT-M-KIT-PENINSULA",
         hosts=("FURN-M-KIT-PEN-END", "FURN-M-KIT-PEN-B36", "FURN-M-KIT-PEN-B24-W",
@@ -61,8 +60,8 @@ MAIN_COUNTERTOPS = [
         overhang=inch(1),
     ),
     # The bar top: every inch is cantilever behind the bases' backs, hence `cantilever_side`.
-    # 98 1/2" runs from the end panel past the corner leg to FURN-M-KIT-PEN-SUPPORT, which
-    # stands under the mixer garage where the overhang would otherwise be.
+    # 122 1/2" runs from the end panel past the corner leg to the east wall, dying into
+    # FURN-M-KIT-PANTRY-S1's north side at y=25'-7 3/4" (2026-10-03).
     Countertop(
         uid="7E97VPX9M2", tag="CT-M-KIT-PENINSULA-BAR",
         hosts=("FURN-M-KIT-PEN-END", "FURN-M-KIT-PEN-B36", "FURN-M-KIT-PEN-B24-W",
@@ -70,19 +69,19 @@ MAIN_COUNTERTOPS = [
         material_ref="oak-counter",
         thickness=inch(1.1875),  # 1 3/16", flush with 3 cm quartz
         overhang=inch(0),
-        depth=inch(9.625),
-        length=inch(98.5),
-        unsupported_overhang=inch(9.625),
+        depth=inch(11.625),
+        length=inch(122.5),
+        unsupported_overhang=inch(11.625),
         cantilever_side="back",
     ),
     # The living room's two live-edge white oak slabs (plan/living_east_run.py), 2" over a
     # 1/2" sub-top, 16 1/2" nominal: 1" over the fronts, the natural edge <= 1 1/2" at its
-    # widest. Each runs past its last base over the end filler: south to the south wall
-    # (2 1/8" scribe), north to the tall bank (1/2" scribe). The stools meet the back edge.
+    # widest. Each runs over its end filler: south to the south wall (2 1/8"), north to the
+    # tall bank (1/2"). The stools meet the back edge.
     Countertop(
         uid="N3E070DD41", tag="CT-M-LIV-E-S",
-        hosts=("FURN-M-LIV-E-END-S", "FURN-M-LIV-E-B18-S", "FURN-M-LIV-E-B30-E1",
-               "FURN-M-LIV-E-B24-S"),
+        hosts=("FURN-M-LIV-E-END-S", "FURN-M-LIV-E-B36-E1", "FURN-M-LIV-E-B36-S",
+               "FURN-M-LIV-E-FILLER-S"),
         material_ref="live-edge-white-oak",
         thickness=inch(2),
         overhang=inch(1),
@@ -91,8 +90,9 @@ MAIN_COUNTERTOPS = [
     ),
     Countertop(
         uid="TPTH3QMGAY", tag="CT-M-LIV-E-N",
-        hosts=("FURN-M-LIV-E-END-N", "FURN-M-LIV-E-B18-N", "FURN-M-LIV-E-B30-E2",
-               "FURN-M-LIV-E-B30-PIER", "FURN-M-LIV-E-B36-MID", "FURN-M-LIV-E-B18-PAN"),
+        hosts=("FURN-M-LIV-E-END-N", "FURN-M-LIV-E-B36-E2", "FURN-M-LIV-E-B15-E3S",
+               "FURN-M-LIV-E-B30-E3", "FURN-M-LIV-E-B15-E3N", "FURN-M-LIV-E-B36-MID",
+               "FURN-M-LIV-E-FILLER-N"),
         material_ref="live-edge-white-oak",
         thickness=inch(2),
         overhang=inch(1),

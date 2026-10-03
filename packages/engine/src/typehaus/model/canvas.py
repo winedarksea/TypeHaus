@@ -128,8 +128,10 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict
                           "fill": part_hex(_lamp(stroke["fill"], lamp)) if stroke["fill"] else None}
                          for stroke in plan_symbol_strokes(symbol, width_m, depth_m)],
         # Ring outlines and oriented primitives are opt-in, keeping ordinary box models small.
+        # ``role: counter`` lets a viewer drop the symbol's counter under a drawn slab.
         "model_parts": [{"center": list(part["center"]), "size": list(part["size"]),
                          **_wood_part(_lamp(part["color"], lamp), wood),
+                         **({"role": "counter"} if part["color"] == "counter" else {}),
                          **({"shape": part["shape"], "radial_segments": DEPTH_CYLINDER_SEGMENTS}
                             if part["shape"] == "cylinder-depth" else {}),
                          **({"shape": "mesh", "mesh": part["mesh"]} if "mesh" in part else {}),

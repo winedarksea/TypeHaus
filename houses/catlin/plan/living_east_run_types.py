@@ -3,8 +3,9 @@
 The living-room bases are the library's 15"-deep SEKTION frames (`SEKT-B*-D15`), the two
 carousel corners are `SEKT-CORNER-B38`, both shared catalog. What is here is what the house
 orders round them: the carousel corner as a product, the peninsula's floor anchoring frame
-and connector rails, and three FÖRBÄTTRA-faced pieces the shared catalog has no reason to
-carry. NOT editable, in the `study_nook_types.py` idiom. Prices live in prices.toml.
+and connector rails, and the FÖRBÄTTRA-faced end panels, seating face and fillers the shared
+catalog has no reason to carry. NOT editable, in the `study_nook_types.py` idiom. Prices
+live in prices.toml.
 """
 
 from __future__ import annotations
@@ -59,19 +60,36 @@ PENINSULA_END_PANEL = FurnitureType(
     source="The peninsula's west end, floor to slab, under the quartz.",
 )
 PENINSULA_BACK_PANEL = FurnitureType(
-    tag="FT-KIT-PEN-BACK-PANEL", name='FÖRBÄTTRA seating face, 98 1/2 x 3/4 x 34"',
-    footprint=(inch(98.5), inch(0.75)), height=inch(34), plan_symbol="sektion-cover-panel",
+    tag="FT-KIT-PEN-BACK-PANEL", name='FÖRBÄTTRA seating face, 122 1/2 x 3/4 x 34"',
+    footprint=(inch(122.5), inch(0.75)), height=inch(34), plan_symbol="sektion-cover-panel",
     product_ref=_PANEL,
-    source=("Covers the bases' backs and the corner leg's from the end panel to the support "
-            "box, on SEKTION connector rails. Three 25x80 panels laid horizontally."),
+    source=("Covers the bases' backs and the corner leg's from the end panel to the east "
+            "wall, on SEKTION connector rails. Five 24 1/2\" pieces stood vertically, two "
+            "34\" lengths from each 25x80 panel: three panels."),
 )
-PENINSULA_SUPPORT_BOX = FurnitureType(
-    tag="FT-KIT-PEN-SUPPORT-BOX", name='Closed support box, 24 x 9 5/8 x 36"',
-    footprint=(inch(24), inch(9.625)), height=inch(36), plan_symbol="sektion-cover-panel",
-    storage=False, work_surface=False, product_ref=_PANEL,
-    source=("Shop-built 3/4\" ply box, FÖRBÄTTRA-faced, standing where the seating overhang "
-            "would be under FURN-M-KIT-MIXER-GARAGE: a counter-to-ceiling cabinet cannot "
-            "stand on a cantilever."),
-)
+
+
+def _filler(tag: str, width_in: float, depth_in: float, label: str, where: str) -> FurnitureType:
+    depth = "15 1/2" if depth_in == 15.5 else f"{depth_in:g}"
+    return FurnitureType(
+        tag=tag, name=f'FÖRBÄTTRA filler, {label} x {depth} x 34"',
+        footprint=(inch(width_in), inch(depth_in)), height=inch(34),
+        plan_symbol="sektion-cover-panel", product_ref=_PANEL,
+        source=(f"{where} Site-cut from a 25x80 panel and faced to match the fronts, floor "
+                "to slab. IKEA ships a filler piece with its corner bases for exactly this "
+                "job; a FÖRBÄTTRA strip is the same piece in the run's finish."),
+    )
+
+
+KITCHEN_CORNER_FILLER = _filler(
+    "FT-KIT-FILLER-2375", 2.375, 24, "2 3/8",
+    "Between FURN-M-KIT-E2 and the NE carousel, so the carousel's fronts clear E2's handles.")
+LIVING_SOUTH_FILLER = _filler(
+    "FT-LIV-E-FILLER-2125", 2.125, 15.5, "2 1/8",
+    "Closes the living bank's south end against the SE corner.")
+LIVING_NORTH_FILLER = _filler(
+    "FT-LIV-E-FILLER-050", 0.5, 15.5, "1/2",
+    "Closes the living bank's north end against FURN-M-KIT-PANTRY-S2.")
+
 LIVING_EAST_RUN_TYPES = (LIVING_END_PANEL, PENINSULA_END_PANEL, PENINSULA_BACK_PANEL,
-                         PENINSULA_SUPPORT_BOX)
+                         KITCHEN_CORNER_FILLER, LIVING_SOUTH_FILLER, LIVING_NORTH_FILLER)

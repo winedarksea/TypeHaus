@@ -1911,10 +1911,12 @@ NEC_FILL_MAIN = [
     # counter under counter-height glass. Coverage is measured along each slab: no point
     # more than 24" from a receptacle (the registry still reports this UNKNOWN).
     # Every device is 42" AFF, 6" over the slab:
-    #   south bank (living)  y 22", 68"                 6 5/8"..81 1/4", gaps 15/46/13
+    #   south bank (living)  y 22", 44", 83 7/8"        6 5/8"..81 1/4"
     #   north bank (dining) y 124 1/8", 168", 216", 258 1/8"; slab 126 3/4"..259 3/4".
-    # RC14 moves onto the north masonry jamb: the 3/4" gap to E2's framing cannot hold
-    # a box. RC3/15 centre in the two 15" framing-clear piers. RC16 uses a standard
+    # RC14/RC17 sit on the masonry jambs, mirrored about the brick's y=104": the 3/4" gap
+    # to each window's framing cannot hold a box. RC4 left 68" when E1 moved over it
+    # (2026-10-03) for the south pier's bay north of the 32" stud. RC3/15 centre in the
+    # two 15" framing-clear piers. RC16 uses a standard
     # 2 3/4" single-gang plate in the last 3 1/4", with 1/4" to king and pantry.
     # Uids and circuits stay with the devices; no holes or pop-ups in the live-edge slab.
     ElectricalDevice(uid="VHY1DXBHG2", tag="ED-M-LIVING-RC13", kind=DeviceKind.RECEPTACLE,
@@ -1929,7 +1931,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(68),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(44),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="8NYNJ818AX", tag="ED-M-LIVING-RC14", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
@@ -1937,6 +1939,13 @@ NEC_FILL_MAIN = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-FIRE-JAMB-N", face="left", distance_from_start=inch(5.375),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    ElectricalDevice(uid="7T29M8ZWWC", tag="ED-M-LIVING-RC17", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-FIRE-JAMB-S", face="left", distance_from_start=inch(2.625),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC010AAAA", tag="ED-M-LIVING-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",

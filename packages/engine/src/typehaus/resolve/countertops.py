@@ -1,7 +1,7 @@
 """Resolve countertops: one derived slab per authored ``Countertop`` (→ model/millwork.py).
 
 Split out of ``resolve/millwork.py``. A slab is a record — its polygon, area and cantilever —
-never a solid: the base cabinet symbols already draw the top (see that module's docstring).
+never a solid; ``geometry_countertops.py`` draws it for the viewer and the GLB.
 """
 
 from __future__ import annotations

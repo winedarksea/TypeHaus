@@ -113,12 +113,13 @@ def test_the_house_has_one_peak_hour_not_four(catlin_model_ro) -> None:
     walls, openings = _house_glazing(catlin_model_ro)
     result = fenestration_gain(catlin_model_ro, walls, openings)
     assert result.peak_hour == pytest.approx(10.5)
-    assert result.peak_btu_per_hour == pytest.approx(12_313.0, rel=0.01)
+    # WIN-M-LIV-E3 adds 9 sf of east glass without changing the house's peak hour.
+    assert result.peak_btu_per_hour == pytest.approx(12_764.0, rel=0.01)
     assert result.unknown_inputs == ()
-    # Every facade contributes at the peak hour, and south leads it — but at 64% of the
+    # Every facade contributes at the peak hour, and south leads it — but at 62% of the
     # total, not the 100% the weights implied by putting it at 1.00 alone.
     assert set(result.by_facade) == {"N", "E", "S", "W"}
-    assert result.by_facade["S"] / result.peak_btu_per_hour == pytest.approx(0.64, abs=0.02)
+    assert result.by_facade["S"] / result.peak_btu_per_hour == pytest.approx(0.62, abs=0.02)
 
 
 def test_a_missing_shgc_is_named_not_assumed(catlin_model_ro) -> None:
@@ -233,7 +234,7 @@ def test_the_aed_excursion_is_the_peak_over_a_diverse_day(catlin_model_ro) -> No
     assert result.excursion_btu_per_hour == pytest.approx(
         result.peak_btu_per_hour - _AED_DIVERSITY_FACTOR * result.average_btu_per_hour,
         abs=1.0)
-    assert result.excursion_btu_per_hour == pytest.approx(866.0, rel=0.02)
+    assert result.excursion_btu_per_hour == pytest.approx(1_022.2, rel=0.02)
     assert result.design_btu_per_hour == pytest.approx(
         result.peak_btu_per_hour + result.excursion_btu_per_hour)
 

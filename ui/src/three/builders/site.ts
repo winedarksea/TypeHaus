@@ -127,7 +127,9 @@ export function buildCanvasObject(
   if (!item.position_m) return null;
   const [width, depth] = type?.footprint_m ?? [0.45, 0.45];
   const height = type?.height_m ?? 0.25;
-  const parts = type?.model_parts ?? [];
+  // A host under a drawn countertop slab drops its symbol's grey counter (→ millwork.ts).
+  const parts = (type?.model_parts ?? []).filter(
+    (part) => !(item.countertop_ref && part.role === "counter"));
   if (parts.length) {
     return buildCanvasObjectParts(parent, item, parts, center, mode, elevation, picks, byUid,
       materials);

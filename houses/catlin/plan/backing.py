@@ -47,6 +47,9 @@ from typehaus import WallBacking, ft, inch
 # a shim; a 42"-tall box's TOP rail lands in the next band up, which is why 54" and 96" both
 # get one and the run between them does not.
 #
+# W-M-E1 has no 53 1/2" upper since FURN-M-KIT-WN3 was deleted (2026-10-03), so its
+# BK-M-E1-LOW band went with it.
+#
 # ** THE SCHEME MOVED WITH THE 2026-09-29 FINISHED-CEILING CORRECTION. ** Counter uppers
 # now start at 53 1/2", their top course at 83 1/2", and the over-cold boxes at 73 1/2".
 # The mixer garage's upper box remains at 76"; living-room curtain rods remain at 84".
@@ -54,7 +57,7 @@ from typehaus import WallBacking, ft, inch
 # A 2x8 laid flat is 7 1/4", so one band covers a spread of hangs. The east-wall curtain
 # band also covers the top cabinet course, avoiding an overlapping blocking band.
 #
-# ** W-M-E1's FOUR CABINET BANDS STOP AT THE KITCHEN. ** The wall is 36 ft and the four ran
+# ** W-M-E1's CABINET BANDS STOP AT THE KITCHEN. ** The wall is 36 ft and the four ran
 # all of it, because `start`/`length` left None is the wall's whole run. Kitchen cabinetry on
 # it starts at y 21'-2 3/8"; everything south of that is living room, so roughly 59 LF of 2x8
 # ran south to back nothing. They start at station 20'-0" now and run the remaining 16 ft to
@@ -122,10 +125,6 @@ MAIN_BACKING = [
     WallBacking(uid="PVJ3823KWR", tag="BK-M-N1-HIGH", wall_ref="W-M-N1",
                 elevation=inch(81.5), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="stacker course rail (83 1/2 in.)"),
-    WallBacking(uid="70856QPNT4", tag="BK-M-E1-LOW", wall_ref="W-M-E1",
-                start=ft(20), length=ft(16),
-                elevation=inch(51), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="upper cabinet bottom rail (53 in.)"),
     # Full length since 2026-09-25: it also takes FURN-M-FIRE-MANTEL (64 in.).
     WallBacking(uid="GBHV48GS1S", tag="BK-M-E1-MID", wall_ref="W-M-E1",
                 elevation=inch(64), height=inch(7.25), profile="2x8",

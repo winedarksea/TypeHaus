@@ -55,24 +55,25 @@ _SECOND_HD_Z = inch(121)            # the same, one floor up (second datum +10'-
 # MAIN — first story of two. Table R602.10.3(1) at <=115 mph / 40' spacing / CS-WSP reads
 # 11.5 ft, x1.15 (eave-to-ridge) x0.95 (9'-0" story) = 12.56 ft per line.
 MAIN_BRACED_WALLS = [
-    # BWL-W-A-E1 — 15'-2" provided after E3 (2026-10-03), above the 12.56 ft requirement.
+    # BWL-W-A-E1 — 16'-6" provided after E3 and E1's move north (2026-10-03), above 12.56 ft.
     # The two new 21" piers do not meet the 27" minimum; retire the former 37" panel.
     # The 147 1/2" north run ends 2'-7" short of the NE corner and keeps its hold-down.
     BracedWallPanel(uid="0BK3XPH9EX", tag="BWP-M-E1-0000", wall_ref="W-M-E1", start=inch(0.0),
-                    width=inch(34.5), note="SE corner; return for BWL-W-A-S1's east end"),
+                    width=inch(50.5), note="SE corner; return for BWL-W-A-S1's east end"),
     BracedWallPanel(uid="KZ7TYRTJKY", tag="BWP-M-E1-0254", wall_ref="W-M-E1", start=inch(253.5),
                     width=inch(147.5), hold_down_ref="CN-M-BWHD-NE-E",
                     note="R602.10.7 end condition 5 at the NE corner"),
-    # BWL-W-A-N1 — 28'-2" provided. The 78" run crosses the W-M-N3/W-M-N3B butt.
+    # BWL-W-A-N1 — 28'-2" provided. The 78" run crosses the W-M-N3/W-M-N3B butt. The
+    # W-M-N1/N1B split moved 5/8" east with the pantry partition (2026-10-03).
     BracedWallPanel(uid="58ACV3YPDF", tag="BWP-M-N3-0042", wall_ref="W-M-N3", start=inch(42.0),
                     width=inch(6.0)),
     BracedWallPanel(uid="65VXYA3ZEF", tag="BWP-M-N3B-0000", wall_ref="W-M-N3B", start=inch(0.0),
                     width=inch(72.0),
                     note="AO-M-ERV-OA's 9\" port is a service penetration, not an opening"),
     BracedWallPanel(uid="BWHFQEKHB2", tag="BWP-M-N1-0094", wall_ref="W-M-N1", start=inch(93.5),
-                    width=inch(46.5)),
+                    width=inch(45.875)),
     BracedWallPanel(uid="KKYT2C33M8", tag="BWP-M-N1B-0000", wall_ref="W-M-N1B", start=inch(0.0),
-                    width=inch(76.0)),
+                    width=inch(76.625)),
     BracedWallPanel(uid="EDBNWQY768", tag="BWP-M-N2-0000", wall_ref="W-M-N2", start=inch(0.0),
                     width=inch(96.0)),
     BracedWallPanel(uid="NET8VQTWP7", tag="BWP-M-N3-0000", wall_ref="W-M-N3", start=inch(0.0),

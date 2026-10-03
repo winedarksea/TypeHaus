@@ -86,8 +86,8 @@ Uppers hang at **53 1/2"**, leaving a 17 1/2" backsplash. The 83 1/2" top course
 Both are recorded here rather than quietly absorbed, because a later reader will otherwise
 try to "fix" them.
 
-**1. The mixer garage: confirm the narrow ceiling reveal.** It stands on the peninsula's
-36" counter. `FT-KIT-DEEP24-40` at 36" under `FT-KIT-DEEP24-30` at 76" tops at 106", about 9/16"
+**1. The mixer garage: confirm the narrow ceiling reveal.** It stands on the peninsula
+carousel's 36" counter, wholly on the corner square since 2026-10-03. `FT-KIT-DEEP24-40` at 36" under `FT-KIT-DEEP24-30` at 76" tops at 106", about 9/16"
 below the finished ceiling. The IKEA rail guide calls for 1/2" installation space, so
 verify the actual ceiling and mounting detail in the field before ordering this box.
 
@@ -126,14 +126,14 @@ with if nobody chooses. Fronts sit on the 5/10/15" ladder, so a 30" base is 5+10
 in this kitchen; the two it does not fit are a 12" base and a corner base, and this house
 has neither.
 
-## What did NOT change
+## What did NOT change (2026-09-11)
 
 The north sink run's composition. `5/8" scribe + B15 + DW + SINK-36 + B30 = 105 5/8"`, pantry
 wall to corner, with the 36" sink base dead-centred under `WIN-M-KITCH`. Every one of those
 widths was already on the SEKTION ladder, so the retype vindicated the arithmetic rather
-than moving it. The peninsula is unchanged too: 120" of carcass is composed of SEKTION boxes
-behind one continuous top, which is a shop decision, and its 15" oak knee overhang is graded
-by `advisory.countertop_overhang` exactly as before.
+than moving it. (The B30 became a B15 + filler on 2026-10-02, and the 5/8" scribe went into
+the pantry on 2026-10-03; both below.) The peninsula's knee is graded by
+`advisory.countertop_overhang`; it is 11 5/8" today.
 
 ## The east wall, carousel corners and the SEKTION peninsula (2026-10-02)
 
@@ -159,3 +159,38 @@ glyph's own ring (`sektion_corner_points`), and `carcass_depth` is a leg's 24".
 425 3/8. Landings 14" south / 38" north. Peninsula: 1/2 panel + B36 + B24 + B24 = 84 1/2, on the
 82 5/8" floor anchoring frame. Uppers: W24 between the garage (5/8 scribe) and the hood; WN1
 W30 -> `SEKT-W36-30`, 3" to the hood.
+
+## Take two: fillers, a symmetric fireplace and a 2" peninsula move (2026-10-03)
+
+**Filler policy.** A width the ladder cannot reach takes a FILLER, and a filler is an
+element: a FÖRBÄTTRA strip site-cut from a 25x80 panel and faced to match the fronts, 34"
+tall like the end panels (`FT-KIT-FILLER-2375`, `FT-LIV-E-FILLER-2125`, `FT-LIV-E-FILLER-050`
+in `plan/living_east_run_types.py`, each priced). IKEA ships a filler piece with its corner
+bases for exactly the NE-carousel spot. A filler is a countertop host, so the slab is cut
+straight over it. A scribe is used only where something else cannot move, and this pass
+removed the one the north run had: the pantry partition moved 5/8" east instead.
+
+**Living room**, mirrored about the brick (y=104"). E1 moved to 64", so E1 and E2 stand at
+104 -/+ 40 and each window's unit centres 1 1/4" off its window, away from the brick:
+
+    6 5/8   2 1/8 filler | B36 8 3/4-44 3/4 | B36 -80 3/4 (E1) | 1/2 panel | brick 81 1/4
+    126 3/4 1/2 panel | B36 -163 1/4 (E2) | B15 -178 1/4 | B30 -208 1/4 (E3) | B15 -223 1/4 | B36 -259 1/4 | 1/2 filler
+
+The north bank is symmetric about E3 (193 1/4 = 192 + 1 1/4).
+
+**North run.** `B15 + DW + SINK-36 + B15 + 2 3/8 filler + 38 leg`, from W-M-PAN-E's face at
+295" (moved 5/8" east, so the pantry is 70 7/8" clear) to the east wall. The sink did not move.
+
+**East run.** The peninsula moved 2" north (carcass y 319 3/8..343 3/8), so the range is
+FLUSH between the two carousels (357 3/8..387 3/8): no fillers at the range. The mixer garage
+stands wholly on the peninsula carousel's corner square (y 319 3/8..343 3/8), the support box
+is deleted, and so is `FURN-M-KIT-WN3`: between the garage and the hood only 14" is left, and
+no 30" upper is that narrow. The 14" landing is lit by `ED-M-KITCH-CAN4`.
+
+**Peninsula.** The knee is 11 5/8" (34% of 34"), so the oak bar top is the design, not one
+alternative; it runs 122 1/2" to the east wall and dies into the tall bank's north side. The
+stools stay on the west 98 1/2": along the east 24" the tall bank stands where a stool would.
+
+**The two places the ladder does not close** are still the two above: the mixer garage's
+ceiling reveal and the cold bay's split filler.
+

@@ -24,15 +24,12 @@ an exclusion rather than as "the outermost furring layer".
 Stools have their own derived geometry (``geometry_millwork.py``) without pretending to be
 structural solids. Their dimensional records still drive the hardwood cut list.
 
-A ``Countertop`` is not drawn either, and for a stronger reason than the stool's: the slab
-is drawn ALREADY. ``model/placeable_symbols/_families.py::counter_case`` puts a counter box
-on top of every base cabinet and sink base, so a ``ResolvedSolid`` here would be a second
-surface in the same place — two coplanar slabs fighting for the same pixels, a new category
-to register in ``emit/trades.py``, ``emit/gltf/palette.py``, the solid-trade table and the
-checked-in vocabulary manifest, and not one fact a reader could not already see. What was
-missing was never the picture; it was the CONTINUOUS SLAB behind it — one area to bill, one
-cantilever to grade — and that is a record, not geometry. (The known cost of the decision:
-the peninsula's two-material top still renders as one colour, because the symbol draws it.)
+A ``Countertop`` is a record here — one area to bill, one cantilever to grade — and is DRAWN
+by ``geometry_countertops.py`` in its own material, the window-stool precedent: the viewer
+and the GLB skip a hosted cabinet's grey symbol counter and draw the slab instead, so a
+cantilever with no cabinet under it shows and an oak top reads as oak. A sink base keeps its
+own cut-out counter and the slab is cut back to its footprint. It is not a
+``ResolvedSolid``, so it adds no solid category, trade row or IFC element.
 """
 
 from __future__ import annotations

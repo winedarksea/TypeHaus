@@ -8,12 +8,14 @@ from pathlib import Path
 
 from typehaus.emit.gltf.geometry import _to_gltf
 from typehaus.emit.gltf.mesh import _MeshBuilder
-from typehaus.emit.gltf.palette import _color, _hex_rgba
+from typehaus.emit.gltf.palette import _color, _hex_rgba, _material_finish_color
 from typehaus.emit.gltf.scene import _SceneBuilder
+from typehaus.emit.gltf.triangulate import polygon_parts
 from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.model.built_in_bookcase import built_in_bookcase_parts
 from typehaus.model.canvas import canvas_object_types, wood_material
 from typehaus.model.placeable_symbols import PART_COLORS, lamp_role, model_parts, place_local
+from typehaus.resolve.geometry_countertops import countertop_prisms, slab_hosts
 from typehaus.resolve.geometry_ir import GMesh
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
 from typehaus.resolve.suspension import suspension_draw
@@ -43,6 +45,7 @@ def _add_canvas_objects(scene: _SceneBuilder, model: ResolvedModel) -> None:
     heights = {t["tag"]: t.get("height_m") for t in canvas_object_types(model.plan)}
     materials = {m.tag: m for m in model.plan.library.materials}
     root = Path(model.plan.source_root or ".")
+    hosted = slab_hosts(model)
     for item in sorted(model.canvas_objects, key=lambda co: co.uid):
         if item.domain == "opening":
             continue
@@ -52,12 +55,33 @@ def _add_canvas_objects(scene: _SceneBuilder, model: ResolvedModel) -> None:
         if product_type is not None and getattr(product_type, "mesh", None) is not None:
             drawn = _add_mesh_sidecar(mb, root / product_type.mesh.path, item.position, item.z_m)
         if not drawn:
-            drawn = _add_canvas_parts(mb, item, product_type, materials)
+            drawn = _add_canvas_parts(mb, item, product_type, materials,
+                                      skip_counter=item.tag in hosted)
         if not drawn:
             _add_canvas_box(mb, item, heights.get(item.type_ref))
         _add_suspension(mb, item, product_type)
         scene.add_object(mb, (_canvas_trade(item.domain),),
                          kind="canvas_object", uid=item.uid)
+
+
+def _add_countertops(scene: _SceneBuilder, model: ResolvedModel, authored: dict) -> None:
+    """Each countertop slab in its own material, on the millwork trade (viewer parity).
+
+    A slab has no selection kind of its own: it selects its first host, as a stool selects
+    its window.
+    """
+    uids = {obj.tag: obj.uid for obj in model.canvas_objects}
+    for top in sorted(model.countertops, key=lambda item: item.uid):
+        mb = _MeshBuilder()
+        color = _material_finish_color(top.material_ref, "millwork", authored)
+        for prism in countertop_prisms(model, top):
+            if prism.voids:
+                mb.add_polygon_prism(polygon_parts(prism.ring, prism.voids),
+                                     prism.z0_m, prism.z1_m, color)
+            else:
+                mb.add_prism(list(prism.ring), prism.z0_m, prism.z1_m, color)
+        if not mb.is_empty() and top.hosts[0] in uids:
+            scene.add_object(mb, ("millwork",), kind="canvas_object", uid=uids[top.hosts[0]])
 
 
 def _add_mesh_sidecar(mb: _MeshBuilder, path: Path, position: tuple[float, float],
@@ -87,7 +111,8 @@ def _add_mesh_sidecar(mb: _MeshBuilder, path: Path, position: tuple[float, float
 
 
 def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
-                      product_type: object | None, materials: dict[str, object]) -> bool:
+                      product_type: object | None, materials: dict[str, object],
+                      skip_counter: bool = False) -> bool:
     """Emit a type's generated massing parts. False when it has no symbol.
 
     The parts are in the symbol's **local** frame: the resolver bakes rotation into
@@ -118,6 +143,8 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     # a 4000K can exports the same shade the viewer draws.
     lamp = lamp_role(getattr(product_type, "cct_k", None))
     for part in parts:
+        if skip_counter and part["color"] == "counter":
+            continue  # the countertop slab draws it (→ _add_countertops)
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         color = (wood_color if wood_color and part["color"] == "wood"
                  else PART_COLORS[lamp if part["color"] == "lamp" else part["color"]])

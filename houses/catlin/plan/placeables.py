@@ -457,15 +457,14 @@ MAIN_PLACEABLES = [
     # four boxes became two and there is no joint at 8'-0" on this wall at all.
 
     # North run — the sink wall. Composed to centre the sink under
-    # WIN-M-KITCH: 5/8" scribe + B15 + DW + SINK-36 + B15 + 2 3/8" filler, then the NE
+    # WIN-M-KITCH: B15 + DW + SINK-36 + B15 + 2 3/8" filler, then the NE
     # carousel's 38" leg, with no slack to slide the sink, so the window's
     # three-storey column moved to the sink instead — see storeys/main.py's OPENINGS.
     # B30 and B15 swapped ends and the dishwasher is on the sink's west side. Bases 24"
     # deep, centre y=34'-5 3/8". FURN-M-KIT-PANTRY-E (a 48" CASE-PANTRY-CLOSET-48 at x
     # 20'-7"..24'-7") stood here and is deleted: it is inside RM-M-PANTRY now.
-    # W-M-PAN-E's east face at 24'-6 3/8" lands 5/8" off FURN-M-KIT-E1's carcass below,
-    # which is a scribe, so the north counter run reads as starting at the pantry wall
-    # exactly as it used to start at the pantry cabinet.
+    # W-M-PAN-E's east face moved 5/8" east to 24'-7" (2026-10-03) so FURN-M-KIT-E1 butts
+    # it: no scribe, and the pantry gained the 5/8". The filler is FURN-M-KIT-E2-FILLER.
     Furniture(uid="49B0RDP4NW", tag="FURN-M-KIT-E1", type_ref="SEKT-B15", room="RM-M-LIVING",
               position=pt(ft(25, 2.5), ft(34, 5.375))),
     # The 36" sink base is dead-centred under WIN-M-KITCH now that the window's column
@@ -505,6 +504,9 @@ MAIN_PLACEABLES = [
     # would have put the sink 5/8" off WIN-M-KITCH's centre.
     Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="SEKT-B15", room="RM-M-LIVING",
               position=pt(ft(31, 5.5), ft(34, 5.375))),
+    # The 2 3/8" corner filler, x 32'-1"..32'-3 3/8", closing E2 to the NE carousel's leg.
+    Furniture(uid="23YVTE2YQQ", tag="FURN-M-KIT-E2-FILLER", type_ref="FT-KIT-FILLER-2375", room="RM-M-LIVING",
+              position=pt(ft(32, 2.1875), ft(34, 5.375))),
 
     # North wall uppers — ordered with the base run. Nothing over the sink
     # (the window's there), the pantry (already full height) or the corner filler.
@@ -585,8 +587,9 @@ MAIN_PLACEABLES = [
 
     # East run — the cooking wall, between two carousel corners (2026-10-02). Bases 24" deep;
     # range 30" deep, 3" proud. South to north: the peninsula-corner carousel (east leg to
-    # y=29'-7 3/8"), 1" filler, range centred y=30'-11 3/8", 1" filler, the NE carousel (leg
-    # from y=32'-3 3/8"). Landings: 14" of corner-leg counter south, 38" north (NKBA 12"/15").
+    # y=29'-9 3/8"), the range flush at y 29'-9 3/8"..32'-3 3/8" (centre 31'-0 3/8", since
+    # the peninsula moved 2" north, 2026-10-03), the NE carousel (leg from y=32'-3 3/8").
+    # Landings: 14" of corner-leg counter south of the garage, 38" north (NKBA 12"/15").
     #
     # ** BOTH CAROUSELS HANG THEIR BIFOLD ON THE END AWAY FROM THE RANGE. ** The slide-in
     # stands 3" proud and a fold toward it would strike it; IKEA's door is reversible.
@@ -602,12 +605,12 @@ MAIN_PLACEABLES = [
     # decision. 29 7/8"x29 5/16" against the allowance's 30"x30" — an eighth and change,
     # which is why the position and the 3"-proud offset above are unchanged.
     Appliance(uid="417H1EH5C3", tag="APPL-M-RANGE", type_ref="APPL-LG-INDUCTION-RANGE", room="RM-M-LIVING",
-              position=pt(ft(34, 2.375), ft(30, 11.375)), rotation=deg(-90)),
-    # ** FURN-M-KIT-CORNER-PEN REPLACES N3. ** Outer corner (35'-5 3/8", 26'-5 3/8"); the east
-    # leg runs to y=29'-7 3/8", the peninsula leg to x=32'-3 3/8", where the peninsula's
+              position=pt(ft(34, 2.375), ft(31, 0.375)), rotation=deg(-90)),
+    # ** FURN-M-KIT-CORNER-PEN REPLACES N3. ** Outer corner (35'-5 3/8", 26'-7 3/8"); the east
+    # leg runs to y=29'-9 3/8", the peninsula leg to x=32'-3 3/8", where the peninsula's
     # free-standing bases take over.
     Furniture(uid="5PZ7SPZYDT", tag="FURN-M-KIT-CORNER-PEN", type_ref="SEKT-CORNER-B38", room="RM-M-LIVING",
-              position=pt(ft(33, 10.375), ft(28, 0.375)), rotation=deg(-90)),
+              position=pt(ft(33, 10.375), ft(28, 2.375)), rotation=deg(-90)),
 
     # The tall bank, y 21'-7 3/4"..25'-7 3/4" — 48" of it. ** SHIFTED NORTH 5 3/8" WITH THE
     # MIXER GARAGE (2026-10-02) ** so it closes the living-room SEKTION line (1/2" scribe at
@@ -661,7 +664,9 @@ MAIN_PLACEABLES = [
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(271.75),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # East wall uppers, 15" deep: WN3 between the mixer garage and the hood, WN1 north of it.
+    # East wall uppers, 15" deep: WN1 north of the hood. South of it only 14" is left between
+    # the mixer garage (y 28'-7 3/8") and the hood (29'-9 3/8"), and no 30" upper is that
+    # narrow, so FURN-M-KIT-WN3/-WN3-ST are deleted (2026-10-03).
     #
     # ** WN1 HANGS AT 73 1/2", ABOVE WIN-M-KIT-E'S 66" HEAD. ** At the run's 53 1/2"
     # it would cross the glass. The 30" frame tops at 103 1/2" without a stacker; the
@@ -676,70 +681,56 @@ MAIN_PLACEABLES = [
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(407.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Recirculating canopy hood, 30" over the cooktop: mount 5'-6" on a 3' range. Follows the
-    # range, centred y=30'-11 3/8".
+    # range, centred y=31'-0 3/8".
     Appliance(uid="Q0W3FYXJGX", tag="APPL-M-HOOD", type_ref="APPL-HOOD-RECIRC", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(371.375),
-                  normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # WN3 spans the mixer garage to the hood: W24 at y 27'-8 3/8"..29'-8 3/8", 5/8" scribe at
-    # the garage. FURN-M-KIT-WN4/-WN4-ST, which filled 15" here, are deleted.
-    Furniture(uid="DVWYR4A5J3", tag="FURN-M-KIT-WN3", type_ref="SEKT-W24-30", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(53.5)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(344.375),
-                  normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(uid="FTTPRYMZEH", tag="FURN-M-KIT-WN3-ST", type_ref="SEKT-W24-20", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(83.5)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(344.375),
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(372.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # ** THE PENINSULA, SPECIFIED AS SEKTION (2026-10-02). ** It was one opaque
     # CASE-PENINSULA-120 box. Landing its east end on the east wall turned the old island's
-    # failed 3'-5 3/8" range aisle into counter and opened the sink aisle to 5'-0".
+    # failed 3'-5 3/8" range aisle into counter and opened the sink aisle.
     #
-    # Carcass y 26'-5 3/8"..28'-5 3/8", drawers opening NORTH to the kitchen (rotation 180):
+    # Carcass y 26'-7 3/8"..28'-7 3/8" (2" north, 2026-10-03, so the range sits flush between
+    # the carousels), drawers opening NORTH to the kitchen (rotation 180):
     # FURN-M-KIT-CORNER-PEN's leg, then 84" of free-standing bases x 25'-3 3/8"..32'-3 3/8"
     # (B36 + B24 + B24) on the SEKTION floor anchoring frame (82 5/8", inset ~11/16" a
     # side), a 1/2" FÖRBÄTTRA end panel at the west, and FÖRBÄTTRA panels on SEKTION
     # connector rails over the seating face. Products: plan/living_east_run_types.py.
     #
-    # Aisles: north 5'-0" front to front (unchanged); west face x 25'-2 7/8" to the fridge
-    # front, 4'-8 1/2" (was 4'-11"). Seating overhang 9 5/8", set by the tall bank's shift:
-    # 28% of 34", inside quartz's 1/3-and-14" rule, so one-piece quartz is now an alternative
-    # to the oak bar top (plan/countertops.py). ** 10" OF KNEE SPACE IS UNDER NKBA's 15" **,
-    # the owner's call; the stools stay.
+    # Aisles: north 4'-10" front to front; west face x 25'-2 7/8" to the fridge front,
+    # 4'-8 1/2". Seating overhang 11 5/8", to the tall bank's north side: 34% of 34", so the
+    # oak bar top, not quartz (plan/countertops.py). ** 11 5/8" OF KNEE SPACE IS UNDER NKBA's
+    # 15" **, the owner's call; the stools stay.
     Furniture(uid="PSB290H9BR", tag="FURN-M-KIT-PEN-END", type_ref="FT-KIT-PEN-END-PANEL", room="RM-M-LIVING",
-              position=pt(ft(25, 3.125), ft(27, 5.375)), rotation=deg(180)),
+              position=pt(ft(25, 3.125), ft(27, 7.375)), rotation=deg(180)),
     Furniture(uid="J79MCTXA1Q", tag="FURN-M-KIT-PEN-B36", type_ref="SEKT-B36", room="RM-M-LIVING",
-              position=pt(ft(26, 9.375), ft(27, 5.375)), rotation=deg(180)),
+              position=pt(ft(26, 9.375), ft(27, 7.375)), rotation=deg(180)),
     Furniture(uid="WXDDD2CFGW", tag="FURN-M-KIT-PEN-B24-W", type_ref="SEKT-B24", room="RM-M-LIVING",
-              position=pt(ft(29, 3.375), ft(27, 5.375)), rotation=deg(180)),
+              position=pt(ft(29, 3.375), ft(27, 7.375)), rotation=deg(180)),
     Furniture(uid="WZ8XSHVH2G", tag="FURN-M-KIT-PEN-B24-E", type_ref="SEKT-B24", room="RM-M-LIVING",
-              position=pt(ft(31, 3.375), ft(27, 5.375)), rotation=deg(180)),
-    # The seating face, x 25'-2 7/8"..33'-5 3/8": the bases' backs and the corner leg's.
+              position=pt(ft(31, 3.375), ft(27, 7.375)), rotation=deg(180)),
+    # The seating face, x 25'-2 7/8"..35'-5 3/8": the bases' backs and the corner leg's, to
+    # the east wall.
     Furniture(uid="JS6D4MHJPQ", tag="FURN-M-KIT-PEN-BACK", type_ref="FT-KIT-PEN-BACK-PANEL", room="RM-M-LIVING",
-              position=pt(ft(29, 4.125), ft(26, 5)), rotation=deg(180)),
-    # Where the overhang would be under the mixer garage: a closed box, so the
-    # counter-to-ceiling cabinet stands on something rather than on a cantilever.
-    Furniture(uid="W0J74NW6BF", tag="FURN-M-KIT-PEN-SUPPORT", type_ref="FT-KIT-PEN-SUPPORT-BOX", room="RM-M-LIVING",
-              position=pt(ft(34, 5.375), ft(26, 0.5625)), rotation=deg(180)),
-    # Three stools, 24"+ each (NKBA), centred on the 98 1/2" seating length, tucked under
-    # the overhang at y=25'-3 3/8".
+              position=pt(ft(30, 4.125), ft(26, 7)), rotation=deg(180)),
+    # Three stools, 24"+ each (NKBA), tucked under the overhang at y=25'-5 3/8". Centred on
+    # the bar's west 98 1/2" (x 25'-2 7/8"..33'-5 3/8"), not its 122 1/2": along the east 24"
+    # FURN-M-KIT-PANTRY-S1 stands where a stool would.
     Furniture(uid="MZNJ9TAN56", tag="FURN-M-KIT-STOOL1", type_ref="FURN-BAR-STOOL", room="RM-M-LIVING",
-              position=pt(ft(26, 7.25), ft(25, 3.375)), rotation=deg(180)),
+              position=pt(ft(26, 7.25), ft(25, 5.375)), rotation=deg(180)),
     Furniture(uid="TMR4RNV2E3", tag="FURN-M-KIT-STOOL2", type_ref="FURN-BAR-STOOL", room="RM-M-LIVING",
-              position=pt(ft(29, 4.125), ft(25, 3.375)), rotation=deg(180)),
+              position=pt(ft(29, 4.125), ft(25, 5.375)), rotation=deg(180)),
     Furniture(uid="1RME2HHSQT", tag="FURN-M-KIT-STOOL3", type_ref="FURN-BAR-STOOL", room="RM-M-LIVING",
-              position=pt(ft(32, 1), ft(25, 3.375)), rotation=deg(180)),
+              position=pt(ft(32, 1), ft(25, 5.375)), rotation=deg(180)),
 
     # ** THE MIXER GARAGE — where the stand mixer lives (owner's call). **
     # 24" x 24", sitting ON the counter at a 36" mount and running to the finished ceiling,
-    # against the east wall: x 33'-5 3/8"..35'-5 3/8", y 25'-7 3/4"..27'-7 3/4" (shifted
-    # north 5 3/8" with the tall bank, 2026-10-02), flush against FURN-M-KIT-PANTRY-S1, so the
-    # east wall reads as one column of storage. Its south 9 5/8" stands on
-    # FURN-M-KIT-PEN-SUPPORT and the rest on the carousel's east leg.
+    # against the east wall: x 33'-5 3/8"..35'-5 3/8", y 26'-7 3/8"..28'-7 3/8" — wholly on
+    # FURN-M-KIT-CORNER-PEN's corner square (2026-10-03), so it stands on a base, not on a
+    # support box straddling a cantilever. The 11 5/8" south of it, to the tall bank, is the
+    # bar top's end.
     #
     # ** NOT A LIFT IN A BASE BAY. ** The mixer is meant to be AT counter level already and
     # slide out level onto the open counter west of it — no lifting 25 lb up out of a base,
@@ -756,16 +747,16 @@ MAIN_PLACEABLES = [
     Furniture(uid="5T1VTCY3EV", tag="FURN-M-KIT-MIXER-GARAGE", type_ref="FT-KIT-DEEP24-40",
               room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(319.75),
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(331.375),
                   normal_gap=inch(0), rotation_offset=deg(-90)))),
     Furniture(uid="34W6S0G5EX", tag="FURN-M-KIT-MIXER-GARAGE-UP", type_ref="FT-KIT-DEEP24-30",
               room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(319.75),
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(331.375),
                   normal_gap=inch(0), rotation_offset=deg(-90)))),
 
     # --- RM-M-PANTRY (storeys/main.py) -----------------------------------
-    # The shelf stack, wall face to wall face across the room's whole 70 1/4" clear span,
+    # The shelf stack, wall face to wall face across the room's whole 70 7/8" clear span,
     # 24" deep against the north wall. DESIGNED TO BE STOOD ON — the full build, the span
     # arithmetic and the blocking-before-gypsum sequencing are on the type's `source`
     # (plan/furniture_types.py) and in notes/pantry_climbable_shelving.md. The one number
@@ -779,7 +770,7 @@ MAIN_PLACEABLES = [
     # would be a two-board glue-up on every shelf. Recorded here because the plan reads as a
     # room and the section does not.
     Furniture(uid="J49EW9WWTQ", tag="FURN-M-PANTRY-SHELVES", type_ref="FT-KIT-PANTRY-SHELVES-70",
-              room="RM-M-PANTRY", position=pt(ft(21, 2.5), ft(34, 8.375))),
+              room="RM-M-PANTRY", position=pt(ft(21, 2.8125), ft(34, 8.375))),
 
     # Centre the 80" king between D-M-BATH2's east RO jamb (56.635") and D-M-BED's
     # west RO jamb (170"). The 113.3175" midpoint leaves 16.6825" beside each bed edge.
@@ -907,7 +898,7 @@ MAIN_PLACEABLES = [
     Furniture(uid="2M12W07AGB", tag="FURN-M-LIV-ROD-E1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7, 2)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(48),
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(64),
                   normal_gap=inch(1.375), rotation_offset=deg(-180)))),
     Furniture(uid="94TRP24ZX6", tag="FURN-M-LIV-ROD-E2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7, 2)),
