@@ -260,14 +260,15 @@ DUCTS_ERV_LEVEL2 = [
     # SUITEBATH, the suite WC and STUBATH drains, KITCH-VENT), so it leaves the trunk in the
     # 14'-0" bay BED1 vacated and crosses north on the upper tier in the 15'-4 1/2"..
     # 16'-7 1/2" web opening — the third truss crossing among the takeoffs.
+    # Both tails extend 4" east with the boots for the east PAX frames (2026-10-03).
     DuctRun(uid="HGMQ4AWG3S", tag="DU-M-ERV-R-BED2", system=DuctSystem.RETURN,
             path=(pt(ft(3, 10.5), ft(14)), pt(ft(16), ft(14)), pt(ft(16), ft(14)),
-                  pt(ft(16), ft(18, 4)), pt(ft(16), ft(18, 4)), pt(ft(27, 9), ft(18, 4))),
+                  pt(ft(16), ft(18, 4)), pt(ft(16), ft(18, 4)), pt(ft(28, 1), ft(18, 4))),
             elevations=(_BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),
     DuctRun(uid="XA7NRRGJ50", tag="DU-M-ERV-R-BED1", system=DuctSystem.RETURN,
-            path=(pt(ft(3, 10.5), ft(9, 9)), pt(ft(27, 9), ft(9, 9))),
+            path=(pt(ft(3, 10.5), ft(9, 9)), pt(ft(28, 1), ft(9, 9))),
             elevations=(_BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),

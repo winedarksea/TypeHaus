@@ -11,6 +11,8 @@
 # the south wall (SS2 in BED1: channel on the BED1 face, so its tip anchor is into the
 # channel only; BD1 in BED2: plain face). Then a doorless 19 5/8" six-shelf frame north of
 # the L, up to D-S-BED1/2's south jamb (its casing omitted; the side panel is scribed).
+# A matching open frame extends each south leg east to x 27'-4 3/8" (owner, 2026-10-03).
+# Its rail has separate south-wall backing (BK-S-SS2/BD1-PAX-EAST).
 # Stations from the wall start: BW1 from y 9'-0", BW2 from y 17'-8", BD2 from x 21'-11".
 #
 # BED3: two 39 3/8" frames on the south wall (BD2, channel on the BED2 side) from 5/8" off
@@ -35,6 +37,11 @@ BEDROOM_WARDROBES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-BW1", face="right", distance_from_start=inch(56.0625),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
+    Furniture(uid="4JDYACM3WN", tag="FURN-S-BED1-PAX-SHELF-EAST", type_ref="FURN-S-PAX-SHELF-20",
+              room="RM-S-BED1", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.25)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-SS2", face="left", distance_from_start=inch(55.5625),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # --- BED2 ---------------------------------------------------------------------------
     # The L: y 17'-10 3/8"..21'-5 3/4"; the shelf frame y 21'-5 3/4"..23'-1 3/8".
@@ -48,6 +55,11 @@ BEDROOM_WARDROBES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-BW2", face="right", distance_from_start=inch(55.5625),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
+    Furniture(uid="3SFWD43Q3A", tag="FURN-S-BED2-PAX-SHELF-EAST", type_ref="FURN-S-PAX-SHELF-20",
+              room="RM-S-BED2", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.25)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-BD1", face="left", distance_from_start=inch(55.5625),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # --- BED3 ---------------------------------------------------------------------------
     # Two rods at the east (corner) end, x 32'-1 3/8"..35'-4 3/4"; shelves x 28'-10"..32'-1 3/8".

@@ -2439,13 +2439,13 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SS2", face="left", distance_from_start=inch(135.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # x 26'-7", east of the PAX corner set (2026-10-02), 5 1/2" off ED-S-STUDY2-RC3's back.
+    # x 28'-0": 5 5/8" clear to the plate west edge from the new east PAX frame (2026-10-03).
     ElectricalDevice(uid="NEC032AAAA", tag="ED-S-BED1-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SS2", face="left", distance_from_start=inch(56),
+                         wall_ref="W-S-SS2", face="left", distance_from_start=inch(73),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ED-S-BED1-RC5 (BW1, y 11'-0") was deleted 2026-10-02: it stood behind the PAX corner
     # set. The west wall south of D-S-BED1 is now all fixed cabinet (work_surface=False), so
@@ -2463,13 +2463,13 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BD1", face="left", distance_from_start=inch(136.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # x 26'-7", east of the PAX corner set (2026-10-02).
+    # x 28'-0", as BED1: clear of the east PAX frame (2026-10-03).
     ElectricalDevice(uid="NEC036AAAA", tag="ED-S-BED2-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD1", face="left", distance_from_start=inch(56),
+                         wall_ref="W-S-BD1", face="left", distance_from_start=inch(73),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ED-S-BED2-RC5 (BW2, y 25'-6") was deleted 2026-10-02: D-S-BED2's shift north for the
     # PAX (plan/storeys/second.py) put it inside the rough opening (y 23'-3 1/2"..25'-9 1/2").

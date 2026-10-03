@@ -330,16 +330,17 @@ REGISTERS = [
     # One per bedroom: BED1 y 9'-18', BED2 y 18'-27', BED3 y 27'-36'.
     #
     # BED1/BED2 ARE FLOOR BOOTS AGAINST THE SOUTH WALL (2026-10-02), not mid-floor at x=29'.
-    # x=27'-9" is the open floor between the SW PAX corner (to ~25'-9") and the bed's west
+    # x=28'-1" leaves 5 1/8" from the east PAX frame to the grille's west edge (2026-10-03).
+    # It is the open floor between the expanded SW PAX run (to 27'-4 3/8") and the bed's west
     # side (~29'-11"); y is the FS-S-EAST bay beside the south wall (I-joists span x, so the
     # boot cannot leave its bay). A low sidewall grille was rejected: the south walls are
     # INT_2X4_RC, whose 3 1/2" cavity takes no 4" riser without a shop-made stack.
     Register(uid="CMR903AAAA", tag="REG-S-RET-BED1", kind=DuctSystem.RETURN, room="RM-S-BED1",
-            position=pt(ft(27, 9), ft(9, 9)), duct_ref="DU-M-ERV-R-BED1",
+            position=pt(ft(28, 1), ft(9, 9)), duct_ref="DU-M-ERV-R-BED1",
             type_ref="REG-T-ERV-EXH", design_cfm=2,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR907AAAA", tag="REG-S-RET-BED2", kind=DuctSystem.RETURN, room="RM-S-BED2",
-            position=pt(ft(27, 9), ft(18, 4)), duct_ref="DU-M-ERV-R-BED2",
+            position=pt(ft(28, 1), ft(18, 4)), duct_ref="DU-M-ERV-R-BED2",
             type_ref="REG-T-ERV-EXH", design_cfm=2,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # BED3 IS A CEILING GRILLE, AND ITS TWO NEIGHBOURS ARE NOT: FO-S-STAIR blocks every

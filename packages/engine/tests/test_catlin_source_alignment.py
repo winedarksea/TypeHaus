@@ -187,6 +187,7 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
                     "FURN-S-BED1", "FURN-S-BED2", "FURN-S-BED3",
                     "FURN-S-BED1-WARD", "FURN-S-BED2-WARD", "FURN-S-BED3-WARD",
                     "FURN-S-BED1-PAX-SHELF", "FURN-S-BED2-PAX-SHELF",
+                    "FURN-S-BED1-PAX-SHELF-EAST", "FURN-S-BED2-PAX-SHELF-EAST",
                     "FURN-S-BED3-PAX-HANG", "FURN-S-BED3-PAX-SHELF", "FURN-S-BED3-PAX-OPEN",
                     "FURN-S-DESK1", "FURN-S-DESK2", "FURN-S-DESK3",
                     "FURN-S-DESK-CHAIR1", "FURN-S-DESK-CHAIR2", "FURN-S-DESK-CHAIR3"}

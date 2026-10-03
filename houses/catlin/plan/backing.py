@@ -270,6 +270,16 @@ SECOND_BACKING = [
                 start=inch(0), length=inch(65.375),
                 elevation=inch(86), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="PAX wall rail (93 in.)"),
+    # East shelf frames: rail backing spans stud-002..005 around the 45 3/4"..65 3/8" frame.
+    # The SS2 rail fasteners reach the wood backing through BED1's resilient channel.
+    WallBacking(uid="AK5C5N4Q60", tag="BK-S-SS2-PAX-EAST", wall_ref="W-S-SS2", face="left",
+                start=inch(32), length=inch(48),
+                elevation=inch(86), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="East PAX shelf frame wall rail (93 in.)"),
+    WallBacking(uid="WWKGDCM4PA", tag="BK-S-BD1-PAX-EAST", wall_ref="W-S-BD1", face="left",
+                start=inch(32), length=inch(48),
+                elevation=inch(86), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="East PAX shelf frame wall rail (93 in.)"),
     WallBacking(uid="XK6128ZS78", tag="BK-S-BD2-PAX", wall_ref="W-S-BD2", face="left",
                 start=inch(64), length=inch(98.375),
                 elevation=inch(86), height=inch(7.25), profile="2x8",

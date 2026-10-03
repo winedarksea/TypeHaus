@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from shapely.geometry import Polygon
 
-from typehaus.quantities import ft
+from typehaus.quantities import ft, inch
 from typehaus.takeoff.placeables import placeables_takeoff
 
 # UI coordinates are metres; retain their precision instead of snapping to inches.
@@ -90,3 +90,60 @@ def test_moved_grow_lights_keep_their_timer_and_ceiling_drop(catlin_plan, tag):
     assert light.controlled_by == ("ED-S-PLANT-SW-TIMER",)
     assert light.mount.kind.value == "ceiling"
     assert light.mount.drop.meters == pytest.approx(ft(2, 3).meters)
+
+
+@pytest.mark.parametrize("bedroom", ("BED1", "BED2"))
+def test_east_pax_frame_meets_corner_and_leaves_outlet_and_erv_access(catlin_model_ro, bedroom):
+    objects = {item.tag: item for item in catlin_model_ro.canvas_objects}
+    corner = objects[f"FURN-S-{bedroom}-WARD"]
+    shelf = objects[f"FURN-S-{bedroom}-PAX-SHELF-EAST"]
+    shelf_polygon = Polygon(shelf.footprint)
+    west, south, east, north = shelf_polygon.bounds
+    corner_bounds = Polygon(corner.footprint).bounds
+    assert shelf.type_ref == objects[f"FURN-S-{bedroom}-PAX-SHELF"].type_ref
+    assert west == pytest.approx(corner_bounds[2])
+    assert south == pytest.approx(corner_bounds[1])
+    assert east - west == pytest.approx(inch(19.625).meters)
+    assert north - south == pytest.approx(inch(22.875).meters)
+    assert east == pytest.approx(ft(27, 4.375).meters)
+
+    outlet = objects[f"ED-S-{bedroom}-RC4"]
+    grille = objects[f"REG-S-RET-{bedroom}"]
+    assert Polygon(outlet.footprint).bounds[0] - east == pytest.approx(inch(5.625).meters)
+    assert Polygon(grille.footprint).bounds[0] - east == pytest.approx(inch(5.125).meters)
+    duct = next(item for item in catlin_model_ro.ducts if item.tag == f"DU-M-ERV-R-{bedroom}")
+    assert duct.path[-1] == pytest.approx(grille.position)
+    assert grille.position[1] == pytest.approx(
+        ft(9, 9).meters if bedroom == "BED1" else ft(18, 4).meters)
+
+    for other in objects.values():
+        if other.room == shelf.room and other.tag != shelf.tag and other.kind == "Furniture":
+            assert shelf_polygon.intersection(Polygon(other.footprint)).area < 1e-9, other.tag
+
+
+def test_east_pax_frames_are_counted_and_have_rail_backing(catlin_plan, catlin_model_ro):
+    row = next(row for row in placeables_takeoff(catlin_model_ro)
+               if row["type"] == "FURN-S-PAX-SHELF-20")
+    assert row["count"] == 5
+    assert {"FURN-S-BED1-PAX-SHELF-EAST", "FURN-S-BED2-PAX-SHELF-EAST"} <= set(row["tags"])
+    for bedroom, wall in (("BED1", "SS2"), ("BED2", "BD1")):
+        backing = catlin_plan.by_tag(f"BK-S-{wall}-PAX-EAST")
+        shelf = catlin_plan.by_tag(f"FURN-S-{bedroom}-PAX-SHELF-EAST")
+        attachment = shelf.location.attachment
+        assert backing.wall_ref == attachment.wall_ref
+        assert backing.face == attachment.face
+        half_width = inch(19.625).meters / 2
+        assert backing.start.meters <= attachment.distance_from_start.meters - half_width
+        assert (backing.start.meters + backing.length.meters
+                >= attachment.distance_from_start.meters + half_width)
+
+
+@pytest.mark.parametrize("bedroom", ("BED1", "BED2"))
+def test_expanded_pax_run_preserves_receptacle_spacing(catlin_ctx, bedroom):
+    from typehaus.checks.mep.electrical import receptacle_spacing
+    from typehaus.findings import Result
+
+    findings = [finding for finding in receptacle_spacing(catlin_ctx)
+                if f"RM-S-{bedroom}" in finding.element_tags]
+    assert findings
+    assert all(finding.result is Result.PASS for finding in findings), findings

@@ -1,4 +1,4 @@
-"""BED1-3's wardrobes: a PAX/GRIMO corner set and a 19 5/8" shelf unit in BED1 and BED2,
+"""BED1-3's wardrobes: a PAX/GRIMO corner set and two 19 5/8" shelf units in BED1 and BED2,
 two 39 3/8" frames behind an AULI/MEHAMN sliding pair in BED3.
 
 House-local for the reason plan/closet_types.py gives: each row is a configuration fitted to
