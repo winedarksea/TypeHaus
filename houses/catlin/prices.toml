@@ -2368,6 +2368,8 @@
 "FURN-S-STUDY-NOOK-SHELF-18" = { material = { low = 230, high = 290 }, labour = { low = 80, high = 200 } }  # 1 ea
 "FT-S-STUDY-NOOK-COVER-80" = { material = { low = 127, high = 145 }, labour = { low = 20, high = 60 } }  # 1 ea
 "FT-S-STUDY-NOOK-SEAT-END" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut
+# Custom 72x24x3 HR-foam cushion, welted performance-fabric cover; a quote, not a listing.
+"FT-S-STUDY-NOOK-CUSHION" = { material = { low = 350, high = 750 }, labour = { low = 0, high = 0 } }  # 1 ea
 "CASE-SINK-BASE-36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 0 ea
 # Both TALL-PANTRY rows lost their instances 2026-08-24: FURN-M-KIT-TALL-N/-S stood where
 # RM-M-PANTRY now is. Catalog rows, kept.

@@ -1,4 +1,4 @@
-"""SEKTION frames on a 2x4 plinth: a lift-up seat base and an open high frame.
+"""SEKTION frames on a 2x4 plinth: a lift-up seat base, an open high frame, a seat cushion.
 
 Both stand on the BESTA precedent's 3 1/2" 2x4 base with a wall-painted baseboard face
 instead of IKEA legs. Dimensions shrink proportionally only when the declared height is short.
@@ -88,3 +88,13 @@ def sektion_open_high(width: float, depth: float, height: float) -> Geometry:
                rect(0, BACK_M / 2, width - 2 * PANEL_M, depth - BACK_M,
                     weight=DETAIL_WEIGHT))
     return strokes, tuple(parts)
+
+
+def seat_cushion(width: float, depth: float, height: float) -> Geometry:
+    """A loose foam cushion: the slab, and its welt seam at mid-thickness."""
+    welt = min(inch(0.25).meters, height / 4)
+    # The welt is the outermost edge; the foam crowns just inside it.
+    parts = (box(0, 0, 0, height, width - welt, depth - welt, "cushion"),
+             box(0, 0, height / 2 - welt / 2, height / 2 + welt / 2,
+                 width, depth, "upholstery"))
+    return (rect(0, 0, width, depth, fill="cushion"),), parts

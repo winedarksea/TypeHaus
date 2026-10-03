@@ -48,7 +48,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   W-S-BD-N / -N1B. FH-S-BATH1 avoids the run, preserving its 338 W cable and 612 Btu/h output.
 - `plan/study_nook.py` — `# haus: editable`, Study 2's window seat under ST-S2A: an 18" open
   SEKTION shelf frame by the door plus three 24x24x15 SEKTION seat units with lift-up fronts on
-  a 2x4 base, 19 1/2" top. Types/products are in `plan/study_nook_types.py`. ED-S-STUDY2-RC3 is
+  a 2x4 base, 19 1/2" top, under one 3" cushion held 1/2" behind the fronts. Types/products are in `plan/study_nook_types.py`. ED-S-STUDY2-RC3 is
   at 26" AFF above the seat; the mark-K reading sconce and its seat-side dimmer live in this file.
 - `plan/bedroom_wardrobes.py` — `# haus: editable`, BED1-3's PAX wardrobes; types and products
   in `plan/bedroom_wardrobe_types.py`. BED1/2's doors sit 2 1/2" off module for them (accepted).

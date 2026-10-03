@@ -4265,5 +4265,9 @@ surface that reaches the court, so the water goes there.
   `ED-S-STUDY2-NOOK-SW`, a dimmer on CKT-LT-UPPER, sits 34" AFF in the corner by the shelves,
   so it can be reached from the seat. Both live in `plan/study_nook.py` with the casework.
 - Priced from IKEA US listings read today: seat $276 core, shelf $152 frame, covers $127/$53.
-- Follow-ups, not modelled: a finish on the raked stair underside over the seat (there is no
-  raked-soffit schema), and a cushion.
+- Cushion: `FURN-S-STUDY-NOOK-CUSHION`, one 72" x 24 3/8" x 3" HR-foam piece (the
+  FT-STUDY-BENCH spec) on the 19 1/2" top. It settles to a ~21" seat and lies at 22 1/2",
+  20" under the stringers at the foot cubby. Its front is held 1/2" behind the VOXTORP faces so
+  the lift-up fronts clear it. New `seat-cushion` symbol. A custom-cushion allowance of $350..750.
+- Follow-up, not modelled: a finish on the raked stair underside over the seat (there is no
+  raked-soffit schema).

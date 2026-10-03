@@ -103,3 +103,16 @@ def test_reading_sconce_and_its_dimmer_are_in_reach_of_the_seat(catlin_model_ro)
     assert sconce.body_z1_m < _stringer_underside(catlin_model_ro, x1)
     authored = next(e for e in catlin_model_ro.plan.all_elements() if e.tag == sconce.tag)
     assert authored.controlled_by == (switch.tag,)
+
+
+def test_cushion_rests_on_the_seat_and_clears_the_lift_up_fronts(catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    cushion = objects["FURN-S-STUDY-NOOK-CUSHION"]
+    x0, front, x1, back = Polygon(cushion.footprint).bounds
+    seats = [Polygon(objects[tag].footprint).bounds for tag in SEATS]
+    assert (x0, x1) == pytest.approx((seats[0][0], seats[-1][2]), abs=1e-4)
+    assert back == pytest.approx(WALL_FACE_Y, abs=1e-4)
+    # Set back from the fronts, or the lift-up doors bind on it.
+    assert front - seats[0][1] == pytest.approx(0.5 * INCH, abs=1e-4)
+    assert cushion.body_z0_m == pytest.approx(objects[SEATS[0]].body_z1_m)
+    assert _stringer_underside(catlin_model_ro, x1) - cushion.body_z1_m >= 18 * INCH
