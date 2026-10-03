@@ -1100,9 +1100,10 @@ GARAGE_PLACEABLES = [
 # assertion in test_catlin_source_alignment checks their clearances and door swings.
 SECOND_PLACEABLES = [
     # BED1 stays in the southern part of its bay; its west-side wardrobe and north-side desk
-    # leave the bed's modeled access zones open.
+    # leave the bed's modeled access zones open. Nudged 1/64" east (owner, 2026-10-03)
+    # to clear the added east PAX frame's 18" foot-access zone.
     Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-BED-TWIN", room="RM-S-BED1",
-              position=pt(m(9.80097), m(3.36872)), rotation=deg(-90)),
+              position=pt(m(9.801366875), m(3.36872)), rotation=deg(-90)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
               position=pt(m(9.95572), m(6.98818)), rotation=deg(0)),
     # BED3 is a FULL (owner, 2026-10-02), tight to the east wall and 3/8" off the north: a

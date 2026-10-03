@@ -8,10 +8,10 @@ from shapely.geometry import Polygon
 from typehaus.quantities import ft, inch
 from typehaus.takeoff.placeables import placeables_takeoff
 
-# UI coordinates are metres; retain their precision instead of snapping to inches.
+# UI coordinates are metres; BED1 was nudged 1/64" east for the added PAX frame.
 # tag, catalog type, room, centre, rotation in degrees
 SECOND_STORY_UI_PLACEMENTS = (
-    ("FURN-S-BED1", "FURN-BED-TWIN", "RM-S-BED1", (9.80097, 3.36872), -90),
+    ("FURN-S-BED1", "FURN-BED-TWIN", "RM-S-BED1", (9.801366875, 3.36872), -90),
     ("FURN-S-DESK1", "FURN-DESK-48", "RM-S-BED1", (10.4995, 4.58763), 90),
     ("FURN-S-DESK-CHAIR1", "FURN-DESK-CHAIR", "RM-S-BED1", (10.0492, 4.62797), 90),
     ("FURN-S-STUDY-TABLE", "FURN-DINING-2-36", "RM-S-STUDY2", (9.55695, 0.625729), 0),
@@ -115,6 +115,9 @@ def test_east_pax_frame_meets_corner_and_leaves_outlet_and_erv_access(catlin_mod
     assert duct.path[-1] == pytest.approx(grille.position)
     assert grille.position[1] == pytest.approx(
         ft(9, 9).meters if bedroom == "BED1" else ft(18, 4).meters)
+    if bedroom == "BED1":
+        bed_west = Polygon(objects["FURN-S-BED1"].footprint).bounds[0]
+        assert bed_west - east >= inch(18).meters
 
     for other in objects.values():
         if other.room == shelf.room and other.tag != shelf.tag and other.kind == "Furniture":

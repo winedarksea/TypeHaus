@@ -52,6 +52,10 @@ not instruction: when it disagrees with this file or the model, it is the one th
   at 26" AFF above the seat; the mark-K reading sconce and its seat-side dimmer live in this file.
 - `plan/bedroom_wardrobes.py` — `# haus: editable`, BED1-3's PAX wardrobes; types and products
   in `plan/bedroom_wardrobe_types.py`. BED1/2's doors sit 2 1/2" off module for them (accepted).
+  BED1/2 each have an open 19 5/8" six-shelf frame at both ends of the L (2026-10-03).
+  The east frames end at x 27'-4 3/8", with south-wall rail backing; RC4 outlets are at
+  x 28'-0", ERV floor returns at x 28'-1". Heat-pump supplies stay in place. BED1's bed
+  moves 1/64" east to keep its foot gap above the 18" recommendation.
 - `plan/lighting_attic.py`, `plan/electrical_attic.py` — `# haus: editable`, split off for the
   same reason (`lighting.py` was 1,158 lines, `electrical.py` 1,700). Split
   by STOREY, which is how `plan/manifest.py` already consumes both. An editable file cannot

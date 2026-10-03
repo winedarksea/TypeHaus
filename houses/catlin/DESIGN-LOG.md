@@ -4294,3 +4294,22 @@ surface that reaches the court, so the water goes there.
   the lift-up fronts clear it. New `seat-cushion` symbol. A custom-cushion allowance of $350..750.
 - Follow-up, not modelled: a finish on the raked stair underside over the seat (there is no
   raked-soffit schema).
+
+## 2026-10-03 — BED1 and BED2 PAX shelf frames at the east ends of the L
+
+- Each SW corner wardrobe gains a second white, doorless 19 5/8" PAX six-shelf frame,
+  duplicating the existing north-end frame. `FURN-S-BED1/2-PAX-SHELF-EAST` sit on the
+  south walls, x 25'-8 3/4"..27'-4 3/8", with their fronts flush with the corner returns.
+  `BK-S-SS2/BD1-PAX-EAST` provide 2x8 rail backing at 86", spanning studs at 32"..80"
+  from the wall starts. The BED1 rail reaches the backing through the resilient channel.
+- `ED-S-BED1/2-RC4` move 17" east to x 28'-0": the old stations were inside the added
+  frames. Each outlet plate's west edge clears the cabinet by 5 5/8". Receptacle spacing
+  still passes in both rooms; circuits, mounting heights and uids are retained.
+- `REG-S-RET-BED1/2` move 4" east to x 28'-1", leaving 5 1/8" from the cabinet end to
+  each grille's west edge. Each remains in its south-wall I-joist bay at y 9'-9" / 18'-4";
+  `DU-M-ERV-R-BED1/2` extend to match. The direct ERV interference and deck-hole checks pass.
+  Heat-pump supply grilles and branches stay in place, per the owner's clarification.
+- BED1's twin bed moves 1/64" east, per the owner's follow-up, bringing its foot gap
+  from 17.9899606" to 18.0055856". The strict clearance regression is retained without
+  an exception; no required/recommended clearance or door swing conflicts are introduced.
+  The narrow PAX takeoff grows 3 → 5.

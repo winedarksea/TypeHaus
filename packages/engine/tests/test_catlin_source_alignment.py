@@ -145,7 +145,8 @@ def test_attic_stair_well_sits_on_the_source_and_inside_the_finished_faces(catli
 
     ** THE WEST EDGE IS NOT THE SOURCE'S. ** It came off 21'-2" on 2026-09-15 and onto the
     stair head, 22'-4 5/8" since 2026-09-28: the flight spends 3'-0" on the winder box, 12
-    goings at 10" on the straight run and a 3/4" head riser board, so 21'-2" left a 15 3/8" x 3'-0" strip of open floor opening
+    goings at 10" on the straight run and a 3/4" head riser board, so 21'-2" left a
+    15 3/8" x 3'-0" strip of open floor opening
     beyond anywhere ST-S2A reaches. Which is what that edge is asserted against now — the
     arithmetic, not the port — and it is `code.R311_7_6_stair_arrival_floor` that found it.
     """
