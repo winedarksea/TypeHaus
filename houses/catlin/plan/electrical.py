@@ -2357,10 +2357,12 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-C1", face="right", distance_from_start=inch(93.375),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # 26" AFF, above the study-nook seat top and cushion (plan/study_nook.py, 2026-10-02):
+    # at 16" the seat buried it. Now the nook's lamp and charging outlet.
     ElectricalDevice(uid="NEC028AAAA", tag="ED-S-STUDY2-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(26)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SS2", face="right", distance_from_start=inch(50.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),

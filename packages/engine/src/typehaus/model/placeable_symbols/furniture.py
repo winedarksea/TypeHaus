@@ -27,6 +27,7 @@ from typehaus.model.placeable_symbols._families import (
                                                         slab,
 )
 from typehaus.model.placeable_symbols._sektion import sektion_drawer_base
+from typehaus.model.placeable_symbols._sektion_seat import sektion_open_high, sektion_seat_base
 from typehaus.model.placeable_symbols._sektion_tall import (
     DRAWER_INTERIOR,
     OPEN_LOWER_INTERIOR,
@@ -79,6 +80,8 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "sektion-tall-drawers": sektion_tall(DRAWER_INTERIOR),
     "sektion-tall-open-lower": sektion_tall(OPEN_LOWER_INTERIOR),
     "sektion-cover-panel": sektion_cover_panel,
+    "sektion-seat-base": sektion_seat_base,
+    "sektion-open-high": sektion_open_high,
     "dresser": case(rows=3, cols=2),
     "chest": case(rows=5, cols=1),
     "nightstand": case(rows=2, cols=1),

@@ -4242,3 +4242,28 @@ surface that reaches the court, so the water goes there.
   wall, and cut the hall-face resilient channel locally around the collar. A regression
   measures actual framing and plenum clearance, including the corner outside the
   soffit check's clipped extent, and verifies full return-grille coverage.
+
+## 2026-10-02 — Study 2 window seat under ST-S2A
+
+- `plan/study_nook.py`: on W-S-SS2's south face (y=8'-9 5/8"), west to east, x 22'-0"..29'-7":
+  a 1/2" FÖRBÄTTRA cover, an open 18x24x80 SEKTION shelf frame (83 1/2" top, 13" under the
+  stringers at its east face) that screens the seat from D-S-STUDY2, three 24x24x15 SEKTION
+  seat units (72" long, long enough to lie down on; 19 1/2" top), and a 1/2" end. Everything
+  stands on a 3 1/2" 2x4 base like the living-room BESTA run. One continuous 1" top runs over
+  the seats. The partition clears the door casing by about 2 1/2".
+- **No drawers.** IKEA sells the 24x24x15 frame only as the fridge-top cabinet (904.997.35,
+  vented top and bottom) and configures it with a 24x15 front on UTRUSTA horizontal hinges.
+  It offers no MAXIMERA for this frame. Each seat therefore has a lift-up VOXTORP 602.733.42
+  front. The cushion must not overhang the fronts, or they cannot lift.
+- Two new symbols, `sektion-seat-base` and `sektion-open-high`
+  (`model/placeable_symbols/_sektion_seat.py`). `sektion-drawer-base` draws three drawers
+  on legs under quartz, and `bookcase` draws in stained wood; neither matched these units.
+- ED-S-STUDY2-RC3 rose from 16" to 26" AFF: at 16" it stood behind the centre seat. It is now
+  the nook's lamp and charging outlet. The receptacle_spacing check still passes.
+- Reading light: `ED-S-STUDY2-NOOK-SC`, a mark-K sconce (Bantam, <=4" projection, 400 lm,
+  3000K), sits at 48" AFF over the west seat, the head end, where the stringers are 87" up.
+  `ED-S-STUDY2-NOOK-SW`, a dimmer on CKT-LT-UPPER, sits 34" AFF in the corner by the shelves,
+  so it can be reached from the seat. Both live in `plan/study_nook.py` with the casework.
+- Priced from IKEA US listings read today: seat $276 core, shelf $152 frame, covers $127/$53.
+- Follow-ups, not modelled: a finish on the raked stair underside over the seat (there is no
+  raked-soffit schema), and a cushion.

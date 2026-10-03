@@ -27,6 +27,7 @@ from plan.bath1_storage_types import BATH1_STORAGE_PRODUCTS
 from plan.bedroom_wardrobe_types import BEDROOM_WARDROBE_PRODUCTS
 from plan.closet_types import CLOSET_PRODUCTS
 from plan.products_interior import INTERIOR_PRODUCTS
+from plan.study_nook_types import STUDY_NOOK_PRODUCTS
 from typehaus.model import Product
 
 # --- the LG kitchen and laundry ---------------------------------------------------------
@@ -257,4 +258,5 @@ PRODUCTS = (
     KOHLER_UNDERSCORE_5713_W1, KOHLER_CLEARFLO_7272,
     LEVITON_EV_RECEPTACLE_1450R,
     *INTERIOR_PRODUCTS, *CLOSET_PRODUCTS, *BEDROOM_WARDROBE_PRODUCTS, *BATH1_STORAGE_PRODUCTS,
+    *STUDY_NOOK_PRODUCTS,
 )

@@ -31,7 +31,7 @@ from params import (breezeway, driveway, entry_band_brace, foundations, hp1_nort
                     second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, bath1_storage,
-                  bath1_storage_types, bedroom_wardrobe_types,
+                  bath1_storage_types, bedroom_wardrobe_types, study_nook, study_nook_types,
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, panel_types,
                   electrical, electrical_attic, equipment_types,
@@ -74,6 +74,7 @@ _library = Library(
                      *closet_types.CLOSET_FURNITURE_TYPES,
                      *bedroom_wardrobe_types.BEDROOM_WARDROBE_TYPES,
                      *bath1_storage_types.BATH1_STORAGE_TYPES,
+                     *study_nook_types.STUDY_NOOK_TYPES,
                      *kitchen_deep_cabinets.KITCHEN_DEEP_CABINET_TYPES),
     # The library's fascia guard plus the house's own surface-mounted one — the porch
     # guard's baseplates land on concrete wall tops and buy no bracket kit, which is a
@@ -370,6 +371,7 @@ PLAN = (
                                 *placeables.SECOND_PLACEABLES,
                                 *bedroom_wardrobes.BEDROOM_WARDROBES,
                                 *bath1_storage.BATH1_STORAGE,
+                                *study_nook.STUDY_NOOK,
                                 *second_deck.SECOND_ELEMENTS,
                                 *millwork.SECOND_SHELVES,
                                 *millwork_vanities.SECOND_VANITY_SHELVES,

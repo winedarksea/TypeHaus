@@ -2360,6 +2360,14 @@
 # https://www.ikea.com/us/en/p/foerbaettra-cover-panel-matte-white-00567837/
 "FT-S-SEKTION-COVER-90" = { material = { low = 154, high = 175 }, labour = { low = 20, high = 60 } }  # 1 ea
 "FT-S-SEKTION-SCRIBE-90" = { material = { low = 10, high = 25 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut white filler
+# Study 2 nook, 2026-10-02 (plan/study_nook_types.py). IKEA US list: seat unit = SEKTION top
+# 904.997.35 $88 + VOXTORP 24x15 602.733.42 $136 + UTRUSTA horizontal hinges 804.654.15 $52
+# = $276; low adds a third of the 2x4 base and the 1" top. Shelf = SEKTION 002.654.44 $152
+# plus UTRUSTA shelves and rail. Covers: FÖRBÄTTRA 205.678.36 $127, 405.678.35 $53 (cut).
+"FURN-S-STUDY-NOOK-SEAT-24" = { material = { low = 320, high = 400 }, labour = { low = 80, high = 200 } }  # 3 ea
+"FURN-S-STUDY-NOOK-SHELF-18" = { material = { low = 230, high = 290 }, labour = { low = 80, high = 200 } }  # 1 ea
+"FT-S-STUDY-NOOK-COVER-80" = { material = { low = 127, high = 145 }, labour = { low = 20, high = 60 } }  # 1 ea
+"FT-S-STUDY-NOOK-SEAT-END" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut
 "CASE-SINK-BASE-36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 0 ea
 # Both TALL-PANTRY rows lost their instances 2026-08-24: FURN-M-KIT-TALL-N/-S stood where
 # RM-M-PANTRY now is. Catalog rows, kept.
