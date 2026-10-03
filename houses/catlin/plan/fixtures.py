@@ -433,29 +433,28 @@ SECOND_FIXTURES = (
     # that leaf sweeps 15.6 in2 of this carcass. The flag is the fix and storeys/second.py
     # says so; this cabinet is the reason it is there.
     #
-    # ** 48" FITS ONLY AS A REAL ARC. ** The usable run is bounded north by D-S-BATH1's
-    # swing and south by FURN-S-BATH1-SHELF (the shower's return panel) at y=394.5". The
+    # ** 48" FITS ONLY AS A REAL ARC. ** The usable run is bounded south by D-S-BATH1's
+    # swing and north by FURN-S-BATH1-SHELF (the shower's return panel) at y=394.5". The
     # swing's BOUNDING BOX reaches y=348", which would leave 46.5" and force a 42"
     # special-order cabinet -- but the swing is a quarter-disc, and tested against the real
-    # polygon a 21"-deep carcass clears from y=345.88" on. So the cabinet runs
-    # y 345.88"..393.88": 48" of stock width, scribing to the shelf with 0.62" to spare,
-    # reading as one continuous run of millwork along the wall. ** Re-run that test if this
-    # door, this shelf or W-S-BD-N1B ever moves ** -- 0.62" is the whole margin.
+    # polygon a 21"-deep carcass clears from y=345.88" on. The SEKTION fronts now reach
+    # y=346.26", so the vanity moves 1/2" north to y=346.38"..394.38": its approach clears
+    # both the east frame and its cover by 0.12", with 0.12" left to the shower shelf.
+    # Re-run the clearance and swing checks if this door, shelf or storage run moves.
     #
     # Measured against the resolved arc: swing bounds x 84..114, y 318..348; carcass bounds
-    # x 95.62..116.62, y 345.88..393.88. Intersection area **0.0 sf**, minimum distance
-    # **0.21"**. The BOUNDING BOXES overlap 2.12" in y, which is the whole reason it reads
+    # x 95.62..116.62, y 346.38..394.38. Intersection area **0.0 sf**. The BOUNDING BOXES
+    # overlap 1.62" in y, which is the whole reason it reads
     # as a conflict on a plan sheet -- and `integrity.door_swing_conflict`
     # (resolve/placeables.py) tests the quarter-disc, not the box, which is why it is
-    # correctly silent. Not a defect. 0.21" is thinner than the 0.62" scribe margin above,
-    # so it is the *tighter* of the two: re-measure both, not just the shelf.
+    # correctly silent. Re-measure the actual arc as well as the shelf gap.
     #
-    # 30" sink base at the SOUTH end (bowl centred on the vanity at y=369.88"), 18"
+    # 30" sink base at the SOUTH end (bowl centred on the vanity at y=370.38"), 18"
     # three-drawer bank at the north. ED-S-BATH1-RC-MIRROR sits at y 370"..374" on this
     # wall, so it is within inches of the basin's edge -- NEC 210.52(D) wants 36" to the
     # sink's OUTSIDE EDGE and this is nowhere near the limit.
     Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-VANITY-48-SINGLE",
-            room="RM-S-BATH1", position=pt(inch(106.12), inch(369.88)), rotation=deg(-90),
+            room="RM-S-BATH1", position=pt(inch(106.12), inch(370.38)), rotation=deg(-90),
             wall_ref="W-S-BA-E1B"),
     # ** `drain_position` IS THE WASTE-AND-OVERFLOW AT THE WEST END, NOT THE WET WALL. **
     # The derived convention projects a hot-served fixture onto `wall_ref`'s axis, which for

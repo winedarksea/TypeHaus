@@ -1,4 +1,4 @@
-"""Preserve the second-storey layout edited in the UI in aa20cbcb."""
+"""Preserve the second-storey UI layout and the BED1 chair's clearance correction."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from typehaus.takeoff.placeables import placeables_takeoff
 SECOND_STORY_UI_PLACEMENTS = (
     ("FURN-S-BED1", "FURN-BED-TWIN", "RM-S-BED1", (9.80097, 3.36872), -90),
     ("FURN-S-DESK1", "FURN-DESK-48", "RM-S-BED1", (10.4995, 4.58763), 90),
-    ("FURN-S-DESK-CHAIR1", "FURN-DESK-CHAIR", "RM-S-BED1", (10.0492, 4.55177), 90),
+    ("FURN-S-DESK-CHAIR1", "FURN-DESK-CHAIR", "RM-S-BED1", (10.0492, 4.62797), 90),
     ("FURN-S-STUDY-TABLE", "FURN-DINING-2-36", "RM-S-STUDY2", (9.55695, 0.625729), 0),
     ("FURN-S-STUDY-CHAIR1", "FURN-DINING-CHAIR", "RM-S-STUDY2", (10.1327, 0.588309), -90),
     ("FURN-S-STUDY-CHAIR2", "FURN-DINING-CHAIR", "RM-S-STUDY2", (8.8924, 0.588713), 90),

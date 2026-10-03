@@ -199,9 +199,9 @@ def test_the_hall_baths_forty_eight_fits_between_the_door_arc_and_the_shelf():
     """48" is a stock width and 42" is special-order, so this inch matters commercially.
 
     The swing's BOUNDING BOX reaches y=348", which would leave 46.5" and force the 42". The
-    arc is a quarter-disc and the cabinet clears it at y=345.88", which leaves 48.62" -- so
-    the house buys a volume-tier cabinet instead of a one-SKU one. The margin to
-    FURN-S-BATH1-SHELF is 0.62" and there is nothing else to give.
+    arc is a quarter-disc and the cabinet clears it at y=346.38", which leaves 48.12" -- so
+    the house buys a volume-tier cabinet instead of a one-SKU one. The SEKTION fronts need
+    that station for the vanity approach; the margin to FURN-S-BATH1-SHELF is 0.12".
     """
     model = _model()
     x0, x1, y0, y1 = _bbox(_obj(model, "FX-S-BATH1-LAV"))

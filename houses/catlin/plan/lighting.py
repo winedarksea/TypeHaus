@@ -1610,7 +1610,7 @@ SECOND_LIGHTING = [
     # ** AND IT WAS ALSO THIS ROOM'S ONLY RECEPTACLE, so deleting it was never available: **
     # code.E3901_6_bathroom_receptacle passes RM-S-BATH1 on this outlet and nothing else.
     # Moving it keeps that pass — y=390.75" is still hard against FX-S-BATH1-LAV's carcass
-    # (y 345.88"..393.88"), 0" to the basin's outside edge against 210.52(D)'s 36".
+    # (y 346.38"..394.38"), 0" to the basin's outside edge against 210.52(D)'s 36".
     #
     # y=390.75" is the 7 1/2" of wall between the mirror's north edge and
     # FURN-S-BATH1-SHELF at y=394.5": a 4 1/2" plate leaves 1 1/2" and 1 3/4". The 11 1/8"

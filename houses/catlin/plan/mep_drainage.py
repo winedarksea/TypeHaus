@@ -464,9 +464,9 @@ SECOND_BRANCH_DRAINS = [
                         inch(115.58)),
             serves=("FX-S-BATH1-SH",)),
     # The 48" vanity's 1 1/2" arm. The drop is at y=31'-0" rather than on the bowl's own
-    # 369.88" for the same reason as the water closet's: 369.88" is 0.13" off the 368" truss
-    # line's south face. y=372" is the 369.75"..382.25" bay, 2 1/8" from the bowl and exactly
-    # where PR-S-BATH1-VENT already takes off. West on that bay to x=5'-0", then south onto
+    # 370.38" for the same reason as the water closet's: the former 369.88" station was
+    # only 0.13" off the truss face. y=372" stays in the 369.75"..382.25" bay, 1.62" from the
+    # bowl and exactly where PR-S-BATH1-VENT already takes off. West on that bay to x=5'-0", then south onto
     # the stack — the leg the water closet's drain used to share (2026-09-24).
     PipeRun(uid="E9TA1G01B8", tag="PR-M-S-BATH1-LAV-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(10), ft(31)), pt(ft(10), ft(31)),

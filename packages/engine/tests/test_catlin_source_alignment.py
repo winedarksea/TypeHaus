@@ -206,12 +206,8 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
                                        == "integrity.placeable_recommended_clearance_conflict"]
     assert not door_swing_conflicts, door_swing_conflicts
     assert not required_clearance_conflicts, required_clearance_conflicts
-    # aa20cbcb turns BED1's twin across the south end and moves the desk chair east.
-    # The chair overlaps the bed's north-side access zone by 2.4"; pin that advisory
-    # pair so additional conflicts still fail. BED2/3 retain clear access zones.
-    assert [finding.element_tags for finding in recommended_clearance_conflicts] == [
-        ("FURN-S-BED1", "FURN-S-DESK-CHAIR1")
-    ], [finding.message for finding in recommended_clearance_conflicts]
+    assert not recommended_clearance_conflicts, [
+        finding.message for finding in recommended_clearance_conflicts]
     from typehaus.checks import Tier
     from typehaus.checks.run import run_from_model
 

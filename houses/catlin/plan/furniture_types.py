@@ -138,7 +138,7 @@ PORCH_TRACK_102 = FurnitureType(
 # wall reads as a single built element from floor to 7'-0" instead of a box beside a tub.
 #
 # CLOSED BELOW THE COUNTER (owner, 2026-09-28). FX-S-BATH1-LAV's north end panel stands
-# 0.6" in front of this case's whole open face, so nothing under the 36" counter line can be
+# 0.12" in front of this case's whole open face, so nothing under the 36" counter line can be
 # reached. A fixed 3/4" plywood front panel (carcass, hidden behind the vanity end; no oak)
 # closes floor to 35 1/4"; the lowest open shelf's top is flush with the counter at 36", so
 # things slide across. Oak boards top at 36/48/60/72/84" — 11 1/4" clear each — and none

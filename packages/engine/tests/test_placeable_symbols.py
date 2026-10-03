@@ -92,15 +92,22 @@ def test_every_colour_role_resolves_to_a_hex_string() -> None:
         assert part_hex(role).startswith("#") and len(part_hex(role)) == 7
 
 
-def test_drawer_desk_has_two_side_drawers_and_open_knee_space() -> None:
+def test_drawer_desk_has_two_drawers_on_each_side_and_open_knee_space() -> None:
     from typehaus.library.placeables import HEMNES_DESK_61
 
     width, depth = (length.meters for length in HEMNES_DESK_61.footprint)
     parts = model_parts("drawer-desk", width, depth, HEMNES_DESK_61.height.meters)
     desktop, *supports = parts
     pulls = [part for part in supports if part["color"] == "metal"]
-    assert len(pulls) == 2
-    assert all(part["center"][0] > 0 and part["center"][1] < 0 for part in pulls)
+    left_pulls = [part for part in pulls if part["center"][0] < 0]
+    right_pulls = [part for part in pulls if part["center"][0] > 0]
+    assert len(left_pulls) == len(right_pulls) == 2
+    assert all(part["center"][1] < 0 for part in pulls)
+    for left, right in zip(left_pulls, right_pulls, strict=True):
+        assert left["center"] == pytest.approx(
+            (-right["center"][0], right["center"][1], right["center"][2]),
+        )
+        assert left["size"] == right["size"]
     # Nothing below the desktop crosses the centre where the seated person's knees go.
     assert all(abs(part["center"][0]) > part["size"][0] / 2 for part in supports)
     desktop_bottom = desktop["center"][2] - desktop["size"][2] / 2

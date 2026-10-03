@@ -895,7 +895,7 @@ MAIN_PLACEABLES = [
     Furniture(uid="SM4T9MMNVP", tag="FURN-M-BED-NIGHTSTAND-E", type_ref="FURN-NIGHTSTAND-24", room="RM-M-BED",
               position=pt(inch(155.875), inch(145.625))),
 
-    # Southwest corner: rotation 90 puts the back against the west wall and drawers north.
+    # Southwest corner: rotation 90 puts the back against the west wall, drawers north/south.
     # Both finish faces are at 6.635"; leave ~1/2" for baseboard. The north end at 68 1/4"
     # keeps the east-facing chair zone south of the king's foot at 68.445".
     Furniture(uid="CMD701AAAA", tag="FURN-M-BED-DESK", type_ref="FURN-DESK-HEMNES-61",
@@ -1208,8 +1208,9 @@ SECOND_PLACEABLES = [
     # dining-room plan and 3D appearance.
     Furniture(uid="DSK701AAAA", tag="FURN-S-DESK1", type_ref="FURN-DESK-48", room="RM-S-BED1",
               position=pt(m(10.4995), m(4.58763)), rotation=deg(90)),
+    # Three inches north of the UI placement clears BED1's 18" side-access zone by 0.58".
     Furniture(uid="CHR701AAAA", tag="FURN-S-DESK-CHAIR1", type_ref="FURN-DESK-CHAIR", room="RM-S-BED1",
-              position=pt(m(10.0492), m(4.55177)), rotation=deg(90)),
+              position=pt(m(10.0492), m(4.62797)), rotation=deg(90)),
     Furniture(uid="DSK702AAAA", tag="FURN-S-DESK2", type_ref="FURN-DESK-48", room="RM-S-BED2",
               position=pt(m(8.49481), m(7.75018)), rotation=deg(0)),
     # Four inches west of the desk centre keeps the chair outside BED2's side-access zone.
@@ -1265,7 +1266,7 @@ SECOND_PLACEABLES = [
     # benches are priced the same way.
     #
     # Clearances, all measured against the resolved model (2026-09-28): FX-S-BATH1-LAV ends
-    # at y 32'-9 7/8", only 5/8" south of the front line and across the case's whole width,
+    # at y 32'-10.38", only 0.12" south of the front line and across the case's whole width,
     # which is why the type closes the case below the counter; ED-S-BATH1-MIRROR ends at
     # y 32'-3", 7 1/2" of daylight, and the case stops 7/8" short of the east wall as scribe; ED-S-BATH1-RC-MIRROR and -SW are further down at
     # y <= 31'-2"; D-S-BATH1's leaf hangs at y 26'-4" and sweeps nowhere near, 6'-3" south;

@@ -247,11 +247,12 @@ WRITING_DESK = FurnitureType(
                            occupant_types=(OFFICE_CHAIR_TAG, "FURN-DESK-CHAIR")),),
 )
 HEMNES_DESK_61 = FurnitureType(
-    tag="FURN-DESK-HEMNES-61", name='HEMNES-style wood desk, 61", two side drawers',
+    tag="FURN-DESK-HEMNES-61", name='HEMNES-style wood desk, 61", drawers on both sides',
     footprint=(inch(61), inch(25.625)), height=inch(29.125),
     plan_symbol="drawer-desk", storage=True, work_surface=True,
     source=("IKEA HEMNES 205.350.44, white stain/light brown; solid-pine top and frame, "
-            "61 x 25 5/8 x 29 1/8 in.; two-drawer side pedestal. Simplified planning model. "
+            "61 x 25 5/8 x 29 1/8 in.; owner-requested variant with two drawers on each "
+            "side. Simplified planning model. "
             "https://www.ikea.com/us/en/p/hemnes-desk-white-stain-light-brown-20535044/"),
     clearances=(front_zone(inch(61), inch(25.625), ft(3), "desk chair and drawer pull-out",
                            occupant_types=(OFFICE_CHAIR_TAG, "FURN-DESK-CHAIR")),),
