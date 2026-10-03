@@ -230,6 +230,7 @@ the future.
 - Move the ERV, EQ-B-ERV so we can keep a 11 meter lane from north to south clear (through D-B-FURN)
 - PR-A-STUBATH-VENT_RUN goes right through the middle of the bathroom RM-A-STUBATH
 - We need to investigate the gap and guard rail situation of the stair ST-S2A. The guard rail doesn't align correctly, and the 6" gap, designed to bring a bit more light between floors, may not be worth it.
+- Extra light switches by beds
 
 # Project Management
 
