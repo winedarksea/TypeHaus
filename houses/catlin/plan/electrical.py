@@ -2223,6 +2223,17 @@ NEC_FILL_MAIN = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BDN2", face="right", distance_from_start=inch(58),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # West of the king and just east of D-M-BATH2: the device centre is 4 1/4" east of the
+    # door's east jamb (x=4'-6 5/8") and 5" west of the bed's west face (x=5'-3 7/8").
+    # Even with its 4" box, that leaves 2 1/4" clear of the opening. The bedroom side is
+    # reachable from the bath sink through the doorway, so this one gets GFCI protection at
+    # the device while staying on the storey's non-GFCI general receptacle circuit.
+    ElectricalDevice(uid="M62BV9TQ4Y", tag="ED-M-BED-RC9", kind=DeviceKind.RECEPTACLE_GFCI,
+                     type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-MAIN", room="RM-M-BED",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-BDN1", face="right", distance_from_start=inch(58.875),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC014AAAA", tag="ED-M-BED-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",

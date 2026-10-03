@@ -67,6 +67,28 @@ def test_main_plan_symbol_census(catlin_model):
     assert {"light", "switch"} <= kinds
 
 
+def test_main_bedroom_door_side_receptacle_is_in_electrical_plan(catlin_model):
+    from typehaus.emit.draw.scene import Text
+
+    devices = {element.tag: element
+               for element in catlin_model.plan.storey_elements("main")
+               if element.element_kind == "ElectricalDevice"}
+    outlet = devices["ED-M-BED-RC9"]
+
+    assert outlet.kind.value == "gfci"
+    assert outlet.type_ref == "ED-T-RECEPTACLE-GFCI"
+    assert outlet.circuit == "CKT-RC-MAIN"
+    assert outlet.circuit in {circuit.tag for circuit in catlin_model.plan.library.circuits}
+    assert outlet.room == "RM-M-BED"
+    assert outlet.location.attachment.wall_ref == "W-M-BDN1"
+    assert outlet.location.attachment.distance_from_start.inches == pytest.approx(58.875)
+    assert placed_xy(catlin_model, outlet)[0] / 0.0254 == pytest.approx(58.875)
+
+    scene = build_electrical_plan(catlin_model, "main")
+    assert any(isinstance(node, Text) and node.content == "M-BED-RC9"
+               for node in scene.nodes)
+
+
 def test_basement_plan_has_panel(catlin_model):
     scene = build_electrical_plan(catlin_model, "basement")
     symbols = [n for n in scene.nodes if isinstance(n, Symbol) and n.name == "panel"]
