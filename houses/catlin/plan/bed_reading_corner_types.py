@@ -30,7 +30,7 @@ _BASE = ("3 1/2\" 2x4 base with a baseboard-matching kick; 1\" walnut top "
 BED_NOOK_END = FurnitureType(
     tag="FURN-M-BED-NOOK-END-12", name='SEKTION 12x24x30 open shelves, 34 1/2" installed',
     footprint=(inch(12), inch(24)), height=inch(34.5), carcass_depth=inch(24),
-    storage=True, work_surface=False, plan_symbol="sektion-open-high",
+    storage=True, work_surface=False, plan_symbol="sektion-open-base",
     product_ref=SEKTION_BASE_FRAME_12_30.tag,
     source=("SEKTION 102.653.92, no fronts, shelves facing the room. " + _BASE + " One at "
             "each end of the seat; the south one is the backrest, 12\" over the cushion."),

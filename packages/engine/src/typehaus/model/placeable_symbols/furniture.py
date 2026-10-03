@@ -36,6 +36,7 @@ from typehaus.model.placeable_symbols._sektion import (
 )
 from typehaus.model.placeable_symbols._sektion_seat import (
                                                         seat_cushion,
+                                                        sektion_open_base,
                                                         sektion_open_high,
                                                         sektion_seat_base,
 )
@@ -98,6 +99,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "sektion-cover-panel": sektion_cover_panel,
     "sektion-seat-base": sektion_seat_base,
     "sektion-open-high": sektion_open_high,
+    "sektion-open-base": sektion_open_base,
     "seat-cushion": seat_cushion,
     "dresser": case(rows=3, cols=2),
     "chest": case(rows=5, cols=1),

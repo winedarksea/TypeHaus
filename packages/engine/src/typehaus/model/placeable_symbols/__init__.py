@@ -58,7 +58,7 @@ SYMBOL_NAMES = frozenset({
     "sektion-drawer-base", "dresser", "chest", "nightstand", "media-console", "bookcase",
     "hemnes-bookcase",
     "sektion-tall-drawers", "sektion-tall-open-lower", "sektion-cover-panel",
-    "sektion-seat-base", "sektion-open-high", "seat-cushion",
+    "sektion-seat-base", "sektion-open-high", "sektion-open-base", "seat-cushion",
     "wardrobe-show", "wardrobe-dress", "wardrobe-double-hang", "closet-board",
     "wardrobe-shelves", "wardrobe-corner", "wardrobe-sliding-pair",
     "bed", "tv", "potted-plant", "wall-rack", "peg-rail", "arch-shelf-mirror",

@@ -1,4 +1,4 @@
-"""SEKTION frames on a 2x4 plinth: a lift-up seat base, an open high frame, a seat cushion.
+"""SEKTION frames on a 2x4 plinth: a lift-up seat base, open high and base frames, a cushion.
 
 Both stand on the BESTA precedent's 3 1/2" 2x4 base with a wall-painted baseboard face
 instead of IKEA legs. Dimensions shrink proportionally only when the declared height is short.
@@ -15,6 +15,7 @@ BASEBOARD_DEPTH_M = inch(0.75).meters
 SEAT_TOP_THICKNESS_M = inch(1).meters
 SEAT_FRAME_HEIGHT_M = inch(15).meters
 HIGH_FRAME_HEIGHT_M = inch(80).meters
+BASE_FRAME_HEIGHT_M = inch(30).meters
 PANEL_M = inch(0.75).meters
 BACK_M = inch(0.125).meters
 FRONT_M = inch(0.875).meters
@@ -84,6 +85,26 @@ def sektion_open_high(width: float, depth: float, height: float) -> Geometry:
     front = -depth / 2
     parts = [*_plinth(width, depth, base_h),
              *_carcass(width, depth, base_h, height, front, shelves)]
+    strokes = (rect(0, 0, width, depth, fill="appliance-white"),
+               rect(0, BACK_M / 2, width - 2 * PANEL_M, depth - BACK_M,
+                    weight=DETAIL_WEIGHT))
+    return strokes, tuple(parts)
+
+
+def sektion_open_base(width: float, depth: float, height: float) -> Geometry:
+    """An open 30" SEKTION base frame on the 2x4 base, under a 1" top.
+
+    The top is a ``counter`` part like a kitchen base's, so a hosted ``Countertop`` slab
+    replaces it instead of drawing coplanar with it.
+    """
+    nominal = BASE_HEIGHT_M + BASE_FRAME_HEIGHT_M + SEAT_TOP_THICKNESS_M
+    scale = min(1.0, height / nominal)
+    base_h = BASE_HEIGHT_M * scale
+    frame_top = height - SEAT_TOP_THICKNESS_M * scale
+    shelf = base_h + (frame_top - base_h) / 2
+    parts = [*_plinth(width, depth, base_h),
+             *_carcass(width, depth, base_h, frame_top, -depth / 2, (shelf,)),
+             box(0, 0, frame_top, height, width, depth, "counter")]
     strokes = (rect(0, 0, width, depth, fill="appliance-white"),
                rect(0, BACK_M / 2, width - 2 * PANEL_M, depth - BACK_M,
                     weight=DETAIL_WEIGHT))
