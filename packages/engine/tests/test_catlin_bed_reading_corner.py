@@ -3,6 +3,7 @@
 import pytest
 from shapely.geometry import Polygon
 
+from typehaus.model.placeable_symbols._sektion_seat import sektion_open_base
 from typehaus.resolve.geometry_millwork import window_stool_prism
 
 INCH = 0.0254
@@ -139,3 +140,17 @@ def test_desk_chair_sits_in_the_desk_zone_clear_of_the_bed(catlin_model_ro):
     bed = objects["FURN-M-BED"]
     for footprint in (bed.footprint, *bed.recommended_clearances):
         assert not chair.intersects(Polygon(footprint))
+
+
+def test_open_base_frame_stops_under_the_slab_it_hosts():
+    # The 1" top is a `counter` part, dropped when a Countertop is hosted; nothing else
+    # may reach into the slab's inch, or the two draw coplanar and flicker.
+    _strokes, parts = sektion_open_base(12 * INCH, 24 * INCH, 34.5 * INCH)
+    tops = {part["color"]: [] for part in parts}
+    for part in parts:
+        tops[part["color"]].append(part["center"][2] + part["size"][2] / 2)
+    counter = [part for part in parts if part["color"] == "counter"]
+    assert len(counter) == 1
+    assert counter[0]["size"][2] == pytest.approx(1 * INCH)
+    body = [z for color, zs in tops.items() if color != "counter" for z in zs]
+    assert max(body) == pytest.approx(33.5 * INCH)
