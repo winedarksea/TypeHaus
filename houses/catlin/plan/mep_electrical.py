@@ -399,8 +399,13 @@ SECOND_DEVICES = [
     # None is a habitable occupancy, so `electrical.room_lighting` does not require these;
     # they are here because a windowless bath, an interior alcove, the stair arrival and a
     # closet all need a switched light to be usable.
+    # ED-S-SUITEBATH-LT is the dry zone's can (2026-10-03): x 12'-6 3/4" is mid-way across
+    # it, 11" in front of the vanity. Both suite-bath cans sit on y 19'-4", the middle of the
+    # clear FS-ATTIC bay between the I-joists at 18'-8"/20'-0"; it was under DU-A-ERV-R-BED3
+    # at 18'-0". ~15" clear of PR-A-STUBATH-DRAIN. Nothing grades this; re-measure after
+    # a move. (2 x 900 + 1,300 bar) lm x CU 0.6 x LLF 0.8 / 46 sf = ~32 fc.
     ElectricalDevice(uid="CED013K1AA", tag="ED-S-SUITEBATH-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(11, 6), ft(18)), type_ref="ED-T-LT-CAN4-WET", circuit="CKT-LT-UPPER",
+                     position=pt(ft(12, 6.75), ft(19, 4)), type_ref="ED-T-LT-CAN4-WET", circuit="CKT-LT-UPPER",
                      room="RM-S-SUITEBATH", controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # y moved 1/2" north on 2026-09-15, following its wall: W-S-SBS went INT_2X4_PARTITION

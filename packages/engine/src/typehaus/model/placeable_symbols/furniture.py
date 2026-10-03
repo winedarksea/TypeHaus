@@ -28,6 +28,7 @@ from typehaus.model.placeable_symbols._families import (
                                                         shelving,
                                                         slab,
 )
+from typehaus.model.placeable_symbols._mirrors import arch_shelf_mirror
 from typehaus.model.placeable_symbols._sektion import (
                                                         sektion_corner_base,
                                                         sektion_corner_points,
@@ -114,6 +115,8 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # casegoods' stained ``wood`` because that is what a folding rack is made of.
     "wall-rack": drying_rack(bars=5),
     "peg-rail": peg_rail(pegs=6),
+    # A plain mirror is a furnishing, not a luminaire: no lamp, no housing.
+    "arch-shelf-mirror": arch_shelf_mirror(),
     "bed": bed(pillows=2, headboard=True),
     "tv": screen(stand=True),
     # The one furnishing that is not joinery: a pot with leaves over it. Five blades is the

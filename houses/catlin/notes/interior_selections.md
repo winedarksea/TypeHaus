@@ -234,8 +234,13 @@ which photographs beautifully and puts almost nothing on a face; the tells are "
 etched into the front of the pane), round, 3000 K, CRI 90+ with R9 50+, and carries a
 defogger. It is **not field-serviceable**, the warranty is one year, and reported failures
 cluster at five to six years; the one line with replaceable LED strips and a seven-year
-warranty (Electric Mirror Fusion) makes no round. It goes in the primary suite bath, which is
-also where the type's own comment always said it belonged.
+warranty (Electric Mirror Fusion) makes no round. Since 2026-10-03 it is the hall bath's
+(`RM-S-BATH1`) only.
+
+**The suite bath's mirror (2026-10-03).** The owner chose the Kate and Laurel Estero, a 20" x
+28" gold arch mirror with a 4" shelf along its bottom (HD 221484; retailer dimensions, confirm
+on delivery), lit by the house's 24" damp bar at 6'-6" above it. It hangs with its bottom at
+46" so the shelf clears the faucet, and the Robern's concealed receptacle is gone with it.
 
 ## What has to reach a trade before a wall closes
 

@@ -424,10 +424,8 @@ SECOND_SHELVES = [
         procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(18.5), clear_height=inch(48.75), shelf_count=5),),
     ),
-    # The suite bath's return tower (2026-09-06). Same oak and 3/4" stock as SB-S-BATH1,
-    # six shelves in a 7'-0" bay — a 28 1/2" bay this time (30" carcass less two
-    # 3/4" panels) in a box only 11 1/4" deep, which is what makes it a linen tower rather
-    # than the hall bath's 20"-deep shelf. `depth` is left to the host's footprint, as there.
+    # The suite bath's alcove shelf, open to the west (2026-10-03): SB-S-BATH1's oak and
+    # 3/4" stock, eight boards in a 9 3/4" bay. `depth` is left to the host's spec, as there.
     ShelfBank(
         uid="FE3PYXZY53", tag="SB-S-SUITEBATH",
         host="FURN-S-SUITEBATH-RETURN",
@@ -435,6 +433,6 @@ SECOND_SHELVES = [
         thickness=inch(0.75),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(28.5), clear_height=ft(7), shelf_count=6),),
+        bays=(ShelfBay(width=inch(9.75), clear_height=inch(84), shelf_count=8),),
     ),
 ]

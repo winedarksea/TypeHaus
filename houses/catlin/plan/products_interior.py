@@ -433,6 +433,14 @@ SCHLUTER_KERDI_LINE_VARIO = Product(
            "one looks best and cleans worst.",
 )
 
+KATELAUREL_ESTERO = Product(
+    tag="PROD-KATELAUREL-221484", brand="Kate and Laurel", model="221484",
+    name="Estero arch wall mirror with shelf, 20 x 28, gold",
+    source="Home Depot listing (HD 221484), read 2026-10-03: 20.12\" W x 28\" H x 5.5\" D, "
+           "gold metal frame, MDF back, 4\" x 20\" shelf along the bottom. Retailer "
+           "dimensions only; confirm on delivery. RM-S-SUITEBATH, over FX-S-SUITEBATH-LAV.",
+)
+
 INTERIOR_PRODUCTS = (
     TOTO_SP_WALLHUNG, TOTO_DUOFIT_WT173M, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
     TOTO_WASHLET_S5, KOHLER_CACHET_SEAT,
@@ -444,6 +452,6 @@ INTERIOR_PRODUCTS = (
     IKEA_SEKTION, IKEA_VOXTORP_WHITE, IKEA_MAXIMERA, TOPKNOBS_BAR_PULL,
     SCHLAGE_LATITUDE, YALE_ASSURE_2,
     SILESTONE_ET_CALACATTA, MARAZZI_MODERN_FORMATION, TILEBAR_BRONX_WHITE,
-    SCHLUTER_KERDI_LINE_VARIO,
+    SCHLUTER_KERDI_LINE_VARIO, KATELAUREL_ESTERO,
     *LIGHTING_PRODUCTS,
 )

@@ -2551,7 +2551,8 @@
 # to direct weather is an NEC 410.10 violation, so the cheaper band is not available here.
 "ED-T-LT-FAN60" = { material = { low = 270, high = 650 }, labour = { low = 155, high = 320 } }  # 1 ea
 "ED-T-LT-FLOOD-NARROW" = { material = { low = 80, high = 250 }, labour = { low = 65, high = 145 } }  # 1 ea
-# 5 ea -> 4 ea on 2026-09-06: RM-S-SUITEBATH's bar became the second lit mirror. A bar
+# 6 ea -> 7 ea on 2026-10-03: RM-S-SUITEBATH is back to a bar over the plain Estero mirror
+# (owner's call). Earlier, 5 ea -> 4 ea on 2026-09-06: its bar had become the second lit mirror. A bar
 # ABOVE a mirror sits above the brow line and casts brow/nose/chin shadows DOWN onto the
 # thing you are trying to see, so running a bar AND a front-lit mirror in one room is
 # worse than either alone. Kuzco Jane-Slim VL6224 at $118 is the pick where a bar stays:
@@ -2559,9 +2560,9 @@
 # upward opening to collect dust. ** CHROME WAS THE ONLY FINISH CONFIRMED IN STOCK, AND
 # CHROME IS THE ONE METAL THAT FIGHTS WARM OAK ** -- confirm a BN SKU before ordering,
 # or take Modern Forms Loft WS-3624-BN at $143.
-"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 6 ea — the sixth is ED-A-STUDIO-BAR-PEND (2026-09-10), the studio bar's task light: a wall-mounted 24" damp bar replacing a pendant that could not fit under the 6:12 rake. See plan/lighting_attic.py
-# ** REPRICED AND RE-SCOPED 2026-09-06: two of them now, and the second is the primary
-# suite's (owner's call -- an integrated LED mirror, not sconces). ** Robern Vitality
+"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 7 ea — one is ED-S-SUITEBATH-MIRROR again (2026-10-03); another is ED-A-STUDIO-BAR-PEND (2026-09-10), the studio bar's task light: a wall-mounted 24" damp bar replacing a pendant that could not fit under the 6:12 rake. See plan/lighting_attic.py
+# ** ONE OF THEM, THE HALL BATH'S (2026-10-03): the suite's went back to a bar over a plain
+# mirror, FT-SUITEBATH-MIRROR-ESTERO. ** Robern Vitality
 # YM0030CPFPD3, 30" round Perimeter, at $831.94 sale against $1,479 list. The old $150-500
 # band was a class allowance for a spec that described no real product: 36", tunable and
 # CRI 95 do not co-exist in this market.
@@ -2574,7 +2575,7 @@
 # enclosed, the warranty is ONE YEAR, and reported failures cluster at five to six years
 # (the driver cooking in a sealed 1 3/4" cavity, not the LEDs). Electric Mirror's Fusion
 # has replaceable LED strips and a 7-year warranty at ~$1,429 but makes no round.
-"ED-T-LT-MIRROR-RING" = { material = { low = 830, high = 1500 }, labour = { low = 60, high = 135 } }  # 2 ea
+"ED-T-LT-MIRROR-RING" = { material = { low = 830, high = 1500 }, labour = { low = 60, high = 135 } }  # 1 ea
 "ED-T-LT-PANEL" = { material = { low = 45, high = 130 }, labour = { low = 48, high = 115 } }  # 4 ea
 # ** THE DINING FIXTURE IS THE OWNER'S OWN IMPORT AND HAS NOT BEEN SELECTED ** (48" linear,
 # 2000-3500 lm, 3000 K, CRI 90+). The band brackets an import against the domestic fixture
@@ -2847,11 +2848,10 @@
 # is a fraction of this and CANNOT be substituted — it is not standable.
 "FT-KIT-PANTRY-SHELVES-70" = { material = { low = 160, high = 420 }, labour = { low = 400, high = 1050 } }  # 1 ea
 "FT-BATH1-SHELF-2030" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
-# The suite bath's twin of it (2026-09-06), same construction and the same two ends of the
-# band — a carpenter building it in place, or a cabinetmaker building it as casework. Lower
-# than FT-BATH1-SHELF-2030 by a little: 30" x 11 1/4" is less carcass than 20" x 30", and it
-# is scribed to a partition rather than to an exterior wall.
-"FT-SUITEBATH-RETURN-3011" = { material = { low = 160, high = 620 }, labour = { low = 150, high = 450 } }  # 1 ea
+# The suite bath's twin of it, open to the west since 2026-10-03: the same build and the same
+# two ends of the band, a little lower, as 11 1/4" x 30" is less carcass than 20" x 30" and
+# it has no closed base.
+"FT-SUITEBATH-SHELF-1130" = { material = { low = 160, high = 620 }, labour = { low = 150, high = 450 } }  # 1 ea
 # RM-M-BATH2's over-toilet cabinet (2026-08-31). [placeables], not [furnishings] — it is
 # screwed to W-M-HS1's studs and cannot be carried out of the room. Basis: ~2 sheets (3/4"
 # paint-grade ply carcass + 5/8" MDF for three flush doors), 6 concealed hinges, 3 push
@@ -2906,6 +2906,8 @@
 "FT-M-CLOSET-VALANCE" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 1 ea
 "FT-M-CLOSET-PLINTH" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 1 ea
 "FURN-M-CLOSET-PEGS" = { material = { low = 25, high = 90 }, labour = { low = 30, high = 80 } }  # 1 ea
+"FT-SUITEBATH-PEGS-24" = { material = { low = 20, high = 60 }, labour = { low = 30, high = 80 } }  # 1 ea — the closet rail at 24", four knobs
+"FT-SUITEBATH-MIRROR-ESTERO" = { material = { low = 80, high = 160 }, labour = { low = 30, high = 80 } }  # 1 ea — Kate and Laurel Estero 20x28 gold arch shelf mirror (HD 221484); retail band, not a quote
 "ED-T-LT-MIRROR-CLOSET" = { material = { low = 300, high = 900 }, labour = { low = 90, high = 200 } }  # 1 ea — hardwired, so an electrician's box and trim
 "ED-T-LT-PSU-TRADFRI-30" = { material = { low = 57, high = 75 }, labour = { low = 0, high = 20 } }  # 1 ea — $45 driver + $12 ANSLUTA cord + connection cords; plug-in
 # BED1-3'S WARDROBES, 2026-10-02 (plan/bedroom_wardrobes.py). IKEA US list read 2026-10-02:

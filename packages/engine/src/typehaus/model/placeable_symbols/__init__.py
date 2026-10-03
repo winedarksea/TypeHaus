@@ -60,7 +60,7 @@ SYMBOL_NAMES = frozenset({
     "sektion-seat-base", "sektion-open-high", "seat-cushion",
     "wardrobe-show", "wardrobe-dress", "wardrobe-double-hang", "closet-board",
     "wardrobe-shelves", "wardrobe-corner", "wardrobe-sliding-pair",
-    "bed", "tv", "potted-plant", "wall-rack", "peg-rail",
+    "bed", "tv", "potted-plant", "wall-rack", "peg-rail", "arch-shelf-mirror",
     # sauna joinery — benches are fitted to the room, not bought as a set
     "sauna-bench", "sauna-bench-tiered",
     # kitchen/bath casework — the fitted millwork a room is built around

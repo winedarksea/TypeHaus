@@ -1459,75 +1459,27 @@ SECOND_LIGHTING = [
                          wall_ref="W-S-DC1", face="right", distance_from_start=inch(35),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # RM-S-SUITEBATH: ED-S-SUITEBATH-LT is now a wet can; a second sits over the shower in
-    # the NE corner, and the mirror light goes on the south wall over FX-S-SUITEBATH-LAV.
+    # RM-S-SUITEBATH: the tub's can, on its long centreline 2.6" south of its middle, in
+    # the same clear FS-ATTIC bay as ED-S-SUITEBATH-LT (plan/mep_electrical.py). It was
+    # under PR-A-STUBATH-SH-DRAIN's trap at y 20'-6". Nothing grades this; re-measure after
+    # a move. The mirror bar is on the north wall over FX-S-SUITEBATH-LAV.
     ElectricalDevice(uid="QTS000DAAA", tag="ED-S-SUITEBATH-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(16, 2), ft(20, 6)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(ft(16, 5.625), ft(19, 4)), type_ref="ED-T-LT-CAN4-WET",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH",
                      controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # ** THE PRIMARY SUITE'S MIRROR BECAME THE LIT ONE ON 2026-09-06 (owner's call), AND
-    # THAT ALSO FIXES A ROOM MISMATCH THAT HAD BEEN SITTING IN THIS FILE. **
-    # ED-T-LT-MIRROR-RING's own comment called it "the master's lit mirror" and the only
-    # instance of it stood in RM-S-BATH1, the hall bath. The owner wants the integrated LED
-    # mirror — not a plain mirror flanked by sconces — in the PRIMARY bath, so the type comes
-    # here and the hall bath keeps its own (a second P1; the two rooms are the two that were
-    # ever candidates for one).
-    #
-    # 30" round over a 30" vanity is the right size, and this is a MIRROR rather than a bar
-    # above one, which matters: a bar over a mirror sits above the brow line and casts
-    # brow/nose/chin shadows DOWN onto the thing you are trying to see, where a front-lit
-    # mirror cross-lights at eye height. Running both would be redundant, so the bar goes.
-    #
-    # ``elevation`` drops from 6'-6" (a bar ABOVE a mirror) to 3'-6" (the BASE of a 30"
-    # mirror, putting its centre at 5'-0"), matching how ED-S-BATH1-MIRROR is authored.
+    # ** BACK TO A BAR OVER A PLAIN MIRROR (owner, 2026-10-03). ** The Robern lit round
+    # (2026-09-06) gave way to FURN-S-SUITEBATH-MIRROR, the Estero arch shelf mirror
+    # (plan/placeables.py), and this is the hall bath's 24" damp bar at the same 6'-6",
+    # 4" over the mirror's top. The Robern's own receptacle went with it; ED-S-SUITEBATH-RC1
+    # still carries NEC 210.52(D).
     ElectricalDevice(uid="QTS000EAAA", tag="ED-S-SUITEBATH-MIRROR", kind=DeviceKind.LIGHT,
-                     # y = 264.625" (W-S-SBN's bath face) less half of the Robern's 1 3/4"
-                     # body. The bar this replaced was 3" deep and sat at 263.625".
-                     type_ref="ED-T-LT-MIRROR-RING",
+                     type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH",
                      controlled_by=("ED-S-SUITEBATH-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SN3", face="right", distance_from_start=inch(50.5),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # ** THE ROBERN IS CORD-AND-PLUG, so it needs a receptacle of its own ** — not the same
-    # outlet as ED-S-SUITEBATH-RC1, which is the NEC 210.52(D) counter-height one and stays.
-    # Same pattern and the same 54" band as ED-S-BATH1-RC-MIRROR. GFCI at the receptacle,
-    # not just at the breaker (210.8(A)(1)). The cord runs behind the glass to a plate
-    # BESIDE it; it used to plug in behind it, which is the defect fixed below.
-    #
-    # ** IT MUST NOT LAND WHERE A MOUNTING CLEAT OR THE BOTTOM BRACKET GOES, and the mirror's
-    # own install sheet is the authority on where those are ** (the round unit's cleat
-    # spacing was not confirmable and has to be read off the sheet in the carton). Two things
-    # for the framer and the electrician before the wall closes: block a FULL-WIDTH flat 2x
-    # band, because the two outer brackets sit only about +/-5" from the centreline and will
-    # not find 16" o.c. studs at an arbitrary vanity centre; and pull a conductor for a
-    # SECOND switch leg, because Robern requires the defogger to be switched independently
-    # of the lights.
-    #
-    # ** MOVED OUT FROM BEHIND THE GLASS, x=13'-10" -> 12'-3 1/2" (2026-09-06), with
-    # ED-S-BATH1-RC-MIRROR, which it was authored from. ** At x=166" it was dead centre of
-    # the 30" mirror (x 151"..181") at 54" AFF: a GFCI DEVICE on a circuit that is not GFCI
-    # at the breaker, so its test/reset button was the whole protective path and it was
-    # sealed behind a hardwired mirror. x=147.5" puts the 4 1/2" plate at 145 1/4"..149 3/4",
-    # 1 1/4" clear of the mirror's west edge and clear of FX-S-SUITEBATH-WC (x 127"..142").
-    # It now stacks directly over ED-S-SUITEBATH-RC1 at x=148"/44" with 5 1/2" between the
-    # two plates, which is how it reads on the wall: the counter outlet and the mirror's,
-    # one above the other.
-    #
-    # ** EAST WAS THE OBVIOUS SIDE AND IT IS NOT AVAILABLE: ** x 181"..211 1/2" of this
-    # north wall is inside FX-S-SUITEBATH-TUBSH's own footprint.
-    #
-    # Unlike the hall bath this room does NOT depend on this outlet for 210.52(D) —
-    # ED-S-SUITEBATH-RC1 is 2 1/2" off the lav carcass and carries it either way.
-    ElectricalDevice(uid="CE0KDETNZH", tag="ED-S-SUITEBATH-RC-MIRROR",
-                     kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-RECEPTACLE-GFCI",
-                     circuit="CKT-RC-SECOND", room="RM-S-SUITEBATH",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SN3", face="right", distance_from_start=inch(32),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The lit shower niche (plans/TODO.md §Plumbing: Schluter-KERDI-BOARD-SNLT).
     # In W-S-C2C, the alcove wall that's neither glazed south nor a door: 2'-4" of head

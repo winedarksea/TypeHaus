@@ -269,7 +269,7 @@ SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
 # with the unit (one-piece, or the 3-piece kit a second floor takes), and the FX-TUBSHOWER-60
 # price basis already buys and hangs them. The type's 7'-0" height is that surround's head;
 # the flanges nail to the two framed walls plus each alcove's millwork return
-# (FT-BATH1-SHELF-2030, FT-SUITEBATH-RETURN-3011). A panel over it would bill the walls twice.
+# (FT-BATH1-SHELF-2030, FT-SUITEBATH-SHELF-1130). A panel over it would bill the walls twice.
 # Of the five showers: BATH2 and STUBATH carry a modelled panel (WP-M-BATH2-SURR,
 # WP-A-STUBATH-SURR), the sauna a tile splash (WP-B-SAUNA-SPLASH), these two are integral.
 TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={

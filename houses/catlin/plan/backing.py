@@ -172,6 +172,11 @@ MAIN_BACKING = [
                 start=inch(15.25), length=inch(49.5),
                 elevation=inch(62), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="closet robe peg rail (64 in.)"),
+    # RM-S-SUITEBATH's robe pegs (plan/placeables.py), on W-S-DC2's bath face at y 18'-9"..20'-9".
+    WallBacking(uid="7ZWH2X1FEM", tag="BK-S-DC2-PEGS", wall_ref="W-S-DC2", face="right",
+                start=inch(32), length=inch(32),
+                elevation=inch(62), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="suite bath robe peg rail (64 in.)"),
     WallBacking(uid="ZRCH8QVDBK", tag="BK-M-C2-MIRROR-LO", wall_ref="W-M-C2", face="left",
                 start=inch(3.25), length=inch(33.5),
                 elevation=inch(12), height=inch(7.25), profile="2x8",

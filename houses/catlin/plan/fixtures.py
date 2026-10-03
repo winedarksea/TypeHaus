@@ -517,14 +517,10 @@ SECOND_FIXTURES = (
     # -90, back turns east onto W-S-C2C; footprint keeps the old pan's north/east edges,
     # extended south, clearing the WC zone, the south lav, and the door swing.
     #
-    # ** THE OPEN END IS CLOSED (2026-09-06, owner's call), THE SAME WAY THE HALL BATH'S
-    # WAS: ** FURN-S-SUITEBATH-RETURN (plan/placeables.py) is a 30" x 11 1/4" x 84" carcass
-    # in the gap, and its NORTH panel is the tub's south return, with a 2x4 framed behind it
-    # for the flange. The note that stood here said "a shelf like FURN-S-BATH1-SHELF will
-    # not fit the leftover" — true of a 20"-deep box and false of one built 11 1/4" deep,
-    # which is an ordinary linen-tower depth. It is millwork as Furniture for the reason
-    # plan/placeables.py gives for the hall bath: a real return partition has to tee into
-    # W-S-C2C, splitting a BEARING wall at a new node and re-phasing its stud grid.
+    # ** THE OPEN END IS CLOSED (2026-09-06), THE SAME WAY THE HALL BATH'S WAS: **
+    # FURN-S-SUITEBATH-RETURN (plan/placeables.py) is an 11 1/4" x 30" x 84" open shelf in
+    # the gap, open to the west since 2026-10-03; its north divider is the tub's south
+    # return, with a 2x4 framed behind it for the flange.
     #
     # ** AND THE TUB IS RE-SEATED ON ITS OWN TWO CLOSED WALLS. ** The 10.4" this note used
     # to quote went stale on 2026-08-30 when W-S-SBS was retyped to a 4 3/4"

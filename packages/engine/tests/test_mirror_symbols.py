@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import math
 
 import pytest
@@ -90,12 +91,13 @@ def test_export_keeps_the_polished_mirror_material() -> None:
     assert surface["roughnessFactor"] < 0.1
 
 
-@pytest.mark.parametrize("tag", ["ED-S-SUITEBATH-MIRROR", "ED-S-BATH1-MIRROR"])
+@pytest.mark.parametrize("turn", [0.0, 90.0])
 def test_exported_bath_mirror_is_circular_on_either_wall_orientation(
-    catlin_model_ro, tag: str,
+    catlin_model_ro, turn: float,
 ) -> None:
     model = catlin_model_ro
-    item = next(item for item in model.canvas_objects if item.tag == tag)
+    item = next(item for item in model.canvas_objects if item.tag == "ED-S-BATH1-MIRROR")
+    item = dataclasses.replace(item, rotation_degrees=item.rotation_degrees + turn)
     mirror = next(kind for kind in model.plan.library.electrical_device_types
                   if kind.tag == item.type_ref)
     mesh = _MeshBuilder()
@@ -122,3 +124,20 @@ def test_exported_bath_mirror_is_circular_on_either_wall_orientation(
         assert radii
         assert max(radii) == pytest.approx(radius)
         assert all(distance == pytest.approx(radius) for distance in radii)
+
+
+def test_arch_shelf_mirror_is_arched_glass_over_a_full_depth_shelf() -> None:
+    width, depth, height = 20.125 * INCH_M, 5.5 * INCH_M, 28 * INCH_M
+    shelf, frame, arch, glass, glass_arch = model_parts("arch-shelf-mirror", width, depth, height)
+    assert shelf["center"][2] - shelf["size"][2] / 2 == pytest.approx(0)
+    assert shelf["size"][:2] == pytest.approx((width, depth))
+    # The half-round tops out at the full height; the straight frame stops at its spring line.
+    assert arch["shape"] == "cylinder-depth"
+    assert arch["center"][2] + arch["size"][2] / 2 == pytest.approx(height)
+    assert frame["center"][2] + frame["size"][2] / 2 == pytest.approx(height - width / 2)
+    assert [glass["color"], glass_arch["color"]] == ["mirror", "mirror"]
+    # Glass stands proud of the frame, toward the room (-y), and inside its border.
+    assert glass["center"][1] < frame["center"][1]
+    assert glass_arch["size"][0] < arch["size"][0]
+    assert frame["center"][1] + frame["size"][1] / 2 == pytest.approx(depth / 2)
+    assert len(plan_symbol_strokes("arch-shelf-mirror", width, depth)) == 2

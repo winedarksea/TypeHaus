@@ -52,3 +52,40 @@ def mirror_light(*, round_face: bool = False) -> Builder:
         return strokes, tuple(parts)
 
     return build
+
+
+ARCH_FRAME_DEPTH_M = 0.0254
+ARCH_FRAME_BORDER_M = 0.019
+ARCH_GLASS_DEPTH_M = 0.004
+ARCH_SHELF_THICKNESS_M = 0.019
+
+
+def arch_shelf_mirror() -> Builder:
+    """A plain arched mirror on a metal frame with a full-width shelf along its bottom.
+
+    The frame and glass sit against the wall (+y); only the shelf takes the footprint's
+    full depth. The arch is a half-round of the face width.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        frame_depth = min(ARCH_FRAME_DEPTH_M, depth * 0.3)
+        glass_depth = min(ARCH_GLASS_DEPTH_M, depth * 0.1)
+        shelf = min(ARCH_SHELF_THICKNESS_M, height * 0.1)
+        # A face shorter than it is wide takes a smaller round rather than leave the box.
+        radius = min(width / 2, (height - shelf) / 2)
+        border = min(ARCH_FRAME_BORDER_M, width * 0.1, radius / 2)
+        spring = height - radius
+        frame_y = depth / 2 - frame_depth / 2
+        glass_y = depth / 2 - frame_depth - glass_depth / 2
+        strokes = (rect(0, 0, width, depth),
+                   rect(0, frame_y, width, frame_depth, fill="brass", weight=DETAIL_WEIGHT))
+        parts = (
+            box(0, 0, 0.0, shelf, width, depth, "brass"),
+            box(0, frame_y, shelf, spring, width, frame_depth, "brass"),
+            depth_cylinder(0, frame_y, spring, radius, frame_depth, "brass"),
+            box(0, glass_y, shelf + border, spring, width - 2 * border, glass_depth, "mirror"),
+            depth_cylinder(0, glass_y, spring, radius - border, glass_depth, "mirror"),
+        )
+        return strokes, parts
+
+    return build

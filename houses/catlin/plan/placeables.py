@@ -1194,25 +1194,28 @@ SECOND_PLACEABLES = [
     # radiant zone stops at y 31'-3", so the unit does not stand on the mat.
     Furniture(uid="640HBGH1XS", tag="FURN-S-BATH1-SHELF", type_ref="FT-BATH1-SHELF-2030",
               room="RM-S-BATH1", position=pt(m(2.68588), m(10.4013))),
-    # The suite bath's twin of it (2026-09-06): FX-S-SUITEBATH-TUBSH's SOUTH return, built
-    # as an 11 1/4"-deep linen tower. Its north panel is the return the flange nails to over
-    # a framed 2x4; x 15'-2 5/8"..17'-8 5/8" is the tub's own 30" width, so the two front
-    # faces land on one line, and y 16'-1 3/8"..17'-0 5/8" is the exact leftover between the
-    # re-seated tub's south edge (y=204.625") and W-S-SBS's north face (y=193.375").
-    #
-    # ** DELIBERATELY NOT A WALL, for the same reason as the hall bath's: ** a real return
-    # partition has to tee into W-S-C2C, splitting a BEARING wall at a new node, and a
-    # segment lays its studs from its own start node — re-phasing that wall's whole grid to
-    # gain nothing the carcass does not already give. Moving W-S-SBS north instead was the
-    # other candidate and costs more: D-S-SUITEBATH's 17" framing station exists BECAUSE
-    # SBS is the 4 3/4" partition (storeys/second.py), and the bedroom side of that wall
-    # carries ED-S-SUITE-RC8 and its NEC 210.52(A)(2) wall-space run.
-    #
-    # ** THE STRIP IS OTHERWISE EMPTY AND WAS CHECKED: ** D-S-SUITEBATH's leaf is ~36" west
-    # of the tub's west face, FX-S-SUITEBATH-LAV's front zone stops at y=222.63", and the
-    # W-S-C2C shower niche is above and north of it.
-    Furniture(uid="P1NESXCW7K", tag="FURN-S-SUITEBATH-RETURN", type_ref="FT-SUITEBATH-RETURN-3011",
-              room="RM-S-SUITEBATH", position=pt(inch(197.615), inch(199))),
+    # The suite bath's twin of it, turned to open west (2026-10-03): FX-S-SUITEBATH-TUBSH's
+    # SOUTH return, in the 11 1/4" between the tub (y=204.625") and W-S-SBS (y=193.375").
+    # x 15'-2 5/8"..17'-8 5/8" is the tub's own 30" width; the back sits on W-S-C2C.
+    # Millwork, not a wall, for the hall bath's reason: a return partition would tee into
+    # bearing W-S-C2C and re-phase its stud grid. D-S-SUITEBATH's leaf parks ~36" west of it.
+    Furniture(uid="P1NESXCW7K", tag="FURN-S-SUITEBATH-RETURN", type_ref="FT-SUITEBATH-SHELF-1130",
+              room="RM-S-SUITEBATH", position=pt(inch(197.615), inch(199)), rotation=deg(-90)),
+    # Robe pegs on W-S-DC2's bath face, y 18'-9"..20'-9", north of the door leaf's parked
+    # position (y < ~18'-5") and clear of the WC's corner. Rail bottom 64", as in the closet.
+    Furniture(uid="GG09CD7KYB", tag="FURN-S-SUITEBATH-PEGS", type_ref="FT-SUITEBATH-PEGS-24",
+              room="RM-S-SUITEBATH", mount=Mount(kind=MountKind.WALL, elevation=inch(64)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-DC2", face="right", distance_from_start=inch(46),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
+    # The Estero arch mirror (owner, 2026-10-03), centred on FX-S-SUITEBATH-LAV with
+    # ED-S-SUITEBATH-MIRROR's bar above it. Bottom 46", so the shelf clears the faucet by
+    # ~10"; the top at 74" hangs off the SN3 72"-79 1/4" backing course.
+    Furniture(uid="P0MWNTP6QE", tag="FURN-S-SUITEBATH-MIRROR", type_ref="FT-SUITEBATH-MIRROR-ESTERO",
+              room="RM-S-SUITEBATH", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-SN3", face="right", distance_from_start=inch(50.5),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RM-S-PLANT: a place to sit among the plants, program divides along y — plants on the
     # south glass, seating behind. Plants sit directly under ED-S-PLANT-TUBE1/2 (x=3'-4"/8'-8",
     # 2'-3" below ceiling, on a photoperiod timer) and under WIN-S-PLANT1/2 (same x, the

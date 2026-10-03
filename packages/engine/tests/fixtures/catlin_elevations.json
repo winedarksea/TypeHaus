@@ -1028,12 +1028,9 @@
 "canvas_objects/ED-S-SUITEBATH-LT/body_z0_m": 5.7912,
 "canvas_objects/ED-S-SUITEBATH-LT/body_z1_m": 5.842,
 "canvas_objects/ED-S-SUITEBATH-LT/z_m": 5.7912,
-"canvas_objects/ED-S-SUITEBATH-MIRROR/body_z0_m": 4.1529,
-"canvas_objects/ED-S-SUITEBATH-MIRROR/body_z1_m": 4.9149,
-"canvas_objects/ED-S-SUITEBATH-MIRROR/z_m": 4.1529,
-"canvas_objects/ED-S-SUITEBATH-RC-MIRROR/body_z0_m": 4.4577,
-"canvas_objects/ED-S-SUITEBATH-RC-MIRROR/body_z1_m": 4.5085,
-"canvas_objects/ED-S-SUITEBATH-RC-MIRROR/z_m": 4.4577,
+"canvas_objects/ED-S-SUITEBATH-MIRROR/body_z0_m": 5.0673,
+"canvas_objects/ED-S-SUITEBATH-MIRROR/body_z1_m": 5.1435,
+"canvas_objects/ED-S-SUITEBATH-MIRROR/z_m": 5.0673,
 "canvas_objects/ED-S-SUITEBATH-RC1/body_z0_m": 4.2037,
 "canvas_objects/ED-S-SUITEBATH-RC1/body_z1_m": 4.2545,
 "canvas_objects/ED-S-SUITEBATH-RC1/z_m": 4.2037,
@@ -1619,6 +1616,12 @@
 "canvas_objects/FURN-S-SUITEBATH-AP/body_z0_m": 3.2385,
 "canvas_objects/FURN-S-SUITEBATH-AP/body_z1_m": 3.5941,
 "canvas_objects/FURN-S-SUITEBATH-AP/z_m": 3.2385,
+"canvas_objects/FURN-S-SUITEBATH-MIRROR/body_z0_m": 4.2545,
+"canvas_objects/FURN-S-SUITEBATH-MIRROR/body_z1_m": 4.9657,
+"canvas_objects/FURN-S-SUITEBATH-MIRROR/z_m": 4.2545,
+"canvas_objects/FURN-S-SUITEBATH-PEGS/body_z0_m": 4.7117,
+"canvas_objects/FURN-S-SUITEBATH-PEGS/body_z1_m": 4.8006,
+"canvas_objects/FURN-S-SUITEBATH-PEGS/z_m": 4.7117,
 "canvas_objects/FURN-S-SUITEBATH-RETURN/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-SUITEBATH-RETURN/body_z1_m": 5.2197,
 "canvas_objects/FURN-S-SUITEBATH-RETURN/z_m": 3.0861,
@@ -41724,6 +41727,12 @@
 "303fe9bc96a6"
 ],
 "geometry/CSW142AAAA::framing/member:backing-2-000": [
+4.6228,
+4.80695,
+8,
+"e0ad97975fcf"
+],
+"geometry/CSW142AAAA::framing/member:backing-3-000": [
 4.8768,
 5.06095,
 8,
@@ -81667,6 +81676,12 @@
 "53f5e01f78e1"
 ],
 "member/CSW142AAAA/backing-2-000": [
+4.6228,
+4.80695,
+2,
+"50ce14646073"
+],
+"member/CSW142AAAA/backing-3-000": [
 4.8768,
 5.06095,
 2,
