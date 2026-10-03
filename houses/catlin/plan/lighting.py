@@ -1671,12 +1671,14 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(2, 3))),
+    # South/latch side of D-S-PLANT: the 4" device fits between the junction's end stud
+    # (north face y=9.415") and the door's south king (south face y=14").
     ElectricalDevice(uid="QTS000RAAA", tag="ED-S-PLANT-SW-TIMER", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH-TIMER",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-C1", face="left", distance_from_start=inch(24),
+                         wall_ref="W-S-C1", face="left", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-S-STUDY2: the notes' study sconces — down spots on the *side* walls, set back

@@ -1303,8 +1303,7 @@ SECOND_PLACEABLES = [
     # Chairs face south from y 4'-0"..7'-0", 1'-3" clear of the plants' north edge. The room's
     # supply is a ceiling grille (REG-S-HP-PLANT at 6'-8", 3'-4", plan/mep_registers.py), so
     # nothing on the floor needs keeping clear between the chairs. Chair x is
-    # set by D-S-PLANT's 2'-6" swing (off y=4'-5 1/2", reaching to ~x=15'-5") — both chairs
-    # stop 3'-2" short of it.
+    # clear of D-S-PLANT's 2'-6" swing (y=1'-5"..3'-11", reaching to x=15'-6").
     Furniture(uid="PLT701AAAA", tag="FURN-S-PLANT-POT1", type_ref="FURN-PLANT-18",
               room="RM-S-PLANT", position=pt(ft(3, 4), ft(2))),
     Furniture(uid="PLT702AAAA", tag="FURN-S-PLANT-POT2", type_ref="FURN-PLANT-18",

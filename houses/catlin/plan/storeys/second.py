@@ -585,12 +585,14 @@ OPENINGS = [
     RoughOpening(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1",
                  position=from_node("N-S-C1", ft(1, 0.625)), width=ft(2, 6),
                  height=ft(6, 8)),                                       # x 20'-3 5/8"
-    # Three doors through the centre bearing line, on the source's own gaps. Each takes a
+    # Doors through the centre bearing line. Each takes a
     # header exactly like O-M-HALL / O-M-DRESS one storey down; the wall itself is unbroken.
     # Full-lite glass leaf admits daylight from the south-facing plant room into
     # RM-S-STUDY2 — this door opens on the study, not the hall (corrected 2026-08-18).
+    # Owner, 2026-10-02: southernmost feasible 16" module station, centre y=2'-8".
+    # RO y=17"..47" leaves the south junction and king/jack pack clear; centre 16" would not.
     Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT-SWING30-GLAZED",
-         position=from_node("N-S-S1", ft(2, 9))),                      # y 4'-5 1/2"
+         position=from_node("N-S-S1", ft(1, 5))),                      # y 2'-8"
     Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT-SWING32",
          position=from_node("N-S-C2", ft(0, 4.875))),                    # y 14'-1 7/8"
     # O-S-HALLW (a 3'-0" cased opening at y 28'-7") is gone: the whole 8'-6" between

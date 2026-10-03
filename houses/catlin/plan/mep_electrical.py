@@ -296,12 +296,12 @@ SECOND_DEVICES = [
                      position=pt(ft(9), ft(6)), type_ref="ED-T-LT-FAN52-WET", circuit="CKT-LT-UPPER",
                      room="RM-S-PLANT", controlled_by=("ED-S-PLANT-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(1, 6))),
-    # Beside D-S-PLANT, the door through the centre bearing wall at y=4'-5 1/2".
+    # North of D-S-PLANT's y=47" jamb pack, in the clear bay before the y=64" stud.
     ElectricalDevice(uid="CED004K2AA", tag="ED-S-PLANT-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-C1", face="left", distance_from_start=inch(78),
+                         wall_ref="W-S-C1", face="left", distance_from_start=inch(56),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="CED005K1AA", tag="ED-S-STUDY2-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(24), ft(3)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",

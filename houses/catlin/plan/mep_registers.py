@@ -145,9 +145,9 @@ REGISTERS_HVAC_SECOND = [
     #
     # RM-S-STUDY2 at (22'-8", 3'-4"): the room's west end, 4'-8" east of W-S-C1 and clear of
     # FURN-S-STUDY-TABLE's west chair (24'-0 5/8"). Both of the room's ways out are behind
-    # the grille — D-S-STUDY2 north at x=20'-3 5/8", D-S-PLANT west at y=4'-5 1/2" — so the
-    # 12x6 throws east down the room and past WIN-S-STUDY1/2 before the air turns back to
-    # the hall. Nothing short-circuits: the study has no extract of its own, it hands its
+    # the grille's eastward throw — D-S-STUDY2 north at x=20'-3 5/8", D-S-PLANT west at y=2'-8".
+    # The 12x6 throws east down the room and past WIN-S-STUDY1/2 before the air turns back to
+    # the hall. The study has no extract of its own, it hands its
     # air on through the two openings.
     Register(uid="DMVENAN0DW", tag="REG-S-HP-STUDY2", kind=DuctSystem.SUPPLY, room="RM-S-STUDY2",
              position=pt(ft(22, 8), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
