@@ -1188,8 +1188,8 @@ GARAGE_PLACEABLES = [
 SECOND_PLACEABLES = [
     # BED1 stays in the southern part of its bay; its west-side wardrobe and north-side desk
     # leave the bed's modeled access zones open.
-    Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-QUEEN-BED", room="RM-S-BED1",
-              position=pt(m(9.92317), m(4.24498)), rotation=deg(0)),
+    Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-BED-TWIN", room="RM-S-BED1",
+              position=pt(m(9.80097), m(3.36872)), rotation=deg(-90)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
               position=pt(m(9.95572), m(6.98818)), rotation=deg(0)),
     # BED3 is a FULL (owner, 2026-10-02), tight to the east wall and 3/8" off the north: a
@@ -1201,9 +1201,9 @@ SECOND_PLACEABLES = [
     # stays on the west wall with its chair to the east. The dining chair keeps the lighter
     # dining-room plan and 3D appearance.
     Furniture(uid="DSK701AAAA", tag="FURN-S-DESK1", type_ref="FURN-DESK-48", room="RM-S-BED1",
-              position=pt(m(8.44158), m(5.00697)), rotation=deg(0)),
+              position=pt(m(10.4995), m(4.58763)), rotation=deg(90)),
     Furniture(uid="CHR701AAAA", tag="FURN-S-DESK-CHAIR1", type_ref="FURN-DESK-CHAIR", room="RM-S-BED1",
-              position=pt(m(8.39216), m(4.60918)), rotation=deg(-180)),
+              position=pt(m(10.0492), m(4.55177)), rotation=deg(90)),
     Furniture(uid="DSK702AAAA", tag="FURN-S-DESK2", type_ref="FURN-DESK-48", room="RM-S-BED2",
               position=pt(m(8.49481), m(7.75018)), rotation=deg(0)),
     # Four inches west of the desk centre keeps the chair outside BED2's side-access zone.
@@ -1220,23 +1220,15 @@ SECOND_PLACEABLES = [
     # west edge stays 8" clear of D-S-DECK-E's east jamb; the two chairs sit on the
     # north side, so neither the table nor its usable seating is in the door opening.
     Furniture(uid="TAB701AAAA", tag="FURN-S-STUDY-TABLE", type_ref="FURN-DINING-2-36",
-              room="RM-S-STUDY2", position=pt(m(8.10913), m(0.646066))),
+              room="RM-S-STUDY2", position=pt(m(9.55695), m(0.625729))),
     Furniture(uid="CHR704AAAA", tag="FURN-S-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
-              room="RM-S-STUDY2", position=pt(m(8.90614), m(0.530999)), rotation=deg(-90)),
+              room="RM-S-STUDY2", position=pt(m(10.1327), m(0.588309)), rotation=deg(-90)),
     Furniture(uid="CHR705AAAA", tag="FURN-S-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
-              room="RM-S-STUDY2", position=pt(m(7.32372), m(0.536064)), rotation=deg(90)),
+              room="RM-S-STUDY2", position=pt(m(8.8924), m(0.588713)), rotation=deg(90)),
     # A compact rocking chair occupies the southeast corner, with its back to the south
     # wall and WIN-S-STUDY3 just north of it up the east wall at y 5'-4" (off the chair
     # rather than over it). The armchair symbol is the intentional close-enough 2D/3D
     # approximation: it keeps the plan readable while the catalog type preserves the use.
-    Furniture(uid="RCK701AAAA", tag="FURN-S-STUDY-ROCKING-CHAIR",
-              type_ref="FURN-ROCKING-CHAIR-30", room="RM-S-STUDY2",
-              position=pt(m(10.1672), m(0.722925)), rotation=deg(225)),
-    # The master takes the king, head against the closet/bath wall that closes the suite's
-    # west strip at x=9'-6 7/8" (rotation -90 turns its back to +x), so the bed faces west
-    # into WIN-S-SUITE1/2 and the 2'-6" foot zone runs out to the window wall instead of into
-    # a partition. It is the one bedroom wide enough to hold a 6'-8" bed with both 2' side
-    # zones intact, and it does: nothing here is short.
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
               room="RM-S-SUITE", position=pt(m(1.52182), m(5.57379)), rotation=deg(0)),
 
@@ -1305,13 +1297,13 @@ SECOND_PLACEABLES = [
     # nothing on the floor needs keeping clear between the chairs. Chair x is
     # clear of D-S-PLANT's 2'-6" swing (y=1'-5"..3'-11", reaching to x=15'-6").
     Furniture(uid="PLT701AAAA", tag="FURN-S-PLANT-POT1", type_ref="FURN-PLANT-18",
-              room="RM-S-PLANT", position=pt(ft(3, 4), ft(2))),
+              room="RM-S-PLANT", position=pt(m(1.28957), m(0.606871))),
     Furniture(uid="PLT702AAAA", tag="FURN-S-PLANT-POT2", type_ref="FURN-PLANT-18",
-              room="RM-S-PLANT", position=pt(ft(8, 8), ft(2))),
+              room="RM-S-PLANT", position=pt(m(2.6348), m(0.584116))),
     Furniture(uid="CHR706AAAA", tag="FURN-S-PLANT-CHAIR", type_ref="FURN-ARMCHAIR-35",
               room="RM-S-PLANT", position=pt(m(1.13772), m(1.8808)), rotation=deg(45)),
     Furniture(uid="RCK702AAAA", tag="FURN-S-PLANT-ROCKER", type_ref="FURN-ROCKING-CHAIR-30",
-              room="RM-S-PLANT", position=pt(m(4.06734), m(1.93971)), rotation=deg(-45)),
+              room="RM-S-PLANT", position=pt(m(4.51571), m(1.96147)), rotation=deg(-45)),
     # Wet-location spot, y=8'-6 3/8": the north partition carries the plant room's humid
     # liner, whose face sits 1 1/4" south of the bare-stud line. A fixture in a room that
     # condenses on purpose has to be wet-location listed rather than the ordinary interior
@@ -1407,6 +1399,9 @@ SECOND_PLACEABLES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-N1B", face="left", distance_from_start=inch(23.25),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # BED1 stays in the southern part of its bay; its west-side wardrobe and north-side desk
+    # leave the bed's modeled access zones open.
+    Furniture(uid="3R2F3FARR7", tag="FURN-S-PLANT-POT2-COPY", type_ref="FURN-PLANT-18", position=pt(m(3.87087), m(0.600137)), room="RM-S-PLANT"),
 ]
 # The attic study uses the same compact work-and-meeting program as the second-storey
 # study, but the stair opening occupies the north side of the room.
