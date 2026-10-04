@@ -45,6 +45,12 @@ class Joint:
     #: it carries, and a marker that guessed a height would be drawing a different part.
     #: ``None`` where the role's own table answers (a tie is a tie, whatever it holds).
     height_m: float | None = None
+    #: Optional carried-member frame for a dimensioned hanger, independent of marker axes.
+    outward_xy: tuple[float, float] | None = None
+    member_width_m: float | None = None
+    seat_z_m: float | None = None
+    slope_radians: float = 0.0
+    carried_member_key: str | None = None
 
 
 def joint_key(role: str, anchor_tag: str, point: tuple[float, float], z_m: float,

@@ -37,8 +37,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "cripple": (0.70, 0.52, 0.33, 1.0),
     "sill": (0.66, 0.48, 0.30, 1.0),
     "bearing_stiffener": (0.60, 0.42, 0.26, 1.0),
-    # stair landing platforms + the U-stair well partition read as framing lumber; the
-    # concrete-wall hanger/ledger band is galvanized grey like "connector". Mirrored in
+    # Stair landing platforms and the U-stair well partition read as framing lumber;
+    # the concrete-wall hanger/ledger band uses the black connector tone. Mirrored in
     # ui/src/three/members.ts CATEGORY_COLOR (GLB/three.js parity convention).
     "landing": (0.72, 0.55, 0.36, 1.0),
     # The joists, rims and posts under a landing deck: framing lumber, a shade under the
@@ -49,7 +49,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "newel": (0.60, 0.42, 0.26, 1.0),
     "partition": (0.70, 0.52, 0.33, 1.0),
     "trimmer": (0.66, 0.48, 0.30, 1.0),
-    "hanger": (0.35, 0.36, 0.38, 1.0),
+    "hanger": (0.10, 0.10, 0.11, 1.0),
     "joist": (0.72, 0.55, 0.36, 1.0),
     # Plies sistered onto a joist line under a point load (resolve/floors.py). Same stock as
     # the joist it doubles, a shade darker so a reinforced line reads as one in the viewer.
@@ -77,7 +77,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "buck": (0.788, 0.694, 0.549, 1.0),           # 0xc9b18c
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
     "brace": (0.639, 0.463, 0.247, 1.0),         # 0xa3763f — as blocking
-    "strap": (0.35, 0.36, 0.38, 1.0),            # galvanized steel strap brace, as "hanger"
+    "strap": (0.35, 0.36, 0.38, 1.0),            # steel strap brace
     # Stick-framed roof lumber + the blocking that fills between it. Values chosen to
     # round-trip exactly to the hex literals in ui/src/three/members.ts CATEGORY_COLOR.
     "rafter": (0.678, 0.498, 0.310, 1.0),        # 0xad7f4f
@@ -150,15 +150,15 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "railing_glass": (0.561, 0.718, 0.788, 0.48),
     "dowel": (0.20, 0.55, 0.35, 1.0),     # GFRP rebar (green)
     "thermal_break": (0.95, 0.55, 0.15, 1.0),  # XPS foam block (orange)
-    "connector": (0.35, 0.36, 0.38, 1.0),  # galvanized structural hardware
-    # Cast-in hardware, a touch warmer and darker than the framer's galvanized grey, so the
-    # two families read apart when both toggles are on rather than making one grey mass.
-    "connector_embedded": (0.30, 0.29, 0.28, 1.0),
-    "connector_hanger": (0.38, 0.39, 0.41, 1.0),
+    # Dark display steel makes the thin connector leaves visible against lumber; product
+    # coatings remain a catalog fact rather than a colour claim in the review model.
+    "connector": (0.10, 0.10, 0.11, 1.0),
+    "connector_embedded": (0.10, 0.10, 0.11, 1.0),
+    "connector_hanger": (0.10, 0.10, 0.11, 1.0),
     # The two roof/skin hardware families, split off ``connector`` because they are different
     # products and a category is what the 3D inspector labels a solid with. Both are mill
     # aluminium sitting on the standing-seam skin rather than the hot-dip galvanized steel a
-    # hanger or a hold-down is, so they read a shade lighter than the fastener grey above.
+    # hanger or a hold-down is, so they read lighter than the connector tone above.
     "snow_guard": (0.72, 0.73, 0.75, 1.0),
     "seam_clamp": (0.72, 0.73, 0.75, 1.0),
     "panel_strap": (0.72, 0.73, 0.75, 1.0),

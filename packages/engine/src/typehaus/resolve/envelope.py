@@ -680,7 +680,13 @@ def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
 #: part. A part nobody has measured carries ``None`` and the post runs to its bearing surface
 #: exactly as before — "nobody looked", never "there is no standoff".
 def _post_connector_insets(model: ResolvedModel) -> dict[str, tuple[float, float]]:
-    from typehaus.hardware.catalog import hardware_by_model
+    from typehaus.hardware.catalog import (
+        ROLE_POST_BASE,
+        hardware_by_model,
+        hardware_for_role_and_nominal,
+    )
+    from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
+    from typehaus.joints.posts import bears_on_concrete, post_base_joints
     from typehaus.model.enums import ConnectorKind
     from typehaus.model.structure import Connector
 
@@ -716,6 +722,14 @@ def _post_connector_insets(model: ResolvedModel) -> dict[str, tuple[float, float
         for tag in carried:
             pair = insets.setdefault(tag, [0.0, 0.0])
             pair[index] = max(pair[index], value * M_PER_IN)
+    # The automatically scheduled bases hold timber off their pours just as authored
+    # bases do. Without this, their new visible seats intersect the bottom inch of wood.
+    for _storey, post in post_base_joints(model, DEFAULT_HARDWARE_TAKEOFF_CONFIG.uplift):
+        if bears_on_concrete(model, post):
+            item = hardware_for_role_and_nominal(ROLE_POST_BASE, post.size)
+            if item.bearing_standoff_in:
+                pair = insets.setdefault(post.tag, [0.0, 0.0])
+                pair[0] = max(pair[0], item.bearing_standoff_in * M_PER_IN)
     return {tag: (pair[0], pair[1]) for tag, pair in insets.items()}
 
 

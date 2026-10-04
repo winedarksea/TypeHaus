@@ -1,15 +1,7 @@
-"""What a joint's marker looks like, per role — including whether it is drawn at all.
+"""Visibility and fallback envelopes for derived connector solids.
 
-A ``ResolvedSolid`` is a plan polygon extruded vertically. Any shape is available *in plan*
-and nothing but a prism in elevation, so an L-shaped tie is not drawable and should not be.
-**These are markers, not models of the parts**: "a tie of this family is at this joint",
-legible among five hundred siblings. What makes them read is not silhouette but
-orientation, and orientation is derivable at every joint — the support line for a tie, the
-run for a mudsill anchor, the carrier for a hanger, the ridge for a strap — so it is never
-guessed.
-
-``draw`` starts narrow on purpose. Every role below is located and billed whether or not it
-is drawn; widening is a ``False`` becoming a ``True`` here, not a new derivation.
+Dimensioned product bodies replace these envelopes in ``resolve/connector_geometry``.
+The rules still locate products without a geometry record and decide which roles draw.
 """
 
 from __future__ import annotations
@@ -106,12 +98,12 @@ MARKER_RULES: dict[str, MarkerRule] = {
     ROLE_SCL_FACE_MOUNT_HANGER: MarkerRule(draw=True, along_in=1.50, across_in=0.75,
                                            half_h_in=None,
                                            category=CATEGORY_CONNECTOR_HANGER),
-    ROLE_FLOOR_TRUSS_HANGER: MarkerRule(draw=False, along_in=1.50, across_in=0.75,
+    ROLE_FLOOR_TRUSS_HANGER: MarkerRule(draw=True, along_in=1.50, across_in=0.75,
                                         half_h_in=None,
                                         category=CATEGORY_CONNECTOR_HANGER),
-    ROLE_LATERAL_TIE_PLATE: MarkerRule(draw=False, along_in=1.50, across_in=0.25,
+    ROLE_LATERAL_TIE_PLATE: MarkerRule(draw=True, along_in=1.50, across_in=0.25,
                                        half_h_in=1.50),
-    ROLE_POST_BASE: MarkerRule(draw=False, along_in=2.75, across_in=2.75, half_h_in=1.50),
+    ROLE_POST_BASE: MarkerRule(draw=True, along_in=2.75, across_in=2.75, half_h_in=1.50),
     # Drawn: a cast-in bolt is set wet, so the concrete sub has to see it before the pour.
     ROLE_POST_BASE_ANCHOR: MarkerRule(draw=True, along_in=0.31, across_in=0.31,
                                       half_h_in=4.00,

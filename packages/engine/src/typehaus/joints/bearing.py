@@ -408,6 +408,7 @@ class ContinuousBearing:
     p0: tuple
     p1: tuple
     z_m: float
+    member_key: str = ""
 
 
 def continuous_bearing_members(model: ResolvedModel, rules: UpliftTieRules) -> list:
@@ -430,5 +431,6 @@ def continuous_bearing_members(model: ResolvedModel, rules: UpliftTieRules) -> l
             storey=storeys.get(member.parent_uid, ""),
             length_m=member.length_m,
             stations_m=tuple(min(index * pitch_m, member.length_m) for index in range(count)),
-            p0=member.p0, p1=member.p1, z_m=member.z0_m))
+            p0=member.p0, p1=member.p1, z_m=member.z0_m,
+            member_key=f"{member.parent_uid}:{member.child_key}"))
     return found

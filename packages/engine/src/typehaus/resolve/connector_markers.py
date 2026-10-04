@@ -1,21 +1,8 @@
-"""Draw the derived connectors — the 500-odd parts that were specified but invisible.
+"""Locate derived connector solids and attach dimensioned bodies to known products.
 
-Only *authored* ``Connector`` elements drew a solid. Everything ``typehaus.joints`` locates
-— the roof hurricane ties, the mudsill anchors, the ridge straps — was billed by part number
-and graded by the load-path check and could not be seen, because the derivation lived
-downstream of ``resolve`` and geometry is made here.
-
-**These are markers, not models of the parts.** A ``ResolvedSolid`` is a plan polygon
-extruded vertically: any shape in plan, nothing but a prism in elevation, so an L-shaped tie
-is not drawable and should not be. What has to read, among five hundred siblings, is *there
-is a tie of this family at this joint* — and what makes that read is orientation, which
-``joints`` derives at every one of them from the support line, the run, the carrier or the
-ridge. None of it is guessed.
-
-Every solid here is ``derived=True``, which is the double-billing guard:
-``structural_solids_takeoff`` bills **every** solid by volume, so without the skip these
-markers would become a phantom "connector" volume row standing beside the hardware rows that
-already bill the same parts by part number. See ``ResolvedSolid.derived``.
+The marker envelope remains available for parts without a dimensional record. Known Simpson
+products get simplified folded meshes shared by the viewer, glTF and IFC. ``derived=True``
+keeps the visual body from becoming a second volume-based bill beside the part-number order.
 """
 
 from __future__ import annotations
@@ -57,6 +44,7 @@ def resolve_connector_markers(model: ResolvedModel) -> list[Finding]:
     from typehaus.joints import derived_joints
 
     findings: list[Finding] = []
+    joints_by_uid = {}
     authored_uids = {solid.uid for solid in model.solids}
     seen: dict[str, str] = {}
     ordinals: dict[str, int] = {}
@@ -84,6 +72,7 @@ def resolve_connector_markers(model: ResolvedModel) -> list[Finding]:
                 fix_hint="re-run `haus fmt` to re-mint the authored uid"))
             continue
         seen[uid] = joint.key
+        joints_by_uid[uid] = joint
 
         ordinals[joint.part] = ordinals.get(joint.part, 0) + 1
         anchor = joint.members[0] if joint.members else joint.role
@@ -111,4 +100,7 @@ def resolve_connector_markers(model: ResolvedModel) -> list[Finding]:
             product=joint.part,
             derived=True,
         ))
+    from typehaus.resolve.connector_geometry.placement import resolve_connector_bodies
+
+    resolve_connector_bodies(model, joints_by_uid)
     return findings

@@ -18,7 +18,7 @@ from typehaus.hardware.plan_geometry import centerline_endpoints, distance_point
 from typehaus.joints.bearing import is_treated
 from typehaus.joints.model import axis_of
 from typehaus.quantities import M_PER_FT, M_PER_IN
-from typehaus.resolve.framing.profiles import is_sawn_lumber
+from typehaus.resolve.framing.profiles import cross_section, is_sawn_lumber
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
 
@@ -88,6 +88,11 @@ class HungConnection:
     member_floor: str = ""
     #: The hung member's own category — a ``stringer`` takes a stair-stringer connector.
     member_category: str = ""
+    #: The actual carried-member frame, so the seat cannot point back into the carrier.
+    outward_xy: tuple[float, float] | None = None
+    member_width_m: float | None = None
+    seat_z_m: float | None = None
+    slope_radians: float = 0.0
 
 
 def _member_carriers(model: ResolvedModel, rules: HangerDetectionRules) -> list:
@@ -161,7 +166,7 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
         member_key = f"{member.parent_uid}:{member.child_key}"
         member_floor = floor_of.get(id(member), "")
         sloped = member.z0_end_m is not None or member.z1_end_m is not None
-        for point, bottom_z, top_z in _member_ends(member):
+        for end_index, (point, bottom_z, top_z) in enumerate(_member_ends(member)):
             best = None
             for carrier in carriers:
                 if carrier.tag == member_key:
@@ -202,6 +207,9 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
             if best is None:
                 continue
             _distance, carrier, carrier_z0 = best
+            other_point, other_bottom_z, _ = _member_ends(member)[1 - end_index]
+            dx, dy = other_point[0] - point[0], other_point[1] - point[1]
+            run = math.hypot(dx, dy)
             found.append(HungConnection(
                 member_key=member_key,
                 member_profile=member.profile, carrier_tag=carrier.tag, sloped=sloped,
@@ -210,7 +218,11 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                 point_m=(point[0], point[1]), carrier_soffit_m=carrier_z0,
                 member_depth_m=max(top_z - bottom_z, 0.0),
                 axis=axis_of(carrier.p0, carrier.p1),
-                member_floor=member_floor, member_category=member.category))
+                member_floor=member_floor, member_category=member.category,
+                outward_xy=(dx / run, dy / run) if run else None,
+                member_width_m=member.plan_width_m or cross_section(member.profile).width_m,
+                seat_z_m=bottom_z,
+                slope_radians=math.atan2(other_bottom_z - bottom_z, run)))
     return found
 
 

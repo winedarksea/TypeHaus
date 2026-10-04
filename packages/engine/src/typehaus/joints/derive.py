@@ -102,12 +102,19 @@ def derived_joints(model, config: HardwareTakeoffConfig = DEFAULT_HARDWARE_TAKEO
 
 def _joint(role: str, part: str, storey: str, point, z_m: float, axis: str,
            embedded: bool, members, anchor_tag: str, grid_m: float,
-           height_m: float | None = None) -> Joint:
+           height_m: float | None = None, outward_xy: tuple[float, float] | None = None,
+           member_width_m: float | None = None, seat_z_m: float | None = None,
+           slope_radians: float = 0.0, carried_member_key: str | None = None) -> Joint:
     point = (float(point[0]), float(point[1]))
     return Joint(role=role, part=part, storey=storey, point=point, z_m=float(z_m),
                  axis=axis, embedded=embedded, members=tuple(members),
-                 key=joint_key(role, anchor_tag, point, float(z_m), grid_m),
-                 height_m=height_m)
+                 # Bearing-grid snapping can merge opposite faces of a narrow carrier.
+                 # Each carried member end needs its own hanger, even at the same station.
+                 key=joint_key(role, anchor_tag, point, float(z_m), grid_m) + (
+                     f"|{carried_member_key}" if carried_member_key is not None else ""),
+                 height_m=height_m, outward_xy=outward_xy, member_width_m=member_width_m,
+                 seat_z_m=seat_z_m, slope_radians=slope_radians,
+                 carried_member_key=carried_member_key)
 
 
 def _bearing_tie_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Joint]:
@@ -148,7 +155,7 @@ def _continuous_tie_joints(model, config: HardwareTakeoffConfig,
             out.append(_joint(
                 ROLE_HURRICANE_TIE, item.model, run.storey,
                 point_along(run.p0, run.p1, station_m), run.z_m, axis, embedded=False,
-                members=(run.profile,), anchor_tag=f"{run.category}:{run.profile}",
+                members=(run.member_key, run.profile), anchor_tag=f"{run.category}:{run.profile}",
                 grid_m=grid_m))
     return out
 
@@ -200,7 +207,9 @@ def _hanger_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[
             connection.point_m, connection.carrier_soffit_m, connection.axis,
             embedded=False, members=(connection.carrier_tag, connection.member_profile),
             anchor_tag=connection.carrier_tag, grid_m=grid_m,
-            height_m=connection.member_depth_m))
+            height_m=connection.member_depth_m, outward_xy=connection.outward_xy,
+            member_width_m=connection.member_width_m, seat_z_m=connection.seat_z_m,
+            slope_radians=connection.slope_radians, carried_member_key=connection.member_key))
     return out
 
 

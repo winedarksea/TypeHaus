@@ -208,10 +208,8 @@ def test_knee_brace_resolves_to_a_raked_wood_member(braced_model) -> None:
     assert [m for m in braced_model.all_members() if m.category == "brace"]
 
 
-def test_knee_brace_hardware_resolves_as_a_band_at_each_end(braced_model) -> None:
-    """The connector reads at BOTH joints — a band hugging the member's z-band at the
-    beam end and another at the post end — instead of the single floating marker box the
-    old spelling drew.
+def test_knee_brace_hardware_resolves_as_folded_steel_at_each_end(braced_model) -> None:
+    """The folded connector meets the actual soffit and post joints.
 
     The part is `KBS1Z` — the Outdoor Accents `APVKB45-6` alternative has no published
     allowable load in any code report. One connector per end is Simpson's own installation
@@ -223,12 +221,13 @@ def test_knee_brace_hardware_resolves_as_a_band_at_each_end(braced_model) -> Non
     top = solids["KB-KB-N-KBS1Z-TOP"]
     bottom = solids["KB-KB-N-KBS1Z-BOT"]
     assert top.category == bottom.category == "connector"
-    assert top.z1_m == pytest.approx(_BRACE_SOFFIT_FT * FT)
-    # down the 3' leg, at the post
-    assert bottom.z1_m == pytest.approx((_BRACE_SOFFIT_FT - _BRACE_LEG_FT) * FT)
-    # Each band spans exactly the end-grain z-band of the wood it wraps.
-    assert top.z1_m - top.z0_m == pytest.approx(member.z1_m - member.z0_m)
-    assert bottom.z1_m - bottom.z0_m == pytest.approx(member.z1_m - member.z0_m)
+    assert top.body_mesh and bottom.body_mesh
+    for solid, point, z_m in ((top, member.p1, member.z1_end_m),
+                               (bottom, member.p0, member.z1_m)):
+        assert any(z == pytest.approx(z_m) for _, _, z in solid.body_mesh.positions)
+        assert min(x for x, _, _ in solid.body_mesh.positions) <= point[0]
+        assert max(x for x, _, _ in solid.body_mesh.positions) >= point[0]
+        assert len(solid.body_mesh.triangles) > 12
     # And no marker boxes remain anywhere.
     assert not any(tag.endswith("-CONN") for tag in solids)
 
