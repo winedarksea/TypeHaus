@@ -206,6 +206,33 @@ export function sectionRingVertices(
   ];
 }
 
+/** Engine-resolved miter/corner silhouette, swept across the member's actual plan width. */
+export function elevationProfileVertices(
+  m: Member, center: PlanCenter,
+): [number, number, number][] | null {
+  const profile = m.elevation_profile;
+  if (!profile || profile.length < 3) return null;
+  const dx = m.p1[0] - m.p0[0], dy = m.p1[1] - m.p0[1];
+  const run = Math.hypot(dx, dy);
+  if (run < MIN_PLAN_RUN_M) return null;
+  const ux = dx / run, uy = dy / run;
+  const half = (m.plan_width_m ?? m.depth_m) / 2;
+  const area = profile.reduce((sum, [s0, z0], index) => {
+    const [s1, z1] = profile[(index + 1) % profile.length];
+    return sum + s0 * z1 - s1 * z0;
+  }, 0);
+  const points = area > 0 ? [...profile].reverse() : profile;
+  const at = (side: number, s: number, z: number): [number, number, number] => {
+    const point = projectPointToScene([
+      m.p0[0] + ux * s - side * uy * half,
+      m.p0[1] + uy * s + side * ux * half,
+    ], z, center);
+    return [point.x, point.y, point.z];
+  };
+  return [...points.map(([s, z]) => at(-1, s, z)),
+    ...points.map(([s, z]) => at(1, s, z))];
+}
+
 /**
  * Triangles for a swept profile laid out as [near ring, far ring]: two fan caps plus one quad
  * per profile edge. Returns how many triangles it pushed, which is what the picking table
@@ -232,7 +259,7 @@ export function pushSweepIndices(indices: number[], base: number, profileCount: 
 export function rakedBoxGeometry(
   m: Member, center: PlanCenter,
 ): THREE.BufferGeometry | null {
-  const ringed = sectionRingVertices(m, center);
+  const ringed = elevationProfileVertices(m, center) ?? sectionRingVertices(m, center);
   const verts = ringed ?? rakedBoxVertices(m, center);
   if (!verts) return null;
   const positions: number[] = [];

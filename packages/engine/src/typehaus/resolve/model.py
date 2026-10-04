@@ -21,7 +21,7 @@ if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-onl
     from typehaus.model.placeables import Mount
     from typehaus.resolve.floor_ends import FloorEnds
     from typehaus.resolve.floor_tilt import DeckPlane
-    from typehaus.resolve.geometry_ir import GeometryModel
+    from typehaus.resolve.geometry_ir import GeometryModel, GMesh
 
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
 Ring = list[tuple[float, float]]
@@ -232,6 +232,11 @@ class FramedMember:
     # run's (left-normal, up) frame, metres, measured from the axis at ``z0_m``. The box
     # fields still bound it, so box-only readers stay conservative; ``member_solid`` sweeps it.
     section_ring: tuple[tuple[float, float], ...] | None = None
+    # A cut member's side silhouette: (run from p0, absolute elevation), swept across
+    # plan_width_m. Keeps plate miters and corner clips identical in every renderer.
+    elevation_profile: tuple[tuple[float, float], ...] | None = None
+    # Stock blank spanning the cut's long points; length_m remains the structural axis.
+    cut_length_m: float | None = None
     # Held up along its WHOLE length rather than reaching between supports — derived from the
     # bearings actually reaching, never assumed from a category. Two things read it and they
     # are why it names the fact rather than either consequence: the takeoff buys such a member
@@ -547,6 +552,8 @@ class ResolvedSolid:
     # taught about sweeps (the plan sheet's railing polylines, the take-off's centroid)
     # degrades to something honest instead of breaking.
     sweep: SolidSweep | None = None
+    # A dimensioned purchased part whose folded shape cannot be a plan prism.
+    body_mesh: GMesh | None = None
     # A MARKER for a part billed elsewhere: never measured, never cut, never bid. The 500-odd
     # derived connectors are the case — located by ``typehaus.joints``, billed by part number
     # from ``takeoff/hardware.py``, and drawn here only so a person can see them.
@@ -559,7 +566,8 @@ class ResolvedSolid:
     # ``SOLID_CATEGORY_TRADE`` would grow a four-way explosion to say one bit.
     #
     # Consumers that MEASURE must skip it — ``structural_solids_takeoff``, the bid packages,
-    # the section and plan drawings, the IFC emitter. Consumers that DRAW must not: glTF,
+    # the section and plan drawings. IFC skips generic markers but exports dimensioned
+    # body_mesh parts. Consumers that DRAW must not skip them: glTF,
     # model.json and the viewer are the whole point.
     derived: bool = False
 

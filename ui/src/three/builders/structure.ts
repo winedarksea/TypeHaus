@@ -37,6 +37,7 @@ import {
 } from "../roofGeometry";
 import { createSolidMaterial } from "../solidMaterials";
 import { createSweepGeometry } from "../tubeGeometry";
+import { createSolidBodyMesh } from "../solidBodyMesh";
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import type { SelectionKind } from "../../state/vocabulary";
 import { registerSelectable, tagTrades } from "./registry";
@@ -50,7 +51,7 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
   materials?: readonly MaterialAppearance[]) {
-  const geo = solid.sweep
+  const geo = solid.body_mesh ? createSolidBodyMesh(solid, center) : solid.sweep
     ? createSweepGeometry(solid, center)
     : (solid.outline.length < 3 ? null
       : createPlanPrismGeometry(solid.outline, solid.z0_m,

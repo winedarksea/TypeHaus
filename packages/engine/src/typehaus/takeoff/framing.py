@@ -207,7 +207,7 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             # as sheets and once as 8-ft sticks of a profile no yard stocks.
             continue
         key = (member.profile, member.category, member.material or "")
-        cuts[key].append(member.length_m * _M_TO_FT)
+        cuts[key].append((member.cut_length_m or member.length_m) * _M_TO_FT)
         splice[key] = splice.get(key, True) and member.continuously_supported
 
     rows: list[dict[str, object]] = []

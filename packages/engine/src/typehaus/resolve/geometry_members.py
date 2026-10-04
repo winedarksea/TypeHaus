@@ -106,15 +106,36 @@ def member_box(member: FramedMember) -> GBox | None:
 def member_solid(member: FramedMember) -> GSolid | None:
     """The member's solid — a box, or a swept profile for a birdsmouth or a formed section.
 
-    The guards are two attribute reads (``seat``, then ``section_ring``) and **nothing
-    else**. No ``cross_section()`` call may precede them: this runs 15,160 times per resolve,
+    The guards are attribute reads for cut silhouettes, seats and formed sections. No
+    ``cross_section()`` call may precede them: this runs 15,160 times per resolve,
     and ``member_box`` stays untouched below (the parity test pins it, and it is the hot path).
     """
+    if member.elevation_profile is not None:
+        return _elevation_sweep(member)
     if member.seat is not None:
         return _seated_sweep(member, member.seat)
     if member.section_ring is not None:
         return _ring_sweep(member, member.section_ring)
     return member_box(member)
+
+
+def _elevation_sweep(member: FramedMember) -> GSweep | None:
+    (ax, ay), (bx, by) = member.p0, member.p1
+    run = math.hypot(bx - ax, by - ay)
+    if run < 1e-9:
+        return None
+    ux, uy = (bx - ax) / run, (by - ay) / run
+    width = member.plan_width_m or cross_section(member.profile).depth_m
+    nx, ny = -uy * width / 2.0, ux * width / 2.0
+    ring = member.elevation_profile
+    area = sum(s0 * z1 - s1 * z0
+               for (s0, z0), (s1, z1) in zip(ring, ring[1:] + ring[:1], strict=True))
+    # The profile's normal must point along the extrusion, including in the mirrored bay.
+    if area > 0.0:
+        ring = tuple(reversed(ring))
+    profile = tuple((ax + ux * s - nx, ay + uy * s - ny, z)
+                    for s, z in ring)
+    return GSweep(profile=profile, extrude=(2.0 * nx, 2.0 * ny, 0.0))
 
 
 def _ring_sweep(member: FramedMember,

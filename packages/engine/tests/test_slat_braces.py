@@ -146,6 +146,109 @@ def test_the_band_emits_slats_as_ifc_braces(band_model, tmp_path) -> None:
     from typehaus.emit.ifc.emitter import emit_ifc
 
     path = emit_ifc(band_model, tmp_path / "band.ifc")
-    members = {m.Name: m for m in ifcopenshell.open(str(path)).by_type("IfcMember")}
+    emitted = ifcopenshell.open(str(path))
+    members = {m.Name: m for m in emitted.by_type("IfcMember")}
     assert members["SB-T/slat-0+0"].PredefinedType == "BRACE"
     assert members["SB-T/plate-top"].PredefinedType == "MEMBER"
+    assert len(emitted.by_type("IfcMechanicalFastener")) == 36
+    assert all(c.Representation for c in emitted.by_type("IfcMechanicalFastener"))
+    assert all(c.Representation.Representations[0].RepresentationType == "Tessellation"
+               for c in emitted.by_type("IfcMechanicalFastener"))
+    assert members["SB-T/slat-0-2"].Representation.Representations[0].RepresentationType == (
+        "SweptSolid")
+
+
+def test_top_landings_are_not_the_five_crossing_slats() -> None:
+    """Top-only connectors would leave three of the five graded slats untied in each bay."""
+    from typehaus.resolve.slat_braces import slat_layout
+
+    layout = slat_layout(_band())
+    for bay in (0, 1):
+        top = [s for s in layout.bay(bay) if s.high == "top"]
+        mid = layout.height / 2.0
+        assert len(top) == 4
+        assert sum(s.u0 <= s.c + mid <= s.u1 for s in top) == 2
+        assert layout.crossing_mid(bay) == 5
+
+
+def test_actual_slat_faces_meet_the_frame_without_interpenetration(band_model) -> None:
+    from typehaus.resolve.geometry_ir import GSweep
+    from typehaus.resolve.geometry_members import member_solid
+    from typehaus.resolve.slat_braces import slat_layout
+
+    layout = slat_layout(_band())
+    sill = _BASE_FT * FT + layout.plate
+    ceiling = sill + layout.height
+    members = {m.child_key: m for m in band_model.braces[0].members}
+    for slat in layout.slats:
+        member = members[f"slat-{slat.bay}{slat.j:+d}"]
+        solid = member_solid(member)
+        assert isinstance(solid, GSweep)
+        for x, y, z in solid.profile:
+            assert sill - 1e-9 <= z <= ceiling + 1e-9
+            station = (x - layout.chord_face if slat.bay == 0
+                       else layout.length - layout.chord_face - x)
+            assert -1e-9 <= station <= layout.width + 1e-9
+        if slat.low == "sill":
+            assert sum(abs(z - sill) < 1e-9 for _, _, z in solid.profile) == 2
+        if slat.high == "top":
+            assert sum(abs(z - ceiling) < 1e-9 for _, _, z in solid.profile) == 2
+        assert member.cut_length_m > member.length_m
+    # The middle board also meets both plates at its clipped long points.
+    assert len(members["slat-0+0"].elevation_profile) == 6
+
+
+def test_lumber_nests_the_miter_blanks(band_model) -> None:
+    from typehaus.takeoff.framing import framing_takeoff
+
+    members = [m for m in band_model.braces[0].members if m.category == "brace"]
+    row = next(r for r in framing_takeoff(band_model) if r["category"] == "brace")
+    assert row["cut_length_ft"] == round(sum(m.cut_length_m for m in members) / FT, 1)
+    assert row["cut_length_ft"] > round(sum(m.length_m for m in members) / FT, 1)
+
+
+@pytest.mark.parametrize("offset", [1.0, -1.0])
+def test_connectors_follow_the_flush_face_on_a_rotated_band(offset) -> None:
+    """The catlin south-to-north run makes positive offset the west face."""
+    element = _band(start=pt(ft(8), ft(10)), end=pt(ft(8), ft(10 + _SPAN_FT)),
+                    plane_offset=inch(offset))
+    model, _ = _frame(element)
+    connectors = [s for s in model.solids if s.product == "KBS1Z"]
+    assert len(connectors) == 36 and len({s.uid for s in connectors}) == 36
+    assert all(s.derived and s.body_mesh for s in connectors)
+    face_x = 8 * FT - math.copysign(2.75 * IN, offset)
+    for connector in connectors:
+        xs = [x for x, _, _ in connector.body_mesh.positions]
+        # Exterior face leaves are at the actual west/east face, not at the slat axis.
+        assert any(abs(x - face_x) < 1e-9 for x in xs)
+        assert max(xs) - min(xs) < 1.6 * IN
+
+
+def test_connector_geometry_is_serialized_and_does_not_double_bill(band_model) -> None:
+    from typehaus.emit.gltf.emitter import emit_gltf_dict
+    from typehaus.server.model_json import model_to_dict
+    from typehaus.takeoff.framing import structural_solids_takeoff
+
+    payload = model_to_dict(band_model)
+    connectors = [s for s in payload["solids"] if s["product"] == "KBS1Z"]
+    assert len(connectors) == 36
+    assert all(s["body_mesh"]["triangles"] for s in connectors)
+    assert not any(r["category"] == "connector" for r in structural_solids_takeoff(band_model))
+    gltf, _ = emit_gltf_dict(band_model, lod="framed")
+    connector_uids = {s["uid"] for s in connectors}
+    assert connector_uids <= {n.get("extras", {}).get("uid") for n in gltf["nodes"]}
+
+
+def test_punched_kbs_cells_are_closed_steel_not_flat_markers() -> None:
+    from collections import Counter
+
+    from typehaus.resolve.kbs_geometry import KBS_GEOMETRY, kbs_mesh
+
+    r = math.sqrt(2)
+    mesh = kbs_mesh((0, 0, 0), (0, 0, -1), (-1, 0, 0),
+                    (1 / r, 0, 1 / r), (-1 / r, 0, 1 / r), (0, -1, 0))
+    edges = Counter(tuple(sorted(edge)) for a, b, c in mesh.triangles
+                    for edge in ((a, b), (b, c), (c, a)))
+    assert set(edges.values()) == {2}
+    assert max(y for _, y, _ in mesh.positions) == pytest.approx(KBS_GEOMETRY.steel_thickness_m)
+    assert min(y for _, y, _ in mesh.positions) == pytest.approx(-KBS_GEOMETRY.flange_width_m)

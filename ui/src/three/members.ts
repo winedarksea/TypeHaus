@@ -29,7 +29,8 @@ import {
   metalPanelProfileForFinish, panelTileSizeM, SEAM_PROFILE,
 } from "./materials";
 import {
-  composeCenteredBoxMatrix, composeMemberBoxMatrix, isRakedMember, isVerticalMember,
+  composeCenteredBoxMatrix, composeMemberBoxMatrix, elevationProfileVertices,
+  isRakedMember, isVerticalMember,
   MIN_EXTENT_M, pushBoxIndices, pushSweepIndices, rakedBoxVertices, sectionRingVertices,
   seatedProfileVertices, TRIANGLES_PER_MEMBER_BOX, UNIT_BOX,
 } from "./memberBox";
@@ -234,7 +235,7 @@ function bucket(members: Member[], materials?: readonly MaterialAppearance[]): B
     // Seam first: a standing-seam or declared ribbed-panel band needs its own textured
     // material, so it can't share the vertex-coloured merge with the lumber around it.
     // A formed section (the drip edge) sweeps its own ring, which only the raked merge draws.
-    if (m.section_ring) out.raked.push(m);
+    if (m.section_ring || m.elevation_profile) out.raked.push(m);
     else if (isSeamMember(m, materials) && !isVerticalMember(m)) out.seam.push(m);
     else if (m.shape === "i_joist") out.ijoist.push(m);
     // An open-web floor truss is not a bar: it draws as chords + webs (three/floorTruss.ts),
@@ -351,7 +352,8 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
   // 12-triangle box, so picking cannot divide by a constant (→ memberPicking.ts).
   const triangleStarts: number[] = [0];
   for (const m of members) {
-    const seated = seatedProfileVertices(m, center) ?? sectionRingVertices(m, center);
+    const seated = elevationProfileVertices(m, center)
+      ?? seatedProfileVertices(m, center) ?? sectionRingVertices(m, center);
     const verts = seated ?? rakedBoxVertices(m, center);
     if (!verts) continue;
     const base = positions.length / 3;

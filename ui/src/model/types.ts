@@ -142,6 +142,9 @@ export interface Member {
   // metres, from the axis at z0_m. Swept along p0->p1 with the run's rise; the box fields
   // still bound it.
   section_ring?: Vec2[] | null;
+  // Cut side silhouette: (run from p0, absolute elevation), swept across plan_width_m.
+  elevation_profile?: Vec2[] | null;
+  cut_length_m?: number | null;
   // The truss inside a fabricated roof truss's envelope; null on every other member.
   truss?: MemberTruss | null;
   shape: MemberShape;
@@ -1535,6 +1538,8 @@ export interface Solid {
   // from stock — the connector family (→ resolve/model.py ResolvedSolid.product). Null on
   // everything else.
   product?: string | null;
+  // Folded purchased-part geometry in project coordinates, with open fastener holes.
+  body_mesh?: { positions: Vec3[]; triangles: [number, number, number][] } | null;
   // A RUN — a handrail, a drain, a raceway — carried as one section swept along a 3D
   // polyline (→ resolve/model.py SolidSweep, resolve/sweep.py). Null on every prism, which
   // is every solid that is not one of those; `three/tubeGeometry.ts` mitres it, and

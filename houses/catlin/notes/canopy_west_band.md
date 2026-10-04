@@ -93,6 +93,29 @@ short for a KBS1Z leg at both ends, so the rule drops anything under 8". That le
 | 3 | 12.353 | sill → centre post | 17.00" |
 | 4 | 16.596 | sill → centre post | 11.00" |
 
+**Connector count review, 2026-10-04.** Keeping only the top-landing slats would connect
+four a bay (16 KBS1Z), but only **two** of those cross mid-band. The five-slat calculation
+below also needs j = 0, +1, +2, which end on the centre post; removing their end ties
+invalidates its force sharing and vertical cancellation. The present bill therefore keeps
+36. A smaller connected set needs a separate load-path calculation, including the remaining
+butted slats' compression-only action; the existing pass does not establish that 36 is the
+minimum possible count.
+
+**Drawn cuts and hardware.** Each slat is the full 1-1/2"-wide diagonal strip clipped to all
+four bay faces, with horizontal miters flush to the plates and plumb cuts to the posts.
+The j = 0 board also clips both corner long points. Engineering still reads the centreline
+length above; takeoff nests the blank spanning the long points, including miter waste.
+Each end shows one folded KBS1Z on the flush west face: two 3" legs with two perpendicular
+1-1/2" flanges, 16-gauge steel, and twelve open fastener holes. Dimensions and form follow
+[ER-280 Table 7 / Figure 7](https://forms.iapmo.org/ues_reports/reports/er_0280.pdf) and
+[Simpson C-C-2019 p.296](https://assets.unilogcorp.com/187/ITEM/DOC/Simpson_Strong_Tie_100313582_Specification_Sheet.pdf).
+The punching positions and bend radii are not dimensioned there: the holes are illustrative
+and sharp folds stand for the bends. This is a dimensioned visualization, not manufacturer
+fabrication CAD or confirmation that every flange/fastener fits this flat-plate installation.
+In particular, the j = 0 slats meet the centre post near its top: the drawn 3" support legs
+extend beyond that post into the plate/header region. Their attachment detail needs review;
+the 0.274 connector ratio alone does not resolve that footprint.
+
 **3b. The slats and their ends.** A slat is tension in one direction of push and compression in
 the other. The KBS1Z is rated along the brace (the axis it shares with the brace), so each slat
 works both ways. **The two bays share V equally**: they are mirror images with the same slats

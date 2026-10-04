@@ -19,6 +19,7 @@ from typehaus.model.braces import SlatBrace
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedBrace, ResolvedModel
+from typehaus.resolve.slat_cuts import clipped_slat_profile, slat_blank_length
 
 _ROOT2 = math.sqrt(2.0)
 
@@ -100,8 +101,8 @@ def slat_layout(el: SlatBrace) -> SlatLayout | None:
 def resolve_slat_brace(model: ResolvedModel, el: SlatBrace, storey: str) -> list[Finding]:
     """The sill, the top plate, the centre post and the slats, on one ``ResolvedBrace``.
 
-    A slat is a raked box with plumb ends, so where it meets a plate its end is drawn back
-    up the slat until the box clears the plate; it bills at its true centreline length.
+    Each board is clipped to the bay faces, including its long points at a frame corner.
+    Engineering uses its centreline; lumber nesting uses the blank spanning its miters.
     """
     layout = slat_layout(el)
     if layout is None:
@@ -137,17 +138,21 @@ def resolve_slat_brace(model: ResolvedModel, el: SlatBrace, storey: str) -> list
     z_sill = base + layout.plate
     offset = el.plane_offset.meters
     for s in layout.slats:
-        u0 = max(s.u0, s.c + half)
-        u1 = min(s.u1, layout.height + s.c - half)
-        if u1 <= u0:
-            continue
+        profile = clipped_slat_profile(s, layout, face)
+        u0, u1 = min(u for u, _ in profile), max(u for u, _ in profile)
         z_lo, z_hi = z_sill + (u0 - s.c), z_sill + (u1 - s.c)
         members.append(member(
             f"slat-{s.bay}{s.j:+d}", "brace", el.slat,
             at(layout.station(s.bay, u0), offset), at(layout.station(s.bay, u1), offset),
-            z_lo - half, z_lo + half, s.length,
-            z0_end_m=z_hi - half, z1_end_m=z_hi + half,
+            max(z_sill, z_lo - half), min(z_sill + layout.height, z_lo + half), s.length,
+            z0_end_m=max(z_sill, z_hi - half),
+            z1_end_m=min(z_sill + layout.height, z_hi + half),
+            elevation_profile=tuple((u - u0, z_sill + z) for u, z in profile),
+            cut_length_m=slat_blank_length(profile),
             plan_width_m=cross_section(el.slat).depth_m, connection=f"kneebrace:{el.connector}"))
     model.braces.append(ResolvedBrace(uid=uid, tag=el.tag, storey=storey,
                                       members=tuple(members)))
+    from typehaus.resolve.slat_connectors import resolve_slat_connectors
+
+    resolve_slat_connectors(model, el, layout, storey)
     return []

@@ -143,6 +143,12 @@ def _solid_geometry(solid: ResolvedSolid, plan) -> ElementGeometry:
     slice kernel) already speaks ``GBox``, so they get real swept geometry with no further
     change.
     """
+    if solid.body_mesh is not None:
+        return ElementGeometry(
+            uid=solid.uid, kind=solid.category,
+            trades=solid_trades(solid.category, solid_material_ref(plan, solid)),
+            parts=(GPart(key="body", solids=(solid.body_mesh,),
+                         material_key=normalize(solid.category), layer_group="structure"),))
     if solid.sweep is not None:
         boxes = tuple(GBox(corners_bottom=start, corners_top=end)
                       for start, end in sweep_legs(solid.sweep))

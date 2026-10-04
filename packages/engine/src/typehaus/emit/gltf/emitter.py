@@ -225,7 +225,11 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         # A run — handrail, drain, raceway — is one mitred tube per leg rather than a plan
         # prism (→ resolve/sweep.py). One ``add_object`` either way.
         legs = sweep_legs(solid.sweep) if solid.sweep is not None else []
-        if legs:
+        if solid.body_mesh is not None:
+            mb = _MeshBuilder()
+            mb.add_mesh(solid.body_mesh, _solid_color(model, solid))
+            scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid)
+        elif legs:
             mb = _MeshBuilder()
             color = _solid_color(model, solid)
             for start, end in legs:

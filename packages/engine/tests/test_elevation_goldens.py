@@ -122,18 +122,18 @@ def _solid_z(solid: object) -> list[float]:
     out: list[float] = []
     for name in ("z0_m", "z1_m", "top"):
         out.extend(_numbers(getattr(solid, name, None)))
-    for name in ("corners_bottom", "corners_top", "vertices", "profile"):
+    for name in ("corners_bottom", "corners_top", "vertices", "positions", "profile"):
         ring = getattr(solid, name, None)
         if ring is None:
             continue
         for point in ring:
             if isinstance(point, (tuple, list)) and len(point) == 3:
                 out.append(float(point[2]))
-    # GSweep: a ``profile`` (read above) swept along ``extrude``.
-    for name in ("extrude",):
-        vec = getattr(solid, name, None)
-        if isinstance(vec, (tuple, list)) and len(vec) == 3:
-            out.append(float(vec[2]))
+    # GSweep's extrusion is a displacement, not an absolute elevation. Pin the translated
+    # far face too; a horizontal extrusion must never invent a point at project z=0.
+    vec = getattr(solid, "extrude", None)
+    if isinstance(vec, (tuple, list)) and len(vec) == 3:
+        out.extend(float(point[2]) + float(vec[2]) for point in solid.profile)
     return out
 
 
@@ -237,6 +237,15 @@ def test_no_resolved_elevation_moves(catlin_model_ro, request) -> None:
     assert not differences, (
         f"{len(differences)} resolved elevation(s) changed. Under the zero-delta rule a "
         f"building re-filing moves NONE of these — a new storey takes its elevation from "
-        f"the same constant object the old one read. Bless only a deliberate datum change:"
+        f"the same constant object the old one read. Bless only reviewed geometry changes:"
         f"\n  " + "\n  ".join(differences)
     )
+
+
+def test_swept_and_meshed_parts_pin_actual_vertex_elevations() -> None:
+    from typehaus.resolve.geometry_ir import GMesh, GSweep
+
+    profile = ((0.0, 0.0, 4.0), (1.0, 0.0, 5.0), (0.0, 0.0, 5.0))
+    assert _solid_z(GSweep(profile=profile, extrude=(0.0, 0.1, 0.0))) == [4, 5, 5, 4, 5, 5]
+    assert _solid_z(GSweep(profile=profile, extrude=(0.0, 0.1, 0.5))) == [4, 5, 5, 4.5, 5.5, 5.5]
+    assert _solid_z(GMesh(positions=profile, triangles=((0, 1, 2),))) == [4, 5, 5]

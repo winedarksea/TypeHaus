@@ -1,10 +1,13 @@
 import * as THREE from "three";
-import type { Member, Model, RebarBar, RebarSet } from "../model/types";
+import type { Member, Model, RebarBar, RebarSet, Solid } from "../model/types";
 import { isMemberUid, locateMember, memberUid, parseMemberUid } from "../model/memberIdentity";
 import { buildMembers } from "./members";
 import { buildRebarMeshes, isStraightBar, tubePath } from "./rebar";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
-import { sectionRingVertices, seatedProfileVertices, TRIANGLES_PER_MEMBER_BOX } from "./memberBox";
+import {
+  elevationProfileVertices, sectionRingVertices, seatedProfileVertices, TRIANGLES_PER_MEMBER_BOX,
+} from "./memberBox";
+import { createSolidBodyMesh } from "./solidBodyMesh";
 import {
   buildMemberHighlight, carriesMemberIdentity, memberIndexForTriangle, resolveMemberPickUid,
 } from "./memberPicking";
@@ -305,6 +308,7 @@ function checkRebarHoopPickResolvesToOneHoop() {
 }
 
 export function runMemberPickingTests() {
+  checkCutProfileAndConnectorMesh();
   checkMemberUidScheme();
   checkInstancedBucketResolvesPerStud();
   checkMergedBucketResolvesPerBox();
@@ -316,4 +320,34 @@ export function runMemberPickingTests() {
   checkHighlightOutlineMatchesTheMember();
   checkLocateMemberAgainstTheModel();
   checkRebarHoopPickResolvesToOneHoop();
+}
+
+function checkCutProfileAndConnectorMesh() {
+  const slat = member({
+    key: "slat-0-2", category: "brace", p0: [2, 3], p1: [2, 4],
+    z0_m: 1, z1_m: 1.1, z0_end_m: 2, z1_end_m: 2,
+    plan_width_m: 0.089, elevation_profile: [[0, 1], [1, 1.9], [1, 2], [0.9, 2], [0, 1.1]],
+  });
+  const vertices = elevationProfileVertices(slat, CENTER);
+  assert(vertices?.length === 10, "The cut profile draws five corners on each face");
+  assert(vertices.every(([x]) => Math.abs(Math.abs(x - 2) - 0.0445) < 1e-9),
+    "Cut boards preserve their 3.5-inch depth on a rotated run");
+  assert(vertices.filter(([, y]) => y === 2).length === 4,
+    "Both miter long points reach the top plate on both faces");
+  const group = new THREE.Group();
+  buildMembers(group, [slat], CENTER, "schematic", RESOLVED_NORDIC_PALETTE.light, "SB1");
+  const mesh = group.children.find((child) => child instanceof THREE.Mesh) as THREE.Mesh;
+  assert(mesh && resolveMemberPickUid(mesh, null, 0) === "SB1::slat-0-2",
+    "A cut slat remains individually pickable");
+  const highlight = buildMemberHighlight(slat, CENTER, "#ffcc00");
+  assert(highlight, "Picking outlines the cut board");
+  const connector = {
+    body_mesh: { positions: [[2, 3, 1], [2, 4, 1], [2, 3, 2]], triangles: [[0, 1, 2]] },
+  } as Solid;
+  const geometry = createSolidBodyMesh(connector, CENTER);
+  assert(geometry?.getAttribute("position").count === 3,
+    "The connector draws the engine mesh rather than its bounding prism");
+  assert(geometry.getAttribute("position").getZ(0) === -3,
+    "Connector meshes use the same project-to-scene transform as members");
+  geometry.dispose();
 }

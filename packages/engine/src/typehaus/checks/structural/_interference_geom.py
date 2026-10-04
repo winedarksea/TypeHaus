@@ -21,10 +21,10 @@ _TOL_AREA = 1e-4
 
 class _Candidate:
     __slots__ = ("label", "poly", "z_lo", "z_hi", "seg", "kind", "parent",
-                 "zlo0", "zhi0", "zlo1", "zhi1")
+                 "zlo0", "zhi0", "zlo1", "zhi1", "elevation_profile")
 
     def __init__(self, label, poly, z_lo, z_hi, seg, kind, parent=None,
-                 zends=None):
+                 zends=None, elevation_profile=None):
         self.label = label
         self.poly = poly
         self.z_lo = z_lo  # min z over the whole member (bounding box)
@@ -35,6 +35,7 @@ class _Candidate:
         # Owning element uid (wall/roof); distinguishes a same-element joint (a real
         # elevation bug) from a cross-element lap/bearing (intended joinery).
         self.parent = parent
+        self.elevation_profile = elevation_profile
         # Per-endpoint z-band (bottom, top) at seg[0] and seg[1]. A sloped member (rafter,
         # raked plate, ridge) rises along its axis; carrying both ends lets the check test
         # the z-band *at the shared plan region* instead of the full-slope bounding box —
@@ -49,6 +50,18 @@ class _Candidate:
         run2 = dx * dx + dy * dy
         if run2 < 1e-18:
             return self.zlo0, self.zhi0
+        if self.elevation_profile is not None:
+            station = ((point[0] - ax) * dx + (point[1] - ay) * dy) / math.sqrt(run2)
+            heights = []
+            ring = self.elevation_profile
+            for (s0, z0), (s1, z1) in zip(ring, ring[1:] + ring[:1], strict=True):
+                if abs(s1 - s0) < 1e-12:
+                    if abs(station - s0) < 1e-9:
+                        heights.extend((z0, z1))
+                elif min(s0, s1) - 1e-9 <= station <= max(s0, s1) + 1e-9:
+                    heights.append(z0 + (z1 - z0) * (station - s0) / (s1 - s0))
+            if heights:
+                return min(heights), max(heights)
         t = max(0.0, min(1.0, ((point[0] - ax) * dx + (point[1] - ay) * dy) / run2))
         return (self.zlo0 + (self.zlo1 - self.zlo0) * t,
                 self.zhi0 + (self.zhi1 - self.zhi0) * t)
@@ -115,7 +128,8 @@ def framing_candidates(model) -> list[_Candidate]:
             out.append(_Candidate(
                 f"{member.parent_uid}:{member.child_key}", poly, z_lo, z_hi,
                 seg=(member.p0, member.p1), kind=member.category,
-                parent=member.parent_uid, zends=zends))
+                parent=member.parent_uid, zends=zends,
+                elevation_profile=member.elevation_profile))
     for solid in model.solids:
         if solid.category not in ("column", "beam"):
             continue

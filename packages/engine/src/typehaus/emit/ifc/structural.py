@@ -139,6 +139,15 @@ def _solid_body(f: Any, body: Any, solid: Any) -> Any:
     leg. Either way the run is *one* element with one representation, where a raked rail used
     to arrive as 292 separate ``IfcRailing``s, one per 1-1/2" of fall.
     """
+    if solid.body_mesh is not None:
+        mesh = solid.body_mesh
+        # Folded leaves are an assembly of touching meshes, not one connected BRep shell.
+        # IFC4 tessellation preserves their holes without claiming an invalid closed shell.
+        points = f.createIfcCartesianPointList3D(mesh.positions)
+        faces = f.createIfcTriangulatedFaceSet(
+            Coordinates=points, Closed=False,
+            CoordIndex=[tuple(index + 1 for index in tri) for tri in mesh.triangles])
+        return f.createIfcShapeRepresentation(body, "Body", "Tessellation", [faces])
     if solid.sweep is not None:
         profile = tuple(solid.sweep.profile)
         path = clean_path(solid.sweep.path)

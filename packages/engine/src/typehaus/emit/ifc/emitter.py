@@ -194,8 +194,9 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
         # is deliberately NOT in the IFC: every sha256 in the `haus handoff` manifest is
         # taken over this file, and 500 markers would be 500 IfcBuildingElementProxies a
         # structural reviewer has to read past. Emitting them as IfcMechanicalFastener is a
-        # real and useful deliverable — with its own golden and its own manifest cost.
-        if solid.derived:
+        # real and useful deliverable: body_mesh parts have that dimensioned shape and
+        # export as mechanical fasteners; generic marker envelopes still stay out.
+        if solid.derived and solid.body_mesh is None:
             continue
         element = _emit_solid(f, body, solid, storeys, project_uuid, model)
         element_entities.setdefault(solid.tag, element)

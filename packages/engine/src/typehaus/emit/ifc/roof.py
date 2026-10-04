@@ -187,7 +187,8 @@ def member_representation(f: Any, body: Any, member: FramedMember) -> Any | None
     bands grow from the heel to the ridge — and gets a faceted solid instead of a section
     stretched to a wrong constant depth.
     """
-    if member.seat is not None or member.section_ring is not None:
+    if (member.seat is not None or member.section_ring is not None
+            or member.elevation_profile is not None):
         swept = _swept_representation(f, body, member)
         if swept is not None:
             return swept

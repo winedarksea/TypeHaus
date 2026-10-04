@@ -10,6 +10,11 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   retypes through a centre-holding macro. Re-affirmed deferred 2026-08-07.
 ## Remaining Work
 
+- **Review `SB-BW-BAND` connector layout before reducing its 36 KBS1Z.** Top-only ties
+  would leave three of the five mid-band slats per bay untied. The dimensioned 3D parts also
+  expose the two j = 0 centre-post connections extending into the plate/header region;
+  resolve their flange and fastener attachment detail (`notes/canopy_west_band.md` §3a).
+
 - **Order the canopy and garage trusses from a fabricator who seals them** — the last four
   canopy UNKNOWNs (`rafter/RF-BW-CANOPY`, `rafter/RF-GARAGE`, `structural.truss_reactions`,
   `structural.uplift_capacity`) close only on those drawings. The ask is `AN-G-TRUSS-ORDER` in
@@ -234,6 +239,10 @@ the future.
 - The vertical chaise in the north west corner of catlin house, extending from basement to attic, likely needs fireblocking. Under Section R302.11 (Fireblocking), vertical and horizontal concealed draft openings must be cut off to form an effective fire barrier between stories, and between a top story and the roof space. Either 3/4" plywood (same plane as the subfloor) or mineral wool batt fill are likely the best solutions to show here. This might already be noted somewhere, but should be shown in the 3d model as well.
 - Can we shorten W-M-STRW by a few inches on its southern end so it ends in line with wall W-M-STOS2?
 - Several of the interior 2x4 wall types do not yet bill paint (or perhaps paint for them is estimated elsewhere?)
+- The auto-generated blocking remains a bit excessive in places still
+- Show the engineering prepared calculations in the UI as a "report" somewhere perhaps
+- If we flip the garage door swing, we might be able to do reduce the landing size in the garage
+- Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
 
 # Project Management
 

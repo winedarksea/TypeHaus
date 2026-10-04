@@ -65,6 +65,9 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         # frame from the axis at ``z0_m``, which the viewer sweeps exactly as the engine does.
         "section_ring": ([list(point) for point in m.section_ring]
                          if m.section_ring is not None else None),
+        "elevation_profile": ([list(point) for point in m.elevation_profile]
+                              if m.elevation_profile is not None else None),
+        "cut_length_m": m.cut_length_m,
         # The truss inside a ``roof_truss`` member's envelope — the raised heel, the eave
         # tails, and whether it is a studded gable end. Null on every other member; the
         # viewer draws chords and webs from it, which no model here resolves.

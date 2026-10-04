@@ -32,6 +32,9 @@ def member_footprint(member: FramedMember) -> tuple[Ring, float, float]:
     if member.z1_end_m is not None:
         zs.append(member.z1_end_m)
     z_lo, z_hi = min(zs), max(zs)
+    if member.elevation_profile is not None:
+        z_lo = min(z for _, z in member.elevation_profile)
+        z_hi = max(z for _, z in member.elevation_profile)
 
     if member.plan_outline is not None:
         return member.plan_outline, z_lo, z_hi
@@ -63,7 +66,7 @@ def member_footprint(member: FramedMember) -> tuple[Ring, float, float]:
 
     # Horizontal/sloped member: a band of its plan-visible cross dimension along p0->p1 —
     # the wide face for a flat-laid plate/sill/block, the thin one for a member on edge.
-    hw = plan_cross_section_m(cs, member.z1_m - member.z0_m) / 2.0
+    hw = (member.plan_width_m or plan_cross_section_m(cs, member.z1_m - member.z0_m)) / 2.0
     nx, ny = -dy / run * hw, dx / run * hw  # perpendicular half-width offset
     ring = [(x0 + nx, y0 + ny), (x1 + nx, y1 + ny),
             (x1 - nx, y1 - ny), (x0 - nx, y0 - ny)]
