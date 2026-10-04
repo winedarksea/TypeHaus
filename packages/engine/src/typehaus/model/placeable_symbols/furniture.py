@@ -71,8 +71,8 @@ __all__ = ["FURNITURE_SYMBOLS", "sectional_points", "sektion_corner_points",
 # The painted-casework pair, named once so a change of kitchen colour is a one-line edit.
 CABINET = "cabinet-cream"
 CABINET_SHADE = "cabinet-cream-dark"
-# An 18" front stays usable as one door instead of splitting into two narrow leaves.
-CABINET_SINGLE_DOOR_MAX_WIDTH_M = inch(18).meters
+# SEKTION offers doors up to 24" wide, so cabinets through that width keep one door.
+CABINET_SINGLE_DOOR_MAX_WIDTH_M = inch(24).meters
 
 FURNITURE_SYMBOLS: dict[str, Builder] = {
     # Seating. Seat count is what separates a sofa from a loveseat from an armchair.

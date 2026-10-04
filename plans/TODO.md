@@ -243,6 +243,7 @@ the future.
 - Show the engineering prepared calculations in the UI as a "report" somewhere perhaps
 - If we flip the garage door swing, we might be able to do reduce the landing size in the garage
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
+- The diagonal slat wall's 36 KBS1Z may overlap. The two longest slats have another problem: their modeled centre-post connectors extend approximately 3.7″ beyond the post’s top, across the plate/header junction. That attachment needs a different detail
 
 # Project Management
 
