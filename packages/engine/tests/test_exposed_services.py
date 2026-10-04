@@ -172,9 +172,10 @@ def test_catlin_declares_its_two_rooms(catlin_model_ro) -> None:
     worth pinning: the PASS quotes the room back to itself, so a design that stops putting a
     duct in a room has to stop saying it does.
 
-    ``RM-S-SUITE`` names ``DU-S-HP-SUITE``. It named nothing until 2026-09-13, when
-    ``SF-S-SUITE`` was retired — and the empty case's own sentence is what said so, which
-    is the whole reason it exists instead of "0 run(s)".
+    The suite branch now stops at the loft boot, 40" west of its tee, and supplies the
+    suite through a high sidewall grille. Its terminal segment is exempt from the ceiling
+    crossing check, so the suite's permission to expose services remains quoted while the
+    PASS explicitly says it currently grades no exposed crossing.
     """
     passes = {f.element_tags[0]: f.message for f in _findings(catlin_model_ro)
               if f.result is Result.PASS and f.element_tags}
@@ -186,5 +187,5 @@ def test_catlin_declares_its_two_rooms(catlin_model_ro) -> None:
     assert "DU-B-ERV-R-GYM" in passes["RM-B-STAIR"]
     assert "DU-B-ERV-R-PLAY" in passes["RM-B-STAIR"]
     assert "exposed duct in the primary suite" in passes["RM-S-SUITE"]
-    assert "DU-S-HP-SUITE" in passes["RM-S-SUITE"]
-    assert "nothing currently hangs in its open air" not in passes["RM-S-SUITE"]
+    assert "DU-S-HP-SUITE" not in passes["RM-S-SUITE"]
+    assert "nothing currently hangs in its open air" in passes["RM-S-SUITE"]

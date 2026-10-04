@@ -30,7 +30,9 @@ IN = inch(1).meters
 
 def _ctx(members=(), solids=(), walls=(), elements=(), library=None):
     elements = list(elements)
-    plan = SimpleNamespace(all_elements=lambda: elements, library=library,
+    plan = SimpleNamespace(storeys=(SimpleNamespace(tag="S"),),
+                           storey_elements=lambda _storey: elements,
+                           all_elements=lambda: elements, library=library,
                            by_tag=lambda t: next((e for e in elements if e.tag == t), None))
     model = SimpleNamespace(all_members=lambda: list(members), solids=list(solids),
                             walls=list(walls), junctions=(), plan=plan)
