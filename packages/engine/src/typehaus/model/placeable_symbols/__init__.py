@@ -59,7 +59,8 @@ SYMBOL_NAMES = frozenset({
     "hemnes-bookcase",
     "sektion-tall-drawers", "sektion-tall-open-lower", "sektion-cover-panel",
     "sektion-seat-base", "sektion-open-high", "sektion-open-base", "seat-cushion",
-    "wardrobe-show", "wardrobe-dress", "wardrobe-double-hang", "closet-board",
+    "wardrobe-show", "wardrobe-show-hang", "wardrobe-dress", "wardrobe-double-hang", "closet-board",
+    "closet-corner-wire",
     "wardrobe-shelves", "wardrobe-corner", "wardrobe-sliding-pair",
     "bed", "tv", "potted-plant", "wall-rack", "peg-rail", "arch-shelf-mirror",
     # sauna joinery — benches are fitted to the room, not bought as a set

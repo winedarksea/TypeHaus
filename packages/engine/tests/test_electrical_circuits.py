@@ -933,7 +933,9 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     verdict it cannot be made vacuous by adding a receptacle somewhere else.
     """
     from typehaus.checks.code.mn_residential.profile import MN_2020
-    from typehaus.checks.mep.electrical import _fixed_cabinet_intervals
+    from shapely.geometry import LineString
+
+    from typehaus.checks.mep.electrical import _fixed_cabinet_intervals, _merged_intervals
     from typehaus.checks.registry import CheckContext, Preferences
 
     plan = load_plan(CATLIN_DIR).plan
@@ -944,10 +946,12 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     ring = [tuple(point) for point in living.clear_face]
     ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2020)
     breaks = _fixed_cabinet_intervals(ctx, ring, "main")
-    # The east tall bank is 4'-0" of floor-to-ceiling carcass on the living room's boundary,
-    # so it has to produce a break, and one long enough to be that bank.
+    # The east tall bank is 4'-0" of floor-to-ceiling carcass on the living room's boundary
+    # (two 2'-0" carcasses side by side), so it has to produce a break, and one long enough
+    # to be that bank once the two abutting intervals merge.
     assert breaks, "counterless fixed cabinets should break the wall line"
-    assert max(hi - lo for lo, hi in breaks) >= 3.5 * 0.3048
+    perimeter = LineString(ring + [ring[0]]).length
+    assert max(hi - lo for lo, hi in _merged_intervals(breaks, perimeter)) >= 3.5 * 0.3048
 
     library = plan.library
     countertopped = tuple(
@@ -964,3 +968,32 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     # Give every one of them a countertop and the wall line is unbroken by cabinets: the
     # same carcasses are now work surfaces, which 210.52(A)(2)(1) does not exempt.
     assert _fixed_cabinet_intervals(ctx, ring, "main") == []
+
+
+def test_a_cabinet_behind_the_wall_does_not_break_this_rooms_wall_space(catlin_plan,
+                                                                        catlin_model_ro):
+    """FURN-M-CLOSET-PAX-WEST stands on the closet face of W-M-BDN2, within _NEAR_WALL_M of
+    RM-M-BED's ring. It is the closet's cabinet, so the bedroom's wall line runs on behind it.
+    """
+    from shapely.geometry import LineString, Point
+
+    from typehaus.checks.code.mn_residential.profile import MN_2020
+    from typehaus.checks.mep.electrical import _fixed_cabinet_intervals
+    from typehaus.checks.registry import CheckContext, Preferences
+
+    plan, model = catlin_plan, catlin_model_ro
+    assert _room_result(model, "RM-M-BED") == "pass"
+    ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2020)
+    bed = next(room for room in model.rooms if room.tag == "RM-M-BED")
+    closet = next(room for room in model.rooms if room.tag == "RM-M-CLOSET")
+    pax = next(item for item in model.canvas_objects
+               if item.tag == "FURN-M-CLOSET-PAX-WEST")
+    ring = [tuple(p) for p in bed.clear_face]
+    boundary = LineString(ring + [ring[0]])
+    behind = sorted(boundary.project(Point(c)) for c in pax.footprint)
+    lo, hi = behind[0], behind[-1]
+    assert hi - lo > 0.3  # it does project onto the bedroom's wall line...
+    for a, b in _fixed_cabinet_intervals(ctx, ring, "main"):  # ...and breaks none of it
+        assert b <= lo + 1e-6 or a >= hi - 1e-6
+    closet_ring = [tuple(p) for p in closet.clear_face]
+    assert _fixed_cabinet_intervals(ctx, closet_ring, "main")

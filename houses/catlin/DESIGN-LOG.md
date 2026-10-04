@@ -4452,3 +4452,36 @@ surface that reaches the court, so the water goes there.
 - The refreshed elevation snapshot also records already-present bedroom furnishings
   missing from the prior snapshot. Kitchen top backing is tested as emitted framing,
   not merely authored bands; the new 2x6 bands add 28 LF of ordered lumber.
+
+## 2026-10-03 — RM-M-CLOSET west end: 29 1/2" PAX and a SuperSlide wire corner
+
+- The 32" custom bay (two rods, valance, shoe deck), both SEKTION drawer units and their
+  quartz slab `CT-M-CLOSET` are gone. Quartz drops 5.50 SF (78.47 → 72.97 SF). The retired
+  `prices.toml` rows stay priced at 0 ea and are listed under `[retired]`.
+- West wall: `FURN-M-CLOSET-PAX-WEST`, a 29 1/2" wall-mounted PAX (SKU 605.890.06, $180)
+  against the south wall, double-hung on the 79"/39" rails, with a 28" OVERSIDAN. It leaves
+  24 3/4" of corner on the west wall. The north wall keeps its 32".
+- North wall, east slot: the two 19 5/8" frames (DRESS, DOUBLE) are one 39 3/8" frame
+  again, `FURN-M-CLOSET-PAX-HANG` (keeps DRESS's uid). It has PAX-SHOW's drawers, two of
+  them glass-front, under one long rail at 86" (~40" of hang), with no upper shelves. New
+  plan symbol `wardrobe-show-hang`. One 38" OVERSIDAN replaces the two 18" strips, so the
+  driver runs 104" of strip, 16.3 W of 30 W, three of nine sources.
+- The corner: `FURN-M-CLOSET-CORNER-HI`/`-LO`, two tiers of ClosetMaid SuperSlide nickel
+  wire with rods on the PAX rail lines. Each tier is an L of 12" shelf, 32" north and
+  24 3/4" west, with its ends screwed to the PAX side panels and a 56333 corner bar
+  joining the rods. New engine plan symbol `closet-corner-wire`: the type's L ring, a wire
+  hatch, and the rod rounding the inner corner.
+- **Confirm before buying:** the west leg leaves only ~2 1/2" of straight rod past the
+  corner bar. If the bar's clip needs more, cut the shelf on site so the bar lands at the
+  panel.
+- Pegs moved 4 3/8" east to x 10'-4 3/8"..13'-10 3/8" to clear PAX-WEST. Casing isn't
+  modelled: a 2 1/2" casing on D-M-BED clears the rail end by ~3/4"; a 3 1/2" one would not.
+- Backing: `BK-M-BA2E2-PAX` (86") for the new rail, and `BK-M-CLN-WIRE-HI`/`-LO` (72"/32")
+  for the north-leg clips. The west leg lands in BA2E2's HIGH and GRAB courses. Every new
+  band end sits on a stud face.
+- NEC 410.16(C)(3), re-measured: CAN1 is ~7 3/4" from PAX-WEST's face and ~6 5/8" from the
+  corner's 24" rod zone, so both cans stay.
+- Engine fix: `electrical.receptacle_spacing` let a counterless cabinet behind a partition
+  break the neighbouring room's wall space (PAX-WEST failed RM-M-BED). A cabinet now breaks
+  only the ring its centroid stands in. The living-room test had been passing because of
+  that bug, through `FURN-M-PANTRY-SHELVES`; it now measures the merged tall bank.

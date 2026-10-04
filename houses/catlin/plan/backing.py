@@ -169,17 +169,32 @@ MAIN_BACKING = [
     WallBacking(uid="VBFFYKBZJW", tag="BK-M-CLN-RACK", wall_ref="W-M-CLN",
                 elevation=inch(46), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="laundry drying rack (48 in.)"),
-    # RM-M-CLOSET (plan/closet.py). The PAX wall rail and the custom bay's valance share
-    # one 2x8 at 86"; the rail sits at the frames' 93" top. Notch round the suite stack
-    # (x 12'-6") and the supplies (15'-9", 16'-5") rising in these two walls.
+    # RM-M-CLOSET (plan/closet.py). The PAX wall rails are 2x8s at 86"; the rail sits at
+    # the frames' 93" top. Notch round the suite stack (x 12'-6") and the supplies (15'-9",
+    # 16'-5") rising in these two walls.
     WallBacking(uid="QZAD6KWB50", tag="BK-M-CLN-PAX", wall_ref="W-M-CLN", face="right",
                 elevation=inch(86), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="PAX wall rail and closet valance (93 in.)"),
+                material_ref="spf", purpose="PAX wall rail (93 in.)"),
     WallBacking(uid="M80101YTFN", tag="BK-M-CLN2-PAX", wall_ref="W-M-CLN2", face="right",
                 elevation=inch(86), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="PAX wall rail (93 in.)"),
+    # PAX-WEST, y 13'-2 3/8"..15'-7 7/8", run north to the next stud face.
+    WallBacking(uid="A71ZZ2QRA3", tag="BK-M-BA2E2-PAX", wall_ref="W-M-BA2E2", face="left",
+                start=inch(24.75), length=inch(32.875),
+                elevation=inch(86), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="PAX wall rail (93 in.)"),
+    # The wire corner's north-leg back clips, x 8'-5 3/8"..11'-1 3/8", run to the stud at
+    # 11'-5 1/4". The west leg's clips land in BK-M-BA2E2-HIGH and -GRAB (backing_wet.py).
+    WallBacking(uid="KEX2RE1ERV", tag="BK-M-CLN-WIRE-HI", wall_ref="W-M-CLN", face="right",
+                start=inch(3.375), length=inch(35.875),
+                elevation=inch(72), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="closet wire shelf clips (upper tier, 80 in.)"),
+    WallBacking(uid="D11W25Y0H8", tag="BK-M-CLN-WIRE-LO", wall_ref="W-M-CLN", face="right",
+                start=inch(3.375), length=inch(35.875),
+                elevation=inch(32), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="closet wire shelf clips (lower tier, 40 in.)"),
     WallBacking(uid="TFRQMAPD74", tag="BK-M-BDN2-PEGS", wall_ref="W-M-BDN2", face="left",
-                start=inch(15.25), length=inch(49.5),
+                start=inch(15.25), length=inch(53.875),
                 elevation=inch(62), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="closet robe peg rail (64 in.)"),
     # RM-S-SUITEBATH's robe pegs (plan/placeables.py), on W-S-DC2's bath face at y 18'-9"..20'-9".

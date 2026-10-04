@@ -1,7 +1,7 @@
-"""RM-M-CLOSET's fit-out catalog: three PAX frames, SEKTION drawers, the custom bay, mirror.
+"""RM-M-CLOSET's fit-out catalog: three PAX frames, the wire corner, the mirror.
 
 House-local because each row is a CONFIGURATION fitted to this closet (a PAX frame with a
-stated interior, a rod cut to a 32" bay), not a bare product. The products themselves are
+stated interior, a wire shelf cut to the corner), not a bare product. The products themselves are
 the ``PROD-IKEA-*`` records below. The placements are in plan/closet.py.
 
 IKEA US listings read 2026-10-01; numbers are what the pages printed that day.
@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from typehaus.model import (
     ElectricalDeviceType,
+    Footprint2D,
     FurnitureType,
     LuminaireForm,
     LuminaireType,
@@ -21,7 +22,10 @@ from typehaus.model import (
     ServicePort,
     ft,
     inch,
+    m,
+    pt,
 )
+from typehaus.model.placeable_symbols.furniture import wardrobe_corner_points
 
 _WALL = Mount(kind=MountKind.WALL)
 _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
@@ -44,17 +48,23 @@ PAX_WALL_FRAME_20 = Product(
     source="IKEA US listing, read 2026-10-02: $170.00; the 39 3/8\" frame's rail and "
            "adjustable feet. Two side by side are 39 1/4\".",
 )
-SEKTION_MAXIMERA_24_DRAWER = Product(
-    tag="PROD-IKEA-SEKTION-MAXIMERA-24-3D", brand="IKEA",
-    model="SEKTION / MAXIMERA 24x15x30, 3 drawers",
-    name="SEKTION / MAXIMERA base cabinet with 3 drawers, white/Aspudden matte white",
-    sku="296.240.12",
-    url=("https://www.ikea.com/us/en/p/sektion-maximera-base-cabinet-with-3-drawers-"
-         "white-aspudden-matte-white-s29624012/"),
-    source=("IKEA US listing, read 2026-10-01: 24\" W x 15\" system depth (15 1/2\" overall) "
-            "x 30\" frame, three MAXIMERA drawers with ASPUDDEN fronts. The four 4 1/2\" "
-            "legs, suspension rail and handles are separate; the linked set was listed at "
-            "$367.00."),
+PAX_WALL_FRAME_30 = Product(
+    tag="PROD-IKEA-PAX-WALL-30", brand="IKEA", model="PAX wall-mounted storage frame",
+    name='PAX wall-mounted storage frame, white, 29 1/2 x 22 7/8 x 92 7/8"', sku="605.890.06",
+    source="IKEA US listing, read 2026-10-03: $180.00; the same rail and feet as the 39 3/8\".",
+)
+SUPERSLIDE_SHELF = Product(
+    tag="PROD-CLOSETMAID-SUPERSLIDE-12-NI", brand="ClosetMaid", model="SuperSlide",
+    name='SuperSlide ventilated wire shelf with integrated hang rod, 12" deep, nickel',
+    source="Cut to length on site. The hang rod is the shelf's front lip, so hangers slide "
+           "the whole run. SKU and length to confirm at purchase.",
+)
+SUPERSLIDE_CORNER_BAR = Product(
+    tag="PROD-CLOSETMAID-56333-NI", brand="ClosetMaid", model="56333",
+    name='SuperSlide corner bar, 10 1/4 x 10 1/4", nickel',
+    source="Joins two SuperSlide rods round an inside corner, so the legs can differ in "
+           "length. Needs straight rod past each end to clip to: confirm against a 2 1/2\" "
+           "west-leg stub before buying.",
 )
 OVERSIDAN = Product(
     tag="PROD-IKEA-OVERSIDAN", brand="IKEA", model="OVERSIDAN",
@@ -71,10 +81,11 @@ TRADFRI_30 = Product(
            "plugs into an ordinary receptacle through the ANSLUTA cord (sold separately).",
 )
 
-CLOSET_PRODUCTS = (PAX_WALL_FRAME, PAX_WALL_FRAME_20, SEKTION_MAXIMERA_24_DRAWER, OVERSIDAN,
-                   TRADFRI_30)
+# PAX_WALL_FRAME_20 is the bedroom wardrobes' (plan/bedroom_wardrobe_types.py).
+CLOSET_PRODUCTS = (PAX_WALL_FRAME, PAX_WALL_FRAME_20, PAX_WALL_FRAME_30, SUPERSLIDE_SHELF,
+                   SUPERSLIDE_CORNER_BAR, OVERSIDAN, TRADFRI_30)
 
-# --- north wall: two PAX frames and the custom bay ---------------------------------------
+# --- PAX frames: two on the north wall, one on the west ----------------------------------
 #
 # Open frames, no doors (owner, 2026-10-01): the aisle in front is ~31", and an east door
 # would swing over the mirror.
@@ -88,62 +99,41 @@ PAX_SHOW = FurnitureType(
     storage=True, work_surface=False, plan_symbol="wardrobe-show",
     product_ref="PROD-IKEA-PAX-WALL", source=_PAX_SOURCE,
 )
-# The east 39 3/8" slot holds two 19 5/8" frames (owner, 2026-10-02): one long-hang,
-# one double-hang. Interiors: model/placeable_symbols/_wardrobe.py.
-PAX_DRESS = FurnitureType(
-    tag="FURN-M-PAX-DRESS",
-    name='PAX 19 5/8" open frame: dress-length rail (~60" clear below), three shelves above',
-    footprint=(inch(19.625), inch(22.875)), height=inch(92.875),
-    storage=True, work_surface=False, plan_symbol="wardrobe-dress",
-    product_ref="PROD-IKEA-PAX-WALL-20", source=_PAX_SOURCE,
+# The east 39 3/8" slot (owner, 2026-10-03; two 19 5/8" frames since 2026-10-02): SHOW's
+# drawers under one long rail. Interiors: model/placeable_symbols/_wardrobe.py.
+PAX_SHOW_HANG = FurnitureType(
+    tag="FURN-M-PAX-SHOW-HANG",
+    name='PAX 39 3/8" open frame: the display drawers below, one long rail above (~40" hang)',
+    footprint=(inch(39.375), inch(22.875)), height=inch(92.875),
+    storage=True, work_surface=False, plan_symbol="wardrobe-show-hang",
+    product_ref="PROD-IKEA-PAX-WALL", source=_PAX_SOURCE,
 )
-PAX_DOUBLE = FurnitureType(
-    tag="FURN-M-PAX-DOUBLE",
-    name='PAX 19 5/8" open frame: two rails on the custom bay\'s 79"/39" lines, one shelf on top',
-    footprint=(inch(19.625), inch(22.875)), height=inch(92.875),
+PAX_DOUBLE_30 = FurnitureType(
+    tag="FURN-M-PAX-DOUBLE-30",
+    name='PAX 29 1/2" open frame: two rails on the closet\'s 79"/39" lines, one shelf on top',
+    footprint=(inch(29.5), inch(22.875)), height=inch(92.875),
     storage=True, work_surface=False, plan_symbol="wardrobe-double-hang",
-    product_ref="PROD-IKEA-PAX-WALL-20", source=_PAX_SOURCE,
-)
-# The custom bay: two rods cut to the 32" between the west wall and the central frame's
-# side panel, and a board top and bottom on the PAX lines so the wall reads as one piece.
-CLOSET_ROD_32 = FurnitureType(
-    tag="FT-M-CLOSET-ROD-32", name='Closet rod, 1 5/16" round, 32" cut, end sockets',
-    footprint=(inch(1.3125), inch(32)), height=inch(1.3125),
-    storage=True, work_surface=False, plan_symbol=None, mount=_WALL,
-    source=("Steel or oak rod in flange sockets: the west end screws to W-M-BA2E2, the east "
-            "end to the central PAX's side panel. Footprint DEPTH is the run off the wall."),
-)
-CLOSET_VALANCE = FurnitureType(
-    tag="FT-M-CLOSET-VALANCE", name='Custom bay top: white cap board with 3" fascia',
-    footprint=(inch(32), inch(22.875)), height=inch(3),
-    plan_symbol="closet-board", mount=_WALL,
-    source="Painted poplar or white melamine, top flush with the PAX frames' top line.",
-)
-CLOSET_PLINTH = FurnitureType(
-    tag="FT-M-CLOSET-PLINTH", name='Custom bay bottom: white shoe deck, 3" fascia',
-    footprint=(inch(32), inch(22.875)), height=inch(3),
-    storage=True, work_surface=False, plan_symbol="closet-board", mount=_WALL,
-    source="As the valance; the bottom board on the PAX bottom line, a deck for shoes.",
+    product_ref="PROD-IKEA-PAX-WALL-30", source=_PAX_SOURCE,
 )
 
-# --- west wall: SEKTION drawers ----------------------------------------------------------
-
-SEKTION_DRAWER_24 = FurnitureType(
-    tag="FURN-M-SEKTION-24-DRAWER",
-    name='SEKTION 24 x 15 x 30" frame, three drawers, four legs, 36" nominal with slab',
-    footprint=(inch(24), inch(16.5)), height=inch(35.681),
-    carcass_depth=inch(15.5), storage=True, work_surface=True,
-    plan_symbol="sektion-drawer-base",
-    product_ref="PROD-IKEA-SEKTION-MAXIMERA-24-3D",
-    source=("Two 24\" units make a 48\" run. IKEA lists 15\" system depth and 15 1/2\" "
-            "overall cabinet depth. The 30\" frame, 4 1/2\" legs and 3 cm slab total "
-            "35 11/16\" (36\" nominal). The slab projects 1\" beyond the drawer fronts. "
-            "Anchor through the SEKTION rail into W-M-BA2E2's 32\"..39 1/4\" backing band; "
-            "the unselected toe plinth is not modeled, so the four legs remain exposed."),
+# --- the north-west corner: SuperSlide wire, two tiers ----------------------------------
+#
+# An L of 12" shelf per tier between the PAX side panels: 32" along the north wall, 24 3/4"
+# down the west. The 56333 bar rounds the rod past the inner corner. Mounted at the rod line.
+_WIRE_W, _WIRE_D, _WIRE_LEG = inch(32), inch(24.75), inch(12)
+_wire_ring = wardrobe_corner_points(_WIRE_W.meters, _WIRE_D.meters, _WIRE_LEG.meters)
+CLOSET_CORNER_WIRE = FurnitureType(
+    tag="FT-M-CLOSET-CORNER-WIRE",
+    name='SuperSlide wire corner, nickel: 12" shelf and rod, 32" x 24 3/4" L',
+    footprint=(_WIRE_W, _WIRE_D), height=inch(1.5),
+    footprint_shape=Footprint2D(points=tuple(pt(m(x), m(y)) for x, y in _wire_ring)),
+    storage=True, work_surface=False, plan_symbol="closet-corner-wire", mount=_WALL,
+    product_ref="PROD-CLOSETMAID-SUPERSLIDE-12-NI",
+    source=("Per tier: SuperSlide shelf cut to each leg, ends screwed to the PAX side "
+            "panels, back clips into W-M-CLN and W-M-BA2E2, one 56333 corner bar."),
 )
 
-CLOSET_FURNITURE_TYPES = (PAX_SHOW, PAX_DRESS, PAX_DOUBLE, CLOSET_ROD_32, CLOSET_VALANCE,
-                          CLOSET_PLINTH, SEKTION_DRAWER_24)
+CLOSET_FURNITURE_TYPES = (PAX_SHOW, PAX_SHOW_HANG, PAX_DOUBLE_30, CLOSET_CORNER_WIRE)
 
 # --- lighting: the lit mirror, the PAX strips and their driver ---------------------------
 

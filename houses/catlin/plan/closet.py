@@ -7,18 +7,19 @@
 # W-M-BDN2 south (left), W-M-C2 east (left). D-M-BED is in the south wall at x 14'-2"..16'-10"
 # and swings out into the bedroom.
 #
-# North wall, west to east (owner, 2026-10-01): a 32" custom bay of two rods (80"/40") with
-# a valance and a shoe deck on the PAX lines; FURN-M-PAX-SHOW (drawers below, shelves
-# above); then two 19 5/8" frames (owner, 2026-10-02): FURN-M-PAX-DRESS (dress rail, ~60"
-# clear, three shelves above) and FURN-M-PAX-DOUBLE (rails on the bay's 79"/39" lines, a
-# shelf on top), 5/8" off the east wall to scribe. Open frames: the aisle is ~31", and the
-# central drawers pull ~18" into it.
+# North wall, west to east: a 32" leg of the wire corner; FURN-M-PAX-SHOW (drawers below,
+# shelves above); then FURN-M-PAX-SHOW-HANG (owner, 2026-10-03; the same drawers under one
+# long rail), 1/2" off the east wall to scribe. West wall (owner, 2026-10-03): a 29 1/2"
+# double-hang PAX against the south wall, then the corner's 24 3/4" leg. The corner is two
+# tiers of SuperSlide wire on the 79"/39" rod lines, an L between the two frames' sides.
+# Open frames: the aisle is ~31" (~27" at the pegs), and both north frames' drawers pull
+# ~18" into it.
 #
 # ** THE PAX FRAMES HANG ON A WALL RAIL AND ARE AUTHORED `MountKind.FLOOR`. ** The product
 # is IKEA's wall-mounted frame (no floor contact, so the raised carpet carries nothing). But
 # `advisory.wall_backing_present` grades a WALL mount's band at the body's BOTTOM, and a
-# 93" frame fastens at its TOP; authored WALL it asks for a band at the floor. BK-M-CLN-PAX
-# is the real rail backing, authored by hand. The plinth deck does sit on the floor.
+# 93" frame fastens at its TOP; authored WALL it asks for a band at the floor.
+# BK-M-CLN-PAX, -CLN2-PAX and -BA2E2-PAX are the real rail backing, authored by hand.
 #
 # Distances are station-to-centre from each wall's start node: W-M-CLN from x 8'-2",
 # W-M-CLN2 from x 13'-5", W-M-BA2E2 south from y 18'-0", W-M-BDN2 east from x 8'-2",
@@ -38,69 +39,48 @@ from typehaus.model import deg, ft, inch, pt
 
 MAIN_CLOSET = [
     # --- north wall ---------------------------------------------------------------------
-    # Custom bay centre x 9'-9 3/8" (101 3/8"..133 3/8"). Both boards are 22 7/8" deep, the
-    # PAX depth, so the front reads as one line; the valance tops out at the frames' 93 1/8".
-    Furniture(uid="8YDGGBNZHY", tag="FURN-M-CLOSET-VALANCE", type_ref="FT-M-CLOSET-VALANCE",
-              room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(90.125)),
+    # The wire corner, x 8'-5 3/8"..11'-1 3/8" on this wall and y 15'-7 7/8"..17'-8 5/8" down
+    # the west. The L's return is on the type's -x side, so it runs down the WEST wall. The
+    # rod hangs at the body's bottom, 5/16" up to its centre: 79"/39", the PAX rail lines.
+    # North-leg clips in BK-M-CLN-WIRE-HI/-LO; the west leg's land in BA2E2's HIGH and GRAB.
+    Furniture(uid="W46JHDBAND", tag="FURN-M-CLOSET-CORNER-HI", type_ref="FT-M-CLOSET-CORNER-WIRE",
+              room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(78.6875)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-CLN", face="right", distance_from_start=inch(19.375),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    Furniture(uid="SA4RFVMGE4", tag="FURN-M-CLOSET-PLINTH", type_ref="FT-M-CLOSET-PLINTH",
-              room="RM-M-CLOSET", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0)),
+    Furniture(uid="5SDTBM2GJM", tag="FURN-M-CLOSET-CORNER-LO", type_ref="FT-M-CLOSET-CORNER-WIRE",
+              room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(38.6875)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-CLN", face="right", distance_from_start=inch(19.375),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Rods run east off the west wall, 12" off the north face (hanger centre), into the
-    # central frame's side panel. Their bases sit in BA2E2's existing wet-wall courses
-    # (BK-M-BA2E2-HIGH 72"..79 1/4", -GRAB 32"..39 1/4"), so they need no new band.
-    Furniture(uid="XX4XJN6N0V", tag="FURN-M-CLOSET-ROD-HI", type_ref="FT-M-CLOSET-ROD-32",
-              room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(79)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(15.375),
-                  normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(uid="5M8RT8XXWJ", tag="FURN-M-CLOSET-ROD-LO", type_ref="FT-M-CLOSET-ROD-32",
-              room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(39)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(15.375),
-                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="YF4P52RKW3", tag="FURN-M-CLOSET-PAX-SHOW", type_ref="FURN-M-PAX-SHOW",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.25)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-CLN", face="right", distance_from_start=inch(55.0625),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    # x 14'-4 3/4"..16'-0 3/8" and 16'-0 3/8"..17'-8".
-    Furniture(uid="X1AG5PS5Y8", tag="FURN-M-CLOSET-PAX-DRESS", type_ref="FURN-M-PAX-DRESS",
+    # x 14'-4 3/4"..17'-8 1/8", 1/2" off the east wall to scribe.
+    Furniture(uid="X1AG5PS5Y8", tag="FURN-M-CLOSET-PAX-HANG", type_ref="FURN-M-PAX-SHOW-HANG",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.25)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-CLN2", face="right", distance_from_start=inch(21.5625),
+                  wall_ref="W-M-CLN2", face="right", distance_from_start=inch(31.4375),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    Furniture(uid="88MG1P0R11", tag="FURN-M-CLOSET-PAX-DOUBLE", type_ref="FURN-M-PAX-DOUBLE",
+
+    # --- west wall: a 29 1/2" double-hang PAX against the south wall --------------------
+    # y 13'-2 3/8"..15'-7 7/8", front at x 10'-4 1/4". Rail into BK-M-BA2E2-PAX.
+    Furniture(uid="PMF55DJ74K", tag="FURN-M-CLOSET-PAX-WEST", type_ref="FURN-M-PAX-DOUBLE-30",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0.25)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-CLN2", face="right", distance_from_start=inch(41.1875),
-                  normal_gap=inch(0), rotation_offset=deg(0)))),
-
-    # --- west wall: SEKTION drawers, south-justified (owner, 2026-10-01) -----------------
-    # Two 24" units form one 48" run. The north unit is under the west bay's 39" rod: the
-    # rod's first 15 1/2" from the wall is directly over the 36" counter and cannot take
-    # hanging clothes; only its remaining length beyond the cabinet face stays usable.
-    Furniture(uid="RBXDWNQ5MB", tag="FURN-M-CLOSET-SEKTION-N", type_ref="FURN-M-SEKTION-24-DRAWER",
-              room="RM-M-CLOSET", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(21.625),
-                  normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(uid="3MCJXB7KKA", tag="FURN-M-CLOSET-SEKTION-S", type_ref="FURN-M-SEKTION-24-DRAWER",
-              room="RM-M-CLOSET", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(45.625),
+                  wall_ref="W-M-BA2E2", face="left", distance_from_start=inch(42.875),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # --- south wall: robe pegs, between the SEKTION run and the switch -------------------
-    # x 9'-9"..13'-3"; rail bottom 64", pegs at ~66", so a robe hem clears the floor.
+    # --- south wall: robe pegs, between PAX-WEST and the switch --------------------------
+    # x 10'-4 3/8"..13'-10 3/8": 1/8" off the PAX side, ~3/4" short of a 2 1/2" casing on
+    # D-M-BED (leaf at 14'-2"; casing is not modelled). Rail bottom 64", pegs at ~66", so a
+    # robe hem clears the floor.
     Furniture(uid="NTTF3DRZJ8", tag="FURN-M-CLOSET-PEGS", type_ref="FURN-M-CLOSET-PEGS",
               room="RM-M-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(64)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-BDN2", face="left", distance_from_start=inch(43),
+                  wall_ref="W-M-BDN2", face="left", distance_from_start=inch(47.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # --- lighting --------------------------------------------------------------------------
@@ -108,7 +88,9 @@ MAIN_CLOSET = [
     # LED in a clothes closet stands 6" off the storage space. The PAX zone runs ceiling to
     # floor to the frames' face at y 15'-9 3/4"; at y 15'-8" the cans were 1 3/4" inside the
     # limit. At 15'-0" they are ~7 3/4" clear of it and ~7 1/2" clear of the south wall's
-    # 12" zone above 6'. Nothing in the engine grades 410.16: re-measure after any move.
+    # 12" zone above 6'. Re-measured 2026-10-03: CAN1 is ~7 3/4" from PAX-WEST's face
+    # (x 10'-4 1/4") and ~6 5/8" from the wire corner's 24" rod zone (x 10'-5 3/8").
+    # Nothing in the engine grades 410.16: re-measure after any move.
     # 1,300 lm over 41.9 sf at CU 0.60 x LLF 0.80 = 14.9 fc on the aisle, plus the PAX strips
     # inside the frames. x stays on 11'/15', one can per side of the central frame.
     ElectricalDevice(uid="QTM000VAAA", tag="ED-M-CLOSET-CAN1", kind=DeviceKind.LIGHT,
@@ -150,7 +132,7 @@ MAIN_CLOSET = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-CLN2", face="right", distance_from_start=inch(13),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # TRADFRI 30 W driver on top of the dress frame, corded into ED-M-CLOSET-RC1. It names
+    # TRADFRI 30 W driver on top of the east frame, corded into ED-M-CLOSET-RC1. It names
     # the circuit so its 30 VA lands on CKT-LT-MAIN; ED-T-RECEPTACLE carries no load_va, so
     # nothing counts twice.
     ElectricalDevice(uid="FB7ZP1MC75", tag="ED-M-CLOSET-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
@@ -161,20 +143,20 @@ MAIN_CLOSET = [
                          wall_ref="W-M-CLN2", face="right", distance_from_start=inch(19),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # One OVERSIDAN per frame under its top panel, 1 1/2" behind the front edge
-    # (y 15'-11 1/4"): 38" + 18" + 18" = 74" at 1.5 W/ft is 9.3 W; x1.25 = 11.6 W on a 30 W
-    # driver, three of its nine sources.
+    # (y 15'-11 1/4", x 10'-2 3/4" on PAX-WEST): 38" + 38" + 28" = 104" at 1.5 W/ft is
+    # 13.0 W; x1.25 = 16.3 W on a 30 W driver, three of its nine sources.
     LightRun(uid="83CZ90GFSQ", tag="LR-M-CLOSET-PAX-SHOW", type_ref="ED-T-LT-PAX-STRIP",
              path=(pt(inch(134), inch(191.25)), pt(inch(172), inch(191.25))),
              room="RM-M-CLOSET", psu_ref="ED-M-CLOSET-LT-PSU",
              controlled_by=("ED-M-CLOSET-SW",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(91))),
-    LightRun(uid="81V49T7YB8", tag="LR-M-CLOSET-PAX-DRESS", type_ref="ED-T-LT-PAX-STRIP",
-             path=(pt(inch(173.5625), inch(191.25)), pt(inch(191.5625), inch(191.25))),
+    LightRun(uid="81V49T7YB8", tag="LR-M-CLOSET-PAX-HANG", type_ref="ED-T-LT-PAX-STRIP",
+             path=(pt(inch(173.375), inch(191.25)), pt(inch(211.375), inch(191.25))),
              room="RM-M-CLOSET", psu_ref="ED-M-CLOSET-LT-PSU",
              controlled_by=("ED-M-CLOSET-SW",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(91))),
-    LightRun(uid="27DAVE1XP0", tag="LR-M-CLOSET-PAX-DOUBLE", type_ref="ED-T-LT-PAX-STRIP",
-             path=(pt(inch(193.1875), inch(191.25)), pt(inch(211.1875), inch(191.25))),
+    LightRun(uid="ZQDXEYDGFW", tag="LR-M-CLOSET-PAX-WEST", type_ref="ED-T-LT-PAX-STRIP",
+             path=(pt(inch(122.75), inch(159.125)), pt(inch(122.75), inch(187.125))),
              room="RM-M-CLOSET", psu_ref="ED-M-CLOSET-LT-PSU",
              controlled_by=("ED-M-CLOSET-SW",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(91))),

@@ -207,6 +207,7 @@ def _fixed_cabinet_intervals(ctx: CheckContext, ring: list,
     from shapely.geometry import LineString, Point, Polygon
 
     boundary = LineString(list(ring) + [ring[0]])
+    room_area = Polygon(ring)
     floor_z = next((s.elevation.meters for s in ctx.plan.storeys if s.tag == storey_tag), 0.0)
     types = {t.tag: t for t in ctx.plan.library.furniture_types}
     intervals: list[tuple[float, float]] = []
@@ -224,6 +225,10 @@ def _fixed_cabinet_intervals(ctx: CheckContext, ring: list,
         if not carcass.is_valid or carcass.is_empty:
             continue
         if carcass.distance(boundary) > _NEAR_WALL_M:
+            continue
+        # _NEAR_WALL_M reaches through a partition: a closet frame behind the wall is not
+        # this room's cabinet. Ownership by geometry: the carcass stands in this room.
+        if not room_area.contains(carcass.centroid):
             continue
         # Projected rather than buffered: a buffer wide enough to reach the boundary (which
         # is the room polygon, not the drywall face — see _NEAR_WALL_M) would also run that

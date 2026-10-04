@@ -55,6 +55,18 @@ def test_double_hang_frame_has_two_rods_and_one_shelf() -> None:
     assert len(_boards_above(parts, NARROW, 79)) == 2
 
 
+def test_show_hang_frame_keeps_the_show_drawers_under_one_long_rail() -> None:
+    show = model_parts("wardrobe-show", WIDTH, DEPTH, HEIGHT)
+    parts = model_parts("wardrobe-show-hang", WIDTH, DEPTH, HEIGHT)
+    def drawers(ps: list) -> list:
+        return [p for p in ps if p["color"] in ("wood", "glass")
+                and p["center"][2] < inch(45).meters and p["size"][2] < inch(30).meters]
+    assert drawers(parts) == drawers(show)
+    assert _rod_centres(parts) == [pytest.approx(inch(86).meters, abs=1e-3)]
+    # Only the frame's own top panel stands above the hang: no upper shelves.
+    assert len(_boards_above(parts, WIDTH, 47)) == 1
+
+
 def test_display_frame_has_solid_lower_fronts_and_two_glass_upper_drawers() -> None:
     parts = model_parts("wardrobe-show", WIDTH, DEPTH, HEIGHT)
     glass = [part for part in parts if part["color"] == "glass"]
@@ -130,7 +142,34 @@ def test_sliding_pair_puts_the_mirror_on_the_right_in_the_front_track() -> None:
     assert mirror[0]["size"][0] == pytest.approx(width / 2)
 
 
-@pytest.mark.parametrize("symbol", ("wardrobe-show", "wardrobe-dress",
+WIRE_W, WIRE_D, WIRE_H = inch(32).meters, inch(24.75).meters, inch(1.5).meters
+
+
+def test_corner_wire_shelf_draws_the_types_l_and_masses_inside_its_box() -> None:
+    ring = wardrobe_corner_points(WIRE_W, WIRE_D, inch(12).meters)
+    strokes = plan_symbol_strokes("closet-corner-wire", WIRE_W, WIRE_D)
+    assert [c for p in strokes[0]["points"] for c in p] == \
+        pytest.approx([c for p in ring for c in p])
+    assert strokes[0]["closed"]
+    rod = strokes[-1]
+    assert not rod["closed"]
+    # The rod runs from the back leg's free end, round the corner bar, to the return's.
+    assert rod["points"][0][0] == pytest.approx(WIRE_W / 2)
+    assert rod["points"][-1][1] == pytest.approx(-WIRE_D / 2)
+    parts = model_parts("closet-corner-wire", WIRE_W, WIRE_D, WIRE_H)
+    for part in parts:
+        (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
+        assert part["color"] == "metal"
+        assert abs(cx) + sx / 2 <= WIRE_W / 2 + 1e-9
+        assert abs(cy) + sy / 2 <= WIRE_D / 2 + 1e-9
+        assert cz - sz / 2 >= 0 and cz + sz / 2 <= WIRE_H + 1e-9
+    shelves = [part for part in parts if part["center"][2] > WIRE_H / 2]
+    assert len(shelves) == 2
+    arc = [part for part in parts if part["shape"] == "prism"]
+    assert arc and all(part["center"][2] < WIRE_H / 2 for part in arc)
+
+
+@pytest.mark.parametrize("symbol", ("wardrobe-show", "wardrobe-show-hang", "wardrobe-dress",
                                     "wardrobe-double-hang", "wardrobe-corner"))
 def test_gltf_uses_the_same_wood_interior_and_glass_or_metal(symbol: str) -> None:
     furniture = FurnitureType(tag="PAX", name="Open wardrobe",

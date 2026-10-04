@@ -38,8 +38,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
   forced — `W-A-C2`/`W-A-C2M`/`W-A-C2B`, `W-A-N2`/`W-A-N2B`, `W-A-W1`/`W-A-W1B` — so nobody
   reading a line has to look in two files for a segment of it, and `RB-HOUSE.bearing_refs`
   sits beside the walls it names.
-- `plan/closet.py` — `# haus: editable`, everything in RM-M-CLOSET (PAX, SEKTION, rods, pegs,
-  mirror, cans, switch, PAX strips); types and IKEA products in `plan/closet_types.py`.
+- `plan/closet.py` — `# haus: editable`, everything in RM-M-CLOSET (three PAX frames, the
+  SuperSlide wire corner, pegs, mirror, cans, switch, PAX strips); types and products in
+  `plan/closet_types.py`.
 - `plan/bath1_storage.py` — `# haus: editable`, three 24x24x90 SEKTION frames in RM-S-BATH1;
   types/products in `plan/bath1_storage_types.py`. Toilet centres under WIN-S-BATH-W at
   y=376"; west/centre lower 30" are open shelves, with a drawer above; east has three

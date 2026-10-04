@@ -2913,14 +2913,24 @@
 # rails and one shelf. KOMPLEMENT 19 5/8" rail $8-12. The custom bay's
 # boards are site-cut white melamine or painted poplar. SEKTION rail/handle allowance is
 # included in the high end of the drawer-cabinet row; the quartz slab is in [countertops].
-# CONFIDENCE: MEDIUM for the IKEA rows (list prices); LOW for the mirror (no SKU chosen).
+# 2026-10-03: the west end is a 29 1/2" double-hang PAX (frame $180, SKU 605.890.06, two
+# KOMPLEMENT rails, one shelf) and a two-tier ClosetMaid SuperSlide nickel corner: per
+# tier ~57" of 12" shelf ($35-55), one 56333 corner bar ($15-25), end and back clips. The
+# bay, its boards and both SEKTIONs are retired, and their quartz slab with them. The two
+# 19 5/8" frames went back to one 39 3/8" (SHOW-HANG): SHOW's drawers and one KOMPLEMENT
+# rail ($10-15) in place of its two upper shelves, so the SHOW row less ~$20-30.
+# CONFIDENCE: MEDIUM for the IKEA rows (list prices); LOW for the mirror (no SKU chosen)
+# and the wire corner (big-box band, SKU not chosen).
 "FURN-M-PAX-SHOW" = { material = { low = 480, high = 820 }, labour = { low = 120, high = 320 } }  # 1 ea
-"FURN-M-PAX-DRESS" = { material = { low = 225, high = 300 }, labour = { low = 80, high = 200 } }  # 1 ea
-"FURN-M-PAX-DOUBLE" = { material = { low = 200, high = 260 }, labour = { low = 80, high = 200 } }  # 1 ea
-"FURN-M-SEKTION-24-DRAWER" = { material = { low = 379, high = 450 }, labour = { low = 45, high = 120 } }  # 2 ea
-"FT-M-CLOSET-ROD-32" = { material = { low = 15, high = 45 }, labour = { low = 20, high = 50 } }  # 2 ea
-"FT-M-CLOSET-VALANCE" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 1 ea
-"FT-M-CLOSET-PLINTH" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 1 ea
+"FURN-M-PAX-SHOW-HANG" = { material = { low = 460, high = 790 }, labour = { low = 120, high = 320 } }  # 1 ea
+"FURN-M-PAX-DRESS" = { material = { low = 225, high = 300 }, labour = { low = 80, high = 200 } }  # 0 ea — retired 2026-10-03
+"FURN-M-PAX-DOUBLE" = { material = { low = 200, high = 260 }, labour = { low = 80, high = 200 } }  # 0 ea — retired 2026-10-03
+"FURN-M-PAX-DOUBLE-30" = { material = { low = 215, high = 250 }, labour = { low = 80, high = 200 } }  # 1 ea
+"FT-M-CLOSET-CORNER-WIRE" = { material = { low = 60, high = 100 }, labour = { low = 30, high = 80 } }  # 2 ea
+"FURN-M-SEKTION-24-DRAWER" = { material = { low = 379, high = 450 }, labour = { low = 45, high = 120 } }  # 0 ea — retired 2026-10-03
+"FT-M-CLOSET-ROD-32" = { material = { low = 15, high = 45 }, labour = { low = 20, high = 50 } }  # 0 ea — retired 2026-10-03
+"FT-M-CLOSET-VALANCE" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 0 ea — retired 2026-10-03
+"FT-M-CLOSET-PLINTH" = { material = { low = 30, high = 90 }, labour = { low = 60, high = 160 } }  # 0 ea — retired 2026-10-03
 "FURN-M-CLOSET-PEGS" = { material = { low = 25, high = 90 }, labour = { low = 30, high = 80 } }  # 1 ea
 "FT-SUITEBATH-PEGS-24" = { material = { low = 20, high = 60 }, labour = { low = 30, high = 80 } }  # 1 ea — the closet rail at 24", four knobs
 "FT-SUITEBATH-MIRROR-ESTERO" = { material = { low = 80, high = 160 }, labour = { low = 30, high = 80 } }  # 1 ea — Kate and Laurel Estero 20x28 gold arch shelf mirror (HD 221484); retail band, not a quote
@@ -5039,12 +5049,12 @@
 #
 # $50-95/SF is fabricated-and-installed low-silica quartz with an eased edge, the same band
 # the retired `finish-countertops-quartz` allowance carried. The five existing tops total
-# 61.34 SF, or $3,067-5,827 against that lump's $3,200-6,000. CT-M-CLOSET adds 5.50 SF
-# (48 x 16 1/2). Five quartz window stools add 11.30 SF (the plant room's four, then
-# WIN-M-KITCH), so this row priced 78.13 SF, and 78.88 SF since the 2026-10-02 corners. See
+# 61.34 SF, or $3,067-5,827 against that lump's $3,200-6,000. Five quartz window stools
+# add 11.30 SF (the plant room's four, then WIN-M-KITCH). CT-M-CLOSET's 5.50 SF went with
+# the closet SEKTIONs on 2026-10-03: 78.47 SF before, 72.97 SF after. See
 # plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the showroom — silica
 # exposure control is the thing to buy here.
-"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 78.88 SF
+"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 72.97 SF
 # The bar top, and the rate is not a countertop rate at all: the stock is the owner's own
 # white oak at ~$2/SF in 8/4, and everything above that is a joiner's time — milling to
 # 1 3/16" so it sits flush with 3 cm stone, strips the long way on slotted screws or
@@ -6107,8 +6117,8 @@ channel = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
 tape = { material = { low = 5, high = 13 }, labour = { low = 3, high = 7 } }
 end_cap = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
 corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 5, high = 11 } }
-# Mark E2, RM-M-CLOSET's two IKEA OVERSIDAN 38" strips (2026-10-01): a finished fixture
-# bought by the piece ($36 per 38"), so the strip is billed as tape and the channel, caps
+# Mark E2, RM-M-CLOSET's three IKEA OVERSIDAN strips (38", 38", 28"; 104" since
+# 2026-10-03): a finished fixture bought by the piece ($36 per 38"), so the strip is billed as tape and the channel, caps
 # and connectors are $0 — they ship in the box. $36 / 3.17 ft = $11.40/LF.
 "channel:ED-T-LT-PAX-STRIP" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 "tape:ED-T-LT-PAX-STRIP" = { material = { low = 10.5, high = 12 }, labour = { low = 3, high = 8 } }
@@ -7576,6 +7586,12 @@ wall_structure = true
 "solids:bug_screen:GARAGE_WALL_2X6" = "reads 0 SF for a corrugated wall by design — the closures bill as an allowance"
 "floor_finishes:polished-concrete" = "the costed fallback to the 2K PU coating on SL-M-DECK (2026-09-12)"
 "placeables:FT-CLOSET-SHELFROD-96" = "RM-M-CLOSET's shelf-and-rod until the 2026-10-01 PAX fit-out; a library size, kept priced"
+"placeables:FURN-M-SEKTION-24-DRAWER" = "RM-M-CLOSET's west drawers until the 2026-10-03 PAX-WEST and wire corner; kept priced"
+"placeables:FT-M-CLOSET-ROD-32" = "RM-M-CLOSET's custom-bay rods until 2026-10-03; kept priced"
+"placeables:FT-M-CLOSET-VALANCE" = "RM-M-CLOSET's custom-bay top board until 2026-10-03; kept priced"
+"placeables:FT-M-CLOSET-PLINTH" = "RM-M-CLOSET's custom-bay shoe deck until 2026-10-03; kept priced"
+"placeables:FURN-M-PAX-DRESS" = "RM-M-CLOSET's 19 5/8\" dress frame, 2026-10-02 to -03; kept priced"
+"placeables:FURN-M-PAX-DOUBLE" = "RM-M-CLOSET's 19 5/8\" double-hang frame, 2026-10-02 to -03; kept priced"
 
 [basis]
 framing              = "material"
