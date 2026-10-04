@@ -25,6 +25,8 @@ source:
   - plan/lighting_types.py
   - plan/mep_electrical.py
   - plan/electrical.py
+  - plan/plant_room.py
+  - plan/plant_room_types.py
 ---
 
 ## Sheet notes
@@ -211,6 +213,72 @@ wall liner (`pvc-panel`, `liner-furring`, `humid-membrane`), restated in
 `plan/storeys/second.py` since the editable dialect cannot import `assemblies.py`'s
 `_HUMID_LINER`. `building_science.humid_room_liner`/`_finish` grade the ceiling exactly
 as they grade the walls.
+
+### Plant displays and mounting support
+
+**Added 2026-10-04.** Four black IKEA SKUGGRÖNA stands, article **205.620.18**, carry
+twelve individually modelled **3 1/2" pots**. Their centres are 24" apart, centred on the
+existing desk; stand bottoms are **48" AFF**. Use the broad-back-against-wall arrangement.
+IKEA recommends pots no larger than 3 1/2", and limits each shelf to **6.6 lb total**:
+pot, saturated medium, plant and retained water. The shelf heights and foliage are
+illustrative; the delivered product and its template govern the installation.
+
+**Structural stud blocking, not ordinary furring, carries the stands.**
+`plan/plant_room.py` authors eight 2x8 blocks, 14 1/2" long, fitted between adjacent studs
+and flush with the plant-room stud face behind the membrane. Each stand gets two:
+
+| Stand | Host wall | Block stations from wall start | Block elevations above storey datum |
+|---|---|---|---|
+| 1 | W-S-PS1 | 64 3/4"–79 1/4" | 48"–55 1/4" and 72"–79 1/4" |
+| 2 | W-S-PS1 | 96 3/4"–111 1/4" | same |
+| 3 | W-S-PS2 | 3/4"–15 1/4" | same |
+| 4 | W-S-PS2 | 16 3/4"–31 1/4" | same |
+
+These elevations are **above the storey datum**, not AFF. The finished floor is 1.120"
+above that datum. The broad-face brackets are **720 mm / 28.346" apart**; nominal bracket
+centres near 49.2" and 77.55" AFF both land within the blocks. Verify delivered holes
+before drilling. Secure both ends of each block to its flanking studs; merely filling a
+bay does not establish the connection's capacity. Size bracket screws and block-end
+connections for the three loaded shelves plus the stand's own weight.
+
+**No separate blanket furring blocking is needed.** Each wall bracket gets a rigid,
+corrosion-resistant spacer from the structural block to the mounting face. Its nominal
+reach is the 1/2" PVC + 3/4" gap + membrane, about 1.29", adjusted to the installed stack.
+Locally clear the furring where a full-depth spacer passes through it. The spacer bears
+on the block and keeps clamp pressure off the hollow PVC; screws engage the structural
+wood rather than relying on 3/4" furring. Keep surrounding drying space open and give the
+PVC clearance around the spacer for expansion. Seal the spacer/fastener penetration
+**at the membrane plane** with compatible gasket/tape/sealant. Face caulk alone cannot
+seal a membrane hidden 1 1/4" behind the liner. Local furring packing, if needed for panel
+support, is a nailer and not the stand's structural anchor.
+
+**Hanging baskets:** `FURN-S-PLANT-HANG-NW/NE` are illustrative 12" baskets, with a 16"
+foliage envelope and approximately 24" trailing vines. Both hang beneath
+`FS-ATTIC`'s existing east–west joist at **y=8'-0"**. Centres are 18" from their finished
+side walls and 8.96" from the north wall. The northeast foliage envelope remains about
+6" west of the exhaust grille. The 46" assembly includes 22" cords; its eye plate meets
+the finished PVC ceiling and its basket rim is near 7'-0" AFF.
+
+Use a rated closed-eye plate with fasteners arranged **along** the joist's bottom flange,
+plus sealed rigid spacers through the ceiling liner. No new cross-blocking is required
+at these positions. **50 lb per basket is a provisional fully watered load allowance,
+not a verified connection rating.** Confirm the saturated planter weight, actual I-joist
+manufacturer/series, flange dimensions, plate rating, fastener pilot holes, thread
+embedment, spacing and added joist load before releasing the attachment for construction.
+The generic modelled I-joist establishes location only. Do not notch or cut its flange.
+Weyerhaeuser TB-808 is an attachment-design reference for its TJI products, not blanket
+approval for an unspecified I-joist or screw eye.
+
+**Installation order:** secure the stud blocks and confirm the overhead joist first;
+lay out the delivered brackets and selected ceiling plates; install and seal the
+penetration interfaces while the membrane is accessible; fit furring, clearance-holed
+PVC and measured spacers; then mount the stands and baskets after verifying hardware
+capacity. Weigh the complete watered pots and baskets before loading them.
+
+Sources: [IKEA product details](https://www.ikea.com/us/en/p/skuggroena-wall-mounted-plant-stand-black-20562018/),
+[IKEA bracket template](https://www.ikea.com/us/en/manuals/skuggroena-wall-mounted-plant-stand-black__AA-2435064-2-100.pdf),
+[Trusscore mounting guidance](https://trusscore.com/install/),
+[Weyerhaeuser TB-808](https://www.weyerhaeuser.com/application/files/1517/5399/9413/TB-808.pdf).
 
 ### Floor
 

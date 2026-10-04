@@ -1858,10 +1858,9 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
                 for point in layer.polygon
             ) / len(layer.polygon)
 
-        # Every member is on the centreline of the band it belongs to — the studs on the
-        # structure layer's, and the rainscreen strapping, where there is any, on the FURRING
-        # layer's, outboard of it (resolve/framing/furring.py). Asserting one offset for all
-        # of them would put the battens inside the ZIP-R they are fastened over.
+        # Studs follow the structure centreline; strapping follows the furring layer.
+        # The garage's authored handrail backing is let in flush with the left stud face,
+        # so its narrow thickness has a different centreline from the studs it attaches to.
         #
         # GARAGE_WALL_2X6 has no furring layer (nail strip face-fastens straight to the
         # Zip-R), so on this house the strapping branch is currently dead. It stays coded
@@ -1875,6 +1874,9 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
         assert has_furring == any(member.category == "strapping" for member in wall.members)
         for member in wall.members:
             center_offset = expected.get(member.category, default_offset)
+            if member.child_key.startswith("backing-"):
+                structure = next(ly for ly in wall.layers if ly.function == "structure")
+                center_offset += (structure.thickness_m - cross_section(member.profile).width_m) / 2
             for point in (member.p0, member.p1):
                 offset = (point[0] - start[0]) * normal_x + (point[1] - start[1]) * normal_y
                 assert offset == pytest.approx(center_offset, abs=1e-9)

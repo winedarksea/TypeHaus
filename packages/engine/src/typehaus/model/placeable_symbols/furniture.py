@@ -31,6 +31,11 @@ from typehaus.model.placeable_symbols._families import (
 )
 from typehaus.model.placeable_symbols._frame import box, rect
 from typehaus.model.placeable_symbols._mirrors import arch_shelf_mirror
+from typehaus.model.placeable_symbols._plants import (
+    hanging_vine_planter,
+    small_potted_plant,
+    wall_plant_stand,
+)
 from typehaus.model.placeable_symbols._sektion import (
                                                         sektion_corner_base,
                                                         sektion_corner_points,
@@ -135,6 +140,9 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # The one furnishing that is not joinery: a pot with leaves over it. Five blades is the
     # fewest that still reads as a canopy rather than as a star at plan scale.
     "potted-plant": potted_plant(leaves=5),
+    "small-potted-plant": small_potted_plant,
+    "wall-plant-stand": wall_plant_stand,
+    "hanging-vine-planter": hanging_vine_planter,
     # Fitted casework. A base cabinet is a carcass under a counter slab, so it is the one
     # family that draws its top rather than its doors; wall and tall units are cases whose
     # cell grid says how the front divides. Narrow cabinets get one door; wider units keep

@@ -341,9 +341,10 @@ DUCTS_HVAC_SECOND = [
             soffit_ref="SF-S-HP1", design_cfm=750),
     # West branch to RM-S-SUITE: tees off DU-S-HP-SUP at D-S-SUITE's centreline
     # (y=14'-1 7/8"), crosses W-S-C2B above the door through the header/top-plate cripple
-    # zone, then runs west down the suite's entry arm to the grille near D-S-SUITEBATH.
-    # 175 cfm feeds two terminals — REG-S-HP-SUITE (100) and REG-A-HP-WEST (75), a floor
-    # boot up through FS-ATTIC directly above. 315 fpm through 10x8, quiet.
+    # zone, and ends at the loft boot 40" west of the tee. REG-S-HP-SUITE is a high sidewall
+    # grille on W-S-C2B's suite face; REG-A-HP-WEST is the floor boot at the duct end in
+    # RM-A-STUDIO. 175 cfm feeds both: 100 to the suite and 75 to the loft.
+    # 315 fpm through 10x8, quiet.
     #
     # ** EXPOSED SINCE 2026-09-13, AND THE ELEVATION IS AUTHORED BECAUSE OF IT. ** SF-S-SUITE
     # boxed this branch out of the entry arm and is retired; RM-S-SUITE declares its ceiling
@@ -356,7 +357,7 @@ DUCTS_HVAC_SECOND = [
     # Underside 8'-0 1/8" over the arm floor, against the 6'-8" headroom line the declaration
     # does not retire.
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 4), ft(14, 1.875)), pt(ft(12, 6), ft(14, 1.875))),
+            path=(pt(ft(19, 4), ft(14, 1.875)), pt(ft(16), ft(14, 1.875))),
             width=inch(10), depth=inch(8), routing=DuctRouting.EXPOSED,
             start_elevation=inch(100.125), end_elevation=inch(100.125), design_cfm=175),
     # The two south rooms' branch: RM-S-PLANT and RM-S-STUDY2 are fed off DU-S-HP-SOUTH,

@@ -40,7 +40,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   landscape, lighting, living_east_run, living_east_run_types,
                   lighting_attic, lighting_types, masonry_joints, mep, millwork,
                   millwork_vanities, placeables,
-                  plant_types, plate_ties,
+                  plant_room, plant_room_types, plant_types, plate_ties,
                   products,
                   site, transitions, views, wind_clamps)
 from plan.storeys import attic, attic_studio, basement, garage, main, second
@@ -78,7 +78,8 @@ _library = Library(
                      *study_nook_types.STUDY_NOOK_TYPES,
                      *bed_reading_corner_types.BED_READING_CORNER_TYPES,
                      *living_east_run_types.LIVING_EAST_RUN_TYPES,
-                     *kitchen_deep_cabinets.KITCHEN_DEEP_CABINET_TYPES),
+                     *kitchen_deep_cabinets.KITCHEN_DEEP_CABINET_TYPES,
+                     *plant_room_types.PLANT_ROOM_FURNITURE_TYPES),
     # The library's fascia guard plus the house's own surface-mounted one — the porch
     # guard's baseplates land on concrete wall tops and buy no bracket kit, which is a
     # different order at a different rate. Tags are disjoint.
@@ -374,6 +375,7 @@ PLAN = (
                                 *mep.SECOND_ELEMENTS,
                                 *electrical.SECOND_ELEMENTS, *lighting.SECOND_LIGHTING,
                                 *placeables.SECOND_PLACEABLES,
+                                *plant_room.PLANT_ROOM_PLACEABLES, *plant_room.PLANT_ROOM_BACKING,
                                 *bedroom_wardrobes.BEDROOM_WARDROBES,
                                 *bath1_storage.BATH1_STORAGE,
                                 *study_nook.STUDY_NOOK,

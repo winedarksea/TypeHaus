@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 42e2af28d19f24c5  
+**Model hash:** 6480de65cc70f0d3
 **Lines:** 158
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -51,7 +51,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | 1,660 | LF ordered | 200 pcs, 1409.2 LF cut | building |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | 28 | LF ordered | 2 pcs, 27.3 LF cut | building |
 | 2x8 — header, joist, landing framing (2x8) | 176 | LF ordered | 34 pcs, 130.8 LF cut | building |
-| 2x8 SPF framing lumber — blocking (2x8:spf) | 598 | LF ordered | 110 pcs, 479.5 LF cut | building |
+| 2x8 SPF framing lumber — blocking (2x8:spf) | 606 | LF ordered | 118 pcs, 489.1 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1134 pcs, 330.8 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |

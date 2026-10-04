@@ -26,6 +26,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from typehaus.model.backing import WallBacking
+from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.openings import WallOpening
 from typehaus.resolve.framing.profiles import cross_section
@@ -181,17 +182,35 @@ def append_backing_members(members: list[FramedMember], rw: ResolvedWall,
             continue
         breaks = _opening_breaks(members, rw.uid, bottom, top, direction, wall_start,
                                  openings, frame_base)
+        band_start = _backing_face_axis(rw, band, direction, wall_start)
         for ordinal, (s0, s1) in enumerate(_segments(start, end, breaks)):
             # The conservative end of a raking run: if the LOWER of the two stud tops cannot
             # reach the band's top, the run has bays with nothing behind it.
             if min(top_at(s0), top_at(s1)) < top - _EPSILON:
                 continue
-            a = add(wall_start, scale(direction, s0))
-            b = add(wall_start, scale(direction, s1))
+            a = add(band_start, scale(direction, s0))
+            b = add(band_start, scale(direction, s1))
             members.append(FramedMember(
                 rw.uid, f"backing-{index}-{ordinal:03d}", "blocking", band.profile,
                 a, b, bottom, top, s1 - s0, material=band.material_ref,
             ))
+
+
+def _backing_face_axis(rw: ResolvedWall, band: BackingBand, direction,
+                       wall_start) -> tuple[float, float]:
+    """Put a band inside the selected stud face, rather than in the cavity's centre."""
+    structure = next((layer for layer in rw.layers
+                      if layer.function == LayerFunction.STRUCTURE.value
+                      and not layer.is_cavity and layer.polygon), None)
+    if structure is None or band.face not in {"left", "right"}:
+        return wall_start
+    normal = (-direction[1], direction[0])
+    projections = [(point[0] - wall_start[0]) * normal[0]
+                   + (point[1] - wall_start[1]) * normal[1] for point in structure.polygon]
+    half_thickness = cross_section(band.profile).width_m / 2
+    offset = (max(projections) - half_thickness if band.face == "left"
+              else min(projections) + half_thickness)
+    return add(wall_start, scale(normal, offset))
 
 
 def band_face_height_m(profile: str) -> float:

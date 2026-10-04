@@ -4608,3 +4608,15 @@ surface that reaches the court, so the water goes there.
   preserving the total braced length. Both corners retain their 33-inch south-wall return.
 - Validation: 34 bracing, window-column/module and reading-corner tests passed; JSON
   build passed. House checks returned 1,841 pass, zero fail and 43 unknown.
+
+## 2026-10-04 — Shorten the second-storey suite supply branch
+
+- `DU-S-HP-SUITE` now runs straight 40 inches west from its takeoff on `DU-S-HP-SUP` to
+  x=16'-0", where the rotated 12x6 floor boot `REG-A-HP-WEST` serves the west loft.
+- Move the loft boot 6 inches west from x=16'-6" and rotate it 90 degrees. Its 75 cfm and
+  the branch total of 175 cfm stay the same.
+- Replace the suite's downward ceiling diffuser with a 100 cfm high sidewall grille on the
+  suite face of `W-S-C2B`, centred above `D-S-SUITE` and aimed west into the bedroom. It uses
+  the same 12x6 double-deflection type and mount elevation as the bedroom side grilles.
+- Keep the branch exposed at its authored 100 1/8-inch centreline; it still crosses
+  `W-S-C2B` above the door header.

@@ -1403,7 +1403,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   gym or a service hall, and no owner has said its ceiling should be open.
   `DU-S-HP-SUITE` lost its `soffit_ref` with `SF-S-SUITE` and is `DuctRouting.EXPOSED` with
   an AUTHORED centreline (100 1/8" storey-relative): without it `_derived_base_z` falls back
-  to the storey datum and lays a supply duct on the floor.
+  to the storey datum and lays a supply duct on the floor. It now runs 40" west from the
+  trunk to `REG-A-HP-WEST` at x=16'-0"; the 75 cfm loft boot is rotated 90 degrees and the
+  100 cfm suite outlet is a high sidewall grille on W-S-C2B above D-S-SUITE.
   - **A box's LONG plan dimension is its axis; every occupant is measured ACROSS the other
     one.** Near-square soffits (e.g. `SF-S-HP1`) need this ordering chosen deliberately, or
     the check grades the trunk's travel as "width" and never compares lane to machine.

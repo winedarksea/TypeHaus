@@ -55,10 +55,9 @@ from typehaus import (
 )
 from typehaus.model import Location, WallAttachment, m
 
-# Terminals off the chase, each at the end of its own drawn branch (plan/mep_hvac_branches.py),
-# and `duct_ref` names that branch. Until 2026-09-23 they named the trunk through an unmodelled
-# boot that could not have been built: ceiling grilles on or beside a joist, 1 3/8" into the
-# hall wall.
+# Terminals off the chase name their drawn branch in `duct_ref`. Until 2026-09-23 the bedroom
+# grilles named the trunk through an unmodelled boot that could not have been built: ceiling
+# grilles on or beside a joist, 1 3/8" into the hall wall.
 #
 # BED1 and BED2 are HIGH SIDEWALL grilles on W-S-BW1/2's bedroom face (22'-1 3/8"), at the end
 # of a side collar straight off the trunk — REG-S-HP-STAIR's type, rotation and derivation:
@@ -72,11 +71,11 @@ from typehaus.model import Location, WallAttachment, m
 # NOTHING GRADES A REGISTER AGAINST ITS HOST SURFACE — a Register resolves no solid, so
 # `Mount.elevation` is a number the schedule and the sections print and no check reads.
 #
-# RM-S-SUITE's terminal (REG-S-HP-SUITE) sits at DU-S-HP-SUITE's west terminus (12'-6",
-# 14'-1 7/8"), throwing down the entry arm into the suite's main volume. This branch is what
-# made the suite's old ERV supply (REG-S-SUP6) redundant. It was in SF-S-SUITE's underside
-# until 2026-09-13; that box is retired and the grille is in the EXPOSED duct's own bottom
-# face now — which is why its elevation is the duct's underside and not a ceiling plane.
+# RM-S-SUITE's 100 cfm terminal is a high sidewall grille on W-S-C2B, directly above
+# D-S-SUITE and aimed west into the sleeping room. It matches the bedroom side-collar pattern:
+# a wall attachment and the same 12x6 double-deflection type and mount elevation.
+# The 75 cfm attic boot is at the shortened DU-S-HP-SUITE's west end, 40" from its takeoff.
+# Total branch airflow and the suite's old ERV supply (REG-S-SUP6) are unchanged.
 REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH01AAAA", tag="REG-S-HP-BED1", kind=DuctSystem.SUPPLY, room="RM-S-BED1",
              duct_ref="DU-S-HP-BED1", type_ref="REG-T-HP-SUP-SIDE", design_cfm=80,
@@ -125,18 +124,15 @@ REGISTERS_HVAC_SECOND = [
              position=pt(inch(222), ft(24)), duct_ref="DU-S-HP-SUP", rotation=deg(90),
              type_ref="REG-T-HP-SUP-SIDE", design_cfm=50,
              mount=Mount(kind=MountKind.WALL, elevation=inch(97.125))),
-    # The suite's supply, at the branch's west terminus, throwing down the entry arm.
-    # ** 96 1/8" IS DERIVED AND IS THE DUCT'S UNDERSIDE ** — the same rule REG-S-HP-STAIR's
-    # 97 1/8" follows. DU-S-HP-SUITE is EXPOSED since SF-S-SUITE's retirement (2026-09-13)
-    # and its centreline resolves at 100 1/8" storey-relative, so an 8" section leaves its
-    # bottom at 96 1/8" and the grille is cut into that face. It read 7'-10" while the box
-    # stood, which was the box's underside; change the branch's elevation or its depth and
-    # this moves with them. Nothing in the engine grades a Register against its host surface
-    # (a Register resolves no solid), so this number is only ever as true as it is authored.
+    # The suite's high sidewall supply over D-S-SUITE, throwing west into RM-S-SUITE. Its
+    # mount elevation matches the bedroom side collars. The W-S-C2B station is the door centre
+    # at y=14'-1 7/8". `face="left"` is the suite side of this north-running wall.
     Register(uid="CSRH06AAAA", tag="REG-S-HP-SUITE", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
-             position=pt(ft(12, 6), ft(14, 1.875)), duct_ref="DU-S-HP-SUITE",
-             type_ref="REG-T-HP-SUP", design_cfm=100,
-             mount=Mount(kind=MountKind.CEILING, elevation=inch(96.125))),
+             duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SUP-SIDE", design_cfm=100,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(95.875)),
+             location=Location(attachment=WallAttachment(
+                 wall_ref="W-S-C2B", face="left", distance_from_start=inch(20.875),
+                 normal_gap=inch(0), rotation_offset=deg(0)))),
     # The two south rooms, both on DU-S-HP-SOUTH — the FS-ATTIC joist-bay branch at
     # y=3'-4" that reaches them from above, because the air handler's case fills SF-S-DUCT
     # from y=6'-0" to 9'-7" and leaves no lane south inside the soffit. Ceiling
@@ -290,6 +286,7 @@ REGISTERS_HVAC_ATTIC = [
              type_ref="REG-T-HP-SUP", design_cfm=35,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # The west loft's supply: a floor boot straight up off DU-S-HP-SUITE through FS-ATTIC.
+    # Shifted 6" west and rotated 90 degrees to terminate the now-shortened branch cleanly.
     # The room gets conditioned air off System 1 like RM-A-STUDY/RM-A-EAST-UNFIN, returning
     # stale air at REG-A-RET1, so the ERV's attic side is extract-only.
     #
@@ -301,7 +298,7 @@ REGISTERS_HVAC_ATTIC = [
     # MINI-SPLIT IS WANTED: reusing this boot is the whole reason the studio costs what it
     # costs.
     Register(uid="CARH03AAAA", tag="REG-A-HP-WEST", kind=DuctSystem.SUPPLY,
-             room="RM-A-STUDIO", position=pt(ft(16, 6), ft(14, 1.875)),
+             room="RM-A-STUDIO", position=pt(ft(16), ft(14, 1.875)), rotation=deg(90),
              duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SUP", design_cfm=75,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
