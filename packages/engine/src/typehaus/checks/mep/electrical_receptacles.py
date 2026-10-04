@@ -44,6 +44,7 @@ _MAX_COUNTING_HEIGHT_M = 5.5 * 0.3048
 _BASIN_SYMBOLS = {"lavatory", "vanity"}
 _NOT_BASIN_SYMBOLS = {"toilet", "toilet-wall-hung", "bidet", "urinal", "tub", "tub-shower",
                       "shower", "floor-drain", "kitchen-sink", "laundry-sink", "hydrant",
+                      "kitchen-sink-undermount-single",
                       "sauna-heater", "water-heater"}
 
 

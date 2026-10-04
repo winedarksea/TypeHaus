@@ -934,9 +934,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `WIN-S-BED3-N` (WT-1424, x 34'-0", sill 4'-0") sits over `WIN-M-KITCH-N`, completing a
   **corner pair** with `WIN-S-BED3` (east wall y=34'-0", each 2'-0" off the corner) — a
   two-storey column — and satisfies R303.1 Exception 1 for `RM-S-BED3` (12.2 sf glazed/6.1
-  sf openable against 10.32 required). The kitchen counter run (B15 + DW + SINK-36 + B15 +
-  2 3/8" filler, from the pantry wall) has no slack; the window column follows the sink,
-  never the reverse (`plan/placeables.py` kitchen header).
+  sf openable against 10.32 required). The current kitchen counter run is B12 + DW24 +
+  SINK-36 + B18, without a filler. The 32-inch single bowl sits 5/8 inch east inside its
+  base to centre under the fixed window (`notes/kitchen_stock_cabinet_details.md`).
 
 - **Rows.** Where a column is impossible, the storey's rhythm must be centred, not merely
   even. East second storey: 4'-0"/13'-4"/22'-8"/32'-0", mirrored about y=18'-0" in station,
@@ -2610,8 +2610,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `notes/kitchen_stock_cabinet_details.md`. Stock frames govern the revised north/east
   runs, except the custom 24x24x40 garage lower. West deep custom uppers retain their scope.
 - **North partition face x=297 3/8:** B12 + DW24 + sink B36 + B18, then existing NE
-  carousel at x=387 3/8. No kitchen filler. Sink and drain moved 5/8 west; the window
-  stays fixed on its stud grid. Pantry shelves are 73 1/4, two 36 1/4 bays plus a 3/4 gable.
+  carousel at x=387 3/8. No kitchen filler. Base centre x=351 3/8; the 32-inch single-bowl
+  undermount sink/faucet centre on the fixed window at x=352. Reference exterior 32x19,
+  bowl 30x17x10, placement envelope 32x22 including rear faucet space. Quartz opening
+  follows the fixture; flange clips/template remain a fabrication check. Drain, disposer,
+  sleeve and cleanout share x=352, y=416 7/8; downstream drain route stays fixed.
+  Pantry shelves are 73 1/4, two 36 1/4 bays plus a 3/4 gable.
 - **North uppers:** W36 + 20 stacker, W36 bridge, W30 + 20 stacker. WN1 is the true
   26x26x30 diagonal corner at 73 1/2 AFF; WN2 is W12-30 between it and the hood.
   Shared polygon geometry keeps plan, collisions, viewer and GLB aligned. Light strips

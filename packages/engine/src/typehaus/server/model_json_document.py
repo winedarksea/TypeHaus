@@ -53,7 +53,7 @@ def _document_header(
         "contentHash": content_hash,
         "units": "imperial",
         # ``countertop_ref``: the slab drawn over this host (``countertops``), so the viewer
-        # skips the symbol's own grey counter. Null on a sink base, which keeps its cut-out.
+        # skips the symbol's grey counter. Bases without explicit slab holes keep theirs.
         "canvas_objects": [
             {**item, "trades": [CANVAS_DOMAIN_TRADE.get(str(item.get("domain")), "furniture")],
              "countertop_ref": hosted.get(str(item.get("tag")))}

@@ -93,8 +93,7 @@ def test_the_vanity_is_one_basin_and_no_longer_a_kitchen_sink():
     assert vanity.plan_symbol == "vanity"
     width, depth = (v.meters / M_PER_IN for v in vanity.footprint)
     assert (round(width, 4), round(depth, 4)) == (48.0, 18.0)
-    # The kitchen sink type survives, because the KITCHEN still uses it.
-    assert _element(plan, "main", "FX-M-KITCH-SINK").type_ref == "FX-KITCHEN-SINK-33"
+    assert _element(plan, "main", "FX-M-KITCH-SINK").type_ref == "FX-KITCHEN-SINK-32-SINGLE"
 
 
 def test_the_vanity_stands_on_the_floor_rather_than_hanging_on_the_wall():

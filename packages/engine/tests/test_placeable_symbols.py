@@ -92,6 +92,32 @@ def test_every_colour_role_resolves_to_a_hex_string() -> None:
         assert part_hex(role).startswith("#") and len(part_hex(role)) == 7
 
 
+def test_single_bowl_undermount_has_actual_flange_bowl_and_separate_faucet():
+    inch_m = 0.0254
+    width, depth, height = (value * inch_m for value in (32, 22, 20))
+    strokes = plan_symbol_strokes("kitchen-sink-undermount-single", width, depth)
+    flange, bowl, drain, faucet = strokes
+    for stroke, expected_width, expected_depth in ((flange, 32, 19), (bowl, 30, 17)):
+        xs, ys = zip(*stroke["points"], strict=True)
+        assert (max(xs) - min(xs)) / inch_m == pytest.approx(expected_width)
+        assert (max(ys) - min(ys)) / inch_m == pytest.approx(expected_depth)
+    flange_center_y = (min(y for _, y in flange["points"])
+                       + max(y for _, y in flange["points"])) / 2
+    assert flange_center_y / inch_m == pytest.approx(-1.5)
+    # Drain and faucet circles both stay on the window centreline; rear drain is 4.5" forward.
+    for stroke in (drain, faucet):
+        center_x = (min(x for x, _ in stroke["points"])
+                    + max(x for x, _ in stroke["points"])) / 2
+        assert center_x == pytest.approx(0)
+    parts = model_parts("kitchen-sink-undermount-single", width, depth, height)
+    steel = [part for part in parts if part["color"] == "appliance-steel"]
+    metal = [part for part in parts if part["color"] == "metal"]
+    rim_z = max(part["center"][2] + part["size"][2] / 2 for part in steel)
+    faucet_base_z = min(part["center"][2] - part["size"][2] / 2 for part in metal)
+    assert rim_z == pytest.approx(10 * inch_m)
+    assert faucet_base_z == pytest.approx(11.181 * inch_m)
+
+
 def test_drawer_desk_has_two_drawers_on_each_side_and_open_knee_space() -> None:
     from typehaus.library.placeables import HEMNES_DESK_61
 

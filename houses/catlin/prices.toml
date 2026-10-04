@@ -2484,10 +2484,9 @@
 "SEKT-W30-15" = { material = { low = 115, high = 280 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W36-15" = { material = { low = 140, high = 340 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W15-20" = { material = { low = 95, high = 235 }, labour = { low = 90, high = 220 } }  # 0 ea
-"SEKT-W24-20" = { material = { low = 125, high = 320 }, labour = { low = 90, high = 220 } }  # 2 ea
 "SEKT-W30-20" = { material = { low = 155, high = 375 }, labour = { low = 90, high = 220 } }  # 1 ea
 "SEKT-W36-20" = { material = { low = 185, high = 455 }, labour = { low = 90, high = 220 } }  # 2 ea
-# These remaining west cold-run and lower-garage dimensions need custom plywood carcasses.
+# The west cold-run and lower garage need custom plywood carcasses.
 # The garage UPPER uses the stock base frame row below. These custom carcasses
 # keep their full-depth front alignment with the high cabinets and refrigerator pair.
 # Material includes paint-grade carcass and doors; the mixer garage carries extra labour
@@ -2500,8 +2499,6 @@
 "SEKT-CORNER-W26-30" = { material = { low = 280, high = 460 }, labour = { low = 140, high = 300 } }
 "FT-KIT-STOCK24-30-HUNG" = { material = { low = 300, high = 520 }, labour = { low = 160, high = 360 } }
 "FT-LIV-E-STOCK12-PLINTH" = { material = { low = 260, high = 420 }, labour = { low = 160, high = 360 } }
-"FT-KIT-TOP-REAR-DECK" = { material = { low = 45, high = 90 }, labour = { low = 70, high = 150 } }
-"FT-KIT-TOP-REAR-END" = { material = { low = 25, high = 55 }, labour = { low = 45, high = 95 } }
 
 #
 # High frames. The current 80" carcasses cost less material than the old 90" entries;
@@ -2509,8 +2506,8 @@
 "SEKT-HIGH24-90" = { material = { low = 190, high = 520 }, labour = { low = 120, high = 300 } }  # 0 ea
 "SEKT-HIGH24-80" = { material = { low = 170, high = 465 }, labour = { low = 120, high = 300 } }  # 2 ea
 "SEKT-HIGH18-80" = { material = { low = 145, high = 400 }, labour = { low = 120, high = 300 } }  # 1 ea
-# The stock 24x24x15 top cabinet is unused in this house.
-"SEKT-TS24-15" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 0 ea
+# East pantry tops: stock 904.997.35 frames with VOXTORP fronts, hinges and rail.
+"SEKT-TS24-15" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
 # The rest of the SEKTION ladder (SEKT-B12/B18, the 12"/18"/36" wall frames,
 # SEKT-HIGH18-90, SEKT-HIGH30-90, SEKT-TS30-15) has no instance in this house and no row
 # here. Add one when a box is added; an unpriced type is silently DROPPED from the takeoff
@@ -3091,7 +3088,10 @@
 # PipeAccessory(PENETRATION_SEAL), so neither is in these two rows.
 "FX-HYDRANT-SD34" = { material = { low = 110, high = 260 }, labour = { low = 120, high = 310 } }  # 2 ea
 "FX-HYDRANT-Y34SS" = { material = { low = 180, high = 500 }, labour = { low = 140, high = 360 } }  # 1 ea
-"FX-KITCHEN-SINK-33" = { material = { low = 220, high = 800 }, labour = { low = 250, high = 600 } }  # 1 ea
+"FX-KITCHEN-SINK-33" = { material = { low = 220, high = 800 }, labour = { low = 250, high = 600 } }  # 0 ea — retired 2026-10-03
+# Same planning allowance, now a 32-inch undermount single bowl with deck-mounted faucet.
+# Includes faucet, strainer, mounting/support and set/connect; brand not selected.
+"FX-KITCHEN-SINK-32-SINGLE" = { material = { low = 220, high = 800 }, labour = { low = 250, high = 600 } }  # 1 ea
 "FX-LAUNDRY-SINK-24" = { material = { low = 130, high = 450 }, labour = { low = 120, high = 290 } }  # 1 ea
 # Read as the lavatory AND its vanity: no CASE-* row covers the bathrooms, so if this were
 # the bowl alone the vanities would be missing from the estimate entirely.

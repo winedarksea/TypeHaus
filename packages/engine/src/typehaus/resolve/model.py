@@ -966,6 +966,7 @@ class ResolvedCountertop:
     profile: str
     outline: Ring
     area_m2: float
+    cutouts: tuple[Ring, ...] = ()
 
 
 @dataclass(frozen=True)

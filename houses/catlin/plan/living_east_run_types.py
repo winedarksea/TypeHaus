@@ -56,15 +56,16 @@ SEKTION_CORNER_WALL_FRAME = Product(
     url="https://www.ikea.com/us/en/p/sektion-corner-wall-cabinet-white-10265504/",
     source='Stock diagonal front with a 15-inch VOXTORP door; hinges included, rail separate.',
 )
-SEKTION_WALL24_TOP_FRAME = Product(
-    tag="PROD-IKEA-SEKTION-WALL24-20", brand="IKEA", model="SEKTION wall frame 24x15x20",
-    name='SEKTION 24x14 3/4x20" wall frame', sku="202.654.57",
-    url="https://www.ikea.com/us/en/p/sektion-wall-cabinet-white-20265457/",
+SEKTION_DEEP24_TOP_FRAME = Product(
+    tag="PROD-IKEA-SEKTION-TOP24-15", brand="IKEA", model="SEKTION top frame 24x24x15",
+    name='SEKTION 24x24x15" top cabinet with ventilation', sku="904.997.35",
+    url="https://www.ikea.com/us/en/p/sektion-top-cabinet-with-ventilation-white-90499735/",
+    source='IKEA US, read 2026-10-03: 23 5/8-inch bare depth, 24 with rail; east pantry tops.',
 )
 LIVING_EAST_RUN_PRODUCTS = (SEKTION_BASE_15_DEEP, SEKTION_CORNER_CAROUSEL,
                           SEKTION_FLOOR_ANCHOR, SEKTION_CONNECTOR_RAIL,
                           SEKTION_BASE24_FRAME, SEKTION_WALL12_FRAME,
-                          SEKTION_CORNER_WALL_FRAME, SEKTION_WALL24_TOP_FRAME)
+                          SEKTION_CORNER_WALL_FRAME, SEKTION_DEEP24_TOP_FRAME)
 
 # FÖRBÄTTRA matte white, site-cut from the 25x80 panel (study_nook_types.py's product).
 _PANEL = "PROD-IKEA-FORBATTRA-MATTE-25-80"

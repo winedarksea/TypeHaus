@@ -88,6 +88,7 @@ SYMBOL_NAMES = frozenset({
     # all come off ``plumbing.neo_angle_points`` so they cannot disagree.
     "shower-neo-angle",
     "kitchen-sink",
+    "kitchen-sink-undermount-single",
     "hydrant", "floor-drain", "laundry-sink",
     # luminaires — one name per LuminaireForm that has a point instance. STRIP has none:
     # a cove strip is a LightRun polyline, drawn by the lighting plan, not a placeable.

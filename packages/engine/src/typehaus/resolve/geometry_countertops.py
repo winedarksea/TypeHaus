@@ -1,9 +1,8 @@
 """Countertop slab prisms shared by the viewer (model.json) and the GLB.
 
-A slab is drawn in its own material, the way a window stool is, so a cantilever with no
-cabinet under it shows and an oak top reads as oak. A host that draws its own counter round
-a basin (``SINK_SYMBOLS``) keeps it: the slab is cut back to that host's footprint, or it
-would bury the bowl. Every other host stops drawing its grey symbol counter.
+A slab is drawn in its own material. Explicit fixture cutouts replace a sink base's
+schematic centred counter; other basin hosts keep their own cut-out counter and the slab
+leaves their footprints clear. Viewer and GLB consume the same rings and holes.
 """
 
 from __future__ import annotations
@@ -30,21 +29,32 @@ def _plan_symbols(model: ResolvedModel) -> dict[str, str | None]:
 
 
 def slab_hosts(model: ResolvedModel) -> dict[str, str]:
-    """Placeable tag -> the countertop that replaces its symbol counter (sink hosts omitted)."""
+    """Placeable tag -> its replacement slab, including bases with explicit fixture holes."""
     symbols = _plan_symbols(model)
     objects = {obj.tag: obj for obj in model.canvas_objects}
     hosted: dict[str, str] = {}
     for top in sorted(model.countertops, key=lambda item: item.tag):
         for tag in top.hosts:
             obj = objects.get(tag)
-            if obj is not None and symbols.get(obj.type_ref or "") not in SINK_SYMBOLS:
+            if obj is not None and not _keeps_symbol_counter(obj, top, symbols):
                 hosted.setdefault(tag, top.tag)
     return hosted
 
 
+def _keeps_symbol_counter(obj: Any, top: ResolvedCountertop,
+                         symbols: dict[str, Any]) -> bool:
+    symbol = symbols.get(obj.type_ref or "")
+    if symbol == "sink-base" and any(
+        Polygon(ring).intersects(Polygon(obj.footprint)) for ring in top.cutouts
+    ):
+        # An explicitly placed opening replaces the cabinet's centred schematic hole.
+        return False
+    return symbol in SINK_SYMBOLS
+
+
 def countertop_prisms(model: ResolvedModel, top: ResolvedCountertop,
                       symbols: dict[str, Any] | None = None) -> tuple[GPrism, ...]:
-    """The slab as prisms: its outline less any sink host, topped at the hosts' highest body."""
+    """Slab outline less fixture openings and retained basin hosts, at host counter height."""
     symbols = symbols if symbols is not None else _plan_symbols(model)
     objects = {obj.tag: obj for obj in model.canvas_objects}
     hosts = [objects[tag] for tag in top.hosts if tag in objects]
@@ -55,7 +65,8 @@ def countertop_prisms(model: ResolvedModel, top: ResolvedCountertop,
     z0 = z1 - top.thickness_m
     slab = Polygon(top.outline)
     sinks = [Polygon(obj.footprint) for obj in hosts
-             if symbols.get(obj.type_ref or "") in SINK_SYMBOLS and len(obj.footprint) >= 3]
+             if _keeps_symbol_counter(obj, top, symbols) and len(obj.footprint) >= 3]
+    sinks.extend(Polygon(ring) for ring in top.cutouts)
     if sinks:
         slab = slab.difference(union_all(sinks))
     parts = [slab] if slab.geom_type == "Polygon" else list(getattr(slab, "geoms", ()))

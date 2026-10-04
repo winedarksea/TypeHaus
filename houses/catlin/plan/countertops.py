@@ -32,6 +32,7 @@ MAIN_COUNTERTOPS = [
     # oversails only its notch faces.
     Countertop(
         uid="GQ3B84T2WH", tag="CT-M-KIT-N",
+        cutouts=("FX-M-KITCH-SINK",),
         hosts=("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE", "FURN-M-KIT-E2",
                "FURN-M-KIT-CORNER-NE"),
         material_ref="quartz-counter",

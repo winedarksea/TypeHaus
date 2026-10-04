@@ -24,6 +24,7 @@ from library.placeables.fixtures import (
     VANITY_48_SINGLE as _LIB_VANITY_48_SINGLE,
 )
 from plan.fixture_types_wc import WC_AND_SHOWER_TYPES
+from plan.kitchen_sink_types import KITCHEN_SINK_32_SINGLE
 from typehaus.model import FixtureType, Service, inch
 
 # The Kohler K-5713-W1-0 Underscore, RM-M-BATH2 (plan/products.py carries brand + model).
@@ -311,6 +312,7 @@ VANITY_48_SINGLE = _LIB_VANITY_48_SINGLE.model_copy(update={
 # simply never break out; plugging holes with a deck plate afterwards defeats the whole point.
 
 FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_48,
+                 KITCHEN_SINK_32_SINGLE,
                  VANITY_24_SHALLOW, VANITY_30_SHALLOW, VANITY_30_SINGLE,
                  VANITY_36_SHALLOW, VANITY_48_SINGLE,
                  *WC_AND_SHOWER_TYPES)

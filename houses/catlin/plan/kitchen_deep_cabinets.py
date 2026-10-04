@@ -45,21 +45,8 @@ STOCK_SHALLOW_PLINTH_BASE = FurnitureType(
             "fixed shelves; no MAXIMERA drawers. Nominal installed depth 15 1/2 inches, "
             "matching the living run. A 1/8-inch sealed joint separates it from S2."),
 )
-PANTRY_TOP_REAR_DECK = FurnitureType(
-    tag="FT-KIT-TOP-REAR-DECK", name='Pantry top rear closure platform, 24x9x3/4"',
-    footprint=(inch(24), inch(9)), height=inch(0.75), plan_symbol="sektion-cover-panel",
-    source=("3/4-inch plywood closes the rear bay at the high cabinet top, supported on "
-            "cleats. Shallow frames bear directly on the high cabinets. Rear restraint "
-            "bridges are separate fastening hardware; see kitchen_stock_cabinet_details.md."),
-)
-PANTRY_TOP_REAR_END = FurnitureType(
-    tag="FT-KIT-TOP-REAR-END", name='Pantry top rear bay end cover, 1/2x9x20"',
-    footprint=(inch(0.5), inch(9)), height=inch(20), plan_symbol="sektion-cover-panel",
-    product_ref="PROD-IKEA-FORBATTRA-MATTE-25-80",
-    source="Site-cut cover panel enclosing the exposed south end of the pantry-top rear bay.",
-)
 
 KITCHEN_DEEP_CABINET_TYPES = (
     DEEP_18_20, DEEP_30_30, DEEP_24_40, STOCK_BASE_FRAME_UPPER,
-    STOCK_SHALLOW_PLINTH_BASE, PANTRY_TOP_REAR_DECK, PANTRY_TOP_REAR_END,
+    STOCK_SHALLOW_PLINTH_BASE,
 )

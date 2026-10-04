@@ -155,6 +155,9 @@ class Countertop(Element):
     """
 
     hosts: tuple[str, ...]
+    # Fixture tags with a local FixtureType.countertop_cutout; holes move with fixtures.
+    # Gross slab area remains the fabrication/takeoff quantity.
+    cutouts: tuple[str, ...] = ()
     material_ref: str
     thickness: Length
     # How far the finished slab stands proud of the carcass face it covers. The ordinary

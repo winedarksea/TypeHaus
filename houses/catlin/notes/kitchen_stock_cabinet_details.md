@@ -1,7 +1,7 @@
 # Kitchen stock-frame installation details
 
 Revision 2026-10-03. Coordinates are inches in the house plan; elevations are above
-finished floor. Cabinet widths are stock modules. These details govern the revised north
+finished floor. Cabinet widths follow stock modules. These details govern the revised north
 and east runs; the west cold-storage custom uppers retain their separate specification.
 
 ## K1 — North run and pantry partition
@@ -23,11 +23,28 @@ retain factory reveals; do not add filler widths to the module arithmetic. Seal 
 wall contacts with a small colour-matched flexible joint after scribing the finish, rather
 than packing a thin FÖRBÄTTRA cover board into a fictitious solid cabinet.
 
-Sink centre x=351 3/8 is 5/8 west of the unchanged window centre x=352. Drain flange,
-floor sleeve, cleanout and first basement drain segment share x=351 3/8, y=420. The
-basement route's subsequent points remain in place; supply and vent are still inside the
-sink cabinet. Pantry shelving is 73 1/4 wide, centred x=256, divided by a 3/4 middle gable
-into two 36 1/4 clear bays. See the updated climbable-shelf calculations.
+The cabinet centre remains x=351 3/8. The 32-inch single-bowl undermount sink and faucet
+centre on the unchanged window at x=352, offset 5/8 east inside the 36-inch base.
+Use the [Kraus KHU100-32 specification](https://www.kraususa.com/media/catalog/product/documentation/KHU100-32-Spec-Sheet.pdf)
+as a dimensional reference, not a committed brand: exterior 32 x 19, bowl 30 x 17,
+10 deep, minimum cabinet 36 x 24. The model's 32 x 22 installation envelope includes
+three inches behind the steel flange for the separately quartz-mounted faucet.
+
+Flange centre y=411 7/8, exterior x=336–368 and y=402 3/8–421 3/8. The schematic
+flush-reveal opening is x=337–367, y=403 3/8–420 3/8, with faucet centre x=352,
+y=423 3/8. Its opening follows the fixture rather than the cabinet's centre. Quartz
+top is 36 AFF, underside 34.819; the 10-inch bowl bottom is 24.819 AFF. The disposer
+top meets that bottom. Drain flange, floor sleeve, cleanout and the first two basement
+drain points share x=352, y=416 7/8 (drain 4 1/2 forward of the flange rear).
+Subsequent drain points remain in place; supply and vent remain inside the cabinet.
+
+With 3/4-inch cabinet sides, the flange has 5/8-inch clearance to the east interior
+side and 1 7/8-inch clearance west. These are geometric clearances, not a mounting-clip
+approval. Before fabrication, check the actual sink and supplied cutout template,
+corner radii, selected reveal, clip access, support, faucet hole and quartz webs;
+the rectangular schematic opening is not a fabrication template. No cabinet side cutting
+is specified. Pantry shelving is 73 1/4 wide, centred x=256, divided by a 3/4 middle
+gable into two 36 1/4 clear bays. See the updated climbable-shelf calculations.
 
 ## K2 — North/east wall frames and diagonal corner
 
@@ -67,7 +84,7 @@ below the actual finished ceiling.
 
 Both boxes resolve to rotation -90 degrees; their doors face west. They occupy the
 peninsula carousel's supported corner square, y=319 3/8–343 3/8. The lower box remains
-the sole custom carcass in this revised run: 24 by 24 by 40, bottom 36, top 76.
+a custom carcass: 24 by 24 by 40, bottom 36, top 76.
 
 The upper is [stock base frame 902.653.88](https://www.ikea.com/us/en/p/sektion-base-cabinet-white-90265388/),
 24 by 24 by 30, bottom 76, top 106. The installed-height type omits legs and a counter.
@@ -102,38 +119,32 @@ space. Confirm the measured ceiling and actual rail installation sequence before
 assembly; the stacked upper bears on the lower, with the rail providing independent
 restraint. No ceiling scribe may consume that lift space.
 
-## K4 — Tall pantry and shallow stock top platforms
+## K4 — Tall pantry and full-depth stock tops
 
 | Item | South y | North y | Bottom | Top |
 |---|---:|---:|---:|---:|
 | S2, 24-wide high frame | 271 3/8 | 295 3/8 | 3 1/2 | 83 1/2 |
 | S1, 24-wide high frame | 295 3/8 | 319 3/8 | 3 1/2 | 83 1/2 |
-| Both 24-wide shallow tops | same | same | 83 1/2 | 103 1/2 |
+| Both 24-wide, 24-deep stock tops | same | same | 83 1/2 | 98 1/2 |
 
-S1 meets the garage. Use [stock shallow top frame 202.654.57](https://www.ikea.com/us/en/p/sektion-wall-cabinet-white-20265457/),
-24 by 15 system by 20, for each top. Bear the shallow frames directly over the tall
-frames' sides. Close each rear bay with a 3/4 plywood deck at 83 1/2, top 84 1/4,
-on continuous 3/4 by 1 1/2 cleats at the sides and rear. The rear deck is adjacent to the
-frame; it does not raise the stock frame above 83 1/2. Add two vertical 3/4 plywood
-restraint cheeks per bay, 3 inches high at the top bracket course, spanning the rear space
-and fastened to the tall cabinet sides and wall backing. Mount the suspension rail to
-these supported cheeks; do not span the rear bay with long unsupported screws.
+S1 meets the garage. Each top is `SEKT-TS24-15`, the stock
+[SEKTION 904.997.35 frame](https://www.ikea.com/us/en/p/sektion-top-cabinet-with-ventilation-white-90499735/),
+24 by 24 by 15, with a matching VOXTORP matte white 24 by 15 front and factory hinges.
+Both retain their 83 1/2 bottoms and finish at 98 1/2, about 8 1/16 below the finished
+ceiling. A 30-inch frame would finish at 113 1/2, about 6 15/16 above the ceiling.
 
-The nominal rear space is 9 inches. The stock shallow frame is actually 14 3/8 bare or
-14 3/4 including rail. With the matching tall frame at 24 including rail and matching
-7/8 fronts, the required frame/rail setback is **24 - 14 3/4 = 9 1/4 inches**.
-The finished projection is 24 7/8 for both (9 1/4 + 14 3/4 + 7/8).
-If measured doors differ, use `rear space = tall frame/rail + tall front - shallow
-frame/rail - shallow front`; size cleats, cheeks and deck from that result. The plan's
-9-inch rear-bay solids are nominal; shop cuts follow 9 1/4 with the specified fronts.
+Bear the stock frame sides directly on the high cabinet sides. Fasten the factory
+suspension rail into BK-M-E1-PANTRY-TOP, 95 1/2–99 above framing datum
+(94 9/16–98 1/16 AFF). Set the rail screw line from the actual factory bracket holes
+and maintain the required 1/2-inch lift clearance. Restrain each top independently to
+framing and tie adjacent cases through structural sidewalls, following the manufacturer
+installation instructions. The thin fiberboard back is not a bearing member.
 
-Enclose the exposed SOUTH rear-bay end with a 1/2 FÖRBÄTTRA board, 20 high, cut to the
-measured setback. Use deck offcuts to close the top rear bay, avoiding dust pockets. The
-north end meets the garage and the middle end meets the adjacent top; seal those enclosed
-contacts rather than adding full-width finish boards that would separate stock modules.
-The two deck rows include all cleats, restraint cheeks, top closure and anchoring hardware;
-the end-cover row includes its cut, edge finish and installation. Neither old custom
-24-deep by 20-high box remains in the order or estimate.
+The stock bare frame depth is 23 5/8, or 24 with its suspension rail, matching the
+high frames and garage upper. Matching 7/8 fronts project 24 7/8 from the finished wall.
+Coordinate factory reveals and the exposed south side finish within the existing module
+width. The price includes frame, front, hinges, rail and installation. The former shallow
+frames, rear decks, restraint cheeks, rear-bay cover and custom 20-high tops are removed.
 
 Keep the two Rev-A-Shelf 5374-24FL swing-out inserts and their door brackets. Check the
 22 1/4 minimum clear opening against the 22 1/2 nominal inside width and actual hinge

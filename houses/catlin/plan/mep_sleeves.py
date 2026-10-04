@@ -27,7 +27,7 @@ from typehaus.model import m
 SLEEVES = [
     # Authored at FX-M-KITCH-SINK's `drain_position` (0.00" alignment) — see fixtures.py.
     SleevePenetration(uid="BFQH6F04VQ", tag="SP-M-KITCH", host_ref="SL-M-DECK",
-                      position=pt(inch(351.375), ft(35)), pipe_diameter=inch(2),
+                      position=pt(inch(352), inch(416.875)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-KITCH-SINK"),
 ]
 

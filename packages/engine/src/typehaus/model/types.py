@@ -315,6 +315,9 @@ class FixtureType(HausModel):
     import_provenance: dict[str, object] | None = None
     placement: PlacementStrategy = PlacementStrategy.FREE_PLACED
     footprint_shape: Footprint2D | None = None
+    # Finished counter opening in the fixture's local frame, separate from its flange
+    # and faucet installation envelope. Countertop.cutouts follows the placed fixture.
+    countertop_cutout: Footprint2D | None = None
     clearances: tuple[ClearanceZone, ...] = ()
     ports: tuple[ServicePort, ...] = ()
     plan_representation: PlanRepresentation | None = None

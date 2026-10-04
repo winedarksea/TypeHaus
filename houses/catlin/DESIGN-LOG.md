@@ -4485,3 +4485,59 @@ surface that reaches the court, so the water goes there.
   break the neighbouring room's wall space (PAX-WEST failed RM-M-BED). A cabinet now breaks
   only the ring its centroid stands in. The living-room test had been passing because of
   that bug, through `FURN-M-PANTRY-SHELVES`; it now measures the merged tall bank.
+
+
+## 2026-10-03 — East pantry tops restored to 24-inch depth
+
+- `FURN-M-KIT-PANTRY-S1-ST` and `-S2-ST` use custom `FT-KIT-DEEP24-20`
+  carcasses, flush to the east wall and matching the tall frames and garage upper.
+  Their UIDs, 24-inch widths, 20-inch heights and 83 1/2-inch bottoms remain.
+- Remove the two rear decks and south rear-bay end cover, their types and price rows;
+  restore the custom-top estimate. Installation details K4 now describe full-depth
+  bearing and wall restraint, with no rear bay.
+- Validation: nine kitchen tests passed; house checks reported 1,839 pass, zero fail,
+  43 unknown; JSON build passed. Remove only the nine snapshot entries for the deleted
+  supports. The remaining elevation snapshot differences concern concurrent sink,
+  disposer and drain edits, rather than the pantry tops.
+
+
+## 2026-10-03 — East pantry tops changed to stock 15-inch frames
+
+- Supersedes the custom-top selection above. Both pantry stackers use `SEKT-TS24-15`,
+  stock IKEA 904.997.35 frames, 24 wide by 24 deep by 15 high, flush to the tall units.
+  Bottoms remain 83 1/2 AFF; tops are now 98 1/2. A 30-high frame would top at 113 1/2,
+  above the approximately 106 9/16 finished ceiling.
+- Remove the unused custom 24x24x20 type and estimate, activate the stock top price row,
+  record the stock SKU, and revise installation detail K4. Add `BK-M-E1-PANTRY-TOP`
+  at 95 1/2–99 framing datum to catch the lower factory rail; its ends sit on stud faces.
+- Validation: eight kitchen tests pass, including pantry footprints/heights, pricing and
+  emitted backing. House checks: 1,840 pass, zero fail, 43 unknown. Two concurrent sink
+  tests and seven sink/disposer/drain elevation snapshot differences remain unrelated.
+  Update only the pantry-top and added-backing entries in the elevation snapshot.
+
+
+## 2026-10-03 — Centre a standard 32-inch single bowl beneath the kitchen window
+
+- Replace the generic 33-inch double bowl with `FX-KITCHEN-SINK-32-SINGLE`:
+  32x19 exterior, 30x17 uninterrupted bowl, 10 deep. Kraus KHU100-32 supplies the
+  dimensional reference; no brand is committed. The 32x22 placement envelope includes
+  a three-inch rear zone for the quartz-mounted faucet.
+- Sink and faucet centre x=352 on the fixed window, 5/8 east inside the unchanged
+  36-inch base centred x=351 3/8. Countertop fixture references resolve local opening
+  polygons into world coordinates; the north quartz slab replaces the base's centred
+  schematic counter, so its 30x17 opening follows the sink in the viewer and GLB.
+- Rim meets the 3 cm quartz underside at 34.819 AFF; bowl bottom 24.819. Disposer
+  follows that lower bottom and the rear-centre drain at x=352, y=416 7/8. Sleeve,
+  cleanout and first two basement drain points move together; subsequent points stay put.
+  Kitchen DFU/WSFU remain 2.0 / 1.5. Activate one new sink estimate row and retire the old.
+- Correct the earlier flange-clearance estimate: with 3/4 cabinet sides, the tight east
+  clearance is 5/8, west 1 7/8. Actual template, clip access, support, corner radii and
+  faucet drilling remain fabrication checks; the rectangular model is not a cut template.
+- Validation: targeted kitchen/countertop/symbol/plumbing tests, reviewed seven intended
+  sink/disposer/drain elevation snapshot changes, plan/3D geometry preview, priced takeoff,
+  JSON and framed IFC builds. House validation has zero failures and no added unknowns.
+- Broader verification: 8,199 fast engine tests passed, 26 skipped; the sole failure
+  was the framing bid snapshot missing the concurrent pantry-top blocking board. Review
+  and refresh that snapshot, then its regression passes. Starter and Catlin check suites
+  each pass all 295 checks; source Ruff passes. Final Catlin report: 1,840 pass,
+  zero fail, 43 unknown (unchanged unknown count).

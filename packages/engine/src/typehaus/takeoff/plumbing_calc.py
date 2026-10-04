@@ -35,6 +35,7 @@ DFU_BY_SYMBOL: dict[str, float] = {
     # A neo-angle pan is a shower: the cut corner is a plan outline, not a drainage fact.
     "shower-neo-angle": 2.0,
     "kitchen-sink": 2.0,    # incl. food-waste grinder / dishwasher branch
+    "kitchen-sink-undermount-single": 2.0,
     "washer": 3.0,          # clothes washer, 2" standpipe
     # A stacked pair is one washer for fixture-unit purposes: the heat-pump dryer above it
     # discharges condensate to an indirect waste, which is not a drainage fixture.
@@ -65,6 +66,7 @@ WSFU_BY_SYMBOL: dict[str, tuple[float, float, float]] = {
     "shower": (2.0, 1.5, 1.5),
     "shower-neo-angle": (2.0, 1.5, 1.5),
     "kitchen-sink": (1.5, 1.0, 1.0),
+    "kitchen-sink-undermount-single": (1.5, 1.0, 1.0),
     "washer": (4.0, 3.0, 3.0),
     "washer-dryer-stacked": (4.0, 3.0, 3.0),  # the dryer half takes no water
     "dishwasher": (1.5, 1.5, 0.0),

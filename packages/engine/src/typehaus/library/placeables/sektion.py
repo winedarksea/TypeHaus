@@ -171,7 +171,7 @@ HIGH_30_90 = _high("SEKT-HIGH30-90", inch(30))
 HIGH_18_80 = _high("SEKT-HIGH18-80", inch(18), inch(80), _HIGH_80)
 HIGH_24_80 = _high("SEKT-HIGH24-80", ft(2), inch(80), _HIGH_80)
 # IKEA sells a narrower range of 24"-deep top cabinets than shallow wall cabinets.
-# Catlin's 18x24x20 and 24x24x20 top boxes are house-local custom millwork.
+# An 18x24x20 top box requires house-local custom millwork.
 TS_24_15 = _wall("SEKT-TS24-15", ft(2), inch(15), _DEEP)
 TS_30_15 = _wall("SEKT-TS30-15", inch(30), inch(15), _DEEP)
 

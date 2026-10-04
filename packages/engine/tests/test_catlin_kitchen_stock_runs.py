@@ -48,23 +48,51 @@ def test_stock_north_modules_close_without_a_filler(catlin_plan, kitchen_objects
     assert (_bounds(upper)[0], _bounds(upper)[2]) == pytest.approx((297.375, 333.375))
 
 
-def test_sink_window_stays_on_grid_and_drain_components_move_together(catlin_model_ro):
+def test_sink_centres_on_fixed_window_and_drain_components_move_together(catlin_model_ro):
     objects = {item.tag: item for item in catlin_model_ro.canvas_objects}
     sink = objects["FX-M-KITCH-SINK"]
     base = objects["FURN-M-KIT-SINKBASE"]
-    assert sink.position[0] == pytest.approx(base.position[0])
+    assert sink.type_ref == "FX-KITCHEN-SINK-32-SINGLE"
+    assert (sink.position[0] - base.position[0]) / INCH == pytest.approx(0.625)
     window = next(item for item in catlin_model_ro.openings if item.tag == "WIN-M-KITCH")
     wall = catlin_model_ro.wall(window.host_wall)
     window_x = wall.axis[0][0] - window.center_along_m
-    assert (window_x - sink.position[0]) / INCH == pytest.approx(0.625)
+    assert sink.position[0] == pytest.approx(window_x)
     plan = catlin_model_ro.plan
-    expected = (351.375 * INCH, 35 * 12 * INCH)
+    expected = (352 * INCH, 416.875 * INCH)
+    assert objects["APPL-M-DISP"].position == pytest.approx(expected, abs=FINISH_TOLERANCE)
     assert plan.by_tag("FX-M-KITCH-SINK").drain_position.xy_m == pytest.approx(expected)
     assert plan.by_tag("SP-M-KITCH").position.xy_m == pytest.approx(expected)
     assert plan.by_tag("CO-B-KITCH-HEAD").position.xy_m == pytest.approx(expected)
     assert plan.by_tag("CO-B-KITCH-HEAD").cap_position.xy_m == pytest.approx(expected)
     assert plan.by_tag("PR-B-KITCH-DRAIN").path[0].xy_m == pytest.approx(expected)
     assert plan.by_tag("PR-B-KITCH-DRAIN").path[1].xy_m == pytest.approx(expected)
+    assert plan.by_tag("PR-B-KITCH-DRAIN").path[2].xy_m == pytest.approx((216 * INCH, 420 * INCH))
+
+
+def test_single_bowl_opening_fits_offset_base_and_meets_quartz_underside(catlin_model_ro):
+    from typehaus.resolve.geometry_countertops import countertop_prisms
+
+    model = catlin_model_ro
+    objects = {item.tag: item for item in model.canvas_objects}
+    sink = objects["FX-M-KITCH-SINK"]
+    base = objects["FURN-M-KIT-SINKBASE"]
+    top = next(item for item in model.countertops if item.tag == "CT-M-KIT-N")
+    hole = Polygon(top.cutouts[0])
+    expected_bounds = tuple(value * INCH for value in (337, 403.375, 367, 420.375))
+    assert hole.bounds == pytest.approx(expected_bounds, abs=FINISH_TOLERANCE)
+    assert hole.area == pytest.approx(30 * 17 * INCH * INCH)
+    assert Polygon(base.footprint).buffer(-0.75 * INCH).contains(hole)
+    # The 32-inch flange extends an inch past each bowl side; east panel has 5/8 inch left.
+    assert (_bounds(base)[2] - 0.75) - (sink.position[0] / INCH + 16) == pytest.approx(0.625)
+    prism = countertop_prisms(model, top)[0]
+    assert sink.z_m + 10 * INCH == pytest.approx(prism.z0_m)
+    assert prism.z1_m - 36 * INCH == pytest.approx(base.z_m)
+    assert objects["APPL-M-DISP"].body_z1_m == pytest.approx(sink.z_m)
+    from typehaus.takeoff.plumbing_calc import fixture_units
+
+    units = next(row for row in fixture_units(model.plan) if row.tag == sink.tag)
+    assert (units.dfu, units.wsfu_total, units.wsfu_hot, units.wsfu_cold) == (2.0, 1.5, 1.0, 1.0)
 
 
 def test_diagonal_corner_closes_to_both_upper_runs(catlin_plan, kitchen_objects):
@@ -117,19 +145,25 @@ def test_garage_fronts_face_west_and_pullout_lands_on_counter(
     assert typ.plan_symbol == "wall-cabinet"
 
 
-def test_pantry_joins_and_supported_stock_tops(catlin_plan, catlin_model_ro, kitchen_objects):
+def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro, kitchen_objects):
     s1, s2 = (kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}"] for n in (1, 2))
     assert (_bounds(s2)[1], _bounds(s1)[3]) == pytest.approx((271.375, 319.375))
     assert _bounds(s2)[3] == pytest.approx(_bounds(s1)[1])
     assert _bounds(s1)[3] == pytest.approx(_bounds(kitchen_objects["FURN-M-KIT-MIXER-GARAGE"])[1])
     for n in (1, 2):
         top = kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}-ST"]
-        deck = kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}-REAR-DECK"]
         base = kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}"]
-        assert top.type_ref == "SEKT-W24-20"
-        assert _bounds(top)[0] == pytest.approx(_bounds(base)[0], abs=0.03125)
-        assert _bounds(top)[2] == pytest.approx(_bounds(deck)[0])
+        assert top.type_ref == "SEKT-TS24-15"
+        assert _bounds(top) == pytest.approx(_bounds(base), abs=0.03125)
+        assert _bounds(top)[2] - _bounds(top)[0] == pytest.approx(24)
+        assert _bounds(top)[0] == pytest.approx(
+            _bounds(kitchen_objects["FURN-M-KIT-MIXER-GARAGE-UP"])[0]
+        )
         assert top.body_z0_m == pytest.approx(base.body_z1_m)
+        assert (top.body_z1_m - top.body_z0_m) / INCH == pytest.approx(15)
+        assert (top.body_z1_m - base.body_z0_m) / INCH == pytest.approx(98.5)
+        assert f"FURN-M-KIT-PANTRY-S{n}-REAR-DECK" not in kitchen_objects
+    assert "FURN-M-KIT-PANTRY-TOP-END" not in kitchen_objects
     shelf_type = next(
         t for t in catlin_plan.library.furniture_types if t.tag == "FT-KIT-PANTRY-SHELVES-70"
     )
@@ -225,6 +259,16 @@ def test_top_backing_is_emitted_below_the_stud_tops(catlin_plan, catlin_model_ro
         band = catlin_plan.by_tag(wall_ref.replace("W-", "BK-", 1) + "-KIT-TOP")
         expected_length = band.length.meters if band.length else math.dist(*wall.axis)
         assert sum(block.length_m for block in blocks) == pytest.approx(expected_length)
+    pantry_band = catlin_plan.by_tag("BK-M-E1-PANTRY-TOP")
+    pantry_blocks = [
+        member for member in catlin_model_ro.wall(pantry_band.wall_ref).members
+        if member.category == "blocking" and member.profile == "2x4"
+        and member.z0_m == pytest.approx(pantry_band.elevation.meters)
+        and member.z1_m == pytest.approx(
+            pantry_band.elevation.meters + pantry_band.height.meters
+        )
+    ]
+    assert sum(block.length_m for block in pantry_blocks) == pytest.approx(pantry_band.length.meters)
 
 
 def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, catlin_model_ro):
@@ -239,11 +283,9 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
         "SEKT-B18": 1,
         "SEKT-W12-30": 1,
         "SEKT-CORNER-W26-30": 1,
-        "SEKT-W24-20": 2,
+        "SEKT-TS24-15": 2,
         "FT-KIT-STOCK24-30-HUNG": 1,
         "FT-LIV-E-STOCK12-PLINTH": 1,
-        "FT-KIT-TOP-REAR-DECK": 2,
-        "FT-KIT-TOP-REAR-END": 1,
     }
     for type_ref, count in expected.items():
         assert quantities[type_ref] == count
@@ -251,7 +293,10 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
     for removed in (
         "FT-KIT-FILLER-2375",
         "FT-LIV-E-FILLER-050",
+        "SEKT-W24-20",
         "FT-KIT-DEEP24-20",
+        "FT-KIT-TOP-REAR-DECK",
+        "FT-KIT-TOP-REAR-END",
         "FT-KIT-DEEP24-30",
     ):
         assert removed not in quantities

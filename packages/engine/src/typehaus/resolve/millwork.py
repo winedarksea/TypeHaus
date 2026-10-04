@@ -27,8 +27,8 @@ structural solids. Their dimensional records still drive the hardwood cut list.
 A ``Countertop`` is a record here — one area to bill, one cantilever to grade — and is DRAWN
 by ``geometry_countertops.py`` in its own material, the window-stool precedent: the viewer
 and the GLB skip a hosted cabinet's grey symbol counter and draw the slab instead, so a
-cantilever with no cabinet under it shows and an oak top reads as oak. A sink base keeps its
-own cut-out counter and the slab is cut back to its footprint. It is not a
+cantilever with no cabinet under it shows and an oak top reads as oak. Explicit fixture
+openings replace a sink base's schematic counter; other basin hosts retain theirs. It is not a
 ``ResolvedSolid``, so it adds no solid category, trade row or IFC element.
 """
 

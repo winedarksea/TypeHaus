@@ -1,8 +1,8 @@
 # haus: editable
 # The kitchen runs and their installation pieces. Dimensions are nominal finish datums.
 # 
-# The sink is deliberately 5/8 inch west of its window: keeping the window on the
-# stud grid buys stock modules and closes the corner without a filler. Installation
+# The 32-inch single bowl and faucet centre on the window, 5/8 inch east within
+# the fixed 36-inch base. Stock modules close the corner without a filler. Installation
 # and actual rail/front allowances: notes/kitchen_stock_cabinet_details.md.
 
 from typehaus import Appliance, Furniture, Location, Mount, MountKind, WallAttachment
@@ -118,9 +118,9 @@ MAIN_KITCHEN_CASEWORK = [
     Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="SEKT-SINK-B36",
               room="RM-M-LIVING",
               position=pt(inch(351.375), inch(413.375))),
-    # The disposer follows the drain flange, including the 5/8-inch west shift.
+    # The disposer follows the smaller undermount bowl's rear-centre drain and lower rim.
     Appliance(uid="ADCW7VPPC1", tag="APPL-M-DISP", type_ref="APPL-DISPOSAL", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(14.5)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(12.319)),
               install_parts=("24V Class-2 control transformer, 40 VA",
                              "double-pole contactor, 30 A, 24V coil",
                              "NEMA 1 enclosure, 6x6x4, hinged",
@@ -129,8 +129,8 @@ MAIN_KITCHEN_CASEWORK = [
                              "2-gang low-voltage mounting ring and plate",
                              "18/6 CL2 control cable, 50 ft"),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-N1", face="left", distance_from_start=inch(80.625),
-                  normal_gap=inch(1.875), rotation_offset=deg(-180)))),
+                  wall_ref="W-M-N1", face="left", distance_from_start=inch(80),
+                  normal_gap=inch(5), rotation_offset=deg(-180)))),
     Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-LG-DISHWASHER", room="RM-M-LIVING",
               position=pt(inch(321.375), inch(413.375))),
     Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="SEKT-B18", room="RM-M-LIVING",
@@ -184,36 +184,18 @@ MAIN_KITCHEN_CASEWORK = [
     Furniture(uid="K09MANH37J", tag="FURN-M-KIT-PANTRY-S2", type_ref="SEKT-HIGH24-80",
               room="RM-M-LIVING",
               position=pt(inch(413.375), inch(283.375)), rotation=deg(-90)),
-    # Stock shallow frames rest on the high cabinets, with restrained nominal 9-inch rear bays.
-    Furniture(uid="4WFET9VXWK", tag="FURN-M-KIT-PANTRY-S1-ST", type_ref="SEKT-W24-20",
-              room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(83.5)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(307.375),
-                  normal_gap=inch(9), rotation_offset=deg(-180)))),
-    Furniture(uid="785R3FDGRK", tag="FURN-M-KIT-PANTRY-S2-ST", type_ref="SEKT-W24-20",
-              room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(83.5)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(283.375),
-                  normal_gap=inch(9), rotation_offset=deg(-180)))),
-    Furniture(uid="J8RHC5D0G1", tag="FURN-M-KIT-PANTRY-S1-REAR-DECK", type_ref="FT-KIT-TOP-REAR-DECK",
+    # Stock 15-high deep tops finish at 98 1/2; 30-high frames would cross the ceiling.
+    Furniture(uid="4WFET9VXWK", tag="FURN-M-KIT-PANTRY-S1-ST", type_ref="SEKT-TS24-15",
               room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(83.5)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(307.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(uid="CP86JGCYKT", tag="FURN-M-KIT-PANTRY-S2-REAR-DECK", type_ref="FT-KIT-TOP-REAR-DECK",
+    Furniture(uid="785R3FDGRK", tag="FURN-M-KIT-PANTRY-S2-ST", type_ref="SEKT-TS24-15",
               room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(83.5)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(283.375),
-                  normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(uid="FVQ15AE7YZ", tag="FURN-M-KIT-PANTRY-TOP-END", type_ref="FT-KIT-TOP-REAR-END",
-              room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(83.5)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(271.125),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # Diagonal corner backs are +x/+y, so this glyph stays at rotation 0, unlike straight uppers.

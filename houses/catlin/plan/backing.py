@@ -112,14 +112,18 @@ BASEMENT_BACKING = [
 ]
 
 MAIN_BACKING = [
-    # Frame brackets and rear-bay restraint bridges fasten near the cabinet tops.
+    # Frame brackets fasten near the cabinet tops.
     WallBacking(uid="ZCGDP5VDX9", tag="BK-M-N1-KIT-TOP", wall_ref="W-M-N1",
                 elevation=inch(99.5), height=inch(5.5), profile="2x6",
                 material_ref="spf", purpose="stock kitchen upper top brackets; diagonal corner north leg"),
     WallBacking(uid="N4B7RPNY55", tag="BK-M-E1-KIT-TOP", wall_ref="W-M-E1",
                 start=inch(241.75), length=inch(190.25),
                 elevation=inch(99.5), height=inch(5.5), profile="2x6",
-                material_ref="spf", purpose="stock garage frame top restraint and pantry top rear bridges"),
+                material_ref="spf", purpose="stock garage frame top restraint"),
+    WallBacking(uid="PT15STOCK1", tag="BK-M-E1-PANTRY-TOP", wall_ref="W-M-E1",
+                start=inch(241.75), length=inch(80),
+                elevation=inch(95.5), height=inch(3.5), profile="2x4",
+                material_ref="spf", purpose="stock 15-inch pantry top frame suspension rail (98 1/2-inch tops)"),
     WallBacking(uid="EA1DMVPCVN", tag="BK-M-N1-CORNER", wall_ref="W-M-N1", length=inch(32.75),
                 elevation=inch(72), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="diagonal corner upper north leg at 73 1/2 inches"),

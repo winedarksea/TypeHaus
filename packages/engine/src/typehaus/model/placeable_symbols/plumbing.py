@@ -27,6 +27,7 @@ from typehaus.model.placeable_symbols._frame import (
     prism,
     rect,
 )
+from typehaus.model.placeable_symbols._undermount_sink import single_bowl_undermount
 
 __all__ = ["NEO_ANGLE_CUT_FRACTION", "PLUMBING_SYMBOLS", "neo_angle_points"]
 
@@ -531,4 +532,5 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "shower-neo-angle": shower(corner_cut_fraction=NEO_ANGLE_CUT_FRACTION),
     "floor-drain": floor_drain(),
     "kitchen-sink": kitchen_sink(bowls=2),
+    "kitchen-sink-undermount-single": single_bowl_undermount,
 }

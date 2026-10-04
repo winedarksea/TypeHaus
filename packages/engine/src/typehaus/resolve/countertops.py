@@ -7,12 +7,14 @@ never a solid; ``geometry_countertops.py`` draws it for the viewer and the GLB.
 from __future__ import annotations
 
 import math
+from dataclasses import replace
 from typing import NamedTuple
 
 from shapely.geometry import Polygon
 
 from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.millwork import Countertop
+from typehaus.model.placeable_symbols import place_local
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedCountertop, ResolvedModel, Ring
 from typehaus.resolve.overlay import union_all
@@ -79,8 +81,42 @@ def resolve_countertops(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             record, record_findings = _slab(el, run, storey.tag, sizes)
             findings.extend(record_findings)
             if record is not None:
-                model.countertops.append(record)
+                rings, cutout_findings = _fixture_cutouts(el, record, plan, placeables)
+                findings.extend(cutout_findings)
+                if not cutout_findings:
+                    model.countertops.append(replace(record, cutouts=rings))
     return findings
+
+
+def _fixture_cutouts(el: Countertop, slab: ResolvedCountertop, plan: PlanModel,
+                    placeables: dict[str, ResolvedCanvasObject]
+                    ) -> tuple[tuple[Ring, ...], list[Finding]]:
+    """Resolve explicit fixture openings; a missing/invalid hole must not draw solid stone."""
+    types = {typ.tag: typ for typ in plan.library.fixture_types}
+    rings: list[Ring] = []
+    findings: list[Finding] = []
+    outline = Polygon(slab.outline)
+    for tag in el.cutouts:
+        obj = placeables.get(tag)
+        typ = types.get(obj.type_ref or "") if obj is not None else None
+        cutout = typ.countertop_cutout if typ is not None else None
+        if obj is None or cutout is None or obj.storey != slab.storey:
+            findings.append(element_error(
+                "integrity.countertop_ref",
+                f"countertop {el.tag} cutout {tag!r} requires a fixture on the same "
+                "storey with a declared countertop_cutout", el.tag))
+            continue
+        ring = tuple(place_local([point.xy_m for point in cutout.points],
+                                 obj.position, obj.rotation_degrees))
+        hole = Polygon(ring) if len(ring) >= 3 else Polygon()
+        if hole.is_empty or not hole.is_valid or not outline.contains(hole):
+            findings.append(element_error(
+                "integrity.countertop_cutout",
+                f"countertop {el.tag} cutout {tag!r} must be a valid opening "
+                "inside the slab", el.tag))
+            continue
+        rings.append(ring)
+    return tuple(rings), findings
 
 
 def _placeable_sizes(plan: PlanModel) -> dict[str, _Size]:

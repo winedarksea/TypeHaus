@@ -384,18 +384,16 @@ MAIN_FIXTURES = (
     Fixture(uid="J7VY2GZ062", tag="FX-M-LAUNDRY-SINK", type_ref="FX-LAUNDRY-SINK-24", room="RM-M-LAUNDRY",
             position=pt(m(3.69703), m(5.86920)), rotation=deg(180), wall_ref="W-M-BA2E",
             drain_position=pt(ft(12, 0), ft(18, 9))),
-    # Sink centre x=351 3/8" is the accepted 5/8" west of the fixed window centre.
-    # The drain and sleeve move together; see kitchen_casework.py.
-    # y=34'-5 3/8" is 24" counter depth. W-M-N1 is the wet wall
-    # (EXT_2X6 — see mep.py's PR-M-KITCH-VENT). The 27" mount is restated here (not
-    # just on the type) because the resolver reads the instance Mount; it lands the rim on
-    # the 36" counter with 9" of bowl below.
-    Fixture(uid="WZRCBGNDFW", tag="FX-M-KITCH-SINK", type_ref="FX-KITCHEN-SINK-33", room="RM-M-LIVING",
+    # Window-centred x=352", 5/8" east within the fixed 36" base. The 32x19 flange
+    # sits forward of a 3" rear faucet zone in the 32x22 installation envelope.
+    # Rim meets the underside of 3 cm quartz: 36 - 1.181 - 10 = 24.819" bowl base.
+    # Rear-centre drain is 4 1/2" forward of the flange rear, at y=416 7/8".
+    Fixture(uid="WZRCBGNDFW", tag="FX-M-KITCH-SINK", type_ref="FX-KITCHEN-SINK-32-SINGLE", room="RM-M-LIVING",
             wall_ref="W-M-N1",
-            mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
-            drain_position=pt(inch(351.375), ft(35)),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(24.819)),
+            drain_position=pt(inch(352), inch(416.875)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-M-N1", face="left", distance_from_start=inch(80.625), normal_gap=inch(1),
+                wall_ref="W-M-N1", face="left", distance_from_start=inch(80), normal_gap=inch(1),
                 rotation_offset=deg(-180)))),
 )
 
