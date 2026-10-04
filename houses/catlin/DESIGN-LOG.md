@@ -4591,3 +4591,19 @@ surface that reaches the court, so the water goes there.
   1,841 pass, zero fail, 43 unknown. JSON, framed IFC and GLB builds succeeded; symbol
   lint passed. The whole-house elevation snapshot still reports concurrent kitchen and
   breezeway changes outside this closet edit.
+
+## 2026-10-04 — Move the bedroom/plant-room west window column south
+
+- Move `WIN-M-BED-W1` and `WIN-S-PLANT3` one 16-inch stud bay south, from y=64 to
+  y=48 inches, preserving their exact vertical column, window sizes and sill heights.
+  The bedroom W1 curtain rod follows; window stools and opening framing derive the move.
+- With W2 unchanged at y=128, the bedroom pair's midpoint moves from y=96 to y=88,
+  halving its offset from the finished room/window-seat centre at y=80.13 (15.87 to
+  7.87 inches). The plant-room centre is y=56.44: its window ends 8.44 inches south of
+  centre, versus 7.56 inches north before. This favours bedroom symmetry while keeping
+  the upper window close to centred; a second bay would put it 24.44 inches off centre.
+- Refit the full-height bracing panels beside both openings. Each south corner panel
+  narrows from 50.5 to 34.5 inches; the neighbouring north panel gains the same 16 inches,
+  preserving the total braced length. Both corners retain their 33-inch south-wall return.
+- Validation: 34 bracing, window-column/module and reading-corner tests passed; JSON
+  build passed. House checks returned 1,841 pass, zero fail and 43 unknown.

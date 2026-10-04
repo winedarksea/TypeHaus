@@ -994,7 +994,7 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model,
     five lower columns and their attic caps line up exactly, WIN-M-MUD/WIN-S-BATH-W included.
     """
     columns = {
-        ft(5, 4).meters: ("WIN-M-BED-W1", "WIN-S-PLANT3"),
+        ft(4).meters: ("WIN-M-BED-W1", "WIN-S-PLANT3"),
         ft(10, 8).meters: ("WIN-M-BED-W2", "WIN-S-SUITE1"),
         ft(20).meters: ("WIN-M-BATH2", "WIN-S-SUITE2"),
         ft(24, 8).meters: ("WIN-M-BATH1-W", "WIN-S-VANITY-W"),

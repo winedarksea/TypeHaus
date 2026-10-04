@@ -469,7 +469,7 @@ MAIN_PLACEABLES = [
     Furniture(uid="BYYY8GG7E6", tag="FURN-M-BED-ROD-W1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-W4", face="left", distance_from_start=inch(92),
+                  wall_ref="W-M-W4", face="left", distance_from_start=inch(108),
                   normal_gap=inch(1.375), rotation_offset=deg(-180)))),
     Furniture(uid="R4A47142RN", tag="FURN-M-BED-ROD-W2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7)),

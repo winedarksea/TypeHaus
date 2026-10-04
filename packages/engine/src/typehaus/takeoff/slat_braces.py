@@ -26,6 +26,15 @@ def _knee_brace_item(model: str):
                 hardware_by_model(model))
 
 
+def _family_source(part: str) -> str | None:
+    """The source of the family a part is a length rung of (SDWS22400DB of ``SDWS22___DB``).
+    Only the source: the family's ROLE is another joint's (through-foam), not this one."""
+    family = next((item for item in structural_hardware_catalog()
+                   if part in (getattr(item, "part_number_by_length_in", None) or {}).values()),
+                  None)
+    return family.source if family is not None else None
+
+
 def slat_brace_rows(model: ResolvedModel) -> list:
     """One row per (part, scope) over every slat band in the model."""
     slats = {brace.tag: sum(1 for m in brace.members if m.category == "brace")
@@ -51,7 +60,10 @@ def slat_brace_rows(model: ResolvedModel) -> list:
                 "slat brace plate screw": "the authored count through each of two plates",
                 "slat brace centre post tie": "the authored count at each end of the post",
                 }[scope]
-        rows.append(hardware_row(item, scope=scope, count=count, part_number=part,
-                                 tags=sorted(tags[(part, scope)]),
-                                 basis=f"{rule} ({', '.join(sorted(tags[(part, scope)]))})"))
+        row = hardware_row(item, scope=scope, count=count, part_number=part,
+                           tags=sorted(tags[(part, scope)]),
+                           basis=f"{rule} ({', '.join(sorted(tags[(part, scope)]))})")
+        if item is None:
+            row["source"] = _family_source(part)
+        rows.append(row)
     return rows

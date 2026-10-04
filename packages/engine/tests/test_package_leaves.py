@@ -111,6 +111,8 @@ _EXCUSED: dict[str, set[str]] = {
     # The canopy band: straps, clips and bases on their published rows; the coil-strap rows
     # (steel + nail capacity) live beside the caps and bases they are read with.
     "engineering/lateral_band.py": {"hardware", "library"},
+    # Its slat band: the KBS1Z's F1, the A35Z ties and the SDWS22 wood rows, all published.
+    "engineering/lateral_band_slats.py": {"hardware", "library"},
     # And again: the break's thrust reaches the house wall's sill anchors, graded on their
     # published F2 (free body §11d).
     "engineering/thermal_break_house.py": {"hardware"},

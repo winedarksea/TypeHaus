@@ -63,8 +63,8 @@ def test_roof_bands_and_members_and_decks_are_catalogued(catlin_model):
 def test_a_solid_reports_what_it_is_made_of_not_concrete(catlin_model):
     """``section._solid_material``'s walk, moved into the resolver. A solid that hatches as
     concrete is right for a footing, but category alone cannot identify what a solid is made
-    of: this house has crushed-stone footings, a framed platform, a sod roof band and KDAT
-    screen slats.
+    of: this house has crushed-stone footings, a framed platform and a sod roof band. (Its
+    KDAT screen slats left the solids on 2026-10-04: SB-BW-BAND's slats are framing members.)
     """
     by_category: dict[str, set[str]] = {}
     for element in catlin_model.geometry.elements:
@@ -86,7 +86,6 @@ def test_a_solid_reports_what_it_is_made_of_not_concrete(catlin_model):
     assert by_category.get("slab") == {"concrete"}
     assert by_category.get("slab_platform", set()) - {"concrete"}
     assert by_category.get("slab_band", set()) - {"concrete"}
-    assert by_category.get("screen_slat") == {"kdat"}
     assert "concrete" not in by_category.get("glazing", set())
 
 

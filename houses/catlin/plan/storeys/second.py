@@ -789,12 +789,11 @@ OPENINGS = [
            position=from_node("N-S-SW", ft(13, 5)), sill_height=ft(2, 8)),    # x 14'-8"
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type, not the 30" south-glazing one ("resize windows to fit the grid", CLAUDE.md).
-    # Sill raised to 3'-0" for the shared 6'-0" head line. Unmoved by the
-    # 2026-08-15 column pass — W-S-W4 starts at N-S-W3 (y=9'-0"), which can't move without
-    # dragging the whole east row off its mirror — so WIN-M-BED-W1 came up to meet it
-    # instead.
+    # Sill 3'-0" holds the shared 6'-0" head line. Moved one 16" bay south with
+    # WIN-M-BED-W1 on 2026-10-04 for bedroom symmetry, retaining the exact column.
+    # At y=48" it sits 8.44" south of the plant room's finished west-wall centre.
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736-HP",
-           position=from_node("N-S-W3", ft(2, 6.5)), sill_height=ft(3)),     # y 5'-0"
+           position=from_node("N-S-W3", ft(3, 10.5)), sill_height=ft(3)),    # y 4'-0"
     # Restores west daylight to the double-vanity alcove without competing with its two
     # north-wall sinks and mirror lights. Paired exactly with WIN-M-BATH1-W below; the 14"
     # RO fits one stud bay.

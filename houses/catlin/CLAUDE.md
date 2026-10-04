@@ -918,7 +918,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   9'-4"/26'-8" (none on main); both mirror about x=18'-0" (main: 4'-0"/14'-8"/21'-4"(door)/
   32'-0"; second: 4'-0"/9'-4"/14'-8"(door)/21'-4"(door)/26'-8"/32'-0" — every pair sums to
   36'-0"). Attic gables do not join these (see **Gables**).
-  West face stacks FIVE (y 5'-4", 10'-8", 20'-0", 24'-8", 31'-4"): first three 27" family on
+  West face stacks FIVE (y 4'-0", 10'-8", 20'-0", 24'-8", 31'-4"): first three 27" family on
   a 3'-0" sill; fourth pairs tempered 14" awnings (`RM-M-BATH1`/`RM-S-VANITY`) on a 3'-6"
   sill; fifth pairs `WIN-M-MUD`/`WIN-S-BATH-W`, also 3'-6". The 27" units share one 6'-0"
   head line; the two 14" pairs share the 4'-6" centre line instead (see **Head lines**).

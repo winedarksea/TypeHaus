@@ -96,10 +96,11 @@ MAIN_BRACED_WALLS = [
     BracedWallPanel(uid="VX1VGVJS1D", tag="BWP-M-S2-0183", wall_ref="W-M-S2", start=inch(183.0),
                     width=inch(33.0), note="SE corner return"),
     # BWL-W-A-W1 — 26'-11" provided.
-    BracedWallPanel(uid="Q0B7D5A81N", tag="BWP-M-W4-0106", wall_ref="W-M-W4", start=inch(105.5),
-                    width=inch(50.5), note="SW corner; 50 1/2\" is end condition 3"),
+    # W1's 16" south move transfers full-height length from the corner to the middle pier.
+    BracedWallPanel(uid="Q0B7D5A81N", tag="BWP-M-W4-0106", wall_ref="W-M-W4", start=inch(121.5),
+                    width=inch(34.5), note="SW corner; 33\" sheathed return on W-M-S1"),
     BracedWallPanel(uid="1BV2KCN83W", tag="BWP-M-W4-0042", wall_ref="W-M-W4", start=inch(41.5),
-                    width=inch(37.0)),
+                    width=inch(53.0)),
     BracedWallPanel(uid="3JGJ937175", tag="BWP-M-W3-0042", wall_ref="W-M-W3", start=inch(41.5),
                     width=inch(70.5)),
     BracedWallPanel(uid="KQKSNR8NDC", tag="BWP-M-W4-0000", wall_ref="W-M-W4", start=inch(0.0),
@@ -190,12 +191,12 @@ SECOND_BRACED_WALLS = [
                     width=inch(33.0), note="SE corner return"),
     # BWL-W-A-W1 — 26'-11" provided, also against 10.37 ft (W-S-W4 is the plant room's
     # west wall).
-    BracedWallPanel(uid="1MADAHH0B7", tag="BWP-S-W4-0058", wall_ref="W-S-W4", start=inch(57.5),
-                    width=inch(50.5), note="SW corner; 50 1/2\" is end condition 3"),
+    BracedWallPanel(uid="1MADAHH0B7", tag="BWP-S-W4-0058", wall_ref="W-S-W4", start=inch(73.5),
+                    width=inch(34.5), note="SW corner; 33\" sheathed return on W-S-S1"),
     BracedWallPanel(uid="BYFCA49K6E", tag="BWP-S-W3-0154", wall_ref="W-S-W3", start=inch(153.5),
                     width=inch(6.5)),
     BracedWallPanel(uid="JVMC4ADCMQ", tag="BWP-S-W4-0000", wall_ref="W-S-W4", start=inch(0.0),
-                    width=inch(30.5)),
+                    width=inch(46.5)),
     BracedWallPanel(uid="14W4PDZB3D", tag="BWP-S-W3-0042", wall_ref="W-S-W3", start=inch(41.5),
                     width=inch(85.0)),
     BracedWallPanel(uid="1DKX1FP4X5", tag="BWP-S-W2-0029", wall_ref="W-S-W2", start=inch(29.0),

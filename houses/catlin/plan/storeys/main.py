@@ -1290,17 +1290,18 @@ OPENINGS = [
     # grid (see NODES); offsets are authored off the wall's far node so they don't move
     # automatically and had to be rewritten by hand.
     #
-    # Four exact main/second columns now order the west face: 5'-0", 10'-4", 19'-8" and
-    # 24'-4", all on the shared 6'-0" head line. The 10'-4" suite header replaces the one
+    # Four exact main/second columns now order the west face: 4'-0", 10'-8", 20'-0" and
+    # 24'-8". The 10'-8" suite header replaces the one
     # ladder-backing rung it crosses at W-S-W3's tee; opening framing takes precedence over
-    # finish backing there. The 31'-4" service group stays a near-column: WIN-S-BATH-W is
-    # 3 1/8" south because its mechanical-chase node re-phases that wall's stud grid.
+    # finish backing there. The 31'-4" service group also columns on the shared facade grid.
+    # W1 moved one 16" bay south on 2026-10-04 with WIN-S-PLANT3: the bedroom pair's
+    # midpoint is y=88", 7.87" north of the finished room/seat centre instead of 15.87".
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
-           type_ref="WT-2736", position=from_node("N-M-SW", ft(4, 2.5)),
-           sill_height=ft(3)),                                                # y 5'-0"
+           type_ref="WT-2736", position=from_node("N-M-SW", ft(2, 10.5)),
+           sill_height=ft(3)),                                                # y 4'-0"
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 6.5)),
-           sill_height=ft(3)),                                               # y 10'-4"
+           sill_height=ft(3)),                                               # y 10'-8"
     # South face, bedroom: centres 4'-0" and 14'-8", both STUD LINES on W-M-S1's grid.
     # S1 stacks under WIN-S-PLANT1; S2 stacks under WIN-S-PLANT4, which took over this stud
     # line from D-S-DECK-W when that door was deleted on 2026-09-03 — the column survives the

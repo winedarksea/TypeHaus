@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 5a20b3110ec30473
-**Lines:** 156
+**Model hash:** 224c5496013f8978  
+**Lines:** 158
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -43,18 +43,19 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 — blocking, joist (2x12:kdat) | 464 | LF ordered | 48 pcs, 421.1 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.9 LF cut | building |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,844 | LF ordered | 657 pcs, 4086.1 LF cut | building |
-| 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,836 | LF ordered | 474 pcs, 2453.4 LF cut | building |
+| 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | 2,876 | LF ordered | 492 pcs, 2485.8 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 8 | LF ordered | 1 pcs, 6.7 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 7,088 | LF ordered | 1164 pcs, 6132.2 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — stud (2x6:df-select-s4s) | 80 | LF ordered | 8 pcs, 69.0 LF cut | building |
-| 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | 88 | LF ordered | 9 pcs, 72.0 LF cut | building |
+| 2x6 KDAT southern yellow pine (treated exterior framing) — plate, girt strapping (2x6:kdat) | 104 | LF ordered | 11 pcs, 81.0 LF cut | building |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | 1,660 | LF ordered | 200 pcs, 1409.2 LF cut | building |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | 28 | LF ordered | 2 pcs, 27.3 LF cut | building |
 | 2x8 — header, joist, landing framing (2x8) | 176 | LF ordered | 34 pcs, 130.8 LF cut | building |
-| 2x8 SPF framing lumber — blocking (2x8:spf) | 606 | LF ordered | 111 pcs, 482.2 LF cut | building |
+| 2x8 SPF framing lumber — blocking (2x8:spf) | 598 | LF ordered | 110 pcs, 479.5 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
-| 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1142 pcs, 333.1 LF cut | building |
+| 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1134 pcs, 330.8 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
+| 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | 8 | LF ordered | 1 pcs, 2.1 LF cut | building |
 | hanger — hanger board (hanger) | 24 | LF ordered | 4 pcs, 17.9 LF cut | building |
 
 ## Sheet goods, by the sheet
@@ -80,17 +81,16 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| strap brace fastener (CS16) (10d x 2-1/2" common, HDG) | 48 | ea |  | building |
 | Pocket door frame kit, 2x4 wall (commodity, to 36"/125 lb) (153068PF) | 1 | ea |  | building |
 | Pocket door frame kit, 2x6 wall (36"/200 lb) (15603068) | 1 | ea |  | building |
 | A35Z framing angle | 8 | ea |  | building |
+| A35Z framing angle | 4 | ea |  | main |
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
 | AC6Z adjustable post cap (6x beam on 6x6), MAX nailing | 2 | ea |  | building |
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing | 2 | ea |  | building |
 | CBSQ66-SDS2 cast-in column base (6x6) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
-| CS16 coiled strap, 16 ga | 1 | ea |  | main |
 | DTT2Z screw hold-down / tension tie | 2 | ea |  | building |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT) | 1 | ea |  | building |
 | H10ASS stainless hurricane tie | 20 | ea |  | building |
@@ -115,6 +115,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | 4 | ea |  | building |
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | 7 | ea |  | building |
 | KBS1Z knee-brace / beam strap (ZMAX) | 2 | ea |  | building |
+| KBS1Z knee-brace stabilizer (ZMAX), one per brace end | 36 | ea |  | main |
 | LS30 skewable angle, gable-end stud to rafter | 22 | ea |  | building |
 | LSCZ adjustable stair-stringer connector (ZMAX) | 2 | ea |  | building |
 | LSSR field-adjustable slope/skew hanger | 38 | ea |  | building |
@@ -135,6 +136,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 71 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 106 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 12 | ea |  | building |
+| slat brace plate screw (SDWS22400DB) | 16 | ea |  | main |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 316 | ea |  | building |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | 4 | ea |  | building |
@@ -143,7 +145,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 1 | ea |  | building |
 | KDAT 4x4 tie block, 5" long, screwed to the tied member (TIE-BLOCK-4X4X5-KDAT) | 2 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,142 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,134 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 72 | ea |  | building |
 
 ## Other structural solids
@@ -259,11 +261,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 — blocking, joist (2x12:kdat) | — |
 | 2x2 — blocking, plate, stud (2x2) | — |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | — |
-| 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | — |
+| 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | — |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | — |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | — |
 | 2x6 Douglas fir Select Structural S4S, eased corners — stud (2x6:df-select-s4s) | — |
-| 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | — |
+| 2x6 KDAT southern yellow pine (treated exterior framing) — plate, girt strapping (2x6:kdat) | — |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | — |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | — |
 | 2x8 — header, joist, landing framing (2x8) | — |
@@ -271,6 +273,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | — |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | — |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | — |
+| 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | — |
 | hanger — hanger board (hanger) | — |
 | Basswood/aspen shiplap sauna liner (5/4), site-milled, 1" ceiling (catlin-sauna-shiplap:ceiling) | — |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
@@ -286,17 +289,16 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 5/8" roof (struct-1-plywood:roof) | — |
 | Structural 1 plywood, 3/4" roof (struct-1-plywood:roof) | — |
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | — |
-| strap brace fastener (CS16) (10d x 2-1/2" common, HDG) | — |
 | Pocket door frame kit, 2x4 wall (commodity, to 36"/125 lb) (153068PF) | — |
 | Pocket door frame kit, 2x6 wall (36"/200 lb) (15603068) | — |
 | A35Z framing angle | — |
+| A35Z framing angle | SB-BW-BAND |
 | ABU44 standoff post base (4x4) | — |
 | ABU44 standoff post base (4x4) | — |
 | AC6Z adjustable post cap (6x beam on 6x6), MAX nailing | — |
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing | — |
 | CBSQ66-SDS2 cast-in column base (6x6) | — |
 | CS16 coiled strap, 16 ga | — |
-| CS16 coiled strap, 16 ga | SB-BW-BAND-D1E, SB-BW-BAND-D1W, SB-BW-BAND-D2E, SB-BW-BAND-D2W |
 | DTT2Z screw hold-down / tension tie | — |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT) | — |
 | H10ASS stainless hurricane tie | — |
@@ -321,6 +323,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | — |
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | — |
 | KBS1Z knee-brace / beam strap (ZMAX) | — |
+| KBS1Z knee-brace stabilizer (ZMAX), one per brace end | SB-BW-BAND |
 | LS30 skewable angle, gable-end stud to rafter | — |
 | LSCZ adjustable stair-stringer connector (ZMAX) | — |
 | LSSR field-adjustable slope/skew hanger | — |
@@ -341,6 +344,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
+| slat brace plate screw (SDWS22400DB) | SB-BW-BAND |
 | SP4 stud plate tie (2x4) | — |
 | SP6 stud plate tie (2x6) | — |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | — |
