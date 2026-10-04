@@ -233,6 +233,7 @@ the future.
 - More plants for the plant room. Five of these on the north wall with plants https://www.ikea.com/us/en/p/skuggroena-wall-mounted-plant-stand-black-20562018/ then two decently large hanging planters (suspended from the joists) in the north east and north west corners with dangling vines. We need to consider how these are mounted through pvc panels and furring strips.
 - The vertical chaise in the north west corner of catlin house, extending from basement to attic, likely needs fireblocking. Under Section R302.11 (Fireblocking), vertical and horizontal concealed draft openings must be cut off to form an effective fire barrier between stories, and between a top story and the roof space. Either 3/4" plywood (same plane as the subfloor) or mineral wool batt fill are likely the best solutions to show here. This might already be noted somewhere, but should be shown in the 3d model as well.
 - Can we shorten W-M-STRW by a few inches on its southern end so it ends in line with wall W-M-STOS2?
+- Several of the interior 2x4 wall types do not yet bill paint (or perhaps paint for them is estimated elsewhere?)
 
 # Project Management
 

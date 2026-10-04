@@ -305,8 +305,10 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # the grade beam, and this row grids fasteners per wall run. **
     # WIN-M-LIV-S2 restores the west living-room window and its packed girt stations.
     # E1's 16" move north adds four packed girt stations at its head and sill (2026-10-03).
-    # The current exterior window layout resolves 1,134 wall-block stations; the mudroom's
-    # interior upper closure adds no exterior fastening (same count with it removed).
+    # ** 1142 -> 1134 ON 2026-10-04: WIN-M-BED-W1 / WIN-S-PLANT3 moved one 16" bay south. **
+    # Their jambs now sit beside the 32" block module, so the jamb blocks take those
+    # stations: W-M-W4 47 -> 43, W-S-W4 30 -> 26, max field gap 34.5" -> 32.8". The
+    # mudroom's interior upper closure adds no exterior fastening.
     assert row["count"] == 1134 and furring[0]["count"] == 198
 
 

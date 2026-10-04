@@ -770,14 +770,14 @@ SECOND_PLACEABLES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-DC2", face="right", distance_from_start=inch(46),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The Estero arch mirror (owner, 2026-10-03), centred on FX-S-SUITEBATH-LAV with
-    # ED-S-SUITEBATH-MIRROR's bar above it. Bottom 46", so the shelf clears the faucet by
-    # ~10"; the top at 74" hangs off the SN3 72"-79 1/4" backing course.
+    # The Estero arch mirror (owner, 2026-10-03), shelf facing into the room, centred on
+    # FX-S-SUITEBATH-LAV, with ED-S-SUITEBATH-MIRROR's bar above it. Bottom 46", so the
+    # shelf clears the faucet by ~10"; the top at 74" hangs off the SN3 72"-79 1/4" backing course.
     Furniture(uid="P0MWNTP6QE", tag="FURN-S-SUITEBATH-MIRROR", type_ref="FT-SUITEBATH-MIRROR-ESTERO",
               room="RM-S-SUITEBATH", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-SN3", face="right", distance_from_start=inch(50.5),
-                  normal_gap=inch(0), rotation_offset=deg(-180))), rotation=deg(0)),
+                  normal_gap=inch(0.25), rotation_offset=deg(0))), rotation=deg(0)),
     # RM-S-PLANT: a place to sit among the plants, program divides along y — plants on the
     # south glass, seating behind. Plants sit directly under ED-S-PLANT-TUBE1/2 (x=3'-4"/8'-8",
     # 2'-3" below ceiling, on a photoperiod timer) and under WIN-S-PLANT1/2 (same x, the
