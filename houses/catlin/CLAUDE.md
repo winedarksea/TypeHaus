@@ -54,7 +54,8 @@ not instruction: when it disagrees with this file or the model, it is the one th
 - `plan/bed_reading_corner.py` — `# haus: editable`, RM-M-BED's west wall: a HEMNES in the SW
   corner, a STRANDMON chair facing north, and a two-seat SEKTION window seat between two 12"
   open cabinets under 1" walnut countertops (`walnut-counter`, 36" tops, 1.70" under the W1/W2
-  stools). Ends at y=115", 9" short of D-M-BATH2's open leaf. Types in `_types.py`.
+  stools). Seat/cabinet run centres on the finished west wall at y=80.13", ends at
+  y=116.63", 7.37" short of D-M-BATH2's open leaf. Types in `_types.py`.
 - `plan/bedroom_wardrobes.py` — `# haus: editable`, BED1-3's PAX wardrobes; types and products
   in `plan/bedroom_wardrobe_types.py`. BED1/2's doors sit 2 1/2" off module for them (accepted).
   BED1/2 each have an open 19 5/8" six-shelf frame at both ends of the L (2026-10-03).

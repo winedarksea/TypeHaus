@@ -4541,3 +4541,13 @@ surface that reaches the court, so the water goes there.
   and refresh that snapshot, then its regression passes. Starter and Catlin check suites
   each pass all 295 checks; source Ruff passes. Final Catlin report: 1,840 pass,
   zero fail, 43 unknown (unchanged unknown count).
+
+## 2026-10-04 — Centre the RM-M-BED window seat on the west wall
+
+- Move both seat units, paired 12-inch end cabinets, covers and cushion 1.62 inches north;
+  hosted walnut tops follow. The 73-inch run spans y=43.63–116.63, centred at y=80.13
+  between the finished south/north faces (6.635/153.625), with equal 36.995-inch margins.
+- The SW HEMNES stays in its corner, leaving a 1.62-inch gap to the run. The open
+  D-M-BATH2 leaf retains 7.37 inches of clearance; RC7 stays clear of the north end.
+- Validation: reading-corner and fixture-discipline tests passed (987 passed, 12 skipped),
+  JSON build passed; house checks reported 1,840 pass, zero fail, 43 unknown.
