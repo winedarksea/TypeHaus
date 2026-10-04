@@ -344,7 +344,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   1-1/2" + block 4-1/2"; the 1/2" ply is nailed to the stud and is NOT a member being drawn
   together — and plain shank has to span it. TimberLOK threads 2" (ESR-1078 Table 1A) and
   clears it exactly. The SDWS22800DB this wall carried until 2026-09-12 does NOT: every
-  SDWS22 threads 3" whatever its length (IAPMO UES ER-192 Table 7), so 1" of thread stood
+  SDWS22 of 5" and longer threads 3" (IAPMO UES ER-192 Table 1), so 1" of thread stood
   inside the stack and jacked the girt off its blocks. **Never substitute a screw here
   without reading its thread length.** The part is authored on the girt band's `FramingSpec`
   (`standoff_fastener_*`), and the takeoff bills exactly it.

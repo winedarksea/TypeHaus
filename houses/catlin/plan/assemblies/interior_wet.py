@@ -190,7 +190,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
         # 1-1/2" of it lands in the stud, past ESR-1078's 1.25" minimum embedded thread.
         #
         # THE SDWS22800DB THIS WALL CARRIED UNTIL 2026-09-12 CANNOT DO THAT. Every SDWS22
-        # threads 3" whatever its length (IAPMO UES ER-192 Table 7), so at 8" it stands 1"
+        # 5" and longer threads 3" (IAPMO UES ER-192 Table 1), so at 8" it stands 1"
         # of thread inside the 6.0" stack and jacks the girt off the block instead of
         # pulling it down. Graded as `girt_screw/W-A-N1`; see
         # notes/catlin_truss_engineering.md §3.

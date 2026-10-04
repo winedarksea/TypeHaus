@@ -310,7 +310,8 @@ finding was right, and it had been right for eleven days.
 the screw is threaded, never checked whether that thread could clamp anything, never checked
 the head, and cited ESR-2236 — which is the report for the SDS, not the SDWS. The real
 report is **IAPMO UES ER-192, and its Table 7 gives every SDWS22 a 3" thread whatever the
-overall length.**
+overall length.** (Corrected 2026-10-04: from 5" up; Table 1 gives the 3" and 4" 1-1/2" and
+2-3/8".)
 
 **The audit's 6-1/2" was wrong, and the right number is 6.0".** The clamped stack is the
 girt (1-1/2") and the block (4-1/2") — the members being drawn together. The 1/2" plywood is

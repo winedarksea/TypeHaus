@@ -48,7 +48,7 @@ The screw is chosen on THREAD, not length. The clamped stack is the girt and the
 6.0"; the sheathing is nailed to the stud and is not a member being drawn together — and
 plain shank has to span it. TimberLOK threads 2" at every length (ICC-ES ESR-1078
 Table 1A) and clears it exactly. The SDWS22800DB this wall carried until 2026-09-12 does
-not: every SDWS22 threads 3" whatever its length (IAPMO UES ER-192 Table 7), so 1" of that
+not: every SDWS22 of 5" and longer threads 3" (IAPMO UES ER-192 Table 1), so 1" of that
 thread stood inside the stack and jacked the girt off the block. Graded as
 ``engineering/girt_screw.py``; the house authors the part on the girt band's
 ``FramingSpec``.

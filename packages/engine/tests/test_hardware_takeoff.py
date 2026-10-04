@@ -208,7 +208,7 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # TLOK08, so the takeoff bills the screw `engineering/girt_screw.py` graded rather than
     # re-deriving one from the stack — a BOM ordering a different screw from the one the
     # record stamped would put the two in silent disagreement. The SDWS22800DB the ladder
-    # used to pick threads 3 in at every length (ER-192 Table 7) and stands 1 in of that
+    # used to pick threads 3 in, as every SDWS22 of 5 in and longer does (ER-192 Table 1) and stands 1 in of that
     # inside the 6.0 in clamped stack, which is why it left.
     row = next(r for r in girt_rows if r["scope"] == "girt wall blocks")
     assert row["size"] == "8 in" and row["part_number"] == "TLOK08"

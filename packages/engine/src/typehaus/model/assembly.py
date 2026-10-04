@@ -141,8 +141,9 @@ class FramingSpec(HausModel):
     standoff_fastener_length_in: float | None = None
     #: THREAD length, which is a different number from the length and the one that decides
     #: whether the stack can be drawn tight: thread standing in the clamped members jacks
-    #: them apart instead of pulling them together. Every SDWS22 threads 3" regardless of
-    #: length (IAPMO UES ER-192 Table 7), which is exactly why this is authored per screw.
+    #: them apart instead of pulling them together. Every SDWS22 of 5" and
+    #: longer threads 3" (IAPMO UES ER-192 Table 1), which is exactly why this is authored per
+    #: screw.
     standoff_fastener_thread_in: float | None = None
     standoff_fastener_withdrawal_lb_per_in: float | None = None
     standoff_fastener_pull_through_lb: float | None = None

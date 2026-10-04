@@ -17,8 +17,8 @@ prescriptive check for an engineered record to answer.
 Three limit states, and the first is the one the audit found open
 ---------------------------------------------------------------
 * **Thread engagement.** A lag-type screw draws two members together only if the members
-  being clamped are spanned by plain SHANK. Every SDWS22 threads 3" at every length
-  (IAPMO UES ER-192 Table 7), so the 8" SDWS22800DB this wall specified until 2026-09-12
+  being clamped are spanned by plain SHANK. Every SDWS22 of 5" and longer threads 3"
+  (IAPMO UES ER-192 Table 1), so the 8" SDWS22800DB this wall specified until 2026-09-12
   stood 1" of thread inside a 6.0" stack and could not pull it tight. FastenMaster
   TimberLOK threads 2" (ICC-ES ESR-1078 Table 1A): 6" of shank against a 6.0" stack, and
   the thread starts where the stud does. Graded as ``stack <= plain shank``, which is the

@@ -398,7 +398,7 @@ under-billing for the window bucks.
    Three corrections to the arithmetic, none of which changes the verdict:
    * **The thread is 3", not 2 3/4".** The right report is **IAPMO UES ER-192 Table 7**
      (the SDWS), not ESR-2236 (the SDS, which the house's own note cited). Every SDWS22
-     threads 3" whatever its overall length.
+     of 5" and longer threads 3" (Table 1; the 3" and 4" thread 1-1/2" and 2-3/8").
    * **The clamped stack is 6.0", not 6.5".** Girt 1-1/2" + block 4-1/2". The 1/2" plywood
      is **nailed to the stud**, so it is on the stud's side of the joint and is not a member
      being drawn together; counting it is counting the anchor as part of the load. At 6.0"

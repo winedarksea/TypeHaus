@@ -407,10 +407,13 @@ more #5 dowels — and both land at **0.759**, `PT-BW-GE`'s own number. Because 
 hold, `column_base`'s embedment (grade to pad top) does not move and
 `entry_column_base_fixity.md` §6e's claim is undisturbed.
 
-**`pier_basis` reads the tributaries close to this line now**: 17.0 ft² of deck and 40.0 ft²
-of roof on `PT-BW-W` plus the 98 lb of wall above, for D 1,628 + L 3,629 = 5,257 lb service
-and 7,760 lb factored against the 8,014 hand-worked here (both before 2026-10-04's +11.4 lb of band). The gap is the deck share — 17.0 against this line's 18.4 — and
-it is bookkeeping in a load case nowhere near governing. It used to read 47.7 ft² of roof,
+**`pier_basis` reads the same roof and wall as this line, and half its deck** (re-read
+2026-10-04): 9.41 ft² of deck and 40.0 ft² of roof on `PT-BW-W` plus the 109 lb of wall above,
+for D 1,888 + L 3,324 = 5,212 lb service and 7,585 lb factored, against the 8,027 hand-worked
+here. The gap is the deck share. `deck_post_tributaries` splits each seat beam's strip between
+the TWO piers under it, and the table above puts a whole seat line (18.4 ft²) on one, so the
+hand row is the conservative end by about that half. It is bookkeeping in a load case nowhere
+near governing (axial d/c 0.02). It used to read 47.7 ft² of roof,
 7.7 ft² of which was the garage landing counted a second time as a "rafter field"; that
 duplicate went on 2026-09-18 (`pier_basis._rafter_fields` now skips a beam pair some
 `FloorSystem` or `Roof` has already accounted for).

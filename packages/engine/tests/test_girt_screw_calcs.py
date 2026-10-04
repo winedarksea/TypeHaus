@@ -7,8 +7,8 @@ in this package is held to.
 Three of these assertions are doing unusual work and are worth reading before changing:
 
 * :func:`test_the_engagement_rule_rejects_the_screw_this_wall_used_to_specify` pins the
-  reason this item exists. A lag-type screw clamps only on plain SHANK, every SDWS22 threads
-  3" whatever its length (IAPMO UES ER-192 Table 7), and the 8" SDWS22800DB this wall
+  reason this item exists. A lag-type screw clamps only on plain SHANK, every SDWS22 of 5" and
+  longer threads 3" (IAPMO UES ER-192 Table 1), and the 8" SDWS22800DB this wall
   specified until 2026-09-12 therefore stood 1" of thread inside the 6.0" stack it was meant
   to pull together. Nothing in the house had ever written that thread length down.
 * :func:`test_the_clamped_stack_is_six_inches_not_six_and_a_half` pins the correction the

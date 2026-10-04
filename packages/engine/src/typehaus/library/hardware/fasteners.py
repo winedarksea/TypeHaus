@@ -29,20 +29,21 @@ SDWS_TIMBER_SCREW = StructuralHardware(
         3.0: "SDWS22300DB", 4.0: "SDWS22400DB", 5.0: "SDWS22500DB",
         6.0: "SDWS22600DB", 8.0: "SDWS22800DB",
     },
-    # IAPMO UES ER-192 Table 7: every SDWS22 threads 3 in, whatever its overall length. That
-    # is why this family cannot serve a girt crossing — at 8 in over a 6 in clamped stack,
-    # 1 in of that thread stands inside the members it is supposed to be pulling together.
+    # IAPMO UES ER-192 Table 1: 1-1/2 in of thread at 3 in, 2-3/8 in at 4 in, and 3 in at
+    # every length from 5 in up. That is why this family cannot serve a girt crossing — at
+    # 8 in over a 6 in clamped stack, 1 in of that thread stands inside the members it is
+    # supposed to be pulling together.
     thread_length_in_by_length_in={
-        3.0: 3.0, 4.0: 3.0, 5.0: 3.0, 6.0: 3.0, 8.0: 3.0,
+        3.0: 1.5, 4.0: 2.375, 5.0: 3.0, 6.0: 3.0, 8.0: 3.0,
     },
     source="Simpson Strong-Tie SDWS Timber Screw product family (strongtie.com/sdws) — "
            "0.220 in shank structural wood screw, Double-Barrier coated (DB); thread "
-           "lengths per IAPMO UES ER-192 Table 7",
+           "lengths per IAPMO UES ER-192 Table 1",
 )
 
 #: An SDWS22 driven SQUARE into the side grain of a DF/SP main member (ER-192 Table 5 fn. 3),
 #: wood to wood, C_D 1.0 as tabulated: ``model -> (Z lbf, at side member in, W lbf/in of
-#: thread, thread in, W_max lbf)``. The 4" threads 2-3/8", not 3" (ER-192 Table 1).
+#: thread, thread in, W_max lbf)``.
 SDWS22_WOOD_ROWS: dict[str, tuple[float, float, float, float, float]] = {
     "SDWS22400DB": (405.0, 1.5, 179.0, 2.375, 425.0),
 }

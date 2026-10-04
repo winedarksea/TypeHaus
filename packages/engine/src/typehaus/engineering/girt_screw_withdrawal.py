@@ -6,7 +6,7 @@ readable without a house in hand.
 
 **The thing this module exists to say is that a screw has two lengths.** Overall length is
 what the box prints; THREAD length is what decides whether the screw works, and the two are
-independent — IAPMO UES ER-192 Table 7 gives every SDWS22 a 3" thread whether it is 3" or
+independent — IAPMO UES ER-192 Table 1 gives every SDWS22 a 3" thread whether it is 5" or
 8" long. A lag-type screw draws a stack together only if the members being clamped are
 spanned by plain SHANK: thread biting in the near member jacks it away from the far one and
 the joint stands open, whatever the withdrawal number says. So::

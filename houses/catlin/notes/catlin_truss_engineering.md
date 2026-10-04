@@ -216,7 +216,8 @@ SDWS22800DB:    8" - 3" thread = 5.0" shank   vs  6.0" stack   ->  1.0" of threa
                                                                    INSIDE the stack
 ```
 
-**Every SDWS22 has a 3" thread whatever its overall length** — IAPMO UES ER-192 Table 7.
+**Every SDWS22 of 5" and longer has a 3" thread** — IAPMO UES ER-192 Table 1 (the 3" and
+4" thread 1-1/2" and 2-3/8").
 That is the fact this note was missing. An earlier draft cited ESR-2236, which is the
 report for the SDS, not the SDWS. At 8" long the SDWS stands an inch of thread in the girt
 and block and jacks the girt off its blocks; the fix at 10" (SDWS221000DB) restores the
