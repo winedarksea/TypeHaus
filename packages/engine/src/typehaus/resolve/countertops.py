@@ -145,9 +145,18 @@ def _slab(el: Countertop, run: list[ResolvedCanvasObject], storey: str,
         covered[-1] = min(covered[-1], remaining)
         length = el.length.meters
 
+    last_angle = math.radians(run[-1].rotation_degrees)
+    reverse_travel = len(run) > 1 and (
+        (run[-1].position[0] - run[0].position[0]) * math.cos(last_angle)
+        + (run[-1].position[1] - run[0].position[1]) * math.sin(last_angle)
+    ) < 0
+    # A run can travel against local +x (north-facing peninsula cabinets do).
+    # Keep the last host's near end when trimming, or the slab acquires a gap.
     rects = [_covered_l(obj, sizes[obj.type_ref or ""], overhang)
              if sizes[obj.type_ref or ""].shape is not None
-             else _covered_rect(obj, width, sizes[obj.type_ref or ""], offset, depth)
+             else _covered_rect(obj, width, sizes[obj.type_ref or ""], offset, depth,
+                                sizes[obj.type_ref or ""].width_m - width
+                                if reverse_travel and obj is run[-1] else 0.0)
              for obj, width in zip(run, covered, strict=True)]
     if extension > 0.0:
         rects.append(_extension_rect(run, sizes[run[-1].type_ref or ""], extension, offset,

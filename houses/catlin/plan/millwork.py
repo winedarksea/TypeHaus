@@ -101,12 +101,12 @@ ATTIC_SHELVES = [
 #
 # 1. THIS SHELF IS DESIGNED TO BE CLIMBED, so its thickness is a STRUCTURAL decision, not a
 #    finish one. It is 8/4 rather than the 4/4 the other light-duty cases get: a climbing
-#    250 lb point load over the gabled ~35 1/16" half-span is what governs, and 4/4 is the
+#    250 lb point load over the gabled ~36 1/4" half-span is what governs, and 4/4 is the
 #    wrong answer to that question. What the 8/4 bought, beyond passing, is that STRENGTH
-#    stopped being the argument for the gable — 1 1/2" oak carries the full 70 7/8" span at
-#    ~656 psi. THE GABLE STAYS ANYWAY, on deflection: the full span is ~0.229" under
-#    250 lb and this shelf is graded as a FLOOR, so L/360 is 0.197" and it misses. Gabled
-#    it is ~0.028". THE CLEATS AND THE BLOCKING STAY EITHER WAY, and the bays below are the
+#    stopped being the argument for the gable — 1 1/2" oak carries the full 73 1/4" span at
+#    ~678 psi. THE GABLE STAYS ANYWAY, on deflection: the full span is ~0.253" under
+#    250 lb and this shelf is graded as a FLOOR, so L/360 is 0.203" and it misses. Gabled
+#    it is ~0.031". THE CLEATS AND THE BLOCKING STAY EITHER WAY, and the bays below are the
 #    two half-spans the gable creates, not one 70" shelf.
 # 2. THE CARCASS IS 18" DEEP, down from 24" — and the mill is what moved it. 24" was past
 #    the 18" the supply can produce, so every shelf was a two-board edge glue-up; 18" is one
@@ -133,8 +133,8 @@ MAIN_SHELVES = [
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(
-            ShelfBay(width=inch(35.0625), clear_height=ft(7), shelf_count=6),
-            ShelfBay(width=inch(35.0625), clear_height=ft(7), shelf_count=6),
+            ShelfBay(width=inch(36.25), clear_height=ft(7), shelf_count=6),
+            ShelfBay(width=inch(36.25), clear_height=ft(7), shelf_count=6),
         ),
     ),
     # --- RM-M-STUDY's call booth, FT-STUDY-BENCH and FT-STUDY-DESK -----------------------

@@ -4415,3 +4415,40 @@ surface that reaches the court, so the water goes there.
   is cut back to its footprint. `oak-counter`/`live-edge-white-oak` name the `oak-board` 3D
   recipe, so the slabs and stools draw with grain. Known residue: the sink base's own
   counter bands stay in the symbol's grey.
+
+## 2026-10-03 — Close kitchen runs with stock frames and detailed support
+
+- Extend the pantry partition 2 3/8 east and recompose the north bases as B12/DW24/
+  sinkB36/B18; delete the E2 filler. Move sink, dishwasher, disposer and aligned drain,
+  sleeve and cleanout 5/8 west, leaving the sink window on its grid. Widen the pantry
+  shelves to73 1/4, with two36 1/4 clear bays and a3/4 middle gable. Redistribute the
+  adjacent braced-wall segments at the moved tee without changing their total length.
+- Merge the west north uppers intoW36 plus20 stacker, shift bridge/flank, and replace
+  WN1 with the26x26x30 diagonal wall corner at73 1/2. Add eastW12-30; lights mount to
+  actual undersides. One polygon supplies corner symbol, collision footprint and GLB geometry.
+- Garage doors now face west. Replace the upper custom carcass with stock902.653.88 at76;
+  its installed type has no legs or counter. Custom lower supports it through aligned
+  sidewalls and each box has independent wall restraint. Add top bracket backing and
+  corner restraint on both walls, with blocking ends on framing.
+- Shift S1/S2 and their tops11 5/8 north, meeting the garage. Replace deep custom tops
+  with shallow stock202.654.57 on supported rear bays, including closure decks, restraint
+  bridges and exposed end cover. Detail actual9 1/4 setback separately from nominal9.
+  Add a12-inch living door/shelf wall-frame cabinet on an anchored plinth; reuse the old
+  north filler's UID and leave only a1/8 sealed installation joint.
+- Shorten oak bar and projecting back panel to73 1/2; reserve25 to the pantry front
+  and space stools24 1/2 apart. Finish remaining backs flush with paint/edge banding.
+  Preserve pantry swing-out hardware; regression tests cover full door/rack deployment,
+  stool fit and the garage's supported pull-out. Correct countertop trimming for runs
+  travelling against cabinet local+x so shortened north-facing slabs remain continuous.
+- Update stock-frame/support/finish price rows, countertop hosts and living slab extent;
+  remove custom upper/top and filler rows. Preserve surviving cabinet UIDs. The dimensioned
+  specification is notes/kitchen_stock_cabinet_details.md; nominal module depths are not
+  shop cuts. Normal tops remain103 1/2; verify the garage's narrow106-inch ceiling reveal.
+- **Validation:** final house checks: 1,841 pass, zero failures, 43 existing unknowns.
+  `scripts/verify.sh --fast` passed (8,159 engine tests; both houses and lint passed).
+  Affected geometry, millwork, plumbing, takeoff, floor-finish and elevation tests passed;
+  JSON/IFC and GLB built, and UI typecheck/tests/build passed. Reviewed the kitchen plan,
+  north/east interior elevations and geometry read from the emitted GLB.
+- The refreshed elevation snapshot also records already-present bedroom furnishings
+  missing from the prior snapshot. Kitchen top backing is tested as emitted framing,
+  not merely authored bands; the new 2x6 bands add 28 LF of ordered lumber.

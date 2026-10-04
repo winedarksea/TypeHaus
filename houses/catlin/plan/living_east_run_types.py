@@ -40,8 +40,31 @@ SEKTION_CONNECTOR_RAIL = Product(
     name='SEKTION connector rail, 34 1/4", 2-pack', sku="005.570.32",
     source="Hangs the FÖRBÄTTRA panels on the peninsula's seating face.",
 )
+SEKTION_BASE24_FRAME = Product(
+    tag="PROD-IKEA-SEKTION-BASE24-30", brand="IKEA", model="SEKTION base frame 24x24x30",
+    name='SEKTION 24x24x30" base frame', sku="902.653.88",
+    url="https://www.ikea.com/us/en/p/sektion-base-cabinet-white-90265388/",
+)
+SEKTION_WALL12_FRAME = Product(
+    tag="PROD-IKEA-SEKTION-WALL12-30", brand="IKEA", model="SEKTION wall frame 12x15x30",
+    name='SEKTION 12x14 3/4x30" wall frame', sku="102.654.72",
+    url="https://www.ikea.com/us/en/p/sektion-wall-cabinet-white-10265472/",
+)
+SEKTION_CORNER_WALL_FRAME = Product(
+    tag="PROD-IKEA-SEKTION-CORNER-W26-30", brand="IKEA", model="SEKTION corner wall frame",
+    name='SEKTION 26x26x30" corner wall frame', sku="102.655.04",
+    url="https://www.ikea.com/us/en/p/sektion-corner-wall-cabinet-white-10265504/",
+    source='Stock diagonal front with a 15-inch VOXTORP door; hinges included, rail separate.',
+)
+SEKTION_WALL24_TOP_FRAME = Product(
+    tag="PROD-IKEA-SEKTION-WALL24-20", brand="IKEA", model="SEKTION wall frame 24x15x20",
+    name='SEKTION 24x14 3/4x20" wall frame', sku="202.654.57",
+    url="https://www.ikea.com/us/en/p/sektion-wall-cabinet-white-20265457/",
+)
 LIVING_EAST_RUN_PRODUCTS = (SEKTION_BASE_15_DEEP, SEKTION_CORNER_CAROUSEL,
-                            SEKTION_FLOOR_ANCHOR, SEKTION_CONNECTOR_RAIL)
+                          SEKTION_FLOOR_ANCHOR, SEKTION_CONNECTOR_RAIL,
+                          SEKTION_BASE24_FRAME, SEKTION_WALL12_FRAME,
+                          SEKTION_CORNER_WALL_FRAME, SEKTION_WALL24_TOP_FRAME)
 
 # FÖRBÄTTRA matte white, site-cut from the 25x80 panel (study_nook_types.py's product).
 _PANEL = "PROD-IKEA-FORBATTRA-MATTE-25-80"
@@ -60,12 +83,13 @@ PENINSULA_END_PANEL = FurnitureType(
     source="The peninsula's west end, floor to slab, under the quartz.",
 )
 PENINSULA_BACK_PANEL = FurnitureType(
-    tag="FT-KIT-PEN-BACK-PANEL", name='FÖRBÄTTRA seating face, 122 1/2 x 3/4 x 34"',
-    footprint=(inch(122.5), inch(0.75)), height=inch(34), plan_symbol="sektion-cover-panel",
+    tag="FT-KIT-PEN-BACK-PANEL", name='FÖRBÄTTRA seating face, 73 1/2 x 1/2 x 34"',
+    footprint=(inch(73.5), inch(0.5)), height=inch(34), plan_symbol="sektion-cover-panel",
     product_ref=_PANEL,
-    source=("Covers the bases' backs and the corner leg's from the end panel to the east "
-            "wall, on SEKTION connector rails. Five 24 1/2\" pieces stood vertically, two "
-            "34\" lengths from each 25x80 panel: three panels."),
+    source=("Three 24 1/2-inch strips stood vertically, cut from two 25x80 panels; "
+            "actual cover thickness 1/2 inch. Connector rails keep the north face at the "
+            "cabinet backs. The remaining 25 inches are painted and edge-banded without "
+            "projecting into the pantry door sweep."),
 )
 
 
@@ -81,15 +105,8 @@ def _filler(tag: str, width_in: float, depth_in: float, label: str, where: str) 
     )
 
 
-KITCHEN_CORNER_FILLER = _filler(
-    "FT-KIT-FILLER-2375", 2.375, 24, "2 3/8",
-    "Between FURN-M-KIT-E2 and the NE carousel, so the carousel's fronts clear E2's handles.")
 LIVING_SOUTH_FILLER = _filler(
     "FT-LIV-E-FILLER-2125", 2.125, 15.5, "2 1/8",
     "Closes the living bank's south end against the SE corner.")
-LIVING_NORTH_FILLER = _filler(
-    "FT-LIV-E-FILLER-050", 0.5, 15.5, "1/2",
-    "Closes the living bank's north end against FURN-M-KIT-PANTRY-S2.")
-
 LIVING_EAST_RUN_TYPES = (LIVING_END_PANEL, PENINSULA_END_PANEL, PENINSULA_BACK_PANEL,
-                         KITCHEN_CORNER_FILLER, LIVING_SOUTH_FILLER, LIVING_NORTH_FILLER)
+                         LIVING_SOUTH_FILLER)

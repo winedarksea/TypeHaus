@@ -22,7 +22,7 @@ def test_the_bar_top_draws_its_whole_cantilever_at_the_counter(catlin_model_ro):
     assert len(prisms) == 1
     (prism,) = prisms
     assert Polygon(prism.ring).equals_exact(Polygon(top.outline), 1e-9)
-    assert Polygon(prism.ring).area == pytest.approx(122.5 * 11.625 * INCH * INCH)
+    assert Polygon(prism.ring).area == pytest.approx(73.5 * 11.625 * INCH * INCH)
     assert prism.z1_m == pytest.approx(max(objects[tag].body_z1_m for tag in top.hosts))
     assert prism.z1_m - prism.z0_m == pytest.approx(top.thickness_m)
 
@@ -55,7 +55,7 @@ def test_hosted_cabinets_drop_their_symbol_counter_in_model_json(catlin_model_ro
     assert bar["host_uid"] == objects["FURN-M-KIT-PEN-END"]["uid"]
     assert bar["z1_m"] - bar["z0_m"] == pytest.approx(1.1875 * INCH)
     assert Polygon(bar["parts"][0]["outline"]).area == pytest.approx(
-        122.5 * 11.625 * INCH * INCH)
+        73.5 * 11.625 * INCH * INCH)
     assert {rows[tag]["material_ref"] for tag in ("CT-M-LIV-E-S", "CT-M-LIV-E-N")} == {
         "live-edge-white-oak"}
 

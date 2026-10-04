@@ -44,9 +44,9 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
 
     objects = {obj.tag: obj for obj in model.canvas_objects}
     pantry_south = Polygon(objects["FURN-M-KIT-PANTRY-S2"].footprint).bounds[1]
-    assert pantry_south == pytest.approx(259.75 * INCH)
+    assert pantry_south == pytest.approx(271.375 * INCH)
     north_pack_end = jamb_members[-1].p0[1] + cross_section(jamb_members[-1].profile).width_m / 2
-    assert pantry_south - north_pack_end == pytest.approx(3.25 * INCH)
+    assert pantry_south - north_pack_end == pytest.approx(14.875 * INCH)
     brick_north = max(point[1] for point in model.wall("W-M-FIRE-JAMB-N").axis)
     south_pack_start = jamb_members[0].p0[1] - cross_section(jamb_members[0].profile).width_m / 2
     assert south_pack_start - brick_north == pytest.approx(0.75 * INCH)

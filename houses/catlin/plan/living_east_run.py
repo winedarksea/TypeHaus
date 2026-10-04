@@ -11,9 +11,9 @@
 # 104 -/+ 40"; each window's unit centres 1 1/4" off the window, away from the brick, and
 # the north bank is symmetric about E3. The 0" joints are the end panels and fillers.
 #   south  y 6 5/8"..81 1/4":  2 1/8" filler, B36, B36 (E1), 1/2" end panel to the brick
-#   north  y 126 3/4"..259 3/4": 1/2" end panel, B36 (E2), B15, B30 (E3), B15, B36, 1/2" filler
+#   north  y 126 3/4"..271 1/4": 1/2" end panel, B36 (E2), B15, B30 (E3), B15, B36, B12 wall frame on plinth; 1/8" sealed joint to the pantry
 # Fillers are elements (FT-LIV-E-FILLER-*), faced to match; the slab runs straight over them.
-# MAXIMERA drawers in every unit.
+# MAXIMERA drawers except the 12-inch door/shelf frame.
 #
 # Stools: all four east windows share a 2'-10" sill so the frame rail, and so the stool
 # top, meets the slab top (36 15/16" above the storey datum; the rail lands 1/64" proud).
@@ -43,8 +43,8 @@ LIVING_EAST_RUN = [
               position=pt(ft(34, 9.625), ft(17, 11.75)), rotation=deg(-90)),
     Furniture(uid="QKGYPHFV12", tag="FURN-M-LIV-E-B36-MID", type_ref="SEKT-B36-D15", room="RM-M-LIVING",
               position=pt(ft(34, 9.625), ft(20, 1.25)), rotation=deg(-90)),
-    Furniture(uid="WQ2SWGGP5K", tag="FURN-M-LIV-E-FILLER-N", type_ref="FT-LIV-E-FILLER-050", room="RM-M-LIVING",
-              position=pt(ft(34, 9.625), ft(21, 7.5)), rotation=deg(-90)),
+    Furniture(uid="WQ2SWGGP5K", tag="FURN-M-LIV-E-B12-PANTRY", type_ref="FT-LIV-E-STOCK12-PLINTH", room="RM-M-LIVING",
+              position=pt(ft(34, 9.625), inch(265.25)), rotation=deg(-90)),
 ]
 
 LIVING_EAST_STOOLS = [

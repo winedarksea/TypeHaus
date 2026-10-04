@@ -112,6 +112,17 @@ BASEMENT_BACKING = [
 ]
 
 MAIN_BACKING = [
+    # Frame brackets and rear-bay restraint bridges fasten near the cabinet tops.
+    WallBacking(uid="ZCGDP5VDX9", tag="BK-M-N1-KIT-TOP", wall_ref="W-M-N1",
+                elevation=inch(99.5), height=inch(5.5), profile="2x6",
+                material_ref="spf", purpose="stock kitchen upper top brackets; diagonal corner north leg"),
+    WallBacking(uid="N4B7RPNY55", tag="BK-M-E1-KIT-TOP", wall_ref="W-M-E1",
+                start=inch(241.75), length=inch(190.25),
+                elevation=inch(99.5), height=inch(5.5), profile="2x6",
+                material_ref="spf", purpose="stock garage frame top restraint and pantry top rear bridges"),
+    WallBacking(uid="EA1DMVPCVN", tag="BK-M-N1-CORNER", wall_ref="W-M-N1", length=inch(32.75),
+                elevation=inch(72), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="diagonal corner upper north leg at 73 1/2 inches"),
     WallBacking(uid="TR3XTCCY65", tag="BK-M-N1-SINK", wall_ref="W-M-N1",
                 elevation=inch(25), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="wall-mounted kitchen sink"),
@@ -121,7 +132,7 @@ MAIN_BACKING = [
     WallBacking(uid="JB32670A20", tag="BK-M-N1-MID", wall_ref="W-M-N1",
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf",
-                purpose="north wall corner filler and any future 66-68 in. hang"),
+                purpose="future north wall 66-68 in. hang"),
     WallBacking(uid="PVJ3823KWR", tag="BK-M-N1-HIGH", wall_ref="W-M-N1",
                 elevation=inch(81.5), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="stacker course rail (83 1/2 in.)"),
@@ -129,14 +140,14 @@ MAIN_BACKING = [
     WallBacking(uid="GBHV48GS1S", tag="BK-M-E1-MID", wall_ref="W-M-E1",
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf",
-                purpose="range hood (66 in.), FURN-M-KIT-WN1 (68 in.), mantel (64 in.)"),
+                purpose="range hood (66 in.) and mantel (64 in.)"),
     # FURN-M-KIT-MIXER-GARAGE-UP's bottom rail. The old one-piece 72" garage spanned 36" to
     # the ceiling and was caught by whichever bands it crossed; split at 76" it has a rail of
     # its own, between BK-M-E1-MID's top at 71 1/4" and BK-M-E1-ROD's bottom at 82".
     WallBacking(uid="Z31Y1280S2", tag="BK-M-E1-GARAGE", wall_ref="W-M-E1",
                 start=ft(20), length=ft(16),
                 elevation=inch(74), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="mixer garage upper box bottom rail (76 in.)"),
+                material_ref="spf", purpose="garage lower restraint (76 in.) and kitchen uppers (73 1/2 in.)"),
     WallBacking(uid="VXX1ME3YWS", tag="BK-M-E1-ROD", wall_ref="W-M-E1",
                 elevation=inch(82), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="curtain rod brackets (86 in.) and kitchen stacker rail (83 1/2 in.)"),

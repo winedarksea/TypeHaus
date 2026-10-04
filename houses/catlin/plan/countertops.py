@@ -26,14 +26,14 @@ from typehaus import ft, inch
 from typehaus.model import Countertop, WindowStool
 
 MAIN_COUNTERTOPS = [
-    # The north run and the NE corner as one L slab: B15, the dishwasher, the 36" sink base,
-    # B15, the 2 3/8" filler, and FURN-M-KIT-CORNER-NE, whose east leg carries the slab to
+    # The north run and the NE corner as one L slab: B12, the dishwasher, the 36" sink base,
+    # B18, and FURN-M-KIT-CORNER-NE, whose east leg carries the slab to
     # y=32'-3 3/8" beside the range. 25" deep: 24" of carcass and 1" of oversail; an L host
     # oversails only its notch faces.
     Countertop(
         uid="GQ3B84T2WH", tag="CT-M-KIT-N",
         hosts=("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE", "FURN-M-KIT-E2",
-               "FURN-M-KIT-E2-FILLER", "FURN-M-KIT-CORNER-NE"),
+               "FURN-M-KIT-CORNER-NE"),
         material_ref="quartz-counter",
         thickness=inch(1.181),  # 3 cm
         overhang=inch(1),
@@ -60,8 +60,8 @@ MAIN_COUNTERTOPS = [
         overhang=inch(1),
     ),
     # The bar top: every inch is cantilever behind the bases' backs, hence `cantilever_side`.
-    # 122 1/2" runs from the end panel past the corner leg to the east wall, dying into
-    # FURN-M-KIT-PANTRY-S1's north side at y=25'-7 3/4" (2026-10-03).
+    # 73 1/2" from the west end panel leaves 25" clear to the tall pantry's nominal
+    # west face. Its doors and swing-out racks must pass the finished bar edge.
     Countertop(
         uid="7E97VPX9M2", tag="CT-M-KIT-PENINSULA-BAR",
         hosts=("FURN-M-KIT-PEN-END", "FURN-M-KIT-PEN-B36", "FURN-M-KIT-PEN-B24-W",
@@ -70,14 +70,15 @@ MAIN_COUNTERTOPS = [
         thickness=inch(1.1875),  # 1 3/16", flush with 3 cm quartz
         overhang=inch(0),
         depth=inch(11.625),
-        length=inch(122.5),
+        length=inch(73.5),
         unsupported_overhang=inch(11.625),
         cantilever_side="back",
+        support="brackets",
     ),
     # The living room's two live-edge white oak slabs (plan/living_east_run.py), 2" over a
     # 1/2" sub-top, 16 1/2" nominal: 1" over the fronts, the natural edge <= 1 1/2" at its
-    # widest. Each runs over its end filler: south to the south wall (2 1/8"), north to the
-    # tall bank (1/2"). The stools meet the back edge.
+    # widest. The south slab covers its 2 1/8" wall filler; the north ends at the tall
+    # bank across a 1/8" sealed joint. The window stools meet the back edge.
     Countertop(
         uid="N3E070DD41", tag="CT-M-LIV-E-S",
         hosts=("FURN-M-LIV-E-END-S", "FURN-M-LIV-E-B36-E1", "FURN-M-LIV-E-B36-S",
@@ -92,11 +93,11 @@ MAIN_COUNTERTOPS = [
         uid="TPTH3QMGAY", tag="CT-M-LIV-E-N",
         hosts=("FURN-M-LIV-E-END-N", "FURN-M-LIV-E-B36-E2", "FURN-M-LIV-E-B15-E3S",
                "FURN-M-LIV-E-B30-E3", "FURN-M-LIV-E-B15-E3N", "FURN-M-LIV-E-B36-MID",
-               "FURN-M-LIV-E-FILLER-N"),
+               "FURN-M-LIV-E-B12-PANTRY"),
         material_ref="live-edge-white-oak",
         thickness=inch(2),
         overhang=inch(1),
-        length=inch(133),
+        length=inch(144.625),
         profile="live-edge",
     ),
     # RM-M-BATH2's deck. One of the two vanity tops in the house that is FABRICATED rather

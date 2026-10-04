@@ -1,0 +1,258 @@
+"""Buildable cabinet joins, working faces and clearances in the revised kitchen."""
+
+import math
+from pathlib import Path
+
+import pytest
+from shapely.geometry import Point, Polygon, box
+
+from typehaus.cli.prices import load_prices
+from typehaus.emit.gltf.canvas_objects import _add_canvas_parts
+from typehaus.emit.gltf.mesh import _MeshBuilder
+from typehaus.model.placeable_symbols._sektion_corner_wall import sektion_corner_wall
+from typehaus.server.model_json import model_to_dict
+from typehaus.takeoff import placeables_takeoff
+
+INCH = 0.0254
+FINISH_TOLERANCE = 0.03125 * INCH
+DOOR_FRONT_ALLOWANCE_IN = 1.0
+PANTRY_DOOR_WIDTH_IN = 24.0
+PANTRY_RACK_EXTENSION_IN = 18.5
+
+
+@pytest.fixture(scope="module")
+def kitchen_objects(catlin_model_ro):
+    return {item.tag: item for item in catlin_model_ro.canvas_objects}
+
+
+def _bounds(item):
+    return tuple(value / INCH for value in Polygon(item.footprint).bounds)
+
+
+def test_stock_north_modules_close_without_a_filler(catlin_plan, kitchen_objects):
+    modules = (
+        ("FURN-M-KIT-E1", "SEKT-B12", 297.375, 309.375),
+        ("FURN-M-KIT-SINKBASE", "SEKT-SINK-B36", 333.375, 369.375),
+        ("FURN-M-KIT-E2", "SEKT-B18", 369.375, 387.375),
+    )
+    for tag, type_ref, west, east in modules:
+        obj = kitchen_objects[tag]
+        assert obj.type_ref == type_ref
+        assert (_bounds(obj)[0], _bounds(obj)[2]) == pytest.approx((west, east))
+    dishwasher = catlin_plan.by_tag("APPL-M-DW")
+    assert dishwasher.position.x.inches == pytest.approx((309.375 + 333.375) / 2)
+    assert "FURN-M-KIT-E2-FILLER" not in kitchen_objects
+    assert "FURN-M-KIT-WE2" not in kitchen_objects
+    assert "FURN-M-KIT-WE2-ST" not in kitchen_objects
+    upper = kitchen_objects["FURN-M-KIT-WE1"]
+    assert (_bounds(upper)[0], _bounds(upper)[2]) == pytest.approx((297.375, 333.375))
+
+
+def test_sink_window_stays_on_grid_and_drain_components_move_together(catlin_model_ro):
+    objects = {item.tag: item for item in catlin_model_ro.canvas_objects}
+    sink = objects["FX-M-KITCH-SINK"]
+    base = objects["FURN-M-KIT-SINKBASE"]
+    assert sink.position[0] == pytest.approx(base.position[0])
+    window = next(item for item in catlin_model_ro.openings if item.tag == "WIN-M-KITCH")
+    wall = catlin_model_ro.wall(window.host_wall)
+    window_x = wall.axis[0][0] - window.center_along_m
+    assert (window_x - sink.position[0]) / INCH == pytest.approx(0.625)
+    plan = catlin_model_ro.plan
+    expected = (351.375 * INCH, 35 * 12 * INCH)
+    assert plan.by_tag("FX-M-KITCH-SINK").drain_position.xy_m == pytest.approx(expected)
+    assert plan.by_tag("SP-M-KITCH").position.xy_m == pytest.approx(expected)
+    assert plan.by_tag("CO-B-KITCH-HEAD").position.xy_m == pytest.approx(expected)
+    assert plan.by_tag("CO-B-KITCH-HEAD").cap_position.xy_m == pytest.approx(expected)
+    assert plan.by_tag("PR-B-KITCH-DRAIN").path[0].xy_m == pytest.approx(expected)
+    assert plan.by_tag("PR-B-KITCH-DRAIN").path[1].xy_m == pytest.approx(expected)
+
+
+def test_diagonal_corner_closes_to_both_upper_runs(catlin_plan, kitchen_objects):
+    corner = kitchen_objects["FURN-M-KIT-WN1"]
+    assert corner.type_ref == "SEKT-CORNER-W26-30"
+    assert corner.rotation_degrees == 0
+    assert len(corner.footprint) == 5
+    assert Polygon(corner.footprint).area < Polygon(corner.footprint).envelope.area
+    assert _bounds(corner) == pytest.approx((399.375, 399.375, 425.375, 425.375), abs=0.03125)
+    for neighbor in ("FURN-M-KIT-WE5-ST", "FURN-M-KIT-WN2"):
+        assert (
+            Polygon(corner.footprint).distance(Polygon(kitchen_objects[neighbor].footprint))
+            < FINISH_TOLERANCE
+        )
+        # Attached paint faces differ from the nominal wall face by 0.01 inch.
+        overlap = Polygon(corner.footprint).intersection(
+            Polygon(kitchen_objects[neighbor].footprint)
+        )
+        assert overlap.area < FINISH_TOLERANCE * 15 * INCH
+    typ = next(t for t in catlin_plan.library.furniture_types if t.tag == corner.type_ref)
+    strokes, parts = sektion_corner_wall(*(v.meters for v in typ.footprint), typ.height.meters)
+    assert strokes[0]["points"] == tuple(point.xy_m for point in typ.footprint_shape.points)
+    door = parts[-1]["points"]
+    assert math.dist(door[0], door[1]) / INCH == pytest.approx(14.875)
+
+
+def test_garage_fronts_face_west_and_pullout_lands_on_counter(
+    catlin_plan, catlin_model_ro, kitchen_objects
+):
+    for tag in ("FURN-M-KIT-MIXER-GARAGE", "FURN-M-KIT-MIXER-GARAGE-UP"):
+        obj = kitchen_objects[tag]
+        radians = math.radians(obj.rotation_degrees)
+        assert (math.sin(radians), -math.cos(radians)) == pytest.approx((-1, 0), abs=1e-9)
+    garage = kitchen_objects["FURN-M-KIT-MIXER-GARAGE"]
+    x0, y0, _, y1 = _bounds(garage)
+    deployed = box((x0 - PANTRY_RACK_EXTENSION_IN) * INCH, y0 * INCH, x0 * INCH, y1 * INCH)
+    counters = [
+        Polygon(top.outline)
+        for top in catlin_model_ro.countertops
+        if top.tag in ("CT-M-KIT-E", "CT-M-KIT-PENINSULA")
+    ]
+    assert counters[0].union(counters[1]).buffer(FINISH_TOLERANCE).covers(deployed)
+    typ = next(
+        t
+        for t in catlin_plan.library.furniture_types
+        if t.tag == kitchen_objects["FURN-M-KIT-MIXER-GARAGE-UP"].type_ref
+    )
+    assert typ.height.inches == 30
+    assert typ.product_ref == "PROD-IKEA-SEKTION-BASE24-30"
+    assert typ.plan_symbol == "wall-cabinet"
+
+
+def test_pantry_joins_and_supported_stock_tops(catlin_plan, catlin_model_ro, kitchen_objects):
+    s1, s2 = (kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}"] for n in (1, 2))
+    assert (_bounds(s2)[1], _bounds(s1)[3]) == pytest.approx((271.375, 319.375))
+    assert _bounds(s2)[3] == pytest.approx(_bounds(s1)[1])
+    assert _bounds(s1)[3] == pytest.approx(_bounds(kitchen_objects["FURN-M-KIT-MIXER-GARAGE"])[1])
+    for n in (1, 2):
+        top = kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}-ST"]
+        deck = kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}-REAR-DECK"]
+        base = kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}"]
+        assert top.type_ref == "SEKT-W24-20"
+        assert _bounds(top)[0] == pytest.approx(_bounds(base)[0], abs=0.03125)
+        assert _bounds(top)[2] == pytest.approx(_bounds(deck)[0])
+        assert top.body_z0_m == pytest.approx(base.body_z1_m)
+    shelf_type = next(
+        t for t in catlin_plan.library.furniture_types if t.tag == "FT-KIT-PANTRY-SHELVES-70"
+    )
+    assert shelf_type.footprint[0].inches == 73.25
+    assert catlin_plan.by_tag("FURN-M-PANTRY-SHELVES").position.x.inches == 256
+    living_end = kitchen_objects["FURN-M-LIV-E-B12-PANTRY"]
+    assert _bounds(living_end)[3] + 0.125 == pytest.approx(_bounds(s2)[1])
+    living_top = next(top for top in catlin_model_ro.countertops if top.tag == "CT-M-LIV-E-N")
+    assert Polygon(living_top.outline).bounds[3] / INCH == pytest.approx(271.375)
+    bank = catlin_plan.by_tag("SB-M-PANTRY")
+    assert [bay.width.inches for bay in bank.bays] == [36.25, 36.25]
+
+
+def test_pantry_doors_and_racks_clear_the_seating_bar(catlin_model_ro, kitchen_objects):
+    bar = Polygon(
+        next(
+            top for top in catlin_model_ro.countertops if top.tag == "CT-M-KIT-PENINSULA-BAR"
+        ).outline
+    )
+    back = Polygon(kitchen_objects["FURN-M-KIT-PEN-BACK"].footprint)
+    worktops = [
+        Polygon(top.outline)
+        for top in catlin_model_ro.countertops
+        if top.tag in ("CT-M-KIT-PENINSULA", "CT-M-KIT-E", "CT-M-LIV-E-N")
+    ]
+    assert (bar.bounds[2] - bar.bounds[0]) / INCH == pytest.approx(73.5)
+    assert bar.bounds[2] == pytest.approx(376.375 * INCH)
+    assert back.bounds[2] == pytest.approx(bar.bounds[2])
+    for n in (1, 2):
+        front, south, _, north = _bounds(kitchen_objects[f"FURN-M-KIT-PANTRY-S{n}"])
+        # Conservative filled quarter-sector for the entire 90-degree door sweep,
+        # allowing a full inch for the front beyond the nominal frame envelope.
+        hinge = Point((front - DOOR_FRONT_ALLOWANCE_IN) * INCH, south * INCH)
+        sweep = hinge.buffer(PANTRY_DOOR_WIDTH_IN * INCH, quad_segs=64).intersection(
+            box((front - 25) * INCH, south * INCH, front * INCH, north * INCH)
+        )
+        rack = box(
+            (front - DOOR_FRONT_ALLOWANCE_IN - PANTRY_RACK_EXTENSION_IN) * INCH,
+            south * INCH,
+            front * INCH,
+            north * INCH,
+        )
+        assert sweep.intersection(bar).area == 0
+        assert sweep.intersection(back).area == 0
+        assert rack.intersection(bar).area == 0
+        assert all(
+            sweep.intersection(top).area < 1e-12 and rack.intersection(top).area < 1e-12
+            for top in worktops
+        )
+        for i in (1, 2, 3):
+            stool = Polygon(kitchen_objects[f"FURN-M-KIT-STOOL{i}"].footprint)
+            assert sweep.intersection(stool).area == 0
+            assert rack.intersection(stool).area == 0
+    stools = [kitchen_objects[f"FURN-M-KIT-STOOL{i}"] for i in (1, 2, 3)]
+    assert [
+        (b.position[0] - a.position[0]) / INCH for a, b in zip(stools, stools[1:], strict=False)
+    ] == pytest.approx([24.5, 24.5])
+    assert all(
+        bar.bounds[0] < Polygon(stool.footprint).bounds[0]
+        and Polygon(stool.footprint).bounds[2] < bar.bounds[2]
+        for stool in stools
+    )
+
+
+def test_corner_payload_and_glb_share_the_diagonal_geometry(catlin_model_ro, kitchen_objects):
+    corner = kitchen_objects["FURN-M-KIT-WN1"]
+    typ = next(t for t in catlin_model_ro.plan.library.furniture_types if t.tag == corner.type_ref)
+    payload = model_to_dict(catlin_model_ro)
+    row = next(t for t in payload["catalog"]["canvas_object_types"] if t["tag"] == typ.tag)
+    assert row["model_parts"]
+    mesh = _MeshBuilder()
+    assert _add_canvas_parts(mesh, corner, typ, {})
+    positions = [point for points, _indices in mesh._buckets.values() for point in points]
+    # glTF (x,z,-y) vertices retain the clipped corner instead of its bounding box.
+    projected = Polygon([(x, -z) for x, _y, z in positions]).convex_hull
+    assert projected.symmetric_difference(Polygon(corner.footprint)).area < 1e-8
+
+
+def test_top_backing_is_emitted_below_the_stud_tops(catlin_plan, catlin_model_ro):
+    # Authored backing above the studs is skipped by framing; a schedule entry alone
+    # would therefore claim support while emitting no boards or lumber quantities.
+    for wall_ref in ("W-M-N1", "W-M-E1"):
+        wall = catlin_model_ro.wall(wall_ref)
+        blocks = [
+            member
+            for member in wall.members
+            if member.category == "blocking"
+            and member.profile == "2x6"
+            and member.z0_m == pytest.approx(99.5 * INCH)
+            and member.z1_m == pytest.approx(105 * INCH)
+        ]
+        assert blocks
+        band = catlin_plan.by_tag(wall_ref.replace("W-", "BK-", 1) + "-KIT-TOP")
+        expected_length = band.length.meters if band.length else math.dist(*wall.axis)
+        assert sum(block.length_m for block in blocks) == pytest.approx(expected_length)
+
+
+def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, catlin_model_ro):
+    quantities = {
+        row["type"]: row["count"]
+        for row in placeables_takeoff(catlin_model_ro)
+        if row["storey"] == "main"
+    }
+    prices = load_prices(Path(catlin_plan.source_root))
+    expected = {
+        "SEKT-B12": 1,
+        "SEKT-B18": 1,
+        "SEKT-W12-30": 1,
+        "SEKT-CORNER-W26-30": 1,
+        "SEKT-W24-20": 2,
+        "FT-KIT-STOCK24-30-HUNG": 1,
+        "FT-LIV-E-STOCK12-PLINTH": 1,
+        "FT-KIT-TOP-REAR-DECK": 2,
+        "FT-KIT-TOP-REAR-END": 1,
+    }
+    for type_ref, count in expected.items():
+        assert quantities[type_ref] == count
+        assert prices.placeables[type_ref].low > 0
+    for removed in (
+        "FT-KIT-FILLER-2375",
+        "FT-LIV-E-FILLER-050",
+        "FT-KIT-DEEP24-20",
+        "FT-KIT-DEEP24-30",
+    ):
+        assert removed not in quantities
+        assert removed not in prices.placeables

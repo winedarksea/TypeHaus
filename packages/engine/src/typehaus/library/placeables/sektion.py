@@ -38,6 +38,7 @@ a property of the room, not of any one box.
 from __future__ import annotations
 
 from typehaus.model import Footprint2D, FurnitureType, ft, inch, m, pt
+from typehaus.model.placeable_symbols._sektion_corner_wall import sektion_corner_wall_points
 from typehaus.model.placeable_symbols.furniture import sektion_corner_points
 
 REFERENCE = ("IKEA SEKTION frame ladder (ikea.com/us, 2026-09-11). Frame sizes only — "
@@ -141,6 +142,7 @@ WALL_36_40 = _wall("SEKT-W36-40", ft(3), inch(40), _WALL_DEPTH)
 # 30" lower boxes and a 20" top course fit below a finished ceiling while keeping
 # the backsplash tall enough for ordinary counter use.
 WALL_15_30 = _wall("SEKT-W15-30", inch(15), inch(30), _WALL_DEPTH)
+WALL_12_30 = _wall("SEKT-W12-30", inch(12), inch(30), _WALL_DEPTH)
 WALL_24_30 = _wall("SEKT-W24-30", ft(2), inch(30), _WALL_DEPTH)
 WALL_30_30 = _wall("SEKT-W30-30", inch(30), inch(30), _WALL_DEPTH)
 WALL_36_30 = _wall("SEKT-W36-30", ft(3), inch(30), _WALL_DEPTH)
@@ -173,6 +175,15 @@ HIGH_24_80 = _high("SEKT-HIGH24-80", ft(2), inch(80), _HIGH_80)
 TS_24_15 = _wall("SEKT-TS24-15", ft(2), inch(15), _DEEP)
 TS_30_15 = _wall("SEKT-TS30-15", inch(30), inch(15), _DEEP)
 
+CORNER_WALL_26_30 = FurnitureType(
+    tag="SEKT-CORNER-W26-30", name='SEKTION 26x26x30" diagonal corner wall cabinet',
+    footprint=(inch(26), inch(26)), height=inch(30),
+    plan_symbol="corner-wall-cabinet", storage=True,
+    source='IKEA 102.655.04; 26-inch nominal legs, 15-inch door; rail sold separately.',
+    footprint_shape=Footprint2D(points=tuple(
+        pt(m(x), m(y)) for x, y in sektion_corner_wall_points(inch(26).meters, inch(26).meters))),
+)
+
 SEKTION_CASEWORK_TYPES = (
     BASE_12, BASE_15, BASE_18, BASE_24, BASE_30, BASE_36, SINK_BASE_36,
     BASE_15_D15, BASE_18_D15, BASE_24_D15, BASE_30_D15, BASE_36_D15, CORNER_BASE_38,
@@ -181,5 +192,5 @@ SEKTION_CASEWORK_TYPES = (
     WALL_15_20, WALL_24_20, WALL_30_20, WALL_36_20,
     WALL_12_15, WALL_15_15, WALL_18_15, WALL_24_15, WALL_30_15, WALL_36_15,
     HIGH_18_90, HIGH_24_90, HIGH_30_90, HIGH_18_80, HIGH_24_80,
-    TS_24_15, TS_30_15,
+    TS_24_15, TS_30_15, WALL_12_30, CORNER_WALL_26_30,
 )

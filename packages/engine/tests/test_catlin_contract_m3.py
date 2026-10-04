@@ -2645,7 +2645,8 @@ def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
     # shrinks this zone by that room's area; the pantry sits at y 33'-3 3/8"..35'-5 3/8",
     # nowhere near the _BAND_Y line this test moves, so the 7' x 18' arithmetic below is
     # unaffected.
-    assert before == pytest.approx(372.3, abs=0.5)  # finish-face room (392.7 axis-derived)
+    # The pantry's 2 3/8-inch eastward extension reduces the living finish zone.
+    assert before == pytest.approx(371.6, abs=0.5)
     assert before - after == pytest.approx(7.0 * 17.9, rel=0.05)
 
 

@@ -297,8 +297,8 @@ NODES = [
     # is gone entirely and the bypass leaves land on the shelf noses. The next move after
     # this one is a shelf-depth decision, not a wall decision.
     Node(uid="BVTKY7EE89", tag="N-M-PAN1", position=pt(ft(18), ft(33, 1))),
-    Node(uid="4B6ND7KATA", tag="N-M-PAN2", position=pt(ft(24, 4.625), ft(33, 1))),
-    Node(uid="HTWHAAG4SF", tag="N-M-PAN3", position=pt(ft(24, 4.625), ft(36))),
+    Node(uid="4B6ND7KATA", tag="N-M-PAN2", position=pt(ft(24, 7), ft(33, 1))),
+    Node(uid="HTWHAAG4SF", tag="N-M-PAN3", position=pt(ft(24, 7), ft(36))),
     # --- RM-M-BATH2 drop-in tub deck -------------------------------
     # Three nodes, two walls, an L in RM-M-BATH2's north-east corner. They carry the knee
     # walls of the box FX-M-BATH2-TUB drops into; the box's other two sides are the room's

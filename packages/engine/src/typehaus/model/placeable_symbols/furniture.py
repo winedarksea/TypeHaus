@@ -34,6 +34,8 @@ from typehaus.model.placeable_symbols._sektion import (
                                                         sektion_corner_points,
                                                         sektion_drawer_base,
 )
+from typehaus.model.placeable_symbols._sektion_corner_wall import sektion_corner_wall
+from typehaus.model.placeable_symbols._sektion_plinth_base import sektion_plinth_wall_base
 from typehaus.model.placeable_symbols._sektion_seat import (
                                                         seat_cushion,
                                                         sektion_open_base,
@@ -144,6 +146,8 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # An L corner base (SEKTION carousel): drawn off ``sektion_corner_points``, the same ring
     # its catalog ``footprint_shape`` states.
     "corner-base": sektion_corner_base(),
+    "corner-wall-cabinet": sektion_corner_wall,
+    "sektion-plinth-wall-base": sektion_plinth_wall_base,
     "wall-cabinet": case(
         rows=1, cols=2, pulls=True, color=CABINET, face_color=CABINET_SHADE,
         single_door_max_width_m=CABINET_SINGLE_DOOR_MAX_WIDTH_M),

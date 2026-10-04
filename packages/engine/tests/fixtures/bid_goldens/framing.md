@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 6b8c36a5291a54ab  
-**Lines:** 154
+**Model hash:** 7594d1ff16da0332  
+**Lines:** 155
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -42,14 +42,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 106 | LF ordered | 20 pcs, 78.8 LF cut | building |
 | 2x12 — blocking, joist (2x12:kdat) | 464 | LF ordered | 48 pcs, 421.1 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.9 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,844 | LF ordered | 657 pcs, 4085.5 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,844 | LF ordered | 657 pcs, 4086.1 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,836 | LF ordered | 474 pcs, 2453.4 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 7,088 | LF ordered | 1164 pcs, 6132.2 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — stud (2x6:df-select-s4s) | 80 | LF ordered | 8 pcs, 69.0 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | 88 | LF ordered | 9 pcs, 72.0 LF cut | building |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | 1,660 | LF ordered | 200 pcs, 1409.2 LF cut | building |
+| 2x6 SPF framing lumber — blocking (2x6:spf) | 28 | LF ordered | 2 pcs, 27.3 LF cut | building |
 | 2x8 — header, joist, landing framing (2x8) | 176 | LF ordered | 34 pcs, 130.8 LF cut | building |
-| 2x8 SPF framing lumber — blocking (2x8:spf) | 590 | LF ordered | 107 pcs, 471.4 LF cut | building |
+| 2x8 SPF framing lumber — blocking (2x8:spf) | 590 | LF ordered | 108 pcs, 473.1 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1142 pcs, 333.1 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
@@ -181,13 +182,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Treated sill plate, KDAT southern yellow pine (treated exterior framing) (pt-sill-plate) | 383.8 | LF |  | building |
+| Treated sill plate, KDAT southern yellow pine (treated exterior framing) (pt-sill-plate) | 383.9 | LF |  | building |
 
 ## Sill gaskets
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Sill seal foam gasket, under the sill plate (sill-seal-foam) | 141.8 | LF |  | building |
+| Sill seal foam gasket, under the sill plate (sill-seal-foam) | 141.9 | LF |  | building |
 | Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | 242 | LF |  | building |
 
 ## Assembly layers, by material
@@ -262,6 +263,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Douglas fir Select Structural S4S, eased corners — stud (2x6:df-select-s4s) | — |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | — |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | — |
+| 2x6 SPF framing lumber — blocking (2x6:spf) | — |
 | 2x8 — header, joist, landing framing (2x8) | — |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | — |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | — |

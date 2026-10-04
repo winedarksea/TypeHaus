@@ -2605,64 +2605,36 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ### Kitchen: the IKEA SEKTION ladder
 
-- **Every kitchen box is a SEKTION frame** (`library/placeables/sektion.py`, `SEKT-*`), since
-  2026-09-11. The generic `CASE-*` catalog is still the shared catalog and other rooms still
-  use it; the kitchen does not. `notes/ikea_sektion_ladder.md` carries the ladder, its
-  sources and the arithmetic.
-- **A width not on the ladder gets a FILLER, not a type.** Bases 12/15/18/21/24/30/36/38/47;
-  wall frames 15/20/30/40 high in 15" and 24" depths; high frames 80 and 90. Do not invent a
-  size — two house-local types (`FT-KIT-OVER-COLD-3278`, `FT-KIT-MIXER-GARAGE-24`) existed
-  only because the old catalog could not reach a number, and both are retired.
-- **The toe kick is 3", not IKEA's 4 1/2", and ONE height serves both runs.** Every SEKTION
-  frame height is a multiple of five, so nothing closes a 108" ceiling off a 4 1/2" leg. At
-  3": `3 + 90 + 15 = 108` tall, and `40 + 15` hung at 53 = 108 upper. Change the leg and
-  every course in the room moves.
-- **The counter still lands on 36", by build-up.** `3" leg + 30" frame = 33"`, and the
-  Silestone is 3 cm (1.181"), so **1 13/16" of sub-top** goes between them. The base types
-  stay 36" tall because 36" is what the object occupies.
-- **Uppers are 15" deep and hang at 53"; the stacker course is 93".** Not 13"/54"/96". The
-  backsplash is 17", inside NKBA's range. Backing rails moved with them
-  (`plan/backing.py`), as did the under-cabinet tape (`plan/lighting.py`).
-- **Fillers are elements** (2026-10-03): FÖRBÄTTRA strips faced to match, priced, and
-  countertop hosts (`FT-KIT-FILLER-2375`, `FT-LIV-E-FILLER-2125`/`-050`). A scribe is only
-  where nothing else can move.
-- **Two odd hangs and two fillers, all deliberate.** `FURN-M-KIT-WN1` hangs at 68" above
-  `WIN-M-KIT-E`'s 66" head; the over-cold pair hangs at 78" to clear the Frigidaire hinge.
-  The mixer garage scribes 2" at the ceiling (72" is unreachable) and the cold bay carries
-  2 7/8" at each end (65 3/4" is not two SEKTION widths). Do not try to close either.
-- **The north sink run did not move.** `B15 + DW + SINK-36 + B15 + 2 3/8" filler` runs from
-  `W-M-PAN-E`, which moved 5/8" east on 2026-10-03 instead of scribing (the pantry is
-  70 7/8" clear; `FT-KIT-PANTRY-SHELVES-70` widened with it).
-- **MAXIMERA is a product, not a geometry** (`PROD-IKEA-MAXIMERA`). The model has no drawer
-  vocabulary; which boxes are drawer stacks is prose in `prices.toml` and `plan/placeables.py`.
-- **The east wall is one SEKTION line, less the brick** (2026-10-02, `plan/living_east_run.py`).
-  Living room: 15"-deep `SEKT-B*-D15` frames, 36" with a 2" live-edge white oak slab
-  (`CT-M-LIV-E-S`/`-N`), **mirrored about the brick at y=104"** (2026-10-03): a B36 under each
-  of E1/E2 centred 1 1/4" off the window away from the brick, and the north bank B15/B30/B15
-  symmetric about E3. South `2 1/8 filler + B36 + B36`, north `B36 + B15 + B30 + B15 + B36 +
-  1/2 filler`, 0" joints throughout.
-  `FURN-M-DINING` moved 2" west so its chair zone clears the live edge (spec: <= 1 1/2" past
-  the fronts).
-- **Two carousel corners, `SEKT-CORNER-B38`** (an L `footprint_shape`): `FURN-M-KIT-CORNER-NE`
-  and `-PEN`. A countertop over an L host takes the whole L and oversails only its notch faces
-  (`resolve/countertops.py`). Both bifolds hinge on the end AWAY from the range (3" proud).
-  The range is flush between them, centred y=31'-0 3/8"; `FURN-M-KIT-E2` is a B15 + the
-  2 3/8" `FURN-M-KIT-E2-FILLER`.
-- **The peninsula is SEKTION**: corner leg + B36/B24/B24 (drawers north) on the floor anchoring
-  frame, a 1/2" west end panel, and FÖRBÄTTRA on connector rails over the 122 1/2" seating face
-  to the east wall. It moved 2" north on 2026-10-03 (carcass y 26'-7 3/8"..28'-7 3/8", north
-  aisle 4'-10"), so the knee is **11 5/8"** (34%, under NKBA's 15", owner's call) and the oak
-  bar top (`cantilever_side="back"`) runs to the tall bank's north side. The mixer garage
-  stands wholly on the peninsula carousel's corner square; the support box and
-  `FURN-M-KIT-WN3` (a 14" slot was left) are deleted. Stools stay on the west 98 1/2".
-- **Countertops are drawn** (`resolve/geometry_countertops.py`): each slab in its own material
-  in the viewer and the GLB, the hosted cabinet's grey symbol counter skipped. A sink base or
-  vanity keeps its own cut-out counter and the slab is cut back to it.
-- **The east-wall counter receptacles are clear of the framing**, all at 42": south 22"/44"
-  plus RC17 on the south brick jamb (83 7/8"); north RC14 on the north jamb (124 1/8"), then
-  168"/216"/258 1/8". Kitchen east wall: KGF4/KMX1 inside the mixer garage (326"/338 3/4"),
-  KGF3 in the 14" landing (349 1/4"), each box beside a stud. 210.52(C) is not graded —
-  re-measure if a window or stud moves.
+- **Current run specification:** `plan/kitchen_casework.py` and
+  `notes/kitchen_stock_cabinet_details.md`. Stock frames govern the revised north/east
+  runs, except the custom 24x24x40 garage lower. West deep custom uppers retain their scope.
+- **North partition face x=297 3/8:** B12 + DW24 + sink B36 + B18, then existing NE
+  carousel at x=387 3/8. No kitchen filler. Sink and drain moved 5/8 west; the window
+  stays fixed on its stud grid. Pantry shelves are 73 1/4, two 36 1/4 bays plus a 3/4 gable.
+- **North uppers:** W36 + 20 stacker, W36 bridge, W30 + 20 stacker. WN1 is the true
+  26x26x30 diagonal corner at 73 1/2 AFF; WN2 is W12-30 between it and the hood.
+  Shared polygon geometry keeps plan, collisions, viewer and GLB aligned. Light strips
+  attach to actual undersides. Top brackets have backing on both corner walls.
+- **Garage faces west**, offsets -180 resolve to -90. Custom lower at36 supports stock
+  base frame 902.653.88 at76, top106, with independent wall restraint and no upper legs
+  or counter. Its pull-out deploys over supported quartz. Verify the narrow ceiling lift space.
+- **Pantry S2/S1:** y=271 3/8–295 3/8–319 3/8, meeting the garage. Stock shallow
+  24x15x20 tops at83 1/2 align with their fronts via supported rear bays (9 nominal,
+  9 1/4 from actual matching frame/rail/front depths), closed at the exposed south end.
+- **Living 12-inch end cabinet:** wall frame 102.654.72 on an anchored plinth, door and
+  shelves, total36; y=259 1/4–271 1/4, then1/8 sealed joint toS2. No invented shallow-base SKU.
+- **Bar and projecting back panel:**73 1/2 long, end x=376 3/8, leaving25 to the
+  pantry nominal front. The remaining25 of cabinet backs are painted and edge-banded.
+  Stools x=315 1/8,339 5/8,364 1/8 at their previous y. Preserve Rev-A-Shelf5374-24FL.
+- **Support height:**3 1/2, normal stock stacks finish103 1/2. Kitchen quartz at36
+  uses approximately1 5/16 substrate; living oak uses1/2 subtop and2 slab. Follow
+  published frame/rail/front measurements for shop cuts, not nominal module depths.
+- **Finish pieces and supports are detailed and priced.** Deleted custom east pantry tops,
+  custom garage upper, kitchen filler and living north filler must not re-enter quantities.
+  MAXIMERA is the drawer product; the12-inch installations use doors and shelves.
+- **East-wall receptacles stay at42 AFF:** living south22/44 plusRC17 at83 7/8;
+  north RC14 at124 1/8, then168/216/258 1/8. Garage KGF4/KMX1 at326/338 3/4;
+  landing KGF3 at349 1/4. Recheck framing and coverage if those locations change.
 
 ### Gardens (2026-09-21)
 

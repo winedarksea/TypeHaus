@@ -289,8 +289,8 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     #
     # UNMOVED by either 2026-09-05 finishes change, and that is the point: both touched only
     # what is SOUTH of _BAND_Y, and the band is north of it.
-    # 372.3 since the room's clear face became its finish face (392.7 axis-derived).
-    assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(372.3, abs=0.5)
+    # The enlarged pantry takes another 0.69 SF from the living finish zone.
+    assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(371.6, abs=0.5)
     # 355.1 until the hall zone, 307.0 with it, 123.9 with the oak bay taken out as well.
     # Back to 355.6 now that both authored zones are gone: everything in this room that is
     # not over SL-M-DECK is one plank floor — south bay, stair lane and hall band alike.
