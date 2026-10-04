@@ -777,7 +777,7 @@ SECOND_PLACEABLES = [
               room="RM-S-SUITEBATH", mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-SN3", face="right", distance_from_start=inch(50.5),
-                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+                  normal_gap=inch(0), rotation_offset=deg(-180))), rotation=deg(0)),
     # RM-S-PLANT: a place to sit among the plants, program divides along y — plants on the
     # south glass, seating behind. Plants sit directly under ED-S-PLANT-TUBE1/2 (x=3'-4"/8'-8",
     # 2'-3" below ceiling, on a photoperiod timer) and under WIN-S-PLANT1/2 (same x, the

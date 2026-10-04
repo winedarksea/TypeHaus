@@ -346,6 +346,8 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 # difference between the two stacks was the stud species. That is a material, not a wall
 # (#70), so the mudroom's exposed Select Structural DF is `Wall.layer_materials` on those
 # two walls and the tag is neutral about where it stands.
+# W-M-STRW now uses interior_mudroom.py's upper-gypsum variant: the same bearing
+# stack, with the coat nooks capped at six feet. The short W-M-STRW2 stays this base.
 #
 # No default_lining, deliberately (like SAUNA_2X4): the mudroom face is a finished face made
 # of the framing itself, not drywall left off. The open 2x6 bays are the coat nooks, so no

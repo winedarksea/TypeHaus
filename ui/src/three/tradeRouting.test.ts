@@ -37,7 +37,8 @@ function wall(): Wall {
       band("foam", "insulation", "xps", ["insulation"]),
       band("ply", "sheathing", "struct-1-plywood", ["framing"]),
       band("studs", "structure", "spf", ["framing"]),
-      band("board", "finish", "gwb", ["drywall"]),
+      { ...band("gwb-mudroom-upper", "finish", "gwb", ["drywall"]),
+        z0_m: 1.8288, z1_m: 2.7432 },
     ],
     members: [],
   } as unknown as Wall;
@@ -56,6 +57,12 @@ export function runTradeRoutingTests() {
   const byTrade = (trade: string) => meshes("siding").filter((m) => (m.userData.trades as string[]).includes(trade));
   assert(byTrade("insulation").length === 1 && byTrade("drywall").length === 1,
     "Each band is tagged with its own trade");
+
+  applyTradeVisibility(root, onlyTrades(["drywall"]));
+  assert(byTrade("drywall").every((m) => m.visible),
+    "The named upper mudroom GWB band activates with the drywall toggle");
+  assert(meshes("siding").filter((m) => !byTrade("drywall").includes(m)).every((m) => !m.visible),
+    "Drywall isolation leaves the other wall layers hidden");
 
   applyTradeVisibility(root, onlyTrades(["insulation"]));
   assert(byTrade("insulation").every((m) => m.visible), "Only insulation: the foam stays");

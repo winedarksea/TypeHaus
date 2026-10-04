@@ -9,8 +9,8 @@ package can confirm the section without measuring the geometry.
 **Everything here comes from what the model authors, and nothing is invented.** The section
 is ``resolve/framing/profiles.cross_section`` — the same parse the geometry stage uses, so
 the profile and the solid cannot disagree. The grade comes off the size string's own suffix
-(LVL, GLB, PSL) or off a ``ConcreteSpec``'s f'c. **Species is not authored anywhere in this
-engine**, so a sawn member's material is written as "sawn lumber" and not as "SPF #2": a
+(LVL, GLB, PSL) or off a ``ConcreteSpec``'s f'c. An explicit member material takes precedence;
+otherwise a sawn member's material is written as "sawn lumber" and not as "SPF #2": a
 grade nobody typed is a grade nobody checked, and putting one in an IFC a PE reads would be
 this module making a structural claim.
 
@@ -37,7 +37,7 @@ _ENGINEERED = (
 )
 
 #: What a member with no product suffix is called. NOT a species and not a grade: this
-#: engine does not author either, and inventing one in a file a PE reads would be a claim.
+#: member has no explicit stock, and inventing one in a file a PE reads would be a claim.
 _SAWN = "sawn lumber"
 
 
@@ -90,10 +90,12 @@ class ProfileCollector:
         self._companions.setdefault(host.id(), []).append(companion)
 
     def add(self, element: Any, profile: str, *, concrete_fc_psi: float | None = None,
-            youngs_modulus_psi: float | None = None) -> None:
+            youngs_modulus_psi: float | None = None,
+            material_ref: str | None = None) -> None:
         if not profile or element is None:
             return
-        key = (profile, material_name(profile, concrete_fc_psi), youngs_modulus_psi)
+        key = (profile, material_ref or material_name(profile, concrete_fc_psi),
+               youngs_modulus_psi)
         self._by_section.setdefault(key, []).append(element)
 
     def flush(self, f: Any) -> int:
@@ -215,17 +217,17 @@ def attach_profiles(f: Any, model: Any, engineering: Any = None,
                 # guessing which is the answer. The layer set names the product that was
                 # specified, which is the more load-bearing of the two, so it keeps the slot.
                 continue
-            profile, tag = _section_of(element, model, ue)
+            profile, tag, material_ref = _section_of(element, model, ue)
             if not profile:
                 continue
             collector.add(element, profile,
                           concrete_fc_psi=_concrete_fc(model, tag),
-                          youngs_modulus_psi=moduli.get(tag))
+                          youngs_modulus_psi=moduli.get(tag), material_ref=material_ref)
     return collector.flush(f)
 
 
-def _section_of(element: Any, model: Any, ue: Any) -> tuple[str | None, str | None]:
-    """``(section string, model tag)`` for one emitted element."""
+def _section_of(element: Any, model: Any, ue: Any) -> tuple[str | None, str | None, str | None]:
+    """``(section string, model tag, explicit stock)`` for one emitted element."""
     from typehaus._meta import PSET_SOURCE
 
     psets = ue.get_psets(element)
@@ -233,15 +235,15 @@ def _section_of(element: Any, model: Any, ue: Any) -> tuple[str | None, str | No
     tag = source.get("tag")
     profile = source.get("profile")
     if profile:
-        return str(profile), tag
+        return str(profile), tag, source.get("material") or None
     # A standalone beam/column solid: no profile in its source pset, because its geometry
     # is an outline prism rather than a swept section. The size is on the authored element.
     plan = getattr(model, "plan", None)
     if plan is None or not tag:
-        return None, tag
+        return None, tag, None
     authored = plan.by_tag(str(tag))
     size = getattr(authored, "size", None) or getattr(authored, "profile", None)
-    return (str(size) if size else None), tag
+    return (str(size) if size else None), tag, None
 
 
 def _concrete_fc(model: Any, tag: str | None) -> float | None:

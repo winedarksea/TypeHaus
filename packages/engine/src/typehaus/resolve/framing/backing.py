@@ -90,6 +90,7 @@ def append_blocking_rows(members: list[FramedMember], rw: ResolvedWall, spec, me
             members.append(FramedMember(
                 rw.uid, f"blocking-{hi}-{bi:03d}", "blocking", member, a, b,
                 base, base + block_height, s1 - s0 - thickness,
+                material=spec.blocking_material_ref,
             ))
 
 

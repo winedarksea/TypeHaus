@@ -623,9 +623,13 @@ WALLS = [
     # delete it) and the whole ~9'-4" west edge reads as unsupported and gets a full LVL
     # header it does not need for 90% of its length — see FO-S-STAIR in second.py.
     #
-    # Both segments are INT_2X6_BRG_EXPOSED_PLY with `layer_materials` swapping the stud to
-    # appearance-grade DF: the studs are open to the mudroom (coat nooks) and 5/8" painted
-    # plywood closes the stair face — `interior_room` picks the mudroom side as layer 0.
+    # Both segments inherit INT_2X6_BRG_EXPOSED_PLY with `layer_materials` swapping the
+    # stud to appearance-grade DF. W-M-STRW's mudroom face stays open below 6'-0" for
+    # coat nooks; above it the variant adds 1/2" painted gypsum to the 9'-0" ceiling.
+    # Flat matching DF 2x6 blocks cap the bays, underside at 6'-0", with their 1 1/2"
+    # front edge behind the gypsum. W-M-STRW2's short fragment stays fully open.
+    # 5/8" painted plywood closes the stair face on both — `interior_room` picks the
+    # mudroom side as layer 0.
     # Until 2026-07-30 the mudroom segment was plain INT_2X6_BRG (spf vs. df-select-s4s),
     # which `integrity.junction_fallback` flagged at N-M-STRJ. The species was its own tag
     # (MUDROOM_INT_2X6_EXPOSED) until 2026-09-12; a material is not a wall (#70).
@@ -638,7 +642,7 @@ WALLS = [
     # 12" transfer-louver cut centred y=34'-0" in the clear bay between studs at 33'-4" and
     # 34'-8", so no stud is cut and no header is needed.
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
-         end_node="N-M-STRJ", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(9),
+         end_node="N-M-STRJ", assembly="INT_2X6_BRG_MUDROOM_UPPER_GWB", top=ft(9),
          layer_materials=(LayerMaterial(layer="stud", material="df-select-s4s"),),
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-M-MUDROOM",

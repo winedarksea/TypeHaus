@@ -26861,6 +26861,18 @@
 8,
 "698effbf7582"
 ],
+"geometry/CMW117AAAA/layer:gwb-mudroom-upper": [
+1.8288,
+2.7432,
+2,
+"316583c5b545"
+],
+"geometry/CMW117AAAA/layer:paint-mudroom-upper": [
+1.8288,
+2.7432,
+2,
+"316583c5b545"
+],
 "geometry/CMW117AAAA/layer:paint-stair": [
 0.0,
 2.7432,
@@ -26878,6 +26890,42 @@
 2.7432,
 2,
 "08fa410dc44f"
+],
+"geometry/CMW117AAAA::framing/member:blocking-0-000": [
+1.8288,
+1.8669,
+8,
+"80b78e93583a"
+],
+"geometry/CMW117AAAA::framing/member:blocking-0-001": [
+1.8288,
+1.8669,
+8,
+"80b78e93583a"
+],
+"geometry/CMW117AAAA::framing/member:blocking-0-002": [
+1.8288,
+1.8669,
+8,
+"80b78e93583a"
+],
+"geometry/CMW117AAAA::framing/member:blocking-0-003": [
+1.8288,
+1.8669,
+8,
+"80b78e93583a"
+],
+"geometry/CMW117AAAA::framing/member:blocking-0-004": [
+1.8288,
+1.8669,
+8,
+"80b78e93583a"
+],
+"geometry/CMW117AAAA::framing/member:blocking-0-005": [
+1.8288,
+1.8669,
+8,
+"80b78e93583a"
 ],
 "geometry/CMW117AAAA::framing/member:plate-bottom": [
 0.0,
@@ -27114,12 +27162,6 @@
 "6d371ae8a315"
 ],
 "geometry/CMW120AAAA::framing/member:stud-000": [
-0.0381,
-2.651125,
-8,
-"5b1c8c335af3"
-],
-"geometry/CMW120AAAA::framing/member:stud-001": [
 0.0381,
 2.651125,
 8,
@@ -69556,6 +69598,42 @@
 2,
 "f16deafda480"
 ],
+"member/CMW117AAAA/blocking-0-000": [
+1.8288,
+1.8669,
+2,
+"846dca74a689"
+],
+"member/CMW117AAAA/blocking-0-001": [
+1.8288,
+1.8669,
+2,
+"846dca74a689"
+],
+"member/CMW117AAAA/blocking-0-002": [
+1.8288,
+1.8669,
+2,
+"846dca74a689"
+],
+"member/CMW117AAAA/blocking-0-003": [
+1.8288,
+1.8669,
+2,
+"846dca74a689"
+],
+"member/CMW117AAAA/blocking-0-004": [
+1.8288,
+1.8669,
+2,
+"846dca74a689"
+],
+"member/CMW117AAAA/blocking-0-005": [
+1.8288,
+1.8669,
+2,
+"846dca74a689"
+],
 "member/CMW117AAAA/plate-bottom": [
 0.0,
 0.0381,
@@ -69755,12 +69833,6 @@
 "b82b89591363"
 ],
 "member/CMW120AAAA/stud-000": [
-0.0381,
-2.651125,
-2,
-"e1eb918c8160"
-],
-"member/CMW120AAAA/stud-001": [
 0.0381,
 2.651125,
 2,

@@ -196,6 +196,41 @@ def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
     assert "foundation-protection-panel" not in rows
 
 
+def test_mudroom_upper_closure_and_flat_caps_export_at_the_authored_height(catlin_ifc_path):
+    ifcopenshell = pytest.importorskip("ifcopenshell")
+    geom = pytest.importorskip("ifcopenshell.geom")
+    model = ifcopenshell.open(str(catlin_ifc_path))
+    settings = geom.settings()
+    settings.set(settings.USE_WORLD_COORDS, True)
+    targets = {
+        "W-M-STRW:gwb-mudroom-upper": (72, 108, "gwb"),
+        "W-M-STRW:paint-mudroom-upper": (72, 108, "latex-paint"),
+        **{f"W-M-STRW/blocking-0-{index:03d}": (72, 73.5, "df-select-s4s")
+           for index in range(6)},
+    }
+    products = {product.Name: product for product in model.by_type("IfcProduct")
+                if product.Name in targets}
+    assert products.keys() == targets.keys()
+    for name, (bottom, top, material) in targets.items():
+        product = products[name]
+        shape = geom.create_shape(settings, product)
+        vertices = shape.geometry.verts
+        elevations = vertices[2::3]
+        assert min(elevations) == pytest.approx(inch(bottom).meters, abs=1e-6)
+        assert max(elevations) == pytest.approx(inch(top).meters, abs=1e-6)
+        assigned = []
+        for relation in product.HasAssociations:
+            if not relation.is_a("IfcRelAssociatesMaterial"):
+                continue
+            association = relation.RelatingMaterial
+            assigned.append(association.MaterialProfiles[0].Material.Name
+                            if association.is_a("IfcMaterialProfileSet") else association.Name)
+        assert assigned == [material]
+    for name in ("gwb-mudroom-upper", "paint-mudroom-upper"):
+        part = products[f"W-M-STRW:{name}"]
+        assert [relation.RelatingObject.Name for relation in part.Decomposes] == ["W-M-STRW"]
+
+
 def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     """``IfcMaterialLayerSet`` has no vertical variation and its thicknesses must sum to the
     wall's — so a partial layer cannot be a member of one. It goes out the way Revit sends a

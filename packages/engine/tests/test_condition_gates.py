@@ -379,6 +379,8 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # staggered sound wall, the one node where this key still fires against a plain
         # INT_2X4_PARTITION neighbour.
         "assembly_change:INT_2X4_STAGGERED_GWB|INT_2X6_STAGGERED_PLUMBING",
+        # N-M-STRJ: W-M-STRW's upper gypsum stops at the fully open W-M-STRW2 stub.
+        "assembly_change:INT_2X6_BRG_EXPOSED_PLY|INT_2X6_BRG_MUDROOM_UPPER_GWB",
         # N-B-BA-NW. W-B-STR3 (the closet's Type X face) hands off to W-B-STR3B, which keeps
         # the family's stair plywood — the leaf stops here because the closet does. The base
         # tag was STAIRWALL_INT_2X6_BRG until 2026-09-12, when it merged with the mudroom's

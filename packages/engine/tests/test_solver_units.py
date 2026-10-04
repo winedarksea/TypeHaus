@@ -165,10 +165,12 @@ def test_ladder_tee_backing_omits_only_the_rung_intersecting_opening_framing():
     assert any(member.category == "header" for member in framed)
 
 
-def _wall_and_plan_with_blocking(heights) -> tuple[SimpleNamespace, ResolvedWall]:
+def _wall_and_plan_with_blocking(
+        heights, material_ref=None) -> tuple[SimpleNamespace, ResolvedWall]:
     layer = Layer(name="stud", material_ref="spf", thickness=inch(3.5),
                  function=LayerFunction.STRUCTURE,
-                 framing=FramingSpec(member="2x4", blocking_heights=heights))
+                 framing=FramingSpec(member="2x4", blocking_heights=heights,
+                                     blocking_material_ref=material_ref))
     plan = SimpleNamespace(
         library=SimpleNamespace(resolve_assembly=lambda tag: SimpleNamespace(layers=(layer,)))
     )
@@ -192,6 +194,15 @@ def test_blocking_heights_emit_one_course_per_bay_between_studs():
     assert all(abs(m.z0_m - expected_base) < 1e-9 for m in blocks)
     # Each block is horizontal (p0 != p1) and butts inside its bay.
     assert all(m.p0 != m.p1 and m.length_m > 0 for m in blocks)
+    assert all(m.material is None for m in blocks)
+
+
+def test_blocking_stock_does_not_restock_the_other_wall_members():
+    plan, rw = _wall_and_plan_with_blocking((inch(48),), material_ref="df-select-s4s")
+    members = frame_wall(plan, rw, openings=[], tee_stations=((inch(48).meters, "N-T"),))
+    blocks = [m for m in members if m.child_key.startswith("blocking-")]
+    assert blocks and all(m.material == "df-select-s4s" for m in blocks)
+    assert all(m.material is None for m in members if not m.child_key.startswith("blocking-"))
 
 
 def test_no_blocking_by_default():

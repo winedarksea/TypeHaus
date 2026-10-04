@@ -88,6 +88,31 @@ def unknown_product_ref(ctx: CheckContext) -> list[Finding]:
     return findings
 
 
+@check(Tier.INTEGRITY, "integrity.blocking_material_ref")
+def blocking_material_ref(ctx: CheckContext) -> list[Finding]:
+    """An authored blocking stock must exist, including on composed assembly variants."""
+    library = ctx.plan.library
+    known = {material.tag for material in library.materials}
+    findings: list[Finding] = []
+    for entry in library.assemblies:
+        assembly = library.resolve_assembly(entry.tag)
+        if assembly is None:
+            continue
+        for layer in assembly.layers:
+            ref = layer.framing.blocking_material_ref if layer.framing else None
+            if ref is not None and ref not in known:
+                findings.append(Finding(
+                    severity=Severity.ERROR,
+                    check_id="integrity.blocking_material_ref",
+                    message=(f"assembly {entry.tag} layer {layer.name} names "
+                             f"blocking_material_ref {ref!r}, which the material catalog "
+                             "does not define"),
+                    element_tags=(entry.tag,),
+                    result=Result.FAIL,
+                ))
+    return findings
+
+
 @check(Tier.INTEGRITY, "integrity.unknown_wood_material_ref")
 def unknown_wood_material_ref(ctx: CheckContext) -> list[Finding]:
     """``FurnitureType.wood_material_ref`` names a real material, or the shelves go generic.

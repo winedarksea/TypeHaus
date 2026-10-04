@@ -165,6 +165,9 @@ class FramingSpec(HausModel):
     # plate. Each height adds one horizontal row of blocking fitted between the studs in
     # every bay. Empty (the default) emits no blocking, so existing walls are unchanged.
     blocking_heights: tuple[Length, ...] = ()
+    # Stock for these in-line courses only; None keeps ordinary framing lumber. An
+    # exposed bay cap can match the finish studs without restocking plates or headers.
+    blocking_material_ref: str | None = None
     # Compressible sill-seal gasket under the sole/sill plate (capillary + air break at
     # the plate-to-concrete joint), stated as its **compressed, in-place** thickness — the
     # dimension the wall-base detail draws and the one the bearing seat is derived from

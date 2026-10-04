@@ -74,6 +74,7 @@ def _emit_framed_member(f: Any, body: Any, parent_tag: str, parent_uid: str,
     ll.ensure_pset(f, child, PSET_SOURCE, {
         "uid": parent_uid, "tag": f"{parent_tag}/{member.child_key}",
         "category": member.category, "profile": member.profile,
+        "material": member.material or "",
     })
     return child
 
