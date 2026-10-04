@@ -9,13 +9,12 @@ from typehaus.resolve.geometry_millwork import window_stool_prism
 INCH = 0.0254
 WALL_FACE_X = 6.635 * INCH
 SOUTH_FACE_Y = 6.635 * INCH
-BOOKCASE = "FURN-M-BED-BOOKCASE-SW"
 COVERS = ("FURN-M-BED-NOOK-COVER-S", "FURN-M-BED-NOOK-COVER-N")
 CABINETS = ("FURN-M-BED-NOOK-END-S", "FURN-M-BED-NOOK-END-N")
 TOPS = ("CT-M-BED-NOOK-S", "CT-M-BED-NOOK-N")
 SEATS = ("FURN-M-BED-NOOK-SEAT-S", "FURN-M-BED-NOOK-SEAT-N")
 CHAIR = "FURN-M-BED-ARMCHAIR"
-RUN = (BOOKCASE, COVERS[0], CABINETS[0], *SEATS, CABINETS[1], COVERS[1])
+RUN = (COVERS[0], CABINETS[0], *SEATS, CABINETS[1], COVERS[1])
 
 
 def _objects(model):
@@ -26,23 +25,22 @@ def _bounds(objects, tag):
     return Polygon(objects[tag].footprint).bounds
 
 
-def test_seat_run_is_contiguous_and_centred_on_w4_with_the_bookcase_in_the_sw_corner(
+def test_seat_run_is_contiguous_and_centred_on_w4(
     catlin_model_ro,
 ):
     objects = _objects(catlin_model_ro)
+    assert "FURN-M-BED-BOOKCASE-SW" not in objects
+    assert "FURN-M-BED-BOOKCASE-W" in objects
+    assert "FURN-M-BED-BOOKCASE-E" in objects
     bounds = [_bounds(objects, tag) for tag in RUN]
     for tag, bound in zip(RUN, bounds, strict=True):
         assert objects[tag].room == "RM-M-BED"
         assert bound[0] == pytest.approx(WALL_FACE_X, abs=1e-4), tag
-    # The seat and paired cabinets stay together; the corner bookcase stands separately.
-    seat_run_bounds = bounds[1:]
-    for south, north in zip(seat_run_bounds, seat_run_bounds[1:], strict=False):
+    for south, north in zip(bounds, bounds[1:], strict=False):
         assert north[1] == pytest.approx(south[3], abs=1e-4)
-    assert bounds[0][1] == pytest.approx(SOUTH_FACE_Y, abs=1e-4)
-    assert seat_run_bounds[0][1] > bounds[0][3]
     room = next(room for room in catlin_model_ro.rooms if room.tag == "RM-M-BED")
     _, room_south, _, room_north = Polygon(room.clear_face).bounds
-    run_south, run_north = seat_run_bounds[0][1], seat_run_bounds[-1][3]
+    run_south, run_north = bounds[0][1], bounds[-1][3]
     assert run_south - room_south == pytest.approx(room_north - run_north, abs=1e-4)
 
 
@@ -105,7 +103,7 @@ def test_armchair_clears_the_cover_the_bookcase_and_the_bed(catlin_model_ro):
     objects = _objects(catlin_model_ro)
     chair = Polygon(objects[CHAIR].footprint)
     assert chair.bounds[1] == pytest.approx(SOUTH_FACE_Y, abs=1e-3)
-    for tag in (COVERS[0], BOOKCASE, "FURN-M-BED-BOOKCASE-W", "FURN-M-BED"):
+    for tag in (COVERS[0], "FURN-M-BED-BOOKCASE-W", "FURN-M-BED"):
         assert chair.distance(Polygon(objects[tag].footprint)) >= 4 * INCH, tag
     # Centred between the window seat's front and the south-wall pair.
     west = chair.bounds[0] - _bounds(objects, SEATS[0])[2]

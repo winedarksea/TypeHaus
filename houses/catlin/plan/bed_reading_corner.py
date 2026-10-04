@@ -1,7 +1,7 @@
 # haus: editable
 # RM-M-BED reading corner on W-M-W4 (west finish face x=6.635"), 2026-10-03. W4 runs N->S
-# from y=156", so distance_from_start = 156" - y_centre. South to north: HEMNES in the SW
-# corner (y 6.635-42.01"), 1.62" gap, 1/2" cover, 12" SEKTION end (the backrest), two 24"
+# from y=156", so distance_from_start = 156" - y_centre. South to north: 1/2" cover,
+# 12" SEKTION end (the backrest), two 24"
 # seat units (19 1/2" top, Study 2's), 12" SEKTION end, 1/2" cover (ends y=116.63").
 # The 73" seat/cabinet run centres at y=80.13", halfway between the room's finished
 # south/north faces (6.635"/153.625"); moved 1.62" north on 2026-10-04. Symmetric ends.
@@ -16,10 +16,6 @@ from typehaus import Furniture, Location, Mount, MountKind, WallAttachment
 from typehaus.model import Countertop, deg, inch, pt
 
 BED_READING_CORNER = [
-    Furniture(uid="X2KA16X90X", tag="FURN-M-BED-BOOKCASE-SW", type_ref="FURN-BOOKCASE-HEMNES-35",
-              room="RM-M-BED", location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-W4", face="left", distance_from_start=inch(131.6775),
-                  normal_gap=inch(0), rotation_offset=deg(180)))),
     Furniture(uid="NJW8BV7455", tag="FURN-M-BED-ARMCHAIR", type_ref="FURN-ARMCHAIR-STRANDMON",
               room="RM-M-BED", position=pt(inch(54.06), inch(25.51)), rotation=deg(180)),
     Furniture(uid="B08H9SJH2J", tag="FURN-M-BED-NOOK-COVER-S", type_ref="FT-M-BED-NOOK-COVER-30",
