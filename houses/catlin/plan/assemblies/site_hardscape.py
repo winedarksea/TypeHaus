@@ -132,7 +132,7 @@ BALCONY_DECK_ALUMINUM = Assembly(
 # POST_WHITE_PAINT's body.
 # ** THE NORTH ENTRY'S WEST SCREEN, LOWER PANEL: THIS IS A SHEAR WALL, NOT A SKIRT. **
 # `W-BW-SCREEN` closes the west side of the passage from the pier tops at -1'-3 1/2" up to
-# +4'-0", with `SC-BW-WEST`'s slats carrying on above it to the header soffit. Three jobs,
+# +4'-0", with `SB-BW-BAND`'s 45° slats bracing the band above it to the header soffit. Three jobs,
 # one element (owner, 2026-09-10):
 #
 #  1. **It is the canopy's north-south lateral system.** The canopy is freestanding, its two

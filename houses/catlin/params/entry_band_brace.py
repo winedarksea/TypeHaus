@@ -1,17 +1,17 @@
 """The west band brace and the canopy's rated head/base extras (owner, 2026-09-30).
 
-`W-BW-SCREEN` tops out at +4'-0" and the `BM-BW-RW` glulam's soffit is at +6'-4 1/8". The 2'-4 1/8"
-between them held only the in-fill slats and the two 6x6s, so the whole N-S shear had to bend
-the posts through caps with no lateral rating. The band is now braced: a CS16 X on EACH face
-of the frame, header face to the far post, flush with the 6x6 and glulam faces and 1" outboard
-of the slats. A face's pair is two straps, one per load direction, each tension-only; the two
-faces share a direction's force. Hand oracle: `notes/canopy_west_band.md` §3.
+`W-BW-SCREEN` tops out at +4'-0" and the `BM-BW-RW` glulam's soffit is at +6'-4 1/8". The band
+between them carries the canopy's whole N-S shear. Since 2026-10-04 it is `SB-BW-BAND`: a 2x6
+sill and top plate, a 6x6 centre post, and KDAT 2x4 slats at 45° rising to the centre from each
+chord, each one a knee brace with a KBS1Z at both ends. It replaced a CS16 X on each face, kept
+as the first backup with the sheathed-pier option in the note's §8. Hand oracle:
+`notes/canopy_west_band.md` §3.
 
 Every uid here was minted once with `typehaus.model.ids.new_uid()` (fmt never visits
 `params/`) and must never be re-typed.
 """
 
-from typehaus import Connector, ConnectorKind, StrapBrace, ft, inch, pt
+from typehaus import Connector, ConnectorKind, SlatBrace, ft, inch, pt
 
 from params.north_entry_frame import (
     COLUMN_HALF_FT,
@@ -25,40 +25,19 @@ from params.north_entry_frame import (
     SCREEN_PANEL_TOP_FT,
 )
 
-# ** THE GEOMETRY IS SET BY THE NAILS AT THE POST END. ** A strap crosses a 6x6 face for only
-# 5 1/2" / cos(theta), and CS16's two hole rows at 2 1/16" hold about one nail an inch, so the
-# diagonal is steepened until six nails fit: the top ends stand 9 1/2" either side of midspan,
-# not over the posts. On the glulam face there is room for many more.
-_MID_Y_FT = (PIER_LINE_Y_FT + GARAGE_SEAT_Y_FT) / 2.0
-_TOP_Y_OFFSET_FT = 9.5 / 12
-_TOP_Z_FT = HEADER_TOP_FT - 1 / 12                  # 1" under the header top
-_BOTTOM_Z_FT = SCREEN_PANEL_TOP_FT + 1 / 12         # 1" over the panel top and its cladding
-_END_INSET_FT = 0.5 / 12                            # strap end 1/2" inside the far post face
-_FACE_IN = 2.75                                     # half the 6x6 and the 5-1/2" glulam
-
-#: ``(uid, tag, bottom y, top y)`` — D1 rises SOUTH from PT-BW-CNW (tension in a southward
-#: push of the deck), D2 rises NORTH from PT-BW-CW (tension in a northward one).
-_DIAGONALS = (
-    ("D1", GARAGE_SEAT_Y_FT + COLUMN_HALF_FT - _END_INSET_FT, _MID_Y_FT - _TOP_Y_OFFSET_FT,
-     {"W": "D8WTYA9CTR", "E": "FHXKYTZ61G"}),
-    ("D2", PIER_LINE_Y_FT - COLUMN_HALF_FT + _END_INSET_FT, _MID_Y_FT + _TOP_Y_OFFSET_FT,
-     {"W": "7ZKF7B86TT", "E": "APNR22T3W7"}),
-)
-
-BAND_STRAPS = []
-for _d, _y_bot, _y_top, _uids in _DIAGONALS:
-    # `face_plane` is to the LEFT of start->end: +x (east) for D1, which runs south, and -x for D2.
-    _east_sign = 1 if _y_top < _y_bot else -1
-    for _face, _sign in (("W", -_east_sign), ("E", _east_sign)):
-        BAND_STRAPS.append(StrapBrace(
-            uid=_uids[_face], tag=f"SB-BW-BAND-{_d}{_face}",
-            start=pt(ft(LANDING_WEST_FT), ft(_y_bot)), start_elevation=ft(_BOTTOM_Z_FT),
-            end=pt(ft(LANDING_WEST_FT), ft(_y_top)), end_elevation=ft(_TOP_Z_FT),
-            face_plane=inch(_sign * _FACE_IN), product="CS16", width=inch(1.25), gauge=16,
-            connects=("BM-BW-RW", "PT-BW-CNW" if _d == "D1" else "PT-BW-CW"),
-            fasteners_each_end=6, fastener='10d x 2-1/2" common, HDG',
-            source="notes/canopy_west_band.md §3 — tension-only, ESR-2105 Table 4 CS16; six "
-                   "nails at each end, all six fit on the 6x6 face"))
+# ** THE SLATS SIT FLUSH WITH THE WEST FACE, WHERE THE KBS1Z GO. ** A KBS1Z joins in-line
+# members face to face, so the 3 1/2" slats stand flush with the 5 1/2" posts, plates and
+# glulam on one face: 1" west of the line (+ is LEFT of south->north, which is west).
+BAND = SlatBrace(
+    uid="8QGAZ9GGFS", tag="SB-BW-BAND",
+    start=pt(ft(LANDING_WEST_FT), ft(PIER_LINE_Y_FT)),
+    end=pt(ft(LANDING_WEST_FT), ft(GARAGE_SEAT_Y_FT)),
+    base_elevation=ft(SCREEN_PANEL_TOP_FT), top_elevation=ft(HEADER_SOFFIT_FT),
+    plane_offset=inch(1.0), assembly="POST_KDAT", supported_by="W-BW-SCREEN",
+    connects=("PT-BW-CW", "PT-BW-CNW", "BM-BW-RW", "W-BW-SCREEN"),
+    source="notes/canopy_west_band.md §3 — 45° slats as knee braces, KBS1Z each end "
+           "(IAPMO UES ER-280 Table 7, type 2); the bays share the push, one in tension, "
+           "one in compression")
 
 # ** THE EAVE COLLECTOR: THE DECK'S N-S SHEAR INTO THE WEST HEADER. ** The deck's boundary
 # nailing lands on the truss heels and the eave blocking; H2.5ASS heel ties carry 110 lb of
@@ -111,4 +90,4 @@ PLATE_ANGLES = [
     )
 ]
 
-ELEMENTS = [*BAND_STRAPS, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES]
+ELEMENTS = [BAND, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES]

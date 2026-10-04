@@ -7,6 +7,7 @@ needs no entry here at all: the same symbol renders at whatever W×D×H the type
 
 from __future__ import annotations
 
+from typehaus.model.placeable_symbols._closet_wire import closet_corner_wire, closet_wire
 from typehaus.model.placeable_symbols._desk import drawer_desk
 from typehaus.model.placeable_symbols._families import (
                                                         Builder,
@@ -28,6 +29,7 @@ from typehaus.model.placeable_symbols._families import (
                                                         shelving,
                                                         slab,
 )
+from typehaus.model.placeable_symbols._frame import box, rect
 from typehaus.model.placeable_symbols._mirrors import arch_shelf_mirror
 from typehaus.model.placeable_symbols._sektion import (
                                                         sektion_corner_base,
@@ -56,7 +58,6 @@ from typehaus.model.placeable_symbols._wardrobe import (
                                                         SHOW_HANG_INTERIOR,
                                                         SHOW_INTERIOR,
                                                         closet_board,
-                                                        closet_corner_wire,
                                                         wardrobe,
                                                         wardrobe_corner,
                                                         wardrobe_corner_points,
@@ -122,6 +123,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "wardrobe-sliding-pair": wardrobe_sliding_pair,
     "closet-board": closet_board,
     "closet-corner-wire": closet_corner_wire,
+    "closet-wire": closet_wire,
     # Wall-hung utility joinery, not a case: a plate and a ladder of bars. It shares the
     # casegoods' stained ``wood`` because that is what a folding rack is made of.
     "wall-rack": drying_rack(bars=5),
@@ -170,6 +172,9 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
         rows=1, cols=3, pulls=True, color=CABINET, face_color=CABINET_SHADE,
         single_door_max_width_m=CABINET_SINGLE_DOOR_MAX_WIDTH_M),
     "besta": besta(),
+    # A hidden steel flat bar under a cantilevered top: the type's own W x D x H, in steel.
+    "countertop-bracket": lambda width, depth, height: (
+        (rect(0, 0, width, depth),), (box(0, 0, 0, height, width, depth, "metal"),)),
     # Sauna joinery. Not casegoods and not tables: a bench is a platform on end supports, and
     # the two-tier version is the one piece of furniture whose *height* is a code-of-practice
     # number rather than an ergonomic average — see ``sauna_bench``.

@@ -54,21 +54,7 @@ MATERIALS = [
     Material(tag="quartz-counter", name="Engineered quartz countertop, 3 cm",
              density=2400.0, hatch="masonry", color="#f2efe9", finish="polished",
              product_ref="PROD-SILESTONE-ET-CALACATTA-GOLD", engineered_stone=True,
-             source="Silestone Et Calacatta Gold, 3 cm, eased edge (owner selection 2026-09-06). Kitchen perimeter and sink run, the 48\" and 51\" vanity tops, and the peninsula's 24\" work surface. ** NEVER CLEAN IT WITH ANYTHING HIGH-pH: ** bleach, ammonia, glass cleaner, degreasers, scouring powder and melamine sponges are the #1 cause of light quartz yellowing across every brand — not UV. #2 is heat scorch, which is irreversible; induction helps (no flame spill, no hot grate) but a 400 F pan is still a 400 F pan. Put that in the owner's manual."),
-    # ** THE PENINSULA'S BAR TOP IS OAK, AND IT STARTED AS AN ENGINEERING LIMIT. ** The old
-    # 15" knee on a 24" carcass was 38% of depth, outside Caesarstone's 1/3-and-14" rule for 3 cm
-    # quartz. Since the peninsula moved 2" north (2026-10-03) the knee is 11 5/8" (34%), just
-    # past the rule, so one-piece quartz would want brackets; the oak bar top is the design.
-    # The owner mills white oak off family land in southern Minnesota (~$2/sf, 4/4 and 8/4 up
-    # to 18" wide).
-    #
-    # ** MILL IT TO 1 3/16" SO THE TWO TOPS ARE FLUSH ** — 3 cm is 1.181". Strips run the LONG
-    # way on slotted screws or figure-8s, ** all six faces finished equally **, and the joint
-    # to the stone is a colour-matched silicone MOVEMENT joint, never grout or hard caulk.
-    Material(tag="oak-counter", name='White oak bar top, 1 3/16", site-milled',
-             r_per_inch=1.0, density=750.0, hatch="lumber", color="#c9a978",
-             finish="oak-board",  # the 3D recipe; the coat is hardwax oil
-             source="Owner's own white oak, milled to match 3 cm quartz flush. The peninsula's 11 5/8\" seating overhang ONLY -- see the note above. The 36\" kitchen sink base stays quartz: do not put water and wood together."),
+             source="Silestone Et Calacatta Gold, 3 cm, eased edge (owner selection 2026-09-06). Kitchen perimeter and sink run, the 48\" and 51\" vanity tops, and the peninsula's one-piece top, its 15\" seating overhang on hidden steel bars. ** NEVER CLEAN IT WITH ANYTHING HIGH-pH: ** bleach, ammonia, glass cleaner, degreasers, scouring powder and melamine sponges are the #1 cause of light quartz yellowing across every brand — not UV. #2 is heat scorch, which is irreversible; induction helps (no flame spill, no hot grate) but a 400 F pan is still a 400 F pan. Put that in the owner's manual."),
     # RM-M-BED reading nook: the two 12" SEKTION end-cabinet tops (CT-M-BED-NOOK-S/-N).
     Material(tag="walnut-counter", name='Black walnut top, 1", 6/4 S4S',
              r_per_inch=1.0, density=610.0, hatch="lumber", color="#5d4433",

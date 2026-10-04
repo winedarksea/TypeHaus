@@ -7,24 +7,47 @@ from shapely.geometry import Polygon
 
 from typehaus.emit.gltf.emitter import emit_gltf_dict
 from typehaus.emit.gltf.palette import _material_finish_color, authored_colors
-from typehaus.model.placeable_symbols import PART_COLORS
+from typehaus.model.placeable_symbols import PART_COLORS, part_hex
 from typehaus.resolve.geometry_countertops import countertop_prisms, slab_hosts
 from typehaus.server.model_json import model_to_dict
 
 INCH = 0.0254
 
 
-def test_the_bar_top_draws_its_whole_cantilever_at_the_counter(catlin_model_ro):
+def test_the_peninsula_draws_its_notched_slab_at_the_counter(catlin_model_ro):
     top = next(item for item in catlin_model_ro.countertops
-               if item.tag == "CT-M-KIT-PENINSULA-BAR")
+               if item.tag == "CT-M-KIT-PENINSULA")
     objects = {obj.tag: obj for obj in catlin_model_ro.canvas_objects}
     prisms = countertop_prisms(catlin_model_ro, top)
     assert len(prisms) == 1
     (prism,) = prisms
     assert Polygon(prism.ring).equals_exact(Polygon(top.outline), 1e-9)
-    assert Polygon(prism.ring).area == pytest.approx(73.5 * 11.625 * INCH * INCH)
+    assert Polygon(prism.ring).area == pytest.approx(
+        (84.5 * 25 + 73.5 * 15) * INCH * INCH)
     assert prism.z1_m == pytest.approx(max(objects[tag].body_z1_m for tag in top.hosts))
     assert prism.z1_m - prism.z0_m == pytest.approx(top.thickness_m)
+
+
+def test_the_seating_brackets_are_steel_under_the_knee(catlin_model_ro):
+    """Five bars, 12" in and 12" out, their tops 1/16" under the stone."""
+    top = next(item for item in catlin_model_ro.countertops
+               if item.tag == "CT-M-KIT-PENINSULA")
+    z0 = countertop_prisms(catlin_model_ro, top)[0].z0_m
+    bars = [obj for obj in catlin_model_ro.canvas_objects
+            if obj.type_ref == "FT-KIT-CT-BRACKET-24"]
+    assert len(bars) == 5
+    slab = Polygon(top.outline)
+    stations = sorted(obj.position[0] / INCH for obj in bars)
+    assert [b - a for a, b in zip(stations, stations[1:], strict=False)] == pytest.approx(
+        [16.375] * 4)
+    for obj in bars:
+        assert slab.contains(Polygon(obj.footprint))
+        assert (z0 - obj.body_z1_m) / INCH == pytest.approx(0.0625, abs=1e-3)
+        assert Polygon(obj.footprint).bounds[1] / INCH == pytest.approx(307.375)
+    types = {item["tag"]: item for item in
+             model_to_dict(catlin_model_ro)["catalog"]["canvas_object_types"]}
+    assert {part["color"] for part in types["FT-KIT-CT-BRACKET-24"]["model_parts"]} == {
+        part_hex("metal")}
 
 
 def test_explicit_sink_opening_replaces_the_bases_centred_counter(catlin_model_ro):
@@ -117,12 +140,12 @@ def test_hosted_cabinets_drop_their_symbol_counter_in_model_json(catlin_model_ro
         assert "counter" in roles, type_ref
 
     rows = {row["tag"]: row for row in payload["countertops"]}
-    bar = rows["CT-M-KIT-PENINSULA-BAR"]
-    assert bar["material_ref"] == "oak-counter"
-    assert bar["host_uid"] == objects["FURN-M-KIT-PEN-END"]["uid"]
-    assert bar["z1_m"] - bar["z0_m"] == pytest.approx(1.1875 * INCH)
-    assert Polygon(bar["parts"][0]["outline"]).area == pytest.approx(
-        73.5 * 11.625 * INCH * INCH)
+    peninsula = rows["CT-M-KIT-PENINSULA"]
+    assert peninsula["material_ref"] == "quartz-counter"
+    assert peninsula["host_uid"] == objects["FURN-M-KIT-PEN-END"]["uid"]
+    assert peninsula["z1_m"] - peninsula["z0_m"] == pytest.approx(1.181 * INCH)
+    assert Polygon(peninsula["parts"][0]["outline"]).area == pytest.approx(
+        (84.5 * 25 + 73.5 * 15) * INCH * INCH)
     assert {rows[tag]["material_ref"] for tag in ("CT-M-LIV-E-S", "CT-M-LIV-E-N")} == {
         "live-edge-white-oak"}
 
@@ -144,7 +167,7 @@ def test_countertops_reach_the_glb_in_their_own_material(catlin_model_ro):
             colors.add(tuple(round(value, 4) for value in
                              material["pbrMetallicRoughness"]["baseColorFactor"]))
     authored = authored_colors(catlin_model_ro)
-    for ref in ("oak-counter", "live-edge-white-oak", "quartz-counter"):
+    for ref in ("live-edge-white-oak", "quartz-counter"):
         expected = _material_finish_color(ref, "millwork", authored)
         assert tuple(round(value, 4) for value in expected) in colors, ref
     # None is the symbol counter's grey: the slab replaced it.

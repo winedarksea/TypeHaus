@@ -1,4 +1,4 @@
-"""Steel strap braces: flat coil strap cut to length and nailed between two member faces."""
+"""Braces that are not knee braces: steel coil straps, and a framed band of 45° slats."""
 
 from __future__ import annotations
 
@@ -51,3 +51,49 @@ class StrapBrace(Element):
 
 
 register_constructor("StrapBrace", StrapBrace)
+
+
+@register_element
+class SlatBrace(Element):
+    """A framed band of 45° slats between two chord posts, each slat a knee brace.
+
+    The frame is a flat ``plate`` sill on ``base_elevation``, a flat ``plate`` under
+    ``top_elevation`` (the collector soffit) and a ``centre_post`` at midspan; ``start`` and
+    ``end`` are the CHORD centres, and the frame runs between their faces. Each bay is filled
+    with ``slat`` stock on edge, ``clear_gap`` apart square to the slats, mirrored so every
+    slat rises toward the centre post (a chevron). One ``connector`` at each slat end makes
+    each slat work in tension and compression, which is what lets the two bays share the
+    push (``notes/canopy_west_band.md`` §3b).
+
+    The layout is ``resolve/slat_braces.slat_layout``'s, one rule for the resolver, the dead
+    load and the engineering. Lumber bills off the resolved members; the connectors, the plate
+    screws and the centre-post ties bill off this element (``takeoff/slat_braces``).
+    """
+
+    start: Point2D
+    end: Point2D
+    chord_size: str = "6x6"
+    base_elevation: Length  # underside of the sill, project-frame absolute
+    top_elevation: Length  # top of the top plate (the collector soffit), absolute
+    plate: str = "2x6"  # sill and top plate, laid flat
+    centre_post: str = "6x6"
+    slat: str = "2x4"  # on edge: its thin face in the band's plane
+    clear_gap: Length = inch(1.5)
+    #: Signed offset of the slats' axis from the start→end line, + to the LEFT: set it to
+    #: put the slats flush with one face of the frame, where the connectors go.
+    plane_offset: Length = inch(0)
+    #: A slat shorter than this cannot take a connector leg at both ends and is left out.
+    min_slat_length: Length = inch(8)
+    connector: str = "KBS1Z"  # one per slat end
+    plate_fastener: str = "SDWS22400DB"
+    plate_fasteners: int = 8  # per plate, through the plate into what it bears on
+    centre_post_tie: str = "A35Z"
+    centre_post_ties_each_end: int = 2
+    assembly: str | None = None
+    #: The wall whose top plate the sill stands on: its dead load joins that line's.
+    supported_by: str | None = None
+    connects: tuple[str, ...] = ()
+    source: str = ""
+
+
+register_constructor("SlatBrace", SlatBrace)

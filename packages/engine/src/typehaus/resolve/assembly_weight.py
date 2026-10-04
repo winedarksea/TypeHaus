@@ -133,10 +133,11 @@ def _standing_on(ctx: Any, wall_tag: str) -> list[tuple[str, float | None, str]]
     """``(tag, plf, why)`` for every element bearing on this wall line, in tag order.
 
     Only the element families that are LINES on this line: another wall stacked on it, and a
-    slat screen standing on its plate. Anything else that names this wall in ``supported_by``
-    is reported unweighed — a point load standing on a wall is a different question from a
-    line load and inventing a plf for it would be a fabricated demand.
+    slat screen or slat band standing on its plate. Anything else that names this wall in
+    ``supported_by`` is reported unweighed — a point load standing on a wall is a different
+    question from a line load and inventing a plf for it would be a fabricated demand.
     """
+    from typehaus.model.braces import SlatBrace
     from typehaus.model.elements import Wall
     from typehaus.model.screens import SlatScreen
 
@@ -157,6 +158,8 @@ def _standing_on(ctx: Any, wall_tag: str) -> list[tuple[str, float | None, str]]
                         if plf is not None else "names a material with no density"))
         elif isinstance(element, SlatScreen):
             out.append(_slat_screen_plf(ctx, element))
+        elif isinstance(element, SlatBrace):
+            out.append(_slat_brace_plf(ctx, element))
         else:
             out.append((getattr(element, "tag", "?"), None,
                         f"is a {type(element).__name__} this module cannot weigh as a line "
@@ -197,3 +200,33 @@ def _slat_screen_plf(ctx: Any, screen: Any) -> tuple[str, float | None, str]:
             f"{count} slats of {screen.slat_face.inches:.2f}\" x "
             f"{screen.slat_depth.inches:.2f}\" x {screen.height.meters / 0.3048:.2f}' in "
             f"{ref} at {density:.0f} kg/m3, over {length_m / 0.3048:.2f}'")
+
+
+def _slat_brace_plf(ctx: Any, band: Any) -> tuple[str, float | None, str]:
+    """A slat band's weight per foot of its own frame: every resolved member, sill to top plate.
+
+    The members are ``resolve/slat_braces``'s, so the slats weighed are the slats drawn. Spread
+    over the band's own length rather than the wall's, which overstates a longer line.
+    """
+    from typehaus.resolve.assembly_material import assembly_structure_material
+    from typehaus.resolve.framing.profiles import cross_section
+
+    brace = next((b for b in ctx.model.braces if b.tag == band.tag), None)
+    if brace is None or not brace.members:
+        return band.tag, None, "resolves to no members"
+    materials = {m.tag: m for m in ctx.plan.library.materials}
+    ref = assembly_structure_material(ctx.plan, getattr(band, "assembly", None))
+    density = getattr(materials.get(ref or ""), "density", None)
+    if density is None:
+        return (band.tag, None,
+                f"is built of `{ref or 'an unnamed material'}`, which states no density")
+    volume_m3 = 0.0
+    for member in brace.members:
+        section = cross_section(member.profile)
+        volume_m3 += (section.width_m or 0.0) * (section.depth_m or 0.0) * member.length_m
+    sill = next(m for m in brace.members if m.child_key == "plate-sill")
+    length_m = sill.length_m
+    plf = volume_m3 * density / length_m * KG_PER_M_TO_PLF
+    return (band.tag, plf,
+            f"{len(brace.members)} members, {volume_m3 / 0.0283168:.2f} ft3 of {ref} at "
+            f"{density:.0f} kg/m3, over its own {length_m / 0.3048:.2f}'")

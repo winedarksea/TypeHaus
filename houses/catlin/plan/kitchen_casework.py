@@ -232,13 +232,30 @@ MAIN_KITCHEN_CASEWORK = [
               position=pt(inch(339.625), inch(319.125)), rotation=deg(180)),
     Furniture(uid="MZNJ9TAN56", tag="FURN-M-KIT-STOOL1", type_ref="FURN-BAR-STOOL",
               room="RM-M-LIVING",
-              position=pt(inch(315.125), ft(25, 5.375)), rotation=deg(180)),
+              position=pt(inch(315.125), ft(25, 2)), rotation=deg(180)),
     Furniture(uid="TMR4RNV2E3", tag="FURN-M-KIT-STOOL2", type_ref="FURN-BAR-STOOL",
               room="RM-M-LIVING",
-              position=pt(inch(339.625), ft(25, 5.375)), rotation=deg(180)),
+              position=pt(inch(339.625), ft(25, 2)), rotation=deg(180)),
     Furniture(uid="1RME2HHSQT", tag="FURN-M-KIT-STOOL3", type_ref="FURN-BAR-STOOL",
               room="RM-M-LIVING",
-              position=pt(inch(364.125), ft(25, 5.375)), rotation=deg(180)),
+              position=pt(inch(364.125), ft(25, 2)), rotation=deg(180)),
+    # The bar's hidden bars: 4" in from each end, 16 3/8" o.c., centred on the cabinet backs
+    # (12" in, 12" out, 3" short of the 15" edge). Tops 1/16" under the stone's 34.819 AFF.
+    Furniture(uid="PVX8XXXE0M", tag="FURN-M-KIT-PEN-BRACKET1", type_ref="FT-KIT-CT-BRACKET-24",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.FLOOR, elevation=inch(34.256)),
+              position=pt(inch(306.875), inch(319.375))),
+    Furniture(uid="ZX6RGMCD83", tag="FURN-M-KIT-PEN-BRACKET2", type_ref="FT-KIT-CT-BRACKET-24",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.FLOOR, elevation=inch(34.256)),
+              position=pt(inch(323.25), inch(319.375))),
+    Furniture(uid="T6GWF2E36E", tag="FURN-M-KIT-PEN-BRACKET3", type_ref="FT-KIT-CT-BRACKET-24",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.FLOOR, elevation=inch(34.256)),
+              position=pt(inch(339.625), inch(319.375))),
+    Furniture(uid="Q9DR1N8XWY", tag="FURN-M-KIT-PEN-BRACKET4", type_ref="FT-KIT-CT-BRACKET-24",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.FLOOR, elevation=inch(34.256)),
+              position=pt(inch(356), inch(319.375))),
+    Furniture(uid="X0SMAJ9JYN", tag="FURN-M-KIT-PEN-BRACKET5", type_ref="FT-KIT-CT-BRACKET-24",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.FLOOR, elevation=inch(34.256)),
+              position=pt(inch(372.375), inch(319.375))),
 
     # Both fronts face WEST: east-wall tangent 90 degrees + offset -180 = -90.
     # Heavy-duty full-extension mixer shelf at counter level; two outlets wired before assembly.

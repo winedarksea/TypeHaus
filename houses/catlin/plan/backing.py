@@ -182,11 +182,6 @@ MAIN_BACKING = [
     WallBacking(uid="M80101YTFN", tag="BK-M-CLN2-PAX", wall_ref="W-M-CLN2", face="right",
                 elevation=inch(86), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="PAX wall rail (93 in.)"),
-    # PAX-WEST, y 13'-2 3/8"..15'-7 7/8", run north to the next stud face.
-    WallBacking(uid="A71ZZ2QRA3", tag="BK-M-BA2E2-PAX", wall_ref="W-M-BA2E2", face="left",
-                start=inch(24.75), length=inch(32.875),
-                elevation=inch(86), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="PAX wall rail (93 in.)"),
     # The wire corner's north-leg back clips, x 8'-5 3/8"..11'-1 3/8", run to the stud at
     # 11'-5 1/4". The west leg's clips land in BK-M-BA2E2-HIGH and -GRAB (backing_wet.py).
     WallBacking(uid="KEX2RE1ERV", tag="BK-M-CLN-WIRE-HI", wall_ref="W-M-CLN", face="right",

@@ -1,8 +1,9 @@
 """The canopy's west band, heads, bases and open front, against ``notes/canopy_west_band.md``.
 
 The note is hand-worked with plain arithmetic and no engine import; this module reproduces its
-rows on the landed house (``kdat``) and pins the two refusals: a band nothing bridges makes the
-record INCOMPLETE by name, and the drift limit's N/A is earned only from SDC A.
+rows on the landed house (``kdat``), the band being ``SB-BW-BAND``'s 45° slats, and pins the two
+refusals: a band nothing bridges makes the record INCOMPLETE by name, and the drift limit's N/A
+is earned only from SDC A.
 """
 
 from __future__ import annotations
@@ -15,12 +16,16 @@ from typehaus.engineering.item import Status
 
 _ITEM = "lateral_system/RF-BW-CANOPY"
 
-#: §3, §4 and §6: ``row name -> (demand, capacity)``.
+#: §3, §4 and §6: ``row name -> (demand, capacity)``. §3's slat band since 2026-10-04.
 _ROWS = {
     "W-BW-SCREEN unit shear": (192.20, 265.0),
     "W-BW-SCREEN aspect ratio": (0.751, 3.5),
-    "W-BW-SCREEN band strap tension, push toward the wall's end node": (707.5, 1134.0),
-    "W-BW-SCREEN band strap tension, push toward its start node": (707.5, 1134.0),
+    "SB-BW-BAND slat end, KBS1Z": (147.79, 540.0),
+    "SB-BW-BAND slat buckling": (147.79, 3389.2),
+    "SB-BW-BAND centre post bending": (118.36, 1360.0),
+    "SB-BW-BAND centre post end ties": (522.53, 1390.0),
+    "SB-BW-BAND top plate screws into BM-BW-RW": (167.29, 660.1),
+    "SB-BW-BAND sill screws into W-BW-SCREEN's top plate": (167.29, 660.1),
     "W-BW-SCREEN top plate end bearing on a chord": (99.53, 251.25),
     "W-BW-SCREEN base plate and sill end bearing on a chord": (64.81, 251.25),
     "BM-BW-RW eave collector clips": (174.18, 450.0),
@@ -55,6 +60,16 @@ def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
     assert values["chord_force_open_front_lb"] == pytest.approx(87.3, abs=0.1)
 
 
+def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
+    """§3a-b: 24.375" x 25.125" bays, five slats across mid-band, 147.79 lb a slat."""
+    values = {q.name: q.value for q in record.inputs}
+    assert values["slat_bay_width_SB-BW-BAND"] == pytest.approx(24.375, abs=1e-3)
+    assert values["slat_bay_height_SB-BW-BAND"] == pytest.approx(25.125, abs=1e-3)
+    assert values["slats_crossing_mid_SB-BW-BAND"] == 5
+    assert values["slat_force_SB-BW-BAND"] == pytest.approx(147.79, abs=0.01)
+    assert not any("band strap tension" in s.name for s in record.limit_states)
+
+
 def test_the_old_anchor_rows_are_gone_with_the_bolt(record) -> None:
     """§4b: the CBSQ's cracked row is measured through the concrete; no ACI Ch. 17 row."""
     assert not any("anchor tension" in s.name for s in record.limit_states)
@@ -75,15 +90,16 @@ def test_a_missing_seismic_category_does_not_earn_the_na(catlin_ctx) -> None:
 
 
 class _WithoutStraps:
-    """The plan with every StrapBrace removed — the ``_Swapped`` idiom, by type."""
+    """The plan with every band brace (slat or strap) removed — the ``_Swapped`` idiom."""
 
     def __init__(self, plan):
         self._plan = plan
 
     def all_elements(self):
-        from typehaus.model.braces import StrapBrace
+        from typehaus.model.braces import SlatBrace, StrapBrace
 
-        return [e for e in self._plan.all_elements() if not isinstance(e, StrapBrace)]
+        return [e for e in self._plan.all_elements()
+                if not isinstance(e, (SlatBrace, StrapBrace))]
 
     def __getattr__(self, name):
         return getattr(self._plan, name)
@@ -99,15 +115,17 @@ def test_an_unbridged_band_is_incomplete_by_name(catlin_ctx) -> None:
     assert any("band between W-BW-SCREEN's top" in text for text in found.missing)
 
 
-#: §5c, ``post -> {row: ratio}``.
+#: §5c, ``post -> {row: ratio}``; a chord's along rows and its column carry the band push.
 _POSTS = {
-    "PT-BW-CW": {"ACE6Z head, uplift + lateral along the beam": 0.345,
+    "PT-BW-CW": {"ACE6Z head, uplift + lateral along the beam": 0.597,
                  "A35Z head, across the beam": 0.164,
                  "A35Z panel top plate into the post": 0.176,
                  "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.280,
-                 "NDS combined axial and bending": 0.321},
-    "PT-BW-CNW": {"AC6Z head, uplift + lateral along the beam": 0.242,
-                  "A35Z head, across the beam": 0.082},
+                 "CBSQ66-SDS2 base, uplift + lateral along the beam": 0.228,
+                 "NDS combined axial and bending": 0.432},
+    "PT-BW-CNW": {"AC6Z head, uplift + lateral along the beam": 0.455,
+                  "A35Z head, across the beam": 0.082,
+                  "NDS combined axial and bending": 0.432},
     "PT-BW-RE": {"ACE6Z head, uplift + lateral along the beam": 0.236,
                  "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.191,
                  "NDS combined axial and bending": 0.225},
@@ -126,11 +144,13 @@ def test_every_post_has_a_rated_head_and_base(catlin_ctx, post) -> None:
 
 
 def test_the_chord_heads_carry_the_band_couple(catlin_ctx) -> None:
-    """§5b: 433.3 + 1,045.06 x 0.98958 / 4.9792 = 640.9 lb at a chord's head."""
+    """§5b: 433.3 + max(207.7 header depth, 181.6 slat couple) = 640.9 lb at a chord's head,
+    and the compression bay's 522.53 lb push across the band."""
     found = catlin_ctx.engineering["wood_roof_post/PT-BW-CW"]
     values = {q.name: q.value for q in found.inputs}
     assert values["head_uplift_lb"] == pytest.approx(640.9, abs=0.2)
     assert values["plate_load_lb"] == pytest.approx(122.26, abs=0.05)
+    assert values["band_push_lb"] == pytest.approx(522.53, abs=0.05)
 
 
 def test_the_glulam_header_reproduces_section_7(catlin_ctx) -> None:

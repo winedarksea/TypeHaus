@@ -173,12 +173,25 @@ joint, not a 1/8-inch custom frame or a thick filler cut from a cover board.
 
 ## K6 — Seating, backs and pantry door/rack clearance
 
-Oak seating bar: 73 1/2 long by 11 5/8 deep, x=302 7/8–376 3/8. Its north edge is
-y=319 3/8 and meets the quartz at the cabinet backs. Provide three concealed 1/4 by 2 by
-24 steel support brackets at x=309, 339 5/8 and 370 1/4: 12 inches on the cabinet
-side, 12 toward the seating side. Recess into the slab underside and fasten through doubled
-3/4 plywood blocking tied to case sidewalls and the anchored peninsula frame; do not screw
-only into fiberboard backs. The bracket allowance includes blocking, anchors and fitting.
+Seating overhang: one quartz slab with the work surface, no seam on the knee line. It
+cantilevers 15 behind the cabinet backs (y=319 3/8) for 73 1/2, x=302 7/8–376 3/8, so
+its south edge is y=304 3/8; east of x=376 3/8 the slab stops at the backs. The slab is
+84 1/2 x 40, notched, and fits a standard 57 x 120 slab. 15 exceeds the 14 that 3 cm
+quartz may hang unsupported, so it is carried:
+
+- **Bars.** Five 1/2 x 2 1/2 x 24 A36 hidden flat bars, powder-coated (the Original
+  Granite Bracket / Iron Supports section, 325 lb each), at x=306 7/8, 323 1/4, 339 5/8,
+  356 and 372 3/8: 4 in from each end, 16 3/8 o.c., inside the published 16–20. Each is
+  centred on the backs, 12 over the box and 12 out, ending 3 short of the edge.
+- **Sub-top.** 3/4 plywood over the three peninsula bases, x=303 3/8–387 3/8, screwed up
+  through the frame tops. Rout a 1/2-deep pocket for each bar so its top is flush; fasten
+  with three #12 x 1 1/2 into the ply and the frame top rail. Do not rely on fiberboard
+  backs.
+- **Height.** Lower the peninsula's SEKTION legs 1/2 (to 4, inside their 3 1/2 minimum):
+  frame top 34, sub-top 34–34 3/4, 1/16 silicone setting, stone underside 34.819 and top
+  36, flush with the carousel slab at the x=32'-3 3/8 seam.
+
+The stools moved 3 3/8 south with the edge and keep their x.
 Nominal pantry front x=401 3/8 leaves **25 inches** from the finished bar
 end: 24 for the door sweep and 1 for the front/clearance allowance. The retained 34-inch
 case back panel is 1/2 thick, the same 73 1/2 length, x=302 7/8–376 3/8, y=319–319 3/8.
@@ -186,7 +199,7 @@ Cut three 24 1/2-inch lengths from two 25 by 80 panels and support them on conne
 Paint and edge-band the remaining 25-inch run of backs; no projecting cover belongs in
 the pantry sweep. Panel thickness must not increase the bar's end coordinate.
 
-Stool centres: x=315 1/8, 339 5/8, 364 1/8; y=305 3/8. Centres are 24 1/2 apart.
+Stool centres: x=315 1/8, 339 5/8, 364 1/8; y=302. Centres are 24 1/2 apart.
 Each stool footprint fits within the shortened bar. Verify both pantry doors through their
 entire 90-degree swing, plus the retained rack's full 18 1/2-inch deployment, against
 bar, stools, counter and panel. Geometry tests include the full swept sector, not only an
@@ -200,5 +213,5 @@ The placeable rows in prices.toml buy the actual stock frames, coordinated front
 shelves, corner hinges, support plywood, finish boards and fitting labour. The pantry rack
 and garage pull-out/door allowances buy the preserved specialty hardware. The rear-finish
 allowance buys the exposed backs' paint and edge band. The existing floor-anchor allowance remains; the new bar-support allowance
-buys the three explicit steel brackets. New B12/B18/W12/corner rows are priced; removed
+buys the ply sub-top and bar pockets; the five bars bill as `FT-KIT-CT-BRACKET-24`. New B12/B18/W12/corner rows are priced; removed
 filler and custom top rows are deleted. These are material/labour budget bands, not live delivered quotations.

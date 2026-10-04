@@ -137,16 +137,21 @@ class Countertop(Element):
     ``depth`` is the finished depth front edge to back. Leave it ``None`` — the normal case
     — and it derives as the host's carcass depth plus ``overhang``, which is what a top on a
     run against a wall is. Author it only where the slab deliberately stops short of the
-    footprint: the reference house's peninsula is a 39" rectangle carrying a 24" stone work
-    surface and a 15" wood bar top, meeting at the carcass face.
+    footprint, or runs past it: the reference house's peninsula top is 40" deep over a 24" box,
+    15" of it a bracketed seating cantilever behind the bases.
 
     ``unsupported_overhang`` is how much of that depth cantilevers past the box. ``None``
     derives it as ``depth - carcass depth``, which is right for a top that starts at the
-    carcass back; author it for a slab that sits entirely off the box (that bar top is 15"
-    deep and 15" of it is cantilever, and a derivation would report zero).
+    carcass back; author it for a slab that hangs off the box's back, or sits entirely off it,
+    where a derivation would report the wrong side or zero.
 
     ``cantilever_side="back"`` hangs that cantilever behind the hosts' BACK face instead: a
     peninsula whose drawers open to the kitchen seats its stools on the far side.
+
+    ``cantilever_length`` hangs that cantilever along only the first stretch of the run,
+    measured from ``hosts[0]``; the rest of the slab stops at ``depth - unsupported_overhang``.
+    One notched slab, not two meeting along the knee: a seam on the cantilever line is
+    the weakest place in the stone.
 
     An authored ``length`` shorter than the run trims the last host; a longer one carries
     the slab past the last host's far end, over an end panel or the support it lands on.
@@ -171,6 +176,8 @@ class Countertop(Element):
     unsupported_overhang: Length | None = None
     # Which host face the cantilever stands off: "front" (the doors) or "back".
     cantilever_side: Literal["front", "back"] = "front"
+    # How far along the run, from ``hosts[0]``, the cantilever extends. None = all of it.
+    cantilever_length: Length | None = None
     # What carries the cantilever: "none" (the slab alone), "corbels", "brackets",
     # "steel-plate". A supported overhang is not a cantilever, and the fabricators' limits
     # are cantilever limits — so this field is the difference between a finding and none,

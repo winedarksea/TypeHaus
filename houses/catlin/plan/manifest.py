@@ -422,7 +422,7 @@ PLAN = (
     # --- entry (north bridge) --------------------------------------------------------------
     #
     # What this buys at the seam, for free: `W-BW-SCREEN`/`-SKIRT`, `FS-BW-GARAGE`,
-    # `RL-BW-GARAGE-E` and `SC-BW-WEST` now sit in one cell with the screen that supports
+    # `RL-BW-GARAGE-E` and `SB-BW-BAND` now sit in one cell with the screen that supports
     # them, so a sheet can draw the entry whole. And the `params/breezeway.py:279` workaround —
     # keep the screen off the house's braced-wall lines by the storey it is filed on — is
     # satisfied BY THE MODEL rather than by the filing.

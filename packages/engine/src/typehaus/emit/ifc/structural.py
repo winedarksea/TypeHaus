@@ -301,8 +301,9 @@ def _emit_brace(f: Any, body: Any, brace: Any, storeys: dict[str, Any],
     for member in sorted(brace.members, key=lambda item: item.child_key):
         child = ll.create_entity(f, "IfcMember", name=f"{brace.tag}/{member.child_key}")
         child.GlobalId = derive_child_guid(project_uuid, brace.uid, member.child_key)
-        # A ResolvedBrace hosts wedges as well as diagonals; only a diagonal is a BRACE.
-        child.PredefinedType = "BRACE" if brace.kind in ("brace", "strap") else "MEMBER"
+        # A ResolvedBrace hosts wedges and a slat band's plates as well as diagonals; only a
+        # diagonal (a knee brace, a slat, a strap) is a BRACE.
+        child.PredefinedType = "BRACE" if member.category in ("brace", "strap") else "MEMBER"
         representation = member_representation(f, body, member)
         if representation is not None:
             ll.assign_representation(f, child, representation)

@@ -15,7 +15,7 @@ the house-wide KDAT longevity spec every treated member here also carries.
 
 from typehaus import (
     Annotation, Connector, ConnectorKind, DeckLayer, FloorSystem, Footing, JoistSpec,
-    Node, Post, Railing, RailingKind, ShearPanelSpec, Slab, SlatScreen, Stair, Wall,
+    Node, Post, Railing, RailingKind, ShearPanelSpec, Slab, Stair, Wall,
     face, ft, inch, pt,
 )
 
@@ -252,7 +252,7 @@ NOTES = [
     Annotation(uid="BWAN03AAAA", tag="AN-BW-ROOF", position=pt(ft(22), ft(40)),
                text=("CANOPY RF-BW-CANOPY BEARS ON ITS OWN FOUR SUPPORTS AND BRACES OFF THE GARAGE: 3 trusses @24in span 24ft on BM-BW-RW/RE. "
                      + roof_note(EAST_POST_SYSTEM) + ". "
-                     + "HEADERS are 5-1/2x11-7/8 treated glulam (24F-V4 DF), starting at each south post's south face. WEST header on two 6x6 KDAT columns PT-BW-CW/CNW on 14in piers: ACE6Z end cap (CW) and AC6Z (CNW), MAX nailing, A35Z angles on the free post faces; cast-in CBSQ66-SDS2 bases, F2 along the screen, straps >= 3in from the pier edge, the four #5 on the cage diagonals. W-BW-SCREEN, the sheathed panel under the slats, is graded at 100% of N-S: 8d at 4in edges, nailed to both 6x6 chords. THE BAND OVER IT is braced by a CS16 X on EACH face (SB-BW-BAND-*), flush with the post and glulam faces, 6 - 10d x 2-1/2 HDG at each end, and the deck's shear reaches the header through 6 LTP4 on the eave blocking (CN-BW-EAVE-*). LATERAL LOAD crosses the joint into RF-GARAGE: E-W through the 7 LSTA24 straps and 7 LTP4 clips (CN-BW-GCLIP-1..7) from RF-GARAGE's south gable frame into W-G-S (STHD14 CN-G-BWHD-S-DR at D-G-SERVICE's east jamb); N-S through RF-GARAGE to W-G-E / W-G-W (notes/canopy_garage_diaphragm.md). NO gravity bearing on W-G-W/W-G-E or on any garage framing. Each truss ties to its header with a stainless H2.5ASS both ends (CN-BW-TRTIE-*). Headers run 8in past the north columns so the roof plane reaches the garage wall, and carry NO truss on that tail -- the deck bridges the last 1ft 9-3/8in to RF-GARAGE's own gable truss, leaving the garage south wall plane clear for its cladding and the fire/draft closure; sheathing CONTINUOUS across the garage south wall line and TIED with 7 LSTA24 straps @4ft o.c. (CN-BW-JOINT-1..7) — the two roofs are ONE plane and move together; the strap line carries in-plane shear and tension only, never gravity. Both eaves get the garage's own fascia and a CONTINUOUS 5in trough falling north to TR-G-LEADER-E/-W; NO leader at the canopy south end. No soffit — open tails. South gable of RF-GARAGE and both ends of RF-BW-CANOPY are CLOSE RAKES (sheathing cantilever + fascia), no ladder framing, no barge rafter. NEITHER END OF THE CANOPY IS A GABLE END: all three canopy trusses are ordinary FIELD trusses spanning 24ft, NOT gable-end frames -- a gable-end frame is supported continuously by the wall under its bottom chord and does not span, and there is no wall under either canopy end. Design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses\"")),
+                     + "HEADERS are 5-1/2x11-7/8 treated glulam (24F-V4 DF), starting at each south post's south face. WEST header on two 6x6 KDAT columns PT-BW-CW/CNW on 14in piers: ACE6Z end cap (CW) and AC6Z (CNW), MAX nailing, A35Z angles on the free post faces; cast-in CBSQ66-SDS2 bases, F2 along the screen, straps >= 3in from the pier edge, the four #5 on the cage diagonals. W-BW-SCREEN, the sheathed panel under the slats, is graded at 100% of N-S: 8d at 4in edges, nailed to both 6x6 chords. THE BAND OVER IT is SB-BW-BAND: a 2x6 sill and top plate, a 6x6 centre post and 18 KDAT 2x4 slats at 45deg rising to the centre, flush with the west face, one KBS1Z at each slat end, 8 SDWS22400DB through each plate, two A35Z at each end of the centre post; the deck's shear reaches the header through 6 LTP4 on the eave blocking (CN-BW-EAVE-*). LATERAL LOAD crosses the joint into RF-GARAGE: E-W through the 7 LSTA24 straps and 7 LTP4 clips (CN-BW-GCLIP-1..7) from RF-GARAGE's south gable frame into W-G-S (STHD14 CN-G-BWHD-S-DR at D-G-SERVICE's east jamb); N-S through RF-GARAGE to W-G-E / W-G-W (notes/canopy_garage_diaphragm.md). NO gravity bearing on W-G-W/W-G-E or on any garage framing. Each truss ties to its header with a stainless H2.5ASS both ends (CN-BW-TRTIE-*). Headers run 8in past the north columns so the roof plane reaches the garage wall, and carry NO truss on that tail -- the deck bridges the last 1ft 9-3/8in to RF-GARAGE's own gable truss, leaving the garage south wall plane clear for its cladding and the fire/draft closure; sheathing CONTINUOUS across the garage south wall line and TIED with 7 LSTA24 straps @4ft o.c. (CN-BW-JOINT-1..7) — the two roofs are ONE plane and move together; the strap line carries in-plane shear and tension only, never gravity. Both eaves get the garage's own fascia and a CONTINUOUS 5in trough falling north to TR-G-LEADER-E/-W; NO leader at the canopy south end. No soffit — open tails. South gable of RF-GARAGE and both ends of RF-BW-CANOPY are CLOSE RAKES (sheathing cantilever + fascia), no ladder framing, no barge rafter. NEITHER END OF THE CANOPY IS A GABLE END: all three canopy trusses are ordinary FIELD trusses spanning 24ft, NOT gable-end frames -- a gable-end frame is supported continuously by the wall under its bottom chord and does not span, and there is no wall under either canopy end. Design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses\"")),
 
     Annotation(uid="BWAN01AAAA", tag="AN-BW-STRUCTURE", position=pt(ft(7), ft(39)),
                text=("LANDING: ONE tier of beams. Two seat beams east-west on the piers at -0ft 8-1/4in; 2x8 joists @12in o.c. run NORTH-SOUTH straight on them, cantilevering 9-1/2in south and 7-1/4in north. BM-BW-FC/FE run north-south in the SAME plane (not a second tier) and exist only to reach the interior landing under D-G-SERVICE's sill, 3-3/4in over the continuous ICF stem; they hang (HU28-2Z) in BM-BW-LAND-HDR, a 3-2x12 KDAT header across the full 36in flight at the landing's north edge, which stands on PT-BW-IC and PT-BW-IE, 4x4 KDAT 21-3/4in tall on ABU44 standoff bases bearing on SL-G-FLOOR as cast: NO anchor bolt and NO slab thickening (~405 lb per post, about 5 psi on the 40 psi under-slab XPS; the bolt was what wanted the thickening). The bases claim no uplift and no lateral (north_entry_structure.md). The interior landing's west edge is closed by W-G-W; ST-G-SERVICE's stringers hang on the header's north face on LSCZ; its handrail is wall-mounted on 2x blocking (BK-G-W-RAIL-*). No bearing on the house and none on the garage. TWO PIER DEPTHS ON PURPOSE: the three HOUSE-side piers (PT-BW-W/E and the east-line pier) bottom at -9ft 9-7/16in and must be cast WITH the basement excavation while it is open — casting them after backfill undermines the house footing, and the depth costs shaft only because the hole is already there. The three GARAGE-side piers (PT-BW-GW/GE and the east-line pier) bottom at -7ft 0in, coplanar with the garage strip footings, and are cast with the garage foundation in the same pour. " + landing_note(EAST_POST_SYSTEM) + ". Hold deck boards 1/2in off the house cladding and let the gap drain")),
@@ -285,15 +285,10 @@ NOTES = [
 # sill lands on the two seats, and each of those crosses this line directly over a pier, with
 # PT-BW-CW and PT-BW-CNW standing on the same two tops.
 #
-# ** THE SLATS ARE IN-FILL AGAIN, AND THE ROLE FIELD SAYS SO. ** With a solid wall covering
-# the guard zone, `SC-BW-WEST` is back to `role="screen"`: it is above the guard line, it
-# guards nothing, and a slat band claiming to be a guard when a wall beside it already is one
-# would put the same edge in the census twice. It stands on the panel's own top plate; the
-# two cross rails an earlier pass added for it are deleted (→ params/north_entry_frame.py).
-SCREEN_PITCH_IN = 3.0
+# ** NO VERTICAL SLATS OVER THE PANEL SINCE 2026-10-04. ** The band between its top plate and
+# BM-BW-RW is SB-BW-BAND, 45° slats that ARE the brace (params/entry_band_brace.py).
 SCREEN_START_Y_FT = DECK_SHEET_SOUTH_Y_FT
 SCREEN_END_Y_FT = GARAGE_Y_SOUTH.feet
-SCREEN_SLAT_COUNT = int((SCREEN_END_Y_FT - SCREEN_START_Y_FT) * 12 / SCREEN_PITCH_IN) + 1
 SCREEN_PANEL_NODES = [
     Node(uid="BWNS01AAAA", tag="N-BW-SCREEN-S",
          position=pt(ft(LANDING_WEST_FT), ft(SCREEN_START_Y_FT)), open_end=True),
@@ -373,8 +368,8 @@ SCREEN_PANEL = Wall(
         apparent_stiffness_kips_per_in=11.0,
         chords=("PT-BW-CW and PT-BW-CNW, the two 6x6 KDAT columns this wall is framed "
                 "around (`within_wall`), 4.979ft centre to centre, each on a cast-in "
-                "CBSQ66-SDS2 in its 12in pier; the band over the panel is braced by the "
-                "CS16 X-straps of params/entry_band_brace.py (notes/canopy_west_band.md)"),
+                "CBSQ66-SDS2 in its 12in pier; the band over the panel is the slat brace "
+                "SB-BW-BAND of params/entry_band_brace.py (notes/canopy_west_band.md)"),
         chord_refs=("PT-BW-CW", "PT-BW-CNW"),
         chord_member="6x6", chord_plies=1,
         anchorage_slip=inch(0.0625),
@@ -422,15 +417,6 @@ SCREEN_SKIRT = Wall(
     top=ft(DECK_JOIST_TOP_FT - SCREEN_SKIRT_BASE_FT),
 )
 GARAGE_STOREY_ELEMENTS.extend([*SCREEN_SKIRT_NODES, SCREEN_SKIRT])
-SCREEN = SlatScreen(
-    uid="BWSC001AAA", tag="SC-BW-WEST", start=pt(ft(LANDING_WEST_FT), ft(SCREEN_START_Y_FT)),
-    end=pt(ft(LANDING_WEST_FT), ft(SCREEN_END_Y_FT)),
-    base_elevation=ft(SCREEN_PANEL_TOP_FT),
-    height=ft(HEADER_SOFFIT_FT - SCREEN_PANEL_TOP_FT),
-    slat_face=inch(1.5), slat_depth=inch(3.5), clear_gap=inch(1.5),
-    assembly="POST_KDAT", supported_by="W-BW-SCREEN",
-    engineering_note="In-fill only, and above the guard line: the slats carry IRC Table R301.5 fn. f's 50 lb over 1 sqft (d/c ~0.33) over a 2ft 4-1/8in span between W-BW-SCREEN's top plate and BM-BW-RW's soffit, and NO shear: the band is braced by the CS16 X-straps SB-BW-BAND-* on both post faces, 1in outboard of the slats (params/entry_band_brace.py). Diagonal slats as SDPWS diagonal lumber are the recorded alternative (notes/canopy_west_band.md §8).",
-)
 
 # ** THE FOUR SEAT-BEAM BEARINGS ARE REAL HARDWARE NOW, NOT SIX INVENTED PART NUMBERS. **
 # The retired CN-BW-*-SEAT connectors borrowed ConnectorKind.HOLD_DOWN with a part number in
@@ -763,7 +749,7 @@ SNOW_RETENTION = [
 ]
 
 MAIN_ELEMENTS = [*FRAME_ELEMENTS, FLOOR, GARAGE_FLOOR, TIERS, *TIER_SLABS,
-                 SCREEN, *RAILINGS, *SEAT_BEARINGS, *COLUMN_BASES, *INTERIOR_POST_BASES,
+                 *RAILINGS, *SEAT_BEARINGS, *COLUMN_BASES, *INTERIOR_POST_BASES,
                  *COLUMN_CAPS, *SEAT_BEAM_HANGERS, *EAST_HEADER_BEARINGS,
                  *TRUSS_TIES, *JOINT_TIES, *GABLE_CLIPS, *LANDING_TIES,
                  *SNOW_RETENTION, *NOTES]

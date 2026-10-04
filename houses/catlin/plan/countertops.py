@@ -5,7 +5,7 @@
 # HARDWOOD (stools, shelves, treads — stock a sawyer cuts), and a countertop is a purchased
 # fabricated slab set by the yard that cut it. Two subs, two trades, two files.
 #
-# ** WHAT WAS PROSE UNTIL THIS FILE GREW THESE ELEMENTS: ** the house's ~63 SF of stone was a
+# ** WHAT WAS PROSE UNTIL THIS FILE GREW THESE ELEMENTS: ** the house's stone was a
 # HAND FIGURE in a prices.toml comment, added up by a reader off the cabinet schedule, and
 # the peninsula's overhang rule was a paragraph in plan/assemblies.py that nothing could
 # check. Both are derived now. Each top names the placeables it covers and the resolver
@@ -14,7 +14,7 @@
 #
 # THE RUNS ARE AUTHORED RATHER THAN GROWN, and this kitchen is exactly why: the peninsula's
 # bases butt FURN-M-KIT-CORNER-PEN's leg, so a walk that merged everything it touched would
-# hand the fabricator one slab crossing two materials. Which cabinets share a slab is a seam
+# hand the fabricator one slab across the range. Which cabinets share a slab is a seam
 # decision.
 #
 # Not here: the four one-piece solid-surface vanity tops (FX-VANITY-24/30/36-*), which are
@@ -48,10 +48,12 @@ MAIN_COUNTERTOPS = [
         thickness=inch(1.181),
         overhang=inch(1),
     ),
-    # ** THE PENINSULA IS TWO TOPS. ** Quartz over the end panel and the three free-standing
-    # bases, oversailing the drawer fronts 1" to the north; white oak on the 11 5/8" seating
-    # cantilever behind them. 11 5/8" on 34" is 34%, just past quartz's 1/3 rule, so one-piece
-    # quartz would want brackets; the oak bar top is the design.
+    # ** THE PENINSULA IS ONE NOTCHED SLAB. ** 1" over the drawer fronts to the north, and a
+    # 15" seating cantilever behind the bases for the first 73 1/2" from the west end panel,
+    # which leaves 25" clear to the tall pantry's nominal west face for its doors and
+    # swing-out racks. 15" is past quartz's 14" unsupported cap, so five hidden flat bars
+    # carry it (FURN-M-KIT-PEN-BRACKET1..5, notes/kitchen_stock_cabinet_details.md K6). No
+    # seam on the knee line: that is the weakest place in the stone.
     Countertop(
         uid="YNNE7K95XB", tag="CT-M-KIT-PENINSULA",
         hosts=("FURN-M-KIT-PEN-END", "FURN-M-KIT-PEN-B36", "FURN-M-KIT-PEN-B24-W",
@@ -59,21 +61,10 @@ MAIN_COUNTERTOPS = [
         material_ref="quartz-counter",
         thickness=inch(1.181),
         overhang=inch(1),
-    ),
-    # The bar top: every inch is cantilever behind the bases' backs, hence `cantilever_side`.
-    # 73 1/2" from the west end panel leaves 25" clear to the tall pantry's nominal
-    # west face. Its doors and swing-out racks must pass the finished bar edge.
-    Countertop(
-        uid="7E97VPX9M2", tag="CT-M-KIT-PENINSULA-BAR",
-        hosts=("FURN-M-KIT-PEN-END", "FURN-M-KIT-PEN-B36", "FURN-M-KIT-PEN-B24-W",
-               "FURN-M-KIT-PEN-B24-E"),
-        material_ref="oak-counter",
-        thickness=inch(1.1875),  # 1 3/16", flush with 3 cm quartz
-        overhang=inch(0),
-        depth=inch(11.625),
-        length=inch(73.5),
-        unsupported_overhang=inch(11.625),
+        depth=inch(40),
+        unsupported_overhang=inch(15),
         cantilever_side="back",
+        cantilever_length=inch(73.5),
         support="brackets",
     ),
     # The living room's two live-edge white oak slabs (plan/living_east_run.py), 2" over a

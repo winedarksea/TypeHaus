@@ -40,9 +40,9 @@ restraint bridges are detailed and priced; the exposed south rear bay has a fini
 
 Garage doors face west. The custom lower box carries the stock upper, and each has
 independent wall restraint. The westward shelf lands on the existing supported quartz.
-The 73 1/2 oak bar and projecting back panel leave 25 inches to the pantry's nominal
-front, allowing the retained swing-out rack and door to deploy. Three stools have 24 1/2
-centre spacing. The existing 11 5/8 knee overhang remains the owner's accepted dimension.
+The 73 1/2 quartz seating overhang and projecting back panel leave 25 inches to the
+pantry's nominal front, allowing the retained swing-out rack and door to deploy. Three
+stools have 24 1/2 centre spacing. The knee is 15 inches on five hidden steel bars (K6).
 
 The living banks still mirror about the fireplace. The new 12-inch installation extends
 the north bank from y=259 1/4 to271 1/4 and replaces the former north filler. The south

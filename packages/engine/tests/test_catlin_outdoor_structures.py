@@ -1181,8 +1181,9 @@ def test_hp3_has_open_yard_airflow_and_its_coordinated_pad(catlin_model):
     for wall in catlin_model.walls:
         if wall.tag.startswith("W-G"):
             assert not clearance.intersects(Polygon(wall.layers[0].polygon))
-    screen_west = min(p[0] / INCH for s in catlin_model.solids
-                      if s.tag.startswith("SC-BW-WEST") for p in s.outline)
+    band = next(b for b in catlin_model.braces if b.tag == "SB-BW-BAND")
+    screen_west = min((m.p0[0] - m.plan_width_m / 2) / INCH for m in band.members
+                      if m.category == "brace")
     assert screen_west - east >= 24
     pad = Polygon(_solid(catlin_model, _HP3_PAD).outline)
     assert pad.contains(box(west * INCH, rear * INCH, east * INCH, front * INCH))

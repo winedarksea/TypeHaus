@@ -1360,7 +1360,7 @@ def test_a_wall_on_a_beam_is_a_line_load_and_reaches_the_piers_under_it(catlin_p
     """``BM-BW-SCSILL``, which carried a wall and no plan area — `north_entry_piers.md` §2.
 
     ** THE NUMBER IS PINNED IN THREE PIECES, NOT ONE. ** The plf, the run and the split each
-    fail differently: a plf that lost `SC-BW-WEST` understates by 30% and still looks
+    fail differently: a plf that lost `SB-BW-BAND` understates by 37% and still looks
     plausible; a run measured off the WALL rather than off the beam's own footprint would be
     6.57' instead of 4.52'; and a split that stopped at the 6x6 KDAT columns would leave the
     piers that actually carry the load with nothing, which is the failure this whole
@@ -1376,8 +1376,8 @@ def test_a_wall_on_a_beam_is_a_line_load_and_reaches_the_piers_under_it(catlin_p
 
     screen = next(w for w in model.walls if w.tag == "W-BW-SCREEN")
     plf, basis = wall_line_plf(ctx, screen)
-    assert plf == pytest.approx(43.20, abs=0.05), basis
-    assert "SC-BW-WEST" in basis, "the slat clerestory is a third of this line"
+    assert plf == pytest.approx(48.27, abs=0.05), basis
+    assert "SB-BW-BAND" in basis, "the slat band is over a third of this line"
 
     # The DIRECT delivery is to the two 6x6 KDAT canopy columns the sill hangs off, and the
     # only beam this accounts for is the sill. A second beam appearing here means some other
@@ -1385,14 +1385,14 @@ def test_a_wall_on_a_beam_is_a_line_load_and_reaches_the_piers_under_it(catlin_p
     raw, accounted = wall_line_loads(ctx)
     assert accounted == {"BM-BW-SCSILL"}
     assert set(raw) == {"PT-BW-CW", "PT-BW-CNW"}
-    assert all(v == pytest.approx(97.7, abs=0.1) for v in raw.values())
+    assert all(v == pytest.approx(109.1, abs=0.1) for v in raw.values())
 
     # And it lands on the CAST piers, through `supported_by`. Those two are the pair that
     # reported UNKNOWN until 2026-09-20; no other pier in the house moves.
     piers = {p.tag: p for p in cast_piers(ctx)}
     carrying = {tag: p.wall_dead_lb for tag, p in piers.items() if p.wall_dead_lb}
     assert set(carrying) == {"PT-BW-W", "PT-BW-GW"}
-    assert all(v == pytest.approx(97.7, abs=0.1) for v in carrying.values())
+    assert all(v == pytest.approx(109.1, abs=0.1) for v in carrying.values())
     assert not piers["PT-BW-W"].unmodelled_load, "the gap this closes"
     assert not piers["PT-BW-GW"].unmodelled_load
     # The basis travels with the pounds, through the wood column that keeps none of them.

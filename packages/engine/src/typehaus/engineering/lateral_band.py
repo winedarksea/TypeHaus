@@ -7,8 +7,10 @@ the N-S shear had to cross that band through two pinned 6x6s and caps with no la
 the record said it landed "directly on the panel's top plate". So, generically:
 
 * where the panel's top is below the collector's soffit and nothing AUTHORED bridges the band
-  (a ``StrapBrace`` on the wall's line reaching from the panel top onto the collector), the
-  record is INCOMPLETE and names the gap;
+  (a ``SlatBrace``, or ``StrapBrace`` legs, on the wall's line reaching from the panel top
+  onto the collector), the record is INCOMPLETE and names the gap;
+* where a slat band bridges it, ``lateral_band_slats`` grades the slats, the centre post and the
+  plate screws, and the frame rows below follow as for straps;
 * where straps bridge it, each load direction's tension straps are graded on their coil-strap
   row — steel, and the nails that fit at the post end, pro-rated off the row — and the frame
   around them: the top plate and the base plates bearing END-ON against the chords
@@ -107,12 +109,22 @@ def band_rows(ctx: Any, roof_tag: str, wall: Any, spec: Any, shear_lb: float,
                 and z[1] >= soffit_ft:
             straps.append((el, a[1], b[1]))
     if not straps:
+        from typehaus.engineering.lateral_band_slats import slat_band_on, slat_rows
+
+        band = slat_band_on(ctx, wall, line, panel_top_ft, soffit_ft, shear_lb)
+        if band is not None:
+            slat_rows(ctx, wall, collector, band, states, notes, missing, inputs)
+            _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states)
+            _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing)
+            return BandResult(handled=_holdown_rows(ctx, wall, wall.shear_panel, shear_lb,
+                                                    top_ft, states, notes, missing, inputs))
         missing.append(
             f"a brace across the {band_ft * 12:.2f}\" band between {wall.tag}'s top "
             f"(+{panel_top_ft:.3f}') and {collector.tag}'s soffit (+{soffit_ft:.3f}'): the "
             f"panel is under the roof in PLAN, but the deck's shear has to cross that band to "
             f"reach it, and nothing authored does — it would bend the chords through their "
-            f"caps. Author StrapBraces on the line, or bring the panel to the collector")
+            f"caps. Author a SlatBrace or StrapBraces on the line, or bring the panel to "
+            f"the collector")
         return BandResult(handled=True)
     _strap_rows(wall, straps, shear_lb, states, notes, inputs)
     _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states)

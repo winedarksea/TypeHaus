@@ -972,9 +972,13 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
 
 def test_a_cabinet_behind_the_wall_does_not_break_this_rooms_wall_space(catlin_plan,
                                                                         catlin_model_ro):
-    """FURN-M-CLOSET-PAX-WEST stands on the closet face of W-M-BDN2, within _NEAR_WALL_M of
-    RM-M-BED's ring. It is the closet's cabinet, so the bedroom's wall line runs on behind it.
+    """A floor-standing cabinet behind the bedroom partition cannot break its wall space.
+
+    Reuse the west wire run's location for a cabinet variant: the current shelves float
+    above the floor, so using them directly would stop exercising room ownership.
     """
+    from dataclasses import replace
+
     from shapely.geometry import LineString, Point
 
     from typehaus.checks.code.mn_residential.profile import MN_2020
@@ -983,11 +987,17 @@ def test_a_cabinet_behind_the_wall_does_not_break_this_rooms_wall_space(catlin_p
 
     plan, model = catlin_plan, catlin_model_ro
     assert _room_result(model, "RM-M-BED") == "pass"
-    ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2020)
     bed = next(room for room in model.rooms if room.tag == "RM-M-BED")
     closet = next(room for room in model.rooms if room.tag == "RM-M-CLOSET")
-    pax = next(item for item in model.canvas_objects
-               if item.tag == "FURN-M-CLOSET-PAX-WEST")
+    west = next(item for item in model.canvas_objects
+                if item.tag == "FURN-M-CLOSET-WEST-HI")
+    xs, ys = zip(*west.footprint, strict=True)
+    pax = replace(west, tag="TEST-CLOSET-CABINET", type_ref="FURN-M-PAX-DOUBLE-30",
+                  z_m=0.04445,
+                  footprint=[(min(xs), min(ys)), (min(xs) + 22.875 * 0.0254, min(ys)),
+                             (min(xs) + 22.875 * 0.0254, max(ys)), (min(xs), max(ys))])
+    model = replace(model, canvas_objects=[*model.canvas_objects, pax])
+    ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2020)
     ring = [tuple(p) for p in bed.clear_face]
     boundary = LineString(ring + [ring[0]])
     behind = sorted(boundary.project(Point(c)) for c in pax.footprint)
@@ -996,4 +1006,7 @@ def test_a_cabinet_behind_the_wall_does_not_break_this_rooms_wall_space(catlin_p
     for a, b in _fixed_cabinet_intervals(ctx, ring, "main"):  # ...and breaks none of it
         assert b <= lo + 1e-6 or a >= hi - 1e-6
     closet_ring = [tuple(p) for p in closet.clear_face]
-    assert _fixed_cabinet_intervals(ctx, closet_ring, "main")
+    cabinet_only = replace(model, canvas_objects=[pax])
+    closet_ctx = CheckContext(plan=plan, model=cabinet_only, preferences=Preferences(),
+                              profile=MN_2020)
+    assert _fixed_cabinet_intervals(closet_ctx, closet_ring, "main")

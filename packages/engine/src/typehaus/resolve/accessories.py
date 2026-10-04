@@ -14,7 +14,7 @@ from collections.abc import Sequence
 from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity, element_error
-from typehaus.model.braces import StrapBrace
+from typehaus.model.braces import SlatBrace, StrapBrace
 from typehaus.model.enums import ConnectorKind, LayerFunction, TrimKind
 from typehaus.model.mep import Sump, VentRun
 from typehaus.model.structure import (
@@ -56,6 +56,7 @@ from typehaus.resolve.model import (
     ResolvedSolid,
 )
 from typehaus.resolve.railings import resolve_railing
+from typehaus.resolve.slat_braces import resolve_slat_brace
 from typehaus.resolve.solid_categories import in_slab_family
 from typehaus.resolve.strap_braces import resolve_strap_brace
 
@@ -124,6 +125,8 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                 _resolve_knee_brace(model, el, storey.tag)
             elif isinstance(el, StrapBrace):
                 findings.extend(resolve_strap_brace(model, el, storey.tag))
+            elif isinstance(el, SlatBrace):
+                findings.extend(resolve_slat_brace(model, el, storey.tag))
             elif isinstance(el, Wedge):
                 _resolve_wedge(model, el, storey.tag)
             elif isinstance(el, Railing):

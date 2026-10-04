@@ -4551,3 +4551,43 @@ surface that reaches the court, so the water goes there.
   D-M-BATH2 leaf retains 7.37 inches of clearance; RC7 stays clear of the north end.
 - Validation: reading-corner and fixture-discipline tests passed (987 passed, 12 skipped),
   JSON build passed; house checks reported 1,840 pass, zero fail, 43 unknown.
+
+## 2026-10-04 — Peninsula top: one quartz slab, 15" knee on hidden steel bars
+
+- **Oak bar top retired.** Its premise, that the 11 5/8" knee was 34% of depth and past
+  quartz's 1/3 rule, was an arithmetic slip: on a one-piece 36 5/8" top it is 32%. The
+  owner chose quartz throughout and a deeper 15" knee instead. `CT-M-KIT-PENINSULA-BAR` and
+  the `oak-counter` material are deleted.
+- **One notched slab**, 84 1/2 x 40, the knee 73 1/2" long from the west end panel so the
+  25" pantry door/rack reserve is unchanged. No seam on the knee line. Fits a standard
+  57 x 120 slab. Quartz is 80.62 SF.
+- **Support.** 15" is past the 14" unsupported cap, so five 1/2 x 2 1/2 x 24 hidden flat
+  bars at 16 3/8" o.c., routed flush into a 3/4 ply sub-top; SEKTION legs down 1/2" to 4"
+  keep the stone at 36" and flush with the carousel slab. A 1/4" bar was rejected: it yields
+  near 95 lb at a 12" tip. The bars are drawn (`FURN-M-KIT-PEN-BRACKET1..5`, steel) and
+  bill per piece; the sub-top is the `cabinet-peninsula-bar-subtop` allowance (K6).
+- **Stools** moved 3 3/8" south with the edge, x unchanged.
+- **Engine:** `Countertop.cantilever_length` hangs a cantilever along part of a run, so a
+  notched slab is one element; `countertop-bracket` is a steel symbol.
+
+
+## 2026-10-04 — Master closet west PAX replaced with two wire shelf-and-rod extensions
+
+- Replace `FURN-M-CLOSET-PAX-WEST` with `FURN-M-CLOSET-WEST-HI` and `-LO`, each
+  a 29 1/2-inch by 12-inch nickel SuperSlide shelf with a separate hanging rod below.
+  Keep the former PAX UID on the upper section; retain both corner placements.
+- Match the corner tiers' body bottoms/tops and rod endpoints exactly. A 0.01-inch
+  wall-face datum correction aligns the west-hosted rectangles with the north-hosted L.
+  The installed west line is 54 1/4 inches per tier, including the corner return.
+- ClosetMaid permits cutting shelves and fixed rods. `notes/closet_wire.md` records
+  field-fit allowances, caps, supported shelf/rod joints and intermediate supports.
+  A continuous west shelf and rod can eliminate the seam and old short corner-bar stub.
+  Correct the product description: SuperSlide has a separate rod beneath the shelf.
+- Remove the west PAX rail backing and 28-inch OVERSIDAN strip; keep the two north strips
+  on the existing driver (9.5 W, 11.9 W with the 25% allowance). Add the extension price
+  row and retire the PAX type's estimate; update only closet elevation snapshot entries.
+- Validation: exact shelf/rod continuity tests, wardrobe symbols, electrical regressions,
+  fixture discipline, symbol/catalog and pricing tests passed; house checks returned
+  1,841 pass, zero fail, 43 unknown. JSON, framed IFC and GLB builds succeeded; symbol
+  lint passed. The whole-house elevation snapshot still reports concurrent kitchen and
+  breezeway changes outside this closet edit.

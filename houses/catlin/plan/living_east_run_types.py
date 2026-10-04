@@ -109,5 +109,15 @@ def _filler(tag: str, width_in: float, depth_in: float, label: str, where: str) 
 LIVING_SOUTH_FILLER = _filler(
     "FT-LIV-E-FILLER-2125", 2.125, 15.5, "2 1/8",
     "Closes the living bank's south end against the SE corner.")
+# The seating cantilever's hidden support (notes/kitchen_stock_cabinet_details.md K6). The
+# section is the published hidden flat bar's: Original Granite Bracket and Iron Supports both
+# rate 1/2 x 2 1/2 steel at ~325 lb a bracket; a 1/4 x 3 bar yields near 95 lb on a 12" arm.
+PENINSULA_BAR_BRACKET = FurnitureType(
+    tag="FT-KIT-CT-BRACKET-24", name='Hidden countertop flat bar, 1/2 x 2 1/2 x 24", steel',
+    footprint=(inch(2.5), inch(24)), height=inch(0.5), plan_symbol="countertop-bracket",
+    source=("A36 hidden flat bar, the Original Granite Bracket / Iron Supports section "
+            "(325 lb each, spaced 16-20\", ending 3\" short of the edge). 12\" bears on "
+            "the peninsula's 3/4 ply sub-top, routed flush; 12\" carries the stone."),
+)
 LIVING_EAST_RUN_TYPES = (LIVING_END_PANEL, PENINSULA_END_PANEL, PENINSULA_BACK_PANEL,
-                         LIVING_SOUTH_FILLER)
+                         LIVING_SOUTH_FILLER, PENINSULA_BAR_BRACKET)

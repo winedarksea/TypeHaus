@@ -1,18 +1,20 @@
 # The canopy's west band, its heads and bases, and the open front — hand-worked basis
 
 **House:** catlin
-**Structure:** `RF-BW-CANOPY`'s west line — `W-BW-SCREEN`, the band over it (`SB-BW-BAND-*`),
+**Structure:** `RF-BW-CANOPY`'s west line — `W-BW-SCREEN`, the band over it (`SB-BW-BAND`),
 the chords `PT-BW-CW`/`-CNW`, the glulam headers `BM-BW-RW`/`-RE`; the heads and bases of all
 four posts (`PT-BW-CW`/`-CNW`/`-RE`/`-RNE`, `kdat`); the open front's chord and couple.
 **Written:** 2026-09-30, by hand, before `engineering/lateral_band.py`, `open_front.py`,
-`roof_beam_glulam.py` and `wood_roof_post_joints.py` were encoded.
-**Oracle for:** `lateral_band.py` (§3-§4), `wood_roof_post.py` / `wood_roof_post_joints.py` (§5),
+`roof_beam_glulam.py` and `wood_roof_post_joints.py` were encoded. §3 and §5b-c re-worked
+2026-10-04 for the slat band, before `lateral_band_slats.py`; the straps it replaced are in §8.
+**Oracle for:** `lateral_band.py` / `lateral_band_slats.py` (§3-§4), `wood_roof_post.py` / `wood_roof_post_joints.py` (§5),
 `open_front.py` (§6), `roof_beam_glulam.py` (§7); reproduced by
 `tests/test_canopy_west_band_calcs.py`.
 **Companions:** `canopy_garage_diaphragm.md` — the delivery to the garage and the envelope this
 note works inside; its §4f points here. `north_entry_canopy_lateral.md` §8c, corrected by §2.
-**What is asked of the reviewer:** §3's strap end (six nails on a 6x6 face) and §4e's
-full-height overturning at the chord bases — the two rows nearest their limits after the deck.
+**What is asked of the reviewer:** §3b's equal share between the mirrored bays and the
+mid-band count it rests on, and §4b's full-height overturning at the chord bases. Those are the
+judgement and the row nearest its limit after the deck.
 
 > ⚠ **The chord base shear is on ONE base, and that is not conservatism for its own sake.** The
 > base plate and the sill bear END-ON against the chords, in compression only, so the panel's
@@ -315,7 +317,7 @@ On a chord, the N-S case is larger, and it governs:
 
 ```
 moment   56.2 + 518.34 = 574.56 lb-ft;  f_b = 574.56 x 12 / 27.73 = 248.6 psi
-§3.9     (112.7 / 530.9 + 248.6 / 1,360) / 0.9135 = 0.3951 / 0.9135                   0.433
+§3.9     (112.7 / 530.9 + 248.6 / 1,360) / 0.9135 = 0.3951 / 0.9135                   0.432
 ```
 
 **5d. Dry service at the connectors, wet in the column.** ESR-2604 §3.2.2 and ESR-3050 §4.1 rate
@@ -374,10 +376,37 @@ governs at 0.355; the 3-ply 2x12 read 0.71 in bending.
 
 ## 8. Alternatives, and why each is not the choice
 
-* **Diagonal slats as the brace** (IRC Method DWB, or SDPWS diagonal lumber). The gaps between
-  slats and the absence of studs and plates to nail them to put the band outside both rows.
-  Recorded as the future option: it would want a continuous 1x6 at 45° lapping full-height
-  studs at 16", let into plates at each end, which is a different wall.
+* **The CS16 X-straps — built until 2026-10-04, the first backup.** A CS16 X on each face, flush
+  with the 6x6 and glulam faces, from 1/2" inside the far post's outer face (1" over the panel
+  top) to 1" under the header top, 9 1/2" past midspan: θ = atan(3.1667 / 3.4688) = 42.39°.
+  It was that steep so six 10d x 2-1/2 HDG fit on the 5.5" post face, a 6.77" crossing; at θ ≈ 26°
+  over the posts it was five, and five does not carry the strap. T = 1,045.06 / 0.73855 / 2 =
+  707.5 lb per strap against min(1,705 steel; 6 x 189.0 = 1,134), ESR-2105 Table 4 pro-rated,
+  **0.624**. Its V tan θ = 954 lb pressed the header DOWN. It loads no post sideways, it is fewer
+  parts, and it is the stronger review position. The slats replaced it on looks: the X was the
+  only steel on the elevation.
+* **Sheathed piers and a slat opening — the second backup.** Sheath full height, deck to header,
+  beside each chord, with vertical slats between. The chord bases hold down the OUTER ends only;
+  each pier's inner end needs its own hold-down. Full-height piers stand 6.34375 + 0.0833 =
+  6.427' tall, so 3.5:1 wants b ≥ 1.836' each, leaving ~1.8' of opening (4.5' today). Then
+  v = 1,045.06 / (2 x 1.836) = 284.6 plf against the SDPWS §4.3.4.2 reduction 1.25 − 0.125 x 3.5
+  = 0.8125: 3" edges 342.5 x 0.8125 = 278.3, **1.023**; 2" edges 447.5 x 0.8125 = 363.6,
+  0.783. Each inner end lifts 522.53 x (7.3333 + 0.0833) / 1.836 = **2,110 lb** into the deck
+  framing, with no pier under it. Sheathing only the band's two ends over the full-length panel is
+  an FTAO wall whose opening reaches the header. SDPWS §4.3.5.2 wants sheathing above and below
+  the opening, and there is none above.
+* **Butted slats screwed, no connector.** ER-192 rates an SDWS only "straight into the side grain
+  of the wood main member with the screw axis at a 90-degree angle to the wood fibers" (Table 5
+  fn. 3), and NDS §12.2 forbids end-grain withdrawal. A 45° butt has neither, so a slat would be
+  compression-only.
+* **Compression-only slats (the chevron without KBS1Z).** One bay carries a whole push, so its
+  slats double to 295.6 lb. Worse, a compression field pushes the header UP by
+  V (1 + H/W) ≈ 2,100 lb over one half: PT-BW-CW's head would carry ~2,100 + 433 lb against the
+  ACE6Z's 1,950. The chords would also take ~1,045 lb sideways in the band, the post bending §2
+  removed. The KBS1Z's rated tension is what lets the bays share and the vertical pushes cancel.
+* **Diagonal slats as SDPWS diagonal lumber sheathing** (IRC Method DWB). Gapped boards and no
+  studs to lap are outside both rows. §3 does not claim it: each slat is graded as a knee brace on
+  its own connector.
 * **`PLATE-TOP-0-1` as a moment cross-beam** (a portal). The posts become bending members in
   the frame, and no published moment rating exists for the angles or caps it would lean on.
 * **Horizontal slats.** SDPWS's horizontal-lumber row is ~50 plf nominal; gapped boards are
@@ -395,7 +424,10 @@ governs at 0.355; the 3-ply 2x12 read 0.71 in bending.
 ## Sources
 
 - AWC SDPWS-2015 Table 4.3A, §4.2.5.2, §4.3.4.
-- ICC-ES ESR-2105 Table 4 (CS16), Table 3 (LSTA24); ICC-ES ESR-2604 §3.1.3 and Table 3 (AC/ACE);
+- IAPMO UES ER-280 rev. 04/28/2026 Table 7 (KBS1Z), fn. 1-3; IAPMO UES ER-192 rev. 09/08/2026
+  Tables 5 and 7 (SDWS22400DB) and fn. 3; both read 2026-10-04. AWC NDS 2018 Supplement Table 4B
+  (SP No. 2 2x4); NDS §12.4.1.
+- ICC-ES ESR-2105 Table 4 (CS16, §8), Table 3 (LSTA24); ICC-ES ESR-2604 §3.1.3 and Table 3 (AC/ACE);
   ICC-ES ESR-3096 Table 5 (A35); ICC-ES ESR-3050 Table 1, §4.1, fn. 4 (CBSQ); all read 2026-09-30.
 - Simpson Strong-Tie C-C-2024, CBSQ lateral F1 485 / F2 1,270; C-C-2019 p. 280 (LTP4).
 - AWC NDS 2018 Supplement Tables 4D and 5A; NDS Tables 4.3.8, 5.3.1, §3.9, §3.10, §5.3.6.

@@ -178,11 +178,11 @@ def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro
 
 
 def test_pantry_doors_and_racks_clear_the_seating_bar(catlin_model_ro, kitchen_objects):
-    bar = Polygon(
-        next(
-            top for top in catlin_model_ro.countertops if top.tag == "CT-M-KIT-PENINSULA-BAR"
-        ).outline
+    # The peninsula slab's seating knee: everything south of the cabinet backs.
+    peninsula = Polygon(
+        next(top for top in catlin_model_ro.countertops if top.tag == "CT-M-KIT-PENINSULA").outline
     )
+    bar = peninsula.intersection(box(0, 0, 1000 * INCH, 319.375 * INCH))
     back = Polygon(kitchen_objects["FURN-M-KIT-PEN-BACK"].footprint)
     worktops = [
         Polygon(top.outline)

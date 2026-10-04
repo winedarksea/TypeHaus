@@ -321,9 +321,10 @@ water. It is its own element with its own node pair rather than a lower base on 
 the wall base regardless of any band, so dropping the panel's base would put a sole plate on
 the pier tops and re-open the seat-beam clash §4 already records.
 
-**Top, +4'-0" to the header soffit: `SC-BW-WEST`.** 2'-4 3/4" of on-edge 2x4 slats at a 1 1/2"
-clear gap, sitting on the panel's top plate and restrained at the header soffit. In-fill only,
-`role="screen"`.
+**Top, +4'-0" to the header soffit: `SB-BW-BAND` (since 2026-10-04; the vertical in-fill
+`SC-BW-WEST` before it).** A 2x6 sill and top plate, a 6x6 centre post, and 2x4 slats on edge at
+45°, 1 1/2" clear, rising to the centre from each chord, one KBS1Z at each end. The slats are
+the band's brace now, not in-fill: `canopy_west_band.md` §3.
 
 > ⚠ **Why the slats are not the guard, and why nothing is asking them to be.** IRC Table
 > R301.5 puts **200 lb concentrated** on a guard (the 50 plf line load is IBC §1607.8.1, not a

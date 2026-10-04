@@ -379,10 +379,9 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     # Eleven since 2026-09-03: ST-SG-PORCH's two raked guard-handrails (RL-SG-PSTAIR-*) and
     # the two level cheeks that return the guard across its threshold (RL-SG-PTHRESH-*).
     # RL-BW-SCREEN left the census on 2026-09-10 and `W-BW-SCREEN` replaced it: a solid
-    # sheathed guard WALL, which passes the way a masonry parapet does. `SC-BW-WEST`, the
+    # sheathed guard WALL, which passes the way a masonry parapet does. `SB-BW-BAND`, the
     # slat band above it, is deliberately NOT here — it starts at +4'-0", above the guard
-    # line, so R312.1.3 has no fall to protect there and the screen declares `role="screen"`
-    # rather than claiming to be a guard beside one. RL-BW-GARAGE-W left on 2026-09-11: the
+    # line, so R312.1.3 has no fall to protect there, and a brace is no guard element. RL-BW-GARAGE-W left on 2026-09-11: the
     # interior landing moved into the garage's SW corner and W-G-W closes that edge.
     # RL-A-FLIGHT-SKIRT since 2026-09-16: the panel skirt under the attic deck's edge.
     assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-FLIGHT-SKIRT", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",

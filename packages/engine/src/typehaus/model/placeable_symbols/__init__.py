@@ -60,7 +60,7 @@ SYMBOL_NAMES = frozenset({
     "sektion-tall-drawers", "sektion-tall-open-lower", "sektion-cover-panel",
     "sektion-seat-base", "sektion-open-high", "sektion-open-base", "seat-cushion",
     "wardrobe-show", "wardrobe-show-hang", "wardrobe-dress", "wardrobe-double-hang", "closet-board",
-    "closet-corner-wire",
+    "closet-corner-wire", "closet-wire",
     "wardrobe-shelves", "wardrobe-corner", "wardrobe-sliding-pair",
     "bed", "tv", "potted-plant", "wall-rack", "peg-rail", "arch-shelf-mirror",
     # sauna joinery — benches are fitted to the room, not bought as a set
@@ -68,7 +68,7 @@ SYMBOL_NAMES = frozenset({
     # kitchen/bath casework — the fitted millwork a room is built around
     "base-cabinet", "sink-base", "corner-base", "wall-cabinet", "corner-wall-cabinet",
     "sektion-plinth-wall-base", "tall-cabinet",
-    "tall-cabinet-double", "tall-cabinet-triple", "besta",
+    "tall-cabinet-double", "tall-cabinet-triple", "besta", "countertop-bracket",
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
     "microwave", "hood",

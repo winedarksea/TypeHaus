@@ -123,7 +123,7 @@ BEARING_TOP_FT = SEAT_TOP_FT - JOIST_DEPTH_IN / 12         # -1'-3 1/2", 18 1/2"
 
 # The headers top out at the GARAGE PLATE, +7'-4" (W-G-E/W-G-W z1). That is what makes
 # RF-BW-CANOPY one plane with RF-GARAGE rather than a roof stepping off it. The 5-1/2" x
-# 11-7/8" glulam (2026-09-30) puts the soffit at +6'-4 1/8" -- where SC-BW-WEST stops.
+# 11-7/8" glulam (2026-09-30) puts the soffit at +6'-4 1/8" -- where SB-BW-BAND's top plate stops.
 HEADER_TOP_FT = 7 + 4 / 12
 HEADER_DEPTH_IN = 11.875
 HEADER_SIZE = "5.5x11.875"
@@ -151,7 +151,7 @@ ROOF_COLUMN_EAST_X_FT = 30.0
 # when it was shortened and hung off the columns. A member with a LINE load and no area was a
 # real gap in that module, and what closed it on 2026-09-20 is that a wall's dead load never
 # needed an area: `pier_basis.wall_line_loads` derives it as a plf (this wall's own layer
-# stack, 30.54, plus `SC-BW-WEST` standing on its plate, 12.94) times the run it shares with
+# stack, 30.54, plus `SB-BW-BAND` standing on its plate, 17.73) times the run it shares with
 # the beam in plan. See notes/north_entry_piers.md §2 — and what the UNKNOWN had been
 # concealing is why `PT-BW-W`/`-GW` are in `_MOMENT_PIERS` below.
 SCREEN_PANEL_TOP_FT = 4.0
@@ -334,7 +334,7 @@ beam(11, "BM-BW-LAND-HDR", GARAGE_STEM_INSIDE_X_FT, LANDING_HEADER_Y_FT,
 # ** 5-1/2" x 11-7/8" GLULAM, FLUSH WITH THE 6x6 FACES (owner, 2026-09-30). ** It replaced a
 # 3-ply 2x12 for the joints, not for bending: an AC6/ACE6 cap is published for a 5-1/2" beam
 # on a 6x6 (ESR-2604 Table 3), it is the only post cap with a lateral row along the beam, and a
-# flush face is what the band brace's straps nail across (params/entry_band_brace.py). The
+# flush face is what the band brace's KBS1Z connectors lie on (params/entry_band_brace.py). The
 # 2026-09-12 refusal rested on `roof_beam` reading only sawn sections; it grades a glulam now
 # (24F-V4 DF, wet, snow C_D -- notes/canopy_west_band.md §7). The retired ply-seam argument
 # is moot: one member, no seam.

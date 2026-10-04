@@ -1289,12 +1289,15 @@
 "canvas_objects/FURN-M-CLOSET-PAX-SHOW/body_z0_m": 0.04445,
 "canvas_objects/FURN-M-CLOSET-PAX-SHOW/body_z1_m": 2.403475,
 "canvas_objects/FURN-M-CLOSET-PAX-SHOW/z_m": 0.04445,
-"canvas_objects/FURN-M-CLOSET-PAX-WEST/body_z0_m": 0.04445,
-"canvas_objects/FURN-M-CLOSET-PAX-WEST/body_z1_m": 2.403475,
-"canvas_objects/FURN-M-CLOSET-PAX-WEST/z_m": 0.04445,
 "canvas_objects/FURN-M-CLOSET-PEGS/body_z0_m": 1.6637,
 "canvas_objects/FURN-M-CLOSET-PEGS/body_z1_m": 1.7526,
 "canvas_objects/FURN-M-CLOSET-PEGS/z_m": 1.6637,
+"canvas_objects/FURN-M-CLOSET-WEST-HI/body_z0_m": 2.0367625,
+"canvas_objects/FURN-M-CLOSET-WEST-HI/body_z1_m": 2.0748625,
+"canvas_objects/FURN-M-CLOSET-WEST-HI/z_m": 2.0367625,
+"canvas_objects/FURN-M-CLOSET-WEST-LO/body_z0_m": 1.0207625,
+"canvas_objects/FURN-M-CLOSET-WEST-LO/body_z1_m": 1.0588625,
+"canvas_objects/FURN-M-CLOSET-WEST-LO/z_m": 1.0207625,
 "canvas_objects/FURN-M-DINING/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-DINING/body_z1_m": 0.7858125,
 "canvas_objects/FURN-M-DINING/z_m": 0.0238125,
@@ -27950,12 +27953,6 @@
 8,
 "282617debdca"
 ],
-"geometry/CMW127AAAA::framing/member:backing-3-000": [
-2.1844,
-2.36855,
-8,
-"b54616096b91"
-],
 "geometry/CMW127AAAA::framing/member:plate-bottom": [
 0.0,
 0.0381,
@@ -53944,7 +53941,6 @@
 ],
 "light_runs/LR-M-CLOSET-PAX-HANG/z_m": 2.3114,
 "light_runs/LR-M-CLOSET-PAX-SHOW/z_m": 2.3114,
-"light_runs/LR-M-CLOSET-PAX-WEST/z_m": 2.3114,
 "light_runs/LR-M-KIT-E-WN1/z_m": 1.8542,
 "light_runs/LR-M-KIT-N-WE1/z_m": 1.3462,
 "light_runs/LR-M-KIT-N-WE2/z_m": 1.3462,
@@ -70369,12 +70365,6 @@
 2.01295,
 2,
 "2d2cc7f56751"
-],
-"member/CMW127AAAA/backing-3-000": [
-2.1844,
-2.36855,
-2,
-"d0b899982b66"
 ],
 "member/CMW127AAAA/plate-bottom": [
 0.0,

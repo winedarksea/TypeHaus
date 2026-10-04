@@ -21,7 +21,8 @@ from typehaus.engineering.registry import EngineeringContext, calc, keys, oracle
 
 KIND = "wood_roof_post"
 #: 2: head and base lateral rows in both directions; the panel chords join (2026-09-30).
-BASIS_VERSION = "2"
+#: 3: a slat band's outward push on its chords, N-S (2026-10-04).
+BASIS_VERSION = "3"
 BASIS = ("AWC NDS 2018 Supplement Table 4D, Southern Pine No. 2 timbers, wet-service row; "
          "NDS §3.7 column stability and §3.9 combined stress; ICC-ES ESR-2604 Table 3 "
          "(AC/ACE); ICC-ES ESR-3096 Table 5 (A35); ICC-ES ESR-3050 Table 1 (CBSQ)")
@@ -132,6 +133,7 @@ def _plate_load(ctx: EngineeringContext, case: _Case, header: Any, base_ft: floa
 def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
     from typehaus.engineering.holdown_anchor import round_pier_anchor
     from typehaus.engineering.holdown_anchor import states as anchor_states
+    from typehaus.engineering.lateral_band_slats import band_for_wall
     from typehaus.engineering.lateral_lines import panel_chords_ft, panel_runs_along
     from typehaus.engineering.pier_basis import (
         DECK_DEAD_LOAD_PSF,
@@ -186,25 +188,48 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
     moment_lb_ft = drag_plf * case.length_ft ** 2 / 8.0
     if plate:
         moment_lb_ft += plate * a_ft * b_ft / case.length_ft
-    fb_actual = moment_lb_ft * 12.0 / section_modulus
-    # This exceeds the NDS §3.9 compression-squared term for fc/Fc' < 1 and retains
-    # the §3.9 second-order amplification, so it is a conservative uniaxial screen.
-    interaction = fc_actual / fc_prime + fb_actual / (FB_WET_PSI * CD_WIND)
-    interaction /= 1.0 - fc_actual / fce
     uplift = max(trib * (case.pressure_psf - 0.6 * DECK_DEAD_LOAD_PSF), 0.0)
     head_uplift = uplift
     couple_note = ""
+    push = push_head = push_base = 0.0
+    moment_basis = "own drag" + (f" + {plate_basis}" if plate else "")
     chords = panel_chords_ft(ctx, case.wall) if case.wall is not None else None
     if chords is not None:
         axis = "y" if panel_runs_along(ctx, case.wall, "y") else "x"
         shear = case.wind.delivered_lb(axis)
         depth_ft = (cross_section(header.size).depth_m or 0.0) / 0.3048
-        head_uplift += shear * depth_ft / chords[0]
+        couple = shear * depth_ft
         couple_note = (f" plus the band's couple {shear:,.1f} lb x {depth_ft:.3f}' header "
                        f"depth / {chords[0]:.3f}'")
+        band = band_for_wall(ctx, case.wall, case.wind.roof_tag, shear)
+        if band is not None:
+            # The slats' own couple on the header (note §3h); the larger of the two, and
+            # nothing favourable credited.
+            if band.couple_lb_ft() > couple:
+                couple = band.couple_lb_ft()
+                couple_note = (f" plus {band.band.tag}'s couple on the header "
+                               f"{couple:,.1f} lb-ft / {chords[0]:.3f}'")
+            # A compression bay pushes this chord OUTWARD, off the plates, so it spans base
+            # to head under the push (note §5b). The N-S case: it does not meet the plate.
+            push = band.chord_push_lb()
+            a_p = band.mid_band_ft - base_ft
+            push_head = push * a_p / case.length_ft
+            push_base = push * (case.length_ft - a_p) / case.length_ft
+            ns_moment = (drag_plf * case.length_ft ** 2 / 8.0
+                         + push * a_p * (case.length_ft - a_p) / case.length_ft)
+            if ns_moment > moment_lb_ft:
+                moment_lb_ft = ns_moment
+                moment_basis = (f"N-S: own drag + {band.band.tag}'s push {push:,.1f} lb at "
+                                f"{a_p:.4f}' above the base")
+        head_uplift += couple / chords[0]
+    fb_actual = moment_lb_ft * 12.0 / section_modulus
+    # This exceeds the NDS §3.9 compression-squared term for fc/Fc' < 1 and retains
+    # the §3.9 second-order amplification, so it is a conservative uniaxial screen.
+    interaction = fc_actual / fc_prime + fb_actual / (FB_WET_PSI * CD_WIND)
+    interaction /= 1.0 - fc_actual / fce
     beam_axis = _beam_axis(ctx, header)
     demands = EndDemands(
-        head_along=own_half, base_along=own_half,
+        head_along=own_half + push_head, base_along=own_half + push_base,
         head_across=own_half + (plate * a_ft / case.length_ft if plate else 0.0),
         base_across=own_half + (plate * b_ft / case.length_ft if plate else 0.0),
         head_uplift=head_uplift, base_uplift=uplift, plate_lb=plate)
@@ -216,8 +241,7 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
                    f"C_P {cp:.3f}; FcE {fce:.0f} psi, D + S ({snow_basis})"),
         LimitState("NDS combined axial and bending", interaction, 1.0, "",
                    f"§3.9 conservative uniaxial screen; axial stress {fc_actual:.1f} psi, "
-                   f"moment {moment_lb_ft:.1f} lb-ft (own drag"
-                   + (f" + {plate_basis}" if plate else "") + f"), bending stress "
+                   f"moment {moment_lb_ft:.1f} lb-ft ({moment_basis}), bending stress "
                    f"{fb_actual:.1f} psi, wet Fb {FB_WET_PSI:g} x C_D {CD_WIND:g}"),
         LimitState("IRC R507.4 height cross-check", case.length_ft, R507_4_HEIGHT_FT, "ft",
                    "2018 IRC Table R507.4, 6x6; the NDS snow check governs this roof",
@@ -247,14 +271,16 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
                 Quantity("axial_lb", axial, "lb", 1.0),
                 Quantity("uplift_lb", uplift, "lb", 1.0),
                 Quantity("head_uplift_lb", head_uplift, "lb", 1.0),
-                Quantity("plate_load_lb", plate, "lb", 1.0)),
+                Quantity("plate_load_lb", plate, "lb", 1.0),
+                Quantity("band_push_lb", push, "lb", 1.0)),
         limit_states=tuple(states), element_tags=tags,
         notes=(("The PVC wrap is a nonstructural finish. It needs an open, drained base and "
                 "an inspectable/removable panel; it contributes no column capacity."
                 if element.assembly == "POST_KDAT_WRAPPED_PVC" else
                 f"{case.tag} is a chord of {case.wall.tag}; its IN-PLANE hold-down and base "
                 f"shear are graded on the lateral_system record, and this one grades its "
-                f"out-of-plane (E-W) ends." if case.wall is not None else ""),
+                f"out-of-plane (E-W) ends and any band push across it (N-S)."
+                if case.wall is not None else ""),
                f"Head uplift is the net roof uplift {uplift:.1f} lb{couple_note}.",
                "DRY SERVICE at every connector: the caps, angles and base are rated for wood "
                "at or under 19% moisture (ESR-2604 §3.2.2, ESR-3050 §4.1). The posts stand "

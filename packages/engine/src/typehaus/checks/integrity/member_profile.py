@@ -36,7 +36,7 @@ _CHECK_ID = "integrity.member_profile_parses"
 #: ``Connector.size`` is a product model ("HUC212-3"), a ``Countertop.profile`` an edge
 #: treatment ("eased"), and neither is ever handed to ``cross_section``. Every pair below
 #: is one that ``resolve/`` really does parse — see ``resolve/envelope.py`` (post, beam) and
-#: ``resolve/accessories.py`` (knee brace, wedge).
+#: ``resolve/accessories.py`` (knee brace, wedge), ``resolve/slat_braces.py`` (slat band).
 #:
 #: The two ``post_size`` fields reach ``geometry.nominal_actual_m`` rather than
 #: ``cross_section`` (``resolve/accessories.py``, ``resolve/railings/parts.py``). That is a
@@ -49,6 +49,10 @@ _ELEMENT_FIELDS: tuple[tuple[str, str], ...] = (
     ("KneeBrace", "post_size"),
     ("Wedge", "member"),
     ("Railing", "post_size"),
+    ("SlatBrace", "chord_size"),
+    ("SlatBrace", "plate"),
+    ("SlatBrace", "centre_post"),
+    ("SlatBrace", "slat"),
 )
 
 #: ``FramingSpec`` fields naming a nominal. ``web_member`` is included with the three the

@@ -352,12 +352,12 @@ Worst case is `PT-BW-W`, which carries the west roof column **and** the landing'
 |---|---|---|
 | roof tributary | 160.0 / 2 headers / 2 supports per header | 40.0 ft² |
 | deck tributary | (23.5 + 13.2) ft² of landing / 2 seat lines | 18.4 ft² |
-| wall line load | `W-BW-SCREEN` + `SC-BW-WEST` on `BM-BW-SCSILL`, half | 98 lb |
+| wall line load | `W-BW-SCREEN` + `SB-BW-BAND` on `BM-BW-SCSILL`, half | 109 lb |
 | roof live | 40.0 × **73.7** psf (§3's design snow) | 2,948 lb |
 | deck live | 18.4 × 40 psf | 736 lb |
-| dead | (40.0 + 18.4) × 10 psf + self weight + carried + wall | 1,766 lb |
-| service | | **5,450 lb** |
-| factored | 1.2 D + 1.6 L | **8,014 lb** |
+| dead | (40.0 + 18.4) × 10 psf + self weight + carried + wall | 1,777 lb |
+| service | | **5,461 lb** |
+| factored | 1.2 D + 1.6 L | **8,027 lb** |
 
 **The wall line load, worked (2026-09-20).** `BM-BW-SCSILL` is the sill under `W-BW-SCREEN`,
 hung on `HU28-2Z` off the two 6x6 KDAT canopy columns `PT-BW-CW`/`-CNW`, which stand on
@@ -369,22 +369,24 @@ never needed a tributary area: it is a plf times a run.
 | term | working | value |
 |---|---|---|
 | `W-BW-SCREEN` | its own resolved layer stack over its 4.08' height | 30.54 plf |
-| `SC-BW-WEST` | 26 slats, 1 1/2" × 3 1/2" × 2.34', kdat at 600 kg/m³, over 6.57' | 12.66 plf |
-| line | | **43.20 plf** |
+| `SB-BW-BAND` | 2x6 sill and top plate, 6x6 centre post, 18 slats (32.41 LF of 2x4): 2.14 ft³ of kdat at 600 kg/m³, over its own 4.52' | 17.73 plf |
+| line | | **48.27 plf** |
 | run | the wall's axis inside `BM-BW-SCSILL`'s own footprint | 4.52' |
-| total | | **195.3 lb** |
-| each column | two bearings | **97.7 lb** |
+| total | | **218.2 lb** |
+| each column | two bearings | **109.1 lb** |
 
 (2026-09-30: the slats shortened 2.40' → 2.34' when the header became an 11 7/8" glulam,
-`canopy_west_band.md` §7; the line was 43.48 plf, 98.3 lb a column.)
+`canopy_west_band.md` §7; the line was 43.48 plf, 98.3 lb a column. 2026-10-04: the vertical
+`SC-BW-WEST`, 12.66 plf over 6.57', became the braced slat band `SB-BW-BAND`,
+`canopy_west_band.md` §3; the line was 43.20 plf, 97.7 lb a column.)
 
-The slat clerestory is a third of it, and leaving it out would understate the sill by 30% —
+The slat band is over a third of it, and leaving it out would understate the sill by 37% —
 the same partial-stack failure `resolve/assembly_weight.dead_load_plf` refuses one layer
 down. The plf is the one `checks/structural/guards.py` already printed ("guard wall
 `W-BW-SCREEN` weighs 31 plf") in the same run that called this load unknown; it moved to
 `resolve/assembly_weight.py` so a calc could read it, because `engineering` may not import
 `checks`. `checks/structural/deck.py` divides the same pounds into R507.3.1's currency —
-97.7 / 50 psf = 1.95 ft² — rather than holding a second answer about one load.
+109.1 / 50 psf = 2.18 ft² — rather than holding a second answer about one load.
 
 > ⚠ **WITHDRAWN 2026-09-21 as a DEMAND, kept as built.** With the landing tied to the garage (§10)
 > the four landing piers lean: `deck_post` grades them "axial, tied column" (d/c 0.007-0.027)
@@ -395,7 +397,7 @@ down. The plf is the one `checks/structural/guards.py` already printed ("guard w
 `deck_post._detailing_only`'s six load-independent states for `_moment_column`'s twelve, and
 the twelfth is dowel ANCHORAGE into the base — ACI 318-19 §25.4.3.1's ℓ_dh, 7.115" for a #5.
 `PT-BW-GW` had an 8" pad giving 5.375" and **no base dowels at all**: d/c 1.32. It was never
-the wall load (98 lb is 1.5% of factored axial). `_MOMENT_PIERS` had covered the landing's
+the wall load (109 lb is 1.4% of factored axial). `_MOMENT_PIERS` had covered the landing's
 EAST column and not its west, while `pier_basis._base_moments` split the lateral case "over
 4 fixed column(s)" and `structural.lateral_racking` named all four — so the west pair carried
 its twins' base moment with nothing detailed to deliver it, and nobody saw it because their
@@ -407,7 +409,7 @@ hold, `column_base`'s embedment (grade to pad top) does not move and
 
 **`pier_basis` reads the tributaries close to this line now**: 17.0 ft² of deck and 40.0 ft²
 of roof on `PT-BW-W` plus the 98 lb of wall above, for D 1,628 + L 3,629 = 5,257 lb service
-and 7,760 lb factored against the 8,014 hand-worked here. The gap is the deck share — 17.0 against this line's 18.4 — and
+and 7,760 lb factored against the 8,014 hand-worked here (both before 2026-10-04's +11.4 lb of band). The gap is the deck share — 17.0 against this line's 18.4 — and
 it is bookkeeping in a load case nowhere near governing. It used to read 47.7 ft² of roof,
 7.7 ft² of which was the garage landing counted a second time as a "rafter field"; that
 duplicate went on 2026-09-18 (`pier_basis._rafter_fields` now skips a beam pair some

@@ -152,9 +152,9 @@ def _slab(el: Countertop, run: list[ResolvedCanvasObject], storey: str,
     unsupported = (el.unsupported_overhang.meters if el.unsupported_overhang is not None
                    else max(0.0, depth - carcass))
     # Where the slab's back edge sits, measured forward from the host's back face. A top
-    # that starts at the carcass back has offset 0; the reference house's bar top is 15"
-    # deep and 15" of it is cantilever, so it starts at the carcass FACE — which is what
-    # this puts it at, rather than needing a second authored coordinate.
+    # that starts at the carcass back has offset 0; a slab that is all cantilever starts at
+    # the carcass FACE — which is what this puts it at, rather than needing a second
+    # authored coordinate.
     offset = carcass - (depth - unsupported)
     if el.cantilever_side == "back":
         # The cantilever hangs behind the back face, the slab running forward from there.
@@ -186,14 +186,40 @@ def _slab(el: Countertop, run: list[ResolvedCanvasObject], storey: str,
         (run[-1].position[0] - run[0].position[0]) * math.cos(last_angle)
         + (run[-1].position[1] - run[0].position[1]) * math.sin(last_angle)
     ) < 0
+    strip = None
+    if el.cantilever_length is not None:
+        strip_length = el.cantilever_length.meters
+        if (strip_length <= 0.0 or strip_length > length or extension > 0.0
+                or any(sizes[obj.type_ref or ""].shape is not None for obj in run)):
+            return None, [element_error(
+                "integrity.countertop_run",
+                f"countertop {el.tag}'s cantilever_length must be positive, no longer than "
+                "the slab, and on a straight run that does not extend past its last host",
+                el.tag)]
+        # The strip keeps the cantilever band; the rest of the run stops short of it.
+        strip = (offset if el.cantilever_side == "back" else offset + depth - unsupported,
+                 _strip_widths(run, covered, strip_length))
+        if el.cantilever_side == "back":
+            offset += unsupported
+        depth_main = depth - unsupported
+    else:
+        depth_main = depth
+
     # A run can travel against local +x (north-facing peninsula cabinets do).
     # Keep the last host's near end when trimming, or the slab acquires a gap.
+    def near_end(obj: ResolvedCanvasObject, width: float, partial: bool) -> float:
+        return sizes[obj.type_ref or ""].width_m - width if reverse_travel and partial else 0.0
+
     rects = [_covered_l(obj, sizes[obj.type_ref or ""], overhang)
              if sizes[obj.type_ref or ""].shape is not None
-             else _covered_rect(obj, width, sizes[obj.type_ref or ""], offset, depth,
-                                sizes[obj.type_ref or ""].width_m - width
-                                if reverse_travel and obj is run[-1] else 0.0)
+             else _covered_rect(obj, width, sizes[obj.type_ref or ""], offset, depth_main,
+                                near_end(obj, width, obj is run[-1]))
              for obj, width in zip(run, covered, strict=True)]
+    if strip is not None:
+        strip_offset, widths = strip
+        rects.extend(_covered_rect(obj, width, sizes[obj.type_ref or ""], strip_offset,
+                                   unsupported, near_end(obj, width, True))
+                     for obj, width in zip(run, widths, strict=True) if width > 0.0)
     if extension > 0.0:
         rects.append(_extension_rect(run, sizes[run[-1].type_ref or ""], extension, offset,
                                      depth))
@@ -204,6 +230,18 @@ def _slab(el: Countertop, run: list[ResolvedCanvasObject], storey: str,
         thickness_m=el.thickness.meters, depth_m=depth, length_m=length,
         overhang_m=overhang, unsupported_overhang_m=unsupported, support=el.support,
         profile=el.profile, outline=outline, area_m2=area), []
+
+
+def _strip_widths(run: list[ResolvedCanvasObject], covered: list[float],
+                  limit: float) -> list[float]:
+    """How much of each host the first ``limit`` of the run covers, gaps included."""
+    widths, remaining = [], limit
+    for index, (obj, width) in enumerate(zip(run, covered, strict=True)):
+        if index:
+            remaining -= run_gap_m(run[index - 1].footprint, obj.footprint)
+        widths.append(max(0.0, min(width, remaining)))
+        remaining -= width
+    return widths
 
 
 def _covered_rect(obj: ResolvedCanvasObject, width: float, size: _Size,

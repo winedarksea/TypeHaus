@@ -6,7 +6,6 @@ applied_to:
   - product: PROD-SILESTONE-ET-CALACATTA-GOLD
   - product: PROD-ROBERN-YM0030CPFPD3
   - material: quartz-counter
-  - material: oak-counter
   - material: tile-floor-24
   - material: tile-wall-1224
 tags:

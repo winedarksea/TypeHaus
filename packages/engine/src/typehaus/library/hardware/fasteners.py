@@ -40,6 +40,16 @@ SDWS_TIMBER_SCREW = StructuralHardware(
            "lengths per IAPMO UES ER-192 Table 7",
 )
 
+#: An SDWS22 driven SQUARE into the side grain of a DF/SP main member (ER-192 Table 5 fn. 3),
+#: wood to wood, C_D 1.0 as tabulated: ``model -> (Z lbf, at side member in, W lbf/in of
+#: thread, thread in, W_max lbf)``. The 4" threads 2-3/8", not 3" (ER-192 Table 1).
+SDWS22_WOOD_ROWS: dict[str, tuple[float, float, float, float, float]] = {
+    "SDWS22400DB": (405.0, 1.5, 179.0, 2.375, 425.0),
+}
+SDWS22_WOOD_CITATION = ("IAPMO UES ER-192 rev. 09/08/2026, read 2026-10-04: Table 5 Z (DF/SP), "
+                        "Table 7 W and W_max (DF/SP main member), fn. 3 square into side "
+                        "grain; tabulated at C_D 1.0, NDS adjustment factors apply (§4.1.1)")
+
 # The girt crossing screw, and the only member of its role. Chosen on THREAD, not length:
 # 2 in of thread on an 8 in screw leaves 6 in of plain shank to span the 6 in clamped stack
 # (girt 1-1/2 in + three-ply block 4-1/2 in), so every turn of the thread is pulling the

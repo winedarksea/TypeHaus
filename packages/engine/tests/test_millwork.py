@@ -299,24 +299,25 @@ def test_a_countertops_area_is_derived_from_the_cabinets_under_it(countertops):
     assert north.area_m2 * M2_TO_FT2 == pytest.approx(expected, rel=0.01)
 
 
-def test_the_peninsula_is_two_tops_meeting_at_the_carcass_back(countertops):
-    """Quartz over the bases, oak on the seating cantilever BEHIND them (cantilever_side)."""
+def test_the_peninsula_is_one_notched_slab_on_brackets(countertops):
+    """Quartz over the bases and the 15" seating knee behind them, for 73 1/2" only."""
     from shapely.geometry import Polygon
 
-    stone, bar = countertops["CT-M-KIT-PENINSULA"], countertops["CT-M-KIT-PENINSULA-BAR"]
-    assert stone.material_ref == "quartz-counter" and bar.material_ref == "oak-counter"
-    # The stone is 24" of carcass plus 1" over the drawer fronts; the oak is all cantilever.
-    assert stone.depth_m * M_TO_IN == pytest.approx(25.0, abs=1e-6)
-    assert bar.depth_m * M_TO_IN == pytest.approx(11.625, abs=1e-6)
-    assert bar.unsupported_overhang_m * M_TO_IN == pytest.approx(11.625, abs=1e-6)
-    # The seating slab stops short of the pantry door and rack deployment.
-    assert bar.length_m * M_TO_IN == pytest.approx(73.5, abs=1e-6)
-    s_x0, s_y0, s_x1, _ = Polygon(stone.outline).bounds
-    b_x0, _, b_x1, b_y1 = Polygon(bar.outline).bounds
-    # The drawers face north, so the bar's north edge IS the stone's south (back) edge.
-    assert b_y1 == pytest.approx(s_y0, abs=1e-9)
-    assert b_x0 == pytest.approx(s_x0, abs=1e-9)
-    assert (b_x1 - s_x1) * M_TO_IN == pytest.approx(-11.0, abs=1e-6)
+    stone = countertops["CT-M-KIT-PENINSULA"]
+    assert "CT-M-KIT-PENINSULA-BAR" not in countertops
+    assert stone.material_ref == "quartz-counter" and stone.support == "brackets"
+    assert stone.depth_m * M_TO_IN == pytest.approx(40.0, abs=1e-6)
+    assert stone.unsupported_overhang_m * M_TO_IN == pytest.approx(15.0, abs=1e-6)
+    ring = Polygon(stone.outline)
+    assert len(stone.outline) == 6
+    # 84 1/2 x 25 over the boxes, plus the 73 1/2 x 15 knee.
+    assert ring.area * M_TO_IN**2 == pytest.approx(84.5 * 25 + 73.5 * 15, abs=1e-3)
+    x0, y0, x1, y1 = (value * M_TO_IN for value in ring.bounds)
+    assert (x0, y0, x1, y1) == pytest.approx((302.875, 304.375, 387.375, 344.375))
+    # The knee stops 25" short of the pantry's nominal front, x=401 3/8.
+    knee = ring.intersection(Polygon([(0, 0), (1e3, 0), (1e3, 319.0 / M_TO_IN),
+                                      (0, 319.0 / M_TO_IN)]))
+    assert knee.bounds[2] * M_TO_IN == pytest.approx(376.375)
 
 
 def test_an_l_host_takes_the_slab_over_its_whole_l(countertops):
@@ -344,7 +345,7 @@ def test_one_quartz_slab_over_the_sektion_peninsula_now_passes(countertops):
 
     one_slab = dataclasses.replace(
         countertops["CT-M-KIT-PENINSULA"], depth_m=34.625 / M_TO_IN,
-        unsupported_overhang_m=9.625 / M_TO_IN)
+        unsupported_overhang_m=9.625 / M_TO_IN, support="none")
     assert _grade(one_slab).result is Result.PASS
 
 
@@ -358,7 +359,7 @@ def test_the_peninsula_type_states_how_much_of_its_depth_is_box(catlin_plan):
 
 
 def test_one_quartz_slab_over_the_whole_peninsula_is_a_fail(countertops):
-    """The finding the two-material top exists to avoid — graded, not asserted in prose.
+    """The finding the peninsula's brackets exist to avoid — graded, not asserted in prose.
 
     Caesarstone's published limits: 1/3 of depth, 15" absolute, 14" unsupported in 3 cm.
     15" on a 39" top is 38%, which is the figure plan/assemblies.py records.
@@ -370,7 +371,7 @@ def test_one_quartz_slab_over_the_whole_peninsula_is_a_fail(countertops):
 
     one_slab = dataclasses.replace(
         countertops["CT-M-KIT-PENINSULA"], depth_m=39.0 / M_TO_IN,
-        unsupported_overhang_m=15.0 / M_TO_IN)
+        unsupported_overhang_m=15.0 / M_TO_IN, support="none")
     finding = _grade(one_slab)
     assert finding.result is Result.FAIL
     assert "38%" in finding.message
@@ -389,8 +390,9 @@ def test_the_house_as_built_is_inside_every_published_limit(catlin_model_ro):
 
     findings = countertop_overhang(check_context(model=catlin_model_ro))
     assert findings and all(f.result is Result.PASS for f in findings)
-    # Only the stone is graded: the bar top is wood and the slab limits do not reach it.
-    assert not any("BAR" in f.message for f in findings)
+    # The seating knee is past the 14" unsupported cap, so it passes only on its brackets.
+    peninsula = next(f for f in findings if "CT-M-KIT-PENINSULA" in f.element_tags)
+    assert "carried on brackets" in peninsula.message
 
 
 def test_a_bank_on_a_fitted_bookcase_bills_the_boards_its_spec_draws(catlin_plan,
@@ -417,3 +419,18 @@ def test_a_bank_on_a_fitted_bookcase_bills_the_boards_its_spec_draws(catlin_plan
             assert shelf.clear_height_m == pytest.approx(
                 bay.height.meters - bay.closed_base_height.meters), bank.tag
     assert {"SB-A-STUDY", "SB-S-BATH1"} <= set(checked)
+
+
+def test_a_cantilever_length_past_the_slab_is_refused(catlin_plan, catlin_model_ro):
+    from typehaus.quantities import inch
+    from typehaus.resolve.countertops import _placeable_sizes, _slab
+
+    el = catlin_plan.by_tag("CT-M-KIT-PENINSULA")
+    objects = {obj.tag: obj for obj in catlin_model_ro.canvas_objects}
+    run = [objects[tag] for tag in el.hosts]
+    sizes = _placeable_sizes(catlin_plan)
+    record, findings = _slab(el, run, "main", sizes)
+    assert record is not None and not findings
+    record, findings = _slab(el.model_copy(update={"cantilever_length": inch(90)}), run,
+                             "main", sizes)
+    assert record is None and findings[0].check_id == "integrity.countertop_run"
