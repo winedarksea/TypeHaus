@@ -233,9 +233,9 @@ MAIN_PLACEABLES = [
     Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FT-SOFA-84-SEAT-BAND",
               room="RM-M-LIVING", position=pt(ft(24, 4.5), ft(8, 8)), rotation=deg(90)),
     Furniture(uid="808W2W6TPA", tag="FURN-M-ARMCHAIR-N", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
-              position=pt(ft(29, 10), ft(10, 10)), rotation=deg(90)),
+              position=pt(m(9.63082), m(3.29893)), rotation=deg(-45)),
     Furniture(uid="G5QQNW9448", tag="FURN-M-ARMCHAIR-S", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
-              position=pt(ft(29, 10), ft(6, 6)), rotation=deg(90)),
+              position=pt(m(9.54846), m(1.77874)), rotation=deg(-120)),
     # --- the mantel, which now has a body (2026-09-06) -----------------------------------
     #
     # SB-M-FIRE-MANTEL is a ShelfBank and a ResolvedShelfBank has NO POSITION — nothing
