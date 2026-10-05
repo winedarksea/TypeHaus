@@ -65,6 +65,7 @@ from typehaus.library.placeables.fixtures import (
 from typehaus.library.placeables.furniture import (
     ARMCHAIR,
     BOOKCASE,
+    CHESS_TABLE_315,
     CHEST,
     CLOSET_PEG_RAIL_42,
     COFFEE_TABLE,
@@ -119,6 +120,7 @@ __all__ = [
     "STANDARD_SOFA", "LOVESEAT", "SECTIONAL", "ARMCHAIR", "COFFEE_TABLE", "END_TABLE",
     "DINING_8_OPEN_CORNERS", "SOFA_84_SEAT_BAND", "PORCH_LOUNGE_27",
     "BOOKCASE",
+    "CHESS_TABLE_315",
     "HEMNES_BOOKCASE_35",
     "HEMNES_DESK_61",
     "HEMNES_DRESSER_63",

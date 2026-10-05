@@ -7,6 +7,7 @@ needs no entry here at all: the same symbol renders at whatever W×D×H the type
 
 from __future__ import annotations
 
+from typehaus.model.placeable_symbols._chess_table import chess_table
 from typehaus.model.placeable_symbols._closet_wire import closet_corner_wire, closet_wire
 from typehaus.model.placeable_symbols._desk import drawer_desk
 from typehaus.model.placeable_symbols._families import (
@@ -94,6 +95,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # elevation, and the coffee/end tables deliberately skip it — they are open underneath.
     "dining-table": slab(leg_inset_m=0.09, apron=True),
     "rounded-dining-table": rounded_slab(leg_inset_m=0.09, apron=True),
+    "chess-table": chess_table,
     "round-table": round_slab(pedestal=True),
     "coffee-table": slab(leg_inset_m=0.05, apron=False),
     "end-table": slab(leg_inset_m=0.04, apron=False),

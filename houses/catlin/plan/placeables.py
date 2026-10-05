@@ -688,13 +688,11 @@ SECOND_PLACEABLES = [
               position=pt(m(7.04819), m(10.1621)), rotation=deg(90)),
     Furniture(uid="CHR703AAAA", tag="FURN-S-DESK-CHAIR3", type_ref="FURN-DESK-CHAIR", room="RM-S-BED3",
               position=pt(m(7.6327), m(10.1621)), rotation=deg(-90)),
-    # Compact two-person table in Study 2, against the south wall. It sits partly under
-    # WIN-S-STUDY1 (resolved centre 26'-8", sill 2'-8" — a
-    # couple inches above the table top, which is the pleasant place for a table). Its
-    # west edge stays 8" clear of D-S-DECK-E's east jamb; the two chairs sit on the
-    # north side, so neither the table nor its usable seating is in the door opening.
-    Furniture(uid="TAB701AAAA", tag="FURN-S-STUDY-TABLE", type_ref="FURN-DINING-2-36",
-              room="RM-S-STUDY2", position=pt(m(9.55695), m(0.625729))),
+    # Chessboard side table replaces the 36" dining table at the existing UI centre.
+    # Its 27 1/2" top stays below WIN-S-STUDY1's 32" sill; the drawer faces north into
+    # the room and the existing chairs remain at its east and west ends.
+    Furniture(uid="TAB701AAAA", tag="FURN-S-STUDY-TABLE", type_ref="FURN-CHESS-TABLE-315",
+              room="RM-S-STUDY2", position=pt(m(9.55695), m(0.625729)), rotation=deg(180)),
     Furniture(uid="CHR704AAAA", tag="FURN-S-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
               room="RM-S-STUDY2", position=pt(m(10.1327), m(0.588309)), rotation=deg(-90)),
     Furniture(uid="CHR705AAAA", tag="FURN-S-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",

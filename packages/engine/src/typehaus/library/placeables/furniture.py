@@ -253,6 +253,16 @@ TWO_PERSON_DINING_TABLE = FurnitureType(
     clearances=(surround_zone(ft(3), ft(3), ft(3), "chair-use zone",
                               occupant_types=(DINING_CHAIR_TAG,)),),
 )
+CHESS_TABLE_315 = FurnitureType(
+    tag="FURN-CHESS-TABLE-315", name="Chessboard side table with piece-storage drawer",
+    footprint=(inch(31.5), inch(27.75)), height=inch(27.5),
+    plan_symbol="chess-table", storage=True, work_surface=True,
+    source=("Owner-specified: 31 1/2 x 27 3/4 in. top, 2 1/4 in. thick, "
+            "27 1/2 in. overall height; side table with one drawer for chess pieces "
+            "and an 8 x 8 chessboard pattern on top. Board size and joinery are illustrative."),
+    clearances=(surround_zone(inch(31.5), inch(27.75), ft(3), "chess chair and drawer access",
+                              occupant_types=(DINING_CHAIR_TAG,)),),
+)
 # No pull-out zone of its own: a dining chair lives inside the table's chair-use zone by
 # definition, and giving it a second one only reports the set conflicting with itself.
 DINING_CHAIR = FurnitureType(
@@ -424,7 +434,7 @@ STARTER_FURNITURE_TYPES = (
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, HEMNES_DRESSER_63,
     CHEST, WARDROBE_48, NIGHTSTAND, NARROW_NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
-    TWO_PERSON_DINING_TABLE, DINING_CHAIR,
+    TWO_PERSON_DINING_TABLE, CHESS_TABLE_315, DINING_CHAIR,
     WRITING_DESK, WRITING_DESK_42, HEMNES_DESK_61, MITTZON_SIT_STAND_DESK_47,
     OFFICE_CHAIR, DESK_CHAIR, BOOKCASE, HEMNES_BOOKCASE_35,
     SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_TIERED_48,

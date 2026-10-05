@@ -14,7 +14,7 @@ SECOND_STORY_UI_PLACEMENTS = (
     ("FURN-S-BED1", "FURN-BED-TWIN", "RM-S-BED1", (9.801366875, 3.36872), -90),
     ("FURN-S-DESK1", "FURN-DESK-48", "RM-S-BED1", (10.4995, 4.58763), 90),
     ("FURN-S-DESK-CHAIR1", "FURN-DESK-CHAIR", "RM-S-BED1", (10.0492, 4.62797), 90),
-    ("FURN-S-STUDY-TABLE", "FURN-DINING-2-36", "RM-S-STUDY2", (9.55695, 0.625729), 0),
+    ("FURN-S-STUDY-TABLE", "FURN-CHESS-TABLE-315", "RM-S-STUDY2", (9.55695, 0.625729), 180),
     ("FURN-S-STUDY-CHAIR1", "FURN-DINING-CHAIR", "RM-S-STUDY2", (10.1327, 0.588309), -90),
     ("FURN-S-STUDY-CHAIR2", "FURN-DINING-CHAIR", "RM-S-STUDY2", (8.8924, 0.588713), 90),
     ("FURN-S-PLANT-POT1", "FURN-PLANT-18", "RM-S-PLANT", (1.28957, 0.606871), 0),
@@ -57,6 +57,19 @@ def test_moved_study_chairs_still_drag_with_the_table(catlin_model_ro):
     assert study_group == {
         "FURN-S-STUDY-TABLE", "FURN-S-STUDY-CHAIR1", "FURN-S-STUDY-CHAIR2",
     }
+
+
+def test_study_chess_table_dimensions_and_takeoff(catlin_model_ro):
+    table = next(item for item in catlin_model_ro.canvas_objects
+                 if item.tag == "FURN-S-STUDY-TABLE")
+    west, south, east, north = Polygon(table.footprint).bounds
+    assert (east - west, north - south) == pytest.approx(
+        (inch(31.5).meters, inch(27.75).meters))
+    assert table.body_z1_m - table.body_z0_m == pytest.approx(inch(27.5).meters)
+    row = next(row for row in placeables_takeoff(catlin_model_ro)
+               if row["type"] == "FURN-CHESS-TABLE-315")
+    assert row["count"] == 1
+    assert row["tags"] == [table.tag]
 
 
 def test_deleted_study_rocker_and_duplicate_pot_reach_the_takeoff(catlin_model_ro):
