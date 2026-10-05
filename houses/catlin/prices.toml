@@ -5242,21 +5242,17 @@
 "DT-POCKET-INT-36" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 2 ea, slab and installation; frame kits above
 "DT-INT-BYPASS48" = { material = { low = 200, high = 500 }, labour = { low = 100, high = 220 } }  # 1 ea — stock molded pair + track, to solid-core or mirrored
 "DT-INT-BYPASS60" = { material = { low = 240, high = 600 }, labour = { low = 100, high = 220 } }  # 1 ea — RM-M-PANTRY. Two 30" leaves on one track; same hardware and same hang as the 48", wider leaves
-# ** NOT RE-SOURCED IN THIS PASS ** — a hidden-jamb reveal door has no shelf price, because it
-# is a frame system (Eclisse, Arkitek) plus a door, not a catalogue item. The material figure
-# is the 2026-08-20a estimate and is the least-supported number left in this section.
-# The LABOUR is the point of this row anyway: a hidden-jamb reveal is not a carpentry item, it
-# is a THREE-TRADE SEQUENCING item. The frame is set dead plumb BEFORE drywall, the rock is
-# terminated into it with L-bead or reveal bead, and the reveal takes a Level-5 finish with zero
-# tolerance for later movement. $620-1,400 against $145-305 for a standard cased prehung is a
-# 4-5x premium, and $75-200 of it lands on the DRYWALL sub rather than the carpenter. Drywall
-# subs frequently exclude cracking at a reveal from their warranty, so carry a rework
-# contingency this file cannot express.
-# 2026-09-15: was "DT-INT-SWING30-TRIMLESS", $600-1,400 / $620-1,400. D-M-BED2 widened to
-# 3'-0" and it was that row's only door, so the row moved with it rather than being left
-# behind at 0 ea. The reveal detail is what costs, not the leaf — everything above still
-# applies — so only the wider slab and a little more return jamb move the numbers.
-"DT-INT-SWING36-TRIMLESS" = { material = { low = 640, high = 1480 }, labour = { low = 640, high = 1440 } }  # 1 ea
+# D-M-BED2 since 2026-10-05: a push-set in-swing in a site-built kerfed hardwood jamb (see
+# the type in plan/storeys/main.py). ESTIMATE, built up from parts and not quoted:
+#   material: 32" solid-core slab 180-450, kerfed jamb + stop stock 90-220, 3 ball-bearing
+#   butts 30-90, kerf-in seal set 30-70, mortised auto door bottom 180-400, hardwood
+#   saddle 40-120, tear-away L-bead 20-40.
+#   labour: carpenter sets the jamb before drywall 200-400; bead line on the drywall sub
+#   60-150; hang the slab, mortise hinges and door bottom, fit seals and saddle 250-500.
+# Lower labour than the EzyJamb-type row it replaced ($640-1,440): no Level-5 reveal, no
+# mud-set aluminium, and a wood jamb can be planed and re-stopped after it is set.
+# The seals and door bottom live here, not in [hardware], so they bill once with the door.
+"DT-INT-SWING32-TRIMLESS-PUSH" = { material = { low = 570, high = 1390 }, labour = { low = 510, high = 1050 } }  # 1 ea
 
 # D-A-STUDY's selected 36 x 80 nominal Murphy Door unit. One purchased assembly includes
 # its factory cabinet shelves, jamb/face-frame/casing hardware and concealed pivot system;

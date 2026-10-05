@@ -956,7 +956,7 @@
       "node": "polyline",
       "points": [
         [
-          213.50000000000003,
+          202.27248031496066,
           -11.875
         ],
         [
@@ -968,7 +968,7 @@
           0.0
         ],
         [
-          213.50000000000003,
+          202.27248031496066,
           0.0
         ]
       ],
@@ -977,14 +977,14 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS01AAAA",
-      "tag": "bearing-block-1-006"
+      "tag": "joist-0-006-0"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          213.50000000000003,
+          202.27248031496066,
           -11.875
         ],
         [
@@ -996,7 +996,7 @@
           0.0
         ],
         [
-          213.50000000000003,
+          202.27248031496066,
           0.0
         ]
       ],
@@ -1012,7 +1012,7 @@
       "node": "polyline",
       "points": [
         [
-          213.50000000000003,
+          202.27248031496066,
           -10.5
         ],
         [
@@ -1025,14 +1025,14 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "bearing-block-1-006/flange"
+      "tag": "joist-0-006-0/flange"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          213.50000000000003,
+          202.27248031496066,
           -1.375
         ],
         [
@@ -1045,7 +1045,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "bearing-block-1-006/flange"
+      "tag": "joist-0-006-0/flange"
     },
     {
       "space": "model",
@@ -1056,11 +1056,11 @@
           -11.875
         ],
         [
-          218.5,
+          229.2275196850394,
           -11.875
         ],
         [
-          218.5,
+          229.2275196850394,
           0.0
         ],
         [
@@ -1073,7 +1073,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-006"
+      "tag": "joist-0-006-0"
     },
     {
       "space": "model",
@@ -1084,11 +1084,11 @@
           -11.875
         ],
         [
-          218.5,
+          229.2275196850394,
           -11.875
         ],
         [
-          218.5,
+          229.2275196850394,
           0.0
         ],
         [
@@ -1112,7 +1112,7 @@
           -10.5
         ],
         [
-          218.5,
+          229.2275196850394,
           -10.5
         ]
       ],
@@ -1121,7 +1121,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-006/flange"
+      "tag": "joist-0-006-0/flange"
     },
     {
       "space": "model",
@@ -1132,7 +1132,7 @@
           -1.375
         ],
         [
-          218.5,
+          229.2275196850394,
           -1.375
         ]
       ],
@@ -1141,7 +1141,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-006/flange"
+      "tag": "joist-0-006-0/flange"
     },
     {
       "space": "model",
@@ -1478,6 +1478,62 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          213.25,
+          87.25
+        ],
+        [
+          218.75000000000003,
+          87.25
+        ],
+        [
+          218.75000000000003,
+          97.71653543307087
+        ],
+        [
+          213.25,
+          97.71653543307087
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW112AAAA",
+      "tag": "cripple-head-0-01"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          213.25,
+          87.25
+        ],
+        [
+          218.75000000000003,
+          87.25
+        ],
+        [
+          218.75000000000003,
+          97.71653543307087
+        ],
+        [
+          213.25,
+          97.71653543307087
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "lsl"
     },
     {
       "space": "model",

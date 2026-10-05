@@ -54,7 +54,7 @@ movement joint may be required even where the height difference is zero.
 | `D-S-STUDY2` | hall oak +1.5000 | oak +1.5000 | 0 | Continuous oak field |
 | `D-S-PLANT` | study oak +1.5000 | raised sheet vinyl +1.1200 | 0.3800 | Solid-surface reducer over a sealed water stop; no drain |
 | `D-M-MUD`, `D-M-MECH`, `D-M-MUDC` | LVP +0.9862 | LVP +0.9862 | 0 | One level field; keep expansion gaps; bottom guide at `D-M-MUDC` on flat substrate |
-| `D-M-BED2` | hall LVP +0.9862 | bedroom carpet +1.5000 | 0.5138 | One internal reducer, carpet edge securely retained |
+| `D-M-BED2` | hall LVP +0.9862 | bedroom carpet +1.5000 | 0.5138 | Hardwood saddle at +1.5000 under the leaf, bevelled down to the LVP; the automatic door bottom seals on it |
 | `D-M-BED` | bedroom carpet +1.5000 | closet carpet +1.5000 | 0 | Continuous carpet stack |
 | `D-M-BATH2` | bedroom carpet +1.5000 | heated porcelain +1.5000 | 0 | Flush carpet/tile edge with suitable profile |
 | `ST-M2S` lower and upper head | main LVP +0.9862 | second oak +1.5000 (+121.5000 absolute) | stair rise | 16 equal risers at 7.5321 in; level turn +61.2431 absolute |

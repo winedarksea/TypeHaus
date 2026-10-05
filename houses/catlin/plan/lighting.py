@@ -800,10 +800,10 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
                      controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The other end of the 3-way, on W-M-C1's bedroom face beside D-M-BED2. That door
-    # hinges at y=9'-9" and latches at y=6'-9", so the strike side is SOUTH of the RO.
-    # Moved one 16" bay with the door on 2026-10-03: y=6'-3" leaves 4" from the box
-    # edge to the jamb. W-M-C1's bedroom paint plane is x=212.115".
+    # The other end of the 3-way, on W-M-C1's bedroom face beside D-M-BED2. Since
+    # 2026-10-05 that door hinges SOUTH at y=6'-9" and latches NORTH at y=9'-5", so the
+    # switches moved to the north jamb: y=9'-11" leaves 4" from the box edge to the jamb,
+    # outside the leaf. W-M-C1's bedroom paint plane is x=212.115".
     #
     # CKT-LT-MAIN, the same circuit as every can it switches. Both ends are
     # ED-T-SWITCH-DIM, which is the house's own 3-way convention (ED-S-HALL-SW/-SW2).
@@ -812,7 +812,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C1", face="left", distance_from_start=inch(75),
+                         wall_ref="W-M-C1", face="left", distance_from_start=inch(119),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ** A READING LIGHT, WHICH THIS ROOM ALSO DID NOT HAVE. ** Four cans on a grid light a
     # floor; nothing in here lit a book. Mark G, ED-T-LT-WALL-LINEAR — the same 36" bar
@@ -875,14 +875,13 @@ MAIN_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, drop=inch(18))),
     # Second gang beside ED-M-BED-SW2 at D-M-BED2, the room's entry from the living room,
     # on the house's 4" gang spacing (ED-M-LIVING-SW's second gang, ED-M-PORCH-FLOOD-SW).
-    # SOUTH of it, following the door's 16" north move on 2026-10-03. Its box's south
-    # edge at y=5'-9" clears the east-wall desk's north end at 5'-8 1/4" by 3/4".
+    # NORTH of it since 2026-10-05, away from the latch jamb, at y=10'-3".
     ElectricalDevice(uid="KCDD6WVW46", tag="ED-M-BED-FAN-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C1", face="left", distance_from_start=inch(71),
+                         wall_ref="W-M-C1", face="left", distance_from_start=inch(123),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-STUDY has no exterior wall, so the notes' "sconce to the side of the window"

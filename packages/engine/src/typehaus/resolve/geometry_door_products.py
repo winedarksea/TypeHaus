@@ -20,13 +20,16 @@ from typehaus.resolve.model import ResolvedWall
 # (width along, height, thickness across, along, elevation, normal offset) -> box
 BoxFn = Callable[..., GPrism]
 
-# --- concealed frame (EzyJamb-type: flush on the pull side, rebated on the push side) ------
-_CONCEALED_JAMB_M = 0.016        # aluminium liner + plaster return, each jamb and the head
+# --- concealed frame: no casing, the gwb dies against a full-depth jamb ----------------------
+# ``DoorType.leaf_set`` picks where the leaf sits in that depth: "pull" is EzyJamb-type, flush
+# with the face it swings toward; "push" is set behind a rebated stop at the far face.
+_CONCEALED_JAMB_M = 0.016        # liner (aluminium or wood) + bead, each jamb and the head
 _SHADOW_GAP_M = 0.003            # 1/8" reveal between leaf edge and liner
 _CONCEALED_STOP_M = 0.013        # rebate lip projecting past the liner; the leaf closes on it
 _SHADOW_STRIP_DEPTH_M = 0.006    # dark face on the stop, seen only through the reveal
 _CONCEALED_UNDERCUT_M = 0.019    # leaf bottom above the wall base: finish floor + clearance
 _CONCEALED_LEAF_THICKNESS_M = 0.045
+_PUSH_SET_REBATE_M = 0.016       # 5/8" stop between a push-set leaf and its finish face
 
 # --- lever set (square rose, lever returning toward the hinge) ----------------------------
 _LEVER_HEIGHT_M = 0.914          # 36" to the lever centre above the leaf's floor
@@ -61,10 +64,15 @@ def handing(opening) -> tuple[float, float]:
 
 
 def concealed_leaf(faces: tuple[float, float], swing_sign: float, width: float,
-                   base_z: float, height: float) -> tuple[float, float, float, float, float]:
-    """``(leaf_width, leaf_height, bottom_z, flush_face, back_face)`` of a concealed-frame leaf."""
-    flush = faces[1] if swing_sign > 0 else faces[0]
-    back = flush - swing_sign * _CONCEALED_LEAF_THICKNESS_M
+                   base_z: float, height: float, leaf_set: str = "pull",
+                   ) -> tuple[float, float, float, float, float]:
+    """``(leaf_width, leaf_height, bottom_z, pull_face, push_face)`` of a concealed-frame leaf."""
+    if leaf_set == "push":
+        back = (faces[0] if swing_sign > 0 else faces[1]) + swing_sign * _PUSH_SET_REBATE_M
+        flush = back + swing_sign * _CONCEALED_LEAF_THICKNESS_M
+    else:
+        flush = faces[1] if swing_sign > 0 else faces[0]
+        back = flush - swing_sign * _CONCEALED_LEAF_THICKNESS_M
     leaf_width = width - 2.0 * (_CONCEALED_JAMB_M + _SHADOW_GAP_M)
     bottom = base_z + _CONCEALED_UNDERCUT_M
     top = base_z + height - _CONCEALED_JAMB_M - _SHADOW_GAP_M
@@ -72,18 +80,19 @@ def concealed_leaf(faces: tuple[float, float], swing_sign: float, width: float,
 
 
 def concealed_frame_parts(box: BoxFn, faces: tuple[float, float], swing_sign: float,
-                          width: float, base_z: float, height: float) -> list[GPart]:
-    """Liner, leaf, stop and shadow strips of a flush concealed-frame door.
+                          width: float, base_z: float, height: float,
+                          leaf_set: str = "pull") -> list[GPart]:
+    """Liner, leaf, stop and shadow strips of a concealed-frame door.
 
-    The liner lines the whole jamb depth and stops flush with both finish faces; the leaf is
-    coplanar with the face it swings toward. Behind it the stop steps into the opening, so
-    the push side shows the frame depth and the pull side only the reveal.
+    The liner lines the whole jamb depth and stops flush with both finish faces. The stop
+    runs from behind the leaf out to the push face: the full frame depth for a pull-set leaf,
+    a 5/8" rebate for a push-set one, whose pull side then shows the open throat.
     """
     lo, hi = faces
     depth, mid = hi - lo, (hi + lo) / 2.0
     j, g, p = _CONCEALED_JAMB_M, _SHADOW_GAP_M, _CONCEALED_STOP_M
     leaf_w, leaf_h, leaf_z0, flush, back = concealed_leaf(faces, swing_sign, width, base_z,
-                                                          height)
+                                                          height, leaf_set)
     push = lo if swing_sign > 0 else hi
     head_z = base_z + height
     liner = (

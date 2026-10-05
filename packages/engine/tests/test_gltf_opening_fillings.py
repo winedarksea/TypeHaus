@@ -34,6 +34,7 @@ from typehaus.resolve import resolve
 from typehaus.resolve.geometry import wall_frame
 from typehaus.resolve.geometry_door_products import (
     _CONCEALED_JAMB_M,
+    _PUSH_SET_REBATE_M,
     _SHADOW_GAP_M,
     finish_faces,
 )
@@ -282,14 +283,15 @@ def test_catlin_plant_room_door_ships_translucent_glazing(catlin_model):
 
 # --- trimless door -----------------------------------------------------------------------
 
-def test_catlin_trimless_door_is_flush_on_its_pull_side(catlin_model):
-    """DT-INT-SWING36-TRIMLESS is a concealed (EzyJamb-type) frame: no casing, the leaf flush
-    with the finish face it swings toward, a 1/8" reveal, and the rebated stop showing on the
-    push side only. D-M-BED2 swings into the living room, so that is the flush face."""
+def test_catlin_push_set_door_is_near_flush_on_its_push_side(catlin_model):
+    """D-M-BED2 swings into RM-M-BED, hinged south, with its leaf set behind a 5/8" rebate at
+    the LIVING-room face: no casing, the stop between the leaf and that face, and nothing
+    proud of the wall. The same opening drawn pull-set puts the leaf on the bedroom face."""
     opening = next(op for op in catlin_model.openings if op.tag == "D-M-BED2")
     door_type = next(dt for dt in catlin_model.plan.library.door_types
                      if dt.tag == opening.type_ref)
-    assert door_type.trimless and opening.flip_swing
+    assert door_type.trimless and door_type.leaf_set == "push"
+    assert opening.flip_hinge and not opening.flip_swing
     wall = _host_wall(catlin_model, opening)
     (x0, y0), _t, (nx, ny), _len = wall_frame(wall)
 
@@ -299,22 +301,22 @@ def test_catlin_trimless_door_is_flush_on_its_pull_side(catlin_model):
     # The resolved swing ring is the oracle for which side the leaf sweeps.
     ring = opening.swing_clearance
     cx, cy = sum(p[0] for p in ring) / len(ring), sum(p[1] for p in ring) / len(ring)
-    assert room_owning(catlin_model, wall.storey, (cx, cy)).tag == "RM-M-LIVING"
+    assert room_owning(catlin_model, wall.storey, (cx, cy)).tag == "RM-M-BED"
     swing_side = 1.0 if offset(cx, cy) > offset(*opening_center_xy(wall, opening)) else -1.0
-
-    parts = {part.key: part for part in opening_parts(
-        wall, opening, door_type.operation, is_trimless=True)}
-    assert "frame" not in parts, "no applied casing"
     lo, hi = finish_faces(wall)
-    flush, push = (hi, lo) if swing_side > 0 else (lo, hi)
+    pull, push = (hi, lo) if swing_side > 0 else (lo, hi)
 
     def span(solid) -> tuple[float, float]:
         offsets = [offset(x, y) for x, y in solid.ring]
         return min(offsets), max(offsets)
 
+    parts = {part.key: part for part in opening_parts(
+        wall, opening, door_type.operation, is_trimless=True, leaf_set="push")}
+    assert "frame" not in parts, "no applied casing"
     (leaf,) = parts["leaf"].solids
     leaf_lo, leaf_hi = span(leaf)
-    assert (leaf_hi if swing_side > 0 else leaf_lo) == pytest.approx(flush, abs=1e-3)
+    leaf_push = leaf_lo if swing_side > 0 else leaf_hi
+    assert leaf_push == pytest.approx(push + swing_side * _PUSH_SET_REBATE_M, abs=1e-6)
     along = [(x - x0) * -ny + (y - y0) * nx for x, y in leaf.ring]
     assert max(along) - min(along) == pytest.approx(
         opening.width_m - 2 * (_CONCEALED_JAMB_M + _SHADOW_GAP_M), abs=_DIMENSION_TOLERANCE_M)
@@ -322,13 +324,19 @@ def test_catlin_trimless_door_is_flush_on_its_pull_side(catlin_model):
         for solid in parts[key].solids:
             a, b = span(solid)
             assert lo - 1e-6 <= a and b <= hi + 1e-6, f"{key} stands proud of the wall"
-    leaf_back = leaf_lo if swing_side > 0 else leaf_hi
     for solid in parts["stop"].solids:
         a, b = span(solid)
-        assert (b <= leaf_back + 1e-6) if swing_side > 0 else (a >= leaf_back - 1e-6), (
-            "the stop belongs on the push side, behind the leaf")
-    assert min(abs(v - push) for v in (a, b)) < 1e-6, "the stop runs out to the push face"
+        assert min(a, b, key=lambda v: abs(v - push)) == pytest.approx(push, abs=1e-6), (
+            "the stop runs out to the push face")
+        assert (b <= leaf_push + 1e-6) if swing_side > 0 else (a >= leaf_push - 1e-6), (
+            "the stop sits between the leaf and the push face")
     assert len(parts["hardware"].solids) == _LEVER_SET_BOXES
+
+    pulled = {part.key: part for part in opening_parts(
+        wall, opening, door_type.operation, is_trimless=True, leaf_set="pull")}
+    (leaf,) = pulled["leaf"].solids
+    leaf_lo, leaf_hi = span(leaf)
+    assert (leaf_hi if swing_side > 0 else leaf_lo) == pytest.approx(pull, abs=1e-6)
 
 
 def opening_center_xy(wall, opening) -> tuple[float, float]:

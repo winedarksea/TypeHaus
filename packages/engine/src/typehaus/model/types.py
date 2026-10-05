@@ -73,6 +73,10 @@ class DoorType(HausModel):
     # No applied casing — drywall return jamb: the gwb wraps into the opening and dies
     # against a concealed jamb, so 3D exports and the live viewer draw no frame boxes.
     trimless: bool = False
+    # Where a trimless leaf sits in the jamb depth: "pull" is flush with the face it swings
+    # toward (EzyJamb-type); "push" is set at the far face of a full-depth jamb, behind a
+    # rebated stop, so an in-swing door reads near-flush on the side it is pushed from.
+    leaf_set: Literal["pull", "push"] = "pull"
     # Type-level engineered-header default (e.g. '2-ply 14" LVL') for openings wide enough
     # that the solver's dimensional-lumber header tables don't apply; a Door instance's
     # own header_spec wins over this.
@@ -117,6 +121,13 @@ class DoorType(HausModel):
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None
+
+    @model_validator(mode="after")
+    def _push_set_is_trimless(self) -> DoorType:
+        if self.leaf_set == "push" and not self.trimless:
+            raise ValueError(f"{self.tag}: leaf_set='push' describes a trimless jamb; "
+                             "set trimless=True")
+        return self
 
 
 class WindowType(HausModel):

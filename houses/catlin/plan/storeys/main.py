@@ -71,18 +71,18 @@ DOOR_TYPES = [
     # only user of either) went from a 32" glazed leaf to a 36" ROUGH OPENING, no leaf at
     # all — the hall and the gym are one circulation space now, so there is nothing to
     # glaze. See D-B-GYM's own note in storeys/basement.py.
-    # Frameless jamb system (no applied casing — drywall return jamb), flush with the gwb.
-    # DT-INT-SWING30-TRIMLESS retired 2026-09-15 and REPLACED by the 36" below, not joined
-    # by it: D-M-BED2 was its only door and widened, which would have left a catalog entry
-    # this house does not hang — the trap this file's own note about the five spliced
-    # shared standard-door records. The jamb system and the drywall premium are unchanged;
-    # only the leaf got wider.
-    #
-    # D-M-BED2 is the main-floor suite's entry and the one door here a walker or a chair has
-    # to get through: a 36" RO is ~33" clear where the 30" was ~27". `trimless` lives on the
-    # TYPE, not the instance, so retyping that door to the plain DT-INT-SWING36 would have
-    # silently dropped the drywall return jamb it was designed around — see this row's own
-    # note in prices.toml for what that reveal actually costs.
+    # D-M-BED2's door since 2026-10-05: an IN-swing (into RM-M-BED) set at the LIVING-room
+    # face, so the side you push from reads near-flush and the leaf is out of the traffic
+    # lane. A full-depth kerfed hardwood flat jamb, tear-away L-bead into both kerfs (no
+    # casing either face), a rabbeted stop at the living edge with a kerf-in seal, the leaf
+    # ~5/8" back from that face, and a ~5" wood-lined throat on the bedroom side (opens ~90°;
+    # hinge-pin stop). Ordinary trades in order: jamb before drywall, slab after paint. It
+    # replaced the EzyJamb-type DT-INT-SWING36-TRIMLESS, which is flush only on its PULL side
+    # and so only flush in the living room while it swung into it. 32" accepts ~29 1/2" clear
+    # (the 36" gave ~33") for the 4" of wall the latch-side switches needed.
+    DoorType(tag="DT-INT-SWING32-TRIMLESS-PUSH", width=ft(2, 8), height=ft(6, 8),
+             trimless=True, leaf_set="push", core="solid",
+             source="Site-built kerfed hardwood flat jamb to the wall's full depth, leaf set behind a rabbeted stop at the push face; 1 3/4in solid-core slab, 3 ball-bearing butts, kerf-in compression seal at stop and head, mortised automatic door bottom on a hardwood saddle; tear-away L-bead both faces. No STC claimed: no tested assembly."),
     # The type dimensions are the framed rough opening. Product/order dimensions stay in
     # bookcase_door so framing, schedules and factory geometry cannot silently exchange them.
     DoorType(tag="DT-INT-BOOKCASE36", width=inch(38), height=inch(82), core="solid",
@@ -1278,15 +1278,14 @@ OPENINGS = [
     # Second bedroom <-> living connection, straight through the centre bearing wall.
     # Trimless (drywall return jamb, no casing) so it reads as a slot in the wall from
     # both rooms. W-M-C1 is BEARING, so the solver's framing tables supply the header.
-    # Widened to 3'-0" on 2026-09-15; moved one 16" stud bay NORTH on 2026-10-03 for
-    # FURN-M-BED-DESK on the east wall. `from_node` anchors the SOUTH jamb at y=6'-9";
-    # the RO ends at 9'-9", leaving 3'-3" north and 12 3/4" to the desk's north end.
-    # ED-M-BED-SW2 / ED-M-BED-FAN-SW follow the move, keeping their latch-side spacing.
-    # ** SWINGS INTO THE LIVING ROOM SINCE 2026-09-26. ** A concealed (EzyJamb-type) frame
-    # is flush on its PULL side, where the hidden hinges are: this puts the flush face,
-    # reveal and lever in the living room, and the rebated frame depth in the bedroom.
-    Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING36-TRIMLESS",
-         position=from_node("N-M-S1", ft(6, 9)), flip_swing=True),
+    # Moved one 16" stud bay NORTH on 2026-10-03 for FURN-M-BED-DESK on the east wall.
+    # ** 32", HINGED SOUTH, SWINGS INTO THE BEDROOM SINCE 2026-10-05. ** It swung into the
+    # living room's main lane. Push-set (see DT-INT-SWING32-TRIMLESS-PUSH), so the living
+    # room still sees a near-flush leaf. The south jamb stays at y=6'-9"; the RO ends at
+    # 9'-5". The open leaf parks along the desk's north end (12 3/4" clear), and both switch
+    # gangs moved to the north (latch) jamb.
+    Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING32-TRIMLESS-PUSH",
+         position=from_node("N-M-S1", ft(6, 9)), flip_hinge=True),
     # O-M-HALL (the old cased pass-through) retired 2026-07-28 with its host wall W-M-C4:
     # the full 4'-2" is open now. Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass) so
     # every main/second head on the west face lands on one shared 6'-0" line (27" units at

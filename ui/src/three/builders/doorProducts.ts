@@ -8,13 +8,15 @@ import type { Opening, Wall } from "../../model/types";
 export type AddBox = (width: number, height: number, thickness: number, along: number,
   elevation: number, normalOffset: number) => void;
 
-// --- concealed frame (EzyJamb-type: flush on the pull side, rebated on the push side) ------
+// --- concealed frame: no casing; `leafSet` "pull" is EzyJamb-type, "push" sits behind a rebate
+export type LeafSet = "pull" | "push";
 const CONCEALED_JAMB_M = 0.016;
 const SHADOW_GAP_M = 0.003;
 const CONCEALED_STOP_M = 0.013;
 const SHADOW_STRIP_DEPTH_M = 0.006;
 const CONCEALED_UNDERCUT_M = 0.019;
 const CONCEALED_LEAF_THICKNESS_M = 0.045;
+const PUSH_SET_REBATE_M = 0.016;
 
 // --- lever set (square rose, lever returning toward the hinge) ----------------------------
 const LEVER_HEIGHT_M = 0.914;
@@ -43,11 +45,13 @@ export function handing(opening: Opening): [number, number] {
   return [opening.flip_hinge ? -1 : 1, opening.flip_swing ? -1 : 1];
 }
 
-/** `[leafWidth, leafHeight, bottomZ, flushFace, backFace]` of a concealed-frame leaf. */
+/** `[leafWidth, leafHeight, bottomZ, pullFace, pushFace]` of a concealed-frame leaf. */
 export function concealedLeaf(faces: [number, number], swingSign: number, width: number,
-  baseZ: number, height: number): [number, number, number, number, number] {
-  const flush = swingSign > 0 ? faces[1] : faces[0];
-  const back = flush - swingSign * CONCEALED_LEAF_THICKNESS_M;
+  baseZ: number, height: number, leafSet: LeafSet = "pull"): [number, number, number, number, number] {
+  const back = leafSet === "push"
+    ? (swingSign > 0 ? faces[0] : faces[1]) + swingSign * PUSH_SET_REBATE_M
+    : (swingSign > 0 ? faces[1] : faces[0]) - swingSign * CONCEALED_LEAF_THICKNESS_M;
+  const flush = back + swingSign * CONCEALED_LEAF_THICKNESS_M;
   const bottom = baseZ + CONCEALED_UNDERCUT_M;
   const top = baseZ + height - CONCEALED_JAMB_M - SHADOW_GAP_M;
   return [width - 2 * (CONCEALED_JAMB_M + SHADOW_GAP_M), top - bottom, bottom, flush, back];
@@ -56,11 +60,12 @@ export function concealedLeaf(faces: [number, number], swingSign: number, width:
 /** Liner, leaf, stop and shadow strips; each group goes to its own `AddBox`. */
 export function buildConcealedFrame(faces: [number, number], swingSign: number, width: number,
   baseZ: number, height: number,
-  add: { liner: AddBox; leaf: AddBox; stop: AddBox; shadow: AddBox }) {
+  add: { liner: AddBox; leaf: AddBox; stop: AddBox; shadow: AddBox }, leafSet: LeafSet = "pull") {
   const [lo, hi] = faces;
   const depth = hi - lo, mid = (hi + lo) / 2;
   const j = CONCEALED_JAMB_M, g = SHADOW_GAP_M, p = CONCEALED_STOP_M;
-  const [leafW, leafH, leafZ0, flush, back] = concealedLeaf(faces, swingSign, width, baseZ, height);
+  const [leafW, leafH, leafZ0, flush, back] = concealedLeaf(faces, swingSign, width, baseZ, height,
+    leafSet);
   const push = swingSign > 0 ? lo : hi;
   const headZ = baseZ + height;
   add.liner(j, height, depth, -width / 2 + j / 2, baseZ + height / 2, mid);

@@ -9,7 +9,7 @@ import { categoryColor } from "../members";
 import { projectPointToScene, type PlanCenter } from "../planGeometry";
 import { NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import {
-  type AddBox, buildConcealedFrame, buildLeverSet, concealedLeaf, finishFaces, handing,
+  type AddBox, type LeafSet, buildConcealedFrame, buildLeverSet, concealedLeaf, finishFaces, handing,
 } from "./doorProducts";
 import { registerSelectable } from "./registry";
 import { baseRefZ } from "./wallFrame";
@@ -65,7 +65,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, operation: DoorOperation | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, isGlazed = false, isTrimless = false,
   bookcaseDoor?: DoorTypeSpec["bookcase_door"],
-  materials?: readonly MaterialAppearance[]) {
+  materials?: readonly MaterialAppearance[], leafSet: LeafSet = "pull") {
   if (opening.kind === "rough_opening") return;
   const firstChildIndex = parent.children.length;
   const [[x0, y0], [x1, y1]] = wall.axis;
@@ -122,8 +122,8 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   const addHardware: AddBox = (w, h, t, a, e, n) => addBox(w, h, t, a, e, hardwareMaterial, n);
   const faces = finishFaces(wall);
   if (isTrimless && opening.kind === "door" && faces && swingLeaf) {
-    // A concealed frame: flush with the face the leaf swings toward, a 1/8" reveal, and the
-    // rebated stop on the push side. Mirrors resolve/geometry_door_products.py.
+    // A concealed frame: no casing, a 1/8" reveal, the leaf set at the face `leafSet` names.
+    // Mirrors resolve/geometry_door_products.py.
     const linerMaterial = standardMaterial(categoryColor("door_leaf"), mode);
     const shadowMaterial = standardMaterial(categoryColor("shadow_gap"), mode,
       { roughness: NORDIC_ROUGHNESS.matte });
@@ -132,9 +132,9 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     buildConcealedFrame(faces, swingSign, opening.width_m, floorZ, availableHeight, {
       liner: withMaterial(linerMaterial), leaf: withMaterial(solidLeafMaterial),
       stop: withMaterial(linerMaterial), shadow: withMaterial(shadowMaterial),
-    });
+    }, leafSet);
     const [leafW, , , flush, back] = concealedLeaf(faces, swingSign, opening.width_m, floorZ,
-      availableHeight);
+      availableHeight, leafSet);
     buildLeverSet(addHardware, -hingeSign * leafW / 2, hingeSign, [flush, back], floorZ);
     registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
     return;

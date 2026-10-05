@@ -106,12 +106,12 @@ def _exterior_face(wall: ResolvedWall) -> tuple[float, float] | None:
 
 def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                   is_glazed: bool = False, is_trimless: bool = False,
-                  bookcase_door=None) -> tuple[GPart, ...]:
+                  bookcase_door=None, leaf_set: str = "pull") -> tuple[GPart, ...]:
     """Every solid the product inside ``opening`` contributes, grouped into named parts.
 
     A rough opening is a bare void with no product and yields nothing. A ``trimless`` swing
-    door is a concealed frame (→ ``geometry_door_products``): no casing, the leaf flush with
-    the face it swings toward. Every swing leaf carries a lever set, appended last.
+    door is a concealed frame (→ ``geometry_door_products``): no casing, the leaf set at the
+    face ``leaf_set`` names. Every swing leaf carries a lever set, appended last.
     """
     if opening.kind == "rough_opening":
         return ()
@@ -174,9 +174,9 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     if (is_trimless and opening.kind == "door" and faces is not None
             and operation in (None, DoorOperation.SWING)):
         parts.extend(concealed_frame_parts(box, faces, swing_sign, width, z0 + sill,
-                                           available_height))
+                                           available_height, leaf_set))
         leaf_w, _h, _z, flush, back = concealed_leaf(faces, swing_sign, width, z0 + sill,
-                                                     available_height)
+                                                     available_height, leaf_set)
         hardware = hardware_part(lever_solids(box, -hinge_sign * leaf_w / 2.0, hinge_sign,
                                               (flush, back), z0 + sill))
         return tuple(parts) + ((hardware,) if hardware is not None else ())

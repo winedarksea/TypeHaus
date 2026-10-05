@@ -1448,6 +1448,9 @@
 "canvas_objects/FURN-M-LIV-ROD-S1/body_z0_m": 2.1574125,
 "canvas_objects/FURN-M-LIV-ROD-S1/body_z1_m": 2.2082125,
 "canvas_objects/FURN-M-LIV-ROD-S1/z_m": 2.1574125,
+"canvas_objects/FURN-M-LIVING-FIDDLE-LEAF-FIG/body_z0_m": 0.0238125,
+"canvas_objects/FURN-M-LIVING-FIDDLE-LEAF-FIG/body_z1_m": 1.5478125,
+"canvas_objects/FURN-M-LIVING-FIDDLE-LEAF-FIG/z_m": 0.0238125,
 "canvas_objects/FURN-M-MEDIA/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-MEDIA/body_z1_m": 0.6334125,
 "canvas_objects/FURN-M-MEDIA/z_m": 0.0238125,
@@ -27546,12 +27549,6 @@
 "8458aa6a7b11"
 ],
 "geometry/CMW112AAAA::framing/member:cripple-head-0-01": [
-2.21615,
-2.667,
-8,
-"dcb16b4147dc"
-],
-"geometry/CMW112AAAA::framing/member:cripple-head-0-02": [
 2.21615,
 2.667,
 8,
@@ -70445,12 +70442,6 @@
 "a1a479d66f95"
 ],
 "member/CMW112AAAA/cripple-head-0-01": [
-2.21615,
-2.667,
-2,
-"cc5034aea423"
-],
-"member/CMW112AAAA/cripple-head-0-02": [
 2.21615,
 2.667,
 2,

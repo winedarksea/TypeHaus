@@ -4651,3 +4651,29 @@ surface that reaches the court, so the water goes there.
   the same 12x6 double-deflection type and mount elevation as the bedroom side grilles.
 - Keep the branch exposed at its authored 100 1/8-inch centreline; it still crosses
   `W-S-C2B` above the door header.
+
+## 2026-10-05 — D-M-BED2: 32" in-swing, push-set in a kerfed wood jamb
+
+- The bedroom's living-room door swung into the living room's main lane. It now swings
+  into `RM-M-BED`, hinged on the SOUTH jamb (`flip_hinge=True`), and is 32" (~29 1/2"
+  clear, down from ~33"; the owner accepted that step back from the 2026-09-15 widening).
+- New house type `DT-INT-SWING32-TRIMLESS-PUSH`. An EzyJamb-type concealed frame is flush
+  only on its PULL side, so an in-swing one reads flush in the bedroom and shows a ~5 1/2"
+  recess in the living room. EzyJamb's in-swing ISD solves that but is hard to install.
+  Instead: a full-depth kerfed hardwood flat jamb, tear-away L-bead in both kerfs (no
+  casing), a rabbeted stop at the LIVING edge with a kerf-in seal, the leaf ~5/8" behind
+  that face, a ~5" wood throat on the bedroom side (opens ~90°, hinge-pin stop), a
+  solid-core slab and a mortised automatic door bottom on a hardwood saddle. Standard
+  sequence: jamb before drywall, slab after paint. No STC is claimed.
+- Engine: `DoorType.leaf_set` ("pull" | "push", push requires `trimless`) places a
+  concealed-frame leaf in the jamb depth; `geometry_door_products.concealed_leaf` and its
+  UI mirror read it.
+- The RO keeps its south jamb at y=6'-9" and ends at 9'-5". The open leaf parks 12 3/4"
+  north of the desk. `ED-M-BED-SW2` / `ED-M-BED-FAN-SW` moved to the north (latch) side,
+  at 119" / 123" along `W-M-C1`.
+- `notes/floor_heights.md`: the LVP-to-carpet step becomes a hardwood saddle at +1.5000 that
+  the door bottom seals on. The price row is a parts build-up estimate, not a quote.
+- Validation: `haus check` 1,856 pass, 0 fail, 44 unknown (none touch this door). Goldens
+  re-blessed for the narrower RO (one W-M-C1 cripple, framing bid LF, the INT_2X6_BRG_RC
+  opening-perimeter detail); the elevation golden also picked up the unblessed
+  FURN-M-LIVING-FIDDLE-LEAF-FIG from the "ficus" commit.

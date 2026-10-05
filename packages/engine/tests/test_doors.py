@@ -62,6 +62,14 @@ def test_door_operation_accepts_the_legacy_string_form():
     assert DoorType(tag="DT-Y", width=ft(3), height=ft(6, 8)).operation is DoorOperation.SWING
 
 
+def test_push_set_leaf_needs_a_trimless_jamb():
+    """``leaf_set="push"`` places a leaf in a concealed jamb; a cased door has no such jamb."""
+    assert DoorType(tag="DT-P", width=ft(2, 8), height=ft(6, 8), trimless=True,
+                    leaf_set="push").leaf_set == "push"
+    with pytest.raises(ValueError, match="trimless"):
+        DoorType(tag="DT-Q", width=ft(2, 8), height=ft(6, 8), leaf_set="push")
+
+
 def test_door_operation_rejects_an_unknown_value():
     with pytest.raises(ValueError):
         DoorType(tag="DT-Z", width=ft(3), height=ft(6, 8), operation="barn")
@@ -79,11 +87,11 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         "DT-INT-SWING36": (36.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING30": (30.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING30-GLAZED": (30.0, DoorOperation.SWING, False, True),
-        # 2026-09-15: was DT-INT-SWING30-TRIMLESS. D-M-BED2 is the only trimless swing in
-        # the house and it widened to 3'-0" for the aging-in-place pass, so the catalog
-        # entry moved with it — leaving the 30" behind would have been exactly the 0-ea
-        # entry the note below says a catalog is not for.
+        # The library's EzyJamb-type preset, spliced in with STANDARD_DOOR_TYPES; no catlin
+        # door hangs it since D-M-BED2 went push-set on 2026-10-05.
         "DT-INT-SWING36-TRIMLESS": (36.0, DoorOperation.SWING, False, False),
+        # D-M-BED2: a 32" in-swing set at the living-room face, out of the traffic lane.
+        "DT-INT-SWING32-TRIMLESS-PUSH": (32.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING24": (24.0, DoorOperation.SWING, False, False),
         "DT-INT-BIFOLD56": (56.0, DoorOperation.BIFOLD, False, False),
         # RM-M-MUD-CLOSET's bypass slider: the framed replacement for FURN-M-MUD-CLOSET-S,

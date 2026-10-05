@@ -110,9 +110,9 @@ ACCENT_GWB_LINING = (
 # ** WHAT MOVES: the bedroom face, 1/2" west, and nothing else. ** The living-room face
 # stays at x=219.385". RM-M-BED loses 1/2" of real width that the model does not record
 # (`resolve/rooms.py` polygonises from wall AXES and insets by lining only), so no area,
-# glazing or egress verdict changes. `D-M-BED2` is `DT-INT-SWING36-TRIMLESS` — a drywall
-# return jamb, no casing — so its reveal simply gets 1/2" deeper on the bedroom side; there
-# is no casing to re-cut and nothing else is hosted on either face.
+# glazing or egress verdict changes. `D-M-BED2` is `DT-INT-SWING32-TRIMLESS-PUSH` — a
+# full-depth jamb, no casing, the leaf set at the living face — so its bedroom-side throat
+# simply gets 1/2" deeper; there is no casing to re-cut.
 #
 # ** NO `stc` IS CLAIMED, DELIBERATELY. ** Same rule the library's presets are held to and
 # `INT_2X4_STAGGERED_GWB` already follows here: a rating is a published test result, never

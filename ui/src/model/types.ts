@@ -1327,6 +1327,8 @@ export interface DoorTypeSpec {
   glazed: boolean;
   // No applied casing — drywall return jamb; the viewer draws no frame boxes for it.
   trimless: boolean;
+  // Where a trimless leaf sits in the jamb: flush with its swing face, or behind a push-side rebate.
+  leaf_set?: "pull" | "push";
   // The chosen product (`Catalog.products`), or null where this is still a specification
   // rather than a picked item. Resolve it with `productFor` (components/ProductRows.tsx).
   product_ref?: string | null;

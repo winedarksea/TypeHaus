@@ -346,7 +346,7 @@ MAIN_PLACEABLES = [
 
     # Southeast corner since 2026-10-03: rotation -90 puts the back on the east wall,
     # with ~1/2" to its 212.115" finish face. D-M-BED2 moved one stud bay north, leaving
-    # 12 3/4" from the desk's north end to its south jamb. Keep y unchanged so the west-
+    # 12 3/4" from the desk's north end to its south (hinge) jamb, where its leaf parks. Keep y unchanged so the west-
     # facing 36" chair zone stays south of the king's foot at 68.445".
     Furniture(uid="CMD701AAAA", tag="FURN-M-BED-DESK", type_ref="FURN-DESK-HEMNES-61",
               room="RM-M-BED", position=pt(inch(198.75), inch(37.75)), rotation=deg(-90)),
@@ -694,7 +694,7 @@ SECOND_PLACEABLES = [
     Furniture(uid="TAB701AAAA", tag="FURN-S-STUDY-TABLE", type_ref="FURN-CHESS-TABLE-315",
               room="RM-S-STUDY2", position=pt(m(9.55695), inch(22.385)), rotation=deg(90)),
     Furniture(uid="CHR704AAAA", tag="FURN-S-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
-              room="RM-S-STUDY2", position=pt(m(10.1327), m(0.588309)), rotation=deg(-90)),
+              room="RM-S-STUDY2", position=pt(m(10.2316), m(0.589194)), rotation=deg(-90)),
     Furniture(uid="CHR705AAAA", tag="FURN-S-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
               room="RM-S-STUDY2", position=pt(m(8.8924), m(0.588713)), rotation=deg(90)),
     # A compact rocking chair occupies the southeast corner, with its back to the south
