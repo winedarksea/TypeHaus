@@ -139,7 +139,16 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
             ifc_class = class_for_kind.get(
                 item.kind, class_for_kind.get(item.domain, "IfcBuildingElementProxy"))
         height = _placeable_height(model, item, source)
-        centroid, bbox = _bounds(item.footprint, item.z_m, item.z_m + height)
+        # Recessed floor devices export their body below the mount plane. The resolved body
+        # band is the same one the IFC emitter extrudes; using the mount elevation here
+        # instead compared the body below the floor against a baseline above it.
+        recessed_device = (item.kind == "ElectricalDevice"
+                           and item.body_z0_m is not None
+                           and item.body_z1_m is not None
+                           and item.body_z0_m != item.z_m)
+        body_z0 = item.body_z0_m if recessed_device else item.z_m
+        body_z1 = item.body_z1_m if recessed_device else body_z0 + height
+        centroid, bbox = _bounds(item.footprint, body_z0, body_z1)
         attrs = {"type": item.type_ref or ""}
         attrs["rotation_degrees"] = f"{item.rotation_degrees:.6f}"
         ports = _type_ports(model, item.type_ref)

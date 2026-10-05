@@ -221,10 +221,9 @@ def test_emit_fixtures_draws_the_generated_glyph_as_plain_polylines() -> None:
     furniture = [node for node in build_floorplan(model, "main").by_layer()["A-FURN"]
                  if isinstance(node, Polyline)]
 
-    # RM-M-LIVING's sofa was retyped house-local to `FT-SOFA-84-SEAT-BAND` on 2026-09-06
-    # (same dimensions, a seat-width walk band), so the shared `FURN-SOFA-84` has no
-    # instance in catlin. The witness here is the sofa MASSING, which did not change.
-    sofa = next(item for item in model.canvas_objects if item.type_ref == "FT-SOFA-84-SEAT-BAND")
+    # RM-M-LIVING's sofa uses a house-local table-clearance type; select the stable instance
+    # tag so a later catalog retune does not break this drawing-pipeline assertion.
+    sofa = next(item for item in model.canvas_objects if item.tag == "FURN-M-SOFA")
     drawn = [node for node in furniture if node.uid == sofa.uid]
     assert len(drawn) > 1, "the resolved outline plus every generated stroke"
     assert drawn[0].closed and drawn[0].lineweight == 0.25, "the footprint stays the heavy outline"
