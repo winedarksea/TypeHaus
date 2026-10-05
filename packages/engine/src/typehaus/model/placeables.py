@@ -124,6 +124,8 @@ class PlanRepresentation(HausModel):
 class ModelRepresentation(HausModel):
     primitive: str | None = None
     glb: str | None = None
+    # Generated 3D geometry can be specified without adding a floor-plan glyph.
+    symbol: str | None = None
 
 
 class WallAttachment(HausModel):

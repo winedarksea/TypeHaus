@@ -7,7 +7,7 @@ None is in a STARTER_* tuple; a house opts in to the ones it places.
 
 from __future__ import annotations
 
-from typehaus.model import FurnitureType, Mount, MountKind, inch
+from typehaus.model import FurnitureType, ModelRepresentation, Mount, MountKind, inch
 
 _WALL = Mount(kind=MountKind.WALL)
 _ROD = ("Curtain rod on end brackets. Width is the rod, not the opening: a rod runs past the "
@@ -21,12 +21,14 @@ _CLOSET = ("Ventilated epoxy-coated steel shelf on 12 ga. wall standards and bra
 CURTAIN_ROD_48 = FurnitureType(
     tag="FT-CURTAIN-ROD-48", name='Curtain rod, 48"',
     footprint=(inch(48), inch(4)), height=inch(2),
-    plan_symbol=None, mount=_WALL, source=_ROD,
+    plan_symbol=None, model_representation=ModelRepresentation(symbol="curtain-rod"),
+    mount=_WALL, source=_ROD,
 )
 CURTAIN_ROD_84 = FurnitureType(
     tag="FT-CURTAIN-ROD-84", name='Curtain rod, 84"',
     footprint=(inch(84), inch(4)), height=inch(2),
-    plan_symbol=None, mount=_WALL, source=_ROD,
+    plan_symbol=None, model_representation=ModelRepresentation(symbol="curtain-rod"),
+    mount=_WALL, source=_ROD,
 )
 # 14x14 is a tub waste-and-overflow size; 14x29 reaches the whole of a wall-hung WC carrier.
 ACCESS_PANEL_1414 = FurnitureType(

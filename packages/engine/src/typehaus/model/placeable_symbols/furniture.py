@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typehaus.model.placeable_symbols._chess_table import chess_table
 from typehaus.model.placeable_symbols._closet_wire import closet_corner_wire, closet_wire
+from typehaus.model.placeable_symbols._curtain_rod import curtain_rod
 from typehaus.model.placeable_symbols._desk import drawer_desk
 from typehaus.model.placeable_symbols._families import (
                                                         Builder,
@@ -84,6 +85,7 @@ CABINET_SHADE = "cabinet-cream-dark"
 CABINET_SINGLE_DOOR_MAX_WIDTH_M = inch(24).meters
 
 FURNITURE_SYMBOLS: dict[str, Builder] = {
+    "curtain-rod": curtain_rod,
     # Seating. Seat count is what separates a sofa from a loveseat from an armchair.
     "sofa": seating(arms=True, seats=3),
     "loveseat": seating(arms=True, seats=2),

@@ -86,6 +86,10 @@ def load_project_placeables(house_dir: Path, plan: PlanModel,
             elif record.get("model_primitive"):
                 common["model_representation"] = ModelRepresentation(
                     primitive=str(record["model_primitive"]))
+            if record.get("model_symbol"):
+                representation = common.get("model_representation") or ModelRepresentation()
+                common["model_representation"] = representation.model_copy(
+                    update={"symbol": _plan_symbol(record["model_symbol"])})
             if record.get("plan_svg"):
                 common["plan_representation"] = PlanRepresentation(svg=str(record["plan_svg"]))
             if "needs" in record:

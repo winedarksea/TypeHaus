@@ -87,6 +87,12 @@ def _wood_part(role: str, wood: Any | None) -> dict[str, Any]:
             **(MIRROR_SURFACE_PROPERTIES if role == "mirror" else {})}
 
 
+def model_symbol_for(item: Any) -> str | None:
+    """An explicit generated model takes precedence over the plan symbol's massing."""
+    representation = getattr(item, "model_representation", None)
+    return getattr(representation, "symbol", None) or getattr(item, "plan_symbol", None)
+
+
 def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict[str, Any]:
     """Project a type's generated plan glyph and 3D massing into the wire contract.
 
@@ -115,8 +121,9 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict
             ],
         }
     symbol = getattr(item, "plan_symbol", None)
+    model_symbol = model_symbol_for(item)
     height = getattr(item, "height", None)
-    if symbol is None or footprint is None:
+    if footprint is None:
         return {"plan_strokes": [], "model_parts": []}
     width_m, depth_m = (part.meters for part in footprint)
     height_m = height.meters if height is not None else 0.0
@@ -136,7 +143,7 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict
                          **({"shape": "mesh", "mesh": part["mesh"]} if "mesh" in part else {}),
                          **({"points": [list(point) for point in part["points"]]}
                             if part["points"] else {})}
-                        for part in model_parts(symbol, width_m, depth_m, height_m)],
+                        for part in model_parts(model_symbol, width_m, depth_m, height_m)],
     }
 
 

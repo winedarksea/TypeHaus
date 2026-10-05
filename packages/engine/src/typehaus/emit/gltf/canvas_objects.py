@@ -13,7 +13,7 @@ from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.emit.gltf.triangulate import polygon_parts
 from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.model.built_in_bookcase import built_in_bookcase_parts
-from typehaus.model.canvas import canvas_object_types, wood_material
+from typehaus.model.canvas import canvas_object_types, model_symbol_for, wood_material
 from typehaus.model.placeable_symbols import PART_COLORS, lamp_role, model_parts, place_local
 from typehaus.resolve.geometry_countertops import countertop_prisms, slab_hosts
 from typehaus.resolve.geometry_ir import GMesh
@@ -132,7 +132,7 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
                          item.z_m + part.z0_m, item.z_m + part.z1_m,
                          wood_color or _color("furniture"))
         return True
-    symbol = getattr(product_type, "plan_symbol", None)
+    symbol = model_symbol_for(product_type)
     footprint = getattr(product_type, "footprint", None)
     height = getattr(product_type, "height", None)
     if symbol is None or footprint is None or height is None:
