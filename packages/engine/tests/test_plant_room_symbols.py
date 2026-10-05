@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+
 import pytest
 
 from typehaus.model.placeable_symbols import model_parts
@@ -34,6 +36,32 @@ def test_small_plant_has_a_three_and_a_half_inch_open_pot_and_leaf_meshes():
     leaves = [part for part in parts if part["color"] == "foliage"]
     assert len(leaves) >= 12
     assert all(part["shape"] == "mesh" for part in leaves)
+
+
+def test_fiddle_leaf_fig_has_a_woody_trunk_and_lightweight_double_sided_leaves():
+    parts = model_parts("fiddle-leaf-fig", inch(24).meters, inch(24).meters,
+                        inch(60).meters)
+    assert parts[0]["size"][:2] == pytest.approx((inch(14).meters,) * 2)
+    assert _bounds(parts[0], 2) == pytest.approx((0, inch(14).meters))
+    trunk = parts[2]
+    assert trunk["color"] == "wood-dark"
+    assert _bounds(trunk, 2)[1] > inch(55).meters
+    leaves = [part for part in parts if part["color"] == "foliage"]
+    assert len(leaves) == 10
+    assert min(_bounds(leaf, 2)[0] for leaf in leaves) > inch(24).meters
+    assert max(_bounds(leaf, 2)[1] for leaf in leaves) == pytest.approx(inch(60).meters)
+    for leaf in leaves:
+        mesh = leaf["mesh"]
+        assert all(math.isfinite(value) for normal in mesh["normals"] for value in normal)
+        # Each front triangle has the same vertices and an opposite normal on its back.
+        half = len(mesh["positions"]) // 2
+        for index in range(0, half, 3):
+            assert mesh["positions"][index:index + 3] == (
+                mesh["positions"][half + index], mesh["positions"][half + index + 2],
+                mesh["positions"][half + index + 1])
+            assert mesh["normals"][index] == pytest.approx(
+                tuple(-value for value in mesh["normals"][half + index]))
+    assert sum(len(part["mesh"]["triangles"]) for part in parts if "mesh" in part) < 1500
 
 
 def test_hanging_basket_has_three_actual_cords_and_trailing_foliage():

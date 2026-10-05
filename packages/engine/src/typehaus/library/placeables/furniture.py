@@ -58,6 +58,11 @@ POTTED_PLANT = FurnitureType(
     tag="FURN-PLANT-18", name="Potted plant", footprint=(ft(1, 6), ft(1, 6)), height=ft(3, 6),
     plan_symbol="potted-plant", source=REFERENCE,
 )
+FIDDLE_LEAF_FIG = FurnitureType(
+    tag="FURN-FIDDLE-LEAF-FIG-24", name="Fiddle leaf fig (Ficus lyrata)",
+    footprint=(ft(2), ft(2)), height=ft(5), plan_symbol="fiddle-leaf-fig",
+    source="Illustrative indoor specimen allowance: 24 in foliage spread, 5 ft overall height.",
+)
 COFFEE_TABLE = FurnitureType(
     tag="FURN-COFFEE-48", name="Coffee table", footprint=(ft(4), ft(2)), height=ft(1, 6),
     plan_symbol="coffee-table", source=REFERENCE,
@@ -413,7 +418,7 @@ CLOSET_PEG_RAIL_42 = FurnitureType(
 
 STARTER_FURNITURE_TYPES = (
     STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, ROCKING_CHAIR, POTTED_PLANT, COFFEE_TABLE,
-    END_TABLE, MEDIA_CONSOLE,
+    FIDDLE_LEAF_FIG, END_TABLE, MEDIA_CONSOLE,
     TV_65, TV_98,
     DINING_8_OPEN_CORNERS, SOFA_84_SEAT_BAND, PORCH_LOUNGE_27,
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, HEMNES_DRESSER_63,
