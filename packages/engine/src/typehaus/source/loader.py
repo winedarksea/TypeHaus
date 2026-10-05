@@ -675,6 +675,9 @@ def _consistency_check(
     authored = list(plan.all_elements())
     _identity_check(authored, findings)
     _building_check(plan, findings)
+    from typehaus.model.suspension import dangling_carries
+
+    findings.extend(dangling_carries(plan))
     elements = {el.tag: el for el in authored}
     # Provenance may legitimately hold library/storey tags too; only flag plan
     # elements the libcst path never saw. Runtime capture (add_generated) supplies a

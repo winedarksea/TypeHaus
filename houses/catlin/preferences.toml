@@ -72,6 +72,10 @@ deck_snow_psf = 35.0
 # it lands on the concrete sunken-garden walls, and it could not land on a wood deck.
 max_guard_dead_load_on_wood_plf = 50
 
+# Dynamic factor on a hung seat's rated load (structural.suspension_anchor; owner, 2026-10-05):
+# a swing or a drop into the seat. Basis: notes/hanging_seat_anchor.md §2.
+hanging_seat_impact_factor = 2.0
+
 # The same allowance for a MASONRY WALL PASSING THROUGH A FLOOR DECK
 # (structural.through_deck_clearance). A sibling of the key above, not a stretch of it: the
 # number is the same and the rule is not, and raising one for a heavy parapet must not

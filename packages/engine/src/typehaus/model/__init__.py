@@ -216,6 +216,7 @@ from typehaus.model.structure import (
     SrwDrainageZone,
     Wedge,
 )
+from typehaus.model.suspension import HangingSeatType, SuspensionAnchor
 from typehaus.model.trim import (
     DischargeExtension,
     Downspout,
@@ -350,6 +351,7 @@ __all__ = [
     "Soffit", "SoffitOpening",
     "FloorHeat", "FinishZone",
     "PanelingSpan", "WallPaneling", "WallBacking", "BracedWallPanel",
+    "SuspensionAnchor", "HangingSeatType",
     "Countertop", "MillworkStandard", "StairLandingMillwork", "ShelfBank", "ShelfBay",
     "WindowStool",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",

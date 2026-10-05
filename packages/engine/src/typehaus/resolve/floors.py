@@ -24,6 +24,7 @@ from typehaus.resolve.floor_tilt import joist_lift, twisted
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
 from typehaus.resolve.opening_lining import lining_solids
+from typehaus.resolve.suspension_anchors import anchor_targets, lay_anchor_lines, unframed
 from typehaus.resolve.through_deck import through_deck_cuts, through_deck_walls
 
 _DEFAULT_SPACING_M = inch(16).meters
@@ -36,18 +37,21 @@ def _member_depth_m(member: str) -> float:
 def resolve_floors(model: ResolvedModel) -> list[Finding]:
     findings: list[Finding] = []
     plan = model.plan
+    anchors = anchor_targets(model)
     for storey in plan.storeys:
         for element in plan.storey_elements(storey.tag):
             if not isinstance(element, FloorSystem):
                 continue
-            floor, floor_findings = _resolve_floor(model, element, storey)
+            floor, floor_findings = _resolve_floor(model, element, storey,
+                                                   anchors.get(element.tag, ()))
             findings.extend(floor_findings)
             if floor is not None:
                 model.floors.append(floor)
+    unframed(model, anchors)
     return findings
 
 
-def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
+def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()):
     spec = system.joists
     along_x = spec.direction == "x"
     if not spec.bearing_refs:
@@ -139,7 +143,14 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     findings = move_lines(system, positions, perp0, perp1)
     extra, extra_findings = extra_lines(system, positions, perp0, perp1)
     findings += extra_findings
-    opening_boxes = within_one_bay(opening_boxes, positions + extra)
+    # A SuspensionAnchor's line: a regular one moved and upgraded, or one added.
+    anchored, line_members, anchor_findings = lay_anchor_lines(
+        model, system, anchors, positions, extra, perp0, perp1, boundaries,
+        [(tag, _axis_coord(axis)) for tag, axis in zip(spec.bearing_refs, bearing_axes,
+                                                       strict=True) if axis is not None],
+        along_x)
+    findings += anchor_findings
+    opening_boxes = within_one_bay(opening_boxes, positions + extra + anchored)
 
     # Anything shorter than the joist's own depth is bearing seat, not span. An opening
     # drawn to a bearing wall's *near face* stops short of the bearing line the span is cut
@@ -148,6 +159,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     min_segment_m = _member_depth_m(spec.member)
     lines = [(f"{index:03d}", perp) for index, perp in enumerate(positions)]
     lines += [(f"x{index:02d}", perp) for index, perp in enumerate(extra)]
+    lines += [(f"a{index:02d}", perp) for index, perp in enumerate(anchored)]
     for index, perp in lines:
         for span_index in range(len(boundaries) - 1):
             a, b = boundaries[span_index], boundaries[span_index + 1]
@@ -171,7 +183,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                 rakes = abs(lift_b - lift_a) > 1e-9
                 members.append(FramedMember(
                     system.uid, f"joist-{span_index}-{index}-{segment_index}", "joist",
-                    spec.member, p0, p1, z0 + lift_a, z1 + lift_a, segment_b - segment_a,
+                    line_members.get(index, spec.member), p0, p1, z0 + lift_a, z1 + lift_a,
+                    segment_b - segment_a,
                     z0_end_m=(z0 + lift_b) if rakes else None,
                     z1_end_m=(z1 + lift_b) if rakes else None,
                 ))
@@ -183,8 +196,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     # Every laid line, extra ones included: a block cut against the regular lines alone
     # would run straight through an authored extra joist.
     members.extend(_reinforcement_members(
-        system, spec, sorted(positions + extra), along_x, ends.tip_lo, ends.tip_hi, z0, z1,
-        lift if tilt is not None else None))
+        system, spec, sorted(positions + extra + anchored), along_x, ends.tip_lo, ends.tip_hi,
+        z0, z1, lift if tilt is not None else None))
 
     # Opening framing after clipping: headers on edges with no declared bearing, trimmer
     # packs bearing to bearing (resolve/floor_openings.py).

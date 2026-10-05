@@ -6,7 +6,6 @@ from math import atan2, degrees
 from typing import Any
 
 from typehaus.model.built_in_bookcase import built_in_bookcase_parts
-from typehaus.model.electrical import luminaire_types
 from typehaus.model.placeable_symbols import (
     PART_COLORS,
     lamp_role,
@@ -193,7 +192,9 @@ def resolved_canvas_objects(
     """
     type_metadata = {item["tag"]: item for item in canvas_object_types(model.plan)}
     prov_of = provenance_of if provenance_of is not None else (lambda _tag: None)
-    luminaires = luminaire_types(model.plan.library)
+    from typehaus.resolve.suspension import hung_types
+
+    luminaires = hung_types(model.plan.library)
     placeables = [{
         "uid": item.uid, "tag": item.tag, "storey": item.storey, "kind": item.kind,
         "type": item.type_ref, "domain": item.domain, "room": item.room,

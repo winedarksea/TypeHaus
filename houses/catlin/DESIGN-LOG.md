@@ -4703,3 +4703,24 @@ surface that reaches the court, so the water goes there.
   clearance variant now live in `typehaus.library.placeables.furniture`. Stable tags retain
   the placements and price joins. Starter and empty templates include the shared product
   catalog alongside the furniture types so product references resolve in new houses.
+
+
+### 2026-10-05 — Living-room hammock chair on a derived LVL line
+
+- `FURN-M-MEDIA` is retired (no TV in this room; `plans/pattern_language_review.md`
+  C9/C10 had left it as an owner call). `FURN-M-HAMMOCK` hangs in its place, centred on
+  the south wall at (26'-10", 4'-0"), back to the wall, seat 12" off the floor.
+- The hang point is `HA-M-HAMMOCK`, a `SuspensionAnchor` hosted on the chair. It upgrades
+  FS-S-EAST's joist line 003 (y = 4'-0", mid-span of the 18'-0" field) to a
+  `2-1.75x11.875 LVL` under a fabricated two-bolt saddle and a Crosby 3-S-5 swivel.
+  The line is derived, so nothing in `params/second_deck.py` changed: delete
+  `plan/living_hammock.py` and its manifest line, and the floor is as authored.
+- Design basis (owner): 360 lb rated, two people; impact factor 2.0 in
+  `preferences.toml [structural]`. `structural.suspension_anchor` PASSes with deflection
+  governing at 0.37 of L/480; `notes/hanging_seat_anchor.md` is the hand pass. Not on the
+  engineering register.
+- The chair type is generic (`FURN-HAMMOCK-CHAIR-MEDIUM`, sized off the La Siesta Habana
+  Comfort). That product is rated 285 lb and does not meet the basis, so no product is
+  recorded yet: the chair bought must state 360 lb or more.
+- The elevation golden also picked up the unblessed `ED-M-LIVING-FLOOR-RC1` from the
+  "floor outlet" commit.

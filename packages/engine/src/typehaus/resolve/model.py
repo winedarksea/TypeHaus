@@ -1489,6 +1489,8 @@ class ResolvedModel:
     solar_panels: list[ResolvedSolarPanel] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
     canvas_objects: list[ResolvedCanvasObject] = field(default_factory=list)
+    # Hang points and the joist line each framed (→ resolve/suspension_anchors.py).
+    suspension_anchors: list[Any] = field(default_factory=list)
     # Derived geometry: every solid the building contributes, built once by the pipeline's
     # final stage so the emitters serialize rather than re-derive it. Optional because
     # ``resolve_preview`` (the drag-overlay path) skips the stage.

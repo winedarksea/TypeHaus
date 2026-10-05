@@ -252,7 +252,7 @@ the future.
 - See if we can narrow the gap between FURN-A-STUDY-BUILTIN and the shelves of D-A-STUDY, or add a wood trim piece in front to maintain visual continuity
 - Ridge beam has a whole lot of LSTA24's one it. Perhaps a single coil strap across the whole top is simpler, such as CS14
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door
-- Hanging daybed on porch or hammock chair
+- Hanging daybed on the porch: a `SuspensionAnchor` used 2-4 times with offsets; needs a host other than an interior joist field
 - Gold foil trim or panel accent somewhere
 
 # Project Management

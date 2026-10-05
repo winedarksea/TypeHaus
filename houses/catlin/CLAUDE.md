@@ -62,6 +62,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
   The east frames end at x 27'-4 3/8", with south-wall rail backing; RC4 outlets are at
   x 28'-0", ERV floor returns at x 28'-1". Heat-pump supplies stay in place. BED1's bed
   moves 1/64" east to keep its foot gap above the 18" recommendation.
+- `plan/living_hammock.py` — `# haus: editable`, the living-room hammock chair and its
+  `SuspensionAnchor`, which derives FS-S-EAST's LVL line 003. Removing it is deleting the
+  file and its manifest line. Hand pass: `notes/hanging_seat_anchor.md`.
 - `plan/lighting_attic.py`, `plan/electrical_attic.py` — `# haus: editable`, split off for the
   same reason (`lighting.py` was 1,158 lines, `electrical.py` 1,700). Split
   by STOREY, which is how `plan/manifest.py` already consumes both. An editable file cannot

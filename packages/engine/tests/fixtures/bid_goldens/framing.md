@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 4fe3297744b8be17  
-**Lines:** 158
+**Model hash:** aaf7ffeefbf6166d  
+**Lines:** 160
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -22,12 +22,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 1 pcs, 1.9 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
 | 1.75x11.875 LVL — trimmer (1.75x11.875 LVL) | 192 | LF ordered | 16 pcs, 176.4 LF cut | building |
-| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,388 | LF ordered | 215 pcs, 2142.0 LF cut | building |
+| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,368 | LF ordered | 214 pcs, 2124.1 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
 | 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 45 | ea | 45 pcs, 485.1 LF cut; 505.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | 422 | LF ordered | 56 pcs, 367.4 LF cut | building |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | 280 | LF ordered | 42 pcs, 230.8 LF cut | building |
-| 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 8 | LF ordered | 3 pcs, 7.6 LF cut | building |
+| 2-1.75x11.875 LVL — header, joist (2-1.75x11.875 LVL) | 28 | LF ordered | 4 pcs, 25.4 LF cut | building |
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | 20 | LF ordered | 1 pcs, 16.7 LF cut | building |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | 36 | LF ordered | 1 pcs, 36.0 LF cut | building |
 | 2-1x4 — stud (2-1x4) | 16 | LF ordered | 2 pcs, 13.1 LF cut | building |
@@ -83,6 +83,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | Pocket door frame kit, 2x4 wall (commodity, to 36"/125 lb) (153068PF) | 1 | ea |  | building |
 | Pocket door frame kit, 2x6 wall (36"/200 lb) (15603068) | 1 | ea |  | building |
+| Eye & eye thrust-bearing swivel, 3 t (rotates under load) (3-S-5) | 1 | ea |  | main |
 | A35Z framing angle | 8 | ea |  | building |
 | A35Z framing angle | 4 | ea |  | main |
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
@@ -133,6 +134,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 4 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 4 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
+| Steel U-saddle on a 3 1/2 in joist line, two 5/8 in through-bolts (SADDLE-3.5-2x58) | 1 | ea |  | main |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 71 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 106 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 12 | ea |  | building |
@@ -245,7 +247,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | — |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | — |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | — |
-| 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | — |
+| 2-1.75x11.875 LVL — header, joist (2-1.75x11.875 LVL) | — |
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | — |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | — |
 | 2-1x4 — stud (2-1x4) | — |
@@ -291,6 +293,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | — |
 | Pocket door frame kit, 2x4 wall (commodity, to 36"/125 lb) (153068PF) | — |
 | Pocket door frame kit, 2x6 wall (36"/200 lb) (15603068) | — |
+| Eye & eye thrust-bearing swivel, 3 t (rotates under load) (3-S-5) | HA-M-HAMMOCK |
 | A35Z framing angle | — |
 | A35Z framing angle | SB-BW-BAND |
 | ABU44 standoff post base (4x4) | — |
@@ -341,6 +344,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUS28Z) | — |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | — |
 | LUS ZMAX face-mount joist hanger (LUSZ) | — |
+| Steel U-saddle on a 3 1/2 in joist line, two 5/8 in through-bolts (SADDLE-3.5-2x58) | HA-M-HAMMOCK |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |

@@ -1375,6 +1375,12 @@
 "STHD14RJ" = { low = 24, high = 42 }  # 2 ea — the main-floor NE corner, across the floor band
 "DTT2Z" = { low = 22, high = 38 }  # 2 ea — the second-floor NE corner, one each side of the deck
 
+# HA-M-HAMMOCK's load path (2026-10-05), UNCONFIRMED allowances: a Crosby 3-S-5 eye & eye
+# swivel at rigging-supply retail, and a shop-fabricated U-saddle with its two 5/8" bolts.
+# The LVL line above them bills under [framing] "2-1.75x11.875 LVL".
+"3-S-5" = { low = 150, high = 300 }  # 1 ea — HA-M-HAMMOCK
+"SADDLE-3.5-2x58" = { low = 80, high = 250 }  # 1 ea — HA-M-HAMMOCK
+
 [concrete]
 # RESEARCHED 2026-08-07 — [low, high] $/cy PLACED (ready-mix delivered + placement
 # labour), by solid category. Basis: 3000 psi ready-mix $125-175/cy delivered nationally,
@@ -6199,7 +6205,6 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # product differs, so its price matches the standard table.
 "FT-DINING-8-OPEN-CORNERS" = { low = 500, high = 3000 }  # 1 ea
 "FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 10 ea
-"FURN-MEDIA-60" = { low = 150, high = 800 }  # 1 ea
 "FURN-PLANT-18" = { low = 30, high = 150 }  # 2 ea
 "FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 3 ea
 "FURN-BED-FULL" = { low = 200, high = 1200 }  # 1 ea — BED3, a size down from the queen
@@ -6213,6 +6218,9 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "FT-LIVING-SOFA-84-TABLE-GAP" = { low = 500, high = 3000 }  # 1 ea — same sofa, 18" seated table gap
 # Wayfair W120117949, read 2026-10-05: $217.99, unit only (tax/delivery/assembly excluded).
 "FT-LIVING-PUZZLE-COFFEE-TABLE" = { low = 217.99, high = 217.99 }  # 1 ea — owner-selected lift-top table
+# The living-room hammock chair (plan/living_hammock.py), 2026-10-05. Allowance, not a read
+# price: a medium spreader-bar chair rated 360 lb or more, with its adjustable suspension rope.
+"FURN-HAMMOCK-CHAIR-MEDIUM" = { low = 150, high = 450 }  # 1 ea — replaces the retired FURN-MEDIA-60
 
 
 # --- WHAT THESE NUMBERS INCLUDE ---------------------------------------------------------

@@ -16,7 +16,18 @@ from typehaus.library.placeables._zones import (
     side_zone,
     surround_zone,
 )
-from typehaus.model import Footprint2D, FurnitureType, Mount, MountKind, Product, ft, inch, m, pt
+from typehaus.library.placeables.hanging_seats import HAMMOCK_CHAIR_MEDIUM
+from typehaus.model import (
+    Footprint2D,
+    FurnitureType,
+    Mount,
+    MountKind,
+    Product,
+    ft,
+    inch,
+    m,
+    pt,
+)
 from typehaus.model.placeable_symbols.furniture import sectional_points
 
 REFERENCE = "plans/furniture_size_reference.md (US residential averages)"
@@ -475,7 +486,7 @@ STARTER_FURNITURE_TYPES = (
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, HEMNES_DRESSER_63,
     CHEST, WARDROBE_48, NIGHTSTAND, NARROW_NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
-    TWO_PERSON_DINING_TABLE, CHESS_TABLE_315, DINING_CHAIR,
+    TWO_PERSON_DINING_TABLE, CHESS_TABLE_315, DINING_CHAIR, HAMMOCK_CHAIR_MEDIUM,
     WRITING_DESK, WRITING_DESK_42, HEMNES_DESK_61, MITTZON_SIT_STAND_DESK_47,
     OFFICE_CHAIR, DESK_CHAIR, BOOKCASE, HEMNES_BOOKCASE_35,
     SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_TIERED_48,

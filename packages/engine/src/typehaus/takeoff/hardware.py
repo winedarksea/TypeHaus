@@ -25,6 +25,7 @@ from typehaus.takeoff.hangers import joist_hanger_rows, ridge_tie_strap_rows
 from typehaus.takeoff.partition_fasteners import partition_deflection_screw_rows
 from typehaus.takeoff.slat_braces import slat_brace_rows
 from typehaus.takeoff.strap_braces import strap_brace_rows
+from typehaus.takeoff.suspension_anchors import suspension_anchor_rows
 from typehaus.takeoff.uplift import uplift_rows
 
 
@@ -48,4 +49,5 @@ def hardware_takeoff(model: ResolvedModel,
         *slat_brace_rows(model),
         *glazing_fastener_rows(model),
         *door_hardware_rows(model),
+        *suspension_anchor_rows(model),
     ]

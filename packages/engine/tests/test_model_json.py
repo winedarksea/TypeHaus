@@ -184,6 +184,10 @@ def test_second_floor_joists_are_i_joists(catlin_payload):
     "flange" fields as an I-joist deliberately."""
     east = next(f for f in catlin_payload["floors"] if f["tag"] == "FS-S-EAST")
     east_joists = [m for m in east["members"] if m["category"] == "joist"]
+    # Line 003 is HA-M-HAMMOCK's 2-ply LVL (resolve/suspension_anchors.py), a rectangle.
+    lvl = [m for m in east_joists if m["profile"].endswith(" LVL")]
+    assert [m["key"] for m in lvl] == ["joist-0-003-0"]
+    east_joists = [m for m in east_joists if m not in lvl]
     assert east_joists
     assert all(m["shape"] == "i_joist" for m in east_joists)
     assert all(m["flange_width_m"] is not None for m in east_joists)

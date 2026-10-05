@@ -269,19 +269,7 @@ MAIN_PLACEABLES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(104),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    # ** SAY THE COST OUT LOUD: TURNING THE SOFA EAST MEANS IT NO LONGER ADDRESSES THIS. **
-    # The fire and this console now sit 90 degrees apart, and a 64" mantel with brick above it
-    # cannot take a panel — so no screen can go over the fire either.
-    # `plans/pattern_language_review.md` C9/C10 named that trade; it is a real choice and not a
-    # deferral. It costs less than it sounds: ** THERE IS NO TV IN THIS ROOM AT ALL. ** The 98"
-    # screen is FURN-B-PLAY-TV in the basement, so this console is holding storage that the
-    # east wall's SEKTION banks already hold.
-    #
-    # ** RETIRING IT OUTRIGHT IS DEFENSIBLE AND IS LEFT AS AN OWNER CALL. ** Kept for now
-    # because deleting a 5' console is a furniture decision, not a consequence of moving a
-    # fireplace; the cost of keeping it is written above so the call can be made on the facts.
-    Furniture(uid="EKN22YPA9J", tag="FURN-M-MEDIA", type_ref="FURN-MEDIA-60", room="RM-M-LIVING",
-              position=pt(m(8.25967), m(0.415496)), rotation=deg(180)),
+    # FURN-M-MEDIA retired 2026-10-05 for the hammock chair (plan/living_hammock.py).
     # The east wall's storage is the SEKTION line in plan/living_east_run.py (2026-10-02),
     # which retired the eight BESTA units that stood here.
     # Dining at 17'-4". Table x 22'-10 1/2"..30'-10 1/2", y 15'-4 1/2"..18'-10 1/2"; the 36"

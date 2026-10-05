@@ -373,6 +373,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "countertops": ("countertops",),
     # Illustrative planting, counted by type and deliberately unpriced.
     "plants": ("planting",),
+    # A hang point's saddle and swivel; its LVL line bills as a joist under ``framing``.
+    "suspension_anchors": ("hardware",),
 }
 
 

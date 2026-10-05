@@ -124,6 +124,7 @@ from typehaus.library.hardware.specialty import (
     THDSS_LEDGER_ANCHOR,
     THROUGH_PANEL_PIPE_STRAP,
 )
+from typehaus.library.hardware.suspension import SUSPENSION_HARDWARE
 from typehaus.library.hardware.ties import TIE_HARDWARE
 
 STRUCTURAL_HARDWARE: tuple = (
@@ -183,6 +184,7 @@ STRUCTURAL_HARDWARE: tuple = (
     POCKET_FRAME_KIT_1560,
     POCKET_FRAME_KIT_HEAVY,
     *TIE_HARDWARE,
+    *SUSPENSION_HARDWARE,
 )
 
 

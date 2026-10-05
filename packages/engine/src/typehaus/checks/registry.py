@@ -202,6 +202,9 @@ class StructuralPreferences:
     #: beyond it inside the width are drift trusses too (``structural.truss_reactions``).
     #: ``None``: the reach is unknown and a neighbouring trussed roof is held to it whole.
     roof_beam_drift_width_ft: float | None = None
+    #: Dynamic factor on a hung seat's rated load (``structural.suspension_anchor``): a
+    #: swing, a drop into the seat. ``None`` is an UNKNOWN naming this key, never a default.
+    hanging_seat_impact_factor: float | None = None
     #: Modulus of subgrade reaction under a retaining wall's mat, pci, and the same number
     #: lying on its side for the buried face. **Only the analytical SHELL export reads
     #: these** (``analytical/shells.py``): a shell model of a retaining wall is a wall on

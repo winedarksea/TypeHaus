@@ -94,3 +94,11 @@ def open_corner_zone(width: Length, depth: Length, reach: Length, purpose: str,
         return _zone(((-x, -y), (x, -y), (x, y), (-x, y)), purpose, source,
                      occupant_types=occupant_types)
     return band(hw, hd + r), band(hw + r, hd)
+
+
+def swing_zone(width: Length, depth: Length, reach: Length, purpose: str) -> ClearanceZone:
+    """A hung seat's fore-and-aft swing: ``reach`` past its front and back, none sideways."""
+    half_width = width.meters / 2
+    half_depth = depth.meters / 2 + reach.meters
+    return _zone(((-half_width, -half_depth), (half_width, -half_depth),
+                  (half_width, half_depth), (-half_width, half_depth)), purpose)

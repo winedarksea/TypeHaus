@@ -202,6 +202,10 @@ ROLE_POCKET_DOOR_FRAME_KIT = "pocket_door_frame_kit"
 # the roof instead of letting it release onto whatever is below. Like the CanDuit ring it
 # does not reach the panel itself — it mounts on seam clamps (``requires_role``).
 ROLE_SNOW_RETENTION = "snow_retention"
+# A hung seat's load path (``SuspensionAnchor.hardware``): the saddle on the joist line and
+# the swivel under it. Named by the anchor, never selected by role.
+ROLE_SUSPENSION_SADDLE = "suspension_saddle"
+ROLE_SUSPENSION_SWIVEL = "suspension_swivel"
 
 
 @dataclass(frozen=True)
@@ -240,6 +244,9 @@ class AllowableLoads:
     #: Simpson state it may not be increased for short-term loading — so it is not comparable
     #: to the uplift number without saying which C_D each carries, hence the field below.
     download_lb: float | None = None
+    #: Rigging working load limit, lbf: in-line tension through the part's two eyes. The
+    #: design factor it carries is stated in ``citation``.
+    wll_lb: float | None = None
     #: The NDS load-duration factor the tabulated values already include. ``None`` where the
     #: record's values are all ``None`` or where the report tabulates several.
     load_duration_factor: float | None = None
@@ -258,7 +265,7 @@ class AllowableLoads:
     def is_empty(self) -> bool:
         """True when the report was read and published no usable number for this part."""
         return all(v is None for v in (self.uplift_lb, self.lateral_f1_lb,
-                                       self.lateral_f2_lb, self.download_lb))
+                                       self.lateral_f2_lb, self.download_lb, self.wll_lb))
 
 
 @dataclass(frozen=True)
@@ -323,6 +330,8 @@ class StructuralHardware:
     #: CBSQ's cracked/uncracked columns), so it buys no separate anchor bolt and no ACI
     #: Ch. 17 row stands in for its anchorage. ``False`` for a stirrup on a bolt (the ABU).
     anchorage_in_rating: bool = False
+    #: Shipping weight, lb, where a load path counts the part's own weight. ``None``: unread.
+    weight_lb: float | None = None
 
     @property
     def available_lengths_in(self) -> tuple:

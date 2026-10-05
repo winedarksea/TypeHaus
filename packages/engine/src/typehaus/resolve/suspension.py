@@ -1,4 +1,4 @@
-"""A hung luminaire's cable: from the top of its body to the surface plumb above it.
+"""A hung body's cable: from the top of a luminaire or a hung seat to the surface above it.
 
 A pendant's type ``height`` is its body — or, by the older convention, the whole assembly
 with the stem folded in, which reads here as a cable of ~0. Only a fixture hung lower than
@@ -14,6 +14,7 @@ from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING, Any
 
 from typehaus.model.electrical import luminaire_types
+from typehaus.model.suspension import HangingSeatType
 from typehaus.resolve.overhead import OverheadIndex
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -42,25 +43,32 @@ class SuspensionDraw:
     canopy_thickness_m: float = CANOPY_THICKNESS_M
 
 
+def hung_types(library: Any) -> dict[str, Any]:
+    """Every type that can hang on a cable: the luminaires and the hung seats."""
+    return {**luminaire_types(library),
+            **{t.tag: t for t in library.furniture_types if isinstance(t, HangingSeatType)}}
+
+
 def hung_type(types: dict[str, Any], item: Any) -> Any | None:
-    """The item's ``LuminaireType`` when it is a hung fixture on a ceiling mount, else None."""
+    """The item's type when it is a hung fixture or seat on a ceiling mount, else None."""
     mount = getattr(item, "mount", None)
     if mount is None or mount.kind.value != "ceiling" or mount.recessed_into_host_surface:
         return None
     product = types.get(item.type_ref or "")
     form = getattr(getattr(product, "form", None), "value", None)
-    if form not in HUNG_FORMS or getattr(product, "height", None) is None:
+    hung = form in HUNG_FORMS or isinstance(product, HangingSeatType)
+    if not hung or getattr(product, "height", None) is None:
         return None
     return product
 
 
 def resolve_suspensions(model: ResolvedModel) -> None:
-    """Set ``suspension_m`` / ``suspended_from`` on every hung luminaire.
+    """Set ``suspension_m`` / ``suspended_from`` on every hung luminaire and seat.
 
     Probed above the body's BASE, not its top, so a body that runs up through its ceiling
     finds that ceiling and reads a negative cable rather than the floor above it.
     """
-    types = luminaire_types(model.plan.library)
+    types = hung_types(model.plan.library)
     index: OverheadIndex | None = None
     for position, item in enumerate(model.canvas_objects):
         product = hung_type(types, item)

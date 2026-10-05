@@ -541,7 +541,7 @@ be sat in.
   >   `FURN-M-MEDIA` now sit 90° apart, and a 64" mantel with brick above cannot take a
   >   panel. That is cheaper than it sounds — **there is no TV in this room at all**, the
   >   98" screen is `FURN-B-PLAY-TV` in the basement — but it is a real choice, not a
-  >   deferral. Retiring the console outright is defensible and is left open.
+  >   deferral. **Retired 2026-10-05**: a hammock chair (`FURN-M-HAMMOCK`) hangs there now.
   >
   > The one thing this review could not have known: the brick is carried **off the concrete,
   > around the joists and up**, so no masonry load lands on wood and no engineered item

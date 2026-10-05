@@ -53,7 +53,7 @@ SYMBOL_NAMES = frozenset({
     # furniture
     "sofa", "loveseat", "sectional", "armchair", "dining-chair", "office-chair",
     "dining-table", "rounded-dining-table", "round-table", "coffee-table", "end-table",
-    "chess-table",
+    "chess-table", "hammock-chair",
     "desk", "wall-desk",
     "drawer-desk", "sit-stand-desk",
     "sektion-drawer-base", "dresser", "chest", "nightstand", "media-console", "bookcase",

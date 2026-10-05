@@ -237,7 +237,10 @@ def ijoist_span(ctx: CheckContext) -> list[Finding]:
                            result=Result.UNKNOWN))
         return out
     for floor in floors:
-        joists = [member for member in floor.members if member.category == "joist"]
+        # The authored field only: a SuspensionAnchor's LVL line is graded by its own check.
+        field_member = authored[floor.tag].joists.member if floor.tag in authored else None
+        joists = [member for member in floor.members if member.category == "joist"
+                  and field_member in (None, member.profile)]
         if not joists:
             out.append(Finding(severity=Severity.WARN, check_id="structural.ijoist_span",
                                message=f"UNKNOWN — floor {floor.tag} has no generated joists",
