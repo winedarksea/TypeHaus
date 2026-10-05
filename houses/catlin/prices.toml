@@ -2378,9 +2378,11 @@
 # Custom 72x24x3 HR-foam cushion, welted performance-fabric cover; a quote, not a listing.
 "FT-S-STUDY-NOOK-CUSHION" = { material = { low = 350, high = 750 }, labour = { low = 0, high = 0 } }  # 1 ea
 # RM-M-BED reading corner, 2026-10-03 (plan/bed_reading_corner_types.py). IKEA US list: SEKTION
-# base frame 102.653.92 $53, plus two UTRUSTA shelves and a share of the 2x4 base; the walnut
-# top bills in [countertops]. Covers are FÖRBÄTTRA 405.678.35 $53, full 30" panels.
-"FURN-M-BED-NOOK-END-12" = { material = { low = 90, high = 135 }, labour = { low = 60, high = 150 } }  # 2 ea
+# base frame 102.653.92 $53, plus two UTRUSTA shelves and a share of the 2x4 base.
+# Added 2026-10-04: AXSTAD 104.260.45 $68 + UTRUSTA 805.248.82 $16/2-pack per cabinet,
+# plus $5-15 knob/handle allowance. Walnut top bills in [countertops].
+# Covers are FÖRBÄTTRA 405.678.35 $53, full 30" panels.
+"FURN-M-BED-NOOK-END-12" = { material = { low = 179, high = 234 }, labour = { low = 80, high = 190 } }  # 2 ea
 "FT-M-BED-NOOK-COVER-30" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 60 } }  # 2 ea
 # Custom 48x24x3 cushion, the Study 2 spec at two-thirds the length; a quote, not a listing.
 "FT-M-BED-NOOK-CUSHION" = { material = { low = 250, high = 500 }, labour = { low = 0, high = 0 } }  # 1 ea

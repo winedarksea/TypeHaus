@@ -3,6 +3,7 @@
 import pytest
 from shapely.geometry import Polygon
 
+from typehaus.model.placeable_symbols import symbol_geometry
 from typehaus.model.placeable_symbols._sektion_seat import sektion_open_base
 from typehaus.resolve.geometry_millwork import window_stool_prism
 
@@ -157,3 +158,42 @@ def test_open_base_frame_stops_under_the_slab_it_hosts():
     assert counter[0]["size"][2] == pytest.approx(1 * INCH)
     body = [z for color, zs in tops.items() if color != "counter" for z in zs]
     assert max(body) == pytest.approx(33.5 * INCH)
+
+
+def test_end_cabinet_doors_fit_under_tops_and_open_into_room(catlin_model_ro):
+    objects = _objects(catlin_model_ro)
+    room = next(r for r in catlin_model_ro.rooms if r.tag == "RM-M-BED")
+    clear = Polygon(room.clear_face).buffer(1e-4)
+    for tag in CABINETS:
+        cabinet = objects[tag]
+        cabinet_type = next(t for t in catlin_model_ro.plan.library.furniture_types
+                            if t.tag == "FURN-M-BED-NOOK-END-12")
+        assert cabinet_type.plan_symbol == "sektion-axstad-base"
+        assert _bounds(objects, tag)[2] - WALL_FACE_X == pytest.approx(24.75 * INCH, abs=1e-4)
+        assert cabinet.recommended_clearances
+        for zone in cabinet.recommended_clearances:
+            assert clear.contains(Polygon(zone))
+            assert Polygon(zone).bounds[0] >= _bounds(objects, tag)[2] - 1e-4
+        # The 3/4" door sits within the walnut top's 24 7/8" depth.
+        top = next(t for t in catlin_model_ro.countertops if tag in t.hosts)
+        assert Polygon(top.outline).bounds[2] - _bounds(objects, tag)[2] == pytest.approx(
+            0.125 * INCH, abs=1e-4)
+
+
+def test_axstad_door_has_a_recessed_panel_and_does_not_enter_hosted_slab():
+    width, depth, height = 12 * INCH, 24.75 * INCH, 34.5 * INCH
+    _strokes, parts = symbol_geometry("sektion-axstad-base", width, depth, height)
+    front = -depth / 2
+    door = [part for part in parts
+            if part["center"][1] - part["size"][1] / 2 < front + 0.75 * INCH - 1e-6
+            and part["center"][2] - part["size"][2] / 2 > 3.5 * INCH
+            and part["color"] != "counter"]
+    assert len(door) == 5  # two stiles, two rails, one recessed panel
+    assert max(p["size"][0] / 2 + abs(p["center"][0]) for p in door) * 2 == pytest.approx(
+        11.875 * INCH)
+    assert max(p["center"][2] + p["size"][2] / 2 for p in door) - min(
+        p["center"][2] - p["size"][2] / 2 for p in door) == pytest.approx(29.875 * INCH)
+    panel = door[-1]
+    assert panel["center"][1] - panel["size"][1] / 2 == pytest.approx(front + 0.25 * INCH)
+    body_tops = [p["center"][2] + p["size"][2] / 2 for p in parts if p["color"] != "counter"]
+    assert max(body_tops) == pytest.approx(33.5 * INCH)

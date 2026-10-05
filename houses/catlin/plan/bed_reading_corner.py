@@ -1,8 +1,8 @@
 # haus: editable
 # RM-M-BED reading corner on W-M-W4 (west finish face x=6.635"), 2026-10-03. W4 runs N->S
 # from y=156", so distance_from_start = 156" - y_centre. South to north: 1/2" cover,
-# 12" SEKTION end (the backrest), two 24"
-# seat units (19 1/2" top, Study 2's), 12" SEKTION end, 1/2" cover (ends y=116.63").
+# 12" SEKTION end with AXSTAD door (the backrest), two 24"
+# seat units (19 1/2" top, Study 2's), 12" SEKTION end with AXSTAD door, 1/2" cover (ends y=116.63").
 # The 73" seat/cabinet run centres at y=80.13", halfway between the room's finished
 # south/north faces (6.635"/153.625"); moved 1.62" north on 2026-10-04. Symmetric ends.
 # Cabinet tops finish at 36" (2x4 base + 30" frame + 1" walnut top), 1.70" under the
