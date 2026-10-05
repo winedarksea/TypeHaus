@@ -1506,13 +1506,18 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       Fb≈1,310. `RM-S-NCLOSET` and ~7'-9" of north hall are at a 7'-1" face / 7'-0 1/8"
       clear in trade;
       `RM-S-HALL`'s graded `clear_height` is unchanged at 8'-11 1/2".
-    - **`Mount.elevation` on a `Register` is a number NO CHECK READS** (a Register resolves
-      no solid) — author every ceiling terminal off its own room's ceiling, never a borrowed
-      comment.
+    - **`Mount.elevation` is above the finished floor.** Registers resolve a body and
+      wall mounts are checked against their host face and overhead surface. Duct elevations
+      are storey-relative: subtract the floor build-up when aligning a wall grille to a duct.
+      Author every ceiling terminal off its own room's ceiling, never a borrowed comment.
     - `REG-S-HP-STAIR` is a SIDEWALL grille (`REG-T-HP-SUP-SIDE`) in `SF-S-DUCT`'s west
       lining at 97 1/8" — do not revert it to a ceiling grille above the room's own return.
-      `REG-A-HP-STUDY` floor boot sits at (25'-0", 3'-4") — every station on that bay line
-      from x 21'-0" to 27'-3" is under furniture, so this is the best fit, not a clean one.
+      `REG-A-HP-STUDY` floor boot sits at (18'-10", 3'-4"), rotated 90° beneath the
+      desk near the centreline wall, clear of its chair. `DU-S-HP-SOUTH` ends east at
+      x=19'-6", its riser station, carrying 175 cfm. `REG-S-HP-STUDY2` is an 8x6
+      east-facing sidewall grille at (21'-6", 3'-7 1/2"), bottom 94 5/8" AFF,
+      fed by a drawn 6" boot off `DU-S-HP-SOUTH-RISE` (250 cfm before its take-off).
+      See `notes/system1_study_supply.md` for selection and aiming.
       **Nothing grades a placeable against a register** — check by hand when moving one.
       `DU-S-HP-SOUTH`'s west terminal is at x=12'-0" (2026-09-23, 2'-8" less duct; 9'-4", the
       glass centroid, is the fallback). Not further east: the extract and the door are there.

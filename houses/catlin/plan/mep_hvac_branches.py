@@ -1,5 +1,5 @@
 # haus: editable
-# Catlin MEP — System 1's three bedroom supply branches, off DU-S-HP-SUP (plan/mep_hvac.py).
+# Catlin MEP — System 1's sidewall supply branches (plan/mep_hvac.py).
 #
 # Until 2026-09-23 REG-S-HP-BED1/2/3 named the trunk and nothing reached them: an unmodelled
 # "boot through W-S-BW1/2/3's stud bay" that could not have been built. Each was a CEILING
@@ -29,6 +29,14 @@
 from typehaus import DuctRouting, DuctRun, DuctSystem, ft, inch, pt
 
 DUCTS_HVAC_BRANCHES_SECOND = [
+    # This boot leaves through SF-S-DUCT's east lining between its ladder rails.
+    # EXPOSED follows the bedroom-collar idiom: the soffit occupancy check requires
+    # named runs to remain inside the box's clear width. Framing clearance is tested.
+    DuctRun(uid="STDYBOOT01", tag="DU-S-HP-STUDY2", system=DuctSystem.SUPPLY,
+            path=(pt(ft(19, 6), inch(43.5)), pt(inch(258), inch(43.5))),
+            elevations=(inch(99.125), inch(99.125)),
+            diameter=inch(6), routing=DuctRouting.EXPOSED,
+            material="galvanized", design_cfm=75),
     DuctRun(uid="AFRBDV5JT6", tag="DU-S-HP-BED1", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 6), ft(12, 4)), pt(inch(265.375), ft(12, 4))),
             elevations=(inch(100.125), inch(100.125)),

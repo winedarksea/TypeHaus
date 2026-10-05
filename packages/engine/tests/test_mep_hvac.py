@@ -241,3 +241,52 @@ def test_bed3_straight_branch_clears_framing_and_keeps_return_grille_in_plenum(
     assert min(branch_body.distance(shape) for shape in structural_shapes) >= inch(.5).meters - 1e-9
     return_grille = next(o for o in model.canvas_objects if o.tag == "REG-S-HP-RET")
     assert Polygon(plenum.footprint).buffer(1e-9).covers(Polygon(return_grille.footprint))
+
+
+def test_study_sidewall_boot_connects_and_clears_soffit_framing(catlin_plan, catlin_model_ro):
+    from shapely.geometry import LineString, Point, Polygon, box
+
+    from typehaus.quantities import inch
+    from typehaus.resolve.framing.profiles import cross_section
+    from typehaus.resolve.mep_bore_geometry import member_plan_shape
+
+    model = catlin_model_ro
+    register = next(e for e in catlin_plan.all_elements() if e.tag == "REG-S-HP-STUDY2")
+    grille = next(o for o in model.canvas_objects if o.tag == register.tag)
+    branch = next(d for d in model.ducts if d.tag == register.duct_ref)
+    riser = next(d for d in model.ducts if d.tag == "DU-S-HP-SOUTH-RISE")
+    bay = next(d for d in model.ducts if d.tag == "DU-S-HP-SOUTH")
+    soffit = next(s for s in model.soffits if s.tag == "SF-S-DUCT")
+    room = next(r for r in model.rooms if r.tag == register.room)
+    assert register.mount.kind.value == "wall"
+    assert register.design_cfm == 75
+    assert branch.design_cfm == 75
+    assert bay.design_cfm == 175
+    assert riser.design_cfm == branch.design_cfm + bay.design_cfm
+    assert branch.diameter_m == pytest.approx(inch(6).meters)
+    assert branch.path[-1] == pytest.approx(grille.position)
+    assert branch.z_m[0] == pytest.approx(riser.z_m[0])
+    assert branch.z_m[0] == pytest.approx(grille.z_m + inch(3).meters)
+    assert LineString(riser.path[:2]).distance(Point(branch.path[0])) < 1e-9
+    assert bay.path[0] == pytest.approx(riser.path[-1])
+    attic_boot = next(o for o in model.canvas_objects if o.tag == "REG-A-HP-STUDY")
+    assert LineString(bay.path).distance(Point(attic_boot.position)) < 1e-9
+    assert Polygon(room.clear_face).covers(Polygon(grille.footprint))
+    assert bay.length_m == pytest.approx(inch(90).meters)
+    assert not bay.conflicts
+
+    half_diameter = branch.diameter_m / 2
+    boot_body = box(branch.path[0][0], branch.path[0][1] - half_diameter,
+                    branch.path[-1][0], branch.path[-1][1] + half_diameter)
+    for member in soffit.members:
+        if (member.z0_m >= branch.z_m[0] + half_diameter
+                or member.z1_m <= branch.z_m[0] - half_diameter):
+            continue
+        shape = member_plan_shape(member, cross_section(member.profile))
+        assert shape is not None
+        assert not boot_body.intersects(shape), member.child_key
+        assert not Polygon(grille.footprint).intersects(shape), member.child_key
+    findings = _connectivity(model)
+    assert not [f.message for f in findings if f.result.value == "fail"]
+    assert any(f.message == "duct DU-S-HP-STUDY2 start lands on DU-S-HP-SOUTH-RISE"
+               for f in findings)

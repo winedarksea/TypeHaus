@@ -53,6 +53,12 @@ from typehaus.model import m
 # of its own. A submitted product with a real curve replaces the three points and nothing
 # else. They feed `mep.erv_static_budget` and are read by nothing else.
 REGISTER_TYPES = (
+    RegisterType(tag="REG-T-HP-STUDY-SIDE",
+                 name="Study heat-pump supply, 8x6 double-deflection sidewall with OBD",
+                 footprint=(inch(8), inch(1)), height=inch(6), plan_symbol="register",
+                 source="notes/system1_study_supply.md — Titus 300R 8x6 performance basis",
+                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
+                                    position=(ft(0), ft(0), ft(0))),)),
     # REG-T-ERV-EXH-WALL below is the house's only wall-oriented ERV terminal type:
     # `footprint` is a PLAN rectangle, so a ceiling grille authors (face, face) with
     # `height` as its 1" thickness and a wall grille authors (face, DEPTH) with `height` as
@@ -360,10 +366,9 @@ DUCTS_HVAC_SECOND = [
             path=(pt(ft(19, 4), ft(14, 1.875)), pt(ft(16), ft(14, 1.875))),
             width=inch(10), depth=inch(8), routing=DuctRouting.EXPOSED,
             start_elevation=inch(100.125), end_elevation=inch(100.125), design_cfm=175),
-    # The two south rooms' branch: RM-S-PLANT and RM-S-STUDY2 are fed off DU-S-HP-SOUTH,
-    # which reaches them from FS-ATTIC's I-joist bay at y=3'-4". The soffit stops at
-    # y=2'-10" and neither room is under it; the bay is how the air crosses the x=18'
-    # bearing line into the west half of the storey.
+    # The plant room and attic study share FS-ATTIC's y=3'-4" I-joist bay.
+    # RM-S-STUDY2 takes 75 cfm from the soffit leg below before it rises; this
+    # bay run carries the remaining 175 cfm west across the x=18' bearing line.
     #
     # JOIST_BAY and not CHASE because the alternative — running west along the attic floor —
     # cannot get past W-A-C1/C1B, the x=18' bearing wall RB-HOUSE sits on, which does not
@@ -372,15 +377,13 @@ DUCTS_HVAC_SECOND = [
     # (R302.11), not a conflict. That note is the regression canary for this whole branch
     # and it requires the run stay filed on the `second` storey.
     #
-    # 10x6/250 cfm: it also picks up RM-A-STUDY's terminal — REG-A-HP-STUDY is a straight
-    # floor boot off this run, extended east to x=26'-0". 250 cfm is 75 + 75 + 100, taken
-    # OUT of the trunk's authored 750 by damper, not added to it. 600 fpm at the riser,
-    # 420 fpm in the east arm (175 cfm to REG-S-HP-STUDY2 and REG-A-HP-STUDY), 180 fpm in
-    # the west arm (75 cfm to REG-S-HP-PLANT). 10" fits the 13 1/2" clear bay with 1 3/4"
-    # to spare and 6" fits the 11 7/8" I-joist depth.
+    # 10x6/175 cfm: REG-A-HP-STUDY is a straight floor boot at x=18'-10".
+    # The riser still receives 250 cfm (75 + 75 + 100); after the 75 cfm sidewall
+    # take-off, 175 rises into this bay. 420 fpm before the attic boot, then 180 fpm
+    # to REG-S-HP-PLANT. The section remains 10x6 to match the riser and fits the
+    # 13 1/2" clear bay and 11 7/8" I-joist depth.
     #
-    # The riser lands at x=19'-6" (the trunk's own centreline, see DU-S-HP-SOUTH-RISE) — a
-    # short arm east to the study and the attic study, a long one west to the plant room.
+    # The riser lands at x=19'-6"; the entire bay run now travels west from there.
     # Manual D App. A13 calls a take-off this close to a supply plenum a noise defect; it is
     # mitigated by turning vanes at the riser, a lined plenum and first 5 ft, and a balancing
     # damper, and the 18x8 trunk was chosen partly so the take-off could sit further
@@ -388,7 +391,7 @@ DUCTS_HVAC_SECOND = [
     #
     # ** BOTH ENDS CAME IN ON 2026-09-04, THE WEST END BY MOST. ** 19'-4" of 10x6 became
     # 15'-8" — and both moves are better terminal placement, not only less duct. The west end
-    # came in again on 2026-09-23, 9'-4" -> 12'-0", another 2'-8" (13'-0" now): see
+    # came in again on 2026-09-23, 9'-4" -> 12'-0", another 2'-8": see
     # REG-S-HP-PLANT for why the room does not notice.
     #
     #  * WEST 6'-8" -> 9'-4", a 2'-8" saving. The old end was 2'-4" PAST the plant room's
@@ -399,24 +402,12 @@ DUCTS_HVAC_SECOND = [
     #    clear in y of FURN-S-PLANT-POT2 (which ends at y=2'-9") and 1'-4" north of
     #    ED-S-PLANT-TUBE1/2's line, so it is over neither a pot nor a grow tube, and it is
     #    still 9'-2" from REG-S-ERV-PLANT-EXH across a 159 sf room.
-    #  * EAST 26'-0" -> 25'-0", a 1'-0" saving, and this one is a defect fix. REG-A-HP-STUDY
-    #    is a FLOOR boot, and at (26'-0", 3'-4") it stood under FURN-A-STUDY-CHAIR2
-    #    (x 25'-8"..27'-4", y 3'-3"..5'-1") — a 100 cfm supply with a seat on it. 25'-0" is
-    #    8" clear west of that chair and 7" clear east of CHAIR1. It is still inside
-    #    FURN-A-STUDY-TABLE's 36" square (x 24'-2 5/8"..27'-2 5/8"), and that is accepted: a
-    #    legged table is not a lid, the boot sits at its open west end between the two chairs,
-    #    and every station on this bay line from x 21'-0" to 27'-3" is under something. Moving
-    #    the terminal off the line entirely wants a boot north across two joists — legal at
-    #    x=25' (mid-span of the 18' east span, where the TJI hole chart is at its most
-    #    permissive) but a bigger change than a duct length.
-    #
-    # ** THE EAST END CANNOT COME IN FURTHER. ** 25'-0" is already 2'-0" west of RM-A-STUDY's
-    # centreline and 2'-4" from REG-S-HP-STUDY2's station at 22'-8"; the next foot west stacks
-    # the storey's two study terminals on top of one another.
+    #  * EAST ends at the riser station x=19'-6" now that RM-S-STUDY2 is fed
+    #    from below. This removes another 3'-2" beyond the attic desk relocation.
     DuctRun(uid="NYRX7TBEGH", tag="DU-S-HP-SOUTH", system=DuctSystem.SUPPLY,
-            path=(pt(ft(25), ft(3, 4)), pt(ft(12), ft(3, 4))),
+            path=(pt(ft(19, 6), ft(3, 4)), pt(ft(12), ft(3, 4))),
             width=inch(10), depth=inch(6), routing=DuctRouting.JOIST_BAY,
-            floor_ref="FS-ATTIC", design_cfm=250),
+            floor_ref="FS-ATTIC", design_cfm=175),
     # THE RISER — a repeated plan point at two elevations is the vertical leg, the idiom
     # DU-S-ERV-HP-FEED's drop already uses.
     #

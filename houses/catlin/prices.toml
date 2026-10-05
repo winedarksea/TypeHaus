@@ -3320,6 +3320,7 @@
 # opposed-blade damper behind it is a different part, and it is the one terminal in System 1
 # whose throw has to be aimed on site rather than left at the factory setting.
 "REG-T-HP-SUP-SIDE" = { material = { low = 30, high = 85 }, labour = { low = 25, high = 60 } }  # 1 ea — 12x6 sidewall, double deflection + OBD, side collar off the trunk
+"REG-T-HP-STUDY-SIDE" = { material = { low = 30, high = 85 }, labour = { low = 25, high = 60 } }  # 8x6 double deflection + OBD; sidewall family allowance
 # The passive transfer louver. Cheapest terminal in the house and it should be: a stamped
 # door/wall grille with no damper, no boot and no duct behind it. Bracketed against
 # REG-T-HP-SUP above, which is the same kind of stamped face with a duct collar on it.

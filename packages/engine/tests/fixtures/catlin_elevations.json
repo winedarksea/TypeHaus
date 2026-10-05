@@ -1886,9 +1886,9 @@
 "canvas_objects/REG-S-HP-STAIR/body_z0_m": 5.553075,
 "canvas_objects/REG-S-HP-STAIR/body_z1_m": 5.705475,
 "canvas_objects/REG-S-HP-STAIR/z_m": 5.553075,
-"canvas_objects/REG-S-HP-STUDY2/body_z0_m": 5.8293,
-"canvas_objects/REG-S-HP-STUDY2/body_z1_m": 5.8547,
-"canvas_objects/REG-S-HP-STUDY2/z_m": 5.8293,
+"canvas_objects/REG-S-HP-STUDY2/body_z0_m": 5.489575,
+"canvas_objects/REG-S-HP-STUDY2/body_z1_m": 5.641975,
+"canvas_objects/REG-S-HP-STUDY2/z_m": 5.489575,
 "canvas_objects/REG-S-HP-SUITE/body_z0_m": 5.521325,
 "canvas_objects/REG-S-HP-SUITE/body_z1_m": 5.673725,
 "canvas_objects/REG-S-HP-SUITE/z_m": 5.521325,
@@ -2438,6 +2438,12 @@
 5.870575,
 2,
 "9ea966bb6e69"
+],
+"ducts/DU-S-HP-STUDY2/z_m": [
+5.565775,
+5.565775,
+2,
+"c92699d032a5"
 ],
 "ducts/DU-S-HP-SUITE/z_m": [
 5.591175,
@@ -53453,6 +53459,12 @@
 2,
 "88a3d237cd49"
 ],
+"geometry/STDYBOOT01-run/body": [
+5.489575,
+5.641975,
+24,
+"485ca6102145"
+],
 "geometry/STFQKR8Q95-run/body": [
 7.112002,
 7.2643958,
@@ -89796,6 +89808,8 @@
 "solids/DU-S-HP-SOUTH-RISE-RUN/z1_m": 5.870575,
 "solids/DU-S-HP-SOUTH-RUN/z0_m": 5.794375,
 "solids/DU-S-HP-SOUTH-RUN/z1_m": 5.946775,
+"solids/DU-S-HP-STUDY2-RUN/z0_m": 5.489575,
+"solids/DU-S-HP-STUDY2-RUN/z1_m": 5.641975,
 "solids/DU-S-HP-SUITE-RUN/z0_m": 5.489575,
 "solids/DU-S-HP-SUITE-RUN/z1_m": 5.692775,
 "solids/DU-S-HP-SUP-RUN/z0_m": 5.489575,

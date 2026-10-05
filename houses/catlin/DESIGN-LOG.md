@@ -14,6 +14,25 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Second-storey study supply on the soffit side (2026-10-04)
+
+Owner approved replacing `REG-S-HP-STUDY2`'s ceiling terminal with an east-facing
+8x6 double-deflection grille near SF-S-DUCT's south end, at y=3'-7 1/2". A drawn 6"
+round boot tees off DU-S-HP-SOUTH-RISE at its 99 1/8" centreline between the
+framing rails. Study flow stays 75 cfm; the upper bay now carries 175 cfm.
+DU-S-HP-SOUTH ends at the x=19'-6" riser, removing another 3'-2" of 10x6 duct
+while adding 2'-0" of 6" round boot. Grille selection, aiming and final
+balancing are documented in `notes/system1_study_supply.md`.
+
+## Attic study supply beneath the desk (2026-10-04)
+
+Moved `REG-A-HP-STUDY` from (25'-0", 3'-4") under the table to
+(18'-10", 3'-4") under the desk near the centreline wall, per owner request.
+The 12x6 floor grille rotates 90° to clear the desk chair and remains in the
+same joist bay with a straight boot. `DU-S-HP-SOUTH` now ends at x=22'-8"
+for the second-storey study terminal, saving 2'-4" of duct. Attic supply
+remains 100 cfm; the east arm carries 75 cfm and the west arm initially 175 cfm.
+
 ## Living east wall: uniform 18-inch doors (2026-10-04)
 
 Owner requested replacing the B30, two B15 and B12 south of PANTRY-S2 with two B36:

@@ -133,22 +133,18 @@ REGISTERS_HVAC_SECOND = [
              location=Location(attachment=WallAttachment(
                  wall_ref="W-S-C2B", face="left", distance_from_start=inch(20.875),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The two south rooms, both on DU-S-HP-SOUTH — the FS-ATTIC joist-bay branch at
-    # y=3'-4" that reaches them from above, because the air handler's case fills SF-S-DUCT
-    # from y=6'-0" to 9'-7" and leaves no lane south inside the soffit. Ceiling
-    # grilles at 9'-0" (the storey's flat ceiling, not the 7'-10" soffit face), each a short
-    # boot down out of the bay.
-    #
-    # RM-S-STUDY2 at (22'-8", 3'-4"): the room's west end, 4'-8" east of W-S-C1 and clear of
-    # FURN-S-STUDY-TABLE's west chair (24'-0 5/8"). Both of the room's ways out are behind
-    # the grille's eastward throw — D-S-STUDY2 north at x=20'-3 5/8", D-S-PLANT west at y=2'-8".
-    # The 12x6 throws east down the room and past WIN-S-STUDY1/2 before the air turns back to
-    # the hall. The study has no extract of its own, it hands its
-    # air on through the two openings.
+    # East face of SF-S-DUCT near its south end, throwing across the study.
+    # The 8x6 grille and its 6" boot clear the ladder rails at a 99 1/8" centreline;
+    # y=3'-7 1/2" puts the full face between the end blocking and first side stud.
+    # The boot tees off the soffit leg before it rises, so this room no longer
+    # needs a joist-bay terminal.
+    # Centre the 1" body 1/2" east of the lining so its back bears on the face.
+    # Mount height is above the finished floor: 99 1/8 - 3 - 1 1/2 = 94 5/8".
+    # See notes/system1_study_supply.md for grille selection and vane setting.
     Register(uid="DMVENAN0DW", tag="REG-S-HP-STUDY2", kind=DuctSystem.SUPPLY, room="RM-S-STUDY2",
-             position=pt(ft(22, 8), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
-             type_ref="REG-T-HP-SUP", design_cfm=75,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+             position=pt(inch(258), inch(43.5)), rotation=deg(90),
+             duct_ref="DU-S-HP-STUDY2", type_ref="REG-T-HP-STUDY-SIDE", design_cfm=75,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(94.625))),
     # RM-S-PLANT at (12'-0", 3'-4"): the branch's west terminus, moved 2'-8" east on
     # 2026-09-23 for that much less 10x6. The glass runs x 4'-0" / 9'-4" / 14'-8"; 9'-4" was
     # its centroid (and 6'-8" before 2026-09-04, which left the east window unwashed). 12'-0",
@@ -257,23 +253,14 @@ REGISTERS_HVAC_SECOND = [
 ]
 
 REGISTERS_HVAC_ATTIC = [
-    # y=3'-4" is the FS-ATTIC bay's own centreline (8" + 2 x 16"), so the boot rises
-    # straight up out of DU-S-HP-SOUTH, which passes directly under this point — the same
-    # straight-boot pattern as REG-A-HP-EAST and REG-A-HP-WEST. 100 cfm is the east arm's
-    # larger share; see DU-S-HP-SOUTH for why that branch is 10x6.
-    #
-    # ** x=25'-0" SINCE 2026-09-04, AND THE OLD 26'-0" HAD A CHAIR ON IT. **
-    # FURN-A-STUDY-CHAIR2 occupies x 25'-8"..27'-4", y 3'-3"..5'-1"; the boot stood inside it,
-    # which for a FLOOR supply means a seat over the grille whenever the chair is pushed in.
-    # 25'-0" is 8" clear west of that chair and 7" east of CHAIR1, and shortens DU-S-HP-SOUTH
-    # by a foot. It is STILL under FURN-A-STUDY-TABLE (x 24'-2 5/8"..27'-2 5/8") and that is
-    # accepted: a legged 36" table is not a lid, this sits at its open west end between the two
-    # chairs, and every station on the y=3'-4" line from x 21'-0" to 27'-3" is under something.
-    # Getting off the line wants a ~32" boot north across two joists — legal here (x=25' is
-    # mid-span of FS-ATTIC's east span, the permissive band of the hole chart), but a bigger
-    # change than this. Nothing grades it: no check tests a placeable against a register.
+    # Keep the straight floor boot in FS-ATTIC's y=3'-4" bay, under the desk's
+    # open top near the centreline wall. Rotate the 12x6 grille along the desk:
+    # x=18'-7"..19'-1" clears the desk chair's west edge (~19'-3") and stays
+    # inside the desk footprint. The room below takes its supply from the soffit
+    # leg, so DU-S-HP-SOUTH ends at its riser station, x=19'-6".
     Register(uid="CARH01AAAA", tag="REG-A-HP-STUDY", kind=DuctSystem.SUPPLY,
-             room="RM-A-STUDY", position=pt(ft(25), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
+             room="RM-A-STUDY", position=pt(ft(18, 10), ft(3, 4)), rotation=deg(90),
+             duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-SUP", design_cfm=100,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # Directly above the hall soffit: the boot rises straight through FS-ATTIC off the
@@ -320,9 +307,8 @@ REGISTERS_HVAC_ATTIC = [
 # what moves the storey's air: in at the hall soffit, out at the far wall of each room.
 #
 # RM-S-PLANT and RM-S-STUDY2 are served as System 1 terminals — REG-S-HP-PLANT and
-# REG-S-HP-STUDY2 in REGISTERS_HVAC_SECOND above, on the DU-S-HP-SOUTH branch. The study
-# was always the anomaly: EQ-S-HP1-AH hangs in that room's own ceiling soffit, and a room
-# does not breathe by being next to the machine.
+# REG-S-HP-STUDY2 in REGISTERS_HVAC_SECOND above. The plant takes a ceiling boot
+# from DU-S-HP-SOUTH; the study takes a sidewall boot off DU-S-HP-SOUTH-RISE.
 REGISTERS = [
     # One per bedroom: BED1 y 9'-18', BED2 y 18'-27', BED3 y 27'-36'.
     #

@@ -9,15 +9,15 @@
 # WIN-M-BED-W1/-W2 stools (37.70"). D-M-BATH2's open leaf reaches y=124", 7.37" clear.
 # Walnut tops (24 7/8" deep) run flush with the seat fronts and cap the covers, which stand
 # tight to the wall and 1/4" behind the top's front edge.
-# STRANDMON: back to the south wall, centred between the cover front (x 31.51") and
-# FURN-M-BED-BOOKCASE-W (x 76.62"), under ED-M-BED-LT.
+# STRANDMON: rotated toward the room beside the south end cover, clear of the
+# south-wall bookcase and bed, under ED-M-BED-LT.
 
 from typehaus import Furniture, Location, Mount, MountKind, WallAttachment
-from typehaus.model import Countertop, deg, inch, pt
+from typehaus.model import Countertop, deg, inch, m, pt
 
 BED_READING_CORNER = [
     Furniture(uid="NJW8BV7455", tag="FURN-M-BED-ARMCHAIR", type_ref="FURN-ARMCHAIR-STRANDMON",
-              room="RM-M-BED", position=pt(inch(54.06), inch(25.51)), rotation=deg(180)),
+              room="RM-M-BED", position=pt(m(1.17423), m(0.799996)), rotation=deg(120)),
     Furniture(uid="B08H9SJH2J", tag="FURN-M-BED-NOOK-COVER-S", type_ref="FT-M-BED-NOOK-COVER-30",
               room="RM-M-BED", mount=Mount(kind=MountKind.FLOOR, elevation=inch(3.5)),
               location=Location(attachment=WallAttachment(
