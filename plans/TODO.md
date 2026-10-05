@@ -258,6 +258,7 @@ the future.
 - The randon vent and the plumbing vent, where they exist the house, overlap, and are both labeled "radon vent" even though one should probably be plumbing.
 - Consider swapping the shower and tub positions in the main floor master bathroom
 - See about switching the size of the over fridge cabinets to a standard (non custom) size
+- Outlet in the kitchen island
 
 # Project Management
 
