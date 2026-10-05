@@ -12,6 +12,7 @@ from typehaus import Building, Library, PlanModel, Project, Storey, ft
 from typehaus.library import (
     STARTER_APPLIANCE_TYPES,
     STARTER_FIXTURE_TYPES,
+    STARTER_FURNITURE_PRODUCTS,
     STARTER_FURNITURE_TYPES,
 )
 
@@ -30,6 +31,7 @@ _library = Library(
     door_types=tuple(main.DOOR_TYPES),
     window_types=tuple(main.WINDOW_TYPES),
     furniture_types=tuple(STARTER_FURNITURE_TYPES),
+    products=STARTER_FURNITURE_PRODUCTS,
     fixture_types=tuple(STARTER_FIXTURE_TYPES),
     appliance_types=tuple(STARTER_APPLIANCE_TYPES),
 )

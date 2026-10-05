@@ -4687,7 +4687,7 @@ surface that reaches the court, so the water goes there.
   The removable felt-lined puzzle tray stows below the lift top above concealed storage.
 - Reference: Breakwater Bay Wayfair W120117949, also sold as GOUUN Amazon B0HFJ5VTC3.
   Product links and the closed-state geometry limitation live in
-  `plan/living_room_furniture_types.py`; horizontal lift travel is unspecified.
+  `library/placeables/furniture.py`; horizontal lift travel is unspecified.
   The furnishings allowance is Wayfair's $217.99 unit price read today, excluding
   tax, delivery and assembly.
 - Moved `FURN-M-SOFA` 12" west to x=23'-4.5", retaining its east-facing rotation.
@@ -4698,3 +4698,8 @@ surface that reaches the court, so the water goes there.
   access zones; takeoff counts one table. House checks: 1,856 pass, 0 fail, 44 unknown,
   with no findings involving the table or sitting group. JSON and framed IFC rebuilt.
   Elevation golden adds only the new table's base/top, with no existing heights moved.
+
+- Shared-library promotion: the table, its product identity and the generic sofa seating
+  clearance variant now live in `typehaus.library.placeables.furniture`. Stable tags retain
+  the placements and price joins. Starter and empty templates include the shared product
+  catalog alongside the furniture types so product references resolve in new houses.

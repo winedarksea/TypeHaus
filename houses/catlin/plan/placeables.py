@@ -215,7 +215,7 @@ MAIN_PLACEABLES = [
     # the sofa's front is x=298", leaving 18" for seated access. The angled chairs keep
     # their positions, with 15.1" north / 19.6" south to the table's nearest edge.
     # Circulation goes around the group; the gap is for seated table access
-    # (plan/living_room_furniture_types.py).
+    # (library/placeables/furniture.py).
     Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FT-LIVING-SOFA-84-TABLE-GAP",
               room="RM-M-LIVING", position=pt(ft(23, 4.5), ft(8, 8)), rotation=deg(90)),
     Furniture(uid="PUZZLECF01", tag="FURN-M-PUZZLE-COFFEE-TABLE",

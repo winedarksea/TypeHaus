@@ -10,11 +10,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from _helpers import CATLIN
+
 from typehaus.checks import build_context
 from typehaus.checks.integrity.catalog_tags import unknown_product_ref
 from typehaus.model import Product
 from typehaus.source import load_plan
-from _helpers import CATLIN
 
 
 def _library_with(plan, **updates):
@@ -73,7 +74,7 @@ def test_a_resolvable_product_ref_is_silent(starter_dir: Path) -> None:
     materials = result.plan.library.materials
     fixed = _library_with(
         result.plan,
-        products=(Product(tag="PROD-TEST", brand="Test"),),
+        products=(*result.plan.library.products, Product(tag="PROD-TEST", brand="Test")),
         materials=(materials[0].model_copy(update={"product_ref": "PROD-TEST"}), *materials[1:]),
     )
     ctx, _ = build_context(fixed, starter_dir)

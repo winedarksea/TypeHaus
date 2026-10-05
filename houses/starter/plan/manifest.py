@@ -15,6 +15,7 @@ from typehaus.library import (
     STANDARD_DOOR_TYPES,
     STARTER_APPLIANCE_TYPES,
     STARTER_FIXTURE_TYPES,
+    STARTER_FURNITURE_PRODUCTS,
     STARTER_FURNITURE_TYPES,
 )
 
@@ -34,6 +35,7 @@ _library = Library(
     window_types=tuple(main.WINDOW_TYPES),
     electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *circuits.PANEL_TYPES),
     furniture_types=tuple(STARTER_FURNITURE_TYPES),
+    products=STARTER_FURNITURE_PRODUCTS,
     fixture_types=tuple(STARTER_FIXTURE_TYPES),
     appliance_types=tuple(STARTER_APPLIANCE_TYPES),
     circuits=tuple(circuits.CIRCUITS),
