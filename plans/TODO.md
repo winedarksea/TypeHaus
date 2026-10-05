@@ -246,7 +246,7 @@ the future.
 - See if we can narrow the gap between FURN-A-STUDY-BUILTIN and the shelves of D-A-STUDY, or add a wood trim piece in front to maintain visual continuity
 - Ridge beam has a whole lot of LSTA24's one it. Perhaps a single coil strap across the whole top is simpler, such as CS14
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door
-- D-M-BED2 to the main bedroom swings out into the main traffic lane. It might make more sense to switch this to a trimmed door
+- D-M-BED2 to the main bedroom swings out into the main traffic lane. It might make more sense to switch this to a trimmed door, or at least downsize it to 32".
 
 # Project Management
 
