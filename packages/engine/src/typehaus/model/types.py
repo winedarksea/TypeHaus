@@ -766,6 +766,9 @@ class RegisterType(FurnitureType, AirHandlingProductFacts):
 
 class ElectricalDeviceType(FurnitureType):
     needs: frozenset[Service] = frozenset({Service.POWER_120})
+    # E3905.7 / NEC 314.27(B): floor receptacles need a box listed for floor use.
+    # A general receptacle listing alone does not establish that application.
+    floor_box_listing: str | None = None
     # NEMA configuration (e.g. "5-20R", "14-50R") — typed data the panel schedule reads,
     # instead of parsing it out of the display name. Voltage stays derivable from ports.
     nema: str | None = None

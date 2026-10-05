@@ -120,6 +120,7 @@ def panel_schedule(model: ResolvedModel) -> list[dict[str, object]]:
             "volts": 240 if circuit.poles == 2 else 120,
             "nema": circuit.nema or "",
             "gfci": circuit.gfci,
+            "afci": circuit.afci,
             "backup": circuit.backup_tier is not None,
             "backup_tier": circuit.backup_tier.value if circuit.backup_tier else "",
             "panel": circuit.panel_ref,

@@ -188,7 +188,9 @@ def _add_canvas_box(mb: _MeshBuilder, item: ResolvedCanvasObject, height_m: floa
     if len(ring) < 3:
         return
     height = height_m if height_m else 0.25  # Panel3D uses type.height_m ?? 0.25
-    mb.add_prism(ring, item.z_m, item.z_m + height, _color("furniture"))
+    bottom = item.body_z0_m if item.body_z0_m is not None else item.z_m
+    top = item.body_z1_m if item.body_z1_m is not None else bottom + height
+    mb.add_prism(ring, bottom, top, _color("furniture"))
 
 
 def _add_suspension(mb: _MeshBuilder, item: ResolvedCanvasObject,

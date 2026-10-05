@@ -87,6 +87,8 @@ _COMBINATION_RECEPTACLE_KIND = "receptacle_240"
 _MAX_TO_RECEPTACLE_M = 6 * 0.3048  # no point along the wall line > 6' from a receptacle
 _MIN_WALL_SPACE_M = 2 * 0.3048  # wall spaces under 2' are exempt
 _NEAR_WALL_M = 0.5  # how close to the room boundary a device must sit to serve it
+_FLOOR_RECEPTACLE_WALL_REACH_M = 18 * 0.0254  # E3901.2.3 / NEC 210.52(A)(3)
+_RECEPTACLE_DISTANCE_TOLERANCE_M = 1e-9  # Include exact limits after polygon projection.
 # How much floor may survive between a floor opening and the wall face behind it and still
 # count as standing room. 12" of ledge along a stair well is not somewhere you plug a lamp in.
 _FLOOR_OPENING_LEDGE_M = 12 * 0.0254
@@ -340,7 +342,9 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
             if not _counts_as_a_125v_receptacle(ctx, device):
                 continue
             s, d = _perimeter_position(ring, placed_xy(ctx.model, device))
-            if d <= _NEAR_WALL_M:
+            floor_mounted = device.mount is not None and device.mount.kind.value == "floor"
+            reach = _FLOOR_RECEPTACLE_WALL_REACH_M if floor_mounted else _NEAR_WALL_M
+            if d <= reach + _RECEPTACLE_DISTANCE_TOLERANCE_M:
                 positions.append(s)
         breaks = (_door_intervals(ctx, ring, room.storey)
                   + _floor_opening_intervals(ctx, ring, room.storey)

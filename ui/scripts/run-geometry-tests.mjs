@@ -41,6 +41,7 @@ try {
   const { runRoomFloorTests } = await server.ssrLoadModule("/src/three/builders/roomFloor.test.ts");
   const { runStairFinishTests } = await server.ssrLoadModule("/src/three/builders/stairFinish.test.ts");
   const { runCountertopTests } = await server.ssrLoadModule("/src/three/builders/countertop.test.ts");
+  const { runFloorBoxTests } = await server.ssrLoadModule("/src/three/builders/floorBoxes.test.ts");
   const { runArchRingTests } = await server.ssrLoadModule("/src/three/builders/archRing.test.ts");
   const { runPlantBuilderTests } = await server.ssrLoadModule("/src/three/builders/plants.test.ts");
   const { runMirrorBuilderTests } = await server.ssrLoadModule("/src/three/builders/mirrors.test.ts");
@@ -121,6 +122,7 @@ try {
   runRoomFloorTests();
   runStairFinishTests();
   runCountertopTests();
+  runFloorBoxTests();
   runArchRingTests();
   runPlantBuilderTests();
   runMirrorBuilderTests();

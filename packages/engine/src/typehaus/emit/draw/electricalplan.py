@@ -47,6 +47,10 @@ def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
         b.add(Symbol(name=element.kind.value, insert=_in((x, y)), layer=layer))
         b.add(Text(anchor=_in((x + 0.1, y + 0.1)),
                    content=element.tag.removeprefix("ED-"), height=1.5, layer="A-ANNO-TEXT"))
+        if element.mount is not None and element.mount.kind.value == "floor":
+            circuit = element.circuit or "UNASSIGNED"
+            b.add(Text(anchor=_in((x + 0.1, y - 0.15)),
+                       content=f"FLOOR BOX / {circuit}", height=1.5, layer="A-ANNO-TEXT"))
 
     # Conduit trunks: dashed homerun polylines on their own raceway layer. The label sits
     # at the polyline's middle vertex — every trunk shares the panel as its first point,

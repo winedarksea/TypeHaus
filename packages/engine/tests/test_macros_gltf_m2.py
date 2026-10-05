@@ -848,10 +848,8 @@ def test_a_generated_furniture_massing_is_one_node_of_several_materials() -> Non
     result = load_plan(house)
     assert result.plan is not None
     model, _ = resolve(result.plan)
-    # RM-M-LIVING's sofa was retyped house-local to `FT-SOFA-84-SEAT-BAND` on 2026-09-06
-    # (same dimensions, a seat-width walk band), so the shared `FURN-SOFA-84` has no
-    # instance in catlin. The witness here is the sofa MASSING, which did not change.
-    sofa = next(item for item in model.canvas_objects if item.type_ref == "FT-SOFA-84-SEAT-BAND")
+    # The sitting-circle sofa keeps its identity when its clearance-specific type changes.
+    sofa = next(item for item in model.canvas_objects if item.tag == "FURN-M-SOFA")
     gltf, _blob = emit_gltf_dict(model)
 
     nodes = [node for node in gltf["nodes"] if node["extras"].get("uid") == sofa.uid]

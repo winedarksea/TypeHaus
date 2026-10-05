@@ -10,6 +10,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   retypes through a centre-holding macro. Re-affirmed deferred 2026-08-07.
 ## Remaining Work
 
+- **Record the attic floor-box assemblies and their floor-use listings.** The new
+  `code.E3905_7_floor_boxes` check verifies the living-room Arlington kit but reports
+  UNKNOWN for the eight existing attic floor receptacles whose types still describe
+  generic wall receptacles. Select their listed boxes and coordinate actual cavity
+  depths and framing; see `houses/catlin/plan/electrical_attic.py`.
+
 - **Review `SB-BW-BAND` connector layout before reducing its 36 KBS1Z.** Top-only ties
   would leave three of the five mid-band slats per bay untied. The dimensioned 3D parts also
   expose the two j = 0 centre-post connections extending into the plate/header region;

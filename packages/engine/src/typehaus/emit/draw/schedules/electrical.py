@@ -37,6 +37,7 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
             (row["circuit"], row["description"], f"{row['breaker_amps']}A/{row['poles']}p",
              f"{row['volts']}V", row["nema"] or "—", row["panel"],
              ("GFCI " if row["gfci"] else "")
+             + ("AFCI " if row["afci"] else "")
              + _TIER_LABEL.get(str(row["backup_tier"]), "")
              + ("SOURCE" if row["source"] else "") or "—",
              f"{row['connected_va']:,.0f}")

@@ -189,6 +189,26 @@ def test_receptacle_spacing_flags_a_single_far_receptacle(project):
     assert [f.result.value for f in findings] == ["fail"]
 
 
+@pytest.mark.parametrize("wall_distance_inches, expected", [(18, "pass"), (19, "fail")])
+def test_floor_receptacle_wall_spacing_reach(project, wall_distance_inches, expected):
+    from typehaus.model import Mount, MountKind, ft, inch
+
+    plan = _room_plan(project)
+    model, _ = resolve(plan)
+    south_face = min(point[1] for point in model.rooms[0].clear_face)
+    spots = [(5, 0), (15, 0), (20, 4), (20, 10), (15, 14), (5, 14), (0, 10), (0, 4)]
+    devices = [ElectricalDevice(uid=f"FRC{index:07d}", tag=f"ED-RC-{index}",
+                                kind=DeviceKind.RECEPTACLE,
+                                position=pt(ft(x), ft(y)))
+               for index, (x, y) in enumerate(spots)]
+    devices[0] = devices[0].model_copy(update={
+        "position": pt(ft(5), m(south_face + inch(wall_distance_inches).meters)),
+        "mount": Mount(kind=MountKind.FLOOR, elevation=inch(0)),
+    })
+    findings = _spacing_findings(_room_plan(project, devices=devices))
+    assert [f.result.value for f in findings] == [expected]
+
+
 # --- catlin: the authored schedule reconciles and the derived numbers fired -----------
 
 def test_catlin_panel_schedule_is_derived(catlin_model):

@@ -35,7 +35,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   bed_reading_corner, bed_reading_corner_types,
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, panel_types,
-                  electrical, electrical_attic, equipment_types,
+                  electrical, electrical_attic, electrical_floor_types, equipment_types,
                   fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets,
                   landscape, lighting, living_east_run, living_east_run_types,
                   lighting_attic, lighting_types, masonry_joints, mep, millwork,
@@ -101,7 +101,8 @@ _library = Library(
                      *equipment_types.EQUIPMENT_TYPES),
     electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *panel_types.PANEL_TYPES,
                              *mep.ELECTRICAL_DEVICE_TYPES,
-                             *electrical.DEVICE_TYPES, *lighting_types.LIGHTING_TYPES),
+                             *electrical.DEVICE_TYPES, *electrical_floor_types.DEVICE_TYPES,
+                             *lighting_types.LIGHTING_TYPES),
     circuits=circuits.CIRCUITS,
     # No ``load_managements``: retired 2026-09-12 with the Class 320 service. See the
     # block at the foot of plan/circuits.py.

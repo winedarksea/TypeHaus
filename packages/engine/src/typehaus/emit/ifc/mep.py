@@ -520,7 +520,7 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
     outline = resolved.footprint if resolved is not None else _rectangle(x, y, half * 2, half * 2)
     # The placeable resolver owns the Mount contract, so IFC reads the same elevation as
     # glTF and the UI instead of carrying its own per-kind defaults (which would diverge).
-    z0 = resolved.z_m if resolved is not None else resolved_mount_elevation(storey, device)
+    z0 = resolved.body_z0_m if resolved is not None else resolved_mount_elevation(storey, device)
     ifc_class, _ = _device_ifc_classes(device.kind.value, product_type)
     element = ll.create_entity(f, ifc_class, name=device.tag)
     element.GlobalId = derive_guid(project_uuid, device.uid)
@@ -536,6 +536,8 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
                                                         "source_type": device.type_ref or ""})
     ll.ensure_pset(f, element, "TypeHaus_Device", {
         "kind": device.kind.value, "circuit": device.circuit or "",
+        "mount": device.mount.kind.value if device.mount else "",
+        "floor_box_listing": getattr(product_type, "floor_box_listing", None) or "",
         # A PoE device names no circuit — its power arrives over the data cable — so the
         # schedule needs the watts here or the load has nowhere to be read.
         "poe_watts": getattr(product_type, "poe_watts", None) or 0.0,

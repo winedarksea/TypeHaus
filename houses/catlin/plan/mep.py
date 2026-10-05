@@ -33,6 +33,7 @@ element order — and therefore model.json — is unchanged.
 from __future__ import annotations
 
 from plan import (
+                  electrical_floor,
                   mep_cleanouts,
                   mep_drainage,
                   mep_electrical,
@@ -69,6 +70,7 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_drainage.LAUNDRY_MAIN,
                  *mep_venting.VENT_BRANCHES_MAIN,
                  *mep_electrical.MAIN_DEVICES,
+                 *electrical_floor.MAIN_DEVICES,
                  *mep_supply.WATER_SUPPLY,
                  *mep_supply.HYDRANT_BRANCH_MAIN,
                  *mep_supply.KITCHEN_STUB_MAIN,

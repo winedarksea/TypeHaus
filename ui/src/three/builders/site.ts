@@ -142,7 +142,10 @@ export function buildCanvasObject(
   const mesh = new THREE.Mesh(canvasObjectFallbackGeometry(
     item.model_primitive ?? type?.model_primitive, width, height, depth,
   ), material);
-  mesh.position.copy(projectPointToScene(item.position_m, elevation + height / 2, center));
+  const mount = item.mount ?? type?.mount;
+  const recessedFloor = mount?.kind === "floor" && mount.recessed_into_host_surface;
+  const bodyCenterElevation = elevation + (recessedFloor ? -height / 2 : height / 2);
+  mesh.position.copy(projectPointToScene(item.position_m, bodyCenterElevation, center));
   mesh.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
   mesh.userData.uid = item.uid;
   mesh.userData.selectionKind = "canvas_object";
