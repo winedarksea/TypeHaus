@@ -9,11 +9,13 @@
 #
 # ** MIRRORED ABOUT THE BRICK (y=104"), 2026-10-03. ** E1 and E2 flank the brick at
 # 104 -/+ 40"; each window's unit centres 1 1/4" off the window, away from the brick, and
-# the north bank is symmetric about E3. The 0" joints are the end panels and fillers.
+# the fireplace-adjacent units retain that offset. The 0" joints are the end panels and fillers.
 #   south  y 6 5/8"..81 1/4":  2 1/8" filler, B36, B36 (E1), 1/2" end panel to the brick
-#   north  y 126 3/4"..271 1/4": 1/2" end panel, B36 (E2), B15, B30 (E3), B15, B36, B12 wall frame on plinth; 1/8" sealed joint to the pantry
+#   north  y 126 3/4"..271 1/4": 1/2" end panel, four B36; 1/8" sealed joint to the pantry
 # Fillers are elements (FT-LIV-E-FILLER-*), faced to match; the slab runs straight over them.
-# MAXIMERA drawers except the 12-inch door/shelf frame.
+# Six B36 with paired nominal 18" doors and shelves (2026-10-04). The former B15 + B30 +
+# B15 + B12 total 72", so two B36 preserve the bank length; the retained middle B36 moves
+# south to make the modules consecutive. Window centres no longer govern those joints.
 #
 # Stools: all four east windows share a 2'-10" sill so the frame rail, and so the stool
 # top, meets the slab top (36 15/16" above the storey datum; the rail lands 1/64" proud).
@@ -35,16 +37,12 @@ LIVING_EAST_RUN = [
               position=pt(ft(34, 9.625), ft(10, 7)), rotation=deg(-90)),
     Furniture(uid="Y44J503GS1", tag="FURN-M-LIV-E-B36-E2", type_ref="SEKT-B36-D15", room="RM-M-LIVING",
               position=pt(ft(34, 9.625), ft(12, 1.25)), rotation=deg(-90)),
-    Furniture(uid="P7S6W1H6EP", tag="FURN-M-LIV-E-B15-E3S", type_ref="SEKT-B15-D15", room="RM-M-LIVING",
-              position=pt(ft(34, 9.625), ft(14, 2.75)), rotation=deg(-90)),
-    Furniture(uid="TKX5EHYSZW", tag="FURN-M-LIV-E-B30-E3", type_ref="SEKT-B30-D15", room="RM-M-LIVING",
-              position=pt(ft(34, 9.625), ft(16, 1.25)), rotation=deg(-90)),
-    Furniture(uid="15FPP4DBD8", tag="FURN-M-LIV-E-B15-E3N", type_ref="SEKT-B15-D15", room="RM-M-LIVING",
-              position=pt(ft(34, 9.625), ft(17, 11.75)), rotation=deg(-90)),
+    Furniture(uid="TKX5EHYSZW", tag="FURN-M-LIV-E-B36-E3", type_ref="SEKT-B36-D15", room="RM-M-LIVING",
+              position=pt(ft(34, 9.625), ft(15, 1.25)), rotation=deg(-90)),
     Furniture(uid="QKGYPHFV12", tag="FURN-M-LIV-E-B36-MID", type_ref="SEKT-B36-D15", room="RM-M-LIVING",
-              position=pt(ft(34, 9.625), ft(20, 1.25)), rotation=deg(-90)),
-    Furniture(uid="WQ2SWGGP5K", tag="FURN-M-LIV-E-B12-PANTRY", type_ref="FT-LIV-E-STOCK12-PLINTH", room="RM-M-LIVING",
-              position=pt(ft(34, 9.625), inch(265.25)), rotation=deg(-90)),
+              position=pt(ft(34, 9.625), ft(18, 1.25)), rotation=deg(-90)),
+    Furniture(uid="WQ2SWGGP5K", tag="FURN-M-LIV-E-B36-PANTRY", type_ref="SEKT-B36-D15", room="RM-M-LIVING",
+              position=pt(ft(34, 9.625), ft(21, 1.25)), rotation=deg(-90)),
 ]
 
 LIVING_EAST_STOOLS = [

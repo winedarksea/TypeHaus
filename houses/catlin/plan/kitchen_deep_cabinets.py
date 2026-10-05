@@ -36,17 +36,6 @@ STOCK_BASE_FRAME_UPPER = FurnitureType(
             "lower garage carcass at 76 inches and independently restrained to wall backing. "
             "See notes/kitchen_stock_cabinet_details.md; finished top 106 inches."),
 )
-STOCK_SHALLOW_PLINTH_BASE = FurnitureType(
-    tag="FT-LIV-E-STOCK12-PLINTH", name='SEKTION 12x15x30" wall frame on anchored plinth',
-    footprint=(inch(12), inch(15.5)), height=inch(36), plan_symbol="sektion-plinth-wall-base",
-    storage=True, work_surface=True, product_ref="PROD-IKEA-SEKTION-WALL12-30",
-    source=("Stock 102.654.72 wall frame on a 3 1/2-inch anchored plinth, with a "
-            "1/2-inch subtop and the shared 2-inch oak slab. One 12x30 VOXTORP door and "
-            "fixed shelves; no MAXIMERA drawers. Nominal installed depth 15 1/2 inches, "
-            "matching the living run. A 1/8-inch sealed joint separates it from S2."),
-)
-
 KITCHEN_DEEP_CABINET_TYPES = (
     DEEP_18_20, DEEP_30_30, DEEP_24_40, STOCK_BASE_FRAME_UPPER,
-    STOCK_SHALLOW_PLINTH_BASE,
 )

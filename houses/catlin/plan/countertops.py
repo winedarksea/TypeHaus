@@ -83,9 +83,8 @@ MAIN_COUNTERTOPS = [
     ),
     Countertop(
         uid="TPTH3QMGAY", tag="CT-M-LIV-E-N",
-        hosts=("FURN-M-LIV-E-END-N", "FURN-M-LIV-E-B36-E2", "FURN-M-LIV-E-B15-E3S",
-               "FURN-M-LIV-E-B30-E3", "FURN-M-LIV-E-B15-E3N", "FURN-M-LIV-E-B36-MID",
-               "FURN-M-LIV-E-B12-PANTRY"),
+        hosts=("FURN-M-LIV-E-END-N", "FURN-M-LIV-E-B36-E2", "FURN-M-LIV-E-B36-E3",
+               "FURN-M-LIV-E-B36-MID", "FURN-M-LIV-E-B36-PANTRY"),
         material_ref="live-edge-white-oak",
         thickness=inch(2),
         overhang=inch(1),

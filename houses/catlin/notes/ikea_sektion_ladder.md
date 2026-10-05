@@ -1,6 +1,6 @@
 # IKEA SEKTION ladder and the current kitchen
 
-Revised 2026-10-03. Stock module dimensions govern kitchen layout; manufacturer rail,
+Revised 2026-10-04. Stock module dimensions govern kitchen layout; manufacturer rail,
 frame and front dimensions govern installation. The dimensioned installation specification
 is [Kitchen stock-frame installation details](kitchen_stock_cabinet_details.md).
 
@@ -14,10 +14,10 @@ is [Kitchen stock-frame installation details](kitchen_stock_cabinet_details.md).
 | Corner wall frame | 26 by 26 by 30 | 73 1/2–103 1/2 |
 | East high frames | 24 wide, 24 system deep, 80 high | 3 1/2–83 1/2 |
 | Garage upper | stock 24 by 24 by 30 base frame | 76–106, no legs/counter |
-| Living end cabinet | stock 12 by 15 by 30 wall frame | anchored plinth, total 36 |
+| Living bases | six stock 36 by 15 by 30 bases, paired 18-inch doors | 36-inch work surface |
 
 A kitchen base uses 3 1/2 support + 30 frame + approximately 1.319 substrate +
-1.181 quartz = 36. The living end uses 3 1/2 plinth + 30 frame + 1/2 subtop +
+1.181 quartz = 36. The living bases use 3 1/2 support + 30 frame + 1/2 subtop +
 2 oak = 36. Normal upper/high stacks finish at 103 1/2, below the finished ceiling.
 The garage upper reaches 106 and requires a field check of the remaining lift space.
 
@@ -32,8 +32,8 @@ North upper course: W36 and its 20 stacker, W36 sink bridge, W30 and its 20 stac
 The diagonal corner meets the north flank and the new east W12 above the fixed window.
 Their underside strips mount to cabinets, replacing the obsolete corner filler light.
 
-East, south to north: the existing shallow living bank, new 12-inch door/shelf wall-frame
-installation, 1/8 sealed joint, S2 then S1 high pantry frames, garage. The tall bank moved
+East, south to north: four 36-inch door/shelf bases in the north living bank,
+1/8 sealed joint, S2 then S1 high pantry frames, garage. The tall bank moved
 11 5/8 north. Its stock shallow 20-high tops align at the fronts on supported rear bays:
 9 nominal, 9 1/4 from the published frame/rail depths with matching fronts. Decks and
 restraint bridges are detailed and priced; the exposed south rear bay has a finish cover.
@@ -44,9 +44,11 @@ The 73 1/2 quartz seating overhang and projecting back panel leave 25 inches to 
 pantry's nominal front, allowing the retained swing-out rack and door to deploy. Three
 stools have 24 1/2 centre spacing. The knee is 15 inches on five hidden steel bars (K6).
 
-The living banks still mirror about the fireplace. The new 12-inch installation extends
-the north bank from y=259 1/4 to271 1/4 and replaces the former north filler. The south
-2 1/8 scribe retains its previous scope and price; it is outside this revised kitchen run.
+The fireplace-adjacent living bases retain their mirrored offsets. The north bank runs
+from y=127 1/4 to271 1/4 as four B36; the south bank retains two B36 and its 2 1/8 scribe.
+All six bases have paired nominal 18-inch doors. The former B30 + two B15 + B12 total
+72 inches and are replaced by two B36, with the retained middle B36 shifted south.
+Window centres and the pantry boundary stay fixed; cabinet joints follow the door rhythm.
 
 ## Honest custom scope and hardware
 
@@ -57,8 +59,8 @@ installation work. On the unchanged west wall, the 18 by 24 by 20 pantry top and
 appliance hinge clearance retain the previous specification.
 
 MAXIMERA is a product choice, not a geometry vocabulary. North B18 and peninsula
-B36/B24/B24 are drawer stacks. The B12 and new living 12-inch wall-frame installation
-use doors and shelves; neither is represented as a 12-inch MAXIMERA base. Sink base uses
+B36/B24/B24 are drawer stacks. The kitchen B12 and all six living B36 use doors and
+shelves; the living MAXIMERA specification is superseded. Sink base uses
 doors, carousel corners use the retained bifold/carousel hardware. The tall pantry retains
 Rev-A-Shelf 5374-24FL swing-out inserts. The garage retains its full-extension shelf and
 lift-up/roll-up front; it is not an appliance-lift base cabinet.

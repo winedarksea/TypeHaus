@@ -14,6 +14,18 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Living east wall: uniform 18-inch doors (2026-10-04)
+
+Owner requested replacing the B30, two B15 and B12 south of PANTRY-S2 with two B36:
+30 + 15 + 15 + 12 = 72 = 2 × 36 inches. The north bank is now four consecutive B36
+at y=127 1/4–271 1/4; the retained B36-MID shifts south to close the run. The south
+bank's two B36 remain. All six specify paired nominal 18x30 VOXTORP doors and shelves
+(IKEA 594.631.16), superseding the living MAXIMERA notes and 12-inch wall-frame/plinth.
+Keep the fireplace panels, south scribe, 144 5/8-inch north oak slab, window centres,
+1/8-inch sealed joint and PANTRY-S2 fixed. The regular door rhythm takes precedence
+over centring individual cabinets below E3 and EAST-MID. Quantities and prices follow
+six configured door/shelf bases; removed narrow-frame/plinth price rows are retired.
+
 ## East wall: BESTA -> SEKTION, carousel corners, SEKTION peninsula (2026-10-02)
 
 The eight BESTA units (16 1/2" deep, 29 3/4" top) did not match the kitchen and left two

@@ -2629,8 +2629,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Pantry S2/S1:** y=271 3/8–295 3/8–319 3/8, meeting the garage. Stock shallow
   24x15x20 tops at83 1/2 align with their fronts via supported rear bays (9 nominal,
   9 1/4 from actual matching frame/rail/front depths), closed at the exposed south end.
-- **Living 12-inch end cabinet:** wall frame 102.654.72 on an anchored plinth, door and
-  shelves, total36; y=259 1/4–271 1/4, then1/8 sealed joint toS2. No invented shallow-base SKU.
+- **Living east banks:** six B36-D15 with paired nominal18-inch VOXTORP doors and
+  shelves (594.631.16); two south of the fireplace, four north at y=127 1/4–271 1/4,
+  then1/8 sealed joint toS2. B30 + two B15 + B12 → two B36, retained MID shifts south.
+  Window centres and S2 stay fixed; joints follow the door rhythm. Total installed height36.
 - **Bar and projecting back panel:**73 1/2 long, end x=376 3/8, leaving25 to the
   pantry nominal front. The remaining25 of cabinet backs are painted and edge-banded.
   Stools x=315 1/8,339 5/8,364 1/8 at their previous y. Preserve Rev-A-Shelf5374-24FL.
@@ -2639,7 +2641,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   published frame/rail/front measurements for shop cuts, not nominal module depths.
 - **Finish pieces and supports are detailed and priced.** Deleted custom east pantry tops,
   custom garage upper, kitchen filler and living north filler must not re-enter quantities.
-  MAXIMERA is the drawer product; the12-inch installations use doors and shelves.
+  MAXIMERA is the kitchen drawer product; kitchen B12 and living B36 use doors and shelves.
 - **East-wall receptacles stay at42 AFF:** living south22/44 plusRC17 at83 7/8;
   north RC14 at124 1/8, then168/216/258 1/8. Garage KGF4/KMX1 at326/338 3/4;
   landing KGF3 at349 1/4. Recheck framing and coverage if those locations change.

@@ -13,12 +13,13 @@ from __future__ import annotations
 from typehaus.model import FurnitureType, Product, inch
 
 SEKTION_BASE_15_DEEP = Product(
-    tag="PROD-IKEA-SEKTION-BASE-D15", brand="IKEA", model="SEKTION 15\"-deep base frames",
-    name='SEKTION white base cabinet frames, 15/18/24/30/36 x 15 x 30"',
-    url="https://www.ikea.com/us/en/p/sektion-base-cabinet-with-shelves-white-vedhamn-oak-s19439618/",
-    source=("IKEA US listings, read 2026-10-02: 15x15x30, 18x15x30 and 24x15x30 found as "
-            "listed configurations (30 and 36 per the base-cabinet category); system depth "
-            "15\", frame 15 3/8\" actual. Every living-room unit takes MAXIMERA drawers."),
+    tag="PROD-IKEA-SEKTION-BASE-D15", brand="IKEA", model="SEKTION shelves/2 doors, VOXTORP matte white",
+    name='SEKTION white base cabinet, 36 x 15 x 30", paired 18" doors', sku="594.631.16",
+    url="https://www.ikea.com/us/en/p/sektion-base-cabinet-with-shelves-2-doors-white-voxtorp-matte-white-s59463116/",
+    source=("IKEA US, read 2026-10-04: frame 702.653.89 with two nominal 18x30 VOXTORP "
+            "doors 802.733.22, UTRUSTA hinges and adjustable shelves. Six living-room "
+            "bases share this configuration; legs, plinth and suspension rail separate. "
+            "15-inch system depth, 15 3/8-inch configured depth; model envelope 15 1/2."),
 )
 SEKTION_CORNER_CAROUSEL = Product(
     tag="PROD-IKEA-SEKTION-CORNER-CAROUSEL", brand="IKEA",

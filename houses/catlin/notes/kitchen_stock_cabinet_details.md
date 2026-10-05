@@ -1,6 +1,6 @@
 # Kitchen stock-frame installation details
 
-Revision 2026-10-03. Coordinates are inches in the house plan; elevations are above
+Revision 2026-10-04. Coordinates are inches in the house plan; elevations are above
 finished floor. Cabinet widths follow stock modules. These details govern the revised north
 and east runs; the west cold-storage custom uppers retain their separate specification.
 
@@ -150,26 +150,37 @@ Keep the two Rev-A-Shelf 5374-24FL swing-out inserts and their door brackets. Ch
 22 1/4 minimum clear opening against the 22 1/2 nominal inside width and actual hinge
 intrusion; adjust hinges to preserve that opening. Maintain full manufacturer deployment.
 
-## K5 — Living end cabinet and sealed joint
+## K5 — Living paired-door banks and sealed joint
 
-At y=259 1/4–271 1/4 use [wall frame 102.654.72](https://www.ikea.com/us/en/p/sektion-wall-cabinet-white-10265472/),
-12 by 15 system by 30, installed as a door-and-shelf cabinet on an anchored 3 1/2 plinth.
-Its installed type is 36 high: 3 1/2 plinth + 30 frame + 1/2 subtop + 2 oak.
-Use two 3/4 plywood plinth sides and cross cleats, shim on bearing pads, screw to subfloor
-and restrain the cabinet to wall framing. No legs are assumed in this wall-frame SKU.
-For this floor-supported installation, the 14 3/8 bare frame plus a 7/8 front and
-1/4 rear spacer gives the modelled 15 1/2 finished depth. Use direct metal restraint
-brackets through the structural frame into wall blocking with the 1/4 spacer; this frame
-does not hang from the wall-cabinet suspension rail. If the installer elects to use the
-rail instead, its 14 3/4 frame/rail depth plus the front projects 15 5/8; coordinate that
-1/8 change with the living fronts and slab before fitting. The plinth still bears the load.
-There are no MAXIMERA drawers in this cabinet. Its price includes frame, door, hinges,
-shelves, plinth, fasteners and installation; the shared oak slab remains separately priced.
+All six living-room bases are 36 by 15 system by 30 frames, each with two nominal
+18 by 30 VOXTORP matte-white doors, UTRUSTA hinges and adjustable shelves. Use
+[SEKTION configuration 594.631.16](https://www.ikea.com/us/en/p/sektion-base-cabinet-with-shelves-2-doors-white-voxtorp-matte-white-s59463116/)
+(frame 702.653.89, two doors 802.733.22). Legs, plinth and suspension rail are separate.
+These are door-and-shelf bases; the former living-room MAXIMERA specification is superseded.
+Keep the 3 1/2 support + 30 frame + 1/2 subtop + 2 oak = 36-inch installed height,
+15 1/2-inch model depth and existing wall/front line. Coordinate actual frame, rail and
+front dimensions when installing, preserving factory door reveals; 18 inches is nominal.
 
-The gap to S2 is exactly 1/8 inch, y=271 1/4–271 3/8. Continue the north living slab
+The south bank retains its two B36, 2 1/8-inch scribe and fireplace end panel.
+The north bank is a 1/2-inch fireplace end panel followed by four consecutive B36:
+
+| Cabinet | South y | North y |
+|---|---:|---:|
+| B36-E2 | 127 1/4 | 163 1/4 |
+| B36-E3 | 163 1/4 | 199 1/4 |
+| B36-MID | 199 1/4 | 235 1/4 |
+| B36-PANTRY | 235 1/4 | 271 1/4 |
+
+The former B30 + two B15 + B12 total 72 inches, exactly two B36. The retained
+B36-MID shifts south to close the run. This replaces the 12-inch wall-frame/plinth
+installation and sets a continuous nominal 18-inch door rhythm; the window centres
+stay fixed, so E3 and EAST-MID no longer centre on individual cabinets.
+
+The gap to S2 remains exactly 1/8 inch, y=271 1/4–271 3/8. Continue the north living slab
 to y=271 3/8 (length 144 5/8 from y=126 3/4); finish its end cleanly at the tall cabinet.
 Seal the cabinet-to-tall joint with flexible colour-matched sealant. This is an installation
 joint, not a 1/8-inch custom frame or a thick filler cut from a cover board.
+PANTRY-S2 and everything north of it retain their existing scope.
 
 ## K6 — Seating, backs and pantry door/rack clearance
 
@@ -213,5 +224,5 @@ The placeable rows in prices.toml buy the actual stock frames, coordinated front
 shelves, corner hinges, support plywood, finish boards and fitting labour. The pantry rack
 and garage pull-out/door allowances buy the preserved specialty hardware. The rear-finish
 allowance buys the exposed backs' paint and edge band. The existing floor-anchor allowance remains; the new bar-support allowance
-buys the ply sub-top and bar pockets; the five bars bill as `FT-KIT-CT-BRACKET-24`. New B12/B18/W12/corner rows are priced; removed
+buys the ply sub-top and bar pockets; the five bars bill as `FT-KIT-CT-BRACKET-24`. Kitchen B12/B18/W12/corner and six living B36 rows are priced; removed
 filler and custom top rows are deleted. These are material/labour budget bands, not live delivered quotations.

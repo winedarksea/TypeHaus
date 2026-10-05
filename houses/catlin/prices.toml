@@ -2455,11 +2455,10 @@
 # The carousel corner (IKEA s79582533, carousel and 13"+13" bifold in the number). Labour
 # is a base and a half: two legs to level and the bifold to hang off the range side.
 "SEKT-CORNER-B38" = { material = { low = 380, high = 750 }, labour = { low = 130, high = 320 } }  # 2 ea
-# The east wall's 15"-deep living-room frames with MAXIMERA stacks (IKEA US configured,
-# read 2026-10-02: 24x15x30 $257-269, 18x15x30 $288 with fronts).
-"SEKT-B15-D15" = { material = { low = 160, high = 320 }, labour = { low = 90, high = 220 } }  # 2 ea
-"SEKT-B30-D15" = { material = { low = 200, high = 420 }, labour = { low = 90, high = 220 } }  # 1 ea
-"SEKT-B36-D15" = { material = { low = 230, high = 480 }, labour = { low = 90, high = 220 } }  # 4 ea
+# The east wall's six 36x15x30 living-room bases with paired 18x30 VOXTORP doors and
+# shelves. IKEA US 594.631.16, read 2026-10-04: $513 configured, legs/plinth/rail separate.
+# Material allowance includes those installation parts; the shared oak slabs bill separately.
+"SEKT-B36-D15" = { material = { low = 480, high = 620 }, labour = { low = 90, high = 220 } }  # 6 ea
 # FÖRBÄTTRA-faced pieces (plan/living_east_run_types.py): site-cut 25x80 panels at $127.
 "FT-LIV-E-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 2 ea
 "FT-KIT-PEN-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 1 ea
@@ -2499,7 +2498,6 @@
 "SEKT-W12-30" = { material = { low = 200, high = 320 }, labour = { low = 90, high = 220 } }
 "SEKT-CORNER-W26-30" = { material = { low = 280, high = 460 }, labour = { low = 140, high = 300 } }
 "FT-KIT-STOCK24-30-HUNG" = { material = { low = 300, high = 520 }, labour = { low = 160, high = 360 } }
-"FT-LIV-E-STOCK12-PLINTH" = { material = { low = 260, high = 420 }, labour = { low = 160, high = 360 } }
 
 #
 # High frames. The current 80" carcasses cost less material than the old 90" entries;
