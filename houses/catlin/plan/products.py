@@ -28,6 +28,7 @@ from plan.bed_reading_corner_types import BED_READING_CORNER_PRODUCTS
 from plan.bedroom_wardrobe_types import BEDROOM_WARDROBE_PRODUCTS
 from plan.closet_types import CLOSET_PRODUCTS
 from plan.living_east_run_types import LIVING_EAST_RUN_PRODUCTS
+from plan.living_room_furniture_types import LIVING_ROOM_FURNITURE_PRODUCTS
 from plan.plant_room_types import PLANT_ROOM_PRODUCTS
 from plan.products_interior import INTERIOR_PRODUCTS
 from plan.study_nook_types import STUDY_NOOK_PRODUCTS
@@ -262,5 +263,5 @@ PRODUCTS = (
     LEVITON_EV_RECEPTACLE_1450R,
     *INTERIOR_PRODUCTS, *CLOSET_PRODUCTS, *BEDROOM_WARDROBE_PRODUCTS, *BATH1_STORAGE_PRODUCTS,
     *STUDY_NOOK_PRODUCTS, *BED_READING_CORNER_PRODUCTS, *LIVING_EAST_RUN_PRODUCTS,
-    *PLANT_ROOM_PRODUCTS,
+    *PLANT_ROOM_PRODUCTS, *LIVING_ROOM_FURNITURE_PRODUCTS,
 )

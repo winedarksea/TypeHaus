@@ -6204,12 +6204,15 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 3 ea
 "FURN-BED-FULL" = { low = 200, high = 1200 }  # 1 ea — BED3, a size down from the queen
 "FURN-ROCKING-CHAIR-30" = { low = 150, high = 700 }  # 2 ea
-# FURN-SOFA-84 is UNREFERENCED since 2026-09-06 — RM-M-LIVING's sofa was retyped to the shared
-# FT-SOFA-84-SEAT-BAND clearance variant when the seating turned onto the fire. Both rows are
+# FURN-SOFA-84 and FT-SOFA-84-SEAT-BAND are unreferenced: the living sofa now uses
+# FT-LIVING-SOFA-84-TABLE-GAP for the puzzle-table arrangement. These shared rows are
 # identical and both stay: an unpriced type is SILENTLY DROPPED from the bill, so the day this
 # row is the live one again it has to already carry a number.
 "FURN-SOFA-84" = { low = 500, high = 3000 }  # 0 ea — kept live for the revert
-"FT-SOFA-84-SEAT-BAND" = { low = 500, high = 3000 }  # 1 ea — same sofa, seat-width walk band
+"FT-SOFA-84-SEAT-BAND" = { low = 500, high = 3000 }  # 0 ea — shared walk-lane variant
+"FT-LIVING-SOFA-84-TABLE-GAP" = { low = 500, high = 3000 }  # 1 ea — same sofa, 18" seated table gap
+# Wayfair W120117949, read 2026-10-05: $217.99, unit only (tax/delivery/assembly excluded).
+"FT-LIVING-PUZZLE-COFFEE-TABLE" = { low = 217.99, high = 217.99 }  # 1 ea — owner-selected lift-top table
 
 
 # --- WHAT THESE NUMBERS INCLUDE ---------------------------------------------------------

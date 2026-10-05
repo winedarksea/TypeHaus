@@ -4677,3 +4677,24 @@ surface that reaches the court, so the water goes there.
   re-blessed for the narrower RO (one W-M-C1 cripple, framing bid LF, the INT_2X6_BRG_RC
   opening-perimeter detail); the elevation golden also picked up the unblessed
   FURN-M-LIVING-FIDDLE-LEAF-FIG from the "ficus" commit.
+
+
+### 2026-10-05 — Living-room lift-top puzzle coffee table
+
+- Added `FURN-M-PUZZLE-COFFEE-TABLE` in `RM-M-LIVING`, centred on the sofa/fire axis
+  at (27'-3.9", 8'-8"), with its 44.5" long edge parallel to the sofa. The closed
+  footprint is 44.5" x 23.8", height 18.3"; the owner specifies 23.6" when lifted.
+  The removable felt-lined puzzle tray stows below the lift top above concealed storage.
+- Reference: Breakwater Bay Wayfair W120117949, also sold as GOUUN Amazon B0HFJ5VTC3.
+  Product links and the closed-state geometry limitation live in
+  `plan/living_room_furniture_types.py`; horizontal lift travel is unspecified.
+  The furnishings allowance is Wayfair's $217.99 unit price read today, excluding
+  tax, delivery and assembly.
+- Moved `FURN-M-SOFA` 12" west to x=23'-4.5", retaining its east-facing rotation.
+  Its local clearance type reserves 18" of seated access to the table, replacing the
+  previous 30" front walk lane. Both armchairs stay put: nearest-edge table gaps are
+  15.1" north and 19.6" south. Circulation goes around the group.
+- Validation: closed table clears physical furniture and existing required/recommended
+  access zones; takeoff counts one table. House checks: 1,856 pass, 0 fail, 44 unknown,
+  with no findings involving the table or sitting group. JSON and framed IFC rebuilt.
+  Elevation golden adds only the new table's base/top, with no existing heights moved.

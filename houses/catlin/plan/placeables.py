@@ -208,30 +208,19 @@ MAIN_PLACEABLES = [
     # turns the seats onto it. The fire is now W-M-FIRE-* at x=34'-11 7/8", centred on y=8'-8"
     # (plan/storeys/main.py), and the convention on this floor is rotation 0 = back at +y, so
     # deg(90) = back WEST / opens EAST. The sofa is west of the fire, so it takes deg(90);
-    # the two armchairs flank it and mirror exactly about y=104".
+    # the two angled armchairs flank the sofa/fire axis at y=104".
     #
-    # Seat to flame: sofa 9'-9 3/8", armchairs 5'-2 1/8". The review's complaint was that the
-    # unit "reads flat at the 11 ft where the sofa is" — geometry has now fixed the half of
-    # that it can, and the unit itself is the other half (plan/electrical.py).
-    #
-    # ** RE-AUTHORED IN FEET. ** The sofa was `pt(m(7.87848), m(2.69813))`, a metric literal
-    # nobody could read against a plan dimensioned in inches.
-    #
-    # ** THE TWO BINDING CLEARANCES ARE BOTH ABOUT 1", AND BOTH SHOULD BE RE-CHECKED AFTER
-    # ANY NUDGE HERE: ** the sofa's 30" front band against the armchairs' west edge, and
-    # armchair N's north edge against the dining chairs' 36" use margin at y=148 1/2".
-    #
-    # ** THE CLEARANCE VARIANT IS SHARED. ** FT-SOFA-84-SEAT-BAND is
-    # FURN-SOFA-84 in every dimension and narrows the walk band to the width of the seat, not
-    # the arms. Like FT-DINING-8-OPEN-CORNERS, it retypes the clearance shape instead of
-    # reducing the reach. Without it the finding is
-    # `integrity.placeable_recommended_clearance_conflict` at WARN/UNKNOWN, which does not
-    # break the 0-FAIL gate but does put a line in a clean report.
-    #
-    # ** NO COFFEE TABLE. ** Anything standing in the sofa's front band is an encroachment by
-    # definition, and this band is now the walk lane to the fire.
-    Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FT-SOFA-84-SEAT-BAND",
-              room="RM-M-LIVING", position=pt(ft(24, 4.5), ft(8, 8)), rotation=deg(90)),
+    # 2026-10-05: move the sofa 12" west for a lift-top puzzle coffee table, its long
+    # edge parallel to the sofa. The table occupies x=316"..339.8", y=81.75"..126.25";
+    # the sofa's front is x=298", leaving 18" for seated access. The angled chairs keep
+    # their positions, with 15.1" north / 19.6" south to the table's nearest edge.
+    # Circulation goes around the group; the gap is for seated table access
+    # (plan/living_room_furniture_types.py).
+    Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FT-LIVING-SOFA-84-TABLE-GAP",
+              room="RM-M-LIVING", position=pt(ft(23, 4.5), ft(8, 8)), rotation=deg(90)),
+    Furniture(uid="PUZZLECF01", tag="FURN-M-PUZZLE-COFFEE-TABLE",
+              type_ref="FT-LIVING-PUZZLE-COFFEE-TABLE", room="RM-M-LIVING",
+              position=pt(inch(327.9), ft(8, 8)), rotation=deg(90)),
     Furniture(uid="808W2W6TPA", tag="FURN-M-ARMCHAIR-N", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
               position=pt(m(9.63082), m(3.29893)), rotation=deg(-45)),
     Furniture(uid="G5QQNW9448", tag="FURN-M-ARMCHAIR-S", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
