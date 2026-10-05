@@ -246,6 +246,7 @@ the future.
 - Several of the interior 2x4 wall types do not yet bill paint (or perhaps paint for them is estimated elsewhere?)
 - The auto-generated blocking remains a bit excessive in places still
 - Show the engineering prepared calculations in the UI as a "report" somewhere perhaps
+- Move the "building science" reports from the "Projects" UI view into one or more "reports" pages. We can maybe retire the entire "Projects" tab into reports.
 - If we flip the garage door swing, we might be able to do reduce the landing size in the garage
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
 - The diagonal slat wall's 36 KBS1Z may overlap. The two longest slats have another problem: their modeled centre-post connectors extend approximately 3.7″ beyond the post’s top, across the plate/header junction. That attachment needs a different detail
@@ -254,6 +255,7 @@ the future.
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door
 - Hanging daybed on the porch: a `SuspensionAnchor` used 2-4 times with offsets; needs a host other than an interior joist field
 - Gold foil trim or panel accent somewhere
+- The randon vent and the plumbing vent, where they exist the house, overlap, and are both labeled "radon vent" even though one should probably be plumbing.
 
 # Project Management
 
