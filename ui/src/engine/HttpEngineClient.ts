@@ -1,3 +1,4 @@
+import type { EngineeringCalculations } from "./engineeringTypes";
 // The M2 EngineClient implementation: fetch + WebSocket against `haus serve`
 // (server/app.py). Same-origin relative paths — the Vite dev proxy and the wheel-served
 // production build both route these to the engine (→ 21 §EngineClient boundary).
@@ -71,6 +72,12 @@ export class HttpEngineClient implements EngineClient {
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     const body = (await res.json()) as { findings: Finding[] };
     return body.findings;
+  }
+
+  async getEngineeringCalculations(): Promise<EngineeringCalculations> {
+    const res = await fetch(this.url("/reports/engineering"));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as EngineeringCalculations;
   }
 
   async getDetailIndex(): Promise<DetailIndexEntry[]> {

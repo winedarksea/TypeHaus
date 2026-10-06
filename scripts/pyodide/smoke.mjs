@@ -9,7 +9,7 @@
 // have gone through `resolve/overlay.py`'s fixed-precision `union_all` is exactly how one
 // ships green. (→ plans/TODO.md, memory: pyodide-geos-repro-harness)
 //
-// Usage:  node scripts/pyodide/smoke.mjs [houseRelPath]        (default houses/starter)
+// Usage:  node scripts/pyodide/smoke.mjs [houseRelPath] [--reports-only]        (default houses/starter)
 // Pyodide is pinned in scripts/pyodide/package.json; run `npm ci` here first.
 
 import { loadPyodide } from "pyodide";
@@ -19,7 +19,8 @@ import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolvePath(HERE, "..", "..");
-const HOUSE = process.argv[2] ?? "houses/starter";
+const HOUSE = process.argv.slice(2).find((arg) => !arg.startsWith("--")) ?? "houses/starter";
+const REPORTS_ONLY = process.argv.includes("--reports-only");
 const t0 = Date.now();
 const step = (m) => console.log(`[${((Date.now() - t0) / 1000).toFixed(1)}s] ${m}`);
 
@@ -55,12 +56,18 @@ assert state["ok"], "rebuild not ok: " + json.dumps(state["findings"][:5])
 
 payload = ENGINE.model_json()
 bom = ENGINE.bom_json()
-glb = ENGINE.glb_bytes()
+calculations = ENGINE.engineering_calculations()
+assert calculations["revision"] == state["revision"]
+assert "00-cover.md" in calculations["files"]
+assert "typehaus.cli._shared" not in sys.modules
+assert "Live model revision" in calculations["files"]["00-cover.md"]
+glb = b"" if ${REPORTS_ONLY ? "True" : "False"} else ENGINE.glb_bytes()
 
 from typehaus.server.space_summary import build_space_summary
 spaces = build_space_summary(ENGINE.model)
 
 json.dumps({
+    "calculation_pages": len(calculations["files"]),
     "solids": len(payload.get("solids") or []),
     "rooms": len(payload.get("rooms") or []),
     "findings": len(state["findings"]),
@@ -74,8 +81,8 @@ json.dumps({
 const r = JSON.parse(report);
 step(`compute path clean under GEOS ${r.geos}`);
 console.log(JSON.stringify(r, null, 2));
-if (!r.glb_bytes || !r.solids || !r.rooms || !r.framing_lines) {
+if ((!REPORTS_ONLY && !r.glb_bytes) || !r.solids || !r.rooms || !r.framing_lines || !r.calculation_pages) {
   console.error("smoke produced an empty model — the compute path did not really run");
   process.exit(1);
 }
-console.log(`OK — ${HOUSE} resolved, billed and emitted under Pyodide GEOS ${r.geos}`);
+console.log(`OK — ${HOUSE} resolved, billed and ${REPORTS_ONLY ? "reported" : "emitted"} under Pyodide GEOS ${r.geos}`);

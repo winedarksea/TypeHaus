@@ -34,11 +34,17 @@ from typehaus.checks.registry import (
     registered,
     run_checks,
 )
-from typehaus.checks.run import build_context, load_preferences, run, run_from_model
+from typehaus.checks.run import (
+    build_context,
+    build_context_from_model,
+    load_preferences,
+    run,
+    run_from_model,
+)
 
 __all__ = [
     "run", "run_from_model", "build_context", "load_preferences", "run_checks", "registered",
-    "check",
+    "check", "build_context_from_model",
     "CheckContext", "CheckReport", "Preferences", "FramingPreferences", "PlumbingPreferences",
     "ReferenceUnderlay", "JurisdictionProfile", "ResultTally", "Tier",
     "PermitChecklist", "PermitChecklistItem", "evaluate_permit_checklist",

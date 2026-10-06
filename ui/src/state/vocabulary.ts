@@ -89,7 +89,7 @@ export const DEFAULT_EARTH_TONE: EarthTone = "brown";
 // the hub the reports now hang under, beside the permit drawings and the house's own notes.
 // It is a DetailView rather than a panel because it is the same read-and-return, full-screen
 // surface the readers are, and a contractor checking a sheet is not editing the plan.
-export type DetailView = "none" | "assembly" | "bom" | "circuits" | "lighting" | "hvac" | "plumbing" | "data" | "estimate" | "documents";
+export type DetailView = "none" | "assembly" | "bom" | "circuits" | "lighting" | "hvac" | "plumbing" | "data" | "estimate" | "engineering" | "building-science" | "space" | "documents";
 
 // The Documents hub's three tabs. Drawings first: it is what a contractor opens the hub for.
 export type DocumentsTab = "drawings" | "notes" | "reports";

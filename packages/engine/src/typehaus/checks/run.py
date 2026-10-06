@@ -163,22 +163,26 @@ def build_engineering(model: ResolvedModel, prefs: Preferences, house_dir: Path 
 def build_context(plan: PlanModel, house_dir: Path | None = None,
                   profile: str | None = None) -> tuple[CheckContext, list[Finding]]:
     model, resolve_findings = resolve(plan)
-    prefs = load_preferences(house_dir) if house_dir else Preferences()
+    return build_context_from_model(model, resolve_findings, house_dir, profile), resolve_findings
+
+
+def build_context_from_model(
+    model: ResolvedModel, resolve_findings: list[Finding],
+    house_dir: Path | None = None, profile: str | None = None,
+    preferences: Preferences | None = None,
+) -> CheckContext:
+    """Compose checks and engineering over the caller's resolved snapshot, without resolving."""
+    prefs = preferences or (load_preferences(house_dir) if house_dir else Preferences())
     jurisdiction = resolve_profile(prefs, profile)
-    # `site_soil_class`, not `jurisdiction.soil_class`: the site's own soils report wins over
-    # the profile's presumptive regional figure, and the engineering suite must read the
-    # same order the checks do or a wall could be screened against one class and graded
-    # against another.
-    engineering, register = build_engineering(model, prefs, house_dir,
-                                              site_soil_class(plan, jurisdiction),
-                                              site_soil_basis(plan, jurisdiction),
-                                              jurisdiction.seismic_design_category)
-    ctx = CheckContext(
-        plan=plan, model=model, preferences=prefs,
-        profile=jurisdiction, resolve_findings=resolve_findings,
-        engineering=engineering, engineering_register=register,
+    # The site's soil report wins over the jurisdiction's regional presumption.
+    engineering, register = build_engineering(
+        model, prefs, house_dir, site_soil_class(model.plan, jurisdiction),
+        site_soil_basis(model.plan, jurisdiction), jurisdiction.seismic_design_category)
+    return CheckContext(
+        plan=model.plan, model=model, preferences=prefs, profile=jurisdiction,
+        resolve_findings=list(resolve_findings), engineering=engineering,
+        engineering_register=register,
     )
-    return ctx, resolve_findings
 
 
 def run(plan: PlanModel, house_dir: Path | None = None, profile: str | None = None,
@@ -210,14 +214,5 @@ def run_from_model(model: ResolvedModel, resolve_findings: list[Finding],
     silently fall back to an empty ``Preferences()``, hiding ``[envelope].ach50`` and every
     other authored preference from the gate.
     """
-    prefs = preferences or (load_preferences(house_dir) if house_dir else Preferences())
-    jurisdiction = resolve_profile(prefs, profile)
-    engineering, register = build_engineering(model, prefs, house_dir,
-                                              site_soil_class(model.plan, jurisdiction),
-                                              site_soil_basis(model.plan, jurisdiction),
-                                              jurisdiction.seismic_design_category)
-    ctx = CheckContext(plan=model.plan, model=model, preferences=prefs,
-                       profile=jurisdiction,
-                       resolve_findings=resolve_findings,
-                       engineering=engineering, engineering_register=register)
+    ctx = build_context_from_model(model, resolve_findings, house_dir, profile, preferences)
     return run_checks(ctx, tier, only=only)

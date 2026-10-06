@@ -1240,6 +1240,13 @@ export interface CondensationProfile {
 
 export interface EnergyReport {
   heating_load_btu_per_hour: number;
+  components?: {
+    kind: string;
+    area_ft2: number;
+    ua_btu_per_hour_f: number;
+    solar_gain_btu_per_hour: number;
+    heating_delta_f: number | null;
+  }[];
   // SENSIBLE, and it stays sensible: that is the quantity a unit's cooling_capacity_btuh
   // is rated against. `cooling_tons` is the TOTAL (sensible + latent) over 12,000.
   cooling_load_btu_per_hour: number;

@@ -245,8 +245,8 @@ the future.
 - Can we shorten W-M-STRW by a few inches on its southern end so it ends in line with wall W-M-STOS2?
 - Several of the interior 2x4 wall types do not yet bill paint (or perhaps paint for them is estimated elsewhere?)
 - The auto-generated blocking remains a bit excessive in places still
-- Show the engineering prepared calculations in the UI as a "report" somewhere perhaps
-- Move the "building science" reports from the "Projects" UI view into one or more "reports" pages. We can maybe retire the entire "Projects" tab into reports.
+- [x] Show the engineering prepared calculations in the UI as a report (Documents → Reports → Engineering calculations).
+- [x] Move building science and space summaries from Project into Documents → Reports. Keep Project for house setup and editing.
 - If we flip the garage door swing, we might be able to do reduce the landing size in the garage
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
 - The diagonal slat wall's 36 KBS1Z may overlap. The two longest slats have another problem: their modeled centre-post connectors extend approximately 3.7″ beyond the post’s top, across the plate/header junction. That attachment needs a different detail
@@ -259,7 +259,6 @@ the future.
 - Gold foil trim or panel accent somewhere
 - The randon vent and the plumbing vent, where they exist the house, overlap, and are both labeled "radon vent" even though one should probably be plumbing.
 - Consider swapping the shower and tub positions in the main floor master bathroom
-- [x] Switch over-fridge/freezer cabinets to stock SEKTION 30x24x20 frames; one per appliance, tops 93 1/2" (2026-10-05, kitchen detail K7).
 - Outlet in the kitchen island
 - There are MASA connectors (and STHD connectors) in places we don't need, for example the brick wall, and possible some of the non load-bearing interior basment walls. Also there are MASA and STHD into the wooden W-B-S2-FR basement wall, incorrectly.
 

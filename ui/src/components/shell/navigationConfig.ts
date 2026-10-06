@@ -18,6 +18,12 @@ export interface ReportSpec {
  * argument for collapsing them behind one trigger rather than a row of buttons.
  */
 export const REPORTS: ReportSpec[] = [
+  { id: "engineering", label: "Engineering calculations", icon: "report",
+    hint: "Live criteria, register, family calculations, and member appendices" },
+  { id: "building-science", label: "Building science", icon: "report",
+    hint: "Energy loads, facade glazing, condensation, and missing inputs" },
+  { id: "space", label: "Space & dimensions", icon: "report",
+    hint: "Areas, storage, building heights, and exterior footprints" },
   { id: "assembly", label: "Assembly details", icon: "wall",
     hint: "Transitions, resolved conditions, layer stacks" },
   { id: "bom", label: "Bill of materials", icon: "report",
@@ -61,7 +67,7 @@ export const DOCUMENT_DESTINATIONS: DocumentsDestinationSpec[] = [
   { tab: "notes", label: "Notes", icon: "note",
     hint: "Design and product notes for this house" },
   { tab: "reports", label: "Reports", icon: "report",
-    hint: "Assembly, bill of materials, circuits, HVAC, plumbing, lighting, data" },
+    hint: "Engineering, building science, space, assemblies, quantities, and trade schedules" },
 ];
 
 /** The hub as one destination — the phone bar has room for a container, not three tabs. */

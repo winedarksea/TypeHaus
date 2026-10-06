@@ -74,6 +74,7 @@ class PackageInputs:
     #: then says the gate was not evaluated rather than implying it opened.
     checklist: object = None
     notes_dir: str = "notes/"
+    model_revision: str = ""
     records: tuple[EngineeringRecord, ...] = field(default_factory=tuple)
 
     def __post_init__(self) -> None:
@@ -163,6 +164,8 @@ def _readme(inputs: PackageInputs) -> str:
 
 def _cover(inputs: PackageInputs) -> str:
     gate = _gate_lines(inputs)
+    revision = ([("Live model revision", f"`{inputs.model_revision}`")]
+                if inputs.model_revision else [])
     return document(
         heading(f"{inputs.house} — structural calculation package"),
         callout(NOT_FOR_CONSTRUCTION, marker="**Status: DRAFT**"),
@@ -174,7 +177,7 @@ def _cover(inputs: PackageInputs) -> str:
             ("Engine version", inputs.engine_version or "unknown"),
             ("Model content hash", f"`{inputs.content_hash}`" if inputs.content_hash else ""),
             ("Engineered items", len(inputs.records)),
-        ]),
+        ] + revision),
         heading("Where the gates stand", 2),
         gate,
         heading("The two gates", 2),

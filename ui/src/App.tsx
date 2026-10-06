@@ -41,6 +41,12 @@ const PlumbingView = lazy(() => import("./components/PlumbingView")
   .then((m) => ({ default: m.PlumbingView })));
 const LightingView = lazy(() => import("./components/LightingView")
   .then((m) => ({ default: m.LightingView })));
+const EngineeringCalculationsView = lazy(() => import("./components/reports/EngineeringCalculationsView")
+  .then((m) => ({ default: m.EngineeringCalculationsView })));
+const BuildingScienceView = lazy(() => import("./components/reports/BuildingScienceView")
+  .then((m) => ({ default: m.BuildingScienceView })));
+const SpaceDimensionsView = lazy(() => import("./components/reports/SpaceDimensionsView")
+  .then((m) => ({ default: m.SpaceDimensionsView })));
 // The Documents hub is lazy for the same reason and one more: its Drawings tab pulls pdf.js
 // and its Notes tab pulls marked, neither of which belongs in the chunk that draws a plan.
 const DocumentsView = lazy(() => import("./components/documents/DocumentsView")
@@ -250,6 +256,9 @@ export function App() {
           {engineReady && detailView === "plumbing" && <PlumbingView />}
           {engineReady && detailView === "data" && <DataView />}
           {engineReady && detailView === "estimate" && <EstimateView />}
+          {engineReady && detailView === "engineering" && <EngineeringCalculationsView />}
+          {engineReady && detailView === "building-science" && <BuildingScienceView />}
+          {engineReady && detailView === "space" && <SpaceDimensionsView />}
           {detailView === "documents" && <DocumentsView />}
         </Suspense>
       </ReaderErrorBoundary>

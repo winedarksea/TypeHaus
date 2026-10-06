@@ -68,6 +68,7 @@ class ProjectState:
     # Load-time (loader/dialect) findings from the last source load, kept apart so the fast
     # path — which never reloads source — can carry them forward instead of dropping them.
     _load_findings: list[Finding] = field(default_factory=list)
+    _resolve_findings: list[Finding] = field(default_factory=list)
     ok: bool = False
     # True between a resolve landing and its (async, Phase 3) check-tier job completing;
     # `findings`/`ok` reflect resolve-time findings only for that window.
@@ -180,6 +181,7 @@ class ProjectState:
         timings.update({f"resolve.{k}": v for k, v in model.timings.items()})
         self._load_findings = list(base_findings)
         combined = base_findings + list(rfindings)
+        self._resolve_findings = combined
         self.model = model
         self.plan = plan
         self.findings = combined

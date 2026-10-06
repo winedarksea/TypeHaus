@@ -1,8 +1,6 @@
 import { Fragment, useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
 import type { Model, Wall } from "../model/types";
-import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
-import { SpaceDashboard } from "./SpaceDashboard";
 import { RoofDesigner } from "./RoofDesigner";
 import { DetailsNavigator } from "./DetailsNavigator";
 import { Icon } from "../icons/Icon";
@@ -51,14 +49,6 @@ export function ProjectDrawer() {
         right={<button className="btn" onClick={() => setWorkbench("assembly")}>Edit</button>}
       >
         <AssemblyPicker model={model} />
-      </DrawerSection>
-
-      <DrawerSection title="Building science">
-        <BuildingScienceDashboard science={model.building_science} />
-      </DrawerSection>
-
-      <DrawerSection title="Space">
-        <SpaceDashboard summary={model.space_summary} buildingHeight={model.building_height_summary} />
       </DrawerSection>
 
       <DrawerSection title="Roof">

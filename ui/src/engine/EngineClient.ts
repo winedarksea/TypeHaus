@@ -1,3 +1,4 @@
+import type { EngineeringCalculations } from "./engineeringTypes";
 // The single typed boundary through which all engine access flows (→ 21 §EngineClient
 // boundary, #15). No component touches the network directly. The M2 implementation is
 // HttpEngineClient; a PyodideEngineClient (in-browser engine in a Web Worker) can slot in
@@ -410,6 +411,7 @@ export interface MacroResult extends PatchResult {
 export interface EngineClient {
   getModel(): Promise<Model>;
   getChecks(): Promise<Finding[]>;
+  getEngineeringCalculations(): Promise<EngineeringCalculations>;
   // Transition details — read-only scene JSON, rendered client-side (→ 11b).
   getDetailIndex(): Promise<DetailIndexEntry[]>;
   getDetail(key: string): Promise<DetailPayload>;

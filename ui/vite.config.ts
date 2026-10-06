@@ -41,6 +41,7 @@ export default defineConfig({
       "/sheets": ENGINE,
       "/notes": ENGINE,
       "/renders": ENGINE,
+      "/reports": ENGINE,
       "/project": ENGINE,
       "/storeys": ENGINE,
       "/asset": ENGINE,

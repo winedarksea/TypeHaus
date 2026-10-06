@@ -11,6 +11,18 @@ house stand* at a glance and is meant to be read in a terminal; this is a set of
 calculations somebody opens in an editor, marks up, and sends back — one per design family,
 each with a member schedule, over an appendix of per-member data.
 
+## Reading live calculations in the UI
+
+Open **Documents → Reports → Engineering calculations** in the local server or standalone
+browser app. The reader generates the same Markdown package from the current resolved
+model, without running `haus calcs` or writing files. Its index groups front matter, family
+calculations, and appendices; individual member sheets are nested under their family.
+
+The cover identifies the live model revision instead of an on-disk content hash, since an
+interactive edit can precede source writeback. An open report refreshes when the revision
+changes. The package remains a draft; review and signoff status come from the engineering
+register. Use the CLI for exported packages and PDFs.
+
 ## What it emits
 
 ```

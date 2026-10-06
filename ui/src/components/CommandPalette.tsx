@@ -90,6 +90,9 @@ export function CommandPalette() {
       { id: "lens-thermal", title: "Lens: Thermal", group: "Lens", run: () => setActiveLens("thermal") },
       { id: "lens-vapor", title: "Lens: Vapour (permeance)", group: "Lens", run: () => setActiveLens("vapor") },
       { id: "run-checks", title: "Run checks (reload model)", group: "Model", disabled: !engineReady, run: () => void reload() },
+      { id: "reader-engineering", disabled: !engineReady, title: "Engineering calculations", group: "Model", run: () => setDetailView("engineering") },
+      { id: "reader-building-science", disabled: !engineReady, title: "Building science (energy, glazing, condensation)", group: "Model", run: () => setDetailView("building-science") },
+      { id: "reader-space", disabled: !engineReady, title: "Space & dimensions", group: "Model", run: () => setDetailView("space") },
       { id: "reader-assembly", disabled: !engineReady, title: "Assembly details (transitions)", group: "Model", run: () => setDetailView("assembly") },
       { id: "reader-bom", disabled: !engineReady, title: "Bill of materials", group: "Model", run: () => setDetailView("bom") },
       { id: "reader-circuits", disabled: !engineReady, title: "Circuits (panel schedule)", group: "Model", run: () => setDetailView("circuits") },
@@ -99,7 +102,7 @@ export function CommandPalette() {
       { id: "reader-estimate", disabled: !engineReady, title: "Estimate (priced rows, bid ladder)", group: "Model", run: () => setDetailView("estimate") },
       { id: "documents-drawings", title: "Drawings (the permit set)", group: "Model", run: () => openDocuments("drawings") },
       { id: "documents-notes", disabled: !engineReady, title: "Notes (design and product notes)", group: "Model", run: () => openDocuments("notes") },
-      { id: "documents-reports", title: "Reports (assembly, BOM, circuits, HVAC…)", group: "Model", run: () => openDocuments("reports") },
+      { id: "documents-reports", title: "Reports (engineering, building science, space, trades…)", group: "Model", run: () => openDocuments("reports") },
       { id: "show-everything", title: "Show everything (clear visibility filters)", group: "Isolate", run: showEverything },
       // The site surface replaces the whole workbench rather than opening over it, so these
       // are a different kind of command from the readers above — hence their own group.

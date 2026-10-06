@@ -78,6 +78,26 @@
   align-items: start;
   min-height: 0;
 }
+
+/* Long report titles and the calculation filter must remain reachable on a phone. */
+.report-reader .workbench-bread {
+  flex-wrap: wrap;
+  padding-block: var(--space-3);
+}
+.report-reader .workbench-title { min-width: 0; overflow-wrap: anywhere; }
+.report-reader .reader-subtitle { max-width: 100%; overflow-wrap: anywhere; }
+.report-reader .doc-list details { margin-top: var(--space-2); }
+.report-reader .doc-list summary { cursor: pointer; padding: 7px 10px; }
+.report-reader .doc-list details .doc-list-item { padding-left: 20px; }
+.calculation-index { position: sticky; top: 0; align-self: start; }
+.calculation-index > summary { display: none; }
+/* Match useIsCompact's 680px boundary so a closed index always has a visible toggle. */
+@media (max-width: 679px) {
+  .report-reader .doc-split { grid-template-columns: 1fr; }
+  .calculation-index { position: static; }
+  .calculation-index > summary { display: list-item; cursor: pointer; padding: 8px 0; }
+  .calculation-index .doc-list { max-height: 60dvh; overflow-y: auto; }
+}
 /* A phone gets one column: a 240px index beside a 150px drawing is neither. */
 @media (max-width: 599px) {
   .doc-split { grid-template-columns: 1fr; }

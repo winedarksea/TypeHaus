@@ -100,6 +100,7 @@ class OfflineEngine:
         self.ok: bool = False
         self._revision: str = "0"
         self._coord: Any = None  # lazily-built ProjectCoordinator (owns the undo journal)
+        self._calculation_cache: Any = None
 
     def load_house(self, root: str, files: dict[str, str]) -> dict[str, Any]:
         base = Path(root)
@@ -155,6 +156,7 @@ class OfflineEngine:
         return {"revision": result.revision, "undo": result.undo_depth, "redo": result.redo_depth}
 
     def rebuild(self) -> dict[str, Any]:
+        self._calculation_cache = None
         # Offline load path (→ 40 gate b): import the manifest directly (pure `exec`, no
         # libcst) instead of load_plan(), whose dialect-lint + provenance steps are the
         # libcst-gated parts. We reuse the engine's own _import_manifest so library-root
@@ -209,6 +211,17 @@ class OfflineEngine:
 
     def findings_json(self) -> list[dict[str, Any]]:
         return [f.model_dump(mode="json") for f in self.findings]
+
+    def engineering_calculations(self) -> dict[str, Any]:
+        from typehaus.checks import build_context_from_model
+        from typehaus.takeoff.calculation_report import CalculationReportCache
+
+        if self.model is None or self.house_dir is None:
+            raise ValueError("model does not resolve")
+        ctx = build_context_from_model(self.model, self.findings, self.house_dir)
+        if self._calculation_cache is None:
+            self._calculation_cache = CalculationReportCache()
+        return self._calculation_cache.get(ctx, self._revision, self.house_dir.name)
 
     def bom_json(self) -> dict[str, Any]:
         """The bill of materials, offline. Mirrors the served ``/bom`` endpoint so the

@@ -1,3 +1,4 @@
+import type { EngineeringCalculations } from "./engineeringTypes";
 // The offline EngineClient (→ 40 WP4.2; editing added in U9). Runs the engine in a pyodide Web
 // Worker; no server, no network after first load. Read/compute is fully supported — getModel,
 // getChecks, build, getArtifact("glb"). Editing (patchPlan/undo/redo) is served in-browser by
@@ -130,6 +131,11 @@ export class PyodideEngineClient implements EngineClient {
   async getChecks(): Promise<Finding[]> {
     await this.initialized;
     return this.call<Finding[]>("checks");
+  }
+
+  async getEngineeringCalculations(): Promise<EngineeringCalculations> {
+    await this.initialized;
+    return this.call<EngineeringCalculations>("engineering");
   }
 
   async getDetailIndex(): Promise<DetailIndexEntry[]> {

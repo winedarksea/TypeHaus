@@ -67,6 +67,10 @@ try {
   const { runRouteTests } = await server.ssrLoadModule("/src/state/route.test.ts");
   const { runViewUrlTests } = await server.ssrLoadModule("/src/state/viewUrl.test.ts");
   const { runTradeVisibilityFacetTests } = await server.ssrLoadModule("/src/model/tradeVisibility.test.ts");
+  const { runCalculationNavigationTests } = await server.ssrLoadModule("/src/model/calculationNavigation.test.ts");
+  const { runEngineeringCacheTests } = await server.ssrLoadModule("/src/engine/engineeringCache.test.ts");
+  runCalculationNavigationTests();
+  await runEngineeringCacheTests();
   runScheduleTests();
   runInspectionTests();
   runSiteStoreTests();

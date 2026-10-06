@@ -1112,7 +1112,7 @@ OPENINGS = [
     # jamb is what sizes the door — see DT-INT-CLOSET24 in storeys/main.py. A 6'-8" head
     # would be six inches inside the stringer.
     Door(uid="B43P8B5Y0T", tag="D-B-CLOSET", host="W-B-STR3", type_ref="DT-INT-CLOSET24",
-         position=from_node("N-B-BA-NW", inch(10)), flip_swing=True),
+         position=from_node("N-B-BA-NW", inch(10)), flip_swing=True, flip_hinge=True),
     # ** O-B-HALL IS GONE AND D-B-SHOP REPLACES IT (2026-09-07). ** The cased opening was
     # 2'-10" through W-B-CW2B and was justified by the workshop being the through-route
     # from the stair to the gym — "a door across a circulation spine buys nothing". The

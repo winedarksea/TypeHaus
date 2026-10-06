@@ -60,8 +60,9 @@ def load_engineering(house: Path | None, profile: str | None = None) -> Engineer
         raise typer.Exit(1)
     ctx, _ = build_context(loaded.plan, directory, profile)
     report = run_checks(ctx)
-    named = {f.engineering_item for f in report.findings if f.engineering_item}
-    item_ids = tuple(sorted(named | set(ctx.engineering)))
+    from typehaus.engineering.discovery import engineering_item_ids
+
+    item_ids = engineering_item_ids(ctx.engineering, report.findings)
     checklist = evaluate_permit_checklist(report, ctx.profile)
     return EngineeringLoad(directory=directory, loaded=loaded, ctx=ctx, report=report,
                            item_ids=item_ids, checklist=checklist)

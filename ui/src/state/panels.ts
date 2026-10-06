@@ -33,7 +33,7 @@ export const PANELS: PanelSpec[] = [
     id: "project",
     label: "Project",
     icon: "folder",
-    hint: "Hierarchy, assemblies, building science, roof, details",
+    hint: "House setup, hierarchy, assemblies, roof, details",
   },
   {
     id: "issues",
