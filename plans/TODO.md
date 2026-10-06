@@ -262,6 +262,7 @@ the future.
 - There are MASA connectors (and STHD connectors) in places we don't need, for example the brick wall, and possible some of the non load-bearing interior basment walls. Also there are MASA and STHD into the wooden W-B-S2-FR basement wall, incorrectly.
 - Stair winders still need framing work in 2d and 3d.
 - Both the EXT_2X6 and ROOF report a moisture risk/glaser profile risk. We don't think this is quite right. Well, roof somewhat is (it relies on the air seal of the spray foam). But the ext_2x6 should be roughly 60% outsulation, which should have condensation usually outside the studs.
+- Should we add a continuous lateral brace (north to south) across the garage trusses? Likely just a couple of 2x6s.
 
 # Project Management
 
