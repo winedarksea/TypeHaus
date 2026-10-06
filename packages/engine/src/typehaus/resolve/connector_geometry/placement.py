@@ -249,6 +249,12 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
                 (tag for tag in references if index.solids.get(tag) is not
                  _connected_beam(index, references)), references[0])
             support_width_m = index.support_width(support_ref, tangent)
+            if joint is not None and outward is not None and support_width_m is not None:
+                # Hung connections are detected on the carrier centreline, but face-mount
+                # catalog geometry uses y=0 as the carrier face. Move the datum to the
+                # face on the carried member's side before fitting the hanger body.
+                point = (point[0] + outward[0] * support_width_m / 2,
+                         point[1] + outward[1] * support_width_m / 2)
     elif part.startswith(BASE_PREFIXES):
         if joint is not None and len(references) > 1:
             support = index.solids.get(references[1])
