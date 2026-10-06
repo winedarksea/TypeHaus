@@ -2494,13 +2494,12 @@
 "SEKT-W15-20" = { material = { low = 95, high = 235 }, labour = { low = 90, high = 220 } }  # 0 ea
 "SEKT-W30-20" = { material = { low = 155, high = 375 }, labour = { low = 90, high = 220 } }  # 1 ea
 "SEKT-W36-20" = { material = { low = 185, high = 455 }, labour = { low = 90, high = 220 } }  # 2 ea
-# The west cold-run and lower garage need custom plywood carcasses.
+# The west pantry top and lower garage need custom plywood carcasses.
 # The garage UPPER uses the stock base frame row below. These custom carcasses
 # keep their full-depth front alignment with the high cabinets and refrigerator pair.
 # Material includes paint-grade carcass and doors; the mixer garage carries extra labour
 # for its pullout and two interior receptacles.
 "FT-KIT-DEEP18-20" = { material = { low = 210, high = 530 }, labour = { low = 150, high = 370 } }  # 1 ea
-"FT-KIT-DEEP30-30" = { material = { low = 390, high = 980 }, labour = { low = 200, high = 490 } }  # 2 ea
 "FT-KIT-DEEP24-40" = { material = { low = 420, high = 1050 }, labour = { low = 220, high = 540 } }  # 1 ea
 # Stock installations include doors, shelves, anchoring and the detailed support fit-out.
 "SEKT-W12-30" = { material = { low = 200, high = 320 }, labour = { low = 90, high = 220 } }
@@ -2515,6 +2514,10 @@
 "SEKT-HIGH18-80" = { material = { low = 145, high = 400 }, labour = { low = 120, high = 300 } }  # 1 ea
 # East pantry tops: stock 904.997.35 frames with VOXTORP fronts, hinges and rail.
 "SEKT-TS24-15" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
+# West cold-run: stock 402.655.12, two VOXTORP 15x20 fronts, UTRUSTA hinges and rail.
+# IKEA configuration 494.549.71 lists $384 before separate rail (read 2026-10-05).
+# Includes one site-cut 2 7/8 x 20 end scribe per cabinet and fitting; no custom carcasses.
+"SEKT-TS30-20" = { material = { low = 350, high = 520 }, labour = { low = 90, high = 220 } }  # 2 ea
 # The rest of the SEKTION ladder (SEKT-B12/B18, the 12"/18"/36" wall frames,
 # SEKT-HIGH18-90, SEKT-HIGH30-90, SEKT-TS30-15) has no instance in this house and no row
 # here. Add one when a box is added; an unpriced type is silently DROPPED from the takeoff
@@ -2850,7 +2853,8 @@
 # 72" counter-to-ceiling box) were here and are DELETED with their types on 2026-09-11: both
 # were custom sizes invented because the generic catalog could not reach a number. A 2026-09-29
 # catalog review found the 24"-deep dimensions are still not stock SEKTION: the over-cold
-# pair and lower mixer garage have explicitly custom FT-KIT-DEEP* rows above. The garage's
+# pair switched to stock 20-high frames on 2026-10-05; the west pantry top and lower
+# mixer garage retain explicit custom FT-KIT-DEEP* rows above. The garage's
 # pull-out shelf and door hardware stay in [allowances], where they always were.
 # RM-M-PANTRY's shelf stack, and it is NOT a closet system — see the type's `source` and
 # notes/pantry_climbable_shelving.md. ** MATERIAL FELL BY ~2/3 ON 2026-08-29 AND THE SHELVES

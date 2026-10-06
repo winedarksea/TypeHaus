@@ -48,6 +48,45 @@ def test_stock_north_modules_close_without_a_filler(catlin_plan, kitchen_objects
     assert (_bounds(upper)[0], _bounds(upper)[2]) == pytest.approx((297.375, 333.375))
 
 
+def test_stock_cold_uppers_preserve_hinge_clearance_and_appliance_joint(
+    catlin_plan, kitchen_objects
+):
+    freezer = kitchen_objects["FURN-M-KIT-OVER-FREEZER"]
+    refrigerator = kitchen_objects["FURN-M-KIT-OVER-FRIDGE"]
+    types = {item.tag: item for item in catlin_plan.library.furniture_types}
+    frame = types["SEKT-TS30-20"]
+    assert tuple(value.inches for value in frame.footprint) == pytest.approx((30, 24))
+    assert frame.height.inches == pytest.approx(20)
+    assert "402.655.12" in frame.source
+    assert "FT-KIT-DEEP30-30" not in types
+    cabinet_mount = catlin_plan.by_tag("FURN-M-KIT-OVER-FREEZER").mount.elevation.meters
+    finished_floor_z = freezer.body_z0_m - cabinet_mount
+    for cabinet, appliance_tag in (
+        (freezer, "APPL-M-FREEZER"), (refrigerator, "APPL-M-FRIDGE")
+    ):
+        appliance = kitchen_objects[appliance_tag]
+        assert cabinet.type_ref == "SEKT-TS30-20"
+        assert (cabinet.body_z0_m - finished_floor_z) / INCH == pytest.approx(73.5)
+        assert (cabinet.body_z1_m - finished_floor_z) / INCH == pytest.approx(93.5)
+        assert (cabinet.body_z0_m - appliance.body_z1_m) / INCH == pytest.approx(1)
+        assert _bounds(cabinet)[2] == pytest.approx(243.375, abs=0.03125)
+        assert f"{cabinet.tag}-ST" not in kitchen_objects
+    assert (_bounds(freezer)[1], _bounds(freezer)[3]) == pytest.approx((331.75, 361.75))
+    assert (_bounds(refrigerator)[1], _bounds(refrigerator)[3]) == pytest.approx(
+        (361.75, 391.75)
+    )
+    south = _bounds(kitchen_objects["APPL-M-FREEZER"])[1]
+    north = _bounds(kitchen_objects["APPL-M-FRIDGE"])[3]
+    assert _bounds(freezer)[1] - south == pytest.approx(2.875)
+    assert north - _bounds(refrigerator)[3] == pytest.approx(2.875)
+    # The rail near the frame top needs its own band, independent of lower restraint.
+    backing = catlin_plan.by_tag("BK-M-C5-COLD-TOP")
+    assert backing.wall_ref == "W-M-C5"
+    rail_screw_elevation = refrigerator.body_z1_m - INCH
+    assert backing.elevation.meters < rail_screw_elevation
+    assert rail_screw_elevation < backing.elevation.meters + backing.height.meters
+
+
 def test_sink_centres_on_fixed_window_and_drain_components_move_together(catlin_model_ro):
     objects = {item.tag: item for item in catlin_model_ro.canvas_objects}
     sink = objects["FX-M-KITCH-SINK"]
@@ -279,7 +318,9 @@ def test_top_backing_is_emitted_below_the_stud_tops(catlin_plan, catlin_model_ro
             pantry_band.elevation.meters + pantry_band.height.meters
         )
     ]
-    assert sum(block.length_m for block in pantry_blocks) == pytest.approx(pantry_band.length.meters)
+    assert sum(block.length_m for block in pantry_blocks) == pytest.approx(
+        pantry_band.length.meters
+    )
 
 
 def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, catlin_model_ro):
@@ -295,6 +336,7 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
         "SEKT-W12-30": 1,
         "SEKT-CORNER-W26-30": 1,
         "SEKT-TS24-15": 2,
+        "SEKT-TS30-20": 2,
         "FT-KIT-STOCK24-30-HUNG": 1,
         "SEKT-B36-D15": 6,
     }
@@ -306,6 +348,7 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
         "FT-LIV-E-FILLER-050",
         "SEKT-W24-20",
         "FT-KIT-DEEP24-20",
+        "FT-KIT-DEEP30-30",
         "FT-KIT-TOP-REAR-DECK",
         "FT-KIT-TOP-REAR-END",
         "FT-KIT-DEEP24-30",

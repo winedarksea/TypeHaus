@@ -4724,3 +4724,23 @@ surface that reaches the court, so the water goes there.
   recorded yet: the chair bought must state 360 lb or more.
 - The elevation golden also picked up the unblessed `ED-M-LIVING-FLOOR-RC1` from the
   "floor outlet" commit.
+
+### 2026-10-05 — Stock 20-inch uppers above the cold-storage pair
+
+- Owner chose one 20-inch-high stock cabinet per appliance, accepting tops 10 inches
+  below the previous alignment. `FURN-M-KIT-OVER-FRIDGE` and `-OVER-FREEZER` now use
+  `SEKT-TS30-20`: IKEA ventilated frame 402.655.12, 30 x 24 x 20 nominal, paired
+  VOXTORP matte-white 15 x 20 doors and UTRUSTA hinges (configuration 494.549.71).
+- Bottoms stay 73 1/2 AFF, one inch above the Frigidaire hinge envelope; tops are
+  93 1/2. Widths, depth, ganged joint on the appliance joint and two 2 7/8 end scribes
+  remain. Leave the space above open, without stackers or a top filler. Detail K7 in
+  `notes/kitchen_stock_cabinet_details.md` records the stock parts and installation.
+- Added `BK-M-C5-COLD-TOP` at 89 1/2–96 3/4 above framing datum for the factory
+  suspension rail; retained the lower restraint band. Removed the unused custom
+  `FT-KIT-DEEP30-30` type and price. New cabinet allowance is $880–1,480 for the pair,
+  including fronts, hinges, rail, end scribes and installation, versus $1,180–2,940
+  for the custom pair; backing bills separately through framing takeoff.
+- Validation: cabinet geometry/pricing, elevation golden and fixture discipline:
+  1,030 passed, 12 skipped. Changed source/test lint and diff whitespace checks pass.
+  House checks: 1,859 pass, zero fail. JSON and framed IFC rebuilt; elevation golden
+  changes only the two cabinet tops and the added backing course.

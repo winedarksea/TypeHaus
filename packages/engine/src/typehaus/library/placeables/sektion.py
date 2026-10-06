@@ -174,6 +174,13 @@ HIGH_24_80 = _high("SEKT-HIGH24-80", ft(2), inch(80), _HIGH_80)
 # An 18x24x20 top box requires house-local custom millwork.
 TS_24_15 = _wall("SEKT-TS24-15", ft(2), inch(15), _DEEP)
 TS_30_15 = _wall("SEKT-TS30-15", inch(30), inch(15), _DEEP)
+TS_30_20 = FurnitureType(
+    tag="SEKT-TS30-20", name='SEKTION 30x24x20" top cabinet with ventilation',
+    footprint=(inch(30), _DEEP), height=inch(20), plan_symbol="wall-cabinet", storage=True,
+    source=("IKEA US frame 402.655.12, verified 2026-10-05: 23 5/8-inch bare depth, "
+            "24 inches with suspension rail. Frame only; fronts, hinges and rail separate. "
+            "https://www.ikea.com/us/en/p/sektion-top-cabinet-with-ventilation-white-40265512/"),
+)
 
 CORNER_WALL_26_30 = FurnitureType(
     tag="SEKT-CORNER-W26-30", name='SEKTION 26x26x30" diagonal corner wall cabinet',
@@ -192,5 +199,5 @@ SEKTION_CASEWORK_TYPES = (
     WALL_15_20, WALL_24_20, WALL_30_20, WALL_36_20,
     WALL_12_15, WALL_15_15, WALL_18_15, WALL_24_15, WALL_30_15, WALL_36_15,
     HIGH_18_90, HIGH_24_90, HIGH_30_90, HIGH_18_80, HIGH_24_80,
-    TS_24_15, TS_30_15, WALL_12_30, CORNER_WALL_26_30,
+    TS_24_15, TS_30_15, TS_30_20, WALL_12_30, CORNER_WALL_26_30,
 )

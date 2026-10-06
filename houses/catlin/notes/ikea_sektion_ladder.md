@@ -54,9 +54,11 @@ Window centres and the pantry boundary stay fixed; cabinet joints follow the doo
 
 The 24 by 24 by 40 garage lower is the only custom carcass in the revised north/east run.
 Site-cut finish panels, plinth, rear platforms and support pieces remain explicit custom
-installation work. On the unchanged west wall, the 18 by 24 by 20 pantry top and two
-30 by 24 by 30 cold-appliance uppers remain custom. Their split 2 7/8 end scribes and
-appliance hinge clearance retain the previous specification.
+installation work. On the west wall, the 18 by 24 by 20 pantry top remains custom.
+The two cold-appliance uppers now use stock 30 by 24 by 20 ventilated frames (402.655.12),
+one per appliance, with paired VOXTORP 15 by 20 fronts. Bottoms remain 73 1/2 and tops
+drop to 93 1/2; leave the space above open. Split 2 7/8 end scribes remain, cut to the
+new 20-inch height. Top rail backing and installation are specified in detail K7.
 
 MAXIMERA is a product choice, not a geometry vocabulary. North B18 and peninsula
 B36/B24/B24 are drawer stacks. The kitchen B12 and all six living B36 use doors and
@@ -69,6 +71,7 @@ lift-up/roll-up front; it is not an appliance-lift base cabinet.
 
 - [Corner frame 102.655.04](https://www.ikea.com/us/en/p/sektion-corner-wall-cabinet-white-10265504/)
 - [Garage upper base frame 902.653.88](https://www.ikea.com/us/en/p/sektion-base-cabinet-white-90265388/)
+- [Cold-appliance top frame 402.655.12](https://www.ikea.com/us/en/p/sektion-top-cabinet-with-ventilation-white-40265512/)
 - [Shallow top frame 202.654.57](https://www.ikea.com/us/en/p/sektion-wall-cabinet-white-20265457/)
 - [12-inch wall frame 102.654.72](https://www.ikea.com/us/en/p/sektion-wall-cabinet-white-10265472/)
 - [SEKTION leg 905.560.71](https://www.ikea.com/us/en/p/sektion-leg-for-cabinet-90556071/)

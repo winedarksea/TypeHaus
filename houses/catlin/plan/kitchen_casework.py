@@ -14,7 +14,7 @@ MAIN_KITCHEN_CASEWORK = [
     # Cabinets 24" deep (centre x=19'-3 3/8"); cold boxes 27" deep (centre 19'-4 7/8").
     #
     # ** THE RUN'S NORTH END IS A WALL, NOT A CABINET. ** RM-M-PANTRY's south partition
-    # W-M-PAN-S puts its face at y=32'-6 5/8"; the shared catalog's CASE-TALL-PANTRY-12/-18
+    # W-M-PAN-S puts its face at y=32'-10 5/8"; the shared catalog's CASE-TALL-PANTRY-12/-18
     # accordingly have no instance in this house — scattered tall storage became one framed
     # room.
     #
@@ -30,14 +30,8 @@ MAIN_KITCHEN_CASEWORK = [
     # no check catches it: ** that zone stands in front of D-M-PANTRY. An open fridge door
     # blocks the pantry. It is the price of putting both on one aisle, and it is the price
     # the owner is paying knowingly.
-    # Product: the Frigidaire Professional single-door pair (plan/appliance_types.py). The
-    # bay is 26'-11 3/8" to 32'-11 3/8", 72" — the appliances do not divide it in half,
-    # because a column is 32 7/8" and not 36". The 6 1/4" remainder goes to
-    # FURN-M-KIT-COLDSTORE-FILL at the SOUTH end, which is what lets both these boxes shift
-    # south as a contiguous pair and still keep their own receptacles behind them
-    # (ED-M-LIVING-KFZ1 at y=29'-10" lands behind the freezer, KRF1 at y=31'-5 3/8" behind
-    # the refrigerator). Splitting the remainder into two 3 1/8" scribes would have put KFZ1
-    # on the joint between them.
+    # Product: the Frigidaire Professional single-door pair (plan/appliance_types.py).
+    # The current bay is y=27'-4 7/8"..32'-10 5/8", 65 3/4", with no appliance filler.
     #
     # x moved OUT, from 19'-8 3/8" to 19'-4 7/8", and the run got roomier for it: these
     # columns are 27" deep against the allowance's 34", and both are back-aligned to the
@@ -79,38 +73,32 @@ MAIN_KITCHEN_CASEWORK = [
     # x=20'-3 3/8" and the appliances stand 3" proud — clearing the fridge/freezer door
     # swing.
     #
-    # ** TWO CUSTOM 30"-HIGH FRAMES AT 73 1/2", REPLACING FOUR BOXES. ** This was a
-    # 32 7/8"-wide house-local FT-KIT-OVER-COLD-3278 at 75" with a CASE-TS3278-12 stacker
-    # over it, per appliance. 32 7/8" is an appliance width, not a cabinet width, and
-    # nobody sells it. A 30" custom frame at 73 1/2" aligns
-    # with the 103 1/2" cabinet top without a stacker.
+    # Stock 30x24x20 fridge-top frames replace the custom 30-high boxes (2026-10-05).
+    # One per appliance, bottoms unchanged at 73 1/2", tops now 93 1/2". The owner
+    # accepts the 10" step below the pantry top; leave the space above open, no stacker.
+    # Frame 402.655.12, paired VOXTORP 15x20 doors; installation detail K7.
     #
     # ** THE HINGE CONTROLS THE MOUNT. ** The Frigidaire columns top at 72 1/2" at the
     # hinge and want 1" above (plan/appliance_types.py). A 73 1/2" cabinet starts exactly
     # there; confirm the hinge and rail clearance on the appliance/shop drawings.
     #
-    # ** THE 5 3/4" OF FILLER, AND WHERE IT GOES. ** Bay 26'-11 3/8"..32'-11 3/8" is
+    # ** THE 5 3/4" OF FILLER, AND WHERE IT GOES. ** Bay 27'-4 7/8"..32'-10 5/8" is
     # 65 3/4"; two 30" boxes are 60". The pair is GANGED, with its joint on the appliance
-    # joint at 30'-1 3/4", so each end of the bay takes a 2 7/8" scribe against a tall
-    # cabinet — instead of one 2 7/8" gap floating between the two boxes where every eye
-    # in the room lands. Box centres are 28'-10 3/4" and 31'-4 3/4", NOT the appliance
-    # centres below them.
-    Furniture(uid="8T3D1P2QRV", tag="FURN-M-KIT-OVER-FRIDGE", type_ref="FT-KIT-DEEP30-30",
+    # joint at 30'-1 3/4", with a 2 7/8" end scribe against PANTRYC south and the pantry
+    # partition north. Box centres are 28'-10 3/4" and 31'-4 3/4", different from
+    # the appliance centres below them.
+    Furniture(uid="8T3D1P2QRV", tag="FURN-M-KIT-OVER-FRIDGE", type_ref="SEKT-TS30-20",
               room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-C5", face="right", distance_from_start=inch(66.75),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    Furniture(uid="Y4KJ6WB0ZC", tag="FURN-M-KIT-OVER-FREEZER", type_ref="FT-KIT-DEEP30-30",
+    Furniture(uid="Y4KJ6WB0ZC", tag="FURN-M-KIT-OVER-FREEZER", type_ref="SEKT-TS30-20",
               room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-C5", face="right", distance_from_start=inch(36.75),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    # ** THE COLD RUN'S STACKER COURSE IS GONE, AND THAT IS THE POINT (2026-09-11). **
-    # FURN-M-KIT-OVER-FRIDGE-ST/-FREEZER-ST were two CASE-TS3278-12 at 96" closing a 21"
-    # box toward the ceiling. A 30" custom wall frame hung at 73 1/2" tops at 103 1/2", so
-    # four boxes became two and there is no joint at 8'-0" on this wall at all.
 
     # Pantry face x=297 3/8; 12 + 24 DW + 36 sink + 18 = 90 inches to the carousel.
     Furniture(uid="49B0RDP4NW", tag="FURN-M-KIT-E1", type_ref="SEKT-B12", room="RM-M-LIVING",

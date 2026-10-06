@@ -25,7 +25,6 @@ def _deep_upper(tag: str, width_in: int, height_in: int) -> FurnitureType:
 
 
 DEEP_18_20 = _deep_upper("FT-KIT-DEEP18-20", 18, 20)
-DEEP_30_30 = _deep_upper("FT-KIT-DEEP30-30", 30, 30)
 DEEP_24_40 = _deep_upper("FT-KIT-DEEP24-40", 24, 40)
 
 STOCK_BASE_FRAME_UPPER = FurnitureType(
@@ -37,5 +36,5 @@ STOCK_BASE_FRAME_UPPER = FurnitureType(
             "See notes/kitchen_stock_cabinet_details.md; finished top 106 inches."),
 )
 KITCHEN_DEEP_CABINET_TYPES = (
-    DEEP_18_20, DEEP_30_30, DEEP_24_40, STOCK_BASE_FRAME_UPPER,
+    DEEP_18_20, DEEP_24_40, STOCK_BASE_FRAME_UPPER,
 )

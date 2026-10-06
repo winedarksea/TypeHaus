@@ -259,7 +259,7 @@ the future.
 - Gold foil trim or panel accent somewhere
 - The randon vent and the plumbing vent, where they exist the house, overlap, and are both labeled "radon vent" even though one should probably be plumbing.
 - Consider swapping the shower and tub positions in the main floor master bathroom
-- See about switching the size of the over fridge cabinets to a standard (non custom) size
+- [x] Switch over-fridge/freezer cabinets to stock SEKTION 30x24x20 frames; one per appliance, tops 93 1/2" (2026-10-05, kitchen detail K7).
 - Outlet in the kitchen island
 - There are MASA connectors (and STHD connectors) in places we don't need, for example the brick wall, and possible some of the non load-bearing interior basment walls. Also there are MASA and STHD into the wooden W-B-S2-FR basement wall, incorrectly.
 

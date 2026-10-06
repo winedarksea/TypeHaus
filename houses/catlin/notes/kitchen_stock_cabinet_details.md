@@ -1,8 +1,8 @@
 # Kitchen stock-frame installation details
 
-Revision 2026-10-04. Coordinates are inches in the house plan; elevations are above
+Revision 2026-10-05. Coordinates are inches in the house plan; elevations are above
 finished floor. Cabinet widths follow stock modules. These details govern the revised north
-and east runs; the west cold-storage custom uppers retain their separate specification.
+and east runs and the west cold-storage uppers.
 
 ## K1 — North run and pantry partition
 
@@ -217,6 +217,41 @@ bar, stools, counter and panel. Geometry tests include the full swept sector, no
 open-door line. The quartz is north of the pantry bank and the projecting back panel stops
 at the bar end. Field-adjust reveals within the one-inch front allowance; do not enlarge
 any slab, panel or pull to enter this clearance.
+
+## K7 — Stock uppers above refrigerator and freezer
+
+Replace the two custom 30 by 24 by 30 carcasses with one stock **30 by 24 by 20**
+top cabinet above each appliance. The owner selected the lower top over stacked frames.
+Use [SEKTION ventilated frame 402.655.12](https://www.ikea.com/us/en/p/sektion-top-cabinet-with-ventilation-white-40265512/),
+two VOXTORP matte-white 15 by 20 doors (202.733.15) per frame and UTRUSTA 110-degree
+soft-close hinges (805.248.82). These are IKEA's
+[494.549.71 configuration](https://www.ikea.com/us/en/p/sektion-top-cab-f-fridge-freezer-w-2-doors-white-voxtorp-matte-white-s49454971/),
+with suspension rail purchased separately; no legs or plinth for this wall installation.
+
+| Item | South y | North y | Bottom | Top |
+|---|---:|---:|---:|---:|
+| Freezer upper | 331 3/4 | 361 3/4 | 73 1/2 | 93 1/2 |
+| Refrigerator upper | 361 3/4 | 391 3/4 | 73 1/2 | 93 1/2 |
+
+The ganged cabinets retain their joint on the appliance joint at y=361 3/4. The appliance
+bay is y=328 7/8–394 5/8, 65 3/4 wide. Two 30-wide frames leave a 2 7/8-wide,
+20-high site-cut scribe at each outer end, against PANTRYC south and the pantry partition
+north. Price these finish strips with the stock cabinets. Keep the space above open;
+there is no stacker or 10-inch top filler. Cabinet tops sit 10 below the west pantry
+top and about 13 1/16 below the finished ceiling.
+
+The 73 1/2 bottom preserves the one-inch clearance above the Frigidaire pair's
+72 1/2 hinge envelope. Confirm appliance leveling and actual hinge clearance at installation.
+Stock bare depth is 23 5/8, 24 with rail. Matching 7/8 fronts project 24 7/8 from the
+wall; coordinate front alignment and factory reveals with the adjacent high frame.
+Keep the stock ventilation cut-outs open and retain the appliance clearances.
+
+Hang both frames on the factory suspension rail anchored into **BK-M-C5-COLD-TOP**,
+89 1/2–96 3/4 above the framing datum (88 9/16–95 13/16 AFF). Set the screw line from
+the actual frame brackets and retain the installation guide's 1/2-inch lift clearance.
+The lower BK-M-C5-MID band provides restraint near the cabinet bottoms; it does not
+carry the top rail. Connect the adjacent cases through structural sidewalls according to
+the factory instructions. Cabinets bear on the wall rail, independently of the appliances.
 
 ## Estimate and ordering scope
 

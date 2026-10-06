@@ -223,7 +223,11 @@ MAIN_BACKING = [
                 purpose="SEKTION base suspension rail (33 1/2 in.), mixer garage lower box (36 in.)"),
     WallBacking(uid="SBE1761N5C", tag="BK-M-C5-MID", wall_ref="W-M-C5",
                 elevation=inch(71.5), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="over-fridge and over-freezer cabinets (73 1/2 in.)"),
+                material_ref="spf", purpose="over-fridge and over-freezer lower restraint (73 1/2 in.)"),
+    # Stock cold-run frames hang from their TOP brackets; the bottom band cannot carry them.
+    WallBacking(uid="R6Y3P8N2KC", tag="BK-M-C5-COLD-TOP", wall_ref="W-M-C5",
+                elevation=inch(89.5), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="SEKTION cold-run suspension rail (93 1/2 in. tops)"),
     WallBacking(uid="WVN7RFKJP6", tag="BK-M-C5-HIGH", wall_ref="W-M-C5",
                 elevation=inch(81.5), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="tall cabinet top course rail (83 1/2 in.)"),
