@@ -1777,18 +1777,18 @@ FLOOR_HEAT = [
               # DHEHK12016 as purchased. NOT a computed number — see above.
               watts=203, delivered_btuh_per_ft2=22.8,
               stat=pt(inch(40), inch(175))),
-    # Under the dining table. FURN-M-DINING covers x 22'-11"..30'-11", y 15'-7"..19'-1"; the
-    # zone takes the table's exact width and runs y 13'-9"..21'-0" so it reaches under both
-    # chair rows (FURN-M-CHAIR-S* at y=14'-6", -N* at y=20'-2") — feet, not the table legs,
-    # are what this is for. 8'-0" x 7'-3" = 58.0 ft2, free-standing in RM-M-LIVING with no
+    # Under the dining table centred at y=18'. FURN-M-DINING covers x 22'-11"..30'-11",
+    # y 16'-3"..19'-9"; the 8'-0" x 7'-3" zone runs y 14'-4 1/2"..21'-7 1/2" under both
+    # chair rows (FURN-M-CHAIR-S* at y=15'-2", -N* at y=20'-10") — feet, not table legs,
+    # are what this is for. 58.0 ft2, free-standing in RM-M-LIVING with no
     # room_ref, since the living room is 642 ft2 and only this patch of it is heated.
     FloorHeat(uid="CMH802AAAA", tag="FH-M-DINING",
-              zone=(pt(ft(22, 11), ft(13, 9)), pt(ft(30, 11), ft(13, 9)),
-                    pt(ft(30, 11), ft(21)), pt(ft(22, 11), ft(21))),
+              zone=(pt(ft(22, 11), ft(14, 4.5)), pt(ft(30, 11), ft(14, 4.5)),
+                    pt(ft(30, 11), ft(21, 7.5)), pt(ft(22, 11), ft(21, 7.5))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
               # 58.0 ft2 at 12 W/ft2 -> 696 W, carried at 700.
               watts=700,
-              stat=pt(ft(26, 11), ft(17, 4))),
+              stat=pt(ft(26, 11), ft(18))),
 ]
 
 # The main floor's structure — two wood bays and one concrete band — lives in

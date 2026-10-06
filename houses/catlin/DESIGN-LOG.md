@@ -24,6 +24,12 @@ DU-S-HP-SOUTH ends at the x=19'-6" riser, removing another 3'-2" of 10x6 duct
 while adding 2'-0" of 6" round boot. Grille selection, aiming and final
 balancing are documented in `notes/system1_study_supply.md`.
 
+## Dining table centred on the 18-foot line (2026-10-05)
+
+Moved `FURN-M-DINING` north so its centre is at y=18'-0". The six side chairs move with
+it, keeping their rows 34" either side of the table centre. The pendant and the 58.0 ft2
+radiant zone move to the same centreline; the zone remains fully within the concrete deck.
+
 ## Attic study supply beneath the desk (2026-10-04)
 
 Moved `REG-A-HP-STUDY` from (25'-0", 3'-4") under the table to

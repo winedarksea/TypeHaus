@@ -54,8 +54,8 @@ the line, so the differential shows up as a hinge. Two consequences to draw:
    this point sharper rather than softer — floating plank is at least forgiving in-plane and
    a nailed-down 3/4" strip floor is not — and it is plank again, so the softer case is the
    one that applies. Break it anyway: the differential is in the structure, not the finish.
-2. **Tile must not cross it at all.** `FH-M-DINING` (x 22'-11" to 30'-11", y 13'-9" to
-   21'-0") sits wholly inside the concrete band, 9" clear of the line, which is deliberate —
+2. **Tile must not cross it at all.** `FH-M-DINING` (x 22'-11" to 30'-11", y 14'-4 1/2" to
+   21'-7 1/2") sits wholly inside the concrete band, 16 1/2" clear of the line, which is deliberate —
    a thinset bed over the cured cap has nothing to accommodate. If a tile field ever grows
    south past y = 13'-0", it needs a proper movement joint (TCNA EJ171) on the line, not a
    grout line.

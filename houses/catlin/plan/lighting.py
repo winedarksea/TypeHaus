@@ -540,11 +540,11 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-C1", face="right", distance_from_start=inch(148),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # The dining fixture, centred on FURN-M-DINING. A 3'-6" assembly off a 9' ceiling puts
+    # The dining fixture, centred on FURN-M-DINING at y=18'. A 3'-6" assembly off a 9' ceiling puts
     # the shade bottom at 5'-6" — about 3' over a 30" table, which is the height that lights
     # the table without blocking the person across it.
     ElectricalDevice(uid="QTM0005AAA", tag="ED-M-DINING-PEND", kind=DeviceKind.LIGHT,
-                     position=pt(ft(26, 11), ft(17, 4)), type_ref="ED-T-LT-PENDANT",
+                     position=pt(ft(26, 11), ft(18)), type_ref="ED-T-LT-PENDANT",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-DINING-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(3, 6))),

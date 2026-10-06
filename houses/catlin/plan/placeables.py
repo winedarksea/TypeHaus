@@ -272,9 +272,10 @@ MAIN_PLACEABLES = [
     # FURN-M-MEDIA retired 2026-10-05 for the hammock chair (plan/living_hammock.py).
     # The east wall's storage is the SEKTION line in plan/living_east_run.py (2026-10-02),
     # which retired the eight BESTA units that stood here.
-    # Dining at 17'-4". Table x 22'-10 1/2"..30'-10 1/2", y 15'-4 1/2"..18'-10 1/2"; the 36"
-    # chair-use margin reaches y=12'-4 1/2" and y=21'-10 1/2", clear of the sofa and with a
-    # wide circulation band to the peninsula.
+    # ** MOVED NORTH 10 1/2" (2026-10-05). ** The 8' x 3'-6" table is centred on y=18'-0":
+    # x 22'-10 1/2"..30'-10 1/2", y 16'-3"..19'-9". The six side-chair rows are centred
+    # 34" north and south of that line, at y=20'-10" and 15'-2". Its 36" side-clearance
+    # bands span y=13'-3"..22'-9", clear of the sofa and with circulation to the peninsula.
     #
     # ** NUDGED 2" WEST WITH ITS SIX CHAIRS (2026-10-02). ** The east chair zone reaches
     # x 406 1/2"; the live-edge slab's nominal front is x 408 7/8" and a natural edge wanders,
@@ -284,11 +285,10 @@ MAIN_PLACEABLES = [
     # hall-to-east-windows walk, so those two places stay unset, brought in when needed.
     #
     # ** THE SHARED TYPE DROPS ONLY THE UNUSED CORNERS (owner's call). **
-    # FURN-M-KIT-PANTRY-S2's carcass (x from 33'-5 3/8", y from 21'-2 3/8") stood 7 1/8" x
-    # 8 1/8" inside the NE corner of the library type's chair-use rectangle — 0.4 sf, and
-    # the only recommended-clearance finding in the kitchen. It is a corner lap and nothing
-    # else: the tall bank is 2'-4 7/8" east of the table's end and 2'-3 7/8" north of its
-    # side, so it is outside BOTH bands at the full 36" and clear of every chair.
+    # FURN-M-KIT-PANTRY-S2's carcass starts at (33'-5 3/8", 21'-2 3/8"), in the table's
+    # open NE corner square of the 36" chair-use zone: 30 7/8" east and 17 3/8" north of the
+    # table corner. It misses the table and all six chairs; the corner square is outside the
+    # bands, while the full 36" reach remains along each side where chairs actually stand.
     #
     # The owner's call was to shrink the zone, and this is the shrink that costs nothing
     # real: FT-DINING-8-OPEN-CORNERS keeps 36" on all four sides and drops only the four
@@ -296,19 +296,19 @@ MAIN_PLACEABLES = [
     # deliberate — cutting 36" to 27" would have cleared the same 0.4 sf while quietly
     # unpolicing the two long sides, where the six chairs that actually exist stand.
     Furniture(uid="QWCMN48QST", tag="FURN-M-DINING", type_ref="FT-DINING-8-OPEN-CORNERS",
-              room="RM-M-LIVING", position=pt(m(8.19198), m(5.2201))),
+              room="RM-M-LIVING", position=pt(m(8.19198), ft(18))),
     Furniture(uid="60XVKZHFAS", tag="FURN-M-CHAIR-S1", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(24, 3), ft(14, 6)), rotation=deg(180)),
+              position=pt(ft(24, 3), ft(15, 2)), rotation=deg(180)),
     Furniture(uid="XCW1QKV701", tag="FURN-M-CHAIR-S2", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(26, 9), ft(14, 6)), rotation=deg(180)),
+              position=pt(ft(26, 9), ft(15, 2)), rotation=deg(180)),
     Furniture(uid="REJA4QPWC3", tag="FURN-M-CHAIR-S3", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(29, 3), ft(14, 6)), rotation=deg(180)),
+              position=pt(ft(29, 3), ft(15, 2)), rotation=deg(180)),
     Furniture(uid="VHHDZ62B5F", tag="FURN-M-CHAIR-N1", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(24, 3), ft(20, 2))),
+              position=pt(ft(24, 3), ft(20, 10))),
     Furniture(uid="R3XJVT80XY", tag="FURN-M-CHAIR-N2", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(26, 9), ft(20, 2))),
+              position=pt(ft(26, 9), ft(20, 10))),
     Furniture(uid="17F6ZBR67K", tag="FURN-M-CHAIR-N3", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(29, 3), ft(20, 2))),
+              position=pt(ft(29, 3), ft(20, 10))),
     # Centre the 80" king between D-M-BATH2's east RO jamb (56.635") and D-M-BED's
     # west RO jamb (170"). The 113.3175" midpoint leaves 16.6825" beside each bed edge.
     # Keep the north-south placement and head-north orientation, freeing the window walls.

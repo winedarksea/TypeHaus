@@ -253,7 +253,7 @@ BASEMENT_CEILING_HEIGHT = inch(-(_JOIST_DEPTH.inches + _CEILING_GWB[0].thickness
                                - BASEMENT_DATUM.inches)
 
 # The concrete/wood boundary. Concrete keeps the east half north of y=13' — the dining
-# radiant zone (FH-M-DINING, x 22'-11"..30'-11", y 13'-9"..21'-0") sits wholly inside it,
+# radiant zone (FH-M-DINING, x 22'-11"..30'-11", y 14'-4 1/2"..21'-7 1/2") sits wholly inside it,
 # with its thinset bed over the cured cap exactly as before. Everything else is wood.
 # Re-apportioning the ceiling later is a matter of moving this one line and the two
 # outlines it cuts.
