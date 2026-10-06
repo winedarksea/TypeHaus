@@ -42,6 +42,8 @@ BAND = SlatBrace(
 # ** THE EAVE COLLECTOR: THE DECK'S N-S SHEAR INTO THE WEST HEADER. ** The deck's boundary
 # nailing lands on the truss heels and the eave blocking; H2.5ASS heel ties carry 110 lb of
 # lateral each, nowhere near 1,045. Two LTP4 per bay, blocking to glulam top (note §3e).
+# 2026-10-05: those blocks are absent from the resolved truss roof. The plates' lower halves
+# seat on the header but their upper halves have no wood; the collector is INCOMPLETE.
 _CLIP_Y_FT = (38.0, 39.0, 40.0, 41.0, 42.0, 42.75)
 _CLIP_UIDS = ("2BGWCYHP73", "SDMYFZXN5Z", "812X7GD63H", "TGHVBBPNB4", "P6GS6PHFXD",
               "3XNNDTGRTE")
@@ -49,7 +51,8 @@ EAVE_CLIPS = [
     Connector(uid=_uid, tag=f"CN-BW-EAVE-{_i + 1}", kind=ConnectorKind.TENSION_TIE,
               position=pt(ft(LANDING_WEST_FT), ft(_y)), elevation=ft(HEADER_TOP_FT),
               size="LTP4", axis="y", connects=("RF-BW-CANOPY", "BM-BW-RW"),
-              source="canopy_west_band.md §3e — eave blocking to BM-BW-RW, the N-S collector")
+              source=("canopy_west_band.md §3e — PROPOSED eave-blocking attachment to BM-BW-RW; "
+                      "blocking members and fastening unresolved"))
     for _i, (_y, _uid) in enumerate(zip(_CLIP_Y_FT, _CLIP_UIDS, strict=True))
 ]
 

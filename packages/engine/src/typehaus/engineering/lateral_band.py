@@ -232,6 +232,7 @@ def _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states) -> None:
 
 
 def _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing) -> None:
+    from typehaus.engineering.collector_attachment import collector_attachment_missing
     from typehaus.hardware.catalog import allowable_for_model
     from typehaus.model.enums import ConnectorKind
 
@@ -253,12 +254,16 @@ def _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing) -> Non
                        f"{shear_lb:,.0f} lb reaches it through the truss heels and the eave "
                        f"blocking, and heel ties rated for uplift carry ~110 lb lateral each")
         return
+    attachment_missing = collector_attachment_missing(
+        ctx.model, roof_tag, collector.tag, [clip for clip, _capacity in rated])
+    missing.extend(attachment_missing)
     each = shear_lb / len(rated)
     worst = min(rated, key=lambda r: r[1])
     states.append(LimitState(
         f"{collector.tag} eave collector clips", each, worst[1], "lb",
         f"{len(rated)} x {worst[0].size} blocking to {collector.tag}, the lower lateral "
-        f"direction of the catalog row, {shear_lb:,.1f} lb shared equally"))
+        f"direction of the catalog row, {shear_lb:,.1f} lb shared equally"
+        + ("; NOMINAL ONLY — the blocking attachment is missing" if attachment_missing else "")))
 
 
 def _holdown_rows(ctx, wall, spec, shear_lb, top_ft, states, notes, missing, inputs) -> bool:

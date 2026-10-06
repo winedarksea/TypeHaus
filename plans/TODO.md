@@ -253,6 +253,7 @@ the future.
 - See if we can narrow the gap between FURN-A-STUDY-BUILTIN and the shelves of D-A-STUDY, or add a wood trim piece in front to maintain visual continuity
 - Ridge beam has a whole lot of LSTA24's one it. Perhaps a single coil strap across the whole top is simpler, such as CS14
 - Resolve `CN-BW-JOINT-1..7`'s garage/canopy diaphragm attachment: roof-plane rendering is corrected, but 24in straps cannot reach the last canopy truss and have no longitudinal nailing members. Detail both wood end attachments, nail schedule/species and diaphragm anchorage; `lateral_system/RF-BW-CANOPY` is INCOMPLETE (houses/catlin/notes/canopy_garage_diaphragm.md §3b).
+- Resolve `CN-BW-EAVE-1..6`'s collector attachment to `BM-BW-RW`: the plates touch the header but their upper halves lack eave blocking. Detail and model raised-heel blocking up to the roof deck, flush plate attachment faces, boundary nailing and end fastening (houses/catlin/notes/canopy_west_band.md §3e).
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door
 - If a hanging daybed on the porch: a `SuspensionAnchor` used 2-4 times with offsets; needs a host other than an interior joist field
 - Gold foil trim or panel accent somewhere

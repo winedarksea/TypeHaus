@@ -46,11 +46,14 @@ def record(catlin_ctx):
 def test_the_band_rows_reproduce_the_note(record) -> None:
     assert record.status is Status.INCOMPLETE, record.summary
     assert any("joint attachment" in missing for missing in record.missing)
+    assert all(any(f"CN-BW-EAVE-{station}: eave blocking" in text for text in record.missing)
+               for station in range(1, 7))
     states = {s.name: s for s in record.limit_states}
     for name, (demand, capacity) in _ROWS.items():
         assert name in states, f"{name} is not on the record"
         assert states[name].demand == pytest.approx(demand, rel=2e-3, abs=0.01), name
         assert states[name].capacity == pytest.approx(capacity, rel=1e-3), name
+    assert "NOMINAL ONLY" in states["BM-BW-RW eave collector clips"].citation
 
 
 def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:

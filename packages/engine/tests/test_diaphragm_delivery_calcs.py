@@ -143,10 +143,12 @@ def test_joint_attachment_gap_is_explicit_despite_passing_nominal_capacity(catli
     assert record.status is Status.INCOMPLETE
     assert any("end nailing not detailed" in missing for missing in record.missing)
     assert all(state.ok for state in record.limit_states)
-    # A calculation-only variant checks that this flag, rather than another missing
-    # input, caused the incomplete result. It does not clear the authored house's gap.
+    # Clearing the joint flag removes that reason, but cannot resolve the independent
+    # missing eave blocking at the west collector.
     detailed_record = _canopy_with(catlin_ctx, joint_attachment_missing=None)
-    assert detailed_record.status is Status.OK
+    assert not any("joint attachment" in text for text in detailed_record.missing)
+    assert detailed_record.status is Status.INCOMPLETE
+    assert any("CN-BW-EAVE-4: eave blocking" in text for text in detailed_record.missing)
 
 
 def test_an_unresolved_receiving_roof_is_incomplete_by_name(catlin_ctx) -> None:

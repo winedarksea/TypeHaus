@@ -171,6 +171,26 @@ Fc-perp, Table 4D SP No. 2 timbers 375 x wet C_M 0.67 = 251.25 psi      0.396
 blocking; an H2.5ASS carries ~110 lb of lateral, so three heel ties are nowhere near it. Six
 LTP4, two per bay, blocking to glulam top, C-C-2019 p. 280 SPF/HF (the lower direction):
 
+**Attachment gap identified 2026-10-05 — this collector is INCOMPLETE.** The six
+`CN-BW-EAVE-1..6` plates have their lower halves flush with `BM-BW-RW`'s east face,
+straddling its +7'-4" top. Their upper halves extend to +7'-6 1/8" into open air.
+The roof's structural top at the header centreline is +8'-4 3/4", **12 3/4" above
+the header**, so these plates cannot attach directly to the roof deck or top chords.
+They are intended to join the header to blocking above it, as in
+[Simpson's LTP4 installation](https://www.strongtie.com/resources/product-installers-guide/ltp4-ltp5-installation).
+
+No such blocking is modeled: `RF-BW-CANOPY.eave_blocking` is unset and its resolved
+members contain no blocking. The existing `Roof.eave_blocking` framing path is for
+plumb-cut rafters; the truss branch does not derive it. Merely drawing or counting
+the six plates does not provide a wood attachment or the boundary-nailing substrate.
+The comparison below is therefore **nominal product capacity only**.
+
+Resolve the raised-heel blocking members, their bearing and flush nailing face at the
+header, the roof-deck boundary nailing, and the plate fasteners into both members.
+The collector check now names every plate whose upper attachment lacks modeled
+blocking seated on the header and reaching the deck. This geometry prerequisite
+does not itself verify nail count, edge distances or blocking anchorage.
+
 ```
 1,045.06 / 6 = 174.2 lb vs 450      0.387
 ```

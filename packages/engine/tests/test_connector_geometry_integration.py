@@ -104,6 +104,22 @@ def test_canopy_joint_attachment_gap_matches_the_resolved_truss_layout(catlin_mo
     assert strap_y - 12 * M_PER_IN > last_canopy_y
 
 
+def test_canopy_eave_plates_seat_on_header_but_have_no_upper_blocking(catlin_model_ro):
+    from shapely.geometry import Point, Polygon
+
+    roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-BW-CANOPY")
+    header = next(s for s in catlin_model_ro.solids if s.tag == "BM-BW-RW")
+    assert not any(m.category == "blocking" for m in roof.members)
+    face = Polygon(header.outline).boundary
+    solids = {s.tag: s for s in catlin_model_ro.solids}
+    for station in range(1, 7):
+        plate = solids[f"CN-BW-EAVE-{station}"]
+        facing_wood = [p for p in plate.body_mesh.positions
+                       if face.distance(Point(p[:2])) < 1e-8]
+        assert any(header.z0_m < p[2] < header.z1_m for p in facing_wood)
+        assert any(p[2] > header.z1_m for p in facing_wood)
+
+
 def test_derived_lateral_plates_are_on_the_sill_face(catlin_model_ro):
     index = ConnectorPlacementIndex(catlin_model_ro)
     solids = {solid.uid: solid for solid in _simpson_solids(catlin_model_ro)}
