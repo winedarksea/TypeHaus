@@ -180,86 +180,20 @@ def test_catlin_fixtures_do_not_overlap_and_required_clearances_hold(catlin_chec
     assert not findings, [f.message for f in findings]
 
 
-def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_report):
+def test_catlin_permit_checklist_blocks_on_the_missing_strap_attachment(catlin_check_report):
     from typehaus.checks import evaluate_permit_checklist
 
-    report = catlin_check_report()
-    checklist = evaluate_permit_checklist(report, "mn-2020")
-    # Every slab either carries an authored assembly or is scoped out of the prescriptive
-    # table for a stated reason (the main-floor deck has conditioned space on both faces;
-    # the garage slab floors an unheated detached structure), so code.energy_prescriptive is
-    # fully evaluated. An UNKNOWN reappearing means a component lost its thermal input again.
-    #
-    # The plumbing checks include FX-1, the mechanical-room utility sink: its drain runs
-    # through SP-B-SLAB-MAIN under the slab and out beneath FT-B-S1, below the frost line
-    # where Minnesota buries sewer connections, so it drains and vents like every other item.
-    #
-    # Scoped to the *gating* items: the code-coverage expansion added a staging lane of
-    # encoded-but-not-yet-gating rules (PermitItemSpec.blocking), allowed to sit UNKNOWN
-    # against a house authored before they existed. What must never regress is the gate
-    # itself — an item that gates today and stops passing tomorrow.
-    # tests/test_permit_gate_catlin.py pins the size of that lane so it cannot grow.
-    #
-    # EVERY gating item passes, "Foundation frost depth" included — asserted positively
-    # rather than merely counted, because `structural.frost_depth` derives a LOCAL grade per
-    # footing rather than comparing to one global plane. The house's four footings under the
-    # sunken garden (one with negative cover) are answered by the R403.3 wings under the
-    # garden slab. The garden's own five footings bear on a 42" compacted washed-stone
-    # section, declared non-frost-susceptible and drained by a sock-wrapped tile, whose
-    # thickness counts toward the design frost depth under ASCE 32 (IRC R403.1.4.1, kept by
-    # MN Rules 1309.0403). (Seven until 2026-09-22: two were pads under freestanding porch
-    # columns, retired with the court's centre line.) The gradation and drainage are the assembly's authored claim; the
-    # check measures that the excavation reaches the depth.
-    #
-    # Pinned tightly on purpose: any OTHER gating item regressing still fails the empty
-    # assertion below, and this one silently going UNKNOWN again fails the two after it.
-    #
-    # N/A is a resolved verdict alongside PASS: "Structural glass guards" is N/A because no
-    # guard in this house is filled with a glass panel — a resolved requirement, not an
-    # unresolved one, and lettering it as a gate failure would be a false statement.
-    #
-    # The hall-bath WC drain now lands in the adjacent clear truss bay, so it no longer holds
-    # the draft gate open. All other blocking lines still have to resolve as before.
-    #
-    # Keep the empty set explicit: a new blocking item must not silently become an accepted
-    # exception.
-    #
-    # ** FIVE OPEN SINCE 2026-09-20, AND EACH IS THE ANSWER A CALCULATION GAVE. ** The
-    # deferred engineering kinds were registered and their lines flipped to blocking; on
-    # catlin they hold the gate shut for named reasons (haus engineering): the landing
-    # column's base turns in the ground (base_rotation/PT-BW-GW, δ 1.456), two column heads
-    # have no published lateral value, the thermal breaks await GFRP data and a measured
-    # modulus, and the SRW apron is OVER. The veneer beam's end anchorage closed 2026-09-21
-    # (notes/sunken_garden_veneer_beam.md §6e).
-    #
-    # ** 2026-09-21: THE LANDING WAS TIED TO THE GARAGE STEM. ** Its piers lean, so the head
-    # joint line closed (the two INCOMPLETE heads left) and base rotation is held open by the
-    # canopy pair's presumptive band alone. The tie itself is OVER at 1.82 (suppressed as a
-    # numbered debt, notes/north_entry_piers.md §10), so its new line is open in their place.
-    #
-    # ** 2026-09-21 (phase 2): base rotation CLOSED on a presumed n_h ** (Terzaghi's loose
-    # row, RE/RNE 0.81 draft). Two tie lines took the landing to 1.18; the thermal break and
-    # the SRW apron are still OVER after the owner's fixes. The tie then CLOSED at 0.966
-    # (HL35HDG at the stem, the anchored hole on the core centreline, W dry; §10d), and the
-    # SRW apron closed on AB Stones (notes/raised_garden_srw.md §3b).
-    # ** THE OTHER LINES WERE EMPTY SINCE 2026-09-22. ** The thermal break was the last blocking line that was
-    # not PASS: basis 7 grades all five items OK (free body §11j) and the five suppressions
-    # came off with it, so the DRAFT permit print opens. The sealed gate stays shut for its
-    # own reason — no `engineering.toml` exists.
-    #
-    # The porch LEDGERS were open for an evening; their Titen HDs grade on Simpson's
-    # L-A-THDSSLDGR23 row now.
-    OPEN: set[str] = set()
+    checklist = evaluate_permit_checklist(catlin_check_report(), "mn-2020")
+    # The canopy's nominal strap capacity does not establish an installed load path.
+    # Pin this specific UNKNOWN and retain the requirement that every other gate resolves.
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}
-    unresolved = [item for item in gating
-                  if item.result not in resolved and item.label not in OPEN]
-    assert not unresolved, \
-        [(item.label, item.result, item.detail) for item in unresolved]
-    still_open = {item.label for item in gating if item.result not in resolved}
-    assert still_open == OPEN, (
-        "an open item was fixed and left in the set, or a new one appeared", still_open)
-    assert checklist.ok
+    blocked = [item for item in gating if item.result not in resolved]
+    assert [item.label for item in blocked] == ["Roof diaphragm and shear panel load path"]
+    assert blocked[0].result is Result.UNKNOWN
+    assert "lateral_system/RF-BW-CANOPY" in blocked[0].engineering_items
+    assert "nailing members" in blocked[0].detail
+    assert not checklist.ok
     frost = [item for item in gating if item.label == "Foundation frost depth"]
     assert len(frost) == 1, [item.label for item in gating]
     assert frost[0].result is Result.PASS

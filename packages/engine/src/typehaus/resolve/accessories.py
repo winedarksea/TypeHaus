@@ -120,6 +120,18 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
             elif isinstance(el, IsolationBoard):
                 _resolve_isolation_board(model, el, storey.tag)
             elif isinstance(el, Connector):
+                if el.roof_mount is not None:
+                    from typehaus.resolve.connector_geometry.ties import STRAPS
+
+                    roof = next((r for r in model.roofs if r.tag == el.roof_mount), None)
+                    dimensions = STRAPS.get(el.size.upper().removesuffix("Z"))
+                    if (roof is None or dimensions is None or dimensions.length_in <= 0
+                            or el.elevation is not None or el.axis is not None):
+                        findings.append(element_error(
+                            "integrity.connector_roof_mount",
+                            f"{el.tag}: roof_mount requires a resolved roof and a fixed-length "
+                            "flat strap, with elevation and axis supplied by that roof", el.tag))
+                        continue
                 _resolve_connector(model, el, storey.tag)
             elif isinstance(el, KneeBrace):
                 _resolve_knee_brace(model, el, storey.tag)

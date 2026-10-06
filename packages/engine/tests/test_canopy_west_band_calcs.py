@@ -44,7 +44,8 @@ def record(catlin_ctx):
 
 
 def test_the_band_rows_reproduce_the_note(record) -> None:
-    assert record.status is Status.OK, record.summary
+    assert record.status is Status.INCOMPLETE, record.summary
+    assert any("joint attachment" in missing for missing in record.missing)
     states = {s.name: s for s in record.limit_states}
     for name, (demand, capacity) in _ROWS.items():
         assert name in states, f"{name} is not on the record"

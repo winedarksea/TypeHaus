@@ -5811,46 +5811,46 @@
 "26af7978b69d"
 ],
 "geometry/BWJT00AAAA/body": [
-2.1388138,
-2.2360651,
-16,
-"1ff2b26e8d33"
+2.5540299,
+2.5649352,
+8,
+"028b80104ff0"
 ],
 "geometry/BWJT01AAAA/body": [
-2.1388138,
-2.2360651,
-16,
-"1ff2b26e8d33"
+2.9604299,
+2.9713352,
+8,
+"2c349474b88e"
 ],
 "geometry/BWJT02AAAA/body": [
-2.1388138,
-2.2360651,
-16,
-"1ff2b26e8d33"
+3.3668299,
+3.3777352,
+8,
+"48e329bff65c"
 ],
 "geometry/BWJT03AAAA/body": [
-2.1388138,
-2.2360651,
+3.7732299,
+3.7791151,
 16,
-"1ff2b26e8d33"
+"579de5b90009"
 ],
 "geometry/BWJT04AAAA/body": [
-2.1388138,
-2.2360651,
-16,
-"1ff2b26e8d33"
+3.3668299,
+3.3777352,
+8,
+"dc18d07434bb"
 ],
 "geometry/BWJT05AAAA/body": [
-2.1388138,
-2.2360651,
-16,
-"1ff2b26e8d33"
+2.9604299,
+2.9713352,
+8,
+"1d228b27b914"
 ],
 "geometry/BWJT06AAAA/body": [
-2.1388138,
-2.2360651,
-16,
-"1ff2b26e8d33"
+2.5540299,
+2.5649352,
+8,
+"5ba502c6f80a"
 ],
 "geometry/BWNSE1AAAA/body": [
 2.413,
@@ -88339,20 +88339,20 @@
 "solids/CN-BW-IBASE-C/z1_m": -0.7239,
 "solids/CN-BW-IBASE-E/z0_m": -0.8636,
 "solids/CN-BW-IBASE-E/z1_m": -0.7239,
-"solids/CN-BW-JOINT-1/z0_m": 2.1388138,
-"solids/CN-BW-JOINT-1/z1_m": 2.2360651,
-"solids/CN-BW-JOINT-2/z0_m": 2.1388138,
-"solids/CN-BW-JOINT-2/z1_m": 2.2360651,
-"solids/CN-BW-JOINT-3/z0_m": 2.1388138,
-"solids/CN-BW-JOINT-3/z1_m": 2.2360651,
-"solids/CN-BW-JOINT-4/z0_m": 2.1388138,
-"solids/CN-BW-JOINT-4/z1_m": 2.2360651,
-"solids/CN-BW-JOINT-5/z0_m": 2.1388138,
-"solids/CN-BW-JOINT-5/z1_m": 2.2360651,
-"solids/CN-BW-JOINT-6/z0_m": 2.1388138,
-"solids/CN-BW-JOINT-6/z1_m": 2.2360651,
-"solids/CN-BW-JOINT-7/z0_m": 2.1388138,
-"solids/CN-BW-JOINT-7/z1_m": 2.2360651,
+"solids/CN-BW-JOINT-1/z0_m": 2.5540299,
+"solids/CN-BW-JOINT-1/z1_m": 2.5649352,
+"solids/CN-BW-JOINT-2/z0_m": 2.9604299,
+"solids/CN-BW-JOINT-2/z1_m": 2.9713352,
+"solids/CN-BW-JOINT-3/z0_m": 3.3668299,
+"solids/CN-BW-JOINT-3/z1_m": 3.3777352,
+"solids/CN-BW-JOINT-4/z0_m": 3.7732299,
+"solids/CN-BW-JOINT-4/z1_m": 3.7791151,
+"solids/CN-BW-JOINT-5/z0_m": 3.3668299,
+"solids/CN-BW-JOINT-5/z1_m": 3.3777352,
+"solids/CN-BW-JOINT-6/z0_m": 2.9604299,
+"solids/CN-BW-JOINT-6/z1_m": 2.9713352,
+"solids/CN-BW-JOINT-7/z0_m": 2.5540299,
+"solids/CN-BW-JOINT-7/z1_m": 2.5649352,
 "solids/CN-BW-PLATE-N/z0_m": 1.2192,
 "solids/CN-BW-PLATE-N/z1_m": 1.3335,
 "solids/CN-BW-PLATE-S/z0_m": 1.2192,

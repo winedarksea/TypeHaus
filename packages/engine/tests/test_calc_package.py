@@ -427,41 +427,21 @@ def test_print_sealed_exits_one_while_nothing_is_sealed(catlin_engineering):
     assert checklist.unsealed
 
 
-def test_the_two_gates_are_separate_and_catlin_reaches_draft_only(catlin_engineering):
-    """The gates are independent. catlin reaches draft since the porch went onto ledgers
-    (2026-09-22), and the WC drain moved into a clear truss bay; sealed still needs its
-    missing register.
+def test_the_two_gates_stay_shut_for_the_missing_strap_attachment(catlin_engineering):
+    """The draft gate requires a complete attachment; sealed also requires the register.
 
-    It reached draft and not sealed until 2026-09-18, missed BOTH for two days while
-    `engineering/column_base.py` graded an embedment its north entry did not have, and
-    reaches draft again since 2026-09-20 — `notes/entry_column_base_fixity.md` §6a put the
-    canopy pair on one plane at -10'-2" and §6e claimed §1806.3.4's doubling for the landing
-    pair. The blocking list must stay empty; a second blocking item fails this assertion.
-
-    The separation is what the pair below pins: `sealed` is false for a reason that has
-    nothing to do with any calculation — catlin carries no `engineering.toml` at all — so it
-    stays false with every draft line green, and it would have stayed false with them red.
-
-    ** IT MISSED DRAFT FROM 2026-09-20 ON NAMED LINES, AND REACHES IT AGAIN ON 2026-09-22. **
-    Every deferred kind became a registered calculation and its line blocks; the last of them
-    to close was the thermal break (basis 7). Any new blocker fails here. The veneer beam
-    closed 2026-09-21 (hook ties and footing dowels, `notes/sunken_garden_veneer_beam.md`
-    §6e); the thermal break on 2026-09-22 (`notes/sunken_garden_court_free_body.md` §11j).
+    The draft gate reopened in September but closes on 2026-10-05 for the garage-joint
+    straps' missing nailing members. Pin the one named blocker so another cannot slip in.
     """
     _ctx, _items, checklist = catlin_engineering
     blocked = [item.label for item in checklist.items
                if item.blocking and item.result not in (Result.PASS,
                                                         Result.NOT_APPLICABLE)]
-    # 2026-09-21: the landing's tie to the garage stem closed the head-joint line, then its
-    # own (deck_tie/FS-BW-FLOOR at 0.966, north_entry_piers.md §10); base rotation CLOSED as
-    # draft on the presumed n_h (column_base_rotation.md §10), and the SRW apron CLOSED on AB
-    # Stones (raised_garden_srw.md §3b).
-    assert blocked == [], blocked
-    assert checklist.ok
+    assert blocked == ["Roof diaphragm and shear panel load path"], blocked
+    assert not checklist.ok
     assert not checklist.sealed
     assert checklist.unsealed
-    # Shut for its own reason: every engineered item is unsealed because the house carries
-    # no register at all, which is true of every passing item.
+    # The absent register independently leaves other engineered items unsealed.
     assert len(checklist.unsealed) > 1
 
 

@@ -59,6 +59,12 @@ Local coordinates use x along the supporting line, y transverse, z up:
   x. LSTA24's zero is also the ridge crest: a supplied slope produces two
   descending leaves, with the 24-inch developed length unchanged. Vertical
   installations of MSTA12 or CS16 rotate this body at placement.
+  Authored fixed-length straps with `Connector.roof_mount` instead seat on the named
+  roof's structural top plane, directly beneath its deck, with length parallel to
+  the ridge. The centre strap folds across its width when it straddles the ridge.
+  This mounting reference supplies elevation and orientation and cannot be combined
+  with an explicit `elevation` or `axis`. It establishes no nailing capacity; the
+  canopy joint's missing nailing members are recorded separately on its delivery.
 - A35 and LS30 use the **bottom of the inner heel**. Their heel runs up z and
   the two leaves project into positive x and positive y. These bodies depict a
   90° installed angle. LS is shipped at 45° and can be field skewed; the API

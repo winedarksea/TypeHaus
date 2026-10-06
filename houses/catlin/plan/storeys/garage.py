@@ -612,6 +612,7 @@ ROOFS = [
                      ReceivingLine(wall="W-G-W", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panel sheathing, 15/32in with 8d at 6in edges (the 5/8in CDX quoted conservatively), v_w 365 plf nominal / 2.0"),
                  ),
                  joint_refs=("CN-BW-JOINT-1", "CN-BW-JOINT-2", "CN-BW-JOINT-3", "CN-BW-JOINT-4", "CN-BW-JOINT-5", "CN-BW-JOINT-6", "CN-BW-JOINT-7"),
+                 joint_attachment_missing="CN-BW-JOINT-1..7 have no longitudinal nailing members beneath their 24in straps. The last canopy truss is 23-3/8in south of the strap centre, beyond the 12in leg. Detail wood attachment on BOTH sides with the full nail schedule and its connection to the diaphragms; see canopy_garage_diaphragm.md §3b",
                  plate_clip_refs=("CN-BW-GCLIP-1", "CN-BW-GCLIP-2", "CN-BW-GCLIP-3", "CN-BW-GCLIP-4", "CN-BW-GCLIP-5", "CN-BW-GCLIP-6", "CN-BW-GCLIP-7"),
                  open_front=True,
                  differential_movement="the canopy's north line (PT-BW-RNE, PT-BW-GW) bears on the garage's own -7ft 0in plane and its south line on the house-side -9ft 9-7/16in plane; the headers are simple spans between them, so a differential rotates each as a rigid body. Tolerance 3/16in (L/360 of the 5.72ft header), what the H2.5ASS ties and the LSTA24 strap line take without distress. The soil is presumed; a soils report predicting more reopens canopy_garage_diaphragm.md §8",
@@ -627,12 +628,11 @@ ROOFS = [
          # its own gravity to its own piers (notes/north_entry_structure.md Sec 1a), and it
          # is also what drops the truss that used to stand 1 1/2" off the garage wall --
          # right where the fire/draft closure and the south cladding want a clear plane.
-         # The deck bridges 1'-9 3/8" from the last canopy truss to RF-GARAGE's gable, which
-         # is one ordinary bay at this 24" spacing and shorter than every other bay on the
-         # roof. That last bay's sheathing lands on the garage's gable truss, so a sliver of
-         # canopy deck load does cross: half a 1'-9 3/8" bay over 24 feet, ~1,800 lb under the
-         # 73.7 psf drift case the headers are sized for (~900 lb balanced). It lands on a
-         # frame bearing continuously on W-G-S, so it spreads to ~75 plf on a 2x6 wall already
+         # The current deck bridges 2'-0 1/8" from the last canopy truss to RF-GARAGE's
+         # gable (resolved geometry, 2026-10-05). That last bay's sheathing lands on the
+         # garage's gable truss, so canopy deck load does cross: half that bay over 24 feet,
+         # ~2,020 lb under 73.7 psf drift snow plus 10 psf dead load. It lands on a
+         # frame bearing continuously on W-G-S, so it spreads to ~84 plf on a 2x6 wall already
          # carrying half a garage bay -- trivial, but real. Sec 1a's "never gravity" is about
          # the STRAP line, not the deck edge; the drawings say so.
          gable_ends=(),

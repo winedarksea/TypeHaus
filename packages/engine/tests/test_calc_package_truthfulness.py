@@ -87,8 +87,8 @@ def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> N
     read nowhere, so the page a reviewer opens first was silent on the one fact that says
     whether this review unblocks anything.
 
-    The hall-bath WC drain moved into a clear truss bay, so catlin's draft gate is open. The
-    SHUT branch remains exercised below on a stub so a handoff cannot misstate that status.
+    The canopy's missing garage-joint attachment closes the draft gate. The handoff must
+    identify that blocker rather than treating nominal strap capacity as a complete design.
     """
     from typehaus.takeoff.handoff import pe_readme
 
@@ -97,13 +97,15 @@ def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> N
                        content_hash="abc", records=[ctx.engineering[i] for i in item_ids],
                        notes=[], checklist=checklist, has_pdf=False)
     assert "## Where the permit gate stands" in readme
-    assert "The draft gate is OPEN" in readme
+    assert "The draft gate is SHUT" in readme
+    assert "Roof diaphragm and shear panel load path" in readme
+    assert "CN-BW-JOINT-1..7" in readme
     assert "PR-M-S-BATH1-WC-DRAIN" not in readme
     assert "FS-S-WEST" not in readme
 
 
 def test_the_readme_names_every_open_blocking_item_when_the_gate_is_shut() -> None:
-    """The SHUT branch on a stub, beside the OPEN one catlin reaches again.
+    """The SHUT branch names every blocker, independently of the current house.
 
     A reviewer opening a SHUT bundle has to be told which lines are shut and that a stamp
     will not open them — the gate is about this engine's own arithmetic. Held on a stub

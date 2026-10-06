@@ -18,6 +18,12 @@ off the garage's gable.
 
 ## 1. The canopy — freestanding
 
+**2026-10-05 attachment correction:** the seven garage-joint LSTA24 straps now draw on
+the roof plane. Their longitudinal nailing members and end fastening are missing, so
+the canopy's garage delivery is INCOMPLETE despite the nominal strap capacity passing.
+See `canopy_garage_diaphragm.md` §3b; the older "all built and graded" statement above
+does not cover this unresolved attachment.
+
 `RF-BW-CANOPY` — **three** 24'-span trusses at 24" o.c. on two headers, each header on
 **two** columns of its own. `CANOPY_ROOF` is `GARAGE_ROOF`'s structure with **no insulation
 and no ceiling**: an open outdoor bay has no thermal boundary to hold, and billing one over
@@ -30,16 +36,16 @@ it would order 144 sf of R-38 blown fiberglass and 5/8" gypsum nobody installs.
 > **1 1/2" off `W-G-S`, out of module** — back to back with `RF-GARAGE`'s own gable truss,
 > two 24' frames in 3 inches, in exactly the plane the fire/draft closure and the garage's
 > south cladding need clear (§5). The roof now authors `gable_ends=()` and the engine drops
-> an off-module end station that is not a gable line. The deck bridges the last **1'-9 3/8"**
-> to `RF-GARAGE`'s gable truss, which is shorter than every other bay on the roof.
+> an off-module end station that is not a gable line. In the current layout the deck bridges
+> **2'-0 1/8"** to `RF-GARAGE`'s gable truss (2026-10-05 resolved-geometry check).
 >
 > **The last bay is the one place a little gravity does cross, and it is worth stating.**
-> That bridging sheathing lands on `RF-GARAGE`'s gable truss and hands it half a 1'-9 3/8"
-> bay over 24 feet: roughly **1,800 lb** under the 73.7 psf drift case the headers are sized
-> for, about 900 lb balanced. The whole canopy sits inside the 9.8' drift zone off the house
+> That bridging sheathing lands on `RF-GARAGE`'s gable truss and hands it half a 2'-0 1/8"
+> bay over 24 feet: roughly **2,020 lb** under 73.7 psf drift snow plus 10 psf dead load.
+> The whole canopy sits inside the 9.8' drift zone off the house
 > gable, so the drift number is the one that governs here, not the balanced one. It lands on
 > a frame bearing **continuously** on `W-G-S` — a gable-end frame is supported that way or it
-> is not one — so it spreads to about **75 plf** on a 2x6 wall already carrying half a garage
+> is not one — so it spreads to about **84 plf** on a 2x6 wall already carrying half a garage
 > bay. Trivial, and real. §1a's "never gravity" is about the **strap line**, not about the
 > deck edge; do not read it as absolute.
 

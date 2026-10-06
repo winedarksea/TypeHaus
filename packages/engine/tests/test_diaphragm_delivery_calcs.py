@@ -60,7 +60,9 @@ def test_the_pinned_posts_split_their_drag_half_to_each_end(catlin_ctx) -> None:
 
 
 def test_the_record_reproduces_sections_3_and_4(record) -> None:
-    assert record.status is Status.OK, record.summary
+    assert record.status is Status.INCOMPLETE, record.summary
+    assert any("joint attachment" in missing and "nailing members" in missing
+               for missing in record.missing)
     states = {s.name: s for s in record.limit_states}
     for name, (demand, capacity) in _ROWS.items():
         assert name in states, f"{name} is not on the record"
@@ -134,6 +136,17 @@ def test_an_unresolved_joint_part_is_incomplete_by_name(catlin_ctx) -> None:
     record = _canopy_with(catlin_ctx, joint_refs=("CN-BW-JOINT-1", "CN-NOWHERE-9"))
     assert record.status is Status.INCOMPLETE
     assert any("CN-NOWHERE-9" in text for text in record.missing)
+
+
+def test_joint_attachment_gap_is_explicit_despite_passing_nominal_capacity(catlin_ctx):
+    record = _canopy_with(catlin_ctx, joint_attachment_missing="end nailing not detailed")
+    assert record.status is Status.INCOMPLETE
+    assert any("end nailing not detailed" in missing for missing in record.missing)
+    assert all(state.ok for state in record.limit_states)
+    # A calculation-only variant checks that this flag, rather than another missing
+    # input, caused the incomplete result. It does not clear the authored house's gap.
+    detailed_record = _canopy_with(catlin_ctx, joint_attachment_missing=None)
+    assert detailed_record.status is Status.OK
 
 
 def test_an_unresolved_receiving_roof_is_incomplete_by_name(catlin_ctx) -> None:

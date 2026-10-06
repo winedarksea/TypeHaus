@@ -79,6 +79,10 @@ def test_every_north_entry_item_is_graded(variant) -> None:
     name, ctx, _report = variant
     for item in sorted(EXPECTED[name] - {"rafter/RF-BW-CANOPY"}):
         record = ctx.engineering[item]
+        if item == "lateral_system/RF-BW-CANOPY":
+            assert record.status is Status.INCOMPLETE, f"{name}: the joint attachment is missing"
+            assert any("joint attachment" in missing for missing in record.missing)
+            continue
         assert record.status is Status.OK, f"{name}: {item} is {record.status}: {record.summary}"
 
 

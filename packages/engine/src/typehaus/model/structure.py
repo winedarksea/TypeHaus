@@ -771,6 +771,9 @@ class Connector(Element):
     kind: ConnectorKind
     position: Point2D
     elevation: Length | None = None  # connector center, project-frame absolute
+    #: Flat strap seated on this roof's structural top plane, length parallel to its ridge.
+    #: The roof supplies elevation and pitch; this does not assert that nailing wood exists.
+    roof_mount: str | None = None
     size: str = ""  # product model, e.g. "APVKB", "H2.5A", "LUS28", "ABU66"
     connects: tuple[str, ...] = ()  # member/wall/post tags the hardware joins
     source: str | None = None  # design specification for custom fabricated hardware

@@ -107,6 +107,35 @@ chord force, the couple's path into the garage and the drift limit are `canopy_w
 
 ### 3b. The joint
 
+**Attachment gap identified 2026-10-05 — the delivery is INCOMPLETE.** The numbers below
+are nominal product-capacity comparisons, not a verified installed connection.
+`CN-BW-JOINT-1..7` were authored at the +7'-4" plate datum and the renderer bent every
+LSTA24 lengthwise as a ridge tie. They now mount directly beneath the roof deck, with
+their 24" length running north-south across the joint. At station 6 (x = 26') the
+structural top plane is +9'-8 3/4", not the plate elevation.
+
+There are **no longitudinal nailing members** under these straps. Their centres are at
+y = 43'-2 5/8"; the last canopy truss is at y = 41'-3 1/4", **23 3/8" south** of the
+centre. A 12" strap leg cannot reach that truss. The garage gable truss at
+y = 43'-3 3/8" crosses the strap but supplies only its chord width along the strap's
+length; it does not supply a nine-nail end attachment. The continuous 3/4" sheathing
+is not a substitute for those wood members. The modeled garage chord stock is also
+SPF, whereas the ESR allowable quoted in the catalog assumes SG >= 0.50.
+The current truss-to-truss bay is **24 1/8"**, rather than the older notes' 21 3/8".
+
+Resolve the attachment before crediting the strap line: detail nailing wood on both
+sides, its fastening into the diaphragms/framing, the butt/splice location, and the
+full product nail schedule (18 common 0.148" x 2 1/2" nails total, nine per member for
+the quoted ESR row), with compatible species and end/edge distances. Local strap
+nailers are distinct from the garage diaphragm's general panel-edge blocking in §3d.
+A longer strap alone still needs wood at both ends. No such members or fastening
+have been invented by the visualization correction. `joint_attachment_missing`
+keeps `lateral_system/RF-BW-CANOPY` incomplete while retaining the nominal arithmetic.
+The published LSTA24 rating is **axial tension**, not a transverse shear rating; the
+along-joint comparison below also needs a justified load path. Boundary nailing and
+axial strap action must be distinguished in the completed attachment detail.
+See [Simpson's LSTA installation guide](https://www.strongtie.com/resources/product-installers-guide/lsta-installation).
+
 The E-W load runs ALONG the joint; the N-S load runs ACROSS it (strap tension). `LSTA24` is
 ESR-2105 Table 3's 1,235 lb.
 

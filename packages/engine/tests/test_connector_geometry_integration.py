@@ -70,6 +70,40 @@ def test_opposite_ridge_hangers_have_separate_bodies(catlin_model_ro):
     assert len(joints) > 30
 
 
+def test_canopy_joint_straps_follow_the_roof_and_cross_the_garage_joint(catlin_model_ro):
+    from typehaus.resolve.roof_geometry import roof_height_at
+
+    roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-BW-CANOPY")
+    solids = {s.tag: s for s in catlin_model_ro.solids}
+    for station in range(1, 8):
+        tag = f"CN-BW-JOINT-{station}"
+        element = catlin_model_ro.plan.by_tag(tag)
+        solid = solids[tag]
+        _, y = element.position.xy_m
+        assert element.roof_mount == roof.tag
+        assert element.elevation is None
+        assert solid.z0_m > roof.bearing_z_m
+        assert min(p[1] for p in solid.body_mesh.positions) == pytest.approx(y - 12 * M_PER_IN)
+        assert max(p[1] for p in solid.body_mesh.positions) == pytest.approx(y + 12 * M_PER_IN)
+        # Both ends sit on the plane: no spurious ridge bend along the strap's length.
+        on_plane = [p for p in solid.body_mesh.positions
+                    if abs(p[2] - roof_height_at(roof, p[:2])) < 1e-8]
+        assert len(on_plane) >= 4, tag
+        assert any(p[1] < y for p in on_plane) and any(p[1] > y for p in on_plane), tag
+
+
+def test_canopy_joint_attachment_gap_matches_the_resolved_truss_layout(catlin_model_ro):
+    roofs = {r.tag: r for r in catlin_model_ro.roofs}
+    last_canopy_y = max(m.p0[1] for m in roofs["RF-BW-CANOPY"].members
+                        if m.category == "roof_truss")
+    garage_gable_y = min(m.p0[1] for m in roofs["RF-GARAGE"].members
+                         if m.category == "roof_truss")
+    strap_y = catlin_model_ro.plan.by_tag("CN-BW-JOINT-6").position.xy_m[1]
+    assert strap_y - last_canopy_y == pytest.approx(23.375 * M_PER_IN)
+    assert garage_gable_y - last_canopy_y == pytest.approx(24.125 * M_PER_IN)
+    assert strap_y - 12 * M_PER_IN > last_canopy_y
+
+
 def test_derived_lateral_plates_are_on_the_sill_face(catlin_model_ro):
     index = ConnectorPlacementIndex(catlin_model_ro)
     solids = {solid.uid: solid for solid in _simpson_solids(catlin_model_ro)}

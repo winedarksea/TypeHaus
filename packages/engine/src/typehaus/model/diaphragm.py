@@ -49,6 +49,9 @@ class DiaphragmDelivery(HausModel):
     lines: tuple[ReceivingLine, ...] = ()
     #: The connectors across the joint (straps), by tag — shear along it, tension across it.
     joint_refs: tuple[str, ...] = ()
+    #: An unresolved attachment detail keeps the delivery INCOMPLETE even if nominal
+    #: product capacities pass. Clear only after its nailing members and fastening exist.
+    joint_attachment_missing: str | None = None
     #: The connectors taking the joint's shear from the receiving roof's frame into the wall
     #: under it (gable frame to top plate), by tag.
     plate_clip_refs: tuple[str, ...] = ()

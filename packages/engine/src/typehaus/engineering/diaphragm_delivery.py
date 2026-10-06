@@ -190,6 +190,9 @@ def delivery_rows(ctx: Any, element: Any, resolved_roof: Any, wind: Any,
         is_detailing=True))
     if delivery.differential_movement:
         rows.notes.append(f"DIFFERENTIAL MOVEMENT: {delivery.differential_movement}")
+    if delivery.joint_attachment_missing:
+        rows.missing.append(f"joint attachment for {element.tag}: "
+                            f"{delivery.joint_attachment_missing}")
     rows.notes.append(
         f"THE ENVELOPE: {delivery.roof} and its walls are graded at 100% of the "
         f"deck-level shear ({v_along:,.1f} lb {_direction(along)}, {v_across:,.1f} lb "

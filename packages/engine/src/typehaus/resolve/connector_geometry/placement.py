@@ -9,12 +9,14 @@ from typing import cast
 
 from shapely.geometry import Point, Polygon
 
+from typehaus.hardware.catalog import ROLE_RIDGE_TIE_STRAP
 from typehaus.hardware.plan_geometry import centerline_endpoints
 from typehaus.joints.model import Joint
 from typehaus.model import Connector, Element, KneeBrace
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.connector_geometry.catalog import connector_mesh
 from typehaus.resolve.connector_geometry.mesh import transform_mesh
+from typehaus.resolve.connector_geometry.roof_straps import roof_strap_mesh
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_ir import GMesh, Vec2, Vec3
 from typehaus.resolve.kbs_geometry import kbs_mesh
@@ -215,6 +217,9 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
     if part == "KBS1Z" and solid.uid in index.knee_bands:
         return _knee_body(*index.knee_bands[solid.uid])
     element = index.elements.get(solid.tag)
+    if isinstance(element, Connector) and element.roof_mount is not None:
+        roof = cast(ResolvedRoof, index.hosts[element.roof_mount])
+        return roof_strap_mesh(roof, element.position.xy_m, part)
     references = joint.members if joint is not None else getattr(element, "connects", ())
     point = joint.point if joint is not None else _centroid(solid.outline)
     z_m = joint.z_m if joint is not None else (solid.z0_m + solid.z1_m) / 2
@@ -268,7 +273,7 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
         if beam is not None:
             member_width_m = _width(beam.outline, (-tangent[1], tangent[0]))
             member_depth_m = beam.z1_m - beam.z0_m
-    elif part.startswith("LSTA"):
+    elif part.startswith("LSTA") and joint is not None and joint.role == ROLE_RIDGE_TIE_STRAP:
         slope = _roof_slope(index, references)
     elif part.startswith("THD"):
         beam = _connected_beam(index, references)
