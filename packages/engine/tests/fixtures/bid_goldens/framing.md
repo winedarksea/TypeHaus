@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** aaf7ffeefbf6166d  
-**Lines:** 160
+**Model hash:** b591863d815c2775\
+**Lines:** 167
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -43,6 +43,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 — blocking, joist (2x12:kdat) | 464 | LF ordered | 48 pcs, 421.1 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.9 LF cut | building |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,834 | LF ordered | 656 pcs, 4077.4 LF cut | building |
+| 2x4 Douglas fir Select Structural S4S, eased corners — blocking (2x4:df-select-s4s) | 40 | LF ordered | 20 pcs, 37.6 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | 2,876 | LF ordered | 492 pcs, 2487.9 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 8 | LF ordered | 1 pcs, 6.7 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 7,088 | LF ordered | 1164 pcs, 6132.2 LF cut | building |
@@ -51,10 +52,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | 1,660 | LF ordered | 199 pcs, 1407.7 LF cut | building |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | 28 | LF ordered | 2 pcs, 27.3 LF cut | building |
 | 2x8 — header, joist, landing framing (2x8) | 176 | LF ordered | 34 pcs, 130.8 LF cut | building |
-| 2x8 SPF framing lumber — blocking (2x8:spf) | 606 | LF ordered | 118 pcs, 489.5 LF cut | building |
+| 2x8 SPF framing lumber — blocking (2x8:spf) | 614 | LF ordered | 119 pcs, 496.7 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1134 pcs, 330.8 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
+| 3.5x5.5 Douglas fir Select Structural S4S, eased corners — blocking (3.5x5.5:df-select-s4s) | 24 | LF ordered | 12 pcs, 22.1 LF cut | building |
+| 5.5x15.5 Douglas fir Select Structural S4S, eased corners — blocking (5.5x15.5:df-select-s4s) | 16 | LF ordered | 6 pcs, 11.3 LF cut | building |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | 8 | LF ordered | 1 pcs, 2.1 LF cut | building |
 | hanger — hanger board (hanger) | 24 | LF ordered | 4 pcs, 17.9 LF cut | building |
 
@@ -81,9 +84,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
+| Smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 216 | ea |  | building |
+| Smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | 84 | ea |  | building |
 | Pocket door frame kit, 2x4 wall (commodity, to 36"/125 lb) (153068PF) | 1 | ea |  | building |
 | Pocket door frame kit, 2x6 wall (36"/200 lb) (15603068) | 1 | ea |  | building |
 | Eye & eye thrust-bearing swivel, 3 t (rotates under load) (3-S-5) | 1 | ea |  | main |
+| 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 238 | ea |  | building |
 | A35Z framing angle | 8 | ea |  | building |
 | A35Z framing angle | 4 | ea |  | main |
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
@@ -118,6 +124,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | KBS1Z knee-brace / beam strap (ZMAX) | 2 | ea |  | building |
 | KBS1Z knee-brace stabilizer (ZMAX), one per brace end | 36 | ea |  | main |
 | LS30 skewable angle, gable-end stud to rafter | 22 | ea |  | building |
+| LS30 skewable angle, diaphragm blocking end | 36 | ea |  | building |
 | LSCZ adjustable stair-stringer connector (ZMAX) | 2 | ea |  | building |
 | LSSR field-adjustable slope/skew hanger | 38 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 19 | ea |  | building |
@@ -263,6 +270,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 — blocking, joist (2x12:kdat) | — |
 | 2x2 — blocking, plate, stud (2x2) | — |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | — |
+| 2x4 Douglas fir Select Structural S4S, eased corners — blocking (2x4:df-select-s4s) | — |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | — |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | — |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | — |
@@ -275,6 +283,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | — |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | — |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | — |
+| 3.5x5.5 Douglas fir Select Structural S4S, eased corners — blocking (3.5x5.5:df-select-s4s) | — |
+| 5.5x15.5 Douglas fir Select Structural S4S, eased corners — blocking (5.5x15.5:df-select-s4s) | — |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | — |
 | hanger — hanger board (hanger) | — |
 | Basswood/aspen shiplap sauna liner (5/4), site-milled, 1" ceiling (catlin-sauna-shiplap:ceiling) | — |
@@ -291,9 +301,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 5/8" roof (struct-1-plywood:roof) | — |
 | Structural 1 plywood, 3/4" roof (struct-1-plywood:roof) | — |
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | — |
+| Smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | — |
+| Smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | — |
 | Pocket door frame kit, 2x4 wall (commodity, to 36"/125 lb) (153068PF) | — |
 | Pocket door frame kit, 2x6 wall (36"/200 lb) (15603068) | — |
 | Eye & eye thrust-bearing swivel, 3 t (rotates under load) (3-S-5) | HA-M-HAMMOCK |
+| 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | — |
 | A35Z framing angle | — |
 | A35Z framing angle | SB-BW-BAND |
 | ABU44 standoff post base (4x4) | — |
@@ -328,6 +341,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | KBS1Z knee-brace / beam strap (ZMAX) | — |
 | KBS1Z knee-brace stabilizer (ZMAX), one per brace end | SB-BW-BAND |
 | LS30 skewable angle, gable-end stud to rafter | — |
+| LS30 skewable angle, diaphragm blocking end | — |
 | LSCZ adjustable stair-stringer connector (ZMAX) | — |
 | LSSR field-adjustable slope/skew hanger | — |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | — |

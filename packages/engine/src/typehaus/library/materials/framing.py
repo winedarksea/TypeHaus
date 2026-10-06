@@ -117,10 +117,12 @@ MATERIALS: tuple[Material, ...] = (
         name="Douglas fir Select Structural S4S, eased corners",
         r_per_inch=1.00,
         density=530.0,
+        specific_gravity=0.50,
         perm_rating=2.9,
         hatch="lumber",
         color="#d9b077",
         finish="clear-satin-hardwax-oil",
-        source="Douglas-fir lumber thermal/permeance reference values.",
+        source="Douglas-fir lumber thermal/permeance reference values; NDS 2018 "
+               "Table 12.3.3A Douglas Fir-Larch specific gravity 0.50.",
     ),
 )

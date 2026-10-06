@@ -67,7 +67,8 @@ def test_flat_caps_close_the_clear_stud_bays_and_bill_matching_wood(catlin_model
             assert min(abs(math.dist(endpoint, stud.p0) - inch(0.75).meters)
                        for stud in studs) < 1e-9
     rows = [row for row in framing_takeoff(catlin_model_ro)
-            if row["category"] == "blocking" and row["material"] == "df-select-s4s"]
+            if row["category"] == "blocking" and row["material"] == "df-select-s4s"
+            and row["profile"] == "2x6"]
     assert len(rows) == 1
     assert rows[0]["profile"] == "2x6"
     assert rows[0]["pieces"] == len(blocks)

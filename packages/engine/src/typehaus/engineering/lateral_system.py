@@ -65,7 +65,9 @@ BASIS = ("AWC SDPWS-2015 §4.2 (diaphragms, §4.2.5.2 open front) and §4.3 (she
 #: 2: a declared ``delivers_to`` is graded (joint, receiver, receiving lines) and every panel
 #: is taken at the 100% envelope where a deck delivers — 2026-09-29.
 #: 3: collector plates require modeled blocking and both wood attachment faces — 2026-10-05.
-BASIS_VERSION = "3"
+#: 4: joint nailers require deck contact and nail margins; straps use installed axial
+#: ratings, while continuous decking carries transverse shear — 2026-10-06.
+BASIS_VERSION = "4"
 
 oracled_by(
     KIND,

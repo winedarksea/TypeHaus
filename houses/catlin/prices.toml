@@ -725,6 +725,17 @@
 # fallback and add a second place to keep in step.
 
 [hardware]
+# Added diaphragm framing, 2026-10-06: material-only per-nail budget bands. Driving labour
+# stays in framing. Retail package benchmarks (confirm quantities with the supplier):
+# LS30 nails: N10D5HDG-R, Lowe's $25.21/600 (~$0.042 each),
+# https://www.lowes.com/pd/1002966160
+# Deck nails: 8d common, True Value $23.99/505 (~$0.048 each),
+# https://www.truevalue.com/product/714383/do-it-8d-x-2-1-2-in-10-1-2-ga-hot-galvanized-common-nails-505-count-5-lb-714383/
+# Strap nails: N10DHDGPT500, Home Depot $38.98/500 (~$0.078 each),
+# https://www.homedepot.com/b/Hardware-Fasteners-Collated-Fasteners-Collated-Framing-Nails/Simpson-Strong-Tie/2-1-2-in/Smooth-Shank/N-5yc1vZc2chZ615Z1z1a7t7Z1z1abv1
+"0.148x1.5 connector nail" = { low = 0.04, high = 0.06 }
+"8d common 0.131x2.5" = { low = 0.04, high = 0.06 }
+"10d short common 0.148x2.5" = { low = 0.07, high = 0.10 }
 # Schematic installed allowances, not supplier quotations. Replace with the engineered
 # fabrication bid; includes anchors/flashing/shims, and may exceed the removed pier cost.
 # RESEARCHED 2026-08-08 — [low, high] $ each, material only. Basis: single-piece and

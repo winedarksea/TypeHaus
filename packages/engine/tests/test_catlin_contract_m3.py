@@ -180,20 +180,18 @@ def test_catlin_fixtures_do_not_overlap_and_required_clearances_hold(catlin_chec
     assert not findings, [f.message for f in findings]
 
 
-def test_catlin_permit_checklist_blocks_on_the_missing_strap_attachment(catlin_check_report):
+def test_catlin_permit_checklist_opens_with_the_completed_canopy_attachments(catlin_check_report):
     from typehaus.checks import evaluate_permit_checklist
 
     checklist = evaluate_permit_checklist(catlin_check_report(), "mn-2020")
-    # The canopy's nominal strap capacity does not establish an installed load path.
-    # Pin this specific UNKNOWN and retain the requirement that every other gate resolves.
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}
-    blocked = [item for item in gating if item.result not in resolved]
-    assert [item.label for item in blocked] == ["Roof diaphragm and shear panel load path"]
-    assert blocked[0].result is Result.UNKNOWN
-    assert "lateral_system/RF-BW-CANOPY" in blocked[0].engineering_items
-    assert "nailing members" in blocked[0].detail
-    assert not checklist.ok
+    assert all(item.result in resolved for item in gating)
+    assert checklist.ok
+    diaphragm = next(item for item in gating
+                     if item.label == "Roof diaphragm and shear panel load path")
+    assert diaphragm.result is Result.PASS
+    assert "lateral_system/RF-BW-CANOPY" in diaphragm.engineering_items
     frost = [item for item in gating if item.label == "Foundation frost depth"]
     assert len(frost) == 1, [item.label for item in gating]
     assert frost[0].result is Result.PASS

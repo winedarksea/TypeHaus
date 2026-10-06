@@ -87,8 +87,8 @@ def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> N
     read nowhere, so the page a reviewer opens first was silent on the one fact that says
     whether this review unblocks anything.
 
-    The canopy's missing garage-joint and eave-blocking attachments close the draft gate.
-    The handoff must identify them alongside the nominal product-capacity comparisons.
+    Completed canopy attachments open the draft gate; the handoff must say so while
+    preserving the independent requirement for professional seals.
     """
     from typehaus.takeoff.handoff import pe_readme
 
@@ -97,10 +97,8 @@ def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> N
                        content_hash="abc", records=[ctx.engineering[i] for i in item_ids],
                        notes=[], checklist=checklist, has_pdf=False)
     assert "## Where the permit gate stands" in readme
-    assert "The draft gate is SHUT" in readme
-    assert "Roof diaphragm and shear panel load path" in readme
-    assert "CN-BW-JOINT-1..7" in readme
-    assert "CN-BW-EAVE-4: eave blocking" in readme
+    assert "The draft gate is OPEN" in readme
+    assert "CN-BW-EAVE-4: eave blocking" not in readme
     assert "PR-M-S-BATH1-WC-DRAIN" not in readme
     assert "FS-S-WEST" not in readme
 

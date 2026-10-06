@@ -290,8 +290,8 @@ def test_the_kdat_canopy_delivers_both_axes_to_the_garage(catlin_ctx) -> None:
     record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
     states = _states(record)
     inputs = _inputs(record)
-    assert record.status is Status.INCOMPLETE, record.summary
-    assert any("joint attachment" in missing for missing in record.missing)
+    assert record.status is Status.OK, record.summary
+    assert not record.missing
     assert inputs["delivered_shear_x"] == pytest.approx(694.6, abs=0.2)
     assert inputs["delivered_shear_y"] == pytest.approx(1045.1, abs=0.2)
     assert states["open front, L'"].ratio == pytest.approx(0.24)
@@ -327,15 +327,15 @@ def test_the_kdat_collectors_and_open_front_chord_are_drawn(catlin_ctx) -> None:
     assert _inputs(record)["chord_force_open_front_lb"] == pytest.approx(87.3, abs=0.2)
     assert states["BM-BW-RW chord tension, open front"].ok
     assert states["BM-BW-RE chord tension, open front"].ok
-    assert states["LSTA24 end straps, chord force + along share"].ok
+    assert states["LSTA24 end straps, chord force + across share"].ok
 
 
 def test_cast_variant_keeps_its_column_collectors_and_delivers_to_garage(
         catlin_cast_ctx) -> None:
     record = catlin_cast_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
     states = _states(record)
-    assert record.status is Status.INCOMPLETE, record.summary
-    assert any("joint attachment" in missing for missing in record.missing)
+    assert record.status is Status.OK, record.summary
+    assert not record.missing
     assert "PT-BW-RE collector end connection, N-S" in states
     assert "PT-BW-RNE collector end connection, N-S" in states
     assert states["W-G-S delivered shear on the surplus"].ok

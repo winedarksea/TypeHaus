@@ -12,6 +12,8 @@ from typehaus import (
     AlarmKind,
     DiaphragmDelivery,
     DiaphragmSpec,
+    CollectorBlocking,
+    JointNailing,
     Door,
     DischargeExtension,
     Downspout,
@@ -580,7 +582,7 @@ ROOFS = [
          # AN-BW-ROOF has to carry the blocking and the chord splice onto the drawings.
          diaphragm=DiaphragmSpec(
              sheathing_layer="deck",
-             fastening='8d common (0.131" x 2 1/2") at 6" o.c. at the boundary and at every panel edge, 12" o.c. in the field; panel edges BLOCKED with 2x4 flat blocking between the trusses',
+             fastening='8d common (0.131" x 2 1/2") at 6" o.c. at the boundary and at every panel edge, 12" o.c. in the field; panel edges BLOCKED with bevelled 2x4 on-edge blocking between the trusses',
              # The row is quoted for 15/32" and this deck is 3/4": thicker sheathing at the
              # same schedule is not weaker. G_a is taken at the SOFT end of the band on
              # purpose — a softer deck is the one more likely to read FLEXIBLE, which hands
@@ -599,6 +601,23 @@ ROOFS = [
              chord_member="2x4", chord_plies=1,
              chord_splice_slip=inch(0.03),
              collector_refs=("BM-BW-RW", "BM-BW-RE"),
+             collector_blocking=(
+                 CollectorBlocking(
+                     collector="BM-BW-RW",
+                     stock="5.5x15.5",
+                     material="df-select-s4s",
+                     fastening="6x16 DF-L solid blocking, bevel top to deck, seat on header, east face flush to LTP4. One LS30 at each truss end, six 0.148x1.5in nails per angle, three per leg; fully nailed deck restrains rotation. Each LTP4: 12 0.131x1.5in nails, six into block and six into glulam, direct to wood. Deck: 8d common at 6in boundary spacing.",
+                 ),
+                 CollectorBlocking(
+                     collector="BM-BW-RE",
+                     stock="5.5x15.5",
+                     material="df-select-s4s",
+                     fastening="6x16 DF-L solid blocking, bevel top to deck, seat on header. One LS30 at each truss end, six 0.148x1.5in nails per angle, three per leg; fully nailed deck restrains rotation. Deck: 8d common at 6in boundary spacing; east header remains the diaphragm chord.",
+                 ),
+             ),
+             # 45in horizontal = 47.434in on the 4:12 slope, within a standard 48in sheet.
+             # Set out from the ridge; cut panels to fit with 1/8in gaps.
+             panel_edge_blocking="2x4", panel_width=ft(3, 9),
              # ** THE CANOPY BRACES OFF THE GARAGE (owner, 2026-09-29, option A). ** The east
              # posts are pinned in two of the three EAST_POST_SYSTEM variants, so the deck
              # hands its shear across the joint: E-W to W-G-S through RF-GARAGE's gable
@@ -612,7 +631,16 @@ ROOFS = [
                      ReceivingLine(wall="W-G-W", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panel sheathing, 15/32in with 8d at 6in edges (the 5/8in CDX quoted conservatively), v_w 365 plf nominal / 2.0"),
                  ),
                  joint_refs=("CN-BW-JOINT-1", "CN-BW-JOINT-2", "CN-BW-JOINT-3", "CN-BW-JOINT-4", "CN-BW-JOINT-5", "CN-BW-JOINT-6", "CN-BW-JOINT-7"),
-                 joint_attachment_missing="CN-BW-JOINT-1..7 have no longitudinal nailing members beneath their 24in straps. The last canopy truss is 23-3/8in south of the strap centre, beyond the 12in leg. Detail wood attachment on BOTH sides with the full nail schedule and its connection to the diaphragms; see canopy_garage_diaphragm.md §3b",
+                 joint_nailing=JointNailing(
+                     stock="3.5x5.5",
+                     material="df-select-s4s",
+                     continuous_deck=True,
+                     strap_nails_each_end=6,
+                     rated_strap_nails_each_end=9,
+                     nail_group_inset=inch(4.5),
+                     fastening="4x6 DF-L longitudinal nailers, bevelled to the deck, between existing truss faces on each side of the garage gable. End stations use the canopy collector blocks on the south side. One LS30 at each nailer end with six 0.148x1.5in nails, three per leg, side grain; fully nailed deck restrains rotation. LSTA24 direct to wood BEFORE deck: six outermost 0.148x2.5in nails per leg, 12 total; omit the middle six holes, >=2-3/8in wood end distance and >=3/4in edge distance. Deck to each nailer: two rows 8d common at 3in o.c., 3/8in panel edge distance, stagger rows. Keep deck panels continuous across the garage gable; no sheathing break at this line, 8d at 6in into gable top chord. Dry-service connections protected by roof membrane.",
+                     source="canopy_garage_diaphragm.md §3b: Simpson C-C-2026 pp.288,291 (LSTA24), p.313 (LS30 six 0.148x1.5in nails); LSTA24 1235lb x 12/18 = 823.3lb installed; AWC SDPWS-2015 Table 4.2A, 190plf boundary row for local deck-to-nailer anchorage",
+                 ),
                  plate_clip_refs=("CN-BW-GCLIP-1", "CN-BW-GCLIP-2", "CN-BW-GCLIP-3", "CN-BW-GCLIP-4", "CN-BW-GCLIP-5", "CN-BW-GCLIP-6", "CN-BW-GCLIP-7"),
                  open_front=True,
                  differential_movement="the canopy's north line (PT-BW-RNE, PT-BW-GW) bears on the garage's own -7ft 0in plane and its south line on the house-side -9ft 9-7/16in plane; the headers are simple spans between them, so a differential rotates each as a rigid body. Tolerance 3/16in (L/360 of the 5.72ft header), what the H2.5ASS ties and the LSTA24 strap line take without distress. The soil is presumed; a soils report predicting more reopens canopy_garage_diaphragm.md §8",

@@ -8,8 +8,11 @@ drainage — and from the S-103 bill of materials, which carries every last pane
 
 from __future__ import annotations
 
+from collections import defaultdict
+
 from typehaus.emit.draw._shared import emit_wall
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.diaphragm_notes import diaphragm_framing_notes
 from typehaus.emit.draw.lineweights import CUT, FAINT, PROFILE
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.draw.schedule_block import (
@@ -28,6 +31,11 @@ from typehaus.emit.draw.structural_common import (
 )
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction, StructuralRole
+from typehaus.resolve.framing.roof_diaphragm import (
+    DIAPHRAGM_BLOCK_CONNECTION,
+    JOINT_NAILER_CONNECTION,
+    PANEL_EDGE_BLOCK_CONNECTION,
+)
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof
 from typehaus.wind import wind_basis
@@ -55,6 +63,11 @@ _BEARING_LABEL_HEIGHT_IN = 2.0
 _BEARING_LABEL_OFFSET_M = 0.1
 # A gable's run is half its footprint across the ridge; a shed's run is the whole width.
 _GABLE_FORMS = frozenset({"gable", "hip"})
+_BLOCKING_TITLES = {
+    DIAPHRAGM_BLOCK_CONNECTION: "COLLECTOR BLOCK",
+    JOINT_NAILER_CONNECTION: "JOINT NAILER",
+    PANEL_EDGE_BLOCK_CONNECTION: "PANEL EDGE BLOCK",
+}
 
 
 def build_roof_framing_plan(model: ResolvedModel, roof_tag: str) -> Scene:
@@ -152,10 +165,17 @@ def build_roof_framing_schedule(model: ResolvedModel, roof: ResolvedRoof) -> Sch
         members = [member for member in roof.members if member.category == category]
         if not members:
             continue
-        repeats = category != _RIDGE_CATEGORY
-        rows.append((f"{prefix}1", title, members[0].profile, spacing if repeats else "—",
-                     str(len(members)),
-                     feet_inches(max(member.length_m for member in members))))
+        groups = defaultdict(list)
+        for member in members:
+            label = (_BLOCKING_TITLES.get(member.connection, title)
+                     if category == "blocking" else title)
+            groups[(label, member.profile)].append(member)
+        for number, ((label, profile), group) in enumerate(sorted(groups.items()), 1):
+            member_spacing = "—" if category == _RIDGE_CATEGORY else spacing
+            if label in _BLOCKING_TITLES.values():
+                member_spacing = "PER PLAN"
+            rows.append((f"{prefix}{number}", label, profile, member_spacing,
+                         str(len(group)), feet_inches(max(member.length_m for member in group))))
     return ScheduleTable(title=f"{roof.tag} MEMBER SCHEDULE",
                          columns=("MARK", "MEMBER", "SIZE", "SPACING", "QTY", "MAX LENGTH"),
                          rows=tuple(rows))
@@ -181,6 +201,7 @@ def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof) -> list[str]:
     wind = _wind_load_note(model)
     if wind:
         notes.append(wind)
+    notes.extend(diaphragm_framing_notes(model, roof))
     notes.append("MEMBER SIZES ARE THE AUTHORED / SOLVER-GENERATED FRAMING AND ARE NOT AN "
                  "ENGINEERED DESIGN; TRUSSES ARE BY THE SUPPLIER'S SEALED DRAWINGS.")
     return notes

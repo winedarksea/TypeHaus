@@ -38,6 +38,9 @@ ROLE_PARTITION_DEFLECTION_SCREW = "partition_deflection_screw"
 # for a joint whose governing load is lateral. The gable end is the classic wind failure in
 # a house that has everything else tied, which is exactly why it gets its own leg.
 ROLE_GABLE_END_TIE = "gable_end_tie"
+# A roof block's end angle is a different joint from a gable-wall tie, even where
+# both use LS30. Keep their located populations and ordering counts independent.
+ROLE_DIAPHRAGM_BLOCKING_END_TIE = "diaphragm_blocking_end_tie"
 # A trussed gable end instead: the gable-end truss is designed for its own out-of-plane load,
 # so the joint only holds the truss down on the plate. Its own role so the stud tie is not it.
 ROLE_GABLE_TRUSS_ANCHOR = "gable_truss_anchor"

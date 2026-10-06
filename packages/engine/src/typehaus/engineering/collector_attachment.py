@@ -6,6 +6,7 @@ from collections.abc import Sequence
 
 from shapely.geometry import Point, Polygon
 
+from typehaus.engineering.blocking_geometry import top_at
 from typehaus.model import Connector
 from typehaus.resolve.geometry_members import member_box
 from typehaus.resolve.model import ResolvedModel
@@ -47,20 +48,20 @@ def collector_attachment_missing(model: ResolvedModel, roof_tag: str, collector_
         supported = False
         for block in blocks:
             # Cut/swept blocking needs its real face geometry, not a bounding-box claim.
-            if block.section_ring is not None or block.elevation_profile is not None:
+            if block.elevation_profile is not None:
                 continue
             body = member_box(block)
             if body is None or not upper_points or not lower_points:
                 continue
             outline = Polygon([point[:2] for point in body.corners_bottom])
             bases = [point[2] for point in body.corners_bottom]
-            tops = [point[2] for point in body.corners_top]
+            tops = [top_at(block, point[:2]) for point in upper_points]
             if (max(abs(z - collector.z1_m) for z in bases) <= tolerance
                     and all(outline.boundary.distance(Point(p[:2])) <= tolerance
                             for p in upper_points)
-                    and min(tops) >= max(p[2] for p in upper_points) - tolerance
-                    and min(tops) >= max(roof_height_at(roof, p[:2])
-                                         for p in upper_points) - tolerance):
+                    and all(top is not None and top >= point[2] - tolerance
+                            and top >= roof_height_at(roof, point[:2]) - tolerance
+                            for top, point in zip(tops, upper_points, strict=True))):
                 supported = True
                 break
         if not supported:

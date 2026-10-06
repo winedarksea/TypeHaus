@@ -15,6 +15,7 @@ from typehaus.hardware.config import (
 )
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.anchors import anchorage_rows
+from typehaus.takeoff.diaphragm_attachments import diaphragm_attachment_rows
 from typehaus.takeoff.doors import door_hardware_rows
 from typehaus.takeoff.fasteners import (
     exposed_fastener_cladding_screw_rows,
@@ -47,6 +48,7 @@ def hardware_takeoff(model: ResolvedModel,
         *anchorage_rows(model, config),
         *strap_brace_rows(model, config.wall_ties),
         *slat_brace_rows(model),
+        *diaphragm_attachment_rows(model),
         *glazing_fastener_rows(model),
         *door_hardware_rows(model),
         *suspension_anchor_rows(model),

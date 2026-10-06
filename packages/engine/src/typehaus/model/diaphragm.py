@@ -7,7 +7,10 @@ reader still imports them from the one place the sibling published-read types ar
 
 from __future__ import annotations
 
+from pydantic import field_validator
+
 from typehaus.model.base import HausModel
+from typehaus.model.diaphragm_attachment import CollectorBlocking, JointNailing
 from typehaus.quantities import Length
 
 
@@ -47,8 +50,9 @@ class DiaphragmDelivery(HausModel):
     roof: str
     #: The receiving walls. The axis each resists is its own direction, derived.
     lines: tuple[ReceivingLine, ...] = ()
-    #: The connectors across the joint (straps), by tag — shear along it, tension across it.
+    #: Axial straps across the joint. Along-joint shear uses continuous deck boundary nailing.
     joint_refs: tuple[str, ...] = ()
+    joint_nailing: JointNailing | None = None
     #: An unresolved attachment detail keeps the delivery INCOMPLETE even if nominal
     #: product capacities pass. Clear only after its nailing members and fastening exist.
     joint_attachment_missing: str | None = None
@@ -110,8 +114,20 @@ class DiaphragmSpec(HausModel):
     #: resolve: a collector is a real member with a real connection at each end, and naming
     #: one that is not in the model is the failure this whole type exists to prevent.
     collector_refs: tuple[str, ...] = ()
+    collector_blocking: tuple[CollectorBlocking, ...] = ()
+    #: Panel-edge blocks under the deck. Width is the horizontal module from the ridge;
+    #: its pitched length must fit the physical sheet width.
+    panel_edge_blocking: str | None = None
+    panel_width: Length | None = None
     #: Σ(Δ_c x) / (2W) — the chord-splice slip term of SDPWS 4.2.2, inches. Zero where the
     #: chord is continuous over the span and has no splice to slip.
     chord_splice_slip: Length | None = None
     #: The neighbouring structure this deck hands its shear to, or ``None``.
     delivers_to: DiaphragmDelivery | None = None
+
+    @field_validator("panel_width")
+    @classmethod
+    def positive_panel_width(cls, value: Length | None) -> Length | None:
+        if value is not None and value.meters <= 0:
+            raise ValueError("panel width must be positive")
+        return value

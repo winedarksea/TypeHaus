@@ -113,9 +113,8 @@ LSTA24_RIDGE_STRAP = StructuralHardware(
                   "carries neither the one-third stress increase nor C_D, so the C_D 1.6 "
                   "recorded here is the table's column heading and not an increase applied "
                   "to this row. Footnote 4's connection strength (18 nails x the NDS yield "
-                  "mode value) is higher, which is why the steel governs — and is why a "
-                  "demand ALONG the joint rather than across it is no weaker: NDS dowel "
-                  "bearing is independent of the angle to grain for a fastener under 1/4 in"),
+                  "mode value) is higher, which is why the steel governs. This is an "
+                  "AXIAL tension rating; it does not rate transverse shear of the strap"),
     ),
 )
 

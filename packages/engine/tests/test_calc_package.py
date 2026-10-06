@@ -411,14 +411,11 @@ def test_print_sealed_exits_one_while_nothing_is_sealed(catlin_engineering):
 
     from typehaus.cli.app import app
 
-    # ** AND IT CLOSED AGAIN ON 2026-09-20, for five named engineering lines (see the test
-    # below), so the refusal here is the DRAFT gate's — correct ordering. The second gate's
-    # own refusal is pinned at the checklist level below until catlin reaches draft again;
-    # re-tighten this to "sealed print blocked" the day it does.
+    # Complete attachments open the draft gate; the absent seals still close this one.
     runner = CliRunner()
     sealed = runner.invoke(app, ["print", str(CATLIN), "--sealed", "--fmt", "dxf"])
     assert sealed.exit_code == 1, sealed.output
-    assert "print blocked" in sealed.output
+    assert "sealed print blocked" in sealed.output
 
     # The shared fixture's checklist, not a second full run of the house — see
     # `test_catlin_fixture_discipline`, which lints exactly that.
@@ -427,21 +424,15 @@ def test_print_sealed_exits_one_while_nothing_is_sealed(catlin_engineering):
     assert checklist.unsealed
 
 
-def test_the_two_gates_stay_shut_for_the_missing_strap_attachment(catlin_engineering):
-    """The draft gate requires a complete attachment; sealed also requires the register.
-
-    The draft gate reopened in September but closes on 2026-10-05 for the garage-joint
-    straps' missing nailing members. Pin the one named blocker so another cannot slip in.
-    """
+def test_draft_gate_opens_but_sealed_gate_still_requires_the_register(catlin_engineering):
+    """Framing and fastening complete the draft; professional seals remain independent."""
     _ctx, _items, checklist = catlin_engineering
     blocked = [item.label for item in checklist.items
                if item.blocking and item.result not in (Result.PASS,
                                                         Result.NOT_APPLICABLE)]
-    assert blocked == ["Roof diaphragm and shear panel load path"], blocked
-    assert not checklist.ok
+    assert blocked == [], blocked
+    assert checklist.ok
     assert not checklist.sealed
-    assert checklist.unsealed
-    # The absent register independently leaves other engineered items unsealed.
     assert len(checklist.unsealed) > 1
 
 

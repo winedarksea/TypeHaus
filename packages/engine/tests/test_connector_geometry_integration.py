@@ -52,10 +52,15 @@ def test_hanger_seats_use_carried_member_ends_and_face_into_them(catlin_model_ro
         assert joint.seat_z_m == pytest.approx(expected_seat)
         solid = solids[marker_uid(joint.key)]
         outward = joint.outward_xy
+        tangent = (0.0, 1.0) if joint.axis == "y" else (1.0, 0.0)
+        support_face_offset = index.support_width(joint.members[0], tangent) / 2
         local = [(sum((p[i] - joint.point[i]) * outward[i] for i in range(2)),
                   p[2] - joint.seat_z_m) for p in solid.body_mesh.positions]
         assert max(y for y, _ in local) > M_PER_IN, solid.tag
-        assert any(y > 0 and abs(z - y * math.tan(joint.slope_radians)) < 1e-8
+        # The seat starts at the support face; joint.point lies on its centreline.
+        assert any(y > support_face_offset
+                   and abs(z - (y - support_face_offset)
+                           * math.tan(joint.slope_radians)) < 1e-8
                    for y, z in local), solid.tag
         tested.append(outward)
     assert len(tested) > 50
@@ -92,7 +97,7 @@ def test_canopy_joint_straps_follow_the_roof_and_cross_the_garage_joint(catlin_m
         assert any(p[1] < y for p in on_plane) and any(p[1] > y for p in on_plane), tag
 
 
-def test_canopy_joint_attachment_gap_matches_the_resolved_truss_layout(catlin_model_ro):
+def test_canopy_joint_nailers_fill_the_resolved_truss_gap(catlin_model_ro):
     roofs = {r.tag: r for r in catlin_model_ro.roofs}
     last_canopy_y = max(m.p0[1] for m in roofs["RF-BW-CANOPY"].members
                         if m.category == "roof_truss")
@@ -102,14 +107,25 @@ def test_canopy_joint_attachment_gap_matches_the_resolved_truss_layout(catlin_mo
     assert strap_y - last_canopy_y == pytest.approx(23.375 * M_PER_IN)
     assert garage_gable_y - last_canopy_y == pytest.approx(24.125 * M_PER_IN)
     assert strap_y - 12 * M_PER_IN > last_canopy_y
+    nailers = [m for m in roofs["RF-BW-CANOPY"].members
+               if m.child_key == "joint-nailer-CN-BW-JOINT-6-south"]
+    assert len(nailers) == 1
+    assert nailers[0].p0[1] == pytest.approx(last_canopy_y + 0.75 * M_PER_IN)
+    assert nailers[0].p1[1] == pytest.approx(strap_y)
 
 
-def test_canopy_eave_plates_seat_on_header_but_have_no_upper_blocking(catlin_model_ro):
+def test_canopy_eave_plates_share_header_and_blocking_attachment_faces(catlin_model_ro):
     from shapely.geometry import Point, Polygon
 
     roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-BW-CANOPY")
     header = next(s for s in catlin_model_ro.solids if s.tag == "BM-BW-RW")
-    assert not any(m.category == "blocking" for m in roof.members)
+    from typehaus.engineering.collector_attachment import collector_attachment_missing
+
+    clips = [catlin_model_ro.plan.by_tag(f"CN-BW-EAVE-{i}") for i in range(1, 7)]
+    assert not collector_attachment_missing(catlin_model_ro, roof.tag, header.tag, clips)
+    blocks = [m for m in roof.members if "collector-block-BM-BW-RW" in m.child_key]
+    assert len(blocks) == 3
+    assert all(m.section_ring is not None for m in blocks)
     face = Polygon(header.outline).boundary
     solids = {s.tag: s for s in catlin_model_ro.solids}
     for station in range(1, 7):

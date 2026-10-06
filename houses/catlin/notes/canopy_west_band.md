@@ -171,25 +171,29 @@ Fc-perp, Table 4D SP No. 2 timbers 375 x wet C_M 0.67 = 251.25 psi      0.396
 blocking; an H2.5ASS carries ~110 lb of lateral, so three heel ties are nowhere near it. Six
 LTP4, two per bay, blocking to glulam top, C-C-2019 p. 280 SPF/HF (the lower direction):
 
-**Attachment gap identified 2026-10-05 — this collector is INCOMPLETE.** The six
-`CN-BW-EAVE-1..6` plates have their lower halves flush with `BM-BW-RW`'s east face,
-straddling its +7'-4" top. Their upper halves extend to +7'-6 1/8" into open air.
-The roof's structural top at the header centreline is +8'-4 3/4", **12 3/4" above
-the header**, so these plates cannot attach directly to the roof deck or top chords.
-They are intended to join the header to blocking above it, as in
-[Simpson's LTP4 installation](https://www.strongtie.com/resources/product-installers-guide/ltp4-ltp5-installation).
+**Attachment completed 2026-10-06.** Each eave now has three solid DF-L Select Structural
+blocks cut from **6x16 stock** (5.5in x 15.5in dressed). They seat directly on their header,
+run between truss faces, and have a bevelled top touching the roof deck. The west blocks'
+east faces align with the glulam's east face and with every LTP4 upper nailing half.
+The roof plane is 12.75in above the header at its centre and 13-2/3in at its east edge;
+the 15.5in blank accommodates that bevel. The last block runs to the garage gable's
+south face; local strap nailers at x=6ft and 30ft use these blocks rather than overlapping
+new lumber. The recipe is `RF-BW-CANOPY.diaphragm` in `plan/storeys/garage.py` and follows the final framing.
 
-No such blocking is modeled: `RF-BW-CANOPY.eave_blocking` is unset and its resolved
-members contain no blocking. The existing `Roof.eave_blocking` framing path is for
-plumb-cut rafters; the truss branch does not derive it. Merely drawing or counting
-the six plates does not provide a wood attachment or the boundary-nailing substrate.
-The comparison below is therefore **nominal product capacity only**.
+**Fastening.** Each LTP4 receives **12 0.131in x 1.5in nails**, six into the block and six
+into the glulam, directly to wood; no intervening sheathing and no reduction for it.
+One LS30 at each block end, six 0.148in x 1.5in nails per angle (three per leg), attaches
+side-grain faces to the adjacent truss. Its 3-3/8in height fits a 2x4 top chord; the fully
+nailed deck restrains rotation (C-C-2026 p.313). Do not load before that deck nailing is
+complete. The deck gets 8d common at 6in boundary
+spacing. The canopy's intermediate panel edges are backed by bevelled 2x4 on-edge blocks;
+the ridge edge in the joint bay reuses its larger longitudinal nailer. The 3ft 9in
+horizontal sheet grid and the remaining blocks are detailed in diaphragm note §3b.
 
-Resolve the raised-heel blocking members, their bearing and flush nailing face at the
-header, the roof-deck boundary nailing, and the plate fasteners into both members.
-The collector check now names every plate whose upper attachment lacks modeled
-blocking seated on the header and reaching the deck. This geometry prerequisite
-does not itself verify nail count, edge distances or blocking anchorage.
+The collector prerequisite reads the actual bevel at each plate, not its bounding-box top.
+All six plates now have both wood faces. End angles, nails and cut stock appear in takeoff.
+See [Simpson's LTP4 installation](https://www.strongtie.com/resources/product-installers-guide/ltp4-ltp5-installation)
+and C-C-2026 pp.309-310 for direct-to-wood fastening.
 
 ```
 1,045.06 / 6 = 174.2 lb vs 450      0.387
@@ -392,7 +396,7 @@ at 16.8315 psf = 646.97 lb, plus 2 x 23.83 = **694.62 lb**. Its resultant (the d
 M = 694.62 x 3.0153 = 2,094.5 lb-ft
 chord force  M / W' = 2,094.5 / 24.000 = 87.3 lb in each header
   glulam, Table 5A 24F-V4 Ft 1,100 x wet 0.80 x C_D 1.6 = 1,408 psi; 87.3 / 65.3 in2 = 1.34 psi   0.001
-  end strap (LSTA24): 87.3 + 694.62 / 7 = 186.5 lb vs 1,235                                0.151
+  end strap (LSTA24): 87.3 + 1,045.1 / 7 = 236.6 lb vs 823.33 (12/18 nails)                 0.287
 the couple into RF-GARAGE: M / 24.000' = 87.3 lb on each of W-G-W and W-G-E, E-W case
   W-G-W  87.3 / 17.392' = 5.02 plf vs 182.5  0.027      W-G-E  87.3 / 19.725' = 4.43 plf  0.024
 ```

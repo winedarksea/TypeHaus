@@ -24,9 +24,8 @@ _ROWS = {
     "open front, L'": (6.000, 25.0),
     "open front, L'/W'": (0.2250, 1.0),
     "joint boundary nailing, along": (28.94, 190.0),
-    "LSTA24 joint straps, along": (99.23, 1235.0),
-    "LSTA24 joint straps, across": (149.29, 1235.0),
-    "LSTA24 joint straps, rotation couple": (56.10, 1235.0),
+    "LSTA24 joint straps, across": (149.29, 823.3333333333334),
+    "LSTA24 joint straps, rotation couple": (56.10, 823.3333333333334),
     "LTP4 plate clips, frame into wall": (99.23, 450.0),
     "RF-GARAGE unit-shear increment": (22.76, 167.5),
     "W-G-S delivered shear on the surplus": (43.03, 182.5),
@@ -60,9 +59,8 @@ def test_the_pinned_posts_split_their_drag_half_to_each_end(catlin_ctx) -> None:
 
 
 def test_the_record_reproduces_sections_3_and_4(record) -> None:
-    assert record.status is Status.INCOMPLETE, record.summary
-    assert any("joint attachment" in missing and "nailing members" in missing
-               for missing in record.missing)
+    assert record.status is Status.OK, record.summary
+    assert not record.missing
     states = {s.name: s for s in record.limit_states}
     for name, (demand, capacity) in _ROWS.items():
         assert name in states, f"{name} is not on the record"
@@ -143,12 +141,20 @@ def test_joint_attachment_gap_is_explicit_despite_passing_nominal_capacity(catli
     assert record.status is Status.INCOMPLETE
     assert any("end nailing not detailed" in missing for missing in record.missing)
     assert all(state.ok for state in record.limit_states)
-    # Clearing the joint flag removes that reason, but cannot resolve the independent
-    # missing eave blocking at the west collector.
+    # The resolved framing now completes both independently checked attachments.
     detailed_record = _canopy_with(catlin_ctx, joint_attachment_missing=None)
     assert not any("joint attachment" in text for text in detailed_record.missing)
-    assert detailed_record.status is Status.INCOMPLETE
-    assert any("CN-BW-EAVE-4: eave blocking" in text for text in detailed_record.missing)
+    assert detailed_record.status is Status.OK
+    assert not detailed_record.missing
+
+
+def test_an_axial_strap_rating_cannot_replace_continuous_deck_shear(catlin_ctx):
+    delivery = catlin_ctx.plan.by_tag("RF-BW-CANOPY").diaphragm.delivers_to
+    recipe = delivery.joint_nailing.model_copy(update={"continuous_deck": False})
+    record = _canopy_with(catlin_ctx, joint_nailing=recipe)
+    assert record.status is Status.INCOMPLETE
+    assert any("no transverse shear capacity" in text for text in record.missing)
+    assert "LSTA24 joint straps, along" not in {state.name for state in record.limit_states}
 
 
 def test_an_unresolved_receiving_roof_is_incomplete_by_name(catlin_ctx) -> None:

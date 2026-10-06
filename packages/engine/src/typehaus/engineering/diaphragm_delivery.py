@@ -7,8 +7,9 @@ of the deck-level shear, with no stiffness judgement across the joint and no rel
 credited (``notes/canopy_garage_diaphragm.md``'s envelope):
 
 * **open front** — SDPWS 4.2.5.2, ``L'`` and ``L'/W'``, where the deck is held on one edge;
-* **the joint** — the deck's boundary nailing along it, the straps along it and across it,
-  and the linear couple the strap line closes when the along-joint resultant is off it;
+* **the joint** — continuous deck boundary nailing for along-joint shear, installed axial
+  strap ratings for across-joint tension and the rotation couple, and wood beneath both
+  nail groups with its local connection to the deck;
 * **the plate clips** — the receiving roof's frame into the wall under it;
 * **the receiving roof** — its unit-shear INCREMENT, lever rule on the resultant, and its
   span-to-depth;
@@ -150,8 +151,8 @@ def delivery_rows(ctx: Any, element: Any, resolved_roof: Any, wind: Any,
         "joint boundary nailing, along", v_along / joint_len, spec.unit_shear_asd_plf, "plf",
         f"{spec.source}; {_direction(along)} {v_along:,.1f} lb along {joint_len:.2f}' of "
         f"joint, where the last bay lands on {delivery.roof}'s frame"))
-    _straps(rows, joints, v_along, v_across, along, joint_at, joint_len,
-            resultants.get(along), element.tag)
+    _straps(ctx, rows, joints, v_along, v_across, along, joint_at, joint_len,
+            resultants.get(along), element)
     _clips(rows, clips, v_along, along)
 
     # ** THE RECEIVING LINES. ** Along the joint the boundary walls take it directly; across
@@ -202,25 +203,29 @@ def delivery_rows(ctx: Any, element: Any, resolved_roof: Any, wind: Any,
     return rows
 
 
-def _straps(rows: DeliveryRows, joints: list[Any], v_along: float, v_across: float,
+def _straps(ctx: Any, rows: DeliveryRows, joints: list[Any], v_along: float, v_across: float,
             along: str, joint_at: float, joint_len: float, resultant: float | None,
-            tag: str) -> None:
+            element: Any) -> None:
+    from typehaus.engineering.joint_attachment import (
+        installed_strap_capacity,
+        joint_attachment_rows,
+    )
     from typehaus.hardware.catalog import allowable_for_model
 
     allowable = allowable_for_model(joints[0].size or "")
-    capacity = getattr(allowable, "uplift_lb", None)
+    capacity = installed_strap_capacity(element.diaphragm.delivers_to,
+                                       getattr(allowable, "uplift_lb", None))
     if allowable is None or capacity is None:
         rows.missing.append(f"a published allowable for the joint strap `{joints[0].size}`")
         return
     n = len(joints)
     cite = allowable.citation.split(":")[0]
     rows.states += [
-        LimitState(f"{joints[0].size} joint straps, along", v_along / n, capacity, "lb",
-                   f"{cite}; {v_along:,.1f} lb over {n} straps — the steel value, and the "
-                   f"nail group behind it is direction-independent under 1/4in (NDS 12.3)"),
         LimitState(f"{joints[0].size} joint straps, across", v_across / n, capacity, "lb",
-                   f"{cite}; {v_across:,.1f} lb of strap tension over {n} straps")]
+                   f"{cite}; {v_across:,.1f} lb of strap tension over {n} straps; "
+                   "capacity reduced for the installed end nail schedule")]
     if resultant is None:
+        joint_attachment_rows(ctx, rows, element, joints, along, v_across / n)
         return
     # The along-joint resultant sits off the joint; the strap line closes the couple.
     index = 0 if along == "x" else 1
@@ -236,6 +241,9 @@ def _straps(rows: DeliveryRows, joints: list[Any], v_along: float, v_across: flo
         f"the {_direction(along)} resultant stands {lever:.3f}' off the joint, M = "
         f"{v_along:,.1f} x {lever:.3f} = {couple:,.1f} lb-ft, taken as a linear couple over "
         f"the strap stations (sum x^2 = {second:.1f} ft2)"))
+    chord_bound = couple / joint_len
+    joint_attachment_rows(ctx=ctx, rows=rows, element=element, joints=joints,
+                          along=along, demand=v_across / n + max(worst, chord_bound))
 
 
 def _clips(rows: DeliveryRows, clips: list[Any], v_along: float, along: str) -> None:

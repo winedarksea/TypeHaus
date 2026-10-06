@@ -130,6 +130,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         resolve_roof_edges(model)
         # After roof framing so authored ridge Beams are already emitted as roof members.
         findings.extend(resolve_columns_and_beams(model))
+        from typehaus.resolve.framing.roof_diaphragm import frame_diaphragm_attachments
+
+        frame_diaphragm_attachments(model)
     with _stage("floors"):
         findings.extend(resolve_floors(model))
     with _stage("mep"):

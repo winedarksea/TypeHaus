@@ -10,7 +10,7 @@ joint "closed" the couple, and never earned its N/A on the drift limit.
 
 * **Chord force** ``M / W'`` in each chord, W' the chords' spacing, graded in the chord where
   it is a glulam (tension parallel to grain) and at the end strap, added linearly to that
-  strap's share of the along-joint shear.
+  strap's share of the across-joint tension.
 * **The couple into the receiving lines**: ``M / d`` on each far line, d their spacing, graded
   on the line's SURPLUS braced length at its authored row, on the along-joint case.
 * **SDPWS 4.2.5.2's drift limit** is a SEISMIC provision (ASCE 7 story drift under seismic
@@ -37,6 +37,7 @@ def _couple(rows: Any) -> float | None:
 def open_front_rows(ctx: Any, rows: Any, element: Any, joints: list[Any], v_along: float,
                     along: str, far: list[tuple[Any, Any]], readings: dict) -> None:
     """Append the chord, couple and drift rows for an ``open_front`` delivery."""
+    from typehaus.engineering.joint_attachment import installed_strap_capacity
     from typehaus.hardware.catalog import allowable_for_model
 
     couple = _couple(rows)
@@ -59,14 +60,18 @@ def open_front_rows(ctx: Any, rows: Any, element: Any, joints: list[Any], v_alon
         _chord_row(rows, chord, force, couple, spacing)
     ends = sorted(joints, key=lambda j: j.position.xy_m[index])
     allowable = allowable_for_model(ends[0].size or "")
-    capacity = getattr(allowable, "uplift_lb", None)
+    capacity = installed_strap_capacity(element.diaphragm.delivers_to,
+                                       getattr(allowable, "uplift_lb", None))
     if capacity:
-        share = v_along / len(joints)
+        across = "y" if along == "x" else "x"
+        delivered = next(q.value for q in rows.inputs if q.name == f"delivered_shear_{across}")
+        share = delivered / len(joints)
         rows.states.append(LimitState(
-            f"{ends[0].size} end straps, chord force + along share", force + share, capacity,
+            f"{ends[0].size} end straps, chord force + across share", force + share, capacity,
             "lb", f"the chord force {force:,.1f} lb crosses the joint through the end straps "
                   f"({ends[0].tag}, {ends[-1].tag}), added LINEARLY to each one's "
-                  f"{share:,.1f} lb of along-joint shear"))
+                  f"{share:,.1f} lb of across-joint tension (a conservative combination "
+                  "of the separate wind cases); reduced installed nail schedule"))
     _far_lines(ctx, rows, far, readings, couple, along)
     _drift(ctx, rows)
 
