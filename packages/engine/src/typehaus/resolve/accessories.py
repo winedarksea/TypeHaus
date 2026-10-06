@@ -527,7 +527,7 @@ def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None
     # without it until 2026-09-15 for no better reason than that the field's docstring said
     # "for braces". ``None`` keeps the project-axis box, so every connector that does not
     # claim an orientation draws exactly as before.
-    if el.axis == "y":
+    if el.axis in ("y", "-y"):
         half_x, half_y = half_y, half_x
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-conn", tag=el.tag, storey=storey,

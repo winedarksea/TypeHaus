@@ -296,7 +296,7 @@ def test_the_kdat_canopy_delivers_both_axes_to_the_garage(catlin_ctx) -> None:
     assert inputs["delivered_shear_y"] == pytest.approx(1045.1, abs=0.2)
     assert states["open front, L'"].ratio == pytest.approx(0.24)
     assert states["open front, L'/W'"].ratio == pytest.approx(0.225)
-    assert states["joint boundary nailing, along"].demand == pytest.approx(28.94, abs=0.05)
+    assert states["joint boundary nailing, along"].demand == pytest.approx(29.14, abs=0.05)
     assert states["W-G-S delivered shear on the surplus"].ok
     assert states["RF-GARAGE unit-shear increment"].ok
     assert states["torsional stability, delivered"].ok

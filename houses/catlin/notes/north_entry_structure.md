@@ -143,8 +143,8 @@ new number. The panel was sheathed and clad on both faces until 2026-09-11, and 
 skin was already described there as free shear, so nothing the capacity rests on moved.
 
 **North — the garage joint is a tie, and the two roofs move together.** Sharing a roof plane
-and a sheathing course while being free to move apart was the odd part, not the tie. Seven
-`LSTA24` straps at 4'-0" o.c. (`CN-BW-JOINT-1..7`) make the continuity a drawn, counted
+and a sheathing course while being free to move apart was the odd part, not the tie. Six
+`LSTA24` straps at 4'-0" o.c. (`CN-BW-JOINT-1..3, -5..7`; none at the ridge since 2026-10-06) make the continuity a drawn, counted
 connection against a collector demand near 18 plf — nominal continuity, deliberately, since
 the canopy no longer depends on it. **The movement joint that remains is at the HOUSE end**,
 which is where two independently founded structures actually meet (§5).

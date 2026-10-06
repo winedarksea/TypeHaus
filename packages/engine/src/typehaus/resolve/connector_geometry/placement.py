@@ -224,7 +224,9 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
     point = joint.point if joint is not None else _centroid(solid.outline)
     z_m = joint.z_m if joint is not None else (solid.z0_m + solid.z1_m) / 2
     axis = joint.axis if joint is not None else getattr(element, "axis", None)
-    tangent = ((0.0, 1.0) if axis == "y" else (1.0, 0.0))
+    # A leading "-" turns the part to the opposite face: a face plate on "-y" lands on the
+    # beam's west face where "y" lands on its east.
+    tangent = {"y": (0.0, 1.0), "-y": (0.0, -1.0), "-x": (-1.0, 0.0)}.get(axis, (1.0, 0.0))
     if axis is None:
         beam = _connected_beam(index, references)
         tangent = cast(Vec2, index.direction(beam.tag) if beam is not None \

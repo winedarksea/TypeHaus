@@ -25,7 +25,11 @@ from typehaus.model.base import Element, HausModel
 from typehaus.model.braced_wall import BracedWallPanel
 from typehaus.model.braces import SlatBrace, StrapBrace
 from typehaus.model.concrete_materials import AsrSpec, CementSpec, ScmFractions
-from typehaus.model.diaphragm_attachment import CollectorBlocking, JointNailing
+from typehaus.model.diaphragm_attachment import (
+    CollectorBlocking,
+    JointNailing,
+    PanelEdgeBlocking,
+)
 from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
 from typehaus.model.enums import (
@@ -303,6 +307,7 @@ for _name, _obj in (
     ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
     ("DiaphragmDelivery", DiaphragmDelivery), ("ReceivingLine", ReceivingLine),
     ("CollectorBlocking", CollectorBlocking), ("JointNailing", JointNailing),
+    ("PanelEdgeBlocking", PanelEdgeBlocking),
     ("HeadConnector", HeadConnector), ("InServiceMoisture", InServiceMoisture),
     ("Library", Library), ("PlanModel", PlanModel),
     ("BookcaseDoorSpec", BookcaseDoorSpec),
@@ -365,7 +370,7 @@ __all__ = [
     "OpeningPosition", "PublishedSpan", "PublishedCapacity", "PublishedReaction",
     "PublishedCladdingLoad", "PublishedHole",
     "ShearPanelSpec", "DiaphragmSpec", "DiaphragmDelivery", "ReceivingLine", "HeadConnector",
-    "CollectorBlocking", "JointNailing",
+    "CollectorBlocking", "JointNailing", "PanelEdgeBlocking",
     "InServiceMoisture",
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",

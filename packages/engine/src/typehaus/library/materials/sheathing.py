@@ -22,6 +22,8 @@ MATERIALS: tuple[Material, ...] = (
         name="Structural 1 plywood",
         r_per_inch=1.25,
         density=600.0,
+        # NDS 2018 Table 12.3.3B: Structural I plywood, all plies Group 1 species.
+        specific_gravity=0.50,
         perm_rating=0.30,
         hatch="osb",
         color="#c9a86a",

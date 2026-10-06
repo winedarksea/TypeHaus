@@ -9,8 +9,9 @@ two lines perpendicular to the joint. Until 2026-09-30 the record computed neith
 joint "closed" the couple, and never earned its N/A on the drift limit.
 
 * **Chord force** ``M / W'`` in each chord, W' the chords' spacing, graded in the chord where
-  it is a glulam (tension parallel to grain) and at the end strap, added linearly to that
-  strap's share of the across-joint tension.
+  it is a glulam (tension parallel to grain), at the plate joining the chord to the block its
+  end strap nails into (plus that plate's own collector share), and at the end strap, added
+  linearly to that strap's share of the across-joint tension.
 * **The couple into the receiving lines**: ``M / d`` on each far line, d their spacing, graded
   on the line's SURPLUS braced length at its authored row, on the along-joint case.
 * **SDPWS 4.2.5.2's drift limit** is a SEISMIC provision (ASCE 7 story drift under seismic
@@ -72,8 +73,61 @@ def open_front_rows(ctx: Any, rows: Any, element: Any, joints: list[Any], v_alon
                   f"({ends[0].tag}, {ends[-1].tag}), added LINEARLY to each one's "
                   f"{share:,.1f} lb of across-joint tension (a conservative combination "
                   "of the separate wind cases); reduced installed nail schedule"))
+    for chord in chords:
+        if chord is not None:
+            _chord_plate_rows(ctx, rows, element, chord, ends, force, index)
     _far_lines(ctx, rows, far, readings, couple, along)
     _drift(ctx, rows)
+
+
+def _chord_plate_rows(ctx: Any, rows: Any, element: Any, chord: Any, ends: list[Any],
+                      force: float, index: int) -> None:
+    """The chord's tie into the block under its end strap: header and block are two pieces."""
+    from typehaus.engineering.collector_attachment import collector_attachment_missing
+    from typehaus.hardware.catalog import allowable_for_model
+    from typehaus.model.enums import ConnectorKind
+    from typehaus.resolve.framing.roof_diaphragm import DIAPHRAGM_BLOCK_CONNECTION
+
+    across = 1 - index
+    station = sum(ctx.plan.by_tag(getattr(chord, n)).position.xy_m[index]
+                  for n in ("start_node", "end_node")) / 2.0
+    end = min(ends, key=lambda j: abs(j.position.xy_m[index] - station))
+    roof = next((r for r in ctx.model.roofs if r.tag == element.tag), None)
+    point = end.position.xy_m
+    block = next((m for m in (roof.members if roof else ())
+                  if m.connection == DIAPHRAGM_BLOCK_CONNECTION
+                  and m.child_key.startswith(f"collector-block-{chord.tag}-")
+                  and min(m.p0[across], m.p1[across]) < point[across]
+                  <= max(m.p0[across], m.p1[across]) + 1e-4
+                  and abs(m.p0[index] - point[index]) <= (m.plan_width_m or 0.0) / 2), None)
+    if block is None:
+        rows.missing.append(f"{chord.tag}: the collector block {end.tag} nails into, over "
+                            f"the chord, to carry its {force:,.1f} lb chord force")
+        return
+    lo, hi = sorted((block.p0[across], block.p1[across]))
+    plates = [el for el in ctx.plan.all_elements()
+              if set(getattr(el, "connects", ()) or ()) == {element.tag, chord.tag}
+              and getattr(el, "kind", None) is ConnectorKind.TENSION_TIE
+              and getattr(el, "position", None) is not None
+              and lo <= el.position.xy_m[across] <= hi]
+    rated = [(p, min(v for v in (a.lateral_f1_lb, a.lateral_f2_lb) if v))
+             for p in plates if (a := allowable_for_model(p.size or "")) is not None
+             and (a.lateral_f1_lb or a.lateral_f2_lb)]
+    if not rated:
+        rows.missing.append(f"{chord.tag}: a rated plate joining it to {block.child_key}, the "
+                            f"block {end.tag} nails into; the {force:,.1f} lb chord force has "
+                            "no other way from the header into the strap")
+        return
+    rows.missing.extend(collector_attachment_missing(ctx.model, element.tag, chord.tag,
+                                                     [p for p, _c in rated]))
+    share = rows.collector_shares.get(chord.tag, 0.0)
+    demand = force / len(rated) + share
+    rows.states.append(LimitState(
+        f"{chord.tag} chord into {end.tag}'s block", demand, min(c for _p, c in rated), "lb",
+        f"{', '.join(p.tag for p, _c in rated)} ({rated[0][0].size}), the lower catalog "
+        f"lateral direction: chord force {force:,.1f} lb"
+        + (f" plus the plate's own {share:,.1f} lb collector share, added linearly across "
+           "the two wind cases" if share else "")))
 
 
 def _chord_row(rows: Any, chord: Any, force: float, couple: float, spacing: float) -> None:

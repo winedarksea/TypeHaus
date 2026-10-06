@@ -210,7 +210,7 @@ GARAGE_ROOF = Assembly(
 # so the two roof planes are ONE plane: change this layer's depth, spacing or heel and the
 # canopy steps off the garage roof at the joint. The sheathing runs continuous across the
 # garage south wall line even though the `Roof` elements are separate, and since 2026-09-29
-# it is again the canopy's lateral path — but now a DESIGNED one: seven LSTA24 straps across
+# it is again the canopy's lateral path — but now a DESIGNED one: six LSTA24 straps across
 # the joint, LTP4 clips from the gable frame into W-G-S, and every part graded at 100% on
 # lateral_system/RF-BW-CANOPY (RF-BW-CANOPY.diaphragm.delivers_to,
 # notes/canopy_garage_diaphragm.md). AN-BW-ROOF says so, and so must the drawings.

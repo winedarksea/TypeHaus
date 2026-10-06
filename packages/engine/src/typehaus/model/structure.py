@@ -786,7 +786,8 @@ class Connector(Element):
     #:
     #: Set it where the orientation is a BUILDABILITY constraint rather than a drawing
     #: preference — an ABU stirrup's two side plates landing on the faces a face-mount hanger
-    #: needs is the worked example (catlin ``CN-SG-BASE-R2``/``-F2``).
+    #: needs is the worked example (catlin ``CN-SG-BASE-R2``/``-F2``). ``-x``/``-y`` turn
+    #: a one-sided part (a face plate) onto the opposite face.
     axis: str | None = None
     #: A POST_BASE landing on concrete WITHOUT a cast-in anchor bolt.
     #:

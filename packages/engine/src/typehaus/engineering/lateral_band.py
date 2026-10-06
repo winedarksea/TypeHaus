@@ -115,7 +115,7 @@ def band_rows(ctx: Any, roof_tag: str, wall: Any, spec: Any, shear_lb: float,
         if band is not None:
             slat_rows(ctx, wall, collector, band, states, notes, missing, inputs)
             _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states)
-            _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing)
+            _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs)
             return BandResult(handled=_holdown_rows(ctx, wall, wall.shear_panel, shear_lb,
                                                     top_ft, states, notes, missing, inputs))
         missing.append(
@@ -128,7 +128,7 @@ def band_rows(ctx: Any, roof_tag: str, wall: Any, spec: Any, shear_lb: float,
         return BandResult(handled=True)
     _strap_rows(wall, straps, shear_lb, states, notes, inputs)
     _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states)
-    _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing)
+    _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs)
     return BandResult(handled=_holdown_rows(ctx, wall, wall.shear_panel, shear_lb, top_ft,
                                             states, notes,
                                             missing, inputs))
@@ -231,7 +231,7 @@ def _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states) -> None:
             f"it needs no moment connection and serves either direction"))
 
 
-def _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing) -> None:
+def _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs) -> None:
     from typehaus.engineering.collector_attachment import collector_attachment_missing
     from typehaus.hardware.catalog import allowable_for_model
     from typehaus.model.enums import ConnectorKind
@@ -258,6 +258,8 @@ def _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing) -> Non
         ctx.model, roof_tag, collector.tag, [clip for clip, _capacity in rated])
     missing.extend(attachment_missing)
     each = shear_lb / len(rated)
+    # The open front adds its chord force to the plate it shares with this row.
+    inputs.append(Quantity(f"collector_clip_each_{collector.tag}", each, "lb", 1.0))
     worst = min(rated, key=lambda r: r[1])
     states.append(LimitState(
         f"{collector.tag} eave collector clips", each, worst[1], "lb",

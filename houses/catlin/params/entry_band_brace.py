@@ -42,19 +42,30 @@ BAND = SlatBrace(
 # ** THE EAVE COLLECTOR: THE DECK'S N-S SHEAR INTO THE WEST HEADER. ** The deck's boundary
 # nailing lands on the truss heels and the eave blocking; H2.5ASS heel ties carry 110 lb of
 # lateral each, nowhere near 1,045. Two LTP4 per bay, blocking to glulam top (note §3e).
-# The diaphragm recipe now derives solid, bevelled raised-heel blocks in every bay;
-# the plates join their flush east faces to the glulam directly, six nails per member.
+# The diaphragm recipe derives solid, bevelled LSL raised-heel blocks in every bay, flush
+# with the header's inboard face; the plates join them to the glulam directly. ZMAX with HDG
+# nails: Simpson publishes no stainless LTP4, and the glulam is treated (IRC R317.3.1).
 _CLIP_Y_FT = (38.0, 39.0, 40.0, 41.0, 42.0, 42.75)
 _CLIP_UIDS = ("2BGWCYHP73", "SDMYFZXN5Z", "812X7GD63H", "TGHVBBPNB4", "P6GS6PHFXD",
               "3XNNDTGRTE")
 EAVE_CLIPS = [
     Connector(uid=_uid, tag=f"CN-BW-EAVE-{_i + 1}", kind=ConnectorKind.TENSION_TIE,
               position=pt(ft(LANDING_WEST_FT), ft(_y)), elevation=ft(HEADER_TOP_FT),
-              size="LTP4", axis="y", connects=("RF-BW-CANOPY", "BM-BW-RW"),
-              source=("canopy_west_band.md §3e — bevelled DF-L blocking to BM-BW-RW; "
-                      "12 0.131x1.5in nails per LTP4, six into each member, direct to wood"))
+              size="LTP4Z", axis="y", connects=("RF-BW-CANOPY", "BM-BW-RW"),
+              source=("canopy_west_band.md §3e — bevelled LSL blocking to BM-BW-RW; "
+                      "12 0.131x1.5in HDG nails per LTP4Z, six into each member, direct to wood"))
     for _i, (_y, _uid) in enumerate(zip(_CLIP_Y_FT, _CLIP_UIDS, strict=True))
 ]
+# ** THE EAST CHORD INTO ITS END STRAP. ** CN-BW-JOINT-7 nails into the joint-bay LSL block,
+# not the glulam; this plate is the east chord force's only way between them. "-y" puts it
+# on the header's west (inboard) face, where the block is flush.
+EAVE_CLIPS.append(
+    Connector(uid="SQVBR8AEND", tag="CN-BW-EAVE-E", kind=ConnectorKind.TENSION_TIE,
+              position=pt(ft(ROOF_COLUMN_EAST_X_FT), ft(_CLIP_Y_FT[-1])),
+              elevation=ft(HEADER_TOP_FT), size="LTP4Z", axis="-y",
+              connects=("RF-BW-CANOPY", "BM-BW-RE"),
+              source=("canopy_west_band.md §6 — LSL joint-bay block to BM-BW-RE, the chord "
+                      "force into CN-BW-JOINT-7; 12 0.131x1.5in HDG nails, six per member")))
 
 
 def _head_angles(x_ft, south_tag, north_tag, south_uid, north_uids, beam):

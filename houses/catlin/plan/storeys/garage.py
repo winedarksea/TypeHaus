@@ -14,6 +14,7 @@ from typehaus import (
     DiaphragmSpec,
     CollectorBlocking,
     JointNailing,
+    PanelEdgeBlocking,
     Door,
     DischargeExtension,
     Downspout,
@@ -554,7 +555,7 @@ ROOFS = [
     # `engineering/roof_moment.roof_base_moments` (d/c 0.71 and 0.55 -- notes/
     # north_entry_piers.md §8). WEST is W-BW-SCREEN, a sheathed 2x4 shear panel. The two
     # WEST columns keep their standoff bases, which are uplift ties and not moment
-    # connections; nothing asks them to be. Two `Roof` ELEMENTS, one plane, and seven LSTA24
+    # connections; nothing asks them to be. Two `Roof` ELEMENTS, one plane, and six LSTA24
     # straps make the continuity a counted connection -- the drawings have to say so
     # (AN-BW-ROOF does). A KBS1Z knee brace at each column stays the cheap fallback and is a
     # live row in this house; `pier_basis.knee_braced` is scoped per structure since
@@ -604,20 +605,28 @@ ROOFS = [
              collector_blocking=(
                  CollectorBlocking(
                      collector="BM-BW-RW",
-                     stock="5.5x15.5",
-                     material="df-select-s4s",
-                     fastening="6x16 DF-L solid blocking, bevel top to deck, seat on header, east face flush to LTP4. One LS30 at each truss end, six 0.148x1.5in nails per angle, three per leg; fully nailed deck restrains rotation. Each LTP4: 12 0.131x1.5in nails, six into block and six into glulam, direct to wood. Deck: 8d common at 6in boundary spacing.",
+                     stock="3.5x16 LSL",
+                     material="lsl",
+                     flush="inboard",
+                     fastening="3-1/2x16 LSL solid blocking, bevel top to deck, seat on header, east face flush with the glulam's east face and every LTP4Z. One LS30Z at each truss end, six 0.148x1.5in HDG nails per angle, three per leg, on clear chord or heel wood and never through a truss plate; fully nailed deck restrains rotation. Each LTP4Z: 12 0.131x1.5in HDG nails, six into block and six into glulam, direct to wood. Deck: 8d common HDG at 6in boundary spacing.",
                  ),
                  CollectorBlocking(
                      collector="BM-BW-RE",
-                     stock="5.5x15.5",
-                     material="df-select-s4s",
-                     fastening="6x16 DF-L solid blocking, bevel top to deck, seat on header. One LS30 at each truss end, six 0.148x1.5in nails per angle, three per leg; fully nailed deck restrains rotation. Deck: 8d common at 6in boundary spacing; east header remains the diaphragm chord.",
+                     stock="3.5x16 LSL",
+                     material="lsl",
+                     flush="inboard",
+                     fastening="3-1/2x16 LSL solid blocking, bevel top to deck, seat on header, west face flush with the glulam's west face. One LS30Z at each truss end, six 0.148x1.5in HDG nails per angle, three per leg, on clear chord or heel wood and never through a truss plate; fully nailed deck restrains rotation. In the joint bay one LTP4Z (CN-BW-EAVE-E) joins the block to the glulam, 12 0.131x1.5in HDG nails, six per member: the east chord force reaches CN-BW-JOINT-7 only through it. Deck: 8d common HDG at 6in boundary spacing.",
                  ),
              ),
              # 45in horizontal = 47.434in on the 4:12 slope, within a standard 48in sheet.
              # Set out from the ridge; cut panels to fit with 1/8in gaps.
-             panel_edge_blocking="2x4", panel_width=ft(3, 9),
+             panel_edge_blocking=PanelEdgeBlocking(
+                 stock="2x4",
+                 material="spf",
+                 module=ft(3, 9),
+                 toenails_each_end=3,
+                 fastening="Three 8d common 0.131x2.5in HDG toenails at each block end into the truss top chord, clear of truss plates. The deck's 6in edge nailing carries the shear through the block. Blocks continue into RF-GARAGE's first bay, where the canopy's first sheet course ends.",
+             ),
              # ** THE CANOPY BRACES OFF THE GARAGE (owner, 2026-09-29, option A). ** The east
              # posts are pinned in two of the three EAST_POST_SYSTEM variants, so the deck
              # hands its shear across the joint: E-W to W-G-S through RF-GARAGE's gable
@@ -630,16 +639,16 @@ ROOFS = [
                      ReceivingLine(wall="W-G-E", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panel sheathing, 15/32in with 8d at 6in edges (the 5/8in CDX quoted conservatively), v_w 365 plf nominal / 2.0"),
                      ReceivingLine(wall="W-G-W", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panel sheathing, 15/32in with 8d at 6in edges (the 5/8in CDX quoted conservatively), v_w 365 plf nominal / 2.0"),
                  ),
-                 joint_refs=("CN-BW-JOINT-1", "CN-BW-JOINT-2", "CN-BW-JOINT-3", "CN-BW-JOINT-4", "CN-BW-JOINT-5", "CN-BW-JOINT-6", "CN-BW-JOINT-7"),
+                 joint_refs=("CN-BW-JOINT-1", "CN-BW-JOINT-2", "CN-BW-JOINT-3", "CN-BW-JOINT-5", "CN-BW-JOINT-6", "CN-BW-JOINT-7"),
                  joint_nailing=JointNailing(
-                     stock="3.5x5.5",
-                     material="df-select-s4s",
+                     stock="2-2x6",
+                     material="spf",
                      continuous_deck=True,
                      strap_nails_each_end=6,
                      rated_strap_nails_each_end=9,
                      nail_group_inset=inch(4.5),
-                     fastening="4x6 DF-L longitudinal nailers, bevelled to the deck, between existing truss faces on each side of the garage gable. End stations use the canopy collector blocks on the south side. One LS30 at each nailer end with six 0.148x1.5in nails, three per leg, side grain; fully nailed deck restrains rotation. LSTA24 direct to wood BEFORE deck: six outermost 0.148x2.5in nails per leg, 12 total; omit the middle six holes, >=2-3/8in wood end distance and >=3/4in edge distance. Deck to each nailer: two rows 8d common at 3in o.c., 3/8in panel edge distance, stagger rows. Keep deck panels continuous across the garage gable; no sheathing break at this line, 8d at 6in into gable top chord. Dry-service connections protected by roof membrane.",
-                     source="canopy_garage_diaphragm.md §3b: Simpson C-C-2026 pp.288,291 (LSTA24), p.313 (LS30 six 0.148x1.5in nails); LSTA24 1235lb x 12/18 = 823.3lb installed; AWC SDPWS-2015 Table 4.2A, 190plf boundary row for local deck-to-nailer anchorage",
+                     fastening="2-ply SPF 2x6 longitudinal nailers, laminated with 8d common 0.131x2.5in HDG nails two near each end and 12in o.c. between, staggered; bevelled to the deck, between existing truss faces on each side of the garage gable. The two end stations use the canopy collector blocks on the south side. One LS30Z at each nailer end, six 0.148x1.5in HDG nails, three per leg, side grain, never through a truss plate; fully nailed deck restrains rotation. LSTA24 direct to wood BEFORE deck: six outermost 0.148x2.5in HDG nails per leg, 12 total, one hole line in each ply; omit the middle six holes; >=2-3/8in wood end distance and >=3/4in edge distance. Field-verify that the six outermost holes start >=4-1/2in from the strap centre. Deck to each nailer: two rows 8d common HDG at 3in o.c., one row per ply 1/2in from its outer face and clear of the strap, staggered, 3/8in from the nailer ends. Keep deck panels continuous across the garage gable; no sheathing break at this line, 8d at 6in into gable top chord.",
+                     source="canopy_garage_diaphragm.md §3b: Simpson C-C-2021 p.269 LSTA table (LSTA24 1235lb in both DF/SP and SPF/HF, 18 nails; LSTA15 955lb SPF/HF, 12 nails); LSTA24 1235lb x 12/18 = 823.3lb installed; C-C-2026 p.313 (LS30 six 0.148x1.5in nails); AWC NDS 2018 12.3.1 nail yield for the deck-to-nailer transfer, one 3in row credited, 8d common through 3/4in Structural I (G 0.50) into SPF (G 0.42) or LSL (G 0.50, ICC-ES ESR-1387)",
                  ),
                  plate_clip_refs=("CN-BW-GCLIP-1", "CN-BW-GCLIP-2", "CN-BW-GCLIP-3", "CN-BW-GCLIP-4", "CN-BW-GCLIP-5", "CN-BW-GCLIP-6", "CN-BW-GCLIP-7"),
                  open_front=True,

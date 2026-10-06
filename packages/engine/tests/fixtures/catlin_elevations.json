@@ -5811,10 +5811,10 @@
 "26af7978b69d"
 ],
 "geometry/BWJT00AAAA/body": [
-2.5540299,
-2.5649352,
+2.5624966,
+2.5734018,
 8,
-"028b80104ff0"
+"6b4f3044f9ee"
 ],
 "geometry/BWJT01AAAA/body": [
 2.9604299,
@@ -5827,12 +5827,6 @@
 3.3777352,
 8,
 "48e329bff65c"
-],
-"geometry/BWJT03AAAA/body": [
-3.7732299,
-3.7791151,
-16,
-"579de5b90009"
 ],
 "geometry/BWJT04AAAA/body": [
 3.3668299,
@@ -5847,10 +5841,10 @@
 "1d228b27b914"
 ],
 "geometry/BWJT06AAAA/body": [
-2.5540299,
-2.5649352,
+2.5624966,
+2.5734018,
 8,
-"5ba502c6f80a"
+"5b9bcd37ad28"
 ],
 "geometry/BWNSE1AAAA/body": [
 2.413,
@@ -15417,46 +15411,82 @@
 "2f452c071d67"
 ],
 "geometry/CGRF01AAAA::framing/member:joint-nailer-CN-BW-JOINT-1-north": [
-2.4341667,
-2.5738667,
+2.4405167,
+2.5802167,
 10,
-"7b9e6c5ea2d8"
+"b22a7f9bd4fb"
 ],
 "geometry/CGRF01AAAA::framing/member:joint-nailer-CN-BW-JOINT-2-north": [
-2.8405667,
-2.9802667,
+2.83845,
+2.97815,
 10,
-"c3431080bc35"
+"675710399af5"
 ],
 "geometry/CGRF01AAAA::framing/member:joint-nailer-CN-BW-JOINT-3-north": [
-3.2469667,
-3.3866667,
+3.24485,
+3.38455,
 10,
-"144060334dfe"
-],
-"geometry/CGRF01AAAA::framing/member:joint-nailer-CN-BW-JOINT-4-north": [
-3.63855,
-3.77825,
-10,
-"f6ee435324e8"
+"98f7cd2a5e56"
 ],
 "geometry/CGRF01AAAA::framing/member:joint-nailer-CN-BW-JOINT-5-north": [
-3.2469667,
-3.3866667,
+3.24485,
+3.38455,
 10,
-"94b3d1e95712"
+"0f7991c38eb2"
 ],
 "geometry/CGRF01AAAA::framing/member:joint-nailer-CN-BW-JOINT-6-north": [
-2.8405667,
-2.9802667,
+2.83845,
+2.97815,
 10,
-"424f3853e841"
+"47a3ca782ea3"
 ],
 "geometry/CGRF01AAAA::framing/member:joint-nailer-CN-BW-JOINT-7-north": [
-2.4341667,
-2.5738667,
+2.4405167,
+2.5802167,
 10,
-"07faaebd2f2d"
+"cefd2b9455a8"
+],
+"geometry/CGRF01AAAA::framing/member:panel-block-RF-BW-CANOPY-2.057400-003": [
+2.5527,
+2.6416,
+10,
+"5d449f6ce6ce"
+],
+"geometry/CGRF01AAAA::framing/member:panel-block-RF-BW-CANOPY-3.200400-003": [
+2.9337,
+3.0226,
+10,
+"fb94b0d8d9c1"
+],
+"geometry/CGRF01AAAA::framing/member:panel-block-RF-BW-CANOPY-4.343400-003": [
+3.3147,
+3.4036,
+10,
+"2c67681da8dc"
+],
+"geometry/CGRF01AAAA::framing/member:panel-block-RF-BW-CANOPY-5.486400-003": [
+3.68935,
+3.77825,
+10,
+"289867bbb13c"
+],
+"geometry/CGRF01AAAA::framing/member:panel-block-RF-BW-CANOPY-6.629400-003": [
+3.3147,
+3.4036,
+10,
+"88498c8a6aa0"
+],
+"geometry/CGRF01AAAA::framing/member:panel-block-RF-BW-CANOPY-7.772400-003": [
+2.9337,
+3.0226,
+10,
+"dc6ae6ca165d"
+],
+"geometry/CGRF01AAAA::framing/member:panel-block-RF-BW-CANOPY-8.915400-003": [
+2.5527,
+2.6416,
+10,
+"1271e248bfb7"
 ],
 "geometry/CGRF01AAAA::framing/member:rake-hi-0-drip-edge-face": [
 2.3976326,
@@ -53504,6 +53534,12 @@
 8,
 "89dd01dcd81f"
 ],
+"geometry/SQVBR8AEND/body": [
+2.181225,
+2.289175,
+56,
+"1559c023b212"
+],
 "geometry/SSSW9XQZZ4/body": [
 2.8209875,
 2.9733875,
@@ -54540,37 +54576,37 @@
 2.2352,
 2.5823333,
 10,
-"973bba9e6126"
+"8e78e8c653ad"
 ],
 "geometry/YX2GDZJMBV::framing/member:collector-block-BM-BW-RE-001": [
 2.2352,
 2.5823333,
 10,
-"973bba9e6126"
+"8e78e8c653ad"
 ],
 "geometry/YX2GDZJMBV::framing/member:collector-block-BM-BW-RE-002": [
 2.2352,
 2.5823333,
 10,
-"973bba9e6126"
+"8e78e8c653ad"
 ],
 "geometry/YX2GDZJMBV::framing/member:collector-block-BM-BW-RW-000": [
 2.2352,
 2.5823333,
 10,
-"d58d196bdba7"
+"8e2f5fc6de18"
 ],
 "geometry/YX2GDZJMBV::framing/member:collector-block-BM-BW-RW-001": [
 2.2352,
 2.5823333,
 10,
-"d58d196bdba7"
+"8e2f5fc6de18"
 ],
 "geometry/YX2GDZJMBV::framing/member:collector-block-BM-BW-RW-002": [
 2.2352,
 2.5823333,
 10,
-"d58d196bdba7"
+"8e2f5fc6de18"
 ],
 "geometry/YX2GDZJMBV::framing/member:eave-hi-drip-edge-face": [
 2.4108833,
@@ -54681,150 +54717,150 @@
 "d24318931c1e"
 ],
 "geometry/YX2GDZJMBV::framing/member:joint-nailer-CN-BW-JOINT-2-south": [
-2.8405667,
-2.9802667,
+2.83845,
+2.97815,
 10,
-"c3431080bc35"
+"675710399af5"
 ],
 "geometry/YX2GDZJMBV::framing/member:joint-nailer-CN-BW-JOINT-3-south": [
-3.2469667,
-3.3866667,
+3.24485,
+3.38455,
 10,
-"144060334dfe"
-],
-"geometry/YX2GDZJMBV::framing/member:joint-nailer-CN-BW-JOINT-4-south": [
-3.63855,
-3.77825,
-10,
-"f6ee435324e8"
+"98f7cd2a5e56"
 ],
 "geometry/YX2GDZJMBV::framing/member:joint-nailer-CN-BW-JOINT-5-south": [
-3.2469667,
-3.3866667,
+3.24485,
+3.38455,
 10,
-"94b3d1e95712"
+"0f7991c38eb2"
 ],
 "geometry/YX2GDZJMBV::framing/member:joint-nailer-CN-BW-JOINT-6-south": [
-2.8405667,
-2.9802667,
+2.83845,
+2.97815,
 10,
-"424f3853e841"
+"47a3ca782ea3"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-2.057400-000": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-2.057400-000": [
 2.5527,
 2.6416,
 10,
 "5d449f6ce6ce"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-2.057400-001": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-2.057400-001": [
 2.5527,
 2.6416,
 10,
 "5d449f6ce6ce"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-2.057400-002": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-2.057400-002": [
 2.5527,
 2.6416,
 10,
 "5d449f6ce6ce"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-3.200400-000": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-3.200400-000": [
 2.9337,
 3.0226,
 10,
 "fb94b0d8d9c1"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-3.200400-001": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-3.200400-001": [
 2.9337,
 3.0226,
 10,
 "fb94b0d8d9c1"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-3.200400-002": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-3.200400-002": [
 2.9337,
 3.0226,
 10,
 "fb94b0d8d9c1"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-4.343400-000": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-4.343400-000": [
 3.3147,
 3.4036,
 10,
 "2c67681da8dc"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-4.343400-001": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-4.343400-001": [
 3.3147,
 3.4036,
 10,
 "2c67681da8dc"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-4.343400-002": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-4.343400-002": [
 3.3147,
 3.4036,
 10,
 "2c67681da8dc"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-5.486400-000": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-5.486400-000": [
 3.68935,
 3.77825,
 10,
 "289867bbb13c"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-5.486400-001": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-5.486400-001": [
 3.68935,
 3.77825,
 10,
 "289867bbb13c"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-6.629400-000": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-5.486400-002": [
+3.68935,
+3.77825,
+10,
+"289867bbb13c"
+],
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-6.629400-000": [
 3.3147,
 3.4036,
 10,
 "88498c8a6aa0"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-6.629400-001": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-6.629400-001": [
 3.3147,
 3.4036,
 10,
 "88498c8a6aa0"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-6.629400-002": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-6.629400-002": [
 3.3147,
 3.4036,
 10,
 "88498c8a6aa0"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-7.772400-000": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-7.772400-000": [
 2.9337,
 3.0226,
 10,
 "dc6ae6ca165d"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-7.772400-001": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-7.772400-001": [
 2.9337,
 3.0226,
 10,
 "dc6ae6ca165d"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-7.772400-002": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-7.772400-002": [
 2.9337,
 3.0226,
 10,
 "dc6ae6ca165d"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-8.915400-000": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-8.915400-000": [
 2.5527,
 2.6416,
 10,
 "1271e248bfb7"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-8.915400-001": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-8.915400-001": [
 2.5527,
 2.6416,
 10,
 "1271e248bfb7"
 ],
-"geometry/YX2GDZJMBV::framing/member:panel-block-8.915400-002": [
+"geometry/YX2GDZJMBV::framing/member:panel-block-RF-BW-CANOPY-8.915400-002": [
 2.5527,
 2.6416,
 10,
@@ -63062,46 +63098,82 @@
 "ed54bcf8b112"
 ],
 "member/CGRF01AAAA/joint-nailer-CN-BW-JOINT-1-north": [
-2.4341667,
-2.5738667,
+2.4405167,
+2.5802167,
 2,
-"64c72cf72430"
+"0d66068f8a50"
 ],
 "member/CGRF01AAAA/joint-nailer-CN-BW-JOINT-2-north": [
-2.8405667,
-2.9802667,
+2.83845,
+2.97815,
 2,
-"c32fc669d556"
+"521560f4f940"
 ],
 "member/CGRF01AAAA/joint-nailer-CN-BW-JOINT-3-north": [
-3.2469667,
-3.3866667,
+3.24485,
+3.38455,
 2,
-"4508b4d3d143"
-],
-"member/CGRF01AAAA/joint-nailer-CN-BW-JOINT-4-north": [
-3.63855,
-3.77825,
-2,
-"57da760571d9"
+"e68c61bcb7ac"
 ],
 "member/CGRF01AAAA/joint-nailer-CN-BW-JOINT-5-north": [
-3.2469667,
-3.3866667,
+3.24485,
+3.38455,
 2,
-"4508b4d3d143"
+"e68c61bcb7ac"
 ],
 "member/CGRF01AAAA/joint-nailer-CN-BW-JOINT-6-north": [
-2.8405667,
-2.9802667,
+2.83845,
+2.97815,
 2,
-"c32fc669d556"
+"521560f4f940"
 ],
 "member/CGRF01AAAA/joint-nailer-CN-BW-JOINT-7-north": [
-2.4341667,
-2.5738667,
+2.4405167,
+2.5802167,
 2,
-"64c72cf72430"
+"0d66068f8a50"
+],
+"member/CGRF01AAAA/panel-block-RF-BW-CANOPY-2.057400-003": [
+2.5527,
+2.6416,
+2,
+"973e3809451f"
+],
+"member/CGRF01AAAA/panel-block-RF-BW-CANOPY-3.200400-003": [
+2.9337,
+3.0226,
+2,
+"9ba4a7ea00d2"
+],
+"member/CGRF01AAAA/panel-block-RF-BW-CANOPY-4.343400-003": [
+3.3147,
+3.4036,
+2,
+"c968dee966a1"
+],
+"member/CGRF01AAAA/panel-block-RF-BW-CANOPY-5.486400-003": [
+3.68935,
+3.77825,
+2,
+"273e4fef8b4d"
+],
+"member/CGRF01AAAA/panel-block-RF-BW-CANOPY-6.629400-003": [
+3.3147,
+3.4036,
+2,
+"c968dee966a1"
+],
+"member/CGRF01AAAA/panel-block-RF-BW-CANOPY-7.772400-003": [
+2.9337,
+3.0226,
+2,
+"9ba4a7ea00d2"
+],
+"member/CGRF01AAAA/panel-block-RF-BW-CANOPY-8.915400-003": [
+2.5527,
+2.6416,
+2,
+"973e3809451f"
 ],
 "member/CGRF01AAAA/rake-hi-0-drip-edge-face": [
 2.3976326,
@@ -86714,150 +86786,150 @@
 "e72a18ef5c87"
 ],
 "member/YX2GDZJMBV/joint-nailer-CN-BW-JOINT-2-south": [
-2.8405667,
-2.9802667,
+2.83845,
+2.97815,
 2,
-"c32fc669d556"
+"521560f4f940"
 ],
 "member/YX2GDZJMBV/joint-nailer-CN-BW-JOINT-3-south": [
-3.2469667,
-3.3866667,
+3.24485,
+3.38455,
 2,
-"4508b4d3d143"
-],
-"member/YX2GDZJMBV/joint-nailer-CN-BW-JOINT-4-south": [
-3.63855,
-3.77825,
-2,
-"57da760571d9"
+"e68c61bcb7ac"
 ],
 "member/YX2GDZJMBV/joint-nailer-CN-BW-JOINT-5-south": [
-3.2469667,
-3.3866667,
+3.24485,
+3.38455,
 2,
-"4508b4d3d143"
+"e68c61bcb7ac"
 ],
 "member/YX2GDZJMBV/joint-nailer-CN-BW-JOINT-6-south": [
-2.8405667,
-2.9802667,
+2.83845,
+2.97815,
 2,
-"c32fc669d556"
+"521560f4f940"
 ],
-"member/YX2GDZJMBV/panel-block-2.057400-000": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-2.057400-000": [
 2.5527,
 2.6416,
 2,
 "973e3809451f"
 ],
-"member/YX2GDZJMBV/panel-block-2.057400-001": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-2.057400-001": [
 2.5527,
 2.6416,
 2,
 "973e3809451f"
 ],
-"member/YX2GDZJMBV/panel-block-2.057400-002": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-2.057400-002": [
 2.5527,
 2.6416,
 2,
 "973e3809451f"
 ],
-"member/YX2GDZJMBV/panel-block-3.200400-000": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-3.200400-000": [
 2.9337,
 3.0226,
 2,
 "9ba4a7ea00d2"
 ],
-"member/YX2GDZJMBV/panel-block-3.200400-001": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-3.200400-001": [
 2.9337,
 3.0226,
 2,
 "9ba4a7ea00d2"
 ],
-"member/YX2GDZJMBV/panel-block-3.200400-002": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-3.200400-002": [
 2.9337,
 3.0226,
 2,
 "9ba4a7ea00d2"
 ],
-"member/YX2GDZJMBV/panel-block-4.343400-000": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-4.343400-000": [
 3.3147,
 3.4036,
 2,
 "c968dee966a1"
 ],
-"member/YX2GDZJMBV/panel-block-4.343400-001": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-4.343400-001": [
 3.3147,
 3.4036,
 2,
 "c968dee966a1"
 ],
-"member/YX2GDZJMBV/panel-block-4.343400-002": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-4.343400-002": [
 3.3147,
 3.4036,
 2,
 "c968dee966a1"
 ],
-"member/YX2GDZJMBV/panel-block-5.486400-000": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-5.486400-000": [
 3.68935,
 3.77825,
 2,
 "273e4fef8b4d"
 ],
-"member/YX2GDZJMBV/panel-block-5.486400-001": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-5.486400-001": [
 3.68935,
 3.77825,
 2,
 "273e4fef8b4d"
 ],
-"member/YX2GDZJMBV/panel-block-6.629400-000": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-5.486400-002": [
+3.68935,
+3.77825,
+2,
+"273e4fef8b4d"
+],
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-6.629400-000": [
 3.3147,
 3.4036,
 2,
 "c968dee966a1"
 ],
-"member/YX2GDZJMBV/panel-block-6.629400-001": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-6.629400-001": [
 3.3147,
 3.4036,
 2,
 "c968dee966a1"
 ],
-"member/YX2GDZJMBV/panel-block-6.629400-002": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-6.629400-002": [
 3.3147,
 3.4036,
 2,
 "c968dee966a1"
 ],
-"member/YX2GDZJMBV/panel-block-7.772400-000": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-7.772400-000": [
 2.9337,
 3.0226,
 2,
 "9ba4a7ea00d2"
 ],
-"member/YX2GDZJMBV/panel-block-7.772400-001": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-7.772400-001": [
 2.9337,
 3.0226,
 2,
 "9ba4a7ea00d2"
 ],
-"member/YX2GDZJMBV/panel-block-7.772400-002": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-7.772400-002": [
 2.9337,
 3.0226,
 2,
 "9ba4a7ea00d2"
 ],
-"member/YX2GDZJMBV/panel-block-8.915400-000": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-8.915400-000": [
 2.5527,
 2.6416,
 2,
 "973e3809451f"
 ],
-"member/YX2GDZJMBV/panel-block-8.915400-001": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-8.915400-001": [
 2.5527,
 2.6416,
 2,
 "973e3809451f"
 ],
-"member/YX2GDZJMBV/panel-block-8.915400-002": [
+"member/YX2GDZJMBV/panel-block-RF-BW-CANOPY-8.915400-002": [
 2.5527,
 2.6416,
 2,
@@ -88769,6 +88841,8 @@
 "solids/CN-BW-EAVE-5/z1_m": 2.289175,
 "solids/CN-BW-EAVE-6/z0_m": 2.181225,
 "solids/CN-BW-EAVE-6/z1_m": 2.289175,
+"solids/CN-BW-EAVE-E/z0_m": 2.181225,
+"solids/CN-BW-EAVE-E/z1_m": 2.289175,
 "solids/CN-BW-GCLIP-1/z0_m": 2.181225,
 "solids/CN-BW-GCLIP-1/z1_m": 2.289175,
 "solids/CN-BW-GCLIP-2/z0_m": 2.181225,
@@ -88807,20 +88881,18 @@
 "solids/CN-BW-IBASE-C/z1_m": -0.7239,
 "solids/CN-BW-IBASE-E/z0_m": -0.8636,
 "solids/CN-BW-IBASE-E/z1_m": -0.7239,
-"solids/CN-BW-JOINT-1/z0_m": 2.5540299,
-"solids/CN-BW-JOINT-1/z1_m": 2.5649352,
+"solids/CN-BW-JOINT-1/z0_m": 2.5624966,
+"solids/CN-BW-JOINT-1/z1_m": 2.5734018,
 "solids/CN-BW-JOINT-2/z0_m": 2.9604299,
 "solids/CN-BW-JOINT-2/z1_m": 2.9713352,
 "solids/CN-BW-JOINT-3/z0_m": 3.3668299,
 "solids/CN-BW-JOINT-3/z1_m": 3.3777352,
-"solids/CN-BW-JOINT-4/z0_m": 3.7732299,
-"solids/CN-BW-JOINT-4/z1_m": 3.7791151,
 "solids/CN-BW-JOINT-5/z0_m": 3.3668299,
 "solids/CN-BW-JOINT-5/z1_m": 3.3777352,
 "solids/CN-BW-JOINT-6/z0_m": 2.9604299,
 "solids/CN-BW-JOINT-6/z1_m": 2.9713352,
-"solids/CN-BW-JOINT-7/z0_m": 2.5540299,
-"solids/CN-BW-JOINT-7/z1_m": 2.5649352,
+"solids/CN-BW-JOINT-7/z0_m": 2.5624966,
+"solids/CN-BW-JOINT-7/z1_m": 2.5734018,
 "solids/CN-BW-PLATE-N/z0_m": 1.2192,
 "solids/CN-BW-PLATE-N/z1_m": 1.3335,
 "solids/CN-BW-PLATE-S/z0_m": 1.2192,

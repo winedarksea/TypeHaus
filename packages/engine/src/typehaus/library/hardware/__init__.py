@@ -37,7 +37,10 @@ from typehaus.library.hardware.braces import (
     APVKB_KNEE_BRACE,
     LAPPED_BRACE_BOLT,
 )
-from typehaus.library.hardware.diaphragm import LS30_DIAPHRAGM_BLOCKING_END_TIE
+from typehaus.library.hardware.diaphragm import (
+    LS30Z_DIAPHRAGM_BLOCKING_END_TIE,
+    LTP4Z_LATERAL_TIE_PLATE,
+)
 from typehaus.library.hardware.fasteners import (
     FASTENMASTER_TIMBERLOK,
     SDPW19_DEFLECTOR_SCREW,
@@ -164,7 +167,7 @@ STRUCTURAL_HARDWARE: tuple = (
     H25A_HURRICANE_TIE,
     H25AZ_HURRICANE_TIE,
     LS30_GABLE_END_TIE,
-    LS30_DIAPHRAGM_BLOCKING_END_TIE,
+    LS30Z_DIAPHRAGM_BLOCKING_END_TIE,
     LTP4_GABLE_TRUSS_ANCHOR,
     HGAM10_MASONRY_GUSSET,
     HETA20Z_EMBEDDED_BEAM_ANCHOR,
@@ -205,6 +208,7 @@ STRUCTURAL_HARDWARE: tuple = (
 #: report's numbers. Keeping it out of ``STRUCTURAL_HARDWARE`` keeps every BOM line, role
 #: lookup and price row exactly where it was.
 CAPACITY_ONLY_RECORDS: tuple = (
+    LTP4Z_LATERAL_TIE_PLATE,
     ABU66SS_POST_BASE,
     AC6Z_POST_CAP,
     ACE6Z_POST_CAP,

@@ -43,7 +43,7 @@ its band and every head and base: `canopy_west_band.md`.
 | term | working | value |
 |---|---|---|
 | canopy footprint | x 4.667 → 31.333, y 37.219 → 43.219 | 26.667' x 6.000' |
-| the joint | `CN-BW-JOINT-1..7`, x 6.0 → 30.0 at y 43.219 | 24.0', 7 `LSTA24` @ 4'-0" |
+| the joint | `CN-BW-JOINT-1..3, -5..7`, x 6.083 → 29.917 at y 43.219 | 23.833', 6 `LSTA24`, none at the ridge |
 | headers | 5-1/2" x 11-7/8" glulam, y 37.271 → 43.219 (from the south post's face) | 5.948' long |
 | header soffit | +7'-4" − 11.875" | +6.3438' |
 | pier top (steel, kdat) | `Site.grade` −2'-10" + 3'-0" | +0.1667' (+0'-2") |
@@ -107,18 +107,25 @@ chord force, the couple's path into the garage and the drift limit are `canopy_w
 
 ### 3b. The joint
 
-**Attachment completed 2026-10-06.** The seven strap stations and the three canopy
-trusses are retained. The straps mount directly to wood under the deck, with their 24in
-length running north-south. Along-joint E-W shear is carried by **continuous deck panels**
-nailed into the receiving gable top chord, not by the straps' axial tension rating.
-No sheathing seam is permitted at the garage gable line.
+**Attachment completed 2026-10-06, revised the same day.** Six strap stations and the three
+canopy trusses. The straps mount directly to wood under the deck, with their 24in length
+running north-south. Along-joint E-W shear is carried by **continuous deck panels** nailed
+into the receiving gable top chord, not by the straps' axial tension rating. No sheathing
+seam is permitted at the garage gable line.
 
-**Wood and cuts.** DF-L Select Structural, SG >= 0.50, dry service protected by the roof
-membrane. At each station, a bevelled **4x6** (3.5in x 5.5in dressed blank) runs between
-truss faces immediately beneath the deck on each side of the garage gable. At x=6ft and
-30ft the canopy-side member is the full-height collector block, rather than a second
-piece occupying the same wood. The bevel follows the 4:12 roof plane across the member's
-width; the ridge station has two bevels. Nothing cuts or drills the plated trusses.
+**No strap at the ridge.** `CN-BW-JOINT-4` (x=18ft) is retired: its nailer needed two bevels,
+a flat 1-1/4in strap cannot seat on that peak, and both sheets' edge nails would land on it.
+The ridge panel edge takes an ordinary panel-edge block in every bay instead. The other tags
+keep their numbers.
+
+**Wood and cuts.** Interior stations (x=10, 14, 22, 26ft): a bevelled **2-ply SPF 2x6**
+(3.0in x 5.5in) runs between truss faces immediately beneath the deck on each side of the
+garage gable, laminated with 8d HDG nails, two near each end and 12in o.c. between. The two
+end stations use the canopy's **3-1/2x16 LSL** collector blocks on the south side (§3e of
+`canopy_west_band.md`); each LSL block is flush with its header's inboard face, so the end
+straps sit on the block centre, 1in inboard of the header centreline: x=6ft 1in and 29ft 11in.
+The bevel follows the 4:12 roof plane across the member's width. Nothing cuts or drills the
+plated trusses, and no fastener goes through a truss plate.
 
 The actual cuts, in inches on the project's north-south datum, are:
 
@@ -132,49 +139,67 @@ The actual cuts, in inches on the project's north-south datum, are:
 
 The joint and strap centre stay at y=518.625in. The gable occupies the first 1.5in of the
 north leg, so a full nine-nail group at the original butt is unsuitable. Install **six
-OUTERMOST nails per strap leg**, 12 total, in existing holes, directly into the nailers
-**before installing sheathing**: 0.148in x 2.5in common nails. Omit the middle six holes.
-The selected holes start at least 4.5in from the centre; the north group's nearest nail
-is consequently >=3in from its wood end, exceeding the catalog's **2-3/8in** end distance.
-Maintain >=3/4in side edge distance and full 2.5in wood penetration. Do not create holes.
+OUTERMOST nails per strap leg**, 12 total, in existing holes, one hole line in each ply,
+directly into the nailers **before installing sheathing**: 0.148in x 2.5in HDG nails. Omit
+the middle six holes. The selected holes start at least 4.5in from the centre; the north
+group's nearest nail is consequently >=3in from its wood end, exceeding the catalog's
+**2-3/8in** end distance. Neither the hole positions nor the 4.5in inset are printed in the
+catalog: **field-verify them on the delivered strap**. The hole lines sit 1/2in each side of
+the centre, 1in from each ply's outer face, over the >=3/4in edge distance.
 
-[Simpson C-C-2026](https://www.strongtie.com/resources/literature/wood-construction-connectors-catalog),
-pp.288,291, permits reducing the straight strap load for fewer fasteners. Its LSTA24 row
-is 1,235lb with 18 nails. Conservatively reduce the **whole** rating, including its steel
-limit, in proportion to the smaller installed group:
+[Simpson C-C-2021](https://www.strongtie.com/resources/literature/wood-construction-connectors-catalog)
+p.269 rates the LSTA24 at 1,235lb with 18 nails in **both** the DF/SP and SPF/HF columns, and
+its general notes reduce the load for fewer fasteners. Conservatively reduce the **whole**
+rating, including its steel limit, in proportion to the smaller installed group:
 
 ```
 T_installed = 1,235 x (12 / 18) = 823.333 lb per strap
 ```
 
-This is a reduced installed rating, not a claim to the full ESR-2105 row. The product's
-published rating is **axial tension**; no transverse strap shear capacity is credited.
+The same table's 12-nail LSTA15 reads 955lb SPF/HF, so 823lb never overstates a 12-nail group
+in SPF. The product's published rating is **axial tension**; no transverse strap shear
+capacity is credited.
 See also [Simpson's installation guide](https://www.strongtie.com/resources/product-installers-guide/lsta-installation).
 
 **Fastening into the decks.** Nail each nailer to the 3/4in Structural I deck with two
-staggered rows of 8d common 0.131in x 2.5in nails at **3in o.c.**, 3/8in panel edge distance.
-One **LS30** at each nailer end, six 0.148in x 1.5in nails per angle (three per leg),
-joins side-grain faces to the adjacent truss. Its 3-3/8in height fits the 2x4 top chord;
-the fully nailed deck restrains rotation, as required for a single LS per connection
-(Simpson C-C-2026 p.313). Do not load the joint before the deck is fully nailed.
-The two canopy end stations use the collector blocks' end angles.
+staggered rows of 8d common HDG 0.131in x 2.5in nails at **3in o.c.**, one row per ply, 1/2in
+from its outer face and clear of the strap, starting 3/8in from the nailer ends. One
+**LS30Z** at each nailer end, six 0.148in x 1.5in HDG nails per angle (three per leg), joins
+side-grain faces to the adjacent truss, on clear chord wood. The fully nailed deck restrains
+rotation, as required for a single LS per connection (Simpson C-C-2026 p.313). Do not load
+the joint before the deck is fully nailed.
 Keep the deck continuous across the gable, with 8d at 6in into its top chord. The first
 8ft course can run from the first canopy truss (y=447.250in) to the next garage field
-truss (y=542.625in): 95.375in, within an 8ft sheet, with its end on that truss. Local
-nailer at the ridge also backs that panel edge in the last bay. Bevelled 2x4 **on-edge**
-blocks back the other panel edges in every canopy bay, allowing the full nail penetration.
+truss (y=542.625in): 95.375in, within an 8ft sheet, with its end on that truss. Bevelled
+SPF 2x4 **on-edge** blocks, three 8d HDG toenails each end, back every panel edge in every
+canopy bay **and in RF-GARAGE's first bay**, where that course ends.
 Set the panel grid out from the ridge at **3ft 9in horizontal**: 45in projects to 47.434in
 on the 4:12 slope, within a standard 48in sheet. Cut each sheet to fit with 1/8in gaps;
 no sheet bends across the ridge. Edge stations are x=6ft 9in, 10ft 6in, 14ft 3in, 18ft,
-21ft 9in, 25ft 6in and 29ft 3in; the seven strap stations remain unchanged.
+21ft 9in, 25ft 6in and 29ft 3in.
 
-Only ONE 6in boundary row at the declared SDPWS-2015 Table 4.2A 190plf is credited for
-local nailer-to-deck transfer. Two 3in rows do not multiply that allowable. Deduct 3/8in
-at each end when reading the effective nailing length. The shorter garage nailer has:
+The nailer-to-deck transfer is read **nail by nail**, NDS 2018 §12.3.1, single shear, and
+only ONE of the two 3in rows is credited. 8d common: D = 0.131in, L = 2.5in,
+F_yb = 100,000psi (NDS Table I1). Side member: the 3/4in Structural I deck, G = 0.50 (NDS
+Table 12.3.3B), l_s = 0.75in. Main member: SPF G = 0.42, or LSL at its lateral-nail G = 0.50
+(ICC-ES ESR-1387), l_m = 2.5 - 0.75 = 1.75in. R_d = K_D = 2.2. F_e = 16,600 G^1.84:
 
 ```
-length = (21.750 - 2 x 0.375) / 12 = 1.750 ft
-R      = 1.750 x 190 = 332.50 lb
+F_es = 16,600 x 0.50^1.84 = 4,636.7 psi
+SPF  F_em = 16,600 x 0.42^1.84 = 3,364.2 psi; R_e = 0.7256, R_t = 2.3333
+     k1 0.6099  k2 0.9296  k3 1.5307
+     Im 350.57  Is 207.07  II 126.29  IIIm 132.95  IIIs 84.38  IV 88.93  -> Z = 84.38 lb (IIIs)
+LSL  F_em = 4,636.7 psi; R_e = 1.0000
+     Im 483.17  Is 207.07  II 162.10  IIIm 170.65  IIIs 90.12  IV 96.98  -> Z = 90.12 lb (IIIs)
+Z' = Z x C_D 1.6 (wind): SPF 135.00 lb, LSL 144.19 lb
+```
+
+Nails in one row start 3/8in from each nailer end, at 3in: ceil(usable / 3) + 1.
+
+```
+canopy nailer, SPF    22.625 - 0.75 = 21.875in -> 9 nails x 135.00 = 1,215.0 lb
+canopy end, LSL block                             9 nails x 144.19 = 1,297.7 lb
+garage nailer, SPF    21.750 - 0.75 = 21.000in -> 8 nails x 135.00 = 1,080.0 lb
 ```
 
 The E-W resultant stands south of the joint. The same bands as §2 give:
@@ -185,31 +210,39 @@ kdat    y_V = (646.98 x 40.219 + 23.83 x 37.500 + 23.83 x 42.479) / 694.6 = 40.2
 steel   y_V = 40.207; e = 3.011ft; M = 2,052.6 lb-ft
 ```
 
-A linear strap distribution at 0, +/-4, +/-8, +/-12ft has sum x^2=448ft^2; its largest
-axial increment is M x 12/448 = **56.10lb** (steel 54.98). The cantilever chord reading
-is M/24 = **87.27lb**. These are two bounds on the same couple, not two applied moments.
-For local wood/deck transfer, take the larger of those two readings of the same couple,
-then conservatively add the separate N-S case:
+The strap stations sit at x - 18ft = +/-4, +/-8 and +/-11.917ft: sum x^2 = 444.01ft^2, and the
+strap line spans 23.833ft. A linear distribution's largest axial increment is
+M x 11.917 / 444.01 = **56.21lb** (steel 55.09). The cantilever chord reading over the strap
+line is M / 23.833 = **87.88lb** (steel 86.12), a hair over the chords' own M / 24 = 87.27lb.
+These are two bounds on the same couple, not two applied moments. For local wood/deck
+transfer, take the larger, then conservatively add the separate N-S case:
 
 ```
-local attachment demand = 1,045.1/7 + max(56.10, 87.27) = 236.56 lb
-local garage attachment = 236.56 / 332.50 = 0.711
+local attachment demand = 1,045.06/6 + max(56.21, 87.88) = 174.18 + 87.88 = 262.06 lb
+canopy nailer      262.06 / 1,215.0 = 0.216
+canopy LSL block   262.06 / 1,297.7 = 0.202
+garage nailer      262.06 / 1,080.0 = 0.243   (steel 258.14, 0.239; cast 305.54, 0.283)
 ```
+
+An earlier draft credited one diaphragm boundary row instead (the deck's unit shear times
+the SDPWS SPF factor 0.92). That bound read the cast variant at 1.13 for a nailer whose
+nails carry four times the demand, so the nails are read directly.
 
 The installed strap rows are:
 
 | row | steel | kdat | capacity |
 |---|---:|---:|---:|
-| E-W deck boundary shear | 28.40plf | 28.94plf | 190plf |
-| N-S strap tension | 147.44lb | 149.29lb | 823.33lb |
-| E-W linear strap couple | 54.98lb | 56.10lb | 823.33lb |
-| end strap, chord + N-S envelope | 232.97lb | 236.56lb | 823.33lb |
+| E-W deck boundary shear | 28.60plf | 29.14plf | 190plf |
+| N-S strap tension | 172.02lb | 174.18lb | 823.33lb |
+| E-W linear strap couple | 55.09lb | 56.21lb | 823.33lb |
+| end strap, chord + N-S envelope | 257.54lb | 261.45lb | 823.33lb |
 
-The engineering check requires actual wood on both sides, roof-plane contact, penetration,
-end and edge distances, the reduced schedule and the continuous deck declaration. Removing
-one nailer or raising it off the roof plane makes the record INCOMPLETE by connector name.
-This completes the draft attachment basis; the truss fabricator's component drawings and
-the project's professional engineering review remain separate requirements.
+The engineering check requires actual wood on both sides with specific gravity >=0.42, a declared deck layer with a published specific gravity,
+roof-plane contact, penetration, end and edge distances, the reduced schedule and the
+continuous deck declaration. Removing one nailer or raising it off the roof plane makes the
+record INCOMPLETE by connector name. This completes the draft attachment basis; the truss
+fabricator's component drawings (which place the plates every LS30Z must clear) and the
+project's professional engineering review remain separate requirements.
 
 ### 3c. Gable frame into `W-G-S` — `CN-BW-GCLIP-1..7`
 

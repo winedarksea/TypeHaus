@@ -67,7 +67,9 @@ BASIS = ("AWC SDPWS-2015 §4.2 (diaphragms, §4.2.5.2 open front) and §4.3 (she
 #: 3: collector plates require modeled blocking and both wood attachment faces — 2026-10-05.
 #: 4: joint nailers require deck contact and nail margins; straps use installed axial
 #: ratings, while continuous decking carries transverse shear — 2026-10-06.
-BASIS_VERSION = "4"
+#: 5: joint nailers read nail by nail (NDS 12.3.1) at their own species; the chord's tie
+#: into its end strap's block is graded — 2026-10-06.
+BASIS_VERSION = "5"
 
 oracled_by(
     KIND,
@@ -177,7 +179,9 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
                          else wind.delivered_lb(axis)) for axis in ("x", "y")}
         resultants = {axis: _resultant(ctx, resolved_roof, wind, by_axis.get(axis), axis)
                       for axis in ("x", "y")}
-        rows = delivery_rows(ctx, element, resolved_roof, wind, shears, resultants)
+        shares = {q.name.removeprefix("collector_clip_each_"): q.value for q in inputs
+                  if q.name.startswith("collector_clip_each_")}
+        rows = delivery_rows(ctx, element, resolved_roof, wind, shears, resultants, shares)
         states.extend(rows.states)
         inputs.extend(rows.inputs)
         notes.extend(rows.notes)

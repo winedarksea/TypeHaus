@@ -50,6 +50,56 @@ def truss_faces(roof):
     return sorted(faces)
 
 
+def _run(axis, station, lo, hi):
+    """Plan end points of a member at ``station`` across the trusses, from lo to hi."""
+    p0, p1 = [0.0, 0.0], [0.0, 0.0]
+    p0[1 - axis] = p1[1 - axis] = station
+    p0[axis], p1[axis] = lo, hi
+    return tuple(p0), tuple(p1)
+
+
+def _collector_blocks(model, roof, spec, axis, bays, additions):
+    """Blocks on each declared collector; returns their (centre, half width) stations."""
+    span_axis = 1 - axis
+    beams = []
+    for recipe in spec.collector_blocking:
+        solid = next((s for s in model.solids if s.tag == recipe.collector), None)
+        beam = model.plan.by_tag(recipe.collector)
+        if solid is None or beam is None:
+            continue
+        points = [model.plan.by_tag(getattr(beam, name)).position.xy_m
+                  for name in ("start_node", "end_node")]
+        across = [p[span_axis] for p in solid.outline]
+        beams.append((recipe, solid, sorted(p[axis] for p in points), min(across),
+                      max(across)))
+    if not beams:
+        return []
+    middle = sum((lo + hi) / 2 for *_rest, lo, hi in beams) / len(beams)
+    extents = []
+    for recipe, solid, limits, face_lo, face_hi in beams:
+        half = cross_section(recipe.stock).width_m / 2
+        station = (face_lo + face_hi) / 2
+        if recipe.flush == "inboard":
+            station = face_hi - half if station < middle else face_lo + half
+        extents.append((station, half))
+        for i, (lo, hi) in enumerate(bays):
+            lo, hi = max(lo, limits[0]), min(hi, limits[1])
+            if hi - lo <= GEOMETRY_TOLERANCE_M:
+                continue
+            member = deck_block(
+                roof, f"collector-block-{recipe.collector}-{i:03d}", recipe.stock,
+                recipe.material, *_run(axis, station, lo, hi), base=solid.z1_m,
+                connection=DIAPHRAGM_BLOCK_CONNECTION)
+            if member:
+                additions[roof.uid].append(member)
+    return extents
+
+
+def _within(station, extents):
+    return any(abs(station - centre) <= half + GEOMETRY_TOLERANCE_M
+               for centre, half in extents)
+
+
 def frame_diaphragm_attachments(model: ResolvedModel) -> None:
     """A second pass: the receiving roof's trusses must already be framed."""
     additions = {roof.uid: [] for roof in model.roofs}
@@ -66,82 +116,63 @@ def frame_diaphragm_attachments(model: ResolvedModel) -> None:
         delivery = spec.delivers_to
         receiver = next((r for r in model.roofs if delivery and r.tag == delivery.roof), None)
         receiving_faces = truss_faces(receiver) if receiver else []
-        bays = [(a[1], b[0]) for a, b in zip(faces, faces[1:], strict=False)]
+        bays = [(roof, a[1], b[0]) for a, b in zip(faces, faces[1:], strict=False)]
         if delivery and receiving_faces and receiving_faces[0][0] > faces[-1][1]:
-            bays.append((faces[-1][1], receiving_faces[0][0]))
-        collectors = []
-        for recipe in spec.collector_blocking:
-            solid = next((s for s in model.solids if s.tag == recipe.collector), None)
-            beam = model.plan.by_tag(recipe.collector)
-            if solid is None or beam is None:
-                continue
-            points = [model.plan.by_tag(getattr(beam, name)).position.xy_m
-                      for name in ("start_node", "end_node")]
-            station = sum(p[span_axis] for p in points) / 2
-            collectors.append(station)
-            limits = sorted(p[axis] for p in points)
-            for i, (lo, hi) in enumerate(bays):
-                p0, p1 = [0.0, 0.0], [0.0, 0.0]
-                p0[span_axis] = p1[span_axis] = station
-                p0[axis], p1[axis] = max(lo, limits[0]), min(hi, limits[1])
-                member = deck_block(
-                    roof, f"collector-block-{recipe.collector}-{i:03d}", recipe.stock,
-                    recipe.material, tuple(p0), tuple(p1), base=solid.z1_m,
-                    connection=DIAPHRAGM_BLOCK_CONNECTION)
-                if member:
-                    additions[roof.uid].append(member)
-        if spec.panel_edge_blocking and spec.panel_width and len(collectors) >= 2:
-            # Panels stop at the ridge fold. The declared module is a plan projection,
-            # chosen to fit the sheet's physical width after allowing for the roof pitch.
+            bays.append((roof, faces[-1][1], receiving_faces[0][0]))
+        recipe = delivery.joint_nailing if delivery else None
+        # A continuous deck runs its first sheet course into the receiver's first bay, so
+        # those sheet edges need the same backing there.
+        receiver_bay = ((receiver, receiving_faces[0][1], receiving_faces[1][0])
+                        if recipe and recipe.continuous_deck and len(receiving_faces) >= 2
+                        else None)
+        extents = _collector_blocks(model, roof, spec, axis,
+                                    [(lo, hi) for _host, lo, hi in bays], additions)
+        joints = ([(tag, connector.position.xy_m[span_axis])
+                   for tag in delivery.joint_refs
+                   if (connector := model.plan.by_tag(tag)) is not None]
+                  if recipe else [])
+        joint_stations = [station for _tag, station in joints]
+        panel = spec.panel_edge_blocking
+        if panel and len(extents) >= 2:
+            # Panels stop at the ridge fold. The module is a plan projection, chosen to fit
+            # the sheet's physical width after allowing for the roof pitch.
+            low = min(c for c, _h in extents)
+            high = max(c for c, _h in extents)
             ridge = roof_ridge_coordinate(roof)
-            anchor = ridge if ridge is not None else min(collectors)
-            stations = [anchor] if min(collectors) < anchor < max(collectors) else []
+            anchor = ridge if ridge is not None else low
+            stations = [anchor] if low < anchor < high else []
             for direction in (-1, 1):
-                station = anchor + direction * spec.panel_width.meters
-                while (min(collectors) + GEOMETRY_TOLERANCE_M < station
-                       < max(collectors) - GEOMETRY_TOLERANCE_M):
+                station = anchor + direction * panel.module.meters
+                while low + GEOMETRY_TOLERANCE_M < station < high - GEOMETRY_TOLERANCE_M:
                     stations.append(station)
-                    station += direction * spec.panel_width.meters
-            joint_stations = ([connector.position.xy_m[span_axis]
-                               for tag in delivery.joint_refs
-                               if (connector := model.plan.by_tag(tag)) is not None]
-                              if delivery and delivery.joint_nailing else [])
+                    station += direction * panel.module.meters
+            joint_bays = {len(bays) - 1} if recipe else set()
             for station in sorted(stations):
-                for i, (lo, hi) in enumerate(bays):
-                    # Only coincident panel edges may reuse a joint nailer.
-                    if (i == len(bays) - 1
+                for i, (host, lo, hi) in enumerate([*bays, *([receiver_bay]
+                                                            if receiver_bay else [])]):
+                    # Only a coincident panel edge may reuse a joint nailer.
+                    if ((i in joint_bays or host is receiver)
                             and any(abs(station - s) < GEOMETRY_TOLERANCE_M
                                     for s in joint_stations)):
                         continue
-                    p0, p1 = [0.0, 0.0], [0.0, 0.0]
-                    p0[span_axis] = p1[span_axis] = station
-                    p0[axis], p1[axis] = lo, hi
                     member = deck_block(
-                        roof, f"panel-block-{station:.6f}-{i:03d}", spec.panel_edge_blocking,
-                        spec.collector_blocking[0].material, tuple(p0), tuple(p1),
+                        host, f"panel-block-{roof.tag}-{station:.6f}-{i:03d}", panel.stock,
+                        panel.material, *_run(axis, station, lo, hi),
                         connection=PANEL_EDGE_BLOCK_CONNECTION)
                     if member:
-                        additions[roof.uid].append(member)
-        if not (delivery and delivery.joint_nailing and receiver and len(receiving_faces) >= 2):
+                        additions[host.uid].append(member)
+        if not (recipe and receiver and len(receiving_faces) >= 2):
             continue
-        recipe = delivery.joint_nailing
-        for tag in delivery.joint_refs:
-            connector = model.plan.by_tag(tag)
-            if connector is None:
-                continue
-            station = connector.position.xy_m[span_axis]
+        for tag, station in joints:
             for host, lo, hi, side in (
                 (roof, faces[-1][1], receiving_faces[0][0], "south"),
                 (receiver, receiving_faces[0][1], receiving_faces[1][0], "north"),
             ):
-                if side == "south" and any(abs(station - s) < GEOMETRY_TOLERANCE_M
-                                            for s in collectors):
+                # The end straps nail into the collector blocks they land on.
+                if side == "south" and _within(station, extents):
                     continue
-                p0, p1 = [0.0, 0.0], [0.0, 0.0]
-                p0[span_axis] = p1[span_axis] = station
-                p0[axis], p1[axis] = lo, hi
                 member = deck_block(host, f"joint-nailer-{tag}-{side}", recipe.stock,
-                                    recipe.material, tuple(p0), tuple(p1),
+                                    recipe.material, *_run(axis, station, lo, hi),
                                     connection=JOINT_NAILER_CONNECTION)
                 if member:
                     additions[host.uid].append(member)

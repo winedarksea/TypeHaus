@@ -3317,16 +3317,16 @@
           88.0
         ],
         [
-          69.25000000000001,
+          71.25,
           88.0
         ],
         [
-          69.25000000000001,
-          99.83333333333337
+          71.25,
+          100.50000000000003
         ],
         [
-          72.00000000000001,
-          100.75000000000003
+          73.0,
+          101.08333333333336
         ],
         [
           74.75000000000001,
@@ -3349,16 +3349,16 @@
           88.0
         ],
         [
-          69.25000000000001,
+          71.25,
           88.0
         ],
         [
-          69.25000000000001,
-          99.83333333333337
+          71.25,
+          100.50000000000003
         ],
         [
-          72.00000000000001,
-          100.75000000000003
+          73.0,
+          101.08333333333336
         ],
         [
           74.75000000000001,
@@ -3370,15 +3370,14 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "YX2GDZJMBV",
-      "material": "df-select-s4s",
-      "fill": "#d9b077"
+      "material": "lsl"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          362.75000000000006,
+          360.74999999999994,
           88.0
         ],
         [
@@ -3390,12 +3389,12 @@
           101.66666666666669
         ],
         [
-          360.0,
-          100.75
+          359.0,
+          101.08333333333336
         ],
         [
-          362.75000000000006,
-          99.83333333333333
+          360.74999999999994,
+          100.50000000000003
         ]
       ],
       "layer": "S-FRAM",
@@ -3410,7 +3409,7 @@
       "node": "hatch",
       "boundary": [
         [
-          362.75000000000006,
+          360.74999999999994,
           88.0
         ],
         [
@@ -3422,12 +3421,12 @@
           101.66666666666669
         ],
         [
-          360.0,
-          100.75
+          359.0,
+          101.08333333333336
         ],
         [
-          362.75000000000006,
-          99.83333333333333
+          360.74999999999994,
+          100.50000000000003
         ]
       ],
       "pattern": "lumber",
@@ -3435,8 +3434,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "YX2GDZJMBV",
-      "material": "df-select-s4s",
-      "fill": "#d9b077"
+      "material": "lsl"
     },
     {
       "space": "model",
@@ -3468,7 +3466,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "YX2GDZJMBV",
-      "tag": "panel-block-2.057400-001"
+      "tag": "panel-block-RF-BW-CANOPY-2.057400-001"
     },
     {
       "space": "model",
@@ -3500,8 +3498,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "YX2GDZJMBV",
-      "material": "df-select-s4s",
-      "fill": "#d9b077"
+      "material": "spf"
     },
     {
       "space": "model",
@@ -3533,7 +3530,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "YX2GDZJMBV",
-      "tag": "panel-block-3.200400-001"
+      "tag": "panel-block-RF-BW-CANOPY-3.200400-001"
     },
     {
       "space": "model",
@@ -3565,8 +3562,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "YX2GDZJMBV",
-      "material": "df-select-s4s",
-      "fill": "#d9b077"
+      "material": "spf"
     },
     {
       "space": "model",
@@ -3598,7 +3594,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "YX2GDZJMBV",
-      "tag": "panel-block-4.343400-001"
+      "tag": "panel-block-RF-BW-CANOPY-4.343400-001"
     },
     {
       "space": "model",
@@ -3630,8 +3626,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "YX2GDZJMBV",
-      "material": "df-select-s4s",
-      "fill": "#d9b077"
+      "material": "spf"
     },
     {
       "space": "model",
@@ -3663,7 +3658,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "YX2GDZJMBV",
-      "tag": "panel-block-5.486400-001"
+      "tag": "panel-block-RF-BW-CANOPY-5.486400-001"
     },
     {
       "space": "model",
@@ -3695,8 +3690,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "YX2GDZJMBV",
-      "material": "df-select-s4s",
-      "fill": "#d9b077"
+      "material": "spf"
     },
     {
       "space": "model",
@@ -3728,7 +3722,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "YX2GDZJMBV",
-      "tag": "panel-block-6.629400-001"
+      "tag": "panel-block-RF-BW-CANOPY-6.629400-001"
     },
     {
       "space": "model",
@@ -3760,8 +3754,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "YX2GDZJMBV",
-      "material": "df-select-s4s",
-      "fill": "#d9b077"
+      "material": "spf"
     },
     {
       "space": "model",
@@ -3793,7 +3786,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "YX2GDZJMBV",
-      "tag": "panel-block-7.772400-001"
+      "tag": "panel-block-RF-BW-CANOPY-7.772400-001"
     },
     {
       "space": "model",
@@ -3825,8 +3818,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "YX2GDZJMBV",
-      "material": "df-select-s4s",
-      "fill": "#d9b077"
+      "material": "spf"
     },
     {
       "space": "model",
@@ -3858,7 +3850,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "YX2GDZJMBV",
-      "tag": "panel-block-8.915400-001"
+      "tag": "panel-block-RF-BW-CANOPY-8.915400-001"
     },
     {
       "space": "model",
@@ -3890,8 +3882,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "YX2GDZJMBV",
-      "material": "df-select-s4s",
-      "fill": "#d9b077"
+      "material": "spf"
     },
     {
       "space": "model",

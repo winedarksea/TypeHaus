@@ -13,11 +13,8 @@ def diaphragm_framing_notes(model, roof):
             material = model.plan.library.material(recipe.material)
             wood = material.name if material else f"UNRESOLVED WOOD {recipe.material}"
             notes.append(f"COLLECTOR {recipe.collector}, {wood}: {recipe.fastening}")
-        if spec.panel_edge_blocking and spec.panel_width:
-            notes.append(f"PANEL EDGE BLOCKS: {spec.panel_edge_blocking} on edge, bevel top "
-                         f"to deck; {spec.panel_width.fmt()} horizontal module from ridge "
-                         "on both slopes. Cut standard sheets to fit with 1/8in gaps; "
-                         "block every panel edge in every bay.")
+        if spec.panel_edge_blocking:
+            notes.append(_panel_note(model, spec.panel_edge_blocking, ""))
     for owner in model.plan.all_elements():
         if not isinstance(owner, Roof) or owner.diaphragm is None:
             continue
@@ -30,4 +27,17 @@ def diaphragm_framing_notes(model, roof):
         wood = material.name if material else f"UNRESOLVED WOOD {recipe.material}"
         notes.append(f"JOINT {owner.tag} TO {delivery.roof}, {wood}: {recipe.fastening}")
         notes.append(f"JOINT ATTACHMENT BASIS: {recipe.source}.")
+        # The owner's continuous first sheet course reaches this roof's first bay.
+        panel = owner.diaphragm.panel_edge_blocking
+        if roof.tag == delivery.roof and recipe.continuous_deck and panel:
+            notes.append(_panel_note(model, panel, f" IN THE FIRST BAY, FROM {owner.tag}"))
     return notes
+
+
+def _panel_note(model, panel, where):
+    material = model.plan.library.material(panel.material)
+    wood = material.name if material else f"UNRESOLVED WOOD {panel.material}"
+    return (f"PANEL EDGE BLOCKS{where}, {wood}: {panel.stock} on edge, bevel top to deck; "
+            f"{panel.module.fmt()} horizontal module from ridge on both slopes. Cut standard "
+            "sheets to fit with 1/8in gaps; block every panel edge in every bay. "
+            f"{panel.fastening}")

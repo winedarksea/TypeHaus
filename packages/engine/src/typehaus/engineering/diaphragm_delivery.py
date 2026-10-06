@@ -50,6 +50,8 @@ class DeliveryRows:
     notes: list[str] = field(default_factory=list)
     missing: list[str] = field(default_factory=list)
     element_tags: list[str] = field(default_factory=list)
+    #: Each collector plate's own N-S share, by collector tag, from the band's row.
+    collector_shares: dict[str, float] = field(default_factory=dict)
 
 
 def _xy_ft(element: Any) -> tuple[float, float] | None:
@@ -65,7 +67,8 @@ def _direction(axis: str) -> str:
 
 
 def delivery_rows(ctx: Any, element: Any, resolved_roof: Any, wind: Any,
-                  shears: dict[str, float], resultants: dict[str, float]) -> DeliveryRows:
+                  shears: dict[str, float], resultants: dict[str, float],
+                  collector_shares: dict[str, float] | None = None) -> DeliveryRows:
     """Every row a declared ``delivers_to`` owes.
 
     ``shears`` is the deck-level ASD shear per axis (the frame's own where cast columns
@@ -75,7 +78,7 @@ def delivery_rows(ctx: Any, element: Any, resolved_roof: Any, wind: Any,
     from typehaus.engineering.lateral_lines import on_boundary, panel_runs_along
     from typehaus.model.spatial import Roof
 
-    rows = DeliveryRows()
+    rows = DeliveryRows(collector_shares=dict(collector_shares or {}))
     delivery = element.diaphragm.delivers_to
     receiver = ctx.plan.by_tag(delivery.roof)
     if not isinstance(receiver, Roof) or receiver.diaphragm is None:

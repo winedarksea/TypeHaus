@@ -184,7 +184,7 @@ _buildings = (
     Building(uid="8JB41G4FNP", tag="garage", name="Garage", kind="accessory"),
     Building(uid="4RASW24NKX", tag="court", name="Sunken garden, porch and balcony",
              kind="accessory"),
-    # The north bridge landing and its screen. Strapped to the GARAGE (seven LSTA24s) and
+    # The north bridge landing and its screen. Strapped to the GARAGE (six LSTA24s) and
     # bearing nothing at the house end, which is a movement joint. Its own building precisely
     # because it is physically continuous with both and belongs to neither — which is also why
     # membership here is AUTHORED and then verified, never derived from the wall graph.

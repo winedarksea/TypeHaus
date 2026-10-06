@@ -28,10 +28,14 @@ MATERIALS: tuple[Material, ...] = (
         name="Laminated strand lumber",
         r_per_inch=1.25,
         density=650.0,
+        # Lateral nail capacity only; withdrawal reads 0.42 on the edge (ICC-ES ESR-1387).
+        specific_gravity=0.50,
         hatch="lumber",
         color="#cbb98e",
         source="R-value per ifcplot port; no published ASTM E96 rating located, so "
-        "the vapour fields stay unset (Glaser reports UNKNOWN, never a guess)",
+        "the vapour fields stay unset (Glaser reports UNKNOWN, never a guess); "
+        "ICC-ES ESR-1387 TimberStrand LSL equivalent specific gravity 0.50 for lateral "
+        "nail design",
     ),
     # Laminated VENEER lumber, the sibling of ``lsl`` and a different product: rotary-peeled
     # veneers laid parallel and glued, rather than stranded flakes. It is authored here and

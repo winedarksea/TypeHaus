@@ -32,7 +32,9 @@ _ROWS = {
     "W-BW-SCREEN chord hold-down, full height": (2243.5, 3060.0),
     "W-BW-SCREEN chord base shear, one base": (1045.06, 1270.0),
     "diaphragm unit shear at W-BW-SCREEN": (174.18, 190.0),
-    "LSTA24 end straps, chord force + across share": (236.6, 823.3333333333334),
+    "LSTA24 end straps, chord force + across share": (261.45, 823.3333333333334),
+    "BM-BW-RW chord into CN-BW-JOINT-1's block": (217.81, 450.0),
+    "BM-BW-RE chord into CN-BW-JOINT-7's block": (87.27, 450.0),
     "W-G-W joint couple, E-W case": (5.02, 182.5),
     "W-G-E joint couple, E-W case": (4.43, 182.5),
 }

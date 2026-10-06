@@ -7,10 +7,12 @@ reader still imports them from the one place the sibling published-read types ar
 
 from __future__ import annotations
 
-from pydantic import field_validator
-
 from typehaus.model.base import HausModel
-from typehaus.model.diaphragm_attachment import CollectorBlocking, JointNailing
+from typehaus.model.diaphragm_attachment import (
+    CollectorBlocking,
+    JointNailing,
+    PanelEdgeBlocking,
+)
 from typehaus.quantities import Length
 
 
@@ -115,19 +117,10 @@ class DiaphragmSpec(HausModel):
     #: one that is not in the model is the failure this whole type exists to prevent.
     collector_refs: tuple[str, ...] = ()
     collector_blocking: tuple[CollectorBlocking, ...] = ()
-    #: Panel-edge blocks under the deck. Width is the horizontal module from the ridge;
-    #: its pitched length must fit the physical sheet width.
-    panel_edge_blocking: str | None = None
-    panel_width: Length | None = None
+    panel_edge_blocking: PanelEdgeBlocking | None = None
     #: Σ(Δ_c x) / (2W) — the chord-splice slip term of SDPWS 4.2.2, inches. Zero where the
     #: chord is continuous over the span and has no splice to slip.
     chord_splice_slip: Length | None = None
     #: The neighbouring structure this deck hands its shear to, or ``None``.
     delivers_to: DiaphragmDelivery | None = None
 
-    @field_validator("panel_width")
-    @classmethod
-    def positive_panel_width(cls, value: Length | None) -> Length | None:
-        if value is not None and value.meters <= 0:
-            raise ValueError("panel width must be positive")
-        return value

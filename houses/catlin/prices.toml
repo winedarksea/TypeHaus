@@ -877,6 +877,10 @@
 # LS30 skewable angles since 2026-09-16 (were H10A): stud to rafter flange, a lateral joint
 # rather than uplift. Commodity list band, not a quote.
 "LS30" = { low = 1.25, high = 3.0 }  # 22 ea — all derived, attic gable-end walls
+# The canopy's diaphragm block and nailer end angles, ZMAX by owner choice for an open
+# canopy (2026-10-06). Budget band: the LS30 row above scaled ~1.25x for the G185 coating;
+# confirm with the supplier.
+"LS30Z" = { low = 1.6, high = 3.8 }  # 32 ea — derived, RF-BW-CANOPY / RF-GARAGE blocking ends
 # The garage's two gable ends take no LS30 since 2026-09-16: the gable-end truss carries the
 # gable's lateral load in its design; one LTP4 ties each truss to W-G-S/N's plate (billed
 # under "LTP4" below, was an HGA10) and the H2.5A at each heel takes uplift.
@@ -1058,6 +1062,9 @@
 # band. NOT on a wall standing on concrete: that plate is a sill and its MASA anchors
 # already make the connection, so the takeoff excludes it rather than paying twice.
 "LTP4" = { low = 1.1, high = 2.2 }  # 108 ea
+# The canopy's collector plates into treated glulam (CN-BW-EAVE-1..6, -E): ZMAX with HDG
+# nails, Simpson publishing no stainless LTP4. Budget band: the LTP4 row scaled ~1.3x.
+"LTP4Z" = { low = 1.4, high = 2.9 }  # 7 ea — authored
 # Post cap for a beam that STOPS on a 6x6 rather than running past it. Nothing derives
 # it — the derived rule uses the cheaper, stronger KBS1Z strap (see houses/catlin/
 # notes/uplift_load_path.md) — so this row prices the authored one-offs only.
@@ -1070,7 +1077,7 @@
 # NOT do. A 24" x 1-1/4" 20ga strap tie is $3.50-4.50 single-piece retail (Fasteners Plus /
 # Home Depot, 2026); the low end is the contractor carton this section discounts to
 # throughout, the high end carries the twelve 10d x 1-1/2" nails H5S specifies per strap.
-"LSTA24" = { low = 2.75, high = 5.5 }  # 26 ea — 19 derived over the house ridge, 7 authored as CN-BW-JOINT-1..7, the diaphragm continuity ties across the garage south wall line
+"LSTA24" = { low = 2.75, high = 5.5 }  # 25 ea — 19 derived over the house ridge, 6 authored as CN-BW-JOINT-1..3, -5..7, the diaphragm continuity ties across the garage south wall line
 "LUS" = { low = 2, high = 6 }  # 13 ea
 # Level I-joist hangers authored on the three flush LVLs (BM-M-HALL, BM-S-HALL, BM-S-BATH-E).
 # ESTIMATE, unconfirmed: single-piece retail band for an IUS2.56/11.88, carton at the low end.

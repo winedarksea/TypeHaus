@@ -80,7 +80,8 @@ def test_canopy_joint_straps_follow_the_roof_and_cross_the_garage_joint(catlin_m
 
     roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-BW-CANOPY")
     solids = {s.tag: s for s in catlin_model_ro.solids}
-    for station in range(1, 8):
+    # No JOINT-4: a flat strap cannot seat on the ridge (canopy_garage_diaphragm.md §3b).
+    for station in (1, 2, 3, 5, 6, 7):
         tag = f"CN-BW-JOINT-{station}"
         element = catlin_model_ro.plan.by_tag(tag)
         solid = solids[tag]
@@ -134,6 +135,13 @@ def test_canopy_eave_plates_share_header_and_blocking_attachment_faces(catlin_mo
                        if face.distance(Point(p[:2])) < 1e-8]
         assert any(header.z0_m < p[2] < header.z1_m for p in facing_wood)
         assert any(p[2] > header.z1_m for p in facing_wood)
+    # The east plate, on "-y", lands on BM-BW-RE's WEST (inboard) face, where its block is.
+    east = next(s for s in catlin_model_ro.solids if s.tag == "BM-BW-RE")
+    plate = catlin_model_ro.plan.by_tag("CN-BW-EAVE-E")
+    assert not collector_attachment_missing(catlin_model_ro, roof.tag, east.tag, [plate])
+    west_face = min(p[0] for p in east.outline)
+    assert max(p[0] for p in solids["CN-BW-EAVE-E"].body_mesh.positions) == pytest.approx(
+        west_face, abs=1e-6)
 
 
 def test_derived_lateral_plates_are_on_the_sill_face(catlin_model_ro):

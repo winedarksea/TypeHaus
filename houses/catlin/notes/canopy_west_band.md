@@ -171,27 +171,32 @@ Fc-perp, Table 4D SP No. 2 timbers 375 x wet C_M 0.67 = 251.25 psi      0.396
 blocking; an H2.5ASS carries ~110 lb of lateral, so three heel ties are nowhere near it. Six
 LTP4, two per bay, blocking to glulam top, C-C-2019 p. 280 SPF/HF (the lower direction):
 
-**Attachment completed 2026-10-06.** Each eave now has three solid DF-L Select Structural
-blocks cut from **6x16 stock** (5.5in x 15.5in dressed). They seat directly on their header,
-run between truss faces, and have a bevelled top touching the roof deck. The west blocks'
-east faces align with the glulam's east face and with every LTP4 upper nailing half.
-The roof plane is 12.75in above the header at its centre and 13-2/3in at its east edge;
-the 15.5in blank accommodates that bevel. The last block runs to the garage gable's
-south face; local strap nailers at x=6ft and 30ft use these blocks rather than overlapping
-new lumber. The recipe is `RF-BW-CANOPY.diaphragm` in `plan/storeys/garage.py` and follows the final framing.
+**Attachment completed 2026-10-06, revised the same day.** Each eave has three solid
+**3-1/2x16 LSL** blocks (3.5in x 16in, stock rim/header). They seat directly on their header,
+run between truss faces, and have a bevelled top touching the roof deck. Each block is flush
+with its header's **inboard** face: the west blocks' east faces align with the glulam's east
+face and with every LTP4Z upper nailing half; the east blocks' west faces with BM-BW-RE's
+west face. The roof plane is 12.75in above the header at its centre and 13-2/3in at the
+blocks' inboard faces; the 16in blank accommodates that bevel. The last block runs to the
+garage gable's south face and is the south nailer for the end strap on its line (diaphragm
+note §3b), whose centre it carries 1in inboard of the header centreline. LSL nails at a
+lateral G of 0.50 (ICC-ES ESR-1387). The recipe is `RF-BW-CANOPY.diaphragm` in
+`plan/storeys/garage.py` and follows the final framing.
 
-**Fastening.** Each LTP4 receives **12 0.131in x 1.5in nails**, six into the block and six
-into the glulam, directly to wood; no intervening sheathing and no reduction for it.
-One LS30 at each block end, six 0.148in x 1.5in nails per angle (three per leg), attaches
-side-grain faces to the adjacent truss. Its 3-3/8in height fits a 2x4 top chord; the fully
-nailed deck restrains rotation (C-C-2026 p.313). Do not load before that deck nailing is
-complete. The deck gets 8d common at 6in boundary
-spacing. The canopy's intermediate panel edges are backed by bevelled 2x4 on-edge blocks;
-the ridge edge in the joint bay reuses its larger longitudinal nailer. The 3ft 9in
+**Fastening.** Each LTP4Z receives **12 0.131in x 1.5in HDG nails**, six into the block and
+six into the glulam, directly to wood; no intervening sheathing and no reduction for it.
+ZMAX with HDG nails because the glulam is treated (IRC R317.3.1); Simpson publishes no
+stainless LTP4, so the house's stainless rule yields at these seven plates.
+One LS30Z at each block end, six 0.148in x 1.5in HDG nails per angle (three per leg),
+attaches side-grain faces to the adjacent truss on clear chord or heel wood, never through a
+truss plate. Its 3-3/8in height fits a 2x4 top chord; the fully nailed deck restrains
+rotation (C-C-2026 p.313). Do not load before that deck nailing is complete. The deck gets
+8d common HDG at 6in boundary spacing. The canopy's panel edges, the ridge included, are
+backed by bevelled SPF 2x4 on-edge blocks with three 8d HDG toenails each end. The 3ft 9in
 horizontal sheet grid and the remaining blocks are detailed in diaphragm note §3b.
 
 The collector prerequisite reads the actual bevel at each plate, not its bounding-box top.
-All six plates now have both wood faces. End angles, nails and cut stock appear in takeoff.
+All six plates, and §6's `CN-BW-EAVE-E`, have both wood faces. End angles, nails and cut stock appear in takeoff.
 See [Simpson's LTP4 installation](https://www.strongtie.com/resources/product-installers-guide/ltp4-ltp5-installation)
 and C-C-2026 pp.309-310 for direct-to-wood fastening.
 
@@ -396,7 +401,11 @@ at 16.8315 psf = 646.97 lb, plus 2 x 23.83 = **694.62 lb**. Its resultant (the d
 M = 694.62 x 3.0153 = 2,094.5 lb-ft
 chord force  M / W' = 2,094.5 / 24.000 = 87.3 lb in each header
   glulam, Table 5A 24F-V4 Ft 1,100 x wet 0.80 x C_D 1.6 = 1,408 psi; 87.3 / 65.3 in2 = 1.34 psi   0.001
-  end strap (LSTA24): 87.3 + 1,045.1 / 7 = 236.6 lb vs 823.33 (12/18 nails)                 0.287
+  end strap (LSTA24): 87.3 + 1,045.1 / 6 = 261.5 lb vs 823.33 (12/18 nails)                 0.318
+  chord into the end strap's LSL block: header and block are two pieces, so a plate joins them
+    west, CN-BW-EAVE-5/-6 share it, each also carrying its §3e collector share:
+      87.3 / 2 + 174.2 = 217.8 lb vs LTP4Z 450 (SPF/HF, lower direction)                   0.484
+    east, CN-BW-EAVE-E alone (the east header is no collector): 87.3 lb vs 450             0.194
 the couple into RF-GARAGE: M / 24.000' = 87.3 lb on each of W-G-W and W-G-E, E-W case
   W-G-W  87.3 / 17.392' = 5.02 plf vs 182.5  0.027      W-G-E  87.3 / 19.725' = 4.43 plf  0.024
 ```
