@@ -221,9 +221,6 @@ def _resolve_stair(
     members = lower_stair_substrates(members, finish_thickness_m)
     deck = _landing_deck(model, stair)
     if deck is not None:
-        if deck.stack_thickness_m > _tread_thickness(stair) + 1e-9:
-            return None, [_error("integrity.stair_landing_deck", f"stair {stair.tag}'s landing "
-                                 "stack is thicker than its treads", stair.tag)]
         members = set_landing_stack(members, deck.stack_thickness_m, _tread_thickness(stair))
     if opening is None:
         outline = _flight_footprint(stair, going_m, risers)

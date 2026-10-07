@@ -1,4 +1,5 @@
-"""ST-M2S's landing: a 3/4" + 3/4" floor stack whose landing tread lips down to tread depth."""
+"""ST-M2S's landing: a 3/4" + 3/4" floor stack, thicker than the 1" treads, whose landing
+tread lips down to tread depth."""
 
 import pytest
 
@@ -24,7 +25,7 @@ def test_the_landing_deck_is_the_floor_stack_and_its_framing_meets_it(catlin_mod
                                               f"landing-rim-{name}-"))]
         assert framing and all(m.z1_m == pytest.approx(deck.z0_m) for m in framing)
     tread = _member(stair, "tread-lower-000")
-    assert tread.z1_m - tread.z0_m == pytest.approx(inch(1.75).meters)
+    assert tread.z1_m - tread.z0_m == pytest.approx(inch(1).meters)
 
 
 def test_only_an_arrival_edge_carries_a_lip_over_its_riser(catlin_model_ro):
@@ -36,7 +37,7 @@ def test_only_an_arrival_edge_carries_a_lip_over_its_riser(catlin_model_ro):
     deck = _member(stair, "landing-lower")
     # Tread depth down from the walking face: the riser below tops out at its underside.
     assert lip.z1_m == pytest.approx(deck.z1_m)
-    assert lip.z1_m - lip.z0_m == pytest.approx(inch(1.75).meters)
+    assert lip.z1_m - lip.z0_m == pytest.approx(inch(1).meters)
     head = next(m for m in stair.members if m.category == "riser"
                 and m.z1_m == pytest.approx(lip.z0_m))
     assert head.child_key.startswith("riser-lower-")

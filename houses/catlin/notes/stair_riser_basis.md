@@ -20,7 +20,7 @@ only if it is more than 30" above the floor or grade below.
 - **Above 30"** is read at the opening's TOP (conservative), over the flight's springing
   floor.
 - **Landing edge**: ST-M2S's landing is 3/4" oak on 3/4" ply (1.5"), but its landing tread's
-  lip drops to the 1.75" tread depth over the riser below, so that step's board is 1.75" too.
+  lip drops to the 1" tread depth over the riser below, so that step's board is 1" too.
 - **Closed** = a `riser` member stands on that step. A box or cast tier is its own riser.
 
 ## 3. By hand, as open risers
@@ -28,13 +28,13 @@ only if it is more than 30" above the floor or grade below.
 | Flight | R | board + covering | opening | top step's opening top | open steps over 30" |
 |---|---|---|---|---|---|
 | ST-B2M | 110.4237/15 = 7.3616" | 1" + 1/2" | **5.86"** | 110.42 − 1.5 = 108.9" | 11 |
-| ST-M2S | 120.5138/16 = 7.5321" | 1.75" | **5.78"** | 120.51 − 1.75 = 118.76" | 12 |
-| ST-S2A | 120/16 = 7.5" | 1.75" | **5.75"** | 120 − 1.75 = 118.25" | 12 |
+| ST-M2S | 120.5138/16 = 7.5321" | 1" | **6.53"** | 120.51 − 1 = 119.51" | 12 |
+| ST-S2A | 120/16 = 7.5" | 1" | **6.50"** | 120 − 1 = 119.0" | 12 |
 | ST-G-SERVICE | 34/5 = 6.8" | 1.5" | **5.30"** | 34 − 1.5 = 32.5" | 1 |
 | ST-SG-PORCH | 33/5 = 6.6" | 1.5" | **5.10"** | 33 − 1.5 = 31.5" | 1 |
 
 The last column counts steps whose opening top is over 30". For ST-M2S that is step k (from
-1) with k × 7.5321 − 1.75 > 30, which gives k ≥ 5, so 12 of the 16. For the two exterior
+1) with k × 7.5321 − 1 > 30, which gives k ≥ 5, so 12 of the 16. For the two exterior
 flights it is only the top step (27.2 + 5.3 = 32.5). Every opening is over 4", so every
 flight FAILs open.
 
@@ -46,11 +46,11 @@ framing it faces instead.
 
 | Flight | stock | pieces | size |
 |---|---|---|---|
-| ST-M2S | oak-riser, 4/4 S4S, owner-milled | 16 | 3/4 × 5.78 × 42 3/8" |
-| ST-S2A | oak-riser | 14 + 2 | 3/4 × 5.75 × 36", two fan risers × 38.42" (√(24² + 30²)) |
+| ST-M2S | oak-riser, 4/4 S4S, owner-milled | 16 | 3/4 × 6.53 × 42 3/8" |
+| ST-S2A | oak-riser | 14 + 2 | 3/4 × 6.50 × 36", two fan risers × 38.42" (√(24² + 30²)) |
 | ST-B2M | plywood-subfloor, under carpet | 14 + 1 | 3/4 × 5.86 × 41 1/16", and the split-landing step × 50 7/8" |
 | ST-G-SERVICE / ST-SG-PORCH | kdat | 5 + 5 | 3/4 × 5.30 / 5.10 × 36" |
 
 Board height = R − the board and any separate covering above (the riser's top is the
-substrate's underside). 5.78" off
+substrate's underside). 6.53" off
 4/4 rough is one board well inside MW-STANDARD's 18" supply.

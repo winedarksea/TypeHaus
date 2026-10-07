@@ -324,15 +324,15 @@ def test_a_u_split_buys_the_stock_it_states_and_moves_no_riser(catlin_model,
     ST-B2M — carpet over cushion on a U-split — unable to say it buys 1" of ply and billing
     1 1/2" of substrate it never orders. Every walking surface in ONE flight shares the
     stock: the treads and both landing decks, or the two risers at a landing differ by the
-    amount the deck was not dropped. ST-S2A states 1 3/4" oak, thicker than the 1 1/2"
-    default, so the field reads both ways on two different turned layouts.
+    amount the deck was not dropped. ST-S2A states 1" oak on a winder layout and ST-B2M 1"
+    of ply on a U-split, so the field reads on two different turned layouts.
     """
     walking = {"tread", "winder", "landing"}
     stated = [m for m in basement_stair.members if m.category in walking]
     thicker = [m for m in winder_stair.members if m.category in walking]
     assert stated and thicker
     assert {round(m.z1_m - m.z0_m, 6) for m in stated} == {round(inch(1).meters, 6)}
-    assert {round(m.z1_m - m.z0_m, 6) for m in thicker} == {round(inch(1.75).meters, 6)}
+    assert {round(m.z1_m - m.z0_m, 6) for m in thicker} == {round(inch(1).meters, 6)}
     # The faces are still one design riser apart, springing included — the thing the drop
     # exists to protect. ``arrival_elevation_m`` is the floor the flight was drawn to meet.
     faces = sorted(m.z1_m + basement_stair.finish_thickness_m for m in stated)
@@ -780,7 +780,7 @@ def test_winder_turn_is_a_stack_of_platform_boxes(catlin_model, winder_stair):
     and nothing laps.
     """
     subfloor, riser, count = _winder_reference(catlin_model, winder_stair)
-    tread_thickness = inch(1.75).meters  # ST-S2A's stated oak
+    tread_thickness = inch(1).meters  # ST-S2A's stated oak
     assert not [m for m in winder_stair.members
                 if m.child_key.startswith(("winder-carriage-", "winder-header"))], (
         "the compound-angle carriage/header fiction is gone")
@@ -815,7 +815,7 @@ def test_straight_flight_lands_on_the_top_winder_box(catlin_model, winder_stair)
     riser above the box's deck, on the notch line the first straight tread sits on.
     """
     subfloor, riser, count = _winder_reference(catlin_model, winder_stair)
-    tread_thickness = inch(1.75).meters  # ST-S2A's stated oak
+    tread_thickness = inch(1).meters  # ST-S2A's stated oak
     stringers = [m for m in winder_stair.members if m.child_key.startswith("stringer-")]
     assert len(stringers) == 3  # three LSL stringers, notes/stair_stringer_basis.md
     spring_notch = subfloor + riser * (count + 1) - tread_thickness

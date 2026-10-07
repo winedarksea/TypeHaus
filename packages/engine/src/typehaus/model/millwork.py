@@ -191,7 +191,8 @@ class StairLandingMillwork(HausModel):
     """How a stair landing's finish boards and exposed nosing are made.
 
     The landing is a floor stack: ``field_thickness`` of T&G over ``subfloor_thickness``,
-    which sets its deck depth and so where its framing sits. The nosing is a stock-style
+    which sets its deck depth and so where its framing sits; it may be thicker or thinner
+    than the flight's treads. The nosing is a stock-style
     landing tread (Stairtek NSWO3548 is the pattern): ``nosing_depth`` wide, rabbeted to the
     field thickness and grooved for its tongue, with a lip that drops to the flight's own
     tread thickness over the riser below. The lip thickness is read off the flight, never

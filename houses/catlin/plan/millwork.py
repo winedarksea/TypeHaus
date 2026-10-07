@@ -69,7 +69,7 @@ MILLWORK = [
             board_face_width=inch(3.5),
             board_coverage_width=inch(3.125),
             # A landing tread off the tread stock: 3/4" behind the nose, grooved for the
-            # field's tongue, its lip the flights' 1 3/4" over the riser below.
+            # field's tongue, its bullnose lip the flights' 1" over the riser below.
             nosing_material_ref="oak-tread",
             nosing_depth=inch(3.5),
         ),

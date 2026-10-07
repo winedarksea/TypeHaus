@@ -275,13 +275,13 @@ def test_only_the_two_oak_flights_are_scheduled(rows, catlin_model_ro):
 
 def test_a_tread_is_scheduled_lying_flat(rows):
     """Thickness is the narrow face of the section whichever order the profile names them
-    in — ``deck 11x1.75`` and ``tapered tread`` parse to opposite orders. A winder's is its
+    in — ``deck 11x1`` and ``tapered tread`` parse to opposite orders. A winder's is its
     z-range, since ``tapered tread`` parses to a nominal section."""
     for use in ("stair tread", "stair winder"):
         for row in _use(rows, use):
-            assert row["finished_thickness_in"] == pytest.approx(1.75)
+            assert row["finished_thickness_in"] == pytest.approx(1.0)
             assert row["finished_width_in"] > row["finished_thickness_in"]
-            assert row["nominal_stock"] == "8/4"
+            assert row["nominal_stock"] == "5/4"
 
 
 def test_the_landing_decks_are_scheduled_and_flagged(rows):
@@ -295,8 +295,8 @@ def test_the_landing_decks_are_scheduled_and_flagged(rows):
     for row in nosings.values():
         assert row["pieces"] == 1 and row["material"] == "oak-tread"
         # The blank is the flight's tread thickness (the lip) x the landing tread's face.
-        assert row["finished_thickness_in"] == pytest.approx(1.75)
-        assert row["nominal_stock"] == "8/4"
+        assert row["finished_thickness_in"] == pytest.approx(1.0)
+        assert row["nominal_stock"] == "5/4"
         assert row["finished_width_in"] == pytest.approx(3.5)
         assert row["milling_profile"] == "landing tread"
     assert nosings[("landing-lower", ("ST-M2S",))]["finished_length_in"] == \

@@ -104,7 +104,9 @@ def set_landing_stack(members: tuple[FramedMember, ...], stack_m: float,
     """Thin each landing deck to its floor stack and lift its own framing to meet it.
 
     The layouts build a landing deck at tread thickness. A hardwood landing is field over
-    subfloor instead; its walking face stays put and the difference goes to the framing.
+    subfloor instead; its walking face stays put and the difference goes to the framing,
+    up when the stack is thinner than a tread, down when it is thicker (1" treads under a
+    3/4" + 3/4" landing).
     """
     lift = tread_m - stack_m
     if abs(lift) <= 1e-9:

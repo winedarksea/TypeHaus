@@ -965,8 +965,8 @@ STAIRS = [
           # run_reversed on x that is the well's SE corner.
           layout="right_angle_winder", turn_direction="left",
           run_direction="x", run_reversed=True, winder_count=3,
-          # 8/4 oak S2S to 1 3/4", as ST-M2S.
-          tread_thickness=inch(1.75),
+          # 5/4 oak S2S to 1", as ST-M2S.
+          tread_thickness=inch(1),
           # The turn is a tiered box (Haun), and a box has to be carried on its outside
           # edges: W-S-E1 takes the east leg, W-S-SS2 the north one. Both are the walls the
           # well was snapped to, so a ledger lands on their finished faces. Without naming

@@ -5107,7 +5107,7 @@
 "oak-tread:tread" = { material = { low = 0, high = 0 }, labour = { low = 40, high = 80 } }  # 26 ea — ST-M2S 14, ST-S2A 12
 # A winder is a two-board glue-up scribed to a fan line and a skirt: the most fitting per tread.
 "oak-tread:winder" = { material = { low = 0, high = 0 }, labour = { low = 60, high = 160 } }  # 3 ea — ST-S2A
-# 3/4" T&G field over the landing ply, plus the grooved 8/4 nosing it tongues into.
+# 3/4" T&G field over the landing ply, plus the grooved 5/4 nosing it tongues into.
 "oak-floor-custom:landing" = { material = { low = 0, high = 0 }, labour = { low = 76, high = 200 } }  # 2 ea — ST-M2S
 # Closed risers (2026-09-28, notes/stair_riser_basis.md). Oak: owner-milled 4/4, so labour
 # only, about half a tread's (a square-edged board, no nosing). Ply: a 3/4" rip under
