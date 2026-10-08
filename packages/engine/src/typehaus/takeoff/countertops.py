@@ -9,7 +9,8 @@ A window stool cut from a material some countertop in the house is cut from join
 material's row: it is a remnant off the same slab order, cut by the same yard at the same
 rate. Its area is its finished board, length x depth. It adds to ``net_area_sqft`` and is
 listed under ``stools``, never ``tops`` or ``length_ft`` (a stool is not part of a run).
-``takeoff/hardwood.py`` admits only custom-milled stools, so no stool bills in both.
+``takeoff/hardwood.py`` lists custom-milled tops and stools again as rough stock, flagged
+``also_in_countertops``; it is an unpriced view, so nothing bills twice.
 
 Waste is deliberately NOT applied here, unlike ``floor_finishes`` and ``wood_surfaces``.
 A slab yard quotes the finished square footage of the top; the yield loss between a 57" x

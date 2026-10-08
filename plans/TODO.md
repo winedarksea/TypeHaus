@@ -270,6 +270,8 @@ the future.
 - Either engineer the mudroom exposed studs as allowed hardwood, or specify southern yellow pine with a gold anodized aluminum trim (>= 1.5 mm / 0.064 / 12 gauge thickness) https://www.dkhardware.com/cr-laurence-l902bga-ccp72-xcp10-brite-gold-anodized-aluminum-1-4-l-bar-extrusion-72-length-pack-of-10-product-10103314.html or 1-1/2" ID U-channel
 - Confirm bug protection of ccspf
 - Spec sand or gravel backfill around house
+- D-M-STUDY should have a door framing (less trim) like D-M-BED2 to match its neighbor, if that is practical
+- Model baseboard and door trim where appropriate
 
 # Project Management
 

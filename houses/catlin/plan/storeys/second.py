@@ -1505,8 +1505,8 @@ STAIRS = [
 
 PANELING = [
     # The suite's headboard band: the family's milled walnut, on the one surface in this
-    # room that earns it. `walnut-tg` is DELIBERATELY the study wainscot's own tag — same
-    # 4/4 T&G board, one mill order, one [wood_surfaces] row. (Unlike the floor it replaces,
+    # room that earns it. `walnut-shiplap` is DELIBERATELY the study wainscot's own tag — same
+    # 4/4 shiplap board, one mill order, one [wood_surfaces] row. (Unlike the floor it replaces,
     # there is no double-billing trap: both bands are wall area on the same table.)
     #
     # ** `walls=` IS NOT OPTIONAL. ** `room=` alone panels every bounding wall of the L —
@@ -1528,7 +1528,7 @@ PANELING = [
     # combustible finish means a box extender per NEC 314.20. Nothing grades that; it is an
     # ordering note. The cap is unmodelled trim, as the study wainscot's is.
     WallPaneling(uid="0D53MRPGKZ", tag="WP-S-SUITE-HEADBOARD", room="RM-S-SUITE",
-                 material_ref="walnut-tg", height=ft(6),
+                 material_ref="walnut-shiplap", height=ft(6),
                  walls=("W-S-SN1", "W-S-SN2")),
 ]
 

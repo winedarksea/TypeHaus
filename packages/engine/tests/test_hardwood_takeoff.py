@@ -31,14 +31,14 @@ def _use(rows, name):
 def test_every_shared_row_declares_where_it_really_bills(rows):
     """``wood_surfaces``'s contract, followed: a mirror row names its primary section.
 
-    Only the stools and the shelf boards are this section's own — everything else is wood
-    the BOM already orders under another name, and summing the sections must not double it.
+    Only the stools and the shelf boards are this section's own — everything else (the
+    live-edge and walnut tops included) the BOM already orders under another name.
     """
     mirrors = ("also_in_framing", "also_in_stair_finish", "also_in_wood_surfaces",
                "also_in_floor_finishes", "also_in_envelope_layers",
-               "also_in_structural_solids")
+               "also_in_structural_solids", "also_in_countertops")
     for row in rows:
-        own = row["use"] in ("window stool", "shelf")
+        own = row["use"] in ("window stool", "shelf") and not row.get("also_in_countertops")
         flagged = any(row.get(flag) for flag in mirrors)
         assert own != flagged, (
             f"{row['use']} / {row['material']}: a row is either this section's own or a "
@@ -114,9 +114,9 @@ def test_rough_stock_always_exceeds_the_finished_piece(rows):
 
 
 def test_a_stool_is_scheduled_at_its_rough_size_from_six_quarter_stock(rows):
-    stools = _use(rows, "window stool")
-    # See test_millwork.py: plant-room and kitchen stools are quartz, the east row's three are
-    # bought live-edge slab stock (not milled); sauna/garage get none.
+    stools = [row for row in _use(rows, "window stool") if row["material"] == "oak-stool"]
+    # See test_millwork.py: plant-room and kitchen stools are quartz, the east row's four are
+    # 2" oak-stool-12q (test below); sauna/garage get none.
     assert stools and sum(row["pieces"] for row in stools) == 30
     for row in stools:
         assert row["nominal_stock"] == "6/4"
@@ -126,6 +126,22 @@ def test_a_stool_is_scheduled_at_its_rough_size_from_six_quarter_stock(rows):
         assert row["boards_per_piece"] == 1
         assert row["finished_thickness_in"] == pytest.approx(1.25)
         assert row["stock_note"] is None, "a 10\" stool comes off one 18\" board"
+
+
+def test_live_edge_slabs_and_walnut_tops_are_cut_listed(rows):
+    """Custom-milled countertops reach the mill; the stone stays the slab yard's."""
+    tops = {tag: row for row in _use(rows, "countertop") for tag in row["tags"]}
+    assert set(tops) == {"CT-M-LIV-E-S", "CT-M-LIV-E-N",
+                         "CT-M-BED-NOOK-S", "CT-M-BED-NOOK-N"}
+    slab = tops["CT-M-LIV-E-N"]
+    assert slab["nominal_stock"] == "12/4" and slab["layup"] == "one board"
+    assert slab["finished_thickness_in"] == pytest.approx(2.0)
+    assert slab["finished_length_in"] == pytest.approx(144.625, abs=0.01)
+    assert all(row["also_in_countertops"] for row in tops.values())
+    east = [row for row in _use(rows, "window stool") if row["material"] == "oak-stool-12q"]
+    assert sum(row["pieces"] for row in east) == 4
+    assert not any(row["also_in_countertops"] for row in east), "plain oak, not slab remnant"
+    assert {row["nominal_stock"] for row in east} == {"12/4"}
 
 
 def test_the_yield_arithmetic_is_the_documented_one(rows):

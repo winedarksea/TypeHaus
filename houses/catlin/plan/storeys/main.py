@@ -2137,10 +2137,17 @@ BEAMS = [
 
 # The first-floor study's walnut wainscot (plans/TODO.md §Hardwood): every bounding wall
 # to 36" above the floor, D-M-STUDY's punch subtracted by the resolver. Board feet come
-# off the walnut-tg material's 4/4 stock (bf = sf) in the wood_surfaces takeoff.
+# off the walnut-shiplap material's 4/4 stock (1.1 bf/sf) in the wood_surfaces takeoff.
 PANELING = [
     WallPaneling(uid="CMK901AAAA", tag="WP-M-STUDY-WAINSCOT", room="RM-M-STUDY",
-                 material_ref="walnut-tg", height=ft(3)),
+                 material_ref="walnut-shiplap", height=ft(3)),
+    # The mudroom's three east-facing walls (W-M-W1 between the closets, and the closets'
+    # east returns), white-painted oak shiplap to 6'-0" — the underside of the coat-nook caps
+    # across the room. The closets' door walls (W-M-MECH-S, W-M-MUDC-N) are left: less the
+    # door, too little wall to be worth it. Wraps WIN-M-MUD; the sconce at 6'-8" is above it.
+    WallPaneling(uid="G21WZA605X", tag="WP-M-MUDROOM-SHIPLAP", room="RM-M-MUDROOM",
+                 material_ref="oak-shiplap-painted", height=ft(6),
+                 walls=("W-M-W1", "W-M-MECH-E", "W-M-MUDC-E")),
     # The call booth's acoustic felt, sitting on top of the wainscot: band
     # 3'-0" to 9'-0", south and north walls only.
     #

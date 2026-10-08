@@ -154,7 +154,7 @@ def millwork(
         rough_bf = row.get("rough_board_feet")
         bf = f"{rough_bf:>8.1f} bf" if isinstance(rough_bf, (int, float)) else "       ? bf"
         console.print(f"  {str(row['use']):<19} {pieces}{size:<32} "
-                      f"[cyan]{species:<9}[/cyan]{stock:>6} {profile:<9}"
+                      f"[cyan]{species:<9}[/cyan]{stock:>6} {profile:<10}"
                       f"{layup:<19}{bf}", soft_wrap=True)
         if row.get("stock_note"):
             console.print(f"      [dim]{row['stock_note']}[/dim]", soft_wrap=True)

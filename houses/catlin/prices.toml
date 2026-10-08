@@ -3450,7 +3450,7 @@
 # soft underfoot (~1010 Janka vs oak's ~1360), and 200 SF of flooring is the most demanding
 # cut a family log pile can be asked for. The rooms are `oak` above; the walnut is a 6'-0"
 # headboard band on W-S-SN1/SN2 (WP-S-SUITE-HEADBOARD), priced in [wood_surfaces] under
-# `walnut-tg` with the study wainscot.
+# `walnut-shiplap` with the study wainscot.
 # ** If site-milled flooring is ever revisited, the two facts worth keeping are: ** kiln
 # drying to 6-8% MC ($0.35-0.75/bf) is the step that cannot be skipped — walnut laid wet
 # shrinks into gaps every board — and 25-30% over net, not the engine's 10% install waste,
@@ -4975,8 +4975,8 @@
 [wood_surfaces]
 # RESEARCHED 2026-08-08 — [low, high] $/SF on the order quantity, by material tag. Mind the
 # mirrors: this table shares three of its five materials with tables that already price them,
-# and the BOM says which by carrying `also_in_*`. Only `walnut-tg` is priced here, because
-# only `walnut-tg` is billed nowhere else.
+# and the BOM says which by carrying `also_in_*`. Only `walnut-shiplap` and `oak-shiplap-painted`
+# are priced here, because only they are billed nowhere else.
 #   oak          also_in_floor_finishes  -> priced in [floor_finishes], 596 SF, same number
 #   catlin-sauna-shiplap also_in_envelope_layers -> priced in [envelope_layers]
 #   elm-timber   also_in_structural_solids, and carries no order_area_sqft (bills as timber)
@@ -5000,7 +5000,7 @@
 # "tile" =    # 52 SF — NOT billed in [floor_finishes]; see above
 # ** 2026-09-05: 51 -> 115 SF, and the second band raises a question this rate does not
 # answer. ** WP-S-SUITE-HEADBOARD joined RM-M-STUDY's wainscot on this tag — the same 4/4
-# T&G board, one mill order, one row (57.8 sf net on W-S-SN1/SN2, 0 to 6'-0"). Both are wall
+# board, one mill order, one row (57.8 sf net on W-S-SN1/SN2, 0 to 6'-0"). Both are wall
 # area on this table, so there is no double-billing trap of the kind the tombstone in
 # [floor_finishes] describes.
 # ** THE RATE BELOW IS A BOUGHT WALNUT RATE ($8-18/SF material). ** If the suite band comes
@@ -5009,7 +5009,13 @@
 # out, not $8-18. The same question applies to the study's existing 52 SF and always did.
 # Resolve it against a real kiln-and-moulder quote before ordering. Do not silently reprice:
 # a bought rate over-states a stock band, and the stock ladder under-states a bought one.
-"walnut-tg" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # 115 SF ordered / 104.2 net — RM-M-STUDY wainscot (46.4 net) + WP-S-SUITE-HEADBOARD (57.8 net)
+# 2026-10-07: T&G -> shiplap, owner-milled on a table saw rather than a moulder; the rate
+# question above stands.
+"walnut-shiplap" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # 115 SF ordered / 104.2 net — RM-M-STUDY wainscot (46.4 net) + WP-S-SUITE-HEADBOARD (57.8 net)
+# 2026-10-07, WP-M-MUDROOM-SHIPLAP. ESTIMATE, not researched: owner-milled oak at the
+# ~$2/SF rough of `oak-stool` x 1.1 face factor, plus stain-blocking primer and enamel;
+# labour is install plus prime and two coats.
+"oak-shiplap-painted" = { material = { low = 2.5, high = 4.5 }, labour = { low = 8, high = 16 } }
 # ADDED 2026-08-29 with RM-M-STUDY's call booth. WP-M-STUDY-FELT, 1/2" recycled-PET acoustic
 # felt board on the south and north walls, band 3'-0" to 9'-0". It is billed here and nowhere
 # else — the material is in no assembly layer and no floor finish, so it carries no
@@ -5089,11 +5095,11 @@
 # plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the showroom — silica
 # exposure control is the thing to buy here.
 "quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 80.62 SF
-# The living room's two live-edge slabs and the three east-row stools in the same stock
-# (2026-10-02). BOUGHT, not the owner's mill: a 2" kiln-dried, flattened white oak flitch is
-# ~2.3 bf/SF at $20-40/bf, and the labour is scribing the back edge, slotted brackets and a
-# six-face hardwax-oil finish.
-"live-edge-white-oak" = { material = { low = 45, high = 95 }, labour = { low = 30, high = 80 } }  # 29.07 SF
+# The living room's two live-edge slabs (2026-10-02); the east-row stools are owner-milled
+# oak-stool-12q since 2026-10-07. A 2" kiln-dried, flattened white oak flitch (12/4, cut-listed by `haus
+# millwork`) is ~2.3 bf/SF at $20-40/bf, and the labour is scribing the back edge, slotted
+# brackets and a six-face hardwax-oil finish.
+"live-edge-white-oak" = { material = { low = 45, high = 95 }, labour = { low = 30, high = 80 } }  # 25.12 SF
 # The reading nook's two end-cabinet tops (2026-10-03): bought 6/4 walnut at ~$12-20/bf, ~2 bf
 # per SF with waste; labour is a joiner's glue-up, flattening and a six-face hardwax oil.
 "walnut-counter" = { material = { low = 25, high = 45 }, labour = { low = 40, high = 110 } }  # ~4.3 SF

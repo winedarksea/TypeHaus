@@ -156,13 +156,21 @@ def test_band_thickness_comes_from_the_material_stock(bands):
                 "tile states no board stock, so the band takes the default"
 
 
-def test_the_catlin_bands_are_the_six_authored_ones(bands):
+def test_the_catlin_bands_are_the_seven_authored_ones(bands):
     """A guard on scope: the reference house authors exactly these, at these heights."""
     by_tag: dict[str, list] = {}
     for band in bands:
         by_tag.setdefault(band.tag, []).append(band)
     assert set(by_tag) == {"WP-B-SAUNA-SPLASH", "WP-M-STUDY-WAINSCOT", "WP-M-STUDY-FELT",
-                           "WP-M-BATH2-SURR", "WP-S-SUITE-HEADBOARD", "WP-A-STUBATH-SURR"}
+                           "WP-M-BATH2-SURR", "WP-S-SUITE-HEADBOARD", "WP-A-STUBATH-SURR",
+                           "WP-M-MUDROOM-SHIPLAP"}
+    # The mudroom's three east-facing walls to 6'-0"; W-M-MECH-E is the L's inner-corner
+    # wall that a single room-wide interior point once put on the closet's face.
+    assert {b.wall_tag for b in by_tag["WP-M-MUDROOM-SHIPLAP"]} == {
+        "W-M-W1", "W-M-MECH-E", "W-M-MUDC-E"}
+    for band in by_tag["WP-M-MUDROOM-SHIPLAP"]:
+        assert band.z1_m - band.z0_m == pytest.approx(72 * _IN, abs=1e-6)
+        assert band.thickness_m == pytest.approx(0.75 * _IN, abs=1e-6)
     # Two 3' spans on two walls of the shower corner, full 7'-6" liner height.
     assert len(by_tag["WP-B-SAUNA-SPLASH"]) == 2
     for band in by_tag["WP-B-SAUNA-SPLASH"]:

@@ -27,7 +27,7 @@ def _model(procurement: str):
                         species="oak", product_ref="PROD-SHELF")
     return SimpleNamespace(
         shelf_banks=[_bank(procurement)],
-        window_stools=(), stairs=(), openings=(), panelings=(), walls=(), solids=(), rooms=(),
+        window_stools=(), countertops=(), stairs=(), openings=(), panelings=(), walls=(), solids=(), rooms=(),
         plan=SimpleNamespace(
             library=SimpleNamespace(materials=(material,)),
             storeys=(),

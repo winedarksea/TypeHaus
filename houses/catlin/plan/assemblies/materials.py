@@ -61,13 +61,14 @@ MATERIALS = [
              finish="clear-satin-hardwax-oil", species="walnut", nominal_quarters=6,
              milling_profile="S4S", requires_custom_milling=True,
              source="Two 12 1/2\" x 24 7/8\" x 1\" tops, each an edge-glued pair from one 6/4 board, oversailing 7/8\" to the seat fronts and capping the covers. Finish all six faces; fix on figure-8s."),
-    # The east wall's living-room slabs and the three window stools that meet them in one
-    # plane. Bought, not milled: a 2" live-edge slab is a sawyer's flitch, flattened and
-    # kiln-dried, and the natural edge is specified at no more than 1 1/2" past the fronts.
+    # The east wall's living-room slabs; the window stools that meet them are oak-stool-12q. A 12/4 kiln-dried flitch flattened to 2"; the natural edge is specified at no
+    # more than 1 1/2" past the fronts. Priced in [countertops], cut-listed by `haus millwork`.
     Material(tag="live-edge-white-oak", name='Live-edge white oak slab, 2"',
              r_per_inch=1.0, density=750.0, hatch="lumber", color="#c4a272",
              finish="oak-board",  # the 3D recipe; the coat is hardwax oil
-             source="Two slabs on the living-room SEKTION banks (CT-M-LIV-E-S/-N) and the stools of WIN-M-LIV-E1/-E2/-E3/WIN-M-EAST-MID, 2\" finished, 16 1/2\" nominal depth. Back edge straight and scribed to the gwb; live edge <= 1 1/2\" past the drawer fronts at its widest, so the dining chair zone still clears. Fix on slotted brackets and finish all six faces: 16\" of flat-sawn oak moves."),
+             species="oak", nominal_quarters=12, milling_profile="live-edge",
+             requires_custom_milling=True,
+             source="Two slabs on the living-room SEKTION banks (CT-M-LIV-E-S/-N), 2\" finished, 16 1/2\" nominal depth. Back edge ripped straight and scribed to the gwb, where the oak-stool-12q stools meet it; live edge <= 1 1/2\" past the drawer fronts at its widest, so the dining chair zone still clears. Fix on slotted brackets and finish all six faces: 16\" of flat-sawn oak moves."),
     # ** THE FLOOR TILE, AND THE SELECTION IS ARITHMETIC BEFORE IT IS TASTE. ** Grout length
     # per square foot is 144 x (1/a + 1/b): a 24x24 gives 1.0 lineal ft/sf, a 3x12 subway
     # gives 5.0, a penny round gives 24+. Large-format is ~3x easier to keep clean than
@@ -236,20 +237,29 @@ MATERIALS = [
     # (which was authored as bare thickness, with no face allowance at all). The order goes
     # up; the wall area does not.
     # --- species wood finishes (plans/TODO.md §Hardwood) -----------------------
-    # RM-M-STUDY wainscot to 36". 4/4 stock: board feet = square feet.
-    Material(tag="walnut-tg", name="Black walnut T&G wainscot (4/4)", r_per_inch=1.1,
+    # RM-M-STUDY wainscot to 36" and the suite headboard band. Shiplap since 2026-10-07: a
+    # rabbet is two passes on a table saw, a tongue and groove is a moulder job. 4/4 stock,
+    # 5 1/2" face over 5" coverage: 1.1 bf per SF.
+    Material(tag="walnut-shiplap", name="Black walnut shiplap wainscot (4/4)", r_per_inch=1.1,
              density=610.0, hatch="lumber", color="#5d4433",
-             finish="clear-satin-hardwax-oil", species="walnut", stock_bf_per_sqft=1.0,
-             nominal_quarters=4, milling_profile="T&G", requires_custom_milling=True,
-             source="plans/TODO.md — first-floor study walnut paneling to 36\""),
+             finish="clear-satin-hardwax-oil", species="walnut", stock_bf_per_sqft=1.1,
+             nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
+             source="plans/TODO.md — first-floor study walnut paneling to 36\"; owner-milled shiplap"),
+    # RM-M-MUDROOM's three east-facing walls (WP-M-MUDROOM-SHIPLAP): owner-milled white oak
+    # shiplap, painted white. For wear and fasten-anywhere hooks, not looks.
+    Material(tag="oak-shiplap-painted", name="White oak shiplap, 4/4, painted white",
+             r_per_inch=1.1, density=750.0, hatch="lumber", color="#f2f0ea",
+             finish="shiplap", species="oak", stock_bf_per_sqft=1.1,
+             nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
+             source="Owner-milled white oak, 5 1/2\" face over 5\" coverage, blind-nailed to studs and the gypsum behind. Prime all faces before install (oak tannin bleeds through latex), then two coats of white enamel."),
     # ** TOMBSTONE: `walnut-floor` (added and removed 2026-09-05). ** For a few hours the
     # suite and its walk-in were a 181.7 SF field of site-milled walnut strip flooring under
-    # its own tag (a separate tag from `walnut-tg` so 182 SF would not bill in both
+    # its own tag (a separate tag from `walnut-shiplap` so 182 SF would not bill in both
     # [floor_finishes] and [wood_surfaces]). It lost on three counts, all in
     # plan/storeys/second.py at RM-S-SUITE: walnut photo-LIGHTENS under the west windows'
     # UV, it is soft underfoot (~1010 Janka vs oak's ~1360), and flooring is the most
     # demanding cut off a family log pile for the least-seen surface. The floor is `oak`;
-    # the walnut is WP-S-SUITE-HEADBOARD, a 6'-0" band on W-S-SN1/SN2 under `walnut-tg`.
+    # the walnut is WP-S-SUITE-HEADBOARD, a 6'-0" band on W-S-SN1/SN2 under `walnut-shiplap`.
     # If it ever comes back it needs its own tag again, `finish="strip-floor"`, and a
     # `STRIP_FLOOR_REFS` needle in ui/src/three/plankMaterial.ts.
     # The call booth's bench seat and desk top, the same walnut as the wainscot
@@ -343,6 +353,12 @@ MATERIALS = [
              color="#c9b08c", finish="oak-board", species="oak",
              nominal_quarters=6, milling_profile="eased", requires_custom_milling=True,
              source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak, ~$2/sf rough. 6/4 because the interior return on an outie window runs most of a 13 7/8\" wall and a 3/4\" board that wide will cup; 1 1/4\" holds flat without the bulk of 8/4. The front edge is eased, not moulded (see the profile note above)"),
+    # The east row's stools (WIN-M-LIV-E1/-E2/-E3, WIN-M-EAST-MID): plain oak, 2" to match
+    # the live-edge slab they meet at its ripped back edge, colour-matched to it.
+    Material(tag="oak-stool-12q", name='White oak window stool, 2", 12/4 S4S', hatch="lumber",
+             color="#c4a272", finish="oak-board", species="oak",
+             nominal_quarters=12, milling_profile="eased", requires_custom_milling=True,
+             source="Owner-milled white oak, 2\" finished from 12/4 to match the live-edge slab's thickness; finish as that slab, hardwax oil all six faces."),
     Material(tag="oak-shelf-8q", name="White oak shelving, 8/4 S4S", hatch="lumber",
              color="#c9b08c", finish="oak-board", species="oak",
              nominal_quarters=8, milling_profile="S4S", requires_custom_milling=True,

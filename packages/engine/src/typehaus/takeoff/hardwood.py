@@ -86,7 +86,7 @@ _PROFILE_FACE_FACTOR: dict[str, float] = {
 _FLAT_FACE_FACTOR = 1.0
 
 #: Order the schedule groups by. A mill reads it top to bottom as one day's work.
-_USE_ORDER = ("window stool", "shelf", "stair tread", "stair winder", "stair riser",
+_USE_ORDER = ("window stool", "countertop", "shelf", "stair tread", "stair winder", "stair riser",
               "stair landing nosing",
               "stair landing board", "stair landing closing board", "stair landing deck",
               "floor", "wainscot", "wall liner", "ceiling liner",
@@ -103,6 +103,7 @@ def hardwood_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
     rows: list[dict[str, object]] = []
     rows.extend(_stool_rows(model, materials, max_board_width_in))
+    rows.extend(_countertop_rows(model, materials, max_board_width_in))
     rows.extend(_shelf_rows(model, materials, max_board_width_in))
     from typehaus.takeoff.hardwood_stairs import stair_rows
 
@@ -286,11 +287,39 @@ def _stool_rows(model: ResolvedModel, materials: Mapping[str, object],
                round(stool.depth_m * _M_TO_IN, 3),
                round(stool.length_m * _M_TO_IN, 2))
         groups.setdefault(key, []).append(stool.window_ref)
+    # A stool cut from a countertop material bills as a remnant in ``countertops``.
+    counter_materials = {top.material_ref for top in model.countertops}
     rows = []
     for (material_ref, profile, thickness, depth, length), tags in groups.items():
+        also = {"also_in_openings": False,
+                "also_in_countertops": material_ref in counter_materials}
         rows.append(_piece_row(
             "window stool", material_ref, materials, len(tags), thickness, depth, length,
-            max_board_width_in, tags, {"also_in_openings": False}, profile=profile))
+            max_board_width_in, tags, also, profile=profile))
+    return rows
+
+
+def _countertop_rows(model: ResolvedModel, materials: Mapping[str, object],
+                     max_board_width_in: float | None) -> list[dict[str, object]]:
+    """Custom-milled tops (walnut, live-edge oak), one row per finished size.
+
+    Priced in ``countertops``; this is the same slab as rough stock, depth x run length.
+    """
+    groups: dict[tuple[str, str, float, float, float], list[str]] = {}
+    for top in model.countertops:
+        if not getattr(materials.get(top.material_ref), "requires_custom_milling", False):
+            continue  # stone is the slab yard's, not the sawyer's
+        key = (top.material_ref, top.profile,
+               round(top.thickness_m * _M_TO_IN, 3),
+               round(top.depth_m * _M_TO_IN, 3),
+               round(top.length_m * _M_TO_IN, 2))
+        groups.setdefault(key, []).append(top.tag)
+    rows = []
+    for (material_ref, profile, thickness, depth, length), tags in groups.items():
+        width, length = sorted((depth, length))  # grain runs the longer way
+        rows.append(_piece_row(
+            "countertop", material_ref, materials, len(tags), thickness, width, length,
+            max_board_width_in, tags, {"also_in_countertops": True}, profile=profile))
     return rows
 
 

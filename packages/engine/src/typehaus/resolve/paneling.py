@@ -69,12 +69,11 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             offset = el.offset.meters if el.offset is not None else 0.0
             thickness_m = _band_thickness_m(plan, el.material_ref)
             # Which side of its walls the band is on. A room-scoped band faces into its room,
-            # and a point guaranteed to be *inside* the face answers that for an L-shaped room
-            # too, where the centroid can fall outside. A line-scoped band has no room to
-            # face, and which side of a facade line its band lands on is not derivable from
-            # anything the model carries today — so those still resolve area-only, exactly as
-            # every band did before this. Better no geometry than a band on the wrong face.
-            toward = _interior_point(room) if room is not None else None
+            # judged per stretch beside the band (`_room_side_point`): one interior point for
+            # the whole room puts an L's inner-corner wall on its far face. A line-scoped band
+            # has no room to face, and which side of a facade line its band lands on is not
+            # derivable from anything the model carries today — so those still resolve
+            # area-only. Better no geometry than a band on the wrong face.
             for wall, (u0, u1) in walls:
                 intervals = [(u0, u1)]
                 if spans_by_wall:
@@ -122,6 +121,8 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                             area -= du * dz
                     if area <= 0.0:
                         continue
+                    toward = (None if room is None
+                              else _room_side_point(room, wall, lo, hi))
                     outline = ([] if toward is None else
                                _band_outline(wall, lo, hi, toward, thickness_m,
                                              el.replaces_wall_finish))
@@ -181,12 +182,22 @@ def _net_cells(lo: float, hi: float, z0: float, z1: float, openings) -> list:
 # an inch — a tile-and-thinset bed, a panel — and visual only: nothing in the takeoff reads it.
 # A band's *area* is what gets ordered, and that is measured on the face, not through it.
 
-def _interior_point(room) -> tuple[float, float]:
-    """A point guaranteed to lie inside a room's clear face — its side of its walls."""
-    from shapely.geometry import Polygon
+def _room_side_point(room, wall, lo: float, hi: float) -> tuple[float, float]:
+    """A point off the middle of the ``lo``..``hi`` stretch, on the room's side of the wall.
 
-    point = Polygon(room.clear_face).representative_point()
-    return (point.x, point.y)
+    The two probes either side of the axis are compared by distance to the room's clear
+    face, so the answer is local to the band: right for every wall of an L.
+    """
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.resolve.geometry import add, normal, scale, sub, unit
+
+    direction = unit(sub(wall.axis[1], wall.axis[0]))
+    mid = add(wall.axis[0], scale(direction, (lo + hi) / 2.0))
+    n = normal(direction)
+    face = Polygon(room.clear_face)
+    left, right = add(mid, scale(n, 0.3)), add(mid, scale(n, -0.3))
+    return left if face.distance(Point(left)) <= face.distance(Point(right)) else right
 
 
 _DEFAULT_BAND_THICKNESS_M = 0.0127
@@ -195,17 +206,18 @@ _DEFAULT_BAND_THICKNESS_M = 0.0127
 def _band_thickness_m(plan: PlanModel, material_ref: str) -> float:
     """How thick to draw a band, from its material's nominal board stock where it has one.
 
-    ``stock_bf_per_sqft`` is board feet per square foot on NOMINAL thickness — 1.0 is 4/4,
-    1.25 is 5/4 — so it doubles as the nominal thickness in inches. Stock under 2" dresses
-    1/4" thinner (4/4 surfaces to 3/4", 5/4 to 1"), which is the figure a board actually
-    stands proud by and the figure ``_SAUNA_LINER`` authors for its 5/4 liner.
+    ``nominal_quarters`` names it outright; failing that, ``stock_bf_per_sqft`` (1.0 for
+    4/4) stands in, which overstates a lapped profile by its face factor. Stock under 2"
+    dresses 1/4" thinner (4/4 surfaces to 3/4", 5/4 to 1"), the figure a board stands proud
+    by and the figure ``_SAUNA_LINER`` authors for its 5/4 liner.
     """
     material = next((m for m in plan.library.materials if m.tag == material_ref), None)
-    nominal = getattr(material, "stock_bf_per_sqft", None) if material is not None else None
+    quarters = getattr(material, "nominal_quarters", None) if material is not None else None
+    nominal = (quarters / 4.0 if quarters else
+               getattr(material, "stock_bf_per_sqft", None) if material is not None else None)
     if not nominal:
         return _DEFAULT_BAND_THICKNESS_M
     return max(0.003, (float(nominal) - 0.25) * 0.0254)
-
 
 
 def _room_side_sign(wall, toward: tuple[float, float]) -> float:

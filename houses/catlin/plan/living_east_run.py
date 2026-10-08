@@ -19,7 +19,8 @@
 #
 # Stools: all four east windows share a 2'-10" sill so the frame rail, and so the stool
 # top, meets the slab top (36 15/16" above the storey datum; the rail lands 1/64" proud).
-# overhang=0 and horn=0, so each stool meets the slab's back edge in one plane.
+# overhang=0 and horn=0, so each stool meets the slab's ripped back edge in one plane.
+# Plain 2" oak (oak-stool-12q), not live edge.
 
 from typehaus import Furniture
 from typehaus.model import WindowStool, deg, ft, inch, pt
@@ -47,15 +48,15 @@ LIVING_EAST_RUN = [
 
 LIVING_EAST_STOOLS = [
     WindowStool(uid="Y9025C8NTZ", tag="STOOL-WIN-M-LIV-E1", window_ref="WIN-M-LIV-E1",
-                material_ref="live-edge-white-oak", thickness=inch(2),
+                material_ref="oak-stool-12q", thickness=inch(2),
                 overhang=inch(0), horn=inch(0), profile="eased"),
     WindowStool(uid="7TK2C8BGBM", tag="STOOL-WIN-M-LIV-E2", window_ref="WIN-M-LIV-E2",
-                material_ref="live-edge-white-oak", thickness=inch(2),
+                material_ref="oak-stool-12q", thickness=inch(2),
                 overhang=inch(0), horn=inch(0), profile="eased"),
     WindowStool(uid="WMLIVE3STL", tag="STOOL-WIN-M-LIV-E3", window_ref="WIN-M-LIV-E3",
-                material_ref="live-edge-white-oak", thickness=inch(2),
+                material_ref="oak-stool-12q", thickness=inch(2),
                 overhang=inch(0), horn=inch(0), profile="eased"),
     WindowStool(uid="SKCRC41TEC", tag="STOOL-WIN-M-EAST-MID", window_ref="WIN-M-EAST-MID",
-                material_ref="live-edge-white-oak", thickness=inch(2),
+                material_ref="oak-stool-12q", thickness=inch(2),
                 overhang=inch(0), horn=inch(0), profile="eased"),
 ]
