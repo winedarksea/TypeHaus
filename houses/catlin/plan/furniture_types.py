@@ -162,7 +162,9 @@ BATH1_SHELF_2030 = FurnitureType(
            "to the east end of RM-S-BATH1's tub alcove, whose WEST panel carries "
            "FX-S-BATH1-SH's east flange over a framed 2x4 and is what makes that insert a "
            "legitimate three-wall install. Depth matches the tub (30\"), height matches the "
-           "surround head (84\"); the 7/8\" of slack at the east wall is taken as scribe.",
+           "surround head (84\"); the 7/8\" of slack at the east wall is taken as scribe. "
+           "Wet-room oak: Type III glue-ups, film finish on all six faces before install, "
+           "stainless pins and fasteners only.",
 )
 
 
@@ -185,7 +187,9 @@ SUITEBATH_SHELF_1130 = FurnitureType(
     wood_material_ref="oak-shelf-4q",
     source="Site-built millwork: a 3/4\" plywood carcass scribed into the south end of "
            "RM-S-SUITEBATH's tub alcove, open to the west. Its north divider carries "
-           "FX-S-SUITEBATH-TUBSH's south flange over a framed 2x4.",
+           "FX-S-SUITEBATH-TUBSH's south flange over a framed 2x4. "
+           "Wet-room oak: Type III glue-ups, film finish on all six faces before install, "
+           "stainless pins and fasteners only.",
 )
 
 # RM-S-SUITEBATH's robe pegs, on W-S-DC2 north of the door leaf (2026-10-03). The closet
@@ -422,41 +426,6 @@ MEDIA_SECTIONAL_U = FurnitureType(
             "2'-10\" to match the catalog's seating."),
 )
 
-
-# --- the media room's bookcases -----------------------------------------------------------
-#
-# House-local because it is a HEIGHT made to fit one room, not a product cloned from a
-# catalog: the owner asked for the theatre's shelving to run up near the ceiling, and the
-# number that answers it comes from RM-B-PLAY-N's own section, not a product page.
-#
-# The room's measured clear height is 8'-0" under SL-M-DECK (`code.R305_ceiling_height`) —
-# NOT the 8'-3 1/2" plan/placeables.py quoted from an older revision of the deck. 7'-6"
-# leaves a 6" reveal, which is the reason for that number and not a rounding:
-#   * it is scribe room. A site-built case run tight to a poured deck has nowhere to go if
-#     the soffit is out of level, and a basement deck is never dead flat.
-#   * it keeps the case tippable. A 90" x 12" carcass swings up on a 90 3/4" diagonal, so it
-#     can be built flat on the floor and stood — at 7'-10" the diagonal is 94 3/4" in a 96"
-#     room and it has to be assembled standing.
-# Same 2'-8" x 1'-0" footprint as the library case it replaces, so every plan dimension in
-# plan/placeables.py — the clearances off D-B-PLAY's swing, the backs on the 18'-3 3/8"
-# face — is unchanged by the swap.
-#
-# ** ANTI-TIP IS NOT OPTIONAL AT THIS HEIGHT ** and is easy here: the south wall is W-B-CE,
-# INT_2X6_STAGGERED_PLUMBING, so there are real studs to catch. That is worth saying because
-# the room's OTHER wall — the north one the screen hangs on — is an 8" pour that takes
-# anchors instead, and someone reading only that note could reach for the wrong fastener.
-THEATER_BOOKCASE = FurnitureType(
-    tag="FT-BOOKCASE-32-90", name='Bookcase, 2\'-8" x 7\'-6"',
-    footprint=(ft(2, 8), ft(1)), height=ft(7, 6),
-    plan_symbol="bookcase", storage=True,
-    wood_material_ref="oak-shelf-4q",
-    source=("owner, 2026-08-24 — the theatre's shelving taken up near the ceiling. The "
-            "library's FURN-BOOKCASE-32 at 6'-0\" in the same 2'-8\" x 1'-0\" footprint, "
-            "stretched to 7'-6\": a 6\" reveal under RM-B-PLAY-N's measured 8'-0\" clear, "
-            "which is scribe room for an out-of-level deck and keeps the 90\" x 12\" "
-            "carcass tippable on its 90 3/4\" diagonal. Anti-tip strap or cleat into "
-            "W-B-CE's studs at every case."),
-)
 
 # --- kitchen millwork (the peninsula/pantry-room rework) --------------------------------
 #
@@ -702,7 +671,7 @@ FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
                    PORCH_TRACK_102,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
                    BATH1_SHELF_2030,
-                   MEDIA_SECTIONAL_U, THEATER_BOOKCASE, SUITEBATH_SHELF_1130,
+                   MEDIA_SECTIONAL_U, SUITEBATH_SHELF_1130,
                    SUITEBATH_PEGS_24, SUITEBATH_MIRROR_ESTERO,
                    PANTRY_SHELVES_70,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,

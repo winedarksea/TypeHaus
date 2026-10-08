@@ -140,29 +140,24 @@ BASEMENT_PLACEABLES = [
     # y 18'-0"..20'-6", so both pairs stand clear of the arc: west from the 18'-6" corner to
     # 23'-10", east from 29'-8" to the 35'-0" corner.
     #
-    # ** 7'-6", NOT THE LIBRARY'S 6'-0" ** (owner: take the theatre's shelving nearer the
-    # ceiling). FT-BOOKCASE-32-90 is house-local and argues the height in
-    # plan/furniture_types.py; the short version is that the room's measured clear is 8'-0"
-    # under SL-M-DECK, so 7'-6" leaves a 6" reveal — scribe room under a poured deck that is
-    # never dead flat, and enough that a 90" x 12" carcass can still be stood up off the
-    # floor. Anti-tip into W-B-CE's studs at every case; it is a stud wall, unlike the pour
-    # the screen hangs on.
+    # ** IKEA BILLY, NOT CUSTOM OAK ** (owner, 2026-10-07). Two 31 1/2" cases fill each 64"
+    # run with 1/2" of scribe at each end; HEMNES pairs (70 3/4") do not fit. 79 1/2" tall
+    # under the room's 8'-0" clear, so the 7'-6" site-built case and its oak are retired.
+    # 11" deep, 1" shallower than before, so the walk to the sectional gains an inch.
+    # Anti-tip into W-B-CE's studs at every case; it is a stud wall, unlike the pour the
+    # screen hangs on.
     #
     # ** THE 8'-3 1/2" CEILING QUOTED ABOVE FOR THE SCREEN IS STALE ** —
     # `code.R305_ceiling_height` reads 8'-0" here today. It does not move the panel (top of
     # glass at 6'-8" clears either), but do not re-derive anything else from it.
-    #
-    # The footprint is unchanged at 2'-8" x 1'-0", so every dimension above still holds: the
-    # backs stay on the 18'-3 3/8" face and both pairs stay clear of D-B-PLAY's swing arc.
-    # A real Billy is 31 1/2" x 11" x 79 1/2"; this is not that piece and does not try to be.
-    Furniture(uid="CS3QSXP6JR", tag="FURN-B-PLAY-BOOK-W1", type_ref="FT-BOOKCASE-32-90", room="RM-B-PLAY-N",
-              position=pt(ft(19, 10), ft(18, 9.375)), rotation=deg(180)),
-    Furniture(uid="F9X5X4J5N5", tag="FURN-B-PLAY-BOOK-W2", type_ref="FT-BOOKCASE-32-90", room="RM-B-PLAY-N",
-              position=pt(ft(22, 6), ft(18, 9.375)), rotation=deg(180)),
-    Furniture(uid="0NPX3QZ0GA", tag="FURN-B-PLAY-BOOK-E1", type_ref="FT-BOOKCASE-32-90", room="RM-B-PLAY-N",
-              position=pt(ft(31), ft(18, 9.375)), rotation=deg(180)),
-    Furniture(uid="2XX4D4BYHR", tag="FURN-B-PLAY-BOOK-E2", type_ref="FT-BOOKCASE-32-90", room="RM-B-PLAY-N",
-              position=pt(ft(33, 8), ft(18, 9.375)), rotation=deg(180)),
+    Furniture(uid="CS3QSXP6JR", tag="FURN-B-PLAY-BOOK-W1", type_ref="FURN-BOOKCASE-BILLY-31", room="RM-B-PLAY-N",
+              position=pt(ft(19, 10.25), ft(18, 8.875)), rotation=deg(180)),
+    Furniture(uid="F9X5X4J5N5", tag="FURN-B-PLAY-BOOK-W2", type_ref="FURN-BOOKCASE-BILLY-31", room="RM-B-PLAY-N",
+              position=pt(ft(22, 5.75), ft(18, 8.875)), rotation=deg(180)),
+    Furniture(uid="0NPX3QZ0GA", tag="FURN-B-PLAY-BOOK-E1", type_ref="FURN-BOOKCASE-BILLY-31", room="RM-B-PLAY-N",
+              position=pt(ft(31, 0.25), ft(18, 8.875)), rotation=deg(180)),
+    Furniture(uid="2XX4D4BYHR", tag="FURN-B-PLAY-BOOK-E2", type_ref="FURN-BOOKCASE-BILLY-31", room="RM-B-PLAY-N",
+              position=pt(ft(33, 7.75), ft(18, 8.875)), rotation=deg(180)),
     # ** FIRST-REFLECTION TREATMENT IS NOT AUTHORED, AND THE TWO SURFACES THAT WANT IT ARE
     # THE SIDE WALLS AND THE CEILING. ** Nothing in the engine grades room acoustics, so
     # this note is the whole record. Two of the four bounces are already answered by

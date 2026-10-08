@@ -115,7 +115,8 @@ def test_custom_milled_shelf_requires_rough_stock_metadata(catlin_plan) -> None:
 
     for storey in catlin_plan.storeys:
         elements = catlin_plan.storey_elements(storey.tag)
-        shelf = next((item for item in elements if isinstance(item, ShelfBank)), None)
+        shelf = next((item for item in elements if isinstance(item, ShelfBank)
+                      and item.procurement is ShelfProcurement.CUSTOM_MILLED), None)
         if shelf is None:
             continue
         changed = shelf.model_copy(update={"material_ref": "oak"})

@@ -64,6 +64,7 @@ from typehaus.library.placeables.fixtures import (
 )
 from typehaus.library.placeables.furniture import (
     ARMCHAIR,
+    BILLY_BOOKCASE_31,
     BOOKCASE,
     CHESS_TABLE_315,
     CHEST,
@@ -129,6 +130,7 @@ __all__ = [
     "BOOKCASE",
     "CHESS_TABLE_315", "HAMMOCK_CHAIR_MEDIUM",
     "HEMNES_BOOKCASE_35",
+    "BILLY_BOOKCASE_31",
     "HEMNES_DESK_61",
     "HEMNES_DRESSER_63",
     "MITTZON_SIT_STAND_DESK_47",

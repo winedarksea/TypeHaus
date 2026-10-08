@@ -263,12 +263,12 @@ def test_the_alcove_is_two_bowls_at_exactly_the_code_minimum_spacing():
     assert east - centre_b >= 15.0, f"east bowl is {east - centre_b:.2f}in off its wall"
 
 
-def test_every_vanity_carries_a_billable_shelf():
+def test_every_vanity_carries_its_own_shelf():
     """The storage is the point, and doors-plus-a-shelf is why these are not drawer banks.
 
     A drawer base runs about 1.5x a door base of the same width. Each of these cabinets is a
-    plain two-door box with one full-depth adjustable shelf cut from the owner's own oak,
-    which is what recovers the volume without paying the drawer premium.
+    plain two-door box with the one full-depth adjustable shelf it ships with, priced in the
+    vanity row rather than milled from the owner's oak.
     """
     model = _model()
     plan = model.plan
@@ -282,7 +282,8 @@ def test_every_vanity_carries_a_billable_shelf():
         banks = [b for b in model.shelf_banks if b.host == fixture.tag]
         assert len(banks) == 1, f"{fixture.tag} has {len(banks)} shelf banks, wants one"
         bank = banks[0]
-        assert bank.material_ref == "oak-shelf-4q"
+        assert bank.material_ref == "cabinet-plywood"
+        assert bank.procurement == "included_in_host"
         # depth is AUTHORED on every one: the derivation is keyed on FurnitureTypes and
         # every host here is a FixtureType, so it is checked here against the carcass —
         # the carcass less a 3/4" back and a 1 3/4" scribe/trap set-off.

@@ -237,12 +237,13 @@ def test_the_bathroom_door_swings_out_and_clears_the_vanity():
     assert blockers == []
 
 
-def test_the_sink_base_carries_a_billable_shelf():
+def test_the_sink_base_carries_its_own_shelf():
     """The owner asked for drawer AND shelf space. Drawers have no vocabulary in the engine
-    and live in the type's `source`; the shelf is a board and bills as owner-milled oak."""
+    and live in the type's `source`; the shelf is the cabinet's own, priced with it."""
     model = _model()
     bank = next(b for b in model.shelf_banks if b.tag == "SB-M-BATH2-VAN")
     assert bank.host == "FX-M-BATH2-SINK"
+    assert bank.procurement == "included_in_host"
     # A Fixture hosting casework is legal — `resolve/millwork.py` builds its placeable map
     # from `canvas_objects`, which carries Fixtures — but the depth cannot be DERIVED from a
     # FixtureType, so it must be authored or the bank resolves with no depth at all.

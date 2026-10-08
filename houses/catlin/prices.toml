@@ -6186,21 +6186,12 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # pieces, so [furnishings] and not [placeables] — a type must land in exactly one of the two
 # and `load_prices` rejects the overlap.
 #
-# The bookcase is a Billy-class 32" unit; four of them line RM-B-PLAY-N's south wall either
-# side of D-B-PLAY. The low end is the IKEA price with no doors, the high end a solid-wood
-# equivalent of the same size.
-#
-# ** THE KEY WAS WRONG AND THE FOUR BOOKCASES WERE BILLING $0 (fixed 2026-09-06). ** This row
-# was written against the library type FURN-BOOKCASE-32, and the house stopped using it on
-# 2026-08-24 when the theatre's shelving was taken up near the ceiling: the placeables carry
-# the house-local FT-BOOKCASE-32-90 and this key matched nothing, so `haus takeoff` listed
-# them under "not priced" and the total was $320-2,000 light. ** A PRICE KEY IS A TYPE TAG,
-# and nothing reconciles the two — a rename on the type side is a silent price deletion, and
-# the only symptom is a line in the "not priced" list nobody reads.
-#
-# The band goes up with the height: FT-BOOKCASE-32-90 is 7'-6" where the library unit is
-# 6'-0", the same 2'-8" x 1'-0" footprint with two more shelves. +25% on both ends.
-"FT-BOOKCASE-32-90" = { low = 100, high = 625 }  # 4 ea
+# IKEA BILLY 002.638.50, white, 31 1/2" x 79 1/2"; four line RM-B-PLAY-N's south wall either
+# side of D-B-PLAY (owner, 2026-10-07: bought, not owner oak). US price ~$70-90; confirm at order.
+"FURN-BOOKCASE-BILLY-31" = { low = 69.99, high = 89.99 }  # 4 ea
+# IKEA HEMNES 604.135.02, white stain/light brown, RM-M-BED's south pair. It billed $0 until
+# 2026-10-07: no row existed. US listing $329.
+"FURN-BOOKCASE-HEMNES-35" = { low = 329, high = 329 }  # 2 ea
 # A 98" panel is the one line in this table with a floor well above zero: the size itself is
 # specialty, and the low end is a TCL/Hisense-class 98" rather than anything smaller. The
 # high end is an LG/Samsung flagship at the same diagonal. The articulating anchor mount into

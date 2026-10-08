@@ -381,6 +381,14 @@ HEMNES_BOOKCASE_35 = FurnitureType(
             "shelves. Anchor to wall per manufacturer. Simplified planning model. "
             "https://www.ikea.com/us/en/p/hemnes-bookcase-white-stain-light-brown-60413502/"),
 )
+BILLY_BOOKCASE_31 = FurnitureType(
+    tag="FURN-BOOKCASE-BILLY-31", name="IKEA BILLY bookcase, white",
+    footprint=(inch(31.5), inch(11)), height=inch(79.5),
+    plan_symbol="bookcase", storage=True,
+    source=("IKEA BILLY 002.638.50, white; particleboard/fiberboard, 80 x 28 x 202 cm "
+            "(31 1/2 x 11 x 79 1/2 in.); five adjustable shelves and one fixed. Anchor to "
+            "wall per manufacturer. https://www.ikea.com/us/en/p/billy-bookcase-white-00263850/"),
+)
 
 # --- Sauna --------------------------------------------------------------------------------
 #
@@ -488,7 +496,7 @@ STARTER_FURNITURE_TYPES = (
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, CHESS_TABLE_315, DINING_CHAIR, HAMMOCK_CHAIR_MEDIUM,
     WRITING_DESK, WRITING_DESK_42, HEMNES_DESK_61, MITTZON_SIT_STAND_DESK_47,
-    OFFICE_CHAIR, DESK_CHAIR, BOOKCASE, HEMNES_BOOKCASE_35,
+    OFFICE_CHAIR, DESK_CHAIR, BOOKCASE, HEMNES_BOOKCASE_35, BILLY_BOOKCASE_31,
     SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_TIERED_48,
     SAUNA_BENCH_54, SAUNA_BENCH_48, SAUNA_BENCH_36,
     WORKBENCH_60, MUDROOM_BENCH_36, CLOSET_PEG_RAIL_42,

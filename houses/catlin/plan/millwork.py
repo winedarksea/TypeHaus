@@ -218,31 +218,6 @@ MAIN_SHELVES = [
         procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(18), clear_height=inch(28.25), shelf_count=1),),
     ),
-    # --- the mudroom bench's seat, FURN-M-MUD-BENCH -----------------------------------
-    #
-    # Same reason as the two above, and the same shape of fix. FURN-M-MUD-BENCH is a
-    # `Furniture` on a library FurnitureType, and `takeoff/hardwood.py` admits exactly five
-    # sources — window stools, ShelfBanks, stair treads, `wood_surfaces` rows and timber
-    # solids. A Furniture is none of them, so the biggest single oak board on this floor
-    # was reaching `haus millwork` as nothing at all. A ShelfBank hosted on the furniture
-    # tag is how a BOARD gets into the cut list.
-    #
-    # `shelf_count=1` for the reason spelled out at SB-M-STUDY-BENCH: a ShelfBay counts
-    # horizontal boards INCLUDING the case top, and on a bench the seat IS the top.
-    #
-    # `depth` deliberately omitted — the host is a FurnitureType, so `_carcass_depth_m`
-    # inherits its 18" footprint depth and the board can never disagree with the carcass.
-    # At 18" the seat is past `MW-STANDARD.max_board_width` once jointing loss is taken, so
-    # it lays up as an edge-glued panel of 2 boards at ~9 1/2", which is how a solid seat
-    # this wide is actually made.
-    #
-    # `clear_height` is the void under it: the type's 18" of bench less the 1 1/2" seat.
-    #
-    # No dollar here, and that is deliberate: `haus millwork` is an UNPRICED VIEW and a
-    # "shelf" row may reference no other priced section (a test enforces it). The bench's
-    # money is already in its `[placeables]` row in prices.toml, which is written to
-    # include the seat — the same accounting as FT-STUDY-BENCH, not the owner-milled
-    # family-stock case the pantry shelves are.
     # --- RM-M-LIVING's fireplace mantel, on FURN-M-FIRE-MANTEL --------------------------
     #
     # A custom-milled walnut shelf, 2 1/4" thick — one brick bed height, so it reads as a
@@ -345,22 +320,28 @@ MAIN_SHELVES = [
         procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(45.5), clear_height=inch(19.625), shelf_count=1),),
     ),
+    # --- the mudroom bench's seat, FURN-M-MUD-BENCH -----------------------------------
+    #
+    # Bought with the bench, not milled (owner, 2026-10-07): the seat is part of the
+    # purchased FURN-M-MUD-BENCH and its money is in that `[placeables]` row. The bank stays
+    # so the seat's board is still on record; `shelf_count=1` because the seat IS the top.
     ShelfBank(
         uid="STDXY9J49R", tag="SB-M-MUD-BENCH",
         host="FURN-M-MUD-BENCH",
         material_ref="oak-shelf-8q",
         thickness=inch(1.5),
         profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
+        procurement=ShelfProcurement.INCLUDED_IN_HOST,
         bays=(ShelfBay(width=inch(36), clear_height=inch(16.5), shelf_count=1),),
     ),
 ]
 
-# --- the theatre bookcases, FT-BOOKCASE-32-90 x4 ---------------------------------------
+# --- the theatre bookcases, IKEA BILLY x4 --------------------------------------------
 #
-# 12" deep, so a single board with 6" to spare, and 4/4: these carry books, not people.
-# Clear width is the 2'-8" carcass less two 3/4" sides. Six boards each — the type's
-# `shelving(shelves=5)` symbol plus the case top.
+# Bought, not milled (owner, 2026-10-07): a book shelf in a basement media room does not need
+# the family oak. Each case's own shelves are in its price, so these banks are
+# INCLUDED_IN_HOST and leave `haus millwork`. Six boards per case — five adjustable plus the
+# fixed one — over the carcass's ~30" clear width.
 BASEMENT_SHELVES = [
     ShelfBank(
         uid="ZJQHBYNFZ3", tag="SB-B-PLAY-BOOK-W1",
@@ -368,8 +349,8 @@ BASEMENT_SHELVES = [
         material_ref="oak-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(30.5), clear_height=ft(7, 6), shelf_count=6),),
+        procurement=ShelfProcurement.INCLUDED_IN_HOST,
+        bays=(ShelfBay(width=inch(30), clear_height=inch(77), shelf_count=6),),
     ),
     ShelfBank(
         uid="DDZP84R2PT", tag="SB-B-PLAY-BOOK-W2",
@@ -377,8 +358,8 @@ BASEMENT_SHELVES = [
         material_ref="oak-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(30.5), clear_height=ft(7, 6), shelf_count=6),),
+        procurement=ShelfProcurement.INCLUDED_IN_HOST,
+        bays=(ShelfBay(width=inch(30), clear_height=inch(77), shelf_count=6),),
     ),
     ShelfBank(
         uid="KRYBE1F0A8", tag="SB-B-PLAY-BOOK-E1",
@@ -386,8 +367,8 @@ BASEMENT_SHELVES = [
         material_ref="oak-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(30.5), clear_height=ft(7, 6), shelf_count=6),),
+        procurement=ShelfProcurement.INCLUDED_IN_HOST,
+        bays=(ShelfBay(width=inch(30), clear_height=inch(77), shelf_count=6),),
     ),
     ShelfBank(
         uid="40MV8CYTFF", tag="SB-B-PLAY-BOOK-E2",
@@ -395,8 +376,8 @@ BASEMENT_SHELVES = [
         material_ref="oak-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(30.5), clear_height=ft(7, 6), shelf_count=6),),
+        procurement=ShelfProcurement.INCLUDED_IN_HOST,
+        bays=(ShelfBay(width=inch(30), clear_height=inch(77), shelf_count=6),),
     ),
 ]
 
@@ -412,6 +393,13 @@ BASEMENT_SHELVES = [
 # so nothing here authors it. It still lays up as a panel — 18 1/2" finished wants a 19 1/4"
 # rough face and the supply is 18" — and that is a fact worth seeing on the schedule rather
 # than at the mill.
+#
+# ** WET-ROOM SPEC, FOR THIS SHELF AND SB-S-SUITEBATH ** (owner, 2026-10-07). Both stand at
+# a tub's end. White oak is the right species (closed pores), so the risk is the detail:
+# quartersawn where the stack allows; Type III PVA in the glue-ups; a wet-area film finish
+# (catalysed or water-borne poly, not oil alone) on all six faces, end grain included,
+# before install; stainless pins and fasteners only, since iron on oak tannin stains black;
+# no board end on the tub deck or the shower's wet line. Recoat when the film wears.
 SECOND_SHELVES = [
     ShelfBank(
         uid="JBAEDPFV5Q", tag="SB-S-BATH1",
