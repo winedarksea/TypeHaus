@@ -923,12 +923,17 @@ STUDIO_DRAINS = [
     PipeRun(uid="FY6M0PTE7C", tag="PR-A-STUBATH-LAV-DRAIN", system=PipeSystem.DRAIN,
             # The drop is 3 1/4" south of the basin, at 21'-1 3/8": on 21'-4 5/8" it stood
             # 1.81" in joist-0-016's top flange, and north of it is DU-A-ERV-R-STUBATH's riser.
+            # ** THE LEG RUNS 3 1/2" EAST OF THE WALL AXIS, ON x=9'-11" (2026-10-08). ** On the
+            # axis it ran through PR-A-HW-STUBATH's riser. In the joist band x is free, so it
+            # jogs east at the drop's foot, runs south on x=9'-11", and side-enters
+            # PR-A-STUBATH-DRAIN's WC arm 3 1/2" east of the stack drop. The hot riser, now at
+            # 20'-10", is 3 3/8" off the drop and 3 1/2" off this lane.
             path=(pt(ft(9, 7.5), ft(21, 1.375)), pt(ft(9, 7.5), ft(21, 1.375)),
-                  pt(ft(9, 7.5), ft(19, 4))),
+                  pt(ft(9, 11), ft(21, 1.375)), pt(ft(9, 11), ft(19, 4))),
             diameter=inch(2), material="pvc",
-            # The drop bottom is 19'-4 1/8" so PR-A-STUBATH-SH-DRAIN still enters the upper
+            # The drop bottom is 19'-4 3/8" so PR-A-STUBATH-SH-DRAIN still enters the upper
             # half at 20'-7 5/8" on the shorter leg.
-            elevations=(ft(20, 0.75), ft(19, 4.125), ft(19, 3.5)),
+            elevations=(ft(20, 0.75), ft(19, 4.375), ft(19, 4.25), ft(19, 3.625)),
             # No `wall_ref`, for the same reason as PR-M-S-BATH1-LAV-DRAIN: the leg runs
             # under W-A-STU-W's plan footprint but below its base, in the joist band, so a
             # claim that every segment is inside that wall's cavity would be false.
@@ -936,11 +941,11 @@ STUDIO_DRAINS = [
     # The 36" pan's 2" waste. FS-ATTIC is I-joists, not the second floor's trusses, so this
     # leg buys its freedom by running WEST — parallel to the joists, in the 241 1/4"..254 3/4"
     # bay the pan's grate already sits in — and crosses nothing at all for 6'-7". It ties into
-    # the leg above at (9'-7 1/2", 20'-7 5/8"), 1/16" over that pipe's CENTRELINE there.
+    # the leg above at (9'-11", 20'-7 5/8"), just over that pipe's CENTRELINE there.
     PipeRun(uid="BVZG9VAP7M", tag="PR-A-STUBATH-SH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(16, 2.625), ft(20, 7.625)), pt(ft(16, 2.625), ft(20, 7.625)),
-                  pt(ft(9, 7.5), ft(20, 7.625))),
+                  pt(ft(9, 11), ft(20, 7.625))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(20, 0.75), ft(19, 5.75), ft(19, 4)),
+            elevations=(ft(20, 0.75), ft(19, 5.75), ft(19, 4.125)),
             serves=("FX-A-STUBATH-SH",)),
 ]

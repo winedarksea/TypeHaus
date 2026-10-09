@@ -974,21 +974,23 @@ STUDIO_SUPPLY = [
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
     PipeRun(uid="TCWF4YDZTW", tag="PR-A-HW-STUBATH", system=PipeSystem.WATER_HOT,
-            # ** THE HOT STAYS ON THE AXIS, AND IT IS NOT FOR WANT OF TRYING. ** The same
-            # 2" offset the cold took does not work here and the arithmetic is worth having:
-            # this run carries a 1" fiberglass sleeve, so its riser is **2.88" across**, and
-            # PR-A-STUBATH-LAV-DRAIN is 2.375". Side by side they need 2.627" between
-            # centres, which puts the hot's jacket **2.7538" from the bay's centre line
-            # against the 2.75" a 2x6 gives** — over by FOUR THOUSANDTHS OF AN INCH. Offset
-            # 2" and the jacket stands 7/10" proud of the stud; left on the axis it is
-            # inside its own bay and coaxial with the drain. Neither is buildable, so it
-            # stays where the wall wants it and the pair is itemised in preferences.toml
-            # with this number. The fix is a 2x8 bay, a furred chase, or a thinner sleeve —
-            # and the sleeve is an energy-code question (R403.5.3), not a clearance one.
-            path=(pt(ft(14, 3.6), ft(22, 4)), pt(ft(9, 7.5), ft(21)),
-                  pt(ft(9, 7.5), ft(21))),
+            # ** 1/2" SLEEVE, AND THE FEED GOES ROUND THE SUITE LAV DRAIN (2026-10-08). ** On a
+            # 1" sleeve (2.88" OD) this riser could neither share the wall axis with
+            # PR-A-STUBATH-LAV-DRAIN nor stand 2" off it inside a 2x6. Now the lav drain jogs
+            # east in the joist band, and the riser stands at 20'-10", 3 3/8" off its drop. The
+            # sleeve is 1/2" fiberglass, R-3.1 (Owens Corning 722579, k 0.16 by ASTM C547),
+            # which still meets IECC R403.5.3's R-3, and it is what lets the feed cross over
+            # PR-M-S-SUITE-WC-DRAIN under the 10'-0" deck.
+            # The feed leg: 2 3/4" west along W-S-SN3's line, south on x=14'-0 3/4" between
+            # PR-M-S-SUITE-LAV-DRAIN (3 1/4") and DU-M-ERV-R-LAUNDRY (4 1/4") through the
+            # 13'-4 1/2"..14'-7 1/2" web opening (bare crown 118.46" against 118.5"), then west
+            # on y=20'-3", inside the 20'-0"..21'-4" truss bay, to the riser.
+            path=(pt(ft(14, 3.6), ft(22, 4)), pt(ft(14, 0.75), ft(22, 4)),
+                  pt(ft(14, 0.75), ft(20, 3)), pt(ft(9, 7.5), ft(20, 3)),
+                  pt(ft(9, 7.5), ft(20, 10)), pt(ft(9, 7.5), ft(20, 10))),
             diameter=inch(0.75), material="pex",
-            insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(9, 9.8), ft(9, 9.8), ft(22, 6)),
+            insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
+            elevations=(ft(9, 9.8), ft(9, 9.8), ft(9, 10.25), ft(9, 10.75), ft(9, 10.75),
+                        ft(22, 6)),
             serves=("FX-A-STUBATH-LAV", "FX-A-STUBATH-SH", "FX-A-STUDIO-BAR-SINK")),
 ]

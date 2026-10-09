@@ -383,7 +383,7 @@ STUDIO_SUPPLY_DEVICES = [
                   serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                           "FX-A-STUDIO-BAR-SINK")),
     PipeAccessory(uid="MA4EXBFW5G", tag="PA-A-STUBATH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-A-HW-STUBATH", position=pt(ft(9, 7.5), ft(21)),
+                  pipe_ref="PR-A-HW-STUBATH", position=pt(ft(9, 7.5), ft(20, 10)),
                   elevation=ft(2, 6), accessible=True, room="RM-A-STUBATH",
                   model='3/4" quarter-turn ball valve',
                   serves=("FX-A-STUBATH-LAV", "FX-A-STUBATH-SH", "FX-A-STUDIO-BAR-SINK")),
