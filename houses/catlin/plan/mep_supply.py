@@ -434,11 +434,13 @@ SUPPLY = [
             # through PR-M-WASH-STANDPIPE, which tops out at 3'-0", so the leg rides 3'-6"
             # (12'-7 7/16" basement-rel). The riser is at y=20'-9 1/4", the bay south of
             # joist-0-016 — at 21'-2.4" the jacket took its flanges.
+            # Sink terminal nudged 3.5" west to x=12'-2" (was 12'-5.5"): that point sat 0.5"
+            # off PR-M-S-SUITE-DRAIN's stack at x=12'-6", and the drop runs through it.
             path=(pt(ft(7, 6), ft(25, 6)), pt(ft(8, 2), ft(20, 9.25)),
                   pt(ft(8, 2), ft(20, 9.25)), pt(ft(8, 2), ft(20, 9.25)),
                   pt(ft(8, 2), ft(18, 1)),
-                  pt(ft(8, 6.5), ft(18, 1)), pt(ft(12, 5.5), ft(18, 1)),
-                  pt(ft(12, 5.5), ft(18, 1))),
+                  pt(ft(8, 6.5), ft(18, 1)), pt(ft(12, 2), ft(18, 1)),
+                  pt(ft(12, 2), ft(18, 1))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(7, 4), ft(8, 1.4375), ft(9, 1.4375), ft(12, 7.4375),
                         ft(12, 7.4375), ft(12, 7.4375), ft(12, 7.4375),
