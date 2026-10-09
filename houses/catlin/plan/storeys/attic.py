@@ -768,16 +768,17 @@ FLOOR_OPENINGS = [
                  outline=(pt(inch(248.5), inch(341.5)), pt(inch(255.5), inch(341.5)),
                           pt(inch(255.5), inch(348.5)), pt(inch(248.5), inch(348.5))),
                  penetration_for=("DU-S-ERV-HP-FEED",)),
-    # Where the radon/vent bundle rises again after its jog, at x=9'-7 1/2". The two risers
-    # straddle the y=34'-8" joist, so each takes its own hole in its own bay, the joists
-    # either side its single trimmers and headed 3 1/2" either side.
+    # Where the radon/vent bundle rises again after its jog: vent at x=9'-7 1/2", radon 6.2"
+    # west at 9'-1.3" (side by side since 2026-10-08). The two risers straddle the y=34'-8"
+    # joist, so each takes its own hole in its own bay. The radon hole runs east to the vent
+    # hole's x=9'-11" so the bath ceiling below keeps no 4" sliver between them.
     FloorOpening(uid="2BSGJXFM0G", tag="FO-A-VENT-STACK", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(112), inch(400)), pt(inch(119), inch(400)),
                           pt(inch(119), inch(416)), pt(inch(112), inch(416))),
                  penetration_for=("VR-M-STACK-vent",)),
     FloorOpening(uid="FHM5PC8VZA", tag="FO-A-RADON-STACK", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(inch(112), inch(416)), pt(inch(119), inch(416)),
-                          pt(inch(119), inch(432)), pt(inch(112), inch(432))),
+                 outline=(pt(inch(105.75), inch(416)), pt(inch(119), inch(416)),
+                          pt(inch(119), inch(432)), pt(inch(105.75), inch(432))),
                  penetration_for=("VR-M-STACK-radon",)),
     FloorOpening(uid="CAF601AAAA", tag="FO-A-STAIR",
                  outline=(pt(ft(22, 4.625), ft(5, 4)),

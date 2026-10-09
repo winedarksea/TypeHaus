@@ -1195,7 +1195,7 @@ CONDUIT_TRUNKS = [
     # gable wall, and up it to ED-A-PV-JB at 25'-6". 6" above the deck for the flat part,
     # which is what CD-A-DATA-NE does on the same storey and for the same reason.
     #
-    # It turns north at x=9'-6", 6" clear of FS-ATTIC's deck void (x 10'-0"..18'-0") west
+    # It turns north at x=8'-8", west of VR-M-STACK's radon riser and clear of FS-ATTIC's deck void (x 10'-0"..18'-0") west
     # edge, and finishes inside the gable wall. y=35'-10" is 4" into W-A-N2/W-A-N2B's 5 1/2"
     # stud cavity (which runs y 35'-6"..35'-11 1/2"), so the run straps to gable studs for
     # its last 1'-6" and stands up between them, directly behind the box. There is no third
@@ -1210,11 +1210,13 @@ CONDUIT_TRUNKS = [
                # Up 7" off the riser head first (2026-09-23): DU-ERV-RISER-EXH's top leg runs
                # east at 20'-4", and 21'-1" clears it and rides above FO-A-ERV-CHASE's deck band.
                path=(pt(inch(19.6), inch(404)), pt(inch(19.6), inch(404)),
-                     pt(inch(110), inch(404)), pt(inch(110), ft(35, 10)),
+                     pt(inch(104), inch(404)), pt(inch(104), ft(35, 10)),
                      pt(ft(10, 2), ft(35, 10)), pt(ft(10, 2), ft(35, 10))),
                start_elevation=ft(20, 6), end_elevation=ft(25),
                elevations=(ft(20, 6), ft(21, 1), ft(21, 1), ft(21, 1), ft(21, 1), ft(25)),
-               # Pull box at 2 (9'-2", 33'-8"), attic deck in RM-A-POCKET: the riser chains in.
+               # Pull box at 2 (8'-8", 33'-8"), attic deck in RM-A-POCKET: the riser chains in.
+               # x=8'-8" since 2026-10-08: 9'-2" ran through VR-M-STACK's radon riser once the
+               # stack's pair went side by side across the gable.
                pull_points=(2,),
                from_ref="CD-B-ATTIC-RISER", to_ref="ED-A-PV-JB"),
     # --- the backup microgrid's three raceways ----------------------------------------
