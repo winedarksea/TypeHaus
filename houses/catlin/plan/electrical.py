@@ -1638,7 +1638,7 @@ BASEMENT_DATA_TRUNKS = [
     #
     # ** THE y=19'-0" LEG IS 18'-8 1/2" (2026-10-08). ** It sat 1 3/8" off PR-B-LSINK-DRAIN's
     # 2" line at y=18'-10 5/8" (x 6'..12'), too close in plan. y=19'-3" hit PR-B-WASH-DRAIN
-    # and y=21'-0" hit PR-B-HW-WASH and PR-B-WC2-DRAIN, so the north step is the one that
+    # and y=21'-0" hit PR-B-HW-WASH and PR-B-WC2-DRAIN, so the 3 1/2" step SOUTH is the one that
     # clears. Same elevation; it clears the drain by 2 1/8" in plan.
     ConduitRun(uid="Z9TXYSYKWG", tag="CD-B-DATA-STUDY", trade_size=inch(0.75), service=Service.DATA,
                path=(pt(inch(10), ft(31)), pt(ft(2), ft(31)), pt(ft(2), ft(18, 8.5)), pt(ft(16), ft(18, 8.5)), pt(ft(16), ft(18, 5)), pt(ft(16), ft(18, 5))),
