@@ -216,15 +216,23 @@ SUPPLY = [
     # The connection test grades the first point against EQ-B-WH.hot as resolved, rather than a
     # copied coordinate.
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
+            # ** IT FALLS WITH THE KITCHEN DRAIN, ABOUT 3" UNDER IT (2026-10-08). ** The x=4'-8"
+            # leg is 2" off PR-B-KITCH-DRAIN's x=4'-6" fall line, so it follows that line down
+            # (0.71"/ft) through the gaps the ERV ducts leave at y=27'-28'6" (RISER-EXH -27 1/2",
+            # SAUNA-EXH, BENCH), dips to -26" to pass under PR-M-S-BATH1-DRAIN at x=5'-0", and
+            # rises to the unchanged tee. The x=7'-6" leg hangs at -25" (7'-0 7/16" clear) to
+            # pass under PR-B-LSINK-DRAIN. The tees at (7'-6", 25'-6") and (6'-6", 17'-0") hold.
             path=(pt(ft(8, 5.125), ft(29, 6)), pt(ft(8, 5.125), ft(29, 6)),
                   pt(ft(4, 8), ft(29, 6)), pt(ft(4, 8), ft(29, 6)),
-                  pt(ft(4, 8), ft(25, 6)), pt(ft(7, 6), ft(25, 6)),
-                  pt(ft(7, 6), ft(17)),
+                  pt(ft(4, 8), ft(26, 6)), pt(ft(4, 8), ft(25, 6)),
+                  pt(ft(5, 4), ft(25, 6)), pt(ft(7, 6), ft(25, 6)),
+                  pt(ft(7, 6), ft(22)), pt(ft(7, 6), ft(17)),
                   pt(ft(6, 6), ft(17)), pt(ft(6, 6), ft(17)),
                   pt(ft(6, 6), ft(15, 6))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(5, 8), ft(5, 9.5), ft(5, 9.5), ft(7, 4),
-                        ft(7, 4), ft(7, 4), ft(7, 4), ft(7, 4),
+            elevations=(ft(5, 8), ft(5, 9.5), ft(5, 9.5), ft(7, 3.625),
+                        ft(7, 1.5), ft(6, 11.4375), ft(6, 11.4375), ft(7, 4),
+                        ft(7, 0.4375), ft(7, 0.4375), ft(7, 0.4375),
                         ft(8, 1.4375), ft(8, 1.4375)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
