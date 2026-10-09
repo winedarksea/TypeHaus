@@ -15,6 +15,7 @@ from typehaus.hardware.catalog import (
     ROLE_KNEE_BRACE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_PIPE_CLAMP,
+    ROLE_SLAB_PLATE_PIN,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_THROUGH_PANEL_PIPE_STRAP,
     hardware_for_role,
@@ -25,6 +26,7 @@ from typehaus.hardware.config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG,
 )
 from typehaus.hardware.config import FT_TO_M
+from typehaus.joints.sills import anchored_sill_returns, pinned_partition_returns
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Connector
 from typehaus.quantities import M_PER_IN
@@ -451,21 +453,40 @@ def test_mudsill_anchor_pitch_and_minimum_per_run() -> None:
 
 def test_catlin_anchors_every_sill_plate_on_concrete(catlin_model) -> None:
     rows = hardware_takeoff(catlin_model)
-    sill_runs = [ret for ret in catlin_model.construction_returns
-                 if ret.takeoff_category == CONFIG.sill_plate_takeoff_category]
+    category = CONFIG.sill_plate_takeoff_category
+    sill_runs = anchored_sill_returns(catlin_model, category)
     anchors = next(row for row in rows if row["role"] == ROLE_MUDSILL_ANCHOR)
-    holdowns = next(row for row in rows if row["role"] == "embedded_strap_holdown")
+    holdowns = next(row for row in rows if row["role"] == "embedded_strap_holdown"
+                    and row["scope"] == "sill plate on concrete")
 
     assert sill_runs, "catlin frames walls on concrete, so it must resolve sill plates"
     assert anchors["count"] >= len(sill_runs) * CONFIG.sill_plate_anchors.minimum_anchors_per_run
-    # Runs that butt at a corner share one holdown location, so holdowns < 2 per run.
-    assert 0 < holdowns["count"] < len(sill_runs) * 2
+    # Derived holdowns land only at exterior foundation corners.
+    assert 0 < holdowns["count"] < len(sill_runs)
+
+
+def test_catlin_cast_in_parts_stay_off_the_wrong_plates(catlin_model) -> None:
+    """No MASA under the brick veneer's grade beam, on a non-bearing slab partition, or
+    on the walkout curb under anything but the framed wall standing on it."""
+    category = CONFIG.sill_plate_takeoff_category
+    anchored = anchored_sill_returns(catlin_model, category)
+    pinned = pinned_partition_returns(catlin_model, category)
+    assert not any("W-SG-BRKBM" in ret.element_tags for ret in anchored + pinned)
+    curbs = {ret.element_tags[0]: ret.element_tags[1] for ret in anchored
+             if ret.element_tags[0] in ("W-B-S2", "W-B-S3")}
+    assert curbs == {"W-B-S2": "W-B-S2-FR", "W-B-S3": "W-B-S3-FR"}
+    pinned_walls = {ret.element_tags[1] for ret in pinned}
+    assert {"W-B-SA-W", "W-B-ESS-S", "W-B-BA-N"} <= pinned_walls
+    assert not pinned_walls & {"W-B-CS", "W-B-STR", "W-B-STR3"}  # bearing, on footings
+    pins = next(row for row in hardware_takeoff(catlin_model)
+                if row["role"] == ROLE_SLAB_PLATE_PIN)
+    assert pins["count"] >= 2 * len(pinned)
 
 
 def test_exterior_door_jambs_are_strapped_to_the_foundation(catlin_model) -> None:
     """The jambs of a main-storey exterior door take their own STHDs.
 
-    ``strap_holdown_rows`` derives holdowns at the *ends* of each sill-plate run, which
+    ``strap_holdown_rows`` derives holdowns only at exterior foundation corners, which
     leaves the jamb studs beside a door punched through the middle of a run with no path
     to the concrete. The four authored connectors are that path, and they bill on their
     own ``modeled connector`` row rather than being folded into the derived count — same
@@ -478,7 +499,18 @@ def test_exterior_door_jambs_are_strapped_to_the_foundation(catlin_model) -> Non
                      and element.kind is ConnectorKind.HOLD_DOWN
                      and element.size == "STHD"]
     assert {element.tag for element in jamb_holdowns} == {
-        "CN-M-HD-ENTRY-E", "CN-M-HD-ENTRY-W", "CN-M-HD-BALC-W", "CN-M-HD-BALC-E"}
+        "CN-M-HD-ENTRY-E", "CN-M-HD-ENTRY-W"}
+    # The balcony door stands on W-B-S3-FR, a framed wall on a curb: a strap across the
+    # floor band into its studs, and an STHD14 cast into the curb under them. Never an
+    # embedded part into wood.
+    by_tag = {tag: catlin_model.plan.by_tag(tag) for tag in (
+        "CN-M-HD-BALC-W", "CN-M-HD-BALC-E", "CN-B-HD-BALC-W", "CN-B-HD-BALC-E")}
+    for tag in ("CN-M-HD-BALC-W", "CN-M-HD-BALC-E"):
+        assert by_tag[tag].kind is ConnectorKind.TENSION_TIE and by_tag[tag].size == "MSTC52"
+        assert by_tag[tag].connects == ("W-M-S2", "W-B-S3-FR")
+    for tag in ("CN-B-HD-BALC-W", "CN-B-HD-BALC-E"):
+        assert by_tag[tag].kind is ConnectorKind.HOLD_DOWN and by_tag[tag].size == "STHD14"
+        assert by_tag[tag].connects == ("W-B-S3-FR", "W-B-S3")
     # Each one names the framed wall it straps and the foundation wall it is cast into.
     for element in jamb_holdowns:
         assert len(element.connects) == 2, element.tag

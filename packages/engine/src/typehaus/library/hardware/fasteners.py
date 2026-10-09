@@ -10,6 +10,7 @@ from typehaus.hardware.catalog import (
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_GIRT_STANDOFF_SCREW,
     ROLE_PARTITION_DEFLECTION_SCREW,
+    ROLE_SLAB_PLATE_PIN,
     AllowableLoads,
     StructuralHardware,
 )
@@ -195,3 +196,18 @@ SDWH_TIMBER_HEX_SCREW = StructuralHardware(
 # hanger when skewed". catlin's ridge is straight and its rafters land square on it, so the
 # skewed row is not this joint's row. The 1,060 lb that circulated in the notes until
 # 2026-09-14 was the skewed one.
+
+
+# A non-bearing partition's PT plate to the basement slab. Mechanically galvanized because
+# the plate is ACQ-treated; the washer keeps the head from pulling through a 1-1/2" plate.
+PDPAWL_SLAB_PLATE_PIN = StructuralHardware(
+    tag="simpson-pdpawl-300mg-slab-plate-pin",
+    name="PDPAWL 0.157 x 3 in powder-actuated pin, 1 in washer, mech. galvanized",
+    role=ROLE_SLAB_PLATE_PIN,
+    manufacturer=_SIMPSON,
+    model="PDPAWL-300MG",
+    source="Simpson Strong-Tie PDPAWL powder-driven pin with washer (strongtie.com/pdpawl), "
+           "ICC-ES ESR-2138. Length = 1-1/2 in plate + 1-1/4 in min. embedment, rounded "
+           "up. Non-structural partition attachment at 24 in o.c.; a concrete screw "
+           "(1/4 in Titen) is the like-for-like substitute",
+)

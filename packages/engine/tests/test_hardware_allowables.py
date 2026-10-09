@@ -268,6 +268,7 @@ _NO_PUBLISHED_LOAD = {
                      "same NDS Ch. 12, 2\" more length (a lapped foot crosses the whole post)",
     "AB-058-10-SS": "ESR-1622 §5.6 puts anchor bolt and footing design outside its scope",
     "CS16": "ESR-2105 publishes a by-nail-count ladder; the model tracks no nail count",
+    "MSTC52": "the same by-nail-count ladder as CS16, for the pre-cut floor-to-floor strap",
     # ** THE ONE ENTRY HERE THAT IS A GAP RATHER THAN A RESULT (2026-09-14). ** Every other
     # model above is empty because a report published nothing: somebody read the page and
     # the number was not on it. HU212-3 is empty because the page has not been read. It was

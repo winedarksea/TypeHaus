@@ -100,14 +100,26 @@ class ConnectorPlacementIndex:
             return _direction(*centerline_endpoints(list(solid.outline)))
         return None
 
-    def return_at(self, tag: str, point: Vec2, z_m: float) -> ResolvedConstructionReturn | None:
-        """Return tags name a construction detail, so location disambiguates its runs."""
+    def return_at(self, tag: str, point: Vec2, z_m: float,
+                  tangent: Vec2 | None = None) -> ResolvedConstructionReturn | None:
+        """Return tags name a construction detail, so location disambiguates its runs.
+
+        Near a corner a point lies inside both crossing plates; ``tangent`` then prefers
+        the run that runs along it.
+        """
         candidates = self.returns_by_tag.get(tag, ())
         if not candidates:
             return None
         location = Point(point)
+
+        def crossing(ret: ResolvedConstructionReturn) -> float:
+            if tangent is None:
+                return 0.0
+            run = _direction(*centerline_endpoints(list(ret.outline)))
+            return 0.0 if abs(run[0] * tangent[0] + run[1] * tangent[1]) > 0.5 else 1e-3
+
         return min(candidates, key=lambda pair: pair[1].distance(location)
-                   + abs(pair[0].z0_m - z_m))[0]
+                   + abs(pair[0].z0_m - z_m) + crossing(pair[0]))[0]
 
     def support_width(self, tag: str | None, tangent: Vec2, *, point: Vec2 | None = None,
                       z_m: float | None = None) -> float | None:
@@ -320,13 +332,16 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
         z_m -= cross_section(member.profile).depth_m
         x_axis, z_axis = z_axis, x_axis
     elif part.startswith(("MASA", "STHD")) and joint is not None and references:
-        run = index.return_at(references[0], point, z_m)
+        run = index.return_at(references[0], point, z_m, tangent)
         if run is not None:
             member_width_m = _width(run.outline, y_axis[:2])
             member_depth_m = run.z1_m - run.z0_m
             # Embedded straps lie on the sill face; the embed bends back into its pour.
             point = (point[0] - y_axis[0] * member_width_m / 2,
                      point[1] - y_axis[1] * member_width_m / 2)
+    elif part.startswith("MSTC"):
+        # A floor-to-floor strap stands plumb across the band: its length runs up.
+        y_axis, z_axis = (0.0, 0.0, 1.0), (-y_axis[0], -y_axis[1], 0.0)
     elif part in FACE_PLATE_PARTS and references:
         widths = [(tag, index.support_width(tag, tangent, point=point, z_m=z_m))
                   for tag in references]

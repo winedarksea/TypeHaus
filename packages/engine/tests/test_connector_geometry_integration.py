@@ -13,7 +13,8 @@ from typehaus.resolve.connector_geometry.placement import ConnectorPlacementInde
 
 SIMPSON_PREFIXES = ("LUS", "IUS", "LSSR", "LSC", "THA", "HU", "HHUS", "H2.5", "H10",
                     "ABU", "CBSQ", "CCQ", "PC", "AC", "ACE", "HL", "L50", "STHD",
-                    "HETA", "MASA", "DTT", "LSTA", "MSTA", "LTP", "A35", "LS30", "KBS", "THD")
+                    "HETA", "MASA", "DTT", "LSTA", "MSTA", "MSTC", "LTP", "A35", "LS30", "KBS",
+                    "THD")
 
 
 def _simpson_solids(model):
@@ -23,9 +24,11 @@ def _simpson_solids(model):
 
 def test_every_displayed_simpson_connector_has_a_dimensioned_body(catlin_model_ro):
     solids = _simpson_solids(catlin_model_ro)
-    assert len(solids) > 600
+    # > 600 until 2026-10-09, when 40 MASA and 34 derived STHD left the brick beam, the
+    # slab partitions and the run ends that were not exterior corners.
+    assert len(solids) > 550
     assert all(solid.body_mesh and solid.body_mesh.triangles for solid in solids)
-    assert {"LUS", "LUSZ", "THA422", "ABU44", "LTP4", "THD50600H6SS"} <= {
+    assert {"LUS", "LUSZ", "THA422", "ABU44", "LTP4", "THD50600H6SS", "MSTC52"} <= {
         solid.product for solid in solids}
 
 

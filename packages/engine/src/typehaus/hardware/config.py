@@ -84,9 +84,16 @@ class SillPlateAnchorRules:
     mudsill_anchor_pitch_ft: float = 4.0
     # IRC R403.1.6 — no plate piece is anchored by fewer than two anchors.
     minimum_anchors_per_run: int = 2
-    # Embedded strap holdowns land at the ends of a sill run (shared ends are one holdown,
-    # so the derivation counts *distinct* run endpoints, not runs x 2).
+    # The end anchors sit in from the plate end: MASA needs 4" end distance (ESR-2555) and
+    # R403.1.6 wants one within 12" of each end.
+    end_distance_in: float = 6.0
+    # Derived embedded strap holdowns land only at EXTERIOR foundation corners, one per
+    # corner. Braced-panel ends and jambs are authored Connectors.
     holdowns_per_run_end: int = 1
+    # An authored embedded holdown this close to a corner already ties it down.
+    authored_holdown_standdown_in: float = 36.0
+    # A non-bearing partition on the slab is pinned, not anchored (industry 24" o.c.).
+    partition_pin_pitch_in: float = 24.0
     # Two run ends closer than this in plan are the same corner/butt joint.
     coincident_end_tolerance_in: float = 6.0
 

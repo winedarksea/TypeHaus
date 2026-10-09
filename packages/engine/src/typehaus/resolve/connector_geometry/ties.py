@@ -65,6 +65,7 @@ STRAPS = {
     "LSTA24": StrapDimensions(1.25, 24.0, 20),
     "MSTA12": StrapDimensions(1.25, 12.0, 18),
     "CS16": StrapDimensions(1.25, 0.0, 16),
+    "MSTC52": StrapDimensions(3.0, 52.0, 16),
 }
 
 

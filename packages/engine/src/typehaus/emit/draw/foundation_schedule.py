@@ -386,12 +386,12 @@ def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]
     ``test_structural_sheets``.
     """
     from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
+    from typehaus.joints.sills import anchored_sill_returns
     from typehaus.takeoff.anchors import mudsill_anchor_rows
 
     config = DEFAULT_HARDWARE_TAKEOFF_CONFIG
     rules = config.sill_plate_anchors
-    returns = [ret for ret in model.construction_returns
-               if ret.takeoff_category == config.sill_plate_takeoff_category]
+    returns = anchored_sill_returns(model, config.sill_plate_takeoff_category)
     if not returns:
         return []
     takeoff = mudsill_anchor_rows(model, rules, config.sill_plate_takeoff_category)

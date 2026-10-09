@@ -252,9 +252,10 @@ the future.
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door
 - If a hanging daybed on the porch: a `SuspensionAnchor` used 2-4 times with offsets; needs a host other than an interior joist field
 - Gold foil trim or panel accent somewhere
-- Consider swapping the shower and tub positions in the main floor master bathroom
+- Consider swapping the shower and tub positions in the main floor master bathroom —
+  [2026-10-09 investigation](../houses/catlin/notes/bath2_swap_review.md) recommends keeping
+  the current layout with the selected 36" tub: basin aisle 33.0" → 26.4", plus a tighter entry and shower entrance.
 - Outlet in the kitchen island
-- There are MASA connectors (and STHD connectors) in places we don't need, for example the brick wall, and possible some of the non load-bearing interior basment walls. Also there are MASA and STHD into the wooden W-B-S2-FR basement wall, incorrectly (shown as wood anchored into wood).
 - [x] Stair winder geometry, structural plywood boxes, 2D/3D framing, and millwork blanks (see `houses/catlin/notes/winder_stair_basis.md`).
 - Both the EXT_2X6 and ROOF report a moisture risk/glaser profile risk. We don't think this is quite right. Well, roof somewhat is (it relies on the air seal of the spray foam). But the ext_2x6 should be roughly 60% outsulation, which should have condensation usually outside the studs.
 - Add wire shelves with rods to the two closets with simple shelves right now.

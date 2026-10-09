@@ -43,6 +43,7 @@ from typehaus.library.hardware.diaphragm import (
 )
 from typehaus.library.hardware.fasteners import (
     FASTENMASTER_TIMBERLOK,
+    PDPAWL_SLAB_PLATE_PIN,
     SDPW19_DEFLECTOR_SCREW,
     SDPW_DEFLECTOR_SCREW,
     SDWH_TIMBER_HEX_SCREW,
@@ -105,6 +106,7 @@ from typehaus.library.hardware.simpson_ties import (
     CS16_COIL_STRAP,
     DTT2Z_FLOOR_TIE,
     MASA_MUDSILL_ANCHOR,
+    MSTC52_FLOOR_STRAP,
     SP4_STUD_PLATE_TIE,
     SP6_STUD_PLATE_TIE,
     STHD14_STRAP_HOLDOWN,
@@ -150,6 +152,8 @@ STRUCTURAL_HARDWARE: tuple = (
     HUC_CONCRETE_HANGER,
     APVB_BRACE_BOLT,
     MASA_MUDSILL_ANCHOR,
+    MSTC52_FLOOR_STRAP,
+    PDPAWL_SLAB_PLATE_PIN,
     STHD_STRAP_HOLDOWN,
     DTT2Z_FLOOR_TIE,
     SP4_STUD_PLATE_TIE,

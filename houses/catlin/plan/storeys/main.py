@@ -2219,8 +2219,8 @@ PANELING = [
 
 # --- exterior door-jamb hold-downs -------------------------------------------
 # The two exterior doors each punch a hole in what is otherwise the continuous shear line
-# from basement concrete to roof; `strap_holdown_rows` only derives STHDs at sill-plate
-# *ends*, not at mid-run openings, so these four fill the gap: embedded strap-tie
+# from basement concrete to roof; `strap_holdown_rows` only derives STHDs at exterior
+# foundation corners, not at mid-run openings, so these fill the gap: embedded strap-tie
 # holdowns, one per jamb, cast into the foundation and nailed up onto the framing above.
 #
 # Geometry: 3" outboard of each RO edge is the king stud's outer face, where the strap
@@ -2234,6 +2234,8 @@ PANELING = [
 _JAMB_Y_NORTH = ft(35, 8.75)
 _JAMB_Y_SOUTH = inch(3.25)
 _JAMB_Z = inch(1)
+_BAND_Z = inch(-6.75)
+_CURB_Z = inch(-101.4375)
 CONNECTORS = [
     Connector(uid="RYMM0XWNBM", tag="CN-M-HD-ENTRY-E", kind=ConnectorKind.HOLD_DOWN,
               position=pt(ft(9, 9), _JAMB_Y_NORTH), elevation=_JAMB_Z,
@@ -2241,14 +2243,21 @@ CONNECTORS = [
     Connector(uid="V5HNZ3S6Q1", tag="CN-M-HD-ENTRY-W", kind=ConnectorKind.HOLD_DOWN,
               position=pt(ft(6, 3), _JAMB_Y_NORTH), elevation=_JAMB_Z,
               size="STHD", connects=("W-M-N3", "W-B-N3")),
-    # W-M-S2 carries no `stacks_on`, but the foundation wall under x 19'-1"..24'-7" at
-    # y = 0 is W-B-S3 (N-B-S2 at x=18' east to N-B-SE) — not W-B-S2, which stops at 18'.
-    Connector(uid="5D80PTSEWM", tag="CN-M-HD-BALC-W", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(ft(19, 1), _JAMB_Y_SOUTH), elevation=_JAMB_Z,
-              size="STHD", connects=("W-M-S2", "W-B-S3")),
-    Connector(uid="PJMETCQPK0", tag="CN-M-HD-BALC-E", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(ft(24, 7), _JAMB_Y_SOUTH), elevation=_JAMB_Z,
-              size="STHD", connects=("W-M-S2", "W-B-S3")),
+    # The balcony door stands on W-B-S3-FR, a framed wall, not on concrete: W-B-S3 is a
+    # 7 1/4" curb at -102 3/16". So each jamb is two parts — an MSTC52 across the floor
+    # band into W-B-S3-FR's jamb studs, and an STHD14 cast in the curb under them.
+    Connector(uid="5D80PTSEWM", tag="CN-M-HD-BALC-W", kind=ConnectorKind.TENSION_TIE,
+              position=pt(ft(19, 1), _JAMB_Y_SOUTH), elevation=_BAND_Z,
+              size="MSTC52", connects=("W-M-S2", "W-B-S3-FR")),
+    Connector(uid="PJMETCQPK0", tag="CN-M-HD-BALC-E", kind=ConnectorKind.TENSION_TIE,
+              position=pt(ft(24, 7), _JAMB_Y_SOUTH), elevation=_BAND_Z,
+              size="MSTC52", connects=("W-M-S2", "W-B-S3-FR")),
+    Connector(uid="0NMTQ0A5A4", tag="CN-B-HD-BALC-W", kind=ConnectorKind.HOLD_DOWN,
+              position=pt(ft(19, 1), _JAMB_Y_SOUTH), elevation=_CURB_Z,
+              size="STHD14", connects=("W-B-S3-FR", "W-B-S3")),
+    Connector(uid="V3TS8F7C9A", tag="CN-B-HD-BALC-E", kind=ConnectorKind.HOLD_DOWN,
+              position=pt(ft(24, 7), _JAMB_Y_SOUTH), elevation=_CURB_Z,
+              size="STHD14", connects=("W-B-S3-FR", "W-B-S3")),
 ]
 
 # **The two columns under ST-M2S's half-landing.**

@@ -17,6 +17,7 @@ from typehaus.hardware.catalog import (
     ROLE_KNEE_BRACE,
     ROLE_LAPPED_BRACE_BOLT,
     ROLE_MUDSILL_ANCHOR,
+    ROLE_SLAB_PLATE_PIN,
     ROLE_STUD_PLATE_TIE,
     hardware_by_model,
     hardware_for_role,
@@ -30,8 +31,10 @@ from typehaus.hardware.config import (
     WallTieRules,
 )
 from typehaus.joints.sills import (
+    anchored_sill_returns,
     mudsill_anchor_stations,
-    sill_plate_returns,
+    partition_pin_stations,
+    pinned_partition_returns,
     strap_holdown_locations,
 )
 from typehaus.model.enums import ConnectorKind
@@ -53,13 +56,14 @@ def _pours(returns) -> list:
 
 def mudsill_anchor_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
                         sill_category: str) -> list:
-    """MASA anchors along every wood sill plate that lands on concrete/ICF.
+    """MASA anchors along every cast-in-anchored sill plate.
 
     The sill plates are the resolved construction returns, so this follows the model: a
     framed wall stacked on a concrete wall produces a return, and the return produces its
     anchors at the configured pitch (never fewer than the code minimum per plate piece).
+    A non-bearing partition on the slab is pinned instead (:func:`partition_pin_rows`).
     """
-    returns = sill_plate_returns(model, sill_category)
+    returns = anchored_sill_returns(model, sill_category)
     if not returns:
         return []
     # Counted off the LOCATED anchors rather than re-applying the pitch rule here. The two
@@ -77,6 +81,24 @@ def mudsill_anchor_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
         basis=(f"{rules.mudsill_anchor_pitch_ft:g} ft o.c. (min "
                f"{rules.minimum_anchors_per_run} per plate run) over "
                f"{len(returns)} sill runs totalling {total_length_m * _M_TO_FT:.1f} LF"))]
+
+
+def partition_pin_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
+                       sill_category: str) -> list:
+    """Powder-actuated pins along every non-bearing partition plate on the slab."""
+    returns = pinned_partition_returns(model, sill_category)
+    if not returns:
+        return []
+    by_storey: Counter = Counter(
+        station.storey for station in partition_pin_stations(model, rules, sill_category))
+    total_length_m = sum(ret.length_m for ret in returns)
+    return [hardware_row(
+        hardware_for_role(ROLE_SLAB_PLATE_PIN), scope="partition plate on slab",
+        count=int(sum(by_storey.values())), by_storey=dict(sorted(by_storey.items())),
+        length_ft=total_length_m * _M_TO_FT, tags=_pours(returns),
+        basis=(f"{rules.partition_pin_pitch_in:g} in o.c. (min "
+               f"{rules.minimum_anchors_per_run} per plate run) over {len(returns)} "
+               f"partition runs totalling {total_length_m * _M_TO_FT:.1f} LF"))]
 
 
 def sill_gasket_rows(model: ResolvedModel) -> list[dict[str, object]]:
@@ -108,7 +130,7 @@ def sill_gasket_rows(model: ResolvedModel) -> list[dict[str, object]]:
 
 def strap_holdown_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
                        sill_category: str) -> list:
-    """Embedded strap holdowns at the ends of the sill-plate runs."""
+    """Embedded strap holdowns at the exterior foundation corners."""
     returns, locations = strap_holdown_locations(model, rules, sill_category)
     if not returns:
         return []
@@ -116,8 +138,8 @@ def strap_holdown_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
     item = hardware_for_role(ROLE_EMBEDDED_STRAP_HOLDOWN)
     return [hardware_row(
         item, scope="sill plate on concrete", count=count, tags=_pours(returns),
-        basis=(f"{rules.holdowns_per_run_end} per distinct sill-run end; "
-               f"{len(returns)} runs share {len(locations)} end locations"))]
+        basis=(f"{rules.holdowns_per_run_end} per exterior foundation corner; "
+               f"{len(locations)} corners over {len(returns)} exterior sill runs"))]
 
 
 # A wall whose every module stud gave way to a jamb pack or a within-wall post (catlin's
@@ -361,6 +383,8 @@ def anchorage_rows(model: ResolvedModel, config: HardwareTakeoffConfig) -> list:
     return [
         *mudsill_anchor_rows(model, config.sill_plate_anchors,
                              config.sill_plate_takeoff_category),
+        *partition_pin_rows(model, config.sill_plate_anchors,
+                            config.sill_plate_takeoff_category),
         *strap_holdown_rows(model, config.sill_plate_anchors,
                             config.sill_plate_takeoff_category),
         *stud_plate_tie_rows(model, config.wall_ties),

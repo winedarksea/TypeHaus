@@ -134,21 +134,26 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
             return v[0] * direction[0] + v[1] * direction[1]
 
         # --- what lands on this pour ------------------------------------------------
-        # Framed walls in the first storey above that carries a collinear wall over it.
+        # A framed wall standing on the pour top inside the SAME storey (a walkout's framed
+        # run on a curb) first; otherwise the first storey above with a collinear wall.
         lower_i = next((i for i, s in enumerate(ordered) if s.tag == lower.storey), None)
         if lower_i is None:
             continue
         pieces: list[tuple[float, float, object]] = []
-        for upper_s in ordered[lower_i + 1:]:
+        for upper_s in ordered[lower_i:]:
             hits = []
             for upper in by_storey.get(upper_s.tag, []):
+                if upper is lower:
+                    continue
+                if upper_s.tag == lower.storey and abs(upper.z0_m - lower.z1_m) > lap + _EPS:
+                    continue
                 upper_asm = model.plan.library.resolve_assembly(upper.assembly)
                 if upper_asm is None or _framed_wood_layer(upper_asm) is None:
                     continue
                 if _is_concrete(upper_asm):  # a concrete tier on concrete is not framed
                     continue
                 segment = _stack_overlap(lower, upper)
-                if segment is not None:
+                if segment is not None and _bears_on(lower, upper, segment):
                     hits.append((upper, upper_asm, segment))
             if not hits:
                 continue
@@ -301,8 +306,17 @@ def _framed_on_slab(model: ResolvedModel, rule: ConstructionRule,
             continue
         width = bearing.thickness.meters
         direction = unit(sub(a1, a0))
-        anchor = add(a0, sub(band_axis(wall.axis, _structure_polygon(wall))[0],
-                             wall.axis[0]))
+        # The plate is the stud band, which the junction solver stops at the face of the
+        # wall a partition tees into — not the axis, which runs on to that wall's node.
+        band = _structure_polygon(wall)
+        if len(band) >= 3:
+            stations = [(p[0] - a0[0]) * direction[0] + (p[1] - a0[1]) * direction[1]
+                        for p in band]
+            lo, hi = max(0.0, min(stations)), min(run, max(stations))
+            if hi - lo < _MIN_STACK_OVERLAP_M:
+                continue
+            a0, run = add(a0, scale(direction, lo)), hi - lo
+        anchor = add(a0, sub(band_axis(wall.axis, band)[0], wall.axis[0]))
         gasket_product, gasket_t = _sill_gasket(asm)
         yield ResolvedConstructionReturn(
             uid=f"CR-{slab.uid}-{wall.uid}-sill",
@@ -317,6 +331,35 @@ def _framed_on_slab(model: ResolvedModel, rule: ConstructionRule,
             gasket_product=gasket_product, gasket_thickness_m=gasket_t,
             condition_key=None,
         )
+
+
+#: How much of a framed wall's stud band must land on the pour for it to bear there.
+_MIN_BEARING_FRACTION = 0.5
+
+
+def _bears_on(lower: ResolvedWall, upper: ResolvedWall, segment) -> bool:
+    """Does ``upper``'s stud band actually land on ``lower``'s structure over ``segment``?
+
+    ``_stack_overlap`` only asks that the axes sit within the two walls' combined depth,
+    which a veneer grade beam 15" in front of a framed wall passes (W-SG-BRKBM under
+    W-M-S1). A plate is billed only where the studs are over the concrete.
+    """
+    from shapely.geometry import Polygon
+
+    band, base = _structure_polygon(upper), _structure_polygon(lower)
+    if len(band) < 3 or len(base) < 3:
+        return True  # no band to test: fall back to the axis gate
+    p0, p1 = segment
+    run = length(sub(p1, p0))
+    if run < _EPS:
+        return False
+    reach = upper.thickness_m + lower.thickness_m
+    window = Polygon(_strip(p0, unit(sub(p1, p0)), run, -reach, reach))
+    over_run = Polygon(band).intersection(window)
+    if over_run.area <= 0.0:
+        return False
+    shared = over_run.intersection(Polygon(base).buffer(_EPS)).area
+    return shared >= _MIN_BEARING_FRACTION * over_run.area
 
 
 def _is_concrete_ref(model: ResolvedModel, assembly: str | None) -> bool:

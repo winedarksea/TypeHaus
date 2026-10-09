@@ -61,6 +61,7 @@ from typehaus.joints.bearing import (
 from typehaus.joints.gable import gable_end_ties
 from typehaus.joints.hung import hung_connections
 from typehaus.joints.posts import catalogued_post_sizes, is_squash_block
+from typehaus.joints.sills import anchored_sill_returns
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Beam, Post
 from typehaus.resolve.assembly_material import assembly_structure_material
@@ -293,8 +294,7 @@ def _stack_and_sill_links(ctx: CheckContext) -> list:
             tuple(stacked),
             f"{straps[0]['coils']} coil(s) of CS16 strapping" if straps else None))
 
-    sills = [r for r in ctx.model.construction_returns
-             if r.takeoff_category == _CONFIG.sill_plate_takeoff_category]
+    sills = anchored_sill_returns(ctx.model, _CONFIG.sill_plate_takeoff_category)
     if sills:
         anchors = mudsill_anchor_rows(ctx.model, _CONFIG.sill_plate_anchors,
                                       _CONFIG.sill_plate_takeoff_category)

@@ -116,8 +116,10 @@ _GARDEN_FRAMED_OUTBOARD = (
 _GARDEN_FRAMED_STUD = Layer(
     name="stud", material_ref="spf", thickness=inch(5.5),
     function=LayerFunction.STRUCTURE,
+    # Peel-and-stick under the plate: this is the envelope's air barrier crossing onto the
+    # curb, and with no cladding layer of its own the wall would otherwise get plain foam.
     framing=FramingSpec(member="2x6", spacing=inch(16), sill_gasket=inch(0.0625),
-                        layout_origin="line"),
+                        sill_gasket_product="sill-seal-peel-stick", layout_origin="line"),
     cavity=CavityFill(material_ref="mineral-wool"))
 
 # The curbs the framed run stands on: W-B-S2 and W-B-S3, 7 1/4" of pour on the existing

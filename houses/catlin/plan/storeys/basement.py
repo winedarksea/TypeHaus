@@ -495,8 +495,10 @@ WALLS = [
     # the reason this comment block already gives twice over: they hold back nothing. Both
     # keep their tag, their uid and their footing, which is the whole point of putting the
     # curb on the old element rather than the framing: FT-B-S2/FT-B-S3, `_FROST_FORMED`,
-    # `structural.frost_depth`, CN-M-HD-BALC-W/E's STHD embedments and W-B-BRICK's
-    # dimensions all still name a piece of concrete on a footing, and none of them moved.
+    # `structural.frost_depth` and W-B-BRICK's dimensions all still name a piece of
+    # concrete on a footing, and none of them moved. The balcony jamb holdowns did move
+    # (2026-10-09): an STHD14 in the curb (CN-B-HD-BALC-*) and an MSTC52 across the floor
+    # band (CN-M-HD-BALC-*), since their old +1" embedment had landed in W-B-S3-FR's studs.
     #
     # **Why the curb is kept and why it is 7 1/4".** The sunken garden is a court whose
     # floor is FLUSH with the basement slab (both -9'-1 7/16") with no way out but a drain;

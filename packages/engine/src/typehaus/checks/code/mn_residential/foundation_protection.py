@@ -142,12 +142,15 @@ def foundation_anchorage(ctx: CheckContext) -> list[Finding]:
     "no anchors are needed".
     """
     from typehaus.hardware.config import HardwareTakeoffConfig
+    from typehaus.joints.sills import anchored_sill_returns, pinned_partition_returns
 
     cid, code = "code.R403_1_6_foundation_anchorage", "R403.1.6"
     rules = HardwareTakeoffConfig().sill_plate_anchors
     category = HardwareTakeoffConfig().sill_plate_takeoff_category
-    returns = [r for r in ctx.model.construction_returns
-               if r.takeoff_category == category]
+    # A non-bearing, unbraced partition on a slab is outside R403.1.6 (not a sill plate,
+    # not a braced panel), so it is pinned and not graded here.
+    returns = anchored_sill_returns(ctx.model, category)
+    pinned = len(pinned_partition_returns(ctx.model, category))
     out: list[Finding] = []
     if rules.mudsill_anchor_pitch_ft > _MAX_ANCHOR_PITCH_FT + 1e-9:
         out.append(_fail(cid, f"the sill-anchor schedule spaces anchors at "
@@ -167,7 +170,9 @@ def foundation_anchorage(ctx: CheckContext) -> list[Finding]:
         out.append(_pass(cid, f"{len(returns)} sill-plate run(s) totalling {length_ft:.0f} LF "
                               f"are anchored at {rules.mudsill_anchor_pitch_ft:g} ft o.c. "
                               f"(min {rules.minimum_anchors_per_run} per run) with an approved "
-                              "cast-in anchor — inside R403.1.6's 6 ft maximum", code))
+                              "cast-in anchor — inside R403.1.6's 6 ft maximum"
+                              + (f"; {pinned} non-bearing slab partition run(s) are pinned, "
+                                 "outside its scope" if pinned else ""), code))
     return out
 
 

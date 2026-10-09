@@ -107,13 +107,19 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # At a 4' pitch, fencepost: floor(20/4)+1 = 6 became floor(18/4)+1 = 5.
     # 136 -> 131 (9e0827b1): the overhead door's grade beam retired, and the five MASA on its
     # phantom 16 LF of sill (x = 10'..26' on 4' centres) went with it.
-    assert joints["mudsill_anchor"] == 131
+    # 131 -> 91 on 2026-10-09: the brick veneer's grade beam W-SG-BRKBM carries no framed
+    # wall and lost its phantom 18 LF run (-5); the curbs now pair with W-B-S2-FR/S3-FR;
+    # and fifteen non-bearing slab partitions are pinned, not anchored (slab_plate_pin).
+    assert joints["mudsill_anchor"] == 91
+    assert joints["slab_plate_pin"] == 50
     # 38 rafters on the ridge. ST-G-SERVICE's two stringer heads were two more until
     # 2026-09-24; they hang on BM-BW-LAND-HDR on LSCZ now, their own role.
     assert joints["sloped_joist_hanger"] == 38
     assert joints["stair_stringer_connector"] == 2
     assert joints["ridge_tie_strap"] == 19
-    assert joints["embedded_strap_holdown"] == 40
+    # 40 -> 6 on 2026-10-09: derived STHDs only at exterior foundation corners. The house's
+    # NE corner and the garage's SW corner stand down for their authored braced-panel STHDs.
+    assert joints["embedded_strap_holdown"] == 6
     # The leg that had nothing until 2026-09-14: six attic gable-end walls, 22 ties, plus one
     # LTP4 (was HGA10) under each of the garage's two gable-end trusses (2026-09-16). Worth
     # pinning hard, because the rule that finds them is four predicates and dropping any one

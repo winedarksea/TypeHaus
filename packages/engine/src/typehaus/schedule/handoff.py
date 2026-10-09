@@ -116,7 +116,7 @@ def mudsill_anchors(model: Any) -> list[HandoffItem]:
 
 
 def holdowns(model: Any) -> list[HandoffItem]:
-    """Embedded strap holdowns — merged run-end locations, which the model does know."""
+    """Embedded strap holdowns — exterior foundation corners, which the model does know."""
     from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
     from typehaus.takeoff.anchors import strap_holdown_locations
 
@@ -131,10 +131,10 @@ def holdowns(model: Any) -> list[HandoffItem]:
     return [HandoffItem(
         id="holdowns",
         label=f"{len(locations) * per_end} embedded strap holdown(s) at "
-              f"{len(locations)} sill-run end(s)",
+              f"{len(locations)} exterior foundation corner(s)",
         count=len(locations) * per_end, sheet_ref="S-100",
-        derived=(f"takeoff/anchors.strap_holdown_locations over {len(runs)} sill runs; "
-                 "ends that meet at a corner or a butt joint are one location, not two"))]
+        derived=(f"takeoff/anchors.strap_holdown_locations over {len(runs)} exterior sill "
+                 "runs; braced-panel ends and jambs are authored Connectors, not these"))]
 
 
 def post_bases(model: Any) -> list[HandoffItem]:

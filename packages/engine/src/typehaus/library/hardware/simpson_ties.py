@@ -9,6 +9,7 @@ from typehaus.hardware.catalog import (
     ROLE_COIL_STRAP,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_FLOOR_TIE_HOLDOWN,
+    ROLE_FLOOR_TO_FLOOR_STRAP,
     ROLE_MUDSILL_ANCHOR,
     ROLE_STUD_PLATE_TIE,
     AllowableLoads,
@@ -235,6 +236,25 @@ CS16_COIL_STRAP = StructuralHardware(
                   "strength 1,705 lbf, all at SG >= 0.50 (footnote 2). No single value is "
                   "recorded because the allowable is selected by a nail count this model "
                   "does not track, and the species basis is SG 0.50 against this house's SPF"),
+    ),
+)
+
+MSTC52_FLOOR_STRAP = StructuralHardware(
+    tag="simpson-mstc52-floor-to-floor-strap",
+    name="MSTC52 medium strap tie, 16 ga, 52 in, floor to floor",
+    role=ROLE_FLOOR_TO_FLOOR_STRAP,
+    manufacturer=_SIMPSON,
+    model="MSTC52",
+    source="Simpson Strong-Tie MSTC52 (strongtie.com/mstc) — straight strap nailed to the "
+           "jamb studs above and below a floor band; Simpson's floor-to-floor table allows "
+           "up to 18 in clear span. Catlin's band is about 13-1/2 in, leaving ~19 in a side",
+    # Like CS16: the allowable is set by the nails actually driven (ESR-2105), and the model
+    # carries no nail count, so no number is recorded.
+    allowable=AllowableLoads(
+        fasteners="0.148 x 3 in nails, half in each member, by the floor-to-floor table",
+        citation=("ICC-ES ESR-2105 and Simpson's MSTC floor-to-floor table publish the "
+                  "strap by nail count, and the model carries no nail count, so no single "
+                  "value is recorded (the CS16 reasoning)"),
     ),
 )
 

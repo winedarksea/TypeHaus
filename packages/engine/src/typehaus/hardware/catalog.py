@@ -77,6 +77,9 @@ ROLE_BRACE_THROUGH_BOLT = "brace_through_bolt"
 # ``model/structure.KneeBrace.foot_lap`` and ``takeoff/anchors.brace_bolt_rows``.
 ROLE_LAPPED_BRACE_BOLT = "lapped_brace_bolt"
 ROLE_MUDSILL_ANCHOR = "mudsill_anchor"
+# A non-bearing partition's plate pinned to a slab poured after the walls' footings: no
+# form board to nail a MASA to, and nothing for it to resist.
+ROLE_SLAB_PLATE_PIN = "slab_plate_pin"
 ROLE_EMBEDDED_STRAP_HOLDOWN = "embedded_strap_holdown"
 ROLE_STUD_PLATE_TIE = "stud_plate_tie"
 ROLE_COIL_STRAP = "coil_strap"
@@ -186,6 +189,9 @@ ROLE_BEAM_HOLD_DOWN = "beam_hold_down"
 # concrete, and the two parts are selected against different reports (ESR-2330 screws into
 # wood, ESR-2920 a strap in a pour).
 ROLE_FLOOR_TIE_HOLDOWN = "floor_tie_holdown"
+# A pre-cut strap nailed across a floor band, stud to stud. Not ROLE_COIL_STRAP: that is
+# bought by the coil and cut, this is one part per joint.
+ROLE_FLOOR_TO_FLOOR_STRAP = "floor_to_floor_strap"
 # The gasketed stainless screw that holds a multiwall glazing sheet down to its framing.
 ROLE_GLAZING_PANEL_FASTENER = "glazing_panel_fastener"
 # The gasketed screw that fixes an exposed-fastener metal wall/roof panel through its face

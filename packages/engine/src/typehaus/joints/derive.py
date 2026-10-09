@@ -31,6 +31,7 @@ from typehaus.hardware.catalog import (
     ROLE_POST_BASE_ANCHOR,
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SCL_FACE_MOUNT_HANGER,
+    ROLE_SLAB_PLATE_PIN,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_STAIR_STRINGER_CONNECTOR,
     hardware_for_role,
@@ -54,6 +55,7 @@ from typehaus.joints.posts import (
 )
 from typehaus.joints.sills import (
     mudsill_anchor_stations,
+    partition_pin_stations,
     strap_holdown_stations,
     tie_plate_stations,
 )
@@ -65,6 +67,7 @@ COVERED_ROLES = frozenset({
     ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
     ROLE_MUDSILL_ANCHOR,
+    ROLE_SLAB_PLATE_PIN,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_STAIR_STRINGER_CONNECTOR,
     ROLE_FACE_MOUNT_JOIST_HANGER,
@@ -237,6 +240,12 @@ def _sill_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Jo
     for station in mudsill_anchor_stations(model, rules, category):
         out.append(_joint(ROLE_MUDSILL_ANCHOR, masa.model, station.storey, station.point_m,
                           station.z_m, station.axis, embedded=True,
+                          members=(station.run_tag,), anchor_tag=station.run_tag,
+                          grid_m=grid_m))
+    pin = hardware_for_role(ROLE_SLAB_PLATE_PIN)
+    for station in partition_pin_stations(model, rules, category):
+        out.append(_joint(ROLE_SLAB_PLATE_PIN, pin.model, station.storey, station.point_m,
+                          station.z_m, station.axis, embedded=False,
                           members=(station.run_tag,), anchor_tag=station.run_tag,
                           grid_m=grid_m))
     for station in strap_holdown_stations(model, rules, category):
