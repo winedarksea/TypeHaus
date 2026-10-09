@@ -801,7 +801,7 @@ SECOND_PLACEABLES = [
                   normal_gap=inch(-1.5), rotation_offset=deg(-180)))),
     # --- mechanical-shaft access panel --------------------------
     # The NW shaft (W-S-CH-W/CH-S) is the house's basement-to-attic pipe highway, not a
-    # leftover corner: VR-M-RADON-VENT's 3" combined radon/plumbing riser stands in it at
+    # leftover corner: VR-M-STACK's 3" combined radon/plumbing riser stands in it at
     # (1', 34'-6") from -8'-10" to 23'-10", four vent branches tie into it, and the second
     # floor's own risers are meant to run it. Until now it had no opening on this storey at
     # all — RM-M-MECH's D-M-MECH is a real swing door, but that reaches the main floor's

@@ -275,7 +275,7 @@ def test_s100_radon_block_is_derived_item_by_item(catlin_model):
     assert "AGGREGATE GRADATION AND THE 12\" MEMBRANE LAP ARE NOT MODELLED" in notes
     assert "SUBP. 3-4: COLLECTION POINT SM-B-RADON" in notes and "SEALED COVER" in notes
     assert "SUBP. 4.E: SM-B-RADON IS CONNECTED TO THE INTERIOR DRAIN TILE OF 19" in notes
-    assert "SUBP. 5: VENT VR-M-RADON-VENT" in notes
+    assert "SUBP. 5: VENT VR-M-STACK" in notes
     assert "NOT MODELLED — FIELD ITEMS" in notes
     # Subp. 6 names the same two boxes code.MN_1303_2402_radon passes on, and only those:
     # a box that declares a room is a lighting supply on some other storey.

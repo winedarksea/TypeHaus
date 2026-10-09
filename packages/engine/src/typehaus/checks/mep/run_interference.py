@@ -37,11 +37,9 @@ all three are earned from the model rather than from a naming convention:
   names both, and **only inside that hole's own prism**: a shared chase hole pardons the
   crossing in the deck and nothing a foot above it;
 * **a run against itself**, which is not a pair — and, for the same reason, two bundled
-  risers of one ``VentRun``, which are one authored element. Their side-by-side spread is a
-  SINGLE axis (``vent_termination.riser_polylines``), and a riser that jogs one way and
-  exits another has two horizontal legs no one axis is perpendicular to; the spread takes
-  the longer, so the siblings are collinear along the shorter. That is an artefact of how a
-  bundle is drawn, not two things in one hole.
+  risers of one ``VentRun``, which are one authored element. ``riser_polylines`` spreads
+  them across every leg, so they no longer coincide; the pardon stays because the bundle's
+  pitch is the author's, not a clearance this check should second-guess.
 
 Everything else is two things in one hole.
 

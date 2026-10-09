@@ -112,7 +112,7 @@ _WEB_PANEL_OFFSET = inch(12)
 # (laid station, new station) in y (owner, 2026-09-23). The fabricator's layout replaces
 # the whole field; these say only where a line must NOT stand.
 #   * 26'-8" -> 26'-10": clears PR-B-HW-SBATH and PR-M-S-BATH1-DRAIN's risers.
-#   * 34'-8" -> 34'-5 3/4": clears the radon/plumbing chase (VR-M-RADON-VENT, now at
+#   * 34'-8" -> 34'-5 3/4": clears the radon/plumbing chase (VR-M-STACK, now at
 #     y=35'-1.3") and the ERV exhaust risers in FO-M-ERV-EA.
 _LINE_MOVES = ((inch(320), inch(322)), (inch(416), inch(413.75)))
 

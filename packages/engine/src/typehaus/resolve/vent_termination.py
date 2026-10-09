@@ -65,7 +65,8 @@ def roof_cleared_by(model: ResolvedModel, vent: VentRun) -> ResolvedRoof | None:
     return covering[0] if len(covering) == 1 else None
 
 
-def derived_termination_elevation(model: ResolvedModel, vent: VentRun) -> float | None:
+def derived_termination_elevation(model: ResolvedModel, vent: VentRun,
+                                  at: tuple[float, float] | None = None) -> float | None:
     """Project-frame Z (m) 12" above the true roof surface at the exterior riser's point.
 
     ``roof_height_at`` returns the structural deck plane, not the weather surface — the
@@ -74,7 +75,8 @@ def derived_termination_elevation(model: ResolvedModel, vent: VentRun) -> float 
     PV standoff off of. ``roof_height_at`` extrapolates its rake line past the footprint
     edge, which is exactly what a riser standing proud of a zero-overhang gable needs.
     Returns ``None`` when no roof is derivable, leaving the caller to fall back to the
-    authored elevation.
+    authored elevation. ``at`` measures at one bundled pipe instead of the bundle's centre:
+    on a rake the pair stands at two roof heights.
     """
     roof = roof_cleared_by(model, vent)
     if roof is None:
@@ -83,7 +85,8 @@ def derived_termination_elevation(model: ResolvedModel, vent: VentRun) -> float 
     assembly = library.resolve_assembly(roof.assembly) if library is not None else None
     skin_m = (sum(layer.thickness.meters for layer in above_structure_layers(assembly))
               if assembly is not None else 0.0)
-    return roof_height_at(roof, exterior_riser_point(vent)) + skin_m + VENT_TERMINATION_CLEARANCE_M
+    point = at if at is not None else exterior_riser_point(vent)
+    return roof_height_at(roof, point) + skin_m + VENT_TERMINATION_CLEARANCE_M
 
 
 #: The five legs of a riser, in order, as ``(uid suffix, tag suffix, is horizontal)``. The
@@ -125,42 +128,57 @@ def riser_polylines(model: ResolvedModel, vent: VentRun
     z_jog = (vent.chase_offset_elevation.meters
              if vent.chase_offset is not None and vent.chase_offset_elevation is not None
              else z_exit)
-    derived_top = derived_termination_elevation(model, vent)
-    z_top = (derived_top if derived_top is not None
-             else vent.roof_termination_elevation.meters
-             if vent.roof_termination_elevation is not None else None)
-    if z_top is None:
+    centre_top = derived_termination_elevation(model, vent)
+    if centre_top is None and vent.roof_termination_elevation is None:
         return []
 
-    # Parallel risers, one per bundled system, spread perpendicular to the LONGEST
-    # horizontal leg — the in-building jog where there is one, the wall exit otherwise.
-    #
-    # **It used to be perpendicular to the wall exit always, and on catlin that put two 3"
-    # pipes on ONE line for 8'-7 1/2".** The riser jogs east and exits north, so no single
-    # axis is perpendicular to both legs and one of them must lose; losing the short one is
-    # the only defensible choice. Two pipes cannot share a bore through a joist web, and the
-    # jog is the leg that crosses them. It also drove the pair 2 2/5" east of its own
-    # station and into W-A-BA-E's studs — a 3" bore in a 2x4, which is what
-    # ``mep.run_through_stud`` reported the moment a VentRun gained an envelope.
-    #
-    # The short leg's two risers are still collinear, and ``mep.run_interference`` exempts
-    # them as one authored element rather than pretending otherwise.
-    jog_x, jog_y = top[0] - chase[0], top[1] - chase[1]
-    lead_x, lead_y = ((jog_x, jog_y) if max(abs(jog_x), abs(jog_y)) > 1e-9
-                      else (offset_x, offset_y))
-    perp_x = abs(lead_y) >= abs(lead_x)
+    # Parallel risers, one per bundled system. **Each horizontal leg spreads the pair across
+    # ITSELF**, and at the turn each pipe's corner is where its two offset lines meet — two
+    # lanes round a bend, never crossing. A single spread axis cannot do this: catlin jogs
+    # east and exits north, and one axis put the pair on ONE line for whichever leg lost —
+    # first 8'-7 1/2" through joist webs, then the exit, where the two pipes shared a bore
+    # through W-A-N2 and stood one behind the other on the siding, reading as one.
+    jog = (top[0] - chase[0], top[1] - chase[1])
+    has_jog = max(abs(jog[0]), abs(jog[1])) > 1e-9
+    has_exit = max(abs(offset_x), abs(offset_y)) > 1e-9
+    lead = jog if has_jog else (offset_x, offset_y)
+    # The lead leg's spread axis keeps its historical sign (+x or +y) so index 0 stays where
+    # the house authored it; the exit's normal follows with the same handedness.
+    n1 = (1.0, 0.0) if abs(lead[1]) >= abs(lead[0]) else (0.0, 1.0)
+    n2, corner_t = n1, 0.0
+    if has_jog and has_exit:
+        d1, d2 = _unit(jog), _unit((offset_x, offset_y))
+        hand = 1.0 if d1[0] * n1[1] - d1[1] * n1[0] > 0 else -1.0   # n1 left (+1) or right
+        n2 = (-d2[1] * hand, d2[0] * hand)
+        along = d1[0] * n2[0] + d1[1] * n2[1]
+        if abs(along) > 1e-9:
+            # corner = top + s*n1 + t*d1, on the exit's offset line: t = s(1 - n1.n2)/(d1.n2)
+            corner_t = (1.0 - (n1[0] * n2[0] + n1[1] * n2[1])) / along
+        else:
+            n2 = n1   # the exit carries straight on (or doubles back) — the offset holds
     count = max(len(vent.systems), 1)
     out = []
     pitch = (vent.bundle_spacing.meters if vent.bundle_spacing is not None
              else vent.diameter.meters * PIPE_BUNDLE_SPACING)
     for index, system in enumerate(vent.systems or (None,)):
-        spread = (index - (count - 1) / 2.0) * pitch
-        dx, dy = (spread, 0.0) if perp_x else (0.0, spread)
-        here, there, out_there = ((chase[0] + dx, chase[1] + dy),
-                                  (top[0] + dx, top[1] + dy),
-                                  (exit_point[0] + dx, exit_point[1] + dy))
+        s = (index - (count - 1) / 2.0) * pitch
+        here = (chase[0] + s * n1[0], chase[1] + s * n1[1])
+        if has_jog:
+            d1 = _unit(jog)
+            there = (top[0] + s * (n1[0] + corner_t * d1[0]),
+                     top[1] + s * (n1[1] + corner_t * d1[1]))
+        else:
+            there = here
+        out_there = (exit_point[0] + s * n2[0], exit_point[1] + s * n2[1])
+        own_top = derived_termination_elevation(model, vent, at=out_there)
+        z_top = own_top if own_top is not None else vent.roof_termination_elevation.meters
         name = system.value if system is not None else "vent"
         path = (here, here, there, there, out_there, out_there)
         z = (z_start, z_jog, z_jog, z_exit, z_exit, z_top)
         out.append((f"{vent.tag}-{name}", path, z))
     return out
+
+
+def _unit(vector: tuple[float, float]) -> tuple[float, float]:
+    length = (vector[0] ** 2 + vector[1] ** 2) ** 0.5
+    return vector[0] / length, vector[1] / length

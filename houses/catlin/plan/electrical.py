@@ -1140,7 +1140,7 @@ PV_JBOX = [
     # number to re-check if this window is ever asked to move again.
     #
     # Going east instead (x >= 14'-11") clears the window at 25'-6" and costs 2'-6" of
-    # 1 1/2" EMT to reach a worse station: further from VR-M-RADON-VENT's riser, and out
+    # 1 1/2" EMT to reach a worse station: further from VR-M-STACK's riser, and out
     # over the stair void's bay.
     #
     # ** IT SITS ON W-A-N2B, NOT W-A-N2 ** — the north gable splits at x=10'-0", and
@@ -1179,7 +1179,7 @@ CONDUIT_TRUNKS = [
     # 20'-11 3/8" eave the roof plane at x=1'-6" is 21'-8 3/8", so a riser continuing to
     # 25'-6" there would run outside the building. The chase does NOT move — moving it would
     # drag the mechanical-room penetration through every storey below, which is the same
-    # reason VR-M-RADON-VENT jogs in the attic instead of relocating (mep_venting.py). A
+    # reason VR-M-STACK jogs in the attic instead of relocating (mep_venting.py). A
     # ConduitRun travels flat at `start_elevation` and rises only at its LAST point, so
     # "up, then over" is two runs, not one polyline.
     ConduitRun(uid="CDT001AAAA", tag="CD-B-ATTIC-RISER", trade_size=inch(1.5),

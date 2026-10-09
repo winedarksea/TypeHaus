@@ -120,7 +120,7 @@ rather than by a plumb cut should be 5 1/4" and take the full 2 1/2" nails.
 | part | count | rule |
 |---|---|---|
 | LSSR sloped/skewable hanger | 38 — one per rafter end | derived, `takeoff/hangers.py` |
-| beveled web stiffener pair, 23/32" ply x 4" | 38 at the ridge (+38 at the eave) | derived, `resolve/framing/roof.py` |
+| beveled web stiffener pair, 23/32" ply x 4" | 38 at the ridge (+38 at the eave) | derived, `resolve/framing/roof_stiffeners.py` |
 | LSTA24 strap over the peak | 19 — one per opposing **pair** | derived, `takeoff/hangers.py` |
 | H2.5A, beam to top plate | 10 — 4' o.c. plus both ends | derived, `takeoff/uplift.py` |
 | SDW22 3 3/4" ply screws | 4 per hanger, one face | spec, not modelled |

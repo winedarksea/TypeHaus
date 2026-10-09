@@ -7,9 +7,11 @@ them, the section slicer cuts them, and IFC writes them — pinned here against 
 from __future__ import annotations
 
 import math
+from dataclasses import replace
 
 import pytest
 
+from typehaus.resolve.framing.roof_stiffeners import bearing_stiffeners
 from typehaus.resolve.geometry_ir import GSweep
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.geometry_slice import CutPlane, slice_solid, sweep_mesh
@@ -132,8 +134,10 @@ def _rafter() -> FramedMember:
         seat=SeatCut(plate_top_z_m=2.45, heel=(0.14, 0.0), seat_run_m=0.14))
 
 
-@pytest.mark.parametrize("member", [_rafter(), _ringed(), _ringed(rise=0.6)],
-                         ids=["rafter", "eave-leg", "rake-leg"])
+@pytest.mark.parametrize("member", [
+    _rafter(), _ringed(), _ringed(rise=0.6),
+    *bearing_stiffeners((replace(_rafter(), profile="11.875 TJI 230"),), hung_at_ridge=True),
+], ids=["rafter", "eave-leg", "rake-leg", "eave-stiffener", "ridge-stiffener"])
 def test_ifc_solid_bounds_the_ir_sweep(member) -> None:
     pytest.importorskip("ifcopenshell")
     from typehaus.emit.ifc import lowlevel as ll

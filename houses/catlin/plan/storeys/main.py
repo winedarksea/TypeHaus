@@ -106,7 +106,7 @@ DOOR_TYPES = [
     # 9'-4" and 8" of wall to spare.
     #
     # This is a code-legal service opening, not a compromise: the pocket is the ERV's access
-    # (EQ-A-ERV-MAN-EXH, the outdoor-air hood, VR-M-RADON-VENT's head), and IRC M1305.1.3
+    # (EQ-A-ERV-MAN-EXH, the outdoor-air hood, VR-M-STACK's head), and IRC M1305.1.3
     # asks a passageway of not less than 30" high and 22" wide — 24 x 42 clears both. No
     # habitable room is reached through it, so R311's door rules have nothing to say.
     DT_INT_ACCESS24,

@@ -33,7 +33,7 @@ from typehaus.model.enums import ConditionKind, LayerFunction
 from typehaus.model.spatial import Roof
 from typehaus.model.structure import Beam
 from typehaus.quantities import inch
-from typehaus.resolve.framing.profiles import cross_section, panel_profile
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.roof_eave import eave_blocking
 from typehaus.resolve.framing.roof_gable import (
     build_truss_layout,
@@ -41,6 +41,7 @@ from typehaus.resolve.framing.roof_gable import (
     is_gable_end_position,
     truss_member,
 )
+from typehaus.resolve.framing.roof_stiffeners import bearing_stiffeners
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.model import (
     BoundaryCondition,
@@ -61,24 +62,6 @@ _SUPPORT_GAP_TOL_M = inch(16.0).meters
 # plate the rafter bears on. The reference's 1.17" notch depth is not a second constant —
 # it is this run times the rafter's slope, and stating it twice is how the two drifted.
 _SEAT_LEN_M = inch(3.5).meters
-#: The beveled web stiffener stock, at both ends of an I-joist rafter: **plywood, not
-#: lumber**. A stiffener fills the joist's own web cavity, and on the TJI 230 that cavity is
-#: (2 5/16" flange - 3/8" web) / 2 = 15/16" per side — a 1 1/2" 2x4 does not physically go in
-#: there, whatever else is wrong with billing sheet goods as SPF. Weyerhaeuser TJ-9000 wants
-#: 23/32" ply each side; the WIDTH is 4" because Simpson/Weyerhaeuser CSG-TJUS25 conditions
-#: the LSSR on stiffeners "4" wide and attached with (4) nails each side" (notes/
-#: ridge_beam_detail.md §3), and the eave end takes the same piece rather than a second size.
-#:
-#: One member per rafter END stands for the PAIR, which is why the thickness is 2 x 23/32"
-#: and not 23/32": the pair straddles a 3/8" web, so a single block on the rafter's own line
-#: is within 1/4" of where the two plies actually are — the same simplification the 2x4 made,
-#: at the right material and the right count. ``prices.toml`` prices this row as the pair.
-_STIFFENER_PROFILE = panel_profile(4.0, 2 * 0.71875, "stiffener")
-#: …and it is named as a sheet good, not left to the category palette. ``FramedMember.material``
-#: is what makes the ridge detail hatch this block as plywood instead of as lumber, and what
-#: puts the product in the BOM key — the whole point of the 2026-09-02 correction is that a
-#: framer reading the detail must not cut a 2x4 for it.
-_STIFFENER_MATERIAL = "struct-1-plywood"
 
 
 def frame_roofs(model: ResolvedModel) -> list[Finding]:
@@ -102,7 +85,7 @@ def frame_roofs(model: ResolvedModel) -> list[Finding]:
         element = _roof_element(model, roof)
         blocks = eave_blocking(roof, element.eave_blocking if element else None, rafters,
                                _eave_plumb_cuts(model, roof), _bearing_plate_top(model, roof))
-        members = (rafters + _bearing_stiffeners(rafters, beam_member is not None) + blocks
+        members = (rafters + bearing_stiffeners(rafters, beam_member is not None) + blocks
                    + ((beam_member,) if beam_member is not None else ()))
         # ``replace`` (not reconstruction) so bearing_z_m / layer_edge_setbacks survive.
         framed.append(replace(roof, members=members))
@@ -243,82 +226,6 @@ def _bearing_along_extent(model: ResolvedModel, roof: ResolvedRoof) -> tuple[flo
     if lo is None or hi is None or hi - lo <= 1e-9:
         return fallback
     return lo, hi
-
-
-def _bearing_stiffeners(rafters: tuple[FramedMember, ...],
-                        hung_at_ridge: bool) -> tuple[FramedMember, ...]:
-    """Model the I-joist web stiffeners as distinct bearing members, at BOTH ends.
-
-    The seat itself is part of the rafter's own solid (see ``_seat_rafters``); these members
-    make the required beveled bearing reinforcement visible and countable in every emitter.
-
-    The RIDGE end is emitted only where the rafter is actually hung on a beam, and it is not
-    optional there: Weyerhaeuser's roof general notes require web stiffeners wherever the
-    hanger's sides do not laterally support the top flange, its H5/H5S ridge details call for
-    "beveled web stiffener required both sides", APA D710 10c says the same, and Simpson's own
-    connector guide conditions the LSSR on them.
-    """
-    stiffeners: list[FramedMember] = []
-    for rafter in rafters:
-        # The profile *string* was matched here while the drawing's flange lines gate on
-        # ``cross_section(profile).shape == "i_joist"``. Two spellings of one question can
-        # disagree; ask the profile table, which is the answer both sides want.
-        if cross_section(rafter.profile).shape != "i_joist":
-            continue
-        axis = _rafter_axis(rafter)
-        stiffeners.append(FramedMember(
-            rafter.parent_uid, f"{rafter.child_key}-eave-stiffener", "bearing_stiffener",
-            _STIFFENER_PROFILE, rafter.p0, rafter.p0, rafter.z0_m, rafter.z1_m,
-            rafter.z1_m - rafter.z0_m, connection="eave:beveled-web-stiffener", orient=axis,
-            material=_STIFFENER_MATERIAL,
-        ))
-        if not hung_at_ridge:
-            continue
-        # The ridge end carries its own elevations on a raked member; reading z0_m/z1_m here
-        # would put the peak's stiffener down at the eave.
-        z0 = rafter.z0_m if rafter.z0_end_m is None else rafter.z0_end_m
-        z1 = rafter.z1_m if rafter.z1_end_m is None else rafter.z1_end_m
-        stiffeners.append(FramedMember(
-            rafter.parent_uid, f"{rafter.child_key}-ridge-stiffener", "bearing_stiffener",
-            _STIFFENER_PROFILE, *(_stiffener_station(rafter),) * 2, z0, z1, z1 - z0,
-            connection="ridge:beveled-web-stiffener", orient=axis,
-            material=_STIFFENER_MATERIAL,
-        ))
-    return tuple(stiffeners)
-
-
-def _rafter_axis(rafter: FramedMember) -> tuple[float, float]:
-    """The rafter's plan direction — the axis an upright member's WIDTH is laid along.
-
-    A stiffener is a 4"-wide plate in the plane of the joist's web, so its wide face runs
-    *up the rafter*. Left to the ``orient=None`` default it would be drawn along +x for
-    every rafter on the plan, which is the web plane only for the rafters that happen to
-    run east-west.
-    """
-    (x0, y0), (x1, y1) = rafter.p0, rafter.p1
-    dx, dy = x1 - x0, y1 - y0
-    run = math.hypot(dx, dy)
-    return (1.0, 0.0) if run < 1e-9 else (dx / run, dy / run)
-
-
-def _stiffener_station(rafter: FramedMember) -> tuple[float, float]:
-    """Where the ridge-end web stiffener sits: INBOARD of the plumb cut, not straddling it.
-
-    The block fills the I-joist's own web cavity with its outer face flush against the cut,
-    so its centre is half a block back down the rafter. Modelling it at ``p1`` — the cut
-    plane, which is also the beam's face — put half of every one of them inside the ridge
-    beam and drew 56 ``structural.member_interference`` FAILs that were the placement's fault
-    and not the framing's. Half of the larger plan dimension clears it whichever axis the
-    ridge runs on, and is where a 4"-wide stiffener's centre genuinely is.
-    """
-    section = cross_section(_STIFFENER_PROFILE)
-    back = max(section.width_m, section.depth_m) / 2.0
-    (x0, y0), (x1, y1) = rafter.p0, rafter.p1
-    dx, dy = x1 - x0, y1 - y0
-    run = math.hypot(dx, dy)
-    if run < 1e-9:
-        return rafter.p1
-    return (x1 - dx / run * back, y1 - dy / run * back)
 
 
 def _seat_rafters(

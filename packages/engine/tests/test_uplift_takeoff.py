@@ -87,7 +87,7 @@ def connections(catlin_model_ro):
 def test_every_rafter_is_tied_at_its_eave(catlin_model_ro, connections) -> None:
     """One tie per rafter, reconciled against the roof's own bearing-stiffener census.
 
-    ``resolve/framing/roof.py::_bearing_stiffeners`` emits one stiffener per I-joist rafter
+    ``resolve/framing/roof_stiffeners.py::bearing_stiffeners`` emits one per I-joist rafter
     END — at ``rafter.p0`` for the eave bearing, and since 2026-08-28 at the ridge too, where
     the sloped hanger requires it. It is derived by a different rule, from a different field,
     in a different module — so the EAVE half is an independent witness that this count is the

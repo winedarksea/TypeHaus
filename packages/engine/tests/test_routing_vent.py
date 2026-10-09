@@ -118,10 +118,10 @@ def test_a_catlin_vent_ties_into_the_VENT_riser_and_never_the_radon(catlin_model
 
     run = next(r for r in catlin_model_ro.pipe_runs if r.tag == "PR-B-SAUNA-VENT")
     root, touch, paths = _vent_siblings(catlin_model_ro, run, [])
-    assert "VR-M-RADON-VENT-vent" in touch
-    assert "VR-M-RADON-VENT-radon" not in touch
+    assert "VR-M-STACK-vent" in touch
+    assert "VR-M-STACK-radon" not in touch
     station = next(p[0] for t, p, _z, _d in vent_risers(catlin_model_ro)
-                   if t == "VR-M-RADON-VENT-vent")
+                   if t == "VR-M-STACK-vent")
     assert root[:2] == pytest.approx(station, abs=1e-6)
     assert any(len(point) == 3 for path in paths for point in path), "goal lines carry z"
 

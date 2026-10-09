@@ -29,7 +29,7 @@ from typehaus.model import Location, WallAttachment, deg
 #     DU-S-ERV-HP-FEED    x 12"       y 33'-10 1/4"  attic standpipe off SUP's head
 #     DU-ERV-RISER-EXH    x 18 5/8"   y 33'-10 1/4"  full height
 #     DU-ERV-EA           x  2'-0"    y 35'-0"       full height, basement to +17'-0"
-#     VR-M-RADON-VENT     x  1'-0"    y 35'-1.3"     radon + plumbing vent (y 34'-6" till 09-23)
+#     VR-M-STACK     x  1'-0"    y 35'-1.3"     radon + plumbing vent (y 34'-6" till 09-23)
 #     six plumbing vents  x  1'-0"    y 35'-1.3"     all landing on that one riser
 #     nine conduits       x 1'-6"/2'-0"/2'-6", y 34'-6" (one at y=35'-3")
 #

@@ -48,7 +48,7 @@ _KERF_FT = _KERF_IN / 12.0
 #: Nominal thicknesses a wood structural panel is sold in. A member whose profile thickness
 #: is an integer multiple of one of these is that many **plies** of it: the roof's beveled
 #: web stiffener is authored 1 7/16" thick precisely because one member stands for the PAIR
-#: of 23/32" plies that straddle the I-joist web (``resolve/framing/roof._STIFFENER_PROFILE``),
+#: of 23/32" plies that straddle the I-joist web (``framing/roof_stiffeners._STIFFENER_PROFILE``),
 #: and ordering it as one 1 7/16" sheet would be ordering a product that does not exist.
 _SHEET_THICKNESS_IN: tuple[float, ...] = (
     0.25, 0.3125, 0.375, 0.4375, 0.46875, 0.5, 0.59375, 0.625, 0.71875, 0.75, 1.0, 1.125,

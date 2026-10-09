@@ -668,7 +668,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - `RM-A-POCKET` (x 0..9'-7 1/2", y 22'-4"..36', STORAGE). Door `D-A-POCKET` is in the
     SOUTH wall of `W-A-STU-N`, not the x=10' wall (far side is the void/shaft). Wall raked
     at 5'-0"+x/3; a 6'-8" head needs x ≥ 5'-9" (`structural.member_interference` catches a
-    shallower station). Door not scuttle: ERV manifold, OA hood, `VR-M-RADON-VENT` head
+    shallower station). Door not scuttle: ERV manifold, OA hood, `VR-M-STACK` head
     sit inside, so IRC M1305.1.3 wants the passageway plus its light and receptacle
     (`ED-A-POCKET-LT1`, `ED-A-POCKET-RC1`). `ResolvedRoom.head_limited_area_m2` is what the plan label
     and `haus build` report beside `area_m2` (whole attic: 496 of 1,171 sf built); every
@@ -1166,7 +1166,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   27" width so the stack is a column of one width, the attic unit simply 12" shorter under
   the rake. It could not grow taller with the pair below: a 48" unit here needs 148" of run,
   and buying the height off the sill instead lands under R312.2's 24".
-  Recheck before any further move: the radon riser is 11 1/8" clear of `WIN-A-N1`'s west
+  Recheck before any further move: the vent riser is 11 1/8" clear of `WIN-A-N1`'s west
   jamb (`mep_venting.py`), the PV junction box 6 1/2" clear of its framing bumper
   (`electrical.py`) — both widened by the narrowing, and a rewidening spends them back.
   `WIN-A-N1` (hosted on `W-A-N2B`) has RO 10'-10 1/2"..13'-1 1/2", clearing the x=10'-0"
@@ -1334,9 +1334,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     machine, so moving it back would cost a FAIL for no savings.
   - **The NW chase is the only riser and is full** (re-packed 2026-09-23): `DU-ERV-RISER-SUP`
     and `DU-ERV-RISER-EXH` (6", bare — house air, IECC R403.3) at y=33'-10.8", `DU-ERV-EA`
-    (8", 2" vapour-sealed wrap) at (2'-0.6", 34'-9.5"), `VR-M-RADON-VENT`'s pair at x=10"
+    (8", 2" vapour-sealed wrap) at (2'-0.6", 34'-9.5"), `VR-M-STACK`'s pair at x=10"
     (vent 34'-4.9", radon 34'-11.1", 6.2" apart so they straddle the attic's 34'-8" joist;
-    the bundle jogs east at +19'-6" to x=9'-7 1/2") and three conduits. **No branch vent
+    the bundle jogs east at +19'-6" and exits the gable side by side, vent on x=9'-7 1/2",
+    radon on 9'-1.3") and three conduits. **No branch vent
     enters the chase any more** (2026-09-24): the main-floor vents rise up `W-S-SN2` into
     `PR-S-BATH1-VENT`, and every other vent ties onto the stack's attic jog or its riser.
     Nothing else goes in that chase.

@@ -116,7 +116,7 @@ DUCTS_ERV_RISERS = [
     # rafters, which `integrity.element_above_roof` catches. So the riser tops out on
     # FS-ATTIC's bottom chord instead (231 7/8" = the deck less 8 7/8", the same datum
     # DU-S-ERV-HP-FEED uses) and its feed jogs the 7" east in the bay before standing up — the
-    # same move VR-M-RADON-VENT makes, in the same shaft, at the same rake.
+    # same move VR-M-STACK makes, in the same shaft, at the same rake.
     #
     # Moving the column east instead is not available: the chase's measured clear is 24" (see
     # the note above) and the three-in-a-row at x=5"/14"/23" already over-fills it by an inch.
@@ -371,8 +371,8 @@ DUCTS_ERV_RISERS = [
     #
     #     DU-ERV-RISER-SUP        x  6 5/8".. 12 5/8"   y 403 1/4"..409 1/4"
     #     DU-ERV-RISER-EXH        x 15 5/8".. 21 5/8"   y 403 1/4"..409 1/4"
-    #     VR-M-RADON-VENT radon   x 10 1/2".. 13 1/2"   y 410 1/8"..413 1/8"
-    #     VR-M-RADON-VENT vent    x 10 1/2".. 13 1/2"   y 414 7/8"..417 7/8"
+    #     VR-M-STACK radon   x 10 1/2".. 13 1/2"   y 410 1/8"..413 1/8"
+    #     VR-M-STACK vent    x 10 1/2".. 13 1/2"   y 414 7/8"..417 7/8"
     #     CD-B-ATTIC-RISER        x 17 1/8".. 18 7/8"   y 413 1/8"..414 7/8"
     #     CD-B-DATA-CHASE         x 23 1/4".. 24 3/4"   y 413 1/4"..414 3/4"
     #     CD-B-SPARE-CHASE        x 28 7/8".. 31 1/8"   y 412 7/8"..415 1/8"

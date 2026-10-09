@@ -23,7 +23,7 @@ from typehaus import (
 # --- Vent branches: wet wall -> shared chase ----------------------------------------
 # BATH1 is served by the vent above W-M-BAE; no riser runs down that wall. W-M-BA2E dies at
 # the main-floor top plate, and W-S-BD-N dies under the cathedral attic, so no vent can
-# simply rise inside those wet walls. They don't have to: VR-M-RADON-VENT is a shared
+# simply rise inside those wet walls. They don't have to: VR-M-STACK is a shared
 # radon/plumbing chase running the full height of the house at (1', 35'-1.3"), inside
 # RM-M-MECH's framed closet and RM-S-BATH1's NW notch, and a vent may run horizontally once
 # it is above every served fixture's flood-level rim. These are the runs that get it
@@ -145,13 +145,13 @@ VENT_BRANCHES_SECOND = [
     # ** THE HALL-BATH RUN'S FIRST VERTEX AND ITS OWN COMMENT DISAGREE. ** That comment says
     # the takeoff is "on W-S-BD-N (y=26'-4")"; the authored path starts at (9'-8.4", 31'-0").
     # Whatever that vertex is for, it is not the takeoff the prose describes, and a merge is
-    # the wrong tool for reconciling them. The chase is VR-M-RADON-VENT's, at
+    # the wrong tool for reconciling them. The chase is VR-M-STACK's, at
     # (1', 35'-1.3") — the *same* shaft as the 2'x2' mechanical chase in the hall bath's NW
     # corner (W-S-CH-W/CH-S, moved there 2026-07-28 from the NE corner specifically so it
     # could carry this riser; storeys/second.py).
     # ** IT APPROACHES THE CHASE FROM THE NORTH SINCE 2026-09-19, AND THE RADON RISER IS
     # WHY. ** The run used to turn west at y=34'-6" and travel the last 8'-7 1/2" to the
-    # chase on that line. So does `VR-M-RADON-VENT`'s own `chase_offset` jog, at 19'-6" —
+    # chase on that line. So does `VR-M-STACK`'s own `chase_offset` jog, at 19'-6" —
     # and this run arrived at 19'-5". Two pipes, one line, one inch apart, collinear the
     # whole way: `mep.run_interference` reported it twice, once against the chase's RADON
     # riser and once against its VENT riser, which are the same physical 3" pipe carrying
@@ -222,7 +222,7 @@ VENT_BRANCHES_ATTIC = [
     # PR-A-BAR-VENT lands on a PipeRun.
     #
     # From there it runs west to the W-A-STU-W axis, north through the pocket at ~7'-0", and
-    # west to VR-M-RADON-VENT at (1'-0", 35'-1.3"), which carries PipeSystem.VENT to the roof. It
+    # west to VR-M-STACK at (1'-0", 35'-1.3"), which carries PipeSystem.VENT to the roof. It
     # mirrors PR-S-SUITEBATH-VENT one storey down — same x=9'-7 1/2" leg, same chase.
     #
     # ** DO NOT INSTEAD ADD THESE FIXTURES TO PR-S-SUITEBATH-VENT.serves. ** `vent_path.py` is
@@ -325,14 +325,12 @@ VENT_BRANCHES_ATTIC = [
 # 9'-7 1/2" is chosen from inside that band because it is **PR-A-STUBATH-VENT's own wet-wall
 # line**. Landing on it deletes that run's last leg outright: the bath vent goes up the wet
 # wall and straight into the stack instead of turning east for 3'-8" to meet it. Measured:
-#   * the bundled pair spreads in Y, across the jog, so BOTH risers stand on x=9'-7 1/2" and
-#     the pair is one pipe wide in plan: x 9'-5 3/4"..9'-9 1/4", y 34'-9.4"..35'-5.2".
-#     It used to spread in X — perpendicular to the wall EXIT — which put the two pipes on
-#     one line for the whole 8'-7 1/2" jog (they cannot share a bore through a joist web)
-#     and drove the east one to 9'-9 9/10", 1 2/5" into W-A-BA-E's 2x4 studs. That was a 3"
-#     bore in a 2x4 and `mep.run_through_stud` reported it the day a VentRun first resolved
-#     an envelope; `resolve/vent_termination.riser_polylines` now spreads across the LONGEST
-#     horizontal leg. W-A-BA-E's stud face at x=10'-0"-1 3/4" is 1" clear of the pair;
+#   * the pair spreads across EACH leg (`resolve/vent_termination.riser_polylines`): in y
+#     along the jog, in x out through the wall, turning the corner as two lanes. The vent
+#     stands on x=9'-7 1/2", the radon 6.2" west at 9'-1.3". A single spread axis left one
+#     leg collinear — first the jog, then (2026-10-08) the wall exit, where both pipes
+#     shared one bore and stood one behind the other on the siding. W-A-BA-E's stud face at
+#     x=10'-0"-1 3/4" is 1" clear of the vent pipe;
 #   * 11 3/4" clear of WIN-A-N1's west jamb (it was 9 5/8" while the pair spread in x, and
 #     2'-1 5/8" until the window moved a bay west on 2026-09-06). A further move west of
 #     that window has nowhere to go (see attic.py's rake note), but if one is ever
@@ -347,7 +345,7 @@ VENT_BRANCHES_ATTIC = [
 # fixed whatever this run does.
 #
 VENT_RISERS = [
-    VentRun(uid="CMVR01AAAA", tag="VR-M-RADON-VENT",
+    VentRun(uid="CMVR01AAAA", tag="VR-M-STACK",
             # ** THE CHASE WAS RE-PACKED ON 2026-09-23. ** VENT first so it spreads SOUTH
             # (y 34'-4.9"), the side the branch vents arrive from up the chase's west slot;
             # the radon riser is north (34'-11.1"). 6.2" apart so the two STRADDLE FS-ATTIC's
@@ -360,7 +358,11 @@ VENT_RISERS = [
             # grown FO-M-ERV-EA; exit_offset shrank to keep the exterior riser at y=37'-0".
             # PR-B-RADON-LEG (mep_drainage.py) arrives at its foot out of the pit's lid.
             chase_position=pt(inch(10), inch(416)), start_elevation=ft(-8, -10),
-            chase_offset=pt(ft(8, 9.5), ft(0)), chase_offset_elevation=ft(19, 6),
+            # The jog lands the pair's CENTRE at 9'-4.4": since 2026-10-08 the pair spreads in
+            # x up the gable (vent east on 9'-7 1/2", radon west on 9'-1.3"), not in y, so
+            # the two pipes no longer share a bore through W-A-N2 or stand one behind the
+            # other on the siding.
+            chase_offset=pt(ft(8, 6.4), ft(0)), chase_offset_elevation=ft(19, 6),
             exit_elevation=ft(23, 10), exit_offset=pt(ft(0), inch(28.7)),
             wall_ref="W-A-N2", attachment="pipe_strap"),
 ]
@@ -384,15 +386,25 @@ VENT_RISERS = [
 VENT_CLAMPS = [
     Connector(uid="CMVC01AAAA", tag="CN-M-VENT-CLAMP1", kind=ConnectorKind.PIPE_STRAP,
               position=pt(ft(9, 7.5), ft(37)), elevation=ft(24, 4), size="SS316-STANDOFF-STRAP #11",
-              connects=("VR-M-RADON-VENT", "W-A-N2")),
+              connects=("VR-M-STACK", "W-A-N2")),
     Connector(uid="CMVC02AAAA", tag="CN-M-VENT-CLAMP2", kind=ConnectorKind.PIPE_STRAP,
               position=pt(ft(9, 7.5), ft(37)), elevation=ft(24, 10), size="SS316-STANDOFF-STRAP #11",
-              connects=("VR-M-RADON-VENT", "W-A-N2")),
+              connects=("VR-M-STACK", "W-A-N2")),
     Connector(uid="CMVC03AAAA", tag="CN-M-VENT-CLAMP3", kind=ConnectorKind.PIPE_STRAP,
               position=pt(ft(9, 7.5), ft(37)), elevation=ft(25, 4), size="SS316-STANDOFF-STRAP #11",
-              connects=("VR-M-RADON-VENT", "W-A-N2")),
+              connects=("VR-M-STACK", "W-A-N2")),
+    # The radon riser, 6.2" west of the vent on the same courses.
+    Connector(uid="97GJ68XRY2", tag="CN-M-RADON-CLAMP1", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(ft(9, 1.3), ft(37)), elevation=ft(24, 4), size="SS316-STANDOFF-STRAP #11",
+              connects=("VR-M-STACK", "W-A-N2")),
+    Connector(uid="ZRBRXDKJVF", tag="CN-M-RADON-CLAMP2", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(ft(9, 1.3), ft(37)), elevation=ft(24, 10), size="SS316-STANDOFF-STRAP #11",
+              connects=("VR-M-STACK", "W-A-N2")),
+    Connector(uid="7XZGATYJG5", tag="CN-M-RADON-CLAMP3", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(ft(9, 1.3), ft(37)), elevation=ft(25, 4), size="SS316-STANDOFF-STRAP #11",
+              connects=("VR-M-STACK", "W-A-N2")),
 ]
-# The basement's two plumbing vents. Both are offset vents to VR-M-RADON-VENT's shared
+# The basement's two plumbing vents. Both are offset vents to VR-M-STACK's shared
 # radon/plumbing chase at (1', 35'-1.3"), because neither room has a wet wall that continues to
 # the storey above: the stair-foot bathroom's four sides are two runs of framed stair wall,
 # a dry 2x4 partition and its own east wet wall, none of which is a stack, and the sauna's

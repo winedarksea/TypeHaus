@@ -408,7 +408,7 @@ geometry rather than money right up until the blocking geometry was removed.
 sentence that used to close this section, *"the NW chase has the room — four 6" insulated
 risers at about 25 % fill"*, was false, and the revision that replaced it was only half
 right. Measured off the resolved model, the shaft's clear is 24" x 26 1/8" and it already
-carried four ERV risers, `VR-M-RADON-VENT`, six plumbing vents on the y=34'-6" line and nine
+carried four ERV risers, `VR-M-STACK`, six plumbing vents on the y=34'-6" line and nine
 conduits. At its old station an 8" `DU-ERV-OA` overran the shaft's east face by an inch, and
 no ordering of four risers packed out of it — that much was correct, and it was read as
 "the upsize is blocked until the chase question is settled".
@@ -510,7 +510,7 @@ measured one.
   takes `mep.erv_static_budget` from a reported figure to "no DuctProductType", because the
   check sizes round pipe only. **So this half stays an unquantified conservatism and is
   named as one.** The move that would close it is ~2 1/2" of northward travel on
-  `VR-M-RADON-VENT`, which opens the gate to 6 1/8" and still clears W-M-N3B; that is a
+  `VR-M-STACK`, which opens the gate to 6 1/8" and still clears W-M-N3B; that is a
   drainage-set decision and it is the owner's.
 
 - **The trunk chain is summed whole.** `DU-S-ERV-HP-FEED` is a parallel branch off the

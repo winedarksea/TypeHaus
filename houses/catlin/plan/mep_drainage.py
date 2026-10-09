@@ -786,7 +786,7 @@ TPR_DISCHARGE = [
 RADON_SUMP = [
     Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(inch(21), inch(411)),
          diameter=inch(18), depth=inch(24), host_ref="SL-B-FLOOR",
-         sealed_cover=True, radon_vent=True, vent_ref="VR-M-RADON-VENT",
+         sealed_cover=True, radon_vent=True, vent_ref="VR-M-STACK",
          # CKT-SUMP was already on the panel schedule but the pit only implied a pump;
          # declaring it here puts an IfcPump/SUMPPUMP in the export and gives the
          # discharge something to check against.

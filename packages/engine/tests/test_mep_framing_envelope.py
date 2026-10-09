@@ -189,7 +189,7 @@ def test_catlin_only_the_radon_pair_is_left_in_the_erv_trimmer_packs(catlin_ctx)
     runs = {f.element_tags[0] for f in fails if "FO-M-ERV-OA" in f.message}
     assert not runs & {"DU-ERV-RISER-SUP", "DU-ERV-RISER-EXH", "CD-B-ATTIC-RISER",
                        "CD-B-DATA-CHASE", "CD-B-SPARE-CHASE"}
-    assert all(run.startswith("VR-M-RADON-VENT") for run in runs)
+    assert all(run.startswith("VR-M-STACK") for run in runs)
 
 
 @pytest.mark.slow

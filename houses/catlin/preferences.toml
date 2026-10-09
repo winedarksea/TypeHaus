@@ -535,7 +535,7 @@ suppress = [
   #   * 29 land ON a member — a joist, a trimmer or a truss chord. These are unambiguous:
   #     the member is cut and nothing headed it, and each wants either a `FloorOpening`
   #     (whose trimmers and header then resolve with it) or the riser moved into a clear
-  #     bay. VR-M-RADON-VENT's two risers stand on the trimmers of FO-M-ERV-OA itself, an
+  #     bay. VR-M-STACK's two risers stand on the trimmers of FO-M-ERV-OA itself, an
   #     inch outside the hole that was cut for the ERV; DU-ERV-EA's 8" leg lands on an
   #     FS-S-WEST chord. The chase cluster is drawn through FS-M-MECH and UNDRAWN above it.
   #   * 18 are clear of every member but wider than `max_undrawn_deck_hole_in` (2"), the

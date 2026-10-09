@@ -342,7 +342,7 @@ OPENINGS = [
     # pitch changed, exactly as it did on this door's first attempt in 2026-08.
     #
     # It is still a DOOR and not a scuttle because this pocket is the ERV's service access — the
-    # manifold EQ-A-ERV-MAN-EXH, the outdoor-air hood and VR-M-RADON-VENT's head all sit inside
+    # manifold EQ-A-ERV-MAN-EXH, the outdoor-air hood and VR-M-STACK's head all sit inside
     # it, and IRC M1305.1.3 wants a passageway, a platform, a light and a receptacle at the
     # appliance (hence ED-A-POCKET-LT1 and ED-A-POCKET-RC1). M1305.1.3's passageway minimum is
     # 30" high x 22" wide, so 24 x 42 clears it with room; the door is SMALLER but not

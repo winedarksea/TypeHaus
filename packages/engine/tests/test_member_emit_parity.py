@@ -61,14 +61,42 @@ def test_every_resolved_member_reaches_model_json(catlin_model_ro):
     )
 
 
+def test_roof_stiffener_bevels_reach_the_viewer(catlin_model_ro):
+    """The named ridge stiffener and every eave pair carry both pitched end elevations."""
+    import math
+
+    import pytest
+
+    payload = model_to_dict(catlin_model_ro)
+    roof = next(entry for entry in payload["roofs"] if entry["tag"] == "RF-HOUSE")
+    members = {member["key"]: member for member in roof["members"]}
+    assert "rafter-005-ridge-stiffener" in members
+    stiffeners = [member for member in members.values()
+                  if member["category"] == "bearing_stiffener"]
+    assert stiffeners
+    for stiffener in stiffeners:
+        rafter_key = stiffener["key"].rsplit("-", 2)[0]
+        rafter = members[rafter_key]
+        rafter_run = math.dist(rafter["p0"], rafter["p1"])
+        stiffener_run = math.dist(stiffener["p0"], stiffener["p1"])
+        assert stiffener_run > 0.0
+        for edge in ("z0", "z1"):
+            rafter_slope = (rafter[f"{edge}_end_m"] - rafter[f"{edge}_m"]) / rafter_run
+            stiffener_slope = (stiffener[f"{edge}_end_m"] - stiffener[f"{edge}_m"]) \
+                / stiffener_run
+            assert stiffener_slope == pytest.approx(rafter_slope)
+        assert stiffener["plan_width_m"] == stiffener["depth_m"]
+        assert len(stiffener["elevation_profile"]) == 4
+
+
 def test_soffit_ladder_framing_is_in_the_payload(catlin_model_ro):
     """The instance the test above was written for, pinned by name.
 
     ``trade="framing"``, not ``"drywall"``: ``emit/trades.py``'s "soffit" -> "drywall" entry
     is a SOLID-category map that routes the finished box, and a stick belongs with every
-    other stick in the building rather than behind the drywall toggle. The finished box is a separate
-    node on the same uid — which is why the framing node reuses ``kind="solid"`` and needs no
-    new ``SelectionKind``.
+    other stick in the building rather than behind the drywall toggle. The finished box is a
+    separate node on the same uid — which is why the framing node reuses ``kind="solid"``
+    and needs no new ``SelectionKind``.
     """
     payload = model_to_dict(catlin_model_ro)
     soffits = {entry["tag"]: entry for entry in payload["soffits"]}
