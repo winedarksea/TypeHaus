@@ -158,6 +158,8 @@ with the command that would re-lane it, red does not negotiate, gray is geometry
 authored well enough to grade. `--out` writes one SVG per level if you want to look at it.
 
 Run-vs-run interference and stud/plate bores used to be on this list. Both are graded now
-(`mep.run_interference`, `mep.run_through_stud`, `mep.run_through_plate`) — which is why
-`preferences.toml` carries two blanket suppressions with their counts and dates beside them.
-Deleting one and re-running `haus check` is how that debt gets measured.
+(`mep.run_interference`, `mep.run_through_stud`, `mep.run_through_plate`).
+`mep.run_interference` is unsuppressed and held at zero on every pair by
+`test_catlin_erv_clearance.py`, so a route that clashes anywhere fails the build.
+`mep.riser_through_deck` is still a blanket suppression with its count and date in
+`preferences.toml`; `haus check --no-suppress` measures it.

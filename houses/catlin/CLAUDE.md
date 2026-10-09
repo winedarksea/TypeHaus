@@ -1318,10 +1318,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     same-band supply crossings step **UP, not down**: the cold band rides inside FS-M-WEST's
     I-joist web, whose window is -10 1/2"..-1 3/8", so two inches down puts a 1" copper's
     invert 7/8" into the bottom flange — the hot band hangs below the joists and has no such
-    limit. Two residues are itemised with their arithmetic in `preferences.toml`:
-    `PR-A-HW-STUBATH`'s 1" sleeve makes it 2.88", which misses sharing a 2x6 bay with the
-    2 3/8" lav drain **by four thousandths of an inch**; and the suite stack head is short by
-    0.48" with both ends pinned.
+    limit. **Every run-vs-run clash is closed since 2026-10-08** and `mep.run_interference` is
+    unsuppressed, ratcheted at zero by `test_catlin_erv_clearance.py`. Three hot runs
+    (`PR-A-HW-STUBATH`, `PR-B-HW-SUITE`, `PR-B-HW-KITCH`) wear a **1/2" fiberglass sleeve,
+    R-3.1** (Owens Corning 722579; IECC R403.5.3 asks R-3), because a 1" jacket's 2.88" did not
+    fit where they cross drains; do not "upgrade" them back to 1" without re-running the check.
   - **Three manifolds map to CAVITIES, not storeys.** Level 1 = basement ceiling, machine in
     RM-B-FURNACE. Level 2 = RM-M-MECH, feeding both main-storey CEILING grilles and
     second-storey FLOOR boots because both open into the one FS-S-WEST/EAST cavity. Level 3 =

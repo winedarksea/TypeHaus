@@ -1,8 +1,10 @@
-"""The ERV/vent clearance campaign's ratchet on catlin (updated 2026-10-01).
+"""Catlin's MEP clearance ratchet (updated 2026-10-08).
 
-``mep.run_interference`` and ``mep.riser_through_deck`` are blanket-suppressed in catlin's
-``preferences.toml`` for the pairs still open. These call the checks directly, so suppression
-cannot hide an unexpected ERV duct, vent or radon-riser clash.
+``mep.run_interference`` is no longer suppressed in catlin's ``preferences.toml``: its
+11-pair campaign closed on 2026-10-08, and the first test below holds EVERY pair at zero.
+``mep.riser_through_deck`` is still blanket-suppressed for its open supply/drain campaign,
+so the ERV/vent tests call the checks directly and suppression cannot hide an ERV duct, vent
+or radon-riser clash.
 """
 
 from __future__ import annotations
@@ -19,9 +21,15 @@ pytestmark = pytest.mark.slow
 
 _WATCHED = re.compile(r"^DU-.*ERV|-VENT$|^VR-")
 
-#: No watched run interpenetrations are accepted on catlin. This direct-check ratchet bypasses
-#: the blanket preference suppression on the wider, still-open MEP campaign.
+#: No watched run interpenetrations are accepted on catlin.
 _KNOWN: set[frozenset[str]] = set()
+
+
+def test_no_run_interpenetrates_another_anywhere(catlin_ctx) -> None:
+    """Every pair, every trade. A new clash is a re-route, never a preferences entry."""
+    pairs = {frozenset(f.element_tags) for f in run_interference(catlin_ctx)
+             if f.result is Result.FAIL}
+    assert not pairs, sorted(sorted(pair) for pair in pairs)
 
 
 def _watched(finding) -> bool:

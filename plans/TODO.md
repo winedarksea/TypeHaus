@@ -94,10 +94,10 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ### MEP / lighting residuals
 
-**The MEP interference campaign's live record is `houses/catlin/preferences.toml`**, not this
-file. It carries the count, the class table that sums to its own headline, and a dated note per
-class. Re-open the campaign with `haus check houses/catlin --no-suppress`, which is the score
-with every suppression lifted.
+**The open MEP campaigns' live record is `houses/catlin/preferences.toml`**, not this file:
+`mep.riser_through_deck` (undrawn holes) and the itemised web crossings, each with its count
+and a dated note. `haus check houses/catlin --no-suppress` is the score with every
+suppression lifted. (`mep.run_interference` closed 2026-10-08 and is ratcheted at zero.)
 
 - **Filters and access panels are recorded but not graded.** Registers carry
   `filter_nominal_size` / `filter_merv` / `service_face` (`model/types.py`
