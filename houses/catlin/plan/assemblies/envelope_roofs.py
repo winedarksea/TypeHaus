@@ -141,18 +141,21 @@ ROOF = Assembly(
 GARAGE_ROOF = Assembly(
     tag="GARAGE_ROOF",
     layers=(
-        # Raised-heel trusses (2x4 chords + webs) with a 9.25" energy heel so full
-        # insulation depth carries over the top plate; the truss carries the ridge, so no
+        # STANDARD-HEEL trusses (2x4 chords + webs): the top chord springs straight off
+        # the 3.5" bottom chord (owner, 2026-10-08). The truss carries the ridge, so no
         # ridge beam is required. `haus` frames the chords/webs/heel as first-class members.
         #
+        # The heel was a 9.25" energy heel until the garage was accepted as what it is:
+        # UNCONDITIONED, needing moderate insulation, not full depth to the plate. Dropping
+        # it lowers this deck and the canopy's by 5.75" together, which is what let the
+        # canopy's collector blocks come down from 3-1/2x16 LSL to 2-2x10 SPF.
+        #
         # The fill is loose-fill fiberglass blown onto the ceiling plane, 14.5" settled —
-        # R-38 nominal (owner). The 9.25" energy heel is the FLOOR of that
-        # depth, not the ceiling: the heel is what guarantees full depth survives over the
-        # top plate instead of pinching to nothing at the eave, and the blow runs deeper
-        # than the heel across the field, tapering into it at the last bay. That is why
-        # 14.5" is thicker than this layer's own 11.875" — the fill lies on the bottom
-        # chord in a vented attic void that is far deeper than 14.5" anywhere but the very
-        # eave, so it is not bounded by the structural depth the way a stud-bay batt is.
+        # R-38 nominal across the field (owner). It now TAPERS at the eave: over the plate
+        # there is only the heel's depth less the baffle, so the last bay or two carry less
+        # than R-38. 14.5" is thicker than this layer's own 11.875" because the fill lies on
+        # the bottom chord in a vented attic void far deeper than that anywhere but the
+        # eave. R806.3: a vent baffle in EVERY eave bay keeps the blow off the soffit inlet.
         # Nothing moves geometrically: a CavityFill adds no thickness to the stack
         # (→ CavityFill), it is a parallel thermal path with the chords, not a series one.
         # The attic above it is the vent void the PVC soffit feeds (ROOFS in
@@ -169,7 +172,7 @@ GARAGE_ROOF = Assembly(
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x4", roof_frame="truss",
                                   spacing=inch(24),
-                                  heel_height=inch(9.25),
+                                  heel_height=inch(3.5),
                                   chord_member="2x4", web_member="2x4"),
               cavity=CavityFill(material_ref="blown-fiberglass", thickness=inch(14.5),
                                 framing_factor=0.0625)),
@@ -199,13 +202,13 @@ GARAGE_ROOF = Assembly(
         Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
-    source="catlin-house detached garage roof (vented 4:12 truss attic); gypsum ceiling + 9.25\" blown fiberglass added 2026-08-20",
+    source="catlin-house detached garage roof (vented 4:12 truss attic); gypsum ceiling + 9.25\" blown fiberglass added 2026-08-20; standard-heel trusses 2026-10-08",
 )
 
 # The north entry canopy, over the open passage between the house and the garage.
 #
 # ** STRUCTURALLY IDENTICAL TO GARAGE_ROOF, AND THAT IS THE POINT. ** Same 2x4 fink at
-# 24" o.c., same 9.25" heel, same deck/membrane/roofing. RF-BW-CANOPY bears at +7'-4" on
+# 24" o.c., same 3.5" standard heel, same deck/membrane/roofing. RF-BW-CANOPY bears at +7'-4" on
 # BM-BW-RW/RE, which are southward extensions of the garage's own two truss bearing lines,
 # so the two roof planes are ONE plane: change this layer's depth, spacing or heel and the
 # canopy steps off the garage roof at the joint. The sheathing runs continuous across the
@@ -228,7 +231,7 @@ CANOPY_ROOF = Assembly(
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x4", roof_frame="truss",
                                   spacing=inch(24),
-                                  heel_height=inch(9.25),
+                                  heel_height=inch(3.5),
                                   chord_member="2x4", web_member="2x4")),
         Layer(name="deck", material_ref="struct-1-plywood", thickness=inch(0.75),
               function=LayerFunction.SHEATHING),

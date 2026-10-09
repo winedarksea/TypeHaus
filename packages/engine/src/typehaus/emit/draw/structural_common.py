@@ -7,7 +7,9 @@ architectural plan family and the structural sheet family independent.
 
 from __future__ import annotations
 
+from typehaus.model.assembly import FramingSpec
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.framing.profiles import truss_chord_depth_m
 
 M_TO_FT = 3.280839895013123
 IN_PER_FT = 12.0
@@ -98,3 +100,16 @@ def wall_center(wall) -> tuple[float, float]:
 def wall_length_m(wall) -> float:
     (x0, y0), (x1, y1) = wall.axis
     return ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+
+
+def truss_heel_note(spec: FramingSpec) -> str | None:
+    """``RAISED HEEL n"`` only for a heel deeper than the chord; else ``STANDARD HEEL``.
+
+    A heel equal to the bottom chord is the top chord springing straight off it.
+    """
+    if spec.heel_height is None:
+        return None
+    heel_m = spec.heel_height.meters
+    if heel_m > truss_chord_depth_m(spec) + 1e-6:
+        return f"RAISED HEEL {inches(heel_m)}"
+    return "STANDARD HEEL"

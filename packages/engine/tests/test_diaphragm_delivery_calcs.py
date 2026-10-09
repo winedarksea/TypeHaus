@@ -15,26 +15,26 @@ from typehaus.engineering.item import Status
 _ITEM = "lateral_system/RF-BW-CANOPY"
 
 #: §2 — the ASD pressure on any band, and the deck-level shears with pinned 6x6 posts.
-_PRESSURE_PSF = 16.8315
-_DELIVERED = {"x": 694.6, "y": 1045.1}
+_PRESSURE_PSF = 16.7232
+_DELIVERED = {"x": 690.2, "y": 1038.4}
 
 #: §3-§4, the kdat column of every table: ``row name -> (demand, capacity)``. The panel and
 #: everything under it moved to ``canopy_west_band.md`` (``test_canopy_west_band_calcs``).
 _ROWS = {
     "open front, L'": (6.000, 25.0),
     "open front, L'/W'": (0.2250, 1.0),
-    "joint boundary nailing, along": (29.14, 190.0),
-    "LSTA24 joint straps, across": (174.18, 823.3333333333334),
-    "LSTA24 joint straps, rotation couple": (56.21, 823.3333333333334),
-    "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (262.06, 1215.0196),
-    "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (262.06, 1080.0174),
-    "LTP4 plate clips, frame into wall": (99.23, 450.0),
-    "RF-GARAGE unit-shear increment": (22.76, 167.5),
-    "W-G-S delivered shear on the surplus": (43.03, 182.5),
-    "W-G-E delivered shear on the surplus": (27.70, 182.5),
-    "W-G-W delivered shear on the surplus": (28.67, 182.5),
-    "W-G-S overturning, delivered increment": (283.5, 3065.0),
-    "diaphragm unit shear at W-BW-SCREEN": (174.18, 190.0),
+    "joint boundary nailing, along": (29.01, 190.0),
+    "LSTA24 joint straps, across": (173.06, 823.3333333333334),
+    "LSTA24 joint straps, rotation couple": (55.89, 823.3333333333334),
+    "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (260.54, 1215.0196),
+    "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (260.54, 1080.0174),
+    "LTP4 plate clips, frame into wall": (98.59, 450.0),
+    "RF-GARAGE unit-shear increment": (22.62, 167.5),
+    "W-G-S delivered shear on the surplus": (39.61, 182.5),
+    "W-G-E delivered shear on the surplus": (25.84, 182.5),
+    "W-G-W delivered shear on the surplus": (26.53, 182.5),
+    "W-G-S overturning, delivered increment": (281.7, 3065.0),
+    "diaphragm unit shear at W-BW-SCREEN": (173.06, 190.0),
 }
 
 
@@ -44,7 +44,7 @@ def record(catlin_ctx):
 
 
 def test_the_pinned_posts_split_their_drag_half_to_each_end(catlin_ctx) -> None:
-    """§2: 16.8315 psf x 5.5/12 x 6.1771' = 47.65 lb, 23.83 lb to each end."""
+    """§2: 16.7232 psf x 5.5/12 x 6.1771' = 47.35 lb, 23.67 lb to each end."""
     from typehaus.engineering.roof_lateral import roof_winds
 
     wind = roof_winds(catlin_ctx.engineering.context)["RF-BW-CANOPY"]
@@ -52,8 +52,8 @@ def test_the_pinned_posts_split_their_drag_half_to_each_end(catlin_ctx) -> None:
     posts = {p.tag: p for p in wind.pinned}
     assert set(posts) == {"PT-BW-RE", "PT-BW-RNE"}, "a within_wall post is the wall's face"
     for post in posts.values():
-        assert post.drag_lb == pytest.approx(47.65, abs=0.02)
-        assert post.head_lb == pytest.approx(post.base_lb) == pytest.approx(23.83, abs=0.01)
+        assert post.drag_lb == pytest.approx(47.35, abs=0.02)
+        assert post.head_lb == pytest.approx(post.base_lb) == pytest.approx(23.67, abs=0.01)
     for axis, lb in _DELIVERED.items():
         assert wind.delivered_lb(axis) == pytest.approx(lb, abs=0.1)
     # §3b: the E-W resultant 3.016' off the joint.
@@ -71,10 +71,10 @@ def test_the_record_reproduces_sections_3_and_4(record) -> None:
 
 
 def test_the_screen_boundary_governs(record) -> None:
-    """§4d: the envelope row over the envelope share — 0.917, and nothing else is closer."""
+    """§4d: the envelope row over the envelope share — 0.911, and nothing else is closer."""
     worst = max(record.limit_states, key=lambda s: s.demand / s.capacity)
     assert worst.name == "diaphragm unit shear at W-BW-SCREEN"
-    assert worst.demand / worst.capacity == pytest.approx(0.917, abs=0.001)
+    assert worst.demand / worst.capacity == pytest.approx(0.911, abs=0.001)
 
 
 def test_the_old_four_to_one_row_is_gone_with_the_second_line(record) -> None:
@@ -91,10 +91,10 @@ def test_the_receivers_are_on_the_record_and_graded_by_nobody_else(catlin_ctx) -
 
 
 def test_the_landing_tie_reads_the_envelope_share(catlin_ctx) -> None:
-    """§4e: the tie's N-S panel load is the whole 1,045.1 lb; its E-W row still governs."""
+    """§4e: the tie's N-S panel load is the whole 1,038.4 lb; its E-W row still governs."""
     record = catlin_ctx.engineering["deck_tie/FS-BW-FLOOR"]
     loads = {q.name: q.value for q in record.inputs}
-    assert loads["y:W-BW-SCREEN panel share of RF-BW-CANOPY"] == pytest.approx(1045.1, abs=0.1)
+    assert loads["y:W-BW-SCREEN panel share of RF-BW-CANOPY"] == pytest.approx(1038.35, abs=0.1)
     assert record.status is Status.OK
     worst = max(record.limit_states, key=lambda s: s.demand / s.capacity)
     assert "E-W" in worst.name
@@ -187,13 +187,13 @@ def test_a_pinned_post_mints_no_column_base(catlin_ctx) -> None:
 
 @pytest.mark.parametrize(("tag", "shaft"), [("PT-BW-PE", 6.120), ("PT-BW-PNE", 3.500)])
 def test_the_pier_is_a_short_pole(catlin_ctx, tag, shaft) -> None:
-    """§6: 82.74 lb at 1.932' above grade on the 14" pier; 2.48' of shaft needed, the pad
+    """§6: 82.20 lb at 1.932' above grade on the 14" pier; 2.47' of shaft needed, the pad
     credited below."""
     record = catlin_ctx.engineering[f"column_base/{tag}"]
     inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["lateral_shear_asd"] == pytest.approx(82.74, abs=0.05)
+    assert inputs["lateral_shear_asd"] == pytest.approx(82.20, abs=0.05)
     assert inputs["shear_height_above_grade"] == pytest.approx(1.932, abs=0.002)
     assert inputs["shaft_embedment"] == pytest.approx(shaft, abs=0.002)
     embedment = record.limit_states[0]
-    assert embedment.demand <= 2.478 + 1e-3, "basis 4's pad credit only ever reads lower"
+    assert embedment.demand <= 2.471 + 1e-3, "basis 4's pad credit only ever reads lower"
     assert record.status is Status.OK

@@ -9,7 +9,7 @@ from typehaus.quantities import Length, inch
 
 
 class CollectorBlocking(HausModel):
-    """Solid raised-heel blocks, cut from stock to the deck, between truss faces."""
+    """Solid heel blocks over a collector, cut from stock to the deck, between truss faces."""
 
     collector: str
     stock: str
@@ -19,7 +19,16 @@ class CollectorBlocking(HausModel):
     flush: Literal["centre", "inboard"] = "centre"
     end_tie: str = "LS30Z"
     end_ties_each_end: int = Field(default=1, ge=1)
+    #: A multi-ply stock ("2-2x10") is laminated here, two nails near each end.
+    lamination_spacing: Length = inch(12)
     fastening: str
+
+    @field_validator("lamination_spacing")
+    @classmethod
+    def positive_lamination(cls, value: Length) -> Length:
+        if value.meters <= 0:
+            raise ValueError("lamination spacing must be positive")
+        return value
 
 
 class PanelEdgeBlocking(HausModel):

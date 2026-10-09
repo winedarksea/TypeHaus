@@ -2909,6 +2909,119 @@
     },
     {
       "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          446.625,
+          97.50000000000003
+        ],
+        [
+          448.125,
+          97.50000000000003
+        ],
+        [
+          448.125,
+          97.71653543307087
+        ],
+        [
+          446.625,
+          97.71653543307087
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "YX2GDZJMBV",
+      "tag": "rake-lo-0-fascia-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          446.625,
+          97.50000000000003
+        ],
+        [
+          448.125,
+          97.50000000000003
+        ],
+        [
+          448.125,
+          97.71653543307087
+        ],
+        [
+          446.625,
+          97.71653543307087
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          445.625,
+          97.00000000000001
+        ],
+        [
+          446.625,
+          97.00000000000001
+        ],
+        [
+          446.625,
+          97.71653543307087
+        ],
+        [
+          445.625,
+          97.71653543307087
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "YX2GDZJMBV",
+      "tag": "rake-lo-0-fascia-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          445.625,
+          97.00000000000001
+        ],
+        [
+          446.625,
+          97.00000000000001
+        ],
+        [
+          446.625,
+          97.71653543307087
+        ],
+        [
+          445.625,
+          97.71653543307087
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "metal-dark-exterior",
+      "fill": "#1c1f24"
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -3239,7 +3352,7 @@
         "kind": "point",
         "xy": [
           446.62500000000006,
-          97.29576771653544
+          94.42076771653545
         ],
         "name": ""
       },
@@ -3249,7 +3362,7 @@
       ],
       "to": [
         446.62500000000006,
-        97.29576771653544
+        94.42076771653545
       ],
       "text": "truss 11.9\"",
       "height": 1.6,

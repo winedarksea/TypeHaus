@@ -292,11 +292,11 @@ def test_the_kdat_canopy_delivers_both_axes_to_the_garage(catlin_ctx) -> None:
     inputs = _inputs(record)
     assert record.status is Status.OK, record.summary
     assert not record.missing
-    assert inputs["delivered_shear_x"] == pytest.approx(694.6, abs=0.2)
-    assert inputs["delivered_shear_y"] == pytest.approx(1045.1, abs=0.2)
+    assert inputs["delivered_shear_x"] == pytest.approx(690.2, abs=0.2)
+    assert inputs["delivered_shear_y"] == pytest.approx(1038.4, abs=0.2)
     assert states["open front, L'"].ratio == pytest.approx(0.24)
     assert states["open front, L'/W'"].ratio == pytest.approx(0.225)
-    assert states["joint boundary nailing, along"].demand == pytest.approx(29.14, abs=0.05)
+    assert states["joint boundary nailing, along"].demand == pytest.approx(29.01, abs=0.05)
     assert states["W-G-S delivered shear on the surplus"].ok
     assert states["RF-GARAGE unit-shear increment"].ok
     assert states["torsional stability, delivered"].ok
@@ -314,7 +314,7 @@ def test_the_screen_and_garage_are_both_graded_at_the_full_kdat_load(catlin_ctx)
     assert states["W-BW-SCREEN chord base shear, one base"].ok
     assert states["W-G-S overturning, delivered increment"].ok
     assert record.governing.name == "diaphragm unit shear at W-BW-SCREEN"
-    assert record.governing.ratio == pytest.approx(0.917, abs=0.005)
+    assert record.governing.ratio == pytest.approx(0.911, abs=0.005)
 
 
 def test_the_kdat_collectors_and_open_front_chord_are_drawn(catlin_ctx) -> None:
@@ -324,7 +324,7 @@ def test_the_kdat_collectors_and_open_front_chord_are_drawn(catlin_ctx) -> None:
                for tag in roof.diaphragm.collector_refs)
     record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
     states = _states(record)
-    assert _inputs(record)["chord_force_open_front_lb"] == pytest.approx(87.3, abs=0.2)
+    assert _inputs(record)["chord_force_open_front_lb"] == pytest.approx(86.7, abs=0.2)
     assert states["BM-BW-RW chord tension, open front"].ok
     assert states["BM-BW-RE chord tension, open front"].ok
     assert states["LSTA24 end straps, chord force + across share"].ok
@@ -340,7 +340,7 @@ def test_cast_variant_keeps_its_column_collectors_and_delivers_to_garage(
     assert "PT-BW-RNE collector end connection, N-S" in states
     assert states["W-G-S delivered shear on the surplus"].ok
     assert states["RF-GARAGE unit-shear increment"].ok
-    assert _inputs(record)["delivered_shear_y"] == pytest.approx(1188.9, abs=0.5)
+    assert _inputs(record)["delivered_shear_y"] == pytest.approx(1180.0, abs=0.5)
 
 
 def test_only_the_declared_canopy_has_a_lateral_system_item(catlin_ctx) -> None:

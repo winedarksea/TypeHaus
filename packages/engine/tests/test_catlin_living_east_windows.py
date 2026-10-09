@@ -54,7 +54,7 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
         openings["WIN-M-LIV-E2"].center_along_m)
 
 
-def test_each_live_edge_stool_meets_the_continuous_counter(catlin_model_ro):
+def test_each_east_stool_meets_the_continuous_counter(catlin_model_ro):
     model = catlin_model_ro
     openings = {opening.tag: opening for opening in model.openings}
     stools = {stool.window_ref: stool for stool in model.window_stools}
@@ -64,7 +64,9 @@ def test_each_live_edge_stool_meets_the_continuous_counter(catlin_model_ro):
     for tag in EAST_WINDOW_CENTRES_IN:
         stool = stools[tag]
         assert not stool.derived
-        assert stool.material_ref == counter.material_ref == "live-edge-white-oak"
+        # Plain 2" oak meeting the live-edge slab's ripped back edge.
+        assert stool.material_ref == "oak-stool-12q"
+        assert counter.material_ref == "live-edge-white-oak"
         assert stool.thickness_m == pytest.approx(2 * INCH)
         assert stool.overhang_m == stool.horn_m == 0
         prism = window_stool_prism(model.wall(stool.wall_tag), openings[tag], stool)

@@ -63,7 +63,7 @@ def test_a_roof_truss_serializes_as_one_member_with_its_chord_section(catlin_pay
     for truss in trusses:
         assert truss["shape"] == "roof_truss"
         assert truss["profile"] in ("24 roof truss", "24 gable roof truss")
-        assert truss["truss"]["heel_m"] == pytest.approx(9.25 * 0.0254)
+        assert truss["truss"]["heel_m"] == pytest.approx(3.5 * 0.0254)  # standard heel
         assert truss["truss"]["tail_lo_m"] > 0 and truss["truss"]["tail_hi_m"] > 0
         assert truss["flange_thickness_m"] == pytest.approx(3.5 * 0.0254)
         assert truss["width_m"] == pytest.approx(1.5 * 0.0254)

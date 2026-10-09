@@ -1874,18 +1874,18 @@ GARAGE_LIGHTING = [
     # width, the same arithmetic ED-G-EXT-LT-E/-W's comment does for a 5" sconce.
     #
     # The elevation is stated, not derived: a `LightRun` outside every room has no room
-    # ceiling to hang from. 8'-5 11/12" storey-relative (7'-5 11/12" absolute) is the
-    # resolved underside of RF-GARAGE's eave soffit — the fascia bottom, which the raised
-    # heel lifts ABOVE the 8'-4" plate. The old 8'-0" hung the channel a foot under the
-    # soffit. If the heel or fascia depth moves, this follows by hand.
+    # ceiling to hang from. 8'-0 1/6" storey-relative (7'-0 1/6" absolute) is the
+    # resolved underside of RF-GARAGE's eave soffit — the fascia bottom, re-read when the
+    # standard-heel trusses dropped the plane 5.75" (2026-10-08). If the heel or fascia
+    # depth moves, this follows by hand.
     LightRun(uid="N2XWJEVXGS", tag="LR-G-EAVE-W", type_ref="ED-T-LT-LINEAR-EXT",
              path=(pt(ft(5, 9.875), ft(43, 2.625)), pt(ft(5, 9.875), ft(67, 2.625))),
              circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 5.917))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
     LightRun(uid="QPT63YW4TW", tag="LR-G-EAVE-E", type_ref="ED-T-LT-LINEAR-EXT",
              path=(pt(ft(30, 2.125), ft(43, 2.625)), pt(ft(30, 2.125), ft(67, 2.625))),
              circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 5.917))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
     # The north gable: under RF-GARAGE's two RAKE soffits, corner -> ridge -> corner, tight
     # to W-G-N's cladding, aperture down — the eave runs' detail turned up the 4:12 rake.
     # (It was 16' on the wall face over D-G-OVERHEAD at 5'-0" absolute, feet below any soffit.)
@@ -1894,8 +1894,8 @@ GARAGE_LIGHTING = [
     # soffit's extent, with the vertex at the 18'-0" ridge. y is W-G-N's cladding face
     # 67'-3 1/2" plus half the 2 1/2" channel.
     #
-    # Heights are stated, not derived, like the eave runs: 8'-10 23/24" storey-relative is
-    # the rake soffit's underside at the corners (7'-10 23/24" absolute, the fascia bottom at
+    # Heights are stated, not derived, like the eave runs: 8'-5 5/24" storey-relative is
+    # the rake soffit's underside at the corners (7'-5 5/24" absolute, the fascia bottom at
     # the eave), and `rise` climbs 144 7/8" of plan at 4:12 = 4'-0 7/24" to the ridge.
     # Developed length ~25'-5", so the channel is cut, not a 4' module.
     #
@@ -1906,7 +1906,7 @@ GARAGE_LIGHTING = [
                    pt(ft(30, 0.875), ft(67, 4.75))),
              rise=(ft(0), ft(4, 0.292), ft(0)),
              circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 10.958))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 5.208))),
     # ** ITS OWN CONTROL, NOT ED-G-EXT-SW, AND THE REASON IS DUTY CYCLE. ** Ganging ~73 LF of
     # perimeter linear onto the door pair's switch would force one of two bad habits: either
     # the two sconces burn all evening because somebody wanted the building lit, or the

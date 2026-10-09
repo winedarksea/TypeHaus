@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any
 
 from typehaus.emit.draw.schedules.blocks import _lay_out_blocks
 from typehaus.emit.draw.sheet_writer import schedule_sheet
+from typehaus.emit.draw.structural_common import truss_heel_note
 from typehaus.resolve.concrete import concrete_spec_of
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff import hardware_takeoff
@@ -226,7 +227,7 @@ def wood_framing_block(model: ResolvedModel) -> list[str]:
         key = (spec.member, round(spec.spacing.inches, 1) if spec.spacing is not None else None,
                spec.double_top_plate, spec.advanced_framing, spec.roof_frame,
                spec.wall_frame, spec.plate_member,
-               round(spec.heel_height.inches, 2) if spec.heel_height is not None else None)
+               truss_heel_note(spec))
         grouped.setdefault(key, []).append(tag)
     lines: list[str] = []
     if not grouped:
@@ -244,7 +245,7 @@ def wood_framing_block(model: ResolvedModel) -> list[str]:
             detail.append("LAID FLAT AS A PLATE COURSE — NOT A STUD WALL")
         if roof_frame == "truss":
             detail.append("TRUSSED ROOF"
-                          + (f", RAISED HEEL {heel:.2f}\"" if heel is not None else ""))
+                          + (f", {heel}" if heel is not None else ""))
         lines.append("  " + ", ".join(detail))
         lines.append(f"  ASSEMBLIES: {_tags(tags)}")
     depths = sorted({system.joists.member for system in model.plan.elements_of_kind(

@@ -65,7 +65,7 @@ def test_standard_sheet_edges_have_backing_in_every_bay_the_sheets_reach(catlin_
             ), (station, tag, lo, hi)
 
 
-def test_no_strap_at_the_ridge_and_the_end_straps_centre_on_the_lsl_blocks(catlin_model_ro):
+def test_no_strap_at_the_ridge_and_the_end_straps_centre_on_the_collector_blocks(catlin_model_ro):
     plan = catlin_model_ro.plan
     assert plan.by_tag("CN-BW-JOINT-4") is None
     canopy = next(r for r in catlin_model_ro.roofs if r.tag == "RF-BW-CANOPY")
@@ -73,10 +73,10 @@ def test_no_strap_at_the_ridge_and_the_end_straps_centre_on_the_lsl_blocks(catli
     for strap, block, header_face_in in (("CN-BW-JOINT-1", "collector-block-BM-BW-RW-002", 74.75),
                                          ("CN-BW-JOINT-7", "collector-block-BM-BW-RE-002", 357.25)):
         member = blocks[block]
-        assert member.profile == "3.5x16 LSL" and member.material == "lsl"
+        assert member.profile == "2-2x10" and member.material == "spf"
         assert plan.by_tag(strap).position.xy_m[0] == pytest.approx(member.p0[0])
         # Flush with the header's inboard face, where its plate is.
-        faces = (member.p0[0] - 1.75 * M_PER_IN, member.p0[0] + 1.75 * M_PER_IN)
+        faces = (member.p0[0] - 1.5 * M_PER_IN, member.p0[0] + 1.5 * M_PER_IN)
         assert any(f == pytest.approx(header_face_in * M_PER_IN) for f in faces)
 
 
@@ -127,11 +127,11 @@ def test_the_chord_plates_carry_the_chord_force_and_the_west_collector_share(cat
     record = next(r for r in compute(catlin_ctx.engineering.context)
                   if r.item_id == "lateral_system/RF-BW-CANOPY")
     states = {s.name: s for s in record.limit_states}
-    # canopy_west_band.md §6: 87.3 / 2 + 174.2 west, 87.3 east, both against 450.
+    # canopy_west_band.md §6: 86.7 / 2 + 173.1 west, 86.7 east, both against 450.
     west = states["BM-BW-RW chord into CN-BW-JOINT-1's block"]
     east = states["BM-BW-RE chord into CN-BW-JOINT-7's block"]
-    assert west.demand == pytest.approx(217.8, abs=0.1)
-    assert east.demand == pytest.approx(87.3, abs=0.1)
+    assert west.demand == pytest.approx(216.4, abs=0.1)
+    assert east.demand == pytest.approx(86.7, abs=0.1)
     assert east.capacity == pytest.approx(450)
 
 
@@ -139,6 +139,7 @@ def test_nail_yield_reproduces_the_hand_calculation():
     # canopy_garage_diaphragm.md §3b: 8d common through 3/4in Structural I.
     assert nail_single_shear_lb(0.131, 0.75, 1.75, 0.50, 0.42, 100_000) == (
         pytest.approx(84.38, abs=0.01), "IIIs")
+    # A G 0.50 main member (LSL, ICC-ES ESR-1387), as the end blocks were until 2026-10-08.
     assert nail_single_shear_lb(0.131, 0.75, 1.75, 0.50, 0.50, 100_000) == (
         pytest.approx(90.12, abs=0.01), "IIIs")
 
@@ -147,27 +148,28 @@ def test_nailers_read_their_own_nails_at_their_own_species(catlin_ctx):
     record = next(r for r in compute(catlin_ctx.engineering.context)
                   if r.item_id == "lateral_system/RF-BW-CANOPY")
     states = {s.name: s for s in record.limit_states}
-    # §3b: 9 x 135.00 SPF, 9 x 144.19 LSL, 8 x 135.00 SPF; 262.06 lb each.
+    # §3b: 9 x 135.00 SPF nailer, 9 x 135.00 SPF end block, 8 x 135.00 SPF; 260.54 lb each.
     for name, capacity in (("CN-BW-JOINT-2 RF-BW-CANOPY", 1215.0),
-                           ("CN-BW-JOINT-1 RF-BW-CANOPY", 1297.7),
+                           ("CN-BW-JOINT-1 RF-BW-CANOPY", 1215.0),
                            ("CN-BW-JOINT-2 RF-GARAGE", 1080.0)):
         state = states[f"{name} nailer into deck"]
         assert state.capacity == pytest.approx(capacity, abs=0.1)
-        assert state.demand == pytest.approx(262.06, abs=0.05)
+        assert state.demand == pytest.approx(260.54, abs=0.05)
 
 
 def test_added_framing_and_fasteners_are_billed(catlin_model_ro):
     rows = {row["scope"]: row for row in diaphragm_attachment_rows(catlin_model_ro)}
-    # 6 LSL blocks + 4 canopy and 6 garage nailers, an angle at each end.
+    # 6 two-ply collector blocks + 4 canopy and 6 garage nailers, an angle at each end.
     assert rows["diaphragm blocking end angles"]["count"] == 32
     assert rows["diaphragm blocking end angles"]["role"] == "diaphragm_blocking_end_tie"
     assert rows["diaphragm blocking end angles"]["part_number"] == "LS30Z"
     assert rows["diaphragm blocking angle nails"]["count"] == 32 * 6
     assert rows["diaphragm joint strap nails"]["count"] == 6 * 12
-    # 4 x 18 canopy + 6 x 16 garage + 2 x 18 on the end LSL blocks.
-    # 4 x 18 + 6 x 16 + 2 x 18 deck, 10 x 5 lamination, 28 x 6 toenails: one bid line.
+    # 4 x 18 canopy + 6 x 16 garage + 2 x 18 on the two end blocks.
+    # 4 x 18 + 6 x 16 + 2 x 18 deck, (10 nailers + 6 blocks) x 5 lamination, 28 x 6
+    # toenails: one bid line.
     nails = rows["diaphragm 8d nails"]
-    assert nails["count"] == 204 + 10 * 5 + 28 * 6
+    assert nails["count"] == 204 + 16 * 5 + 28 * 6
     assert "204 deck-to-nailer" in nails["basis"] and "168 panel-edge" in nails["basis"]
     assert "six outermost" in rows["diaphragm joint strap nails"]["basis"]
 
@@ -176,7 +178,7 @@ def test_roof_sheets_separate_stock_sizes_and_print_both_attachments(catlin_mode
     roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-BW-CANOPY")
     rows = {row[1]: row for row in build_roof_framing_schedule(catlin_model_ro, roof).rows}
     for label, profile, quantity in (
-        ("COLLECTOR BLOCK", "3.5x16 LSL", "6"),
+        ("COLLECTOR BLOCK", "2-2x10", "6"),
         ("JOINT NAILER", "2-2x6", "4"),
         ("PANEL EDGE BLOCK", "2x4", "21"),
     ):

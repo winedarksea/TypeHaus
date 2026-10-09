@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 57de8a7117fdd1dd  
+**Model hash:** 72124636d23f4279  
 **Lines:** 167
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -33,6 +33,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-1x4 — stud (2-1x4) | 16 | LF ordered | 2 pcs, 13.1 LF cut | building |
 | 2-1x6 — stud (2-1x6) | 16 | LF ordered | 2 pcs, 13.1 LF cut | building |
 | 2-2x10 — header (2-2x10) | 40 | LF ordered | 5 pcs, 26.2 LF cut | building |
+| 2-2x10 SPF framing lumber — blocking (2-2x10:spf) | 16 | LF ordered | 6 pcs, 11.3 LF cut | building |
 | 2-2x6 — header (2-2x6) | 24 | LF ordered | 3 pcs, 17.6 LF cut | building |
 | 2-2x6 SPF framing lumber — blocking (2-2x6:spf) | 24 | LF ordered | 10 pcs, 18.4 LF cut | building |
 | 2-2x8 — header (2-2x8) | 184 | LF ordered | 57 pcs, 153.8 LF cut | building |
@@ -56,7 +57,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1134 pcs, 330.8 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
-| 3.5x16 LSL Laminated strand lumber — blocking (3.5x16 LSL:lsl) | 16 | LF ordered | 6 pcs, 11.3 LF cut | building |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | 8 | LF ordered | 1 pcs, 2.1 LF cut | building |
 | hanger — hanger board (hanger) | 24 | LF ordered | 4 pcs, 17.9 LF cut | building |
 
@@ -88,7 +88,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Pocket door frame kit, 2x4 wall (commodity, to 36"/125 lb) (153068PF) | 1 | ea |  | building |
 | Pocket door frame kit, 2x6 wall (36"/200 lb) (15603068) | 1 | ea |  | building |
 | Eye & eye thrust-bearing swivel, 3 t (rotates under load) (3-S-5) | 1 | ea |  | main |
-| HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 422 | ea |  | building |
+| HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 452 | ea |  | building |
 | A35Z framing angle | 8 | ea |  | building |
 | A35Z framing angle | 4 | ea |  | main |
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
@@ -260,6 +260,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-1x4 — stud (2-1x4) | — |
 | 2-1x6 — stud (2-1x6) | — |
 | 2-2x10 — header (2-2x10) | — |
+| 2-2x10 SPF framing lumber — blocking (2-2x10:spf) | — |
 | 2-2x6 — header (2-2x6) | — |
 | 2-2x6 SPF framing lumber — blocking (2-2x6:spf) | — |
 | 2-2x8 — header (2-2x8) | — |
@@ -283,7 +284,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | — |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | — |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | — |
-| 3.5x16 LSL Laminated strand lumber — blocking (3.5x16 LSL:lsl) | — |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | — |
 | hanger — hanger board (hanger) | — |
 | Basswood/aspen shiplap sauna liner (5/4), site-milled, 1" ceiling (catlin-sauna-shiplap:ceiling) | — |

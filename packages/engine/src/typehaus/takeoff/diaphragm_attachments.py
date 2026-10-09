@@ -84,6 +84,7 @@ def diaphragm_attachment_rows(model):
                                if r.collector in member.child_key), None)
                 if recipe:
                     counts[(recipe.end_tie, roof.storey)] += 2 * recipe.end_ties_each_end
+                    nails["lamination"] += _lamination_nail_count(member, recipe)
                 delivery = spec.delivers_to
                 if (delivery and delivery.joint_nailing
                         and _backs_joint_station(model, roof, member, delivery.joint_refs)):
@@ -118,7 +119,7 @@ def diaphragm_attachment_rows(model):
         (DECK_NAIL, nails["deck"] + nails["lamination"] + nails["toenail"],
          "diaphragm 8d nails",
          f"{nails['deck']} deck-to-nailer along the declared rows (shared collector blocks "
-         f"included), {nails['lamination']} laminating the two-ply nailers, "
+         f"included), {nails['lamination']} laminating the two-ply nailers and blocks, "
          f"{nails['toenail']} panel-edge block toenails"),
         ("10d short common 0.148x2.5", nails["strap"], "diaphragm joint strap nails",
          "six outermost nails per leg; 12 per LSTA24, reduced installed capacity"),

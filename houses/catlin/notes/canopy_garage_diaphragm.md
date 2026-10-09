@@ -20,6 +20,11 @@ load (§3-§4), and the §5 section. Every row here is under 0.92; nothing is ne
 except the canopy deck's boundary at the screen line under the envelope (§4d). The west line,
 its band and every head and base: `canopy_west_band.md`.
 
+> ⚠ **Re-worked 2026-10-08 for the standard-heel trusses.** Both roofs dropped 5.75", so the
+> canopy ridge stands 11.917' up, 21.04' over the ground beneath, and `q_h` falls from 18.335
+> to 18.217 psf. Every wind number below is the new one. The receiving lines' surplus grew
+> too: the garage's eave-to-ridge fell under 5', so R602.10.3(2) item 2 takes x0.70.
+
 > ⚠ **The envelope is deliberate and it double-counts on purpose.** The garage path is graded
 > at 100% of the delivered load, and `W-BW-SCREEN` and everything downstream of it
 > (hold-down, anchorage, `deck_tie/FS-BW-FLOOR`) are ALSO graded at 100% of N-S. No
@@ -30,7 +35,7 @@ its band and every head and base: `canopy_west_band.md`.
 
 > ⚠ **The plan's "about 811 lb E-W / 1,179 lb N-S" carried the 12" round's drag.** A 4" HSS
 > catches a third of it. On the 5-1/2" x 11-7/8" glulam headers (2026-09-30) the delivered
-> shears are 681.6 / 1,032.1 lb (steel) and 694.6 / 1,045.1 lb (KDAT). §2 works them.
+> shears are 677.3 / 1,025.4 lb (steel) and 690.2 / 1,038.4 lb (KDAT). §2 works them.
 
 > ⚠ **The west line is re-read in `canopy_west_band.md` (2026-09-30).** The screen stops 2'-4 1/8"
 > under its header, the band is braced by CS16 X-straps, and the panel, its hold-down and every
@@ -61,12 +66,13 @@ its band and every head and base: `canopy_west_band.md`.
 
 ## 2. The demand the canopy delivers (oracles `roof_lateral.py`)
 
-The pressure is §7a's, unchanged: `q_h` 18.335 psf, `G` 0.85, `C_f` 1.80, 0.6 for ASD —
-**16.8315 psf** on any projected band. The headers' band grew with the glulam:
+The pressure is §7a's: `q_h` 18.217 psf at 21.04' (11.917' ridge, −9.120' ground; Exposure B
+`K_z` = 2.01 (21.04/1200)^(2/7) = 0.6330, `K_d` 0.85, V 115), `G` 0.85, `C_f` 1.80, 0.6 for
+ASD — **16.7232 psf** on any projected band. The headers' band grew with the glulam:
 
 ```
-E-W   slope rise 4.444' x 6.000' + 2 headers 0.98958' x 5.9479'   = 38.439 sf ->  646.98 lb
-N-S   gable-end triangle 2.222' x 26.667'                         = 59.259 sf ->  997.4 lb
+E-W   slope rise 4.444' x 6.000' + 2 headers 0.98958' x 5.9479'   = 38.439 sf ->  642.82 lb
+N-S   gable-end triangle 2.222' x 26.667'                         = 59.259 sf ->  991.0 lb
 ```
 
 **A pinned post splits its own drag half to the head and half to the base.** A member pinned
@@ -74,8 +80,8 @@ at both ends under a uniform load returns `wL/2` to each support; the head half 
 deck, the base half goes down the pier and never reaches the diaphragm.
 
 ```
-steel   16.8315 x (4.0/12) x 6.1771  = 34.66 lb per post  ->  17.33 lb head, 17.33 base
-kdat    16.8315 x (5.5/12) x 6.1771  = 47.65 lb per post  ->  23.83 lb head, 23.83 base
+steel   16.7232 x (4.0/12) x 6.1771  = 34.43 lb per post  ->  17.22 lb head, 17.22 base
+kdat    16.7232 x (5.5/12) x 6.1771  = 47.35 lb per post  ->  23.67 lb head, 23.67 base
 ```
 
 A post framed into a wall (`within_wall`) is not in the sum: its face is the wall's, and
@@ -84,8 +90,8 @@ canopy's demand either**, exactly as §7a never counted it; it is in the landing
 
 ```
                  E-W                               N-S
-steel    646.98 + 2(17.33) =  681.6 lb     997.4 + 2(17.33) = 1,032.1 lb
-kdat     646.98 + 2(23.83) =  694.6 lb     997.4 + 2(23.83) = 1,045.1 lb
+steel    642.82 + 2(17.22) =  677.3 lb     991.0 + 2(17.22) = 1,025.4 lb
+kdat     642.82 + 2(23.67) =  690.2 lb     991.0 + 2(23.67) = 1,038.4 lb
 ```
 
 ## 3. The delivery — joint, receiving roof, receiving lines (oracles `diaphragm_delivery.py`)
@@ -107,7 +113,8 @@ chord force, the couple's path into the garage and the drift limit are `canopy_w
 
 ### 3b. The joint
 
-**Attachment completed 2026-10-06, revised the same day.** Six strap stations and the three
+**Attachment completed 2026-10-06, revised the same day; end blocks re-stocked 2026-10-08.**
+Six strap stations and the three
 canopy trusses. The straps mount directly to wood under the deck, with their 24in length
 running north-south. Along-joint E-W shear is carried by **continuous deck panels** nailed
 into the receiving gable top chord, not by the straps' axial tension rating. No sheathing
@@ -121,9 +128,10 @@ keep their numbers.
 **Wood and cuts.** Interior stations (x=10, 14, 22, 26ft): a bevelled **2-ply SPF 2x6**
 (3.0in x 5.5in) runs between truss faces immediately beneath the deck on each side of the
 garage gable, laminated with 8d HDG nails, two near each end and 12in o.c. between. The two
-end stations use the canopy's **3-1/2x16 LSL** collector blocks on the south side (§3e of
-`canopy_west_band.md`); each LSL block is flush with its header's inboard face, so the end
-straps sit on the block centre, 1in inboard of the header centreline: x=6ft 1in and 29ft 11in.
+end stations use the canopy's **2-ply SPF 2x10** collector blocks on the south side (§3e of
+`canopy_west_band.md`); each 3in block is flush with its header's inboard face, so the end
+straps sit on the block centre, 1-1/4in inboard of the header centreline: x=6ft 1-1/4in and
+29ft 10-3/4in. Two plies give the strap's two hole lines one ply each, as on the nailers.
 The bevel follows the 4:12 roof plane across the member's width. Nothing cuts or drills the
 plated trusses, and no fastener goes through a truss plate.
 
@@ -181,47 +189,45 @@ no sheet bends across the ridge. Edge stations are x=6ft 9in, 10ft 6in, 14ft 3in
 The nailer-to-deck transfer is read **nail by nail**, NDS 2018 §12.3.1, single shear, and
 only ONE of the two 3in rows is credited. 8d common: D = 0.131in, L = 2.5in,
 F_yb = 100,000psi (NDS Table I1). Side member: the 3/4in Structural I deck, G = 0.50 (NDS
-Table 12.3.3B), l_s = 0.75in. Main member: SPF G = 0.42, or LSL at its lateral-nail G = 0.50
-(ICC-ES ESR-1387), l_m = 2.5 - 0.75 = 1.75in. R_d = K_D = 2.2. F_e = 16,600 G^1.84:
+Table 12.3.3B), l_s = 0.75in. Main member: SPF G = 0.42 for every nailer and both end blocks,
+l_m = 2.5 - 0.75 = 1.75in. R_d = K_D = 2.2. F_e = 16,600 G^1.84:
 
 ```
 F_es = 16,600 x 0.50^1.84 = 4,636.7 psi
 SPF  F_em = 16,600 x 0.42^1.84 = 3,364.2 psi; R_e = 0.7256, R_t = 2.3333
      k1 0.6099  k2 0.9296  k3 1.5307
      Im 350.57  Is 207.07  II 126.29  IIIm 132.95  IIIs 84.38  IV 88.93  -> Z = 84.38 lb (IIIs)
-LSL  F_em = 4,636.7 psi; R_e = 1.0000
-     Im 483.17  Is 207.07  II 162.10  IIIm 170.65  IIIs 90.12  IV 96.98  -> Z = 90.12 lb (IIIs)
-Z' = Z x C_D 1.6 (wind): SPF 135.00 lb, LSL 144.19 lb
+Z' = Z x C_D 1.6 (wind): SPF 135.00 lb
 ```
 
 Nails in one row start 3/8in from each nailer end, at 3in: ceil(usable / 3) + 1.
 
 ```
 canopy nailer, SPF    22.625 - 0.75 = 21.875in -> 9 nails x 135.00 = 1,215.0 lb
-canopy end, LSL block                             9 nails x 144.19 = 1,297.7 lb
+canopy end, SPF block                             9 nails x 135.00 = 1,215.0 lb
 garage nailer, SPF    21.750 - 0.75 = 21.000in -> 8 nails x 135.00 = 1,080.0 lb
 ```
 
 The E-W resultant stands south of the joint. The same bands as §2 give:
 
 ```
-kdat    y_V = (646.98 x 40.219 + 23.83 x 37.500 + 23.83 x 42.479) / 694.6 = 40.203
-        e = 43.219 - 40.203 = 3.016ft; M = 694.6 x 3.016 = 2,094.5 lb-ft
-steel   y_V = 40.207; e = 3.011ft; M = 2,052.6 lb-ft
+kdat    y_V = (642.82 x 40.219 + 23.67 x 37.500 + 23.67 x 42.479) / 690.2 = 40.203
+        e = 43.219 - 40.203 = 3.016ft; M = 690.2 x 3.016 = 2,081.3 lb-ft
+steel   y_V = 40.207; e = 3.012ft; M = 2,039.7 lb-ft
 ```
 
-The strap stations sit at x - 18ft = +/-4, +/-8 and +/-11.917ft: sum x^2 = 444.01ft^2, and the
-strap line spans 23.833ft. A linear distribution's largest axial increment is
-M x 11.917 / 444.01 = **56.21lb** (steel 55.09). The cantilever chord reading over the strap
-line is M / 23.833 = **87.88lb** (steel 86.12), a hair over the chords' own M / 24 = 87.27lb.
+The strap stations sit at x - 18ft = +/-4, +/-8 and +/-11.896ft: sum x^2 = 443.02ft^2, and the
+strap line spans 23.792ft. A linear distribution's largest axial increment is
+M x 11.896 / 443.02 = **55.89lb** (steel 54.77). The cantilever chord reading over the strap
+line is M / 23.792 = **87.48lb** (steel 85.73), a hair over the chords' own M / 24 = 86.72lb.
 These are two bounds on the same couple, not two applied moments. For local wood/deck
 transfer, take the larger, then conservatively add the separate N-S case:
 
 ```
-local attachment demand = 1,045.06/6 + max(56.21, 87.88) = 174.18 + 87.88 = 262.06 lb
-canopy nailer      262.06 / 1,215.0 = 0.216
-canopy LSL block   262.06 / 1,297.7 = 0.202
-garage nailer      262.06 / 1,080.0 = 0.243   (steel 258.14, 0.239; cast 305.54, 0.283)
+local attachment demand = 1,038.35/6 + max(55.89, 87.48) = 173.06 + 87.48 = 260.54 lb
+canopy nailer      260.54 / 1,215.0 = 0.214
+canopy SPF block   260.54 / 1,215.0 = 0.214   (the same nails into the same species)
+garage nailer      260.54 / 1,080.0 = 0.241   (steel 256.64, 0.238; cast 303.37, 0.281)
 ```
 
 An earlier draft credited one diaphragm boundary row instead (the deck's unit shear times
@@ -232,10 +238,10 @@ The installed strap rows are:
 
 | row | steel | kdat | capacity |
 |---|---:|---:|---:|
-| E-W deck boundary shear | 28.60plf | 29.14plf | 190plf |
-| N-S strap tension | 172.02lb | 174.18lb | 823.33lb |
-| E-W linear strap couple | 55.09lb | 56.21lb | 823.33lb |
-| end strap, chord + N-S envelope | 257.54lb | 261.45lb | 823.33lb |
+| E-W deck boundary shear | 28.47plf | 29.01plf | 190plf |
+| N-S strap tension | 170.91lb | 173.06lb | 823.33lb |
+| E-W linear strap couple | 54.77lb | 55.89lb | 823.33lb |
+| end strap, chord + N-S envelope | 255.89lb | 259.78lb | 823.33lb |
 
 The engineering check requires actual wood on both sides with specific gravity >=0.42, a declared deck layer with a published specific gravity,
 roof-plane contact, penetration, end and edge distances, the reduced schedule and the
@@ -249,8 +255,8 @@ project's professional engineering review remain separate requirements.
 Seven **LTP4**, Simpson C-C-2019 p. 280, SPF/HF 540 / 450 lb at C_D 1.6, the lower taken:
 
 ```
-steel   681.6 / 7 = 97.37 lb   vs 450   0.216
-kdat    694.6 / 7 = 99.23 lb   vs 450   0.221
+steel   677.3 / 7 = 96.75 lb   vs 450   0.215
+kdat    690.2 / 7 = 98.59 lb   vs 450   0.219
 ```
 
 Nailed to the chord's and the plate's inside faces, not over sheathing, so footnote 3's 0.64
@@ -263,10 +269,10 @@ does not apply — and the drawings say so.
 N-S resultant's x:
 
 ```
-kdat    x_V = (997.4 x 18.000 + 2 x 23.83 x 30.000) / 1045.1 = 18.547
-        W-G-E 1045.1 x 12.547/24 = 546.4 lb     W-G-W 498.7 lb
-        increment 546.4 / 24.0 = 22.76 plf vs 167.5   0.136
-steel   x_V 18.403   W-G-E 533.4   W-G-W 498.7    22.22 plf   0.133
+kdat    x_V = (991.0 x 18.000 + 2 x 23.67 x 30.000) / 1038.4 = 18.547
+        W-G-E 1038.4 x 12.547/24 = 542.8 lb     W-G-W 495.5 lb
+        increment 542.8 / 24.0 = 22.62 plf vs 167.5   0.135
+steel   x_V 18.403   W-G-E 529.9   W-G-W 495.5    22.08 plf   0.132
 ```
 
 **No south-bay blocking is required**, so the drift trusses `truss-000`/`-001` are untouched.
@@ -274,28 +280,29 @@ steel   x_V 18.403   W-G-E 533.4   W-G-W 498.7    22.22 plf   0.133
 ### 3e. The receiving lines, IRC R301.1.3
 
 On the **surplus** (provided less required, off `bracing_eval`), SDPWS 4.3A 15/32" 8d at 6",
-**182.5 plf** ASD. Required on every garage line is 4.275'.
+**182.5 plf** ASD. Required on every garage line is 2.993' (4.5' x 0.70 eave-to-ridge under 5'
+x 0.95 story height; it was 4.275' under the 9.25" heel, when the garage roof stood over 5').
 
 | line | provided | surplus | steel | kdat |
 |---|---:|---:|---|---|
-| `W-G-S` (E-W) | 20.417' | 16.142' | 681.6/16.142 = 42.22 plf, 0.231 | 43.03 plf, **0.236** |
-| `W-G-E` (N-S) | 24.000' | 19.725' | 533.4/19.725 = 27.04 plf, 0.148 | 27.70 plf, 0.152 |
-| `W-G-W` (N-S) | 21.667' | 17.392' | 498.7/17.392 = 28.67 plf, 0.157 | 28.67 plf, 0.157 |
+| `W-G-S` (E-W) | 20.417' | 17.425' | 677.3/17.425 = 38.87 plf, 0.213 | 39.61 plf, **0.217** |
+| `W-G-E` (N-S) | 24.000' | 21.008' | 529.9/21.008 = 25.23 plf, 0.138 | 25.84 plf, 0.142 |
+| `W-G-W` (N-S) | 21.667' | 18.675' | 495.5/18.675 = 26.53 plf, 0.145 | 26.53 plf, 0.145 |
 
 ### 3f. `W-G-S` overturning, and the two ends of it
 
 The delivered shear over the whole provided length, times the wall height, NO dead load:
 
 ```
-steel   v = 681.6 / 20.417 = 33.38 plf    T = 33.38 x 8.333 = 278.2 lb
-kdat    v = 34.02 plf                     T = 283.5 lb
+steel   v = 677.3 / 20.417 = 33.17 plf    T = 33.17 x 8.333 = 276.4 lb
+kdat    v = 33.80 plf                     T = 281.7 lb
 ```
 
 * **Beside `D-G-SERVICE`** a new **STHD14, `CN-G-BWHD-S-DR`**, cast into `W-GF-S-DR`'s 6" core
-  (ESR-2920 6" stem row, 3,065 lb): 278.2 / 3,065 = **0.091** (kdat 0.092).
+  (ESR-2920 6" stem row, 3,065 lb): 276.4 / 3,065 = **0.090** (kdat 0.092).
 * **The SE corner needs no device.** R602.10.7 end condition 1: a 144" return on the same post.
 * `CN-G-BWHD-SW` is on `W-G-W`. The E-W case reaches `W-G-W` and `W-G-E` as the joint couple,
-  ±M / 24' = ±87.3 lb (kdat) on the E-W case — graded, and small (`canopy_west_band.md` §6).
+  ±M / 24' = ±86.7 lb (kdat) on the E-W case — graded, and small (`canopy_west_band.md` §6).
   This line used to say the joint "closes" the couple before the garage sees it; the joint
   hands it on.
 
@@ -305,8 +312,8 @@ kdat    v = 34.02 plf                     T = 283.5 lb
 
 Read over the chords (`PT-BW-CW`/`-CNW`, 5.4375' out to out) rather than the wall's 6.573' run,
 the 6" edge nailing is OVER (1.05); the panel is nailed at 4" edges (265 plf) and reads
-**0.725** kdat (steel 1,032.1 / 5.4375 = 189.8, 0.716). The hold-down is a cast-in CBSQ66-SDS2
-graded over the FULL frame height, 2,243.5 / 3,060 = **0.733** kdat (steel 2,221.0, 0.726), and
+**0.721** kdat (steel 1,025.4 / 5.4375 = 188.6, 0.712). The hold-down is a cast-in CBSQ66-SDS2
+graded over the FULL frame height, 2,227.6 / 3,060 = **0.728** kdat (steel 2,205.2, 0.721), and
 its anchorage is the CBSQ's own cracked row, so the ABU66SS / AB-058-10-SS / ACI Ch. 17 rows
 are gone. All of it: `canopy_west_band.md` §4.
 
@@ -315,22 +322,30 @@ are gone. All of it: `canopy_west_band.md` §4.
 The deck delivers the N-S case along its 6.000' west eave into the header, the collector:
 
 ```
-steel   1032.1 / 6.000 = 172.01 plf vs 190    0.905
-kdat    1045.1 / 6.000 = 174.18 plf           0.917
+steel   1025.4 / 6.000 = 170.91 plf vs 190    0.900
+kdat    1038.4 / 6.000 = 173.06 plf           0.911
 ```
 
 The governing row of the lateral record in both pinned variants.
 
 ### 4e. The landing tie
 
-`deck_tie/FS-BW-FLOOR` reads the screen's share (1,045.1 lb of panel load N-S); its **E-W row
-governs at 0.966 and does not read the screen's share at all**.
+`deck_tie/FS-BW-FLOOR` reads the screen's share (1,038.4 lb of panel load N-S); its **E-W row
+governs at 0.966 and does not read the screen's share at all**. The N-S row, by
+`north_entry_piers.md` §10c's bolt-group arithmetic with this share in place of §10b's 980.74
+(and the addendum's 98.94 lb of deck wind at x 7.7917):
+
+```
+Fy = 1,038.35 + 98.94 = 1,137.29 lb    M = 1,038.35 (6.0 − 7.5937) + 98.94 (7.7917 − 7.5937) = −1,635.3 lb-ft
+W   X −117.14  Y 765.06   765.06/1,480 + 117.14/740 = 0.517 + 0.158 = 0.675
+FC  X   58.57  Y 508.71   58.57/518 + 508.71/917    = 0.113 + 0.555 = 0.668
+```
 
 ### 4f. The band over the panel — `canopy_west_band.md` §3
 
-The screen stops at +4'-0" and the header's soffit is +6'-4 1/8": the band is braced by a CS16 X
-on each face, 707.5 / 1,134 lb, **0.624**, with its plates bearing end-on on the chords (0.396)
-and the deck's shear collected into the header by six LTP4 (0.387).
+The screen stops at +4'-0" and the header's soffit is +6'-4 1/8": the band is braced by 45°
+KDAT slats on KBS1Z ends, 146.85 / 540 lb, **0.272**, with its plates bearing end-on on the
+chords (0.394) and the deck's shear collected into the header by six LTP4 (0.385).
 
 ## 5. The steel post (oracles `steel_post.py`)
 
@@ -350,9 +365,9 @@ E3    F_e = π² 29,000 / 49.18² = 118.35 ksi;   F_y/F_e = 0.4225 <= 2.25
       F_cr = 0.658^0.4225 x 50 = 41.90 ksi;   P_n = 41.90 x 3.37 = 141.19 kip
       P_n / Ω_c (1.67) = 84.54 kip
 axial D + S   40 ft² x (10 + 73.7) + post 12.21 lb/ft x 6.229' = 3,424.1 lb       0.041
-H1-1b drag    w = 16.83 x 4/12 = 5.61 plf, M = wL²/8 = 27.21 lb-ft
+H1-1b drag    w = 16.72 x 4/12 = 5.57 plf, M = wL²/8 = 27.04 lb-ft
               M_c = 50 x 4.69 / 1.67 / 12 = 11.70 kip-ft
-              0.0405/2 + 0.0272/11.70 = 0.023    (D + S taken with the full 0.6W: a bound)
+              0.0405/2 + 0.0270/11.70 = 0.023    (D + S taken with the full 0.6W: a bound)
 ```
 
 **The saddle — two 5/8" HDG through-bolts, NDS 2018 §12.3.1, double shear, steel side
@@ -368,10 +383,10 @@ I_s   2 D l_s F_es / (4 K_θ)                  = 5,437.5
 III_s 2 k_3 D l_s F_em / ((2+R_e) 3.2 K_θ)    = 1,513.4   governs
 IV    2 D²/(3.2 K_θ) sqrt(2 F_em F_yb/(3(1+R_e))) = 1,891.5
 Z' = 1,513.4 x C_D 1.6 x C_M 0.7 = 1,695.0 lb per bolt, 3,390.0 for the pair
-uplift 0.6D + 0.6W = 40 x (16.8315 - 6.0) = 433.26 lb                               0.128
+uplift 0.6D + 0.6W = 40 x (16.7232 - 6.0) = 428.93 lb                               0.127
 ```
 
-C_M 0.7 because the header's end is at an eave; the head's lateral is the post's own 17.5
+C_M 0.7 because the header's end is at an eave; the head's lateral is the post's own 17.4
 lb of drag and is not a row. **Stainless and galvanized are never mixed at this joint**:
 HDG bolts, HDG saddle, and a butyl isolation layer against the KDAT.
 
@@ -381,15 +396,15 @@ h_ef 7.891" both cones are bounded by the pier's own 113.1 in², so the group's 
 single centre bolt's and ψ_ec is 1.0.
 
 ```
-breakout, T   φN_cbg 4,528 lb (unreduced reading, §8f)   T = 433.26/0.6 = 722.1 lb   0.159
-steel, T      the pair: φN_sa = 0.75 x 2 x 0.226 x 58,000 = 19,662 lb               0.037
-shear         the base drag 17.47/0.6 = 29.1 lb — well inside every §8f shear row
+breakout, T   φN_cbg 4,528 lb (unreduced reading, §8f)   T = 428.93/0.6 = 714.9 lb   0.158
+steel, T      the pair: φN_sa = 0.75 x 2 x 0.226 x 58,000 = 19,662 lb               0.036
+shear         the base drag 17.36/0.6 = 28.9 lb — well inside every §8f shear row
 ```
 
 **The record grades the pair as §8f's single centred bolt**, rows and all: the group's
 breakout is the same bounded cone, and one bolt's pullout and steel (57 ksi, the stainless
 read) are half the pair's. That is the lower bound, so the rows print one bolt's φN_sa and
-the tension row reads 722.1 / 4,528 = 0.159 either way.
+the tension row reads 714.9 / 4,528 = 0.158 either way.
 
 The anchors stand in the drained gap and see bending under shear (AISC Design Guide 1 §3.5);
 at 29 lb it is not a row, and it is named so the gap is never grouted to "fix" it.
@@ -410,8 +425,8 @@ Fc*               525 x C_D 1.15 = 603.75 psi (snow)
 FcE               0.822 x 440,000 / 13.48² = 1,990 psi
 Cp                r = FcE/Fc* = 3.296, c = 0.8  ->  0.927
 axial             Fc' A = 603.75 x 0.927 x 5.5² = 16,937 lb; d/c = 0.201
-own drag          16.8315 psf x 5.5/12 x 6.1771 = 47.65 lb, half at each end
-bending           w L²/8 = 36.8 lb-ft; f_b = 15.9 psi vs wet Fb x C_D 1.6 = 1,360 psi
+own drag          16.7232 psf x 5.5/12 x 6.1771 = 47.35 lb, half at each end
+bending           w L²/8 = 36.6 lb-ft; f_b = 15.8 psi vs wet Fb x C_D 1.6 = 1,360 psi
 interaction       (f_c/Fc' + f_b/Fb') / (1 - f_c/FcE) = 0.225
 IRC R507.4        6.177' < 14' 6x6 limit (cross-check; the roof's drift snow needs NDS)
 ```
@@ -430,16 +445,16 @@ it stands out of grade. Both go into the soil as a short pole, IBC 1807.3.2.1
 non-constrained at S1 150 psf/ft (Table 1806.2 class 4, GM) taken at d/3:
 
 ```
-steel   P = 17.33 + 16.8315 x 1.0 x 3.0 = 17.33 + 50.49 = 67.82 lb
-        M at grade = 17.33 x 3.0 + 50.49 x 1.5 = 127.7 lb-ft    h = 1.883'
-        A = 2.34 P / (S1 b),  d = 0.5 A (1 + sqrt(1 + 4.36 h / A)), S1 at d/3  ->  d = 2.422'
-kdat    14" pier: P = 23.83 + 16.8315 x (14/12) x 3.0 = 82.74 lb, h = 1.932'  ->  d = 2.478'
+steel   P = 17.22 + 16.7232 x 1.0 x 3.0 = 17.22 + 50.17 = 67.39 lb
+        M at grade = 17.22 x 3.0 + 50.17 x 1.5 = 126.9 lb-ft    h = 1.883'
+        A = 2.34 P / (S1 b),  d = 0.5 A (1 + sqrt(1 + 4.36 h / A)), S1 at d/3  ->  d = 2.415'
+kdat    14" pier: P = 23.67 + 16.7232 x (14/12) x 3.0 = 82.20 lb, h = 1.932'  ->  d = 2.471'
 ```
 
 | pier | shaft embedment (grade to pad top) | steel | kdat |
 |---|---:|---|---|
-| `PT-BW-PE` on `PD-BW-RE` | 6.120' | 0.396 | 0.405 |
-| `PT-BW-PNE` on `PD-BW-RNE` | 3.500' | 0.692 | 0.708 |
+| `PT-BW-PE` on `PD-BW-RE` | 6.120' | 0.395 | 0.404 |
+| `PT-BW-PNE` on `PD-BW-RNE` | 3.500' | 0.690 | 0.706 |
 
 The shaft alone; `column_base` basis 4 credits the doweled pad and reads lower. **The pads
 leave −10'-2"**: `PD-BW-RE` sits on the house-side plane (`PIER_BOTTOM_FT`), where the house
@@ -452,33 +467,43 @@ for the CBSQ's cover), so the switch to `cast` needs no new pad form. Axial is `
 ## 7. The cast variant — columns share E-W by rigidity with `W-G-S`
 
 The columns are the 2026-09-20 design unchanged: h 16.5625' from −10'-2", k = 3EI/h³ =
-1,567.7 lb/in (gross, §7c), propped heads 96.01 lb each, E-W diaphragm shear 821.3 lb. `W-G-S`
+1,567.7 lb/in (gross, §7c). What moved is the wind on them. Their exposed shaft runs from
+`Site.grade` to the eave, which fell 5.75" with the standard heel: 7.472 + 2.833 = 10.306'.
+So each catches 16.7232 x 1.0 x 10.306 = 172.34 lb at a = 16.5625 − 5.153 = 11.410' above
+its base, and the propped shaft returns 94.51 lb to its head and leaves 516.6 lb-ft at its
+base. The E-W diaphragm shear is §2's glulam bands plus both heads, 642.82 + 2 x 94.51 =
+831.8 lb; N-S is 991.0 + 189.0 = 1,180.0 lb. `W-G-S`
 lies on the canopy's north boundary, so it is stationed as a third E-W line. Its stiffness
-is SDPWS 4.3-1's shear term on its SURPLUS length (the required 4.275' is spent on the
-garage's own wind): `1000 G_a L / h = 1000 x 11 x 16.142 / 8.333 = 21,307 lb/in`. Bending
+is SDPWS 4.3-1's shear term on its SURPLUS length (the required 2.993' is spent on the
+garage's own wind): `1000 G_a L / h = 1000 x 11 x 17.425 / 8.333 = 23,001 lb/in`. Bending
 and anchorage slip are not stated for a prescriptive wall; leaving them out makes the wall
 stiffer and the columns' share smaller, **which is why the garage rows keep 100%**.
 `W-G-E`/`W-G-W` stand under `RF-GARAGE`, not on the canopy's boundary, and are not stationed.
 
 ```
 stations  RE 37.500   RNE 42.479   W-G-S 43.219      span 5.719'
-tributary 0.4353      0.5000       0.0647            avg drift 0.164"
-deck      SDPWS 4.2.2 at 15.4 plf on 5.719 x 26.667  = 0.0318"   ratio 0.19x -> RIGID
-rigid     0.0641      0.0641       0.8717
-torsion   y_r 42.805, y_V 40.165, e -2.639', M_t 2,167.8 lb-ft, J 1,421,846 lb/in-ft²
+tributary 0.4353      0.5000       0.0647            avg drift 0.166"
+deck      SDPWS 4.2.2 at 15.6 plf on 5.719 x 26.667  = 0.032"    ratio 0.19x -> RIGID
+rigid     0.0600      0.0600       0.8800
+torsion   y_r 42.831, y_V 40.167, e -2.665', M_t 2,216.6 lb-ft, J 1,422,139 lb/in-ft²
           (N-S lines as §8g: panel 9,970.5 at x 6, columns at x 30, x_r 11.742)
-          increments RE +12.68, RNE +0.78 lb
-E-W top   RE 52.68 + 12.68 = 65.36 lb   M = 65.36 x 16.5625 + 552.7 = 1,635.2 lb-ft
-N-S       V 1,189.4, e 8.196', direct 142.28 + torsion 196.24 = 338.52 lb
-          M = 338.52 x 16.5625 + 552.7 = 6,159.4 lb-ft   base V 424.0 lb at 14.53'
+          increments RE +13.03, RNE +0.86 lb
+E-W top   RE 49.89 + 13.03 = 62.92 lb   M = 62.92 x 16.5625 + 516.6 = 1,558.7 lb-ft
+N-S       V 1,180.0, e 8.181', direct 141.15 + torsion 194.29 = 335.45 lb
+          M = 335.45 x 16.5625 + 516.6 = 6,072.4 lb-ft   base V 413.3 lb at 14.69'
 ```
 
 **N-S now governs both cast columns**, because E-W collapsed onto the wall. Embedment, shaft
-alone at h = 14.53 − 7.333 = 7.19' above grade: d = **6.59'** against the 8.333' the pad
+alone at h = 14.69 − 7.333 = 7.36' above grade: d = **6.56'** against the 8.333' the pad
 bottom gives — **0.79** (basis 4's pad credit reads lower). −10'-2" is kept: it is the plane
 this variant was designed and drawn on, and a shallower one is a separate decision this note
-does not make. The garage rows are graded at 821.3 lb E-W (100%) and 1,189.4 lb N-S (100%);
-every one is under its steel value x 1.24, so under 0.28.
+does not make. The garage rows are graded at 831.8 lb E-W (100%) and 1,180.0 lb N-S (100%);
+the largest is the garage nailer at 303.37 / 1,080 = 0.281.
+
+The engine's shaft is 16.5104' (198.125", pad top to soffit) where this note keeps 16.5625',
+so its heads read 94.28 lb and its N-S column force 335.74 lb, within 0.1% of the above;
+`tests/test_pier_calcs.py` pins the hand values at the engine's height: 335.45 x 16.5104 +
+515.6 lb-ft of propped drag (a = 11.358') = 6,054.0 lb-ft.
 
 **The screen, in `cast`, keeps its share of the canopy's OWN frame** — 82.5% at the cracked
 columns, 981 lb, 0.82, as 2026-09-20 — and is not taken at 100% here. The envelope refuses a
@@ -502,8 +527,8 @@ column sat 3'-2" below the garage strip it lapped.
 
 | trigger | where | today |
 |---|---|---|
-| landing tie or screen OVER at the envelope | §4, §4e | 0.906 / 0.966, both under |
-| `W-G-S` surplus or overturning needs more than a hold-down | §3e, §3f | 0.230 and one STHD14 |
+| landing tie or screen OVER at the envelope | §4, §4e | 0.911 / 0.966, both under |
+| `W-G-S` surplus or overturning needs more than a hold-down | §3e, §3f | 0.217 and one STHD14 |
 | garage-roof blocking unbuildable round the drift trusses | §3d | none required |
 
 ## 10. What is NOT graded here

@@ -105,8 +105,10 @@ That is a benefit of this scheme, and it is why the landing is graded at IRC Tab
 ## 3. The design snow — ASCE 7-16 §7.7 roof-step drift **(READ THIS ONE)**
 
 The house's north face is a gable end standing 6 1/2" south of the passage roof, rising
-from +20'-2 1/4" at the corners to +29'-2 1/4" at the ridge — **12 to 21 feet above the
-canopy**. That is a roof-step drift condition and it governs.
+from +20'-2 1/4" at the corners to +29'-2 1/4" at the ridge — **12 1/2 to 21 1/2 feet above
+the canopy's eave** at +7.472' (half a foot more since the standard-heel trusses, 2026-10-08).
+That is a roof-step drift condition and it governs. The clear height h_c is many times the
+2.45' drift, so h_d is set by l_u alone and the drop moved none of the numbers below.
 
 | term | working | value |
 |---|---|---|
@@ -687,6 +689,11 @@ pinned to them and correctly so. `integrity.reinforcement_layout`'s four anchora
   which nail was driven. See §4a.
 
 ## 8. The canopy's east columns in BENDING (oracles `roof_moment.roof_base_moments`)
+
+> **§8 and §9 are the 2026-09-11 / -20 passes, before the canopy delivered to the garage and
+> before the standard-heel trusses (2026-10-08) dropped the eave to +7.472' and the ridge to
+> +11.917' (`q_h` 18.217 psf, 16.723 psf ASD).** The cast variant's current split, base
+> moments and head forces are `canopy_garage_diaphragm.md` §7.
 
 **Written 2026-09-11, by hand from the authored geometry.** `PT-BW-RE` and `PT-BW-RNE` are
 the canopy's east lateral system (`notes/north_entry_structure.md` §1a). Until this date

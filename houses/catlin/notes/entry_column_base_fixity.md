@@ -546,6 +546,10 @@ not reach far enough there either.
 
 ### 7a. The wind, unchanged
 
+> The 2026-09-20 basis, kept because `tests/test_lateral_system_calcs.py` reproduces §7's pure
+> arithmetic on it. Since the standard-heel trusses (2026-10-08) the ridge is 11.917' and the
+> live pressure is 16.723 psf: `canopy_garage_diaphragm.md` §2 and §7.
+
 `q_h = 18.335 psf` at 21.52' above the ground beneath (12.396' ridge, -9.120' ground),
 `G = 0.85`, `C_f = 1.80` — the §29.3 solid-sign surrogate `roof_moment` uses because ASCE
 7-16 Fig. 27.3-4's free-roof `C_N` is not a grid this repository holds — and `0.6` for ASD.

@@ -79,23 +79,25 @@ def test_the_head_is_asked_for_no_moment_and_says_so(catlin_cast_ctx):
 def test_canopy_columns_reproduce_9b_9c_9e(catlin_cast_ctx):
     # E-W with torsion (§9b): RNE takes the +0.40 lb increment, RE's -0.40 relief is not
     # credited. Column shear is the base shear / 0.6 (§9d).
-    for tag, e_w, shear in (("PT-BW-RE", 338.77, 707.56),
-                            ("PT-BW-RNE", 338.77, 707.56)):
+    # 2026-10-08, standard heel: the hand pass at this 16.5104' shaft moves the N-S head
+    # force 338.29 -> 335.25 lb (canopy_garage_diaphragm.md §7); these pin the engine's.
+    for tag, e_w, shear in (("PT-BW-RE", 335.74, 689.67),
+                            ("PT-BW-RNE", 335.74, 689.67)):
         record = _record(catlin_cast_ctx, tag)
         assert record.status == Status.OK
         lateral = _state(record, "connector lateral, wind")
         assert lateral.demand == pytest.approx(e_w, abs=0.05)
-        assert lateral.capacity == 1350.0 and lateral.ratio == pytest.approx(0.251, abs=1e-3)
-        assert _state(record, "connector uplift").demand == pytest.approx(433.25, abs=0.1)
+        assert lateral.capacity == 1350.0 and lateral.ratio == pytest.approx(0.249, abs=1e-3)
+        assert _state(record, "connector uplift").demand == pytest.approx(428.93, abs=0.1)
         assert _state(record, "connector uplift").capacity == 2560.0
         assert "the rated set" in _state(record, "connector uplift").citation
         assert _state(record, "column shear").demand == pytest.approx(shear, abs=0.1)
         # N-S head force 342.52 lb ASD with torsion, not the 142.27 k/Σk share (§9e).
         torsion = _state(record, "column torsion")
-        assert torsion.demand == pytest.approx(129.39, abs=0.02)
+        assert torsion.demand == pytest.approx(128.23, abs=0.02)
         assert _input(record, "torsion_lever") == pytest.approx(2.75)
         combined = _state(record, "connector combined")
-        assert combined.ratio == pytest.approx(0.420, abs=1e-3)
+        assert combined.ratio == pytest.approx(0.416, abs=1e-3)
         assert "§9 Limitations item 4" in combined.citation
         assert "combined_unity_unverified" not in {q.name for q in record.inputs}
     assert _input(_record(catlin_cast_ctx, "PT-BW-RE"), "seat_eccentricity") == pytest.approx(0.0)

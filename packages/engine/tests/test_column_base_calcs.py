@@ -39,9 +39,11 @@ _WORKED = {
     "PT-BW-GW": (3.50, 4.50, 2.0, 4.33, 3.21, Status.OK),
     "PT-BW-GE": (3.50, 4.50, 1.5, 4.39, 3.30, Status.OK),
 }
+#: The cast variant's N-S base shear, 413.3 lb at 7.31' above grade since the standard-heel
+#: trusses (canopy_garage_diaphragm.md §7, 2026-10-08); it was 424.1 lb at 7.14'.
 _ORACLE = {
-    "PT-BW-RE": (7.33, 8.33, 2.5, 6.52, 4.90, Status.OK),
-    "PT-BW-RNE": (7.33, 8.33, 2.0, 6.54, 4.94, Status.OK),
+    "PT-BW-RE": (7.33, 8.33, 2.5, 6.48, 4.87, Status.OK),
+    "PT-BW-RNE": (7.33, 8.33, 2.0, 6.50, 4.92, Status.OK),
 }
 
 #: The columns that claim IBC §1806.3.4's doubling: NONE since basis 4. The mechanism and its

@@ -319,7 +319,8 @@
 # billed as stick lumber. That is the same error the 2026-08-29 attic measurement had to
 # correct by hand for the main house; it was live in the garage and nobody had noticed.
 #
-# "24 roof truss" — live on BOTH north-end roofs. 4:12, 2x4 fink, 9 1/4" energy heel, 24"
+# "24 roof truss" — live on BOTH north-end roofs. 4:12, 2x4 fink, standard heel (since
+# 2026-10-08; it was a 9 1/4" energy heel), 24"
 # o.c.: RF-GARAGE's 11 field trusses, plus all THREE of RF-BW-CANOPY's, which are field
 # trusses and not gable ends because neither canopy end has a wall under it. RF-GARAGE's two
 # gable ends are their own row below.
@@ -328,7 +329,7 @@
 # gable ends included — they are the same package) carries it, so
 # $8.30-14.75 per LF all in, split 80/20 material/labour the way the 36' row below is.
 # Per truss that reads $160-283 delivered and $40-71 to set, which is the sanity check.
-# CONFIDENCE: MEDIUM. No fabricator quote — an energy heel and a 4:12 are both ordinary,
+# CONFIDENCE: MEDIUM. No fabricator quote — a standard heel and a 4:12 are both ordinary,
 # but a truss package is quoted, not looked up, and the spread is where that shows.
 "24 roof truss" = { material = { low = 6.65, high = 11.80 }, labour = { low = 1.65, high = 2.95 } }  # 336 LF — 11 RF-GARAGE field + 3 RF-BW-CANOPY, all at 24'-0"
 # "24 gable roof truss" — the two drop trusses at the ends of the RF-GARAGE package, and
@@ -387,7 +388,7 @@
 # section is about 105 lb against 92 lb at 14"), same splice-over-any-bearing-point rule
 # because it bears continuously. 36 LF, three 12s, no offcut, no waste to price.
 "2-1.75x16 LVL" = { material = { low = 18, high = 34 }, labour = { low = 9, high = 20 } }  # 36 LF
-"2-2x10" = { material = { low = 3, high = 4 }, labour = { low = 1, high = 2 } }  # 24 LF
+"2-2x10" = { material = { low = 3, high = 4 }, labour = { low = 1, high = 2 } }  # 56 LF — 40 header + 16 canopy collector blocking (2026-10-08: was 3.5x16 LSL, unpriced)
 "2-2x6" = { material = { low = 1.7, high = 2.3 }, labour = { low = 0.9, high = 1.8 } }  # 16 LF
 "2-2x8" = { material = { low = 2.2, high = 3.1 }, labour = { low = 1, high = 2 } }  # 440 LF
 "2x10" = { material = { low = 1.5, high = 2 }, labour = { low = 1.3, high = 2.4 } }  # 172 LF — 58 hanger + 114 wet-wall -MID courses (2026-09-12)

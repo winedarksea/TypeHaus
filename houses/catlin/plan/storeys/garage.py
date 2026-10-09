@@ -366,13 +366,13 @@ ROOMS = [
 # The SOFFIT stays cellular PVC and stays white: vented, out of the weather, and a white
 # soffit is what keeps an overhang from reading as a shadow. A vented PVC soffit closes the
 # overhang and feeds the vent channel. Elevations derive from the resolved roof plane so the
-# raised-heel lift carries the trim with it.
+# truss heel lift carries the trim with it.
 # BOTH eaves get a 5" gutter in the house's dark exterior coil (params/roof_trim.py
 # ::_CHAIN_MATERIAL — mill aluminium read as a pale band under a dark edge). The eaves are
 # EAST and WEST since the ridge turned on 2026-09-07: east discharges beside the HP1 pad and
 # the walk round to the house, west over the window wall and the hydrant corner, and neither
 # is open ground the way the old north eave was. Declared here rather than in params/ for the
-# same reason as the fascia — the raised-heel truss lifts the deck plane at the envelope
+# same reason as the fascia — the truss heel lifts the deck plane at the envelope
 # stage, so an absolute elevation would drift off the eave.
 #
 # What binds a leader to its trough is `Downspout.gutter_ref="RF-GARAGE"`, which BOTH carry,
@@ -465,8 +465,9 @@ _GARAGE_LEADER_E = Downspout(
     position=pt(ft(29, 7), ft(67, 7)),          # the drop, on the north wall
     outlet=pt(ft(31, 3.25), ft(68, 5.875)),     # the trough's north end
     # Both absolute. The trough they bracket is derived from the roof plane, so it moves on
-    # its own if the roof does; these are the two numbers that have to follow it by hand.
-    top_elevation=ft(7, 6),             # inside the trough floor
+    # its own if the roof does; these are the two numbers that have to follow it by hand
+    # (re-read 2026-10-08 when the standard-heel trusses dropped the trough 5.75").
+    top_elevation=ft(7, 0.417),             # inside the trough floor
     bottom_elevation=ft(-1, -6),
     diameter=inch(3), material="metal-dark-kstyle", gutter_ref="RF-GARAGE",
     discharge_ref="RG-E-BASIN",
@@ -485,7 +486,7 @@ _GARAGE_LEADER_E = Downspout(
 _GARAGE_LEADER_W = Downspout(
     uid="WB6YFR9QB2", tag="TR-G-LEADER-W",
     position=pt(ft(4, 8.75), ft(68, 5.875)),    # north end, clear of the west screen
-    top_elevation=ft(7, 6),
+    top_elevation=ft(7, 0.417),
     bottom_elevation=ft(-1, -6),
     diameter=inch(3), material="metal-dark-kstyle", gutter_ref="RF-GARAGE",
     discharge_ref="RG-W-BASIN",
@@ -605,17 +606,17 @@ ROOFS = [
              collector_blocking=(
                  CollectorBlocking(
                      collector="BM-BW-RW",
-                     stock="3.5x16 LSL",
-                     material="lsl",
+                     stock="2-2x10",
+                     material="spf",
                      flush="inboard",
-                     fastening="3-1/2x16 LSL solid blocking, bevel top to deck, seat on header, east face flush with the glulam's east face and every LTP4Z. One LS30Z at each truss end, six 0.148x1.5in HDG nails per angle, three per leg, on clear chord or heel wood and never through a truss plate; fully nailed deck restrains rotation. Each LTP4Z: 12 0.131x1.5in HDG nails, six into block and six into glulam, direct to wood. Deck: 8d common HDG at 6in boundary spacing.",
+                     fastening="2-ply SPF 2x10 solid blocking, laminated with 8d common HDG, two near each end and 12in o.c.; bevel top to deck, seat on header, east face flush with the glulam's east face and every LTP4Z. One LS30Z at each truss end, six 0.148x1.5in HDG nails per angle, three per leg, on clear chord or heel wood and never through a truss plate; fully nailed deck restrains rotation. Each LTP4Z: 12 0.131x1.5in HDG nails, six into block and six into glulam, direct to wood. Deck: 8d common HDG at 6in boundary spacing.",
                  ),
                  CollectorBlocking(
                      collector="BM-BW-RE",
-                     stock="3.5x16 LSL",
-                     material="lsl",
+                     stock="2-2x10",
+                     material="spf",
                      flush="inboard",
-                     fastening="3-1/2x16 LSL solid blocking, bevel top to deck, seat on header, west face flush with the glulam's west face. One LS30Z at each truss end, six 0.148x1.5in HDG nails per angle, three per leg, on clear chord or heel wood and never through a truss plate; fully nailed deck restrains rotation. In the joint bay one LTP4Z (CN-BW-EAVE-E) joins the block to the glulam, 12 0.131x1.5in HDG nails, six per member: the east chord force reaches CN-BW-JOINT-7 only through it. Deck: 8d common HDG at 6in boundary spacing.",
+                     fastening="2-ply SPF 2x10 solid blocking, laminated with 8d common HDG, two near each end and 12in o.c.; bevel top to deck, seat on header, west face flush with the glulam's west face. One LS30Z at each truss end, six 0.148x1.5in HDG nails per angle, three per leg, on clear chord or heel wood and never through a truss plate; fully nailed deck restrains rotation. In the joint bay one LTP4Z (CN-BW-EAVE-E) joins the block to the glulam, 12 0.131x1.5in HDG nails, six per member: the east chord force reaches CN-BW-JOINT-7 only through it. Deck: 8d common HDG at 6in boundary spacing.",
                  ),
              ),
              # 45in horizontal = 47.434in on the 4:12 slope, within a standard 48in sheet.
@@ -648,7 +649,7 @@ ROOFS = [
                      rated_strap_nails_each_end=9,
                      nail_group_inset=inch(4.5),
                      fastening="2-ply SPF 2x6 longitudinal nailers, laminated with 8d common 0.131x2.5in HDG nails two near each end and 12in o.c. between, staggered; bevelled to the deck, between existing truss faces on each side of the garage gable. The two end stations use the canopy collector blocks on the south side. One LS30Z at each nailer end, six 0.148x1.5in HDG nails, three per leg, side grain, never through a truss plate; fully nailed deck restrains rotation. LSTA24 direct to wood BEFORE deck: six outermost 0.148x2.5in HDG nails per leg, 12 total, one hole line in each ply; omit the middle six holes; >=2-3/8in wood end distance and >=3/4in edge distance. Field-verify that the six outermost holes start >=4-1/2in from the strap centre. Deck to each nailer: two rows 8d common HDG at 3in o.c., one row per ply 1/2in from its outer face and clear of the strap, staggered, 3/8in from the nailer ends. Keep deck panels continuous across the garage gable; no sheathing break at this line, 8d at 6in into gable top chord.",
-                     source="canopy_garage_diaphragm.md §3b: Simpson C-C-2021 p.269 LSTA table (LSTA24 1235lb in both DF/SP and SPF/HF, 18 nails; LSTA15 955lb SPF/HF, 12 nails); LSTA24 1235lb x 12/18 = 823.3lb installed; C-C-2026 p.313 (LS30 six 0.148x1.5in nails); AWC NDS 2018 12.3.1 nail yield for the deck-to-nailer transfer, one 3in row credited, 8d common through 3/4in Structural I (G 0.50) into SPF (G 0.42) or LSL (G 0.50, ICC-ES ESR-1387)",
+                     source="canopy_garage_diaphragm.md §3b: Simpson C-C-2021 p.269 LSTA table (LSTA24 1235lb in both DF/SP and SPF/HF, 18 nails; LSTA15 955lb SPF/HF, 12 nails); LSTA24 1235lb x 12/18 = 823.3lb installed; C-C-2026 p.313 (LS30 six 0.148x1.5in nails); AWC NDS 2018 12.3.1 nail yield for the deck-to-nailer transfer, one 3in row credited, 8d common through 3/4in Structural I (G 0.50) into SPF (G 0.42)",
                  ),
                  plate_clip_refs=("CN-BW-GCLIP-1", "CN-BW-GCLIP-2", "CN-BW-GCLIP-3", "CN-BW-GCLIP-4", "CN-BW-GCLIP-5", "CN-BW-GCLIP-6", "CN-BW-GCLIP-7"),
                  open_front=True,
@@ -800,7 +801,7 @@ RAILINGS = [
 # engineering.toml (notes/canopy_west_band.md §9, canopy_garage_diaphragm.md §10).
 TRUSS_ORDER = [
     Annotation(uid="7FTJXBJ6NP", tag="AN-G-TRUSS-ORDER", position=pt(ft(18), ft(55)),
-               text="TRUSS ORDER — RF-GARAGE and RF-BW-CANOPY, one fabricator, SEALED component design and reaction schedule. (1) A reaction at EVERY bearing, gravity and uplift, stating its basis: ground snow 50 psf, flat 42 psf balanced, the roof-step DRIFT surcharge of 50 psf peak over 9.8ft off the house gable (ASCE 7-16 §7.7), wind V_ult 115 mph Exposure B Risk Category II, 10 psf dead. (2) DRIFT TRUSSES: all three canopy trusses and RF-GARAGE's two southernmost (truss-000/-001) carry the drift case, not ground snow. (3) The canopy's SOUTH-END truss stands at the open south edge with no wall under it: design it for the out-of-plane wind on the gable-end triangle (2.22ft x 26.67ft, 16.8 psf ASD) braced at the deck, and say how it is braced. (4) The N-S diaphragm CHORD: both canopy end trusses' top chords, combined with gravity, and the peak splice's slip — the lateral design assumes 0.03in. (5) The heel ties are H2.5ASS stainless on the canopy (CN-BW-TRTIE-*) and H2.5A on the garage; confirm or supersede from the uplift reactions"),
+               text="TRUSS ORDER — RF-GARAGE and RF-BW-CANOPY, one fabricator, SEALED component design and reaction schedule. Both are 4:12 2x4 finks at 24in o.c. with a STANDARD HEEL: the top chord springs off the 3.5in bottom chord, no raised or energy heel. (1) A reaction at EVERY bearing, gravity and uplift, stating its basis: ground snow 50 psf, flat 42 psf balanced, the roof-step DRIFT surcharge of 50 psf peak over 9.8ft off the house gable (ASCE 7-16 §7.7), wind V_ult 115 mph Exposure B Risk Category II, 10 psf dead. (2) DRIFT TRUSSES: all three canopy trusses and RF-GARAGE's two southernmost (truss-000/-001) carry the drift case, not ground snow. (3) The canopy's SOUTH-END truss stands at the open south edge with no wall under it: design it for the out-of-plane wind on the gable-end triangle (2.22ft x 26.67ft, 16.8 psf ASD) braced at the deck, and say how it is braced. (4) The N-S diaphragm CHORD: both canopy end trusses' top chords, combined with gravity, and the peak splice's slip — the lateral design assumes 0.03in. (5) The heel ties are H2.5ASS stainless on the canopy (CN-BW-TRTIE-*) and H2.5A on the garage; confirm or supersede from the uplift reactions"),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS,

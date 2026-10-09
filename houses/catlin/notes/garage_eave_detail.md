@@ -14,15 +14,15 @@ source:
 ## Sheet notes
 
 ### General
-- Roof: raised-heel trusses at 24" o.c., 4:12, 16" overhang on the top chord tails.
+- Roof: standard-heel trusses at 24" o.c., 4:12, 16" overhang on the top chord tails.
 - Deck: 3/4" Structural 1 plywood. Self-adhered membrane, full field. Nail-strip standing seam.
-- Attic: vented. Blown fill level on the ceiling, stopped at the bearing walls.
+- Attic: vented, unconditioned garage. Blown fill level on the ceiling, tapering over the plate.
 - Wall: 2x6, sheathing with integral WRB, corrugated metal panel.
 
 ### Keyed
-- [K1] Raised heel on the plate. Truss tie at every truss.
+- [K1] Standard heel on the plate: top chord springs off the bottom chord. Truss tie at every truss.
 - [K2] 2x6 fascia nailer on the tails, 1" formed metal fascia over it.
-- [K3] Vented soffit, fascia back to the wall. Keep baffles clear at every bay.
+- [K3] Vented soffit, fascia back to the wall. Vent baffle in EVERY eave bay (R806.3): the shallow heel leaves the blow no room to stop short on its own.
 - [K4] Formed drip edge: 2" flange on the deck, bend over the deck edge, face over the metal fascia.
 - [K5] Membrane laps OVER the drip flange. Seam panels hem over the drip nose.
 - [K6] 5" K-gutter, back sheet BEHIND the drip face, rim 1/2" below the deck edge.

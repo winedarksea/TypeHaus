@@ -27,6 +27,7 @@ from typehaus.emit.draw.structural_common import (
     IN_PER_FT,
     feet_inches,
     outline_bbox,
+    truss_heel_note,
     wall_center,
 )
 from typehaus.findings import Finding, Result, Severity
@@ -189,8 +190,8 @@ def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof) -> list[str]:
     spec = roof_framing_spec(model, roof)
     if spec is not None:
         frame = "ENGINEERED TRUSSES" if spec.roof_frame == "truss" else "SITE-CUT RAFTERS"
-        heel = (f", RAISED HEEL {spec.heel_height.inches:.0f}\""
-                if spec.heel_height is not None else "")
+        heel_note = truss_heel_note(spec)
+        heel = f", {heel_note}" if heel_note else ""
         notes.append(f"{frame}: {spec.member.upper()}{heel}, ASSEMBLY {roof.assembly}.")
     if roof.bearing_z_m is not None:
         notes.append(f"ROOF SEATS ON PLATES AT {roof.bearing_z_m:.2f} m; "

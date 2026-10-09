@@ -217,10 +217,12 @@ def test_every_routed_run_category_is_declared(catlin_model_ro):
     # GEOMETRY fact, not a trade one, and this assertion is about the trade vocabulary. A
     # horizontal cast sleeve and the three parts of an authored cleanout are fittings,
     # not routed runs, although all four use the sweep geometry primitive. Drainage solids
-    # have their own category family and are also outside this routed-run registry.
+    # have their own category family and are also outside this routed-run registry. A truss
+    # attic's blown fill sweeps its eave taper along the ridge (resolve/attic_insulation.py).
     minted = {(s.category or "").lower() for s in catlin_model_ro.solids if s.sweep is not None}
     fittings = {"cleanout_fitting", "cleanout_extension", "cleanout_cap"}
-    assert (minted - {"railing", "beam", "pipe_sleeve"} - fittings - DRAINAGE_CATEGORIES
+    geometric = {"railing", "beam", "pipe_sleeve", "insulation"}
+    assert (minted - geometric - fittings - DRAINAGE_CATEGORIES
             <= ROUTED_RUN_CATEGORIES)
 
 
