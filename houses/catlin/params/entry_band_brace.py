@@ -33,6 +33,7 @@ BAND = SlatBrace(
     start=pt(ft(LANDING_WEST_FT), ft(PIER_LINE_Y_FT)),
     end=pt(ft(LANDING_WEST_FT), ft(GARAGE_SEAT_Y_FT)),
     base_elevation=ft(SCREEN_PANEL_TOP_FT), top_elevation=ft(HEADER_SOFFIT_FT),
+    clear_gap=inch(2.25),  # KBS1Z leg clearance: 1-1/2" overlapped every pair (note §3a)
     plane_offset=inch(1.0), assembly="POST_KDAT", supported_by="W-BW-SCREEN",
     connects=("PT-BW-CW", "PT-BW-CNW", "BM-BW-RW", "W-BW-SCREEN"),
     source="notes/canopy_west_band.md §3 — 45° slats as knee braces, KBS1Z each end "

@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 72124636d23f4279  
+**Model hash:** 378597c85583d5dd  
 **Lines:** 167
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -45,7 +45,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 — blocking, joist (2x12:kdat) | 464 | LF ordered | 48 pcs, 421.1 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.9 LF cut | building |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,834 | LF ordered | 656 pcs, 4077.4 LF cut | building |
-| 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | 2,876 | LF ordered | 492 pcs, 2487.9 LF cut | building |
+| 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | 2,868 | LF ordered | 488 pcs, 2480.7 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 58.8 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 7,088 | LF ordered | 1164 pcs, 6132.2 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — blocking, stud (2x6:df-select-s4s) | 88 | LF ordered | 14 pcs, 76.3 LF cut | building |
@@ -68,7 +68,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.8 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 661.6 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
-| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 99 | sheets 4x8 | 99 sheets 4x8 over 3165.0 SF net | building |
+| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 99 | sheets 4x8 | 99 sheets 4x8 over 3164.3 SF net | building |
 | SPF framing lumber, 3/4" ceiling (spf:ceiling) | 5 | sheets 4x8 | 5 sheets 4x8 over 137.5 SF net | building |
 | SPF framing lumber, 11 1/4" ceiling (spf:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 64.4 SF net | building |
 | Structural 1 plywood, 23/32" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 50.1 SF net | building |
@@ -121,7 +121,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | 4 | ea |  | building |
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | 7 | ea |  | building |
 | KBS1Z knee-brace / beam strap (ZMAX) | 2 | ea |  | building |
-| KBS1Z knee-brace stabilizer (ZMAX), one per brace end | 36 | ea |  | main |
+| KBS1Z knee-brace stabilizer (ZMAX), one per brace end | 28 | ea |  | main |
 | LS30 skewable angle, gable-end stud to rafter | 22 | ea |  | building |
 | LS30Z skewable angle, diaphragm blocking end | 32 | ea |  | building |
 | LSCZ adjustable stair-stringer connector (ZMAX) | 2 | ea |  | building |

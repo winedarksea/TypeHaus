@@ -247,7 +247,6 @@ the future.
 - The auto-generated blocking remains a bit excessive in places still
 - If we flip the garage door swing, we might be able to do reduce the landing size in the garage
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
-- The diagonal slat wall's 36 KBS1Z may overlap. Perhaps we need fewer slats, or the longest slats become 4x4 (to increase filled area)
 - See if we can narrow the gap between FURN-A-STUDY-BUILTIN and the shelves of D-A-STUDY, or add a wood trim piece in front to maintain visual continuity
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door
@@ -255,7 +254,7 @@ the future.
 - Gold foil trim or panel accent somewhere
 - Consider swapping the shower and tub positions in the main floor master bathroom
 - Outlet in the kitchen island
-- There are MASA connectors (and STHD connectors) in places we don't need, for example the brick wall, and possible some of the non load-bearing interior basment walls. Also there are MASA and STHD into the wooden W-B-S2-FR basement wall, incorrectly.
+- There are MASA connectors (and STHD connectors) in places we don't need, for example the brick wall, and possible some of the non load-bearing interior basment walls. Also there are MASA and STHD into the wooden W-B-S2-FR basement wall, incorrectly (shown as wood anchored into wood).
 - Stair winders still need framing work in 2d and 3d.
 - Both the EXT_2X6 and ROOF report a moisture risk/glaser profile risk. We don't think this is quite right. Well, roof somewhat is (it relies on the air seal of the spray foam). But the ext_2x6 should be roughly 60% outsulation, which should have condensation usually outside the studs.
 - Should we add a continuous lateral brace (north to south) across the garage trusses? Likely just a couple of 2x6s.

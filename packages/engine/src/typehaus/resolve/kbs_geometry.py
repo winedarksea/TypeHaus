@@ -27,6 +27,12 @@ class KBSGeometryConfig:
 KBS_GEOMETRY = KBSGeometryConfig()
 
 
+def kbs_heel_spacing(config: KBSGeometryConfig = KBS_GEOMETRY) -> float:
+    """The least heel-to-heel distance along one bearing face for two KBS1Z not to overlap:
+    one's support leg, plus the next one's brace leaf projected back at 45°."""
+    return config.leg_length_m + config.flange_width_m * math.sqrt(2.0)
+
+
 def _add(a: Vec3, b: Vec3, factor: float = 1.0) -> Vec3:
     return tuple(x + factor * y for x, y in zip(a, b, strict=True))
 

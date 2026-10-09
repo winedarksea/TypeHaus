@@ -78,7 +78,9 @@ class SlatBrace(Element):
     plate: str = "2x6"  # sill and top plate, laid flat
     centre_post: str = "6x6"
     slat: str = "2x4"  # on edge: its thin face in the band's plane
-    clear_gap: Length = inch(1.5)
+    #: Under 2-1/8" the KBS1Z at neighbouring slat ends overlap (its 3" support leg plus the
+    #: next one's 1-1/2" brace leaf at 45°); the resolver refuses that.
+    clear_gap: Length = inch(2.25)
     #: Signed offset of the slats' axis from the start→end line, + to the LEFT: set it to
     #: put the slats flush with one face of the frame, where the connectors go.
     plane_offset: Length = inch(0)

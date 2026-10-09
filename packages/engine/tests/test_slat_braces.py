@@ -1,8 +1,8 @@
 """SlatBrace: a framed band of 45° slats, each a knee brace — layout, members, bill, IFC.
 
 The frame is catlin's west band (``notes/canopy_west_band.md`` §3a) on a bare two-post frame,
-so the layout numbers are the note's: 24.375" x 25.125" bays, nine slats a bay, five across
-mid-band.
+so the layout numbers are the note's: 24.375" x 25.125" bays, seven slats a bay at 2 1/4"
+clear, five across mid-band.
 """
 
 from __future__ import annotations
@@ -72,15 +72,15 @@ def test_the_layout_is_section_3a() -> None:
     lay = slat_layout(_band())
     assert lay.width / IN == pytest.approx(24.375, abs=1e-3)
     assert lay.height / IN == pytest.approx(25.125, abs=1e-3)
-    assert lay.pitch / IN == pytest.approx(3.0 * math.sqrt(2), abs=1e-6)
+    assert lay.pitch / IN == pytest.approx(3.75 * math.sqrt(2), abs=1e-6)
     for bay in (0, 1):
         slats = lay.bay(bay)
-        assert [s.j for s in slats] == list(range(-4, 5))  # j = ±5 is 5.00", under 8"
+        assert [s.j for s in slats] == list(range(-3, 4))  # j = ±4 is 5.00", under 8"
         assert lay.crossing_mid(bay) == 5
-        assert min(s.length for s in slats) / IN == pytest.approx(11.0, abs=0.01)
+        assert min(s.length for s in slats) / IN == pytest.approx(12.5, abs=0.01)
         assert max(s.length for s in slats) / IN == pytest.approx(34.47, abs=0.01)
     lands = [(s.low, s.high) for s in lay.bay(0)]
-    assert lands.count(("chord", "top")) == 4 and lands.count(("sill", "centre")) == 4
+    assert lands.count(("chord", "top")) == 3 and lands.count(("sill", "centre")) == 3
     assert ("chord", "centre") in lands
 
 
@@ -95,7 +95,7 @@ def test_the_bays_mirror_about_the_centre_post(band_model) -> None:
         assert m.z0_end_m > m.z0_m  # p0 is the low end
         rising[m.child_key] = (abs(m.p1[0] - mid) < abs(m.p0[0] - mid), m.p0[0], m.p1[0])
     assert all(toward for toward, _a, _b in rising.values())
-    for j in range(-4, 5):
+    for j in range(-3, 4):
         _t, a0, a1 = rising[f"slat-0{j:+d}"]
         _t, b0, b1 = rising[f"slat-1{j:+d}"]
         assert a0 + b0 == pytest.approx(2 * mid) and a1 + b1 == pytest.approx(2 * mid)
@@ -110,7 +110,7 @@ def test_members_stay_in_their_bay(band_model) -> None:
     assert by_key["post-centre"].p0 == pytest.approx((_SPAN_FT * FT / 2, 0.0))
     sill_top, top_under = by_key["plate-sill"].z1_m, by_key["plate-top"].z0_m
     slats = [m for m in brace.members if m.category == "brace"]
-    assert len(slats) == 18
+    assert len(slats) == 14
     for m in slats:
         assert m.z0_m >= sill_top - 1e-9 and m.z1_end_m <= top_under + 1e-9
         assert m.p0[1] == pytest.approx(IN) and m.plan_width_m == pytest.approx(3.5 * IN)
@@ -121,13 +121,26 @@ def test_the_slats_bill_as_lumber_and_the_parts_as_hardware(band_model) -> None:
     from typehaus.takeoff.hardware import hardware_takeoff
 
     lumber = {(r["profile"], r["category"]): r for r in framing_takeoff(band_model)}
-    assert lumber[("2x4", "brace")]["pieces"] == 18
+    assert lumber[("2x4", "brace")]["pieces"] == 14
     rows = {r["scope"]: r for r in hardware_takeoff(band_model)
             if r["scope"].startswith("slat brace")}
-    assert rows["slat brace connector"]["count"] == 36
+    assert rows["slat brace connector"]["count"] == 28
     assert rows["slat brace connector"]["part_number"] == "KBS1Z"
     assert rows["slat brace plate screw"]["count"] == 16
     assert rows["slat brace centre post tie"]["count"] == 4
+
+
+def test_neighbouring_connectors_need_their_heel_spacing() -> None:
+    """At the old 1 1/2" gap every pair of KBS1Z overlapped (note §3a): the resolver refuses."""
+    from typehaus.resolve.kbs_geometry import kbs_heel_spacing
+    from typehaus.resolve.slat_braces import slat_layout
+
+    assert kbs_heel_spacing() / IN == pytest.approx(3.0 + 1.5 * math.sqrt(2))
+    assert slat_layout(_band()).pitch >= kbs_heel_spacing()
+    model, findings = _frame(_band(clear_gap=inch(1.5)))
+    assert not model.braces
+    assert [f.check_id for f in findings] == ["integrity.slat_brace"]
+    assert "would overlap" in findings[0].message
 
 
 def test_an_unread_centre_post_is_a_missing_row_not_a_number() -> None:
@@ -150,7 +163,7 @@ def test_the_band_emits_slats_as_ifc_braces(band_model, tmp_path) -> None:
     members = {m.Name: m for m in emitted.by_type("IfcMember")}
     assert members["SB-T/slat-0+0"].PredefinedType == "BRACE"
     assert members["SB-T/plate-top"].PredefinedType == "MEMBER"
-    assert len(emitted.by_type("IfcMechanicalFastener")) == 36
+    assert len(emitted.by_type("IfcMechanicalFastener")) == 28
     assert all(c.Representation for c in emitted.by_type("IfcMechanicalFastener"))
     assert all(c.Representation.Representations[0].RepresentationType == "Tessellation"
                for c in emitted.by_type("IfcMechanicalFastener"))
@@ -166,7 +179,7 @@ def test_top_landings_are_not_the_five_crossing_slats() -> None:
     for bay in (0, 1):
         top = [s for s in layout.bay(bay) if s.high == "top"]
         mid = layout.height / 2.0
-        assert len(top) == 4
+        assert len(top) == 3
         assert sum(s.u0 <= s.c + mid <= s.u1 for s in top) == 2
         assert layout.crossing_mid(bay) == 5
 
@@ -214,7 +227,7 @@ def test_connectors_follow_the_flush_face_on_a_rotated_band(offset) -> None:
                     plane_offset=inch(offset))
     model, _ = _frame(element)
     connectors = [s for s in model.solids if s.product == "KBS1Z"]
-    assert len(connectors) == 36 and len({s.uid for s in connectors}) == 36
+    assert len(connectors) == 28 and len({s.uid for s in connectors}) == 28
     assert all(s.derived and s.body_mesh for s in connectors)
     face_x = 8 * FT - math.copysign(2.75 * IN, offset)
     for connector in connectors:
@@ -231,7 +244,7 @@ def test_connector_geometry_is_serialized_and_does_not_double_bill(band_model) -
 
     payload = model_to_dict(band_model)
     connectors = [s for s in payload["solids"] if s["product"] == "KBS1Z"]
-    assert len(connectors) == 36
+    assert len(connectors) == 28
     assert all(s["body_mesh"]["triangles"] for s in connectors)
     assert not any(r["category"] == "connector" for r in structural_solids_takeoff(band_model))
     gltf, _ = emit_gltf_dict(band_model, lod="framed")

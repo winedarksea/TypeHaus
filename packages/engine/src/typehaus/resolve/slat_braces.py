@@ -18,6 +18,7 @@ from typehaus.findings import Finding, element_error
 from typehaus.model.braces import SlatBrace
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.kbs_geometry import kbs_heel_spacing
 from typehaus.resolve.model import FramedMember, ResolvedBrace, ResolvedModel
 from typehaus.resolve.slat_cuts import clipped_slat_profile, slat_blank_length
 
@@ -108,6 +109,13 @@ def resolve_slat_brace(model: ResolvedModel, el: SlatBrace, storey: str) -> list
     if layout is None:
         return [element_error("integrity.slat_brace", "the frame leaves no bay between the "
                               "chords, plates and centre post", el.tag)]
+    need = kbs_heel_spacing()
+    if el.connector == "KBS1Z" and layout.pitch < need - 1e-9:
+        return [element_error(
+            "integrity.slat_brace",
+            f"slats {layout.pitch / 0.0254:.3f}\" apart along a plate, but a KBS1Z at each end "
+            f"needs {need / 0.0254:.3f}\": neighbouring connectors would overlap. Widen "
+            f"clear_gap", el.tag)]
     (x0, y0), (x1, y1) = el.start.xy_m, el.end.xy_m
     ux, uy = (x1 - x0) / layout.length, (y1 - y0) / layout.length
     material = assembly_structure_material(model.plan, el.assembly)

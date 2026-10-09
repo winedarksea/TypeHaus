@@ -151,7 +151,7 @@ ROOF_COLUMN_EAST_X_FT = 30.0
 # when it was shortened and hung off the columns. A member with a LINE load and no area was a
 # real gap in that module, and what closed it on 2026-09-20 is that a wall's dead load never
 # needed an area: `pier_basis.wall_line_loads` derives it as a plf (this wall's own layer
-# stack, 30.54, plus `SB-BW-BAND` standing on its plate, 17.73) times the run it shares with
+# stack, 30.54, plus `SB-BW-BAND` standing on its plate, 15.71) times the run it shares with
 # the beam in plan. See notes/north_entry_piers.md §2 — and what the UNKNOWN had been
 # concealing is why `PT-BW-W`/`-GW` are in `_MOMENT_PIERS` below.
 SCREEN_PANEL_TOP_FT = 4.0

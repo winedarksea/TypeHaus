@@ -5086,51 +5086,39 @@
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-0+1": [
 1.2573,
-1.8051277,
+1.7781869,
 8,
-"62a1ec738a8b"
+"83cef1309ab9"
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-0+2": [
 1.2573,
-1.6973646,
+1.6434831,
 8,
-"634a8d506a22"
+"2b591579e5b0"
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-0+3": [
 1.2573,
-1.5896015,
+1.5087792,
 8,
-"b0608604029a"
-],
-"geometry/8QGAZ9GGFS::framing/member:slat-0+4": [
-1.2573,
-1.4818385,
-8,
-"6b1660bb66be"
+"3bb13bad72db"
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-0-1": [
-1.3476473,
+1.3745881,
 1.895475,
 8,
-"b1054783de04"
+"5b3c9c0f6fb6"
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-0-2": [
-1.4554104,
+1.5092919,
 1.895475,
 8,
-"58bd441ef040"
+"e3c8eb5bc07b"
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-0-3": [
-1.5631735,
+1.6439958,
 1.895475,
 8,
-"355a03fd8515"
-],
-"geometry/8QGAZ9GGFS::framing/member:slat-0-4": [
-1.6709365,
-1.895475,
-8,
-"981cbfb60284"
+"39f9da3f6ee7"
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-1+0": [
 1.2573,
@@ -5140,51 +5128,39 @@
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-1+1": [
 1.2573,
-1.8051277,
+1.7781869,
 8,
-"62a1ec738a8b"
+"83cef1309ab9"
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-1+2": [
 1.2573,
-1.6973646,
+1.6434831,
 8,
-"634a8d506a22"
+"2b591579e5b0"
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-1+3": [
 1.2573,
-1.5896015,
+1.5087792,
 8,
-"b0608604029a"
-],
-"geometry/8QGAZ9GGFS::framing/member:slat-1+4": [
-1.2573,
-1.4818385,
-8,
-"6b1660bb66be"
+"3bb13bad72db"
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-1-1": [
-1.3476473,
+1.3745881,
 1.895475,
 8,
-"b1054783de04"
+"5b3c9c0f6fb6"
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-1-2": [
-1.4554104,
+1.5092919,
 1.895475,
 8,
-"58bd441ef040"
+"e3c8eb5bc07b"
 ],
 "geometry/8QGAZ9GGFS::framing/member:slat-1-3": [
-1.5631735,
+1.6439958,
 1.895475,
 8,
-"355a03fd8515"
-],
-"geometry/8QGAZ9GGFS::framing/member:slat-1-4": [
-1.6709365,
-1.895475,
-8,
-"981cbfb60284"
+"39f9da3f6ee7"
 ],
 "geometry/8REEX7CC35/body": [
 2.419096,
@@ -8170,15 +8146,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-000-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-000-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-001": [
 6.15315,
@@ -8188,15 +8164,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-001-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-001-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-002": [
 6.15315,
@@ -8206,15 +8182,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-002-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-002-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-003": [
 6.15315,
@@ -8224,15 +8200,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-003-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-003-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-004": [
 6.15315,
@@ -8242,15 +8218,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-004-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-004-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-005": [
 6.15315,
@@ -8260,15 +8236,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-005-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-005-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-006": [
 6.15315,
@@ -8278,15 +8254,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-006-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-006-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-007": [
 6.15315,
@@ -8296,15 +8272,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-007-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-007-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-008": [
 6.15315,
@@ -8314,15 +8290,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-008-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-008-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-009": [
 6.15315,
@@ -8332,15 +8308,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-009-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-009-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-010": [
 6.15315,
@@ -8350,15 +8326,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-010-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-010-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-011": [
 6.15315,
@@ -8368,15 +8344,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-011-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-011-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-012": [
 6.15315,
@@ -8386,15 +8362,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-012-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-012-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-013": [
 6.15315,
@@ -8404,15 +8380,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-013-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-013-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-014": [
 6.15315,
@@ -8422,15 +8398,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-014-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-014-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-015": [
 6.15315,
@@ -8440,15 +8416,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-015-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-015-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-016": [
 6.15315,
@@ -8458,15 +8434,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-016-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-016-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-017": [
 6.15315,
@@ -8476,15 +8452,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-017-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-017-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-018": [
 6.15315,
@@ -8494,15 +8470,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-018-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-018-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-019": [
 6.15315,
@@ -8512,15 +8488,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-019-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-019-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-020": [
 6.15315,
@@ -8530,15 +8506,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-020-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-020-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-021": [
 6.15315,
@@ -8548,15 +8524,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-021-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-021-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-022": [
 6.15315,
@@ -8566,15 +8542,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-022-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-022-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-023": [
 6.15315,
@@ -8584,15 +8560,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-023-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-023-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-024": [
 6.15315,
@@ -8602,15 +8578,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-024-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-024-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-025": [
 6.15315,
@@ -8620,15 +8596,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-025-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-025-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-026": [
 6.15315,
@@ -8638,15 +8614,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-026-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-026-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-027": [
 6.15315,
@@ -8656,15 +8632,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-027-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-027-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-028": [
 6.15315,
@@ -8674,15 +8650,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-028-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-028-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-029": [
 6.15315,
@@ -8692,15 +8668,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-029-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-029-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-030": [
 6.15315,
@@ -8710,15 +8686,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-030-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-030-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-031": [
 6.15315,
@@ -8728,15 +8704,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-031-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-031-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-032": [
 6.15315,
@@ -8746,15 +8722,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-032-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-032-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-033": [
 6.15315,
@@ -8764,15 +8740,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-033-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-033-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-034": [
 6.15315,
@@ -8782,15 +8758,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-034-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-034-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-035": [
 6.15315,
@@ -8800,15 +8776,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-035-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-035-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-036": [
 6.15315,
@@ -8818,15 +8794,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-036-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-036-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-037": [
 6.15315,
@@ -8836,15 +8812,15 @@
 ],
 "geometry/CARF01AAAA::framing/member:rafter-037-eave-stiffener": [
 6.181725,
-6.48335,
+6.53415,
 8,
-"0cfc53279034"
+"ed6bc6bf745e"
 ],
 "geometry/CARF01AAAA::framing/member:rafter-037-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
 8,
-"bcb5970bd1fe"
+"e3c4b2abb1d4"
 ],
 "geometry/CARF01AAAA::framing/member:rake-hi-0-drip-edge-face": [
 6.2916264,
@@ -16599,10 +16575,10 @@
 "c6f627adc6d9"
 ],
 "geometry/CM-0433b0585f60/body": [
-1.4869735,
-1.6439958,
+1.5677958,
+1.7248181,
 768,
-"4b48b90eeb9b"
+"22283af3ace1"
 ],
 "geometry/CM-046538ce09f1/body": [
 6.042025,
@@ -16627,12 +16603,6 @@
 6.149975,
 56,
 "bd318eb82dc1"
-],
-"geometry/CM-069af858ae26/body": [
-1.4010162,
-1.5580385,
-768,
-"bb5cd5306d31"
 ],
 "geometry/CM-076c2045b0d4/body": [
 7.6981609,
@@ -16851,10 +16821,10 @@
 "bd318eb82dc1"
 ],
 "geometry/CM-1971066c77c4/body": [
-1.5087792,
-1.6658015,
+1.4279569,
+1.5849792,
 768,
-"9a06e6128ad6"
+"5ee40828e3d1"
 ],
 "geometry/CM-1972d8b23988/body": [
 -0.2869692,
@@ -17114,12 +17084,6 @@
 56,
 "35b5654af816"
 ],
-"geometry/CM-2f83436a680f/body": [
-1.2192,
-1.3122556,
-768,
-"8e19f4cda60b"
-],
 "geometry/CM-2fb7d82e6655/body": [
 -0.390525,
 -0.2651811,
@@ -17155,12 +17119,6 @@
 -2.1161375,
 24,
 "eb1e5cbf0eb0"
-],
-"geometry/CM-337db5d1d5a8/body": [
-1.5947365,
-1.7517588,
-768,
-"b8f384f69ce5"
 ],
 "geometry/CM-33dd002e969b/body": [
 -2.6812875,
@@ -17390,12 +17348,6 @@
 48,
 "c5a44126e669"
 ],
-"geometry/CM-4851fbf623b9/body": [
-1.4010162,
-1.5580385,
-768,
-"bb5cd5306d31"
-],
 "geometry/CM-48ef0c6387ae/body": [
 6.0975875,
 6.2499875,
@@ -17421,10 +17373,10 @@
 "eb1e5cbf0eb0"
 ],
 "geometry/CM-4ba1d210b1f7/body": [
-1.3792104,
-1.5362327,
+1.4330919,
+1.5901142,
 768,
-"af3171637b93"
+"1e3252e06d87"
 ],
 "geometry/CM-4bb5ab5a82b9/body": [
 2.994025,
@@ -17529,12 +17481,6 @@
 "1db879147abe"
 ],
 "geometry/CM-54276358fc8d/body": [
-1.8405194,
-1.933575,
-768,
-"d4ecd2fc1a8f"
-],
-"geometry/CM-54415596d936/body": [
 1.8405194,
 1.933575,
 768,
@@ -17751,10 +17697,10 @@
 "99f9817ef9ba"
 ],
 "geometry/CM-62e97f8fa94a/body": [
-1.5087792,
-1.6658015,
+1.4279569,
+1.5849792,
 768,
-"9a06e6128ad6"
+"5ee40828e3d1"
 ],
 "geometry/CM-6365e19a607b/body": [
 2.994025,
@@ -17889,10 +17835,10 @@
 "ba5194e2061f"
 ],
 "geometry/CM-6c3dfc888afd/body": [
-1.2714473,
-1.4284696,
+1.2983881,
+1.4554104,
 768,
-"afcacf1d2f35"
+"9bef1e250984"
 ],
 "geometry/CM-6c5397cb7b38/body": [
 9.0838893,
@@ -18038,12 +17984,6 @@
 44,
 "079edee2aaa9"
 ],
-"geometry/CM-7953c571f26d/body": [
-1.2192,
-1.3122556,
-768,
-"8e19f4cda60b"
-],
 "geometry/CM-79993fb0abfb/body": [
 9.0838893,
 9.2210156,
@@ -18079,12 +18019,6 @@
 3.101975,
 56,
 "ba5194e2061f"
-],
-"geometry/CM-7c5d0ed1e144/body": [
-1.5947365,
-1.7517588,
-768,
-"b8f384f69ce5"
 ],
 "geometry/CM-7cc9bdbe9d71/body": [
 -2.9575125,
@@ -18151,12 +18085,6 @@
 6.149975,
 56,
 "bd318eb82dc1"
-],
-"geometry/CM-813654d0759b/body": [
-1.8405194,
-1.933575,
-768,
-"d4ecd2fc1a8f"
 ],
 "geometry/CM-81483362695d/body": [
 -2.8654375,
@@ -18639,10 +18567,10 @@
 "9423bd4ecc20"
 ],
 "geometry/CM-a808fe3a5bc6/body": [
-1.4869735,
-1.6439958,
+1.5677958,
+1.7248181,
 768,
-"4b48b90eeb9b"
+"22283af3ace1"
 ],
 "geometry/CM-a8b4f017520a/body": [
 1.8405194,
@@ -19227,10 +19155,10 @@
 "ba5194e2061f"
 ],
 "geometry/CM-d4c375e025d3/body": [
-1.3792104,
-1.5362327,
+1.4330919,
+1.5901142,
 768,
-"af3171637b93"
+"1e3252e06d87"
 ],
 "geometry/CM-d57928e3882b/body": [
 2.1796375,
@@ -19275,10 +19203,10 @@
 "59330c4aa46d"
 ],
 "geometry/CM-dab11a023404/body": [
-1.2714473,
-1.4284696,
+1.2983881,
+1.4554104,
 768,
-"afcacf1d2f35"
+"9bef1e250984"
 ],
 "geometry/CM-db28295c2986/body": [
 2.1796375,
@@ -19317,10 +19245,10 @@
 "bd318eb82dc1"
 ],
 "geometry/CM-dd46209d67a9/body": [
-1.7243054,
-1.8813277,
+1.6973646,
+1.8543869,
 768,
-"06cb1564e266"
+"2d9e4cfcb41e"
 ],
 "geometry/CM-dd57f12a466f/body": [
 6.042025,
@@ -19353,10 +19281,10 @@
 "bf42bbf1fa4e"
 ],
 "geometry/CM-e18352150d73/body": [
-1.7243054,
-1.8813277,
+1.6973646,
+1.8543869,
 768,
-"06cb1564e266"
+"2d9e4cfcb41e"
 ],
 "geometry/CM-e19480844a45/body": [
 -0.3556,
@@ -19449,10 +19377,10 @@
 "817c29bbc558"
 ],
 "geometry/CM-ea8834516609/body": [
-1.6165423,
-1.7735646,
+1.5626608,
+1.7196831,
 768,
-"761a045ad4fe"
+"ec8437aca63e"
 ],
 "geometry/CM-eb47af206eec/body": [
 6.8599609,
@@ -19677,10 +19605,10 @@
 "fadfe851bf34"
 ],
 "geometry/CM-fb0592556046/body": [
-1.6165423,
-1.7735646,
+1.5626608,
+1.7196831,
 768,
-"761a045ad4fe"
+"ec8437aca63e"
 ],
 "geometry/CM-fc1b81fae159/body": [
 -0.4270375,
@@ -57171,51 +57099,39 @@
 ],
 "member/8QGAZ9GGFS/slat-0+1": [
 1.2573,
-1.8051277,
+1.7781869,
 4,
-"36378ff20870"
+"a86ac983f3d7"
 ],
 "member/8QGAZ9GGFS/slat-0+2": [
 1.2573,
-1.6973646,
+1.6434831,
 4,
-"d7148002987f"
+"7277155b896e"
 ],
 "member/8QGAZ9GGFS/slat-0+3": [
 1.2573,
-1.5896015,
+1.5087792,
 4,
-"ebb1b67a9495"
-],
-"member/8QGAZ9GGFS/slat-0+4": [
-1.2573,
-1.4818385,
-4,
-"58e1528ca7a1"
+"19e4eda49d2d"
 ],
 "member/8QGAZ9GGFS/slat-0-1": [
-1.3476473,
+1.3745881,
 1.895475,
 4,
-"8a4160891b7d"
+"9a350c517df8"
 ],
 "member/8QGAZ9GGFS/slat-0-2": [
-1.4554104,
+1.5092919,
 1.895475,
 4,
-"ba3e9c9c82e9"
+"fed12e10714e"
 ],
 "member/8QGAZ9GGFS/slat-0-3": [
-1.5631735,
+1.6439958,
 1.895475,
 4,
-"eeafaedc1d8c"
-],
-"member/8QGAZ9GGFS/slat-0-4": [
-1.6709365,
-1.895475,
-4,
-"0c3fc7d51a86"
+"10984202d758"
 ],
 "member/8QGAZ9GGFS/slat-1+0": [
 1.2573,
@@ -57225,51 +57141,39 @@
 ],
 "member/8QGAZ9GGFS/slat-1+1": [
 1.2573,
-1.8051277,
+1.7781869,
 4,
-"36378ff20870"
+"a86ac983f3d7"
 ],
 "member/8QGAZ9GGFS/slat-1+2": [
 1.2573,
-1.6973646,
+1.6434831,
 4,
-"d7148002987f"
+"7277155b896e"
 ],
 "member/8QGAZ9GGFS/slat-1+3": [
 1.2573,
-1.5896015,
+1.5087792,
 4,
-"ebb1b67a9495"
-],
-"member/8QGAZ9GGFS/slat-1+4": [
-1.2573,
-1.4818385,
-4,
-"58e1528ca7a1"
+"19e4eda49d2d"
 ],
 "member/8QGAZ9GGFS/slat-1-1": [
-1.3476473,
+1.3745881,
 1.895475,
 4,
-"8a4160891b7d"
+"9a350c517df8"
 ],
 "member/8QGAZ9GGFS/slat-1-2": [
-1.4554104,
+1.5092919,
 1.895475,
 4,
-"ba3e9c9c82e9"
+"fed12e10714e"
 ],
 "member/8QGAZ9GGFS/slat-1-3": [
-1.5631735,
+1.6439958,
 1.895475,
 4,
-"eeafaedc1d8c"
-],
-"member/8QGAZ9GGFS/slat-1-4": [
-1.6709365,
-1.895475,
-4,
-"0c3fc7d51a86"
+"10984202d758"
 ],
 "member/9HX5HSKNWD/corner-start": [
 0.05715,
@@ -58731,15 +58635,15 @@
 ],
 "member/CARF01AAAA/rafter-000-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-000-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-001": [
 6.181725,
@@ -58749,15 +58653,15 @@
 ],
 "member/CARF01AAAA/rafter-001-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-001-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-002": [
 6.181725,
@@ -58767,15 +58671,15 @@
 ],
 "member/CARF01AAAA/rafter-002-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-002-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-003": [
 6.181725,
@@ -58785,15 +58689,15 @@
 ],
 "member/CARF01AAAA/rafter-003-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-003-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-004": [
 6.181725,
@@ -58803,15 +58707,15 @@
 ],
 "member/CARF01AAAA/rafter-004-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-004-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-005": [
 6.181725,
@@ -58821,15 +58725,15 @@
 ],
 "member/CARF01AAAA/rafter-005-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-005-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-006": [
 6.181725,
@@ -58839,15 +58743,15 @@
 ],
 "member/CARF01AAAA/rafter-006-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-006-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-007": [
 6.181725,
@@ -58857,15 +58761,15 @@
 ],
 "member/CARF01AAAA/rafter-007-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-007-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-008": [
 6.181725,
@@ -58875,15 +58779,15 @@
 ],
 "member/CARF01AAAA/rafter-008-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-008-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-009": [
 6.181725,
@@ -58893,15 +58797,15 @@
 ],
 "member/CARF01AAAA/rafter-009-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-009-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-010": [
 6.181725,
@@ -58911,15 +58815,15 @@
 ],
 "member/CARF01AAAA/rafter-010-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-010-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-011": [
 6.181725,
@@ -58929,15 +58833,15 @@
 ],
 "member/CARF01AAAA/rafter-011-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-011-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-012": [
 6.181725,
@@ -58947,15 +58851,15 @@
 ],
 "member/CARF01AAAA/rafter-012-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-012-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-013": [
 6.181725,
@@ -58965,15 +58869,15 @@
 ],
 "member/CARF01AAAA/rafter-013-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-013-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-014": [
 6.181725,
@@ -58983,15 +58887,15 @@
 ],
 "member/CARF01AAAA/rafter-014-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-014-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-015": [
 6.181725,
@@ -59001,15 +58905,15 @@
 ],
 "member/CARF01AAAA/rafter-015-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-015-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-016": [
 6.181725,
@@ -59019,15 +58923,15 @@
 ],
 "member/CARF01AAAA/rafter-016-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-016-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-017": [
 6.181725,
@@ -59037,15 +58941,15 @@
 ],
 "member/CARF01AAAA/rafter-017-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-017-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-018": [
 6.181725,
@@ -59055,15 +58959,15 @@
 ],
 "member/CARF01AAAA/rafter-018-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-018-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-019": [
 6.181725,
@@ -59073,15 +58977,15 @@
 ],
 "member/CARF01AAAA/rafter-019-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-019-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-020": [
 6.181725,
@@ -59091,15 +58995,15 @@
 ],
 "member/CARF01AAAA/rafter-020-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-020-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-021": [
 6.181725,
@@ -59109,15 +59013,15 @@
 ],
 "member/CARF01AAAA/rafter-021-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-021-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-022": [
 6.181725,
@@ -59127,15 +59031,15 @@
 ],
 "member/CARF01AAAA/rafter-022-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-022-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-023": [
 6.181725,
@@ -59145,15 +59049,15 @@
 ],
 "member/CARF01AAAA/rafter-023-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-023-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-024": [
 6.181725,
@@ -59163,15 +59067,15 @@
 ],
 "member/CARF01AAAA/rafter-024-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-024-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-025": [
 6.181725,
@@ -59181,15 +59085,15 @@
 ],
 "member/CARF01AAAA/rafter-025-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-025-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-026": [
 6.181725,
@@ -59199,15 +59103,15 @@
 ],
 "member/CARF01AAAA/rafter-026-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-026-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-027": [
 6.181725,
@@ -59217,15 +59121,15 @@
 ],
 "member/CARF01AAAA/rafter-027-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-027-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-028": [
 6.181725,
@@ -59235,15 +59139,15 @@
 ],
 "member/CARF01AAAA/rafter-028-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-028-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-029": [
 6.181725,
@@ -59253,15 +59157,15 @@
 ],
 "member/CARF01AAAA/rafter-029-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-029-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-030": [
 6.181725,
@@ -59271,15 +59175,15 @@
 ],
 "member/CARF01AAAA/rafter-030-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-030-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-031": [
 6.181725,
@@ -59289,15 +59193,15 @@
 ],
 "member/CARF01AAAA/rafter-031-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-031-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-032": [
 6.181725,
@@ -59307,15 +59211,15 @@
 ],
 "member/CARF01AAAA/rafter-032-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-032-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-033": [
 6.181725,
@@ -59325,15 +59229,15 @@
 ],
 "member/CARF01AAAA/rafter-033-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-033-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-034": [
 6.181725,
@@ -59343,15 +59247,15 @@
 ],
 "member/CARF01AAAA/rafter-034-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-034-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-035": [
 6.181725,
@@ -59361,15 +59265,15 @@
 ],
 "member/CARF01AAAA/rafter-035-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-035-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-036": [
 6.181725,
@@ -59379,15 +59283,15 @@
 ],
 "member/CARF01AAAA/rafter-036-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-036-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rafter-037": [
 6.181725,
@@ -59397,15 +59301,15 @@
 ],
 "member/CARF01AAAA/rafter-037-eave-stiffener": [
 6.181725,
-6.48335,
-2,
-"56280f7329ba"
+6.53415,
+4,
+"17145036eb66"
 ],
 "member/CARF01AAAA/rafter-037-ridge-stiffener": [
-8.89635,
+8.84555,
 9.197975,
-2,
-"e3fba4fb8a75"
+4,
+"a6a8df2ac901"
 ],
 "member/CARF01AAAA/rake-hi-0-drip-edge-face": [
 6.2916264,
@@ -89375,74 +89279,58 @@
 "solids/CN~KBS1Z~SB-BW-BAND~0+0~high/z1_m": 1.9890908,
 "solids/CN~KBS1Z~SB-BW-BAND~0+0~low/z0_m": 1.1636842,
 "solids/CN~KBS1Z~SB-BW-BAND~0+0~low/z1_m": 1.3207065,
-"solids/CN~KBS1Z~SB-BW-BAND~0+1~high/z0_m": 1.7243054,
-"solids/CN~KBS1Z~SB-BW-BAND~0+1~high/z1_m": 1.8813277,
+"solids/CN~KBS1Z~SB-BW-BAND~0+1~high/z0_m": 1.6973646,
+"solids/CN~KBS1Z~SB-BW-BAND~0+1~high/z1_m": 1.8543869,
 "solids/CN~KBS1Z~SB-BW-BAND~0+1~low/z0_m": 1.2192,
 "solids/CN~KBS1Z~SB-BW-BAND~0+1~low/z1_m": 1.3122556,
-"solids/CN~KBS1Z~SB-BW-BAND~0+2~high/z0_m": 1.6165423,
-"solids/CN~KBS1Z~SB-BW-BAND~0+2~high/z1_m": 1.7735646,
+"solids/CN~KBS1Z~SB-BW-BAND~0+2~high/z0_m": 1.5626608,
+"solids/CN~KBS1Z~SB-BW-BAND~0+2~high/z1_m": 1.7196831,
 "solids/CN~KBS1Z~SB-BW-BAND~0+2~low/z0_m": 1.2192,
 "solids/CN~KBS1Z~SB-BW-BAND~0+2~low/z1_m": 1.3122556,
-"solids/CN~KBS1Z~SB-BW-BAND~0+3~high/z0_m": 1.5087792,
-"solids/CN~KBS1Z~SB-BW-BAND~0+3~high/z1_m": 1.6658015,
+"solids/CN~KBS1Z~SB-BW-BAND~0+3~high/z0_m": 1.4279569,
+"solids/CN~KBS1Z~SB-BW-BAND~0+3~high/z1_m": 1.5849792,
 "solids/CN~KBS1Z~SB-BW-BAND~0+3~low/z0_m": 1.2192,
 "solids/CN~KBS1Z~SB-BW-BAND~0+3~low/z1_m": 1.3122556,
-"solids/CN~KBS1Z~SB-BW-BAND~0+4~high/z0_m": 1.4010162,
-"solids/CN~KBS1Z~SB-BW-BAND~0+4~high/z1_m": 1.5580385,
-"solids/CN~KBS1Z~SB-BW-BAND~0+4~low/z0_m": 1.2192,
-"solids/CN~KBS1Z~SB-BW-BAND~0+4~low/z1_m": 1.3122556,
 "solids/CN~KBS1Z~SB-BW-BAND~0-1~high/z0_m": 1.8405194,
 "solids/CN~KBS1Z~SB-BW-BAND~0-1~high/z1_m": 1.933575,
-"solids/CN~KBS1Z~SB-BW-BAND~0-1~low/z0_m": 1.2714473,
-"solids/CN~KBS1Z~SB-BW-BAND~0-1~low/z1_m": 1.4284696,
+"solids/CN~KBS1Z~SB-BW-BAND~0-1~low/z0_m": 1.2983881,
+"solids/CN~KBS1Z~SB-BW-BAND~0-1~low/z1_m": 1.4554104,
 "solids/CN~KBS1Z~SB-BW-BAND~0-2~high/z0_m": 1.8405194,
 "solids/CN~KBS1Z~SB-BW-BAND~0-2~high/z1_m": 1.933575,
-"solids/CN~KBS1Z~SB-BW-BAND~0-2~low/z0_m": 1.3792104,
-"solids/CN~KBS1Z~SB-BW-BAND~0-2~low/z1_m": 1.5362327,
+"solids/CN~KBS1Z~SB-BW-BAND~0-2~low/z0_m": 1.4330919,
+"solids/CN~KBS1Z~SB-BW-BAND~0-2~low/z1_m": 1.5901142,
 "solids/CN~KBS1Z~SB-BW-BAND~0-3~high/z0_m": 1.8405194,
 "solids/CN~KBS1Z~SB-BW-BAND~0-3~high/z1_m": 1.933575,
-"solids/CN~KBS1Z~SB-BW-BAND~0-3~low/z0_m": 1.4869735,
-"solids/CN~KBS1Z~SB-BW-BAND~0-3~low/z1_m": 1.6439958,
-"solids/CN~KBS1Z~SB-BW-BAND~0-4~high/z0_m": 1.8405194,
-"solids/CN~KBS1Z~SB-BW-BAND~0-4~high/z1_m": 1.933575,
-"solids/CN~KBS1Z~SB-BW-BAND~0-4~low/z0_m": 1.5947365,
-"solids/CN~KBS1Z~SB-BW-BAND~0-4~low/z1_m": 1.7517588,
+"solids/CN~KBS1Z~SB-BW-BAND~0-3~low/z0_m": 1.5677958,
+"solids/CN~KBS1Z~SB-BW-BAND~0-3~low/z1_m": 1.7248181,
 "solids/CN~KBS1Z~SB-BW-BAND~1+0~high/z0_m": 1.8320685,
 "solids/CN~KBS1Z~SB-BW-BAND~1+0~high/z1_m": 1.9890908,
 "solids/CN~KBS1Z~SB-BW-BAND~1+0~low/z0_m": 1.1636842,
 "solids/CN~KBS1Z~SB-BW-BAND~1+0~low/z1_m": 1.3207065,
-"solids/CN~KBS1Z~SB-BW-BAND~1+1~high/z0_m": 1.7243054,
-"solids/CN~KBS1Z~SB-BW-BAND~1+1~high/z1_m": 1.8813277,
+"solids/CN~KBS1Z~SB-BW-BAND~1+1~high/z0_m": 1.6973646,
+"solids/CN~KBS1Z~SB-BW-BAND~1+1~high/z1_m": 1.8543869,
 "solids/CN~KBS1Z~SB-BW-BAND~1+1~low/z0_m": 1.2192,
 "solids/CN~KBS1Z~SB-BW-BAND~1+1~low/z1_m": 1.3122556,
-"solids/CN~KBS1Z~SB-BW-BAND~1+2~high/z0_m": 1.6165423,
-"solids/CN~KBS1Z~SB-BW-BAND~1+2~high/z1_m": 1.7735646,
+"solids/CN~KBS1Z~SB-BW-BAND~1+2~high/z0_m": 1.5626608,
+"solids/CN~KBS1Z~SB-BW-BAND~1+2~high/z1_m": 1.7196831,
 "solids/CN~KBS1Z~SB-BW-BAND~1+2~low/z0_m": 1.2192,
 "solids/CN~KBS1Z~SB-BW-BAND~1+2~low/z1_m": 1.3122556,
-"solids/CN~KBS1Z~SB-BW-BAND~1+3~high/z0_m": 1.5087792,
-"solids/CN~KBS1Z~SB-BW-BAND~1+3~high/z1_m": 1.6658015,
+"solids/CN~KBS1Z~SB-BW-BAND~1+3~high/z0_m": 1.4279569,
+"solids/CN~KBS1Z~SB-BW-BAND~1+3~high/z1_m": 1.5849792,
 "solids/CN~KBS1Z~SB-BW-BAND~1+3~low/z0_m": 1.2192,
 "solids/CN~KBS1Z~SB-BW-BAND~1+3~low/z1_m": 1.3122556,
-"solids/CN~KBS1Z~SB-BW-BAND~1+4~high/z0_m": 1.4010162,
-"solids/CN~KBS1Z~SB-BW-BAND~1+4~high/z1_m": 1.5580385,
-"solids/CN~KBS1Z~SB-BW-BAND~1+4~low/z0_m": 1.2192,
-"solids/CN~KBS1Z~SB-BW-BAND~1+4~low/z1_m": 1.3122556,
 "solids/CN~KBS1Z~SB-BW-BAND~1-1~high/z0_m": 1.8405194,
 "solids/CN~KBS1Z~SB-BW-BAND~1-1~high/z1_m": 1.933575,
-"solids/CN~KBS1Z~SB-BW-BAND~1-1~low/z0_m": 1.2714473,
-"solids/CN~KBS1Z~SB-BW-BAND~1-1~low/z1_m": 1.4284696,
+"solids/CN~KBS1Z~SB-BW-BAND~1-1~low/z0_m": 1.2983881,
+"solids/CN~KBS1Z~SB-BW-BAND~1-1~low/z1_m": 1.4554104,
 "solids/CN~KBS1Z~SB-BW-BAND~1-2~high/z0_m": 1.8405194,
 "solids/CN~KBS1Z~SB-BW-BAND~1-2~high/z1_m": 1.933575,
-"solids/CN~KBS1Z~SB-BW-BAND~1-2~low/z0_m": 1.3792104,
-"solids/CN~KBS1Z~SB-BW-BAND~1-2~low/z1_m": 1.5362327,
+"solids/CN~KBS1Z~SB-BW-BAND~1-2~low/z0_m": 1.4330919,
+"solids/CN~KBS1Z~SB-BW-BAND~1-2~low/z1_m": 1.5901142,
 "solids/CN~KBS1Z~SB-BW-BAND~1-3~high/z0_m": 1.8405194,
 "solids/CN~KBS1Z~SB-BW-BAND~1-3~high/z1_m": 1.933575,
-"solids/CN~KBS1Z~SB-BW-BAND~1-3~low/z0_m": 1.4869735,
-"solids/CN~KBS1Z~SB-BW-BAND~1-3~low/z1_m": 1.6439958,
-"solids/CN~KBS1Z~SB-BW-BAND~1-4~high/z0_m": 1.8405194,
-"solids/CN~KBS1Z~SB-BW-BAND~1-4~high/z1_m": 1.933575,
-"solids/CN~KBS1Z~SB-BW-BAND~1-4~low/z0_m": 1.5947365,
-"solids/CN~KBS1Z~SB-BW-BAND~1-4~low/z1_m": 1.7517588,
+"solids/CN~KBS1Z~SB-BW-BAND~1-3~low/z0_m": 1.5677958,
+"solids/CN~KBS1Z~SB-BW-BAND~1-3~low/z1_m": 1.7248181,
 "solids/CN~LS30~W-A-N1~01/z0_m": 8.8125859,
 "solids/CN~LS30~W-A-N1~01/z1_m": 8.87095,
 "solids/CN~LS30~W-A-N1~02/z0_m": 8.2315609,

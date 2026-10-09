@@ -354,12 +354,12 @@ Worst case is `PT-BW-W`, which carries the west roof column **and** the landing'
 |---|---|---|
 | roof tributary | 160.0 / 2 headers / 2 supports per header | 40.0 ft² |
 | deck tributary | (23.5 + 13.2) ft² of landing / 2 seat lines | 18.4 ft² |
-| wall line load | `W-BW-SCREEN` + `SB-BW-BAND` on `BM-BW-SCSILL`, half | 109 lb |
+| wall line load | `W-BW-SCREEN` + `SB-BW-BAND` on `BM-BW-SCSILL`, half | 105 lb |
 | roof live | 40.0 × **73.7** psf (§3's design snow) | 2,948 lb |
 | deck live | 18.4 × 40 psf | 736 lb |
-| dead | (40.0 + 18.4) × 10 psf + self weight + carried + wall | 1,777 lb |
-| service | | **5,461 lb** |
-| factored | 1.2 D + 1.6 L | **8,027 lb** |
+| dead | (40.0 + 18.4) × 10 psf + self weight + carried + wall | 1,772 lb |
+| service | | **5,456 lb** |
+| factored | 1.2 D + 1.6 L | **8,021 lb** |
 
 **The wall line load, worked (2026-09-20).** `BM-BW-SCSILL` is the sill under `W-BW-SCREEN`,
 hung on `HU28-2Z` off the two 6x6 KDAT canopy columns `PT-BW-CW`/`-CNW`, which stand on
@@ -371,16 +371,17 @@ never needed a tributary area: it is a plf times a run.
 | term | working | value |
 |---|---|---|
 | `W-BW-SCREEN` | its own resolved layer stack over its 4.08' height | 30.54 plf |
-| `SB-BW-BAND` | 2x6 sill and top plate, 6x6 centre post, 18 slats (32.41 LF of 2x4): 2.14 ft³ of kdat at 600 kg/m³, over its own 4.52' | 17.73 plf |
-| line | | **48.27 plf** |
+| `SB-BW-BAND` | 2x6 sill and top plate, 6x6 centre post, 14 slats (25.75 LF of 2x4): 1.90 ft³ of kdat at 600 kg/m³, over its own 4.52' | 15.71 plf |
+| line | | **46.25 plf** |
 | run | the wall's axis inside `BM-BW-SCSILL`'s own footprint | 4.52' |
-| total | | **218.2 lb** |
-| each column | two bearings | **109.1 lb** |
+| total | | **209.1 lb** |
+| each column | two bearings | **104.5 lb** |
 
 (2026-09-30: the slats shortened 2.40' → 2.34' when the header became an 11 7/8" glulam,
 `canopy_west_band.md` §7; the line was 43.48 plf, 98.3 lb a column. 2026-10-04: the vertical
 `SC-BW-WEST`, 12.66 plf over 6.57', became the braced slat band `SB-BW-BAND`,
-`canopy_west_band.md` §3; the line was 43.20 plf, 97.7 lb a column.)
+`canopy_west_band.md` §3; the line was 43.20 plf, 97.7 lb a column. 2026-10-08: the slat gap
+went 1-1/2" → 2-1/4" and 18 slats became 14, §3a-bis; the line was 48.27 plf, 109.1 lb.)
 
 The slat band is over a third of it, and leaving it out would understate the sill by 37% —
 the same partial-stack failure `resolve/assembly_weight.dead_load_plf` refuses one layer
@@ -388,7 +389,7 @@ down. The plf is the one `checks/structural/guards.py` already printed ("guard w
 `W-BW-SCREEN` weighs 31 plf") in the same run that called this load unknown; it moved to
 `resolve/assembly_weight.py` so a calc could read it, because `engineering` may not import
 `checks`. `checks/structural/deck.py` divides the same pounds into R507.3.1's currency —
-109.1 / 50 psf = 2.18 ft² — rather than holding a second answer about one load.
+104.5 / 50 psf = 2.09 ft² — rather than holding a second answer about one load.
 
 > ⚠ **WITHDRAWN 2026-09-21 as a DEMAND, kept as built.** With the landing tied to the garage (§10)
 > the four landing piers lean: `deck_post` grades them "axial, tied column" (d/c 0.007-0.027)
@@ -399,7 +400,7 @@ down. The plf is the one `checks/structural/guards.py` already printed ("guard w
 `deck_post._detailing_only`'s six load-independent states for `_moment_column`'s twelve, and
 the twelfth is dowel ANCHORAGE into the base — ACI 318-19 §25.4.3.1's ℓ_dh, 7.115" for a #5.
 `PT-BW-GW` had an 8" pad giving 5.375" and **no base dowels at all**: d/c 1.32. It was never
-the wall load (109 lb is 1.4% of factored axial). `_MOMENT_PIERS` had covered the landing's
+the wall load (105 lb is 1.3% of factored axial). `_MOMENT_PIERS` had covered the landing's
 EAST column and not its west, while `pier_basis._base_moments` split the lateral case "over
 4 fixed column(s)" and `structural.lateral_racking` named all four — so the west pair carried
 its twins' base moment with nothing detailed to deliver it, and nobody saw it because their
@@ -410,8 +411,8 @@ hold, `column_base`'s embedment (grade to pad top) does not move and
 `entry_column_base_fixity.md` §6e's claim is undisturbed.
 
 **`pier_basis` reads the same roof and wall as this line, and half its deck** (re-read
-2026-10-04): 9.41 ft² of deck and 40.0 ft² of roof on `PT-BW-W` plus the 109 lb of wall above,
-for D 1,888 + L 3,324 = 5,212 lb service and 7,585 lb factored, against the 8,027 hand-worked
+2026-10-04): 9.41 ft² of deck and 40.0 ft² of roof on `PT-BW-W` plus the 105 lb of wall above,
+for D 1,883 + L 3,324 = 5,208 lb service and 7,579 lb factored, against the 8,021 hand-worked
 here. The gap is the deck share. `deck_post_tributaries` splits each seat beam's strip between
 the TWO piers under it, and the table above puts a whole seat line (18.4 ft²) on one, so the
 hand row is the conservative end by about that half. It is bookkeeping in a load case nowhere
