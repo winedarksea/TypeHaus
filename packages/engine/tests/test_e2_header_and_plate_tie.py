@@ -165,7 +165,7 @@ def test_the_catlin_header_crossings_are_at_their_true_stations(
     # drain's OD takes off its top face (§9); the extract and the main drain meet nothing.
     expected = {
         "PR-B-KITCH-DRAIN": (54.00, 216.0, 0.46),
-        "PR-M-S-BATH1-DRAIN": (54.77, 216.0, 0.30),
+        "PR-M-S-BATH1-DRAIN": (60.00, 216.0, 0.70),  # straight drop since 2026-10-08
     }
     assert set(stations) == set(expected)
     for tag, want in expected.items():

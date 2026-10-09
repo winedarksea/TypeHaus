@@ -1301,7 +1301,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (`header_spec="flat 2x8 nonbearing"`, the wall's own 2x laid flat, 1 1/2" tall) and no
     cripples above it. The 2-2x8 and its four ungraded holes are gone: `DU-B-ERV-R-SAUNA-EXH`
     and `PR-B-MAIN-DRAIN` (4.50") pass through the open head and cut nothing, and
-    `PR-B-KITCH-DRAIN`/`PR-M-S-BATH1-DRAIN` take 0.46"/0.30" off the nailer's top, which
+    `PR-B-KITCH-DRAIN`/`PR-M-S-BATH1-DRAIN` take 0.46"/0.70" off the nailer's top, which
     `mep.run_through_header` PASSes (a nonbearing nailer carries no load). **Do not put a
     bearing header back here without re-reading `notes/framing_bore_limits.md` §8-§9**, and
     do not land anything on `W-B-CW` — it stops being nonbearing, and the flat header with it.

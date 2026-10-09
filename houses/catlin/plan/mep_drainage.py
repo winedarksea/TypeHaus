@@ -116,16 +116,10 @@ DRAINS = [
     # editable-dialect and cannot import the constant, but nothing here can drift quietly:
     # `mep.sleeve_coverage` fails the build the moment this run stops passing through its
     # sleeve.
-    # ** ITS 2.38" BORE OF `W-B-CW`'s HEADER IS ALSO A RECORDED REFUSAL (2026-09-22). **
-    # 2.38" is inside a joist's D/3 and a joist rule decides nothing about a header; against
-    # TJ-9000 the hole is 15" from the bearing (fine) and 1.04" off the header's bottom face
-    # against a middle-third zone wanting 3.96", and it stands 0.77" from
-    # `PR-M-S-BATH1-DRAIN`'s 3.50" hole against a 7.00" minimum spacing — a rule about the
-    # PAIR that neither run can satisfy alone (notes/framing_bore_limits.md §8.3). This is
-    # the tail of a 43'-4" run landing 1/16" over PR-B-MAIN-DRAIN inside `drain_tie_ins`'
-    # 1" window, so it is the least movable of the three and every router proposal for it
-    # trades the header for a slope, burial or footing-clearance FAIL. It travels with the
-    # designed header, not away from it.
+    # It crosses `W-B-CW` through `D-B-FURN`'s flat 2x8 nonbearing nailer, 0.46" off its top
+    # (`mep.run_through_header` PASSes). It is the tail of a 43'-4" run landing 1/16" over
+    # PR-B-MAIN-DRAIN inside `drain_tie_ins`' 1" window, so it is the least movable drain
+    # here: `PR-M-S-BATH1-DRAIN` keeps east of its x=4'-6" fall line rather than cross it.
     # ** OVER THE STAIR WELL IT HUGS THE NORTH WALL, EXPOSED (2026-09-23). ** It ran 8 ft
     # inside FO-M-STAIR's north trimmer pack. The pack moved onto W-B-N2's sill (plan/
     # storeys/main.py) and this leg jogs north on two 45 pairs — over W-B-CN's top at
@@ -348,31 +342,21 @@ DRAINS = [
 # so the elevations read as heights on the storey the pipe is actually visible from:
 # +9'-9" is the second floor's underside, the negative inverts are the basement ceiling.
 SECOND_DRAINS = [
-    # ** THE DIAGONAL CROSSES `W-B-CW`'s HEADER, AND THAT IS A RECORDED REFUSAL (2026-09-22).
-    # ** This leg bores `D-B-FURN`'s 2-2x8 header 3.50" at x=4'-6 3/4", 0.77" from
-    # `PR-B-KITCH-DRAIN`'s own 2.38" hole. No published chart reaches either — TJ-9000 wants
-    # 2 x the larger diameter between two holes (7.00") and the middle third of the depth,
-    # and both sit within 1 1/4" of the header's bottom face (notes/framing_bore_limits.md
-    # §8). The squared alternative — west at y=26'-6", south down x=1'-7", east to the tie —
-    # reaches the wall's one free 5 1/4" of clear bay and **costs no developed length at all**
-    # (178" either way; an L and its diagonal differ only in the corner). It was tried and it
-    # fails, structurally rather than incidentally: **the bay is west of x=2'-0" and this tie
-    # is at x=3'-0"**, so any route reaching it crosses `DU-B-ERV-R-BENCH`'s x=2'-0" lane and
-    # `PR-B-WC2-DRAIN`'s x=2'-4 1/2" lane TWICE, in the four feet where every basement service
-    # converges — four new `mep.run_interference` FAILs, measured. Clearing them wants the
-    # drain above -22" (it is already under the deck) or below -31" (it ties in at -28"), and
-    # a gravity drain does neither. **The diagonal is clean exactly because it never goes
-    # west of x=3'-0".** What closes the header is a designed header, not a lane.
+    # ** STRAIGHT SOUTH ON x=5'-0", EAST OF THE KITCHEN DRAIN (2026-10-08). ** The old
+    # diagonal to a tie at x=3'-0" ran within 1/2" of `PR-B-KITCH-DRAIN`'s x=4'-6" fall line
+    # for its last nine feet and crossed it in elevation — a drain-on-drain clash no fitting
+    # explains. It now drops on the stack's own line and side-enters the main at x=5'-0",
+    # 6" east of the kitchen tie and 12" west of the main's corner: 10'-0" at 0.575"/ft,
+    # 11" of 3" PVC shorter, through `D-B-FURN`'s flat nailer 0.70" off its top.
     PipeRun(uid="CMPD07AAAA", tag="PR-M-S-BATH1-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(5), ft(26, 6)), pt(ft(5), ft(26, 6)),
-                  pt(ft(4, 6.4), ft(17, 4.8)), pt(ft(3), ft(16, 6))),
+            path=(pt(ft(5), ft(26, 6)), pt(ft(5), ft(26, 6)), pt(ft(5), ft(16, 6))),
             diameter=inch(3), material="pvc",
             # ** THE HEAD IS ABOVE THE SECOND FLOOR NOW, NOT UNDER IT. ** It was 9'-9" —
             # inside the truss depth — for as long as this stack had no branch piping at
             # all. PR-M-S-VANITY-DRAIN is a wall arm in W-S-BD-N's cavity at 10'-2 9/16",
             # and a stack tops out at its highest inlet, so the barrel rises 6" further to
             # 10'-3" and every other branch ties onto the vertical below it.
-            elevations=(ft(10, 3), ft(-1.8333), ft(-2.2333), ft(-2.3333)),
+            elevations=(ft(10, 3), ft(-1.8333), inch(-27.75)),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # ** THE HEAD IS 1 1/2" LOWER THAN ITS BATH1 TWIN, AND DELIBERATELY. ** The attic bath's

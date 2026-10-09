@@ -494,7 +494,7 @@ required above the header." Three things follow in the engine:
 |---|---|---|
 | `DU-B-ERV-R-SAUNA-EXH` | 3.25" notch, UNKNOWN | x 45.00", band -25.44"..-21.44": **cuts nothing**, 2.50" over the nailer, 5.50" off the west king |
 | `PR-B-KITCH-DRAIN` | 2.38" bore, UNKNOWN | x 54.00", band -28.40"..-26.02": **0.46" notch** off the top, 1.04" left — PASS |
-| `PR-M-S-BATH1-DRAIN` | 3.50" bore, UNKNOWN | x 54.77", band -28.23"..-24.73": **0.30" notch** off the top, 1.20" left — PASS |
+| `PR-M-S-BATH1-DRAIN` | 3.50" bore, UNKNOWN | x 60.00" (straight drop since 2026-10-08): **0.70" notch** off the top, 0.80" left — PASS |
 | `PR-B-MAIN-DRAIN` | 4.50" bore, UNKNOWN | x 72.00", band -27.29"..-22.79": **cuts nothing**, 0.65" over the nailer, 2.25" off the east king |
 
 `PR-B-MAIN-DRAIN` never meets R602.6 at all: with no cripple in the head there is no stud

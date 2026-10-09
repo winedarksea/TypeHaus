@@ -176,7 +176,7 @@ EQUIPMENT_ERV_BASEMENT = [
 #          x=4'-6" fall line and the SH2/SINK2 pair that converge on (3'-0", 16'-6"). Each
 #          holds one 4" duct and only one: the window is PR-B-WC1-DRAIN's tail at y=22'-0"
 #          on top and PR-M-S-BATH1-DRAIN's rake at y=17'-0" underneath, about three inches
-#          of air.
+#          of air (that rake is gone: the drain drops straight on x=5'-0" since 2026-10-08).
 #        * **x=2'-0", -27 15/16"** — under everything, over PR-B-SINK2-DRAIN's -25.4"
 #          at y=15'-9". 79 1/2" of headroom under it, in the workshop, where the ceiling is
 #          open by design and the bench hood it feeds hangs at 5'-6" anyway.
