@@ -590,16 +590,28 @@ SUPPLY = [
             # Tees off PR-B-HW-TRUNK at y=17'-0" and runs square east under the joists,
             # into the riser's bay from the SOUTH: FS-M-WEST blocks that bay at x=14'-6"
             # under the laundry duct's drop, and PR-B-HW-KITCH holds y=15'-6".
+            # ** IN THE TRUSS FLOOR IT RUNS UNDER THE TUB WASTE (2026-10-08). ** The north leg
+            # shares x=16'-5" with PR-M-S-SUITE-TUB-DRAIN's leg (0.6" apart) and there is no
+            # lane beside it: the web opening ends at 16'-7 1/2" and DU-M-ERV-R-BED2 and the
+            # cold hold the west. So it rides under the waste at 9'-6 11/16" on a 1/2" sleeve
+            # (R-3.1, as PR-A-HW-STUBATH), 3.06" over the BED2 and STUDY radials' crowns, dips
+            # to 9'-6" under CD-M-DATA-KITCH at y=21'-1.3" and through truss 016's opening,
+            # steps to 9'-7" for DU-M-ERV-R-KITCH, and climbs past the tub drop to 9'-10"
+            # before turning west over the cold.
             path=(pt(ft(6, 6), ft(17)), pt(ft(16, 5), ft(17)), pt(ft(16, 5), ft(18)),
                   pt(ft(16, 5), ft(18)),
-                  pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(22, 4)),
+                  pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(18)), pt(ft(16, 5), ft(20, 9)),
+                  pt(ft(16, 5), ft(20, 11.625)), pt(ft(16, 5), ft(21, 6.75)),
+                  pt(ft(16, 5), ft(21, 6.75)), pt(ft(16, 5), ft(22, 1)), pt(ft(16, 5), ft(22, 4)),
                   pt(ft(14, 3.6), ft(22, 4)), pt(ft(14, 3.6), ft(22, 4)),
                   pt(ft(14, 3.6), ft(22, 4))),
-            diameter=inch(0.75), material="pex", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
+            diameter=inch(0.75), material="pex", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
             elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375),
-                        ft(18, 1.3125), ft(18, 11.4375), ft(18, 11.4375), ft(18, 11.4375),
-                        ft(19, 1.4375), ft(21, 7.4375)),
-            wall_refs=(None, None, None, "W-M-CLN2", None, None, None, None, "W-S-SN3"),
+                        ft(18, 1.3125), ft(18, 8.125), ft(18, 8.125), ft(18, 7.4375),
+                        ft(18, 7.4375), ft(18, 8.4375), ft(18, 8.4375), ft(18, 11.4375),
+                        ft(18, 11.4375), ft(19, 1.4375), ft(21, 7.4375)),
+            wall_refs=(None, None, None, "W-M-CLN2", None, None, None, None, None, None, None,
+                       None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
     # The bathroom's 36" pocket occupies the east wall south of its opening. The cold branch
     # leaves the tank's cold port at top elevation, turns south and west over the tank, then

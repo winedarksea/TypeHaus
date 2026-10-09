@@ -132,11 +132,11 @@ def test_catlin_is_pinned_so_a_campaign_can_see_itself(catlin_ctx) -> None:
     0/20 on 2026-09-24: every ERV duct, vent and the radon riser now stands in a drawn hole
     (``test_catlin_erv_clearance.py``); what is left is supply and drain, all undrawn.
 
-    0/19 on 2026-10-08: PR-A-HW-STUBATH went to a 1/2" sleeve, 1.88" across, under the 2"
-    a trade drills, so its FS-ATTIC hole left this column for an UNKNOWN."""
+    0/17 on 2026-10-08: PR-A-HW-STUBATH and PR-B-HW-SUITE went to a 1/2" sleeve, 1.88"
+    across, under the 2" a trade drills, so their three holes left this column for UNKNOWNs."""
     fails = _by_result(catlin_ctx, Result.FAIL)
     on_member = [f for f in fails if "lands on the member" in f.message]
     undrawn = [f for f in fails if "FRAMED, NOT DRILLED" in f.message]
     assert len(on_member) == 0
-    assert len(undrawn) == 19
+    assert len(undrawn) == 17
     assert len(fails) == len(on_member) + len(undrawn)
