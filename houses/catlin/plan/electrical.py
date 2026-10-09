@@ -1635,8 +1635,13 @@ BASEMENT_DATA_TRUNKS = [
     # because it would surface a long tail across 111 runs. So this clearance was measured
     # by hand and is written down here, because the next person to move this line will not
     # be told by anything.
+    #
+    # ** THE y=19'-0" LEG IS 18'-8 1/2" (2026-10-08). ** It sat 1 3/8" off PR-B-LSINK-DRAIN's
+    # 2" line at y=18'-10 5/8" (x 6'..12'), too close in plan. y=19'-3" hit PR-B-WASH-DRAIN
+    # and y=21'-0" hit PR-B-HW-WASH and PR-B-WC2-DRAIN, so the north step is the one that
+    # clears. Same elevation; it clears the drain by 2 1/8" in plan.
     ConduitRun(uid="Z9TXYSYKWG", tag="CD-B-DATA-STUDY", trade_size=inch(0.75), service=Service.DATA,
-               path=(pt(inch(10), ft(31)), pt(ft(2), ft(31)), pt(ft(2), ft(19)), pt(ft(16), ft(19)), pt(ft(16), ft(18, 5)), pt(ft(16), ft(18, 5))),
+               path=(pt(inch(10), ft(31)), pt(ft(2), ft(31)), pt(ft(2), ft(18, 8.5)), pt(ft(16), ft(18, 8.5)), pt(ft(16), ft(18, 5)), pt(ft(16), ft(18, 5))),
                start_elevation=inch(-12.5), end_elevation=ft(2, 8), elevations=(inch(-12.5), inch(-12.5), inch(-12.5), inch(-12.5), inch(-12.5), ft(2, 8)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-STUDY-DATA1"),
 ]
