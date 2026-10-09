@@ -350,14 +350,28 @@ def _door_pocket(plan: PlanModel, el, rw, operation, width: float) -> tuple[floa
     and it already carries exactly the meaning wanted here — which side of the opening the
     leaf belongs to. ``False`` (the default) pockets toward the wall's end node.
     """
+    from typehaus.hardware.catalog import pocket_frame_kit
     from typehaus.model.enums import DoorOperation
+    from typehaus.quantities import inch
     from typehaus.quantities import m as _metres
-    from typehaus.resolve.framing.tables import pocket_run
+    from typehaus.resolve.framing.tables import pocket_run, pocket_wall_is_deep
 
     if el.element_kind != "Door" or operation != DoorOperation.POCKET.value:
         return (0.0, 0)
     sign = -1 if getattr(el, "flip_hinge", False) else +1
-    return (pocket_run(_metres(width)).meters, sign)
+    door_type = next((x for x in plan.library.door_types if x.tag == el.type_ref), None)
+    family = getattr(door_type, "pocket_frame", None)
+    rough = None
+    if family:
+        # A family with no kit at this width raises in the takeoff; frame it at 2W + 1".
+        width_in = round(_metres(width).inches)
+        try:
+            kit = pocket_frame_kit(family, width_in, pocket_wall_is_deep(getattr(rw, "layers", ())))
+            ro_in = kit.rough_opening_in_by_length_in.get(width_in)
+            rough = inch(ro_in) if ro_in is not None else None
+        except LookupError:
+            rough = None
+    return (pocket_run(_metres(width), rough).meters, sign)
 
 
 def _opening_center(plan: PlanModel, el, rw, axis_len: float, width: float) -> float:

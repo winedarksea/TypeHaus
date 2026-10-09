@@ -268,6 +268,9 @@ class FramedMember:
     # A winder's LEADING edge — the nosing its grain runs along, which the millwork blank is
     # measured off. Not ``riser_line``: every plan draws that, and a winder marks its fan line.
     nosing_line: tuple[tuple[float, float], tuple[float, float]] | None = None
+    # The hardware ROLE whose product ships this member (a pocket kit's split studs). It is
+    # drawn and cleared like any member and billed with the kit, never as lumber.
+    supplied_by: str | None = None
 
 
 @dataclass(frozen=True)

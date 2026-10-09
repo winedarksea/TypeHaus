@@ -387,6 +387,43 @@ POCKET_FRAME_KIT_HEAVY = StructuralHardware(
            "series.",
 )
 
+# Eclisse ships a factory-assembled galvanized-steel cassette rather than loose split studs,
+# so the pocket's flatness does not depend on the framer. Selected by ``DoorType.pocket_frame
+# = "eclisse"``. Its RO is wider than 2W + 1" (FS + 1/2"), and the frame reads that table.
+_ECLISSE_WIDTHS = (24, 26, 28, 30, 32, 34, 36, 42, 48)
+_ECLISSE_RO = {24: 50.5, 26: 54.5, 28: 58.5, 30: 62.5, 32: 66.5, 34: 70.5, 36: 74.5,
+               42: 85.5, 48: 97.5}
+_ECLISSE_SOURCE = (
+    "ECLISSE Single 2x4-2x6 technical sheet 11/2022 (eclisse.us/en-us/support/product/single/"
+    ") — R.O. = F.S. + 1/2\" wide, H1 + 1/4\" high from FINISHED floor; door to 220 lb and "
+    "1-3/4\" thick; drywall screws into the pocket no longer than 1\". "
+    "houses/catlin/notes/pocket_frame_eclisse.md"
+)
+POCKET_FRAME_KIT_ECLISSE_2X4 = StructuralHardware(
+    tag="eclisse-single-2x4-pocket-frame",
+    name="Pocket door frame, galvanized steel cassette, 2x4 wall (to 220 lb)",
+    role=ROLE_POCKET_DOOR_FRAME_KIT,
+    manufacturer="ECLISSE",
+    model="POCKET-FRAME-ECLISSE-2X4",
+    fits_nominal=tuple(f"eclisse-{w}" for w in _ECLISSE_WIDTHS),
+    # 80" leaves only; EKC = 2x4, then width and height (Home Depot listings, 2026-10-09).
+    part_number_by_length_in={36: "EKC3680", 42: "EKC4280"},
+    rough_opening_in_by_length_in=_ECLISSE_RO,
+    source=_ECLISSE_SOURCE,
+)
+# The 2x6 series is EKQ. No 80"-tall listing was found at retail, so no part number is
+# recorded; order it by size from the dealer.
+POCKET_FRAME_KIT_ECLISSE_2X6 = StructuralHardware(
+    tag="eclisse-single-2x6-pocket-frame",
+    name="Pocket door frame, galvanized steel cassette, 2x6 wall (to 220 lb)",
+    role=ROLE_POCKET_DOOR_FRAME_KIT,
+    manufacturer="ECLISSE",
+    model="POCKET-FRAME-ECLISSE-2X6",
+    fits_nominal=tuple(f"eclisse-{w}-2x6" for w in _ECLISSE_WIDTHS),
+    rough_opening_in_by_length_in=_ECLISSE_RO,
+    source=_ECLISSE_SOURCE,
+)
+
 
 # ** THE STEEL POST'S TWO WELDED ENDS (2026-09-29). ** A fabricated HSS post is bought as one
 # piece with its saddle and base plate on it, so neither end is ordered or selected by role —

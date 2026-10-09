@@ -341,6 +341,9 @@ class StructuralHardware:
     anchorage_in_rating: bool = False
     #: Shipping weight, lb, where a load path counts the part's own weight. ``None``: unread.
     weight_lb: float | None = None
+    #: A pocket frame's published rough-opening WIDTH per door width, inches. Empty means the
+    #: kit follows the 2W + 1" every commodity series publishes (``tables.pocket_run``).
+    rough_opening_in_by_length_in: dict = field(default_factory=dict)
 
     @property
     def available_lengths_in(self) -> tuple:
@@ -428,6 +431,19 @@ def hardware_for_role_and_nominal(role: str, nominal: str) -> StructuralHardware
         raise LookupError(f"expected exactly one library hardware item for role {role!r} at "
                           f"{nominal}, found {[item.tag for item in items]}")
     return items[0]
+
+
+def pocket_frame_kit(family: str | None, width_in: int, deep_wall: bool) -> StructuralHardware:
+    """The frame kit a pocket door of ``width_in`` is bought with.
+
+    ``family`` is ``DoorType.pocket_frame``. ``None`` is the commodity ladder, where only the
+    36" leaf has a 2x6 kit (Johnson 1560); a named family publishes both depths at every
+    width, so its nominal is ``<family>-<width>[-2x6]``.
+    """
+    base = f"{family}-{width_in}" if family else str(width_in)
+    deep = deep_wall and (family is not None or width_in == 36)
+    return hardware_for_role_and_nominal(ROLE_POCKET_DOOR_FRAME_KIT,
+                                         f"{base}-2x6" if deep else base)
 
 
 def hardware_by_model(model: str) -> StructuralHardware | None:

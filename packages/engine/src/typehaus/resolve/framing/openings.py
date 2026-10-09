@@ -12,6 +12,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+from typehaus.hardware.catalog import ROLE_POCKET_DOOR_FRAME_KIT
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
 from typehaus.quantities import m as _m
@@ -20,7 +21,6 @@ from typehaus.resolve.framing.short_members import MIN_STUD_LINE_M
 from typehaus.resolve.framing.stud_module import OpeningStudModule, opening_stud_module
 from typehaus.resolve.framing.tables import (
     OVERHEAD_TRACK_MEMBER,
-    POCKET_SPLIT_STUD_2X6_MIN_DEPTH,
     POCKET_SPLIT_STUD_MEMBER,
     POCKET_SPLIT_STUD_MEMBER_2X6,
     POCKET_SPLIT_STUD_SPACING,
@@ -31,6 +31,7 @@ from typehaus.resolve.framing.tables import (
     jamb_pack_counts,
     member_actual,
     opening_framing_pattern,
+    pocket_wall_is_deep,
 )
 from typehaus.resolve.geometry import add, scale
 from typehaus.resolve.geometry_walls import cuts_layer
@@ -468,10 +469,8 @@ def _append_pocket_cavity(out: list[FramedMember], rw, direction, wall_start,
     floating.
     """
     spacing = POCKET_SPLIT_STUD_SPACING.meters
-    structure = next((layer for layer in getattr(rw, "layers", ())
-                      if layer.function == "structure"), None)
     split_member = (POCKET_SPLIT_STUD_MEMBER_2X6
-                    if structure and structure.thickness_m >= POCKET_SPLIT_STUD_2X6_MIN_DEPTH.meters
+                    if pocket_wall_is_deep(getattr(rw, "layers", ()))
                     else POCKET_SPLIT_STUD_MEMBER)
     count = int(abs(closed - mouth) // spacing)
     for index in range(1, count + 1):
@@ -483,7 +482,8 @@ def _append_pocket_cavity(out: list[FramedMember], rw, direction, wall_start,
         point = add(wall_start, scale(direction, station))
         out.append(FramedMember(rw.uid, f"pocketsplit-{opening_index}-{index:02d}", "stud",
                                 split_member, point, point, z0, header_bottom,
-                                header_bottom - z0, orient=direction))
+                                header_bottom - z0, orient=direction,
+                                supplied_by=ROLE_POCKET_DOOR_FRAME_KIT))
 
 
 def _append_track_jamb_legs(out: list[FramedMember], rw, direction, wall_start,

@@ -65,7 +65,11 @@ _library = Library(
     # was the whole pocket ladder, which pulled all six Johnson 1500PF sizes in and left five of
     # them with no door, no price row and nothing to bill — the same dead weight the two
     # retired house types in `main.DOOR_TYPES` carried. Both house pockets use 36" frames.
-    door_types=(DT_POCKET_INT_36, *STANDARD_DOOR_TYPES, *main.LOCAL_DOOR_TYPES),
+    # Bought as Eclisse steel cassettes (2026-10-09): stiffer than loose split studs and
+    # forgiving of the framer. Its 74 1/2" RO is 1 1/2" wider than the 2W + 1" commodity one.
+    # notes/pocket_frame_eclisse.md.
+    door_types=(DT_POCKET_INT_36.model_copy(update={"pocket_frame": "eclisse"}),
+                *STANDARD_DOOR_TYPES, *main.LOCAL_DOOR_TYPES),
     window_types=WINDOW_TYPES_16_INCH_MODULE,
     # The shared catalogs supply every plumbing fixture, appliance, and railing this house
     # uses; only the wall-fitted mudroom closets stay house-local. Tags are disjoint, and

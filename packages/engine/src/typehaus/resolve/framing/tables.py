@@ -174,9 +174,8 @@ POCKET_RUN_ALLOWANCE = inch(1)
 POCKET_SPLIT_STUD_SPACING = inch(12)
 # A split stud is a pair of half-thickness legs with the leaf slot between them, so it is
 # authored as a built-up ``2-1x4``: two 3/4"x3-1/2" halves, the same 3-1/2" depth as the
-# 2x4 wall it stands in. A premium kit substitutes steel-wrapped legs of the same
-# dimensions and supplies them *in* the kit; the takeoff carries the kit as hardware, so a
-# house that buys one is over-billed by this lumber row and under-billed by nothing.
+# 2x4 wall it stands in. Every kit ships its own split studs (steel), so the members carry
+# ``supplied_by`` and the lumber takeoff skips them; they stay for geometry and clearances.
 POCKET_SPLIT_STUD_MEMBER = "2-1x4"
 POCKET_SPLIT_STUD_MEMBER_2X6 = "2-1x6"
 POCKET_SPLIT_STUD_2X6_MIN_DEPTH = inch(5.5)
@@ -189,13 +188,22 @@ POCKET_SPLIT_STUD_2X6_MIN_DEPTH = inch(5.5)
 POCKET_MAX_FASTENER = inch(1)
 
 
-def pocket_run(clear_width: Length) -> Length:
+def pocket_run(clear_width: Length, rough_opening: Length | None = None) -> Length:
     """How far the pocket runs past the rough opening for a leaf of ``clear_width``.
 
     The leaf has to disappear completely, plus the split jamb it passes through, which is
-    the 1" every frame-kit rough-opening table folds into its 2W + 1 formula.
+    the 1" every frame-kit rough-opening table folds into its 2W + 1 formula. A kit that
+    publishes its own RO (Eclisse: 2W + 2-1/2" at 36") passes it, and the run is the rest.
     """
+    if rough_opening is not None:
+        return inch(rough_opening.inches - clear_width.inches)
     return inch(clear_width.inches + POCKET_RUN_ALLOWANCE.inches)
+
+
+def pocket_wall_is_deep(layers) -> bool:
+    """Whether a pocket in a wall of ``layers`` takes the 2x6 split studs and kit."""
+    structure = next((layer for layer in layers or () if layer.function == "structure"), None)
+    return bool(structure and structure.thickness_m >= POCKET_SPLIT_STUD_2X6_MIN_DEPTH.meters)
 
 
 # A bifold hangs entirely from its own head track inside a non-bearing partition: it needs

@@ -101,6 +101,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `pantry_climbable_shelving.md` | the climbable-shelving rule and what it retired |
 | `partition_top_deflection.md` | why an interior partition's framing stops 3/4" under the structure over it, the SDPW DEFLECTOR that holds it there and why it is the 6" one, the two-tops rule and the four FAILs that decided it, and what the schedule deliberately does not bill |
 | `pocket_door_at_laundry.md` | the pocket door and the wall it is cut into |
+| `pocket_frame_eclisse.md` | why both pockets are Eclisse steel cassettes, their published 74 1/2" RO, and what the model does not carry |
 | `porch_enclosure.md` | the seasonal curtain track that replaced the glazed enclosure |
 | `porch_stair.md` | the porch stair geometry |
 | `wall_bracing_layout.md` | IRC R602.10 braced wall bracing: the derived story count (the basement is a concrete box, the attic is R325.6 habitable), the eave-to-ridge factor measured from the top plate rather than the eave, required against provided line by line, the factors not taken and what would bring them back, the NE corner's three options, the garage door piers, and the 24" x 24" service-penetration threshold no code states |

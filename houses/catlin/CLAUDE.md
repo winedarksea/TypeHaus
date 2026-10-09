@@ -1540,13 +1540,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       `W-S-SS2` at y 104 1/8"..105 5/8") may NOT be lapped — `structural.member_interference`
       excuses treads/stringers over a soffit but not that ledger.
 - **`W-M-HS4` is a pocket wall and nothing may ever go in it again** — no outlet, switch,
-  pipe, register, blocking, or towel bar between 12'-1" and 15'-2" on the y=22'-4" datum
+  pipe, register, blocking, or towel bar between 12'-2" and 15'-4 1/2" on the y=22'-4" datum
   (the built cavity is 1" north of it; no stud to fasten to, no depth to recess into).
   `D-M-LAUN`'s 3'-0" pocket leaf parks there, crossing
   node `N-M-E3`. Enforced by `mep.pocket_occupancy`.
   - **A split stud that ever reaches the top plate destroys the `W-M-LS` plate tie** — a
     pocket occupies floor to 6'-8" only, so the tie's plates run continuous over/under it and
     only its vertical edge floats.
+  - **Both pockets are Eclisse steel cassettes (2026-10-09)**, `pocket_frame="eclisse"` on the
+    type: RO 74 1/2" against the commodity 73", so each cavity is 1 1/2" longer. EKC3680 here;
+    `D-B-BATH`'s 2x6 EKQ kit is special order, 4-9 weeks. `notes/pocket_frame_eclisse.md`.
   - The closing pack must clear `N-M-C2`, where bearing `W-M-C3` corners in and
     `BM-M-HALL` starts. Full detail, including the 1" fastener limit:
     `notes/pocket_door_at_laundry.md`.

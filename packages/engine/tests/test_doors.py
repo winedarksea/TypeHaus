@@ -554,7 +554,7 @@ def _pocket_members(width=ft(4), *, flip=False, wall_len=6.0):
 
 
 def test_pocket_rough_opening_is_the_published_two_w_plus_one():
-    """Every frame kit sizes the RO at 2W + 1"; ``pocket_run`` is the second half of it."""
+    """The commodity kits size the RO at 2W + 1"; ``pocket_run`` is the second half of it."""
     assert (ft(4) + pocket_run(ft(4))).inches == pytest.approx(97.0)
     assert (ft(3) + pocket_run(ft(3))).inches == pytest.approx(73.0)
     assert (ft(2, 6) + pocket_run(ft(2, 6))).inches == pytest.approx(61.0)
@@ -717,8 +717,8 @@ def test_catlin_bath_pocket_crosses_into_the_matching_section(catlin_model_ro):
               if member.child_key.startswith("pocketsplit-")]
     assert splits and {member.profile for member in splits} == {"2-1x6"}
     frames = {row["part_number"]: row for row in door_hardware_rows(model)}
-    assert frames["153068PF"]["count"] == 1
-    assert frames["15603068"]["count"] == 1
+    assert frames["EKC3680"]["count"] == 1  # D-M-LAUN, 2x4
+    assert frames["POCKET-FRAME-ECLISSE-2X6"]["count"] == 1  # D-B-BATH
 
 
 def test_catlin_murphy_door_keeps_published_dimensions_and_hinge_clearance(catlin_model_ro):

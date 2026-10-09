@@ -13,11 +13,11 @@ The tower's diagonal path past the sink is 34 3/8"; the tub's north face is 25.0
 the doorway's inside face, giving standing room at its front. The washer is operated from the
 hall. The tub remains the air-gap receptor for `PR-M-DRYER-COND`.
 
-The leaf runs 37" east of the opening. Its end stays short of `N-M-C2`, where bearing
+The cavity runs 38 1/2" east of the opening, to x=15'-4 1/2" (the Eclisse RO). Its end stays short of `N-M-C2`, where bearing
 `W-M-C3` and `BM-M-HALL` begin. `W-M-LS` meets the continuous top and bottom plates;
 its vertical gypsum edge floats against the split jamb. No fastener over the pocket may
 exceed the 1" limit in `resolve/framing/tables.py`. No box, pipe, duct, register, or
 backing may occupy the leaf's travel; `mep.pocket_occupancy` checks both wall segments.
 
-`DT-POCKET-INT-36` uses a Johnson 1500PF frame for this 2x4 host. The hardware takeoff
-bills part `153068PF` per door.
+`DT-POCKET-INT-36` hangs in an Eclisse EKC3680 steel cassette for this 2x4 host
+(`pocket_frame_eclisse.md`); the hardware takeoff bills it per door.

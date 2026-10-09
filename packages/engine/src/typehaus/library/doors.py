@@ -9,8 +9,9 @@ nothing about one was ever house-specific.
 The pocket family goes first because it is the one door whose *type* carries real
 consequences the plan cannot infer. A pocket:
 
-- frames at roughly ``2W + 1"``, not ``W``. Every published kit sizes the rough opening
-  that way, and ``resolve.framing.tables.pocket_run`` is that formula.
+- frames at roughly ``2W + 1"``, not ``W``. The commodity kits size the rough opening
+  that way and ``resolve.framing.tables.pocket_run`` is that formula; a kit family named by
+  ``DoorType.pocket_frame`` may publish its own (Eclisse: 74 1/2" at 36").
 - leaves a run of wall as long as the leaf again with no stud to fasten to, no bay to bore
   and no depth to recess a box into. ``mep.pocket_occupancy`` refuses anything in it.
 - is width-limited by the *kit*, not by the opening. The commodity series stop at 36" and

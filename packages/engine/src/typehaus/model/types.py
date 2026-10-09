@@ -118,6 +118,10 @@ class DoorType(HausModel):
     # off this field simply does not select the row.
     function: Literal["entry", "passage", "privacy", "pocket_privacy", "closet",
                       "garage_man_door", "overhead"] | None = None
+    # The CATALOG FAMILY a pocket's frame kit is bought from (e.g. "eclisse"); the host wall's
+    # depth picks the kit within it. None is the commodity ladder (Johnson / Cavity Sliders).
+    # A family may publish its own rough opening, so it moves the framing as well as the BOM.
+    pocket_frame: str | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None

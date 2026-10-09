@@ -361,13 +361,6 @@
 # wall took it (a KDAT 2x4 outrigger on edge does that job now — "2x4:kdat" below). What is
 # left is the sauna/plant liner strapping and the garage's own rainscreen.
 "1x4" = { material = { low = 0.45, high = 0.7 }, labour = { low = 0.35, high = 0.7 } }  # 742 LF
-# A pocket door's split stud: two 1x4 legs with the leaf slot between them, so the material
-# is exactly twice the 1x4 above. Labour is NOT doubled — the pair is set as one member, and
-# the frame kit ships them assembled (they are steel-wrapped in the heavy-duty unit), so the
-# carpenter hangs one thing. See library/hardware/: a house that buys the kit is over-billed
-# by this row and under-billed by nothing.
-"2-1x4" = { material = { low = 0.9, high = 1.4 }, labour = { low = 0.35, high = 0.7 } }  # 20 LF
-"2-1x6" = { material = { low = 1.4, high = 2.4 }, labour = { low = 0.35, high = 0.7 } }  # 2x6 pocket split studs
 # "1x6.81165 panel" =    # 112 LF — cellular-PVC fascia, billed in [edge_trim]
 # One ply of the row below: floor-opening trimmer packs on the I-joist decks run bearing to
 # bearing in band-deep LVL since 2026-09-16. Half the 2-ply material; labour per ply a bit over half.
@@ -1152,9 +1145,14 @@
 # includes its own seam clamp (which this one must, since no separate PV clamp is billed)
 # costs materially more than the bare grab.
 "S-5-PVKIT" = { low = 14, high = 35 }  # 48 ea
-# The 36" 1500 and 1560 frames are billed by their actual kit part numbers.
-"153068PF" = { low = 125, high = 220 }  # D-M-LAUN; listed at $149 (homesteadhardware.com)
-"15603068" = { low = 275, high = 400 }  # D-B-BATH; 1560 listed at $299 (doorclearancecenter.com)
+# Eclisse steel cassettes since 2026-10-09 (notes/pocket_frame_eclisse.md). EKC3680 listed
+# $341.94 (Home Depot) to $465 (Ferguson). The 2x6 (EKQ series) has no 80" retail listing:
+# 30x84 is $695 at Ferguson, special order, 4-9 weeks, so order D-B-BATH's early.
+"EKC3680" = { low = 340, high = 470 }  # D-M-LAUN
+"POCKET-FRAME-ECLISSE-2X6" = { low = 600, high = 750 }  # D-B-BATH
+# The Johnson kits these replaced, kept priced.
+"153068PF" = { low = 125, high = 220 }  # 0 ea; listed at $149 (homesteadhardware.com)
+"15603068" = { low = 275, high = 400 }  # 0 ea; 1560 listed at $299 (doorclearancecenter.com)
 # 2026-08-20 — the wind-mitigation clamps (plan/wind_clamps.py). The PANEL PROFILE decides
 # the part: an S-5-S will not close on a nail-strip bulb and an S-5-N will not close on a
 # snap-lock leg. Priced per SKU rather than as a family:
@@ -5278,7 +5276,8 @@
 # $103.50-206.50 for a 2-door, which is why the old $150 floor was wrong.
 "DT-INT-BIFOLD56" = { material = { low = 175, high = 500 }, labour = { low = 105, high = 225 } }  # 1 ea — was 2 until D-M-LAUN became a pocket (2026-08-21); O-S-CLOSET is the last one
 # The 36" slab is priced separately from the counted frame kits in [hardware]. Labour
-# includes setting the frame before drywall and hanging and adjusting each leaf.
+# includes setting the frame before drywall and hanging and adjusting each leaf. The Eclisse
+# cassette arrives assembled, so the setting half sits nearer the low end.
 "DT-POCKET-INT-36" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 2 ea, slab and installation; frame kits above
 "DT-INT-BYPASS48" = { material = { low = 200, high = 500 }, labour = { low = 100, high = 220 } }  # 1 ea — stock molded pair + track, to solid-core or mirrored
 "DT-INT-BYPASS60" = { material = { low = 240, high = 600 }, labour = { low = 100, high = 220 } }  # 1 ea — RM-M-PANTRY. Two 30" leaves on one track; same hardware and same hang as the 48", wider leaves

@@ -205,6 +205,8 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             continue  # separately specified wear boards bill by area in sheet_goods
         if member.category == STRAP_CATEGORY:
             continue  # steel strap: hardware, billed in takeoff/strap_braces
+        if member.supplied_by:
+            continue  # ships inside a kit billed as hardware (a pocket frame's split studs)
         if rip_stock(member.profile, member.material) is not None:
             # A plywood rip is ordered by the SHEET (``takeoff/sheet_rips``) and bills in
             # ``sheet_goods``. Leaving it here as well would order the same wood twice, once
