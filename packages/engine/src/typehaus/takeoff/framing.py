@@ -197,6 +197,8 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # bought in pieces it cannot be built from.
     splice: dict[tuple[str, str, str], bool] = {}
     for member in model.all_members():
+        if member.category == "stair_subdeck":
+            continue
         if (member.parent_uid, member.child_key) in wear_members:
             continue  # separately specified wear boards bill by area in sheet_goods
         if member.category == STRAP_CATEGORY:
@@ -206,7 +208,7 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             # ``sheet_goods``. Leaving it here as well would order the same wood twice, once
             # as sheets and once as 8-ft sticks of a profile no yard stocks.
             continue
-        key = (member.profile, member.category, member.material or "")
+        key = (member.stock_profile or member.profile, member.category, member.material or "")
         cuts[key].append((member.cut_length_m or member.length_m) * _M_TO_FT)
         splice[key] = splice.get(key, True) and member.continuously_supported
 

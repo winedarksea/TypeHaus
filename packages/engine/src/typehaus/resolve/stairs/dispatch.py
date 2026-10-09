@@ -38,7 +38,13 @@ from typehaus.resolve.stairs.finish import (
 )
 from typehaus.resolve.stairs.straight import _straight_stair_members
 from typehaus.resolve.stairs.u_split import _u_split_landing_members
-from typehaus.resolve.stairs.winder import _winder_stair_members
+from typehaus.resolve.stairs.winder_support import winder_supporting_floor
+from typehaus.resolve.stairs.winder import (
+    _winder_stair_members,
+    local_winder_layout,
+    resolved_winder_layout,
+    winder_transform,
+)
 
 
 def _resolve_stair(
@@ -179,6 +185,15 @@ def _resolve_stair(
     risers = math.ceil(rise / _MAX_RISER_M)
     treads = max(0, risers - 1)
     straight_treads = treads - stair.winder_count
+    winder_layout = None
+    if stair.layout == "right_angle_winder":
+        try:
+            if straight_treads < 0:
+                raise ValueError("winder count exceeds the tread budget")
+            winder_layout = local_winder_layout(stair, nosing_m)
+        except ValueError as exc:
+            return None, [_error("integrity.stair_winders", f"stair {stair.tag}: {exc}",
+                                 stair.tag)]
     # Turn-landing depth (in the run direction) for the U-stair. Unset reserves one stair
     # width; an authored value is honoured down to the IRC R311.7.6 direction-of-travel
     # minimum (see ``_MIN_LANDING_DEPTH_M``), which is 36" and *not* the stair width.
@@ -194,8 +209,9 @@ def _resolve_stair(
         straight_run = run - landing_depth_m
         available_going = straight_run / lower_treads if lower_treads else 0.0
     else:
-        straight_run = run - stair.width.meters if stair.layout == "right_angle_winder" else run
-        available_going = straight_run / straight_treads if straight_treads else 0.0
+        turn_run = winder_layout.riser_lines[-1][0][0] if winder_layout is not None else 0.0
+        straight_run = run - turn_run
+        available_going = straight_run / straight_treads if straight_treads else math.inf
     # A flight with no opening has no run budget to blow: nothing bounds it overhead, so its
     # footprint is whatever its own risers and going come to, derived below.
     if opening is not None and available_going + 1e-9 < going_m:
@@ -215,9 +231,26 @@ def _resolve_stair(
         # error when it is missing — but that is two branches back from here.
         assert stair.start is not None
         origin_x, origin_y = stair.start.xy_m
-    members = _stair_members(stair, origin_x, origin_y, z0, risers, riser,
-                             going_m, physical_tread_m, nosing_m, landing_depth_m,
-                             _deck_underside(model, stair, opening), finish_thickness_m)
+    support_floor_m = winder_supporting_floor(model, stair, z0) if winder_layout else z0
+    try:
+        members = _stair_members(stair, origin_x, origin_y, z0, risers, riser,
+                                 going_m, physical_tread_m, nosing_m, landing_depth_m,
+                                 _deck_underside(model, stair, opening), finish_thickness_m,
+                                 support_floor_m)
+    except ValueError as exc:
+        if stair.layout != "right_angle_winder":
+            raise
+        return None, [_error("integrity.stair_winder_framing", f"stair {stair.tag}: {exc}",
+                             stair.tag)]
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+    from typehaus.resolve.stairs.winder_geometry import ascent_normal, physical_nosing_line
+
+    members = tuple(replace(member, nosing_line=physical_nosing_line(
+        Polygon(member_footprint(member)[0]), ascent_normal(member.riser_line, member.p0)))
+        if member.category == "tread" and member.nosing_line is None
+        and member.riser_line is not None else member for member in members)
     members = lower_stair_substrates(members, finish_thickness_m)
     deck = _landing_deck(model, stair)
     if deck is not None:
@@ -227,8 +260,8 @@ def _resolve_stair(
     # Structural guards: the flight never drops below the subfloor it springs from (so a
     # U-stair well partition cannot poke through the foundation), and every flight is
     # borne on the walls beside it — posted down wherever none reaches.
-    members = _clip_stair_to_subfloor(members, z0)
-    members = _bear_stair_on_walls(model, stair, members, z0)
+    members = _clip_stair_to_subfloor(members, support_floor_m)
+    members = _bear_stair_on_walls(model, stair, members, support_floor_m)
     surfaces = _finish_materials(model, stair)
     members = _in_stair_material(stair, members, surfaces)
     finish_parts = (stair_finish_parts(members, stair.finish_material,
@@ -265,7 +298,9 @@ def _resolve_stair(
                          base_elevation_m=z0, arrival_elevation_m=z_top,
                          finish_material=stair.finish_material,
                          finish_thickness_m=finish_thickness_m,
-                         finish_parts=finish_parts), []
+                         finish_parts=finish_parts,
+                         winder_turn=(resolved_winder_layout(stair, origin_x, origin_y, nosing_m)
+                                      if winder_layout is not None else None)), []
 
 
 def _millwork_standard(model: ResolvedModel):
@@ -402,10 +437,11 @@ def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: in
                    riser: float, going: float, tread_depth: float, nosing: float,
                    landing_depth_m: float,
                    head_z: float | None = None,
-                   finish_m: float = 0.0) -> tuple[FramedMember, ...]:
+                   finish_m: float = 0.0,
+                   support_floor_m: float | None = None) -> tuple[FramedMember, ...]:
     if stair.layout == "right_angle_winder":
         return _winder_stair_members(stair, minx, miny, z0, risers, riser, going,
-                                     tread_depth, nosing)
+                                     tread_depth, nosing, support_floor_m)
     if stair.layout in {"u_split_landing", "u_level_landing"}:
         return _u_split_landing_members(stair, minx, miny, z0, risers, riser, going,
                                         tread_depth, nosing,
@@ -438,20 +474,17 @@ def _stair_fits_opening(stair: Stair, minx: float, maxx: float, miny: float, max
                 and required_run <= maxy - miny + 1e-9)
     if stair.layout == "right_angle_winder":
         straight_treads = risers - 1 - stair.winder_count
-        cross_end = (start_y + (1 if stair.turn_direction != "right" else -1) * stair.width.meters
-                     if stair.run_direction == "x" else
-                     start_x + (1 if stair.turn_direction != "right" else -1) * stair.width.meters)
-        if stair.run_direction == "x":
-            end_x = start_x + (-1 if stair.run_reversed else 1) * (
-                stair.width.meters + tread * straight_treads)
-            return (min(start_x, end_x) >= minx - 1e-9 and max(start_x, end_x) <= maxx + 1e-9
-                    and min(start_y, cross_end) >= miny - 1e-9
-                    and max(start_y, cross_end) <= maxy + 1e-9)
-        end_y = start_y + (-1 if stair.run_reversed else 1) * (
-            stair.width.meters + tread * straight_treads)
-        return (min(start_y, end_y) >= miny - 1e-9 and max(start_y, end_y) <= maxy + 1e-9
-                and min(start_x, cross_end) >= minx - 1e-9
-                and max(start_x, cross_end) <= maxx + 1e-9)
+        nosing = (stair.nosing_depth.meters if stair.nosing_depth is not None
+                  else _DEFAULT_NOSING_DEPTH_M)
+        layout = local_winder_layout(stair, nosing)
+        transform, _ = winder_transform(stair, minx, miny)
+        points = [transform(p) for p in layout.footprint]
+        points.extend(transform((p[0] + tread * straight_treads, p[1]))
+                      for p in layout.riser_lines[-1])
+        # The entering oak nose projects forward of the structural turn boundary.
+        points.extend(transform((p[0], p[1] - nosing)) for p in layout.riser_lines[0])
+        return all(minx - 1e-9 <= x <= maxx + 1e-9
+                   and miny - 1e-9 <= y <= maxy + 1e-9 for x, y in points)
     run = (-1 if stair.run_reversed else 1) * tread * max(0, risers - 1)
     if stair.run_direction == "x":
         return (min(start_x, start_x + run) >= minx - 1e-9
@@ -462,3 +495,4 @@ def _stair_fits_opening(stair: Stair, minx: float, maxx: float, miny: float, max
             and max(start_y, start_y + run) <= maxy + 1e-9
             and minx - 1e-9 <= start_x
             and start_x + stair.width.meters <= maxx + 1e-9)
+

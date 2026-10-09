@@ -12,7 +12,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, StairFinishPart
 
 _LOWERED_CATEGORIES = frozenset({
-    "tread", "winder", "landing", "stringer", "landing_framing",
+    "tread", "winder", "landing", "stringer", "landing_framing", "stair_subdeck",
 })
 _WALKING_CATEGORIES = frozenset({"tread", "winder", "landing"})
 

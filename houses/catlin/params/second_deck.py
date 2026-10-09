@@ -45,7 +45,7 @@ the fabricator's order, which ``haus takeoff``'s fabrication schedule states.
 """
 
 from typehaus.geometry import rect
-from typehaus import DeckLayer, FloorSystem, JoistSpec, Layer, LayerFunction, ft, inch
+from typehaus import DeckLayer, FloorSystem, JoistSpec, JoistReinforcement, Layer, LayerFunction, ft, inch, pt
 
 # Both members share one depth, deliberately — see the module docstring. ``main_deck.py``
 # imports ``_DEPTH``/``_SUBFLOOR`` from here rather than restating them, so the concrete
@@ -149,6 +149,10 @@ EAST_FLOOR = FloorSystem(
     # the old FS-SECOND). Plain board, not type X: R302.13 doesn't reach this floor.
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _HOUSE),
+    reinforcements=(
+        JoistReinforcement(at=pt(inch(373.375), inch(66.875)), plies=3, blocking=True,
+                           source="ST-S2A departing-rim/newel reactions: sister the supporting I-joist and block both adjacent bays to the main-storey bearing walls"),
+    ),
     source="catlin second floor, east half — 11 7/8\" I-joists at 16\" o.c. spanning "
            "18'-0\" from the x=18' bearing line to W-M-E1, unchanged from the old "
            "whole-floor FS-SECOND",

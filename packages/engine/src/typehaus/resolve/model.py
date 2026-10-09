@@ -22,6 +22,7 @@ if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-onl
     from typehaus.resolve.floor_ends import FloorEnds
     from typehaus.resolve.floor_tilt import DeckPlane
     from typehaus.resolve.geometry_ir import GeometryModel, GMesh
+    from typehaus.resolve.stairs.winder_geometry import WinderLayout
 
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
 Ring = list[tuple[float, float]]
@@ -237,6 +238,8 @@ class FramedMember:
     elevation_profile: tuple[tuple[float, float], ...] | None = None
     # Stock blank spanning the cut's long points; length_m remains the structural axis.
     cut_length_m: float | None = None
+    # Purchased stock before a rip; profile describes the built member.
+    stock_profile: str | None = None
     # Held up along its WHOLE length rather than reaching between supports — derived from the
     # bearings actually reaching, never assumed from a category. Two things read it and they
     # are why it names the fact rather than either consequence: the takeoff buys such a member
@@ -699,6 +702,7 @@ class ResolvedStair:
     finish_material: str | None = None
     finish_thickness_m: float = 0.0
     finish_parts: tuple[StairFinishPart, ...] = ()
+    winder_turn: WinderLayout | None = None
 
 
 @dataclass(frozen=True)

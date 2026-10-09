@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import math
 
+from shapely.geometry import Polygon
+
 from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel, ResolvedStair
@@ -55,24 +57,22 @@ def _wear_members(model: ResolvedModel):
 def winder_blank_in(member, nosing_m: float) -> tuple[float, float]:
     """``(width, length)`` in inches of the rectangle a winder is cut from.
 
-    Grain runs along the NOSING (``nosing_line``), the strong direction for the edge a
-    foot lands on; width is the tread's reach back from it plus the ``nosing_m`` that tucks
-    under the next riser. A member without an outline falls back to its board section.
+    The physical polygon already includes the nose and rear fit. Grain runs along its
+    leading nosing; rough milling allowances belong to the millwork schedule.
     """
-    section = cross_section(member.profile)
-    fallback = (max(section.width_m, section.depth_m) / 0.0254, member.length_m / 0.0254)
+    del nosing_m  # retained for callers; projecting a physical panel adds no second nose
     ring, edge = member.plan_outline, member.nosing_line
     if not ring or edge is None:
-        return fallback
+        raise ValueError("a winder millwork blank needs its physical outline and nosing")
     (ax, ay), (bx, by) = edge
     span = math.hypot(bx - ax, by - ay)
     if span < 1e-9:
-        return fallback
+        raise ValueError("a winder nosing must have positive length")
     ux, uy = (bx - ax) / span, (by - ay) / span
-    points = [*ring, *edge]
-    along = [(x - ax) * ux + (y - ay) * uy for x, y in points]
-    across = [abs((x - ax) * -uy + (y - ay) * ux) for x, y in points]
-    return ((max(across) + nosing_m) / 0.0254, (max(along) - min(along)) / 0.0254)
+    along = [(x - ax) * ux + (y - ay) * uy for x, y in ring]
+    across = [(x - ax) * -uy + (y - ay) * ux for x, y in ring]
+    return ((max(across) - min(across)) / 0.0254,
+            (max(along) - min(along)) / 0.0254)
 
 
 def stair_tread_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -197,7 +197,8 @@ def stair_finish_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         widest = max((m.length_m for m in treads), default=0.0)
         landing_area = sum(
             m.length_m * cross_section(m.profile).width_m for m in landings)
-        tread_area = sum(m.length_m * cross_section(m.profile).width_m for m in treads)
+        tread_area = sum(Polygon(m.plan_outline).area if m.plan_outline
+                         else m.length_m * cross_section(m.profile).width_m for m in treads)
         authored = model.plan.by_tag(stair.tag)
         rows.append({
             "stair": stair.tag,

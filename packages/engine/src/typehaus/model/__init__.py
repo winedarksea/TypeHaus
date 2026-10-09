@@ -196,6 +196,7 @@ from typehaus.model.spatial import (
     Stair,
     WallLiningException,
 )
+from typehaus.model.stair_winders import WinderFramingSpec, WinderTurnSpec
 from typehaus.model.stormwater import AreaDrain
 from typehaus.model.structure import (
     Beam,
@@ -318,6 +319,7 @@ for _name, _obj in (
     register_constructor(_name, _obj)
 
 __all__ = [
+    "WinderTurnSpec", "WinderFramingSpec",
     "ReinforcementSpec",
     "BarSpec",
     "HookConfinement",

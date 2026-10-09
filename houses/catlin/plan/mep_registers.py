@@ -165,7 +165,7 @@ REGISTERS_HVAC_SECOND = [
     # pair balanced rather than merely present (mep.humid_room_pressure is the rule that
     # says so out loud).
     Register(uid="CXDCYN7YQ2", tag="REG-S-HP-PLANT", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
-             position=pt(ft(12), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
+             position=pt(ft(12), ft(3, 3)), duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-SUP-DAMPERED", design_cfm=75,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # The plant room's extract. RM-S-PLANT was supply-only, so its own ventilation pushed
@@ -259,7 +259,7 @@ REGISTERS_HVAC_ATTIC = [
     # inside the desk footprint. The room below takes its supply from the soffit
     # leg, so DU-S-HP-SOUTH ends at its riser station, x=19'-6".
     Register(uid="CARH01AAAA", tag="REG-A-HP-STUDY", kind=DuctSystem.SUPPLY,
-             room="RM-A-STUDY", position=pt(ft(18, 10), ft(3, 4)), rotation=deg(90),
+             room="RM-A-STUDY", position=pt(ft(18, 10), ft(3, 3)), rotation=deg(90),
              duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-SUP", design_cfm=100,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),

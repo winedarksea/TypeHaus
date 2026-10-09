@@ -134,6 +134,8 @@ export interface Member {
   // p0/p1 is the board centreline, half a going past it (drawing the axis made uniform
   // flights read as unevenly stepped). Absent on winders: their axis IS the fan line.
   riser_line?: [Vec2, Vec2] | null;
+  nosing_line?: [Vec2, Vec2] | null;
+  stock_profile?: string | null;
   // A birdsmouth: the member's underside is cut flat to bear on a plate at `plate_top_z_m`,
   // over `seat_run_m` from the plumb `heel` toward the member's nearer end. Its depth is not
   // carried because it is not independent — it is the run times the member's own slope.

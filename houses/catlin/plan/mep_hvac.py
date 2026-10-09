@@ -405,7 +405,7 @@ DUCTS_HVAC_SECOND = [
     #  * EAST ends at the riser station x=19'-6" now that RM-S-STUDY2 is fed
     #    from below. This removes another 3'-2" beyond the attic desk relocation.
     DuctRun(uid="NYRX7TBEGH", tag="DU-S-HP-SOUTH", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(3, 4)), pt(ft(12), ft(3, 4))),
+            path=(pt(ft(19, 6), ft(3, 3)), pt(ft(12), ft(3, 3))),
             width=inch(10), depth=inch(6), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-ATTIC", design_cfm=175),
     # THE RISER — a repeated plan point at two elevations is the vertical leg, the idiom
@@ -451,8 +451,8 @@ DUCTS_HVAC_SECOND = [
     # the elevation DU-S-HP-SOUTH derives for itself from the joists. Both storey-relative
     # to `second`, whose datum is 10'-0" — the same convention every PipeRun here uses.
     DuctRun(uid="27B8FKNDPB", tag="DU-S-HP-SOUTH-RISE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(9, 10)), pt(ft(19, 6), ft(3, 4)),
-                  pt(ft(19, 6), ft(3, 4))),
+            path=(pt(ft(19, 6), ft(9, 10)), pt(ft(19, 6), ft(3, 3)),
+                  pt(ft(19, 6), ft(3, 3))),
             elevations=(inch(99.125), inch(99.125), inch(111.125)),
             width=inch(10), depth=inch(6), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=250),

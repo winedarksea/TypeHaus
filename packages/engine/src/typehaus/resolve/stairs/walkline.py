@@ -70,7 +70,8 @@ def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
     for member in stair.members:
         if member.category == "winder":
             flights.setdefault("winder", []).append((
-                member.p0, member.p1, finished_step_elevation(stair, member)))
+                *(member.nosing_line or (member.p0, member.p1)),
+                finished_step_elevation(stair, member)))
         elif member.category == "tread" and member.riser_line is not None:
             a, b = member.riser_line
             key = member.child_key.rsplit("-", 1)[0]
@@ -104,6 +105,11 @@ def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
             (a0, b0, z0), (a1, b1, z1) = stations[-2], stations[-1]
             stations.append(((2 * a1[0] - a0[0], 2 * a1[1] - a0[1]),
                              (2 * b1[0] - b0[0], 2 * b1[1] - b0[1]), 2 * z1 - z0))
+    if "winder" in flights:
+        departing = min((stations[0] for key, stations in flights.items()
+                         if key.startswith("tread") and stations), key=lambda s: s[2], default=None)
+        if departing is not None:
+            flights["winder"].append(departing)
     return flights
 
 

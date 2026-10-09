@@ -231,9 +231,19 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
         (round(member.p0[0], 4), round(member.p0[1], 4))
         for member in members if member.p0 == member.p1 and member.category == "newel"}
     for member in members:
-        if member.category == "landing_framing" and member.child_key.startswith("landing-rim-"):
+        if (member.category == "landing_framing"
+                and member.child_key.startswith("landing-rim-")
+                and not member.child_key.startswith("landing-rim-winder")):
             rims_by_platform.setdefault(member.child_key.rsplit("-", 1)[0],
                                         []).append(member)
+        if member.child_key.startswith("landing-rim-winder"):
+            # Complete platforms bear through their own plywood decks to the first frame.
+            # A second ledger here would occupy a lower deck and duplicate the fitted rim.
+            host, _ = _best_host_wall(model, stair, member.p0, member.p1)
+            connection = (f"framed-wall-anchor:{host.tag}" if host is not None else
+                          "winder-tier-bearing")
+            out.append(replace(member, connection=connection))
+            continue
         # The deck is carried; the joists and rims under it are what carry. `replace` below
         # preserves whatever category the generator set, so re-emitting these keeps them
         # framing.

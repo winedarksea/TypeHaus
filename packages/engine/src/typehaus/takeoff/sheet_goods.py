@@ -45,6 +45,11 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # Stair walking surfaces are not sheet goods: they bill by the piece in
     # ``takeoff/stairs.stair_tread_takeoff``.
     areas: dict[tuple[str, str, float, float | None], float] = defaultdict(float)
+    for stair in model.stairs:
+        for member in stair.members:
+            if member.category == "stair_subdeck" and member.plan_outline:
+                areas[("stair subdeck", member.material, member.z1_m - member.z0_m, None)] += abs(
+                    polygon_area(member.plan_outline))
     openings_by_wall: dict[str, list] = defaultdict(list)
     for opening in model.openings:
         openings_by_wall[opening.host_wall].append(opening)
@@ -179,7 +184,8 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # this set, so nothing is billed twice.
     rips = [(member, stock, member.length_m * _M_TO_FT)
             for member in model.all_members()
-            if (stock := rip_stock(member.profile, member.material)) is not None]
+            if member.category != "stair_subdeck"
+            and (stock := rip_stock(member.profile, member.material)) is not None]
     return sorted(rows + rip_sheet_rows(rips),
                   key=lambda row: (str(row["scope"]), str(row["material"]),
                                    float(str(row["thickness_in"]))))

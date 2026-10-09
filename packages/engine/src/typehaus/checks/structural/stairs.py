@@ -1,4 +1,4 @@
-"""Stair load-path and winder-geometry checks — advisory, not engineering (→ 12).
+"""Stair load-path and riser-uniformity checks — advisory, not engineering (→ 12).
 
 Kept out of ``resolve/stairs.py`` on purpose. ``resolve_envelope_geometry``'s finding
 contract is *bad references* — a stair naming a storey or an opening that does not exist —
@@ -20,13 +20,6 @@ from typehaus.quantities import inch
 from typehaus.resolve.model import FramedMember, ResolvedStair
 from typehaus.resolve.solid_categories import in_slab_family
 from typehaus.resolve.stairs.walkline import intermediate_step_elevations, level_landing_is_complete
-
-# IRC R311.7.5.2.1: a winder tread must be at least 6" deep at every point within the
-# stairway's clear width, which includes its narrow end against the newel — and at least
-# 10" deep on the walk line, measured 12" in from the narrow side.
-MIN_WINDER_NARROW_TREAD_IN = 6.0
-MIN_WINDER_WALK_LINE_TREAD_IN = 10.0
-WALK_LINE_OFFSET_IN = 12.0
 
 # IRC R311.7.5.1: the greatest riser height in a flight may exceed the smallest by 3/8".
 MAX_RISER_VARIATION_IN = 0.375
@@ -212,122 +205,3 @@ def stair_riser_uniformity(ctx: CheckContext) -> list[Finding]:
                 (stair.tag,), Result.PASS))
     return out
 
-
-def _winder_stairs(ctx: CheckContext) -> list[ResolvedStair]:
-    return [stair for stair in ctx.model.stairs
-            if any(member.category == "winder" for member in stair.members)]
-
-
-def _winder_gaps(stair: ResolvedStair, offset_m: float) -> list[float]:
-    """Going between consecutive winder nosings, ``offset_m`` out from the narrow end.
-
-    A winder member runs narrow end (``p0``, on the newel's face) to nosing (``p1``), so
-    walking ``offset_m`` along it lands on the line the code measures: 0 is the narrow end
-    itself, 12" the walk line. Consecutive risers are what the code measures between, so
-    the winders are taken in ascending order.
-    """
-    winders = sorted((member for member in stair.members if member.category == "winder"),
-                     key=lambda member: member.z0_m)
-
-    def point_at(member: FramedMember) -> tuple[float, float]:
-        dx, dy = member.p1[0] - member.p0[0], member.p1[1] - member.p0[1]
-        run = math.hypot(dx, dy)
-        if run < 1e-9:
-            return member.p0
-        reach = min(offset_m, run) / run
-        return (member.p0[0] + dx * reach, member.p0[1] + dy * reach)
-
-    points = [point_at(member) for member in winders]
-    return [math.hypot(upper[0] - lower[0], upper[1] - lower[1])
-            for lower, upper in zip(points, points[1:], strict=False)]
-
-
-@check(Tier.STRUCTURAL, "structural.winder_walk_line_depth")
-def winder_walk_line_depth(ctx: CheckContext) -> list[Finding]:
-    """Measure winder going on the walk line against IRC R311.7.5.2.1's 10".
-
-    The walk line is 12" in from the narrow side of the treads, and that is where a winder
-    has to deliver the same 10" going a straight tread does. It is the *other* half of the
-    winder rule — ``winder_narrow_tread_depth`` measures the 6" floor at the newel — and
-    the one that decides whether a turn is walkable rather than merely legal at its pinch
-    point. A 90° turn taken in three winders sweeps 22.5° per tread, so the walk line has
-    to sit ~2'-2" out from the pivot before consecutive nosings are 10" apart: it is a
-    function of the *well*, which is why neither a bigger newel nor better framing moves
-    it.
-    """
-    winder_stairs = _winder_stairs(ctx)
-    if not winder_stairs:
-        return [Finding(severity=Severity.WARN,
-                        check_id="structural.winder_walk_line_depth",
-                        message="UNKNOWN — no winder treads to measure",
-                        result=Result.UNKNOWN)]
-    minimum_m = inch(MIN_WINDER_WALK_LINE_TREAD_IN).meters
-    out: list[Finding] = []
-    for stair in winder_stairs:
-        gaps = _winder_gaps(stair, inch(WALK_LINE_OFFSET_IN).meters)
-        if not gaps:
-            continue
-        narrowest = min(gaps)
-        detail = (f"stair {stair.tag} winder going on the walk line "
-                  f"({WALK_LINE_OFFSET_IN:.0f}\" from the narrow end) is "
-                  f"{narrowest / 0.0254:.1f}\"")
-        if narrowest + 1e-9 < minimum_m:
-            out.append(_advisory(
-                "structural.winder_walk_line_depth",
-                f"{detail}, under the {MIN_WINDER_WALK_LINE_TREAD_IN:.0f}\" IRC "
-                "R311.7.5.2.1 minimum", (stair.tag,), Result.FAIL,
-                fix_hint=("widen the well so the turn sweeps a longer arc, or spread the "
-                          "turn over more risers — the walk line is set by the well, not "
-                          "by the newel or the turn framing"),
-            ))
-        else:
-            out.append(_advisory(
-                "structural.winder_walk_line_depth",
-                f"{detail} (>= {MIN_WINDER_WALK_LINE_TREAD_IN:.0f}\" IRC R311.7.5.2.1)",
-                (stair.tag,), Result.PASS))
-    return out
-
-
-@check(Tier.STRUCTURAL, "structural.winder_narrow_tread_depth")
-def winder_narrow_tread_depth(ctx: CheckContext) -> list[Finding]:
-    """Measure winder tread depth at the narrow end against IRC R311.7.5.2.1's 6".
-
-    The narrow-end depth is the plan gap between the narrow ends of two consecutive winder
-    nosings. It was structurally 0 while every winder converged on the newel *centreline*;
-    starting them at the newel's face gives it a real value, and this reports whether that
-    value clears the code minimum. A quarter turn taken in three winders around a 4x4 will
-    not — the honest fix is a layout decision (more risers in the turn, or a larger newel
-    the winders wrap), not a number this generator can invent.
-    """
-    winder_stairs = _winder_stairs(ctx)
-    if not winder_stairs:
-        return [Finding(severity=Severity.WARN,
-                        check_id="structural.winder_narrow_tread_depth",
-                        message="UNKNOWN — no winder treads to measure",
-                        result=Result.UNKNOWN)]
-    minimum_m = inch(MIN_WINDER_NARROW_TREAD_IN).meters
-    out: list[Finding] = []
-    for stair in winder_stairs:
-        gaps = _winder_gaps(stair, 0.0)
-        if not gaps:
-            continue
-        narrowest = min(gaps)
-        if narrowest + 1e-9 < minimum_m:
-            out.append(_advisory(
-                "structural.winder_narrow_tread_depth",
-                f"stair {stair.tag} winder tread depth at the narrow end is "
-                f"{narrowest / 0.0254:.1f}\", under the "
-                f"{MIN_WINDER_NARROW_TREAD_IN:.0f}\" IRC R311.7.5.2.1 minimum",
-                (stair.tag,), Result.FAIL,
-                fix_hint=(f"spread the turn over more risers, or wrap the winders around a "
-                          f"newel/well wide enough that consecutive narrow ends are "
-                          f"{MIN_WINDER_NARROW_TREAD_IN:.0f}\" apart"),
-            ))
-        else:
-            out.append(_advisory(
-                "structural.winder_narrow_tread_depth",
-                f"stair {stair.tag} winder tread depth at the narrow end is "
-                f"{narrowest / 0.0254:.1f}\" (>= {MIN_WINDER_NARROW_TREAD_IN:.0f}\" "
-                "IRC R311.7.5.2.1)",
-                (stair.tag,), Result.PASS))
-    return out

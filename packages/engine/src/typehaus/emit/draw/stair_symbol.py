@@ -148,6 +148,8 @@ def _mark(member) -> Segment:
     sliver at one end of every flight and ``(going + nosing)/2`` at the other — uniform
     steps that read as non-uniform.
     """
+    if member.nosing_line is not None:
+        return member.nosing_line
     if member.riser_line is not None:
         return member.riser_line
     return (member.p0, member.p1)
@@ -379,7 +381,7 @@ def _emit_risers(b: SceneBuilder, stair, flights: dict[str, list],
         for member in flights[key]:
             if member.category == "landing":
                 continue
-            if member.plan_outline is not None:
+            if member.plan_outline is not None and member.category != "winder":
                 b.add(Polyline(points=tuple(_in(p) for p in member.plan_outline),
                                closed=True, layer="A-STAIR", lineweight=LIGHT,
                                uid=stair.uid, tag=member.child_key))

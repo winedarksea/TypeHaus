@@ -818,7 +818,7 @@ OPENINGS = [
     # The west unit is tempered for its proximity to D-S-DECK-E.
     Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3048-T",
            position=from_node("N-S-S1", ft(7, 5)), sill_height=ft(2, 8)),     # x 26'-8"
-    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3048",
+    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3048-T",
            position=from_node("N-S-S1", ft(12, 9)), sill_height=ft(2, 8)),    # x 32'-0"
     # Baths + north. WIN-S-BATH-N/W have no source counterpart, kept for hall-bath daylight.
     # Re-hosted off W-S-N3: W-S-N3B is now the chase's own wall, not the

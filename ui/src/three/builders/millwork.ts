@@ -89,7 +89,10 @@ export function buildBoardMembers(parent: THREE.Group, members: readonly Member[
     if (m.plan_outline && m.plan_outline.length >= 3) {
       geometry = createPlanPrismGeometry(m.plan_outline, m.z0_m, m.z1_m, [], center);
       if (geometry) {
-        applyPlankPlaneUv(geometry, center, planLongAxis(m.plan_outline), plankTileSizeM(style));
+        const grainAxis: [number, number] = m.nosing_line
+          ? [m.nosing_line[1][0] - m.nosing_line[0][0], m.nosing_line[1][1] - m.nosing_line[0][1]]
+          : planLongAxis(m.plan_outline);
+        applyPlankPlaneUv(geometry, center, grainAxis, plankTileSizeM(style));
         seatPieceUv(geometry, style, seed);
       }
     } else {

@@ -24,6 +24,7 @@ from typehaus.model.refs import (
     PublishedSpan,
 )
 from typehaus.model.registry import register_constructor, register_element
+from typehaus.model.stair_winders import WinderFramingSpec, WinderTurnSpec
 from typehaus.model.trim import EaveTrim
 from typehaus.quantities import Length, Pitch, Point2D
 
@@ -227,6 +228,8 @@ class Stair(Element):
     # well so the stair springs from the far lane and arrives in the near one.
     turn_direction: str | None = None
     winder_count: int = 0
+    winder_turn: WinderTurnSpec | None = None
+    winder_framing: WinderFramingSpec = WinderFramingSpec()
     start: Point2D | None = None
     # Walls the flight is permitted to bear on, beyond the ones the resolver picks by
     # geometry + structural role. This grants permission, never restricts it: a tag here
@@ -239,9 +242,8 @@ class Stair(Element):
     # IRC R311.7.6 requires 36" in the direction of travel; shorter values are floored
     # to 36" by the resolver. Cross-run width still matches the stair lane.
     landing_depth: Length | None = None
-    # Nominal newel-post profile at the winder turn (e.g. "4x4", "6x6"). A wider newel
-    # widens the well the winders wrap, moving their narrow ends apart — the sanctioned
-    # lever on ``structural.winder_narrow_tread_depth`` short of adding risers.
+    # Newel stock. The clear inner boundary belongs to winder_turn, independently of
+    # post size; changing a post must not silently change a tread's code measurement.
     newel_profile: str = "4x4"
     # A tread is deliberately wider than its step-to-step going: the default 1" nose overhangs
     # the riser below, leaving a 10" code-minimum going on an 11" physical board.

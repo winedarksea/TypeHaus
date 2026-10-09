@@ -197,7 +197,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
     # would run straight through an authored extra joist.
     members.extend(_reinforcement_members(
         system, spec, sorted(positions + extra + anchored), along_x, ends.tip_lo, ends.tip_hi,
-        z0, z1, lift if tilt is not None else None))
+        z0, z1, lift if tilt is not None else None, field_members=members))
 
     # Opening framing after clipping: headers on edges with no declared bearing, trimmer
     # packs bearing to bearing (resolve/floor_openings.py).
@@ -347,7 +347,8 @@ def _plane_range(plane, ring) -> tuple[float, float]:
 # the blocks bill themselves with no further wiring.
 def _reinforcement_members(system: FloorSystem, spec, positions: list[float], along_x: bool,
                            axis_lo: float, axis_hi: float,
-                           z0: float, z1: float, lift=None) -> list[FramedMember]:
+                           z0: float, z1: float, lift=None,
+                           field_members: list[FramedMember] | None = None) -> list[FramedMember]:
     """Sister plies + blocking for each of ``system.reinforcements``.
 
     The plies run the *whole* joist — bearing line to bearing line including both
@@ -371,6 +372,11 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
         return out
     #: joist line index -> (cluster lo, cluster hi, sisters laid, the side they went)
     laid: dict[int, tuple[float, float, int, float]] = {}
+    widths = {position: cross_section(spec.member).width_m for position in positions}
+    for member in field_members or ():
+        position = member.p0[1 if along_x else 0]
+        if position in widths:
+            widths[position] = max(widths[position], cross_section(member.profile).width_m)
     for index, reinforcement in enumerate(system.reinforcements):
         at_x, at_y = reinforcement.at.xy_m
         perp_at, axis_at = (at_y, at_x) if along_x else (at_x, at_y)
@@ -378,12 +384,13 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
         perp = positions[line]
         member = reinforcement.member or spec.member
         ply_width = cross_section(member).width_m
+        host_width = widths[perp]
         plies = max(int(reinforcement.plies), 1)
         # The extra plies go on the side the load is on, so the cluster straddles it rather
         # than leaving the post overhanging its own reinforcement. A load exactly on the
         # line is arbitrary; +1 keeps it deterministic.
         existing_lo, existing_hi, existing, existing_sign = laid.get(
-            line, (perp - ply_width / 2.0, perp + ply_width / 2.0, 0, 0.0))
+            line, (perp - host_width / 2.0, perp + host_width / 2.0, 0, 0.0))
         # The first entry on a line picks the side (toward the load); later ones extend the
         # pack that is already there rather than starting a second one on the other face.
         sign = existing_sign or (1.0 if perp_at >= perp else -1.0)
@@ -398,7 +405,7 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
         raise_b = lift(axis_hi, perp) if lift is not None else 0.0
         sister_rakes = abs(raise_b - raise_a) > 1e-9
         for ply in range(existing, plies - 1):
-            s0, s1 = _shift(p0, p1, normal, (ply + 1) * ply_width)
+            s0, s1 = _shift(p0, p1, normal, host_width / 2 + (ply + .5) * ply_width)
             out.append(FramedMember(
                 system.uid, f"sister-{index}-{ply}", "sister_joist", member,
                 s0, s1, z0 + raise_a, z1 + raise_a, axis_hi - axis_lo,
@@ -409,8 +416,8 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
         # this entry's and any earlier entry's).
         sisters = max(existing, plies - 1)
         spread = sign * sisters * ply_width
-        cluster_lo = min(existing_lo, perp - ply_width / 2.0 + min(0.0, spread))
-        cluster_hi = max(existing_hi, perp + ply_width / 2.0 + max(0.0, spread))
+        cluster_lo = min(existing_lo, perp - host_width / 2.0 + min(0.0, spread))
+        cluster_hi = max(existing_hi, perp + host_width / 2.0 + max(0.0, spread))
         laid[line] = (cluster_lo, cluster_hi, sisters, sign)
         if not reinforcement.blocking:
             continue
@@ -421,9 +428,9 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
             if not 0 <= neighbour < len(positions):
                 continue  # the cluster is on the field edge — nothing to block against
             if key == "lo":
-                a, b = positions[neighbour] + ply_width / 2.0, cluster_lo
+                a, b = positions[neighbour] + widths[positions[neighbour]] / 2.0, cluster_lo
             else:
-                a, b = cluster_hi, positions[neighbour] - ply_width / 2.0
+                a, b = cluster_hi, positions[neighbour] - widths[positions[neighbour]] / 2.0
             if b - a <= 1e-6:
                 continue
             if along_x:

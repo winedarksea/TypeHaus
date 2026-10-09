@@ -237,6 +237,7 @@ STAIR_MEMBER_CATEGORIES = frozenset({
 #: these. Anything mixed, or a category not named, is the framer's stick.
 MEMBER_CATEGORY_TRADE: dict[str, str] = {
     **{category: "stairs" for category in STAIR_MEMBER_CATEGORIES},
+    "stair_subdeck": "framing",
     "gutter": "drainage",
     "rebar": "concrete",
     **{k: _TRADE[k] for k in ("insulation", "airgap", "furring", "cladding")},
