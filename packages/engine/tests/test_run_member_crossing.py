@@ -56,8 +56,9 @@ def test_the_web_verdict_is_a_SECOND_finding_and_not_a_changed_one(
     web = [f for f in findings if "ON A WEB" in f.message]
     # Seventeen when the panel datum landed; nine since D1 took level 2's ducts off the
     # webs; six since the 2026-09-24 vent re-lane. Every one left is a PIPE — the plumbing
-    # campaign's, not the air's.
-    assert len(web) == 6, [f.message for f in web]
+    # campaign's, not the air's. Five since PR-A-STUBATH-DRAIN left the webs for the
+    # y=19'-8" truss bay (2026-10-08).
+    assert len(web) == 5, [f.message for f in web]
     assert all(tag.startswith("PR-") for f in web for tag in f.element_tags
                if not tag.startswith("FS-"))
     for finding in web:

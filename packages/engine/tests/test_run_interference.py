@@ -142,36 +142,27 @@ def test_a_joint_is_pardoned_within_a_fittings_reach_and_no_further() -> None:
     assert not fails, "0.1 m is inside 3 x 0.05 m of the joint — that is the fitting"
 
 
-def test_catlin_reports_the_suite_stack_head_crossing(catlin_ctx) -> None:
-    """The measurement this whole change was made for: two 3" drains essentially on top of
-    each other, two feet from the stack head they share. Invisible while the exemption was
-    a single bool for the pair.
+def test_catlin_suite_stack_head_crossing_is_closed(catlin_ctx) -> None:
+    """The measurement this check's per-joint exemption was made for: PR-A-STUBATH-DRAIN
+    crossing PR-M-S-SUITE-WC-DRAIN two feet from the stack head they shared, 1.83" deep.
+    Closed 2026-10-08: the studio drain ties into the WC branch's north-south leg from the
+    west and never crosses it."""
+    assert not [f for f in run_interference(catlin_ctx)
+                if f.result.value == "fail"
+                and {"PR-A-STUBATH-DRAIN", "PR-M-S-SUITE-WC-DRAIN"} <= set(f.element_tags)]
 
-    **Re-measured by hand on 2026-09-23**, when the stack left the master closet for
-    W-M-CLN at (12'-6", 18'-0"). PR-A-STUBATH-DRAIN's leg 3 falls 9'-8" -> 9'-6 1/2" from
-    (9'-7 1/2", 19'-4") to the head; PR-M-S-SUITE-WC-DRAIN's leg 2 falls 9'-8 1/2" ->
-    9'-5 3/8" along x=11'-2.81". Where they cross the two centrelines are about 1.1" apart
-    in z, so two 3.50" OD pipes share about 2.4" — 2.44" as measured at the station. It was
-    2.64" with the stack at (13'-0", 16'-10.8").
 
-    **1.83" since 2026-09-26**, when PR-M-S-SUITE-WC-DRAIN's entry dropped to 9'-3" (a
-    buildable fitting stack): leg 2 now falls 9'-8 1/2" -> 9'-4 1/2", so at the crossing
-    the centrelines are 9'-7.2" and 9'-5.5", about 1.6" apart in z.
-    """
-    message = next(
-        (f.message for f in run_interference(catlin_ctx)
-         if f.result.value == "fail"
-         and "PR-A-STUBATH-DRAIN" in f.element_tags
-         and "PR-M-S-SUITE-WC-DRAIN" in f.element_tags), None)
-    assert message is not None, "the crossing at the suite stack head is reported"
-    assert '1.83" inside each other in plan' in message
-    assert '1.83" in elevation' in message
-    # Both centrelines, at the station — the two numbers a plan file authors.
-    assert "runs at 9'-7.2\"" in message and "at 9'-5.5\"" in message
-    # Leg for leg, as it was measured by hand. The legs are named in PAIR order, which the
-    # message did not do: it hung the first run's leg number off the second run's name.
-    assert "leg 3 of PR-A-STUBATH-DRAIN" in message
-    assert "leg 2 of PR-M-S-SUITE-WC-DRAIN" in message
+def test_the_legs_are_named_in_pair_order() -> None:
+    """Each leg number hangs off its own run's name. The message once hung the first run's
+    leg off the second run's name; catlin's suite-stack crossing pinned this until it closed."""
+    first = _track([(-3.0, 2.0), (-2.0, 2.0), (-2.0, 1.0), (2.0, 1.0)], [2.0] * 4)
+    second = _track([(0.0, 0.0), (0.0, 3.0)], [2.0, 2.0])
+    sections = {"PR-A": (0.05, 0.05, None), "PR-B": (0.05, 0.05, None)}
+    fails = [f for f in _findings_for({"PR-A": first, "PR-B": second}, sections)
+             if f.result.value == "fail"]
+    assert len(fails) == 1
+    assert "leg 3 of PR-A" in fails[0].message
+    assert "leg 1 of PR-B" in fails[0].message
 
 
 def _findings_for(tracks, sections, systems=None, floors=()):

@@ -592,7 +592,6 @@ suppress = [
   "mep.open_web_panel:FS-S-WEST",
   "mep.run_member_crossing:PR-A-CW-STUBATH",
   "mep.run_member_crossing:PR-A-HW-STUBATH",
-  "mep.run_member_crossing:PR-A-STUBATH-DRAIN",
   "mep.run_member_crossing:PR-M-KITCH-VENT",
   "mep.run_member_crossing:PR-M-S-BATH1-LAV-DRAIN",
   "mep.run_member_crossing:PR-M-S-BATH1-TUB-DRAIN",

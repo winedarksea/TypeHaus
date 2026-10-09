@@ -42,16 +42,12 @@ def _stack(gap_in, *, rise_in=0.25):
     return SimpleNamespace(model=SimpleNamespace(pipe_runs=[barrel, low, high]))
 
 
-def test_catlin_suite_stack_passes_on_combo_and_street_tee(catlin_ctx) -> None:
+def test_catlin_suite_stack_has_one_inlet_in_the_truss_band(catlin_ctx) -> None:
+    """The combo + street tee pair is gone (2026-10-08): PR-A-STUBATH-DRAIN now ties into
+    PR-M-S-SUITE-WC-DRAIN's horizontal leg, so the suite stack head takes one branch."""
     findings = drain_inlet_spacing(catlin_ctx)
-    named = [f for f in findings
-             if "PR-A-STUBATH-DRAIN" in f.message and "PR-M-S-SUITE-WC-DRAIN" in f.message]
-    assert len(named) == 1, "the pair the authored comment makes a claim about"
-    finding = named[0]
-    assert finding.result.value == "pass"
-    assert '3.50" apart' in finding.message
-    assert "combo 501 + street sanitary tee 403" in finding.message
-    assert "PR-M-S-SUITE-DRAIN" in finding.message, "the barrel is named too"
+    assert not [f for f in findings
+                if "PR-A-STUBATH-DRAIN" in f.message and "PR-M-S-SUITE-WC-DRAIN" in f.message]
 
 
 def test_catlin_carries_no_inlet_spacing_fail_or_unknown(catlin_ctx) -> None:

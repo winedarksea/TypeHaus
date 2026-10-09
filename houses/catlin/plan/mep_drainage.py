@@ -486,14 +486,10 @@ SECOND_BRANCH_DRAINS = [
     # Graded at the three truss lines the leg actually crosses, and at 3" PVC's real 3.500"
     # OD, `mep.run_member_crossing` reports **+0.944"** of crown at `joist-0-015-0`, the
     # tightest of them.
-    # ** IT LANDS AT 9'-3", 3 1/2" BELOW THE ATTIC BRANCH, AND 3 1/2" IS A FITTING STACK. **
-    # (2026-09-26; it was 2 1/2", which no fittings make.) Charlotte Pipe SUB-PAC-PVC-DWV
-    # (06/2026): a 3" combo (501, C = 7 9/16" branch c/l to bottom stop, B = 6 1/2") with a
-    # street sanitary tee (403, C = 4 9/16" branch c/l to spigot end) spigoted into its top
-    # hub puts the two branch centrelines 4 9/16 - 1 1/16 = 3 1/2" apart, the tightest
-    # sanitary pair published; `mep.drain_inlet_spacing` grades it. Two plain sanitary tees
-    # need 4 7/8" plus a nipple, which the truss band does not have. The final leg lies in the y=18'-0" bay, so nothing under it but the
-    # ceiling; its crown at the 240" truss is 117.0" against the web window's 118.5".
+    # It lands at 9'-3" on the stack, its only inlet there since PR-A-STUBATH-DRAIN moved onto
+    # this branch's north-south leg (2026-10-08). The final leg lies in the y=18'-0" bay, so
+    # nothing under it but the ceiling; its crown at the 240" truss is 117.0" against the web
+    # window's 118.5".
     PipeRun(uid="885X4850FE", tag="PR-M-S-SUITE-WC-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(134.81), inch(250.625)), pt(inch(134.81), inch(250.625)),
                   pt(inch(134.81), ft(18)), pt(ft(12, 6), ft(18))),
@@ -884,14 +880,20 @@ STUDIO_DRAINS = [
     # 0.36"/ft, clear of 708.0's 1/4" — and its 3" crown sits at 9'-9 1/2", inside the
     # 8 7/8" chord-to-chord window a leg crossing FS-S-WEST's trusses has to stay in. That
     # window is what took PR-M-S-SUITE-DRAIN's head down 1 1/2" (below); the two profiles
-    # move together or neither moves. It lands at 9'-6 1/2" on the stack's vertical, 3 1/2"
-    # above where PR-M-S-SUITE-WC-DRAIN enters it — a street sanitary tee spigoted into that
-    # branch's combo (see its note), not a double fitting at one point.
+    # move together or neither moves.
+    # ** IT ENDS ON PR-M-S-SUITE-WC-DRAIN, NOT ON THE STACK (2026-10-08). ** The old diagonal
+    # to the stack crossed that branch's x=11'-2.81" leg 1.8" too close, and on a truss web.
+    # Now it steps 4" north and runs east on y=19'-8", inside the 18'-8"..20'-0" truss bay (no
+    # web to cross), side-entering the branch from the west 8" north of the tub arm's
+    # east-side tie — room for two wyes, which 4" was not. Two WCs on one 3" horizontal is
+    # what UPC Table 703.2 allows. `drain_inlet_spacing` grades barrels only, so this
+    # spacing is this comment's claim, not a check's.
     PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(11, 0.875), ft(19, 4)), pt(ft(9, 7.5), ft(19, 4)),
-                  pt(ft(9, 7.5), ft(19, 4)), pt(ft(12, 6), ft(18))),
+                  pt(ft(9, 7.5), ft(19, 4)), pt(ft(9, 7.5), ft(19, 8)),
+                  pt(inch(134.81), ft(19, 8))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(19, 4), ft(19, 3.5), ft(9, 8), ft(9, 6.5)),
+            elevations=(ft(19, 4), ft(19, 3.5), ft(9, 8), inch(115.875), inch(115.25)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
     # ** THE HEAD FOLLOWED THE BOWL ONTO W-A-BATH-S AND THE RUN GOT SHORTER, 2026-09-09. **
     # The bar was three pieces on W-A-C2's west face and is now one SUNNERSTA kitchenette on
