@@ -110,6 +110,10 @@ def member_solid(member: FramedMember) -> GSolid | None:
     ``cross_section()`` call may precede them: this runs 15,160 times per resolve,
     and ``member_box`` stays untouched below (the parity test pins it, and it is the hot path).
     """
+    if member.plan_outline is not None:
+        from typehaus.resolve.geometry_ir import GPrism
+
+        return GPrism(ring=tuple(member.plan_outline), z0_m=member.z0_m, z1_m=member.z1_m)
     if member.elevation_profile is not None:
         return _elevation_sweep(member)
     if member.seat is not None:

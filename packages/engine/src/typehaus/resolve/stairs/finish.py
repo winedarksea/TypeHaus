@@ -177,3 +177,16 @@ def stairhead_nosing_part(members: tuple[FramedMember, ...], material_ref: str,
         return None
     head = max(risers, key=lambda m: m.z1_m)
     return nosing_lip(head, "stairhead:nosing", material_ref, arrival_z, nosing_m, finish_m)
+
+
+def set_tread_nosing_lines(members: tuple[FramedMember, ...]) -> tuple[FramedMember, ...]:
+    """Publish the physical leading edge for every rectangular tread as well as winders."""
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+    from typehaus.resolve.stairs.winder_geometry import ascent_normal, physical_nosing_line
+
+    return tuple(replace(member, nosing_line=physical_nosing_line(
+        Polygon(member_footprint(member)[0]), ascent_normal(member.riser_line, member.p0)))
+        if member.category == "tread" and member.nosing_line is None
+        and member.riser_line is not None else member for member in members)

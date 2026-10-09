@@ -262,3 +262,34 @@ def stair_walk_stations(stair) -> list[tuple[tuple[float, float],
                 used.reverse()
         route.extend(used)
     return route
+
+
+def winder_surface_z_at(stair, point: tuple[float, float]) -> float | None:
+    """The ruled nosing surface at a turn point, including its wide wall-rail edge.
+
+    Projecting an outside handrail onto fan midpoints can select a different tread.
+    Signed distance between adjacent finished nosing planes preserves the elevation at
+    every point along each nose, across the complete clear stair width.
+    """
+    layout = getattr(stair, "winder_turn", None)
+    if layout is None:
+        return None
+    from shapely.geometry import Point, Polygon
+
+    if not Polygon(layout.footprint).buffer(stair.nosing_depth_m + 1e-7).covers(Point(point)):
+        return None
+    winders = sorted((m for m in stair.members if m.category == "winder"), key=lambda m: m.z1_m)
+    departing = min((m for m in stair.members if m.category == "tread"),
+                    key=lambda m: m.z1_m, default=None)
+    if departing is None or departing.nosing_line is None:
+        return None
+    noses = [m.nosing_line for m in winders] + [departing.nosing_line]
+    for index, member in enumerate(winders):
+        normal0, normal1 = layout.normals[index:index + 2]
+        a, b = noses[index][0], noses[index + 1][0]
+        before = (point[0] - a[0]) * normal0[0] + (point[1] - a[1]) * normal0[1]
+        after = (point[0] - b[0]) * normal1[0] + (point[1] - b[1]) * normal1[1]
+        if before >= -1e-7 and after <= 1e-7 and before - after > 1e-7:
+            fraction = max(0.0, min(1.0, before / (before - after)))
+            return finished_step_elevation(stair, member) + fraction * stair.riser_height_m
+    return None

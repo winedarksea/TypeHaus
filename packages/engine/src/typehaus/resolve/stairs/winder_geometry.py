@@ -6,6 +6,7 @@ import math
 from dataclasses import dataclass
 
 from shapely.geometry import LineString, Point, Polygon
+from shapely.ops import unary_union
 
 from typehaus.model.stair_winders import WinderTurnSpec
 from typehaus.quantities import inch, m, pt
@@ -135,7 +136,16 @@ def layout_from_spec(spec: WinderTurnSpec, count: int, width_m: float) -> Winder
         raise ValueError("the complete winder inner boundary must follow its footprint")
     if any(boundary.distance(Point(p)) > GEOMETRY_TOLERANCE_M for p in inner):
         raise ValueError("winder clear inner boundary must lie on its footprint")
+    inner_path = LineString(inner)
+    if math.dist(lines[0][0], inner[0]) > GEOMETRY_TOLERANCE_M or math.dist(
+            lines[-1][0], inner[-1]) > GEOMETRY_TOLERANCE_M:
+        raise ValueError("winder inner boundary must start and end at the inner riser endpoints")
+    stations = [inner_path.project(Point(line[0])) for line in lines]
+    if any(b <= a + GEOMETRY_TOLERANCE_M for a, b in zip(stations, stations[1:], strict=False)):
+        raise ValueError("winder inner endpoints must advance along the clear inner boundary")
     for line in lines:
+        if inner_path.distance(Point(line[0])) > GEOMETRY_TOLERANCE_M:
+            raise ValueError("every winder riser must start on the clear inner boundary")
         if any(boundary.distance(Point(p)) > GEOMETRY_TOLERANCE_M for p in line):
             raise ValueError("winder riser endpoints must lie on the footprint")
         if not polygon.buffer(GEOMETRY_TOLERANCE_M).covers(LineString(line)):
@@ -161,7 +171,9 @@ def layout_from_spec(spec: WinderTurnSpec, count: int, width_m: float) -> Winder
     panels = [clip_half_plane(clip_half_plane(polygon, lines[i], normals[i]),
                               lines[i + 1], normals[i + 1], ahead=False)
               for i in range(count)]
-    if abs(sum(p.area for p in panels) - polygon.area) > GEOMETRY_TOLERANCE_M:
+    coverage = unary_union(panels)
+    if (abs(sum(p.area for p in panels) - coverage.area) > GEOMETRY_TOLERANCE_M
+            or coverage.symmetric_difference(polygon).area > GEOMETRY_TOLERANCE_M):
         raise ValueError("winder riser segments must partition the complete turn in ascent order")
     return layout
 
@@ -197,7 +209,9 @@ def balanced_winder_turn(width_m: float, count: int, nosing_m: float) -> WinderT
         layout = layout_from_spec(spec, count, width_m)
         noses = tuple(shifted_line(line, normal, -nosing_m)
                       for line, normal in zip(layout.riser_lines, layout.normals, strict=True))
-        if min(measure_winders(layout.inner_boundary, layout.riser_lines, noses).narrow_depths_m
+        if min(measure_winders(layout.inner_boundary, layout.riser_lines, noses,
+                               tuple(layout.panel(i, nosing_m, 0) for i in range(count)))
+               .narrow_depths_m
                ) >= DESIGN_NARROW_DEPTH_M - GEOMETRY_TOLERANCE_M:
             return spec
         radius += LAYOUT_INCREMENT_M
@@ -229,58 +243,31 @@ def _circle_point(line: Segment, centre: Point2, radius: float) -> Point2:
 
 
 def measure_winders(inner: tuple[Point2, ...], risers: tuple[Segment, ...],
-                    noses: tuple[Segment, ...]) -> WinderMeasurements:
+                    noses: tuple[Segment, ...],
+                    panels: tuple[Polygon, ...]) -> WinderMeasurements:
     """Measure resolved noses, never authored goings or distance along separate fan lines."""
-    if len(noses) != len(risers) or len(noses) < 2:
+    if len(noses) != len(risers) or len(noses) < 2 or len(panels) != len(noses) - 1:
         raise ValueError("every winder needs its entering and departing nosing")
     centre = line_intersection(risers[0], risers[-1])
     narrow_boundary = LineString(inner)
     radius = narrow_boundary.distance(Point(centre)) + WALKLINE_OFFSET_M
     points = tuple(_circle_point(line, centre, radius) for line in noses)
-    # Extend the entering/departing straight inner edges through their nose projections.
-    first_dx = inner[0][0] - inner[1][0]
-    first_dy = inner[0][1] - inner[1][1]
-    last_dx = inner[-1][0] - inner[-2][0]
-    last_dy = inner[-1][1] - inner[-2][1]
-    reach = narrow_boundary.length
-    # The end side follows the entering/departing direction, not the first polygon chord.
-    (a0, b0), (a1, b1) = risers[0], risers[-1]
-    first_u = (b0[1] - a0[1], -(b0[0] - a0[0]))
-    last_u = (b1[1] - a1[1], -(b1[0] - a1[0]))
-    if first_u[0] * first_dx + first_u[1] * first_dy < 0:
-        first_u = (-first_u[0], -first_u[1])
-    if last_u[0] * last_dx + last_u[1] * last_dy < 0:
-        last_u = (-last_u[0], -last_u[1])
-    first_len, last_len = math.hypot(*first_u), math.hypot(*last_u)
-    extended = LineString(((inner[0][0] + first_u[0] / first_len * reach,
-                            inner[0][1] + first_u[1] / first_len * reach), *inner,
-                           (inner[-1][0] + last_u[0] / last_len * reach,
-                            inner[-1][1] + last_u[1] / last_len * reach)))
-    intersections = []
-    normals = []
-    for line in noses:
-        a, b = line
-        dx, dy = b[0] - a[0], b[1] - a[1]
-        length = math.hypot(dx, dy)
-        ux, uy = dx / length, dy / length
-        full = LineString(((a[0] - ux * reach, a[1] - uy * reach),
-                           (b[0] + ux * reach, b[1] + uy * reach)))
-        cut = extended.intersection(full)
-        if not isinstance(cut, Point):
-            raise ValueError("winder nosing must meet the clear inner boundary exactly once")
-        intersections.append(tuple(cut.coords[0]))
-        normals.append((uy, -ux))
     narrow = []
-    for index, (a, b) in enumerate(zip(intersections, intersections[1:], strict=False)):
-        # Depth is linear along each boundary segment. Its minimum occurs at an endpoint;
-        # retain intervening vertices as well for a nonradial balanced winder.
-        lo, hi = sorted((extended.project(Point(a)), extended.project(Point(b))))
-        vertices = [a, b, *(p for p in inner if lo < extended.project(Point(p)) < hi)]
-        n0, n1 = normals[index:index + 2]
-        minimum = min(abs((p[0] - a[0]) * n0[0] + (p[1] - a[1]) * n0[1])
-                      + abs((b[0] - p[0]) * n1[0] + (b[1] - p[1]) * n1[1])
-                      for p in vertices)
-        narrow.append(minimum)
+    for index, panel in enumerate(panels):
+        # Crop rear fit beneath the next tread's foremost projection. Plane distance is
+        # affine inside this region, so evaluating every vertex proves the minimum across
+        # the entire clear tread, including irregular outer boundaries and interior pinches.
+        trailing_normal = ascent_normal(risers[index + 1], risers[index][1])
+        clear = clip_half_plane(panel, noses[index + 1], trailing_normal)
+        distances = []
+        for point in polygon_ring(clear):
+            depth = 0.0
+            for a, b in noses[index:index + 2]:
+                length = math.dist(a, b)
+                nx, ny = (b[1] - a[1]) / length, -(b[0] - a[0]) / length
+                depth += abs((point[0] - a[0]) * nx + (point[1] - a[1]) * ny)
+            distances.append(depth)
+        narrow.append(min(distances))
     return WinderMeasurements(points, tuple(math.dist(a, b) for a, b in
                                             zip(points, points[1:], strict=False)),
                               tuple(narrow), centre, radius)

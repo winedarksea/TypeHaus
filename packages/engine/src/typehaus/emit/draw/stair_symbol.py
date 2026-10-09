@@ -142,7 +142,7 @@ def _flight_key(member) -> str:
 
 
 def _mark(member) -> Segment:
-    """The line a walking surface draws: its riser FACE, never its board centreline.
+    """The line a walking surface draws: its finished nose, then its riser face.
 
     The centreline sits half a going past the riser, which drew a ``(going - nosing)/2``
     sliver at one end of every flight and ``(going + nosing)/2`` at the other — uniform
@@ -376,7 +376,7 @@ def _between(marks: list[Segment], segment: Segment) -> bool:
 
 def _emit_risers(b: SceneBuilder, stair, flights: dict[str, list],
                  ledger: _SegmentLedger) -> None:
-    """One line per riser face, suppressed where a landing or a ring already drew it."""
+    """One line per finished nosing, suppressed where a landing or ring already drew it."""
     for key in sorted(flights):
         for member in flights[key]:
             if member.category == "landing":

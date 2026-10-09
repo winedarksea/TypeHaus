@@ -339,6 +339,12 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec(f"A-301.{index}", view.title or view.tag,
                                 scene=partial(build_annotated_section, view=view)))
 
+    from typehaus.emit.draw.winder_detail import build_winder_detail
+
+    for index, stair in enumerate((s for s in model.stairs if s.winder_turn is not None), 1):
+        sheets.append(SheetSpec(f"A-401.{index}", f"{stair.tag} winder geometry and framing",
+                                scene=partial(build_winder_detail, stair_tag=stair.tag)))
+
     # The 5 series, not the 4. NCS 4 is LARGE-SCALE VIEWS — an enlarged plan of a kitchen or
     # a stair at 1/2" = 1'-0", the same drawing type as the plan it comes from. A junction
     # cut at 1-1/2" = 1'-0" is a DETAIL and belongs in 5. This set has no large-scale views,

@@ -1,13 +1,4 @@
-"""Stair load-path and riser-uniformity checks — advisory, not engineering (→ 12).
-
-Kept out of ``resolve/stairs.py`` on purpose. ``resolve_envelope_geometry``'s finding
-contract is *bad references* — a stair naming a storey or an opening that does not exist —
-and it fails the build when one shows up. Neither rule here is a bad reference: a landing
-post can land on a perfectly resolvable deck that simply is not carrying anything, and a
-winder turn can be geometrically consistent and still short of code. Both are judgements
-about a resolved model, so both belong in the STRUCTURAL tier, at WARN, beside every other
-"advisory, not engineering" rule.
-"""
+"""Stair landing-post load paths and resolved riser uniformity."""
 
 from __future__ import annotations
 

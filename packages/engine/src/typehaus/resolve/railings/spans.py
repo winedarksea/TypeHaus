@@ -28,6 +28,7 @@ from typehaus.resolve.stairs.walkline import (
     RAIL_LATERAL_REACH_M,
     flight_walklines,
     walkline_z_at,
+    winder_surface_z_at,
 )
 
 #: ``(pa, pb, surface_z)`` — one flat band of a run, and the walking surface under it.
@@ -103,7 +104,9 @@ def raking_surface(stair, base_m: float) -> RailingSurface:
     lines = flight_walklines(stair)
 
     def height_at(point: Vec) -> float:
-        z = walkline_z_at(lines, point, RAIL_STAIR_REACH_M)
+        z = winder_surface_z_at(stair, point)
+        if z is None:
+            z = walkline_z_at(lines, point, RAIL_STAIR_REACH_M)
         return base_m if z is None else z
 
     def _split(a: Vec, b: Vec, steps: int) -> list[tuple[Vec, Vec]]:

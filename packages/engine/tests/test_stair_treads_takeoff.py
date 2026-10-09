@@ -33,12 +33,10 @@ def test_the_oak_flights_bill_owner_furnished_pieces(catlin_model_ro) -> None:
 
 
 def test_a_winder_blank_is_its_outline_with_the_grain_on_the_nosing(catlin_model_ro) -> None:
-    """ST-S2A's 36" turn: a 24x30 triangle off the entering edge, a five-sided middle
-    winder, and a triangle whose nosing is its 38 3/8" hypotenuse. Each blank is the
-    outline's reach back from its nosing plus the 1" that tucks under the next riser."""
+    """Physical oak panels include noses and rear fit, projected along the nosing grain."""
     [stair] = [s for s in catlin_model_ro.stairs if s.tag == "ST-S2A"]
     winders = sorted((m for m in stair.members if m.category == "winder"),
                      key=lambda m: m.child_key)
     blanks = [winder_blank_in(m, stair.nosing_depth_m) for m in winders]
     assert blanks == [pytest.approx(b, abs=0.01)
-                      for b in [(25.0, 36.0), (17.87, 46.85), (19.74, 38.42)]]
+                      for b in [(30.30052616, 38.32420151), (29.87366807, 56.352018), (25.625, 45.97151518)]]

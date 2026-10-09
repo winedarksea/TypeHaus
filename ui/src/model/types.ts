@@ -130,12 +130,12 @@ export interface Member {
   z0_end_m: number | null;
   z1_end_m: number | null;
   plan_outline?: Vec2[] | null;
-  // A straight tread's riser face — the going*i line the 2D stair icon marks. The axis
-  // p0/p1 is the board centreline, half a going past it (drawing the axis made uniform
-  // flights read as unevenly stepped). Absent on winders: their axis IS the fan line.
+  // Leading riser face for straight treads and winders; nosing_line is the physical
+  // foremost edge, including the integral nose, and sets the oak grain direction.
   riser_line?: [Vec2, Vec2] | null;
   nosing_line?: [Vec2, Vec2] | null;
   stock_profile?: string | null;
+  start_connection?: string | null;
   // A birdsmouth: the member's underside is cut flat to bear on a plate at `plate_top_z_m`,
   // over `seat_run_m` from the plumb `heel` toward the member's nearer end. Its depth is not
   // carried because it is not independent — it is the run times the member's own slope.

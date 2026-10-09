@@ -53,12 +53,12 @@ def _board(stair: Stair, key: str, polygon: Polygon, axis: Segment,
 
 
 def _rims(stair: Stair, index: int, polygon: Polygon, departing: Segment,
-          base: float, top: float, top_tier: bool):
+          base: float, top: float):
     ply = cross_section(stair.winder_framing.rim_profile).width_m
     edges = _inward_edges(polygon)
     depart_line = LineString(departing)
     plies = [stair.winder_framing.departing_rim_plies
-             if top_tier and depart_line.distance(LineString(line).interpolate(.5, normalized=True))
+             if depart_line.distance(LineString(line).interpolate(.5, normalized=True))
              < 1e-6 else 1 for line, _ in edges]
     inner = _offset_vertices(edges, [ply * count for count in plies])
     outer = [line[0] for line, _ in edges]
@@ -96,7 +96,7 @@ def _blocking(stair: Stair, index: int, interior: Polygon, lines: list[Segment],
                 continue
             axis = LineString(line).intersection(piece)
             if not isinstance(axis, LineString) or axis.length <= 1e-7:
-                continue
+                raise ValueError("winder blocking cannot be cut from its declared stock")
             members.append(_board(stair, f"landing-joist-winder{index}-{len(members)}",
                                   piece, (axis.coords[0], axis.coords[-1]), base, top, ply))
         remaining = remaining.difference(band)
@@ -131,7 +131,7 @@ def winder_box_framing(stair: Stair, layout: WinderLayout, z0: float,
         if frame_top <= base or frame_top - base > stock.depth_m + 1e-7:
             raise ValueError("winder tier height exceeds its rim stock or leaves no frame")
         rims, interior = _rims(stair, index, deck, layout.riser_lines[-1], base,
-                               frame_top, index == stair.winder_count - 1)
+                               frame_top)
         members.extend(rims)
         supports = [((minx, y), (maxx, y)) for y in sorted(support_ys)]
         if index + 1 < len(decks):

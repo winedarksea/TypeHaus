@@ -27,3 +27,14 @@ def winder_supporting_floor(model: ResolvedModel, stair: Stair, finished_base: f
                               else source.elevation.meters)
     below = [top for top in candidates if top <= finished_base + 1e-7]
     return max(below) if below else finished_base
+
+
+def winder_members_fit_opening(members, outline) -> bool:
+    """Keep physical walking panels and structural decks inside the actual opening polygon."""
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+
+    opening = Polygon(outline).buffer(1e-7)
+    return all(opening.covers(Polygon(member_footprint(member)[0])) for member in members
+               if member.category in {"winder", "tread", "stair_subdeck"})

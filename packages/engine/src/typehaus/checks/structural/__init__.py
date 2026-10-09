@@ -32,6 +32,7 @@ from typehaus.checks.structural import (
     snow,  # noqa: F401 - registers checks
     soffit,  # noqa: F401 - registers checks
     stair_stringers,  # noqa: F401 - registers checks
+    stair_winders,  # noqa: F401 - registers checks
     stairs,  # noqa: F401 - registers checks
     subfloor_oversail,  # noqa: F401 - registers checks
     suspension_anchor,  # noqa: F401 - registers checks

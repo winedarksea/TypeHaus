@@ -168,6 +168,8 @@ def member_class(category: str) -> tuple[str, str | None]:
     whichever parent generated it.
     """
     key = category.lower()
+    if key == "stair_subdeck":
+        return "IfcPlate", "SHEET"
     if key in _PROXY_CATEGORIES:
         return "IfcBuildingElementProxy", None
     if key in _COVERING_PREDEFINED_TYPE:

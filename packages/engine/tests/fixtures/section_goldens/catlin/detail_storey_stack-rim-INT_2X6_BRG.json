@@ -684,7 +684,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSF603AAAA",
-      "tag": "bearing-block-0-015"
+      "tag": "bearing-block-0-017"
     },
     {
       "space": "model",
@@ -732,7 +732,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CSF603AAAA",
-      "tag": "bearing-block-0-015/flange"
+      "tag": "bearing-block-0-017/flange"
     },
     {
       "space": "model",
@@ -752,7 +752,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CSF603AAAA",
-      "tag": "bearing-block-0-015/flange"
+      "tag": "bearing-block-0-017/flange"
     },
     {
       "space": "model",

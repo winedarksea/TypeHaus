@@ -75,6 +75,27 @@ export function runWoodPieceTests() {
   assert(JSON.stringify(uvRange(t1.geometry)) !== JSON.stringify(uvRange(t2.geometry)),
     "two identical treads are two boards, not one figure twice");
 
+  // A winder's grain follows its physical nosing even when another edge is longer.
+  const winderGroup = new THREE.Group();
+  const winder = { ...member("winder-001", "winder", "house-tread"),
+    plan_outline: [[0, 0], [1, 0], [2, 3], [0, 2]],
+    nosing_line: [[0, 0], [1, 0]],
+  } as Member;
+  const plywood = member("stair-subdeck-001", "stair_subdeck", "plywood-subfloor");
+  const framing = buildBoardMembers(winderGroup, [winder, plywood], [0, 0], "nordic",
+    PALETTE, MATERIALS, "ST-WINDER");
+  assert(framing.length === 1 && framing[0].category === "stair_subdeck",
+    "structural plywood stays in framing and receives no hardwood board texture");
+  const winderMesh = winderGroup.children[0] as THREE.Mesh;
+  const positions = winderMesh.geometry.getAttribute("position");
+  const uv = winderMesh.geometry.getAttribute("uv");
+  const noseIndices = Array.from({ length: positions.count }, (_, i) => i)
+    .filter(i => Math.abs(positions.getZ(i)) < 1e-7);
+  assert(noseIndices.length >= 2, "the physical nosing is present in the viewer mesh");
+  const across = noseIndices.map(i => uv.getX(i));
+  assert(Math.max(...across) - Math.min(...across) < 1e-6,
+    "grain UV runs along the serialized nosing rather than the longest polygon edge");
+
   // --- a built-in's wood part is textured; its other parts stay flat -------------------
   const item = { uid: "FURN-1", position_m: [0, 0] as Vec2, rotation: 0 } as CanvasObject;
   const parts: ModelPart[] = [

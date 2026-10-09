@@ -68,6 +68,11 @@ def build_framing_plan(model: ResolvedModel, storey: str) -> Scene:
             b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer="S-FRAM",
                            lineweight=PROFILE, uid=level.floor.uid, tag=member.child_key))
 
+    from typehaus.emit.draw.winder_detail import emit_winder_framing
+
+    for stair in model.stairs:
+        if stair.storey == storey and stair.winder_turn is not None:
+            emit_winder_framing(b, stair)
     plan_points = _drawn_plan_points(model, levels)
     metrics = metrics_for(plan_points)
     seen: set[str] = set()

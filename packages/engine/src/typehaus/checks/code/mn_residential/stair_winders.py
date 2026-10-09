@@ -51,7 +51,7 @@ def winder_measurements(stair) -> WinderMeasurements:
                            tuple(m.riser_line for m in winders) + (terminal_riser,),
                            tuple(physical_nosing_line(Polygon(m.plan_outline), normal)
                                  for m, normal in zip(winders, layout.normals, strict=False))
-                           + (nose,))
+                           + (nose,), tuple(Polygon(m.plan_outline) for m in winders))
 
 
 @check(Tier.CODE, CHECK_ID)
@@ -69,13 +69,7 @@ def winder_treads(ctx: CheckContext) -> list[Finding]:
         walk = measured.walkline_depths_m
         narrow = measured.narrow_depths_m
         spread = max(walk) - min(walk)
-        problems = []
-        if min(walk) < MINIMUM_WALKLINE_DEPTH_M - GEOMETRY_TOLERANCE_M:
-            problems.append("walkline depth below 10 inches")
-        if min(narrow) < MINIMUM_NARROW_DEPTH_M - GEOMETRY_TOLERANCE_M:
-            problems.append("depth within clear width below 6 inches")
-        if spread > MAXIMUM_WALKLINE_VARIATION_M + GEOMETRY_TOLERANCE_M:
-            problems.append("walkline depth variation exceeds 3/8 inch")
+        problems = dimension_problems(measured)
         label = (f"{stair.tag}: {len(walk)} winder depths at the 12-inch walkline "
                  + ", ".join(f'{depth / .0254:.3f}"' for depth in walk)
                  + f'; narrow depths {", ".join(f"{depth / .0254:.3f}" for depth in narrow)}"'
@@ -83,3 +77,16 @@ def winder_treads(ctx: CheckContext) -> list[Finding]:
         out.append(_fail(CHECK_ID, label + "; " + "; ".join(problems), tags, "R311.7.5.2.1")
                    if problems else _pass(CHECK_ID, label, "R311.7.5.2.1"))
     return out or [not_applicable(CHECK_ID, "no winder stairs", (), "R311.7.5.2.1")]
+
+
+def dimension_problems(measured: WinderMeasurements) -> list[str]:
+    walk, narrow = measured.walkline_depths_m, measured.narrow_depths_m
+    spread = max(walk) - min(walk)
+    problems = []
+    if min(walk) < MINIMUM_WALKLINE_DEPTH_M - GEOMETRY_TOLERANCE_M:
+        problems.append("walkline depth below 10 inches")
+    if min(narrow) < MINIMUM_NARROW_DEPTH_M - GEOMETRY_TOLERANCE_M:
+        problems.append("depth within clear width below 6 inches")
+    if spread > MAXIMUM_WALKLINE_VARIATION_M + GEOMETRY_TOLERANCE_M:
+        problems.append("walkline depth variation exceeds 3/8 inch")
+    return problems

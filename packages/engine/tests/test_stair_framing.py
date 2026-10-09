@@ -398,7 +398,8 @@ def test_every_landing_platform_corner_is_supported(catlin_model):
     framing (deck + joists + rims) resting on nothing, because the whole support pass sat
     inside a foundation-walls-only branch."""
     for stair in catlin_model.stairs:
-        rims = [m for m in stair.members if m.child_key.startswith("landing-rim-")]
+        rims = [m for m in stair.members if m.child_key.startswith("landing-rim-")
+                and not m.child_key.startswith("landing-rim-winder")]
         if not rims:
             continue
         subfloor = _subfloor(catlin_model, stair)
@@ -461,7 +462,10 @@ def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,
             if member.category != "hanger":
                 continue
             assert member.connection is not None
-            if member.child_key.startswith("hanger-"):
+            if member.child_key.startswith("hanger-winder-"):
+                assert member.connection.startswith("winder-box-rim:")
+                assert member.material == "steel"
+            elif member.child_key.startswith("hanger-"):
                 assert member.connection.startswith("concrete-wall-hanger:"), member.child_key
             else:
                 assert member.child_key.startswith("ledger-"), member.child_key
@@ -619,7 +623,7 @@ def test_tread_marks_along_a_flight_are_evenly_spaced(catlin_model):
 
 @pytest.mark.parametrize("flight,storey", [("lower", "basement"), ("upper", "main")])
 def test_tread_marks_are_flush_with_the_flight_ends(catlin_model, flight, storey):
-    """The drawn grid is the riser faces, flush at the flight boundaries.
+    """The drawn grid follows physical noses, with their projection at flight boundaries.
 
     The old symbols drew each board's *centreline*, half a going past its riser — so
     every flight showed a (going - nosing)/2 sliver at the springing and
@@ -649,17 +653,17 @@ def test_tread_marks_are_flush_with_the_flight_ends(catlin_model, flight, storey
         springing = min(point[along] for point in stair.outline) / M_PER_IN
         # The first mark sits ON the springing edge and the last one a going before the
         # landing it climbs onto.
-        assert min(marks) == pytest.approx(springing, abs=1e-6)
-        assert max(marks) == pytest.approx(near_edge - board - going, abs=1e-6)
+        assert min(marks) == pytest.approx(springing - stair.nosing_depth_m / M_PER_IN, abs=1e-6)
+        assert max(marks) == pytest.approx(near_edge - board - going - stair.nosing_depth_m / M_PER_IN, abs=1e-6)
     else:
         # The upper flight leaves its own landing's near edge. That first riser face is
         # DRAWN BY THE LANDING RECTANGLE — one line per riser face, one owner per line —
         # so the first mark of its own is one going in from it.
-        assert max(marks) == pytest.approx(near_edge - going, abs=1e-6)
+        assert max(marks) == pytest.approx(near_edge + stair.nosing_depth_m / M_PER_IN, abs=1e-6)
         # ...and its arrival nosing is the well ring's own edge, so the last mark is one
         # going short of the deck edge rather than on it.
         arrival = min(point[along] for point in stair.outline) / M_PER_IN
-        assert min(marks) == pytest.approx(arrival + board + going, abs=1e-6)
+        assert min(marks) == pytest.approx(arrival + board + going + stair.nosing_depth_m / M_PER_IN, abs=1e-6)
 
 
 # ------------------------------------- 8c. each flight meets the storey edge it arrives at
@@ -712,143 +716,6 @@ def test_paired_landings_share_the_far_edge(catlin_model, tag):
     # Flush at the far end of the well, however deep either one is.
     assert max(lower.p0[along], lower.p1[along]) == pytest.approx(
         max(upper.p0[along], upper.p1[along]), abs=1e-9)
-
-
-# --------------------------------------------------------------- 9. the winder turn
-def _winder_reference(catlin_model, winder_stair):
-    subfloor = _subfloor(catlin_model, winder_stair)
-    riser = winder_stair.riser_height_m
-    return subfloor, riser, winder_stair.winder_count
-
-
-def test_winder_turn_has_three_code_sized_raised_surfaces(catlin_model, winder_stair):
-    subfloor, riser, count = _winder_reference(catlin_model, winder_stair)
-    newels = [m for m in winder_stair.members if m.category == "newel"]
-    newel = next(m for m in newels if m.child_key == "newel-000")
-    assert newel.p0 == newel.p1 and newel.orient is not None
-    assert newel.z0_m == pytest.approx(subfloor)
-    # The box assembly's inside corner post: it runs from the subfloor to the top box's
-    # deck, which every tier's rims and the flight's inner stringer die into.
-    assert newel.z1_m == pytest.approx(subfloor + riser * count)
-    winders = [m for m in winder_stair.members if m.category == "winder"]
-    assert len(winders) == count
-    # A wedge can legitimately be a triangle (the first and last are, once degenerate
-    # vertices are stripped) — three distinct corners is the floor, not four.
-    assert all(winder.plan_outline and len(winder.plan_outline) >= 3 for winder in winders)
-    assert [winder.z1_m for winder in winders] == pytest.approx(
-        [subfloor + riser * step for step in range(1, count + 1)])
-
-
-def _ring_area(ring) -> float:
-    return abs(sum(a[0] * b[1] - b[0] * a[1]
-                   for a, b in zip(ring, ring[1:] + ring[:1]))) / 2.0
-
-
-def test_winder_wedge_rings_are_minimal_simple_polygons(winder_stair):
-    """The pie panels are clean polygons that together tile the turn square exactly.
-
-    The old ring construction appended the outer corner into the first wedge — whose
-    nosings both sit on the entering edge — as a zero-area excursion doubling a line along
-    the whole outer edge, and kept vertices collinear along the newel line. Both drew as
-    plan artifacts and extruded to coincident opposite-facing prism quads.
-    """
-    width = next(m.length_m for m in winder_stair.members if m.category == "tread")
-    wedges = [m for m in winder_stair.members if m.category == "winder"]
-    for wedge in wedges:
-        ring = list(wedge.plan_outline)
-        assert _ring_area(ring) > 1e-6, wedge.child_key
-        for index in range(len(ring)):
-            a, b, c = ring[index - 1], ring[index], ring[(index + 1) % len(ring)]
-            assert math.hypot(b[0] - a[0], b[1] - a[1]) > 1e-9, (wedge.child_key, b)
-            cross = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
-            assert abs(cross) > 1e-9, (wedge.child_key, "collinear vertex", b)
-    # The wedges tile the turn square except one 6"x6"/2 triangle at the inside corner:
-    # the code-minimum narrow path crosses that corner on the diagonal between the first
-    # two fan lines' narrow ends rather than hugging the newel, so the triangle belongs
-    # to no walking surface. Anything else missing (or doubled) is a construction defect.
-    corner_cut = inch(6).meters ** 2 / 2.0
-    assert sum(_ring_area(list(w.plan_outline)) for w in wedges) == pytest.approx(
-        width * width - corner_cut, rel=1e-6)
-
-
-def test_winder_turn_is_a_stack_of_platform_boxes(catlin_model, winder_stair):
-    """Larry Haun's winder: one platform box per step, each landing flush on the one
-    below, rather than a compound-angle carriage cut through the turn.
-
-    A box's sides are ripped to exactly one riser less the deck they carry, so box ``k``'s
-    underside is box ``k-1``'s finished face and box 0's is the subfloor. Nothing floats
-    and nothing laps.
-    """
-    subfloor, riser, count = _winder_reference(catlin_model, winder_stair)
-    tread_thickness = inch(1).meters  # ST-S2A's stated oak
-    assert not [m for m in winder_stair.members
-                if m.child_key.startswith(("winder-carriage-", "winder-header"))], (
-        "the compound-angle carriage/header fiction is gone")
-    for index in range(count):
-        rims = [m for m in winder_stair.members
-                if m.child_key.startswith(f"landing-rim-winder{index}-")]
-        assert rims, f"box {index} has no sides"
-        deck = subfloor + riser * (index + 1)  # the winder tread's finished face
-        for rim in rims:
-            # A box side is framing under the winder tread it carries, not a walking
-            # surface — the same split the U-stair's landing joists and rims take.
-            assert rim.category == "landing_framing", rim.child_key
-            assert rim.z1_m == pytest.approx(deck - tread_thickness), rim.child_key
-            assert rim.z0_m == pytest.approx(subfloor + riser * index), rim.child_key
-            assert rim.profile.endswith(" rim"), rim.child_key
-        # The winder tread is this box's deck: its underside is the box's top.
-        winder = next(m for m in winder_stair.members
-                      if m.child_key == f"winder-{index:03d}")
-        assert winder.z1_m == pytest.approx(deck)
-        assert winder.z0_m == pytest.approx(rims[0].z1_m)
-        # One diagonal block per box, splitting the wedge into two bearing triangles.
-        blocks = [m for m in winder_stair.members
-                  if m.child_key.startswith(f"landing-joist-winder{index}-")]
-        assert len(blocks) == 1 and blocks[0].z1_m == pytest.approx(rims[0].z1_m)
-
-
-def test_straight_flight_lands_on_the_top_winder_box(catlin_model, winder_stair):
-    """The upper flight attaches to the top box's departing edge — Haun's "upper flight
-    stringers attach directly to the top edge of the upper winder box".
-
-    That rim is doubled because it carries the whole flight, and the stringers spring one
-    riser above the box's deck, on the notch line the first straight tread sits on.
-    """
-    subfloor, riser, count = _winder_reference(catlin_model, winder_stair)
-    tread_thickness = inch(1).meters  # ST-S2A's stated oak
-    stringers = [m for m in winder_stair.members if m.child_key.startswith("stringer-")]
-    assert len(stringers) == 3  # three LSL stringers, notes/stair_stringer_basis.md
-    spring_notch = subfloor + riser * (count + 1) - tread_thickness
-    for stringer in stringers:
-        assert stringer.z1_m == pytest.approx(spring_notch)
-    first_tread = next(m for m in winder_stair.members if m.child_key == "tread-000")
-    assert first_tread.z0_m == pytest.approx(spring_notch)
-    # The top box's departing rim (its last edge) is two plies; every other side is one.
-    top_rims = [m for m in winder_stair.members
-                if m.child_key.startswith(f"landing-rim-winder{count - 1}-")]
-    departing = max(top_rims, key=lambda m: int(m.child_key.rsplit("-", 1)[1]))
-    assert cross_section(departing.profile).width_m == pytest.approx(inch(3.0).meters)
-    for rim in top_rims:
-        if rim is not departing:
-            assert cross_section(rim.profile).width_m == pytest.approx(inch(1.5).meters)
-    # It spans the inside corner to the turn corner: one stair width, which a straight
-    # tread also spans, and both stringers spring off its ends.
-    width = next(m for m in winder_stair.members if m.category == "tread").length_m
-    assert math.hypot(departing.p1[0] - departing.p0[0],
-                      departing.p1[1] - departing.p0[1]) == pytest.approx(width)
-    newel = next(m for m in winder_stair.members if m.child_key == "newel-000")
-    assert newel.p0 in (departing.p0, departing.p1)
-
-
-def test_winder_nosings_are_never_plan_coincident_with_a_straight_tread(winder_stair):
-    """The fan used to divide by ``winder_count``, putting the last nosing on the
-    departing edge of the turn square — exactly where ``tread-000`` already is, one riser
-    up. That is a riser with zero going: unclimbable."""
-    treads = [m for m in winder_stair.members if m.category == "tread"]
-    for winder in (m for m in winder_stair.members if m.category == "winder"):
-        for tread in treads:
-            assert {winder.p0, winder.p1} != {tread.p0, tread.p1}, (
-                f"{winder.child_key} is plan-coincident with {tread.child_key}")
 
 
 # ------------------------------------------------------- 9b. dropped tread boards
@@ -1001,28 +868,6 @@ def test_invalid_tread_and_nosing_combinations_are_rejected(fields):
     assert any(finding.check_id in {"integrity.stair_geometry", "integrity.stair_nosing"}
                for finding in findings)
 
-
-def test_six_by_six_newel_winder_preserves_code_sized_inside_goings():
-    """``Stair.newel_profile`` is consumed, not the old module constant: a 6x6 newel's
-    faces sit 2.75" off its centreline, and every winder narrow end must land on them.
-
-    The measured narrow-end tread depth is locked too — a quarter turn in three winders
-    around a 6x6 delivers half the newel's half-face (1.375"), still 4.625" short of the
-    6" IRC R311.7.5.2.1 minimum. That shortfall is a layout fact this generator refuses
-    to paper over with invented risers, so the test asserts the honest number.
-    """
-    stair, findings = _resolved_stair(_stair_plan(
-        layout="right_angle_winder", turn_direction="left", winder_count=3,
-        newel_profile="6x6"))
-    assert stair is not None, [f.message for f in findings]
-    newels = [m for m in stair.members if m.category == "newel"]
-    assert newels and all(m.profile == "6x6" for m in newels)
-    winders = sorted((m for m in stair.members if m.category == "winder"),
-                     key=lambda m: m.z0_m)
-    assert len(winders) == 3
-    gaps = [math.hypot(b.p0[0] - a.p0[0], b.p0[1] - a.p0[1])
-            for a, b in zip(winders, winders[1:])]
-    assert min(gaps) >= inch(6).meters - 1e-9
 
 
 def test_a_wall_four_inches_off_the_stringer_is_not_a_host():

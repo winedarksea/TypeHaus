@@ -240,6 +240,7 @@ class FramedMember:
     cut_length_m: float | None = None
     # Purchased stock before a rip; profile describes the built member.
     stock_profile: str | None = None
+    start_connection: str | None = None
     # Held up along its WHOLE length rather than reaching between supports — derived from the
     # bearings actually reaching, never assumed from a category. Two things read it and they
     # are why it names the fact rather than either consequence: the takeoff buys such a member

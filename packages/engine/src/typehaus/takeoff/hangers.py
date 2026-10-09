@@ -62,6 +62,10 @@ def _explicit_hanger_rows(model: ResolvedModel) -> list:
     for hanger in model.all_members():
         if hanger.category != "hanger":
             continue
+        if hanger.connection and hanger.connection.startswith("winder-box-rim:"):
+            hosts_by_role.setdefault(ROLE_STAIR_STRINGER_CONNECTOR, Counter())[
+                hanger.connection.split(":", 1)[1]] += 1
+            continue
         host = _supporting_wall(model, hanger)
         role = (ROLE_CONCRETE_FACE_MOUNT_HANGER
                 if host is not None and host.is_foundation

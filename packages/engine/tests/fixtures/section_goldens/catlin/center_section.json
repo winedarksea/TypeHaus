@@ -13604,7 +13604,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSF603AAAA",
-      "tag": "bearing-block-0-013-rail-top"
+      "tag": "bearing-block-0-015-rail-top"
     },
     {
       "space": "model",
@@ -13660,7 +13660,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSF603AAAA",
-      "tag": "bearing-block-0-013-rail-bottom"
+      "tag": "bearing-block-0-015-rail-bottom"
     },
     {
       "space": "model",

@@ -69,6 +69,10 @@ _BUDGET: dict[str, tuple[int, str]] = {
         1, "a @cache'd module helper — one load for the module, not one per test"),
     "test_catlin_bathroom_vanities.py": (
         1, "a @cache'd module helper — one load for the module, not one per test"),
+    "test_winder_integration.py": (
+        0, "shared read-only Catlin model/context; no additional loads"),
+    "test_winder_ifc.py": (
+        0, "shared read-only framed Catlin IFC; no additional loads or emissions"),
     "test_masonry_finish.py": (
         0, "its one `run(plan)` carries NO house_dir — an empty Preferences, so a different "
            "suppression set and jurisdiction — but it takes the plan from the fixture"),

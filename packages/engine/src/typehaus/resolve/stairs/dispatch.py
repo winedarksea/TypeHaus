@@ -33,17 +33,21 @@ from typehaus.resolve.stairs.finish import (
     landing_nosing_parts,
     lower_stair_substrates,
     set_landing_stack,
+    set_tread_nosing_lines,
     stair_finish_parts,
     stairhead_nosing_part,
 )
 from typehaus.resolve.stairs.straight import _straight_stair_members
 from typehaus.resolve.stairs.u_split import _u_split_landing_members
-from typehaus.resolve.stairs.winder_support import winder_supporting_floor
 from typehaus.resolve.stairs.winder import (
     _winder_stair_members,
     local_winder_layout,
     resolved_winder_layout,
     winder_transform,
+)
+from typehaus.resolve.stairs.winder_support import (
+    winder_members_fit_opening,
+    winder_supporting_floor,
 )
 
 
@@ -242,15 +246,10 @@ def _resolve_stair(
             raise
         return None, [_error("integrity.stair_winder_framing", f"stair {stair.tag}: {exc}",
                              stair.tag)]
-    from shapely.geometry import Polygon
-
-    from typehaus.resolve.framing.footprint import member_footprint
-    from typehaus.resolve.stairs.winder_geometry import ascent_normal, physical_nosing_line
-
-    members = tuple(replace(member, nosing_line=physical_nosing_line(
-        Polygon(member_footprint(member)[0]), ascent_normal(member.riser_line, member.p0)))
-        if member.category == "tread" and member.nosing_line is None
-        and member.riser_line is not None else member for member in members)
+    if winder_layout is not None and not winder_members_fit_opening(members, outline):
+        return None, [_error("integrity.stair_opening", f"stair {stair.tag} physical panels "
+                             "or decks extend outside its opening polygon", stair.tag)]
+    members = set_tread_nosing_lines(members)
     members = lower_stair_substrates(members, finish_thickness_m)
     deck = _landing_deck(model, stair)
     if deck is not None:

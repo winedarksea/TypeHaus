@@ -1,37 +1,14 @@
-"""Tread boards and winder narrow ends (plans/TODO.md "Stair framing follow-ups").
-
-Two geometry defects, both of which the member IR made easy to miss:
-
-* **treads rendered as 1.5" strips.** A tread was spelled ``"2x12"``, and a member's plan
-  footprint is built from a profile's *thickness* face — so every tread drew as the 1.5"
-  edge of the stock instead of the board a framer nails down.
-* **D2: winder narrow ends converged on a point.** Every winder started at the newel's
-  *centreline*, so the narrow-end tread depth was exactly 0 where IRC R311.7.5.2.1 wants 6".
-
-The fan now *constructs* the narrow path at the 6" code minimum — three 6" offsets around
-the inside corner rather than a radial fan converging on the newel — so
-``structural.winder_narrow_tread_depth`` measures a built-in PASS. The check stays: it is
-what keeps the construction honest, and the synthetic-fan tests here hold it honest in
-both directions.
-"""
+"""Physical rectangular tread boards and consistent riser-face grids."""
 
 from __future__ import annotations
 
 import math
-from types import SimpleNamespace
 
 import pytest
 
-from typehaus.checks.structural.stairs import (
-    MIN_WINDER_NARROW_TREAD_IN,
-    winder_narrow_tread_depth,
-    winder_walk_line_depth,
-)
-from typehaus.findings import Result
 from typehaus.quantities import inch
 from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.model import FramedMember, ResolvedStair
 
 _TREAD_THICKNESS_M = inch(1.5).meters
 # A profile string is a rounded human-readable catalog key ("deck 10.3333x1.5"), so a
@@ -123,15 +100,13 @@ def test_top_tread_board_reaches_the_arrival_deck(catlin_model):
     """Anchoring the board on its riser line instead of its centre would leave the flight
     half a going short of the deck it arrives at — a visible hole at the top of the run."""
     winder = next(stair for stair in catlin_model.stairs if stair.winder_count)
-    # The flight springs off the top winder box's departing rim, at the newel end of it.
-    springing = next(member for member in winder.members
-                     if member.child_key == "newel-000").p0
-    going = winder.going_depth_m
-    reaches = [math.hypot(tread.p0[0] - springing[0], tread.p0[1] - springing[1])
-               + winder.tread_depth_m / 2.0
-               for tread in _treads(winder)]
-    assert min(reaches) == pytest.approx(going, abs=1e-9)  # first board starts at the springing
-    assert max(reaches) == pytest.approx(going * len(reaches), abs=1e-9)
+    first = min(_treads(winder), key=lambda m: m.z1_m)
+    last = max(_treads(winder), key=lambda m: m.z1_m)
+    normal = winder.winder_turn.normals[-1]
+    origin = first.riser_line[0]
+    ring = member_footprint(last)[0]
+    reach = max((p[0] - origin[0]) * normal[0] + (p[1] - origin[1]) * normal[1] for p in ring)
+    assert reach == pytest.approx(winder.going_depth_m * len(_treads(winder)), abs=1e-9)
 
 
 # ------------------------------------------------------------------ riser lines
@@ -169,11 +144,10 @@ def test_riser_grid_is_flush_at_the_springing_and_the_landing_zone(catlin_model)
     winder = next(stair for stair in catlin_model.stairs if stair.winder_count)
     # The straight flight springs at the turn square's departing edge — the top winder's
     # fan line — so its first riser line lies on that same line.
-    top_fan = next(member for member in winder.members
-                   if member.child_key == f"winder-{winder.winder_count - 1:03d}")
+    top_fan = winder.winder_turn.riser_lines[-1]
     first = min(_treads(winder), key=lambda member: member.z0_m)
-    assert _collinear(top_fan.p0, *first.riser_line)
-    assert _collinear(top_fan.p1, *first.riser_line)
+    assert _collinear(top_fan[0], *first.riser_line)
+    assert _collinear(top_fan[1], *first.riser_line)
     for stair in (s for s in catlin_model.stairs if s.layout == "u_split_landing"):
         along = 1 if stair.run_direction == "y" else 0
         going = stair.going_depth_m
@@ -205,87 +179,3 @@ def test_riser_grid_is_flush_at_the_springing_and_the_landing_zone(catlin_model)
             assert gap == pytest.approx(expected, abs=1e-9), (stair.tag, flight)
 
 
-# ------------------------------------------------------------- winder narrow ends
-def test_winder_narrow_ends_are_spaced_at_the_code_minimum(catlin_model):
-    winder = next(stair for stair in catlin_model.stairs if stair.winder_count)
-    winders = [member for member in winder.members if member.category == "winder"]
-    assert len(winders) == winder.winder_count
-    narrow_ends = {member.p0 for member in winders}
-    assert len(narrow_ends) == len(winders), "narrow ends still share one point"
-    gaps = [math.dist(upper.p0, lower.p0) for lower, upper in zip(winders, winders[1:])]
-    assert min(gaps) >= inch(6).meters - 1e-9
-
-
-def test_winder_narrow_end_depth_is_measured_and_reported(catlin_ctx):
-    ctx = catlin_ctx
-    findings = winder_narrow_tread_depth(ctx)
-    assert len(findings) == 1
-    finding = findings[0]
-    assert finding.result is Result.PASS
-    assert finding.severity.value == "warn"
-    assert "R311.7.5.2.1" in finding.message
-
-
-def _winder_at(narrow_end, z0):
-    return FramedMember("S", f"winder-{z0:.3f}", "winder", "tapered tread",
-                        narrow_end, (narrow_end[0] + 1.0, narrow_end[1]),
-                        z0, z0 + _TREAD_THICKNESS_M, 1.0)
-
-
-def _stair_with_narrow_ends(spacing_m):
-    members = tuple(_winder_at((0.0, index * spacing_m), index * 0.18) for index in range(3))
-    return ResolvedStair(uid="S", tag="S-WIND", storey="main", to_storey="second",
-                         outline=[], riser_count=4, riser_height_m=0.18,
-                         tread_depth_m=0.28, run_direction="x", run_reversed=False,
-                         layout="right_angle_winder", turn_direction="left",
-                         winder_count=3, members=members)
-
-
-def test_winder_check_passes_a_turn_that_does_meet_the_six_inch_minimum():
-    """The FAIL above must be the geometry, not a rule that can only ever fail."""
-    generous = inch(MIN_WINDER_NARROW_TREAD_IN + 1.0).meters
-    ctx = SimpleNamespace(model=SimpleNamespace(stairs=[_stair_with_narrow_ends(generous)]))
-    findings = winder_narrow_tread_depth(ctx)
-    assert [finding.result for finding in findings] == [Result.PASS]
-
-    tight = inch(MIN_WINDER_NARROW_TREAD_IN - 1.0).meters
-    ctx = SimpleNamespace(model=SimpleNamespace(stairs=[_stair_with_narrow_ends(tight)]))
-    assert [finding.result for finding in winder_narrow_tread_depth(ctx)] == [Result.FAIL]
-
-
-# ------------------------------------------------------------------ the walk line
-def test_winder_walk_line_is_measured_a_foot_out_from_the_narrow_end(catlin_ctx):
-    ctx = catlin_ctx
-    findings = winder_walk_line_depth(ctx)
-    assert len(findings) == 1
-    finding = findings[0]
-    assert finding.result is Result.PASS
-    assert finding.severity.value == "warn"  # advisory, never build-breaking
-    assert "R311.7.5.2.1" in finding.message
-    # It is a *different* measurement from the narrow end, taken further out along the
-    # same treads, so it reads wider than the code-minimum narrow end.
-    narrow = winder_narrow_tread_depth(ctx)[0]
-    assert _reported_inches(finding) > _reported_inches(narrow)
-
-
-def test_walk_line_check_passes_a_turn_that_does_open_up(catlin_model):
-    """A fan wide enough at the walk line passes, so the FAIL above is the well and not
-    a rule that can only ever fire. The synthetic winders run 1 m out from their narrow
-    ends, radiating from a point 1 m apart at the far end: at the 12" walk line the gap
-    is a bit under a third of that."""
-    ctx = SimpleNamespace(model=SimpleNamespace(stairs=[_stair_with_narrow_ends(0.0)]))
-    assert [finding.result for finding in winder_walk_line_depth(ctx)] == [Result.FAIL]
-    wide = ResolvedStair(uid="S", tag="S-WIDE", storey="main", to_storey="second",
-                         outline=[], riser_count=4, riser_height_m=0.18,
-                         tread_depth_m=0.28, run_direction="x", run_reversed=False,
-                         layout="right_angle_winder", turn_direction="left",
-                         winder_count=3, members=tuple(
-                             _winder_at((0.0, index * inch(11).meters), index * 0.18)
-                             for index in range(3)))
-    ctx = SimpleNamespace(model=SimpleNamespace(stairs=[wide]))
-    assert [finding.result for finding in winder_walk_line_depth(ctx)] == [Result.PASS]
-
-
-def _reported_inches(finding) -> float:
-    """The measured number a stair advisory prints, e.g. ``... is 5.0", under ...``."""
-    return float(finding.message.split(" is ")[1].split('"')[0])

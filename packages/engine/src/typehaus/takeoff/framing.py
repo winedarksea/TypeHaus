@@ -197,7 +197,9 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # bought in pieces it cannot be built from.
     splice: dict[tuple[str, str, str], bool] = {}
     for member in model.all_members():
-        if member.category == "stair_subdeck":
+        if (member.category == "stair_subdeck"
+                or (member.category == "hanger" and member.connection
+                    and member.connection.startswith("winder-box-rim:"))):
             continue
         if (member.parent_uid, member.child_key) in wear_members:
             continue  # separately specified wear boards bill by area in sheet_goods

@@ -38,6 +38,7 @@
     "ridge_cap": "roofing",
     "riser": "stairs",
     "soffit": "siding",
+    "stair_subdeck": "framing",
     "stringer": "stairs",
     "tread": "stairs",
     "winder": "stairs"
@@ -160,6 +161,7 @@
     "snow_guard": 12106431,
     "soffit": 14737625,
     "solar": 1713223,
+    "stair_subdeck": 12094556,
     "strap": 5856353,
     "strapping": 12687466,
     "stringer": 10054466,
@@ -340,6 +342,7 @@
     "snow_guard": 12106431,
     "soffit": 14737625,
     "solar": 1713223,
+    "stair_subdeck": 12094556,
     "strap": 5856353,
     "strapping": 12687466,
     "stringer": 10054466,

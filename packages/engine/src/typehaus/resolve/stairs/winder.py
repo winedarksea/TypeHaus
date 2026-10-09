@@ -24,8 +24,8 @@ from typehaus.resolve.stairs.winder_geometry import (
     WinderLayout,
     balanced_winder_turn,
     layout_from_spec,
-    polygon_ring,
     physical_nosing_line,
+    polygon_ring,
     shifted_line,
 )
 
@@ -95,7 +95,21 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                 stair.uid, f"stringer-{index}", "stringer", stair.stringer_profile,
                 a, b, spring - depth, spring, math.hypot(tread, riser) * straight_treads,
                 z0_end_m=arrival - depth, z1_end_m=arrival,
-                connection=f"winder-box-rim:{departing_rim}"))
+                connection=f"winder-box-rim:{departing_rim}",
+                start_connection=f"winder-box-rim:{departing_rim}"))
+    rim = next(m for m in boxes if m.child_key == departing_rim)
+    steel_thickness = .125 * .0254
+    stringer_width = cross_section(stair.stringer_profile).width_m
+    for member in tuple(out):
+        bottom, top = max(member.z0_m, rim.z0_m), min(member.z1_m, rim.z1_m)
+        if top <= bottom:
+            raise ValueError("straight stringer has no attachment depth at the departing rim")
+        a = (member.p0[0] + steel_thickness / 2, member.p0[1] - stringer_width / 2)
+        b = (a[0], member.p0[1] + stringer_width / 2)
+        out.append(FramedMember(
+            stair.uid, f"hanger-winder-{member.child_key}", "hanger",
+            f"0.125x{(top - bottom) / .0254:g}", a, b, bottom, top, stringer_width,
+            material="steel", connection=f"winder-box-rim:{departing_rim}"))
     rear_fit = stair.riser_thickness.meters if stair.riser_thickness else 0.0
     for index in range(stair.winder_count):
         top = z0 + riser * (index + 1)
@@ -103,7 +117,6 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         nose = shifted_line(leading, layout.normals[index], -nosing)
         panel = layout.panel(index, nosing, rear_fit)
         # Extend the edge to its physical wall/well intersections after the nose shift.
-        dx, dy = nose[1][0] - nose[0][0], nose[1][1] - nose[0][1]
         nose = physical_nosing_line(panel, layout.normals[index])
         out.append(FramedMember(
             stair.uid, f"winder-{index:03d}", "winder", "tapered tread",

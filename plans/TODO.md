@@ -255,9 +255,8 @@ the future.
 - Consider swapping the shower and tub positions in the main floor master bathroom
 - Outlet in the kitchen island
 - There are MASA connectors (and STHD connectors) in places we don't need, for example the brick wall, and possible some of the non load-bearing interior basment walls. Also there are MASA and STHD into the wooden W-B-S2-FR basement wall, incorrectly (shown as wood anchored into wood).
-- Stair winders still need framing work in 2d and 3d.
+- [x] Stair winder geometry, structural plywood boxes, 2D/3D framing, and millwork blanks (see `houses/catlin/notes/winder_stair_basis.md`).
 - Both the EXT_2X6 and ROOF report a moisture risk/glaser profile risk. We don't think this is quite right. Well, roof somewhat is (it relies on the air seal of the spray foam). But the ext_2x6 should be roughly 60% outsulation, which should have condensation usually outside the studs.
-- Should we add a continuous lateral brace (north to south) across the garage trusses? Likely just a couple of 2x6s.
 - Add wire shelves with rods to the two closets with simple shelves right now.
 - Specify steel pocket door frames like Eclisse steel frame kits
 - Add the titanium stair rail and backsplash
