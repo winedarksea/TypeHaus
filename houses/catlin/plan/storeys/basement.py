@@ -18,6 +18,7 @@ from typehaus import (
     HumidityClass,
     Layer,
     LayerFunction,
+    LayerMaterial,
     Node,
     Occupancy,
     PanelingSpan,
@@ -499,6 +500,8 @@ WALLS = [
     # concrete on a footing, and none of them moved. The balcony jamb holdowns did move
     # (2026-10-09): an STHD14 in the curb (CN-B-HD-BALC-*) and an MSTC52 across the floor
     # band (CN-M-HD-BALC-*), since their old +1" embedment had landed in W-B-S3-FR's studs.
+    # The STHD14's 14" embed is deeper than this 7 1/4" curb, so W-B-S3 is cast monolithic
+    # with FT-B-S3 (tasks.toml, the walls visit), straps set before that one pour.
     #
     # **Why the curb is kept and why it is 7 1/4".** The sunken garden is a court whose
     # floor is FLUSH with the basement slab (both -9'-1 7/16") with no way out but a drain;
@@ -813,6 +816,11 @@ WALLS = [
     # room. Set `interior_room` explicitly on both — do not let the component winding
     # decide which side layer 0 faces.
     #
+    # **No plywood in the basement (owner, 2026-10-09).** The stair-line family's painted
+    # ply face belongs to the mudroom above; down here W-B-STR/STR3B/STR2 swap that leaf
+    # to 5/8" gwb (`layer_materials`, same thickness, no face moves) and W-B-STR3 already
+    # carries Type X there.
+    #
     # W-B-STR is also RM-B-ESS's west enclosure, so it takes the Type X variant:
     # `advisory.ess_enclosure` passed here on the mass of 12" of concrete and now passes on
     # a 5/8" Type X leaf on the closet face. W-B-N3 (the closet's north side) is still
@@ -820,6 +828,7 @@ WALLS = [
     Wall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
          end_node="N-B-ESS-SE", assembly="STAIRWALL_INT_2X6_BRG_TYPEX", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
+         layer_materials=(LayerMaterial(layer="ply-stair", material="gwb"),),
          interior_room="RM-B-ESS",
          structural_role=StructuralRole.BEARING),
     # The same wall south of the closet: no Type X leaf, RM-B-FURNACE on the west face.
@@ -845,6 +854,7 @@ WALLS = [
     Wall(uid="VZPMT59XVQ", tag="W-B-STR3B", start_node="N-B-BA-NW",
          end_node="N-B-BA-W", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
+         layer_materials=(LayerMaterial(layer="ply-stair", material="gwb"),),
          interior_room="RM-B-FURNACE",
          structural_role=StructuralRole.BEARING),
     # The stub south of it: RM-B-BATH's west enclosure, nothing bearing on it, nothing
@@ -863,6 +873,7 @@ WALLS = [
     Wall(uid="CBW122AAAA", tag="W-B-STR2", start_node="N-B-BA-W",
          end_node="N-B-STR", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
+         layer_materials=(LayerMaterial(layer="ply-stair", material="gwb"),),
          interior_room="RM-B-FURNACE"),
     # Sauna partitions — SAUNA_2X4 carries the hot-side liner (T&G/furring/foil-faced
     # polyiso) as part of the wall type, not a room finish override; the east wall (the

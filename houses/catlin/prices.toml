@@ -1101,10 +1101,10 @@
 # the row billed nothing. A price row for a part the model does not contain is not harmless:
 # it reads as coverage.
 "MASA" = { low = 1.75, high = 3 }  # 91 ea
-# Estimates (2026-10-09), not quotes. 16 ga 52" floor-to-floor strap at the balcony jambs.
-"MSTC52" = { low = 12, high = 20 }  # 2 ea — CN-M-HD-BALC-W/E
-# Mech-galv 0.157 x 3" washered pin plus its powder load; non-bearing slab partitions.
-"PDPAWL-300MG" = { low = 0.45, high = 0.9 }  # 50 ea
+# Retail, 2026-10-09: ToolUp/Total Fastening $14.54 to McCoy's $19.99.
+"MSTC52" = { low = 14.5, high = 20 }  # 2 ea — CN-M-HD-BALC-W/E
+# Retail, 2026-10-09: $25-38 per 100 (PDPAWL-287MG), plus ~$0.10 of powder load each.
+"PDPAWL-287MG" = { low = 0.35, high = 0.55 }  # 50 ea — non-bearing slab partitions
 # 1/2" x 10" cast-in anchor bolt with the BP1/2 plate washer R602.11.1 requires,
 # priced as the pair because neither is ordered without the other. Set by the concrete
 # sub, not the framer, which is why cost_codes.py files "AB-*" under 03 15 00 rather

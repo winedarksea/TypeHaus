@@ -383,7 +383,7 @@ INT_2X6_BRG_EXPOSED_PLY = Assembly(
               function=LayerFunction.FINISH),
     ),
     interfaces=(STUD_BEARING,),
-    source="catlin stair-line bearing wall (W-B-STR2/STR3B basement, W-M-STRW/STRW2 main): 2x6 bearing studs at 16 in. o.c. on a gasketed PT sill, nominal 5/8 in. paint-grade veneer-core plywood on the stair face, painted. The mudroom pair carries exposed Select Structural S4S DF studs (open bays = coat nooks) via Wall.layer_materials; everything below is plain spf, where nothing is exposed to a finished room.",
+    source="catlin stair-line bearing wall (W-B-STR2/STR3B basement, W-M-STRW/STRW2 main): 2x6 bearing studs at 16 in. o.c. on a gasketed PT sill, nominal 5/8 in. paint-grade veneer-core plywood on the stair face, painted. The mudroom pair carries exposed Select Structural S4S DF studs (open bays = coat nooks) via Wall.layer_materials; everything below is plain spf, where nothing is exposed to a finished room. The basement segments swap the plywood leaf for 5/8 in. gwb via Wall.layer_materials.",
 )
 
 # ** The same wall where it walls the under-stair storage (2026-09-05). ** W-B-STR3's

@@ -164,13 +164,12 @@
           -13.437499999999996
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "cabinet-plywood",
-      "fill": "#c8a97a"
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -1296,13 +1295,12 @@
           1.1280000000000001
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "cabinet-plywood",
-      "fill": "#c8a97a"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -1339,7 +1337,7 @@
         0.7,
         1.058
       ],
-      "content": "cabinet-plywood  0.625\"",
+      "content": "gwb  0.625\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1369,12 +1367,13 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "gypsum",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb"
+      "material": "df-select-s4s",
+      "fill": "#d9b077"
     },
     {
       "space": "paper",
@@ -1411,7 +1410,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "gwb  0.5\"",
+      "content": "df-select-s4s  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1446,8 +1445,8 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "df-select-s4s",
-      "fill": "#d9b077"
+      "material": "cabinet-plywood",
+      "fill": "#c8a97a"
     },
     {
       "space": "paper",
@@ -1484,7 +1483,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "df-select-s4s  5.5\"",
+      "content": "cabinet-plywood  0.625\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

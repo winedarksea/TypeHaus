@@ -201,13 +201,13 @@ SDWH_TIMBER_HEX_SCREW = StructuralHardware(
 # A non-bearing partition's PT plate to the basement slab. Mechanically galvanized because
 # the plate is ACQ-treated; the washer keeps the head from pulling through a 1-1/2" plate.
 PDPAWL_SLAB_PLATE_PIN = StructuralHardware(
-    tag="simpson-pdpawl-300mg-slab-plate-pin",
-    name="PDPAWL 0.157 x 3 in powder-actuated pin, 1 in washer, mech. galvanized",
+    tag="simpson-pdpawl-287mg-slab-plate-pin",
+    name="PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized",
     role=ROLE_SLAB_PLATE_PIN,
     manufacturer=_SIMPSON,
-    model="PDPAWL-300MG",
+    model="PDPAWL-287MG",
     source="Simpson Strong-Tie PDPAWL powder-driven pin with washer (strongtie.com/pdpawl), "
-           "ICC-ES ESR-2138. Length = 1-1/2 in plate + 1-1/4 in min. embedment, rounded "
-           "up. Non-structural partition attachment at 24 in o.c.; a concrete screw "
-           "(1/4 in Titen) is the like-for-like substitute",
+           "ICC-ES ESR-2138. 2-7/8 in through a 1-1/2 in plate leaves ~1-3/8 in in the "
+           "slab. Non-structural partition attachment at 24 in o.c.; a 1/4 in Titen "
+           "concrete screw is the like-for-like substitute",
 )

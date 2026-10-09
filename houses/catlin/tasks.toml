@@ -63,6 +63,8 @@ constraints = [
   { label = "sleeves and block-outs marked on the forms before any steel goes in" },
   { label = "P/E/M on site during forming — every sleeve is a pre-pour operation" },
   { label = "anchor bolt layout marked against the sill plan" },
+  # The 7 1/4" curb is shallower than an STHD14's 14" embed (2026-10-09, owner).
+  { label = "W-B-S3 curb cast MONOLITHIC with FT-B-S3 under the balcony door, both STHD14s (CN-B-HD-BALC-W/E) set before that pour — never a cold joint across their embedment" },
   { label = "cold-weather protection on site if the forecast says so" },
   { label = "confirmed with the sub 48 hours ahead" },
 ]

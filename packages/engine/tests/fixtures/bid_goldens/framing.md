@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** c8716e12924bcd2d  
+**Model hash:** a8fd4e5aa164c581  
 **Lines:** 171
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -144,7 +144,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 4 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | 2 | ea |  | building |
-| PDPAWL 0.157 x 3 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-300MG) | 50 | ea |  | basement, main |
+| PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | 50 | ea |  | basement, main |
 | Steel U-saddle on a 3 1/2 in joist line, two 5/8 in through-bolts (SADDLE-3.5-2x58) | 1 | ea |  | main |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 71 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 106 | ea |  | building |
@@ -365,7 +365,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUS28Z) | — |
 | LUS ZMAX face-mount joist hanger (LUSZ) | — |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | — |
-| PDPAWL 0.157 x 3 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-300MG) | SL-B-FLOOR, SL-M-DECK |
+| PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | SL-B-FLOOR, SL-M-DECK |
 | Steel U-saddle on a 3 1/2 in joist line, two 5/8 in through-bolts (SADDLE-3.5-2x58) | HA-M-HAMMOCK |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
