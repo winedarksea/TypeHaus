@@ -190,6 +190,7 @@ MN_2020 = JurisdictionProfile(
                         # a head riser in front of its framing made every last tread 3/4"
                         # short. Measured nosing to nosing, landings and floors included.
                         "code.R311_7_5_2_tread_depth",
+                        "code.R311_7_5_2_1_winder_treads",
                         "structural.stair_riser_uniformity"),
                        ("IRC R311.7", "IRC R311.7.5.1", "IRC R311.7.5.2",
                         "IRC R311.7.5.3")),
