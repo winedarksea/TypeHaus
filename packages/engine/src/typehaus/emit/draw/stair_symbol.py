@@ -345,6 +345,17 @@ def _emit_flight_edges(b: SceneBuilder, stair, flights: dict[str, list],
     """
     for key in sorted(flights):
         members = flights[key]
+        if members[0].category == "winder":
+            footprint = union_all([Polygon(member.plan_outline) for member in members])
+            parts = [footprint] if isinstance(footprint, Polygon) else list(footprint.geoms)
+            for part_index, part in enumerate(parts):
+                ring = list(part.exterior.coords)
+                for edge_index, (a, c) in enumerate(zip(ring, ring[1:], strict=False)):
+                    if ledger.claim(a, c):
+                        b.add(Polyline(points=(_in(a), _in(c)), layer="A-STAIR",
+                                       lineweight=LIGHT, uid=stair.uid,
+                                       tag=f"winder-edge-{part_index}-{edge_index}"))
+            continue
         if members[0].category != "tread" or len(members) < 1:
             continue
         marks = _flight_stations_drawn(stair, members)

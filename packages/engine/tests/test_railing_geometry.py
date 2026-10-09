@@ -173,7 +173,7 @@ def test_a_raking_rail_is_one_solid_per_level(catlin_model):
 
 def test_a_straight_flight_collapses_to_the_points_it_is_cut_at(catlin_model):
     """The sampled path is simplified, so a rail is authored geometry again, not stations."""
-    rail = next(s for s in _rails(catlin_model, "RL-A-HANDRAIL") if s.sweep is not None)
+    rail = next(s for s in _rails(catlin_model, "RL-S-HANDRAIL-E") if s.sweep is not None)
     assert 2 <= len(rail.sweep.path) <= 12, rail.sweep.path
 
 

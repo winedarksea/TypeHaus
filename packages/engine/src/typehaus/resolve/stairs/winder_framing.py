@@ -103,6 +103,19 @@ def _blocking(stair: Stair, index: int, interior: Polygon, lines: list[Segment],
     return members
 
 
+def departing_rim_members(members, layout: WinderLayout, tier: int,
+                          plies: int, ply_width_m: float):
+    """Select parallel rim plies, excluding adjacent boards that merely meet a corner."""
+    departing = LineString(layout.riser_lines[-1])
+    nx, ny = layout.normals[-1]
+    return tuple(member for member in members
+                 if member.child_key.startswith(f"landing-rim-winder{tier}-")
+                 and abs((member.p1[0] - member.p0[0]) * nx
+                         + (member.p1[1] - member.p0[1]) * ny) < 1e-7
+                 and departing.distance(LineString((member.p0, member.p1)).interpolate(
+                     .5, normalized=True)) < plies * ply_width_m + 1e-7)
+
+
 def winder_box_framing(stair: Stair, layout: WinderLayout, z0: float,
                        riser: float, oak_thickness: float,
                        supporting_floor_m: float | None = None) -> list[FramedMember]:

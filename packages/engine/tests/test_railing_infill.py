@@ -180,6 +180,7 @@ class _FakeTread:
     def __init__(self, index: int, x: float, z1: float, width: float) -> None:
         self.child_key = f"tread-{index}"
         self.riser_line = ((x, -width / 2.0), (x, width / 2.0))
+        self.nosing_line = self.riser_line
         self.p0, self.p1 = (x, -width / 2.0), (x, width / 2.0)
         self.z0_m, self.z1_m = z1 - 0.03, z1
 

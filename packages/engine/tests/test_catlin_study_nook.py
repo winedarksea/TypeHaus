@@ -41,7 +41,7 @@ def test_run_is_six_pieces_on_the_south_face_of_w_s_ss2(catlin_model_ro):
     for left, right in zip(bounds, bounds[1:], strict=False):
         assert right[0] == pytest.approx(left[2], abs=1e-4)
     assert bounds[0][0] / INCH == pytest.approx(264.0, abs=1e-3)
-    assert bounds[-1][2] / INCH == pytest.approx(355.0, abs=1e-3)
+    assert bounds[-1][2] / INCH == pytest.approx(343.0, abs=1e-3)
 
 
 def test_partition_clears_the_doorway_and_its_casing(catlin_model_ro):

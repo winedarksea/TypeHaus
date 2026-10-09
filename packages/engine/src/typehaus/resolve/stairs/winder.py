@@ -5,8 +5,6 @@ from __future__ import annotations
 import math
 from dataclasses import replace
 
-from shapely.geometry import LineString
-
 from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
@@ -19,7 +17,7 @@ from typehaus.resolve.stairs.common import (
     _tread_risers,
     _tread_thickness,
 )
-from typehaus.resolve.stairs.winder_framing import winder_box_framing
+from typehaus.resolve.stairs.winder_framing import departing_rim_members, winder_box_framing
 from typehaus.resolve.stairs.winder_geometry import (
     WinderLayout,
     balanced_winder_turn,
@@ -76,12 +74,9 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         raise ValueError("winder count exceeds the stair's tread budget")
     inside, outside = layout.riser_lines[-1]
     boxes = winder_box_framing(stair, layout, z0, riser, thickness, supporting_floor_m)
-    departing_edge = LineString(layout.riser_lines[-1])
-    rim_prefix = f"landing-rim-winder{stair.winder_count - 1}-"
-    departing_rim = next(member.child_key for member in boxes
-                         if member.category == "landing_framing"
-                         and member.child_key.startswith(rim_prefix)
-                         and departing_edge.distance(LineString(member.plan_outline)) < 1e-7)
+    departing_rim = departing_rim_members(
+        boxes, layout, stair.winder_count - 1, stair.winder_framing.departing_rim_plies,
+        cross_section(stair.winder_framing.rim_profile).width_m)[0].child_key
     out = []
     spring = _notch_z(z0 + riser * (stair.winder_count + 1), thickness)
     arrival = _notch_z(z0 + riser * risers, thickness)

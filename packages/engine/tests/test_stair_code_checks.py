@@ -383,8 +383,8 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     # slat band above it, is deliberately NOT here — it starts at +4'-0", above the guard
     # line, so R312.1.3 has no fall to protect there, and a brace is no guard element. RL-BW-GARAGE-W left on 2026-09-11: the
     # interior landing moved into the garage's SW corner and W-G-W closes that edge.
-    # RL-A-FLIGHT-SKIRT since 2026-09-16: the panel skirt under the attic deck's edge.
-    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-FLIGHT-SKIRT", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",
+    # The full-length flight guard replaces the former overlapping panel skirt.
+    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",
                     "RL-S-STAIR",
                     "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE",
                     "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N",

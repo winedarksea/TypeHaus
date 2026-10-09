@@ -9,6 +9,10 @@ joist line at y=48 inches. The stair head retains the required 36-inch landing d
 The flight guard follows the actual open edge; the wall handrail wraps both outer turn
 faces. The nearby study window now uses the existing tempered type. The south supply
 branch and boot move one inch south to clear the enlarged opening's trimmer.
+The study nook retains all three 24-inch seat units and its 72-inch cushion. A custom
+6-inch bookshelf replaces the 18-inch shelf, shifting the seats 12 inches toward the
+higher stringer end while preserving the doorway and cushion clearance. Its reading
+light and dimmer move with the seat.
 
 `WinderTurnSpec` supplies the footprint, clear inside boundary, and four ordered riser
 segments, including entry and departure. Finished noses come from physical oak polygons.
@@ -37,14 +41,14 @@ and solid bay blocking. Upper boxes generate no duplicate landing posts.
 `stair_subdeck` belongs to structural framing and sheet goods. It contributes no walking
 step, oak millwork, or duplicate sheet-rip quantity. Full 1-inch oak panels include integral
 noses and rear fit. Physical polygons and elevations pass to JSON, the viewer, glTF, IFC,
-plans, sections, and construction detail A-401.1. Viewer grain and millwork share the nosing
+plans, sections, and construction detail S-501.1. Viewer grain and millwork share the nosing
 axis. The existing LSL stringer basis remains in `stair_stringer_basis.md`.
 
 | Winder | Previous blank, inches | Physical blank, inches |
 | --- | --- | --- |
 | W1 | 25.00 × 36.00 | 30.30 × 38.32 |
 | W2 | 17.87 × 46.85 | 29.87 × 56.35 |
-| W3 | 19.74 × 38.42 | 25.63 × 45.97 |
+| W3 | 19.74 × 38.42 | 26.27 × 46.35 |
 
 New dimensions project the complete physical panel along/perpendicular to its nosing,
 including the nose once. Rough stock, trim, jointing, and glue-up allowances remain in the

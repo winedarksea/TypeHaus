@@ -39,4 +39,4 @@ def test_a_winder_blank_is_its_outline_with_the_grain_on_the_nosing(catlin_model
                      key=lambda m: m.child_key)
     blanks = [winder_blank_in(m, stair.nosing_depth_m) for m in winders]
     assert blanks == [pytest.approx(b, abs=0.01)
-                      for b in [(30.30052616, 38.32420151), (29.87366807, 56.352018), (25.625, 45.97151518)]]
+                      for b in [(30.30052616, 38.32420151), (29.86751346, 56.35095264), (26.27451905, 46.34651518)]]

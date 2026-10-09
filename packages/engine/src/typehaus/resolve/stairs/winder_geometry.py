@@ -6,10 +6,10 @@ import math
 from dataclasses import dataclass
 
 from shapely.geometry import LineString, Point, Polygon
-from shapely.ops import unary_union
 
 from typehaus.model.stair_winders import WinderTurnSpec
 from typehaus.quantities import inch, m, pt
+from typehaus.resolve.overlay import GRID_SIZE_M, union_all
 
 Point2 = tuple[float, float]
 Segment = tuple[Point2, Point2]
@@ -101,11 +101,16 @@ class WinderLayout:
 
     def panel(self, index: int, nosing_m: float, rear_fit_m: float) -> Polygon:
         entering = self.riser_lines[0]
-        # Only the entering edge projects beyond the turn. The remaining noses overlap
-        # the preceding panel, while the exterior wall and clear well edges remain fixed.
+        # Entry nosing and departure rear fit project into adjoining runs. Other noses
+        # overlap the preceding panel; exterior wall and clear well edges stay fixed.
         strip = Polygon((*entering, *reversed(shifted_line(
             entering, self.normals[0], -nosing_m))))
         extended = self.polygon.union(strip) if nosing_m > 0 else self.polygon
+        if index == len(self.riser_lines) - 2 and rear_fit_m > 0:
+            departing = self.riser_lines[-1]
+            rear_strip = Polygon((*departing, *reversed(shifted_line(
+                departing, self.normals[-1], rear_fit_m))))
+            extended = extended.union(rear_strip)
         cut = clip_half_plane(extended, self.riser_lines[index], self.normals[index], -nosing_m)
         return clip_half_plane(cut, self.riser_lines[index + 1], self.normals[index + 1],
                                rear_fit_m, ahead=False)
@@ -171,9 +176,10 @@ def layout_from_spec(spec: WinderTurnSpec, count: int, width_m: float) -> Winder
     panels = [clip_half_plane(clip_half_plane(polygon, lines[i], normals[i]),
                               lines[i + 1], normals[i + 1], ahead=False)
               for i in range(count)]
-    coverage = unary_union(panels)
-    if (abs(sum(p.area for p in panels) - coverage.area) > GEOMETRY_TOLERANCE_M
-            or coverage.symmetric_difference(polygon).area > GEOMETRY_TOLERANCE_M):
+    coverage = union_all(panels)
+    coverage_tolerance = polygon.length * GRID_SIZE_M
+    if (abs(sum(p.area for p in panels) - coverage.area) > coverage_tolerance
+            or coverage.symmetric_difference(polygon).area > coverage_tolerance):
         raise ValueError("winder riser segments must partition the complete turn in ascent order")
     return layout
 

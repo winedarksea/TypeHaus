@@ -72,8 +72,9 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     assert not_lumber, "catlin has composite and cast treads; this should not be empty"
     # And steel straps, which are hardware (`takeoff/strap_braces.py`).
     straps = [m for m in members if m.category == STRAP_CATEGORY]
+    hardware = [m for m in members if m.category == "hanger" and m.material == "steel"]
     assert sum(int(row["pieces"]) for row in rows) == (
-        len(members) - len(ripped) - len(not_lumber) - len(straps))
+        len(members) - len(ripped) - len(not_lumber) - len(straps) - len(hardware))
     assert not any(rip_stock(str(row["profile"]), row["material"]) for row in rows)
 
     for row in rows:
@@ -284,8 +285,9 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                      and m.material in _NOT_LUMBER)
     assert not_lumber, "catlin has treads that are not lumber; this should not be zero"
     straps = sum(1 for m in members if m.category == STRAP_CATEGORY)
+    hardware = sum(1 for m in members if m.category == "hanger" and m.material == "steel")
     assert sum(int(row["pieces"]) for row in bom["framing"]) == (
-        len(members) - ripped - not_lumber - straps)
+        len(members) - ripped - not_lumber - straps - hardware)
 
 
 # Every collection on ``ResolvedModel`` is either billed by a BOM section or waived here with
@@ -541,4 +543,4 @@ def test_stair_finish_flags_the_stairs_a_nosing_allowance_cannot_reach(catlin_mo
 
     billed = sum(float(row["tread_lf"]) for row in rows.values()
                  if row["conditioned"] and row["has_nosing"])
-    assert billed == pytest.approx(134.9)
+    assert billed == pytest.approx(136.8)  # balanced winders have longer cross-stair edges

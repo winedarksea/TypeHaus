@@ -69,27 +69,30 @@ def test_the_defect_this_rule_was_written_for(ctx):
         _with(ctx, lambda e: None if getattr(e, "tag", None) == "RL-A-FLIGHT-GUARD" else e))
     by_stair = _by_stair(findings)
     assert by_stair["ST-S2A"].result is Result.FAIL
-    # 6 nosing ends since 2026-09-16: east of the 26'-5 3/8" newel, less the two lowest
-    # (30" and 22 1/2" over the study floor, which R312.1.1 reaches neither of). West of it
-    # RL-A-STAIR on the deck and RL-A-FLIGHT-SKIRT beneath it still stand.
-    assert "6 nosing end(s)" in by_stair["ST-S2A"].message
-    assert "75\" fall" in by_stair["ST-S2A"].message
+    # The guard now follows the full flight. Its lowest tread is at the 30" trigger,
+    # and the final tread arrives beside the deck; ten intermediate ends need it.
+    assert "10 nosing end(s)" in by_stair["ST-S2A"].message
+    assert "105\" fall" in by_stair["ST-S2A"].message
     assert {by_stair[tag].result
             for tag in ("ST-B2M", "ST-M2S", "ST-G-SERVICE", "ST-SG-PORCH")} \
         == {Result.PASS}
 
 
-def test_the_skirt_closes_the_band_under_the_deck_guard(ctx):
-    """ST-S2A's well is 5 5/8" wider than the flight, so its south side faces a void strip,
-    not "its own well" — a 1" probe alone read it as inside the shaft and passed with no guard
-    at all. West of the newel RL-A-STAIR on the attic deck stands over the nosings, and the
-    deck framing closes the band under it only to within 4" of the first two; the skirt closes
-    the rest."""
-    findings = stair_open_side_guard(
-        _with(ctx, lambda e: None if getattr(e, "tag", None) == "RL-A-FLIGHT-SKIRT" else e))
+def test_a_shortened_flight_guard_exposes_the_upper_nosings(ctx):
+    """A deck-edge guard above the flight cannot replace its missing upper guard run."""
+    from typehaus.quantities import m, pt
+
+    def shorten(element):
+        if element.tag != "RL-A-FLIGHT-GUARD":
+            return element
+        a, b = element.path
+        halfway = pt(m((a.x.meters + b.x.meters) / 2), m((a.y.meters + b.y.meters) / 2))
+        return element.model_copy(update={"path": (a, halfway)})
+
+    findings = stair_open_side_guard(_with(ctx, shorten))
     finding = _by_stair(findings)["ST-S2A"]
     assert finding.result is Result.FAIL
-    assert "2 nosing end(s)" in finding.message
+    assert "open side with no guard" in finding.message
 
 
 def test_a_short_guard_fails_on_height_rather_than_reading_as_a_missing_one(ctx):
@@ -115,19 +118,24 @@ def test_a_guard_at_exactly_34_inches_passes(ctx):
 
 
 def test_a_partition_standing_above_a_flight_does_not_close_its_side(ctx):
-    """W-A-GC-S's face sits 5 5/8" outboard of ST-S2A's south side in plan and would close it on a
-    plan-only test — but it stands on the attic deck at 20'-0", five feet over the treads it
-    passes. The wall clause brackets the nosing between ``z0`` and ``z1`` for this reason;
-    without the lower half, the rule silently exempts the very flight it was written for."""
+    """An attic partition directly over the flight edge still cannot guard lower treads."""
+    from dataclasses import replace
+
     from typehaus.model.structure import Railing
 
     walls = [w for w in ctx.model.walls if w.tag == "W-A-GC-S"]
     assert walls, "W-A-GC-S is the wall this test is about"
     assert walls[0].z0_m / 0.3048 == pytest.approx(20.0, abs=0.01)
-    # With the guard gone, the partition overhead must not stand in for it.
-    findings = stair_open_side_guard(_with(
+    # Move the partition over the flight in a private model view. The real enlarged
+    # opening now sets this wall too far away to exercise the elevation comparison.
+    moved_walls = [replace(w, axis=((inch(256.125).meters, inch(69.625).meters),
+                                   (inch(376.125).meters, inch(69.625).meters)))
+                   if w.tag == "W-A-GC-S" else w for w in ctx.model.walls]
+    variant = _with(
         ctx, lambda e: None if isinstance(e, Railing)
-        and e.tag == "RL-A-FLIGHT-GUARD" else e))
+        and e.tag == "RL-A-FLIGHT-GUARD" else e)
+    variant.model = replace(ctx.model, walls=moved_walls)
+    findings = stair_open_side_guard(variant)
     assert _by_stair(findings)["ST-S2A"].result is Result.FAIL
 
 
@@ -187,4 +195,3 @@ def test_a_wall_standing_on_the_partition_continues_it(ctx):
     finding = _by_stair(stair_open_side_guard(
         SimpleNamespace(plan=ctx.plan, model=model, preferences=None)))["ST-B2M"]
     assert finding.result is Result.FAIL
-

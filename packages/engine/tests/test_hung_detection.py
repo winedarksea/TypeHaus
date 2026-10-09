@@ -85,7 +85,7 @@ def test_st_g_service_hangs_on_the_landing_header(catlin_model_ro) -> None:
     assert {c.carrier_tag for c in heads} == {"BM-BW-LAND-HDR"}, heads
     assert all(c.member_category == "stringer" and c.sloped for c in heads), heads
     rows = [row for row in hardware_takeoff(catlin_model_ro)
-            if row.get("part_number") == "LSCZ"]
+            if row.get("part_number") == "LSCZ" and "BM-BW-LAND-HDR" in row["basis"]]
     assert [row["count"] for row in rows] == [2], rows
     assert not [row for row in hardware_takeoff(catlin_model_ro)
                 if row.get("part_number") == "LSSR" and row["basis"].startswith("2 x 2x12")]

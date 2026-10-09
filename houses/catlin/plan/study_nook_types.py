@@ -1,4 +1,4 @@
-"""Study 2 window seat under ST-S2A: three SEKTION top frames and an 18" open high frame.
+"""Study 2 window seat under ST-S2A: three SEKTION top frames and a custom 6" bookshelf.
 
 All stand on a 3 1/2" 2x4 base, not on IKEA legs. IKEA sells
 no MAXIMERA drawer for the 24x24x15 top frame, so each seat unit opens with a lift-up
@@ -56,12 +56,12 @@ STUDY_NOOK_SEAT = FurnitureType(
             "for this frame."),
 )
 STUDY_NOOK_SHELF = FurnitureType(
-    tag="FURN-S-STUDY-NOOK-SHELF-18", name='SEKTION 18x24x80 open shelves, 83 1/2" installed',
-    footprint=(inch(18), inch(24)), height=inch(83.5), carcass_depth=inch(24),
+    tag="FURN-S-STUDY-NOOK-SHELF-6", name='Custom 6x24x80 open shelves, 83 1/2" installed',
+    footprint=(inch(6), inch(24)), height=inch(83.5), carcass_depth=inch(24),
     storage=True, work_surface=False, plan_symbol="sektion-open-high",
-    product_ref=SEKTION_HIGH_FRAME_18_80.tag,
-    source=("SEKTION 002.654.44, no fronts, adjustable shelves facing the room. " + _BASE
-            + " Screens the seat from traffic through D-S-STUDY2; rail-anchored to W-S-SS2."),
+    source=("Custom paint-grade 3/4\" plywood carcass and adjustable shelves, no fronts. "
+            + _BASE + " Rail-anchored to W-S-SS2. Narrowed to preserve the full 72\" seat "
+            "and its clearance beneath the enlarged stair turn without moving toward the door."),
 )
 STUDY_NOOK_COVER = FurnitureType(
     tag="FT-S-STUDY-NOOK-COVER-80", name='FÖRBÄTTRA matte white cover, 1/2 x 24 5/8 x 80"',

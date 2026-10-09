@@ -31,7 +31,9 @@ def test_catlin_second_floor_joist_count_matches_resolved(catlin_model):
     floors = [f for f in catlin_model.floors if f.storey == "second"]
     assert len(floors) > 1, "the storey merge is only interesting on a multi-deck storey"
     scene = build_framing_plan(catlin_model, "second")
-    joist_nodes = [n for n in scene.by_layer()["S-FRAM"] if isinstance(n, Polyline)]
+    floor_uids = {floor.uid for floor in floors}
+    joist_nodes = [n for n in scene.by_layer()["S-FRAM"]
+                   if isinstance(n, Polyline) and n.uid in floor_uids]
     assert len(joist_nodes) == sum(len(floor.members) for floor in floors)
 
 

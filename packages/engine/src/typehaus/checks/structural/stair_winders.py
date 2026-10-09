@@ -5,7 +5,6 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 from shapely.geometry import LineString, Point, Polygon
-from shapely.ops import unary_union
 
 from typehaus.checks._authoring import structural_advisory
 from typehaus.checks.registry import Tier, check
@@ -14,6 +13,8 @@ from typehaus.findings import Result, not_applicable
 from typehaus.model.floors import FloorSystem
 from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.overlay import union_all
+from typehaus.resolve.stairs.winder_framing import departing_rim_members
 
 CHECK_ID = "structural.winder_box_support"
 CONTACT_TOLERANCE_M = 1e-6
@@ -34,8 +35,8 @@ def winder_support_problems(stair, authored, model) -> list[str]:
         if not decks or not frames:
             problems.append(f"box {index + 1} is missing its deck or framing")
             continue
-        deck = unary_union([Polygon(m.plan_outline) for m in decks])
-        supports = unary_union([Polygon(m.plan_outline) for m in frames])
+        deck = union_all([Polygon(m.plan_outline) for m in decks])
+        supports = union_all([Polygon(m.plan_outline) for m in frames])
         buffered = supports.buffer(CONTACT_TOLERANCE_M)
         if any(not buffered.covers(Polygon(m.plan_outline).boundary) for m in decks):
             problems.append(f"box {index + 1} has an unsupported plywood edge or seam")
@@ -76,16 +77,18 @@ def winder_support_problems(stair, authored, model) -> list[str]:
                 break
         previous, previous_top = deck, decks[0].z1_m
         previous_supports = buffered
-    departing = [m for m in stair.members if m.child_key.startswith(
-        f"landing-rim-winder{stair.winder_count - 1}-") and "-ply" in m.child_key]
-    if spec.departing_rim_plies > 1 and len(departing) != spec.departing_rim_plies:
+    departing = departing_rim_members(stair.members, stair.winder_turn,
+                                      stair.winder_count - 1, spec.departing_rim_plies,
+                                      cross_section(spec.rim_profile).width_m)
+    if len(departing) != spec.departing_rim_plies:
         problems.append("departing rim does not contain its specified plies")
     for member in stair.members:
         if member.category != "stringer":
             continue
         rim = next((m for m in departing if Polygon(m.plan_outline).buffer(
             CONTACT_TOLERANCE_M).covers(Point(member.p0))), None)
-        if rim is None or min(member.z1_m, rim.z1_m) <= max(member.z0_m, rim.z0_m):
+        if (rim is None or min(member.z1_m, rim.z1_m) <= max(member.z0_m, rim.z0_m)
+                or member.start_connection != f"winder-box-rim:{rim.child_key}"):
             problems.append(f"{member.child_key} does not meet the departing rim")
     for post in (m for m in stair.members if m.category == "newel"):
         if _bearing_element_under(SimpleNamespace(model=model), post.p0, post.z0_m):
@@ -99,7 +102,7 @@ def winder_support_problems(stair, authored, model) -> list[str]:
                 if reinforcement.plies < 2 or not reinforcement.blocking:
                     continue
                 members = [m for m in floor.members if m.child_key.startswith(f"sister-{index}-")]
-                geometry = unary_union([Polygon(member_footprint(m)[0]) for m in members])
+                geometry = union_all([Polygon(member_footprint(m)[0]) for m in members])
                 if geometry.buffer(CONTACT_TOLERANCE_M).covers(Point(post.p0)):
                     reinforced = True
         if not reinforced:

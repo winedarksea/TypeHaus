@@ -48,8 +48,10 @@ def test_main_stair_has_two_equal_flights_and_one_level_turn(catlin_model_ro):
     route = stair_walk_stations(stair)
     landing_stations = [station for station in route
                         if abs(station[2] - lower.z1_m) < 1e-9]
-    # Four deck edges plus the lower flight's synthetic arrival at the landing edge.
-    assert len(landing_stations) == 5
+    # Four deck edges. The lower flight's synthetic arrival used to be a fifth; since the
+    # landing lip closes the arrival interval it coincides with the lip-adjusted deck edge,
+    # and the route keeps it once (walkline.stair_walk_stations' coincident dedupe).
+    assert len(landing_stations) == 4
     assert [finding.result for finding in stair_geometry(
         SimpleNamespace(model=SimpleNamespace(stairs=[stair]), plan=catlin_model_ro.plan))] \
         == [Result.PASS]

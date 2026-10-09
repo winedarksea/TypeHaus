@@ -60,7 +60,7 @@ def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
                                                    tuple[float, float], float]]]:
     """Per flight, the nosing stations of the sloped walking line, in climb order.
 
-    A station is ``(a, b, z)``: the riser-face segment (a winder's fan line) at its
+    A station is ``(a, b, z)``: the finished nosing segment at its
     tread's finished walking elevation. R311.7.2 measures plumb from the sloped line
     adjoining the nosings, so the line to sample is the interpolation between
     consecutive stations of one flight — never across flights, whose runs occupy
@@ -73,7 +73,7 @@ def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
                 *(member.nosing_line or (member.p0, member.p1)),
                 finished_step_elevation(stair, member)))
         elif member.category == "tread" and member.riser_line is not None:
-            a, b = member.riser_line
+            a, b = member.nosing_line or member.riser_line
             key = member.child_key.rsplit("-", 1)[0]
             flights.setdefault(key, []).append((a, b,
                                                 finished_step_elevation(stair, member)))
@@ -87,12 +87,34 @@ def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
             ux, uy = (x1 - x0) / run, (y1 - y0) / run
             half = cross_section(member.profile).width_m / 2.0
             px, py = -uy * half, ux * half
-            flights[member.child_key] = [
+            stations = [
                 ((x0 - px, y0 - py), (x0 + px, y0 + py),
                  finished_step_elevation(stair, member)),
                 ((x1 - px, y1 - py), (x1 + px, y1 + py),
                  finished_step_elevation(stair, member)),
             ]
+            nose = next((part for part in getattr(stair, "finish_parts", ())
+                         if part.key == f"{member.child_key}:nosing"), None)
+            if nose is not None:
+                # The landing lip closes the interval between the flight's finished
+                # arrival nose and its structural deck. Leaving that gap sends a rail
+                # point into the neighbouring U flight's elevation instead.
+                a, b = nose.outline[-2:]
+                midpoint = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
+                edge_index = min(range(2), key=lambda i: math.dist(
+                    midpoint, tuple((x + y) / 2 for x, y in zip(
+                        stations[i][0], stations[i][1], strict=True))))
+                edge_a, edge_b, _ = stations[edge_index]
+                cross = ((b[0] - a[0]) * (edge_b[1] - edge_a[1])
+                         - (b[1] - a[1]) * (edge_b[0] - edge_a[0]))
+                # A split landing's side lip joins its other half across the partition;
+                # it is not an end of this landing's longitudinal walking route.
+                if abs(cross) < 1e-7:
+                    if ((b[0] - a[0]) * (edge_b[0] - edge_a[0])
+                            + (b[1] - a[1]) * (edge_b[1] - edge_a[1])) < 0:
+                        a, b = b, a
+                    stations[edge_index] = (a, b, nose.z1_m)
+            flights[member.child_key] = stations
     for key, stations in flights.items():
         stations.sort(key=lambda station: station[2])
         # Extend a straight flight one station past its top riser: the sloped line runs
@@ -260,7 +282,11 @@ def stair_walk_stations(stair) -> list[tuple[tuple[float, float],
             tail = _mid(route[-1])
             if (math.dist(tail, _mid(used[-1])) < math.dist(tail, _mid(used[0]))):
                 used.reverse()
-        route.extend(used)
+        for station in used:
+            if (route and math.dist(_mid(route[-1]), _mid(station)) < 1e-7
+                    and abs(route[-1][2] - station[2]) <= _FLAT_Z_TOLERANCE_M):
+                continue
+            route.append(station)
     return route
 
 

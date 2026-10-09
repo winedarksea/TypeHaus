@@ -11,10 +11,9 @@ neither: it is a sloped walking surface that climbs out of one floor without bel
 any deck ring. Catlin's ST-S2A stood 30"-120" over the study it climbs out of, open on the
 south side for 10'-0", at a clean 0-FAIL report.
 
-The two rules divide on one line, and it is the stair's own ``outline`` — the well. Inside
-it, an unguarded edge is the well's and ``code.R312_1_guard`` adjudicates it edge by edge.
-Outside it, the flight has left the shaft and stands in a room, which is this rule. No
-overlap, no seam — with one exception, the switchback's inner side: that faces the other
+The flight-side rule reads actual walking footprints. A floor opening may be much wider
+than its flight, and the void strip beside it still needs a guard at the nosing line.
+The switchback's inner side faces the other
 lane across the well partition, which ``code.R312_1_guard`` never sees, so this rule grades
 it (``_stair_partition``). ST-M2S's arriving lane stood 7 1/2"-30" under a flush partition
 top over a 60"-98" fall into the departing lane, at a clean report.
@@ -99,11 +98,9 @@ def stair_open_side_guard(ctx: CheckContext) -> list[Finding]:
     Every nosing's two ends are put to three questions, in the order a builder would ask
     them:
 
-    * **Is it still in the shaft?** A step outboard that lands inside the stair's own
-      outline is looking at the stairway, not at a room — a winder's inner corner. That void
-      is the well's, and ``code.R312_1_guard`` already grades it edge by edge. The probe has
-      to stay in the shaft a foot out, too: a flight narrower than its well faces a void
-      strip whose deck-edge guard stands a storey up. **Unless the step crosses the well
+    * **Is another walking lane beside it?** Both outboard probes must reach the stair's
+      actual walking footprint. An enlarged floor opening cannot exempt an empty strip
+      beside the flight whose deck-edge guard stands a storey up. **If the step crosses the well
       partition**: then the fall is into the other lane, and the partition (with any wall
       stacked on it) closes the side only where it stands 34" over the nosing.
     * **How far is the fall?** :func:`_landing_below`. 30" or under and the rule does not
@@ -111,8 +108,7 @@ def stair_open_side_guard(ctx: CheckContext) -> list[Finding]:
       here rather than exempted by a special case.
     * **Is the side closed?** A wall whose own band brackets the nosing — ``z0`` at or under
       it, ``z1`` above. Both halves matter: a partition standing on the deck *above* a
-      flight passes over it without closing anything, and W-A-GC-S's face sits 5 5/8" outboard of
-      ST-S2A's south side doing exactly that.
+      flight passes over it without closing anything.
 
     What survives is an open side, and it wants a guard: a ``Railing`` in a guard role
     running that line, either raked with the flight (``serves_stair``) or level at the
@@ -123,6 +119,8 @@ def stair_open_side_guard(ctx: CheckContext) -> list[Finding]:
     from shapely.geometry import LineString, Point, Polygon
 
     from typehaus.model.structure import Railing
+    from typehaus.resolve.framing.footprint import member_footprint
+    from typehaus.resolve.overlay import union_all
     from typehaus.resolve.stairs.walkline import flight_stations
 
     cid, code = "code.R312_1_1_stair_open_side", "R312.1.1"
@@ -141,7 +139,10 @@ def stair_open_side_guard(ctx: CheckContext) -> list[Finding]:
               if floor.members and floor.deck_outline and len(floor.deck_outline) >= 3]
     out: list[Finding] = []
     for stair in ctx.model.stairs:
-        shaft = Polygon(stair.outline) if len(stair.outline) >= 3 else None
+        # A floor opening can be wider than the stair. An empty strip beside the flight
+        # must not become exempt merely because both outboard probes fit inside that hole.
+        shaft = union_all([Polygon(member_footprint(member)[0]) for member in stair.members
+                           if member.category in {"tread", "winder", "landing"}])
         partition = partition_solids(stair)
         flights = flight_stations(stair)
         open_sides: list[tuple[float, tuple[float, float]]] = []  # (drop, plan point)
