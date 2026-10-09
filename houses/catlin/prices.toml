@@ -5272,7 +5272,7 @@
 # size, not a special, so the step is small; labour is the same hang either way plus the wider
 # jamb pack.
 "DT-INT-SWING36" = { material = { low = 175, high = 590 }, labour = { low = 150, high = 315 } }  # 2 ea
-"DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 2 ea (D-S-PLANT, D-M-STUDY — both borrowed light) — was 38% low; a solid-core divided-lite is a real door. The "1 ea" this line carried until 2026-09-12 predated D-M-STUDY's 2026-08-29 retype
+"DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 1 ea, D-S-PLANT; D-M-STUDY uses its own kerfed-jamb type since 2026-10-09
 "DT-INT-DOUBLE60" = { material = { low = 400, high = 1000 }, labour = { low = 255, high = 500 } }  # 1 ea — flush solid-core pair, paint-grade to stain-grade
 # 56" needs a FOUR-panel bifold, not a two-panel — doornmore prices a 4-door at $302.40 against
 # $103.50-206.50 for a 2-door, which is why the old $150 floor was wrong.
@@ -5293,6 +5293,13 @@
 # mud-set aluminium, and a wood jamb can be planed and re-stopped after it is set.
 # The seals and door bottom live here, not in [hardware], so they bill once with the door.
 "DT-INT-SWING32-TRIMLESS-PUSH" = { material = { low = 570, high = 1390 }, labour = { low = 510, high = 1050 } }  # 1 ea
+
+# D-M-STUDY: the same kerfed-jamb finish, with a tempered-glass wood leaf and no door
+# bottom or saddle (the ERV's 5 cfm relief must escape under the leaf). Parts estimate,
+# not a supplier quote: glazed slab 350-900, jamb/stop 90-220, butts 30-90, perimeter
+# seals 30-70, L-bead 20-40; labour: jamb 200-400, bead 60-150, hang/mortise/seal 200-400.
+# Lockset remains in the existing door-hardware allowance.
+"DT-INT-SWING30-GLAZED-TRIMLESS" = { material = { low = 520, high = 1320 }, labour = { low = 460, high = 950 } }  # 1 ea
 
 # D-A-STUDY's selected 36 x 80 nominal Murphy Door unit. One purchased assembly includes
 # its factory cabinet shelves, jamb/face-frame/casing hardware and concealed pivot system;

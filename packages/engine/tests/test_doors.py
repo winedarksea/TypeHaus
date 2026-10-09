@@ -75,8 +75,8 @@ def test_door_operation_rejects_an_unknown_value():
         DoorType(tag="DT-Z", width=ft(3), height=ft(6, 8), operation="barn")
 
 
-def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
-    types = {door_type.tag: door_type for door_type in catlin_model.plan.library.door_types}
+def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
+    types = {door_type.tag: door_type for door_type in catlin_plan.library.door_types}
     expected = {
         "DT-EXT-SWING36": (36.0, DoorOperation.SWING, True, False),
         "DT-EXT-FRENCH60": (60.0, DoorOperation.DOUBLE_SWING, True, True),
@@ -87,6 +87,7 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         "DT-INT-SWING36": (36.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING30": (30.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING30-GLAZED": (30.0, DoorOperation.SWING, False, True),
+        "DT-INT-SWING30-GLAZED-TRIMLESS": (30.0, DoorOperation.SWING, False, True),
         # The library's EzyJamb-type preset, spliced in with STANDARD_DOOR_TYPES; no catlin
         # door hangs it since D-M-BED2 went push-set on 2026-10-05.
         "DT-INT-SWING36-TRIMLESS": (36.0, DoorOperation.SWING, False, False),

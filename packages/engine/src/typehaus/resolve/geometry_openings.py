@@ -174,7 +174,7 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     if (is_trimless and opening.kind == "door" and faces is not None
             and operation in (None, DoorOperation.SWING)):
         parts.extend(concealed_frame_parts(box, faces, swing_sign, width, z0 + sill,
-                                           available_height, leaf_set))
+                                           available_height, leaf_set, is_glazed))
         leaf_w, _h, _z, flush, back = concealed_leaf(faces, swing_sign, width, z0 + sill,
                                                      available_height, leaf_set)
         hardware = hardware_part(lever_solids(box, -hinge_sign * leaf_w / 2.0, hinge_sign,

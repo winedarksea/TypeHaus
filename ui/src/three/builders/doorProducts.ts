@@ -17,6 +17,8 @@ const SHADOW_STRIP_DEPTH_M = 0.006;
 const CONCEALED_UNDERCUT_M = 0.019;
 const CONCEALED_LEAF_THICKNESS_M = 0.045;
 const PUSH_SET_REBATE_M = 0.016;
+const GLAZED_LEAF_FRAME_WIDTH_M = 0.1016;
+const GLAZED_LEAF_PANE_THICKNESS_M = 0.015;
 
 // --- lever set (square rose, lever returning toward the hinge) ----------------------------
 const LEVER_HEIGHT_M = 0.914;
@@ -60,7 +62,8 @@ export function concealedLeaf(faces: [number, number], swingSign: number, width:
 /** Liner, leaf, stop and shadow strips; each group goes to its own `AddBox`. */
 export function buildConcealedFrame(faces: [number, number], swingSign: number, width: number,
   baseZ: number, height: number,
-  add: { liner: AddBox; leaf: AddBox; stop: AddBox; shadow: AddBox }, leafSet: LeafSet = "pull") {
+  add: { liner: AddBox; leaf: AddBox; stop: AddBox; shadow: AddBox; glazing?: AddBox },
+  leafSet: LeafSet = "pull") {
   const [lo, hi] = faces;
   const depth = hi - lo, mid = (hi + lo) / 2;
   const j = CONCEALED_JAMB_M, g = SHADOW_GAP_M, p = CONCEALED_STOP_M;
@@ -71,7 +74,23 @@ export function buildConcealedFrame(faces: [number, number], swingSign: number, 
   add.liner(j, height, depth, -width / 2 + j / 2, baseZ + height / 2, mid);
   add.liner(j, height, depth, width / 2 - j / 2, baseZ + height / 2, mid);
   add.liner(width - 2 * j, j, depth, 0, headZ - j / 2, mid);
-  add.leaf(leafW, leafH, CONCEALED_LEAF_THICKNESS_M, 0, leafZ0 + leafH / 2, (flush + back) / 2);
+  const leafMidZ = leafZ0 + leafH / 2, leafMidNormal = (flush + back) / 2;
+  if (add.glazing) {
+    // Separate wood stiles/rails leave real borrowed light and support the hinge/lever.
+    const rail = Math.min(GLAZED_LEAF_FRAME_WIDTH_M, leafW / 4, leafH / 4);
+    add.leaf(rail, leafH, CONCEALED_LEAF_THICKNESS_M, -leafW / 2 + rail / 2,
+      leafMidZ, leafMidNormal);
+    add.leaf(rail, leafH, CONCEALED_LEAF_THICKNESS_M, leafW / 2 - rail / 2,
+      leafMidZ, leafMidNormal);
+    add.leaf(leafW - 2 * rail, rail, CONCEALED_LEAF_THICKNESS_M, 0,
+      leafZ0 + rail / 2, leafMidNormal);
+    add.leaf(leafW - 2 * rail, rail, CONCEALED_LEAF_THICKNESS_M, 0,
+      leafZ0 + leafH - rail / 2, leafMidNormal);
+    add.glazing(leafW - 2 * rail, leafH - 2 * rail, GLAZED_LEAF_PANE_THICKNESS_M,
+      0, leafMidZ, leafMidNormal);
+  } else {
+    add.leaf(leafW, leafH, CONCEALED_LEAF_THICKNESS_M, 0, leafMidZ, leafMidNormal);
+  }
   const stripFar = back - swingSign * SHADOW_STRIP_DEPTH_M;
   const stripT = Math.abs(stripFar - back), stripN = (stripFar + back) / 2;
   const stopT = Math.abs(push - stripFar), stopN = (push + stripFar) / 2;

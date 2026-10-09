@@ -4750,3 +4750,27 @@ surface that reaches the court, so the water goes there.
   1,030 passed, 12 skipped. Changed source/test lint and diff whitespace checks pass.
   House checks: 1,859 pass, zero fail. JSON and framed IFC rebuilt; elevation golden
   changes only the two cabinet tops and the added backing course.
+
+### 2026-10-09 — Study door matches the bedroom's kerfed jamb
+
+- `D-M-STUDY` uses `DT-INT-SWING30-GLAZED-TRIMLESS`: the same full-depth kerfed hardwood
+  jamb and tear-away L-bead at both drywall faces as `D-M-BED2`, with no applied casing.
+  Keep the tempered-glass wood leaf for borrowed light. Set the jamb before drywall and
+  hang the slab after paint, using ordinary butt hinges and a perimeter kerf-in seal.
+- The booth keeps its outward swing into `RM-M-LIVING`, so this leaf is **pull-set** at
+  the living-room finish face. The bedroom's inward swing needs **push-set** at that same
+  face. Matching those settings would recess the study leaf; matching the visible jamb
+  treatment is the useful part. The 30" x 80" opening, uid, host, position, header and
+  swing clearances stay unchanged, as do every framing member on both host walls.
+- Preserve the study's open undercut above the finished floor: 15 cfm supply minus
+  10 cfm extract needs 5 cfm of relief under the leaf (`plan/mep_registers.py`). Do not
+  copy the bedroom's automatic door bottom or hardwood saddle. No acoustic rating claimed.
+- The engine and viewer now support a glazed trimless leaf as wood stiles/rails around
+  a separate transparent pane, with the same jamb, stop and shadow reveal as solid leaves.
+  The displayed 4" stiles/rails and glass thickness are schematic, not supplier cut sizes.
+- Door/jamb allowance is a parts estimate of $980–2,270 including installation, excluding
+  the separately counted lockset, against $515–1,250 for the previous cased glazed type.
+  `D-S-PLANT` keeps that ordinary cased type and its price; neither is a supplier quote.
+- Validation: 1,194 relevant engine tests passed, 26 skipped; UI typecheck and geometry
+  tests passed. House checks: 1,861 pass, zero fail, 52 unknown. JSON, framed IFC and GLB
+  rebuilt; takeoff counts and prices one study door on its new type.

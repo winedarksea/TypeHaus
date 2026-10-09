@@ -256,7 +256,6 @@ the future.
   [2026-10-09 investigation](../houses/catlin/notes/bath2_swap_review.md) recommends keeping
   the current layout with the selected 36" tub: basin aisle 33.0" → 26.4", plus a tighter entry and shower entrance.
 - Outlet in the kitchen island
-- [x] Stair winder geometry, structural plywood boxes, 2D/3D framing, and millwork blanks (see `houses/catlin/notes/winder_stair_basis.md`).
 - Both the EXT_2X6 and ROOF report a moisture risk/glaser profile risk. We don't think this is quite right. Well, roof somewhat is (it relies on the air seal of the spray foam). But the ext_2x6 should be roughly 60% outsulation, which should have condensation usually outside the studs.
 - Add wire shelves with rods to the two closets with simple shelves right now.
 - Specify steel pocket door frames like Eclisse steel frame kits
@@ -264,7 +263,6 @@ the future.
 - Either engineer the mudroom exposed studs as allowed hardwood, or specify southern yellow pine with a gold anodized aluminum trim (>= 1.5 mm / 0.064 / 12 gauge thickness) https://www.dkhardware.com/cr-laurence-l902bga-ccp72-xcp10-brite-gold-anodized-aluminum-1-4-l-bar-extrusion-72-length-pack-of-10-product-10103314.html or 1-1/2" ID U-channel
 - Confirm bug protection of ccspf
 - Spec sand or gravel backfill around house
-- D-M-STUDY should have a door framing (less trim) like D-M-BED2 to match its neighbor, if that is practical
 - Model baseboard and door trim where appropriate
 
 # Project Management

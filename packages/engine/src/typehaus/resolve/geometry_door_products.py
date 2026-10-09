@@ -30,6 +30,8 @@ _SHADOW_STRIP_DEPTH_M = 0.006    # dark face on the stop, seen only through the 
 _CONCEALED_UNDERCUT_M = 0.019    # leaf bottom above the wall base: finish floor + clearance
 _CONCEALED_LEAF_THICKNESS_M = 0.045
 _PUSH_SET_REBATE_M = 0.016       # 5/8" stop between a push-set leaf and its finish face
+_GLAZED_LEAF_FRAME_WIDTH_M = 0.1016  # schematic 4" stiles/rails, enough wood for the lever rose
+_GLAZED_LEAF_PANE_THICKNESS_M = 0.015  # matches ordinary glazed doors; not a glass order size
 
 # --- lever set (square rose, lever returning toward the hinge) ----------------------------
 _LEVER_HEIGHT_M = 0.914          # 36" to the lever centre above the leaf's floor
@@ -81,7 +83,7 @@ def concealed_leaf(faces: tuple[float, float], swing_sign: float, width: float,
 
 def concealed_frame_parts(box: BoxFn, faces: tuple[float, float], swing_sign: float,
                           width: float, base_z: float, height: float,
-                          leaf_set: str = "pull") -> list[GPart]:
+                          leaf_set: str = "pull", is_glazed: bool = False) -> list[GPart]:
     """Liner, leaf, stop and shadow strips of a concealed-frame door.
 
     The liner lines the whole jamb depth and stops flush with both finish faces. The stop
@@ -113,14 +115,35 @@ def concealed_frame_parts(box: BoxFn, faces: tuple[float, float], swing_sign: fl
                         leaf_z0 + stop_h / 2.0, stop_n))
     shadow.append(box(2.0 * inner, g, strip_t, 0.0, head_z - j - g / 2.0, strip_n))
     stop.append(box(2.0 * (inner - p), p, stop_t, 0.0, head_z - j - p / 2.0, stop_n))
-    return [
+    leaf_mid_z, leaf_mid_normal = leaf_z0 + leaf_h / 2.0, (flush + back) / 2.0
+    if is_glazed:
+        # A wood perimeter keeps hinges and the lever on the slab, while the separate pane
+        # preserves borrowed light. The jamb/stop still have no sill across the undercut.
+        rail = min(_GLAZED_LEAF_FRAME_WIDTH_M, leaf_w / 4.0, leaf_h / 4.0)
+        leaf_solids = (
+            box(rail, leaf_h, _CONCEALED_LEAF_THICKNESS_M, -leaf_w / 2.0 + rail / 2.0,
+                leaf_mid_z, leaf_mid_normal),
+            box(rail, leaf_h, _CONCEALED_LEAF_THICKNESS_M, leaf_w / 2.0 - rail / 2.0,
+                leaf_mid_z, leaf_mid_normal),
+            box(leaf_w - 2.0 * rail, rail, _CONCEALED_LEAF_THICKNESS_M, 0.0,
+                leaf_z0 + rail / 2.0, leaf_mid_normal),
+            box(leaf_w - 2.0 * rail, rail, _CONCEALED_LEAF_THICKNESS_M, 0.0,
+                leaf_z0 + leaf_h - rail / 2.0, leaf_mid_normal),
+        )
+    else:
+        leaf_solids = (box(leaf_w, leaf_h, _CONCEALED_LEAF_THICKNESS_M, 0.0,
+                           leaf_mid_z, leaf_mid_normal),)
+    parts = [
         GPart(key="jamb_liner", material_key=_CONCEALED_FRAME_KEY, solids=liner),
-        GPart(key="leaf", material_key="door_leaf", solids=(
-            box(leaf_w, leaf_h, _CONCEALED_LEAF_THICKNESS_M, 0.0, leaf_z0 + leaf_h / 2.0,
-                (flush + back) / 2.0),)),
+        GPart(key="leaf", material_key="door_leaf", solids=leaf_solids),
         GPart(key="stop", material_key=_CONCEALED_FRAME_KEY, solids=tuple(stop)),
         GPart(key="shadow_gap", material_key=_SHADOW_GAP_KEY, solids=tuple(shadow)),
     ]
+    if is_glazed:
+        parts.append(GPart(key="glazing", material_key="glass", solids=(
+            box(leaf_w - 2.0 * rail, leaf_h - 2.0 * rail, _GLAZED_LEAF_PANE_THICKNESS_M,
+                0.0, leaf_mid_z, leaf_mid_normal),)))
+    return parts
 
 
 def lever_solids(box: BoxFn, latch_along: float, toward_hinge: float,

@@ -83,6 +83,12 @@ DOOR_TYPES = [
     DoorType(tag="DT-INT-SWING32-TRIMLESS-PUSH", width=ft(2, 8), height=ft(6, 8),
              trimless=True, leaf_set="push", core="solid",
              source="Site-built kerfed hardwood flat jamb to the wall's full depth, leaf set behind a rabbeted stop at the push face; 1 3/4in solid-core slab, 3 ball-bearing butts, kerf-in compression seal at stop and head, mortised automatic door bottom on a hardwood saddle; tear-away L-bead both faces. No STC claimed: no tested assembly."),
+    # Match D-M-BED2's casing-free jamb, but keep the booth's outward swing and borrowed
+    # light. Pull-set puts this leaf at the same living-room finish face. Its undercut
+    # relieves the ERV's 15 cfm supply / 10 cfm extract (mep_registers.py): no bottom seal.
+    DoorType(tag="DT-INT-SWING30-GLAZED-TRIMLESS", width=ft(2, 6), height=ft(6, 8),
+             glazed=True, tempered=True, trimless=True, leaf_set="pull", core="solid",
+             source="Site-built kerfed hardwood flat jamb to the wall's full depth, matching D-M-BED2 with tear-away L-bead both faces and no applied casing; 1 3/4in wood stile-and-rail slab with tempered glass, pull-set flush at the living-room face, 3 ball-bearing butts, kerf-in perimeter seal. Retain an open undercut above the finished floor for the study's 5 cfm relief; no sweep, automatic door bottom or saddle. Jamb before drywall, slab after paint; no STC claimed."),
     # The type dimensions are the framed rough opening. Product/order dimensions stay in
     # bookcase_door so framing, schedules and factory geometry cannot silently exchange them.
     DoorType(tag="DT-INT-BOOKCASE36", width=inch(38), height=inch(82), core="solid",
@@ -1247,11 +1253,10 @@ OPENINGS = [
     # row is three 27x48 units; a glazed leaf is the one way daylight reaches this room
     # without cutting an opening in a bearing wall or the envelope.
     #
-    # A RETYPE, not a move: DT-INT-SWING30-GLAZED is the same 2'-6" x 6'-8" leaf on the same
-    # RO, so the jamb pack, the bearing header W-M-C3's framing tables put over it, the swing
-    # and the uid are all unchanged. D-S-PLANT is the precedent — the same type, hung for the
-    # same reason, into RM-S-PLANT. The type already carries `tempered=True`, which R308.4.1
-    # requires of glazing in a door as a property of the product rather than of its location.
+    # Trimless since 2026-10-09 to match D-M-BED2's kerfed hardwood jamb. The 30" RO,
+    # bearing header, outward swing and uid stay put. Pull-set is flush toward RM-M-LIVING;
+    # copying the bedroom's push-set would recess this outward-swinging leaf on that face.
+    # D-S-PLANT keeps the ordinary cased glazed type. Both require tempered door glazing.
     #
     # This buys the ROOM daylight; it does not buy the CHECK anything. `_room_windows` skips
     # doors, so `code.R303_1_light_and_ventilation` still reports 0.0 sf of glazing here and
@@ -1260,7 +1265,7 @@ OPENINGS = [
     #
     # `office` is not a sleeping occupancy, so there is no R310 exposure — and since the
     # 2026-08-29 `exterior_only` fix there could not be one anyway.
-    Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED",
+    Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED-TRIMLESS",
          position=from_node("N-M-E4", inch(9)), flip_swing=True, flip_hinge=True),
     # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15. ** `from_node` resolves to the NEAR JAMB, so
     # the RO is x=170"..202". The king is centred between this opening and D-M-BATH2:
@@ -1276,7 +1281,7 @@ OPENINGS = [
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT-SWING32",
          position=from_node("N-M-D3", ft(6, 0)), flip_hinge=False, flip_swing=True),
     # Second bedroom <-> living connection, straight through the centre bearing wall.
-    # Trimless (drywall return jamb, no casing) so it reads as a slot in the wall from
+    # Trimless (kerfed hardwood jamb, no casing) so it reads as a slot in the wall from
     # both rooms. W-M-C1 is BEARING, so the solver's framing tables supply the header.
     # Moved one 16" stud bay NORTH on 2026-10-03 for FURN-M-BED-DESK on the east wall.
     # ** 32", HINGED SOUTH, SWINGS INTO THE BEDROOM SINCE 2026-10-05. ** It swung into the

@@ -120,6 +120,8 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   const hardwareMaterial = standardMaterial(categoryColor("door_hardware"), mode,
     { metalness: 0.8, roughness: 0.35 });
   const addHardware: AddBox = (w, h, t, a, e, n) => addBox(w, h, t, a, e, hardwareMaterial, n);
+  const glassMaterial = standardMaterial(0x8fb7c9, mode, { transparent: true, opacity: 0.48,
+    roughness: 0.2, metalness: 0.05, depthWrite: false });
   const faces = finishFaces(wall);
   if (isTrimless && opening.kind === "door" && faces && swingLeaf) {
     // A concealed frame: no casing, a 1/8" reveal, the leaf set at the face `leafSet` names.
@@ -132,6 +134,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     buildConcealedFrame(faces, swingSign, opening.width_m, floorZ, availableHeight, {
       liner: withMaterial(linerMaterial), leaf: withMaterial(solidLeafMaterial),
       stop: withMaterial(linerMaterial), shadow: withMaterial(shadowMaterial),
+      glazing: isGlazed ? withMaterial(glassMaterial) : undefined,
     }, leafSet);
     const [leafW, , , flush, back] = concealedLeaf(faces, swingSign, opening.width_m, floorZ,
       availableHeight, leafSet);
@@ -176,8 +179,6 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + frameWidth / 2, frameMaterial, frameOffset);
   }
   const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
-  const glassMaterial = standardMaterial(0x8fb7c9, mode, { transparent: true, opacity: 0.48,
-    roughness: 0.2, metalness: 0.05, depthWrite: false });
   if (opening.kind === "door" && operation === "double_swing") {
     // Two leaves meeting at a center mullion, matching the 2D French-door symbol.
     const mullionWidth = Math.min(frameWidth, (opening.width_m - 2 * frameWidth) / 6);
