@@ -479,7 +479,13 @@ SUPPLY = [
                   pt(ft(18, 9), ft(16, 5)), pt(ft(18, 9), ft(16, 5)),
                   pt(ft(18, 9), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
                   pt(ft(30, 3.6), ft(33, 7.2)), pt(ft(30, 3.6), ft(33, 7.2))),
-            diameter=inch(0.75), material="pex", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
+            diameter=inch(0.75), material="pex", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
+            # ** 1/2" SLEEVE AND THE EAST LEG AT -1'-3 1/16", FOR CD-B-KITCHEN (2026-10-08). **
+            # Between SL-M-DECK's -14 1/16" board and RM-B-PLAY-N's 3" finished-air allowance
+            # there are 3" of band; a 1" jacket (2.88" OD) and the 3/4" EMT that crosses this
+            # leg at y=29' need 3.8" stacked, a 1/2" jacket (1.88" OD, R-3.1 still meets IECC
+            # R403.5.3's R-3) and the EMT need 2.8". So this leg rides 1/16" under the board
+            # and the conduit passes under it.
             # ** THE x=18'-9" STEP GOES 1 1/4" DEEPER THAN THE BAND (P3, 2026-09-19). **
             # This run crosses PR-B-CW-TRUNK's own y=16'-0" lane there, and at the hot band's
             # -1'-4" the two were 1.2" apart against the 2 1/8" a 1 1/4" cold and this run's
@@ -490,8 +496,8 @@ SUPPLY = [
             # ceiling the owner leaves open, and it clears the 6'-8" headroom line by 11".
             elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 4.6375),
                         ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
-                        ft(7, 8.1875), ft(7, 8.1875), ft(7, 9.4375),
-                        ft(7, 9.4375), ft(12, 7.4375)),
+                        ft(7, 8.1875), ft(7, 8.1875), ft(7, 10.375),
+                        ft(7, 10.375), ft(12, 7.4375)),
             serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
     # Second-storey groups: risers climb two storeys to the hall bath, split at both deck
     # top (ft(9) basement-rel = 0'-0" project) and second floor (ft(19) = 10'-0" project),

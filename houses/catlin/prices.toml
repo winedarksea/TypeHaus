@@ -2394,10 +2394,11 @@
 "FT-S-SEKTION-SCRIBE-90" = { material = { low = 10, high = 25 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut white filler
 # Study 2 nook, 2026-10-02 (plan/study_nook_types.py). IKEA US list: seat unit = SEKTION top
 # 904.997.35 $88 + VOXTORP 24x15 602.733.42 $136 + UTRUSTA horizontal hinges 804.654.15 $52
-# = $276; low adds a third of the 2x4 base and the 1" top. Shelf = SEKTION 002.654.44 $152
-# plus UTRUSTA shelves and rail. Covers: FÖRBÄTTRA 205.678.36 $127, 405.678.35 $53 (cut).
+# = $276; low adds a third of the 2x4 base and the 1" top. The 6" shelf is a custom
+# plywood allowance to clear the enlarged winder flight. Covers: FÖRBÄTTRA 205.678.36
+# $127, 405.678.35 $53 (cut).
 "FURN-S-STUDY-NOOK-SEAT-24" = { material = { low = 320, high = 400 }, labour = { low = 80, high = 200 } }  # 3 e5 ea — 3 Study 2, 2 RM-M-BED reading corner
-"FURN-S-STUDY-NOOK-SHELF-18" = { material = { low = 230, high = 290 }, labour = { low = 80, high = 200 } }  # 1 ea
+"FURN-S-STUDY-NOOK-SHELF-6" = { material = { low = 230, high = 290 }, labour = { low = 80, high = 200 } }  # 1 ea; custom plywood bookshelf allowance
 "FT-S-STUDY-NOOK-COVER-80" = { material = { low = 127, high = 145 }, labour = { low = 20, high = 60 } }  # 1 ea
 "FT-S-STUDY-NOOK-SEAT-END" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut
 # Custom 72x24x3 HR-foam cushion, welted performance-fabric cover; a quote, not a listing.
@@ -5727,6 +5728,9 @@
 # is 1.4 LF and cannot move the estimate.
 # $/LF, by spec
 "1\" fiberglass sleeve, ASJ jacket (R-3.5)" = { material = { low = 1.5, high = 3.5 }, labour = { low = 0.9, high = 1.8 } }  # 146.9 LF
+# 1/2" wall on 3/4" tube where a crossing leaves no room for 1": R-3.1 (Owens Corning
+# 722579, k 0.16 by ASTM C547) still meets IECC R403.5.3's R-3. ESTIMATE, set under the 1" row.
+"1/2\" fiberglass sleeve, ASJ jacket (R-3.1)" = { material = { low = 1.2, high = 3.0 }, labour = { low = 0.9, high = 1.8 } }
 "1/2\" closed-cell elastomeric sleeve, foil-faced, over the barrel" = { material = { low = 1.5, high = 4 }, labour = { low = 0.9, high = 1.8 } }  # 1.4 LF
 
 [edge_trim]

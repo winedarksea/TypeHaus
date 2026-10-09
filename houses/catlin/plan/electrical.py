@@ -1311,8 +1311,10 @@ CONDUIT_TRUNKS = [
                # top plate (-15 5/8"), and it still hangs only 2 5/8" into RM-B-PLAY-N.
                start_elevation=ft(-1, -4.25), end_elevation=ft(3, 6),
                elevations=(ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
-                           ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
-                           ft(-1, -4.25), ft(3, 6)),
+                           ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.5625), ft(-1, -4.5625),
+                           ft(-1, -4.5625), ft(3, 6)),
+               # The y=29' leg is 5/16" lower, at -1'-4 9/16", to pass under PR-B-HW-KITCH's
+               # x=30'-3.6" leg (see its note): 2.91" into RM-B-PLAY-N against the 3" allowance.
                # NEC 358.26 conduit bodies, covers down: 2 = RM-B-FURNACE (9'-6 5/8", 19'-11");
                # 7 = RM-B-PLAY-N (19'-9", 25'-6"). Not 6: CD-B-DATA-MEDIA passes 1/3" off it.
                pull_points=(2, 7),
