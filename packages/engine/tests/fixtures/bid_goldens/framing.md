@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.2  
 **Model hash:** 4326e495a6272e00  
-**Lines:** 167
+**Lines:** 168
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -118,7 +118,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | 4 | ea |  | building |
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | 7 | ea |  | building |
 | KBS1Z knee-brace / beam strap (ZMAX) | 2 | ea |  | building |
-| KBS1Z knee-brace stabilizer (ZMAX), one per brace end | 28 | ea |  | main |
+| KBS1Z knee-brace stabilizer (ZMAX), one per brace end | 24 | ea |  | main |
 | LS30 skewable angle, gable-end stud to rafter | 22 | ea |  | building |
 | LS30Z skewable angle, diaphragm blocking end | 32 | ea |  | building |
 | LSCZ adjustable stair-stringer connector (ZMAX) | 2 | ea |  | building |
@@ -145,6 +145,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 71 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 106 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 12 | ea |  | building |
+| slat brace infill screw (SDWS22300DB) | 8 | ea |  | main |
 | slat brace plate screw (SDWS22400DB) | 16 | ea |  | main |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 316 | ea |  | building |
@@ -362,6 +363,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
+| slat brace infill screw (SDWS22300DB) | SB-BW-BAND |
 | slat brace plate screw (SDWS22400DB) | SB-BW-BAND |
 | SP4 stud plate tie (2x4) | — |
 | SP6 stud plate tie (2x6) | — |

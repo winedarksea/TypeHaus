@@ -12,6 +12,9 @@ from typehaus.model.refs import FaceRef, HeadConnector, InServiceMoisture, Publi
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D, inch
 
+#: How a handrail end is finished (R311.7.8.2): see ``Railing.start_termination``.
+RailTermination = Literal["wall_return", "newel", "safety_terminal", "open"]
+
 
 class SrwDrainageZone(HausModel):
     """Free-draining aggregate the maker specifies behind the unit (AB's "wall rock").
@@ -994,6 +997,10 @@ class Railing(Element):
     # "type-II" (the shaped profile with a finger recess), or a product name.
     graspable_profile: str | None = None
     continuous: bool = True  # R311.7.8.2: the full length of the flight, no interruption
+    # R311.7.8.2: each end returns (to the wall), or stops at a newel post or safety
+    # terminal. A plain end cap is "open". ``None`` = not stated → UNKNOWN.
+    start_termination: RailTermination | None = None
+    end_termination: RailTermination | None = None
     infill: Literal["balusters", "panel", "cable", "mesh"] | None = None
     # R312.1.3: the largest opening the infill admits. For balusters this is the clear gap
     # between them, which is *not* ``post_spacing`` — that is the structural post rhythm.

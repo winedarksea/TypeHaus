@@ -310,6 +310,12 @@ class RailingType(HausModel):
     # is what R308.4.4 (structural glass balusters) reads; ``None`` means "not stated",
     # which that rule reports as UNKNOWN rather than as a deficiency.
     glazing: Literal["tempered", "laminated", "laminated-tempered"] | None = None
+    # A round rail's outside diameter. Wins over any size in ``graspable_profile``.
+    rail_diameter: Length | None = None
+    # The length the rail stock comes in; a longer run is spliced (take-off counts them).
+    stock_length: Length | None = None
+    # The product's largest span between supports along the rail (R301.5's 200 lb load).
+    bracket_spacing_max: Length | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None

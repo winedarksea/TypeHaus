@@ -4816,3 +4816,9 @@ surface that reaches the court, so the water goes there.
   25'-5 1/8" newel and RL-A-FLIGHT-SKIRT (uid restored) closes the band beneath. The y=5'-4"
   joist line moves to 5'-6", into the trimmer pack band, and the pack absorbs it. The newel's
   sister moved 1" east. Headroom over the turn reads 7.05' under FS-ATTIC.
+- Validation: house checks 1,864 pass, zero fail, 52 unknown. `scripts/verify.sh` at the
+  committed tree: 8,970 passed; the two `test_handoff` fingerprint failures came from that
+  run's worktree setup and pass in the shared tree. Moved goldens, read before blessing:
+  catlin_elevations (ST-S2A, FS-ATTIC, RL-A-*), bid framing.md (less trimmer/header LVL,
+  one fewer LUS, about 26 SF more subfloor), and six section details that cut the y=5'-6"
+  attic joist.

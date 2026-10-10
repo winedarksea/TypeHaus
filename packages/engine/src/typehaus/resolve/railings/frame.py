@@ -14,6 +14,7 @@ from typehaus.resolve.railings.parts import (
     RailingParts,
 )
 from typehaus.resolve.railings.spans import RAIL_BAND_STEP_M, RailingSurface
+from typehaus.resolve.railings.wall_contact import nearest_wall_face
 from typehaus.resolve.sweep import (
     rect_profile,
     round_profile,
@@ -33,8 +34,6 @@ MIN_POST_SPACING_M = 0.3
 #: every station of every wall-mounted rail, marching up the flight beside a rail that is
 #: actually screwed to the wall.
 _WALL_MOUNTS = frozenset({"wall"})
-#: How far from a station a wall may be and still be the thing the bracket lands on.
-_BRACKET_REACH_M = inch(9).meters
 #: Bracket stock: the drop from the rail centreline to the arm, and the arm's section.
 _BRACKET_DROP_M = inch(2.5).meters
 _BRACKET_SECTION_M = inch(1.0).meters
@@ -94,19 +93,24 @@ def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list
                   surface: RailingSurface, parts: RailingParts, rail_h: float) -> None:
     """A short arm at each station, from the wall face out to the rail centreline.
 
-    The wall is found rather than authored: the nearest wall face on the railing's storey
-    within :data:`_BRACKET_REACH_M` of the station gives both the direction the arm runs and
-    how far it reaches. A station with no wall that close gets a stub dropped under the rail
-    instead — which side to project toward is not knowable there, and a cleat under the bar
-    is at least never on the wrong one. Neither is a 36" post standing on the flight.
+    The wall is found rather than authored (:func:`~.wall_contact.nearest_wall_face`): the
+    nearest parallel finish face within reach gives both the arm's direction and length. A
+    station with no wall that close gets a stub dropped under the rail instead — which side
+    to project toward is not knowable there, and a cleat under the bar is at least never on
+    the wrong one. An end carried by a wall return (:mod:`.terminations`) gets no bracket.
     """
     half = _BRACKET_SECTION_M / 2.0
+    last = len(stations) - 1
     for index, station in enumerate(stations):
+        if (index == 0 and el.start_termination == "wall_return") or (
+                index == last and el.end_termination == "wall_return"):
+            continue
         rail_z = surface.height_at(station) + rail_h
         arm_z = rail_z - _BRACKET_DROP_M
-        anchor = _nearest_wall_face(model, el, storey, station)
-        outline = (rect_between(anchor, station, -half, half) if anchor is not None
-                   else square(station[0], station[1], half, half))
+        contact = nearest_wall_face(model, station, rail_z,
+                                    along=_directions_at(stations, index))
+        outline = (rect_between(contact.face_point, station, -half, half)
+                   if contact is not None else square(station[0], station[1], half, half))
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-b{index:02d}", tag=f"{el.tag}-BRACKET{index + 1}", storey=storey,
             category=RAILING_CATEGORY, outline=outline,
@@ -115,30 +119,13 @@ def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list
         ))
 
 
-def _nearest_wall_face(model: ResolvedModel, el: Railing, storey: str,
-                       station: Vec) -> Vec | None:
-    """The point on the nearest wall's *face* a bracket at ``station`` would land on."""
-    best: tuple[float, Vec] | None = None
-    for wall in model.walls:
-        if wall.storey != storey:
-            continue
-        (x0, y0), (x1, y1) = wall.axis
-        dx, dy = x1 - x0, y1 - y0
-        run2 = dx * dx + dy * dy
-        if run2 < 1e-18:
-            continue
-        t = max(0.0, min(1.0, ((station[0] - x0) * dx + (station[1] - y0) * dy) / run2))
-        foot = (x0 + dx * t, y0 + dy * t)
-        gap = math.hypot(station[0] - foot[0], station[1] - foot[1])
-        # The axis is the wall's centreline; the bracket lands on the face nearer the rail.
-        reach = max(0.0, gap - wall.thickness_m / 2.0)
-        if reach > _BRACKET_REACH_M or gap < 1e-9:
-            continue
-        face = (station[0] + (foot[0] - station[0]) * reach / gap,
-                station[1] + (foot[1] - station[1]) * reach / gap)
-        if best is None or reach < best[0]:
-            best = (reach, face)
-    return None if best is None else best[1]
+def _directions_at(stations: list[Vec], index: int) -> tuple[Vec, ...]:
+    """The rail's plan direction(s) either side of station ``index``."""
+    out: list[Vec] = []
+    for a, b in ((index - 1, index), (index, index + 1)):
+        if 0 <= a and b < len(stations):
+            out.append(sub(stations[b], stations[a]))
+    return tuple(out)
 
 
 def emit_rails(model: ResolvedModel, el: Railing, storey: str, path: list[Vec],
