@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** a8fd4e5aa164c581  
-**Lines:** 171
+**Model hash:** 505ce008eb6dd3b4  
+**Lines:** 167
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -30,11 +30,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-1.75x11.875 LVL — header, joist (2-1.75x11.875 LVL) | 36 | LF ordered | 4 pcs, 26.8 LF cut | building |
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | 20 | LF ordered | 1 pcs, 16.7 LF cut | building |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | 36 | LF ordered | 1 pcs, 36.0 LF cut | building |
-| 2-1x4 — stud (2-1x4) | 16 | LF ordered | 2 pcs, 13.1 LF cut | building |
-| 2-1x6 — stud (2-1x6) | 16 | LF ordered | 2 pcs, 13.1 LF cut | building |
 | 2-2x10 — header (2-2x10) | 40 | LF ordered | 5 pcs, 26.2 LF cut | building |
 | 2-2x10 SPF framing lumber — blocking (2-2x10:spf) | 16 | LF ordered | 6 pcs, 11.3 LF cut | building |
-| 2-2x6 — header (2-2x6) | 24 | LF ordered | 3 pcs, 17.6 LF cut | building |
+| 2-2x6 — header (2-2x6) | 24 | LF ordered | 3 pcs, 17.8 LF cut | building |
 | 2-2x6 SPF framing lumber — blocking (2-2x6:spf) | 24 | LF ordered | 10 pcs, 18.4 LF cut | building |
 | 2-2x8 — header (2-2x8) | 184 | LF ordered | 57 pcs, 153.8 LF cut | building |
 | 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 48.0 LF cut; 48.0 LF in the takeoff | building |
@@ -47,13 +45,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,834 | LF ordered | 656 pcs, 4077.4 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | 2,868 | LF ordered | 488 pcs, 2480.7 LF cut | building |
 | 2x4 SPF framing lumber — blocking (2x4:spf) | 64 | LF ordered | 29 pcs, 58.8 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,072 | LF ordered | 1162 pcs, 6121.7 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, plate, raked top plate, sill, stud (2x6) | 7,072 | LF ordered | 1162 pcs, 6122.0 LF cut | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners — blocking, stud (2x6:df-select-s4s) | 88 | LF ordered | 14 pcs, 76.3 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — plate, girt strapping (2x6:kdat) | 104 | LF ordered | 11 pcs, 81.0 LF cut | building |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | 1,660 | LF ordered | 199 pcs, 1407.7 LF cut | building |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | 28 | LF ordered | 2 pcs, 27.3 LF cut | building |
 | 2x8 — header, joist, landing framing (2x8) | 264 | LF ordered | 68 pcs, 205.9 LF cut | building |
-| 2x8 SPF framing lumber — blocking (2x8:spf) | 614 | LF ordered | 119 pcs, 496.7 LF cut | building |
+| 2x8 SPF framing lumber — blocking (2x8:spf) | 624 | LF ordered | 120 pcs, 505.1 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1134 pcs, 330.8 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
@@ -86,8 +84,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 192 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | 72 | ea |  | building |
-| Pocket door frame kit, 2x4 wall (commodity, to 36"/125 lb) (153068PF) | 1 | ea |  | building |
-| Pocket door frame kit, 2x6 wall (36"/200 lb) (15603068) | 1 | ea |  | building |
 | Eye & eye thrust-bearing swivel, 3 t (rotates under load) (3-S-5) | 1 | ea |  | main |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 452 | ea |  | building |
 | A35Z framing angle | 8 | ea |  | building |
@@ -261,8 +257,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-1.75x11.875 LVL — header, joist (2-1.75x11.875 LVL) | — |
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | — |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | — |
-| 2-1x4 — stud (2-1x4) | — |
-| 2-1x6 — stud (2-1x6) | — |
 | 2-2x10 — header (2-2x10) | — |
 | 2-2x10 SPF framing lumber — blocking (2-2x10:spf) | — |
 | 2-2x6 — header (2-2x6) | — |
@@ -307,8 +301,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | — |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | — |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | — |
-| Pocket door frame kit, 2x4 wall (commodity, to 36"/125 lb) (153068PF) | — |
-| Pocket door frame kit, 2x6 wall (36"/200 lb) (15603068) | — |
 | Eye & eye thrust-bearing swivel, 3 t (rotates under load) (3-S-5) | HA-M-HAMMOCK |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | — |
 | A35Z framing angle | — |

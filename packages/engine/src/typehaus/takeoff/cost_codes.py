@@ -113,6 +113,8 @@ def _trade_code(section: str, trade: str) -> CostCode:
     return _SECTION_TRADE_CODES.get((section, trade)) or TRADE_CODES[trade]
 
 
+_POCKET_FRAME_CODE = CostCode("2400", "08 71 00", "openings")
+
 #: Per-key refinements, matched with :func:`fnmatch.fnmatchcase` against the BOM key and
 #: tried after the fact rules and before the section default. First match wins. Kept short:
 #: a table that classifies every key is wrong about most of them.
@@ -129,8 +131,9 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     # I-joist web stiffeners: a plywood rip the framer nails with the roof.
     ("framing", "* stiffener panel", CostCode("2000", "06 17 00", "framing")),
     ("sheet_goods", "zip-r*", CostCode("2100", "07 21 00", "insulation")),
-    # A pocket door's frame kit is Door Hardware (08 71 00), the carpenter's package.
-    ("hardware", "pocket-frame-*", CostCode("2400", "08 71 00", "openings")),
+    # A pocket door's frame kit is Door Hardware (08 71 00), the carpenter's package. Matched
+    # by role in ``_fact_code`` too, since a kit with a part number bills under that key.
+    ("hardware", "pocket-frame-*", _POCKET_FRAME_CODE),
     # A cast-in anchor bolt is set by the sub who pours the wall (03 15 00).
     ("hardware", "ab-*", CostCode("1000", "03 15 00", "concrete")),
     ("openings", "*door*", CostCode("2400", "08 10 00", "openings")),
@@ -345,6 +348,8 @@ def _placeable_trade(row: Mapping[str, Any]) -> str | None:
 def _fact_code(section: str, row: Mapping[str, Any]) -> CostCode | None:
     """A trade read from the row's own facts, or ``None`` to fall through."""
     trade: str | None = None
+    if section == "hardware" and row.get("role") == "pocket_door_frame_kit":
+        return _POCKET_FRAME_CODE
     if section in ("placeables", "furnishings"):
         trade = _placeable_trade(row)
     elif section == "envelope_layers":

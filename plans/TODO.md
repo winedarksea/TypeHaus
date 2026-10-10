@@ -257,9 +257,9 @@ the future.
   the current layout with the selected 36" tub: basin aisle 33.0" → 26.4", plus a tighter entry and shower entrance.
 - Outlet in the kitchen island
 - Both the EXT_2X6 and ROOF report a moisture risk/glaser profile risk. We don't think this is quite right. Well, roof somewhat is (it relies on the air seal of the spray foam). But the ext_2x6 should be roughly 60% outsulation, which should have condensation usually outside the studs.
-- Add wire shelves with rods to the two closets with simple shelves right now.
 - Add the titanium stair rail and backsplash
 - Either engineer the mudroom exposed studs as allowed hardwood, or specify southern yellow pine with a gold anodized aluminum trim (>= 1.5 mm / 0.064 / 12 gauge thickness) https://www.dkhardware.com/cr-laurence-l902bga-ccp72-xcp10-brite-gold-anodized-aluminum-1-4-l-bar-extrusion-72-length-pack-of-10-product-10103314.html or 1-1/2" ID U-channel
+- Perhaps two more shelf like blocking rows in the mudroom exposed stud line, one as a lower shelf and one as a top shelf
 - Confirm bug protection of ccspf
 - Spec sand or gravel backfill around house
 - Model baseboard and door trim where appropriate

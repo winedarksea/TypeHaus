@@ -1,4 +1,54 @@
-# Master closet west wire extension
+# Closet wire shelves and rods
+
+## Suite double hang and mudroom single tier
+
+Owner selection, 2026-10-09: one 16-inch-deep shelf-and-rod run in the mudroom
+and two tiers in the suite, using the existing generic wire shelving allowances. Purchase SKUs
+remain unspecified; ClosetMaid SuperSlide's 16-inch system is a compatible
+basis for the installation requirements below.
+
+| Closet / tier | Element | Installed run | Shelf top AFF | Backing |
+| --- | --- | --- | --- | --- |
+| Mudroom, `RM-M-MUD-CLOSET` | `FURN-M-MUDC-SHELF` | 60 x 16 inches | 67 inches | `BK-M-STOS-SHELF` on `W-M-STOS` |
+| Suite upper, `RM-S-CLOSET` | `FURN-S-CLOSET-SHELF` | 84 x 16 inches | 80 inches | `BK-S-PS2-SHELF` on `W-S-PS2` |
+| Suite lower, `RM-S-CLOSET` | `FURN-S-CLOSET-SHELF-LO` | 84 x 16 inches | 40 inches | `BK-S-PS2-SHELF-LO` on `W-S-PS2` |
+
+The two catalog types now use the existing `closet-wire` symbol: wire-pattern
+plan strokes and a thin metal shelf with a separate metal hanging rod below
+in 3D. The mudroom retains its 66-inch mount and 67-inch shelf top above the
+finished floor. The suite's upper tier retains the existing UID and tag,
+now mounted at 79 inches; the added lower tier is mounted at 39 inches.
+Both suite tiers share the original wall attachment and footprint, with
+40 inches between shelf tops. Representative rod centers are at 79 1/4 and
+39 1/4 inches in the suite and 66 1/4 inches in the mudroom. The 1-inch body is
+a model envelope, not the actual hardware spacing. Set the purchased rod
+supports from their installation instructions while retaining the shelf top.
+
+Use stock longer than the installed run, cut to fit after finishes and end
+hardware are installed, and cap all cut wires and rod ends. Follow the
+selected hardware's fitting clearance rather than treating 60 or 84 inches
+as an advance saw cut. Prefer continuous shelves and fixed rods; any rod
+connector must rest in a compatible rod support.
+
+[ClosetMaid's wire shelving specifications](https://design.closetmaid.com/en-us/Documents/Wire%20Shelving%20Specifications%20rev_6_12_English_HQ.pdf)
+require back clips at 10–12-inch intervals, front shelf supports at most
+36 inches apart, and rod supports at the ends and at 24–36-inch intervals.
+Provide intermediate supports on every tier: at least three shelf/rod support
+stations for 60 inches and four per 84-inch tier, including the ends. Shorten
+spacing for heavy loads as the selected system requires. Use matching
+hardware for the 16-inch shelf and its separate rod, including down clips
+at open ends; a shelf end spaced off a side wall needs its own front support.
+
+Fasten back clips into the listed backing courses or studs. Check front
+brackets' lower screws independently: the shelf-height backing does not
+automatically cover them. Land those screws on studs or suitable backing,
+or use the selected system's prescribed anchors. The existing
+`FT-CLOSET-SHELFROD-60` and `-84` price allowances include installation
+hardware; the rates remain unchanged. The suite now bills two 84-inch units
+and the mudroom one 60-inch unit. The additional suite backing bills through
+the framing takeoff.
+
+## Master closet west wire extension
 
 Owner selection, 2026-10-04: replace `FURN-M-CLOSET-PAX-WEST` with
 `FURN-M-CLOSET-WEST-HI` and `FURN-M-CLOSET-WEST-LO`. Each is a nominal
@@ -16,7 +66,7 @@ the viewer's representative rods are centered at 79 and 39 inches. The
 set the actual support locations from the selected SuperSlide hardware while
 keeping the shelf and rod lines level throughout each tier.
 
-## Cutting and buying
+### Cutting and buying
 
 [ClosetMaid's installation guide](https://homedepot.closetmaid.com/en-US/Installation/Pages/how-to-guides.aspx)
 explicitly permits cutting wire shelving with bolt cutters or a hacksaw and
@@ -44,7 +94,7 @@ span the full 54 1/4-inch line, preserving the model's two tagged sections as
 installation zones. Likewise prefer one straight rod from the corner bar to
 the south end instead of recreating the old short west-leg stub.
 
-## Supports and continuity
+### Supports and continuity
 
 SuperSlide has a separate rod underneath the shelf, rather than using the
 shelf's front lip as the hanging rail. Use the matching corner bar to continue

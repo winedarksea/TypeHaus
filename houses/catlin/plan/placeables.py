@@ -852,11 +852,17 @@ SECOND_PLACEABLES = [
               room="RM-S-NCLOSET", position=pt(ft(20, 1), inch(396.5)),
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3))),
 
-    # The second storey's two closets, same rule as the main floor's pair above.
+    # Suite double hang: 80"/40" shelf tops, with the 1" bodies mounted at 79"/39" AFF.
+    # Retain the existing identity on the upper tier; both rods face south into the closet.
     # RM-S-CLOSET: 94 3/4" of clear wall on the north side (W-S-CLN, face y 12'-2 5/8");
     # an 84" run leaves 5 3/8" either end clear of W-S-DC1's jamb.
     Furniture(uid="CMWJ7Q6Y7H", tag="FURN-S-CLOSET-SHELF", type_ref="FT-CLOSET-SHELFROD-84",
-              room="RM-S-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(66)),
+              room="RM-S-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(79)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-PS2", face="left", distance_from_start=inch(50),
+                  normal_gap=inch(0.4375), rotation_offset=deg(0)))),
+    Furniture(uid="1B3D49E2D0", tag="FURN-S-CLOSET-SHELF-LO", type_ref="FT-CLOSET-SHELFROD-84",
+              room="RM-S-CLOSET", mount=Mount(kind=MountKind.WALL, elevation=inch(39)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-PS2", face="left", distance_from_start=inch(50),
                   normal_gap=inch(0.4375), rotation_offset=deg(0)))),

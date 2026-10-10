@@ -17,6 +17,12 @@ _PANEL = ("Framed metal access panel in a finished wall face; size is the clear 
           "depth the frame's projection.")
 _CLOSET = ("Ventilated epoxy-coated steel shelf on 12 ga. wall standards and brackets, with "
            "the integral hang rod — the ordinary reach-in fit-out. Standards land on studs.")
+_CLOSET_WIRE_WITH_SEPARATE_ROD = (
+    "Ventilated coated-steel wire shelf with a separate hanging rod beneath. Matching wall "
+    "clips, front brackets and rod supports fasten to studs or backing; provide intermediate "
+    "supports and cap cut ends. The 1-inch body is representative shelf-and-rod geometry, "
+    "not a hardware drilling template."
+)
 
 CURTAIN_ROD_48 = FurnitureType(
     tag="FT-CURTAIN-ROD-48", name='Curtain rod, 48"',
@@ -53,14 +59,16 @@ ACCESS_PANEL_CLG_3029 = FurnitureType(
             "return inlet (IMC 601.5(7))."),
 )
 CLOSET_SHELF_ROD_60 = FurnitureType(
-    tag="FT-CLOSET-SHELFROD-60", name='Closet shelf and rod, 60" x 16"',
+    tag="FT-CLOSET-SHELFROD-60", name='Wire closet shelf and separate rod, 60" x 16"',
     footprint=(inch(60), inch(16)), height=inch(1),
-    storage=True, work_surface=False, plan_symbol="bookcase", mount=_WALL, source=_CLOSET,
+    storage=True, work_surface=False, plan_symbol="closet-wire", mount=_WALL,
+    source=_CLOSET_WIRE_WITH_SEPARATE_ROD,
 )
 CLOSET_SHELF_ROD_84 = FurnitureType(
-    tag="FT-CLOSET-SHELFROD-84", name='Closet shelf and rod, 84" x 16"',
+    tag="FT-CLOSET-SHELFROD-84", name='Wire closet shelf and separate rod, 84" x 16"',
     footprint=(inch(84), inch(16)), height=inch(1),
-    storage=True, work_surface=False, plan_symbol="bookcase", mount=_WALL, source=_CLOSET,
+    storage=True, work_surface=False, plan_symbol="closet-wire", mount=_WALL,
+    source=_CLOSET_WIRE_WITH_SEPARATE_ROD,
 )
 CLOSET_SHELF_ROD_96 = FurnitureType(
     tag="FT-CLOSET-SHELFROD-96", name='Closet shelf and rod, 96" x 16"',

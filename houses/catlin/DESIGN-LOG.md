@@ -4774,3 +4774,26 @@ surface that reaches the court, so the water goes there.
 - Validation: 1,194 relevant engine tests passed, 26 skipped; UI typecheck and geometry
   tests passed. House checks: 1,861 pass, zero fail, 52 unknown. JSON, framed IFC and GLB
   rebuilt; takeoff counts and prices one study door on its new type.
+
+### 2026-10-09 — Wire shelves and rods in the suite and mudroom closets
+
+- `FURN-M-MUDC-SHELF` and `FURN-S-CLOSET-SHELF` now use the established
+  `closet-wire` representation through their existing 60-inch and 84-inch catalog
+  types: wire-pattern plan strokes and a thin metal shelf with a separate rod below
+  in 3D. Retain 16-inch depth and the 1-inch representative body on all three tiers.
+- The suite has two 84-inch tiers with shelf tops at 80 and 40 inches AFF. Keep the
+  original UID/tag on the upper tier and add `FURN-S-CLOSET-SHELF-LO` beneath it,
+  sharing the original wall attachment and footprint. Move `BK-S-PS2-SHELF` to the
+  upper clip band and add `BK-S-PS2-SHELF-LO` for the lower tier.
+- The mudroom keeps one 60-inch run on its existing 66-inch mount, shelf top 67 inches.
+  Purchase SKUs remain unspecified; shelf-and-rod rates still include installation
+  hardware, now counting two suite units. The additional backing bills as framing.
+- `notes/closet_wire.md` records cut-to-fit stock, caps, intermediate supports and
+  screw attachment into the tier-specific backing courses, studs or prescribed anchors.
+  Hardware dimensions come from the purchased system, rather than the model envelope.
+- Validation: 1,111 focused tests passed, 14 skipped; the only failure is the
+  unrelated study-door elevation snapshot. House checks: 1,863 pass, zero fail,
+  52 unknown. JSON, framed IFC and GLB rebuilt and both closets reviewed in plan
+  and 3D; UI typecheck, geometry tests and build pass. The full verification run
+  was interrupted when the owner changed the suite to two tiers; its two framing
+  takeoff failures now pass after the concurrent takeoff correction.

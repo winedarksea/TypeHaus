@@ -1556,9 +1556,12 @@
 "canvas_objects/FURN-S-BED3/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-BED3/body_z1_m": 4.1021,
 "canvas_objects/FURN-S-BED3/z_m": 3.0861,
-"canvas_objects/FURN-S-CLOSET-SHELF/body_z0_m": 4.7625,
-"canvas_objects/FURN-S-CLOSET-SHELF/body_z1_m": 4.7879,
-"canvas_objects/FURN-S-CLOSET-SHELF/z_m": 4.7625,
+"canvas_objects/FURN-S-CLOSET-SHELF-LO/body_z0_m": 4.0767,
+"canvas_objects/FURN-S-CLOSET-SHELF-LO/body_z1_m": 4.1021,
+"canvas_objects/FURN-S-CLOSET-SHELF-LO/z_m": 4.0767,
+"canvas_objects/FURN-S-CLOSET-SHELF/body_z0_m": 5.0927,
+"canvas_objects/FURN-S-CLOSET-SHELF/body_z1_m": 5.1181,
+"canvas_objects/FURN-S-CLOSET-SHELF/z_m": 5.0927,
 "canvas_objects/FURN-S-DESK-CHAIR1/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-DESK-CHAIR1/body_z1_m": 4.0513,
 "canvas_objects/FURN-S-DESK-CHAIR1/z_m": 3.0861,
@@ -4977,6 +4980,12 @@
 "e8549d967810"
 ],
 "geometry/8BRZAXSW73::framing/member:pocketsplit-0-02": [
+-2.7416125,
+-0.7477125,
+8,
+"e8549d967810"
+],
+"geometry/8BRZAXSW73::framing/member:pocketsplit-0-03": [
 -2.7416125,
 -0.7477125,
 8,
@@ -28664,6 +28673,12 @@
 8,
 "38a4e97dab02"
 ],
+"geometry/CMW124AAAA::framing/member:pocketsplit-0-03": [
+0.0381,
+2.032,
+8,
+"38a4e97dab02"
+],
 "geometry/CMW124AAAA::framing/member:stud-000": [
 0.0381,
 2.651125,
@@ -40599,10 +40614,10 @@
 "b7b31aff550e"
 ],
 "geometry/CSW119AAAA::framing/member:backing-0-000": [
-4.2672,
-4.45135,
+4.0132,
+4.19735,
 8,
-"be35dfb6661e"
+"14fbacd473cb"
 ],
 "geometry/CSW119AAAA::framing/member:backing-1-000": [
 4.2672,
@@ -40611,10 +40626,10 @@
 "be35dfb6661e"
 ],
 "geometry/CSW119AAAA::framing/member:backing-2-000": [
-4.6736,
-4.85775,
+4.2672,
+4.45135,
 8,
-"17c22de8aee5"
+"be35dfb6661e"
 ],
 "geometry/CSW119AAAA::framing/member:backing-3-000": [
 4.8768,
@@ -40627,6 +40642,12 @@
 5.06095,
 8,
 "35a5dea7566f"
+],
+"geometry/CSW119AAAA::framing/member:backing-5-000": [
+5.0292,
+5.21335,
+8,
+"8a4027040d32"
 ],
 "geometry/CSW119AAAA::framing/member:plate-bottom": [
 3.048,
@@ -56971,6 +56992,12 @@
 2,
 "b3ac07800d7e"
 ],
+"member/8BRZAXSW73/pocketsplit-0-03": [
+-2.7416125,
+-0.7477125,
+2,
+"b3ac07800d7e"
+],
 "member/8BRZAXSW73/stud-000": [
 -2.7416125,
 -0.396875,
@@ -71743,6 +71770,12 @@
 2,
 "d5f814261ca4"
 ],
+"member/CMW124AAAA/pocketsplit-0-03": [
+0.0381,
+2.032,
+2,
+"d5f814261ca4"
+],
 "member/CMW124AAAA/stud-000": [
 0.0381,
 2.651125,
@@ -81608,10 +81641,10 @@
 "b8f30a7575c5"
 ],
 "member/CSW119AAAA/backing-0-000": [
-4.2672,
-4.45135,
+4.0132,
+4.19735,
 2,
-"1ccf1034a083"
+"797e4574e5a0"
 ],
 "member/CSW119AAAA/backing-1-000": [
 4.2672,
@@ -81620,10 +81653,10 @@
 "1ccf1034a083"
 ],
 "member/CSW119AAAA/backing-2-000": [
-4.6736,
-4.85775,
+4.2672,
+4.45135,
 2,
-"df1d22fb1a35"
+"1ccf1034a083"
 ],
 "member/CSW119AAAA/backing-3-000": [
 4.8768,
@@ -81636,6 +81669,12 @@
 5.06095,
 2,
 "f7809631728b"
+],
+"member/CSW119AAAA/backing-5-000": [
+5.0292,
+5.21335,
+2,
+"abb7efbea348"
 ],
 "member/CSW119AAAA/plate-bottom": [
 3.048,

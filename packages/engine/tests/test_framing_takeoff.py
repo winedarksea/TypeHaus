@@ -73,8 +73,11 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     # And steel straps, which are hardware (`takeoff/strap_braces.py`).
     straps = [m for m in members if m.category == STRAP_CATEGORY]
     hardware = [m for m in members if m.category == "hanger" and m.material == "steel"]
+    # And members a kit ships: a pocket frame's split studs, billed with the kit.
+    kit = [m for m in members if m.supplied_by]
+    assert kit, "catlin has two pocket doors; this should not be empty"
     assert sum(int(row["pieces"]) for row in rows) == (
-        len(members) - len(ripped) - len(not_lumber) - len(straps) - len(hardware))
+        len(members) - len(ripped) - len(not_lumber) - len(straps) - len(hardware) - len(kit))
     assert not any(rip_stock(str(row["profile"]), row["material"]) for row in rows)
 
     for row in rows:
@@ -286,8 +289,9 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     assert not_lumber, "catlin has treads that are not lumber; this should not be zero"
     straps = sum(1 for m in members if m.category == STRAP_CATEGORY)
     hardware = sum(1 for m in members if m.category == "hanger" and m.material == "steel")
+    kit = sum(1 for m in members if m.supplied_by)
     assert sum(int(row["pieces"]) for row in bom["framing"]) == (
-        len(members) - ripped - not_lumber - straps - hardware)
+        len(members) - ripped - not_lumber - straps - hardware - kit)
 
 
 # Every collection on ``ResolvedModel`` is either billed by a BOM section or waived here with
