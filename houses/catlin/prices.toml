@@ -1051,7 +1051,7 @@
 # end" — and the F1 the code report publishes is measured through that pair). Net material
 # effect is a SAVING: 16 KBS1Z at $3.50-6.50 is $56-104 against the 8 APVKB45-6 at
 # $22-45 they replace, $176-360. The stronger, rated part is the cheaper one here.
-"KBS1Z" = { low = 3.5, high = 6.5 }  # 30 ea — 2 derived at the breezeway, 28 on SB-BW-BAND's 14 slats (2026-10-08; 36 on 18 from 2026-10-04 until the 2-1/4" gap cleared their overlap). It was 30 while the balcony carried eight knee braces at two straps each; those braces were deleted 2026-09-03 when four fixed concrete columns became the lateral system. The row stays: the part is a live engine feature and the breezeway uses it
+"KBS1Z" = { low = 3.5, high = 6.5 }  # 26 ea — 2 derived at the breezeway, 24 on SB-BW-BAND's 12 braced slats (2026-10-09: the two corner slats are screwed infill; 28 on 14 from 2026-10-08; 36 on 18 from 2026-10-04 until the 2-1/4" gap cleared their overlap). It was 30 while the balcony carried eight knee braces at two straps each; those braces were deleted 2026-09-03 when four fixed concrete columns became the lateral system. The row stays: the part is a live engine feature and the breezeway uses it
 # Lateral tie plate at the bottom plate of a framed wall standing on a framed floor
 # band. NOT on a wall standing on concrete: that plate is a sill and its MASA anchors
 # already make the connection, so the takeoff excludes it rather than paying twice.
@@ -1354,7 +1354,7 @@
 "TLOK08" = { low = 0.81, high = 1.10 }  # 1131 ea — the catlin truss's one girt screw
 # RF-HOUSE eave blocking toe screws (notes/eave_gutter_girt.md §4): 2 per end into the
 # stiffener pair (3") and 2 per block down into the rafter plate (4").
-"SDWS22300DB" = { low = 0.55, high = 0.85 }  # 144 ea
+"SDWS22300DB" = { low = 0.55, high = 0.85 }  # 152 ea — 8 toe-screw SB-BW-BAND's two corner infill slats
 "SDWS22400DB" = { low = 0.6, high = 0.95 }  # 88 ea — 72 eave blocking, 16 through SB-BW-BAND's plates
 # The interior partitions' deflection screw at every top plate — one per crossing of the
 # framing above, a 24" pitch where a wall runs under a parallel member, one per blocked bay

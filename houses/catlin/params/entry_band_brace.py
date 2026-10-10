@@ -3,7 +3,8 @@
 `W-BW-SCREEN` tops out at +4'-0" and the `BM-BW-RW` glulam's soffit is at +6'-4 1/8". The band
 between them carries the canopy's whole N-S shear. Since 2026-10-04 it is `SB-BW-BAND`: a 2x6
 sill and top plate, a 6x6 centre post, and KDAT 2x4 slats at 45° rising to the centre from each
-chord, each one a knee brace with a KBS1Z at both ends. It replaced a CS16 X on each face, kept
+chord, each one a knee brace with a KBS1Z at both ends, except the two corner-to-corner slats,
+screwed infill because no KBS1Z leg fits a corner (note §3a-ter). It replaced a CS16 X on each face, kept
 as the first backup with the sheathed-pier option in the note's §8. Hand oracle:
 `notes/canopy_west_band.md` §3.
 

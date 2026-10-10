@@ -2,7 +2,7 @@
 
 The frame is catlin's west band (``notes/canopy_west_band.md`` §3a) on a bare two-post frame,
 so the layout numbers are the note's: 24.375" x 25.125" bays, seven slats a bay at 2 1/4"
-clear, five across mid-band.
+clear, j = 0 screwed infill, four braces across mid-band.
 """
 
 from __future__ import annotations
@@ -76,7 +76,8 @@ def test_the_layout_is_section_3a() -> None:
     for bay in (0, 1):
         slats = lay.bay(bay)
         assert [s.j for s in slats] == list(range(-3, 4))  # j = ±4 is 5.00", under 8"
-        assert lay.crossing_mid(bay) == 5
+        assert [s.j for s in slats if not s.braced] == [0]  # §3a-ter: a corner to corner
+        assert lay.crossing_mid(bay) == 4
         assert min(s.length for s in slats) / IN == pytest.approx(12.5, abs=0.01)
         assert max(s.length for s in slats) / IN == pytest.approx(34.47, abs=0.01)
     lands = [(s.low, s.high) for s in lay.bay(0)]
@@ -124,10 +125,33 @@ def test_the_slats_bill_as_lumber_and_the_parts_as_hardware(band_model) -> None:
     assert lumber[("2x4", "brace")]["pieces"] == 14
     rows = {r["scope"]: r for r in hardware_takeoff(band_model)
             if r["scope"].startswith("slat brace")}
-    assert rows["slat brace connector"]["count"] == 28
+    assert rows["slat brace connector"]["count"] == 24
     assert rows["slat brace connector"]["part_number"] == "KBS1Z"
+    assert rows["slat brace infill screw"]["count"] == 8  # 2 slats x 2 ends x 2
     assert rows["slat brace plate screw"]["count"] == 16
     assert rows["slat brace centre post tie"]["count"] == 4
+
+
+def test_a_corner_slat_is_screwed_infill(band_model) -> None:
+    """§3a-ter: j = 0's KBS1Z legs would run into both plates, so it takes toe screws, no
+    connector, and every connector on a post stays inside the bay's height."""
+    from typehaus.resolve.slat_braces import slat_layout
+
+    layout = slat_layout(_band())
+    members = {m.child_key: m for m in band_model.braces[0].members}
+    assert members["slat-0+0"].connection == "screwed:SDWS22300DB"
+    assert members["slat-1-1"].connection == "kneebrace:KBS1Z"
+    tags = {s.tag for s in band_model.solids if s.product == "KBS1Z"}
+    assert not any("~0+0~" in t or "~1+0~" in t for t in tags)
+    sill = _BASE_FT * FT + layout.plate
+    on_post = {f"~{s.bay}{s.j:+d}~{end}" for s in layout.slats
+               for end, landing in (("low", s.low), ("high", s.high))
+               if landing in ("chord", "centre")}
+    posted = [s for s in band_model.solids if s.product == "KBS1Z"
+              and any(s.tag.endswith(k) for k in on_post)]
+    assert len(posted) == 12  # j = -3 ... -1 at a chord, +1 ... +3 at the centre, two bays
+    for solid in posted:
+        assert sill - 1e-6 <= solid.z0_m and solid.z1_m <= sill + layout.height + 1e-6
 
 
 def test_neighbouring_connectors_need_their_heel_spacing() -> None:
@@ -163,7 +187,7 @@ def test_the_band_emits_slats_as_ifc_braces(band_model, tmp_path) -> None:
     members = {m.Name: m for m in emitted.by_type("IfcMember")}
     assert members["SB-T/slat-0+0"].PredefinedType == "BRACE"
     assert members["SB-T/plate-top"].PredefinedType == "MEMBER"
-    assert len(emitted.by_type("IfcMechanicalFastener")) == 28
+    assert len(emitted.by_type("IfcMechanicalFastener")) == 24
     assert all(c.Representation for c in emitted.by_type("IfcMechanicalFastener"))
     assert all(c.Representation.Representations[0].RepresentationType == "Tessellation"
                for c in emitted.by_type("IfcMechanicalFastener"))
@@ -171,8 +195,8 @@ def test_the_band_emits_slats_as_ifc_braces(band_model, tmp_path) -> None:
         "SweptSolid")
 
 
-def test_top_landings_are_not_the_five_crossing_slats() -> None:
-    """Top-only connectors would leave three of the five graded slats untied in each bay."""
+def test_top_landings_are_not_the_crossing_slats() -> None:
+    """Top-only connectors would leave two of the four graded slats untied in each bay."""
     from typehaus.resolve.slat_braces import slat_layout
 
     layout = slat_layout(_band())
@@ -181,7 +205,7 @@ def test_top_landings_are_not_the_five_crossing_slats() -> None:
         mid = layout.height / 2.0
         assert len(top) == 3
         assert sum(s.u0 <= s.c + mid <= s.u1 for s in top) == 2
-        assert layout.crossing_mid(bay) == 5
+        assert layout.crossing_mid(bay) == 4
 
 
 def test_actual_slat_faces_meet_the_frame_without_interpenetration(band_model) -> None:
@@ -227,7 +251,7 @@ def test_connectors_follow_the_flush_face_on_a_rotated_band(offset) -> None:
                     plane_offset=inch(offset))
     model, _ = _frame(element)
     connectors = [s for s in model.solids if s.product == "KBS1Z"]
-    assert len(connectors) == 28 and len({s.uid for s in connectors}) == 28
+    assert len(connectors) == 24 and len({s.uid for s in connectors}) == 24
     assert all(s.derived and s.body_mesh for s in connectors)
     face_x = 8 * FT - math.copysign(2.75 * IN, offset)
     for connector in connectors:
@@ -244,7 +268,7 @@ def test_connector_geometry_is_serialized_and_does_not_double_bill(band_model) -
 
     payload = model_to_dict(band_model)
     connectors = [s for s in payload["solids"] if s["product"] == "KBS1Z"]
-    assert len(connectors) == 28
+    assert len(connectors) == 24
     assert all(s["body_mesh"]["triangles"] for s in connectors)
     assert not any(r["category"] == "connector" for r in structural_solids_takeoff(band_model))
     gltf, _ = emit_gltf_dict(band_model, lod="framed")

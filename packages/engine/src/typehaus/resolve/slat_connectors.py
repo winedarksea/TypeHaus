@@ -27,7 +27,7 @@ def resolve_slat_connectors(model, element, layout, storey: str) -> None:
     face_offset = element.plane_offset.meters + exterior_sign * depth / 2.0
     inward = (exterior_sign * uy, -exterior_sign * ux, 0.0)
     sill = element.base_elevation.meters + layout.plate
-    for slat in layout.slats:
+    for slat in (s for s in layout.slats if s.braced):
         mirror = 1.0 if slat.bay == 0 else -1.0
 
         def vector(u, z, mirror=mirror):

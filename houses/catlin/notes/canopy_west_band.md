@@ -7,7 +7,8 @@ four posts (`PT-BW-CW`/`-CNW`/`-RE`/`-RNE`, `kdat`); the open front's chord and 
 **Written:** 2026-09-30, by hand, before `engineering/lateral_band.py`, `open_front.py`,
 `roof_beam_glulam.py` and `wood_roof_post_joints.py` were encoded. §3 and §5b-c re-worked
 2026-10-04 for the slat band, before `lateral_band_slats.py`; the straps it replaced are in §8.
-Re-worked again 2026-10-08 at a 2-1/4" slat gap (§3a: the KBS1Z overlapped at 1-1/2").
+Re-worked again 2026-10-08 at a 2-1/4" slat gap (§3a: the KBS1Z overlapped at 1-1/2"), and
+2026-10-09 with the two corner slats (j = 0) as screwed infill, not braces (§3a-ter).
 **Oracle for:** `lateral_band.py` / `lateral_band_slats.py` (§3-§4), `wood_roof_post.py` / `wood_roof_post_joints.py` (§5),
 `open_front.py` (§6), `roof_beam_glulam.py` (§7); reproduced by
 `tests/test_canopy_west_band_calcs.py`.
@@ -80,14 +81,15 @@ centreline (bay frame, u from the chord face toward the centre, z from the sill 
 A slat runs from the sill (c > 0) or the chord (c < 0) to the centre post (H + c > W) or the
 top plate. Its centreline length is (min(W, H + c) − max(0, c)) x √2. j = ±4 gives 5.00": too
 short for a KBS1Z leg at both ends, so the rule drops anything under 8". That leaves
-**j = −3 … +3: seven slats a bay, fourteen in all, 28 KBS1Z**:
+**j = −3 … +3: seven slats a bay, fourteen in all**; j = 0 is screwed infill (§3a-ter), so
+**six a bay are braces, 24 KBS1Z**:
 
 | j | c | from → to | length |
 |---|---|---|---|
 | −3 | −16.285 | chord → top plate | 12.50" |
 | −2 | −10.982 | chord → top plate | 20.00" |
 | −1 | −5.678 | chord → top plate | 27.50" |
-| 0 | −0.375 | chord → centre post | **34.47"** |
+| 0 | −0.375 | chord → centre post | 34.47", infill |
 | 1 | 4.928 | sill → centre post | 27.50" |
 | 2 | 10.232 | sill → centre post | 20.00" |
 | 3 | 15.535 | sill → centre post | 12.50" |
@@ -102,12 +104,23 @@ limit (5.13"); 2-1/4" (5.30") keeps 0.18" for fit-up. The resolver refuses a pit
 weighed and refused: ER-280 Table 7 type 2 is a 2x brace, and type 1 (4x) wants a second
 KBS1Z on the east face, which stands 2" back from the posts there.
 
+**3a-ter. The corner slats are infill (2026-10-09).** A KBS1Z's support leg runs 3" along its
+bearing face from the heel, and the heel stands 1-1/2"/√2 = 1.06" past the centreline, so a
+slat end needs **4.06"** from the frame corner along that face. j = 0 meets both corners: its
+centreline is 0.375" off each, so the low heel is 0.69" inside the sill and the high heel
+0.69" inside the top plate, with the legs running a further 3" into them. ER-280 Figure 7
+shows the part only on the obtuse side (a 45° bend), so it cannot flip into the 45° side
+either. The two j = 0 slats stay in the frame, toe-screwed with two SDWS22300DB an end, and
+carry none of the brace force. j = ±1 clear by 1.62". No other pitch helps: the corners leave
+an 8.87" band of c with no fit, wider than the 5.30" pitch, so one slat always lands in it.
+`resolve/slat_braces._kbs_fits` is the rule; the engineering reads only braced slats.
+
 **Connector count review, 2026-10-04.** Keeping only the top-landing slats would connect
 three a bay (12 KBS1Z), but only **two** of those cross mid-band. The five-slat calculation
 below also needs j = 0, +1, +2, which end on the centre post; removing their end ties
-invalidates its force sharing and vertical cancellation. The present bill therefore keeps
-28. A smaller connected set needs a separate load-path calculation, including the remaining
-butted slats' compression-only action; the existing pass does not establish that 28 is the
+invalidates its force sharing and vertical cancellation. The bill kept 28 until §3a-ter
+took the two j = 0 slats out of the bracing; it is 24. A smaller connected set needs a separate load-path calculation, including the remaining
+butted slats' compression-only action; the existing pass does not establish that 24 is the
 minimum possible count.
 
 **Drawn cuts and hardware.** Each slat is the full 1-1/2"-wide diagonal strip clipped to all
@@ -121,9 +134,7 @@ Each end shows one folded KBS1Z on the flush west face: two 3" legs with two per
 The punching positions and bend radii are not dimensioned there: the holes are illustrative
 and sharp folds stand for the bends. This is a dimensioned visualization, not manufacturer
 fabrication CAD or confirmation that every flange/fastener fits this flat-plate installation.
-In particular, the j = 0 slats meet the centre post near its top: the drawn 3" support legs
-extend beyond that post into the plate/header region. Their attachment detail needs review;
-the 0.274 connector ratio alone does not resolve that footprint.
+The j = 0 slats, whose legs would have run into the plates, carry no connector (§3a-ter).
 
 **3b. The slats and their ends.** A slat is tension in one direction of push and compression in
 the other. The KBS1Z is rated along the brace (the axis it shares with the brace), so each slat
@@ -134,14 +145,14 @@ into the side grain … at a 90-degree angle" (Table 5 fn. 3), and a 45° butt h
 screw.
 
 The verticals carry the band's shear only by bending, and a vertical loaded along its length
-by its landing slats has **zero shear at mid-band**. So the slats crossing mid-band, z =
-12.5625", carry the bay's whole half. Those are c in [−12.5625, 11.8125], i.e. j = −2 … +2,
-**five**:
+by its landing slats has **zero shear at mid-band**. So the braced slats crossing mid-band, z =
+12.5625", carry the bay's whole half. Those are c in [−12.5625, 11.8125], i.e. j = −2 … +2
+less the infill j = 0, **four**:
 
 ```
 V_bay = 1,038.35 / 2 = 519.18 lb
-P     = 519.18 / (5 x cos 45°) = 146.85 lb per slat, tension or compression
-h     = P cos 45° = 103.84 lb, horizontal (and vertical) at each end
+P     = 519.18 / (4 x cos 45°) = 183.56 lb per slat, tension or compression
+h     = P cos 45° = 129.79 lb, horizontal (and vertical) at each end
 ```
 
 KBS1Z, IAPMO UES ER-280 Table 7, connection type 2 (a 2x brace, one connector each end, 12 - 8d
@@ -149,17 +160,17 @@ x 1-1/2 or SD9x1-1/2), F1 at 45°, C_D 1.6 included; the catalog's SPF/HF 540 lb
 DF/SP row. Dry service at the connectors, as §5d prints for every part here:
 
 ```
-146.85 / 540 = 0.272
+183.56 / 540 = 0.340
 ```
 
 Slat compression, NDS §3.7, about the 1-1/2" face (the out-of-plane 3-1/2" is far stiffer); SP
-No. 2 2x4, Table 4B, wet (C_M 0.8 on Fc, 0.9 on E_min), C_D 1.6, longest slat 34.47":
+No. 2 2x4, Table 4B, wet (C_M 0.8 on Fc, 0.9 on E_min), C_D 1.6, longest braced slat 27.50":
 
 ```
 Fc*   1,450 x 0.8 x 1.6 = 1,856.0 psi      Emin' 510,000 x 0.9 = 459,000
-le/d  34.47 / 1.5 = 22.98   FcE = 0.822 x 459,000 / 22.98² = 714.4 psi   α = 0.3849
-C_P   (1.3849/1.6) − sqrt((1.3849/1.6)² − 0.3849/0.8) = 0.3478   Fc' = 645.6 psi
-      146.85 / (645.6 x 5.25) = 146.85 / 3,389 = 0.043
+le/d  27.50 / 1.5 = 18.33   FcE = 0.822 x 459,000 / 18.33² = 1,122.5 psi   α = 0.6048
+C_P   (1.6048/1.6) − sqrt((1.6048/1.6)² − 0.6048/0.8) = 0.5030   Fc' = 933.6 psi
+      183.56 / (933.6 x 5.25) = 183.56 / 4,901 = 0.037
 ```
 
 **3c. The top plate bears END-ON on the chord.** A tension bay pulls its chord inward along the
@@ -224,30 +235,31 @@ The deck's own boundary row is the diaphragm note's §4d, 1,038.35 / 6.000 = 173
 **0.911** — along the full 6' eave, because the header is the collector; the panel's 5.44' is
 no longer the boundary length.
 
-**3f. The verticals take what lands on them.** Four slats land on each side of the centre post
-(j = 0 … 3) and four on each chord (j = −3 … 0), each delivering h = 103.84 lb horizontally. That
+**3f. The verticals take what lands on them.** Three braced slats land on each side of the
+centre post (j = 1 … 3) and three on each chord (j = −3 … −1), each delivering h = 129.79 lb
+horizontally. That
 is applied as a uniform load over H. **On the centre post both bays push the SAME way**, whatever
 the push: the tension bay pulls it toward its own chord and the compression bay shoves it the
 same way. So it takes both:
 
 ```
-F      2 x 4 x 103.84 = 830.68 lb over 2.09375'
-M      830.68 x 2.09375 / 8 = 217.40 lb-ft;  6x6 S 27.729 in3 -> f_b 94.08 psi
-Fb'    Table 4D SP No. 2 timbers 850 x wet C_M 1.0 x C_D 1.6 = 1,360 psi              0.069
-ends   830.68 / 2 = 415.34 lb at each plate: two A35Z per end (one each face), the lower
-       ESR-3096 Table 5 row F1 695 lb     415.34 / (2 x 695) = 0.299
+F      2 x 3 x 129.79 = 778.75 lb over 2.09375'
+M      778.75 x 2.09375 / 8 = 203.81 lb-ft;  6x6 S 27.729 in3 -> f_b 88.20 psi
+Fb'    Table 4D SP No. 2 timbers 850 x wet C_M 1.0 x C_D 1.6 = 1,360 psi              0.065
+ends   778.75 / 2 = 389.38 lb at each plate: two A35Z per end (one each face), the lower
+       ESR-3096 Table 5 row F1 695 lb     389.38 / (2 x 695) = 0.280
 ```
 
 The vertical components on the centre post cancel: the tension bay pulls it down and the
-compression bay pushes it up by the same 4 x 103.84.
+compression bay pushes it up by the same 3 x 129.79.
 
-A **chord** takes only its own bay, 4 x 103.84 = **415.34 lb**. A tension bay pulls it inward
+A **chord** takes only its own bay, 3 x 129.79 = **389.38 lb**. A tension bay pulls it inward
 onto the plate ends (§3c). A compression bay pushes it OUTWARD, off the plates, so it spans base
 to head. §5b carries that.
 
 **3g. The plates are screwed, and the tension bay is a withdrawal.** The top plate takes V from
 the glulam soffit, and the sill hands V to the panel's top plate. The tension bay's three
-top-landing slats (j = −3 … −1) pull the top plate DOWN by 3 x 103.84 = 311.51 lb over their
+top-landing slats (j = −3 … −1) pull the top plate DOWN by 3 x 129.79 = 389.38 lb over their
 half, and its three sill landings pull the sill UP by the same. Eight SDWS22400DB per plate: up
 through the 2x6 into the glulam, and down through the 2x6 into the double top plate. Each is
 1-1/2" side member, 2-1/2" into the main, all 2.375" of thread in it. IAPMO UES ER-192: Table 5
@@ -256,18 +268,18 @@ Both are DF/SP main-member rows (glulam DF 0.50, KDAT SP 0.55). Screws go square
 (fn. 3), C_D 1.6, dry service:
 
 ```
-lateral     1,038.35 / 8 = 129.79 lb       withdrawal  311.51 / 4 = 77.88 lb (that half's four)
-resultant   151.36 lb at alpha = atan(77.88 / 129.79) = 30.96°
+lateral     1,038.35 / 8 = 129.79 lb       withdrawal  389.38 / 4 = 97.34 lb (that half's four)
+resultant   162.24 lb at alpha = atan(97.34 / 129.79) = 36.87°
 NDS §12.4.1 Z'a = W'p Z' / (W'p cos² a + Z' sin² a),  W'p = 425 x 1.6 = 680,  Z' = 405 x 1.6 = 648
-            Z'a = 680 x 648 / (680 x 0.7353 + 648 x 0.2647) = 656.2 lb            0.231
+            Z'a = 680 x 648 / (680 x 0.6400 + 648 x 0.3600) = 659.2 lb            0.246
 ```
 
-**3h. The header couple.** The two bays' top landings push the glulam opposite ways, 311.51 lb
+**3h. The header couple.** The two bays' top landings push the glulam opposite ways, 389.38 lb
 each. Their landings stand u = 8.840, 14.143, 19.447" from each chord face, centroid
 14.143", so 24.375 + 2.75 − 14.143 = 12.982" each side of the centre:
 
 ```
-couple  311.51 x 2 x 12.982 / 12 = 674.0 lb-ft    / 4.9792' chords = 135.4 lb at a head
+couple  389.38 x 2 x 12.982 / 12 = 842.5 lb-ft    / 4.9792' chords = 169.2 lb at a head
 vs the deck's own couple through the header depth, 1,038.35 x 0.98958 / 4.9792 = 206.4 lb
 ```
 
@@ -343,18 +355,18 @@ each post through an A35Z at the plate end (`CN-BW-PLATE-*`): 121.48 / 695 = **0
 
 Head uplift is the net roof uplift, 428.9 lb. On a chord, add the band's couple: the larger of
 the deck's shear acting a header depth above the top plate, 1,038.35 x 0.98958 / 4.9792 = 206.4,
-and the slats' own couple on the glulam (§3h), 135.4. That gives **635.3 lb**, with nothing
+and the slats' own couple on the glulam (§3h), 169.2. That gives **635.3 lb**, with nothing
 favourable credited.
 
 **The band push, N-S, on a chord only.** §3f: the compression bay pushes its chord OUTWARD with
-415.34 lb, off the plate ends, so the post spans base to head under it. Its resultant stands at
+389.38 lb, off the plate ends, so the post spans base to head under it. Its resultant stands at
 mid-band, +4.1250 + 2.09375/2 = +5.1719':
 
 ```
 a = 5.1719 + 1.2917 = 6.4636' above the base,  b = 7.6354 − 6.4636 = 1.1718'
-head along = 29.26 + 415.34 x 6.4636 / 7.6354 = 29.26 + 351.60 = 380.86 lb
-base along = 29.26 + 415.34 x 1.1718 / 7.6354 = 29.26 +  63.74 =  93.00 lb
-M          = 415.34 x 6.4636 x 1.1718 / 7.6354 = 412.00 lb-ft   (a point load: the conservative end)
+head along = 29.26 + 389.38 x 6.4636 / 7.6354 = 29.26 + 329.62 = 358.88 lb
+base along = 29.26 + 389.38 x 1.1718 / 7.6354 = 29.26 +  59.76 =  89.02 lb
+M          = 389.38 x 6.4636 x 1.1718 / 7.6354 = 386.25 lb-ft   (a point load: the conservative end)
 ```
 
 It is the N-S wind, so it meets the head uplift above (the same case's couple) and not the
@@ -365,8 +377,8 @@ a quarter of the moment.
 
 | post | cap | uplift + along | A35 across | base, across (uplift + F1) | base, along (+ F2) |
 |---|---|---|---|---|---|
-| CW | ACE6Z | 635.3/1,950 + 380.86/1,760 = **0.542** | 113.45/695 = 0.163 | 428.9/3,060 + 66.55/485 = 0.277 | + 93.00/1,270 = 0.213 |
-| CNW | AC6Z | 635.3/2,815 + 380.86/2,075 = 0.409 | 56.73/695 = 0.082 | 0.277 | 0.213 |
+| CW | ACE6Z | 635.3/1,950 + 358.88/1,760 = **0.530** | 113.45/695 = 0.163 | 428.9/3,060 + 66.55/485 = 0.277 | + 89.02/1,270 = 0.210 |
+| CNW | AC6Z | 635.3/2,815 + 358.88/2,075 = 0.399 | 56.73/695 = 0.082 | 0.277 | 0.210 |
 | RE | ACE6Z | 428.9/1,950 + 23.67/1,760 = 0.233 | 23.67/695 = 0.034 | 428.9/3,060 + 23.67/485 = 0.189 | 0.159 |
 | RNE | AC6Z | 428.9/2,815 + 23.67/2,075 = 0.164 | 0.017 | 0.189 | 0.159 |
 
@@ -384,8 +396,8 @@ moment   16.7232 x 0.4583 x 7.6354² / 8 + 121.48 x 5.2917 x 2.3437 / 7.6354
 On a chord, the N-S case is larger, and it governs:
 
 ```
-moment   55.9 + 412.00 = 467.86 lb-ft;  f_b = 467.86 x 12 / 27.73 = 202.5 psi
-§3.9     (112.7 / 530.9 + 202.5 / 1,360) / 0.9135 = 0.3612 / 0.9135                   0.395
+moment   55.9 + 386.25 = 442.15 lb-ft;  f_b = 442.15 x 12 / 27.73 = 191.3 psi
+§3.9     (112.7 / 530.9 + 191.3 / 1,360) / 0.9135 = 0.3530 / 0.9135                   0.386
 ```
 
 **5d. Dry service at the connectors, wet in the column.** ESR-2604 §3.2.2 and ESR-3050 §4.1 rate

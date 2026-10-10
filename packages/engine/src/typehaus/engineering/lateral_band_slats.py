@@ -3,7 +3,8 @@
 ``resolve/slat_braces.slat_layout`` says which slats there are; this grades them. The two bays
 are mirror images with the same joints, so they share the push equally, one in tension and one
 in compression. The verticals carry the band's shear only by bending and have none at
-mid-band, so the slats crossing it carry their bay's whole half. Everything else follows from
+mid-band, so the braced slats crossing it carry their bay's whole half. Screwed infill (a
+corner slat no KBS1Z fits) carries nothing here. Everything else follows from
 the force one slat carries, ``h`` each way at each end:
 
 * the slat's connector (a rated F1 along the brace) and its buckling;
@@ -55,8 +56,8 @@ class SlatBand:
         return self.per_end_lb * math.sqrt(2.0)
 
     def landings(self, which: str) -> int:
-        """Slats of ONE bay landing on ``chord`` | ``sill`` | ``centre`` | ``top``."""
-        return sum(1 for s in self.layout.bay(0) if which in (s.low, s.high))
+        """Braced slats of ONE bay landing on ``chord`` | ``sill`` | ``centre`` | ``top``."""
+        return sum(1 for s in self.layout.braces(0) if which in (s.low, s.high))
 
     @property
     def mid_band_ft(self) -> float:
@@ -70,7 +71,7 @@ class SlatBand:
     def couple_lb_ft(self) -> float:
         """The two bays' top landings on the header: equal, opposite, mirrored (note §3h)."""
         lay = self.layout
-        top = [s for s in lay.bay(0) if s.high == "top"]
+        top = [s for s in lay.braces(0) if s.high == "top"]
         if not top:
             return 0.0
         centroid = sum(lay.height + s.c for s in top) / len(top)
@@ -129,9 +130,11 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
                    Quantity(f"slat_bay_height_{el.tag}", lay.height * _IN_PER_M, "in", 0.01)))
     notes.append(
         f"BAND, {el.tag}: {len(lay.slats)} slats at 45°, {len(lay.bay(0))} a bay, mirrored to "
-        f"rise toward the centre post. The bays share {sb.shear_lb:,.1f} lb equally (mirror "
-        f"images, the same joints); the {sb.crossing} crossing mid-band, where the verticals "
-        f"carry no shear, take a bay's half: {p:,.1f} lb a slat, tension or compression.")
+        f"rise toward the centre post; {len(lay.braces(0))} a bay are braced, the rest screwed "
+        f"infill (a corner no {el.connector} leg fits). The bays share {sb.shear_lb:,.1f} lb "
+        f"equally (mirror images, the same joints); the {sb.crossing} crossing mid-band, "
+        f"where the verticals carry no shear, take a bay's half: {p:,.1f} lb a slat, tension "
+        f"or compression.")
     allow = allowable_for_model(el.connector, role=ROLE_KNEE_BRACE)
     if allow is None or not allow.lateral_f1_lb:
         missing.append(f"a published F1 along the brace for {el.connector!r}, the connector "
@@ -159,7 +162,7 @@ def _slat_buckling(el, lay, p, states, missing) -> None:
         return
     section = cross_section(el.slat)
     d_in, b_in = section.width_m * _IN_PER_M, section.depth_m * _IN_PER_M
-    length_in = max(s.length for s in lay.slats) * _IN_PER_M
+    length_in = max(s.length for s in lay.slats if s.braced) * _IN_PER_M
     fc_star = SLAT_FC_PSI * SLAT_FC_CM * CD_WIND
     fce = 0.822 * SLAT_EMIN_PSI * SLAT_EMIN_CM / (length_in / d_in) ** 2
     ratio = fce / fc_star
@@ -167,7 +170,7 @@ def _slat_buckling(el, lay, p, states, missing) -> None:
     cp = term - math.sqrt(term ** 2 - ratio / 0.8)
     states.append(LimitState(
         f"{el.tag} slat buckling", p, fc_star * cp * d_in * b_in, "lb",
-        f"NDS §3.7, the longest slat {length_in:.2f}\" about its {d_in:g}\" face, l/d "
+        f"NDS §3.7, the longest braced slat {length_in:.2f}\" about its {d_in:g}\" face, l/d "
         f"{length_in / d_in:.2f}; Table 4B SP No. 2 Fc {SLAT_FC_PSI:g} x wet {SLAT_FC_CM} x "
         f"C_D {CD_WIND}, E_min {SLAT_EMIN_PSI:,.0f} x {SLAT_EMIN_CM}: FcE {fce:.1f} psi, "
         f"C_P {cp:.4f}"))

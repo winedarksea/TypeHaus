@@ -87,6 +87,10 @@ class SlatBrace(Element):
     #: A slat shorter than this cannot take a connector leg at both ends and is left out.
     min_slat_length: Length = inch(8)
     connector: str = "KBS1Z"  # one per slat end
+    #: A slat whose connector leg would run off its bearing face (a frame corner) is screwed
+    #: infill instead, toe-screwed at each end and carrying none of the brace force.
+    infill_fastener: str = "SDWS22300DB"
+    infill_fasteners_each_end: int = 2
     plate_fastener: str = "SDWS22400DB"
     plate_fasteners: int = 8  # per plate, through the plate into what it bears on
     centre_post_tie: str = "A35Z"

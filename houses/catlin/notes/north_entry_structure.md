@@ -329,7 +329,7 @@ the pier tops and re-open the seat-beam clash §4 already records.
 
 **Top, +4'-0" to the header soffit: `SB-BW-BAND` (since 2026-10-04; the vertical in-fill
 `SC-BW-WEST` before it).** A 2x6 sill and top plate, a 6x6 centre post, and 2x4 slats on edge at
-45°, 2 1/4" clear (1 1/2" until 2026-10-08, when the KBS1Z overlapped), rising to the centre from each chord, one KBS1Z at each end. The slats are
+45°, 2 1/4" clear (1 1/2" until 2026-10-08, when the KBS1Z overlapped), rising to the centre from each chord, one KBS1Z at each end except the two corner-to-corner slats, screwed infill (§3a-ter). The slats are
 the band's brace now, not in-fill: `canopy_west_band.md` §3.
 
 > ⚠ **Why the slats are not the guard, and why nothing is asking them to be.** IRC Table

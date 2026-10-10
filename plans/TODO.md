@@ -16,10 +16,9 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   generic wall receptacles. Select their listed boxes and coordinate actual cavity
   depths and framing; see `houses/catlin/plan/electrical_attic.py`.
 
-- **Review `SB-BW-BAND` connector layout before reducing its 36 KBS1Z.** Top-only ties
-  would leave three of the five mid-band slats per bay untied. The dimensioned 3D parts also
-  expose the two j = 0 centre-post connections extending into the plate/header region;
-  resolve their flange and fastener attachment detail (`notes/canopy_west_band.md` §3a).
+- **Review `SB-BW-BAND` connector layout before reducing its 24 KBS1Z.** Top-only ties
+  would leave two of the four braced mid-band slats per bay untied
+  (`notes/canopy_west_band.md` §3a).
 
 - **Order the canopy and garage trusses from a fabricator who seals them** — the last four
   canopy UNKNOWNs (`rafter/RF-BW-CANOPY`, `rafter/RF-GARAGE`, `structural.truss_reactions`,

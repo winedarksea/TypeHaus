@@ -2,7 +2,8 @@
 
 The lumber bills off the resolved members in ``takeoff/framing.py``, like every other stick.
 This bills what the :class:`~typehaus.model.braces.SlatBrace` names: its slats come from the
-resolved record, so a slat the layout dropped is a pair of connectors nobody buys.
+resolved record, so a slat the layout dropped is a pair of connectors nobody buys, and a
+screwed infill slat bills its toe screws instead.
 """
 
 from __future__ import annotations
@@ -37,8 +38,12 @@ def _family_source(part: str) -> str | None:
 
 def slat_brace_rows(model: ResolvedModel) -> list:
     """One row per (part, scope) over every slat band in the model."""
-    slats = {brace.tag: sum(1 for m in brace.members if m.category == "brace")
+    slats = {brace.tag: sum(1 for m in brace.members if m.category == "brace"
+                            and (m.connection or "").startswith("kneebrace:"))
              for brace in model.braces}
+    infill = {brace.tag: sum(1 for m in brace.members if m.category == "brace"
+                             and (m.connection or "").startswith("screwed:"))
+              for brace in model.braces}
     counts: Counter = Counter()
     tags: dict[tuple[str, str], list[str]] = {}
     for storey in model.plan.storeys:
@@ -46,17 +51,21 @@ def slat_brace_rows(model: ResolvedModel) -> list:
             if not isinstance(el, SlatBrace) or el.tag not in slats:
                 continue
             for key, n in (((el.connector, "slat brace connector"), 2 * slats[el.tag]),
+                           ((el.infill_fastener, "slat brace infill screw"),
+                            2 * el.infill_fasteners_each_end * infill[el.tag]),
                            ((el.plate_fastener, "slat brace plate screw"),
                             2 * el.plate_fasteners),
                            ((el.centre_post_tie, "slat brace centre post tie"),
                             2 * el.centre_post_ties_each_end)):
-                counts[key] += n
+                if n:
+                    counts[key] += n
                 tags.setdefault(key, []).append(el.tag)
     rows = []
     for (part, scope), count in sorted(counts.items()):
         item = (_knee_brace_item(part) if scope == "slat brace connector"
                 else hardware_by_model(part))
-        rule = {"slat brace connector": "one at each end of every resolved slat",
+        rule = {"slat brace connector": "one at each end of every braced slat",
+                "slat brace infill screw": "the authored count at each end of a screwed slat",
                 "slat brace plate screw": "the authored count through each of two plates",
                 "slat brace centre post tie": "the authored count at each end of the post",
                 }[scope]

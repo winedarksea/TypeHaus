@@ -7,6 +7,10 @@ lateral_band_slats``) all read it. Oracle: ``houses/catlin/notes/canopy_west_ban
 Each bay has its own frame: ``u`` runs from the chord face toward the centre post, ``z`` up
 from the sill's top. A slat's centreline is ``z = u - c``, so every slat rises toward the
 centre, and ``c_j = (W - H)/2 + j * pitch`` centres the set on the bay.
+
+A slat is ``braced`` when a KBS1Z's support leg stays on its bearing face at both ends. One
+ending in a frame corner (catlin's j = 0) would run its leg into the plate, so it is screwed
+infill: drawn and billed as lumber, but no connector, and no share of the brace force.
 """
 
 from __future__ import annotations
@@ -18,7 +22,7 @@ from typehaus.findings import Finding, element_error
 from typehaus.model.braces import SlatBrace
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.kbs_geometry import kbs_heel_spacing
+from typehaus.resolve.kbs_geometry import KBS_GEOMETRY, kbs_heel_spacing
 from typehaus.resolve.model import FramedMember, ResolvedBrace, ResolvedModel
 from typehaus.resolve.slat_cuts import clipped_slat_profile, slat_blank_length
 
@@ -37,6 +41,7 @@ class Slat:
     u1: float
     low: str
     high: str
+    braced: bool = True  # False: screwed infill, no connector (module docstring)
 
     @property
     def length(self) -> float:
@@ -59,10 +64,14 @@ class SlatLayout:
     def bay(self, index: int) -> tuple[Slat, ...]:
         return tuple(s for s in self.slats if s.bay == index)
 
+    def braces(self, index: int) -> tuple[Slat, ...]:
+        """One bay's braced slats: the ones carrying the band's force."""
+        return tuple(s for s in self.bay(index) if s.braced)
+
     def crossing_mid(self, index: int) -> int:
-        """Slats crossing mid-band in one bay. The verticals' shear is zero there."""
+        """Braced slats crossing mid-band in one bay. The verticals' shear is zero there."""
         z = self.height / 2.0
-        return sum(1 for s in self.bay(index) if s.u0 <= s.c + z <= s.u1)
+        return sum(1 for s in self.braces(index) if s.u0 <= s.c + z <= s.u1)
 
     def station(self, bay: int, u: float) -> float:
         """Distance along start→end of a bay-frame ``u``."""
@@ -93,10 +102,21 @@ def slat_layout(el: SlatBrace) -> SlatLayout | None:
             u0, u1 = max(0.0, c), min(width, height + c)
             if u1 <= u0 or (u1 - u0) * _ROOT2 < el.min_slat_length.meters - 1e-9:
                 continue
-            slats.append(Slat(bay, j, c, u0, u1, "sill" if c > 0.0 else "chord",
-                              "centre" if height + c > width else "top"))
+            low, high = "sill" if c > 0.0 else "chord", "centre" if height + c > width else "top"
+            braced = el.connector != "KBS1Z" or _kbs_fits(c, low, high, width, height, face)
+            slats.append(Slat(bay, j, c, u0, u1, low, high, braced))
     return SlatLayout(length, chord_face, centre_half, plate, width, height, pitch,
                       tuple(slats))
+
+
+def _kbs_fits(c: float, low: str, high: str, width: float, height: float,
+              face: float) -> bool:
+    """Both KBS1Z support legs stay on their bearing faces. Each runs ``leg`` away from the
+    heel, the outside long edge, ``face / √2`` past the centreline (slat_connectors)."""
+    reach = face / _ROOT2 + KBS_GEOMETRY.leg_length_m
+    low_room = -c if low == "chord" else c  # heel's distance from the corner, along the face
+    high_room = height - (width - c) if high == "centre" else width - (height + c)
+    return low_room >= reach - 1e-9 and high_room >= reach - 1e-9
 
 
 def resolve_slat_brace(model: ResolvedModel, el: SlatBrace, storey: str) -> list[Finding]:
@@ -157,7 +177,9 @@ def resolve_slat_brace(model: ResolvedModel, el: SlatBrace, storey: str) -> list
             z1_end_m=min(z_sill + layout.height, z_hi + half),
             elevation_profile=tuple((u - u0, z_sill + z) for u, z in profile),
             cut_length_m=slat_blank_length(profile),
-            plan_width_m=cross_section(el.slat).depth_m, connection=f"kneebrace:{el.connector}"))
+            plan_width_m=cross_section(el.slat).depth_m,
+            connection=(f"kneebrace:{el.connector}" if s.braced
+                        else f"screwed:{el.infill_fastener}")))
     model.braces.append(ResolvedBrace(uid=uid, tag=el.tag, storey=storey,
                                       members=tuple(members)))
     from typehaus.resolve.slat_connectors import resolve_slat_connectors

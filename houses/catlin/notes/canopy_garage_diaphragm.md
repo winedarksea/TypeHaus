@@ -344,7 +344,7 @@ FC  X   58.57  Y 508.71   58.57/518 + 508.71/917    = 0.113 + 0.555 = 0.668
 ### 4f. The band over the panel — `canopy_west_band.md` §3
 
 The screen stops at +4'-0" and the header's soffit is +6'-4 1/8": the band is braced by 45°
-KDAT slats on KBS1Z ends, 146.85 / 540 lb, **0.272**, with its plates bearing end-on on the
+KDAT slats on KBS1Z ends, 183.56 / 540 lb, **0.340** (the corner pair is screwed infill), with its plates bearing end-on on the
 chords (0.394) and the deck's shear collected into the header by six LTP4 (0.385).
 
 ## 5. The steel post (oracles `steel_post.py`)
