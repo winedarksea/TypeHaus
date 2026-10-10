@@ -377,6 +377,9 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # The work surfaces, by the square foot a slab yard quotes. Not "hardwood": a
     # countertop is a purchased fabricated top, not stock the owner's mill saws.
     "countertops": ("countertops",),
+    # Derived base and door casing, by the LF; custom-milled stock lists again as a cut list.
+    "base_runs": ("interior_trim", "hardwood"),
+    "door_casings": ("interior_trim", "hardwood"),
     # Illustrative planting, counted by type and deliberately unpriced.
     "plants": ("planting",),
     # A hang point's saddle and swivel; its LVL line bills as a joist under ``framing``.

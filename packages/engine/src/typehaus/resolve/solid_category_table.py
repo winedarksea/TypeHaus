@@ -170,4 +170,7 @@ ROWS: tuple[C, ...] = (
     C("opening", non_solid=True),
     # Window stools have their own millwork takeoff and IFC emitter.
     C("window_stool", non_solid=True),
+    # Derived interior trim (→ resolve/interior_trim.py): own takeoff, own IFC coverings.
+    C("baseboard", non_solid=True),
+    C("door_casing", non_solid=True),
 )

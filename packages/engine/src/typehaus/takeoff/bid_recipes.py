@@ -133,6 +133,7 @@ SHAPES: dict[str, Shape] = {
     "wood_surfaces": Shape("Wood surfaces", None, "SF ordered"),
     "shelving": Shape("Purchased shelving", None, "SF ordered"),
     "countertops": Shape("Countertops", None, "SF"),
+    "interior_trim": Shape("Base and door casing, by the LF", None, "LF"),
     "stair_treads": Shape("Treads, winders and landings, by the piece", _tread, "pcs"),
     "railings": Shape("Guards and handrails", _railing, "LF"),
     "allowances": Shape("Owner allowances"),
@@ -216,14 +217,16 @@ RECIPES: dict[str, Recipe] = {
     "openings": Recipe("Windows and doors", "Every product by type and size, the pocket "
                        "frames, and the hardware allowances.",
                        ("openings", "hardware", "solids", "allowances"), ("A-601",)),
-    "tile": Recipe("Tile", "Floor and wall tile by area with the uncoupling membrane.",
-                   ("floor_finishes", "allowances"), ("A-101",)),
-    "flooring": Recipe("Flooring", "Every finish floor by ordered area, with its underlayment.",
-                       ("floor_finishes", "allowances"), ("A-101",)),
+    "tile": Recipe("Tile", "Floor and wall tile by area with the uncoupling membrane, and "
+                   "the tile base by the foot.",
+                   ("floor_finishes", "interior_trim", "allowances"), ("A-101",)),
+    "flooring": Recipe("Flooring", "Every finish floor by ordered area, with its underlayment, "
+                       "and any flash cove by the foot.",
+                       ("floor_finishes", "interior_trim", "allowances"), ("A-101",)),
     "millwork": Recipe("Millwork and casework", "Casework and built-ins by unit, tops by area, "
                        "paneling and interior trim.",
-                       ("placeables", "countertops", "shelving", "wood_surfaces", "envelope_layers",
-                        "allowances"), ("A-101", "A-501")),
+                       ("placeables", "countertops", "shelving", "interior_trim",
+                        "wood_surfaces", "envelope_layers", "allowances"), ("A-101", "A-501")),
     "plumbing": Recipe("Plumbing", "Pipe by system and size in feet, fittings by the piece, "
                        "the sleeves that go in before the pour, every fixture by model, and "
                        "the water heater.",

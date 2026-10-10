@@ -129,6 +129,7 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
                # Work surfaces by the square foot. Printed below rather than only
                # forwarded: it is the one section a kitchen conversation is about.
                "countertops": bom["countertops"],
+               "interior_trim": bom["interior_trim"],
                # The custom-milling schedule. Forwarded but not PRINTED here: `haus millwork` is
                # its own command with the mill's own column set, and repeating a 17-row cut
                # list inside the BOM dump would bury the sections a builder reads.
@@ -303,6 +304,15 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
             extra = f" + stools {', '.join(stools)}" if stools else ""
             console.print(f"  {item['net_area_sqft']:>7} sf   {item['material']:<16} "
                           f"{item['length_ft']} LF · {', '.join(item['tops'])}{extra}")
+    if payload["interior_trim"]:
+        console.print("[bold]Base and door casing[/bold]  (kind · material · LF · pieces)")
+        totals: dict[tuple[str, str], list[float]] = {}
+        for item in payload["interior_trim"]:
+            slot = totals.setdefault((item["kind"], item["material"]), [0.0, 0])
+            slot[0] += item["length_ft"]
+            slot[1] += item["pieces"]
+        for (kind, material), (length, pieces) in sorted(totals.items()):
+            console.print(f"  {length:>8.1f} LF  {kind:<12} {material:<24} {int(pieces)} pcs")
     if payload["wood_surfaces"]:
         console.print("[bold]Wood surfaces by species[/bold]  (species · material · kind)")
         for item in payload["wood_surfaces"]:

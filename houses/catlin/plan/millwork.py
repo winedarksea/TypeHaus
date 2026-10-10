@@ -4,9 +4,9 @@
 # The owner has white oak off family land in southern Minnesota at roughly $2/sf rough
 # milled, in 4/4, 6/4 and 8/4, with boards commonly 12"+ wide and some to 18". That supply wins
 # on WIDTH and FLATNESS and loses on PROFILE: a one-piece stool, shelf or tread is worth
-# milling, and a knife grind plus a molder setup for baseboard or casing cannot amortise
-# over one house. So this file takes off the winners and nothing else —
-# `finish-interior-trim-and-baseboard` stays a prices.toml lump on purpose.
+# milling, and a knife grind plus a molder setup cannot amortise over one house. Base and
+# casing sidestep that by having no profile at all — plain S4S, butt-jointed — which is
+# planer work, so TRIM-STANDARD below takes them off too.
 #
 # The bath vanities' sink-base shelves are in plan/millwork_vanities.py; the plant room's
 # quartz stools are in plan/countertops.py (stone, the slab yard's, not the sawyer's).
@@ -24,6 +24,7 @@ from typehaus.model import (
     ShelfBay,
     ShelfProcurement,
     StairLandingMillwork,
+    TrimStandard,
 )
 
 # The one declaration. Scope is EXT_2X6 alone — 34 of the 41 windows are in scope:
@@ -48,7 +49,8 @@ MILLWORK = [
         # 1 1/4" holds it flat; 8/4 was bulk the stool carries no load for.
         stool_thickness=inch(1.25),
         stool_overhang=inch(0.75),
-        # 1" of horn each side. The apron and the casing legs die onto it.
+        # 1" of horn each side. No apron (the window returns are drywall); the horn stands
+        # past the return so the stool reads as a board, not a shelf.
         stool_horn=inch(1),
         stool_profile="eased",
         stool_assemblies=("EXT_2X6",),
@@ -74,6 +76,30 @@ MILLWORK = [
             nosing_depth=inch(3.5),
         ),
         max_board_width=inch(18),
+    ),
+    # Base and door casing, derived per room and per door face (resolve/interior_trim.py).
+    # One board for both: 3/4" x 3 1/2" oak S4S, butt-jointed, flush where base meets leg.
+    # The base goes in after the hard floors, so there is no shoe; carpet tucks under it.
+    # Swap `material_ref` to "poplar-trim-paint" and the oak leaves `haus millwork` and the
+    # takeoff prices bought stock instead. tasks.toml's trim visit names its rows by stock,
+    # so rename those two there too — `haus site validate` names them if you forget.
+    #   * Tile rooms take a tile base and sheet-vinyl rooms a flash cove: that is the floor
+    #     material's `base_detail`, not a list here.
+    #   * Excluded: the utility rooms (RM-B-STAIR is the one that keeps its base) and the
+    #     plant room, whose 70% RH would cup oak. The garage and the unfinished attic fall
+    #     out on their own (unconditioned / no floor finish).
+    TrimStandard(
+        uid="KXZVF6Z652", tag="TRIM-STANDARD",
+        material_ref="oak-trim",
+        thickness=inch(0.75),
+        base_height=inch(3.5),
+        casing_width=inch(3.5),
+        reveal=inch(0.1875),
+        # 3/4" jamb + 1/4" shim: the leg's inside edge sits 13/16" inside the RO.
+        jamb_allowance=inch(1),
+        min_leg_width=inch(1.5),
+        excluded_rooms=("RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM",
+                        "RM-B-SAUNA", "RM-S-PLANT"),
     ),
 ]
 

@@ -29,14 +29,14 @@ MATERIALS_FLOORING = [
                     'nominal carpet. Verify compressed edge at oak and tile doors.'),
     Material(tag="catlin-tile-oak-height", name="Porcelain over DITRA-XL to oak height",
              hatch="masonry", color="#dfe2e5", finish="porcelain-tile",
-             finish_thickness_in=0.75,
+             finish_thickness_in=0.75, base_detail="tile",
              floor_waste_fraction=0.15, floor_companion_refs=("catlin-ditra-xl",),
              product_ref="PROD-MARAZZI-MF01",
              source='5/16" DITRA-XL + 5/16" Marazzi MF01 24x24 matte porcelain + '
                     '1/8" combined mortar beds = 3/4" above subfloor. Verify beds.'),
     Material(tag="catlin-tile-heated", name="Porcelain over DITRA-HEAT to oak height",
              hatch="masonry", color="#dce0e3", finish="porcelain-tile",
-             finish_thickness_in=0.75,
+             finish_thickness_in=0.75, base_detail="tile",
              floor_waste_fraction=0.15, floor_companion_refs=("catlin-ditra-heat",),
              product_ref="PROD-MARAZZI-MF01",
              source='1/4" DITRA-HEAT + 5/16" Marazzi MF01 24x24 matte porcelain + '

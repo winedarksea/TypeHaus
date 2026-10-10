@@ -145,6 +145,9 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("pipe_runs", "radon", CostCode("3200", "23 05 00", "mechanical")),
     ("pipe_runs", "sump_discharge", CostCode("3100", "22 14 00", "plumbing")),
     ("pipe_fittings", "*", CostCode("3100", "22 13 00", "plumbing")),
+    # A base the floor trade makes from the floor itself goes with that trade's arrival.
+    ("interior_trim", "tile-base", CostCode("4000", "09 30 00", "tile")),
+    ("interior_trim", "flash-cove", CostCode("4000", "09 65 00", "flooring")),
     # Allowances. ** THE KEY PREFIX IS THE TRADE DECLARATION. ** Leading segments, never
     # substrings: "waterproofing" contains "roof" and "egress-window-wells" contains "well".
     # A key that reaches none of these files under general conditions — readable, but it is
@@ -203,6 +206,9 @@ SECTION_CODES: dict[str, CostCode] = {
     "shelving": CostCode("4100", "06 41 00", "millwork"),
     # 12 36 00 Countertops: fabricated off site and set by the yard that cut it.
     "countertops": CostCode("4100", "12 36 00", "millwork"),
+    # 06 20 00 Finish Carpentry: base and casing. A tile base and a flash cove are the floor
+    # trade's work but file here with the trim they replace (→ takeoff/interior_trim.py).
+    "interior_trim": CostCode("4100", "06 20 00", "millwork"),
     # 06 43 00 Wood Stairs and Railings: the stair installer sets the treads.
     "stair_treads": CostCode("2700", "06 43 00", "stairs"),
     "openings": CostCode("2400", "08 00 00", "openings"),

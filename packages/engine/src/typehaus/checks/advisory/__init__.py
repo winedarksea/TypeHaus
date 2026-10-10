@@ -9,4 +9,5 @@ from typehaus.checks.advisory import (  # noqa: F401 - registers checks
     energy_storage,
     floor_finish,
     guards,
+    interior_trim,
 )

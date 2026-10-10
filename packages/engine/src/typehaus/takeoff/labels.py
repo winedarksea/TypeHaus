@@ -26,6 +26,7 @@ SECTION_LABELS: dict[str, str] = {
     "floor_heat": "Radiant floor heat", "placeables": "Fixtures, equipment and casework",
     "floor_finishes": "Floor finishes", "envelope_layers": "Assembly layers",
     "wood_surfaces": "Wood surfaces", "countertops": "Countertops",
+    "interior_trim": "Base and door casing",
     "shelving": "Purchased shelving", "stair_treads": "Stair treads and landings",
     "openings": "Windows and doors", "footing_bedding": "Footing bedding",
     "pipe_runs": "Pipe", "pipe_fittings": "Pipe fittings", "ducts": "Ducts",

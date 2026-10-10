@@ -40,6 +40,7 @@ from typehaus.takeoff.framing import (
 from typehaus.takeoff.glazing import glazing_panel_takeoff, glazing_trim_takeoff
 from typehaus.takeoff.hardware import hardware_takeoff
 from typehaus.takeoff.hardwood import hardwood_takeoff
+from typehaus.takeoff.interior_trim import interior_trim_takeoff
 from typehaus.takeoff.lighting import (
     connected_lighting_va,
     light_run_materials,
@@ -150,6 +151,9 @@ def bill_of_materials(
         # cabinets under them bill in `placeables` as carcasses, and the counter each symbol
         # DRAWS on top of one is display geometry that never billed anything.
         "countertops": countertop_takeoff(model),
+        # Base and door casing by the LF, off the house's TrimStandard: the room-perimeter
+        # number a trim lump stands in for. Custom-milled stock lists again in ``hardwood``.
+        "interior_trim": interior_trim_takeoff(model),
         # The milling schedule: the same wood as a CUT LIST in rough stock — finished
         # T x W x L, nominal quarters, rough board feet, and the glue-up flag. A view of
         # ``wood_surfaces``, ``framing`` and ``stair_finish`` for everything it shares with

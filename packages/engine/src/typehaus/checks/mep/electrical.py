@@ -9,8 +9,7 @@ from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
-from typehaus.resolve.geometry import opening_center
-from typehaus.resolve.intervals import merge as _merge_intervals
+from typehaus.resolve import room_perimeter
 from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
@@ -86,7 +85,7 @@ _RECEPTACLE_KINDS = {"receptacle", "gfci"}  # the 125V 15/20A devices 210.52 cou
 _COMBINATION_RECEPTACLE_KIND = "receptacle_240"
 _MAX_TO_RECEPTACLE_M = 6 * 0.3048  # no point along the wall line > 6' from a receptacle
 _MIN_WALL_SPACE_M = 2 * 0.3048  # wall spaces under 2' are exempt
-_NEAR_WALL_M = 0.5  # how close to the room boundary a device must sit to serve it
+_NEAR_WALL_M = room_perimeter.NEAR_WALL_M  # how close a device must sit to serve the wall
 _FLOOR_RECEPTACLE_WALL_REACH_M = 18 * 0.0254  # E3901.2.3 / NEC 210.52(A)(3)
 _RECEPTACLE_DISTANCE_TOLERANCE_M = 1e-9  # Include exact limits after polygon projection.
 # How much floor may survive between a floor opening and the wall face behind it and still
@@ -94,7 +93,7 @@ _RECEPTACLE_DISTANCE_TOLERANCE_M = 1e-9  # Include exact limits after polygon pr
 _FLOOR_OPENING_LEDGE_M = 12 * 0.0254
 # How far a cabinet's base may sit above the floor and still meet the floor line: a toe-kick
 # tolerance, which an upper cabinet is nowhere near.
-_FIXED_CABINET_FLOOR_CONTACT_M = 6 * 0.0254
+_FIXED_CABINET_FLOOR_CONTACT_M = room_perimeter.FLOOR_CONTACT_M
 
 
 def _counts_as_a_125v_receptacle(ctx: CheckContext, device) -> bool:
@@ -108,91 +107,29 @@ def _counts_as_a_125v_receptacle(ctx: CheckContext, device) -> bool:
         port.service.value == "power_120" for port in device_type.ports)
 
 
-def _perimeter_position(ring: list, point: tuple) -> tuple[float, float]:
-    """(arc-length coordinate of the nearest boundary point, distance to the boundary)."""
-    best_s, best_d = 0.0, float("inf")
-    s = 0.0
-    for index in range(len(ring)):
-        (x0, y0), (x1, y1) = ring[index], ring[(index + 1) % len(ring)]
-        ex, ey = x1 - x0, y1 - y0
-        length = (ex * ex + ey * ey) ** 0.5
-        if length < 1e-9:
-            continue
-        t = max(0.0, min(1.0, ((point[0] - x0) * ex + (point[1] - y0) * ey) / (length * length)))
-        px, py = x0 + ex * t, y0 + ey * t
-        d = ((point[0] - px) ** 2 + (point[1] - py) ** 2) ** 0.5
-        if d < best_d:
-            best_s, best_d = s + t * length, d
-        s += length
-    return best_s, best_d
-
-
-def _point_at(ring: list, s: float) -> tuple[float, float]:
-    total = 0.0
-    for index in range(len(ring)):
-        (x0, y0), (x1, y1) = ring[index], ring[(index + 1) % len(ring)]
-        length = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
-        if total + length >= s or index == len(ring) - 1:
-            t = 0.0 if length < 1e-9 else (s - total) / length
-            return (x0 + (x1 - x0) * t, y0 + (y1 - y0) * t)
-        total += length
-    return ring[0]
+_perimeter_position = room_perimeter.perimeter_position
+_point_at = room_perimeter.point_at
+_cyclic_span = room_perimeter.cyclic_span
+_merged_intervals = room_perimeter.merged_intervals
 
 
 def _door_intervals(ctx: CheckContext, ring: list, storey_tag: str) -> list[tuple[float, float]]:
     """Perimeter intervals occupied by door openings on walls bounding this room."""
-    walls = {w.tag: w for w in ctx.model.walls if w.storey == storey_tag}
-    intervals = []
-    for opening in ctx.model.openings:
-        if not opening.is_door:
-            continue
-        host = walls.get(opening.host_wall)
-        if host is None:
-            continue
-        center = opening_center(host, opening) or host.axis[0]
-        s, d = _perimeter_position(ring, center)
-        if d <= _NEAR_WALL_M:
-            half = opening.width_m / 2.0
-            intervals.append((s - half, s + half))
-    return intervals
+    return room_perimeter.door_intervals(ctx.model, ring, storey_tag)
 
 
 def _floor_opening_intervals(ctx: CheckContext, ring: list,
                              storey_tag: str) -> list[tuple[float, float]]:
     """Perimeter intervals where the boundary fronts a floor opening rather than floor.
 
-    210.52(A)(2)'s subject is *wall space*, and its yardstick is "measured horizontally along
-    the floor line". Where a stair well runs up against the wall there is no floor line to
-    measure along — the boundary looks like wall on plan, but standing in front of it means
-    standing over the drop, and the only way to satisfy the 6' rule there is to hang a
-    receptacle above a stairwell. So a well breaks the measurement the same way a doorway
-    does; the spaces either side of it are still measured in full.
-
-    ``_FLOOR_OPENING_LEDGE_M`` is how much floor may survive between the well edge and the
-    wall face and still count as somewhere to stand. It is deliberately small: a foot of
-    concrete ledge along a 9' drop is not a place a lamp gets plugged in.
+    210.52(A)(2)'s subject is *wall space*, measured "horizontally along the floor line".
+    Where a stair well runs up against the wall there is no floor line to measure along, and
+    the only way to satisfy the 6' rule there is to hang a receptacle above a stairwell. So a
+    well breaks the measurement the same way a doorway does. ``_FLOOR_OPENING_LEDGE_M`` is
+    deliberately small: a foot of ledge along a 9' drop is not where a lamp gets plugged in.
     """
-    from shapely.geometry import LineString, Point, Polygon
-
-    boundary = LineString(list(ring) + [ring[0]])
-    intervals: list[tuple[float, float]] = []
-    for element in ctx.plan.storey_elements(storey_tag):
-        # A chase is boxed and decked over — there is floor on it, so it breaks nothing. Only
-        # an opening you could step into takes the floor line away.
-        if element.element_kind != "FloorOpening" or element.purpose.value == "chase":
-            continue
-        well = Polygon([point.xy_m for point in element.outline])
-        if not well.is_valid or well.is_empty:
-            continue
-        fronting = boundary.intersection(well.buffer(_FLOOR_OPENING_LEDGE_M))
-        for piece in getattr(fronting, "geoms", (fronting,)):
-            if piece.is_empty or piece.length <= 0:
-                continue
-            # Cyclic, as for cabinets: a piece crossing the ring's seam projects near 0 AND
-            # near the full length, and min..max then swallowed the whole room.
-            offsets = sorted(boundary.project(Point(coord)) for coord in piece.coords)
-            intervals.extend(_cyclic_span(offsets, boundary.length))
-    return intervals
+    return room_perimeter.floor_opening_intervals(ctx.plan, ring, storey_tag,
+                                                  _FLOOR_OPENING_LEDGE_M)
 
 
 def _fixed_cabinet_intervals(ctx: CheckContext, ring: list,
@@ -200,87 +137,13 @@ def _fixed_cabinet_intervals(ctx: CheckContext, ring: list,
     """Perimeter intervals occupied by fixed cabinets that have no work surface.
 
     210.52(A)(2)(1) names them alongside doorways and fireplaces as the things wall space is
-    unbroken by, and for the same reason: a run of floor-to-ceiling pantry has no floor line
-    in front of it and nowhere to put a lamp, so requiring a receptacle within 6' of its
-    middle would put one behind a cabinet. A base run is the opposite case — its countertop
-    is exactly what the receptacle is for — which is why the type has to say which it is
+    unbroken by: a run of floor-to-ceiling pantry has no floor line in front of it and
+    nowhere to put a lamp. A base run is the opposite case — its countertop is exactly what
+    the receptacle is for — which is why the type says which it is
     (``FurnitureType.work_surface``) rather than the check guessing from height.
     """
-    from shapely.geometry import LineString, Point, Polygon
-
-    boundary = LineString(list(ring) + [ring[0]])
-    room_area = Polygon(ring)
-    floor_z = next((s.elevation.meters for s in ctx.plan.storeys if s.tag == storey_tag), 0.0)
-    types = {t.tag: t for t in ctx.plan.library.furniture_types}
-    intervals: list[tuple[float, float]] = []
-    for item in ctx.model.canvas_objects:
-        if item.storey != storey_tag or item.type_ref is None:
-            continue
-        item_type = types.get(item.type_ref)
-        if item_type is None or item_type.work_surface is not False:
-            continue
-        # An upper cabinet is also a fixed cabinet with no counter, but 210.52(A)(2) measures
-        # along the floor line and an upper does not reach it.
-        if item.z_m - floor_z > _FIXED_CABINET_FLOOR_CONTACT_M:
-            continue
-        carcass = Polygon(item.footprint)
-        if not carcass.is_valid or carcass.is_empty:
-            continue
-        if carcass.distance(boundary) > _NEAR_WALL_M:
-            continue
-        # _NEAR_WALL_M reaches through a partition: a closet frame behind the wall is not
-        # this room's cabinet. Ownership by geometry: the carcass stands in this room.
-        if not room_area.contains(carcass.centroid):
-            continue
-        # Projected rather than buffered: a buffer wide enough to reach the boundary (which
-        # is the room polygon, not the drywall face — see _NEAR_WALL_M) would also run that
-        # far past each end of the carcass and swallow the wall either side of it.
-        #
-        # ** THE ARC IS CHOSEN CYCLICALLY, NOT AS min..max, AND THAT IS NOT A REFINEMENT. **
-        # A perimeter is a closed ring, so a cabinet sitting on the wall that happens to
-        # contain the ring's START projects some corners near 0 and the rest near the full
-        # length. `min..max` then reports the interval the cabinet does NOT occupy — the whole
-        # rest of the room — which is far worse than reporting nothing: every real receptacle
-        # gap inside that span is silently swallowed and the room passes. Catlin's attic
-        # studio hit exactly this (a 21'-8" knee-wall plinth projecting to 22.7 and 79.7 on an
-        # 80.2 ft ring, claiming 57 ft of break and missing the 11 ft gap it was meant to
-        # cover). Pick the SHORT arc instead, and split it when it wraps the seam.
-        offsets = sorted(boundary.project(Point(coord))
-                         for coord in carcass.exterior.coords)
-        intervals.extend(_cyclic_span(offsets, boundary.length))
-    return intervals
-
-
-def _cyclic_span(offsets: list[float], perimeter: float) -> list[tuple[float, float]]:
-    """The shortest arc of a closed ring covering ``offsets``, as 1 or 2 linear intervals.
-
-    The covered arc is the complement of the LARGEST gap between consecutive offsets, taken
-    cyclically. Where that arc crosses the ring's seam it comes back as two intervals, which
-    is what every caller here wants anyway — they are merged into a flat list of breaks.
-    """
-    if not offsets:
-        return []
-    if len(offsets) == 1 or perimeter <= 0:
-        return [(offsets[0], offsets[0])]
-    gaps = [(offsets[i + 1] - offsets[i], i) for i in range(len(offsets) - 1)]
-    gaps.append((perimeter - offsets[-1] + offsets[0], len(offsets) - 1))
-    _, widest = max(gaps)
-    start = offsets[(widest + 1) % len(offsets)]
-    end = offsets[widest]
-    if start <= end:
-        return [(start, end)]
-    return [(start, perimeter), (0.0, end)]
-
-
-def _merged_intervals(intervals: list[tuple[float, float]],
-                      perimeter: float) -> list[tuple[float, float]]:
-    """Clamp the breaks to the ring, sort them, and union any that overlap.
-
-    The wall-space builder pairs each break's end with the next break's start, which only
-    describes wall space while the breaks are disjoint: a doorway opening straight onto a
-    stair well would otherwise manufacture a negative-length "space" between the two.
-    """
-    return _merge_intervals([(max(0.0, a), min(perimeter, b)) for a, b in intervals])
+    return room_perimeter.fixed_cabinet_intervals(
+        ctx.model, ctx.plan, ring, storey_tag, lambda t: t.work_surface is False)
 
 
 def _coverage_gaps(space: tuple[float, float], positions: list[float]) -> list[float]:

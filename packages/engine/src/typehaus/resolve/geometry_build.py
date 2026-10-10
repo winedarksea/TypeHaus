@@ -40,7 +40,11 @@ from typehaus.resolve.geometry_ir import (
     PartCatalogRef,
 )
 from typehaus.resolve.geometry_members import member_part_key, member_solid, member_uid
-from typehaus.resolve.geometry_millwork import window_stool_prism
+from typehaus.resolve.geometry_millwork import (
+    base_run_prisms,
+    door_casing_prisms,
+    window_stool_prism,
+)
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.geometry_roofs import roof_parts
 from typehaus.resolve.geometry_walls import layer_solids
@@ -350,6 +354,17 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
                                        profile=stool.profile)),),
         ))
 
+    for run in model.base_runs:
+        prisms = base_run_prisms(run)
+        if prisms:
+            elements.append(_trim_geometry(run.uid, "baseboard", run.tag, run.material_ref,
+                                           run.profile, prisms))
+    for casing in model.door_casings:
+        prisms = door_casing_prisms(casing)
+        if prisms:
+            elements.append(_trim_geometry(casing.uid, "door_casing", casing.tag,
+                                           casing.material_ref, casing.profile, prisms))
+
     for roof in model.roofs:
         elements.append(_roof_geometry(roof, model))
 
@@ -373,3 +388,14 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
         elements.append(earth)
 
     return GeometryModel(elements=tuple(elements))
+
+
+def _trim_geometry(uid: str, kind: str, tag: str, material_ref: str, profile: str,
+                   prisms: list) -> ElementGeometry:
+    """A base run or a door casing: millwork boards, drawn in their own material."""
+    return ElementGeometry(
+        uid=uid, kind=kind, trades=("millwork",),
+        parts=(GPart(key="body", solids=tuple(prisms), material_key="lumber",
+                     catalog=PartCatalogRef(material_ref=material_ref, role=kind, name=tag,
+                                            profile=profile)),),
+    )

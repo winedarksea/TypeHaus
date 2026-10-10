@@ -737,6 +737,8 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         # `wood_surfaces` and not in `placeables`: the boxes under a top bill as
         # carcasses, and the slab each cabinet SYMBOL draws billed nothing at all.
         "countertops",
+        # Base and door casing by the LF, off the TrimStandard (takeoff/interior_trim.py).
+        "interior_trim",
         "glazing_panels", "glazing_trim", "edge_trim",
         # Self-adhered membrane over framing tops, by the foot of member.
         "member_protection",

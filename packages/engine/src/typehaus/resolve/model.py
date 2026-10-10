@@ -15,6 +15,7 @@ from typehaus.model.assembly import Layer
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.layout_lines import ResolvedLayoutLine
+from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing
 from typehaus.resolve.rebar.records import ResolvedRebarSet
 
 if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-only
@@ -1480,6 +1481,9 @@ class ResolvedModel:
     window_stools: list[ResolvedWindowStool] = field(default_factory=list)
     shelf_banks: list[ResolvedShelfBank] = field(default_factory=list)
     countertops: list[ResolvedCountertop] = field(default_factory=list)
+    # Derived base and door casing off the house's ``TrimStandard`` (→ resolve/interior_trim.py).
+    base_runs: list[ResolvedBaseRun] = field(default_factory=list)
+    door_casings: list[ResolvedDoorCasing] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
     # Derived wall-line chains (#43): collinear within a storey, stacked across them,
@@ -1533,6 +1537,7 @@ class ResolvedModel:
             self.walls, self.openings, self.solids, self.construction_returns, self.roofs,
             self.stairs, self.floors, self.soffits, self.braces, self.floor_heat, self.rooms,
             self.panelings, self.window_stools, self.shelf_banks, self.countertops,
+            self.base_runs, self.door_casings,
             self.pipe_runs, self.drain_cleanouts, self.pipe_accessories, self.sleeves, self.ducts,
             self.conduits, self.light_runs, self.solar_panels, self.footing_beddings,
             self.canvas_objects,

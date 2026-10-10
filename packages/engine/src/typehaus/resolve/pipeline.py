@@ -175,6 +175,12 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         # After placeables and rooms: a shelf bank hosted on a carcass reads that
         # placeable's resolved type, and a stool's room scope reads the resolved rooms.
         findings.extend(resolve_millwork(plan, model))
+    with _stage("interior_trim"):
+        # After millwork, placeables, paneling and rooms: base stops at casework and wood
+        # bands, sits on the finished floor, and a casing leg scribes to a cabinet.
+        from typehaus.resolve.interior_trim import resolve_interior_trim
+
+        findings.extend(resolve_interior_trim(plan, model))
     with _stage("floor_heat"):
         findings.extend(resolve_floor_heat(model))
     with _stage("stacking"):

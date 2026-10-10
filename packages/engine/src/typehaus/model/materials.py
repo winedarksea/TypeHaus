@@ -235,6 +235,11 @@ class Material(HausModel):
     # Project-specific waste allowance for a finish whose cut pattern differs from the
     # generic tag defaults. None uses the takeoff's default schedule.
     floor_waste_fraction: float | None = None
+    # What a FLOOR finish wants at the wall (``resolve/interior_trim.py``): "trim" is the
+    # wood base board, "tile" a cut-tile base, "integral_cove" sheet flooring flashed up the
+    # wall, "none" nothing. ``None`` means "trim". Authored on the floor, not on the room or
+    # an engine table, because the base is a fact about the floor (decision #57).
+    base_detail: Literal["trim", "tile", "integral_cove", "none"] | None = None
     # The chosen product this material *is*, by ``Product.tag`` (model/product.py).
     # ``None`` is the ordinary case: "5/8\" type X gypsum board" is a specification, and a
     # specification is what most of a house is bought against. Naming a product narrows it

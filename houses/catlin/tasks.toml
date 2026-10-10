@@ -539,3 +539,50 @@ constraints = [
   { label = "every lien waiver received against every payment made", owner = "owner", severity = "attention" },
   { label = "warranties, manuals and the as-built set filed", owner = "owner", severity = "attention" },
 ]
+
+# --- BASE AND CASING: after the hard floors, before the carpet (2026-10-10) --------------------
+# The base is set ON the finished floor, so there is no shoe moulding to hide a gap — which
+# only works if the oak, LVP, tile and sheet vinyl are down first. Carpet tucks under a base,
+# so it goes in after it. Both packages are split in full so no row falls to no visit.
+[visits."task/flooring/building/hard"]
+label = "Hard floors — oak, LVP, tile setting, coatings, rubber, sheet vinyl and its flash cove"
+rows = ["allowances:finish-floor-prep-and-self-levelling",
+        "allowances:finish-transitions-and-stair-nosings",
+        "floor_finishes:catlin-ditra-heat", "floor_finishes:catlin-ditra-xl",
+        "floor_finishes:catlin-plant-sureply", "floor_finishes:catlin-plant-vinyl-raised",
+        "floor_finishes:catlin-tile-heated", "floor_finishes:catlin-tile-oak-height",
+        "floor_finishes:coated-concrete", "floor_finishes:lvp", "floor_finishes:lvp-underlayment",
+        "floor_finishes:oak-floor-custom", "floor_finishes:rubber",
+        "floor_finishes:sealed-concrete", "floor_finishes:vinyl-sheet",
+        "interior_trim:flash-cove",
+        "sheet_goods:aluminum-deck", "sheet_goods:composite-deck"]
+
+[visits."task/flooring/building/carpet"]
+label = "Carpet — BED, BED1-3, the main closet and PLAY-N, tucked under the base"
+rows = ["floor_finishes:carpet", "floor_finishes:carpet-pad",
+        "floor_finishes:catlin-carpet-raised", "floor_finishes:catlin-carpet-underlayment"]
+depends_on = ["task/millwork/building/trim"]
+
+# The rows are keyed by STOCK: switching TRIM-STANDARD's material renames them here.
+[visits."task/millwork/building/trim"]
+label = "Oak base and door casing — butt-jointed S4S, on the finished floor"
+rows = ["interior_trim:oak-trim", "interior_trim:oak-trim:door casing"]
+depends_on = ["task/flooring/building/hard"]
+constraints = [
+  { label = "hard floors down and protected in every trimmed room" },
+  { label = "oak trim milled, acclimatised and oiled on all faces", owner = "owner" },
+]
+
+[visits."task/millwork/building/casework"]
+label = "Casework, tops, stools, shelving and liners"
+rows = ["allowances:cabinet-closet-shelving-and-rod",
+        "allowances:cabinet-mixer-garage-pullout-and-door",
+        "allowances:cabinet-pantry-swing-out-inserts", "allowances:cabinet-peninsula-bar-subtop",
+        "allowances:cabinet-peninsula-floor-anchor", "allowances:cabinet-peninsula-rear-finish",
+        "allowances:cabinet-study-booth-cushions", "allowances:finish-cabinet-pulls",
+        "allowances:finish-canopy-east-pvc-column-wrap",
+        "allowances:finish-window-stools-and-aprons",
+        "countertops:live-edge-white-oak", "countertops:quartz-counter",
+        "countertops:walnut-counter",
+        "envelope_layers:cabinet-plywood", "envelope_layers:catlin-sauna-shiplap",
+        "envelope_layers:pvc-panel", "wood_surfaces:walnut-shiplap"]

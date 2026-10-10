@@ -1,4 +1,4 @@
-"""IFC products for resolved interior millwork."""
+"""IFC products for resolved interior millwork: stools, base runs and door casings."""
 
 from __future__ import annotations
 
@@ -7,7 +7,11 @@ from typing import Any
 from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.model.ids import derive_guid
-from typehaus.resolve.geometry_millwork import window_stool_prism
+from typehaus.resolve.geometry_millwork import (
+    base_run_prisms,
+    door_casing_prisms,
+    window_stool_prism,
+)
 from typehaus.resolve.model import ResolvedModel
 
 
@@ -40,4 +44,39 @@ def emit_window_stools(f: Any, body: Any, model: ResolvedModel,
         })
         ll.assign_container(f, element, storeys[stool.storey])
         entities[stool.tag] = element
+    return entities
+
+
+def emit_interior_trim(f: Any, body: Any, model: ResolvedModel,
+                       storeys: dict[str, Any], project_uuid: Any) -> dict[str, Any]:
+    """One ``IfcCovering`` per base run (SKIRTINGBOARD) and per door casing (MOLDING).
+
+    The same prisms model.json and the GLB draw. A tile base or a flash cove is not a board
+    and carries no prism; it stays in the takeoff only.
+    """
+    entities: dict[str, Any] = {}
+    records = ([(run, "SKIRTINGBOARD", base_run_prisms(run),
+                 {"room": run.room, "host_wall": run.wall_tag, "kind": run.kind})
+                for run in sorted(model.base_runs, key=lambda item: item.uid)]
+               + [(casing, "MOLDING", door_casing_prisms(casing),
+                   {"room": casing.room, "host_wall": casing.wall_tag,
+                    "door_ref": casing.opening_ref})
+                  for casing in sorted(model.door_casings, key=lambda item: item.uid)])
+    for record, predefined, prisms, extra in records:
+        if not prisms or record.storey not in storeys:
+            continue
+        element = ll.create_entity(f, "IfcCovering", name=record.tag)
+        element.GlobalId = derive_guid(project_uuid, record.uid)
+        element.PredefinedType = predefined
+        ll.assign_representation(f, element, ll.add_prisms_at_elevations(
+            f, body, [(list(p.ring), p.z0_m, p.z1_m) for p in prisms]))
+        material = f.create_entity("IfcMaterial", Name=record.material_ref)
+        f.create_entity("IfcRelAssociatesMaterial", RelatedObjects=[element],
+                        RelatingMaterial=material)
+        ll.ensure_pset(f, element, PSET_SOURCE, {
+            "uid": record.uid, "tag": record.tag, "material_ref": record.material_ref,
+            "profile": record.profile, **extra,
+        })
+        ll.assign_container(f, element, storeys[record.storey])
+        entities[record.tag] = element
     return entities

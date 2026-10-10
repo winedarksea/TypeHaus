@@ -447,10 +447,29 @@ MATERIALS: tuple[Material, ...] = (
         color="#f0ede7",
         finish="veined-marble",
         finish_thickness_in=0.120,
+        base_detail="integral_cove",
         source="finish covering, not an assembly layer; thermal/vapour fields unset. "
         "Tarkett Home First Class, Monaco Calacatta (TK1387071) or equal: 120 mil "
         "total, 16 mil urethane wear layer, 12' wide rolls, glue-down or loose-lay. "
         "A continuous white Calacatta marble print with no tile or grout lines, "
         "which the viewer draws as the `veined-marble` recipe",
+    ),
+    # Store-bought interior trim, the ``TrimStandard`` default: plain S4S boards, base and
+    # casing one stock. Bought, so no ``requires_custom_milling`` and no ``haus millwork``
+    # row; ``takeoff/interior_trim.py`` bills them by the LF.
+    Material(
+        tag="poplar-trim-paint",
+        name="Poplar trim, 1x4 S4S, paint grade",
+        hatch="lumber", color="#f2f0ea", finish="satin-enamel",
+        species="poplar", milling_profile="S4S",
+        source="stock 3/4\" x 3 1/2\" S4S poplar (1x4) from the yard, primed and painted "
+        "on site; base and casing are the same board, butt-jointed",
+    ),
+    Material(
+        tag="mdf-trim-primed",
+        name="MDF trim, 3/4\" S4S, factory primed",
+        hatch="lumber", color="#f4f2ec", finish="satin-enamel", milling_profile="S4S",
+        source="factory-primed MDF board stock, painted on site; cheaper than poplar and "
+        "dent-prone at the floor, so a base in a mudroom or hall is better in poplar",
     ),
 )

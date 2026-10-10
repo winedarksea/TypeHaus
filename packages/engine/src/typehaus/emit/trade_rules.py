@@ -270,6 +270,8 @@ RECORD_FAMILY_TRADES: dict[str, tuple[str, ...]] = {
     "solar_panel": ("electrical",),
     "light_run": ("electrical",),
     "paneling": ("millwork",),
+    "baseboard": ("millwork",),
+    "door_casing": ("millwork",),
     "opening": ("openings",),
     "wall_lumber": ("framing",),
 }

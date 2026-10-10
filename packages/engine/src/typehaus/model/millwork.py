@@ -22,6 +22,8 @@ Two derived-geometry elements and one declaration:
   a counter is the one piece of millwork whose quantity is a consequence of the layout,
   and a hand-figured square footage in a price file goes stale the first time a cabinet
   moves. It is not drawn — see ``resolve/millwork.py`` for why.
+* :class:`TrimStandard` — interior base and door casing, declared once and derived per room
+  and per door face (``resolve/interior_trim.py``).
 * :class:`MillworkStandard` — declared once, derived many. It states the default stool
   material/thickness/overhang/horn and the *scope* of which windows get a stool, so 39
   near-identical elements never have to be authored, while a per-window ``WindowStool``
@@ -264,6 +266,41 @@ class MillworkStandard(Element):
     max_board_width: Length
 
 
+@register_element
+class TrimStandard(Element):
+    """The house's interior base and door casing, declared once and derived per room/door.
+
+    One per plan (a second is an ``integrity.trim_standard`` error). Separate from
+    ``MillworkStandard`` so a house can take trim without declaring stools.
+
+    Procurement is the material: a ``requires_custom_milling`` stock sends the boards to
+    ``haus millwork``; a store-bought one is priced by the LF. Changing ``material_ref`` is
+    the whole switch. Casing legs sit ``jamb_allowance - reveal`` inside the rough opening
+    (``ResolvedOpening.width_m``), so the allowance is the shim plus the jamb: house-authored,
+    because it is the door supplier's fact and not the engine's.
+    """
+
+    material_ref: str
+    thickness: Length
+    base_height: Length
+    casing_width: Length
+    reveal: Length
+    jamb_allowance: Length
+    # A clipped casing leg narrower than this is dropped rather than scribed to a sliver.
+    min_leg_width: Length
+    profile: str = "S4S"
+    # Conditioned, floor-finished rooms that still take no base or casing (a mechanical
+    # room, a workshop). Unconditioned and unfinished rooms are out already.
+    excluded_rooms: tuple[str, ...] = ()
+
+    @model_validator(mode="after")
+    def dimensions_are_positive(self) -> TrimStandard:
+        if min(self.thickness.meters, self.base_height.meters,
+               self.casing_width.meters) <= 0 or self.reveal.meters < 0:
+            raise ValueError(f"{self.tag}: trim thickness, height and width must be positive")
+        return self
+
+
 for _name, _obj in (
     ("WindowStool", WindowStool),
     ("ShelfBay", ShelfBay),
@@ -271,5 +308,6 @@ for _name, _obj in (
     ("Countertop", Countertop),
     ("StairLandingMillwork", StairLandingMillwork),
     ("MillworkStandard", MillworkStandard),
+    ("TrimStandard", TrimStandard),
 ):
     register_constructor(_name, _obj)

@@ -42,6 +42,7 @@ from typehaus.emit.gltf.members import (
     owned_elsewhere,
 )
 from typehaus.emit.gltf.mesh import _MeshBuilder
+from typehaus.emit.gltf.millwork import _add_interior_trim
 from typehaus.emit.gltf.openings import (  # noqa: F401
     _DOOR_LEAF_THICKNESS_M,
     _DOUBLE_SWING_LEAF_COUNT,
@@ -350,6 +351,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     add_plants(scene, model)
     _add_canvas_objects(scene, model)
     _add_countertops(scene, model, authored)
+    _add_interior_trim(scene, model, authored)
     add_rebar(scene, model)
 
     earth = _MeshBuilder()

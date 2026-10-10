@@ -52,6 +52,10 @@ is already parallel.
   weather, fill/hatch fallback and glTF colour. A test requires a row for every enum member.
 - **A material's look is authored on the `Material`** (`hatch`, `color`, `finish`). No engine
   or UI table may name a house-only tag, and a lint enforces it (decision #57).
+- **Base and door casing are derived from one `TrimStandard`** (decision #85): records on
+  `ResolvedModel.base_runs` / `door_casings`, drawn by `geometry_millwork`, billed by the LF in
+  `interior_trim`. The base kind is the floor's `Material.base_detail`; the stock's
+  `requires_custom_milling` decides whether it is milled or bought.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure

@@ -5111,6 +5111,24 @@
 # per SF with waste; labour is a joiner's glue-up, flattening and a six-face hardwax oil.
 "walnut-counter" = { material = { low = 25, high = 45 }, labour = { low = 40, high = 110 } }  # ~4.3 SF
 
+[interior_trim]
+# Base and door casing by the LF, off the derived runs (resolve/interior_trim.py), keyed on the
+# stock tag; `:door casing` prices the casing apart (more cuts per foot). ~446 LF of oak base
+# and ~770 LF of casing at 2026-10-10. Owner-milled oak is LABOUR ONLY, the shelf and tread
+# convention: the stock is the `haus millwork` cut list. Install is butt-jointed S4S, flush
+# base-to-leg, oiled before it goes up; the base goes in after the hard floors, so no shoe.
+"oak-trim" = { material = { low = 0, high = 0 }, labour = { low = 3.0, high = 5.5 } }
+"oak-trim:door casing" = { material = { low = 0, high = 0 }, labour = { low = 4.0, high = 8.0 } }
+# The store-bought switch (`material_ref = "poplar-trim-paint"`), priced so the switch shows
+# its real cost on day one: 1x4 poplar S4S at the yard, primed and painted on site (the paint
+# stays in [allowances] paint-trim-and-doors).
+"poplar-trim-paint" = { material = { low = 1.6, high = 2.75 }, labour = { low = 3.0, high = 5.5 } }
+"poplar-trim-paint:door casing" = { material = { low = 1.6, high = 2.75 }, labour = { low = 4.0, high = 8.0 } }
+# Tile rooms take a cut-tile base off the field tile; the setter's labour is most of it.
+"tile-base" = { material = { low = 2, high = 5 }, labour = { low = 8, high = 14 } }
+# Sheet-vinyl rooms flash the sheet up the wall on a cove stick with a cap strip.
+"flash-cove" = { material = { low = 1.5, high = 3 }, labour = { low = 6, high = 12 } }
+
 [stair_treads]
 # The oak flights' walking surfaces by the piece (2026-09-28), moved out of [framing] where
 # they billed as `deck 11x1.5` / `tapered tread` / `deck 44.625x1.5` lumber. The stock is
@@ -7049,18 +7067,15 @@ electrical-radon-fan-smoke-co-surge-and-commissioning = { low = 2450, high = 800
 permits-mep = { low = 1500, high = 4000 }
 
 # --- interior finishes -----------------------------------------------------------------------
-# ~1,400-1,800 LF, in no key today. Split: finger-joint or MDF stock against the carpenter.
-# NOT DRIVEN (2026-08-27): baseboard follows ROOM PERIMETER, and no BOM table reports it —
-# `floor_finishes` gives area by finish and `envelope_layers` gives wall face area, neither of
-# which is a perimeter. Deliberately not proxied off sqrt(area) or a wall-area ratio: both are
-# shape assumptions dressed as measurements. A `room_perimeter_lf` field on the finishes
-# takeoff converts this row and `paint-trim-and-doors` below in the same change.
-finish-interior-trim-and-baseboard = { material = { low = 4200, high = 7000 }, labour = { low = 7800, high = 13000 } }
+# `finish-interior-trim-and-baseboard` is DELETED (2026-10-10), not zeroed: base and casing are
+# derived per room and per door (plan/millwork.py TRIM-STANDARD) and priced by the LF in
+# [interior_trim]. Leaving the lump would bill the trim twice.
 # [envelope_layers] `latex-paint` is WALL AND CEILING AREA ONLY — it cannot see a lineal foot
 # of trim or the face of a door. Painting is labour-dominated; the paint itself is ~20%.
-# NOT DRIVEN (2026-08-27): it wants the same room-perimeter LF the trim row above wants, plus
-# a door-leaf FACE area the openings table does not report (it has count, width and height,
-# but painting a bifold is not painting a slab). See the note on that row.
+# NOT DRIVEN: the trim's LF now exists ([interior_trim]), so the trim half of this row could be
+# driven by it; the door-leaf FACE area the openings table does not report still cannot (it
+# has count, width and height, but painting a bifold is not painting a slab). Oak trim is
+# oiled, not painted, which is a second reason not to drive it off the trim LF blindly.
 paint-trim-and-doors = { material = { low = 1600, high = 3600 }, labour = { low = 6400, high = 14400 } }
 # --- the court columns' mineral silicate wash, NEW 2026-09-13 --------------------------------
 # The four 12" round cast columns (PT-SG-BR1/BR3/BF1/BF3), washed white with the same Beeckosil
@@ -7659,6 +7674,7 @@ wood_surfaces        = "material"
 # Both rows spell their own split, so the section default governs nothing here —
 # it is stated because every priced section needs one.
 countertops          = "material"
+interior_trim        = "material"
 stair_treads         = "material"
 openings             = "material"
 footing_bedding      = "material"

@@ -331,8 +331,8 @@ MATERIALS = [
     # White oak off family land in southern Minnesota, rough-milled: boards commonly 12\"+
     # wide and out to 18\", in 4/4 and 8/4. Owner-supplied stock wins on WIDTH and FLATNESS
     # — a one-piece stool, shelf or tread — and loses on PROFILE, where a knife grind plus a
-    # molder setup cannot amortise over one house. That is why there is no oak baseboard or
-    # casing tag here and `finish-interior-trim-and-baseboard` stays a lump.
+    # molder setup cannot amortise over one house. Base and casing dodge that by having no
+    # profile: plain S4S, ripped and planed (`oak-trim`, the `TrimStandard`'s stock).
     #
     # These are PIECE goods, not coverage goods: each one is cut to a finished T x W x L, so
     # they carry `nominal_quarters` (the stock a mill saws) and deliberately no
@@ -380,6 +380,12 @@ MATERIALS = [
              color="#c9b08c", finish="oak-board", species="oak",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. 3/4\" dressed: a riser carries no load, and at ~6\" high it comes off one board and stays flat"),
+    # Base and door casing (plan/millwork.py TRIM-STANDARD): one plain board for both, so
+    # no knife and no molder — planer work off the 4/4 stack, ripped from the wide boards.
+    Material(tag="oak-trim", name='White oak trim, 3/4" x 3 1/2" S4S', hatch="lumber",
+             color="#c9b08c", finish="oak-board", species="oak",
+             nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
+             source="Owner-milled white oak, 4/4 dressed to 3/4\" and ripped to 3 1/2\". Base and casing are the same stock, butt-jointed and flush where they meet; hardwax oil, as the stools. Base goes in after the hard floors, so no shoe."),
     *MATERIALS_METAL,
     *MATERIALS_ISHTAR,
     *MATERIALS_FLOORING,

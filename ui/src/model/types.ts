@@ -320,6 +320,36 @@ export interface WindowStool {
 }
 
 /**
+ * One straight piece of derived base board (→ resolve/interior_trim_base.py). It selects as
+ * its room. A tile base or a flash cove is not a board and is never sent.
+ */
+export interface BaseRun {
+  uid: string;
+  tag: string;
+  storey: string;
+  room: string;
+  room_uid: string;
+  material_ref: string;
+  profile: string;
+  outline: Vec2[];
+  z0_m: number;
+  z1_m: number;
+}
+
+/** A door face's picture-frame casing: legs and head (→ resolve/interior_trim_casing.py). */
+export interface DoorCasing {
+  uid: string;
+  tag: string;
+  storey: string;
+  opening_ref: string;
+  opening_uid: string;
+  room: string;
+  material_ref: string;
+  profile: string;
+  pieces: { outline: Vec2[]; z0_m: number; z1_m: number }[];
+}
+
+/**
  * A fabricated slab over a run of base cabinets, drawn in its own material
  * (→ resolve/geometry_countertops.py). A sink host is cut out of it, so a part may carry holes.
  */
@@ -1786,6 +1816,8 @@ export interface Model {
   nodes?: PlanNode[]; // authored wall-graph vertices (→ _catalog sibling); absent on older json
   openings: Opening[];
   window_stools?: WindowStool[];
+  base_runs?: BaseRun[]; // absent on older model.json: no derived trim drawn
+  door_casings?: DoorCasing[];
   countertops?: Countertop[]; // absent on older model.json: cabinet symbols draw the counter
   roofs?: Roof[];
   solids?: Solid[];

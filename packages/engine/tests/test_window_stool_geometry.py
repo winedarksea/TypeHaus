@@ -60,9 +60,12 @@ def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     assert all(row["opening_uid"] in openings for row in rows)
 
     gltf, _blob = emit_gltf_dict(catlin_model_ro)
+    # A door's casing is millwork selecting as its opening too; a stool is a window's.
+    windows = {o.uid for o in catlin_model_ro.openings if o.kind == "window"}
     nodes = [node for node in gltf["nodes"]
              if node["extras"].get("trade") == "millwork"
-             and node["extras"].get("kind") == "opening"]
+             and node["extras"].get("kind") == "opening"
+             and node["extras"].get("uid") in windows]
     assert len(nodes) == 39
     assert {node["extras"]["uid"] for node in nodes} == {
         row["opening_uid"] for row in rows}

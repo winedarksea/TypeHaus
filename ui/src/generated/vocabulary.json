@@ -186,8 +186,14 @@
     "window_trim": 1842980
   },
   "recordFamilyTrades": {
+    "baseboard": [
+      "millwork"
+    ],
     "brace": [
       "framing"
+    ],
+    "door_casing": [
+      "millwork"
     ],
     "earth": [
       "earth"

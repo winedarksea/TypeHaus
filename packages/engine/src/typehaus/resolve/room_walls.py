@@ -34,9 +34,43 @@ def bounding_walls(
     """
     if len(room.clear_face) < 3:
         return []
-    face = Polygon(room.clear_face)
-    edge = face.exterior
     out: list[tuple[ResolvedWall, tuple[float, float]]] = []
+    for wall, segment in _shared_segments(model, room, Polygon(room.clear_face).exterior):
+        axis = LineString(wall.axis)
+        stations = [axis.project(Point(c)) for c in segment.coords]
+        lo, hi = min(stations), max(stations)
+        if hi - lo > _MIN_RUN_M:
+            out.append((wall, (lo, hi)))
+    return out
+
+
+def bounding_wall_arcs(
+    model: ResolvedModel, room: ResolvedRoom, ring: list, body_of=None
+) -> list[tuple[ResolvedWall, tuple[float, float]]]:
+    """As :func:`bounding_walls`, but each shared run as an arc ``(s0, s1)`` along ``ring``.
+
+    ``ring`` is the caller's copy of the room's clear face (its orientation and start are
+    the caller's), and ``s`` is metres along it. An arc crossing the ring's seam comes back
+    as two. Each arc reaches ``_TOUCH_M`` past the run's true ends, round a corner.
+    ``body_of(wall)`` lets a caller asking for many rooms reuse its wall bodies.
+    """
+    from typehaus.resolve.room_perimeter import cyclic_span
+
+    if len(ring) < 3:
+        return []
+    boundary = LineString(list(ring) + [ring[0]])
+    out: list[tuple[ResolvedWall, tuple[float, float]]] = []
+    for wall, segment in _shared_segments(model, room, boundary, body_of):
+        if segment.length <= _MIN_RUN_M:
+            continue
+        offsets = sorted(boundary.project(Point(c)) for c in segment.coords)
+        out.extend((wall, span) for span in cyclic_span(offsets, boundary.length))
+    return out
+
+
+def _shared_segments(model: ResolvedModel, room: ResolvedRoom, edge, body_of=None):
+    """``(wall, LineString)`` for each stretch of ``edge`` lying on a wall's layer body."""
+    face = Polygon(room.clear_face)
     for wall in model.walls:
         if wall.storey != room.storey:
             continue
@@ -44,7 +78,8 @@ def bounding_walls(
         if axis.length <= 0.0:
             continue
         if getattr(wall, "layers", None):
-            body = wall_body(wall, wall.z0_m, wall.z1_m)
+            body = (body_of(wall) if body_of is not None
+                    else wall_body(wall, wall.z0_m, wall.z1_m))
         else:  # a layerless stand-in: its axis at its stated thickness
             body = axis.buffer(getattr(wall, "thickness_m", 0.0) / 2.0, cap_style="flat")
         if body.is_empty or body.distance(face) > _TOUCH_M:
@@ -52,12 +87,6 @@ def bounding_walls(
         shared = edge.intersection(body.buffer(_TOUCH_M))
         if shared.geom_type == "MultiLineString":
             shared = linemerge(shared)  # rejoin a run the ring's start point split
-        segments = getattr(shared, "geoms", (shared,))
-        for segment in segments:
-            if segment.geom_type != "LineString" or segment.length <= 0.0:
-                continue
-            stations = [axis.project(Point(c)) for c in segment.coords]
-            lo, hi = min(stations), max(stations)
-            if hi - lo > _MIN_RUN_M:
-                out.append((wall, (lo, hi)))
-    return out
+        for segment in getattr(shared, "geoms", (shared,)):
+            if segment.geom_type == "LineString" and segment.length > 0.0:
+                yield wall, segment

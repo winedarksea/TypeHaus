@@ -94,6 +94,8 @@ ESTIMATE_PLANS = (
     # Net area, not an order quantity: a countertop's slab yield is inside the fabricated
     # rate, so there is no waste to add (→ takeoff/countertops.py).
     ("countertops", "countertops", "material", "net_area_sqft", "SF"),
+    # Net LF: trim is ordered and installed by the foot; the cut loss sits in the rate.
+    ("interior_trim", "interior_trim", "item", "length_ft", "LF"),
     ("stair_treads", "stair_treads", "material", "pieces", "ea"),
     ("openings", "openings", "type", "count", "ea"),
     ("footing_bedding", "footing_bedding", "aggregate", "volume_cubic_yards", "cy"),
@@ -248,6 +250,9 @@ QUALIFIED_KEY_FIELD: dict[str, str | tuple[str, ...]] = {
     # are all ``item = "tape"``/``"channel"``, and they are not one rate. A house that
     # prices the bare item keeps one blended rate over every run.
     "light_run_materials": "type",
+    # A casing leg is cut, mitred to nothing and nailed twice; a base run is one long board.
+    # ``oak-trim:door casing`` prices the casing apart; a bare stock key prices both.
+    "interior_trim": "kind",
 }
 
 

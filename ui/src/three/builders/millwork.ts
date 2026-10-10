@@ -1,14 +1,16 @@
-// Millwork: window stools (resolved geometry, drawn in their own material — oak boards, or a
-// stone stool's flat colour) and the stair members whose material declares a board recipe
-// (oak treads and winders; a landing's plank-floor field).
+// Millwork: window stools, base runs and door casings (resolved geometry, drawn in their own
+// material — oak boards, or a painted or stone piece's flat colour) and the stair members
+// whose material declares a board recipe (oak treads and winders; a landing's plank field).
 import * as THREE from "three";
-import type { Countertop, Member, WindowStool } from "../../model/types";
+import type {
+  BaseRun, Countertop, DoorCasing, Member, Vec2, WindowStool,
+} from "../../model/types";
 import {
   authoredAppearance, materialColor, type MaterialAppearance, type ResolvedNordicPalette,
 } from "../../nordic/palette";
 import { composeMemberBoxMatrix, isRakedMember } from "../memberBox";
 import { memberColor } from "../members";
-import { createPlanPrismGeometry, type PlanCenter } from "../planGeometry";
+import { createPlanPrismGeometry, projectPointToScene, type PlanCenter } from "../planGeometry";
 import {
   applyPlankPlaneUv, createPlankMaterial, planLongAxis, plankStyleOrNull, plankTileSizeM,
   type PlankStyle,
@@ -42,6 +44,62 @@ export function buildWindowStool(parent: THREE.Group, stool: WindowStool, center
   parent.add(makeSurfaceMesh(geometry, style
     ? createPlankMaterial(mode, style, color) : standardMaterial(color, mode)));
   registerSelectable(parent, firstChildIndex, stool.opening_uid, "opening", picks, byUid);
+}
+
+/**
+ * One rectangular trim board (a base piece, a casing leg or head) as a textured box: the grain
+ * runs its longest way, so a leg's grain stands up and a head's runs across.
+ */
+function trimBoardGeometry(outline: readonly Vec2[], z0: number, z1: number,
+  center: PlanCenter, style: PlankStyle | null, seed: number): THREE.BufferGeometry | null {
+  if (!style || outline.length !== 4) {
+    return createPlanPrismGeometry(outline as Vec2[], z0, z1, [], center);
+  }
+  const origin = projectPointToScene(outline[0], z0, center);
+  const along = projectPointToScene(outline[1], z0, center).sub(origin);
+  const across = projectPointToScene(outline[3], z0, center).sub(origin);
+  const up = new THREE.Vector3(0, z1 - z0, 0);
+  let matrix = new THREE.Matrix4().makeBasis(along, up, across);
+  if (matrix.determinant() < 0) matrix = new THREE.Matrix4().makeBasis(across, up, along);
+  matrix.setPosition(origin.clone().addScaledVector(along, 0.5).addScaledVector(across, 0.5)
+    .addScaledVector(up, 0.5));
+  return boardBoxGeometry(matrix, style, seed);
+}
+
+function buildTrimPieces(parent: THREE.Group, uid: string, materialRef: string,
+  pieces: readonly { outline: Vec2[]; z0_m: number; z1_m: number }[], center: PlanCenter,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  materials: readonly MaterialAppearance[] | undefined) {
+  const color = materialColor(materialRef, palette, materials);
+  const style = boardStyleFor(materialRef, materials);
+  const material = style ? createPlankMaterial(mode, style, color) : standardMaterial(color, mode);
+  for (const [index, piece] of pieces.entries()) {
+    if (piece.outline.length < 3 || piece.z1_m <= piece.z0_m) continue;
+    const geometry = trimBoardGeometry(piece.outline, piece.z0_m, piece.z1_m, center, style,
+      pieceSeed(`${uid}|${index}`));
+    if (geometry) parent.add(makeSurfaceMesh(geometry, material));
+  }
+}
+
+/** A derived base run: one board on the room's finish face. It selects as its room. */
+export function buildBaseRun(parent: THREE.Group, run: BaseRun, center: PlanCenter,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  materials: readonly MaterialAppearance[] | undefined,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  const firstChildIndex = parent.children.length;
+  buildTrimPieces(parent, run.uid, run.material_ref, [run], center, mode, palette, materials);
+  registerSelectable(parent, firstChildIndex, run.room_uid, "room", picks, byUid);
+}
+
+/** A door face's casing: legs and head. It selects as its door, as a stool as its window. */
+export function buildDoorCasing(parent: THREE.Group, casing: DoorCasing, center: PlanCenter,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  materials: readonly MaterialAppearance[] | undefined,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  const firstChildIndex = parent.children.length;
+  buildTrimPieces(parent, casing.uid, casing.material_ref, casing.pieces, center, mode, palette,
+    materials);
+  registerSelectable(parent, firstChildIndex, casing.opening_uid, "opening", picks, byUid);
 }
 
 /**

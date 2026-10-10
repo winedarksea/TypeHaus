@@ -1,4 +1,7 @@
-"""Finished window-stool prisms shared by the viewer, GLB, and IFC."""
+"""Finished millwork prisms — window stools, base runs, door casings — for every emitter.
+
+The viewer payload, the GLB and the IFC all read these; none re-derives a board.
+"""
 
 from __future__ import annotations
 
@@ -6,6 +9,7 @@ from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_ir import GPrism
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.model import ResolvedWall, ResolvedWindowStool
+from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing
 
 
 def window_stool_prism(wall: ResolvedWall, opening,
@@ -61,3 +65,18 @@ def window_stool_prism(wall: ResolvedWall, opening,
         return None
     top = frame.solids[-1].z1_m
     return GPrism(ring=ring, z0_m=top - stool.thickness_m, z1_m=top)
+
+
+def base_run_prisms(run: ResolvedBaseRun) -> list[GPrism]:
+    """The board of one base run; nothing for a tile base or a flash cove (not millwork)."""
+    piece = run.piece
+    if run.kind != "trim" or len(piece.outline) < 3 or piece.z1_m <= piece.z0_m:
+        return []
+    return [GPrism(ring=piece.outline, z0_m=piece.z0_m, z1_m=piece.z1_m)]
+
+
+def door_casing_prisms(casing: ResolvedDoorCasing) -> list[GPrism]:
+    """One prism per installed casing piece (legs, head, and a hatch's sill)."""
+    return [GPrism(ring=piece.outline, z0_m=piece.z0_m, z1_m=piece.z1_m)
+            for piece in casing.pieces
+            if len(piece.outline) >= 3 and piece.z1_m > piece.z0_m]

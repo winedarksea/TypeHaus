@@ -19,7 +19,7 @@ from typehaus.library import (
     STARTER_FURNITURE_TYPES,
 )
 
-from plan import assemblies, circuits, electrical, mep, placeables, site, views
+from plan import assemblies, circuits, electrical, mep, millwork, placeables, site, views
 from plan.storeys import main, upper
 
 format_version = 1
@@ -61,7 +61,7 @@ PLAN = (
         "main",
         [*main.NODES, *main.WALLS, *main.OPENINGS, *main.ROOMS, *main.FLOOR,
          *main.ALARMS, *mep.SUMP, *mep.RISER, *mep.FAN_BOX, *electrical.MAIN_DEVICES,
-         *views.DETAIL_SLICES, *placeables.MAIN_PLACEABLES],
+         *views.DETAIL_SLICES, *placeables.MAIN_PLACEABLES, *millwork.TRIM],
     )
     .with_elements(
         "upper",

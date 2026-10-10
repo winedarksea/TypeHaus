@@ -111,7 +111,8 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // `countertops` sits with the casework rather than with the wood: a top is derived from
     // the run of cabinets under it, so reading the two together is what makes the kitchen
     // legible. The boxes bill as carcasses in `placeables`; the slab over them bills here.
-    sections: ["placeables", "countertops", "shelving"],
+    // `interior_trim` (base and door casing by the LF) sits with the casework it dies into.
+    sections: ["placeables", "countertops", "shelving", "interior_trim"],
   },
   {
     id: "planting",

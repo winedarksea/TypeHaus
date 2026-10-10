@@ -22,7 +22,11 @@ from typehaus.model.spatial import Stair
 from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry_build import wall_trades
 from typehaus.resolve.geometry_countertops import countertop_prisms
-from typehaus.resolve.geometry_millwork import window_stool_prism
+from typehaus.resolve.geometry_millwork import (
+    base_run_prisms,
+    door_casing_prisms,
+    window_stool_prism,
+)
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json_plants import plants_json
@@ -167,6 +171,7 @@ def wall_graph_json(
             for o in model.openings
         ],
         "window_stools": stools,
+        **_interior_trim_json(model),
         # Slabs drawn in their own material (→ resolve/geometry_countertops.py), one ring per
         # part; a sink host's footprint is cut out of the ring, so it may carry holes.
         "countertops": [
@@ -397,3 +402,38 @@ def framing_json(model: ResolvedModel, provenance: Provenance | None) -> dict[st
             for zone in model.floor_heat
         ],
     }
+
+
+def _interior_trim_json(model: ResolvedModel) -> dict[str, Any]:
+    """Drawable base runs and door casings (→ resolve/interior_trim.py).
+
+    A base selects as its room and a casing as its door. A tile base or a flash cove is
+    not a board, so it has no prism and is not sent.
+    """
+    room_uids = {room.tag: room.uid for room in model.rooms}
+    base_runs = []
+    for run in model.base_runs:
+        prisms = base_run_prisms(run)
+        if not prisms or run.room not in room_uids:
+            continue
+        base_runs.append({
+            "uid": run.uid, "tag": run.tag, "storey": run.storey, "room": run.room,
+            "room_uid": room_uids[run.room], "material_ref": run.material_ref,
+            "profile": run.profile,
+            "outline": [list(point) for point in prisms[0].ring],
+            "z0_m": prisms[0].z0_m, "z1_m": prisms[0].z1_m,
+        })
+    casings = []
+    for casing in model.door_casings:
+        prisms = door_casing_prisms(casing)
+        if not prisms:
+            continue
+        casings.append({
+            "uid": casing.uid, "tag": casing.tag, "storey": casing.storey,
+            "opening_ref": casing.opening_ref, "opening_uid": casing.opening_uid,
+            "room": casing.room, "material_ref": casing.material_ref,
+            "profile": casing.profile,
+            "pieces": [{"outline": [list(point) for point in prism.ring],
+                        "z0_m": prism.z0_m, "z1_m": prism.z1_m} for prism in prisms],
+        })
+    return {"base_runs": base_runs, "door_casings": casings}
