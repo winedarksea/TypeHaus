@@ -139,13 +139,13 @@ def test_attic_stair_well_sits_on_the_source_and_inside_the_finished_faces(catli
 
     East is the east wall's inside gwb face (36' - 6 5/8"), north is W-S-SS2's south gwb
     face (9'-0" - 2 3/8"). The three balanced winders extend beyond the 3'-0" straight
-    flight, while retaining those two bearing faces. The port had
+    flight, while retaining those two bearing faces; the turn stands under intact deck. The port had
     this opening at x 22'-8"..36', y 8'-8"..12' — over RM-S-BED1, not RM-S-STUDY2, and with
     its east edge on the sheathing plane where the carriage's wall ledger resolved outside
     the building.
 
     ** THE WEST EDGE IS NOT THE SOURCE'S. ** It came off 21'-2" on 2026-09-15 and onto the
-    stair head: the flight now spends 49 1/4" on the turn, twelve 10" goings on the
+    stair head: the flight now spends 48 1/4" on the turn, twelve 10" goings on the
     straight run, and a 3/4" head riser board. Assert that geometry rather than preserving
     the obsolete 36" turn, which could not provide the required narrow tread depths.
     """
@@ -154,20 +154,20 @@ def test_attic_stair_well_sits_on_the_source_and_inside_the_finished_faces(catli
     ys = [p.xy_m[1] for p in well.outline]
     stair = catlin_plan.by_tag("ST-S2A")
     turn_extent = max(p.xy_m[0] for p in stair.winder_turn.footprint)
-    assert turn_extent == pytest.approx(inch(49.25).meters)
+    assert turn_extent == pytest.approx(inch(48.25).meters)
     stair_head = (ft(35, 5.375).meters - turn_extent
                   - 12 * inch(10).meters     # winder box + 12 goings
                   - inch(0.75).meters)       # + the head riser board against the header
     assert min(xs) == pytest.approx(stair_head, abs=1e-9)
-    assert min(xs) == pytest.approx(ft(21, 3.375).meters, abs=TOL_M)
+    assert min(xs) == pytest.approx(ft(21, 4.375).meters, abs=TOL_M)
     assert max(xs) == pytest.approx(ft(35, 5.375).meters, abs=TOL_M)
-    # The opening reaches the next joist line south of the enlarged turn.
-    assert min(ys) == pytest.approx(ft(4).meters, abs=1e-9)
+    # The opening is the straight flight: its south edge is the flight's south face.
+    assert min(ys) == pytest.approx(ft(5, 9.625).meters, abs=1e-9)
     assert max(ys) == pytest.approx(ft(8, 9.625).meters, abs=TOL_M)
 
     # run_reversed on x makes `start` the flight's SE corner (resolve/stairs/dispatch.py),
     # and the flight's north side is the well's.
-    assert stair.start.xy_m == pytest.approx((max(xs), ft(4, 8.375).meters), abs=1e-9)
+    assert stair.start.xy_m == pytest.approx((max(xs), ft(4, 9.375).meters), abs=1e-9)
     assert stair.start.xy_m[1] + turn_extent == pytest.approx(max(ys), abs=1e-9)
     assert stair.width.meters == pytest.approx(ft(3).meters, abs=1e-9)
     assert stair.layout == "right_angle_winder" and stair.run_reversed is True

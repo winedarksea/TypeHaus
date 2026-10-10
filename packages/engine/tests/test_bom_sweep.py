@@ -35,8 +35,8 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     prices at zero here by design — its volume already billed through ``wall_structure`` —
     which is what keeps a wall-as-guard from being ordered twice."""
     rows = [row for row in bom["railings"] if row["style"] != "masonry"]
-    # The full-length attic flight guard replaces the former overlapping panel skirt.
-    assert sum(int(row["count"]) for row in rows) == 19
+    # The flight guard stops at the newel; RL-A-FLIGHT-SKIRT closes the band under it.
+    assert sum(int(row["count"]) for row in rows) == 20
     masonry = [row for row in bom["railings"] if row["style"] == "masonry"]
     assert [row["tags"] for row in masonry] == [["W-BW-SCREEN"]]
     assert all(row["post_count"] == 0 and row["bracket_count"] == 0 for row in masonry), \
@@ -87,8 +87,10 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # 26.2 since 2026-09-25: RL-S-STAIRHEAD's 4'-2" leg along ST-M2S's well partition.
     # 26.3 since 2026-09-28: FO-A-STAIR's header went 3/4" west for ST-S2A's head riser
     # board, and RL-A-STAIR with it.
-    # The relocated deck return and full ten-foot flight guard bring this to 32.7 LF.
-    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(32.7, abs=0.1)
+    # 32.7 for 2026-10-08 (a 21 5/8" return and a full ten-foot flight guard); 26.8 since
+    # 2026-10-09: the deck edge is the flight's south face, so RL-A-STAIR is one 8'-0 1/8"
+    # line and RL-A-FLIGHT-GUARD stops at the 25'-5 1/8" newel (6'-0").
+    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(26.8, abs=0.1)
     # 45.6 over four storey groups, and this is the catch-all: every guard or handrail that
     # names no `type_ref` lands here. RL-A-HANDRAIL's 13.0 runs beside ST-S2A's winder fan as
     # well as its straight flight (per R311.7.8.2, measured by `code.R311_7_8_handrail`
@@ -104,8 +106,10 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # 47.3 since 2026-09-16: RL-A-FLIGHT-SKIRT's 1'-8 3/8" raked panel under the attic deck.
     # 47.5 since 2026-09-28: RL-G-SERVICE and the two upper-flight rails reach their lowest
     # riser, one head riser board further out (3/4" + 3/4" + 1 1/4").
-    # The handrail wraps both outer turn faces; the obsolete skirt no longer bills.
-    assert by_type["(untyped railing)"] == pytest.approx(50.8, abs=0.1)
+    # The handrail wraps both outer turn faces (50.8 for 2026-10-08, the skirt gone).
+    # 52.3 since 2026-10-09: the skirt is back under the newel (+1.7), and the 48 1/4"
+    # turn takes 2" off the handrail.
+    assert by_type["(untyped railing)"] == pytest.approx(52.3, abs=0.1)
 
 
 def test_the_untyped_group_key_is_also_what_gets_emitted(bom):

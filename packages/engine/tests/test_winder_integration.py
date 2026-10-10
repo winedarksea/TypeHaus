@@ -169,13 +169,15 @@ def test_winder_detail_and_framing_sheet_draw_resolved_edges(
 
 def test_architectural_plan_shows_the_actual_clear_inner_boundary(stair, catlin_model_ro):
     scene = build_floorplan(catlin_model_ro, stair.to_storey)
+    # The notch's south edge is FO-A-STAIR's south edge, drawn once, by the opening.
+    opening = catlin_model_ro.plan.by_tag(catlin_model_ro.plan.by_tag(stair.tag).floor_opening)
     edges = unary_union(
         [
             LineString([(x * 0.0254, y * 0.0254) for x, y in node.points])
             for node in scene.nodes
             if isinstance(node, Polyline)
-            and node.uid == stair.uid
-            and node.tag.startswith("winder-edge-")
+            and ((node.uid == stair.uid and node.tag.startswith("winder-edge-"))
+                 or node.uid == opening.uid)
         ]
     )
     # Drawing unions use the engine's one-micron overlay grid.
@@ -226,3 +228,57 @@ def test_stringer_attachment_is_hardware_and_is_not_ordered_as_lumber(catlin_mod
         if r["role"] == ROLE_STAIR_STRINGER_CONNECTOR and "landing-rim-winder" in r["basis"]
     ]
     assert sum(r["count"] for r in hardware) == 3
+
+
+def _variant(catlin_plan, tag, **update):
+    original = catlin_plan.by_tag(tag)
+    changed = original.model_copy(update=update)
+    return catlin_plan.with_elements(
+        "attic",
+        tuple(changed if e.tag == tag else e for e in catlin_plan.storey_elements("attic")),
+    )
+
+
+def test_the_turn_sits_under_intact_deck_and_headroom_is_graded_there(stair, catlin_model_ro,
+                                                                     catlin_ctx):
+    """Only the straight flight is in FO-A-STAIR; R311.7.2 measures the turn under FS-ATTIC."""
+    from typehaus.checks.code.mn_residential.stairs import stair_headroom
+
+    opening = catlin_model_ro.plan.by_tag("FO-A-STAIR")
+    hole = Polygon([p.xy_m for p in opening.outline]).buffer(1e-7)
+    winders = [m for m in stair.members if m.category == "winder"]
+    assert any(not hole.covers(Polygon(m.plan_outline)) for m in winders)
+    [finding] = [f for f in stair_headroom(catlin_ctx) if f.message.startswith("ST-S2A ")]
+    assert finding.result.value == "pass" and "FS-ATTIC" in finding.message
+
+
+def test_a_straight_tread_under_intact_deck_is_still_refused(catlin_plan):
+    from typehaus.quantities import Point2D, inch
+    from typehaus.resolve import resolve
+
+    start = catlin_plan.by_tag("ST-S2A").start
+    # 2" south: the straight flight's south edge runs under the deck past FO-A-STAIR.
+    moved = Point2D(start.x, start.y - inch(2))
+    model, findings = resolve(_variant(catlin_plan, "ST-S2A", start=moved))
+    assert not [s for s in model.stairs if s.tag == "ST-S2A"]
+    assert any(f.check_id == "integrity.stair_opening" and "ST-S2A" in f.message
+               for f in findings)
+
+
+def test_a_turn_under_a_low_deck_fails_headroom(catlin_model_ro):
+    """Drop FS-ATTIC 12": the turn under it loses R311.7.2, and the void keeps the flight."""
+    from types import SimpleNamespace
+
+    from typehaus.checks.code.mn_residential.stairs import stair_headroom
+
+    drop = 0.3048
+    floors = [
+        replace(f, deck_z0_m=f.deck_z0_m - drop,
+                members=[replace(m, z0_m=m.z0_m - drop, z1_m=m.z1_m - drop) for m in f.members])
+        if f.tag == "FS-ATTIC" else f
+        for f in catlin_model_ro.floors
+    ]
+    ctx = SimpleNamespace(model=replace(catlin_model_ro, floors=floors), plan=catlin_model_ro.plan,
+                          preferences=None)
+    [finding] = [f for f in stair_headroom(ctx) if f.message.startswith("ST-S2A ")]
+    assert finding.result.value == "fail" and "FS-ATTIC" in finding.message

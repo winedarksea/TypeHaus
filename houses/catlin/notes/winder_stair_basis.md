@@ -2,17 +2,29 @@
 
 ST-S2A retains three winders, 36-inch clear entry/departure widths, sixteen 7½-inch
 risers, and twelve 10-inch straight goings on three 1¾ × 11⅞-inch LSL stringers.
-The east and north bearing faces stay in place. The turn extends 13¼ inches into the
-entering and departing runs: its outside footprint is 49¼ inches square around a
-13¼-inch inside well. The attic opening extends west 13¼ inches and south to the next
-joist line at y=48 inches. The stair head retains the required 36-inch landing depth.
-The flight guard follows the actual open edge; the wall handrail wraps both outer turn
-faces. The nearby study window now uses the existing tempered type. The south supply
-branch and boot move one inch south to clear the enlarged opening's trimmer.
-The study nook retains all three 24-inch seat units and its 72-inch cushion. A custom
-6-inch bookshelf replaces the 18-inch shelf, shifting the seats 12 inches toward the
-higher stringer end while preserving the doorway and cushion clearance. Its reading
-light and dimmer move with the seat.
+The east and north bearing faces stay in place. Since 2026-10-09 the winders are
+square-notched around a 12¼-inch corner notch at the newel. The turn is 48¼ inches
+square and extends 12¼ inches into the entering and departing runs. A 6-inch narrow end
+needs about 19 inches of inside edge at 36 inches clear, so three winders cannot get
+meaningfully smaller: a 12-inch notch reaches only 6.15 inches.
+
+FO-A-STAIR is the straight flight only: x 21'-4⅜"..35'-5⅜", y 5'-9⅝"..8'-9⅝". Its
+south edge is the flight's own south face. The turn sits under intact FS-ATTIC deck.
+Winder 3's walking surface is at 144 inches; the deck framing's underside is at
+228⅛ inches. `code.R311_7_2_stair_headroom` measures 7.05 feet over the turn (6'-8"
+required). The resolver requires only the straight treads inside the hole
+(`resolve/stairs/dispatch.py::_stair_fits_opening`, `winder_support.winder_members_fit_opening`).
+The trimmer pack on the south edge absorbs the y=5'-4" joist, which `line_overrides` moves to
+y=5'-6" inside the pack band. The stair head retains the required 36-inch landing depth.
+
+One guard line runs on y=5'-9⅝". RL-A-STAIR (42 inches, on the deck) runs from the head
+east to x=29'-4½", where W-A-GC-S takes over under the rake. RL-A-FLIGHT-GUARD holds 36
+inches over the nosings from the first straight riser (31'-5⅛") to the 25'-5⅛" newel.
+RL-A-FLIGHT-SKIRT, an 18¾-inch raked panel from the newel to 23'-8¾", closes the band
+between the nosings and the pack. The cap reaches the deck at 25'-8⅛"; the newel sits 3
+inches west so the skirt closes to 3⅛ inches of the pack. The wall handrail wraps both
+outer turn faces. The newel's sistered joist moved 1 inch east with the departing edge
+(`params/second_deck.py`).
 
 `WinderTurnSpec` supplies the footprint, clear inside boundary, and four ordered riser
 segments, including entry and departure. Finished noses come from physical oak polygons.
@@ -23,8 +35,8 @@ Minimum clear depths use every vertex of each physical tread clipped between fin
 nosings, covering both the inside boundary and any irregular outer edge.
 Winder uniformity is checked separately from rectangular tread uniformity.
 
-Walkline depths are 12.837, 12.837, and 12.837 inches; spread is below 0.001 inch.
-Minimum clear depths are 6.491, 6.357, and 6.357 inches. These meet the 10-inch, 6-inch,
+Walkline depths are 12.594, 12.469, and 12.595 inches; spread is 0.126 inch.
+Minimum clear depths are 6.266, 6.270, and 6.518 inches. These meet the 10-inch, 6-inch,
 and ⅜-inch requirements. See the [walkline definition](https://stairways.org/blog/r311-7-4-walkline-2021/)
 and [winder tread provisions](https://stairways.org/blog/r311-7-5-2-1-winder-treads-2021/).
 
@@ -44,11 +56,11 @@ noses and rear fit. Physical polygons and elevations pass to JSON, the viewer, g
 plans, sections, and construction detail S-501.1. Viewer grain and millwork share the nosing
 axis. The existing LSL stringer basis remains in `stair_stringer_basis.md`.
 
-| Winder | Previous blank, inches | Physical blank, inches |
+| Winder | 49¼" balanced turn, inches | 48¼" notched turn, inches |
 | --- | --- | --- |
-| W1 | 25.00 × 36.00 | 30.30 × 38.32 |
-| W2 | 17.87 × 46.85 | 29.87 × 56.35 |
-| W3 | 19.74 × 38.42 | 26.27 × 46.35 |
+| W1 | 30.30 × 38.32 | 29.17 × 36.00 |
+| W2 | 29.87 × 56.35 | 29.89 × 54.02 |
+| W3 | 26.27 × 46.35 | 25.53 × 45.65 |
 
 New dimensions project the complete physical panel along/perpendicular to its nosing,
 including the nose once. Rough stock, trim, jointing, and glue-up allowances remain in the

@@ -4797,3 +4797,22 @@ surface that reaches the court, so the water goes there.
   and 3D; UI typecheck, geometry tests and build pass. The full verification run
   was interrupted when the owner changed the suite to two tiers; its two framing
   takeoff failures now pass after the concurrent takeoff correction.
+
+### 2026-10-09 — ST-S2A: a 48 1/4" notched turn, and the opening on the flight edge
+
+- The 2026-10-08 balanced turn was compliant, but it needed a 13 1/4" curved inside well:
+  49 1/4" square, with the opening dropped to the y=4'-0" joist line. That left a 21 5/8"
+  strip between flight and deck, and two guard lines with a return between them.
+- Now the three winders square-notch around a 12 1/4" corner notch. The turn is 48 1/4"
+  square; walkline 12.594/12.469/12.595", narrow ends 6.266/6.270/6.518". The 6" narrow-end
+  rule needs about 19" of inside edge at 36" clear, so a 12" notch reaches only 6.15".
+- Engine: only the straight flight must be inside a winder stair's opening
+  (`_stair_fits_opening`, `winder_members_fit_opening`). A turn may sit under intact deck,
+  and `code.R311_7_2_stair_headroom` already probes deck framing outside the voids. Three
+  new tests in `test_winder_integration.py` pin it: the turn under deck passes, a straight
+  tread under deck is still refused, and a turn under a deck dropped 12" fails R311.7.2.
+- FO-A-STAIR is x 21'-4 3/8"..35'-5 3/8", y 5'-9 5/8"..8'-9 5/8": the deck edge is the
+  flight's south face. RL-A-STAIR is one line on it, RL-A-FLIGHT-GUARD stops at the
+  25'-5 1/8" newel and RL-A-FLIGHT-SKIRT (uid restored) closes the band beneath. The y=5'-4"
+  joist line moves to 5'-6", into the trimmer pack band, and the pack absorbs it. The newel's
+  sister moved 1" east. Headroom over the turn reads 7.05' under FS-ATTIC.

@@ -195,8 +195,8 @@ def test_catlin_stair_headroom_is_measured_and_passes(catlin_ctx):
     for finding in findings.values():
         assert finding.result is Result.PASS, finding.message
         assert "plumb under" in finding.message  # a measurement, not a storey attribute
-    # The winder's overhead constraint is the roof it climbs into, not a nominal ceiling.
-    assert "RF-" in findings["ST-S2A"].message
+    # The winder turn stands under intact FS-ATTIC deck, and that framing governs it.
+    assert "FS-ATTIC" in findings["ST-S2A"].message
 
 
 # ---------------------------------------------------------------------- width
@@ -383,8 +383,8 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     # slat band above it, is deliberately NOT here — it starts at +4'-0", above the guard
     # line, so R312.1.3 has no fall to protect there, and a brace is no guard element. RL-BW-GARAGE-W left on 2026-09-11: the
     # interior landing moved into the garage's SW corner and W-G-W closes that edge.
-    # The full-length flight guard replaces the former overlapping panel skirt.
-    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",
+    # The flight guard stops at the newel; RL-A-FLIGHT-SKIRT closes the band under it.
+    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-FLIGHT-SKIRT", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",
                     "RL-S-STAIR",
                     "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE",
                     "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N",

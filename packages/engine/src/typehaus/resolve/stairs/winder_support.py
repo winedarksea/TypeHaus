@@ -30,11 +30,15 @@ def winder_supporting_floor(model: ResolvedModel, stair: Stair, finished_base: f
 
 
 def winder_members_fit_opening(members, outline) -> bool:
-    """Keep physical walking panels and structural decks inside the actual opening polygon."""
+    """Keep the straight flight's treads inside the actual opening polygon.
+
+    The turn's winders and subdecks may stand under intact deck; R311.7.2 grades the
+    headroom over them (``resolve/stair_headroom.py``).
+    """
     from shapely.geometry import Polygon
 
     from typehaus.resolve.framing.footprint import member_footprint
 
     opening = Polygon(outline).buffer(1e-7)
     return all(opening.covers(Polygon(member_footprint(member)[0])) for member in members
-               if member.category in {"winder", "tread", "stair_subdeck"})
+               if member.category == "tread")

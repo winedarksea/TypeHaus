@@ -150,7 +150,7 @@ EAST_FLOOR = FloorSystem(
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _HOUSE),
     reinforcements=(
-        JoistReinforcement(at=pt(inch(373.375), inch(66.875)), plies=3, blocking=True,
+        JoistReinforcement(at=pt(inch(374.375), inch(66.875)), plies=3, blocking=True,
                            source="ST-S2A departing-rim/newel reactions: sister the supporting I-joist and block both adjacent bays to the main-storey bearing walls"),
     ),
     source="catlin second floor, east half — 11 7/8\" I-joists at 16\" o.c. spanning "

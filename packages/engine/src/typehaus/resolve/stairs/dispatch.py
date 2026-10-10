@@ -472,16 +472,16 @@ def _stair_fits_opening(stair: Stair, minx: float, maxx: float, miny: float, max
         return (required_cross <= maxx - minx + 1e-9
                 and required_run <= maxy - miny + 1e-9)
     if stair.layout == "right_angle_winder":
+        # Only the straight flight must be in the hole. A low turn may sit under intact
+        # deck; R311.7.2 grades the headroom over it (resolve/stair_headroom.py).
         straight_treads = risers - 1 - stair.winder_count
         nosing = (stair.nosing_depth.meters if stair.nosing_depth is not None
                   else _DEFAULT_NOSING_DEPTH_M)
         layout = local_winder_layout(stair, nosing)
         transform, _ = winder_transform(stair, minx, miny)
-        points = [transform(p) for p in layout.footprint]
-        points.extend(transform((p[0] + tread * straight_treads, p[1]))
-                      for p in layout.riser_lines[-1])
-        # The entering oak nose projects forward of the structural turn boundary.
-        points.extend(transform((p[0], p[1] - nosing)) for p in layout.riser_lines[0])
+        departing = layout.riser_lines[-1]
+        points = [transform(p) for p in departing]
+        points.extend(transform((p[0] + tread * straight_treads, p[1])) for p in departing)
         return all(minx - 1e-9 <= x <= maxx + 1e-9
                    and miny - 1e-9 <= y <= maxy + 1e-9 for x, y in points)
     run = (-1 if stair.run_reversed else 1) * tread * max(0, risers - 1)

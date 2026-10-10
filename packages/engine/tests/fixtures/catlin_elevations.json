@@ -19685,23 +19685,41 @@
 2,
 "16a7818ff22e"
 ],
-"geometry/CMD208AAAA/frame": [
-0.0,
-2.032,
-8,
-"9a68f4b2c829"
-],
-"geometry/CMD208AAAA/glass": [
-0.075,
-1.957,
+"geometry/CMD208AAAA/glazing": [
+0.1206,
+1.9114,
 2,
-"f59eacaf4cac"
+"44cae804ddd9"
 ],
 "geometry/CMD208AAAA/hardware": [
 0.882,
 0.946,
 12,
 "cc227fd26d3b"
+],
+"geometry/CMD208AAAA/jamb_liner": [
+0.0,
+2.032,
+6,
+"21826df41ada"
+],
+"geometry/CMD208AAAA/leaf": [
+0.019,
+2.013,
+8,
+"88badaa5fd75"
+],
+"geometry/CMD208AAAA/shadow_gap": [
+0.019,
+2.016,
+6,
+"116db343d2ac"
+],
+"geometry/CMD208AAAA/stop": [
+0.019,
+2.016,
+6,
+"808069523ab0"
 ],
 "geometry/CMD210AAAA/frame": [
 0.0,

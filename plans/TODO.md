@@ -239,7 +239,6 @@ the future.
 - FT-SBG-S has rebar that should tie into the walls W-SG-W2 and W-SG-E2. Really the interior portion of FT-SBG-S is the footing and cross bracing for W-SG-S, W-SG-W2, and W-SG-E2, and should be detailed appropriately (this should actually improve strength with a small amount of additional rebar).
 - Move the ERV, EQ-B-ERV so we can keep a 11 meter lane from north to south clear (through D-B-FURN)
 - PR-A-STUBATH-VENT_RUN goes right through the middle of the bathroom RM-A-STUBATH
-- We need to investigate the gap and guard rail situation of the stair ST-S2A. The guard rail doesn't align correctly, and the 6" gap, designed to bring a bit more light between floors, may not be worth it.
 - Extra light switches by beds
 - The vertical chaise in the north west corner of catlin house, extending from basement to attic, likely needs fireblocking. Under Section R302.11 (Fireblocking), vertical and horizontal concealed draft openings must be cut off to form an effective fire barrier between stories, and between a top story and the roof space. Either 3/4" plywood (same plane as the subfloor) or mineral wool batt fill are likely the best solutions to show here. This might already be noted somewhere, but should be shown in the 3d model as well.
 - Can we shorten W-M-STRW by a few inches on its southern end so it ends in line with wall W-M-STOS2?

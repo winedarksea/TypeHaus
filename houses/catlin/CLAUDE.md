@@ -720,14 +720,18 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - `code.N1103_6_whole_house_ventilation` sits at 210 cfm provided against 205 required
     (MN 1322 R403.5) — a seventh bedroom or ~250 sf more conditioned floor fails it.
 
-- **`FO-A-STAIR`'s WEST edge is the stair head, `x=22'-4 5/8"`, not the source's 21'-2"**
-  (moved 2026-09-15; 3/4" further on 2026-09-28 so the head riser board stands against the
-  header and the top tread is a full going — `notes/stair_nosing_basis.md`). ST-S2A spends
-  3'-0" on its winder box and 12 goings at 10" on the straight run, so it tops out there;
-  21'-2" left a **15 3/8" x 3'-0" hole at the head of the stair**, which `code.R311_7_5_1_stair_end_risers` passed because it reads the arrival deck
-  through the well and never asks where in it the flight ends.
-  `code.R311_7_6_stair_arrival_floor` is the rule that asks in plan and the one that found
-  it. The north, east and south edges did not move.
+- **`FO-A-STAIR`'s WEST edge is the stair head, `x=21'-4 3/8"`, not the source's 21'-2"**
+  (moved 2026-09-15; one 3/4" head riser board past the top riser since 2026-09-28,
+  `notes/stair_nosing_basis.md`). ST-S2A spends 4'-0 1/4" on its winder turn and 12 goings
+  at 10" on the straight run, so it tops out there; 21'-2" left a hole at the head of the
+  stair that `code.R311_7_5_1_stair_end_risers` passed, because it reads the arrival deck
+  through the well and never asks where in it the flight ends. `code.R311_7_6_stair_arrival_floor`
+  asks in plan, and it found that hole.
+  **The hole is the straight flight only (2026-10-09)**: its south edge is the flight's south
+  face (5'-9 5/8"), so `RL-A-STAIR` and `RL-A-FLIGHT-GUARD` are one line, and the winder
+  turn sits under intact `FS-ATTIC` deck, where `code.R311_7_2_stair_headroom` grades it
+  (7.05'). The y=5'-4" joist line is moved into the trimmer pack (`line_overrides`). Moving
+  the turn or the deck re-opens that check, not `integrity.stair_opening`.
 - **`P-M-STRWELL-SS` is the third well post** (`y=31'-1 5/8"`), under ST-B2M's
   half-landings, whose corner is a rim end no host wall reaches. **Every landing edge and
   stairhead header stands one head riser board past the last riser line** (plus the carpet
