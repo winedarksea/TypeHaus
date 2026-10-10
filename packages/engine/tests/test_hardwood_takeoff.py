@@ -36,7 +36,7 @@ def test_every_shared_row_declares_where_it_really_bills(rows):
     """
     mirrors = ("also_in_framing", "also_in_stair_finish", "also_in_wood_surfaces",
                "also_in_floor_finishes", "also_in_envelope_layers",
-               "also_in_structural_solids", "also_in_countertops")
+               "also_in_structural_solids", "also_in_countertops", "also_in_interior_trim")
     for row in rows:
         own = row["use"] in ("window stool", "shelf") and not row.get("also_in_countertops")
         flagged = any(row.get(flag) for flag in mirrors)

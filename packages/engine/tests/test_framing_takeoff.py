@@ -193,6 +193,8 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     bom = bill_of_materials(catlin_model)
     assert set(bom) == {"framing", "framing_by_size", "fabricated_members",
                         "structural_solids",
+                        # Base and door casing by the LF (``takeoff/interior_trim.py``).
+                        "interior_trim",
                         # Rolled steel members by the FOOT of a named AISC section — taken
                         # OUT of ``structural_solids`` above, because a member bought by the
                         # foot must not also bill by the yard (``takeoff/steel.py``).

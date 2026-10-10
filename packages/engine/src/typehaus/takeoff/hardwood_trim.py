@@ -30,7 +30,7 @@ def trim_rows(model: ResolvedModel, materials: Mapping[str, object],
 
     rows: list[dict[str, object]] = []
     base: dict[tuple[str, str, float, float], list] = {}
-    for run in model.base_runs:
+    for run in getattr(model, "base_runs", ()):
         if run.kind != "trim" or not milled(run.material_ref):
             continue
         key = (run.material_ref, run.profile, round(run.thickness_m * _M_TO_IN, 3),
@@ -53,7 +53,7 @@ def trim_rows(model: ResolvedModel, materials: Mapping[str, object],
         rows.append(row)
 
     casing: dict[tuple[str, str, float, float, float], list[str]] = {}
-    for item in model.door_casings:
+    for item in getattr(model, "door_casings", ()):
         if not milled(item.material_ref):
             continue
         for piece in item.pieces:

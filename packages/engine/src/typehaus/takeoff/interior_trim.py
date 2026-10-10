@@ -22,6 +22,7 @@ _ITEM = {"tile": "tile-base", "integral_cove": "flash-cove"}
 
 
 def interior_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    names = {m.tag: m.name for m in model.plan.library.materials}
     length: dict[tuple, float] = defaultdict(float)
     pieces: dict[tuple, int] = defaultdict(int)
     inside: dict[tuple, int] = defaultdict(int)
@@ -43,6 +44,7 @@ def interior_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         tags[key].extend((casing.room, casing.opening_ref))
     return [{
         "kind": kind, "room": room, "material": material, "item": item,
+        "description": f"{kind.capitalize()}, {names.get(material, material)} — {room}",
         "length_ft": round(length[key] / _FT, 2),
         "pieces": pieces[key],
         "inside_corners": inside[key], "outside_corners": outside[key],
