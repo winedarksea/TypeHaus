@@ -145,12 +145,14 @@ have to be re-derived.
 
 ## 5. Not done, and why
 
-* **Handrail backing is not authored.** All five wall-mounted rails in this house serve a
-  stair, so they rake, and a `WallBacking` band is level — it cannot follow one. They also
-  stand 5"–8" off the nearest wall axis on brackets, and two of the five square onto no wall
-  the derivation can find at all. Resolving the rail-to-wall association is the prerequisite,
-  and it is real work rather than an oversight. **This is the one item on the list with a
-  code load behind it (§2), so it is the one most worth finishing.**
+* **Handrail backing is authored only where a support misses a stud.** A raked rail cannot
+  take a level band, but its supports are discrete. Since 2026-10-09 the rail-to-wall
+  association is solved (`resolve/railings/wall_contact.py`: the parallel finish face, across
+  storeys), so every bracket and wall return lands on a named wall. `BK-G-W-RAIL-FOOT` and
+  `BK-M-STRW2-RAIL-TOP` are the two blocks this needed so far
+  (`notes/titanium_handrail_backsplash.md` §3). **Still open, and it is the item with a code
+  load behind it (§2):** no check grades a support against the stud or block behind it —
+  `advisory.wall_backing_present` reads placeables, not railing supports.
 * **Backing capacity is not computed anywhere.** Whether a 3/4" plywood band carries a 250 lb
   grab bar is an engineering question and belongs to a named register item (decision #65),
   not to a check with no load to compute against. `advisory.wall_backing_present` grades

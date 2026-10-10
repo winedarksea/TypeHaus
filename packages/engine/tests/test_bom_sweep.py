@@ -109,7 +109,11 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # The handrail wraps both outer turn faces (50.8 for 2026-10-08, the skirt gone).
     # 52.3 since 2026-10-09: the skirt is back under the newel (+1.7), and the 48 1/4"
     # turn takes 2" off the handrail.
-    assert by_type["(untyped railing)"] == pytest.approx(52.3, abs=0.1)
+    # 42.9 later that day: ST-B2M's two rails left for RAILING-INT-TI-HANDRAIL-42 (9.9 LF,
+    # the W rail now running to the top nosing), and the dark-steel rails moved 3/8" off
+    # their walls for R311.7.8.2's clearance.
+    assert by_type["(untyped railing)"] == pytest.approx(42.9, abs=0.1)
+    assert by_type["RAILING-INT-TI-HANDRAIL-42"] == pytest.approx(9.9, abs=0.1)
 
 
 def test_the_untyped_group_key_is_also_what_gets_emitted(bom):

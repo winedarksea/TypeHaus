@@ -32,6 +32,7 @@ from plan.living_east_run_types import LIVING_EAST_RUN_PRODUCTS
 from plan.plant_room_types import PLANT_ROOM_PRODUCTS
 from plan.products_interior import INTERIOR_PRODUCTS
 from plan.study_nook_types import STUDY_NOOK_PRODUCTS
+from plan.titanium_types import TITANIUM_PRODUCTS
 from typehaus.library.placeables import STARTER_FURNITURE_PRODUCTS
 from typehaus.model import Product
 
@@ -265,5 +266,5 @@ PRODUCTS = (
     FLOOR_BOX_PRODUCT,
     *INTERIOR_PRODUCTS, *CLOSET_PRODUCTS, *BEDROOM_WARDROBE_PRODUCTS, *BATH1_STORAGE_PRODUCTS,
     *STUDY_NOOK_PRODUCTS, *BED_READING_CORNER_PRODUCTS, *LIVING_EAST_RUN_PRODUCTS,
-    *PLANT_ROOM_PRODUCTS, *STARTER_FURNITURE_PRODUCTS,
+    *PLANT_ROOM_PRODUCTS, *STARTER_FURNITURE_PRODUCTS, *TITANIUM_PRODUCTS,
 )

@@ -21,6 +21,8 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     foam_plastic,
     foundation_protection,
     glazing,
+    handrail_clearance,
+    handrail_hardware,
     illumination,
     open_risers,
     radon,

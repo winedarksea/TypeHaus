@@ -1421,31 +1421,34 @@ STAIR_GUARDS = [
 # code.R311_7_8_handrail via `serves_stair`, raked along each flight's nosing line
 # (`top_height` 34"-38"). Lower flight (east lane) rails on W-M-C5's stair face; upper
 # flight (west lane) rails on W-M-STRW's face (y 26'-10 3/8"..31'-11 1/8", well north of
-# W-M-STRW2's 5 3/8" stub) — each 2" off its wall (bracket standoff).
+# W-M-STRW2's 5 3/8" stub) — each 2 3/8" off its wall's finish face: R311.7.8.2's 1 1/2"
+# clear plus the bar's 3/4" radius, with 1/8" to spare. Both ends return to the wall.
 # rail_count=1: a handrail, not a guard frame; role="handrail" keeps these out of the
 # R312.1.3 guard-infill census.
 STAIR_HANDRAILS = [
     Railing(
         uid="CSRL03AAAA", tag="RL-S-HANDRAIL-E", path=(
-            pt(ft(17, 6.625), ft(26, 0.375)),
-            pt(ft(17, 6.625), ft(31, 10.375)),
+            pt(ft(17, 6.25), ft(26, 0.375)),
+            pt(ft(17, 6.25), ft(31, 10.375)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
         base_elevation=ft(0), post_spacing=inch(48), post_size="2x2", rail_count=1,
         mount="wall", assembly="RAILING_DARK_METAL",
         role="handrail", serves_stair="ST-M2S", top_height=inch(36),
         graspable_profile="1.5in round — Type I",
+        start_termination="wall_return", end_termination="wall_return",
     ),
     Railing(
         uid="CSRL04AAAA", tag="RL-S-HANDRAIL-W", path=(
-            pt(ft(10, 5.25), ft(31, 11.125)),
-            pt(ft(10, 5.25), ft(26, 10.375)),
+            pt(ft(10, 5.75), ft(31, 11.125)),
+            pt(ft(10, 5.75), ft(26, 10.375)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
         base_elevation=ft(10), post_spacing=inch(48), post_size="2x2", rail_count=1,
         mount="wall", assembly="RAILING_DARK_METAL",
         role="handrail", serves_stair="ST-M2S", top_height=inch(36),
         graspable_profile="1.5in round — Type I",
+        start_termination="wall_return", end_termination="wall_return",
     ),
 ]
 

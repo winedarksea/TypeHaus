@@ -538,18 +538,25 @@ def test_catlin_stair_handrail_rakes_along_the_flight(catlin_model) -> None:
     def along_y(solid):
         return min(y for _, y in solid.outline)
 
-    brackets = sorted((s for s in catlin_model.solids
-                       if s.tag.startswith("RL-S-HANDRAIL-E-BRACKET")), key=along_y)
-    assert len(brackets) >= 2
+    # Both ends return to the wall since 2026-10-09, so the end supports are RETURNs (drawn
+    # on the rail centreline) and only the mid station is a BRACKET (arm top on it).
+    supports = sorted((s for s in catlin_model.solids
+                       if s.tag.startswith(("RL-S-HANDRAIL-E-BRACKET",
+                                            "RL-S-HANDRAIL-E-RETURN"))), key=along_y)
+    assert len(supports) >= 2
+
+    def rail_z(solid):
+        return solid.z1_m if "BRACKET" in solid.tag else (solid.z0_m + solid.z1_m) / 2.0
+
     rail_h = 36 * 0.0254
     # ST-M2S lower flight: first tread top one riser above the main floor, landing at the
     # far end — the rail rides the walking line, not the authored base_elevation. Both
     # numbers carry the main floor's 15/16" build-up (3/4" subfloor + plank): the flight
     # springs from the SURFACE underfoot, not from the storey datum at the joist tops.
-    assert brackets[0].z1_m == pytest.approx(0.1905 + 0.0251 + rail_h, abs=2e-2)
-    assert brackets[-1].z1_m == pytest.approx(1.524 + 0.0251 + rail_h, abs=2e-2)
-    for bracket in brackets:
-        assert bracket.z1_m - bracket.z0_m < 6 * 0.0254, "a bracket, not a post"
+    assert rail_z(supports[0]) == pytest.approx(0.1905 + 0.0251 + rail_h, abs=2e-2)
+    assert rail_z(supports[-1]) == pytest.approx(1.524 + 0.0251 + rail_h, abs=2e-2)
+    for support in supports:
+        assert support.z1_m - support.z0_m < 6 * 0.0254, "a bracket, not a post"
     # The rail is ONE solid now, carrying the 3D polyline it used to be chopped into bands to
     # approximate (→ resolve/sweep.py), so the rake is read off that path rather than off a
     # stack of pieces sorted along y.
@@ -646,7 +653,8 @@ def test_infill_never_lands_on_the_frame_category(catlin_model) -> None:
     squares on every floor plan and silently move the frame row's count."""
     frame = [s for s in catlin_model.solids if s.category == "railing"]
     assert frame
-    assert all("POST" in s.tag or "RAIL" in s.tag or "BRACKET" in s.tag for s in frame)
+    assert all(any(part in s.tag for part in ("POST", "RAIL", "BRACKET", "RETURN", "ENDPLATE"))
+               for s in frame)
     # Not pinned to a count any more. A raking rail is banded finely enough to draw as one
     # continuous bar and a round one is faceted on top of that, so the frame's solid count
     # is a function of stair slope and rail diameter rather than a number worth freezing.

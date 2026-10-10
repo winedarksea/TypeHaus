@@ -125,7 +125,7 @@ def drawn_handrail_findings(ctx: CheckContext, stair: ResolvedStair, rail: Raili
         return out, note + " (no measurable nosing line under it — height not cross-checked)"
 
     # --- R311.7.8.3, measured: a stated diameter has to be a graspable one ---------------
-    diameter = _stated_round_diameter_m(rail)
+    diameter = _stated_round_diameter_m(ctx, rail)
     if diameter is not None and not (_MIN_TYPE_I_DIAMETER.meters - 1e-9 <= diameter
                                      <= _MAX_TYPE_I_DIAMETER.meters + 1e-9):
         out.append(_fail(cid, f"handrail {rail.tag} states a {diameter / 0.0254:.2f}\" "
@@ -269,9 +269,10 @@ def _point_to_segment_m(point: Vec, a: Vec, b: Vec) -> float:
     return math.hypot(px - (x0 + dx * t), py - (y0 + dy * t))
 
 
-def _stated_round_diameter_m(rail: Railing) -> float | None:
-    """The diameter a ``graspable_profile`` names, when it names a circular section."""
-    from typehaus.resolve.railings.parts import round_rail_radius_m
+def _stated_round_diameter_m(ctx: CheckContext, rail: Railing) -> float | None:
+    """The circular section the rail's type or ``graspable_profile`` states, if any."""
+    from typehaus.resolve.railings.parts import railing_type, round_rail_radius_m
 
-    radius = round_rail_radius_m(rail, None, 0.0)
+    product = railing_type(getattr(ctx.plan, "library", None), rail)
+    radius = round_rail_radius_m(rail, product, 0.0)
     return None if not radius else 2.0 * radius

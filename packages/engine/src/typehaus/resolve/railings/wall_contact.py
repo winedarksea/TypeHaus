@@ -29,6 +29,8 @@ REACH_M = inch(9).meters
 #: |cos| between rail and wall axis above which the wall runs alongside the rail. A wall the
 #: rail dies into end-on is not the one it is fastened to, nor the one clearance is to.
 _PARALLEL_DOT = 0.9
+#: |cos| between rail and point → face below which the face is square to the rail.
+_SQUARE_COS = 0.2
 #: Half-height of the slice the layer bodies are read over.
 _SLICE_M = 0.001
 
@@ -61,11 +63,18 @@ def nearest_wall_face(model: ResolvedModel, point: Vec, z: float, *,
             continue
         body = wall_body(wall, z - _SLICE_M, z + _SLICE_M)
         if body.is_empty:
+            # Inside the wall's extent but past its layer bands: the floor band of a wall
+            # carried floor-to-floor (#43). Its face plane continues there, so read it.
+            body = wall_body(wall, wall.z0_m, wall.z1_m)
+        if body.is_empty:
             continue
         gap = body.distance(here)
         if gap > reach_m or (best is not None and gap >= best.distance_m):
             continue
         face = nearest_points(body, here)[0]
+        if along and gap > 1e-6 and not _square_to(along, (face.x - point[0],
+                                                           face.y - point[1]), gap):
+            continue  # reached diagonally, past the wall's end: not the face beside it
         best = WallContact(wall.tag, gap, (face.x, face.y))
     return best
 
@@ -84,6 +93,15 @@ def _parallel(wall: ResolvedWall, along: tuple[Vec, ...]) -> bool:
     for dx, dy in along:
         d = math.hypot(dx, dy)
         if d > 1e-9 and abs(ux * dx + uy * dy) / d >= _PARALLEL_DOT:
+            return True
+    return False
+
+
+def _square_to(along: tuple[Vec, ...], offset: Vec, gap: float) -> bool:
+    """Is ``offset`` (point → face) near-perpendicular to the rail's direction?"""
+    for dx, dy in along:
+        d = math.hypot(dx, dy)
+        if d > 1e-9 and abs(offset[0] * dx + offset[1] * dy) / (d * gap) <= _SQUARE_COS:
             return True
     return False
 

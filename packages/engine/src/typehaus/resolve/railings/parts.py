@@ -26,6 +26,7 @@ import re
 from dataclasses import dataclass
 
 from typehaus.model.structure import Railing
+from typehaus.model.types import RailingType
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import nominal_actual_m
 from typehaus.resolve.model import ResolvedModel
@@ -52,8 +53,10 @@ RAILING_FACETS = 8
 #: 1-1/4"-2" rail **or** an equivalent-perimeter shaped one, so a bare "type-I" is not
 #: evidence of a circle and stays square; only a profile naming the shape is drawn as one.
 _ROUND_WORDS = re.compile(r"\b(round|circular|dia(?:meter)?)\b", re.IGNORECASE)
-#: The leading dimension of a profile string, in inches — the "1.5" of "1.5in round".
-_PROFILE_SIZE = re.compile(r"^\s*(\d+(?:\.\d+)?)\s*(?:in\b|\"|\u2033)?", re.IGNORECASE)
+#: The leading dimension of a profile string — the "1.5" of "1.5in round", the "42" of
+#: "42mm round". A bare number is inches.
+_PROFILE_SIZE = re.compile(r"^\s*(\d+(?:\.\d+)?)\s*(?P<unit>mm\b|in\b|\"|\u2033)?",
+                           re.IGNORECASE)
 #: Stock 3/4" square picket, 3/16" cable, 1/2" lite — used where the product states nothing.
 _DEFAULT_BALUSTER_WIDTH = inch(0.75)
 _DEFAULT_CABLE_DIAMETER = inch(0.1875)
@@ -87,10 +90,26 @@ class RailingParts:
     rail_round_radius_m: float | None
 
 
+def railing_type(library, el: Railing) -> RailingType | None:
+    """The ``RailingType`` a railing names, or None (also when there is no library)."""
+    if not el.type_ref or library is None:
+        return None
+    return next((p for p in library.railing_types if p.tag == el.type_ref), None)
+
+
+def rail_half_section_m(library, el: Railing) -> float:
+    """Half the drawn top rail's width: the round rail's radius, else the stock bar's."""
+    product = railing_type(library, el)
+    section = RAIL_SECTION_M
+    if product is not None and product.rail_diameter is not None:
+        section = product.rail_diameter.meters
+    radius = round_rail_radius_m(el, product, section)
+    return radius if radius is not None else section / 2.0
+
+
 def resolve_parts(model: ResolvedModel, el: Railing) -> RailingParts:
     """Walk the material ladder and the product dimensions for one railing."""
-    product = next((p for p in model.plan.library.railing_types
-                    if p.tag == el.type_ref), None) if el.type_ref else None
+    product = railing_type(model.plan.library, el)
 
     def material(field: str) -> str | None:
         return getattr(el, field, None) or getattr(product, field, None)
@@ -103,8 +122,10 @@ def resolve_parts(model: ResolvedModel, el: Railing) -> RailingParts:
     panel_thickness = dimension("panel_thickness", _DEFAULT_PANEL_THICKNESS)
     # A cap over a panel is wide enough to take the lite plus its bite, and never narrower
     # than the stock rail — the reveal is derived from the panel, not authored beside it.
-    rail_section = (max(RAIL_SECTION_M, panel_thickness + 2.0 * _PANEL_CAP_BITE.meters)
-                    if el.infill == "panel" else RAIL_SECTION_M)
+    stock = (product.rail_diameter.meters
+             if product is not None and product.rail_diameter is not None else RAIL_SECTION_M)
+    rail_section = (max(stock, panel_thickness + 2.0 * _PANEL_CAP_BITE.meters)
+                    if el.infill == "panel" else stock)
     return RailingParts(
         post_material=material("post_material"),
         rail_material=material("rail_material"),
@@ -122,23 +143,26 @@ def resolve_parts(model: ResolvedModel, el: Railing) -> RailingParts:
     )
 
 
-def round_rail_radius_m(el: Railing, product: object,
+def round_rail_radius_m(el: Railing, product: RailingType | None,
                         rail_section_m: float) -> float | None:
-    """Half the diameter of a round rail, from what the profile says it is.
+    """Half the diameter of a round rail: the product's stated diameter, else the profile's.
 
     A panel-topping cap is a cap, not a grab rail: it is sized off the lite it swallows and
     is never drawn round, whatever the handrail beside it is made of.
     """
     if el.infill == "panel":
         return None
-    profile = (getattr(el, "graspable_profile", None)
-               or getattr(product, "graspable_profile", None))
+    if product is not None and product.rail_diameter is not None:
+        return product.rail_diameter.meters / 2.0
+    profile = el.graspable_profile
     if not profile or not _ROUND_WORDS.search(profile):
         return None
     match = _PROFILE_SIZE.match(profile)
-    diameter: float = (float(match.group(1)) * inch(1).meters if match
-                       else rail_section_m)
-    return diameter / 2.0
+    if not match:
+        return rail_section_m / 2.0
+    unit = (match.group("unit") or "in").lower()
+    scale = 0.001 if unit == "mm" else inch(1).meters
+    return float(match.group(1)) * scale / 2.0
 
 
 def is_translucent(model: ResolvedModel, material_ref: str | None) -> bool:

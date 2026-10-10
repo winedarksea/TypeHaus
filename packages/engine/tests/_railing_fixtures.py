@@ -13,7 +13,7 @@ from typehaus.model.enums import RailingKind
 from typehaus.model.structure import Railing
 from typehaus.model.types import RailingType
 from typehaus.quantities import ft, inch, pt
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.railings import resolve_railing
 
 
@@ -72,7 +72,26 @@ def railing_type(tag: str = "RT-T", **kw) -> RailingType:
     return RailingType(**defaults)
 
 
-def resolve_railings(railings, *, types=(), materials=(), stairs=()) -> ResolvedModel:
+def wall_along_x(tag: str, y_face_m: float, *, x0_m: float = -1.0, x1_m: float = 5.0,
+                 depth_m: float = 0.14, storey: str = "main", z0_m: float = -3.0,
+                 z1_m: float = 3.0, axis_y_m: float | None = None) -> ResolvedWall:
+    """A one-layer wall whose finish face is the line ``y = y_face_m``, body below it.
+
+    ``axis_y_m`` puts the axis somewhere other than the body's centreline — a face-aligned
+    wall, where axis +- thickness/2 is not where the face is.
+    """
+    ring = ((x0_m, y_face_m - depth_m), (x1_m, y_face_m - depth_m),
+            (x1_m, y_face_m), (x0_m, y_face_m))
+    axis_y = y_face_m - depth_m / 2.0 if axis_y_m is None else axis_y_m
+    layer = ResolvedLayer(name="body", material_ref="gwb", function="structure",
+                          thickness_m=depth_m, polygon=ring)
+    return ResolvedWall(uid=f"W{tag[-6:]}", tag=tag, storey=storey, assembly="TEST",
+                        axis=((x0_m, axis_y), (x1_m, axis_y)), layers=(layer,),
+                        z0_m=z0_m, z1_m=z1_m)
+
+
+def resolve_railings(railings, *, types=(), materials=(), stairs=(),
+                     walls=()) -> ResolvedModel:
     """Resolve ``railings`` into a model's solids, exactly as the pipeline would.
 
     ``materials`` is ``{tag: color}``; a colour with an 8-digit ``#RRGGBBAA`` alpha under
@@ -85,6 +104,7 @@ def resolve_railings(railings, *, types=(), materials=(), stairs=()) -> Resolved
     )
     model = ResolvedModel(plan=_FakePlan(railings, library))
     model.stairs.extend(stairs)
+    model.walls.extend(walls)
     findings = []
     for element in railings:
         findings.extend(resolve_railing(model, element, "main"))

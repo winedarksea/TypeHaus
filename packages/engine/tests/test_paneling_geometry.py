@@ -156,14 +156,18 @@ def test_band_thickness_comes_from_the_material_stock(bands):
                 "tile states no board stock, so the band takes the default"
 
 
-def test_the_catlin_bands_are_the_seven_authored_ones(bands):
+def test_the_catlin_bands_are_the_eight_authored_ones(bands):
     """A guard on scope: the reference house authors exactly these, at these heights."""
     by_tag: dict[str, list] = {}
     for band in bands:
         by_tag.setdefault(band.tag, []).append(band)
     assert set(by_tag) == {"WP-B-SAUNA-SPLASH", "WP-M-STUDY-WAINSCOT", "WP-M-STUDY-FELT",
                            "WP-M-BATH2-SURR", "WP-S-SUITE-HEADBOARD", "WP-A-STUBATH-SURR",
-                           "WP-M-MUDROOM-SHIPLAP"}
+                           "WP-M-MUDROOM-SHIPLAP", "WP-M-KIT-BACKSPLASH"}
+    # The range backsplash: an authored sheet thickness wins over the material's stock.
+    (splash,) = by_tag["WP-M-KIT-BACKSPLASH"]
+    assert splash.thickness_m == pytest.approx(0.0008, abs=1e-9)
+    assert splash.run_m == pytest.approx(1.0, abs=1e-6)
     # The mudroom's three east-facing walls to 6'-0"; W-M-MECH-E is the L's inner-corner
     # wall that a single room-wide interior point once put on the closet's face.
     assert {b.wall_tag for b in by_tag["WP-M-MUDROOM-SHIPLAP"]} == {

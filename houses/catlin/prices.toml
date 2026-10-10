@@ -5048,6 +5048,9 @@
 # runs about $8-12/SF installed-goods, cast solid surface $12-20, acrylic $5-9, and the
 # delta over a builder-kit surround is what is left after the kit's own value comes out.
 # One owner selection collapses this range; until then the spread is honest.
+# Owner-furnished (Waltly, paid — costs.toml): two Gr 2 sheets hung uncut; labour only, MS-
+# polymer bond over the painted gypsum and the range/hood/upper cut-in.
+"titanium-gr2-sheet-brushed" = { material = { low = 0, high = 0 }, labour = { low = 15, high = 35 } }  # 12 SF ordered: WP-M-KIT-BACKSPLASH (2026-10-09)
 "marble-look-panel" = { low = 4, high = 11 }  # 93 SF ordered: WP-M-BATH2-SURR + WP-A-STUBATH-SURR (2026-09-23)
 # ** OPEN: the delta basis above holds for BATH2 only. FX-SHOWER-36-NEO-COMBO (STUBATH) buys the
 # pan and glass, not the walls, so its 42 SF bills as a delta over a kit it never had. **
@@ -5901,7 +5904,14 @@
 # Williams rail and post pricing, Ultralox fascia-mount installation instructions,
 # fortressbp.com Al13 Home component pricing, homeadvisor.com 2026 deck railing replacement.
 # $/LF of guard line, by railing product type
-"(untyped railing)" = { material = { low = 25, high = 60 }, labour = { low = 18, high = 35 } }  # 30 LF — untyped handrails, placeholder. DOUBLE-COUNT CHECK: if one of these is top-mounted on the stair guard, its labour is already inside RAILING-INT-STAIR-GUARD
+"(untyped railing)" = { material = { low = 25, high = 60 }, labour = { low = 18, high = 35 } }  # 42.9 LF (2026-10-09) — the four dark-steel handrails plus the flight skirt and guard stubs, placeholder. DOUBLE-COUNT CHECK: if one of these is top-mounted on the stair guard, its labour is already inside RAILING-INT-STAIR-GUARD
+# RAILING-INT-TI-HANDRAIL-42 (2026-10-09): ST-B2M's two titanium wall rails, ~9.9 LF plan.
+# The tube is OWNER-FURNISHED (Waltly, already paid — costs.toml), so material is only the
+# stock 316 fittings for 42.4 mm tube: 2 brackets, 4 wall-return elbows, 4 end plates, 2
+# internal splice sleeves, structural epoxy and A4 anchors (~$220-580 the lot). Labour is
+# above a steel rail's: titanium is cut and deburred slow, and every fitting is dry-fitted
+# then bonded. LOW confidence until the fittings are bought.
+"RAILING-INT-TI-HANDRAIL-42" = { material = { low = 20, high = 60 }, labour = { low = 40, high = 90 } }  # 9.9 LF — owner-furnished tube; fittings + labour only
 "RAILING-EXT-ALUMINUM-FASCIA" = { material = { low = 30, high = 45 }, labour = { low = 35, high = 55 } }  # 40.3 LF — RL-SG-BALCONY only. Williams ESR-3485 / Fortress Al13 Home; material dropped from 55-80 when the product left Trex Signature on 2026-09-02. Fascia-mount labour keeps its 25-40% premium over surface mount (through-bolting into rim blocking, cantilevered 200 lb load). NOT INCLUDED: fascia-mount bracket kits at $40-60 per post and their four 5/16" x 4" through-bolts each, ~8 posts at 60" o.c., which no $/LF rail price carries
 # 2026-09-03: 42.7 LF over FIVE runs, where it was 36.3 LF over one. RL-SG-PORCH LOST 3.0 LF
 # (33.3) — its east leg stops at y -3'-10" to open a 3'-0" gap for the new porch stair — and

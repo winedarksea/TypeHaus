@@ -93,7 +93,8 @@ def test_a_rail_authored_round_is_drawn_round(catlin_model):
     assert rails
     for rail in rails:
         assert is_round_profile(rail.sweep.profile), "authored round, drawn square"
-        assert profile_radius_m(rail.sweep.profile) <= inch(0.75).meters + 1e-9
+        # RAILING-INT-TI-HANDRAIL-42: the type's 42 mm diameter wins over the profile string.
+        assert profile_radius_m(rail.sweep.profile) == pytest.approx(0.021, abs=1e-9)
     widths = {round(max(x for x, _y in r.outline) - min(x for x, _y in r.outline), 4)
               for r in rails}
     assert widths

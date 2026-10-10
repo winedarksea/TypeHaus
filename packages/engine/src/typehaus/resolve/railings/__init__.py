@@ -1,8 +1,8 @@
 """Guard and handrail geometry: posts, rails and infill along an authored plan path.
 
 Split by *part*, not by style: :mod:`.spans` owns what the walking surface does, :mod:`.parts`
-owns what each part is made of and how big it is, :mod:`.frame` owns posts and rails, and
-:mod:`.infill` owns what fills the bays.
+owns what each part is made of and how big it is, :mod:`.frame` owns posts and rails,
+:mod:`.terminations` owns the ends, and :mod:`.infill` owns what fills the bays.
 
 The flat/raking fork is one line here and one object (:class:`~.spans.RailingSurface`)
 everywhere else, so a new style is written once rather than twice.
@@ -23,6 +23,7 @@ from typehaus.resolve.railings.frame import (
 from typehaus.resolve.railings.infill import emit_infill
 from typehaus.resolve.railings.parts import resolve_parts
 from typehaus.resolve.railings.spans import flat_surface, raking_surface
+from typehaus.resolve.railings.terminations import emit_terminations
 
 __all__ = ["railing_post_stations", "resolve_railing"]
 
@@ -58,4 +59,5 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
     stations = railing_post_stations(path, max(el.post_spacing.meters, MIN_POST_SPACING_M))
     emit_posts(model, el, storey, stations, surface, parts, rail_h)
     emit_rails(model, el, storey, path, surface, parts, rail_h)
-    return emit_infill(model, el, storey, stations, surface, parts, rail_h)
+    findings = emit_terminations(model, el, storey, path, surface, parts, rail_h)
+    return findings + emit_infill(model, el, storey, stations, surface, parts, rail_h)

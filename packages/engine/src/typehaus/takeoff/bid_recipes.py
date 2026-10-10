@@ -75,7 +75,14 @@ def _opening(row: Row) -> str:
 
 def _railing(row: Row) -> str:
     posts, brackets = row.get("post_count"), row.get("bracket_count")
-    return f"{posts} post(s), {brackets} bracket(s)" if posts is not None else ""
+    if posts is None:
+        return ""
+    parts = [f"{posts} post(s)", f"{brackets} bracket(s)"]
+    if row.get("return_count"):
+        parts.append(f"{row['return_count']} wall return(s)")
+    if row.get("splice_count"):
+        parts.append(f"{row['splice_count']} splice(s)")
+    return ", ".join(parts)
 
 
 @dataclass(frozen=True)

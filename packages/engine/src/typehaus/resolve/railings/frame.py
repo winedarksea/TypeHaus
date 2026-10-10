@@ -123,7 +123,7 @@ def _directions_at(stations: list[Vec], index: int) -> tuple[Vec, ...]:
     """The rail's plan direction(s) either side of station ``index``."""
     out: list[Vec] = []
     for a, b in ((index - 1, index), (index, index + 1)):
-        if 0 <= a and b < len(stations):
+        if a >= 0 and b < len(stations):
             out.append(sub(stations[b], stations[a]))
     return tuple(out)
 

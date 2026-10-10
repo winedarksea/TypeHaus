@@ -65,6 +65,9 @@ class WallPaneling(Element):
     # True: the band replaces the wall assembly's own FINISH layer (billed as this
     # material, subtracted from that one). False: applied over it, nothing subtracted.
     replaces_wall_finish: bool = False
+    # Drawn thickness for a sheet good (a 0.8 mm metal sheet); None derives it from the
+    # material's board stock.
+    thickness: Length | None = None
 
 
 for _name, _obj in (

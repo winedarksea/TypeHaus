@@ -5,8 +5,9 @@
 # the fixed 36-inch base. Stock modules close the corner without a filler. Installation
 # and actual rail/front allowances: notes/kitchen_stock_cabinet_details.md.
 
-from typehaus import Appliance, Furniture, Location, Mount, MountKind, WallAttachment
-from typehaus.model import deg, ft, inch, pt
+from typehaus import (Appliance, Furniture, Location, Mount, MountKind, PanelingSpan,
+                      WallAttachment, WallPaneling)
+from typehaus.model import deg, ft, inch, mm, pt
 
 MAIN_KITCHEN_CASEWORK = [
     # West run — cold storage and pantry against the centre bearing wall, opening east.
@@ -203,6 +204,16 @@ MAIN_KITCHEN_CASEWORK = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(372.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # Titanium backsplash behind the range: two owner-furnished 500 x 1000 mm Gr 2 sheets,
+    # landscape, stacked and UNCUT (the factory hems are the edges), centred on the range at
+    # 372 3/8". `offset` is from the wall base, so the counter top (36" AFF) is 36 15/16";
+    # the top (75 3/8" AFF) hides behind the hood and laps 1 7/8" behind FURN-M-KIT-WN2.
+    # Bonded over the painted gypsum. notes/titanium_handrail_backsplash.md §5.
+    WallPaneling(uid="6T69T5QZQP", tag="WP-M-KIT-BACKSPLASH", room="RM-M-LIVING",
+                 material_ref="titanium-gr2-sheet-brushed", offset=inch(36.9375),
+                 height=mm(1000), thickness=mm(0.8),
+                 spans=(PanelingSpan(wall_ref="W-M-E1", start=inch(352.6875),
+                                     length=mm(1000)),)),
 
     # Peninsula carcasses stay put; north aisle 58 inches, west aisle 56 1/2 inches.
     Furniture(uid="PSB290H9BR", tag="FURN-M-KIT-PEN-END", type_ref="FT-KIT-PEN-END-PANEL",

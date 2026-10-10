@@ -104,6 +104,13 @@ from typehaus import WallBacking, ft, inch
 #
 # Move the rail and move these. `face` is the default "left": W-G-W runs N->S, so its
 # left-hand normal points east, into the garage.
+#
+# ST-B2M's titanium rails (plan/storeys/main.py): RL-M-HANDRAIL-E is on concrete (anchors),
+# and RL-M-HANDRAIL-W's mid bracket (y=28'-7 5/8") lands on W-M-STRW's stud-005 at 28'-8".
+# Its top wall return (y=26'-2 5/8", 37" up) puts one flange screw in W-M-STRW2's end stud
+# and the rest in the 4 1/8" bay between that stud and the N-M-STRJ tee: a 2x8 flat fills
+# it. The foot return lands in the floor band behind the stair plywood — a field block,
+# notes/titanium_handrail_backsplash.md §3.
 
 # The groups above, filed on the storey each wall stands on: `PlanModel` keys elements
 # by storey, so a band cannot ride in a list that mixes them.
@@ -112,6 +119,10 @@ BASEMENT_BACKING = [
 ]
 
 MAIN_BACKING = [
+    WallBacking(uid="FVNZSAD2DJ", tag="BK-M-STRW2-RAIL-TOP", wall_ref="W-M-STRW2",
+                start=inch(0), length=inch(4.125),
+                elevation=inch(33), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="RL-M-HANDRAIL-W top wall-return flange"),
     # Frame brackets fasten near the cabinet tops.
     WallBacking(uid="ZCGDP5VDX9", tag="BK-M-N1-KIT-TOP", wall_ref="W-M-N1",
                 elevation=inch(99.5), height=inch(5.5), profile="2x6",

@@ -34,8 +34,10 @@ MN_2020 = JurisdictionProfile(
         "R311.3 landings at exterior doors, R311.6 hallway width, R311.7 stairways. "
         "Fall protection: R312.1 guards at stair wells, at raised walking surfaces and "
         "at the open sides of a flight, "
-        "R312.1.3 guard opening limits, R311.7.8 stair handrails, and R312.2 window fall "
-        "protection. Glazing: R308.4 safety glazing in hazardous locations. "
+        "R312.1.3 guard opening limits, R311.7.8 stair handrails (height, grip, continuity, "
+        "1-1/2\" wall clearance, 4-1/2\" projection, returned ends, R301.5 bracket "
+        "spacing), and R312.2 window fall protection. "
+        "Glazing: R308.4 safety glazing in hazardous locations. "
         "Fire safety: R302.5/R302.6 garage-to-dwelling separation (gypsum thickness, doors "
         "into sleeping rooms, ducts into garages), R302.13 floor-assembly protection and "
         "R316.4 the thermal barrier over foam plastic — the latter graded off authored "
@@ -213,8 +215,13 @@ MN_2020 = JurisdictionProfile(
                        ("IRC R312.2",), blocking=False),
         # Railing grew a handrail role, so this leaves permit_exclusions and joins the
         # checklist in the same change — a check may not be both.
-        PermitItemSpec("Stair handrails", ("code.R311_7_8_handrail",),
-                       ("IRC R311.7.8",), blocking=False),
+        PermitItemSpec("Stair handrails",
+                       ("code.R311_7_8_handrail", "code.R311_7_8_2_handrail_wall_clearance",
+                        "code.R311_7_1_handrail_projection",
+                        "code.R311_7_8_2_handrail_ends",
+                        "code.R301_5_handrail_support_spacing"),
+                       ("IRC R311.7.8", "IRC R311.7.8.2", "IRC R311.7.1", "IRC R301.5"),
+                       blocking=False),
         PermitItemSpec("Guard opening limit", ("code.R312_1_3_guard_opening_limit",),
                        ("IRC R312.1.3",), blocking=False),
         PermitItemSpec("Safety glazing", ("code.R308_4_safety_glazing",),

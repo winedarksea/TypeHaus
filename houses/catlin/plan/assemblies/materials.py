@@ -10,6 +10,7 @@ from library import (
 from .materials_ishtar import MATERIALS_ISHTAR
 from .materials_metal import MATERIALS_METAL
 from .materials_flooring import MATERIALS_FLOORING
+from .materials_titanium import MATERIALS_TITANIUM
 
 
 MATERIALS = [
@@ -382,4 +383,5 @@ MATERIALS = [
     *MATERIALS_METAL,
     *MATERIALS_ISHTAR,
     *MATERIALS_FLOORING,
+    *MATERIALS_TITANIUM,
 ]

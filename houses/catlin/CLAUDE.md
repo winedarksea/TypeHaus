@@ -1716,6 +1716,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `W-B-S3-FR` (not 7'-6" — its cabinet would top out above `code.R305_ceiling_height`'s
     95 3/8").
 
+- **ST-B2M's handrails are the owner's titanium** (`RAILING-INT-TI-HANDRAIL-42`,
+  `plan/titanium_types.py`): 42 mm tube on stock 316 fittings for 42.4 mm tube, 70 mm
+  wall-to-centre, both ends of both rails returned to the wall (R311.7.8.2: an end cap alone
+  does not pass). The 5 tubes cover this stair only; ST-M2S needs ~4.5 m more. **Every wall
+  handrail stands 2 3/8"+ off its finish face** — `code.R311_7_8_2_handrail_wall_clearance`
+  grades the drawn rail, and the old 2" stand-off FAILed it everywhere. The W rail stops at
+  the upper flight's top nosing (26'-2 5/8"): past it the rake reads the lower flight. Cut
+  plan, fitting fit and the R301.5 span: `notes/titanium_handrail_backsplash.md`.
 - **Under-stair space.** No `RM-B-UNDERSTAIR` room exists; the storage under the arriving
   stair flight (and on under the landing deck) is part of `RM-B-STAIR`'s single polygon.
   `D-B-CLOSET` opens it to the furnace room; `ED-B-CLOSET-LT` (`room=RM-B-STAIR`) lights it.
@@ -2662,6 +2670,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **East-wall receptacles stay at42 AFF:** living south22/44 plusRC17 at83 7/8;
   north RC14 at124 1/8, then168/216/258 1/8. Garage KGF4/KMX1 at326/338 3/4;
   landing KGF3 at349 1/4. Recheck framing and coverage if those locations change.
+
+- **The range backsplash is two uncut titanium sheets** (`WP-M-KIT-BACKSPLASH`,
+  `plan/kitchen_casework.py`), 1000 x 1000 mm centred on the range, 36"-75 3/8" AFF, top
+  behind the hood. Its `offset` is wall-local (36 15/16" = the 36" counter). Keep the hood's
+  power box at >= 77" AFF, above the sheet. 3 sheets spare.
 
 ### Gardens (2026-09-21)
 

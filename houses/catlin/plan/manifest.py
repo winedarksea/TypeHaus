@@ -42,7 +42,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   millwork_vanities, placeables,
                   plant_room, plant_room_types, plant_types, plate_ties,
                   products,
-                  site, transitions, views, wind_clamps)
+                  site, titanium_types, transitions, views, wind_clamps)
 from plan.storeys import attic, attic_studio, basement, garage, main, second
 
 format_version = 1
@@ -87,7 +87,7 @@ _library = Library(
     # The library's fascia guard plus the house's own surface-mounted one — the porch
     # guard's baseplates land on concrete wall tops and buy no bracket kit, which is a
     # different order at a different rate. Tags are disjoint.
-    railing_types=ALL_RAILING_TYPES,
+    railing_types=(*ALL_RAILING_TYPES, *titanium_types.RAILING_TYPES),
     # The library's plumbing catalog is a planning ALLOWANCE (its own header says final
     # selection is the owner's). `plan/fixture_types.py` is that selection where one has
     # been made — so far the RM-M-BATH2 drop-in bath alone — and rides beside the

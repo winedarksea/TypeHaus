@@ -927,18 +927,20 @@ FLIGHT_SKIRT = Railing(
     mount="fascia", role="guard", serves_stair="ST-S2A", infill="panel",
 )
 
-# Continuous wall rail wraps the outer faces of the turn and follows the straight run.
+# Continuous wall rail wraps the outer faces of the turn and follows the straight run,
+# 2 3/8" off both faces (R311.7.8.2's 1 1/2" clear + the bar's radius); both ends return.
 STAIR_HANDRAIL = Railing(
     uid="CARL02AAAA", tag="RL-A-HANDRAIL", path=(
-        pt(inch(423.375), inch(56.375)),
-        pt(inch(423.375), inch(103.625)),
-        pt(inch(257.125), inch(103.625)),  # the top riser's face; the header is 3/4" west
+        pt(inch(423), inch(56.375)),
+        pt(inch(423), inch(103.25)),
+        pt(inch(257.125), inch(103.25)),  # the top riser's face; the header is 3/4" west
     ),
     kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
     base_elevation=ft(20), post_spacing=inch(48), post_size="2x2", rail_count=1,
     mount="wall", assembly="RAILING_DARK_METAL",
     role="handrail", serves_stair="ST-S2A", top_height=inch(36),
     graspable_profile="1.5in round — Type I",
+    start_termination="wall_return", end_termination="wall_return",
 )
 
 STAIRS = [

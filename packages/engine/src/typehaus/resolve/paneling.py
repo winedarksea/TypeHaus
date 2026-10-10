@@ -67,7 +67,8 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                         el, f"paneling {el.tag} spans wall {ref!r}, which does not "
                             f"{scope} (or is excluded by walls=)"))
             offset = el.offset.meters if el.offset is not None else 0.0
-            thickness_m = _band_thickness_m(plan, el.material_ref)
+            thickness_m = (el.thickness.meters if el.thickness is not None
+                           else _band_thickness_m(plan, el.material_ref))
             # Which side of its walls the band is on. A room-scoped band faces into its room,
             # judged per stretch beside the band (`_room_side_point`): one interior point for
             # the whole room puts an L's inner-corner wall on its far face. A line-scoped band

@@ -2038,32 +2038,36 @@ STAIRS = [
 
 # ST-B2M handrails (R311.7.8): one wall-mounted rail per flight, `serves_stair` rakes each
 # to its flight's nosing line and code.R311_7_8_handrail grades `top_height` (34"-38"),
-# continuity and graspability. Same authoring as ST-M2S one storey up (second.py
-# STAIR_HANDRAILS): each rail sits 2" off its lane's wall face and runs the flight's span.
-# The west rail moved 2 5/8" west on 2026-08-24 with the wall face it is mounted to
-# (x=10'-3 1/4" now); the east one is on W-B-CN's concrete and did not move.
+# continuity and graspability. Owner-furnished 42 mm titanium tube on stock 316 stainless
+# 42.4 mm fittings (plan/titanium_types.py, notes/titanium_handrail_backsplash.md): centreline
+# 2 3/4" (70 mm) off the finish face, so 1.92" clear (R311.7.8.2) and 3.58" projection
+# (R311.7.1). Both ends of each rail return to the wall. The W rail runs to y=26'-2 5/8",
+# over the top nosing (the upper flight's arrival station): past it the rake reads the lower
+# flight instead.
 STAIR_HANDRAILS = [
     Railing(
-        uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", path=(
-            pt(ft(17, 4), ft(26, 0.375)),
-            pt(ft(17, 4), ft(31, 0.375)),
+        uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", type_ref="RAILING-INT-TI-HANDRAIL-42", path=(
+            pt(ft(17, 3.25), ft(26, 0.375)),
+            pt(ft(17, 3.25), ft(31, 0.375)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
         base_elevation=ft(-9, -4), post_spacing=inch(48), post_size="2x2", rail_count=1,
-        mount="wall", assembly="RAILING_DARK_METAL",
+        mount="wall",
         role="handrail", serves_stair="ST-B2M", top_height=inch(36),
-        graspable_profile="1.5in round — Type I",
+        graspable_profile="42mm round — Type I",
+        start_termination="wall_return", end_termination="wall_return",
     ),
     Railing(
-        uid="CMRL02AAAA", tag="RL-M-HANDRAIL-W", path=(
-            pt(ft(10, 5.25), ft(31, 1.625)),
-            pt(ft(10, 5.25), ft(26, 10.375)),
+        uid="CMRL02AAAA", tag="RL-M-HANDRAIL-W", type_ref="RAILING-INT-TI-HANDRAIL-42", path=(
+            pt(ft(10, 6), ft(31, 1.625)),
+            pt(ft(10, 6), ft(26, 2.625)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
         base_elevation=ft(0), post_spacing=inch(48), post_size="2x2", rail_count=1,
-        mount="wall", assembly="RAILING_DARK_METAL",
+        mount="wall",
         role="handrail", serves_stair="ST-B2M", top_height=inch(36),
-        graspable_profile="1.5in round — Type I",
+        graspable_profile="42mm round — Type I",
+        start_termination="wall_return", end_termination="wall_return",
     ),
 ]
 

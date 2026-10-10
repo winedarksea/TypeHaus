@@ -771,9 +771,10 @@ STAIRS = [
 # asks for continuity riser to riser and forbids nothing beyond) puts the bracket squarely on
 # the stud and needs no blocking there. The FOOT station is 5" from a stud and gets a
 # `WallBacking` band in plan/backing.py (`BK-G-W-RAIL-FOOT`) — move this path and move it.
-# The rail centreline at x=6'-9" is 2 1/4" off the wall's gyp face at 6'-6 3/4": the 1 1/2"
-# clearance R311.7.1.2 wants plus the bar's own 3/4" radius. It hangs over the stem ledge,
-# 2 5/8" clear of the flight's west edge at 6'-11 5/8".
+# The rail centreline at x=6'-9 1/8" is 2 3/8" off the wall's gyp face at 6'-6 3/4": the
+# 1 1/2" clearance R311.7.8.2 wants plus the bar's own 3/4" radius, with 1/8" to spare. It
+# hangs over the stem ledge, 2 1/2" clear of the flight's west edge at 6'-11 5/8". Both ends
+# return to the wall.
 #
 # It was post-mounted on the west side of a flight standing in the open at x 8'-6"..11'-6"
 # (2026-09-07 to 2026-09-11), and before that ran x 5'..8' under a landing at 6'-6"..9'-6",
@@ -786,12 +787,13 @@ STAIRS = [
 
 RAILINGS = [
     Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE",
-            path=(pt(ft(6, 9), ft(50, 10.375)), pt(ft(6, 9), ft(47, 2.625))),
+            path=(pt(ft(6, 9.125), ft(50, 10.375)), pt(ft(6, 9.125), ft(47, 2.625))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
             base_elevation=ft(-2, -10), post_spacing=inch(48), post_size="2x2",
             rail_count=1, mount="wall", assembly="RAILING_DARK_METAL",
             role="handrail", serves_stair="ST-G-SERVICE", top_height=inch(36),
-            graspable_profile="1.5in round — Type I"),
+            graspable_profile="1.5in round — Type I",
+            start_termination="wall_return", end_termination="wall_return"),
 ]
 
 # ** THE TRUSS ORDER, FOR BOTH ROOFS (2026-09-30). ** `rafter/RF-BW-CANOPY`, `rafter/RF-GARAGE`,

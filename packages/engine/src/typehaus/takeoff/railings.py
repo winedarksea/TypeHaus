@@ -24,6 +24,7 @@ from typehaus.resolve.railings.infill import derived_infill_count
 from typehaus.resolve.railings.parts import (
     RAILING_GLASS_CATEGORY,
     RAILING_INFILL_CATEGORY,
+    railing_type,
     resolve_parts,
 )
 from typehaus.resolve.sweep import sweep_length_m
@@ -119,6 +120,22 @@ def _top_rail_length_ft(model: ResolvedModel, tag: str) -> float:
     return total * _M_TO_FT
 
 
+def _hardware_quantities(model: ResolvedModel, element: Railing) -> dict[str, object]:
+    """Wall returns (an elbow + end plate each) and, where the type states its stock
+    length, the sticks the top rail takes and the splices between them."""
+    out: dict[str, object] = {}
+    returns = len(_by_part(model, element.tag, "RETURN"))
+    if returns:
+        out["return_count"] = returns
+    product = railing_type(model.plan.library, element)
+    if product is not None and product.stock_length is not None:
+        run_ft = _top_rail_length_ft(model, element.tag)
+        sticks = max(1, math.ceil(run_ft / (product.stock_length.meters * _M_TO_FT) - 1e-9))
+        out["stock_count"] = sticks
+        out["splice_count"] = sticks - 1
+    return out
+
+
 def _infill_solids(model: ResolvedModel, element: Railing) -> list:
     """This railing's infill solids, matched on the parent uid — a tag prefix also caught
     ``RL-SG-PORCH-NE-BAL3`` under ``RL-SG-PORCH`` and billed the stub's balusters twice."""
@@ -183,6 +200,7 @@ def railing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             row["top_rail_length_ft"] = (float(row["top_rail_length_ft"])
                                          + _top_rail_length_ft(model, element.tag))
             _add_infill(row, _infill_quantities(model, element))
+            _add_infill(row, _hardware_quantities(model, element))
             tags = row["tags"]
             assert isinstance(tags, list)
             tags.append(element.tag)

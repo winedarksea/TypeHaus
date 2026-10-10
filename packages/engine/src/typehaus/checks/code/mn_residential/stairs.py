@@ -23,6 +23,7 @@ from typehaus.findings import Finding, not_applicable
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.overhead import OverheadIndex
+from typehaus.resolve.railings.parts import rail_half_section_m
 from typehaus.resolve.stair_headroom import STAIR_HEADROOM, run_clearances
 from typehaus.resolve.stairs.walkline import (
     flight_stations,
@@ -209,24 +210,23 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
 
 # R311.7.1's clear-width-past-handrail limits: 31.5" with a handrail on one side of the
 # flight, 27" with handrails both sides. Measured against the authored rail's plan line
-# plus the 1.5" section the resolver frames (half of it each side of the line).
+# plus the section the resolver frames (``rail_half_section_m``: the type's diameter).
 _MIN_WIDTH_PAST_ONE_RAIL = inch(31.5)
 _MIN_WIDTH_PAST_TWO_RAILS = inch(27)
-_RAIL_HALF_SECTION = inch(0.75)
 # A rail whose plan line sits farther than this outside a flight's tread edge belongs to
 # some other run (the same stair's opposite lane), not to this flight's side.
 _RAIL_LATERAL_REACH = inch(12)
 _RAIL_PARALLEL_DOT = 0.9  # rail runs along the flight, not across it
 
 
-def _flight_rail_projections(stair, rails) -> dict[str, tuple[float, float, float]]:
+def _flight_rail_projections(stair, rails, library) -> dict[str, tuple[float, float, float]]:
     """Per straight flight, ``(width, low-side projection, high-side projection)`` in m.
 
     Geometry is measured, never assumed: the flight's edges come off its tread boards'
     endpoints, the handrail's plan line off the authored path. A rail counts against a
     flight when it runs parallel to it, overlaps its run extent, and sits within
     ``_RAIL_LATERAL_REACH`` of one edge; its projection into the flight is however far the
-    near face of its 1.5" section reaches past that edge. Winders are excluded exactly as
+    near face of its drawn section reaches past that edge. Winders are excluded exactly as
     before — only ``tread`` boards define a lane.
     """
     flights: dict[str, list] = {}
@@ -253,7 +253,7 @@ def _flight_rail_projections(stair, rails) -> dict[str, tuple[float, float, floa
         r0, r1 = min(r_of(p) for p in ends), max(r_of(p) for p in ends)
         proj0 = proj1 = 0.0
         for rail in rails:
-            pts = [p.xy_m for p in rail.path]
+            pts, half = [p.xy_m for p in rail.path], rail_half_section_m(library, rail)
             for a, b in zip(pts[:-1], pts[1:], strict=True):
                 seg = math.hypot(b[0] - a[0], b[1] - a[1])
                 if seg < 1e-9:
@@ -268,9 +268,9 @@ def _flight_rail_projections(stair, rails) -> dict[str, tuple[float, float, floa
                         <= e1 + _RAIL_LATERAL_REACH.meters):
                     continue
                 if abs(c - e0) <= abs(c - e1):
-                    proj0 = max(proj0, min(c + _RAIL_HALF_SECTION.meters - e0, e1 - e0))
+                    proj0 = max(proj0, min(c + half - e0, e1 - e0))
                 else:
-                    proj1 = max(proj1, min(e1 - (c - _RAIL_HALF_SECTION.meters), e1 - e0))
+                    proj1 = max(proj1, min(e1 - (c - half), e1 - e0))
         out[key] = (e1 - e0, max(proj0, 0.0), max(proj1, 0.0))
     return out
 
@@ -317,7 +317,7 @@ def stair_width(ctx: CheckContext) -> list[Finding]:
         clear_fail = False
         worst: tuple[float, float, int] | None = None  # (clear, limit, sides)
         for key, (flight_w, proj0, proj1) in sorted(
-                _flight_rail_projections(stair, serving).items()):
+                _flight_rail_projections(stair, serving, getattr(plan, "library", None)).items()):
             sides = (proj0 > 1e-9) + (proj1 > 1e-9)
             if sides == 0:
                 continue
