@@ -377,6 +377,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   run their own 24" module) — 32"x24"=5.33 ft2 is the crossing tributary in
   `notes/catlin_truss_engineering.md`. Block phase is solved for 32", not 16" — reusing the
   stud phase puts half a facade's segments on the wrong parity.
+- **The 2" cavity is closed against insects in four places** (2026-10-10; the ccSPF in it has
+  no other protection, `notes/outie_window_truss_detail.md` "Insect closure"): the base screen
+  and a head screen over every window/door, both DERIVED (`resolve/rainscreen_closures.py`) in
+  perforated aluminium, holes <= 1/8"; the jamb buck returns (a hold point); and the PBR rib
+  closures (`[allowances] envelope-pbr-profile-closures`). **The top stays closed: the roof deck
+  oversails to the girt face**, pinned by `test_rainscreen_closures.py` — clip it back to the
+  sheathing and the whole cavity opens into the eave. B&B's rat guard / C-closure is a
+  **confirm in the BBD75 install guide**.
 - Girt course module counts from the SILLS' datum, phase ZERO
   (`course_datum="framing-base"` + `course_offset=inch(0)`), not the wall base. One module
   runs unbroken from wall base through the gable rake, breaking only at a starter (band

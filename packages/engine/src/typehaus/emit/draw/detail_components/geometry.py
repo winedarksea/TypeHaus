@@ -274,10 +274,10 @@ def vent_face(wall, band, is_outboard_high: bool) -> float:
       truss (``houses/catlin/notes/outie_window_truss_detail.md``), so there is nothing to
       slot it into at the moment it is installed.
 
-    Read through ``resolve.accessories.rainscreen_cavity_m`` so the drawing, the resolved
+    Read through ``resolve.rainscreen_closures.rainscreen_cavity_m`` so the drawing, the resolved
     bug-screen solid and the order are all one number.
     """
-    from typehaus.resolve.accessories import rainscreen_cavity_m
+    from typehaus.resolve.rainscreen_closures import rainscreen_cavity_m
 
     outer = face_of(band, is_outboard_high, outer=True)
     gap_m = rainscreen_cavity_m(wall.layers)

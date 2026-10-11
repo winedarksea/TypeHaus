@@ -2148,7 +2148,22 @@
 # keyed on the ASSEMBLY's rainscreen cavity, and `layer_materials=` swapped a material and
 # nothing else — same 1/2" vent gap, same 1" section, same 144 LF, same 12.2 SF on the same
 # fourteen walls. The panel above it is board & batten on ten of them and PBR on four.
-"bug_screen:EXT_2X6" = { unit = "SF", material = { low = 9.5, high = 23.5 }, labour = { low = 14, high = 29.5 } }  # 12.2 SF = 144 LF
+# ** RE-STRUCK 2026-10-10: 2" CAVITY, METAL SECTION, AND OPENING HEADS. ** Three changes at once.
+# (1) The truss wall's cavity is 2" (1/2" vent gap + 1-1/2" girt band), so 1 LF is now 1/6 SF
+# and the old $/SF had silently doubled again (12.2 -> 24.6 SF for the same 144 LF). (2) The
+# polypropylene strip is chewable; the closure is now `perforated-aluminum-insect-closure`, a
+# 0.032" perforated sheet (holes <= 1/8") braked to a U across the cavity. (3) The engine now
+# derives a head screen over every window and door on a rainscreen wall
+# (`resolve/rainscreen_closures.head_screen_spans`): 144 LF of base + 104.6 LF over 38 heads
+# here = 248.6 LF, reading 42.0 SF (the base bands keep their mitred corners), and 4 heads
+# (12.1 LF, 2.0 SF) on the plant wall's own row below.
+# Underlying: **$3.50-7.50/LF installed** — material $2.00-4.50 (shop-braked from 4x8 perforated
+# 0.032" aluminium, 5" girth = 0.42 SF of sheet per LF plus waste; a bought formed profile is
+# ~$10/LF, GBA "material for rainscreen bug screen", which caps the band), labour $1.50-3.00 —
+# dearer than the strip because a head piece is cut and fitted one opening at a time. x 6 for
+# $/SF. No firm quote is on file: ask the siding sub or a sheet-metal shop.
+"bug_screen:EXT_2X6" = { unit = "SF", material = { low = 12, high = 27 }, labour = { low = 9, high = 18 } }  # 42.0 SF = 248.6 LF (144 base + 104.6 heads)
+"bug_screen:PLANT_EXT_2X6_HUMID" = { unit = "SF", material = { low = 12, high = 27 }, labour = { low = 9, high = 18 } }  # 2.0 SF = 12.1 LF, 4 plant-room heads
 # RETIRED 2026-08-20, kept for the rate. The garage lost its 3/8" rainscreen furring that
 # day, so GARAGE_WALL_2X6 has no vented cavity and bills no screen; the row is left because
 # the number was researched and the wall could get its cavity back. It reads 0 SF today.
@@ -6909,6 +6924,19 @@ envelope-exterior-hoods-and-flashing = { low = 200, high = 500 }
 # band where a straight Cor-A-Vent section sits at the bottom, which is why this row does
 # not go below it. 192 LF x $2.00-4.50 = $384-864.
 envelope-garage-corrugated-closure-strips = { low = 384, high = 864 }
+# NEW 2026-10-10 — the house's PBR profile closures, the same job as the garage row above.
+# PBR (`pbr-panel-24`, the E/W walls) is ribbed, so every horizontal termination leaves the rib
+# voids open into the rainscreen cavity (see [cladding]'s note: "every horizontal termination
+# needs a die-cut foam closure matched to the rib"). The derived `bug_screen` closes the CAVITY;
+# it does not close the RIBS in front of it. Counted off the model, not modelled:
+#   72.0 LF  base, VENTED closure (main-storey E/W walls; the cavity drains and vents here)
+#   72.0 LF  eave head, SOLID closure (second-storey E/W walls; the E/W walls ARE the eaves)
+#   47.3 LF  opening heads, SOLID, under the head flashing (19 windows, RO + a jamb post each side)
+#   47.3 LF  opening sills, SOLID, over the sill pan's J-receiver (all 19 are windows)
+#  238.6 LF  total; each closure bedded in butyl tape. Board & batten (N/S) needs none by its
+#            guide; its rat guard and C-closure are a BBD75 install-guide CONFIRM, not a row.
+# $2.00-4.50/LF installed, the garage row's band: 238.6 LF x $2.00-4.50 = $477-1,074.
+envelope-pbr-profile-closures = { low = 477, high = 1074 }
 
 # --- MEP ------------------------------------------------------------------------------------
 # REMOVED 2026-08-27: electrical-pv-array-modules-and-racking, $24,000-46,000. The money went

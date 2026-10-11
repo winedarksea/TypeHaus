@@ -10,12 +10,11 @@ invents a position or a route.
 from __future__ import annotations
 
 import math
-from collections.abc import Sequence
 from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.braces import SlatBrace, StrapBrace
-from typehaus.model.enums import ConnectorKind, LayerFunction, TrimKind
+from typehaus.model.enums import ConnectorKind
 from typehaus.model.mep import Sump, VentRun
 from typehaus.model.structure import (
     Connector,
@@ -36,26 +35,23 @@ from typehaus.model.trim import (
 )
 from typehaus.quantities import inch
 from typehaus.resolve.assembly_material import assembly_structure_material
+from typehaus.resolve.edge_runs import resolve_downspout, resolve_edge_run
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import (
     bar,
     circle_outline,
-    clip_half_plane,
-    length,
     nominal_actual_m,
     rect_between,
     square,
-    sub,
-    wall_frame,
 )
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedBrace,
-    ResolvedLayer,
     ResolvedModel,
     ResolvedSolid,
 )
 from typehaus.resolve.railings import resolve_railing
+from typehaus.resolve.rainscreen_closures import resolve_bug_screens
 from typehaus.resolve.slat_braces import resolve_slat_brace
 from typehaus.resolve.solid_categories import in_slab_family
 from typehaus.resolve.strap_braces import resolve_strap_brace
@@ -70,43 +66,7 @@ from typehaus.resolve.round_solids import (  # noqa: F401  # isort: skip  (see a
     PIPE_SWEEP_BANDS as _PIPE_SWEEP_BANDS,
     round_run_bands as _round_run_bands,
 )
-from typehaus.resolve.trim_bands import drip_edge_bands, open_channel_bands
 from typehaus.resolve.vent_termination import RISER_LEGS, riser_polylines
-
-# Trim ``TrimKind`` values collapse onto a small render/IFC category set.
-_TRIM_CATEGORY = {
-    "fascia": "fascia",
-    # The vented eave panel, not the dropped box ``resolve/soffits.py`` mints as "soffit":
-    # one is the siding contractor's trim, the other the drywaller's ceiling.
-    "soffit": "eave_soffit",
-    "gutter": "gutter",
-    "downspout": "downspout",
-    "drip_flashing": "flashing",
-    "wrb_counterflashing": "flashing",
-    # A beam cap is formed metal like the flashing family, but it caps an exposed beam in a
-    # wall plane and is the siding contractor's, not the roofer's — the BOM has always
-    # billed it under ``_SIDING_EDGE_TRIM``. Collapsed onto "flashing" it rode the roofing
-    # trade and the sunken-garden caps showed under Roof in the viewer, so it keeps its own
-    # label and its own trade, exactly as the wall corner below does.
-    "beam_cap": "beam_cap",
-    # A wall corner closure is formed metal like the flashing family but it is the siding
-    # contractor's, not the roofer's, so it keeps its own label and rides the siding trade.
-    "wall_corner": "wall_corner",
-    "movement_joint": "movement_joint",  # the mason's sealant joint, not formed metal
-    # The glazing extrusions share the edge-run shape but not the flashing category: they
-    # are an aluminium order billed by the lineal foot, and the take-off groups on this.
-    "glazing_channel": "glazing_trim",
-    "glazing_bar": "glazing_trim",
-}
-
-# Rainscreen base closure. The strip is a stock corrugated section: 1-1/2" tall, sold by the
-# lineal foot, cut to the cavity's own depth. Only the height is a constant here — the depth
-# is read off the wall's furring layer, so a change to the batten size moves the order with
-# it instead of leaving a strip that no longer fills the cavity.
-BUG_SCREEN_MATERIAL = "corrugated-vent-strip"
-BUG_SCREEN_HEIGHT_IN = 1.5
-_STACK_TOLERANCE_M = 0.05   # a storey's walls land exactly on the one below; this is slop
-_STACK_PLAN_TOL_M = 0.5     # two stacked walls share a plan line within a wall's thickness
 
 
 def resolve_accessories(model: ResolvedModel) -> list[Finding]:
@@ -154,243 +114,12 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
             elif isinstance(el, VentRun):
                 findings.extend(_resolve_vent(model, el, storey.tag))
             elif isinstance(el, Downspout):
-                _resolve_downspout(model, el, storey.tag)
+                resolve_downspout(model, el, storey.tag)
             elif isinstance(el, (EaveSoffit, Fascia, Gutter, Flashing, GlazingTrim,
                                  MovementJoint)):
-                _resolve_edge_run(model, el, storey.tag)
-    _resolve_bug_screens(model)
+                resolve_edge_run(model, el, storey.tag)
+    resolve_bug_screens(model)
     return findings
-
-
-def rainscreen_band(
-        layers: Sequence[ResolvedLayer]) -> tuple[ResolvedLayer, float] | None:
-    """``(band layer, vented depth)`` for a wall's rainscreen, or ``None`` if it has none.
-
-    A rainscreen is not any furring — it is a FURRING layer with CLADDING *outboard* of it,
-    which is what makes the gap a drained and vented cavity rather than a service chase. The
-    predicate is read off the assembly, so every wall built on a rainscreen stack qualifies
-    automatically and an interior partition (no cladding at all) never does. Where a wall
-    carries two furring layers — the plant room has a liner batten inboard and an outrigger
-    band outboard — the one the CLADDING is outboard of is the rainscreen, and this returns
-    the layer as well as the number so a caller cannot pick a different one by taking the
-    first it finds.
-
-    A furring band packed with insulation vents only what is left over. The Swinburne truss
-    wall's outrigger is 3-1/2" deep with 2-1/2" of closed-cell foam behind it, so the drained
-    and vented cavity in front of the foam is 1" — not 3-1/2", which is what the band's own
-    thickness says and what would size a 3-1/2" insect closure at the bottom of every wall.
-    The fill resolves as a cavity layer of its own (``topology.py``) sharing the band's
-    depth position, so subtract it where it names the band as its host. A band packed SOLID
-    vents nothing, and is no more a rainscreen than a stud bay is: ``None``, not zero, or the
-    take-off ships a run of 0"-deep insect strip and the resolver draws the whole band.
-
-    **An AIRGAP layer immediately inboard of the band belongs to the same cavity.** The
-    catlin truss's outer girt band is 1-1/2" of solid KDAT — nothing vents inside it — with
-    the 1/2" vent gap authored as its own layer behind it. Read band-only, that wall would
-    report a 1-1/2"
-    cavity that is actually wood, and no cavity at all where the air is. Read together they
-    are the 2" of drained, vented, insect-screened space the wall really has, open to the
-    outside between the girt courses: 1/2" behind the girts plus the 1-1/2" between them.
-    Everything downstream — the bug screen, ``vent_face``, the envelope take-off, the roof
-    layer setbacks — follows this one number.
-
-    **A STRUCTURE layer between the band and the cladding cancels the band**, for the
-    reason spelled out at the branch below: nothing vents through the wall's own structure.
-
-    ``layers`` is ``ResolvedWall.layers`` — every resolved layer interior→exterior,
-    cavity fills included, since a fill is exactly what this has to subtract. Passing
-    ``depth_layers()`` (which drops them) reports the band's gross depth.
-    """
-    band = None
-    depth = 0.0
-    airgap = 0.0
-    for layer in layers:
-        if getattr(layer, "is_cavity", False):
-            if band is not None and layer.cavity_host == band.name:
-                depth -= layer.thickness_m
-            continue
-        if layer.function == LayerFunction.AIRGAP.value:
-            # Held, not returned: it only counts as part of the rainscreen if the very next
-            # body layer is the furring band it feeds. An air gap anywhere else in a stack
-            # (the brick veneer's 1" cavity behind its own wythe) is a different cavity.
-            airgap = layer.thickness_m
-            continue
-        if layer.function == LayerFunction.FURRING.value:
-            band, depth = layer, layer.thickness_m + airgap
-        elif layer.function == LayerFunction.CLADDING.value and band is not None:
-            return (band, depth) if depth > 1e-9 else None
-        elif layer.function == LayerFunction.STRUCTURE.value:
-            # **A cavity cannot vent to the outside through the wall's own structure.** A
-            # furring band INBOARD of the structure is a liner or service batten, and a
-            # cladding layer on the far side of 8" of concrete does not turn it into a
-            # rainscreen. Without this, catlin's `SAUNA_LINER_ON_BASEMENT_8` — the sauna's
-            # T&G-on-furring liner inboard of a buried pour, with the above-grade acrylic
-            # protection band (function CLADDING, deliberately) outboard of it — resolved a
-            # 1/2" rainscreen and an insect closure at the bottom of a wall standing under
-            # 6'-4" of soil, and billed it.
-            band, depth = None, 0.0
-        airgap = 0.0
-    return None
-
-
-def rainscreen_cavity_m(layers: Sequence[ResolvedLayer]) -> float | None:
-    """Depth of a wall's drained and vented rainscreen cavity — see :func:`rainscreen_band`."""
-    found = rainscreen_band(layers)
-    return found[1] if found is not None else None
-
-
-def _point_segment_distance(p: tuple[float, float], a: tuple[float, float],
-                            b: tuple[float, float]) -> float:
-    run = sub(b, a)
-    span = run[0] * run[0] + run[1] * run[1]
-    if span <= 0.0:
-        return length(sub(p, a))
-    t = min(1.0, max(0.0, ((p[0] - a[0]) * run[0] + (p[1] - a[1]) * run[1]) / span))
-    return length(sub(p, (a[0] + run[0] * t, a[1] + run[1] * t)))
-
-
-def _continues_cavity_below(model: ResolvedModel, wall) -> bool:
-    """Is this wall's rainscreen cavity fed from a rainscreen wall directly beneath it?
-
-    Platform framing stacks a storey's walls on the one below, and the cladding and its
-    vent cavity run past that joint uninterrupted — there is no cladding start there and so
-    no screen. A wall only gets one where the cavity genuinely begins: at grade, or on top
-    of something that is not itself a rainscreen (a concrete stem wall, a garage curb).
-
-    The test is that some rainscreen wall's top lands on this wall's base *and* shares its
-    plan line; matching elevation alone would suppress the screen on every wall in a storey
-    the moment one of them stacked.
-    """
-    for other in model.walls:
-        if other.tag == wall.tag or abs(other.z1_m - wall.z0_m) > _STACK_TOLERANCE_M:
-            continue
-        if rainscreen_cavity_m(other.layers) is None:
-            continue
-        mid = ((wall.axis[0][0] + wall.axis[1][0]) / 2.0,
-               (wall.axis[0][1] + wall.axis[1][1]) / 2.0)
-        if _point_segment_distance(mid, other.axis[0], other.axis[1]) <= _STACK_PLAN_TOL_M:
-            return True
-    return False
-
-
-def _resolve_bug_screens(model: ResolvedModel) -> None:
-    """A vented insect closure where a rainscreen cavity opens at the base of the cladding.
-
-    Derived rather than authored: the screen exists because of how the wall is built, not
-    because of anything about a particular wall, so hand-authoring one run per wall would
-    mean the next exterior wall someone draws silently ships an open cavity for wasps. The
-    strip fills the furring layer's own plan band — its depth *is* the cavity depth, by
-    construction — and sits at the bottom of that cavity.
-
-    Only the *bottom* of a cavity is screened: see :func:`_continues_cavity_below`.
-
-    Geometry only: the solid renders and exports, and
-    :func:`typehaus.takeoff.envelope.bug_screen_takeoff` bills the same runs by the lineal
-    foot off the same predicate.
-    """
-    height = inch(BUG_SCREEN_HEIGHT_IN).meters
-    for wall in model.walls:
-        if not screens_rainscreen_base(model, wall):
-            continue
-        found = rainscreen_band(wall.layers)
-        if found is None:
-            continue
-        furring, vent = found
-        outline = _vented_band(wall, furring, vent, _cavity_airgap(wall.layers, furring))
-        if len(outline) < 3:
-            continue
-        model.solids.append(ResolvedSolid(
-            uid=f"{wall.uid}-bugscreen", tag=f"{wall.tag}-BUGSCREEN", storey=wall.storey,
-            category=TrimKind.BUG_SCREEN.value, outline=outline,
-            z0_m=wall.z0_m, z1_m=wall.z0_m + height, assembly=wall.assembly,
-        ))
-
-
-def _cavity_airgap(layers: Sequence[ResolvedLayer],
-                   furring: ResolvedLayer) -> ResolvedLayer | None:
-    """The AIRGAP layer immediately inboard of ``furring``, or ``None``.
-
-    The other half of the reading :func:`rainscreen_band` takes: it adds that gap's depth to
-    the cavity, and this is the polygon that depth is actually in, so the screen the model
-    draws and the screen the take-off bills are one strip.
-    """
-    previous = None
-    for layer in layers:
-        if getattr(layer, "is_cavity", False):
-            continue
-        if layer is furring:
-            return (previous if previous is not None
-                    and previous.function == LayerFunction.AIRGAP.value else None)
-        previous = layer
-    return None
-
-
-def _vented_band(wall, furring, vent: float,
-                 airgap: ResolvedLayer | None = None) -> list[tuple[float, float]]:
-    """The plan polygon of the cavity actually open at the base of the cladding.
-
-    Three cases, and each is a wall the house has actually built:
-
-    * **An unfilled band** vents over its whole depth — every rainscreen wall built before
-      the truss wall, and why this returns the band unchanged there.
-    * **A band packed with 2-1/2" of closed-cell foam** (the Swinburne outrigger) vents only
-      the 1" in front of it, and drawing the screen across the foam too would put a 3-1/2"
-      insect closure where a 1" one goes — the same overstatement
-      :func:`rainscreen_cavity_m` corrects for the order.
-    * **A solid band with its gap authored behind it** (the catlin truss's outer girt, with
-      the 1/2" vent as its own AIRGAP layer) vents over BOTH, and the strip has to span the
-      two polygons or the model draws a 1-1/2" closure where a 2" one goes.
-
-    The fill's own polygon is no help in the second case:
-    ``topology._synchronize_cavity_polygons`` makes every cavity layer share its host's ring
-    by convention, so the fill's *depth* is the only thing it can be measured by. Which end
-    of the band that depth is packed against is read off the stack — the cladding is
-    outboard, so the vent is the slice nearest it.
-    """
-    ring = list(furring.polygon)
-    if airgap is not None and airgap.polygon:
-        # Two adjacent bands of one cavity. Unioned through ``resolve/overlay`` rather than
-        # with a bare ``unary_union``: the grid-size guard there is what keeps this from
-        # being fatal on the web app's GEOS 3.12 and silently wrong on the venv's 3.13.
-        merged = _merge_bands(ring, list(airgap.polygon))
-        if merged is not None:
-            ring = merged
-    if vent >= furring.thickness_m + (airgap.thickness_m if airgap is not None else 0.0) \
-            - 1e-9:
-        return ring
-    _origin, _tangent, across, axis_length = wall_frame(wall)
-    if axis_length <= 0.0:
-        return ring
-    def mean_offset(polygon) -> float:
-        return sum(x * across[0] + y * across[1] for x, y in polygon) / len(polygon)
-
-    outermost = [layer for layer in wall.layers if not layer.is_cavity and layer.polygon]
-    if not outermost:
-        return ring
-    outward = across if mean_offset(outermost[-1].polygon) >= mean_offset(ring) \
-        else (-across[0], -across[1])
-    cut = max(x * outward[0] + y * outward[1] for x, y in ring) - vent
-    return clip_half_plane(ring, (outward[0] * cut, outward[1] * cut), outward)
-
-
-def _merge_bands(a: list[tuple[float, float]],
-                 b: list[tuple[float, float]]) -> list[tuple[float, float]] | None:
-    """``a`` and ``b`` as one ring, or ``None`` if they do not merge into a simple one."""
-    from shapely.geometry import Polygon
-
-    from typehaus.resolve.overlay import union_all
-
-    merged = union_all([Polygon(a), Polygon(b)])
-    if merged.is_empty or merged.geom_type != "Polygon":
-        return None
-    return [(float(x), float(y)) for x, y in merged.exterior.coords[:-1]]
-
-
-def screens_rainscreen_base(model: ResolvedModel, wall) -> bool:
-    """Does this wall carry a bug-screen run? Shared by the resolver and the take-off, so
-    the geometry and the order can never disagree about which walls are screened."""
-    return (rainscreen_cavity_m(wall.layers) is not None
-            and not _continues_cavity_below(model, wall))
 
 
 # --- per-kind ---------------------------------------------------------------
@@ -716,100 +445,3 @@ def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> list[Findin
                 category="vent", outline=circle_outline(a, radius, _PIPE_FACETS),
                 z0_m=min(za, zb), z1_m=max(za, zb)))
     return []
-
-
-def _resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
-    path = [p.xy_m for p in el.path]
-    if len(path) < 2:
-        return
-    category = _TRIM_CATEGORY.get(el.kind.value, "flashing")
-    top = el.top_elevation.meters
-    z0 = top - el.depth.meters
-    half = el.thickness.meters / 2.0
-    # Two of the kinds are *formed* metal, not extruded stock, and the boxes-only solid IR
-    # can only say so by composing the section out of bands (see :mod:`.trim_bands`). The
-    # rest are genuinely one band and fall through to the plain extrusion below.
-    recipe = _BANDED_SECTIONS.get(el.kind)
-    if recipe is not None:
-        _resolve_banded_run(model, el, storey, path, category, top, half,
-                            recipe(2.0 * half, el.depth.meters))
-        return
-    for i, (a, b) in enumerate(zip(path[:-1], path[1:], strict=True)):
-        model.solids.append(ResolvedSolid(
-            uid=f"{el.uid}-{i:02d}", tag=f"{el.tag}-{i + 1}", storey=storey,
-            category=category, outline=rect_between(a, b, -half, half), z0_m=z0, z1_m=top,
-            material=el.material,
-        ))
-
-
-#: Which edge-run kinds resolve as a composed section rather than as one extruded band.
-#: A gutter is an open-top U, not the solid billet of aluminium a single bar would draw —
-#: nothing rain could fall *into*. A drip edge is a bent angle: a flat leg lapped
-#: under the roofing and a turn-down that throws the water clear. Both are the same recipes
-#: the roof's *derived* trim uses, so an authored run and a derived one cannot drift into
-#: different-looking metal on the same house.
-_BANDED_SECTIONS = {
-    TrimKind.GUTTER: open_channel_bands,
-    TrimKind.DRIP_FLASHING: drip_edge_bands,
-}
-
-
-def _resolve_banded_run(model: ResolvedModel, el, storey: str, path, category: str,
-                        top: float, half: float, bands) -> None:
-    """Lay a composed section's bands across the ``[-half, +half]`` span the bar occupied.
-
-    The run stays exactly where it was authored; only its cross-section stops being solid.
-    """
-    for key, offset, band_t, bottom_drop, top_drop in bands:
-        left, right = _cross_span(half, offset, band_t, el.back_side)
-        for i, (a, b) in enumerate(zip(path[:-1], path[1:], strict=True)):
-            model.solids.append(ResolvedSolid(
-                uid=f"{el.uid}-{i:02d}-{key}", tag=f"{el.tag}-{i + 1}-{key.upper()}",
-                storey=storey, category=category,
-                outline=rect_between(a, b, left, right),
-                z0_m=top - bottom_drop, z1_m=top - top_drop,
-                material=el.material,
-            ))
-
-
-def _resolve_downspout(model: ResolvedModel, el, storey: str) -> None:
-    """The leader as a round prism from the gutter outlet down to its discharge.
-
-    Faceted exactly like the vent riser (:func:`_resolve_vent`) so the two read as the same
-    kind of round metal on the elevation rather than one being smooth and the other a prism.
-    """
-    z0, z1 = el.bottom_elevation.meters, el.top_elevation.meters
-    if z1 - z0 <= 0.0:
-        return
-    radius = el.diameter.meters / 2.0
-    model.solids.append(ResolvedSolid(
-        uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="downspout",
-        outline=circle_outline(el.position.xy_m, radius, _PIPE_FACETS),
-        z0_m=z0, z1_m=z1, material=el.material))
-    # The gooseneck: one pipe diameter under the trough floor, outlet to drop, run past
-    # both centres by a radius so it covers the two elbows.
-    if el.outlet is not None and el.outlet.xy_m != el.position.xy_m:
-        a, b = el.outlet.xy_m, el.position.xy_m
-        length = math.dist(a, b)
-        ux, uy = (b[0] - a[0]) / length, (b[1] - a[1]) / length
-        model.solids.append(ResolvedSolid(
-            uid=f"{el.uid}-01", tag=f"{el.tag}-OFFSET", storey=storey, category="downspout",
-            outline=rect_between((a[0] - ux * radius, a[1] - uy * radius),
-                                 (b[0] + ux * radius, b[1] + uy * radius), -radius, radius),
-            z0_m=z1 - 2.0 * radius, z1_m=z1, material=el.material))
-
-
-def _cross_span(half: float, offset: float, band_t: float,
-                back_side: str) -> tuple[float, float]:
-    """A band's ``[left, right]`` offsets, given where its inboard end sits.
-
-    The band recipes measure offsets from the section's *inboard* end. ``rect_between``
-    measures from the path's left-hand normal, so when the building is on the left the two
-    frames run in opposite directions and the offsets have to be mirrored — not merely
-    relabelled.
-    """
-    if back_side == "left":
-        right = half - offset
-        return right - band_t, right
-    left = -half + offset
-    return left, left + band_t

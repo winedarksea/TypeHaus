@@ -4746,6 +4746,62 @@
       "node": "polyline",
       "points": [
         [
+          -6.000000000000001,
+          203.5
+        ],
+        [
+          -4.0,
+          203.5
+        ],
+        [
+          -4.0,
+          205.0
+        ],
+        [
+          -6.000000000000001,
+          205.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSX307AAAA-headscreen",
+      "tag": "WIN-S-PLANT2-HEADSCREEN"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          203.5
+        ],
+        [
+          -4.0,
+          203.5
+        ],
+        [
+          -4.0,
+          205.0
+        ],
+        [
+          -6.000000000000001,
+          205.0
+        ]
+      ],
+      "pattern": "spf",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           6.635000000000001,
           107.50000000000001
         ],

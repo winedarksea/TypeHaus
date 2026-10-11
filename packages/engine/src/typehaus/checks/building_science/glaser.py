@@ -131,7 +131,7 @@ def glaser_layers(layers: list[Layer]) -> list[Layer]:
     4"-of-foam wall as a 1-1/2"-of-foam wall — which is a dew point at the stud that the
     real assembly does not have. So a band carrying a ``CavityFill`` is walked (parallel-
     pathed across its fill, like any other layer with one) and the vent plane is the *next*
-    layer out. The same reasoning ``resolve/accessories.rainscreen_cavity_m`` applies to the
+    layer out. The same reasoning ``resolve/rainscreen_closures.rainscreen_cavity_m`` applies to the
     insect closure at the bottom of that cavity: what vents is the unfilled remainder.
     """
     for index, layer in enumerate(layers):

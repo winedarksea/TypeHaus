@@ -663,21 +663,25 @@ def test_bug_screens_bill_the_exterior_perimeter_once_not_once_per_storey(catlin
     Reconciled against the walls themselves: the total is the run of exactly the walls whose
     cavity starts at their own base, which on catlin is the main-storey perimeter. The garage
     has no rainscreen furring on GARAGE_WALL_2X6 — nail strip face-fastens straight to the
-    Zip-R, so there is no cavity there to close.
+    Zip-R, so there is no cavity there to close. The opening head screens add on top, on
+    every storey, each one off the same ``head_screen_spans`` the resolver draws.
     """
-    from typehaus.resolve.accessories import screens_rainscreen_base
     from typehaus.resolve.geometry import length, sub
+    from typehaus.resolve.rainscreen_closures import head_screen_spans, screens_rainscreen_base
 
     rows = bom["bug_screens"]
     assert rows, "a rainscreen house must order its base closure"
     billed = sum(float(row["length_ft"]) for row in rows)
     screened = [wall for wall in catlin_model.walls
                 if screens_rainscreen_base(catlin_model, wall)]
-    expected = sum(length(sub(wall.axis[1], wall.axis[0])) for wall in screened) * 3.280839895
+    heads = sum(s1 - s0 for wall in catlin_model.walls
+                for _opening, s0, s1, _z0 in head_screen_spans(catlin_model, wall))
+    expected = (sum(length(sub(wall.axis[1], wall.axis[0])) for wall in screened)
+                + heads) * 3.280839895
     assert billed == pytest.approx(expected, abs=0.2)
     # Every screened wall is a ground-tier one; nothing stacked on a rainscreen qualifies.
     assert {wall.storey for wall in screened} == {"main"}
-    assert all(row["material"] == "corrugated-vent-strip" for row in rows)
+    assert all(row["material"] == "perforated-aluminum-insect-closure" for row in rows)
 
 
 def test_bug_screen_rows_are_grouped_by_the_cavity_they_are_cut_to(bom):

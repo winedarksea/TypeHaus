@@ -122,6 +122,23 @@ _BASE_ROWS: tuple[Material, ...] = (
         "density is the published bulk density of polypropylene. No ASTM E96 "
         "test is published for the strip itself",
     ),
+    # The metal replacement for the strip above (kept as the revert): a perforated aluminium
+    # U folded across the cavity, holes 1/8" or less. Polypropylene is chewable; this is not.
+    # Modelled as a solid box filling the cavity, so ``density`` is the box's EFFECTIVE one.
+    Material(
+        tag="perforated-aluminum-insect-closure",
+        name='Perforated aluminium rainscreen insect closure (holes <= 1/8")',
+        r_per_inch=0.0,
+        density=97.0,
+        perm_rating=120.0,
+        hatch="metal",
+        color="#b6bac0",
+        source=f"{_UAF}: 'Air, still' 120 perm-in — the vapour path is the open "
+        "perforation, as for `corrugated-vent-strip`. Density is aluminium's 2700 kg/m3 "
+        'times the metal fraction of the 2" x 1-1/2" box it is drawn as: a 0.032" sheet '
+        'with 5" of girth (web + two legs) at 33% open area (3 mm holes, 5 mm stagger) is '
+        '0.107 sq in in 3.0 sq in, 3.6%',
+    ),
     Material(
         tag="cedar-tg",
         name="Cedar T&G paneling",

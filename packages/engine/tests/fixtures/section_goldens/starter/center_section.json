@@ -2775,6 +2775,62 @@
       "node": "polyline",
       "points": [
         [
+          291.41125,
+          84.0
+        ],
+        [
+          291.91125,
+          84.0
+        ],
+        [
+          291.91125,
+          85.5
+        ],
+        [
+          291.41125,
+          85.5
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "WN12AAAAAA-headscreen",
+      "tag": "WIN-103-HEADSCREEN"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          291.41125,
+          84.0
+        ],
+        [
+          291.91125,
+          84.0
+        ],
+        [
+          291.91125,
+          85.5
+        ],
+        [
+          291.41125,
+          85.5
+        ]
+      ],
+      "pattern": "spf",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -3.91125,
           0.0
         ],
@@ -2817,6 +2873,118 @@
         [
           -3.91125,
           1.4999999999999998
+        ]
+      ],
+      "pattern": "spf",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -3.91125,
+          84.0
+        ],
+        [
+          -3.41125,
+          84.0
+        ],
+        [
+          -3.41125,
+          85.5
+        ],
+        [
+          -3.91125,
+          85.5
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "WN13AAAAAA-headscreen",
+      "tag": "WIN-104-HEADSCREEN"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -3.91125,
+          84.0
+        ],
+        [
+          -3.41125,
+          84.0
+        ],
+        [
+          -3.41125,
+          85.5
+        ],
+        [
+          -3.91125,
+          85.5
+        ]
+      ],
+      "pattern": "spf",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          291.41125,
+          198.00000000000003
+        ],
+        [
+          291.91125,
+          198.00000000000003
+        ],
+        [
+          291.91125,
+          199.50000000000003
+        ],
+        [
+          291.41125,
+          199.50000000000003
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "WN21AAAAAA-headscreen",
+      "tag": "WIN-202-HEADSCREEN"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          291.41125,
+          198.00000000000003
+        ],
+        [
+          291.91125,
+          198.00000000000003
+        ],
+        [
+          291.91125,
+          199.50000000000003
+        ],
+        [
+          291.41125,
+          199.50000000000003
         ]
       ],
       "pattern": "spf",

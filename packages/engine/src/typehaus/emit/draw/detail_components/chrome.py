@@ -243,7 +243,7 @@ def _continuous_insulation(wall, intervals: dict):
     packed = fill.thickness_m / M_PER_IN
     b_lo, b_hi = min(band[0], band[1]), max(band[0], band[1])
     # The fill packs against the band's INBOARD face, hard up against the continuous boards
-    # behind it — the same reading ``resolve.accessories._vented_band`` takes to size the
+    # behind it — the same reading ``resolve.rainscreen_closures._vented_band`` takes to size the
     # insect strip, and the reason the vent is the slice nearest the cladding.
     if abs(b_lo - hi) <= abs(b_hi - lo):
         return (lo, max(hi, b_lo + packed), total + packed, "ext. insul.")

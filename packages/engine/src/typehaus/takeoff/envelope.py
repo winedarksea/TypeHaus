@@ -28,15 +28,16 @@ from shapely.geometry import Polygon
 from typehaus.model.enums import LayerFunction, TrimKind
 from typehaus.model.layer_functions import LAYER_FUNCTIONS
 from typehaus.model.spatial import Room
-from typehaus.resolve.accessories import (
-    BUG_SCREEN_MATERIAL,
-    rainscreen_cavity_m,
-    screens_rainscreen_base,
-)
 from typehaus.resolve.ceiling_over import ceiling_decks_over, room_roof_over
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
+from typehaus.resolve.rainscreen_closures import (
+    BUG_SCREEN_MATERIAL,
+    head_screen_spans,
+    rainscreen_cavity_m,
+    screens_rainscreen_base,
+)
 from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
 from typehaus.resolve.sheathing_corner import layer_run_m
 from typehaus.resolve.solid_categories import in_slab_family
@@ -293,35 +294,46 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
 
 def bug_screen_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """Lineal feet of rainscreen base vent/insect strip, grouped by cavity depth.
+    """Lineal feet of rainscreen insect closure, base and opening heads, by cavity depth.
 
-    The strip is stock extrusion cut to the cavity it closes, so the buying decision is
-    "how many feet of the 3/4" section and how many of the 1/2"" — hence the grouping. It is
-    billed off the *walls*, the same predicate the resolver derives the geometry from
-    (:func:`typehaus.resolve.accessories.screens_rainscreen_base`), rather than off the emitted
-    solids: the solid sweep in ``structural_solids_takeoff`` counts it too, but in cubic
-    feet, which is not a unit anyone orders a vent strip in.
+    The closure is stock cut to the cavity it closes, so the buying decision is "how many
+    feet of each section" — hence the grouping. It is billed off the *walls* and their
+    openings, the same predicates the resolver derives the geometry from
+    (:func:`typehaus.resolve.rainscreen_closures.screens_rainscreen_base` and
+    ``head_screen_spans``), rather than off the emitted solids: the solid sweep in
+    ``structural_solids_takeoff`` counts them too, but by area, which is not a unit anyone
+    orders a closure in. ``count`` is screened wall bases, ``heads`` screened openings.
     """
     runs: dict[float, dict[str, object]] = {}
     for wall in model.walls:
-        if not screens_rainscreen_base(model, wall):
+        cavity = rainscreen_cavity_m(wall.layers)
+        if cavity is None:
             continue
-        key = round(rainscreen_cavity_m(wall.layers) or 0.0, 4)
+        base = screens_rainscreen_base(model, wall)
+        heads = head_screen_spans(model, wall)
+        if not base and not heads:
+            continue
+        key = round(cavity, 4)
         row = runs.get(key)
         if row is None:
             row = runs[key] = {"category": TrimKind.BUG_SCREEN.value,
                                "material": BUG_SCREEN_MATERIAL,
                                "cavity_depth_in": round(key / 0.0254, 3),
-                               "count": 0, "length_m": 0.0, "tags": []}
-        row["count"] = int(row["count"]) + 1
-        row["length_m"] = float(row["length_m"]) + length(sub(wall.axis[1], wall.axis[0]))
+                               "count": 0, "heads": 0, "length_m": 0.0, "tags": []}
         tags = row["tags"]
         assert isinstance(tags, list)
-        tags.append(wall.tag)
+        if base:
+            row["count"] = int(row["count"]) + 1
+            row["length_m"] = float(row["length_m"]) + length(sub(wall.axis[1], wall.axis[0]))
+            tags.append(wall.tag)
+        for opening, s0, s1, _z0 in heads:
+            row["heads"] = int(row["heads"]) + 1
+            row["length_m"] = float(row["length_m"]) + (s1 - s0)
+            tags.append(opening.tag)
     return [
         {"category": row["category"], "material": row["material"],
          "cavity_depth_in": row["cavity_depth_in"], "count": int(row["count"]),
-         "length_ft": round(float(row["length_m"]) * _M_TO_FT, 1),
+         "heads": int(row["heads"]), "length_ft": round(float(row["length_m"]) * _M_TO_FT, 1),
          "tags": sorted(row["tags"])}
         for row in (runs[key] for key in sorted(runs))
     ]

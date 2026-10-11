@@ -142,11 +142,11 @@ def _wall_clip_setbacks(wall) -> dict[str, float]:
         #   reports 1-1/2" of wood as vent and misses the half inch of actual air, holding
         #   the roof foam half an inch proud of the wall's foam face.
         #
-        # ``accessories.rainscreen_cavity_m`` answers both — it is the same question the bug
+        # ``rainscreen_closures.rainscreen_cavity_m`` answers both — it is the same question the bug
         # screen and the envelope take-off ask — so this reads it rather than re-deriving it.
         # The band-minus-fill walk stays as the fallback for a stack it declines (a band with
         # no cladding outboard of it is not a rainscreen and vents nothing).
-        from typehaus.resolve.accessories import rainscreen_cavity_m
+        from typehaus.resolve.rainscreen_closures import rainscreen_cavity_m
 
         band = layers[furring_index]
         cavity = rainscreen_cavity_m(wall.layers)

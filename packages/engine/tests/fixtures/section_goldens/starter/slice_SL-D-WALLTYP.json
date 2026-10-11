@@ -1191,6 +1191,62 @@
       "node": "polyline",
       "points": [
         [
+          -3.91125,
+          198.00000000000003
+        ],
+        [
+          -3.41125,
+          198.00000000000003
+        ],
+        [
+          -3.41125,
+          199.50000000000003
+        ],
+        [
+          -3.91125,
+          199.50000000000003
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "WN20AAAAAA-headscreen",
+      "tag": "WIN-201-HEADSCREEN"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -3.91125,
+          198.00000000000003
+        ],
+        [
+          -3.41125,
+          198.00000000000003
+        ],
+        [
+          -3.41125,
+          199.50000000000003
+        ],
+        [
+          -3.91125,
+          199.50000000000003
+        ]
+      ],
+      "pattern": "spf",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -0.6612500000000001,
           -11.875
         ],

@@ -33,8 +33,8 @@ from typehaus.emit.draw.detail_components.geometry import (
 from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import IRNode
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.accessories import BUG_SCREEN_HEIGHT_IN, BUG_SCREEN_MATERIAL
 from typehaus.resolve.model import ResolvedLayer, ResolvedWall
+from typehaus.resolve.rainscreen_closures import BUG_SCREEN_HEIGHT_IN, BUG_SCREEN_MATERIAL
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 # How near a banded layer's top must land on the wall top to read as "runs to the top" —

@@ -93,7 +93,7 @@ def shared_h_channel(u_center: float, z_joint: float, roof_sign: float,
                      crop_in) -> list[IRNode]:
     """The H channel where a standing sheet's head meets the roof sheet's edge.
 
-    It matters that it draws as a *joint*: ``_resolve_edge_run`` renders every glazing-trim
+    It matters that it draws as a *joint*: ``edge_runs.resolve_edge_run`` renders every glazing-trim
     profile as the same solid box, so in 3D an H is indistinguishable from a U, and the
     section here is the only place a reader can see that one extrusion now receives two
     sheets — the wall sheet rising into the lower slot, the roof sheet entering the upper

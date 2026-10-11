@@ -335,6 +335,34 @@ The buck, the head/sill courses and the girts themselves are **not** drawn as co
 linework. They are resolved members, so the cut carries them as the solids they are; drawing
 them again would be a second, disagreeing picture of the same wood.
 
+## Insect closure (2026-10-10)
+
+The 2" cavity (1/2" vent gap + 1-1/2" girt band) is a sheltered void with the ccSPF face
+exposed in it. Carpenter ants excavate the foam, wasps and mud daubers nest in voids, and
+mice chew it. Minnesota is a slight termite zone, so IRC R318.4 does not apply; this is
+durability, not code. The only protection is physical: every way into the cavity is closed
+with corrosion-proof perforation, holes 1/8" or less, or with solid metal. At an opening that
+means four places:
+
+- **Head screen (derived, billed).** The head flashing drains the cavity above the head course
+  to the outside, and that slot is open. A perforated aluminium closure
+  (`perforated-aluminum-insect-closure`) sits on the head course across the whole 2" cavity,
+  RO plus a jamb post each side, under the flashing. The engine derives one over every window
+  and door on a rainscreen wall (`resolve/rainscreen_closures.head_screen_spans`) and bills it
+  with the base screen in `bug_screen:<assembly>`.
+- **Jamb (HOLD POINT).** The 1/2" gap behind each jamb post is closed by the buck return. Walk
+  every jamb before the cladding goes on: the return must meet the foam with no daylight, and
+  any gap gets low-expansion foam.
+- **Sill.** The pan discharges into the vent gap, which is closed below by the base screen. Only
+  the J-receiver joint needs sealing; seal it at the mount plane.
+- **Penetrations.** Hose bibs, exterior lights and the ERV hoods sleeve through the cavity; seal
+  each sleeve to the foam and to the panel (`[allowances] envelope-exterior-hoods-and-flashing`).
+
+On the PBR walls the panel ribs are a second opening in front of the cavity: solid profile
+closures at every horizontal termination (`[allowances] envelope-pbr-profile-closures`). Board &
+batten relies on the Metal Sales rat guard and C-closure, **to be confirmed in the BBD75
+install guide**.
+
 ## Why the change, honestly
 
 **Not R-value, and the model's own card overstates it.** `haus explain EXT_2X6 --card`

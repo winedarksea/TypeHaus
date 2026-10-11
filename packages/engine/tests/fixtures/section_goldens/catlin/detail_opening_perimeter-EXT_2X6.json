@@ -1712,6 +1712,62 @@
       "node": "polyline",
       "points": [
         [
+          436.00000000000006,
+          83.50000000000001
+        ],
+        [
+          438.0,
+          83.50000000000001
+        ],
+        [
+          438.0,
+          85.00000000000001
+        ],
+        [
+          436.00000000000006,
+          85.00000000000001
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMD201AAAA-headscreen",
+      "tag": "D-M-ENTRY-HEADSCREEN"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          436.00000000000006,
+          83.50000000000001
+        ],
+        [
+          438.0,
+          83.50000000000001
+        ],
+        [
+          438.0,
+          85.00000000000001
+        ],
+        [
+          436.00000000000006,
+          85.00000000000001
+        ]
+      ],
+      "pattern": "spf",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           415.5224803149607,
           -12.5
         ],

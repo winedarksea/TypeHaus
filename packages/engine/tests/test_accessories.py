@@ -775,10 +775,10 @@ def test_every_rainscreen_wall_base_is_screened(catlin_model) -> None:
     assembly — so a new exterior wall cannot ship without one, which is the whole point of
     deriving it rather than hand-placing runs.
     """
-    from typehaus.resolve.accessories import screens_rainscreen_base
+    from typehaus.resolve.rainscreen_closures import screens_rainscreen_base
 
     screens = {s.tag.replace("-BUGSCREEN", ""): s
-               for s in catlin_model.solids if s.category == TrimKind.BUG_SCREEN.value}
+               for s in catlin_model.solids if s.tag.endswith("-BUGSCREEN")}
     assert screens, "a standing-seam rainscreen house resolves bug screens"
     expected = {wall.tag for wall in catlin_model.walls
                 if screens_rainscreen_base(catlin_model, wall)}
@@ -809,11 +809,11 @@ def test_a_screen_sits_in_the_cavity_it_closes_at_the_cladding_start(catlin_mode
     Both are one function (``rainscreen_band``), and the strip the model draws spans exactly
     what it reports — the two polygons unioned — or the order and the drawing disagree.
     """
-    from typehaus.resolve.accessories import (
+    from typehaus.resolve.geometry import polygon_area
+    from typehaus.resolve.rainscreen_closures import (
         BUG_SCREEN_HEIGHT_IN,
         rainscreen_cavity_m,
     )
-    from typehaus.resolve.geometry import polygon_area
 
     wall = next(w for w in catlin_model.walls if w.tag == "W-M-S1")
     screen = next(s for s in catlin_model.solids
@@ -846,7 +846,7 @@ def test_a_stacked_storey_does_not_get_a_second_screen(catlin_model) -> None:
 def test_an_interior_partition_is_never_screened(catlin_model) -> None:
     """The predicate is a FURRING layer with CLADDING outboard of it — a service chase or a
     bare partition has no cavity to close, and must not order strip."""
-    from typehaus.resolve.accessories import rainscreen_cavity_m
+    from typehaus.resolve.rainscreen_closures import rainscreen_cavity_m
 
     interior = [w for w in catlin_model.walls
                 if not any(ly.function == "cladding" for ly in w.depth_layers())]

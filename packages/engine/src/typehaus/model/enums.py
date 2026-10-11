@@ -594,7 +594,7 @@ class TrimKind(Enum):
     # pick wrong, it simply billed nothing. Its own kind rather than ``DRIP_FLASHING`` for
     # two reasons: the price key IS the category, so it would otherwise disappear into the
     # roof's drip-edge row; and ``DRIP_FLASHING`` is a BANDED section (a bent angle with a
-    # turn-down, ``_BANDED_SECTIONS`` in resolve/accessories.py), which is not the section a
+    # turn-down, ``_BANDED_SECTIONS`` in resolve/edge_runs.py), which is not the section a
     # corner closure has. Authored with ``Flashing(vertical=True)``.
     WALL_CORNER = "wall_corner"
     # A sealant-over-compressible-filler joint where a masonry wythe ends against something

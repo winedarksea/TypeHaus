@@ -416,7 +416,7 @@ class GlazedRoofConfig:
     #: Drawing convention: schematic thickness for an aluminium extrusion.
     extrusion_draw_in: float = 0.25
     #: Building facts for the shared H channel where the standing sheet's head meets the
-    #: roof sheet's edge. ``_resolve_edge_run`` draws every profile as the same box, so the
+    #: roof sheet's edge. ``edge_runs.resolve_edge_run`` draws every profile as the same box, so the
     #: only place this joint reads as a *joint* is the 2D detail.
     #: ``h_slot_in`` is the slot each sheet enters (16mm sheet plus fitting clearance);
     #: ``h_lap_in`` is how far the legs grip it; ``h_web_in`` is the plate between them.
