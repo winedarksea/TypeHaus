@@ -65,6 +65,12 @@ DROPPED_REFERENCE_STOREYS = ("breezeway-placeholder",)
 # regression: something the old house had and the new one silently lost.
 _GARAGE_MOVED = "the garage moved 7'-5 5/8\" south to close the breezeway gap to 4'-0 1/2\""
 
+_SG_SIDE_STRIP_TRIMMED = (
+    "FT-SG-W2/E2 stop on FT-SG-S's toe line since 2026-10-10: FT-SG-S runs out to out of the "
+    "side strips and is the footing under their walls' south 4'-10\" (free body §12b), so "
+    "each side strip is 4'-10\" shorter than the reference's — past the matcher's extent score"
+)
+
 DECLARED_DIVERGENCES = {
     # Declared until 2026-09-04, dropped when the matcher started PAIRING it with
     # SL-SG-FROST-W (the sunken garden's R403.3 wing insulation, 1.644 m away, reported
@@ -201,6 +207,10 @@ DECLARED_DIVERGENCES = {
         "2026-09-22 (side-wall axes 8'/28' -> 9'/27'), on top of the 2'-0\" it had already "
         "moved north when the court shortened on 2026-09-10"
     ),
+    # Paired until 2026-10-10, when FT-SG-S took over the two south corners and these strips
+    # stopped on its toe line, 4'-10" short of their old south end.
+    "Sunken Garden West Wall Footing": _SG_SIDE_STRIP_TRIMMED,
+    "Sunken Garden East Wall Footing": _SG_SIDE_STRIP_TRIMMED,
     "Garage Floor Slab": _GARAGE_MOVED,
     "Garage ICF Concrete Core 3": _GARAGE_MOVED,
     "Garage Stud Wall 1": _GARAGE_MOVED,

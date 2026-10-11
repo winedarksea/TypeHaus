@@ -2541,7 +2541,7 @@
 "footing_beddings/FB-RG-WEST/z1_m": -1.2192,
 "footing_beddings/FB-SG-ARCH/soakaway_z0_m": -4.4561125,
 "footing_beddings/FB-SG-ARCH/z0_m": -4.1513125,
-"footing_beddings/FB-SG-ARCH/z1_m": -3.3131125,
+"footing_beddings/FB-SG-ARCH/z1_m": -3.0845125,
 "footing_beddings/FB-SG-E1/z0_m": -4.1513125,
 "footing_beddings/FB-SG-E1/z1_m": -3.0845125,
 "footing_beddings/FB-SG-E2/soakaway_z0_m": -4.4561125,
@@ -53904,10 +53904,10 @@
 "1c4284ae1c7f"
 ],
 "geometry/SGW102AAAA/body": [
--3.3131125,
--2.8686125,
+-3.0845125,
+-2.7797125,
 2,
-"37fcbb0054ef"
+"71cdd2832da1"
 ],
 "geometry/SGW103AAAA/layer:concrete": [
 -2.7797125,
@@ -93814,8 +93814,8 @@
 "solids/W-M-W3-BUGSCREEN/z1_m": -0.3032125,
 "solids/W-M-W4-BUGSCREEN/z0_m": -0.3413125,
 "solids/W-M-W4-BUGSCREEN/z1_m": -0.3032125,
-"solids/W-SG-ARCH/z0_m": -3.3131125,
-"solids/W-SG-ARCH/z1_m": -2.8686125,
+"solids/W-SG-ARCH/z0_m": -3.0845125,
+"solids/W-SG-ARCH/z1_m": -2.7797125,
 "solids/WIN-A-N1-HEADSCREEN/z0_m": 7.7089,
 "solids/WIN-A-N1-HEADSCREEN/z1_m": 7.747,
 "solids/WIN-A-N2-HEADSCREEN/z0_m": 7.7089,

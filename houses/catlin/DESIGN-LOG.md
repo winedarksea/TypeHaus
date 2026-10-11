@@ -4914,3 +4914,14 @@ surface that reaches the court, so the water goes there.
   - the closed ties shrink (−4.8 lb).
 - Net steel since before 2026-10-10: **+148 lb**, 6,379.7 → 6,527.9 lb. The beam lost 164 lb;
   the south corners gained 313 lb where there had been no footing at all.
+- Validation (first full-suite run over both days): `haus check` 0 FAIL, 69 not evaluable
+  (unchanged); every court record is draft OK. Six suite failures came from these changes and
+  were fixed at the cause, none by loosening a pin:
+  - the rebar layout oracle was re-worked by hand at FT-SG-S's 300" length. W-SG-S's
+    verticals rise 0.125" on the #5 mat; embedment is 7.75" against ldh 7.115";
+  - the area/spacing band now takes a mat's area inside its cover;
+  - `veneer_beam` fingerprints its bar sizes. Torsion governs now, so a smaller bar had
+    stopped staling a seal;
+  - FT-SG-W2/E2's trim is declared in the reference equivalence test;
+  - the elevation golden is blessed for W-SG-ARCH's move only (bottom 9" up, top 3 1/2" up,
+    FB-SG-ARCH with it).

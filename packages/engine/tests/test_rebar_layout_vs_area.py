@@ -8,7 +8,10 @@ and the cover strip the area ignores: ``[area/s − 1, area/s + 2]`` bars a laye
 the longest the role lays. A layout that dropped a row, doubled a face or ran bars through
 the cover lands outside it. Two things the old arithmetic never knew are taken out first:
 the leg of a vertical continued into the pour below, and the part of a mat's outline that a
-larger overlapping pour reinforces instead.
+larger overlapping pour reinforces instead. A mat's area is taken inside its cover: on a long
+mat whose bars run the short way (FT-SG-S, 34 bars of 94" in 100") the cover strip is worth
+~1.5 bars, not the one the band allows. A zoned role (``BarSpec.zone``) is end pieces by
+design and has no area figure; ``test_rebar_layout_oracle`` counts FT-SG-S's bar for bar.
 """
 
 from __future__ import annotations
@@ -38,12 +41,14 @@ def _wall_area_m2(model, wall) -> float:
     return max(0.0, area)
 
 
-def _solid_area_m2(model, solid) -> float:
+def _solid_area_m2(model, solid, cover_m: float = 0.0) -> float:
     from shapely.geometry import Polygon
 
     own = Polygon(solid.outline)
     area = abs(polygon_area(list(solid.outline))) - sum(
         abs(polygon_area(list(v))) for v in solid.voids)
+    if cover_m:
+        area -= own.area - own.buffer(-cover_m, join_style="mitre").area
     reinforced = {s.host_tag for s in model.rebar}
     for other in model.solids:
         if (other.tag != solid.tag and other.tag in reinforced and not other.derived
@@ -75,10 +80,11 @@ def test_every_spaced_role_is_within_one_bar_per_layer_of_area_over_spacing(
         if wall is not None:
             area = _wall_area_m2(model, wall)
         else:
+            cover = spec.cover.meters if spec.cover is not None else 0.0
             area = _solid_area_m2(model, next(s for s in model.solids
-                                              if s.tag == rebar_set.host_tag))
+                                              if s.tag == rebar_set.host_tag), cover)
         for entry in spec.bars:
-            if entry.role not in _SPACED or entry.spacing is None:
+            if entry.role not in _SPACED or entry.spacing is None or entry.zone is not None:
                 continue
             area_here = area
             layers = max(1, entry.layers)

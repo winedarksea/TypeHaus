@@ -6,7 +6,8 @@ bars) and the PT-SG-COL cage. Counts are exact; lengths match the note to 0.01".
 
 ** THE COURT NARROWED TO 17'-0" ON 2026-09-22 ** and the note has not followed: §2/§3 are
 worked for a 240" axis and FT-SG-S/W-SG-S are 216" now. The same arithmetic, re-run at 216",
-is inlined in each docstring below. PT-SG-COL retired with the court's centre line, so §4 is
+is inlined in each docstring below; FT-SG-S's mat is worked at its 2026-10-10 300" length the
+same way. PT-SG-COL retired with the court's centre line, so §4 is
 laid on a stand-in built from the note's own inputs.
 """
 
@@ -34,15 +35,18 @@ def _lb(bars) -> float:
 
 
 def test_ft_sg_s_mat(catlin_model_ro) -> None:
-    """§2 at 216" x 100" (the 4'-4" toe, 2026-09-22): bar region 94" x 210".
-    bottom-x @ 9": ceil((210 - 0.625)/9) + 1 = 25 #5 at 94" (2,350" = 195.83' = 204.25 lb);
-    top-x @ 12": ceil((210 - 0.625)/12) + 1 = 19 #5 at 94" (1,786" = 148.83' = 155.23 lb);
-    y: ceil((94 - 0.5)/18) + 1 = 7 #4 at 210" (1,470" = 122.5' = 81.83 lb). No laps or
-    hooks."""
+    """§2 at 300" x 100" — out to out of the side strips since 2026-10-10, free body §12b:
+    bar region 94" x 294". bottom-x @ 9": ceil((294 - 0.625)/9) + 1 = 34 #5 at 94"
+    (3,196" = 266.33' = 277.79 lb); top-x @ 12": ceil(293.375/12) + 1 = 26 #5 at 94"
+    (2,444" = 203.67' = 212.42 lb); bottom-y @ 12": ceil((94 - 0.625)/12) + 1 = 9 #5 at 294"
+    (2,646" = 220.5' = 229.98 lb); top-y the same 9 lines, ``zone`` 78" at each end only:
+    18 #5 at 78" (1,404" = 117.0' = 122.03 lb). No laps (24.5' < 40' stock), no hooks.
+    Layers stack 3" + db/2 up and down: bottom-y on bottom-x, top-y under top-x."""
     m = catlin_model_ro
-    for role, count, length_in, lb in (("bottom-x", 25, 94.0, 204.25),
-                                       ("top-x", 19, 94.0, 155.23),
-                                       ("bottom-y", 7, 210.0, 81.83)):
+    for role, count, length_in, lb in (("bottom-x", 34, 94.0, 277.79),
+                                       ("top-x", 26, 94.0, 212.42),
+                                       ("bottom-y", 9, 294.0, 229.98),
+                                       ("top-y", 18, 78.0, 122.03)):
         bars = _role(m, "FT-SG-S", role)
         assert len(bars) == count, role
         for b in bars:
@@ -51,24 +55,25 @@ def test_ft_sg_s_mat(catlin_model_ro) -> None:
         assert _lb(bars) == pytest.approx(lb, abs=0.01)
     soffit = next(s for s in m.solids if s.tag == "FT-SG-S").z0_m
     heights = {r: (_role(m, "FT-SG-S", r)[0].path[0][2] - soffit) / _IN
-               for r in ("bottom-x", "bottom-y", "top-x")}
-    assert heights == pytest.approx({"bottom-x": 3.3125, "bottom-y": 3.875, "top-x": 8.6875},
-                                    abs=0.001)
+               for r in ("bottom-x", "bottom-y", "top-x", "top-y")}
+    assert heights == pytest.approx({"bottom-x": 3.3125, "bottom-y": 3.9375, "top-x": 8.6875,
+                                     "top-y": 8.0625}, abs=0.001)
 
 
 def test_w_sg_s_verticals(catlin_model_ro) -> None:
     """§3 at 216": centres [0.625, 215.375], ceil(214.75/7) + 1 = 32 #5 continuous from the
-    footing, 114.0" + a 8.436" foot (cut 122.436 x 32 = 3,917.95" = 340.54 lb), 2.6875"
-    inside the retained face, 7.875" of the 7.115" ldh embedded."""
+    footing. The foot sits on FT-SG-S's bottom mat, #5 on #5 since 2026-10-10 (was #5 on #4),
+    so it is 0.125" higher: 113.875" + a 8.436" foot (cut 122.311 x 32 = 3,913.95" =
+    340.19 lb), 2.6875" inside the retained face, 7.75" of the 7.115" ldh embedded."""
     bars = _role(catlin_model_ro, "W-SG-S", "vertical")
     assert len(bars) == 32
     for b in bars:
-        assert b.placed_length_m / _IN == pytest.approx(114.0, abs=0.01)
+        assert b.placed_length_m / _IN == pytest.approx(113.875, abs=0.01)
         assert b.hook_length_m / _IN == pytest.approx(8.436, abs=0.001)
         assert b.lap_length_m == 0.0 and b.hook_kinds == ("std90",)
-        assert b.embedment_m / _IN == pytest.approx(7.875, abs=0.001)
+        assert b.embedment_m / _IN == pytest.approx(7.75, abs=0.001)
         assert b.development_m / _IN == pytest.approx(7.115, abs=0.001)
-    assert _lb(bars) == pytest.approx(340.54, abs=0.01)
+    assert _lb(bars) == pytest.approx(340.19, abs=0.01)
     wall = catlin_model_ro.wall("W-SG-S")
     t = (bars[0].path[1][1] - wall.axis[0][1]) / _IN
     assert t == pytest.approx(-2.6875, abs=0.001)
