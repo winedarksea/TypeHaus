@@ -1,16 +1,19 @@
 # In-wall backing — the height schedule and where it comes from
 
 **House:** catlin
-**Structure:** every `WallBacking` in `plan/backing.py` and `plan/backing_wet.py` (70 bands).
+**Structure:** every `WallBacking` in `plan/backing.py`, `plan/backing_wet.py` and
+`plan/plant_room.py` (74 bands).
 **Written:** 2026-09-09. **Revised 2026-09-12**: the wet-wall plywood band became three 2x
-courses (§4), and `advisory.wall_backing_bearing` was added (§5).
+courses (§4), and `advisory.wall_backing_bearing` was added (§5). **Revised 2026-10-10**:
+backing follows a designated body, and a grab-bar course stands only at a tub, shower or WC
+(§4).
 **Oracle for:** nothing. This is a **sources note**, not a calculation note — there is no
 arithmetic here to reproduce, only a set of heights and the authority behind each one.
 `advisory.wall_backing_present` grades coverage against it; no engine table repeats it.
 **Companions:** `notes/interior_selections.md` §"What has to reach a trade before a wall
 closes" — the prose this file finally makes buildable.
 **What is asked of the reviewer:** confirm that each height below is the one *this* family
-wants, and that the wet-wall band's cost (below) is the trade you mean to make.
+wants, and that the fixtures with no grab course (§4) are the trade you mean to make.
 
 > ⚠ **This is the only irreversible item in the house.** Every other decision here can be
 > revisited with a screwdriver. Retrofit backing after tile is $1,500–4,000 per wall.
@@ -28,7 +31,7 @@ wants, and that the wet-wall band's cost (below) is the trade you mean to make.
 | Grab bar (bar centreline) | 33"–36" | ADA 609.4 |
 | Mirror / medicine cabinet | blocks topping at 40" and 76" | Fox Cities Habitat QRG ch. 10a |
 | Towel bar | block topping at 60" (bar lands 48"–54") | Habitat QRG ch. 10a |
-| *(this house)* wet-wall courses | 32"–39 1/4", 44"–53 1/4", 72"–79 1/4" | §4 — CRC R328.1.1 plus two chosen heights |
+| *(this house)* bath courses | 32"–39 1/4", 44"–53 1/4", 72"–79 1/4" | §4 — CRC R328.1.1 plus two chosen heights |
 | Toilet paper holder | block topping at 26", span ≥ 12" | Habitat QRG ch. 10a |
 | Kitchen upper cabinets | ~54" (36" counter + 18" clear) and ~84" for a 30" box | NKBA 2023 Planning Guidelines |
 | Wall-hung vanity | bracket band under a 32"–34" top | manufacturer rough-ins |
@@ -97,23 +100,29 @@ Nothing draws that and nothing prices it. The three courses below are laid flat 
 between the studs**, which is what the kitchen rails have always meant by "2x8 flat": nothing
 stands proud, nothing is dadoed, and the framer cuts to the bay.
 
-### The three wet-wall courses
+### The three bath courses
 
 | Course | Profile | Bottom | Top | What it answers |
 | --- | --- | --- | --- | --- |
 | `-GRAB` | 2x8 | 32" | 39 1/4" | CRC R328.1.1 verbatim — 2x8 nominal min, 32"–39 1/4", flush with the framing |
-| `-MID` | 2x10 | 44" | 53 1/4" | towel bar (48"), robe hook, slide-bar lower bracket, `FURN-M-BATH2-CAB`'s 48" rail |
-| `-HIGH` | 2x8 | 72" | 79 1/4" | shower arm (78"), slide-bar upper bracket, high hook |
+| `-MID` | 2x10 | 44" | 53 1/4" | mirror bottom cleats, `FURN-M-BATH2-CAB`'s 48" rail |
+| `-HIGH` | 2x8 | 72" | 79 1/4" | mirror top cleats, the closet wire shelf's 80" clips |
 
-All three on the 16 full-height wet walls; `W-A-STU-W` gets `-GRAB` and `-MID` only, because
-its plate is at 72 3/4" and `CARF01AAAA:rafter-020` rakes across it at 60 7/8".
+**The policy since 2026-10-10: backing follows a designated body.** Until then these were
+three standard anchor heights on 16 wet walls, authored where a screw *might* land. That put
+~725 LF of band in the house, ~280 LF of it with nothing in front. Now a band stands behind
+something the model hangs, stands or rails against the wall. It covers the whole stud bays
+around that thing, ends on stud faces, and runs full length only when it would cover about
+2/3 of the wall anyway. A `-GRAB` course stands **only where a tub, shower or WC does**, read
+off the wall the fixture's footprint is against and never off `Fixture.wall_ref`. That
+leaves 14 bath courses (was 49). Where a `-MID` or `-HIGH` course already backed a mirror or
+cabinet, it stays and is renamed for that body.
 
-> ⚠ **What this gives up.** The retired band was continuous 32"–80". The courses leave
-> **39 1/4"–44", 53 1/4"–72" and everything above 80 1/4" unbacked.** A screw in one of those
-> gaps has nothing behind it. The policy has not changed — these are three standard anchor
-> heights authored where a screw *might* land, not a fit to today's fixtures; only one
-> modelled body in the whole house (`FURN-M-BATH2-CAB` at 48" on `W-M-HS1`) sat inside the
-> old 48" band at all, and `-MID` still covers it.
+Fixtures with **no grab course** today, by geometry: `FX-S-BATH1-SH` (on `W-S-N3` /
+`W-S-CH-W`; the course on `W-S-BD-N` was never in front of it and now backs the two vanity
+top rails), `FX-S-SUITEBATH-TUBSH`'s back wall `W-S-C2C` (its end on `W-S-SN3` is covered),
+`FX-S-BATH1-WC` (`W-S-W1`), `FX-B-BATH-WC` (`W-B-BA-N`), `FX-B-SAUNA-SH` and
+`FX-A-STUBATH-SH`. Each is a band to add if a bar is wanted there.
 
 **What it gains beyond the flat wall.** A per-bay block can be omitted or shifted at the bay
 a shower valve and its risers occupy. A continuous sheet cannot, and §5 flags that overlap as
@@ -123,25 +132,9 @@ ungraded.
 tub spout and the shower arm are the plumber's **rough-in blocking**, set with the rough-in.
 Only the grab bar is this file's business.
 
-| Band | Count | Material |
-| --- | --- | --- |
-| Wet walls, `-GRAB` + `-HIGH`, 2x8 flat | 33 | +148 LF on the 1,010 LF 2x8 row |
-| Wet walls, `-MID`, 2x10 flat | 17 | 114 LF of the 172 LF 2x10 row |
-| Kitchen and curtain-rod rails, 2x8 flat | 10 | part of the same 2x8 row |
-| Closet rods, 2x8 flat | 2 | " |
-| Plumbing access panel frames, 2x8 flat | 5 | " |
-| `BK-G-W-RAIL-FOOT` handrail block, 2x12 flat | 1 | 8 LF of 1.5x11.25 |
-
-**Cost, stated honestly.** The three courses run **$674–1,086** against the retired band's
-**$647–1,128**. That is a wash against today's price rows — which assume no dado — and a
-clear saving once let-in labour is priced. **The reason for the change is buildability, not
-money.** `prices.toml` keeps the two retired plywood rows at 0 LF so the comparison does not
-have to be re-derived.
-
-> ⚠ The old note recorded that `plan/fixture_types_wc.py` says "a continuous band costs about
-> twelve dollars". That is right for the 12"-wide strip it describes and wrong by two orders
-> of magnitude for anything that covers a 40"–80" range. It is still wrong; the prose has not
-> been fixed. Read the table above, not that sentence.
+**Take-off after the 2026-10-10 trim:** 2x8 blocking 356 LF ordered (was 624), 2x10 24 LF
+(was 106), 2x6 26 LF (was 28). About $880–1,425 off the framing range. `prices.toml` keeps
+the two retired plywood rows at 0 LF.
 
 ## 5. Not done, and why
 

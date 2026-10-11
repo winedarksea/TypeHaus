@@ -4,13 +4,13 @@
 # `# haus: editable` is REQUIRED: a band is UI-movable, and a WallBacking edited in the editor
 # against a file without this marker is silently dropped on write-back.
 #
-# ** THIS IS THE ONLY IRREVERSIBLE ITEM IN THE HOUSE. ** Every other decision here can be
-# revisited with a screwdriver. Once drywall and tile close a wall, a twelve-dollar plywood
-# strip becomes a $1,500-4,000 demolition, so these bands are authored where a screw *might*
-# land rather than where one lands in today's model. `plan/fixture_types_wc.py` and
-# `notes/interior_selections.md` have carried that policy as prose since 2026-08; this file is
-# the first version of it the framer can actually build, the takeoff can buy, and the 3D model
-# can show.
+# ** BACKING FOLLOWS A DESIGNATED BODY ** (owner, 2026-10-10; it was "wherever a screw
+# *might* land" until then, see DESIGN-LOG.md). A band stands behind something the model
+# hangs, stands or rails against the wall — a cabinet, wardrobe, mirror, rod, shelf, peg,
+# access panel, hydrant, plant stand or handrail — and a grab-bar course only where a tub,
+# shower or WC stands (plan/backing_wet.py). Each run is trimmed to whole stud bays around
+# what it serves, ends on stud faces, and goes full length only when it would cover most of
+# the wall anyway. A future hang is not a body; it gets its blocking when it gets a model.
 #
 # ** WHY THESE ARE ELEMENTS AND NOT `FramingSpec.blocking_heights`. ** That field emits a flat
 # course between studs for every wall of an assembly, so backing one wet wall would mean
@@ -54,18 +54,14 @@ from typehaus import WallBacking, ft, inch
 # now start at 53 1/2", their top course at 83 1/2", and the over-cold boxes at 73 1/2".
 # The mixer garage's upper box remains at 76"; living-room curtain rods remain at 84".
 #
-# A 2x8 laid flat is 7 1/4", so one band covers a spread of hangs. The east-wall curtain
-# band also covers the top cabinet course, avoiding an overlapping blocking band.
+# A 2x8 laid flat is 7 1/4", so one band covers a spread of hangs.
 #
-# ** W-M-E1's CABINET BANDS STOP AT THE KITCHEN. ** The wall is 36 ft and the four ran
-# all of it, because `start`/`length` left None is the wall's whole run. Kitchen cabinetry on
-# it starts at y 21'-2 3/8"; everything south of that is living room, so roughly 59 LF of 2x8
-# ran south to back nothing. They start at station 20'-0" now and run the remaining 16 ft to
-# the wall's end; 240" lands on a jack pack, so the run begins on framing.
-#
-# BK-M-E1-ROD keeps its full run: at 82" it backs the two LIVING-ROOM curtain rods (86" since
-# the east row's heads rose 2", 2026-10-02) and the kitchen stacker rail at 83 1/2".
-# BK-M-E1-MIXER is full length too: it carries the SEKTION base rail the whole wall now.
+# ** W-M-E1's BANDS FOLLOW THEIR BODIES (2026-10-10). ** The upper bands start at the pantry's
+# south stud face, 272 3/4" (S2 starts at 271 3/8"), not at 20'-0": the 31" south of it is
+# living room. The 82" course is two runs — BK-M-E1-ROD behind the living-room rods and
+# BK-M-E1-STACKER behind the pantry stackers — and the 64" course is the hood's three bays
+# plus BK-M-E1-MANTEL; 8 ft and 19 ft of open wall separate the two pairs.
+# BK-M-E1-MIXER stays full length: the SEKTION base rail runs the whole wall.
 
 # --- closet rods and shelves ------------------------------------------------------------
 #
@@ -75,8 +71,8 @@ from typehaus import WallBacking, ft, inch
 # --- plumbing access panels -------------------------------------------------------------
 #
 # A panel frame screws to the wall the same way anything else does, and all four of these
-# sit BELOW the wet-wall band's 32" bottom edge — the tub and shower valve bodies they open
-# onto are down at the deck, not up at the bar line.
+# sit BELOW the grab-bar course's 32" bottom edge — the tub and shower valve bodies they open
+# onto are down at the deck, not up at the bar line. Each band fills the bays its panel spans.
 
 # --- handrail brackets --------------------------------------------------------------------
 #
@@ -128,11 +124,11 @@ MAIN_BACKING = [
                 elevation=inch(99.5), height=inch(5.5), profile="2x6",
                 material_ref="spf", purpose="stock kitchen upper top brackets; diagonal corner north leg"),
     WallBacking(uid="N4B7RPNY55", tag="BK-M-E1-KIT-TOP", wall_ref="W-M-E1",
-                start=inch(241.75), length=inch(190.25),
+                start=inch(272.75), length=inch(159.25),
                 elevation=inch(99.5), height=inch(5.5), profile="2x6",
                 material_ref="spf", purpose="stock garage frame top restraint"),
     WallBacking(uid="PT15STOCK1", tag="BK-M-E1-PANTRY-TOP", wall_ref="W-M-E1",
-                start=inch(241.75), length=inch(80),
+                start=inch(272.75), length=inch(46.5),
                 elevation=inch(95.5), height=inch(3.5), profile="2x4",
                 material_ref="spf", purpose="stock 15-inch pantry top frame suspension rail (98 1/2-inch tops)"),
     WallBacking(uid="EA1DMVPCVN", tag="BK-M-N1-CORNER", wall_ref="W-M-N1", length=inch(32.75),
@@ -141,53 +137,68 @@ MAIN_BACKING = [
     WallBacking(uid="TR3XTCCY65", tag="BK-M-N1-SINK", wall_ref="W-M-N1",
                 elevation=inch(25), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="wall-mounted kitchen sink"),
+    # WE5 and WE1 either side of WIN-M-KITCH; the window's framing breaks the run between.
     WallBacking(uid="EPCM53YC2B", tag="BK-M-N1-LOW", wall_ref="W-M-N1",
+                start=inch(32.75), length=inch(104.25),
                 elevation=inch(51), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="upper cabinet bottom rail (53 in.)"),
-    WallBacking(uid="JB32670A20", tag="BK-M-N1-MID", wall_ref="W-M-N1",
-                elevation=inch(64), height=inch(7.25), profile="2x8",
-                material_ref="spf",
-                purpose="future north wall 66-68 in. hang"),
     WallBacking(uid="PVJ3823KWR", tag="BK-M-N1-HIGH", wall_ref="W-M-N1",
                 elevation=inch(81.5), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="stacker course rail (83 1/2 in.)"),
-    # Full length since 2026-09-25: it also takes FURN-M-FIRE-MANTEL (64 in.).
     WallBacking(uid="GBHV48GS1S", tag="BK-M-E1-MID", wall_ref="W-M-E1",
+                start=inch(352.75), length=inch(46.5),
                 elevation=inch(64), height=inch(7.25), profile="2x8",
-                material_ref="spf",
-                purpose="range hood (66 in.) and mantel (64 in.)"),
+                material_ref="spf", purpose="APPL-M-HOOD (66 in.)"),
+    WallBacking(uid="FFXNC9F05Z", tag="BK-M-E1-MANTEL", wall_ref="W-M-E1",
+                start=inch(80.5), length=inch(47),
+                elevation=inch(64), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="FURN-M-FIRE-MANTEL (64 in.)"),
     # FURN-M-KIT-MIXER-GARAGE-UP's bottom rail. The old one-piece 72" garage spanned 36" to
     # the ceiling and was caught by whichever bands it crossed; split at 76" it has a rail of
     # its own, between BK-M-E1-MID's top at 71 1/4" and BK-M-E1-ROD's bottom at 82".
     WallBacking(uid="Z31Y1280S2", tag="BK-M-E1-GARAGE", wall_ref="W-M-E1",
-                start=ft(20), length=ft(16),
+                start=inch(320.75), length=inch(111.25),
                 elevation=inch(74), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="garage lower restraint (76 in.) and kitchen uppers (73 1/2 in.)"),
     WallBacking(uid="VXX1ME3YWS", tag="BK-M-E1-ROD", wall_ref="W-M-E1",
+                start=inch(32.75), length=inch(142.75),
                 elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="curtain rod brackets (86 in.) and kitchen stacker rail (83 1/2 in.)"),
+                material_ref="spf", purpose="living-room curtain rod brackets (86 in.)"),
+    WallBacking(uid="KC1M7649AZ", tag="BK-M-E1-STACKER", wall_ref="W-M-E1",
+                start=inch(272.75), length=inch(46.5),
+                elevation=inch(82), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="FURN-M-KIT-PANTRY-S1/S2-ST stacker rail (83 1/2 in.)"),
     # ** HOSTING SURFACED THESE, 2026-09-25. ** Until the wall-mounted bodies were hosted on
     # their faces, `advisory.wall_backing_present` could not square them onto a wall and
     # said UNKNOWN; hosted, it names the wall and there was nothing behind them.
     WallBacking(uid="PE3FV6DGRM", tag="BK-M-S2-ROD", wall_ref="W-M-S2",
                 elevation=inch(82), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="curtain rod brackets (84 in.)"),
+    # FURN-M-LIV-ROD-BALC's end bracket, 10" along W-M-C1.
     WallBacking(uid="DQYV0CA18A", tag="BK-M-C1-ROD", wall_ref="W-M-C1",
+                start=inch(0), length=inch(15.25),
                 elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="curtain rod brackets (84 in.)"),
+                material_ref="spf", purpose="FURN-M-LIV-ROD-BALC end bracket (84 in.)"),
     WallBacking(uid="016TC9913X", tag="BK-M-W4-ROD", wall_ref="W-M-W4",
                 elevation=inch(82), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="curtain rod brackets (84 in.)"),
     WallBacking(uid="7T3GDF98A5", tag="BK-M-S1-ROD", wall_ref="W-M-S1",
+                start=inch(0), length=inch(79.25),
                 elevation=inch(82), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="curtain rod brackets (84 in.)"),
+                material_ref="spf", purpose="FURN-M-BED-ROD-S1 curtain rod brackets (84 in.)"),
+    WallBacking(uid="ETQ6V0Y07Z", tag="BK-M-S1-ROD-S2", wall_ref="W-M-S1",
+                start=inch(144.75), length=inch(71.25),
+                elevation=inch(82), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="FURN-M-BED-ROD-S2 curtain rod brackets (84 in.)"),
     WallBacking(uid="VBFFYKBZJW", tag="BK-M-CLN-RACK", wall_ref="W-M-CLN",
+                start=inch(48.75), length=inch(6.5),
                 elevation=inch(46), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="laundry drying rack (48 in.)"),
     # RM-M-CLOSET (plan/closet.py). The PAX wall rails are 2x8s at 86"; the rail sits at
     # the frames' 93" top. Notch round the suite stack (x 12'-6") and the supplies (15'-9",
     # 16'-5") rising in these two walls.
     WallBacking(uid="QZAD6KWB50", tag="BK-M-CLN-PAX", wall_ref="W-M-CLN", face="right",
+                start=inch(32.75), length=inch(30.25),
                 elevation=inch(86), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="PAX wall rail (93 in.)"),
     WallBacking(uid="M80101YTFN", tag="BK-M-CLN2-PAX", wall_ref="W-M-CLN2", face="right",
@@ -224,8 +235,9 @@ MAIN_BACKING = [
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="mudroom shelf (66 in.)"),
     WallBacking(uid="GWVBD431GV", tag="BK-M-N1-DISP", wall_ref="W-M-N1",
+                start=inch(66.5), length=inch(27),
                 elevation=inch(12), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="disposal switch box and air-switch bracket (14 in.)"),
+                material_ref="spf", purpose="APPL-M-DISP switch box and air-switch bracket (14 in.)"),
     # Dropped 34" -> 31 1/2" (2026-10-02) so one band takes both the SEKTION base suspension
     # rail at the frame top (33 1/2") down the whole wall and the mixer garage's box at 36".
     WallBacking(uid="GRFFVAA88Y", tag="BK-M-E1-MIXER", wall_ref="W-M-E1",
@@ -242,30 +254,26 @@ MAIN_BACKING = [
     WallBacking(uid="WVN7RFKJP6", tag="BK-M-C5-HIGH", wall_ref="W-M-C5",
                 elevation=inch(81.5), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="tall cabinet top course rail (83 1/2 in.)"),
+    # The carrier bay, king face to king face.
     WallBacking(uid="QJSHFZFDY3", tag="BK-M-HS1-AP", wall_ref="W-M-HS1",
+                start=inch(16.53125), length=inch(19.75),
                 elevation=inch(22), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="bath 1 plumbing access panel frame"),
-    WallBacking(uid="7H0ZY02018", tag="BK-M-BA2E-AP", wall_ref="W-M-BA2E",
-                elevation=inch(4), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="bath 2 tub access panel frame"),
+                material_ref="spf", purpose="FURN-M-BATH1-AP access panel frame"),
     # The tub deck's own skirt is a 19 1/4" wall, so this band sits inside a 16" stud run:
     # 2" clears the sole plate and the 2x8 tops out at 9 1/4", well under it.
     WallBacking(uid="2WV5J50Q0C", tag="BK-M-TUBDK-AP", wall_ref="W-M-TUBDK-W",
+                start=inch(48.75), length=inch(19.25),
                 elevation=inch(2), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="bath 2 tub deck access panel frame"),
     # FX-M-PORCH-HYD's seat. The hydrant states a WALL/24" mount on the element as of
     # 2026-09-15 (plan/fixtures.py); before that it inherited a default FLOOR mount and
     # resolved at 1 1/4", so there was nothing at 24" for a band to be missing behind.
     #
-    # ** THE BAND SPANS TWO BAYS BECAUSE THE STATION IS NOT SETTLED. ** The hydrant is
-    # authored at x=12'-0" and W-M-S1's stud-006 is at 144.000" — the barrel is bored
-    # through a stud today, and nothing in the engine grades that. The open question is
-    # whether it moves to the bay centre (~151 1/2") or the bore is accepted; 128 3/4"..158"
-    # backs it either way, so settling that question later costs no framing. Both ends land
-    # on a stud face — stud-005's east at 128 3/4" and king-1-l0's west at 158" — which is
-    # what advisory.wall_backing_bearing asks for. Two blocks in the field, one run here.
+    # The hydrant sits at 152", in the bay between stud-006 (east face 144 3/4") and
+    # king-1-l0 (west face 158"), so one block fills that bay. It spanned the bay west of it
+    # too while the hydrant still stood on stud-006 at 144".
     WallBacking(uid="HTKFF371E9", tag="BK-M-S1-HYD", wall_ref="W-M-S1",
-                start=inch(128.75), length=inch(29.25),
+                start=inch(144.75), length=inch(13.25),
                 elevation=inch(21), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="wall hydrant seat (FX-M-PORCH-HYD, 24 in.)"),
 ]
@@ -292,11 +300,13 @@ SECOND_BACKING = [
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="closet shelf and rod (66 in.)"),
     WallBacking(uid="QY4ZK9WZ6S", tag="BK-S-CH-S-AP", wall_ref="W-S-CH-S",
+                start=inch(0), length=inch(15.25),
                 elevation=inch(22), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="bath 1 chase access panel frame"),
     WallBacking(uid="W2XZ7J1J2X", tag="BK-S-SN3-AP", wall_ref="W-S-SN3",
+                start=inch(72.75), length=inch(14.5),
                 elevation=inch(4), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="suite bath access panel frame"),
+                material_ref="spf", purpose="FURN-S-SUITEBATH-AP access panel frame"),
     # FX-S-BALC-HYD's seat, the balcony half of the same 2026-09-15 mount fix. This one sits
     # cleanly in a bay: W-S-S1's stud-002 is at 80.000" and king-1-l0 at 94.750", so the
     # hydrant at x=7'-4" (88") has 3 15/16" to the nearest stud face either side. One bay,
@@ -344,14 +354,16 @@ ATTIC_BACKING = [
     # IKEA requires the SUNNERSTA kitchenette (FURN-A-STUDIO-BAR-BASE, plan/placeables.py) be
     # anchored to the wall, and a 44 1/8" x 54 3/4" flat-pack on an attic deck is exactly the
     # thing that walks away from an unanchored screw. 46" puts a 2x8 flat at 46"..53 1/4", which
-    # takes the unit's own top rail (~52") anywhere along its 10'-3 15/16"..14'-0" run.
+    # takes the unit's own top rail (~52") anywhere along its run, 3 7/8"..48" on this wall.
     # ** THE RAKE IS WHY IT IS NOT HIGHER. ** W-A-BATH-S runs from x 9'-7 1/2" east, where the
     # 6:12 underside `1 1/2" + x/2` is only 4'-11 1/4"; a band any taller runs its west end into
     # the roof plane, which is `structural.member_interference`'s business and not a guess.
     WallBacking(uid="DHRK7N7J1Y", tag="BK-A-BATH-S", wall_ref="W-A-BATH-S",
+                start=inch(0), length=inch(47.25),
                 elevation=inch(46), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="SUNNERSTA kitchenette wall anchor rail"),
     WallBacking(uid="YQYFFHW9T6", tag="BK-A-BATH-S-SINK", wall_ref="W-A-BATH-S",
+                start=inch(16.75), length=inch(30.5),
                 elevation=inch(25), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="bar sink hanger (27 in.)"),
 ]

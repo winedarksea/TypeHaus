@@ -189,8 +189,8 @@
 "0.5x5 panel" = { low = 1.5, high = 5 }  # 56 LF — formed gutter stock
 # RETIRED 2026-09-12, kept per the glazed-green-brick convention. These two priced the
 # WallBacking bands when every wet wall carried ONE continuous 3/4" Structural 1 plywood
-# band, 48" tall (24" on the short knee wall W-A-STU-W). They now resolve to 0 LF: the wet
-# walls carry three 2x courses instead, which bill through the [framing] "2x8" and "2x10"
+# band, 48" tall (24" on the short knee wall W-A-STU-W). They now resolve to 0 LF: the bath
+# walls carry 2x courses instead, which bill through the [framing] "2x8" and "2x10"
 # rows below. See plan/backing_wet.py and notes/wall_backing.md.
 #
 # Why they are still here. A row deleted is a row re-derived from scratch the next time
@@ -384,7 +384,7 @@
 "2-2x10" = { material = { low = 3, high = 4 }, labour = { low = 1, high = 2 } }  # 56 LF — 40 header + 16 canopy collector blocking (2026-10-08: was 3.5x16 LSL, unpriced)
 "2-2x6" = { material = { low = 1.7, high = 2.3 }, labour = { low = 0.9, high = 1.8 } }  # 16 LF
 "2-2x8" = { material = { low = 2.2, high = 3.1 }, labour = { low = 1, high = 2 } }  # 440 LF
-"2x10" = { material = { low = 1.5, high = 2 }, labour = { low = 1.3, high = 2.4 } }  # 172 LF — 58 hanger + 114 wet-wall -MID courses (2026-09-12)
+"2x10" = { material = { low = 1.5, high = 2 }, labour = { low = 1.3, high = 2.4 } }  # 172 LF — 58 hanger + 114 wet-wall -MID courses (2026-09-12); -MID backing 106 -> 24 LF ordered (2026-10-10 trim)
 # ST-SG-PORCH's stringers are 2x12:kdat and bill on the "2x12:kdat" row below (32 LF ordered),
 # not here. The 3.7 LF plan run of each is 4.6 LF of stick on the rake; the cut list has it.
 "2x12" = { material = { low = 1.85, high = 2.6 }, labour = { low = 1.4, high = 2.6 } }  # 96 LF spf — ST-B2M and ST-M2S, three stringers a flight (2026-09-28)
@@ -541,7 +541,7 @@
 # 2026-09-03: 524 -> 548 LF ordered. The porch enclosure's flank blocking — sixteen blocks
 # closing FS-SG-DECK's joist bays where the curtain plane crosses them, 17.3 LF cut, three
 # more 8' sticks. The "# 464 LF" this comment used to carry was itself 60 LF stale.
-"2x8" = { material = { low = 1.1, high = 1.55 }, labour = { low = 1.3, high = 2.4 } }  # 1,010 LF — +148 for the wet-wall -GRAB/-HIGH courses (2026-09-12)
+"2x8" = { material = { low = 1.1, high = 1.55 }, labour = { low = 1.3, high = 2.4 } }  # 1,010 LF — +148 for the wet-wall -GRAB/-HIGH courses (2026-09-12); 2x8 backing 624 -> 356 LF ordered (2026-10-10 trim)
 # D-G-SERVICE's continuous header (2026-08-18). Three plies at $3-5/LF per 1.75" ply, on
 # the same basis as the rows above; shallow stock, so the low end of that band.
 "3-1.75x5.5 LVL" = { material = { low = 12, high = 22 }, labour = { low = 9, high = 18 } }

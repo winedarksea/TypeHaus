@@ -4822,3 +4822,39 @@ surface that reaches the court, so the water goes there.
   catlin_elevations (ST-S2A, FS-ATTIC, RL-A-*), bid framing.md (less trimmer/header LVL,
   one fewer LUS, about 26 SF more subfloor), and six section details that cut the y=5'-6"
   attic joist.
+
+### 2026-10-10 — Wall backing follows a designated body
+
+- Policy reversed (owner): backing is no longer authored "where a screw *might* land". A band
+  stands behind a modelled body — cabinet, wardrobe, mirror, rod, shelf, peg, access panel,
+  hydrant, plant stand, handrail. A grab-bar course stands only where a tub, shower or WC
+  does. Each run covers whole stud bays around its body, ends on stud faces, and runs full
+  length only at about 2/3 cover. Before: 106 bands, ~725 LF authored, ~280 LF with nothing
+  in front. After: 74 bands, 380 LF authored.
+- Deleted: every course on the seven fixture-less wet walls plus `W-S-BD-N1B` (24), the
+  MID/HIGH courses backing nothing, `BK-M-BAE-GRAB`, `BK-S-BA-E1B-GRAB`, `BK-M-N1-MID`
+  (a future hang), and `BK-M-BA2E-AP`. No access panel stands in front of the last one; the
+  tub-deck panel is on `BK-M-TUBDK-AP`.
+- Fixture walls are read off geometry, not `wall_ref`. Two of the plan's premises were
+  wrong. Both main-floor WCs back onto `W-M-HS1`, so `W-M-BAE` had no grab-bar use.
+  `FX-S-BATH1-SH` stands on `W-S-N3`/`W-S-CH-W`, not `W-S-BD-N`, so `BK-S-BD-N-GRAB` now backs
+  the two vanity top rails. The fixtures left with no grab course are listed in
+  `notes/wall_backing.md` §4.
+- Re-purposed and renamed: `BK-M-BA2E2-HIGH`/`-GRAB` (closet wire clips; the GRAB also takes
+  the shower), `BK-M-HS1-MID`/`-HIGH` (FURN-M-BATH2-CAB), `BK-S-SN3-MID`/`-HIGH` and
+  `BK-S-BA-E1B-MID` (mirrors), `BK-S-BD-N-MID`/`-HIGH` (vanity mirrors).
+- Trimmed to bays: the W-M-E1 uppers start at 272 3/4" (the pantry), not 20'-0". The 82"
+  and 64" courses split into `BK-M-E1-ROD` + `BK-M-E1-STACKER` and `BK-M-E1-MID` (hood) +
+  `BK-M-E1-MANTEL`. `BK-M-S1-ROD` splits into one band per rod (`-ROD-S2`). Also trimmed:
+  `BK-M-C1-ROD`, `BK-M-N1-LOW`/`-DISP`, `BK-M-CLN-RACK`/`-PAX`, all four access panels, both
+  attic kitchenette bands and the grab course on `W-A-STU-W`. `BK-M-S1-HYD` drops to its one bay
+  now that the hydrant sits at 152", clear of stud-006.
+- Bands only 1-3" over their bays were left alone (PAX rails, pegs, closet mirror, SEKTION).
+- Every `advisory.wall_backing_present` PASS still passes (50 of 50, same walls).
+  `wall_backing_bearing` has no floating end. Take-off: 2x8 blocking 624 -> 356 LF ordered,
+  2x10 106 -> 24, 2x6 28 -> 26, 2x4 cut 58.8 -> 56.0. Framing range down $876-$1,425.
+- Validation: `haus check` 0 FAIL, 69 not evaluable (unchanged). `scripts/verify.sh --fast`:
+  8,799 passed, 27 skipped; the three golden failures were blocking only and re-blessed after
+  reading the diffs. Those are the framing bid's four SPF blocking rows, removed `backing-*`
+  members in catlin_elevations, and SL-D-STAIRVOID/-WALLTYP's backing members with their
+  lumber hatches. Checks-as-tests (starter, catlin) and ruff pass.

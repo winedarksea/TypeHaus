@@ -154,26 +154,18 @@ TOTO_DRAKE = FixtureType(
 # for a hook saves the blocking, not the valve. Only a true two-in-one magnetic combo head is
 # one outlet, which is why the two low-use showers take one and the two tubs do not.
 #
-# ** BLOCKING IS THE ONLY IRREVERSIBLE ITEM IN THIS FILE, AND IT IS NOW MODELLED. ** As of
-# 2026-09-09 every band below is a `WallBacking` in `plan/backing.py`, so it reaches the
-# framer on the S-sheets and the lumber yard through the takeoff instead of living here as
-# an instruction nobody downstream can read. `advisory.wall_backing_present` reports a
-# wall-mounted body with nothing behind it, and `notes/wall_backing.md` carries the height
-# schedule with its sources. One correction the modelling forced: the "about twelve
-# dollars" below is right for the 12" strip this paragraph describes and wrong for the 48"
-# band that actually covers the 40"-80" range in one piece, which is ~13 sheets of ply.
-# The paragraph is kept verbatim because the REASONING in it is still the reasoning.
-#
-# ** BLOCKING IS THE ONLY IRREVERSIBLE ITEM IN THIS FILE. ** A 3/4" plywood strip, 12" wide,
-# spanning two stud bays, ~40" to ~80" AFF, in ALL FIVE wet walls including the ones with no
-# slide bar planned — blocking only where today's model's screws land pins the house to
-# today's model forever, and a continuous band costs about twelve dollars. Block the drop
-# elbow, the valve, the tub spout and the shower arm in the same pass, and ** put grab-bar
-# backing at 33"-36" AFF **: without it everyone grabs the bar anyway, toggles in cement
-# board work loose, and water wicks down the anchor holes into the stud bay as a concealed
-# leak. Retrofit after tile is $1,500-4,000. Tub spouts are specified THREADED (IPS), never
-# slip-fit: a slip-fit spout seals on an O-ring over a bare copper stub and when it ages the
-# leak is behind the tile.
+# ** BLOCKING IS THE ONLY IRREVERSIBLE ITEM IN THIS FILE, AND IT IS MODELLED. ** Every band
+# is a `WallBacking` in `plan/backing.py` / `plan/backing_wet.py`, so it reaches the framer
+# on the S-sheets and the lumber yard through the takeoff. Since 2026-10-10 it follows a
+# designated body: a grab-bar course (2x8, 32"-39 1/4") only where a tub, shower or WC
+# stands, and mirror/cabinet courses only behind a modelled mirror or cabinet. The old
+# "block every wet wall where a screw might land" policy is retired (DESIGN-LOG.md,
+# `notes/wall_backing.md` §4). Without grab-bar backing everyone grabs the bar anyway,
+# toggles in cement board work loose, and water wicks down the anchor holes into the stud
+# bay as a concealed leak; retrofit after tile is $1,500-4,000. The drop elbow, valve, tub
+# spout and shower arm are the plumber's rough-in blocking, set in the same pass. Tub spouts
+# are specified THREADED (IPS), never slip-fit: a slip-fit spout seals on an O-ring over a
+# bare copper stub and when it ages the leak is behind the tile.
 
 # RM-M-BATH2's 36" shower — the primary, and the one that gets the adjustable-height
 # handshower, because adjustable height is the actual benefit and this is the shower used

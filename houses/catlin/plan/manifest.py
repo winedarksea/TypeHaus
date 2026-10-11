@@ -348,7 +348,7 @@ PLAN = (
          *lighting.BASEMENT_LIGHTING,
          *placeables.BASEMENT_PLACEABLES, *millwork.BASEMENT_SHELVES,
          *millwork_vanities.BASEMENT_VANITY_SHELVES,
-         *backing.BASEMENT_BACKING, *backing_wet.BASEMENT_WET_BACKING],
+         *backing.BASEMENT_BACKING],
     )
     .with_elements(
         "main",
