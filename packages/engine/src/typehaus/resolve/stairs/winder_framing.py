@@ -9,6 +9,7 @@ from shapely.geometry import LineString, Polygon
 from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
+from typehaus.resolve.overlay import difference, intersection
 from typehaus.resolve.stairs.winder_geometry import (
     Segment,
     WinderLayout,
@@ -89,7 +90,7 @@ def _blocking(stair: Stair, index: int, interior: Polygon, lines: list[Segment],
     remaining = interior
     members = []
     for line in lines:
-        band = LineString(line).buffer(ply / 2, cap_style="flat").intersection(remaining)
+        band = intersection(LineString(line).buffer(ply / 2, cap_style="flat"), remaining)
         pieces = [band] if isinstance(band, Polygon) else list(getattr(band, "geoms", ()))
         for piece in pieces:
             if not isinstance(piece, Polygon) or piece.area <= 1e-8:
@@ -99,7 +100,7 @@ def _blocking(stair: Stair, index: int, interior: Polygon, lines: list[Segment],
                 raise ValueError("winder blocking cannot be cut from its declared stock")
             members.append(_board(stair, f"landing-joist-winder{index}-{len(members)}",
                                   piece, (axis.coords[0], axis.coords[-1]), base, top, ply))
-        remaining = remaining.difference(band)
+        remaining = difference(remaining, band)
     return members
 
 

@@ -10,7 +10,6 @@ from typehaus.emit.gltf.geometry import _to_gltf
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _color, _hex_rgba, _material_finish_color
 from typehaus.emit.gltf.scene import _SceneBuilder
-from typehaus.emit.gltf.triangulate import polygon_parts
 from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.model.built_in_bookcase import built_in_bookcase_parts
 from typehaus.model.canvas import canvas_object_types, model_symbol_for, wood_material
@@ -75,11 +74,8 @@ def _add_countertops(scene: _SceneBuilder, model: ResolvedModel, authored: dict)
         mb = _MeshBuilder()
         color = _material_finish_color(top.material_ref, "millwork", authored)
         for prism in countertop_prisms(model, top):
-            if prism.voids:
-                mb.add_polygon_prism(polygon_parts(prism.ring, prism.voids),
-                                     prism.z0_m, prism.z1_m, color)
-            else:
-                mb.add_prism(list(prism.ring), prism.z0_m, prism.z1_m, color)
+            mb.add_prism_with_rectangular_voids(list(prism.ring), prism.voids,
+                                                prism.z0_m, prism.z1_m, color)
         if not mb.is_empty() and top.hosts[0] in uids:
             scene.add_object(mb, ("millwork",), kind="canvas_object", uid=uids[top.hosts[0]])
 
