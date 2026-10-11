@@ -787,48 +787,52 @@ footing bears on that footing: the clear span is between the toe faces, not the 
 |---|---|---|
 | clear span | 23.500 − 12.500 | **11.00'** |
 | bearing | 12.5 − 9.0 (axis to toe face) | 42" |
-| d | 17.75 − 2.0 − 0.375 − 0.625/2 | 15.0625" |
-| design span | min(11.00 + 15.0625/12, 11.00 + 42/12) = min(12.255, 14.5) | **12.255'** |
+| cover | 3" — the soffit between the toes is cast on the bed (ACI Table 20.5.1.3.1); was 2" until 2026-10-11 | 3" |
+| d | 17.75 − 3.0 − 0.375 − 0.625/2 | 14.0625" |
+| design span | min(11.00 + 14.0625/12, 11.00 + 42/12) = min(12.172, 14.5) | **12.172'** |
 
 **Strength at U = 1.4D**, w = 268.86 + 221.875 = 490.735 plf, wu = 687.03 plf:
 
 ```
-Mu      687.03 × 12.255² / 8                             = 12,898 ft-lb
-Vu      687.03 × 12.255 / 2                              =  4,210 lb
-As,req  12,898 × 12 / (0.9 × 60,000 × 0.9 × 15.0625)      =  0.2114 in²
-§9.6.1.3  4/3 × 0.2114 = 0.2819 < §9.6.1.2's 0.639 — the 4/3 rule waives the minimum
+Mu      687.03 × 12.172² / 8                             = 12,723 ft-lb
+Vu      687.03 × 12.172 / 2                              =  4,181 lb
+As,req  12,723 × 12 / (0.9 × 60,000 × 0.9 × 14.0625)      =  0.2234 in²
+§9.6.1.3  4/3 × 0.2234 = 0.2979 < §9.6.1.2's 0.597 — the 4/3 rule governs the minimum
 2 #5    a = 0.62 × 60,000 / (0.85 × 5,000 × 12)           =  0.7294 in
-        φMn = 0.9 × 0.62 × 60,000 × (15.0625 − 0.3647)/12  = 41,007 ft-lb    d/c 0.315
-        0.62 ≥ 0.2819                                                       d/c 0.455
-φVc     0.75 × 2 × 70.711 × 12 × 15.0625                   = 19,171 lb      d/c 0.220
+        φMn = 0.9 × 0.62 × 60,000 × (14.0625 − 0.3647)/12  = 38,217 ft-lb    d/c 0.333
+        0.62 ≥ 0.2979                                                       d/c 0.480
+        (and 0.62 ≥ §9.6.1.2's 0.597 outright: at 3" the waiver is not leaned on)
+φVc     0.75 × 2 × 70.711 × 12 × 14.0625                   = 17,899 lb      d/c 0.234
 ```
 
 **Torsion falls below the threshold.**
 
 ```
 t       268.86 × 4.1275 / 12                               =  92.48 ft-lb/ft
-Tu      1.4 × 92.48 × 12.255 / 2                           =  793.3 ft-lb
-φT_th   0.75 × 0.25 × 70.711 × 762.5 / 12                  =  842.5 ft-lb    d/c 0.942
+Tu      1.4 × 92.48 × 12.172 / 2                           =  787.9 ft-lb
+φT_th   0.75 × 0.25 × 70.711 × 762.5 / 12                  =  842.5 ft-lb    d/c 0.935
 ```
 
 ACI 318-19 §22.7.4.1: below φT_th torsion **may be neglected**. §4's closed hoops at ph/8,
 §4a's side bars and Al, and §6e's requirement that every corner bar develop fy at the face
-all fall away. The margin is 6%; at the face less d (§22.7.3.2's critical section, not
-taken) it would be 0.75. The eccentricity is still 4.13": nothing here moved the brick.
+all fall away. The margin is 6.5%, but the threshold is itself ¼ of the cracking torque, so
+factored Tu is ~23% of Tcr; at the face less d (§22.7.3.2's critical section, not taken) it
+would be ~0.75 of the threshold. Cover does not enter it (Acp and pcp are gross). The eccentricity is still 4.13": nothing here moved the brick.
 
 **No shear steel is owed.** §9.6.3.1 asks Av,min only where Vu > φλ√f'c bw d =
-0.75 × 70.711 × 12 × 15.0625 = **9,586 lb**; Vu is 4,210 (d/c 0.439). The #3 ties @ 12" are
+0.75 × 70.711 × 12 × 14.0625 = **8,949 lb**; Vu is 4,181 (d/c 0.467). The #3 ties @ 12" are
 cage ties.
 
-**Deflection, with no end fixity.** Service Ma = 490.735 × 12.255²/8 = 9,213 ft-lb, under
-⅔Mcr = 18,565, so Ie = Ig = 5,592.36 in⁴; span 147.06".
+**Deflection, with no end fixity.** Service Ma = 490.735 × 12.172²/8 = 9,088 ft-lb, under
+⅔Mcr = 18,565, so Ie = Ig = 5,592.36 in⁴; span 146.06".
 
 ```
-Δ all dead   40.895 × 147.06⁴ × 5 / (384 × 4,030,509 × 5,592.36) = 0.01105 in
-Δ beam only  × 221.875 / 490.735                                 = 0.00500 in
-λΔ           2 / (1 + 50 × 0.40 / (12 × 15.0625))                = 1.8008   (2 #4 top)
-after attachment  1.8008 × 0.01105 + (0.01105 − 0.00500)          = 0.0260 in
-ℓ/600 = 147.06 / 600 = 0.245 in                                      d/c 0.106
+Δ all dead   40.895 × 146.06⁴ × 5 / (384 × 4,030,509 × 5,592.36) = 0.01075 in
+Δ beam only  × 221.875 / 490.735                                 = 0.00486 in
+λΔ           2 / (1 + 50 × 0.40 / (12 × 14.0625))                = 1.7881   (2 #4 top)
+after attachment  1.7881 × 0.01075 + (0.01075 − 0.00486)          = 0.0251 in
+ℓ/600 = 146.06 / 600 = 0.243 in                                      d/c 0.103
+ℓ/480 = 0.304 in                                                     d/c 0.083
 ```
 
 `end_restraint` is **removed**: it was a serviceability credit and nothing needs it.
@@ -848,7 +852,8 @@ against the 27.58" class B lap (ℓd 21.21 × 1.3; 0.919). A 3'-6" bar.
 | hoops / ties | #3 closed @ 5", 135° | #3 @ 12" (cage) |
 | side bars | 1 #4 each face | — |
 | dowels | 3 #5 per end, 66" + 30" | 2 #5 per end, 12" + 30" |
-| laid weight | 251.2 lb | **91.9 lb** |
+| cover | 2" | 3" (2026-10-11) |
+| laid weight | 251.2 lb | **87.1 lb** (91.9 at 2" cover) |
 
 **What would undo this.** Taking the toes away (narrowing FT-SG-W1/E1, or a beam bottom raised
 above the footing top that leaves it bearing on a 7" lip) puts the span back to 17'-0" and Tu

@@ -71,32 +71,32 @@ def test_inputs_are_the_concrete_layer_and_the_drawn_wythe(record) -> None:
 
 
 def test_strength_rows_reproduce_the_hand_pass(record) -> None:
-    """§6j at U = 1.4D on L = min(11 + d, 11 + 3.5) = 12.255': Mu 12,898; Vu 4,210;
-    As,req 0.2114 so §9.6.1.3's 4/3 is 0.2819 and waives §9.6.1.2's 0.639; φMn 41,007 on
-    2 #5."""
+    """§6j at U = 1.4D on L = min(11 + d, 11 + 3.5) = 12.172' (d 14.0625 at 3" cover):
+    Mu 12,723; Vu 4,181; As,req 0.2234 so §9.6.1.3's 4/3 is 0.2979, under §9.6.1.2's 0.597;
+    φMn 38,217 on 2 #5."""
     _, rec = record
     flex = _state(rec, "flexure")
-    assert flex.demand == pytest.approx(12898, abs=1)
-    assert flex.capacity == pytest.approx(41007, abs=1)
+    assert flex.demand == pytest.approx(12723, abs=1)
+    assert flex.capacity == pytest.approx(38217, abs=1)
     minimum = _state(rec, "minimum flexural steel")
-    assert minimum.demand == pytest.approx(0.2819, abs=1e-4)
+    assert minimum.demand == pytest.approx(0.2979, abs=1e-4)
     assert "§9.6.1.3" in minimum.citation and minimum.ok
     shear = _state(rec, "one-way shear")
-    assert shear.demand == pytest.approx(4209.8, abs=1)
-    assert shear.capacity == pytest.approx(19171, abs=1)
+    assert shear.demand == pytest.approx(4181.2, abs=1)
+    assert shear.capacity == pytest.approx(17899, abs=1)
 
 
 def test_torsion_is_below_the_threshold_and_its_detailing_is_not_owed(record) -> None:
-    """§6j: Tu 1.4 × 268.86 × (4.1275/12) × 12.255/2 = 793.3 ft-lb against φT_th 842.5,
-    d/c 0.942 — §22.7.4.1 lets it be neglected, so no hoop, side-bar or Al rows exist and
-    Vu 4,210 is under §9.6.3.1's 9,586 Av,min trigger."""
+    """§6j: Tu 1.4 × 268.86 × (4.1275/12) × 12.172/2 = 787.9 ft-lb against φT_th 842.5,
+    d/c 0.935 — §22.7.4.1 lets it be neglected, so no hoop, side-bar or Al rows exist and
+    Vu 4,181 is under §9.6.3.1's 8,949 Av,min trigger."""
     _, rec = record
     tors = _state(rec, "torsion below the §22.7.4.1 threshold")
-    assert tors.demand == pytest.approx(793.3, abs=0.1)
+    assert tors.demand == pytest.approx(787.9, abs=0.1)
     assert tors.capacity == pytest.approx(842.5, abs=0.1)
-    assert tors.ratio == pytest.approx(0.942, abs=1e-3)
+    assert tors.ratio == pytest.approx(0.935, abs=1e-3)
     trigger = _state(rec, "shear below the Av,min trigger")
-    assert trigger.capacity == pytest.approx(9585.9, abs=0.5) and trigger.ok
+    assert trigger.capacity == pytest.approx(8949.3, abs=0.5) and trigger.ok
     names = {s.name for s in rec.limit_states}
     for gone in ("closed hoop spacing", "torsion transverse steel, equilibrium (one leg)",
                  "longitudinal steel, flexure + torsion", "closed hoop hook angle"):
@@ -105,16 +105,16 @@ def test_torsion_is_below_the_threshold_and_its_detailing_is_not_owed(record) ->
 
 
 def test_deflection_is_two_rows_and_tms_l_over_600_is_the_strict_one(record) -> None:
-    """§6j: uncracked (Ma 9,213 < ⅔Mcr), Δ after attachment 0.02595" on 147.06" — ℓ/600
-    0.106, ℓ/480 0.085, with no fixity claimed."""
+    """§6j: uncracked (Ma 9,088 < ⅔Mcr), Δ after attachment 0.02512" on 146.06" — ℓ/600
+    0.103, ℓ/480 0.083, with no fixity claimed."""
     _, rec = record
     tms = _state(rec, "deflection after the wythe is attached, TMS")
-    assert tms.demand == pytest.approx(0.02595, abs=1e-5)
-    assert tms.capacity == pytest.approx(0.2451, abs=1e-4)
-    assert tms.ratio == pytest.approx(0.106, abs=1e-3)
+    assert tms.demand == pytest.approx(0.02512, abs=1e-5)
+    assert tms.capacity == pytest.approx(0.2434, abs=1e-4)
+    assert tms.ratio == pytest.approx(0.103, abs=1e-3)
     assert "TMS 402-22 §13.1.2.3" in tms.citation
     aci = _state(rec, "deflection after the wythe is attached, ACI")
-    assert aci.ratio == pytest.approx(0.085, abs=1e-3)
+    assert aci.ratio == pytest.approx(0.083, abs=1e-3)
     assert not any("SERVICEABILITY ONLY" in note for note in rec.notes)
     assert not [s for s in rec.limit_states if "end moment into" in s.name]
 

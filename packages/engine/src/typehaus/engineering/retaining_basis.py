@@ -428,8 +428,9 @@ def bar_for_roles(spec: object, roles: tuple[str, ...]) -> tuple[int, float] | N
     A footing mat is authored by role — ``bottom-x`` is the transverse bottom steel that
     carries the toe, ``top-x`` the transverse top steel that carries the heel — and a bar in
     the wrong role is not a bar this section can use. ``None`` where the spec is absent, has
-    no bar in any of those roles, or states a COUNT rather than a spacing: a strip footing
-    is billed and graded per foot of run, and "four bars" says nothing about a foot of it.
+    no bar in any of those roles, or states a COUNT rather than a spacing or a ``zone``: a
+    strip footing is graded per foot of run, and "four bars" or "6'-6\" each end" says
+    nothing about a foot of it.
 
     The conservative contract :func:`parse_reinforcement` keeps is kept here too — anything
     this cannot read is reported as NO steel, never as assumed steel.
@@ -437,7 +438,7 @@ def bar_for_roles(spec: object, roles: tuple[str, ...]) -> tuple[int, float] | N
     if spec is None:
         return None
     for entry in getattr(spec, "bars", ()) or ():
-        if entry.role not in roles or entry.spacing is None:
+        if entry.role not in roles or entry.spacing is None or entry.zone is not None:
             continue
         spacing_in = float(entry.spacing.inches)
         if entry.bar not in _BAR or spacing_in <= 0.0:

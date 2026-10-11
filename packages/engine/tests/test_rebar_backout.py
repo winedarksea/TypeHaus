@@ -38,8 +38,8 @@ _SCHEDULE = {
     ("column", "#3", "hdg-a767"): (93, 121.1),
     ("column", "#5", "hdg-a767"): (80, 472.3),
     ("footing", "#4", "hdg-a767"): (24, 167.9),
-    ("footing", "#5", "hdg-a767"): (170, 1600.3),
-    ("foundation wall", "#3", "hdg-a767"): (19, 30.5),
+    ("footing", "#5", "hdg-a767"): (179, 1465.9),
+    ("foundation wall", "#3", "hdg-a767"): (19, 25.7),
     ("foundation wall", "#4", "hdg-a767"): (283, 1610.1),
     ("foundation wall", "#5", "hdg-a767"): (135, 1311.1),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
@@ -80,8 +80,11 @@ _SCHEDULE = {
 # +287.4 lb, −28 pieces on 2026-10-10 (note addendum): W-SG-BRKBM bears on the court toes
 # and sheds its torsion cage (−159.3); FT-SG-S owns the south corners with #5 E-W mats and
 # W2/E2 stop at its toe (+447.1).
-_TOTAL_LB = 6667.1
-_TOTAL_PIECES = 1099
+# −139.2 lb, +9 pieces on 2026-10-11 (note addendum): FT-SG-S's E-W top bars only over
+# W2/E2's heels, 6'-6" each end (−134.4); its bottom bars straight (no hooks); W-SG-BRKBM
+# at 3" cover, smaller ties (−4.8).
+_TOTAL_LB = 6527.9
+_TOTAL_PIECES = 1108
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
 #: authoring steel may lift the tonnage into the register's band without opening it. Opening
@@ -229,5 +232,6 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # detailing review (note §1): the stems continuous at #5 @ 7", one mat per overlap.
     # 47.4 on 2026-10-10 (note addendum): +287 lb in the court's corner footings and E-W mats
     # against −0.65 cy billed — the S/W2/E2 overlap no longer billed twice (−1.25), the corner
-    # squares (+0.91), the ARCH strut at 12" x 12" (−0.31).
-    assert total_lb / total_cy == pytest.approx(47.39, rel=0.02)
+    # squares (+0.91), the ARCH strut at 12" x 12" (−0.31). 46.4 on 2026-10-11: FT-SG-S's
+    # top E-W bars confined to the heels (−139 lb, no concrete).
+    assert total_lb / total_cy == pytest.approx(46.40, rel=0.02)

@@ -744,7 +744,9 @@ _VENEER_BEAM_STEEL = ReinforcementSpec(
         BarSpec(role="ties", bar=3, spacing=inch(12.0),
                 note="cage ties; ACI 318-19 §9.6.3.1 asks no shear steel at Vu 4,210 lb"),
     ),
-    cover=inch(2.0),
+    # 3": the soffit between the toes is cast on the bed (ACI 318-19 Table 20.5.1.3.1), as
+    # every other court pour is. It was 2" until 2026-10-11; the span does not miss the inch.
+    cover=inch(3.0),
     source="notes/sunken_garden_veneer_beam.md §6j",
 )
 
@@ -1253,17 +1255,20 @@ _RETAINING_FOOTING_MAT = ReinforcementSpec(
 
 # FT-SG-S's 4'-4" toe: at #5 @ 12" it reads 0.98 in flexure; #5 @ 9" holds it at 0.74,
 # the ~0.7 the court is designed to, on the same bar size (free body §7, south row).
-# Since 2026-10-10 its E-W bars are #5 @ 12" top and bottom, wall to wall (were #4 @ 18"
-# distribution): under W2/E2's south 4'-10" they are those walls' toe/heel steel, matching
-# the side strips' transverse mat, and across the court they are the south tie (§12b).
+# E-W since 2026-10-10 (§12b): under W2/E2's south 4'-10" these bars ARE those walls' toe and
+# heel steel. Bottom #5 @ 12" runs out to out (was #4 @ 18"): the toe bars, then 25' of one
+# bar line across the court. Top #5 @ 12" only over the heels — the side strips' own 6'-6"
+# heel bar carried round the corner; the court middle has no top tension (winter E-W tension
+# rides W-SG-S's horizontals, §11m.2).
+_HEEL_BAR_FT = (_RETAINING_FOOTING_WIDTH_IN - 2 * _RETAINING_FOOTING_MAT.cover.inches) / 12.0
 _SOUTH_FOOTING_MAT = _RETAINING_FOOTING_MAT.model_copy(update={"bars": (
     BarSpec(role="bottom-x", bar=5, spacing=inch(9.0),
             note="transverse, resists the 4'-4\" toe cantilever; hook the toe end"),
     _RETAINING_FOOTING_MAT.bars[1],
-    BarSpec(role="bottom-y", bar=5, spacing=inch(12.0), hooks=("start", "end"),
-            note="E-W, out to out: W2/E2's toe steel at the corners and the court's south tie"),
-    BarSpec(role="top-y", bar=5, spacing=inch(12.0), hooks=("start", "end"),
-            note="E-W, out to out: W2/E2's heel steel at the corners, top face across the court"),
+    BarSpec(role="bottom-y", bar=5, spacing=inch(12.0),
+            note="E-W, out to out: W2/E2's toe steel at the corners, continuous between"),
+    BarSpec(role="top-y", bar=5, spacing=inch(12.0), zone=ft(_HEEL_BAR_FT),
+            note="E-W at each end only: W2/E2's heel steel, the side strips' top bar"),
 )})
 
 # Width, offset and mat per strip. Four share one; FT-SG-S grows its toe only, so its

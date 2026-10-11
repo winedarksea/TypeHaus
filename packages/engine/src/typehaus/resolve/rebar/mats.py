@@ -4,7 +4,9 @@ Frame (decision D7): a strip footing's ``y`` runs along its wall and ``x`` acros
 or slab uses plan X/Y. A ``-x`` role is a bar RUNNING in x, spaced along y by the D3 fencepost
 across the region, and each bar is the part of its line inside ``outline − voids`` shrunk
 by cover — so a void splits a bar and an L-shaped slab shortens one. Bottom roles stack up
-from the soffit in authored order, top roles down from the top.
+from the soffit in authored order, top roles down from the top. A mat role with a ``zone`` lays
+each bar line only within that distance of either end of it — corner steel that need not
+cross the middle — and keeps its hooks at the outer ends.
 
 A ribbed slab (``ReinforcementSpec.ribs``) holds its mat in the cap: the cap is the assembly's
 STRUCTURE layer at the top of the solid, and each rib hangs ``ribs.depth`` below it. ``rib``
@@ -52,6 +54,17 @@ def _segments(region, runs_x: bool, q: float, lo: float, hi: float):
         yield (x0, y0), (x1, y1)
 
 
+def _zoned(a, b, hooks, zone):
+    """``(a, b)`` whole, or its two end pieces of ``zone`` each where they do not meet."""
+    length = ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
+    if zone is None or 2 * zone.meters >= length:
+        return [((a, b), hooks)]
+    t = zone.meters / length
+    a2 = (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+    b2 = (b[0] - (b[0] - a[0]) * t, b[1] - (b[1] - a[1]) * t)
+    return [((a, a2), (hooks[0], None)), ((b2, b), (None, hooks[1]))]
+
+
 def lay_mat(sink: Sink, spec, solid, cover: float, *, ey=(0.0, 1.0),
             cap_thickness: float | None = None, earlier=()) -> None:
     """``earlier``: plan outlines of pours already reinforced — this mat stops at them."""
@@ -85,9 +98,10 @@ def lay_mat(sink: Sink, spec, solid, cover: float, *, ey=(0.0, 1.0),
             acc[level] += db
             for q in fence(q_lo + db / 2, q_hi - db / 2, entry.spacing.meters):
                 for a, b in _segments(region, runs_x, q, lo, hi):
-                    sink.straight(entry, frame.world(*a, z), frame.world(*b, z),
-                                  hook_dirs=hooks, lap_offset=frame.along(not runs_x),
-                                  top_cast=level == "top" and z - solid.z0_m > 12 * _IN)
+                    for (a1, b1), hk in _zoned(a, b, hooks, entry.zone):
+                        sink.straight(entry, frame.world(*a1, z), frame.world(*b1, z),
+                                      hook_dirs=hk, lap_offset=frame.along(not runs_x),
+                                      top_cast=level == "top" and z - solid.z0_m > 12 * _IN)
     if ribs is not None:
         _lay_ribs(sink, spec, concrete, region, frame, cover, z_bot, z_top)
 

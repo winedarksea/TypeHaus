@@ -128,7 +128,9 @@ class BarSpec(HausModel):
     #: Hooked rows only: the ties enclosing those hooks (ACI 318-19 §25.4.3.3) — the ψr 1.0
     #: credit when the hooked bars sit closer than 6 db. ``None``: none are credited.
     hook_ties: HookConfinement | None = None
-    #: Stirrups/ties only: the distance from EACH end of the member they are confined to.
+    #: Stirrups/ties: the distance from EACH end of the member they are confined to. On a
+    #: footing, pad or slab mat role: the length each bar line keeps at EACH end — corner steel
+    #: that does not cross the middle. A zoned mat role is not per-foot steel along the run.
     zone: Length | None = None
     #: Dowels only: the straight length cast into the pour BELOW the joint. ``None`` means
     #: the drawing does not say, and a column on a wall then cannot grade its development

@@ -465,11 +465,11 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
             f"concrete the beam's pour bears on, wall or footing toe (note §6j).",
             *notes_ldh,
             *joint_notes,
-            "NOT GRADED (moved from the deferral): the stirrup form; which way each hook turns "
-            "(it must stay inside the wall it anchors in); shrinkage restraint between the two "
-            "side walls; the masonry "
-            "anchors over the insulated standoff, which are `veneer_anchor/<wythe>`, their own "
-            "deferral.",
+            "NOT GRADED (moved from the deferral): the stirrup form; "
+            + ("which way each hook turns (it must stay inside the wall it anchors in); "
+               if torsion else "")
+            + "shrinkage restraint between the two side walls; the masonry anchors over the "
+            "insulated standoff, which are `veneer_anchor/<wythe>`, their own deferral.",
             f"SOFT JOINTS: the wythe ends {_end_gaps(wythe_bands, w_sup, e_sup)}; each end's "
             f"seal over compressible filler is a MovementJoint, billed by the foot and graded "
             f"by structural.masonry_movement_joint (BIA Technical Note 18A; notes §6g).",

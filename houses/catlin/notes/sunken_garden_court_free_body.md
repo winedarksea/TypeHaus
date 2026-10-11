@@ -2623,10 +2623,10 @@ the footing under W-SG-S and under the south 4'-10" of W2/E2; FT-SG-W2/E2 stop o
 line, y −22.5 (`Footing.end_extension`/`start_extension`, derived from the two strips' reach).
 One placement, as before.
 
-**Its E-W steel is #5 @ 12" top and bottom, wall to wall** (was #4 @ 18" bottom,
-distribution). Under W2/E2's south 4'-10" those bars ARE the walls' toe and heel steel, so
-they are checked as §7 checks W2/E2's own transverse mat, on the inner layer's d (they sit
-under/over the N-S #5):
+**Its E-W steel is #5 @ 12" bottom, out to out, and #5 @ 12" top over the two heels only**
+(was #4 @ 18" bottom, distribution). Under W2/E2's south 4'-10" those bars ARE the walls' toe
+and heel steel, so they are checked as §7 checks W2/E2's own transverse mat, on the inner
+layer's d (they sit under/over the N-S #5):
 
 ```
 d (inner layer)  12 − 3 − 0.625 − 0.625/2                    = 8.0625 in   (§7e: 8.6875)
@@ -2636,9 +2636,31 @@ heel (§7c's 0.70 at 11,865)          0.70 × 11,865 / 10,993            d/c 0.7
 ```
 
 Both are one-way cantilever bounds for a zone that is supported on two edges (the W2 stem and
-the S stem), so they are conservative. Across the court the same bars are the south tie.
-Steel: FT-SG-S 441.3 → 976.6 lb, W2/E2 250.9 → 206.8 each — net +447.1 lb
-(`rebar_backout.md`, addendum 2026-10-10).
+the S stem), so they are conservative.
+
+**Where each layer stops (2026-10-11).** The bars are laid straight; x is from the west
+edge of FT-SG-S, and the east side is the mirror:
+
+```
+outer edge 5.5', 3" cover → bars start 5.75'; W2 back face 8.5', court face 9.5'
+ℓd #5, straight, ψt 1.0 (8.7" of concrete below), ψe 1.0 (galvanized)
+        60,000 / (25 × 70.711) × 0.625                          = 21.2 in
+top (heel)    BarSpec.zone 6'-6" = 84 − 2 × 3 cover, the side strips' own heel bar
+              back face → bar start  (8.5 − 5.75) × 12            = 33 in ≥ 21.2 ✓
+              court face → bar end   (5.75 + 6.5 − 9.5) × 12      = 33 in ≥ 21.2 ✓
+bottom (toe)  out to out, 24.5' — court face → west end 45 in ≥ 21.2 ✓; continuous east
+```
+
+The top layer stops 2'-9" past the court face because the court's middle has no top tension.
+The footing bears up under the stone and field and spans nothing, and the one E-W tension
+the court sees (§11m.2, winter contraction) crosses at W-SG-S's horizontals, 0.304 on those
+alone. The bottom layer runs through. That makes it one bar line, ties the two corner zones
+into one 25' footing against differential settlement, and is distribution steel at +59 lb
+over #4 @ 18" for that middle 11'. No hooks on either layer: each develops straight.
+
+Steel: FT-SG-S 441.3 → 842.2 lb, W2/E2 250.9 → 206.8 each, net +312.7 lb. It was 976.6 lb
+(+447.1) for one day, with the top layer wall to wall and hooked
+(`rebar_backout.md`, addenda 2026-10-10 and 2026-10-11).
 
 **Sliding: the engine does not credit it, and that is conservative.** `retaining_system` sums
 each wall as a unit section × its axis length, so a footing extension moves nothing and the

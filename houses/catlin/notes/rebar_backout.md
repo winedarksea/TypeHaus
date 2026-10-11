@@ -670,3 +670,20 @@ Total **6,667.1 lb / 1,099 pieces** (was 6,379.7 / 1,127). Two design changes, h
 Net **+287.4 lb**: −159.3 in the beam, +447.1 in the footings. The steel moved to where the
 model had been missing it — two corner squares with no footing under them — and out of a
 beam that was graded on a span it does not have.
+
+## Addendum 2026-10-11 — FT-SG-S's top bars over the heels only; the beam at 3" cover
+
+Total **6,527.9 lb / 1,108 pieces** (was 6,667.1 / 1,099). This is a value-engineering review
+of the day before. The design is unchanged; the steel follows the demand more closely.
+
+- **FT-SG-S 976.6 → 842.2 lb** (free body §12b). Its E-W top layer ran wall to wall as "the
+  south tie", but the court's middle 11' has no top tension, and the court's E-W tension
+  crosses at W-SG-S's horizontals. It is now `BarSpec.zone` 6'-6" at each end: the side
+  strips' own heel bar carried round the corner, 18 pieces where there were 9 long ones. The
+  bottom layer still runs out to out and is now straight, since 45" of embedment develops it
+  without a hook.
+- **W-SG-BRKBM 91.9 → 87.1 lb** (veneer note §6j). The cover went 2" → 3" because the soffit
+  between the toes is cast on the bed, and the closed ties shrink with it.
+
+Footing #5 170 → **179** pieces / **1,465.9** lb; foundation wall #3 **25.7** lb. Net from
+before 2026-10-10: **+148.2 lb** (+312.7 in the footings, −164.1 in the beam).

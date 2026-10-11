@@ -194,6 +194,21 @@ def test_a_later_mat_stops_at_an_earlier_pours_concrete() -> None:
     assert max(max(p[0] for p in b.path) for b in sink.bars) / _IN == pytest.approx(96.0)
 
 
+def test_a_zoned_mat_role_lays_only_its_two_end_pieces() -> None:
+    sink = _sink()
+    outline = ((0.0, 0.0), (300 * _IN, 0.0), (300 * _IN, 48 * _IN), (0.0, 48 * _IN))
+    pad = ResolvedSolid(uid="u", tag="P", storey="s", category="pad", outline=outline,
+                        z0_m=0.0, z1_m=12 * _IN)
+    bar = BarSpec(role="top-x", bar=5, spacing=inch(12), zone=inch(78), hooks=("start", "end"))
+    lay_mat(sink, _spec(bar), pad, 3 * _IN)
+    spans = sorted((min(p[0] for p in b.path) / _IN, max(p[0] for p in b.path) / _IN)
+                   for b in sink.bars)
+    assert len(spans) % 2 == 0 and len(spans) >= 4
+    for lo, hi in spans:
+        # each piece runs 78" in from its own end and turns its hook down there, never mid-pad
+        assert (lo, hi) == pytest.approx((3.0, 81.0)) or (lo, hi) == pytest.approx((219.0, 297.0))
+
+
 def test_a_hooked_vertical_runs_from_the_pour_below_and_records_its_anchorage() -> None:
     sink = _sink()
     base = WallBase(top=0.0, rest=-8 * _IN)

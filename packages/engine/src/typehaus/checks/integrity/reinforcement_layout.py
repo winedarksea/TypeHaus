@@ -91,7 +91,8 @@ def _schema_errors(ctx: CheckContext, element, spec):
             yield f"role {e.role} must state exactly one of spacing or count"
         if spec.ribs is None and (e.role == "rib" or (kind == "Slab" and e.role == "stirrups")):
             yield f"role {e.role} needs ReinforcementSpec.ribs"
-        if e.zone is not None and e.role not in ("ties", "stirrups"):
+        if e.zone is not None and e.role not in ("ties", "stirrups") and not (
+                e.role in _MAT and kind in ("Footing", "Pad", "Slab")):
             yield f"role {e.role} cannot take a zone"
         if e.hook_ties is not None and (e.role not in ("top-y", "bottom-y") or not e.hooks):
             yield f"role {e.role} takes hook_ties only as a hooked top-y/bottom-y row"

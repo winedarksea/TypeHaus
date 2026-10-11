@@ -4858,3 +4858,59 @@ surface that reaches the court, so the water goes there.
   reading the diffs. Those are the framing bid's four SPF blocking rows, removed `backing-*`
   members in catlin_elevations, and SL-D-STAIRVOID/-WALLTYP's backing members with their
   lumber hatches. Checks-as-tests (starter, catlin) and ruff pass.
+
+### 2026-10-10 — Court rebar: the veneer beam on the toes, ARCH in the footing plane, FT-SG-S owns the corners
+
+- **W-SG-BRKBM, 251 → 87 lb.** The engine graded it as a 17'-0" span between W-SG-W1/E1. The
+  resolved solids show its lower 10 3/4" sitting inside FT-SG-W1/E1's 3'-0" toes, so the
+  clear span is the **11'-0"** between the toe faces. `engineering/veneer_beam` now takes the
+  innermost concrete the pour overlaps, footing or wall, as each support. At 11'-0", Tu is 0.935
+  of §22.7.4.1's threshold, so torsion is neglected and the cage is a simple span's:
+  - 2 #5 bottom, 2 #4 straight hangers, #3 cage ties @ 12";
+  - 2 #5 dowels per end, cast straight in the toe (§9.7.3.8.1);
+  - `end_restraint` removed.
+
+  The steel this replaces: 3 #5 bottom, 3 #5 top hooked at fy into the walls with confining
+  ties, closed #3 hoops @ 5" (135°), and #4 side bars. Flexure 0.333, deflection 0.103 on
+  ℓ/600. Note §6j. The engine also gained §9.6.1.3 (4/3 As,req), and the torsion-neglected
+  branch grades stirrups by §9.6.3.1.
+- **W-SG-ARCH is a 12" x 12" plain strut flush with the court floor and footing tops,
+  poured with the footings (owner).** It was 12" x 17 1/2", 9" below the footing plane on its
+  own dig floor. SL-SG-FLOOR could not simply replace it: a 3 1/2" rim with voids is no
+  strut, and a slab poured after the walls does not close the loop before backfill. The strut
+  in the footing plane is the version of that idea that works:
+  - strut d/c 0.40 → **0.512**; sliding FS 1.735 unchanged;
+  - `FB-SG-ARCH` undercut 33" → 42", so the court has one dig plane;
+  - `FO-SG-STRUT` (new uid) cuts the rim off it;
+  - placement 1 is now "footings and strut".
+
+  Free body §8b.
+- **FT-SG-S runs out to out (25'-0") and W2/E2 stop at its toe line.** Before this, each south
+  corner square (3'-6" x 3'-6", heel under heel) had no footing, so the outer 6" x 6" of each
+  wall corner stood on stone, and the toe overlap was billed twice. Its E-W steel went from
+  #4 @ 18" distribution to the side strips' #5 @ 12" transverse mat carried round the
+  corners: toe 0.78, heel 0.76. The engine's sliding credit ignores the corners (FS 1.89 if
+  counted, 1.735 graded). Free body §12b.
+- Soakaway re-based to the new beds: 413 sf, 165 + 99 = 264 cf against 222 cf of melt, PASS
+  at 1.19 (`court_soakaway_storage.md`).
+
+### 2026-10-11 — Court rebar review: value-engineered, and 3" on the beam
+
+- **FT-SG-S's top E-W layer covers the heels only** (`BarSpec.zone` 6'-6" each end — the side
+  strips' own heel bar). The day before it ran wall to wall, called "the south tie". But
+  nothing puts top tension in the court's middle 11': the footing bears up under the field,
+  and the court's E-W tension (winter contraction, §11m.2) crosses at W-SG-S's horizontals.
+  The bottom layer stays out to out, one bar line tying the corners into one footing, and
+  went straight (45" develops it). 976.6 → 842.2 lb.
+  - Engine: `zone` is now legal on a footing/pad/slab mat role and lays each bar line's two end
+    pieces. `retaining_basis.bar_for_roles` never reads a zoned bar as per-foot steel.
+  - Superseded: #5 @ 12" top-y wall to wall, hooked both ends (1 day).
+- **W-SG-BRKBM cover 2" → 3".** Between the toes its soffit is cast on the bed, which is ACI
+  Table 20.5.1.3.1's "cast against ground", and every other court pour is at 3". The 2" was
+  inherited and never justified. The cost is nothing:
+  - d 15.06" → 14.06";
+  - flexure 0.315 → 0.333;
+  - 2 #5 now meets §9.6.1.2's minimum outright instead of through the §9.6.1.3 waiver;
+  - the closed ties shrink (−4.8 lb).
+- Net steel since before 2026-10-10: **+148 lb**, 6,379.7 → 6,527.9 lb. The beam lost 164 lb;
+  the south corners gained 313 lb where there had been no footing at all.

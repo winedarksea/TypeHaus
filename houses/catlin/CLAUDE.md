@@ -1606,7 +1606,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     subp. 2 reaches only walls that also enclose below-grade interior space, and none of
     them does. They get drained backfill instead, which relieves the thrust that a coat
     would not. It does not change their R404.4 case either way — sliding is graded on the
-    closed court loop at FS 1.71 (`retaining_system/W-SG-ARCH`), not on these walls
+    closed court loop at FS 1.73 (`retaining_system/W-SG-ARCH`), not on these walls
     individually (→ "Sunken garden court").
   - Skin: `BASEMENT_12`/`_8` cover the XPS with a 1/8" `foundation-coating-acrylic-black`
     (troweled over mesh; the library product in the house's exterior dark since 2026-09-23 —
@@ -2103,27 +2103,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `FS-SG-DECK.reinforcements`.
 - Veneer `W-B-BRICK` (both faces exposed; top at -13 1/3" since 2026-09-22 so
   `FS-SG-PORCH`'s 2x12s pass over it with 2 1/12" of air — nothing grades that gap) stands on
-  `W-SG-BRKBM`, a 12" x 17-3/4" grade beam spanning 17'-0" between `W-SG-W1`/`W-SG-E1` — not on
-  the house footing (`FT-B-BRICK`, retired). Basis: `notes/sunken_garden_veneer_beam.md`.
-- **THE BEAM'S DEFLECTION IS GRADED AT TMS 402-22 §13.1.2.3's ℓ/600 = 0.350" (17.5' design
-  span), AND AT THE 17'-0" COURT IT CLOSES WITHOUT THE END JOINT** (note §6i). It needed the
-  monolithic joint at 19'-0" (§6f: 1.242 OVER as a simple span). Now: **0.315** as a simple span,
-  **0.225** at the claimed α = 0.25 (elastic estimate 0.487, a 2:1 derate).
-  `W-SG-BRKBM.end_restraint` stays authored because the beam is still cast monolithic and its
-  added rows pass; keeping the claim is the engineer's call, and nothing depends on it.
-  - **The credit is SERVICEABILITY ONLY and must stay that way.** Midspan flexure is graded at
-    α = 0 (0.433). What the fixity ADDS is graded: negative flexure 0.072, the end moment into
-    `W-SG-W1`/`E1` as **plain concrete** over b_eff = b + 2t = 36" (0.287; ~0.56 at the full
-    elastic α, which is why `#6 @ 38"` does not change), and end-moment shear 0.106. ACI 318-19
-    Table 14.5.2.1's US coefficient is `Mn = 5λ√f'c·Sm` (the 0.42λ√f'c form is SI).
-  - **If this beam ever stops being cast monolithic with `W-SG-W1`/`W-SG-E1`, `end_restraint`
-    comes off with it** — `AN-SG-PLACEMENTS` placement 2 is the statement the field rests on,
-    and `test_the_fixity_credit_is_never_assumed` takes the record to its simple-span
-    reading (0.315).
-  - **What governs the record is now an ANCHORAGE length, 0.790** — §6e's 7.11" of top-row
-    hook in 9.00" of wall, held there by the two #4 confining ties per end (without them
-    ψr goes 1.6 and ℓdh 11.38" against 9.00", an immediate FAIL). Thinning either side wall
-    or raising its cover moves that row before it moves anything else here.
+  `W-SG-BRKBM`, a 12" x 17-3/4" grade beam bearing on `FT-SG-W1`/`E1`'s 3'-0" toes and
+  spanning the **11'-0" between the toe faces** — not on the house footing (`FT-B-BRICK`,
+  retired). Basis: `notes/sunken_garden_veneer_beam.md` §6j (2026-10-10).
+- **The beam is an ordinary simple span because it sits on the toes.** Its lower 10 3/4"
+  is inside each toe for 3'-6", and `engineering/veneer_beam` takes the innermost concrete the
+  pour overlaps (wall or footing) as the support. At 11'-0", Tu is **0.935 φT_th**
+  (§22.7.4.1), so torsion is neglected: no closed hoops, side bars, fy hooks into the walls, or
+  `end_restraint`. The steel is 2 #5 bottom, 2 #4 straight hangers, #3 cage ties @ 12" (Vu is
+  under §9.6.3.1's trigger), and 2 #5 dowels per end cast straight in the toe (§9.7.3.8.1,
+  class B lap 27.58" in a 30" projection), at **3" cover**, since the soffit is cast on the bed.
+  The total is 87 lb; it was 251. Flexure 0.333; TMS ℓ/600 deflection 0.103.
+  - **What would undo it:** narrowing `FT-SG-W1`/`E1`'s toes, or raising the beam off them.
+    Either puts the span back to 17'-0" and Tu to 1.35 φT_th, and
+    `test_without_the_toe_bearing_the_light_cage_would_not_do` fails at once. So does moving
+    the brick further off the beam's centre (e 4.13").
 - Nothing in the engine grades a thermal break for continuity — a `Footing`
   resolves to one blob with no polygon, so verify an adjacent gap directly (→
   DESIGN-LOG.md, "Exterior colour, balcony and veneer").
@@ -2216,7 +2210,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `retaining_system/W-SG-ARCH` are unchanged; `retaining_system` reads its section from `size` and
   its axis from the resolved solid. It keeps `SUNKEN_GARDEN_GRADE_BEAM_12` (no wash: nothing of it
   shows) and bills in `prices.toml` `[concrete] "beam:SUNKEN_GARDEN_GRADE_BEAM_12"` at the court
-  walls' rate. `size` keeps a decimal point (`12.0x17.5`) so `cross_section` reads actual
+  walls' rate. `size` keeps a decimal point (`12.0x12`) so `cross_section` reads actual
   dimensions. `W-SG-BRKBM` stays a wall because a `Beam` has no layers for its XPS break.
 - **W-SG-W1/W2 and E1/E2 are one pour each but stay two elements.** The halves differ in
   `lateral_support`, `unbalanced_fill`, reinforcement, `base_restraint_ref` and how far the
@@ -2276,22 +2270,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Ponding over the court is ~267 cf (7 1/4" over 442 sf) against ~158 cf of 100-yr/24-hr
   rain (~1.7x); the volumes scale with the court's area, **the 1.7x ratio does not**. Cite the
   ratio, not the volumes, unless the volumes are what is being asked for. The governing case
-  is **snowmelt over a frozen field**, and `drainage.soakaway_storage` grades it: 155 cf of
-  course voids + 93 cf of 48 h infiltration (presumed HSG D) = 249 cf against 222 cf of melt
+  is **snowmelt over a frozen field**, and `drainage.soakaway_storage` grades it: 165 cf of
+  course voids (413 sf) + 99 cf of 48 h infiltration (presumed HSG D) = 264 cf against 222 cf of melt
   off 278 sf (`notes/court_soakaway_storage.md`). Go to an 18" course only if the credit fails.
-- **`W-SG-ARCH` must not move, and since 2026-09-10 the reason is no longer the ratio.**
-  Dropping its top to the rim underside gives a 10 1/4" section at phi-Pn 60,712 lb, which
-  FAILED at Pu 62,051 (d/c 1.02) and **passes at today's Pu 40,145 (d/c 0.66)**; the 8 1/2"
-  section passes too, at d/c 0.80. (Pu was 49,157 until 2026-09-14, when the strut force
-  became a derived reaction rather than half the largest member's thrust — the south wall's,
-  which cannot compress an E-W strut. `notes/..._court_free_body.md` §8.) What holds 12" x 17 1/2" is the SEQUENCING argument — the loop
-  must close before backfill, and a strut whose bottom is tied to a surface that moves is a
-  residue, not a chosen depth — plus no redundancy and a saving of **0.45 CY**, not the
-  ~1.1 CY this line claimed until 2026-09-14 (1.1 CY is the WHOLE beam; the shallower
-  section keeps most of it, and the delta is the 87 in² difference). Read
-  `notes/sunken_garden_court_free_body.md` §8's three-reason block before shrinking it. Its
-  top and `_rim_underside_in` are the same expression. `FO-SG-ARCH` is retired with the stoop.
-  `W-SG-BRKBM` carries no structural load — it is the veneer's thermal foundation only.
+- **`W-SG-ARCH` is a 12" x 12" plain strut in the FOOTING plane (2026-10-10, owner;
+  free body §8b).** Its top is the court top and footing top (-109 7/16"), and its depth IS the
+  footing thickness, so it is no longer a residue of some other surface. It is cast in
+  **placement 1 with the footings**, which closes the loop before a wall is even formed. Strut
+  d/c is **0.512** (φPn 79,734 vs Pu 40,804, λ 0.684); sliding FS 1.735 is unchanged, because
+  the loop edge did not move. The rim is cut off it by `FO-SG-STRUT` (net rim ∩ strut = 0 sf).
+  **Never reuse `FO-SG-ARCH`'s uid** — that void retired with the stoop. It has no steel and
+  needs none (D9: pure compression). It was 12" x 17 1/2" and hung 9" below the footings
+  until 2026-10-10; §8's three-reason block records why that section was held then.
+  `W-SG-BRKBM` carries no court load — it is the veneer's thermal foundation only.
 - **`W-SG-W1`+`W2` are ONE pour, and so are `E1`+`E2`** — one 12" section, one form height,
   placement 2. They are two elements because the restraint condition changes at `N-SG-MW` /
   `N-SG-ME`: braced top-and-bottom north, R404.4 base-restrained south. So does the steel —
@@ -2303,23 +2294,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **The court's four 12" cast rounds (the balcony corners) are `SUNKEN_GARDEN_COLUMN_12`**,
   which names `concrete=EXPOSED_MIX` (corner φM_n 24,700 lb-ft, notes/balcony_moment_columns.md
   §4). The two porch centre columns that also used it retired on 2026-09-22.
-- **One excavation plane again**: `FB-SG-ARCH`'s undercut derives to 33", not the footings'
-  42", so all six beds bottom on `_SG_WALL_BED_BOTTOM` with the drywell's top. The 42" was
-  copied and is not required — the beam has no `Footing`, so it is not in the frost
-  population at all. The BEAM still hangs 9" lower; only its bed came up.
+- **One excavation plane, strut included**: `FB-SG-ARCH`'s undercut derives to 42", the
+  footings' own, so all six beds bottom on `_SG_WALL_BED_BOTTOM` with the drywell's top and
+  the strut bottoms with the footings.
 - **Three placements, not four**, and the order is on the drawing (`AN-SG-PLACEMENTS`):
-  footings + both belled piers monolithic; then all five walls + the grade beam at one form
-  height (house basement wall poured, cured and surveyed FIRST, for the epoxied break
-  dowels); then the rim slab with the four corner columns. `AN-SG-MIX` permits EXPOSED_MIX for the
+  footings + the `W-SG-ARCH` strut in one placement (the loop closes here); then all five
+  walls + `W-SG-BRKBM` at one form height (house basement wall poured, cured and surveyed
+  FIRST — every break blockout is set against it); then the rim slab with the four corner columns. `AN-SG-MIX` permits EXPOSED_MIX for the
   whole court so it comes off one ticket — **do not retype PIER_BASE_12**, it is shared with
   the north entry. `AN-SG-COLDWEATHER` puts a hard 1 November milestone on placement 3.
 - **`_veneer_beam_bottom` stays held** at -120 3/16", not flush with the slab underside.
-  **The binding number is the computed ℓ/600 row, not Table 9.3.1.1's L/16** (2026-09-22): a
-  member whose deflection is computed is outside that table's scope anyway. At the 17'-0" court
-  the 17 3/4" section reads 0.225 against TMS ℓ/600 at α 0.25 and 0.315 with no fixity at all
-  (veneer note §6i), so the end-fixity credit is no longer needed. A flush 10 1/2" beam is 3.4x
-  less stiff (Ig ∝ h³) and would lean on the fixity again. Held, the beam is buried but its
-  17 3/4" section survives.
+  Since 2026-10-10 the reason is **bearing**: that bottom is what puts the beam's ends inside
+  `FT-SG-W1`/`E1`'s toes and makes it an 11'-0" span (veneer note §6j). Raise it to the slab
+  underside and the beam sits on a 7" lip, the span is 17'-0" again, and the torsion cage
+  comes back. (Until 2026-09-22 the reason was Table 9.3.1.1's L/16; until 2026-10-10 it was
+  the ℓ/600 row at 17'-0".)
 - `FT-B-S2`/`S3` cover below `SL-SG-FLOOR` is 8".
 - `plan/site.py`'s two garden spot elevations are -9'-1 7/16"; they are a structural input,
   not drafting annotation — `engineering/balcony_wind.ground_below_ft` takes the site's
@@ -2421,6 +2410,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `SPEC.south_toe_extension_in`, free body §12a)**: it squares the planted field to 11'-0"
   (121 sf) and paves the strip W-SG-S shades; outboard edge and heel unmoved; at `#5 @ 12"`
   the toe read 0.98. Its closure board needs none of this: `TB-SG-*` sit on W1/E1 only.
+- **FT-SG-S owns the two south corners (2026-10-10, free body §12b).** It runs out to out of
+  the side strips, 25'-0", and `FT-SG-W2`/`E2` stop on its toe line (`_EXTENSIONS`, derived
+  from the strips' reach). Before that, each corner square had no footing, and the toe overlap
+  was billed twice. Its E-W steel is the side strips' transverse mat carried round the corner:
+  **`bottom-y` #5 @ 12" straight, out to out, and `top-y` #5 @ 12" with `zone` 6'-6" at each
+  end, over the heels only** (`BarSpec.zone` on a mat role, 2026-10-11). There is no top
+  layer across the middle: nothing puts top tension there, and the court's E-W tension rides
+  W-SG-S's horizontals (§11m.2). Do not "complete" it to wall to wall; that was 134 lb of
+  nothing.
 - **The other four court strips are 7'-0" x 1'-0" CENTRED on the wall axis, zero offset, with a
   `#5 @ 12"` mat (2026-09-10).** They were 96" with a 6" court-side offset for one revision
   and the 96" was a fossil: §3 widened the strip because the resultant fell outside the
