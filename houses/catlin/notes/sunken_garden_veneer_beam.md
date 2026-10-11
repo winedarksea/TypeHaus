@@ -5,9 +5,11 @@
 `FT-B-S3` (the footings it is isolated from), `SG_VENEER_BEAM_14` (the assembly).
 **Written:** 2026-09-05, by hand. §6e re-worked 2026-09-21 (hooks, enclosing ties, footing
 dowels); §6f added 2026-09-22 (TMS ℓ/600, end fixity, the joint rows) and §6d superseded by it.
+**§6j (2026-10-10) is the graded basis now:** the beam bears on FT-SG-W1/E1's toes, spans
+11'-0", and its torsion falls under §22.7.4.1's threshold — a simple-span cage, 91.9 lb.
 **Oracle for:** `checks/structural/masonry_joint.py` (§6g, `tests/test_masonry_joint.py`), and
 `engineering/veneer_beam.py` (`veneer_beam/W-SG-BRKBM`) since 2026-09-20 —
-§6 is worked at the model's own geometry and `tests/test_veneer_beam_calc.py` reproduces it;
+§6j is worked at the model's own geometry and `tests/test_veneer_beam_calc.py` reproduces it;
 §3/§4 still oracle the report-side `engineering/retaining_court/veneer_beam.py` at their literals.
 The masonry anchors (§5.1) are NOT computed: they are `veneer_anchor/W-B-BRICK`, a deferral.
 The geometry is pinned by
@@ -57,7 +59,7 @@ condition sat at 0 FAIL.
 
 | term | working | value |
 |---|---|---|
-| beam clear span | court clear width, `_x_in_w` → `_x_in_e` | 19'-0" |
+| beam clear span | court clear width, `_x_in_w` → `_x_in_e` (**superseded**: §6j, 11'-0" between the court footings' toes) | 19'-0" |
 | beam bearing | 6" into each side wall (nodes on `_x_ax_w`/`_x_ax_e`) | 6" each end |
 | beam section | `SPEC.wall_thickness_in` × (`_veneer_beam_top` − `_veneer_beam_bottom`) | 12" × 17-3/4" |
 | beam concrete faces | −10" (north) … −22" (south) | |
@@ -769,6 +771,89 @@ closes ℓ/600 on its own. The elastic estimate at the new span is α = 1/(1 + 2
 5,592.36/(2.040e8 × 210)) = **0.487**. `end_restraint` stays authored because the beam is still
 cast monolithic with the walls (placement 2) and its added rows all pass; whether to keep
 claiming it is the engineer's call, and nothing now depends on it.
+
+### 6j. The beam bears on the court footings' toes (2026-10-10) — the record now
+
+> **Supersedes §3's span, §4a's steel, §6c–§6f and §6i as the graded basis.** They are kept
+> as written: each was right about the member the engine was then asked to grade.
+
+**The geometry nobody had read.** `W-SG-BRKBM` runs z −120 3/16"..−102 7/16"; `FT-SG-W1`/`E1`
+run z −121 7/16"..−109 7/16" and x 5'-6"..12'-6" / 23'-6"..30'-6", across the beam's whole
+y band (−10"..−22"; their north edge is −6.68"). So the beam's lower 10 3/4" sits **inside**
+each toe for 3'-6" from the wall axis, and its upper 7" sits **on** it. A pour cast on a
+footing bears on that footing: the clear span is between the toe faces, not the walls.
+
+| term | working | value |
+|---|---|---|
+| clear span | 23.500 − 12.500 | **11.00'** |
+| bearing | 12.5 − 9.0 (axis to toe face) | 42" |
+| d | 17.75 − 2.0 − 0.375 − 0.625/2 | 15.0625" |
+| design span | min(11.00 + 15.0625/12, 11.00 + 42/12) = min(12.255, 14.5) | **12.255'** |
+
+**Strength at U = 1.4D**, w = 268.86 + 221.875 = 490.735 plf, wu = 687.03 plf:
+
+```
+Mu      687.03 × 12.255² / 8                             = 12,898 ft-lb
+Vu      687.03 × 12.255 / 2                              =  4,210 lb
+As,req  12,898 × 12 / (0.9 × 60,000 × 0.9 × 15.0625)      =  0.2114 in²
+§9.6.1.3  4/3 × 0.2114 = 0.2819 < §9.6.1.2's 0.639 — the 4/3 rule waives the minimum
+2 #5    a = 0.62 × 60,000 / (0.85 × 5,000 × 12)           =  0.7294 in
+        φMn = 0.9 × 0.62 × 60,000 × (15.0625 − 0.3647)/12  = 41,007 ft-lb    d/c 0.315
+        0.62 ≥ 0.2819                                                       d/c 0.455
+φVc     0.75 × 2 × 70.711 × 12 × 15.0625                   = 19,171 lb      d/c 0.220
+```
+
+**Torsion falls below the threshold.**
+
+```
+t       268.86 × 4.1275 / 12                               =  92.48 ft-lb/ft
+Tu      1.4 × 92.48 × 12.255 / 2                           =  793.3 ft-lb
+φT_th   0.75 × 0.25 × 70.711 × 762.5 / 12                  =  842.5 ft-lb    d/c 0.942
+```
+
+ACI 318-19 §22.7.4.1: below φT_th torsion **may be neglected**. §4's closed hoops at ph/8,
+§4a's side bars and Al, and §6e's requirement that every corner bar develop fy at the face
+all fall away. The margin is 6%; at the face less d (§22.7.3.2's critical section, not
+taken) it would be 0.75. The eccentricity is still 4.13": nothing here moved the brick.
+
+**No shear steel is owed.** §9.6.3.1 asks Av,min only where Vu > φλ√f'c bw d =
+0.75 × 70.711 × 12 × 15.0625 = **9,586 lb**; Vu is 4,210 (d/c 0.439). The #3 ties @ 12" are
+cage ties.
+
+**Deflection, with no end fixity.** Service Ma = 490.735 × 12.255²/8 = 9,213 ft-lb, under
+⅔Mcr = 18,565, so Ie = Ig = 5,592.36 in⁴; span 147.06".
+
+```
+Δ all dead   40.895 × 147.06⁴ × 5 / (384 × 4,030,509 × 5,592.36) = 0.01105 in
+Δ beam only  × 221.875 / 490.735                                 = 0.00500 in
+λΔ           2 / (1 + 50 × 0.40 / (12 × 15.0625))                = 1.8008   (2 #4 top)
+after attachment  1.8008 × 0.01105 + (0.01105 − 0.00500)          = 0.0260 in
+ℓ/600 = 147.06 / 600 = 0.245 in                                      d/c 0.106
+```
+
+`end_restraint` is **removed**: it was a serviceability credit and nothing needs it.
+
+**The bottom row into its support (§9.7.3.8.1).** At a simple support ⅓ of the positive
+steel continues 6" in. The row sits inside the toe zone, so it stops at the toe face and
+2 #5 dowels per end, cast straight in FT-SG-W1/E1 in placement 1, carry it: 0.62 in² against
+⅓ × 0.62 = 0.207 (d/c 0.333), 12" of embedment against 6" (0.500), and a 30" projection
+against the 27.58" class B lap (ℓd 21.21 × 1.3; 0.919). A 3'-6" bar.
+
+**The steel, then and now.**
+
+| | was (§4a, §6e) | now |
+|---|---|---|
+| bottom | 3 #5 | 2 #5 |
+| top | 3 #5, hooked into the walls, 2 #4 confining ties each end | 2 #4 straight hangers |
+| hoops / ties | #3 closed @ 5", 135° | #3 @ 12" (cage) |
+| side bars | 1 #4 each face | — |
+| dowels | 3 #5 per end, 66" + 30" | 2 #5 per end, 12" + 30" |
+| laid weight | 251.2 lb | **91.9 lb** |
+
+**What would undo this.** Taking the toes away (narrowing FT-SG-W1/E1, or a beam bottom raised
+above the footing top that leaves it bearing on a 7" lip) puts the span back to 17'-0" and Tu
+back to 1.35 φT_th; `test_without_the_toe_bearing_the_light_cage_would_not_do` shows the
+record failing at once. So does moving the brick further off the beam's centre.
 
 ## Sources
 

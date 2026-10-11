@@ -60,8 +60,9 @@ def test_weight_is_the_astm_unit_mass(rows) -> None:
 
     for row in rows:
         number = int(str(row["bar"]).lstrip("#"))
+        # abs 0.05: the row's weight is rounded to 0.1 lb, which on a 30 lb row is 0.15%.
         assert row["weight_lb"] == pytest.approx(
-            row["length_ft"] * BARS[number].weight_plf, rel=0.001)
+            row["length_ft"] * BARS[number].weight_plf, rel=0.001, abs=0.05)
 
 
 def test_the_coating_comes_from_the_pours_mix_not_the_schedule(rows) -> None:

@@ -1832,33 +1832,28 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     #
     # W-SG-BRKBM (2026-09-05) is the second beam and it does a different job from the first.
     # W-SG-ARCH is structural: it closes the loop that lets W-SG-W2/E2 cancel. W-SG-BRKBM is
-    # THERMAL: it spans W-SG-W1 to W-SG-E1 to carry W-B-BRICK, so 129 SF of brick standing in
-    # open air stops bearing on FT-B-S2/S3's own toe. It reinforces nothing — W1/E1 are
-    # already restrained top and bottom by the porch frame — and its assembly carries the
+    # THERMAL: it spans between FT-SG-W1/E1's toes to carry W-B-BRICK, so 129 SF of brick
+    # standing in open air stops bearing on FT-B-S2/S3's own toe. It reinforces nothing — W1/E1
+    # are already restrained top and bottom by the porch frame — and its assembly carries the
     # 2" XPS isolation board that is the actual point. See
     # `notes/sunken_garden_veneer_beam.md`.
     #
     # W-SG-ARCH is NOT the arch: the 16" cast cross-wall with two semicircular arches, its
     # 42" masonry parapet and its three balcony pillars are retired. What carries the tag now
-    # is a 12" x 17 1/2" grade beam on the same node pair, entirely below the garden floor,
-    # whose only job is to close the loop that lets W-SG-W2 and W-SG-E2 cancel each other's
-    # thrust instead of standing as two free cantilevers at FS 0.73. It reuses the retired
-    # uid deliberately. See `engineering/retaining_system.py` and
-    # `notes/sunken_garden_court_free_body.md`.
+    # is a 12" x 12" plain strut on the same node pair, in the footing plane and flush with
+    # the court floor (2026-10-10), whose only job is to close the loop that lets W-SG-W2 and
+    # W-SG-E2 cancel each other's thrust instead of standing as two free cantilevers at
+    # FS 0.73. It reuses the retired uid deliberately. See `engineering/retaining_system.py`
+    # and `notes/sunken_garden_court_free_body.md` §8b.
     assert {w.tag for w in walls} == {"W-SG-W1", "W-SG-E1", "W-SG-W2", "W-SG-E2", "W-SG-S",
                                       "W-SG-BRKBM"}
-    # It was BURIED until 2026-09-03: its top was the garden floor's underside. The court
-    # dropped 7 1/4" for the flood step at D-B-PATIO and the beam DID NOT FOLLOW — a 10 1/4"
-    # section fails as a strut (d/c 1.02) and lowering its bottom instead puts its bed under
-    # DRW-SG-MAIN. It stood 3 3/4" proud of the dropped court as a mow strip for two days;
-    # since the court came back flush on 2026-09-05 its top IS the rim slab's underside, so
-    # the court floor bears on it, nothing shows, and FO-SG-ARCH is retired. What must stay
-    # true either way is that it is nowhere near underfoot on the PORCH: its top is below the
-    # porch deck by the whole basement depth.
+    # Since 2026-10-10 its top IS the court floor, between the toes it is the walking surface
+    # (FO-SG-STRUT voids the rim over it). What must stay true is that it is nowhere near
+    # underfoot on the PORCH: its top is below the porch deck by the whole basement depth.
     beam = next(s for s in catlin_model.solids if s.tag == "W-SG-ARCH")
     assert beam.category == "beam"
     court = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
-    assert (court.z1_m - beam.z1_m) / 0.0254 == pytest.approx(3.5, abs=1e-6)
+    assert (court.z1_m - beam.z1_m) / 0.0254 == pytest.approx(0.0, abs=1e-6)
     assert beam.z1_m < 0.0
     assert all(w.is_foundation for w in walls)
     # Every court wall is the same 12" pour, and W-SG-BRKBM is that pour PLUS a 2" board —

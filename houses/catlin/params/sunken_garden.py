@@ -50,7 +50,6 @@ from typehaus import (
     DeckLayer,
     IsolationBoard,
     Downspout,
-    EndRestraint,
     face,
     Fascia,
     Flashing,
@@ -63,7 +62,6 @@ from typehaus import (
     from_node,
     ft,
     Gutter,
-    HookConfinement,
     inch,
     JoistReinforcement,
     JoistSpec,
@@ -632,55 +630,19 @@ _ret_top = ft(SPEC.retaining_top_ft)
 # this constant would silently inflate every moment in
 # `notes/sunken_garden_court_free_body.md`.
 _ret_unbalanced_fill = _ret_top - _wall_bottom
-# W-SG-ARCH, the grade beam closing the court's north end. Its underside is the retaining
-# footings' underside, so the excavation has one bottom and the strut engages them; its top
-# is the garden-floor underside, -112 15/16". With the court flush again (2026-09-05,
-# `court_step_down_in` back to 0) that expression and `_rim_underside_in` are the SAME
-# number, so the beam is fully buried and the rim slab bears directly on it — one bearing
-# plane, no cut, and the 3 3/4" proud mow strip it briefly was (while the court sat at
-# -116 11/16") is gone along with FO-SG-ARCH.
+# W-SG-ARCH, the strut closing the court's north end: 12" x 12" of plain concrete IN THE
+# FOOTING PLANE since 2026-10-10 (owner; notes/sunken_garden_court_free_body.md §8b). Its top
+# is the court floor and the footing tops, its bottom the footing undersides, and it is cast
+# with the footings in placement 1 — so the loop closes before a wall is even formed, and
+# the court has one dig plane. Between the toes it IS the floor's north band, thickened to
+# footing depth; the rim is voided over it (FO-SG-STRUT) as it is over the toes.
 #
-# ** IT CANNOT FOLLOW THE COURT DOWN — AND THE REASON CHANGED ON 2026-09-10. ** Drop the
-# top to the rim underside and the section is 10 1/4". That USED to fail outright: phi-Pn
-# 60,712 lb against Pu 62,051 at the thrust of the day, d/c 1.02. Three height cuts took Pu
-# to 49,157 lb, and the 2026-09-14 correction to the strut reaction takes it to 40,145 lb —
-# **the 10 1/4" section now passes at d/c 0.66**, so the arithmetic no longer rejects it and
-# this comment must not be read as though it does.
-#
-# What holds the section is the SEQUENCING argument, which did not move:
-# `notes/sunken_garden_court_free_body.md` §8 exists because the loop must be closed before
-# any backfill, and a strut whose bottom is tied to whatever surface happens to be under it
-# is a residue rather than a chosen depth — it gets shaved again the next time the court
-# floor or the footing plane moves, which is exactly what these two shallower sections
-# were. Plus: 2% is the margin at 8 1/2" on the one member with no redundancy, and the
-# whole saving is ~1.1 CY. Read §8's three-reason block before shrinking this beam.
-#
-# Holding 17 1/2" by lowering the bottom instead lands its 42" bed 7 1/4" below the wall
-# beds' plane, a second dig floor. 17 1/2" at this elevation is the version of this beam
-# that gets built.
-_grade_beam_top = ft(-SPEC.basement_depth_ft) - inch(SPEC.slab_thickness_in)
-# ** DECOUPLED FROM `_wall_bottom` AND HELD AT -130 7/16" (2026-09-05). ** It used to read
-# `_wall_bottom - footing_thickness`, and when the retaining footings rose 9" to become the
-# court's walking surface this expression would have dragged the beam up with them — cutting
-# the section from 12" x 17 1/2" to 12" x 8 1/2", Ag 210 in² to ~102 in², and taking the
-# strut check from d/c 0.60 to about 1.23, which FAILED at the thrust of that day.
-#
-# ** IT NO LONGER FAILS, AND THE DECOUPLING IS STILL RIGHT. ** At today's Pu 40,145 lb the
-# 8 1/2" section reads d/c 0.80 — it passes comfortably. That is the point of decoupling rather
-# than an argument against it: a section arrived at by subtraction between two surfaces
-# that both move is not a design, and the margin it happens to land on this revision is not
-# a reason to accept it.
-#
-# W-SG-ARCH is the court's only real strut: `notes/sunken_garden_court_free_body.md` §8
-# rejects a slab strut for it in as many words ("the beam needs nothing from it", "laterally
-# supported at the top and bottom before backfilling"), and W-SG-W2/E2 cancel their thrusts
-# through it. Nothing about the court floor is a reason to shrink it, so the two numbers are
-# now separate and this one is written as the arithmetic it always was rather than as a
-# reference to a constant that has moved on.
-#
-# The cost is that the beam is no longer flush with the retaining footings' undersides —
-# it sits 9" proud below them — and `test_retaining_court` says so deliberately.
-_grade_beam_bottom = ft(-(SPEC.basement_depth_ft + 0.75)) - inch(SPEC.footing_thickness_in)
+# Its depth is the footing thickness BY DEFINITION, not a gap left between two surfaces, so
+# §8's "residue" objection to a shallower section no longer applies. The section was held
+# at 12" x 17 1/2" with its underside 9" below the footings (its own bed plane) from
+# 2026-09-05 to 2026-10-10; plain strut d/c 0.35 there, ~0.51 here.
+_grade_beam_top = _court_top
+_grade_beam_bottom = _wall_bottom - inch(SPEC.footing_thickness_in)
 # W-SG-BRKBM's two faces, and neither is a new number: the top IS W-B-BRICK's authored
 # underside and the bottom IS the garden slab's, so the beam exactly fills the void already
 # between them. If either moves, this beam has to be re-derived rather than nudged.
@@ -763,40 +725,27 @@ _BRACED_STEM_STEEL = ReinforcementSpec(
     source="IRC Table R404.1.2(8), braced top and bottom; 3\" cover with the rest of the court (see _RET_STEM_STEEL)",
 )
 
-# W-SG-BRKBM's steel: flexure (3 #5 each face) from notes/sunken_garden_veneer_beam.md §3,
-# closed #3 hoops @ 5" and one #4 side bar per face from the §4a torsion addendum.
-# End anchorage (§6e, 2026-09-21): the TOP row hooks into W-SG-W1/E1 with two closed #4 ties
-# per end enclosing the hooks (Ath 0.80 >= 0.4 Ahs 0.372, psi_r 1.0: ldh 7.11" in 9.00"). The
-# BOTTOM row sits inside FT-SG-W1/E1, poured first, so 3 #5 dowels are cast STRAIGHT in each
-# footing, 66" back from its court face, lapping the row class B (30.00" past the wall face).
-#
-# ** THE TOP ROW'S HOOK IS ALSO THE NEGATIVE-MOMENT ANCHORAGE SINCE 2026-09-22 (§6f). ** It
-# was authored for torsion — a corner bar developing fy at the support face, no §25.4.10.1
-# reduction — and crediting the end fixity gives the same row 5,621 ft-lb of end moment to
-# deliver. Nothing about the detail changes (fy at the face already covers a flexural
-# anchorage asking less); what changes is that there are now two reasons it may not relax.
-#
-# Two details left prose until 2026-09-22 and are graded now: the dowels' `projection` past
-# the joint (30", making the bar a clean 8'-0" stock length with the 66" embedment, against
-# a 27.58" class B lap) and the hoops' `tie_hook_degrees` (135 — these hoops ARE the torsion
-# steel, so ACI 318-19 §25.7.1.3/.6 require it and an unstated angle is a missing input).
+# W-SG-BRKBM's steel (2026-10-10, notes/sunken_garden_veneer_beam.md §6j). The beam's ends
+# sit on FT-SG-W1/E1's 3'-0" toes, so it spans 11'-0" between the toe faces, not 17'-0"
+# between the walls. At that span Tu is 0.94 φT_th: ACI 318-19 §22.7.4.1 lets torsion be
+# neglected, and with it the closed hoops @ 5", the side bars, the fy hooks into the walls,
+# their confining ties and the end-fixity claim. What is left is an ordinary simple span:
+# 2 #5 bottom (§9.6.1.3: As ≥ 4/3 As,req), 2 #4 straight hangers, #3 cage ties (Vu is under
+# §9.6.3.1's Av,min trigger), and 2 #5 dowels per end cast straight in the footing toe —
+# §9.7.3.8.1's extension of the bottom row into its support, lapped class B.
 _VENEER_BEAM_STEEL = ReinforcementSpec(
     bars=(
-        BarSpec(role="top-y", bar=5, count=3, hooks=("start", "end"), hook_turn="up",
-                hook_ties=HookConfinement(bar=4, count=2, spacing=inch(5.0), legs=2,
-                                          orientation="perpendicular"),
-                note="90° hooks turned UP into W-SG-W1/E1 (down would reach the footing); two closed #4 ties per end enclose them"),
-        BarSpec(role="bottom-y", bar=5, count=3,
-                note="stops at the FT-SG-W1/E1 court face; laps the footing dowels there"),
-        BarSpec(role="dowels", bar=5, count=3, embedment=inch(66.0), projection=inch(30.0),
-                note="per end, cast horizontal in FT-SG-W1/E1 (placement 1) through the footing's court face; 66 + 30 = one 8'-0\" stock bar, and the 30\" clears the 27.58\" class B lap to bottom-y"),
-        BarSpec(role="ties", bar=3, spacing=inch(5.0), tie_hook_degrees=135,
-                note="closed hoops, 135° hooks — ACI 318-19 §9.7.6.3.3, ph/8 = 5.25\""),
-        BarSpec(role="horizontal", bar=4, count=1, layers=2,
-                note="torsion longitudinal bar at mid-depth, each face — §9.7.5.1"),
+        BarSpec(role="top-y", bar=4, count=2,
+                note="straight hangers into W-SG-W1/E1; no torsion and no end moment is claimed"),
+        BarSpec(role="bottom-y", bar=5, count=2,
+                note="stops at the FT-SG-W1/E1 toe face; laps the footing dowels there"),
+        BarSpec(role="dowels", bar=5, count=2, embedment=inch(12.0), projection=inch(30.0),
+                note="per end, cast horizontal in FT-SG-W1/E1 (placement 1) through the toe face; 12 + 30 = a 3'-6\" bar, and the 30\" clears the 27.58\" class B lap to bottom-y"),
+        BarSpec(role="ties", bar=3, spacing=inch(12.0),
+                note="cage ties; ACI 318-19 §9.6.3.1 asks no shear steel at Vu 4,210 lb"),
     ),
     cover=inch(2.0),
-    source="notes/sunken_garden_veneer_beam.md §3, §4a and §6e",
+    source="notes/sunken_garden_veneer_beam.md §6j",
 )
 
 _RET_REBAR = '#5 @ 7" o.c.'
@@ -982,9 +931,9 @@ WALLS = [
     # **Why a beam and not a better bed.** A strip bearing on soil cannot be had: the wythe
     # sits inside FT-B-S2/S3's 10" toe, and a separate pour bottoming on the wing plane has
     # to stay outside the 45 deg line off their bearing edge — y = -12.76" — which pushes the
-    # brick to -15.95" and opens an 11.9" slot between it and the house. A beam SPANNING to
-    # W-SG-W1 and W-SG-E1 needs no soil bearing at all, so that constraint simply does not
-    # apply, and the wythe lands at -10.05" for a 6" cavity.
+    # brick to -15.95" and opens an 11.9" slot between it and the house. A beam SPANNING
+    # between FT-SG-W1/E1's toes needs no soil bearing in the house's zone, so that
+    # constraint does not apply, and the wythe lands at -10.05" for a 6" cavity.
     #
     # **It reinforces nothing, and that is worth saying.** The obvious hope is that a north
     # strut helps the side walls. It does not: W-SG-W1/E1 are already restrained top and
@@ -993,20 +942,18 @@ WALLS = [
     # IRC Table R404.1.2(8). This beam earns its 1.0 cy on the thermal argument alone.
     #
     # **17 3/4" deep, between two surfaces that were already there**: its top IS W-B-BRICK's
-    # underside (-8'-6 7/16") and its bottom IS the garden slab's (-10'-0 3/16"), so it drops
-    # into the void the court already had. The wings stay CONTINUOUS underneath — the beam
-    # bears on the side walls at its ends, not on the compressible foam, which is the same
-    # care W-SG-ARCH takes for the same reason.
+    # underside (-8'-6 7/16") and its bottom is held at -10'-0 3/16". The house's frost wings
+    # stay CONTINUOUS underneath — the beam delivers nothing to the compressible foam.
     #
-    # **The wythe sits off centre on purpose.** Brick at -10.05..-13.675" against a beam
-    # centred at -15" is 4.1" of eccentricity, ~162 ft-lb/ft of torsion over the span. The
-    # section is cast into both side walls and the garden slab bears on its south face, so
-    # it is restrained at both ends and along its length; see
-    # notes/sunken_garden_veneer_beam.md. Centring the brick instead would have cost the 6".
+    # **It bears on FT-SG-W1/E1's toes and spans 11'-0" between them** (2026-10-10, note
+    # §6j). Its lower 10 3/4" runs into the toe zone for 3'-6" at each end, so the span the
+    # engine grades is between the toe faces, not the walls. The wythe's 4.1" eccentricity
+    # (kept for the 6" cavity) then twists the section below ACI's §22.7.4.1 threshold, which
+    # is why `_VENEER_BEAM_STEEL` is a plain simple-span cage. Placement 2 still casts it with
+    # the side walls; no end fixity is claimed and none is needed (ℓ/600 at 0.08).
     #
-    # No Footing, same as W-SG-ARCH and for the same reason — it spans, so a strip under it
-    # would be concrete spent on nothing, and a `FT-SG-BRKBM` solid would land inside the
-    # excavation and reopen the frost question ASCE 32 closes.
+    # No Footing of its own: a `FT-SG-BRKBM` solid would land inside the excavation and
+    # reopen the frost question ASCE 32 closes.
     # ** WHICH FACE THE BOARD LANDS ON IS NOT OBVIOUS, AND IT IS THE WHOLE POINT. ** This
     # beam is its own open wall-graph chain (both ends `open_end`), so
     # `resolve/orientation.py` hands it the fallback outward sign rather than a winding's,
@@ -1015,33 +962,11 @@ WALLS = [
     # FT-B-S2/S3 — the exact contact this beam exists to remove — at 0 FAIL, because nothing
     # grades a thermal break for continuity. The face is pinned by
     # `test_the_veneer_beam_isolates_the_house_footing`; do not trust the sign.
-    # ** THE END FIXITY IS A SERVICEABILITY CREDIT AND NOTHING ELSE (§6f, 2026-09-22). **
-    # TMS 402-22 §13.1.2.3 holds any horizontally spanning member supporting veneer to
-    # l/600 = 0.390", which this beam misses at 1.242 as a simple span. It is cast
-    # monolithic with W-SG-W1/E1 in placement 2, and the elastic estimate of that joint —
-    # the wall ABOVE it alone, far end pinned, b_eff the beam's own 12", gross section — is
-    # alpha 0.514. 0.25 is CLAIMED, a 2:1 derate, and it reads 0.464.
-    #
-    # Midspan flexure stays graded at alpha = 0 (0.555), so a joint softer than claimed
-    # costs deflection and can NEVER buy strength. What the fixity adds is graded:
-    # negative flexure 0.093, the end moment into the wall as plain concrete over
-    # b_eff = b + 2t = 36" (0.368, and 0.757 at the full elastic alpha, so #6 @ 38" does
-    # not change), and the end-moment shear 0.136.
-    #
-    # ** IF THIS BEAM EVER STOPS BEING CAST MONOLITHIC WITH W-SG-W1/E1, end_restraint
-    # COMES OFF WITH IT ** and the record goes straight back to 1.242 OVER. Placement 2 in
-    # AN-SG-PLACEMENTS is the statement this field depends on.
     FoundationWall(uid="SGW108AAAA", tag="W-SG-BRKBM", start_node="N-SG-BMW",
                    end_node="N-SG-BME", assembly="SG_VENEER_BEAM_14",
                    top_elevation=_veneer_beam_top, bottom_elevation=_veneer_beam_bottom,
                    unbalanced_fill=inch(0),
                    lateral_support="top_and_bottom",
-                   end_restraint=EndRestraint(
-                       fixity=0.25, elastic_fixity=0.487, effective_width=inch(36.0),
-                       source="notes/sunken_garden_veneer_beam.md §6f/§6i — equal rotational "
-                              "springs at the placement-2 joints; k_theta = 3EI_w/h = "
-                              "2.040e8 lb-in/rad gives alpha 0.487 at the 17'-0\" court "
-                              "(0.514 at 19'-0\"), claimed at 0.25"),
                    reinforcement=_VENEER_BEAM_STEEL),
     # Garden retaining run (to just above grade), the U south of the porch.
     #
@@ -1143,18 +1068,17 @@ WALLS = [
                    lateral_support="base", base_restraint_ref="W-SG-ARCH"),
 ]
 
-# W-SG-ARCH: a BURIED GRADE BEAM (strut), not a wall and not an arch. 12" x 17 1/2" on the
-# MW–ME pair, wholly below the garden floor, closing the loop so W-SG-W2/E2's thrusts cancel
+# W-SG-ARCH: a STRUT in the footing plane, not a wall and not an arch. 12" x 12" on the
+# MW–ME pair, flush with the court floor, closing the loop so W-SG-W2/E2's thrusts cancel
 # through it (`engineering/retaining_system.py`, `notes/sunken_garden_court_free_body.md`
-# §8). It is a `Beam` so plans draw it as a hidden grade beam rather than a cut wall; the
-# uid and tag are the wall's, so `retaining_system/W-SG-ARCH` and its GlobalId survive.
+# §8/§8b). It is a cast `Beam` because `resolve/orientation` and `retaining_system._verify`
+# both count one as a loop edge; a `Slab` is not one. Uid and tag survive from the wall.
 #
-# - Cast WITH the walls, so the loop closes before backfill loads them. A slab strut would
-#   leave them free cantilevers at FS 0.73 until the floor cured.
-# - No Footing: 219 plf on its own 12" of bearing. FB-SG-ARCH beds it directly.
-# - Section is held, not derived: see `_grade_beam_top` / `_grade_beam_bottom`. The size
-#   string keeps a decimal point so `cross_section` reads it as actual dimensions.
-# - SUNKEN_GARDEN_GRADE_BEAM_12 carries no wash: nothing of it shows.
+# - Cast WITH the footings (placement 1), so the loop is closed before backfill.
+# - No Footing: it bears on FB-SG-ARCH like the strips bear on theirs.
+# - Its solid runs axis to axis, so 3'-6" at each end lands inside FT-SG-W1/W2 and E1/E2's
+#   toes (0.26 cy billed twice, recorded rather than modelled away: a Beam has no end trim).
+# - SUNKEN_GARDEN_GRADE_BEAM_12 carries no wash; it is a walked surface like the toes.
 _GRADE_BEAM_DEPTH_IN = _grade_beam_top.inches - _grade_beam_bottom.inches
 GRADE_BEAMS = [
     # ** PLAIN BY DESIGN, FOR A 100-YEAR LIFE (decision #75 D9). ** A soil-bedded compression
@@ -1329,10 +1253,17 @@ _RETAINING_FOOTING_MAT = ReinforcementSpec(
 
 # FT-SG-S's 4'-4" toe: at #5 @ 12" it reads 0.98 in flexure; #5 @ 9" holds it at 0.74,
 # the ~0.7 the court is designed to, on the same bar size (free body §7, south row).
+# Since 2026-10-10 its E-W bars are #5 @ 12" top and bottom, wall to wall (were #4 @ 18"
+# distribution): under W2/E2's south 4'-10" they are those walls' toe/heel steel, matching
+# the side strips' transverse mat, and across the court they are the south tie (§12b).
 _SOUTH_FOOTING_MAT = _RETAINING_FOOTING_MAT.model_copy(update={"bars": (
     BarSpec(role="bottom-x", bar=5, spacing=inch(9.0),
             note="transverse, resists the 4'-4\" toe cantilever; hook the toe end"),
-    *_RETAINING_FOOTING_MAT.bars[1:],
+    _RETAINING_FOOTING_MAT.bars[1],
+    BarSpec(role="bottom-y", bar=5, spacing=inch(12.0), hooks=("start", "end"),
+            note="E-W, out to out: W2/E2's toe steel at the corners and the court's south tie"),
+    BarSpec(role="top-y", bar=5, spacing=inch(12.0), hooks=("start", "end"),
+            note="E-W, out to out: W2/E2's heel steel at the corners, top face across the court"),
 )})
 
 # Width, offset and mat per strip. Four share one; FT-SG-S grows its toe only, so its
@@ -1342,6 +1273,21 @@ _STRIP = (_RETAINING_FOOTING_WIDTH_IN, _RETAINING_FOOTING_OFFSET_IN, _RETAINING_
 _STRIP_BY_WALL = {
     "W-SG-S": (_RETAINING_FOOTING_WIDTH_IN + _SOUTH_EXT_IN,
                _RETAINING_FOOTING_OFFSET_IN + _SOUTH_EXT_IN / 2.0, _SOUTH_FOOTING_MAT),
+}
+
+# ** FT-SG-S OWNS THE TWO SOUTH CORNERS (2026-10-10, free body §12b). ** Each strip used to
+# stop at its wall's axis node, so the outer corner square (3'-6" x 3'-6", heel under heel)
+# was footing-less — the outer 6" x 6" of each wall corner stood on nothing — while the toe
+# zones of FT-SG-S and FT-SG-W2/E2 overlapped and billed twice. FT-SG-S now runs out to out
+# of the side strips and is the footing under W-SG-S and the south 4'-10" of W2/E2; the side
+# strips stop on its toe line. Its E-W mat runs wall to wall and is both their cantilever
+# steel there and the court's south tie.
+_SIDE_REACH_FT = (_RETAINING_FOOTING_WIDTH_IN / 2.0 - _RETAINING_FOOTING_OFFSET_IN) / 12.0
+_SOUTH_REACH_FT = (_STRIP_BY_WALL["W-SG-S"][0] / 2.0 + _STRIP_BY_WALL["W-SG-S"][1]) / 12.0
+_EXTENSIONS = {
+    "W-SG-S": {"start_extension": ft(_SIDE_REACH_FT), "end_extension": ft(_SIDE_REACH_FT)},
+    "W-SG-W2": {"end_extension": ft(-_SOUTH_REACH_FT)},      # MW -> SW: south is the end
+    "W-SG-E2": {"start_extension": ft(-_SOUTH_REACH_FT)},    # SE -> ME: south is the start
 }
 
 FOOTINGS = [
@@ -1356,9 +1302,10 @@ FOOTINGS = [
             # (12" of EXPOSED_MIX) and the porch one declared 13", an inch no footing here
             # has been built at for revisions. Width is plan geometry, not an assembly.
             assembly="COURT_FOOTING_12",
-            depth=inch(SPEC.footing_thickness_in))
-    # W-SG-ARCH is deliberately absent: the buried grade beam carries 219 plf over its own
-    # 12" of bearing and bears straight on FB-SG-ARCH. See its own block in WALLS.
+            depth=inch(SPEC.footing_thickness_in),
+            **_EXTENSIONS.get(w.tag, {}))
+    # W-SG-ARCH is deliberately absent: the strut bears straight on FB-SG-ARCH. See
+    # GRADE_BEAMS.
     for w in WALLS if w.tag in _WALL_FOOTING_UID
 ]
 # The five WALL footings bear on a shared 42" compacted-aggregate section, and that section
@@ -1447,30 +1394,14 @@ _SG_WALL_BED_BOTTOM = (_wall_bottom
 _SG_SOAKAWAY_BOTTOM = _SG_WALL_BED_BOTTOM - inch(SPEC.soakaway_depth_in)
 
 # W-SG-ARCH's bed, appended rather than swept up by the comprehension above because it is
-# hosted on the Beam and not on a Footing — the grade beam has none (see GRADE_BEAMS). Same NFS
+# hosted on the Beam and not on a Footing — the strut has none (see GRADE_BEAMS). Same NFS
 # claim about the same stone and the same soakaway course.
 #
-# ** THE UNDERCUT IS 33", NOT 42", SINCE 2026-09-10, AND THAT CLOSES THE 9" STEP IN THE
-# DIG. ** It read `aggregate_bedding_depth_in` — the footings' 42" — copied because every
-# bed in this court once shared one plane. When `_grade_beam_bottom` was decoupled and HELD
-# 9" below the footings (the section §8 will not give up), the copied 42" went down with it
-# and the excavation grew a second floor along the beam line: one more laser setting, one
-# more compaction schedule, one more tile plane.
-#
-# **The 42" is not required here and never was.** It is an ASCE 32 soil-replacement section
-# and this beam is not in the frost population at all: it has no `Footing`, so
-# `structural.frost_depth` — which iterates footing and pad SOLIDS — never sees it, and the
-# reason it has none is that it carries 219 plf over its own 12" of bearing, 219 psf against
-# 3,000 allowable. What the bed is actually for is a compacted, drained, non-frost-
-# susceptible plane to cast a 20' beam on. 33" of it still puts the beam's underside 33"
-# above undisturbed clay, which clears the 42" frost requirement measured from the court
-# floor by 21" on its own.
-#
-# Derived off the wall-bed plane rather than pinned at 33", so it follows if either end
-# moves. If `_grade_beam_bottom` ever rises to the footing plane this goes to 42" on its
-# own — and then the whole question reopens, correctly. It is NOT
-# `cast_foam_in_aggregate`: that is for the house-adjacent footings' thermal break, and this
-# beam is 11'-0" south of the house with unconditioned court on both faces.
+# ** 42", ON THE WALL-BED PLANE, SINCE THE STRUT CAME UP TO THE FOOTINGS (2026-10-10). ** It
+# was 33" while the beam hung 9" below them; derived off the two planes, it lands on
+# `_SG_WALL_BED_BOTTOM` by itself and the court's dig has one floor again (plus the
+# soakaway course). The strut is still not in the frost population — no `Footing`, so
+# `structural.frost_depth` never iterates it — but it now has the same 42" the strips do.
 #
 # ** 36" WIDE, AND OFF-CENTRE IN PURPOSE ONLY. ** The bed stays on the beam's axis; 36" is the
 # beam plus 12" each side, and the north 12" (-10'-6" to -9'-6") is the strip AD-SG-COURT's
@@ -1558,7 +1489,7 @@ GARDEN_SLAB = Slab(
              pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n))),
     thickness=inch(SPEC.rim_thickness_in),
     top_elevation=_court_top,
-    openings=("FO-SG-FIELD", "FO-SG-BRKBM",
+    openings=("FO-SG-FIELD", "FO-SG-STRUT", "FO-SG-BRKBM",
               "FO-SG-TOE-W", "FO-SG-TOE-E", "FO-SG-TOE-S",
               "FO-SG-TOE-N-W", "FO-SG-TOE-N-E"),
 )
@@ -1574,12 +1505,15 @@ GARDEN_FLOOR_OPENINGS = [
                           pt(ft(_field_x_e), ft(_field_y_s)),
                           pt(ft(_field_x_e), ft(_field_y_n)),
                           pt(ft(_field_x_w), ft(_field_y_n)))),
-    # ** FO-SG-ARCH IS RETIRED (2026-09-05). uid SGO002AAAA MUST NOT BE REUSED. ** It cut
-    # the rim so W-SG-ARCH could stand 3 3/4" proud of the dropped court as a mow strip.
-    # With the court flush again, `_grade_beam_top` (-112 15/16") IS `_rim_underside_in`
-    # exactly — the same expression on both sides — so the beam is fully buried and the rim
-    # pours straight over it and bears on it. There is nothing left to cut around, and a
-    # chase here would open a 17'-0" slot in the court floor over a solid beam.
+    # ** FO-SG-ARCH IS RETIRED (2026-09-05). uid SGO002AAAA MUST NOT BE REUSED. **
+    # FO-SG-STRUT (2026-10-10) is its successor in purpose only: W-SG-ARCH now tops out ON the
+    # court plane, so between the two toes it IS the walking surface and the rim is cut off
+    # it, as off the toes. Only the span between the toe voids; they already cover the ends.
+    FloorOpening(uid="JR4QMXE47P", tag="FO-SG-STRUT", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(ft(_field_x_w), ft(_y_ax_mid - 0.5)),
+                          pt(ft(_field_x_e), ft(_y_ax_mid - 0.5)),
+                          pt(ft(_field_x_e), ft(_y_ax_mid + 0.5)),
+                          pt(ft(_field_x_w), ft(_y_ax_mid + 0.5)))),
     # And the same cut around W-SG-BRKBM at the north end. The beam drops through the rim's
     # full 3 1/2" (its underside IS the rim's), so the slab cannot pour through it either —
     # it dies into the beam's south face and the beam becomes the court floor's north edge.
@@ -3177,7 +3111,7 @@ BALCONY_REAR_FLASH = Flashing(
 SEQUENCE_NOTES = [
     Annotation(
         uid="SGAN01AAAA", tag="AN-SG-PLACEMENTS", position=pt(ft(_cx), ft(-20)),
-        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS: the five strip footings FT-SG-W1/E1/W2/E2/S in one placement. The court has no column pads since 2026-09-22 — the porch spans wall to wall on two ledgers — so nothing in this court is dug below the wall beds. (2) WALLS AND GRADE BEAM: all five court walls, W-SG-ARCH and W-SG-BRKBM, one form height (every wall top is the porch datum 0ft 0in), one strip-and-set. W-SG-BRKBM IS CAST MONOLITHIC WITH THE TWO SIDE WALLS, NOT DOWELLED INTO THEM (settled 2026-09-14): it is a blockout inside this same form between -8ft 6-7/16in and -10ft 0-3/16in, its 3 #5 top and bottom lapping into W-SG-W1/W-SG-E1s vertical steel. It was named in NO placement until now, while notes/sunken_garden_veneer_beam.md called it cast in one section and chipped-and-dowelled in another - and there is no existing pour to chip, because this placement is where those side walls are themselves cast. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — every thermal-break blockout is set against its face (AN-SG-BLOCKOUTS; the dowels that once needed it are deleted). (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all four 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
+        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND STRUT: the five strip footings FT-SG-W1/E1/W2/E2/S and the 12in x 12in strut W-SG-ARCH in one placement, all on one bed plane — the court loop is closed before any wall is formed. The court has no column pads since 2026-09-22 — the porch spans wall to wall on two ledgers — so nothing in this court is dug below the wall beds. (2) WALLS AND VENEER BEAM: all five court walls and W-SG-BRKBM, one form height (every wall top is the porch datum 0ft 0in), one strip-and-set. W-SG-BRKBM IS CAST MONOLITHIC WITH THE TWO SIDE WALLS, NOT DOWELLED INTO THEM (settled 2026-09-14): it is a blockout inside this same form between -8ft 6-7/16in and -10ft 0-3/16in, bearing on FT-SG-W1/E1's toes and spanning the 11ft 0in between them; its 2 #4 hangers run straight into the walls and its 2 #5 bottom bars lap the dowels cast in the toes. It was named in NO placement until now, while notes/sunken_garden_veneer_beam.md called it cast in one section and chipped-and-dowelled in another - and there is no existing pour to chip, because this placement is where those side walls are themselves cast. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — every thermal-break blockout is set against its face (AN-SG-BLOCKOUTS; the dowels that once needed it are deleted). (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all four 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
     Annotation(
         uid="SGAN02AAAA", tag="AN-SG-MIX", position=pt(ft(_cx), ft(-23)),
         text="ONE TICKET: every placement in this court specifies EXPOSED_MIX (5,000 psi, w/cm <= 0.40, class F3+C2 air entrainment and SCM caps). The two column pads that specified BURIED_MIX (PIER_BASE_12) were retired with the porch's centre line on 2026-09-22, so there is no substitution left to permit: supply the whole court from one ticket"),

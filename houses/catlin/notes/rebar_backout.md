@@ -651,3 +651,22 @@ Total **6,471.4 lb / 1,148 pieces** (was 6,566.3 / 1,172). `W-GF-N-DR` is gone w
 bars of `_ICF_STEM_STEEL` (#4 @ 16" each way), and `W-GF-N` lays 14 where it laid 17: its
 east end is an open end now, not a junction the horizontals ran through. Foundation wall #4
 311 → **287** pieces, 1,715.4 → **1,620.5** lb. No other row moves.
+
+## Addendum 2026-10-10 — the veneer beam on the toes; FT-SG-S owns the south corners
+
+Total **6,667.1 lb / 1,099 pieces** (was 6,379.7 / 1,127). Two design changes, host by host:
+
+- **W-SG-BRKBM 251.2 → 91.9 lb** (`sunken_garden_veneer_beam.md` §6j). It bears on
+  FT-SG-W1/E1's toes and spans 11'-0", so torsion is under §22.7.4.1's threshold and the cage
+  is a simple span's: 2 #5 bottom (was 3), 2 #4 straight hangers (was 3 #5 hooked), #3 ties @
+  12" (19, was 44 closed hoops @ 5"), 2 #5 dowels per end at 12" + 30" (4, was 6 at 66" + 30");
+  the 2 #4 side bars and the 4 #4 hook ties are gone. Foundation wall #3 44 → **19** /
+  **30.5** lb; #4 287 → **283** / **1,610.1**; #5 141 → **135** / **1,311.1**.
+- **FT-SG-S 441.3 → 976.6 lb, FT-SG-W2/E2 250.9 → 206.8 each** (free body §12b). FT-SG-S runs
+  out to out, 25'-0", and its E-W steel is #5 @ 12" top and bottom wall to wall (was #4 @ 18"
+  bottom only); W2/E2 stop at its toe line, 4'-10" shorter. Footing #4 31 → **24** / **167.9**;
+  #5 156 → **170** / **1,600.3**.
+
+Net **+287.4 lb**: −159.3 in the beam, +447.1 in the footings. The steel moved to where the
+model had been missing it — two corner squares with no footing under them — and out of a
+beam that was graded on a span it does not have.

@@ -221,13 +221,74 @@ def tie_hook_row(beam: Any, spec: Any, out: Anchorage) -> None:
         is_detailing=True))
 
 
+def _simple_support_state(ctx: Any, beam: Any, spec: Any, role: str,
+                          row: tuple[int, int, int], solid: Any, out: Anchorage) -> None:
+    """Torsion neglected: ACI 318-19 §9.7.3.8.1 — at a simple support, ⅓ of the positive
+    steel extends 6" into the support. Here that is the dowels cast in the footing the beam
+    bears on, lapped class B to the row (note §6j)."""
+    from typehaus.resolve.concrete import concrete_spec_for, fc_psi
+    from typehaus.resolve.rebar.detailing import tension_lap_in
+
+    dowel = next((b for b in getattr(spec, "bars", ()) if b.role == "dowels"), None)
+    if dowel is None or dowel.embedment is None or not dowel.count:
+        out.missing.append(
+            f"`dowels` (a COUNT and an `embedment`) on {beam.tag}'s ReinforcementSpec: its "
+            f"{role} row ends at {solid.tag}'s face and §9.7.3.8.1 wants ⅓ of it 6\" in")
+        return
+    ftg_fc = fc_psi(concrete_spec_for(ctx.plan, ctx.plan.by_tag(solid.tag)))
+    if ftg_fc is None:
+        out.missing.append(f"f'c on {solid.tag} to lap {beam.tag}'s dowels in it")
+        return
+    bar, count, _layers = row
+    out.states.append(LimitState(
+        f"positive steel into the support at {solid.tag}", count * BARS[bar].area_in2 / 3.0,
+        dowel.count * BARS[dowel.bar].area_in2, "in2",
+        f"ACI 318-19 §9.7.3.8.1 — ⅓ of the {count} #{bar} row continues into {solid.tag} as "
+        f"{dowel.count} #{dowel.bar} dowels", is_detailing=True))
+    out.states.append(LimitState(
+        f"dowel extension into {solid.tag}", 6.0, float(dowel.embedment.inches), "in",
+        "ACI 318-19 §9.7.3.8.1, 6\" past the support face", is_detailing=True))
+    if dowel.projection is not None:
+        lap = tension_lap_in(dowel.bar, ftg_fc, spec.lap_class)
+        out.states.append(LimitState(
+            f"dowel lap of {role} past the {solid.tag} joint", lap,
+            float(dowel.projection.inches), "in",
+            f"ACI 318-19 §25.5.2.1 class {spec.lap_class or 'B'} lap; authored `projection` "
+            f"into {beam.tag}", is_detailing=True))
+
+
 def anchor_rows(ctx: Any, beam: Any, spec: Any, rows: dict[str, tuple[int, int, int]],
                 supports: tuple[Any, Any], own: Any, frame: tuple[Any, Any, Any],
-                section: tuple[float, float, float], epoxy: bool) -> Anchorage:
+                section: tuple[float, float, float], epoxy: bool, *,
+                torsion: bool = True) -> Anchorage:
     """Every longitudinal row into each end. ``rows`` maps role -> ``(bar, count, layers)``,
-    ``supports`` is ``(start, end)``, ``section`` is ``(width, cover, hoop diameter)``, in."""
+    ``supports`` is ``(start, end)``, ``section`` is ``(width, cover, hoop diameter)``, in.
+
+    ``torsion`` False (Tu below φT_th): no row is a torsion corner bar. The bottom row is
+    graded on §9.7.3.8.1 into the footing it bears on; an unhooked top row is a hanger and is
+    not graded; the hoop hook angle is not asked."""
     out = Anchorage()
     _width, cover, hoop_d = section
+    if not torsion:
+        for role, row in rows.items():
+            entry = next(b for b in getattr(spec, "bars", ()) if b.role == role)
+            if role == "top-y" and not entry.hooks:
+                out.notes.append(f"{role}: {row[1]} #{row[0]} straight hangers, ungraded — "
+                                 f"no torsion and no end moment is claimed of them.")
+                continue
+            db = BARS[row[0]].diameter_in
+            inset = cover + hoop_d + db / 2.0
+            z = (own.z1 / _M_PER_IN - inset) if role == "top-y" else (own.z0 / _M_PER_IN + inset)
+            for sup in supports:
+                if sup.z0 / _M_PER_IN + db / 2.0 <= z <= sup.z1 / _M_PER_IN - db / 2.0:
+                    _hook_state(ctx, beam, entry, role, row, sup, own, section, epoxy, out)
+                    continue
+                solid = _footing_at(ctx, *frame, sup, own, z * _M_PER_IN)
+                if solid is None:
+                    out.missing.append(f"a footing for {beam.tag}'s {role} row at {sup.tag}")
+                    continue
+                _simple_support_state(ctx, beam, spec, role, row, solid, out)
+        return out
     for role, row in rows.items():
         entry = next(b for b in getattr(spec, "bars", ()) if b.role == role)
         db = BARS[row[0]].diameter_in

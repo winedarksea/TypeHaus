@@ -74,14 +74,11 @@ _NOTE_SYSTEM_FS = 1.735                # §12a; §12 1.712
 #   w = 3,072.31 plf, L = 16.333 ft -> wL = 50,181 lb
 #   P = 25,090 lb service, Pu = 1.6 x 25,090 = 40,145 lb
 #
-# ** DO NOT READ A FALLING Pu AS PERMISSION TO SHRINK THE BEAM. ** The two shallower
-# sections §8 once rejected (10 1/4" and 8 1/2") pass at this Pu by an even wider margin
-# than they did at the old one. What holds 17.5" is the sequencing argument and the absence
-# of redundancy, not the ratio; §8's three-reason block is where that lives.
+# §8b (2026-10-10): the strut is 12" x 12" in the footing plane, cast with the footings.
 _NOTE_STRUT_PU_LB = 40_804.0           # §4d, w 3,122.8 plf (§4c 41,047; §4 40,145)
-#: §8's formula on the 18'-0" member (§12): λ = 1 − (216 / (32 × 12))² = 0.6836, so
-#: 0.60 × 0.45 × 3,000 × 210 × 0.6836 = 116,279 lb (103,655 on the 20'-0" one).
-_NOTE_STRUT_PHI_PN_LB = 116_279.0
+#: §8b's formula on the 18'-0" member: λ = 1 − (216 / (32 × 12))² = 0.6836, so
+#: 0.60 × 0.45 × 3,000 × 144 × 0.6836 = 79,734 lb (116,279 at the old 12" x 17.5").
+_NOTE_STRUT_PHI_PN_LB = 79_734.0
 #: The other end of the corner-fixity family, hand-worked in §8 beside the graded one.
 #: Asserted so the record cannot quietly stop publishing the range.
 _NOTE_STRUT_FIXED_CORNER_P_LB = 19_127.0      # §4c 19,241; §4 18,818
@@ -435,43 +432,26 @@ def test_the_net_rim_laps_no_footing(catlin_model) -> None:
             f"in the slab section and once in the footing one, and no check grades it")
 
 
-def test_the_grade_beam_holds_its_section_and_carries_the_court_floor(
-        catlin_model) -> None:
-    """W-SG-ARCH is 17 1/2" deep and NEITHER face moves — which now costs it its flushness.
-
-    The court has been at three configurations and the beam has sat through all of them. It
-    dropped 7 1/4" on 2026-09-03 for a flood step, leaving this beam standing 3 3/4" proud as
-    a mow strip with FO-SG-ARCH cutting the rim around it; it came back flush on 2026-09-05
-    (`court_step_down_in` -> 0), and the beam was buried again with the rim bearing directly
-    on it and FO-SG-ARCH retired; and later the same day the three retaining footings rose 9"
-    to become the court's walking surface.
-
-    **BOTH faces are fixed by the strut, and that is the assertion here.** Dropping the TOP
-    to a lowered floor leaves a 10 1/4" section: phi-Pn 60,712 lb against Pu 62,051, **d/c
-    1.02, it fails**. Raising the BOTTOM with the retaining footings leaves 8 1/2", Ag
-    102 in^2, phi-Pn ~50,300 lb against Pu 54,134 — **d/c ~1.08, it fails too**. So
-    `_grade_beam_bottom` is now DECOUPLED from `_wall_bottom` and held, and the beam
-    deliberately stands 9" proud below the footings it used to be flush with. The
-    "one excavation, one stone plane" that flushness used to buy is gone; §8 of
-    notes/sunken_garden_court_free_body.md says what replaces it.
-
-    The 17 1/2" is the assertion that matters: it is the section §8 of the note grades.
+def test_the_strut_is_in_the_footing_plane_and_the_rim_is_cut_off_it(catlin_model) -> None:
+    """§8b. W-SG-ARCH is 12" x 12", flush with the court strips top and bottom, and between
+    the toes it is the walking surface — FO-SG-STRUT voids the rim over it as the toe voids
+    do over the footings. Its depth is the footing thickness by construction, not a residue.
     """
+    from shapely.geometry import Polygon
+
     beam = next(s for s in catlin_model.solids if s.tag == "W-SG-ARCH")
     court = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
     footing = next(s for s in catlin_model.solids if s.tag == "FT-SG-W2")
-
-    # NOT flush any more, and by exactly the 9" the footings rose.
-    assert (footing.z0_m - beam.z0_m) / _M_PER_FT * 12 == pytest.approx(9.0, abs=1e-6)
-    # The footings' TOPS are the court's walking surface: the rim voids over them.
+    assert beam.z0_m == pytest.approx(footing.z0_m, abs=1e-9)
+    assert beam.z1_m == pytest.approx(footing.z1_m, abs=1e-9)
     assert footing.z1_m == pytest.approx(court.z1_m, abs=1e-9)
-    assert (beam.z1_m - beam.z0_m) / _M_PER_FT * 12 == pytest.approx(17.5, abs=1e-6)
-    # Buried: its top IS the rim slab's underside, so the court floor bears on it. Both
-    # sides of this are the same expression in params/sunken_garden (`_grade_beam_top` and
-    # `_rim_underside_in`), and that is exactly why FO-SG-ARCH could be retired.
-    assert (court.z1_m - beam.z1_m) / _M_PER_FT * 12 == pytest.approx(3.5, abs=1e-6)
-    # The court is flush with the basement floor plane again.
+    assert (beam.z1_m - beam.z0_m) / _M_PER_FT * 12 == pytest.approx(12.0, abs=1e-6)
     assert court.z1_m / _M_PER_FT * 12 == pytest.approx(-109.4375, abs=1e-6)
+    # The net rim never shares plan area with the strut.
+    rim = Polygon(list(court.outline))
+    for void in court.voids:
+        rim = rim.difference(Polygon(list(void)))
+    assert rim.intersection(Polygon(list(beam.outline))).area == pytest.approx(0.0, abs=1e-6)
     # The curb over that floor is the flood step, and it is 7 1/4" whatever happens here.
     curb = next(w for w in catlin_model.plan.all_elements()
                 if getattr(w, "tag", None) == "W-B-S2")

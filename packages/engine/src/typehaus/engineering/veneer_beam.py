@@ -3,11 +3,13 @@
 Promoted 2026-09-20 from the report-only screening in ``sunken_garden/veneer_beam.py`` to a
 registered kind that reads the plan: the section off the beam's own STRUCTURE layer (the
 concrete only — ``SG_VENEER_BEAM_14``'s 2" ``xps-break`` is not section), the supports off
-the walls whose pour it overlaps, the load off the wythe it carries, and the steel off its
-``ReinforcementSpec`` (counts, through ``retaining_basis.bar_count_for_roles``).
+the walls whose pour it overlaps, the span between the innermost concrete it bears on (a wall,
+or a footing toe its pour sits on — note §6j), the load off the wythe it carries, and the steel
+off its ``ReinforcementSpec`` (counts, through ``retaining_basis.bar_count_for_roles``).
 
-Graded at U = 1.4D: flexure, minimum steel, shear, torsion in EQUILIBRIUM (no §22.7.3.2
-redistribution is relied on), the §9.6.4/§9.7 torsion detailing, deflection after the wythe
+Graded at U = 1.4D: flexure, minimum steel (§9.6.1.2, or §9.6.1.3's 4/3 waiver), shear, and —
+above §22.7.4.1's threshold — torsion in EQUILIBRIUM (no §22.7.3.2 redistribution) with the
+§9.6.4/§9.7 detailing; below it, an ordinary beam's stirrup rows. Then deflection after the wythe
 is attached (TMS 402-22 §13.1.2.3's ℓ/600 and ACI Table 24.2.2's ℓ/480), and end anchorage of
 each longitudinal row
 (``veneer_beam_anchorage``): hooked into the supporting wall, or through dowels cast in the
@@ -181,6 +183,28 @@ def _supports(ctx: EngineeringContext, own: _Band, skip: set[str], origin: _Vec,
     return start, end
 
 
+def _bearings(ctx: EngineeringContext, own: _Band, origin: _Vec, u: _Vec, n: _Vec
+              ) -> tuple[list[_Band], list[_Band]]:
+    """Footing solids the beam's own pour overlaps — concrete it BEARS on, split by end.
+
+    A beam cast over a footing's projecting toe bears on it, whatever the wall above does:
+    the clear span is measured between the innermost bearing faces (note §6j)."""
+    start: list[_Band] = []
+    end: list[_Band] = []
+    for solid in ctx.model.solids:
+        if solid.category not in ("footing", "pad") or solid.derived or not solid.outline:
+            continue
+        us = [(p[0] - origin[0]) * u[0] + (p[1] - origin[1]) * u[1] for p in solid.outline]
+        ns = [(p[0] - origin[0]) * n[0] + (p[1] - origin[1]) * n[1] for p in solid.outline]
+        band = _Band(solid.tag, min(us), max(us), min(ns), max(ns), solid.z0_m, solid.z1_m)
+        if (min(band.u1, own.u1) - max(band.u0, own.u0) <= _TOL_M
+                or min(band.n1, own.n1) - max(band.n0, own.n0) <= _TOL_M
+                or min(band.z1, own.z1) - max(band.z0, own.z0) <= _TOL_M):
+            continue
+        (start if (band.u0 + band.u1) < (own.u0 + own.u1) else end).append(band)
+    return start, end
+
+
 def _end_gaps(wythes: list[_Band], west: _Band, east: _Band) -> str:
     """How far each end of the carried wythe(s) stands off the supporting wall's face."""
     lo, hi = min(b.u0 for b in wythes), max(b.u1 for b in wythes)
@@ -194,6 +218,65 @@ def _state(name: str, demand: float, capacity: float, unit: str, citation: str, 
            detailing: bool = False) -> LimitState:
     return LimitState(name, demand, capacity, unit, citation, is_detailing=detailing,
                       combination=_COMBO, combination_factors=(("D", DEAD_LOAD_FACTOR),))
+
+
+def _torsion_states(screen: Any, spec: Any, section: tuple[float, float, float, float, float],
+                    bars: tuple[Any, Any, Any], long_prov: float) -> list[LimitState]:
+    """Torsion above φT_th: equilibrium design and the §9.6.4/§9.7 detailing (note §4a, §6c)."""
+    width, depth, d, cover, fc = section
+    bottom, side, (hoop_bar, hoop_s) = bars
+    hoop_d = BARS[hoop_bar].diameter_in
+    tors = torsion_design(
+        tu_ftlb=screen.factored_torsion_ftlb, vu_lb=screen.factored_shear_lb, width_in=width,
+        depth_in=depth, d_in=d, cover_in=cover, hoop_diameter_in=hoop_d,
+        hoop_leg_area_in2=BARS[hoop_bar].area_in2, hoop_spacing_in=hoop_s, fc_psi=fc)
+    inset = cover + hoop_d + BARS[bottom[0]].diameter_in / 2.0
+    vgap = (depth - 2.0 * inset) / ((side[1] if side else 0) + 1)
+    hgap = (width - 2.0 * inset) / max(bottom[1] - 1, 1)
+    long_req = max(screen.required_steel_in2, screen.minimum_steel_in2) + tors.al_required_in2
+    return [
+        _state("torsion transverse steel, equilibrium (one leg)", tors.at_s_required,
+               tors.at_s_provided, "in2/in",
+               "ACI 318-19 §22.7.6.1, θ 45°, Ao 0.85 Aoh — no §22.7.3.2 redistribution"),
+        _state("torsion section limit", tors.combined_stress_psi, tors.stress_limit_psi, "psi",
+               "ACI 318-19 §22.7.7.1(a)"),
+        _state("closed hoop spacing", hoop_s, tors.hoop_spacing_max_in, "in",
+               "ACI 318-19 §9.7.6.3.3, min(ph/8, 12\")", detailing=True),
+        _state("minimum transverse torsion steel", tors.transverse_min,
+               tors.transverse_provided, "in2/in", "ACI 318-19 §9.6.4.2", detailing=True),
+        _state("longitudinal steel, flexure + torsion", long_req, long_prov, "in2",
+               "ACI 318-19 §9.5.4.3 with Al,min per §9.6.4.3", detailing=True),
+        _state("longitudinal bar spacing around the perimeter", max(vgap, hgap), 12.0, "in",
+               "ACI 318-19 §9.7.5.1", detailing=True),
+    ]
+
+
+def _stirrup_states(screen: Any, section: tuple[float, float, float],
+                    hoop: tuple[int, float]) -> list[LimitState]:
+    """Torsion below φT_th (§22.7.4.1): an ordinary beam. Stirrups are graded only where
+    §9.6.3.1 asks for Av,min; below that trigger the ties are cage ties (note §6j)."""
+    width, d, fc = section
+    hoop_bar, hoop_s = hoop
+    states = [_state(
+        "torsion below the §22.7.4.1 threshold", screen.factored_torsion_ftlb,
+        screen.phi_threshold_torsion_ftlb, "ft-lb",
+        "ACI 318-19 §22.7.4.1(a), φ 0.75 × 0.25λ√f'c Acp²/pcp — torsion may be neglected, so "
+        "no §9.6.4 hoops or longitudinal torsion steel are owed")]
+    trigger = 0.75 * fc ** 0.5 * width * d
+    if screen.factored_shear_lb <= trigger:
+        states.append(_state(
+            "shear below the Av,min trigger", screen.factored_shear_lb, trigger, "lb",
+            "ACI 318-19 §9.6.3.1, Vu ≤ φλ√f'c bw d — no shear reinforcement is required; "
+            "the authored ties are cage ties", detailing=True))
+        return states
+    av_s = 2.0 * BARS[hoop_bar].area_in2 / hoop_s
+    av_min = max(0.75 * fc ** 0.5 * width / REINFORCEMENT_FY_PSI,
+                 50.0 * width / REINFORCEMENT_FY_PSI)
+    return [*states,
+            _state("minimum shear steel", av_min, av_s, "in2/in",
+                   "ACI 318-19 §9.6.3.4, two legs", detailing=True),
+            _state("stirrup spacing", hoop_s, min(d / 2.0, 24.0), "in",
+                   "ACI 318-19 §9.7.6.2.2, min(d/2, 24\")", detailing=True)]
 
 
 def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> EngineeringRecord:
@@ -219,7 +302,8 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
     side = bar_count_for_roles(spec, ("horizontal",))
     hoop = bar_for_roles(spec, ("ties", "stirrups"))
     for got, what in ((bottom, "a `bottom-y` bar COUNT"), (top, "a `top-y` bar COUNT"),
-                      (hoop, "`ties` at a spacing (the closed hoops)")):
+                      (hoop, "`ties` at a spacing (stirrups, or the closed hoops torsion "
+                             "needs)")):
         if got is None:
             missing.append(f"{what} in {beam.tag}'s ReinforcementSpec")
 
@@ -238,11 +322,14 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
 
     start: list[_Band] = []
     end: list[_Band] = []
+    bear_s: list[_Band] = []
+    bear_e: list[_Band] = []
     if own is not None:
         start, end = _supports(ctx, own, set(tags), origin, u, n)
         if len(start) != 1 or len(end) != 1:
             missing.append(f"exactly one supporting wall at each end of {beam.tag} (found "
                            f"{[b.tag for b in start]} / {[b.tag for b in end]})")
+        bear_s, bear_e = _bearings(ctx, own, origin, u, n)
     # Anything missing so far leaves nothing gradeable: every state reads the section, the
     # steel, the span and the load together.
     if missing:
@@ -257,8 +344,12 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
     width = (own.n1 - own.n0) / _M_PER_IN
     depth = (own.z1 - own.z0) / _M_PER_IN
     (w_sup,), (e_sup,) = start, end
-    clear_ft = (e_sup.u0 - w_sup.u1) / _M_PER_IN / 12.0
-    bearing = ((w_sup.u1 - own.u0) + (own.u1 - e_sup.u0)) / 2.0 / _M_PER_IN
+    # The span runs between the INNERMOST bearing faces: a wall, or a footing toe the beam's
+    # pour sits on (note §6j). Development and the joints still read the WALLS.
+    w_bear = max((w_sup, *bear_s), key=lambda b: b.u1)
+    e_bear = min((e_sup, *bear_e), key=lambda b: b.u0)
+    clear_ft = (e_bear.u0 - w_bear.u1) / _M_PER_IN / 12.0
+    bearing = ((w_bear.u1 - own.u0) + (own.u1 - e_bear.u0)) / 2.0 / _M_PER_IN
     self_plf = CONCRETE_UNIT_WEIGHT_PCF * width * depth / 144.0
     ecc = ecc_num / wythe_plf / _M_PER_IN
     hoop_bar, hoop_s = hoop
@@ -270,10 +361,7 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
         provided_bar_count=bottom[1], provided_bar_area_in2=bot_bar.area_in2,
         veneer_load_plf=wythe_plf, beam_load_plf=self_plf, eccentricity_in=ecc)
     d, span = screen.effective_depth_in, screen.effective_span_ft
-    tors = torsion_design(
-        tu_ftlb=screen.factored_torsion_ftlb, vu_lb=screen.factored_shear_lb, width_in=width,
-        depth_in=depth, d_in=d, cover_in=cover, hoop_diameter_in=hoop_d,
-        hoop_leg_area_in2=BARS[hoop_bar].area_in2, hoop_spacing_in=hoop_s, fc_psi=fc)
+    torsion = not screen.torsion_may_be_neglected
     top_area = top[1] * BARS[top[0]].area_in2
     side_area = (side[1] * side[2] * BARS[side[0]].area_in2) if side else 0.0
     restraint = getattr(beam, "end_restraint", None)
@@ -282,34 +370,27 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
         depth_in=depth, d_in=d, tension_in2=screen.provided_steel_in2,
         compression_in2=top_area, fc_psi=fc,
         end_fixity=float(restraint.fixity) if restraint is not None else 0.0)
-    inset = cover + hoop_d + bot_bar.diameter_in / 2.0
-    vgap = (depth - 2.0 * inset) / ((side[1] if side else 0) + 1)
-    hgap = (width - 2.0 * inset) / max(bottom[1] - 1, 1)
-    long_req = max(screen.required_steel_in2, screen.minimum_steel_in2) + tors.al_required_in2
-    long_prov = screen.provided_steel_in2 + top_area + side_area
     phi_mn = screen.factored_moment_ftlb / screen.flexure_ratio
-
+    min_cite = (f"ACI 318-19 §9.6.1.3 — As ≥ 4/3 As,req ({4 / 3 * screen.required_steel_in2:.3f}"
+                f" in²) waives §9.6.1.2's {screen.minimum_steel_in2:.3f}"
+                if screen.minimum_waived else "ACI 318-19 §9.6.1.2")
     states = [
         _state("flexure, simple span", screen.factored_moment_ftlb, phi_mn, "ft-lb",
                "ACI 318-19 §22.2, φ 0.90; simple span — no end fixity credited"),
-        _state("minimum flexural steel", screen.minimum_steel_in2,
-               screen.provided_steel_in2, "in2", "ACI 318-19 §9.6.1.2", detailing=True),
+        _state("minimum flexural steel", screen.minimum_governing_in2,
+               screen.provided_steel_in2, "in2", min_cite, detailing=True),
         _state("one-way shear", screen.factored_shear_lb,
                screen.factored_shear_lb / screen.shear_ratio, "lb",
-               "ACI 318-19 Table 22.5.5.1(a), 2λ√f'c — Av ≥ Av,min from the hoops"),
-        _state("torsion transverse steel, equilibrium (one leg)", tors.at_s_required,
-               tors.at_s_provided, "in2/in",
-               "ACI 318-19 §22.7.6.1, θ 45°, Ao 0.85 Aoh — no §22.7.3.2 redistribution"),
-        _state("torsion section limit", tors.combined_stress_psi, tors.stress_limit_psi, "psi",
-               "ACI 318-19 §22.7.7.1(a)"),
-        _state("closed hoop spacing", hoop_s, tors.hoop_spacing_max_in, "in",
-               "ACI 318-19 §9.7.6.3.3, min(ph/8, 12\")", detailing=True),
-        _state("minimum transverse torsion steel", tors.transverse_min,
-               tors.transverse_provided, "in2/in", "ACI 318-19 §9.6.4.2", detailing=True),
-        _state("longitudinal steel, flexure + torsion", long_req, long_prov, "in2",
-               "ACI 318-19 §9.5.4.3 with Al,min per §9.6.4.3", detailing=True),
-        _state("longitudinal bar spacing around the perimeter", max(vgap, hgap), 12.0, "in",
-               "ACI 318-19 §9.7.5.1", detailing=True),
+               "ACI 318-19 Table 22.5.5.1(a), 2λ√f'c"
+               + (" — Av ≥ Av,min from the hoops" if torsion else "")),
+    ]
+    if torsion:
+        states.extend(_torsion_states(screen, spec, (width, depth, d, cover, fc),
+                                      (bottom, side, hoop), screen.provided_steel_in2
+                                      + top_area + side_area))
+    else:
+        states.extend(_stirrup_states(screen, (width, d, fc), hoop))
+    states += [
         LimitState(
             "deflection after the wythe is attached, TMS ℓ/600", defl.after_attachment_in,
             defl.limit_600_in, "in",
@@ -337,7 +418,7 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
     mix_coating = getattr(concrete_spec_for(ctx.plan, beam), "bar_coating", "") or ""
     epoxy = "epoxy" in f"{' '.join(b.coating or '' for b in spec.bars)} {mix_coating}".lower()
     ends = anchor_rows(ctx, beam, spec, {"top-y": top, "bottom-y": bottom}, (w_sup, e_sup), own,
-                       (origin, u, n), (width, cover, hoop_d), epoxy)
+                       (origin, u, n), (width, cover, hoop_d), epoxy, torsion=torsion)
     states.extend(ends.states)
     missing.extend(ends.missing)
     notes_ldh = ends.notes
@@ -351,7 +432,7 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
         item_id=item_id(KIND, beam.tag), kind=KIND, key=beam.tag,
         basis_version=BASIS_VERSION, basis=BASIS, status=status,
         summary=(f"{beam.tag}: {width:.0f}\" x {depth:.2f}\" beam spanning {clear_ft:.2f}' "
-                 f"between {w_sup.tag} and {e_sup.tag}, carrying {wythe_plf:.0f} plf of "
+                 f"between {w_bear.tag} and {e_bear.tag}, carrying {wythe_plf:.0f} plf of "
                  f"{', '.join(w.tag for w in carried)} — d/c {worst.ratio:.2f}, governed by "
                  f"{worst.name}" + (f"; {len(missing)} input(s) missing" if missing else "")),
         inputs=(
@@ -376,8 +457,12 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
             f"at {DEAD_LOAD_FACTOR}D. SECTION is the concrete layer only, {width:.2f}\".",
             f"TORSION: Tu {screen.factored_torsion_ftlb:,.0f} ft-lb at e {ecc:.3f}\" is "
             f"{screen.factored_torsion_ftlb / threshold:.2f}x φT_th ({threshold:,.0f}), so "
-            f"§9.6.4 detailing is owed and graded; it is designed in equilibrium, so the "
-            f"garden slab bearing §22.7.3.2 would need is not relied on.",
+            + ("§9.6.4 detailing is owed and graded; it is designed in equilibrium, so the "
+               "garden slab bearing §22.7.3.2 would need is not relied on." if torsion else
+               "§22.7.4.1 lets it be neglected: no closed hoops, side bars or fy corner-bar "
+               "anchorage are owed, and the rows are an ordinary simple-span beam's."),
+            f"SPAN: {clear_ft:.2f}' clear between {w_bear.tag} and {e_bear.tag} — the innermost "
+            f"concrete the beam's pour bears on, wall or footing toe (note §6j).",
             *notes_ldh,
             *joint_notes,
             "NOT GRADED (moved from the deferral): the stirrup form; which way each hook turns "

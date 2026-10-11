@@ -1433,6 +1433,43 @@ does no structural work can only ever be a place for rust to start. With no stee
 nothing to corrode, and the 100-year life rests on the concrete alone. `Beam.reinforcement`
 exists for a future cast beam that bends; this one is left `None` deliberately.
 
+### 8b. The strut moves into the footing plane (2026-10-10, owner)
+
+> **Supersedes §8's section, its "held" bottom and its three-reason block.** The force, the
+> plain-concrete case and the λ bracket are unchanged.
+
+`SL-SG-FLOOR` still cannot be the strut — it is a 3 1/2" rim around the 11'-0" field (§8's
+first bullet stands). What the owner asked instead is the floor's north BAND thickened to
+footing depth: `W-SG-ARCH` becomes **12" x 12", top on the court plane (−109 7/16"), bottom on
+the footing undersides (−121 7/16")**, cast with the five strips in **placement 1**. Between
+the toes it is the walking surface and `FO-SG-STRUT` voids the rim over it, exactly as the toe
+voids do over the strips. It stays a cast `Beam` on N-SG-MW/N-SG-ME, because that is what
+`resolve/orientation` and `retaining_system._verify` count as a loop edge.
+
+```
+Ag    = 12 × 12                                            =    144 in²
+λ     = 1 − (216 / (32 × 12))²                             = 0.6836   (18'-0" axis span, as §12)
+φPn   = 0.60 × 0.45 × 3,000 × 144 × 0.6836                 = 79,734 lb
+Pu    = 1.6 × 25,503 (§4d, pinned corner)                  = 40,804 lb    d/c 0.512 ✓
+```
+
+**Why §8's three reasons no longer hold the old section.**
+
+1. *Sequencing* gets **better**, not worse: the loop closes in placement 1, before a wall
+   is formed, where it used to close in placement 2 with the walls.
+2. *Residue*: the depth is the footing thickness by definition (`_grade_beam_bottom =
+   _wall_bottom − footing_thickness`), a chosen number every strip shares, not the gap left
+   between two surfaces that each move for their own reasons.
+3. *Margin*: 0.512 on the full 18'-0" λ, with the strut buried in stone on three faces and
+   walked on the fourth. That is not the 2% §8 refused.
+
+**What it buys.** One dig plane: `FB-SG-ARCH`'s undercut derives to 42" and lands on
+`_SG_WALL_BED_BOTTOM` with every strip; the 9" step along the beam line is gone. 0.31 cy less
+concrete (26.25 → 18.0 cf billed). **What it costs**: the solid runs axis to axis, so 3'-6" at
+each end lies inside FT-SG-W1/W2 and E1/E2's toes — 7.0 cf (0.26 cy) billed twice, recorded
+because a `Beam` has no end trim. It is still not in the frost population (no `Footing`), and
+it is still plain (§8, D9).
+
 ---
 
 ## 9. What this note does NOT do
@@ -2572,6 +2609,55 @@ uncapped spring: μΣwL 97,508 over 322.565" (μw 302.29)
   x = (97,508 + 56,210) / (227.84 + 604.58) = 184.66"  T = 227.84 × 184.66 = 42,074 lb (42,125)
   line = 42,074.2 − 2 × 788.5 = 40,497 lb; unstated-grade slab edge 40,497 / 22,680 = 1.786 OVER
 ```
+
+### 12b. FT-SG-S owns the south corners (2026-10-10)
+
+**What was wrong.** Each strip stopped at its wall's axis node. FT-SG-W2 ran to y −27.333,
+FT-SG-S from x 9.000, so the outer corner square — x 5.5..9.0 × y −27.333..−30.833, heel under
+heel, 3.5' × 3.5' — had **no footing**, and the outer 6" x 6" of the wall corner stood on
+stone. Meanwhile the two toe zones overlapped (x 9.0..12.5 × y −27.333..−22.5, 16.92 sf a
+corner), billed twice and laid with one mat. The east corner is the mirror.
+
+**What is built now.** FT-SG-S runs out to out of the side strips, x 5.5..30.5 (25'-0"), and is
+the footing under W-SG-S and under the south 4'-10" of W2/E2; FT-SG-W2/E2 stop on its toe
+line, y −22.5 (`Footing.end_extension`/`start_extension`, derived from the two strips' reach).
+One placement, as before.
+
+**Its E-W steel is #5 @ 12" top and bottom, wall to wall** (was #4 @ 18" bottom,
+distribution). Under W2/E2's south 4'-10" those bars ARE the walls' toe and heel steel, so
+they are checked as §7 checks W2/E2's own transverse mat, on the inner layer's d (they sit
+under/over the N-S #5):
+
+```
+d (inner layer)  12 − 3 − 0.625 − 0.625/2                    = 8.0625 in   (§7e: 8.6875)
+#5 @ 12":  a 0.3647, φMn = 0.9 × 0.31 × 60,000 × (8.0625 − 0.1824)/12 = 10,993 ft-lb/ft
+toe  (§12a's W2/E2 0.72 at 11,865)   0.72 × 11,865 / 10,993            d/c 0.78
+heel (§7c's 0.70 at 11,865)          0.70 × 11,865 / 10,993            d/c 0.76
+```
+
+Both are one-way cantilever bounds for a zone that is supported on two edges (the W2 stem and
+the S stem), so they are conservative. Across the court the same bars are the south tie.
+Steel: FT-SG-S 441.3 → 976.6 lb, W2/E2 250.9 → 206.8 each — net +447.1 lb
+(`rebar_backout.md`, addendum 2026-10-10).
+
+**Sliding: the engine does not credit it, and that is conservative.** `retaining_system` sums
+each wall as a unit section × its axis length, so a footing extension moves nothing and the
+record stays at **FS 1.735**. The reserve it leaves out, per corner:
+
+```
+concrete   12.25 sf × 1.0 × 150                              =  1,837.5 lb
+soil       (12.25 − 0.25 stem) × 9.1198 × 110                 = 12,038.1 lb
+stem bit   0.25 × 9.1198 × 150                                =    342.0 lb
+                                                                14,217.6 lb
+less the toe overlap the unit sections count twice: 3.0 × 4.333 × 150 = 1,950.0 lb
+net per corner                                                  12,267.6 lb
+both corners × μ 0.35                                            8,587.3 lb
+FS (not graded)  (97,507.5 + 8,587.3) / 56,210.2                = 1.89    (graded 1.735)
+no stone, μ 0.25 (0.25 × (278,593 + 24,535)) / 56,210.2          = 1.35    (graded 1.24)
+```
+
+The no-stone row is still short of 1.50 (§5 stands): the bed is still the margin. What changed
+is that the corner squares are real concrete now, not a gap the free body happened to ignore.
 
 ## Sources
 

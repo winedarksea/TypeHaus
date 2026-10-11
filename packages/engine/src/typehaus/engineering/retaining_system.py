@@ -745,8 +745,9 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
             for m in built_by_pcf[low]) + ". A shortfall is not a failure — it is the force "
         "that has to reach the loop, and the `corner shear transfer` row is where it is "
         "graded.",
-        "Sequence is the objection this answers: the cross-member is cast WITH the walls, "
-        "so the loop is closed before any backfill goes in. A floor slab strut would not be.",
+        "Sequence is the objection this answers: the cross-member is cast no later than the "
+        "walls (with their footings, or with the walls), so the loop is closed before any "
+        "backfill goes in. A floor slab poured after them would not be.",
     ) + _surcharge_notes(ctx, built_by_pcf[low], low)
 
     if over_low != over_high:

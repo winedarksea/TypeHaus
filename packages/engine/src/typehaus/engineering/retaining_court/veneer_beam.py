@@ -72,8 +72,19 @@ class VeneerBeamResult:
     unresolved: tuple[str, ...]
 
     @property
+    def minimum_governing_in2(self) -> float:
+        """The minimum that binds: §9.6.1.2's, or 4/3 of the demand where §9.6.1.3 waives it."""
+        return min(self.minimum_steel_in2, 4.0 / 3.0 * self.required_steel_in2)
+
+    @property
+    def minimum_waived(self) -> bool:
+        """ACI 318-19 §9.6.1.3: As provided ≥ 4/3 As required releases §9.6.1.1/§9.6.1.2."""
+        return 4.0 / 3.0 * self.required_steel_in2 < self.minimum_steel_in2
+
+    @property
     def torsion_may_be_neglected(self) -> bool:
-        """True only below the §22.7.4.1 threshold — which on this beam it is NOT."""
+        """True below the §22.7.4.1 threshold. False at the 19'-0" literals; true on the
+        11'-0" span the beam has bearing on the court footings' toes (note §6j)."""
         return self.factored_torsion_ftlb <= self.phi_threshold_torsion_ftlb
 
     @property

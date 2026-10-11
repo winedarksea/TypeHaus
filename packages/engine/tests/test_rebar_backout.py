@@ -37,11 +37,11 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): (93, 121.1),
     ("column", "#5", "hdg-a767"): (80, 472.3),
-    ("footing", "#4", "hdg-a767"): (31, 270.1),
-    ("footing", "#5", "hdg-a767"): (156, 1051.0),
-    ("foundation wall", "#3", "hdg-a767"): (44, 70.6),
-    ("foundation wall", "#4", "hdg-a767"): (287, 1620.5),
-    ("foundation wall", "#5", "hdg-a767"): (141, 1420.3),
+    ("footing", "#4", "hdg-a767"): (24, 167.9),
+    ("footing", "#5", "hdg-a767"): (170, 1600.3),
+    ("foundation wall", "#3", "hdg-a767"): (19, 30.5),
+    ("foundation wall", "#4", "hdg-a767"): (283, 1610.1),
+    ("foundation wall", "#5", "hdg-a767"): (135, 1311.1),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
     ("slab", "#3", "black"): (220, 237.3),
     ("slab", "#4", "black"): (43, 576.9),
@@ -77,8 +77,11 @@ _SCHEDULE = {
 # The active KDAT east supports replace two full-height cast columns with shorter pier
 # cages: 114 -> 93 #3 ties, and the 80 #5 pieces shorten by 73.0 lb. The immediately
 # preceding 6,471.4 lb / 1,148-piece schedule thus becomes 6,379.7 lb / 1,127 pieces.
-_TOTAL_LB = 6379.7
-_TOTAL_PIECES = 1127
+# +287.4 lb, −28 pieces on 2026-10-10 (note addendum): W-SG-BRKBM bears on the court toes
+# and sheds its torsion cage (−159.3); FT-SG-S owns the south corners with #5 E-W mats and
+# W2/E2 stop at its toe (+447.1).
+_TOTAL_LB = 6667.1
+_TOTAL_PIECES = 1099
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
 #: authoring steel may lift the tonnage into the register's band without opening it. Opening
@@ -224,4 +227,7 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # nowhere, laps and hooks out of [waste], the fencepost. No concrete moved. 46.9 is inside
     # the 40-80 a lightly reinforced residential foundation runs. 46.0 after the same day's
     # detailing review (note §1): the stems continuous at #5 @ 7", one mat per overlap.
-    assert total_lb / total_cy == pytest.approx(45.10, rel=0.02)
+    # 47.4 on 2026-10-10 (note addendum): +287 lb in the court's corner footings and E-W mats
+    # against −0.65 cy billed — the S/W2/E2 overlap no longer billed twice (−1.25), the corner
+    # squares (+0.91), the ARCH strut at 12" x 12" (−0.31).
+    assert total_lb / total_cy == pytest.approx(47.39, rel=0.02)
