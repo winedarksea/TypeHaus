@@ -69,7 +69,7 @@ def resolve_rebar(model) -> list[ResolvedRebarSet]:
             continue
         sink, cover = _sink(plan, element, spec, wall=True)
         footing = _footing_under(model, wall)
-        base = _base_of(model, footing) if footing is not None else None
+        base = _wall_base(model, wall, footing) if footing is not None else None
         beam = base is None and any(e.role in BEAM_ROLES for e in spec.bars)
         joints = _beam_joints(model, spec, wall, cover) if beam else None
         ends = _beam_row_ends(model, wall, joints) if beam else None
@@ -111,6 +111,7 @@ def resolve_rebar(model) -> list[ResolvedRebarSet]:
                        if m.z0_m < solid.z1_m and solid.z0_m < m.z1_m]
             lay_mat(sink, spec, solid, cover, ey=_strip_axis(model, element),
                     cap_thickness=_cap_thickness(plan, element), earlier=earlier)
+            _lay_continuations(model, sink, spec, solid, cover)
             laid_mats.append(solid)
         out.append(ResolvedRebarSet(solid.uid, solid.tag, element.element_kind, solid.storey,
                                     solid.category, tuple(sink.bars)))
@@ -146,6 +147,40 @@ def _plan_area(ring) -> float:
 def _footing_under(model, wall):
     return next((s for s in model.solids if s.category == "footing" and not s.derived
                  and getattr(model.plan.by_tag(s.tag), "under", None) == wall.tag), None)
+
+
+def _wall_base(model, wall, footing) -> WallBase:
+    """The base under ``footing``'s wall, banded wherever another footing whose top the wall
+    stands on owns the mat instead — the larger pour keeps an overlap's mat, as ``lay_mat``
+    lays it, so a stretch takes the largest footing under its axis."""
+    from shapely.geometry import LineString, Polygon
+
+    base = _base_of(model, footing)
+    (ax, ay), (bx, by) = wall.axis
+    length = math.hypot(bx - ax, by - ay) or 1.0
+    axis = LineString(wall.axis)
+    owners = sorted((s for s in model.solids if s.category == "footing" and not s.derived
+                     and abs(s.z1_m - footing.z1_m) < 1e-3),
+                    key=lambda s: (-_plan_area(s.outline), s.tag))
+    bands, claimed = [], []
+    for other in owners:
+        hit = axis.intersection(Polygon(other.outline))
+        for part in getattr(hit, "geoms", [hit]):
+            if part.is_empty or part.geom_type != "LineString":
+                continue
+            ss = sorted(((p[0] - ax) * (bx - ax) + (p[1] - ay) * (by - ay)) / length
+                        for p in part.coords)
+            s0, s1 = ss[0], ss[-1]
+            for c0, c1 in claimed:
+                if c0 <= s0 < c1:
+                    s0 = c1
+                if c0 < s1 <= c1:
+                    s1 = c0
+            if s1 - s0 > 1e-3:
+                claimed.append((s0, s1))
+                if other.tag != footing.tag:
+                    bands.append((s0, s1, _base_of(model, other)))
+    return WallBase(base.top, base.rest, tuple(bands)) if bands else base
 
 
 def _bottom_mat_m(spec) -> float:
@@ -301,17 +336,21 @@ def _beam_row_ends(model, wall, joints) -> dict:
 
 def _beam_end_dowels(sink: Sink, spec, wall, cover: float, joints) -> None:
     """Each ``dowels`` bar is cast STRAIGHT in the footing, ``embedment`` back from its span
-    face (the cold joint), and projects a class-B lap into the beam. Oracle:
-    ``notes/sunken_garden_veneer_beam.md`` §6e."""
+    face (the cold joint), and projects its authored ``projection`` (else the class-B lap)
+    into the beam — a contact lap BESIDE the bottom bar, inboard of it, never on its
+    centreline. Oracle: ``notes/sunken_garden_veneer_beam.md`` §6e/§6j."""
     entries = [e for e in spec.bars if e.role == "dowels" and e.count and e.embedment]
+    bottom = next((e for e in spec.bars if e.role == "bottom-y" and e.count), None)
+    beside = BARS[bottom.bar].diameter_in * _IN if bottom else 0.0
     frame, _ext = wall_frame(wall, structure_layer(wall))
     inner, z = _beam_z(spec, frame, cover)
     for entry in entries:
         db = BARS[entry.bar].diameter_in * _IN
-        t0, t1 = frame.t0 + inner + db / 2, frame.t1 - inner - db / 2
+        t0, t1 = frame.t0 + inner + beside + db / 2, frame.t1 - inner - beside - db / 2
         ts = ([t0 + (t1 - t0) * i / (entry.count - 1) for i in range(entry.count)]
               if entry.count > 1 else [(t0 + t1) / 2])
-        lap = det.tension_lap_in(entry.bar, sink.fc_psi, sink.lap_class) * _IN
+        lap = (entry.projection.meters if entry.projection is not None
+               else det.tension_lap_in(entry.bar, sink.fc_psi, sink.lap_class) * _IN)
         for joint, limit, inward in (j for j in joints if j is not None):
             start = joint - inward * entry.embedment.meters
             start = max(start, limit) if inward > 0 else min(start, limit)
@@ -320,6 +359,38 @@ def _beam_end_dowels(sink: Sink, spec, wall, cover: float, joints) -> None:
                                       frame.world(joint + inward * lap, t, z)],
                               placed_m=abs(joint - start), lap_m=lap, hook_m=0.0,
                               hook_kinds=())
+
+
+def _lay_continuations(model, sink: Sink, spec, solid, cover: float) -> None:
+    """``BarSpec.continues_into``: a splice bar beside each bar end that a named pour abuts —
+    ``lap`` back along the bar, across both covers, ``lap`` on into the neighbour."""
+    from shapely.geometry import Point, Polygon
+
+    for entry in spec.bars:
+        if not entry.continues_into or entry.spacing is None:
+            continue
+        hosts = [(Polygon(s.outline), s) for s in model.solids
+                 if s.tag in entry.continues_into and not s.derived]
+        lap = det.tension_lap_in(entry.bar, sink.fc_psi, sink.lap_class) * _IN
+        db = BARS[entry.bar].diameter_in * _IN
+        laid = [b for b in sink.bars if b.role == entry.role and b.bar == entry.bar
+                and len(b.path) == 2]
+        for bar in laid:
+            for p, q in ((bar.path[0], bar.path[1]), (bar.path[1], bar.path[0])):
+                d = (p[0] - q[0], p[1] - q[1])
+                norm = math.hypot(*d) or 1.0
+                d = (d[0] / norm, d[1] / norm)
+                probe = Point(p[0] + d[0] * (cover + 0.02), p[1] + d[1] * (cover + 0.02))
+                host = next((s for poly, s in hosts if poly.contains(probe)), None)
+                if host is None:
+                    continue
+                element = model.plan.by_tag(host.tag)
+                far = cover + cover_m(model.plan, element,
+                                      getattr(element, "reinforcement", None)) + lap
+                side = (-d[1] * db, d[0] * db)
+                a = (p[0] - d[0] * lap + side[0], p[1] - d[1] * lap + side[1], p[2])
+                b = (p[0] + d[0] * far + side[0], p[1] + d[1] * far + side[1], p[2])
+                sink.straight(entry, a, b, lap_offset=(side[0] / db, side[1] / db, 0.0))
 
 
 def _contains(outline, x: float, y: float) -> bool:

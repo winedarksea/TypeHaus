@@ -30,10 +30,17 @@ _ROW_FROM_EDGE_M = 6 * _IN
 
 @dataclass(frozen=True)
 class WallBase:
-    """The pour a wall stands on: its top, and where a foot rests (atop its bottom mat)."""
+    """The pour a wall stands on: its top, and where a foot rests (atop its bottom mat).
+
+    ``bands``: ``(s0, s1, WallBase)`` stretches of the wall that stand on a DIFFERENT pour
+    (FT-SG-S under W2/E2's south 4'-10"); ``at(s)`` is the base under station ``s``."""
 
     top: float
     rest: float
+    bands: tuple = ()
+
+    def at(self, s: float) -> WallBase:
+        return next((b for s0, s1, b in self.bands if s0 - 1e-6 <= s <= s1 + 1e-6), self)
 
 
 @dataclass
@@ -131,11 +138,12 @@ def lay_wall(sink: Sink, spec, wall, cover: float, openings,
             a, b = rng[0] + cover, rng[1] - cover
             if entry.role == "vertical" and entry.spacing is not None:
                 hooked = base is not None and bool(entry.hooks) and "start" in entry.hooks
-                z_start = base.rest + db / 2 if hooked else frame.z0 + cover
                 foot = _d3(_scale(frame.n, -inward if face == "exterior" else inward)) \
                     if hooked else None
-                anchor = _anchorage(sink, entry, base, z_start, db) if hooked else None
                 for s in fence(a + db / 2, b - db / 2, entry.spacing.meters):
+                    here = base.at(s) if hooked else None
+                    z_start = here.rest + db / 2 if hooked else frame.z0 + cover
+                    anchor = _anchorage(sink, entry, here, z_start, db) if hooked else None
                     zt = top_at(s) - cover
                     runs = _cut(z_start, zt, s, holes, cover, vertical=True)
                     for k, (z_lo, z_hi) in enumerate(runs):

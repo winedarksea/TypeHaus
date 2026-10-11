@@ -63,7 +63,9 @@ def test_inputs_are_the_concrete_layer_and_the_drawn_wythe(record) -> None:
     assert inputs["bearing"] == pytest.approx(42.0)
     assert inputs["wythe_load"] == pytest.approx(268.86, abs=0.01)
     assert inputs["self_weight"] == pytest.approx(221.875)
-    assert inputs["eccentricity"] == pytest.approx(4.1275, abs=1e-3)
+    # 4.1275" modelled + the authored 1/4" bearing tolerance (2026-10-11, note §6j)
+    assert inputs["eccentricity"] == pytest.approx(4.3775, abs=1e-3)
+    assert inputs["bearing_tolerance"] == pytest.approx(0.25)
     assert (inputs["bottom_bars"], inputs["top_bars"]) == (2.0, 2.0)
     assert inputs["end_fixity"] == 0.0
     assert rec.scope is Scope.SCREENING
@@ -87,14 +89,14 @@ def test_strength_rows_reproduce_the_hand_pass(record) -> None:
 
 
 def test_torsion_is_below_the_threshold_and_its_detailing_is_not_owed(record) -> None:
-    """§6j: Tu 1.4 × 268.86 × (4.1275/12) × 12.172/2 = 787.9 ft-lb against φT_th 842.5,
-    d/c 0.935 — §22.7.4.1 lets it be neglected, so no hoop, side-bar or Al rows exist and
-    Vu 4,181 is under §9.6.3.1's 8,949 Av,min trigger."""
+    """§6j: Tu 1.4 × 268.86 × ((4.1275 + 0.25)/12) × 12.172/2 = 835.7 ft-lb against φT_th
+    842.5, d/c 0.992 at the drawn ±1/4" bearing tolerance — §22.7.4.1 lets it be neglected,
+    so no hoop, side-bar or Al rows exist and Vu 4,181 is under §9.6.3.1's 8,949 Av,min trigger."""
     _, rec = record
     tors = _state(rec, "torsion below the §22.7.4.1 threshold")
-    assert tors.demand == pytest.approx(787.9, abs=0.1)
+    assert tors.demand == pytest.approx(835.7, abs=0.1)
     assert tors.capacity == pytest.approx(842.5, abs=0.1)
-    assert tors.ratio == pytest.approx(0.935, abs=1e-3)
+    assert tors.ratio == pytest.approx(0.992, abs=1e-3)
     trigger = _state(rec, "shear below the Av,min trigger")
     assert trigger.capacity == pytest.approx(8949.3, abs=0.5) and trigger.ok
     names = {s.name for s in rec.limit_states}
@@ -261,3 +263,28 @@ def test_the_count_accessor_leaves_the_spacing_accessor_refusing_counts(catlin_p
     assert bar_for_roles(beam.reinforcement, ("bottom-y",)) is None
     assert bar_count_for_roles(beam.reinforcement, ("bottom-y",)) == (5, 2, 1)
     assert bar_count_for_roles(beam.reinforcement, ("horizontal",)) is None
+
+
+def test_the_cage_is_laid_to_its_two_placements(catlin_model_ro) -> None:
+    """§6j, as laid (2026-10-11): no tie enters the FT-SG-W1/E1 toes poured a placement
+    earlier; each dowel laps BESIDE its bottom bar (contact, one db inboard), never on its
+    centreline; and the authored 12" + 30" dowel is what is laid, not the 27.58" minimum."""
+    m = catlin_model_ro
+    bars = next(s for s in m.rebar if s.host_tag == "W-SG-BRKBM").bars
+    toes = [s for s in m.solids if s.tag in ("FT-SG-W1", "FT-SG-E1")]
+    xs = sorted(x for s in toes for x in (min(p[0] for p in s.outline),
+                                         max(p[0] for p in s.outline)))
+    w_face, e_face = xs[1], xs[2]  # the two inner toe faces, 11'-0" apart
+    assert (e_face - w_face) / 0.3048 == pytest.approx(11.0, abs=0.01)
+    ties = [b for b in bars if b.role == "ties"]
+    assert len(ties) == 12
+    for b in ties:
+        assert all(w_face < p[0] < e_face for p in b.path)
+    dowels = [b for b in bars if b.role == "dowels"]
+    bottom = [b for b in bars if b.role == "bottom-y"]
+    assert len(dowels) == 4 and len(bottom) == 2
+    for d in dowels:
+        assert d.placed_length_m / 0.0254 == pytest.approx(12.0, abs=0.01)
+        assert d.lap_length_m / 0.0254 == pytest.approx(30.0, abs=0.01)
+        gaps = [abs(d.path[0][1] - b.path[0][1]) / 0.0254 for b in bottom]
+        assert min(gaps) == pytest.approx(0.625, abs=0.001)  # one #5 diameter: contact

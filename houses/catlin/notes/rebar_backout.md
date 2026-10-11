@@ -687,3 +687,14 @@ of the day before. The design is unchanged; the steel follows the demand more cl
 
 Footing #5 170 → **179** pieces / **1,465.9** lb; foundation wall #3 **25.7** lb. Net from
 before 2026-10-10: **+148.2 lb** (+312.7 in the footings, −164.1 in the beam).
+
+### Same day, after review — splices, and the beam cage as placed
+
+Total **6,586.0 lb / 1,125 pieces** (+58.1 / +17):
+
+- FT-SG-W2/E2's 6 #4 each carry a 50.1" splice bar across both of their joints, into
+  FT-SG-W1/E1 and FT-SG-S (free body §11m.2): 24 bars, footing #4 24 → **48** / **234.9** lb.
+- W-SG-BRKBM's ties stay out of the toes, 19 → 12, foundation wall #3 **16.2** lb (veneer
+  note §6j).
+- Its dowels are laid at the authored 30" projection, and W2/E2's south verticals foot on
+  FT-SG-S's #5 mat: foundation wall #5 **1,311.7** lb.

@@ -351,7 +351,10 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
     clear_ft = (e_bear.u0 - w_bear.u1) / _M_PER_IN / 12.0
     bearing = ((w_bear.u1 - own.u0) + (own.u1 - e_bear.u0)) / 2.0 / _M_PER_IN
     self_plf = CONCRETE_UNIT_WEIGHT_PCF * width * depth / 144.0
-    ecc = ecc_num / wythe_plf / _M_PER_IN
+    tolerance = getattr(beam, "bearing_tolerance", None)
+    tol_in = tolerance.inches if tolerance is not None else 0.0
+    ecc_model = ecc_num / wythe_plf / _M_PER_IN
+    ecc = ecc_model + tol_in
     hoop_bar, hoop_s = hoop
     hoop_d, bot_bar = BARS[hoop_bar].diameter_in, BARS[bottom[0]]
     screen = check_veneer_beam(
@@ -443,6 +446,7 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
             Quantity("wythe_load", wythe_plf, "plf", 1.0),
             Quantity("self_weight", self_plf, "plf", 1.0),
             Quantity("eccentricity", ecc, "in", 0.0625),
+            Quantity("bearing_tolerance", tol_in, "in", 0.0625),
             Quantity("fc", fc, "psi", 1.0),
             Quantity("cover", cover, "in", 0.0625),
             Quantity("bottom_bars", float(bottom[1]), "count", None),
@@ -458,7 +462,9 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
             f"LOAD: {wythe_plf:.2f} plf of masonry (its assembly's density x height, openings "
             f"not deducted) + {self_plf:.2f} plf of beam at {CONCRETE_UNIT_WEIGHT_PCF:.0f} pcf, "
             f"at {DEAD_LOAD_FACTOR}D. SECTION is the concrete layer only, {width:.2f}\".",
-            f"TORSION: Tu {screen.factored_torsion_ftlb:,.0f} ft-lb at e {ecc:.3f}\" is "
+            f"TORSION: Tu {screen.factored_torsion_ftlb:,.0f} ft-lb at e {ecc:.3f}\""
+            + (f" (modelled {ecc_model:.3f}\" + the {tol_in:g}\" bearing tolerance)"
+               if tol_in else "") + " is "
             f"{screen.factored_torsion_ftlb / threshold:.2f}x φT_th ({threshold:,.0f}), so "
             + ("§9.6.4 detailing is owed and graded; it is designed in equilibrium, so the "
                "garden slab bearing §22.7.3.2 would need is not relied on." if torsion else

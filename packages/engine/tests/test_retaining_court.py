@@ -627,3 +627,57 @@ def test_the_restrained_walls_stay_in_the_engineering_suite(catlin_plan) -> None
     model, _ = resolve(catlin_plan)
     tags = set(enumerate_walls(EngineeringContext(plan=catlin_plan, model=model)))
     assert tags == {"W-SG-E2", "W-SG-S", "W-SG-W2"}
+
+
+def test_staged_backfill_holds_at_half_a_wall_of_difference(catlin_plan) -> None:
+    """Free body §13 (2026-10-11), the AN-SG-BACKFILL rule. Each retained side at fill fraction f
+    of its H: at-rest earth ½ K0 (H f)² (no apron surcharge yet), heel soil to the fill line (H
+    f − 1' of footing), the stem and footing whole. W1/E1 stand EMPTY until the porch braces
+    them (IRC R404.1.7) and slide with the U:
+    2 x 10.443' x (5,974.8 − 3 x 9.12 x 110 = 2,965.2 plf) x 0.35 = 21,676 lb.
+    Grid of twelfths, 110 pcf:
+
+    * no side more than H/2 above another: worst FS 1.64 (one side at half, two full);
+    * one side empty, two full: 1.37 — not a slide, and not 1.5: the rule forbids it;
+    * the three-wall loop alone at H/2: 1.31, which is why W1/E1 are named.
+    """
+    import dataclasses
+    import itertools
+    import math
+
+    from typehaus.engineering.registry import EngineeringContext
+    from typehaus.engineering.retaining_system import _free_body, _loops, _members
+    from typehaus.engineering.soil import presumptive
+    from typehaus.resolve import resolve
+
+    model, _ = resolve(catlin_plan)
+    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
+    full, missing = _members(ctx, _loops(ctx)["W-SG-ARCH"], soil=presumptive("GM"),
+                             soil_pcf=110.0)
+    assert not missing
+    # Earth only: the raised apron whose surcharge the completed record adds (§4c) is built
+    # after the backfill, so no stage carries it.
+    efp = presumptive("GM").at_rest_efp_psf_per_ft
+    h, heel, stem, pcf = 10.12, 3.0, 9.12, 110.0
+    north = 2 * 10.443 * (5_974.8 - heel * stem * pcf) * 0.35
+    assert north == pytest.approx(21_676, abs=1)
+
+    def fs(fills, credit):
+        staged = [dataclasses.replace(
+            m, thrust_plf=0.5 * efp * (h * f) ** 2,
+            weight_plf=m.weight_plf - heel * stem * pcf + heel * max(0.0, h * f - 1.0) * pcf)
+            for m, f in zip(full, fills, strict=True)]
+        demand, capacity, _ = _free_body(staged)
+        # equal side fills with S empty cancel outright: nothing to slide
+        return (capacity + credit) / demand if demand > 1.0 else math.inf
+
+    grid = [i / 12 for i in range(13)]
+
+    def worst(rule, credit):
+        return min(fs(c, credit) for c in itertools.product(grid, repeat=len(full))
+                   if max(c) - min(c) <= rule + 1e-9 and max(c) > 0)
+
+    assert worst(0.5, north) == pytest.approx(1.64, abs=0.01)
+    assert worst(0.5, north) >= 1.5
+    assert worst(1.0, north) == pytest.approx(1.37, abs=0.01)
+    assert worst(0.5, 0.0) == pytest.approx(1.31, abs=0.01)

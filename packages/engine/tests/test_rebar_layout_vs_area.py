@@ -59,6 +59,13 @@ def _solid_area_m2(model, solid, cover_m: float = 0.0) -> float:
     return area
 
 
+def _leaves(bar, solid) -> bool:
+    from shapely.geometry import Point, Polygon
+
+    ring = Polygon(solid.outline).buffer(1e-3)
+    return any(not ring.contains(Point(p[0], p[1])) for p in bar.path)
+
+
 def test_every_spaced_role_is_within_one_bar_per_layer_of_area_over_spacing(
         catlin_model_ro) -> None:
     model = catlin_model_ro
@@ -71,7 +78,11 @@ def test_every_spaced_role_is_within_one_bar_per_layer_of_area_over_spacing(
         placed: dict[str, float] = defaultdict(float)
         longest: dict[str, float] = defaultdict(float)
         wall = model.wall(rebar_set.host_tag)
+        host = None if wall is not None else next(
+            s for s in model.solids if s.tag == rebar_set.host_tag)
         for bar in rebar_set.bars:
+            if host is not None and _leaves(bar, host):
+                continue  # a ``continues_into`` splice: it bills, the area never knew it
             below = 0.0
             if wall is not None and bar.role == "vertical":
                 below = max(0.0, wall.z0_m - min(p[2] for p in bar.path))

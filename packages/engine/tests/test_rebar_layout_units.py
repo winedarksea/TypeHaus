@@ -223,6 +223,21 @@ def test_a_hooked_vertical_runs_from_the_pour_below_and_records_its_anchorage() 
         assert abs(bar.path[0][2] - bar.path[1][2]) < 1e-9  # the foot is level
 
 
+def test_a_banded_base_rests_each_foot_on_the_mat_under_its_own_station() -> None:
+    """A wall straddling two footings (W2's south 4'-10" on FT-SG-S): each vertical's foot
+    rests on the mat of the footing under ITS station, not the one ``Footing.under`` names."""
+    sink = _sink()
+    other = WallBase(top=0.0, rest=-7.75 * _IN)
+    base = WallBase(top=0.0, rest=-8 * _IN, bands=((60 * _IN, 120 * _IN, other),))
+    entry = BarSpec(role="vertical", bar=5, spacing=inch(12), face="exterior", hooks=("start",))
+    lay_wall(sink, _spec(entry), _wall(), 2 * _IN, (), base)
+    for bar in sink.bars:
+        s = bar.path[1][0] / _IN
+        rest = -7.75 if s >= 60 else -8.0
+        assert bar.path[1][2] / _IN == pytest.approx(rest + 0.3125), s
+        assert bar.embedment_m / _IN == pytest.approx(-rest)
+
+
 @pytest.mark.parametrize("turn, sign", [(None, -1.0), ("up", 1.0), ("down", -1.0)])
 def test_a_beam_top_row_hook_turns_as_authored(turn, sign) -> None:
     """``BarSpec.hook_turn``: ``None`` keeps the top row's hooks turned down into the section;

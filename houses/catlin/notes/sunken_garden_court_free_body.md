@@ -1472,6 +1472,42 @@ it is still plain (§8, D9).
 
 ---
 
+### 8c. The strut stays plain, on its fibre: the lifetime cases (2026-10-11, owner)
+
+A review asked whether 0.512 in compression establishes a member that lives its life in
+compression. The owner's position is to keep W-SG-ARCH plain on `EXPOSED_MIX`, which already
+carries macro-synthetic fibre at 4 lb/cy, and to add galvanized bar only if the fibre is not
+enough. Each case, and what it asks of the strut:
+
+- **Permission.** ACI 318-19 §14.1.3(a): plain concrete is permitted in a member
+  continuously supported by soil. The strut bears on FB-SG-ARCH over its full length. D9 is
+  not an exception being leaned on.
+- **Shrinkage and temperature cracking.** It will crack; a 17' plain member cast on stone
+  does. Macro-synthetic fibre at this dose is what ACI 544.4R recognises in place of
+  shrinkage/temperature mesh: it holds a crack tight. It is not a tension tie, and nothing
+  here asks it to be one.
+- **A crack under service.** The loop pushes the strut together whenever soil stands
+  against W2/E2. A crack closes and bears on its own rough faces; strength is the 0.512
+  section. Lateral buckling at a crack is not available to a member bedded in stone with
+  the court floor's fill over it.
+- **Winter E-W tension** (§11m.2, last paragraph). The court shrinking toward its own
+  centreline puts at most 75,443 lb across x 216". W-SG-S's 23 horizontals carry all of it
+  at **0.304** with the strut and the veneer beam given nothing. A strut cracked open in
+  winter loses nothing the design needs.
+- **Settlement.** Differential settlement along a bedded strut puts flexure in it and
+  cracks it. That is the "crack under service" case again: the crack hinges, the loop
+  re-seats, the strut keeps carrying compression. The bed is FB-SG-ARCH's 42" of compacted
+  NFS stone, the same section as every footing in the court.
+
+**What would make fibre not enough, and would need bar.** Any of these:
+
+1. the strut is made the court's E-W tie, for instance if W-SG-S's horizontals are cut;
+2. it loses its bedding (a void, a trench crossing it);
+3. it has to resist bending in its own right, such as a load on it from above or a cantilevered
+   end.
+
+None is designed. If one ever is, the cheap answer is 2 #5 lapped into FT-SG-W2/E2, about 40 lb.
+
 ## 9. What this note does NOT do
 
 Inherited from `sunken_garden_retaining_screening.md` §5, all still open, plus what this pass
@@ -2468,6 +2504,20 @@ joint is permitted at y −132"** (`AN-SG-PLACEMENTS`; owner-confirmed 2026-09-2
 section's 0.208 governs there. A joint would leave that section with nothing; lapping the
 6 #4 through would read 0.571, and no bar is lapped because none is needed.
 
+> **2026-10-11: they are lapped now.** The 0.208 is a flexural stress limit read for direct
+> tension. It keeps the joint whole only while it stays uncracked, and restraint cracking
+> (this very case) does not ask. FT-SG-W2/E2's 6 #4 now each carry a splice bar across both
+> of their joints (`BarSpec.continues_into`, owner): a 22.06" class B lap on the W2 side,
+> through both 3" covers, and 22.06" on into W1/E1 or FT-SG-S. That is 50.1" per bar, 24
+> bars, +67.0 lb. The joint is graded cracked, like the run:
+>
+> ```
+> joint, spliced   37,015 / (0.9 x 6 x 0.20 x 60,000 = 64,800)                     d/c 0.571 ✓
+> ```
+>
+> Into FT-SG-S the splice is developed straight in a footing that is the same placement and
+> carries #5 @ 9" the same way, rather than lapped bar to bar.
+
 **Sensitivity on μ** — the one estimated input. 0.35 is IBC Table 1806.2's sliding value, a
 lower bound where sliding is the question and the wrong side of this one; T grows with μ. The
 run reaches 1.0 at **μ 0.531**, the joint at **μ 1.27**; at ACI 360R-92 §6.3's subgrade-drag F =
@@ -2680,6 +2730,63 @@ no stone, μ 0.25 (0.25 × (278,593 + 24,535)) / 56,210.2          = 1.35    (gr
 
 The no-stone row is still short of 1.50 (§5 stands): the bed is still the margin. What changed
 is that the corner squares are real concrete now, not a gap the free body happened to ignore.
+
+## 13. Staged backfill — the court is a structure while it is being filled (2026-10-11)
+
+§4's FS 1.735 is the completed court: all three retained sides full, the heel soil on all
+three footings. While it is being backfilled, neither half of that is true. A review screened
+E2 and S full with W2 empty at FS ≈ 1.06. The owner's brief for the answer is that it must be
+safe at a hand-wavy level, "half in on one side, then the other", because a crew will not
+follow a lift schedule to the inch.
+
+**Method.** This is §4's rigid-body sum. It takes the same members and directions from the
+engine (`retaining_system._members`, 110 pcf, at-rest 60 psf/ft, μ 0.35 on the bed), with
+each retained side at fill fraction f of its H = 10.12':
+
+```
+thrust      ½ × 60 × (H f)²            earth only — the raised apron (§4c) comes later
+weight      stem + footing whole; heel soil 3' × max(0, H f − 1') × 110
+```
+
+**What else slides with the U.** W1+W2 and E1+E2 are each one pour, now spliced through the
+joint (§11m.2), with BRKBM between their north ends. W1/E1 cannot take backfill until the
+porch beams brace their tops (IRC R404.1.7 — they are designed braced, #6 @ 38"), so during
+the court's backfill they stand EMPTY and add weight only:
+
+```
+2 × 10.443' × (5,974.8 − 3 × 9.12 × 110 = 2,965.2 plf) × 0.35          = 21,676 lb
+```
+
+Dragging W1 sideways with W2 is a shear across the W1|W2 section: the 84" x 12" footing plus
+the 12" stem, about 2,300 in² of one placement. The 10.8 kip asked of it is negligible.
+BRKBM and the corner squares (§12b) are not credited.
+
+**Results** (grid of twelfths of H on each of W2, S, E2; worst stage under each rule):
+
+| rule: no side more than … above another | loop alone | + W1/E1 empty |
+|---|---|---|
+| H/4, 2'-6" | 1.56 | 1.92 |
+| H/3, 3'-4" | 1.47 | 1.82 |
+| **H/2, 5'-0" — "half one side, then the other"** | 1.31 | **1.64** |
+| anything (one side empty, two full) | 1.08 | 1.37 |
+
+At 130 pcf the half rule reads 1.76; 110 governs, as in §4. On the site's own soil (μ 0.25,
+no bed) the half rule would be ~1.17. That is §5 again: the bed is the margin, at every stage.
+
+**The rule on the drawing (`AN-SG-BACKFILL`).**
+
+- W2, S and E2 go up together, and no one of them stands more than half its height (5'-0")
+  above another.
+- W1/E1 are not backfilled until braced.
+- Nothing is backfilled before the strut and footings have cured.
+
+That is safe at **1.64**. One side left empty while the others are full is 1.37: it does not
+slide, but it is not a design state, and the rule forbids it in words a crew can carry. No
+temporary bracing is needed. Bracing W2 to E2 across the court would add nothing in any
+case: the U already slides as one body, and a brace adds no friction.
+
+`test_retaining_court.test_staged_backfill_holds_at_half_a_wall_of_difference` reproduces
+the three key rows from the engine's members.
 
 ## Sources
 

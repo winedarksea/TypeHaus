@@ -49,8 +49,10 @@ _PATH = {
     "court sliding under break thrust": (0.0, 71_474.1, 0.0),
 }
 # §11m: the exact beam-on-bed solution (transfer matrices, not FE) and the winter bound.
+# The W1|W2 / E1|E2 joints were graded plain (44.07 psi vs 212.13, 0.2077) until 2026-10-11,
+# when FT-SG-W2/E2's 6 #4 were spliced across them: now 6 splice bars, cracked, as the run.
 _WINTER = {"court winter tension, side run": (37_015.11, 64_800.0, 0.5712),
-           "court winter tension, unreinforced joint": (44.0656, 212.132, 0.2077)}
+           "court winter tension, spliced joint": (37_015.11, 64_800.0, 0.5712)}
 _LINE = {"house near-line plan flexure": (46_396.3, 84_852.81, 0.5468),
          "house near-line plan shear": (1_405.4, 6_788.23, 0.2070),
          "house slab-edge peak sustained load": (22.6527, 33.33, 0.6796), **_WINTER}
@@ -454,9 +456,11 @@ def test_the_line_solver_is_hetenyi_far_from_its_ends() -> None:
     assert p / 2.0 <= shear <= p / 2.0 * 1.01
 
 
-def test_no_bar_crosses_the_court_side_joint(records) -> None:
-    """§11m.2: 6 #4 in each braced run, and none across W1|W2 / E1|E2 — graded plain there."""
+def test_the_court_side_joint_is_spliced(records) -> None:
+    """§11m.2 (2026-10-11): 6 #4 in each braced run, and 6 #4 splice bars across W1|W2 /
+    E1|E2 (``BarSpec.continues_into``), so the joint is graded cracked, not plain."""
     record = records["TB-SG-W1"]
     assert _input(record, "winter_tension_steel") == pytest.approx(1.20)
-    assert _input(record, "winter_joint_section") == pytest.approx(840.0)
-    assert any(n.startswith("WINTER JOINT") and "-132.0" in n for n in record.notes)
+    assert _input(record, "winter_joint_steel") == pytest.approx(1.20)
+    assert not any(n.startswith("WINTER JOINT") for n in record.notes)
+    assert not [s for s in record.limit_states if "unreinforced joint" in s.name]

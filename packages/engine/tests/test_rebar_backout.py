@@ -37,11 +37,11 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): (93, 121.1),
     ("column", "#5", "hdg-a767"): (80, 472.3),
-    ("footing", "#4", "hdg-a767"): (24, 167.9),
+    ("footing", "#4", "hdg-a767"): (48, 234.9),
     ("footing", "#5", "hdg-a767"): (179, 1465.9),
-    ("foundation wall", "#3", "hdg-a767"): (19, 25.7),
+    ("foundation wall", "#3", "hdg-a767"): (12, 16.2),
     ("foundation wall", "#4", "hdg-a767"): (283, 1610.1),
-    ("foundation wall", "#5", "hdg-a767"): (135, 1311.1),
+    ("foundation wall", "#5", "hdg-a767"): (135, 1311.7),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
     ("slab", "#3", "black"): (220, 237.3),
     ("slab", "#4", "black"): (43, 576.9),
@@ -83,8 +83,11 @@ _SCHEDULE = {
 # −139.2 lb, +9 pieces on 2026-10-11 (note addendum): FT-SG-S's E-W top bars only over
 # W2/E2's heels, 6'-6" each end (−134.4); its bottom bars straight (no hooks); W-SG-BRKBM
 # at 3" cover, smaller ties (−4.8).
-_TOTAL_LB = 6527.9
-_TOTAL_PIECES = 1108
+# +58.1 lb, +17 pieces the same day, the review (note addendum): FT-SG-W2/E2's #4 spliced
+# into W1/E1 and FT-SG-S (24 bars, +67.0); W-SG-BRKBM's ties kept out of the toes (19 -> 12,
+# −9.5); its dowels at the authored 30" projection, W2/E2's south feet on FT-SG-S's mat (+0.6).
+_TOTAL_LB = 6586.0
+_TOTAL_PIECES = 1125
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
 #: authoring steel may lift the tonnage into the register's band without opening it. Opening
@@ -233,5 +236,6 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # 47.4 on 2026-10-10 (note addendum): +287 lb in the court's corner footings and E-W mats
     # against −0.65 cy billed — the S/W2/E2 overlap no longer billed twice (−1.25), the corner
     # squares (+0.91), the ARCH strut at 12" x 12" (−0.31). 46.4 on 2026-10-11: FT-SG-S's
-    # top E-W bars confined to the heels (−139 lb, no concrete).
-    assert total_lb / total_cy == pytest.approx(46.40, rel=0.02)
+    # top E-W bars confined to the heels (−139 lb, no concrete); 46.8 after the review's
+    # splices (+58 lb).
+    assert total_lb / total_cy == pytest.approx(46.81, rel=0.02)

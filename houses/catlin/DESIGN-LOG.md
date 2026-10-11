@@ -4925,3 +4925,34 @@ surface that reaches the court, so the water goes there.
   - FT-SG-W2/E2's trim is declared in the reference equivalence test;
   - the elevation golden is blessed for W-SG-ARCH's move only (bottom 9" up, top 3 1/2" up,
     FB-SG-ARCH with it).
+
+### 2026-10-11 — Court rebar, after review: splices, staged backfill, the cage as placed
+
+A reviewer's five points and two follow-ups; owner decisions marked.
+
+- **Joint splices (owner: lap them).** FT-SG-W2/E2's 6 #4 each get a 50.1" splice bar across
+  both of their joints, into W1/E1 and FT-SG-S. The engine gained
+  `BarSpec.continues_into` to lay them. The W1|W2 / E1|E2 joints were graded as plain
+  concrete in tension at 0.208, an uncracked reading. They now grade cracked at 0.571, like
+  the runs. +67 lb.
+- **Staged backfill (owner: must survive "half one side, then the other").** The three-wall
+  loop alone reads FS 1.31 at a half-height difference, and 1.08 with one side empty. W1/E1
+  must stay empty until the porch braces them (IRC R404.1.7), and their concrete slides with
+  the U. Crediting it, the half rule holds at **1.64**. `AN-SG-BACKFILL` states the rule; no
+  bracing is needed. Free body §13, with a test.
+- **ARCH (owner: plain on fibre unless fibre is not enough).** It is enough: ACI §14.1.3(a)
+  (soil-supported), cracks close under the loop's compression, and winter tension rides the
+  S wall. Free body §8c names the three changes that would need bar.
+- **Brick tolerance (owner: ±1/4").** The torsion record now grades at e + 1/4" and reads
+  **0.992**. The drawing states the tolerance. It is now the whole margin.
+- **Heel bars (owner: keep full width).** The reviewer's ~128 lb of shorter top bars is
+  declined, for a two-way top mat and one bar mark per strip.
+- **Fixed without a decision.**
+  - W2/E2's south verticals now foot on FT-SG-S's mat (`_wall_base` bands each stretch of
+    a wall by the footing under it).
+  - BRKBM's ties no longer enter the toes (19 → 12).
+  - Its dowels lap beside the bottom bars instead of on their centreline, and are laid at
+    the authored 30", not the 27.58" minimum.
+  - The winter check grades a spliced joint as steel rather than skipping it.
+  - The beam's fingerprint now carries its bar sizes.
+- Steel 6,527.9 → **6,586.0 lb**.

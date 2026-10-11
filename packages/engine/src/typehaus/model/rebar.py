@@ -150,6 +150,11 @@ class BarSpec(HausModel):
     #: laitance removed, and is what earns μ = 1.0λ in shear friction; ``None`` or
     #: ``"not_roughened"`` is graded at 0.6λ.
     joint_surface: Literal["roughened", "not_roughened"] | None = None
+    #: Mat roles only: tags of pours placed WITH this one that this role carries on into. At
+    #: each bar end a named pour abuts, a splice bar is laid beside the bar — a class lap on
+    #: this side, through both covers, and a class lap past the joint into the neighbour —
+    #: so a joint the concrete makes continuous is not one the steel leaves open.
+    continues_into: tuple[str, ...] | None = None
     #: Prose the struct cannot hold — a hook, a stagger, a "top of footing to 6\" below
     #: grade". For the drawing; nothing grades it.
     note: str | None = None

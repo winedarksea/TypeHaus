@@ -94,6 +94,11 @@ def _schema_errors(ctx: CheckContext, element, spec):
         if e.zone is not None and e.role not in ("ties", "stirrups") and not (
                 e.role in _MAT and kind in ("Footing", "Pad", "Slab")):
             yield f"role {e.role} cannot take a zone"
+        if e.continues_into and (e.role not in _MAT or kind not in ("Footing", "Pad", "Slab")):
+            yield f"role {e.role} takes continues_into only as a footing/pad/slab mat role"
+        for tag in e.continues_into or ():
+            if ctx.plan.by_tag(tag) is None:
+                yield f"continues_into names {tag!r}, which is not in this plan"
         if e.hook_ties is not None and (e.role not in ("top-y", "bottom-y") or not e.hooks):
             yield f"role {e.role} takes hook_ties only as a hooked top-y/bottom-y row"
         if e.hook_turn is not None and (e.role not in ("top-y", "bottom-y") or not e.hooks):

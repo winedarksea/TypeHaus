@@ -855,6 +855,35 @@ against the 27.58" class B lap (ℓd 21.21 × 1.3; 0.919). A 3'-6" bar.
 | cover | 2" | 3" (2026-10-11) |
 | laid weight | 251.2 lb | **87.1 lb** (91.9 at 2" cover) |
 
+**The brick's placement tolerance is graded (2026-10-11).** The threshold margin above is
+6.5%, and the brick line could eat it. φT_th is reached at
+
+```
+e_max = 842.46 / (1.4 × 268.86/12 × 12.172/2) = 4.413"   — 0.286" past the modelled 4.128"
+```
+
+So the drawing states ±1/4" on W-B-BRICK's bearing line (`AN-SG-PLACEMENTS`), and the record
+grades at it (`FoundationWall.bearing_tolerance`):
+
+```
+Tu = 1.4 × 268.86 × (4.1275 + 0.25)/12 × 12.172/2 = 835.7 ft-lb       d/c 0.992
+```
+
+The tolerance IS the margin now. A looser tolerance, a heavier wythe or a longer span each
+put the torsion cage back. That trade was made knowingly; restoring the cage costs about
+100 lb.
+
+**As laid (2026-10-11).** The cage now matches its two placements:
+
+- The 12 #3 ties stop at the toe faces (19 were laid, 8 of them inside the toes, which are
+  poured a placement earlier).
+- Each dowel sits one #5 diameter inboard of its bottom bar: a contact lap, not a shared
+  centreline.
+- The dowel is laid at its authored 12" + 30", not cut back to the 27.58" minimum.
+
+The ties stay closed. An open U saves about 4 lb and would be a new stirrup shape in the
+engine for no structural gain. 78.5 lb laid.
+
 **What would undo this.** Taking the toes away (narrowing FT-SG-W1/E1, or a beam bottom raised
 above the footing top that leaves it bearing on a 7" lip) puts the span back to 17'-0" and Tu
 back to 1.35 φT_th; `test_without_the_toe_bearing_the_light_cage_would_not_do` shows the

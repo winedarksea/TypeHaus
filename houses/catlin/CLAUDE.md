@@ -2113,7 +2113,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `end_restraint`. The steel is 2 #5 bottom, 2 #4 straight hangers, #3 cage ties @ 12" (Vu is
   under §9.6.3.1's trigger), and 2 #5 dowels per end cast straight in the toe (§9.7.3.8.1,
   class B lap 27.58" in a 30" projection), at **3" cover**, since the soffit is cast on the bed.
-  The total is 87 lb; it was 251. Flexure 0.333; TMS ℓ/600 deflection 0.103.
+  The total is 78.5 lb; it was 251. Flexure 0.333; TMS ℓ/600 deflection 0.103. As laid: ties
+  only between the toe faces, and each dowel one db beside its bar (a contact lap).
+  - **Torsion is graded at the brick's ±1/4" bearing tolerance** (`bearing_tolerance` on the
+    beam; `AN-SG-PLACEMENTS` states it): **0.992**. The tolerance is the whole margin;
+    φT_th is reached at +0.286". A heavier wythe, a longer span or a looser tolerance puts
+    the torsion cage back (about 100 lb).
   - **What would undo it:** narrowing `FT-SG-W1`/`E1`'s toes, or raising the beam off them.
     Either puts the span back to 17'-0" and Tu to 1.35 φT_th, and
     `test_without_the_toe_bearing_the_light_cage_would_not_do` fails at once. So does moving
@@ -2212,6 +2217,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   shows) and bills in `prices.toml` `[concrete] "beam:SUNKEN_GARDEN_GRADE_BEAM_12"` at the court
   walls' rate. `size` keeps a decimal point (`12.0x12`) so `cross_section` reads actual
   dimensions. `W-SG-BRKBM` stays a wall because a `Beam` has no layers for its XPS break.
+- **FT-SG-W2/E2's #4 longitudinals are spliced across both of their joints** (into W1/E1 and
+  FT-SG-S; `BarSpec.continues_into`, 2026-10-11). The joint is graded cracked at 0.571, like
+  the run, not as plain concrete at 0.208. Do not take the splices out on the strength of
+  "one pour": restraint cracking is exactly the case they are for.
 - **W-SG-W1/W2 and E1/E2 are one pour each but stay two elements.** The halves differ in
   `lateral_support`, `unbalanced_fill`, reinforcement, `base_restraint_ref` and how far the
   dimpleboard runs, and nothing in the schema varies those along one wall. Merging would
@@ -2283,6 +2292,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   needs none (D9: pure compression). It was 12" x 17 1/2" and hung 9" below the footings
   until 2026-10-10; §8's three-reason block records why that section was held then.
   `W-SG-BRKBM` carries no court load — it is the veneer's thermal foundation only.
+  **It stays plain on `EXPOSED_MIX`'s macro fibre** (owner, free body §8c): ACI 318-19
+  §14.1.3(a) (continuously soil-supported), a crack closes under the loop's compression,
+  and the winter E-W tension rides W-SG-S's horizontals (0.304) with nothing from the strut.
+  It needs bar only if it becomes a tie, loses its bed, or is asked to bend.
+- **Backfill is a stage of the structure (`AN-SG-BACKFILL`, free body §13).** W2, S and E2 go
+  up together, no one more than half its height (5'-0") above another: worst FS **1.64**,
+  crediting W1/E1's concrete. W1/E1 stand empty until the porch braces them (IRC R404.1.7).
+  One side empty with two full is 1.37, and the three-wall loop alone at the half rule is
+  1.31. That is why W1/E1 are credited and why their empty state is part of the rule.
+  `test_staged_backfill_holds_at_half_a_wall_of_difference` holds the numbers.
 - **`W-SG-W1`+`W2` are ONE pour, and so are `E1`+`E2`** — one 12" section, one form height,
   placement 2. They are two elements because the restraint condition changes at `N-SG-MW` /
   `N-SG-ME`: braced top-and-bottom north, R404.4 base-restrained south. So does the steel —

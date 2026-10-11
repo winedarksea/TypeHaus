@@ -8,6 +8,7 @@ it the same way, ``T = F − 0.9·(K_a/K_0)·H`` shared by the side lines (the s
 active as the loop moves off it; 0.9 because it resists, ASCE 7-16 §2.3.1). Two sections:
 
 * each side run, cracked: the bars continuous along it, φ As fy (ACI 318-19 §21.2.2);
+* each joint whose bars are spliced across it: the crossing bars, cracked, φ As fy;
 * each joint between two runs that NO bar crosses: plain concrete, the footing alone at its
   thickness less 2" (§14.5.1.7) against φ 5 √f'c (§14.5.2.1, the only tension stress
   Chapter 14 lets plain concrete carry — read here for a direct tension, flagged).
@@ -100,7 +101,7 @@ def winter_rows(ctx, board, free_bodies: dict, soil, states, missing, inputs,
             f"{friction:,.0f} lb less {relax:.2f} x its retained soil {h:,.0f} lb "
             f"(K_a/K_0 {soil.active_efp_psf_per_ft:.0f}/{soil.at_rest_efp_psf_per_ft:.0f}, "
             f"x0.9 resisting) at {pcf:.0f} pcf = {total:,.0f} lb over {len(lines)} side lines")
-    runs, joints = [], []
+    runs, joints, spliced = [], [], []
     for members in lines.values():
         for lo, hi, wall, foot in members:
             solid = _footing(ctx, foot)
@@ -115,10 +116,12 @@ def winter_rows(ctx, board, free_bodies: dict, soil, states, missing, inputs,
                 continue
             solids = [s for s in (_footing(ctx, f0), _footing(ctx, f1)) if s is not None]
             band = [p[1 - board.ax] * _IN for s in solids for p in s.outline]
-            area, _n = _crossing_area(ctx, None, board.ax, h0, (min(band) - 1.0,
-                                                                max(band) + 1.0))
+            area, n = _crossing_area(ctx, None, board.ax, h0, (min(band) - 1.0,
+                                                               max(band) + 1.0))
             if area == 0.0:
                 joints.append((h0, w0, w1, f0, f1, solids))
+            else:
+                spliced.append((area, n, h0, f0, f1))
     if runs:
         area, n, wall, foot = min(runs)
         inputs.append(Quantity("winter_tension_steel", area, "in2", 0.0001))
@@ -129,6 +132,15 @@ def winter_rows(ctx, board, free_bodies: dict, soil, states, missing, inputs,
             f"{area:.3f} in², phi 0.90 x fy {REINFORCEMENT_FY_PSI:,.0f} (cracked, concrete "
             f"not credited). Rigid-plastic upper bound; valid while the friction NORTH of the "
             f"run is no more than {total:,.0f} lb (free body §11m.2)", combination="1.0T"))
+    if spliced:
+        area, n, at, f0, f1 = min(spliced)
+        inputs.append(Quantity("winter_joint_steel", area, "in2", 0.0001))
+        states.append(LimitState(
+            "court winter tension, spliced joint", demand,
+            PHI_TENSION * area * REINFORCEMENT_FY_PSI, "lb",
+            f"{head}; at the {f0}|{f1} joint ({at:.1f}\") {n} bars cross it (lapped splices, "
+            f"BarSpec.continues_into), As {area:.3f} in², phi 0.90 x fy — cracked, concrete "
+            f"not credited (free body §11m.2)", combination="1.0T"))
     graded = []
     for at, w0, w1, f0, f1, solids in joints:
         fc = min(fc_psi(concrete_spec_for(ctx.plan, ctx.plan.by_tag(t))) or 0.0

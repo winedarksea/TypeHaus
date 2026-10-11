@@ -140,6 +140,10 @@ class FoundationWall(Wall):
     #: Partial end fixity a SPANNING wall (a grade beam) gets from monolithic end joints.
     #: None is the honest default and means a simple span. Credited for serviceability only.
     end_restraint: EndRestraint | None = None
+    #: A SPANNING wall carrying a masonry wythe: how far the drawing lets that wythe be set
+    #: off its modelled bearing line. The veneer beam grades its torsion at the modelled
+    #: eccentricity PLUS this, so the tolerance printed is the one the record holds to.
+    bearing_tolerance: Length | None = None
 
 
 class CrushedStoneSpec(HausModel):

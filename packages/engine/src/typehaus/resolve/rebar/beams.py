@@ -83,7 +83,11 @@ def lay_beam(sink: Sink, entries, frame: LinearFrame, cover: float,
     for entry in entries:
         db = BARS[entry.bar].diameter_in * _IN
         if entry.role in ("ties", "stirrups") and entry.spacing is not None:
-            a, b = frame.s0 + cover, frame.s1 - cover
+            # A bottom row stopping at a cold joint marks concrete poured BEFORE this member
+            # (a footing toe it bears on): no hoop is cast into it.
+            joint = ends.get("bottom-y", (None, None))
+            a = frame.s0 + cover if joint[0] is None else max(frame.s0, joint[0]) + cover
+            b = frame.s1 - cover if joint[1] is None else min(frame.s1, joint[1]) - cover
             positions = fence(a, b, entry.spacing.meters)
             if entry.zone is not None:
                 zone = entry.zone.meters

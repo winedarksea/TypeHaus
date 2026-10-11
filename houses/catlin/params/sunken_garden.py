@@ -969,6 +969,9 @@ WALLS = [
                    top_elevation=_veneer_beam_top, bottom_elevation=_veneer_beam_bottom,
                    unbalanced_fill=inch(0),
                    lateral_support="top_and_bottom",
+                   # ±1/4" on W-B-BRICK's bearing line (AN-SG-PLACEMENTS); torsion is graded
+                   # at e + 1/4" = 0.99 φT_th, so the tolerance is the whole margin.
+                   bearing_tolerance=inch(0.25),
                    reinforcement=_VENEER_BEAM_STEEL),
     # Garden retaining run (to just above grade), the U south of the porch.
     #
@@ -1275,9 +1278,21 @@ _SOUTH_FOOTING_MAT = _RETAINING_FOOTING_MAT.model_copy(update={"bars": (
 # offset (positive = into the court, see above) is half the extension.
 _SOUTH_EXT_IN = SPEC.south_toe_extension_in
 _STRIP = (_RETAINING_FOOTING_WIDTH_IN, _RETAINING_FOOTING_OFFSET_IN, _RETAINING_FOOTING_MAT)
+# FT-SG-W2/E2's longitudinal #4s are spliced across both of their joints (2026-10-11, free
+# body §11m.2): into W1/E1 (one pour, no cold joint — but restraint cracking does not ask)
+# and into FT-SG-S. Each splice is a class B lap beside the bar, through both covers, and a
+# class B lap on into the neighbour, so the side line keeps a steel tie after it cracks.
+def _spliced_mat(*into: str) -> ReinforcementSpec:
+    bars = tuple(b.model_copy(update={"continues_into": into}) if b.role == "bottom-y" else b
+                 for b in _RETAINING_FOOTING_MAT.bars)
+    return _RETAINING_FOOTING_MAT.model_copy(update={"bars": bars})
+
+
 _STRIP_BY_WALL = {
     "W-SG-S": (_RETAINING_FOOTING_WIDTH_IN + _SOUTH_EXT_IN,
                _RETAINING_FOOTING_OFFSET_IN + _SOUTH_EXT_IN / 2.0, _SOUTH_FOOTING_MAT),
+    "W-SG-W2": _STRIP[:2] + (_spliced_mat("FT-SG-W1", "FT-SG-S"),),
+    "W-SG-E2": _STRIP[:2] + (_spliced_mat("FT-SG-E1", "FT-SG-S"),),
 }
 
 # ** FT-SG-S OWNS THE TWO SOUTH CORNERS (2026-10-10, free body §12b). ** Each strip used to
@@ -3116,7 +3131,7 @@ BALCONY_REAR_FLASH = Flashing(
 SEQUENCE_NOTES = [
     Annotation(
         uid="SGAN01AAAA", tag="AN-SG-PLACEMENTS", position=pt(ft(_cx), ft(-20)),
-        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND STRUT: the five strip footings FT-SG-W1/E1/W2/E2/S and the 12in x 12in strut W-SG-ARCH in one placement, all on one bed plane — the court loop is closed before any wall is formed. The court has no column pads since 2026-09-22 — the porch spans wall to wall on two ledgers — so nothing in this court is dug below the wall beds. (2) WALLS AND VENEER BEAM: all five court walls and W-SG-BRKBM, one form height (every wall top is the porch datum 0ft 0in), one strip-and-set. W-SG-BRKBM IS CAST MONOLITHIC WITH THE TWO SIDE WALLS, NOT DOWELLED INTO THEM (settled 2026-09-14): it is a blockout inside this same form between -8ft 6-7/16in and -10ft 0-3/16in, bearing on FT-SG-W1/E1's toes and spanning the 11ft 0in between them; its 2 #4 hangers run straight into the walls and its 2 #5 bottom bars lap the dowels cast in the toes. It was named in NO placement until now, while notes/sunken_garden_veneer_beam.md called it cast in one section and chipped-and-dowelled in another - and there is no existing pour to chip, because this placement is where those side walls are themselves cast. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — every thermal-break blockout is set against its face (AN-SG-BLOCKOUTS; the dowels that once needed it are deleted). (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all four 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
+        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND STRUT: the five strip footings FT-SG-W1/E1/W2/E2/S and the 12in x 12in strut W-SG-ARCH in one placement, all on one bed plane — the court loop is closed before any wall is formed. FT-SG-W2/E2's 6 #4 longitudinals are spliced across both of their joints, into FT-SG-W1/E1 and into FT-SG-S (a 50in #4 splice bar beside each, class B each side). The court has no column pads since 2026-09-22 — the porch spans wall to wall on two ledgers — so nothing in this court is dug below the wall beds. (2) WALLS AND VENEER BEAM: all five court walls and W-SG-BRKBM, one form height (every wall top is the porch datum 0ft 0in), one strip-and-set. W-SG-BRKBM IS CAST MONOLITHIC WITH THE TWO SIDE WALLS, NOT DOWELLED INTO THEM (settled 2026-09-14): it is a blockout inside this same form between -8ft 6-7/16in and -10ft 0-3/16in, bearing on FT-SG-W1/E1's toes and spanning the 11ft 0in between them; its 2 #4 hangers run straight into the walls, its 2 #5 bottom bars lap (contact, beside them) the 2 #5 dowels cast in each toe, and its #3 cage ties stop at the toe faces. LAY W-B-BRICK'S FIRST COURSE ON ITS DRAWN BEARING LINE WITHIN +/-1/4in: the beam carries no torsion steel, and is graded at that tolerance (0.99 of the ACI 318-19 22.7.4.1 threshold). It was named in NO placement until now, while notes/sunken_garden_veneer_beam.md called it cast in one section and chipped-and-dowelled in another - and there is no existing pour to chip, because this placement is where those side walls are themselves cast. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — every thermal-break blockout is set against its face (AN-SG-BLOCKOUTS; the dowels that once needed it are deleted). (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all four 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
     Annotation(
         uid="SGAN02AAAA", tag="AN-SG-MIX", position=pt(ft(_cx), ft(-23)),
         text="ONE TICKET: every placement in this court specifies EXPOSED_MIX (5,000 psi, w/cm <= 0.40, class F3+C2 air entrainment and SCM caps). The two column pads that specified BURIED_MIX (PIER_BASE_12) were retired with the porch's centre line on 2026-09-22, so there is no substitution left to permit: supply the whole court from one ticket"),
@@ -3127,6 +3142,10 @@ SEQUENCE_NOTES = [
     Annotation(
         uid="SGAN04AAAA", tag="AN-SG-BLOCKOUTS", position=pt(ft(_cx), ft(-29)),
         text="THERMAL-BREAK BLOCKOUTS — NO BOARD IS CAST AGAINST (basis 7, free body 11j). Every court face that meets an isolation board is formed against a greased, pull-rodded blockout of the board's own thickness, stripped, and the board set into the slot afterwards: TB-SG-W1/E1 2-1/2in x 8in x 84in (placement 1, left in until the walls strip), TB-SG-W1/E1-STEM 2-1/2in x 12in x 9ft 1-7/16in and W-SG-BRKBM's 2in x 17-3/4in x 19ft 0in (placement 2, the beam's pulled up out of the bedding-stone side). Boards are set after the walls are stripped, before backfill, and the owner walks the empty slots first (inspection break_blockouts_stripped). The board is FOAMULAR-class XPS as scheduled; nothing holds it but the slot. A board cast against the pour locks in its fresh-concrete squeeze for good — the beam's alone was 41,162 lb — and puts the house's slab edge and global sliding back over"),
+    # Minted 2026-10-11 with typehaus.model.ids.new_uid(). Free body §13.
+    Annotation(
+        uid="90QCKCV758", tag="AN-SG-BACKFILL", position=pt(ft(_cx), ft(-32)),
+        text="BACKFILL IS A STAGE OF THE STRUCTURE (free body 13). The court resists sliding as one U, W1+W2 / S / E1+E2 with the strut, and only reaches FS 1.73 when ALL THREE retained sides are full. (a) W-SG-W2, W-SG-S and W-SG-E2 are backfilled TOGETHER in lifts: no one of the three may stand more than HALF ITS HEIGHT (5ft 0in) above any other at any time. Half up one side, then the other, then on up, is fine (worst stage FS 1.64); one side left empty while the rest is full is NOT (1.37). (b) W-SG-W1/E1 are NOT backfilled until the porch beams brace their tops (IRC R404.1.7); their concrete is part of the sliding resistance in (a) and must stand empty until then. (c) No backfill before placement 1 has cured and the strut is in, and none against a wall before its break board is set (AN-SG-BLOCKOUTS)"),
 ]
 
 # ** SPENT UIDS, 2026-09-22 — the centre line retired with the 17'-0" court. ** Not reused:
