@@ -395,13 +395,12 @@ WALLS = [
     # So the three that stay 12" stay for reasons that are no longer about bearing width,
     # and each is worth stating.
     #
-    #   W-B-E1/E2 — the east perimeter. SL-M-DECK is a 414 SF cast slab and its east edge
-    #     lands here; 12" is not needed for the seat, but this is the one perimeter run with
-    #     a cast deck on it and the extra 4" is ~2.2 cy against re-detailing the east edge of
-    #     a pour that is already the model's fussiest element. Left as built, deliberately —
-    #     and it is now the only place in the house where wall thickness is a judgement
-    #     rather than a derivation, so it is the first candidate the next time this line is
-    #     opened.
+    #   W-B-E1/E2 — the east perimeter. SL-M-DECK's east edge lands here, but 12" is not
+    #     needed for the seat. **W-B-E1 is held at 12" by the fireplace**: the brick wythe
+    #     (x 419 7/8"..423 1/2") bears on this pour (420"..432", outer face pinned on 36'-0"),
+    #     and a 10" or 8" pour would put ~2" of it on the joists (notes/east_breast_bearing.md).
+    #     E2 stays 12" so the east wall is one section, no inside-face step at y=18'. 10" was
+    #     weighed and declined 2026-10-11: NR either way, ~2 cy saved, an odd form module.
     #   W-B-CS2, W-B-CN2, W-B-CN — the centre line under the cast band, same reading.
     #   W-B-CS — FRAMED, and no longer on this list at all. It carried wood on both faces,
     #     so what it actually needed was a bearing wall and not a pour.

@@ -1621,8 +1621,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     carry **no skin at all** (XPS sits inside `W-B-BRICK`'s ventilated cavity).
     `BASEMENT_8_GARDEN`/`_GARDEN_PARGE` were **deleted 2026-09-12** (#72: a tag nothing
     references is deleted); the revert is in git, pointed at from `plan/assemblies.py`.
-  - Pour thickness: only `W-B-E1`/`E2` are `BASEMENT_12` — they bear `SL-M-DECK`, the one
-    remaining cast deck. The other nine segments are 8" with `#5 @ 41" o.c.` vertical steel
+  - Pour thickness: only `W-B-E1`/`E2` are `BASEMENT_12`. **`W-B-E1` cannot thin**: the
+    fireplace brick bears on its pour's inside face (`notes/east_breast_bearing.md`); E2
+    matches it. 10" was weighed and declined 2026-10-11. The other nine segments are 8" with `#5 @ 41" o.c.` vertical steel
     per IRC Table R404.1.2(8). `W-B-STR`/`W-B-STR3` and `W-B-CS` are 2x6 bearing **stud**
     walls, not concrete — `unbalanced_fill` is `ft(0)` on all of them; `W-B-CS2`/`W-B-CN`/
     `W-B-CN2` are the only interior pours left. Do not retype any of the nine to 12" without

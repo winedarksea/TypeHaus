@@ -30,27 +30,18 @@ from .mixes import BURIED_MIX, DECK_CAP_MIX, INTERIOR_SLAB_MIX
 # ALL_MATERIALS, and the coating's colour is a stock-grey palette call that has no
 # business going upstream.
 #
-# **The perimeter is two thicknesses and one rule, not one default.** 8" is earned only
-# where a *cast concrete deck* lands on the wall top beside the sill plate and needs its own
-# bearing seat inboard of it. A wood floor buys no extra width: the I-joists and their rim
-# bear on the same 2x6 mudsill the framed wall above stands on, and an 8" wall carries that
-# sill with 2" to spare — the conventional Minnesota wall. The only cast deck left is
-# SL-M-DECK (x 18'-36', y 13'-36', spanning east-west), which bears on the EAST wall and
-# the centre line and nowhere else. So W-B-E1/E2 stay 12" and the west, north and south
-# perimeter goes to 8".
+# **The perimeter is two thicknesses.** 8" everywhere except W-B-E1/E2, which stay 12" —
+# W-B-E1 because the fireplace brick bears on its pour, E2 to match it. Which wall gets
+# which thickness, and why, is owned by the WALLS header in storeys/basement.py.
 #
-# IRC Table R404.1.2(8) permits it and says what it costs: at GM soil's 45 psf/ft, on the
-# 10' wall row (9'-4" actual, footnote f forbids interpolating) retaining the 7' row (6'-6"
-# actual, grade at -2'-10"), 12" reads NR and 8" reads #6 @ 48" o.c. vertical. That steel is
-# authored on each wall in storeys/basement.py — without it
-# `structural.foundation_unbalanced_fill` FAILs, which is the intended behaviour.
+# IRC Table R404.1.2(8) at GM soil's 45 psf/ft, the 8' wall row (8'-0" pour) and the 7'
+# backfill row: 12" and 10" read NR, 8" reads #5 @ 41" o.c. vertical. That steel is
+# authored on each 8" wall — without it `structural.foundation_unbalanced_fill` FAILs.
 #
-# 8" and not 10", which also reads NR: 8" is the standard residential form module, and the
-# market rate quoted for a poured foundation "is for a typical 8" wall" (see prices.toml).
-# Thickness above that adds concrete without adding forming, so 10" would keep an
-# odd-thickness forming premium and hand back half the yardage saving to avoid ~245 LF of
-# #6 bar. Thinning also seats the wall properly: at 12" the pour overhung the inside edge of
-# its own 20" strip footing by 2", and at 8" it sits entirely on it with a 2" inboard toe.
+# 8" and not 10": 8" is the standard residential form module and the market rate is quoted
+# for it (see prices.toml); 10" keeps an odd-thickness forming premium to avoid the bar.
+# Thinning also seats the wall: at 12" the pour overhangs its 20" strip's inside edge by 2";
+# at 8" it sits wholly on it with a 2" inboard toe.
 #
 # **Within each thickness, two assemblies, because the north/east/west walls and the south
 # wall are two genuinely different conditions.** Both are the same core; they differ only in
