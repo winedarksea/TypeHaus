@@ -523,19 +523,19 @@ def test_french_drain_draws_its_configured_size():
 # --- sauna --------------------------------------------------------------------
 
 def test_sauna_room_vocabulary_is_polyline_geometry(catlin_model):
-    """Benches, heater clearance, floor slope and drop ceiling all draw as real geometry."""
+    """Placed benches, floor slope and finished ceiling draw as real geometry."""
     scene = _authored_scene(catlin_model, "SL-D-SAUNA")
     tags = _component_tags(scene)
-    assert {"sauna-bench", "sauna-heater", "sauna-floor-slope", "sauna-drop-ceiling",
+    assert {"sauna-bench", "sauna-floor-slope", "sauna-drop-ceiling",
             "sauna-baseboard"} <= tags
     for node in scene.nodes:
         if str(getattr(node, "tag", "")).startswith("detail-component:sauna"):
             assert isinstance(node, (Polyline, Hatch))
 
 
-def test_sauna_heater_clearance_is_an_open_dashed_zone(catlin_model):
-    """A keep-clear envelope, not built fabric: dashed and unfilled, or it reads as a cabinet."""
-    scene = _authored_scene(catlin_model, "SL-D-SAUNA")
+def test_sauna_heater_body_is_an_open_dashed_outline(catlin_model):
+    """The heater is a dashed body reference at cuts that intersect its real position."""
+    scene = _authored_scene(catlin_model, "SL-D-SAUNA-READING")
     heater = _component_nodes(scene, "sauna-heater")[0]
     assert heater.linetype == "DASHED" and heater.closed
     boundaries = {tuple(h.boundary) for h in scene.nodes if isinstance(h, Hatch)}

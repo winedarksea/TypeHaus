@@ -42,7 +42,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   millwork_vanities, placeables,
                   plant_room, plant_room_types, plant_types, plate_ties,
                   products,
-                  site, titanium_types, transitions, views, wind_clamps)
+                  sauna, sauna_types, site, titanium_types, transitions, views, wind_clamps)
 from plan.storeys import attic, attic_studio, basement, garage, main, second
 
 format_version = 1
@@ -81,6 +81,7 @@ _library = Library(
                      *bath1_storage_types.BATH1_STORAGE_TYPES,
                      *study_nook_types.STUDY_NOOK_TYPES,
                      *bed_reading_corner_types.BED_READING_CORNER_TYPES,
+                     *sauna_types.SAUNA_FURNITURE_TYPES,
                      *living_east_run_types.LIVING_EAST_RUN_TYPES,
                      *kitchen_deep_cabinets.KITCHEN_DEEP_CABINET_TYPES,
                      *plant_room_types.PLANT_ROOM_FURNITURE_TYPES),
@@ -346,7 +347,7 @@ PLAN = (
          *masonry_joints.JOINTS,
          *mep.BASEMENT_ELEMENTS, *electrical.BASEMENT_ELEMENTS,
          *lighting.BASEMENT_LIGHTING,
-         *placeables.BASEMENT_PLACEABLES, *millwork.BASEMENT_SHELVES,
+         *placeables.BASEMENT_PLACEABLES, *sauna.SAUNA_SEATING, *millwork.BASEMENT_SHELVES,
          *millwork_vanities.BASEMENT_VANITY_SHELVES,
          *backing.BASEMENT_BACKING],
     )

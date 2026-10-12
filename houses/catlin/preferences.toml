@@ -251,11 +251,11 @@ issue = "ISSUED FOR PERMIT"
 # Sheet-number prefixes forced into / out of the `--set permit` set. The default split
 # already omits separate E-1xx power and P-1xx plumbing plans; fixtures remain on the floor
 # plans. A-502's deck-bearing crop adds no bearing information beyond the structural plans,
-# and A-506's generic hall-shower crop adds no permit-review information. They remain in the
+# and A-507's generic hall-shower crop adds no permit-review information. They remain in the
 # full set at their authored numbers. `permit_add = ["E-1", "P-1"]` restores the trade plans
 # in one line if a reviewer asks.
 permit_add = []
-permit_drop = ["A-502", "A-506"]
+permit_drop = ["A-502", "A-507"]
 
 
 # --- decided advisories -------------------------------------------------------------------

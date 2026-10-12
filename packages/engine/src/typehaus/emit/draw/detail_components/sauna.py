@@ -1,14 +1,15 @@
 """Sauna detail vocabulary — the liner base, and the room-scale fit-out.
 
 References: ``sauna_basement_wall_detail_ifc.png`` and ``sauna_shower_basement_detail_ifc.png``.
-Dimensions come from ``saunashowerdetail.json`` via ``config``.
+Liner/wet-floor dimensions come from ``saunashowerdetail.json`` via ``config``;
+seating, heater and finished ceiling are cut from resolved placements.
 
 Two scales live here, and the distinction is what keeps them from drawing in the wrong crop:
 
 * **Per wall** — ``sauna_liner_base``: the bottom 6" of the hot-side liner is fiber-cement
   baseboard rather than furring + T&G, flashed at its top, with the liquid floor membrane
   run up its face.
-* **Per room** — benches, heater clearance, sloped floor and drop ceiling. These read the
+* **Per room** — placed benches, heater body, sloped floor and finished ceiling. These read the
   sauna's interior u-span between the innermost faces of the walls the cut crosses, plus the
   floor slab and ceiling structure in frame, and draw once for the room.
 
@@ -32,6 +33,11 @@ from typehaus.emit.draw.detail_components.geometry import (
     slab_at_junction,
     wall_cut_bounds_m,
     wall_in_frame,
+)
+from typehaus.emit.draw.detail_components.sauna_seating import (
+    sauna_benches,
+    sauna_finished_ceilings_in_cut,
+    sauna_heaters_in_cut,
 )
 from typehaus.emit.draw.lineweights import LIGHT, PROFILE
 from typehaus.emit.draw.scene import IRNode, Polyline
@@ -146,25 +152,6 @@ def ceiling_underside_over(model, crop, direction, station, u_lo_in, u_hi_in):
     return best
 
 
-def sauna_benches(u_lo: float, u_hi: float, floor_z: float) -> list[IRNode]:
-    """Two-tier benches: lower seat at 18", upper at 36", 20" deep, 1.5" boards.
-
-    Cantilevered off the room's high-u wall and projecting into the room, each seat carried on
-    a front leg so it reads as a bench rather than a floating board.
-    """
-    wall_u = u_hi
-    front = wall_u - cfg.SAUNA_BENCH_DEPTH_IN
-    nodes: list[IRNode] = []
-    for top_in in (cfg.SAUNA_BENCH_LOWER_TOP_IN, cfg.SAUNA_BENCH_UPPER_TOP_IN):
-        z_top = floor_z + top_in
-        z_bottom = z_top - cfg.SAUNA_BENCH_THK_IN
-        nodes += rect_region(front, z_bottom, wall_u, z_top,
-                             "sauna-bench", "sauna-shiplap", "lumber", lineweight=PROFILE)
-        nodes += rect_region(front, floor_z, front + cfg.SAUNA_BENCH_THK_IN, z_bottom,
-                             "sauna-bench-leg", "sauna-shiplap", "lumber", lineweight=PROFILE)
-    return nodes
-
-
 def sauna_heater_clearance(u_lo: float, _u_hi: float, floor_z: float) -> list[IRNode]:
     """The heater's required clearance envelope against the room's low-u wall.
 
@@ -231,11 +218,9 @@ def build_sauna_room_components(model, walls, crop, direction, station) -> list[
     floor_z = floor.z1_m / M_PER_IN
     nodes: list[IRNode] = []
     nodes += sauna_floor_slope(u_lo, u_hi, floor_z)
-    nodes += sauna_benches(u_lo, u_hi, floor_z)
-    nodes += sauna_heater_clearance(u_lo, u_hi, floor_z)
-    ceiling_z = ceiling_underside_over(model, crop, direction, station, u_lo, u_hi)
-    if ceiling_z is not None:
-        nodes += sauna_drop_ceiling(u_lo, u_hi, ceiling_z / M_PER_IN)
+    nodes += sauna_benches(model, direction, station)
+    nodes += sauna_heaters_in_cut(model, direction, station)
+    nodes += sauna_finished_ceilings_in_cut(model, direction, station)
     return nodes
 
 

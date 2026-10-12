@@ -58,6 +58,12 @@ DETAIL_SLICES = [
          cut_origin=pt(ft(14), ft(6)), cut_direction="x",
          crop=(pt(ft(8), inch(-116)), pt(ft(19, 6), inch(6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
+    # Through the reading platform and heater: the back points west, feet east.
+    Slice(uid="RP18WM2C5X", tag="SL-D-SAUNA-READING", kind=SliceKind.DETAIL,
+         title="Sauna window-side reading recliner",
+         cut_origin=pt(ft(14), inch(24)), cut_direction="x",
+         crop=(pt(ft(9, 6), inch(-116)), pt(ft(19, 6), inch(6))),
+         exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
     # Hall bath shower section — cut plane x=5' through FX-S-BATH1-SH so the recess,
     # tile-on-backer sides, glass panel, and (once authorable) the HRV takeoff render.
     Slice(uid="CVD906AAAA", tag="SL-D-SHOWER", kind=SliceKind.DETAIL,

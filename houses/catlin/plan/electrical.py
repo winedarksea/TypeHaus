@@ -271,10 +271,8 @@ BASEMENT_DEVICES = [
     # (x 15'-5 3/4"..15'-11 3/4") when the heater turned onto the east liner: it butts the
     # heater's west face, which is what "immediately west" has meant throughout.
     #
-    # ** IT STAYS LOW AND IT STAYS OUT OF THE BENCH. ** 18" is the box's BASE, exactly
-    # FURN-B-SAUNA-BENCH-SW's top, so the bench stops 7 15/16" short of it rather than
-    # running under it. Raising the box over the bench would buy that back and is the wrong
-    # trade in a room that stratifies: a junction box belongs in the coolest air there is.
+    # Box base remains 18" AFF. The 24" south reading deck ends 4" west of its body;
+    # keep cover/tool access open, including when the heater fence is fabricated.
     ElectricalDevice(uid="CEE005AAAA", tag="ED-B-SAUNA-JB", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-SAUNA-JB",
                      circuit="CKT-SAUNA", mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
@@ -388,24 +386,9 @@ BASEMENT_EQUIPMENT = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-B-S4", face="left", distance_from_start=inch(17),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    # ** ON THE EAST LINER SINCE 2026-09-05 (round three), AND IT TURNED TO GET THERE. **
-    # It stood on the SOUTH liner at x 14'-5 3/4"..15'-11 3/4" from the shrink until the
-    # south bench grew: with the heater in the middle of that wall the bench could be 2'-6"
-    # and no longer. Against the east liner instead — `rotation=deg(270)` turns the 18"
-    # face to the wall and the 16" depth into the room, since local -y is a placeable's
-    # front — it takes x 15'-11 3/4"..17'-3 3/4" by y 0'-11 1/2"..2'-5 1/2" and hands the
-    # whole middle of the south liner back. The bench went 2'-6" -> 4'-0" on it
-    # (plan/placeables.py).
-    #
-    # 2" off the east liner and 2" off the south, the same stand-off it always carried.
-    # **It is deliberately NOT pushed north against D-B-SAUNA's jamb**, which would free
-    # another foot and a half of bench: that puts a 30" stove at the doorway you walk past
-    # in the dark, and nothing in this engine grades clearance to a sauna heater —
-    # `EquipmentType` carries no `clearances` at all.
-    #
-    # Clear of everything, and every one of these gaps is hand-held: 1'-1 15/16" to the
-    # south bench's east end, 8 1/4" north to D-B-SAUNA's leaf (y 3'-1 11/16"..5'-1 11/16"),
-    # and 4'-3 11/16" to FX-B-SAUNA-SH's pan.
+    # Existing US PC110E remains on the east liner. Resolved body (type dimensions govern):
+    # x192.25..207.25, y12.5..28.5, 45" tall. Reading deck ends at x181.75: 10.5" gap.
+    # US manual Figure 5 and the fence/service requirements: notes/sauna_seating.md.
     Equipment(uid="CEE020AAAA", tag="EQ-B-SAUNA-HTR", kind=EquipmentKind.SAUNA_HEATER,
               position=pt(inch(199.75), inch(20.5)), footprint=(inch(18), inch(16)),
               room="RM-B-SAUNA", type_ref="EQ-T-SAUNA-HEATER", rotation=deg(270),

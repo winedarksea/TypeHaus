@@ -1633,43 +1633,34 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `face("concrete-ext")`: the furnace room and workshop gained 4" of clear on the inside
     face, and `clear_face` (the finish face) shows it (`notes/basement_to_framed_wall_detail.md`).
 
-- **Sauna (`RM-B-SAUNA`).** Against the south (garden) wall, long axis east-west; west wall
-  at x=8'-10" on `N-B-S1`; south face is one plane on `W-B-S2`'s garden curb, no jog. Clear
-  box **8'-3 15/16" x 8'-10 11/16"**, 555 cf against `EQ-T-SAUNA-HEATER`'s 600 cf rating
-  (45 cf margin — a deeper room needs a bigger heater and circuit). Entered from the gym
-  through framed `W-B-CS`; keeps `WIN-B-SAUNA`.
-  - Its north wall (`W-B-SA-N`, split at `N-B-HALL-S`; `W-B-SA-N2` is the east segment) lands
-    on `W-B-CS3`'s 4'-5" framed run beside `D-B-GYM`'s rough opening (starts y=10'-11 7/16").
-    Do not move `D-B-GYM` south or this wall north of 10'-0" — past 10'-6" the wall and the
-    opening overlap outright and no `haus check` rule tests a tee wall beside an opening.
-  - **`W-B-CS3` has no footing of its own**: `FT-B-CS` runs north to y=11'-3 7/16" and
-    `FT-B-CS2` south to 12'-11 7/16" (`Footing.start_extension`, `params/foundations.py`),
-    8" past `D-B-GYM`'s jamb packs; the 20" under the opening is slab. Move the door or
-    its packs and `structural.bearing_wall_footing` FAILs.
-  - Heater `EQ-T-SAUNA-HEATER` (9 kW) is on the **east liner**: `rotation=deg(270)`, 18" face
-    to wall, 16" deep, 2" off both liners.
-  - Benches: `FURN-SAUNA-BENCH-2T-60` (two-tier), `FURN-B-SAUNA-BENCH-E`, and the south-liner
-    bench `FURN-SAUNA-BENCH-48` (**4'-0", do not grow it**) — `ED-B-SAUNA-JB`'s box base sits
-    at 18" AFF, the bench-top height, so a longer carcass would reach under a live 9 kW
-    junction box. Do not push the heater north to `D-B-SAUNA`'s jamb either —
-    `EquipmentType` carries no clearances field and nothing would stop a 30" hot stove at the
-    doorway. `FURN-SAUNA-BENCH-48` must stay priced in `prices.toml` — an unpriced type
-    silently drops from the takeoff. `REG-B-SUP3`, `DU-B-ERV-R-SAUNA-SUP`'s east leg and
-    `ED-B-SAUNA-JB` all sit with the heater on the east liner.
-  - **Lighting is two 24V under-bench runs and NOTHING ELECTRICAL IS IN THE HOT ROOM
-    (2026-09-13).** `LR-B-SAUNA-BENCH-L` (an L along the west + south foot benches, 7'-1/2",
-    1 corner connector) and `LR-B-SAUNA-BENCH-N` (5'-0" along the two-tier bench), both
-    `ED-T-LT-STRIP24-SAUNA` mark **X** — 24V IP68 silicone tape rated to 90 C, 2700K, at
-    **16" AFF** under the 18" bench lips, which is the coolest air in a stratified room. One
-    `Mount.elevation` serves a whole `LightRun`, so this works only while all three seat tops
-    stay 18". Driver `ED-B-SAUNA-LT-PSU` (`ED-T-LT-PSU-60`) is a surface box on W-B-SA-N's
-    **workshop** face at (10'-0", 10'-6 13/16"), 48" AFF; `ED-B-SAUNA-SW` is on W-B-CS's
-    **gym** face and retyped `ED-T-SWITCH-DIM`. 36.1 W x1.25 = 45.2 W, **75% of the PSU-60's
-    nameplate** — `ED-T-LT-PSU-200` is not available here, a PSU sums at its RATING and 200 VA
-    on the ALWAYS_ON tier flips `cycle_48h.sustains_always_on` (surplus is +0.44 kWh).
-    The tape bills through `[allowances] electrical-sauna-under-bench-strip`, not
-    `[placeables]`. **`ED-T-LT-SAUNA-VT` (mark V, the fibre-optic kit) is retained
-    CATALOG-ONLY as the named revert and its letter is NOT freed** — the replacement took X.
+- **Sauna (`RM-B-SAUNA`).** Current seating is in `plan/sauna.py` with dimensions/types in
+  `plan/sauna_types.py`; construction and acceptance: `notes/sauna_seating.md` (2026-10-11).
+  The current clear box is approximately 7'-3" × 8'-10 11/16". Read the resolved polygon
+  for containment. The finished ceiling underside is **82 13/16" AFF**, not the stale 90".
+  - West upper lying bench **78 × 28, 42" AFF**, with a full unobstructed surface. Independent
+    foot platform **78 3/16 × 20, 24" AFF**; south reading deck **58½ × 28, 24" AFF**;
+    access step **14 × 10, 12" AFF**. Upper headroom **40 13/16"**.
+  - Armless removable wood recliner faces east, back west, on the south deck near the window.
+    Wood/pad share a **26 × 57½"** envelope and the platform datum. Drawn at 110°; positive
+    locks 105/110/112°. Flat custom mattress **26 × 80 × 4"**, segmented linen/wool with
+    adjustable cushions. Complete-assembly hot-sauna qualification and a full-size one-hour
+    cool/dry reading trial are required before fabrication. No supplier approval is claimed.
+  - Capacity **four**: three upper, one on the south lower deck, with the recliner/pad
+    removed. Occupied seat/leg areas are shown in the note's dimensioned review.
+  - Shower/heater positions stay. US Harvia HPCS11U1H/PC110E **10.5 kW**, body 16 × 15 × 45.
+    Reading deck clears heater **10½"**, junction box **4"**; floor aisle **24½"** beside
+    step, **28"** beside reading deck. Follow the US listing and retain box/tool access.
+    A wall-attached softwood heater fence below the rock line is part of fabrication.
+  - Drain and condensate terminations remain beneath removable foot-deck panels. Both
+    condensate drops descend inside the north-wall cavity; outlets land over the grate at
+    (162, 98 3/16) and (160, 98 3/16) inches, 9 inches AFF. Inset posts
+    preserve the west exhaust; `CO-B-SAUNA-HEAD` has a flush aisle cap at **(181", 60")**.
+  - Lighting: `LR-B-SAUNA-WEST` and `LR-B-SAUNA-SOUTH` on framing rails at **16" AFF**.
+    116 11/16" of 24 V heat-rated tape = **29.17 W**; ×1.25 = **36.46 W**, within the existing
+    external 60 W driver's 80% limit. Switch remains outside; all six seating types are priced.
+  - North-wall/door constraint remains: do not move `D-B-GYM` south or sauna north wall beyond
+    10'-0" without reviewing its tee beside the opening. `W-B-CS3` has no independent footing;
+    `FT-B-CS`/`FT-B-CS2` stop beneath jamb packs, with slab under the opening.
 
 - **Bathroom.** Rotated north-south along the framed stair wall (`W-B-STR3B`/`W-B-STR2`);
   clear **3'-3 15/16" x 7'-1 1/4"**. The shared vent and supply drops run in `W-B-STR2`

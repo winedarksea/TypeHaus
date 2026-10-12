@@ -12,77 +12,9 @@ from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 # point at the new room (plan/mep.py). PR-B-COND (heat-pump condensate) air-gaps over
 # FX-B-SAUNA-FD, the sauna's trapped wet-floor drain, which sees regular water flow the way
 # an air gap wants and a bathroom lavatory does not.
-#
-# ** THE SAUNA ROTATED ONTO THE GARDEN WALL ON 2026-09-05, THEN SHRANK EAST THE SAME DAY. **
-# The benches are dimensioned to *liner faces* (what the joiner scribes to), not node lines:
-# west liner x=9'-1 13/16", east liner x=17'-5 3/4", north liner y=9'-8 3/16", south liner
-# y=0'-9 1/2" — an 8'-3 15/16" x 8'-10 11/16" clear box, and it is **one plane on each of the
-# four sides now**. The 2" jog the rotation left in the south face at x=8'-10", where the
-# buried pour handed over to the framed walkout, is gone with W-B-S1B: the whole south face
-# is W-B-S2's garden curb on SAUNA_LINER_ON_GARDEN_CURB.
-#
-# The east liner is on W-B-CS, and the shower pan takes the room's NORTH-EAST corner
-# (notes/sauna_shower_basement_detail.md) — x 14'-5 3/4"..17'-5 3/4". That pan is what sizes
-# the benches now, not the room: it eats the east 3'-0" of the only unbroken face, leaving
-# 5'-3 15/16" of north wall, so the 8'-6" two-tier carcass comes down to the 5'-0" sibling.
-# ** 2026-09-22: THE ROOM IS 1'-0" NARROWER, FROM THE WEST. ** The court narrowed to 17'-0"
-# and N-B-S1 came 1'-0" east with it, taking the west wall along (the east wall is the
-# x=18' bearing line and cannot follow). The benches followed the west liner: the two-tier
-# run is the 4'-0" sibling (x 10'-3 1/4"..14'-3 1/4"), the west foot bench moved 1'-0"
-# east, and the south foot bench is the 3'-0" sibling so it still stops 7 15/16" short of
-# ED-B-SAUNA-JB. The figures in the comments below are the pre-narrowing ones.
-BASEMENT_PLACEABLES = [
-    # The two-tier run still takes the NORTH wall: it is the only face with no opening in it
-    # — the south wall has WIN-B-SAUNA, the east wall D-B-SAUNA, the west wall is the new
-    # partition — and it is the only one FX-B-SAUNA-FD can hide under. rotation 0 puts its
-    # back (+y local) against that face. **5'-0" carcass since the shrink**, x 9'-3 1/4"..
-    # 14'-3 1/4" and y 6'-2 3/16"..9'-8 3/16": 1 7/16" of scribe at the west liner and 2 1/2"
-    # clear of FX-B-SAUNA-SH's pan at its east end. The 8'-6" carcass could not follow the
-    # room in: the north wall's free run is the room's 8'-3 15/16" LESS the pan's 3'-0".
-    #
-    # FX-B-SAUNA-FD and the two condensate air gaps over it (PR-B-COND, PR-B-ERV-COND) sit
-    # UNDER this bench, 18" off the north liner, and that is deliberate: a two-tier sauna
-    # bench is an open frame, the slab falls to that point, and a boxed chase in the bench's
-    # back corner is the only place in the room it can go without standing in open floor.
-    # The drain is at x=13'-6", still 9 1/4" inside the shortened carcass's east end — which
-    # is the constraint that kept this bench on the north wall rather than moving it to the
-    # west one, where a 96" carcass would have fitted and left the air gaps standing in the
-    # open.
-    Furniture(uid="CBF601AAAA", tag="FURN-B-SAUNA-BENCH-E", type_ref="FURN-SAUNA-BENCH-2T-48",
-              room="RM-B-SAUNA", position=pt(inch(147.25), inch(95.1875)), rotation=deg(0)),
-    # The foot bench returns along the WEST liner, back to it (rotation 90 turns the 54"
-    # carcass into the y direction), running y 1'-0"..5'-6" with a 2 1/2" scribe at the south
-    # liner and 1 3/16" clear of the two-tier bench's south face. Its top is 18";
-    # REG-B-EXH2's low stale pickup sits 4" off the floor behind it, which is the convection
-    # loop the sauna's two dampered terminals drive. It moved 3'-10" east with the liner.
-    Furniture(uid="CBF602AAAA", tag="FURN-B-SAUNA-BENCH-S", type_ref="FURN-SAUNA-BENCH-54",
-              room="RM-B-SAUNA", position=pt(inch(131.8125), inch(39)), rotation=deg(90)),
-    # ** THE SOUTH LINER'S OWN FOOT BENCH, NEW 2026-09-05. ** The third bench, and the one
-    # that closes the L: it butts the west foot bench's east face at x=10'-9 13/16" and runs
-    # 4'-0" east to x=14'-9 13/16", scribed to the south liner at y=0'-9 1/2". `rotation=180`
-    # puts its back at -y, against that liner — the opposite of the north bench's 0.
-    #
-    # ** IT WAS 2'-6" FOR AN HOUR, AND MOVING THE HEATER IS WHAT MADE IT 4'-0". **
-    # EQ-B-SAUNA-HTR stood in the middle of this liner and left 3'-7 15/16" of it; on the
-    # east liner (plan/electrical.py) it leaves 4'-7 15/16" and the bench takes all but the
-    # last 7 15/16" of that.
-    #
-    # ** WHAT STOPS IT IS ED-B-SAUNA-JB, NOT THE WALL. ** The heater's junction box came
-    # east with the heater and sits at x 15'-5 3/4"..15'-11 3/4", its base at 18" AFF, which
-    # is exactly this bench's top: a 4'-6" carcass would reach under it, and a fixed seat in
-    # front of a live 9 kW junction box is not a detail to draw. So 4'-0", leaving 7 15/16"
-    # of clear liner to the box and 1'-1 15/16" to the heater. Nothing in this engine grades
-    # either gap — `EquipmentType` carries no `clearances` and nothing tests a placeable
-    # against a wall device — so both are taken here, deliberately, and a longer bench must
-    # not eat them. FURN-SAUNA-BENCH-48 was minted in `library/` for it.
-    #
-    # It sits UNDER WIN-B-SAUNA (x 12'-1"..13'-3", sill 3'-0 3/4"), which is the reason it is
-    # an 18" foot bench and not a tier: the top clears the sill by 1'-6 3/4" and the glass
-    # stays glass. The 2 1/2" of liner showing at the west end is the neighbouring bench's
-    # own scribe, not a gap in this one.
-    Furniture(uid="V218FXRSH2", tag="FURN-B-SAUNA-BENCH-SW", type_ref="FURN-SAUNA-BENCH-36",
-              room="RM-B-SAUNA", position=pt(inch(159.8125), inch(19.5)), rotation=deg(180)),
 
+# Sauna joinery and the reading recliner live in plan/sauna.py.
+BASEMENT_PLACEABLES = [
     # RM-B-WORKSHOP's two benches. The room is still L-shaped, with the legs redrawn twice
     # on 2026-09-05: a west bay **7'-10 3/16" clear (x 0'-8"..8'-6 3/16")** running from the
     # south wall up to the sauna's north face at y=10'-3 13/16", plus a north strip 8'-0"

@@ -3099,14 +3099,26 @@
 # is mostly setting-out, scribing and two cleat runs whatever its length, so the joiner's
 # day does not shrink with the lumber.
 "FURN-SAUNA-BENCH-2T-60" = { material = { low = 235, high = 885 }, labour = { low = 130, high = 430 } }  # 0 ea since 2026-09-22 (the sauna lost 1'-0")
-"FURN-SAUNA-BENCH-2T-48" = { material = { low = 190, high = 710 }, labour = { low = 110, high = 360 } }  # 1 ea — the 2T-60 cut 1'-0" shorter
-"FURN-SAUNA-BENCH-54" = { material = { low = 200, high = 800 }, labour = { low = 80, high = 300 } }  # 1 ea
+"FURN-SAUNA-BENCH-2T-48" = { material = { low = 190, high = 710 }, labour = { low = 110, high = 360 } }  # 0 ea since 2026-10-11; replaced by fitted west-wall seating
+"FURN-SAUNA-BENCH-54" = { material = { low = 200, high = 800 }, labour = { low = 80, high = 300 } }  # 0 ea since 2026-10-11
 # The 4'-0" sibling on the south liner (2026-09-05). Material scales off the 54" row by
 # carcass length (48/54 = 0.89); labour is held level with it, for the reason the 2T-60 row
 # gives above — scribing a bench between a bench and a junction box is setting-out time, and
 # setting-out does not shrink with the lumber.
 "FURN-SAUNA-BENCH-48" = { material = { low = 180, high = 710 }, labour = { low = 80, high = 300 } }  # 0 ea since 2026-09-22
-"FURN-SAUNA-BENCH-36" = { material = { low = 135, high = 530 }, labour = { low = 70, high = 250 } }  # 1 ea — the 48 cut 1'-0" shorter
+"FURN-SAUNA-BENCH-36" = { material = { low = 135, high = 530 }, labour = { low = 70, high = 250 } }  # 0 ea since 2026-10-11; replaced by the reading platform
+# Custom sauna seating, 2026-10-11. Planning allowances, not supplier quotations;
+# joinery includes support posts, removable decks, 16" lighting rails, heater fence
+# and coordinated cleanout-cap access; drain piping stays in its trade takeoff.
+"FT-CATLIN-SAUNA-UPPER-78" = { material = { low = 300, high = 1100 }, labour = { low = 250, high = 850 } }
+"FT-CATLIN-SAUNA-LOWER-78" = { material = { low = 250, high = 900 }, labour = { low = 200, high = 600 } }
+"FT-CATLIN-SAUNA-READING-58" = { material = { low = 220, high = 800 }, labour = { low = 180, high = 550 } }
+"FT-CATLIN-SAUNA-STEP" = { material = { low = 50, high = 180 }, labour = { low = 80, high = 220 } }
+"FT-CATLIN-SAUNA-RECLINER" = { material = { low = 350, high = 1100 }, labour = { low = 300, high = 1000 } }
+# Custom 4" linen/wool mattress includes flexible sections, cover, ties and two bolsters.
+# Purchased fabrication is in material; labour is fitting. Complete-assembly sauna
+# qualification and the physical reading trial remain fabrication gates.
+"FT-CATLIN-SAUNA-MATTRESS" = { material = { low = 450, high = 950 }, labour = { low = 0, high = 100 } }
 "FURN-WALL-RACK-24" = { material = { low = 30, high = 150 }, labour = { low = 30, high = 90 } }  # 1 ea
 # One fixed stepped study run. Oak horizontal boards remain in [hardwood]; this row carries
 # its plywood backs/dividers/filler, dados, fabrication, finish, delivery and installation.

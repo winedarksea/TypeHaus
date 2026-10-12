@@ -264,8 +264,8 @@ def test_authored_sauna_detail_draws_room_scale_vocabulary(catlin_model):
     assert "detail-component:sauna-baseboard" in tags
     assert "detail-component:thermal-break" in tags
     # Room-scale vocabulary.
-    assert "detail-component:sauna-bench" in tags, "two-tier benches expected"
-    assert "detail-component:sauna-heater" in tags, "heater clearance box expected"
+    assert "detail-component:sauna-bench" in tags, "independent bench platforms expected"
+    assert "detail-component:sauna-heater" not in tags, "heater does not cross this cut"
     assert "detail-component:sauna-floor-slope" in tags, "floor slope to drain expected"
     assert "detail-component:sauna-drop-ceiling" in tags, "hung drop ceiling expected"
     # Everything stays polyline/hatch geometry, never a bare Symbol.
@@ -284,23 +284,20 @@ def test_authored_non_sauna_detail_is_unchanged(catlin_model):
             == build_section(catlin_model, fndn).to_json())
 
 
-def test_sauna_bench_geometry_matches_reference(catlin_model):
-    # Bench tops at 18"/36" above the floor slab, 1.5" boards — the reference numbers.
-    from typehaus.emit.draw.detail_components import (
-        SAUNA_BENCH_LOWER_TOP_IN,
-        SAUNA_BENCH_UPPER_TOP_IN,
-        sauna_benches,
-    )
+def test_sauna_bench_geometry_matches_placed_furniture(catlin_model):
+    from typehaus.emit.draw.detail_components import sauna_benches
     from typehaus.quantities import M_PER_IN
 
     floor = next(s for s in catlin_model.solids if s.tag == "SL-B-FLOOR")
-    floor_z = floor.z1_m / M_PER_IN
-    nodes = sauna_benches(120.0, 210.0, floor_z)
-    seats = [n for n in nodes if getattr(n, "tag", None) == "detail-component:sauna-bench"]
-    assert len(seats) == 2, "a lower and an upper bench"
-    tops = sorted(max(z for _u, z in seat.points) for seat in seats)
-    assert abs(tops[0] - (floor_z + SAUNA_BENCH_LOWER_TOP_IN)) < 1e-6
-    assert abs(tops[1] - (floor_z + SAUNA_BENCH_UPPER_TOP_IN)) < 1e-6
+    nodes = sauna_benches(catlin_model, "x", 72 * M_PER_IN)
+    for tag, height in (("FURN-B-SAUNA-UPPER", 42), ("FURN-B-SAUNA-LOWER", 24),
+                        ("FURN-B-SAUNA-STEP", 12)):
+        obj = next(o for o in catlin_model.canvas_objects if o.tag == tag)
+        seats = [n for n in nodes if getattr(n, "uid", None) == obj.uid
+                 and getattr(n, "tag", None) == "detail-component:sauna-bench"]
+        assert seats
+        assert max(z for n in seats for _, z in n.points) == pytest.approx(
+            floor.z1_m / M_PER_IN + height)
 
 
 def test_unresolvable_anchor_yields_finding_no_crash(catlin_model):

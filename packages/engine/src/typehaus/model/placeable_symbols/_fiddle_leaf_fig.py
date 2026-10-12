@@ -6,8 +6,8 @@ import math
 
 from typehaus.model.placeable_symbols._families import Geometry
 from typehaus.model.placeable_symbols._frame import DETAIL_WEIGHT, circle, polygon, prism
+from typehaus.model.placeable_symbols._mesh import mesh_part
 from typehaus.model.placeable_symbols._plant_primitives import (
-    _mesh_part,
     slender_segment,
     tapered_pot,
 )
@@ -75,6 +75,6 @@ def fiddle_leaf_fig(width: float, depth: float, height: float) -> Geometry:
                           elevation + height * LEAF_RISE_HEIGHT_SHARE * 0.55 + fold))
         front = [(edge, (edge + 1) % len(outline), len(outline))
                  for edge in range(len(outline))]
-        parts.append(_mesh_part(positions, front + [(a, c, b) for a, b, c in front],
+        parts.append(mesh_part(positions, front + [(a, c, b) for a, b, c in front],
                                 "foliage"))
     return tuple(strokes), tuple(parts)

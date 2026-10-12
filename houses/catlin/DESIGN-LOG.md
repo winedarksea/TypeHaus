@@ -14,6 +14,30 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Sauna lying bench and window-side reading place (2026-10-11)
+
+Owner approved a 78 × 28-inch west upper bench at 42 AFF, an independent 24-inch foot
+platform and south reading deck, and a 12-inch step. The old tiered symbol forced lower
+height to half the upper; separate open-frame symbols now represent 42/24 correctly.
+A removable armless recliner faces east with its back west and daylight alongside. Its
+wood and segmented 4-inch linen/wool pad share a bent profile and mounting datum, with
+adjustable neck/lumbar cushions. Four-person capacity is three upper plus one on the south
+lower deck after removing the recliner/pad, including supported legs, rather than counting
+empty bench length alone. The finished ceiling is 82 13/16 AFF, not 90 inches.
+
+Shower/heater stay; low lighting is rehosted on 16-inch framing rails (29.17 W / 36.46 W
+sizing load on the existing 60 W driver). The drain retains removable deck access; a flush
+cleanout cap moves into the aisle to keep the new foot deck from hiding it. All six seating
+types are priced planning allowances. Hot-sauna qualification of the complete mattress
+and a one-hour cool/dry full-size fit trial remain fabrication gates. The US heater manual
+also requires a softwood fence, included in the joinery fabrication scope. Dimensions,
+occupied layouts, listing checks and acceptance details: `notes/sauna_seating.md`.
+
+Review added transverse deck bearers, connected low rail stretchers and inclined recliner
+stringers. The heat-pump condensate riser moved into the north-wall cavity to avoid piercing
+the foot deck; the ERV outlet extends onto the grate. Both remain at 9 inches AFF. Tests now
+check member connectivity, pipe clearance, padded adjustment envelopes and mattress joints.
+
 ## Second-storey study supply on the soffit side (2026-10-04)
 
 Owner approved replacing `REG-S-HP-STUDY2`'s ceiling terminal with an east-facing

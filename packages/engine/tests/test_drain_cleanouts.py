@@ -152,6 +152,11 @@ def test_catlin_cleanouts_have_plan_schedule_and_three_solids(catlin_model_ro):
             "cleanout_fitting", "cleanout_extension", "cleanout_cap"}
         assert len(components) == (5 if cleanout.direction == "two_way" else 3)
         assert all(s.sweep is not None for s in components)
+        if cleanout.access == "floor":
+            cap_solid = next(s for s in components if s.category == "cleanout_cap")
+            extension = next(s for s in components if s.category == "cleanout_extension")
+            assert cap_solid.z1_m == pytest.approx(cleanout.cap_z_m)
+            assert extension.z1_m <= cleanout.cap_z_m + 1e-8
         scene = build_plumbing_plan(model, cleanout.storey)
         assert any(isinstance(n, Symbol) and n.name == "cleanout"
                    and n.insert == pytest.approx(tuple(v / 0.0254

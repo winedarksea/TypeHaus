@@ -12,6 +12,9 @@ from typehaus.resolve.model import ResolvedDrainCleanout, ResolvedModel, Resolve
 from typehaus.resolve.round_solids import PIPE_FACETS
 from typehaus.resolve.sweep import round_profile, sweep_plan_silhouette, sweep_z_extent
 
+FLOOR_CAP_TERMINAL_DIAMETERS = 1.0
+CAP_THICKNESS_M = inch(0.75).meters
+
 
 def _component(model: ResolvedModel, element: DrainCleanout, storey: str,
                suffix: str, category: str, path: tuple[tuple[float, float, float], ...],
@@ -96,18 +99,29 @@ def resolve_drain_cleanout(model: ResolvedModel, element: DrainCleanout,
     cap_end = (cap[0], cap[1], cap_z)
     extension = ((fitting_end, (fitting[0], fitting[1], cap_z), cap_end)
                  if element.access == "wall" else (fitting_end, cap_end))
+    if (element.access == "floor" and math.dist(fitting, cap) > 1e-6
+            and cap_z > fitting_end[2]):
+        # An offset floor access tube needs a vertical terminal: ending an inclined
+        # sweep at the floor leaves its circular rim protruding above the finish plane.
+        terminal_depth = min(diameter * FLOOR_CAP_TERMINAL_DIAMETERS,
+                             (cap_z - fitting_end[2]) / 2)
+        extension = (fitting_end, (cap[0], cap[1], cap_z - terminal_depth), cap_end)
     _component(model, element, storey.tag, "EXT", "cleanout_extension",
                extension, diameter * 0.45)
     if element.access == "wall":
         dx, dy = cap[0] - fitting[0], cap[1] - fitting[1]
         distance = math.hypot(dx, dy)
-        cap_start = (cap[0] - dx / distance * inch(0.375).meters,
-                     cap[1] - dy / distance * inch(0.375).meters, cap_z)
-        cap_tip = (cap[0] + dx / distance * inch(0.375).meters,
-                   cap[1] + dy / distance * inch(0.375).meters, cap_z)
+        cap_start = (cap[0] - dx / distance * CAP_THICKNESS_M / 2,
+                     cap[1] - dy / distance * CAP_THICKNESS_M / 2, cap_z)
+        cap_tip = (cap[0] + dx / distance * CAP_THICKNESS_M / 2,
+                   cap[1] + dy / distance * CAP_THICKNESS_M / 2, cap_z)
+    elif element.access == "floor":
+        # The authored datum is the accessible finish plane, not the cap's center.
+        cap_start = (cap[0], cap[1], cap_z - CAP_THICKNESS_M)
+        cap_tip = (cap[0], cap[1], cap_z)
     else:
-        cap_start = (cap[0], cap[1], cap_z - inch(0.375).meters)
-        cap_tip = (cap[0], cap[1], cap_z + inch(0.375).meters)
+        cap_start = (cap[0], cap[1], cap_z - CAP_THICKNESS_M / 2)
+        cap_tip = (cap[0], cap[1], cap_z + CAP_THICKNESS_M / 2)
     _component(model, element, storey.tag, "CAP", "cleanout_cap",
                (cap_start, cap_tip),
                diameter * 0.58)

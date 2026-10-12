@@ -46,10 +46,11 @@ BASEMENT_CLEANOUTS = [
                   position=pt(ft(12), ft(21, 6)), fitting_elevation=inch(-9.258854),
                   cap_position=pt(ft(12), ft(21, 6)), cap_elevation=inch(0),
                   access="floor", clear_width=inch(24), clear_depth=inch(24)),
-    # On the sauna branch's west leg, 4" south of FURN-B-SAUNA-BENCH-E's front.
+    # Keep the fitting on the branch; its rising access extension now terminates in the
+    # open aisle at (181", 60"). An 18" square clears the foot platform and access step.
     DrainCleanout(uid="COB0000007", tag="CO-B-SAUNA-HEAD", pipe_ref="PR-B-SAUNA-DRAIN",
                   position=pt(ft(13), ft(5, 10.2)), fitting_elevation=inch(-9.58),
-                  cap_position=pt(ft(13), ft(5, 10.2)), cap_elevation=inch(0),
+                  cap_position=pt(inch(181), inch(60)), cap_elevation=inch(0),
                   access="floor", clear_width=inch(18), clear_depth=inch(18)),
     # WC2's branch runs in the basement ceiling. Its upper terminal is below the fixture;
     # the cap needs an access panel. Its turn east into the stack is only 90° now that the

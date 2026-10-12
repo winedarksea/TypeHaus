@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import math
 
-from typehaus.model.placeable_symbols._frame import Part, PartMesh
+from typehaus.model.placeable_symbols._frame import Part
+from typehaus.model.placeable_symbols._mesh import mesh_part
 
 Point3D = tuple[float, float, float]
 ROUND_SEGMENTS = 16
@@ -20,28 +21,6 @@ def _cross(first: Point3D, second: Point3D) -> Point3D:
     return (first[1] * second[2] - first[2] * second[1],
             first[2] * second[0] - first[0] * second[2],
             first[0] * second[1] - first[1] * second[0])
-
-
-def _mesh_part(positions: list[Point3D], triangles: list[tuple[int, int, int]],
-               color: str) -> Part:
-    # Split vertices at every triangle: leaf folds and pot rims need crisp normals.
-    vertices, normals = [], []
-    for first, second, third in triangles:
-        a, b, c = positions[first], positions[second], positions[third]
-        normal = _unit(_cross(tuple(b[i] - a[i] for i in range(3)),
-                              tuple(c[i] - a[i] for i in range(3))))
-        vertices.extend((a, b, c))
-        normals.extend((normal,) * 3)
-    bounds = [(min(point[axis] for point in vertices),
-               max(point[axis] for point in vertices)) for axis in range(3)]
-    mesh: PartMesh = {
-        "positions": tuple(vertices),
-        "triangles": tuple((i, i + 1, i + 2) for i in range(0, len(vertices), 3)),
-        "normals": tuple(normals),
-    }
-    return {"center": tuple((low + high) / 2 for low, high in bounds),
-            "size": tuple(high - low for low, high in bounds), "color": color,
-            "points": (), "shape": "mesh", "mesh": mesh}
 
 
 def tapered_pot(radius: float, bottom: float, top: float, color: str) -> Part:
@@ -60,7 +39,7 @@ def tapered_pot(radius: float, bottom: float, top: float, color: str) -> Part:
             c = next_course * ROUND_SEGMENTS + segment
             d = next_course * ROUND_SEGMENTS + following
             triangles.extend(((a, b, c), (b, d, c)))
-    return _mesh_part(positions, triangles, color)
+    return mesh_part(positions, triangles, color)
 
 
 def slender_segment(start: Point3D, end: Point3D, radius: float, color: str) -> Part:
@@ -78,7 +57,7 @@ def slender_segment(start: Point3D, end: Point3D, radius: float, color: str) -> 
         following = (segment + 1) % ROUND_SEGMENTS
         triangles.extend(((segment, following, segment + ROUND_SEGMENTS),
                           (following, following + ROUND_SEGMENTS, segment + ROUND_SEGMENTS)))
-    return _mesh_part(positions, triangles, color)
+    return mesh_part(positions, triangles, color)
 
 
 def folded_leaf(center: Point3D, length: float, width: float,
@@ -96,4 +75,4 @@ def folded_leaf(center: Point3D, length: float, width: float,
         (center[0], center[1], center[2] + width * LEAF_FOLD_SHARE),
     ]
     front = [(edge, (edge + 1) % 4, 4) for edge in range(4)]
-    return _mesh_part(positions, front + [(a, c, b) for a, b, c in front], "foliage")
+    return mesh_part(positions, front + [(a, c, b) for a, b, c in front], "foliage")

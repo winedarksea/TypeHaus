@@ -56,8 +56,9 @@ EQUIPMENT_TYPES = (
     # this class has: they want 22-28" of width including listed clearance to combustibles
     # and 35-47" of CLEAR SPACE ABOVE. There is no heater niche in this model and none is
     # wanted — the placeholder was the heater itself — so this is a straight body-size
-    # correction. The Cilindro's own numbers: 3.94" clearance all round, 37.4" of headroom
-    # above, 78" minimum ceiling. RM-B-SAUNA is 7'-6" (90") clear, so the headroom closes.
+    # correction. The US HPCS11U1H manual requires 1.2" side/back, 4" front, 32.5" above,
+    # and 78" minimum room height. Finished sauna ceiling is 82 13/16" AFF, leaving
+    # 37 13/16" above the body. Fence and installation checks: notes/sauna_seating.md.
     EquipmentType(tag="EQ-T-SAUNA-HEATER", name="Electric sauna heater, 10.5 kW",
                   footprint=(inch(16), inch(15)), height=inch(45),
                   plan_symbol="sauna-heater",

@@ -592,8 +592,9 @@ REGISTERS_BASEMENT = [
             type_ref="REG-T-ERV-BENCH-HOOD", design_cfm=12,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(5, 6))),
     # The sauna's stale pickup is on the wall, 4" above the floor on the WEST liner below
-    # FURN-B-SAUNA-BENCH-S (it was the south face until the room rotated on 2026-09-05 and
-    # EQ-B-SAUNA-HTR took that wall): a sauna stratifies hard, so the low pickup pulls
+    # FURN-B-SAUNA-UPPER; its inset posts keep the register face clear. The former south
+    # face rotated on 2026-09-05 and
+    # EQ-B-SAUNA-HTR took that wall: a sauna stratifies hard, so the low pickup pulls
     # the cold spent
     # layer off the floor rather than the löyly at bench height. Paired with REG-B-SUP3 over
     # the heater, both ends dampered (REG-T-ERV-SAUNA-*), it drives the room's convection

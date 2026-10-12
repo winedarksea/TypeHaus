@@ -85,8 +85,9 @@ def test_catlin_omits_low_value_details_only_from_its_permit_set(catlin_model_ro
     permit_by_number = {sheet.number: sheet.title for sheet in permit}
 
     assert full_by_number["A-502"] == "Deck bearing detail"
-    assert full_by_number["A-506"] == "Hall bath shower section"
-    assert {"A-502", "A-506"}.isdisjoint(permit_by_number)
+    assert full_by_number["A-507"] == "Hall bath shower section"
+    assert permit_by_number["A-506"] == "Sauna window-side reading recliner"
+    assert {"A-502", "A-507"}.isdisjoint(permit_by_number)
 
     # Filtering never renumbers or retitles the retained sheets.
     assert all(full_by_number[number] == title

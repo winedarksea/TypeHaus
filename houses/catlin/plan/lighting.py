@@ -26,6 +26,8 @@
 #
 # Uids are QT/QR + storey letter + serial (Crockford base32, no I/L/O/U → model/ids.py).
 
+from .sauna_types import LIGHT_RAIL_HEIGHT_IN, READING_LIGHT_PATH, WEST_LIGHT_PATH
+
 from typehaus import (
     DeviceKind,
     ElectricalDevice,
@@ -151,35 +153,24 @@ BASEMENT_LIGHTING = [
     # RETIRED, never to be reused ** (the SGS503AAAA precedent). Why, in full:
     # DESIGN-LOG.md, "Basement".
     #
-    # ** TWO RUNS, BECAUSE THE BENCHES ARE NOT A U. ** The west and south foot benches butt
-    # at x=10'-9 13/16" and make an L; the two-tier bench stands alone across the room
-    # (plan/placeables.py). One run would draw tape over open floor. The L bills 2 end caps
-    # + ** 1 corner connector **, `light_run_materials` deriving that from len(path) - 2.
-    #
-    # ** THE PATHS ARE THE BENCH FRONT FACES, NOT THE LINER ** — the strip is on the fascia,
-    # 20"-42" off the wall. The west leg starts at y=2'-5 1/2" and not at its bench's own
-    # south end: south of that line the south bench covers the west bench's fascia.
-    #
-    # ** 16" IS ONE ELEVATION FOR THE WHOLE PATH AND A LightRun CANNOT RAKE. ** It works only
-    # while all three seat tops are 18" — the foot benches are stated 18", the 2T-60's LOWER
-    # tier derives at half its declared 36" (library/placeables/furniture.py). Clears
-    # REG-B-EXH2's 4" AFF stale pickup behind the west bench.
-    LightRun(uid="0Y2Z97Y7TY", tag="LR-B-SAUNA-BENCH-L", type_ref="ED-T-LT-STRIP24-SAUNA",
-             path=(pt(inch(141.8125), inch(66)), pt(inch(141.8125), inch(29.5)),
-                   pt(inch(177.8125), inch(29.5))),
+    # Open-frame rails at 16" AFF keep the 90 C tape low, independent of the new
+    # 24" platform tops. WEST is the long foot deck; SOUTH follows only the reading
+    # platform's exposed north/east edges. Neither path spans unsupported open floor.
+    LightRun(uid="CH9EBHV9B6", tag="LR-B-SAUNA-WEST", type_ref="ED-T-LT-STRIP24-SAUNA",
+             path=WEST_LIGHT_PATH,
              room="RM-B-SAUNA", psu_ref="ED-B-SAUNA-LT-PSU",
              controlled_by=("ED-B-SAUNA-SW",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    LightRun(uid="CH9EBHV9B6", tag="LR-B-SAUNA-BENCH-N", type_ref="ED-T-LT-STRIP24-SAUNA",
-             path=(pt(inch(123.25), inch(74.1875)), pt(inch(171.25), inch(74.1875))),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(LIGHT_RAIL_HEIGHT_IN))),
+    LightRun(uid="0Y2Z97Y7TY", tag="LR-B-SAUNA-SOUTH", type_ref="ED-T-LT-STRIP24-SAUNA",
+             path=READING_LIGHT_PATH,
              room="RM-B-SAUNA", psu_ref="ED-B-SAUNA-LT-PSU",
              controlled_by=("ED-B-SAUNA-SW",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(LIGHT_RAIL_HEIGHT_IN))),
     # ** NO `circuit=` ON EITHER RUN: ** a 24V run carries none, its PSU does — authoring one
     # double-bills the tape against CKT-LT-BACKUP.
     #
-    # ** THE PSU SIZE IS THE BINDING CONSTRAINT. ** 12'-1/2" at 3 W/ft is 36.1 W; x1.25 is
-    # 45.2 W, ** 75% of the PSU-60's nameplate ** and inside the OMNIDRIVE X's own "load to
+    # ** THE PSU SIZE IS THE BINDING CONSTRAINT. ** 9'-8 11/16" at 3 W/ft is 29.17 W; x1.25 is
+    # 36.46 W, ** 61% of the PSU-60's nameplate ** and inside the OMNIDRIVE X's own "load to
     # <=80%". ED-T-LT-PSU-200 is NOT available here: a PSU sums into the backup tier at its
     # RATING, not the tape's draw (plan/lighting_types.py), so 200 VA on the ALWAYS_ON tier
     # costs 1.40 kWh over 48 h against a 0.84 kWh surplus and flips

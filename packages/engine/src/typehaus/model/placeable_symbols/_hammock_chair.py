@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from typehaus.model.placeable_symbols._families import Geometry
 from typehaus.model.placeable_symbols._frame import DETAIL_WEIGHT, ellipse, line
-from typehaus.model.placeable_symbols._plant_primitives import _mesh_part, slender_segment
+from typehaus.model.placeable_symbols._mesh import mesh_part
+from typehaus.model.placeable_symbols._plant_primitives import slender_segment
 
 SPREADER_DROP_SHARE = 0.32   # ring to bar, as a share of the overall height
 SPREADER_BACK_SHARE = 0.20   # bar behind the footprint centre, share of depth
@@ -65,4 +66,4 @@ def _pod(width, depth, height, bar_y, bar_z):
             a = j * (ACROSS + 1) + i
             b, c, d = a + 1, a + ACROSS + 1, a + ACROSS + 2
             triangles += [(a, b, c), (b, d, c), (a, c, b), (b, c, d)]  # both faces
-    return _mesh_part(positions, triangles, "cushion")
+    return mesh_part(positions, triangles, "cushion")

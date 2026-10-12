@@ -302,8 +302,8 @@ DRAINS = [
             elevations=(ft(1, 6), inch(-8)),
             serves=("FX-B-BATH-LAV",)),
     # The sauna group: the curbed pan's drop at the NE corner, then a 1/8 bend south-west to
-    # y=5'-10", just clear of FURN-B-SAUNA-BENCH-E (whose footprint covers the whole pan
-    # centre line west of the pan, so no cleanout cap could stand on it), west under the
+    # y=5'-10", then west beneath the removable foot platform. The cleanout fitting stays
+    # on this leg; its rising cap extension ends in the aisle (mep_cleanouts.py). West under the
     # sauna and the workshop to x=3'-0", and north to the base of PR-B-MAIN-DRAIN's slab
     # drop. It is the straight head of the building drain, which continues north on the same
     # line. One 2" branch carries both fixtures (4 DFU against the 6 a 2" branch takes).
@@ -579,11 +579,9 @@ LAUNDRY_MAIN = [
 # receptor that sees water in normal use, which a shower floor drain is and a finished
 # lavatory is not.
 #
-# Route: west across the sauna's hung drop ceiling (SP-B-CS-COND crossing), then north to
-# the drain and straight down in a boxed chase 1'-9" off W-B-SA-N. Air gap is 9" above
-# finish floor, falling 0.3"/ft (above ch. 4714 (UPC) 708.0's 1/4"/ft minimum)
-# across all three legs. The drop point sits over FX-B-SAUNA-SH's centre line — an indirect
-# waste has to discharge over its receptor.
+# Route: west through the existing ceiling crossing, then north within the service void.
+# Both drops descend inside the north-wall cavity; their low legs clear the removable
+# foot deck. Both outlets are 9" AFF over the floor grate. Horizontal legs fall 0.3"/ft.
 # --- the ERV's condensate ---------------------------------------------------------------
 #
 # A cold-climate ERV core makes water — on the order of a gallon or two a day at this flow
@@ -598,7 +596,7 @@ LAUNDRY_MAIN = [
 # the alternative the plan floated (the mechanical-room sink) still has no drain of its own,
 # which is the same plans/TODO.md open item it predicted this would land on.
 #
-# So it runs its own line to the same receptor, dropping in the same boxed chase 6" north of
+# So it runs its own line to the same receptor, dropping in the north wall 6" west of
 # PR-B-COND's drop: two air gaps over one trapped floor drain that sees
 # water in normal use, which is the whole reason that receptor was chosen in the first place.
 # 0.3"/ft across both horizontal legs, the same grade as its neighbour and above IRC
@@ -642,7 +640,8 @@ LAUNDRY_MAIN = [
 # y=8'-2 3/16" (FX-B-SAUNA-SH's centre line) since W-B-SA-N went north on 2026-09-05, so
 # this line stops the east leg 6" short at x=13'-0" and runs 5'-0 13/16" south from y=13'-3"
 # to the drain's own horizontal. The 6" separation from PR-B-COND's drop is west of it
-# rather than north, and both air gaps are over the grate.
+# rather than north, at the wall. The ERV's final low leg angles east to x=160" so both
+# outlets land over the 6" grate at y=98 3/16", 2" apart and 9" AFF (seating review, 2026-10-11).
 #
 # The 6" is taken in x deliberately: a drop at (13'-6", 8'-2 3/16") would land its last
 # vertex ON PR-B-SAUNA-DRAIN's new north jog in plan and above its invert, which is exactly
@@ -661,7 +660,7 @@ ERV_CONDENSATE = [
     #
     # So the fall is taken where it is already hidden: south to y=10'-0", which is inside
     # W-B-SA-N's stud core (y 9'-8 3/16"..10'-3 3/16"), then straight down that cavity to
-    # 9 9/16". What is left in the room is the last 1'-10", at floor level, landing the 9"
+    # 9.59". The final 23.59" diagonal stays below the deck and lands the 9"
     # air gap over FX-B-SAUNA-FD — the run's own final leg to its receptor, which is what an
     # indirect waste to a floor drain looks like. 0.3"/ft on both horizontals.
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
@@ -674,7 +673,8 @@ ERV_CONDENSATE = [
             path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 7), ft(30, 9)),
                   pt(ft(2, 7), ft(13, 3)),
                   pt(ft(13), ft(13, 3)), pt(ft(13), ft(10, 1.4375)),
-                  pt(ft(13), ft(10, 1.4375)), pt(ft(13), inch(98.1875))),
+                  pt(ft(13), ft(10, 1.4375)),
+                  pt(inch(160), inch(98.1875))),
             diameter=inch(0.75), material="pvc",
             # Starts at 4'-6": EQ-B-ERV's four ports are on top, with 3 5/16" of ceiling
             # above them (see plan/electrical.py). The pan is the run's high point; the fall
@@ -682,7 +682,7 @@ ERV_CONDENSATE = [
             # The first leg is 1'-4" now rather than 1'-0", so its fall goes 0.3" -> 0.4"
             # to hold the same 0.3"/ft; everything downstream keeps its authored invert.
             elevations=(inch(54), inch(53.6), inch(48.45), inch(45.425),
-                        inch(44.45), inch(9.545), inch(9))),
+                        inch(44.45), inch(9.589789422), inch(9))),
 ]
 
 # ** THE COLLECTOR MOVED ONTO THE SERVICE BAND, AND THE HEAD CAME UP 2 5/8" (2026-09-09). **
@@ -709,14 +709,16 @@ ERV_CONDENSATE = [
 CONDENSATE = [
     PipeRun(uid="CBPC01AAAA", tag="PR-B-COND", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(ft(27), ft(10, 11)), pt(ft(18), ft(10, 11)), pt(ft(18), ft(9)),
-                  pt(ft(13, 6), ft(9)), pt(ft(13, 6), inch(98.1875)),
+                  pt(ft(13, 6), ft(9)), pt(ft(13, 6), inch(121.4375)),
+                  pt(ft(13, 6), inch(121.4375)),
                   pt(ft(13, 6), inch(98.1875))),
             diameter=inch(0.75), material="pvc",
-            # The 0.3"/ft the comment above states, authored as the grade it is: the
-            # intermediate inverts solve from it. path[4] is the top of the drop and stays
-            # authored — a vertical leg has no plan run to fall over. 16'-2 3/4" of plan
-            # run from the head takes 4.87" out of 92", which is the 87.13" written here.
-            elevations=(ft(7, 8), None, None, None, inch(87.13), ft(0, 9)),
+            # Drop inside the north wall, beside the ERV drain, so no riser pierces the
+            # continuous 24" foot deck. Keep the existing ceiling crossing and 9" air gap.
+            # At 0.3"/ft, 198 7/16" of overhead run takes 4.9609375" from the 92" head;
+            # the last 23 1/4" under-bench leg takes 0.58125" to the same receptor.
+            elevations=(ft(7, 8), None, None, None, inch(87.0390625),
+                        inch(9.58125), ft(0, 9)),
             slope_in_per_ft=0.3),
 ]
 

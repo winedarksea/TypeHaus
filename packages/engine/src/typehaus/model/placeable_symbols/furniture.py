@@ -40,6 +40,11 @@ from typehaus.model.placeable_symbols._plants import (
                                                         small_potted_plant,
                                                         wall_plant_stand,
 )
+from typehaus.model.placeable_symbols._sauna_bench import sauna_open_bench
+from typehaus.model.placeable_symbols._sauna_recliner import (
+                                                        sauna_recliner,
+                                                        sauna_recliner_mattress,
+)
 from typehaus.model.placeable_symbols._sektion import (
                                                         sektion_corner_base,
                                                         sektion_corner_points,
@@ -197,5 +202,8 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # the two-tier version is the one piece of furniture whose *height* is a code-of-practice
     # number rather than an ergonomic average — see ``sauna_bench``.
     "sauna-bench": sauna_bench(tiers=1),
+    "sauna-open-bench": sauna_open_bench,
     "sauna-bench-tiered": sauna_bench(tiers=2),
+    "sauna-recliner": sauna_recliner,
+    "sauna-recliner-mattress": sauna_recliner_mattress,
 }
