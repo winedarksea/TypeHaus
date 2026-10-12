@@ -352,6 +352,13 @@ MAIN_PLACEABLES = [
     # rose 2" to 6'-10" when the sills went to the counter line, and the rods followed.
     # y=10" (or x, on side walls) centres the rod 10" off the wall line: 6 1/2" finish face
     # + ~3 1/2" bracket projection. Each rod centres on its opening's RO centre.
+    # The south pair are 64" apart; S2 is the west opening, so its rod shares S1's 84" head
+    # line and sits 64" west along W-M-S2.
+    Furniture(uid="RDS2LIV001", tag="FURN-M-LIV-ROD-S2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-S2", face="left", distance_from_start=inch(105.28125),
+                  normal_gap=inch(1.625), rotation_offset=deg(-180)))),
     Furniture(uid="EYJ3ZHXFSF", tag="FURN-M-LIV-ROD-S1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
               location=Location(attachment=WallAttachment(

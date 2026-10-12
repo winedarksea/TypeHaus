@@ -53,7 +53,7 @@ from typehaus import (
     inch,
     pt,
 )
-from typehaus.model import Location, WallAttachment, m
+from typehaus.model import Location, WallAttachment
 
 # Terminals off the chase name their drawn branch in `duct_ref`. Until 2026-09-23 the bedroom
 # grilles named the trunk through an unmodelled boot that could not have been built: ceiling
@@ -355,7 +355,7 @@ REGISTERS_SECOND = [
     Register(uid="CSRV05AAAA", tag="REG-S-EXH1", kind=DuctSystem.EXHAUST, room="RM-S-BATH1",
             position=pt(ft(5), ft(32, 8)), duct_ref="DU-A-ERV-R-BATH1",
             type_ref="REG-T-ERV-EXH", design_cfm=20,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9)), rotation=deg(90)),
 ]
 
 # Main-storey terminals are ceiling grilles fed from the FS-S-WEST bays overhead, each with
