@@ -80,3 +80,20 @@ def test_shared_register_direction_and_duct_physics_are_preserved():
     assert ducts["DUCT-T-SEMIRIGID-4"].bore_diameter.inches == pytest.approx(3.8)
     assert ducts["DUCT-T-GALV-6"].roughness_m == pytest.approx(0.0000914)
     assert ducts["DUCT-T-FLEX-6"].bend_equivalent_length.inches == pytest.approx(84)
+
+
+@pytest.mark.parametrize("screen_size", [65, 98])
+def test_tv_catalog_offers_wall_and_stand_mounts(screen_size):
+    from typehaus.library.placeables.furniture import STARTER_FURNITURE_TYPES
+    from typehaus.model import MountKind
+
+    types = {item.tag: item for item in STARTER_FURNITURE_TYPES}
+    stand = types[f"FURN-TV-{screen_size}"]
+    wall = types[f"FURN-TV-{screen_size}-WALL"]
+    assert stand.plan_symbol == "tv"
+    assert wall.plan_symbol == "tv-wall"
+    assert wall.mount.kind is MountKind.WALL
+    assert wall.footprint[0] == stand.footprint[0]
+    assert wall.height == stand.height
+    assert wall.footprint[1].inches == pytest.approx(4)
+    assert wall.footprint[1] < stand.footprint[1]

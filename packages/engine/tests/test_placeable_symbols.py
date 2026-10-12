@@ -263,3 +263,16 @@ def test_wave_chandelier_is_five_strips_waving_in_elevation() -> None:
     assert len(first) == 1 and "mesh" in first[0]
     bottoms = [z for _, _, z in first[0]["mesh"]["positions"]]
     assert max(bottoms) - min(bottoms) > 0.1  # it undulates, not a flat bar
+
+
+def test_wall_tv_panel_reaches_its_mount_elevation_without_a_pedestal():
+    width, depth, height = 2.16, 0.1016, 1.27
+    panel, = model_parts("tv-wall", width, depth, height)
+    assert panel["color"] == "screen"
+    assert panel["size"] == pytest.approx((width, depth, height))
+    assert panel["center"] == pytest.approx((0, 0, height / 2))
+    assert all(stroke["fill"] != "wood-dark"
+               for stroke in plan_symbol_strokes("tv-wall", width, depth))
+    stand_parts = model_parts("tv", width, 0.4191, height)
+    assert {part["color"] for part in stand_parts} == {"screen", "wood-dark", "metal"}
+    assert stand_parts[0]["center"][2] - stand_parts[0]["size"][2] / 2 > 0

@@ -88,12 +88,27 @@ MEDIA_CONSOLE = FurnitureType(
 )
 # TV sizes are quoted W x H x D; the footprint is W x D and the stated H is the height.
 TV_65 = FurnitureType(
-    tag="FURN-TV-65", name='65" television', footprint=(inch(56.5), inch(14.5)),
+    tag="FURN-TV-65", name='65" stand-mounted television', footprint=(inch(56.5), inch(14.5)),
     height=inch(33.9), plan_symbol="tv", source=REFERENCE,
 )
 TV_98 = FurnitureType(
-    tag="FURN-TV-98", name='98" television', footprint=(inch(85.3), inch(16.5)),
+    tag="FURN-TV-98", name='98" stand-mounted television', footprint=(inch(85.3), inch(16.5)),
     height=inch(50.1), plan_symbol="tv", source=REFERENCE,
+)
+
+# Illustrative panel envelopes, including wall-mount depth; preserve the authored screen
+# heights so swapping mounting styles does not move the top of a wall-mounted TV.
+TV_65_WALL = FurnitureType(
+    tag="FURN-TV-65-WALL", name='65" wall-mounted television',
+    footprint=(inch(56.5), inch(4)), height=inch(33.9), plan_symbol="tv-wall",
+    mount=Mount(kind=MountKind.WALL),
+    source="Illustrative 65 in panel with 4 in wall-mount envelope; not product-specific.",
+)
+TV_98_WALL = FurnitureType(
+    tag="FURN-TV-98-WALL", name='98" wall-mounted television',
+    footprint=(inch(85.3), inch(4)), height=inch(50.1), plan_symbol="tv-wall",
+    mount=Mount(kind=MountKind.WALL),
+    source="Illustrative 98 in panel with 4 in wall-mount envelope; not product-specific.",
 )
 
 # This tag groups chairs tucked at any catalog dining table with that table's zone.
@@ -489,7 +504,7 @@ STARTER_FURNITURE_TYPES = (
     STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, ROCKING_CHAIR, POTTED_PLANT, COFFEE_TABLE,
     PUZZLE_COFFEE_TABLE, SOFA_WITH_PUZZLE_COFFEE_TABLE,
     FIDDLE_LEAF_FIG, END_TABLE, MEDIA_CONSOLE,
-    TV_65, TV_98,
+    TV_65, TV_98, TV_65_WALL, TV_98_WALL,
     DINING_8_OPEN_CORNERS, SOFA_84_SEAT_BAND, PORCH_LOUNGE_27,
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, HEMNES_DRESSER_63,
     CHEST, WARDROBE_48, NIGHTSTAND, NARROW_NIGHTSTAND,

@@ -133,3 +133,10 @@ def test_attach_slide_detach_round_trip_through_write_back(tmp_path) -> None:
     assert result.plan is not None, [f.message for f in result.findings]
     item = result.plan.by_tag(tag)
     assert item.position is None and item.location.attachment.wall_ref == "W-101"
+
+
+def test_playroom_tv_uses_a_thin_wall_panel_seated_on_the_host(catlin_model_ro):
+    tv = next(item for item in catlin_model_ro.canvas_objects if item.tag == "FURN-B-PLAY-TV")
+    assert tv.type_ref == "FURN-TV-98-WALL"
+    face, edge = _face_distance(catlin_model_ro, tv.tag, "W-B-N1")
+    assert edge == pytest.approx(face, abs=1e-9)

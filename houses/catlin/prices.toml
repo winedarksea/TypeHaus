@@ -6310,7 +6310,7 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # specialty, and the low end is a TCL/Hisense-class 98" rather than anything smaller. The
 # high end is an LG/Samsung flagship at the same diagonal. The articulating anchor mount into
 # 8" concrete is inside the range and is a real part of it.
-"FURN-TV-98" = { low = 1600, high = 6000 }  # 1 ea
+"FURN-TV-98-WALL" = { low = 1600, high = 6000 }  # 1 ea
 # The U sectional, 11'-0" x 8'-0" with a 3'-0" seat depth: eight to nine seats' worth of
 # frame, so it prices as roughly two-and-a-half sofas rather than one. Same enormous spread
 # as every other seating row here, and for the same reason — it is an owner decision that can

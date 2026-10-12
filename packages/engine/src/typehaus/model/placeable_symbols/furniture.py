@@ -151,6 +151,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "arch-shelf-mirror": arch_shelf_mirror(),
     "bed": bed(pillows=2, headboard=True),
     "tv": screen(stand=True),
+    "tv-wall": screen(stand=False),
     # The one furnishing that is not joinery: a pot with leaves over it. Five blades is the
     # fewest that still reads as a canopy rather than as a star at plan scale.
     "potted-plant": potted_plant(leaves=5),

@@ -64,7 +64,7 @@ SYMBOL_NAMES = frozenset({
     "wardrobe-show", "wardrobe-show-hang", "wardrobe-dress", "wardrobe-double-hang", "closet-board",
     "closet-corner-wire", "closet-wire",
     "wardrobe-shelves", "wardrobe-corner", "wardrobe-sliding-pair",
-    "bed", "tv", "potted-plant", "wall-rack", "peg-rail", "arch-shelf-mirror",
+    "bed", "tv", "tv-wall", "potted-plant", "wall-rack", "peg-rail", "arch-shelf-mirror",
     "small-potted-plant", "wall-plant-stand", "hanging-vine-planter", "fiddle-leaf-fig",
     # sauna joinery — benches are fitted to the room, not bought as a set
     "sauna-bench", "sauna-bench-tiered", "sauna-open-bench", "sauna-recliner",

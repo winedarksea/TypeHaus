@@ -635,15 +635,16 @@ def bed(*, pillows: int = 2, headboard: bool = True) -> Builder:
 
 
 def screen(*, stand: bool = True) -> Builder:
-    """A television: a thin panel on a stand, drawn as its footprint plus the screen line."""
+    """A television panel, optionally raised above a pedestal stand."""
 
     def build(width: float, depth: float, height: float) -> Geometry:
-        panel_t = clamp(depth * 0.16, 0.02, 0.06)
+        panel_t = clamp(depth * 0.16, 0.02, 0.06) if stand else depth
         panel_cy = depth / 2 - panel_t / 2
         base_h = min(0.05, height * 0.08)
         strokes = [rect(0, 0, width, depth, weight=DETAIL_WEIGHT),
                    rect(0, panel_cy, width, panel_t, fill="screen")]
-        parts = [box(0, panel_cy, height * 0.32, height, width, panel_t, "screen")]
+        panel_bottom = height * 0.32 if stand else 0.0
+        parts = [box(0, panel_cy, panel_bottom, height, width, panel_t, "screen")]
         if stand:
             strokes.append(rect(0, 0, width * 0.3, depth * 0.8, fill="wood-dark",
                                 weight=DETAIL_WEIGHT))

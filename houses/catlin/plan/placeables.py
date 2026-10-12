@@ -51,7 +51,7 @@ BASEMENT_PLACEABLES = [
     # (ED-B-PLAY-N-DATA1). `mount=WALL` with the panel's bottom at 2'-6" puts its top at
     # 6'-8" under an 8'-3 1/2" ceiling. **An 8" concrete wall takes anchors, not blocking** —
     # there is no stud bay behind this and the mount is a mechanical fixing into the pour.
-    Furniture(uid="X99HBG99WJ", tag="FURN-B-PLAY-TV", type_ref="FURN-TV-98", room="RM-B-PLAY-N",
+    Furniture(uid="X99HBG99WJ", tag="FURN-B-PLAY-TV", type_ref="FURN-TV-98-WALL", room="RM-B-PLAY-N",
               mount=Mount(kind=MountKind.WALL, elevation=inch(30)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-B-N1", face="left", distance_from_start=inch(111),
