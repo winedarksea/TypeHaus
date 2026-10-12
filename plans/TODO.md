@@ -196,9 +196,6 @@ the future.
  - **`SF-B-BATH` stays, and not for want of numbers** — its three runs clear the 6'-8"
    headroom line by ~7 1/2" and a declaration on `RM-B-BATH` would pass. Nobody has decided a
    bathroom ceiling should be open. That is a design question, not a cleanup.
- - **Rebar is modelled and pickable now; only the price back-out is left.** The `[concrete]`
-   $/cy rates still absorb the steel (`[rebar_inclusive]` in `prices.toml`). Pricing rebar as
-   its own rows means cutting those rates the same day.
  - Add trim/baseboard — we're generally trimless (clean lines, drywall), but maybe a flush-with-drywall baseboard.
 - Orientation-tuned glass, particularly second-story south-facing windows.
 - Make it easier to "hop" into a given room for 3d viewing and rotate in spot, perhaps with a "fish eye" lens view rendering

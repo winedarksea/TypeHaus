@@ -153,42 +153,34 @@ def test_dowels_bill_only_where_authored_as_l_bars(catlin_model) -> None:
         assert bar.lap_length_m > 0 and (bar.hook_kinds, len(bar.path)) == shape
 
 
-def test_an_empty_reinforcement_table_moves_no_money() -> None:
-    """catlin bills the steel and prices none of it — on purpose, and that is the safety.
-
-    Every row lands in the estimate's ``unpriced`` list, which satisfies "every BOM table is
-    priced, declared, or unpriced" BY BEING LISTED, and the total does not move by one cent.
-    The tonnage ships before the dollar does, so it can be read against the allowance
-    register's ~5 tons before a single $/cy rate is cut.
+def test_reinforcement_bills_as_material() -> None:
+    """The $/lb is the bar, cut, bent and delivered, with chairs and wire, and NOT the
+    placing. Placing stays in the [concrete]/[wall_structure] labour residuals (decision #86).
     """
     from typehaus.cli.price_file import load_prices
 
     prices = load_prices(_CATLIN)
-    assert prices is not None
-    assert prices.reinforcement == {}, (
-        "catlin prices no reinforcement yet. When it does, the [concrete] and "
-        "[wall_structure] rates must be cut in the SAME commit — see [rebar_inclusive].")
+    assert prices is not None and prices.reinforcement
     assert prices.basis["reinforcement"] == "material"
 
 
 def test_pricing_reinforcement_against_an_inclusive_rate_is_a_hard_error() -> None:
     """The double-billing guard, in both directions.
 
-    ``prices.toml`` states the "cut the $/cy rates the same day" condition in two places, and
-    `plans/cost-options.md` observed that *"nothing enforces that"* — against roughly five
-    tons and $10,000-18,000. This is the enforcement, and it is the same shape the file
-    already uses twice: an explicit opt-in boolean deciding whether a part bills separately
-    or rides inside a rate, and a hard error naming both sides of a double-count.
+    catlin prices ``[reinforcement]`` with both ``[rebar_inclusive]`` flags false. Flip
+    either back to true and the file must refuse to load, naming both sides of the
+    double-count: the priced table, and the rate that would still contain its steel.
     """
     from typehaus.cli.price_file import load_prices
 
     source = (_CATLIN / "prices.toml").read_text()
-    priced = source.replace("[reinforcement]\n",
-                            '[reinforcement]\n"#6" = { low = 1.05, high = 1.35 }\n', 1)
+    assert "concrete       = false" in source and "wall_structure = false" in source
+    inclusive = source.replace("concrete       = false", "concrete       = true") \
+                      .replace("wall_structure = false", "wall_structure = true")
 
     with tempfile.TemporaryDirectory() as tmp:
         house = Path(tmp)
-        (house / "prices.toml").write_text(priced)
+        (house / "prices.toml").write_text(inclusive)
         with pytest.raises(ValueError) as excinfo:
             load_prices(house)
         message = str(excinfo.value)
@@ -197,10 +189,8 @@ def test_pricing_reinforcement_against_an_inclusive_rate_is_a_hard_error() -> No
         assert "[concrete]" in message and "[wall_structure]" in message
         assert "rebar_inclusive" in message
 
-        # And declaring the cut lets it through — the guard is a gate, not a wall.
-        cut = priced.replace("concrete       = true", "concrete       = false") \
-                    .replace("wall_structure = true", "wall_structure = false")
-        (house / "prices.toml").write_text(cut)
+        # And the declared cut lets it through — the guard is a gate, not a wall.
+        (house / "prices.toml").write_text(source)
         assert load_prices(house).reinforcement
 
 

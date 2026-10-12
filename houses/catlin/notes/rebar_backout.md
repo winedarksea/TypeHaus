@@ -16,22 +16,21 @@
 > authorised and §3's conclusion is unchanged. Historic tables below describe the former
 > pier scheme.
 
-# Rebar back-out — the reconciliation, and why the rate cut is NOT taken yet
+# Rebar back-out — the reconciliation, and the rate cut (TAKEN 2026-10-11)
 
 **House:** catlin, Ramsey County, Minnesota.
 **Subject:** the reinforcing-steel back-out out of the `[concrete]` and `[wall_structure]`
 $/cy rates.
 **Written:** 2026-09-03, by hand in a separate pass.
 **Oracle for:** `takeoff/reinforcement.py`'s back-out. The steel §4 named is authored as of
-2026-09-17 and billed as laid-out pieces; the rate cut is **closed by decision** (§3).
+2026-09-17 and billed as laid-out pieces; the rate cut is **taken** (§3, 2026-10-11).
 
-**Status: the quantity ships, the dollar does not.** `takeoff/reinforcement.py` bills
-reinforcing steel by the pound as of 2026-09-03. `[reinforcement]` in `prices.toml` is
-present and **empty**, so every row lands in the estimate's `unpriced` list and the total
-does not move by one cent. This note is the independent oracle the back-out has to pass
-before those rates are filled in and the `[concrete]` / `[wall_structure]` $/cy rates are
-cut. Since 2026-09-17 the steel is laid out and counted as pieces, §4's gaps are authored,
-and the cut is **held closed by decision** (§3) rather than by the arithmetic.
+**Status (2026-10-11): the quantity AND the dollar ship.** `[reinforcement]` prices the
+laid-out bar by the pound, black and A767 apart; `[rebar_inclusive]` is `false` for both
+sections; and every $/cy row that held steel had its material half re-anchored without it
+(decision #86, superseding #75's closed gate). Re-anchored, not netted to zero: the total rose
+by about $8,000-12,900, because the old rates under-read both the 5,000 psi mix and the steel
+(§3). Everything below §3's new head is the record of how the gate stood until then.
 
 Worked by hand in a separate pass, in the discipline every calculation in this repo is held
 to: *a back-out that only agrees with itself is not verified.*
@@ -347,7 +346,69 @@ flatters a ratio by hiding from it is the worst kind.
 line — per-group rounding as one group split into three — and changed no quantity anywhere.
 A specification change should cost nothing, and this one did.)
 
-## 3. The test, and the gate is CLOSED BY DECISION
+## 3. The rate cut — OPEN since 2026-10-11
+
+Decision #86 reverses #75 D14 on purpose. The owner's two rules: **re-anchor, don't net to
+zero** — rebuild each row's material half from what is actually sourced, minus the bar — and
+**$/lb is material only** (fabricated bar + chairs + tie wire); placing labour stays in the
+labour residuals.
+
+**Where the steel sits** (`reinforcement_by_host` joined to the price rows, 6,586.0 lb):
+
+```
+row                                   cy      lb     lb/cy   bar
+footing (COURT_FOOTING_12 only)     19.09   1,700.8   89     #4/#5 HDG
+column:PIER_CONCRETE_12              1.45     332.3  229     #3/#5 HDG, moment-pier dowels incl.
+column:SUNKEN_GARDEN_COLUMN_12       0.90     261.1  290     #3/#5 HDG
+slab:DECK_EPS_INT  (414 SF)         18.37*  1,224.3   —      #3/#4/#5 BLACK, 2.96 lb/SF
+BASEMENT_12                         10.67     101.5   9.5    #4 HDG
+BASEMENT_8                          18.11     554.0  30.6    #4/#5 HDG
+GARAGE_ICF_6                         7.90     604.8  76.6    #4 HDG
+SUNKEN_GARDEN_WALL                   7.06     129.5  18.3    #6 HDG
+SUNKEN_GARDEN_WALL_DRAINED          17.11   1,599.2  93.5    #4/#5 HDG
+SG_VENEER_BEAM_14                    0.99      78.5  79.3    #3/#4/#5 HDG
+                                           -------
+                                            6,586.0          (* gross prism; billed per SF)
+```
+
+No steel: `pad:PIER_BASE_12` (the moment piers' dowels into it are hosted by the column, and
+bill there), `beam:SUNKEN_GARDEN_GRADE_BEAM_12`, the bare `slab` row and every FRC flatwork
+row (fibre only), `FOUNDATION_WALL_12_INT` and the two curbs (merged, steel-free). Those rows
+are untouched; the pad and the grade beam lost the "same band as" link to rows that moved.
+
+**The $/lb rates** (`[reinforcement]`, sources dated there): black #3 $1.15-1.65, #4
+$1.00-1.40, #5 $0.95-1.30, #6 $0.90-1.25; A767 HDG +$0.35-0.85 on each. The old "+$0.30/lb"
+was a mill-list premium; galvanizing after fabrication is $0.20-0.50/lb at the kettle (AGA)
+plus round-trip freight and a lot minimum spread over a few small lots.
+
+**The reconciliation** (`scripts/price_delta.py`, section subtotals, before tax ladder):
+
+```
+                                     low          high
+[reinforcement]  6,586 lb        +8,322.85    +13,486.06
+  black  1,224.3 lb              +1,239.39    + 1,732.34
+  HDG    5,361.7 lb              +7,083.46    +11,753.72
+[concrete]                         −883.97     −1,633.85
+  column:SUNKEN_GARDEN_COLUMN_12   −544.50     −  954.00   cage out
+  column:PIER_CONCRETE_12          −245.05     −  464.00   cage out
+  slab:DECK_EPS_INT                −310.50     −  621.00   bar out, placing stays
+  footing                          +216.08     +  405.15   5,000 psi mix re-read
+[wall_structure]                   +515.64     +1,085.01   5,000 psi mix + ties re-read
+                                 ---------    ----------
+net                              +7,954.52    +12,937.22
+every other section                   0.00          0.00
+```
+
+**Why the total rises.** The old material halves were "Twin Cities ready-mix $180-200 plus
+rebar". The house pours 5,000 psi with macro fibre (and air on EXPOSED_MIX), which sources
+at $193-235, so the mix was under-read by about what the implied steel was worth. Netted the
+other way, the implied steel was ~$15-50/cy in the split rows (~$1,200-4,000 over their
+81 cy), plus the column cage lines (~$600-1,000) and the deck's bar line. That is perhaps
+$2,500-6,500 in all, against $8,300-13,500 of bar actually billed. The difference is the 6,586 lb nobody priced
+until the layout counted it, plus the HDG premium. It is not a new cost. The register's
+$10,000-18,000 (`[allowances]` note) brackets the result's upper half.
+
+**The gate history**, kept for the record:
 
 ```
 billed          6,718 lb / 143.93 cy   =  46.7 lb/cy   (2026-09-21, veneer beam bottom row stops at the dowels)
@@ -371,7 +432,7 @@ reinforced residential foundation runs, which is the sanity check this section a
 At $1.05–1.35/lb, **6,718 lb is $7,054–9,069** (6,668 lb was $7,001–9,001) (6,730 lb was $7,067–9,086 before the
 2026-09-17 detailing review): still under the register's $10,000–18,000,
 though no longer by half. **The gate stays closed, and from today that is a DECISION rather
-than an arithmetic result** (decision #75 D14). The price back-out is out of the layout's
+than an arithmetic result** (decision #75 D14; reversed by #86 on 2026-10-11, above). The price back-out is out of the layout's
 scope: `[reinforcement]` stays empty, `[rebar_inclusive]` stays `true`, and
 `tests/test_rebar_backout.py` pins that as a closed-by-decision constant tied to this
 section. It no longer asserts a dollar figure, so a future authoring pass that lifts the
@@ -511,6 +572,9 @@ not modelled anywhere.
 
 ## 5. What has to happen before the cut
 
+> **DONE 2026-10-11** (decision #86): the cut is taken, in one commit, material half only, with
+> `[rebar_inclusive]` flipped. §3 holds the reconciliation. The list below is the record.
+>
 > **2026-09-17:** the first three bullets are done (§4). The re-run of §3 lands at
 > $6,938–8,921 and the gate is held closed by decision, not by that figure. What remains is
 > the cut itself, below, whenever it is chosen.
@@ -557,10 +621,9 @@ Three independent mechanical checks. Two are already runnable.
 2. **Quantities must be identical.** Same two refs, `haus takeoff --csv`, `diff`. The only
    permitted new rows are `reinforcement:*`. Anything else moving means an assembly-naming
    pass silently re-grouped a pour.
-3. **This note.** `tests/test_rebar_backout.py` pins §1's rows (pieces and pounds) and §3's
-   closed-by-decision gate. Since 2026-09-17 the gate is a constant, not a dollar comparison
-   (decision #75 D14): the test fails when someone prices `[reinforcement]` or flips
-   `[rebar_inclusive]`, not when authoring moves the tonnage.
+3. **This note.** `tests/test_rebar_backout.py` pins §1's rows (pieces and pounds) and, since
+   2026-10-11, that `[reinforcement]` is priced, both `[rebar_inclusive]` flags are false, and
+   every billed (bar, coating) resolves to its own black or HDG key.
 4. **The layout.** `tests/test_rebar_layout_oracle.py` reproduces three elements of §1 bar for
    bar against `rebar_layout_basis.md`, and `test_rebar_layout_vs_area.py` holds every spaced
    role to within a bar of `area / spacing`.

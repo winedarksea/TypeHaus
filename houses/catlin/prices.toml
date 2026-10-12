@@ -37,9 +37,8 @@
 # [allowances] table (48 lump sums), and three of the four bid-ladder stages were turned on.
 # Read those two blocks' own headers before changing either.
 #
-# Three things are still deliberately out, and each says why where it lives: REBAR (it is
-# inside the [concrete] $/cy rates -- see [basis_notes] -- so an allowance would bill it
-# twice), GC OVERHEAD AND PROFIT (that is [markup], deliberately zero, ~$130k-375k if taken),
+# Two things are still deliberately out, and each says why where it lives (REBAR was a third
+# until 2026-10-11; it now bills by the pound in [reinforcement]): GC OVERHEAD AND PROFIT (that is [markup], deliberately zero, ~$130k-375k if taken),
 # and the full-deck ice-and-water membrane (an upgrade, not base scope).
 #
 # Two price-model refactors landed with them, and both are legibility rather than money:
@@ -1501,7 +1500,7 @@
 #     Use $49-77 as the COST FLOOR and budget ~$90-140 each at (4) #5 with galvanizing;
 #   * the cage is galvanized — EITHER ASTM A767 (galvanize AFTER fabrication; the class is a
 #     coating weight, not a bend order) OR ASTM A1094 (coated stock, bent after coating),
-#     the fabricator's choice named on the order — about +$0.30/lb over black bar.
+#     the fabricator's choice named on the order — +$0.35-0.85/lb over black ([reinforcement]).
 #     **Why galvanized, if the pier row is not:** it is, since
 #     2026-09-11. The exposure argument for both is ACI 318-19 Table 19.3.1.1 class C2 —
 #     worked for the court in `params/sunken_garden.py` (salt arrives on boots and cannot
@@ -1538,16 +1537,20 @@
 # assembly's own source still specifies ~30", which is longer than required and is what
 # gets built; the number here is now the requirement, not a third figure.
 #
-# ** THE DOWELS ARE IN THE STEEL TONNAGE. ** `[reinforcement]` is empty and
-# `[rebar_inclusive]` sets `concrete = true`, so every $/cy
-# rate above absorbs its own steel. The corner columns' dowels are AUTHORED now (role
-# `dowels`, decision #75) and the reinforcement takeoff bills them as L-bars — hooked into
-# the wall top, lapped class B above. Their dollars stay in this rate until the back-out.
-"column:SUNKEN_GARDEN_COLUMN_12" = { material = { low = 1150, high = 2100 }, labour = { low = 920, high = 1700 } }  # 0.92 cy = 32.6 LF over the four balcony corners (PT-SG-BR1/BR3/BF1/BF3); $/cy, so the line scales. 1.53 cy over six until the centre line retired, 2026-09-22
+# ** THE CAGE IS OUT OF THIS RATE (2026-10-11).** It bills by the pound in [reinforcement]
+# (261 lb, ~290 lb/cy, dowels included), so the cage bullet above is the part to QUOTE, not a
+# part of this $/cy. Material re-anchored without it, per cy at 34.4 LF/cy of 12" round:
+#   fibre tube $4-9/LF                                        $137-309
+#   saddle collars + kickers, ~$150-300 over the four          $167-333
+#   ready-mix, EXPOSED_MIX short load                          $200-320
+#   waterstop at the wall-top joint, 4 x ~3 LF at $3-6         $ 40- 80
+#                                                              $544-1,042 -> $545-1,040
+"column:SUNKEN_GARDEN_COLUMN_12" = { material = { low = 545, high = 1040 }, labour = { low = 920, high = 1700 } }  # 0.92 cy = 32.6 LF over the four balcony corners (PT-SG-BR1/BR3/BF1/BF3); $/cy, so the line scales. 1.53 cy over six until the centre line retired, 2026-09-22
 # W-SG-ARCH, the buried grade beam / strut on the MW-ME line. A concrete Beam since 2026-09-16, so
 # it bills here by the yard rather than under [wall_structure]. Same 12" court pour off the same
-# ticket as SUNKEN_GARDEN_WALL, so the SAME RATE: re-rate both together. An unpriced key drops
-# from the takeoff silently.
+# ticket as SUNKEN_GARDEN_WALL. An unpriced key drops from the takeoff silently.
+# PLAIN (no authored steel), so the 2026-10-11 rebar re-anchor left it alone. It no longer shares
+# SUNKEN_GARDEN_WALL's material band ($221-290 since then): re-rate it on its own.
 "beam:SUNKEN_GARDEN_GRADE_BEAM_12" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 0.97 CY — no wash, nothing of it shows
 # The six 12" round shafts of the NORTH ENTRY, and which six depends on EAST_POST_SYSTEM
 # (params/east_posts.py, 2026-09-29). Under "steel" (and "kdat") they are PT-BW-W/E/PE on the
@@ -1572,28 +1575,31 @@
 # $18-38/LF to lay out, set and brace the tube plumb, place and vibrate, and strip.
 # Labour-dominated, like every small-volume pour in this table.
 #
+# ** THE CAGE LEFT THE MATERIAL HALF 2026-10-11 ** and bills in [reinforcement] (332 lb,
+# ~229 lb/cy with the moment piers' dowels). Material is tube + ready-mix only, per cy:
+# $4-9/LF x 34.4 = $137-309, + $200-320 = **$337-629**. The two paragraphs below are the
+# cage's record; the $/LF they quote is no longer in this rate.
+#
 # ** THE CAGE LINE IS RE-STRUCK 2026-09-11, AND THIS ONE IS A REAL RATE GAP, NOT PROSE. **
 # It read "a 4-bar cage with ties $3-7/LF" — black bar. `ENTRY_PIER_CAGE` is galvanized
 # (A767 after fabrication or A1094 stock, named on the order) and has been since 2026-09-10,
 # for the same reason the
 # garden columns are: these stand up to 18 1/2" out of the ground at an entry that is
-# salted every winter, on an EXPOSED_MIX. The garden row charges about +$0.30/lb for
-# exactly that and this row charged nothing. A (4) #5 + #3 tie cage at 10" o.c. on a 12"
+# salted every winter, on an EXPOSED_MIX. The garden row charged about +$0.30/lb for
+# exactly that and this row charged nothing (both now bill HDG in [reinforcement]).
+# A (4) #5 + #3 tie cage at 10" o.c. on a 12"
 # round with 2" cover is ~5.0 lb/LF (4.17 vertical, 0.87 ties), so the premium is
 # **+$1.50/LF, about +$80 over the six shafts** — and the material rate below moves with
 # it, 498-923 -> 506-949 $/cy. Small, and it was the wrong kind of small: a rate that
 # quietly prices a different product from the one authored.
 #
-# ** THE DOWELS ARE IN THE STEEL TONNAGE. ** Same as the garden
-# row above: `[rebar_inclusive]` sets `concrete = true`, so this $/cy rate absorbs its own
-# steel. The four moment piers (PT-BW-E/-RE/-GE/-RNE) author their pad dowels as role
-# `dowels` (decision #75) and the reinforcement takeoff bills them with the cages.
+# The moment piers' pad dowels (role `dowels`, decision #75) bill with the cages, under the
+# column host — which is why `pad:PIER_BASE_12` below carries no steel.
 #
 # ** THE CAGE IS THE SAME PART THE GARDEN ROW BUYS. ** `ENTRY_PIER_CAGE` and the court's
 # cage are ONE 8" cross-section — (4) #5, #3 rings @ 10", 2" cover — so these six and the
 # court's six are TWELVE OFF of one fabricated unit, lengths per pour. Quote the 8-inch cage
-# by name, twelve off, rather than pricing six pier cages and six column cages separately;
-# the per-LF rate above already carries the galvanized premium.
+# by name, twelve off, rather than pricing six pier cages and six column cages separately.
 #
 # ** THE CAGE-STEP HISTORY THIS ROW CARRIED IS GONE (2026-09-11). ** Two paragraphs
 # recorded a #4 -> #5 correction on PT-SG-COL (+16 lb, 2026-08-30) and the same correction
@@ -1604,16 +1610,25 @@
 # 1.131 in2 on a 12" round, 29% short, and a plain column at h/d past 3 is not permitted at
 # any stress under §14.1.5** — so it is stated here once instead of being reconstructed
 # from two obituaries. notes/north_entry_piers.md §6 is the live derivation.
-"column:PIER_CONCRETE_12" = { material = { low = 506, high = 949 }, labour = { low = 638, high = 1348 } }  # six shafts; "steel": six piers, ~0.9 cy — "cast": 1.51 cy = 53.5 LF with two full-height canopy columns; $/cy, so the line scales
+"column:PIER_CONCRETE_12" = { material = { low = 337, high = 629 }, labour = { low = 638, high = 1348 } }  # six shafts; "steel": six piers, ~0.9 cy — "cast": 1.51 cy = 53.5 LF with two full-height canopy columns; $/cy, so the line scales
 # "dowel" =    # 0 cy
 # A 16"x8" footing is 0.0329 cy/LF, so this is $9.20-14.80/LF. Inch Calculator's dimension
 # table back-solves to a consistent $256-267/cy but on a $137/cy ready-mix basis; Twin Cities
 # 2026 ready-mix is $180-200 and placement labour is up ~20-25% since. MN adds 42" frost depth
-# and footings stepped down the walk-out side. Rebar is IN this rate (see the [basis_notes]).
-# SPLIT 2026-08-27. Material is the Twin Cities 2026 ready-mix quote this comment already
-# names ($180-200/cy, a YARD'S PRE-TAX SHEET) plus the rebar and form lumber consumed in the
-# pour; labour is the residual. That order matters — see the [basis_notes] on this section.
-"footing" = { material = { low = 195, high = 240 }, labour = { low = 85, high = 210 } }  # 26.92 cy MEASURED (19.09 COURT_FOOTING_12 + 6.35 FOOTING_20 + 1.48 FOOTING_EXPOSED_20) — 30.87 until 2026-09-15, when the garage's nine (3.95 cy) went to stone. The 33.25/31.52/1.73 this comment carried was stale again; re-read off `haus takeoff` rather than re-derived
+# and footings stepped down the walk-out side.
+# SPLIT 2026-08-27; labour is the residual — see the [basis_notes] on this section.
+# ** RE-ANCHORED 2026-10-11, REBAR OUT. ** The court's 1,701 lb (89 lb/cy over 19.09 cy) bills
+# in [reinforcement]; FOOTING_20/_EXPOSED_20 are plain. Material, per cy:
+#   5,000 psi ready-mix, Twin Cities 2026                      $185-215
+#   + macro fibre 4 lb/cy                                      $  8- 12
+#   + air, EXPOSED_MIX only (20.6 of 27 cy)                    $  0-  8
+#   form boards, stakes, keyway, consumables                   $ 10- 20
+#                                                              $203-255
+# Sources: homeblue.com Minneapolis $/cy (5,000 psi $177-186), concretecalculate.com 2026
+# ready-mix by PSI ($185-215 delivered), slabcalc.co 2026 (air +$3-8/cy).
+# The old $195-240 was a 3,000-psi $180-200 plus steel: the mix was under-read by about what
+# the steel was worth, which is why this band RISES with the rebar out of it.
+"footing" = { material = { low = 203, high = 255 }, labour = { low = 85, high = 210 } }  # 26.92 cy MEASURED (19.09 COURT_FOOTING_12 + 6.35 FOOTING_20 + 1.48 FOOTING_EXPOSED_20) — 30.87 until 2026-09-15, when the garage's nine (3.95 cy) went to stone. The 33.25/31.52/1.73 this comment carried was stale again; re-read off `haus takeoff` rather than re-derived
 # ** THE GENERIC ROW, AND CATLIN NO LONGER USES IT (2026-09-14). ** It is a lump for a pad
 # nobody has sized — all setup and no volume, really a $300-600 minimum charge — and the
 # "0.59 cy" in this comment was stale for as long as the house had no `Pad` at all. Kept
@@ -1631,8 +1646,10 @@
 # a third again wider, because a 3-form isolated pour at the bottom of a deep excavation
 # carries setup a continuous strip footing amortises over 96 LF.
 #
-# Rebar: NONE authored, and that is the same open item `notes/rebar_backout.md` §5 records
-# for the belled piers. The rate carries no steel and the note says so.
+# Rebar: none in the pad. The moment piers' dowels into it bill under the column host
+# (`column:PIER_CONCRETE_12`). So the 2026-10-11 rebar re-anchor left this row alone, and its
+# material band is the OLD footing band, no longer the current one. The bands differ by $8-15/cy,
+# and that is the BURIED_MIX 5,000 psi under-read, not steel.
 "pad:PIER_BASE_12" = { material = { low = 195, high = 240 }, labour = { low = 115, high = 280 } }  # 0.80 cy — all six north-entry pads, PD-BW-W / -E / -RE / -GW / -GE / -RNE
 # ** SECOND-LARGEST ERROR. ** $175-280/cy is $2.16-3.46/SF at 4" — bare ready-mix with no
 # labour in it. Minnesota installed slab is $6.60-13.20/SF (CalcShed by-state, Aug 2026);
@@ -1664,8 +1681,8 @@
 # should book. What is corrected is the sentence — a rate that says it contains mesh, for
 # slabs that contain none, is a rate nobody can check.
 #
-# The fibre is NOT a [reinforcement] line and must not become one when the rebar back-out
-# opens that section (notes/rebar_backout.md §5). That section bills BAR by the pound. Fibre
+# The fibre is NOT a [reinforcement] line, and it stayed out when the rebar back-out
+# opened that section on 2026-10-11. That section bills BAR by the pound. Fibre
 # is an admixture priced by the yard and it stays in this rate, exactly as the mesh it
 # replaced did.
 # 2026-09-03: the sunken-garden court floor became a RIM around an open field, and both
@@ -1766,14 +1783,17 @@
 # an extrapolation that came out ~4% light even at the shallower section it described.
 # 414 SF x 0.01869 = 7.74 cy.
 #   ready-mix, 7.74 cy + waste @ $180-200/cy            $3.37- 3.74/SF
-#   reinforcing: rib bars + cap mesh, furnished/placed  $1.50- 3.00/SF
+#   reinforcing: PLACING only (2.96 lb/SF @ $0.25-0.50) $0.75- 1.50/SF
 #   place, screed, power trowel, cure                   $3.00- 5.50/SF
 #   temporary shoring, adjustable posts @ 6' o.c.       $2.00- 5.00/SF
 #   cold-weather protection (Nov-Mar in MN)             $0.00- 0.75/SF
 #   structural engineering, stamped                     $1.00- 3.00/SF
 #   small-job premium                                   $0.15- 2.40/SF
 #                                                      -----------------
-#                                                      $11.02-23.39/SF
+#                                                      $10.27-21.89/SF
+# ** 2026-10-11: the BAR left this build-up. ** The line read "rib bars + cap mesh,
+# furnished/placed $1.50-3.00/SF"; the 1,224 lb of black bar (BuildDeck schedule) now bills
+# by the pound in [reinforcement], so only its placing stays here.
 # **No pump line here, on purpose (corrected 2026-08-21).** The build-up carried
 # "boom pump (mob + hours + yardage) $1.15-1.80/SF" until then, which double-booked the
 # `concrete-pumping` lump sum in [allowances] — this file's single house-wide home for
@@ -1796,7 +1816,7 @@
 # $900-2,060, i.e. $2.00-5.00/SF. Engineering also stays and is still a third of a shored
 # deck's, because the form supplier gives a layout and the shoring is prescriptive out of the
 # manual rather than designed.
-"slab:DECK_EPS_INT" = { low = 11.02, high = 23.39, unit = "SF" }  # 414 SF — EPS-formed deck, concrete + temporary shoring, pump in [allowances]
+"slab:DECK_EPS_INT" = { low = 10.27, high = 21.89, unit = "SF" }  # 414 SF — EPS-formed deck, concrete + temporary shoring, pump in [allowances]
 # 2026-08-20: RE-UNITED, and REPRICED — the old rate was not just mis-keyed, it was wrong.
 # It read $15-60/LF for a structural bearing break (Armatherm FRR, Foamglas Perinsul) under
 # three ~0.3 SF pads at the sunken-garden column and drywell, giving $25-90 each against the
@@ -4711,13 +4731,9 @@
 # more. That gives $135-225/LF = $405-675/cy.
 # Back out rebar (~$16-27/LF) and damp-proofing (~$7-18/LF) and you land near the old number —
 # which is why $320-600 was defensible ONLY IF those were modelled separately. THEY ARE NOT IN
-# THE MODEL AT ALL, so the all-in rate is the honest one. The rebar question is under
-# "Not in the estimate" in plans/cost-options.md and in plans/TODO.md, with the standing
-# condition attached: if rebar is ever authored as elements, cut these rates the same day.
-# ** THAT CONDITION IS NOW ENFORCED, NOT MERELY WRITTEN DOWN. ** Reinforcement is a BOM
-# section as of 2026-09-03 and [rebar_inclusive] wall_structure = true is this rate declaring
-# that it still absorbs its own steel. Pricing [reinforcement] without flipping that to false
-# is a hard error naming both sides — see cli/price_file._check_rebar_not_double_billed.
+# THE MODEL AT ALL, so the all-in rate is the honest one.
+# ** THE REBAR IS OUT AS OF 2026-10-11 ** and bills by the pound in [reinforcement];
+# [rebar_inclusive] wall_structure = false. The split rows below are re-anchored without it.
 # ** THE WATERPROOFING IS OUT OF THESE RATES AS OF 2026-09-12, AND THEY CAME DOWN FOR IT. **
 # The market anchor above quotes a poured wall "INCLUDING forms, rebar, concrete and basic
 # damp-proofing", and the paragraph then backs out ~$7-18/LF of damp-proofing on the argument
@@ -4732,12 +4748,13 @@
 # membrane actually splits ($0.81-0.87/SF sheet against $1.70-3.80/SF to roll it):
 #   BASEMENT_12  0.3333 cy/LF -> $7-18/LF = $21-54/cy   -> material -$6/-$16, labour -$15/-$38
 #   BASEMENT_8   0.2305 cy/LF -> $7-18/LF = $30-78/cy   -> material -$9/-$23, labour -$21/-$55
-# The all-in rate still absorbs its own rebar; [rebar_inclusive] wall_structure = true is
-# unchanged and that condition is enforced, not merely written down.
-# SPLIT 2026-08-27 on the same pre-tax ready-mix anchor as [concrete]: $180-200/cy plus the
-# rebar this all-in rate absorbs. Forming, bracing, placing and stripping are the residual and
-# are most of the number, which is exactly the paragraph above's point about thickness.
-"BASEMENT_12" = { material = { low = 204, high = 244 }, labour = { low = 195, high = 402 } }  # W-B-E1/E2 only since 2026-08-21; net of the waterproofing, see above
+# SPLIT 2026-08-27. Forming, bracing, placing and stripping are the labour residual and are
+# most of the number, which is exactly the paragraph above's point about thickness.
+# ** RE-ANCHORED 2026-10-11, REBAR OUT ** (101.5 lb of #4 HDG, 9.5 lb/cy). Material, per cy:
+#   BURIED_MIX: 5,000 psi $185-215 + macro fibre $8-12         $193-227
+#   form ties, release, keyway, bracing consumables (54 SF form/cy)  $ 15- 30
+#                                                              $208-257
+"BASEMENT_12" = { material = { low = 208, high = 257 }, labour = { low = 195, high = 402 } }  # W-B-E1/E2 only since 2026-08-21; net of the waterproofing, see above
 # 2026-08-21: the eight non-deck-bearing perimeter segments went 12" -> 8" (108 LF, -12.4 cy).
 # ** DO NOT price these off the 12" row. ** $420-700/cy was derived per-CY at 12"; applied to
 # an 8" volume it books the saving as ~$5,200-8,700, when the trade only gives back ~$25-45/LF
@@ -4745,10 +4762,11 @@
 # with thickness, only the concrete does. Re-derived from the same market anchor, which is
 # quoted for an 8" wall in the first place, so this is the LESS extrapolated of the two rows:
 #   8" x 9'-4" = 0.2305 cy/LF;  $110-180/LF at 9'-0" -> $114-187/LF at 9'-4" -> ~$495-810/cy
-# Vertical steel (#6 @ 48" o.c., ~27 bars / ~245 LF, which 12" did not need) has no line item
-# of its own — the same all-in rate that already absorbs the 12" wall's rebar absorbs this.
-# SPLIT 2026-08-27. Slightly more material per yard than the 12" row because the vertical #6
-# steel this wall needs and that one did not is inside the same all-in rate.
+# ** RE-ANCHORED 2026-10-11, REBAR OUT ** (554 lb of #4/#5 HDG, 30.6 lb/cy, in
+# [reinforcement]). Material, per cy — more form per yard than the 12" row, so more ties:
+#   BURIED_MIX: 5,000 psi $185-215 + macro fibre $8-12         $193-227
+#   form ties, release, keyway, bracing consumables (81 SF form/cy)  $ 25- 45
+#                                                              $218-272
 # ** ZERO, AND IT IS NOT A PLACEHOLDER. ** W-B-WELL's structure layer carries no
 # `FramingSpec` on purpose (plan/assemblies.py): `resolve/stairs/u_split.py` already
 # generates the 2x4 plates and studs between ST-B2M's two flights, and authoring a second
@@ -4759,7 +4777,7 @@
 # row at anything but zero buys them twice. The 1/2" board on both faces is real and is
 # bought in [envelope_layers], where every other gwb face in the house is.
 "STAIRWELL_PARTITION_4H" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }  # W-B-WELL, 0.47 CY — billed in [framing], see above
-"BASEMENT_8" = { material = { low = 206, high = 247 }, labour = { low = 259, high = 485 } }  # W-B-N1/N2/N3, W-B-W1/W2; net of the waterproofing, see above
+"BASEMENT_8" = { material = { low = 218, high = 272 }, labour = { low = 259, high = 485 } }  # W-B-N1/N2/N3, W-B-W1/W2; net of the waterproofing, see above
 # "BASEMENT_8_GARDEN" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }
 # stood here from 2026-08-18, the south wall split out so its full-height parge could stay
 # while the others took an above-grade band. RETIRED 2026-09-12 with the assembly: the parge
@@ -4780,14 +4798,21 @@
 # crane access is tighter, and a face that will be visible often gets rubbed or patched.
 # 2026-08-21: was "CATLIN_CONC_12_INT". Same 12" interior pour, now drawn from library
 # FOUNDATION_WALL_12_INT rather than minted a second time here; the rate is untouched.
+# MERGED, and the 2026-10-11 rebar back-out did not touch it: W-B-CN/CN2/CS2 author NO steel, so
+# there is nothing measured to take out. If it gains a schedule, split this row first.
 "FOUNDATION_WALL_12_INT" = { low = 470, high = 780 }  # 5.25 CY — was $320-600; comment was stale at 22.18 CY until 2026-08-29
 # HISTORY, so the number can be re-struck rather than re-guessed. 2026-08-20: $480-1,000/cy
 # was $8.89-18.52/SF and its LOW sat on the absolute floor of the cheapest published number
 # anywhere; it went to $756-1,296 = $14-24/SF against a $13-25/SF typical installed market.
 # SPLIT 2026-08-27, and this is the row where the split says the most: an ICF wall is BOUGHT,
 # not formed. The blocks are $5.00-7.00/SF of face and at ~54 SF/cy that is $270-378/cy of
-# permanent formwork on top of the ready-mix and steel — over half the rate is material, where
+# permanent formwork on top of the ready-mix — over half the rate is material, where
 # a site-formed wall is under a third. Taxing it as merged was leaving real money out.
+# ** RE-ANCHORED 2026-10-11, REBAR OUT ** (605 lb of #4 HDG, 76.6 lb/cy, in [reinforcement]):
+#   ICF blocks $5.00-7.00/SF x 54 SF/cy                        $270-378
+#   BURIED_MIX: 5,000 psi $185-215 + macro fibre $8-12         $193-227
+#   kickers, foam adhesive, corner and end bracing consumables $ 10- 25
+#                                                              $473-630
 # 2026-08-29: the EPS double-bill came off `[envelope_layers]."icf-eps"` (see the note there),
 # and the labour half came down for wall height — below.
 # ** RE-STRUCK 2026-08-29 — THIS STEM IS FOUR COURSES TALL AND WAS PAYING FOR NINE. **
@@ -4812,7 +4837,7 @@
 # Sources: icfinsider.com and latestcost.com 2026 ICF cost guides ($8-18/SF wall system);
 # foxblocks.com ICF foundation cost ($10-25/SF of wall surface); icfmag.com "Build Stem Walls
 # or Frost Walls" on the minimum-crew, one-to-three-course stem case.
-"GARAGE_ICF_6" = { material = { low = 460, high = 600 }, labour = { low = 205, high = 460 } }  # 7.20 CY = 389 SF — was $756-1,296 merged, then $756-1,296 split
+"GARAGE_ICF_6" = { material = { low = 473, high = 630 }, labour = { low = 205, high = 460 } }  # 7.20 CY = 389 SF — was $756-1,296 merged, then $756-1,296 split
 # ** CATEGORY ERROR, same as BASEMENT_BRICK_VENEER: this line contains ZERO ready-mix. ** It
 # is dry-stacked segmental block. The cost drivers are SF of exposed face and wall HEIGHT,
 # and the model tracks neither — 9.07 cy is 245 SF of face at 27 SF/cy. Market for SRW
@@ -4876,7 +4901,9 @@
 #   $14 - 28/LF over 0.0134 cy/LF                       = $1,045 - 2,090/cy
 # Rounded to $1,000-2,000. DO NOT read this row as a wall rate or escalate it against one:
 # it is the same trade priced per foot of edge rather than per yard of volume, and the $/cy
-# is only high because the denominator is small. ~19'-2" of it in total.
+# is only high because the denominator is small. ~19'-2" of it in total. MERGED and steel-free
+# (the dowels above are a line in the per-LF build, not authored bar), so the 2026-10-11
+# rebar back-out left both rows alone.
 "GARDEN_CURB_6" = { low = 1000, high = 2000 }
 "SAUNA_LINER_ON_GARDEN_CURB" = { low = 1000, high = 2000 }
 # "SAUNA_LINER_ON_CONCRETE" = { low = 420, high = 700 } stood here for 4.1 cy. RETIRED
@@ -4895,13 +4922,19 @@
 # and not the 42" masonry parapet over it — neither returns, and the $5,395-$11,257 that
 # retiring them saved is not being given back. (That measurement is in git history; the
 # 2026-08-31 rewrite of plans/cost-options.md keeps live options only.)
-"SUNKEN_GARDEN_WALL" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # W-SG-W1/E1 — the porch box's side walls, since the 2026-09-14 split
+# ** RE-ANCHORED 2026-10-11, REBAR OUT ** (W1/E1 130 lb, the U 1,599 lb; [reinforcement]).
+# Material, per cy, for both rows:
+#   EXPOSED_MIX: 5,000 psi $185-215 + fibre $8-12 + air $3-8   $196-235
+#   form ties, release, chamfer, bracing consumables           $ 15- 30
+#   architectural face: plyform facing, rub-and-patch stock    $ 10- 25
+#                                                              $221-290
+"SUNKEN_GARDEN_WALL" = { material = { low = 221, high = 290 }, labour = { low = 285, high = 620 } }  # W-SG-W1/E1 — the porch box's side walls, since the 2026-09-14 split
 # The three FREE retaining walls, split off SUNKEN_GARDEN_WALL on 2026-09-14 for the same
 # reason SUNKEN_GARDEN_GRADE_BEAM_12 was: one face differs. Same 12" pour, same EXPOSED_MIX,
 # same ticket, SAME RATE — the waterproofing and the drainage composite bill by the square
 # foot in [envelope_layers] and are not in this number. An unpriced assembly tag is dropped
 # from the takeoff SILENTLY and the total falls, which is why this row exists at all.
-"SUNKEN_GARDEN_WALL_DRAINED" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # W-SG-W2/E2/S — the retaining U
+"SUNKEN_GARDEN_WALL_DRAINED" = { material = { low = 221, high = 290 }, labour = { low = 285, high = 620 } }  # W-SG-W2/E2/S — the retaining U
 
 # The veneer grade beam, NEW 2026-09-05. Same ready-mix anchor as SUNKEN_GARDEN_WALL — it is
 # the same pour, the same day, off the same ticket — but the labour half is materially
@@ -4915,7 +4948,12 @@
 # The board is NOT in this rate. It bills separately as `xps:2.0` out of the envelope-layer
 # section, which is the whole reason the break was authored as a Layer and not as a
 # `FootingBedding` flag — see the assembly's own note in plan/assemblies.py.
-"SG_VENEER_BEAM_14" = { material = { low = 215, high = 280 }, labour = { low = 210, high = 430 } }  # ~1.05 CY
+# ** RE-ANCHORED 2026-10-11, REBAR OUT ** (78.5 lb HDG in [reinforcement]). Material, per cy:
+#   EXPOSED_MIX: 5,000 psi $185-215 + fibre $8-12 + air $3-8   $196-235
+#   four-sided forms in a hole, ties, release                  $ 17- 40
+#   epoxy and pocket prep for the doweled ends                 $ 10- 20
+#                                                              $223-295
+"SG_VENEER_BEAM_14" = { material = { low = 223, high = 295 }, labour = { low = 210, high = 430 } }  # ~1.05 CY
 
 [timber]
 # On-edge 2x4 screen stock; same material volume rate as KDAT posts, higher fixing labour.
@@ -6368,14 +6406,10 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # shape. Twelve rows report an overlap today and every one of them is a measurement.
 # Two rows from the register are deliberately ABSENT:
 #
-#   Rebar, $10,000-18,000.  [basis_notes] concrete says rebar is INSIDE the $/cy rates, and
-#                           those rates were raised on 2026-08-20 on exactly that assumption.
-#                           Authoring it here would bill ~5 tons of steel twice. Since
-#                           2026-09-03 the reversal is ENFORCED rather than remembered:
-#                           [rebar_inclusive] declares which rates still contain their steel,
-#                           and pricing [reinforcement] against one that does is a hard error
-#                           naming both sides. The QUANTITY already bills (unpriced) so the
-#                           tonnage can be checked against this figure first.
+#   Rebar, $10,000-18,000.  Not an allowance because it is a MEASURED line: since 2026-10-11
+#                           [reinforcement] prices the laid-out ~6,600 lb by the pound
+#                           (~$8,300-13,500 before tax), and the $/cy rates were re-anchored
+#                           without it. Authoring it here as well would bill it twice.
 #   GC overhead and profit, $100,000-375,000.  That is the [markup] stage, which the owner
 #                           deliberately left at zero. Putting it here would turn on, through
 #                           a side door, the one thing that was explicitly turned off — and
@@ -7595,22 +7629,34 @@ solar_modules = true
 
 # --- reinforcement ---------------------------------------------------------------------
 #
-# DELIBERATELY EMPTY, and the emptiness is the safety property. `takeoff/reinforcement.py`
-# bills reinforcing steel by the pound as of 2026-09-03; until this table has rates, every
-# row lands in the estimate's `unpriced` list and the TOTAL DOES NOT MOVE. That is what lets
-# the tonnage be reviewed against the ~5 tons and $10,000-18,000 the allowance register
-# carries (see the [allowances] omission note) before a single rate is cut.
+# PRICED 2026-10-11 (decision #86, superseding #75 D14): $/lb of fabricated bar, MATERIAL
+# ONLY — the bar cut and bent to the laid-out schedule, tagged and delivered, plus chairs,
+# bolsters and tie wire. Placing labour stays in the [concrete]/[wall_structure] labour
+# residuals. Same commit: [rebar_inclusive] went false and every $/cy row that held steel had
+# its material half re-anchored without it (notes/rebar_backout.md §3).
 #
-# Filling it in is the SAME-DAY other half of cutting the material rebar out of [concrete]
-# and [wall_structure]. `[rebar_inclusive]` below is what enforces that, and the enforcement
-# is the whole point: `plans/cost-options.md` recorded the standing condition and observed
-# that "nothing enforces that", against a five-ton exposure.
-#
-# When it is filled: black bar keys on the bar designation (`"#5"`); hot-dip galvanized keys
-# `"#5:hdg-a767"` and runs roughly +$0.30/lb over black. If the two do not price separately
-# then specifying galvanized bar house-wide is invisible in the estimate, which is most of
-# the reason for specifying it.
+# Black, Twin Cities 2026, small quantity: mill Grade 60 $0.55-0.75/lb, + cut/bend/detail/tag
+# $0.20-0.35, + a small-load delivery spread over ~1,200 lb, + chairs and wire $0.05-0.10.
+# Graded by size: a #3 is mostly ties and costs the most bending per pound.
+# Hot-dip galvanized after fabrication (ASTM A767): + $0.20-0.50/lb finished weight (AGA
+# member survey), + freight to and from the kettle and the galvanizer's lot minimum spread
+# over a few small lots, $0.15-0.35. **+$0.35-0.85/lb, not the +$0.30 this file used to
+# assume**; a supplier quotes HDG 25-50% over black and small lots sit at the top of it.
+# Sources (read 2026-10-11): wirelessestimator.com reinforcement $/lb by bar size;
+# buildermuse.com rebar 2026 ($0.72/lb mill); costflowai.com rebar 2026 (cut/bend
+# $0.10-0.60/ft, delivery $350-700); galvanizeit.org "Economics of Thick Coatings" (AGA
+# $0.20-0.50/lb); southatlanticllc.com reinforcing FAQ (HDG +25-50% over black).
+# PLACEHOLDER pending a fabricator's quote (Rebarfab, New Brighton) — ask for black and A767
+# per pound, and the galvanizer's minimum by name.
 [reinforcement]
+"#3" = { low = 1.15, high = 1.65 }  # 237.3 lb — SL-M-DECK, the only black pour
+"#4" = { low = 1.00, high = 1.40 }  # 576.9 lb — SL-M-DECK
+"#5" = { low = 0.95, high = 1.30 }  # 410.1 lb — SL-M-DECK
+"#6" = { low = 0.90, high = 1.25 }  # 0 lb black — kept so a black #6 prices at once (see [retired])
+"#3:hdg-a767" = { low = 1.50, high = 2.50 }  # 137.3 lb — column ties, veneer-beam ties
+"#4:hdg-a767" = { low = 1.35, high = 2.25 }  # 1,845.0 lb — court footings, walls, ICF stems
+"#5:hdg-a767" = { low = 1.30, high = 2.15 }  # 3,249.9 lb — columns, court footings, walls
+"#6:hdg-a767" = { low = 1.25, high = 2.10 }  # 129.5 lb — W-SG-W1/E1
 
 # ** ROLLED STEEL MEMBERS, BY THE FOOT OF A NAMED SECTION (new 2026-09-20). ** One row and
 # one member: the fireplace lintel, which billed exactly $0 until this section existed. A
@@ -7649,17 +7695,14 @@ solar_modules = true
 # --- rebar_inclusive -------------------------------------------------------------------
 #
 # Whether a $/cy rate still CONTAINS its own reinforcing steel. Absent means true, because
-# that was the only place rebar could live before it had a section of its own — so a file
-# written before this existed keeps its exact meaning, and a house opts out explicitly once
-# it has actually cut the rates.
+# that was the only place rebar could live before it had a section of its own.
 #
-# Both are still `true` here: [concrete] and [wall_structure] absorb their rebar, exactly as
-# their [basis_notes] entries say, and [reinforcement] is empty so nothing is billed twice.
-# THESE TWO LINES AND THE [reinforcement] RATES MOVE IN ONE COMMIT, or the estimate
-# double-bills roughly five tons of steel. Cut the MATERIAL half only.
+# Both `false` since 2026-10-11: the steel bills by the pound in [reinforcement], and the
+# rows that held it were re-anchored without it in the same commit. Flipping either back
+# while [reinforcement] is priced double-bills ~6,600 lb; the loader refuses that.
 [rebar_inclusive]
-concrete       = true
-wall_structure = true
+concrete       = false
+wall_structure = false
 
 # ** ROWS THIS HOUSE KEEPS ON PURPOSE THOUGH NOTHING BILLS THEM. **
 #
@@ -7697,6 +7740,7 @@ wall_structure = true
 "placeables:FT-M-CLOSET-PLINTH" = "RM-M-CLOSET's custom-bay shoe deck until 2026-10-03; kept priced"
 "placeables:FURN-M-PAX-DRESS" = "RM-M-CLOSET's 19 5/8\" dress frame, 2026-10-02 to -03; kept priced"
 "placeables:FURN-M-PAX-DOUBLE-30" = "RM-M-CLOSET west PAX replaced by two wire extensions, 2026-10-04; kept priced"
+"reinforcement:#6" = "black #6: no black pour carries it; priced so one would cost at once"
 "placeables:FURN-M-PAX-DOUBLE" = "RM-M-CLOSET's 19 5/8\" double-hang frame, 2026-10-02 to -03; kept priced"
 
 [basis]
@@ -7752,11 +7796,11 @@ allowances           = "installed"
 [basis_notes]
 duct_fittings   = "material only, and derived rather than quoted, exactly as [pipe_fittings] is: an elbow is counted off the run's own 3D polyline, so the count is geometry and the rate is a catalogue price. No tees — there is no parent inference for an air-side system the way drain_tie_ins gives one for drainage, and a radial install barely has any"
 pipe_fittings   = "material only, and derived rather than quoted — see the table's own note. Its arrival RE-BASED [pipe_runs] drain/vent to bare pipe; restoring the old fitting adder there would double-bill every elbow in the house"
-reinforcement   = "$/lb of BAR, MATERIAL ONLY — and the labour is deliberately not here. [basis_notes] concrete is explicit that its $/cy is a sourced material price plus a RESIDUAL labour figure; subtracting a rebar placer's wage out of a residual is judgement dressed as arithmetic, where subtracting a sourced rebar material price out of a sourced material price is arithmetic. So the placing labour stays inside the [concrete] and [wall_structure] residuals, on the same doctrine [hardware] already uses — the labour to drive a screw is inside the [framing] labour rate. Lengths are CUT lengths off the laid-out bars (decision #75): placed + laps + hooks, by counted piece, so [waste] must not add laps again (cli/price_file.py refuses a reinforcement waste factor); chairs, bolsters and tie wire ride inside the $/lb rate. THIS TABLE IS DELIBERATELY EMPTY. Every row lands in the estimate's `unpriced` list, the total does not move by one cent, and the tonnage can be read against the register's ~5 tons / $10,000-18,000 BEFORE any rate is touched — the quantity ships before the dollar does. Pricing it while [rebar_inclusive] still says concrete/wall_structure contain their own rebar is a HARD ERROR in cli/price_file.py, which is what makes the standing 'cut the rates the same day' condition enforced rather than merely written down twice"
-concrete        = "$/cy PLACED. Merged everywhere until 2026-08-27, when the three largest rows (footing, slab, drain_tile's siblings aside) gained a REAL split — and the rule that produced them is the one that kept the rest merged: the MATERIAL half is an independently sourced pre-tax number (Twin Cities ready-mix $180-200/cy, wire mesh $0.20-0.50/SF, rebar) and the labour half is the residual. That is a back-out, and it is honest only in that direction. A percentage guess at the split would read exactly like a real one, which is why the smaller rows still carry none. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
+reinforcement   = "$/lb of fabricated BAR, MATERIAL ONLY: cut, bent, tagged and delivered, plus chairs, bolsters and tie wire. Priced since 2026-10-11 (decision #86), when [rebar_inclusive] went false and every $/cy row holding steel had its material half re-anchored without it. The placing labour stays inside the [concrete] and [wall_structure] labour residuals, on the doctrine [hardware] uses: subtracting a placer's wage out of a residual is judgement, subtracting a sourced bar price out of a sourced material price is arithmetic. Black and hot-dip galvanized (A767) price apart, `#5` and `#5:hdg-a767`. Lengths are CUT lengths off the laid-out bars (decision #75), placed + laps + hooks by counted piece, so [waste] must not add laps again (cli/price_file.py refuses a reinforcement waste factor)"
+concrete        = "$/cy PLACED. Split where the MATERIAL half is an independently sourced pre-tax number (5,000 psi Twin Cities ready-mix $185-215/cy plus fibre and air, form consumables, tubes) and the labour half is the residual. That is a back-out, and it is honest only in that direction; a percentage guess at the split would read exactly like a real one, which is why the smaller rows still carry none. NO REBAR in any rate since 2026-10-11: it bills by the pound in [reinforcement], and the rows that held it were re-anchored then from what was sourced, not netted to zero. Fibre is an admixture and stays in the yard rate. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
 steel_members   = "$/LF of a named AISC section, split material/labour. The section string is the key because an L3-1/2x3-1/2x1/4 and an L3-1/2x3-1/2x3/8 share a bounding box and are different purchases; a $/cy rate cannot tell them apart, which is why this is its own table and not a row of [concrete]. Material is small-quantity mill stock plus a galvaniser's minimum, not a $/lb commodity read"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
-wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and RETAINING_BLOCK_12_WASHED (one wall split across two tags 2026-09-13 when the three perimeter legs took a mineral silicate wash on their yard face and the two balcony returns did not; identical rates, and the wash itself bills in [envelope_layers], never here), ENTRY_SCREEN_SKIRT (a 24ga steel skirt over the north entry deck framing, priced $/SF of face off the [envelope_layers] corrugated-panel-24 rate by name, so the two must be moved together by hand), BASEMENT_BRICK_VENEER and FIREPLACE_BRICK_WYTHE contain no ready-mix at all and must not be escalated with a concrete index. FIREPLACE_BRICK_WYTHE was missing from this list until 2026-09-13 even though its own row comment said \"SAME CATEGORY ERROR AS BASEMENT_BRICK_VENEER\" — a brick panel priced $/SF of face laid has no ready-mix in it either. `brown-brick` now carries a live per-material row under BOTH assembly keys (BASEMENT_BRICK_VENEER:brown-brick and FIREPLACE_BRICK_WYTHE:brown-brick) since the house went back to one brick blend, so the old \"one live per-material row\" phrasing no longer holds; the :glazed-lapis-brick and :glazed-gold-brick rows were commented out 2026-09-04 when the Ishtar scheme was retired, and :white-brick 2026-09-13, all kept there for the revert. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
+wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, form consumables, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. NO REBAR since 2026-10-11: it bills in [reinforcement] and the split rows were re-anchored without it; FOUNDATION_WALL_12_INT and the curbs are merged and steel-free. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and RETAINING_BLOCK_12_WASHED (one wall split across two tags 2026-09-13 when the three perimeter legs took a mineral silicate wash on their yard face and the two balcony returns did not; identical rates, and the wash itself bills in [envelope_layers], never here), ENTRY_SCREEN_SKIRT (a 24ga steel skirt over the north entry deck framing, priced $/SF of face off the [envelope_layers] corrugated-panel-24 rate by name, so the two must be moved together by hand), BASEMENT_BRICK_VENEER and FIREPLACE_BRICK_WYTHE contain no ready-mix at all and must not be escalated with a concrete index. FIREPLACE_BRICK_WYTHE was missing from this list until 2026-09-13 even though its own row comment said \"SAME CATEGORY ERROR AS BASEMENT_BRICK_VENEER\" — a brick panel priced $/SF of face laid has no ready-mix in it either. `brown-brick` now carries a live per-material row under BOTH assembly keys (BASEMENT_BRICK_VENEER:brown-brick and FIREPLACE_BRICK_WYTHE:brown-brick) since the house went back to one brick blend, so the old \"one live per-material row\" phrasing no longer holds; the :glazed-lapis-brick and :glazed-gold-brick rows were commented out 2026-09-04 when the Ishtar scheme was retired, and :white-brick 2026-09-13, all kept there for the revert. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"
 openings        = "material and labour are now SEPARATE quantities. The old single 55-65% back-out factor is gone: the real material share runs 70-85% for windows, 60-70% for exterior doors, 40-55% for interior doors and 10-25% for a cased opening"
 hardware        = "material only, and deliberately so — the labour to drive a screw or set a hanger is inside the [framing] labour rate. HUC212-3 is the exception and says why"

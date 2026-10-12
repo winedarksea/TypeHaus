@@ -353,6 +353,11 @@ These have each been proposed, priced and killed. The reason is the row.
 
 Upward exposures, so the tables above are not read as a complete picture.
 
+**Rebar left this table on 2026-10-11** (decision #86): `[reinforcement]` prices the laid-out
+6,586 lb by the pound, and the $/cy rates were re-anchored without it. Section subtotals rose
+**+$7,955 – $12,937** against the baseline above. That is a correction of the estimate, not an
+option.
+
 | exposure | amount | why it is not a row |
 |---|---:|---|
 | **GC overhead and profit** | $100,000–375,000 | `[markup]` is zero **by owner decision.** Not an omission — a decision. Turning it on also taxes and contingencies the fee |
@@ -360,7 +365,6 @@ Upward exposures, so the tables above are not read as a complete picture.
 | **Telehandler or ladder conveyor** | $700–1,000/day, $3,500–5,000/month | The roof plane is the largest material-handling problem in the project: 4:12, 26' eave, 32' ridge, **zero overhang to stage on**, and the polyiso is a sail. Also the 26'-long PBR wall panels |
 | **Boom pump, several days** | inside `concrete-pumping` $4,600–7,800 — probably short | Forced by the sunken garden: 27.1 cy of 10' wall at the bottom of a 9' court, 5" from the house (25.95 of `SUNKEN_GARDEN_WALL` plus the 1.10 veneer beam; it was 29.2 before the court shortened on 2026-09-10). A chute cannot reach it |
 | **Second sprayer mobilisation** | $500–1,500 | 2,448 LF of girt course and 45 openings' jamb posts go on **between** the two foam passes. No sprayer waits through that |
-| **Rebar, ~5 tons** | $10,000–18,000 | Still inside the `[concrete]` and `[wall_structure]` $/cy rates, and **the "nothing enforces that" is fixed as of 2026-09-03**: `[rebar_inclusive]` in `prices.toml` declares which rates still contain their steel, and pricing `[reinforcement]` against one that does is a hard error naming both sides (`cli/price_file._check_rebar_not_double_billed`). `takeoff/reinforcement.py` bills the tonnage NOW, priced at nothing, so the quantity can be read against this row before any rate is cut — 1.76 tons of it so far, from the sunken-garden court alone. **Read that against 2.41 tons on 2026-09-09, not as growth**: the court's footing mat came down `#6 @ 10"` → `#5 @ 12"` when the strips narrowed, which removes steel and no concrete, so the house's lb/cy ratio fell 31.6 → 23.8. The rest of the house is not yet migrated to `ReinforcementSpec`, and that unbilled steel — not this cut — is still the gap to ~5 tons |
 | Excavation has no quantity | the weakest number in the file | $24,000–55,000 as a lump, so no design change can ever demonstrate a saving against it. The sunken garden alone implies 185–235 cy of extra cut (it was 200–250 before the court shortened 28' → 26' on 2026-09-10; the excavation loses the court's own 38 sf at ~9' plus the footings' outboard over-dig) |
 | Garden footings priced as strips | ~$1,500–2,100 under | The `footing` rate derives from a 16"x8" strip, then covers the garden's 84"-wide reinforced bases — 20.9 of 33.25 cy |
 | Garage slab may be thin | +$343–1,810 | 3-1/2" carrying vehicle loads through MN freeze–thaw; 4"–5" is normal |

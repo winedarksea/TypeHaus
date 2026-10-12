@@ -1,17 +1,13 @@
 """The rebar back-out's oracle — ``houses/catlin/notes/rebar_backout.md``, pinned.
 
 Reinforcing steel used to ride invisibly inside the ``[concrete]`` and ``[wall_structure]``
-$/cy rates: roughly five tons of it, worth $10,000-18,000, and the standing condition that
-those rates be cut the day it became a line of its own was written down in three places and
-enforced in none.
-
-It is enforced now, and this module pins the two halves of that:
+$/cy rates. Since 2026-10-11 (decision #86) it is priced by the pound, black and HDG apart,
+and those rates were re-anchored without it. This module pins:
 
 * :func:`test_the_billed_tonnage_reproduces_the_note` — §1's schedule, term by term.
-* :func:`test_the_backout_gate_is_still_CLOSED` — **the important one.** Since 2026-09-17
-  the gate is closed BY DECISION (decision #75 D14, note §3): a constant, the empty
-  ``[reinforcement]`` table and the inclusive $/cy rates, so authoring more steel cannot open
-  it by crossing a dollar line. Opening it is §5's one-commit rate cut.
+* :func:`test_the_rate_cut_is_taken` — ``[reinforcement]`` priced, both ``[rebar_inclusive]``
+  flags false, and every billed (bar, coating) resolving to ITS OWN key, so black and
+  galvanized never quietly share a rate.
 
 Uses catlin's real ``prices.toml``; there is precedent for house-specific price tests.
 """
@@ -89,12 +85,6 @@ _SCHEDULE = {
 _TOTAL_LB = 6586.0
 _TOTAL_PIECES = 1125
 
-#: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
-#: authoring steel may lift the tonnage into the register's band without opening it. Opening
-#: it is §5's one-commit rate cut, and flipping this constant is part of that commit.
-_BACKOUT_GATE_CLOSED_BY_DECISION = True
-
-
 @pytest.fixture(scope="module")
 def rows(catlin_model):
     return reinforcement_takeoff(catlin_model)
@@ -114,52 +104,36 @@ def test_the_billed_tonnage_reproduces_the_note(rows) -> None:
     assert sum(p for p, _w in got.values()) == _TOTAL_PIECES
 
 
-def test_the_backout_gate_is_still_CLOSED(rows) -> None:
-    """**Closed by decision (§3, decision #75 D14), and asserted as that.**
+def test_the_rate_cut_is_taken(rows) -> None:
+    """§3, decision #86: the rate cut is taken, in one commit, and stays whole.
 
-    Until 2026-09-17 this compared the billed steel's dollars against the register's
-    $10,000-18,000. The layout lifted the tonnage to 6,608 lb ($6,938-8,921), and further
-    authoring could lift it into the band — which must not open the gate by itself. So the
-    gate is a constant tied to the note, and this test holds the three things that make it
-    true: the constant, the empty ``[reinforcement]`` table and the inclusive $/cy rates.
-
-    When the rate cut is taken (§5), flip the constant in the same commit.
+    ``[reinforcement]`` is priced, neither $/cy section still claims its rebar (the loader
+    would refuse the double-bill anyway), and every billed bar resolves to the key for its
+    OWN coating. ``candidate_keys`` falls ``#5:hdg-a767`` back to ``#5``, so a missing HDG
+    row would price galvanized bar at the black rate without a word. That is the miss this
+    guards.
     """
     import tomllib
 
     from typehaus.cli.price_file import load_prices, rebar_is_inclusive
+    from typehaus.cli.prices import rate_for
 
     note = (_CATLIN / "notes" / "rebar_backout.md").read_text()
-    assert "## 3. The test, and the gate is CLOSED BY DECISION" in note
-    assert _BACKOUT_GATE_CLOSED_BY_DECISION, (
-        "the gate is open by decision: the [reinforcement] rates and the "
-        "[rebar_inclusive] flip belong in this same commit — see §5")
+    assert "## 3. The rate cut — OPEN since 2026-10-11" in note
     data = tomllib.loads((_CATLIN / "prices.toml").read_text())
-    assert rebar_is_inclusive(data, "concrete") and rebar_is_inclusive(data, "wall_structure")
+    assert not rebar_is_inclusive(data, "concrete")
+    assert not rebar_is_inclusive(data, "wall_structure")
     prices = load_prices(_CATLIN)
-    assert prices is not None and prices.reinforcement == {}
-    assert sum(r["weight_lb"] for r in rows) > 0
-
-
-def test_the_rates_still_declare_themselves_rebar_inclusive() -> None:
-    """The other half of the same invariant, from the price file's side.
-
-    While the gate is shut these two must stay `true` and `[reinforcement]` must stay empty.
-    The loader refuses the combination that would double-bill, so this is really asserting
-    that nobody has half-done the cut.
-    """
-    import tomllib
-
-    from typehaus.cli.price_file import load_prices, rebar_is_inclusive
-
-    data = tomllib.loads((_CATLIN / "prices.toml").read_text())
-    assert rebar_is_inclusive(data, "concrete")
-    assert rebar_is_inclusive(data, "wall_structure")
-
-    prices = load_prices(_CATLIN)
-    assert prices is not None and prices.reinforcement == {}, (
-        "reinforcement is priced while the $/cy rates still contain their rebar. "
-        "load_prices should have refused this; if it did not, the guard is broken.")
+    assert prices is not None and prices.reinforcement
+    billed = {(r["bar"], r["coating"]) for r in rows}
+    assert {c for _b, c in billed} == {"black", "hdg-a767"}
+    for bar, coating in sorted(billed):
+        want = bar if coating == "black" else f"{bar}:{coating}"
+        key, price = rate_for(prices, "reinforcement", bar, coating)
+        assert (key, price is not None) == (want, True), (bar, coating)
+        if coating != "black":
+            black = prices.reinforcement[bar]
+            assert price.low > black.low and price.high > black.high, bar
 
 
 def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> None:
