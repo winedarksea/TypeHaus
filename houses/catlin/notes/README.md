@@ -90,6 +90,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | Note | Subject |
 |---|---|
 | `bath2_over_toilet_cabinet.md` | the over-toilet cabinet and its clearances |
+| `bath2_shower.md` | BATH2's thermostatic one-outlet shower: the tank-duration hand calc, the glass heights, the steam path and why the exhaust grille stays outside the enclosure, and the open finish/SKU confirms |
 | `bath2_swap_review.md` | measured shower/tub swap: the basin aisle, doorway approach, shower entrance and dependent construction |
 | `beam_water_protection.md` | keeping water out of a built-up exterior beam |
 | `east_breast_bearing.md` | RM-M-LIVING's fireplace surround: why the brick bears on `W-B-E1`'s pour and not on the floor, the opening it needs through `FS-M-EAST`, and the list of things nothing in `haus check` looks at |

@@ -144,15 +144,22 @@ TOTO_DRAKE = FixtureType(
 # single, dual, or dual THERMOSTATIC cartridge — the cartridge lives in the trim — so the
 # pressure-balance-versus-thermostatic choice stays reversible from outside the tile in 2041.
 # Moen makes you commit at rough-in across three different bodies; Kohler's Rite-Temp is
-# pressure-balance only. Pressure balance is what is actually bought in all four: every
-# shower here is single-outlet (a tub-shower combo is a diverted single outlet), thermostatic
-# earns its 3-5x only on multi-outlet showers, and a thermostatic element drifts and fails
-# where a PB spool is nearly inert. The ~$1,500-2,000 saved covers the tub filler outright.
+# pressure-balance only. Pressure balance stays the default: a PB spool is nearly inert where
+# a thermostatic element drifts and fails, and the three low-use or tub showers gain nothing.
+#
+# ** BATH2 IS THE EXCEPTION, AND THE REASON IS THE TANK, NOT THE OUTLET COUNT ** (2026-10-12).
+# A PB valve holds the hot-to-cold RATIO, so as the 80-gal heat-pump tank (EQ-B-WH) cools late
+# in a long shower, the head cools with it. A thermostatic valve re-mixes to hold the set
+# temperature, and the 17T adds a separate volume control. That is the daily, long shower.
+# notes/bath2_shower.md has the hand calc (~40 min of 105 F from one tank).
+#
+# ** EVERY HEAD IS <= 1.75 GPM ** (house standard, 2026-10-12): 26008 and 26010SRN at 1.75,
+# 52535-SS at 1.75 in the tub-showers. The ratings live on the product records.
 #
 # ** A HANDSHOWER IS A SECOND OUTLET AND THEREFORE A DIVERTER AND A SECOND RISER — and that
 # is true whether it hangs on a slide bar or on a wall elbow with a hook. ** Swapping the bar
 # for a hook saves the blocking, not the valve. Only a true two-in-one magnetic combo head is
-# one outlet, which is why the two low-use showers take one and the two tubs do not.
+# one outlet, which is why the three stall showers take one and the two tubs do not.
 #
 # ** BLOCKING IS THE ONLY IRREVERSIBLE ITEM IN THIS FILE, AND IT IS MODELLED. ** Every band
 # is a `WallBacking` in `plan/backing.py` / `plan/backing_wet.py`, so it reaches the framer
@@ -167,19 +174,25 @@ TOTO_DRAKE = FixtureType(
 # are specified THREADED (IPS), never slip-fit: a slip-fit spout seals on an O-ring over a
 # bare copper stub and when it ages the leak is behind the tile.
 
-# RM-M-BATH2's 36" shower — the primary, and the one that gets the adjustable-height
-# handshower, because adjustable height is the actual benefit and this is the shower used
-# daily. Diverter rough stacks above the MultiChoice body.
-SHOWER_36_DIVERTED = SHOWER.model_copy(update={
-    "tag": "FX-SHOWER-36-DIVERTED",
-    "name": 'Shower, 36", pressure-balance valve with diverter and slide bar',
-    "product_ref": "PROD-DELTA-R10000-UNBX",
-    "source": 'RM-M-BATH2, owner selection 2026-09-06. Delta MultiChoice R10000-UNBX rough '
-              '(ASSE 1016) with a pressure-balance cartridge, PLUS a diverter rough and a '
-              'second riser feeding a slide-bar handshower — two outlets, two-handle trim. '
-              'Fixed head is Speakman S-2005-H-1 (PROD-SPEAKMAN-S-2005-H) at 2.5 gpm, which '
-              'the 2018 UPC Table 403.1 allows and Minnesota does not amend down. Geometry '
-              'is the library allowance\'s, unchanged; what this type carries is the valve.',
+# RM-M-BATH2's 36" shower — the primary, used daily and long. Thermostatic trim on the same
+# R10000 rough, one magnetic combo outlet (the diverter rough, second riser and slide bar of
+# FX-SHOWER-36-DIVERTED are gone, 2026-10-12), solid-surface walls and base, and glass that
+# stops short of the ceiling on purpose. There is no glass element in the engine, so this
+# text and the prices.toml row carry the glass, as on FX-SHOWER-36-NEO-COMBO.
+SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
+    "tag": "FX-SHOWER-36-THERMO-COMBO",
+    "name": 'Shower, 36", thermostatic valve with a two-in-one rainshower combo',
+    "product_ref": "PROD-DELTA-T17T",
+    "source": 'RM-M-BATH2, owner selection 2026-10-12, replacing FX-SHOWER-36-DIVERTED. '
+              'Delta MultiChoice R10000-UNBX rough (ASSE 1016) under a TempAssure 17T '
+              'thermostatic trim (PROD-DELTA-T17T): separate temperature and volume, no '
+              'diverter. Head: Moen Attract Magnetix 26008 rainshower combo, 1.75 gpm, ONE '
+              'outlet. Base: a matching 36x36 compression-moulded solid-surface base '
+              '(PROD-SOLID-SURFACE-SHOWER) under floor-to-ceiling panels (WP-M-BATH2-SURR). '
+              'GLASS: on the tub (north) side, floor to ceiling on the W-M-TUBDK-S knee wall; on '
+              'the front (west) a fixed panel and door to 7\'-6" (90"), leaving ~16" open '
+              'under the 106" ceiling. No transom: that gap is the steam path to REG-M-EXH2, '
+              'which sits just outside it (notes/bath2_shower.md).',
 })
 
 # RM-B-SAUNA's rinse and RM-A-STUBATH's guest shower. ** ONE OUTLET, ON PURPOSE. ** A
@@ -271,8 +284,9 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
     "source": 'RM-S-BATH1 and RM-S-SUITEBATH, owner selection 2026-09-06. Delta MultiChoice '
               'R10000-UNBX rough (ASSE 1016) under a Delta T14459-SS COMPLETE trim — valve '
               'trim, H2Okinetic showerhead and tub spout in one box, which removes the '
-              'spout-matching problem and means these two rooms need no separately specified '
-              'head — plus a diverter rough and a second riser for the handshower. '
+              'spout-matching problem — plus a diverter rough and a second riser for the '
+              'handshower. HEAD: the boxed head is swapped for a Delta 52535-SS 5-setting '
+              '(1.75 gpm, 2026-10-12) to hold the house\'s 1.75 gpm standard. '
               'H2Okinetic Touch-Clean: soft rubber spray holes, so calcium wipes off with a '
               'thumb and there is nothing to soak. ** CONFIRM THE -SS FINISH IS IN STOCK '
               'BEFORE THE PLUMBER ORDERS: ** Delta is thinning its stainless SHOWERING line '
@@ -284,5 +298,5 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
 
 WC_AND_SHOWER_TYPES = (
     TOTO_SP_WALL_HUNG, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
-    SHOWER_36_DIVERTED, SHOWER_36_COMBO, SHOWER_36_NEO_COMBO, TUBSHOWER_60_DIVERTED,
+    SHOWER_36_THERMO_COMBO, SHOWER_36_COMBO, SHOWER_36_NEO_COMBO, TUBSHOWER_60_DIVERTED,
 )

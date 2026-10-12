@@ -251,7 +251,7 @@ MAIN_FIXTURES = (
     # the file's 0.01" rounding convention — struck on the gwb at 94.625" instead, the pan
     # would sit 1/100" inside the finish. y is untouched, so the north face still shares
     # W-M-TUBDK-S's line. The aisle to the vanity is 33 11/16".
-    Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36-DIVERTED", room="RM-M-BATH2",
+    Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36-THERMO-COMBO", room="RM-M-BATH2",
             position=pt(ft(6, 4.615), ft(14, 8.375)), rotation=deg(-90), wall_ref="W-M-BA2E",
             drain_position=pt(ft(1, 9), ft(17, 3))),
     # ** THE KOHLER K-5713-W1-0 UNDERSCORE, AND IT IS A DROP-IN. ** The bath has no skirt:

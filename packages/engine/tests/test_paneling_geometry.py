@@ -213,7 +213,8 @@ def test_the_catlin_bands_are_the_eight_authored_ones(bands):
     for band in by_tag["WP-M-BATH2-SURR"]:
         assert band.run_m == pytest.approx(3 * 12 * _IN, abs=1e-6)
         assert band.z0_m == pytest.approx(0.0, abs=1e-6)
-        assert band.z1_m == pytest.approx(84 * _IN, abs=1e-6)
+        # Floor to ceiling since 2026-10-12: RM-M-BATH2's 106" clear height.
+        assert band.z1_m == pytest.approx(106 * _IN, abs=1e-6)
         assert band.replaces_wall_finish
         # A cast panel states no board stock, so it takes the 1/2" default — which is,
         # again, the panel's own thickness.

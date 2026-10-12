@@ -319,6 +319,10 @@ This is the part of the pass with a deadline on it.
   figure carried unchanged, and the clearance envelope is drawn off it.
 - Confirm **Delta `-SS` stainless stock** before the plumber orders; the showering line is
   being thinned and several sibling SKUs came back discontinued.
+- **`RM-M-BATH2`'s shower went thermostatic on 2026-10-12** (17T trim on the same R10000
+  rough, Moen 26008 combo head, solid-surface walls and base, every head now ≤ 1.75 gpm).
+  The argument, the hand calc and three open confirms (26008 finish, 17T SKU, base brand)
+  are in `notes/bath2_shower.md`.
 - Confirm the **Robern round unit's cleat spacing** off the sheet in the carton, and its CCT
   on the box label.
 - ~~**`RM-A-STUBATH`'s vanity contradiction**~~ — closed 2026-09-09 at `FX-VANITY-24-SHALLOW`,

@@ -119,10 +119,12 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
 
 
 def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
-    """RM-M-BATH2's marble-look surround, 2026-09-02 — the second finish-replacing band in
-    this house and the first that is not the sauna's tile.
+    """The cast shower surrounds — the second finish-replacing band in this house and the
+    first that is not the sauna's tile.
 
-    Two 3'-0" x 7'-0" bands on the 36" pan's closed sides, 42.0 SF net. It is priced in
+    ``marble-look-panel`` is RM-A-STUBATH's alone since 2026-10-12: two 3'-0" x 7'-0" bands,
+    42.0 SF net. RM-M-BATH2 took ``solid-surface-panel`` floor to ceiling, two 3'-0" x 8'-10"
+    bands, 53.0 SF net. Both are priced in
     ``[wood_surfaces]`` as an UNSPLIT UPGRADE DELTA and not at a full rate, because
     ``[fixtures]``'s ``FX-SHOWER-36`` row already buys "36x36 curbed pan plus its three-wall
     surround panels" with its labour — a full rate here would buy these same two walls
@@ -133,15 +135,16 @@ def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
     is not a board), and so is ``stock_bf_per_sqft`` — so no board-foot column, and the band
     draws at the 1/2" default, which is the panel's actual thickness.
     """
-    row = next(r for r in bom["wood_surfaces"] if r["material"] == "marble-look-panel")
-    assert row["kind"] == "override"
-    # + RM-A-STUBATH's WP-A-STUBATH-SURR (2026-09-23), the same two 3' x 7' bands.
-    assert float(row["net_area_sqft"]) == pytest.approx(84.0, abs=0.05)
-    assert float(row["order_area_sqft"]) == 93.0
-    assert not row.get("species")
-    # Billed here and nowhere else: the panel is in no assembly layer and no floor finish,
-    # which is also why the Glaser walk never reaches it and it buys no new UNKNOWN.
-    assert not row.get("also_in_envelope_layers")
+    expected = {"marble-look-panel": (42.0, 47.0), "solid-surface-panel": (53.0, 59.0)}
+    for material, (net, ordered) in expected.items():
+        row = next(r for r in bom["wood_surfaces"] if r["material"] == material)
+        assert row["kind"] == "override"
+        assert float(row["net_area_sqft"]) == pytest.approx(net, abs=0.05)
+        assert float(row["order_area_sqft"]) == ordered
+        assert not row.get("species")
+        # Billed here and nowhere else: the panel is in no assembly layer and no floor
+        # finish, which is also why the Glaser walk never reaches it.
+        assert not row.get("also_in_envelope_layers")
 
 
 def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):

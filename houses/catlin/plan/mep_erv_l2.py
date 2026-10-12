@@ -245,7 +245,7 @@ DUCTS_ERV_LEVEL2 = [
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=20),
     DuctRun(uid="0DMX0NM8XS", tag="DU-M-ERV-R-BATH2", system=DuctSystem.EXHAUST,
-            path=(pt(ft(3, 10.5), ft(18)), pt(ft(4), ft(18))),
+            path=(pt(ft(3, 10.5), ft(15, 4)), pt(ft(4, 2), ft(15, 4))),
             elevations=(_BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=20),

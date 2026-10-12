@@ -1551,6 +1551,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     - Where the box passes under `ST-S2A`'s flight, `ledger-W-S-SS2-stringer-2` (the 2x10 on
       `W-S-SS2` at y 104 1/8"..105 5/8") may NOT be lapped — `structural.member_interference`
       excuses treads/stringers over a soffit but not that ledger.
+- **`REG-M-EXH2` stays OUTSIDE BATH2's shower, by design** (2026-10-12): at (4'-2", 15'-4"),
+  ~8" west of the front glass, on `DU-M-ERV-R-BATH2`'s 15'-4" bay leg. The front glass stops
+  at 90" under the 106" ceiling, and that open top is the steam path. The ERV has no headroom
+  to boost (206.6 vs 205 cfm), so position is the only lever. **Do not glass the front to the
+  ceiling, add a transom, or move the grille back by the tub** without re-reading
+  `notes/bath2_shower.md`.
 - **`W-M-HS4` is a pocket wall and nothing may ever go in it again** — no outlet, switch,
   pipe, register, blocking, or towel bar between 12'-2" and 15'-4 1/2" on the y=22'-4" datum
   (the built cavity is 1" north of it; no stud to fasten to, no depth to recess into).

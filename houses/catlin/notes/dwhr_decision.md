@@ -231,8 +231,9 @@ it now.
 
 ## 9. What is NOT decided here
 
-- **Shower flow rates.** No `FixtureType` in this house authors a gpm. A2 is an assumption, not
-  a model reading, and §6 would move with it.
+- **Shower flow rates.** Still no engine field, but since 2026-10-12 every head's product
+  record states its rating: all are 1.75 gpm (`plan/products_showering.py`). A2 is re-read at
+  that figure in §10.
 - **Cold-main temperature.** A3 is an annual mean. A seasonal calculation would raise the
   winter saving and lower the summer one; it does not move a 28-year payback.
 - **The HPWH's real COP.** A5 and A6 are estimates. No energy model in this engine computes
@@ -242,6 +243,39 @@ it now.
 - **The sauna shower.** `FX-B-SAUNA-SH` drains under-slab and is outside every option above.
 - **Any code question.** MN ch. 4714 (UPC) permits a listed double-wall DWHR on a drain; since
   nothing is being installed, that reading was not pursued past confirming it is not a barrier.
+
+## 10. Addendum, 2026-10-12: 1.75 gpm heads, and the capacity question
+
+`FX-M-BATH2-SH` went thermostatic with a 1.75 gpm head (`notes/bath2_shower.md`), and every
+other head is now 1.75 gpm. That changes A2. §1's table row "36" diverted" is historical. The
+geometry it records did not move.
+
+**A2 at 1.75 gpm.** 8 min × 1.75 = 14.0 gal.
+
+| term | working | value |
+|---|---|---|
+| heat recovered per shower | 14.0 × 8.33 × 25.4 | 2,962 Btu |
+| per year | 1,095 × 2,962 | 3.24 MBtu = 950 kWh delivered |
+| effective electricity saved | 950 / 2.21 | 430 kWh |
+| annual saving | 430 × $0.1698 | **$73/yr** (was $83, −12.5%) |
+| payback | $2,300 / $73 | **31.5 yr** (was 27.7) |
+
+**The capacity argument.** So far this note asked only about money. A preheater also stretches
+the tank: equal-flow preheat raises the cold at the valve and the tank inlet by 25.4 °F. The
+check uses `bath2_shower.md` §2's terms (120 °F setpoint, 56 usable gal, 105 °F at the head):
+
+| main | hot fraction, no DWHR | with DWHR (Tc + 25.4) | minutes, no DWHR | with DWHR |
+|---|---|---|---|---|
+| 50 °F | 55/70 = 0.786 | 29.6/44.6 = 0.664 | 40.7 | **48.2** |
+| 40 °F (rise 0.564 × 53 = 29.9) | 65/80 = 0.813 | 35.1/50.1 = 0.701 | 39.4 | **45.6** |
+
+**So it adds about 16–18%, not double.** The 2026-10-12 plan expected preheat to roughly
+double how long the tank lasts. The arithmetic does not support that, because the usable
+fraction of a stratified tank does not grow with a warmer inlet. Either way the capacity
+is not needed: one shower already gets ~40 minutes.
+
+**Decision unchanged: no.** The payback lengthened to 31.5 years, and the capacity
+benefit is modest. The revisit triggers in §8 stand.
 
 ## Sources
 

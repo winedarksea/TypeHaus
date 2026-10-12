@@ -488,8 +488,13 @@ REGISTERS_MAIN = [
             position=pt(ft(1, 2), ft(24, 8)), duct_ref="DU-M-ERV-R-BATH1",
             type_ref="REG-T-ERV-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    # BATH2's moved 2026-10-12 from (4'-0", 18'-0") by the tub to the 15'-4" bay, ~8" west of
+    # the shower's front glass (x 4'-10 5/8"). That glass stops at 90" under a 106" ceiling,
+    # so steam spilling over its open top is caught here at the source. Kept OUTSIDE the
+    # enclosure on purpose, at 20 cfm: the ERV has no headroom to boost
+    # (notes/bath2_shower.md). Clear of ED-M-BATH2-CAN1 at (2'-6", 16'-0").
     Register(uid="CMRV06AAAA", tag="REG-M-EXH2", kind=DuctSystem.EXHAUST, room="RM-M-BATH2",
-            position=pt(ft(4), ft(18)), duct_ref="DU-M-ERV-R-BATH2",
+            position=pt(ft(4, 2), ft(15, 4)), duct_ref="DU-M-ERV-R-BATH2",
             type_ref="REG-T-ERV-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # THE OWNER ASKED FOR THIS ONE TO GO, AND IT COULD NOT. RM-M-LAUNDRY is a 4'-3" x 4'-3"

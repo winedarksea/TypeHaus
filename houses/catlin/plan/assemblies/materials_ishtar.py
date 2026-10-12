@@ -192,7 +192,8 @@ MATERIALS_ISHTAR = [
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
              color="#1e3a5c",
              source="garage eave + rake fascia weather face, 2026-08-26 only — Western States Metal Roofing \"Regal Blue\", PVDF/Kynar over 24 ga. steel; the manufacturer publishes no hex (its own page warns the on-screen swatch differs from the panel), so this value is an approximation and a physical chip governs"),
-    # RM-M-BATH2's shower back: the 36" pan's two closed sides, WP-M-BATH2-SURR.
+    # WP-A-STUBATH-SURR's panel (RM-M-BATH2's until 2026-10-12, when it took
+    # `solid-surface-panel` below). Everything said here applies to both.
     #
     # **Not `pvc-panel`.** That tag is RM-S-PLANT's Trusscore liner and is priced over 445.8
     # SF; folding 47 SF of a different product into it would make both unseparable and would
@@ -211,6 +212,14 @@ MATERIALS_ISHTAR = [
              name="Marble-look cast shower wall panel (1/2\")",
              r_per_inch=0.0, density=1600.0, hatch="stone", color="#efece6",
              source="RM-M-BATH2 shower surround, 2026-09-02; \"marble-look\" spans cultured marble, cast solid surface and acrylic and the product family is an OPEN OWNER SELECTION — see prices.toml [wood_surfaces] for the price spread that collapses when it is made"),
+    # RM-M-BATH2's shower walls since 2026-10-12, WP-M-BATH2-SURR, floor to ceiling. The
+    # family is chosen (compression-moulded solid surface, to match the base); the brand is
+    # not. Same reasoning as marble-look-panel above: no species, 1/2" default, no vapour field.
+    Material(tag="solid-surface-panel",
+             name="Solid-surface shower wall panel (1/2\")",
+             r_per_inch=0.0, density=1700.0, hatch="stone", color="#f2f0ec",
+             product_ref="PROD-SOLID-SURFACE-SHOWER",
+             source="RM-M-BATH2 shower surround, owner selection 2026-10-12: compression-moulded solid surface matching the 36x36 base, brand open (plan/products_showering.py)"),
     # The above-grade foundation band on BASEMENT_8/_12: a trowel-applied acrylic
     # coating over the exposed XPS, on the Styro Industries Tuff II product data
     # (styro.net / totalwall.com "Applying TUFF II Over Rigid Foam & ICF"). It is the option

@@ -3311,15 +3311,16 @@
 # same surround, same mortar bed, so those rows' basis carries over unchanged and the delta
 # is trim. Delta MultiChoice R10000-UNBX rough is $53-65 in all five wet walls (one part,
 # five walls, and the pressure-balance-vs-thermostatic choice stays reversible from outside
-# the tile). What differs per room is the outlet count:
+# the tile — BATH2 used that reversal on 2026-10-12). Every head is <= 1.75 gpm. What
+# differs per room is the trim and the outlet count:
 #
-#   -COMBO     one outlet. Single-function trim + a Moen Engage Magnetix 26010SRN two-in-one
-#              head (~$90). No diverter, no second riser, no blocking. RM-B-SAUNA, RM-A-STUBATH.
-#   -DIVERTED  two outlets. Adds a diverter rough (~$183 list) + two-handle trim + a slide
-#              bar. RM-M-BATH2, the primary shower.
-#   TUBSHOWER  two outlets, but the fixed head arrives inside the trim: Delta T14459-SS is a
-#              COMPLETE tub-and-shower trim (valve trim + H2Okinetic head + tub spout in one
-#              box), MSRP $428 and street $270-310, so these two rooms buy no separate head.
+#   -COMBO     one outlet. Single-function PB trim + a Moen Engage Magnetix 26010SRN two-in-one
+#              head (~$90, 1.75 gpm). No diverter, no second riser. RM-B-SAUNA, RM-A-STUBATH.
+#   -THERMO-COMBO  one outlet, THERMOSTATIC. Delta 17T trim (separate temperature and volume)
+#              + Moen Attract Magnetix 26008 combo, solid-surface base, custom glass.
+#              RM-M-BATH2, the primary shower. Replaced -DIVERTED (2 outlets, slide bar).
+#   TUBSHOWER  two outlets. Delta T14459-SS COMPLETE trim (valve trim + head + tub spout in
+#              one box, street $270-310), with the boxed head swapped for a 52535-SS (1.75 gpm).
 #
 # ** DELTA PRICES -SS STAINLESS AT PARITY WITH CHROME across most of the line, so the
 # brushed-nickel premium budgeted elsewhere in this file largely does not exist inside
@@ -3335,8 +3336,18 @@
 # seal. An unpriced type is silently dropped from the takeoff, which is why this row lands in
 # the same commit as the type.
 "FX-SHOWER-36-NEO-COMBO" = { material = { low = 750, high = 1900 }, labour = { low = 280, high = 620 } }  # 1 ea
-"FX-SHOWER-36-DIVERTED" = { material = { low = 700, high = 1600 }, labour = { low = 260, high = 600 } }  # 1 ea
-"FX-TUBSHOWER-60-DIVERTED" = { material = { low = 900, high = 2600 }, labour = { low = 450, high = 1050 } }  # 2 ea
+# RM-M-BATH2, 2026-10-12. ESTIMATE, not quoted. Built on FX-SHOWER-36's basis (pan + KIT
+# surround + their labour), so `solid-surface-panel` in [wood_surfaces] stays a delta:
+#   material  FX-SHOWER-36 band                                  300-1000
+#             solid-surface base over an acrylic pan             +150-500
+#             R10000 rough $55-65 + 17T trim $250-450 + 26008 $130-180   +435-695
+#             custom frameless 3/8" glass: one floor-to-ceiling panel on the
+#             tub knee wall, a 90" fixed panel and door on the front     +1300-3000
+#   labour    FX-SHOWER-36 band 200-470 + thermostatic trim set 60-130 + glass hang 300-700
+# The glass is the biggest and widest number; a glazier's measure-and-quote collapses it.
+"FX-SHOWER-36-THERMO-COMBO" = { material = { low = 2200, high = 5200 }, labour = { low = 560, high = 1300 } }  # 1 ea
+# +$65-100/ea for the 52535-SS head over the boxed one (2026-10-12; street $64-73).
+"FX-TUBSHOWER-60-DIVERTED" = { material = { low = 965, high = 2700 }, labour = { low = 450, high = 1050 } }  # 2 ea
 "FX-TUB-60" = { material = { low = 400, high = 1600 }, labour = { low = 330, high = 800 } }  # 1 ea
 # THE CHOSEN BATH — Kohler K-5713-W1-0 Underscore with the Bask heated surface, RM-M-BATH2
 # (plan/products.py, plan/fixture_types.py). This row is a real product, not a class
@@ -5050,7 +5061,7 @@
 #   catlin-sauna-shiplap also_in_envelope_layers -> priced in [envelope_layers]
 #   elm-timber   also_in_structural_solids, and carries no order_area_sqft (bills as timber)
 #   tile         the RM-B-SAUNA override — see the correction below, it is NOT a mirror
-#   marble-look-panel  billed here and nowhere else, like pet-felt-panel
+#   marble-look-panel, solid-surface-panel  billed here and nowhere else, like pet-felt-panel
 # Basis for walnut: hardwood T&G paneling material $2-6/SF for common species, and walnut is
 # at the top of the species ladder — homeguide.com tongue-and-groove ceiling cost 2026,
 # designtransitionstudio.com walnut price guide, homewyse.com wall paneling 2026.
@@ -5097,7 +5108,8 @@
 # painted gypsum with a mitred edge at the wainscot cap; no framing, no substrate.
 "pet-felt-panel" = { material = { low = 4, high = 9 }, labour = { low = 2, high = 5 } }  # 62 SF
 # ADDED 2026-09-02 with RM-M-BATH2's shower surround, WP-M-BATH2-SURR — 42 SF net / 47 SF
-# ordered of marble-look cast panel on the 36" pan's two closed sides.
+# ordered of marble-look cast panel on the 36" pan's two closed sides. (BATH2 moved to
+# `solid-surface-panel` 2026-10-12; the basis below now prices WP-A-STUBATH-SURR.)
 #
 # ** THIS IS AN UPGRADE DELTA, NOT A RATE, and it is deliberately UNSPLIT. ** [fixtures]'s
 # `FX-SHOWER-36` row already buys "36x36 curbed pan plus its three-wall surround panels",
@@ -5116,9 +5128,15 @@
 # Owner-furnished (Waltly, paid — costs.toml): two Gr 2 sheets hung uncut; labour only, MS-
 # polymer bond over the painted gypsum and the range/hood/upper cut-in.
 "titanium-gr2-sheet-brushed" = { material = { low = 0, high = 0 }, labour = { low = 15, high = 35 } }  # 12 SF ordered: WP-M-KIT-BACKSPLASH (2026-10-09)
-"marble-look-panel" = { low = 4, high = 11 }  # 93 SF ordered: WP-M-BATH2-SURR + WP-A-STUBATH-SURR (2026-09-23)
-# ** OPEN: the delta basis above holds for BATH2 only. FX-SHOWER-36-NEO-COMBO (STUBATH) buys the
-# pan and glass, not the walls, so its 42 SF bills as a delta over a kit it never had. **
+"marble-look-panel" = { low = 4, high = 11 }  # 47 SF ordered: WP-A-STUBATH-SURR only since 2026-10-12
+# ** OPEN: FX-SHOWER-36-NEO-COMBO (STUBATH) buys the pan and glass, not the walls, so its
+# 42 SF bills as a delta over a kit it never had. **
+# 2026-10-12, WP-M-BATH2-SURR, floor to ceiling (53 SF net / 59 ordered). Same UPGRADE-DELTA
+# basis as marble-look-panel above: FX-SHOWER-36-THERMO-COMBO's material half carries the kit
+# surround and its labour. Compression-moulded solid surface runs ~$12-25/SF; less the kit's
+# own value that leaves $8-20. The ~11 SF above the kit's 7'-0" head has no kit under it,
+# so the high end carries it. ESTIMATE; the owner's brand pick collapses it.
+"solid-surface-panel" = { low = 8, high = 20 }  # 59 SF ordered: WP-M-BATH2-SURR
 
 [countertops]
 # ** THE ~63 SF WAS A HAND FIGURE AND IS NOW A DERIVED QUANTITY (2026-09-11). ** Until this

@@ -15,6 +15,7 @@ catalog and ``integrity.duplicate_catalog_tag`` proves the tags are disjoint.
 from __future__ import annotations
 
 from plan.products_lighting import LIGHTING_PRODUCTS
+from plan.products_showering import SHOWERING_PRODUCTS
 from typehaus.model import Product
 
 # =========================================================================================
@@ -138,53 +139,6 @@ MOEN_ADLER_LAUNDRY = Product(
            "faucet is a two-handle rigid spout with no spray. Take the sprayer and TEE A "
            "1/2\" HOSE BIBB OFF THE COLD AT THE LAUNDRY BOX -- a rough-in item that has to "
            "reach the plumber before the wall closes.",
-)
-DELTA_MULTICHOICE_ROUGH = Product(
-    tag="PROD-DELTA-R10000-UNBX", brand="Delta", model="R10000-UNBX",
-    name="MultiChoice universal shower rough-in valve body",
-    source="Delta Faucet product page, read 2026-09-06. ** THE DECIDING FACT IS ON DELTA'S "
-           "OWN PAGE: ** the body 'accepts single, dual, or dual thermostatic cartridge' -- "
-           "the cartridge lives in the TRIM, not the rough. One rough-in part in all five "
-           "wet walls, and the pressure-balance-vs-thermostatic choice stays reversible from "
-           "OUTSIDE the tile in 2041. Moen makes you pick Posi-Temp vs Moentrol vs ExactTemp "
-           "as three different bodies at rough-in; Kohler's Rite-Temp is pressure-balance "
-           "only. ASSE 1016 -- see notes/interior_selections.md for why that listing is "
-           "not negotiable and why this part is not the one to import.",
-)
-DELTA_T14459_TRIM = Product(
-    tag="PROD-DELTA-T14459-SS", brand="Delta", model="T14459-SS",
-    name="Ashlyn Monitor 14 tub-and-shower trim with H2Okinetic head and spout, Stainless",
-    source="Delta Faucet product page, read 2026-09-06. A COMPLETE trim -- valve trim, "
-           "showerhead and tub spout in one box -- which removes the spout-matching problem "
-           "and means the two 60\" combos need no separately specified head. Pressure "
-           "balance (ASSE 1016), not thermostatic: every shower here is single-outlet, and a "
-           "PB spool is nearly inert where a thermostatic element drifts and fails. Delta "
-           "prices -SS at parity with chrome across most of the line, so the brushed-nickel "
-           "premium being budgeted largely does not exist inside Delta. ** CONFIRM STOCK IN "
-           "STAINLESS BEFORE THE PLUMBER ORDERS: ** Delta's stainless SHOWERING line is being "
-           "thinned hard and several sibling SKUs came back discontinued.",
-)
-SPEAKMAN_HOTEL_HEAD = Product(
-    tag="PROD-SPEAKMAN-S-2005-H", brand="Speakman", model="S-2005-H-1",
-    name="Hotel Anystream showerhead, 2.5 gpm, Brushed Nickel",
-    source="Speakman product page, read 2026-09-06. The only mechanism on the market that "
-           "cleans INSIDE the orifice -- the Anystream plungers self-descale, where every "
-           "other head is soft-nub-and-thumb or unscrew-and-soak. Nobody sells a consumer "
-           "head with a user-removable faceplate. 2.5 gpm is the 2018 UPC Table 403.1 limit "
-           "and Minnesota adds no flow amendment (4714.0408 is entirely receptor lining and "
-           "pitch), so this is legal here and is NOT a CA/WA 1.8 gpm SKU. It looks "
-           "utilitarian rather than designed; that is the trade.",
-)
-MOEN_ENGAGE_MAGNETIX = Product(
-    tag="PROD-MOEN-26010SRN", brand="Moen", model="26010SRN",
-    name="Engage Magnetix two-in-one showerhead/handshower, Spot Resist Brushed Nickel",
-    source="Moen product page, read 2026-09-06. ** ONE OUTLET, WHICH IS THE ENTIRE POINT. ** "
-           "A fixed head plus a separate handshower is TWO outlets and needs a diverter and "
-           "a second riser -- and that is true whether the handshower hangs on a slide bar "
-           "or on a wall elbow with a hook. Swapping the bar for a hook saves the blocking, "
-           "not the valve. This is a magnetic combo: no diverter, no second riser, no "
-           "blocking, and you still get a handheld for cleaning. Spending ~$500 of valve and "
-           "trim to put a handshower in a basement sauna rinse is bad value.",
 )
 DELTA_TRINSIC_FILLER = Product(
     tag="PROD-DELTA-T2759-SS", brand="Delta", model="T2759-SS",
@@ -445,7 +399,7 @@ INTERIOR_PRODUCTS = (
     TOTO_SP_WALLHUNG, TOTO_DUOFIT_WT173M, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
     TOTO_WASHLET_S5, KOHLER_CACHET_SEAT,
     DELTA_ARVO_LAV, DELTA_ESSA_KITCHEN, MOEN_ADLER_LAUNDRY,
-    DELTA_MULTICHOICE_ROUGH, DELTA_T14459_TRIM, SPEAKMAN_HOTEL_HEAD, MOEN_ENGAGE_MAGNETIX,
+    *SHOWERING_PRODUCTS,
     DELTA_TRINSIC_FILLER, DELTA_R2707_ROUGH,
     KOHLER_CAXTON_BASIN, SWAN_CONTOUR_TOP,
     HARVIA_CILINDRO_PC110E, HARVIA_XENIO_CX170, CARIITTI_FIBRE_KIT,

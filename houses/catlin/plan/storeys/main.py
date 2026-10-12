@@ -2210,14 +2210,15 @@ PANELING = [
     # shower panel on a bath apron. Authoring `spans` at all is what excludes it
     # (resolve/paneling.py) — this is the reason the band is not authored `room=`-wide.
     #
-    # `height=ft(7)` on a zero offset, which is FX-SHOWER-36's own type height. 2 x 3'-0" x
-    # 7'-0" = 42.0 SF net.
+    # Floor to ceiling since 2026-10-12: `inch(106)` is RM-M-BATH2's clear height
+    # (clear_height_m 2.6924). 2 x 3'-0" x 8'-10" = 53.0 SF net of solid-surface panel,
+    # matching the FX-SHOWER-36-THERMO-COMBO base (notes/bath2_shower.md).
     #
     # Known limitation: `replaces_wall_finish` only nets out in `wood_surfaces`, so
-    # `envelope_layers` still bills about 42 SF of latex paint behind the panel (~$65-125).
+    # `envelope_layers` still bills about 53 SF of latex paint behind the panel (~$80-155).
     # The gypsum genuinely stays and is genuinely bought; only the paint on it is wrong.
     WallPaneling(uid="AWV1DA0P86", tag="WP-M-BATH2-SURR", room="RM-M-BATH2",
-                 material_ref="marble-look-panel", height=ft(7),
+                 material_ref="solid-surface-panel", height=inch(106),
                  replaces_wall_finish=True,
                  spans=(PanelingSpan(wall_ref="W-M-BA2E2", start=ft(1, 9.625),
                                      length=ft(3)),
