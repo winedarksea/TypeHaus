@@ -106,7 +106,8 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                backing: tuple[BackingBand, ...] = (),
                continuation_start: str | None = None,
                continuation_end: str | None = None,
-               line: object | None = None) \
+               line: object | None = None,
+               lap_start: bool = True, lap_end: bool = True) \
         -> tuple[FramedMember, ...]:
     """Generate studs, plates, and opening framing for one resolved wall.
 
@@ -225,7 +226,8 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     _append_plates(members, rw, plate_member, p0, d, axis_len, z0, plate_h, top_plates,
                    top_start, top_end, structure_polygon, start_role, end_role, thickness,
                    neighbour_insets_start, neighbour_insets_end, openings=openings,
-                   post_bands=post_bands, post_top_bands=post_top_bands)
+                   post_bands=post_bands, post_top_bands=post_top_bands,
+                   laps=(lap_start, lap_end))
 
     # --- studs at spacing, skipping those inside an opening's king/jack pack --
     stud_z0 = z0 + plate_h
@@ -493,7 +495,8 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
                    neighbour_insets_end: tuple[float, float] | None = None,
                    openings: tuple[WallOpening, ...] = (),
                    post_bands: tuple[tuple[float, float], ...] = (),
-                   post_top_bands: tuple[tuple[float, float], ...] | None = None) -> None:
+                   post_top_bands: tuple[tuple[float, float], ...] | None = None,
+                   laps: tuple[bool, bool] = (True, True)) -> None:
     """Bottom + top plate course(s), each cut to the corner square that course owns.
 
     The cap plate of a double top plate laps the *opposite* way from the courses below it:
@@ -555,8 +558,9 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
                               (post_bands if post_top_bands is None else post_top_bands)])
     for i in range(top_plates):
         laps_back = top_plates > 1 and i == top_plates - 1
-        roles = ((invert_corner_role(start_role), invert_corner_role(end_role))
-                 if laps_back else (start_role, end_role))
+        # An end whose neighbour tops out at another height has no course to lap with.
+        roles = tuple(invert_corner_role(role) if laps_back and lap else role
+                      for role, lap in zip((start_role, end_role), laps, strict=True))
         course_start, course_end = plate_run(*roles)
         course_segments = _plate_segments(course_start, course_end, top_breaks, thickness)
         course_single = len(course_segments) == 1
@@ -824,6 +828,17 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     continuations = continuation_roles(model, lambda tag: _structure_module_signature(
         plan, resolved_by_tag.get(tag), lines_for_wall.get(tag)))
 
+    def _laps(rw: ResolvedWall, endpoint: str) -> bool:
+        """Whether this L end's top courses meet the neighbour's at one height."""
+        neighbour_tag, neighbour_endpoint = corner_neighbours.get((rw.tag, endpoint),
+                                                                  ("", ""))
+        neighbour = resolved_by_tag.get(neighbour_tag)
+        if neighbour is None:
+            return True
+        mine = _wall_top_elevations(rw)[endpoint == "end"]
+        theirs = _wall_top_elevations(neighbour)[neighbour_endpoint == "end"]
+        return abs(mine - theirs) < 1e-4
+
     def _neighbour_insets(rw: ResolvedWall, endpoint: str, p0, direction,
                           axis_len: float) -> tuple[float, float] | None:
         """The corner neighbour's band, projected onto ``rw``'s framing axis.
@@ -888,6 +903,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                              corner_end="end" in endpoints,
                              butting_start="start" in butting,
                              butting_end="end" in butting,
+                             lap_start=_laps(rw, "start"),
+                             lap_end=_laps(rw, "end"),
                              open_start="start" in open_endpoints.get(rw.tag, ()),
                              open_end="end" in open_endpoints.get(rw.tag, ()),
                              tee_stations=tee_stations,

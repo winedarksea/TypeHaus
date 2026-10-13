@@ -257,3 +257,24 @@ def test_the_screw_releases_vertically_and_the_catalog_says_so() -> None:
         assert item.allowable.uplift_lb is None, item.tag
         assert item.allowable.lateral_f1_lb and item.allowable.lateral_f2_lb
         assert "ER-192" in item.allowable.citation
+
+
+def test_an_l_with_a_gapped_partition_is_owned_by_the_full_height_wall(catlin_model_ro) -> None:
+    """The partition's lowered plates neither own the corner nor lap into it."""
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+
+    (corner,) = [j for j in catlin_model_ro.junctions if j.node_tag == "N-M-STRJ"]
+    assert corner.kind == "l" and corner.framing_owner == "W-M-STRW"
+
+    def plates(tag):
+        return [member_footprint(m) for m in catlin_model_ro.wall(tag).members
+                if m.category in ("plate", "stud", "corner")]
+
+    for ring_a, a0, a1 in plates("W-M-STRW"):
+        for ring_b, b0, b1 in plates("W-M-STOS2"):
+            if min(a1, b1) - max(a0, b0) <= 1e-6:
+                continue
+            overlap = Polygon(ring_a).intersection(Polygon(ring_b)).area
+            assert overlap < 1e-6

@@ -4,12 +4,9 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import model_validator
-
 from typehaus.model.base import Element, HausModel
 from typehaus.model.elements import Wall
 from typehaus.model.enums import ConnectorKind, RailingKind
-from typehaus.model.placeables import WallAttachment
 from typehaus.model.rebar import ReinforcementSpec
 from typehaus.model.refs import FaceRef, HeadConnector, InServiceMoisture, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
@@ -1008,9 +1005,6 @@ class Railing(Element):
     # terminal. A plain end cap is "open". ``None`` = not stated → UNKNOWN.
     start_termination: RailTermination | None = None
     end_termination: RailTermination | None = None
-    # Offset return onto a remaining wall face, without shortening the graspable rail.
-    # Height follows the rail endpoint; an omitted attachment keeps the nearest-wall rule.
-    end_return_attachment: WallAttachment | None = None
     infill: Literal["balusters", "panel", "cable", "mesh"] | None = None
     # R312.1.3: the largest opening the infill admits. For balusters this is the clear gap
     # between them, which is *not* ``post_spacing`` — that is the structural post rhythm.
@@ -1025,12 +1019,6 @@ class Railing(Element):
     post_material: str | None = None
     rail_material: str | None = None
     infill_material: str | None = None
-
-    @model_validator(mode="after")
-    def _return_attachment_requires_wall_return(self) -> Railing:
-        if self.end_return_attachment is not None and self.end_termination != "wall_return":
-            raise ValueError("end_return_attachment requires end_termination='wall_return'")
-        return self
 
 
 @register_element

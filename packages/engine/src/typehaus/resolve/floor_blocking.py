@@ -76,6 +76,8 @@ _FIT_TOL_M = inch(0.0625).meters
 _GRAZE_M = inch(0.25).meters
 #: A wall counts as on the line when its axis is this close to it.
 _LINE_TOL_M = inch(3).meters
+#: A wall above takes a bearing block once it covers one stud's thickness of the bay.
+_MIN_BEARING_OVERLAP_M = inch(1.5).meters
 #: How far a wall's base or top may miss the joist field's own face (subfloor, plate).
 _BASE_TOL_M = inch(2).meters
 
@@ -183,7 +185,11 @@ def _floor_blocking(
         for bay, ((p_a, w_a), (p_b, w_b)) in enumerate(zip(lines, lines[1:], strict=False)):
             if p_b - p_a > spacing + inch(1).meters:
                 continue  # an opening between them, not one bay
-            if not any(a_lo <= (p_a + p_b) / 2.0 <= a_hi for a_lo, a_hi in above):
+            # Any real overlap, not the bay's midpoint: a wall ending mid-bay still has an
+            # end stud to carry down.
+            clear = (p_a + w_a / 2.0, p_b - w_b / 2.0)
+            if not any(min(a_hi, clear[1]) - max(a_lo, clear[0]) >= _MIN_BEARING_OVERLAP_M
+                       for a_lo, a_hi in above):
                 continue
             gap = _clip((p_a + w_a / 2.0, p_b - w_b / 2.0), blocked)
             if gap is None:

@@ -897,7 +897,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     unlike the exterior pair): `INT_2X6_BRG`/`PLANT_INT_2X6_BRG_HUMID` (the x=18'-0"
     **centreline**, `W-M-C1..C5B`/`W-S-C1..C4B`/`W-A-C1..C2`) and
     `INT_2X6_BRG_EXPOSED_PLY` and its two variants `STAIRWALL_INT_2X6_BRG_TYPEX`/
-    `_UNDERSTAIR` (the **stair line**, `W-B-STR/STR2/STR3` under `W-M-STRW/STRW2`). **No code compels this**
+    `_UNDERSTAIR` (the **stair line**, `W-B-STR/STR2/STR3` under `W-M-STRW`). **No code compels this**
     (R602.3.3 is the bearing-stud rule; R602.3.2's single-top-plate exception is about
     rafters/joists centred over studs within 1"; in-line framing is an APA technique) — done
     because the centreline carries `RB-HOUSE` continuously to the footings. Pinned by
@@ -1743,7 +1743,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   does not pass). The 5 tubes cover this stair only; ST-M2S needs ~4.5 m more. **Every wall
   handrail stands 2 3/8"+ off its finish face** — `code.R311_7_8_2_handrail_wall_clearance`
   grades the drawn rail, and the old 2" stand-off FAILed it everywhere. The W rail stops at
-  the upper flight's top nosing (26'-2 5/8"): past it the rake reads the lower flight. Cut
+  26'-5 3/4", 3 1/8" short of the upper flight's top nosing, so its square return lands on
+  W-M-STRW's end and corner studs at the W-M-STOS2 L (owner, 2026-10-13). Cut
   plan, fitting fit and the R301.5 span: `notes/titanium_handrail_backsplash.md`.
 - **Under-stair space.** No `RM-B-UNDERSTAIR` room exists; the storage under the arriving
   stair flight (and on under the landing deck) is part of `RM-B-STAIR`'s single polygon.

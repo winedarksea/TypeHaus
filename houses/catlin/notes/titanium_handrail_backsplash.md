@@ -3,8 +3,8 @@
 **House:** catlin
 **Structure:** `RL-M-HANDRAIL-E`, `RL-M-HANDRAIL-W` (ST-B2M); `WP-M-KIT-BACKSPLASH` (W-M-E1).
 **Written:** 2026-10-09, by hand, from the authored geometry and the resolved rail sweeps.
-**Junction update:** 2026-10-13 — remove W-M-STRW2; offset the W rail's top return onto
-W-M-STRW without changing either graspable rail or the stock cut plan.
+**Junction update:** 2026-10-13 — W-M-STRW2 removed; the W rail now stops 3 1/8" short
+of its old end so a stock square return lands on W-M-STRW at the W-M-STOS2 L (owner).
 **Oracle for:** the R301.5 support-spacing limit on `RAILING-INT-TI-HANDRAIL-42`
 (`bracket_spacing_max = 1000 mm`), graded by `code.R301_5_handrail_support_spacing`;
 reproduced by `tests/test_catlin_titanium_handrail.py`.
@@ -28,7 +28,7 @@ seat on a 42.0 x 37.0 mm tube.
 
 | item | bought | used | spare |
 |---|---|---|---|
-| Ti alloy tube 42 OD x 2.5 wall x ~1200 | 5 | 4 (2 per rail) | 1 full tube + 4 offcuts ~255-270 mm |
+| Ti alloy tube 42 OD x 2.5 wall x ~1200 | 5 | 4 (2 per rail) | 1 full tube + 4 offcuts ~260-320 mm |
 | Gr 2 sheet 500 x 1000 x 0.8, teardrop hem | 5 | 2 | 3 |
 
 Tube grade is not on the order (a bike-frame supplier, so likely Gr 9 Ti-3Al-2.5V). Ask for
@@ -39,12 +39,10 @@ Cut plan per rail, developed (sloped) length off the resolved RAIL1 sweep:
 | rail | developed | supports (developed station) | pieces |
 |---|---|---|---|
 | RL-M-HANDRAIL-E | 74.1" = 1882 mm | 0 / 37.3" / 74.1" | 2 x ~941 mm, spliced at the mid bracket |
-| RL-M-HANDRAIL-W | 73.3" = 1862 mm | 0 / 36.6" / 73.3" | 2 x ~931 mm, spliced at the mid bracket |
+| RL-M-HANDRAIL-W | 69.4" = 1763 mm | 0 / 34.7" / 69.4" | 2 x ~881 mm, spliced at the mid bracket |
 
-Three returns use stock stainless elbows. The W rail's top return needs a formed offset
-fitting: its endpoint stays at y=314 5/8", and its flange moves north to y=321 1/2" on
-W-M-STRW's stair face. The resolved level return is about 7.40" long, with its flange
-normal to the wall. Cut each rail piece to the fitting's measured socket.
+All four returns are stock 90-degree elbows, square to the wall. Cut each rail piece to
+the elbow's measured socket, not to these lengths.
 
 Main to second (ST-M2S) needs ~4.2-4.5 m more and is NOT covered by this stock. It stays
 dark steel unless more tube is ordered (same lot, so the brushed finish matches).
@@ -54,8 +52,7 @@ dark steel unless more tube is ordered (same lot, so the brushed finish matches)
 | part | count | fit on 42.0 / 37.0 tube |
 |---|---|---|
 | saddle wall bracket, 60-93 mm wall-to-centre, rated >= 0.9 kN | 2 | saddle R21.2 on R21.0: seats; bed in epoxy |
-| 90-degree wall-return elbow | 3 | spigot for 42.4 x 2.6 tube (ID 37.2) is 0.2 mm loose: epoxy fills it. A 42.4 x 2.0 spigot (38.4) will NOT go in |
-| formed offset top return, W rail | 1 | follow the resolved endpoint and wall-normal flange; confirm socket fit and fitting capacity |
+| 90-degree wall-return elbow | 4 | spigot for 42.4 x 2.6 tube (ID 37.2) is 0.2 mm loose: epoxy fills it. A 42.4 x 2.0 spigot (38.4) will NOT go in |
 | wall end plate (flange), ~70 mm | 4 | closes the return; 3 screws |
 | internal splice sleeve | 2 | catalogue sleeves are ~37.0-38.2 mm: likely too tight. Fallback: machine 316 bar to 36.85 x 100 mm |
 
@@ -67,17 +64,20 @@ galvanic series, so the pair is benign indoors. Anchors are A4/316.
 
 - **E rail (W-B-CN, concrete):** two A4 6 mm screw anchors per plate, three per flange.
 - **W rail mid bracket** (y = 28'-7 5/8") lands on W-M-STRW stud-005 at 28'-8".
-- **W rail top return:** the graspable rail still ends at y = 26'-2 5/8", about 37" up.
-  Its level return offsets to W-M-STRW's stair face at y = 26'-9 1/2", at that same
-  height. `BK-M-STRW-RAIL-TOP` is a 9" long flat 2x8 at 33", covering y=319 3/4"..328 3/4".
-  The entire 70 mm flange lands inside that backed wall face, beyond the L corner.
+- **W rail top return** (y = 26'-5 3/4"): square onto W-M-STRW's stair face. Behind the
+  flange are the wall's end stud and corner stud at the W-M-STOS2 L (y 26'-4 1/4" ..
+  26'-7 1/4"); the 70 mm flange (y 26'-4 3/8" .. 26'-7 1/8") lands wholly on them, so no
+  backing block is needed.
 - **W rail foot return** (y = 31'-1 5/8", ~6" below the main floor) lands in the floor
   band, behind the stair plywood. W-B-STR's studs stop 13 7/16" below the floor, and
   FS-M-MECH's joist end is 2 5/8" behind the face. **Field item:** block solid between the
   joist end and the plywood there before the plywood goes on. A `WallBacking` cannot sit
   above its wall's framing.
-- The W rail stops at the upper flight's top nosing (26'-2 5/8"). Past that point the
-  rake reads the lower flight.
+- The W rail stops at y = 26'-5 3/4", 3 1/8" short of the upper flight's top nosing
+  (26'-2 5/8"), because W-M-STRW's face ends at the L corner (owner, 2026-10-13: return
+  where there is wall rather than reach into the open hall). `code.R311_7_8_handrail` still
+  passes: it skips the arrival station. Read literally, R311.7.8.2 wants the rail over the
+  top riser, so the AHJ may ask about this 3 1/8".
 
 ## 4. R301.5 hand-calc — 200 lb concentrated, any direction
 
@@ -94,7 +94,7 @@ galvanic series, so the pair is benign indoors. Anchors are A4/316.
 | at the widest drawn span, 947 mm | 890 x 947 / 4 / 2893 | 72.8 MPa |
 
 Bending governs at 0.28 on a 1000 mm span. That span is the type's `bracket_spacing_max`,
-and the drawn spans are 930-947 mm. Each support (bracket or flange) sees at most the full
+and the drawn spans are 881-947 mm. Each support (bracket or flange) sees at most the full
 890 N when the load lands on it, so buy fittings rated >= 0.9 kN. The splice sits over a
 bracket, so the sleeve carries shear and a small continuity moment, not midspan moment.
 
@@ -121,8 +121,6 @@ bracket, so the sleeve carries shear and a small continuity moment, not midspan 
 
 - **Bracket and anchor capacity:** a product rating, read when the fittings are bought.
   `advisory.wall_backing_present` does not see railing supports.
-- **The formed offset return:** the geometry is modeled; its fitting and socket connection
-  need the same >= 0.9 kN qualification as the other fittings.
 - **The splice bond:** sleeve shear and bond are the epoxy maker's table.
 - **Backsplash fixing:** no check reads `model.panelings`.
 

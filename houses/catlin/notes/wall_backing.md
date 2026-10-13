@@ -141,8 +141,9 @@ the two retired plywood rows at 0 LF.
 * **Handrail backing is authored only where a support misses a stud.** A raked rail cannot
   take a level band, but its supports are discrete. Since 2026-10-09 the rail-to-wall
   association is solved (`resolve/railings/wall_contact.py`: the parallel finish face, across
-  storeys), so every bracket and wall return lands on a named wall. `BK-G-W-RAIL-FOOT` and
-  `BK-M-STRW2-RAIL-TOP` are the two blocks this needed so far
+  storeys), so every bracket and wall return lands on a named wall. `BK-G-W-RAIL-FOOT` is
+  the one block this needs today; `BK-M-STRW2-RAIL-TOP` retired with W-M-STRW2 on 2026-10-13,
+  when the rail's top return moved onto W-M-STRW's corner studs
   (`notes/titanium_handrail_backsplash.md` §3). **Still open, and it is the item with a code
   load behind it (§2):** no check grades a support against the stud or block behind it —
   `advisory.wall_backing_present` reads placeables, not railing supports.

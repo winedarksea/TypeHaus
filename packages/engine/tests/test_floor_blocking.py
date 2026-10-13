@@ -35,6 +35,17 @@ def test_the_bays_over_w_m_c3_are_blocked_though_no_deck_names_it(catlin_model_r
         assert any(lo >= 216 * _IN and hi <= 268.1 * _IN for lo, hi in spans), tag
 
 
+@pytest.mark.parametrize(("deck", "x_in", "lo_in", "hi_in"), [
+    ("FS-M-MECH", 118.75, 309.38, 325.38),   # W-M-STRW ends at y=26'-6", past mid-bay
+    ("FS-M-STAIR", 216.0, 261.38, 277.38),   # W-M-C3 ends at y=22'-4", short of mid-bay
+])
+def test_a_bearing_wall_ending_mid_bay_still_gets_its_block(catlin_model_ro, deck, x_in,
+                                                            lo_in, hi_in) -> None:
+    spans = [sorted((m.p0[1], m.p1[1])) for m in _blocking(_floor(catlin_model_ro, deck))
+             if abs(m.p0[0] - x_in * _IN) < 0.01]
+    assert any(lo > lo_in * _IN and hi < hi_in * _IN for lo, hi in spans)
+
+
 def test_an_interior_line_is_blocked_on_its_axis(catlin_model_ro) -> None:
     attic = _floor(catlin_model_ro, "FS-ATTIC")
     solid = [m for m in _blocking(attic) if m.profile == "11.875 I-joist"]

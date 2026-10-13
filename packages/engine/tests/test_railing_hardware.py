@@ -17,7 +17,6 @@ from _railing_fixtures import (
 )
 
 from typehaus.model.enums import RailingKind
-from typehaus.model.placeables import WallAttachment
 from typehaus.quantities import ft, inch, mm, pt
 from typehaus.resolve.sweep import profile_radius_m
 
@@ -72,89 +71,6 @@ def test_a_wall_return_with_no_wall_warns_and_draws_nothing():
     model = resolve_railings([rail])
     assert "RETURN1" not in _tags(model, "RL-H")
     assert [f.check_id for f in model.railing_findings] == ["geometry.railing_return_unanchored"]
-
-
-def test_an_offset_return_preserves_the_rail_and_sets_the_flange_normal_to_the_wall():
-    wall = wall_along_x("W-T", 0.0, x0_m=0.0)
-    attachment = WallAttachment(wall_ref="W-T", face="left", distance_from_start=inch(116))
-    rail = _handrail(end_termination="wall_return", end_return_attachment=attachment)
-    model = resolve_railings([rail], walls=[wall])
-    assert not model.railing_findings
-    solids = {s.tag: s for s in solids_of(model, rail.tag)}
-    endpoint = solids["RL-H-RAIL1"].sweep.path[-1]
-    assert endpoint[:2] == pytest.approx(rail.path[-1].xy_m)
-    assert endpoint[2] == pytest.approx(inch(36).meters)
-    ret = solids["RL-H-RETURN2"].sweep.path
-    assert ret[0] == endpoint
-    assert ret[1] == pytest.approx((inch(116).meters, 0.0, endpoint[2]))
-    a, b = solids["RL-H-ENDPLATE2"].sweep.path
-    assert a == ret[1]
-    assert b == pytest.approx((a[0], mm(6).meters, a[2]))
-
-
-@pytest.mark.parametrize(("wall_tag", "station", "wall_end", "message"), [
-    ("MISSING", 116, 120, "missing return wall"),
-    ("W-T", 130, 120, "outside its wall"),
-    ("W-T", 100, 120, "return reach"),
-    ("W-T", 119.5, 120, "not completely supported"),
-])
-def test_an_invalid_explicit_return_reports_an_error(wall_tag, station, wall_end, message):
-    wall = wall_along_x("W-T", 0.0, x0_m=0, x1_m=inch(wall_end).meters)
-    rail = _handrail(end_termination="wall_return", end_return_attachment=WallAttachment(
-        wall_ref=wall_tag, face="left", distance_from_start=inch(station)))
-    model = resolve_railings([rail], walls=[wall])
-    assert "RETURN2" not in _tags(model, rail.tag)
-    (finding,) = model.railing_findings
-    assert finding.check_id == "integrity.railing_return_attachment"
-    assert finding.severity.value == "error"
-    assert message in finding.message
-
-
-def test_an_attachment_requires_a_wall_return_termination():
-    with pytest.raises(ValueError, match="end_termination"):
-        _handrail(end_return_attachment=WallAttachment(wall_ref="W-T", face="left",
-                                                      distance_from_start=inch(116)))
-
-
-@pytest.mark.parametrize("backend", ("libcst", "py"))
-def test_return_attachment_round_trips_through_source_and_reference_remapping(tmp_path, backend):
-    from _helpers import STARTER, copy_house
-
-    from typehaus.model.remap import ReferenceRemap, remap_ops_for
-    from typehaus.source import ProjectCoordinator, load_plan, writeback
-    from typehaus.source.serialize import element_add_op
-
-    house = copy_house(STARTER, tmp_path / "starter")
-    source_path = house / "plan" / "placeables.py"
-    before = source_path.read_text()
-    coordinator = ProjectCoordinator(house)
-    rail = _handrail(assembly=None, end_termination="wall_return",
-                     end_return_attachment=WallAttachment(
-                         wall_ref="W-101", face="left", distance_from_start=inch(96)))
-    assert type(rail).model_validate(rail.model_dump()) == rail
-    try:
-        writeback.set_backend(backend)
-        op = element_add_op(rail, tag=rail.tag, hint_list="MAIN_PLACEABLES")
-        coordinator.apply_patch([op], coordinator.revision())
-        loaded = load_plan(house)
-        assert loaded.ok, loaded.findings
-        added = loaded.plan.by_tag(rail.tag)
-        assert added.end_return_attachment == rail.end_return_attachment
-        remap = ReferenceRemap(renamed={"W-101": "W-102"},
-                               shift={rail.tag: ft(12).meters}, reversed=frozenset({rail.tag}))
-        coordinator.apply_patch(remap_ops_for(added, remap), coordinator.revision())
-        loaded = load_plan(house)
-        assert loaded.ok, loaded.findings
-        attachment = loaded.plan.by_tag(rail.tag).end_return_attachment
-        assert attachment.wall_ref == "W-102" and attachment.face == "right"
-        assert attachment.distance_from_start.meters == pytest.approx(inch(48).meters, abs=1e-6)
-        coordinator.undo()
-        restored = load_plan(house).plan.by_tag(rail.tag)
-        assert restored.end_return_attachment == rail.end_return_attachment
-        coordinator.undo()
-        assert source_path.read_text() == before
-    finally:
-        writeback.set_backend("libcst")
 
 
 def test_brackets_reach_a_wall_on_another_storey():

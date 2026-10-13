@@ -102,6 +102,7 @@ def apply_partition_tops(model: ResolvedModel) -> None:
     roofs = {roof.tag: roof for roof in model.roofs}
     grade_m = site_grade_elevation_m_from_plan(model.plan)
     lines = lines_by_wall(model.layout_lines)
+    gapped: set[str] = set()
     for index, wall in enumerate(model.walls):
         if not takes_a_deflection_gap(model, wall, bearing_refs):
             continue
@@ -109,6 +110,7 @@ def apply_partition_tops(model: ResolvedModel) -> None:
         if isinstance(top, ToRoof) and top.roof_ref in roofs:
             start_z, end_z = roof_underside_rake(model, wall, roofs[top.roof_ref])
             z1 = max(start_z, end_z)
+            gapped.add(wall.tag)
             model.walls[index] = replace(
                 wall, z1_m=z1, top_z0_m=start_z, top_z1_m=end_z, plate_top_z_m=None,
                 # The body moved with the framing here — the two coincide under a rafter —
@@ -129,9 +131,29 @@ def apply_partition_tops(model: ResolvedModel) -> None:
         # that is the shape that opens a 12-5/8" slot in ``ST-S2A``'s stair enclosure and
         # leaves three basement risers outside their own wet wall.
         z1 = max(wall.z1_m, plate_top)
+        gapped.add(wall.tag)
         model.walls[index] = replace(
             wall, z1_m=z1, plate_top_z_m=plate_top,
             layers=reband_for_platform(wall, wall.z0_m, z1, grade_m, lines.get(wall.tag),
                                        plate_top=plate_top,
                                        plate_base=wall.plate_base_z_m),
         )
+    _full_height_owns_corners(model, gapped)
+
+
+def _full_height_owns_corners(model: ResolvedModel, gapped: set[str]) -> None:
+    """An L between a gapped partition and a full-height wall is the full-height wall's.
+
+    Topology picks an L's owner by tag alone. A partition owner keeps its lowered top
+    courses through the corner square while the other wall's lapping course runs in at
+    the old height, so the two plates intersect, and the full-height wall's cap stops
+    short of the corner it should carry. Only the framing owner changes; sheathing keeps
+    its own choice.
+    """
+    for index, junction in enumerate(model.junctions):
+        if junction.kind != "l" or junction.framing_owner not in gapped:
+            continue
+        others = [item.wall_tag for item in junction.incidents
+                  if item.wall_tag not in gapped]
+        if len(others) == 1:
+            model.junctions[index] = replace(junction, framing_owner=others[0])

@@ -36,7 +36,6 @@ from typehaus import (
     Stair,
     StructuralRole,
     Wall,
-    WallAttachment,
     WallPaneling,
     Window,
     WindowType,
@@ -610,8 +609,9 @@ WALLS = [
     # W-M-STRW carries the cut second-floor joists and stacks over the basement
     # stair wall — footings -> W-B-STR -> W-M-STRW -> W-S-BA-E1B -> attic joists, one
     # continuous bearing path (CLAUDE.md). It ends at N-M-STRJ as an L with W-M-STOS2;
-    # the former W-M-STRW2 stub is removed to clear the hallway. A short header seats
-    # on this wall's top plate and the southern trimmer without moving the stair opening.
+    # the former W-M-STRW2 stub is removed to clear the hallway. This wall owns the
+    # corner (STOS2 is a gapped partition), so its double top plate runs to STOS2's
+    # south face and seats FO-S-STAIR's short header without moving the opening.
     #
     # The assembly inherits INT_2X6_BRG_EXPOSED_PLY with `layer_materials` swapping the
     # stud to appearance-grade DF. W-M-STRW's mudroom face stays open below 6'-0" for
@@ -2008,11 +2008,9 @@ STAIRS = [
 # continuity and graspability. Owner-furnished 42 mm titanium tube on stock 316 stainless
 # 42.4 mm fittings (plan/titanium_types.py, notes/titanium_handrail_backsplash.md): centreline
 # 2 3/4" (70 mm) off the finish face, so 1.92" clear (R311.7.8.2) and 3.58" projection
-# (R311.7.1). Both ends of each rail return to the wall. The W rail runs to y=26'-2 5/8",
-# over the top nosing (the upper flight's arrival station): past it the rake reads the lower
-# flight instead.
-# Its top return offsets north onto W-M-STRW at y=26'-9 1/2", with a flat flange
-# backed by BK-M-STRW-RAIL-TOP. The graspable rail still reaches the same top nosing.
+# (R311.7.1). Both ends of each rail return square to the wall on stock elbows. The W rail
+# stops at y=26'-5 3/4", where W-M-STRW's face begins, 3 1/8" short of the top nosing
+# (26'-2 5/8"): its flange centres on the wall's end and corner studs at the L.
 STAIR_HANDRAILS = [
     Railing(
         uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", type_ref="RAILING-INT-TI-HANDRAIL-42", path=(
@@ -2029,7 +2027,7 @@ STAIR_HANDRAILS = [
     Railing(
         uid="CMRL02AAAA", tag="RL-M-HANDRAIL-W", type_ref="RAILING-INT-TI-HANDRAIL-42", path=(
             pt(ft(10, 6), ft(31, 1.625)),
-            pt(ft(10, 6), ft(26, 2.625)),
+            pt(ft(10, 6), ft(26, 5.75)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
         base_elevation=ft(0), post_spacing=inch(48), post_size="2x2", rail_count=1,
@@ -2037,8 +2035,6 @@ STAIR_HANDRAILS = [
         role="handrail", serves_stair="ST-B2M", top_height=inch(36),
         graspable_profile="42mm round — Type I",
         start_termination="wall_return", end_termination="wall_return",
-        end_return_attachment=WallAttachment(wall_ref="W-M-STRW", face="left",
-                                             distance_from_start=inch(110.5)),
     ),
 ]
 

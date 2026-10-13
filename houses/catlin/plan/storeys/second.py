@@ -1333,9 +1333,9 @@ FLOOR_OPENINGS = [
                  # for an edge that is fully bearing-supported along its whole length.
                  #
                  # West edge: W-M-STRW ends at the storage-wall L corner. Only the
-                 # southern gap needs a header: 9 1/2" including its 1 1/2" top-plate
-                 # seat, hung from the south trimmer at the other end. It stays in the
-                 # floor band; neither stair nor this finished outline moves.
+                 # southern gap needs a header: 7 3/4" including its 1 1/2" top-plate
+                 # seat, hung from the south trimmer and clear of the next truss. It stays
+                 # in the floor band; neither stair nor this finished outline moves.
                  bearing_refs=("W-M-STRW", "W-M-C5", "W-M-C5B"),
                  # The truss band closed in the ceiling's own 5/8" board on all four edges,
                  # flush with the finish below; the framing steps back behind it.

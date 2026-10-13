@@ -137,8 +137,7 @@ def test_split_missing_wall_rejected(plan):
 # --- remap registry ----------------------------------------------------------
 
 _REF_VOCABULARY = {"wall_ref", "wall_refs", "host", "start_node", "end_node", "stacks_on",
-                   "bearing_refs", "within_wall", "location", "serves", "serves_fixture",
-                   "serves_stair", "end_return_attachment"}
+                   "bearing_refs", "within_wall", "location", "serves", "serves_fixture"}
 
 
 def test_remap_registry_covers_reference_fields():
