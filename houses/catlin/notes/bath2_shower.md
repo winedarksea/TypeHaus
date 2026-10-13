@@ -195,9 +195,12 @@ The air can carry it: 95 cfm = 0.045 m³/s; picking up 7.7 g/m³ (7.3 -> 15) tha
 West along the 11'-4" FS-S-WEST bay (lower tier) to x=8'-0"; south on the upper tier
 through web opening 3 (x 7'-4 1/2"..8'-7 1/2") across the 12', 13'-4" and 14'-8" trusses,
 passing over `DU-M-ERV-R-LIVING` and `-BED2`; west along the 15'-4" bay to the nozzle. It
-moves no existing run. `haus route --run DU-M-BATH2-DRY --alternatives 3 --evaluate`
-proposed three lanes and every one added a FAIL (a crossing tier 1 1/2" into the chord, or
-a leg in RM-S-SUITE's headroom); the authored lane checks clean. The router's sizing line
+moves no existing run. **The accepted route is the router's proposal A**
+(`haus route --run DU-M-BATH2-DRY --alternatives 6 --evaluate --via "8,11.3333" --via
+"8,15.3333"`: 13.07 ft, 4 bends), with two corrections. Its crossing tier was -2", which
+puts the crown 1 1/2" into the top chord, so the crossing rides the house's -3 1/2" upper
+tier instead. Its lane at x=7'-10 13/16" moved to 8'-0", the centre of web opening 3. As
+authored, the run checks clean. Proposals B-F were longer, and each added FAILs. The router's sizing line
 says 95 cfm wants 6" at the house's 0.08 in./100 ft design rate. 5" and 6" do not fit the
 crossing, so the fan carries the friction instead:
 

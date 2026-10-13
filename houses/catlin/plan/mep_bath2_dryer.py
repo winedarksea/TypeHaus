@@ -65,6 +65,12 @@ MAIN_STALL_FAN = [
 # West along the 11'-4" bay, south through web opening 3 (x 7'-4 1/2"..8'-7 1/2") across
 # the 12', 13'-4" and 14'-8" trusses, over DU-M-ERV-R-LIVING and -BED2, then west along the
 # 15'-4" bay to the nozzle. Moves no existing run; 5" and 6" do not fit the crossing.
+# ACCEPTED ROUTE: `haus route --run DU-M-BATH2-DRY --alternatives 6 --evaluate --via
+# "8,11.3333" --via "8,15.3333"` proposal A (13.07 ft, 4 bends), with two corrections. Its
+# crossing tier was -2", which puts the crown 1 1/2" into the top chord
+# (`mep.run_member_crossing` FAIL), so the crossing is set to the house's -3 1/2" upper tier.
+# Its x=7'-10 13/16" became 8'-0", the centre of web opening 3. B-F were longer and each
+# added FAILs.
 DUCTS_STALL_FAN = [
     DuctRun(uid="YGK2JPV5AN", tag="DU-M-BATH2-DRY", system=DuctSystem.TRANSFER,
             path=(pt(ft(14, 6), ft(11, 4)), pt(ft(8), ft(11, 4)), pt(ft(8), ft(11, 4)),
