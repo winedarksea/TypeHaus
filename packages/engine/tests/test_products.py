@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from _helpers import CATLIN
 
 from typehaus.checks import build_context
@@ -163,3 +165,5 @@ def test_hardware_reads_its_product_off_the_bom_row(catlin_plan, catlin_areas) -
     estimate = estimate_costs(bill_of_materials(model), prices, catlin_areas)
     rows = estimate["sections"]["hardware"]["rows"]
     assert rows and any(r.get("product", "").startswith("Simpson Strong-Tie") for r in rows)
+
+pytestmark = pytest.mark.slow

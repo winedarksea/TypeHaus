@@ -16,6 +16,7 @@ from pathlib import Path
 
 import pytest
 
+
 from typehaus.server.state import ProjectState
 from typehaus.source.loader import load_plan
 from typehaus.source.ops import PatchOp
@@ -277,3 +278,4 @@ def test_reconcile_never_adopts_a_reload_older_than_the_plan(
     finally:
         state_mod.load_plan = original
     assert next(e for e in state.plan.all_elements() if e.tag == tag).type_ref == "FURN-ARMCHAIR-35"
+pytestmark = pytest.mark.slow

@@ -192,3 +192,5 @@ def test_catlin_ifc_cleanout_components_are_sanitary_and_represented(catlin_ifc_
         for tag in (cleanout.tag, cleanout.tag + "-EXT", cleanout.tag + "-CAP"):
             assert tag in members
             assert fittings[tag].Representation is not None
+
+pytestmark = pytest.mark.slow

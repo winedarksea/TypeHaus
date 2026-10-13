@@ -681,3 +681,5 @@ def test_staged_backfill_holds_at_half_a_wall_of_difference(catlin_plan) -> None
     assert worst(0.5, north) >= 1.5
     assert worst(1.0, north) == pytest.approx(1.37, abs=0.01)
     assert worst(0.5, 0.0) == pytest.approx(1.31, abs=0.01)
+
+pytestmark = pytest.mark.slow

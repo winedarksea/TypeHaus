@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.foundation_schedule import (
     anchorage_schedule,
@@ -468,3 +470,5 @@ def test_hardware_schedule_renders_every_derived_row(catlin_model, tmp_path: Pat
     with PdfPages(out) as pdf:
         _write_hardware_schedule(pdf, catlin_model, "S-602", "Connection hardware schedule")
     assert out.stat().st_size > 0
+
+pytestmark = pytest.mark.slow

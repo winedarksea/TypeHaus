@@ -536,3 +536,5 @@ def test_the_sump_names_what_feeds_it(catlin_model):
     for tag in sump.inlet_refs:
         assert catlin_model.plan.by_tag(tag) is not None, tag
     assert sump.inlet_invert is not None, "a receiver with no level cannot be checked against"
+
+pytestmark = pytest.mark.slow

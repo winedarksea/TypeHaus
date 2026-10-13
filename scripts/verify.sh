@@ -1,35 +1,52 @@
 #!/usr/bin/env bash
-# The CI gate. Run it before every commit that touches the engine, the library, or a house.
+# The short gate. Run it before every commit that touches the engine, the library, or a house.
 #
-# Usage: scripts/verify.sh [--fast] [--baseline-dir DIR]
-#   --fast          tests + checks-as-tests + ruff only, and the tests deselect the
-#                   `slow` marker. Skips the two full house builds and the npm build — the
-#                   slow half — so the edit / verify loop stays short. The full gate runs
-#                   every test including `slow`; run it before committing.
-#   --baseline-dir  diff houses/{catlin,starter}/out/model.json against
-#                   DIR/{catlin,starter}-model.json instead of only building them.
+# Usage: scripts/verify.sh [--full|--fast] [--baseline-dir DIR]
+#   (default)       short tests, strict house checks, ruff, UI typecheck and geometry tests.
+#                   Target under five minutes.
+#   --fast          alias for the default short gate.
+#   --full          every test, both house check suites, builds, benchmark, and UI build.
+#                   Run manually and before a release.
+#   --baseline-dir  with --full, diff house model.json files against DIR.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 HAUS=.venv/bin/haus
 PY=.venv/bin/python
 
-FAST=0
+FAST=1
+MODE_EXPLICIT=0
 BASELINE_DIR=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --fast) FAST=1; shift ;;
-    --baseline-dir) BASELINE_DIR="$2"; shift 2 ;;
+    --fast|--full)
+      if [[ "$MODE_EXPLICIT" == "1" ]]; then
+        echo "--fast and --full cannot be combined" >&2
+        exit 2
+      fi
+      MODE_EXPLICIT=1
+      [[ "$1" == "--fast" ]] && FAST=1 || FAST=0
+      shift
+      ;;
+    --baseline-dir)
+      [[ $# -ge 2 ]] || { echo "--baseline-dir requires a directory" >&2; exit 2; }
+      BASELINE_DIR="$2"
+      shift 2
+      ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
 
+if [[ "$FAST" == "1" && -n "$BASELINE_DIR" ]]; then
+  echo "--baseline-dir requires --full" >&2
+  exit 2
+fi
+
 echo "== engine tests =="
 # Flags come from [tool.pytest.ini_options] in the root pyproject (-n 6 --dist loadfile).
 #
-# --fast deselects `slow` (full IFC emission, permit-set rendering, golden comparison,
-# subprocess benchmarks — see the marker's definition in pyproject.toml). The full gate
-# below runs everything, which is what keeps `slow` from becoming where tests go to die.
+# The short gate deselects `slow` (whole-house IFC/permit comparisons and end-to-end
+# command/server scenarios — see the module-level marks). The full gate keeps them live.
 if [[ "$FAST" == "1" ]]; then
   $PY -m pytest packages/engine/tests -m "not slow"
 else
@@ -43,12 +60,33 @@ echo "== starter house checks-as-tests =="
 # silently-tolerant behavior. -p no:typehaus_checks disables the auto-load so only the
 # explicit file collection runs.
 TYPEHAUS_HOUSE=houses/starter $PY -m pytest -p no:typehaus_checks \
-  packages/engine/src/typehaus/checks/pytest_plugin.py
+  -n0 packages/engine/src/typehaus/checks/pytest_plugin.py
 
-echo "== catlin house checks-as-tests =="
-TYPEHAUS_HOUSE=houses/catlin \
-  $PY -m pytest -p no:typehaus_checks \
-  packages/engine/src/typehaus/checks/pytest_plugin.py
+if [[ "$FAST" == "1" ]]; then
+  echo "== catlin strict house check =="
+  CATLIN_CHECK="$(mktemp -t catlin-check)"
+  $HAUS check houses/catlin --json --exit-on none > "$CATLIN_CHECK"
+  $PY - "$CATLIN_CHECK" <<'PYEOF'
+import json, sys
+
+payload = json.load(open(sys.argv[1]))
+failures = {
+    (f["check_id"], tuple(sorted(f["element_tags"] or ())))
+    for f in payload["findings"] if f["result"] == "fail"
+}
+if failures:
+    sys.exit(f"catlin FAILs: {sorted(failures)}")
+print(f"{payload['pass']} pass, {payload['fail']} fail, "
+      f"{payload['unknown']} not evaluable, "
+      f"{payload['not_applicable']} not applicable")
+PYEOF
+  rm -f "$CATLIN_CHECK"
+else
+  echo "== catlin house checks-as-tests =="
+  TYPEHAUS_HOUSE=houses/catlin \
+    $PY -m pytest -p no:typehaus_checks \
+    packages/engine/src/typehaus/checks/pytest_plugin.py
+fi
 
 echo "== ruff =="
 .venv/bin/ruff check packages/engine/src
@@ -61,7 +99,9 @@ echo "== ruff =="
 # packages/engine/src` by hand while working through it.
 
 if [[ "$FAST" == "1" ]]; then
-  echo "== verify.sh --fast: tests and ruff passed (builds/bench/ui skipped) =="
+  echo "== ui: typecheck and geometry tests =="
+  (cd ui && npm run typecheck && npm test)
+  echo "== verify.sh: standard gates passed =="
   exit 0
 fi
 

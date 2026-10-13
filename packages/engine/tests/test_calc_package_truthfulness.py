@@ -209,3 +209,5 @@ def test_every_front_matter_page_the_doc_lists_is_actually_written(page, catlin_
     ctx, item_ids, checklist = catlin_engineering
     files = calc_package(_inputs(ctx, item_ids, checklist))
     assert page in files
+
+pytestmark = pytest.mark.slow

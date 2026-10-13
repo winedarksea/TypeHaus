@@ -109,3 +109,5 @@ def test_end_bearing_is_graded_against_what_the_member_needs(tmp_path):
                 if f.check_id == "integrity.floor_end_bearing"]
     assert [f.result for f in findings] == [Result.FAIL]
     assert "2.75\"" in findings[0].message and "FS-S-WEST" in findings[0].element_tags
+
+pytestmark = pytest.mark.slow

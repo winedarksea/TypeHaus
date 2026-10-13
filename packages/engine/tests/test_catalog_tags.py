@@ -67,3 +67,9 @@ def test_every_tag_keyed_catalog_is_covered() -> None:
         assert isinstance(entries, tuple)
     uncovered = sorted(tag_keyed - set(CATALOGS))
     assert not uncovered, f"tag-keyed catalogs with no duplicate check: {uncovered}"
+
+
+# The Catlin row in this shipped-house matrix took 26 seconds in the short-tier profile.
+# Catlin's strict check still runs in standard verification; this multi-house regression
+# stays in the exhaustive tier.
+pytestmark = pytest.mark.slow

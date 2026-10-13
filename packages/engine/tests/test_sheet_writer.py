@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import date
 
 import pytest
+
 from _helpers import CATLIN
 
 from typehaus.emit.draw.floorplan import build_floorplan
@@ -468,3 +469,4 @@ def test_the_house_issue_wording_reaches_the_stamp_only_through_cmd_sheets():
     assert "preferences.print_options.issue or (" in source
     assert 'issue += " · SEALED"' in source
     assert load_preferences(CATLIN).print_options.issue == "ISSUED FOR PERMIT"
+pytestmark = pytest.mark.slow

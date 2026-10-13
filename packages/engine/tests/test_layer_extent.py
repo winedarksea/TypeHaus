@@ -536,3 +536,5 @@ def test_a_banded_layer_follows_the_wall_up_the_platform_lift():
     assert next(ly for ly in upper.layers if ly.name == "siding").band(upper)[1] == \
         pytest.approx(upper.z1_m)
     assert siding.band_spec == (("grade", 0.0), None)
+
+pytestmark = pytest.mark.slow

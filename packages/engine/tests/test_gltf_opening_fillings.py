@@ -559,3 +559,5 @@ def test_a_product_under_a_raked_wall_top_stops_at_the_rake():
     rake_at_lower_jamb = 3.0 + (1.5 - 3.0) * (lower_jamb_along / 4.0)
     assert top_elevation == pytest.approx(rake_at_lower_jamb, abs=_DIMENSION_TOLERANCE_M)
     assert top_elevation < wall.z0_m + opening.sill_m + opening.height_m
+
+pytestmark = pytest.mark.slow

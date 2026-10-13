@@ -290,3 +290,5 @@ def test_a_follow_roof_ceiling_states_that_rather_than_a_number() -> None:
                if isinstance(node, Text) and node.layer == "A-AREA-IDEN"}
     assert "CLG FOLLOWS ROOF" in printed
     assert not any(c.startswith("CLG ") and c != "CLG FOLLOWS ROOF" for c in printed)
+
+pytestmark = pytest.mark.slow

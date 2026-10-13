@@ -1034,3 +1034,5 @@ def test_a_cabinet_behind_the_wall_does_not_break_this_rooms_wall_space(catlin_p
     closet_ctx = CheckContext(plan=plan, model=cabinet_only, preferences=Preferences(),
                               profile=MN_2020)
     assert _fixed_cabinet_intervals(closet_ctx, closet_ring, "main")
+
+pytestmark = pytest.mark.slow

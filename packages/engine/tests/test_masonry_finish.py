@@ -356,3 +356,5 @@ def test_cladding_side_mismatch_flags_a_reversed_leg(project) -> None:
 
 def test_cladding_side_mismatch_silent_when_windings_agree(project) -> None:
     assert _mismatches(_corner_plan(project, east_reversed=False)) == []
+
+pytestmark = pytest.mark.slow

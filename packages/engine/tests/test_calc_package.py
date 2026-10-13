@@ -23,6 +23,7 @@ from __future__ import annotations
 from datetime import date
 
 import pytest
+
 from _helpers import CATLIN, REPO_ROOT
 
 from typehaus.engineering import registered_kinds
@@ -486,3 +487,4 @@ def test_a_family_calculation_points_at_the_pages_that_carry_the_rest(package):
         assert CONVENTIONS_FILE in text.split("## 9.")[1], name
     assert CONVENTIONS_FILE in package
     assert "draft" in package[CONVENTIONS_FILE]
+pytestmark = pytest.mark.slow

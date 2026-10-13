@@ -325,3 +325,5 @@ def test_heal_reversed_segment_flips_face_and_keeps_pose(plan):
                  for o in resolve(_apply(before, healed))[0].canvas_objects
                  if o.tag == "ED-SCONCE")
     assert after == (pytest.approx(pose[0], abs=1e-6), pytest.approx(pose[1]))
+
+pytestmark = pytest.mark.slow

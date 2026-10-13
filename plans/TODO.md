@@ -236,8 +236,7 @@ the future.
 - Extra light switches by beds
 - The vertical chaise in the north west corner of catlin house, extending from basement to attic, likely needs fireblocking. Under Section R302.11 (Fireblocking), vertical and horizontal concealed draft openings must be cut off to form an effective fire barrier between stories, and between a top story and the roof space. Either 3/4" plywood (same plane as the subfloor) or mineral wool batt fill are likely the best solutions to show here. This might already be noted somewhere, but should be shown in the 3d model as well.
 - Several of the interior 2x4 wall types do not yet bill paint (or perhaps paint for them is estimated elsewhere?)
-- The auto-generated blocking remains a bit excessive in places still
-- If we flip the garage door swing, we might be able to do reduce the landing size in the garage
+- If we flip the garage door D-G-SERVICE swing, we might be able to do reduce the landing size in the garage
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
 - See if we can narrow the gap between FURN-A-STUDY-BUILTIN and the shelves of D-A-STUDY, or add a wood trim piece in front to maintain visual continuity
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so

@@ -19,6 +19,7 @@ from pathlib import Path
 
 import pytest
 
+
 import typehaus.checks  # noqa: F401  - importing the package registers every check
 from typehaus.checks.code.mn_residential.profile import (
     DEFAULT_PROFILE_NAME,
@@ -473,3 +474,4 @@ def test_every_engineering_kind_reaches_a_permit_item(catlin_plan) -> None:
     assert not invisible, (
         f"these engineering items reach no permit line — a deferral nobody can see on the "
         f"checklist reads as a design with nothing outstanding: {invisible}")
+pytestmark = pytest.mark.slow

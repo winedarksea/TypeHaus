@@ -257,3 +257,5 @@ def test_no_suppress_lifts_the_house_suppressions_and_writes_nothing() -> None:
     assert "mep.riser_through_deck" in loud["failing_check_ids"]
     assert "mep.riser_through_deck" not in quiet["failing_check_ids"]
     assert hashlib.sha256(prefs.read_bytes()).hexdigest() == before, "it writes nothing"
+
+pytestmark = pytest.mark.slow

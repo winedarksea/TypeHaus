@@ -249,3 +249,5 @@ def test_below_grade_geometry_is_dashed_on_its_own_layer(catlin_model):
     # this is where it is supposed to read instead: its floor and its south retaining wall,
     # dashed, below the line — the elevation convention for buried work.
     assert {"SL-SG-FIELD", "W-SG-S"} <= {node.tag for node in buried if node.tag}
+
+pytestmark = pytest.mark.slow

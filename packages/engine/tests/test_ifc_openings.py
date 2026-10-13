@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+
 from typehaus.diff import build_report
 from typehaus.diff.ifc_adapter import baseline_elems, external_elems
 from typehaus.emit.ifc import emit_ifc
@@ -166,3 +167,4 @@ def test_wall_is_external_is_derived_not_read_off_the_tag(catlin_model, catlin_i
     external = {name: eu.get_pset(w, "Pset_WallCommon", "IsExternal") for name, w in walls.items()}
     assert external["W-B-CS"] is False
     assert external["W-B-S1"] is True
+pytestmark = pytest.mark.slow

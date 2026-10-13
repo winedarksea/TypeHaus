@@ -95,3 +95,5 @@ def test_catlin_site_files_validate_clean() -> None:
     result = subprocess.run([sys.executable, "-m", "typehaus.cli.app", "site", "validate",
                              str(CATLIN)], capture_output=True, text=True)
     assert result.returncode == 0, result.stdout + result.stderr
+
+pytestmark = pytest.mark.slow

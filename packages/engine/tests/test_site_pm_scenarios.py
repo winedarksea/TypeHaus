@@ -15,6 +15,7 @@ from pathlib import Path
 
 import pytest
 
+
 from typehaus.checks.jurisdiction import InspectionSpec, JurisdictionProfile
 from typehaus.cli.prices import ZERO
 from typehaus.schedule.graph import find_cycles
@@ -624,3 +625,4 @@ def test_the_catlin_board_is_acyclic_with_the_truss_hold_on_it() -> None:
     # site/long-lead-orders blocked nothing at all.
     framing = board.readiness["task/framing/building/frame"]
     assert "site/long-lead-orders" in [c.ref for c in framing.blockers if c.kind == "visit"]
+pytestmark = pytest.mark.slow

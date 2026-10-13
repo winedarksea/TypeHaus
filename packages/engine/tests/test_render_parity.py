@@ -82,3 +82,5 @@ def test_a_frameless_scene_still_fits_to_its_content(catlin_model, tmp_path):
     png = _render(scene, tmp_path / "section.png")
     svg = _render(scene, tmp_path / "section.svg")
     assert _png_aspect(png) == pytest.approx(_svg_aspect(svg), rel=1e-2)
+
+pytestmark = pytest.mark.slow

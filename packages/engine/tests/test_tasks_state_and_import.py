@@ -14,6 +14,7 @@ from __future__ import annotations
 import csv
 
 import pytest
+
 from typer.testing import CliRunner
 
 from typehaus.cli.app import app
@@ -217,3 +218,4 @@ def test_costs_import_keeps_fields_the_csv_has_no_column_for(sandbox, tmp_path) 
     entry = load_costs(sandbox).entries["framing"][target["key"]]
     assert entry.actual_cost == 500.0
     assert entry.product == "Menards SPF #2" and entry.note == "delivered 8/12"
+pytestmark = pytest.mark.slow

@@ -84,3 +84,5 @@ def test_costs_endpoints_409_when_the_model_does_not_resolve(tmp_path: Path):
         assert client.get("/costs").status_code == 409
         assert client.put("/costs", json={"ops": [
             {"op": "set_extra", "item": {"name": "x"}}]}).status_code == 409
+
+pytestmark = pytest.mark.slow

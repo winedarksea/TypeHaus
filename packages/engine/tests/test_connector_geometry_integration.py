@@ -237,3 +237,5 @@ def test_titen_stock_shaft_length_and_wrench_size():
     assert max(z for _, y, z in mesh.positions if y > 0) == pytest.approx(0.375 * M_PER_IN)
     assert fastener_mesh("THD50600H4SS") == mesh
     assert fastener_mesh("THD999") is None
+
+pytestmark = pytest.mark.slow

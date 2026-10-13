@@ -59,3 +59,5 @@ def test_the_c101_zoning_layers_are_styled_before_a_house_authors_them():
     for layer in ("C-PROP-EASE", "C-EROS", "C-ANNO-TABL", "C-ANNO-BMRK"):
         assert layer in PDF_LAYER_STYLE, layer
         assert layer in DXF_LAYER_STYLE, layer
+
+pytestmark = pytest.mark.slow

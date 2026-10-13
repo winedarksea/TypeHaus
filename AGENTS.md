@@ -50,8 +50,8 @@ This document provides guidelines for agents working on the TypeHaus codebase.
   **no** `house_dir` (empty `Preferences`, so a different suppression set), and anything
   that mutates the context or the model.
 - **The `slow` marker:** one marker, registered in the root `pyproject.toml`, applied at
-  module level (`pytestmark = pytest.mark.slow`). `scripts/verify.sh --fast` deselects it;
-  the full gate runs everything, so `slow` is a fast-loop convenience and never a
-  quarantine. Earn it by measuring — `pytest --durations=40` — and un-mark a module that
-  stops being slow, or it becomes a test nobody runs.
+  module level (`pytestmark = pytest.mark.slow`). Standard `scripts/verify.sh` deselects it;
+  `scripts/verify.sh --full` and bare pytest run everything, so `slow` is a fast-loop
+  convenience and never a quarantine. Earn it by measuring — `pytest --durations=40` — and
+  un-mark a module that stops being slow, or it becomes a test nobody runs.
 - **Refactor When Useful:** Code base is not deployed in production. Breaking changes are fine when they add clear value.

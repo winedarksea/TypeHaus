@@ -141,3 +141,5 @@ def test_included_shelves_leave_the_host_placeable_billed(catlin_plan) -> None:
     host = next(item for item in model.canvas_objects if item.tag == bank.host)
     assert any(row["type"] == host.type_ref and row["count"] > 0
                for row in placeables_takeoff(model))
+
+pytestmark = pytest.mark.slow

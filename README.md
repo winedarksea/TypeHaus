@@ -38,11 +38,12 @@ pip install -e packages/engine           # once, into a 3.11+ venv
 .venv/bin/haus explain transitions houses/starter   # derived boundary conditions
 ```
 
-Tests and the full gate:
+Tests and verification:
 
 ```bash
-.venv/bin/python -m pytest packages/engine/tests -q   # parallel by default (~4 min)
-scripts/verify.sh                                     # the CI gate; --fast skips builds/bench/npm
+.venv/bin/python -m pytest packages/engine/tests -q   # exhaustive suite, parallel by default
+scripts/verify.sh                                     # standard gate, targets five minutes
+scripts/verify.sh --full                              # exhaustive tests, builds, benchmark, and UI build
 ```
 
 ## UI Start

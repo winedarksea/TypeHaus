@@ -50,9 +50,8 @@ python_version = "3.11"
 strict = true
 mypy_path = "packages/engine/src"
 
-# Bare `pytest` is serial and takes over an hour on this suite; xdist with per-file
-# distribution brings it to ~4 min. `loadfile` (not `load`) keeps every test in a module on
-# one worker, so module-scoped house fixtures are built once each rather than per test.
+# Bare `pytest` runs the complete suite. xdist with per-file distribution keeps each module
+# on one worker, so module-scoped house fixtures are built once rather than per test.
 #
 # This is the *only* pytest config in the repo. packages/engine/pytest.ini used to shadow
 # it — pytest picks the rootdir by walking up from the arguments, so `pytest
@@ -61,15 +60,16 @@ mypy_path = "packages/engine/src"
 [tool.pytest.ini_options]
 testpaths = ["packages/engine/tests"]
 addopts = "-q -n 6 --dist loadfile -p no:cacheprovider"
-# The one marker. `scripts/verify.sh --fast` deselects it; the full gate runs everything, so
-# `slow` is a fast-loop convenience and never a quarantine. Mark a MODULE (module-level
-# `pytestmark = pytest.mark.slow`) rather than scattering per-test marks: the unit that costs
-# real time here is a module's shared fixture, and `--dist loadfile` schedules by module too.
+# The one marker. Standard verification deselects it; `scripts/verify.sh --full` and bare
+# pytest run everything, so `slow` is a fast-loop convenience and never a quarantine. Mark a
+# MODULE (module-level `pytestmark = pytest.mark.slow`) rather than scattering per-test
+# marks: the unit that costs real time here is a module's shared fixture, and `--dist loadfile`
+# schedules by module too.
 #
 # Earn the mark — measure with `--durations` first. A module marked `slow` that is no longer
-# slow is just a test nobody runs.
+# slow is just a test nobody runs. Keep focused unit tests in the standard tier.
 markers = [
-  "slow: full IFC emission, permit-set rendering, golden comparison, subprocess benchmarks",
+  "slow: whole-house exports and comparisons, permit rendering, end-to-end CLI and server flows",
 ]
 # Third-party noise only, not ours: FastAPI 0.141's own Body() on pydantic 2.13, and
 # Starlette 1.6's TestClient asking for httpx2. Drop each when the library fixes it.

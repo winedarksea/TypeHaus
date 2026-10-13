@@ -148,3 +148,5 @@ def test_a_hostile_project_name_cannot_write_code_into_the_manifest(tmp_path: Pa
     house2 = tmp_path / "backref"
     scaffold_house(house2, r"House \1 \g<0>")
     assert load_plan(house2).plan.project.name == r"House \1 \g<0>"
+
+pytestmark = pytest.mark.slow

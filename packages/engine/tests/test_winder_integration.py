@@ -288,3 +288,5 @@ def test_a_turn_under_a_low_deck_fails_headroom(catlin_model_ro):
                           preferences=None)
     [finding] = [f for f in stair_headroom(ctx) if f.message.startswith("ST-S2A ")]
     assert finding.result.value == "fail" and "FS-ATTIC" in finding.message
+
+pytestmark = pytest.mark.slow

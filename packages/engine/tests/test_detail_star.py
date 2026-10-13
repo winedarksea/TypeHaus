@@ -11,6 +11,8 @@ from __future__ import annotations
 import re
 from types import SimpleNamespace
 
+import pytest
+
 
 from typehaus.emit.draw.details import derive_detail_slices, detail_index
 from typehaus.source import load_plan
@@ -191,3 +193,5 @@ def test_per_condition_override_writes_back_to_source(tmp_path):
     assert eave.unstarred_conditions == (key,)
     assert eave.starred_conditions == ()
     assert eave.star is False and eave.stars(key) is False
+
+pytestmark = pytest.mark.slow

@@ -307,3 +307,5 @@ def test_an_absent_head_diameter_is_unknown_and_names_itself(tmp_path):
     [finding] = _fastener(ctx)
     assert finding.result is Result.UNKNOWN
     assert "panel_fastener_head_dia_in" in finding.message
+
+pytestmark = pytest.mark.slow

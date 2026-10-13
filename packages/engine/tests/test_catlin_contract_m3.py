@@ -17,6 +17,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
 from _helpers import CATLIN as CATLIN_DIR
 from _helpers import catlin_params, frames_structure
 
@@ -2976,3 +2977,4 @@ def test_the_suite_tudor_posts_space_evenly_between_the_windows_over_studs(catli
     studs = [m.p0[1] / 0.0254 for m in walls["W-M-W3"].members if m.category == "stud"]
     for lo, hi in posts:
         assert any(lo <= s <= hi for s in studs), (lo, hi, sorted(studs))
+pytestmark = pytest.mark.slow

@@ -96,3 +96,5 @@ def test_append_detail_note_rejects_bad_requests(client):
     assert client.post("/detail/notes", json={"text": "no key"}).status_code == 400
     assert client.post("/detail/notes",
                        json={"key": "no_such_key", "text": "x"}).status_code == 404
+
+pytestmark = pytest.mark.slow

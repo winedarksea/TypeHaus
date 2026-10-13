@@ -102,3 +102,5 @@ def test_takeoff_summary_is_an_order_of_magnitude_smaller_than_json() -> None:
     assert "cost_estimate" not in summary.output
     # The escape hatch is unaffected: --json still carries every row.
     assert '"cost_estimate"' in full.output
+
+pytestmark = pytest.mark.slow

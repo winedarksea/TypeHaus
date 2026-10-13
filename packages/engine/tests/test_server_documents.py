@@ -7,6 +7,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+
 from _helpers import CATLIN, copy_house
 
 from typehaus.emit.draw.sheet_manifest import sheet_manifest, write_sheet_manifest
@@ -126,3 +127,4 @@ def test_render_download_is_an_attachment_and_allow_listed(client, catlin_house)
     assert "attachment" in ok.headers["content-disposition"]
     assert client.get("/renders/notes.txt").status_code == 404
     assert client.get("/renders/..%2Fpermit_set.json").status_code == 404
+pytestmark = pytest.mark.slow

@@ -228,3 +228,5 @@ def test_a_load_resting_on_unstated_inputs_is_unknown(catlin_model_ro) -> None:
     bath1 = rows["RM-S-BATH1"]
     assert bath1.result is Result.UNKNOWN
     assert "ach50" in bath1.message
+
+pytestmark = pytest.mark.slow

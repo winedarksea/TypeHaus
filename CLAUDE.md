@@ -3,7 +3,8 @@
 ```
 .venv/bin/haus build houses/catlin        # the CLI. No PYTHONPATH, no uv.
 .venv/bin/python -m pytest packages/engine/tests -q
-scripts/verify.sh                         # the full CI gate
+scripts/verify.sh                         # standard gate, targets five minutes
+scripts/verify.sh --full                  # exhaustive local/release gate
 ```
 
 `scripts/verify.sh` runs in `.venv`, which has accumulated packages nobody declared, so it
@@ -15,8 +16,9 @@ Run it before touching `pyproject.toml` dependencies or a CI step.
 console script `.venv/bin/haus` is the real entry point. `uv` is **not** installed; ignore
 any `uv sync` / `PYTHONPATH=packages/engine/src python -m typehaus.cli.app` incantation you
 find in older docs. Pytest defaults are configured in the **root** `pyproject.toml`, the only
-pytest config in the repo (`-n 6 --dist loadfile`, ~4 min for the full suite) — bare `pytest`
-is already parallel.
+pytest config in the repo (`-n 6 --dist loadfile`) — bare `pytest` runs every test, including
+the `slow` modules. `scripts/verify.sh` deselects those modules by default; use `--full` before
+a release or for exhaustive local verification.
 
 ## Non-negotiables
 
@@ -87,7 +89,8 @@ is already parallel.
 .venv/bin/haus millwork houses/catlin --md out/milling.md --csv out/milling.csv
 .venv/bin/haus bids houses/catlin --all --out out/bids       # unpriced per-trade RFQs (docs/bid-package-format.md)
 .venv/bin/haus costs import out/estimate.csv --house houses/catlin   # actuals back in
-scripts/verify.sh --fast                  # tests + ruff, skipping builds/bench/npm
+scripts/verify.sh                        # standard tests, house checks, ruff, UI typecheck/tests
+scripts/verify.sh --full                 # all tests, checks, builds, benchmark, and UI build
 scripts/ci_local.sh                       # the CI engine job in a THROWAWAY venv, declared deps only
 ```
 

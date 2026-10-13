@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import pytest
 
+
 from typehaus.takeoff.calc_markdown import Bullets, Code, Heading, Table_, inline, parse
 from typehaus.takeoff.calc_pdf import (
     APPENDIX_PREFIX,
@@ -550,3 +551,4 @@ def test_the_pdf_with_the_appendix_is_byte_deterministic_too(tmp_path):
     first = write_calc_pdf(APPENDIX_FILES, tmp_path / "a.pdf", inputs)
     second = write_calc_pdf(APPENDIX_FILES, tmp_path / "b.pdf", inputs)
     assert first.read_bytes() == second.read_bytes()
+pytestmark = pytest.mark.slow

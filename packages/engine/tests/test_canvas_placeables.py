@@ -736,3 +736,5 @@ def test_a_door_leaf_passes_over_a_flush_body_in_its_sweep() -> None:
     assert not [item for item in findings
                 if item.check_id == "integrity.door_swing_conflict"
                 and "REG-SWING" in item.element_tags]
+
+pytestmark = pytest.mark.slow

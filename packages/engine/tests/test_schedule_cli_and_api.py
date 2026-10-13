@@ -10,6 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+
 from _helpers import copy_house
 from typer.testing import CliRunner
 
@@ -233,3 +234,4 @@ def test_set_task_still_works_beside_set_visit(client, house: Path) -> None:
     text = (house / "tasks.toml").read_text()
     assert '[entries."task/earth/building"]' in text
     assert '[visits."task/concrete/building/footings"]' in text
+pytestmark = pytest.mark.slow

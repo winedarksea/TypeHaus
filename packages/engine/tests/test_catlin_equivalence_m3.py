@@ -30,6 +30,7 @@ from pathlib import Path
 
 import pytest
 
+
 from typehaus.diff.equivalence import (
     STATUS_ONLY_REFERENCE,
     EquivalenceTolerance,
@@ -551,3 +552,4 @@ def test_equivalence_report_is_serializable_and_deterministic(equivalence, tmp_p
     assert equivalence.to_json() == equivalence.to_json()
     written = equivalence.write(tmp_path / "equivalence.json")
     assert written.exists() and written.read_text() == equivalence.to_json()
+pytestmark = pytest.mark.slow

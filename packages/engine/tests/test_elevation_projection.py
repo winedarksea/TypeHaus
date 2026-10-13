@@ -324,3 +324,5 @@ def test_a_model_without_the_geometry_ir_says_so(catlin_plan):
     preview = resolve_preview(catlin_plan)
     with pytest.raises(ValueError, match="geometry IR"):
         build_elevation(preview, "south")
+
+pytestmark = pytest.mark.slow

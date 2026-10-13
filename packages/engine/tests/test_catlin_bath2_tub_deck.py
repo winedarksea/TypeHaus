@@ -19,6 +19,8 @@ from functools import cache
 
 from pathlib import Path
 
+import pytest
+
 from shapely.geometry import Polygon
 
 from typehaus.resolve import resolve
@@ -241,3 +243,5 @@ def test_the_drain_matches_the_bath_kohler_actually_specifies():
                if getattr(e, "tag", "") == "PR-B-TUB2-DRAIN")
     assert round(run.diameter.meters / M_PER_IN, 4) == 1.5
     assert run.serves == ("FX-M-BATH2-TUB",)
+
+pytestmark = pytest.mark.slow

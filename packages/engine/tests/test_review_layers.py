@@ -13,6 +13,7 @@ import xml.etree.ElementTree as ET
 
 import pytest
 
+
 from typehaus.emit.draw.review_layers import (
     BACKGROUND,
     BY_SLUG,
@@ -331,3 +332,4 @@ def test_a_card_with_paper_space_keeps_its_ids_unique(catlin_model, tmp_path) ->
     ids = [e.get("id") for e in root.iter() if e.get("id")]
     assert len(ids) == len(set(ids)), "duplicate id across the card's two axes"
     assert [g.get("data-typehaus-layer") for g in _groups(root)], "no groups on the card"
+pytestmark = pytest.mark.slow

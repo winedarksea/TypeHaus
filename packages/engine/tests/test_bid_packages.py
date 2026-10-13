@@ -115,3 +115,5 @@ def test_framing_golden(request, tmp_path: Path) -> None:
 def test_priced_is_refused_without_prices(starter_dir: Path) -> None:
     result = runner.invoke(app, ["bids", str(starter_dir), "--priced"])
     assert result.exit_code == 2
+
+pytestmark = pytest.mark.slow

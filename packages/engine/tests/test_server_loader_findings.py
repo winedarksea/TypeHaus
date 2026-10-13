@@ -74,3 +74,5 @@ def test_clean_house_has_no_loader_errors(starter_dir: Path, tmp_path: Path) -> 
         result = load_plan(house)
         errs = [f for f in result.findings if f.severity is Severity.ERROR]
         assert not errs, (house.name, [f.check_id for f in errs])
+
+pytestmark = pytest.mark.slow
