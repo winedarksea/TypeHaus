@@ -179,7 +179,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
                    "structural.stair_stringer",
                    "structural.member_interference", "structural.floor_opening_header",
                    "structural.uplift_path_coverage", "code.R302_5_garage_separation",
-                   "code.R302_13_floor_protection"),
+                   "code.R302_13_floor_protection", "code.fireblock_chase"),
         on_site=("sealed truss drawings on site", "hangers and straps installed",
                  "fireblocking in place"),
         milestone="rough_ins",

@@ -26,8 +26,8 @@ verdict on backing is ADVISORY (→ ``checks/advisory/backing.py``), never a FAI
 Not to be confused with **fireblocking** (IRC R302.11), which is a draft stop that fills the
 cavity rather than a fastening target laid flat on the stud face. An 8' wall triggers no
 horizontal fireblock at all, so every horizontal 2x in an ordinary bathroom is this, not
-that. ``checks/code/mn_residential/profile.py`` declares R302.11 outside its coverage and
-this element does not change that.
+that. The engine grades R302.11 only at stacked floor chases (``FloorOpening.fireblock``);
+wall-cavity fireblocking stays outside its coverage and this element does not change that.
 """
 
 from __future__ import annotations

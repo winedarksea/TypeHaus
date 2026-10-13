@@ -36,6 +36,7 @@ SECTION_LABELS: dict[str, str] = {
     "plumbing_specialties": "Plumbing specialties", "install_parts": "Installation kits",
     "pipe_insulation": "Pipe insulation", "freeze_protection": "Freeze protection",
     "edge_trim": "Edge trim and flashing", "member_protection": "Member protection tape",
+    "fireblock_sealant": "Firestop sealant",
     "wall_structure": "Wall structure by the yard", "reinforcement": "Reinforcing steel",
     "timber": "Timber", "steel_members": "Rolled steel members",
     "railings": "Guards and handrails",

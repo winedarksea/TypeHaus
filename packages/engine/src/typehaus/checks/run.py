@@ -102,6 +102,7 @@ def load_preferences(house_dir: Path) -> Preferences:
             max_undrawn_deck_hole_in=mep.get("max_undrawn_deck_hole_in", 2.0),
             min_drain_slope_margin_in_per_ft=mep.get(
                 "min_drain_slope_margin_in_per_ft", 0.0625),
+            fireblock_min_web_in=mep.get("fireblock_min_web_in", 1.5),
             routing=dict(mep.get("routing") or {}),
         ),
         structural=StructuralPreferences(

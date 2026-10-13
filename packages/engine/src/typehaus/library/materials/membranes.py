@@ -199,4 +199,17 @@ MATERIALS: tuple[Material, ...] = (
             "ASTM E96 value published."
         ),
     ),
+    # The annulus seal where a run passes a fireblock (IRC R302.11 item 4). Billed by the
+    # lineal foot of penetration perimeter (``takeoff/fireblocking.py``).
+    Material(
+        tag="firestop-sealant",
+        name="Firestop sealant (intumescent / elastomeric, gun grade)",
+        hatch="membrane",
+        color="#c2402f",
+        source=(
+            "Product class: a sealant tested to ASTM E814 / UL 1479 through-penetration "
+            "systems (e.g. 3M Fire Barrier Sealant FD 150+, Hilti CP 606). IRC R302.11 "
+            "item 4 exempts the annular fill from ASTM E136; no vapour value is published."
+        ),
+    ),
 )

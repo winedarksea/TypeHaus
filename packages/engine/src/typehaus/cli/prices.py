@@ -125,6 +125,8 @@ ESTIMATE_PLANS = (
     # Framing-top membrane by the foot, keyed on the material tag. Mirrors nothing: `framing`
     # bills the stick the tape covers, not the tape.
     ("member_protection", "member_protection", "material", "length_ft", "LF"),
+    # Firestop sealant by the foot of fireblock penetration (``takeoff/fireblocking.py``).
+    ("fireblock_sealant", "fireblock_sealant", "material", "length_ft", "LF"),
     # Placed by the yard, keyed on the assembly — see the field comment on ``Prices``.
     ("wall_structure", "wall_structure", "assembly", "volume_cubic_yards", "cy"),
     # Reinforcing steel by the POUND — how it is milled, shipped, and quoted. The key is the

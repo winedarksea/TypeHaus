@@ -126,6 +126,7 @@ SHAPES: dict[str, Shape] = {
     "envelope_layers": Shape("Assembly layers, by material", None, "SF net"),
     "edge_trim": Shape("Trim and flashing, by profile", None, "LF"),
     "member_protection": Shape("Member protection tape", None, "LF"),
+    "fireblock_sealant": Shape("Firestop sealant", None, "LF"),
     "construction_returns": Shape("Construction returns", None, "LF"),
     "sill_gaskets": Shape("Sill gaskets", None, "LF"),
     "drainage": Shape("Stormwater runs", None, "LF"),
@@ -188,8 +189,8 @@ RECIPES: dict[str, Recipe] = {
                       "the structural hardware, the decks, and the tape on every member "
                       "top. Trusses and engineered wood are called out by the profile.",
                       ("framing", "sheet_goods", "hardware", "solids", "timber",
-                       "member_protection", "construction_returns", "sill_gaskets",
-                       "envelope_layers", "wall_structure"),
+                       "member_protection", "fireblock_sealant", "construction_returns",
+                       "sill_gaskets", "envelope_layers", "wall_structure"),
                       ("S-100", "S-101", "S-201", "A-301", "A-401")),
     "stairs": Recipe("Stairs and guards", "Stringers, treads, risers and newels, and every "
                      "guard and handrail. Owner-milled treads are install only.",

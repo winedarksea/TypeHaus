@@ -64,6 +64,8 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids",
              "edge_trim",
              # Joist/beam tape by the foot. See ``Prices.member_protection``.
              "member_protection",
+             # Firestop sealant by the foot of penetration. See ``Prices.fireblock_sealant``.
+             "fireblock_sealant",
              # Monolithic wall structure: concrete/masonry walls by the yard.
              "wall_structure",
              # Reinforcing steel by the POUND, which is how it is bought and billed. Keyed
@@ -319,6 +321,8 @@ class Prices:
     # 3-ply 2x12 is 4 1/2" across; the common 3 1/8" roll is not enough, and that is a real
     # ordering mistake this row exists to prevent.
     member_protection: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Firestop sealant by the lineal foot of fireblock penetration, keyed on material tag.
+    fireblock_sealant: Mapping[str, PriceRange] = field(default_factory=dict)
     # Monolithic wall structure, keyed on the *assembly* tag rather than the material: a
     # placed yard of SUNKEN_GARDEN_WALL and a yard of BASEMENT_12 are both "concrete"
     # and are not the same price. Priced by the cubic yard; the rows also carry

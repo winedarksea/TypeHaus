@@ -139,6 +139,9 @@ class MepPreferences:
     #: A house with no head left may author 0.0 with the argument beside it; catlin does,
     #: and every PASS still prints its margin, which is most of the check's value.
     min_drain_slope_margin_in_per_ft: float = 0.0625
+    #: ``code.fireblock_chase``: the narrowest fireblock sheet left between two runs (or a
+    #: run and the hole's edge) before the crossing needs mineral wool instead.
+    fireblock_min_web_in: float = 1.5
 
     # --- mep.riser_through_deck (checks/mep/riser_through_deck.py) ---
     #: The largest hole a trade DRILLS through a deck rather than frames. Past it the deck

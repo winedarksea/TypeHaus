@@ -33,6 +33,7 @@ from typehaus.takeoff.electrical import (
     solar_takeoff,
 )
 from typehaus.takeoff.fasteners import exposed_fastener_cladding_screw_rows
+from typehaus.takeoff.fireblocking import fireblock_sealant_takeoff
 from typehaus.takeoff.framing import (
     _board_feet_per_ft,
     _order_length_ft,
@@ -70,6 +71,7 @@ __all__ = [
     "construction_returns_takeoff",
     "edge_trim_takeoff",
     "member_protection_takeoff",
+    "fireblock_sealant_takeoff",
     "floor_heat_takeoff",
     "framing_bom_by_size",
     "framing_takeoff",

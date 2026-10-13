@@ -143,6 +143,12 @@ class FloorOpening(Element):
     #: closing the truss ends and trimmers from the ceiling below to the joist tops. The
     #: outline stays the finished hole; the framing steps back by this stack's thickness.
     lining: tuple[Layer, ...] = ()
+    #: R302.11 fireblock closing the hole in the deck plane, top-down from the deck top:
+    #: layer 0 is the sheet, flush with the subfloor; mineral wool packs below it. Its
+    #: penetrations are derived from the runs (``resolve/opening_fireblock.py``).
+    fireblock: tuple[Layer, ...] = ()
+    #: Material sealing each penetration's annulus through the fireblock.
+    fireblock_sealant: str | None = None
 
 
 class FloorOpeningEdgeInterval(HausModel):

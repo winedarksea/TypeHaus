@@ -88,6 +88,7 @@
     "eave_soffit": 14737625,
     "fascia": 15461350,
     "finish": 15131611,
+    "fireblock": 13412467,
     "flashing": 12567756,
     "floor": 13749442,
     "footing": 8027520,
@@ -275,6 +276,7 @@
     "eave_soffit": 14737625,
     "fascia": 15461350,
     "finish": 15131611,
+    "fireblock": 13412467,
     "flashing": 12567756,
     "floor": 13749442,
     "footing": 8027520,
@@ -458,6 +460,9 @@
     "fascia": [
       "siding"
     ],
+    "fireblock": [
+      "concrete"
+    ],
     "flashing": [
       "roofing"
     ],
@@ -635,6 +640,7 @@
     "duct_transfer": "mechanical",
     "eave_soffit": "siding",
     "fascia": "siding",
+    "fireblock": "framing",
     "flashing": "roofing",
     "footing": "concrete",
     "french_drain": "drainage",

@@ -82,9 +82,13 @@ MN_2020 = JurisdictionProfile(
         "statewide and R602.10.3 items 1-2 never reach them; R602.10.8's connection and "
         "fastening rules are printed as conditions of the pass and are NOT graded, the "
         "model carrying no nail schedule. "
-        "Explicitly NOT covered, and not merely unimplemented: fireblocking and "
-        "draftstopping (R302.11-.12), crawl spaces (R408), and chimneys and solid-fuel "
-        "appliances (R1001-R1004). "
+        "Explicitly NOT covered, and not merely unimplemented: fireblocking (R302.11) "
+        "other than at stacked floor chases, draftstopping (R302.12), crawl spaces (R408), "
+        "and chimneys and solid-fuel appliances (R1001-R1004). "
+        "Added 2026-10-13: R302.11 fireblocking at a floor chase stacked through two or "
+        "more decks (code.fireblock_chase) — the sheet in the deck plane, its derived "
+        "penetrations, the annular sealant and the mineral-wool fallback. Single-hole "
+        "penetrations (item 4 outside a shaft) are not graded. "
         "Added 2026-09-17: notching and boring limits — R502.8.1 joists "
         "(mep.run_member_crossing), R602.6 studs (mep.run_through_stud) and R602.6.1 top "
         "plates (mep.run_through_plate), all graded against the ACTUAL resolved members "
@@ -237,6 +241,8 @@ MN_2020 = JurisdictionProfile(
                        ("IRC R302.5.1", "IRC R302.5.2", "IRC R302.6"), blocking=False),
         PermitItemSpec("Floor assembly protection", ("code.R302_13_floor_protection",),
                        ("IRC R302.13",), blocking=False),
+        PermitItemSpec("Fireblocking at floor chases", ("code.fireblock_chase",),
+                       ("IRC R302.11",)),
         # Non-blocking, like its two neighbours above: the rule is graded off authored
         # assemblies, so it can say the drawn stack puts a barrier over the foam and cannot
         # say the built one does. R316.5's exceptions are not modelled either. That is a

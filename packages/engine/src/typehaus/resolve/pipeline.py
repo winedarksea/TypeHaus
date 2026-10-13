@@ -34,6 +34,7 @@ from typehaus.resolve.layout_lines import lines_by_wall, resolve_layout_lines
 from typehaus.resolve.mep import resolve_mep
 from typehaus.resolve.millwork import resolve_millwork
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
+from typehaus.resolve.opening_fireblock import resolve_fireblocks
 from typehaus.resolve.paneling import resolve_paneling
 from typehaus.resolve.partition_top import apply_partition_tops
 from typehaus.resolve.placeables import resolve_placeables
@@ -139,6 +140,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_mep(model))
         # Needs the runs: a bay a run crosses gets a 2x6 box instead of a solid block.
         resolve_bearing_blocking(model)
+    with _stage("fireblocks"):
+        # Reads the run envelopes: a chase fireblock's holes follow the runs.
+        resolve_fireblocks(model)
     with _stage("solar"):
         # After framing: panels ride the resolved roof planes.
         findings.extend(resolve_solar(model))

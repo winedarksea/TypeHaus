@@ -124,6 +124,10 @@ ROWS: tuple[C, ...] = (
     # A floor opening's well lining: sheet_goods / derived_paint bill it off ResolvedFloor.
     C("opening_lining", trade="drywall", ifc_class=_COVER, ifc_predefined="CLADDING",
       billed_elsewhere=True),
+    # A chase fireblock in the deck plane (resolve/opening_fireblock.py). Runs pass its voids,
+    # so not hard; sheet_goods / fireblocking bill it off model.fireblocks.
+    C("fireblock", trade="framing", ifc_class="IfcPlate", ifc_predefined="USERDEFINED",
+      ifc_object_type="FIREBLOCK", material_refile="layer", billed_elsewhere=True),
     # Pours, and what is cast into them.
     C("slab", trade="concrete", ifc_class="IfcSlab", elevation_family="body",
       finish_group="element", material_refile="laid", is_pour=True, slab_family="slab",

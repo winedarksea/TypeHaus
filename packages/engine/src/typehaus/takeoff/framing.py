@@ -298,6 +298,9 @@ def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     for solid in model.solids:
         if solid.tag in billed_as_steel:
             continue
+        # A chase fireblock bills by area in ``sheet_goods`` (off ``model.fireblocks``).
+        if solid.category == "fireblock":
+            continue
         # A derived connector marker is a MARKER: the part it stands for is billed by
         # part number in ``takeoff/hardware.py``, off the joint, never off this box. Without
         # this skip the 500-odd markers become a phantom "connector" volume row standing

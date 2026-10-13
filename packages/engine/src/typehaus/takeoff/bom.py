@@ -30,6 +30,7 @@ from typehaus.takeoff.electrical import (
 from typehaus.takeoff.envelope import bug_screen_takeoff, envelope_layer_takeoff
 from typehaus.takeoff.fabrication import fabricated_member_schedule
 from typehaus.takeoff.finishes import floor_finish_rows
+from typehaus.takeoff.fireblocking import fireblock_sealant_takeoff
 from typehaus.takeoff.framing import (
     construction_returns_takeoff,
     framing_bom_by_size,
@@ -184,6 +185,8 @@ def bill_of_materials(
         # "the two garden decks' joists", so nothing could bill the membrane that keeps
         # water out of a built-up beam's ply seams.
         "member_protection": member_protection_takeoff(model),
+        # Firestop sealant by the foot of fireblock penetration; the sheet is in sheet_goods.
+        "fireblock_sealant": fireblock_sealant_takeoff(model),
         "pipe_runs": pipe_run_takeoff(model),
         # Fittings by the piece, counted off the runs' own 3D polylines and the drainage
         # graph — not estimated. Kept separate so [pipe_runs]'s drain/vent $/LF rates

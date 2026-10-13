@@ -51,7 +51,8 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // `structural_solids` so nothing is counted twice.
     sections: ["framing", "framing_by_size", "fabricated_members", "structural_solids",
       "steel_members", "wall_structure", "reinforcement",
-      "sheet_goods", "member_protection", "construction_returns", "sill_gaskets", "hardware",
+      "sheet_goods", "member_protection", "fireblock_sealant", "construction_returns",
+      "sill_gaskets", "hardware",
       "footing_bedding"],
   },
   {

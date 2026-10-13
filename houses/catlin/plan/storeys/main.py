@@ -22,6 +22,8 @@ from typehaus import (
     FloorHeat,
     FloorOpening,
     FloorOpeningPurpose,
+    Layer,
+    LayerFunction,
     LayerMaterial,
     Node,
     Occupancy,
@@ -1903,7 +1905,16 @@ FLOOR_OPENINGS = [
     FloorOpening(uid="6KE3VP3HY1", tag="FO-M-ERV-OA", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(6), ft(33, 5.5)), pt(inch(48.5), ft(33, 5.5)),
                           pt(inch(48.5), ft(35, 6.25)), pt(inch(6), ft(35, 6.25))),
-                 bearing_refs=("W-B-W1",)),
+                 bearing_refs=("W-B-W1",),
+                 # The shaft closed in the deck plane (R302.11); holes follow the runs. The
+                 # spare conduit leaves 0.6" of sheet beside the 6" riser, so wool packs under.
+                 fireblock=(
+                     Layer(name="sheet", material_ref="plywood-subfloor",
+                           thickness=inch(0.75), function=LayerFunction.SHEATHING),
+                     Layer(name="wool", material_ref="mineral-wool", thickness=inch(3.5),
+                           function=LayerFunction.INSULATION),
+                 ),
+                 fireblock_sealant="firestop-sealant"),
 ]
 
 # The tub deck's cap: 3/4" exterior-grade plywood over W-M-TUBDK-W/-S and the two room walls

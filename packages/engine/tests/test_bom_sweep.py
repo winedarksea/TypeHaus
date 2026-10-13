@@ -747,6 +747,8 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "glazing_panels", "glazing_trim", "edge_trim",
         # Self-adhered membrane over framing tops, by the foot of member.
         "member_protection",
+        # Firestop sealant by the foot of fireblock penetration.
+        "fireblock_sealant",
         # Self-regulating heater cable by the foot of run traced.
         "freeze_protection",
         "bug_screens", "openings", "floor_finishes", "stair_finish", "stair_treads", "railings",

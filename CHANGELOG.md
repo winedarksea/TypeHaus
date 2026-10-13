@@ -4,6 +4,13 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+- **Stacked floor chases are fireblocked (IRC R302.11).** `FloorOpening.fireblock` closes a
+  chase in the deck plane; its holes are derived from the runs on every resolve, so a moved
+  riser moves its hole. The sheet bills in `sheet_goods`, the annulus seal in the new
+  `fireblock_sealant` section (`firestop-sealant` in the library, unpriced), and
+  `code.fireblock_chase` grades every chase stacked over another. Catlin's NW chase carries a
+  3/4" plywood sheet with mineral wool under it at all three decks.
+
 ## 0.1.2 — 2026-09-27
 
 - **Water-heater supply clearance is graded.** `mep.pex_water_heater_clearance` checks the

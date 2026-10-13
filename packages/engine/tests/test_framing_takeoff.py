@@ -177,8 +177,10 @@ def test_structural_solids_account_for_every_resolved_solid(catlin_model) -> Non
     steel_tags = {tag for row in steel for tag in row["tags"]}
     assert steel_tags, "no steel member in the fixture — the rule cannot prove anything"
     assert steel_tags.isdisjoint({tag for row in rows for tag in row["tags"]})
+    # A chase fireblock bills by area in ``sheet_goods``, off ``model.fireblocks``.
     measured = [solid for solid in catlin_model.solids
-                if not solid.derived and solid.tag not in steel_tags]
+                if not solid.derived and solid.tag not in steel_tags
+                and solid.category != "fireblock"]
     assert measured, "every solid is derived — the fixture is wrong, not the rule"
     assert sum(int(row["count"]) for row in rows) == len(measured)
     assert {tag for row in rows for tag in row["tags"]} == {
@@ -263,6 +265,8 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # which `framing` (sticks by profile, house-wide) and
                         # `structural_solids` (beams by the yard) both cannot address.
                         "member_protection",
+                        # Firestop sealant by the foot of fireblock penetration.
+                        "fireblock_sealant",
                         # Heater cable by the foot, the electrical twin of
                         # `pipe_insulation` — a traced AND lagged run is the outdoor norm.
                         "freeze_protection",
@@ -386,6 +390,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "plants": ("planting",),
     # A hang point's saddle and swivel; its LVL line bills as a joist under ``framing``.
     "suspension_anchors": ("hardware",),
+    # A chase fireblock: the sheet by area, the annulus seal by the foot.
+    "fireblocks": ("sheet_goods", "fireblock_sealant"),
 }
 
 

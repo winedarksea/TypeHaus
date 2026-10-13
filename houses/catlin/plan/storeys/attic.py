@@ -740,7 +740,16 @@ FLOOR_OPENINGS = [
     FloorOpening(uid="TMNX0WK28P", tag="FO-A-ERV-CHASE", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(6), inch(400)), pt(inch(33), inch(400)),
                           pt(inch(33), inch(416)), pt(inch(6), inch(416))),
-                 bearing_refs=("W-S-W1B",)),
+                 bearing_refs=("W-S-W1B",),
+                 # The shaft closed in the deck plane (R302.11); holes follow the runs. The
+                 # spare conduit leaves 0.6" of sheet beside the 6" riser, so wool packs under.
+                 fireblock=(
+                     Layer(name="sheet", material_ref="plywood-subfloor",
+                           thickness=inch(0.75), function=LayerFunction.SHEATHING),
+                     Layer(name="wool", material_ref="mineral-wool", thickness=inch(3.5),
+                           function=LayerFunction.INSULATION),
+                 ),
+                 fireblock_sealant="firestop-sealant"),
     # Three attic radials that leave the deck for a bay, each through its own hole sized to
     # the duct and inside that bay, so none cuts a joist or takes framing (2026-09-24).
     FloorOpening(uid="JFYH0MJA77", tag="FO-A-ERV-HPFEED", purpose=FloorOpeningPurpose.CHASE,

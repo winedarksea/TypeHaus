@@ -85,9 +85,10 @@ triggers none — every horizontal 2x in a catlin bathroom is backing, not fireb
 places it would bite here are the walls over 10 ft and, more sharply, R302.11 item 2's
 soffits and dropped ceilings and item 3's stair-stringer tops and bottoms.
 
-`checks/code/mn_residential/profile.py` declares R302.11 **outside this engine's coverage**,
-and nothing in `plan/backing.py` changes that. Fireblocking remains un-modelled and is the
-framer's and the inspector's to carry.
+Since 2026-10-13 the engine models R302.11 at one place only: a floor chase stacked through two
+or more decks (`FloorOpening.fireblock`, graded by `code.fireblock_chase`; catlin's NW chase).
+Wall-cavity, soffit and stair-stringer fireblocking stay un-modelled, and nothing in
+`plan/backing.py` changes that; they are the framer's and the inspector's to carry.
 
 ## 4. What this house bought
 

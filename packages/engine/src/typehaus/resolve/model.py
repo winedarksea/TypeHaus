@@ -711,6 +711,23 @@ class ResolvedStair:
 
 
 @dataclass(frozen=True)
+class ResolvedFireblock:
+    """A chase's fireblock (``resolve/opening_fireblock.py``): holes derived from the runs."""
+
+    opening_tag: str
+    storey: str
+    floor_tag: str
+    #: ``(material ref, thickness m, net area m²)`` per layer, top-down.
+    layers: tuple[tuple[str, float, float], ...]
+    #: ``(run tag, annulus perimeter m)`` for each run through the sheet.
+    penetrations: tuple[tuple[str, float], ...]
+    #: Narrowest sheet left between two holes or a hole and the edge; ``None`` with no hole.
+    min_web_m: float | None
+    #: The run pair (or run and "edge") that sets ``min_web_m``.
+    min_web_between: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
 class ResolvedFloor:
     """A framed floor deck: joists generated from a FloorSystem's JoistSpec (M3).
 
@@ -1468,6 +1485,7 @@ class ResolvedModel:
     roofs: list[ResolvedRoof] = field(default_factory=list)
     stairs: list[ResolvedStair] = field(default_factory=list)
     floors: list[ResolvedFloor] = field(default_factory=list)
+    fireblocks: list[ResolvedFireblock] = field(default_factory=list)
     floor_opening_pocket_closures: list[ResolvedFloorOpeningPocketClosure] = field(
         default_factory=list
     )
