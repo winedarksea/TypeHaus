@@ -35,6 +35,20 @@ from typehaus.model import LuminaireType
 _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
                           position=(ft(0), ft(0), ft(0))),)
 
+# Mark B, held as a name so B1/B2 below are copies of it rather than restatements.
+_CAN4_WET = LuminaireType(
+    tag="ED-T-LT-CAN4-WET", name='4" recessed can, wet location, white regressed trim',
+    form=LuminaireForm.RECESSED_CAN, type_mark="B",
+    footprint=(inch(5), inch(5)), height=inch(2), plan_symbol="recessed-can",
+    lamp="LED module, field replaceable", watts=12.0, lumens=900.0,
+    cct_k=3000, cri=90, dimmable=True, damp_rated=True, wet_rated=True,
+    load_va=12.0, ports=_POWER_120,
+    product_ref="PROD-LOTUS-LL4SR-30K-WH",
+    source="Lotus LL4SR-30K-WH — the SAME SKU as mark A, which is already wet "
+           "+ IP54 listed, so this is a schedule row rather than a second "
+           "product and there is no separate wet trim to colour-match")
+
+
 AMBIENT_LUMINAIRE_TYPES = (
     # --- A/B/C: recessed cans (plans/electrical_notes.md, "Recessed cans") ------------
     # ** THE BLACK BAFFLE WENT WHITE ON 2026-09-06, AND THE GLARE ARGUMENT SURVIVES INTACT —
@@ -84,26 +98,37 @@ AMBIENT_LUMINAIRE_TYPES = (
     # matters (Revit's Initial Color Temperature, IFC's light source, the E-602 schedule):
     # two CCTs in one room have to read as two schedule rows or the electrician cannot tell
     # which module goes in which can. Do not "deduplicate" these two into one entry.
+    #
+    # ** THE BAN IS ON INSTALL-TIME SELECTABLE MODULES, NOT ON ADJUSTABLE LIGHT ** (owner,
+    # 2026-10-12). A 5CCT DIP switch is set once, blind, by the electrician, and is wrong
+    # constantly. A user-adjustable fixture with a live control (tunable white, RGB) is
+    # allowed: it records its working CCT in `cct_k` and its range in `source`.
     luminaire_class("ED-T-LT-CAN4-4000").model_copy(update={"type_mark": "A1", "source": "Lotus LL4SR class, 4\" deeply regressed white trim, in the 4000K "
-                         "tap. ** BUY A FIXED-CCT MODULE, NEVER A 5CCT SELECTABLE ONE: ** "
-                         "the DIP switch gets set wrong constantly, one can at the wrong "
-                         "temperature in a run of eight is a screaming defect, and a "
+                         "tap. ** BUY A FIXED-CCT MODULE, NEVER AN INSTALL-SELECTABLE 5CCT "
+                         "ONE: ** the DIP switch gets set wrong constantly, one can at the "
+                         "wrong temperature in a run of eight is a screaming defect, and a "
                          "dedicated phosphor gives better R9 than a warm/cool blend. Two "
                          "schedule rows is how the electrician tells them apart, which is "
                          "the reason A1 exists at all."}),
     # Same housing, wet-listed: a can over a tub or inside a shower enclosure is in a wet
     # location, and every bath can here is specified that way rather than sorting them by
     # which side of the curtain they fall on.
-    LuminaireType(tag="ED-T-LT-CAN4-WET", name='4" recessed can, wet location, white regressed trim',
-                  form=LuminaireForm.RECESSED_CAN, type_mark="B",
-                  footprint=(inch(5), inch(5)), height=inch(2), plan_symbol="recessed-can",
-                  lamp="LED module, field replaceable", watts=12.0, lumens=900.0,
-                  cct_k=3000, cri=90, dimmable=True, damp_rated=True, wet_rated=True,
-                  load_va=12.0, ports=_POWER_120,
-                  product_ref="PROD-LOTUS-LL4SR-30K-WH",
-                  source="Lotus LL4SR-30K-WH — the SAME SKU as mark A, which is already wet "
-                         "+ IP54 listed, so this is a schedule row rather than a second "
-                         "product and there is no separate wet trim to colour-match"),
+    _CAN4_WET,
+    # B1/B2: RM-M-BATH2's two layers (2026-10-12, notes/bath2_lighting.md). Same wet can as
+    # B, each in ONE fixed phosphor: B1 5000 K on the plain day toggle, B2 2700 K on the
+    # evening dimmer. Separate marks so the electrician knows which module goes where.
+    _CAN4_WET.model_copy(update={
+        "tag": "ED-T-LT-CAN4-WET-5000", "type_mark": "B1",
+        "name": '4" recessed can, wet location, white regressed trim, 5000K',
+        "cct_k": 5000, "dimmable": False, "product_ref": "PROD-LOTUS-LL4SR-50K-WH",
+        "source": "Lotus LL4SR class in a FIXED 5000 K phosphor (confirm the SKU), on a "
+                  "plain toggle: BATH2's day layer."}),
+    _CAN4_WET.model_copy(update={
+        "tag": "ED-T-LT-CAN4-WET-2700", "type_mark": "B2",
+        "name": '4" recessed can, wet location, white regressed trim, 2700K',
+        "cct_k": 2700, "product_ref": "PROD-LOTUS-LL4SR-27K-WH",
+        "source": "Lotus LL4SR class in a FIXED 2700 K phosphor (confirm the SKU), on "
+                  "BATH2's evening dimmer, inside the shower glass."}),
     # height=inch(5) is LEFT ALONE and is probably also wrong: the Lotus 3" is the same
     # canless family as mark A and is very likely 2" too. It is not corrected here because
     # the 3" SKU was never confirmed against a datasheet (see the source string), and
@@ -140,6 +165,23 @@ AMBIENT_LUMINAIRE_TYPES = (
                   source="Armacost RibbonFlex Pro 24V COB, 3000K, on the shadow-gap ceilings "
                          "and the stair rail. Nobody reads by a cove, which is why the "
                          "R9-grade tape is spent on the kitchen (mark U) and not here."),
+
+    # --- E3: RM-M-BATH2's evening glow (2026-10-12) ------------------------------------
+    # Mark E's tape in a fixed 2700 K, damp-rated (silicone-coated) because it runs under the
+    # vanity, the over-toilet cabinet and the tub deck's nosing. Soft, low, widespread: the
+    # evening layer, on the dimmer with the halo mirror. Prices on its own
+    # [light_run_materials] keys.
+    LuminaireType(tag="ED-T-LT-STRIP24-2700",
+                  name="24V COB LED tape, 2700K, damp, in aluminium channel",
+                  form=LuminaireForm.STRIP, type_mark="E3",
+                  footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
+                  lamp="LED tape, 24V DC, COB, silicone-coated", watts_per_ft=3.0,
+                  lumens=230.0, cct_k=2700, cri=90, voltage=24, dimmable=True,
+                  damp_rated=True,
+                  product_ref="PROD-ARMACOST-RIBBONFLEX-COB",
+                  source="Armacost RibbonFlex Pro 24V COB family in 2700K, silicone-coated "
+                         "for a damp room (confirm the damp SKU). Toe kick, cabinet underside "
+                         "and tub-deck nosing in RM-M-BATH2."),
 
     # --- E1: the shower niche's lit shelf ---------------------------------------------
     # ZERO INSTANCES since 2026-10-12: both niches were dropped (notes/superseded/

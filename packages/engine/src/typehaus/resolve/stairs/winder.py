@@ -141,17 +141,18 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         if end:
             out.append(end)
     out.extend(boxes)
-    post_section = cross_section(stair.newel_profile)
-    # The post stands beside the departing lane, with both faces outside clear width.
-    # It attaches to the departing rim; it never substitutes for the well boundary.
-    post = (inside[0] + post_section.width_m / 2,
-            inside[1] - post_section.depth_m / 2)
-    post_top = z0 + riser * stair.winder_count
-    post_base = z0 if supporting_floor_m is None else supporting_floor_m
-    out.append(FramedMember(
-        stair.uid, "newel-000", "newel", stair.newel_profile, post, post,
-        post_base, post_top, post_top - post_base, orient=(1.0, 0.0),
-        connection=f"winder-box-rim:{departing_rim}"))
+    if stair.newel_profile is not None:
+        post_section = cross_section(stair.newel_profile)
+        # The optional post attaches beside the departing lane, outside clear width.
+        # It never substitutes for the well boundary or the stacked boxes' bearing.
+        post = (inside[0] + post_section.width_m / 2,
+                inside[1] - post_section.depth_m / 2)
+        post_top = z0 + riser * stair.winder_count
+        post_base = z0 if supporting_floor_m is None else supporting_floor_m
+        out.append(FramedMember(
+            stair.uid, "newel-000", "newel", stair.newel_profile, post, post,
+            post_base, post_top, post_top - post_base, orient=(1.0, 0.0),
+            connection=f"winder-box-rim:{departing_rim}"))
     return tuple(replace(
         member, p0=point(member.p0), p1=point(member.p1),
         orient=vector(member.orient) if member.orient else None,

@@ -4,11 +4,12 @@ Split off its parent for the 500-line rule, and the subject splits cleanly: ever
 is a luminaire, a tape or a driver, and every one of them answers to two house rules that no
 plumbing fixture does.
 
-** THE HOUSE STANDARD IS 3000 K, FIXED. ** Fixed rather than field-selectable: a 5CCT DIP
+** THE HOUSE STANDARD IS 3000 K, AND NO INSTALL-TIME SELECTABLE MODULES. ** A 5CCT DIP
 switch gets set wrong constantly, one can at 4000 K in a run of eight is a screaming defect,
-and a dedicated 3000 K phosphor gives better R9 than a warm/cool blend. The one deliberate
-exception is the 4000 K tap over the work surfaces, which is a separate schedule row so the
-electrician can tell which module goes in which can.
+and a dedicated phosphor gives better R9 than a warm/cool blend. Each deliberate exception
+(4000 K over the work surfaces, BATH2's 5000 K day and 2700 K evening layers) is its own
+schedule row. A USER-ADJUSTABLE fixture with a live control (tunable white, RGB) is allowed
+(2026-10-12): it records its working CCT in ``cct_k`` and its range in ``source``.
 
 ** A DRIVER IS THE PART THAT DIES, NOT THE LED. ** Electrolytic capacitors are rated at 25 C
 and halve their life per 10 C above it, so a 25,000-hour LED behind a captive driver in an
@@ -23,10 +24,8 @@ from typehaus.model import Product
 
 # --- Lighting -----------------------------------------------------------------------------
 #
-# The house standard is 3000 K, FIXED, everywhere it is not deliberately something else.
-# Fixed rather than 5CCT selectable: the DIP switch gets set wrong constantly, one can at
-# 4000 K in a run of eight is a screaming defect, and a dedicated 3000 K phosphor gives
-# better R9 than a warm/cool blend.
+# The house standard is 3000 K everywhere it is not deliberately something else, and never
+# an install-time selectable (DIP) module: see the module docstring.
 LOTUS_LL4SR_CAN = Product(
     tag="PROD-LOTUS-LL4SR-30K-WH", brand="Lotus LED Lights", model="LL4SR-30K-WH",
     name='4" deeply regressed LED downlight, white trim, 3000K',
@@ -185,8 +184,34 @@ LEDSUPPLY_SAUNA_STRIP = Product(
            "OMNIDRIVE X 60 W above, OUTSIDE the hot room.",
 )
 
+# BATH2's two can layers (2026-10-12): the LL4SR in fixed 5000 K and 2700 K phosphors.
+# ** CONFIRM BOTH SKUs: ** Lotus publishes 5000 K and 2700 K in its 4" round LL4R line; the
+# square regressed LL4SR was only ever read at 3000 K. If either tap is not made, take the
+# LL4R round in that CCT and keep the trim white.
+LOTUS_LL4SR_CAN_50K = LOTUS_LL4SR_CAN.model_copy(update={
+    "tag": "PROD-LOTUS-LL4SR-50K-WH", "model": "LL4SR-50K-WH",
+    "name": '4" deeply regressed LED downlight, white trim, 5000K',
+    "source": "BATH2's day layer, 2026-10-12: the LL4SR in a FIXED 5000 K phosphor, wet + "
+              "IP54 as the 3000 K. CONFIRM THE SKU (LL4R-50K is published; LL4SR-50K was "
+              "not found)."})
+LOTUS_LL4SR_CAN_27K = LOTUS_LL4SR_CAN.model_copy(update={
+    "tag": "PROD-LOTUS-LL4SR-27K-WH", "model": "LL4SR-27K-WH",
+    "name": '4" deeply regressed LED downlight, white trim, 2700K',
+    "source": "BATH2's evening shower can, 2026-10-12: the LL4SR in a FIXED 2700 K "
+              "phosphor. CONFIRM THE SKU, as for the 5000 K."})
+# The evening halo mirror. A USER-adjustable fixture (built-in dimmer and 2700/4500/6500 K
+# touch control), which the 2026-10-12 rule allows; it is commissioned and left at 2700 K.
+FLEURCO_HALO_MIRROR = Product(
+    tag="PROD-FLEURCO-MHA2436", brand="Fleurco", model="Halo MHA2436 (class)",
+    name='24" x 36" backlit halo LED mirror with defogger',
+    source="Fleurco Halo collection listings, read 2026-10-12: backlit (halo) LED mirror "
+           "with a defogger pad, built-in dimmer and 2700 / 4500 / 6500 K selection on its "
+           "own touch control; MHA3036 confirmed, the 24\" width to CONFIRM. Listed for "
+           "plug installation: CONFIRM a hardwire kit, or a concealed receptacle on the "
+           "evening dimmer's leg goes behind it. CONFIRM the damp listing (IP44 minimum).",
+)
 LIGHTING_PRODUCTS = (
-    LOTUS_LL4SR_CAN, WESTGATE_VAPORTIGHT, DOLRIA_PC0008, ROBERN_VITALITY_ROUND,
+    LOTUS_LL4SR_CAN, LOTUS_LL4SR_CAN_50K, LOTUS_LL4SR_CAN_27K, FLEURCO_HALO_MIRROR, WESTGATE_VAPORTIGHT, DOLRIA_PC0008, ROBERN_VITALITY_ROUND,
     MODERN_FORMS_BANTAM, MODERN_FORMS_MYKONOS, CRAFTMADE_FORCE_XL,
     ARMACOST_RIBBONFLEX_COB, DIODE_VALENT_X, DIODE_OMNIDRIVE_X,
     LEDSUPPLY_SAUNA_STRIP,

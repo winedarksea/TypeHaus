@@ -156,7 +156,7 @@ def test_band_thickness_comes_from_the_material_stock(bands):
                 "tile states no board stock, so the band takes the default"
 
 
-def test_the_catlin_bands_are_the_eight_authored_ones(bands):
+def test_the_catlin_bands_are_the_eight_authored_ones(bands, catlin_model):
     """A guard on scope: the reference house authors exactly these, at these heights."""
     by_tag: dict[str, list] = {}
     for band in bands:
@@ -199,18 +199,14 @@ def test_the_catlin_bands_are_the_eight_authored_ones(bands):
         assert not band.replaces_wall_finish
         # PET felt states no board stock, so it takes the 1/2" default — which is the panel.
         assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
-    # RM-M-BATH2's marble-look shower surround: the 36" pan's two closed sides,
-    # 3'-0" x 7'-0" each on a zero offset. The walls are W-M-BA2E2 and W-M-BDN1 and NOT
-    # W-M-BA2E — FX-M-BATH2-SH's `wall_ref` names the riser's wall, which since 2026-09-09
-    # is collinear with W-M-BA2E2 but still stops four feet NORTH of the pan (it runs
+    # RM-M-BATH2's shower surround: the 36" pan's two closed sides, 3'-0" each, floor to
+    # ceiling. The walls are W-M-BA2E2 and W-M-BDN1 and NOT W-M-BA2E — FX-M-BATH2-SH's
+    # `wall_ref` names the riser's wall, which stops four feet NORTH of the pan (it runs
     # y 18'-0"..22'-4"), so it is not a wall this band can land on. That is the trap this
-    # assertion exists to hold. W-M-TUBDK-S bounds the room too
-    # and must stay out: it is the tub deck's 20 3/4" knee wall, and a room-wide band would
-    # clamp to its top and buy 5.3 SF of shower panel on a bath apron. Authoring `spans` is
-    # what excludes it.
-    assert len(by_tag["WP-M-BATH2-SURR"]) == 2
-    assert {b.wall_tag for b in by_tag["WP-M-BATH2-SURR"]} == {"W-M-BA2E2", "W-M-BDN1"}
-    for band in by_tag["WP-M-BATH2-SURR"]:
+    # assertion exists to hold.
+    closed = [b for b in by_tag["WP-M-BATH2-SURR"] if b.wall_tag != "W-M-TUBDK-S"]
+    assert {b.wall_tag for b in closed} == {"W-M-BA2E2", "W-M-BDN1"}
+    for band in closed:
         assert band.run_m == pytest.approx(3 * 12 * _IN, abs=1e-6)
         assert band.z0_m == pytest.approx(0.0, abs=1e-6)
         # Floor to ceiling since 2026-10-12: RM-M-BATH2's 106" clear height.
@@ -219,6 +215,14 @@ def test_the_catlin_bands_are_the_eight_authored_ones(bands):
         # A cast panel states no board stock, so it takes the 1/2" default — which is,
         # again, the panel's own thickness.
         assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
+    # The third span (2026-10-12): the tub deck's knee wall below the north glass, over the
+    # pan's 3' only. It stands INSIDE the room, so the span names its face; the band is on
+    # the stall (south) side and clamps to the wall's 3/4"..20" body.
+    (knee,) = [b for b in by_tag["WP-M-BATH2-SURR"] if b.wall_tag == "W-M-TUBDK-S"]
+    assert knee.run_m == pytest.approx(3 * 12 * _IN, abs=1e-3)
+    assert (knee.z0_m, knee.z1_m) == pytest.approx((0.75 * _IN, 20 * _IN), abs=1e-6)
+    wall = next(w for w in catlin_model.walls if w.tag == "W-M-TUBDK-S")
+    assert Polygon(knee.outline).centroid.y < wall.axis[0][1]
     # RM-S-SUITE's headboard band (2026-09-05): the walnut that was briefly the suite FLOOR,
     # stood up behind the bed on the two staggered-stud sound walls between the suite and the
     # vanity. Two walls and not the room's other six — `walls=` is what keeps the band off
@@ -283,3 +287,21 @@ def test_a_full_height_band_on_a_lifted_wall_stops_at_the_top_plate(catlin_plan)
         # And it really is shorter than the wall — otherwise the assertion above is
         # satisfied by a plate that happens to be the wall top.
         assert wall.plate_top_z_m < wall.z1_m - _IN
+
+
+def test_a_span_on_a_wall_inside_its_room_needs_a_face(catlin_plan):
+    """Both faces of a knee wall are the room's, so no side can be derived: without
+    ``face`` the span is an unbounded-wall ERROR, never a band on a guessed side."""
+    from typehaus.model import PanelingSpan, WallPaneling
+    from typehaus.quantities import ft, inch
+    from typehaus.resolve import resolve
+
+    band = WallPaneling(uid="TSTPNL0001", tag="WP-TEST-KNEE", room="RM-M-BATH2",
+                        material_ref="solid-surface-panel", replaces_wall_finish=True,
+                        spans=(PanelingSpan(wall_ref="W-M-TUBDK-S", start=inch(4.365),
+                                            length=ft(3)),))
+    main = (*catlin_plan.storey_elements("main"), band)
+    plan = catlin_plan.model_copy(update={"elements": {**catlin_plan.elements, "main": main}})
+    model, findings = resolve(plan)
+    assert not [b for b in model.panelings if b.tag == "WP-TEST-KNEE"]
+    assert any("WP-TEST-KNEE" in f.message and "W-M-TUBDK-S" in f.message for f in findings)

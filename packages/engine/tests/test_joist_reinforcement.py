@@ -26,7 +26,6 @@ The categories are also a published contract — ``structural.cantilever_point_l
 
 from __future__ import annotations
 
-
 import pytest
 
 from typehaus.model.floors import FloorSystem, JoistReinforcement, JoistSpec
@@ -34,7 +33,6 @@ from typehaus.quantities import ft, inch, pt
 from typehaus.resolve.floors import _reinforcement_members
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.takeoff.framing import framing_takeoff
-
 
 PLY_WIDTH_M = cross_section("2x8").width_m  # 1.5"
 SPACING_M = inch(16).meters
@@ -214,7 +212,7 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
         found = [m for m in floor.members if m.category == "sister_joist"]
         assert floor.tag not in unsistered or found == [], floor.tag
         sisters.extend((floor.tag, m) for m in found)
-    # Two additional full-span plies carry the relocated winder newel on FS-S-EAST.
+    # Two additional full-span plies carry ST-S2A's departing-rim reactions on FS-S-EAST.
     assert sorted(tag for tag, _ in sisters) == ["FS-M-WEST", "FS-S-EAST", "FS-S-EAST"]
     # Full span, tip to tip: a sister that stops short carries nothing where the load is
     # (``resolve/floors.py::_reinforcement_members``). 17.9' and not the 18'-0" bearing grid

@@ -2604,7 +2604,11 @@
 # defect. A dedicated phosphor also gives better R9 than a warm/cool blend.
 "ED-T-LT-CAN4" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 108 } }  # 39 ea
 "ED-T-LT-CAN4-4000" = { material = { low = 25, high = 75 }, labour = { low = 52, high = 108 } }  # 4 ea
-"ED-T-LT-CAN4-WET" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 10 ea
+"ED-T-LT-CAN4-WET" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 8 ea — BATH2's two went to B1 2026-10-12
+# B1/B2, BATH2's day (5000 K) and evening (2700 K) cans: the same wet LL4SR in a fixed
+# phosphor, so the same band as B. Confirm both SKUs (plan/products_lighting.py).
+"ED-T-LT-CAN4-WET-5000" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 3 ea
+"ED-T-LT-CAN4-WET-2700" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 1 ea
 # dolria PC0008-20T-G (Amazon B0B5G5PJDF); the same-looking Latitude Run is $500 at Wayfair.
 # ** THE LABOUR HIGH END IS A LIFT, NOT A LADDER: ** the canopy is on the rafters 27' up.
 "ED-T-LT-CHANDELIER" = { material = { low = 400, high = 550 }, labour = { low = 150, high = 450 } }  # 1 ea
@@ -2640,7 +2644,7 @@
 # upward opening to collect dust. ** CHROME WAS THE ONLY FINISH CONFIRMED IN STOCK, AND
 # CHROME IS THE ONE METAL THAT FIGHTS WARM OAK ** -- confirm a BN SKU before ordering,
 # or take Modern Forms Loft WS-3624-BN at $143.
-"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 7 ea — one is ED-S-SUITEBATH-MIRROR again (2026-10-03); another is ED-A-STUDIO-BAR-PEND (2026-09-10), the studio bar's task light: a wall-mounted 24" damp bar replacing a pendant that could not fit under the 6:12 rake. See plan/lighting_attic.py
+"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 6 ea since 2026-10-12 (ED-M-BATH2-MIRROR went to P3) — one is ED-S-SUITEBATH-MIRROR again (2026-10-03); another is ED-A-STUDIO-BAR-PEND (2026-09-10), the studio bar's task light: a wall-mounted 24" damp bar replacing a pendant that could not fit under the 6:12 rake. See plan/lighting_attic.py
 # ** ONE OF THEM, THE HALL BATH'S (2026-10-03): the suite's went back to a bar over a plain
 # mirror, FT-SUITEBATH-MIRROR-ESTERO. ** Robern Vitality
 # YM0030CPFPD3, 30" round Perimeter, at $831.94 sale against $1,479 list. The old $150-500
@@ -2655,6 +2659,12 @@
 # enclosed, the warranty is ONE YEAR, and reported failures cluster at five to six years
 # (the driver cooking in a sealed 1 3/4" cavity, not the LEDs). Electric Mirror's Fusion
 # has replaceable LED strips and a 7-year warranty at ~$1,429 but makes no round.
+# P3, BATH2's make-up bar: a damp 24" linear with CRI >= 95 and a published R9, fixed
+# 5000 K. A premium over P's $118-300 for the phosphor; ESTIMATE until the product is
+# confirmed. P4, the 24" x 36" halo mirror with a defogger: Fleurco Halo class, listed
+# $400-900; hardwired, so an electrician's box and trim on the labour side.
+"ED-T-LT-MIRROR-DAY" = { material = { low = 180, high = 450 }, labour = { low = 60, high = 135 } }  # 1 ea
+"ED-T-LT-MIRROR-HALO-2700" = { material = { low = 400, high = 900 }, labour = { low = 90, high = 200 } }  # 1 ea
 "ED-T-LT-MIRROR-RING" = { material = { low = 830, high = 1500 }, labour = { low = 60, high = 135 } }  # 1 ea
 "ED-T-LT-PANEL" = { material = { low = 45, high = 130 }, labour = { low = 48, high = 115 } }  # 4 ea
 # ** THE DINING FIXTURE IS THE OWNER'S OWN IMPORT AND HAS NOT BEEN SELECTED ** (48" linear,
@@ -2671,7 +2681,7 @@
 # the room's R303.1 compliance depends on rather than against a look.
 "ED-T-LT-PENDANT-BAR" = { material = { low = 180, high = 700 }, labour = { low = 70, high = 200 } }  # 0 ea — CATALOG-ONLY since 2026-09-10, the mark N convention: its one placement retyped to ED-T-LT-MIRROR when the attic rake left no room for a hung fixture. Kept priced so the revert costs nothing
 "ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 3 ea
-"ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 4 ea — the fourth is ED-B-SAUNA-LT-PSU (2026-09-13), surface-mounted on the workshop face of W-B-SA-N rather than in a ceiling box
+"ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea since 2026-10-12 — both niche supplies went, ED-M-BATH2-PSU came; ED-B-SAUNA-LT-PSU is surface-mounted on the workshop face of W-B-SA-N rather than in a ceiling box
 "ED-T-LT-SCONCE-EXT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 3 ea — ED-G-EXT-LT-E and -W, a matching pair flanking D-G-OVERHEAD (one fitting until 2026-09-07), and ED-M-STAIR-LT beside the head of ST-SG-PORCH (2026-09-03; moved off the house onto W-SG-E1's east face 2026-09-04, where it is a step light 2'-2" over the pad rather than a sconce 9'-10" over it — same fitting, but the feed is a drop down the porch framing to a concrete wall rather than a box in a stud bay, so take the labour at the high end). The stair light reuses this type rather than minting a full-cutoff downlight of its own precisely so it lands on a priced row: an unpriced type is silently dropped from the bill
 "ED-T-LT-SCONCE-SPOT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 4 ea
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
@@ -2741,8 +2751,8 @@
 "ED-T-RECEPTACLE-WR-GFCI" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 5 ea
 "ED-T-SAUNA-JB" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-SWITCH" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 35 ea — was 36 until 2026-09-13, when ED-B-SAUNA-SW retyped to the dimmer row below with the sauna's under-bench tape
-"ED-T-SWITCH-DIM" = { material = { low = 20, high = 60 }, labour = { low = 52, high = 110 } }  # 7 ea — ED-B-SAUNA-SW joined 2026-09-13; take it at the labour high end, it is a Lutron DVELV-300P reverse-phase paired to an ELV tape driver, not an LED+ control
-"ED-T-SWITCH-TIMER" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 2 ea — the plant room, and the garage soffit run since 2026-09-11
+"ED-T-SWITCH-DIM" = { material = { low = 20, high = 60 }, labour = { low = 52, high = 110 } }  # 14 ea (takeoff 2026-10-12) — ED-M-BATH2-SW-EVE joined 2026-10-12; ED-B-SAUNA-SW 2026-09-13; take it at the labour high end, it is a Lutron DVELV-300P reverse-phase paired to an ELV tape driver, not an LED+ control
+"ED-T-SWITCH-TIMER" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 3 ea — the plant room, the garage soffit run since 2026-09-11, and BATH2's stall fan (ED-M-BATH2-SW-DRY, a 30-60 min countdown) since 2026-10-12
 "EQ-T-EG4-12KPV" = { material = { low = 2600, high = 3500 }, labour = { low = 1400, high = 3000 } }  # 1 ea
 # 2026-08-20 — NEW, and it was unpriced in BOTH [placeables] and [furnishings]. A duct heater
 # is not furniture, so it belongs here and nowhere else.
@@ -2887,6 +2897,10 @@
 "EQ-T-SAUNA-HEATER" = { material = { low = 2970, high = 4200 }, labour = { low = 780, high = 1700 } }  # 1 ea
 # One tank, not two (2026-08-15, replacing the two-row entry the old two-tank model
 # carried) — Rheem ProTerra 80gal PROPH80/XE80T10HS45U0 class, retail-listed $900-$1,300.
+# BATH2's stall-drying fan (2026-10-12, notes/bath2_shower.md §7): a 4" insulated inline
+# fan, ~$130-260 for the WhisperLine-class unit; labour hangs it on the bedroom ceiling's
+# truss chords over its intake grille and lands the circuit. ESTIMATE; confirm the model.
+"EQ-T-INLINE-FAN-4" = { material = { low = 130, high = 260 }, labour = { low = 150, high = 350 } }  # 1 ea
 "EQ-T-WATER-HEATER" = { material = { low = 1900, high = 3000 }, labour = { low = 550, high = 1300 } }  # 1 ea
 "FT-ACCESS-PANEL-1414" = { material = { low = 35, high = 90 }, labour = { low = 45, high = 110 } }  # 2 ea
 "FT-ACCESS-PANEL-1429" = { material = { low = 55, high = 140 }, labour = { low = 45, high = 110 } }  # 2 ea
@@ -3390,6 +3404,11 @@
 # and overflow. It is strictly above FX-TUB-60 on both halves, which is the point of the
 # 2026-08-21 pass.
 "FX-TUBSHOWER-60" = { material = { low = 500, high = 2000 }, labour = { low = 400, high = 950 } }  # 2 ea
+# The stall fan's two terminals (2026-10-12): a 10x10 filter-back return grille (MERV 8-11
+# filter) at the intake, and a 4" round adjustable nozzle with a gravity backdraft damper
+# in the shower ceiling. ESTIMATES.
+"REG-T-FILTER-GRILLE-10" = { material = { low = 25, high = 60 }, labour = { low = 25, high = 60 } }  # 1 ea
+"REG-T-NOZZLE-DAMPER-4" = { material = { low = 40, high = 120 }, labour = { low = 30, high = 70 } }  # 1 ea
 "REG-T-ERV-EXH" = { material = { low = 25, high = 80 }, labour = { low = 18, high = 45 } }  # 13 ea
 # The sidewall extract (plan/mep_hvac.py) — the same 6" round product as REG-T-ERV-EXH
 # above, one field order apart, so the MATERIAL half is copied verbatim from it. The LABOUR
@@ -5140,12 +5159,13 @@
 "marble-look-panel" = { low = 4, high = 11 }  # 47 SF ordered: WP-A-STUBATH-SURR only since 2026-10-12
 # ** OPEN: FX-SHOWER-36-NEO-COMBO (STUBATH) buys the pan and glass, not the walls, so its
 # 42 SF bills as a delta over a kit it never had. **
-# 2026-10-12, WP-M-BATH2-SURR, floor to ceiling (53 SF net / 59 ordered). Same UPGRADE-DELTA
+# 2026-10-12, WP-M-BATH2-SURR, floor to ceiling (53 SF net / 59 ordered; 57.8 / 64 with the
+# W-M-TUBDK-S span added the same day). Same UPGRADE-DELTA
 # basis as marble-look-panel above: FX-SHOWER-36-THERMO-COMBO's material half carries the kit
 # surround and its labour. Compression-moulded solid surface runs ~$12-25/SF; less the kit's
 # own value that leaves $8-20. The ~11 SF above the kit's 7'-0" head has no kit under it,
 # so the high end carries it. ESTIMATE; the owner's brand pick collapses it.
-"solid-surface-panel" = { low = 8, high = 20 }  # 59 SF ordered: WP-M-BATH2-SURR
+"solid-surface-panel" = { low = 8, high = 20 }  # 64 SF ordered: WP-M-BATH2-SURR, 57.8 SF net with the knee-wall span (2026-10-12)
 
 [countertops]
 # ** THE ~63 SF WAS A HAND FIGURE AND IS NOW A DERIVED QUANTITY (2026-09-11). ** Until this
@@ -6271,11 +6291,10 @@
 # bought by the LINEAL FOOT; an end cap and a corner connector are PIECES. Both read the
 # same `quantity` column (the takeoff writes each row in its own unit), so a piece row must
 # say `unit = "EA"` — without it the line prints as feet. See `ALTERNATE_UNITS`.
-# The 24V families (E `ED-T-LT-STRIP24`, E3 `ED-T-LT-STRIP24-2700`, U
-# `ED-T-LT-STRIP24-TASK`, and E1 `ED-T-LT-NICHE-SNLT` at zero runs since 2026-10-12, a
+# The 24V families (E `ED-T-LT-STRIP24`, U `ED-T-LT-STRIP24-TASK`, and E1 `ED-T-LT-NICHE-SNLT` at zero runs since 2026-10-12, a
 # named revert) price on the BARE keys below: interior dry-location cove, an
 # anodized extrusion with a frosted lens, tape cut to length off a 16.4' reel.
-# 104.6 LF of channel and tape, 22 end caps, 2 corner connectors.
+# 89.0 LF of channel and tape, 8 end caps, 2 corner connectors (takeoff, 2026-10-12).
 channel = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
 tape = { material = { low = 5, high = 13 }, labour = { low = 3, high = 7 } }
 end_cap = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
@@ -6283,6 +6302,13 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # Mark E2, RM-M-CLOSET's two IKEA OVERSIDAN strips (38" each, 76" total since
 # 2026-10-04): a finished fixture bought by the piece ($36 per 38"), so the strip is billed as tape and the channel, caps
 # and connectors are $0 — they ship in the box. $36 / 3.17 ft = $11.40/LF.
+# Mark E3, BATH2's evening glow (2026-10-12): 12.9 LF over three runs, toe kick, cabinet
+# underside and tub-deck nosing. Damp: silicone-coated tape and a gasketed lens, so a step
+# over the bare rows on material.
+"channel:ED-T-LT-STRIP24-2700" = { material = { low = 6, high = 14 }, labour = { low = 4, high = 10 } }
+"tape:ED-T-LT-STRIP24-2700" = { material = { low = 6, high = 15 }, labour = { low = 3, high = 7 } }
+"end_cap:ED-T-LT-STRIP24-2700" = { unit = "EA", material = { low = 2, high = 5 }, labour = { low = 4, high = 8 } }
+"corner_connector:ED-T-LT-STRIP24-2700" = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 5, high = 11 } }
 "channel:ED-T-LT-PAX-STRIP" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 "tape:ED-T-LT-PAX-STRIP" = { material = { low = 10.5, high = 12 }, labour = { low = 3, high = 8 } }
 "end_cap:ED-T-LT-PAX-STRIP" = { unit = "EA", material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }

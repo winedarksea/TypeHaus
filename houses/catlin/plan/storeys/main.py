@@ -2207,7 +2207,8 @@ PANELING = [
     #
     # W-M-TUBDK-S, the tub deck's knee wall, is the shower's north side below the
     # full-height glass, so it gets a third span over the pan's 3' only (2026-10-12). It
-    # clamps to the wall's 19 1/4" top. The band is still `spans`-scoped, never room-wide:
+    # clamps to the wall's 19 1/4" top. The knee wall stands INSIDE the room's face, so the
+    # span names its face: "right" of C->E is the stall (south) side. Still `spans`-scoped:
     # a room band would clad the rest of the deck apron too. The cap is a solid-surface
     # sill sloped >= 1/4" into the stall, glass in clamps or a weeped channel, in silicone.
     #
@@ -2217,7 +2218,7 @@ PANELING = [
     #
     # Floor to ceiling since 2026-10-12: `inch(106)` is RM-M-BATH2's clear height
     # (clear_height_m 2.6924). 2 x 3'-0" x 8'-10" = 53.0 SF of solid-surface panel, plus
-    # 3'-0" x 1'-6 1/2" = 4.6 SF on the knee wall: 57.6 SF (notes/bath2_shower.md).
+    # 3'-0" x 1'-7 1/4" = 4.8 SF on the knee wall: 57.8 SF (notes/bath2_shower.md).
     #
     # Known limitation: `replaces_wall_finish` only nets out in `wood_surfaces`, so
     # `envelope_layers` still bills about 53 SF of latex paint behind the panel (~$80-155).
@@ -2230,7 +2231,7 @@ PANELING = [
                         PanelingSpan(wall_ref="W-M-BDN1", start=ft(4, 10.615),
                                      length=ft(3)),
                         PanelingSpan(wall_ref="W-M-TUBDK-S", start=inch(4.365),
-                                     length=ft(3)))),
+                                     length=ft(3), face="right"))),
 ]
 
 

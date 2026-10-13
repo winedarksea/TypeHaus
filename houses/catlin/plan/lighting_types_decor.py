@@ -332,6 +332,36 @@ DECORATIVE_LUMINAIRE_TYPES = (
 
     # --- P: mirror lighting -----------------------------------------------------------
     luminaire_class("ED-T-LT-MIRROR").model_copy(update={"type_mark": "P"}),
+    # P3/P4: RM-M-BATH2's two mirror layers (2026-10-12, notes/bath2_lighting.md).
+    # P3 is the DAY and make-up light over the mirror head: 5000 K working (up to 6000 K is
+    # acceptable), CRI >= 95 WITH A PUBLISHED R9, on the plain day toggle, so not dimmed.
+    # No listing found 2026-10-12 met CRI 95 with a published R9 in a fixed CCT; RAB's
+    # Radiance (CRI > 90, R9 > 50) is field-selectable, which the house rule bans.
+    LuminaireType(tag="ED-T-LT-MIRROR-DAY",
+                  name='24" damp linear over-mirror light, 5000K, CRI 95',
+                  form=LuminaireForm.MIRROR_LIGHT, type_mark="P3",
+                  footprint=(inch(24), inch(2)), height=inch(3),
+                  plan_symbol="mirror-light-bar", lamp="LED integrated", watts=24.0,
+                  lumens=2000.0, cct_k=5000, cri=95, dimmable=False, damp_rated=True,
+                  load_va=24.0, ports=_POWER_120,
+                  source="CLASS, product to CONFIRM: a damp-listed 24\" linear, FIXED "
+                         "5000 K (6000 K acceptable), CRI >= 95 with R9 published on the "
+                         "sheet, not an install-selectable 5CCT bar."),
+    # P4 is the EVENING mirror: a backlit (halo) LED mirror, a soft widespread glow and not
+    # a task light, 24" x 36" centred on the basin. User-adjustable (2700/4500/6500 K on its
+    # own touch control), allowed since 2026-10-12, worked at 2700 K on the evening dimmer.
+    # `load_va` carries the defogger; the defogger is on the mirror's own control.
+    LuminaireType(tag="ED-T-LT-MIRROR-HALO-2700",
+                  name='24" x 36" backlit halo LED mirror, 2700K, defogger',
+                  form=LuminaireForm.MIRROR_LIGHT, type_mark="P4",
+                  footprint=(inch(24), inch(1.75)), height=inch(36),
+                  plan_symbol="mirror-light", lamp="LED integrated, backlit halo",
+                  watts=30.0, lumens=1500.0, cct_k=2700, cri=90, dimmable=True,
+                  damp_rated=True, load_va=60.0, ports=_POWER_120,
+                  product_ref="PROD-FLEURCO-MHA2436",
+                  source="Fleurco Halo class (PROD-FLEURCO-MHA2436), 2700 K working, range "
+                         "2700-6500 K on its own control; defogger on the mirror. Confirm "
+                         "the 24\" width, a hardwire kit and the damp listing."),
     # The primary bath's lit mirror — the owner's requirement is an integrated LED mirror,
     # not a plain mirror flanked by sconces.
     #

@@ -64,6 +64,16 @@ def resolved(authored):
     )
 
 
+def test_omitting_the_newel_preserves_box_framing_and_stair_dimensions(authored):
+    with_newel = resolved(authored)
+    without_newel = resolved(authored.model_copy(update={"newel_profile": None}))
+    assert [member for member in with_newel.members if member.category == "newel"]
+    assert without_newel.members == tuple(
+        member for member in with_newel.members if member.category != "newel"
+    )
+    assert winder_measurements(without_newel) == winder_measurements(with_newel)
+
+
 @pytest.mark.parametrize("direction", ["x", "y"])
 @pytest.mark.parametrize("reversed_run", [False, True])
 @pytest.mark.parametrize("turn", ["left", "right"])

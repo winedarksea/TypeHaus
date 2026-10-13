@@ -419,7 +419,7 @@ CIRCUITS = (
     # number nobody re-adds when a can moves.
     Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", slot=38, panel_ref=_PANEL, breaker_amps=15, poles=1,
             afci=True,
-            description="General lighting — main storey, porch and garage (incl. the garage's exterior linear runs)"),
+            description="General lighting — main storey, porch and garage (incl. the garage's exterior linear runs); + EQ-M-BATH2-STALL-FAN ~30 VA, an Equipment the derived sum does not count"),
     Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", slot=43, panel_ref=_PANEL, breaker_amps=15, poles=1,
             afci=True, description="General lighting — second + attic"),
     # The two storey receptacle circuits stay non-GFCI at the breaker on purpose: each

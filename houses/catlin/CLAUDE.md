@@ -1557,6 +1557,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   to boost (206.6 vs 205 cfm), so position is the only lever. **Do not glass the front to the
   ceiling, add a transom, or move the grille back by the tub** without re-reading
   `notes/bath2_shower.md`.
+  - **The stall-drying fan is a TRANSFER loop, not ventilation** (2026-10-12):
+    `EQ-M-BATH2-STALL-FAN` (`EquipmentKind.FAN`, `plan/mep_bath2_dryer.py`) blows bedroom air
+    down `DU-M-BATH2-DRY` into the stall on a countdown timer; it leaves over the open top
+    like the steam. No outdoor air, no credit, and any contact with an ERV run is a clash.
+    Its ~30 VA is stated on `CKT-LT-MAIN`'s description, not counted (§7 of the note).
+- **Every shower is a wet wall, and nothing goes through an integral insert** (2026-10-12).
+  Behind any panel or tile a shower wets: glass-mat or cement backer, then a bonded liquid
+  membrane lapped OVER the base flange, then the finish — never paper-faced gypsum. A
+  one-piece tub-shower insert takes no niche, screw or accessory: only the valve and spout
+  knockouts. Both lit niches are gone. The spec lives on the fixture types' `source` and
+  their price rows (`notes/bath2_shower.md` §6); the sauna rinse is the open exception.
+- **CCT rule: no install-time selectable modules; user-adjustable fixtures are allowed**
+  (2026-10-12). A 5CCT DIP switch is set once, blind, and wrong; one mark per fixed CCT. A
+  tunable-white or RGB fixture with a live control is fine: `cct_k` is its working CCT,
+  `source` its range. BATH2 is 5000 K day / 2700 K evening (`notes/bath2_lighting.md`).
 - **`W-M-HS4` is a pocket wall and nothing may ever go in it again** — no outlet, switch,
   pipe, register, blocking, or towel bar between 12'-2" and 15'-4 1/2" on the y=22'-4" datum
   (the built cavity is 1" north of it; no stud to fasten to, no depth to recess into).

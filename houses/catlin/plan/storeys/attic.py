@@ -950,7 +950,7 @@ STAIRS = [
     # fixes is the flight's elevation: derived from the datums the winders and every tread
     # drew 1 1/2" low, and the step off the top tread onto the studio floor measured 9".
     Stair(uid="CST703AAAA", tag="ST-S2A", floor_opening="FO-A-STAIR",
-          from_storey="second", to_storey="attic", width=ft(3), newel_profile="6x6",
+          from_storey="second", to_storey="attic", width=ft(3), newel_profile=None,
           base_elevation=inch(121.5), top_elevation=inch(241.5),
           # Enter north at the east edge, then three lower winders turn the climb west.
           # `start` is the origin the run walks from (resolve/stairs/dispatch.py), and with
@@ -959,7 +959,8 @@ STAIRS = [
           run_direction="x", run_reversed=True, winder_count=3,
           # 5/4 oak S2S to 1", as ST-M2S.
           tread_thickness=inch(1),
-          # Three winders square-notched around a 12 1/4" corner notch at the newel: walkline
+          # The stacked boxes carry the turn without a newel; stringers attach to its rim.
+          # Three winders square-notched around a 12 1/4" corner notch: walkline
           # 12.59/12.47/12.59", narrow ends 6.27/6.27/6.52" (R311.7.5.2.1). A 48 1/4" box.
           winder_turn=WinderTurnSpec(
               footprint=(

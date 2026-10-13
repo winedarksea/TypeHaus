@@ -19,6 +19,7 @@ The 2,515-line original was split by system (AGENTS.md §1.1 keeps files under 5
 - ``plan/mep_erv_types.py``      — the ERV catalog: the Broan, the two manifold sizes, the
   mixing box, the exterior hood, the over-bench capture hood
 - ``plan/mep_registers.py``      — the air terminals themselves, storey by storey
+- ``plan/mep_bath2_dryer.py``    — BATH2's stall-drying fan: fan, two terminals, timer, duct
 - ``plan/mep_electrical.py``     — panel, per-storey devices, exterior boxes and clamps
 
 Those sixteen are ``# haus: editable``; this file is not, and must not become so — the dialect
@@ -34,6 +35,7 @@ from __future__ import annotations
 
 from plan import (
                   electrical_floor,
+                  mep_bath2_dryer,
                   mep_cleanouts,
                   mep_drainage,
                   mep_electrical,
@@ -91,7 +93,8 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  # penetration note in mep_erv_outdoor.py.
                  *mep_erv_outdoor.PENETRATIONS_ERV_MAIN,
                  *mep_erv_risers.DUCTS_ERV_RISERS,
-                 *mep_registers.REGISTERS_MAIN]
+                 *mep_registers.REGISTERS_MAIN,
+                 *mep_bath2_dryer.MAIN_STALL_FAN]
 
 # ** THE GARAGE'S MEP AT THE MAIN DATUM, NOT THE HOUSE'S (2026-09-13). ** These two rode in
 # ``MAIN_ELEMENTS`` because that was the only storey at 0'-0" and a storey key was carrying
@@ -137,6 +140,7 @@ SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    # storey down: these run in FS-S-WEST's cavity and the bay check matches a
                    # segment against sibling floors ON THE DUCT'S OWN STOREY.
                    *mep_erv_l2.DUCTS_ERV_LEVEL2,
+                   *mep_bath2_dryer.DUCTS_STALL_FAN,
                    *mep_hvac.DUCTS_HVAC_SECOND,
                    *mep_hvac_branches.DUCTS_HVAC_BRANCHES_SECOND,
                    *mep_registers.REGISTERS,

@@ -58,8 +58,10 @@ def winder_support_problems(stair, authored, model) -> list[str]:
                 problems.append(f"box {index + 1} rim bearing line lacks blocking "
                                 "below its plywood")
         else:
+            # Plywood without its floor framing cannot carry the box stack.
             floors = [floor for floor in model.floors if floor.storey == stair.storey
-                      and floor.deck_outline and Polygon(floor.deck_outline).covers(deck)]
+                      and floor.members and floor.deck_outline
+                      and Polygon(floor.deck_outline).covers(deck)]
             if not floors or all(abs(f.deck_top_at(*deck.centroid.coords[0]) - frames[0].z0_m)
                                  > CONTACT_TOLERANCE_M for f in floors):
                 problems.append("first box is not seated on the modeled structural floor")
@@ -118,9 +120,11 @@ def winder_box_support(ctx):
         if stair.winder_turn is None:
             continue
         problems = winder_support_problems(stair, ctx.plan.by_tag(stair.tag), ctx.model)
+        support_description = ("plywood edges/seams supported; tiers bear on structural decks; "
+                               "stringers meet departing rim")
+        if any(member.category == "newel" for member in stair.members):
+            support_description += "; newel reaction has a load path"
         out.append(structural_advisory(
-            CHECK_ID, f"{stair.tag}: " + ("; ".join(problems) if problems else
-            "plywood edges/seams supported; tiers bear on structural decks; "
-            "stringers meet departing rim; newel reaction has a load path"),
+            CHECK_ID, f"{stair.tag}: " + ("; ".join(problems) if problems else support_description),
             (stair.tag,), Result.FAIL if problems else Result.PASS))
     return out or [not_applicable(CHECK_ID, "no winder platform boxes")]

@@ -946,32 +946,95 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-BAE", face="right", distance_from_start=inch(9.625),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # RM-M-BATH2: two wet cans (one over the future tub/shower end) and a mirror light on
-    # the west wall. The radiant-floor stat ED-M-BATH2-FH-STAT is a separate control and
-    # does not switch any of this.
+    # RM-M-BATH2: two layers, two controls (2026-10-12, notes/bath2_lighting.md).
+    # DAY, 5000 K on a plain toggle (ED-M-BATH2-SW-DAY): three B1 cans and the P3 make-up
+    # bar over the mirror. EVENING, 2700 K on a dimmer (ED-M-BATH2-SW-EVE): the P4 halo
+    # mirror, the B2 shower can and three E3 runs off ED-M-BATH2-PSU. Every can sits in the
+    # y 176"-192" FS-S-WEST bay, clear of both chords; CAN1 was on the y=192" chord. The
+    # radiant-floor stat ED-M-BATH2-FH-STAT is a separate control and switches none of this.
     ElectricalDevice(uid="QTM000NAAA", tag="ED-M-BATH2-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(2, 6), ft(16)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(ft(2, 6), ft(15, 4)), type_ref="ED-T-LT-CAN4-WET-5000",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
-                     controlled_by=("ED-M-BATH2-SW",),
+                     controlled_by=("ED-M-BATH2-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000PAAA", tag="ED-M-BATH2-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5, 6), ft(19, 6)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(ft(5, 6), ft(19, 6)), type_ref="ED-T-LT-CAN4-WET-5000",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
-                     controlled_by=("ED-M-BATH2-SW",),
+                     controlled_by=("ED-M-BATH2-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # Inside the glass, either side of REG-M-BATH2-DRY-OUT at x=6'-4".
+    ElectricalDevice(uid="N45GBJ06HG", tag="ED-M-BATH2-CAN-SH", kind=DeviceKind.LIGHT,
+                     position=pt(ft(5, 8), ft(15, 4)), type_ref="ED-T-LT-CAN4-WET-5000",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
+                     controlled_by=("ED-M-BATH2-SW-DAY",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="5KYF1YKZM6", tag="ED-M-BATH2-CAN-SH-EVE", kind=DeviceKind.LIGHT,
+                     position=pt(ft(7), ft(15, 4)), type_ref="ED-T-LT-CAN4-WET-2700",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
+                     controlled_by=("ED-M-BATH2-SW-EVE",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # The make-up bar, 1" over the halo mirror's 6'-6" head, centred on the basin.
     ElectricalDevice(uid="QTM000QAAA", tag="ED-M-BATH2-MIRROR", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH2", controlled_by=("ED-M-BATH2-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+                     type_ref="ED-T-LT-MIRROR-DAY",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
+                     controlled_by=("ED-M-BATH2-SW-DAY",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 7)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-W3", face="left", distance_from_start=inch(94.625),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    ElectricalDevice(uid="QTM000RAAA", tag="ED-M-BATH2-SW", kind=DeviceKind.SWITCH,
+    # The halo mirror IS the luminaire: 24" x 36", 3'-6" to 6'-6", centred on the basin at
+    # y=14'-5 3/8". Backed by BK-M-W3-MID/-HIGH (plan/backing_wet.py). It moved
+    # ED-M-BATH2-RC1 north, clear of its glass.
+    ElectricalDevice(uid="5AE57JENYW", tag="ED-M-BATH2-MIRROR-HALO", kind=DeviceKind.LIGHT,
+                     type_ref="ED-T-LT-MIRROR-HALO-2700",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
+                     controlled_by=("ED-M-BATH2-SW-EVE",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-W3", face="left", distance_from_start=inch(94.625),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # The evening glow: three E3 runs, 12.9 ft at 3 W/ft = 39 W on a 60 W supply (154%).
+    # Toe kick under the vanity's front, 3" back from its face.
+    LightRun(uid="X6JKNWY4BF", tag="LR-M-BATH2-TOEKICK", type_ref="ED-T-LT-STRIP24-2700",
+             path=(pt(inch(21.5), inch(159.5)), pt(inch(21.5), inch(205.5))),
+             room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
+             controlled_by=("ED-M-BATH2-SW-EVE",),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(3))),
+    # Under FURN-M-BATH2-CAB's front edge at 4'-0".
+    LightRun(uid="ZCNWQ40D9A", tag="LR-M-BATH2-CAB", type_ref="ED-T-LT-STRIP24-2700",
+             path=(pt(inch(7.5), inch(259.25)), pt(inch(51), inch(259.25))),
+             room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
+             controlled_by=("ED-M-BATH2-SW-EVE",),
+             mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
+    # Under the cap's nosing on W-M-TUBDK-W, the deck's one exposed face (the south face
+    # is inside the shower), above FURN-M-BATH2-TUBDK-AP.
+    LightRun(uid="WRCE8P7S44", tag="LR-M-BATH2-TUBDECK", type_ref="ED-T-LT-STRIP24-2700",
+             path=(pt(inch(51.75), inch(198)), pt(inch(51.75), inch(263))),
+             room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
+             controlled_by=("ED-M-BATH2-SW-EVE",),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(19.5))),
+    # In the ceiling's y 192"-208" bay, outside the shower zone and off the extract trunk.
+    ElectricalDevice(uid="ESWYM2QANP", tag="ED-M-BATH2-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(ft(2, 6), ft(16, 8)), type_ref="ED-T-LT-PSU-60",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
+                     mount=Mount(kind=MountKind.CEILING)),
+    # A 2-gang over the vanity's south end: day toggle (the old ED-M-BATH2-SW, same uid)
+    # and evening dimmer 4" west. A third gang does not fit: ED-M-BATH2-FH-STAT is at
+    # x 9 3/4"-13 3/4" and D-M-BATH2's casing starts ~22" — so the stall fan's timer is on
+    # W-M-W3 beside the mirror (ED-M-BATH2-SW-DRY).
+    ElectricalDevice(uid="QTM000RAAA", tag="ED-M-BATH2-SW-DAY", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-BDN1", face="left", distance_from_start=inch(19.71875),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="EDGKW1FCES", tag="ED-M-BATH2-SW-EVE", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-BDN1", face="left", distance_from_start=inch(15.71875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-M-LAUNDRY / RM-M-CLOSET / RM-M-MUDROOM: 3" cans. Small rooms want a small

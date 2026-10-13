@@ -2,12 +2,14 @@
 
 **House:** catlin
 **Structure:** `FX-M-BATH2-SH` (`FX-SHOWER-36-THERMO-COMBO`), `WP-M-BATH2-SURR`, `REG-M-EXH2`,
-`DU-M-ERV-R-BATH2`, `EQ-B-WH`.
+`DU-M-ERV-R-BATH2`, `EQ-B-WH`; since the follow-up the same day, `EQ-M-BATH2-STALL-FAN`,
+`DU-M-BATH2-DRY`, `REG-M-BATH2-DRY-IN`/`-OUT` (§7).
 **Written:** 2026-10-12, by hand, against `out/model.json` after the change.
 **Oracle for:** nothing. This is a **decision record**. No engine module computes hot-water
 duration or steam, and none is proposed. It follows `notes/TEMPLATE.md`'s shape so the
 arithmetic can be redone line by line.
 **Companions:** `notes/dwhr_decision.md` (§10 re-reads the DWHR "no" at 1.75 gpm);
+`notes/bath2_lighting.md` (the room's two light layers);
 `notes/interior_selections.md` (the ASSE 1016 argument every shower valve here rests on).
 **What is asked of the reviewer:** §2's three assumptions (setpoint, usable fraction, mains
 temperature). Disagree with one and redo the table.
@@ -15,7 +17,8 @@ temperature). Disagree with one and redo the table.
 > ⚠ **The grille is outside the enclosure on purpose, and the front glass's open top is the
 > steam path.** Do not glass the front to the ceiling, add a transom, or move `REG-M-EXH2`
 > back by the tub without re-reading §4. The ERV has no headroom to boost, so position is
-> the only lever.
+> the only lever. The stall-drying fan (§7) does not change this: its air enters at the
+> ceiling inside the glass and leaves the stall the same way, over the open top.
 
 ---
 
@@ -104,9 +107,11 @@ BATH2's 20 cfm, so the grille's position is the only lever.
 ## 5. What is NOT decided here
 
 - **Drain-water heat recovery**: still no. See `dwhr_decision.md` §10.
-- **A boost fan, a transom, or steam features**: not done.
-- **The studio bath and sauna showers, and the two tub-showers' valves and walls**: unchanged.
-  The tub-showers get only the 52535-SS head.
+- **A transom, a boost of the ERV extract, or steam features**: not done. The ERV cannot
+  boost (§4). The stall-drying fan of §7 is a TRANSFER loop of bedroom air, not a boost:
+  it takes nothing out of the house and earns no ventilation credit.
+- **The studio bath and sauna showers, and the two tub-showers' valves**: unchanged. The
+  tub-showers get only the 52535-SS head. Their WALLS are §6.
 - **A flow-rate field**: none. Nothing in the engine would read it. 1.75 gpm lives on the
   product records in `plan/products_showering.py`.
 
@@ -123,6 +128,101 @@ BATH2's 20 cfm, so the grille's position is the only lever.
 3. **Solid-surface brand**, and that its 36x36 base's drain matches `FX-M-BATH2-SH`'s
    `drain_position`.
 
+## 6. Wet walls (follow-up, 2026-10-12)
+
+Every shower here is now specified so water cannot get behind its walls. Nothing in the
+engine grades a substrate, so this lives on the type `source`, the price rows and the
+comment on `WP-M-BATH2-SURR` (the "glass has no element" precedent; `Wall.layer_materials`
+would retype the whole wall face).
+
+| shower | behind the finish | rule |
+|---|---|---|
+| BATH2 (`FX-M-BATH2-SH`) | glass-mat gypsum or cement backer, floor to ceiling, on both closed walls; bonded liquid membrane (RedGard / Hydro Ban class) lapped OVER the base flange; panel bonded over that | neither wall is exterior, so no double vapour barrier |
+| BATH2 knee wall `W-M-TUBDK-S` | the same, under a third `WP-M-BATH2-SURR` span over the pan's 3' (19 1/4", 4.8 SF) | cap is a solid-surface sill sloped >= 1/4" into the stall; glass in clamps or a weeped channel, bedded in silicone |
+| STUBATH neo-angle | the same backer and membrane under `WP-A-STUBATH-SURR` | priced on `FX-SHOWER-36-NEO-COMBO` |
+| BATH1, SUITEBATH tub-showers | the one-piece insert IS the wall | **nothing penetrates the insert** but the valve and spout knockouts; use the moulded shelves. Both lit niches are dropped (`notes/superseded/shower_niche.md`) |
+| BATH1's back, exterior `W-S-N3` | insert inside, ccSPF outside: ~0 perm both faces | never penetrate it |
+| sauna rinse | model: tile on shiplap; note: foam backer | OPEN — `notes/sauna_shower_basement_detail.md` |
+
+BATH2's base: integral flanges E, S and N, threshold W, fully bedded with no voids, and no
+radiant cable under it. Joints: mould-inhibiting 100% silicone at panel-to-base, the corner
+and the cap; escutcheons sealed to the panel; the R10000's plaster guard set to the panel
+face. No niche. No bottom track on the door: a sweep and a drip rail.
+
+The knee-wall span needed one engine addition: `W-M-TUBDK-S` stands inside the room's face,
+so both its faces are the room's and no side can be derived. `PanelingSpan.face` names it
+(`"right"` of C->E is the stall), and a span on an inside wall without one is an ERROR.
+
+## 7. Stall drying fan (Option A, owner 2026-10-12)
+
+**What it is.** `EQ-M-BATH2-STALL-FAN`, a moisture-rated 4" inline fan in RM-M-BED's ceiling,
+draws filtered bedroom air through `REG-M-BATH2-DRY-IN` and blows it down into the stall
+through `REG-M-BATH2-DRY-OUT`, a damped round nozzle at (6'-4", 15'-4"), on a 30-60 min
+countdown (`ED-M-BATH2-SW-DRY`). The air leaves over the front glass's 16" open top, past
+`REG-M-EXH2`, and returns to the bedroom under `D-M-BATH2`.
+
+### 7.1 The three options
+
+| | what | why not / why |
+|---|---|---|
+| **A** | breeze dryer: inline fan, ~95 cfm at 0.3-0.4 in. w.g. | **chosen**: ~1 sone, one duct, a passive terminal in the stall |
+| B | spa-blower jet system (Airmada class) | Airmada's blowers move 70-115 cfm at **40-130 in. w.g.**, two orders of magnitude over the inline fan's 0.2-0.4". That pressure buys jets, at 62-70 dB, custom nozzles, and a blower that would need a mechanical room |
+| C | skip it | a squeegeed stall in still, humid air takes ~2 h to dry (§7.2) |
+
+Airmada itself claims 5-7 h for an untreated shower; that is the still-air row below.
+
+### 7.2 How long the stall takes to dry
+
+Wetted area: two closed walls and the glass to ~7' (4 x 3' x 7' = 84 SF) plus the base
+(9 SF): **93 SF = 8.6 m²**. Evaporation is h_m x (vapour density at the film - in the air).
+
+| term | still stall, after a shower | with the breeze |
+|---|---|---|
+| air | ~23 °C, ~80% RH: 0.80 x 20.6 = 16.5 g/m³ | bedroom air ~21 °C, 40% RH: 0.40 x 18.3 = 7.3 g/m³ |
+| film | ~21 °C: 18.3 g/m³ | ~17 °C (evaporatively cooled, still warm from the shower): 14.5 g/m³ |
+| drive | 18.3 - 16.5 = **1.8 g/m³** | 14.5 - 7.3 = **7.2 g/m³** |
+| h_m | natural convection, h ~ 3 W/m²K: 3 / (1.2 x 1006 x 0.89) = **2.8e-3 m/s** | forced, 0.5-1 m/s on the near faces, h ~ 7-11: **6e-3 to 1e-2 m/s** |
+| rate | 2.8e-3 x 1.8 = 5.0e-3 g/m²s = **18 g/m²h** | 7.2 x (6e-3..1e-2) = **150-260 g/m²h** |
+| squeegeed film, ~50 g/m² | 50 / 18 = **~2.8 h** | 50 / (150..260) = 12-20 min; **~20-30 min** with the faces the jet does not reach |
+| unsqueegeed, ~150-300 g/m² | **~8-16 h**, in practice 4-8 h as the room dries out | **~1-2 h** |
+
+The air can carry it: 95 cfm = 0.045 m³/s; picking up 7.7 g/m³ (7.3 -> 15) that is 0.35 g/s,
+**1.2 kg/h**, against 50 g/m² x 8.6 m² = **0.43 kg** to remove.
+
+### 7.3 Route and static
+
+`DU-M-BATH2-DRY`: 4" galvanized, 13.0 ft developed, 4 x 90° plus the two tier offsets.
+West along the 11'-4" FS-S-WEST bay (lower tier) to x=8'-0"; south on the upper tier
+through web opening 3 (x 7'-4 1/2"..8'-7 1/2") across the 12', 13'-4" and 14'-8" trusses,
+passing over `DU-M-ERV-R-LIVING` and `-BED2`; west along the 15'-4" bay to the nozzle. It
+moves no existing run. `haus route --run DU-M-BATH2-DRY --alternatives 3 --evaluate`
+proposed three lanes and every one added a FAIL (a crossing tier 1 1/2" into the chord, or
+a leg in RM-S-SUITE's headroom); the authored lane checks clean. The router's sizing line
+says 95 cfm wants 6" at the house's 0.08 in./100 ft design rate. 5" and 6" do not fit the
+crossing, so the fan carries the friction instead:
+
+| term | working | in. w.g. |
+|---|---|---|
+| duct friction | 95 cfm in 4" (1,090 fpm): 0.55 / 100 ft x 13 ft | 0.07 |
+| four elbows | ~5-10 ft equivalent each at 0.55 / 100 ft | 0.11-0.22 |
+| filter grille, MERV 8 | 10x10 at ~140 fpm face | 0.05-0.10 |
+| nozzle + damper | velocity pressure 0.074 x K 1-1.5 | 0.07-0.11 |
+| **total** | | **~0.3-0.4** |
+
+At 0.3-0.4" a WhisperLine-class 4" fan (120 cfm at 0.2", 108 at 0.3") gives **~90-105 cfm**.
+
+### 7.4 Open confirms
+
+1. **Fan model.** The FV-10NLF1E was discontinued 2024-04-02; confirm a current 4" equal
+   (Fantech, Broan, Panasonic) with a published curve >= 95 cfm at 0.3-0.4" and a
+   moisture-rated, insulated housing.
+2. **Nozzle**: a round adjustable diffuser with a gravity backdraft damper, suitable for a
+   wet location.
+3. **Filter size** behind the 10x10 grille (MERV 8-11).
+4. **GFCI**: the fan is in the bedroom ceiling, not a shower zone, so the code does not
+   require it; confirm the fan's own listing does not. ~30 VA on `CKT-LT-MAIN`, stated on
+   the circuit (an Equipment adds 0 VA to the derived panel schedule).
+
 ## Sources
 
 - Moen 26008 product page and spec sheet: 1.75 gpm at 80 psi for units made after 3/1/2018
@@ -132,5 +232,11 @@ BATH2's 20 cfm, so the grille's position is the only lever.
 - Delta 52535-SS spec sheet (DSP-B-52535): 1.75 gpm at 80 psi, WaterSense, 1/2"-14 NPT.
 - Delta TempAssure 17T Series listings: thermostatic trim for the MultiChoice R10000 body,
   separate volume and temperature controls.
+- Panasonic FV-10NLF1E distributor listings (supplyhouse.com, platt.com): 120 cfm, 1.0 sone,
+  4" duct, insulated housing; discontinued 2024-04-02. Read 2026-10-12.
+- Airmada product literature: 70-115 cfm at 40-130 in. w.g. blowers; 5-7 h to dry an
+  untreated shower (the plan of 2026-10-12).
+- ASHRAE Fundamentals Ch. 6 (mass transfer, Lewis relation) and Ch. 21 (duct friction,
+  fitting losses), for §7.2-7.3's coefficients.
 - `houses/catlin/out/model.json`: `rooms` (RM-M-BATH2 clear height), and
   `plan/mep_registers.py`, `plan/mep_erv_l2.py`, `plan/fixture_types_wc.py`.

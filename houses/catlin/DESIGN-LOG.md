@@ -4980,3 +4980,17 @@ A reviewer's five points and two follow-ups; owner decisions marked.
   - The winter check grades a spliced joint as steel rather than skipping it.
   - The beam's fingerprint now carries its bar sizes.
 - Steel 6,527.9 → **6,586.0 lb**.
+
+### 2026-10-12 — ST-S2A: remove the redundant winder newel
+
+- Owner: remove `newel-000`. ST-S2A now states `newel_profile=None`; other stairs can
+  still specify newel stock. The complete stacked boxes carry the winders, and the three
+  straight stringers attach to the doubled departing rim. No member bears on the post's
+  top, and removing it preserves the remaining framing and walking geometry.
+- Retain FS-S-EAST's sistered joist and solid bay blocking for departing-rim reactions;
+  its source and the winder basis no longer attribute a reaction to the removed post.
+- The support report mentions a newel load path only when a post is present. Regression
+  coverage pins ST-S2A's omission and unchanged framing/dimensions when a newel is omitted.
+  The first box's floor seat requires floor framing, so removing the floor still fails
+  directly rather than relying on the former newel's reinforcement check.
+  Remove only the post's two member/geometry entries from the elevation golden.

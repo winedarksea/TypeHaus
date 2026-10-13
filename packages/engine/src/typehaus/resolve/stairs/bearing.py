@@ -224,9 +224,8 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
 
     out: list[FramedMember] = []
     rims_by_platform: dict[str, list[FramedMember]] = {}
-    # A post the generator already stood at a platform corner is a load path: the winder
-    # newel carries the inside corner of every box tier stacked on it, so posting that
-    # corner again would stand a 4x4 inside the newel.
+    # A generator-supplied post already occupies its corner; an additional landing post
+    # at the same point would duplicate it. Winder boxes bear through their own decks.
     supported_corners: set[tuple[float, float]] = {
         (round(member.p0[0], 4), round(member.p0[1], 4))
         for member in members if member.p0 == member.p1 and member.category == "newel"}

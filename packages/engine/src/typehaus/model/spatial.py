@@ -242,9 +242,9 @@ class Stair(Element):
     # IRC R311.7.6 requires 36" in the direction of travel; shorter values are floored
     # to 36" by the resolver. Cross-run width still matches the stair lane.
     landing_depth: Length | None = None
-    # Newel stock. The clear inner boundary belongs to winder_turn, independently of
-    # post size; changing a post must not silently change a tread's code measurement.
-    newel_profile: str = "4x4"
+    # Optional newel stock; None omits the post for a self-supporting winder box stack.
+    # The clear inner boundary belongs to winder_turn, independently of post size.
+    newel_profile: str | None = "4x4"
     # A tread is deliberately wider than its step-to-step going: the default 1" nose overhangs
     # the riser below, leaving a 10" code-minimum going on an 11" physical board.
     # ``None`` is retained for source compatibility with older authored plans and resolves to

@@ -196,9 +196,12 @@ Most of the choices in this pass fall out of four rules rather than out of taste
 **3000 K, fixed, house-wide.** The dining fixture was 2700 K and the kitchen cans 3000 K in
 an open plan where you see both at once, which reads as a defect rather than as warmth. 2700 K
 also pushes white paint yellow and makes white oak read orange, which is precisely this
-palette's failure mode. Fixed rather than 5CCT selectable: the DIP switch gets set wrong
-constantly, one can at 4000 K in a run of eight is a screaming defect, and a dedicated
-phosphor gives better R9 than a warm/cool blend.
+palette's failure mode. **No install-time selectable modules:** a 5CCT DIP switch gets set
+wrong constantly, one can at 4000 K in a run of eight is a screaming defect, and a dedicated
+phosphor gives better R9 than a warm/cool blend. Since 2026-10-12 a **user-adjustable**
+fixture with a live control (tunable white, RGB) is allowed; its type records the working
+CCT and its range. RM-M-BATH2 is the deliberate exception to 3000 K: a 5000 K day layer and a
+2700 K evening layer, each its own schedule mark (`notes/bath2_lighting.md`).
 
 **The black baffles went white, and the glare argument survives intact.** The old spec bought
 glare control with a dark absorbing ring; a **deeply regressed white reflector** hides the

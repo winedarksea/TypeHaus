@@ -7,7 +7,7 @@ from shapely.geometry import LineString, Polygon
 from shapely.ops import unary_union
 
 from typehaus.checks.code.mn_residential.stair_winders import winder_measurements, winder_treads
-from typehaus.checks.structural.stair_winders import winder_support_problems
+from typehaus.checks.structural.stair_winders import winder_box_support, winder_support_problems
 from typehaus.emit.draw import build_floorplan
 from typehaus.emit.draw.framingplan import build_framing_plan
 from typehaus.emit.draw.scene import ArchDimension, Polyline
@@ -38,6 +38,9 @@ def test_code_and_support_paths_pass_from_resolved_geometry(stair, catlin_model_
     surfaces = sorted(m.z1_m for m in stair.members if m.category in {"winder", "tread"})
     assert surfaces == pytest.approx([(0.0254 * (121.5 + i * 7.5)) for i in range(1, 16)])
     assert not [m for m in stair.members if m.child_key.startswith("landing-post-")]
+    assert not [member for member in stair.members if member.category == "newel"]
+    [support] = winder_box_support(catlin_ctx)
+    assert support.result.value == "pass" and "newel" not in support.message
 
 
 @pytest.mark.parametrize(
@@ -68,7 +71,10 @@ def test_support_check_fails_when_real_support_is_removed(stair, catlin_model_ro
             else m
             for m in members
         )
-    assert winder_support_problems(replace(stair, members=members), authored, model)
+    problems = winder_support_problems(replace(stair, members=members), authored, model)
+    assert problems
+    if defect == "missing_floor":
+        assert "first box is not seated on the modeled structural floor" in problems
 
 
 def test_complete_plywood_decks_carry_the_next_box_without_hidden_oak(stair):

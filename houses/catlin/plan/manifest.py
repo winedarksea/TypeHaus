@@ -100,7 +100,8 @@ _library = Library(
     # hood are still unchosen and still correctly generic. Tags are disjoint (APPL-LG-*
     # vs APPL-*), which `integrity.duplicate_catalog_tag` proves rather than assumes.
     appliance_types=(*STARTER_APPLIANCE_TYPES, *appliance_types.APPLIANCE_TYPES),
-    register_types=(*ALL_REGISTER_TYPES, *mep.REGISTER_TYPES),
+    register_types=(*ALL_REGISTER_TYPES, *mep.REGISTER_TYPES,
+                    *equipment_types.STALL_FAN_REGISTER_TYPES),
     duct_product_types=ALL_DUCT_PRODUCT_TYPES,
     equipment_types=(*ALL_VENTILATION_EQUIPMENT_TYPES, *mep.EQUIPMENT_TYPES,
                      *equipment_types.EQUIPMENT_TYPES),

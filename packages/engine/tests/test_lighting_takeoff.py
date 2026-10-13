@@ -216,11 +216,15 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     # 44 fixtures / 1,121.6 VA since 2026-09-30: ED-M-MUDROOM-CAN3 adds 9 VA over the bench.
     # 46 / 1,191.6 VA since 2026-10-01: RM-M-CLOSET's lit mirror (40 VA) and the TRADFRI
     # driver for its PAX strips (30 VA, the supply's rating).
-    assert row["runs"] == 3 and row["fixtures"] == 46
-    assert row["connected_va"] == pytest.approx(1191.6, abs=0.05)
+    # 50 / 1,343.6 VA since 2026-10-12: RM-M-BATH2's two layers add ED-M-BATH2-CAN-SH and
+    # -CAN-SH-EVE (12 VA each), the halo mirror (60 VA with its defogger) and ED-M-BATH2-PSU
+    # (60 VA, the supply's rating), and the mirror bar became the 24 VA make-up bar (+8).
+    # EQ-M-BATH2-STALL-FAN's ~30 VA is an Equipment and is not in this sum (1,374 with it).
+    assert row["runs"] == 3 and row["fixtures"] == 50
+    assert row["connected_va"] == pytest.approx(1343.6, abs=0.5)
 
     panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-MAIN"]
-    assert panel["connected_va"] == pytest.approx(1191.6, abs=0.5)
+    assert panel["connected_va"] == pytest.approx(1343.6, abs=0.5)
     # 1,113 VA of a 15A branch: under the 1,440 VA an NEC 210.19(A)(1) continuous load may
     # take. The three switches added with those fixtures are all ED-T-SWITCH-DIM, which
     # carries no load_va — a dimmer is free on the circuit and costs only on the estimate.

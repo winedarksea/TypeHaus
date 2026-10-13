@@ -24,6 +24,8 @@ path is untouched and stays the default: interior finish genuinely does stop at 
 
 from __future__ import annotations
 
+from typing import Literal
+
 from typehaus.model.base import Element, HausModel
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length
@@ -38,7 +40,7 @@ class PanelingSpan(HausModel):
     #: "left" / "right" of the authored wall direction. Required on a wall standing INSIDE
     #: the room (a tub-deck knee wall), whose two faces are both the room's; ignored on a
     #: bounding wall, whose room side is derived.
-    face: str | None = None
+    face: Literal["left", "right"] | None = None
 
 
 @register_element

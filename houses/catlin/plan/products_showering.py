@@ -105,7 +105,20 @@ SOLID_SURFACE_SHOWER = Product(
            "against FX-M-BATH2-SH's drain_position before ordering.",
 )
 
+# The stall-drying fan (notes/bath2_shower.md §7). A CLASS record: the WhisperLine
+# FV-10NLF1E the hand calc read was DISCONTINUED 2024-04-02.
+INLINE_FAN_4 = Product(
+    tag="PROD-INLINE-FAN-4", brand="Panasonic / Fantech / Broan (class)",
+    model="4\" insulated inline fan, ~120 cfm free air",
+    name='4" remote-mount inline fan, insulated housing, ~1 sone',
+    source="Read against the Panasonic WhisperLine FV-10NLF1E (120 cfm free air, ~1 sone, "
+           "insulated housing, 4\" collars), discontinued 2024-04-02 per Panasonic "
+           "distributors. CONFIRM a current 4\" equal (Fantech, Broan, Panasonic) with a "
+           "published curve of >= 95 cfm at 0.3-0.4 in. w.g. and a moisture-rated housing.",
+)
+
 SHOWERING_PRODUCTS = (
+    INLINE_FAN_4,
     DELTA_MULTICHOICE_ROUGH, DELTA_T14459_TRIM, SPEAKMAN_HOTEL_HEAD, MOEN_ENGAGE_MAGNETIX,
     MOEN_ATTRACT_MAGNETIX, DELTA_17T_THERMO_TRIM, DELTA_UNIVERSAL_HEAD, SOLID_SURFACE_SHOWER,
 )

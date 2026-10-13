@@ -22,6 +22,7 @@ from library.hvac_equipment import (
 from typehaus import (
     EquipmentType,
     HeatPumpRating,
+    RegisterType,
     RatingBasis,
     Service,
     ServicePort,
@@ -402,4 +403,36 @@ EQUIPMENT_TYPES = (
                   footprint=(inch(14), inch(9)), height=inch(15),
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
+    # BATH2's stall-drying fan (2026-10-12, notes/bath2_shower.md §7). A remote inline fan
+    # in RM-M-BED's ceiling, not a ventilator: it moves bedroom air through the stall and
+    # back, so its run is DuctSystem.TRANSFER and earns no ventilation credit. No air ports:
+    # TRANSFER has no Service, and the duct lands on the case face.
+    EquipmentType(tag="EQ-T-INLINE-FAN-4",
+                  name="Stall drying fan, 4in insulated inline, ~120 cfm free air",
+                  footprint=(inch(12), inch(9)), height=inch(8),
+                  product_ref="PROD-INLINE-FAN-4",
+                  source="WhisperLine FV-10NLF1E class (discontinued 2024-04-02; confirm a "
+                         "4in equal): ~120 cfm at 0.2 in. w.g., 108 at 0.3, ~1 sone, "
+                         "~25-30 W, insulated housing. Serviced through its intake grille.",
+                  ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                     position=(ft(0), ft(0), ft(0))),)),
+)
+
+# The stall fan's two terminals, catalogued with the fan rather than in plan/mep_hvac.py,
+# which is at its 500-line limit. `footprint` is a PLAN rectangle: both are ceiling
+# terminals, (face, face) with `height` as the body.
+STALL_FAN_REGISTER_TYPES = (
+    RegisterType(tag="REG-T-FILTER-GRILLE-10",
+                 name="Filter-back return grille, 10x10, MERV 8-11 filter",
+                 footprint=(inch(12), inch(12)), height=inch(1), plan_symbol="register",
+                 source="Stall fan intake in RM-M-BED's ceiling; the filter keeps lint and "
+                        "dust out of the fan and the stall. Drop the grille to service the "
+                        "fan above it. Confirm the filter size."),
+    RegisterType(tag="REG-T-NOZZLE-DAMPER-4",
+                 name="4in round adjustable nozzle diffuser with gravity backdraft damper",
+                 footprint=(inch(4.2), inch(4.2)), height=inch(2), plan_symbol="register",
+                 source="Stall fan discharge in FX-M-BATH2-SH's ceiling: an aimable jet "
+                        "nozzle, and a gravity damper so stall steam does not back into the "
+                        "duct when the fan is off. Passive: no electrics in the shower zone. "
+                        "Confirm a wet-location-suitable product."),
 )

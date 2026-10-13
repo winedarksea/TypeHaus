@@ -3,7 +3,7 @@
 ST-S2A retains three winders, 36-inch clear entry/departure widths, sixteen 7½-inch
 risers, and twelve 10-inch straight goings on three 1¾ × 11⅞-inch LSL stringers.
 The east and north bearing faces stay in place. Since 2026-10-09 the winders are
-square-notched around a 12¼-inch corner notch at the newel. The turn is 48¼ inches
+square-notched around a 12¼-inch corner notch. The turn is 48¼ inches
 square and extends 12¼ inches into the entering and departing runs. A 6-inch narrow end
 needs about 19 inches of inside edge at 36 inches clear, so three winders cannot get
 meaningfully smaller: a 12-inch notch reaches only 6.15 inches.
@@ -23,7 +23,7 @@ inches over the nosings from the first straight riser (31'-5⅛") to the 25'-5�
 RL-A-FLIGHT-SKIRT, an 18¾-inch raked panel from the newel to 23'-8¾", closes the band
 between the nosings and the pack. The cap reaches the deck at 25'-8⅛"; the newel sits 3
 inches west so the skirt closes to 3⅛ inches of the pack. The wall handrail wraps both
-outer turn faces. The newel's sistered joist moved 1 inch east with the departing edge
+outer turn faces. The sistered floor joist moved 1 inch east with the departing edge
 (`params/second_deck.py`).
 
 `WinderTurnSpec` supplies the footprint, clear inside boundary, and four ordered riser
@@ -47,8 +47,9 @@ The first frame bears on structural subfloor at 120¾ inches, rather than the fi
 at 121½ inches. Its ripped rim height is 6½ inches; the following two are 6¾ inches.
 Every departing rim has two separate 1½-inch plies, transferring the upper connection
 through the stack. Steel connector plates model straight-stringer attachment to the top
-rim. The newel stands outside clear stair width and bears on the sistered floor joist
-and solid bay blocking. Upper boxes generate no duplicate landing posts.
+rim. The box stack carries the turn without a newel post; `newel_profile=None` omits
+the redundant `newel-000` since 2026-10-12. The sistered floor joist and solid bay blocking
+remain for departing-rim reactions. Upper boxes generate no duplicate landing posts.
 
 `stair_subdeck` belongs to structural framing and sheet goods. It contributes no walking
 step, oak millwork, or duplicate sheet-rip quantity. Full 1-inch oak panels include integral
