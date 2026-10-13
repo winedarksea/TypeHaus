@@ -654,8 +654,7 @@ SECOND_PLACEABLES = [
     #
     # Deliberately NOT a Wall. A real return partition has to tee into W-S-N3, splitting it
     # at a new node, and a segment lays its studs from its own start node — which re-phases
-    # the very stud grid WIN-S-BATH-N was nudged 8" off N-S-CH2 to sit centred in
-    # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs). Built
+    # the wall's whole stud grid. Built
     # millwork as Furniture is this house's existing convention: the mudroom and both sauna
     # benches are priced the same way.
     #
@@ -664,7 +663,6 @@ SECOND_PLACEABLES = [
     # which is why the type closes the case below the counter; ED-S-BATH1-MIRROR ends at
     # y 32'-3", 7 1/2" of daylight, and the case stops 7/8" short of the east wall as scribe; ED-S-BATH1-RC-MIRROR and -SW are further down at
     # y <= 31'-2"; D-S-BATH1's leaf hangs at y 26'-4" and sweeps nowhere near, 6'-3" south;
-    # WIN-S-BATH-N spans x 3'-5"..4'-7" on this same wall, well west of the case;
     # REG-S-EXH1 and both cans are ceiling-mounted and none is over it; and the FH-S-BATH1
     # radiant zone stops at y 31'-3", so the unit does not stand on the mat.
     Furniture(uid="640HBGH1XS", tag="FURN-S-BATH1-SHELF", type_ref="FT-BATH1-SHELF-2030",

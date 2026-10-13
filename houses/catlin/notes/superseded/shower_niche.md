@@ -1,20 +1,11 @@
----
-title: "Lit Shower Niche — Suite Bath"
-applied_to:
-  - light_run: LR-S-NICHE
-  - luminaire_type: ED-T-LT-NICHE-SNLT
-  - device: ED-S-NICHE-PSU
-tags:
-  - lighting
-  - bathroom
-  - waterproofing
-  - tile
-  - low-voltage
-source:
-  - plan/lighting.py
-  - plan/lighting_types.py
-  - plan/fixtures.py
----
+> # ⛔ SUPERSEDED 2026-10-12
+>
+> **Neither niche is built.** The owner dropped both lit niches (`LR-S-NICHE`,
+> `LR-S-BATH1-NICHE`) and their supplies: each cut through a one-piece flanged tub-shower
+> insert, and a hole in an insert has nothing behind it to lap to. Read the rule on
+> `FX-TUBSHOWER-60-DIVERTED.source` instead: nothing penetrates an integral insert but the
+> valve and spout knockouts; use the moulded shelves. Mark E1 `ED-T-LT-NICHE-SNLT` and its
+> price row stay in the catalog at zero instances, as a named revert.
 
 # Notes
 

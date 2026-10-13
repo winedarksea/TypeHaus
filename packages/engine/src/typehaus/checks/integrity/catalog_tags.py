@@ -149,7 +149,7 @@ def register_duct_ref(ctx: CheckContext) -> list[Finding]:
     The one honest absence is a ``TRANSFER`` louver: a passive opening between two spaces
     belongs to no ducted system and carries no ``duct_ref`` by construction (see
     ``DuctSystem.TRANSFER``), so it is skipped rather than excused — there is nothing there
-    to connect.
+    to connect. A fan-driven TRANSFER grille does name its run, and that name is validated.
     """
     from typehaus.model.enums import DuctSystem
 
@@ -159,9 +159,9 @@ def register_duct_ref(ctx: CheckContext) -> list[Finding]:
     for element in ctx.plan.all_elements():
         if element.element_kind != "Register":
             continue
-        if getattr(element, "kind", None) is DuctSystem.TRANSFER:
-            continue
         ref = getattr(element, "duct_ref", None)
+        if ref is None and getattr(element, "kind", None) is DuctSystem.TRANSFER:
+            continue
         if ref is None:
             findings.append(Finding(
                 severity=Severity.WARN,
@@ -191,7 +191,7 @@ def register_duct_ref(ctx: CheckContext) -> list[Finding]:
             severity=Severity.WARN,
             check_id="integrity.register_duct_ref",
             message=(f"every register naming a duct names one of the {len(runs)} DuctRuns in "
-                     "this plan, and every register without one is a TRANSFER louver"),
+                     "this plan, and every register without one is a passive TRANSFER louver"),
             element_tags=(),
             result=Result.PASS,
         ))

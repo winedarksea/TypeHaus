@@ -471,7 +471,7 @@ _EQUIPMENT_KIND_TOKENS = (
     ("water heater", EquipmentKind.WATER_HEATER),
     ("sauna", EquipmentKind.SAUNA_HEATER),
     ("batt", EquipmentKind.BATTERY), ("inverter", EquipmentKind.INVERTER),
-    ("fireplace", EquipmentKind.SPACE_HEATER),
+    ("fireplace", EquipmentKind.SPACE_HEATER), ("fan", EquipmentKind.FAN),
     ("heat kit", EquipmentKind.SPACE_HEATER), ("heatkit", EquipmentKind.SPACE_HEATER),
     ("ducted", EquipmentKind.DUCTED_AIR_HANDLER),
     ("head", EquipmentKind.INDOOR_HEAD), ("cassette", EquipmentKind.INDOOR_HEAD),

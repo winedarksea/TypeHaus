@@ -17,7 +17,7 @@
 # - Source bearing-wall windows are 2'-8"; `preferences.toml` caps a bearing RO at 30"
 #   (raised from 27" on 2026-08-01 for WIN-S-BED1/BED2), 42" non-bearing. Existing window
 #   types are kept; only positions move onto the source openings.
-# - `WIN-S-BATH-W`/`WIN-S-BATH-N` have no source counterpart — kept for bathroom daylight.
+# - `WIN-S-BATH-W` has no source counterpart — kept for bathroom daylight.
 # - `RM-S-BATH1` is the hall bath; the suite's own bath is RM-S-SUITEBATH. Renamed from
 #   `RM-S-ENSUITE` (2026-07-27, which it never was) across fixtures/mep/views/lighting/electrical.
 from typehaus import (
@@ -820,7 +820,7 @@ OPENINGS = [
            position=from_node("N-S-S1", ft(7, 5)), sill_height=ft(2, 8)),     # x 26'-8"
     Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3048-T",
            position=from_node("N-S-S1", ft(12, 9)), sill_height=ft(2, 8)),    # x 32'-0"
-    # Baths + north. WIN-S-BATH-N/W have no source counterpart, kept for hall-bath daylight.
+    # Baths + north. WIN-S-BATH-W has no source counterpart, kept for hall-bath daylight.
     # Re-hosted off W-S-N3: W-S-N3B is now the chase's own wall, not the
     # bathroom's. Nudged to 8" off N-S-CH2: at 1' the RO straddled the module
     # stud line instead of centering in the bay, breaking two studs and pulling in a

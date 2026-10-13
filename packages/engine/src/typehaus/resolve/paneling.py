@@ -59,6 +59,8 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             spans_by_wall: dict[str, list] = {}
             for span in el.spans:
                 spans_by_wall.setdefault(span.wall_ref, []).append(span)
+            if room is not None:
+                walls = walls + _inner_walls(model, room, spans_by_wall, walls)
             for ref in spans_by_wall:
                 if ref not in {wall.tag for wall, _ in walls}:
                     scope = f"bound room {room.tag}" if room is not None \
@@ -122,7 +124,10 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                             area -= du * dz
                     if area <= 0.0:
                         continue
+                    face = next((span.face for span in spans_by_wall.get(wall.tag, ())
+                                 if span.face), None)
                     toward = (None if room is None
+                              else _face_point(wall, lo, hi, face) if face
                               else _room_side_point(room, wall, lo, hi))
                     outline = ([] if toward is None else
                                _band_outline(wall, lo, hi, toward, thickness_m,
@@ -182,6 +187,36 @@ def _net_cells(lo: float, hi: float, z0: float, z1: float, openings) -> list:
 # What a band stands proud of the wall by, where its material states no stock thickness. Half
 # an inch — a tile-and-thinset bed, a panel — and visual only: nothing in the takeoff reads it.
 # A band's *area* is what gets ordered, and that is measured on the face, not through it.
+
+def _inner_walls(model: ResolvedModel, room, spans_by_wall, walls) -> list:
+    """Walls a span names that stand inside the room rather than bound it, whole-run.
+
+    Only a span that says which ``face`` it is on qualifies: both faces of a knee wall are
+    the room's, so no side can be derived. Anything else stays an unbounded-wall ERROR.
+    """
+    from shapely.geometry import LineString, Polygon
+
+    known = {wall.tag for wall, _ in walls}
+    inside = Polygon(room.clear_face).buffer(0.05)
+    out = []
+    for wall in model.walls:
+        if (wall.tag in known or wall.storey != room.storey
+                or not any(span.face for span in spans_by_wall.get(wall.tag, ()))):
+            continue
+        axis = LineString(wall.axis)
+        if inside.covers(axis):
+            out.append((wall, (0.0, axis.length)))
+    return out
+
+
+def _face_point(wall, lo: float, hi: float, face: str) -> tuple[float, float]:
+    """A point off the middle of ``lo``..``hi`` on the named face of the wall."""
+    from typehaus.resolve.geometry import add, normal, scale, sub, unit
+
+    direction = unit(sub(wall.axis[1], wall.axis[0]))
+    mid = add(wall.axis[0], scale(direction, (lo + hi) / 2.0))
+    return add(mid, scale(normal(direction), 0.3 if face == "left" else -0.3))
+
 
 def _room_side_point(room, wall, lo: float, hi: float) -> tuple[float, float]:
     """A point off the middle of the ``lo``..``hi`` stretch, on the room's side of the wall.

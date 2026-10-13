@@ -35,6 +35,10 @@ class PanelingSpan(HausModel):
     wall_ref: str
     start: Length
     length: Length
+    #: "left" / "right" of the authored wall direction. Required on a wall standing INSIDE
+    #: the room (a tub-deck knee wall), whose two faces are both the room's; ignored on a
+    #: bounding wall, whose room side is derived.
+    face: str | None = None
 
 
 @register_element

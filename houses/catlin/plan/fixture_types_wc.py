@@ -192,7 +192,14 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
               'GLASS: on the tub (north) side, floor to ceiling on the W-M-TUBDK-S knee wall; on '
               'the front (west) a fixed panel and door to 7\'-6" (90"), leaving ~16" open '
               'under the 106" ceiling. No transom: that gap is the steam path to REG-M-EXH2, '
-              'which sits just outside it (notes/bath2_shower.md).',
+              'which sits just outside it (notes/bath2_shower.md). WET WALLS: behind every '
+              'panel, floor to ceiling, glass-mat gypsum or cement backer, then a bonded '
+              'liquid membrane (RedGard / Hydro Ban class) lapped OVER the base flange, then '
+              'the panel bonded over that. Base flanged E/S/N, threshold W, fully bedded, no '
+              'radiant cable under it. Mould-inhibiting 100% silicone at panel-to-base, the '
+              'corner and the knee-wall cap; escutcheons sealed to the panel and the R10000 '
+              'plaster guard set to the panel face. No niche, and no bottom track on the '
+              'door: a sweep and drip rail.',
 })
 
 # RM-B-SAUNA's rinse and RM-A-STUBATH's guest shower. ** ONE OUTLET, ON PURPOSE. ** A
@@ -263,7 +270,10 @@ SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
               'THE SPECIFICATION AND IT IS NOT UNIVERSAL: ** confirm the ordered base before '
               'the enclosure is bought, because a deeper cut takes the P2708.1 circle under '
               '30". The freeze note on SHOWER_36_COMBO applies unchanged — every supply and '
-              'this valve stay on an interior partition inside the thermal envelope.',
+              'this valve stay on an interior partition inside the thermal envelope. WET '
+              'WALLS: glass-mat gypsum or cement backer behind WP-A-STUBATH-SURR, then a '
+              'bonded liquid membrane (RedGard / Hydro Ban class) lapped over the base '
+              'flange, then the panel; silicone at every panel joint and escutcheon.',
 })
 
 # RM-S-BATH1 and RM-S-SUITEBATH. The two 60" combos, and the two places a handshower earns
@@ -293,7 +303,10 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
               'hard and several sibling SKUs came back discontinued. If it has gone, the '
               'substitute is Moen Spot Resist Brushed Nickel throughout — mixing Delta '
               'SpotShield BN and Moen Spot Resist BN across rooms is fine, mixing them in '
-              'the SAME room is not, they are visibly different tones.',
+              'the SAME room is not, they are visibly different tones. ** NOTHING '
+              'PENETRATES THE INTEGRAL INSERT ** except the valve and spout knockouts: no '
+              'niche, no grab-bar screw, no accessory. Use the moulded shelves; a hole in a '
+              'one-piece insert has nothing behind it to lap to.',
 })
 
 WC_AND_SHOWER_TYPES = (

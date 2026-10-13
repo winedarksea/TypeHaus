@@ -50,3 +50,13 @@ is 82 13/16 inches AFF; use that surface for headroom and heater checks.
 - **The room floor is sealed concrete, not tile.** `FX-B-SAUNA-SH` is a curbed *liner* pan: it brings its own waterproof floor inside the curb, so there is no tile bed to lay there and no reason to tile the wet floor outside it either. `RM-B-SAUNA.floor_finish` is `sealed-concrete` — densifier plus two coats on `SL-B-FLOOR`, which already slopes 1/8" per foot to `FX-B-SAUNA-FD`. The tile that remains in this room is `WP-B-SAUNA-SPLASH`, the pan's two closed wall sides, unchanged. The "shower tile" and "foam tile backer" bullets above are superseded for the *floor*; the wall build-up still stands. Duckboards over the sealed slab in the hot zone remain an owner option and are not modelled.
 
 - Coordinate: thresholds (now flush throughout — see the slab note), the pan curb's two open sides, slip resistance, and transitions between the sealed slab, any duckboards, and the pan curb.
+
+## Open item — the rinse's wet walls (2026-10-12)
+
+**The model and this note disagree, and this note is the intent.** `WP-B-SAUNA-SPLASH` bills
+tile on the sauna's T&G shiplap liner (`W-B-CS`, `W-B-SA-N2`); the bullet above specifies
+foam tile backer to the ceiling under a bonded waterproofing. Tile on shiplap is the
+detail the house-wide wet-wall rule forbids: backer and a bonded membrane behind any finish
+a shower wets, lapped over the pan's flange. **Before the tile is bought:** confirm the two
+spans' substrate is polyiso foam backer (GoBoard class), sealed at seams and to the pan,
+and re-type the liner behind them, or record why the shiplap stays.

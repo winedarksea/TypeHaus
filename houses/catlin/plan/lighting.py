@@ -1439,21 +1439,9 @@ SECOND_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SN3", face="right", distance_from_start=inch(50.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # The lit shower niche (plans/TODO.md §Plumbing: Schluter-KERDI-BOARD-SNLT).
-    # In W-S-C2C, the alcove wall that's neither glazed south nor a door: 2'-4" of head
-    # channel centred on the alcove (y 17'-0"..22'-0") at y=19'-6", x=17'-9" (3" proud of
-    # wall centre). Head at 5'-0" — niche sill is 4'-0", clearing the tub deck by 2'-4" and
-    # putting a bottle at hand height. 24V, no branch circuit — driver does. 2'-4" at 3 W/ft
-    # = 7 W, well under the 60 W supply.
-    LightRun(uid="QRS0004AAA", tag="LR-S-NICHE", type_ref="ED-T-LT-NICHE-SNLT",
-             path=(pt(ft(17, 9), ft(18, 4)), pt(ft(17, 9), ft(20, 8))),
-             room="RM-S-SUITEBATH", psu_ref="ED-S-NICHE-PSU",
-             controlled_by=("ED-S-SUITEBATH-SW",),
-             mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
-    ElectricalDevice(uid="QTS000E1AA", tag="ED-S-NICHE-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(m(5.74792), m(6.74617)), type_ref="ED-T-LT-PSU-60",
-                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
-                     mount=Mount(kind=MountKind.CEILING)),
+    # No lit niche (owner, 2026-10-12): LR-S-NICHE and ED-S-NICHE-PSU are gone. A hole in a
+    # one-piece insert has nothing to lap to (FX-TUBSHOWER-60-DIVERTED; superseded note
+    # notes/superseded/shower_niche.md). Mark E1 stays in the catalog as a named revert.
 
     # RM-S-VANITY: two lavatories, two mirror lights, both on the north wet wall.
     ElectricalDevice(uid="QTS000FAAA", tag="ED-S-VANITY-MIRROR1", kind=DeviceKind.LIGHT,
@@ -1536,28 +1524,7 @@ SECOND_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(46),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The hall bath's lit niche (2026-08-02), mirroring the suite's LR-S-NICHE — same
-    # KERDI-BOARD-SNLT board and rules (notes/shower_niche.md: board IS the membrane,
-    # driver lead exits through the head channel, sealed with KERDI-FIX).
-    # Alcove's back wall is the glazed exterior, so this niche goes in the tub's west END
-    # wall (W-S-CH-W, a dry mechanical-chase wall) instead, with the 12"x28" board stood
-    # VERTICAL — the alcove's clear run there is only ~25". Head channel: 1'-0" of tape at
-    # the same 5'-0" bottle-height head as the suite's, centred at y=34'-4", x=3'-0"
-    # (3" proud of wall centre).
-    LightRun(uid="QRS0005AAA", tag="LR-S-BATH1-NICHE", type_ref="ED-T-LT-NICHE-SNLT",
-             path=(pt(ft(3), ft(33, 10)), pt(ft(3), ft(34, 10))),
-             room="RM-S-BATH1", psu_ref="ED-S-BATH1-NICHE-PSU",
-             controlled_by=("ED-S-BATH1-SW",),
-             mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
-    # Own 60 W driver, in the ceiling outside the shower zone (serviceable without opening
-    # tile). NOT a share of ED-S-NICHE-PSU: that's 30' away across the plan, and the
-    # catalog's per-area-supply rule (plan/lighting_types.py) forbids a 24V home run that
-    # long. 1'-0" at 3 W/ft = 3 W, well under the 60 W box.
-    ElectricalDevice(uid="QTS001CAAA", tag="ED-S-BATH1-NICHE-PSU",
-                     kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(7), ft(31, 6)), type_ref="ED-T-LT-PSU-60",
-                     circuit="CKT-LT-UPPER", room="RM-S-BATH1",
-                     mount=Mount(kind=MountKind.CEILING)),
+    # The hall bath's lit niche and its PSU are gone too (2026-10-12), same reason.
 
     # Both switches sit at x=17'-6 3/4", the humid liner on W-S-C1's plant-room face — a
     # switch authored to the bare wall face resolves inside the panel.

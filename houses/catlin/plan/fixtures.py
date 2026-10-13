@@ -461,6 +461,8 @@ SECOND_FIXTURES = (
     # chase wall's finish face is x=2'-11 3/8", the tub's west end 2'-11 3/4", and the
     # w-and-o tee is 3 1/2" in from it at x=39 1/4". y=409.5" is the tub's own centreline
     # (394.5"..424.5"). The drop lands in the 401.75"..414.25" truss bay with 6" to spare.
+    # Its back is exterior W-S-N3, ~0 perm on both sides (insert inside, closed-cell
+    # outside), so nothing may ever penetrate it: a hole there dries to neither face.
     Fixture(uid="CSQ803AAAA", tag="FX-S-BATH1-SH", type_ref="FX-TUBSHOWER-60-DIVERTED", room="RM-S-BATH1",
             position=pt(m(1.66988), m(10.4013)), wall_ref="W-S-BD-N",
             drain_position=pt(inch(39.25), inch(409.5))),

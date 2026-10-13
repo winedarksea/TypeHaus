@@ -434,7 +434,8 @@ def _equipment_ifc_classes(kind: str) -> tuple[str, str]:
 
     Split systems are ``IfcUnitaryEquipment`` — the IFC4 class for a packaged
     heating/cooling unit, which is what a condenser, a wall head and a concealed ducted air
-    handler each are — and an ERV is ``IfcAirToAirHeatRecovery``. Everything else (water
+    handler each are — an ERV is ``IfcAirToAirHeatRecovery`` and a FAN is ``IfcFan``.
+    Everything else (water
     heaters, sauna heaters, resistance space heaters) has no better fit than the proxy it
     already emitted as — including FURNACE and AIR_HANDLER, which are arguably unitary
     equipment too but which nothing models yet; re-classing an element nobody authors would
@@ -451,6 +452,7 @@ def _equipment_ifc_classes(kind: str) -> tuple[str, str]:
         "indoor_head": ("IfcUnitaryEquipment", "IfcUnitaryEquipmentType"),
         "ducted_air_handler": ("IfcUnitaryEquipment", "IfcUnitaryEquipmentType"),
         "erv": ("IfcAirToAirHeatRecovery", "IfcAirToAirHeatRecoveryType"),
+        "fan": ("IfcFan", "IfcFanType"),
     }.get(kind, ("IfcBuildingElementProxy", "IfcBuildingElementProxyType"))
 
 

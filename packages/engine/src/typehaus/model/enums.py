@@ -349,9 +349,10 @@ class DuctSystem(Enum):
     # terminate anywhere another exhaust does, and its length is limited by a rule no other
     # run obeys. One enum member is the entire schema cost of checking all three.
     DRYER = "dryer"
-    # A passive transfer opening between two spaces — a louver or grille in a wall, moving
-    # air on pressure difference alone. It belongs to no ducted system and carries no
-    # ``duct_ref``, which is exactly why it needs a member of its own: filed as RETURN it
+    # Air moved from one room to another and never out of the house. A passive louver
+    # moves it on pressure difference alone and carries no ``duct_ref``; a fan-driven
+    # transfer run (an ``EquipmentKind.FAN`` on a duct) does, and its grilles name that run.
+    # Either way it needs a member of its own: filed as RETURN it
     # would be counted as an ERV stale pickup by the ventilation checks and printed as one
     # on the register schedule, crediting a room with an extract it does not have. The
     # checks that look for a fresh-air supply or a bathroom exhaust match on their own
@@ -432,6 +433,10 @@ class EquipmentKind(Enum):
     # The thing that makes a semi-rigid radial install a radial install, and a real box with
     # a real footprint that has to fit the space it hangs in.
     DUCT_MANIFOLD = "duct_manifold"
+    # A remote or inline fan moving air through a duct of its own — a stall-drying or
+    # transfer fan, not a ventilator. It earns no ventilation credit: its run is filed under
+    # the duct system it serves (often ``DuctSystem.TRANSFER``), and only ERV is counted.
+    FAN = "fan"
 
 
 class BackupTier(Enum):

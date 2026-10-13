@@ -35,7 +35,7 @@ def test_a_note_file_nothing_binds_is_out_of_subject(catlin_model_ro):
     """`applied_to` frontmatter is not the test and never was — several catlin notes carry
     it and render nowhere, which is what notes/README.md used to get wrong."""
     graded = {f.element_tags[0] for f in _run(catlin_model_ro) if f.element_tags}
-    assert "shower_niche" not in graded
+    assert "garage_hydrant" not in graded
     assert "roof_wall_eave_detail" in graded
 
 

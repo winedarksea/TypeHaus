@@ -113,7 +113,7 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
     equipment_classes = {
         "heat_pump": "IfcUnitaryEquipment", "indoor_head": "IfcUnitaryEquipment",
         "ducted_air_handler": "IfcUnitaryEquipment",
-        "erv": "IfcAirToAirHeatRecovery",
+        "erv": "IfcAirToAirHeatRecovery", "fan": "IfcFan",
     }
     electrical_classes = {
         "receptacle": "IfcOutlet", "gfci": "IfcOutlet", "receptacle_240": "IfcOutlet",
@@ -195,7 +195,7 @@ def external_elems(ifc_path: Path) -> list[DiffElem]:
                 "IfcSanitaryTerminal", "IfcBuildingElementProxy", "IfcOutlet", "IfcAirTerminal",
                 "IfcSwitchingDevice", "IfcLightFixture", "IfcElectricDistributionBoard",
                 "IfcJunctionBox", "IfcFlowMeter", "IfcUnitaryEquipment",
-                "IfcAirToAirHeatRecovery",
+                "IfcAirToAirHeatRecovery", "IfcFan",
                 # Low-voltage, reachable only through ``ElectricalDeviceType.ifc_entity``.
                 # Left off this list, every access point and camera we exported would read
                 # back as a deletion.

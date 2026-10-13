@@ -142,6 +142,8 @@ AMBIENT_LUMINAIRE_TYPES = (
                          "R9-grade tape is spent on the kitchen (mark U) and not here."),
 
     # --- E1: the shower niche's lit shelf ---------------------------------------------
+    # ZERO INSTANCES since 2026-10-12: both niches were dropped (notes/superseded/
+    # shower_niche.md). Kept as a named revert, priced on the bare light-run keys.
     # A variant of E, not a new family: same 24V tape, same driver, same per-foot pricing.
     # Mark "E1" because "Q" — the next free single letter — is the garage shop light, and
     # the E-602 schedule is keyed on the mark.

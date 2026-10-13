@@ -124,8 +124,8 @@ grep `notes=` in `plan/transitions.py` for the list, which is the only authority
 `outie_window_truss_detail.md` · `plant_room.md` · `roof_wall_eave_detail.md` ·
 `sauna_basement_wall_detail.md`
 
-Five files this section used to name — `backup_power.md`, `balcony_irrigation.md`,
-`garage_hydrant.md`, `sauna_shower_basement_detail.md`, `shower_niche.md` — are referenced
+Four files this section used to name — `backup_power.md`, `balcony_irrigation.md`,
+`garage_hydrant.md`, `sauna_shower_basement_detail.md` — are referenced
 from `plan/*.py` **comments only** and render nowhere. They are design notes, and they are
 free to be edited as documentation.
 
@@ -135,3 +135,4 @@ free to be edited as documentation.
 |---|---|---|
 | `superseded/balcony_lateral_bracing_design.md` | `balcony_moment_columns.md` | the wind derivation, and the record of the braced scheme that was not built |
 | `superseded/heat_pump_deck_mounting.md` | `heat_pump_ground_pad.md` | the rule: a fastener through a deck that is a roof lands in a sacrificial member |
+| `superseded/shower_niche.md` | `FX-TUBSHOWER-60-DIVERTED.source` | the KERDI-BOARD-SNLT detail, and the rule: nothing penetrates an integral insert |

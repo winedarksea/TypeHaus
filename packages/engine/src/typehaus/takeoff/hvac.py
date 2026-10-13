@@ -31,6 +31,8 @@ _M2_TO_FT2 = 10.76391041671
 # rating of its own that a zone should be sized against.
 _INDOOR_KINDS = frozenset({"indoor_head", "ducted_air_handler"})
 _VENTILATION_KINDS = frozenset({"erv"})
+# A FAN is in neither set: it is scheduled as equipment, but moves no outdoor air and
+# conditions no zone, so it claims no ventilation credit and no capacity.
 
 
 @dataclass(frozen=True)

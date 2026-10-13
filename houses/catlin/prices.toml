@@ -3335,7 +3335,11 @@
 # bought as a matched pair; labour is up on the square only for the extra panel to set and
 # seal. An unpriced type is silently dropped from the takeoff, which is why this row lands in
 # the same commit as the type.
-"FX-SHOWER-36-NEO-COMBO" = { material = { low = 750, high = 1900 }, labour = { low = 280, high = 620 } }  # 1 ea
+# WET WALLS (2026-10-12): glass-mat or cement backer for WP-A-STUBATH-SURR's ~47 SF in place
+# of paper-faced gypsum (+$60-110) and a bonded liquid membrane, two coats lapped over the
+# base flange (1-2 gal RedGard/Hydro Ban class + corner fabric, +$90-190): material +150-300.
+# Labour +160-350 for the membrane coats and cure. ESTIMATE.
+"FX-SHOWER-36-NEO-COMBO" = { material = { low = 900, high = 2200 }, labour = { low = 440, high = 970 } }  # 1 ea
 # RM-M-BATH2, 2026-10-12. ESTIMATE, not quoted. Built on FX-SHOWER-36's basis (pan + KIT
 # surround + their labour), so `solid-surface-panel` in [wood_surfaces] stays a delta:
 #   material  FX-SHOWER-36 band                                  300-1000
@@ -3343,9 +3347,14 @@
 #             R10000 rough $55-65 + 17T trim $250-450 + 26008 $130-180   +435-695
 #             custom frameless 3/8" glass: one floor-to-ceiling panel on the
 #             tub knee wall, a 90" fixed panel and door on the front     +1300-3000
+#             wet walls (2026-10-12): glass-mat or cement backer behind the ~58 SF
+#             of panel in place of paper-faced gypsum +70-120, and a bonded liquid
+#             membrane, two coats lapped over the base flange (1-2 gal RedGard /
+#             Hydro Ban class + corner fabric) +100-210                     +170-330
 #   labour    FX-SHOWER-36 band 200-470 + thermostatic trim set 60-130 + glass hang 300-700
+#             + membrane coats and cure 180-380
 # The glass is the biggest and widest number; a glazier's measure-and-quote collapses it.
-"FX-SHOWER-36-THERMO-COMBO" = { material = { low = 2200, high = 5200 }, labour = { low = 560, high = 1300 } }  # 1 ea
+"FX-SHOWER-36-THERMO-COMBO" = { material = { low = 2370, high = 5530 }, labour = { low = 740, high = 1680 } }  # 1 ea
 # +$65-100/ea for the 52535-SS head over the boxed one (2026-10-12; street $64-73).
 "FX-TUBSHOWER-60-DIVERTED" = { material = { low = 965, high = 2700 }, labour = { low = 450, high = 1050 } }  # 2 ea
 "FX-TUB-60" = { material = { low = 400, high = 1600 }, labour = { low = 330, high = 800 } }  # 1 ea
@@ -6262,8 +6271,9 @@
 # bought by the LINEAL FOOT; an end cap and a corner connector are PIECES. Both read the
 # same `quantity` column (the takeoff writes each row in its own unit), so a piece row must
 # say `unit = "EA"` — without it the line prints as feet. See `ALTERNATE_UNITS`.
-# The three 24V families (E `ED-T-LT-STRIP24`, E1 `ED-T-LT-NICHE-SNLT`, U
-# `ED-T-LT-STRIP24-TASK`) price on the BARE keys below: interior dry-location cove, an
+# The 24V families (E `ED-T-LT-STRIP24`, E3 `ED-T-LT-STRIP24-2700`, U
+# `ED-T-LT-STRIP24-TASK`, and E1 `ED-T-LT-NICHE-SNLT` at zero runs since 2026-10-12, a
+# named revert) price on the BARE keys below: interior dry-location cove, an
 # anodized extrusion with a frosted lens, tape cut to length off a 16.4' reel.
 # 104.6 LF of channel and tape, 22 end caps, 2 corner connectors.
 channel = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
@@ -7238,10 +7248,11 @@ finish-floor-prep-and-self-levelling = { low = 0.88, high = 2.29, unit = "SF", d
 # way. What changed under it:
 #   * RM-B-BATH went to sheet vinyl with a 6" integral flash cove. That floor now needs no
 #     backer and no membrane at all — the cove IS the waterproofing — and no threshold.
-#   * RM-M-BATH2's shower back is WP-M-BATH2-SURR, a cast panel over 42 SF that bonds to
-#     gypsum by construction. No backer, no membrane behind it either.
+#   * RM-M-BATH2's and RM-A-STUBATH's shower panels DO get backer and a membrane since
+#     2026-10-12, but both bill on their own fixture rows (FX-SHOWER-36-THERMO-COMBO,
+#     -NEO-COMBO), not here. Both lit niches are gone.
 # What is left, and why this cannot go to zero: RM-M-BATH2's 84 SF of tiled floor over
-# FH-M-BATH2, RM-B-SAUNA's 45 SF of splash tile, and the RM-S-SUITEBATH niche. Halving the
+# FH-M-BATH2 and RM-B-SAUNA's 45 SF of splash tile. Halving the
 # lump is a defensible reading of that residue; it is not an arithmetic result, and the next
 # person to touch it should re-argue it rather than trust it.
 finish-tile-backer-and-waterproofing = { low = 2000, high = 4500 }
