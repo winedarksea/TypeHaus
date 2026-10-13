@@ -390,7 +390,10 @@
 # KDAT southern pine 2x12, the garden's two deck fields (12" o.c.) and ST-SG-PORCH's stringers.
 # The porch ledgers are Beams and bill in [timber] "beam:BEAM_KDAT". Treated 2x12 runs ~25-40%
 # over the SPF stick above, and 20' lengths carry a further premium.
-"2x12:kdat" = { material = { low = 2.4, high = 3.6 }, labour = { low = 1.4, high = 2.6 } }  # 496 LF ordered — 464 (joists, spare joist, blocks) + 32 (ST-SG-PORCH stringers)
+"2x12:kdat" = { material = { low = 2.4, high = 3.6 }, labour = { low = 1.4, high = 2.6 } }  # 456 LF ordered — 424 (joists, spare joist, blocks) + 32 (ST-SG-PORCH stringers)
+# The court daybed's two built-up porch lines (plan/court_daybed.py): three plies of the row
+# above per LF of line, nailed up on site.
+"3-2x12:kdat" = { material = { low = 7.2, high = 10.8 }, labour = { low = 4.2, high = 7.8 } }  # 40 LF ordered — FS-SG-PORCH lines 003 and 006
 "2x2" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 816 LF
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
 # polyiso rate of $1.20-2.20/SF.
@@ -1086,7 +1089,10 @@
 "LUS28Z" = { low = 2.5, high = 7.5 }  # 10 ea — the breezeway beams (4 phantom joists alongside BM-BW-FC/-FE dropped 2026-09-24; the 18 at BM-SG-BLC retired 2026-09-22)
 # The single-2x12 face-mount in stainless (owner, 2026-09-22): Simpson publishes no LUS212, and
 # its 2x12 rows list the LUS210 (H 7-13/16"). The porch joists hang on it at both ledgers.
-"LUS210SS" = { low = 6.0, high = 12.0 }  # 20 ea — FS-SG-PORCH's 10 joists, both ends, on BM-SG-LDGW/LDGE
+"LUS210SS" = { low = 6.0, high = 12.0 }  # 16 ea — FS-SG-PORCH's 8 single joists, both ends, on BM-SG-LDGW/LDGE
+# The two 3-ply lines the daybed builds (plan/court_daybed.py): no stainless triple is listed,
+# so ZMAX. Retail allowance for the galvanized LUS210-3 plus the ZMAX premium.
+"LUS210-3Z" = { low = 9.0, high = 18.0 }  # 4 ea — FS-SG-PORCH lines 003 and 007, both ends
 "LUSZ" = { low = 2.5, high = 7.5 }  # 2 ea — FS-BW-FLOOR's rims into BM-BW-FE (FS-BW-GARAGE's 4 ran alongside their beams, dropped 2026-09-24)
 # "LUS210" retired 2026-08-23. It priced the two back-beam hangers until the 2026-08-22
 # retype moved them onto HUCQ410-SDS, after which nothing in the house authored a LUS210 and
@@ -1400,6 +1406,11 @@
 # The LVL line above them bills under [framing] "2-1.75x11.875 LVL".
 "3-S-5" = { low = 150, high = 300 }  # 1 ea — HA-M-HAMMOCK
 "SADDLE-3.5-2x58" = { low = 80, high = 250 }  # 1 ea — HA-M-HAMMOCK
+# The court daybed's four ropes (2026-10-13), UNCONFIRMED allowances: a galvanized Crosby
+# G-209 1/2" shackle at rigging-supply retail, and a shop-fabricated U-saddle for a 3-ply
+# line, hot-dip galvanized after fabrication. The plies bill under [framing].
+"G-209-1/2" = { low = 8, high = 20 }  # 4 ea — HA-SG-DAYBED-NE/NW/SE/SW
+"SADDLE-4.5-2x58-HDG" = { low = 100, high = 300 }  # 4 ea — HA-SG-DAYBED-NE/NW/SE/SW
 
 [concrete]
 # RESEARCHED 2026-08-07 — [low, high] $/cy PLACED (ready-mix delivered + placement
@@ -6402,6 +6413,9 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # The living-room hammock chair (plan/living_hammock.py), 2026-10-05. Allowance, not a read
 # price: a medium spreader-bar chair rated 360 lb or more, with its adjustable suspension rope.
 "FURN-HAMMOCK-CHAIR-MEDIUM" = { low = 150, high = 450 }  # 1 ea — replaces the retired FURN-MEDIA-60
+# The court's hanging daybed (plan/court_daybed.py), 2026-10-13. Allowance: an Atlantic
+# Swing Co. Simon-class twin frame rated 500 lb, its 4-point rope kit, and an outdoor cushion.
+"FURN-HANGING-DAYBED-TWIN" = { low = 900, high = 2200 }  # 1 ea — FURN-SG-DAYBED
 
 
 # --- WHAT THESE NUMBERS INCLUDE ---------------------------------------------------------

@@ -196,16 +196,21 @@ def _add_canvas_box(mb: _MeshBuilder, item: ResolvedCanvasObject, height_m: floa
 
 def _add_suspension(mb: _MeshBuilder, item: ResolvedCanvasObject,
                     product_type: object | None) -> None:
-    """A hung body's cable up to its ceiling and the canopy there; the viewer draws the same."""
+    """A hung body's cables up to its ceiling and the canopy over each; the viewer draws the
+    same."""
     draw = suspension_draw(item, product_type)
     if draw is None:
         return
-    x, y = item.position
+    turn = math.radians(item.rotation_degrees)
+    hangs = [(item.position[0] + dx * math.cos(turn) - dy * math.sin(turn),
+              item.position[1] + dx * math.sin(turn) + dy * math.cos(turn), z1)
+             for dx, dy, z1 in draw.points] or [(*item.position, draw.z1_m)]
+    for x, y, z1 in hangs:
 
-    def square(side: float) -> list[tuple[float, float]]:
-        h = side / 2
-        return [(x - h, y - h), (x + h, y - h), (x + h, y + h), (x - h, y + h)]
+        def square(side: float, x=x, y=y) -> list[tuple[float, float]]:
+            h = side / 2
+            return [(x - h, y - h), (x + h, y - h), (x + h, y + h), (x - h, y + h)]
 
-    mb.add_prism(square(draw.cable_m), draw.z0_m, draw.z1_m, PART_COLORS["metal"])
-    mb.add_prism(square(draw.canopy_m), draw.z1_m - draw.canopy_thickness_m, draw.z1_m,
-                 PART_COLORS["metal"])
+        mb.add_prism(square(draw.cable_m), draw.z0_m, z1, PART_COLORS["metal"])
+        mb.add_prism(square(draw.canopy_m), z1 - draw.canopy_thickness_m, z1,
+                     PART_COLORS["metal"])

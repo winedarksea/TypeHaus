@@ -113,7 +113,8 @@ def test_deck_rows_follow_the_joist_field(rows):
     (a 1.25" member) as its own width so the narrow roll's order is not short.
     """
     deck_rows = [r for r in rows if r["scope"] == "deck"]
-    assert {r["width_in"] for r in deck_rows} == {1.25, 1.5}
+    # 4.5": the court daybed's two 3-ply porch lines (plan/court_daybed.py).
+    assert {r["width_in"] for r in deck_rows} == {1.25, 1.5, 4.5}
     porch_and_deck_ft = sum(r["length_ft"] for r in deck_rows)
     # A bound on the ORDER OF MAGNITUDE, which is all this assertion is entitled to claim
     # (a tight bound once tripped on 17.3 lf of flank blocks). Since 2026-09 both garden

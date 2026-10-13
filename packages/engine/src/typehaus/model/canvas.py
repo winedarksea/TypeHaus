@@ -266,9 +266,12 @@ def _suspension(item: Any, product: Any) -> dict[str, Any] | None:
     draw = suspension_draw(item, product)
     if draw is None:
         return None
-    return {"z0_m": draw.z0_m, "z1_m": draw.z1_m, "cable_m": draw.cable_m,
-            "canopy_m": draw.canopy_m, "canopy_thickness_m": draw.canopy_thickness_m,
-            "from": item.suspended_from}
+    record = {"z0_m": draw.z0_m, "z1_m": draw.z1_m, "cable_m": draw.cable_m,
+              "canopy_m": draw.canopy_m, "canopy_thickness_m": draw.canopy_thickness_m,
+              "from": item.suspended_from}
+    if draw.points:
+        record["points"] = [list(point) for point in draw.points]
+    return record
 
 
 def _mount(mount: Any) -> dict[str, Any] | None:

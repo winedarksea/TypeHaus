@@ -121,11 +121,12 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
 
     authored = specs.get((connection.carrier_tag, connection.member_floor))
     if authored is not None and not connection.sloped:
-        item = hardware_by_model(authored)
+        item = authored_hanger_item(authored, connection.member_profile)
         if item is None:
             raise LookupError(f"authored hanger {authored!r} on {connection.carrier_tag} x "
                               f"{connection.member_floor} is not in the hardware catalog")
-        return item.role, item, authored
+        swapped = item is not hardware_by_model(authored)
+        return item.role, item, item.model if swapped else authored
     if connection.member_category == "stringer":
         item = hardware_for_role(ROLE_STAIR_STRINGER_CONNECTOR)
         return ROLE_STAIR_STRINGER_CONNECTOR, item, item.model
@@ -143,3 +144,26 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
     item = hardware_for_role(ROLE_FACE_MOUNT_JOIST_HANGER, exposure=exposure)
     return (ROLE_FACE_MOUNT_JOIST_HANGER, item,
             sized_hanger_model(item, connection.member_profile))
+
+
+def authored_hanger_item(authored: str, profile: str):
+    """The part an authored hanger spec puts on a member of ``profile``.
+
+    The spec names the part for the field's own member. A line built up past it (a
+    ``SuspensionAnchor``'s 3-ply) takes the part catalogued for its ply count in the same
+    role and exposure; a spec whose part states no sizes covers every profile.
+    """
+    from typehaus.hardware.catalog import (
+        hardware_by_model,
+        hardware_capacity_records,
+        structural_hardware_catalog,
+    )
+
+    item = hardware_by_model(authored)
+    nominal = profile.split(":")[0].strip()
+    if item is None or not item.fits_nominal or nominal in item.fits_nominal:
+        return item
+    return next((other for other in (*structural_hardware_catalog(),
+                                     *hardware_capacity_records())
+                 if other.role == item.role and other.exposure == item.exposure
+                 and nominal in other.fits_nominal), item)

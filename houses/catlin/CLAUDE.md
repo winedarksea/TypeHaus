@@ -65,6 +65,11 @@ not instruction: when it disagrees with this file or the model, it is the one th
 - `plan/living_hammock.py` — `# haus: editable`, the living-room hammock chair and its
   `SuspensionAnchor`, which derives FS-S-EAST's LVL line 003. Removing it is deleting the
   file and its manifest line. Hand pass: `notes/hanging_seat_anchor.md`.
+- `plan/court_daybed.py` — `# haus: editable`, the court's 4-rope hanging daybed under
+  FS-SG-PORCH and its four `SuspensionAnchor`s, which derive lines 003 and 006 as 3-ply 2x12
+  KDAT (wet) on LUS210-3Z hangers. The ropes must stay ON authored lines: a moved line lands
+  its hanger on a ledger Titen HD. Hand pass and the open ledger question:
+  `notes/court_daybed_anchor.md`.
 - `plan/lighting_attic.py`, `plan/electrical_attic.py` — `# haus: editable`, split off for the
   same reason (`lighting.py` was 1,158 lines, `electrical.py` 1,700). Split
   by STOREY, which is how `plan/manifest.py` already consumes both. An editable file cannot

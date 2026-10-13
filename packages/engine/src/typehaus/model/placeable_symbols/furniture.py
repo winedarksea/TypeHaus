@@ -34,6 +34,7 @@ from typehaus.model.placeable_symbols._families import (
 from typehaus.model.placeable_symbols._fiddle_leaf_fig import fiddle_leaf_fig
 from typehaus.model.placeable_symbols._frame import box, rect
 from typehaus.model.placeable_symbols._hammock_chair import hammock_chair
+from typehaus.model.placeable_symbols._hanging_daybed import hanging_daybed
 from typehaus.model.placeable_symbols._mirrors import arch_shelf_mirror
 from typehaus.model.placeable_symbols._plants import (
                                                         hanging_vine_planter,
@@ -105,6 +106,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "rounded-dining-table": rounded_slab(leg_inset_m=0.09, apron=True),
     "chess-table": chess_table,
     "hammock-chair": hammock_chair,
+    "hanging-daybed": hanging_daybed,
     "round-table": round_slab(pedestal=True),
     "coffee-table": slab(leg_inset_m=0.05, apron=False),
     "end-table": slab(leg_inset_m=0.04, apron=False),

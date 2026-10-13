@@ -11,7 +11,8 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class MemberGrade:
-    """Joist/beam-orientation reference values, psi, at normal (100%) load duration, dry."""
+    """Joist/beam-orientation reference values, psi, at normal (100%) load duration, in the
+    ``service`` condition they are stated for: a ``"wet"`` row has C_M already taken."""
 
     tag: str
     fb_psi: float
@@ -27,6 +28,7 @@ class MemberGrade:
     #: coefficient: delta_shear = k * W * L**2 / (E * b * d), W plf, L ft.
     shear_deflection_k: float
     source: str
+    service: str = "dry"
 
     def fb_adjusted_psi(self, depth_in: float) -> float:
         return self.fb_psi * (self.fb_ref_depth_in / depth_in) ** self.fb_size_exponent
@@ -44,4 +46,22 @@ MICROLLAM_LVL_2_0E = MemberGrade(
            "bolts installed in face, load perpendicular to grain, G = 0.50",
 )
 
-MEMBER_GRADES = {grade.tag: grade for grade in (MICROLLAM_LVL_2_0E,)}
+# The porch's 2x12 KDAT: No. 2 is the grade IRC Table R507.6 (the porch's own span row) is
+# published for, and nothing in the house states a better one. Reference values with C_M
+# applied; C_F is in the table's size-specific values, C_r is not taken (a 3-ply line under
+# one point load is not a repetitive member), C_i is 1.0 (southern pine is not incised).
+# Sawn-lumber E is apparent: shear deflection is already in it.
+SOUTHERN_PINE_NO2_2X12_WET = MemberGrade(
+    tag="southern-pine-no2-2x12-wet",
+    fb_psi=750.0, fb_ref_depth_in=11.25, fb_size_exponent=0.0,
+    fv_psi=175.0 * 0.97, e_psi=1.4e6 * 0.9, fc_perp_psi=565.0 * 0.67, bolt_g_perp=0.55,
+    shear_deflection_k=0.0,
+    service="wet",
+    source="AWC NDS 2018 Supplement Table 4B, Southern Pine No. 2, 2\"-4\" thick, 12\" "
+           "wide: Fb 750, Fv 175, Fc-perp 565, E 1,400,000 psi; Table 4B wet service "
+           "factors: C_M 1.0 on Fb (Fb C_F <= 1,150 psi), 0.97 on Fv, 0.67 on Fc-perp, 0.9 "
+           "on E. NDS Table 12.3.3A: southern pine G = 0.55",
+)
+
+MEMBER_GRADES = {grade.tag: grade for grade in (MICROLLAM_LVL_2_0E,
+                                                SOUTHERN_PINE_NO2_2X12_WET)}

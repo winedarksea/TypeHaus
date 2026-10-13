@@ -212,9 +212,10 @@ ROLE_POCKET_DOOR_FRAME_KIT = "pocket_door_frame_kit"
 # does not reach the panel itself — it mounts on seam clamps (``requires_role``).
 ROLE_SNOW_RETENTION = "snow_retention"
 # A hung seat's load path (``SuspensionAnchor.hardware``): the saddle on the joist line and
-# the swivel under it. Named by the anchor, never selected by role.
+# the swivel or shackle under it. Named by the anchor, never selected by role.
 ROLE_SUSPENSION_SADDLE = "suspension_saddle"
 ROLE_SUSPENSION_SWIVEL = "suspension_swivel"
+ROLE_SUSPENSION_SHACKLE = "suspension_shackle"
 
 
 @dataclass(frozen=True)

@@ -37,46 +37,69 @@ def _places(unit: str) -> int:
 
 @dataclass(frozen=True)
 class SimpleSpan:
-    """A point load ``p`` at ``a`` from the left bearing of span ``span``, plus uniform ``w``."""
+    """A point load ``p`` at ``a`` from the left bearing of span ``span``, plus uniform ``w``,
+    and any ``others`` (``(p, a)`` pairs) hung from the same line."""
 
     p: float      # lb
     a: float      # in
     span: float   # in
     w: float      # lb/in
+    others: tuple[tuple[float, float], ...] = ()
+
+    @property
+    def loads(self) -> tuple[tuple[float, float], ...]:
+        return ((self.p, self.a), *self.others)
 
     @property
     def reactions(self) -> tuple[float, float]:
         half = self.w * self.span / 2
-        return (self.p * (self.span - self.a) / self.span + half,
-                self.p * self.a / self.span + half)
+        return (sum(p * (self.span - a) / self.span for p, a in self.loads) + half,
+                sum(p * a / self.span for p, a in self.loads) + half)
 
     def moment_at(self, x: float) -> float:
         left, _ = self.reactions
-        return left * x - self.w * x * x / 2 - (self.p * (x - self.a) if x > self.a else 0.0)
+        return left * x - self.w * x * x / 2 - sum(p * (x - a) for p, a in self.loads if x > a)
+
+    def shear_at(self, x: float) -> tuple[float, float]:
+        """Shear just left and just right of ``x``."""
+        left, _ = self.reactions
+        before = left - self.w * x - sum(p for p, a in self.loads if a < x - 1e-9)
+        return before, before - sum(p for p, a in self.loads if abs(a - x) <= 1e-9)
 
     @property
     def max_moment(self) -> float:
-        left, right = self.reactions
-        stations = [self.a]
-        if self.w > 0:
-            stations += [x for x in (left / self.w, self.span - right / self.w)
-                         if 0 <= x <= self.span]
+        stations = [a for _, a in self.loads]
+        if self.w > 0:  # each segment's shear zero, where it falls inside that segment
+            edges = sorted({0.0, self.span, *stations})
+            for lo, hi in zip(edges, edges[1:], strict=False):
+                zero = lo + self.shear_at(lo)[1] / self.w
+                if lo < zero < hi:
+                    stations.append(zero)
         return max(self.moment_at(x) for x in stations)
 
     @property
     def shear_at_load(self) -> float:
-        """The larger shear either side of the load point (NDS 3.4.3.3's V)."""
-        left, right = self.reactions
-        return max(left - self.w * self.a, right - self.w * (self.span - self.a))
+        """The larger shear either side of ``p`` (NDS 3.4.3.3's V)."""
+        return max(abs(v) for v in self.shear_at(self.a))
 
 
 def point_deflection(p: float, a: float, span: float, e: float, b: float, d: float,
                      shear_k: float) -> float:
     """Deflection under ``p`` at its own station: bending P a^2 b^2 / (3 E I L) plus the
     published shear term, whose uniform form k W L^2 / (E b d) fixes kG = 1.5 E / k."""
-    far = span - a
-    bending = p * a * a * far * far / (3 * e * (b * d ** 3 / 12) * span)
-    return bending + p * a * far * shear_k / (1.5 * span * e * b * d)
+    return deflection_at(((p, a),), a, span, e, b, d, shear_k)
+
+
+def deflection_at(loads, x: float, span: float, e: float, b: float, d: float,
+                  shear_k: float) -> float:
+    """Deflection at ``x`` under every ``(p, a)`` point load, by superposition."""
+    i = b * d ** 3 / 12
+    total = 0.0
+    for p, a in loads:
+        near, far = (x, span - a) if x <= a else (span - x, a)
+        total += p * far * near * (span * span - far * far - near * near) / (6 * e * i * span)
+        total += p * far * near * shear_k / (1.5 * span * e * b * d)
+    return total
 
 
 def bolt_double_shear(diameter: float, main: float, side: float, g: float) -> tuple[float, str]:
@@ -99,9 +122,10 @@ def bolt_double_shear(diameter: float, main: float, side: float, g: float) -> tu
 
 
 def connection_shear(fv: float, b: float, d: float, bolt_diameter: float,
-                     clear_of_ends: bool) -> tuple[float, float]:
-    """NDS 2018 §3.4.3.3, bolts at mid-depth: d_e = d/2 + D/2 below the unloaded (top)
-    edge. Returns (V_r', d_e); the (d_e/d)^2 penalty applies within 5d of a member end."""
-    de = d / 2 + bolt_diameter / 2
+                     clear_of_ends: bool, top: float | None = None) -> tuple[float, float]:
+    """NDS 2018 §3.4.3.3: V_r' = 2/3 F_v b d_e, d_e the depth less the unloaded (top) edge's
+    distance to the bolt hole. ``top`` is the bolt row's centre below the top edge; ``None``
+    is mid-depth. Returns (V_r', d_e); the (d_e/d)^2 penalty applies within 5d of an end."""
+    de = d - ((d / 2 if top is None else top) - bolt_diameter / 2)
     vr = 2 / 3 * fv * b * de
     return (vr if clear_of_ends else vr * (de / d) ** 2), de

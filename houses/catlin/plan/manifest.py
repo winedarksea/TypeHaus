@@ -34,7 +34,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   bath1_storage_types, bedroom_wardrobe_types, study_nook, study_nook_types,
                   bed_reading_corner, bed_reading_corner_types,
                   bedroom_wardrobes, braced_walls,
-                  circuits, closet, closet_types, countertops, panel_types,
+                  circuits, closet, closet_types, countertops, court_daybed, panel_types,
                   electrical, electrical_attic, electrical_floor_types, equipment_types,
                   fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets,
                   landscape, lighting, living_east_run, living_east_run_types, living_hammock,
@@ -426,7 +426,8 @@ PLAN = (
     .with_elements("g-deck", [*mep.GARAGE_DECK_ELEMENTS])
     # --- court (sunken garden / porch / balcony) --------------------------------------------
     .with_elements("court-low", [*sunken_garden.BASEMENT_ELEMENTS,
-                                 *sunken_garden_drainage.BASEMENT_ELEMENTS])
+                                 *sunken_garden_drainage.BASEMENT_ELEMENTS,
+                                 *court_daybed.COURT_DAYBED])
     .with_elements("court-main", [*sunken_garden.MAIN_ELEMENTS])
     .with_elements("court-upper", [*sunken_garden.SECOND_ELEMENTS])
     # --- entry (north bridge) --------------------------------------------------------------

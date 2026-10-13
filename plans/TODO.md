@@ -241,7 +241,6 @@ the future.
 - See if we can narrow the gap between FURN-A-STUDY-BUILTIN and the shelves of D-A-STUDY, or add a wood trim piece in front to maintain visual continuity
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door
-- If a hanging daybed on the porch: a `SuspensionAnchor` used 2-4 times with offsets; needs a host other than an interior joist field
 - Gold foil trim or panel accent somewhere
 - Consider swapping the shower and tub positions in the main floor master bathroom —
   [2026-10-09 investigation](../houses/catlin/notes/bath2_swap_review.md) recommends keeping

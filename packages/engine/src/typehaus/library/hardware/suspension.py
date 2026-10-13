@@ -1,4 +1,5 @@
-"""A hung seat's load path below its joist line: the saddle bolted through it, the swivel.
+"""A hung seat's load path below its joist line: the saddle bolted through it, the swivel or
+shackle under it.
 
 Named by ``SuspensionAnchor.hardware`` and graded by ``structural.suspension_anchor``.
 """
@@ -7,6 +8,7 @@ from __future__ import annotations
 
 from typehaus.hardware.catalog import (
     ROLE_SUSPENSION_SADDLE,
+    ROLE_SUSPENSION_SHACKLE,
     ROLE_SUSPENSION_SWIVEL,
     AllowableLoads,
     StructuralHardware,
@@ -50,4 +52,44 @@ FABRICATED_JOIST_SADDLE = StructuralHardware(
     weight_lb=6.0,
 )
 
-SUSPENSION_HARDWARE = (CROSBY_3_S_5_SWIVEL, FABRICATED_JOIST_SADDLE)
+FABRICATED_JOIST_SADDLE_HDG = StructuralHardware(
+    tag="fabricated-joist-saddle-58-hdg",
+    name="HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts",
+    role=ROLE_SUSPENSION_SADDLE,
+    manufacturer="fabricated",
+    model="SADDLE-4.5-2x58-HDG",
+    source="Shop-fabricated, exterior: ASTM A36 1/4 x 2 1/2 in strap bent to a U around a "
+           "3-ply 2x12 (10 3/4 in legs, 4 9/16 in inside), a welded 1/2 in plate padeye under "
+           "it for the shackle, hot-dip galvanized after fabrication (ASTM A123), and two "
+           "5/8 in ASTM A307 bolts HDG to ASTM A153 at 4 in centres, the row 2 1/2 in below "
+           "the line's top (the anchor's bolt_top_distance; NDS 3.4.3.3). ~7 lb with bolts "
+           "(18.4 in3 of plate at 0.284 lb/in3 + 1.6 lb of bolts, nuts and washers). "
+           "Galvanized, not stainless, so it sits on the galvanized "
+           "shackle with no dissimilar pair. Graded through the bolts and the line; the weld "
+           "and padeye are the fabricator's, proof-loaded to 2 x the anchor's demand",
+    weight_lb=7.0,
+)
+
+CROSBY_G_209_SHACKLE_12 = StructuralHardware(
+    tag="crosby-g-209-shackle-12",
+    name="Screw-pin anchor shackle, 1/2 in, galvanized, 2 t (no swivel: a bed must not spin)",
+    role=ROLE_SUSPENSION_SHACKLE,
+    manufacturer="Kito Crosby",
+    model="G-209-1/2",
+    source="Crosby G-209 screw-pin anchor shackle, 1/2 in, stock no. 1018455, hot-dip "
+           "galvanized forged carbon steel with an alloy pin, 0.7 lb (distributor listings, "
+           "read 2026-10-13). Moused pin. A 4-rope bed hangs on a shackle, never a swivel",
+    weight_lb=0.7,
+    allowable=AllowableLoads(
+        wll_lb=4409.0,
+        load_duration_factor=1.0,
+        fasteners="in-line through the saddle's padeye and the rope's thimble eye",
+        citation="Crosby G-209 1/2 in row (stock no. 1018455), read 2026-10-13 from "
+                 "distributor listings of the Crosby catalog: working load limit 2 t "
+                 "(4,409 lb), meets ASME B30.26; confirm against the Crosby catalog page "
+                 "when ordering",
+    ),
+)
+
+SUSPENSION_HARDWARE = (CROSBY_3_S_5_SWIVEL, FABRICATED_JOIST_SADDLE,
+                       FABRICATED_JOIST_SADDLE_HDG, CROSBY_G_209_SHACKLE_12)

@@ -1428,6 +1428,9 @@ class ResolvedCanvasObject:
     # ``None`` for anything not hung, or hung under nothing the model resolved.
     suspension_m: float | None = None
     suspended_from: str | None = None
+    #: A seat on several ropes: ``(x, y, cable_m)`` per hang point, x/y in the item's frame.
+    #: ``suspension_m`` is then the shortest of them. Empty for a single point at the centre.
+    suspension_points: tuple[tuple[float, float, float], ...] = ()
 
 
 @dataclass(frozen=True)

@@ -1748,6 +1748,9 @@
 "canvas_objects/FURN-S-SUITEBATH-RETURN/body_z0_m": 3.0861,
 "canvas_objects/FURN-S-SUITEBATH-RETURN/body_z1_m": 5.2197,
 "canvas_objects/FURN-S-SUITEBATH-RETURN/z_m": 3.0861,
+"canvas_objects/FURN-SG-DAYBED/body_z0_m": -2.3225125,
+"canvas_objects/FURN-SG-DAYBED/body_z1_m": -1.5859125,
+"canvas_objects/FURN-SG-DAYBED/z_m": -2.3225125,
 "canvas_objects/FURN-SG-SPLASH-BASIN/body_z0_m": -1.016,
 "canvas_objects/FURN-SG-SPLASH-BASIN/body_z1_m": -0.6604,
 "canvas_objects/FURN-SG-SPLASH-BASIN/z_m": -1.016,
@@ -16755,9 +16758,9 @@
 ],
 "geometry/CM-0ae342deae56/body": [
 -0.2869692,
--0.0885317,
+-0.0790067,
 44,
-"079edee2aaa9"
+"73dd74d9822b"
 ],
 "geometry/CM-0b18880b294c/body": [
 8.8484027,
@@ -18327,9 +18330,9 @@
 ],
 "geometry/CM-9db9ed063b65/body": [
 -0.2869692,
--0.0885317,
+-0.0790067,
 44,
-"079edee2aaa9"
+"73dd74d9822b"
 ],
 "geometry/CM-9dd17a82d886/body": [
 1.8405194,
@@ -18927,9 +18930,9 @@
 ],
 "geometry/CM-cf546eb42358/body": [
 -0.2869692,
--0.0885317,
+-0.0790067,
 44,
-"079edee2aaa9"
+"73dd74d9822b"
 ],
 "geometry/CM-cfb1f349136c/body": [
 2.994025,
@@ -18951,9 +18954,9 @@
 ],
 "geometry/CM-d012c1846582/body": [
 -0.2869692,
--0.0885317,
+-0.0790067,
 44,
-"079edee2aaa9"
+"73dd74d9822b"
 ],
 "geometry/CM-d0379156cdf3/body": [
 6.0975875,
@@ -90549,6 +90552,14 @@
 "solids/CN~LTP4~W-S-W4~125/z1_m": 3.101975,
 "solids/CN~LTP4~W-S-W4~126/z0_m": 2.994025,
 "solids/CN~LTP4~W-S-W4~126/z1_m": 3.101975,
+"solids/CN~LUS210-3Z~BM-SG-LDGE~01/z0_m": -0.2869692,
+"solids/CN~LUS210-3Z~BM-SG-LDGE~01/z1_m": -0.0790067,
+"solids/CN~LUS210-3Z~BM-SG-LDGE~02/z0_m": -0.2869692,
+"solids/CN~LUS210-3Z~BM-SG-LDGE~02/z1_m": -0.0790067,
+"solids/CN~LUS210-3Z~BM-SG-LDGW~03/z0_m": -0.2869692,
+"solids/CN~LUS210-3Z~BM-SG-LDGW~03/z1_m": -0.0790067,
+"solids/CN~LUS210-3Z~BM-SG-LDGW~04/z0_m": -0.2869692,
+"solids/CN~LUS210-3Z~BM-SG-LDGW~04/z1_m": -0.0790067,
 "solids/CN~LUS210SS~BM-SG-LDGE~01/z0_m": -0.2869692,
 "solids/CN~LUS210SS~BM-SG-LDGE~01/z1_m": -0.0885317,
 "solids/CN~LUS210SS~BM-SG-LDGE~02/z0_m": -0.2869692,
@@ -90565,10 +90576,10 @@
 "solids/CN~LUS210SS~BM-SG-LDGE~07/z1_m": -0.0885317,
 "solids/CN~LUS210SS~BM-SG-LDGE~08/z0_m": -0.2869692,
 "solids/CN~LUS210SS~BM-SG-LDGE~08/z1_m": -0.0885317,
-"solids/CN~LUS210SS~BM-SG-LDGE~09/z0_m": -0.2869692,
-"solids/CN~LUS210SS~BM-SG-LDGE~09/z1_m": -0.0885317,
-"solids/CN~LUS210SS~BM-SG-LDGE~10/z0_m": -0.2869692,
-"solids/CN~LUS210SS~BM-SG-LDGE~10/z1_m": -0.0885317,
+"solids/CN~LUS210SS~BM-SG-LDGW~09/z0_m": -0.2869692,
+"solids/CN~LUS210SS~BM-SG-LDGW~09/z1_m": -0.0885317,
+"solids/CN~LUS210SS~BM-SG-LDGW~10/z0_m": -0.2869692,
+"solids/CN~LUS210SS~BM-SG-LDGW~10/z1_m": -0.0885317,
 "solids/CN~LUS210SS~BM-SG-LDGW~11/z0_m": -0.2869692,
 "solids/CN~LUS210SS~BM-SG-LDGW~11/z1_m": -0.0885317,
 "solids/CN~LUS210SS~BM-SG-LDGW~12/z0_m": -0.2869692,
@@ -90581,14 +90592,6 @@
 "solids/CN~LUS210SS~BM-SG-LDGW~15/z1_m": -0.0885317,
 "solids/CN~LUS210SS~BM-SG-LDGW~16/z0_m": -0.2869692,
 "solids/CN~LUS210SS~BM-SG-LDGW~16/z1_m": -0.0885317,
-"solids/CN~LUS210SS~BM-SG-LDGW~17/z0_m": -0.2869692,
-"solids/CN~LUS210SS~BM-SG-LDGW~17/z1_m": -0.0885317,
-"solids/CN~LUS210SS~BM-SG-LDGW~18/z0_m": -0.2869692,
-"solids/CN~LUS210SS~BM-SG-LDGW~18/z1_m": -0.0885317,
-"solids/CN~LUS210SS~BM-SG-LDGW~19/z0_m": -0.2869692,
-"solids/CN~LUS210SS~BM-SG-LDGW~19/z1_m": -0.0885317,
-"solids/CN~LUS210SS~BM-SG-LDGW~20/z0_m": -0.2869692,
-"solids/CN~LUS210SS~BM-SG-LDGW~20/z1_m": -0.0885317,
 "solids/CN~LUS28Z~BM-BW-FC~01/z0_m": -0.2107692,
 "solids/CN~LUS28Z~BM-BW-FC~01/z1_m": -0.0424942,
 "solids/CN~LUS28Z~BM-BW-FC~02/z0_m": -0.2107692,

@@ -1,11 +1,12 @@
 """A load hung from the floor framing overhead: a hammock chair, a hanging daybed.
 
-``SuspensionAnchor`` is hosted on the item it carries and has no position of its own, so a
-dragged chair takes its anchor along and the anchor's framing (one LVL joist line,
+Each hang point of a ``HangingSeatType`` is one ``SuspensionAnchor``. An anchor is hosted on
+the item it carries and has no position of its own, so a dragged seat takes its anchors along
+and their framing (one joist line each, shared where two meet,
 ``resolve/suspension_anchors.py``) is re-derived on every build. Deleting the anchor deletes
 the framing. ``structural.suspension_anchor`` grades the load path, oracled by the house's
-``notes/hanging_seat_anchor.md``. Furniture, not engineering: nothing here reaches the
-``haus engineering`` register.
+``notes/hanging_seat_anchor.md`` and ``notes/court_daybed_anchor.md``. Furniture, not
+engineering: nothing here reaches the ``haus engineering`` register.
 """
 
 from __future__ import annotations
@@ -20,8 +21,8 @@ from typehaus.quantities import Length, Point2D, inch, pt
 
 
 class HangingSeatType(FurnitureType):
-    """A seat hung from one point overhead. ``height`` is the seat bottom to its own ring;
-    the suspension (rope, chain) between that ring and the anchor is not part of the type."""
+    """A seat hung from one or more points overhead. ``height`` is the seat bottom to its own
+    top (a ring, a frame's rails); the suspension (rope, chain) above it is not the type's."""
 
     #: The occupant load the product is rated for, lb, and the document that says so.
     rated_load_lb: float
@@ -34,6 +35,9 @@ class HangingSeatType(FurnitureType):
     ground_clearance: Length
     #: Ceiling-to-ring suspension the supplied kit can be set to, (min, max).
     suspension_range: tuple[Length, Length]
+    #: Where the suspension meets the framing overhead, in the item's frame: one point for a
+    #: chair, four corners for a bed. Each needs a ``SuspensionAnchor`` at that ``offset``.
+    hang_points: tuple[Point2D, ...] = (pt(inch(0), inch(0)),)
 
 
 @register_element
@@ -53,8 +57,13 @@ class SuspensionAnchor(Element):
     #: Through-bolts in the saddle, and their diameter: the connection the check grades.
     bolts: int = 2
     bolt_diameter: Length = inch(0.625)
+    #: The bolt row's centre below the member's top edge. ``None``: at mid-depth. Higher buys
+    #: NDS 3.4.3.3 depth near a bearing; never lower than mid-depth.
+    bolt_top_distance: Length | None = None
     #: The floor system to frame in. ``None``: the one plumb above, on the storey above.
     floor_ref: str | None = None
+    #: Wet service (NDS C_M on the bolts and hangers). ``None``: wet on an exterior deck.
+    wet_service: bool | None = None
     source: str = ""
 
 

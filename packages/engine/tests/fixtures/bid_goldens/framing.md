@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** b491bc214aaf31bd  
-**Lines:** 169
+**Model hash:** 14ab9f5929f21580  
+**Lines:** 175
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -40,7 +40,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 576 | LF ordered | 84 pcs, 478.1 LF cut | building |
 | 2x10 — hanger board (2x10) | 58 | LF ordered | 9 pcs, 43.0 LF cut | building |
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 32 | LF ordered | 5 pcs, 20.2 LF cut | building |
-| 2x12 — blocking, joist (2x12:kdat) | 464 | LF ordered | 48 pcs, 421.1 LF cut | building |
+| 2x12 — blocking, joist (2x12:kdat) | 424 | LF ordered | 46 pcs, 387.6 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.9 LF cut | building |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,844 | LF ordered | 657 pcs, 4085.1 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — brace, girt strapping, truss ladder blocking (2x4:kdat) | 2,868 | LF ordered | 488 pcs, 2480.7 LF cut | building |
@@ -53,6 +53,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x8 — header, joist, landing framing (2x8) | 256 | LF ordered | 67 pcs, 203.8 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 364 | LF ordered | 80 pcs, 296.3 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
+| 3-2x12 — joist (3-2x12:kdat) | 40 | LF ordered | 2 pcs, 33.5 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1134 pcs, 330.8 LF cut | building |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | 24 | LF ordered | 36 pcs, 16.5 LF cut | building |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | 8 | LF ordered | 1 pcs, 2.1 LF cut | building |
@@ -96,6 +97,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
 | DTT2Z screw hold-down / tension tie | 2 | ea |  | building |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT) | 1 | ea |  | building |
+| Screw-pin anchor shackle, 1/2 in, galvanized, 2 t (no swivel: a bed must not spin) (G-209-1/2) | 4 | ea |  | basement |
 | H10ASS stainless hurricane tie | 20 | ea |  | building |
 | H2.5A hurricane/seismic tie | 38 | ea |  | building |
 | H2.5A hurricane/seismic tie | 4 | ea |  | building |
@@ -135,14 +137,17 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS face-mount joist hanger | 2 | ea |  | building |
 | LUS face-mount joist hanger | 2 | ea |  | building |
 | LUS face-mount joist hanger | 9 | ea |  | building |
-| LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 10 | ea |  | building |
-| LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 10 | ea |  | building |
+| LUS210-3Z face-mount hanger, triple 2x10/2x12 (ZMAX) | 2 | ea |  | building |
+| LUS210-3Z face-mount hanger, triple 2x10/2x12 (ZMAX) | 2 | ea |  | building |
+| LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 8 | ea |  | building |
+| LUS210SS face-mount hanger, 2x10/2x12 (stainless) | 8 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 4 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 4 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | 2 | ea |  | building |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | 50 | ea |  | basement, main |
 | Steel U-saddle on a 3 1/2 in joist line, two 5/8 in through-bolts (SADDLE-3.5-2x58) | 1 | ea |  | main |
+| HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | 4 | ea |  | basement |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 71 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 106 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 12 | ea |  | building |
@@ -185,7 +190,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | butyl-tape, 1 1/2" on beam (butyl-tape) | 18 | LF |  | main |
 | butyl-tape, 1 1/4" on deck (butyl-tape) | 31 | LF |  | main, second |
-| butyl-tape, 1 1/2" on deck (butyl-tape) | 456 | LF |  | main, second |
+| butyl-tape, 1 1/2" on deck (butyl-tape) | 422.5 | LF |  | main, second |
+| butyl-tape, 4 1/2" on deck (butyl-tape) | 33.5 | LF |  | main |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 4.5 | LF |  | main |
 | butyl-tape-beam, 3" on beam (butyl-tape-beam) | 26.8 | LF |  | main |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 19.3 | LF |  | second |
@@ -282,6 +288,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x8 — header, joist, landing framing (2x8) | — |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | — |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | — |
+| 3-2x12 — joist (3-2x12:kdat) | — |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | — |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | — |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | — |
@@ -315,6 +322,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | CS16 coiled strap, 16 ga | — |
 | DTT2Z screw hold-down / tension tie | — |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT) | — |
+| Screw-pin anchor shackle, 1/2 in, galvanized, 2 t (no swivel: a bed must not spin) (G-209-1/2) | HA-SG-DAYBED-NE, HA-SG-DAYBED-NW, HA-SG-DAYBED-SE, HA-SG-DAYBED-SW |
 | H10ASS stainless hurricane tie | — |
 | H2.5A hurricane/seismic tie | — |
 | H2.5A hurricane/seismic tie | — |
@@ -354,6 +362,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |
+| LUS210-3Z face-mount hanger, triple 2x10/2x12 (ZMAX) | — |
+| LUS210-3Z face-mount hanger, triple 2x10/2x12 (ZMAX) | — |
 | LUS210SS face-mount hanger, 2x10/2x12 (stainless) | — |
 | LUS210SS face-mount hanger, 2x10/2x12 (stainless) | — |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | — |
@@ -362,6 +372,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | — |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | SL-B-FLOOR, SL-M-DECK |
 | Steel U-saddle on a 3 1/2 in joist line, two 5/8 in through-bolts (SADDLE-3.5-2x58) | HA-M-HAMMOCK |
+| HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | HA-SG-DAYBED-NE, HA-SG-DAYBED-NW, HA-SG-DAYBED-SE, HA-SG-DAYBED-SW |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
@@ -390,6 +401,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape, 1 1/2" on beam (butyl-tape) | BM-SG-LDGE, BM-SG-LDGW |
 | butyl-tape, 1 1/4" on deck (butyl-tape) | FS-BW-FLOOR, FS-BW-GARAGE, FS-SG-DECK |
 | butyl-tape, 1 1/2" on deck (butyl-tape) | FS-BW-FLOOR, FS-BW-GARAGE, FS-SG-DECK, FS-SG-PORCH |
+| butyl-tape, 4 1/2" on deck (butyl-tape) | FS-SG-PORCH |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | BM-BW-SCSILL |
 | butyl-tape-beam, 3" on beam (butyl-tape-beam) | BM-BW-FC, BM-BW-FE, BM-BW-GARAGE-SEAT, BM-BW-HOUSE-SEAT |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | BM-SG-BLE, BM-SG-BLW |

@@ -6,8 +6,9 @@ on one station share one line. Members stay category ``"joist"``, so blocking, s
 bay grading, glTF and take-off treat the line as the joist it is. Removing the anchor
 leaves the floor exactly as authored.
 
-A host that is not a plain joist field (open-web trusses, a deck) resolves no line and the
-record carries the reason; ``structural.suspension_anchor`` reports it as UNKNOWN.
+A host that is not a plain sawn or engineered joist field (open-web trusses) resolves no line
+and the record carries the reason; ``structural.suspension_anchor`` reports it as UNKNOWN.
+An exterior deck is framed like any field and graded wet.
 """
 
 from __future__ import annotations
@@ -118,8 +119,6 @@ def anchor_targets(model) -> dict[str, list[AnchorTarget]]:
 
 
 def _unframeable(host: FloorSystem) -> str:
-    if host.service == "deck":
-        return f"{host.tag} is an exterior deck, not an interior joist field"
     if host.joists.web_panel_pitch is not None:
         return (f"{host.tag} is open-web floor trusses: an added line is a truss order, "
                 "not a field change")

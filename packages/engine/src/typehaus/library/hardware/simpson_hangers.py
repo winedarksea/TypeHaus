@@ -362,6 +362,37 @@ LUS210Z_FACE_MOUNT_HANGER = StructuralHardware(
 )
 
 
+#: The triple-2x12 face-mount on a treated ledger: the porch line a SuspensionAnchor builds up
+#: to three plies. ZMAX, not stainless: no LUS210-3SS is listed (C-C-2021's DF/SP table names
+#: the stamping, the stainless LUS rows stop at the -2), so this part departs from the porch's
+#: LUS210SS — an owner flag, not a silent swap.
+LUS210_3Z_FACE_MOUNT_HANGER = StructuralHardware(
+    tag="simpson-lus210-3z-face-mount-hanger",
+    name="LUS210-3Z face-mount hanger, triple 2x10/2x12 (ZMAX)",
+    role=ROLE_FACE_MOUNT_JOIST_HANGER,
+    manufacturer=_SIMPSON,
+    model="LUS210-3Z",
+    exposure=EXPOSURE_TREATED,
+    fits_nominal=("3-2x10", "3-2x12"),
+    source="Simpson Strong-Tie LUS210-3 in ZMAX (G185) — 18 ga, W 4-5/8\", H 8-3/16\", "
+           "B 2\"; ZMAX per IRC R317.3.1 on a preservative-treated carrier. No stainless "
+           "triple is listed: the owner accepts ZMAX here or names another part",
+    allowable=AllowableLoads(
+        uplift_lb=1445.0,
+        download_lb=1830.0,
+        load_duration_factor=1.0,
+        species="DF/SP — the southern pine joists and ledger it is used on",
+        fasteners="(8) 0.162 x 3-1/2 into the header, (6) 0.162 x 3-1/2 into the joist "
+                  "(double-shear)",
+        citation=("Simpson Strong-Tie Wood Construction Connectors C-C-2021 p. 105, "
+                  "\"Face-Mount Hangers - Solid Sawn Lumber (DF/SP)\", TPL 2x12 joist size, "
+                  "LUS210-3 row, read 2026-10-13: uplift (160) 1,445, floor (100) 1,830, "
+                  "snow (115) 2,075, roof (125) 2,245 lb. download_lb is the floor column; "
+                  "dry values — take NDS C_M 0.70 in wet service, as Simpson direct"),
+    ),
+)
+
+
 HU212_3_FACE_MOUNT_HANGER = StructuralHardware(
     tag="simpson-hu212-3-face-mount-hanger",
     name="HU212-3 face-mount hanger, triple 2x12",

@@ -32,7 +32,7 @@ def test_hammock_bills_its_chair_and_hardware(catlin_model_ro):
     rows = [row for row in placeables_takeoff(catlin_model_ro) if CHAIR in row["tags"]]
     assert [row["count"] for row in rows] == [1]
     parts = {row["part_number"]: row["count"] for row in hardware_takeoff(catlin_model_ro)
-             if row["scope"] == "suspension anchor"}
+             if row["scope"] == "suspension anchor" and "HA-M-HAMMOCK" in row["tags"]}
     assert parts == {"3-S-5": 1, "SADDLE-3.5-2x58": 1}
 
 

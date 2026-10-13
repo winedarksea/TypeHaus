@@ -5017,3 +5017,27 @@ A reviewer's five points and two follow-ups; owner decisions marked.
   The first box's floor seat requires floor framing, so removing the floor still fails
   directly rather than relying on the former newel's reinforcement check.
   Remove only the post's two member/geometry entries from the elevation golden.
+
+### 2026-10-13 — Court hanging daybed on two derived 3-ply porch lines
+
+- `FURN-SG-DAYBED` (`plan/court_daybed.py`) hangs under `FS-SG-PORCH` in the court's west
+  bay, outside `WIN-B-SAUNA`: a twin, 4-rope `HANGING_DAYBED_TWIN` sized off the Atlantic
+  Swing Co. Simon (80 x 43 x 29 in), centred at (15'-5", -4'-11 1/4"), seat 18" off the court.
+  Owner basis: 500 lb rated, half of it per rope (one occupant on a long edge).
+- Four `SuspensionAnchor`s at the type's `hang_points` (76 x 36 in) land exactly on lines 003
+  and 006, which become `3-2x12:kdat` graded on a new wet southern-pine No. 2 row. Two plies
+  read 1.19 in bending; three read 0.79. The LUS210-3Z hanger at `BM-SG-LDGW` governs at 0.88
+  (C_M 0.70). `notes/court_daybed_anchor.md` is the hand pass.
+- **48" on lines 003/007 was rejected.** Moving a line 4" to a rope put its 3-ply end 2" from a
+  ledger Titen HD, behind the hanger's flange. On unmoved lines every anchor is 6" off.
+- **The saddle bolts sit 2 1/2" below the top, not at mid-depth.** The west ropes are 32" off
+  the ledger, inside NDS 3.4.3.3's 5d, where mid-depth bolts read 1.18.
+- Engine: deck hosts frame (open-web trusses still refuse); a line's member states take every
+  anchor on it; a hanger bearing is graded against the hanger's published download; a seat
+  outside any Room is graded against the nearest wall face; one cable is drawn per hang point.
+  An authored hanger spec now gives way on a built-up line to the part catalogued for its ply
+  count (LUS210SS → LUS210-3Z).
+- **Open, owner and engineer:** ZMAX rather than stainless on the two 3-ply hangers (no
+  LUS210-3SS is listed), and the ledger's THDs under the concentrated reaction (~1.13 of the
+  letter's implied per-anchor basis; note §5). The proposed fix, one added THD each side of
+  each 3-ply hanger, is not taken.

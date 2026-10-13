@@ -156,8 +156,9 @@ export function buildCanvasObject(
 }
 
 /**
- * A hung body's cable up to the surface it hangs from, and the canopy there — the same two
- * boxes emit/gltf/canvas_objects.py::_add_suspension writes. Both select the fixture.
+ * A hung body's cable up to the surface it hangs from, and the canopy there — one pair per
+ * hang point, the boxes emit/gltf/canvas_objects.py::_add_suspension writes. Both select the
+ * fixture.
  */
 export function buildSuspension(
   parent: THREE.Group,
@@ -171,17 +172,25 @@ export function buildSuspension(
   if (!hang || !item.position_m) return;
   const material = standardMaterial(0x9ea3a8, mode,
     { roughness: mode === "nordic" ? NORDIC_ROUGHNESS.massing : 1 });
-  const boxes: [number, number, number][] = [
-    [hang.cable_m, hang.z0_m, hang.z1_m],
-    [hang.canopy_m, hang.z1_m - hang.canopy_thickness_m, hang.z1_m],
-  ];
-  for (const [side, z0, z1] of boxes) {
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(side, z1 - z0, side), material);
-    mesh.position.copy(projectPointToScene(item.position_m, (z0 + z1) / 2, center));
-    mesh.userData.uid = item.uid;
-    mesh.userData.selectionKind = "canvas_object";
-    parent.add(mesh);
-    picks.push(mesh);
+  const [px, py] = item.position_m;
+  const turn = ((item.rotation ?? 0) * Math.PI) / 180;
+  const hangs: [number, number, number][] = hang.points?.length
+    ? hang.points.map(([dx, dy, z1]) => [px + dx * Math.cos(turn) - dy * Math.sin(turn),
+                                          py + dx * Math.sin(turn) + dy * Math.cos(turn), z1])
+    : [[px, py, hang.z1_m]];
+  for (const [x, y, top] of hangs) {
+    const boxes: [number, number, number][] = [
+      [hang.cable_m, hang.z0_m, top],
+      [hang.canopy_m, top - hang.canopy_thickness_m, top],
+    ];
+    for (const [side, z0, z1] of boxes) {
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(side, z1 - z0, side), material);
+      mesh.position.copy(projectPointToScene([x, y], (z0 + z1) / 2, center));
+      mesh.userData.uid = item.uid;
+      mesh.userData.selectionKind = "canvas_object";
+      parent.add(mesh);
+      picks.push(mesh);
+    }
   }
   byUid.set(item.uid, [...(byUid.get(item.uid) ?? []), material]);
 }

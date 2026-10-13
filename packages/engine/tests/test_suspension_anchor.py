@@ -1,6 +1,7 @@
 """``SuspensionAnchor``: its derived joist line, its removal, and its graded load path.
 
-The numbers pinned here are ``houses/catlin/notes/hanging_seat_anchor.md``'s, worked by hand.
+The numbers pinned here are ``houses/catlin/notes/hanging_seat_anchor.md``'s and
+``court_daybed_anchor.md``'s, worked by hand.
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ from typehaus.checks.structural._suspension_math import (
     SimpleSpan,
     bolt_double_shear,
     connection_shear,
+    deflection_at,
     point_deflection,
 )
 from typehaus.checks.structural.suspension_anchor import suspension_anchor
@@ -71,6 +73,32 @@ def test_the_note_numbers():
     z, mode = bolt_double_shear(0.625, 3.5, 0.25, 0.50)
     assert (round(z, 1), mode) == (1235.6, "Im")
     assert connection_shear(285, 3.5, 11.875, 0.625, True) == pytest.approx((4156.25, 6.25))
+
+
+def test_the_daybed_note_numbers():
+    """Two ropes on one wet 3-ply 2x12 line (court_daybed_anchor.md §3)."""
+    p, w, span = 538.95, 50 / 12, 202.25
+    beam = SimpleSpan(p=p, a=32.125, span=span, w=w, others=((p, 108.125),))
+    assert beam.reactions == pytest.approx((1125.5, 795.1), abs=0.1)
+    assert beam.max_moment == pytest.approx(56_380, abs=5)
+    assert beam.moment_at(32.125) == pytest.approx(34_007, abs=5)
+    assert beam.shear_at_load == pytest.approx(991.7, abs=0.1)
+    assert deflection_at(beam.loads, 108.125, span, 1.26e6, 4.5, 11.25, 0.0) == pytest.approx(
+        0.199, abs=0.001)
+    assert deflection_at(beam.loads, 32.125, span, 1.26e6, 4.5, 11.25, 0.0) == pytest.approx(
+        0.101, abs=0.001)
+    z, mode = bolt_double_shear(0.625, 4.5, 0.25, 0.55)
+    assert (round(z, 1), mode) == (1513.4, "IIIs")
+    mid, _ = connection_shear(169.75, 4.5, 11.25, 0.625, False)
+    raised, de = connection_shear(169.75, 4.5, 11.25, 0.625, False, top=2.5)
+    assert (round(mid), round(raised), de) == (842, 2995, pytest.approx(9.0625))
+
+
+def test_one_load_is_the_single_load_case():
+    single = SimpleSpan(p=740.2, a=106.0, span=216.0, w=1.0)
+    pair = SimpleSpan(p=740.2, a=106.0, span=216.0, w=1.0, others=((0.0, 50.0),))
+    assert pair.reactions == pytest.approx(single.reactions)
+    assert pair.max_moment == pytest.approx(single.max_moment)
 
 
 # --- the derived line ------------------------------------------------------------------
@@ -141,8 +169,8 @@ def test_a_dangling_carries_is_a_load_error(catlin_plan):
 def test_a_truss_host_frames_nothing(catlin_plan):
     plan = _replace_elements(catlin_plan, **{CHAIR: {"position": pt(ft(9), ft(4))}})
     model = SimpleNamespace(plan=plan, suspension_anchors=[], canvas_objects=[])
-    assert not anchor_targets(model)
-    [record] = model.suspension_anchors
+    assert ANCHOR not in {t.anchor.tag for ts in anchor_targets(model).values() for t in ts}
+    [record] = [r for r in model.suspension_anchors if r.tag == ANCHOR]
     assert record.floor == "FS-S-WEST" and "truss" in record.reason
     finding = _finding(_ctx(plan, model))
     assert finding.result is Result.UNKNOWN and "truss" in finding.message
@@ -156,7 +184,7 @@ def test_deleting_the_anchor_leaves_the_floor_as_authored(catlin_plan, catlin_mo
     spec = catlin_plan.by_tag(FLOOR).joists.member
     assert isinstance(catlin_plan.by_tag(FLOOR), FloorSystem)
     assert {m.profile for m in _east_joists(bare)} == {spec}
-    assert not bare.suspension_anchors
+    assert not [r for r in bare.suspension_anchors if r.tag == ANCHOR]
     # Joists only: the bearing blocks either side of line 003 are cut to the LVL's width.
     upgraded = [replace(m, profile=spec) for m in _east_joists(catlin_model_ro)]
     assert upgraded == _east_joists(bare)
@@ -226,3 +254,64 @@ def test_dragging_the_chair_carries_its_line(catlin_plan):
     finding = _finding(_ctx(moved, model))
     assert finding.result is Result.PASS and "line a00" in finding.message
     assert "47.4\" from RM-M-LIVING" in finding.message
+
+
+# --- several anchors, a deck host, a hanger bearing ------------------------------------------
+
+DAYBED = ("HA-SG-DAYBED-SW", "HA-SG-DAYBED-SE", "HA-SG-DAYBED-NE", "HA-SG-DAYBED-NW")
+
+
+def test_a_deck_host_frames_its_line(catlin_plan):
+    model = SimpleNamespace(plan=catlin_plan, suspension_anchors=[], canvas_objects=[])
+    targets = anchor_targets(model)
+    assert {t.anchor.tag for t in targets["FS-SG-PORCH"]} == set(DAYBED)
+    assert not [r for r in model.suspension_anchors if r.tag in DAYBED]
+
+
+def test_two_anchors_on_one_line_grade_heavier_than_either_alone(catlin_plan, catlin_model_ro):
+    both = _finding(_ctx(catlin_plan, catlin_model_ro), "HA-SG-DAYBED-SW")
+    alone = copy.copy(catlin_model_ro)
+    alone.suspension_anchors = [r for r in catlin_model_ro.suspension_anchors
+                                if r.tag != "HA-SG-DAYBED-SE"]
+    single = _finding(_ctx(catlin_plan, alone), "HA-SG-DAYBED-SW")
+    assert "the line also carries HA-SG-DAYBED-SE" in both.message
+    assert "bending 4,698/5,933" in both.message
+    assert "also carries" not in single.message and "bending 4,698" not in single.message
+
+
+def test_the_daybed_passes_on_its_hangers(catlin_plan, catlin_model_ro):
+    ctx = _ctx(catlin_plan, catlin_model_ro)
+    for tag in DAYBED:
+        finding = _finding(ctx, tag)
+        assert finding.result is Result.PASS, finding.message
+        for text in ("P = 250 lb x 2 + 39.0 lb own weight = 539 lb", "wet",
+                     "LUS210-3Z at BM-SG-LDGW (C_M 0.7) 1,126/1,281 lb (0.88)",
+                     "0.199/0.421 in (0.47)", "539/2,119 lb (0.25)",
+                     "Governs: LUS210-3Z at BM-SG-LDGW"):
+            assert text in finding.message, (tag, text)
+    west = _finding(ctx, "HA-SG-DAYBED-SW")
+    assert "(d_e 9.06\") 992/2,995 lb (0.33)" in west.message
+    assert "32.9\" from W-SG-W1's face" in west.message
+
+
+def test_mid_depth_bolts_fail_the_west_rope(catlin_plan, catlin_model_ro):
+    plan = _replace_elements(catlin_plan, **{"HA-SG-DAYBED-SW": {"bolt_top_distance": None}})
+    finding = _finding(_ctx(plan, catlin_model_ro), "HA-SG-DAYBED-SW")
+    assert finding.result is Result.FAIL and "992/842 lb (1.18)" in finding.message
+
+
+def test_a_dry_grade_in_wet_service_is_unknown(catlin_plan, catlin_model_ro):
+    plan = _replace_elements(catlin_plan, **{"HA-SG-DAYBED-SW": {
+        "member_grade": "microllam-lvl-2.0e"}})
+    finding = _finding(_ctx(plan, catlin_model_ro), "HA-SG-DAYBED-SW")
+    assert finding.result is Result.UNKNOWN and "wet service" in finding.message
+
+
+def test_an_offset_off_its_hang_point_fails(catlin_plan, catlin_model_ro):
+    plan = _replace_elements(catlin_plan, **{"HA-SG-DAYBED-SW": {
+        "offset": pt(inch(-30), inch(-18))}})
+    findings = suspension_anchor(_ctx(plan, catlin_model_ro))
+    assert any(f.result is Result.FAIL and "1 of FURN-HANGING-DAYBED-TWIN's 4 hang points"
+               in f.message for f in findings)
+    finding = _finding(_ctx(plan, catlin_model_ro), "HA-SG-DAYBED-SW")
+    assert finding.result is Result.FAIL and "not one of" in finding.message
