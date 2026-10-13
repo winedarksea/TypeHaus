@@ -217,7 +217,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # reads a list and ``solar`` is a dict of summaries.
                         "solar_modules", "backup_power",
                         "luminaire_schedule", "lighting_controls", "light_runs",
-                        "light_run_materials", "lighting_load",
+                        "light_run_materials", "lighting_load", "track_lighting_materials",
                         # Structured cabling.
                         "data_devices", "data_raceways", "poe_budget",
                         # Resolved-but-unbilled families.
