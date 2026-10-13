@@ -183,6 +183,10 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                 # A member running alongside a carrier is blocked or nailed to it, never hung.
                 if _parallel(member, carrier, rules.parallel_reject_deg):
                     continue
+                # Near the carrier's END is not against its face: the member's own width
+                # must overlap the carrier's run, or it passes beside it.
+                if _past_carrier_end(point, carrier, _width_m(member)):
+                    continue
                 # A floor-opening carrier takes only its own deck's joists and headers framing
                 # INTO it — a stringer head is the stair's detail, and a joist or rim running
                 # beside a trimmer pack bears on a plate.
@@ -220,7 +224,7 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                 axis=axis_of(carrier.p0, carrier.p1),
                 member_floor=member_floor, member_category=member.category,
                 outward_xy=(dx / run, dy / run) if run else None,
-                member_width_m=member.plan_width_m or cross_section(member.profile).width_m,
+                member_width_m=_width_m(member),
                 seat_z_m=bottom_z,
                 slope_radians=math.atan2(other_bottom_z - bottom_z, run)))
     return found
@@ -244,6 +248,19 @@ def _parallel(member, carrier: CarryingElement, reject_deg: float) -> bool:
         return False
     cos_angle = min(abs(mx * cx + my * cy) / lengths, 1.0)
     return math.degrees(math.acos(cos_angle)) < reject_deg
+
+
+def _width_m(member) -> float:
+    return member.plan_width_m or cross_section(member.profile).width_m
+
+
+def _past_carrier_end(point, carrier: CarryingElement, width_m: float) -> bool:
+    """The member's footprint lies wholly beyond either end of the carrier's run."""
+    run = math.dist(carrier.p0, carrier.p1)
+    if run < 1e-9:
+        return False
+    station = _station_along(point, carrier)
+    return station < -width_m / 2.0 - 1e-6 or station > run + width_m / 2.0 + 1e-6
 
 
 def _end_nailed(member, rules: HangerDetectionRules) -> bool:

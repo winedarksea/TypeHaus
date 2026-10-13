@@ -2027,6 +2027,8 @@ STAIR_HANDRAILS = [
     Railing(
         uid="CMRL02AAAA", tag="RL-M-HANDRAIL-W", type_ref="RAILING-INT-TI-HANDRAIL-42", path=(
             pt(ft(10, 6), ft(31, 1.625)),
+            # Pins the mid bracket on W-M-STRW stud-005 rather than at the run's midpoint.
+            pt(ft(10, 6), ft(28, 8)),
             pt(ft(10, 6), ft(26, 5.75)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),

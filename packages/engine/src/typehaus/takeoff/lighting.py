@@ -22,6 +22,12 @@ from typehaus.model.mep import ElectricalDevice
 from typehaus.model.placeables import Mount
 from typehaus.model.types import ElectricalDeviceType, LuminaireType
 from typehaus.resolve.model import ResolvedLightRun, ResolvedModel
+from typehaus.takeoff.lighting_supplies import (
+    PSU_SIZING_FACTOR,
+    effective_lighting_circuit,
+    electrical_devices,
+    supplied_loads,
+)
 
 _M_TO_FT = 3.280839895013123
 _M2_TO_FT2 = 10.7639104167
@@ -29,11 +35,6 @@ _M2_TO_FT2 = 10.7639104167
 # Mirrors ``takeoff/electrical.GENERAL_LIGHTING_VA_PER_FT2``. Restated rather than imported
 # so this module can be read on its own; the parity is pinned by the takeoff test.
 GENERAL_LIGHTING_VA_PER_FT2 = 3.0
-
-# The continuous-load factor a 24V driver is sized by (NEC 210.19(A)(1) basis), matching
-# ``checks/mep/lighting.PSU_SIZING_FACTOR``.
-PSU_SIZING_FACTOR = 1.25
-
 
 class _RunTypeTotals(TypedDict):
     type: str
@@ -46,6 +47,7 @@ class _RunTypeTotals(TypedDict):
 class _SupplyTotals(TypedDict):
     psu: str
     runs: list[str]
+    fixtures: list[str]
     length_ft: float
     watts: float
 
@@ -187,6 +189,7 @@ def lighting_controls(model: ResolvedModel) -> list[dict[str, object]]:
     """
     types = luminaire_types(model.plan.library)
     device_types = _device_types(model)
+    devices = electrical_devices(model)
     switches = {element.tag: element for storey in model.plan.storeys
                 for element in model.plan.storey_elements(storey.tag)
                 if _is_electrical_device(element)
@@ -201,7 +204,7 @@ def lighting_controls(model: ResolvedModel) -> list[dict[str, object]]:
     for load, kind in loads:
         product = types.get(getattr(load, "type_ref", "") or "")
         names = tuple(getattr(load, "controlled_by", ()) or ())
-        circuit = getattr(load, "circuit", None)
+        circuit = effective_lighting_circuit(load, devices)
         controls = []
         crossed = []
         for name in names:
@@ -258,13 +261,12 @@ def light_run_takeoff(model: ResolvedModel) -> dict[str, object]:
         row["runs"] = int(row["runs"]) + 1
         row["length_ft"] = float(row["length_ft"]) + length_ft
         row["watts"] = float(row["watts"]) + watts
-        if run.psu_ref is None:
-            continue
-        supply = by_psu.setdefault(run.psu_ref, {
-            "psu": run.psu_ref, "runs": [], "length_ft": 0.0, "watts": 0.0})
-        supply["runs"].append(run.tag)
-        supply["length_ft"] = float(supply["length_ft"]) + length_ft
-        supply["watts"] = float(supply["watts"]) + watts
+    for psu, tag, kind, watts, length_ft in supplied_loads(model):
+        supply = by_psu.setdefault(psu, {
+            "psu": psu, "runs": [], "fixtures": [], "length_ft": 0.0, "watts": 0.0})
+        supply["runs" if kind == "run" else "fixtures"].append(tag)
+        supply["length_ft"] += length_ft
+        supply["watts"] += watts
 
     devices = {element.tag: element for storey in model.plan.storeys
                for element in model.plan.storey_elements(storey.tag)
@@ -279,6 +281,7 @@ def light_run_takeoff(model: ResolvedModel) -> dict[str, object]:
             "psu": psu_tag,
             "type": getattr(device, "type_ref", None),
             "runs": sorted(supply["runs"]),
+            "fixtures": sorted(supply["fixtures"]),
             "length_ft": round(float(supply["length_ft"]), 1),
             "connected_watts": round(float(supply["watts"]), 1),
             "required_watts": round(required, 1),
@@ -344,6 +347,7 @@ def connected_lighting_va(model: ResolvedModel) -> dict[str, object]:
     types = _device_types(model)
     luminaire_tags = set(luminaire_types(model.plan.library))
     psu_tags = {run.psu_ref for run in model.light_runs if run.psu_ref}
+    psu_tags.update(device.psu_ref for device in _luminaires(model) if device.psu_ref)
 
     by_circuit: dict[str, _CircuitTotals] = {}
 

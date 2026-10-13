@@ -21,6 +21,7 @@ from typehaus.model.types import (
     EquipmentType,
     FixtureType,
     FurnitureType,
+    LuminaireType,
     RailingType,
     RegisterType,
     WindowType,
@@ -48,7 +49,7 @@ class Library(HausModel):
     # ``DuctRun`` states and ``prices.toml``'s ``[ducts]`` already qualifies on. Nothing
     # in the takeoff needs it; the static budget does.
     duct_product_types: tuple[DuctProductType, ...] = ()
-    electrical_device_types: tuple[ElectricalDeviceType, ...] = ()
+    electrical_device_types: tuple[LuminaireType | ElectricalDeviceType, ...] = ()
     circuits: tuple[Circuit, ...] = ()
     load_managements: tuple[LoadManagement, ...] = ()
     transitions: tuple[Transition, ...] = ()

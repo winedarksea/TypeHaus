@@ -112,8 +112,9 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # 42.9 later that day: ST-B2M's two rails left for RAILING-INT-TI-HANDRAIL-42 (9.9 LF,
     # the W rail now running to the top nosing), and the dark-steel rails moved 3/8" off
     # their walls for R311.7.8.2's clearance.
+    # 9.7 since 2026-10-13: the W rail stops 3 1/8" short, where W-M-STRW's face ends.
     assert by_type["(untyped railing)"] == pytest.approx(42.9, abs=0.1)
-    assert by_type["RAILING-INT-TI-HANDRAIL-42"] == pytest.approx(9.9, abs=0.1)
+    assert by_type["RAILING-INT-TI-HANDRAIL-42"] == pytest.approx(9.7, abs=0.1)
 
 
 def test_the_untyped_group_key_is_also_what_gets_emitted(bom):
@@ -762,7 +763,7 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
             "solar", "solar_modules", "backup_power",
         # Lighting
         "luminaire_schedule", "lighting_controls", "light_runs", "light_run_materials",
-        "lighting_load",
+        "lighting_load", "track_lighting_materials",
         # Data & low-voltage
         "data_devices", "data_raceways", "poe_budget",
         # Placeables

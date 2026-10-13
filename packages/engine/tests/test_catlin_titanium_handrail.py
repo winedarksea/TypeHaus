@@ -62,7 +62,7 @@ def test_the_takeoff_counts_the_fittings_and_the_stock(catlin_model_ro):
 def test_the_west_top_return_is_square_onto_the_corner_studs(catlin_model_ro):
     """Note §3: a stock elbow at y=26'-5 3/4", its whole flange on W-M-STRW's corner studs."""
     rail = catlin_model_ro.plan.by_tag("RL-M-HANDRAIL-W")
-    for point, expected in zip(rail.path, ((126, 373.625), (126, 317.75)), strict=True):
+    for point, expected in zip(rail.path, ((126, 373.625), (126, 344), (126, 317.75)), strict=True):
         assert point.xy_m == pytest.approx(tuple(v * _IN for v in expected))
     assert catlin_model_ro.wall("W-M-STRW2") is None
     (junction,) = [j for j in catlin_model_ro.junctions if j.node_tag == "N-M-STRJ"]

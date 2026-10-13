@@ -28,7 +28,7 @@ seat on a 42.0 x 37.0 mm tube.
 
 | item | bought | used | spare |
 |---|---|---|---|
-| Ti alloy tube 42 OD x 2.5 wall x ~1200 | 5 | 4 (2 per rail) | 1 full tube + 4 offcuts ~260-320 mm |
+| Ti alloy tube 42 OD x 2.5 wall x ~1200 | 5 | 4 (2 per rail) | 1 full tube + 4 offcuts ~260-370 mm |
 | Gr 2 sheet 500 x 1000 x 0.8, teardrop hem | 5 | 2 | 3 |
 
 Tube grade is not on the order (a bike-frame supplier, so likely Gr 9 Ti-3Al-2.5V). Ask for
@@ -39,7 +39,7 @@ Cut plan per rail, developed (sloped) length off the resolved RAIL1 sweep:
 | rail | developed | supports (developed station) | pieces |
 |---|---|---|---|
 | RL-M-HANDRAIL-E | 74.1" = 1882 mm | 0 / 37.3" / 74.1" | 2 x ~941 mm, spliced at the mid bracket |
-| RL-M-HANDRAIL-W | 69.4" = 1763 mm | 0 / 34.7" / 69.4" | 2 x ~881 mm, spliced at the mid bracket |
+| RL-M-HANDRAIL-W | 69.4" = 1763 mm | 0 / 36.8" / 69.4" | ~935 + ~828 mm, spliced at the mid bracket |
 
 All four returns are stock 90-degree elbows, square to the wall. Cut each rail piece to
 the elbow's measured socket, not to these lengths.
@@ -63,7 +63,8 @@ galvanic series, so the pair is benign indoors. Anchors are A4/316.
 ## 3. Mounting and backing
 
 - **E rail (W-B-CN, concrete):** two A4 6 mm screw anchors per plate, three per flange.
-- **W rail mid bracket** (y = 28'-7 5/8") lands on W-M-STRW stud-005 at 28'-8".
+- **W rail mid bracket** (y = 28'-8") is centred on W-M-STRW stud-005; a path vertex
+  holds it there, since a bracket otherwise sits at the run's midpoint.
 - **W rail top return** (y = 26'-5 3/4"): square onto W-M-STRW's stair face. Behind the
   flange are the wall's end stud and corner stud at the W-M-STOS2 L (y 26'-4 1/4" ..
   26'-7 1/4"); the 70 mm flange (y 26'-4 3/8" .. 26'-7 1/8") lands wholly on them, so no
@@ -94,7 +95,7 @@ galvanic series, so the pair is benign indoors. Anchors are A4/316.
 | at the widest drawn span, 947 mm | 890 x 947 / 4 / 2893 | 72.8 MPa |
 
 Bending governs at 0.28 on a 1000 mm span. That span is the type's `bracket_spacing_max`,
-and the drawn spans are 881-947 mm. Each support (bracket or flange) sees at most the full
+and the drawn spans are 828-947 mm. Each support (bracket or flange) sees at most the full
 890 N when the load lands on it, so buy fittings rated >= 0.9 kN. The splice sits over a
 bracket, so the sleeve carries shear and a small continuity moment, not midspan moment.
 

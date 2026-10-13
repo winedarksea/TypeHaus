@@ -128,11 +128,19 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict
     width_m, depth_m = (part.meters for part in footprint)
     height_m = height.meters if height is not None else 0.0
     lamp = lamp_role(getattr(item, "cct_k", None))
+    track = getattr(item, "track_lighting", None)
+    if track is not None:
+        from typehaus.model.placeable_symbols._track_lighting import track_geometry
+
+        strokes, parts = track_geometry(track)
+    else:
+        strokes = plan_symbol_strokes(symbol, width_m, depth_m)
+        parts = model_parts(model_symbol, width_m, depth_m, height_m)
     return {
         "plan_strokes": [{"points": [list(point) for point in stroke["points"]],
                           "closed": stroke["closed"], "weight": stroke["weight"],
                           "fill": part_hex(_lamp(stroke["fill"], lamp)) if stroke["fill"] else None}
-                         for stroke in plan_symbol_strokes(symbol, width_m, depth_m)],
+                         for stroke in strokes],
         # Ring outlines and oriented primitives are opt-in, keeping ordinary box models small.
         # ``role: counter`` lets a viewer drop the symbol's counter under a drawn slab.
         "model_parts": [{"center": list(part["center"]), "size": list(part["size"]),
@@ -143,7 +151,7 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict
                          **({"shape": "mesh", "mesh": part["mesh"]} if "mesh" in part else {}),
                          **({"points": [list(point) for point in part["points"]]}
                             if part["points"] else {})}
-                        for part in model_parts(model_symbol, width_m, depth_m, height_m)],
+                        for part in parts],
     }
 
 

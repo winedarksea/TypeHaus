@@ -156,8 +156,8 @@ def test_multiway_and_control_kinds_survive_into_the_schedule(catlin_model):
     # The west loft's sconce is switched at the fixture and names nothing.
     assert (rows["ED-A-STUDIO-SCONCE"]["integral_switch"]
             and not rows["ED-A-STUDIO-SCONCE"]["switches"])
-    # A 24V run reports its supply where a fixture reports a circuit.
-    assert rows["LR-S-HALL-GAP"]["circuit"] is None
+    # Supply-fed loads report the supply's branch and their DC source together.
+    assert rows["LR-S-HALL-GAP"]["circuit"] == "CKT-LT-UPPER"
     assert rows["LR-S-HALL-GAP"]["psu"] == "ED-S-HALL-LT-PSU"
 
 
@@ -221,10 +221,11 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     # (60 VA, the supply's rating), and the mirror bar became the 24 VA make-up bar (+8).
     # EQ-M-BATH2-STALL-FAN's ~30 VA is an Equipment and is not in this sum (1,374 with it).
     assert row["runs"] == 3 and row["fixtures"] == 50
-    assert row["connected_va"] == pytest.approx(1343.6, abs=0.5)
+    # Laundry's 9VA can becomes a 40VA supply; its 22W heads are not counted again.
+    assert row["connected_va"] == pytest.approx(1374.6, abs=0.5)
 
     panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-MAIN"]
-    assert panel["connected_va"] == pytest.approx(1343.6, abs=0.5)
+    assert panel["connected_va"] == pytest.approx(1374.6, abs=0.5)
     # 1,113 VA of a 15A branch: under the 1,440 VA an NEC 210.19(A)(1) continuous load may
     # take. The three switches added with those fixtures are all ED-T-SWITCH-DIM, which
     # carries no load_va — a dimmer is free on the circuit and costs only on the estimate.

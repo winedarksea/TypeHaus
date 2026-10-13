@@ -102,7 +102,7 @@ from typehaus import WallBacking, ft, inch
 # left-hand normal points east, into the garage.
 #
 # ST-B2M's titanium rails (plan/storeys/main.py): RL-M-HANDRAIL-E is on concrete (anchors),
-# and RL-M-HANDRAIL-W's mid bracket (y=28'-7 5/8") lands on W-M-STRW's stud-005 at 28'-8".
+# and RL-M-HANDRAIL-W's mid bracket (y=28'-8") is centred on W-M-STRW's stud-005.
 # Its square top return lands at y=26'-5 3/4" on W-M-STRW's end and corner studs at the
 # L, which take the whole flange, so it needs no band.
 # The foot return lands in the floor band behind the stair plywood — a field block,

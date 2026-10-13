@@ -424,7 +424,7 @@ def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     spare carries nothing at all — billing THHN against either would buy wire for pipe that
     will never hold it.
     """
-    power_runs = [run for run in model.conduits if run.service not in ("data", None)]
+    power_runs = [run for run in model.conduits if run.service in ("power_120", "power_240")]
     total_ft = sum(run.length_m * 3.280839895013123 for run in power_runs)
     if total_ft <= 0.0:
         return []

@@ -46,6 +46,7 @@ _PLAIN_SWITCH_MARK = "S"
 # Legible names for the forms, for the legend. Keyed by ``LuminaireForm.value`` so a new
 # form shows up as a missing legend row rather than as a silently unlabelled glyph.
 _FORM_LABEL = {
+    "track": "ADJUSTABLE TRACK",
     "recessed_can": "RECESSED CAN",
     "panel": "FLAT PANEL",
     "strip": "LED COVE / TAPE RUN",
@@ -102,7 +103,7 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
         positions[element.tag] = centre
         _emit_glyph(b, product.plan_symbol, product.footprint[0].meters,
                     product.footprint[1].meters, centre, _rotation_degrees(element),
-                    element.uid, element.tag)
+                    element.uid, element.tag, track=product.track_lighting)
         b.add(Text(anchor=_in((centre[0] + _label_offset(product), centre[1])),
                    content=product.type_mark or product.tag,
                    height=2.0, layer="E-LITE"))
@@ -127,7 +128,8 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
         positions[run.tag] = mid
         _emit_light_run_ticks(b, run)
 
-    _emit_psu_leaders(b, runs_on_storey, device_positions)
+    _emit_psu_leaders(b, [*runs_on_storey, *(light for light in luminaires if light.psu_ref)],
+                      device_positions, feeds=model.conduits)
     _emit_switch_legs(b, [*luminaires, *runs_on_storey], positions)
     _emit_legend(b, model, storey, types, forms_present)
     return b.build()
@@ -144,9 +146,14 @@ def _label_offset(product: object) -> float:
 
 def _emit_glyph(b: SceneBuilder, symbol: str | None, width_m: float, depth_m: float,
                 centre: tuple[float, float], rotation_degrees: float,
-                uid: str = "", tag: str = "") -> None:
+                uid: str = "", tag: str = "", *, track=None) -> None:
     """The fixture's own drawn geometry, placed and rotated like the canvas places it."""
-    for stroke in plan_symbol_strokes(symbol, width_m, depth_m):
+    strokes = plan_symbol_strokes(symbol, width_m, depth_m)
+    if track is not None:
+        from typehaus.model.placeable_symbols._track_lighting import track_geometry
+
+        strokes, _ = track_geometry(track)
+    for stroke in strokes:
         placed = place_local(stroke["points"], centre, rotation_degrees)
         b.add(Polyline(points=tuple(_in(point) for point in placed),
                        layer="E-LITE", lineweight=stroke["weight"] * 2,
@@ -203,18 +210,27 @@ def _unit(a: tuple[float, float]) -> tuple[float, float]:
     return (a[0] / n, a[1] / n) if n > 1e-12 else (0.0, 0.0)
 
 
-def _emit_psu_leaders(b: SceneBuilder, runs: list, device_positions: dict) -> None:
+def _emit_psu_leaders(b: SceneBuilder, runs: list, device_positions: dict, *, feeds=()) -> None:
     """A dashed leader from each run's nearest point to its PSU/driver, plus one marker per
     PSU — two runs sharing a supply (a common cove wiring pattern) get one marker, not two.
     """
     drawn_psus: set[str] = set()
+    routes = {(feed.from_ref, feed.to_ref): feed.path for feed in feeds
+              if feed.service == "power_24"}
     for run in runs:
         psu = getattr(run, "psu_ref", None)
         target = device_positions.get(psu) if psu else None
         if target is None:
             continue
-        origin = min(run.path, key=lambda point: math.dist(point, target))
-        b.add(Polyline(points=(_in(origin), _in(target)), layer="E-LITE-COVE",
+        path = getattr(run, "path", ())
+        origin = (min(path, key=lambda point: math.dist(point, target)) if path
+                  else device_positions.get(run.tag))
+        if origin is None:
+            continue
+        route = routes.get((psu, run.tag))
+        points = tuple(_in(point) for point in (target, *route)) if route else \
+            (_in(origin), _in(target))
+        b.add(Polyline(points=points, layer="E-LITE-COVE",
                        lineweight=LIGHT, linetype="DASHED"))
         if psu in drawn_psus:
             continue

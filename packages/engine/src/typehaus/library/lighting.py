@@ -9,6 +9,11 @@ the tag without a duplicate.
 from __future__ import annotations
 
 from typehaus import LuminaireForm, Service, ServicePort, ft, inch
+from typehaus.library.track_lighting import (
+    magnetic_track_spec,
+    standard_track_spec,
+    track_luminaire,
+)
 from typehaus.model import LuminaireType
 
 _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
@@ -16,6 +21,8 @@ _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
 _SOURCE = "Commodity luminaire class; photometry and wattage are the class's typical values."
 
 LUMINAIRE_CLASSES: tuple[LuminaireType, ...] = (
+    track_luminaire("ED-T-LT-TRACK-MAGNETIC", magnetic_track_spec()),
+    track_luminaire("ED-T-LT-TRACK-H120", standard_track_spec()),
     LuminaireType(
         tag="ED-T-LT-CAN4-4000",
         name='4" recessed can, 4000K, white regressed trim',

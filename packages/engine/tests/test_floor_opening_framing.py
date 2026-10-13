@@ -183,10 +183,10 @@ def test_only_the_stair_openings_southern_support_gap_is_headed(catlin_model_ro)
                if "FO-S-STAIR" in member.child_key]
     (header,) = headers
     assert header.child_key == "header-FO-S-STAIR-0"
-    assert header.length_m == pytest.approx(inch(9.5).meters)
+    assert header.length_m == pytest.approx(inch(7.75).meters)
     assert header.profile == "2-1.75x11.875 LVL"
     assert header.p0[1] == pytest.approx(inch(311.75).meters)
-    assert header.p1[1] == pytest.approx(inch(321.25).meters)
+    assert header.p1[1] == pytest.approx(inch(319.5).meters)
 
 
 def test_beyond_prescriptive_header_is_reported(catlin_plan):

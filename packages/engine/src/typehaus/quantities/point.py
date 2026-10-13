@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, final
 
-from typehaus.quantities.length import Length, m
+from typehaus.quantities.length import Length
 
 if TYPE_CHECKING:
     from pydantic import GetCoreSchemaHandler
@@ -57,14 +57,15 @@ class Point2D:
         def _validate(value: Any) -> Point2D:
             if isinstance(value, Point2D):
                 return value
-            if isinstance(value, (list, tuple)) and len(value) == 2:
-                x, y = value
-                return Point2D(x if isinstance(x, Length) else m(float(x)),
-                               y if isinstance(y, Length) else m(float(y)))
-            raise ValueError(f"cannot coerce {value!r} into Point2D")
+            return Point2D(*value)
 
-        return core_schema.no_info_plain_validator_function(
+        coordinate = _handler.generate_schema(Length)
+        return core_schema.no_info_after_validator_function(
             _validate,
+            core_schema.union_schema([
+                core_schema.is_instance_schema(Point2D),
+                core_schema.tuple_schema([coordinate, coordinate]),
+            ]),
             serialization=core_schema.plain_serializer_function_ser_schema(
                 lambda v: [v.x.to_source(), v.y.to_source()], when_used="json"
             ),

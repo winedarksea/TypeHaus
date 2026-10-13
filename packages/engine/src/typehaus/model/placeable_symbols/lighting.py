@@ -38,6 +38,7 @@ from typehaus.model.placeable_symbols._frame import (
     rect,
 )
 from typehaus.model.placeable_symbols._mirrors import mirror_light
+from typehaus.model.placeable_symbols._track_lighting import track_light
 from typehaus.model.placeable_symbols._wave_chandelier import wave_chandelier
 
 __all__ = ["LIGHTING_SYMBOLS"]
@@ -372,6 +373,7 @@ def suspended_linear_light() -> Builder:
 
 
 LIGHTING_SYMBOLS: dict[str, Builder] = {
+    "track-light": track_light,
     "recessed-can": recessed_can(),
     "panel-light": panel_light(),
     "sconce": sconce(throw="down"),

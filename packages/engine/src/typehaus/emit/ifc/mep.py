@@ -529,8 +529,16 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
     predefined = getattr(product_type, "ifc_predefined_type", None)
     if predefined and hasattr(element, "PredefinedType"):
         element.PredefinedType = predefined
-    ll.assign_representation(f, element, ll.add_prism_from_profile(
-        f, body, outline, product_type.height.meters if product_type is not None else 0.05, z0))
+    track = getattr(product_type, "track_lighting", None)
+    if track is not None:
+        from typehaus.emit.ifc.track_lighting import track_representation
+
+        representation = track_representation(f, body, track, (x, y),
+                                               float(_rotation_metadata(device, resolved)), z0)
+    else:
+        representation = ll.add_prism_from_profile(
+            f, body, outline, product_type.height.meters if product_type is not None else 0.05, z0)
+    ll.assign_representation(f, element, representation)
     ll.ensure_pset(f, element, PSET_SOURCE, {
         "uid": device.uid, "tag": device.tag,
         "rotation_degrees": _rotation_metadata(device, resolved)})
@@ -538,6 +546,7 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
                                                         "source_type": device.type_ref or ""})
     ll.ensure_pset(f, element, "TypeHaus_Device", {
         "kind": device.kind.value, "circuit": device.circuit or "",
+        "psu_ref": device.psu_ref or "",
         "mount": device.mount.kind.value if device.mount else "",
         "floor_box_listing": getattr(product_type, "floor_box_listing", None) or "",
         # A PoE device names no circuit — its power arrives over the data cable — so the
@@ -595,6 +604,14 @@ def _luminaire_photometry(product_type: Any) -> dict[str, Any]:
         "dimmable": bool(getattr(product_type, "dimmable", False)),
         "damp_rated": bool(getattr(product_type, "damp_rated", False)),
         "wet_rated": bool(getattr(product_type, "wet_rated", False)),
+        **({"track_system": product_type.track_lighting.system,
+            "head_count": product_type.track_lighting.head_count,
+            "rail_product": product_type.track_lighting.rail_product_ref,
+            "feed_product": product_type.track_lighting.feed_product_ref,
+            "installed_rail_m": product_type.track_lighting.rail_length.meters,
+            "stock_rail_m": product_type.track_lighting.stock_length.meters,
+            "track_configuration": product_type.track_lighting.model_dump_json()}
+           if getattr(product_type, "track_lighting", None) is not None else {}),
     }
 
 

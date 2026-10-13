@@ -414,21 +414,24 @@ def test_catlin_conduit_trunks(catlin_model):
     # the spa conduit": it runs 6" east of CD-B-SPA and parallel to it the whole way,
     # because NEC 800.133/725 forbids comms sharing a RACEWAY with power and
     # `ConduitRun.service` is one value, never a set.
-    assert len(catlin_model.conduits) == 17
+    assert len(catlin_model.conduits) == 18  # includes the laundry's Class 2 surface feed
     # Not all from the panel: the three microgrid runs start at the PV junction box and at
     # the inverter, and every data run starts at the patch enclosure.
     # CD-A-PV-EAST's from_ref is the RUN it continues rather than a device, which is the
     # honest statement for a second leg of one raceway: there is no junction box at the
     # elbow, the conduit simply turns.
     assert {run.from_ref for run in catlin_model.conduits} == {
-        "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV", "ED-B-NET-PATCH", "CD-B-ATTIC-RISER"}
+        "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV", "ED-B-NET-PATCH", "CD-B-ATTIC-RISER",
+        "ED-M-LAUNDRY-PSU"}
     rows = conduit_takeoff(catlin_model)
     # Power only — data and the capped spare are billed by takeoff/data.py, because comms
     # and power are separate orders pulled by separate trades and may not share a raceway.
-    assert {row["trade_size_in"] for row in rows} == {0.75, 1.0, 1.25, 1.5}
+    assert {row["trade_size_in"] for row in rows} == {0.5, 0.75, 1.0, 1.25, 1.5}
     # A loose sanity band, not a contract: no trunk group is a stub and none crosses the
     # house twice. The 1" group sits at 60 ft because it is four runs, not one.
-    assert all(20 < row["length_ft"] < 70 for row in rows)
+    assert all(20 < row["length_ft"] < 70 for row in rows if row["trade_size_in"] > 0.5)
+    feed = next(row for row in rows if row["trade_size_in"] == 0.5)
+    assert feed["tags"] == ["CR-M-LAUNDRY-24V"] and feed["length_ft"] < 3
     assert not [run.tag for row in rows for run in catlin_model.conduits
                 if run.tag in row["tags"] and run.service in ("data", None)]
     # The PV feed reaches the attic junction box in two legs. The riser
@@ -465,7 +468,7 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
         if element.element_kind == "ElectricalDevice")
     # Rows are trade-size groups, not runs: the three 1" microgrid runs join the group the
     # 1" trunk already made.
-    assert len(bom["conduit"]) == 4
+    assert len(bom["conduit"]) == 5  # laundry adds its own 1/2" group
     # The microgrid section is derived twice over: the placed ESS hardware, then the
     # shed-tier switching gear. The first row is the inverter because equipment leads.
     components = bom["backup_power"]["components"]
@@ -799,7 +802,8 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     assert set(payload) == {"panel_schedule", "service_load", "conduit", "conduit_schedule",
                             "devices", "solar", "data",
                             "backup_components", "backup_runtime", "lighting"}
-    assert set(payload["lighting"]) == {"schedule", "controls", "runs", "connected_va"}
+    assert set(payload["lighting"]) == {
+        "schedule", "controls", "runs", "connected_va", "track_materials"}
     assert payload["panel_schedule"] == panel_schedule(catlin_model)
     assert payload["service_load"] == service_load_summary(catlin_model)
     assert payload["conduit"] == conduit_takeoff(catlin_model)

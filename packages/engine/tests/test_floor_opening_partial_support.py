@@ -113,13 +113,21 @@ def test_catlin_local_header_seats_on_the_plate_and_hangs_from_the_south_trimmer
     (plate,) = [m for m in wall.members
                if m.child_key == "plate-top-0"]
     seat = Polygon(member_footprint(header)[0]).intersection(Polygon(member_footprint(plate)[0]))
-    assert seat.area == pytest.approx(inch(3.5).meters * inch(1.5).meters)
+    # W-M-STRW owns the L, so its cap runs to 316 1/4": the header bears 3 1/4" on it.
+    assert seat.area == pytest.approx(inch(3.5).meters * inch(3.25).meters)
+    # ...and stops short of the next truss, which keeps its full bearing on the plate.
+    (truss,) = [m for m in floor.members if m.child_key == "joist-0-020-0"]
+    assert header.p1[1] < truss.p0[1] - inch(0.875).meters
+    assert max(truss.p0[0], truss.p1[0]) == pytest.approx(inch(122.625).meters)
     assert header.z0_m >= wall.plate_top_z_m
     (trimmer,) = [m for m in floor.members if m.child_key == "trimmer-FO-S-STAIR-0-0"]
     assert (header.z0_m, header.z1_m) == (trimmer.z0_m, trimmer.z1_m)
     joints = [c for c in hung_connections(catlin_model_ro, HangerDetectionRules())
               if c.member_key.endswith(":header-FO-S-STAIR-0")]
     assert [c.carrier_tag for c in joints] == [f"{floor.uid}:trimmer-FO-S-STAIR-0-0"]
+    # The truss beside the header's end passes it and bears on the plate: no hanger.
+    assert not [c for c in hung_connections(catlin_model_ro, HangerDetectionRules())
+                if c.carrier_tag.endswith(":header-FO-S-STAIR-0")]
     # The header replaces the terminal ceiling nailer over the storage wall.
     assert not any(m.child_key == "partition-block-W-M-STOS2-003" for m in floor.members)
     assert header.p0[1] < inch(318).meters < header.p1[1]

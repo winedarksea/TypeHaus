@@ -21,6 +21,7 @@ where that was not available (the lit mirror) the note says so plainly.
 from __future__ import annotations
 
 from typehaus.model import Product
+from typehaus.library.track_lighting import MAGNETIC_TRACK_PRODUCTS
 
 # --- Lighting -----------------------------------------------------------------------------
 #
@@ -211,6 +212,7 @@ FLEURCO_HALO_MIRROR = Product(
            "evening dimmer's leg goes behind it. CONFIRM the damp listing (IP44 minimum).",
 )
 LIGHTING_PRODUCTS = (
+    *MAGNETIC_TRACK_PRODUCTS,
     LOTUS_LL4SR_CAN, LOTUS_LL4SR_CAN_50K, LOTUS_LL4SR_CAN_27K, FLEURCO_HALO_MIRROR, WESTGATE_VAPORTIGHT, DOLRIA_PC0008, ROBERN_VITALITY_ROUND,
     MODERN_FORMS_BANTAM, MODERN_FORMS_MYKONOS, CRAFTMADE_FORCE_XL,
     ARMACOST_RIBBONFLEX_COB, DIODE_VALENT_X, DIODE_OMNIDRIVE_X,

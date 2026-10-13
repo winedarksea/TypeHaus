@@ -19,13 +19,12 @@ from typehaus.model.electrical import luminaire_types
 from typehaus.model.enums import Occupancy
 from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_ring
-
-# The sizing factor a 24V LED supply is picked by: continuous load at 125%, the same
-# NEC 210.19(A)(1) basis a continuous branch-circuit load uses. A driver run at its
-# nameplate cooks; the margin is what buys its rated life.
-PSU_SIZING_FACTOR = 1.25
-
-_M_TO_FT = 3.280839895013123
+from typehaus.takeoff.lighting_supplies import (
+    PSU_SIZING_FACTOR,
+    effective_lighting_circuit,
+    electrical_devices,
+    supply_demands,
+)
 
 
 # WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR
@@ -71,6 +70,7 @@ def lighting_controls(ctx: CheckContext) -> list[Finding]:
                 for element in ctx.plan.storey_elements(storey.tag)
                 if element.element_kind == "ElectricalDevice"
                 and getattr(element.kind, "value", None) == "switch"}
+    devices = electrical_devices(ctx.model)
 
     out: list[Finding] = []
     controlled = 0
@@ -92,9 +92,9 @@ def lighting_controls(ctx: CheckContext) -> list[Finding]:
                 (element.tag,)))
             continue
         controlled += 1
-        circuit = getattr(element, "circuit", None)
+        circuit = effective_lighting_circuit(element, devices)
         if circuit is None:
-            continue  # a 24V run has no branch circuit of its own; its PSU does
+            continue  # a missing supply's branch is checked by the supply checks
         crossed = sorted({name for name in names
                           if switches[name].circuit not in (None, circuit)})
         if crossed:
@@ -264,7 +264,7 @@ def light_run_psu(ctx: CheckContext) -> list[Finding]:
                if element.element_kind == "ElectricalDevice"}
 
     out: list[Finding] = []
-    demand_by_psu: dict[str, float] = {}
+    demand_by_psu = supply_demands(ctx.model)
     for run in runs:
         product = types.get(run.type_ref)
         line_voltage = getattr(product, "voltage", 120) if product is not None else 120
@@ -279,11 +279,10 @@ def light_run_psu(ctx: CheckContext) -> list[Finding]:
                 cid, "light run " + run.tag + " names supply " + run.psu_ref
                      + ", which is not a device in this plan", (run.tag,)))
             continue
-        watts_per_ft = getattr(product, "watts_per_ft", None) or 0.0
-        demand_by_psu[run.psu_ref] = (demand_by_psu.get(run.psu_ref, 0.0)
-                                      + watts_per_ft * run.length_m * _M_TO_FT)
 
     for psu_tag in sorted(demand_by_psu):
+        if psu_tag not in devices:
+            continue
         required = demand_by_psu[psu_tag] * PSU_SIZING_FACTOR
         rating = getattr(types.get(devices[psu_tag].type_ref or ""), "load_va", None)
         if rating is None:
@@ -295,7 +294,7 @@ def light_run_psu(ctx: CheckContext) -> list[Finding]:
             out.append(_warn_fail(
                 cid, "supply " + psu_tag + " is rated " + f"{rating:.0f}"
                      + " W but drives " + f"{demand_by_psu[psu_tag]:.0f}"
-                     + " W of tape, which needs " + f"{required:.0f}"
+                     + " W of lighting, which needs " + f"{required:.0f}"
                      + " W at the 125% continuous factor", (psu_tag,)))
     if not out:
         out.append(_pass(cid, str(len(runs)) + " light runs resolve to a supply sized for "

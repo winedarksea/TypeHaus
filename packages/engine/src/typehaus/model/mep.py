@@ -520,6 +520,7 @@ class ElectricalDevice(Element):
     # ``location=Location(attachment=WallAttachment(...))``; kept only so old source loads.
     wall_ref: str | None = None
     circuit: str | None = None  # Circuit tag in Library.circuits (panel schedule)
+    psu_ref: str | None = None  # DC supply owns the branch connection for this luminaire
     type_ref: str | None = None
     room: str | None = None
     rotation: object | None = None

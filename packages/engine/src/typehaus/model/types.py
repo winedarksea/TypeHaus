@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import Literal
 
 from pydantic import model_validator
@@ -25,6 +26,11 @@ from typehaus.model.placeables import (
 )
 from typehaus.model.refs_holes import PublishedHole
 from typehaus.model.registry import register_constructor
+from typehaus.model.track_lighting import (
+    ASSEMBLY_DIMENSION_RELATIVE_TOLERANCE,
+    ASSEMBLY_DIMENSION_TOLERANCE_M,
+    TrackLightingSpec,
+)
 from typehaus.quantities import Length, UFactor, m
 
 
@@ -784,6 +790,7 @@ class ElectricalDeviceType(FurnitureType):
     nema: str | None = None
     # Connected load in volt-amps; summed per circuit by the panel-schedule takeoff.
     load_va: float | None = None
+    output_voltage: int | None = None  # DC supplies; distinct from branch voltage
     # Breaker spaces in the enclosure (panel kinds only) — what electrical.panel_spaces
     # reconciles the circuit slots against.
     spaces: int | None = None
@@ -864,6 +871,41 @@ class LuminaireType(ElectricalDeviceType):
     max_overall_height: Length | None = None
     # The canopy at the ceiling, which a cluster spreads to the width of its whole cascade.
     canopy_diameter: Length | None = None
+    track_lighting: TrackLightingSpec | None = None
+
+    @model_validator(mode="after")
+    def _track_configuration(self):
+        if (self.form == LuminaireForm.TRACK) != (self.track_lighting is not None):
+            raise ValueError("TRACK luminaires require a track_lighting configuration")
+        if self.track_lighting is not None:
+            from typehaus.model.placeable_symbols._track_lighting import (
+                track_bounds,
+                track_dimensions,
+            )
+
+            dimensions = track_dimensions(self.track_lighting)
+            actual = (self.footprint[0].meters, self.footprint[1].meters, self.height.meters)
+            if any(not math.isclose(a, b, abs_tol=ASSEMBLY_DIMENSION_TOLERANCE_M,
+                                    rel_tol=ASSEMBLY_DIMENSION_RELATIVE_TOLERANCE)
+                   for a, b in zip(actual, dimensions, strict=True)):
+                raise ValueError("Track assembly dimensions must match configured geometry")
+            x0, y0, _z0, x1, y1, _z1 = track_bounds(self.track_lighting)
+            expected = sorted(((x0, y0), (x1, y0), (x1, y1), (x0, y1)))
+            points = sorted(p.xy_m for p in self.footprint_shape.points) \
+                if self.footprint_shape is not None else []
+            if len(points) != 4 or any(not math.isclose(
+                    a, b, abs_tol=ASSEMBLY_DIMENSION_TOLERANCE_M,
+                    rel_tol=ASSEMBLY_DIMENSION_RELATIVE_TOLERANCE)
+                                      for point, corner in zip(points, expected, strict=True)
+                                      for a, b in zip(point, corner, strict=True)):
+                raise ValueError("Track footprint must retain the rail midpoint and actual bounds")
+            spec = self.track_lighting
+            if self.watts != spec.watts or self.lumens != spec.lumens:
+                raise ValueError("Track watts and lumens must be derived from configured heads")
+            voltage = 24 if spec.system == "magnetic_24v" else 120
+            if self.voltage != voltage or self.load_va != (None if voltage == 24 else spec.watts):
+                raise ValueError("Track branch load must match its electrical system")
+        return self
 
 
 for _name, _obj in (

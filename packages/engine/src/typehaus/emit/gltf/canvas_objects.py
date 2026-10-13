@@ -135,6 +135,11 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
         return False
     width_m, depth_m = (part.meters for part in footprint)
     parts = model_parts(symbol, width_m, depth_m, height.meters)
+    track = getattr(product_type, "track_lighting", None)
+    if track is not None:
+        from typehaus.model.placeable_symbols._track_lighting import track_geometry
+
+        _, parts = track_geometry(track)
     # Mirrors model/canvas._lamp: the generic ``lamp`` role becomes the type's CCT bin, so
     # a 4000K can exports the same shade the viewer draws.
     lamp = lamp_role(getattr(product_type, "cct_k", None))

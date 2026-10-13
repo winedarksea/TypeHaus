@@ -172,6 +172,9 @@ def _register_builtins() -> None:
     def _placeable_handler(kind: str) -> RemapHandler:
         def handler(el: Element, remap: ReferenceRemap) -> list[PatchOp]:
             changed: dict[str, object] = {}
+            psu = getattr(el, "psu_ref", None)
+            if psu and remap.resolve(psu) != psu:
+                changed["psu_ref"] = remap.resolve(psu)
             loc = getattr(el, "location", None)
             att = getattr(loc, "attachment", None)
             explicit = remap.rehost.get(el.tag)
@@ -193,7 +196,7 @@ def _register_builtins() -> None:
         return handler
 
     for _cls in (Furniture, Fixture, Appliance, Equipment, Register, ElectricalDevice):
-        fields = tuple(f for f in ("wall_ref", "location") if f in _cls.model_fields)
+        fields = tuple(f for f in ("wall_ref", "location", "psu_ref") if f in _cls.model_fields)
         remap_handler(_cls, ref_fields=fields)(_placeable_handler(_cls.__name__))
 
     @remap_handler(DrainCleanout, ref_fields=("wall_ref", "pipe_ref"))

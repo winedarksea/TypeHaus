@@ -30,6 +30,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     joist_flange,
     landscape_drainage,
     lighting,
+    lighting_supplies,
     lighting_suspension,
     open_web_panel,
     plumbing,

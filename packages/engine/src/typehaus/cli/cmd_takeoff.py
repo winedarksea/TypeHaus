@@ -113,6 +113,7 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
                "lighting_controls": bom["lighting_controls"],
                "light_runs": bom["light_runs"],
                "light_run_materials": bom["light_run_materials"],
+               "track_lighting_materials": bom["track_lighting_materials"],
                "lighting_load": bom["lighting_load"],
                # Same argument as lighting_controls above: a section the CLI drops is
                # invisible to the estimate and to variant compare.

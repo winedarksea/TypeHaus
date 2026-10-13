@@ -72,6 +72,7 @@ from typehaus.takeoff.shelving import shelving_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff, stair_tread_takeoff
 from typehaus.takeoff.steel import steel_members_takeoff
+from typehaus.takeoff.track_lighting import track_lighting_materials
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
@@ -242,6 +243,7 @@ def bill_of_materials(
         # The cove/LED order sheet: channel and tape by the foot, end caps and corner
         # connectors by the piece — where ``light_runs`` above bills one blended length.
         "light_run_materials": light_run_materials(model),
+        "track_lighting_materials": track_lighting_materials(model),
         "lighting_load": connected_lighting_va(model),
         # The low-voltage program (→ takeoff/data.py): the E-603 device schedule, the data
         # and spare raceways ``conduit`` deliberately excludes, and the PoE draw the panel

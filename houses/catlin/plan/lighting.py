@@ -27,13 +27,16 @@
 # Uids are QT/QR + storey letter + serial (Crockford base32, no I/L/O/U → model/ids.py).
 
 from .sauna_types import LIGHT_RAIL_HEIGHT_IN, READING_LIGHT_PATH, WEST_LIGHT_PATH
+from .laundry_lighting_types import LAUNDRY_SUPPLY_MOUNT, LAUNDRY_TRACK_DROP
 
 from typehaus import (
     DeviceKind,
+    ConduitRun,
     ElectricalDevice,
     LightRun,
     Mount,
     MountKind,
+    Service,
     deg,
     ft,
     inch,
@@ -146,6 +149,7 @@ BASEMENT_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-STR3", face="left", distance_from_start=inch(28),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+
 
     # ** RM-B-SAUNA IS LIT FROM UNDER THE BENCHES SINCE 2026-09-13; NOTHING ELECTRICAL IS
     # LEFT IN THE HOT ROOM. ** ED-B-SAUNA-LT (mark V, a $1,500-2,250 Cariitti fibre kit) was
@@ -1037,14 +1041,28 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-BDN1", face="left", distance_from_start=inch(15.71875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # RM-M-LAUNDRY / RM-M-CLOSET / RM-M-MUDROOM: 3" cans. Small rooms want a small
-    # aperture — a 4" can in a 22 ft2 laundry is a headlamp.
-    # The laundry's can sits over the machines; the closet's is centred on the corridor.
-    ElectricalDevice(uid="QTM000SAAA", tag="ED-M-LAUNDRY-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(10, 8), ft(20, 2)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY",
+    # The rail is north of the tall machine body: both task axes remain clear of it.
+    # Surface mounting leaves the existing ceiling ducts and framing intact.
+    ElectricalDevice(uid="QTM000SAAA", tag="ED-M-LAUNDRY-TRACK", kind=DeviceKind.LIGHT,
+                     position=pt(inch(130.7), inch(258)), type_ref="ED-T-LT-TRACK-LAUNDRY",
+                     psu_ref="ED-M-LAUNDRY-PSU", room="RM-M-LAUNDRY",
                      controlled_by=("ED-M-LAUNDRY-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+                     mount=Mount(kind=MountKind.CEILING, drop=LAUNDRY_TRACK_DROP)),
+    ElectricalDevice(uid="QTM02YAAAA", tag="ED-M-LAUNDRY-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-LT-PSU-PUREEDGE-40", circuit="CKT-LT-MAIN",
+                     room="RM-M-LAUNDRY", controlled_by=("ED-M-LAUNDRY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=LAUNDRY_SUPPLY_MOUNT),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-BA2E", face="left", distance_from_start=inch(11),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # Class 2 surface feed: above the accessible supply, then along the ceiling to the
+    # west end canopy. Its upper surface stays below 108"; no ceiling bay is disturbed.
+    ConduitRun(uid="QRM02YAAAA", tag="CR-M-LAUNDRY-24V",
+               from_ref="ED-M-LAUNDRY-PSU", to_ref="ED-M-LAUNDRY-TRACK",
+               service=Service.POWER_24, trade_size=inch(0.5),
+               path=(pt(inch(104.815), inch(257)), pt(inch(104.815), inch(257.5)),
+                     pt(inch(112.7), inch(257.5)), pt(inch(112.7), inch(258))),
+               elevations=(inch(90.37), inch(107.5), inch(107.5), inch(107.5))),
     # ** BOTH THESE SWITCHES FOLLOW W-M-BA2E's FACE, AND IT MOVED (2026-09-09). ** The bath2
     # east line went 2" east and the W-M-BA2E2 jog came off, so ONE finished face at
     # x=101 3/8" now serves both — 99 3/8" and 106 3/4" before. A wall device's footprint is

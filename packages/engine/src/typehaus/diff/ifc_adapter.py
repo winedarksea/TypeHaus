@@ -149,6 +149,15 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         body_z0 = item.body_z0_m if recessed_device else item.z_m
         body_z1 = item.body_z1_m if recessed_device else body_z0 + height
         centroid, bbox = _bounds(item.footprint, body_z0, body_z1)
+        track = getattr(device_types.get(item.type_ref or ""), "track_lighting", None)
+        if track is not None:
+            from typehaus.model.placeable_symbols import place_local
+            from typehaus.model.placeable_symbols._track_lighting import track_geometry
+
+            strokes, _ = track_geometry(track)
+            points = [point for stroke in strokes for point in stroke["points"]]
+            centroid, bbox = _bounds(place_local(points, item.position, item.rotation_degrees),
+                                     body_z0, body_z1)
         attrs = {"type": item.type_ref or ""}
         attrs["rotation_degrees"] = f"{item.rotation_degrees:.6f}"
         ports = _type_ports(model, item.type_ref)

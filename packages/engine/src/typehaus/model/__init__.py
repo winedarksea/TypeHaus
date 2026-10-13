@@ -224,6 +224,7 @@ from typehaus.model.structure import (
     Wedge,
 )
 from typehaus.model.suspension import HangingSeatType, SuspensionAnchor
+from typehaus.model.track_lighting import TrackHeadProduct, TrackHeadSpec, TrackLightingSpec
 from typehaus.model.trim import (
     DischargeExtension,
     Downspout,
@@ -354,7 +355,7 @@ __all__ = [
     "BuiltInBookcaseBay", "BuiltInBookcaseSpec",
     "HeatPumpRating",
     "RegisterType", "RailingType", "DuctProductType", "ElectricalDeviceType",
-    "LuminaireType", "MeshRef",
+    "LuminaireType", "MeshRef", "TrackHeadProduct", "TrackHeadSpec", "TrackLightingSpec",
     "JoistSpec", "JoistReinforcement", "DeckLayer", "FloorSystem", "FloorOpening",
     "FloorOpeningEdgeInterval", "FloorOpeningPocketClosure",
     "Slab", "SlabThermalBreak",

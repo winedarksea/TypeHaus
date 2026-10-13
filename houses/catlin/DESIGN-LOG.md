@@ -20,18 +20,22 @@ Removed W-M-STRW2 and its free-end node N-M-STR1 to clear the hallway. W-M-STRW 
 meets W-M-STOS2 as an L; the slight hallway jog is intentional. Both stairs' widths,
 treads, start/finish positions and both opening outlines are unchanged.
 
-FO-S-STAIR's west edge now declares only W-M-STRW. The resolver subtracts supported
-intervals and sizes headers for their actual seated spans. Its southern gap takes one
-9 1/2-inch, two-ply 11 7/8-inch LVL inside FS-S-WEST's existing floor band, hung from
-the southern trimmer and seated 1 1/2 inches on W-M-STRW's top plate. No wall cap
-projects into the hall. Joist clipping and trimmer support read those same intervals.
-The header also occupies the storage wall's terminal ceiling-block station, so the
-blocking pass uses it there instead of generating an overlapping second member.
+W-M-STRW owns the L. STOS2 is a partition whose plates sit 5/8" low for the deflection
+gap, so it butts with no top-plate lap; when it owned the corner, the two walls' plates
+crossed in the corner square and W-M-STRW's cap stopped short. W-M-STRW's double top plate
+now runs to STOS2's south face.
 
-RL-M-HANDRAIL-W keeps its full graspable path. Its top return offsets onto W-M-STRW's
-stair face at y=26'-9 1/2", at the rail endpoint's height, with a wall-normal flange
-and the rehosted 9-inch BK-M-STRW-RAIL-TOP behind it. This return needs a formed offset
-fitting rather than a stock 90-degree elbow; see notes/titanium_handrail_backsplash.md.
+FO-S-STAIR's west edge declares only W-M-STRW. Its southern gap takes one 7 3/4", two-ply
+11 7/8" LVL inside FS-S-WEST's floor band, hung from the southern trimmer and seated on
+W-M-STRW's top plate, 1 5/8" clear of the next truss, which keeps its full bearing. The
+squash block under W-M-STRW's end bay is kept (bearing blocks now follow any overlap of a
+wall above, not only a bay's midpoint).
+
+RL-M-HANDRAIL-W stops at y=26'-5 3/4" and returns square on a stock elbow; its flange lands
+on W-M-STRW's end and corner studs, so BK-M-STRW2-RAIL-TOP is retired. The owner chose
+this over extending into the open hall: the rail ends 3 1/8" short of the top nosing
+(notes/titanium_handrail_backsplash.md §3). An offset fitting reaching the old end point
+was tried the same day and rejected: no stock part, and the tube met its flange at 22°.
 
 ## Sauna lying bench and window-side reading place (2026-10-11)
 

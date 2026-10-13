@@ -33,6 +33,7 @@ from typehaus.takeoff.lighting import (
 )
 from typehaus.takeoff.plumbing import plumbing_takeoff
 from typehaus.takeoff.runs import conduit_schedule
+from typehaus.takeoff.track_lighting import track_lighting_materials
 
 
 def systems_json(
@@ -107,6 +108,7 @@ def systems_json(
                 "controls": lighting_controls(model),
                 "runs": light_run_takeoff(model),
                 "connected_va": connected_lighting_va(model),
+                "track_materials": track_lighting_materials(model),
             },
             # The low-voltage reader's whole payload, verbatim from takeoff/data.py — the
             # three derivations the E-603 sheet prints. Filed under `electrical` beside

@@ -171,6 +171,7 @@ class Service(Enum):
     GAS = "gas"
     POWER_120 = "power_120"
     POWER_240 = "power_240"
+    POWER_24 = "power_24"  # Class 2 DC lighting feeds, separate from line-voltage trunks
     SUPPLY_AIR = "supply_air"
     RETURN_AIR = "return_air"
     VENT = "vent"
@@ -494,6 +495,7 @@ class LuminaireForm(Enum):
     """
 
     RECESSED_CAN = "recessed_can"
+    TRACK = "track"
     PANEL = "panel"
     STRIP = "strip"
     SCONCE = "sconce"

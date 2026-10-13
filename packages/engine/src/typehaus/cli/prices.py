@@ -366,6 +366,7 @@ UNPRICED_VIEWS: dict[str, str] = {
     "data_devices": "priced in [placeables] as the ED-T-* types",
     "luminaire_schedule": "priced in [placeables] as the ED-T-LT-* types",
     "lighting_controls": "priced in [placeables] as the ED-T-* types",
+    "track_lighting_materials": "component order view of track placeables; vendor quote required",
     # Schedule and engineering summaries — a panel schedule is not a thing you buy. The
     # breakers behind it are the electrical-afci-gfci-breakers allowance.
     "panel_schedule": ("schedule data; its row COUNT drives the electrical-afci-gfci "
