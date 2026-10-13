@@ -218,21 +218,21 @@ def test_an_unbound_condition_still_warns():
     assert findings[0].check_id == "integrity.condition_coverage"
 
 
-def test_suppressed_bindings_derive_no_detail_sheets(catlin_model):
+def test_suppressed_bindings_derive_no_detail_sheets(catlin_model_ro):
     """Catlin end-to-end: the veneer reveals and the surviving assembly-change conditions
     are present and bound, but scaffold nothing.
 
     The brick veneer's reveals are this shape of suppression (TR-CATLIN-VENEER-OPENING)."""
     from typehaus.emit.draw.details import derive_detail_slices
 
-    cond_keys = {c.key for c in catlin_model.conditions}
+    cond_keys = {c.key for c in catlin_model_ro.conditions}
     assert "opening_perimeter:BASEMENT_BRICK_VENEER" in cond_keys
-    derived_keys = {d.key for d in derive_detail_slices(catlin_model)}
+    derived_keys = {d.key for d in derive_detail_slices(catlin_model_ro)}
     assert "opening_perimeter:BASEMENT_BRICK_VENEER" not in derived_keys
     assert not {k for k in derived_keys if k.startswith("assembly_change:")}
 
 
-def test_catlin_assembly_change_noise_is_gone(catlin_model):
+def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
     """The 12 node-sharing false positives are down to the real in-plan changes.
 
     Each entry is a genuine assembly transition authored in the catlin plan, not
@@ -318,7 +318,7 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     accident — if this key ever comes back without the brick coming back with it, something
     has re-ledged a stem for no load.
     """
-    keys = sorted({c.key for c in catlin_model.conditions
+    keys = sorted({c.key for c in catlin_model_ro.conditions
                    if c.key.startswith("assembly_change:")})
     assert keys == [
         # N-B-S1, where the buried south wall meets the sunken garden's sauna curb: the
@@ -379,8 +379,6 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # staggered sound wall, the one node where this key still fires against a plain
         # INT_2X4_PARTITION neighbour.
         "assembly_change:INT_2X4_STAGGERED_GWB|INT_2X6_STAGGERED_PLUMBING",
-        # N-M-STRJ: W-M-STRW's upper gypsum stops at the fully open W-M-STRW2 stub.
-        "assembly_change:INT_2X6_BRG_EXPOSED_PLY|INT_2X6_BRG_MUDROOM_UPPER_GWB",
         # N-B-BA-NW. W-B-STR3 (the closet's Type X face) hands off to W-B-STR3B, which keeps
         # the family's stair plywood — the leaf stops here because the closet does. The base
         # tag was STAIRWALL_INT_2X6_BRG until 2026-09-12, when it merged with the mudroom's

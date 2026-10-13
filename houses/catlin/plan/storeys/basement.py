@@ -775,10 +775,10 @@ WALLS = [
     # (reference: "Stairway 7' x 16' 6 1/2""). Framed, not poured: it
     # holds back no earth (`unbalanced_fill` was ft(0) the whole time it was concrete), and
     # what it actually does is carry FS-M-MECH/FS-M-STAIR's short joists — the stubs the
-    # stair well leaves — and stack W-M-STRW/W-M-STRW2 above. That is a stud-wall job on a
+    # stair well leaves — and stack W-M-STRW above. That is a stud-wall job on a
     # footing, not a pour: ~9.8 cy of concrete out, and RM-B-FURNACE gains 3 1/8".
     # Split at N-B-BA-W: W-B-STR keeps tag/uid and the north 14'-2 5/8" that
-    # W-M-STRW/W-M-STRW2 stack on; W-B-STR2 is the 3'-9 3/8" stub alongside the bathroom,
+    # W-M-STRW stacks on; W-B-STR2 is the 3'-9 3/8" stub alongside the bathroom,
     # carrying its three ceiling-level service crossings (plan/mep.py's WALL_SLEEVES).
     # Split again at N-B-ESS-SE (y=31'-0"), for the ESS closet's south
     # partition, exactly as it was split at N-B-BA-W for the bathroom. **Unlike the north
@@ -786,10 +786,8 @@ WALLS = [
     # y 26'-6"..36'-0" and crosses from W-B-STR onto W-B-STR3 halfway along. It keeps
     # naming W-B-STR — `resolve/stacking.py` picks it as the sole candidate on both basement
     # segments, since it is the only main-storey wall whose axis overlaps either by the 2'
-    # minimum. W-M-STRW2 (trimmed to 5 3/8", south of the split, nominally
-    # `stacks_on="W-B-STR3"`) never actually resolves a stack edge either way — at 5 3/8" it
-    # cannot clear that 2' overlap test as upper or lower — so its `stacks_on` is honest
-    # geometry, not a load path; its real job is FO-S-STAIR's bearing coverage (second.py).
+    # minimum. Removing the main-storey's southern wall stub leaves this stack unchanged;
+    # FO-S-STAIR's short local header replaces its opening-edge support (second.py).
     #
     # **ALIGNMENT is the whole of it**, and the two failure modes below are why it is what
     # it is. Framing this line was tried and backed out once, for one reason: that

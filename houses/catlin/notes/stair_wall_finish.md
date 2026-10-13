@@ -1,7 +1,7 @@
 # Painted stair wall finish
 
-**Applies to:** `INT_2X6_BRG_EXPOSED_PLY` on `W-B-STR2`, `W-B-STR3B`, and
-`W-M-STRW2`, plus its `INT_2X6_BRG_MUDROOM_UPPER_GWB` variant on `W-M-STRW`;
+**Applies to:** `INT_2X6_BRG_EXPOSED_PLY` on `W-B-STR2` and `W-B-STR3B`,
+plus its `INT_2X6_BRG_MUDROOM_UPPER_GWB` variant on `W-M-STRW`;
 its Type X variants remain as authored.
 
 The stair face is nominal 5/8-inch paint-grade veneer-core hardwood plywood. A smooth
@@ -28,8 +28,9 @@ edge with a J or reveal trim; do not feather compound onto the exposed wood.
 Fit flat 2x6 blocks between the studs across the full 5 1/2-inch cavity depth,
 with their underside at 6'-0" and top at 6'-1 1/2". Their front edges sit behind
 the gypsum. Use Select Structural S4S Douglas fir with eased corners, matching
-the studs' clear satin hardwax-oil finish on the visible undersides. W-M-STRW2's
-short fragment and the basement walls retain their existing finishes.
+the studs' clear satin hardwax-oil finish on the visible undersides. The basement walls
+retain their existing finishes. W-M-STRW ends at the W-M-STOS2 L corner; the former
+southern stub is removed, and its replacement header stays inside the upstairs floor.
 
 **Product references:** [Columbia Forest Products 5/8-inch hardwood plywood](https://www.columbiaforestproducts.com/plywood/classic-core),
 [APA panel thickness labeling](https://www.apawood.org/guides-tools-training/technical-document-library/technical-topics/panel-thickness-tolerances-and-labeling/),

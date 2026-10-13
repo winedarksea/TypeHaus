@@ -103,9 +103,9 @@ from typehaus import WallBacking, ft, inch
 #
 # ST-B2M's titanium rails (plan/storeys/main.py): RL-M-HANDRAIL-E is on concrete (anchors),
 # and RL-M-HANDRAIL-W's mid bracket (y=28'-7 5/8") lands on W-M-STRW's stud-005 at 28'-8".
-# Its top wall return (y=26'-2 5/8", 37" up) puts one flange screw in W-M-STRW2's end stud
-# and the rest in the 4 1/8" bay between that stud and the N-M-STRJ tee: a 2x8 flat fills
-# it. The foot return lands in the floor band behind the stair plywood — a field block,
+# Its offset top return lands at y=26'-9 1/2", 37" up, on W-M-STRW. A flat 2x8
+# fills the 9" bay behind its flange, between the end stud and the L corner framing.
+# The foot return lands in the floor band behind the stair plywood — a field block,
 # notes/titanium_handrail_backsplash.md §3.
 
 # The groups above, filed on the storey each wall stands on: `PlanModel` keys elements
@@ -115,8 +115,8 @@ BASEMENT_BACKING = [
 ]
 
 MAIN_BACKING = [
-    WallBacking(uid="FVNZSAD2DJ", tag="BK-M-STRW2-RAIL-TOP", wall_ref="W-M-STRW2",
-                start=inch(0), length=inch(4.125),
+    WallBacking(uid="FVNZSAD2DJ", tag="BK-M-STRW-RAIL-TOP", wall_ref="W-M-STRW",
+                start=inch(103.25), length=inch(9),
                 elevation=inch(33), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="RL-M-HANDRAIL-W top wall-return flange"),
     # Frame brackets fasten near the cabinet tops.

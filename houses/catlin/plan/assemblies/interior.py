@@ -339,7 +339,7 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 )
 
 # --- the stair-line bearing wall, exposed studs one face and plywood the other --------
-# W-M-STRW/W-M-STRW2 (mudroom, main) and W-B-STR3B/W-B-STR2 (basement) are ONE wall: 2x6
+# W-M-STRW (mudroom, main) and W-B-STR3B/W-B-STR2 (basement) share one wall family: 2x6
 # bearing studs at 16" o.c. on a gasketed sill, 5/8" paint-grade veneer-core plywood on
 # the stair face. It
 # was authored twice, as MUDROOM_INT_2X6_EXPOSED and STAIRWALL_INT_2X6_BRG, and the only
@@ -347,7 +347,7 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 # (#70), so the mudroom's exposed Select Structural DF is `Wall.layer_materials` on those
 # two walls and the tag is neutral about where it stands.
 # W-M-STRW now uses interior_mudroom.py's upper-gypsum variant: the same bearing
-# stack, with the coat nooks capped at six feet. The short W-M-STRW2 stays this base.
+# stack, with the coat nooks capped at six feet.
 #
 # No default_lining, deliberately (like SAUNA_2X4): the mudroom face is a finished face made
 # of the framing itself, not drywall left off. The open 2x6 bays are the coat nooks, so no

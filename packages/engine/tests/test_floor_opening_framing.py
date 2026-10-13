@@ -15,6 +15,7 @@ table rather than letting the drawn member imply a prescriptive answer.
 from __future__ import annotations
 
 import pytest
+from _floor_opening_fixtures import _deck
 from _helpers import CATLIN as CATLIN_DIR
 
 from typehaus.checks import build_context
@@ -36,17 +37,17 @@ def _endpoints(member):
 
 
 # ------------------------------------------------------------------ trimmer plies
-def test_trimmer_plies_are_not_coincident(catlin_model):
-    trimmers = _members(catlin_model, "trimmer")
+def test_trimmer_plies_are_not_coincident(catlin_model_ro):
+    trimmers = _members(catlin_model_ro, "trimmer")
     assert trimmers, "catlin frames stair openings in both wood decks"
     assert len({_endpoints(member) for member in trimmers}) == len(trimmers)
 
 
-def test_an_extended_trimmer_stops_at_a_neighbouring_wells_bearing(catlin_model):
+def test_an_extended_trimmer_stops_at_a_neighbouring_wells_bearing(catlin_model_ro):
     # FO-S-ERV-CHASE's header-edge trimmers once ran to x=18', across FO-S-STAIR's well,
     # and folded the stair's north pack out to the same 17'-6 3/4". Both now end on
     # W-M-STRW's line, x=10'-0", which carries the stair's west edge.
-    members = {m.child_key: m for floor in catlin_model.floors if floor.tag == "FS-S-WEST"
+    members = {m.child_key: m for floor in catlin_model_ro.floors if floor.tag == "FS-S-WEST"
                for m in floor.members if m.category == "trimmer"}
     stair_west = ft(10).meters
     for key in ("trimmer-FO-S-ERV-CHASE-0-0", "trimmer-FO-S-ERV-CHASE-1-0"):
@@ -54,7 +55,7 @@ def test_an_extended_trimmer_stops_at_a_neighbouring_wells_bearing(catlin_model)
     assert members["trimmer-FO-S-STAIR-1-0"].p0[0] == pytest.approx(stair_west)
 
 
-def test_trimmer_plies_lie_face_to_face_outboard_of_the_opening(catlin_model):
+def test_trimmer_plies_lie_face_to_face_outboard_of_the_opening(catlin_model_ro):
     """Ply 0 keeps the authored opening line (the header ends bear on it); ply 1 steps
     exactly one ply thickness *away* from the hole, which is where the second trimmer of
     a doubled pair goes.
@@ -66,7 +67,7 @@ def test_trimmer_plies_lie_face_to_face_outboard_of_the_opening(catlin_model):
     pair, and :func:`test_a_short_sawn_opening_is_headed_in_single_joist_sized_members`
     asserts that the singles are single.
     """
-    trimmers = {member.child_key: member for member in _members(catlin_model, "trimmer")}
+    trimmers = {member.child_key: member for member in _members(catlin_model_ro, "trimmer")}
     pairs = {key[: -len("-0")] for key in trimmers
              if key.endswith("-0") and f"{key[: -len('-0')]}-1" in trimmers}
     assert pairs
@@ -81,7 +82,7 @@ def test_trimmer_plies_lie_face_to_face_outboard_of_the_opening(catlin_model):
 
 
 # ------------------------------------------------------------------ header sizing
-def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
+def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model_ro):
     """Every header is flush in its joist band, and doubled unless R502.10.1 says otherwise.
 
     The DEPTH half holds for every header without exception: a header hangs *inside* the
@@ -100,11 +101,11 @@ def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
         _prescriptive_short_opening,
     )
 
-    headers = _members(catlin_model, "header")
+    headers = _members(catlin_model_ro, "header")
     assert headers
     short = 0
     short_span_engineered = 0
-    for floor in catlin_model.floors:
+    for floor in catlin_model_ro.floors:
         joist = next((member for member in floor.members if member.category == "joist"), None)
         if joist is None:
             continue
@@ -145,7 +146,7 @@ def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
         "expected the ERV riser chases' headers to be short by span and doubled by member")
 
 
-def test_header_ply_count_tracks_the_span(catlin_model):
+def test_header_ply_count_tracks_the_span():
     """Ply count must track span, not draw the same single ply for every opening."""
     band = cross_section("11.875 I-joist").depth_m
     short = cross_section(opening_header_profile(ft(3, 4).meters, band))
@@ -158,10 +159,9 @@ def test_header_ply_count_tracks_the_span(catlin_model):
 def _plan_without_stair_bearing_refs(catlin_plan):
     """Catlin with FO-S-STAIR's ``bearing_refs`` stripped.
 
-    Both of that opening's long edges are carried by bearing wall, so the resolver draws
-    no header for it at all — which leaves the advisory nothing to report. Dropping the
-    declared bearing restores exactly the condition the rule guards: a 10'-3" opening edge
-    with nothing under it, closed by a header past the prescriptive table.
+    The walls carry almost all of the opening; only its short southern gap has a header.
+    Dropping the declared bearing restores the condition the rule guards: a full opening
+    edge with nothing under it, closed by a header past the prescriptive table.
     """
     plan = catlin_plan
     elements = {
@@ -173,26 +173,30 @@ def _plan_without_stair_bearing_refs(catlin_plan):
     return plan.model_copy(update={"elements": elements})
 
 
-def test_no_header_is_drawn_where_bearing_wall_carries_the_edge(catlin_model):
+def test_only_the_stair_openings_southern_support_gap_is_headed(catlin_model_ro):
     """FO-S-STAIR is drawn to the finished well, so no edge coincides with a wall axis.
 
-    The bearing test reads each declared wall's plan *footprint*, so both long edges are
-    still recognised as wall-borne — a centreline-equality test claimed neither was and
-    put a 10'-3" engineered header under both (plans/TODO.md D3).
+    Bearing footprints carry the east edge and most of the west. The west's southern
+    header includes a real top-plate seat beyond the L corner's framed butt face.
     """
-    headers = [member for member in _members(catlin_model, "header")
+    headers = [member for member in _members(catlin_model_ro, "header")
                if "FO-S-STAIR" in member.child_key]
-    assert headers == []
+    (header,) = headers
+    assert header.child_key == "header-FO-S-STAIR-0"
+    assert header.length_m == pytest.approx(inch(9.5).meters)
+    assert header.profile == "2-1.75x11.875 LVL"
+    assert header.p0[1] == pytest.approx(inch(311.75).meters)
+    assert header.p1[1] == pytest.approx(inch(321.25).meters)
 
 
 def test_beyond_prescriptive_header_is_reported(catlin_plan):
-    """A 10'-3" floor-opening header is an engineered beam; the drawing set has to say
+    """A full stair-opening header is an engineered beam; the drawing set has to say
     so, which ``structural.header_prescriptive`` only ever did for *wall* openings."""
     plan = _plan_without_stair_bearing_refs(catlin_plan)
     ctx, _ = build_context(plan, CATLIN_DIR)
     findings = floor_opening_header_within_prescriptive(ctx)
     failures = [finding for finding in findings if finding.result is Result.FAIL]
-    assert failures, "an unsupported FO-S-STAIR edge needs a header spanning 10'-3\""
+    assert failures, "an unsupported FO-S-STAIR edge needs a full-length header"
     assert all(finding.severity.value == "warn" for finding in findings)
     for header in _members(ctx.model, "header"):
         if header.length_m / inch(12).meters <= 8.0 + 1e-9:
@@ -238,9 +242,9 @@ def test_trimmer_plies_follow_the_same_line():
     assert _trimmer_plies(ft(3, 4).meters, "11.875 I-joist") == 2
 
 
-def test_catlin_is_unchanged_by_the_short_opening_allowance(catlin_model):
+def test_catlin_is_unchanged_by_the_short_opening_allowance(catlin_model_ro):
     """Every catlin deck is engineered, so every trimmer stays a doubled pair."""
-    trimmers = {member.child_key for member in _members(catlin_model, "trimmer")}
+    trimmers = {member.child_key for member in _members(catlin_model_ro, "trimmer")}
     assert trimmers
     assert {key for key in trimmers if key.endswith("-1")}, "doubled pairs survive"
     for key in trimmers:
@@ -251,71 +255,6 @@ def test_catlin_is_unchanged_by_the_short_opening_allowance(catlin_model):
 # A 24'x12' I-joist deck in x on three bearing lines (x = 0, 12', 24'); the opening sits in
 # the east span at y 4'-0"..7'-4", so the y=4'-0" joist line is ON its south edge and the
 # 5'-4"/6'-8" lines are inside it.
-def _deck_plan(*, east_edge=None, opening_bearing=(), member="11.875 I-joist", lining=False):
-    import uuid
-
-    from typehaus.model import (
-        Assembly,
-        Building,
-        FloorOpening,
-        FloorSystem,
-        FramingSpec,
-        JoistSpec,
-        Layer,
-        LayerFunction,
-        Library,
-        Material,
-        Node,
-        PlanModel,
-        Project,
-        Site,
-        Storey,
-        Wall,
-    )
-    from typehaus.quantities import degF, pt
-
-    east_edge = east_edge or ft(20)
-    stud = Assembly(tag="EXT", layers=(
-        Layer(name="stud", material_ref="wood", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),))
-    project = Project(
-        name="Deck", project_uuid=uuid.UUID("00000000-0000-4000-8000-0000000000b1"),
-        site=Site(lat=44.9, lon=-93.2, elevation=ft(830), design_temp_heating=degF(-15),
-                  design_temp_cooling=degF(90)), building=Building(name="Deck"))
-    main = Storey(uid="STMAIN0001", tag="main", elevation=ft(0), default_ceiling_height=ft(9))
-    second = Storey(uid="STSEC00001", tag="second", elevation=ft(9),
-                    default_ceiling_height=ft(9))
-    nodes, walls = [], []
-    for index, x in enumerate((0, 12, 24)):
-        south, north = f"N-{index}S", f"N-{index}N"
-        nodes += [Node(uid=f"N{index:08d}S", tag=south, position=pt(ft(x), ft(0)), open_end=True),
-                  Node(uid=f"N{index:08d}N", tag=north, position=pt(ft(x), ft(12)), open_end=True)]
-        walls.append(Wall(uid=f"W{index:09d}", tag=f"W-{x}", start_node=south,
-                          end_node=north, assembly="EXT", top=ft(9)))
-    plan = PlanModel(project=project, library=Library(
-        materials=(Material(tag="wood", name="Wood", r_per_inch=1.25),
-                   Material(tag="gwb", name="Gypsum", r_per_inch=0.9)),
-        assemblies=(stud,)), storeys=(main, second))
-    deck = (
-        FloorOpening(uid="FO00000001", tag="FO-1", bearing_refs=opening_bearing, outline=(
-            pt(ft(14), ft(4)), pt(east_edge, ft(4)), pt(east_edge, ft(7, 4)),
-            pt(ft(14), ft(7, 4))), lining=(
-                Layer(name="gwb-well", material_ref="gwb", thickness=inch(0.625),
-                      function=LayerFunction.FINISH),) if lining else ()),
-        FloorSystem(uid="FS00000001", tag="FS-1", openings=("FO-1",), joists=JoistSpec(
-            member=member, spacing=inch(16), direction="x",
-            bearing_refs=("W-0", "W-12", "W-24"))),
-    )
-    return plan.with_elements("main", (*nodes, *walls)).with_elements("second", deck)
-
-
-def _deck(**fields):
-    from typehaus.resolve import resolve
-
-    model, findings = resolve(_deck_plan(**fields))
-    assert not [f for f in findings if f.severity.value == "error"], findings
-    return model, {member.child_key: member for member in model.floors[0].members}
-
 
 def test_trimmers_run_bearing_to_bearing_at_a_header_edge():
     model, members = _deck()

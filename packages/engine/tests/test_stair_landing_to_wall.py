@@ -34,15 +34,15 @@ def _stair(model, tag):
     ("ST-B2M", "W-B-N2", "concrete-wall-hanger:W-B-N2"),
     ("ST-M2S", "W-M-N2", "framed-wall-ledger:W-M-N2"),
 ])
-def test_the_far_landing_joists_bear_on_the_north_wall(catlin_model, tag, wall, connection):
-    stair = _stair(catlin_model, tag)
+def test_the_far_landing_joists_bear_on_the_north_wall(catlin_model_ro, tag, wall, connection):
+    stair = _stair(catlin_model_ro, tag)
     far_y = max(m.p1[1] for m in stair.members if m.category == "landing")
     far = [m for m in stair.members if m.category == "landing_framing"
            and m.child_key.startswith("landing-joist-") and abs(m.p0[1] - far_y) < 1e-6]
     assert len(far) == 2, "one far edge joist per half-landing"
     assert {m.connection for m in far} == {connection}
     # Flush: the joist's face is on the wall's inside face.
-    host = next(w for w in catlin_model.walls if w.tag == wall)
+    host = next(w for w in catlin_model_ro.walls if w.tag == wall)
     inside = min(p[1] for layer in host.depth_layers() for p in layer.polygon)
     assert far_y + 0.75 * _INCH == pytest.approx(inside, abs=0.01 * _INCH)
     # So nothing is posted at the north corners.
@@ -50,8 +50,8 @@ def test_the_far_landing_joists_bear_on_the_north_wall(catlin_model, tag, wall, 
                 if m.child_key.startswith("landing-post-") and m.p0[1] > far_y - 0.1]
 
 
-def test_headroom_grades_each_landing_over_its_required_depth_only(catlin_model):
-    stair = _stair(catlin_model, "ST-B2M")
+def test_headroom_grades_each_landing_over_its_required_depth_only(catlin_model_ro):
+    stair = _stair(catlin_model_ro, "ST-B2M")
     full, graded = flight_stations(stair), headroom_stations(stair)
     for key in ("landing-lower", "landing-upper"):
         (a0, _, _), (a1, _, _) = full[key]
@@ -75,7 +75,7 @@ def test_stair_wall_studs_remain_plumb_beneath_the_flush_finish(catlin_model_ro)
     """The 5/8" plywood and under-stair Type X share a face without moving bearing studs."""
     wall_tags = (
         "W-B-STR", "W-B-STR3", "W-B-STR3B", "W-B-STR2",
-        "W-M-STRW", "W-M-STRW2",
+        "W-M-STRW",
     )
     walls = {wall.tag: wall for wall in catlin_model_ro.walls}
     for tag in wall_tags:

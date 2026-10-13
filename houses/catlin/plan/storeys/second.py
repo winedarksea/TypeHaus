@@ -518,9 +518,7 @@ WALLS = [
     # LOWER wall looking up for a collinear overlapping upper, and W-M-STRW (main, y
     # 26'-6"..36') has TWO — both W-S-BA-E and W-S-BA-E1B sit on the same x=10' line above
     # it, each overlapping it by more than the 2' minimum. That is what
-    # `integrity.stack_ambiguous` raises as a hard ERROR without a tiebreaker (W-M-STRW2,
-    # the short segment south of N-M-STRJ, is not a factor either way — at 5 3/8" it never
-    # clears that 2' minimum, above or below, so it never enters this resolution). W-M-STRW
+    # `integrity.stack_ambiguous` raises as a hard ERROR without a tiebreaker. W-M-STRW
     # is already BEARING, already a bearing ref of FO-S-STAIR, and already
     # `stacks_on="W-B-STR"`, so the path runs footings -> W-B-STR -> W-M-STRW -> here ->
     # attic joists, unbroken and already built. Its `alignment=face(...)` on a 6.75"
@@ -1334,14 +1332,11 @@ FLOOR_OPENINGS = [
                  # without it structural.floor_opening_header emits a 9.4' LVL placeholder
                  # for an edge that is fully bearing-supported along its whole length.
                  #
-                 # West edge: W-M-STRW covers 26'-6"..36'; W-M-STRW2, trimmed 2026-08-30 to
-                 # exactly the 5 3/8" between N-M-STRJ and this edge's own south end
-                 # (26'-0 3/8", fixed by the stair's tread count, not the wall grid), covers
-                 # the rest. Both are needed: drop either tag and this whole ~9'-4" edge
-                 # reads as unsupported, and structural.floor_opening_header emits a full
-                 # LVL header for it rather than the 5 3/8" that actually went missing — see
-                 # W-M-STRW2's comment in main.py.
-                 bearing_refs=("W-M-STRW", "W-M-STRW2", "W-M-C5", "W-M-C5B"),
+                 # West edge: W-M-STRW ends at the storage-wall L corner. Only the
+                 # southern gap needs a header: 9 1/2" including its 1 1/2" top-plate
+                 # seat, hung from the south trimmer at the other end. It stays in the
+                 # floor band; neither stair nor this finished outline moves.
+                 bearing_refs=("W-M-STRW", "W-M-C5", "W-M-C5B"),
                  # The truss band closed in the ceiling's own 5/8" board on all four edges,
                  # flush with the finish below; the framing steps back behind it.
                  lining=(
@@ -1420,8 +1415,8 @@ STAIR_GUARDS = [
 # ST-M2S handrails (R311.7.8): one wall-mounted rail per flight, graded by
 # code.R311_7_8_handrail via `serves_stair`, raked along each flight's nosing line
 # (`top_height` 34"-38"). Lower flight (east lane) rails on W-M-C5's stair face; upper
-# flight (west lane) rails on W-M-STRW's face (y 26'-10 3/8"..31'-11 1/8", well north of
-# W-M-STRW2's 5 3/8" stub) — each 2 3/8" off its wall's finish face: R311.7.8.2's 1 1/2"
+# flight (west lane) rails on W-M-STRW's face (y 26'-10 3/8"..31'-11 1/8", north of
+# the storage-wall L corner) — each 2 3/8" off its wall's finish face: R311.7.8.2's 1 1/2"
 # clear plus the bar's 3/4" radius, with 1/8" to spare. Both ends return to the wall.
 # rail_count=1: a handrail, not a guard frame; role="handrail" keeps these out of the
 # R312.1.3 guard-infill census.

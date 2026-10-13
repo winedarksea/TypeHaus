@@ -235,7 +235,6 @@ the future.
 - PR-A-STUBATH-VENT_RUN goes right through the middle of the bathroom RM-A-STUBATH
 - Extra light switches by beds
 - The vertical chaise in the north west corner of catlin house, extending from basement to attic, likely needs fireblocking. Under Section R302.11 (Fireblocking), vertical and horizontal concealed draft openings must be cut off to form an effective fire barrier between stories, and between a top story and the roof space. Either 3/4" plywood (same plane as the subfloor) or mineral wool batt fill are likely the best solutions to show here. This might already be noted somewhere, but should be shown in the 3d model as well.
-- Can we shorten W-M-STRW by a few inches on its southern end so it ends in line with wall W-M-STOS2?
 - Several of the interior 2x4 wall types do not yet bill paint (or perhaps paint for them is estimated elsewhere?)
 - The auto-generated blocking remains a bit excessive in places still
 - If we flip the garage door swing, we might be able to do reduce the landing size in the garage

@@ -133,6 +133,7 @@ def _register_builtins() -> None:
     from typehaus.model.elements import Door, RoughOpening, Wall, Window
     from typehaus.model.mep import DrainCleanout, ElectricalDevice, Equipment, Register
     from typehaus.model.spatial import Appliance, Fixture, Furniture, Room, Stair
+    from typehaus.model.structure import Railing
 
     @remap_handler(Wall, ref_fields=("start_node", "end_node", "stacks_on", "bearing_refs"))
     def _wall(el: Element, remap: ReferenceRemap) -> list[PatchOp]:
@@ -222,13 +223,37 @@ def _register_builtins() -> None:
         # than an auto-rewrite, so this handler only reports (no ops) — coverage satisfied.
         return []
 
+    @remap_handler(Railing, ref_fields=("serves_stair", "end_return_attachment"))
+    def _railing(el: Element, remap: ReferenceRemap) -> list[PatchOp]:
+        from typehaus.source.ops import RawExpr
+        from typehaus.source.serialize import value_source
+
+        changed = {}
+        stair = remap.resolve(el.serves_stair) if el.serves_stair else None
+        if stair is not None and stair != el.serves_stair:
+            changed["serves_stair"] = stair
+        attachment = el.end_return_attachment
+        if attachment is not None:
+            target = remap.rehost.get(el.tag) or remap.resolve(attachment.wall_ref)
+            shift, flip = remap.shift.get(el.tag, 0.0), el.tag in remap.reversed
+            if target is not None and (target != attachment.wall_ref or shift or flip):
+                changed["end_return_attachment"] = RawExpr(value_source(
+                    _relocated_attachment(attachment, target, shift, flip)))
+        return [PatchOp("update", "Railing", el.tag, changed)] if changed else []
+
 
 def _relocated(loc, att, wall: str, shift: float, flip: bool):
     """The ``location`` rewritten onto ``wall`` at the mapped station, as dialect source."""
-    from typehaus.quantities import deg
-    from typehaus.source.macros_common import _round_len
     from typehaus.source.ops import RawExpr
     from typehaus.source.serialize import value_source
+
+    new_loc = loc.model_copy(update={"attachment": _relocated_attachment(att, wall, shift, flip)})
+    return RawExpr(value_source(new_loc))
+
+
+def _relocated_attachment(att, wall: str, shift: float, flip: bool):
+    from typehaus.quantities import deg
+    from typehaus.source.macros_common import _round_len
 
     d = att.distance_from_start.meters
     update: dict[str, object] = {
@@ -240,8 +265,7 @@ def _relocated(loc, att, wall: str, shift: float, flip: bool):
         update["face"] = "right" if att.face == "left" else "left"
         turned = (float(getattr(att.rotation_offset, "degrees", 0.0)) + 180.0) % 360.0
         update["rotation_offset"] = deg(turned)
-    new_loc = loc.model_copy(update={"attachment": att.model_copy(update=update)})
-    return RawExpr(value_source(new_loc))
+    return att.model_copy(update=update)
 
 
 # Ref-bearing fields no handler carries (decision #33). ``delete_wall`` refuses while one

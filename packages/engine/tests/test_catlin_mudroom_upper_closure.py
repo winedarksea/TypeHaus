@@ -16,7 +16,7 @@ def test_only_the_mudroom_wall_uses_the_upper_closure(catlin_plan, catlin_model_
     variant = "INT_2X6_BRG_MUDROOM_UPPER_GWB"
     assert [element.tag for element in catlin_plan.all_elements()
             if getattr(element, "assembly", None) == variant] == ["W-M-STRW"]
-    for tag in ("W-M-STRW2", "W-B-STR2", "W-B-STR3B"):
+    for tag in ("W-B-STR2", "W-B-STR3B"):
         wall = catlin_model_ro.wall(tag)
         assert wall.assembly == "INT_2X6_BRG_EXPOSED_PLY"
         assert not any("mudroom-upper" in layer.name for layer in wall.layers)
@@ -53,7 +53,7 @@ def test_upper_finish_is_on_the_mudroom_face_and_stops_at_the_ceiling(catlin_mod
 def test_flat_caps_close_the_clear_stud_bays_and_bill_matching_wood(catlin_model_ro):
     wall = catlin_model_ro.wall("W-M-STRW")
     blocks = [member for member in wall.members if member.child_key.startswith("blocking-")]
-    assert len(blocks) == 6
+    assert len(blocks) == 7  # The L corner leaves one more clear bay than the former tee.
     studs = [member for member in wall.members if member.category == "stud"]
     for block in blocks:
         assert block.profile == "2x6"

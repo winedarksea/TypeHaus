@@ -116,8 +116,9 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     # to interpenetrate the trimmer (structural.member_interference).
     # Five since 2026-09-24: FO-S-ERV-CHASE's trimmer pack and header took the other three.
     assert 10.073 in west_spans
+    # The southern local header takes another 3 1/2" off one tail, including its seat.
     assert sum(1 for s in (round(m.length_m / ft(1).meters, 3) for m in west_joists)
-              if s == 10.073) == 5
+              if s == 10.073) == 4
 
 
 def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(

@@ -312,4 +312,4 @@ def test_catlin_base_stops_at_the_bare_faces(catlin_model_ro) -> None:
     walls = {r.wall_tag for r in catlin_model_ro.base_runs}
     assert not {w for w in walls if w.startswith("W-M-FIRE-")}
     assert not [r for r in catlin_model_ro.base_runs
-                if r.wall_tag == "W-M-STRW2" and r.room == "RM-M-MUDROOM"]
+                if r.wall_tag == "W-M-STRW" and r.room == "RM-M-MUDROOM"]

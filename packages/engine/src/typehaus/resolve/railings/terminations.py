@@ -14,6 +14,7 @@ from typehaus.model.structure import Railing
 from typehaus.resolve.geometry import Vec
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, SolidSweep
 from typehaus.resolve.railings.parts import RAILING_CATEGORY, RAILING_FACETS, RailingParts
+from typehaus.resolve.railings.return_attachment import attached_return_face
 from typehaus.resolve.railings.spans import RailingSurface
 from typehaus.resolve.railings.wall_contact import nearest_wall_face
 from typehaus.resolve.sweep import (
@@ -42,21 +43,31 @@ def emit_terminations(model: ResolvedModel, el: Railing, storey: str, path: list
         if termination != "wall_return":
             continue
         z = surface.height_at(end) + rail_h
-        contact = nearest_wall_face(model, end, z, along=((end[0] - inward[0],
-                                                           end[1] - inward[1]),))
-        if contact is None or contact.distance_m < 1e-4:
-            findings.append(Finding(
-                severity=Severity.WARN, check_id="geometry.railing_return_unanchored",
-                message=(f"railing {el.tag} end {index} is a wall_return but no wall face "
-                         "runs alongside it within reach; no return drawn"),
-                element_tags=(el.tag,), result=Result.FAIL))
-            continue
-        fx, fy = contact.face_point
+        if index == 2 and el.end_return_attachment is not None:
+            try:
+                (fx, fy), (ux, uy) = attached_return_face(model, el, end, z, _PLATE_RADIUS_M)
+            except ValueError as error:
+                findings.append(Finding(
+                    severity=Severity.ERROR, check_id="integrity.railing_return_attachment",
+                    message=f"railing {el.tag} end return: {error}",
+                    element_tags=(el.tag,), result=Result.FAIL))
+                continue
+        else:
+            contact = nearest_wall_face(model, end, z, along=((end[0] - inward[0],
+                                                               end[1] - inward[1]),))
+            if contact is None or contact.distance_m < 1e-4:
+                findings.append(Finding(
+                    severity=Severity.WARN, check_id="geometry.railing_return_unanchored",
+                    message=(f"railing {el.tag} end {index} is a wall_return but no wall face "
+                             "runs alongside it within reach; no return drawn"),
+                    element_tags=(el.tag,), result=Result.FAIL))
+                continue
+            fx, fy = contact.face_point
+            ux = (end[0] - fx) / contact.distance_m
+            uy = (end[1] - fy) / contact.distance_m
         _append(model, el, storey, f"t{index:02d}", f"RETURN{index}",
                 SolidSweep(path=((end[0], end[1], z), (fx, fy, z)), profile=profile),
                 parts.rail_material)
-        ux = (end[0] - fx) / contact.distance_m
-        uy = (end[1] - fy) / contact.distance_m
         plate = SolidSweep(
             path=((fx, fy, z), (fx + ux * _PLATE_THICK_M, fy + uy * _PLATE_THICK_M, z)),
             profile=round_profile(_PLATE_RADIUS_M, RAILING_FACETS))

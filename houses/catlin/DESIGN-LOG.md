@@ -14,6 +14,25 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Stair/storage hallway L corner (2026-10-13)
+
+Removed W-M-STRW2 and its free-end node N-M-STR1 to clear the hallway. W-M-STRW now
+meets W-M-STOS2 as an L; the slight hallway jog is intentional. Both stairs' widths,
+treads, start/finish positions and both opening outlines are unchanged.
+
+FO-S-STAIR's west edge now declares only W-M-STRW. The resolver subtracts supported
+intervals and sizes headers for their actual seated spans. Its southern gap takes one
+9 1/2-inch, two-ply 11 7/8-inch LVL inside FS-S-WEST's existing floor band, hung from
+the southern trimmer and seated 1 1/2 inches on W-M-STRW's top plate. No wall cap
+projects into the hall. Joist clipping and trimmer support read those same intervals.
+The header also occupies the storage wall's terminal ceiling-block station, so the
+blocking pass uses it there instead of generating an overlapping second member.
+
+RL-M-HANDRAIL-W keeps its full graspable path. Its top return offsets onto W-M-STRW's
+stair face at y=26'-9 1/2", at the rail endpoint's height, with a wall-normal flange
+and the rehosted 9-inch BK-M-STRW-RAIL-TOP behind it. This return needs a formed offset
+fitting rather than a stock 90-degree elbow; see notes/titanium_handrail_backsplash.md.
+
 ## Sauna lying bench and window-side reading place (2026-10-11)
 
 Owner approved a 78 × 28-inch west upper bench at 42 AFF, an independent 24-inch foot

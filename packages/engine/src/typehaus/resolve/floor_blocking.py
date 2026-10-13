@@ -43,6 +43,7 @@ from typehaus.hardware.plan_geometry import point_in_ring
 from typehaus.model.floors import FloorSystem, JoistSpec
 from typehaus.quantities import inch
 from typehaus.resolve.floor_ends import FloorEnds, structure_span
+from typehaus.resolve.floor_opening_support import header_blocking_spans
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import (
     FramedMember,
@@ -282,7 +283,7 @@ def _partition_top_blocking(
             # a short block still carries, and wrong here.
             gap = bay
             if any(b_lo < gap[1] and b_hi > gap[0] for b_lo, b_hi
-                   in _carrier_spans(model, centre, z0, z1, axis_i, perp_i)):
+                   in _carrier_spans(model, centre, z0, z1, axis_i, perp_i, block_width=width)):
                 unframed.append(joint.wall_tag)
                 continue
             key = f"{PARTITION_BLOCK_PREFIX}{joint.wall_tag}-{step:03d}"
@@ -437,9 +438,10 @@ def _bay_edges_at(
 
 def _carrier_spans(
     model: ResolvedModel, coord: float, z0: float, z1: float, axis_i: int, perp_i: int,
+    *, block_width: float = 0.0,
 ) -> list[_Span]:
-    """Perp extents of beams on this line in the joist depth: no plate under them."""
-    out: list[_Span] = []
+    """Beams and opening headers occupying this station: no duplicate block over them."""
+    out = header_blocking_spans(model, coord, z0, z1, axis_i, perp_i, block_width)
     for solid in model.solids:
         if solid.category != "beam" or solid.z1_m <= z0 or solid.z0_m >= z1:
             continue

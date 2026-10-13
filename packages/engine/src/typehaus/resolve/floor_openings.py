@@ -22,6 +22,7 @@ from dataclasses import dataclass, replace
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.quantities import inch, m
+from typehaus.resolve.floor_opening_support import OpeningHeaderRun, edge_header_runs
 from typehaus.resolve.framing.profiles import cross_section, is_sawn_lumber
 from typehaus.resolve.framing.tables import ENGINEERED_LVL, header_size
 from typehaus.resolve.model import FramedMember, ResolvedModel
@@ -111,8 +112,8 @@ class OpeningFrame:
     trimmer_profile: str
     #: How far the trimmer pack reaches outboard of each parallel edge.
     trim_band: float
-    #: The header's width, outboard of each headed axis edge; the cut tails end past it.
-    header_width: float = 0.0
+    #: Local headers, including their seats; empty on an entirely wall-borne edge.
+    header_runs: tuple[tuple[OpeningHeaderRun, ...], tuple[OpeningHeaderRun, ...]] = ((), ())
     #: The lining's total thickness between the authored and the framed lines.
     setback: float = 0.0
     #: Half the deck's own joist width: a line closer than this to the pack would lap it.
@@ -132,9 +133,12 @@ class OpeningFrame:
         only the opening's own interval left a stub beside the extended trimmer.
         """
         if self.perp0 + 1e-9 < perp < self.perp1 - 1e-9:
-            reach = self.header_width if self.plies else 0.0
-            return _subtract_interval(segments, self.axis0 - reach * self.headers[0],
-                                      self.axis1 + reach * self.headers[1])
+            reaches = [max((run.width_m for run in runs
+                            if run.start_m - self.line_half_width - 1e-9 <= perp
+                            <= run.end_m + self.line_half_width + 1e-9), default=0.0)
+                       if self.plies else 0.0 for runs in self.header_runs]
+            return _subtract_interval(segments, self.axis0 - reaches[0],
+                                      self.axis1 + reaches[1])
         if not self.plies:
             return segments
         reach = self.trim_band + self.line_half_width
@@ -173,26 +177,41 @@ def opening_frames(model: ResolvedModel, system: FloorSystem, along_x: bool,
             axis1 + setback
         edges = _header_edges(box, along_x)
         carriers = tuple(_edge_carriers(model, opening, p0, p1) for p0, p1 in edges)
-        headers = tuple(not _covers(found, *sorted((p0[1 if along_x else 0],
-                                                    p1[1 if along_x else 0])))
-                        for found, (p0, p1) in zip(carriers, edges, strict=True))
+        finished_lo, finished_hi = (miny, maxy) if along_x else (minx, maxx)
+        try:
+            header_runs = tuple(edge_header_runs(
+                model, opening, found, across=0 if along_x else 1, edge=edge,
+                sign=sign, finished_lo=finished_lo, finished_hi=finished_hi,
+                setback=setback,
+                profile_for_span=lambda span: opening_header_profile(span, depth_m, member),
+            ) for found, edge, sign in zip(carriers, (axis0, axis1), (-1, 1), strict=True))
+        except ValueError as error:
+            return None, [Finding(
+                severity=Severity.ERROR, check_id="integrity.floor_opening_header_bearing",
+                message=f"floor {system.tag} opening {opening.tag}: {error}",
+                element_tags=(system.tag, opening.tag), result=Result.FAIL)]
+        headers = tuple(bool(runs) for runs in header_runs)
         # Ply count is a property of the header span (across the joists), not trimmer length.
         plies = _trimmer_plies(perp1 - perp0, member)
         band = plies * ply_width
         # A ply past the deck's edge is never laid (opening_members), so it bears on nothing.
         packs = ((max(perp0 - band, deck[0]), perp0), (perp1, min(perp1 + band, deck[1])))
         runs = tuple(
-            (_run_end(carriers[0], headers[0], axis0, band_lo, band_hi, boundaries, ends, lo=True),
-             _run_end(carriers[1], headers[1], axis1, band_lo, band_hi, boundaries, ends,
+            (_run_end(carriers[0], _header_meets_pack(header_runs[0], band_lo, band_hi),
+                      axis0, band_lo, band_hi, boundaries, ends, lo=True),
+             _run_end(carriers[1], _header_meets_pack(header_runs[1], band_lo, band_hi),
+                      axis1, band_lo, band_hi, boundaries, ends,
                       lo=False))
             for band_lo, band_hi in packs)
-        header_width = cross_section(
-            opening_header_profile(perp1 - perp0, depth_m, member)).width_m
         frames.append(OpeningFrame(
             opening, minx, maxx, miny, maxy, perp0, perp1, axis0, axis1, headers, runs,
-            carriers, packs, plies, trimmer_profile, band, header_width, setback,
+            carriers, packs, plies, trimmer_profile, band, header_runs, setback,
             cross_section(member).width_m / 2.0))
     return [_stop_at_neighbour_bearing(frame, frames) for frame in frames], []
+
+
+def _header_meets_pack(runs, band_lo: float, band_hi: float) -> bool:
+    return any(run.start_m <= band_hi + 1e-9 and run.end_m >= band_lo - 1e-9 for run in runs)
 
 
 def _run_end(carriers, headed: bool, edge: float, band_lo: float, band_hi: float,
@@ -218,11 +237,13 @@ def _stop_at_neighbour_bearing(frame: OpeningFrame, frames: list[OpeningFrame]) 
         for other in frames:
             if other is frame:
                 continue
-            if not other.headers[0] and _covers(other.carriers[0], band_lo, band_hi, reach=True):
+            if not _header_meets_pack(other.header_runs[0], band_lo, band_hi) \
+                    and _covers(other.carriers[0], band_lo, band_hi, reach=True):
                 line = other.carriers[0][0][0]
                 if frame.axis1 - 1e-9 <= line < run1:
                     run1 = line
-            if not other.headers[1] and _covers(other.carriers[1], band_lo, band_hi, reach=True):
+            if not _header_meets_pack(other.header_runs[1], band_lo, band_hi) \
+                    and _covers(other.carriers[1], band_lo, band_hi, reach=True):
                 line = other.carriers[1][0][0]
                 if run0 < line <= frame.axis0 + 1e-9:
                     run0 = line
@@ -278,18 +299,17 @@ def opening_members(system: FloorSystem, frames: list[OpeningFrame], along_x: bo
     for frame in frames:
         if not frame.plies:
             continue
-        span = frame.perp1 - frame.perp0
-        half = frame.header_width / 2.0
-        for edge_index, line in enumerate((frame.axis0 - half, frame.axis1 + half)):
-            if not frame.headers[edge_index]:
-                continue
-            p0, p1 = (((line, frame.perp0), (line, frame.perp1)) if along_x
-                      else ((frame.perp0, line), (frame.perp1, line)))
-            headers.append(FramedMember(
-                system.uid, f"header-{frame.opening.tag}-{edge_index}", "header",
-                opening_header_profile(span, depth_m, system.joists.member),
-                p0, p1, z0, z1, span,
-            ))
+        for edge_index, (edge, sign) in enumerate(((frame.axis0, -1), (frame.axis1, 1))):
+            runs = frame.header_runs[edge_index]
+            for run_index, run in enumerate(runs):
+                line = edge + sign * run.width_m / 2.0
+                p0, p1 = (((line, run.start_m), (line, run.end_m)) if along_x
+                          else ((run.start_m, line), (run.end_m, line)))
+                suffix = f"-{run_index}" if len(runs) > 1 else ""
+                headers.append(FramedMember(
+                    system.uid, f"header-{frame.opening.tag}-{edge_index}{suffix}", "header",
+                    run.profile, p0, p1, z0, z1, run.end_m - run.start_m,
+                ))
         width = frame.trim_band / frame.plies
         for edge_index, (edge, sign) in enumerate(((frame.perp0, -1.0), (frame.perp1, 1.0))):
             run0, run1 = frame.runs[edge_index]

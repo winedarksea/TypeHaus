@@ -13,6 +13,7 @@ import pytest
 
 from typehaus.checks.code.mn_residential.handrail_clearance import rail_samples, top_rail_path
 from typehaus.checks.code.mn_residential.handrail_hardware import support_stations
+from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.takeoff.railings import railing_takeoff
 
 _IN = 0.0254
@@ -56,6 +57,32 @@ def test_the_takeoff_counts_the_fittings_and_the_stock(catlin_model_ro):
     assert sorted(row["tags"]) == list(_RAILS)
     assert (row["bracket_count"], row["return_count"]) == (2, 4)
     assert (row["stock_count"], row["splice_count"]) == (4, 2)
+
+
+def test_the_west_top_return_flange_lands_on_backing_beyond_the_corner(catlin_model_ro):
+    rail = catlin_model_ro.plan.by_tag("RL-M-HANDRAIL-W")
+    for point, expected in zip(rail.path, ((126, 373.625), (126, 314.625)), strict=True):
+        assert point.xy_m == pytest.approx(tuple(v * _IN for v in expected))
+    wall = catlin_model_ro.wall("W-M-STRW")
+    assert catlin_model_ro.wall("W-M-STRW2") is None
+    assert catlin_model_ro.plan.by_tag("N-M-STR1") is None
+    (junction,) = [j for j in catlin_model_ro.junctions if j.node_tag == "N-M-STRJ"]
+    assert junction.kind == "l"
+    assert {incident.wall_tag for incident in junction.incidents} == {"W-M-STRW", "W-M-STOS2"}
+    solids = {s.tag: s for s in catlin_model_ro.solids if s.tag.startswith(rail.tag)}
+    bar_end = solids[f"{rail.tag}-RAIL1"].sweep.path[-1]
+    ret = solids[f"{rail.tag}-RETURN2"].sweep.path
+    assert ret[0] == bar_end
+    assert ret[1] == pytest.approx((123.26 * _IN, 321.5 * _IN, bar_end[2]))
+    a, b = solids[f"{rail.tag}-ENDPLATE2"].sweep.path
+    assert b[0] > a[0]
+    assert (b[1], b[2]) == (a[1], a[2])
+    (backing,) = [m for m in wall.members if m.child_key.startswith("backing-")]
+    ring, z0, z1 = member_footprint(backing)
+    radius = 0.035
+    assert min(y for _, y in ring) <= a[1] - radius
+    assert max(y for _, y in ring) >= a[1] + radius
+    assert z0 <= a[2] - radius and z1 >= a[2] + radius
 
 
 def test_the_note_r301_5_hand_calc():

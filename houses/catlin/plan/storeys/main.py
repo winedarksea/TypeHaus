@@ -36,6 +36,7 @@ from typehaus import (
     Stair,
     StructuralRole,
     Wall,
+    WallAttachment,
     WallPaneling,
     Window,
     WindowType,
@@ -197,15 +198,8 @@ NODES = [
     # instead of stopping flush at the wall's south end. Keep N-M-C3 as the wall junction.
     Node(uid="CMN141AAAA", tag="N-M-C3-BM-N", position=pt(ft(18), ft(26, 1))),
     # Interior tees
-    # N-M-STR1 moved 25'-10" -> 26'-0 3/8", onto FO-S-STAIR's own south edge
-    # exactly — the last of the wall past that edge was a jamb return with no bearing job,
-    # and `structural.floor_opening_header` doesn't care about trim, only about coverage.
-    # W-M-STRW2 (below) is now as short as the opening's own bearing sliver requires and no
-    # shorter; `open_end` stands for the same reason it always did — one wall edge, honestly.
-    Node(uid="CMN015AAAA", tag="N-M-STR1", position=pt(ft(10), ft(26, 0.375)), open_end=True),
-    # W-M-STOS2's tee into the stair wall line, and the W-M-STRW/W-M-STRW2 split:
-    # `resolve/topology.py` builds junctions from wall *endpoints* only, so the tee needs its
-    # own segment here regardless of how short W-M-STRW2 south of it gets.
+    # W-M-STRW ends at W-M-STOS2 as an L corner. The former southern stub and its
+    # free-end node are retired; FO-S-STAIR's local header stays inside the floor band.
     Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 6))),
     # W-M-WELL's ends: FO-M-STAIR's south edge (the stairhead) and the south face of
     # ST-M2S's level-landing joist (its axis is the landing edge, 31'-11 1/8": one head riser
@@ -613,28 +607,18 @@ WALLS = [
          assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     # --- stair / storage block --------------------------------------------------
-    # W-M-STRW carries the cut second-floor joists and stacks over the basement concrete
+    # W-M-STRW carries the cut second-floor joists and stacks over the basement
     # stair wall — footings -> W-B-STR -> W-M-STRW -> W-S-BA-E1B -> attic joists, one
-    # continuous bearing path (CLAUDE.md); W-M-STRW2 below is not part of that path (it
-    # stacks on W-B-STR3 instead, and nothing above claims it) and exists purely to close
-    # FO-S-STAIR's bearing coverage for the 5 3/8" its south edge (26'-0 3/8", fixed by the
-    # stair's own tread count) runs past this wall's end.
+    # continuous bearing path (CLAUDE.md). It ends at N-M-STRJ as an L with W-M-STOS2;
+    # the former W-M-STRW2 stub is removed to clear the hallway. A short header seats
+    # on this wall's top plate and the southern trimmer without moving the stair opening.
     #
-    # Split at N-M-STRJ, not because the bearing PATH needs two pieces, but because
-    # `resolve/topology.py` builds junctions from wall *endpoints* only: W-M-STOS2 tees into
-    # this line at N-M-STRJ, so W-M-STRW has to end there for the tee to frame. W-M-STRW2
-    # picks the line back up south of it, trimmed 2026-08-30 to exactly the opening's edge —
-    # the 2 3/8" it used to run past that as a jamb return was pure trim, not bearing, and
-    # `structural.floor_opening_header` only cares about coverage. Shorten it further (or
-    # delete it) and the whole ~9'-4" west edge reads as unsupported and gets a full LVL
-    # header it does not need for 90% of its length — see FO-S-STAIR in second.py.
-    #
-    # Both segments inherit INT_2X6_BRG_EXPOSED_PLY with `layer_materials` swapping the
+    # The assembly inherits INT_2X6_BRG_EXPOSED_PLY with `layer_materials` swapping the
     # stud to appearance-grade DF. W-M-STRW's mudroom face stays open below 6'-0" for
     # coat nooks; above it the variant adds 1/2" painted gypsum to the 9'-0" ceiling.
     # Flat matching DF 2x6 blocks cap the bays, underside at 6'-0", with their 1 1/2"
-    # front edge behind the gypsum. W-M-STRW2's short fragment stays fully open.
-    # 5/8" painted plywood closes the stair face on both — `interior_room` picks the
+    # front edge behind the gypsum. 5/8" painted plywood closes the stair face —
+    # `interior_room` picks the
     # mudroom side as layer 0.
     # Until 2026-07-30 the mudroom segment was plain INT_2X6_BRG (spf vs. df-select-s4s),
     # which `integrity.junction_fallback` flagged at N-M-STRJ. The species was its own tag
@@ -653,22 +637,6 @@ WALLS = [
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
-    # 5 3/8" — trimmed 2026-08-30 from the old 8" (freed end at 25'-10", a jamb return past
-    # FO-S-STAIR's edge with no bearing job). `interior_room` still names the mudroom: the
-    # field only picks which side layer 0 faces, and the mudroom seed is on the correct
-    # (west) side of this segment's midpoint too. stacks_on W-B-STR3 since 2026-08-23:
-    # W-B-STR was split at y=31'-0" for the ESS closet's south partition, and this segment
-    # sits wholly south of that line — though in practice `resolve/stacking.py` never
-    # resolves a stack edge for either end of this wall at all, upper or lower: at 5 3/8"
-    # it is well under the 2' minimum overlap the pass requires, so it was never part of
-    # the vertical load path either as W-M-STRW2 (this wall) or its predecessor. Its job is
-    # FO-S-STAIR's bearing_refs, not the stack.
-    Wall(uid="CMW134AAAA", tag="W-M-STRW2", start_node="N-M-STRJ",
-         end_node="N-M-STR1", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(9),
-         layer_materials=(LayerMaterial(layer="stud", material="df-select-s4s"),),
-         alignment=face("stud-ext", offset=inch(-2.625)),
-         interior_room="RM-M-MUDROOM",
-         structural_role=StructuralRole.BEARING, stacks_on="W-B-STR3"),
     # The wall at the top of the stairs is gone, and with it D-M-STAIR and node
     # N-M-STR2 — shortened repeatedly until the only thing left of it was a 4'-2"
     # partition that was almost entirely a 32" door leaf. Removing the door meant removing
@@ -827,8 +795,7 @@ WALLS = [
     # the hall's extension to the sauna wall deleted it. What is left beneath the y=18'
     # line here is W-B-CW2, which reaches 6 11/16" into this wall's x 13'-4"..18'-0" run —
     # short of the 2'-0" minimum overlap, so there is exactly ONE candidate count of zero
-    # and no `integrity.stack_ambiguous` to arm. Same situation as W-M-STRW2 two hundred
-    # lines down.
+    # and no `integrity.stack_ambiguous` to arm.
     # The load goes into the deck instead: FS-M-WEST's joists run in x, this partition runs
     # ALONG them at y=216" mid-bay between the 208" and 224" lines, so
     # params/main_deck.py carries two `JoistReinforcement` blocking entries under it.
@@ -2044,6 +2011,8 @@ STAIRS = [
 # (R311.7.1). Both ends of each rail return to the wall. The W rail runs to y=26'-2 5/8",
 # over the top nosing (the upper flight's arrival station): past it the rake reads the lower
 # flight instead.
+# Its top return offsets north onto W-M-STRW at y=26'-9 1/2", with a flat flange
+# backed by BK-M-STRW-RAIL-TOP. The graspable rail still reaches the same top nosing.
 STAIR_HANDRAILS = [
     Railing(
         uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", type_ref="RAILING-INT-TI-HANDRAIL-42", path=(
@@ -2068,6 +2037,8 @@ STAIR_HANDRAILS = [
         role="handrail", serves_stair="ST-B2M", top_height=inch(36),
         graspable_profile="42mm round — Type I",
         start_termination="wall_return", end_termination="wall_return",
+        end_return_attachment=WallAttachment(wall_ref="W-M-STRW", face="left",
+                                             distance_from_start=inch(110.5)),
     ),
 ]
 
