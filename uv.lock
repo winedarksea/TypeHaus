@@ -2099,7 +2099,7 @@ requires-dist = [
     { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.27" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.90" },
     { name = "ifcopenshell", specifier = ">=0.8,<0.9" },
-    { name = "ifctester", marker = "extra == 'dev'", specifier = ">=0.8" },
+    { name = "ifctester", marker = "extra == 'dev'", specifier = ">=0.8,<0.9" },
     { name = "libcst", specifier = ">=1.1" },
     { name = "matplotlib", specifier = ">=3.8" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.9" },
