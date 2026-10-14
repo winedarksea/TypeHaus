@@ -245,6 +245,7 @@ the future.
 - Maybe swap the two living room east side curtain rods with cellular blinds in the four larger east facing living room windows
 - Review ED-M-PORCH-FLOOD. Update the 3d model for a proper flood light (or switch to a second mirrored downlight) and consider moving out to mounted on the edge of the balcony, more fully over the sunken garden.
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
+- Sconce ED-S-STUDY2-STAIR-SC1 is a bit close to the floor, perhaps it should go at the top of the stairs on the wall, still on the same circuit but in the room above?
 - Maybe replace D-M-PANTRY with a 36" pocket door
 
 # Project Management
