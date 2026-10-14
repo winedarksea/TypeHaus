@@ -1750,7 +1750,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "kdat"
     },
     {
       "space": "model",

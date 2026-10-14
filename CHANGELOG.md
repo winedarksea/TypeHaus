@@ -4,6 +4,10 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+- **An exterior door's rough sill can be treated stock.**
+  `FramingSpec.exterior_door_sill_material_ref` restocks a raised exterior door's rough sill
+  and the cripples under it, which sit at the wet threshold. Windows and interior doors keep
+  ordinary lumber.
 - **Stacked floor chases are fireblocked (IRC R302.11).** `FloorOpening.fireblock` closes a
   chase in the deck plane; its holes are derived from the runs on every resolve, so a moved
   riser moves its hole. The sheet bills in `sheet_goods`, the annulus seal in the new

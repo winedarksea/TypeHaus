@@ -57,3 +57,24 @@ def test_catlin_main_bearing_walls_bill_lsl(catlin_model) -> None:
     assert plates and all(m.material is None for m in plates)
     rows = {(r["profile"], r["material"]) for r in framing_bom_by_size(catlin_model)}
     assert ("2x6", "lsl") in rows
+
+
+def _opening_members() -> tuple[FramedMember, ...]:
+    p = (0.0, 0.0)
+    keys = (("sill-0", "sill"), ("cripple-sill-0-01", "cripple"), ("header-0", "header"),
+            ("sill-1", "sill"), ("cripple-sill-1-01", "cripple"), ("sill-2", "sill"),
+            ("stud-000", "stud"))
+    return tuple(FramedMember("W", key, cat, "2x6", p, p, 0.0, 0.3, 0.9) for key, cat in keys)
+
+
+def test_exterior_door_sill_takes_the_wet_stock() -> None:
+    from typehaus.resolve.framing.openings import WallOpening
+    from typehaus.resolve.framing.stud_stock import stamp_exterior_door_sills
+
+    openings = [WallOpening(1.0, 0.9, 2.0, 0.3, is_door=True, exterior=True),
+                WallOpening(3.0, 0.7, 1.2, 0.9, is_door=False),
+                WallOpening(5.0, 0.9, 2.0, 0.3, is_door=True)]
+    out = stamp_exterior_door_sills(_opening_members(), openings, "kdat")
+    assert {m.child_key for m in out if m.material == "kdat"} == {"sill-0", "cripple-sill-0-01"}
+    members = _opening_members()
+    assert stamp_exterior_door_sills(members, openings, None) is members

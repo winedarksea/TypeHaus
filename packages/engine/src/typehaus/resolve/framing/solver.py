@@ -58,7 +58,7 @@ from typehaus.resolve.framing.short_members import (
     is_stud_line_offcut,
     short_member_findings,
 )
-from typehaus.resolve.framing.stud_stock import stamp_stud_stock
+from typehaus.resolve.framing.stud_stock import stamp_exterior_door_sills, stamp_stud_stock
 from typehaus.resolve.framing.tables import DEFAULT_SPACING, member_actual
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.layout_lines import layout_phase, lines_by_wall
@@ -705,6 +705,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # DoorType's. Neither survives onto ResolvedOpening, so both are read off the plan.
     type_header_specs = {door_type.tag: door_type.header_spec
                          for door_type in plan.library.door_types}
+    exterior_door_types = {door_type.tag for door_type in plan.library.door_types
+                           if door_type.exterior}
     door_header_specs = {element.tag: element.header_spec
                          for element in plan.all_elements()
                          if isinstance(element, Door)}
@@ -723,6 +725,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             if op.is_door else None,
             pocket_run_m=op.pocket_run_m,
             pocket_sign=op.pocket_sign,
+            exterior=op.is_door and op.type_ref in exterior_door_types,
         ))
     keepouts = pocket_keepouts(plan, model)
     # Two producers, one seam. A carrier bay and a pocket cavity are the same instruction to
@@ -927,6 +930,12 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                              continuation_start=continuations.get((rw.tag, "start")),
                              continuation_end=continuations.get((rw.tag, "end")),
                              line=lines_for_wall.get(rw.tag))
+        # Before the stud stock: a wet sill's cripples keep the treated stock.
+        sill_layer = structure_layer(plan, rw.assembly)
+        members = stamp_exterior_door_sills(
+            members, by_host.get(rw.tag, []),
+            getattr(getattr(sill_layer, "framing", None),
+                    "exterior_door_sill_material_ref", None))
         members = stamp_stud_stock(members, rw, authored)
         # ``replace`` rather than a field-by-field rebuild: this pass only adds members,
         # and respelling the constructor here silently drops any field added later.

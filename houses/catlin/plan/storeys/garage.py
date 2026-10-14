@@ -317,6 +317,8 @@ OPENINGS = [
     # open leaf parks along W-BW-SCREEN at x=6'-7" and leaves the tier approach and D-M-ENTRY's
     # sweep (y <= 36'-0") clear. The frame's own sill stands on the deck at 0'-0", so the leaf
     # clears the boards by the sill and nothing re-rises. CLOSER WITH HOLD-OPEN: AN-G-SERVICE-DOOR.
+    # Its rough sill sits flush with the deck: KDAT under a sloped, back-dammed pan
+    # (notes/opening_flashing_spec.md §6).
     #
     # The head lands 8" under the top plate — 6'-8" of door in a wall whose plate is at
     # +7'-4" — which is why this opening now names a header the way the overhead door does.

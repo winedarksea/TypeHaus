@@ -14,6 +14,17 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## D-G-SERVICE's rough sill: KDAT under a sloped pan (2026-10-13)
+
+The outswing left `W-G-S` `sill-0`, the door's 2x6 rough sill, in untreated SPF with its top
+flush with the deck boards and no pan specified. It is now KDAT, along with its cripple
+(`FramingSpec.exterior_door_sill_material_ref` on GARAGE_WALL_2X6). Both exterior swing doors
+take a sloped, back-dammed pan (`notes/opening_flashing_spec.md` §6), billed as
+`envelope-door-sill-pans` and closing the gap that note recorded.
+
+Dropping the deck 1" was weighed and declined: it re-levels the deck under D-M-ENTRY as well.
+Raising the door 1" would spend the header's last inch.
+
 ## Garage service door swings out; the interior landing goes (2026-10-13)
 
 D-G-SERVICE now swings OUT onto the north-entry deck. It is hinged on the west jamb, so the

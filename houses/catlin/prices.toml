@@ -6950,12 +6950,13 @@ roof-flashings-boots-and-custom-sheet-metal = { low = 3000, high = 8000 }
 # sealant is `envelope-exterior-sealants-and-caulking`. Three scopes, three rows, no overlap
 # — and the reason a fourth row for liquid flashing would be a double bill.
 #
-# NOT COVERED BY THIS ROW, found 2026-09-19 and left as a gap rather than papered over: the
-# two `DT-EXT-SWING36` exterior doors take sill pans too, and this driver is
-# `[kind=window]`. Nothing bills them. Fixing it means a second driven row on
-# `openings.count[kind=door]` with a door-type filter, which is a change to make when
-# somebody is pricing doors and not in passing.
+# The two `DT-EXT-SWING36` doors' pans are NOT in this row (driver is `[kind=window]`);
+# they are `envelope-door-sill-pans` below.
 envelope-opening-flashing-and-sill-pans = { low = 180, high = 262, unit = "ea", driver = "openings.count[kind=window]" }
+# Sloped sill pan with back and end dams under each exterior swing door
+# (`notes/opening_flashing_spec.md` §6). Filtered by TYPE, not `kind=door`: FRENCH60's own
+# row already carries its pan. ~$60-140 of preformed pan or membrane plus about an hour.
+envelope-door-sill-pans = { low = 150, high = 300, unit = "ea", driver = "openings.count[type=DT-EXT-SWING36]" }
 # MN limits to 3.0 ACH50, so the second blower-door test is not optional.
 # DRIVEN 2026-08-27 off gross floor area — 6,098 SF, one of the two addressable scalars.
 # ** RE-RATED 2026-08-30. The published $/SF air-sealing guides this rate came from assume a

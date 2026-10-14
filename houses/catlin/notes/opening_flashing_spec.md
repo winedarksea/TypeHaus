@@ -165,9 +165,7 @@ the foam was sprayed in (60-80 F, `ccspf_spec.md` §3) and set the windows behin
   (`[K7]`)**. Different parts, different trades, bought elsewhere: the brake-formed pieces
   ride inside the panel's $/SF rate under TRIM IS PARITY, and the sealant is
   `[allowances] envelope-exterior-sealants-and-caulking`.
-- **The two exterior doors.** `DT-EXT-SWING36` takes a sill pan too, and the allowance that
-  buys this scope is driven on `openings.count[kind=window]`. Nothing bills those two pans.
-  Recorded in `prices.toml` beside the row; not fixed here.
+- **The two exterior swing doors.** Their pans are §6, billed on their own row.
 - **Anything the engine grades.** No check in `haus check` reads a flashing membrane, its
   thickness, its substrate or its lap. `OpeningDetailConfig` is deliberately untouched — the
   outie recipe (`emit/draw/detail_components/opening.py::outie_window_truss`) already draws a
@@ -181,6 +179,32 @@ the foam was sprayed in (60-80 F, `ccspf_spec.md` §3) and set the windows behin
 | **Written substrate approval for the lap onto shaved ccSPF** | A letter from the membrane maker naming shaved 2 lb ccSPF, plus a jobsite adhesion mock-up on the real foam. Phone call, not an estimate. ESR-4363 does not cover it and AC148 does not evaluate it. |
 | Which product is bought | §2 is a qualifying list, not a selection. Price and lead time decide it; §1 is the gate. |
 | Full system vs. the §1.1 hybrid | Both qualify. ~$112/opening against ~$30/opening in material. |
+
+## 6. The two exterior swing doors (2026-10-13)
+
+`DT-EXT-SWING36` is `D-M-ENTRY` and `D-G-SERVICE`. Both open onto the north-entry deck, and
+both take a pan. `prices.toml [allowances] envelope-door-sill-pans` bills them, driven on
+`openings.count[type=DT-EXT-SWING36]`. `DT-EXT-FRENCH60`'s own row already carries its pan.
+
+**`D-G-SERVICE` is the exposed one.** Its threshold is 12" above the garage plate, so the
+door stands on a framed rough sill (`W-G-S` `sill-0`, on one cripple). The top of that sill is
+0'-0", flush with `FS-BW-FLOOR`'s boards, and the leaf swings out over the deck.
+
+- **Sill and cripple are KDAT**, not the wall's SPF
+  (`FramingSpec.exterior_door_sill_material_ref`).
+- **Sloped pan, back dam, end dams.** Use a preformed sloped pan, or an impermeable
+  self-adhered membrane (§1.1) over a beveled KDAT shim that falls outward. The back dam
+  stands under the frame's interior edge. The end dams turn up the jambs at least 6", and the
+  corners are the liquid.
+- **The front leg turns DOWN past the cladding** into the gap between the board ends and the
+  RO. That gap stays open: never caulk it, shim it, or run a board tight to the sill.
+- Set the frame on sealant at the back dam only, never across the front, so the pan drains.
+- The deck stays at 0'-0". A 1" drop (R311.3.1 allows 1 1/2" at an outswing door) would
+  re-level the shared deck under `D-M-ENTRY` too; the pan and the frame's own sill height do
+  that job instead.
+
+`D-M-ENTRY` sits at its storey's floor and has no rough sill. Its pan is the same part,
+lapped onto the house's fluid-applied system (§3).
 
 ## Sources
 

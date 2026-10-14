@@ -128,6 +128,8 @@ class WallOpening:
     header_spec: str | None = None
     pocket_run_m: float = 0.0
     pocket_sign: int = 0
+    #: ``DoorType.exterior`` — what ``stud_stock.stamp_exterior_door_sills`` restocks by.
+    exterior: bool = False
 
 
 def pocket_extent(opening: WallOpening) -> tuple[float, float]:

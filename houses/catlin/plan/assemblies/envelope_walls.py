@@ -360,8 +360,11 @@ GARAGE_WALL_2X6 = Assembly(
         # choice. Walls only: the garage ceiling is insulated separately (GARAGE_ROOF).
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
+              # D-G-SERVICE's raised rough sill sits flush with the deck under the
+              # door pan: KDAT, not SPF (notes/opening_flashing_spec.md §6).
               framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
-                                  spacing=inch(24)),
+                                  spacing=inch(24),
+                                  exterior_door_sill_material_ref="kdat"),
               cavity=CavityFill(material_ref="closed-cell-spray-foam", thickness=inch(2.0),
                                 framing_factor=0.20,
                                 control={ControlLayer.AIR, ControlLayer.WATER,
