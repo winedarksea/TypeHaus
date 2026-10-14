@@ -969,16 +969,20 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   base to centre under the fixed window (`notes/kitchen_stock_cabinet_details.md`).
 
 - **Rows.** Where a column is impossible, the storey's rhythm must be centred, not merely
-  even. East second storey: 4'-0"/13'-4"/22'-8"/32'-0", mirrored about y=18'-0" in station,
-  width (27/30/30/27), and head (6'-0"/7'-0"/7'-0"/6'-0") over one 3'-0" sill — a 9'-4" beat
-  three times over (→ DESIGN-LOG.md).
+  even. East second storey: 5'-4"/13'-4"/22'-8"/34'-0". The inner pair mirrors about
+  y=18'-0"; those two and STUDY3 are 27" wide on a 3'-0" sill with 7'-0" heads.
+  STUDY3 columns with WIN-M-LIV-E1; BED3's 14" unit instead columns with WIN-M-KIT-E,
+  on its own 4'-0" sill and 6'-0" head (→ DESIGN-LOG.md).
   East main row: 5'-4"/12'-0"/16'-0"/20'-0"/34'-0" — the last gap deliberately ends a blank kitchen
   stretch. First four: 27" units on one **2'-10" sill, 6'-10" head** (2026-10-02: the stool
   top sits on the SEKTION slab top — sill + 2.953" frame rail = 36 15/16" above datum). `WIN-M-KIT-E` is a 14" unit
   at a 3'-6" sill (bay centre, 408" off `N-M-SE`) — joins neither beat nor head line, closes
   the row's north end as a service window (can never column with the 27"/30" family beside
   it — the 8" rule). `WIN-M-LIV-E1` moved 16" north on 2026-10-03 to mirror E2 about the
-  brick, so it no longer columns with `WIN-S-STUDY3` (4'-0"). **Check
+  brick; `WIN-S-STUDY3` followed it to 5'-4" on 2026-10-14, restoring their column and
+  clearing the southeast study bookshelf. The chess table/chairs moved 30" west; the
+  23.62" Frailey corner shelf keeps both south windows. Its catalog is
+  `plan/study_bookcase_types.py`; RC5 moved to the east-wall pier at y=3'-4". **Check
   `out/render/elev_east.png` before touching this row.**
   `WIN-M-LIV-E3` was added 2026-10-03: E2 moved one bay south and EAST-MID one north,
   yielding 21" RO piers / 15" between jamb packs; E2 gave up its BED1 column. Pantry and

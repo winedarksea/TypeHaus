@@ -1112,7 +1112,7 @@ OPENINGS = [
     # Pushed east to N-M-STRJ (2026-07-28, mudroom conversion): same 6" tee clearance as
     # D-M-ENTRY above it, off the bearing stair wall's jack studs. Renamed with the room.
     Door(uid="CMD204AAAA", tag="D-M-MUD", host="W-M-STOS2", type_ref="DT-INT-SWING32",
-         position=from_node("N-M-STRJ", inch(8))),
+         position=from_node("N-M-STRJ", inch(8)), flip_hinge=True),
     # 1'-2" off N-M-BA1, not the 1'-0" it read until 2026-08-29. The node moved 2" north
     # with the y=26'-6" line and a `from_node` offset is measured from it, so the leaf would
     # have slid north with it — the exact silent drift main.py's WIN-M-MUD-W note records.

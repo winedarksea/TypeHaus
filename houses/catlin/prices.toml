@@ -6369,6 +6369,9 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # IKEA BILLY 002.638.50, white, 31 1/2" x 79 1/2"; four line RM-B-PLAY-N's south wall either
 # side of D-B-PLAY (owner, 2026-10-07: bought, not owner oak). US price ~$70-90; confirm at order.
 "FURN-BOOKCASE-BILLY-31" = { low = 69.99, high = 89.99 }  # 4 ea
+# Frailey JW0510 rustic brown/black, Home Depot 326090309: $109.45 sale; Tribesigns
+# $149.99 direct, checked 2026-10-14. One compact upstairs study corner shelf.
+"FT-STUDY-CORNER-BOOKCASE" = { low = 109.45, high = 149.99 }
 # IKEA HEMNES 604.135.02, white stain/light brown, RM-M-BED's south pair. It billed $0 until
 # 2026-10-07: no row existed. US listing $329.
 "FURN-BOOKCASE-HEMNES-35" = { low = 329, high = 329 }  # 2 ea

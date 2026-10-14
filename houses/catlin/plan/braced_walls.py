@@ -140,11 +140,12 @@ MAIN_BRACED_CONNECTORS = [
 # factor) x0.95 = 7.41 ft per line, and 10.37 ft on the two lines the plant room stands on,
 # where Table R602.10.3(2) item 6 charges x1.40 for a panel with no gypsum inside it.
 SECOND_BRACED_WALLS = [
-    # BWL-W-A-E1 — 26'-8" provided.
+    # BWL-W-A-E1 — 26'-8" provided. STUDY3's 16" north move transfers full-height
+    # length from its north pier to the southeast corner return (2026-10-14).
     BracedWallPanel(uid="J1DJCJK12V", tag="BWP-S-E1-0000", wall_ref="W-S-E1", start=inch(0.0),
-                    width=inch(34.5), note="SE corner return"),
-    BracedWallPanel(uid="HD9VHPM55N", tag="BWP-S-E1-0062", wall_ref="W-S-E1", start=inch(61.5),
-                    width=inch(46.5)),
+                    width=inch(50.5), note="SE corner return"),
+    BracedWallPanel(uid="HD9VHPM55N", tag="BWP-S-E1-0062", wall_ref="W-S-E1", start=inch(77.5),
+                    width=inch(30.5)),
     BracedWallPanel(uid="X0BJTGKPWB", tag="BWP-S-E2-0000", wall_ref="W-S-E2", start=inch(0.0),
                     width=inch(38.5)),
     BracedWallPanel(uid="QH49XH0ZDQ", tag="BWP-S-E2-0066", wall_ref="W-S-E2", start=inch(65.5),

@@ -676,10 +676,10 @@ OPENINGS = [
     # column; WIN-A-E-N at 32'-4" is the one alignment given up (attic.py).
     # 2026-08-27: retyped WT-2736-T -> WT-2748-T, 36" -> 48" tall. Same 27" bearing width,
     # so the mirrored 4'-0"/13'-4"/22'-8"/32'-0" beat and every offset below are untouched;
-    # the head moves 6'-0" -> 7'-0". 2026-10-03: WIN-M-LIV-E1 moved to 5'-4" to flank the
-    # fireplace brick symmetrically, so this no longer columns with it.
+    # the head moves 6'-0" -> 7'-0". 2026-10-14: STUDY3 follows WIN-M-LIV-E1's 2026-10-03
+    # move to 5'-4", restoring their column and clearing the compact corner bookshelf.
     Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2748-T",
-           position=from_node("N-S-SE", ft(2, 10.5)), sill_height=ft(3)),     # y 4'-0"
+           position=from_node("N-S-SE", ft(4, 2.5)), sill_height=ft(3)),     # y 5'-4"
     # BED1/BED2 ARE BACK ON THE 27" BEARING CAP, AND THE 2026-08-01 NOTE THAT
     # PUT THEM ON 30" WAS WRONG ABOUT WHY IT HAD TO. That note read: "a 27x36 falls a third
     # short [of R303.1] ... 27" cannot reach it at any height that fits under the 9'-0"

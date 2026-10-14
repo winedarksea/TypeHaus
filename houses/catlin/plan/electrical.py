@@ -2411,12 +2411,14 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SS2", face="right", distance_from_start=inch(158.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # The southeast corner shelf covers the old south-wall station. The east-wall pier
+    # between shelf and WIN-S-STUDY3 keeps plugs accessible (owner, 2026-10-14).
     ElectricalDevice(uid="NEC062AAAA", tag="ED-S-STUDY2-RC5", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-S2", face="left", distance_from_start=inch(206),
+                         wall_ref="W-S-E1", face="left", distance_from_start=inch(40),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC063AAAA", tag="ED-S-STUDY2-RC6", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",

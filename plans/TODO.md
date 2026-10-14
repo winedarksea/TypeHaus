@@ -244,6 +244,7 @@ the future.
 - Plan microwave placement
 - Maybe swap the two living room east side curtain rods with cellular blinds in the four larger east facing living room windows
 - Review ED-M-PORCH-FLOOD. Update the 3d model for a proper flood light (or switch to a second mirrored downlight) and consider moving out to mounted on the edge of the balcony, more fully over the sunken garden.
+- [x] Move upstairs study chess table/chairs 30" west; add the compact Tribesigns Frailey corner bookshelf (23.62", preserving south windows); move WIN-S-STUDY3 16" north to align with WIN-M-LIV-E1 and relocate RC5 to the east-wall pier. (2026-10-14)
 
 # Project Management
 

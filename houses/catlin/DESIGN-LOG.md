@@ -5165,3 +5165,19 @@ A reviewer's five points and two follow-ups; owner decisions marked.
 - Headroom under ST-S2A drops, by the owner's choice: shelf top ~5" under the stringers at
   its east face, seat top 14 1/2" and cushion top 11 1/2" at the east foot cubby. The study
   nook test's floors fall to 4 1/2" / 14" / 11".
+
+## 2026-10-14 — Study chess group west; compact southeast corner bookcase
+
+- Chess table and both chairs move 30" west as one group; their other coordinates,
+  rotations and identities stay fixed. The table's south edge stays on the painted wall.
+- Add the rustic-brown/black Tribesigns Frailey JW0510: 23.62" square, 78.74" tall,
+  seven paired shelf tiers with open backs. The 1/2" finish-face gaps leave 2.245" beside
+  WIN-S-STUDY2 and 17.426" beside the east chair. Both south windows and the nook stay put.
+  The linked BILLY combinations would cover the south window, including the 37 3/8" set.
+  `plan/study_bookcase_types.py` carries the chosen product; frame details are illustrative.
+- WIN-S-STUDY3 moves one 16" bay north to y=5'-4", directly over WIN-M-LIV-E1; same
+  tempered 27x48 unit and 3'-0" sill. Its braced-wall designations transfer 16" from the
+  north pier to the southeast return; total full-height bracing stays 26'-8". The move
+  adds four packed girt-fastening stations, taking that hardware quantity 1134 -> 1138.
+- RC5 keeps its uid, circuit and 16" elevation, moving from behind the bookcase to
+  W-S-E1's study face at y=3'-4", between the shelf and east window.

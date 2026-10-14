@@ -311,7 +311,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # Their jambs now sit beside the 32" block module, so the jamb blocks take those
     # stations: W-M-W4 47 -> 43, W-S-W4 30 -> 26, max field gap 34.5" -> 32.8". The
     # mudroom's interior upper closure adds no exterior fastening.
-    assert row["count"] == 1134 and furring[0]["count"] == 198
+    # STUDY3 follows E1 north (2026-10-14): four more packed girt stations at head/sill.
+    assert row["count"] == 1138 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

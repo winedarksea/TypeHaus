@@ -1,4 +1,4 @@
-"""Preserve the second-storey UI layout and the BED1 chair's clearance correction."""
+"""Preserve the second-storey layout, including the study's compact corner bookshelf."""
 
 from __future__ import annotations
 
@@ -9,14 +9,15 @@ from typehaus.quantities import ft, inch
 from typehaus.takeoff.placeables import placeables_takeoff
 
 # UI coordinates are metres; BED1 was nudged 1/64" east for the added PAX frame.
+# The study table/chairs subsequently moved together 30" west for the corner shelf.
 # tag, catalog type, room, centre, rotation in degrees
 SECOND_STORY_UI_PLACEMENTS = (
     ("FURN-S-BED1", "FURN-BED-TWIN", "RM-S-BED1", (9.801366875, 3.36872), -90),
     ("FURN-S-DESK1", "FURN-DESK-48", "RM-S-BED1", (10.4995, 4.58763), 90),
     ("FURN-S-DESK-CHAIR1", "FURN-DESK-CHAIR", "RM-S-BED1", (10.0492, 4.62797), 90),
-    ("FURN-S-STUDY-TABLE", "FURN-CHESS-TABLE-315", "RM-S-STUDY2", (9.55695, 0.568579), 90),
-    ("FURN-S-STUDY-CHAIR1", "FURN-DINING-CHAIR", "RM-S-STUDY2", (10.2316, 0.589194), -90),
-    ("FURN-S-STUDY-CHAIR2", "FURN-DINING-CHAIR", "RM-S-STUDY2", (8.8924, 0.588713), 90),
+    ("FURN-S-STUDY-TABLE", "FURN-CHESS-TABLE-315", "RM-S-STUDY2", (8.79495, 0.568579), 90),
+    ("FURN-S-STUDY-CHAIR1", "FURN-DINING-CHAIR", "RM-S-STUDY2", (9.4696, 0.589194), -90),
+    ("FURN-S-STUDY-CHAIR2", "FURN-DINING-CHAIR", "RM-S-STUDY2", (8.1304, 0.588713), 90),
     ("FURN-S-PLANT-POT1", "FURN-PLANT-18", "RM-S-PLANT", (1.28957, 0.606871), 0),
     ("FURN-S-PLANT-POT2", "FURN-PLANT-18", "RM-S-PLANT", (2.6348, 0.584116), 0),
     ("FURN-S-PLANT-POT2-COPY", "FURN-PLANT-18", "RM-S-PLANT", (3.87087, 0.600137), 0),
@@ -74,6 +75,88 @@ def test_study_chess_table_dimensions_and_takeoff(catlin_model_ro):
                if row["type"] == "FURN-CHESS-TABLE-315")
     assert row["count"] == 1
     assert row["tags"] == [table.tag]
+
+
+def test_study_corner_bookcase_fits_between_windows_and_preserves_chess_access(catlin_model_ro):
+    from typehaus.model.placeable_symbols import model_parts, place_local
+    from typehaus.resolve.geometry_millwork import window_stool_prism
+
+    objects = {item.tag: item for item in catlin_model_ro.canvas_objects}
+    bookcase = objects["FURN-S-STUDY-CORNER-BOOKCASE"]
+    footprint = Polygon(bookcase.footprint)
+    west, south, east, north = footprint.bounds
+    room = next(room for room in catlin_model_ro.rooms if room.tag == bookcase.room)
+    assert Polygon(room.clear_face).covers(footprint)
+    assert east - west == pytest.approx(inch(23.62).meters)
+    assert north - south == pytest.approx(inch(23.62).meters)
+    assert bookcase.body_z1_m - bookcase.body_z0_m == pytest.approx(inch(78.74).meters)
+    assert bookcase.rotation_degrees == -90
+    # Even the room's minimum (under its remote soffit) exceeds this bookcase's height.
+    assert room.clear_height_m > bookcase.body_z1_m - bookcase.body_z0_m
+    room_bounds = Polygon(room.clear_face).bounds
+    assert room_bounds[2] - east == pytest.approx(inch(0.5).meters)
+    assert south - room_bounds[1] == pytest.approx(inch(0.5).meters)
+
+    for opening in catlin_model_ro.openings:
+        if opening.host_wall in ("W-S-S2", "W-S-E1"):
+            assert footprint.intersection(Polygon(opening.framing_bumper)).area < 1e-12
+        if opening.swing_clearance:
+            assert footprint.intersection(Polygon(opening.swing_clearance)).area < 1e-12
+    for stool in catlin_model_ro.window_stools:
+        if stool.window_ref in {"WIN-S-STUDY1", "WIN-S-STUDY2", "WIN-S-STUDY3"}:
+            opening = next(item for item in catlin_model_ro.openings
+                           if item.tag == stool.window_ref)
+            prism = window_stool_prism(catlin_model_ro.wall(opening.host_wall), opening, stool)
+            assert prism is not None
+            assert footprint.intersection(Polygon(prism.ring)).area < 1e-12
+    parts = model_parts("corner-bookcase", east - west, north - south,
+                        bookcase.body_z1_m - bookcase.body_z0_m)
+    for run in catlin_model_ro.base_runs:
+        if run.room != bookcase.room:
+            continue
+        for part in parts:
+            x, y, z = part["center"]
+            w, d, h = part["size"]
+            if bookcase.body_z0_m + z - h / 2 >= run.piece.z1_m:
+                continue
+            ring = [(x - w / 2, y - d / 2), (x + w / 2, y - d / 2),
+                    (x + w / 2, y + d / 2), (x - w / 2, y + d / 2)]
+            placed = place_local(ring, bookcase.position, bookcase.rotation_degrees)
+            assert Polygon(placed).intersection(Polygon(run.piece.outline)).area < 1e-12
+    for other in objects.values():
+        if other.room == bookcase.room and other.kind == "Furniture" and other != bookcase:
+            assert footprint.intersection(Polygon(other.footprint)).area < 1e-12, other.tag
+    for clearance in objects["FURN-S-STUDY-TABLE"].recommended_clearances:
+        assert footprint.intersection(Polygon(clearance)).area < 1e-12
+    chair_east = Polygon(objects["FURN-S-STUDY-CHAIR1"].footprint).bounds[2]
+    assert west - chair_east > inch(17).meters
+
+
+def test_study_bookcase_product_takeoff_and_relocated_outlet(catlin_plan, catlin_model_ro):
+    row = next(row for row in placeables_takeoff(catlin_model_ro)
+               if row["type"] == "FT-STUDY-CORNER-BOOKCASE")
+    assert row["count"] == 1
+    assert row["tags"] == ["FURN-S-STUDY-CORNER-BOOKCASE"]
+    catalog_type = next(item for item in catlin_plan.library.furniture_types
+                        if item.tag == row["type"])
+    product = next(item for item in catlin_plan.library.products
+                   if item.tag == catalog_type.product_ref)
+    assert product.brand == "Tribesigns"
+    assert product.model == "HOGA-JW0510"
+
+    source_outlet = catlin_plan.by_tag("ED-S-STUDY2-RC5")
+    assert source_outlet.uid == "NEC062AAAA"
+    assert source_outlet.circuit == "CKT-RC-SECOND"
+    assert source_outlet.mount.elevation.meters == pytest.approx(inch(16).meters)
+    assert source_outlet.location.attachment.wall_ref == "W-S-E1"
+    objects = {item.tag: item for item in catlin_model_ro.canvas_objects}
+    outlet = objects[source_outlet.tag]
+    assert outlet.position[1] == pytest.approx(inch(40).meters)
+    outlet_bounds = Polygon(outlet.footprint).bounds
+    shelf_north = Polygon(objects["FURN-S-STUDY-CORNER-BOOKCASE"].footprint).bounds[3]
+    window = next(item for item in catlin_model_ro.openings if item.tag == "WIN-S-STUDY3")
+    assert outlet_bounds[1] - shelf_north > inch(7).meters
+    assert Polygon(window.framing_bumper).bounds[1] > outlet_bounds[3]
 
 
 def test_deleted_study_rocker_and_duplicate_pot_reach_the_takeoff(catlin_model_ro):

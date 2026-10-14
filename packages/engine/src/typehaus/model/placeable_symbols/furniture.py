@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typehaus.model.placeable_symbols._chess_table import chess_table
 from typehaus.model.placeable_symbols._closet_wire import closet_corner_wire, closet_wire
+from typehaus.model.placeable_symbols._corner_bookcase import corner_bookcase
 from typehaus.model.placeable_symbols._curtain_rod import curtain_rod
 from typehaus.model.placeable_symbols._desk import drawer_desk
 from typehaus.model.placeable_symbols._families import (
@@ -132,6 +133,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "nightstand": case(rows=2, cols=1),
     "media-console": case(rows=2, cols=3, pulls=False),
     "bookcase": shelving(shelves=5),
+    "corner-bookcase": corner_bookcase,
     # Five interior shelves plus base and cap; only the cap has the light-brown stain.
     "hemnes-bookcase": shelving(shelves=7, body_color="appliance-white",
                                back_color="casework-shadow", top_color="wood"),

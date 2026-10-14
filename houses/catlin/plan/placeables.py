@@ -602,17 +602,20 @@ SECOND_PLACEABLES = [
               position=pt(m(7.6327), m(10.1621)), rotation=deg(-90)),
     # The 31 1/2" side runs north–south, with its south edge on W-S-S2's painted
     # drywall face at y=6.635". Centre is that face plus half the table length;
-    # rotation 90 leaves the drawer accessible from the east side.
+    # rotation 90 leaves the drawer accessible from the east side. The whole group moved
+    # 30" west for the southeast corner shelf (owner, 2026-10-14).
     Furniture(uid="TAB701AAAA", tag="FURN-S-STUDY-TABLE", type_ref="FURN-CHESS-TABLE-315",
-              room="RM-S-STUDY2", position=pt(m(9.55695), inch(22.385)), rotation=deg(90)),
+              room="RM-S-STUDY2", position=pt(m(8.79495), inch(22.385)), rotation=deg(90)),
     Furniture(uid="CHR704AAAA", tag="FURN-S-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
-              room="RM-S-STUDY2", position=pt(m(10.2316), m(0.589194)), rotation=deg(-90)),
+              room="RM-S-STUDY2", position=pt(m(9.4696), m(0.589194)), rotation=deg(-90)),
     Furniture(uid="CHR705AAAA", tag="FURN-S-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
-              room="RM-S-STUDY2", position=pt(m(8.8924), m(0.588713)), rotation=deg(90)),
-    # A compact rocking chair occupies the southeast corner, with its back to the south
-    # wall and WIN-S-STUDY3 just north of it up the east wall at y 5'-4" (off the chair
-    # rather than over it). The armchair symbol is the intentional close-enough 2D/3D
-    # approximation: it keeps the plan readable while the catalog type preserves the use.
+              room="RM-S-STUDY2", position=pt(m(8.1304), m(0.588713)), rotation=deg(90)),
+    # Finish corner (425.365", 6.635") minus/plus 1/2" gap and half the 23.62" case.
+    # -90 turns the symbol's +x/+y backs east/south. The compact Frailey keeps both south
+    # windows; even the smaller BILLY combination would cover WIN-S-STUDY2.
+    Furniture(uid="CSBOOK0001", tag="FURN-S-STUDY-CORNER-BOOKCASE",
+              type_ref="FT-STUDY-CORNER-BOOKCASE", room="RM-S-STUDY2",
+              position=pt(inch(413.055), inch(18.945)), rotation=deg(-90)),
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
               room="RM-S-SUITE", position=pt(m(1.52182), m(5.57379)), rotation=deg(0)),
     # Flush with the queen's sides; backs stop at the 3/4" walnut paneling face.
