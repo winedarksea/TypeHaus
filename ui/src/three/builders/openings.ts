@@ -167,8 +167,10 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
         pieceSeed(`${opening.uid}|bookcase-board-${boardIndex++}`));
       parent.add(new THREE.Mesh(geometry, material));
     };
+    const mountPlane = faces === null ? 0
+      : bookcaseDoor.mounting_face === "negative_normal" ? faces[0] : faces[1];
     buildBookcaseDoor(addOakBox, bookcaseDoor, opening.width_m, availableHeight, floorZ,
-      boardMaterial, boardMaterial);
+      boardMaterial, boardMaterial, mountPlane);
     registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
     return;
   }

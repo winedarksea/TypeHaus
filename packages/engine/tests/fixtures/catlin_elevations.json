@@ -1151,18 +1151,9 @@
 "canvas_objects/FURN-A-STUDIO-BAR-BASE/body_z0_m": 6.118098,
 "canvas_objects/FURN-A-STUDIO-BAR-BASE/body_z1_m": 7.508748,
 "canvas_objects/FURN-A-STUDIO-BAR-BASE/z_m": 6.118098,
-"canvas_objects/FURN-A-STUDY-BRIDGE-CAP/body_z0_m": 7.63905,
-"canvas_objects/FURN-A-STUDY-BRIDGE-CAP/body_z1_m": 7.6581,
-"canvas_objects/FURN-A-STUDY-BRIDGE-CAP/z_m": 7.63905,
-"canvas_objects/FURN-A-STUDY-BRIDGE-EAST/body_z0_m": 6.1341,
-"canvas_objects/FURN-A-STUDY-BRIDGE-EAST/body_z1_m": 7.6581,
-"canvas_objects/FURN-A-STUDY-BRIDGE-EAST/z_m": 6.1341,
 "canvas_objects/FURN-A-STUDY-BRIDGE-FRONT/body_z0_m": 6.1341,
 "canvas_objects/FURN-A-STUDY-BRIDGE-FRONT/body_z1_m": 7.6581,
 "canvas_objects/FURN-A-STUDY-BRIDGE-FRONT/z_m": 6.1341,
-"canvas_objects/FURN-A-STUDY-BRIDGE-WEST/body_z0_m": 6.1341,
-"canvas_objects/FURN-A-STUDY-BRIDGE-WEST/body_z1_m": 7.6581,
-"canvas_objects/FURN-A-STUDY-BRIDGE-WEST/z_m": 6.1341,
 "canvas_objects/FURN-A-STUDY-BUILTIN/body_z0_m": 6.1341,
 "canvas_objects/FURN-A-STUDY-BUILTIN/body_z1_m": 7.6581,
 "canvas_objects/FURN-A-STUDY-BUILTIN/z_m": 6.1341,
@@ -6472,6 +6463,12 @@
 2,
 "3034a6239ff2"
 ],
+"geometry/CAD203AAAA-casing-r/body": [
+6.1341,
+8.1661,
+6,
+"b041ebcfa324"
+],
 "geometry/CAD203AAAA/bookcase_back": [
 6.1341,
 8.0518,
@@ -6483,12 +6480,6 @@
 8.0899,
 4,
 "11ec0560973b"
-],
-"geometry/CAD203AAAA/bookcase_casing": [
-6.067425,
-8.23595,
-6,
-"91387cbcfa88"
 ],
 "geometry/CAD203AAAA/bookcase_shelves": [
 6.508115,
@@ -7067,6 +7058,12 @@
 "ff271848e48f"
 ],
 "geometry/CAR404AAAA-base-CAW109AAAA-0/body": [
+6.1341,
+6.223,
+2,
+"ff271848e48f"
+],
+"geometry/CAR404AAAA-base-CAW113AAAA-0/body": [
 6.1341,
 6.223,
 2,

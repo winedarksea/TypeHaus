@@ -237,7 +237,7 @@ the future.
 - Either engineer the mudroom exposed studs as allowed hardwood, or specify southern yellow pine with a gold anodized aluminum trim (>= 1.5 mm / 0.064 / 12 gauge thickness) https://www.dkhardware.com/cr-laurence-l902bga-ccp72-xcp10-brite-gold-anodized-aluminum-1-4-l-bar-extrusion-72-length-pack-of-10-product-10103314.html or 1-1/2" ID U-channel
 - Perhaps two more shelf like blocking rows in the mudroom exposed stud line, one as a lower shelf and one as a top shelf
 - Spec sand or gravel backfill around house
-- the framing of D-A-STUDY (bookcase shelf) and the oak trim next to it (such as FURN-A-STUDY-BRIDGE-FRONT) are wrong. The door looks like it needs to be inset into the framing, north a bit more, right now it hasn't got a clear support on the east side. Then the trim is simpler likely, a single panel on that wall closing the gap to the bookshelves.
+- The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
 
 # Project Management
 

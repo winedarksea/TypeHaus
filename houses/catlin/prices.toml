@@ -3165,15 +3165,13 @@
 # One fixed stepped study run. Oak horizontal boards remain in [hardwood]; this row carries
 # its plywood backs/dividers/filler, dados, fabrication, finish, delivery and installation.
 "FT-A-STUDY-BUILTIN" = { material = { low = 500, high = 1100 }, labour = { low = 800, high = 1700 } }  # 1 ea
-# Study door bridge, 2026-10-13: four boards of owner-stock 4/4 oak (wood purchase $0).
-# Planning allowances, not quotes: material is cleats/fasteners/finish; labour is milling,
-# assembly, scribing the 1/8" casing reveal and fitting to stationary backing/casework.
-# Total for 1 front + 2 returns + 1 cap: $0-50 incidentals and $120-300 labour.
-# These rows own the entire bridge cost; FT-A-STUDY-BUILTIN excludes it and [hardwood]
-# re-presents the four boards as an unpriced milling schedule, never a second cost.
+# Study door casing infill, 2026-10-14: one owner-stock 4/4 oak board (wood purchase $0).
+# Planning allowance, not a quote: material is fasteners/glue/finish; labour is milling,
+# fitting to the east casing leg and scribing to the bookcase filler.
+# This row owns the infill's cost; FT-A-STUDY-BUILTIN excludes it and [hardwood]
+# re-presents it as an unpriced milling schedule, never a second cost. Its casing legs bill
+# in interior trim with the rest of the house's oak casing.
 "FT-A-STUDY-BRIDGE-FRONT" = { material = { low = 0, high = 20 }, labour = { low = 60, high = 140 } }  # 1 ea
-"FT-A-STUDY-BRIDGE-RETURN" = { material = { low = 0, high = 10 }, labour = { low = 20, high = 60 } }  # 2 ea
-"FT-A-STUDY-BRIDGE-CAP" = { material = { low = 0, high = 10 }, labour = { low = 20, high = 40 } }  # 1 ea
 # --- FX-*, REPRICED 2026-08-21 -------------------------------------------------------
 # The whole family was re-researched after FX-TUBSHOWER-60 was found priced BELOW FX-TUB-60
 # on both halves — a tub plus a surround, a valve, a riser and a head cannot cost less to
@@ -5453,8 +5451,9 @@
 # D-A-STUDY's selected 36 x 80 nominal Murphy Door unit. One purchased assembly includes
 # its factory cabinet shelves, jamb/face-frame/casing hardware and concealed pivot system;
 # those shelves are deliberately outside the owner-stock hardwood takeoff. Installation
-# includes setting the supplied jamb/casing and threshold, subject to delivered-unit fastening
-# verification. It does not include unsupported three-ply-jamb or assumed leaf-weight scope.
+# includes setting the supplied jamb and threshold, subject to delivered-unit fastening
+# verification. The factory casing ships but is not installed: the house's oak casing is
+# derived and billed in interior trim (notes/study_bookcase_bridge.md). It does not include unsupported three-ply-jamb or assumed leaf-weight scope.
 "DT-INT-BOOKCASE36" = { material = { low = 1400, high = 3500 }, labour = { low = 500, high = 1150 } }  # 1 ea
 
 # --- cased openings -----------------------------------------------------------------------------

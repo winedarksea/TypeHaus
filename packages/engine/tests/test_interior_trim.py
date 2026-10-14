@@ -279,9 +279,9 @@ def test_the_takeoff_reconciles_to_the_records(starter) -> None:
 
 # --- catlin: what the plan said to expect ---------------------------------------------------
 
-def test_catlin_trimless_bookcase_and_overhead_doors_take_no_casing(catlin_model_ro) -> None:
+def test_catlin_trimless_and_overhead_doors_take_no_casing(catlin_model_ro) -> None:
     cased = {c.opening_ref for c in catlin_model_ro.door_casings}
-    assert cased.isdisjoint({"D-M-STUDY", "D-M-BED2", "D-A-STUDY", "D-G-OVERHEAD"})
+    assert cased.isdisjoint({"D-M-STUDY", "D-M-BED2", "D-G-OVERHEAD"})
     # An exterior door is cased on its room face only.
     for door in ("D-M-ENTRY", "D-M-BALC", "D-S-DECK-E"):
         assert len([c for c in catlin_model_ro.door_casings if c.opening_ref == door]) == 1

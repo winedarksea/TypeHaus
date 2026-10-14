@@ -32,6 +32,20 @@ owner-confirmed entry station, 36" AFF. Its hydrant branch order remains unresol
 and must be settled before installation; geometry alone does not prove protection.
 The lane check admits only the named door exception; the door must be held open.
 
+## Study bookcase door is a flush mount in its framing (2026-10-14)
+
+Supersedes the four-board bridge below. The engine hung the Murphy cabinet proud of
+W-A-SN, back on the wall axis and front 5 7/8" into the study. Its east 3 1/2" stood over
+`FO-A-STAIR` with no support. Murphy's pre-hung flush-mount sheet says otherwise: the
+4 9/16" jamb sits tight to the drywall, the face frame is flush with the shelf-side wall, the
+body protrudes 3 3/4" on the swing side, and in-swing casing is applied wall trim lapping the
+face frame 1/2". The 38x82 RO (nominal + 2") and 2x4 jamb packs were already right, so no
+framing moved. The cabinet now runs y 105 5/8..113 7/8", between the jambs. The house's oak
+casing (TRIM-STANDARD) is derived on the study face, and one 6 1/2 x 60 x 3/4" oak infill in
+the casing plane closes the east leg to the filler. The factory casing ships unused. Open:
+`ED-A-STUDY-SW` sits under the east leg (`advisory.trim_device_clash`), and there is no free
+stud bay beside the door. See `notes/study_bookcase_bridge.md`.
+
 ## Study door casing joins the fixed bookcase in oak (2026-10-13)
 
 Added a stationary 60"-high oak cover across the 5 5/8" casing-to-filler gap and the

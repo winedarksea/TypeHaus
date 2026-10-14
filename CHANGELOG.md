@@ -4,14 +4,20 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
-- **Catlin's study bookcase door joins the fixed shelves through a 60" oak bridge.** Four
-  stationary boards cover the gap and depth step, retaining a 1/8" casing reveal. The boards
-  appear in drawings, the viewer, GLB, IFC and the estimate, with a separate owner-stock
-  fabrication/install allowance.
+- **A bookcase door is a flush mount, cased in the house's trim.** The cabinet's face frame
+  sits on the mounting face's finish and its body runs back through the rough opening (it
+  used to hang proud of the wall, its back on the axis). The factory casing part is gone: a
+  bookcase door now takes `TrimStandard`'s derived casing on its shelf face only, lapping the
+  face frame by the new required `BookcaseDoorSpec.casing_lap` (Murphy: 1/2"), and bills in
+  interior trim with the rest.
+- **Catlin's study bookcase door sits in its framing, with one 60" oak infill to the shelves.**
+  The cabinet is off `FO-A-STAIR` and between both jambs; house oak casing frames it, and a
+  6 1/2" infill in the casing plane closes the east leg to the bookcase filler. It replaces the
+  four-board bridge.
 - **Millwork can include individually modeled furniture boards.**
   `MillworkStandard.board_furniture_refs` sends explicitly named boards to the sawyer with
-  cut sizes from their catalog types. Catlin's four study bridge boards now appear as three
-  4/4 oak rows; the schedule remains an unpriced view of their placeable allowance.
+  cut sizes from their catalog types. Catlin's study casing infill appears as one 4/4 oak row;
+  the schedule remains an unpriced view of its placeable allowance.
 - **A sill plate on concrete is plain pressure-treated SYP (`pt-syp`), not KDAT.** The
   `CR-CONC-TO-FRAMED-SILL` returns report the new library material; the load above pins the
   plate flat, so drying after treatment buys nothing there.

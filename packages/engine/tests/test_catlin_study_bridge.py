@@ -1,8 +1,7 @@
-"""The stationary oak cover joins the study door casing to the stepped shelf run."""
+"""D-A-STUDY is a flush-mount Murphy door cased in house oak; one oak infill meets the shelves."""
 
 import struct
 from dataclasses import replace
-from itertools import combinations
 from pathlib import Path
 
 import pytest
@@ -23,12 +22,9 @@ from typehaus.takeoff.hardwood import _furniture_board_rows, hardwood_takeoff
 from typehaus.takeoff.placeables import placeables_takeoff
 
 BRIDGE_PREFIX = "FURN-A-STUDY-BRIDGE-"
-BOARD_BOUNDS_IN = {
-    "FRONT": (263.875, 99.75, 269.375, 100.5),
-    "WEST": (263.875, 100.5, 264.625, 105.625),
-    "EAST": (268.625, 100.5, 269.375, 105.625),
-    "CAP": (264.625, 100.5, 268.625, 105.625),
-}
+BOARD_BOUNDS_IN = {"FRONT": (262.875, 104.875, 269.375, 105.625)}
+# W-A-SN's two finish faces: the study (shelf) face and the loft (swing) face.
+STUDY_FACE_Y_IN, LOFT_FACE_Y_IN = 105.625, 110.375
 
 
 def _boards(model):
@@ -36,64 +32,92 @@ def _boards(model):
             if item.tag.startswith(BRIDGE_PREFIX)}
 
 
-def test_four_boards_form_a_connected_cover_at_the_built_in_elevation(catlin_model_ro):
+def _door(model):
+    door = next(door for door in model.openings if door.tag == "D-A-STUDY")
+    door_type = next(t for t in model.plan.library.door_types if t.tag == door.type_ref)
+    parts = opening_parts(model.wall(door.host_wall), door, door_type.operation,
+                          bookcase_door=door_type.bookcase_door)
+    return door, door_type, parts
+
+
+def _bounds_in(geometry):
+    return tuple(v / M_PER_IN for v in geometry.bounds)
+
+
+def test_cabinet_sits_in_the_rough_opening_flush_with_the_study_face(catlin_model_ro):
+    door, door_type, parts = _door(catlin_model_ro)
+    assert {part.key for part in parts} == {"bookcase_sides", "bookcase_caps",
+                                            "bookcase_shelves", "bookcase_back"}
+    cabinet = unary_union([Polygon(solid.ring) for part in parts for solid in part.solids])
+    x0, y0, x1, y1 = _bounds_in(cabinet)
+    # Face frame on the study finish (nothing over FO-A-STAIR), back 3 1/2" past the loft
+    # face: Murphy's 8 1/4" body less a 4 3/4" wall, the jamb's 3 3/4" on a 4 9/16" wall.
+    assert y0 == pytest.approx(STUDY_FACE_Y_IN)
+    assert y1 - LOFT_FACE_Y_IN == pytest.approx(3.5)
+    center = (catlin_model_ro.wall("W-A-SN").axis[0][0] + door.center_along_m) / M_PER_IN
+    half_ro = door.width_m / 2 / M_PER_IN
+    assert center - half_ro < x0 and x1 < center + half_ro
+    assert x1 - x0 == pytest.approx(door_type.bookcase_door.body_width.meters / M_PER_IN)
+
+
+def test_house_oak_casing_laps_the_face_frame_on_the_study_face_only(catlin_model_ro):
+    door, door_type, parts = _door(catlin_model_ro)
+    casings = [c for c in catlin_model_ro.door_casings if c.opening_ref == "D-A-STUDY"]
+    assert [(c.room, c.material_ref) for c in casings] == [("RM-A-STUDY", "oak-trim")]
+    pieces = {piece.name: piece for piece in casings[0].pieces}
+    assert set(pieces) == {"leg_left", "leg_right", "head"}
+    sides = next(part for part in parts if part.key == "bookcase_sides")
+    frame = unary_union([Polygon(solid.ring) for solid in sides.solids])
+    lap = door_type.bookcase_door.casing_lap.meters / M_PER_IN
+    legs = {name: _bounds_in(Polygon(pieces[name].outline)) for name in ("leg_left", "leg_right")}
+    assert legs["leg_left"][2] == pytest.approx(_bounds_in(frame)[0] + lap)
+    assert legs["leg_right"][0] == pytest.approx(_bounds_in(frame)[2] - lap)
+    for x0, y0, x1, y1 in legs.values():
+        assert (y0, y1) == pytest.approx((STUDY_FACE_Y_IN - 0.75, STUDY_FACE_Y_IN))
+        assert x1 - x0 == pytest.approx(3.5)
+    body_top = (catlin_model_ro.wall("W-A-SN").base_ref_z_m
+                + door_type.bookcase_door.body_height.meters)
+    assert pieces["head"].z0_m == pytest.approx(body_top - lap * M_PER_IN)
+
+
+def test_one_infill_closes_the_east_leg_to_the_filler_in_the_casing_plane(catlin_model_ro):
     boards = _boards(catlin_model_ro)
     assert set(boards) == set(BOARD_BOUNDS_IN)
+    infill = boards["FRONT"]
+    assert _bounds_in(Polygon(infill.footprint)) == pytest.approx(BOARD_BOUNDS_IN["FRONT"])
     builtin = next(item for item in catlin_model_ro.canvas_objects
                    if item.tag == "FURN-A-STUDY-BUILTIN")
-    for suffix, board in boards.items():
-        assert tuple(v / M_PER_IN for v in Polygon(board.footprint).bounds) == pytest.approx(
-            BOARD_BOUNDS_IN[suffix])
-        assert board.body_z1_m == pytest.approx(builtin.body_z1_m)
-        bottom = 59.25 if suffix == "CAP" else 0
-        assert board.body_z0_m == pytest.approx(builtin.body_z0_m + bottom * M_PER_IN)
-    for first, second in combinations(boards.values(), 2):
-        overlap_height = max(0, min(first.body_z1_m, second.body_z1_m)
-                             - max(first.body_z0_m, second.body_z0_m))
-        overlap_area = Polygon(first.footprint).intersection(Polygon(second.footprint)).area
-        assert overlap_height * overlap_area < 1e-10
-    for first, second in (('FRONT', 'WEST'), ('FRONT', 'EAST'), ('FRONT', 'CAP'),
-                          ('WEST', 'CAP'), ('EAST', 'CAP')):
-        assert Polygon(boards[first].footprint).distance(Polygon(boards[second].footprint)) < 1e-8
-    assert Polygon(boards["EAST"].footprint).distance(Polygon(builtin.footprint)) < 1e-8
+    assert infill.body_z0_m == pytest.approx(builtin.body_z0_m)
+    assert infill.body_z1_m == pytest.approx(builtin.body_z1_m)
+    assert Polygon(infill.footprint).distance(Polygon(builtin.footprint)) < 1e-8
+    casing = next(c for c in catlin_model_ro.door_casings if c.opening_ref == "D-A-STUDY")
+    east_leg = Polygon(next(p for p in casing.pieces if p.name == "leg_right").outline)
+    assert Polygon(infill.footprint).distance(east_leg) < 1e-8
+    assert Polygon(infill.footprint).intersection(east_leg).area < 1e-10
+    assert Polygon(infill.footprint).bounds[1] == pytest.approx(east_leg.bounds[1])
 
 
-def test_bridge_fits_the_study_without_overlapping_partitions_or_other_furniture(catlin_model_ro):
+def test_infill_fits_the_study_without_overlapping_partitions_or_the_door(catlin_model_ro):
     model = catlin_model_ro
-    boards = _boards(model)
+    door, _door_type, parts = _door(model)
     room = next(room for room in model.rooms if room.tag == "RM-A-STUDY")
     room_face = Polygon(room.clear_face).buffer(1e-8)
     walls = unary_union([Polygon(layer.polygon) for wall in model.walls
                          if wall.tag.startswith("W-A-SN") for layer in wall.layers])
     peers = [item for item in model.canvas_objects
              if item.storey == "attic" and not item.tag.startswith(BRIDGE_PREFIX)]
-    for board in boards.values():
+    for board in _boards(model).values():
         footprint = Polygon(board.footprint)
         assert room_face.covers(footprint), board.tag
         assert footprint.intersection(walls).area < 1e-10
+        assert footprint.intersection(Polygon(door.swing_clearance)).area < 1e-10
+        assert all(footprint.intersection(Polygon(solid.ring)).area < 1e-10
+                   for part in parts for solid in part.solids)
         for peer in peers:
             assert footprint.intersection(Polygon(peer.footprint)).area < 1e-10, peer.tag
 
 
-def test_bridge_leaves_a_casing_reveal_and_clears_the_modeled_door(catlin_model_ro):
-    model = catlin_model_ro
-    door = next(door for door in model.openings if door.tag == "D-A-STUDY")
-    door_type = next(t for t in model.plan.library.door_types if t.tag == door.type_ref)
-    parts = opening_parts(model.wall(door.host_wall), door, door_type.operation,
-                          bookcase_door=door_type.bookcase_door)
-    casing = unary_union([Polygon(solid.ring) for part in parts
-                          if part.key == "bookcase_casing" for solid in part.solids])
-    front = Polygon(_boards(model)["FRONT"].footprint)
-    assert front.bounds[0] - casing.bounds[2] == pytest.approx(0.125 * M_PER_IN)
-    assert front.bounds[1] == pytest.approx(casing.bounds[1])
-    for board in _boards(model).values():
-        footprint = Polygon(board.footprint)
-        assert footprint.intersection(Polygon(door.swing_clearance)).area < 1e-10
-        assert all(footprint.intersection(Polygon(solid.ring)).area < 1e-10
-                   for part in parts for solid in part.solids)
-
-
-def test_viewer_and_gltf_keep_four_oak_boards_with_their_actual_bounds(catlin_model_ro):
+def test_viewer_and_gltf_keep_the_oak_infill_with_its_actual_bounds(catlin_model_ro):
     model = catlin_model_ro
     boards = _boards(model)
     types = {record["tag"]: record for record in canvas_object_types(model.plan)}
@@ -126,7 +150,7 @@ def test_viewer_and_gltf_keep_four_oak_boards_with_their_actual_bounds(catlin_mo
             assert (min(values), max(values)) == pytest.approx(expected, abs=1e-6)
 
 
-def test_ifc_keeps_each_bridge_board_and_its_cap_mount(catlin_model_ro, catlin_ifc_path):
+def test_ifc_keeps_the_infill_board(catlin_model_ro, catlin_ifc_path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
     exported = ifcopenshell.open(str(catlin_ifc_path))
     furniture = {item.Name: item for item in exported.by_type("IfcFurniture")
@@ -146,38 +170,30 @@ def test_ifc_keeps_each_bridge_board_and_its_cap_mount(catlin_model_ro, catlin_i
         assert footprint.bounds == pytest.approx(Polygon(board.footprint).bounds)
 
 
-def test_four_boards_are_counted_and_the_separate_owner_stock_allowance_is_priced(catlin_model_ro):
+def test_the_infill_is_counted_and_its_owner_stock_allowance_is_priced(catlin_model_ro):
     rows = {row["type"]: row for row in placeables_takeoff(catlin_model_ro)
             if row["type"].startswith("FT-A-STUDY-BRIDGE-")}
-    assert {tag: row["count"] for tag, row in rows.items()} == {
-        "FT-A-STUDY-BRIDGE-FRONT": 1, "FT-A-STUDY-BRIDGE-RETURN": 2,
-        "FT-A-STUDY-BRIDGE-CAP": 1,
-    }
+    assert {tag: row["count"] for tag, row in rows.items()} == {"FT-A-STUDY-BRIDGE-FRONT": 1}
     prices = load_prices(Path(catlin_model_ro.plan.source_root))
     assert prices is not None
-    rates = [(row["count"], prices.placeables[tag]) for tag, row in rows.items()]
-    assert all(rate.is_split for _, rate in rates)
-    assert sum(count * rate.material.low for count, rate in rates) == 0
-    assert sum(count * rate.material.high for count, rate in rates) == 50
-    assert sum(count * rate.labour.low for count, rate in rates) == 120
-    assert sum(count * rate.labour.high for count, rate in rates) == 300
+    rate = prices.placeables["FT-A-STUDY-BRIDGE-FRONT"]
+    assert rate.is_split
+    assert (rate.material.low, rate.material.high) == (0, 20)
+    assert (rate.labour.low, rate.labour.high) == (60, 140)
     shelves = next(bank for bank in catlin_model_ro.shelf_banks if bank.tag == "SB-A-STUDY")
     assert sum(shelf.count for shelf in shelves.shelves) == 12
 
 
-def test_catlin_millwork_cuts_all_four_bridge_boards_from_four_quarter_oak(catlin_model_ro):
+def test_catlin_millwork_cuts_the_infill_from_four_quarter_oak(catlin_model_ro):
     rows = [row for row in hardwood_takeoff(catlin_model_ro) if row["use"] == "casework board"]
     assert {(row["finished_thickness_in"], row["finished_width_in"],
-             row["finished_length_in"]): row["pieces"] for row in rows} == {
-        (0.75, 5.5, 60): 1, (0.75, 5.125, 60): 2, (0.75, 4, 5.125): 1,
-    }
+             row["finished_length_in"]): row["pieces"] for row in rows} == {(0.75, 6.5, 60): 1}
     assert {tag for row in rows for tag in row["tags"]} == {
         board.tag for board in _boards(catlin_model_ro).values()}
     for row in rows:
         assert (row["material"], row["nominal_stock"], row["milling_profile"], row["layup"]) == (
             "oak-trim", "4/4", "S4S", "one board")
         assert row["also_in_placeables"] is True
-    assert sum(row["rough_board_feet"] for row in rows) == pytest.approx(8.6)
 
 
 def test_millwork_board_scope_is_explicit_and_cut_sizes_follow_the_catalog(catlin_model_ro):

@@ -100,29 +100,47 @@ class TrimScope:
         rough opening (trimless) or the factory frame (a bookcase door), per
         :func:`base_break_half_width`.
         """
-        if not cased(self.door_types.get(opening.type_ref or "")):
+        door_type = self.door_types.get(opening.type_ref or "")
+        if not cased(door_type):
             return None
-        s = self.standard
-        return (opening.width_m / 2.0 - s.jamb_allowance.meters + s.reveal.meters
-                + s.casing_width.meters)
+        inner, _head = casing_edges(opening, door_type, self.standard)
+        return inner + self.standard.casing_width.meters
 
     def base_break_half_width(self, opening) -> float | None:
         """Half the base break at a door; ``None`` where the base runs under it (a hatch)."""
         if opening.sill_m >= self.standard.base_height.meters:
             return None
-        door_type = self.door_types.get(opening.type_ref or "")
-        if door_type is not None and door_type.bookcase_door is not None:
-            return door_type.bookcase_door.casing_overall_width.meters / 2.0
         half = self.casing_half_width(opening)
         return opening.width_m / 2.0 if half is None else half
 
 
 def cased(door_type) -> bool:
-    """Whether a door takes applied casing: not trimless, not a bookcase, not overhead."""
+    """Whether a door takes applied casing: not trimless, not overhead."""
     if door_type is None:
         return True
-    return not (door_type.trimless or door_type.bookcase_door is not None
-                or door_type.operation == DoorOperation.OVERHEAD)
+    return not (door_type.trimless or door_type.operation == DoorOperation.OVERHEAD)
+
+
+def casing_edges(opening, door_type, standard: TrimStandard) -> tuple[float, float]:
+    """``(inner edge from the opening centre, head bottom above the sill)`` of its casing.
+
+    A site-hung door's casing stands ``jamb_allowance - reveal`` inside the rough opening. A
+    bookcase door's laps its face frame by the product's ``casing_lap`` instead.
+    """
+    product = getattr(door_type, "bookcase_door", None)
+    if product is not None:
+        lap = product.casing_lap.meters
+        return product.body_width.meters / 2.0 - lap, product.body_height.meters - lap
+    step = standard.jamb_allowance.meters - standard.reveal.meters
+    return opening.width_m / 2.0 - step, opening.height_m - step
+
+
+def cased_side(door_type, side: int) -> bool:
+    """Whether the wall face at ``side`` (+1 = +normal) takes casing: a bookcase only its own."""
+    product = getattr(door_type, "bookcase_door", None)
+    if product is None:
+        return True
+    return side == (-1 if product.mounting_face == "negative_normal" else 1)
 
 
 def trim_scope(plan: PlanModel, model: ResolvedModel) -> tuple[TrimScope | None, list[Finding]]:

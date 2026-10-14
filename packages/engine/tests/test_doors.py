@@ -731,10 +731,8 @@ def test_catlin_murphy_door_keeps_published_dimensions_and_hinge_clearance(catli
     assert spec.clear_passage_width.meters / inch(1).meters == pytest.approx(30.25)
     assert spec.casing_overall_width.meters / inch(1).meters == pytest.approx(42.5)
 
-    opening = next(o for o in catlin_model_ro.openings if o.tag == "D-A-STUDY")
-    host = catlin_model_ro.wall("W-A-SN")
-    center_x = host.axis[0][0] + opening.center_along_m
-    casing_west_x = center_x - spec.casing_overall_width.meters / 2
+    casing = next(c for c in catlin_model_ro.door_casings if c.opening_ref == "D-A-STUDY")
+    casing_west_x = min(x for piece in casing.pieces for x, _y in piece.outline)
     center_wall = catlin_model_ro.wall("W-A-C1B")
     center_wall_east_face = max(x for layer in center_wall.layers for x, _y in layer.polygon)
     assert casing_west_x - center_wall_east_face >= spec.hinge_side_clearance.meters

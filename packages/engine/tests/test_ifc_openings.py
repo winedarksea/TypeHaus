@@ -61,7 +61,7 @@ def test_bookcase_door_ifc_body_contains_separate_cabinet_boards(catlin_ifc):
     door = next(door for door in f.by_type("IfcDoor") if door.Name == "D-A-STUDY")
     body = door.Representation.Representations[0]
     assert body.RepresentationType == "SweptSolid"
-    assert len(body.Items) == 12
+    assert len(body.Items) == 9  # 2 sides, 2 caps, 4 shelves, a back; casing is trim
     assert all(item.is_a("IfcExtrudedAreaSolid") for item in body.Items)
 
 

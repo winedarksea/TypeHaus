@@ -704,9 +704,9 @@ export function runSelectionRegistrationTests() {
       body_width_m: 0.88265, body_height_m: 1.9939, body_depth_m: 0.20955,
       casing_overall_width_m: 1.0795, mounting_face: "negative_normal",
     });
-  assert(bookcaseGroup.children.length === 12,
-    "Bookcase door renders casing, two sides, two caps, four shelves, and a back");
-  assert(bookcaseRegistry.picks.length === 12,
+  assert(bookcaseGroup.children.length === 9,
+    "Bookcase door renders two sides, two caps, four shelves, and a back; casing is trim");
+  assert(bookcaseRegistry.picks.length === 9,
     "Every cabinet board selects the bookcase door");
 }
 

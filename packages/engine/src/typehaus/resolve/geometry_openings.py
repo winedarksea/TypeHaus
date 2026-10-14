@@ -181,7 +181,10 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                                               (flush, back), z0 + sill))
         return tuple(parts) + ((hardware,) if hardware is not None else ())
     if opening.kind == "door" and bookcase_door is not None:
-        return bookcase_door_parts(box, bookcase_door, width, available_height, z0 + sill)
+        mount = 0.0 if faces is None else (
+            faces[0] if bookcase_door.mounting_face == "negative_normal" else faces[1])
+        return bookcase_door_parts(box, bookcase_door, width, available_height, z0 + sill,
+                                   mount)
     if not is_trimless:
         parts.append(GPart(key="frame", material_key=frame_key, solids=(
             box(frame_width, available_height, frame_depth,

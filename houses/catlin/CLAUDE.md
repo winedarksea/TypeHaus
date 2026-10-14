@@ -762,18 +762,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `FURN-A-STUDY-BUILTIN` is one wall-attached fixed run, x=22'-8"..30'-8 3/4", front at
   y=8'-9 5/8", with its back on `W-A-SN-REAR`'s south finish. `SB-A-STUDY` is rehosted to
   it and keeps the 9 7/8" owner-stock oak shelf depth. A 2 5/8" filler closes the west end.
-- Four `FURN-A-STUDY-BRIDGE-*` oak boards cover the casing-to-filler gap: 5 1/2" wide,
-  5 7/8" deep and 60" high, flush with the door casing with a 1/8" reveal. The open back
-  lands on stationary backing and filler; field-fit after hanging the door. Cut list and
-  the separate owner-stock fabrication allowance: `notes/study_bookcase_bridge.md`.
-  `MW-STANDARD.board_furniture_refs` puts all four boards in `haus millwork` as 4/4 oak S4S,
-  with cut sizes derived from their furniture types; the schedule adds no second cost.
+- **`D-A-STUDY` is a Murphy flush mount sitting in its framing** (2026-10-14): face frame on
+  W-A-SN's study finish (y=8'-9 5/8"), body through the 38x82 RO, back 3 1/2" proud on the
+  loft (swing) side, nothing over `FO-A-STAIR`. House oak casing (TRIM-STANDARD, derived) on
+  the study face only, lapping the face frame 1/2" (`BookcaseDoorSpec.casing_lap`); the
+  factory casing ships unused. The 4 9/16" jamb is 3/16" short of the 4 3/4" wall: flush it to
+  the study face, scribe the loft side.
+- `FURN-A-STUDY-BRIDGE-FRONT` is one 6 1/2 x 60 x 3/4" owner-stock oak infill in the casing
+  plane, from the east leg to the bookcase filler; one 4/4 oak row in `haus millwork`.
+  `ED-A-STUDY-SW` sits under the east casing leg (`advisory.trim_device_clash`): still open.
+  Cut list and allowance: `notes/study_bookcase_bridge.md`.
 - `D-A-STUDY` keeps its uid and wall-hosted semantics but uses `DT-INT-BOOKCASE36`: 36x80
-  nominal, 34 3/4 x 78 1/2 x 8 1/4 factory body, 38x82 RO, 42 1/2 casing envelope, 30 1/4
-  published passage and 1 1/2 hinge-side wall clearance. It is west-hinged in-swing and
-  uses the explicit flat 2x4 nonbearing header. Published clearance envelopes are not a
-  calculated pivot sweep; verify threshold anchorage, jamb fastening and floor blocking
-  against the delivered unit before installation.
+  nominal, 34 3/4 x 78 1/2 x 8 1/4 factory body, 38x82 RO, 30 1/4 published passage and
+  1 1/2 hinge-side wall clearance. It is west-hinged in-swing and uses the explicit flat 2x4
+  nonbearing header. Published clearance envelopes are not a calculated pivot sweep; verify
+  threshold anchorage, jamb fastening and floor blocking against the delivered unit.
 
 - **Roof is flash-and-batt in the joist bay**: 11-7/8" TJI 230 @ 24" o.c., 5" ccSPF
   against the deck underside + R-30C batt in the remaining 6-7/8", 5/8" CDX plywood,

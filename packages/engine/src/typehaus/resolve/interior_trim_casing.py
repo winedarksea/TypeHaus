@@ -6,6 +6,9 @@ In the host wall's frame, ``d`` measured out from the opening's centre line:
     outer edge = inner edge + casing_width
     head bottom = rough-opening head - jamb_allowance + reveal
 
+A bookcase door is cased on its shelf face only, lapping the face frame by the product's
+``casing_lap`` (``interior_trim_scope.casing_edges``).
+
 The legs run from the room's finished floor to the head; the head sits on them, flush with
 their outer edges. A leg that runs into an adjacent wall, fixed casework or a neighbouring
 door's casing is scribed back to it, and left off when less than ``min_leg_width`` is left;
@@ -16,7 +19,14 @@ from __future__ import annotations
 
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_door_products import finish_faces
-from typehaus.resolve.interior_trim_scope import TrimScope, cased, face_function, is_finish
+from typehaus.resolve.interior_trim_scope import (
+    TrimScope,
+    cased,
+    cased_side,
+    casing_edges,
+    face_function,
+    is_finish,
+)
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.model_trim import CasingClip, ResolvedDoorCasing, TrimPiece
 from typehaus.resolve.room_lookup import room_owning
@@ -35,12 +45,15 @@ def resolve_door_casings(plan, model: ResolvedModel, scope: TrimScope) -> None:
     for opening in sorted(model.openings, key=lambda o: o.uid):
         if not opening.is_door or opening.kind != "door":
             continue
-        if not cased(scope.door_types.get(opening.type_ref or "")):
+        door_type = scope.door_types.get(opening.type_ref or "")
+        if not cased(door_type):
             continue
         wall = walls.get(opening.host_wall)
         if wall is None:
             continue
         for side in (1, -1):
+            if not cased_side(door_type, side):
+                continue
             casing = _casing(plan, model, scope, wall, opening, side, laid)
             if casing is not None:
                 model.door_casings.append(casing)
@@ -64,7 +77,7 @@ def _casing(plan, model, scope: TrimScope, wall: ResolvedWall, opening, side: in
 
     s = scope.standard
     t, width = s.thickness.meters, s.casing_width.meters
-    inner = opening.width_m / 2.0 - s.jamb_allowance.meters + s.reveal.meters
+    inner, head_rise = casing_edges(opening, scope.door_types.get(opening.type_ref or ""), s)
     outer = inner + width
     room = room_owning(model, wall.storey, at(0.0, face + side * _ROOM_PROBE_M))
     if room is None or room.tag not in scope.rooms:
@@ -79,8 +92,7 @@ def _casing(plan, model, scope: TrimScope, wall: ResolvedWall, opening, side: in
         n0, n1 = face, face + side * t
         return (at(d0, n0), at(d1, n0), at(d1, n1), at(d0, n1))
 
-    head_z = wall.base_ref_z_m + opening.sill_m + opening.height_m - s.jamb_allowance.meters \
-        + s.reveal.meters
+    head_z = wall.base_ref_z_m + opening.sill_m + head_rise
     sill_z = wall.base_ref_z_m + opening.sill_m
     raised = opening.sill_m > _RAISED_SILL_M or sill_z - floor_z > _RAISED_SILL_M
     # A hatch's frame closes with a sill piece mirroring the head; the legs stand on it.

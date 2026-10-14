@@ -76,10 +76,9 @@ MILLWORK = [
             nosing_depth=inch(3.5),
         ),
         max_board_width=inch(18),
-        # Four 4/4 oak boards, including the horizontal cap. Their types in study_bridge.py
-        # own the dimensions; the sawyer view must follow any later change to those sizes.
-        board_furniture_refs=("FURN-A-STUDY-BRIDGE-FRONT", "FURN-A-STUDY-BRIDGE-WEST",
-                              "FURN-A-STUDY-BRIDGE-EAST", "FURN-A-STUDY-BRIDGE-CAP"),
+        # The study door's 4/4 oak casing infill. Its type in study_bridge.py owns the size;
+        # the sawyer view follows any later change to it.
+        board_furniture_refs=("FURN-A-STUDY-BRIDGE-FRONT",),
     ),
     # Base and door casing, derived per room and per door face (resolve/interior_trim.py).
     # One board for both: 3/4" x 3 1/2" oak S4S, butt-jointed, flush where base meets leg.

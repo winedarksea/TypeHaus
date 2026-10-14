@@ -92,6 +92,7 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
                  "casing_overall_width_m": dt.bookcase_door.casing_overall_width.meters,
                  "clear_passage_width_m": dt.bookcase_door.clear_passage_width.meters,
                  "hinge_side_clearance_m": dt.bookcase_door.hinge_side_clearance.meters,
+                 "casing_lap_m": dt.bookcase_door.casing_lap.meters,
                  "clearance_envelope": {
                      "kind": "published_installation_clearance",
                      "hinge_side_m": dt.bookcase_door.hinge_side_clearance.meters,

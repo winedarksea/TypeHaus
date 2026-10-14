@@ -50,11 +50,15 @@ class BookcaseDoorSpec(HausModel):
     casing_overall_width: Length
     clear_passage_width: Length
     hinge_side_clearance: Length
+    # How far the field-applied casing laps the face frame: legs and head alike. The derived
+    # house casing (``interior_trim_casing``) stands its inner edge here, not at the RO.
+    casing_lap: Length
     # Catalog wood used for the visible cabinet boards; selects both color and the 3D board
     # finish in the viewer. A factory finish can omit this where no house material is chosen.
     material_ref: str | None = None
-    # Which face of the host wall receives the factory cabinet.  This is a placement
-    # datum, not a claim about its hinge/pivot axis or opening sweep.
+    # The shelf face: its face frame is flush with this face's finish, the body runs back
+    # through the opening, and only this face is cased. A placement datum, not a claim
+    # about the hinge/pivot axis or opening sweep.
     mounting_face: Literal["negative_normal", "positive_normal"] = "negative_normal"
     source: str
 

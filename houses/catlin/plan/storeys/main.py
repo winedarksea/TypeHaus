@@ -100,9 +100,10 @@ DOOR_TYPES = [
                  nominal_width=inch(36), nominal_height=inch(80),
                  body_width=inch(34.75), body_height=inch(78.5), body_depth=inch(8.25),
                  casing_overall_width=inch(42.5), clear_passage_width=inch(30.25),
-                 hinge_side_clearance=inch(1.5), mounting_face="negative_normal",
+                 hinge_side_clearance=inch(1.5), casing_lap=inch(0.5),
+                 mounting_face="negative_normal",
                  material_ref="oak-shelf-4q",
-                 source="Murphy Door measurement charts and instruction manuals, read 2026-09-19; published installation clearance, not a calculated pivot sweep",
+                 source="Murphy Door measurement charts and instruction manuals, read 2026-09-19; published installation clearance, not a calculated pivot sweep. Pre-Hung Flush Mount Installation, read 2026-10-14: 4 9/16in jamb tight to the drywall, face frame flush with the shelf-side wall, 3 3/4in protrusion on the swing side, in-swing casing applied with a 1/2in lap on the face frame",
              ),
              source="Murphy Door 36 x 80 nominal flush-mount bookcase door; 38 x 82 rough opening. West-hinged in-swing at D-A-STUDY. Threshold anchorage, jamb fastening and final connection design require verification against the delivered unit and supporting floor blocking; exact pivot-axis sweep remains deferred."),
     # 2'-0" x 3'-6" — the attic pocket's ACCESS door, and the house's only
