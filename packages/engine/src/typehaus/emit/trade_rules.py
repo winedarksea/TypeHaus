@@ -78,7 +78,8 @@ MATERIAL_TRADE_PATTERNS: tuple[tuple[str, str], ...] = (
     # An equipment stand's extrusion is set by the HVAC installer with the unit on it
     # (audit:2026-09-12#concrete:column:EQUIP_STAND_ALUM).
     ("aluminum-extrusion", "mechanical"),
-    ("spf", "framing"), ("kdat", "framing"), ("lvl", "framing"), ("glulam*", "framing"),
+    ("spf", "framing"), ("kdat", "framing"), ("pt-syp", "framing"),
+    ("lvl", "framing"), ("glulam*", "framing"),
     ("*-timber", "framing"), ("douglas*", "framing"),
     ("sauna-shiplap", "millwork"),
     ("pvc-panel", "millwork"),

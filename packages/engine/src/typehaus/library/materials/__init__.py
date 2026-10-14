@@ -40,6 +40,7 @@ _ORDER = (
     "lsl",
     "lvl",
     "kdat",
+    "pt-syp",
     "glulam-treated",
     "osb",
     "struct-1-plywood",

@@ -14,6 +14,13 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Sill plates on concrete are plain PT, not KDAT (2026-10-13)
+
+Every `CR-CONC-TO-FRAMED-SILL` plate — the garage walls on the ICF stem, the basement's framed
+walls on the foundation walls and the partitions on the slab — is `pt-syp`. R317.1 asks for
+treated; the wall's load and anchors keep the plate from warping, so KDAT is not needed. KDAT
+stays where a stick is exposed or unloaded (girts, deck framing, D-G-SERVICE's rough sill).
+
 ## D-G-SERVICE's rough sill: KDAT under a sloped pan (2026-10-13)
 
 The outswing left `W-G-S` `sill-0`, the door's 2x6 rough sill, in untreated SPF with its top

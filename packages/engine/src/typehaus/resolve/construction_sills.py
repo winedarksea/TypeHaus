@@ -45,6 +45,9 @@ _COMPRESSED_SILL_GASKET_M = 0.0625 * 0.0254
 SILL_GASKET_FOAM = "sill-seal-foam"
 SILL_GASKET_PEEL_STICK = "sill-seal-peel-stick"
 
+#: The treated plate itself: plain PT, not KDAT — the wall above pins it flat.
+SILL_PLATE_MATERIAL = "pt-syp"
+
 
 def _assembly_is_clad(asm) -> bool:
     """Does this assembly carry a weather skin — i.e. is it an envelope wall?
@@ -243,7 +246,7 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
                 uid=uid,
                 tag=rule.tag, storey=storey_tag, kind=rule.kind,
                 applies_to=rule.applies_to, takeoff_category=rule.takeoff_category,
-                material_ref="kdat",
+                material_ref=SILL_PLATE_MATERIAL,
                 element_tags=element_tags,
                 outline=_strip(anchor, direction, run, lo, hi),
                 # On the pour, not at the framed wall's base — a flat-bearing-seat wall's
@@ -322,7 +325,7 @@ def _framed_on_slab(model: ResolvedModel, rule: ConstructionRule,
             uid=f"CR-{slab.uid}-{wall.uid}-sill",
             tag=rule.tag, storey=wall.storey, kind=rule.kind,
             applies_to=rule.applies_to, takeoff_category=rule.takeoff_category,
-            material_ref="kdat",
+            material_ref=SILL_PLATE_MATERIAL,
             element_tags=(slab.tag, wall.tag),
             outline=_strip(anchor, direction, run, -width / 2.0, width / 2.0),
             z0_m=wall.z0_m, z1_m=wall.z0_m + lap, thickness_m=width, length_m=run,

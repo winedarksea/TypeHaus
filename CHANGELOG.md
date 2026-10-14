@@ -4,6 +4,9 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+- **A sill plate on concrete is plain pressure-treated SYP (`pt-syp`), not KDAT.** The
+  `CR-CONC-TO-FRAMED-SILL` returns report the new library material; the load above pins the
+  plate flat, so drying after treatment buys nothing there.
 - **An exterior door's rough sill can be treated stock.**
   `FramingSpec.exterior_door_sill_material_ref` restocks a raised exterior door's rough sill
   and the cripples under it, which sit at the wet threshold. Windows and interior doors keep

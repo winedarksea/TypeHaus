@@ -93,10 +93,9 @@ def test_sill_plate_is_pt_bearing_and_carries_overlay_metadata(catlin_model) -> 
     assert sills
     for sill in sills:
         assert sill.kind == "bearing_plate"
-        # kdat, not spf: this return's own category is ``pt-sill-plate`` and its rule cites
-        # IRC R317.1, so the record has to say treated. The rate does not follow it —
-        # ``construction_returns`` prices on the category, not the material.
-        assert sill.material_ref == "kdat"
+        # Treated, not spf (IRC R317.1), and plain PT, not KDAT: the wall pins it flat. The
+        # rate does not follow it — ``construction_returns`` prices on the category.
+        assert sill.material_ref == "pt-syp"
         assert sill.lap_m > 0.0
         assert sill.sealant is not None
         assert len(sill.element_tags) >= 2  # the concrete element + the framed wall

@@ -6221,7 +6221,8 @@
 # crossing — and one blended figure inside a PT delta could not carry that. Leaving it here
 # as well would double-count it.
 #
-# **The material the takeoff reports for this return is `kdat`, not `spf`, since 2026-08-24.**
+# **The material the takeoff reports for this return is `pt-syp` (plain PT) since 2026-10-13;
+# `kdat` from 2026-08-24, `spf` before.** The wall pins the plate flat, so KDAT was overkill.
 # The old note here argued the `spf` it reported "is not a bug to chase — it is the framing
 # member's species". That was wrong about the record even though it was right about the
 # money: `resolve/construction_sills.py` was hardcoding a species onto a return whose own

@@ -141,6 +141,7 @@ const DETAIL_FILL: Record<string, string> = {
   // wall whose whole point is which stick is treated. Greener and greyer than `spf` so the
   // two woods are told apart. Mirrors emit/draw/palette.py DETAIL_FILL.
   kdat: "#b7ad7a",
+  "pt-syp": "#b3ad82",
   // Treated structural glulam — the balcony beams. Warmer and lighter than `kdat`: a
   // glulam is a manufactured member with visible laminations and a clear finish, not a
   // green-cast treated stick. Mirrors emit/draw/palette.py DETAIL_FILL.

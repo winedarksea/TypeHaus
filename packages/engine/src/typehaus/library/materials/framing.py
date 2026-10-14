@@ -80,6 +80,22 @@ MATERIALS: tuple[Material, ...] = (
         "df-select-s4s 0.99-1.06 band already authored in catlin; "
         f"permeability shares the softwood midpoint used for spf ({_UAF})",
     ),
+    # Plain pressure-treated SYP, NOT kiln-dried after treatment: the sill plate on concrete
+    # (IRC R317.1). It ships wet and shrinks, but a plate under a wall is pinned flat by the
+    # load and its anchors, so KDAT buys nothing there. Same species and SG as ``kdat``.
+    Material(
+        tag="pt-syp",
+        name="Pressure-treated southern yellow pine (sill plate)",
+        r_per_inch=0.95,
+        density=600.0,
+        perm_rating=2.9,
+        hatch="lumber",
+        color="#b3ad82",
+        preservative_treated=True,
+        specific_gravity=0.55,
+        source="species values shared with kdat (SYP); drying after treatment "
+        "changes neither R nor permeability in service",
+    ),
     # Treated structural glulam — the balcony's three beams (Anthony Power Preserved /
     # Boise 24F-V5M1/SP, southern yellow pine laminations, preservative-treated after
     # lay-up and clear-finished). A separate tag from ``kdat``: it is a manufactured
