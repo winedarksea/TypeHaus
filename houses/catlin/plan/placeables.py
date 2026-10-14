@@ -678,12 +678,12 @@ SECOND_PLACEABLES = [
     # bearing W-S-C2C and re-phase its stud grid. D-S-SUITEBATH's leaf parks ~36" west of it.
     Furniture(uid="P1NESXCW7K", tag="FURN-S-SUITEBATH-RETURN", type_ref="FT-SUITEBATH-SHELF-1130",
               room="RM-S-SUITEBATH", position=pt(inch(197.615), inch(199)), rotation=deg(-90)),
-    # Robe pegs on W-S-DC2's bath face, y 18'-9"..20'-9", north of the door leaf's parked
-    # position (y < ~18'-5") and clear of the WC's corner. Rail bottom 64", as in the closet.
+    # Robe pegs on W-S-DC2's bath face, shifted 24" south to y 16'-9"..18'-9", behind
+    # the door leaf's parked position (y < ~18'-5"). Rail bottom 64", as in the closet.
     Furniture(uid="GG09CD7KYB", tag="FURN-S-SUITEBATH-PEGS", type_ref="FT-SUITEBATH-PEGS-24",
               room="RM-S-SUITEBATH", mount=Mount(kind=MountKind.WALL, elevation=inch(64)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-S-DC2", face="right", distance_from_start=inch(46),
+                  wall_ref="W-S-DC2", face="right", distance_from_start=inch(22),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
     # The Estero arch mirror (owner, 2026-10-03), shelf facing into the room, centred on
     # FX-S-SUITEBATH-LAV, with ED-S-SUITEBATH-MIRROR's bar above it. Bottom 46", so the

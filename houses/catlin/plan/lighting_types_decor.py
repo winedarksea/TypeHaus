@@ -120,7 +120,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # room only (RM-A-EAST-UNFIN): no R303.1 floor applies.
     LuminaireType(tag="ED-T-LT-SCONCE-GOTHIC", name="Gothic forged-iron candle sconce, E12 flame LED",
                   form=LuminaireForm.SCONCE, type_mark="Z",
-                  footprint=(inch(7), inch(5)), height=inch(16), plan_symbol="sconce-gothic",
+                  footprint=(inch(7), inch(5)), height=inch(12), plan_symbol="sconce-gothic",
                   lamp="E12 flame-tip LED candle, 3000K", watts=4.0, lumens=250.0,
                   cct_k=3000, cri=80, dimmable=True, load_va=4.0, ports=_POWER_120,
                   source="Gothic-style forged-iron candle sconce, black, one arm, E12 "
