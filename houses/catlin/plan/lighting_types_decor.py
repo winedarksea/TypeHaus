@@ -112,6 +112,21 @@ DECORATIVE_LUMINAIRE_TYPES = (
                          "different product, and J's head stands 9\" tall — which is the "
                          "hazard this row exists to avoid."),
 
+    # Z: the gothic iron sconce. Forged black iron, pointed-arch plate, scrolled arm, drip cup
+    # and an E12 flame-tip LED. Chosen from the owner's listings (Amazon B0CBS5MPLF, two
+    # AliExpress items, an Etsy hand-forged iron sconce), none of which could be read here, so
+    # the numbers are typical for the class, not a listing's. Bulb dimmability and the
+    # 250 lm are NOT verified against a bulb and must be confirmed before ordering. Storage
+    # room only (RM-A-EAST-UNFIN): no R303.1 floor applies.
+    LuminaireType(tag="ED-T-LT-SCONCE-GOTHIC", name="Gothic forged-iron candle sconce, E12 flame LED",
+                  form=LuminaireForm.SCONCE, type_mark="Z",
+                  footprint=(inch(7), inch(5)), height=inch(16), plan_symbol="sconce-gothic",
+                  lamp="E12 flame-tip LED candle, 3000K", watts=4.0, lumens=250.0,
+                  cct_k=3000, cri=80, dimmable=True, load_va=4.0, ports=_POWER_120,
+                  source="Gothic-style forged-iron candle sconce, black, one arm, E12 "
+                         "flame-tip LED. Class figures (4 W, 250 lm, 80 CRI), not a listing; "
+                         "confirm a dimmable E12 candle bulb before ordering."),
+
     # --- L/M: hanging fixtures --------------------------------------------------------
     # ``height`` on a hanging fixture is the *whole assembly* — canopy, drop, shade — which
     # is what lets ``Mount(CEILING, drop=height)` land the canopy on the ceiling and read

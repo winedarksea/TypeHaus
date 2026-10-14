@@ -33,6 +33,7 @@ from typehaus.model.placeable_symbols._frame import (
     box,
     circle,
     clamp,
+    depth_cylinder,
     line,
     polygon,
     rect,
@@ -144,6 +145,51 @@ def sconce(*, throw: str = "down") -> Builder:
                      "luminaire-housing"),
                  box(0, body_cy - body_r / 2, 0.0, lens_h, body_r * 1.4, body_r * 0.9,
                      "lamp")]
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
+def gothic_sconce() -> Builder:
+    """A forged-iron gothic candle sconce: pointed-arch backplate, scrolled arm, drip cup.
+
+    The pointed head is stepped in three boxes because a plan ring cannot stand in the wall
+    plane; the arm is a depth cylinder, so its round section is real in 3D. The flame is the
+    ``lamp`` role, the only emitting face.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        plate_d = clamp(depth * BACKPLATE_SHARE, 0.0, depth * 0.35)
+        plate_cy = depth / 2 - plate_d / 2
+        arm_front = depth / 2 - plate_d
+        tip = -depth / 2
+        # The plan glyph reads width and depth only; the vertical stack is shares of the
+        # height, so a short or wide box keeps the candle and flame inside it.
+        arm_r = _plan_size(width, depth) * 0.04
+        arm_z = height * 0.40
+        cup_r = _plan_size(width, depth) * 0.2
+        cup_y = tip + cup_r
+        cup_base = arm_z + arm_r
+        cup_top = cup_base + height * 0.10
+        candle_top = cup_top + height * 0.20
+        strokes: list[Stroke] = [
+            rect(0, plate_cy, width, plate_d, fill="luminaire-housing"),
+            line((0.0, arm_front), (0.0, cup_y), weight=OUTLINE_WEIGHT),
+            circle(0.0, cup_y, cup_r, fill="luminaire-housing"),
+            circle(0.0, cup_y, cup_r * 0.45, fill="lamp", weight=DETAIL_WEIGHT),
+        ]
+        parts = [
+            box(0, plate_cy, 0.0, height * 0.78, width, plate_d, "luminaire-housing"),
+            box(0, plate_cy, height * 0.78, height * 0.90, width * 0.78, plate_d,
+                "luminaire-housing"),
+            box(0, plate_cy, height * 0.90, height, width * 0.42, plate_d, "luminaire-housing"),
+            depth_cylinder(0, (arm_front + tip) / 2, arm_z, arm_r, arm_front - tip,
+                           "luminaire-housing"),
+            box(0, cup_y, cup_base, cup_top, cup_r * 2, cup_r * 2, "luminaire-housing"),
+            box(0, cup_y, cup_top, candle_top, cup_r * 1.1, cup_r * 1.1, "cabinet-cream"),
+            box(0, cup_y, candle_top, candle_top + height * 0.08, cup_r * 0.5, cup_r * 0.5,
+                "lamp"),
+        ]
         return tuple(strokes), tuple(parts)
 
     return build
@@ -379,6 +425,7 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "sconce": sconce(throw="down"),
     "sconce-updown": sconce(throw="updown"),
     "sconce-spot": sconce(throw="spot"),
+    "sconce-gothic": gothic_sconce(),
     "pendant": pendant(),
     "chandelier": chandelier(arms=6),
     "cluster-pendant": cluster_pendant(globes=20),

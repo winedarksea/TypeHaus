@@ -244,8 +244,8 @@ the future.
 - Plan microwave placement
 - Maybe swap the two living room east side curtain rods with cellular blinds in the four larger east facing living room windows
 - Review ED-M-PORCH-FLOOD. Update the 3d model for a proper flood light (or switch to a second mirrored downlight) and consider moving out to mounted on the edge of the balcony, more fully over the sunken garden.
-- Sconce ED-S-STUDY2-NOOK-SC is basically at the floor level of the stairway. If it is meant for lighting the stair, it should probably be in the room above on the wall (still on the same circuit)
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
+- Maybe replace D-M-PANTRY with a 36" pocket door
 
 # Project Management
 

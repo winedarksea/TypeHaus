@@ -95,7 +95,8 @@ ATTIC_LIGHTING = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-A-EAST-UNFIN, 475 sf of unfinished storage under the east rake. The three cans that
-    # were one line at x=22'-0" become three up/down sconces on the centre wall's EAST face,
+    # were one line at x=22'-0" became three sconces on the centre wall's EAST face (now the
+    # gothic iron type, ED-T-LT-SCONCE-GOTHIC, 2026-10-14),
     # x=18'-5 3/8" — that face's finish plane (x=18'-3 3/8") plus a 4"-deep body's own half,
     # which is the offset ED-A-STUDY-SPOT already uses on the same wall. Spacing goes
     # 15'/22'/28' -> 15'/20'-6"/26' so the fourth station (ED-A-EAST-LT, in
@@ -104,7 +105,7 @@ ATTIC_LIGHTING = [
     # ** NO LUMEN CONSEQUENCE: ** storage is not a habitable room, so R303.1 never applied
     # here — this room is the one place on the storey where the change is free.
     ElectricalDevice(uid="QTA0002AAA", tag="ED-A-EAST-SCONCE2", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-UD",
+                     type_ref="ED-T-LT-SCONCE-GOTHIC",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
@@ -112,7 +113,7 @@ ATTIC_LIGHTING = [
                          wall_ref="W-A-C2B", face="right", distance_from_start=inch(44),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTA0003AAA", tag="ED-A-EAST-SCONCE3", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-UD",
+                     type_ref="ED-T-LT-SCONCE-GOTHIC",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
@@ -120,7 +121,7 @@ ATTIC_LIGHTING = [
                          wall_ref="W-A-C2", face="right", distance_from_start=inch(72),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTA0004AAA", tag="ED-A-EAST-SCONCE4", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-UD",
+                     type_ref="ED-T-LT-SCONCE-GOTHIC",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),

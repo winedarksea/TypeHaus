@@ -470,7 +470,8 @@ SECOND_DEVICES = [
 # x=22'-0"; on 2026-09-06 the whole storey came off its recessed cans (plan/lighting_attic.py
 # carries the reasoning and the corrected 2" product data) and they became up/down sconces
 # on the centre wall's east face at x=18'-5 3/8" — that face's finish plane plus a 4"-deep
-# body's own half, the offset ED-A-STUDY-SPOT already uses on the same wall.
+# body's own half, the offset ED-A-STUDY-SPOT already uses on the same wall. (2026-10-14: the
+# RM-A-EAST-UNFIN fittings are now gothic iron sconces, ED-T-LT-SCONCE-GOTHIC.)
 ATTIC_DEVICES = [
     # RM-A-EAST-UNFIN (x 18'-36', y 8'-8"-36'): switch inside D-A-HALVES, the door at (18', 32').
     # ** y MOVED 15'-0" -> 31'-6", AND THAT IS A BUG FIX, NOT A STYLE CHANGE: ** this fitting
@@ -478,7 +479,7 @@ ATTIC_DEVICES = [
     # loft has been lit by two coincident fixtures and billed for both. 31'-6" is the fourth
     # station in that room's run, 11 1/2" clear of ED-A-EAST-SW's plate below.
     ElectricalDevice(uid="CED011K1AA", tag="ED-A-EAST-LT", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-UD",
+                     type_ref="ED-T-LT-SCONCE-GOTHIC",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
