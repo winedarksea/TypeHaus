@@ -16,7 +16,7 @@ from typehaus.model.assembly import Assembly
 from typehaus.model.plan import Library
 
 if TYPE_CHECKING:
-    from typehaus.checks.building_science.condensation import CondensationAnalysis
+    from typehaus.checks.building_science.condensation_verdict import EnvelopeVerdict
 
 _W = 460.0
 _PX_PER_IN = 26.0
@@ -27,14 +27,14 @@ _TOP = 70.0
 
 
 def render_card(asm: Assembly, library: Library,
-                condensation: CondensationAnalysis | None = None) -> Drawing:
+                condensation: EnvelopeVerdict | None = None) -> Drawing:
     """Render one assembly's section card to a Drawing (SVG-serializable)."""
     stack = list(asm.default_lining) + list(asm.layers)
     core_start = len(asm.default_lining)
 
     heights = [max(_MIN_DRAW_H, layer.thickness.inches * _PX_PER_IN) for layer in stack]
     stack_h = sum(heights)
-    plot_height = 128.0 if condensation is not None else 0.0
+    plot_height = 140.0 if condensation is not None else 0.0
     height = max(_TOP + stack_h + 90.0 + plot_height, 240.0 + plot_height)
     d = Drawing(width=_W, height=height, bg="#ffffff")
 
@@ -99,10 +99,14 @@ def render_card(asm: Assembly, library: Library,
     return d
 
 
-def _add_condensation_plot(d: Drawing, analysis: CondensationAnalysis, y: float) -> None:
-    """Draw the same Glaser profile surfaced in the UI card and A-401 detail feed."""
+def _add_condensation_plot(d: Drawing, verdict: EnvelopeVerdict, y: float) -> None:
+    """Draw the check's verdict: the worst-month profile, badged by the gate, not the screen."""
     x0, width, height = _LEFT, 360.0, 82.0
-    d.add(Text(x0, y, "Glaser design-day profile", size=10, weight="bold"))
+    analysis = verdict.shown
+    title = ("Glaser cold-snap profile (gate deferred to R806.5)" if verdict.deferral
+             else f"Glaser worst-month profile ({verdict.gate.month})" if verdict.gate
+             else "Glaser profile")
+    d.add(Text(x0, y, title, size=10, weight="bold"))
     if not analysis.known:
         d.add(Text(x0, y + 18, "UNKNOWN — " + ", ".join(analysis.unknown_materials),
                    size=10, fill="#a66a00"))
@@ -133,12 +137,20 @@ def _add_condensation_plot(d: Drawing, analysis: CondensationAnalysis, y: float)
                        stroke=color, stroke_width=1.6))
     d.add(Text(x0 + width, y + 104, "orange: temperature · blue: vapor · red: saturation",
                size=8, fill="#6e6a64", anchor="end"))
-    if analysis.has_risk:
-        d.add(Badge(x0 + width - 54, y + 12, "RISK", "#bf3e36"))
-    else:
-        d.add(Badge(x0 + width - 54, y + 12, "SAFE", "#3c7d5c"))
+    badge = {"risk": ("RISK", "#bf3e36"), "deferred": ("R806.5", "#6e6a64"),
+             "safe": ("SAFE", "#3c7d5c")}.get(verdict.status)
+    if badge is not None:
+        d.add(Badge(x0 + width - 54, y + 12, badge[0], badge[1]))
+    screen = verdict.screen
+    if verdict.status == "deferred":
+        d.add(Text(x0, y + 118, "sealed cold side: deck-contact insulation is the control "
+                   "(graded by code.R806_5_unvented_roof)", size=8, fill="#6e6a64"))
+    elif verdict.status == "safe" and screen.known and screen.has_risk:
+        d.add(Text(x0, y + 118, f"cold snap ({verdict.screen_boundary}): dew point at "
+                   f"{screen.crossing_description} — transient, must dry",
+                   size=8, fill="#6e6a64"))
 
 
 def render_card_svg(asm: Assembly, library: Library,
-                    condensation: CondensationAnalysis | None = None) -> str:
+                    condensation: EnvelopeVerdict | None = None) -> str:
     return render_card(asm, library, condensation).to_svg()

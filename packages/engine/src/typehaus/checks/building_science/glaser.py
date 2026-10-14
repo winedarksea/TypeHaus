@@ -161,6 +161,10 @@ def glaser_layers(layers: list[Layer]) -> list[Layer]:
     return layers
 
 
+# A crossing this far through a layer is read as the interface with the next one.
+_AT_INTERFACE = 0.95
+
+
 @dataclass(frozen=True)
 class CondensationPoint:
     """One point in the graph, measured from the interior face of the stack."""
@@ -207,6 +211,18 @@ class CondensationAnalysis:
         return self.crossing_layer is not None
 
     @property
+    def crossing_description(self) -> str | None:
+        """Where the crossing is, in words. A crossing at the outboard face of one layer
+        is the inner face of the next, and "stud (97% through layer)" read as a wet stud."""
+        if self.crossing_layer is None or self.crossing_fraction is None:
+            return None
+        index = self.plane_names.index(self.crossing_layer)
+        if self.crossing_fraction >= _AT_INTERFACE and index + 1 < len(self.plane_names):
+            return (f"the outboard face of {self.crossing_layer} (inner face of "
+                    f"{self.plane_names[index + 1]})")
+        return f"{self.crossing_layer} ({self.crossing_fraction:.0%} through layer)"
+
+    @property
     def tightest_plane(self) -> CondensationPoint | None:
         """The plane running closest to saturation — the assembly's condensation margin.
 
@@ -244,6 +260,7 @@ class CondensationAnalysis:
             "interior_retarder_class": self.interior_retarder_class,
             "crossing_layer": self.crossing_layer,
             "crossing_fraction": self.crossing_fraction,
+            "crossing_description": self.crossing_description,
             "unknown_materials": list(self.unknown_materials),
             "margin_pa": tightest.margin_pa if tightest else None,
             "margin_layer": self.tightest_plane_name,

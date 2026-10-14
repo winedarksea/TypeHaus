@@ -194,10 +194,7 @@ the future.
  - **`SF-B-BATH` stays, and not for want of numbers** — its three runs clear the 6'-8"
    headroom line by ~7 1/2" and a declaration on `RM-B-BATH` would pass. Nobody has decided a
    bathroom ceiling should be open. That is a design question, not a cleanup.
- - Add trim/baseboard — we're generally trimless (clean lines, drywall), but maybe a flush-with-drywall baseboard.
 - Orientation-tuned glass, particularly second-story south-facing windows.
-- Make it easier to "hop" into a given room for 3d viewing and rotate in spot, perhaps with a "fish eye" lens view rendering
-- Possibly in second floor study, a bookshelf continuing hallways to make an alcove under the stairs
 - **OPEN: `_y_in_n` is datumed off the ABOVE-GRADE cladding face, and nothing at the porch
   deck's own elevation faces cladding.** Below z=0 the house's south face is `W-B-BRICK`,
   which stands **6.435" south of that line** (cladding -7.25", brick -13.685"). The two halves
@@ -219,6 +216,7 @@ the future.
 - **Plan lettering residue after 96b845f4 (3/32" lettering):** at 1/4" a few small rooms still
   touch a tag (PANTRY/D8, STUDY/D13, MECH's "CHASE TYP. OF 2"), and on the 11x17 reduced check
   print the 12 pt room names spill past small rooms' walls.
+- Several of the interior 2x4 wall types do not yet bill paint (or perhaps paint for them is estimated elsewhere?). We want paint on main rooms and exterior wall interiors, but for rooms like the basement mechanical room or unfinished attic it is not necessary.
 - **Author interior paint at library level, then retire `takeoff/derived_paint.py` to a check.**
   Today bare gypsum facing a used room is *billed* paint by derivation (≈7,000 SF on catlin:
   the STC presets and every deck `ceiling_below`). Authoring would let the house say colour,
@@ -229,22 +227,17 @@ the future.
   (2) a wall coating draws a plane (polygonOffset, see the wash); (3) whether paint belongs in
   an STC preset's tested core; (4) authored paint makes gypsum Class III, which moves Glaser.
 - The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
-- Move the ERV, EQ-B-ERV so we can keep a 11 meter lane from north to south clear (through D-B-FURN)
+- Move the ERV, EQ-B-ERV so we can keep a 11 meter lane from north to south clear (through D-B-FURN) — plan: `plans/dry-fire-lane.md` (full 10.25 m needs a basement ERV re-layout; 8.7 m fallback leaves the ERV)
 - PR-A-STUBATH-VENT_RUN goes right through the middle of the bathroom RM-A-STUBATH
 - Extra light switches by beds
-- Several of the interior 2x4 wall types do not yet bill paint (or perhaps paint for them is estimated elsewhere?)
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
-- [x] Bridge FURN-A-STUDY-BUILTIN to D-A-STUDY in matching oak: four 3/4" boards, 60" high,
-  with a 1/8" casing reveal; cut list and field fit in `houses/catlin/notes/study_bookcase_bridge.md`.
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door
 - Gold foil trim or panel accent somewhere
-- Both the EXT_2X6 and ROOF report a moisture risk/glaser profile risk. We don't think this is quite right. Well, roof somewhat is (it relies on the air seal of the spray foam). But the ext_2x6 should be roughly 60% outsulation, which should have condensation usually outside the studs.
 - Choose bracket products for the four dark-steel handrails (RL-S-HANDRAIL-E/-W, RL-A-HANDRAIL, RL-G-SERVICE): `code.R301_5_handrail_support_spacing` is UNKNOWN until a `RailingType` states `bracket_spacing_max`
 - Either engineer the mudroom exposed studs as allowed hardwood, or specify southern yellow pine with a gold anodized aluminum trim (>= 1.5 mm / 0.064 / 12 gauge thickness) https://www.dkhardware.com/cr-laurence-l902bga-ccp72-xcp10-brite-gold-anodized-aluminum-1-4-l-bar-extrusion-72-length-pack-of-10-product-10103314.html or 1-1/2" ID U-channel
 - Perhaps two more shelf like blocking rows in the mudroom exposed stud line, one as a lower shelf and one as a top shelf
 - Spec sand or gravel backfill around house
-- Model baseboard and door trim where appropriate
 
 # Project Management
 

@@ -92,7 +92,7 @@ function CondensationPlot({ profile }: { profile: CondensationProfile }) {
     return points.map((p, i) => `${i ? "L" : "M"}${p.position * 260} ${72 - ((values[i] - lo) / (hi - lo || 1)) * 64}`).join(" ");
   };
   return <div style={{ marginTop: 10 }}>
-    <span className="k">Glaser profile</span>
+    <span className="k">{profile.status === "deferred" ? "Glaser cold-snap profile" : "Glaser profile"}</span>
     <svg width="100%" viewBox="0 0 260 88" style={{ display: "block", marginTop: 3 }}>
       <rect width="260" height="72" fill="var(--panel)" stroke="var(--panel-line)" />
       <path d={path(temperature)} fill="none" stroke="var(--control-thermal)" strokeWidth="2" />
@@ -100,6 +100,11 @@ function CondensationPlot({ profile }: { profile: CondensationProfile }) {
       <path d={path(saturation)} fill="none" stroke="var(--control-air)" strokeWidth="2" />
       <text x="0" y="85" fontSize="9" fill="var(--line)">temp · vapor · saturation</text>
     </svg>
-    {profile.status === "risk" && <div className="finding warn">Dew point: {profile.crossing_layer}</div>}
+    {profile.gate_month && <div className="muted">Worst month: {profile.gate_boundary}</div>}
+    {profile.status === "risk" && <div className="finding warn">Dew point: {profile.crossing_description ?? profile.crossing_layer}</div>}
+    {profile.status === "deferred" && <div className="muted">Deferred to R806.5: sealed cold side, deck-contact insulation is the control.</div>}
+    {profile.status === "safe" && profile.screen?.status === "risk" && <div className="muted">
+      Cold snap ({profile.screen.boundary}): dew point at {profile.screen.crossing_description} — transient, must dry.
+    </div>}
   </div>;
 }

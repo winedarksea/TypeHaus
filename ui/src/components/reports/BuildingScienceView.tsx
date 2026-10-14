@@ -60,7 +60,7 @@ export function BuildingScienceView() {
         { key: "ratio", header: "WWR", num: true, cell: (row) => formatRatioPercent(row.ratio) },
       ]} />
     </ReaderSection>
-    <ReaderSection title="Condensation" note="Steady-state screening through the assembly. Expand a profile to inspect its temperature and vapor pressures." count={science.condensation.length}>
+    <ReaderSection title="Condensation" note="The condensation check's verdict per assembly: the monthly (ISO 13788-style) gate, its worst month plotted. Expand a profile to inspect its temperatures and vapor pressures." count={science.condensation.length}>
       {science.condensation.map((profile) => <CondensationResult key={profile.assembly} profile={profile} />)}
     </ReaderSection>
   </ReaderShell>;
@@ -69,9 +69,15 @@ export function BuildingScienceView() {
 function CondensationResult({ profile }: { profile: CondensationProfile }) {
   return <details className="reader-card">
     <summary>{profile.assembly} · <span className={profile.status === "safe" ? "" : "muted"}>{profile.status}</span></summary>
-    {profile.crossing_layer && <p>Dew-point crossing in {profile.crossing_layer}
-      {profile.crossing_fraction !== null && ` (${formatRatioPercent(profile.crossing_fraction)} through layer)`}.</p>}
-    {profile.status === "safe" && <p>No condensation crossing under these screening conditions.</p>}
+    {profile.gate_boundary && <p>Monthly gate, worst month: {profile.gate_boundary}.</p>}
+    {profile.status === "risk" && <p>Dew-point crossing at {profile.crossing_description ?? profile.crossing_layer}.</p>}
+    {profile.status === "safe" && <p>No dew-point crossing in any month.</p>}
+    {profile.status === "deferred" && <p>{profile.deferral}</p>}
+    {profile.screen && profile.status !== "deferred" && <p className="muted">
+      Cold-snap screen ({profile.screen.boundary}): {profile.screen.status === "risk"
+        ? `dew point at ${profile.screen.crossing_description} — transient; the plane must be able to dry. Not the verdict.`
+        : profile.screen.status === "safe" ? "no crossing." : "not evaluated."}
+    </p>}
     {profile.status === "unknown" && <p>The condensation result could not be determined.</p>}
     {profile.unknown_materials.length > 0 && <p>Missing material properties: {profile.unknown_materials.join(", ")}.</p>}
     <ReaderTable rows={profile.points} rowKey={(_, index) => String(index)} empty={<p className="muted">No profile points available.</p>} columns={[

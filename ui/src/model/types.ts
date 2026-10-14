@@ -1262,12 +1262,30 @@ export interface FacadeWWR {
   ratio: number;
 }
 
+/** The condensation CHECK's verdict for one assembly. ``status`` and ``points`` are the
+ * monthly gate's worst month (or, when the gate defers to R806.5, the cold-snap walk);
+ * ``screen`` is the 99% design-hour walk, which is informative and never the verdict. */
 export interface CondensationProfile {
   assembly: string;
-  status: "safe" | "risk" | "unknown";
+  surface?: string;
+  status: "safe" | "risk" | "unknown" | "deferred";
   crossing_layer: string | null;
   crossing_fraction: number | null;
+  crossing_description?: string | null;
   unknown_materials: string[];
+  interior_retarder_layer?: string | null;
+  interior_retarder_class?: string | null;
+  gate_month?: string | null;
+  gate_boundary?: string | null;
+  deferred_to?: string | null;
+  deferral?: string | null;
+  screen?: {
+    status: "safe" | "risk" | "unknown";
+    crossing_layer: string | null;
+    crossing_fraction: number | null;
+    crossing_description: string | null;
+    boundary: string;
+  };
   points: { position: number; temperature_c: number; vapor_pressure_pa: number; saturation_pressure_pa: number }[];
 }
 

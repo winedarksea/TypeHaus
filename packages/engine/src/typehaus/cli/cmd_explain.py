@@ -113,7 +113,7 @@ def explain(
     if asm is not None:
         from typehaus.analysis import assembly_r_value
         from typehaus.checks import load_preferences
-        from typehaus.checks.building_science.condensation import analyze_assembly
+        from typehaus.checks.building_science.condensation_verdict import assess_layers
         from typehaus.emit.draw import render_card_svg
 
         rv = assembly_r_value(asm, plan.library)
@@ -128,11 +128,13 @@ def explain(
                 console.print(f"  {'  ↳ cavity':9} {fill.material_ref:12} {thk.fmt()}"
                               f"  (ff {fill.framing_factor:.0%}, in bays — adds no depth)")
         if card or out:
-            heating = plan.project.site.design_temp_heating
-            condensation = analyze_assembly(
-                asm, plan.library,
-                heating_design_temp_f=heating.fahrenheit if heating else None,
-                preferences=load_preferences(d),
+            # The check's verdict (monthly gate / R806.5 deferral + cold-snap screen), not
+            # the bare design-hour walk, so the card cannot badge what the check passes.
+            condensation = assess_layers(
+                asm.tag, list(asm.default_lining) + list(asm.layers), asm, plan.library,
+                site=plan.project.site, preferences=load_preferences(d),
+                is_roof=any(roof.assembly == asm.tag
+                            for roof in plan.elements_of_kind("Roof")),
             )
             svg = render_card_svg(asm, plan.library, condensation)
             dest = out or (d / "out" / f"card_{asm.tag}.svg")

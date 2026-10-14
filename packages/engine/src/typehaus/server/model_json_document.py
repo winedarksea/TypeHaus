@@ -137,30 +137,32 @@ def _building_science(
     if preferences is None:
         return None
     from typehaus.checks.building_science.condensation import (
-        analyze_assembly,
-        conditioned_envelope_assemblies,
+        assess_surface,
+        conditioned_envelope_surfaces,
     )
     from typehaus.checks.building_science.wwr import analyze_wwr
     from typehaus.checks.registry import CheckContext
     from typehaus.checks.run import resolve_profile
     from typehaus.energy import estimate_block_load
 
-    heating = model.plan.project.site.design_temp_heating
+    ctx = CheckContext(plan=model.plan, model=model, preferences=preferences,
+                       profile=resolve_profile(preferences))
+    # The CHECK's verdict per assembly — gate, R806.5 deferral, screen — so the card can
+    # never badge a risk the check graded a pass. Keyed by tag: the house-wide surface when
+    # the tag has one, else the first humid room's (an assembly only ever built round a
+    # plant room is graded at that room's RH, and the card says so via ``surface``).
+    surfaces = conditioned_envelope_surfaces(ctx)
+    by_tag: dict[str, Any] = {}
+    for surface in sorted(surfaces, key=lambda item: item.room_tag is not None):
+        by_tag.setdefault(surface.assembly_tag, surface)
     return {
         "wwr": [item.as_dict() for item in analyze_wwr(model)],
         "energy": estimate_block_load(model, preferences).as_dict(),
         "condensation": [
-            analyze_assembly(
-                assembly, model.plan.library,
-                heating_design_temp_f=heating.fahrenheit if heating else None,
-                preferences=preferences,
-            ).as_dict()
-            # Gated as the check is: only the conditioned-envelope assemblies it grades.
-            # Resolved: a variant carries its stack on its base (#35).
-            for assembly in (model.plan.library.resolve_assembly(tag)
-                             for tag in conditioned_envelope_assemblies(CheckContext(
-                                 plan=model.plan, model=model, preferences=preferences,
-                                 profile=resolve_profile(preferences))))
+            {**assess_surface(ctx, surface).as_dict(), "assembly": surface.assembly_tag,
+             "surface": surface.label}
+            for surface in (by_tag[tag] for tag in dict.fromkeys(
+                item.assembly_tag for item in surfaces))
         ],
     }
 
