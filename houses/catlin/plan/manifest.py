@@ -32,7 +32,7 @@ from params import (breezeway, driveway, entry_band_brace, foundations, hp1_nort
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, bath1_storage,
                   bath1_storage_types, bedroom_wardrobe_types, study_nook, study_nook_types,
-                  bed_reading_corner, bed_reading_corner_types,
+                  bed_frame_types, bed_reading_corner, bed_reading_corner_types,
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, court_daybed, panel_types,
                   dry_fire_lane, electrical, electrical_attic, electrical_floor_types, equipment_types,
@@ -57,7 +57,7 @@ _library = Library(
     assemblies=tuple(assemblies.ASSEMBLIES),
     # Brand and model for the products this house has actually chosen — identity only,
     # never a price (#28). The types above point at these by ``product_ref``.
-    products=products.PRODUCTS,
+    products=(*products.PRODUCTS, *bed_frame_types.BED_FRAME_PRODUCTS),
     # The one library pocket size this house hangs, alongside the house's own catalog. Only
     # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
     # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
@@ -83,6 +83,7 @@ _library = Library(
                      *study_nook_types.STUDY_NOOK_TYPES,
                      *study_bridge.STUDY_BRIDGE_TYPES,
                      *bed_reading_corner_types.BED_READING_CORNER_TYPES,
+                     *bed_frame_types.BED_FRAME_TYPES,
                      *sauna_types.SAUNA_FURNITURE_TYPES,
                      *living_east_run_types.LIVING_EAST_RUN_TYPES,
                      *kitchen_deep_cabinets.KITCHEN_DEEP_CABINET_TYPES,

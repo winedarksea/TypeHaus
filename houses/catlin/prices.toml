@@ -6387,7 +6387,11 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # as every other seating row here, and for the same reason — it is an owner decision that can
 # move 5x after the house is built without a drawing changing.
 "FT-SECTIONAL-U-MEDIA" = { low = 1400, high = 8000 }  # 1 ea
-"FURN-BED-KING" = { low = 400, high = 2500 }  # 1 ea
+# Retired from FURN-M-BED 2026-10-14 for the Nectar bamboo Twin below; the row stays for reuse.
+"FURN-BED-KING" = { low = 400, high = 2500 }  # 0 ea
+# Nectar Japanese-joinery bamboo frame, King natural; page read 2026-10-14. $898 is the Add to Cart
+# price with Natural selected; headboard inclusion is unverified (bamboo headboard +$349).
+"FURN-BED-JAPANESE-KING" = { low = 898, high = 898 }  # 1 ea
 "FURN-DESK-48" = { low = 120, high = 600 }  # 4 ea
 "FURN-DESK-42" = { low = 120, high = 600 }  # 1 ea; same planning allowance as the 48" desk
 # IKEA HEMNES white stain, article 105.761.91; US listing checked 2026-10-03.

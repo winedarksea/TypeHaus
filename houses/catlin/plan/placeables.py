@@ -236,10 +236,11 @@ MAIN_PLACEABLES = [
               position=pt(ft(26, 9), ft(20, 10))),
     Furniture(uid="17F6ZBR67K", tag="FURN-M-CHAIR-N3", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
               position=pt(ft(29, 3), ft(20, 10))),
-    # Centre the 80" king between D-M-BATH2's east RO jamb (56.635") and D-M-BED's
-    # west RO jamb (170"). The 113.3175" midpoint leaves 16.6825" beside each bed edge.
-    # Keep the north-south placement and head-north orientation, freeing the window walls.
-    Furniture(uid="CMB701AAAA", tag="FURN-M-BED", type_ref="FURN-BED-KING", room="RM-M-BED",
+    # Nectar Japanese-joinery bamboo frame, King natural (plan/bed_frame_types.py), 79.9" wide.
+    # Centred on the same 113.3175" midpoint as the former king, so it keeps the 16.6825" each side
+    # between the bed edges and the two RO jambs; north-south placement and head-north orientation
+    # are unchanged.
+    Furniture(uid="CMB701AAAA", tag="FURN-M-BED", type_ref="FURN-BED-JAPANESE-KING", room="RM-M-BED",
               position=pt(inch(113.3175), m(2.80531))),
     # Matching 16" tables are the largest whole-inch width that fits: flush with the bed,
     # with 0.6825" to each RO. Their 16" depth backs onto the bedroom face at y=153.625".
