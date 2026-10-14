@@ -72,8 +72,7 @@ def test_the_daybed_bills_its_bed_and_hardware(catlin_model_ro):
     assert [row["count"] for row in rows] == [1]
     parts = {row["part_number"]: row["count"] for row in hardware_takeoff(catlin_model_ro)
              if row["scope"] == "suspension anchor"}
-    assert parts == {"3-S-5": 1, "SADDLE-3.5-2x58": 1, "G-209-1/2": 4,
-                     "SADDLE-4.5-2x58-HDG": 4}
+    assert parts == {"G-209-1/2": 4, "SADDLE-4.5-2x58-HDG": 4}
     hung = {}
     for row in joist_hanger_rows(catlin_model_ro, _rules()):
         if row["size"] in ("2x12:kdat", "3-2x12:kdat"):

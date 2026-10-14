@@ -14,6 +14,22 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Living-room hammock chair removed (2026-10-14)
+
+- `FURN-M-HAMMOCK` and its `HA-M-HAMMOCK` suspension anchor are gone from the plan
+  (`plan/living_hammock.py` deleted, with its manifest line). The anchor's derived LVL
+  upgrade on FS-S-EAST line 003 went with it, so that joist line is as authored again.
+- The room's south wall is empty where the chair hung. The media console it replaced
+  (`FURN-M-MEDIA`) stays retired; nothing replaces it.
+- Kept in the library for a later hung seat: `FURN-HAMMOCK-CHAIR-MEDIUM` and the hanging
+  daybed types (`library/placeables/hanging_seats.py`), the suspension model, the derived
+  joist-line logic (`resolve/suspension_anchors.py`), the hardware rows, and the
+  `structural.suspension_anchor` check. `hanging_seat_impact_factor` stays in
+  `preferences.toml` for the check.
+- Priced rows for the removed items were dropped from `prices.toml` (`3-S-5`,
+  `SADDLE-3.5-2x58`, `FURN-HAMMOCK-CHAIR-MEDIUM`). Re-price them if the chair returns.
+- `notes/hanging_seat_anchor.md` stays as the hand basis for the library's math.
+
 ## Required dry-fire lane through D-B-FURN (2026-10-14)
 
 Implemented the fallback from `plans/dry-fire-lane.md`: a required finite reservation,

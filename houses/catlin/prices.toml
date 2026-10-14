@@ -1398,11 +1398,6 @@
 "STHD14RJ" = { low = 24, high = 42 }  # 2 ea — the main-floor NE corner, across the floor band
 "DTT2Z" = { low = 22, high = 38 }  # 2 ea — the second-floor NE corner, one each side of the deck
 
-# HA-M-HAMMOCK's load path (2026-10-05), UNCONFIRMED allowances: a Crosby 3-S-5 eye & eye
-# swivel at rigging-supply retail, and a shop-fabricated U-saddle with its two 5/8" bolts.
-# The LVL line above them bills under [framing] "2-1.75x11.875 LVL".
-"3-S-5" = { low = 150, high = 300 }  # 1 ea — HA-M-HAMMOCK
-"SADDLE-3.5-2x58" = { low = 80, high = 250 }  # 1 ea — HA-M-HAMMOCK
 # The court daybed's four ropes (2026-10-13), UNCONFIRMED allowances: a galvanized Crosby
 # G-209 1/2" shackle at rigging-supply retail, and a shop-fabricated U-saddle for a 3-ply
 # line, hot-dip galvanized after fabrication. The plies bill under [framing].
@@ -6420,9 +6415,6 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "FT-LIVING-SOFA-84-TABLE-GAP" = { low = 500, high = 3000 }  # 1 ea — same sofa, 18" seated table gap
 # Wayfair W120117949, read 2026-10-05: $217.99, unit only (tax/delivery/assembly excluded).
 "FT-LIVING-PUZZLE-COFFEE-TABLE" = { low = 217.99, high = 217.99 }  # 1 ea — owner-selected lift-top table
-# The living-room hammock chair (plan/living_hammock.py), 2026-10-05. Allowance, not a read
-# price: a medium spreader-bar chair rated 360 lb or more, with its adjustable suspension rope.
-"FURN-HAMMOCK-CHAIR-MEDIUM" = { low = 150, high = 450 }  # 1 ea — replaces the retired FURN-MEDIA-60
 # The court's hanging daybed (plan/court_daybed.py), 2026-10-13. Allowance: an Atlantic
 # Swing Co. Simon-class twin frame rated 500 lb, its 4-point rope kit, and an outdoor cushion.
 "FURN-HANGING-DAYBED-TWIN" = { low = 900, high = 2200 }  # 1 ea — FURN-SG-DAYBED

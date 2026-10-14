@@ -65,9 +65,6 @@ not instruction: when it disagrees with this file or the model, it is the one th
   The east frames end at x 27'-4 3/8", with south-wall rail backing; RC4 outlets are at
   x 28'-0", ERV floor returns at x 28'-1". Heat-pump supplies stay in place. BED1's bed
   moves 1/64" east to keep its foot gap above the 18" recommendation.
-- `plan/living_hammock.py` — `# haus: editable`, the living-room hammock chair and its
-  `SuspensionAnchor`, which derives FS-S-EAST's LVL line 003. Removing it is deleting the
-  file and its manifest line. Hand pass: `notes/hanging_seat_anchor.md`.
 - `plan/court_daybed.py` — `# haus: editable`, the court's 4-rope hanging daybed under
   FS-SG-PORCH and its four `SuspensionAnchor`s, which derive lines 003 and 006 as 3-ply 2x12
   KDAT (wet) on LUS210-3Z hangers. The ropes must stay ON authored lines: a moved line lands

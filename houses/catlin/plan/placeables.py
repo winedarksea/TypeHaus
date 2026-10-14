@@ -196,7 +196,7 @@ MAIN_PLACEABLES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(104),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
-    # FURN-M-MEDIA retired 2026-10-05 for the hammock chair (plan/living_hammock.py).
+    # FURN-M-MEDIA retired 2026-10-05; its hammock-chair replacement was removed 2026-10-14.
     # The east wall's storage is the SEKTION line in plan/living_east_run.py (2026-10-02),
     # which retired the eight BESTA units that stood here.
     # ** MOVED NORTH 10 1/2" (2026-10-05). ** The 8' x 3'-6" table is centred on y=18'-0":

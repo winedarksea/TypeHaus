@@ -1,8 +1,8 @@
-# Living-room hammock chair anchor — hand-worked basis
+# Hung seat anchor — hand-worked basis
 
-**House:** catlin
-**Structure:** `HA-M-HAMMOCK` carrying `FURN-M-HAMMOCK` (`plan/living_hammock.py`), framed as
-FS-S-EAST's joist line 003 upgraded to a `2-1.75x11.875 LVL`.
+**House:** catlin (placement removed 2026-10-14; the math stays in the library)
+**Structure:** a hung seat (`FURN-M-HAMMOCK`, `HA-M-HAMMOCK`) on FS-S-EAST's joist line 003
+upgraded to a `2-1.75x11.875 LVL`. No house element carries it now; kept for a future anchor.
 **Written:** 2026-10-05, by hand, before the calculation it oracles was encoded.
 **Oracle for:** `checks/structural/_suspension_math.py`, reported by
 `structural.suspension_anchor`; reproduced by `tests/test_suspension_anchor.py`.

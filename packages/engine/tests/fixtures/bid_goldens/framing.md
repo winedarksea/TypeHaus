@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 7011ab37e063c122  
-**Lines:** 171
+**Model hash:** 2173c54fd8b77f81  
+**Lines:** 169
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -22,12 +22,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 2 pcs, 3.2 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
 | 1.75x11.875 LVL — trimmer (1.75x11.875 LVL) | 192 | LF ordered | 16 pcs, 176.4 LF cut | building |
-| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,400 | LF ordered | 218 pcs, 2158.8 LF cut | building |
+| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,420 | LF ordered | 219 pcs, 2176.7 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
 | 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 44 | ea | 44 pcs, 484.4 LF cut; 504.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | 422 | LF ordered | 56 pcs, 367.4 LF cut | building |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | 280 | LF ordered | 42 pcs, 230.8 LF cut | building |
-| 2-1.75x11.875 LVL — header, joist (2-1.75x11.875 LVL) | 28 | LF ordered | 5 pcs, 25.6 LF cut | building |
+| 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 8 | LF ordered | 4 pcs, 7.8 LF cut | building |
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | 20 | LF ordered | 1 pcs, 16.7 LF cut | building |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | 36 | LF ordered | 1 pcs, 36.0 LF cut | building |
 | 2-2x10 — header (2-2x10) | 40 | LF ordered | 5 pcs, 26.2 LF cut | building |
@@ -86,7 +86,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | 192 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | 72 | ea |  | building |
-| Eye & eye thrust-bearing swivel, 3 t (rotates under load) (3-S-5) | 1 | ea |  | main |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | 452 | ea |  | building |
 | A35Z framing angle | 8 | ea |  | building |
 | A35Z framing angle | 4 | ea |  | main |
@@ -142,7 +141,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | 2 | ea |  | building |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | 50 | ea |  | basement, main |
-| Steel U-saddle on a 3 1/2 in joist line, two 5/8 in through-bolts (SADDLE-3.5-2x58) | 1 | ea |  | main |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | 4 | ea |  | basement |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 71 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | 106 | ea |  | building |
@@ -263,7 +261,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | — |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | — |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | — |
-| 2-1.75x11.875 LVL — header, joist (2-1.75x11.875 LVL) | — |
+| 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | — |
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | — |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | — |
 | 2-2x10 — header (2-2x10) | — |
@@ -312,7 +310,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | — |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail) | — |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5) | — |
-| Eye & eye thrust-bearing swivel, 3 t (rotates under load) (3-S-5) | HA-M-HAMMOCK |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5) | — |
 | A35Z framing angle | — |
 | A35Z framing angle | SB-BW-BAND |
@@ -368,7 +365,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUSZ) | — |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor | — |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG) | SL-B-FLOOR, SL-M-DECK |
-| Steel U-saddle on a 3 1/2 in joist line, two 5/8 in through-bolts (SADDLE-3.5-2x58) | HA-M-HAMMOCK |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG) | HA-SG-DAYBED-NE, HA-SG-DAYBED-NW, HA-SG-DAYBED-SE, HA-SG-DAYBED-SW |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600) | — |
