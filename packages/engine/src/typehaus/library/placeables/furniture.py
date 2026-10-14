@@ -16,6 +16,7 @@ from typehaus.library.placeables._zones import (
     side_zone,
     surround_zone,
 )
+from typehaus.library.placeables.cantilever_chair import CANTILEVER_CHAIR, CANTILEVER_CHAIR_TAG
 from typehaus.library.placeables.hanging_seats import HAMMOCK_CHAIR_MEDIUM, HANGING_DAYBED_TWIN
 from typehaus.model import (
     Footprint2D,
@@ -327,7 +328,7 @@ CHESS_TABLE_315 = FurnitureType(
             "27 1/2 in. overall height; side table with one drawer for chess pieces "
             "and an 8 x 8 chessboard pattern on top. Board size and joinery are illustrative."),
     clearances=(surround_zone(inch(31.5), inch(27.75), ft(3), "chess chair and drawer access",
-                              occupant_types=(DINING_CHAIR_TAG,)),),
+                              occupant_types=(DINING_CHAIR_TAG, CANTILEVER_CHAIR_TAG)),),
 )
 # No pull-out zone of its own: a dining chair lives inside the table's chair-use zone by
 # definition, and giving it a second one only reports the set conflicting with itself.
@@ -509,7 +510,8 @@ STARTER_FURNITURE_TYPES = (
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, HEMNES_DRESSER_63,
     CHEST, WARDROBE_48, NIGHTSTAND, NARROW_NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
-    TWO_PERSON_DINING_TABLE, CHESS_TABLE_315, DINING_CHAIR, HAMMOCK_CHAIR_MEDIUM,
+    TWO_PERSON_DINING_TABLE, CHESS_TABLE_315, DINING_CHAIR, CANTILEVER_CHAIR,
+    HAMMOCK_CHAIR_MEDIUM,
     HANGING_DAYBED_TWIN,
     WRITING_DESK, WRITING_DESK_42, HEMNES_DESK_61, MITTZON_SIT_STAND_DESK_47,
     OFFICE_CHAIR, DESK_CHAIR, BOOKCASE, HEMNES_BOOKCASE_35, BILLY_BOOKCASE_31,

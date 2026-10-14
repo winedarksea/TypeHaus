@@ -6404,7 +6404,10 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # The identical 8' table with the shared open-corner clearance variant. Nothing about the
 # product differs, so its price matches the standard table.
 "FT-DINING-8-OPEN-CORNERS" = { low = 500, high = 3000 }  # 1 ea
-"FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 10 ea
+"FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 8 ea
+# IKEA LYCKAN chair, birch veneer, item 005.691.91: $140 US list, checked 2026-10-14.
+# The two upstairs study chairs at the chess table; the frame layout is not priced.
+"FURN-CANTILEVER-CHAIR" = { low = 140, high = 140 }  # 2 ea
 "FURN-PLANT-18" = { low = 30, high = 150 }  # 2 ea
 "FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 3 ea
 "FURN-BED-FULL" = { low = 200, high = 1200 }  # 1 ea — BED3, a size down from the queen

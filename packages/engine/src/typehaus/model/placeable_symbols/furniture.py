@@ -7,6 +7,7 @@ needs no entry here at all: the same symbol renders at whatever W×D×H the type
 
 from __future__ import annotations
 
+from typehaus.model.placeable_symbols._cantilever_chair import cantilever_chair
 from typehaus.model.placeable_symbols._chess_table import chess_table
 from typehaus.model.placeable_symbols._closet_wire import closet_corner_wire, closet_wire
 from typehaus.model.placeable_symbols._corner_bookcase import corner_bookcase
@@ -100,6 +101,8 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "sectional": sectional(),
     # A dining chair has no arms and a slim back; its "seats" count is the single pad.
     "dining-chair": seating(arms=False, seats=1, back_depth_m=0.10),
+    # Bent wood side members carry a seat shell; see _cantilever_chair.py for the frame.
+    "cantilever-chair": cantilever_chair,
     "office-chair": pedestal_seat(),
     # Tables and desks. The apron is what stops a dining table reading as a coffee table in
     # elevation, and the coffee/end tables deliberately skip it — they are open underneath.

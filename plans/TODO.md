@@ -232,7 +232,7 @@ the future.
 - Extra light switches by beds
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
-- D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door
+- D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door. A simpler option is probably to just make sure the hinge can open to close to 180 degrees so the door can be flat against the wall, out of the way of the walking space.
 - Gold foil trim or panel accent somewhere
 - Choose bracket products for the four dark-steel handrails (RL-S-HANDRAIL-E/-W, RL-A-HANDRAIL, RL-G-SERVICE): `code.R301_5_handrail_support_spacing` is UNKNOWN until a `RailingType` states `bracket_spacing_max`
 - Either engineer the mudroom exposed studs as allowed hardwood, or specify southern yellow pine with a gold anodized aluminum trim (>= 1.5 mm / 0.064 / 12 gauge thickness) https://www.dkhardware.com/cr-laurence-l902bga-ccp72-xcp10-brite-gold-anodized-aluminum-1-4-l-bar-extrusion-72-length-pack-of-10-product-10103314.html or 1-1/2" ID U-channel
@@ -244,7 +244,8 @@ the future.
 - Plan microwave placement
 - Maybe swap the two living room east side curtain rods with cellular blinds in the four larger east facing living room windows
 - Review ED-M-PORCH-FLOOD. Update the 3d model for a proper flood light (or switch to a second mirrored downlight) and consider moving out to mounted on the edge of the balcony, more fully over the sunken garden.
-- [x] Move upstairs study chess table/chairs 30" west; add the compact Tribesigns Frailey corner bookshelf (23.62", preserving south windows); move WIN-S-STUDY3 16" north to align with WIN-M-LIV-E1 and relocate RC5 to the east-wall pier. (2026-10-14)
+- Sconce ED-S-STUDY2-NOOK-SC is basically at the floor level of the stairway. If it is meant for lighting the stair, it should probably be in the room above on the wall (still on the same circuit)
+- Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
 
 # Project Management
 

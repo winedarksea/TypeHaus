@@ -25,6 +25,7 @@ from typehaus.library.placeables.appliances import (
     STARTER_APPLIANCE_TYPES,
     WASHER,
 )
+from typehaus.library.placeables.cantilever_chair import CANTILEVER_CHAIR
 from typehaus.library.placeables.casework import (
     BAR_STOOL,
     BASE_15,
@@ -137,7 +138,8 @@ __all__ = [
     "MITTZON_SIT_STAND_DESK_47",
     "MEDIA_CONSOLE", "TV_65", "TV_98", "QUEEN_BED", "KING_BED", "FULL_BED", "TWIN_BED",
     "DRESSER", "CHEST", "NIGHTSTAND", "SIX_SEAT_DINING_TABLE", "EIGHT_SEAT_DINING_TABLE",
-    "ROUND_DINING_TABLE", "DINING_CHAIR", "WRITING_DESK", "OFFICE_CHAIR", "DESK_CHAIR",
+    "ROUND_DINING_TABLE", "DINING_CHAIR", "CANTILEVER_CHAIR", "WRITING_DESK", "OFFICE_CHAIR",
+    "DESK_CHAIR",
     "SAUNA_BENCH_TIERED_102", "SAUNA_BENCH_TIERED_60", "SAUNA_BENCH_TIERED_48",
     "SAUNA_BENCH_54", "SAUNA_BENCH_48", "SAUNA_BENCH_36", "WORKBENCH_60",
     "MUDROOM_BENCH_36", "CLOSET_PEG_RAIL_42",

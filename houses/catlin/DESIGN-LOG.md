@@ -14,6 +14,21 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Study chairs are IKEA LYCKAN cantilever chairs (2026-10-14)
+
+- `FURN-S-STUDY-CHAIR1`/`CHAIR2` (the chess-table pair) retype from `FURN-DINING-CHAIR` to
+  `FURN-CANTILEVER-CHAIR`, a generic library type (`library/placeables/cantilever_chair.py`)
+  whose envelope is the IKEA LYCKAN, birch veneer (item 005.691.91): 17 3/4 x 20 1/8 x 32 5/8"
+  with an 18 1/8" seat, $140 each, `prices.toml` row `2 ea`. The tags and positions are kept.
+- The chess table's chair-use zone now accepts `FURN-CANTILEVER-CHAIR` as well as
+  `FURN-DINING-CHAIR`; without it the chairs drop out of the table's placement group
+  (`test_moved_study_chairs_still_drag_with_the_table`).
+- 3D: `model/placeable_symbols/_cantilever_chair.py`. Each side is one bent member (front
+  spring to the seat arm, rear leg, back post) on a plywood seat shell, a back panel and a
+  steel cross rail. The product page names the cantilever and the materials but not the
+  joinery, so the member path is illustrative, not measured.
+- `FURN-DINING-CHAIR` drops to 8 placements in the price row (the attic pair stays).
+
 ## Living-room hammock chair removed (2026-10-14)
 
 - `FURN-M-HAMMOCK` and its `HA-M-HAMMOCK` suspension anchor are gone from the plan

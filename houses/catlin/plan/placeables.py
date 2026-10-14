@@ -606,9 +606,9 @@ SECOND_PLACEABLES = [
     # 30" west for the southeast corner shelf (owner, 2026-10-14).
     Furniture(uid="TAB701AAAA", tag="FURN-S-STUDY-TABLE", type_ref="FURN-CHESS-TABLE-315",
               room="RM-S-STUDY2", position=pt(m(8.79495), inch(22.385)), rotation=deg(90)),
-    Furniture(uid="CHR704AAAA", tag="FURN-S-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
+    Furniture(uid="CHR704AAAA", tag="FURN-S-STUDY-CHAIR1", type_ref="FURN-CANTILEVER-CHAIR",
               room="RM-S-STUDY2", position=pt(m(9.4696), m(0.589194)), rotation=deg(-90)),
-    Furniture(uid="CHR705AAAA", tag="FURN-S-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
+    Furniture(uid="CHR705AAAA", tag="FURN-S-STUDY-CHAIR2", type_ref="FURN-CANTILEVER-CHAIR",
               room="RM-S-STUDY2", position=pt(m(8.1304), m(0.588713)), rotation=deg(90)),
     # Finish corner (425.365", 6.635") minus/plus 1/2" gap and half the 23.62" case.
     # -90 turns the symbol's +x/+y backs east/south. The compact Frailey keeps both south

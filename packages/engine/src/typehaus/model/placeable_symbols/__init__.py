@@ -51,7 +51,8 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
 # holds the registry to it in both directions.
 SYMBOL_NAMES = frozenset({
     # furniture
-    "sofa", "loveseat", "sectional", "armchair", "dining-chair", "office-chair",
+    "sofa", "loveseat", "sectional", "armchair", "dining-chair", "cantilever-chair",
+    "office-chair",
     "dining-table", "rounded-dining-table", "round-table", "coffee-table", "end-table",
     "chess-table", "hammock-chair", "hanging-daybed", "curtain-rod",
     "desk", "wall-desk",
