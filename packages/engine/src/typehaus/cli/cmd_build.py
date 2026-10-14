@@ -34,7 +34,7 @@ from typehaus.findings import Authority, Result, Severity
 # on catlin that is 1451 lines of output down to ~30, and the 716 passing checks it drops
 # were never the reason anyone ran the command.
 _ONLY_ALL = "all"
-_ONLY_DEFAULT = "fail,unknown"
+_ONLY_DEFAULT = "fail,unknown,advisory"
 
 
 def _parse_only(only: str) -> frozenset[Result] | None:
@@ -78,7 +78,8 @@ def _check_json_summary(tally, findings: list) -> dict:
     fail_severity = Counter(x.severity.value for x in findings if x.result is Result.FAIL)
     return {
         "pass": tally.passed, "fail": tally.failed, "unknown": tally.unknown,
-        "not_applicable": tally.not_applicable, "engineered": tally.engineered,
+        "not_applicable": tally.not_applicable, "advisory": tally.advisory,
+        "engineered": tally.engineered,
         "categories": dict(sorted(categories.items())),
         "fail_severity": dict(sorted(fail_severity.items())),
         "failing_check_ids": failing,
@@ -203,7 +204,7 @@ def check(
              "full model_dump() (#52). --json stays the complete machine surface."),
     only: str = typer.Option(_ONLY_DEFAULT, "--only",
                              help=f"Results to print: `{_ONLY_ALL}`, or a comma-separated "
-                                  "subset of pass,fail,unknown,not_applicable."),
+                                  "subset of pass,fail,unknown,not_applicable,advisory."),
     exit_on: ExitOn = typer.Option(ExitOn.fail, "--exit-on",
                                    help="What makes the command exit 1."),
     plain: bool = typer.Option(False, "--plain",
@@ -240,7 +241,8 @@ def check(
         # --json is the machine surface and stays complete regardless of --only.
         console.print_json(json.dumps({
             "pass": tally.passed, "fail": tally.failed, "unknown": tally.unknown,
-            "not_applicable": tally.not_applicable, "engineered": tally.engineered,
+            "not_applicable": tally.not_applicable, "advisory": tally.advisory,
+            "engineered": tally.engineered,
             "findings": [x.model_dump(mode="json") for x in report.findings],
         }))
     elif json_summary:
@@ -256,11 +258,12 @@ def check(
         # #32's wording survives with two clauses inserted, and each prints only when
         # non-zero — a house with neither regresses no pinned line.
         na = f", {tally.not_applicable} not applicable" if tally.not_applicable else ""
+        advice = f", {tally.advisory} advisory" if tally.advisory else ""
         eng = (f"; {tally.engineered} of the results rest on engineered design "
                f"(see haus engineering)" if tally.engineered else "")
         console.print(
             f"\n[bold]{tally.passed} pass, {tally.failed} fail, "
-            f"{tally.unknown} not evaluable{na}[/bold] of "
+            f"{tally.unknown} not evaluable{na}{advice}[/bold] of "
             f"{tally.total} encoded rules{eng}; this profile covers a declared subset of the "
             f"code{suffix}.",
             soft_wrap=True,
@@ -321,7 +324,7 @@ def permit_check(
         }))
     else:
         colors = {Result.PASS: "green", Result.FAIL: "red", Result.UNKNOWN: "yellow",
-                  Result.NOT_APPLICABLE: "dim"}
+                  Result.NOT_APPLICABLE: "dim", Result.ADVISORY: "yellow"}
 
         seal_colors = {Freshness.FRESH: "green", Freshness.ACCEPTED: "green",
                        Freshness.STALE: "red",

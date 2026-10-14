@@ -29,7 +29,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from typehaus.quantities import M_PER_IN, Length, Point2D, ft, inch
 
@@ -96,7 +96,7 @@ class RouteProposal:
     floor_ref: str | None = None
     soffit_ref: str | None = None
     #: Extra constructor keywords to echo verbatim — a raceway's ``from_ref``/``to_ref``.
-    echo: dict[str, str] = field(default_factory=dict)
+    echo: dict[str, Any] = field(default_factory=dict)
     #: Free-form lines the caller wants printed with the proposal — a legalisation notice,
     #: a head-budget shortfall, a firestop somebody has to detail. Never silent.
     notes: list[str] = field(default_factory=list)
@@ -170,8 +170,8 @@ class RouteProposal:
         for name, value in (("floor_ref", self.floor_ref),
                             ("soffit_ref", self.soffit_ref),
                             *sorted(self.echo.items())):
-            if value:
-                lines.append(f'        {name}="{value}",')
+            if value is not None:
+                lines.append(f"        {name}={value_source(value)},")
         if self.serves:
             lines.append(f"        serves={value_source(self.serves)},")
         lines[-1] = lines[-1].rstrip(",") + "),"
@@ -207,7 +207,7 @@ class RouteProposal:
                  *_wrapped("elevations", elevations),
                  f"        service={_system_source('conduit', self.system)},"]
         for name, value in sorted(self.echo.items()):
-            lines.append(f'        {name}="{value}",')
+            lines.append(f"        {name}={value_source(value)},")
         lines[-1] = lines[-1].rstrip(",") + "),"
         return "\n".join(lines)
 

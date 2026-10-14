@@ -35,7 +35,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   bed_reading_corner, bed_reading_corner_types,
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, court_daybed, panel_types,
-                  electrical, electrical_attic, electrical_floor_types, equipment_types,
+                  dry_fire_lane, electrical, electrical_attic, electrical_floor_types, equipment_types,
                   fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets,
                   landscape, lighting, living_east_run, living_east_run_types, living_hammock,
                   lighting_attic, lighting_types, masonry_joints, mep, millwork,
@@ -344,7 +344,7 @@ PLAN = (
         # footings and hydrant drywell in one list; the four garage names are spread onto
         # `g-foundation` below instead. Spread by name rather than by editing params/, which
         # already named all four at module level.
-        [*basement.ELEMENTS, *fixtures.BASEMENT_FIXTURES,
+        [*basement.ELEMENTS, *dry_fire_lane.DRY_FIRE_LANE, *fixtures.BASEMENT_FIXTURES,
          *foundations.HOUSE_FOOTINGS, *foundations.HOUSE_FOOTING_BEDDING,
          *foundations.VENEER_PLINTH, *foundations.VENEER_PLINTH_BEDDING,
          *masonry_joints.JOINTS,

@@ -50,7 +50,7 @@ class HardPrism:
     """A plan footprint and a z band the route may not enter. Already inflated."""
 
     tag: str
-    kind: str  # "opening" | "void" | "stair" | "member" | "beam" | "concrete" | "run" | "avoid"
+    kind: str  # opening | void | stair | member | beam | concrete | run | clear_zone | avoid
     footprint: Any  # shapely Polygon
     z0_m: float
     z1_m: float
@@ -268,7 +268,16 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
             out.append(HardPrism(tag=envelope.tag, kind="run", footprint=prism.footprint,
                                  z0_m=prism.z0_m, z1_m=prism.z1_m))
 
-    for tag in sorted(avoid):
+    # A reservation keeps its finite band even when also named by --avoid.
+    zone_tags = {zone.tag for zone in model.clear_zones}
+    for zone in model.clear_zones:
+        poly = _polygon(zone.outline)
+        if poly is not None:
+            out.append(HardPrism(tag=zone.tag, kind="clear_zone",
+                                 footprint=poly.buffer(inflate),
+                                 z0_m=zone.z0_m - inflate, z1_m=zone.z1_m + inflate))
+
+    for tag in sorted(avoid - zone_tags):
         element = model.plan.by_tag(tag)
         poly = _polygon(getattr(element, "outline", None))
         if poly is not None:

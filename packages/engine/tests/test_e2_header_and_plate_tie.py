@@ -74,19 +74,12 @@ def test_an_engineered_header_is_the_fabricator_s_chart(profile: str) -> None:
 
 
 def test_catlin_s_remaining_header_crossings_are_all_reported(catlin_model_ro) -> None:
-    """Two runs meet a header in this house, and both only clip R602.7.4's flat nailer.
-
-    Six until the 2026-09-22 reroute pass, four until B1 the same day: `D-B-FURN`'s 2-2x8
-    became a flat 2x8 in a wall authored NONBEARING, so the extract duct and the main
-    drain pass over it through an open head, and the two drains that still clip its top
-    face notch a member that carries nothing (`notes/framing_bore_limits.md` §9).
-    """
+    """The dry-fire collector lift clears the last two flat-nailer notches."""
     from typehaus.checks.mep.routing_bores import run_through_header
 
     findings = run_through_header(_ctx(catlin_model_ro))
-    assert len(findings) == 2
-    assert {f.result.value for f in findings} == {"pass"}
-    assert all("R602.7.4" in f.message for f in findings)
+    assert len(findings) == 1
+    assert {f.result.value for f in findings} == {"not_applicable"}
 
 
 # --- §6 where along the header, and how much of it ------------------------------------
@@ -161,15 +154,8 @@ def test_the_catlin_header_crossings_are_at_their_true_stations(
     stations = {tag: (cut.station[0] / M_PER_IN, cut.station[1] / M_PER_IN, cut.through_in)
                 for tag, _wall, cuts in _crossings(_ctx(catlin_model_ro))
                 for cut in cuts if cut.category == "header"}
-    # Since B1 the member is a flat 2x8, z -29.44..-27.94, and the cut is the notch the
-    # drain's OD takes off its top face (§9); the extract and the main drain meet nothing.
-    expected = {
-        "PR-B-KITCH-DRAIN": (54.00, 216.0, 0.46),
-        "PR-M-S-BATH1-DRAIN": (60.00, 216.0, 0.70),  # straight drop since 2026-10-08
-    }
-    assert set(stations) == set(expected)
-    for tag, want in expected.items():
-        assert stations[tag] == pytest.approx(want, abs=0.01), tag
+    # The 2026-10-13 lift takes both former kitchen/BATH1 notches above the nailer.
+    assert not stations
 
 
 def test_the_two_rerouted_runs_cut_nothing_at_all(catlin_model_ro) -> None:
@@ -306,36 +292,32 @@ def test_published_hole_is_a_registered_dialect_constructor() -> None:
     assert "PublishedHole" in constructor_names()
 
 
-def test_a_header_names_the_opening_it_was_framed_around(catlin_model_ro) -> None:
-    """``child_key`` stays ``header-0`` — every section golden is keyed on it — so the
-    door's tag rides beside it. Without it no chart can be found for a header at all."""
-    from typehaus.checks.mep.routing_bores import _crossings
+def _historical_kitchen_header_cut(model):
+    """Exercise the former notch against today's real header without lowering the house."""
+    wall = model.wall("W-B-CW")
+    cuts = leg_crossings(wall, (54 * M_PER_IN, 204 * M_PER_IN),
+                         (54 * M_PER_IN, 228 * M_PER_IN),
+                         -27.21 * M_PER_IN, -27.21 * M_PER_IN,
+                         2.375 / 2 * M_PER_IN)
+    return next(cut for cut in cuts if cut.category == "header")
 
-    openings = {tag: cut.opening_tag
-                for tag, _wall, cuts in _crossings(_ctx(catlin_model_ro))
-                for cut in cuts if cut.category == "header"}
-    assert openings["PR-B-KITCH-DRAIN"] == "D-B-FURN"
-    assert openings["PR-M-S-BATH1-DRAIN"] == "D-B-FURN"
-    assert all(cut.child_key == "header-0"
-               for wall in catlin_model_ro.walls for cut in wall.members
-               if cut.opening_tag == "D-B-FURN" and cut.category == "header")
+
+def test_a_header_names_the_opening_it_was_framed_around(catlin_model_ro) -> None:
+    """The member's stable child key also carries its authored opening identity."""
+    cut = _historical_kitchen_header_cut(catlin_model_ro)
+    assert cut.opening_tag == "D-B-FURN"
+    assert all(member.child_key == "header-0"
+               for wall in catlin_model_ro.walls for member in wall.members
+               if member.opening_tag == "D-B-FURN" and member.category == "header")
 
 
 def test_the_bearing_is_the_jack_face_and_not_the_member_end(catlin_model_ro) -> None:
-    """A header runs OVER its jacks, so its ends are not its bearings: PR-B-KITCH-DRAIN is
-    16.50" from the member end and 15.00" from the bearing the chart measures from (§8.3)."""
-    from typehaus.checks.mep.routing_bores import _crossings, _from_bearing_in
+    """The historical kitchen notch was 16.50" from the end, 15" from its bearing."""
+    from typehaus.checks.mep.routing_bores import _from_bearing_in
 
-    ctx = _ctx(catlin_model_ro)
-    for tag, _wall, cuts in _crossings(ctx):
-        if tag != "PR-B-KITCH-DRAIN":
-            continue
-        cut = next(c for c in cuts if c.category == "header")
-        assert cut.from_end_m / M_PER_IN == pytest.approx(16.50, abs=0.01)
-        assert _from_bearing_in(ctx, cut) == pytest.approx(15.00, abs=0.01)
-        break
-    else:  # pragma: no cover - the crossing is pinned above
-        pytest.fail("PR-B-KITCH-DRAIN no longer crosses a header")
+    cut = _historical_kitchen_header_cut(catlin_model_ro)
+    assert cut.from_end_m / M_PER_IN == pytest.approx(16.50, abs=0.01)
+    assert _from_bearing_in(_ctx(catlin_model_ro), cut) == pytest.approx(15.00, abs=0.01)
 
 
 # --- §9 B1: D-B-FURN's flat nonbearing header ---------------------------------------------
@@ -360,7 +342,8 @@ def test_the_flat_header_opens_d_b_furn_s_head(catlin_model_ro) -> None:
     assert header.profile == "2x8"
     assert (header.z1_m - header.z0_m) / M_PER_IN == pytest.approx(1.5)
     assert not [m for m in wall.members if m.category == "cripple"]
-    open_head = {"PR-B-MAIN-DRAIN", "DU-B-ERV-R-SAUNA-EXH"}
+    open_head = {"PR-B-MAIN-DRAIN", "DU-B-ERV-R-SAUNA-EXH",
+                 "PR-B-KITCH-DRAIN", "PR-M-S-BATH1-DRAIN"}
     for tag, found, cuts in _crossings(_ctx(catlin_model_ro)):
         if tag in open_head and found.tag == "W-B-CW":
             assert not cuts, (tag, [c.member_key for c in cuts])

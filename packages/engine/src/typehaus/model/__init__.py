@@ -24,6 +24,7 @@ from typehaus.model.backing import WallBacking
 from typehaus.model.base import Element, HausModel
 from typehaus.model.braced_wall import BracedWallPanel
 from typehaus.model.braces import SlatBrace, StrapBrace
+from typehaus.model.clear_zones import ClearZone
 from typehaus.model.concrete_materials import AsrSpec, CementSpec, ScmFractions
 from typehaus.model.diaphragm_attachment import (
     CollectorBlocking,
@@ -399,7 +400,8 @@ __all__ = [
     "PipeSystem", "PipeAccessoryKind", "DuctSystem", "DuctRouting", "EquipmentKind",
     "BackupTier", "DeviceKind", "LuminaireForm", "RatingBasis", "UtilityKind",
     "ConnectorKind", "RailingKind", "TrimKind", "ShelfProcurement",
-    "PlacementStrategy", "MountKind", "ClearancePolicy", "Footprint2D", "ClearanceZone",
+    "ClearZone", "PlacementStrategy", "MountKind", "ClearancePolicy",
+    "Footprint2D", "ClearanceZone",
     "ServicePort", "PortCertainty",
     "PlanRepresentation", "ModelRepresentation", "Location", "WallAttachment",
     "Mount",

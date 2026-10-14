@@ -41,6 +41,7 @@ the two places the graded figure is deliberately conservative.
 from __future__ import annotations
 
 from typehaus.checks._authoring import advisory, failed, not_applicable, passed, unknown
+from typehaus.checks.mep.erv_network import connected_distribution
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import DuctSystem, EquipmentKind
@@ -283,8 +284,8 @@ def _through_trunks(ctx: CheckContext, plenums: dict, landings: dict[str, str]
 def _network(ctx: CheckContext, machine_tag: str, landings: dict[str, str]) -> list[object]:
     """The runs that belong to this ventilator's own distribution, and nothing else.
 
-    A run is in the network when it is a radial off one of the plenums, or when one of its
-    ends lands in the machine, a plenum, or the mixing box the fresh leg discharges into.
+    Seed from radials and equipment landings, then follow compatible physical duct joints.
+    Remote pieces of a split header contribute even when neither end touches equipment.
 
     **A run that states no ``material`` is not in it, and that exclusion is the point.**
     Catlin's System 1 shares the mixing box with this machine and its trunks are fabricated
@@ -312,7 +313,7 @@ def _network(ctx: CheckContext, machine_tag: str, landings: dict[str, str]) -> l
             if equipment_at_end(ctx, z, duct.path[index]) in anchors:
                 out.append(duct)
                 break
-    return out
+    return connected_distribution(ctx.model.ducts, {duct.tag for duct in out})
 
 
 @check(Tier.ADVISORY, "mep.erv_static_budget")

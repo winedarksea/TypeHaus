@@ -1329,9 +1329,14 @@ CONDUIT_TRUNKS = [
     #
     # Both sleeves reference _SPA_CHASE_X so they can never drift apart from the run again.
     ConduitRun(uid="CDT004AAAA", tag="CD-B-SPA", trade_size=inch(1),
-               path=(pt(ft(2), ft(29)), pt(ft(2), ft(1)), pt(_SPA_CHASE_X, ft(1)),
+               # The south-wall cross-lane leg clears 80" AFF. The two vertical
+               # offsets keep both garden sleeves at their original -4' elevation.
+               path=(pt(ft(2), ft(29)), pt(ft(2), ft(1)), pt(ft(2), ft(1)),
+                     pt(ft(7), ft(1)), pt(ft(7), ft(1)), pt(_SPA_CHASE_X, ft(1)),
                      pt(_SPA_CHASE_X, ft(-7.833))),
-               start_elevation=ft(-4), end_elevation=ft(-4), elevations=(ft(-4), ft(-4), ft(-4), ft(-4)),
+               start_elevation=ft(-4), end_elevation=ft(-4),
+               elevations=(ft(-4), ft(-4), inch(-27.5), inch(-27.5),
+                           ft(-4), ft(-4), ft(-4)),
                from_ref="ED-B-PANEL", to_ref="ED-B-SPA-DISC"),
 ]
 

@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING, Any
 import typer
 
 from typehaus.cli._shared import _print_findings, _resolve_house
+from typehaus.cli.route_metadata import run_metadata as _run_metadata
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
@@ -67,7 +68,7 @@ class Endpoints:
     #: and it is safe to do literally because no gravity profile is involved.
     tie_is_the_goal: bool = False
     #: Extra constructor keywords to echo, e.g. a raceway's ``from_ref``/``to_ref``.
-    echo: dict[str, str] = field(default_factory=dict)
+    echo: dict[str, Any] = field(default_factory=dict)
     #: True when a gravity profile applies. Not ``system == "drain"`` at the call site,
     #: because a DuctSystem is also a string and "exhaust" does not fall.
     falls: bool = False
@@ -252,7 +253,9 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
             diameter_m=run.diameter_m,
             serves=run.serves, storey=run.storey, system=run.system, falls=False,
             touch=frozenset({run.tag, *chain, *children}), root_paths=paths,
-            tie_is_the_goal=True, after_paste=after)
+            tie_is_the_goal=True, after_paste=after,
+            echo=_run_metadata(model, run.tag, ("material", "finish", "insulation",
+                                                "sanitary", "freeze_protection")))
     found = _discharge(model, run, problems if falls else [])
     if found is None and falls:
         return None
@@ -273,7 +276,9 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
         radius_m=(run.diameter_m or 0.0) / 2.0, diameter_m=run.diameter_m,
         serves=run.serves, storey=run.storey, system=run.system,
         falls=falls, touch=frozenset({run.tag, *chain}),
-        root_paths=() if falls else tuple(p for p in paths if p))
+        root_paths=() if falls else tuple(p for p in paths if p),
+        echo=_run_metadata(model, run.tag, ("material", "finish", "insulation",
+                                            "sanitary", "freeze_protection")))
 
 
 def _duct_endpoints(model: ResolvedModel, duct: Any,
@@ -291,13 +296,18 @@ def _duct_endpoints(model: ResolvedModel, duct: Any,
     two systems can join** (``mep_envelopes.joinable``). Distance alone let a supply
     proposal pass through an exhaust trunk it happened to end beside.
     """
-    from typehaus.resolve.mep_envelopes import joinable
+    from typehaus.resolve.mep_envelopes import insulation_thickness_m, joinable
     from typehaus.resolve.mep_soffit import ducts_are_joined
     from typehaus.routing.trades import duct as duct_trade
 
     if len(duct.path) < 2 or len(duct.z_m) != len(duct.path):
         problems.append(f"{duct.tag}: fewer than two vertices or no resolved elevations, "
                         "so it has no two ends to route between")
+        return None
+    lagging = insulation_thickness_m(duct.insulation)
+    if lagging is None:
+        problems.append(f"{duct.tag}: insulation states no thickness, so its routing "
+                        "envelope cannot be established")
         return None
     joined = {other.tag for other in model.ducts
               if other.tag != duct.tag and ducts_are_joined(model, duct.tag, other.tag)
@@ -308,10 +318,11 @@ def _duct_endpoints(model: ResolvedModel, duct: Any,
     return Endpoints(
         origin=origin, root=root, advice=_duct_size_advice(model, duct),
         kind="duct", radius_m=duct_trade.radius_m(
-            diameter_m=duct.diameter_m, width_m=duct.width_m, depth_m=duct.depth_m),
+            diameter_m=duct.diameter_m, width_m=duct.width_m, depth_m=duct.depth_m) + lagging,
         diameter_m=duct.diameter_m or 0.0, width_m=width, depth_m=depth,
         storey=duct.storey, system=duct.system, falls=False,
-        touch=frozenset({duct.tag, *joined}))
+        touch=frozenset({duct.tag, *joined}),
+        echo=_run_metadata(model, duct.tag, ("material", "insulation", "design_cfm")))
 
 
 def _conduit_endpoints(model: ResolvedModel, raceway: Any,

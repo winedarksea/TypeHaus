@@ -172,7 +172,7 @@ def test_json_output_is_complete_regardless_of_only() -> None:
 
     result = runner.invoke(app, ["check", str(CATLIN), "--json", "--only", "fail"])
     payload = json.loads(result.output)
-    verdicts = ("pass", "fail", "unknown", "not_applicable")
+    verdicts = tuple(result.value for result in Result)
     assert len(payload["findings"]) == sum(payload[key] for key in verdicts)
     assert payload["pass"] > 0
     # `engineered` is an Authority, not a verdict — it cuts across the four buckets above
@@ -199,6 +199,7 @@ def test_json_summary_agrees_with_json_on_the_counts_but_is_far_smaller(
     assert summary_payload["fail"] == full_payload["fail"]
     assert summary_payload["unknown"] == full_payload["unknown"]
     assert summary_payload["not_applicable"] == full_payload["not_applicable"]
+    assert summary_payload["advisory"] == full_payload["advisory"]
     assert summary_payload["engineered"] == full_payload["engineered"]
     assert "findings" not in summary_payload
     assert len(summary.output) < len(full.output) / 10
@@ -218,6 +219,7 @@ def test_json_summary_categories_sum_to_the_totals(catlin_json_summary) -> None:
     assert sum(c["unknown"] for c in categories.values()) == payload["unknown"]
     assert (sum(c["not_applicable"] for c in categories.values())
             == payload["not_applicable"])
+    assert sum(c["advisory"] for c in categories.values()) == payload["advisory"]
     assert isinstance(payload["failing_check_ids"], list)
     assert isinstance(payload["unknown_check_ids"], list)
 

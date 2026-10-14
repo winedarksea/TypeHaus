@@ -61,6 +61,8 @@ class Scorecard:
     resolved_fail: list[dict] = field(default_factory=list)
     new_unknown: list[dict] = field(default_factory=list)
     resolved_unknown: list[dict] = field(default_factory=list)
+    new_advisory: list[dict] = field(default_factory=list)
+    resolved_advisory: list[dict] = field(default_factory=list)
     #: Run-schedule rows for runs that are new or whose geometry digest moved.
     moved_runs: list[dict] = field(default_factory=list)
     #: What is not graded yet, said out loud — an absent finding reads as a pass.
@@ -78,6 +80,7 @@ class Scorecard:
             "profile": self.profile, "new_fail": self.new_fail,
             "resolved_fail": self.resolved_fail, "new_unknown": self.new_unknown,
             "resolved_unknown": self.resolved_unknown, "moved_runs": self.moved_runs,
+            "new_advisory": self.new_advisory, "resolved_advisory": self.resolved_advisory,
             "coverage": self.coverage, "notes": self.notes,
         }
 
@@ -211,12 +214,14 @@ def score(directory: Path, baseline: dict, *, checks: str = "mep",
         if key in before:
             continue
         (card.new_fail if row["result"] == "fail"
-         else card.new_unknown if row["result"] == "unknown" else []).append(row)
+         else card.new_unknown if row["result"] == "unknown"
+         else card.new_advisory if row["result"] == "advisory" else []).append(row)
     for key, row in before.items():
         if key in after:
             continue
         (card.resolved_fail if row["result"] == "fail"
-         else card.resolved_unknown if row["result"] == "unknown" else []).append(row)
+         else card.resolved_unknown if row["result"] == "unknown"
+         else card.resolved_advisory if row["result"] == "advisory" else []).append(row)
 
     old_runs = baseline.get("runs", {})
     for tag, entry in current["runs"].items():
@@ -239,7 +244,9 @@ def _coverage(card: Scorecard, *, suppress: bool = True) -> list[str]:
     reader to ignore the block.
     """
     out = [g for g in KNOWN_GAPS if suppress or "suppress" not in g]
-    if card.moved_runs and not (card.new_fail or card.new_unknown):
+    if card.moved_runs and not (card.new_fail or card.new_unknown or card.new_advisory
+                               or card.resolved_fail or card.resolved_unknown
+                               or card.resolved_advisory):
         out.append("runs moved and no MEP finding changed, which may mean the move is "
                    "clean or may mean nothing grades it — check the two lines above")
     return out
@@ -273,13 +280,15 @@ def render(card: Scorecard) -> list[str]:
         lines.append(f"  [dim]{note}[/dim]")
     for label, rows, colour in (("NEW FAIL", card.new_fail, "red"),
                                 ("NEW UNKNOWN", card.new_unknown, "yellow"),
+                                ("NEW ADVISORY", card.new_advisory, "yellow"),
                                 ("RESOLVED FAIL", card.resolved_fail, "green"),
-                                ("RESOLVED UNKNOWN", card.resolved_unknown, "green")):
+                                ("RESOLVED UNKNOWN", card.resolved_unknown, "green"),
+                                ("RESOLVED ADVISORY", card.resolved_advisory, "green")):
         for row in rows:
             lines.append(f"  [{colour}]{label} {row['check_id']}: "
                          f"{row['message']}[/{colour}]")
     if not (card.new_fail or card.new_unknown or card.resolved_fail
-            or card.resolved_unknown):
+            or card.resolved_unknown or card.new_advisory or card.resolved_advisory):
         lines.append("  [green]no finding changed in the chosen set[/green]")
     for row in card.moved_runs:
         detail = (f"{row.get('developed_ft', 0):.1f} LF developed"

@@ -227,7 +227,6 @@ the future.
   (2) a wall coating draws a plane (polygonOffset, see the wash); (3) whether paint belongs in
   an STC preset's tested core; (4) authored paint makes gypsum Class III, which moves Glaser.
 - The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
-- Move the ERV, EQ-B-ERV so we can keep a 11 meter lane from north to south clear (through D-B-FURN) — plan: `plans/dry-fire-lane.md` (full 10.25 m needs a basement ERV re-layout; 8.7 m fallback leaves the ERV)
 - PR-A-STUBATH-VENT_RUN goes right through the middle of the bathroom RM-A-STUBATH
 - Extra light switches by beds
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
@@ -238,6 +237,7 @@ the future.
 - Either engineer the mudroom exposed studs as allowed hardwood, or specify southern yellow pine with a gold anodized aluminum trim (>= 1.5 mm / 0.064 / 12 gauge thickness) https://www.dkhardware.com/cr-laurence-l902bga-ccp72-xcp10-brite-gold-anodized-aluminum-1-4-l-bar-extrusion-72-length-pack-of-10-product-10103314.html or 1-1/2" ID U-channel
 - Perhaps two more shelf like blocking rows in the mudroom exposed stud line, one as a lower shelf and one as a top shelf
 - Spec sand or gravel backfill around house
+- the framing of D-A-STUDY (bookcase shelf) and the oak trim next to it (such as FURN-A-STUDY-BRIDGE-FRONT) are wrong. The door looks like it needs to be inset into the framing, north a bit more, right now it hasn't got a clear support on the east side. Then the trim is simpler likely, a single panel on that wall closing the gap to the bookshelves.
 
 # Project Management
 

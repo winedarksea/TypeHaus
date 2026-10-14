@@ -1774,7 +1774,7 @@ export type Severity = "error" | "warn" | "info";
 
 // Mirrors typehaus.findings.Result. "not_applicable" is a verdict, not a gap: the
 // condition the rule governs does not exist in this building.
-export type CheckResult = "pass" | "fail" | "unknown" | "not_applicable";
+export type CheckResult = "pass" | "fail" | "unknown" | "not_applicable" | "advisory";
 
 export interface Finding {
   // The checks framework's Finding (→ 12 §Checks). Fields are permissive because

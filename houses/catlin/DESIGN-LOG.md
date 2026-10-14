@@ -14,6 +14,24 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Required dry-fire lane through D-B-FURN (2026-10-14)
+
+Implemented the fallback from `plans/dry-fire-lane.md`: a required finite reservation,
+27.5" wide and 80" high, from the target face at y13" to y352". Its usable length is
+8.6106 m; the earlier 8.74 m figure included space behind the target. The machine and
+outdoor hoods stay at their existing stations. Westward relocation conflicts with panel
+working space; the tested eastward layouts did not establish zero route refusals, and
+the rotated supply alternative delivered only about 204 cfm against the 205 cfm gate.
+`notes/dry_fire_route_comparison.md` records the search limits and candidate geometry.
+
+Lifted the main drain/cleanout and their arriving branch profiles, rerouted condensate
+through the clear W-B-CW3 bay, lifted three duct crossings, and moved the hot trunk east
+of the lifted ducts. The return trunk also needs its low crossing north of y352"; the
+original fallback study overlooked that obstruction. The backflow body is at the
+owner-confirmed entry station, 36" AFF. Its hydrant branch order remains unresolved
+and must be settled before installation; geometry alone does not prove protection.
+The lane check admits only the named door exception; the door must be held open.
+
 ## Study door casing joins the fixed bookcase in oak (2026-10-13)
 
 Added a stationary 60"-high oak cover across the 5 5/8" casing-to-filler gap and the
@@ -5107,3 +5125,13 @@ A reviewer's five points and two follow-ups; owner decisions marked.
   LUS210-3SS is listed), and the ledger's THDs under the concentrated reaction (~1.13 of the
   letter's implied per-anchor basis; note §5). The proposed fix, one added THD each side of
   each 3-ply hanger, is not taken.
+
+## 2026-10-14 — Study 2 nook shelf back to a stock 18" SEKTION
+
+- `FURN-S-STUDY-NOOK-SHELF` is the SEKTION 18x24x80 high frame again (002.654.44, open,
+  83 1/2" on the base); type `FURN-S-STUDY-NOOK-SHELF-18` replaces the custom 6" plywood one.
+  The west end stays at x=264" (3 3/8" off D-S-STUDY2's bumper); seats, end panel, cushion,
+  reading sconce and dimmer move 12" east. The run is now x=264"..355".
+- Headroom under ST-S2A drops, by the owner's choice: shelf top ~5" under the stringers at
+  its east face, seat top 14 1/2" and cushion top 11 1/2" at the east foot cubby. The study
+  nook test's floors fall to 4 1/2" / 14" / 11".

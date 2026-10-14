@@ -15,8 +15,8 @@ BASEMENT_CLEANOUTS = [
                   direction="two_way", access="floor",
                   clear_width=inch(24), clear_depth=inch(24)),
     DrainCleanout(uid="COB0000009", tag="CO-B-COLLECTOR", pipe_ref="PR-B-MAIN-DRAIN",
-                  position=pt(ft(5, 3), ft(16, 6)), fitting_elevation=inch(81.2375),
-                  cap_position=pt(ft(5, 3), ft(17, 9)), cap_elevation=inch(85.2375),
+                  position=pt(ft(5, 3), ft(16, 6)), fitting_elevation=inch(83.7375),
+                  cap_position=pt(ft(5, 3), ft(17, 9)), cap_elevation=inch(87.7375),
                   direction="two_way", access="wall", wall_ref="W-B-CW",
                   clear_width=inch(24), clear_depth=inch(24)),
     # PR-B-BATH-DRAIN turns south, then west, and the main carries it north: 180° in

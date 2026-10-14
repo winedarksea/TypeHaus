@@ -1256,9 +1256,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     keep — no real duct system lands under 0.2" w.g. The number that governs is MN 1322
     R403.5's **205**.
   - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
-    over the whole system and reads the curve at it: **0.371" w.g. worst path, 206.6 cfm
-    delivered**, on the SUPPLY side since 2026-09-24, when `DU-ERV-RISER-SUP` humped over the
-    basement crossing (+2 elbows); extract is 0.327. The margin over 205 is 1.6 cfm. It reports the 3 cfm against the 210 design rate as
+    over the whole system and reads the curve at it: **0.374" w.g. worst path, 206.5 cfm
+    delivered**, on the EXTRACT side after the dry-fire clearance revision (+2 riser
+    elbows, +1 return elbow); supply remains 0.371. The margin over 205 is 1.5 cfm. It reports the 3 cfm against the 210 design rate as
     UNKNOWN, never a FAIL — whether 207 is ENOUGH is
     `code.N1103_6_whole_house_ventilation`'s question, asked against MN's 205 and not against
     a designer's hope. **The extract side was authored at 265 cfm against a 210 cfm machine
@@ -1783,10 +1783,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     R305.1.1 honestly. An authored ~53" ceiling would be taken verbatim and FAIL.
   - `DT-INT-CLOSET24` is **2'-0" x 6'-0"**: at y=28'-4" there is 76.5" of head, a 6'-8" leaf
     plus header wants 82", a 6'-0" leaf wants 74".
-  - `D-B-FURN` is at `ft(3, 3)`, pinned by the condensate line — `CD-B-SPA`,
-    `CD-B-DATA-SHOP` and `PR-B-ERV-COND` all pass nearby and none can move (a `ConduitRun`
-    has one flat elevation). Moving this door east re-opens the clash (king stud is 0.475"
-    off the pipe).
+  - `D-B-FURN` remains at `ft(3, 3)`. The ERV condensate now crosses W-B-CW3 at
+    x=90" and no longer pins this door's king stud. Check nearby `CD-B-SPA` and
+    `CD-B-DATA-SHOP` before moving the opening.
+  - **Dry-fire lane:** `CZ-B-DRYFIRE` reserves x=40.5–68", y=13–352", slab to 80" AFF.
+    Usable target-face distance is **8.6106 m**. Hang the target on the workshop south
+    wall, below `CD-B-SPA`; hold `D-B-FURN` open during use. Keep fixed furniture out
+    of the inverter working space. The full ERV relocation failed its routing gates;
+    see `notes/dry_fire_route_comparison.md` before reopening it.
 
 - **Engine behaviour to rely on.** `illumination._gypsum_finishes` matches `gwb*`/`gwb`/
   `gwb-x` (every gypsum layer in this catalog), not the literal string `"gyp"`.

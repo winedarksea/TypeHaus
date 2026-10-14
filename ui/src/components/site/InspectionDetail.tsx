@@ -13,7 +13,7 @@ import { useStore } from "../../state/store";
 
 const CHECK_DOT: Record<string, string> = {
   pass: "site-dot-done", fail: "site-dot-blocked",
-  unknown: "site-dot-attention", not_applicable: "site-dot-na",
+  unknown: "site-dot-attention", advisory: "site-dot-attention", not_applicable: "site-dot-na",
 };
 
 /**

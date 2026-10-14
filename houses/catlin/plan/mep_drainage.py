@@ -22,8 +22,7 @@ from typehaus.model import m
 
 # Basement-ceiling collector: picks up both WC sleeves and rides y=16'-6" (a foot clear of
 # the y=18' cross walls) to its slab drop. Every vertex carries its own invert
-# (`elevations`); the first leg falls hard (~2"/ft) so the 46' kitchen branch can hold
-# 1/4"/ft off it.
+# (`elevations`); the first leg falls 1.56"/ft to collect the upper-storey branches.
 #
 # ** THE SEWER LEAVES NORTH, TO THE STREET (2026-10-01). ** It used to leave south under
 # FT-B-S1 into the rear yard, toward no sewer main at all: the street is on the north
@@ -39,18 +38,10 @@ DRAINS = [
     # The collector STARTS at the tie (6'-0", 22'-7"); nothing drops through the deck here.
     # Both BATH1 branches (PR-B-WC1-DRAIN 3", PR-B-LAV1-DRAIN 1 1/2") come into it there: one
     # combination wye at the head of the 4" line.
-    # ** IT BORES `W-B-CW`'s HEADER 4.50", 3.00" FROM THE EAST JACK FACE, AND NOTHING IN
-    # THIS ENGINE OR IN ANY CHART CLOSES THAT (2026-09-22). ** `haus route --run
-    # PR-B-MAIN-DRAIN --alternatives 3 --evaluate` returns no proposal at all — "nothing
-    # downstream of it is derivable, so there is no root to route to", because this IS the
-    # building drain — and TJ-9000's ALLOWABLE HOLES page publishes 3 5/8" at the deepest
-    # member that fits over `D-B-FURN` (11 7/8" in the 13.82" available), allows no hole
-    # within 8" of a bearing, and wants the middle third of the depth where this pipe runs
-    # 0.60" off the bottom face. Three misses, any one of them fatal
-    # (notes/framing_bore_limits.md §8.3). The 5 1/4" of free clear bay at x 16 3/4"..22"
-    # is the only slot a 4.50" run fits, and it is west of the tie-in corner every basement
-    # drain converges on. **This one wants a designed header over D-B-FURN, and that is an
-    # owner's decision and an engineer's item, not a route.**
+    # The y=16'-6" collector is 2 1/2" higher for the dry-fire lane: its lowest
+    # 4.50" OD underside is 80.8875" AFF. The upstream fall absorbs the lift; the
+    # buried base and cast sewer exit remain fixed. W-B-CW's flat nonbearing nailer
+    # lies below this crossing (notes/framing_bore_limits.md §8–9).
     PipeRun(uid="CMP905AAAA", tag="PR-B-MAIN-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(6), ft(22, 7)), pt(ft(6), ft(16, 6)),
                   pt(ft(3), ft(16, 6)), pt(ft(3), ft(16, 6)),
@@ -66,7 +57,7 @@ DRAINS = [
             # under that, and the building drain then holds 1/4"/ft for 20'-6" to the exit
             # 1'-0" past FT-B-N4. Sized 4": the rolled-up basement load is past the 35 a 3"
             # branch carries (Table 703.2), at 48 DFU.
-            elevations=(ft(7, 9.4375), ft(6, 9.4375), ft(6, 8.6375), inch(-15.0), inch(-20.125)),
+            elevations=(ft(7, 9.4375), ft(6, 11.9375), ft(6, 11.1375), inch(-15.0), inch(-20.125)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK",
                     "FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
@@ -116,10 +107,11 @@ DRAINS = [
     # editable-dialect and cannot import the constant, but nothing here can drift quietly:
     # `mep.sleeve_coverage` fails the build the moment this run stops passing through its
     # sleeve.
-    # It crosses `W-B-CW` through `D-B-FURN`'s flat 2x8 nonbearing nailer, 0.46" off its top
-    # (`mep.run_through_header` PASSes). It is the tail of a 43'-4" run landing 1/16" over
-    # PR-B-MAIN-DRAIN inside `drain_tie_ins`' 1" window, so it is the least movable drain
-    # here: `PR-M-S-BATH1-DRAIN` keeps east of its x=4'-6" fall line rather than cross it.
+    # The kitchen leaves the lane ceiling entirely: west to x32.5", south to y406.5",
+    # down through SP-B-SLAB-KITCH, then 3 1/2" east into the buried main. The plan's
+    # x36",y418" stack sat inside the north footing's 45-degree influence line.
+    # y406.5" clears that line and the panel working space; x32.5" clears the two-way
+    # sewer cleanout's fitting at (36",408"). Seal the slab sleeve to the radon layer.
     # ** OVER THE STAIR WELL IT HUGS THE NORTH WALL, EXPOSED (2026-09-23). ** It ran 8 ft
     # inside FO-M-STAIR's north trimmer pack. The pack moved onto W-B-N2's sill (plan/
     # storeys/main.py) and this leg jogs north on two 45 pairs — over W-B-CN's top at
@@ -130,31 +122,21 @@ DRAINS = [
             path=(pt(inch(352), inch(416.875)), pt(inch(352), inch(416.875)),
                   pt(ft(18), ft(35)), pt(ft(17, 9.25), ft(35, 2.75)),
                   pt(ft(9, 10.75), ft(35, 2.75)), pt(ft(9, 8), ft(35)),
-                  pt(ft(6), ft(35)), pt(ft(4, 6), ft(35)),
-                  pt(ft(4, 6), ft(16, 6))),
+                  pt(ft(6), ft(35)), pt(inch(32.5), ft(35)),
+                  pt(inch(32.5), inch(406.5)), pt(inch(32.5), inch(406.5)),
+                  pt(ft(3), inch(406.5))),
             diameter=inch(2), material="pvc",
             # Starts on the cap's own top (+15/16" project = 9'-2 3/8" basement-relative) and
             # drops clear of the deck's SOFFIT, the bearing seat at -13 7/16" — a drop that
             # stops inside the pour is what `mep.sleeve_coverage` reads as a sleeve serving
             # nothing.
             #
-            # ** THE PROFILE IS NOT UNIFORM, AND THAT IS THE POINT. ** 8'-5 3/16" of head
-            # over 43'-4" would allow 0.235"/ft spread evenly — under the minimum — so the
-            # head is spent where it is worth something instead. The theater leg takes the
-            # least it legally can (3 1/16" over 11'-4", 0.270"/ft) to keep the pipe inside
-            # the foam for its whole length; the stair leg 0.29"/ft; and the last leg, once
-            # the run is over RM-B-FURNACE and RM-B-WORKSHOP where nothing cares how low it
-            # hangs, takes 13 5/8" over 19'-0" at 0.717"/ft.
-            #
-            # The end lands at 6'-9 1/8", 1/16" over PR-B-MAIN-DRAIN's interpolated
-            # CENTRELINE at x=4'-6" (an authored elevation is a centreline — model/mep.py)
-            # — a side entry into the 4" barrel's upper half, which is what a 2"
-            # branch wants, and inside `drain_tie_ins`' 1" tolerance so the load still rolls
-            # up. It ties on the main's y=16'-6" leg rather than at its (6'-0") head, which
-            # is 1'-6" of 2" PVC saved and one fitting fewer.
+            # Preserve the theater/stair profile; the final ceiling legs hold
+            # 0.3"/ft, as does the short buried wye leg. Its -19.25" arrival is
+            # 3/32" above the main's -19.34375" centreline at y406.5".
             elevations=(ft(9, 2.375), ft(8, 5.9375), ft(8, 2.6875), ft(8, 2.59375),
                         ft(8, 0.3125), ft(8, 0.21875),
-                        ft(7, 11.25), ft(7, 10.75), ft(6, 9.125)),
+                        ft(7, 11.25), inch(94.2625), inch(93.925), inch(-19.1625), inch(-19.25)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its flange on the wet wall (→ SP-M-WC2), x 2'-6" y 20'-10 5/8" — the
     # run's first two points ARE the fixture's drain convention, under the bowl.
@@ -169,10 +151,10 @@ DRAINS = [
             # The offset is a 1/8 bend (~43°), not a square jog: with the 90° east into the
             # stack that is under 707.4's 135° aggregate, so the branch carries only its
             # upper-terminal cleanout. Square, it was 180° and wanted a second ceiling panel.
-            # The offset falls 1/32"; the south leg falls 5" over 4'-3", and the short
-            # collector leg falls 2".
+            # The raised collector shortens the south leg's fall to 2 1/2"; the
+            # final 7 1/2" leg still falls 2", keeping the shower branch above it.
             elevations=(ft(9, 1.4375), ft(7, 4.4375), ft(7, 4.375),
-                        ft(6, 11.4375), ft(6, 9.4375)),
+                        ft(7, 1.9375), ft(6, 11.9375)),
             serves=("FX-M-BATH2-WC",)),
     # ** BATH1's WALL-HUNG WC, ON ITS OWN BRANCH, NOT PR-B-MAIN-DRAIN'S FIRST VERTEX. **
     #   * a wall-hung carrier connects at 3" (Geberit Duofix / TOTO DuoFit both call out
@@ -223,13 +205,13 @@ DRAINS = [
             path=(pt(ft(1, 9), ft(17, 1.375)), pt(ft(1, 9), ft(17, 1.375)),
                   pt(ft(3), ft(16, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(6, 10.6375)),
+            elevations=(ft(9, 1.4375), ft(7, 10.0375), inch(85.3875)),
             serves=("FX-M-BATH2-SH",)),
     PipeRun(uid="CBPD05AAAA", tag="PR-B-SINK2-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(1), ft(14, 5.375)), pt(ft(1), ft(14, 5.375)),
                   pt(ft(3), ft(16, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(6, 10.0375)),
+            elevations=(ft(9, 1.4375), inch(94.5375), inch(83.2375)),
             serves=("FX-M-BATH2-SINK",)),
     PipeRun(uid="CBPD06AAAA", tag="PR-B-WASH-DRAIN", system=PipeSystem.DRAIN,
             # The drop is at 19'-4", mid-bay both ways: y=20'-0" is joist-0-015's line (and
@@ -244,14 +226,14 @@ DRAINS = [
     # ceiling to PR-B-MAIN-DRAIN's x=6' collector — same two-move shape as PR-B-SINK2-DRAIN/
     # PR-B-WASH-DRAIN, forced by the 9" concrete deck. This is the tub's trap arm too, sized
     # 2" (not 1 1/2") since the vent (PR-M-BATH2-VENT's leg at x=8'-2 1/2") sits 3'-9" away
-    # and Table 1002.2 allows 60" on 2" vs. 42" on 1 1/2". Falls 1.32"/ft, arriving ~6" above the
-    # collector's invert — a top tee-in, not a side one.
+    # and Table 1002.2 allows 60" on 2" vs. 42" on 1 1/2". Its raised arrival is just
+    # above the collector centreline; the sauna vent rises early to clear this new grade.
     PipeRun(uid="ZK49S63X8X", tag="PR-B-LSINK-DRAIN", system=PipeSystem.DRAIN,
             # 18'-10 5/8", clear of joist-0-014's flange at 18'-9 1/4"; at 18'-9" it took 1.44".
             path=(pt(ft(12, 0), ft(18, 10.625)), pt(ft(12, 0), ft(18, 10.625)),
                   pt(ft(6), ft(18, 10.625))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 2.4375)),
+            elevations=(ft(9, 1.4375), ft(7, 10.0375), inch(87.75)),
             serves=("FX-M-LAUNDRY-SINK",)),
     # --- the two basement slab-fixture branches ---------------------------------------
     #
@@ -346,8 +328,8 @@ SECOND_DRAINS = [
     # diagonal to a tie at x=3'-0" ran within 1/2" of `PR-B-KITCH-DRAIN`'s x=4'-6" fall line
     # for its last nine feet and crossed it in elevation — a drain-on-drain clash no fitting
     # explains. It now drops on the stack's own line and side-enters the main at x=5'-0",
-    # 6" east of the kitchen tie and 12" west of the main's corner: 10'-0" at 0.575"/ft,
-    # 11" of 3" PVC shorter, through `D-B-FURN`'s flat nailer 0.70" off its top.
+    # 6" east of the kitchen tie and 12" west of the main's corner. The collector lift
+    # reduces the 10'-0" tail's fall to 0.325"/ft and clears D-B-FURN's flat nailer.
     PipeRun(uid="CMPD07AAAA", tag="PR-M-S-BATH1-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(5), ft(26, 6)), pt(ft(5), ft(26, 6)), pt(ft(5), ft(16, 6))),
             diameter=inch(3), material="pvc",
@@ -356,7 +338,7 @@ SECOND_DRAINS = [
             # all. PR-M-S-VANITY-DRAIN is a wall arm in W-S-BD-N's cavity at 10'-2 9/16",
             # and a stack tops out at its highest inlet, so the barrel rises 6" further to
             # 10'-3" and every other branch ties onto the vertical below it.
-            elevations=(ft(10, 3), ft(-1.8333), inch(-27.75)),
+            elevations=(ft(10, 3), ft(-1.8333), inch(-25.25)),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # ** THE HEAD IS 1 1/2" LOWER THAN ITS BATH1 TWIN, AND DELIBERATELY. ** The attic bath's
@@ -379,7 +361,7 @@ SECOND_DRAINS = [
                   pt(ft(6), ft(16, 6))),
             diameter=inch(3), material="pvc",
             elevations=(ft(9, 7.5), ft(8, 11.875), ft(0), inch(-5), inch(-5.5),
-                        ft(-1.8333), ft(-2.2503), ft(-2.3163)),
+                        ft(-1.8333), inch(-24.5036), inch(-25.2956)),
             wall_refs=(None, "W-M-CLN", None, None, None, None, None),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
@@ -602,87 +584,20 @@ LAUNDRY_MAIN = [
 # 0.3"/ft across both horizontal legs, the same grade as its neighbour and above IRC
 # ch. 4714 (UPC) 708.0's 1/4"/ft minimum.
 #
-# ** THE NORTH-SOUTH LEG MUST STAY CLEAR OF D-B-FURN'S ROUGH OPENING. ** At x=3'-11" it
-# would pass through W-B-CW at y=18'-0", the furnace room door (RO x 3'-4"..6'-0", head
-# 6'-8"), 68" above the sill — a 3/4" PVC line across the top of a doorway with nothing to
-# hang it from and a header it cannot be bored into.
-#
-# ** THE FIX IS HORIZONTAL, BECAUSE THIS LINE FALLS. ** The usual answer to a run in an
-# opening is to carry it over the head; the head is at 80" basement-relative and the run
-# STARTS at 72", at the Broan's condensate spigot. There is no gravity route over it, and
-# there is no re-levelling either — the whole point of the run is 0.3"/ft of continuous fall
-# to FX-B-SAUNA-FD, above ch. 4714 (UPC) 708.0's 1/4"/ft. So the leg moves west out of the opening
-# and everything else stays.
-#
-# ** x=2'-11" IS A MEASURED BAY, AND x=2'-9" — THE OBVIOUS GUESS — IS NOT. ** W-B-CW
-# resolves studs at x=0'-8 3/4", 1'-4", 2'-8" and 6'-9", with the door's king at 3'-0 3/4".
-# That leaves a 3 1/4" bay between the 2x8 stud's east face (2'-8 3/4") and the king's west
-# face (3'-0"), and a 14 1/2" bay west of it. 2'-9" lands 1/4" off the stud face, which a
-# 1.05"-OD 3/4" PVC pipe cannot clear — it would be bored half into the stud. 2'-11" leaves
-# 1 3/4" to the stud and **0.475" to the king**, so the hole is a hole in sheathing and
-# gypsum and nothing else — but it is the tightest dimension in this run, and it is what
-# fixed D-B-FURN at 3'-3" rather than the 3'-4" it was authored at before the 2026-09-05 UI
-# drag (this note was struck against that 3'-4", where the king's west face was 3'-1" and
-# the bay 4 1/4"). Any move of that door east re-opens the clash this line was routed around.
-# The bigger western bay was declined: it costs another 1'-11" of jog each way and puts the
-# line into the lane PR-B-WC2-DRAIN (x=2'-4 1/2") and the BATH2 supply pair (x=2'-3") share.
-#
-# The one thing in the new lane is PR-B-MAIN-DRAIN, whose 4" trunk runs x=3'-0" between
-# y=16'-6" and y=15'-6". Their plan lanes overlap by about half an inch there and their
-# elevations do not: the trunk is at -2'-4.8" project and this line passes under it at
-# -3'-6.7", 13 7/8" of clear. Nothing else lies between y=13'-3" and y=30'-9" at x=2'-11"
-# — the only basement wall the leg crosses is W-B-CW itself.
-#
-# The jog off the spigot is 1'-0" long and takes its own 0.3" of fall, so the two legs below
-# it are 66.45" and 63.275". Monotonic from 72" to 9", 0.3"/ft on every horizontal segment.
-#
-# ** THE DROP FOLLOWS THE DRAIN, AND ITS OFFSET IS IN x, NOT y. ** FX-B-SAUNA-FD sits at
-# y=8'-2 3/16" (FX-B-SAUNA-SH's centre line) since W-B-SA-N went north on 2026-09-05, so
-# this line stops the east leg 6" short at x=13'-0" and runs 5'-0 13/16" south from y=13'-3"
-# to the drain's own horizontal. The 6" separation from PR-B-COND's drop is west of it
-# rather than north, at the wall. The ERV's final low leg angles east to x=160" so both
-# outlets land over the 6" grate at y=98 3/16", 2" apart and 9" AFF (seating review, 2026-10-11).
-#
-# The 6" is taken in x deliberately: a drop at (13'-6", 8'-2 3/16") would land its last
-# vertex ON PR-B-SAUNA-DRAIN's new north jog in plan and above its invert, which is exactly
-# what `resolve/mep_queries.drain_tie_ins` reads as a connection. An air gap that resolves
-# as a tie-in is no longer an air gap (test_plumbing_pass::test_drain_loads_roll_up...).
-# The long leg at x=2'-11" stays in the lane vetted above and crosses nothing new; 0.3"/ft
-# throughout puts the two intermediate inverts at 63.42" and 63.05". The last horizontal
-# leg is 5'-0 13/16" and its authored end came up 43.73" -> 43.905" with the drain's move,
-# so the 0.3"/ft this paragraph claims is still true of every leg.
+# The pan sits below the door head, so this gravity line crosses east north of the
+# dry-fire lane, then stays in the furnace room's east half. x=90" crosses W-B-CW3
+# between its 81" and 97" studs; y=207" is the workshop's north service strip.
+# Every horizontal holds 0.3"/ft. The final drop remains in W-B-SA-N's cavity,
+# ending 9" over FX-B-SAUNA-FD through the existing 23.59" indirect-waste leg.
 ERV_CONDENSATE = [
-    # ** IT DROPS IN W-B-SA-N'S CAVITY NOW, NOT IN THE SAUNA (2026-09-09). ** The pan is at
-    # 4'-6" and RM-B-SAUNA's ceiling is at 6'-10 13/16", so this line can NEVER reach that
-    # room the way PR-B-COND does — over its ceiling. Run straight to the grate it crossed
-    # the last 1'-6" of the sauna at 3'-8", waist height, and `mep.run_in_finished_volume`
-    # called it at 39.3". There is no elevation that fixes it and no box worth 39" of drop.
-    #
-    # So the fall is taken where it is already hidden: south to y=10'-0", which is inside
-    # W-B-SA-N's stud core (y 9'-8 3/16"..10'-3 3/16"), then straight down that cavity to
-    # 9.59". The final 23.59" diagonal stays below the deck and lands the 9"
-    # air gap over FX-B-SAUNA-FD — the run's own final leg to its receptor, which is what an
-    # indirect waste to a floor drain looks like. 0.3"/ft on both horizontals.
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
-            # ** THE NORTH-SOUTH LANE IS x=2'-7", NOT 2'-11" (P2, 2026-09-19). ** At
-            # 2'-11" it ran one inch from PR-B-MAIN-DRAIN's 4" vertical at (3'-0", 15'-6"),
-            # which drops from -2'-5" to the footing — and a 4" main and a 3/4" condensate
-            # want 2 3/4" between centres. Four inches west is five, and there is nothing
-            # else in that lane at this depth: PR-B-WC2-DRAIN's riser at x=2'-4 1/2" is thirty
-            # inches higher and the basement raceway bundle is at -4'-0".
-            path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 7), ft(30, 9)),
-                  pt(ft(2, 7), ft(13, 3)),
-                  pt(ft(13), ft(13, 3)), pt(ft(13), ft(10, 1.4375)),
-                  pt(ft(13), ft(10, 1.4375)),
+            path=(pt(ft(3, 11), ft(30, 9)), pt(ft(7, 6), ft(30, 9)),
+                  pt(ft(7, 6), ft(17, 3)), pt(ft(13), ft(17, 3)),
+                  pt(ft(13), ft(10, 1.4375)), pt(ft(13), ft(10, 1.4375)),
                   pt(inch(160), inch(98.1875))),
             diameter=inch(0.75), material="pvc",
-            # Starts at 4'-6": EQ-B-ERV's four ports are on top, with 3 5/16" of ceiling
-            # above them (see plan/electrical.py). The pan is the run's high point; the fall
-            # is 0.3"/ft the whole way, and the tie-in at FX-B-SAUNA-FD is 9".
-            # The first leg is 1'-4" now rather than 1'-0", so its fall goes 0.3" -> 0.4"
-            # to hold the same 0.3"/ft; everything downstream keeps its authored invert.
-            elevations=(inch(54), inch(53.6), inch(48.45), inch(45.425),
-                        inch(44.45), inch(9.589789422), inch(9))),
+            elevations=(inch(54), inch(52.925), inch(48.875), inch(47.225),
+                        inch(45.0859375), inch(9.589789422), inch(9))),
 ]
 
 # ** THE COLLECTOR MOVED ONTO THE SERVICE BAND, AND THE HEAD CAME UP 2 5/8" (2026-09-09). **

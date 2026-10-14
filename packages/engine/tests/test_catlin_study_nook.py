@@ -41,7 +41,7 @@ def test_run_is_six_pieces_on_the_south_face_of_w_s_ss2(catlin_model_ro):
     for left, right in zip(bounds, bounds[1:], strict=False):
         assert right[0] == pytest.approx(left[2], abs=1e-4)
     assert bounds[0][0] / INCH == pytest.approx(264.0, abs=1e-3)
-    assert bounds[-1][2] / INCH == pytest.approx(343.0, abs=1e-3)
+    assert bounds[-1][2] / INCH == pytest.approx(355.0, abs=1e-3)
 
 
 def test_partition_clears_the_doorway_and_its_casing(catlin_model_ro):
@@ -63,13 +63,13 @@ def test_everything_stays_under_the_flight(catlin_model_ro):
         assert flight.contains(Polygon(objects[tag].footprint)), tag
     shelf = objects[SHELF]
     shelf_east = Polygon(shelf.footprint).bounds[2]
-    assert _stringer_underside(catlin_model_ro, shelf_east) - shelf.body_z1_m >= 6 * INCH
+    assert _stringer_underside(catlin_model_ro, shelf_east) - shelf.body_z1_m >= 4.5 * INCH
     for tag in SEATS:
         seat = objects[tag]
         east = Polygon(seat.footprint).bounds[2]
         assert seat.body_z1_m - seat.body_z0_m == pytest.approx(19.5 * INCH)
-        # Even the foot cubby keeps a usable 20" over the seat top.
-        assert _stringer_underside(catlin_model_ro, east) - seat.body_z1_m >= 20 * INCH, tag
+        # The foot cubby is low by choice (owner, 2026-10-14): feet, not a head.
+        assert _stringer_underside(catlin_model_ro, east) - seat.body_z1_m >= 14 * INCH, tag
 
 
 def test_each_front_swing_stays_inside_the_room(catlin_model_ro):
@@ -115,4 +115,4 @@ def test_cushion_rests_on_the_seat_and_clears_the_lift_up_fronts(catlin_model_ro
     # Set back from the fronts, or the lift-up doors bind on it.
     assert front - seats[0][1] == pytest.approx(0.5 * INCH, abs=1e-4)
     assert cushion.body_z0_m == pytest.approx(objects[SEATS[0]].body_z1_m)
-    assert _stringer_underside(catlin_model_ro, x1) - cushion.body_z1_m >= 18 * INCH
+    assert _stringer_underside(catlin_model_ro, x1) - cushion.body_z1_m >= 11 * INCH

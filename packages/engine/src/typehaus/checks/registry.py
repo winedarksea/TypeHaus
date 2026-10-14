@@ -379,12 +379,13 @@ class ResultTally:
     failed: int = 0
     unknown: int = 0
     not_applicable: int = 0
+    advisory: int = 0
     engineered: int = 0
 
     @property
     def total(self) -> int:
         """Encoded rules that produced a verdict. ``engineered`` is orthogonal, not a bucket."""
-        return self.passed + self.failed + self.unknown + self.not_applicable
+        return self.passed + self.failed + self.unknown + self.not_applicable + self.advisory
 
 
 @dataclass
@@ -421,6 +422,7 @@ class CheckReport:
             failed=tally[Result.FAIL],
             unknown=tally[Result.UNKNOWN],
             not_applicable=tally[Result.NOT_APPLICABLE],
+            advisory=tally[Result.ADVISORY],
             engineered=engineered,
         )
 

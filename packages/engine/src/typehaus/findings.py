@@ -25,8 +25,13 @@ class Result(Enum):
     pass; N/A is a different sentence, and one that must be **earned**. A check may only
     return it where the model positively establishes absence ("no masonry guard anywhere in
     the plan"). "No dryer is modeled" in a house that has a laundry is a real gap — UNKNOWN.
+
+    ``ADVISORY`` is a known unmet recommendation, rather than an unknown measurement or
+    a passed requirement. It is nonblocking and has its own tally, so a staged reservation
+    can expose its remaining intrusions without claiming either compliance or failure.
     """
 
+    ADVISORY = "advisory"
     PASS = "pass"
     FAIL = "fail"
     UNKNOWN = "unknown"
@@ -168,17 +173,20 @@ def by_result(cid: str, result: Result, msg: str, tags: tuple[str, ...] = (),
         return passed(cid, msg, tags, code=code)
     if result is Result.UNKNOWN:
         return unknown(cid, msg, tags, code=code, fix=fix)
+    if result is Result.ADVISORY:
+        return advisory(cid, msg, tags, result, code=code, fix=fix)
     return failed(cid, msg, tags, code=code, fix=fix)
 
 
-#: The two verdicts that leave nothing outstanding on a checklist line.
-GATE_OK = frozenset({Result.PASS, Result.NOT_APPLICABLE})
+#: Recommendations remain visible without holding a mandatory checklist gate shut.
+GATE_OK = frozenset({Result.PASS, Result.NOT_APPLICABLE, Result.ADVISORY})
 
 
 def fold_results(matched: list[Finding]) -> tuple[Result, str]:
     """Roll a set of matched findings into one verdict, and the sentence for it.
 
-    Precedence: **FAIL beats UNKNOWN beats all-N/A beats PASS.** N/A only wins when *every*
+    Precedence: **FAIL beats UNKNOWN beats ADVISORY beats all-N/A beats PASS.**
+    N/A only wins when *every*
     matched finding is N/A — one real result on the line means the requirement did apply.
     No findings at all is UNKNOWN and deliberately distinct from all-N/A: nobody looked is
     not the same claim as this does not apply here.
@@ -193,6 +201,9 @@ def fold_results(matched: list[Finding]) -> tuple[Result, str]:
     unknown = [f for f in matched if f.result is Result.UNKNOWN]
     if unknown:
         return Result.UNKNOWN, unknown[0].message
+    recommended = [f for f in matched if f.result is Result.ADVISORY]
+    if recommended:
+        return Result.ADVISORY, recommended[0].message
     if not matched:
         return Result.UNKNOWN, "no evaluable model input"
     na = [f for f in matched if f.result is Result.NOT_APPLICABLE]

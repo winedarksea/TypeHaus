@@ -223,7 +223,7 @@ export interface Prerequisite {
 
 export interface InspectionCheck {
   check_id: string;
-  result: "pass" | "fail" | "unknown" | "not_applicable";
+  result: "pass" | "fail" | "unknown" | "not_applicable" | "advisory";
   detail: string;
   element_tags: string[];
 }

@@ -106,5 +106,5 @@ def _print_findings(findings: list, plain: bool | None = None) -> None:
         return
     for f in findings:
         color = "red" if f.severity is Severity.ERROR else (
-            "yellow" if f.result is Result.FAIL else "dim")
+            "yellow" if f.result in (Result.FAIL, Result.ADVISORY) else "dim")
         console.print(f"[{color}]{f.render()}[/{color}]", soft_wrap=True)

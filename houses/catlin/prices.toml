@@ -2443,7 +2443,7 @@
 # plywood allowance to clear the enlarged winder flight. Covers: FÖRBÄTTRA 205.678.36
 # $127, 405.678.35 $53 (cut).
 "FURN-S-STUDY-NOOK-SEAT-24" = { material = { low = 320, high = 400 }, labour = { low = 80, high = 200 } }  # 3 e5 ea — 3 Study 2, 2 RM-M-BED reading corner
-"FURN-S-STUDY-NOOK-SHELF-6" = { material = { low = 230, high = 290 }, labour = { low = 80, high = 200 } }  # 1 ea; custom plywood bookshelf allowance
+"FURN-S-STUDY-NOOK-SHELF-18" = { material = { low = 230, high = 290 }, labour = { low = 80, high = 200 } }  # 1 ea; SEKTION 18x24x80 frame + shelves
 "FT-S-STUDY-NOOK-COVER-80" = { material = { low = 127, high = 145 }, labour = { low = 20, high = 60 } }  # 1 ea
 "FT-S-STUDY-NOOK-SEAT-END" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 50 } }  # 1 ea, site-cut
 # Custom 72x24x3 HR-foam cushion, welted performance-fabric cover; a quote, not a listing.

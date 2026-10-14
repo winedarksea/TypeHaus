@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typehaus.resolve.clear_zones import ResolvedClearZone
 from typehaus.resolve.model import (
     BoundaryCondition,
     FramedMember,
@@ -21,7 +22,7 @@ from typehaus.resolve.pipeline import resolve, resolve_preview
 
 __all__ = [
     "resolve", "resolve_preview", "ResolvedModel", "ResolvedWall", "ResolvedLayer",
-    "ResolvedOpening",
+    "ResolvedOpening", "ResolvedClearZone",
     "ResolvedRoom", "ResolvedSolid", "ResolvedRoof", "ResolvedStair", "ResolvedFloorHeat",
     "ResolvedCanvasObject", "FramedMember",
     "BoundaryCondition", "StackEdge",

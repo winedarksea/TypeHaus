@@ -162,7 +162,7 @@ def test_the_broan_carries_the_whole_published_curve(catlin_plan) -> None:
     assert broan.fan_curve_max_static_in_wg == pytest.approx(1.3)
 
 
-def test_the_governing_side_is_supply_via_the_play_radial(catlin_model_ro) -> None:
+def test_the_governing_side_is_extract_via_the_sauna_radial(catlin_model_ro) -> None:
     """Note §6, and the governing SIDE swapped THREE times on 2026-09-15.
 
     The machine's curve is an external static PER SIDE, so what governs is the worse of two
@@ -189,8 +189,8 @@ def test_the_governing_side_is_supply_via_the_play_radial(catlin_model_ro) -> No
     30.48 on 8, 0.0141 -> 0.0347 (note §3). Delivered flow is 207.2 cfm either way.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "supply side via DU-B-ERV-R-PLAY" in message
-    assert "extract side" not in message
+    assert "extract side via DU-B-ERV-R-SAUNA-EXH" in message
+    assert "supply side" not in message
 
 
 def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> None:
@@ -248,7 +248,10 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     elbows, 0.1338 -> 0.1685 (§6). Delivered 206.6 cfm, which still reads as 207.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "0.371 in. w.g." in message
+    # Dry-fire revision: the hand-worked addendum adds two riser elbows and one
+    # return elbow; extract now governs at 0.3736, delivering 206.53 cfm.
+    assert "extract side" in message
+    assert "0.374 in. w.g." in message
     assert "delivering 207 cfm" in message
 
 

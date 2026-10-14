@@ -73,6 +73,12 @@ SLAB_STUBS = [
     SleevePenetration(uid="CBP906AAAA", tag="SP-B-SAUNA-FD", host_ref="SL-B-FLOOR",
                       position=pt(ft(13, 6), inch(98.1875)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-FD"),
+    # Kitchen stack west of the dry-fire lane and south of FT-B-N4. Seal both
+    # the sleeve-to-pipe annulus and sleeve-to-slab joint to the radon membrane.
+    SleevePenetration(uid="CKSLAB0001", tag="SP-B-SLAB-KITCH", host_ref="SL-B-FLOOR",
+                      position=pt(inch(32.5), inch(406.5)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3),
+                      seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
     # Where the ceiling collector turns down to become the under-slab building drain; 4",
     # matching the building drain. `mep.sleeve_coverage` holds the crossing.
     SleevePenetration(uid="CBP902AAAA", tag="SP-B-SLAB-MAIN", host_ref="SL-B-FLOOR",

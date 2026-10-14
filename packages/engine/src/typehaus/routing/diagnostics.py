@@ -66,6 +66,7 @@ class Mobility(str, Enum):
 #: chose and a kind is what the resolver built.
 _KIND_MOBILITY = {
     "opening": Mobility.FIXED,
+    "clear_zone": Mobility.FIXED,
     "void": Mobility.FIXED,
     "concrete": Mobility.FIXED,
     # An open-web truss's WEBS, where the deck states its fabricator's panel layout

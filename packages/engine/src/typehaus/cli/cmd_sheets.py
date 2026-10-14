@@ -15,7 +15,7 @@ import typer
 from rich.table import Table
 
 from typehaus.cli._shared import _detail, _print_findings, _resolve_house, app, console
-from typehaus.findings import Result
+from typehaus.findings import GATE_OK
 
 
 @app.command()
@@ -208,8 +208,7 @@ def print_sheets(
         console.print(
             "[red]permit print blocked: declared checklist has failures or unknowns[/red]")
         for item in checklist.items:
-            if item.blocking and item.result is not Result.NOT_APPLICABLE \
-                    and item.result is not Result.PASS:
+            if item.blocking and item.result not in GATE_OK:
                 console.print(f"  {item.label}: {item.detail}")
         raise typer.Exit(1)
     # The FINAL gate, and it is a second one: ``checklist.ok`` above is the draft gate and

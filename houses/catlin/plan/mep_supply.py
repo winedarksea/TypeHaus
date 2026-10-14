@@ -208,32 +208,21 @@ SUPPLY = [
                     # 1 1/4" trunk that carries 64 in Table 610.4's 46-60 psi column, so the
                     # tee costs nothing in size.
                     "FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
-    # ** THE FIRST POINT IS THE MOVED HOT PORT (2026-10-01). ** The top ports remain
-    # 8" apart; the heater is turned so hot is west and cold east. Against W-B-STR3 at
-    # (8'-9 1/8", 29'-6"), the trunk leaves west at the hot port's low connection elevation,
-    # beneath the ERV gym drop, then rises west of the return trunk and exhaust manifold. At
-    # 7'-4" it runs south to y=25'-6", east to x=7'-6", then south to the suite connection.
-    # The low band stays below the bath cold pair and 6" clear of joist-0-015's flange plane;
-    # the former y=20'-0" hot riser station clips that flange.
-    # The connection test grades the first point against EQ-B-WH.hot as resolved, rather than a
-    # copied coordinate.
+    # The heater connection and downstream branch tees stay fixed. North of the lane,
+    # the low jog reaches x83" before rising to 83 7/16" AFF; its jacket stays below
+    # the extract plenum and east of its riser and BENCH collar. The y310" jog returns
+    # to the former south approach, crossing the lane above 81 7/8" clear.
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
-            # ** IT FALLS WITH THE KITCHEN DRAIN, ABOUT 3" UNDER IT (2026-10-08). ** The x=4'-8"
-            # leg is 2" off PR-B-KITCH-DRAIN's x=4'-6" fall line, so it follows that line down
-            # (0.71"/ft) through the gaps the ERV ducts leave at y=27'-28'6" (RISER-EXH -27 1/2",
-            # SAUNA-EXH, BENCH), dips to -26" to pass under PR-M-S-BATH1-DRAIN at x=5'-0", and
-            # rises to the unchanged tee. The x=7'-6" leg hangs at -25" (7'-0 7/16" clear) to
-            # pass under PR-B-LSINK-DRAIN. The tees at (7'-6", 25'-6") and (6'-6", 17'-0") hold.
             path=(pt(ft(8, 5.125), ft(29, 6)), pt(ft(8, 5.125), ft(29, 6)),
-                  pt(ft(4, 8), ft(29, 6)), pt(ft(4, 8), ft(29, 6)),
-                  pt(ft(4, 8), ft(26, 6)), pt(ft(4, 8), ft(25, 6)),
+                  pt(inch(83), ft(29, 6)), pt(inch(83), ft(29, 6)),
+                  pt(inch(83), inch(310)), pt(ft(5, 4), inch(310)),
                   pt(ft(5, 4), ft(25, 6)), pt(ft(7, 6), ft(25, 6)),
                   pt(ft(7, 6), ft(22)), pt(ft(7, 6), ft(17)),
                   pt(ft(6, 6), ft(17)), pt(ft(6, 6), ft(17)),
                   pt(ft(6, 6), ft(15, 6))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(5, 8), ft(5, 9.5), ft(5, 9.5), ft(7, 3.625),
-                        ft(7, 1.5), ft(6, 11.4375), ft(6, 11.4375), ft(7, 4),
+            elevations=(ft(5, 8), ft(5, 9.5), ft(5, 9.5), inch(83.4375),
+                        inch(83.4375), inch(83.4375), inch(83.4375), ft(7, 4),
                         ft(7, 0.4375), ft(7, 0.4375), ft(7, 0.4375),
                         ft(8, 1.4375), ft(8, 1.4375)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",

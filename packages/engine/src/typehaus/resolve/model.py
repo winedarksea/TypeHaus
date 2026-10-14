@@ -20,6 +20,7 @@ from typehaus.resolve.rebar.records import ResolvedRebarSet
 
 if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-only
     from typehaus.model.placeables import Mount
+    from typehaus.resolve.clear_zones import ResolvedClearZone
     from typehaus.resolve.floor_ends import FloorEnds
     from typehaus.resolve.floor_tilt import DeckPlane
     from typehaus.resolve.geometry_ir import GeometryModel, GMesh
@@ -1477,6 +1478,7 @@ class ResolvedPlant:
 @dataclass
 class ResolvedModel:
     plan: PlanModel
+    clear_zones: list[ResolvedClearZone] = field(default_factory=list)
     walls: list[ResolvedWall] = field(default_factory=list)
     junctions: list[ResolvedJunction] = field(default_factory=list)
     openings: list[ResolvedOpening] = field(default_factory=list)
@@ -1555,7 +1557,8 @@ class ResolvedModel:
         resolve stage has finished mutating ``self`` — see the field's docstring."""
         index: dict[str, object] = {}
         for collection in (
-            self.walls, self.openings, self.solids, self.construction_returns, self.roofs,
+            self.clear_zones, self.walls, self.openings, self.solids, self.construction_returns,
+            self.roofs,
             self.stairs, self.floors, self.soffits, self.braces, self.floor_heat, self.rooms,
             self.panelings, self.window_stools, self.shelf_banks, self.countertops,
             self.base_runs, self.door_casings,

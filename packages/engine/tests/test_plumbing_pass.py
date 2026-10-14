@@ -44,6 +44,52 @@ def test_pipe_runs_emit_viewer_solids_by_system(catlin_model):
     assert {"pipe_drain", "pipe_water_cold", "pipe_water_hot", "pipe_vent"} <= categories
 
 
+def test_dry_fire_collector_and_access_fittings_clear_eighty_and_a_half_inches(catlin_model_ro):
+    """Raising only the pipe would leave its physical cleanout in the shooting lane."""
+    from shapely.geometry import box
+    from typehaus.quantities import M_PER_IN
+    from typehaus.resolve.mep_envelopes import envelopes as run_envelopes
+    from typehaus.resolve.room_floor import room_floor_elevation
+
+    floor = room_floor_elevation(catlin_model_ro, next(r for r in catlin_model_ro.rooms if r.tag == "RM-B-WORKSHOP"))
+    lane = box(40.5 * M_PER_IN, 13 * M_PER_IN, 68 * M_PER_IN, 352 * M_PER_IN)
+    main = next(run for run in catlin_model_ro.pipe_runs if run.tag == "PR-B-MAIN-DRAIN")
+    envelopes = [prism for prism in next(e for e in run_envelopes(catlin_model_ro) if e.tag == main.tag).prisms
+                 if prism.footprint.intersection(lane).area > 0]
+    assert envelopes
+    assert min(prism.z0_m for prism in envelopes) >= floor + 80.5 * M_PER_IN
+    fittings = [solid for solid in catlin_model_ro.solids
+                if solid.tag.startswith("CO-B-COLLECTOR")]
+    assert fittings
+    assert min(solid.z0_m for solid in fittings) >= floor + 80.5 * M_PER_IN
+
+
+def test_erv_condensate_stays_outside_the_dry_fire_lane(catlin_model_ro):
+    from shapely.geometry import box
+    from typehaus.quantities import M_PER_IN
+    from typehaus.resolve.mep_envelopes import envelopes as run_envelopes
+
+    lane = box(40.5 * M_PER_IN, 13 * M_PER_IN, 68 * M_PER_IN, 352 * M_PER_IN)
+    condensate = next(run for run in catlin_model_ro.pipe_runs if run.tag == "PR-B-ERV-COND")
+    assert all(prism.footprint.intersection(lane).area == 0
+               for prism in next(e for e in run_envelopes(catlin_model_ro) if e.tag == condensate.tag).prisms)
+
+
+def test_confirmed_hydrant_backflow_station_sits_on_the_entry_riser(catlin_model_ro):
+    from typehaus.quantities import M_PER_IN
+    from typehaus.resolve.mep_queries import pipe_elevations_at
+    from typehaus.resolve.room_floor import room_floor_elevation
+
+    valve = next(item for item in catlin_model_ro.pipe_accessories if item.tag == "PA-G-HYD-BFP")
+    riser = next(run for run in catlin_model_ro.pipe_runs if run.tag == valve.pipe_ref)
+    floor = room_floor_elevation(catlin_model_ro, next(r for r in catlin_model_ro.rooms if r.tag == "RM-B-STAIR"))
+    assert valve.pipe_ref == "PR-B-CW-TRUNK"
+    assert valve.position == pytest.approx((132 * M_PER_IN, 426 * M_PER_IN))
+    assert (valve.z_m - floor) / M_PER_IN == pytest.approx(36)
+    heights = pipe_elevations_at(riser, valve.position)
+    assert min(heights) <= valve.z_m <= max(heights)
+
+
 # --- wet-wall occupancy ---------------------------------------------------------------
 
 def test_wet_wall_occupancy_passes_for_the_bath1_risers(code_report):

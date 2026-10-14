@@ -387,6 +387,29 @@ flow to about 195 cfm, under MN's 205. **Rigid pipe here is not a refinement, it
 the system legal.** `DUCT-T-FLEX-6` stays in the catalog, named by no run, so this comparison
 reads off typed data.
 
+### Dry-fire clearance revision, 2026-10-13
+
+The extract riser keeps its low north–south leg below the sauna-supply radial. At
+(26.9", 350") it rises 1 9/16" before crossing the lane at 83.5" AFF, leaving 80.5"
+under its bare 6" section. This adds two elbows, and no developed length: the new
+1 9/16" rise is taken off the final rise into the extract plenum. The bench and sauna
+extract crossings rise to 82.5" centres (80.5" underside); their initial drops shorten
+by exactly the amount their terminal drops grow, so their lengths and elbow counts
+stay unchanged.
+
+Independent arithmetic using §2: at 210 cfm in 6" galvanized, f≈0.0225,
+P_v≈0.07131, and D=0.5 ft, the two extra riser elbows cost
+0.0225 × (2 × 4.5 / 0.5) × 0.07131 = **0.0289 in. w.g.**
+The return trunk takes the same 59.5" of horizontal travel and 10.4" of drop, but
+turns west at y357" after staying east at x74". Its elbow count rises from two to
+three: another **0.0144 in. w.g.**, with no added developed length.
+Using the October sauna revision's extract total of approximately 0.3303 gives
+**0.3303 + 0.0289 + 0.0144 = 0.3736 in. w.g.** Extract now governs over the
+unchanged 0.3713 supply column. The fan curve gives
+208 − (0.3736−0.3) × 20 = **206.53 cfm**, above the 205 cfm gate.
+The engine rounds this to 0.374 in. w.g. and 207 cfm. This budget covers the
+retained machine arrangement, not the unqualified full-length relocation.
+
 ## 7. Broan's own instruction, and what obeying it would cost
 
 The B210E75RT installation manual carries one distribution instruction: **above 200 cfm with

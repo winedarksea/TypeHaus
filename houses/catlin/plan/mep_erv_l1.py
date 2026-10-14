@@ -17,8 +17,8 @@
 # "210 at 0.2"" and "206 at 0.4"" were never two claims; they are two stations on one curve,
 # and `EQ-T-BROAN-B210E75RT.fan_curve` carries all ten published points (214 @ 0.1" down to
 # 176 @ 1.2", ceiling 1.3" where the core deforms). `mep.erv_static_budget` computes what
-# THIS duct system costs and reads the curve at it: **0.371" w.g. worst path, 207 cfm
-# delivered**, the worst path being DU-B-ERV-R-PLAY on the SUPPLY side. The oracle is
+# THIS duct system costs and reads the curve at it: **0.374" w.g. worst path, 207 cfm
+# delivered**, via DU-B-ERV-R-SAUNA-EXH on the EXTRACT side. The oracle is
 # notes/erv_static_budget.md.
 #
 # ** THE 8" UPSIZE BROAN'S MANUAL ASKS FOR ABOVE 200 cfm IS NOW OBEYED IN FULL. ** Both
@@ -213,17 +213,13 @@ DUCTS_ERV_BASEMENT = [
             elevations=(inch(75.6), inch(75.6), inch(75.6), ft(7, 2)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
-    # THE RETURN TRUNK NO LONGER HAS TO DODGE A RADIAL LANE. It used to leave the plenum's
-    # east end, drop, cross UNDER the x=6'-6" lane that DU-B-ERV-R-GYM and -SAUNA-SUP
-    # shared, and come back west at y=29'-9" — a detour around two ducts that are not there
-    # any more. It now drops out of the plenum's underside at x=7'-4 1/2" and runs the
-    # y=28'-6" line straight west at the machine's own port level, 7" under
-    # DU-ERV-RISER-EXH's approach on the same line and three inches under the deepest
-    # collar drop above it.
+    # Keep the return below the collars, but east of the clear lane until y357".
+    # Its westward leg clears the lane's north end by 2" at the duct envelope.
     DuctRun(uid="6BTCWW2S1V", tag="DU-B-ERV-RET-TRUNK", system=DuctSystem.RETURN,
             path=(pt(ft(7, 4.5), ft(28, 6)), pt(ft(7, 4.5), ft(28, 6)),
-                  pt(ft(3, 8), ft(28, 6)), pt(ft(3, 8), ft(29, 9))),
-            elevations=(ft(7, 2), inch(75.6), inch(75.6), inch(75.6)),
+                  pt(inch(74), ft(28, 6)), pt(inch(74), inch(357)),
+                  pt(ft(3, 8), ft(29, 9))),
+            elevations=(ft(7, 2), inch(75.6), inch(75.6), inch(75.6), inch(75.6)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
     # ** NEITHER RADIAL CROSSES ST-B2M ANY MORE (2026-09-22). ** Both used to ride the
@@ -301,7 +297,7 @@ DUCTS_ERV_BASEMENT = [
     DuctRun(uid="MTVYDDP43W", tag="DU-B-ERV-R-BENCH", system=DuctSystem.RETURN,
             path=(pt(ft(6, 6), ft(28, 2)), pt(ft(6, 6), ft(27)), pt(ft(6, 6), ft(27)),
                   pt(ft(2), ft(27)), pt(ft(2), ft(8, 6)), pt(ft(2), ft(8, 6))),
-            elevations=(ft(7, 6), ft(7, 6), inch(81.5), inch(81.5), inch(81.5), ft(6, 2)),
+            elevations=(ft(7, 6), ft(7, 6), inch(82.5), inch(82.5), inch(82.5), ft(6, 2)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=6),
     # The basement bath's extract leaves the plenum's EAST end and drops 1 1/4" off its
     # collar, then south on x=8'-0" and east on y=24'-0" to a sidewall grille in W-B-STR3B
@@ -328,7 +324,7 @@ DUCTS_ERV_BASEMENT = [
                   pt(ft(1, 0.5), ft(28)), pt(ft(1, 0.5), inch(40)),
                   pt(inch(116.5625), inch(40)), pt(inch(116.5625), inch(40)),
                   pt(inch(116.5625), ft(3, 2)), pt(inch(122), ft(3, 2))),
-            elevations=(ft(7, 6), ft(7, 6), inch(82), inch(82), inch(82), inch(82),
+            elevations=(ft(7, 6), ft(7, 6), inch(82.5), inch(82.5), inch(82.5), inch(82.5),
                         inch(4), inch(4), inch(4)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
 ]

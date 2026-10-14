@@ -17,6 +17,7 @@ from typehaus.model.plan import PlanModel
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.accessories import resolve_accessories
 from typehaus.resolve.ceilings import resolve_ceilings
+from typehaus.resolve.clear_zones import resolve_clear_zones
 from typehaus.resolve.construction import apply_construction_rules
 from typehaus.resolve.drainage import resolve_drainage
 from typehaus.resolve.envelope import resolve_columns_and_beams, resolve_envelope_geometry
@@ -165,6 +166,8 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_rooms(plan, model))
         # After resolve_rooms: needs each room's clear face to hang a ceiling under.
         resolve_ceilings(plan, model)
+    with _stage("clear_zones"):
+        findings.extend(resolve_clear_zones(model))
     with _stage("floor_opening_pockets"):
         # After floors, walls and rooms: a pocket must be physically bounded on the
         # adjacent deck and may not silently consume a room seed or stair arrival.

@@ -264,16 +264,18 @@ SUPPLY_DEVICES_GARAGE = [
     # pressure simultaneously, which is why the code allows it and the house keeps it
     # (→ notes/garage_hydrant.md).
     #
-    # Placed on the branch, not the fixture, because that's where it's reachable: the run is
-    # exposed across the heated basement, 3'-0" over the basement floor — head height, beside
-    # PA-B-MAIN-SHUTOFF. No elevation authored; a check valve on a pipe sits on the pipe.
+    # Owner-confirmed 2026-10-13: reachable beside the main shutoff on the basement
+    # entry riser. Filed on main, so -73 7/16" project is 36" above the finished slab.
+    # PR-G-HYDRANT-CW still branches upstream underground; this placement fixes geometry
+    # but does not prove hydrant protection. Resolve branch order before installation.
     #
     # Dual check, matching PA-B-BFP-BATH/SAUNA, since this is low-hazard (car-wash) use. An
     # AHJ treating the weep as a health hazard would want an RPZ instead — ask, don't build
     # ahead of the answer.
     PipeAccessory(uid="R7QB4XKD2M", tag="PA-G-HYD-BFP",
-                  kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-G-HYDRANT-CW",
-                  position=pt(ft(5), ft(3)), room="RM-B-FURNACE", accessible=True,
+                  kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-B-CW-TRUNK",
+                  position=pt(ft(11), ft(35, 6)), elevation=inch(-73.4375),
+                  room="RM-B-STAIR", accessible=True,
                   model='3/4" dual-check backflow preventer, testable',
                   serves=("FX-G-HYDRANT",)),
 ]

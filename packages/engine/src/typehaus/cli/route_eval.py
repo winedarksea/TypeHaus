@@ -114,9 +114,11 @@ def _evaluate_one(directory: Path, model: ResolvedModel, proposal: RouteProposal
 
     seen = {_key(f): f for f in findings}
     result.introduced = [f for key, f in seen.items()
-                         if key not in baseline and f.result.value in ("fail", "unknown")]
+                         if key not in baseline and f.result.value in
+                         ("fail", "unknown", "advisory")]
     result.resolved = [f for key, f in baseline.items()
-                       if key not in seen and f.result.value in ("fail", "unknown")]
+                       if key not in seen and f.result.value in
+                       ("fail", "unknown", "advisory")]
     result.coverage = _coverage_gaps(proposal, findings)
     return result
 
@@ -146,7 +148,7 @@ def candidate_element(model: ResolvedModel, proposal: RouteProposal) -> tuple[st
             tag=proposal.tag, system=PipeSystem(proposal.system), path=path,
             diameter=_len(proposal.diameter_m),
             elevations=tuple(_len(z - datum) for _x, _y, z in proposal.points),
-            serves=proposal.serves)
+            serves=proposal.serves, **proposal.echo)
     elif proposal.kind == "duct":
         section: dict[str, Any] = ({"width": _len(proposal.width_m),
                                     "depth": _len(proposal.depth_m)}
@@ -156,7 +158,8 @@ def candidate_element(model: ResolvedModel, proposal: RouteProposal) -> tuple[st
             tag=proposal.tag, system=DuctSystem(proposal.system), path=path, **section,
             routing=DuctRouting(proposal.routing or "exposed"),
             floor_ref=proposal.floor_ref, soffit_ref=proposal.soffit_ref,
-            elevations=tuple(_len(z - datum) for _x, _y, z in proposal.points))
+            elevations=tuple(_len(z - datum) for _x, _y, z in proposal.points),
+            **proposal.echo)
     else:
         # **The WHOLE raceway, with a z at every vertex** (2026-09-19). This used to grade
         # the legalised FIRST LEG only — a raceway was a plan polyline plus two end
@@ -174,7 +177,8 @@ def candidate_element(model: ResolvedModel, proposal: RouteProposal) -> tuple[st
             path=tuple(Point2D(_len(x), _len(y)) for x, y, _z in proposal.points),
             trade_size=_len(proposal.diameter_m),
             elevations=tuple(_len(z) for _x, _y, z in proposal.points),
-            service=Service(proposal.system) if proposal.system else None)
+            service=Service(proposal.system) if proposal.system else None,
+            **proposal.echo)
 
     return storey, element
 
@@ -242,9 +246,11 @@ def evaluate_network(directory: Path, model: ResolvedModel,
 
     seen = {_key(f): f for f in findings}
     result.introduced = [f for key, f in seen.items()
-                         if key not in baseline and f.result.value in ("fail", "unknown")]
+                         if key not in baseline and f.result.value in
+                         ("fail", "unknown", "advisory")]
     result.resolved = [f for key, f in baseline.items()
-                       if key not in seen and f.result.value in ("fail", "unknown")]
+                       if key not in seen and f.result.value in
+                       ("fail", "unknown", "advisory")]
     result.coverage = sorted({gap for proposal in proposals
                               for gap in _coverage_gaps(proposal, findings)})
     return result

@@ -189,14 +189,19 @@ DUCTS_ERV_RISERS = [
             # old -27" so that the return trunk, which shares this y=28'-6" line at the
             # machine's own -33 27/32", keeps 6 3/8" between the two envelopes; 78 15/16" of
             # headroom under it, still over R305.1.1's 76" basement projection floor.
+            # The dry-fire lane lifts only the south approach to 83.5" AFF: rise at
+            # y350", west of the lane and south of the sauna supply crossing. The
+            # northern low tier stays below that radial; two extra elbows are budgeted.
             # Re-stationed at (2'-2.9", 33'-10.8") on 2026-09-23 — the east end of the chase's
             # south band, so DU-M-ERV-EXH-FEED arrives from the east with nothing between.
             path=(pt(ft(4, 2), ft(34, 6)), pt(inch(26.9), ft(34, 6)),
                   pt(inch(26.9), inch(406.8)), pt(inch(26.9), inch(406.8)),
+                  pt(inch(26.9), inch(350)), pt(inch(26.9), inch(350)),
                   pt(inch(26.9), ft(28, 6)), pt(ft(6, 1.5), ft(28, 6)),
                   pt(ft(6, 1.5), ft(28, 6))),
             elevations=(inch(244), inch(244), inch(244), inch(-27.5),
-                        inch(-27.5), inch(-27.5), inch(-23.4375)),
+                        inch(-27.5), inch(-25.9375), inch(-25.9375),
+                        inch(-25.9375), inch(-23.4375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
     # The outdoor side, which did not exist at all before this pass. Both legs carry

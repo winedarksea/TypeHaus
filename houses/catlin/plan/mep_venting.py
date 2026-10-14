@@ -433,9 +433,9 @@ VENT_BRANCHES_BASEMENT = [
             path=(pt(ft(10), ft(19, 3)), pt(ft(10), ft(19, 3)),
                   pt(ft(9), ft(19, 3))),
             diameter=inch(1.5), material="pvc",
-            # The one-foot west leg reaches the existing sauna vent at 7'-9 1/4". Its
-            # 1.699"/ft rise keeps the riser head below W-B-STR2's top plate.
-            elevations=(ft(1, 3.4375), inch(91.551), ft(7, 9.25)),
+            # Follow the sauna vent's raised y=19'-0" station, preserving drainage
+            # back to the fixtures and keeping the riser below W-B-STR2's top plate.
+            elevations=(ft(1, 3.4375), inch(91.551), inch(93.7678)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-3", 8'-2 3/16") — inside
     # W-B-CS's 3 1/2" liner build-up, in the pan's own east wall, on the pan-and-floor-drain
@@ -466,11 +466,12 @@ VENT_BRANCHES_BASEMENT = [
             # it by 1.85". A vent has to be graded to drain back to the drainage pipe
             # (P3104.1) so it cannot dip under one thing and climb over the next; what it
             # can do is take its rise EARLY. It now gains 3 3/4" in the first 8'-6" and
-            # coasts the remaining 15'-6", which clears the laundry drain by a third of an
-            # inch and — the part worth noting — buys back half an inch over
+            # coasts the remaining 15'-6". The y=19' point rose another 1/2" with the
+            # dry-fire collector lift, keeping clear of the raised laundry drain. The
+            # north profile retains the half-inch clearance over
             # DU-B-ERV-R-PLAY at y=30'-6", where D3 left it 2 1/2 thousandths of an inch.
             elevations=(ft(0, 3.4375), ft(7, 1.4375), ft(7, 3.4375), ft(7, 5.4375),
-                        ft(7, 9.25), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
+                        inch(93.75), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
                         ft(8, 0.0375), ft(8, 0.1375)),
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
 ]

@@ -493,10 +493,20 @@ required above the header." Three things follow in the engine:
 | run | before (2-2x8) | after (flat 2x8) |
 |---|---|---|
 | `DU-B-ERV-R-SAUNA-EXH` | 3.25" notch, UNKNOWN | x 45.00", band -25.44"..-21.44": **cuts nothing**, 2.50" over the nailer, 5.50" off the west king |
-| `PR-B-KITCH-DRAIN` | 2.38" bore, UNKNOWN | x 54.00", band -28.40"..-26.02": **0.46" notch** off the top, 1.04" left — PASS |
-| `PR-M-S-BATH1-DRAIN` | 3.50" bore, UNKNOWN | x 60.00" (straight drop since 2026-10-08): **0.70" notch** off the top, 0.80" left — PASS |
-| `PR-B-MAIN-DRAIN` | 4.50" bore, UNKNOWN | x 72.00", band -27.29"..-22.79": **cuts nothing**, 0.65" over the nailer, 2.25" off the east king |
+| `PR-B-KITCH-DRAIN` | 2.38" bore, UNKNOWN | x 54.00", band -26.29"..-23.91": **cuts nothing**, 1.65" over the nailer |
+| `PR-M-S-BATH1-DRAIN` | 3.50" bore, UNKNOWN | x 60.00", band -26.51"..-23.01": **cuts nothing**, 1.43" over the nailer |
+| `PR-B-MAIN-DRAIN` | 4.50" bore, UNKNOWN | x 72.00", band -25.41"..-20.91": **cuts nothing**, 2.53" over the nailer, 2.25" off the east king |
 
 `PR-B-MAIN-DRAIN` never meets R602.6 at all: with no cripple in the head there is no stud
 to measure its 4.50" against (a non-bearing 2x8's limit is 60% x 7.25" = 4.35", and it
-would have been 0.15" over). No lane shift; `mep.run_through_header`: four UNKNOWNs -> two PASSes.
+would have been 0.15" over). No lane shift was needed.
+
+**Dry-fire collector lift, 2026-10-13.** The y198" collector and CO-B-COLLECTOR rose
+2 1/2"; the x36" underside is now 80.8875" AFF. Its ceiling branches were regraded
+to arrive above the raised barrel. The kitchen drain retains its former northern
+profile through y312", then falls 0.474"/ft into the collector; flattening the entire
+leg hit CD-B-GARAGE and CD-B-DATA-MEDIA. The table above records the resulting current
+crossings. Both former flat-header notches now clear the nailer; the four crossings
+cut no header at all. The condensate no longer uses the door's west-jamb bay: it passes
+W-B-CW3 at x90", between the x81" and x97" studs. D-B-FURN remains at x39" without
+a condensate constraint.
