@@ -192,6 +192,9 @@ MN_2020 = JurisdictionProfile(
                         "code.R311_7_6_stair_arrival_floor",
                         # ...and 36" of it past the top nosing, not only a footfall.
                         "code.R311_7_6_stair_head_landing",
+                        # ...or, with no opening, the exception: a door at the head that
+                        # does not swing over the stairs (stair_arrival.py).
+                        "code.R311_7_6_door_at_stair_head",
                         # The going the resolver was asked for is not the depth it built:
                         # a head riser in front of its framing made every last tread 3/4"
                         # short. Measured nosing to nosing, landings and floors included.

@@ -13,6 +13,8 @@ from typehaus import (
     DiaphragmDelivery,
     DiaphragmSpec,
     CollectorBlocking,
+    Connector,
+    ConnectorKind,
     JointNailing,
     PanelEdgeBlocking,
     Door,
@@ -259,12 +261,12 @@ OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 # 8'-0". It was 2'-6" (RO 8'-6"..11'-6", centre 10'-0") from 2026-09-07 to 2026-09-11 and
 # 6'-6" off a wall at x=0'-0" before that — every one of those stations a 24" multiple,
 # under a "must sit on the stud module" rule this file invented and the engine never had.
-# What the corner buys: the interior landing and stair sit against `W-G-W`, so the stair's
-# handrail is wall-mounted on ordinary blocking and the landing's west guard is gone; the
+# What the corner buys: the stair sits against `W-G-W`, so its handrail is wall-mounted on
+# ordinary blocking; the
 # exterior landing covers both door patches at 3'-7" instead of 5'-6".
 #
 # ** MOVING THIS CONSTANT MOVES MORE THAN A DOOR. ** params/north_entry_frame.py derives the
-# interior landing, both carriers, their posts and the exterior landing's east edge from it
+# east edge beam BM-BW-FE and the exterior landing's east edge from it
 # (SERVICE_RO_WEST_FT / SERVICE_RO_EAST_FT); the stair, the handrail, the two backing bands
 # in plan/backing.py, the three switch/light stations in plan/lighting.py and the
 # SL-D-NORTH-BRIDGE cut in plan/views.py are LITERALS that follow it by hand. The stem under
@@ -305,8 +307,16 @@ OPENINGS = [
     # **This door reaches up to the breezeway, not down to the slab.** The deck is the
     # landing outside this door (code.R311_3_exterior_landing, and the house rule that both
     # breezeway doors open onto it at one level), so the threshold has to stay at 0'-0"
-    # absolute: +1'-0" over a garage storey that sits at -1'-0". Inside, ST-G-STEPS takes
-    # the 2'-10" down to the slab.
+    # absolute: +1'-0" over a garage storey that sits at -1'-0". Inside, ST-G-SERVICE rises
+    # the 2'-10" from the slab straight to the threshold.
+    #
+    # ** IT SWINGS OUT, HINGED ON THE WEST JAMB (owner, 2026-10-13). ** IRC R311.7.6's exception
+    # waives the top landing of an interior flight, garage stairs named, provided no door
+    # swings over the stairs; MN 1309 adopts the 2018 IRC (notes/garage_service_door_outswing.md).
+    # `flip_swing` puts the sweep on the deck; `flip_hinge` hangs it on the west jamb, so the
+    # open leaf parks along W-BW-SCREEN at x=6'-7" and leaves the tier approach and D-M-ENTRY's
+    # sweep (y <= 36'-0") clear. The frame's own sill stands on the deck at 0'-0", so the leaf
+    # clears the boards by the sill and nothing re-rises. CLOSER WITH HOLD-OPEN: AN-G-SERVICE-DOOR.
     #
     # The head lands 8" under the top plate — 6'-8" of door in a wall whose plate is at
     # +7'-4" — which is why this opening now names a header the way the overhead door does.
@@ -319,6 +329,7 @@ OPENINGS = [
     # dropped below it (IRC R602.7.2 lets the header take the top plate's place).
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING36",
          position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(1),
+         flip_hinge=True, flip_swing=True,
          header_spec='3-ply 5.5" LVL'),
     # This 8' wall (vs. the house's 10') is why the 27" family is 36" tall: a 60" height at
     # this 42" sill would push the header above the top plate.
@@ -707,9 +718,9 @@ ALARMS = [
 #
 # Five risers from the garage slab at -2'-10" up to D-G-SERVICE's threshold at 0'-0", the
 # same 5 x 6.8" risers on 11" treads at 3'-0" wide that five concrete `Slab`s used to be
-# (SL-G-STEP-0..4 in params/foundations.py). SL-G-STEP-0, the 3'-0" landing at the
-# threshold, is still a Slab and belongs there — a landing is a floor, not a flight. The
-# four treads below it are this.
+# (SL-G-STEP-0..4 in params/foundations.py). ** NO TOP LANDING SINCE 2026-10-13. ** The door
+# swings out, so R311.7.6's exception applies (code.R311_7_6_door_at_stair_head grades it) and
+# the head riser stands against W-G-S's gyp face under the threshold.
 #
 # PRESSURE-TREATED WOOD, not concrete (owner choice): KDAT southern yellow pine, kiln-
 # dried after treatment so it is stable enough to cut and fit like framing. The garden's
@@ -728,18 +739,23 @@ ALARMS = [
 # The elevations are literals because this file is `# haus: editable` and may hold only
 # literals; -2'-10" is `params/foundations.SITE_GRADE`, which `plan/site.py` repeats as
 # `Site.grade` and `plan/manifest.py` asserts the two agree. `start` is the foot of the
-# flight — the landing's north edge at 47'-1 5/8", plus the 3/4" head riser board that
-# stands against it, plus 4 x 11" of tread = 50'-10 3/8" — and
-# it climbs south (`run_reversed`) back to the landing. The y literals below move with
+# flight — W-G-S's gyp face at 43'-9 3/8", plus the 3/4" head riser board that stands
+# against it, plus 4 x 11" of tread = 47'-6 1/8" (50'-10 3/8" under the retired landing) —
+# and it climbs south (`run_reversed`) to the threshold. The y literals below move with
 # GARAGE_Y_SOUTH.
+#
+# ** THE STRINGER HEADS SEAT ON THE STEM, NOT A HEADER. ** The stem's finished face stands
+# 4 7/8" proud of W-G-S's gyp at -1'-0", 5.2" under the top tread, and the inner 1 3/4" of
+# that ledge is the ICF core (the rest is interior EPS and board, trimmed back under each
+# head). Each stringer bears on the core through a stainless shim pack (STAIR_SEATS); the hand
+# check and the field kick-out anchor are in notes/garage_service_door_outswing.md §3.
 #
 # ** x=6'-11 5/8" IS THE STEM'S FINISHED FACE, AND THE FLIGHT IS FLUSH TO IT (2026-09-11). **
 # The ICF stem `W-GF-W` is 11" thick off the node line at x=6'-0" and carries a 5/8" board on
 # its inside face from grade up (GARAGE_ICF_6's `gwb-stem`), so the finished face is
-# 6'-11 5/8"; `params/north_entry_frame.py::GARAGE_STEM_INSIDE_X_FT` is the same number and
-# the landing's east edge and both carriers derive from it. The framed wall above the stem
+# 6'-11 5/8". The framed wall above the stem
 # is thinner — its gyp face is at 6'-6 3/4" — which leaves a 4 7/8" ledge on the stem top at
-# -1'-0", accepted as-is (owner).
+# -1'-0", accepted as-is (owner). The same ledge runs along W-G-S under the head.
 #
 # 11" treads with NO nosing, which keeps the run at the 3'-8" the four slabs occupied and
 # leaves an 11" going against R311.7.5.2's 10" minimum. A nose would shorten the run and buy
@@ -748,12 +764,25 @@ STAIRS = [
     Stair(uid="X99TD38ZS3", tag="ST-G-SERVICE",
           from_storey="garage", to_storey="garage",
           base_elevation=ft(-2, -10), top_elevation=ft(0),
-          width=ft(3), start=pt(ft(6, 11.625), ft(50, 10.375)),
+          width=ft(3), start=pt(ft(6, 11.625), ft(47, 6.125)),
           run_direction="y", run_reversed=True,
           tread_depth=inch(11), nosing_depth=inch(0),
           # The top step's open riser tops out 32.5" over the slab (R311.7.5.1).
           riser_thickness=inch(0.75),
           material="kdat"),
+]
+
+# Each stringer head seats on the stem core, 1 3/4" of concrete inside W-G-S's gyp face, on a
+# stainless shim pack: the house's wood-on-concrete seat (a drained standoff, never a gasket)
+# and the capillary break. It is also what tells structural.member_in_masonry the stringer's
+# end in the core is a seat cut, not a burial. x is each stringer's centreline.
+STAIR_SEATS = [
+    Connector(uid="1P13EB3SE6", tag="CN-G-STR-SEAT-W", kind=ConnectorKind.BEARING_STANDOFF,
+              position=pt(ft(7, 0.375), ft(43, 10.25)), elevation=ft(-1),
+              size="SS316-SHIM-35", connects=("ST-G-SERVICE", "W-GF-S1")),
+    Connector(uid="SPB72B0ZDN", tag="CN-G-STR-SEAT-E", kind=ConnectorKind.BEARING_STANDOFF,
+              position=pt(ft(9, 10.875), ft(43, 10.25)), elevation=ft(-1),
+              size="SS316-SHIM-35", connects=("ST-G-SERVICE", "W-GF-S-DR")),
 ]
 
 # R311.7.8 wants a handrail on any flight of four or more risers, and this one has five.
@@ -763,14 +792,13 @@ STAIRS = [
 # ** WALL-MOUNTED ON W-G-W SINCE 2026-09-11. ** The flight is flush to the west stem, so the
 # rail is brackets into the framed wall above it, the way `RL-M-HANDRAIL-W` in
 # plan/storeys/main.py is. `mount="wall"` makes the resolver emit a bracket per station
-# instead of a 36" post on each tread; `post_spacing=48"` on a 3'-9" run puts one bracket at
-# each end of the path and none between. ** THE TOP END IS ON A STUD, 1" PAST THE LANDING
-# EDGE. ** W-G-W's studs are 24" o.c. from N-G-NW, so stud-010 is at y=47'-2 5/8"; the
-# landing edge is 47'-1 5/8", a quarter inch off that stud's face, which would have put the
-# bracket half on the stud and half over WIN-G-S1's bay. Running the rail 1" further (R311.7.8
-# asks for continuity riser to riser and forbids nothing beyond) puts the bracket squarely on
-# the stud and needs no blocking there. The FOOT station is 5" from a stud and gets a
-# `WallBacking` band in plan/backing.py (`BK-G-W-RAIL-FOOT`) — move this path and move it.
+# instead of a 36" post on each tread; `post_spacing=48"` on a 3'-7 1/4" run puts one bracket at
+# each end of the path and none between. ** NEITHER END IS ON A STUD (2026-10-13). ** The top
+# end stands 1 1/2" off W-G-S's face, past the head riser and clear of the corner for the
+# return; W-G-W's stud-012 is inside that corner, so the bracket takes BK-G-W-RAIL-TOP, a
+# band filling the stud-012..stud-011 bay. The foot is over the bottom riser, 3 1/2" off
+# stud-010, on BK-G-W-RAIL-FOOT in the stud-010..stud-009 bay (plan/backing.py) — move this
+# path and move both.
 # The rail centreline at x=6'-9 1/8" is 2 3/8" off the wall's gyp face at 6'-6 3/4": the
 # 1 1/2" clearance R311.7.8.2 wants plus the bar's own 3/4" radius, with 1/8" to spare. It
 # hangs over the stem ledge, 2 1/2" clear of the flight's west edge at 6'-11 5/8". Both ends
@@ -779,15 +807,12 @@ STAIRS = [
 # It was post-mounted on the west side of a flight standing in the open at x 8'-6"..11'-6"
 # (2026-09-07 to 2026-09-11), and before that ran x 5'..8' under a landing at 6'-6"..9'-6",
 # a stale offset nothing graded. `serves_stair` rakes the rail along the nosing line and the
-# rail tops out 36" above it, inside R311.7.8.1's 34"-38". The door leaf hinges EAST (the
-# default) and lies along the landing's east side when open, clear of this rail.
-#
-# The composite landing continuation has its east guard in params/breezeway.py; its west
-# edge is closed by W-G-W itself.
+# rail tops out 36" above it, inside R311.7.8.1's 34"-38". The door swings out, so no leaf
+# reaches this rail.
 
 RAILINGS = [
     Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE",
-            path=(pt(ft(6, 9.125), ft(50, 10.375)), pt(ft(6, 9.125), ft(47, 2.625))),
+            path=(pt(ft(6, 9.125), ft(47, 6.125)), pt(ft(6, 9.125), ft(43, 10.875))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
             base_elevation=ft(-2, -10), post_spacing=inch(48), post_size="2x2",
             rail_count=1, mount="wall", assembly="RAILING_DARK_METAL",
@@ -806,6 +831,12 @@ TRUSS_ORDER = [
                text="TRUSS ORDER — RF-GARAGE and RF-BW-CANOPY, one fabricator, SEALED component design and reaction schedule. Both are 4:12 2x4 finks at 24in o.c. with a STANDARD HEEL: the top chord springs off the 3.5in bottom chord, no raised or energy heel. (1) A reaction at EVERY bearing, gravity and uplift, stating its basis: ground snow 50 psf, flat 42 psf balanced, the roof-step DRIFT surcharge of 50 psf peak over 9.8ft off the house gable (ASCE 7-16 §7.7), wind V_ult 115 mph Exposure B Risk Category II, 10 psf dead. (2) DRIFT TRUSSES: all three canopy trusses and RF-GARAGE's two southernmost (truss-000/-001) carry the drift case, not ground snow. (3) The canopy's SOUTH-END truss stands at the open south edge with no wall under it: design it for the out-of-plane wind on the gable-end triangle (2.22ft x 26.67ft, 16.8 psf ASD) braced at the deck, and say how it is braced. (4) The N-S diaphragm CHORD: both canopy end trusses' top chords, combined with gravity, and the peak splice's slip — the lateral design assumes 0.03in. (5) The heel ties are H2.5ASS stainless on the canopy (CN-BW-TRTIE-*) and H2.5A on the garage; confirm or supersede from the uplift reactions. (6) PERMANENT BRACING per BCSI-B3: show every web continuous lateral restraint and its diagonal brace, and the gable-end bracing at RF-GARAGE's north gable (W-G-N, over the 16ft overhead door) and south gable; state whether the 5/8in gypsum ceiling is relied on as bottom-chord restraint"),
 ]
 
+# `Door` and `DoorType` carry no hardware field, so the closer is a drawing note (2026-10-13).
+SERVICE_DOOR_HARDWARE = [
+    Annotation(uid="VJDMQAGNCA", tag="AN-G-SERVICE-DOOR", position=pt(ft(8, 1), ft(42, 6)),
+               text="D-G-SERVICE: OUTSWING, hinged on the WEST jamb, onto the entry deck. Surface closer with a HOLD-OPEN arm (parallel-arm, exterior-rated, adjustable latch speed) so the leaf stays parked along W-BW-SCREEN and nobody reaches out over the deck from the top tread of ST-G-SERVICE. Leaf must not swing over the stair (IRC R311.7.6 exception, MN 1309); exterior sill stands on the deck at 0ft 0in"),
+]
+
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS,
             _GARAGE_LEADER_E, _GARAGE_LEADER_W, *ALARMS, *STAIRS, *RAILINGS,
-            *STEM_TOP_Z_FLASHING, *TRUSS_ORDER]
+            *STEM_TOP_Z_FLASHING, *TRUSS_ORDER, *SERVICE_DOOR_HARDWARE, *STAIR_SEATS]

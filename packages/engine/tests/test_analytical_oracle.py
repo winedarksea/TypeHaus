@@ -184,23 +184,24 @@ def test_the_landing_ties_are_springs_on_their_members(solved):
     ectx = load.ctx.engineering.context
     joints = wall_ties(ectx, ectx.plan.by_tag("FS-BW-FLOOR"))
     springs = [s for s in model.support_springs if "deck_tie/FS-BW-FLOOR" in s.basis]
-    assert len(springs) == 2 * len(joints) == 6
+    assert len(springs) == 2 * len(joints) == 4
     assert {s.dof for s in springs} == {"DX", "DY"}
     lb_per_in = {round(s.stiffness_n_m * N_TO_LB * 0.0254) for s in springs}
     assert lb_per_in == {190_919}  # 2 x 270,000 x 0.5^1.5
     nodes = {s.node for s in springs}
-    assert any("BM-BW-FC:tie" in n for n in nodes) and any("BM-BW-FE:tie" in n for n in nodes)
+    # Since 2026-10-13 line 1 is FE's tip into W-G-S, wood to wood (§3e addendum).
+    assert any("BM-BW-FE:tie:W-G-S" in n for n in nodes)
     # The screen's tie lands on the sill it stands on, at the sill's north end.
     assert any("BM-BW-SCSILL" in n and "tie:W-G-W" in n for n in nodes)
     assert not [g for g in model.gaps if "lands on no member" in g]
 
 
 def test_the_ties_carry_no_gravity_but_the_graph_hands_them_a_thrust(solved):
-    """§3e: the block stands 1/4" off the stem, so no VERTICAL reaction reaches a tie. The
-    graph does hand them a horizontal one under gravity — the seat beams' end pieces rise
-    0.6' to the carriers over 1.125' (the work-point convention), a thrust the building
-    does not have. A finding, pinned so it cannot grow unseen: ~53 lb live at a stem tie (~95
-    before each deck beam took its own half-bay strip on 2026-09-23, §3e)."""
+    """§3e: no VERTICAL reaction reaches a tie. The graph does hand them a horizontal one
+    under gravity — the seat beams' end pieces rise to the beams over the work-point offset,
+    a thrust the building does not have. A finding, pinned so it cannot grow unseen: ~6 lb
+    since 2026-10-13, when the stem ties and BM-BW-FC retired (~53 lb at the FC stem tie
+    before; ~95 before each deck beam took its own half-bay strip on 2026-09-23)."""
     _, model, result, _ = solved
     nodes = {s.node for s in model.support_springs if "deck_tie/" in s.basis}
     assert nodes
@@ -210,4 +211,4 @@ def test_the_ties_carry_no_gravity_but_the_graph_hands_them_a_thrust(solved):
             reaction = result.reactions[(node, case)]
             assert abs(reaction.fz_n) * N_TO_LB < 1e-6
             worst = max(worst, math.hypot(reaction.fx_n, reaction.fy_n) * N_TO_LB)
-    assert worst == pytest.approx(52.8, abs=3.0)
+    assert worst == pytest.approx(6.4, abs=1.0)

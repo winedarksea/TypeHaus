@@ -794,7 +794,7 @@
 # gained the `supported_by="SL-B-FLOOR"` their own comment had always described in
 # prose, so the derived rule can see the joint. The third 4x4, P-M-STRLAND-SE, is a
 # 13 7/16" squash block and takes no base (UpliftTieRules.blocking_max_height_ft).
-"ABU44" = { low = 22, high = 40 }  # 4 ea — 2 DERIVED under P-M-STRWELL-S/SS, 2 AUTHORED (CN-BW-IBASE-C/-E) under the 4x4 interior landing posts PT-BW-IC/-IE since 2026-09-11, when those went from 6x6 squash blocks short of their beams to 25-3/4in standoff-based posts
+"ABU44" = { low = 22, high = 40 }  # 2 ea — DERIVED under P-M-STRWELL-S/SS. The 2 authored under the garage landing posts PT-BW-IC/-IE went with the landing, 2026-10-13
 # The shim pack under every wood beam soffit that lands on a pour. Modelled as a part since
 # 2026-09-03; it was prose inside two assembly `source` strings before that, bought on the
 # job and priced nowhere. 316 stainless plate, 3-1/2" square, stacked to the 1/2"-1" a cast
@@ -813,7 +813,7 @@
 # a pack is inside the framing rate either way. A custom tapered stainless shim would be a
 # rate change and is deliberately not what this specifies — see
 # notes/balcony_differential_movement.md §3.
-"SS316-SHIM-35" = { low = 9, high = 22 }  # 8 ea — 4 balcony column tops, 4 north entry seat-beam bearings. The 2 under the east canopy header are "cast"-variant only (10 ea then); the 2 porch-column packs retired with the centre line, 2026-09-22
+"SS316-SHIM-35" = { low = 9, high = 22 }  # 10 ea — 4 balcony column tops, 4 north entry seat-beam bearings, 2 ST-G-SERVICE stringer seats on the garage stem (CN-G-STR-SEAT-W/-E, 2026-10-13). The 2 under the east canopy header are "cast"-variant only (10 ea then); the 2 porch-column packs retired with the centre line, 2026-09-22
 # Four modeled 3/8-in Type 316 bolts pin the HP3 aluminum rails to their leg cap plates.
 # Bolt Depot lists 3/8-16 Type 316 bolts at $0.89 (1-1/2 in) to $2.36 (4 in), plus a 3/8
 # Type 316 nut ($0.22) and washer ($0.20). The model has not fixed the bolt length, so this
@@ -935,22 +935,19 @@
 # banded; HDG 16d nails are inside the framing rate. Backups and their prices:
 # notes/column_head_connector_options.md.
 "HETA20Z" = { low = 3.0, high = 6.0 }  # 12 ea, all authored — six joints, a pair each (FL11473 Table 3 rates the pair): the four balcony corners and PT-BW-E/-GE. The canopy's east pair (CN-BW-TIE-RE*/RNE*) is 4 more ONLY under EAST_POST_SYSTEM = "cast" (16 ea)
-# The landing's two tie lines (params/landing_tie.py), 2026-09-21: the four stem-tie HGAM10s
-# are RETIRED (Titen Turbo exterior bar, G90 only) and their row with them. Owner's second
-# call the same day: HL35HDG at the stem (CN-BW-STEMTIE-F{C,E}-{A,B}), HL33HDG kept for
-# CN-BW-GWTIE-LO/-HI into W-G-W. Retail HL33HDG $13.99 (fastenersplus), HL35HDG $26.18-26.47
-# (fastoolnow / dhcsupplies, 2026-09-21), banded; the 1/2" bolts, lags and Titen HD
-# (THD50400HMG, one per HL35 concrete leg) ride in the framing rate.
-# deck_tie/FS-BW-FLOOR closes at 0.966 (notes/north_entry_piers.md §10d).
+# The landing's two tie lines (params/landing_tie.py). HL33HDG into W-G-W (CN-BW-GWTIE-LO/-HI),
+# retail $13.99 (fastenersplus, 2026-09-21). Since 2026-10-13 the stem tie (4 HL35HDG on
+# blocks, Titen HD into the ICF) is gone with the garage landing; line 1 is two 3 ga HL43HDG
+# from BM-BW-FE into W-G-S, retail ~$30-35, made to order 4-5 weeks (fastenersplus /
+# benefast, 2026-10-13). Bolts and lags ride in the framing rate.
+# deck_tie/FS-BW-FLOOR closes at 0.778 (notes/north_entry_piers.md §10h).
 "HL33HDG" = { low = 12.0, high = 20.0 }  # 2 ea — into W-G-W
-"HL35HDG" = { low = 24.0, high = 36.0 }  # 4 ea — two per stem joint
+"HL43HDG" = { low = 30.0, high = 45.0 }  # 2 ea — CN-BW-GSTIE-LO/-HI, BM-BW-FE into W-G-S
 # KDAT 4x4 tie blocks and fillers, each an offcut plus cutting and M4 end treatment: LIST
 # BANDS, not quotes. The 3-1/2" cube is CN-BW-GWTIE-BLK (through the garage corner
-# cladding); the stem blocks under the carriers are 5" long for the HL35 (CN-BW-STEMTIE-
-# F{C,E}-BLK); the 26-1/2" filler gives the HL33's leg a 3-1/2" face in the screen's end
+# cladding); the 26-1/2" filler gives the HL33's leg a 3-1/2" face in the screen's end
 # stud pack (CN-BW-GWTIE-FILLER).
 "TIE-BLOCK-4X4-KDAT" = { low = 3.0, high = 8.0 }  # 1 ea — CN-BW-GWTIE-BLK
-"TIE-BLOCK-4X4X5-KDAT" = { low = 3.0, high = 8.0 }  # 2 ea — CN-BW-STEMTIE-F{C,E}-BLK
 "FILLER-4X4-KDAT" = { low = 6.0, high = 14.0 }  # 1 ea — CN-BW-GWTIE-FILLER
 # The two CENTRE balcony pillars' post caps, and since 2026-09-10 the canopy's two WEST
 # columns as well. A 3-1/2" glulam landing on a 6x6 is a CCQ, not the PC6Z: that cap is
@@ -1047,13 +1044,13 @@
 # Material only, per this section's rule: nailing a face-mount hanger to a 6x6 is framing
 # labour. ** THE ROW MUST EXIST EVEN AT A ROUGH BAND **: an unpriced part is silently dropped
 # from the takeoff, so the total FALLS and the omission reads as a saving.
-"HU28-2Z" = { low = 9, high = 16 }  # 6 ea — CN-BW-HGR-CW/-CNW/-SCS-S/-SCS-N/-FC/-FE
+"HU28-2Z" = { low = 9, high = 16 }  # 4 ea — CN-BW-HGR-CW/-CNW/-SCS-S/-SCS-N (-FC/-FE went with the garage landing, 2026-10-13)
 # 22 ea -> 30 on 2026-08-30: the eight balcony knee braces moved off the unrated APVKB45-6
 # onto this part, two per brace (Simpson's own instruction — "install single KBS1Z on each
 # end" — and the F1 the code report publishes is measured through that pair). Net material
 # effect is a SAVING: 16 KBS1Z at $3.50-6.50 is $56-104 against the 8 APVKB45-6 at
 # $22-45 they replace, $176-360. The stronger, rated part is the cheaper one here.
-"KBS1Z" = { low = 3.5, high = 6.5 }  # 26 ea — 2 derived at the breezeway, 24 on SB-BW-BAND's 12 braced slats (2026-10-09: the two corner slats are screwed infill; 28 on 14 from 2026-10-08; 36 on 18 from 2026-10-04 until the 2-1/4" gap cleared their overlap). It was 30 while the balcony carried eight knee braces at two straps each; those braces were deleted 2026-09-03 when four fixed concrete columns became the lateral system. The row stays: the part is a live engine feature and the breezeway uses it
+"KBS1Z" = { low = 3.5, high = 6.5 }  # 24 ea — on SB-BW-BAND's 12 braced slats (2026-10-09: the two corner slats are screwed infill; 28 on 14 from 2026-10-08; 36 on 18 from 2026-10-04 until the 2-1/4" gap cleared their overlap). It was 30 while the balcony carried eight knee braces at two straps each; those braces were deleted 2026-09-03 when four fixed concrete columns became the lateral system. The row stays: the part is a live engine feature and the breezeway uses it
 # Lateral tie plate at the bottom plate of a framed wall standing on a framed floor
 # band. NOT on a wall standing on concrete: that plate is a sill and its MASA anchors
 # already make the connection, so the takeoff excludes it rather than paying twice.
@@ -1065,10 +1062,10 @@
 # it — the derived rule uses the cheaper, stronger KBS1Z strap (see houses/catlin/
 # notes/uplift_load_path.md) — so this row prices the authored one-offs only.
 "PC6Z" = { low = 14, high = 26 }  # 0 ea
-"LSSR" = { low = 12, high = 22 }  # 38 ea — the ridge; the ST-G-SERVICE stringers moved to LSCZ (2026-09-24)
+"LSSR" = { low = 12, high = 22 }  # 38 ea — the ridge
 # LSCZ $2.99 each, fastenersplus.com (read 2026-09-24); the band carries the house's usual
 # contractor-carton low and a ZMAX/short-stock high.
-"LSCZ" = { low = 2.5, high = 5 }  # 2 ea — ST-G-SERVICE's stringer heads on BM-BW-LAND-HDR
+"LSCZ" = { low = 2.5, high = 5 }  # 3 ea — resolver-emitted at an interior winder landing rim. ST-G-SERVICE's 2 went with BM-BW-LAND-HDR, 2026-10-13: its stringers now seat on the garage stem
 # Rafter-to-rafter over the peak, one per opposing pair — the piece the LSSR above does
 # NOT do. A 24" x 1-1/4" 20ga strap tie is $3.50-4.50 single-piece retail (Fasteners Plus /
 # Home Depot, 2026); the low end is the contractor carton this section discounts to
@@ -1086,14 +1083,14 @@
 "HHUS410" = { low = 14, high = 24 }  # 10 ea
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
-"LUS28Z" = { low = 2.5, high = 7.5 }  # 10 ea — the breezeway beams (4 phantom joists alongside BM-BW-FC/-FE dropped 2026-09-24; the 18 at BM-SG-BLC retired 2026-09-22)
+"LUS28Z" = { low = 2.5, high = 7.5 }  # 0 ea — the 8 on the garage landing's beams went with it, 2026-10-13. Kept: the engine sizes it off any 2x8 into treated stock
 # The single-2x12 face-mount in stainless (owner, 2026-09-22): Simpson publishes no LUS212, and
 # its 2x12 rows list the LUS210 (H 7-13/16"). The porch joists hang on it at both ledgers.
 "LUS210SS" = { low = 6.0, high = 12.0 }  # 16 ea — FS-SG-PORCH's 8 single joists, both ends, on BM-SG-LDGW/LDGE
 # The two 3-ply lines the daybed builds (plan/court_daybed.py): no stainless triple is listed,
 # so ZMAX. Retail allowance for the galvanized LUS210-3 plus the ZMAX premium.
 "LUS210-3Z" = { low = 9.0, high = 18.0 }  # 4 ea — FS-SG-PORCH lines 003 and 007, both ends
-"LUSZ" = { low = 2.5, high = 7.5 }  # 2 ea — FS-BW-FLOOR's rims into BM-BW-FE (FS-BW-GARAGE's 4 ran alongside their beams, dropped 2026-09-24)
+"LUSZ" = { low = 2.5, high = 7.5 }  # 2 ea — FS-BW-FLOOR's rims into BM-BW-FE
 # "LUS210" retired 2026-08-23. It priced the two back-beam hangers until the 2026-08-22
 # retype moved them onto HUCQ410-SDS, after which nothing in the house authored a LUS210 and
 # the row billed nothing. A price row for a part the model does not contain is not harmless:
@@ -5042,11 +5039,12 @@
 # -> material $252-468 and labour $180-360, i.e. $432-828 over 0.19 cy.
 "beam:BEAM_LVL" = { material = { low = 1326, high = 2463 }, labour = { low = 947, high = 1895 } }  # 0.19 cy = 12.0 LF
 #
-# BEAM, KDAT — 62.0 LF over nine members, 0.40 cy (re-listed 2026-09-22, after the court
-# trial retired the brace rails, the porch beams and BM-SG-BLC):
+# BEAM, KDAT — 6 members, 0.18 cy (re-listed 2026-10-13, after the garage landing went;
+# the court trial retired the brace rails, the porch beams and BM-SG-BLC on 2026-09-22):
 #   18.0 LF  2x12, BM-SG-LDGW/LDGE — the porch ledgers at 9'-0" each.
 #    7.2 LF  2-2x8, BM-BW-HOUSE-SEAT / -GARAGE-SEAT at 3'-7".
-#   20.9 LF  2-2x8, BM-BW-FC / -FE at 10'-5".
+#   ~6.4 LF  3-2x8, BM-BW-FE (since 2026-10-13: BM-BW-FC and the landing header went with
+#            the garage landing, and FE shortened and went 3-ply for the HL43 bolt).
 #   11.4 LF  3-2x12, BM-BW-RW / -RE at 5'-8 5/8".
 #    4.5 LF  2x8, BM-BW-SCSILL.
 # KDAT is +40%/+65% on MATERIAL over the [framing] SPF rows, labour unchanged; a built-up
@@ -5067,9 +5065,9 @@
 # treatment, not by "4x12 glulam" — the untreated price is a third less and the two get
 # quoted against each other constantly.
 "beam:BEAM_GLULAM_TREATED" = { material = { low = 2800, high = 3800 }, labour = { low = 1120, high = 1870 } }  # 0.25 cy = ~23 LF over BM-SG-BLW/BLE = $30-41/LF material, $12-20/LF to set (BM-SG-BLC retired 2026-09-22)
-"beam:BEAM_KDAT" = { material = { low = 580, high = 958 }, labour = { low = 203, high = 388 } }  # 0.40 cy, 9 members — since 2026-09-22 including the porch ledgers BM-SG-LDGW/LDGE. Was 0.59 cy / 94.9 LF: the balcony's centre beam went to glulam and its two E-W brace rails were deleted outright, both on 2026-09-03
+"beam:BEAM_KDAT" = { material = { low = 580, high = 958 }, labour = { low = 203, high = 388 } }  # 0.18 cy, 6 members since 2026-10-13 (BM-BW-FC and BM-BW-LAND-HDR went with the garage landing; FE went 3-ply). Was 0.40 cy / 9 members from 2026-09-22
 #
-# COLUMN, KDAT — 19.7 LF, 0.13 cy, in TWO sections. [framing] "6x6" is $5-8.50 mat +
+# COLUMN, KDAT — 15.4 LF, 0.12 cy (2026-10-13). [framing] "6x6" is $5-8.50 mat +
 # $2.50-5 lab; these are GROUND-CONTACT rated (the brief) and stand on standoff bases over
 # open soil, so material is $6.50-11/LF. The bases, the post caps and the structural screws
 # are all in [hardware] already and are NOT in this rate.
@@ -5080,8 +5078,7 @@
 #     PT-BW-RE/-RNE are 6x6s on 3'-0" piers
 #     and add ~12.5 LF here; under "cast" they are full-height concrete columns
 #     (notes/canopy_garage_diaphragm.md).
-#   * PT-BW-IC and PT-BW-IE, two 4x4 interior landing posts at 2.15 LF each, authored
-#     2026-09-11 under BM-BW-FC/-FE's tips on ABU44 standoff bases.
+#   * PT-BW-IC and PT-BW-IE, the 4x4 garage-landing posts, are gone (2026-10-13).
 #
 # The comment read "the four breezeway 6x6 posts, 28.4 LF, 0.22 cy" until 2026-09-11. It
 # was stale in both directions at once — two of the four 6x6s are gone and two 4x4s that
@@ -5089,7 +5086,7 @@
 # the BOM resolves the volume, so the LINE was right the whole time and only the roster an
 # estimator reads was wrong. A quote asked for against "four 6x6 posts" comes back for the
 # wrong bill of sticks at the right total.
-"column:POST_KDAT" = { material = { low = 840, high = 1420 }, labour = { low = 323, high = 645 } }  # 0.13 cy = 19.7 LF: two 6x6 canopy columns (7.69 LF each) and two 4x4 landing posts (2.15 LF each)
+"column:POST_KDAT" = { material = { low = 840, high = 1420 }, labour = { low = 323, high = 645 } }  # 0.12 cy = 15.4 LF: two 6x6 canopy columns (7.69 LF each)
 
 [wood_surfaces]
 # RESEARCHED 2026-08-08 — [low, high] $/SF on the order quantity, by material tag. Mind the
@@ -7430,6 +7427,12 @@ finish-wall-tile-material = { low = 900, high = 1800 }
 # type before a per-function count means anything. Until both are done this stays one lump
 # at the researched rate — the same money, and the same 34 openings.
 finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.count[takes_hardware=True]" }
+# D-G-SERVICE's surface closer with a HOLD-OPEN arm (AN-G-SERVICE-DOOR, 2026-10-13): the
+# outswing leaf parks along W-BW-SCREEN so nobody reaches out over the deck from the top tread.
+# finish-door-hardware above is lockset/hinges/stop only, so this is its own lump. Retail read
+# 2026-10-13: Norton 7500H $403 (absupply), CLP7500-T $443 (qualitydoor), UNI7500H $630-768
+# (qualitydoor / nationallocksupply); plus $100-250 to hang it on a fiberglass leaf.
+finish-door-closer-hold-open = { low = 500, high = 1000 }
 # DRIVEN 2026-08-27 off the window count; 41 are authored as of 2026-09-27. It was
 # $73-164 per window covering stool
 # STOCK, apron, jamb extension and the carpenter's hour.

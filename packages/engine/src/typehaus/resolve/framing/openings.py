@@ -423,7 +423,10 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
                                                opening_index, header_bottom + depth,
                                                header_span)
 
-    if not opening.is_door:
+    # A door gets a rough sill only where its threshold stands ABOVE the framing base: a
+    # raised sill (catlin's D-G-SERVICE, 12" up on the garage stem) is a hole in the wall
+    # below the threshold exactly as a window's is, and nothing else carries the door.
+    if not opening.is_door or opening.sill_m > 1e-9:
         sill_top = sill_datum + opening.sill_m
         sill_bottom = _rough_sill_bottom(sill_top, z0)
         # The rough sill fits *between* the trimmers, spanning the rough opening only, so

@@ -1785,36 +1785,37 @@ GARAGE_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    # A third shop light over the service-door landing. The two above are at y=48' and
-    # y=58', the working half of the bay; the landing is at y 40'-6"..43'-6" and the flight
-    # below it drops 2'-10" in five risers, neither light reaching within R303.8's 4'.
-    # Stepping off a 34" landing in the dark is the reason the rule exists. (It reads as an
+    # A third shop light over ST-G-SERVICE, the service door's flight. The two above are at
+    # y=50'-6" and y=60'-6", the working half of the bay; the flight drops 2'-10" in five
+    # risers from the threshold and neither reaches within R303.8's 4' of it. Stepping
+    # through the door onto a top tread in the dark is the reason the rule exists. (It reads as an
     # *exterior* stair rather than an interior one because `_stair_is_indoors` asks whether
     # a CONDITIONED room stands over it, and the garage is deliberately unconditioned. R303.7
     # would want the same luminaire here and not the switching, since five risers is under
     # its six-riser threshold.)
     ElectricalDevice(uid="4PQRD03TG8", tag="ED-G-LT3", kind=DeviceKind.LIGHT,
-                     # x=8'-3" is the interior landing's centre (sheet 6'-7"..9'-11 5/8")
-                     # since the service door moved into the SW corner on 2026-09-11.
-                     position=pt(m(2.6101), m(13.8606)), type_ref="ED-T-LT-SHOP4",
+                     # Centred on the flight (x 6'-11 5/8"..9'-11 5/8", y 43'-9 3/8"..
+                     # 47'-6 1/8") since the interior landing went, 2026-10-13.
+                     position=pt(ft(8, 5.625), ft(45, 7.75)), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # On W-G-S's INTERIOR face (plan/storeys/garage.py::GARAGE_Y_SOUTH) — see
     # plan/electrical.py's GARAGE_DEVICES comment for the face-position arithmetic.
     #
-    # ** x=10'-8" IS EAST OF THE DOOR'S JACK, AND 80" IS 46" ABOVE THE LANDING (2026-09-11). **
+    # ** x=10'-8" IS EAST OF THE DOOR'S JACK, AND 76" IS 48 4/5" ABOVE THE TOP TREAD. **
     # D-G-SERVICE's RO is 6'-7"..9'-7" since it moved into the SW corner, its east king ends
     # at 9'-10", and this switch and ED-G-EXT-SW below stand 4" and 10" east of that. Both
-    # were INSIDE the old rough opening (a defect the 2026-09-07 rotation carried forward),
-    # and both were 12" above the landing: a garage device's `Mount.elevation` is measured
-    # off the ROOM FLOOR (`resolve/room_floor.py`), the slab at -2'-10", so 46" resolved to
-    # +1'-0" absolute against a landing at 0'-0". 80" over the slab is +3'-10" absolute, 46"
-    # over the landing you stand on to reach it.
+    # were INSIDE the old rough opening (a defect the 2026-09-07 rotation carried forward).
+    # A garage device's `Mount.elevation` is measured off the ROOM FLOOR
+    # (`resolve/room_floor.py`), the slab at -2'-10". It was 80" — 46" over the interior
+    # landing — until that landing went (2026-10-13); the flight's top tread is at -6.8"
+    # absolute, 27.2" over the slab, so 76" puts the gang 48.8" over the tread you stand on
+    # and 42" over the threshold you walk in on.
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(80)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(56),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
@@ -1868,7 +1869,7 @@ GARAGE_LIGHTING = [
                          wall_ref="W-G-N", face="right", distance_from_start=inch(264),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Its switch, inside, beside ED-G-SW at the service door: 6" west of it and 4" east of
-    # the door's east king (see ED-G-SW for the stations and the 80" elevation; nothing
+    # the door's east king (see ED-G-SW for the stations and the 76" elevation; nothing
     # grades a wall device against an opening, so a move of that door must move both by
     # hand). Walk in, one reach turns on the shop lights and BOTH door lights. One switch
     # for the pair, not one each: they light a single opening and there is no reason to run
@@ -1877,7 +1878,7 @@ GARAGE_LIGHTING = [
     ElectricalDevice(uid="QTG0005AAA", tag="ED-G-EXT-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(80)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(50),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
@@ -1958,12 +1959,12 @@ GARAGE_LIGHTING = [
     # a perimeter run left on until somebody notices is the dark-sky failure mode.
     #
     # Third in the gang at the service door, 6" east of ED-G-SW on the 6" spacing those two
-    # already use (10'-2", 10'-8", 11'-2"), same 80" over the slab = 46" over the landing.
+    # already use (10'-2", 10'-8", 11'-2"), same 76" over the slab, 48.8" over the top tread.
     # Same circuit as the loads it switches, so no NEC 210.7 two-circuit box.
     ElectricalDevice(uid="S7ANA4Q300", tag="ED-G-SOFFIT-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SWITCH-TIMER",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(80)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(62),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),

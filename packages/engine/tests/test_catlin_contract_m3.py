@@ -591,8 +591,10 @@ def test_opening_framing_registers_with_the_opening_it_frames(catlin_model):
         heads = sorted(wall.base_ref_z_m + o.sill_m + o.height_m for o in openings)
         # A rough sill only exists where the opening leaves room for one under it: a cased
         # opening running to the floor has the bottom plate as its sill and gets no member.
+        # A door gets one only where its threshold stands above the framing base
+        # (D-G-SERVICE, 12" up on the garage stem; since 2026-10-13).
         sills = sorted(wall.base_ref_z_m + o.sill_m for o in openings
-                       if not o.is_door
+                       if (not o.is_door or o.sill_m > 1e-9)
                        and wall.base_ref_z_m + o.sill_m - plate_h
                        > wall.base_ref_z_m + plate_h + 1e-9)
         got_sills = sorted(m.z1_m for m in members if m.category == "sill")
@@ -1708,12 +1710,12 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     door's landing (code.R311_3_exterior_landing, and houses/catlin/CLAUDE.md's rule that
     both breezeway doors open onto it at one level), so the threshold stays at 0'-0" and the
     sill is positive: +1'-0" over a garage storey at -1'-0", with the 2'-10" taken inside
-    instead — by the FS-BW-GARAGE landing and the ST-G-SERVICE flight below it.
+    instead — by the ST-G-SERVICE flight, which rises straight to the threshold.
 
-    That landing was the SL-G-STEP-0 pour until 2026-09-10 and is a DECK now, continuous
-    with FS-BW-FLOOR across a 1/4" threshold joint. What it does is unchanged, so the
-    assertions below are on its height rather than on what it is made of — and the pour's
-    absence is asserted, so it cannot come back alongside the deck that replaced it.
+    The top landing was the SL-G-STEP-0 pour until 2026-09-10, then the FS-BW-GARAGE deck;
+    since 2026-10-13 there is none, because the door swings OUT (IRC R311.7.6's exception,
+    graded by code.R311_7_6_door_at_stair_head). Both absences are asserted, so neither can
+    come back alongside the flight that replaced them.
     """
     wall = catlin_model.wall("W-G-S")
     door = next(o for o in catlin_model.openings if o.tag == "D-G-SERVICE")
@@ -1728,12 +1730,11 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     assert abs(deck_top - threshold) <= inch(1.5).meters
     assert threshold - slab.z1_m == pytest.approx(inch(34.0).meters)
 
-    # Five 6.8" risers inside close that 2'-10": a landing level with the threshold, and four
-    # pressure-treated treads below it.
-    landing = next(f for f in catlin_model.floors if f.tag == "FS-BW-GARAGE")
-    assert landing.deck_z1_m == pytest.approx(threshold)
+    # Five 6.8" risers inside close that 2'-10": four pressure-treated treads and the head
+    # riser up to the threshold itself.
+    assert not [f for f in catlin_model.floors if f.tag == "FS-BW-GARAGE"]
     assert not [s.tag for s in catlin_model.solids if s.tag.startswith("SL-G-STEP-")], \
-        "the pour was replaced by FS-BW-GARAGE, not left under it"
+        "the pour is gone, and so is the deck that replaced it"
 
     stair = next(s for s in catlin_model.stairs if s.tag == "ST-G-SERVICE")
     assert stair.riser_count == 5

@@ -75,20 +75,18 @@ def test_a_deck_joist_carries_a_stringer_head_and_nothing_else() -> None:
         == [("S:stringer-0", "F:joist-edge", True)]
 
 
-def test_st_g_service_hangs_on_the_landing_header(catlin_model_ro) -> None:
-    """Both stringer heads hang on BM-BW-LAND-HDR, the full-width header at the landing's
-    north edge, and bill as LSCZ stair-stringer connectors, not joist hangers."""
+def test_st_g_service_hangs_on_nothing_since_its_landing_went(catlin_model_ro) -> None:
+    """Its stringer heads hung on BM-BW-LAND-HDR on LSCZ until 2026-10-13; the door swings
+    out now, the landing is gone, and the heads SEAT on the stem core on authored standoffs
+    (CN-G-STR-SEAT-*). Nothing may hang them, and no LSCZ may be billed for them."""
     stair = next(s for s in catlin_model_ro.stairs if s.tag == "ST-G-SERVICE")
     heads = [c for c in hung_connections(catlin_model_ro, CONFIG.hanger_detection)
              if c.member_key.startswith(f"{stair.uid}:stringer-")]
-    assert len(heads) == 2
-    assert {c.carrier_tag for c in heads} == {"BM-BW-LAND-HDR"}, heads
-    assert all(c.member_category == "stringer" and c.sloped for c in heads), heads
-    rows = [row for row in hardware_takeoff(catlin_model_ro)
-            if row.get("part_number") == "LSCZ" and "BM-BW-LAND-HDR" in row["basis"]]
-    assert [row["count"] for row in rows] == [2], rows
+    assert heads == []
+    # The winder landing's resolver-emitted LSCZ rims are another stair's, and stay.
     assert not [row for row in hardware_takeoff(catlin_model_ro)
-                if row.get("part_number") == "LSSR" and row["basis"].startswith("2 x 2x12")]
+                if row.get("part_number") == "LSCZ"
+                and not row["basis"].startswith("resolver-emitted")]
 
 
 def test_a_stringer_head_takes_a_stair_stringer_connector_not_a_sloped_hanger() -> None:

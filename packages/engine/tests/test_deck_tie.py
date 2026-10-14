@@ -1,8 +1,9 @@
 """``engineering/deck_tie.py`` against ``houses/catlin/notes/north_entry_piers.md`` §10.
 
 The note was worked by hand before the module: the tie joints as a bolt group, the landing's
-loads placed where they act, each angle's interaction per joint at its own C_M (HL35HDG wet
-at the stem, HL33HDG dry into W-G-W) and ACI 318 Ch. 17 on the stem anchors (§10a-§10e).
+loads placed where they act, each angle's interaction per joint at its own C_M (§10a-§10e).
+Since 2026-10-13 (§10h) the two joints are wood to wood: HL43HDG wet on BM-BW-FE into W-G-S,
+HL33HDG dry into W-G-W. The stem tie and its anchors retired with the carriers.
 """
 
 from __future__ import annotations
@@ -28,18 +29,17 @@ def _input(record, prefix):
 
 
 def test_the_tie_is_derived_from_the_authored_hardware(catlin_ctx):
-    """§10a: three joints, a pair each — two over the stem core, one into W-G-W (dry)."""
+    """§10h: two joints, a pair each, both wood to wood: FE into W-G-S (wet), the screen into
+    W-G-W (dry). FE runs INTO its wall, the screen alongside its own."""
     ectx = catlin_ctx.engineering.context
     joints = wall_ties(ectx, ectx.plan.by_tag("FS-BW-FLOOR"))
     assert [(j.member, j.wall, len(j.parts), j.model, j.wall_axis, j.heel_axis,
-             j.on_concrete, j.service_condition) for j in joints] == [
-        ("BM-BW-FC", "W-GF-S1", 2, "HL35HDG", "x", "y", True, None),
-        ("BM-BW-FE", "W-GF-S-DR", 2, "HL35HDG", "x", "y", True, None),
-        ("W-BW-SCREEN", "W-G-W", 2, "HL33HDG", "y", None, False, "dry")]
-    assert "windblown" in joints[2].service_basis
-    assert [round(j.x_ft, 4) for j in joints] == [7.125, 9.4583, 6.1979]
-    # The stem pairs stand 1 1/4" north of the core centreline (43.6771), §10a.
-    assert [round(j.y_ft, 4) for j in joints] == [43.7812, 43.7812, 43.1458]
+             j.on_concrete, j.service_condition, j.member_axis) for j in joints] == [
+        ("BM-BW-FE", "W-G-S", 2, "HL43HDG", "x", None, False, None, "y"),
+        ("W-BW-SCREEN", "W-G-W", 2, "HL33HDG", "y", None, False, "dry", "y")]
+    assert "windblown" in joints[1].service_basis
+    assert [round(j.x_ft, 4) for j in joints] == [9.5833, 6.1979]
+    assert [round(j.y_ft, 4) for j in joints] == [43.1458, 43.1458]
 
 
 def test_the_loads_reproduce_section_10b(catlin_ctx):
@@ -56,37 +56,46 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
     assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(delivered)
 
 
-def test_the_verdicts_reproduce_section_10c(catlin_ctx):
-    """§10c/§10d: every row passes; E-W wind at BM-BW-FE governs at 0.966."""
+def test_the_verdicts_reproduce_section_10h(catlin_ctx):
+    """§10h: every row passes; N-S wind at W governs at 0.778, E-W at W 0.775."""
     record = catlin_ctx.engineering[_ITEM]
     assert record.status is Status.OK
-    assert _state(record, "tie interaction, N-S wind").ratio == pytest.approx(0.6752, abs=5e-4)
+    ns = _state(record, "tie interaction, N-S wind")
+    assert ns.ratio == pytest.approx(0.7780, abs=5e-4)
+    assert record.governing.name == ns.name
     ew = _state(record, "tie interaction, E-W wind")
-    assert ew.ratio == pytest.approx(0.9665, abs=5e-4)
-    assert record.governing.name == ew.name
-    assert _state(record, "tie interaction, guard").ratio == pytest.approx(0.8145, abs=5e-4)
-    assert "119.5 lb along the wall / 518.0 + 674.7 lb across it / 917.0" in ew.citation
+    assert ew.ratio == pytest.approx(0.7749, abs=5e-4)
+    assert _state(record, "tie interaction, guard").ratio == pytest.approx(0.6314, abs=5e-4)
+    assert "558.5 lb along the wall / 1,480.0 + 294.2 lb across it / 740.0" in ew.citation
     # W's dry service is a judgement named for the engineer of record, on the record.
     assert any("DRY SERVICE at W-BW-SCREEN/W-G-W" in n and "engineer of record" in n
                for n in record.notes)
 
 
-def test_the_stem_anchors_reproduce_section_10e(catlin_ctx):
-    """§10e: one Titen HD per HL35 leg, on the core centreline (the angle set 1 1/4" north):
-    3" to each face, 0.750 at FE under E-W wind."""
+def test_no_tie_lands_on_concrete_since_the_stem_tie_retired(catlin_ctx):
+    """§10h: the stem anchors (§10e) went with the carriers; no anchor row is graded."""
     record = catlin_ctx.engineering[_ITEM]
-    assert _state(record, "wall anchors, tension").ratio == pytest.approx(0.5336, abs=5e-4)
-    assert _state(record, "wall anchors, shear").ratio == pytest.approx(0.3668, abs=5e-4)
-    assert _state(record, "wall anchors, tension-shear").ratio == pytest.approx(0.7503,
-                                                                                abs=5e-4)
-    assert _state(record, "wall anchor edge").capacity == pytest.approx(3.0)
-    assert _state(record, "wall anchor spacing").capacity == pytest.approx(7.5)
-    assert sum("FOR THE ENGINEER OF RECORD" in n and "EMPTY" in n for n in record.notes) == 2
+    assert not [s for s in record.limit_states if s.name.startswith("wall anchor")]
+    assert not [n for n in record.notes if "EMPTY" in n]
+
+
+def test_the_stem_anchors_reproduce_section_10e():
+    """§10e by hand, no house: one Titen HD per HL35 leg, 3" to each face, 7.5" apart, FE's
+    old E-W demand (1,124.5 lb toward a face, 199.1 along). catlin retired the stem tie on
+    2026-10-13; ``deck_tie_anchor`` stays oracled by the section it was written against."""
+    from typehaus.engineering.deck_tie_anchor import Demand, Group, grade
+
+    group = Group("FE", 2, 7.5, 3.0, 3.0, 5_000.0)
+    tension, shear, both, _how = grade(group, Demand("E-W", 1124.5, 199.1, False))
+    assert tension == pytest.approx(0.5336, abs=5e-4)
+    assert shear == pytest.approx(0.3668, abs=5e-4)
+    assert both == pytest.approx(0.7503, abs=5e-4)
 
 
 def test_the_hl_reading_by_heel():
-    """§10a: heel across the wall reads F1 across; a vertical heel doubles uplift along;
-    C_M 0.70 unless the parts author dry service."""
+    """§10a: heel across the wall reads F1 across; a vertical heel doubles uplift in the tied
+    member's leg plane (§10h: along the wall for a screen, across it for a beam that runs
+    into it); C_M 0.70 unless the parts author dry service."""
     from typehaus.engineering.deck_tie import capacity
 
     stem = capacity(TieJoint("FE", "S-DR", ("a", "b"), "HL35HDG", 0, 0, "x", "y"))
@@ -95,9 +104,13 @@ def test_the_hl_reading_by_heel():
                             "dry", "covered"))
     mixed = capacity(TieJoint("SC", "G-W", ("a", "b"), "HL33HDG", 0, 0, "y", None, False,
                               "mixed"))
+    # A beam running INTO its wall: the leg on its side face takes the across force in plane.
+    into = capacity(TieJoint("FE", "G-S", ("a", "b"), "HL43HDG", 0, 0, "x", None, False,
+                             member_axis="y"))
     assert (stem.along_lb, stem.across_lb) == pytest.approx((518.0, 917.0))
     assert (wet.along_lb, wet.across_lb) == pytest.approx((1036.0, 518.0))
     assert (dry.along_lb, dry.across_lb) == pytest.approx((1480.0, 740.0))
+    assert (into.along_lb, into.across_lb) == pytest.approx((892.5, 1785.0))
     assert isinstance(mixed, str)
 
 
@@ -137,5 +150,5 @@ def test_the_tie_takes_the_landing_piers_out_of_every_lateral_register(catlin_ct
     assert {"PT-BW-PE", "PT-BW-PNE"} <= lateral
     for kind in ("base_rotation", "column_base", "column_head_joint"):
         assert not set(keys_of(kind, ectx)) & set(_LANDING), kind
-    # The interior landing rides the same carriers but relieved no column: no item.
+    # The interior landing (retired 2026-10-13) relieved no column and never had an item.
     assert keys_of("deck_tie", ectx) == ["FS-BW-FLOOR"]

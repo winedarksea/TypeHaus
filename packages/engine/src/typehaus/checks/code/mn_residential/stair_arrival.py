@@ -18,7 +18,7 @@ from shapely.geometry import Point, Polygon
 
 from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, not_applicable
+from typehaus.findings import Finding, not_applicable, passed
 
 #: How far past the top nosing, as a fraction of a going, the first footfall off a flight
 #: lands. Half a going is inside the arrival tread's own depth, so the probe is never a
@@ -204,3 +204,111 @@ def stair_head_landing(ctx: CheckContext) -> list[Finding]:
 def _wall_polygon(wall) -> Polygon | None:
     points = [point for layer in wall.layers for point in layer.polygon]
     return Polygon(points).convex_hull if len(points) >= 3 else None
+
+
+#: A door "at the head" stands within a going past the top nosing plus its own wall's depth.
+_HEAD_DOOR_REACH_GOINGS = 1.0
+#: Its host wall crosses the walking line: within 45 degrees of square to the travel.
+_CROSSING_COS = math.cos(math.radians(45))
+#: Plan area of a sweep over the flight that counts as swinging over it (1 sq in).
+_SWEEP_TOL_M2 = 0.0254 ** 2
+
+
+@check(Tier.CODE, "code.R311_7_6_door_at_stair_head")
+def door_at_stair_head(ctx: CheckContext) -> list[Finding]:
+    """R311.7.6 exception: no top landing where a flight rises to a door that swings clear.
+
+    "A floor or landing is not required at the top of an interior flight of stairs,
+    including stairs in an enclosed garage, provided that a door does not swing over the
+    stairs" (IRC 2018, adopted by MN 1309). The two rules above grade a flight through a
+    floor opening; one that rises inside a storey straight to a door threshold — catlin's
+    ST-G-SERVICE since 2026-10-13 — leaves both N/A, and this is the question it raises.
+
+    Scope: a flight with no floor opening and a door at its head — threshold within one
+    riser of the arrival elevation, in a wall crossing the walking line, overlapping the
+    flight's width, within a going past the top nosing plus the wall's depth. PASS: the
+    flight stands in an enclosed room and the leaf's ``swing_clearance`` misses its plan
+    footprint. FAIL: the leaf swings over the stairs. UNKNOWN: no swing is resolved, or the
+    flight is not interior and the exception does not reach it. N/A: no door at the head.
+    """
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.room_lookup import room_owning
+    from typehaus.resolve.stairs.walkline import stair_walk_stations
+
+    cid, code = "code.R311_7_6_door_at_stair_head", "R311.7.6"
+    if not ctx.model.stairs:
+        return [_unknown(cid, "no resolved stairs", (), code)]
+    out: list[Finding] = []
+    for stair in ctx.model.stairs:
+        tags = (stair.tag,)
+        route = stair_walk_stations(stair)
+        if getattr(ctx.plan.by_tag(stair.tag), "floor_opening", None) or len(route) < 2:
+            out.append(not_applicable(cid, f"{stair.tag} heads onto a floor through its "
+                                      "opening (code.R311_7_6_stair_head_landing)",
+                                      tags, code))
+            continue
+        door = _door_at_head(ctx.model, stair, route)
+        if door is None:
+            out.append(not_applicable(cid, f"{stair.tag} has no door at its head", tags,
+                                      code))
+            continue
+        tags = (stair.tag, door.tag)
+        flight = Polygon(stair.outline)
+        if len(door.swing_clearance) < 3:
+            out.append(_unknown(cid, f"{door.tag} stands at {stair.tag}'s head with no "
+                                "resolved swing, so whether it swings over the stairs is "
+                                "unknown", tags, code))
+            continue
+        over = Polygon(door.swing_clearance).intersection(flight).area
+        if over > _SWEEP_TOL_M2:
+            out.append(_fail(cid, f"{door.tag}'s leaf swings over {stair.tag} "
+                             f"({over / 0.0254 ** 2:.0f} sq in of its sweep over the flight) "
+                             "and the flight has no top landing; R311.7.6's exception holds "
+                             "only where a door does not swing over the stairs", tags, code))
+            continue
+        cx, cy = flight.representative_point().coords[0]
+        room = room_owning(ctx.model, stair.storey, (cx, cy))
+        if room is None:
+            out.append(_unknown(cid, f"{stair.tag} rises to {door.tag} with no top landing, "
+                                "but stands in no room: the exception covers an INTERIOR "
+                                "flight", tags, code))
+            continue
+        out.append(passed(cid, f"{stair.tag} rises to {door.tag}'s threshold with no top "
+                          f"landing, inside {room.tag}, and {door.tag}'s leaf swings clear "
+                          "of the stairs (R311.7.6 exception)", tags, code=code))
+    return out
+
+
+def _door_at_head(model, stair, route):
+    """The door whose threshold the flight's top nosing reaches, or ``None``."""
+    (ax, ay), (bx, by), arrival_z = route[-1]
+    (px, py), (qx, qy), _ = route[-2]
+    nose = ((ax + bx) / 2.0, (ay + by) / 2.0)
+    dx, dy = nose[0] - (px + qx) / 2.0, nose[1] - (py + qy) / 2.0
+    span = math.hypot(dx, dy)
+    width = math.hypot(bx - ax, by - ay)
+    if span < 1e-9 or width < 1e-9:
+        return None
+    ux, uy = dx / span, dy / span
+    best = None
+    for opening in model.openings:
+        wall = model.wall(opening.host_wall) if opening.is_door else None
+        if wall is None or getattr(wall, "axis", None) is None:
+            continue
+        (sx, sy), (ex, ey) = wall.axis
+        run = math.hypot(ex - sx, ey - sy) or 1.0
+        tx, ty = (ex - sx) / run, (ey - sy) / run
+        if abs(tx * ux + ty * uy) > _CROSSING_COS:
+            continue  # the wall runs with the walking line; nobody walks through it
+        threshold = getattr(wall, "base_ref_z_m", wall.z0_m) + opening.sill_m
+        if abs(threshold - arrival_z) > stair.riser_height_m:
+            continue
+        cx, cy = sx + tx * opening.center_along_m, sy + ty * opening.center_along_m
+        along = (cx - nose[0]) * ux + (cy - nose[1]) * uy
+        lateral = abs((cx - nose[0]) * -uy + (cy - nose[1]) * ux)
+        reach = _HEAD_DOOR_REACH_GOINGS * stair.going_depth_m + wall.thickness_m
+        if (-1e-6 <= along <= reach and lateral < (width + opening.width_m) / 2.0
+                and (best is None or along < best[0])):
+            best = (along, opening)
+    return None if best is None else best[1]

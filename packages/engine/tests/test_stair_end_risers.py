@@ -148,15 +148,17 @@ def test_surfaces_are_found_across_storey_filing(catlin_model):
     """ST-G-SERVICE is filed on ``garage`` at both ends and arrives on a ``main`` deck.
 
     A storey-scoped lookup finds only SL-G-FLOOR, 2'-10" under the flight's own foot, and
-    reports a 27" top riser. ``surfaces_at`` asks the physical question instead.
+    reports a 27" top riser. ``surfaces_at`` asks the physical question instead. Since
+    2026-10-13 the flight rises straight to D-G-SERVICE's threshold and the deck it arrives
+    on is FS-BW-FLOOR outside the door (the interior landing FS-BW-GARAGE retired).
     """
-    # (8'-3", 46'-8 3/8") is inside the interior landing's sheet, x 6'-7"..9'-11 5/8" since
-    # the service door moved into the garage's SW corner (2026-09-11; it was 8'-6"..11'-6").
-    found = {surface.deck_tag: surface.deck_top_m
-             for surface in surfaces_at(catlin_model, (8.25 * _FT, 46.7 * _FT))}
-    assert "SL-G-FLOOR" in found and "FS-BW-GARAGE" in found
-    assert found["SL-G-FLOOR"] == pytest.approx(inch(-34).meters, abs=1e-9)
-    assert found["FS-BW-GARAGE"] == pytest.approx(0.0, abs=1e-9)
+    outside = {surface.deck_tag: surface.deck_top_m
+               for surface in surfaces_at(catlin_model, (8.25 * _FT, 43.0 * _FT))}
+    assert outside.get("FS-BW-FLOOR") == pytest.approx(0.0, abs=1e-9), outside
+    inside = {surface.deck_tag: surface.deck_top_m
+              for surface in surfaces_at(catlin_model, (8.25 * _FT, 46.0 * _FT))}
+    assert inside.get("SL-G-FLOOR") == pytest.approx(inch(-34).meters, abs=1e-9), inside
+    assert "FS-BW-GARAGE" not in inside
 
 
 def test_hardscape_counts_as_a_surface_a_flight_foots_on(catlin_model):

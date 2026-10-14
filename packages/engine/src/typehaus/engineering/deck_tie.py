@@ -17,7 +17,9 @@ and any moment is a mechanism; the record says so rather than grading it.
   (C-C-2024 fn 6: lateral may not be doubled). Perpendicular to the heel is the published
   UPLIFT case — for a horizontal heel, mirrored into the other leg (equal legs, equal
   bolting); for a vertical heel, the force in the tied member's leg plane, which fn 6 lets a
-  pair double, and the force across it, one part. Published dry at C_D 1.6: x NDS C_M 0.70,
+  pair double, and the force across it, one part. That plane runs with the MEMBER (its leg
+  is on the member's side face): along the wall for a screen parallel to it, across the wall
+  for a beam that runs into it. Published dry at C_D 1.6: x NDS C_M 0.70,
   or 1.0 where the parts author dry service (``Connector.service``) — a judgement the
   record names for the engineer of record.
 
@@ -66,7 +68,8 @@ BASIS = ("the tie part's published allowables with the linear interaction its do
 #: far edge, one anchor per concrete leg) read off the angle's own hole pattern.
 #: 4: the anchor's edges read off each angle's authored position against the resolved core
 #: (the hole nearest the centreline is the one anchored), not an angle assumed centred.
-BASIS_VERSION = "4"
+#: 5: a vertical heel's leg plane runs with the tied member, not always along the wall.
+BASIS_VERSION = "5"
 #: ESR-2713 §1.0 / FL11473 fn 8: the least f'c the concrete anchors are published for.
 MIN_FC_PSI = 2_500.0
 #: NDS 2018 Table 11.3.3, dowel-type fasteners, in-service moisture > 19 %: an exterior tie.
@@ -172,8 +175,12 @@ def capacity(joint: TieJoint) -> Capacity | str:
     f1, up = allow.lateral_f1_lb * c_m, allow.uplift_lb * c_m
     wet = "dry, authored" if joint.service_condition == "dry" else "wet"
     if joint.heel_axis is None:
-        return Capacity(up * n, up, cd, f"heel vertical: uplift x {n} in the member's leg "
-                        f"plane (fn 6), uplift x 1 across, C_M {c_m:g} ({wet})", cite, True)
+        in_plane = "along" if joint.member_axis in (None, joint.wall_axis) else "across"
+        return Capacity(up * n if in_plane == "along" else up,
+                        up if in_plane == "along" else up * n, cd,
+                        f"heel vertical: uplift x {n} in the member's leg plane ({in_plane} "
+                        f"the wall, fn 6), uplift x 1 out of it, C_M {c_m:g} ({wet})",
+                        cite, True)
     along_heel = joint.heel_axis == joint.wall_axis
     return Capacity(f1 if along_heel else up, up if along_heel else f1, cd,
                     f"heel {joint.heel_axis}: F1 along it, uplift (mirrored) across, one "

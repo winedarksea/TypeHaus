@@ -141,16 +141,16 @@ def test_a_wall_stopping_exactly_at_the_sheet_is_not_passing_through_it() -> Non
 
 
 def test_a_deck_the_sheet_merely_dies_into_is_not_a_penetration(catlin_model_ro) -> None:
-    """``W-G-S`` satisfies clauses 1, 2 and 4 against both breezeway landings.
+    """``W-G-S`` satisfies clauses 1, 2 and 4 against the breezeway landing.
 
     A deck outline runs to the AXIS of the line it dies into, so every wall standing at a
-    deck's edge overlaps it by half its own thickness — 59 and 285 sq in with the saw's own
-    clearance allowed for, 38 and 265 without. Clause 3 is
-    containment for exactly this: the sheet is already drawn to that wall and cutting it
-    again deducts the same strip twice.
+    deck's edge overlaps it by half its own thickness — 59 sq in with the saw's own
+    clearance allowed for, 38 without. Clause 3 is containment for exactly this: the sheet
+    is already drawn to that wall and cutting it again deducts the same strip twice.
+    (FS-BW-GARAGE, the interior landing, was the second witness until 2026-10-13.)
     """
     wall = catlin_model_ro.wall("W-G-S")
-    for tag in ("FS-BW-FLOOR", "FS-BW-GARAGE"):
+    for tag in ("FS-BW-FLOOR",):
         deck = _deck(catlin_model_ro, tag)
         soffit = min(member.z0_m for member in deck.members)
         assert wall.base_ref_z_m <= soffit + _THROUGH_TOL_M

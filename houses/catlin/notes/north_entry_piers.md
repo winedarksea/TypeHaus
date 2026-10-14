@@ -353,13 +353,17 @@ Worst case is `PT-BW-W`, which carries the west roof column **and** the landing'
 | term | working | value |
 |---|---|---|
 | roof tributary | 160.0 / 2 headers / 2 supports per header | 40.0 ft² |
-| deck tributary | (23.5 + 13.2) ft² of landing / 2 seat lines | 18.4 ft² |
+| deck tributary | 23.5 ft² of landing / 2 seat lines | 11.8 ft² |
 | wall line load | `W-BW-SCREEN` + `SB-BW-BAND` on `BM-BW-SCSILL`, half | 105 lb |
 | roof live | 40.0 × **73.7** psf (§3's design snow) | 2,948 lb |
-| deck live | 18.4 × 40 psf | 736 lb |
-| dead | (40.0 + 18.4) × 10 psf + self weight + carried + wall | 1,772 lb |
-| service | | **5,456 lb** |
-| factored | 1.2 D + 1.6 L | **8,021 lb** |
+| deck live | 11.8 × 40 psf | 470 lb |
+| dead | (40.0 + 11.8) × 10 psf + 1,188 lb self weight + carried + wall | 1,706 lb |
+| service | | **5,124 lb** |
+| factored | 1.2 D + 1.6 L | **7,515 lb** |
+
+(2026-10-13: the garage's interior landing, 13.2 ft², retired with the inswing door, and the
+two carriers that brought it to the seats with it: 18.4 → 11.8 ft², service 5,456 → 5,124,
+factored 8,021 → 7,515.)
 
 **The wall line load, worked (2026-09-20).** `BM-BW-SCSILL` is the sill under `W-BW-SCREEN`,
 hung on `HU28-2Z` off the two 6x6 KDAT canopy columns `PT-BW-CW`/`-CNW`, which stand on
@@ -411,9 +415,13 @@ hold, `column_base`'s embedment (grade to pad top) does not move and
 `entry_column_base_fixity.md` §6e's claim is undisturbed.
 
 **`pier_basis` reads the same roof and wall as this line, and half its deck** (re-read
-2026-10-04): 9.41 ft² of deck and 40.0 ft² of roof on `PT-BW-W` plus the 105 lb of wall above,
-for D 1,883 + L 3,324 = 5,208 lb service and 7,579 lb factored, against the 8,021 hand-worked
-here. The gap is the deck share. `deck_post_tributaries` splits each seat beam's strip between
+2026-10-13): 5.50 ft² of deck and 40.0 ft² of roof on `PT-BW-W` plus the 105 lb of wall above,
+for D 1,844 + L 3,168 = 5,012 lb service and 7,282 lb factored, against the 7,515 hand-worked
+here. The 5.50 is the house seat's strip, `0.792' cantilever + 4.979' / 2 = 3.281'`, over the
+seat's 3.3542' and split between its two piers; `PT-BW-GW`/`-GE` read the garage seat's
+`4.979' / 2 + 0.604' = 3.094'` the same way, 5.19 ft². Each pier carried 3.91 ft² more (9.41 /
+9.10) until 2026-10-13, the interior landing arriving on the seats through `BM-BW-FC`/`-FE`:
+`3.91 × (1.2 × 10 + 1.6 × 40) = 297 lb` factored off all four. The gap is the deck share. `deck_post_tributaries` splits each seat beam's strip between
 the TWO piers under it, and the table above puts a whole seat line (18.4 ft²) on one, so the
 hand row is the conservative end by about that half. It is bookkeeping in a load case nowhere
 near governing (axial d/c 0.02). It used to read 47.7 ft² of roof,
@@ -1013,6 +1021,11 @@ rest 0.237 on the guard at C_D 1.0).
 
 ## 10. The landing's two tie lines (oracles `engineering/deck_tie.py`, `deck_tie_anchor.py`)
 
+> **Since 2026-10-13 line 1 is not the stem tie: read §10h first.** The garage's interior
+> landing retired (the service door swings out), `BM-BW-FC` went, `BM-BW-FE` stops at the
+> garage cladding, and line 1 is a pair of HL43HDG from FE into `W-G-S`, wood to wood.
+> §10a's line 2, §10b's loads and the method below stand; §10c-§10e's numbers are history.
+
 **Written 2026-09-21, by hand, before the module; reworked three times the same day.** The
 landing is tied so its four piers stop being the lateral system. Two tie lines: over the
 garage stem under each carrier, and on the screen's own line into `W-G-W`, wood to wood.
@@ -1196,6 +1209,59 @@ HL33's single hole sat on the centreline; the HL35's two do not.
 carriers only, 2'-4" apart: the screen's 981 lb landed 1'-1 1/2" west of the line and the
 couple put 1,675 lb on `BM-BW-FC` — **1.82** N-S, 1.60 E-W, 1.30 guard. Simpson also bars the
 HGAM's Titen Turbo screws from exterior exposure (C-C-2021 p. 252). Retired 2026-09-21.
+
+### 10h. 2026-10-13 — two wood-to-wood joints (the current design)
+
+**What changed.** No carrier crosses the stem any more, so there is nothing over the core to
+anchor: line 1 is `BM-BW-FE`'s tip into `W-G-S` over `D-G-SERVICE`'s east jamb pack, a pair of
+angles on FE's east face, heel vertical, lagged through a KDAT filler cut flush with the
+corrugated (the line-2 detail). Line 2 is unchanged. Loads are §10b as amended (deck N-S
+**98.94**, addendum 2026-09-23) except the screen's N-S share, which `lateral_system/RF-BW-CANOPY`
+now delivers at **1,038.35 lb** (the panel's 2026-09-30 regrade); all act where §10b says.
+
+**The angle's plane runs with the member.** A vertical heel's wood leg lies on the tied
+member's side face. For the screen (runs y, ties into `W-G-W`, which runs y) that plane is
+ALONG the wall, as §10a read it; for FE (runs y, ties into `W-G-S`, which runs x) it is ACROSS
+the wall. So at FE the pair's doubled uplift resists N-S and one part resists E-W
+(`deck_tie` basis 5).
+
+**HL33 does not close it; HL43 does.** Two joints 3.39' apart put the screen's wind couple
+on each as ±558.5 lb N-S. One HL33 out of plane, wet, is 518 lb:
+
+    HL33 at FE, wet:  294.19 / 518 + 558.50 / 1,036 = 0.568 + 0.539 = 1.107   OVER
+
+C-C-2024 p. 303, read 2026-10-13 (the HL43 row): 3 ga, W 4-1/4", L 3", D1 1-1/2", D3 2-3/4",
+(2) 3/4" bolts, DF/SP uplift **1,275**, F1 1,445 at C_D 1.6; **fn 5: wood members of the
+"4" series >= 5-1/8" thick.** FE goes to 3-ply 2x8 (4-1/2") and the bolt passes FE and the
+rim beside it: 6". Wet (C_M 0.70): uplift 892.5, the pair in plane 1,785.
+
+**Distribution.** W (6.1979, 43.1458), FE (9.5833, 43.1458). Centroid (7.8906, 43.1458),
+`dx = ∓1.6927`, `dy = 0`, `J = 2 × 1.6927² = 5.7305 ft²`.
+
+N-S wind: `ΣFy = 98.94 + 1,038.35 = 1,137.29`, `M = 1,038.35 (6.0 − 7.8906) + 98.94 (7.7917 −
+7.8906) = −1,962.9 − 9.8 = −1,972.7 lb-ft`:
+
+| joint | X | Y | ratio |
+|---|---:|---:|---|
+| W (wall runs y; leg plane along) | 0 | 1,151.41 | 1,151.41 / 1,480 = **0.778** |
+| FE (wall runs x; leg plane across) | 0 | −14.12 | 14.12 / 1,785 = 0.008 |
+
+E-W wind: `ΣFx = 588.38` at y 39.9323, `M = (43.1458 − 39.9323) × 588.38 = 1,890.8 lb-ft`;
+`X = 294.19` each, `Y = M × 1.6927 / 5.7305 = ∓558.50`:
+
+| joint | X | Y | ratio |
+|---|---:|---:|---|
+| W | 294.19 | −558.50 | 558.50 / 1,480 + 294.19 / 740 = 0.377 + 0.398 = **0.775** |
+| FE | 294.19 | 558.50 | 294.19 / 892.5 + 558.50 / 1,785 = 0.330 + 0.313 = 0.643 |
+
+Guard at C_D 1.0 (caps / 1.6), 200 lb E-W at the screen's south end (6.0, 36.6458):
+`M = (43.1458 − 36.6458) × 200 = 1,300.0`, `X = 100`, `Y = ∓384.0` → W `384.0 / 925 + 100 /
+462.5 = 0.415 + 0.216 =` **0.631**; FE `100 / 557.8 + 384.0 / 1,115.6 = 0.179 + 0.344 = 0.523`.
+
+**Verdict: every row passes, N-S wind at W governs at 0.778.** No anchor rows: nothing ties
+to concrete. For the engineer of record, beside W's dry service: FE's 3/4" bolt stands 2-3/4"
+(3.7D) off FE's end grain, under NDS Table 12.5.1A's 7D for full design value, and the wall
+leg's lag lands in a two-ply jack/king pack.
 
 ## Sources
 

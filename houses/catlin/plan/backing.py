@@ -79,34 +79,22 @@ from typehaus import WallBacking, ft, inch
 # ST-G-SERVICE's handrail RL-G-SERVICE is wall-mounted on W-G-W since 2026-09-11
 # (plan/storeys/garage.py). A bracket takes IRC Table R301.5's 200 lb in any direction, and
 # a 2x6 stud bay at 24" o.c. has a stud where the framer put one, not where the bracket
-# lands. `post_spacing=48"` on the 3'-9" rail path resolves one bracket at each end and none
-# between, so there are two stations and they are answered two different ways:
+# lands. `post_spacing=48"` on the 3'-7 1/4" rail path resolves one bracket at each end and
+# none between, and since the flight moved 3'-4 1/4" south to the threshold (2026-10-13,
+# no interior landing) NEITHER lands on a stud, so both get a 2x12 laid flat, cut to FILL
+# THE BAY, both ends nailed (a block with one free end cannot be fastened):
 #
-#  * TOP, y=47'-2 5/8" — the rail's landing end was set ON stud-010 of W-G-W (67'-2 5/8"
-#    less ten 24" modules), so that bracket screws into a stud and wants no blocking. A band
-#    here could not have helped anyway: the station is 1/4" north of WIN-G-S1's bay, whose
-#    rough-opening exclusion clips any backing to the far side of that stud.
-#  * FOOT, y=50'-9 5/8" — the flight's bottom riser, 5" from the nearest stud, so this one
-#    gets a 2x12 laid flat, cut to FILL THE BAY: station 16'-0 3/4"..17'-11 1/4" from
-#    N-G-NW, which is face to face between the studs at 16'-0" and 18'-0" o.c. — 22 1/2" of
-#    clear bay, one cut, both ends nailed. It was authored 15'-11"..16'-11" until 2026-09-12
-#    and that 12" block lapped the north stud by 1/4" and floated 10 1/4" clear of anything
-#    at its south end; a block with one free end cannot be fastened. The bracket at station
-#    16'-5" sits 4 1/4" inside the north end of the bay either way.
-#    11 1/4" tall (`integrity.wall_backing_ref` holds `height` to the profile).
-#    Centred 2 1/2" below the rail top there — the resolver's own `_BRACKET_DROP_M` — so the
-#    arm lands mid-band with ~5" of play: 12"..23 1/4" above the garage datum, against a
-#    rail top at +20 3/4" where the nosing line meets the first riser.
+#  * TOP, y=43'-10 7/8" — 1 1/2" off W-G-S's face. W-G-W's stud-012 is inside that corner
+#    (y 43'-8 3/4"..43'-10 1/4"), so the band fills stud-012..stud-011: station
+#    22'-0 3/4"..23'-4 3/8" from N-G-NW, 15 5/8" of clear bay. Centred 2 1/2" below the rail
+#    top there, which is 36" over the top nosing at -6.8" absolute: 33"..44 1/4" above the
+#    garage datum against a rail top at +41.2".
+#  * FOOT, y=47'-6 1/8" — the bottom riser, 3 1/2" off stud-010, in the stud-010..stud-009
+#    bay: station 18'-0 3/4"..19'-11 1/4", 22 1/2" clear — the band that sat one module further north
+#    (16'-0 3/4"..17'-11 1/4") under the landing design. 12"..23 1/4" above the garage datum,
+#    against a rail top at +20 3/4" where the nosing line meets the first riser.
 #
-# Move the rail and move these. `face` is the default "left": W-G-W runs N->S, so its
-# left-hand normal points east, into the garage.
-#
-# ST-B2M's titanium rails (plan/storeys/main.py): RL-M-HANDRAIL-E is on concrete (anchors),
-# and RL-M-HANDRAIL-W's mid bracket (y=28'-8") is centred on W-M-STRW's stud-005.
-# Its square top return lands at y=26'-5 3/4" on W-M-STRW's end and corner studs at the
-# L, which take the whole flange, so it needs no band.
-# The foot return lands in the floor band behind the stair plywood — a field block,
-# notes/titanium_handrail_backsplash.md §3.
+# 11 1/4" tall (`integrity.wall_backing_ref` holds `height` to the profile).
 
 # The groups above, filed on the storey each wall stands on: `PlanModel` keys elements
 # by storey, so a band cannot ride in a list that mixes them.
@@ -340,8 +328,12 @@ SECOND_BACKING = [
 ]
 
 GARAGE_BACKING = [
+    WallBacking(uid="YJH79SSVTK", tag="BK-G-W-RAIL-TOP", wall_ref="W-G-W",
+                start=ft(22, 0.75), length=inch(15.625),
+                elevation=inch(33), height=inch(11.25), profile="1.5x11.25",
+                material_ref="spf", purpose="handrail brackets (RL-G-SERVICE, head of flight)"),
     WallBacking(uid="1FTWGZ1WJ3", tag="BK-G-W-RAIL-FOOT", wall_ref="W-G-W",
-                start=ft(16, 0.75), length=inch(22.5),
+                start=ft(18, 0.75), length=inch(22.5),
                 elevation=inch(12), height=inch(11.25), profile="1.5x11.25",
                 material_ref="spf", purpose="handrail brackets (RL-G-SERVICE, foot of flight)"),
 ]

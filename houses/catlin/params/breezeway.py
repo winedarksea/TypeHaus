@@ -22,9 +22,7 @@ from typehaus import (
 from params.foundations import SITE_GRADE
 from params.landing_tie import LANDING_TIES
 from params.north_entry_frame import (
-    BEAM_X_FT,
     BEARING_TOP_FT,
-    CARRIER_END_Y_FT,
     COLUMN_HALF_FT,
     DECK_FINISH_FT,
     DECK_JOIST_TOP_FT,
@@ -36,22 +34,14 @@ from params.north_entry_frame import (
     FRAME_Y0_FT,
     FRAME_Y1_FT,
     GARAGE_CLADDING_Y_FT,
-    GARAGE_INSIDE_Y_FT,
-    GARAGE_LANDING_EAST_FT,
-    GARAGE_LANDING_END_Y_FT,
-    GARAGE_LANDING_WEST_FT,
     GARAGE_SEAT_Y_FT,
     HEADER_SOFFIT_FT,
     HEADER_SOUTH_Y_FT,
     HEADER_TOP_FT,
     HOUSE_CLADDING_Y_FT,
     HOUSE_SEAT_Y_FT,
-    INTERIOR_POST_X_FT,
-    INTERIOR_POST_Y_FT,
-    JOIST_DEPTH_IN,
     LANDING_EAST_FT,
     LANDING_WEST_FT,
-    MOVEMENT_GAP_IN,
     EAST_POST_SYSTEM,
     PIER_LINE_Y_FT,
     ROOF_COLUMN_EAST_X_FT,
@@ -96,32 +86,9 @@ FLOOR = FloorSystem(
     source="shared upper landing on two piered seat beams; north_entry_structure.md",
 )
 
-# ** THE INTERIOR LANDING SITS IN THE GARAGE'S SW CORNER (2026-09-11). ** Joists span
-# carrier to carrier (7'-1 5/8"..9'-5 1/2"); the sheet runs from the door RO's west jamb at
-# 6'-7", a quarter inch off W-G-W's gyp face, to the stem's finished face plus 3'-0" at
-# 9'-11 5/8", which is also where the stair below it is flush. It oversails the carriers
-# 6 5/8" west and 6 1/8" east, inside `structural.subfloor_oversail`'s 8". The west edge is
-# closed by W-G-W itself; RL-BW-GARAGE-E below guards the east. Boards share the main
-# landing's finish datum and direction.
-#
-# The joists stop at the third 12" line, 46'-2 7/8": BM-BW-LAND-HDR is the last support
-# under the boards, 10" on, so the field emits no north-edge 2x8 beside it (2026-09-24).
-GARAGE_FIELD_END_Y_FT = GARAGE_Y_SOUTH.feet + MOVEMENT_GAP_IN / 12 + 3.0
-assert GARAGE_FIELD_END_Y_FT < CARRIER_END_Y_FT - 6 / 12, "the last joist crowds the header"
-GARAGE_FLOOR = FloorSystem(
-    uid="BWFS02AAAA", tag="FS-BW-GARAGE",
-    top_elevation=ft(DECK_JOIST_TOP_FT),
-    joists=JoistSpec(member="2x8", spacing=inch(12), direction="x",
-                     bearing_refs=("BM-BW-FC", "BM-BW-FE")),
-    outline=rectangle(BEAM_X_FT[0], GARAGE_Y_SOUTH.feet + MOVEMENT_GAP_IN / 12,
-                      BEAM_X_FT[1], GARAGE_FIELD_END_Y_FT),
-    subfloor_outline=rectangle(GARAGE_LANDING_WEST_FT,
-                               GARAGE_Y_SOUTH.feet + MOVEMENT_GAP_IN / 12,
-                               GARAGE_LANDING_EAST_FT, GARAGE_LANDING_END_Y_FT),
-    subfloor=DeckLayer(material_ref="composite-deck", thickness=inch(1)),
-    service="deck", top_protection="butyl-tape",
-    source="FS-BW-FLOOR continuation; 1/4in threshold joint; replaces SL-G-STEP-0",
-)
+# ** NO INTERIOR LANDING SINCE 2026-10-13. ** D-G-SERVICE swings OUT onto this deck, so
+# IRC R311.7.6's exception lets ST-G-SERVICE rise straight to the threshold
+# (notes/garage_service_door_outswing.md). FS-BW-GARAGE (uid BWFS02AAAA) is retired.
 
 STAIR_Y0_FT = HOUSE_CLADDING_Y_FT + 3 / 12
 STAIR_Y1_FT = GARAGE_CLADDING_Y_FT - 3 / 12
@@ -230,13 +197,9 @@ def guard(uid, tag, path):
 # Two openings to check that are NOT the sphere between slats: the gap under the bottom of
 # the slats to the deck surface, and the end gaps where the screen meets the house and the
 # garage. Both are openings in a required guard and both count.
-# ** RL-BW-GARAGE-W IS GONE (2026-09-11): the interior landing stands against W-G-W. ** Its
-# uid BWRGGWAAAA is retired and must not be reused. The east guard stands on the landing's
-# east edge, which is the stem's finished face plus the 3'-0" stair width -- derived, not
-# the 11.5 literal it carried until then.
+# RL-BW-GARAGE-W (BWRGGWAAAA, 2026-09-11) and RL-BW-GARAGE-E (BWRGGEAAAA, 2026-10-13) are
+# retired with the interior landing they guarded; neither uid is reused.
 RAILINGS = [
-    guard("BWRGGEAAAA", "RL-BW-GARAGE-E", ((GARAGE_LANDING_EAST_FT, GARAGE_INSIDE_Y_FT),
-                                          (GARAGE_LANDING_EAST_FT, GARAGE_LANDING_END_Y_FT))),
     Railing(uid="BWRHE1AAAA", tag="RL-BW-ENTRY",
             path=(pt(ft(STAIR_FOOT_X_FT), ft(STAIR_Y1_FT)),
                   pt(ft(LANDING_EAST_FT), ft(STAIR_Y1_FT))),
@@ -255,7 +218,7 @@ NOTES = [
                      + "HEADERS are 5-1/2x11-7/8 treated glulam (24F-V4 DF), starting at each south post's south face. WEST header on two 6x6 KDAT columns PT-BW-CW/CNW on 14in piers: ACE6Z end cap (CW) and AC6Z (CNW), MAX nailing, A35Z angles on the free post faces; cast-in CBSQ66-SDS2 bases, F2 along the screen, straps >= 3in from the pier edge, the four #5 on the cage diagonals. W-BW-SCREEN, the sheathed panel under the slats, is graded at 100% of N-S: 8d at 4in edges, nailed to both 6x6 chords. THE BAND OVER IT is SB-BW-BAND: a 2x6 sill and top plate, a 6x6 centre post and 14 KDAT 2x4 slats at 45deg, 2-1/4in clear, rising to the centre, flush with the west face, one KBS1Z at each slat end, 8 SDWS22400DB through each plate, two A35Z at each end of the centre post; the deck's shear path into the header uses 6 LTP4Z (CN-BW-EAVE-1..6) nailed directly to bevelled 2-ply SPF 2x10 heel blocking (laminated 8d HDG, two near each end and 12in o.c.) and the glulam, 12 0.131x1.5in HDG nails each (six per member). Blocks seat on each header flush with its INBOARD face, one LS30Z at each truss end (six 0.148x1.5in HDG nails per angle, three per leg, never through a truss plate); the fully nailed deck restrains rotation. One LTP4Z (CN-BW-EAVE-E) ties the east joint-bay block to BM-BW-RE for the east chord force. Deck boundary: 8d HDG at 6in; panel-edge blocking: bevelled SPF 2x4 on edge at 3ft 9in horizontal from the ridge, in every canopy bay and RF-GARAGE's first bay, three 8d HDG toenails each end; cut standard 4ft-wide sheets to fit the pitched module with 1/8in gaps. LATERAL LOAD crosses the joint into RF-GARAGE: E-W through continuous deck panels nailed at 6in into the garage gable top chord and 7 LTP4 clips (CN-BW-GCLIP-1..7) from RF-GARAGE's south gable frame into W-G-S (STHD14 CN-G-BWHD-S-DR at D-G-SERVICE's east jamb); N-S through RF-GARAGE to W-G-E / W-G-W (notes/canopy_garage_diaphragm.md). Canopy trusses bear on their own headers; the last deck bay also bears on the garage gable frame. Each truss ties to its header with a stainless H2.5ASS both ends (CN-BW-TRTIE-*). Headers run 8in past the north columns so the roof plane reaches the garage wall, and carry NO truss on that tail -- the deck bridges the last 2ft 0-1/8in to RF-GARAGE's own gable truss, leaving the garage south wall plane clear for its cladding and the fire/draft closure; sheathing CONTINUOUS across the garage south wall line; 6 LSTA24 straps @4ft o.c. (CN-BW-JOINT-1..3, -5..7; none at the ridge) direct to bevelled 2-ply SPF 2x6 longitudinal nailers BEFORE the deck, between truss faces on both sides of the garage gable; the end straps sit on the 2-2x10 collector blocks, 1-1/4in inboard of the header centrelines. Six OUTERMOST 0.148x2.5in HDG nails per leg (12 total), omit middle six holes, >=2-3/8in wood end and >=3/4in edge distances; installed axial capacity 823lb (1235 x 12/18). One LS30Z at each nailer end (six 0.148x1.5in HDG nails each, three per leg); the fully nailed deck restrains rotation; deck-to-nailer two staggered rows 8d HDG at 3in, one per ply, clear of the strap. NO sheathing seam at the garage gable; see canopy_garage_diaphragm.md Sec 3b — the two roofs are ONE plane and move together; straps carry axial N-S tension and the E-W rotation couple; E-W shear uses deck boundary nailing. Both eaves get the garage's own fascia and a CONTINUOUS 5in trough falling north to TR-G-LEADER-E/-W; NO leader at the canopy south end. No soffit — open tails. South gable of RF-GARAGE and both ends of RF-BW-CANOPY are CLOSE RAKES (sheathing cantilever + fascia), no ladder framing, no barge rafter. NEITHER END OF THE CANOPY IS A GABLE END: all three canopy trusses are ordinary FIELD trusses spanning 24ft, NOT gable-end frames -- a gable-end frame is supported continuously by the wall under its bottom chord and does not span, and there is no wall under either canopy end. Design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses\"")),
 
     Annotation(uid="BWAN01AAAA", tag="AN-BW-STRUCTURE", position=pt(ft(7), ft(39)),
-               text=("LANDING: ONE tier of beams. Two seat beams east-west on the piers at -0ft 8-1/4in; 2x8 joists @12in o.c. run NORTH-SOUTH straight on them, cantilevering 9-1/2in south and 7-1/4in north. BM-BW-FC/FE run north-south in the SAME plane (not a second tier) and exist only to reach the interior landing under D-G-SERVICE's sill, 3-3/4in over the continuous ICF stem; they hang (HU28-2Z) in BM-BW-LAND-HDR, a 3-2x12 KDAT header across the full 36in flight at the landing's north edge, which stands on PT-BW-IC and PT-BW-IE, 4x4 KDAT 21-3/4in tall on ABU44 standoff bases bearing on SL-G-FLOOR as cast: NO anchor bolt and NO slab thickening (~405 lb per post, about 5 psi on the 40 psi under-slab XPS; the bolt was what wanted the thickening). The bases claim no uplift and no lateral (north_entry_structure.md). The interior landing's west edge is closed by W-G-W; ST-G-SERVICE's stringers hang on the header's north face on LSCZ; its handrail is wall-mounted on 2x blocking (BK-G-W-RAIL-*). No bearing on the house and none on the garage. TWO PIER DEPTHS ON PURPOSE: the three HOUSE-side piers (PT-BW-W/E and the east-line pier) bottom at -9ft 9-7/16in and must be cast WITH the basement excavation while it is open — casting them after backfill undermines the house footing, and the depth costs shaft only because the hole is already there. The three GARAGE-side piers (PT-BW-GW/GE and the east-line pier) bottom at -7ft 0in, coplanar with the garage strip footings, and are cast with the garage foundation in the same pour. " + landing_note(EAST_POST_SYSTEM) + ". Hold deck boards 1/2in off the house cladding and let the gap drain")),
+               text=("LANDING: ONE tier of beams. Two seat beams east-west on the piers at -0ft 8-1/4in; 2x8 joists @12in o.c. run NORTH-SOUTH straight on them, cantilevering 9-1/2in south and 7-1/4in north. BM-BW-FE, the east edge beam, runs north-south in the SAME plane (not a second tier), seat to seat; nothing crosses the garage stem or W-G-S. D-G-SERVICE SWINGS OUT onto this deck, hinged on its WEST jamb, with a closer and hold-open: no interior landing (IRC R311.7.6 exception); ST-G-SERVICE rises straight to the threshold and its stringer heads seat on the stem-top ledge inside W-G-S (notes/garage_service_door_outswing.md). The deck ties to the garage on two lines (params/landing_tie.py). No bearing on the house and none on the garage. TWO PIER DEPTHS ON PURPOSE: the three HOUSE-side piers (PT-BW-W/E and the east-line pier) bottom at -9ft 9-7/16in and must be cast WITH the basement excavation while it is open — casting them after backfill undermines the house footing, and the depth costs shaft only because the hole is already there. The three GARAGE-side piers (PT-BW-GW/GE and the east-line pier) bottom at -7ft 0in, coplanar with the garage strip footings, and are cast with the garage foundation in the same pour. " + landing_note(EAST_POST_SYSTEM) + ". Hold deck boards 1/2in off the house cladding and let the gap drain")),
 
     Annotation(uid="BWAN02AAAA", tag="AN-BW-TIERS", position=pt(ft(16), ft(39)),
                text="TERRACE: 5 equal 6.6in rises off the SL-WK-C entry walk; four CAST tiers (SL-BW-TIER1..4), 18in going, wedding-caked so each is fully bedded on the one below, on a compacted washed-rock base — NOT frost-founded, and that is a decision: a monolithic pour moves as one piece and the joint that matters is at the TOP, against a deck landing on piers that will not move (R311.7.5.1 allows 3/8in of riser variation and that joint is where it is spent). EXPOSED_MIX (ACI 318-19 F3+C2), broom finish, 1/4in per foot of cross-fall to the east. No wood, no stringers, no piers — the eight drilled piers this replaced stood east of the flight under open ground"),
@@ -516,16 +479,7 @@ SEAT_BEAM_HANGERS = [
               position=pt(ft(LANDING_WEST_FT), ft(GARAGE_SEAT_Y_FT - COLUMN_HALF_FT)),
               elevation=ft(SEAT_TOP_FT), size="HU28-2Z",
               connects=("BM-BW-SCSILL", "PT-BW-CNW")),
-    # The two garage carriers into BM-BW-LAND-HDR's south face (2026-09-24): the same 2-2x8
-    # into the same part, flush tops; the elevation is the hanger's centre.
-    Connector(uid="FZXT6JSTBY", tag="CN-BW-HGR-FC", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(BEAM_X_FT[0]), ft(CARRIER_END_Y_FT)),
-              elevation=ft(DECK_JOIST_TOP_FT - JOIST_DEPTH_IN / 24), size="HU28-2Z",
-              connects=("BM-BW-FC", "BM-BW-LAND-HDR")),
-    Connector(uid="FYC66TSEYW", tag="CN-BW-HGR-FE", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(BEAM_X_FT[1]), ft(CARRIER_END_Y_FT)),
-              elevation=ft(DECK_JOIST_TOP_FT - JOIST_DEPTH_IN / 24), size="HU28-2Z",
-              connects=("BM-BW-FE", "BM-BW-LAND-HDR")),
+    # CN-BW-HGR-FC/-FE (FZXT6JSTBY/FYC66TSEYW) are retired with BM-BW-LAND-HDR (2026-10-13).
 ]
 
 # ** EACH COLUMN NOW CARRIES TWO HANGERS, ON TWO DIFFERENT FACES (owner, 2026-09-15). ** The
@@ -595,38 +549,7 @@ COLUMN_BASES = [
     ))
 ]
 
-# ** THE TWO INTERIOR POST BASES, AND THEY TAKE NO ANCHOR BOLT (owner, 2026-09-11). **
-# PT-BW-IC/-IE are 4x4 KDAT standing on SL-G-FLOOR, and the 1" standoff is the whole reason
-# the part is here: this corner is not dry. The garage slab is authored EXPOSED_MIX for ACI
-# exposure class C2 precisely because chloride arrives on the car and pools on a floor nobody
-# rinses, and this base sits 3'-0" inside the service door where plowed snow is walked in.
-# The standoff keeps the post's end grain out of that water.
-#
-# ** WHY `anchored=False`, AND WHAT IT COSTS. ** A cast-in AB-058-10-SS is 5/8" x 10". It
-# needs something like 8" of embedment and the slab is 3-1/2" thick on 1" of XPS, so the bolt
-# cannot live here at all -- it drags a 10"-deep thickening along to house itself. The
-# thickening was authored for a day on that basis and is gone: the base is bearing-only, so
-# download crosses the plate into the pour and the joint claims NO uplift and NO lateral.
-# That is outside ESR-1622's tabulated configuration, which is measured through the anchor,
-# and §5.8 makes it the designer's call by putting the anchor and the concrete support
-# outside its own scope.
-#
-# It is honest here because the demand is gravity and nothing else. These posts stand inside
-# a garage under a landing that weighs more than any wind on it; uplift is nil. The landing's
-# lateral -- a 200 lb guard load on RL-BW-GARAGE-E -- reaches ground through the seat beams
-# on PT-BW-GW/GE, whose cast-in CBSQ bases ARE anchored. **What nothing grades is that path**, and
-# `notes/north_entry_structure.md` carries it as an ungraded item rather than a claim.
-#
-# The slab itself was never the question: 8.1 ft2 tributary at IRC R507.1's 50 psf is ~405 lb
-# per post on a 3-1/2" square, which is a lighter load at a lower contact pressure than the
-# car tire this slab is already designed for.
-INTERIOR_POST_BASES = [
-    Connector(uid=f"BWIB{_i}AAAAAA"[:10], tag=f"CN-BW-IBASE-{_s}",
-              kind=ConnectorKind.POST_BASE, position=pt(ft(_x), ft(INTERIOR_POST_Y_FT)),
-              elevation=SITE_GRADE, size="ABU44", anchored=False,
-              connects=(f"PT-BW-I{_s}", "SL-G-FLOOR"))
-    for _i, (_s, _x) in enumerate(zip(("C", "E"), INTERIOR_POST_X_FT, strict=True))
-]
+# CN-BW-IBASE-C/-E (BWIB0AAAAA/BWIB1AAAAA) are retired with PT-BW-IC/-IE (2026-10-13).
 
 # ** THE CANOPY'S TRUSS BEARINGS, AUTHORED RATHER THAN DERIVED, AND IN STAINLESS. **
 # `takeoff/uplift.py::bearing_uplift_tie_rows` was already deriving eight commodity H2.5A
@@ -769,8 +692,8 @@ SNOW_RETENTION = [
     for index, station_y in enumerate(SNOW_RETENTION_STATIONS_FT, 1)
 ]
 
-MAIN_ELEMENTS = [*FRAME_ELEMENTS, FLOOR, GARAGE_FLOOR, TIERS, *TIER_SLABS,
-                 *RAILINGS, *SEAT_BEARINGS, *COLUMN_BASES, *INTERIOR_POST_BASES,
+MAIN_ELEMENTS = [*FRAME_ELEMENTS, FLOOR, TIERS, *TIER_SLABS,
+                 *RAILINGS, *SEAT_BEARINGS, *COLUMN_BASES,
                  *COLUMN_CAPS, *SEAT_BEAM_HANGERS, *EAST_HEADER_BEARINGS,
                  *TRUSS_TIES, *JOINT_TIES, *GABLE_CLIPS, *LANDING_TIES,
                  *SNOW_RETENTION, *NOTES]

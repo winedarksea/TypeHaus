@@ -374,12 +374,13 @@ def test_the_porch_guards_doorway_is_the_stair_throat_and_not_an_open_side(catli
     assert opening == pytest.approx(inch(36).meters, abs=0.02)
 
 
-def test_the_replacement_garage_landing_is_in_the_guard_census(catlin_ctx):
+def test_the_garage_has_no_raised_landing_left_to_guard(catlin_ctx):
+    """SL-G-STEP-0, then FS-BW-GARAGE, stood 34" over the slab; since 2026-10-13 the service
+    door swings out and ST-G-SERVICE rises straight to its threshold (R311.7.6 exception)."""
     from typehaus.checks.code.mn_residential.fall_protection import raised_surface_guard_height
 
     findings = {f.message.split(":")[0]: f for f in raised_surface_guard_height(catlin_ctx)}
-    assert "SL-G-STEP-0" not in findings
-    assert findings["FS-BW-GARAGE"].result is Result.PASS
+    assert "SL-G-STEP-0" not in findings and "FS-BW-GARAGE" not in findings
 
 
 def test_an_interior_seam_between_two_floor_systems_is_not_an_open_side(catlin_ctx):

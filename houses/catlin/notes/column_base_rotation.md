@@ -432,3 +432,28 @@ Worked, `PT-BW-W` at 1.0": `P_u = 1.2 × 1,876.4 + 1.6 × 3,324.5 = 7,570.9`, `E
 3/0.0746) = 36,148`, `δ = 1 / (1 − 7,042.9 / 27,111) = 1.3510`; at 1.0" `0.75 × 9,204 = 6,903
 < P_u`, a mechanism. No verdict moves: the landing is tied (`north_entry_piers.md` §10), and
 these rows stay arithmetic only.
+
+## Addendum 2026-10-13 — the interior garage landing is gone
+
+The garage landing and its carriers went with the outswing `D-G-SERVICE`
+(`garage_service_door_outswing.md`). Each of the four landing piers loses 3.91 ft² of deck:
+`D −39.1`, `L −156.4` (`north_entry_piers.md` §6). The wall line load above `W`/`GW` reads
+105 lb (it was 97.7). k_θ, L and I_g are unchanged, and EI moves only through β = 1.2D/P_u.
+
+| column | D | L | P_u | β | EI | δ 0.25" | δ 1.0" |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `PT-BW-W` | 1,844.3 | 3,168.1 | 7,282.1 | 0.3039 | 2.3316e9 | 1.0787 | 1.3242 |
+| `PT-BW-E` | 957.7 | 220.1 | 1,501.4 | 0.7654 | 9.2951e8 | 1.0220 | 1.0658 |
+| `PT-BW-GW` | 1,421.1 | 3,155.5 | 6,754.1 | 0.2525 | 2.4273e9 | 1.3318 | 46.32 |
+| `PT-BW-GE` | 645.8 | 207.6 | 1,107.1 | 0.7000 | 9.6531e8 | 1.0529 | 1.2398 |
+
+Worked, `PT-BW-GW` at 1.0":
+- `Pc,rigid = π² × 2.4273e9 / (2.1 × 60.5)² = 1,484,157`
+- `R = 7.5111e5 × 60.5 / 2.4273e9 = 0.01872`
+- `Pc,flex = 1,484,157 / (1 + 3/0.01872) = 9,204`
+- `0.75 × 9,204 = 6,903`, which now exceeds `P_u` by 149 lb
+- `δ = 1 / (1 − 6,754.1 / 6,903) = 46.3`
+
+It is no longer a mechanism, but a magnifier of 46 is unstable in every practical sense. No
+verdict moves: the landing is tied (`north_entry_piers.md` §10h), and these rows stay
+arithmetic only.

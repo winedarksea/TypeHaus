@@ -26,7 +26,7 @@ def test_the_old_concrete_and_glazed_connector_is_retired(catlin_plan):
 def test_finished_boards_and_both_stairs_meet_both_sills(catlin_model_ro):
     model = catlin_model_ro
     floors = {f.tag: f for f in model.floors}
-    for tag in ("FS-BW-FLOOR", "FS-BW-GARAGE"):
+    for tag in ("FS-BW-FLOOR",):
         floor = floors[tag]
         assert floor.deck_z1_m == pytest.approx(0)
         assert floor.deck_z0_m == pytest.approx(-inch(1).meters)
@@ -62,35 +62,27 @@ def test_both_full_door_landing_patches_fit_the_shared_deck(catlin_plan):
     assert max(p.x.meters for p in floor.subfloor_outline) == pytest.approx(ft(9, 7).meters)
 
 
-def test_interior_landing_has_three_clear_feet_and_real_continuing_beams(catlin_model_ro):
+def test_the_service_flight_rises_to_the_threshold_with_no_interior_landing(catlin_model_ro):
+    """D-G-SERVICE swings OUT since 2026-10-13 (IRC R311.7.6 exception), so the interior
+    landing and everything under it retired, and nothing of the deck crosses W-G-S."""
     model = catlin_model_ro
-    floor = model.plan.by_tag("FS-BW-GARAGE")
-    y_end = max(p.y.meters for p in floor.subfloor_outline)
-    assert y_end - ft(43, 13.625).meters == pytest.approx(ft(3).meters)
+    for gone in ("FS-BW-GARAGE", "BM-BW-FC", "BM-BW-LAND-HDR", "PT-BW-IC", "PT-BW-IE",
+                 "CN-BW-IBASE-C", "CN-BW-IBASE-E", "CN-BW-HGR-FC", "CN-BW-HGR-FE",
+                 "RL-BW-GARAGE-E", "RL-BW-GARAGE-W"):
+        assert model.plan.by_tag(gone) is None, gone
+    door = model.plan.by_tag("D-G-SERVICE")
+    assert door.flip_swing and door.flip_hinge
     stair = next(s for s in model.stairs if s.tag == "ST-G-SERVICE")
-    # The stringers stop at the head riser's board, which stands against the landing edge.
+    # The stringers stop at the head riser's board, which stands against W-G-S's gyp face.
+    gyp_face = ft(43, 9.375).meters
     assert min(m.p1[1] for m in stair.members if m.category == "stringer") == pytest.approx(
-        y_end + ft(0, 0.75).meters)
-    for tag in floor.joists.bearing_refs:
-        beam = model.plan.by_tag(tag)
-        # No `engineering_note` any more: the escape that turned one into a delegated
-        # ENGINEERED finding is deleted, and these beams are graded prescriptively now.
-        assert not beam.engineering_note
-        # Their tips hang in BM-BW-LAND-HDR, which is POSTED: that ends the 4'-2" interior
-        # cantilever that broke R507.5.1, and the header spans the whole 36" flight.
-        assert set(beam.bearing_refs) == {"BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT",
-                                          "BM-BW-LAND-HDR"}
-        end = model.plan.by_tag(beam.end_node).position
-        assert end.y.meters == pytest.approx(y_end - inch(4.5).meters)
-        # Inside the RO (6'-7"..9'-7"): the west carrier is sistered to FS-BW-FLOOR's joist
-        # at 7'-3 3/4" and the east one's face is on the jamb.
-        assert ft(6, 7).meters < end.x.meters < ft(9, 7).meters
-    # And the sheet is flush to the stem's finished face plus the 3'-0" flight below it,
-    # a quarter inch off W-G-W's gyp face on the west — the west guard is the wall.
-    assert min(p.x.meters for p in floor.subfloor_outline) == pytest.approx(ft(6, 7).meters)
-    assert max(p.x.meters for p in floor.subfloor_outline) == pytest.approx(
-        ft(9, 11.625).meters)
-    assert model.plan.by_tag("RL-BW-GARAGE-W") is None
+        gyp_face + ft(0, 0.75).meters)
+    # FE is the deck's east edge beam, seat to seat, its tip at the garage's cladding face.
+    edge = model.plan.by_tag("BM-BW-FE")
+    assert set(edge.bearing_refs) == {"BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"}
+    assert not edge.engineering_note
+    tip = max(model.plan.by_tag(n).position.y.meters for n in (edge.start_node, edge.end_node))
+    assert tip == pytest.approx(ft(43, 1.75).meters)
 
 
 def test_tiers_are_cast_pours_at_an_18in_going_over_a_clear_lower_landing(catlin_model_ro):
@@ -149,7 +141,7 @@ def test_the_single_garage_slab_cannot_become_a_basement_ceiling(catlin_plan):
 
 
 def test_all_connector_floor_bearings_resolve(catlin_model_ro):
-    for tag in ("FS-BW-FLOOR", "FS-BW-GARAGE"):
+    for tag in ("FS-BW-FLOOR",):
         system = catlin_model_ro.plan.by_tag(tag)
         assert isinstance(system, FloorSystem)
         assert all(catlin_model_ro.plan.by_tag(ref) is not None

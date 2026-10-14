@@ -64,6 +64,9 @@ class TieJoint:
     #: is authored (read wet), "mixed" where they disagree; and its stated basis.
     service_condition: str | None = None
     service_basis: str = ""
+    #: The tied member's own run in plan, "x"/"y", ``None`` where it has none: a vertical-heel
+    #: angle's wood leg lies on the member's side face, so its plane runs with the member.
+    member_axis: str | None = None
 
 
 @dataclass(frozen=True)
@@ -144,8 +147,19 @@ def wall_ties(ctx: EngineeringContext, deck: Any) -> list[TieJoint]:
             wall_axis="x" if abs(x1 - x0) >= abs(y1 - y0) else "y",
             heel_axis=next(iter(heels)) if len(heels) == 1 else "mixed",
             on_concrete=wall_tag in concrete, service_condition=service[0],
-            service_basis=service[1]))
+            service_basis=service[1], member_axis=_plan_axis(ctx, member)))
     return out
+
+
+def _plan_axis(ctx: EngineeringContext, tag: str) -> str | None:
+    """"x" or "y" for a member authored between two nodes (a beam, a wall), else ``None``."""
+    element = ctx.plan.by_tag(tag)
+    ends = [ctx.plan.by_tag(getattr(element, name, None) or "")
+            for name in ("start_node", "end_node")]
+    if any(getattr(end, "position", None) is None for end in ends):
+        return None
+    (x0, y0), (x1, y1) = (_xy_ft(end.position) for end in ends)
+    return "x" if abs(x1 - x0) >= abs(y1 - y0) else "y"
 
 
 def deck_storey(ctx: EngineeringContext, deck: Any) -> str | None:

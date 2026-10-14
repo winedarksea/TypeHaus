@@ -107,7 +107,8 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
     hand on the handle, from whatever else the corner is asked to hold.
 
     12" is the number. Since the 2026-09-16 move beside ST-G-SERVICE the NW-corner bench
-    and heater are far off; the nearest placeable is ED-G-LT3, 31" away.
+    and heater are far off; the nearest placeable is ED-G-LT3, 29" away since it was
+    re-centred over the flight (2026-10-13).
     """
     from shapely.geometry import Polygon
 
@@ -120,7 +121,7 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
     assert min(tight.values()) >= 12, sorted(tight.items(), key=lambda kv: kv[1])[:3]
     # Named so a future move reads as a decision.
     assert min(tight, key=tight.get) == "ED-G-LT3"
-    assert tight["ED-G-LT3"] == pytest.approx(31.1, abs=0.5)
+    assert tight["ED-G-LT3"] == pytest.approx(28.9, abs=0.5)
 
 
 # --- 3. the supply run --------------------------------------------------------------------
@@ -199,14 +200,14 @@ def test_the_whole_garage_stands_on_its_floor_not_on_the_stem_top(catlin_model):
     by_tag = {o.tag: o for o in catlin_model.canvas_objects}
     grade = catlin_model.plan.project.site.grade.meters
     assert by_tag["FURN-G-WORKBENCH"].z_m == pytest.approx(grade, abs=1e-6)
-    # ** ED-G-SW IS AUTHORED AT 80", NOT THE HOUSE'S USUAL 46", AND THAT IS THE POINT OF
-    # THIS ASSERTION RATHER THAN AN EXCEPTION TO IT. ** It is reached from the interior
-    # landing FS-BW-GARAGE, which stands 34" over the slab this datum measures from, so 46"
-    # authored here resolved to 12" over the surface anyone actually stands on to use it
-    # (2026-09-11). 80" over the floor is 46" over the landing. The contract under test is
-    # unchanged: whatever is authored resolves that far above the FLOOR, never the stem top.
+    # ** ED-G-SW IS AUTHORED AT 76", NOT THE HOUSE'S USUAL 46", AND THAT IS THE POINT OF
+    # THIS ASSERTION RATHER THAN AN EXCEPTION TO IT. ** It is reached from ST-G-SERVICE's top
+    # tread, 27.2" over the slab this datum measures from (80" over the interior landing,
+    # 2026-09-11 to 2026-10-13). 76" over the floor is 48.8" over the tread. The contract
+    # under test is unchanged: whatever is authored resolves that far above the FLOOR, never
+    # the stem top.
     for tag, above_floor_ft in (("ED-G-EV-620", 4.0), ("ED-G-EV-1450", 4.0),
-                                ("EQ-G-HEATER", 6.0), ("ED-G-SW", 80 / 12),
+                                ("EQ-G-HEATER", 6.0), ("ED-G-SW", 76 / 12),
                                 ("ED-G-LT1", 8.0)):
         assert (by_tag[tag].z_m - grade) * _M_TO_FT == pytest.approx(
             above_floor_ft, abs=1e-6), tag

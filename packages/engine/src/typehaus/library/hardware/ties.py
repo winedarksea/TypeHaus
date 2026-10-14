@@ -1,9 +1,9 @@
 """Tie hardware for a deck held to another structure — split out of the hardware catalog (size).
 
-The north-entry landing's two tie lines (catlin ``params/landing_tie.py``, owner
-2026-09-21): HL33HDG wood to wood into the garage's west wall, and HL35HDG on the garage
-stem's core where the anchor side is an ACI 318 Ch. 17 design
-(``engineering/deck_tie_anchor.py``). Numbers copied from the catalog, never derived.
+The north-entry landing's two tie lines (catlin ``params/landing_tie.py``): HL33HDG wood to
+wood into the garage's west wall, HL43HDG wood to wood into its south wall (2026-10-13), and
+HL35HDG for an angle on a concrete stem's core, where the anchor side is an ACI 318 Ch. 17
+design (``engineering/deck_tie_anchor.py``). Numbers copied from the catalog, never derived.
 """
 
 from __future__ import annotations
@@ -85,6 +85,35 @@ HL35HDG_HEAVY_ANGLE = StructuralHardware(
     ),
 )
 
+HL43HDG_HEAVY_ANGLE = StructuralHardware(
+    tag="simpson-hl43hdg-heavy-angle",
+    name="HL43HDG heavy angle, 3 ga, hot-dip galvanized",
+    role=ROLE_HEAVY_ANGLE,
+    manufacturer="Simpson Strong-Tie",
+    model="HL43HDG",
+    source="Simpson Strong-Tie HL heavy angle, 3 ga, legs 4-1/4\" x 4-1/4\", 3\" long, one "
+           "3/4\" hole per leg 1-1/2\" off its end (D1), 2-3/4\" off the heel (D3); HDG to "
+           "order. ~$30-35 ea retail, made to order, 4-5 weeks (fastenersplus / benefast, "
+           "HL43HDG, 2026-10-13)",
+    allowable=AllowableLoads(
+        uplift_lb=1275.0,
+        lateral_f1_lb=1445.0,
+        lateral_f2_lb=None,
+        load_duration_factor=1.6,
+        species="DF/SP (SPF/HF 0.85x, fn 2) — every member it bolts to here is KDAT SP",
+        fasteners="(2) 3/4\" through bolts, ASTM A307 Gr A or better (fn 8), one per leg; "
+                  "lag screws of equal diameter >= 5\" long may replace the bolt in the "
+                  "carried member (fn 7); wood members >= 5-1/8\" thick for the \"4\" "
+                  "series (fn 5), face at least as wide as the angle (fn 3)",
+        citation=("Simpson Strong-Tie Wood Construction Connectors C-C-2024 p. 303, HL "
+                  "table, HL43 row, read 2026-10-13: 3 ga, W1/W2 4-1/4, L 3, D1 1-1/2, "
+                  "D3 2-3/4, (2) 3/4\" bolts; DF/SP uplift 1,275, F1 1,445 lb at C_D 1.6. "
+                  "Fn 6: allowable loads are for a single connector; uplift may be doubled "
+                  "for two, lateral may NOT be doubled. Wood-to-wood only. "
+                  + HL_CATALOG_URL),
+    ),
+)
+
 TIE_BLOCK_KDAT = StructuralHardware(
     tag="kdat-4x4-tie-block",
     name="KDAT 4x4 tie block, 3-1/2\" long, screwed to the tied member",
@@ -119,5 +148,6 @@ FILLER_4X_KDAT = StructuralHardware(
            "3-1/2\" face where two 2x plies give 3\" (HL fn 3). Its nailing is not graded",
 )
 
-TIE_HARDWARE: tuple = (HL33HDG_HEAVY_ANGLE, HL35HDG_HEAVY_ANGLE, TIE_BLOCK_KDAT,
+TIE_HARDWARE: tuple = (HL33HDG_HEAVY_ANGLE, HL35HDG_HEAVY_ANGLE, HL43HDG_HEAVY_ANGLE,
+                       TIE_BLOCK_KDAT,
                        TIE_BLOCK_KDAT_5, FILLER_4X_KDAT)

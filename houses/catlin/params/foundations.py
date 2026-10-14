@@ -456,8 +456,8 @@ GARAGE_STEM_WALLS = [
     # ** `_STEM`, NOT `_GRADE_BEAM`, SINCE 2026-09-11. ** This was the service door's grade
     # beam, dropped to grade so the door could open off the slab — a premise that died when
     # the door's sill rose to the north-entry landing (+1'-0" over the stem top). With the
-    # door in the SW corner (RO 6'-7"..9'-7") the landing carriers BM-BW-FC/-FE pass over
-    # this stem's top at -1'-0" with 3 3/4" to their soffit. The tag, uid and footing
+    # door in the SW corner (RO 6'-7"..9'-7"), ST-G-SERVICE's stringer heads seat on this
+    # stem's top at -1'-0" (STAIR_SEATS, plan/storeys/garage.py). The tag, uid and footing
     # FT-GF-S-DR are kept because the water-service sleeve names that footing.
     FoundationWall(uid="CGF107AAAA", tag="W-GF-S-DR", start_node="N-GF-S-DRW",
                    end_node="N-GF-S-DRE", **_STEM),
@@ -704,8 +704,8 @@ GARAGE_SLAB = Slab(
 # --- garage service-door landing ---------------------------------------------------
 #
 # The shared composite landing is authored with its actual bridge frame in breezeway.py.
-# Retired unsupported concrete landing CGS510AAAA / SL-G-STEP-0. The composite
-# FS-BW-GARAGE continuation now bears on the foundation-to-foundation bridge.
+# Retired unsupported concrete landing CGS510AAAA / SL-G-STEP-0. Since 2026-10-13 there is
+# no interior landing at all: D-G-SERVICE swings out and ST-G-SERVICE rises to its threshold.
 GARAGE_STEPS = []
 
 # --- garage hydrant: supply sleeve, gravel pit -------------------------------------

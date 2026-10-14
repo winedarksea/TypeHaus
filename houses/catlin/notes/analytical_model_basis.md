@@ -256,6 +256,23 @@ The test now pins BR1's live to this statics line as well as the pair.
 It fell by 0.55 against the whole-span graph, between the carriers' strip ratio (0.50) and
 the seat beams' (0.62–0.66) that feed it, which is the bound a hand reading can give.
 
+## Addendum 2026-10-13 — the stem ties retired; two joints, four springs (§1, §3e)
+
+The garage's interior landing went (the service door swings out), and `BM-BW-FC` and the stem
+tie with it. `deck_tie_basis.wall_ties` now returns two joints, so the graph carries **four**
+springs, 190,919 lb/in each, at `N-BM-BW-FE:tie:W-G-S` (on FE's axis at its tip, y 43.146)
+and the sill's north end as before. Line 1 is now two **HL43HDG** with one 3/4" bolt per leg;
+at D = 3/4" `γ = 270,000 × 0.75^1.5 = 175,370 lb/in` per bolt, 1.84 times the 1/2" figure.
+The spring stays at the 1/2" value, EQUAL at both joints, because equal stiffness is what
+`deck_tie` distributes by (north_entry_piers.md §10h); a stiffer FE would draw more of the
+E-W shear onto the joint with the most capacity left (0.643 against W's 0.775), so the
+equal claim errs toward the governing joint. A question for the engineer of record, not a
+gap.
+
+**§3e's thrust** is a solve reading: **6.4 lb** worst, down from 52.8 at the FC tie. The
+incline that made it ran to the carriers' stem-joint nodes, which are gone; what is left is
+FE's own end piece over the garage seat.
+
 ## Addendum 2026-09-23b — the balcony 3" lower
 
 `balcony_level_ft` 10.0 → 9.75' (R311.3 at `D-S-DECK-E`); the frame, the record and the

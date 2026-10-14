@@ -39,20 +39,17 @@ RULES = CONFIG.uplift
 # The canopy's two WEST columns, authored as ABU66SS on 2026-09-10 so the order names the
 # stainless part the house actually buys rather than the galvanized one the section-based
 # derivation reaches for. Since 2026-09-30 all four canopy posts (kdat) are on authored
-# CBSQ66-SDS2 cast-in bases. And since 2026-09-11 the two interior landing
-# posts on ABU44 (CN-BW-IBASE-C/-E): 4x4 KDAT standing 25 3/4" on the garage slab, authored
-# so the 1" standoff is on the drawings — and so the base can say `anchored=False`, which no
-# derived base can. There is no cast-in bolt under those two; see
-# ``test_every_post_base_on_concrete_is_bought_its_anchor``.
+# CBSQ66-SDS2 cast-in bases. The two interior landing posts on ABU44 (CN-BW-IBASE-C/-E,
+# 2026-09-11) retired with the landing on 2026-10-13; their `anchored=False` case is kept by
+# ``test_a_bearing_only_base_on_a_slab_is_not_bought_a_bolt``.
 #: The two balcony centre pillars joined this set on 2026-09-14, when they came off the porch
 #: framing and onto the cast column tops (CN-SG-BASE-R2 / -F2, ABU66SS, ``anchored=True``).
 #: They were covered by an authored TENSION_TIE until then, and the kind moved with the joint
 #: rather than with the part: ``model/enums.py`` reads TENSION_TIE as "a post on FRAMING" and
 #: POST_BASE as "a stirrup on CONCRETE", so a pillar that now stands on a pour takes a base.
 #: The canopy's four 6x6 KDAT posts stand on authored CBSQ66-SDS2 cast-in bases (2026-09-30,
-#: EAST_POST_SYSTEM = "kdat"); the landing's two 4x4s on authored ABU44.
-AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-IC",
-                       "PT-BW-IE"}
+#: EAST_POST_SYSTEM = "kdat").
+AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE"}
 
 #: **Empty since 2026-09-14, and kept rather than deleted.** ``post_base_rows`` reads BOTH
 #: kinds — a post whose joint is already made must not be bought a base — and while the two
@@ -284,8 +281,7 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     # it again the same day: the house buys stainless at every treated post base, and the
     # derived rule names the catalog model for the SECTION, which is the galvanized ABU66.
     # `CN-BW-BASE-W` / `-NW` author those two joints as ABU66SS instead, which stands the
-    # derivation down, and `CN-BW-IBASE-C` / `-E` do the same for the two interior landing
-    # posts (ABU44, authored for the standoff detail). The 4x4 rung that is left is the
+    # derivation down. The 4x4 rung that is left is the
     # stairwell posts on the basement slab — a TRIO since 2026-09-15, when ST-M2S's upper
     # half-landing gained a going of depth and with it a third corner over FO-M-STAIR's
     # hole (P-M-STRWELL-SS, houses/catlin/notes/u_stair_split_landing.md). A PAIR again
@@ -303,11 +299,8 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     # rather than silence: four authored bases, three derived, one squash block (the centre
     # pillars' two authored bases retired in 2026-09). The four balcony corner columns are
     # absent because they are no longer WOOD —
-    # the filter below is on section, and a "12 round" is not a 6x6. PT-BW-IC / PT-BW-IE
-    # were squash blocks for one day (2026-09-10: 1'-6 1/2" of 6x6 stopping 7 1/4" SHORT of
-    # the carriers they were meant to hold, sized off the pier top); since 2026-09-11 they
-    # are 25 3/4" 4x4 posts on authored bases, and they left the squash-block set with the
-    # height.
+    # the filter below is on section, and a "12 round" is not a 6x6. (PT-BW-IC / PT-BW-IE,
+    # the interior landing's 4x4s, retired on 2026-10-13.)
     # No ``within_wall`` filter, and deliberately not: since 2026-09-12 that field is
     # geometric only (the framer cuts the plates around the post), so it says nothing about
     # whether the base joint is made. PT-BW-CW / -CNW now carry it — they stand in
@@ -318,7 +311,7 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
             and e.size in {"6x6", "4x4"}}
     assert wood == AUTHORED_POST_BASES | AUTHORED_TENSION_TIES | {
         "P-M-STRWELL-S", "P-M-STRWELL-SS", "P-M-STRLAND-SE",
-        "PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-IC", "PT-BW-IE"}
+        "PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE"}
 
 
 def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
@@ -348,15 +341,8 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
     Two of catlin's bases land on concrete AND take a bolt — the stairwell 4x4s on the
     basement slab. The canopy's CBSQ66-SDS2 bases are cast in and take none. The sunken garden has
     none left: its four balcony corners are cast columns, and its two wood centre pillars
-    retired with the centre support line (2026-09).
-
-    ** AND TWO BASES LAND ON CONCRETE AND TAKE NO BOLT, WHICH IS THE INTERESTING HALF. **
-    PT-BW-IC / PT-BW-IE stand on the garage slab under the interior landing. Their bases are
-    authored ``anchored=False`` (2026-09-11): a 5/8" x 10" cast-in bolt needs something like
-    8" of embedment and SL-G-FLOOR is 3-1/2" on 1" of XPS, so the bolt could not live there
-    without dragging a slab thickening along to house itself. Both went. Those bases transfer
-    download by bearing and claim no uplift and no lateral, which is a real configuration and
-    the one thing that must not silently re-acquire a bolt.
+    retired with the centre support line (2026-09). The two bearing-only ABU44s under the
+    interior landing retired with it on 2026-10-13; that case has its own test now.
     """
     from typehaus.takeoff.uplift_joints import post_base_anchor_rows
 
@@ -395,13 +381,36 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
     # The population is the union of DERIVED and AUTHORED bases, stated as that sum rather
     # than as one number, because the two halves move independently: the derived rows are the
     # 2 ABU44 ladder rungs, and the authored-and-anchored-on-concrete half is 0 — every
-    # authored base on concrete is either cast in (CN-BW-BASE-*) or ``anchored=False``
-    # (CN-BW-IBASE-C / -E, the interesting case above).
+    # authored base on concrete is cast in (CN-BW-BASE-*).
     derived = sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES))
     assert derived == 2
     assert row["count"] == derived
-    assert "PT-BW-IC" not in row["basis"] and "PT-BW-IE" not in row["basis"], \
-        "a bearing-only base must not be billed a cast-in anchor"
+
+
+def test_a_bearing_only_base_on_a_slab_is_not_bought_a_bolt(catlin_plan) -> None:
+    """An authored base that says ``anchored=False`` must never silently re-acquire a bolt.
+
+    Catlin's witnesses were PT-BW-IC / -IE, 4x4s on ABU44 standoffs on the garage slab
+    (2026-09-11 to 2026-10-13): a 5/8" x 10" cast-in bolt wants ~8" of embedment and
+    SL-G-FLOOR is 3-1/2" on foam. The landing went; the configuration is put back here.
+    """
+    from typehaus.model.enums import ConnectorKind
+    from typehaus.model.ids import new_uid
+    from typehaus.model.structure import Connector, Post
+    from typehaus import ft, inch, pt
+    from typehaus.resolve.pipeline import resolve
+    from typehaus.takeoff.uplift_joints import post_base_anchor_rows
+
+    post = Post(uid=new_uid(), tag="PT-TEST-SLAB", position=pt(ft(20), ft(55)), size="4x4",
+                height=inch(24), assembly="POST_KDAT", supported_by="SL-G-FLOOR")
+    base = Connector(uid=new_uid(), tag="CN-TEST-SLAB", kind=ConnectorKind.POST_BASE,
+                     position=pt(ft(20), ft(55)), elevation=ft(-2, -10), size="ABU44",
+                     anchored=False, connects=("PT-TEST-SLAB", "SL-G-FLOOR"))
+    plan = catlin_plan.with_elements("garage", [*catlin_plan.elements["garage"], post, base])
+    model, _ = resolve(plan)
+    basis = post_base_anchor_rows(model, RULES)[0]["basis"]
+    assert "P-M-STRWELL-S" in basis
+    assert "PT-TEST-SLAB" not in basis, "a bearing-only base must not be billed an anchor"
 
 
 def test_a_base_on_a_pour_is_bought_its_cast_in_bolt_and_a_bare_pier_is_not(
@@ -420,9 +429,8 @@ def test_a_base_on_a_pour_is_bought_its_cast_in_bolt_and_a_bare_pier_is_not(
     posts on them, and a rule that trusted that set bought four bolts for four piers that
     have no base at all.
 
-    And PT-BW-IC / PT-BW-IE are the third side: their bases DO bear on concrete (the garage
-    slab) and are authored ``anchored=False``, so the pour is not sufficient either — the
-    joint has to claim the bolt as well.
+    (The third side — a base on concrete authored ``anchored=False`` — is
+    ``test_a_bearing_only_base_on_a_slab_is_not_bought_a_bolt``.)
     """
     from typehaus.takeoff.uplift_joints import post_base_anchor_rows
 
@@ -433,8 +441,6 @@ def test_a_base_on_a_pour_is_bought_its_cast_in_bolt_and_a_bare_pier_is_not(
         assert cast_in not in basis, f"{cast_in}'s CBSQ is cast in; it takes no bolt"
     for pier in ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4"):
         assert pier not in basis, f"{pier} is a cast pier, not a based post"
-    for bearing_only in ("PT-BW-IC", "PT-BW-IE"):
-        assert bearing_only not in basis, f"{bearing_only}'s base is anchored=False"
 
 
 def test_an_authored_column_cap_stands_down_the_derived_strap(catlin_model_ro):
@@ -443,21 +449,45 @@ def test_an_authored_column_cap_stands_down_the_derived_strap(catlin_model_ro):
     Catlin billed no strap at all between the breezeway's retirement and 2026-09-10. The
     north entry brought the rule back to life, and the population splits, which is what
     makes the guard readable: BM-BW-RW lands on PT-BW-CW / PT-BW-CNW under an authored
-    CCQ46SDS2.5 cap and must NOT be strapped again, while BM-BW-LAND-HDR lands on
-    PT-BW-IC/IE — the posts that ended the interior cantilever, with nothing authored at their
-    tops — and must be (the carriers themselves hang in the header since 2026-09-24). BM-BW-RE is in neither set as of 2026-09-10: it lands on cast concrete, and a
-    beam-on-WOOD-post rule has no business there.
+    cap and must NOT be strapped again. BM-BW-LAND-HDR on PT-BW-IC/IE was the bare half,
+    strapped with two KBS1Z, until the interior landing retired on 2026-10-13; no bare
+    beam-on-wood-post joint is left, so no row derives. BM-BW-RE is in neither set as of
+    2026-09-10: it lands on cast concrete, and a beam-on-WOOD-post rule has no business there.
     """
     rows = post_beam_strap_rows(catlin_model_ro, RULES)
-    assert len(rows) == 1
-    assert rows[0]["part_number"] == "KBS1Z"
-    assert rows[0]["count"] == 2
-    assert "BM-BW-LAND-HDR->PT-BW-IC" in rows[0]["basis"]
-    assert "BM-BW-LAND-HDR->PT-BW-IE" in rows[0]["basis"]
-    for joint in AUTHORED_POST_BEAM_JOINTS:
-        beam, post = sorted(joint)
-        assert f"{beam}->{post}" not in rows[0]["basis"], joint
-        assert f"{post}->{beam}" not in rows[0]["basis"], joint
+    assert rows == []
+
+
+def test_a_bare_beam_on_a_wood_post_is_strapped(catlin_plan) -> None:
+    """The bare half catlin lost with BM-BW-LAND-HDR, put back: a beam on a 4x4 with nothing
+    authored at the joint derives a strap, and the derived joint and its row agree (it is
+    ``beam_hold_down``'s parity witness in ``test_joint_row_parity``)."""
+    from collections import Counter
+
+    from typehaus import Beam, Node, Post, ft, inch, pt
+    from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
+    from typehaus.joints import derived_joints
+    from typehaus.model.ids import new_uid
+    from typehaus.resolve.pipeline import resolve
+    from typehaus.takeoff.hardware import hardware_takeoff
+
+    added = [Node(uid=new_uid(), tag="N-TEST-B-S", position=pt(ft(19), ft(55))),
+             Node(uid=new_uid(), tag="N-TEST-B-N", position=pt(ft(21), ft(55))),
+             Post(uid=new_uid(), tag="PT-TEST-A", position=pt(ft(19), ft(55)), size="4x4",
+                  height=inch(18), assembly="POST_KDAT", supported_by="SL-G-FLOOR"),
+             Post(uid=new_uid(), tag="PT-TEST-B", position=pt(ft(21), ft(55)), size="4x4",
+                  height=inch(18), assembly="POST_KDAT", supported_by="SL-G-FLOOR"),
+             Beam(uid=new_uid(), tag="BM-TEST", start_node="N-TEST-B-S",
+                  end_node="N-TEST-B-N", size="2-2x8", top_elevation=ft(-1, -2),
+                  bearing_refs=("PT-TEST-A", "PT-TEST-B"), assembly="BEAM_KDAT")]
+    plan = catlin_plan.with_elements("garage", [*catlin_plan.elements["garage"], *added])
+    model, _ = resolve(plan)
+    [row] = post_beam_strap_rows(model, RULES)
+    assert "BM-TEST->PT-TEST-A" in row["basis"] and "BM-TEST->PT-TEST-B" in row["basis"]
+    located = Counter(j.role for j in derived_joints(model, CONFIG))["beam_hold_down"]
+    billed = sum(r["count"] for r in hardware_takeoff(model, CONFIG)
+                 if r.get("role") == "beam_hold_down" and r["scope"] != "modeled connector")
+    assert located == billed == 2
 
 
 def test_a_tie_at_a_beam_s_own_bearing_does_not_stand_down_the_joists_above_it(

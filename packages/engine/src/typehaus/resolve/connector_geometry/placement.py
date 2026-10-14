@@ -357,7 +357,7 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
                      point[1] - y_axis[1] * width / 2)
     elif part.startswith("HL"):
         beam = _connected_beam(index, references)
-        if beam is not None:
+        if beam is not None and axis is not None:
             centre = _centroid(beam.outline)
             # Paired angles on opposite block faces have their concrete legs outside.
             if sum((point[i] - centre[i]) * y_axis[i] for i in range(2)) < 0:
@@ -374,13 +374,16 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
                          point[1] + y_axis[1] * thickness_m)
                 # These authored angle elevations name the centre of the upright leg.
                 z_m += thickness_m - dimensions.vertical_leg_in * M_PER_IN / 2
-        elif axis is None and len(references) == 2 and all(
-                index.model.wall(tag) is not None for tag in references):
+        elif axis is None and len(references) == 2 and index.model.wall(references[1]) \
+                is not None and (index.model.wall(references[0]) is not None
+                                 or beam is not None):
             # A wall face meeting another wall's end has a vertical heel, even when
-            # their centreline axes are parallel (the screen/garage corner).
+            # their centreline axes are parallel (the screen/garage corner); so does a
+            # beam running into a wall face (catlin's BM-BW-FE into W-G-S).
             wall_axis = cast(Vec2, index.direction(references[0]))
             x_axis = z_axis
-            centre = _centroid(cast(ResolvedWall, index.model.wall(references[0])).axis)
+            centre = _centroid(cast(ResolvedWall, index.model.wall(references[0])).axis
+                               if beam is None else beam.outline)
             sign = 1.0 if sum((centre[i] - point[i]) * wall_axis[i] for i in range(2)) > 0 else -1.0
             y_axis = (sign * wall_axis[0], sign * wall_axis[1], 0.0)
             z_axis = (wall_axis[1], -wall_axis[0], 0.0)

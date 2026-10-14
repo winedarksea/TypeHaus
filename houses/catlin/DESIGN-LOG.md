@@ -14,6 +14,42 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Garage service door swings out; the interior landing goes (2026-10-13)
+
+D-G-SERVICE now swings OUT onto the north-entry deck. It is hinged on the west jamb, so the
+open leaf parks along W-BW-SCREEN, and it has a closer with hold-open. Because no door swings
+over the stairs, IRC 2018 R311.7.6's exception for an interior flight in an enclosed garage
+waives the top landing. MN 1309.0010 adopts that edition, and 1309.0311 leaves R311.7.6
+unamended (both read on revisor.mn.gov). MN's R311.7.1.1 brings garage stairs INTO R311.7, so
+the exception has to carry the case by itself. Whether R311.3 reaches the garage's own door
+(R311.1 scopes R311 to dwellings) is an AHJ confirmation item: see
+`notes/garage_service_door_outswing.md` §1.
+
+Removed: FS-BW-GARAGE, BM-BW-FC, BM-BW-LAND-HDR, PT-BW-IC/-IE and their unanchored ABU44s,
+CN-BW-HGR-FC/-FE, RL-BW-GARAGE-E, and the stem tie line (4 HL35HDG on tie blocks, with a
+Titen HD into the ICF). Their uids are retired.
+
+What replaced them:
+- ST-G-SERVICE moved 3'-4 1/4" south and rises five risers to the threshold. Its stringer
+  heads seat on the W-G-S stem core on stainless shims (CN-G-STR-SEAT-W/-E).
+- BM-BW-FE is a short 3-ply edge beam, seat to seat.
+- Deck tie line 1 is two 3 ga HL43HDG from FE's tip into W-G-S. `deck_tie/FS-BW-FLOOR`
+  went from 0.966 to 0.778 (`north_entry_piers.md` §10h).
+- The rail and its backing were re-stationed, ED-G-SW dropped to 76", and ED-G-LT3 moved over
+  the flight.
+
+Engine changes:
+- New rule `code.R311_7_6_door_at_stair_head`.
+- A raised door threshold now gets a rough sill.
+- A BEARING_STANDOFF seat pardons a stringer end in masonry.
+- HL43HDG is catalogued with its geometry.
+- The deck-tie leg plane follows the member axis (basis 5).
+
+**Cost** (`haus takeoff`, construction total low/high): **+$70 / +$167**, from
+$862,326 / $1,736,941 to $862,396 / $1,737,108. The structure alone saves $430 / $833, with
+HL43HDG priced at $30–45 each. The new `finish-door-closer-hold-open` allowance
+($500–1,000 installed) more than spends that.
+
 ## Stair/storage hallway L corner (2026-10-13)
 
 Removed W-M-STRW2 and its free-end node N-M-STR1 to clear the hallway. W-M-STRW now

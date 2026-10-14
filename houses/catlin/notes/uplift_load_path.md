@@ -175,8 +175,9 @@ anchor, not the stirrup. The two on the dry basement slab can take a galvanised 
 That is a ~$25 purchasing swap, filed with the MiTek ones below rather than split into a
 second product for one role.
 
-> ⚠ **A BASE ON CONCRETE CAN STILL TAKE NO BOLT, AND TWO OF THEM DO (2026-09-11).**
-> `PT-BW-IC`/`-IE` stand on `SL-G-FLOOR` under the interior landing, and their bases are
+> ⚠ **A BASE ON CONCRETE CAN STILL TAKE NO BOLT (2026-09-11; catlin's two, `PT-BW-IC`/`-IE`,
+> went with the interior garage landing on 2026-10-13 — the rule below stands).**
+> Those posts stood on `SL-G-FLOOR`, and their bases were
 > authored `Connector.anchored=False`. The reason is dimensional before it is structural: an
 > `AB-058-10-SS` is 5/8" × 10" and wants something like 8" of embedment, while the garage slab
 > is 3 1/2" of concrete on 1" of XPS. The bolt cannot live there without dragging a 10" slab

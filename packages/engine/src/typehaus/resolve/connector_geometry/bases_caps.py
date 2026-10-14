@@ -14,7 +14,7 @@ from typehaus.resolve.geometry_ir import GMesh
 
 # Nominal sheet steel, before coating. Gauge minima in code reports are manufacturing
 # tolerances, not the intended thickness for a visual model.
-STEEL_GAUGE_THICKNESS_IN = {7: 0.1793, 10: 0.1345, 12: 0.1046, 16: 0.0598, 18: 0.0478}
+STEEL_GAUGE_THICKNESS_IN = {3: 0.2391, 7: 0.1793, 10: 0.1345, 12: 0.1046, 16: 0.0598, 18: 0.0478}
 POST_STANDOFF_IN = 1.0
 SIMPLIFIED_CORNER_CLIP_IN = 0.125
 
@@ -107,11 +107,14 @@ class AngleDimensions:
     gauge: int
 
 
-# C-C-2026 pp. 313/315. L50's 5" is its longitudinal length, not either leg width.
+# C-C-2026 pp. 313/315 (HL: C-C-2024 p. 303). L50's 5" is its longitudinal length, not
+# either leg width.
 ANGLE_DIMENSIONS = {
     "L50": AngleDimensions(5.0, 2.375, 1.375, 16),
     "HL33": AngleDimensions(2.5, 3.25, 3.25, 7),
     "HL35": AngleDimensions(5.0, 3.25, 3.25, 7),
+    # C-C-2024 p. 303: 3 ga, 4-1/4" legs, 3" long.
+    "HL43": AngleDimensions(3.0, 4.25, 4.25, 3),
 }
 
 

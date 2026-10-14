@@ -915,174 +915,6 @@
       "node": "polyline",
       "points": [
         [
-          496.6714566929134,
-          -8.25
-        ],
-        [
-          561.125,
-          -8.25
-        ],
-        [
-          561.125,
-          -1.0
-        ],
-        [
-          496.6714566929134,
-          -1.0
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWB004AAAA",
-      "tag": "BM-BW-FC"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          496.6714566929134,
-          -8.25
-        ],
-        [
-          561.125,
-          -8.25
-        ],
-        [
-          561.125,
-          -1.0
-        ],
-        [
-          496.6714566929134,
-          -1.0
-        ]
-      ],
-      "pattern": "kdat",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "kdat"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          561.125,
-          -12.25
-        ],
-        [
-          565.625,
-          -12.25
-        ],
-        [
-          565.625,
-          -1.0
-        ],
-        [
-          561.125,
-          -1.0
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWB011AAAA",
-      "tag": "BM-BW-LAND-HDR"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          561.125,
-          -12.25
-        ],
-        [
-          565.625,
-          -12.25
-        ],
-        [
-          565.625,
-          -1.0
-        ],
-        [
-          561.125,
-          -1.0
-        ]
-      ],
-      "pattern": "kdat",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "kdat"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          561.625,
-          -32.8207
-        ],
-        [
-          565.125,
-          -32.8207
-        ],
-        [
-          565.125,
-          -12.249999999999998
-        ],
-        [
-          561.625,
-          -12.249999999999998
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWPT09AAAA",
-      "tag": "PT-BW-IC"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          561.625,
-          -32.8207
-        ],
-        [
-          565.125,
-          -32.8207
-        ],
-        [
-          565.125,
-          -12.249999999999998
-        ],
-        [
-          561.625,
-          -12.249999999999998
-        ]
-      ],
-      "pattern": "kdat",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "kdat"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           517.825,
           -12.266666666666666
         ],
@@ -1197,300 +1029,48 @@
       "node": "polyline",
       "points": [
         [
-          563.375,
-          -34.0
+          524.5,
+          -12.5
         ],
         [
-          561.4891500000001,
-          -34.0
+          528.0,
+          -12.5
         ],
         [
-          561.4891500000001,
-          -33.947700000000005
+          528.0,
+          -11.500000000000002
         ],
         [
-          561.4891500000001,
-          -33.8954
-        ],
-        [
-          563.375,
-          -33.8954
-        ],
-        [
-          565.26085,
-          -33.8954
-        ],
-        [
-          565.26085,
-          -33.947700000000005
-        ],
-        [
-          565.26085,
-          -34.0
+          524.5,
+          -11.500000000000002
         ]
       ],
       "layer": "S-FNDN",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "BWIB0AAAAA",
-      "tag": "CN-BW-IBASE-C"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          561.5937500000001,
-          -31.260200000000033
-        ],
-        [
-          561.5937500000001,
-          -33.8954
-        ],
-        [
-          561.54145,
-          -33.8954
-        ],
-        [
-          561.4891500000001,
-          -33.8954
-        ],
-        [
-          561.4891500000001,
-          -31.260200000000033
-        ],
-        [
-          561.4891500000001,
-          -28.625000000000004
-        ],
-        [
-          561.4891500000001,
-          -28.559782608695652
-        ],
-        [
-          561.4891500000001,
-          -28.5
-        ],
-        [
-          561.54145,
-          -28.5
-        ],
-        [
-          561.5937500000001,
-          -28.5
-        ],
-        [
-          561.5937500000001,
-          -28.559782608695652
-        ],
-        [
-          561.5937500000001,
-          -28.625000000000004
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWIB0AAAAA",
-      "tag": "CN-BW-IBASE-C"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          565.15625,
-          -33.8954
-        ],
-        [
-          565.15625,
-          -31.260200000000033
-        ],
-        [
-          565.15625,
-          -28.625000000000004
-        ],
-        [
-          565.15625,
-          -28.559782608695652
-        ],
-        [
-          565.15625,
-          -28.5
-        ],
-        [
-          565.2085500000001,
-          -28.5
-        ],
-        [
-          565.26085,
-          -28.5
-        ],
-        [
-          565.26085,
-          -28.559782608695652
-        ],
-        [
-          565.26085,
-          -28.625000000000004
-        ],
-        [
-          565.26085,
-          -31.260200000000033
-        ],
-        [
-          565.26085,
-          -33.8954
-        ],
-        [
-          565.2085500000001,
-          -33.8954
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWIB0AAAAA",
-      "tag": "CN-BW-IBASE-C"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          563.375,
-          -33.0598
-        ],
-        [
-          561.5937500000001,
-          -33.0598
-        ],
-        [
-          561.5937500000001,
-          -33.0299
-        ],
-        [
-          561.5937500000001,
-          -33.0
-        ],
-        [
-          563.375,
-          -33.0
-        ],
-        [
-          565.15625,
-          -33.0
-        ],
-        [
-          565.15625,
-          -33.029900000000005
-        ],
-        [
-          565.15625,
-          -33.0598
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWIB0AAAAA",
-      "tag": "CN-BW-IBASE-C"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          559.875,
-          -8.325
-        ],
-        [
-          561.125,
-          -8.325
-        ],
-        [
-          561.125,
-          -8.2875
-        ],
-        [
-          561.125,
-          -8.25
-        ],
-        [
-          559.875,
-          -8.25
-        ],
-        [
-          558.625,
-          -8.25
-        ],
-        [
-          558.625,
-          -8.2875
-        ],
-        [
-          558.625,
-          -8.325
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "FZXT6JSTBY",
-      "tag": "CN-BW-HGR-FC"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          523.625,
-          -11.75
-        ],
-        [
-          527.125,
-          -11.75
-        ],
-        [
-          527.125,
-          -8.25
-        ],
-        [
-          523.625,
-          -8.25
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "B0FS509J9R",
-      "tag": "CN-BW-STEMTIE-FC-BLK"
+      "uid": "1P13EB3SE6",
+      "tag": "CN-G-STR-SEAT-W"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          523.625,
-          -11.75
+          524.5,
+          -12.5
         ],
         [
-          527.125,
-          -11.75
+          528.0,
+          -12.5
         ],
         [
-          527.125,
-          -8.25
+          528.0,
+          -11.500000000000002
         ],
         [
-          523.625,
-          -8.25
+          524.5,
+          -11.500000000000002
         ]
       ],
       "pattern": "concrete",
@@ -1561,299 +1141,411 @@
       "node": "polyline",
       "points": [
         [
-          518.125,
-          -8.25
-        ],
-        [
-          519.625,
-          -8.25
-        ],
-        [
-          519.625,
-          -1.0
-        ],
-        [
-          518.125,
-          -1.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWFS02AAAA",
-      "tag": "joist-0-000-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          518.125,
-          -8.25
-        ],
-        [
-          519.625,
-          -8.25
-        ],
-        [
-          519.625,
-          -1.0
-        ],
-        [
-          518.125,
-          -1.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          530.125,
-          -8.25
-        ],
-        [
-          531.625,
-          -8.25
-        ],
-        [
-          531.625,
-          -1.0
-        ],
-        [
-          530.125,
-          -1.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWFS02AAAA",
-      "tag": "joist-0-001-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          530.125,
-          -8.25
-        ],
-        [
-          531.625,
-          -8.25
-        ],
-        [
-          531.625,
-          -1.0
-        ],
-        [
-          530.125,
-          -1.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          542.125,
-          -8.25
-        ],
-        [
-          543.625,
-          -8.25
-        ],
-        [
-          543.625,
-          -1.0
-        ],
-        [
-          542.125,
-          -1.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWFS02AAAA",
-      "tag": "joist-0-002-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          542.125,
-          -8.25
-        ],
-        [
-          543.625,
-          -8.25
-        ],
-        [
-          543.625,
-          -1.0
-        ],
-        [
-          542.125,
-          -1.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          554.125,
-          -8.25
-        ],
-        [
-          555.625,
-          -8.25
-        ],
-        [
-          555.625,
-          -1.0
-        ],
-        [
-          554.125,
-          -1.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWFS02AAAA",
-      "tag": "joist-0-003-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          554.125,
-          -8.25
-        ],
-        [
-          555.625,
-          -8.25
-        ],
-        [
-          555.625,
-          -1.0
-        ],
-        [
-          554.125,
-          -1.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          518.875,
-          -8.25
-        ],
-        [
-          554.875,
-          -8.25
-        ],
-        [
-          554.875,
-          -1.0
-        ],
-        [
-          518.875,
-          -1.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWFS02AAAA",
-      "tag": "rim-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          518.875,
-          -8.25
-        ],
-        [
-          554.875,
-          -8.25
-        ],
-        [
-          554.875,
-          -1.0
-        ],
-        [
-          518.875,
-          -1.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          565.625,
-          -6.8
+          559.125,
+          -28.700000000000003
         ],
         [
           565.6830708661419,
-          -6.8
+          -28.700000000000003
         ],
         [
           565.6830708661419,
+          -27.200000000000003
+        ],
+        [
+          559.125,
+          -27.200000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "tread-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          559.125,
+          -28.700000000000003
+        ],
+        [
+          565.6830708661419,
+          -28.700000000000003
+        ],
+        [
+          565.6830708661419,
+          -27.200000000000003
+        ],
+        [
+          559.125,
+          -27.200000000000003
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          548.125,
+          -21.9
+        ],
+        [
+          559.125,
+          -21.9
+        ],
+        [
+          559.125,
+          -20.4
+        ],
+        [
+          548.125,
+          -20.4
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "tread-001"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          548.125,
+          -21.9
+        ],
+        [
+          559.125,
+          -21.9
+        ],
+        [
+          559.125,
+          -20.4
+        ],
+        [
+          548.125,
+          -20.4
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          537.125,
+          -15.1
+        ],
+        [
+          548.125,
+          -15.1
+        ],
+        [
+          548.125,
+          -13.6
+        ],
+        [
+          537.125,
+          -13.6
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "tread-002"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          537.125,
+          -15.1
+        ],
+        [
+          548.125,
+          -15.1
+        ],
+        [
+          548.125,
+          -13.6
+        ],
+        [
+          537.125,
+          -13.6
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          526.125,
+          -8.299999999999999
+        ],
+        [
+          537.125,
+          -8.299999999999999
+        ],
+        [
+          537.125,
+          -6.8
+        ],
+        [
+          526.125,
+          -6.8
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "tread-003"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          526.125,
+          -8.299999999999999
+        ],
+        [
+          537.125,
+          -8.299999999999999
+        ],
+        [
+          537.125,
+          -6.8
+        ],
+        [
+          526.125,
+          -6.8
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          558.375,
+          -27.2
+        ],
+        [
+          559.125,
+          -27.2
+        ],
+        [
+          559.125,
+          -21.9
+        ],
+        [
+          558.375,
+          -21.9
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "riser-001"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          558.375,
+          -27.2
+        ],
+        [
+          559.125,
+          -27.2
+        ],
+        [
+          559.125,
+          -21.9
+        ],
+        [
+          558.375,
+          -21.9
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          547.375,
+          -20.4
+        ],
+        [
+          548.125,
+          -20.4
+        ],
+        [
+          548.125,
+          -15.1
+        ],
+        [
+          547.375,
+          -15.1
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "riser-002"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          547.375,
+          -20.4
+        ],
+        [
+          548.125,
+          -20.4
+        ],
+        [
+          548.125,
+          -15.1
+        ],
+        [
+          547.375,
+          -15.1
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          536.375,
+          -13.6
+        ],
+        [
+          537.125,
+          -13.6
+        ],
+        [
+          537.125,
+          -8.299999999999999
+        ],
+        [
+          536.375,
+          -8.299999999999999
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "X99TD38ZS3",
+      "tag": "riser-003"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          536.375,
+          -13.6
+        ],
+        [
+          537.125,
+          -13.6
+        ],
+        [
+          537.125,
+          -8.299999999999999
+        ],
+        [
+          536.375,
+          -8.299999999999999
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          525.375,
+          -6.8
+        ],
+        [
+          526.125,
+          -6.8
+        ],
+        [
+          526.125,
           -1.4999999999999987
         ],
         [
-          565.625,
+          525.375,
           -1.4999999999999987
         ]
       ],
@@ -1869,19 +1561,19 @@
       "node": "hatch",
       "boundary": [
         [
-          565.625,
+          525.375,
           -6.8
         ],
         [
-          565.6830708661419,
+          526.125,
           -6.8
         ],
         [
-          565.6830708661419,
+          526.125,
           -1.4999999999999987
         ],
         [
-          565.625,
+          525.375,
           -1.4999999999999987
         ]
       ],
@@ -1953,62 +1645,6 @@
       "node": "polyline",
       "points": [
         [
-          518.875,
-          -1.0
-        ],
-        [
-          565.625,
-          -1.0
-        ],
-        [
-          565.625,
-          0.0
-        ],
-        [
-          518.875,
-          0.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWFS02AAAA",
-      "tag": "deck"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          518.875,
-          -1.0
-        ],
-        [
-          565.625,
-          -1.0
-        ],
-        [
-          565.625,
-          0.0
-        ],
-        [
-          518.875,
-          0.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "composite-deck"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           519.25,
           -12.000000000000005
         ],
@@ -2051,6 +1687,62 @@
         [
           519.25,
           -10.500000000000007
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          519.25,
+          -1.5000000000000042
+        ],
+        [
+          524.75,
+          -1.5000000000000042
+        ],
+        [
+          524.75,
+          -4.370956789862821e-15
+        ],
+        [
+          519.25,
+          -4.370956789862821e-15
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CGW101AAAA",
+      "tag": "sill-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          519.25,
+          -1.5000000000000042
+        ],
+        [
+          524.75,
+          -1.5000000000000042
+        ],
+        [
+          524.75,
+          -4.370956789862821e-15
+        ],
+        [
+          519.25,
+          -4.370956789862821e-15
         ]
       ],
       "pattern": "lumber",

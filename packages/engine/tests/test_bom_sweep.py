@@ -36,7 +36,8 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     which is what keeps a wall-as-guard from being ordered twice."""
     rows = [row for row in bom["railings"] if row["style"] != "masonry"]
     # The flight guard stops at the newel; RL-A-FLIGHT-SKIRT closes the band under it.
-    assert sum(int(row["count"]) for row in rows) == 20
+    # 19 since 2026-10-13: RL-BW-GARAGE-E left with the garage's interior landing.
+    assert sum(int(row["count"]) for row in rows) == 19
     masonry = [row for row in bom["railings"] if row["style"] == "masonry"]
     assert [row["tags"] for row in masonry] == [["W-BW-SCREEN"]]
     assert all(row["post_count"] == 0 and row["bracket_count"] == 0 for row in masonry), \
@@ -113,7 +114,9 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # the W rail now running to the top nosing), and the dark-steel rails moved 3/8" off
     # their walls for R311.7.8.2's clearance.
     # 9.7 since 2026-10-13: the W rail stops 3 1/8" short, where W-M-STRW's face ends.
-    assert by_type["(untyped railing)"] == pytest.approx(42.9, abs=0.1)
+    # 39.9 since 2026-10-13: RL-BW-GARAGE-E's 3'-0" left with the garage's interior landing,
+    # and RL-G-SERVICE's run went 3'-7 3/4" -> 3'-7 1/4" (head to its new 1 1/2" return).
+    assert by_type["(untyped railing)"] == pytest.approx(39.9, abs=0.1)
     assert by_type["RAILING-INT-TI-HANDRAIL-42"] == pytest.approx(9.7, abs=0.1)
 
 

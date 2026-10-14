@@ -174,60 +174,25 @@ y=37'-6", not brackets standing off the basement concrete.
 | `BM-BW-HOUSE-SEAT` | `PT-BW-W`, `PT-BW-E` | 3'-7" between two 12" round piers (5'-6" until 2026-09-11, when the deck's east edge came in to `D-G-SERVICE`'s jamb at x=9'-7"), soffit −1'-3 1/2". `SS316-SHIM-35` pack under it (bearing, and the dielectric off the pour), a cast-in `HETA20Z` pair (the tie). |
 | `BM-BW-GARAGE-SEAT` | `PT-BW-GW`, `PT-BW-GE` | Identical span, elevation and detail. |
 | `BM-BW-SCSILL` | Both seat beams | The screen panel's sill and the deck's west rim in one member, on the column line at x=6'-0" where the joist field cannot reach. |
-| `BM-BW-FC` / `-FE` | Both seat beams **and** `BM-BW-LAND-HDR` | Continue into the garage to the interior landing, under `D-G-SERVICE`'s sill and 3 3/4" over the continuous ICF stem (`W-GF-S-DR` is full stem since 2026-09-11; its door gap dated from when the door opened at the slab). The west one is sistered to the deck's second joist at 7'-3 3/4"; the east one's face is on the RO's east jamb at 9'-7". The tips hang in the header on `HU28-2Z` (`CN-BW-HGR-FC`/`-FE`). |
-| `BM-BW-LAND-HDR` | `PT-BW-IC`, `PT-BW-IE` | 3-2x12 KDAT, flush with the joists, across the full 36" of `ST-G-SERVICE` (stem face 6'-11 5/8" to 9'-11 5/8") at the landing's north edge (2026-09-24). Both stringers hang on its north face on `LSCZ`. `FE` could not move east to catch the east stringer: it crosses `W-G-S` inside the door RO, whose east jack is at 9'-7". `PT-BW-IE` moved 4 3/8" east to the header's end instead. The posts are now 21 3/4" tall. |
+| `BM-BW-FE` | Both seat beams | Since 2026-10-13: a 3-ply 2x8 east edge beam on the RO's east jamb line, ending at the garage seat beam, so nothing crosses the stem or `W-G-S`. Its tip takes deck tie line 1 (two `HL43HDG` into `W-G-S`, `params/landing_tie.py`). `BM-BW-FC`, `BM-BW-LAND-HDR`, `PT-BW-IC`/`-IE` and the interior landing they carried are retired (`notes/garage_service_door_outswing.md`). |
 | `FS-BW-FLOOR` joists | Both seat beams | 2x8 at 12" o.c. running **north-south**, bearing on top, cantilevering 9 1/2" south and 7 1/4" north. Joist tape, stainless fasteners. |
 
 > ⚠ **ONE TIER OF BEAMS, and it was two until 2026-09-10.** This landing was framed pier →
 > seat beam (east-west) → floor beam (north-south) → joist (east-west) → board: three tiers
 > of framing under a 5'-6" × 4'-11 3/4" square, with beams running both ways, and the middle
 > tier carrying nothing the seats could not carry directly. The joists turned to run
-> north-south straight on the seats and `BM-BW-FW` went. `BM-BW-FC`/`-FE` stayed because they
-> are not a tier — they sit in the joist plane, parallel to the joists, and do the one thing
-> no joist can do here, which is reach the interior landing through a door opening.
+> north-south straight on the seats and `BM-BW-FW` went. `BM-BW-FE` is not a tier either: it
+> sits in the joist plane as the field's east edge.
 >
 > **The seats are the tier that survives, and the alternative does not fit.** Putting the
 > north-south beams straight on the piers instead fails on one line: x=6'-0" is occupied at
 > both y stations by a canopy column standing on that same pier and rising through the deck
 > band. The columns own x=6'-0"; the seats get the piers.
 
-> ⚠ **`PT-BW-IC`/`-IE` bear on `SL-G-FLOOR` as cast — no thickening, and no anchor bolt
-> (owner, 2026-09-11).** A "thicken to 10" over a 2'-0" square, monolithic" note stood here
-> for a day. The slab never wanted it: 8.1 ft² tributary at IRC R507.1's 50 psf is ~405 lb per
-> post, ~600 lb with the stair's top reaction, which under a 3 1/2" square is a lighter load
-> at a lower contact pressure than one tire of the car that parks on this slab. Spread through
-> the 3 1/2" pour it reaches the 1" under-slab XPS at about 5 psi against a 40 psi board.
->
-> **What wanted the 10" was the bolt.** `AB-058-10-SS` is 5/8" × 10" and needs something like
-> 8" of embedment; the slab is 3 1/2" on foam, so the bolt could not live in it and dragged a
-> thickening along to house itself. The bases are now authored `anchored=False`: download
-> crosses the plate into the pour, which is bearing and needs no bolt, and the joint claims
-> **no uplift and no lateral**. That is outside ESR-1622's tabulated configuration, which is
-> measured through the anchor — and ESR-1622 §5.8 puts the anchor and the concrete support
-> outside its own scope, which makes it the designer's call rather than the report's.
-> The order is 4 `AB-058-10-SS`, not 6.
->
-> ⚠ **AND HERE IS WHAT NOBODY GRADES.** With no base anchor these two are leaning columns:
-> they carry gravity and lean on the braced system for stability. `RL-BW-GARAGE-E`'s 200 lb
-> guard load has to reach ground through the landing into the seat beams and down
-> `PT-BW-GW`/`GE`, whose `ABU66SS` bases ARE anchored. **No check in this engine follows that
-> path.** `structural.uplift_path_coverage` now reports these two NOT_APPLICABLE and says
-> why, which is honest about the joint and silent about the diaphragm. If a reviewer wants it
-> closed, the cheap answer is one anchor back in the east base, not the thickening back.
->
-> `structural.deck_footing_size` still reports NOT_APPLICABLE and correctly: R507.3.1 sizes a
-> spread footing over soil and no soil is in this load path. A `Pad` stays the wrong element
-> for any future thickening — one pour with the slab has no element that says "monolithic",
-> and an isolated pad reports a `concrete_interference` lap with the slab it is part of.
->
-> **They are 4x4 KDAT, 25 3/4" tall, on `ABU44` standoff bases, unanchored (owner,
-> 2026-09-11).** The 1" standoff is the reason the part is here and it is not a dry-location
-> nicety: `SL-G-FLOOR` is authored `EXPOSED_MIX` for ACI exposure class **C2** on the
-> house's own reasoning that chloride arrives on the car and pools on a floor nobody rinses,
-> and this corner is 3'-0" inside the service door where plowed snow is walked in. The
-> standoff keeps the post's end grain out of that water. The first pass authored 6x6s sized off the PIER top, so they
-> stopped at −1'-3 1/2" under carriers whose soffit is −0'-8 1/4" — a 7 1/4" gap nothing
-> graded. `structural.deck_post_size` reads Table R507.4's 6'-9" for a 4x4 against 2'-1 3/4".
+> **`PT-BW-IC`/`-IE` (the interior landing's 4x4 posts on unanchored ABU44s) are retired,
+> 2026-10-13**, and so is the ungraded leaning-column load path this note used to warn about
+> (`RL-BW-GARAGE-E`'s guard load through an unanchored base). The history is in git and in
+> DESIGN-LOG.md.
 
 > ⚠ **Hold the deck boards 1/2" off the house cladding and let the gap drain.** Boards run
 > tight to a rainscreened wall dam the drainage plane and hold water against it. Abutting is

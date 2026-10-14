@@ -54,6 +54,15 @@ def test_every_derived_joint_is_billed_exactly_once(catlin_model_ro, role: str) 
         f"row builder have stopped agreeing, which is the drift typehaus.joints prevents")
 
 
+#: Roles catlin stopped locating when the garage's interior landing went (2026-10-13), each
+#: with the test that still locates one and checks its row. Not a waiver: a witness.
+_WITNESSED_ELSEWHERE = {
+    "stair_stringer_connector":
+        "test_hung_detection.py::test_a_deck_joist_carries_a_stringer_head_and_nothing_else",
+    "beam_hold_down": "test_uplift_takeoff.py::test_a_bare_beam_on_a_wood_post_is_strapped",
+}
+
+
 def test_the_covered_roles_are_the_ones_actually_located(catlin_model_ro) -> None:
     """``COVERED_ROLES`` is a claim, and an unbacked one would make the test above vacuous.
 
@@ -64,9 +73,11 @@ def test_the_covered_roles_are_the_ones_actually_located(catlin_model_ro) -> Non
     assert set(joints) <= COVERED_ROLES, (
         f"derived_joints returned roles COVERED_ROLES does not claim: "
         f"{sorted(set(joints) - COVERED_ROLES)}")
-    assert set(joints) == COVERED_ROLES, (
+    assert set(joints) | set(_WITNESSED_ELSEWHERE) == COVERED_ROLES, (
         f"COVERED_ROLES claims roles this house locates none of, so the parity test above "
-        f"is vacuous for them: {sorted(COVERED_ROLES - set(joints))}")
+        f"is vacuous for them: {sorted(COVERED_ROLES - set(joints) - set(_WITNESSED_ELSEWHERE))}")
+    assert not set(joints) & set(_WITNESSED_ELSEWHERE), \
+        "a role catlin locates again belongs back in the catlin parity, not the witness list"
 
 
 def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_ro) -> None:
@@ -113,9 +124,10 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     assert joints["mudsill_anchor"] == 91
     assert joints["slab_plate_pin"] == 50
     # 38 rafters on the ridge. ST-G-SERVICE's two stringer heads were two more until
-    # 2026-09-24; they hang on BM-BW-LAND-HDR on LSCZ now, their own role.
+    # 2026-09-24, then hung on BM-BW-LAND-HDR on LSCZ, their own role, until 2026-10-13: they
+    # seat on the stem now, on authored standoffs, and hang on nothing.
     assert joints["sloped_joist_hanger"] == 38
-    assert joints["stair_stringer_connector"] == 2
+    assert joints["stair_stringer_connector"] == 0
     assert joints["ridge_tie_strap"] == 19
     # 40 -> 6 on 2026-10-09: derived STHDs only at exterior foundation corners. The house's
     # NE corner and the garage's SW corner stand down for their authored braced-panel STHDs.

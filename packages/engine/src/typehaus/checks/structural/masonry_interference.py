@@ -20,6 +20,9 @@ Cleared, each for a stated reason and never by guess:
 * a ``Post.within_wall`` naming this wall, and a ``Beam.ledger_on`` naming it;
 * a POCKET: a beam that names this wall in its ``bearing_refs`` with an end inside the
   layer;
+* a SEAT: a stair stringer with an end inside the layer, where an authored
+  ``BEARING_STANDOFF`` joins its stair to this wall — the raked prism has no seat cut, and
+  the standoff is the part that says one is there;
 * a concrete/masonry column or pier (its assembly is itself concrete or masonry);
 * a LINTEL: the masonry band starts at the beam's soffit (within tolerance), so the wythe is
   bedded on it and a steel angle's leg rising in the bed joints is the detail.
@@ -84,17 +87,27 @@ def _subjects(model, plan, cache: dict):
 
 
 def _authored(plan, cache: dict):
-    """``(within, ledgers, bearings, mineral solids)`` read off the plan."""
+    """``(within, ledgers, bearings, seats, mineral solids)`` read off the plan.
+
+    ``seats`` pairs a stair's UID (a stringer's parent) with the wall a standoff seats it on.
+    """
     from typehaus.model.elements import Wall
-    from typehaus.model.structure import Beam, Post
+    from typehaus.model.enums import ConnectorKind
+    from typehaus.model.spatial import Stair
+    from typehaus.model.structure import Beam, Connector, Post
 
     within: set[tuple[str, str]] = set()
     ledgers: set[tuple[str, str]] = set()
     bearings: set[tuple[str, str]] = set()
+    seats: set[tuple[str, str]] = set()
     mineral: set[str] = set()
     if plan is None:
-        return within, ledgers, bearings, mineral
+        return within, ledgers, bearings, seats, mineral
     for el in plan.all_elements():
+        if isinstance(el, Connector) and el.kind == ConnectorKind.BEARING_STANDOFF:
+            joined = [plan.by_tag(t) for t in el.connects]
+            seats.update((s.uid, w.tag) for s in joined if isinstance(s, Stair)
+                         for w in joined if isinstance(w, Wall))
         if isinstance(el, Post) and el.within_wall:
             within.add((el.tag, el.within_wall))
         if isinstance(el, Beam):
@@ -104,7 +117,7 @@ def _authored(plan, cache: dict):
         asm_tag = getattr(el, "assembly", None)
         if not isinstance(el, Wall) and asm_tag and _mineral_layer_names(plan, asm_tag, cache):
             mineral.add(el.tag)  # a concrete pier/column is not framing
-    return within, ledgers, bearings, mineral
+    return within, ledgers, bearings, seats, mineral
 
 
 def _at_shared_junction(model, wall, member_parent, pt) -> bool:
@@ -133,7 +146,7 @@ def member_in_masonry(ctx: CheckContext) -> list[Finding]:
         return [not_applicable(_CHECK_ID, "no wall in this plan has a concrete or masonry "
                                "layer, so no framing can be buried in one")]
     tol_z = inch(ctx.preferences.framing.interference_tolerance_in).meters
-    within, ledgers, bearings, mineral = _authored(plan, cache)
+    within, ledgers, bearings, seats, mineral = _authored(plan, cache)
     cands = [c for c in framing_candidates(ctx.model)
              if c.kind not in _ENVELOPE_SKIN_KINDS and c.label not in mineral]
     tree = STRtree([c.poly for c in cands])
@@ -157,6 +170,9 @@ def member_in_masonry(ctx: CheckContext) -> list[Finding]:
                 continue
             if (c.label, wall.tag) in within or (c.label, wall.tag) in ledgers:
                 continue
+            if (c.kind == "stringer" and (c.parent, wall.tag) in seats
+                    and any(poly.buffer(tol_z).covers(Point(p)) for p in c.seg)):
+                continue  # a seat the stair declares with its standoff
             if c.kind == "beam":
                 ends_in = any(poly.buffer(tol_z).covers(Point(p)) for p in c.seg)
                 if ends_in and (c.label, wall.tag) in bearings:

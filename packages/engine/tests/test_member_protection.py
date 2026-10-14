@@ -26,9 +26,11 @@ GLULAM_BEAMS = {"BM-SG-BLW", "BM-SG-BLE"}
 #: The canopy's two headers, 5 1/2" treated glulam since 2026-09-30 (the AC6 heads want the
 #: full 6x6 width; notes/canopy_west_band.md §7): no seam, wide roll at their own width.
 CANOPY_GLULAMS = {"BM-BW-RW", "BM-BW-RE"}
-#: The garage landing's 3-ply 2x12 header, 4 1/2" across with two open ply seams — the
-#: site-built beam this section was written for, and the only ply beam left.
-PLY_BEAMS = {"BM-BW-LAND-HDR"}
+#: The north entry's east edge beam, 3-ply 2x8 since 2026-10-13 (the HL43 tie wants 5 1/8" of
+#: wood through FE and its rim), 4 1/2" across with two open ply seams — the site-built beam
+#: this section was written for, and the only ply beam left. BM-BW-LAND-HDR, the garage
+#: landing's 3-ply 2x12 header, held this slot until it retired the same day.
+PLY_BEAMS = {"BM-BW-FE"}
 #: The porch's two single-2x12 ledgers (2026-09), on the COMMON roll at 1 1/2": no seam.
 LEDGERS = {"BM-SG-LDGW", "BM-SG-LDGE"}
 #: Every beam on the wide roll, whatever its width.
@@ -47,8 +49,8 @@ def test_only_authored_members_are_taped(rows):
     # arrived in the same pass — the west screen panel's sill, which doubles as the deck's
     # west rim, and which is an exposed treated top like every other member in this set.
     assert taped == BUILT_UP_BEAMS | LEDGERS | {
-        "FS-SG-PORCH", "FS-SG-DECK", "FS-BW-FLOOR", "FS-BW-GARAGE",
-        "BM-BW-SCSILL", "BM-BW-FC", "BM-BW-FE",
+        "FS-SG-PORCH", "FS-SG-DECK", "FS-BW-FLOOR",
+        "BM-BW-SCSILL",
         "BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"}
 
 
@@ -81,9 +83,10 @@ def test_beam_length_is_the_axis_length(rows):
     """
     wide = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 4.5]
     assert len(wide) == 1
-    # The garage landing's 3'-0" header (BM-BW-LAND-HDR, 2026-09-24). A beam's billed length
-    # is its AXIS, so the tape follows a retirement or a retype exactly.
-    assert wide[0]["length_ft"] == pytest.approx(3.0, abs=0.1)
+    # BM-BW-FE, the deck's east edge beam, seat to seat and on to the garage cladding:
+    # 36'-8 1/2" -> 43'-1 3/4", 6.44'. A beam's billed length is its AXIS, so the tape follows
+    # a retirement or a retype exactly (it was the landing header's 3'-0" until 2026-10-13).
+    assert wide[0]["length_ft"] == pytest.approx(6.4, abs=0.1)
     assert wide[0]["count"] == 1
     canopy = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 5.5]
     assert len(canopy) == 1
