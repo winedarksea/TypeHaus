@@ -3165,6 +3165,15 @@
 # One fixed stepped study run. Oak horizontal boards remain in [hardwood]; this row carries
 # its plywood backs/dividers/filler, dados, fabrication, finish, delivery and installation.
 "FT-A-STUDY-BUILTIN" = { material = { low = 500, high = 1100 }, labour = { low = 800, high = 1700 } }  # 1 ea
+# Study door bridge, 2026-10-13: four boards of owner-stock 4/4 oak (wood purchase $0).
+# Planning allowances, not quotes: material is cleats/fasteners/finish; labour is milling,
+# assembly, scribing the 1/8" casing reveal and fitting to stationary backing/casework.
+# Total for 1 front + 2 returns + 1 cap: $0-50 incidentals and $120-300 labour.
+# These rows own the entire bridge cost; FT-A-STUDY-BUILTIN excludes it and [hardwood]
+# re-presents the four boards as an unpriced milling schedule, never a second cost.
+"FT-A-STUDY-BRIDGE-FRONT" = { material = { low = 0, high = 20 }, labour = { low = 60, high = 140 } }  # 1 ea
+"FT-A-STUDY-BRIDGE-RETURN" = { material = { low = 0, high = 10 }, labour = { low = 20, high = 60 } }  # 2 ea
+"FT-A-STUDY-BRIDGE-CAP" = { material = { low = 0, high = 10 }, labour = { low = 20, high = 40 } }  # 1 ea
 # --- FX-*, REPRICED 2026-08-21 -------------------------------------------------------
 # The whole family was re-researched after FX-TUBSHOWER-60 was found priced BELOW FX-TUB-60
 # on both halves — a tub plus a surround, a valve, a riser and a head cannot cost less to

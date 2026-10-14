@@ -14,6 +14,18 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Study door casing joins the fixed bookcase in oak (2026-10-13)
+
+Added a stationary 60"-high oak cover across the 5 5/8" casing-to-filler gap and the
+5 7/8" depth step. A 5 1/2" front leaves a 1/8" reveal beside the factory casing; two
+returns and an inset cap close it to the fixed shelves. The door, shelf run and stair-pocket
+partitions stay in place. Four individually modeled boards use owner-stock 4/4 oak dressed
+to 3/4", matching `oak-trim`. The separate planning allowance is $120-300 labour plus
+$0-50 incidentals. `MW-STANDARD.board_furniture_refs` includes all four pieces in the
+millwork schedule as 4/4 oak S4S, totaling 8.6 rough board feet. Cut sizes follow the modeled
+boards and fabrication prices remain in placeables. See `notes/study_bookcase_bridge.md`
+for cuts and field-fitting limits.
+
 ## Sill plates on concrete are plain PT, not KDAT (2026-10-13)
 
 Every `CR-CONC-TO-FRAMED-SILL` plate — the garage walls on the ICF stem, the basement's framed

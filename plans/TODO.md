@@ -234,7 +234,8 @@ the future.
 - Extra light switches by beds
 - Several of the interior 2x4 wall types do not yet bill paint (or perhaps paint for them is estimated elsewhere?)
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
-- See if we can narrow the gap between FURN-A-STUDY-BUILTIN and the shelves of D-A-STUDY, or add a wood trim piece in front to maintain visual continuity
+- [x] Bridge FURN-A-STUDY-BUILTIN to D-A-STUDY in matching oak: four 3/4" boards, 60" high,
+  with a 1/8" casing reveal; cut list and field fit in `houses/catlin/notes/study_bookcase_bridge.md`.
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door
 - Gold foil trim or panel accent somewhere

@@ -56,6 +56,7 @@ def resolve_millwork(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     findings: list[Finding] = []
     standard, standard_findings = _the_standard(plan)
     findings.extend(standard_findings)
+    findings.extend(_validate_board_furniture_scope(plan, model, standard))
     findings.extend(_resolve_stools(plan, model, standard))
     findings.extend(_resolve_shelf_banks(plan, model))
     findings.extend(resolve_countertops(plan, model))
@@ -76,6 +77,43 @@ def _the_standard(plan: PlanModel) -> tuple[MillworkStandard | None, list[Findin
                      f"{len(found)}: {', '.join(sorted(el.tag for el in found))}"),
             element_tags=tuple(sorted(el.tag for el in found)), result=Result.FAIL)]
     return found[0], []
+
+
+def _validate_board_furniture_scope(plan: PlanModel, model: ResolvedModel,
+                                   standard: MillworkStandard | None) -> list[Finding]:
+    """The explicit board scope must name individual boards with custom-milling stock."""
+    if standard is None or not standard.board_furniture_refs:
+        return []
+    findings: list[Finding] = []
+    refs = standard.board_furniture_refs
+    if len(refs) != len(set(refs)):
+        findings.append(element_error("integrity.millwork_board_ref",
+                                      "millwork board furniture references must be unique",
+                                      standard.tag))
+    objects = {obj.tag: obj for obj in model.canvas_objects if obj.kind == "Furniture"}
+    types = {t.tag: t for t in plan.library.furniture_types}
+    materials = {material.tag: material for material in plan.library.materials}
+    for ref in sorted(set(refs)):
+        obj = objects.get(ref)
+        product = types.get(obj.type_ref) if obj is not None else None
+        symbol = (getattr(product.model_representation, "symbol", None) or product.plan_symbol
+                  if product is not None else None)
+        if (product is None or symbol != "closet-board" or product.mesh is not None
+                or product.footprint_shape is not None or product.built_in_bookcase is not None
+                or min(*(size.meters for size in product.footprint), product.height.meters) <= 0):
+            findings.append(element_error(
+                "integrity.millwork_board_ref",
+                f"millwork board {ref!r} must name a resolved Furniture with a single "
+                "rectangular closet-board model", standard.tag))
+            continue
+        material = materials.get(product.wood_material_ref)
+        if (material is None or not material.requires_custom_milling
+                or not material.species or material.nominal_quarters is None):
+            findings.append(element_error(
+                "integrity.millwork_board_stock",
+                f"millwork board {ref!r} needs custom-milled wood with species and "
+                "nominal_quarters", standard.tag))
+    return findings
 
 
 # --- window stools ---------------------------------------------------------------------

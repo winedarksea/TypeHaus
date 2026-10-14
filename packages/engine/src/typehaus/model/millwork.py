@@ -259,6 +259,10 @@ class MillworkStandard(Element):
     # Explicit landing finish construction. Empty means the older whole-surface row for
     # stairs that have not declared field boards and a separate nosing.
     landing_deck: StairLandingMillwork | None = None
+    # Furniture occurrences that each model one solid rectangular board with the
+    # closet-board symbol. Cut sizes and stock derive from the type; pricing stays in
+    # placeables. Explicit scope keeps ordinary wood-colored furniture out of the mill.
+    board_furniture_refs: tuple[str, ...] = ()
     # The widest board the supply can produce. An owner-supply fact, not an engine constant
     # and not a price, so it belongs in the house exactly as ``prices.toml`` numbers do
     # (plans/01-decisions.md #28). ``takeoff/hardwood.py`` reads it for the ``layup`` column:

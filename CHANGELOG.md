@@ -4,6 +4,14 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+- **Catlin's study bookcase door joins the fixed shelves through a 60" oak bridge.** Four
+  stationary boards cover the gap and depth step, retaining a 1/8" casing reveal. The boards
+  appear in drawings, the viewer, GLB, IFC and the estimate, with a separate owner-stock
+  fabrication/install allowance.
+- **Millwork can include individually modeled furniture boards.**
+  `MillworkStandard.board_furniture_refs` sends explicitly named boards to the sawyer with
+  cut sizes from their catalog types. Catlin's four study bridge boards now appear as three
+  4/4 oak rows; the schedule remains an unpriced view of their placeable allowance.
 - **A sill plate on concrete is plain pressure-treated SYP (`pt-syp`), not KDAT.** The
   `CR-CONC-TO-FRAMED-SILL` returns report the new library material; the load above pins the
   plate flat, so drying after treatment buys nothing there.

@@ -86,7 +86,7 @@ _PROFILE_FACE_FACTOR: dict[str, float] = {
 _FLAT_FACE_FACTOR = 1.0
 
 #: Order the schedule groups by. A mill reads it top to bottom as one day's work.
-_USE_ORDER = ("window stool", "door casing", "baseboard", "countertop", "shelf",
+_USE_ORDER = ("window stool", "door casing", "baseboard", "casework board", "countertop", "shelf",
               "stair tread", "stair winder", "stair riser", "stair landing nosing",
               "stair landing board", "stair landing closing board", "stair landing deck",
               "floor", "wainscot", "wall liner", "ceiling liner",
@@ -105,6 +105,7 @@ def hardwood_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     rows.extend(_stool_rows(model, materials, max_board_width_in))
     rows.extend(_countertop_rows(model, materials, max_board_width_in))
     rows.extend(_shelf_rows(model, materials, max_board_width_in))
+    rows.extend(_furniture_board_rows(model, materials, standard, max_board_width_in))
     from typehaus.takeoff.hardwood_stairs import stair_rows
 
     rows.extend(stair_rows(model, materials, standard, max_board_width_in))
@@ -353,6 +354,35 @@ def _shelf_rows(model: ResolvedModel, materials: Mapping[str, object],
             "shelf", material_ref, materials, count, thickness, width, length,
             max_board_width_in, tags, {}, profile=profile))
     return rows
+
+
+def _furniture_board_rows(model: ResolvedModel, materials: Mapping[str, object],
+                         standard: MillworkStandard | None,
+                         max_board_width_in: float | None) -> list[dict[str, object]]:
+    """Cut explicitly scoped board furniture, including upright panels and flat caps.
+
+    The resolver validates these as single closet-board solids with custom-milled stock.
+    Thickness is their narrow dimension; grain follows the longer face dimension, so
+    rotating or mounting a board upright cannot change its cut size.
+    """
+    if standard is None:
+        return []
+    objects = {obj.tag: obj for obj in model.canvas_objects if obj.kind == "Furniture"}
+    types = {t.tag: t for t in model.plan.library.furniture_types}
+    groups: dict[tuple[str, float, float, float], list[str]] = {}
+    for tag in sorted(set(standard.board_furniture_refs)):
+        obj = objects.get(tag)
+        product = types.get(obj.type_ref) if obj is not None else None
+        if product is None or product.wood_material_ref is None:
+            continue  # invalid references are reported by resolve_millwork
+        dimensions = sorted((product.footprint[0].inches, product.footprint[1].inches,
+                             product.height.inches))
+        thickness, width, length = (round(value, 3) for value in dimensions)
+        key = (product.wood_material_ref, thickness, width, length)
+        groups.setdefault(key, []).append(tag)
+    return [_piece_row("casework board", ref, materials, len(tags), thickness, width, length,
+                       max_board_width_in, tags, {"also_in_placeables": True})
+            for (ref, thickness, width, length), tags in groups.items()]
 
 
 #: ``wood_surfaces`` kinds this schedule re-presents, and the use each becomes.

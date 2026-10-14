@@ -762,6 +762,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `FURN-A-STUDY-BUILTIN` is one wall-attached fixed run, x=22'-8"..30'-8 3/4", front at
   y=8'-9 5/8", with its back on `W-A-SN-REAR`'s south finish. `SB-A-STUDY` is rehosted to
   it and keeps the 9 7/8" owner-stock oak shelf depth. A 2 5/8" filler closes the west end.
+- Four `FURN-A-STUDY-BRIDGE-*` oak boards cover the casing-to-filler gap: 5 1/2" wide,
+  5 7/8" deep and 60" high, flush with the door casing with a 1/8" reveal. The open back
+  lands on stationary backing and filler; field-fit after hanging the door. Cut list and
+  the separate owner-stock fabrication allowance: `notes/study_bookcase_bridge.md`.
+  `MW-STANDARD.board_furniture_refs` puts all four boards in `haus millwork` as 4/4 oak S4S,
+  with cut sizes derived from their furniture types; the schedule adds no second cost.
 - `D-A-STUDY` keeps its uid and wall-hosted semantics but uses `DT-INT-BOOKCASE36`: 36x80
   nominal, 34 3/4 x 78 1/2 x 8 1/4 factory body, 38x82 RO, 42 1/2 casing envelope, 30 1/4
   published passage and 1 1/2 hinge-side wall clearance. It is west-hinged in-swing and
