@@ -26,14 +26,15 @@ from typehaus.model import m
 # --- Water supply: the service lateral, hydrant to house ---------------------------
 #
 # The project's first WATER_COLD run: the water service lateral, from the garage yard
-# hydrant (11', 48'-6") south to the house's north foundation at the service's own 6' bury
+# hydrant (11', 48'-1 5/16") south to the house's north foundation at the service's own 6' bury
 # — a supply line that rises above frost anywhere along its length freezes there. Filed on
 # ``main`` (datum 0'-0") so the authored elevations read straight off the drawing set.
 #
 # ** ONE STRAIGHT LEG, NO BURIED TURN (2026-09-16). ** It used to enter the house at x=5'-0"
 # and jog east at y=38'-0" to a hydrant at y=62'-0", 30'-6" of trench and two elbows. The
 # hydrant moved south beside ST-G-SERVICE and the entry moved east to x=11'-0", under
-# ST-B2M's upper landing (SP-B-N3-HYD): 13'-0" of trench. The water goes west to the old
+# ST-B2M's upper landing (SP-B-N3-HYD): now 12'-7 5/16" of trench after the 2026-10-13 move.
+# The water goes west to the old
 # x=5'-0" riser INSIDE the heated basement, at the ceiling, as PR-B-CW-TRUNK.
 #
 # The bury is 6' below *grade* (-2'-10"), so the run sits at -8'-10". It crosses the
@@ -49,7 +50,8 @@ WATER_SUPPLY = [
             # footing. What actually resolves it is depth: all five north-entry footings now
             # bear BELOW this invert, so `mep.footing_clearance` sees the pipe above their
             # bearing planes and no influence at all. Keep it that way if a pier ever moves.
-            path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(48, 6)), pt(ft(11), ft(48, 6))),
+            path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(48, 1.3125)),
+                  pt(ft(11), ft(48, 1.3125))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(-8, -10), ft(-8, -10), ft(-2, -5.2)),
             serves=("FX-G-HYDRANT",)),

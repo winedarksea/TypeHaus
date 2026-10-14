@@ -582,8 +582,7 @@ SECOND_FIXTURES = (
 )
 
 
-# Garage wash-down hydrant on the west wall near the NW corner — clear of EQ-G-HEATER,
-# both north windows, and the EV receptacles; 1'-6" off the wall for hose swing.
+# Garage wash-down yard hydrant standing free beside the service stair.
 #
 # Stands on SL-G-FLOOR (the garage slab at 0'-0"), 1'-10" below the `garage` storey datum
 # (the ICF stem top). `resolve/placeables.py` measures mount height off the room's floor
@@ -596,11 +595,11 @@ SECOND_FIXTURES = (
 GARAGE_FIXTURES = (
     # No `wall_ref`, deliberately: a 6'-0"-bury yard hydrant can't stand against a wall here
     # without its shutoff/weep stone entering the perimeter footing's 45° influence line.
-    # Stands free at (11'-0", 48'-6") on the buried service line (see params/foundations.py):
-    # 1'-0" east of ST-G-SERVICE's flight, near its foot. Moved south from y=62'-0" on
-    # 2026-09-16 so the service runs dead straight at x=11'-0" into the house.
+    # Stands free at (11'-0", 48'-1 5/16") on the buried service line: the southernmost
+    # 1/16" station clearing the drywell's footing influence line (params/foundations.py).
+    # Moved 4 11/16" south on 2026-10-13 after the interior landing was retired.
     Fixture(uid="CGQ801AAAA", tag="FX-G-HYDRANT", type_ref="FX-HYDRANT-Y34SS",
-            room="RM-GARAGE", position=pt(ft(11), ft(48, 6))),
+            room="RM-GARAGE", position=pt(ft(11), ft(48, 1.3125))),
 )
 
 # --- the guest studio: bath + wet bar ---------------------------------------------------

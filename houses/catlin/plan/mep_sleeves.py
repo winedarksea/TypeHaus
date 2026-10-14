@@ -172,7 +172,7 @@ WALL_SLEEVES = [
 #
 # `mep.footing_clearance` requires the run to actually thread the sleeve, not merely pass
 # near the footing (checks/mep/plumbing_concrete.py) — see params/foundations.py for the
-# hydrant's station at (11'-0", 48'-6"), chosen to clear the west and south footings.
+# hydrant's station at (11'-0", 48'-1 5/16"), chosen to clear the west and south footings.
 GARAGE_SLEEVES = [
     # It crosses the garage's south foundation line at x=11'-0", at -8'-10", inside a 2"
     # protection sleeve. `host_ref=FT-GF-S-DR`: the garage moved 6'-0" east on 2026-09-07 and

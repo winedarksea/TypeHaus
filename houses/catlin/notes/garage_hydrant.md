@@ -223,3 +223,17 @@ x = 5'-0" and jogging east at y = 38' — 30'-6" of trench and two buried elbows
   crossing is still `FT-GF-S-DR` inside `SP-GF-S-HYD`, now perpendicular with no elbow near it.
 - **Consequence to accept:** the hydrant stands in the walk path off the stair foot, not the
   parking bay. Hose swing is toward the east.
+
+## Southern clearance limit after landing removal (2026-10-13)
+
+**Supersedes the station above.** With the interior landing removed, the hydrant moved
+**4 11/16" south** to **(11'-0", 48'-1 5/16")**. Its slab sleeve, buried seat, hose-thread
+vacuum breaker and drain-back drywell moved together. The straight buried leg is now
+**12'-7 5/16"**, with the same 6'-0" bury and foundation crossings.
+
+The drywell excavation sets the southern limit. Its 9" radius and bottom at -9'-10" need
+34" of lateral clearance from the south footing's -7'-0" bearing plane. The resolved north
+face of `FT-GF-S-DR` is y = 44'-6.2875", giving a minimum centreline of 48'-1.2875".
+The authored station rounds north to the next 1/16": **34.025" clear against 34" required**.
+Another 1/16" south would enter the footing's 45° influence line. `FT-GF-W` remains 35.337"
+clear; the drywell remains 18" across and 18" deep, centred on the buried weep.

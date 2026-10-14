@@ -8,7 +8,6 @@ and that the freeze-depth rule can actually fail.
 from __future__ import annotations
 
 import pytest
-
 from _helpers import check_context
 
 from typehaus.findings import Result
@@ -91,7 +90,7 @@ def test_the_hydrant_is_on_the_garage_storey_at_the_authored_spot(catlin_model):
     # hydrant went with it: the clear zone is derived from FT-GF-W's 45° influence line, so
     # holding the absolute x would have put the shutoff inside that footing's own 20" strip.
     assert x * _M_TO_FT == pytest.approx(11.0, abs=1e-6)
-    assert y * _M_TO_FT == pytest.approx(48.5, abs=1e-6)
+    assert y * _M_TO_FT == pytest.approx(48 + 1.3125 / 12, abs=1e-6)
     # It stands free, and that is the design rather than a missing reference: a 6'-0" bury
     # cannot sit against a wall whose footing bears at -4'-2" without putting its shutoff
     # and weep stone inside the 45° influence line. → test_the_hydrant_assembly_clears_...
@@ -107,8 +106,8 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
     hand on the handle, from whatever else the corner is asked to hold.
 
     12" is the number. Since the 2026-09-16 move beside ST-G-SERVICE the NW-corner bench
-    and heater are far off; the nearest placeable is ED-G-LT3, 29" away since it was
-    re-centred over the flight (2026-10-13).
+    and heater are far off; the nearest placeable is ED-G-LT3, 24.3" away after the
+    hydrant's move to the south footing clearance limit (2026-10-13).
     """
     from shapely.geometry import Polygon
 
@@ -121,7 +120,7 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
     assert min(tight.values()) >= 12, sorted(tight.items(), key=lambda kv: kv[1])[:3]
     # Named so a future move reads as a decision.
     assert min(tight, key=tight.get) == "ED-G-LT3"
-    assert tight["ED-G-LT3"] == pytest.approx(28.9, abs=0.5)
+    assert tight["ED-G-LT3"] == pytest.approx(24.3, abs=0.5)
 
 
 # --- 3. the supply run --------------------------------------------------------------------
@@ -245,7 +244,15 @@ def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
     # x=11'-0" since 2026-09-07: the pit rides HYDRANT_X_FT, and the hydrant moved 6'-0"
     # east with the garage that sets its footing clearances.
     assert x_ft == pytest.approx(11.0, abs=1e-6)
-    assert y_ft == pytest.approx(48.5, abs=1e-6)
+    assert y_ft == pytest.approx(48 + 1.3125 / 12, abs=1e-6)
+    position = _hydrant(catlin_model).position.xy_m
+    assert pit.position.xy_m == pytest.approx(position)
+    for tag in ("SP-G-HYDRANT", "PA-G-HYD-SEAT", "PA-G-HYD-VB"):
+        assert catlin_model.plan.by_tag(tag).position.xy_m == pytest.approx(position), tag
+    run = _supply(catlin_model)
+    assert run.path[-2] == run.path[-1] == pytest.approx(position)
+    assert (run.path[-1][1] - run.path[0][1]) * _M_TO_FT == pytest.approx(
+        12 + 7.3125 / 12, abs=1e-6)
     # Stone from 5'-6" to 7'-0" *below grade*: the 6' shutoff sits 6" below the top of it
     # with a foot of stone under the weep. → test_the_hydrant_assembly_clears_the_footings.
     # Depths are read from grade, not from the house datum: grade is at -2'-6", so the
@@ -278,10 +285,11 @@ def test_the_hydrant_assembly_clears_the_footings(catlin_model):
     crossing that stays, PR-G-HYDRANT-CW passing beneath FT-GF-S-DR, is sleeved rather than
     spaced.
 
-    ** ONE STRAIGHT LEG SINCE 2026-09-16. ** The hydrant moved south to (11', 48'-6"),
+    ** ONE STRAIGHT LEG SINCE 2026-09-16. ** The hydrant is now at (11', 48'-1 5/16"),
     beside ST-G-SERVICE, and the service enters the basement at x=11'-0" under ST-B2M's
     landing: no buried turn, and the one footing crossing is perpendicular.
     """
+    from shapely.affinity import translate
     from shapely.geometry import Point, Polygon
     from shapely.ops import unary_union
 
@@ -295,6 +303,9 @@ def test_the_hydrant_assembly_clears_the_footings(catlin_model):
     assert not stone.intersects(pour), "the weep excavation is under the footing"
     assert stone.distance(pour.boundary) + 1e-9 >= bearing - pit.z0_m, \
         "the weep excavation is inside the footings' 45° influence line"
+    # The owner requested the southern limit; the next 1/16" station must fail clearance.
+    farther_south = translate(stone, yoff=-0.0254 / 16)
+    assert farther_south.distance(pour.boundary) < bearing - pit.z0_m
 
     # The riser, at the deep end where the shutoff is.
     run = _supply(catlin_model)

@@ -720,18 +720,19 @@ GARAGE_STEPS = []
 # Freestanding, not wall-mounted: at this bury the shutoff sits 22" and the weep stone 34"
 # below the garage footings' -7'-0" bearing plane, so the 45° influence line keeps the stone
 # 34" off every footing edge. Against FT-GF-W that is x >= 10'-10 1/2"; against the south
-# strip (north face 44'-6 1/4") it is y >= 48'-1". No wall position clears both.
+# strip (north face 44'-6.2875") it is y >= 48'-1.2875". No wall position clears both.
 #
-# ** (11'-0", 48'-6") SINCE 2026-09-16. ** It stood at y=62'-0" in the NW corner and the
+# ** (11'-0", 48'-1 5/16") SINCE 2026-10-13. ** It stood at y=62'-0" in the NW corner and the
 # service jogged east in the yard to reach it. Moved south beside the service stair, on the
 # line the house entry now uses (SP-B-N3-HYD at x=11'-0"), the buried run is one straight
-# 13'-0" leg crossing FT-GF-S-DR perpendicular inside SP-GF-S-HYD. The stone clears the
-# south strip by 38 3/4" and FT-GF-W by 35 1/2".
+# 12'-7 5/16" leg crossing FT-GF-S-DR perpendicular inside SP-GF-S-HYD. With the interior
+# landing retired, it moved another 4 11/16" south to the southernmost 1/16" station that
+# keeps the stone outside the south strip's 45° influence line: 34.025" against 34".
 #
 # Consequence: a post standing 4'-1" off the west stem face beside the stair foot. Don't
 # move it onto a wall.
 HYDRANT_X_FT = 11.0         # the FT-GF-W-clear station, and the service line
-HYDRANT_Y_FT = 48.5         # beside ST-G-SERVICE's foot; FT-GF-S binds
+HYDRANT_Y_FT = 48 + 1.3125 / 12  # southernmost 1/16" station; FT-GF-S-DR binds
 HYDRANT_BURY_FT = 6.0       # shutoff depth below grade — the code number for this fixture
 
 # A 4" topping pedestal (SL-G-HYDRANT-PED) that lifted the slab penetration above the
@@ -764,7 +765,7 @@ GARAGE_HYDRANT_SLEEVE = SleevePenetration(
 # Re-sized from 2'x4' deep (12.6 cu ft, bottom -9'-0", overlapped FT-GF-W by 4"
 # in plan — nothing was grading it, since `mep.footing_clearance` only walks pipe runs) down
 # to 1'-6"x1'-6" deep, top -5'-6", ~2.6 cu ft. Bottom -7'-0" is 34" below bearing; the
-# stone's edge stands 35 1/2" off FT-GF-W (no slack) and 38 3/4" off the south strip.
+# stone's edge clears FT-GF-W by 35.337" and the south strip by 34.025".
 GARAGE_HYDRANT_DRYWELL = Drywell(
     uid="CGP603AAAA", tag="DRW-G-HYDRANT",
     position=pt(ft(HYDRANT_X_FT), ft(HYDRANT_Y_FT)),
