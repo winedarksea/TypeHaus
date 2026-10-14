@@ -228,6 +228,7 @@ the future.
   an STC preset's tested core; (4) authored paint makes gypsum Class III, which moves Glaser.
 - The theater, RM-B-PLAY-N is specified as carpet, and should have a heating strip under the carpet near the sofa where feet are, likely just plugged in to a regular outlet
 - PR-A-STUBATH-VENT_RUN goes right through the middle of the bathroom RM-A-STUBATH
+- PR-B-ERV-COND-RUN runs right though blocking D-B-SHOP door
 - Extra light switches by beds
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
@@ -238,6 +239,11 @@ the future.
 - Perhaps two more shelf like blocking rows in the mudroom exposed stud line, one as a lower shelf and one as a top shelf
 - Spec sand or gravel backfill around house
 - The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
+- MEP autorouter work seems to burn a lot of tokens, are there any parts we could modify to get the same functionality with less token usage?
+- Make the CDX side of the sheathing prettier. Paint it black and add milled black locust slats face nailed (perhaps upgrade to 3/4" cdx behind) to give a shadow gap vertical slat look. Alternatives: shiplap planks, or flat overlay plywood or sheet plus trim and onlays for decorative panels
+- Plan microwave placement
+- Maybe swap the two living room east side curtain rods with cellular blinds in the four larger east facing living room windows
+- Review ED-M-PORCH-FLOOD. Update the 3d model for a proper flood light (or switch to a second mirrored downlight) and consider moving out to mounted on the edge of the balcony, more fully over the sunken garden.
 
 # Project Management
 
