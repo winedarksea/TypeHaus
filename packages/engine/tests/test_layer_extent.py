@@ -203,10 +203,10 @@ def test_mudroom_upper_closure_and_flat_caps_export_at_the_authored_height(catli
     settings = geom.settings()
     settings.set(settings.USE_WORLD_COORDS, True)
     targets = {
-        "W-M-STRW:gwb-mudroom-upper": (72, 108, "gwb"),
-        "W-M-STRW:paint-mudroom-upper": (72, 108, "latex-paint"),
-        **{f"W-M-STRW/blocking-0-{index:03d}": (72, 73.5, "df-select-s4s")
-           for index in range(6)},
+        "W-M-STRW:gwb-mudroom-upper": (84, 108, "gwb"),
+        "W-M-STRW:paint-mudroom-upper": (84, 108, "latex-paint"),
+        **{f"W-M-STRW/blocking-{course}-{index:03d}": (bottom, bottom + 1.5, "white-oak-8-4")
+           for course, bottom in ((0, 15), (1, 70.5), (2, 84)) for index in range(6)},
     }
     products = {product.Name: product for product in model.by_type("IfcProduct")
                 if product.Name in targets}

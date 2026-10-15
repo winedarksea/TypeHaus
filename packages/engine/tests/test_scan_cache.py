@@ -169,3 +169,24 @@ def test_the_scanner_identity_moves_with_the_constructor_allowlist(monkeypatch):
     finally:
         del _CONSTRUCTORS["_TestOnlySpec"]
     assert loader._scanner_identity() == before
+
+
+def test_a_load_on_another_thread_does_not_clear_this_threads_capture():
+    """The observer is per thread: a rebuild worker finishing its own load mid-way through
+    this one (its ``finally`` clears the observer) once dropped every later capture here."""
+    import threading
+
+    from typehaus import Slice, SliceKind, ft, pt
+    from typehaus.model.base import set_construction_observer
+
+    seen: list[str] = []
+    set_construction_observer(lambda el: seen.append(el.tag))
+    try:
+        other = threading.Thread(target=set_construction_observer, args=(None,))
+        other.start()
+        other.join()
+        Slice(tag="SL-T", kind=SliceKind.DETAIL, cut_origin=pt(ft(0), ft(0)),
+              cut_direction="y")
+    finally:
+        set_construction_observer(None)
+    assert seen == ["SL-T"]

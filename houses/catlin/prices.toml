@@ -520,9 +520,14 @@
 "3-2x4:kdat" = { material = { low = 3.9, high = 5.7 }, labour = { low = 0.5, high = 1 } }  # 352 LF (1,128 blocks x 3 plies)
 # RF-HOUSE's gutter girt (2026-09-16, notes/eave_gutter_girt.md): a flat 2x6 KDAT girt on
 # three-ply 2x6 standoffs, one per rafter bay. 2x6 because the gutter's couple needs two
-# screws 3-1/2" apart. Rates scaled 1.5x from the 2x4 rows by section.
-"2x6:kdat" = { material = { low = 2.0, high = 2.9 }, labour = { low = 0.8, high = 1.4 } }  # 72 LF ordered
+# screws 3-1/2" apart. Rates scaled 1.5x from the 2x4 rows by section. Since 2026-10-14 it
+# also bills W-M-STRW's KDAT sole plate (one 10' stick), exposed in the mudroom's open bays.
+"2x6:kdat" = { material = { low = 2.0, high = 2.9 }, labour = { low = 0.8, high = 1.4 } }  # 130 LF ordered
 "3-2x6:kdat" = { material = { low = 6.0, high = 8.7 }, labour = { low = 0.5, high = 1 } }  # 24 LF (36 standoffs x 3 plies)
+# W-M-STRW's oak bay courses (bench support, 6' shelf, 7' cap): owner-stock 8/4 white oak,
+# milled S4S to 1 1/2" — milling is the material rate; labour is fitting each block between
+# exposed finish studs.
+"2x6:white-oak-8-4" = { material = { low = 2.5, high = 4.5 }, labour = { low = 2.0, high = 4.0 } }
 # The eave and rake RETURN at the top of the wall — each layer's own depth carried out to
 # close the cladding cavity under the roof edge — is no longer one 3-1/2" piece. The catlin
 # truss authors the stand-off as layers, so the return follows as one thin run per layer:
@@ -3073,6 +3078,10 @@
 # An hour of a carpenter at rough-in, but it has to exist BEFORE the brick goes up, so it is
 # priced with the mantel rather than in [framing] where the shelf's buyer would never see it.
 "FT-MANTEL-WALNUT-46" = { material = { low = 250, high = 550 }, labour = { low = 250, high = 600 } }  # 1 ea
+# W-M-STRW's notched oak bench: owner-stock 8/4 white oak milled to a 1 1/2" x 9 1/4" x 8'
+# blank (material = milling), then seven stud notches scribed to the as-built stations,
+# eased arris, oil, and screwing down through the fingers (labour).
+"FT-MUD-STRW-BENCH" = { material = { low = 80, high = 200 }, labour = { low = 300, high = 700 } }  # 1 ea
 # TR-SG-LEADER-SE's splash basin (2026-09-23): a ~24" granite boulder basin from a stone yard,
 # set on 4" of compacted stone, plus the 2' x 6' river-rock apron on fabric beyond its notch.
 # Placement is two people and a dolly for a ~250-400 lb stone — the rate, not a machine.

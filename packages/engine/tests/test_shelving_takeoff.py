@@ -28,6 +28,7 @@ def _model(procurement: str):
     return SimpleNamespace(
         shelf_banks=[_bank(procurement)],
         window_stools=(), countertops=(), stairs=(), openings=(), panelings=(), walls=(), solids=(), rooms=(),
+        all_members=lambda: (),
         plan=SimpleNamespace(
             library=SimpleNamespace(materials=(material,)),
             storeys=(),

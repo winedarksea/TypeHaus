@@ -148,7 +148,12 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
         covering = [b for b in bands.get(wall.tag, ())
                     if b.elevation_m - _REACH_M <= low <= b.elevation_m + b.height_m + _REACH_M
                     and _covers_station(b, station, wall)]
-        if covering:
+        if not covering and _blocking_course_behind(wall, low, station):
+            out.append(passed(
+                "advisory.wall_backing_present",
+                f"{body.tag} hangs at {low / M_PER_IN:.0f}\" on {wall.tag}, backed by the "
+                f"wall's in-line blocking course at that height", tags))
+        elif covering:
             names = ", ".join(sorted(b.tag for b in covering))
             out.append(passed(
                 "advisory.wall_backing_present",
@@ -163,6 +168,28 @@ def wall_backing_present(ctx: CheckContext) -> list[Finding]:
                 fix=f"author a WallBacking on {wall.tag} spanning "
                     f"{low / M_PER_IN:.0f}\" above the floor"))
     return out
+
+
+def _blocking_course_behind(wall: ResolvedWall, low: float, station: float) -> bool:
+    """Whether a ``FramingSpec.blocking_heights`` course stands at ``low`` behind ``station``.
+
+    A course is a row of blocks fitted between the studs, so it is read as one run: its
+    stations span from its first block's end to its last's.
+    """
+    (x0, y0), (x1, y1) = wall.axis
+    axis_len = float(((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5) or 1.0
+    ux, uy = (x1 - x0) / axis_len, (y1 - y0) / axis_len
+    base = wall.base_ref_z_m
+    courses: dict[str, list[float]] = {}
+    for member in wall.members:
+        if member.category != "blocking" or not member.child_key.startswith("blocking-"):
+            continue
+        if not (member.z0_m - base - _REACH_M <= low <= member.z1_m - base + _REACH_M):
+            continue
+        course = courses.setdefault(member.child_key.split("-")[1], [])
+        course.extend((p[0] - x0) * ux + (p[1] - y0) * uy for p in (member.p0, member.p1))
+    return any(min(run) - _REACH_M <= station <= max(run) + _REACH_M
+               for run in courses.values())
 
 
 def _covers_station(band: BackingBand, station: float, wall: ResolvedWall) -> bool:

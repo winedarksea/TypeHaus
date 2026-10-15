@@ -771,7 +771,64 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          117.12500000000001,
+          15.0
+        ],
+        [
+          122.62500000000001,
+          15.0
+        ],
+        [
+          122.62500000000001,
+          16.5
+        ],
+        [
+          117.12500000000001,
+          16.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW117AAAA",
+      "tag": "blocking-0-001"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          117.12500000000001,
+          15.0
+        ],
+        [
+          122.62500000000001,
+          15.0
+        ],
+        [
+          122.62500000000001,
+          16.5
+        ],
+        [
+          117.12500000000001,
+          16.5
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "white-oak-8-4",
+      "fill": "#c9b08c"
     },
     {
       "space": "model",

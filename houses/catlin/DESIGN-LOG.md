@@ -14,6 +14,28 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## W-M-STRW becomes storage: oak courses, a bench, a KDAT plate (2026-10-14)
+
+- **The sole plate stays, so the LVP cannot run flush.** A bearing wall needs a nominal 2x
+  bottom plate (IRC R602.3.4), and it stands ~1 1/4" above the LVP in every open bay. The
+  plate is KDAT southern pine with HDG or stainless fasteners (R317.3), because boots drip
+  snowmelt onto it. The engine gained `FramingSpec.sole_plate_material_ref` to say so; it
+  bills on the existing `2x6:kdat` row.
+- **Gypsum moved up from 6' to 7'.** Three 8/4 white-oak courses fill the bays: the 7' cap,
+  a 6' shelf (a 12" cubby under the cap), and a support course for `FURN-M-STRW-BENCH`, a
+  notched oak 2x10 with its seat at 18". Custom-milled framing now reaches `haus millwork`
+  (`takeoff/hardwood_framing.py`). `advisory.wall_backing_present` reads an in-line blocking
+  course at the mount height as backing, which is what carries the bench.
+- **The switches left W-M-STRW**: below 7' that face is open bays and has no surface for a
+  box. `W-M-MECH-E`'s east face was rejected because the open `D-M-ENTRY` leaf parks 3.6"
+  off it. They are a 3-gang plate on `W-M-MECH-S`, latch side of `D-M-MECH`.
+- **`D-M-MECH` moved 8" west (2'-9" -> 2'-1"), not the 6" first planned.** At 2'-3" the
+  king left the 16" module stud at x=64" standing in the bay, leaving 3 1/4" and 4" bays,
+  and no 3-gang box fits either. Reversing `W-M-MECH-S` (east to west) lays its module out
+  from the east end. At 2'-1" that is also the module station, so the door cuts one stud,
+  not two, and `structural.door_framing_module` passes. The bay is 10 3/4" clear. The
+  hinge clears `FURN-M-MUD-BENCH` by 7/8"; any further west and the leaf hits it.
+
 ## Study chairs are IKEA LYCKAN cantilever chairs (2026-10-14)
 
 - `FURN-S-STUDY-CHAIR1`/`CHAIR2` (the chess-table pair) retype from `FURN-DINING-CHAIR` to

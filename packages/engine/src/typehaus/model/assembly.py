@@ -168,6 +168,9 @@ class FramingSpec(HausModel):
     # Stock for these in-line courses only; None keeps ordinary framing lumber. An
     # exposed bay cap can match the finish studs without restocking plates or headers.
     blocking_material_ref: str | None = None
+    # Stock for the bottom (sole) plate only — a treated plate where an exposed bay takes
+    # drip. None keeps ordinary framing lumber; top plates are never restocked.
+    sole_plate_material_ref: str | None = None
     # Stock for a raised EXTERIOR door's rough sill and the cripples under it — the sill
     # sits at the wet threshold under the pan. None keeps ordinary framing lumber.
     exterior_door_sill_material_ref: str | None = None

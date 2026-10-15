@@ -220,14 +220,15 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
         _append_plates(plate_only, rw, plate_member, p0, d, axis_len, z0, course_h, 0,
                        top_start, top_end, structure_polygon, start_role, end_role,
                        thickness, neighbour_insets_start, neighbour_insets_end,
-                       openings=openings, post_bands=post_bands)
+                       openings=openings, post_bands=post_bands,
+                       sole_material=spec.sole_plate_material_ref)
         return tuple(plate_only)
     top_plates = _top_plate_count(spec)
     _append_plates(members, rw, plate_member, p0, d, axis_len, z0, plate_h, top_plates,
                    top_start, top_end, structure_polygon, start_role, end_role, thickness,
                    neighbour_insets_start, neighbour_insets_end, openings=openings,
                    post_bands=post_bands, post_top_bands=post_top_bands,
-                   laps=(lap_start, lap_end))
+                   laps=(lap_start, lap_end), sole_material=spec.sole_plate_material_ref)
 
     # --- studs at spacing, skipping those inside an opening's king/jack pack --
     stud_z0 = z0 + plate_h
@@ -496,7 +497,8 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
                    openings: tuple[WallOpening, ...] = (),
                    post_bands: tuple[tuple[float, float], ...] = (),
                    post_top_bands: tuple[tuple[float, float], ...] | None = None,
-                   laps: tuple[bool, bool] = (True, True)) -> None:
+                   laps: tuple[bool, bool] = (True, True),
+                   sole_material: str | None = None) -> None:
     """Bottom + top plate course(s), each cut to the corner square that course owns.
 
     The cap plate of a double top plate laps the *opposite* way from the courses below it:
@@ -550,7 +552,7 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
     for i, (seg_start, seg_end) in enumerate(segments):
         key = "plate-bottom" if single else f"plate-bottom-{i}"
         members.append(_plate(rw, point_at(seg_start), point_at(seg_end),
-                              key, z0, z0 + plate_h, member))
+                              key, z0, z0 + plate_h, member, sole_material))
     # A full-height post interrupts the top courses too, but an opening below the framing
     # base does not — the top plate runs over a garage door — so the top courses take only
     # the posts that rise through them.
@@ -639,8 +641,9 @@ def _wall_top_elevations(rw: ResolvedWall) -> tuple[float, float]:
 
 
 def _plate(rw: ResolvedWall, p0, p1, key: str, z0: float, z1: float,
-          profile: str) -> FramedMember:
-    return FramedMember(rw.uid, key, "plate", profile, p0, p1, z0, z1, length(sub(p1, p0)))
+          profile: str, material: str | None = None) -> FramedMember:
+    return FramedMember(rw.uid, key, "plate", profile, p0, p1, z0, z1, length(sub(p1, p0)),
+                        material=material)
 
 
 def _short_wall_finding(plan: PlanModel, rw: ResolvedWall) -> list[Finding]:

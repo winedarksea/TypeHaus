@@ -599,6 +599,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     plane at +0.9862". Their doors open into the mudroom, and the bypass guide at
     `D-M-MUDC` needs one level field. The exterior `D-M-ENTRY` has a separate flashed
     weather sill; see `notes/floor_heights.md`.
+  - **`W-M-STRW`'s mudroom face is open bays to 7'-0"** (2026-10-14): three flat
+    `white-oak-8-4` courses (bench support 15"-16 1/2", a 6' shelf, the 7' cap under the
+    gypsum) and `FURN-M-STRW-BENCH`, a notched oak 2x10 seated on the support course, 3 3/4"
+    proud. Its sole plate is KDAT (`FramingSpec.sole_plate_material_ref`): boots drip on it,
+    and LVP butts it, because R602.3.4 keeps a nominal 2x plate on a bearing wall. No device
+    may go on that face below 7'; the mudroom switches are a 3-gang plate on `W-M-MECH-S`
+    east of `D-M-MECH`. `W-M-MECH-S` is authored EAST to WEST so its studs lay out from the
+    east end and leave that bay clear. Reverse it and a module stud lands in the box.
   - LVP +0.9862" and the coated cap +15/16" meet flush on both legs of the living-room
     L. The main bedroom entry and second-storey plant room retain reducers. Oak +1 1/2"
     now runs through the second hall and linen closet as well as the suite and studies;
@@ -1895,8 +1903,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **`ED-M-ENTRY-LT`/`-SW` exist because the narrowing exposed a false PASS**:
     `code.R303_8_exterior_stairway_illumination` had been satisfied for `ST-BW-ENTRY` by
     `ED-M-PANTRY-LT` — a wall light INSIDE the pantry, 3'-10" from the tiers in plan through a
-    wall. The sconce is on `W-M-N2`'s bay centre at x=11'-4", 6'-4" up; its switch is on
-    `W-M-STRW`'s mudroom face (R303.8.1 wants it inside the dwelling, not in the garage).
+    wall. The sconce is on `W-M-N2`'s bay centre at x=11'-4", 6'-4" up; its switch is the
+    east gang of the mudroom's 3-gang plate on `W-M-MECH-S` (R303.8.1 wants it inside the
+    dwelling, not in the garage).
   - `EQ-M-HP3-OD` sits at x 12'-4"..15'-2 3/8", `SL-M-HP3PAD` at x 12'-1"..15'-5", clearing
     12 11/16" to the nearest glass (Gree's 12" lesser-side minimum); the front walk's west
     edge is x=15'-9". Nothing grades an Equipment against a deck or clearance envelope, so

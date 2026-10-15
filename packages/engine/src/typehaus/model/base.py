@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import threading
 from collections.abc import Callable
 from typing import Any
 
@@ -10,13 +11,13 @@ from pydantic import BaseModel, ConfigDict
 # Construction observer: when set, called with every Element as it is built. The model
 # layer knows nothing about who listens — the source loader injects a callable while it
 # imports a house manifest (runtime authorship capture) and clears it after. Inert
-# (a single `is not None` check per construction) when unset.
-_construction_observer: Callable[[Element], None] | None = None
+# (a single `is not None` check per construction) when unset. Per THREAD: a server's
+# rebuild worker loading a house must not replace or clear another thread's capture.
+_observer_state = threading.local()
 
 
 def set_construction_observer(observer: Callable[[Element], None] | None) -> None:
-    global _construction_observer
-    _construction_observer = observer
+    _observer_state.observer = observer
 
 
 class HausModel(BaseModel):
@@ -41,8 +42,9 @@ class Element(HausModel):
     tag: str
 
     def model_post_init(self, __context: Any) -> None:
-        if _construction_observer is not None:
-            _construction_observer(self)
+        observer = getattr(_observer_state, "observer", None)
+        if observer is not None:
+            observer(self)
 
     @property
     def element_kind(self) -> str:

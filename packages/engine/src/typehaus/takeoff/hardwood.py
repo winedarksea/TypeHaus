@@ -90,7 +90,7 @@ _USE_ORDER = ("window stool", "door casing", "baseboard", "casework board", "cou
               "stair tread", "stair winder", "stair riser", "stair landing nosing",
               "stair landing board", "stair landing closing board", "stair landing deck",
               "floor", "wainscot", "wall liner", "ceiling liner",
-              "wall and ceiling liner", "timber post")
+              "wall and ceiling liner", "timber post", "blocking", "plate")
 
 
 def hardwood_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -112,6 +112,9 @@ def hardwood_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     from typehaus.takeoff.hardwood_trim import trim_rows
 
     rows.extend(trim_rows(model, materials, max_board_width_in))
+    from typehaus.takeoff.hardwood_framing import framing_rows
+
+    rows.extend(framing_rows(model, materials, max_board_width_in))
     rows.extend(_coverage_rows(model, materials))
     rows.extend(_timber_rows(model, materials, max_board_width_in))
     rows.sort(key=_sort_key)

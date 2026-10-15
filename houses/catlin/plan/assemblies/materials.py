@@ -178,6 +178,11 @@ MATERIALS = [
     # eased arris keeps a hand running along an exposed edge off a sharp corner. Douglas
     # fir-larch rather than SPF: it is the denser species (~32 pcf vs SPF's ~29), which is
     # why its R/inch is *lower* than spf's 1.24 — conductivity tracks density in wood.
+    # The bays' flat courses (bench support, 6' shelf, 7' cap) and the bench board are oak.
+    Material(tag="white-oak-8-4", name='White oak 8/4, custom-milled S4S to 1 1/2"',
+             hatch="lumber", color="#c9b08c", finish="oak-board", species="oak",
+             nominal_quarters=8, milling_profile="S4S", requires_custom_milling=True,
+             source="Owner-milled white oak, 8/4 dressed to 1 1/2\" so a flat course sits flush with the 2x6 studs it spans between; hardwax oil, as the stools."),
     # The stair face. 3/4" rather than the 1/2" a plain panel finish would take, because
     # this panel is structural backing: coat hooks and the closet rail screw straight into
     # it anywhere along the wall, with no blocking behind and no stud to hunt for.

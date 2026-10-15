@@ -30,3 +30,20 @@ def test_blocking_stock_reference_including_inherited_variants(ref):
         assert {finding.element_tags for finding in findings} == {("BASE",), ("VARIANT",)}
         assert all(finding.severity.value == "error" for finding in findings)
         assert all(ref in finding.message for finding in findings)
+
+
+@pytest.mark.parametrize("ref", [None, "matching-wood", "misspelled-wood"])
+def test_sole_plate_stock_reference(ref):
+    library = Library(
+        materials=(Material(tag="matching-wood", name="Matching wood"),),
+        assemblies=(Assembly(tag="BASE", layers=(
+            Layer(name="stud", material_ref="matching-wood", thickness=inch(5.5),
+                  function=LayerFunction.STRUCTURE,
+                  framing=FramingSpec(member="2x6", sole_plate_material_ref=ref)),)),),
+    )
+    findings = blocking_material_ref(SimpleNamespace(plan=SimpleNamespace(library=library)))
+    if ref != "misspelled-wood":
+        assert findings == []
+    else:
+        assert [f.element_tags for f in findings] == [("BASE",)]
+        assert "sole_plate_material_ref" in findings[0].message

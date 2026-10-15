@@ -235,12 +235,10 @@ the future.
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door. A simpler option is probably to just make sure the hinge can open to close to 180 degrees so the door can be flat against the wall, out of the way of the walking space.
 - Gold foil trim or panel accent somewhere
 - Choose bracket products for the four dark-steel handrails (RL-S-HANDRAIL-E/-W, RL-A-HANDRAIL, RL-G-SERVICE), including RL-A-HANDRAIL's bracket 6 with its 20 1/2" rise from W-S-SS2's top plate: `code.R301_5_handrail_support_spacing` is UNKNOWN until a `RailingType` states `bracket_spacing_max`
-- Either engineer the mudroom exposed studs as allowed hardwood, or specify southern yellow pine with a gold anodized aluminum trim (>= 1.5 mm / 0.064 / 12 gauge thickness) https://www.dkhardware.com/cr-laurence-l902bga-ccp72-xcp10-brite-gold-anodized-aluminum-1-4-l-bar-extrusion-72-length-pack-of-10-product-10103314.html or 1-1/2" ID U-channel
-- Perhaps two more shelf like blocking rows in the mudroom exposed stud line, one as a lower shelf and one as a top shelf
 - Spec sand or gravel backfill around house
 - The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
 - MEP autorouter work seems to burn a lot of tokens, are there any parts we could modify to get the same functionality with less token usage?
-- Make the CDX side of the sheathing prettier. Paint it black and add milled black locust slats face nailed (perhaps upgrade to 3/4" cdx behind) to give a shadow gap vertical slat look. Alternatives: shiplap planks, or flat overlay plywood/sheet plus trim and onlays for decorative panels
+- Make W-BW-SCREEN's east passage face prettier (currently 5/8" MDO, not the west structural CDX). [Finish comparison, elevations, quantities, and sample instructions](bw-screen-finish-comparison.md) completed 2026-10-14: natural black locust slats over matte black lead; visible stainless screws preferred. Shiplap and ornamental panels compared. Physical samples, actual door/closer clearance, and final construction/model implementation remain pending.
 - Plan microwave placement
 - Select the cellular blinds' product, opacity and color, then field-measure final inside-mount deductions
 - Review ED-M-PORCH-FLOOD. Update the 3d model for a proper flood light (or switch to a second mirrored downlight) and consider moving out to mounted on the edge of the balcony, more fully over the sunken garden.

@@ -279,6 +279,17 @@ MAIN_PLACEABLES = [
     Furniture(uid="CMF803AAAA", tag="FURN-M-MUD-BENCH", type_ref="FURN-M-MUD-BENCH",
               room="RM-M-MUDROOM", position=pt(ft(1, 3.125), ft(31, 4)),
               rotation=deg(90)),
+    # The notched oak bench in W-M-STRW's bays, from stud-006's centre (y=27'-4") to
+    # stud-000's south face (y=35'-3 7/8"), short of D-M-MUD's and D-M-ENTRY's casings; the
+    # short south bay keeps only its support block. It sits on the oak support course: 16 1/2"
+    # off the storey datum less the 0.9862" LVP, since Mount.elevation is off the finished
+    # floor. normal_gap puts its back 5 1/2" into the bays, so 3 3/4" stands proud.
+    Furniture(uid="C9BJD9MJH2", tag="FURN-M-STRW-BENCH", type_ref="FT-MUD-STRW-BENCH", room="RM-M-MUDROOM",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(15.5138),
+                          recessed_into_host_surface=True),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-STRW", face="right", distance_from_start=inch(56.0625),
+                  normal_gap=inch(-5.5), rotation_offset=deg(0)))),
 
     # --- laundry (RM-M-LAUNDRY) --------------------------------------------------------
     # Fold-down drying rack over FX-M-LAUNDRY-SINK, sharing its x centreline and 24" width.

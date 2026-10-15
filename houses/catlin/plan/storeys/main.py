@@ -617,10 +617,14 @@ WALLS = [
     # south face and seats FO-S-STAIR's short header without moving the opening.
     #
     # The assembly inherits INT_2X6_BRG_EXPOSED_PLY with `layer_materials` swapping the
-    # stud to appearance-grade DF. W-M-STRW's mudroom face stays open below 6'-0" for
+    # stud to appearance-grade DF. W-M-STRW's mudroom face stays open below 7'-0" for
     # coat nooks; above it the variant adds 1/2" painted gypsum to the 9'-0" ceiling.
-    # Flat matching DF 2x6 blocks cap the bays, underside at 6'-0", with their 1 1/2"
-    # front edge behind the gypsum. 5/8" painted plywood closes the stair face —
+    # Three flat white-oak courses span each bay: the 7'-0" cap (underside at 7'-0",
+    # front edge behind the gypsum), a 6'-0" shelf and the support course under
+    # FURN-M-STRW-BENCH, a notched oak 2x10 seat at 18". The sole plate is KDAT: boots drip
+    # on it, and LVP butts it (R602.3.4 keeps a 2x plate). No switch box on this face —
+    # below 7' it is open bays; the mudroom switches are on W-M-MECH-S. 5/8" painted
+    # plywood closes the stair face —
     # `interior_room` picks the
     # mudroom side as layer 0.
     # Until 2026-07-30 the mudroom segment was plain INT_2X6_BRG (spf vs. df-select-s4s),
@@ -855,8 +859,11 @@ WALLS = [
     Wall(uid="CMW132AAAA", tag="W-M-BDN2", start_node="N-M-D3",
          end_node="N-M-C1", assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- RM-M-MECH: framed MEP shaft closet, NW corner -------------
-    Wall(uid="CMW137AAAA", tag="W-M-MECH-S", start_node="N-M-MECH1",
-         end_node="N-M-MECH2", assembly="INT_2X4_PARTITION", top=ft(9)),
+    # Authored east to west so its 16" layout runs from the east end: the module studs land
+    # at 56"/40"/24" (in or beside D-M-MECH's opening), leaving 58"..68 3/4" clear for the
+    # switch box.
+    Wall(uid="CMW137AAAA", tag="W-M-MECH-S", start_node="N-M-MECH2",
+         end_node="N-M-MECH1", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW138AAAA", tag="W-M-MECH-E", start_node="N-M-MECH2",
          end_node="N-M-MECH3", assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- RM-M-MUD-CLOSET: framed south mudroom closet --------------
@@ -1130,10 +1137,11 @@ OPENINGS = [
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING30",
          position=from_node("N-M-BA1", ft(1))),
     # RM-M-MECH's hinged utility door, not the mudroom closets' bypass style.
-    # Pulled 2" west of its original 3'-2 15/16": at that offset the king stud
-    # punched into W-M-MECH-E's corner stud pack. This clears it with margin to spare.
+    # At 2'-1" (was 2'-9"): the 8" west move opens a 10 3/4" bay between the east king and
+    # the end stud for the mudroom's 3-gang switch plate (plan/lighting.py). 2'-1" is also
+    # the wall's module station (one stud cut), and the hinge clears FURN-M-MUD-BENCH by 7/8".
     Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-S", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-MECH1", ft(2, 9)), flip_swing=True, flip_hinge=True),
+         position=from_node("N-M-MECH1", ft(2, 1))),
     # RM-M-MUD-CLOSET's bypass slider, no swing to clear. Near jamb 1'-1" off N-M-MUDC1
     # centres the 50" RO in the partition's framed span, leaving both corner stud packs clear
     # (the D-M-MECH king-stud lesson).

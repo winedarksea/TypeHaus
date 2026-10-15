@@ -247,9 +247,8 @@ def _capture_authorship(house_dir: Path) -> Iterator[dict[str, SourceLoc]]:
     "defined in params/… — edit in code", never a writeback destination (the coordinator
     routes exclusively through ``editable_files()``).
 
-    Uses the module-global observer in ``typehaus.model.base`` — the same class of
-    process-wide global as this module's ``sys.path`` mutation; rebuilds are serialized,
-    so a single active capture is the operating assumption.
+    Uses the thread-local observer in ``typehaus.model.base``, so a load on another thread
+    (a server's rebuild worker) can neither steal nor clear this one's capture.
     """
     captured: dict[str, SourceLoc] = {}
     # co_filename → house-relative posix path (or None if outside); resolved once per file.

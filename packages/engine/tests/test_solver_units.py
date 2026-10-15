@@ -166,11 +166,12 @@ def test_ladder_tee_backing_omits_only_the_rung_intersecting_opening_framing():
 
 
 def _wall_and_plan_with_blocking(
-        heights, material_ref=None) -> tuple[SimpleNamespace, ResolvedWall]:
+        heights, material_ref=None, sole_ref=None) -> tuple[SimpleNamespace, ResolvedWall]:
     layer = Layer(name="stud", material_ref="spf", thickness=inch(3.5),
                  function=LayerFunction.STRUCTURE,
                  framing=FramingSpec(member="2x4", blocking_heights=heights,
-                                     blocking_material_ref=material_ref))
+                                     blocking_material_ref=material_ref,
+                                     sole_plate_material_ref=sole_ref))
     plan = SimpleNamespace(
         library=SimpleNamespace(resolve_assembly=lambda tag: SimpleNamespace(layers=(layer,)))
     )
@@ -203,6 +204,16 @@ def test_blocking_stock_does_not_restock_the_other_wall_members():
     blocks = [m for m in members if m.child_key.startswith("blocking-")]
     assert blocks and all(m.material == "df-select-s4s" for m in blocks)
     assert all(m.material is None for m in members if not m.child_key.startswith("blocking-"))
+
+
+def test_sole_plate_stock_restocks_only_the_bottom_plate():
+    plan, rw = _wall_and_plan_with_blocking((inch(48),), sole_ref="kdat")
+    members = frame_wall(plan, rw, openings=[])
+    plates = [m for m in members if m.category == "plate"]
+    bottom = [m for m in plates if m.child_key.startswith("plate-bottom")]
+    assert bottom and all(m.material == "kdat" for m in bottom)
+    assert all(m.material is None for m in plates if m not in bottom)
+    assert all(m.material is None for m in members if m.category != "plate")
 
 
 def test_no_blocking_by_default():
@@ -413,3 +424,16 @@ def test_module_studs_clear_the_flat_backers_face_not_its_centre():
                    if m.category == "stud" and m.p0[0] > inch(1).meters)
 
     assert first_module(california) >= first_module(three)
+
+
+def test_a_blocking_course_backs_a_body_hung_at_its_height():
+    from dataclasses import replace
+
+    from typehaus.checks.advisory.backing import _blocking_course_behind
+
+    plan, rw = _wall_and_plan_with_blocking((inch(13.5),))
+    wall = replace(rw, members=frame_wall(plan, rw, openings=[]))
+    # Course 15"..16 1/2" off the datum; a bench seated on it, at mid-wall.
+    assert _blocking_course_behind(wall, inch(15.5).meters, 2.0)
+    assert not _blocking_course_behind(wall, inch(30).meters, 2.0)
+    assert not _blocking_course_behind(wall, inch(15.5).meters, 4.5)

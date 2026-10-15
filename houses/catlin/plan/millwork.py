@@ -363,6 +363,16 @@ MAIN_SHELVES = [
         procurement=ShelfProcurement.INCLUDED_IN_HOST,
         bays=(ShelfBay(width=inch(36), clear_height=inch(16.5), shelf_count=1),),
     ),
+    # --- W-M-STRW's notched oak bench, FURN-M-STRW-BENCH: milled from the family oak ----
+    ShelfBank(
+        uid="CK2PDFB4JH", tag="SB-M-STRW-BENCH",
+        host="FURN-M-STRW-BENCH",
+        material_ref="white-oak-8-4",
+        thickness=inch(1.5),
+        profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
+        bays=(ShelfBay(width=inch(95.875), clear_height=inch(16.5), shelf_count=1),),
+    ),
 ]
 
 # --- the theatre bookcases, IKEA BILLY x4 --------------------------------------------

@@ -667,6 +667,19 @@ SPLASH_BASIN_GRANITE_24 = FurnitureType(
            "Stone yard selection; no product named.",
 )
 
+# --- W-M-STRW's coat-nook bench (2026-10-14) ----------------------------------------------
+#
+# A notched oak 2x10 let into the stud bays, seat top 18". Wall-carried, so no legs.
+STRW_BENCH = FurnitureType(
+    tag="FT-MUD-STRW-BENCH", name='Mudroom stud-bay bench, notched oak 2x10, 95 7/8"',
+    footprint=(inch(95.875), inch(9.25)), height=inch(1.5),
+    storage=False, plan_symbol="wall-desk", wood_material_ref="white-oak-8-4",
+    source="8/4 white oak dressed to 1 1/2\" x 9 1/4\", notched 1 5/8\" x 5 9/16\" at each "
+           "stud and scribed to the as-built stud stations. Bears on W-M-STRW's oak support "
+           "course and is screwed down through the fingers; eased front arris, 3 3/4\" proud "
+           "of the stud faces.",
+)
+
 FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
                    CURTAIN_ROD_48, CURTAIN_ROD_84, CELLULAR_BLIND_2748, PORCH_TRACK_176,
                    PORCH_TRACK_102,
@@ -678,4 +691,4 @@ FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
                    CLOSET_SHELF_36, BATH2_CAB_4506, STUDIO_KITCHENETTE_4422,
-                   MANTEL_WALNUT_46, SPLASH_BASIN_GRANITE_24)
+                   MANTEL_WALNUT_46, SPLASH_BASIN_GRANITE_24, STRW_BENCH)

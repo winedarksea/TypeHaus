@@ -90,7 +90,7 @@ def unknown_product_ref(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.INTEGRITY, "integrity.blocking_material_ref")
 def blocking_material_ref(ctx: CheckContext) -> list[Finding]:
-    """An authored blocking stock must exist, including on composed assembly variants."""
+    """An authored blocking or sole-plate stock must exist, including on assembly variants."""
     library = ctx.plan.library
     known = {material.tag for material in library.materials}
     findings: list[Finding] = []
@@ -99,13 +99,15 @@ def blocking_material_ref(ctx: CheckContext) -> list[Finding]:
         if assembly is None:
             continue
         for layer in assembly.layers:
-            ref = layer.framing.blocking_material_ref if layer.framing else None
-            if ref is not None and ref not in known:
+            for field in ("blocking_material_ref", "sole_plate_material_ref"):
+                ref = getattr(layer.framing, field) if layer.framing else None
+                if ref is None or ref in known:
+                    continue
                 findings.append(Finding(
                     severity=Severity.ERROR,
                     check_id="integrity.blocking_material_ref",
                     message=(f"assembly {entry.tag} layer {layer.name} names "
-                             f"blocking_material_ref {ref!r}, which the material catalog "
+                             f"{field} {ref!r}, which the material catalog "
                              "does not define"),
                     element_tags=(entry.tag,),
                     result=Result.FAIL,

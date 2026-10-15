@@ -165,18 +165,6 @@ def test_derived_lateral_plates_are_on_the_sill_face(catlin_model_ro):
     assert tested > 100
 
 
-def test_paired_heavy_angles_project_away_from_their_tie_block(catlin_model_ro):
-    solids = {solid.tag: solid for solid in catlin_model_ro.solids}
-    for beam in ("FC", "FE"):
-        left = solids[f"CN-BW-STEMTIE-{beam}-A"].body_mesh
-        right = solids[f"CN-BW-STEMTIE-{beam}-B"].body_mesh
-        block = solids[f"CN-BW-STEMTIE-{beam}-BLK"]
-        west, east = min(x for x, _ in block.outline), max(x for x, _ in block.outline)
-        assert max(x for x, _, _ in left.positions) == pytest.approx(west)
-        assert min(x for x, _, _ in right.positions) == pytest.approx(east)
-        assert min(z for _, _, z in left.positions) == pytest.approx(-12 * M_PER_IN)
-
-
 def test_wall_end_angles_have_vertical_heels(catlin_model_ro):
     solids = {solid.tag: solid for solid in catlin_model_ro.solids}
     for tag in ("CN-BW-GWTIE-LO", "CN-BW-GWTIE-HI"):

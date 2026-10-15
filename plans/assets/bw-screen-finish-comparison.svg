@@ -1,0 +1,628 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1840" viewBox="0 0 1400 1840" role="img" aria-labelledby="title desc">
+<title id="title">W-BW-SCREEN east-face finish comparison</title><desc id="desc">Four matched conceptual east elevations: vertical locust slats, shiplap, botanical panels and geometric panels; assembly sections and a dimensioned door plan. Dimensions and quantities are in the companion study. Brace slats and hardware are schematic.</desc>
+<defs><pattern id="wood" width="18" height="90" patternUnits="userSpaceOnUse"><rect width="18" height="90" fill="#bc9059"/><path d="M4 0Q12 25 5 50T6 90M13 0Q7 32 14 67T12 90" fill="none" stroke="#996d3c" stroke-width=".6"/></pattern></defs>
+<g font-family="Arial, Helvetica, sans-serif">
+<rect x="0.000" y="0.000" width="1400.000" height="1840.000" fill="#f5f3ee" />
+<text x="38" y="42" font-size="28" fill="#292c30" font-weight="700">W-BW-SCREEN  /  EAST FACE</text>
+<text x="38" y="70" font-size="15" fill="#292c30" >Finish study · 2026-10-14 · natural black locust / painted Exterior MDO · design comparison, not construction drawings</text>
+<text x="38" y="96" font-size="14" fill="#292c30" >Matched scale within elevations. South is left; north / garage is right. Existing brace pattern is schematic; preserve its design.</text>
+<g transform="translate(28,120)">
+<rect x="0.000" y="0.000" width="664.000" height="500.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
+<text x="18" y="28" font-size="18" fill="#292c30" font-weight="700">A · VERTICAL SHADOW-GAP SLATS</text>
+<rect x="41.000" y="41.000" width="22.500" height="396.000" fill="#efeee8" />
+<rect x="422.938" y="41.000" width="22.500" height="396.000" fill="#e4e5e2" />
+<rect x="101.750" y="94.438" width="24.750" height="342.562" fill="url(#wood)" />
+<rect x="370.625" y="94.438" width="24.750" height="342.562" fill="url(#wood)" />
+<clipPath id="brace-0-left"><rect x="126.5" y="101.1875" width="109.6875" height="113.0625"/></clipPath>
+<g clip-path="url(#brace-0-left)">
+<line x1="18.500" y1="214.250" x2="131.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="45.500" y1="214.250" x2="158.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="72.500" y1="214.250" x2="185.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="99.500" y1="214.250" x2="212.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="126.500" y1="214.250" x2="239.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="153.500" y1="214.250" x2="266.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="180.500" y1="214.250" x2="293.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="207.500" y1="214.250" x2="320.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="234.500" y1="214.250" x2="347.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+</g>
+<clipPath id="brace-0-right"><rect x="260.9375" y="101.1875" width="109.6875" height="113.0625"/></clipPath>
+<g clip-path="url(#brace-0-right)">
+<line x1="478.625" y1="214.250" x2="365.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="451.625" y1="214.250" x2="338.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="424.625" y1="214.250" x2="311.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="397.625" y1="214.250" x2="284.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="370.625" y1="214.250" x2="257.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="343.625" y1="214.250" x2="230.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="316.625" y1="214.250" x2="203.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="289.625" y1="214.250" x2="176.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="262.625" y1="214.250" x2="149.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+</g>
+<rect x="236.188" y="101.188" width="24.750" height="113.062" fill="url(#wood)" />
+<rect x="101.750" y="214.250" width="293.625" height="6.750" fill="url(#wood)" />
+<rect x="101.750" y="94.438" width="293.625" height="6.750" fill="url(#wood)" />
+<rect x="101.750" y="41.000" width="321.188" height="53.438" fill="url(#wood)" />
+<rect x="68.000" y="221.000" width="354.938" height="220.500" fill="#1c1f24" />
+<rect x="69.125" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="72.5" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="72.5" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="72.5" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="77.562" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="80.9375" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="80.9375" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="80.9375" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="86.000" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="89.375" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="89.375" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="89.375" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="94.438" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="97.8125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="97.8125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="97.8125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="102.875" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="106.25" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="106.25" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="106.25" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="111.312" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="114.6875" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="114.6875" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="114.6875" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="119.750" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="123.125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="123.125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="123.125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="128.188" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="131.5625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="131.5625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="131.5625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="136.625" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="140.0" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="140.0" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="140.0" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="145.062" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="148.4375" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="148.4375" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="148.4375" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="153.500" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="156.875" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="156.875" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="156.875" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="161.938" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="165.3125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="165.3125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="165.3125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="170.375" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="173.75" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="173.75" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="173.75" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="178.812" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="182.1875" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="182.1875" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="182.1875" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="187.250" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="190.625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="190.625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="190.625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="195.688" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="199.0625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="199.0625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="199.0625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="204.125" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="207.5" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="207.5" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="207.5" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="212.562" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="215.9375" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="215.9375" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="215.9375" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="221.000" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="224.375" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="224.375" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="224.375" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="229.438" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="232.8125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="232.8125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="232.8125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="237.875" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="241.25" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="241.25" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="241.25" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="246.312" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="249.6875" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="249.6875" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="249.6875" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="254.750" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="258.125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="258.125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="258.125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="263.188" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="266.5625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="266.5625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="266.5625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="271.625" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="275.0" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="275.0" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="275.0" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="280.062" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="283.4375" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="283.4375" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="283.4375" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="288.500" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="291.875" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="291.875" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="291.875" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="296.938" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="300.3125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="300.3125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="300.3125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="305.375" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="308.75" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="308.75" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="308.75" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="313.812" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="317.1875" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="317.1875" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="317.1875" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="322.250" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="325.625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="325.625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="325.625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="330.688" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="334.0625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="334.0625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="334.0625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="339.125" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="342.5" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="342.5" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="342.5" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="347.562" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="350.9375" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="350.9375" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="350.9375" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="356.000" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="359.375" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="359.375" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="359.375" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="364.438" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="367.8125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="367.8125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="367.8125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="372.875" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="376.25" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="376.25" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="376.25" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="381.312" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="384.6875" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="384.6875" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="384.6875" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="389.750" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="393.125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="393.125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="393.125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="398.188" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="401.5625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="401.5625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="401.5625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="406.625" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="410.0" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="410.0" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="410.0" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="415.062" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
+<circle cx="418.4375" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="418.4375" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="418.4375" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="260.938" y="77.000" width="162.000" height="360.000" fill="none" stroke="#3c7994" stroke-width="1.2" stroke-dasharray="5 5"/>
+<line x1="41.000" y1="437.000" x2="449.938" y2="437.000" stroke="#555" stroke-width="2"/>
+<line x1="68.000" y1="449.000" x2="422.938" y2="449.000" stroke="#666" />
+<line x1="68.000" y1="444.000" x2="68.000" y2="454.000" stroke="#666" />
+<line x1="422.938" y1="444.000" x2="422.938" y2="454.000" stroke="#666" />
+<text x="158.0" y="469" font-size="13" fill="#292c30" >78⅞″ overall run</text>
+<text x="459" y="110" font-size="12" fill="#292c30" >Garage return →</text>
+<text x="459" y="129" font-size="12" fill="#292c30" >Door is perpendicular</text>
+<text x="459" y="148" font-size="12" fill="#292c30" >when closed.</text>
+<text x="459" y="202" font-size="12" fill="#292c30" >Blue dashed outline:</text>
+<text x="459" y="221" font-size="12" fill="#292c30" >90° parked door</text>
+<text x="459" y="240" font-size="12" fill="#292c30" >projected onto this view;</text>
+<text x="459" y="259" font-size="12" fill="#292c30" >it is in front of finish.</text>
+<text x="459" y="302" font-size="12" fill="#292c30" >+48″ panel top</text>
+<text x="459" y="321" font-size="12" fill="#292c30" >+0″ deck datum</text>
+<text x="459" y="340" font-size="12" fill="#292c30" >−1″ backing bottom</text>
+<text x="18" y="486" font-size="13" fill="#292c30" >42 × 1½″ faces · ⅜″ gaps · ¼″ end margins</text>
+</g>
+<g transform="translate(718,120)">
+<rect x="0.000" y="0.000" width="664.000" height="500.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
+<text x="18" y="28" font-size="18" fill="#292c30" font-weight="700">B · VERTICAL SHIPLAP</text>
+<rect x="41.000" y="41.000" width="22.500" height="396.000" fill="#efeee8" />
+<rect x="422.938" y="41.000" width="22.500" height="396.000" fill="#e4e5e2" />
+<rect x="101.750" y="94.438" width="24.750" height="342.562" fill="url(#wood)" />
+<rect x="370.625" y="94.438" width="24.750" height="342.562" fill="url(#wood)" />
+<clipPath id="brace-1-left"><rect x="126.5" y="101.1875" width="109.6875" height="113.0625"/></clipPath>
+<g clip-path="url(#brace-1-left)">
+<line x1="18.500" y1="214.250" x2="131.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="45.500" y1="214.250" x2="158.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="72.500" y1="214.250" x2="185.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="99.500" y1="214.250" x2="212.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="126.500" y1="214.250" x2="239.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="153.500" y1="214.250" x2="266.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="180.500" y1="214.250" x2="293.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="207.500" y1="214.250" x2="320.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="234.500" y1="214.250" x2="347.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+</g>
+<clipPath id="brace-1-right"><rect x="260.9375" y="101.1875" width="109.6875" height="113.0625"/></clipPath>
+<g clip-path="url(#brace-1-right)">
+<line x1="478.625" y1="214.250" x2="365.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="451.625" y1="214.250" x2="338.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="424.625" y1="214.250" x2="311.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="397.625" y1="214.250" x2="284.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="370.625" y1="214.250" x2="257.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="343.625" y1="214.250" x2="230.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="316.625" y1="214.250" x2="203.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="289.625" y1="214.250" x2="176.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="262.625" y1="214.250" x2="149.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+</g>
+<rect x="236.188" y="101.188" width="24.750" height="113.062" fill="url(#wood)" />
+<rect x="101.750" y="214.250" width="293.625" height="6.750" fill="url(#wood)" />
+<rect x="101.750" y="94.438" width="293.625" height="6.750" fill="url(#wood)" />
+<rect x="101.750" y="41.000" width="321.188" height="53.438" fill="url(#wood)" />
+<rect x="68.000" y="221.000" width="354.938" height="220.500" fill="#1c1f24" />
+<rect x="69.125" y="223.250" width="7.594" height="211.500" fill="url(#wood)" />
+<line x1="76.719" y1="434.750" x2="76.719" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="72.921875" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="72.921875" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="72.921875" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="76.719" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="91.344" y1="434.750" x2="91.344" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="84.03125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="84.03125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="84.03125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="91.344" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="105.969" y1="434.750" x2="105.969" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="98.65625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="98.65625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="98.65625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="105.969" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="120.594" y1="434.750" x2="120.594" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="113.28125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="113.28125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="113.28125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="120.594" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="135.219" y1="434.750" x2="135.219" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="127.90625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="127.90625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="127.90625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="135.219" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="149.844" y1="434.750" x2="149.844" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="142.53125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="142.53125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="142.53125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="149.844" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="164.469" y1="434.750" x2="164.469" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="157.15625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="157.15625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="157.15625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="164.469" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="179.094" y1="434.750" x2="179.094" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="171.78125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="171.78125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="171.78125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="179.094" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="193.719" y1="434.750" x2="193.719" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="186.40625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="186.40625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="186.40625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="193.719" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="208.344" y1="434.750" x2="208.344" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="201.03125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="201.03125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="201.03125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="208.344" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="222.969" y1="434.750" x2="222.969" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="215.65625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="215.65625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="215.65625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="222.969" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="237.594" y1="434.750" x2="237.594" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="230.28125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="230.28125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="230.28125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="237.594" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="252.219" y1="434.750" x2="252.219" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="244.90625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="244.90625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="244.90625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="252.219" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="266.844" y1="434.750" x2="266.844" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="259.53125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="259.53125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="259.53125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="266.844" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="281.469" y1="434.750" x2="281.469" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="274.15625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="274.15625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="274.15625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="281.469" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="296.094" y1="434.750" x2="296.094" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="288.78125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="288.78125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="288.78125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="296.094" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="310.719" y1="434.750" x2="310.719" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="303.40625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="303.40625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="303.40625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="310.719" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="325.344" y1="434.750" x2="325.344" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="318.03125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="318.03125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="318.03125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="325.344" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="339.969" y1="434.750" x2="339.969" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="332.65625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="332.65625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="332.65625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="339.969" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="354.594" y1="434.750" x2="354.594" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="347.28125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="347.28125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="347.28125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="354.594" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="369.219" y1="434.750" x2="369.219" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="361.90625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="361.90625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="361.90625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="369.219" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="383.844" y1="434.750" x2="383.844" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="376.53125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="376.53125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="376.53125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="383.844" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="398.469" y1="434.750" x2="398.469" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="391.15625" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="391.15625" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="391.15625" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="398.469" y="223.250" width="14.625" height="211.500" fill="url(#wood)" />
+<line x1="413.094" y1="434.750" x2="413.094" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
+<circle cx="405.78125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="405.78125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="405.78125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="413.094" y="223.250" width="8.719" height="211.500" fill="url(#wood)" />
+<circle cx="417.453125" cy="423.5" r="1.05" fill="#b6bcc0"/>
+<circle cx="417.453125" cy="329.0" r="1.05" fill="#b6bcc0"/>
+<circle cx="417.453125" cy="234.5" r="1.05" fill="#b6bcc0"/>
+<rect x="260.938" y="77.000" width="162.000" height="360.000" fill="none" stroke="#3c7994" stroke-width="1.2" stroke-dasharray="5 5"/>
+<line x1="41.000" y1="437.000" x2="449.938" y2="437.000" stroke="#555" stroke-width="2"/>
+<line x1="68.000" y1="449.000" x2="422.938" y2="449.000" stroke="#666" />
+<line x1="68.000" y1="444.000" x2="68.000" y2="454.000" stroke="#666" />
+<line x1="422.938" y1="444.000" x2="422.938" y2="454.000" stroke="#666" />
+<text x="158.0" y="469" font-size="13" fill="#292c30" >78⅞″ overall run</text>
+<text x="459" y="110" font-size="12" fill="#292c30" >Garage return →</text>
+<text x="459" y="129" font-size="12" fill="#292c30" >Door is perpendicular</text>
+<text x="459" y="148" font-size="12" fill="#292c30" >when closed.</text>
+<text x="459" y="202" font-size="12" fill="#292c30" >Blue dashed outline:</text>
+<text x="459" y="221" font-size="12" fill="#292c30" >90° parked door</text>
+<text x="459" y="240" font-size="12" fill="#292c30" >projected onto this view;</text>
+<text x="459" y="259" font-size="12" fill="#292c30" >it is in front of finish.</text>
+<text x="459" y="302" font-size="12" fill="#292c30" >+48″ panel top</text>
+<text x="459" y="321" font-size="12" fill="#292c30" >+0″ deck datum</text>
+<text x="459" y="340" font-size="12" fill="#292c30" >−1″ backing bottom</text>
+<text x="18" y="486" font-size="13" fill="#292c30" >25 blanks · 3¼″ typical cover · balanced edge rips</text>
+</g>
+<g transform="translate(28,640)">
+<rect x="0.000" y="0.000" width="664.000" height="500.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
+<text x="18" y="28" font-size="18" fill="#292c30" font-weight="700">C1 · BOTANICAL ONLAYS</text>
+<rect x="41.000" y="41.000" width="22.500" height="396.000" fill="#efeee8" />
+<rect x="422.938" y="41.000" width="22.500" height="396.000" fill="#e4e5e2" />
+<rect x="101.750" y="94.438" width="24.750" height="342.562" fill="url(#wood)" />
+<rect x="370.625" y="94.438" width="24.750" height="342.562" fill="url(#wood)" />
+<clipPath id="brace-2-left"><rect x="126.5" y="101.1875" width="109.6875" height="113.0625"/></clipPath>
+<g clip-path="url(#brace-2-left)">
+<line x1="18.500" y1="214.250" x2="131.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="45.500" y1="214.250" x2="158.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="72.500" y1="214.250" x2="185.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="99.500" y1="214.250" x2="212.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="126.500" y1="214.250" x2="239.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="153.500" y1="214.250" x2="266.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="180.500" y1="214.250" x2="293.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="207.500" y1="214.250" x2="320.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="234.500" y1="214.250" x2="347.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+</g>
+<clipPath id="brace-2-right"><rect x="260.9375" y="101.1875" width="109.6875" height="113.0625"/></clipPath>
+<g clip-path="url(#brace-2-right)">
+<line x1="478.625" y1="214.250" x2="365.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="451.625" y1="214.250" x2="338.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="424.625" y1="214.250" x2="311.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="397.625" y1="214.250" x2="284.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="370.625" y1="214.250" x2="257.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="343.625" y1="214.250" x2="230.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="316.625" y1="214.250" x2="203.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="289.625" y1="214.250" x2="176.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="262.625" y1="214.250" x2="149.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+</g>
+<rect x="236.188" y="101.188" width="24.750" height="113.062" fill="url(#wood)" />
+<rect x="101.750" y="214.250" width="293.625" height="6.750" fill="url(#wood)" />
+<rect x="101.750" y="94.438" width="293.625" height="6.750" fill="url(#wood)" />
+<rect x="101.750" y="41.000" width="321.188" height="53.438" fill="url(#wood)" />
+<rect x="68.000" y="221.000" width="354.938" height="220.500" fill="#1c1f24" />
+<rect x="69.125" y="428.000" width="352.688" height="6.750" fill="url(#wood)" />
+<rect x="69.125" y="223.250" width="352.688" height="6.750" fill="url(#wood)" />
+<rect x="69.125" y="230.000" width="6.750" height="198.000" fill="url(#wood)" />
+<rect x="184.438" y="230.000" width="6.750" height="198.000" fill="url(#wood)" />
+<rect x="299.750" y="230.000" width="6.750" height="198.000" fill="url(#wood)" />
+<rect x="415.062" y="230.000" width="6.750" height="198.000" fill="url(#wood)" />
+<path d="M130.15625 396.5 Q116.65625 333.5 134.65625 261.5" fill="none" stroke="#bc9059" stroke-width="4"/>
+<ellipse cx="116.65625" cy="369.5" rx="18.0" ry="7.2" transform="rotate(-30 116.65625 369.5)" fill="url(#wood)"/>
+<ellipse cx="143.65625" cy="342.5" rx="18.0" ry="7.2" transform="rotate(30 143.65625 342.5)" fill="url(#wood)"/>
+<ellipse cx="116.65625" cy="315.5" rx="18.0" ry="7.2" transform="rotate(-30 116.65625 315.5)" fill="url(#wood)"/>
+<ellipse cx="143.65625" cy="288.5" rx="18.0" ry="7.2" transform="rotate(30 143.65625 288.5)" fill="url(#wood)"/>
+<path d="M245.46875 396.5 Q231.96875 333.5 249.96875 261.5" fill="none" stroke="#bc9059" stroke-width="4"/>
+<ellipse cx="231.96875" cy="369.5" rx="18.0" ry="7.2" transform="rotate(-30 231.96875 369.5)" fill="url(#wood)"/>
+<ellipse cx="258.96875" cy="342.5" rx="18.0" ry="7.2" transform="rotate(30 258.96875 342.5)" fill="url(#wood)"/>
+<ellipse cx="231.96875" cy="315.5" rx="18.0" ry="7.2" transform="rotate(-30 231.96875 315.5)" fill="url(#wood)"/>
+<ellipse cx="258.96875" cy="288.5" rx="18.0" ry="7.2" transform="rotate(30 258.96875 288.5)" fill="url(#wood)"/>
+<path d="M360.78125 396.5 Q347.28125 333.5 365.28125 261.5" fill="none" stroke="#bc9059" stroke-width="4"/>
+<ellipse cx="347.28125" cy="369.5" rx="18.0" ry="7.2" transform="rotate(-30 347.28125 369.5)" fill="url(#wood)"/>
+<ellipse cx="374.28125" cy="342.5" rx="18.0" ry="7.2" transform="rotate(30 374.28125 342.5)" fill="url(#wood)"/>
+<ellipse cx="347.28125" cy="315.5" rx="18.0" ry="7.2" transform="rotate(-30 347.28125 315.5)" fill="url(#wood)"/>
+<ellipse cx="374.28125" cy="288.5" rx="18.0" ry="7.2" transform="rotate(30 374.28125 288.5)" fill="url(#wood)"/>
+<rect x="260.938" y="77.000" width="162.000" height="360.000" fill="none" stroke="#3c7994" stroke-width="1.2" stroke-dasharray="5 5"/>
+<line x1="41.000" y1="437.000" x2="449.938" y2="437.000" stroke="#555" stroke-width="2"/>
+<line x1="68.000" y1="449.000" x2="422.938" y2="449.000" stroke="#666" />
+<line x1="68.000" y1="444.000" x2="68.000" y2="454.000" stroke="#666" />
+<line x1="422.938" y1="444.000" x2="422.938" y2="454.000" stroke="#666" />
+<text x="158.0" y="469" font-size="13" fill="#292c30" >78⅞″ overall run</text>
+<text x="459" y="110" font-size="12" fill="#292c30" >Garage return →</text>
+<text x="459" y="129" font-size="12" fill="#292c30" >Door is perpendicular</text>
+<text x="459" y="148" font-size="12" fill="#292c30" >when closed.</text>
+<text x="459" y="202" font-size="12" fill="#292c30" >Blue dashed outline:</text>
+<text x="459" y="221" font-size="12" fill="#292c30" >90° parked door</text>
+<text x="459" y="240" font-size="12" fill="#292c30" >projected onto this view;</text>
+<text x="459" y="259" font-size="12" fill="#292c30" >it is in front of finish.</text>
+<text x="459" y="302" font-size="12" fill="#292c30" >+48″ panel top</text>
+<text x="459" y="321" font-size="12" fill="#292c30" >+0″ deck datum</text>
+<text x="459" y="340" font-size="12" fill="#292c30" >−1″ backing bottom</text>
+<text x="18" y="486" font-size="13" fill="#292c30" >Three fields · natural locust stems and leaves</text>
+</g>
+<g transform="translate(718,640)">
+<rect x="0.000" y="0.000" width="664.000" height="500.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
+<text x="18" y="28" font-size="18" fill="#292c30" font-weight="700">C2 · GEOMETRIC ONLAYS</text>
+<rect x="41.000" y="41.000" width="22.500" height="396.000" fill="#efeee8" />
+<rect x="422.938" y="41.000" width="22.500" height="396.000" fill="#e4e5e2" />
+<rect x="101.750" y="94.438" width="24.750" height="342.562" fill="url(#wood)" />
+<rect x="370.625" y="94.438" width="24.750" height="342.562" fill="url(#wood)" />
+<clipPath id="brace-3-left"><rect x="126.5" y="101.1875" width="109.6875" height="113.0625"/></clipPath>
+<g clip-path="url(#brace-3-left)">
+<line x1="18.500" y1="214.250" x2="131.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="45.500" y1="214.250" x2="158.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="72.500" y1="214.250" x2="185.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="99.500" y1="214.250" x2="212.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="126.500" y1="214.250" x2="239.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="153.500" y1="214.250" x2="266.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="180.500" y1="214.250" x2="293.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="207.500" y1="214.250" x2="320.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="234.500" y1="214.250" x2="347.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+</g>
+<clipPath id="brace-3-right"><rect x="260.9375" y="101.1875" width="109.6875" height="113.0625"/></clipPath>
+<g clip-path="url(#brace-3-right)">
+<line x1="478.625" y1="214.250" x2="365.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="451.625" y1="214.250" x2="338.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="424.625" y1="214.250" x2="311.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="397.625" y1="214.250" x2="284.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="370.625" y1="214.250" x2="257.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="343.625" y1="214.250" x2="230.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="316.625" y1="214.250" x2="203.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="289.625" y1="214.250" x2="176.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+<line x1="262.625" y1="214.250" x2="149.562" y2="101.188" stroke="#a77b48" stroke-width="6.75"/>
+</g>
+<rect x="236.188" y="101.188" width="24.750" height="113.062" fill="url(#wood)" />
+<rect x="101.750" y="214.250" width="293.625" height="6.750" fill="url(#wood)" />
+<rect x="101.750" y="94.438" width="293.625" height="6.750" fill="url(#wood)" />
+<rect x="101.750" y="41.000" width="321.188" height="53.438" fill="url(#wood)" />
+<rect x="68.000" y="221.000" width="354.938" height="220.500" fill="#1c1f24" />
+<rect x="69.125" y="428.000" width="352.688" height="6.750" fill="url(#wood)" />
+<rect x="69.125" y="223.250" width="352.688" height="6.750" fill="url(#wood)" />
+<rect x="69.125" y="230.000" width="6.750" height="198.000" fill="url(#wood)" />
+<rect x="184.438" y="230.000" width="6.750" height="198.000" fill="url(#wood)" />
+<rect x="299.750" y="230.000" width="6.750" height="198.000" fill="url(#wood)" />
+<rect x="415.062" y="230.000" width="6.750" height="198.000" fill="url(#wood)" />
+<polygon points="130.15625,266.0 166.15625,329.0 130.15625,392.0 94.15625,329.0" fill="none" stroke="#bc9059" stroke-width="7"/>
+<circle cx="130.15625" cy="329.0" r="13.5" fill="url(#wood)"/>
+<polygon points="245.46875,266.0 281.46875,329.0 245.46875,392.0 209.46875,329.0" fill="none" stroke="#bc9059" stroke-width="7"/>
+<circle cx="245.46875" cy="329.0" r="13.5" fill="url(#wood)"/>
+<polygon points="360.78125,266.0 396.78125,329.0 360.78125,392.0 324.78125,329.0" fill="none" stroke="#bc9059" stroke-width="7"/>
+<circle cx="360.78125" cy="329.0" r="13.5" fill="url(#wood)"/>
+<rect x="260.938" y="77.000" width="162.000" height="360.000" fill="none" stroke="#3c7994" stroke-width="1.2" stroke-dasharray="5 5"/>
+<line x1="41.000" y1="437.000" x2="449.938" y2="437.000" stroke="#555" stroke-width="2"/>
+<line x1="68.000" y1="449.000" x2="422.938" y2="449.000" stroke="#666" />
+<line x1="68.000" y1="444.000" x2="68.000" y2="454.000" stroke="#666" />
+<line x1="422.938" y1="444.000" x2="422.938" y2="454.000" stroke="#666" />
+<text x="158.0" y="469" font-size="13" fill="#292c30" >78⅞″ overall run</text>
+<text x="459" y="110" font-size="12" fill="#292c30" >Garage return →</text>
+<text x="459" y="129" font-size="12" fill="#292c30" >Door is perpendicular</text>
+<text x="459" y="148" font-size="12" fill="#292c30" >when closed.</text>
+<text x="459" y="202" font-size="12" fill="#292c30" >Blue dashed outline:</text>
+<text x="459" y="221" font-size="12" fill="#292c30" >90° parked door</text>
+<text x="459" y="240" font-size="12" fill="#292c30" >projected onto this view;</text>
+<text x="459" y="259" font-size="12" fill="#292c30" >it is in front of finish.</text>
+<text x="459" y="302" font-size="12" fill="#292c30" >+48″ panel top</text>
+<text x="459" y="321" font-size="12" fill="#292c30" >+0″ deck datum</text>
+<text x="459" y="340" font-size="12" fill="#292c30" >−1″ backing bottom</text>
+<text x="18" y="486" font-size="13" fill="#292c30" >Same frame · diamonds and central medallions</text>
+</g>
+<text x="38" y="1192" font-size="20" fill="#292c30" font-weight="700">REPRESENTATIVE ASSEMBLY SECTIONS</text>
+<text x="38" y="1217" font-size="13" fill="#292c30" >Exploded concept diagrams; thickness labels govern. No changes to west metal, structural sheathing, or brace connections.</text>
+<g transform="translate(38,1245)">
+<text x="0" y="0" font-size="16" fill="#292c30" font-weight="700">A · SLATS</text>
+<rect x="0.000" y="20.000" width="105.000" height="90.000" fill="#e5c89e" />
+<text x="7" y="72" font-size="12" fill="#292c30" >BLOCKING</text>
+<rect x="105.000" y="20.000" width="25.000" height="90.000" fill="#292c30" />
+<text x="103" y="130" font-size="12" fill="#292c30" >⅝″ MDO</text>
+<rect x="130.000" y="56.000" width="11.250" height="25.000" fill="#949b9d" />
+<rect x="141.250" y="20.000" width="33.750" height="90.000" fill="url(#wood)" />
+<line x1="192.000" y1="64.000" x2="40.000" y2="64.000" stroke="#a4adb3" stroke-width="3"/>
+<text x="220" y="43" font-size="13" fill="#292c30" >1″ added face depth</text>
+<text x="220" y="67" font-size="12" fill="#292c30" >+ ⅛″ cap/drip budget</text>
+<text x="220" y="91" font-size="12" fill="#292c30" >passage side →</text>
+<text x="0" y="159" font-size="12" fill="#292c30" >¼″ discrete spacers / vertical drying paths</text>
+<text x="0" y="178" font-size="12" fill="#292c30" >¾″ locust; screws to in-wall blocking</text>
+</g>
+<g transform="translate(493,1245)">
+<text x="0" y="0" font-size="16" fill="#292c30" font-weight="700">B · SHIPLAP</text>
+<rect x="0.000" y="20.000" width="105.000" height="90.000" fill="#e5c89e" />
+<text x="7" y="72" font-size="12" fill="#292c30" >BLOCKING</text>
+<rect x="105.000" y="20.000" width="25.000" height="90.000" fill="#292c30" />
+<text x="103" y="130" font-size="12" fill="#292c30" >⅝″ MDO</text>
+<rect x="130.000" y="56.000" width="33.750" height="25.000" fill="#949b9d" />
+<rect x="163.750" y="20.000" width="33.750" height="90.000" fill="url(#wood)" />
+<line x1="192.000" y1="64.000" x2="40.000" y2="64.000" stroke="#a4adb3" stroke-width="3"/>
+<text x="220" y="43" font-size="13" fill="#292c30" >1.5″ added face depth</text>
+<text x="220" y="67" font-size="12" fill="#292c30" >+ ⅛″ cap/drip budget</text>
+<text x="220" y="91" font-size="12" fill="#292c30" >passage side →</text>
+<text x="0" y="159" font-size="12" fill="#292c30" >¾″ battens; rear drainage reliefs</text>
+<text x="0" y="178" font-size="12" fill="#292c30" >¾″ locust; horizontal rail drainage breaks</text>
+</g>
+<g transform="translate(948,1245)">
+<text x="0" y="0" font-size="16" fill="#292c30" font-weight="700">C · PANELS</text>
+<rect x="0.000" y="20.000" width="105.000" height="90.000" fill="#e5c89e" />
+<text x="7" y="72" font-size="12" fill="#292c30" >BLOCKING</text>
+<rect x="105.000" y="20.000" width="25.000" height="90.000" fill="#292c30" />
+<text x="103" y="130" font-size="12" fill="#292c30" >⅝″ MDO</text>
+<rect x="130.000" y="56.000" width="5.625" height="25.000" fill="#949b9d" />
+<rect x="135.625" y="20.000" width="33.750" height="90.000" fill="url(#wood)" />
+<line x1="192.000" y1="64.000" x2="40.000" y2="64.000" stroke="#a4adb3" stroke-width="3"/>
+<text x="220" y="43" font-size="13" fill="#292c30" >0.875″ added face depth</text>
+<text x="220" y="67" font-size="12" fill="#292c30" >+ ⅛″ cap/drip budget</text>
+<text x="220" y="91" font-size="12" fill="#292c30" >passage side →</text>
+<text x="0" y="159" font-size="12" fill="#292c30" >⅛″ discrete spacers behind trim / onlays</text>
+<text x="0" y="178" font-size="12" fill="#292c30" >¾″ frame; ½″ motifs sit within fields</text>
+</g>
+<text x="38" y="1473" font-size="20" fill="#292c30" font-weight="700">DOOR / FINISH PLAN — COMMON DATUMS, DIMENSIONS IN INCHES</text>
+<rect x="109.000" y="1585.500" width="14.000" height="194.500" fill="#e5c89e" />
+<rect x="123.000" y="1585.500" width="2.500" height="194.500" fill="#1c1f24" />
+<rect x="125.500" y="1585.500" width="4.000" height="194.500" fill="#bd9058" />
+<line x1="116.000" y1="1585.500" x2="308.000" y2="1585.500" stroke="#555" stroke-width="3"/>
+<line x1="144.000" y1="1585.500" x2="288.000" y2="1585.500" stroke="#3c7994" stroke-width="3"/>
+<line x1="144.000" y1="1585.500" x2="144.000" y2="1729.500" stroke="#3c7994" stroke-width="3"/>
+<path d="M288 1585.5 A144 144 0 0 1 144 1729.5" fill="none" stroke="#3c7994" stroke-dasharray="5 4"/>
+<line x1="144.000" y1="1585.500" x2="131.450" y2="1728.952" stroke="#a84430" stroke-width="2" stroke-dasharray="4 4"/>
+<text x="304" y="1573.5" font-size="13" fill="#292c30" >N ↑</text>
+<text x="156" y="1573.5" font-size="12" fill="#292c30" >garage / closed door</text>
+<text x="148" y="1740" font-size="12" fill="#3c7994" >90°</text>
+<text x="104" y="1752" font-size="12" fill="#a84430" >95°</text>
+<text x="385" y="1521" font-size="14" fill="#292c30" >Existing MDO east face: x = 74⅜″</text>
+<text x="385" y="1540" font-size="14" fill="#292c30" >Modeled hinge / RO west jamb: x = 79″</text>
+<text x="385" y="1559" font-size="14" fill="#292c30" >Available offset before finishes: 4⅝″</text>
+<text x="385" y="1578" font-size="14" fill="#292c30" >Deck east edge: x = 115″</text>
+<text x="825" y="1521" font-size="14" fill="#292c30" >A: 1″ added face depth → x = 75⅜″</text>
+<text x="825" y="1540" font-size="14" fill="#292c30" >B: 1½″ added face depth → x = 75⅞″</text>
+<text x="825" y="1559" font-size="14" fill="#292c30" >C: ⅞″ added frame depth → x = 75¼″</text>
+<text x="825" y="1578" font-size="14" fill="#292c30" >Budget another ⅛″ at cap / drip trim.</text>
+<text x="385" y="1623" font-size="14" fill="#292c30" >At 95°, far edge moves 36 sin(5°) = 3.14″ west.</text>
+<text x="385" y="1642" font-size="14" fill="#292c30" >Blue sweep is the model’s 90° zero-thickness sector.</text>
+<text x="385" y="1661" font-size="14" fill="#292c30" >Red line illustrates overtravel, not approved operation.</text>
+<text x="825" y="1623" font-size="14" fill="#292c30" >Door hardware and hinge offsets are unselected.</text>
+<text x="825" y="1642" font-size="14" fill="#292c30" >Do not infer handle clearance from the blue arc.</text>
+<text x="825" y="1661" font-size="14" fill="#292c30" >Study recommendation: controlled 90° hold-open / stop,</text>
+<text x="825" y="1680" font-size="14" fill="#292c30" >subject to supplier and field template verification.</text>
+<text x="385" y="1733" font-size="13" fill="#292c30" >Face depths include stand-offs; sections exaggerate thin components for legibility.</text>
+<text x="385" y="1756" font-size="13" fill="#292c30" >See companion Markdown for cap budgets, passage widths, quantities, sample builds, and acceptance gates.</text>
+<text x="38" y="1817" font-size="13" fill="#292c30" >Source: current Catlin model, resolved 2026-10-14. Drawings compare finishes only; existing structure is schematic.</text>
+</g></svg>

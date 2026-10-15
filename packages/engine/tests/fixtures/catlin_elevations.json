@@ -1523,6 +1523,9 @@
 "canvas_objects/FURN-M-SOFA/body_z0_m": 0.0238125,
 "canvas_objects/FURN-M-SOFA/body_z1_m": 0.8874125,
 "canvas_objects/FURN-M-SOFA/z_m": 0.0238125,
+"canvas_objects/FURN-M-STRW-BENCH/body_z0_m": 0.4191,
+"canvas_objects/FURN-M-STRW-BENCH/body_z1_m": 0.4572,
+"canvas_objects/FURN-M-STRW-BENCH/z_m": 0.4191,
 "canvas_objects/FURN-M-STUDY-BENCH/body_z0_m": 0.0250495,
 "canvas_objects/FURN-M-STUDY-BENCH/body_z1_m": 0.4314495,
 "canvas_objects/FURN-M-STUDY-BENCH/z_m": 0.0250495,
@@ -28154,16 +28157,16 @@
 "698effbf7582"
 ],
 "geometry/CMW117AAAA/layer:gwb-mudroom-upper": [
-1.8288,
+2.1336,
 2.7432,
 2,
-"316583c5b545"
+"b6f5d92c9524"
 ],
 "geometry/CMW117AAAA/layer:paint-mudroom-upper": [
-1.8288,
+2.1336,
 2.7432,
 2,
-"316583c5b545"
+"b6f5d92c9524"
 ],
 "geometry/CMW117AAAA/layer:paint-stair": [
 0.0,
@@ -28184,46 +28187,130 @@
 "08fa410dc44f"
 ],
 "geometry/CMW117AAAA::framing/member:blocking-0-000": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 8,
-"80b78e93583a"
+"94db6ff852f1"
 ],
 "geometry/CMW117AAAA::framing/member:blocking-0-001": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 8,
-"80b78e93583a"
+"94db6ff852f1"
 ],
 "geometry/CMW117AAAA::framing/member:blocking-0-002": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 8,
-"80b78e93583a"
+"94db6ff852f1"
 ],
 "geometry/CMW117AAAA::framing/member:blocking-0-003": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 8,
-"80b78e93583a"
+"94db6ff852f1"
 ],
 "geometry/CMW117AAAA::framing/member:blocking-0-004": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 8,
-"80b78e93583a"
+"94db6ff852f1"
 ],
 "geometry/CMW117AAAA::framing/member:blocking-0-005": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 8,
-"80b78e93583a"
+"94db6ff852f1"
 ],
 "geometry/CMW117AAAA::framing/member:blocking-0-006": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 8,
-"80b78e93583a"
+"94db6ff852f1"
+],
+"geometry/CMW117AAAA::framing/member:blocking-1-000": [
+1.7907,
+1.8288,
+8,
+"46a88c99db0c"
+],
+"geometry/CMW117AAAA::framing/member:blocking-1-001": [
+1.7907,
+1.8288,
+8,
+"46a88c99db0c"
+],
+"geometry/CMW117AAAA::framing/member:blocking-1-002": [
+1.7907,
+1.8288,
+8,
+"46a88c99db0c"
+],
+"geometry/CMW117AAAA::framing/member:blocking-1-003": [
+1.7907,
+1.8288,
+8,
+"46a88c99db0c"
+],
+"geometry/CMW117AAAA::framing/member:blocking-1-004": [
+1.7907,
+1.8288,
+8,
+"46a88c99db0c"
+],
+"geometry/CMW117AAAA::framing/member:blocking-1-005": [
+1.7907,
+1.8288,
+8,
+"46a88c99db0c"
+],
+"geometry/CMW117AAAA::framing/member:blocking-1-006": [
+1.7907,
+1.8288,
+8,
+"46a88c99db0c"
+],
+"geometry/CMW117AAAA::framing/member:blocking-2-000": [
+2.1336,
+2.1717,
+8,
+"c851d3213b05"
+],
+"geometry/CMW117AAAA::framing/member:blocking-2-001": [
+2.1336,
+2.1717,
+8,
+"c851d3213b05"
+],
+"geometry/CMW117AAAA::framing/member:blocking-2-002": [
+2.1336,
+2.1717,
+8,
+"c851d3213b05"
+],
+"geometry/CMW117AAAA::framing/member:blocking-2-003": [
+2.1336,
+2.1717,
+8,
+"c851d3213b05"
+],
+"geometry/CMW117AAAA::framing/member:blocking-2-004": [
+2.1336,
+2.1717,
+8,
+"c851d3213b05"
+],
+"geometry/CMW117AAAA::framing/member:blocking-2-005": [
+2.1336,
+2.1717,
+8,
+"c851d3213b05"
+],
+"geometry/CMW117AAAA::framing/member:blocking-2-006": [
+2.1336,
+2.1717,
+8,
+"c851d3213b05"
 ],
 "geometry/CMW117AAAA::framing/member:corner-end": [
 0.0381,
@@ -30440,12 +30527,6 @@
 "5b1c8c335af3"
 ],
 "geometry/CMW137AAAA::framing/member:stud-001": [
-0.0381,
-2.651125,
-8,
-"5b1c8c335af3"
-],
-"geometry/CMW137AAAA::framing/member:stud-002": [
 0.0381,
 2.651125,
 8,
@@ -71846,46 +71927,130 @@
 "f16deafda480"
 ],
 "member/CMW117AAAA/blocking-0-000": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 2,
-"846dca74a689"
+"96bb59d56bc0"
 ],
 "member/CMW117AAAA/blocking-0-001": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 2,
-"846dca74a689"
+"96bb59d56bc0"
 ],
 "member/CMW117AAAA/blocking-0-002": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 2,
-"846dca74a689"
+"96bb59d56bc0"
 ],
 "member/CMW117AAAA/blocking-0-003": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 2,
-"846dca74a689"
+"96bb59d56bc0"
 ],
 "member/CMW117AAAA/blocking-0-004": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 2,
-"846dca74a689"
+"96bb59d56bc0"
 ],
 "member/CMW117AAAA/blocking-0-005": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 2,
-"846dca74a689"
+"96bb59d56bc0"
 ],
 "member/CMW117AAAA/blocking-0-006": [
-1.8288,
-1.8669,
+0.381,
+0.4191,
 2,
-"846dca74a689"
+"96bb59d56bc0"
+],
+"member/CMW117AAAA/blocking-1-000": [
+1.7907,
+1.8288,
+2,
+"4b30b4eab876"
+],
+"member/CMW117AAAA/blocking-1-001": [
+1.7907,
+1.8288,
+2,
+"4b30b4eab876"
+],
+"member/CMW117AAAA/blocking-1-002": [
+1.7907,
+1.8288,
+2,
+"4b30b4eab876"
+],
+"member/CMW117AAAA/blocking-1-003": [
+1.7907,
+1.8288,
+2,
+"4b30b4eab876"
+],
+"member/CMW117AAAA/blocking-1-004": [
+1.7907,
+1.8288,
+2,
+"4b30b4eab876"
+],
+"member/CMW117AAAA/blocking-1-005": [
+1.7907,
+1.8288,
+2,
+"4b30b4eab876"
+],
+"member/CMW117AAAA/blocking-1-006": [
+1.7907,
+1.8288,
+2,
+"4b30b4eab876"
+],
+"member/CMW117AAAA/blocking-2-000": [
+2.1336,
+2.1717,
+2,
+"b4a7cbce8545"
+],
+"member/CMW117AAAA/blocking-2-001": [
+2.1336,
+2.1717,
+2,
+"b4a7cbce8545"
+],
+"member/CMW117AAAA/blocking-2-002": [
+2.1336,
+2.1717,
+2,
+"b4a7cbce8545"
+],
+"member/CMW117AAAA/blocking-2-003": [
+2.1336,
+2.1717,
+2,
+"b4a7cbce8545"
+],
+"member/CMW117AAAA/blocking-2-004": [
+2.1336,
+2.1717,
+2,
+"b4a7cbce8545"
+],
+"member/CMW117AAAA/blocking-2-005": [
+2.1336,
+2.1717,
+2,
+"b4a7cbce8545"
+],
+"member/CMW117AAAA/blocking-2-006": [
+2.1336,
+2.1717,
+2,
+"b4a7cbce8545"
 ],
 "member/CMW117AAAA/corner-end": [
 0.0381,
@@ -73676,12 +73841,6 @@
 "e1eb918c8160"
 ],
 "member/CMW137AAAA/stud-001": [
-0.0381,
-2.651125,
-2,
-"e1eb918c8160"
-],
-"member/CMW137AAAA/stud-002": [
 0.0381,
 2.651125,
 2,

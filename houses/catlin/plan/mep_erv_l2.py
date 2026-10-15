@@ -56,8 +56,8 @@ EQUIPMENT_ERV_MAIN = [
               room="RM-M-MECH", type_ref="EQ-T-ERV-PLENUM-M-SUP",
               mount=Mount(kind=MountKind.WALL, elevation=ft(8)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-MECH-S", face="left", distance_from_start=inch(52),
-                  normal_gap=inch(1.625), rotation_offset=deg(0)))),
+                  wall_ref="W-M-MECH-S", face="right", distance_from_start=inch(20),
+                  normal_gap=inch(1.625), rotation_offset=deg(-180)))),
     Equipment(uid="9D1KYBNJ12", tag="EQ-M-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
               footprint=(inch(34), inch(8)),
               room="RM-M-MECH", type_ref="EQ-T-ERV-PLENUM-M-EXH",
