@@ -247,6 +247,8 @@ the future.
 - Maybe replace D-M-PANTRY with a 36" pocket door
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
 - ED-A-STUDIO-BAR-PEND should probably be replaced with a track light on the sloped ceiling
+- Add flashing to the top plate of W-BW-SCREEN's top plate, and generally improve the 3d modeling representation of flashing (ie around windows).
+- Possibly swap the concrete canopy stairway (SL-BW-TIER*) to pressure treated wood and composite treads.
 
 # Project Management
 
