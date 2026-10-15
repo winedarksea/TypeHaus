@@ -35,10 +35,11 @@ _WORKED = {
     # Carriers 4.5" shorter at the landing header, 2026-09-24 (addendum 2026-09-24).
     # W/GW 14" round since 2026-09-30 (the CBSQ's 3" side cover, canopy_west_band.md §5e).
     # The garage landing went 2026-10-13 (addendum 2026-10-13): 3.91 ft2 off each; GW's soft
-    # end is a hair inside 0.75 Pc (6,754 vs 6,903), so it is a 46x magnifier, not None.
+    # end is a hair inside 0.75 Pc. The 0.06 inch raised bearing (2026-10-15 addendum)
+    # makes L=60.56 inch and the soft-end magnifier 48.8372, still arithmetic only.
     "PT-BW-W": (1.0787, 1.3242, Status.INCOMPLETE),
     "PT-BW-E": (1.0220, 1.0658, Status.OK),
-    "PT-BW-GW": (1.3318, 46.32, Status.OVER),
+    "PT-BW-GW": (1.33234, 48.8372, Status.OVER),
     "PT-BW-GE": (1.0529, 1.2398, Status.INCOMPLETE),
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->
     # 4,855 lb (front), 4,877 (rear); wall-top k_θ unchanged. Front R 6.616 / 6.242.

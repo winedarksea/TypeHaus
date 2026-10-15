@@ -1555,11 +1555,11 @@
         ],
         [
           -10.0,
-          1.0
+          0.94
         ],
         [
           -15.902519685039373,
-          1.0
+          0.94
         ]
       ],
       "layer": "S-FRAM",
@@ -1583,11 +1583,11 @@
         ],
         [
           -10.0,
-          1.0
+          0.94
         ],
         [
           -15.902519685039373,
-          1.0
+          0.94
         ]
       ],
       "pattern": "lumber",
@@ -1595,7 +1595,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "composite-deck"
+      "material": "trex-enhance-basics"
     },
     {
       "space": "model",

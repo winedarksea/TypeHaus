@@ -155,6 +155,8 @@ class Stair(Element):
     # An exterior composite wear surface and its PT carriage are different orders.
     # None preserves the framing material on the treads and the existing lumber bill.
     tread_material: str | None = None
+    # Membrane over stepped bearing faces of straight stringer flights; bought by run.
+    top_protection: str | None = None
     # A closed riser: the board's stock thickness, face on the riser line. ``None`` is an
     # open riser, graded by ``code.R311_7_5_1_open_risers``.
     riser_thickness: Length | None = None
@@ -251,6 +253,12 @@ class Stair(Element):
     # the defaults below.
     tread_depth: Length | None = None
     nosing_depth: Length | None = None
+
+    @model_validator(mode="after")
+    def validate_stringer_top_protection(self) -> Stair:
+        if self.top_protection and (self.carriage != "stringer" or self.layout != "straight"):
+            raise ValueError("top_protection requires a straight stringer stair")
+        return self
 
 
 @register_element

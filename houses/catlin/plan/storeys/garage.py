@@ -6,6 +6,11 @@
 # service enters from the north. It faced east until 2026-09-07, drawn for a south lot with
 # a driveway around the east side; see notes/garage_orientation_lot.md for that premise and
 # the revert recipe.
+from library import (
+    TREX_ENHANCE_BASICS,
+    TREX_ENHANCE_BASICS_DECK_LAYER,
+    TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING,
+)
 from typehaus import (
     Alarm,
     Annotation,
@@ -769,7 +774,11 @@ STAIRS = [
           width=ft(3), start=pt(ft(6, 11.625), ft(47, 6.125)),
           run_direction="y", run_reversed=True,
           tread_depth=inch(11), nosing_depth=inch(0),
-          # The top step's open riser tops out 32.5" over the slab (R311.7.5.1).
+          tread_material=TREX_ENHANCE_BASICS.tag,
+          tread_thickness=TREX_ENHANCE_BASICS_DECK_LAYER.thickness,
+          stringer_spacing=TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING,
+          top_protection="butyl-tape",
+          # Closed KDAT risers stay independent of the thinner composite wear boards.
           riser_thickness=inch(0.75),
           material="kdat"),
 ]
@@ -782,6 +791,15 @@ STAIR_SEATS = [
     Connector(uid="1P13EB3SE6", tag="CN-G-STR-SEAT-W", kind=ConnectorKind.BEARING_STANDOFF,
               position=pt(ft(7, 0.375), ft(43, 10.25)), elevation=ft(-1),
               size="SS316-SHIM-35", connects=("ST-G-SERVICE", "W-GF-S1")),
+    Connector(uid="GSTRSEAT01", tag="CN-G-STR-SEAT-1", kind=ConnectorKind.BEARING_STANDOFF,
+              position=pt(ft(7, 8.625), ft(43, 10.25)), elevation=ft(-1),
+              size="SS316-SHIM-35", connects=("ST-G-SERVICE", "W-GF-S1")),
+    Connector(uid="GSTRSEAT02", tag="CN-G-STR-SEAT-2", kind=ConnectorKind.BEARING_STANDOFF,
+              position=pt(ft(8, 5.625), ft(43, 10.25)), elevation=ft(-1),
+              size="SS316-SHIM-35", connects=("ST-G-SERVICE", "W-GF-S-DR")),
+    Connector(uid="GSTRSEAT03", tag="CN-G-STR-SEAT-3", kind=ConnectorKind.BEARING_STANDOFF,
+              position=pt(ft(9, 2.625), ft(43, 10.25)), elevation=ft(-1),
+              size="SS316-SHIM-35", connects=("ST-G-SERVICE", "W-GF-S-DR")),
     Connector(uid="SPB72B0ZDN", tag="CN-G-STR-SEAT-E", kind=ConnectorKind.BEARING_STANDOFF,
               position=pt(ft(9, 10.875), ft(43, 10.25)), elevation=ft(-1),
               size="SS316-SHIM-35", connects=("ST-G-SERVICE", "W-GF-S-DR")),
@@ -835,6 +853,8 @@ TRUSS_ORDER = [
 
 # `Door` and `DoorType` carry no hardware field, so the closer is a drawing note (2026-10-13).
 SERVICE_DOOR_HARDWARE = [
+    Annotation(uid="GTREXSPEC1", tag="AN-G-COMPOSITE-DECKING", position=pt(ft(8), ft(44)),
+               text="FS-BW-FLOOR, FS-SG-PORCH and ST-G-SERVICE: TREX ENHANCE BASICS, actual 0.94 x 5.5in square-edge, color TBD. Service treads: four 36 x 11in assemblies, each front 5.5in + 1/4in gap + rear rip 5.25in; five KDAT stringers <=9in o.c., EACH on a 316 stainless stem seat. BUTYL TAPE all deck framing tops and stepped stringer cuts; field-treat wood cuts. Both decks and treads: 316 stainless Cap-Tor xd #10 x 2-3/4in, TWO per board at EVERY support, flush; support all board ends. Retain KDAT rough sill under sloped pan, 1/2in open drainage gap, no board through doorway. See notes/composite_decking.md"),
     Annotation(uid="VJDMQAGNCA", tag="AN-G-SERVICE-DOOR", position=pt(ft(8, 1), ft(42, 6)),
                text="D-G-SERVICE: OUTSWING, hinged on the WEST jamb, onto the entry deck. Surface closer with a HOLD-OPEN arm (parallel-arm, exterior-rated, adjustable latch speed) so the leaf stays parked along W-BW-SCREEN and nobody reaches out over the deck from the top tread of ST-G-SERVICE. Leaf must not swing over the stair (IRC R311.7.6 exception, MN 1309); exterior sill stands on the deck at 0ft 0in"),
 ]

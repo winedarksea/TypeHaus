@@ -587,13 +587,13 @@
 # installed. The milling schedule is a VIEW and adds nothing to this estimate; if the owner
 # mills the treads rather than buying them, the MATERIAL half of this row is what falls
 # away, not the labour half.
-"deck 11x1.5" = { material = { low = 7, high = 14.5 }, labour = { low = 11.5, high = 23 } }  # 288 LF — stair treads (blend: 28 oak, 12 carpet); the 32 LF kdat half is the two EXTERIOR flights, ST-G-SERVICE and ST-SG-PORCH (4 treads at 3'-0" each, 2026-09-03), which are neither oak nor carpeted and sit at the low end of this blend
+"deck 11x1.5" = { material = { low = 7, high = 14.5 }, labour = { low = 11.5, high = 23 } }  # 288 LF — stair treads (blend: 28 oak, 12 carpet); the remaining KDAT treads are ST-SG-PORCH; ST-G-SERVICE now bills as Trex in [stair_treads], which are neither oak nor carpeted and sit at the low end of this blend
 # ST-B2M's carpeted landing platform. The oak flights' treads, winders and ST-M2S's landing
 # left this table 2026-09-28 for [stair_treads], by the piece.
 # The two exterior PT flights' closed risers (2026-09-28): 1x6 KDAT ripped to the step,
 # $9-14 an 8' board, set like trim.
-"0.750x5.100" = { material = { low = 1.1, high = 1.8 }, labour = { low = 1, high = 2 } }  # 24 LF — ST-SG-PORCH
-"0.750x5.300" = { material = { low = 1.1, high = 1.8 }, labour = { low = 1, high = 2 } }  # 24 LF — ST-G-SERVICE
+"0.750x5.088" = { material = { low = 1.1, high = 1.8 }, labour = { low = 1, high = 2 } }  # 24 LF — ST-SG-PORCH
+"0.750x5.860" = { material = { low = 1.1, high = 1.8 }, labour = { low = 1, high = 2 } }  # ST-G-SERVICE KDAT closed risers
 "deck 42x1.5" = { material = { low = 8, high = 16 }, labour = { low = 9.5, high = 25 } }  # 16 LF — ST-B2M landing, carpeted
 "hanger" = { material = { low = 1.5, high = 4 }, labour = { low = 1.3, high = 2.6 } }  # 32 LF — stair hanger board, 2x stock
 
@@ -626,7 +626,7 @@
 # line-set sleeve got. The MATERIAL is already bought: 6 x 32 = 192 SF against 184.1 net.
 # The LABOUR is not, and +$20-45 is the cut-in and the anchoring of a single trim board onto
 # a wall top, added below.
-"composite-deck" = { material = { low = 130, high = 320 }, labour = { low = 173, high = 391 } }  # 6 sheets — 184.1 SF: FS-SG-PORCH + FS-BW-FLOOR + 3 SF of UNMODELLED ST-SG-PORCH threshold board
+"trex-enhance-basics" = { material = { low = 130, high = 320 }, labour = { low = 173, high = 391 } }  # FS-SG-PORCH + FS-BW-FLOOR; per 32 SF equivalent. Includes 316 stainless Cap-Tor xd face screws. Threshold trim remains included in the porch installation scope.
 # The balcony's waterproof interlocking aluminium plank (FS-SG-DECK's subfloor). Bought by
 # the board like the composite above it, so this is the same sheet-EQUIVALENT conversion —
 # 32 SF at the researched installed rate. It carried the identical money as
@@ -818,7 +818,7 @@
 # a pack is inside the framing rate either way. A custom tapered stainless shim would be a
 # rate change and is deliberately not what this specifies — see
 # notes/balcony_differential_movement.md §3.
-"SS316-SHIM-35" = { low = 9, high = 22 }  # 10 ea — 4 balcony column tops, 4 north entry seat-beam bearings, 2 ST-G-SERVICE stringer seats on the garage stem (CN-G-STR-SEAT-W/-E, 2026-10-13). The 2 under the east canopy header are "cast"-variant only (10 ea then); the 2 porch-column packs retired with the centre line, 2026-09-22
+"SS316-SHIM-35" = { low = 9, high = 22 }  # 13 ea — 4 balcony column tops, 4 north entry seat-beam bearings, 5 ST-G-SERVICE stringer seats on the garage stem (CN-G-STR-SEAT-W/-E and -1..3, 2026-10-15). The 2 under the east canopy header are "cast"-variant only (15 ea then); the 2 porch-column packs retired with the centre line, 2026-09-22
 # Four modeled 3/8-in Type 316 bolts pin the HP3 aluminum rails to their leg cap plates.
 # Bolt Depot lists 3/8-16 Type 316 bolts at $0.89 (1-1/2 in) to $2.36 (4 in), plus a 3/8
 # Type 316 nut ($0.22) and washer ($0.20). The model has not fixed the bolt length, so this
@@ -5262,6 +5262,9 @@
 "flash-cove" = { material = { low = 1.5, high = 3 }, labour = { low = 6, high = 12 } }
 
 [stair_treads]
+# Four complete 36 x 11 in tread assemblies, two square-edge boards each, 0.94 in stock.
+# Carry the deck material allowance per 2.75 SF assembly; retain the existing $11.5-23/LF stair installation rate, including 316 stainless Cap-Tor xd screws.
+"trex-enhance-basics:tread" = { material = { low = 11.171875, high = 27.5 }, labour = { low = 34.5, high = 69 } }
 # The oak flights' walking surfaces by the piece (2026-09-28), moved out of [framing] where
 # they billed as `deck 11x1.5` / `tapered tread` / `deck 44.625x1.5` lumber. The stock is
 # owner-milled (`haus millwork` is its cut list), so MATERIAL IS ZERO and each rate is the

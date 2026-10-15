@@ -59,7 +59,7 @@ def test_the_band_rows_reproduce_the_note(record) -> None:
 def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
     values = {q.name: q.value for q in record.inputs}
     assert values["band_height_W-BW-SCREEN"] == pytest.approx(2.34375, abs=1e-4)
-    assert values["overturning_height_W-BW-SCREEN"] == pytest.approx(8.625, abs=1e-3)
+    assert values["overturning_height_W-BW-SCREEN"] == pytest.approx(8.62, abs=1e-3)
     assert values["joint_couple_lb_ft"] == pytest.approx(2106.7, abs=1.0)
     assert values["chord_force_open_front_lb"] == pytest.approx(87.8, abs=0.1)
 
@@ -153,7 +153,7 @@ def test_the_chord_heads_carry_the_band_couple(catlin_ctx) -> None:
     found = catlin_ctx.engineering["wood_roof_post/PT-BW-CW"]
     values = {q.name: q.value for q in found.inputs}
     assert values["head_uplift_lb"] == pytest.approx(635.3, abs=0.2)
-    assert values["plate_load_lb"] == pytest.approx(121.48, abs=0.05)
+    assert values["plate_load_lb"] == pytest.approx(121.38, abs=0.05)
     assert values["band_push_lb"] == pytest.approx(389.38, abs=0.05)
 
 

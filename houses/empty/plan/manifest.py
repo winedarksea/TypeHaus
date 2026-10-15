@@ -10,6 +10,7 @@ import uuid
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft
 from typehaus.library import (
+    TREX_ENHANCE_BASICS_PRODUCT,
     STARTER_APPLIANCE_TYPES,
     STARTER_FIXTURE_TYPES,
     STARTER_FURNITURE_PRODUCTS,
@@ -31,7 +32,7 @@ _library = Library(
     door_types=tuple(main.DOOR_TYPES),
     window_types=tuple(main.WINDOW_TYPES),
     furniture_types=tuple(STARTER_FURNITURE_TYPES),
-    products=STARTER_FURNITURE_PRODUCTS,
+    products=(*STARTER_FURNITURE_PRODUCTS, TREX_ENHANCE_BASICS_PRODUCT),
     fixture_types=tuple(STARTER_FIXTURE_TYPES),
     appliance_types=tuple(STARTER_APPLIANCE_TYPES),
 )

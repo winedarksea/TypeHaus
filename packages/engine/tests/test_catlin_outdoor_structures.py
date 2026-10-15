@@ -62,7 +62,7 @@ def _porch_deck_top(model):
     *is* the floor, so the surface underfoot is its joist tops plus the plank on them."""
     joists = [m for m in _floor(model, "FS-SG-PORCH").members if m.category == "joist"]
     assert joists, "FS-SG-PORCH must resolve joists to stand on"
-    return max(m.z1_m for m in joists) + 1 * INCH  # SPEC.porch_deck_thickness_in
+    return max(m.z1_m for m in joists) + model.plan.by_tag("FS-SG-PORCH").subfloor.thickness.meters
 
 
 def _porch_outline(model):
@@ -1000,7 +1000,7 @@ def test_the_porch_stair_climbs_five_risers_from_the_pad_to_the_plank(catlin_mod
     """
     stair = next(s for s in catlin_model.stairs if s.tag == "ST-SG-PORCH")
     assert stair.riser_count == 5
-    assert stair.riser_height_m / INCH == pytest.approx(6.6)
+    assert stair.riser_height_m / INCH == pytest.approx(6.588)
     assert stair.going_depth_m / INCH == pytest.approx(11.0)
     assert stair.base_elevation_m / FT == pytest.approx(_HP_PAD_TOP_FT)
     treads = [m for m in stair.members if m.category == "tread"]

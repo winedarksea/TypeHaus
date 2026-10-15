@@ -540,3 +540,18 @@ improves to **0.399**; all four post records and the canopy lateral record remai
 - Simpson Strong-Tie C-C-2024, CBSQ lateral F1 485 / F2 1,270; C-C-2019 p. 280 (LTP4).
 - AWC NDS 2018 Supplement Tables 4D and 5A; NDS Tables 4.3.8, 5.3.1, §3.9, §3.10, §5.3.6.
 - ACI 318-19 §10.3.1.2, §10.6.1.1. ASCE 7-16 §11.7.
+
+
+## 2026-10-15 actual composite thickness addendum
+
+The library's Trex Enhance Basics is 0.94 inch actual instead of 1 inch. Holding the
+entry walking surface at 0'-0 raises its supporting wood and pier/chord bases by 0.06 inch.
+Reapply §4b to base -15.44 inch: H = (88 + 15.44)/12 = **8.620 ft** rather than 8.625.
+The roof, header soffit and panel top stay fixed; the panel's bottom rises 0.005 ft.
+
+For §5b's plate reaction, use panel height **4.078333 ft** (4.083333 - 0.005), band
+2.34375 ft and the same 4.520833 ft clear span: P = 16.7232 ×
+(4.078333/2 + 2.34375/2) × 4.520833/2 ≈ **121.38 lb** per chord.
+Head uplift stays **635.295 lb** and band push **389.381 lb**; the same rated hardware
+and capacities pass. The tests use these actual-stock values; the earlier worked text
+retains the nominal 1-inch board geometry for its dated derivation.

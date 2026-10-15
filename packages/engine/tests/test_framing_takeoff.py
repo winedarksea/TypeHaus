@@ -20,7 +20,7 @@ from typehaus.takeoff.sheet_rips import rip_stock
 from _helpers import frames_structure
 
 # Walking-surface materials that bill somewhere other than the lumber order.
-_NOT_LUMBER = {"composite-deck", "concrete", "oak-tread", "oak-floor-custom", "oak-riser",
+_NOT_LUMBER = {"composite-deck", "trex-enhance-basics", "concrete", "oak-tread", "oak-floor-custom", "oak-riser",
                "plywood-subfloor"}
 
 

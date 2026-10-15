@@ -14,6 +14,17 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Shared Trex Enhance Basics on entry, porch and service stair (2026-10-15)
+
+The main library now names Trex Enhance Basics at actual 0.94 inch thickness. FS-BW-FLOOR
+keeps its 0'-0 walking surface and its wood/support stack rises 0.06 inch; FS-SG-PORCH
+keeps the framing datum and finishes at +0.94 inch, with guard and porch-stair arrival
+following it. ST-G-SERVICE gets four composite tread assemblies on five KDAT stringers,
+each on a stainless stem seat, retaining five 6.8 inch rises and its existing footprint.
+Both decks and the service treads use 316 stainless face screws; stepped stringer cuts
+get quantified butyl tape. The door rough sill and cripple remain KDAT under the drained
+pan. See notes/composite_decking.md for cuts, fastening and purchasing scope.
+
 ## W-M-STRW becomes storage: oak courses, a bench, a KDAT plate (2026-10-14)
 
 - **The sole plate stays, so the LVP cannot run flush.** A bearing wall needs a nominal 2x

@@ -47,9 +47,10 @@ def test_shared_landing_covers_both_door_widths(catlin_model):
     surface = Polygon([p.xy_m for p in deck.subfloor_outline])
     for tag in (ENTRY_DOOR, SERVICE_DOOR):
         x, y = _opening_world_center(catlin_model, tag)
-        south = y - 3 * FT if tag == SERVICE_DOOR else y + 7.25 * INCH
+        # Measure the landing from the board edge, beyond cladding and the drainage gap.
+        south = y - 3 * FT - 1.375 * INCH if tag == SERVICE_DOOR else y + 7.75 * INCH
         patch = box(x - 1.5 * FT, south, x + 1.5 * FT, south + 3 * FT)
-        assert surface.buffer(INCH).covers(patch), tag
+        assert surface.buffer(1e-8).covers(patch), tag
 
 
 def test_both_breezeway_doors_open_onto_the_deck_at_the_same_level(catlin_model):

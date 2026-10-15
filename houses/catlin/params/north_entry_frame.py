@@ -26,7 +26,8 @@ foundation. There is no excavation out there to make depth cheap.
 
 **KDAT longevity, house-wide (owner, 2026-09-10).** Every treated member here and in
 `breezeway.py` carries the same four-part detail, stated once rather than per element:
-304 stainless fasteners; butyl joist tape over every beam and rim top (`top_protection`);
+304 stainless fasteners (316 Cap-Tor xd for Trex boards; structural connectors per schedule);
+butyl joist tape over every beam and rim top (`top_protection`);
 AWPA M4 field treatment of every cut end, notch and drilled hole with 2% copper naphthenate
 (IRC R317.1.1 makes this "shall", not advice); and a pigmented penetrating oil finish
 applied on installation. `AN-BW-KDAT` carries it onto the drawings.
@@ -37,6 +38,8 @@ from typehaus import (
     JoistSpec, Node, Pad, Post, Railing, RailingKind, ReinforcementSpec, SlatScreen, Stair,
     ft, inch, pt,
 )
+
+from typehaus.library import TREX_ENHANCE_BASICS_DECK_LAYER
 
 from params.column_heads import CBSQ66_HEAD, HETA20Z_PAIR_HEAD
 from params.east_posts import east_supports, full_height_columns, moment_piers
@@ -69,7 +72,7 @@ LANDING_EAST_FT = SERVICE_RO_EAST_FT
 # `W-BW-SCREEN-SKIRT` READS THIS: a drifted skirt is a 7/16" step in steel, graded by nothing.
 SCREEN_CLADDING_WEST_X_FT = LANDING_WEST_FT - (1.75 + 0.625 + 0.875) / 12
 DECK_FINISH_FT = 0.0
-DECK_JOIST_TOP_FT = -1 / 12
+DECK_JOIST_TOP_FT = DECK_FINISH_FT - TREX_ENHANCE_BASICS_DECK_LAYER.thickness.feet
 JOIST_DEPTH_IN = 7.25
 DETAIL_CUT_Y_FT = (HOUSE_CLADDING_Y_FT + GARAGE_CLADDING_Y_FT) / 2
 
@@ -97,8 +100,8 @@ PIER_BOTTOM_FT = -(9 + 9.4375 / 12)   # the house footing underside, -9'-9 7/16"
 # above it. 10" is still ample for a 2'-0" pad at these loads.
 FOOTING_DEPTH_FT = 10 / 12
 FOOTING_TOP_FT = PIER_BOTTOM_FT + FOOTING_DEPTH_FT
-# Every landing bearing is cast concrete up to -0'-8 1/4" on BOTH sides, so no treated
-# member lies below the deck framing. Site.grade is -2'-10", so this is 25 3/4" ABOVE
+# Every landing bearing is cast concrete up to -15.44" on BOTH sides, so no treated
+# member lies below the deck framing. Site.grade is -2'-10", so this is 18.56" ABOVE
 # finished grade -- the post bases are already clear of snow, splash and de-icer, and the
 # once-proposed "carry the pier a foot higher" line item was based on a wrong picture of
 # the site and is deleted.
@@ -106,9 +109,9 @@ FOOTING_TOP_FT = PIER_BOTTOM_FT + FOOTING_DEPTH_FT
 # beam soffit on one plane, floor beams hung off the seats -- is real construction and reads
 # in the engine as fifteen `structural.member_interference` FAILs, because two beams crossing
 # at one elevation DO occupy the same space in a model that has no hanger. So the floor beams
-# sit ON the seats: seat top -0'-8 1/4" (the floor beams' soffit), seat soffit -1'-3 1/2".
-SEAT_TOP_FT = DECK_JOIST_TOP_FT - JOIST_DEPTH_IN / 12      # -0'-8 1/4"
-BEARING_TOP_FT = SEAT_TOP_FT - JOIST_DEPTH_IN / 12         # -1'-3 1/2", 18 1/2" above grade
+# sit ON the seats: seat top -8.19" (the floor beams' soffit), seat soffit -15.44".
+SEAT_TOP_FT = DECK_JOIST_TOP_FT - JOIST_DEPTH_IN / 12      # -8.19"
+BEARING_TOP_FT = SEAT_TOP_FT - JOIST_DEPTH_IN / 12         # -15.44", 18.56" above grade
 
 # The headers top out at the GARAGE PLATE, +7'-4" (W-G-E/W-G-W z1). That is what makes
 # RF-BW-CANOPY one plane with RF-GARAGE rather than a roof stepping off it. The 5-1/2" x
@@ -215,6 +218,7 @@ FRAME_Y1_FT = GARAGE_CLADDING_Y_FT - 0.75 / 12
 # not bearing, so this does not compromise "the landing touches nothing on the house" -- but
 # it has to be DRAWN, because a carpenter will otherwise close it.
 DECK_SHEET_SOUTH_Y_FT = HOUSE_CLADDING_Y_FT + 0.5 / 12
+DECK_SHEET_NORTH_Y_FT = GARAGE_CLADDING_Y_FT - 0.5 / 12
 
 
 def rectangle(x0, y0, x1, y1):
@@ -240,7 +244,7 @@ def beam(number, tag, x0, y0, x1, y1, bearings, top=DECK_JOIST_TOP_FT, size="2-2
     return result
 
 
-# The two seat beams, both on cast concrete at -0'-8 1/4" and both spanning 3'-7" between
+# The two seat beams, both on cast concrete at -15.44" and both spanning 3'-7" between
 # two bearings (5'-6" until 2026-09-11, when the deck's east edge came in to the door jamb).
 # They grade the same way as a result: `structural.deck_beam_span` reads a real 3'-7" span
 # off two Posts on each, rather than one falling back to a length.
@@ -292,7 +296,7 @@ beam(5, "BM-BW-FE", EDGE_BEAM_X_FT, FRAME_Y0_FT, EDGE_BEAM_X_FT, GARAGE_CLADDING
 #
 # So the canopy is freestanding on four columns of its own (owner, 2026-09-10): PT-BW-CW/CE
 # at the pier line and PT-BW-CNW/CNE at the garage-side line, each on cast concrete to
-# -0'-8 1/4". x=6'-0" and x=30'-0" are still the garage's own corner lines, so the canopy
+# -15.44". x=6'-0" and x=30'-0" are still the garage's own corner lines, so the canopy
 # reads as one plane with RF-GARAGE and the sheathing runs continuous across the joint -- and
 # THAT continuity is the only thing the two structures share. It is the canopy's lateral
 # system (AN-BW-ROOF says so) and it carries no gravity load in either direction.
@@ -700,7 +704,7 @@ for _uid, _tag, _x, _pad_in, _top in (
         bottom_elevation=ft(GARAGE_FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT
                             if _tag in _MOMENT_PIERS else GARAGE_PIER_BOTTOM_FT)))
 
-# The two west roof columns. Pier top -1'-3 1/2" to header soffit +6'-4 1/8" = 7'-7 5/8".
+# The two west roof columns. Pier top -15.44" to header soffit +6'-4 1/8" = 7'-7.565".
 # k*lu/d under 17, nowhere near NDS Sec 3.7.1.4's limit of 50. A cast-in CBSQ66-SDS2 base
 # (no separate bolt) and an ACE6Z/AC6Z cap at the header, all live rows in prices.toml;
 # `engineering/wood_roof_post` grades both posts, `lateral_system` their chord role.

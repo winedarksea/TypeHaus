@@ -1306,3 +1306,20 @@ E-W is unchanged (68.61). §10c's N-S line: `M = 980.74 (6.0 − 7.5937) + 98.94
 
 E-W (0.966, governing), guard (0.815) and the stem anchors (0.750) do not read the deck's
 N-S wind and are unchanged. Every row still passes.
+
+
+### 10i. 2026-10-15 — actual Trex stock and open sill drainage
+
+Trex Enhance Basics is 0.94 inch actual: the deck edge is 7.25 + 0.94 = 8.19 inch,
+not 8.25 inch. Wood framing and the landing pier tops rise 0.06 inch to preserve the
+0'-0 walking surface. The screen sill follows that rise, reducing its face height by
+0.005 ft. The deck sheet now stops 1/2 inch south of the garage cladding, rather than
+at the garage wall node (1.375 inch less sheet length), matching the pan discharge note.
+
+Reapply §10b/§10h's same wind pressures and two-joint bolt-group calculation to those
+faces and centroids: deck E-W **66.9232 lb**, screen face **406.9998 lb**, skirt
+**112.2701 lb**; deck N-S **98.6669 lb**, delivered screen N-S **1,038.3506 lb**.
+The two joints and capacities do not change. N-S governs at **0.777886** (W force
+1,151.3 lb / 1,480); E-W at W is **557.6 / 1,480 + 293.1 / 740 = 0.772809**
+(using unrounded forces); guard remains **0.631351**. All pass. Older §10h numbers
+above retain their dated geometry; these are the current actual-stock oracles.

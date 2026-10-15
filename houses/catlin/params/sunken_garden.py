@@ -78,6 +78,7 @@ from typehaus import (
     TrimKind,
 )
 
+from typehaus.library import TREX_ENHANCE_BASICS_DECK_LAYER
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.model.structure import CompliantLayer
 from params.column_heads import HETA20Z_PAIR_HEAD
@@ -324,7 +325,7 @@ class SunkenGardenSpec:
     # 2x12 KDAT southern pine at 12" o.c., hung ledger to ledger (16'-9" face to face).
     porch_joist: str = "2x12:kdat"
     porch_joist_oc_in: float = 12.0
-    porch_deck_thickness_in: float = 1.0  # composite plank
+    porch_deck_thickness_in: float = TREX_ENHANCE_BASICS_DECK_LAYER.thickness.inches
     # The two side walls run this far PAST the porch's front edge before handing off to the
     # retaining run. Without it the W1/W2 (and E1/E2) junction node would land exactly on
     # `_y_ax_front`, which is also the balcony's front pillar line — so PT-SG-BF1/BF3 would
@@ -2654,8 +2655,7 @@ PORCH_JOISTS = FloorSystem(
     # to the deck's north edge over the brick. Along the span it is ledger face to face.
     outline=_PORCH_JOIST_OUTLINE,
     subfloor_outline=_PORCH_PLANK_OUTLINE,
-    subfloor=DeckLayer(material_ref="composite-deck",
-                       thickness=inch(SPEC.porch_deck_thickness_in)),
+    subfloor=TREX_ENHANCE_BASICS_DECK_LAYER,
     # Butyl over every joist and block top: the composite plank above is GAPPED.
     top_protection=_BEAM_TAPE,
     service="deck",

@@ -1750,7 +1750,8 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     assert treads[0].z1_m - slab.z1_m == pytest.approx(inch(34.0 / 5).meters)
     assert treads[-1].z1_m == pytest.approx(threshold - inch(34.0 / 5).meters)
     # Pressure-treated, distinct from the generic lumber elsewhere in the house.
-    assert {m.material for m in stair.members} == {"kdat"}
+    assert {m.material for m in stair.members if m.category == "tread"} == {"trex-enhance-basics"}
+    assert {m.material for m in stair.members if m.category != "tread"} == {"kdat"}
 
 
 def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
@@ -1947,7 +1948,7 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # Both exterior decks carry their walking surface, and both do it the same way: the
     # plank is the floor system's own deck sheet, so the surface follows the framing instead
     # of floating beside it as a second element. No Slab is left over either deck.
-    for tag, material in (("FS-SG-PORCH", "composite-deck"), ("FS-SG-DECK", "aluminum-deck")):
+    for tag, material in (("FS-SG-PORCH", "trex-enhance-basics"), ("FS-SG-DECK", "aluminum-deck")):
         system = catlin_model.plan.by_tag(tag)
         assert system.subfloor is not None and system.subfloor.material_ref == material
     assert not [s for s in catlin_model.solids

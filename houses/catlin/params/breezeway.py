@@ -14,10 +14,12 @@ the house-wide KDAT longevity spec every treated member here also carries.
 """
 
 from typehaus import (
-    Annotation, Connector, ConnectorKind, DeckLayer, FloorSystem, Footing, JoistSpec,
+    Annotation, Connector, ConnectorKind, FloorSystem, Footing, JoistSpec,
     Node, Post, Railing, RailingKind, ShearPanelSpec, Slab, Stair, Wall,
     face, ft, inch, pt,
 )
+
+from typehaus.library import TREX_ENHANCE_BASICS_DECK_LAYER
 
 from params.foundations import SITE_GRADE
 from params.landing_tie import LANDING_TIES
@@ -27,6 +29,7 @@ from params.north_entry_frame import (
     DECK_FINISH_FT,
     DECK_JOIST_TOP_FT,
     DECK_SHEET_SOUTH_Y_FT,
+    DECK_SHEET_NORTH_Y_FT,
     ENTRY_PIER_CAGE,
     FRAME_ELEMENTS,
     FIELD_EAST_X_FT,
@@ -66,7 +69,7 @@ from plan.storeys.garage import GARAGE_Y_SOUTH
 #
 # ** THE FIELD IS NARROWER THAN THE DECK AND BOTH EDGES ARE FORCED. ** West, PT-BW-CW and
 # PT-BW-CNW are 6x6 canopy columns standing on the pier line at x=6'-0" and rising through the
-# deck's own -1" to -8 1/4" band, so the westmost joist face stops at their east face. East,
+# deck's own -0.94" to -8.19" band, so the westmost joist face stops at their east face. East,
 # BM-BW-FE occupies x=9'-4" to 9'-7" (11'-3"..11'-6" until 2026-09-11, when the deck came in
 # to the service door's east jamb). The boards oversail 3 3/4" each side onto the blocking
 # named in AN-BW-STRUCTURE -- a composite board is not cantilevered at its END, so that strip
@@ -80,8 +83,8 @@ FLOOR = FloorSystem(
                      cantilever_end=ft(FRAME_Y1_FT - GARAGE_SEAT_Y_FT)),
     outline=rectangle(FIELD_WEST_X_FT, FRAME_Y0_FT, FIELD_EAST_X_FT, FRAME_Y1_FT),
     subfloor_outline=rectangle(LANDING_WEST_FT, DECK_SHEET_SOUTH_Y_FT,
-                               LANDING_EAST_FT, GARAGE_Y_SOUTH.feet),
-    subfloor=DeckLayer(material_ref="composite-deck", thickness=inch(1)),
+                               LANDING_EAST_FT, DECK_SHEET_NORTH_Y_FT),
+    subfloor=TREX_ENHANCE_BASICS_DECK_LAYER,
     service="deck", top_protection="butyl-tape",
     source="shared upper landing on two piered seat beams; north_entry_structure.md",
 )
@@ -110,18 +113,6 @@ TREAD_DEPTH_FT = 1.5
 TREAD_COUNT = 4
 STAIR_FOOT_X_FT = LANDING_EAST_FT + TREAD_COUNT * TREAD_DEPTH_FT
 LOWER_LANDING_END_X_FT = STAIR_FOOT_X_FT + 3
-# ** 9" O.C., AND IT IS THE TREAD RATING, NOT THE DECKING RATING. ** A composite board is
-# rated for a UNIFORM load as decking and a 300 lb CONCENTRATED load as a stair tread (IRC
-# Table R301.5 fn. c; ICC-ES AC174 Sec 4.1.1 tests it at 1/8" of deflection under 300 lb, an
-# ABSOLUTE limit, not L/288). The same board is 16" as decking and 8"-12" as a tread across
-# the major brands -- ESR-3771 shows 16" and 11" on one product. `composite-deck` in this
-# house names no manufacturer, so 9" is the floor of the mainstream distribution (Trex
-# Enhance 9", Trex Select 9", TimberTech Premier 9", ReliaBoard 9") and survives a purchasing
-# change after the boxes are built. IRC R507.2.2.5 makes the delivered board's instruction
-# binding and IRC Table R507.7 excludes stairways outright: if the board's ASTM D7032 label
-# says less than 9", the layout follows the board. Square-edge, face-fastened only -- Fiberon
-# and TimberTech both prohibit grooved planks as stair treads outright.
-TREAD_SUPPORT_SPACING_IN = 9.0
 
 # ** FOUR CAST TIERS ON A COMPACTED BASE, WHICH IS WHERE THIS ARRIVED AFTER TWO WRONG TURNS. **
 # A cut stringer was tried first and fails three ways at this pitch: the horizontal span was
@@ -218,18 +209,18 @@ NOTES = [
                      + "HEADERS are 5-1/2x11-7/8 treated glulam (24F-V4 DF), east starting at its south post's south face; west with equal 8-7/8in tails past its post centres. WEST header on two 6x6 KDAT columns PT-BW-CW/CNW on 14in piers: AC6Z at both CW and CNW, MAX nailing, A35Z angles on the free post faces; cast-in CBSQ66-SDS2 bases, F2 along the screen, straps >= 3in from the pier edge, the four #5 on the cage diagonals. W-BW-SCREEN, the sheathed panel under the slats, is graded at 100% of N-S: 8d at 4in edges, nailed to both 6x6 chords. THE BAND OVER IT is SB-BW-BAND: a 2x6 sill and top plate, a 6x6 centre post and 14 KDAT 2x4 slats at 45deg, 2-1/4in clear, rising to the centre, flush with the west face, one KBS1Z at each slat end, 8 SDWS22400DB through each plate, two A35Z at each end of the centre post; the deck's shear path into the header uses 6 LTP4Z (CN-BW-EAVE-1..6) nailed directly to bevelled 2-ply SPF 2x10 heel blocking (laminated 8d HDG, two near each end and 12in o.c.) and the glulam, 12 0.131x1.5in HDG nails each (six per member). Blocks seat on each header flush with its INBOARD face, one LS30Z at each truss end (six 0.148x1.5in HDG nails per angle, three per leg, never through a truss plate); the fully nailed deck restrains rotation. One LTP4Z (CN-BW-EAVE-E) ties the east joint-bay block to BM-BW-RE for the east chord force. Deck boundary: 8d HDG at 6in; panel-edge blocking: bevelled SPF 2x4 on edge at 3ft 9in horizontal from the ridge, in every canopy bay and RF-GARAGE's first bay, three 8d HDG toenails each end; cut standard 4ft-wide sheets to fit the pitched module with 1/8in gaps. LATERAL LOAD crosses the joint into RF-GARAGE: E-W through continuous deck panels nailed at 6in into the garage gable top chord and 7 LTP4 clips (CN-BW-GCLIP-1..7) from RF-GARAGE's south gable frame into W-G-S (STHD14 CN-G-BWHD-S-DR at D-G-SERVICE's east jamb); N-S through RF-GARAGE to W-G-E / W-G-W (notes/canopy_garage_diaphragm.md). Canopy trusses bear on their own headers; the last deck bay also bears on the garage gable frame. Each truss ties to its header with a stainless H2.5ASS both ends (CN-BW-TRTIE-*). Headers run 8in past the north columns so the roof plane reaches the garage wall, and carry NO truss on that tail -- the deck bridges the last 2ft 0-1/8in to RF-GARAGE's own gable truss, leaving the garage south wall plane clear for its cladding and the fire/draft closure; sheathing CONTINUOUS across the garage south wall line; 6 LSTA24 straps @4ft o.c. (CN-BW-JOINT-1..3, -5..7; none at the ridge) direct to bevelled 2-ply SPF 2x6 longitudinal nailers BEFORE the deck, between truss faces on both sides of the garage gable; the end straps sit on the 2-2x10 collector blocks, 1-1/4in inboard of the header centrelines. Six OUTERMOST 0.148x2.5in HDG nails per leg (12 total), omit middle six holes, >=2-3/8in wood end and >=3/4in edge distances; installed axial capacity 823lb (1235 x 12/18). One LS30Z at each nailer end (six 0.148x1.5in HDG nails each, three per leg); the fully nailed deck restrains rotation; deck-to-nailer two staggered rows 8d HDG at 3in, one per ply, clear of the strap. NO sheathing seam at the garage gable; see canopy_garage_diaphragm.md Sec 3b — the two roofs are ONE plane and move together; straps carry axial N-S tension and the E-W rotation couple; E-W shear uses deck boundary nailing. Both eaves get the garage's own fascia and a CONTINUOUS 5in trough falling north to TR-G-LEADER-E/-W; NO leader at the canopy south end. No soffit — open tails. South gable of RF-GARAGE and both ends of RF-BW-CANOPY are CLOSE RAKES (sheathing cantilever + fascia), no ladder framing, no barge rafter. NEITHER END OF THE CANOPY IS A GABLE END: all three canopy trusses are ordinary FIELD trusses spanning 24ft, NOT gable-end frames -- a gable-end frame is supported continuously by the wall under its bottom chord and does not span, and there is no wall under either canopy end. Design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses\"")),
 
     Annotation(uid="BWAN01AAAA", tag="AN-BW-STRUCTURE", position=pt(ft(7), ft(39)),
-               text=("LANDING: ONE tier of beams. Two seat beams east-west on the piers at -0ft 8-1/4in; 2x8 joists @12in o.c. run NORTH-SOUTH straight on them, cantilevering 9-1/2in south and 7-1/4in north. BM-BW-FE, the east edge beam, runs north-south in the SAME plane (not a second tier), seat to seat; nothing crosses the garage stem or W-G-S. D-G-SERVICE SWINGS OUT onto this deck, hinged on its WEST jamb, with a closer and hold-open: no interior landing (IRC R311.7.6 exception); ST-G-SERVICE rises straight to the threshold and its stringer heads seat on the stem-top ledge inside W-G-S (notes/garage_service_door_outswing.md). The deck ties to the garage on two lines (params/landing_tie.py). No bearing on the house and none on the garage. TWO PIER DEPTHS ON PURPOSE: the three HOUSE-side piers (PT-BW-W/E and the east-line pier) bottom at -9ft 9-7/16in and must be cast WITH the basement excavation while it is open — casting them after backfill undermines the house footing, and the depth costs shaft only because the hole is already there. The three GARAGE-side piers (PT-BW-GW/GE and the east-line pier) bottom at -7ft 0in, coplanar with the garage strip footings, and are cast with the garage foundation in the same pour. " + landing_note(EAST_POST_SYSTEM) + ". Hold deck boards 1/2in off the house cladding and let the gap drain")),
+               text=("LANDING: ONE tier of beams. Two seat beams east-west on the piers at the library-derived joist soffit; 2x8 joists @12in o.c. run NORTH-SOUTH straight on them, cantilevering 9-1/2in south and 7-1/4in north. BM-BW-FE, the east edge beam, runs north-south in the SAME plane (not a second tier), seat to seat; nothing crosses the garage stem or W-G-S. D-G-SERVICE SWINGS OUT onto this deck, hinged on its WEST jamb, with a closer and hold-open: no interior landing (IRC R311.7.6 exception); ST-G-SERVICE rises straight to the threshold and its stringer heads seat on the stem-top ledge inside W-G-S (notes/garage_service_door_outswing.md). The deck ties to the garage on two lines (params/landing_tie.py). No bearing on the house and none on the garage. TWO PIER DEPTHS ON PURPOSE: the three HOUSE-side piers (PT-BW-W/E and the east-line pier) bottom at -9ft 9-7/16in and must be cast WITH the basement excavation while it is open — casting them after backfill undermines the house footing, and the depth costs shaft only because the hole is already there. The three GARAGE-side piers (PT-BW-GW/GE and the east-line pier) bottom at -7ft 0in, coplanar with the garage strip footings, and are cast with the garage foundation in the same pour. " + landing_note(EAST_POST_SYSTEM) + ". Hold deck boards 1/2in off the house cladding and let the gap drain")),
 
     Annotation(uid="BWAN02AAAA", tag="AN-BW-TIERS", position=pt(ft(16), ft(39)),
                text="TERRACE: 5 equal 6.6in rises off the SL-WK-C entry walk; four CAST tiers (SL-BW-TIER1..4), 18in going, wedding-caked so each is fully bedded on the one below, on a compacted washed-rock base — NOT frost-founded, and that is a decision: a monolithic pour moves as one piece and the joint that matters is at the TOP, against a deck landing on piers that will not move (R311.7.5.1 allows 3/8in of riser variation and that joint is where it is spent). EXPOSED_MIX (ACI 318-19 F3+C2), broom finish, 1/4in per foot of cross-fall to the east. No wood, no stringers, no piers — the eight drilled piers this replaced stood east of the flight under open ground"),
     Annotation(uid="BWAN04AAAA", tag="AN-BW-KDAT", position=pt(ft(9), ft(41)),
-               text="ALL KDAT: 304 stainless fasteners (IRC R317.3.1); butyl joist tape over every beam/rim top; field-treat every cut end, notch and hole with 2% copper naphthenate per AWPA M4 (IRC R317.1.1 — required, not advisory); finish with a PIGMENTED penetrating oil on installation, recoat 2-3yr horizontal. NO silicate/'liquid glass' — it is a masonry densifier, leaches from wood and adds no UV protection. W-BW-SCREEN is KDAT 2x4 framing, CDX and corrugated on the WEST face and one 5/8in APA Rated Siding 303 MDO panel on the sheltered EAST face; every cut end inside that panel gets the same M4 treatment before it is closed up, because nothing reaches it afterwards. The east ply is a FINISH face: prime all six edges and both faces before hanging, then two coats of exterior acrylic. W-BW-SCREEN-SKIRT carries the west corrugated down over the sill, the seat beams and the two column standoff bases, stopping 1in ABOVE the pier tops — do not seal that edge to the concrete, it is how the flutes drain and the column bases dry"),
+               text="ALL KDAT: 304 stainless fasteners (IRC R317.3.1), with connector-specific fasteners as scheduled; TREX walking boards use 316 stainless Cap-Tor xd per AN-G-COMPOSITE-DECKING; butyl joist tape over every beam/rim top; field-treat every cut end, notch and hole with 2% copper naphthenate per AWPA M4 (IRC R317.1.1 — required, not advisory); finish with a PIGMENTED penetrating oil on installation, recoat 2-3yr horizontal. NO silicate/'liquid glass' — it is a masonry densifier, leaches from wood and adds no UV protection. W-BW-SCREEN is KDAT 2x4 framing, CDX and corrugated on the WEST face and one 5/8in APA Rated Siding 303 MDO panel on the sheltered EAST face; every cut end inside that panel gets the same M4 treatment before it is closed up, because nothing reaches it afterwards. The east ply is a FINISH face: prime all six edges and both faces before hanging, then two coats of exterior acrylic. W-BW-SCREEN-SKIRT carries the west corrugated down over the sill, the seat beams and the two column standoff bases, stopping 1in ABOVE the pier tops — do not seal that edge to the concrete, it is how the flutes drain and the column bases dry"),
 ]
 
 # ** THE WEST SIDE IS A SOLID SHEAR PANEL WITH A SLAT CLERESTORY OVER IT (owner, 2026-09-10). **
 # The whole west edge was open slats standing beside a separate metal guard, and neither of
 # those is true any more. Bottom: `W-BW-SCREEN`, a sheathed KDAT wall from the PIER TOPS at
-# -1'-3 1/2" up to +4'-0" -- the canopy's north-south lateral system, the guard, and the
+# -15.44" up to +4'-0" -- the canopy's north-south lateral system, the guard, and the
 # closure over the deck framing, all one element (→ plan/assemblies.py::ENTRY_SCREEN_WALL).
 # Top: the slats below, now a 2'-4 3/4" clerestory band from +4'-0" to the header soffit.
 #

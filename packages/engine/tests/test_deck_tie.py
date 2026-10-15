@@ -44,12 +44,12 @@ def test_the_tie_is_derived_from_the_authored_hardware(catlin_ctx):
 
 def test_the_loads_reproduce_section_10b(catlin_ctx):
     record = catlin_ctx.engineering[_ITEM]
-    # The landing's OWN edge band (§10b): 8 1/4" of joist and board, not TR-SG-FASCIA.
-    assert _input(record, "x:FS-BW-FLOOR deck wind") == pytest.approx(68.61, abs=0.01)
-    assert _input(record, "x:W-BW-SCREEN face") == pytest.approx(407.50, abs=0.01)
+    # The landing's OWN edge band (§10b): 8.19" of joist and board (2026-10-15, §10i), not TR-SG-FASCIA.
+    assert _input(record, "x:FS-BW-FLOOR deck wind") == pytest.approx(66.9232, abs=0.01)
+    assert _input(record, "x:W-BW-SCREEN face") == pytest.approx(407.00, abs=0.01)
     assert _input(record, "x:W-BW-SCREEN-SKIRT face") == pytest.approx(112.27, abs=0.01)
     # Seat beams 3.3542' from the column's east face (§10b addendum 2026-09-23).
-    assert _input(record, "y:FS-BW-FLOOR deck wind") == pytest.approx(98.94, abs=0.01)
+    assert _input(record, "y:FS-BW-FLOOR deck wind") == pytest.approx(98.6669, abs=0.01)
     assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(1038.35, abs=0.1)
     canopy = catlin_ctx.engineering["lateral_system/RF-BW-CANOPY"]
     delivered = next(q.value for q in canopy.inputs if q.name == "delivered_shear_y")
@@ -57,16 +57,16 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
 
 
 def test_the_verdicts_reproduce_section_10h(catlin_ctx):
-    """§10h: every row passes; N-S wind at W governs at 0.778, E-W at W 0.775."""
+    """§10h: every row passes; N-S wind at W governs at 0.778, E-W at W 0.773 after §10i."""
     record = catlin_ctx.engineering[_ITEM]
     assert record.status is Status.OK
     ns = _state(record, "tie interaction, N-S wind")
     assert ns.ratio == pytest.approx(0.7780, abs=5e-4)
     assert record.governing.name == ns.name
     ew = _state(record, "tie interaction, E-W wind")
-    assert ew.ratio == pytest.approx(0.7749, abs=5e-4)
+    assert ew.ratio == pytest.approx(0.7728, abs=5e-4)
     assert _state(record, "tie interaction, guard").ratio == pytest.approx(0.6314, abs=5e-4)
-    assert "558.5 lb along the wall / 1,480.0 + 294.2 lb across it / 740.0" in ew.citation
+    assert "557.6 lb along the wall / 1,480.0 + 293.1 lb across it / 740.0" in ew.citation
     # W's dry service is a judgement named for the engineer of record, on the record.
     assert any("DRY SERVICE at W-BW-SCREEN/W-G-W" in n and "engineer of record" in n
                for n in record.notes)

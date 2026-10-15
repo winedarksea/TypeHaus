@@ -140,14 +140,11 @@ def test_a_wall_stopping_exactly_at_the_sheet_is_not_passing_through_it() -> Non
     assert len(through_deck_walls(model_with(0.2), system, -0.3, 0.05, outline)) == 1
 
 
-def test_a_deck_the_sheet_merely_dies_into_is_not_a_penetration(catlin_model_ro) -> None:
-    """``W-G-S`` satisfies clauses 1, 2 and 4 against the breezeway landing.
+def test_a_deck_held_off_the_wall_for_drainage_is_not_a_penetration(catlin_model_ro) -> None:
+    """Actual Trex boards stop 1/2 inch off the garage cladding (2026-10-15).
 
-    A deck outline runs to the AXIS of the line it dies into, so every wall standing at a
-    deck's edge overlaps it by half its own thickness — 59 sq in with the saw's own
-    clearance allowed for, 38 without. Clause 3 is containment for exactly this: the sheet
-    is already drawn to that wall and cutting it again deducts the same strip twice.
-    (FS-BW-GARAGE, the interior landing, was the second witness until 2026-10-13.)
+    The wall still spans the deck's vertical band, but the open drainage gap leaves no
+    sheet overlap to cut. The geometric predicate must not turn proximity into a void.
     """
     wall = catlin_model_ro.wall("W-G-S")
     for tag in ("FS-BW-FLOOR",):
@@ -157,9 +154,27 @@ def test_a_deck_the_sheet_merely_dies_into_is_not_a_penetration(catlin_model_ro)
         assert framing_top_z_m(wall) >= deck.deck_z1_m + _THROUGH_TOL_M
         face = _wall_face(wall).buffer(_SHEET_CLEARANCE_M, join_style=2)
         overlap = face.intersection(Polygon(deck.deck_outline))
-        assert overlap.area / (_IN ** 2) > 30, tag
+        assert overlap.area < 1e-12, tag
+        assert _wall_face(wall).distance(Polygon(deck.deck_outline)) == pytest.approx(
+            inch(0.5).meters)
         assert not Polygon(deck.deck_outline).covers(face)
         assert not (deck.through_walls or ())
+
+
+def test_a_sheet_overlapping_a_wall_edge_is_not_a_contained_penetration(catlin_model_ro):
+    """Preserve the old edge-overlap witness after adding the actual drainage gap."""
+    deck = _deck(catlin_model_ro, "FS-BW-FLOOR")
+    wall = catlin_model_ro.wall("W-G-S")
+    north = max(y for x, y in deck.deck_outline)
+    outline = [(x, wall.axis[0][1] if abs(y - north) < 1e-8 else y)
+               for x, y in deck.deck_outline]
+    sheet = Polygon(outline)
+    face = _wall_face(wall).buffer(_SHEET_CLEARANCE_M, join_style=2)
+    assert sheet.intersection(face).area / _IN**2 > 30
+    assert not sheet.covers(face)
+    assert through_deck_walls(catlin_model_ro, catlin_model_ro.plan.by_tag(deck.tag),
+                              min(m.z0_m for m in deck.members), deck.deck_z1_m,
+                              outline) == ()
 
 
 # --- the cut --------------------------------------------------------------------------

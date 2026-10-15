@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 31e1368a1f8183af  
-**Lines:** 170
+**Model hash:** 4cadf2af6e346622
+**Lines:** 171
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -91,8 +91,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle | 8 | ea |  | building |
 | A35Z framing angle | 4 | ea |  | main |
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
-| AC6Z adjustable post cap (6x beam on 6x6), MAX nailing | 2 | ea |  | building |
-| ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing | 2 | ea |  | building |
+| AC6Z adjustable post cap (6x beam on 6x6), MAX nailing | 3 | ea |  | building |
+| ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing | 1 | ea |  | building |
 | CBSQ66-SDS2 cast-in column base (6x6) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
 | DTT2Z screw hold-down / tension tie | 2 | ea |  | building |
@@ -151,7 +151,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 316 | ea |  | building |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38) | 4 | ea |  | building |
-| 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 10 | ea |  | building |
+| 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 13 | ea |  | building |
 | THA422 top-flange floor truss hanger | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 1 | ea |  | building |
@@ -172,7 +172,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 145.2 | bf | 4 placed, 11.1 SF plan; 0.45 cy in the takeoff | main, second |
+| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 147.6 | bf | 4 placed, 11.3 SF plan; 0.46 cy in the takeoff | main, second |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | 58.8 | bf | 6 placed, 6.9 SF plan; 0.18 cy in the takeoff | main |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 85.2 | bf | 3 placed, 7.2 SF plan; 0.26 cy in the takeoff | main, second |
 | Column — POST_KDAT (column:POST_KDAT) | 38.4 | bf | 2 placed, 0.4 SF plan; 0.12 cy in the takeoff | main |
@@ -186,11 +186,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape, 1 1/4" on deck (butyl-tape) | 24.7 | LF |  | main, second |
 | butyl-tape, 1 1/2" on deck (butyl-tape) | 413.2 | LF |  | main, second |
 | butyl-tape, 4 1/2" on deck (butyl-tape) | 33.5 | LF |  | main |
+| butyl-tape, 1 1/2" on stair (butyl-tape) | 29.7 | LF |  | main |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 4.5 | LF |  | main |
 | butyl-tape-beam, 3" on beam (butyl-tape-beam) | 6.7 | LF |  | main |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 19.3 | LF |  | second |
 | butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | 6.4 | LF |  | main |
-| butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | 11.9 | LF |  | main |
+| butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | 12.4 | LF |  | main |
 
 ## Firestop sealant
 
@@ -396,6 +397,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape, 1 1/4" on deck (butyl-tape) | FS-BW-FLOOR, FS-SG-DECK |
 | butyl-tape, 1 1/2" on deck (butyl-tape) | FS-BW-FLOOR, FS-SG-DECK, FS-SG-PORCH |
 | butyl-tape, 4 1/2" on deck (butyl-tape) | FS-SG-PORCH |
+| butyl-tape, 1 1/2" on stair (butyl-tape) | ST-G-SERVICE |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | BM-BW-SCSILL |
 | butyl-tape-beam, 3" on beam (butyl-tape-beam) | BM-BW-GARAGE-SEAT, BM-BW-HOUSE-SEAT |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | BM-SG-BLE, BM-SG-BLW |

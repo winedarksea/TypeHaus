@@ -53,7 +53,7 @@ def test_maximum_stringer_spacing_and_finished_rises(direction, reversed_run):
     assert len(strings) == 8  # ceil(73 / 12) bays + both end members
     # The two end members sit inside the width, inset half a ply each.
     assert stations[-1] - stations[0] == pytest.approx(inch(73 - 1.5).meters)
-    assert max(b - a for a, b in zip(stations, stations[1:])) <= inch(12).meters
+    assert max(b - a for a, b in zip(stations, stations[1:], strict=False)) <= inch(12).meters
     assert {m.material for m in strings} == {"kdat"}
     treads = sorted((m for m in stair.members if m.category == "tread"),
                      key=lambda m: m.z1_m)
@@ -61,7 +61,7 @@ def test_maximum_stringer_spacing_and_finished_rises(direction, reversed_run):
     assert {m.material for m in treads} == {"composite-deck"}
     surfaces = [stair.base_elevation_m, *(m.z1_m for m in treads),
                 stair.arrival_elevation_m]
-    assert [b - a for a, b in zip(surfaces, surfaces[1:])] == pytest.approx(
+    assert [b - a for a, b in zip(surfaces, surfaces[1:], strict=False)] == pytest.approx(
         [inch(34).meters / 5] * 5)
     for tread in treads:
         section = cross_section(tread.profile)
@@ -121,3 +121,45 @@ def test_stringer_spacing_lays_out_a_winder_straight_flight():
     assert len(strings) == 3
     assert {m.profile for m in strings} == {"1.75x11.875 LSL"}
     assert strings[0].z1_m - strings[0].z0_m == pytest.approx(inch(11.875).meters)
+
+
+def test_shared_trex_product_dimensions_and_catalog_registration():
+    from typehaus.emit.draw.palette import DETAIL_FILL, DETAIL_HATCH
+    from typehaus.library import (
+        ALL_MATERIALS,
+        TREX_ENHANCE_BASICS,
+        TREX_ENHANCE_BASICS_BOARD_WIDTH,
+        TREX_ENHANCE_BASICS_DECK_LAYER,
+        TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING,
+    )
+
+    assert TREX_ENHANCE_BASICS in ALL_MATERIALS
+    assert sum(m.tag == "trex-enhance-basics" for m in ALL_MATERIALS) == 1
+    assert any(m.tag == "composite-deck" for m in ALL_MATERIALS)
+    assert TREX_ENHANCE_BASICS_DECK_LAYER.material_ref == TREX_ENHANCE_BASICS.tag
+    assert TREX_ENHANCE_BASICS_DECK_LAYER.thickness.inches == pytest.approx(0.94)
+    assert TREX_ENHANCE_BASICS_BOARD_WIDTH.inches == pytest.approx(5.5)
+    assert TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING.inches == pytest.approx(9)
+    assert DETAIL_FILL["trex-enhance-basics"] == DETAIL_FILL["composite-deck"]
+    assert DETAIL_HATCH["trex-enhance-basics"] == DETAIL_HATCH["composite-deck"]
+
+
+def test_stringer_tape_follows_notches_and_is_not_a_sheet():
+    from typehaus.takeoff.member_protection import member_protection_takeoff
+
+    model, findings = _resolve(_tiers(width=inch(36), tread_depth=inch(11),
+                                     tread_thickness=inch(0.94), stringer_spacing=inch(9),
+                                     top_protection="butyl-tape"))
+    assert not findings
+    [row] = member_protection_takeoff(model)
+    assert row == dict(material="butyl-tape", scope="stair", width_in=1.5,
+                       count=5, length_ft=29.7, tags=["ST-TIERS"])
+    assert not sheet_goods_takeoff(model)
+    assert member_protection_takeoff(_resolve(_tiers())[0]) == []
+
+
+@pytest.mark.parametrize("overrides", [{"carriage": "box"}, {"carriage": "cast"},
+                                        {"layout": "right_angle_winder"}])
+def test_tape_requires_a_supported_carriage(overrides):
+    with pytest.raises(ValueError, match="top_protection requires a straight stringer stair"):
+        _tiers(top_protection="butyl-tape", **overrides)

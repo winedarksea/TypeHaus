@@ -11,6 +11,7 @@ import uuid
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft
 from typehaus.library import (
+    TREX_ENHANCE_BASICS_PRODUCT,
     ALL_ELECTRICAL_DEVICE_TYPES,
     STANDARD_DOOR_TYPES,
     STARTER_APPLIANCE_TYPES,
@@ -35,7 +36,7 @@ _library = Library(
     window_types=tuple(main.WINDOW_TYPES),
     electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *circuits.PANEL_TYPES),
     furniture_types=tuple(STARTER_FURNITURE_TYPES),
-    products=STARTER_FURNITURE_PRODUCTS,
+    products=(*STARTER_FURNITURE_PRODUCTS, TREX_ENHANCE_BASICS_PRODUCT),
     fixture_types=tuple(STARTER_FIXTURE_TYPES),
     appliance_types=tuple(STARTER_APPLIANCE_TYPES),
     circuits=tuple(circuits.CIRCUITS),

@@ -16,10 +16,11 @@ def test_no_stair_surface_is_a_sheet_good(catlin_model_ro) -> None:
 
 def test_the_oak_flights_bill_owner_furnished_pieces(catlin_model_ro) -> None:
     rows = stair_tread_takeoff(catlin_model_ro)
-    count = {use: sum(r["pieces"] for r in rows if r["use"] == use)
+    count = {use: sum(r["pieces"] for r in rows
+                      if r["use"] == use and str(r["material"]).startswith("oak"))
              for use in ("tread", "winder", "landing")}
     assert count == {"tread": 26, "winder": 3, "landing": 2}
-    oak = [r for r in rows if r["stair"] != "ST-B2M"]
+    oak = [r for r in rows if str(r["material"]).startswith("oak")]
     assert {r["stair"] for r in oak} == {"ST-M2S", "ST-S2A"}
     assert all(r["supply"] == "owner-milled" for r in oak)
     # The carpeted flight's only finish pieces are its bought ply risers, never oak.

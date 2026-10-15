@@ -12,6 +12,7 @@ field unset so the Glaser walk reports UNKNOWN naming it (#32) instead of guessi
 
 from __future__ import annotations
 
+from typehaus.library.decking import TREX_ENHANCE_BASICS
 from typehaus.library.materials import cladding as _cladding
 from typehaus.library.materials import concrete_masonry as _concrete_masonry
 from typehaus.library.materials import finishes as _finishes
@@ -34,6 +35,7 @@ _ALL = (
     + _finishes.MATERIALS
     + _concrete_masonry.MATERIALS
     + _site.MATERIALS
+    + (TREX_ENHANCE_BASICS,)
 )
 _ORDER = (
     "spf",

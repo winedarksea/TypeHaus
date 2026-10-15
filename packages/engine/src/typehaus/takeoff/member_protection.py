@@ -23,6 +23,7 @@ from __future__ import annotations
 import math
 
 from typehaus.model.floors import FloorSystem
+from typehaus.model.spatial import Stair
 from typehaus.model.structure import Beam
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
@@ -113,4 +114,17 @@ def member_protection_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 continue
             rows.add(element.top_protection, "beam", _rounded_width_in(element.size),
                      tag=element.tag, length_m=math.dist(p0, p1))
+    # A notched stringer's tape follows the sawtooth, rather than its shorter rake axis.
+    # Count each tread bearing and its adjoining vertical cut, excluding the unnotched tail.
+    for stair in model.stairs:
+        authored = model.plan.by_tag(stair.tag)
+        if not isinstance(authored, Stair) or not authored.top_protection:
+            continue
+        notches = stair.riser_count - 1
+        going = stair.going_depth_m
+        for member in stair.members:
+            if member.category != "stringer":
+                continue
+            rows.add(authored.top_protection, "stair", _rounded_width_in(member.profile),
+                     tag=stair.tag, length_m=notches * (going + stair.riser_height_m))
     return rows.finish()

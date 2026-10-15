@@ -29,8 +29,8 @@ def test_finished_boards_and_both_stairs_meet_both_sills(catlin_model_ro):
     for tag in ("FS-BW-FLOOR",):
         floor = floors[tag]
         assert floor.deck_z1_m == pytest.approx(0)
-        assert floor.deck_z0_m == pytest.approx(-inch(1).meters)
-        assert all(m.z1_m == pytest.approx(-inch(1).meters) for m in floor.members)
+        assert floor.deck_z0_m == pytest.approx(-inch(0.94).meters)
+        assert all(m.z1_m == pytest.approx(-inch(0.94).meters) for m in floor.members)
     # The garage flight rises 34" off the slab; the entry flight 33" off SL-WK-C, 1" over grade.
     for tag, rise_in in (("ST-BW-ENTRY", 33), ("ST-G-SERVICE", 34)):
         stair = next(s for s in model.stairs if s.tag == tag)
@@ -57,8 +57,10 @@ def test_both_full_door_landing_patches_fit_the_shared_deck(catlin_plan):
                                          ft(9.5).meters, deck_south + ft(3).meters))
     # D-G-SERVICE's RO is 6'-7"..9'-7" since 2026-09-11 (the garage's SW corner), one inch
     # off D-M-ENTRY's; the deck's east edge IS that jamb, so this patch fits exactly.
-    assert surface.buffer(1e-8).covers(box(ft(6, 7).meters, garage_face - ft(3).meters,
-                                         ft(9, 7).meters, garage_face))
+    assert surface.buffer(1e-8).covers(box(ft(6, 7).meters, garage_face - ft(0, 0.5).meters - ft(3).meters,
+                                         ft(9, 7).meters, garage_face - ft(0, 0.5).meters))
+    assert max(p.y.meters for p in floor.subfloor_outline) == pytest.approx(
+        garage_face - inch(0.5).meters)
     assert max(p.x.meters for p in floor.subfloor_outline) == pytest.approx(ft(9, 7).meters)
 
 
@@ -166,3 +168,44 @@ def test_west_header_equal_tails_preserve_the_canopy_bearing_run(catlin_plan, ca
     assert bearing.axis[0][1] == pytest.approx(inch(447.25).meters)
     assert bearing.axis[1][1] == pytest.approx(inch(518.625).meters)
     assert north - south == pytest.approx(inch(77.5).meters)
+
+
+def test_shared_trex_surfaces_supports_and_stem_seats(catlin_model_ro):
+    from typehaus.library import TREX_ENHANCE_BASICS_DECK_LAYER
+    from typehaus.takeoff.framing import framing_takeoff
+    from typehaus.takeoff.stairs import stair_tread_takeoff
+
+    model = catlin_model_ro
+    for tag, top_in in (("FS-BW-FLOOR", 0), ("FS-SG-PORCH", 0.94)):
+        system = model.plan.by_tag(tag)
+        assert system.subfloor == TREX_ENHANCE_BASICS_DECK_LAYER
+        resolved = next(f for f in model.floors if f.tag == tag)
+        assert resolved.deck_z1_m == pytest.approx(inch(top_in).meters)
+    for tag, top_in in (("BM-BW-HOUSE-SEAT", -8.19), ("BM-BW-GARAGE-SEAT", -8.19)):
+        solid = next(s for s in model.solids if s.tag == tag)
+        assert solid.z1_m == pytest.approx(inch(top_in).meters)
+    for tag in ("PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE"):
+        solid = next(s for s in model.solids if s.tag == tag)
+        assert solid.z1_m == pytest.approx(inch(-15.44).meters)
+    stair = next(s for s in model.stairs if s.tag == "ST-G-SERVICE")
+    stringers = [m for m in stair.members if m.category == "stringer"]
+    assert len(stringers) == 5
+    xs = sorted(m.p1[0] for m in stringers)
+    assert max(b-a for a,b in zip(xs, xs[1:], strict=False)) <= inch(9).meters + 1e-9
+    seats = [e for e in model.plan.all_elements() if e.tag.startswith("CN-G-STR-SEAT-")]
+    assert len(seats) == len(stringers)
+    assert sorted(e.position.x.meters for e in seats) == pytest.approx(xs)
+    for seat in seats:
+        host = model.wall(seat.connects[1])
+        assert min(x for x,y in host.axis) <= seat.position.x.meters <= max(x for x,y in host.axis)
+    treads = [m for m in stair.members if m.category == "tread"]
+    assert len(treads) == 4
+    assert {m.material for m in treads} == {"trex-enhance-basics"}
+    assert all(m.z1_m-m.z0_m == pytest.approx(inch(0.94).meters) for m in treads)
+    sill = next(m for m in model.wall("W-G-S").members if m.child_key == "sill-0")
+    assert sill.material == "kdat" and sill.z1_m == pytest.approx(0)
+    [order] = [r for r in stair_tread_takeoff(model) if r["stair"] == stair.tag]
+    assert (order["material"], order["pieces"], order["thickness_in"]) == (
+        "trex-enhance-basics", 4, 0.94)
+    assert order["area_sqft"] == 11
+    assert not [r for r in framing_takeoff(model) if r["material"] == "trex-enhance-basics"]

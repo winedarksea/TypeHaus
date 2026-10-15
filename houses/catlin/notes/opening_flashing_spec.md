@@ -186,6 +186,10 @@ the foam was sprayed in (60-80 F, `ccspf_spec.md` §3) and set the windows behin
 both take a pan. `prices.toml [allowances] envelope-door-sill-pans` bills them, driven on
 `openings.count[type=DT-EXT-SWING36]`. `DT-EXT-FRENCH60`'s own row already carries its pan.
 
+The decks and service treads now match in Trex Enhance Basics, actual 0.94 inch stock;
+the structural rough sill remains KDAT. No continuous board crosses the pan discharge.
+See `composite_decking.md`.
+
 **`D-G-SERVICE` is the exposed one.** Its threshold is 12" above the garage plate, so the
 door stands on a framed rough sill (`W-G-S` `sill-0`, on one cripple). The top of that sill is
 0'-0", flush with `FS-BW-FLOOR`'s boards, and the leaf swings out over the deck.

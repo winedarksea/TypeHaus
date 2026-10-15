@@ -50,6 +50,14 @@ from typehaus.library.assemblies import (
     STARTER_FLOOR,
     STUD_BEARING,
 )
+from typehaus.library.decking import (
+    TREX_ENHANCE_BASICS,
+    TREX_ENHANCE_BASICS_BOARD_WIDTH,
+    TREX_ENHANCE_BASICS_DECK_LAYER,
+    TREX_ENHANCE_BASICS_PRODUCT,
+    TREX_ENHANCE_BASICS_STAIR_BOARD_GAP,
+    TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING,
+)
 from typehaus.library.doors import (
     ALL_DOOR_TYPES,
     DT_POCKET_INT_36,
@@ -77,6 +85,12 @@ from typehaus.library.railings import ALL_RAILING_TYPES
 from typehaus.library.windows import WINDOW_TYPES_16_INCH_MODULE
 
 __all__ = [
+    "TREX_ENHANCE_BASICS",
+    "TREX_ENHANCE_BASICS_BOARD_WIDTH",
+    "TREX_ENHANCE_BASICS_DECK_LAYER",
+    "TREX_ENHANCE_BASICS_PRODUCT",
+    "TREX_ENHANCE_BASICS_STAIR_BOARD_GAP",
+    "TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING",
     "FOOTING_STONE_20",
     "BEAM_LVL",
     "BEAM_KDAT",

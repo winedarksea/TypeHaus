@@ -71,6 +71,7 @@ MATERIAL_TRADE_PATTERNS: tuple[tuple[str, str], ...] = (
     # last, over a frame the carpenter already signed off, and it is the row an owner prices
     # against LVP and oak. The joists and the rim under it stay framing, where they belong.
     ("composite-deck*", "flooring"),
+    ("trex-enhance-basics", "flooring"),
     ("aluminum-deck*", "flooring"),
     ("plywood-subfloor*", "framing"),
     ("cabinet-plywood", "millwork"),        # audit:2026-09-12#envelope_layers:cabinet-plywood

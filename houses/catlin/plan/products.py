@@ -34,6 +34,7 @@ from plan.products_interior import INTERIOR_PRODUCTS
 from plan.study_bookcase_types import STUDY_BOOKCASE_PRODUCTS
 from plan.study_nook_types import STUDY_NOOK_PRODUCTS
 from plan.titanium_types import TITANIUM_PRODUCTS
+from typehaus.library import TREX_ENHANCE_BASICS_PRODUCT
 from typehaus.library.placeables import STARTER_FURNITURE_PRODUCTS
 from typehaus.model import Product
 
@@ -256,6 +257,7 @@ LEVITON_EV_RECEPTACLE_1450R = Product(
 # One catalog to every ``product_ref`` and to the manifest; two files only because of the
 # 500-line rule.
 PRODUCTS = (
+    TREX_ENHANCE_BASICS_PRODUCT,
     LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER,
     FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,

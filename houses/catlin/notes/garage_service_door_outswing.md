@@ -61,19 +61,19 @@ door/flight pair, and an inswing leaf over the same flight FAILs
 ## 3. Stringer seat, hand check
 
 Each stringer head seats on the ICF core of the `W-G-S` stem at −1'-0" through a 316
-stainless shim pack (`CN-G-STR-SEAT-W/-E`). That gives the wood-on-concrete standoff and the
-capillary break. Assumed: 2 stringers, 1 1/2" wide, bearing on the core's 1 3/4" depth.
+stainless shim pack (`CN-G-STR-SEAT-W/-E` and `-1..3`). That gives the wood-on-concrete standoff and the
+capillary break. Since 2026-10-15: 5 stringers (Trex Enhance Basics treads, <=9 inch o.c.), 1 1/2" wide, bearing on the core's 1 3/4" depth.
 
 | | |
 |---|---|
 | plan area | 3'-0" wide × 3'-8" run ≈ 11.0 ft² |
 | load (IRC R301.5 stairs 40 psf live; ~10 psf dead) | 50 psf × 11.0 = 550 lb |
-| head reaction, simple span | 275 lb, i.e. 138 lb per stringer |
+| head reaction, simple span | 275 lb, at most 69 lb per stringer (9 inch tributary width out of 36 inch) |
 | worst case: 300 lb tread point load at the top tread | ≈ 300 lb to one head |
-| one stringer, governing | 138 + 300 ≈ 440 lb |
+| one stringer, governing | 69 + 300 ≈ 369 lb |
 | bearing area | 1.5" × 1.75" = 2.63 in² |
-| bearing stress | 440 / 2.63 ≈ 168 psi |
-| Fc⊥ (SPF, NDS Supplement) | 425 psi, so ratio ≈ 0.40 |
+| bearing stress | 369 / 2.63 ≈ 140 psi |
+| Fc⊥ (SPF, NDS Supplement) | 425 psi, so ratio ≈ 0.33 |
 
 Concrete bearing at this stress is trivial. The concentrated and uniform loads are combined
 conservatively.

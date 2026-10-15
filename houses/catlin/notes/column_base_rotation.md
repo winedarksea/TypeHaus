@@ -457,3 +457,21 @@ Worked, `PT-BW-GW` at 1.0":
 It is no longer a mechanism, but a magnifier of 46 is unstable in every practical sense. No
 verdict moves: the landing is tied (`north_entry_piers.md` §10h), and these rows stay
 arithmetic only.
+
+
+## 2026-10-15 actual composite thickness addendum (landing arithmetic only)
+
+The entry deck stays 0'-0, but Trex's actual 0.94 inch thickness raises its supporting
+wood and pier tops by 0.06 inch. PT-BW-GW's exposed length becomes **60.56 inch**.
+The shaft's added self-weight gives P_u **6,754.904 lb**; EI is **2.427181025e9 lb-in²**.
+At the soft band end k_theta remains **751,092.455 lb-in** (the buried soil profile and
+pad did not change). Reapply §0's series-spring arithmetic:
+
+- Pc,rigid = π² EI / (2.1 L)² = **1,481,124.586 lb**.
+- R = k_theta L / EI = **0.0187403241**.
+- Pc,flex = Pc,rigid / (1 + 3/R) = **9,194.814 lb**.
+- δ = 1 / (1 - P_u / (0.75 Pc,flex)) = **48.8372**; stiff end **1.33234**.
+
+This updates the dated 46.32 reproduction, without changing its verdict or reviving a
+retired load path. These landing-pier rows remain arithmetic only: the active landing
+is laterally tied to the garage, as §10h/§10i of north_entry_piers.md describe.
