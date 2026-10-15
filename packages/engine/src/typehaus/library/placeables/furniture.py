@@ -16,7 +16,11 @@ from typehaus.library.placeables._zones import (
     side_zone,
     surround_zone,
 )
-from typehaus.library.placeables.cantilever_chair import CANTILEVER_CHAIR, CANTILEVER_CHAIR_TAG
+from typehaus.library.placeables.cantilever_chair import (
+    CANTILEVER_CHAIR,
+    CANTILEVER_CHAIR_PRODUCT,
+    CANTILEVER_CHAIR_TAG,
+)
 from typehaus.library.placeables.hanging_seats import HAMMOCK_CHAIR_MEDIUM, HANGING_DAYBED_TWIN
 from typehaus.model import (
     Footprint2D,
@@ -521,4 +525,4 @@ STARTER_FURNITURE_TYPES = (
 )
 
 # Include these identities wherever STARTER_FURNITURE_TYPES supplies the catalog.
-STARTER_FURNITURE_PRODUCTS = (PUZZLE_COFFEE_TABLE_PRODUCT,)
+STARTER_FURNITURE_PRODUCTS = (PUZZLE_COFFEE_TABLE_PRODUCT, CANTILEVER_CHAIR_PRODUCT)
