@@ -16,11 +16,13 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from shapely.geometry import Point
+from shapely.geometry import Point, Polygon
 from shapely.ops import nearest_points
 
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import Vec
+from typehaus.resolve.geometry_prims import arch_soffit_circle
+from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.wall_faces import wall_body
 
@@ -77,6 +79,50 @@ def nearest_wall_face(model: ResolvedModel, point: Vec, z: float, *,
             continue  # reached diagonally, past the wall's end: not the face beside it
         best = WallContact(wall.tag, gap, (face.x, face.y))
     return best
+
+
+def mounting_wall_face(model: ResolvedModel, point: Vec, z: float, *,
+                       along: tuple[Vec, ...], half_width_m: float,
+                       z0_m: float, z1_m: float) -> tuple[WallContact | None, tuple[str, ...]]:
+    """Find a mounting face for the whole hardware footprint, with obstructing tags.
+
+    Clearance may read a wall's continuing face plane across a window; screws cannot.
+    Inspect the nearest face rather than reaching through its opening to another wall.
+    """
+    contact = nearest_wall_face(model, point, z, along=along)
+    if contact is None:
+        return None, ()
+    wall = next(w for w in model.walls if w.tag == contact.wall_tag)
+    (ax, ay), (bx, by) = wall.axis
+    length = math.hypot(bx - ax, by - ay)
+    ux, uy = (bx - ax) / length, (by - ay) / length
+    fx, fy = contact.face_point
+    station = (fx - ax) * ux + (fy - ay) * uy
+    low, high = station - half_width_m, station + half_width_m
+    face_layers = [layer for layer in wall.layers if not layer.is_cavity
+                   and len(layer.polygon) >= 3
+                   and Polygon(layer.polygon).distance(Point(fx, fy)) < 1e-6]
+    blocked = []
+    for opening in model.openings:
+        if opening.host_wall != wall.tag:
+            continue
+        if not any(cuts_layer(wall, layer.name, opening) for layer in face_layers):
+            continue
+        left = opening.center_along_m - opening.width_m / 2
+        right = opening.center_along_m + opening.width_m / 2
+        bottom = wall.base_ref_z_m + opening.sill_m
+        top = bottom + opening.height_m
+        if high <= left or low >= right or z1_m <= bottom:
+            continue
+        if opening.arch_rise_m > 0:
+            radius, _angle, depth = arch_soffit_circle(opening.width_m / 2,
+                                                     opening.arch_rise_m)
+            offset = max(low, min(high, opening.center_along_m)) - opening.center_along_m
+            top = (top - opening.arch_rise_m +
+                   math.sqrt(max(0.0, radius * radius - offset * offset)) - depth)
+        if z0_m < top:
+            blocked.append(opening.tag)
+    return (None, tuple(blocked)) if blocked else (contact, ())
 
 
 def wall_half_span(wall: ResolvedWall) -> float:

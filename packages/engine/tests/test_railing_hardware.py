@@ -18,6 +18,7 @@ from _railing_fixtures import (
 
 from typehaus.model.enums import RailingKind
 from typehaus.quantities import ft, inch, mm, pt
+from typehaus.resolve.model import ResolvedOpening
 from typehaus.resolve.sweep import profile_radius_m
 
 
@@ -70,7 +71,9 @@ def test_a_wall_return_with_no_wall_warns_and_draws_nothing():
     rail = _handrail(start_termination="wall_return")
     model = resolve_railings([rail])
     assert "RETURN1" not in _tags(model, "RL-H")
-    assert [f.check_id for f in model.railing_findings] == ["geometry.railing_return_unanchored"]
+    assert any(f.check_id == "geometry.railing_return_unanchored"
+               for f in model.railing_findings)
+    assert not any(t.startswith("BRACKET") for t in _tags(model, "RL-H"))
 
 
 def test_brackets_reach_a_wall_on_another_storey():
@@ -96,6 +99,81 @@ def test_a_wall_the_rail_dies_into_end_on_is_not_its_wall():
     rail = _handrail(path=(pt(inch(2.375), ft(0)), pt(inch(2.375), ft(10))))
     model = resolve_railings([rail], walls=[wall_along_x("W-X", -0.05, x0_m=-1.0,
                                                          x1_m=1.0)])
-    arm = next(s for s in solids_of(model, "RL-H") if s.tag == "RL-H-BRACKET1")
-    xs = [x for x, _y in arm.outline]
-    assert inches(max(xs) - min(xs)) == pytest.approx(1.0, abs=1e-6), "a stub, not an arm"
+    assert not any(t.startswith("BRACKET") for t in _tags(model, "RL-H"))
+    assert all(f.check_id == "geometry.railing_bracket_unanchored"
+               for f in model.railing_findings)
+
+
+def _window(**overrides):
+    values = dict(uid="WINDOW0001", tag="WIN-T", host_wall="W-T", type_ref=None,
+                  width_m=inch(24).meters, height_m=inch(48).meters,
+                  sill_m=inch(24).meters, center_along_m=1.0 + inch(60).meters,
+                  kind="window", is_door=False)
+    values.update(overrides)
+    return ResolvedOpening(**values)
+
+
+@pytest.mark.parametrize("end_in", [60, 47])
+def test_return_rejects_window_and_plate_overlapping_jamb(end_in):
+    # A 70 mm plate centred 1" short of the jamb still overlaps the opening.
+    rail = _handrail(path=(pt(inch(end_in), inch(2.375)), pt(inch(120), inch(2.375))),
+                     start_termination="wall_return")
+    wall = wall_along_x("W-T", 0.0, z0_m=0)
+    model = resolve_railings([rail], walls=[wall], openings=[_window()])
+    assert "RETURN1" not in _tags(model, "RL-H")
+    assert "ENDPLATE1" not in _tags(model, "RL-H")
+    assert any(f.check_id == "geometry.railing_return_unanchored"
+               and f.element_tags == ("RL-H", "WIN-T") for f in model.railing_findings)
+
+
+@pytest.mark.parametrize(("end_in", "height_in"), [(46, 36), (60, 76)])
+def test_return_mounts_beside_or_above_window_across_storeys(end_in, height_in):
+    rail = _handrail(path=(pt(inch(end_in), inch(2.375)), pt(inch(120), inch(2.375))),
+                     height=inch(height_in), start_termination="wall_return")
+    wall = wall_along_x("W-T", 0.0, storey="below", z0_m=0)
+    model = resolve_railings([rail], walls=[wall], openings=[_window()])
+    assert {"RETURN1", "ENDPLATE1"} <= set(_tags(model, "RL-H"))
+
+
+def test_bracket_rejects_its_full_vertical_footprint_at_window_head():
+    rail = _handrail(height=inch(73))
+    model = resolve_railings([rail], walls=[wall_along_x("W-T", 0, z0_m=0)],
+                             openings=[_window(center_along_m=1.0 + inch(40).meters)])
+    # The rail is above the 72" head; the bracket arm is still inside the opening.
+    assert "BRACKET2" not in _tags(model, "RL-H")
+    assert any(f.check_id == "geometry.railing_bracket_unanchored"
+               and f.element_tags == ("RL-H", "WIN-T") for f in model.railing_findings)
+
+
+def test_opening_sill_uses_wall_reference_elevation():
+    from dataclasses import replace
+
+    wall = replace(wall_along_x("W-T", 0, z0_m=inch(120).meters,
+                                z1_m=inch(240).meters), plate_base_z_m=inch(120).meters)
+    rail = _handrail(base_elevation=inch(120),
+                     path=(pt(inch(60), inch(2.375)), pt(inch(120), inch(2.375))),
+                     start_termination="wall_return")
+    model = resolve_railings([rail], walls=[wall], openings=[_window()])
+    assert "RETURN1" not in _tags(model, "RL-H")
+
+
+def test_authored_angled_return_reaches_solid_jamb_without_moving_grip():
+    rail = _handrail(path=(pt(inch(47), inch(2.375)), pt(inch(120), inch(2.375))),
+                     start_termination="wall_return", start_return_target=pt(inch(46), ft(0)))
+    model = resolve_railings([rail], walls=[wall_along_x("W-T", 0, z0_m=0)],
+                             openings=[_window()])
+    ret = next(s for s in solids_of(model, "RL-H") if s.tag == "RL-H-RETURN1")
+    assert ret.sweep.path[0][:2] == pytest.approx(rail.path[0].xy_m)
+    assert ret.sweep.path[-1][:2] == pytest.approx(rail.start_return_target.xy_m)
+    plate = next(s for s in solids_of(model, "RL-H") if s.tag == "RL-H-ENDPLATE1")
+    assert plate.sweep.path[0][0] == pytest.approx(plate.sweep.path[-1][0])
+
+
+@pytest.mark.parametrize("target_in", [60, 20])
+def test_authored_return_target_cannot_land_in_opening_or_exceed_reach(target_in):
+    rail = _handrail(path=(pt(inch(47), inch(2.375)), pt(inch(120), inch(2.375))),
+                     start_termination="wall_return",
+                     start_return_target=pt(inch(target_in), ft(0)))
+    model = resolve_railings([rail], walls=[wall_along_x("W-T", 0, z0_m=0)],
+                             openings=[_window()])
+    assert "RETURN1" not in _tags(model, "RL-H")

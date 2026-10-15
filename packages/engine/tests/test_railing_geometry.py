@@ -51,7 +51,7 @@ def _stations(model, tag: str, step_m: float = 0.25):
     assert rails, f"{tag} draws no swept rail"
     path = max(rails, key=lambda s: s.z1_m).sweep.path
     out = []
-    for a, b in zip(path, path[1:]):
+    for a, b in zip(path, path[1:], strict=False):
         run = math.hypot(b[0] - a[0], b[1] - a[1])
         steps = max(int(math.ceil(run / step_m)), 1)
         for k in range(steps):
@@ -193,7 +193,7 @@ def test_no_bay_exceeds_the_authored_post_spacing(catlin_plan):
     for railing in (e for e in catlin_plan.all_elements() if isinstance(e, Railing)):
         spacing = max(railing.post_spacing.meters, MIN_POST_SPACING_M)
         stations = railing_post_stations([p.xy_m for p in railing.path], spacing)
-        for (x0, y0), (x1, y1) in zip(stations, stations[1:]):
+        for (x0, y0), (x1, y1) in zip(stations, stations[1:], strict=False):
             seen += 1
             bay = math.hypot(x1 - x0, y1 - y0)
             assert bay <= spacing + 1e-6, (
@@ -208,7 +208,7 @@ def test_the_stations_still_divide_a_segment_evenly(catlin_model):
     from typehaus.resolve.railings.frame import railing_post_stations
 
     stations = railing_post_stations([(0.0, 0.0), (10.001, 0.0)], 5.0)
-    bays = [b[0] - a[0] for a, b in zip(stations, stations[1:])]
+    bays = [b[0] - a[0] for a, b in zip(stations, stations[1:], strict=False)]
     assert len(bays) == 3
     assert min(bays) > 3.0
 
@@ -274,3 +274,42 @@ def test_a_stated_diameter_outside_type_i_fails(catlin_plan):
     findings = _handrail_findings(plan)
     assert any(f.result is Result.FAIL and "R311.7.8.3" in (f.code_ref or "")
                for f in findings), [f.message for f in findings]
+
+
+def test_attic_handrail_supports_clear_the_window_and_door(catlin_model_ro):
+    from shapely.geometry import Polygon
+
+    model = catlin_model_ro
+    tag = 'RL-A-HANDRAIL'
+    rail = _rails(model, tag)[0]
+    assert rail.sweep.path[0] == pytest.approx(tuple(inch(v).meters for v in (423, 46, 165)))
+    assert rail.sweep.path[-1][:2] == pytest.approx(
+        tuple(inch(v).meters for v in (257.125, 103.25)))
+    assert len(_solids(model, tag, 'RAIL')) == 1
+    assert all(a[2] <= b[2] for a, b in zip(rail.sweep.path, rail.sweep.path[1:], strict=False))
+    lower_plate = _solids(model, tag, 'ENDPLATE1')[0]
+    assert max(y for _x, y in lower_plate.outline) < inch(48.5).meters
+    upper_plate = _solids(model, tag, 'ENDPLATE2')[0]
+    assert min(x for x, _y in upper_plate.outline) > inch(261.5).meters
+    window = next(o for o in model.openings if o.tag == 'WIN-S-STUDY3')
+    bumper = Polygon(window.framing_bumper)
+    supports = _solids(model, tag, 'BRACKET') + _solids(model, tag, 'ENDPLATE')
+    assert all(not Polygon(s.outline).intersects(bumper) for s in supports)
+    assert any(min(y for _x, y in s.outline) <= inch(84).meters <=
+               max(y for _x, y in s.outline) for s in _solids(model, tag, 'BRACKET'))
+
+
+def test_attic_handrail_lower_supports_have_bearing_backing(catlin_model_ro):
+    from typehaus.checks.advisory.backing import floating_band_ends
+    from typehaus.resolve.framing.backing_panels import backing_bands
+
+    model = catlin_model_ro
+    wall = next(w for w in model.walls if w.tag == 'W-S-E1')
+    bands = [b for b in backing_bands(model.plan)[wall.tag] if 'HANDRAIL' in b.tag]
+    assert len(bands) == 2
+    assert floating_band_ends(wall, bands) == []
+    members = [m for m in wall.members if m.child_key.startswith('backing-')]
+    for suffix, station in [('ENDPLATE1', 46), ('BRACKET2', 84)]:
+        support = _solids(model, 'RL-A-HANDRAIL', suffix)[0]
+        assert any(min(m.p0[1], m.p1[1]) <= inch(station).meters <= max(m.p0[1], m.p1[1])
+                   and m.z0_m <= support.z0_m and m.z1_m >= support.z1_m for m in members)

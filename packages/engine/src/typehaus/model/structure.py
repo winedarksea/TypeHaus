@@ -1005,6 +1005,10 @@ class Railing(Element):
     # terminal. A plain end cap is "open". ``None`` = not stated → UNKNOWN.
     start_termination: RailTermination | None = None
     end_termination: RailTermination | None = None
+    # Optional authored wall anchors for angled returns to a jamb. The graspable rail
+    # still ends at `path`; targets must have solid support within the return's reach.
+    start_return_target: Point2D | None = None
+    end_return_target: Point2D | None = None
     infill: Literal["balusters", "panel", "cable", "mesh"] | None = None
     # R312.1.3: the largest opening the infill admits. For balusters this is the clear gap
     # between them, which is *not* ``post_spacing`` — that is the structural post rhythm.

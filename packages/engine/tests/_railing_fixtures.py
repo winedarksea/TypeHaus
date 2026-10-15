@@ -91,7 +91,7 @@ def wall_along_x(tag: str, y_face_m: float, *, x0_m: float = -1.0, x1_m: float =
 
 
 def resolve_railings(railings, *, types=(), materials=(), stairs=(),
-                     walls=()) -> ResolvedModel:
+                     walls=(), openings=()) -> ResolvedModel:
     """Resolve ``railings`` into a model's solids, exactly as the pipeline would.
 
     ``materials`` is ``{tag: color}``; a colour with an 8-digit ``#RRGGBBAA`` alpha under
@@ -105,6 +105,7 @@ def resolve_railings(railings, *, types=(), materials=(), stairs=(),
     model = ResolvedModel(plan=_FakePlan(railings, library))
     model.stairs.extend(stairs)
     model.walls.extend(walls)
+    model.openings.extend(openings)
     findings = []
     for element in railings:
         findings.extend(resolve_railing(model, element, "main"))

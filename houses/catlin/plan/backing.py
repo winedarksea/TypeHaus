@@ -263,6 +263,16 @@ MAIN_BACKING = [
 ]
 
 SECOND_BACKING = [
+    # RL-A-HANDRAIL bridges WIN-S-STUDY3. Its return at y=46" and bracket at y=84"
+    # miss studs; each block spans from a full stud to the adjacent window king.
+    WallBacking(uid="HRAILFOOT1", tag="BK-S-E1-HANDRAIL-FOOT", wall_ref="W-S-E1",
+                start=inch(32.25), length=inch(14.75),
+                elevation=inch(41.375), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="RL-A-HANDRAIL lower wall return"),
+    WallBacking(uid="HRAILJAMB1", tag="BK-S-E1-HANDRAIL-JAMB", wall_ref="W-S-E1",
+                start=inch(80), length=inch(14.75),
+                elevation=inch(47.875), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="RL-A-HANDRAIL bracket north of window"),
     # SEKTION high rail: cabinet top 94 1/2" AFF, near-top rail, plus 1 1/2" of floor
     # build-up above the storey datum. The 90"..97 1/4" course spans the mounting screws.
     # Two bands because the rail crosses the staggered/bearing wall split at x=70 1/2".

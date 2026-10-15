@@ -74,7 +74,7 @@ from typehaus.model import Location, WallAttachment
 # RM-S-SUITE's 100 cfm terminal is a high sidewall grille on W-S-C2B, directly above
 # D-S-SUITE and aimed west into the sleeping room. It matches the bedroom side-collar pattern:
 # a wall attachment and the same 12x6 double-deflection type and mount elevation.
-# The 75 cfm attic boot is at the shortened DU-S-HP-SUITE's west end, 40" from its takeoff.
+# The 75 cfm attic boot is at the shortened DU-S-HP-SUITE's west end, 28" from its takeoff.
 # Total branch airflow and the suite's old ERV supply (REG-S-SUP6) are unchanged.
 REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH01AAAA", tag="REG-S-HP-BED1", kind=DuctSystem.SUPPLY, room="RM-S-BED1",
@@ -273,7 +273,8 @@ REGISTERS_HVAC_ATTIC = [
              type_ref="REG-T-HP-SUP", design_cfm=35,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # The west loft's supply: a floor boot straight up off DU-S-HP-SUITE through FS-ATTIC.
-    # Shifted 6" west and rotated 90 degrees to terminate the now-shortened branch cleanly.
+    # Shifted 6" west (2026-10-04), then 12" back east to x=17'-0" (2026-10-14), still rotated
+    # 90 degrees to terminate the branch. Its 6" x-face clears W-A-C2's west face by 6".
     # The room gets conditioned air off System 1 like RM-A-STUDY/RM-A-EAST-UNFIN, returning
     # stale air at REG-A-RET1, so the ERV's attic side is extract-only.
     #
@@ -285,7 +286,7 @@ REGISTERS_HVAC_ATTIC = [
     # MINI-SPLIT IS WANTED: reusing this boot is the whole reason the studio costs what it
     # costs.
     Register(uid="CARH03AAAA", tag="REG-A-HP-WEST", kind=DuctSystem.SUPPLY,
-             room="RM-A-STUDIO", position=pt(ft(16), ft(14, 1.875)), rotation=deg(90),
+             room="RM-A-STUDIO", position=pt(ft(17), ft(14, 1.875)), rotation=deg(90),
              duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SUP", design_cfm=75,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.findings import Finding, Result, Severity
 from typehaus.model.structure import Railing
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import Vec, length, rect_between, square, sub
@@ -14,7 +15,7 @@ from typehaus.resolve.railings.parts import (
     RailingParts,
 )
 from typehaus.resolve.railings.spans import RAIL_BAND_STEP_M, RailingSurface
-from typehaus.resolve.railings.wall_contact import nearest_wall_face
+from typehaus.resolve.railings.wall_contact import mounting_wall_face
 from typehaus.resolve.sweep import (
     rect_profile,
     round_profile,
@@ -43,6 +44,8 @@ _BRACKET_SECTION_M = inch(1.0).meters
 #: well inside a sixteenth, so a 13-ft bar collapses back to the two points a carpenter cuts
 #: it at; a winder, whose nosing line genuinely curves, keeps as many as it needs.
 _RAIL_SIMPLIFY_TOL_M = inch(1.0 / 16.0).meters
+#: Bound refinement at abrupt surface transitions without hiding a level lead-in's end.
+_MAX_RAIL_SAMPLE_SUBDIVISIONS = 12
 
 
 def railing_post_stations(path: list[Vec], spacing: float) -> list[Vec]:
@@ -70,15 +73,14 @@ def railing_post_stations(path: list[Vec], spacing: float) -> list[Vec]:
 
 
 def emit_posts(model: ResolvedModel, el: Railing, storey: str, stations: list[Vec],
-               surface: RailingSurface, parts: RailingParts, rail_h: float) -> None:
+               surface: RailingSurface, parts: RailingParts, rail_h: float) -> list[Finding]:
     """One prism per station, standing on the walking surface under it.
 
     Unless the rail is carried by a wall, in which case it stands on nothing at all and
     gets brackets instead — see :func:`emit_brackets`.
     """
     if el.mount in _WALL_MOUNTS:
-        emit_brackets(model, el, storey, stations, surface, parts, rail_h)
-        return
+        return emit_brackets(model, el, storey, stations, surface, parts, rail_h)
     half = parts.post_section_m / 2.0
     for index, (px, py) in enumerate(stations):
         z0 = surface.height_at((px, py))
@@ -87,19 +89,18 @@ def emit_posts(model: ResolvedModel, el: Railing, storey: str, stations: list[Ve
             category=RAILING_CATEGORY, outline=square(px, py, half, half),
             z0_m=z0, z1_m=z0 + rail_h, assembly=el.assembly, material=parts.post_material,
         ))
+    return []
 
 
 def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list[Vec],
-                  surface: RailingSurface, parts: RailingParts, rail_h: float) -> None:
+                  surface: RailingSurface, parts: RailingParts, rail_h: float) -> list[Finding]:
     """A short arm at each station, from the wall face out to the rail centreline.
 
-    The wall is found rather than authored (:func:`~.wall_contact.nearest_wall_face`): the
-    nearest parallel finish face within reach gives both the arm's direction and length. A
-    station with no wall that close gets a stub dropped under the rail instead — which side
-    to project toward is not knowable there, and a cleat under the bar is at least never on
-    the wrong one. An end carried by a wall return (:mod:`.terminations`) gets no bracket.
+    Only a solid face supporting the full arm footprint can carry a bracket. An end
+    carried by a wall return (:mod:`.terminations`) gets no bracket.
     """
     half = _BRACKET_SECTION_M / 2.0
+    findings: list[Finding] = []
     last = len(stations) - 1
     for index, station in enumerate(stations):
         if (index == 0 and el.start_termination == "wall_return") or (
@@ -107,16 +108,24 @@ def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list
             continue
         rail_z = surface.height_at(station) + rail_h
         arm_z = rail_z - _BRACKET_DROP_M
-        contact = nearest_wall_face(model, station, rail_z,
-                                    along=_directions_at(stations, index))
-        outline = (rect_between(contact.face_point, station, -half, half)
-                   if contact is not None else square(station[0], station[1], half, half))
+        contact, obstructing_tags = mounting_wall_face(
+            model, station, rail_z, along=_directions_at(stations, index),
+            half_width_m=half, z0_m=arm_z - half, z1_m=rail_z)
+        if contact is None or contact.distance_m < 1e-4:
+            findings.append(Finding(
+                severity=Severity.WARN, check_id="geometry.railing_bracket_unanchored",
+                message=(f"railing {el.tag} bracket {index + 1} has no solid wall face "
+                         "supporting its full footprint within reach; no bracket drawn"),
+                element_tags=(el.tag, *obstructing_tags), result=Result.FAIL))
+            continue
+        outline = rect_between(contact.face_point, station, -half, half)
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-b{index:02d}", tag=f"{el.tag}-BRACKET{index + 1}", storey=storey,
             category=RAILING_CATEGORY, outline=outline,
             z0_m=arm_z - half, z1_m=rail_z, assembly=el.assembly,
             material=parts.post_material,
         ))
+    return findings
 
 
 def _directions_at(stations: list[Vec], index: int) -> tuple[Vec, ...]:
@@ -175,13 +184,40 @@ def _rail_path(path: list[Vec], surface: RailingSurface, rise_m: float) -> tuple
     follow the flight. ``rise_m`` is this level's height above that surface.
     """
     points: list[Vec3] = []
+    starting_z = surface.height_at(path[0]) + rise_m
+    leading_level = True
+
+    def append_band(a: Vec3, b: Vec3, depth: int = 0) -> None:
+        midpoint = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
+        midpoint_z = surface.height_at(midpoint) + rise_m
+        if (depth < _MAX_RAIL_SAMPLE_SUBDIVISIONS and
+                abs(midpoint_z - (a[2] + b[2]) / 2) > _RAIL_SIMPLIFY_TOL_M / 2):
+            middle = (*midpoint, midpoint_z)
+            append_band(a, middle, depth + 1)
+            append_band(middle, b, depth + 1)
+        else:
+            points.append(a)
+
     for a, b in zip(path[:-1], path[1:], strict=True):
         run = length(sub(b, a))
         steps = max(int(math.ceil(run / RAIL_BAND_STEP_M)), 1)
         for k in range(steps):
             t = k / steps
             station = (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
-            points.append((station[0], station[1], surface.height_at(station) + rise_m))
+            next_t = (k + 1) / steps
+            following = (a[0] + (b[0] - a[0]) * next_t, a[1] + (b[1] - a[1]) * next_t)
+            current = (*station, surface.height_at(station) + rise_m)
+            next_point = (*following, surface.height_at(following) + rise_m)
+            if leading_level and abs(next_point[2] - starting_z) > 1e-9:
+                # Resolve the end of a level lead-in without changing the established
+                # sampling policy for the rest of a flight or its arrival landing.
+                if points:
+                    append_band(current, next_point)
+                else:
+                    points.append(current)
+                leading_level = False
+            else:
+                points.append(current)
     end = path[-1]
     points.append((end[0], end[1], surface.height_at(end) + rise_m))
     return simplify_path(points, _RAIL_SIMPLIFY_TOL_M, _RAIL_SIMPLIFY_TOL_M)

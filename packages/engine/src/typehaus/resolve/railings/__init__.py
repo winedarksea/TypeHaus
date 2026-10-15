@@ -57,7 +57,7 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
 
     parts = resolve_parts(model, el)
     stations = railing_post_stations(path, max(el.post_spacing.meters, MIN_POST_SPACING_M))
-    emit_posts(model, el, storey, stations, surface, parts, rail_h)
+    findings = emit_posts(model, el, storey, stations, surface, parts, rail_h)
     emit_rails(model, el, storey, path, surface, parts, rail_h)
-    findings = emit_terminations(model, el, storey, path, surface, parts, rail_h)
+    findings.extend(emit_terminations(model, el, storey, path, surface, parts, rail_h))
     return findings + emit_infill(model, el, storey, stations, surface, parts, rail_h)
