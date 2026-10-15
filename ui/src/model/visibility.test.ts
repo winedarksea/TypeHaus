@@ -61,7 +61,8 @@ export function runVisibilityTests() {
   assert(memberTrades({ category: "fascia" }).join() === "siding", "So is the fascia");
   assert(memberTrades({ category: "gutter" }).join() === "drainage",
     "A gutter is the head of the stormwater run");
-  assert(memberTrades({ category: "ridge_cap" }).join() === "roofing", "A ridge cap is roofing");
+  assert(memberTrades({ category: "ridge_cap" }).join() === "roofing:flashing",
+    "A ridge cap takes the roofing flashing facet");
   assert(memberTrades({ category: "stringer" }).join() === "stairs",
     "A stringer is the stair builder's");
   assert(memberTrades({ category: "stud" }).join() === "framing",
@@ -101,7 +102,7 @@ export function runVisibilityTests() {
 
   assert(expandRolePreset({ groups: ["walls"], trades: ["framing"] }).join() ===
     "framing,framing:structure,framing:furring,framing:sheathing,framing:connector," +
-    "framing:connector-embedded,siding,insulation,drywall,paint",
+    "framing:connector-embedded,siding,siding:flashing,insulation,drywall,paint",
     "A preset expands its groups and trades, in order, framing to its facets");
 
   // Saved recipes from the 13-name vocabulary still apply.

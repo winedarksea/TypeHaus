@@ -248,6 +248,9 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "corner_trim": (0.85, 0.86, 0.87, 1.0),  # eave corner trim (continuous skin)
     "drip_edge": (0.75, 0.77, 0.80, 1.0),  # formed drip edge (pitched section)
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing
+    "opening_head_flashing": (0.08, 0.09, 0.10, 1.0),
+    "opening_sill_pan": (0.30, 0.13, 0.12, 1.0),
+    "opening_flashing_membrane": (0.30, 0.13, 0.12, 1.0),
     "wall_corner": (0.75, 0.77, 0.80, 1.0),  # formed-metal wall corner closure
     "movement_joint": (0.45, 0.38, 0.33, 1.0),  # brick-matched silicone joint
     "beam_cap": (0.75, 0.77, 0.80, 1.0),  # mill-finish aluminium beam cap

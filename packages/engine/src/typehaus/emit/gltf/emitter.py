@@ -74,7 +74,12 @@ from typehaus.emit.gltf.walls import (
     _add_wall_body,
     _wall_top_at,  # noqa: F401
 )
-from typehaus.emit.trade_rules import RECORD_FAMILY_TRADES, assembly_trades, solid_trades
+from typehaus.emit.trade_rules import (
+    MEMBER_CATEGORY_TRADE,
+    RECORD_FAMILY_TRADES,
+    assembly_trades,
+    solid_trades,
+)
 from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry import light_run_band_shells
 from typehaus.resolve.geometry_build import wall_trades
@@ -230,20 +235,23 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         if solid.body_mesh is not None:
             mb = _MeshBuilder()
             mb.add_mesh(solid.body_mesh, _solid_color(model, solid))
-            scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid)
+            scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid,
+                             category=solid.category)
         elif legs:
             mb = _MeshBuilder()
             color = _solid_color(model, solid)
             for start, end in legs:
                 mb.add_gbox(GBox(corners_bottom=start, corners_top=end), color)
-            scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid)
+            scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid,
+                             category=solid.category)
         elif solid.outline:
             mb = _MeshBuilder()
             mb.add_prism_with_rectangular_voids(solid.outline, solid.voids, solid.z0_m,
                                                 solid.z1_m, _solid_color(model, solid))
             # Not every solid is a pour: a standalone beam or post is framing, a routed pipe
             # run is plumbing, a cast column is concrete (→ emit/trade_rules.py).
-            scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid)
+            scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid,
+                             category=solid.category)
 
     # WallPaneling bands. A band is an applied surface on the room side of a wall. Its
     # colour resolves through the catalog material, the same path the viewer's
@@ -271,9 +279,17 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         mb = _MeshBuilder()
-        _add_roof(mb, roof, model, authored)
+        flashing_categories = frozenset({"drip_edge", "corner_trim", "ridge_cap"})
+        _add_roof(mb, roof, model, authored, exclude_categories=flashing_categories)
         scene.add_object(mb, assembly_trades(model.plan, roof.assembly, "roof"),
                          kind="roof", uid=roof.uid)
+        for category in sorted(flashing_categories):
+            metal = _MeshBuilder()
+            for member in roof.members:
+                if member.category == category and not owned_elsewhere(member, roof.uid):
+                    _add_member(metal, member, authored)
+            scene.add_object(metal, (MEMBER_CATEGORY_TRADE[category],), kind="roof",
+                             uid=roof.uid, category=category)
         # Rafters, trusses and gable studs are framing, and belong in the framing trade with
         # every other stick in the building — not hidden behind the roof toggle. Same split
         # walls already use (body → walls, members → framing); selection still lands on the

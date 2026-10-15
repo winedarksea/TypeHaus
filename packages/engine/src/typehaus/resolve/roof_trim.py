@@ -28,6 +28,7 @@ from typehaus.model.enums import LayerFunction
 from typehaus.model.spatial import Roof
 from typehaus.model.trim import EaveGutter, EaveTrim
 from typehaus.quantities import M_PER_IN, inch
+from typehaus.resolve.flashing_config import FLASHING
 from typehaus.resolve.framing.profiles import panel_profile
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof, ResolvedWall
 from typehaus.resolve.roof_drip_edge import (
@@ -50,7 +51,7 @@ from typehaus.resolve.roof_edge_geometry import (
     wall_face_inset,
 )
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
-from typehaus.resolve.trim_bands import GUTTER_SHELL_M, formed_edge_bands, open_channel_bands
+from typehaus.resolve.trim_bands import formed_edge_bands, open_channel_bands
 
 # A fascia board is envelope trim by category, but it is also the nailer the carpenter hangs
 # off the rafter tails — so it has to show up under a framing view toggle too.
@@ -365,11 +366,11 @@ def _corner_trim_members(
     """
     top = (mating.cladding_under + cladding.thickness.meters) * slope_factor
     z_lo = mating.cladding_under * slope_factor - _CORNER_TRIM_LEG_M
-    bands = formed_edge_bands(_CORNER_TRIM_THICKNESS_M, top - z_lo)
+    bands = formed_edge_bands(_CORNER_TRIM_THICKNESS_M, top - z_lo, FLASHING.sheet_m)
     material = _edge_trim_material(element, cladding.material_ref)
     trim = element.eave_trim if isinstance(element, Roof) else None
     slope = roof_slope(roof)
-    shell = min(GUTTER_SHELL_M, _CORNER_TRIM_THICKNESS_M / 3.0)
+    shell = min(FLASHING.sheet_m, _CORNER_TRIM_THICKNESS_M / 3.0)
     members: list[FramedMember] = []
     for run in roof_edge_runs(roof):
         spec = drip_spec(trim, run)

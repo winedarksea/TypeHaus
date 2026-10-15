@@ -30,6 +30,7 @@ from typehaus import (
     EaveTrim,
     FasciaBoard,
     Flashing,
+    FormedFlashingSection,
     FoundationWall,
     Node,
     Occupancy,
@@ -204,27 +205,32 @@ STEM_TOP_Z_FLASHING = [
     Flashing(uid="4Z104BJ7TV", tag="TR-G-STEMZ-S1", kind=TrimKind.DRIP_FLASHING,
              path=(pt(ft(6), ft(43, 2.225)), pt(ft(30), ft(43, 2.225))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
-             material="aluminum-flat-pvdf", back_side="left"),
+             material="aluminum-flat-pvdf", back_side="left",
+             section=FormedFlashingSection(drip=inch(1.5))),
     # East: one unbroken run since the overhead door left this wall (2026-09-07).
     Flashing(uid="7PK70E7009", tag="TR-G-STEMZ-E", kind=TrimKind.DRIP_FLASHING,
              path=(pt(ft(30, 0.4), ft(43, 2.625)), pt(ft(30, 0.4), ft(67, 2.625))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
-             material="aluminum-flat-pvdf", back_side="left"),
+             material="aluminum-flat-pvdf", back_side="left",
+             section=FormedFlashingSection(drip=inch(1.5))),
     # North: the two 4'-0" piers flanking the overhead door, walked E->W with the loop, so
     # N1 is the east pier (30'-0"->26'-0") and N2 the west (10'-0"->6'-0"). N2 keeps the uid
     # the retired east pier TR-G-STEMZ-E2 carried.
     Flashing(uid="CZJZNX97MB", tag="TR-G-STEMZ-N1", kind=TrimKind.DRIP_FLASHING,
              path=(pt(ft(30), ft(67, 3.025)), pt(ft(26), ft(67, 3.025))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
-             material="aluminum-flat-pvdf", back_side="left"),
+             material="aluminum-flat-pvdf", back_side="left",
+             section=FormedFlashingSection(drip=inch(1.5))),
     Flashing(uid="HQQQFQ576Z", tag="TR-G-STEMZ-N2", kind=TrimKind.DRIP_FLASHING,
              path=(pt(ft(10), ft(67, 3.025)), pt(ft(6), ft(67, 3.025))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
-             material="aluminum-flat-pvdf", back_side="left"),
+             material="aluminum-flat-pvdf", back_side="left",
+             section=FormedFlashingSection(drip=inch(1.5))),
     Flashing(uid="DHPT0K1FB2", tag="TR-G-STEMZ-W", kind=TrimKind.DRIP_FLASHING,
              path=(pt(ft(5, 11.6), ft(67, 2.625)), pt(ft(5, 11.6), ft(43, 2.625))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
-             material="aluminum-flat-pvdf", back_side="left"),
+             material="aluminum-flat-pvdf", back_side="left",
+             section=FormedFlashingSection(drip=inch(1.5))),
 ]
 
 # Published so params/foundations.py can gap the ICF stem under the overhead door instead

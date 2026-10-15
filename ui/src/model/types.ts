@@ -1598,6 +1598,7 @@ export interface Solid {
   // from stock — the connector family (→ resolve/model.py ResolvedSolid.product). Null on
   // everything else.
   product?: string | null;
+  host_ref?: string | null;
   // Folded purchased-part geometry in project coordinates, with open fastener holes.
   body_mesh?: { positions: Vec3[]; triangles: [number, number, number][] } | null;
   // A RUN — a handrail, a drain, a raceway — carried as one section swept along a 3D

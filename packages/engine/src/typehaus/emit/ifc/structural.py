@@ -112,7 +112,8 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
     if model is not None:
         _assign_solid_material(f, element, solid, model)
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": solid.uid, "tag": solid.tag,
-                                               "category": solid.category})
+                                               "category": solid.category,
+                                               "host_ref": solid.host_ref or ""})
     ll.assign_container(f, element, storeys[_container_storey(solid, model)])
     return element
 

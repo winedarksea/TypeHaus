@@ -14,6 +14,18 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Flashing geometry and the west-screen sill cap (2026-10-15)
+
+The exposed surface selected for capping is SB-BW-BAND's 2×6 sill above W-BW-SCREEN,
+rather than the bearing joint at the wall's +4′-0″ top. TR-BW-SCREEN-CAP falls west over
+the corrugated face, fitted around existing wood and connectors without moving them.
+Exterior windows and doors now show their heads and concealed membrane/pan surfaces in
+3D and exports, including the outie sill's discharge behind the cladding. One Flashing
+control hides or isolates the pieces across their existing trades. The screen cap bills
+once; opening geometry uses the existing allowances and trim-inclusive rates. See
+[the modeling basis and limits](notes/flashing_model.md) for dimensions and the distinction
+between modeled cutouts and fabrication/penetration details.
+
 ## Shared Trex Enhance Basics on entry, porch and service stair (2026-10-15)
 
 The main library now names Trex Enhance Basics at actual 0.94 inch thickness. FS-BW-FLOOR

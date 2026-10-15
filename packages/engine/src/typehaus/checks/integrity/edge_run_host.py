@@ -47,6 +47,7 @@ from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.geometry_members import member_box
 
 _CHECK_ID = "integrity.edge_run_host"
 
@@ -93,6 +94,15 @@ class _WallHost:
         self.z1_m = wall.z1_m
 
 
+class _BraceSillHost:
+    """A fitted cap trims the brace's sill top, rather than the brace's full height."""
+
+    def __init__(self, member) -> None:
+        shape = member_box(member)
+        self.outline = [(x, y) for x, y, _z in shape.corners_top] if shape else None
+        self.z1_m = member.z1_m
+
+
 def _floor_outline(floor) -> list[tuple[float, float]] | None:
     """The plan hull of a floor system's joist field and sheet, or ``None`` if unauthored."""
     points = [p.xy_m for p in (*floor.outline, *floor.subfloor_outline)]
@@ -131,6 +141,9 @@ def edge_run_host(ctx: CheckContext) -> list[Finding]:
     roofs = {roof.tag: roof for roof in model.roofs}
     # A wall host (a masonry wythe's MovementJoint) reads as its layers' plan hull and top.
     walls = {wall.tag: _WallHost(wall) for wall in model.walls}
+    brace_sills = {brace.tag: _BraceSillHost(member)
+                  for brace in model.braces for member in brace.members
+                  if member.child_key == "plate-sill"}
     run_paths = {element.tag: element
                  for kind in _RUN_KINDS
                  for element in model.plan.elements_of_kind(kind)}
@@ -149,7 +162,10 @@ def edge_run_host(ctx: CheckContext) -> list[Finding]:
                 fix="point host_ref at a live tag, or drop it if the run trims nothing"))
             continue
 
-        solid = solids.get(host_tag) or walls.get(host_tag)
+        section = getattr(run, "section", None)
+        fitted_sill = (brace_sills.get(host_tag)
+                       if getattr(section, "fit_to_brace_sill", False) else None)
+        solid = solids.get(host_tag) or walls.get(host_tag) or fitted_sill
         if solid is not None:
             gap = _plan_gap(run.path, getattr(solid, "outline", None))
             low, high = _top_range(solid)

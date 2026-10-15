@@ -19,6 +19,7 @@ import math
 import pytest
 
 from typehaus.quantities import inch
+from typehaus.resolve.flashing_config import FLASHING
 from typehaus.resolve.geometry_members import member_solid
 
 # 6:12. Roof-stack offsets are perpendicular to the slope; elevations are vertical.
@@ -132,8 +133,9 @@ def test_the_drip_face_hangs_outboard_of_the_wall_it_laps(eave) -> None:
     face = eave.leg("face")
     nose = eave.leg("nose")
     cladding = eave.member("W-S-E1-closure-0-cladding")
-    assert face[0] == pytest.approx(1.25 - 1.25 / 3.0), "the face keeps the old trim's plane"
+    assert face[0] == pytest.approx(1.25 - FLASHING.sheet_m / inch(1).meters)
     assert face[1] == pytest.approx(1.25)
+    assert face[1] - face[0] == pytest.approx(0.032), "the metal is a real sheet"
     assert cladding[1] <= face[0] + 1e-6, "the wall panels run up inboard of the face"
     assert face[2] < cladding[3], "the face's leg laps down over the panel heads"
     assert nose[2] >= cladding[3] - 1e-6, "the nose clears the closure head"

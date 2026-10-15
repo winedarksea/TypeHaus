@@ -44,6 +44,11 @@ function DerivedNote({ source }: { source: string }) {
 
 export function SolidInspector({ solid }: { solid: Solid }) {
   const model = useStore((s) => s.model);
+  const zoomToUid = useStore((s) => s.zoomToUid);
+  const host = solid.host_ref && [
+    ...model?.openings ?? [], ...model?.braces ?? [], ...model?.walls ?? [],
+    ...model?.solids ?? [], ...model?.floors ?? [],
+  ].find((item) => item.tag === solid.host_ref);
   // A solid that names no material of its own is not material-less: its assembly's face
   // layer is the sheet you are looking at (the breezeway glazing is one polycarbonate
   // layer and nothing else), and that is what the row and the product join want.
@@ -55,6 +60,11 @@ export function SolidInspector({ solid }: { solid: Solid }) {
           it is the key every palette, trade table and take-off is written against and a
           reader chasing one needs to see it spelled the way the code spells it. */}
       <span className="k">Category</span><span>{solid.category}</span>
+      {solid.host_ref && <><span className="k">Host</span><span>
+        {host ? <button type="button" className="btn" onClick={() => zoomToUid(host.uid)}>
+          {solid.host_ref}
+        </button> : solid.host_ref}
+      </span></>}
       <span className="k">Assembly</span><span>{solid.assembly ?? "—"}</span>
       {/* The trim-run family (gutters, fascia, soffits, ridge caps, edge cladding, railing
           parts) names a material DIRECTLY instead of an assembly — the resolver sets it and
@@ -67,7 +77,8 @@ export function SolidInspector({ solid }: { solid: Solid }) {
       {solid.product && <><span className="k">Part</span><span>{solid.product}</span></>}
       <ProductRows product={productForMaterial(model, material)} />
       <span className="k">Plan extent</span><PlanExtent points={solid.outline} />
-      <span className="k">Thickness</span><span>{formatFtIn(solid.z1_m - solid.z0_m)}</span>
+      <span className="k">{solid.body_mesh ? "Height" : "Thickness"}</span>
+      <span>{formatFtIn(solid.z1_m - solid.z0_m)}</span>
       <span className="k">Elevation</span><span>{formatFtIn(solid.z0_m)} → {formatFtIn(solid.z1_m)}</span>
       <span className="k">Storey</span><span>{solid.storey}</span>
       <span className="k">Voids</span><span>{solid.voids?.length ?? 0}</span>

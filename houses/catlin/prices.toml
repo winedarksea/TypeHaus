@@ -5935,7 +5935,7 @@
 # Sources: homeguide.com 2026 soffit and fascia replacement, angi.com aluminum soffit cost,
 # homewyse.com aluminum fascia, homeguide.com drip edge cost 2026.
 # $/LF, by trim category (fascia, soffit, flashings, formed roof trim)
-"beam_cap" = { material = { low = 1.50, high = 4 }, labour = { low = 2, high = 4.50 } }  # 0 LF since 2026-09-22 — the four porch beams it capped are retired (the porch hangs on ledgers); kept priced
+"beam_cap" = { material = { low = 1.50, high = 4 }, labour = { low = 2, high = 4.50 } }  # TR-BW-SCREEN-CAP, the fitted cover on the brace sill; the former porch beam caps remain retired
 # NEW 2026-09-03 with the porch enclosure. TR-SG-SLOT, the closure over the 2 3/4" insulation
 # gap between the porch deck's north edge and the house cladding (params/sunken_garden.py) —
 # a formed 2 1/2" aluminium band screwed to the deck's north rim, sloped south to drain, with a

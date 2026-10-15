@@ -3,7 +3,7 @@
 // Split out of components/Panel3D.tsx: this is a pure contract test between two codebases —
 // which node names / glTF `extras` the emitter writes and what the viewer will accept — and it
 // is easier to keep the two in step when it is not buried in a React component.
-import { FACET_KEYS, type FacetKey } from "../model/visibilityFacets";
+import { FACET_KEYS, withFacets, type FacetKey } from "../model/visibilityFacets";
 import type { SelectionKind, Trade } from "../state/vocabulary";
 import { ALL_SELECTION_KINDS, ALL_TRADES } from "../state/vocabulary";
 
@@ -61,7 +61,11 @@ export function wholeHouseGlbAssignment(
     ? kindRaw as SelectionKind : null;
   const uidRaw = typeof userData?.uid === "string" ? userData.uid : parts[2];
   const trades = tradesRaw as Trade[];
+  const classified = typeof userData?.category === "string"
+    ? withFacets(trades, userData.category, ["solidCategories", "memberCategories"])[0] : null;
   const facet = typeof userData?.facet === "string"
     && (FACET_KEYS as readonly string[]).includes(userData.facet) ? userData.facet as FacetKey : null;
-  return { trade: trades[0], trades, uid: uidRaw || null, kind, facet };
+  const categoryFacet = classified && (FACET_KEYS as readonly string[]).includes(classified)
+    ? classified as FacetKey : null;
+  return { trade: trades[0], trades, uid: uidRaw || null, kind, facet: facet ?? categoryFacet };
 }

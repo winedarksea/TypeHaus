@@ -45,6 +45,21 @@ def resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
     if len(path) < 2:
         return
     category = _TRIM_CATEGORY.get(el.kind.value, "flashing")
+    section = getattr(el, "section", None)
+    if section is not None:
+        if section.fit_to_brace_sill:
+            return  # fitted after the brace and all connector geometry exist
+        if el.vertical:
+            raise ValueError(f"{el.tag}: formed sections require a horizontal plan run")
+        from typehaus.resolve.flashing_caps import formed_run_mesh
+        from typehaus.resolve.flashing_solids import flashing_solid
+
+        for i, (a, b) in enumerate(zip(path[:-1], path[1:], strict=True)):
+            model.solids.append(flashing_solid(
+                uid=f"{el.uid}-{i:02d}", tag=f"{el.tag}-{i + 1}", storey=storey,
+                category=category, mesh=formed_run_mesh(el, a, b), material=el.material,
+                host_ref=el.host_ref or el.tag, billed_elsewhere=False))
+        return
     top = el.top_elevation.meters
     z0 = top - el.depth.meters
     half = el.thickness.meters / 2.0

@@ -85,6 +85,10 @@ export function groupState(groupId: string, visible: VisibleTrades): GroupState 
   const group = TRADE_GROUPS.find((g) => g.id === groupId);
   if (!group) return "off";
   const keys = group.trades.flatMap(visibilityKeysOf);
+  return visibilityState(keys, visible);
+}
+
+export function visibilityState(keys: readonly VisibilityKey[], visible: VisibleTrades): GroupState {
   const on = keys.filter((key) => visible[key] !== false).length;
   return on === 0 ? "off" : on === keys.length ? "on" : "mixed";
 }
@@ -177,12 +181,15 @@ export function migrateSavedVisibility(
     const targets: VisibilityKey[] = KNOWN.has(name)
       ? [name as VisibilityKey, ...(on === false && !name.includes(":")
         ? facetsOf(name as Trade).filter((facet) => !named.has(facet)) : [])]
-      : (LEGACY_TRADES[name] ?? []);
+      : (LEGACY_TRADES[name] ?? []).flatMap((trade) =>
+        on === false ? visibilityKeysOf(trade) : [trade]);
     for (const key of targets) out[key] = on !== false;
   }
   for (const [name, on] of Object.entries(layerGroups ?? {})) {
     if (on !== false) continue;
-    for (const trade of LEGACY_LAYER_GROUPS[name] ?? []) out[trade] = false;
+    for (const trade of LEGACY_LAYER_GROUPS[name] ?? []) {
+      for (const key of visibilityKeysOf(trade)) if (!named.has(key)) out[key] = false;
+    }
   }
   return out;
 }

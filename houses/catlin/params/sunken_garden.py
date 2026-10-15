@@ -53,6 +53,7 @@ from typehaus import (
     face,
     Fascia,
     Flashing,
+    FormedFlashingSection,
     FloorOpening,
     FloorOpeningPurpose,
     FloorSystem,
@@ -3110,13 +3111,15 @@ BALCONY_RUNNEL = Gutter(
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
     top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(3),
-    material="aluminum", host_ref="FS-SG-DECK")
+    material="aluminum", host_ref="FS-SG-DECK",
+    section=FormedFlashingSection(drip=inch(_drip_depth_in)))
 # Rear (north, house-side) counter-flashing tucked up into the house WRB.
 _REAR_PATH = (pt(ft(_deck_x_w), ft(_y_in_n)), pt(ft(_deck_x_e), ft(_y_in_n)))
 BALCONY_REAR_FLASH = Flashing(
     uid="SGFF02AAAA", tag="TR-SG-WRB-FLASH", kind=TrimKind.WRB_COUNTERFLASHING,
-    path=_REAR_PATH, top_elevation=_deck_top + inch(6), depth=inch(8), thickness=inch(2),
-    material="aluminum", host_ref="FS-SG-DECK")
+    path=_REAR_PATH, top_elevation=_deck_top, depth=inch(8), thickness=inch(2),
+    material="aluminum", host_ref="FS-SG-DECK",
+    section=FormedFlashingSection(profile="counter", upstand=inch(6), drip=inch(2)))
 
 # ============================================================================
 # Per-storey exports (spliced into plan/manifest.py).

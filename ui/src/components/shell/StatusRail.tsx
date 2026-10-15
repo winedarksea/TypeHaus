@@ -1,6 +1,7 @@
 import { useStore } from "../../state/store";
 import { visibleFindings } from "../../state/locate";
 import { ALL_TRADES } from "../../state/vocabulary";
+import { FLASHING_FACETS } from "../../model/visibilityFacets";
 import { LENSES } from "../LensBar";
 import { Menu } from "../ui/Menu";
 
@@ -26,6 +27,8 @@ export function StatusRail() {
   const adviseCount = findings.filter((f) => f.severity === "info").length;
 
   const shownTrades = ALL_TRADES.filter((t) => visibleTrades[t]).length;
+  const flashingOnly = Object.entries(visibleTrades).every(([key, on]) =>
+    on === FLASHING_FACETS.some((facet) => facet === key));
   const activeLensSpec = LENSES.find((l) => l.id === activeLens) ?? LENSES[0];
 
   return (
@@ -40,7 +43,8 @@ export function StatusRail() {
         <span>{activeStorey ?? "—"}</span>
         <span className="sep">·</span>
         <span>
-          {shownTrades === ALL_TRADES.length ? "All trades" : `${shownTrades} of ${ALL_TRADES.length} trades`}
+          {flashingOnly ? "Flashing only" : shownTrades === ALL_TRADES.length ? "All trades"
+            : `${shownTrades} of ${ALL_TRADES.length} trades`}
         </span>
         {hiddenLevels.length > 0 && (<>
           <span className="sep">·</span>

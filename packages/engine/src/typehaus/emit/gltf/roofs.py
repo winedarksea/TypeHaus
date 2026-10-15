@@ -30,7 +30,8 @@ from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 
 def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof, model: ResolvedModel,
-              authored: dict | None = None) -> None:
+              authored: dict | None = None, *,
+              exclude_categories: frozenset[str] = frozenset()) -> None:
     """Render the roof as its authored above-structure assembly stack, then its skin members.
 
     Each band is a closed solid, so it reads (and imports into Revit/SketchUp) as real
@@ -51,6 +52,8 @@ def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof, model: ResolvedModel,
         for solid in part.solids:
             mb.add_mesh(solid, color)
     for member in roof.members:
+        if member.category in exclude_categories:
+            continue
         # Skin the roof owns. A closure band belongs to the wall it continues, and the caller
         # emits it into that wall's node instead (``owned_elsewhere``).
         if not is_roof_framing_member(member) and not owned_elsewhere(member, roof.uid):

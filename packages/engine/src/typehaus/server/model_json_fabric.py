@@ -212,6 +212,7 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "voids": [[list(point) for point in ring] for ring in solid.voids],
              "z0_m": solid.z0_m, "z1_m": solid.z1_m, "assembly": solid.assembly,
              "material": solid.material,
+             "host_ref": solid.host_ref,
              "trades": list(solid_trades(solid.category,
                                          solid_material_ref(model.plan, solid))),
              # Manufacturer part number where the solid IS a purchased part (connectors);
@@ -226,7 +227,7 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "sweep": (None if solid.sweep is None else {
                  "path": [list(point) for point in solid.sweep.path],
                  "profile": [list(point) for point in solid.sweep.profile]}),
-             "provenance": _provenance(provenance, solid.tag)}
+             "provenance": _provenance(provenance, solid.host_ref or solid.tag)}
             for solid in sorted(model.solids, key=lambda item: item.uid)
         ],
         # WallPaneling bands (wainscot, tile splash). Unlike a construction return these ARE

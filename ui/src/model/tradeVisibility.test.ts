@@ -6,8 +6,9 @@ import {
   ALL_VISIBILITY_KEYS, allVisibleTrades, anyTradeVisible, baseTrade, DEFAULT_OFF_KEYS, defaultVisibleTrades,
   expandRolePreset, groupState, memberTrades, migrateSavedVisibility, onlyTrades, primaryTrade,
   primaryTradeVisible, ROLE_PRESETS, visibilityKeyLabel, visibilityKeysOf,
+  solidVisibilityKeys, visibilityState,
 } from "./tradeVisibility";
-import { FACETS } from "./visibilityFacets";
+import { FACETS, FLASHING_FACETS } from "./visibilityFacets";
 import type { Model, RebarSet } from "./types";
 import { parseViewParams, viewParamsFor } from "../state/viewUrl";
 import { applyVisibility } from "../three/builders/registry";
@@ -147,7 +148,52 @@ function checkPrimaryTradeVisible() {
   assert(!primaryTradeVisible([REBAR], { ...all, [REBAR]: false }), "its own chip hides it");
 }
 
+function checkFlashing() {
+  const fresh = defaultVisibleTrades();
+  assert(visibilityState(FLASHING_FACETS, fresh) === "on", "flashing defaults on");
+  const off = { ...fresh, ...Object.fromEntries(FLASHING_FACETS.map((key) => [key, false])) };
+  assert(visibilityState(FLASHING_FACETS, off) === "off", "one control hides every flashing trade");
+  assert(visibilityState(FLASHING_FACETS, { ...off, "roofing:flashing": true }) === "mixed",
+    "the combined flashing control reports a partially visible set");
+  const isolated = onlyTrades(FLASHING_FACETS);
+  const categories = ["flashing", "beam_cap", "wall_corner", "opening_head_flashing",
+    "opening_sill_pan", "opening_flashing_membrane"];
+  for (const category of categories) {
+    const keys = solidVisibilityKeys({ category });
+    assert(anyTradeVisible(keys, isolated), `${category} draws in flashing-only`);
+    assert(!anyTradeVisible(keys, off), `${category} hides with flashing off`);
+    const trade = baseTrade(keys[0]);
+    assert(!anyTradeVisible(keys, migrateSavedVisibility({ [trade]: false })),
+      `an old hidden ${trade} trade also hides its flashing`);
+    const assignment = wholeHouseGlbAssignment("", { trades: [trade], category });
+    assert(assignment?.facet === keys[0], `${category} GLB metadata selects the same facet`);
+  }
+  for (const category of ["drip_edge", "corner_trim", "ridge_cap"]) {
+    assert(anyTradeVisible(memberTrades({ category }), isolated),
+      `derived ${category} remains visible in flashing-only`);
+  }
+  for (const category of ["gutter", "connector", "glazing_trim"]) {
+    assert(!anyTradeVisible(solidVisibilityKeys({ category }), isolated),
+      `${category} is excluded from flashing-only`);
+  }
+  assert(!anyTradeVisible(["openings"], isolated), "the window product itself hides");
+  assert(!anyTradeVisible(["roofing"], isolated), "the roof covering itself hides");
+  assert(!migrateSavedVisibility({ roof: false })["roofing:flashing"],
+    "legacy roof visibility reaches its flashing");
+  assert(!migrateSavedVisibility({}, { cladding: false })["siding:flashing"],
+    "legacy layer visibility reaches wall flashing");
+  assert(migrateSavedVisibility({ siding: false, "siding:flashing": true })["siding:flashing"],
+    "an explicitly isolated flashing facet survives migration");
+  const model = { storeys: [{ tag: "main" }] } as unknown as Model;
+  const printed = viewParamsFor({ viewMode: "3d", threeMode: "nordic", visibleTrades: isolated,
+    hiddenLevels: [], activeStorey: "main", labelMode: "hover", activeLens: "none",
+    activeWorkspace: "design", detailView: "none", model });
+  const parsed = parseViewParams(`?${printed}`);
+  assert(parsed.visible?.join() === FLASHING_FACETS.join(), "flashing-only links round-trip");
+}
+
 export function runTradeVisibilityFacetTests() {
+  checkFlashing();
   checkPrimaryTradeVisible();
   checkTable();
   checkDefaultsAndCascade();

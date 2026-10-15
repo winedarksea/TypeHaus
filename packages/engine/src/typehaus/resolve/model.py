@@ -579,6 +579,8 @@ class ResolvedSolid:
     # body_mesh parts. Consumers that DRAW must not skip them: glTF,
     # model.json and the viewer are the whole point.
     derived: bool = False
+    # Flashing keeps its source opening/brace addressable without borrowing its identity.
+    host_ref: str | None = None
 
 
 @dataclass

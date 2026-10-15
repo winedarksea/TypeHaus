@@ -77,6 +77,9 @@ ROWS: tuple[C, ...] = (
     _trim("glazing_trim", "openings", ifc=_FOOTING, elevation="sash"),
     # Roof edge trim and what fastens into the standing seam.
     _trim("flashing", "roofing"),
+    _trim("opening_head_flashing", "siding"),
+    _trim("opening_sill_pan", "openings", elevation=None),
+    _trim("opening_flashing_membrane", "openings", elevation=None),
     C("ridge_cap", trade="roofing", ifc_class=_FOOTING, finish_group="accessory"),
     _trim("snow_guard", "roofing", ifc=_ACC),
     # A 3" clip is a dot at 1/4"=1'-0": real, visible, and not drawn in elevation.

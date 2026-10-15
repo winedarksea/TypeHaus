@@ -12,6 +12,7 @@ from __future__ import annotations
 import math
 
 from typehaus.quantities import inch
+from typehaus.resolve.flashing_config import FLASHING
 
 # The gutter channel is modelled as three thin bands (back / bottom / front) so it reads as
 # an open-top U instead of a solid bar of aluminum. Real formed gutter stock is ~0.03" —
@@ -66,7 +67,8 @@ def drip_edge_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band]:
     )
 
 
-def formed_edge_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band, Band]:
+def formed_edge_bands(thickness_m: float, depth_m: float,
+                       sheet_m: float = GUTTER_SHELL_M) -> tuple[Band, Band, Band]:
     """A formed edge trim ``thickness_m`` deep in plan, ``depth_m`` tall: cleat, face, hem.
 
     The piece capping a wrapped (continuous standing-seam) roof edge. Drawn as one solid box
@@ -86,8 +88,8 @@ def formed_edge_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band, B
     fold rather than as two solids sharing a corner. The return is clamped so a shallow or
     narrow run still resolves rather than folding back past its own cleat.
     """
-    shell = min(GUTTER_SHELL_M, thickness_m / 3.0, depth_m / 3.0)
-    hem = min(2.0 * shell, max(0.0, thickness_m - 2.0 * shell))
+    shell = min(sheet_m, thickness_m / 3.0, depth_m / 3.0)
+    hem = min(FLASHING.hem_m, max(0.0, thickness_m - 2.0 * shell))
     return (
         ("cleat", 0.0, thickness_m, shell, 0.0),
         ("face", thickness_m - shell, shell, depth_m, shell),
@@ -102,7 +104,7 @@ Quad = tuple[tuple[float, float], tuple[float, float], tuple[float, float], tupl
 def formed_drip_legs(
     *, slope: float, deck_top_at_edge_m: float, flange_back_m: float, bend_m: float,
     nose_floor_m: float, face_in_m: float, face_bottom_m: float, kick_m: float,
-    kick_in_m: float | None = None, shell_m: float = GUTTER_SHELL_M,
+    kick_in_m: float | None = None, shell_m: float = FLASHING.sheet_m,
 ) -> dict[str, Quad]:
     """One formed drip edge as four convex legs: flange, nose, face, kick.
 

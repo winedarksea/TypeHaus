@@ -12,7 +12,10 @@ Every uid here was minted once with `typehaus.model.ids.new_uid()` (fmt never vi
 `params/`) and must never be re-typed.
 """
 
-from typehaus import Connector, ConnectorKind, SlatBrace, ft, inch, pt
+from typehaus import (
+    Connector, ConnectorKind, Flashing, FormedFlashingSection, SlatBrace, TrimKind,
+    ft, inch, pt,
+)
 
 from params.north_entry_frame import (
     COLUMN_HALF_FT,
@@ -24,6 +27,7 @@ from params.north_entry_frame import (
     PIER_LINE_Y_FT,
     ROOF_COLUMN_EAST_X_FT,
     SCREEN_PANEL_TOP_FT,
+    SCREEN_CLADDING_WEST_X_FT,
 )
 
 # ** THE SLATS SIT FLUSH WITH THE WEST FACE, WHERE THE KBS1Z GO. ** A KBS1Z joins in-line
@@ -109,4 +113,19 @@ PLATE_ANGLES = [
     )
 ]
 
-ELEMENTS = [BAND, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES]
+# The cap sits ON the exposed sill, fitted around the brace and its connectors. It never
+# changes a bearing surface or the sill-to-wall interface. West drip clears the corrugated;
+# east return projects only 1/8" past the existing 2x6, preserving passage clearance.
+_CAP_WEST_FT = SCREEN_CLADDING_WEST_X_FT - 0.125 / 12
+_CAP_EAST_FT = LANDING_WEST_FT + (2.75 + 0.125) / 12
+_CAP_CENTRE_FT = (_CAP_WEST_FT + _CAP_EAST_FT) / 2
+SILL_CAP = Flashing(
+    uid="PD2PPXS59S", tag="TR-BW-SCREEN-CAP", kind=TrimKind.BEAM_CAP,
+    path=(pt(ft(_CAP_CENTRE_FT), ft(PIER_LINE_Y_FT + COLUMN_HALF_FT)),
+          pt(ft(_CAP_CENTRE_FT), ft(GARAGE_SEAT_Y_FT - COLUMN_HALF_FT))),
+    top_elevation=ft(SCREEN_PANEL_TOP_FT + 1.5 / 12), depth=inch(0.75),
+    thickness=ft(_CAP_EAST_FT - _CAP_WEST_FT), back_side="right",
+    material="metal-dark-exterior", host_ref=BAND.tag,
+    section=FormedFlashingSection(profile="cap", slope=0.25 / 12, fit_to_brace_sill=True))
+
+ELEMENTS = [BAND, SILL_CAP, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES]

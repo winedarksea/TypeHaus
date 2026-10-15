@@ -13,7 +13,9 @@ import { TRADE_SURFACES } from "../../model/visibility";
 import {
   ALL_VISIBILITY_KEYS, baseTrade, expandRolePreset, groupState, ROLE_PRESETS, TRADE_GROUPS,
   type VisibilityKey, visibilityKeyLabel, visibilityKeysOf, type VisibleTrades,
+  visibilityState,
 } from "../../model/tradeVisibility";
+import { FLASHING_FACETS } from "../../model/visibilityFacets";
 import { TriStateCheckbox } from "../ui/TriStateCheckbox";
 import { Icon } from "../../icons/Icon";
 
@@ -37,7 +39,9 @@ export function DisciplinesGrid({ viewMode }: { viewMode: "2d" | "split" | "3d" 
   const setTradesVisible = useStore((s) => s.setTradesVisible);
   const showOnlyTrades = useStore((s) => s.showOnlyTrades);
   const showEverything = useStore((s) => s.showEverything);
+  const setViewMode = useStore((s) => s.setViewMode);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
+  const flashingState = visibilityState(FLASHING_FACETS, visibleTrades);
 
   const toggleExpanded = (id: string) => setExpanded((prev) => {
     const next = new Set(prev);
@@ -48,6 +52,17 @@ export function DisciplinesGrid({ viewMode }: { viewMode: "2d" | "split" | "3d" 
   return (
     <>
       <h3>Disciplines</h3>
+      <div className={`trade-chip${flashingState === "off" ? "" : " on"}`}>
+        <TriStateCheckbox state={flashingState} label="Flashing"
+          onChange={(checked) => setTradesVisible(FLASHING_FACETS, checked)} />
+        <span>Flashing</span>
+        <span className="trade-surface" aria-label="3D only">3D</span>
+        <button type="button" className="btn" title="Show only flashing"
+          onClick={() => {
+            showOnlyTrades(FLASHING_FACETS);
+            if (viewMode === "2d") setViewMode("3d");
+          }}>Only</button>
+      </div>
       {/* Both viewers read this same set. A trade the 2D plan has no geometry for (roof
           surfaces, the site sheet, finish floors) is marked rather than left to look broken
           when its checkbox does nothing on the plan side. */}
@@ -82,14 +97,18 @@ export function DisciplinesGrid({ viewMode }: { viewMode: "2d" | "split" | "3d" 
               </div>
               {open && chips.length > 1 && (
                 <div className="trade-grid trade-group-chips">
-                  {chips.map((key) => {
+                  {chips.filter((key) => !FLASHING_FACETS.includes(key as typeof FLASHING_FACETS[number])).map((key) => {
                     const chipPlanOnly3D = !TRADE_SURFACES[baseTrade(key)].plan;
                     const label = visibilityKeyLabel(key);
                     return (
                       <label key={key} className={`trade-chip${visibleTrades[key] ? " on" : ""}`}
                         title={chipPlanOnly3D ? `${label} — drawn in 3D only` : label}>
                         <input type="checkbox" checked={visibleTrades[key]}
-                          onChange={(e) => setTradeVisible(key, e.target.checked)} />
+                          onChange={(e) => {
+                            const flashing = FLASHING_FACETS.filter((facet) => baseTrade(facet) === key);
+                            if (flashing.length) setTradesVisible([key, ...flashing], e.target.checked);
+                            else setTradeVisible(key, e.target.checked);
+                          }} />
                         {label}
                         {chipPlanOnly3D && <span className="trade-surface" aria-label="3D only">3D</span>}
                       </label>

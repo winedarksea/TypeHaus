@@ -18,6 +18,7 @@ from typing import Literal
 
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import TrimKind
+from typehaus.model.flashing import FormedFlashingSection
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D, inch
 
@@ -141,7 +142,8 @@ class Flashing(_EdgeRun):
 
     A ``DRIP_FLASHING`` resolves as a bent angle — a flat leg lapped under the roofing and a
     turn-down at the outboard end that throws the water clear — so its ``back_side`` is load
-    bearing. A ``WRB_COUNTERFLASHING`` is a flat back pan and stays a single band.
+    bearing. Without ``section``, a ``WRB_COUNTERFLASHING`` stays a flat back band.
+    ``section`` opts into physical sheet thickness, folded legs, and a shedding slope.
     """
 
     kind: TrimKind = TrimKind.DRIP_FLASHING
@@ -151,6 +153,7 @@ class Flashing(_EdgeRun):
     # honoured the same way in ``takeoff/edge_trim.py``: without it a 25' corner piece bills
     # as 1-1/4" of formed metal, because ``_EdgeRun.path`` is a *plan* polyline.
     vertical: bool = False
+    section: FormedFlashingSection | None = None
 
 
 class FasciaBoard(HausModel):

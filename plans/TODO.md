@@ -247,8 +247,9 @@ the future.
 - Maybe replace D-M-PANTRY with a 36" pocket door
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
 - ED-A-STUDIO-BAR-PEND should probably be replaced with a track light on the sloped ceiling
-- Add flashing to the top plate of W-BW-SCREEN's top plate, and generally improve the 3d modeling representation of flashing (ie around windows).
+- Flashing geometry and visibility implemented 2026-10-15: west-draining fitted cap on SB-BW-BAND's exposed 2×6 sill above W-BW-SCREEN; metal heads and concealed perimeter/sill flashing at exterior windows and doors; one Flashing 3D hide/isolate control. [Modeling basis and limits](../houses/catlin/notes/flashing_model.md).
 - Possibly swap the concrete canopy stairway (SL-BW-TIER*) to pressure treated wood and composite treads.
+- Add a gutter along the entryway canopy gable in the narrow space between canopy and house, the goal is for this to mostly fill the space, if it can do so in a way that is buildable and not causing any problems.
 
 # Project Management
 

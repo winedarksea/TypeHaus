@@ -64,6 +64,7 @@ from typehaus.model.enums import (
     TrimKind,
     UtilityKind,
 )
+from typehaus.model.flashing import FormedFlashingSection
 from typehaus.model.floors import (
     DeckLayer,
     FinishZone,
@@ -341,7 +342,7 @@ __all__ = [
     "Wedge",
     "Railing",
     "Fascia", "Gutter",
-    "Flashing", "MovementJoint",
+    "Flashing", "FormedFlashingSection", "MovementJoint",
     "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveDripEdge", "EaveTrim", "GlazingPanel",
     "GlazingTrim",
     "Downspout", "DischargeExtension",

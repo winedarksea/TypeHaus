@@ -202,6 +202,12 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.connector_markers import resolve_connector_markers
 
         findings.extend(resolve_connector_markers(model))
+    with _stage("flashing"):
+        from typehaus.resolve.flashing_caps import resolve_brace_caps
+        from typehaus.resolve.opening_flashing import resolve_opening_flashing
+
+        resolve_opening_flashing(model)
+        resolve_brace_caps(model)
     with _stage("conditions"):
         _assembly_change_conditions(model)
     with _stage("rebar"):

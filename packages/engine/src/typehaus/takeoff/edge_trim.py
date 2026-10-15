@@ -122,7 +122,9 @@ def edge_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                      _section_profile(face_m, element.thickness.meters),
                      material, tag=element.tag,
                      length_m=length_m,
-                     mirror="structural_solids")
+                     mirror=("" if getattr(getattr(element, "section", None),
+                                           "fit_to_brace_sill", False)
+                             else "structural_solids"))
     _add_derived_roof_trim(model, rows)
     return rows.finish()
 

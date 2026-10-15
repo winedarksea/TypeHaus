@@ -45,11 +45,20 @@ export const FACETS = [
   { key: "framing:connector-embedded", label: "Cast-in connectors", defaultOff: false,
     solidCategories: ["connector_embedded"] },
   { key: "concrete:rebar", label: "Rebar", defaultOff: true, memberCategories: ["rebar"] },
+  { key: "roofing:flashing", label: "Roof flashing", defaultOff: false,
+    solidCategories: ["flashing", "ridge_cap"], memberCategories: ["drip_edge", "ridge_cap"] },
+  { key: "siding:flashing", label: "Wall flashing", defaultOff: false,
+    solidCategories: ["beam_cap", "wall_corner", "opening_head_flashing"],
+    memberCategories: ["corner_trim"] },
+  { key: "openings:flashing", label: "Opening flashing", defaultOff: false,
+    solidCategories: ["opening_sill_pan", "opening_flashing_membrane"] },
 ] as const satisfies readonly FacetSpec[];
 
 export type FacetKey = (typeof FACETS)[number]["key"];
 
 export const FACET_KEYS: FacetKey[] = FACETS.map((facet) => facet.key);
+/** One composite control spans these facets without changing construction ownership. */
+export const FLASHING_FACETS = FACET_KEYS.filter((key) => key.endsWith(":flashing"));
 
 /** The framing facets alone — kept for callers that predate the generic table. */
 export const FRAMING_FACETS = FACET_KEYS.filter((key) => key.startsWith("framing:"));

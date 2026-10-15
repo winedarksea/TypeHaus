@@ -54,6 +54,7 @@ const METALLIC_SOLID_CATEGORIES = new Set([
   "railing", "railing_infill", "gutter", "downspout", "flashing", "connector",
   "connector_embedded", "connector_hanger",
   "snow_guard", "seam_clamp", "panel_strap",
+  "beam_cap", "wall_corner", "opening_head_flashing",
 ]);
 
 // Painted finishes name their colour in the material ref ("post-paint-white"). The served
@@ -135,6 +136,8 @@ export function createSolidMaterial(
   const metallic = METALLIC_SOLID_CATEGORIES.has(solid.category);
   const opacity = solidOpacity(solid, catalog);
   const translucent = opacity < 1;
+  const flashingMembrane = solid.category === "opening_flashing_membrane"
+    || solid.category === "opening_sill_pan";
   return standardMaterial(solidColor(solid, catalog, palette), mode, {
     roughness: metallic ? 0.35 : translucent ? 0.15 : mode === "nordic" ? NORDIC_ROUGHNESS.matte : 1,
     metalness: metallic ? 0.8 : 0,
@@ -143,6 +146,10 @@ export function createSolidMaterial(
     // A pane is a thin prism: without both faces it disappears from one side.
     side: translucent ? THREE.DoubleSide : THREE.FrontSide,
     depthWrite: !translucent,
+    // Depth bias exposes a coating on its substrate without thickening physical geometry.
+    polygonOffset: flashingMembrane,
+    polygonOffsetFactor: flashingMembrane ? -1 : 0,
+    polygonOffsetUnits: flashingMembrane ? -1 : 0,
   });
 }
 

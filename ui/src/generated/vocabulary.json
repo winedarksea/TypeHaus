@@ -113,8 +113,11 @@
     "movement_joint": 7561556,
     "newel": 10054466,
     "oak_bookcase": 13217932,
+    "opening_flashing_membrane": 4989215,
     "opening_frame": 11765071,
+    "opening_head_flashing": 1316634,
     "opening_lining": 15592419,
+    "opening_sill_pan": 4989215,
     "outlooker": 12094556,
     "overhead_door": 3816768,
     "pad": 8422021,
@@ -301,8 +304,11 @@
     "movement_joint": 7561556,
     "newel": 10054466,
     "oak_bookcase": 13217932,
+    "opening_flashing_membrane": 4989215,
     "opening_frame": 11765071,
+    "opening_head_flashing": 1316634,
     "opening_lining": 15592419,
+    "opening_sill_pan": 4989215,
     "outlooker": 12094556,
     "overhead_door": 3816768,
     "pad": 8422021,
@@ -493,8 +499,17 @@
     "movement_joint": [
       "masonry"
     ],
+    "opening_flashing_membrane": [
+      "openings"
+    ],
+    "opening_head_flashing": [
+      "siding"
+    ],
     "opening_lining": [
       "drywall"
+    ],
+    "opening_sill_pan": [
+      "openings"
     ],
     "pad": [
       "concrete"
@@ -651,7 +666,10 @@
     "leader_extension": "drainage",
     "main_shutoff": "plumbing",
     "movement_joint": "masonry",
+    "opening_flashing_membrane": "openings",
+    "opening_head_flashing": "siding",
     "opening_lining": "drywall",
+    "opening_sill_pan": "openings",
     "pad": "concrete",
     "panel_strap": "roofing",
     "penetration_seal": "plumbing",
