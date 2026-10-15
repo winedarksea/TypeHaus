@@ -1,13 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1840" viewBox="0 0 1400 1840" role="img" aria-labelledby="title desc">
-<title id="title">W-BW-SCREEN east-face finish comparison</title><desc id="desc">Four matched conceptual east elevations: vertical locust slats, shiplap, botanical panels and geometric panels; assembly sections and a dimensioned door plan. Dimensions and quantities are in the companion study. Brace slats and hardware are schematic.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2640" viewBox="0 0 1400 2640" role="img" aria-labelledby="title desc">
+<title id="title">W-BW-SCREEN east-face finish comparison</title><desc id="desc">Four matched conceptual east elevations: vertical locust slats, shiplap, botanical panels and geometric panels; five entry risers and the upper landing, assembly sections, a dimensioned door plan and an approach plan. Dimensions and quantities are in the companion study. Brace slats and hardware are schematic.</desc>
 <defs><pattern id="wood" width="18" height="90" patternUnits="userSpaceOnUse"><rect width="18" height="90" fill="#bc9059"/><path d="M4 0Q12 25 5 50T6 90M13 0Q7 32 14 67T12 90" fill="none" stroke="#996d3c" stroke-width=".6"/></pattern></defs>
 <g font-family="Arial, Helvetica, sans-serif">
-<rect x="0.000" y="0.000" width="1400.000" height="1840.000" fill="#f5f3ee" />
+<rect x="0.000" y="0.000" width="1400.000" height="2640.000" fill="#f5f3ee" />
 <text x="38" y="42" font-size="28" fill="#292c30" font-weight="700">W-BW-SCREEN  /  EAST FACE</text>
 <text x="38" y="70" font-size="15" fill="#292c30" >Finish study · 2026-10-14 · natural black locust / painted Exterior MDO · design comparison, not construction drawings</text>
-<text x="38" y="96" font-size="14" fill="#292c30" >Matched scale within elevations. South is left; north / garage is right. Existing brace pattern is schematic; preserve its design.</text>
+<text x="38" y="96" font-size="14" fill="#292c30" >Matched screen elevations; landing / stairs use oblique projection to show depth. South left; garage right. Brace pattern schematic.</text>
 <g transform="translate(28,120)">
-<rect x="0.000" y="0.000" width="664.000" height="500.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
+<rect x="0.000" y="0.000" width="664.000" height="700.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
 <text x="18" y="28" font-size="18" fill="#292c30" font-weight="700">A · VERTICAL SHADOW-GAP SLATS</text>
 <rect x="41.000" y="41.000" width="22.500" height="396.000" fill="#efeee8" />
 <rect x="422.938" y="41.000" width="22.500" height="396.000" fill="#e4e5e2" />
@@ -40,7 +40,7 @@
 <rect x="236.188" y="101.188" width="24.750" height="113.062" fill="url(#wood)" />
 <rect x="101.750" y="214.250" width="293.625" height="6.750" fill="url(#wood)" />
 <rect x="101.750" y="94.438" width="293.625" height="6.750" fill="url(#wood)" />
-<rect x="101.750" y="41.000" width="321.188" height="53.438" fill="url(#wood)" />
+<rect x="74.188" y="41.000" width="348.750" height="53.438" fill="url(#wood)" />
 <rect x="68.000" y="221.000" width="354.938" height="220.500" fill="#1c1f24" />
 <rect x="69.125" y="223.250" width="6.750" height="211.500" fill="url(#wood)" />
 <circle cx="72.5" cy="423.5" r="1.05" fill="#b6bcc0"/>
@@ -212,10 +212,39 @@
 <circle cx="418.4375" cy="234.5" r="1.05" fill="#b6bcc0"/>
 <rect x="260.938" y="77.000" width="162.000" height="360.000" fill="none" stroke="#3c7994" stroke-width="1.2" stroke-dasharray="5 5"/>
 <line x1="41.000" y1="437.000" x2="449.938" y2="437.000" stroke="#555" stroke-width="2"/>
-<line x1="68.000" y1="449.000" x2="422.938" y2="449.000" stroke="#666" />
-<line x1="68.000" y1="444.000" x2="68.000" y2="454.000" stroke="#666" />
-<line x1="422.938" y1="444.000" x2="422.938" y2="454.000" stroke="#666" />
-<text x="158.0" y="469" font-size="13" fill="#292c30" >78⅞″ overall run</text>
+<g aria-label="Oblique upper landing and four deep treads with five risers">
+<polygon points="68.000,437.000 422.938,437.000 446.587,448.180 91.650,448.180" fill="#d8d4c8" stroke="#777c74" stroke-width="1"/>
+<path d="M72.4,439.08 L427.3375,439.08" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M76.8,441.16 L431.7375,441.16" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M81.2,443.24 L436.1375,443.24" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M85.6,445.32 L440.5375,445.32" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M90.0,447.4 L444.9375,447.4" stroke="#b8b5aa" stroke-width=".7"/>
+<polygon points="429.150,477.880 439.050,482.560 439.050,601.360 429.150,596.680" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="102.900,477.880 429.150,477.880 439.050,482.560 112.800,482.560" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="102.900,448.180 429.150,448.180 429.150,477.880 102.900,477.880" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="439.050,512.260 448.950,516.940 448.950,606.040 439.050,601.360" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="112.800,512.260 439.050,512.260 448.950,516.940 122.700,516.940" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="112.800,482.560 439.050,482.560 439.050,512.260 112.800,512.260" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="448.950,546.640 458.850,551.320 458.850,610.720 448.950,606.040" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="122.700,546.640 448.950,546.640 458.850,551.320 132.600,551.320" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="122.700,516.940 448.950,516.940 448.950,546.640 122.700,546.640" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="458.850,581.020 468.750,585.700 468.750,615.400 458.850,610.720" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="132.600,581.020 458.850,581.020 468.750,585.700 142.500,585.700" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="132.600,551.320 458.850,551.320 458.850,581.020 132.600,581.020" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="142.500,585.700 468.750,585.700 468.750,615.400 142.500,615.400" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<path d="M109.875,615.4 L510.375,615.4" stroke="#757a6e" stroke-width="2"/>
+<text x="500" y="415" font-size="12" fill="#292c30">Upper landing at +0″</text>
+<text x="500" y="456" font-size="12" fill="#292c30">Oblique stair view:</text>
+<text x="500" y="479" font-size="12" fill="#292c30">5 × 6.6″ risers</text>
+<text x="500" y="502" font-size="12" fill="#292c30">4 × 18″ treads</text>
+<text x="500" y="543" font-size="12" fill="#292c30">Tops and side shown</text>
+<text x="500" y="566" font-size="12" fill="#292c30">to reveal stair depth.</text>
+<text x="500" y="609" font-size="12" fill="#292c30">Walk at −33″</text>
+</g>
+<line x1="68.000" y1="649.000" x2="422.938" y2="649.000" stroke="#666" />
+<line x1="68.000" y1="644.000" x2="68.000" y2="654.000" stroke="#666" />
+<line x1="422.938" y1="644.000" x2="422.938" y2="654.000" stroke="#666" />
+<text x="158.0" y="669" font-size="13" fill="#292c30" >78⅞″ overall run</text>
 <text x="459" y="110" font-size="12" fill="#292c30" >Garage return →</text>
 <text x="459" y="129" font-size="12" fill="#292c30" >Door is perpendicular</text>
 <text x="459" y="148" font-size="12" fill="#292c30" >when closed.</text>
@@ -226,10 +255,10 @@
 <text x="459" y="302" font-size="12" fill="#292c30" >+48″ panel top</text>
 <text x="459" y="321" font-size="12" fill="#292c30" >+0″ deck datum</text>
 <text x="459" y="340" font-size="12" fill="#292c30" >−1″ backing bottom</text>
-<text x="18" y="486" font-size="13" fill="#292c30" >42 × 1½″ faces · ⅜″ gaps · ¼″ end margins</text>
+<text x="18" y="686" font-size="13" fill="#292c30" >42 × 1½″ faces · ⅜″ gaps · ¼″ end margins</text>
 </g>
 <g transform="translate(718,120)">
-<rect x="0.000" y="0.000" width="664.000" height="500.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
+<rect x="0.000" y="0.000" width="664.000" height="700.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
 <text x="18" y="28" font-size="18" fill="#292c30" font-weight="700">B · VERTICAL SHIPLAP</text>
 <rect x="41.000" y="41.000" width="22.500" height="396.000" fill="#efeee8" />
 <rect x="422.938" y="41.000" width="22.500" height="396.000" fill="#e4e5e2" />
@@ -262,7 +291,7 @@
 <rect x="236.188" y="101.188" width="24.750" height="113.062" fill="url(#wood)" />
 <rect x="101.750" y="214.250" width="293.625" height="6.750" fill="url(#wood)" />
 <rect x="101.750" y="94.438" width="293.625" height="6.750" fill="url(#wood)" />
-<rect x="101.750" y="41.000" width="321.188" height="53.438" fill="url(#wood)" />
+<rect x="74.188" y="41.000" width="348.750" height="53.438" fill="url(#wood)" />
 <rect x="68.000" y="221.000" width="354.938" height="220.500" fill="#1c1f24" />
 <rect x="69.125" y="223.250" width="7.594" height="211.500" fill="url(#wood)" />
 <line x1="76.719" y1="434.750" x2="76.719" y2="223.250" stroke="#654b2e" stroke-width=".8"/>
@@ -390,10 +419,39 @@
 <circle cx="417.453125" cy="234.5" r="1.05" fill="#b6bcc0"/>
 <rect x="260.938" y="77.000" width="162.000" height="360.000" fill="none" stroke="#3c7994" stroke-width="1.2" stroke-dasharray="5 5"/>
 <line x1="41.000" y1="437.000" x2="449.938" y2="437.000" stroke="#555" stroke-width="2"/>
-<line x1="68.000" y1="449.000" x2="422.938" y2="449.000" stroke="#666" />
-<line x1="68.000" y1="444.000" x2="68.000" y2="454.000" stroke="#666" />
-<line x1="422.938" y1="444.000" x2="422.938" y2="454.000" stroke="#666" />
-<text x="158.0" y="469" font-size="13" fill="#292c30" >78⅞″ overall run</text>
+<g aria-label="Oblique upper landing and four deep treads with five risers">
+<polygon points="68.000,437.000 422.938,437.000 446.587,448.180 91.650,448.180" fill="#d8d4c8" stroke="#777c74" stroke-width="1"/>
+<path d="M72.4,439.08 L427.3375,439.08" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M76.8,441.16 L431.7375,441.16" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M81.2,443.24 L436.1375,443.24" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M85.6,445.32 L440.5375,445.32" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M90.0,447.4 L444.9375,447.4" stroke="#b8b5aa" stroke-width=".7"/>
+<polygon points="429.150,477.880 439.050,482.560 439.050,601.360 429.150,596.680" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="102.900,477.880 429.150,477.880 439.050,482.560 112.800,482.560" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="102.900,448.180 429.150,448.180 429.150,477.880 102.900,477.880" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="439.050,512.260 448.950,516.940 448.950,606.040 439.050,601.360" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="112.800,512.260 439.050,512.260 448.950,516.940 122.700,516.940" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="112.800,482.560 439.050,482.560 439.050,512.260 112.800,512.260" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="448.950,546.640 458.850,551.320 458.850,610.720 448.950,606.040" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="122.700,546.640 448.950,546.640 458.850,551.320 132.600,551.320" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="122.700,516.940 448.950,516.940 448.950,546.640 122.700,546.640" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="458.850,581.020 468.750,585.700 468.750,615.400 458.850,610.720" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="132.600,581.020 458.850,581.020 468.750,585.700 142.500,585.700" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="132.600,551.320 458.850,551.320 458.850,581.020 132.600,581.020" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="142.500,585.700 468.750,585.700 468.750,615.400 142.500,615.400" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<path d="M109.875,615.4 L510.375,615.4" stroke="#757a6e" stroke-width="2"/>
+<text x="500" y="415" font-size="12" fill="#292c30">Upper landing at +0″</text>
+<text x="500" y="456" font-size="12" fill="#292c30">Oblique stair view:</text>
+<text x="500" y="479" font-size="12" fill="#292c30">5 × 6.6″ risers</text>
+<text x="500" y="502" font-size="12" fill="#292c30">4 × 18″ treads</text>
+<text x="500" y="543" font-size="12" fill="#292c30">Tops and side shown</text>
+<text x="500" y="566" font-size="12" fill="#292c30">to reveal stair depth.</text>
+<text x="500" y="609" font-size="12" fill="#292c30">Walk at −33″</text>
+</g>
+<line x1="68.000" y1="649.000" x2="422.938" y2="649.000" stroke="#666" />
+<line x1="68.000" y1="644.000" x2="68.000" y2="654.000" stroke="#666" />
+<line x1="422.938" y1="644.000" x2="422.938" y2="654.000" stroke="#666" />
+<text x="158.0" y="669" font-size="13" fill="#292c30" >78⅞″ overall run</text>
 <text x="459" y="110" font-size="12" fill="#292c30" >Garage return →</text>
 <text x="459" y="129" font-size="12" fill="#292c30" >Door is perpendicular</text>
 <text x="459" y="148" font-size="12" fill="#292c30" >when closed.</text>
@@ -404,10 +462,10 @@
 <text x="459" y="302" font-size="12" fill="#292c30" >+48″ panel top</text>
 <text x="459" y="321" font-size="12" fill="#292c30" >+0″ deck datum</text>
 <text x="459" y="340" font-size="12" fill="#292c30" >−1″ backing bottom</text>
-<text x="18" y="486" font-size="13" fill="#292c30" >25 blanks · 3¼″ typical cover · balanced edge rips</text>
+<text x="18" y="686" font-size="13" fill="#292c30" >25 blanks · 3¼″ typical cover · balanced edge rips</text>
 </g>
-<g transform="translate(28,640)">
-<rect x="0.000" y="0.000" width="664.000" height="500.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
+<g transform="translate(28,840)">
+<rect x="0.000" y="0.000" width="664.000" height="700.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
 <text x="18" y="28" font-size="18" fill="#292c30" font-weight="700">C1 · BOTANICAL ONLAYS</text>
 <rect x="41.000" y="41.000" width="22.500" height="396.000" fill="#efeee8" />
 <rect x="422.938" y="41.000" width="22.500" height="396.000" fill="#e4e5e2" />
@@ -440,7 +498,7 @@
 <rect x="236.188" y="101.188" width="24.750" height="113.062" fill="url(#wood)" />
 <rect x="101.750" y="214.250" width="293.625" height="6.750" fill="url(#wood)" />
 <rect x="101.750" y="94.438" width="293.625" height="6.750" fill="url(#wood)" />
-<rect x="101.750" y="41.000" width="321.188" height="53.438" fill="url(#wood)" />
+<rect x="74.188" y="41.000" width="348.750" height="53.438" fill="url(#wood)" />
 <rect x="68.000" y="221.000" width="354.938" height="220.500" fill="#1c1f24" />
 <rect x="69.125" y="428.000" width="352.688" height="6.750" fill="url(#wood)" />
 <rect x="69.125" y="223.250" width="352.688" height="6.750" fill="url(#wood)" />
@@ -465,10 +523,39 @@
 <ellipse cx="374.28125" cy="288.5" rx="18.0" ry="7.2" transform="rotate(30 374.28125 288.5)" fill="url(#wood)"/>
 <rect x="260.938" y="77.000" width="162.000" height="360.000" fill="none" stroke="#3c7994" stroke-width="1.2" stroke-dasharray="5 5"/>
 <line x1="41.000" y1="437.000" x2="449.938" y2="437.000" stroke="#555" stroke-width="2"/>
-<line x1="68.000" y1="449.000" x2="422.938" y2="449.000" stroke="#666" />
-<line x1="68.000" y1="444.000" x2="68.000" y2="454.000" stroke="#666" />
-<line x1="422.938" y1="444.000" x2="422.938" y2="454.000" stroke="#666" />
-<text x="158.0" y="469" font-size="13" fill="#292c30" >78⅞″ overall run</text>
+<g aria-label="Oblique upper landing and four deep treads with five risers">
+<polygon points="68.000,437.000 422.938,437.000 446.587,448.180 91.650,448.180" fill="#d8d4c8" stroke="#777c74" stroke-width="1"/>
+<path d="M72.4,439.08 L427.3375,439.08" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M76.8,441.16 L431.7375,441.16" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M81.2,443.24 L436.1375,443.24" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M85.6,445.32 L440.5375,445.32" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M90.0,447.4 L444.9375,447.4" stroke="#b8b5aa" stroke-width=".7"/>
+<polygon points="429.150,477.880 439.050,482.560 439.050,601.360 429.150,596.680" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="102.900,477.880 429.150,477.880 439.050,482.560 112.800,482.560" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="102.900,448.180 429.150,448.180 429.150,477.880 102.900,477.880" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="439.050,512.260 448.950,516.940 448.950,606.040 439.050,601.360" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="112.800,512.260 439.050,512.260 448.950,516.940 122.700,516.940" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="112.800,482.560 439.050,482.560 439.050,512.260 112.800,512.260" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="448.950,546.640 458.850,551.320 458.850,610.720 448.950,606.040" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="122.700,546.640 448.950,546.640 458.850,551.320 132.600,551.320" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="122.700,516.940 448.950,516.940 448.950,546.640 122.700,546.640" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="458.850,581.020 468.750,585.700 468.750,615.400 458.850,610.720" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="132.600,581.020 458.850,581.020 468.750,585.700 142.500,585.700" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="132.600,551.320 458.850,551.320 458.850,581.020 132.600,581.020" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="142.500,585.700 468.750,585.700 468.750,615.400 142.500,615.400" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<path d="M109.875,615.4 L510.375,615.4" stroke="#757a6e" stroke-width="2"/>
+<text x="500" y="415" font-size="12" fill="#292c30">Upper landing at +0″</text>
+<text x="500" y="456" font-size="12" fill="#292c30">Oblique stair view:</text>
+<text x="500" y="479" font-size="12" fill="#292c30">5 × 6.6″ risers</text>
+<text x="500" y="502" font-size="12" fill="#292c30">4 × 18″ treads</text>
+<text x="500" y="543" font-size="12" fill="#292c30">Tops and side shown</text>
+<text x="500" y="566" font-size="12" fill="#292c30">to reveal stair depth.</text>
+<text x="500" y="609" font-size="12" fill="#292c30">Walk at −33″</text>
+</g>
+<line x1="68.000" y1="649.000" x2="422.938" y2="649.000" stroke="#666" />
+<line x1="68.000" y1="644.000" x2="68.000" y2="654.000" stroke="#666" />
+<line x1="422.938" y1="644.000" x2="422.938" y2="654.000" stroke="#666" />
+<text x="158.0" y="669" font-size="13" fill="#292c30" >78⅞″ overall run</text>
 <text x="459" y="110" font-size="12" fill="#292c30" >Garage return →</text>
 <text x="459" y="129" font-size="12" fill="#292c30" >Door is perpendicular</text>
 <text x="459" y="148" font-size="12" fill="#292c30" >when closed.</text>
@@ -479,10 +566,10 @@
 <text x="459" y="302" font-size="12" fill="#292c30" >+48″ panel top</text>
 <text x="459" y="321" font-size="12" fill="#292c30" >+0″ deck datum</text>
 <text x="459" y="340" font-size="12" fill="#292c30" >−1″ backing bottom</text>
-<text x="18" y="486" font-size="13" fill="#292c30" >Three fields · natural locust stems and leaves</text>
+<text x="18" y="686" font-size="13" fill="#292c30" >Three fields · natural locust stems and leaves</text>
 </g>
-<g transform="translate(718,640)">
-<rect x="0.000" y="0.000" width="664.000" height="500.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
+<g transform="translate(718,840)">
+<rect x="0.000" y="0.000" width="664.000" height="700.000" fill="#fffdf8" rx="8" stroke="#d5cfc4"/>
 <text x="18" y="28" font-size="18" fill="#292c30" font-weight="700">C2 · GEOMETRIC ONLAYS</text>
 <rect x="41.000" y="41.000" width="22.500" height="396.000" fill="#efeee8" />
 <rect x="422.938" y="41.000" width="22.500" height="396.000" fill="#e4e5e2" />
@@ -515,7 +602,7 @@
 <rect x="236.188" y="101.188" width="24.750" height="113.062" fill="url(#wood)" />
 <rect x="101.750" y="214.250" width="293.625" height="6.750" fill="url(#wood)" />
 <rect x="101.750" y="94.438" width="293.625" height="6.750" fill="url(#wood)" />
-<rect x="101.750" y="41.000" width="321.188" height="53.438" fill="url(#wood)" />
+<rect x="74.188" y="41.000" width="348.750" height="53.438" fill="url(#wood)" />
 <rect x="68.000" y="221.000" width="354.938" height="220.500" fill="#1c1f24" />
 <rect x="69.125" y="428.000" width="352.688" height="6.750" fill="url(#wood)" />
 <rect x="69.125" y="223.250" width="352.688" height="6.750" fill="url(#wood)" />
@@ -531,10 +618,39 @@
 <circle cx="360.78125" cy="329.0" r="13.5" fill="url(#wood)"/>
 <rect x="260.938" y="77.000" width="162.000" height="360.000" fill="none" stroke="#3c7994" stroke-width="1.2" stroke-dasharray="5 5"/>
 <line x1="41.000" y1="437.000" x2="449.938" y2="437.000" stroke="#555" stroke-width="2"/>
-<line x1="68.000" y1="449.000" x2="422.938" y2="449.000" stroke="#666" />
-<line x1="68.000" y1="444.000" x2="68.000" y2="454.000" stroke="#666" />
-<line x1="422.938" y1="444.000" x2="422.938" y2="454.000" stroke="#666" />
-<text x="158.0" y="469" font-size="13" fill="#292c30" >78⅞″ overall run</text>
+<g aria-label="Oblique upper landing and four deep treads with five risers">
+<polygon points="68.000,437.000 422.938,437.000 446.587,448.180 91.650,448.180" fill="#d8d4c8" stroke="#777c74" stroke-width="1"/>
+<path d="M72.4,439.08 L427.3375,439.08" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M76.8,441.16 L431.7375,441.16" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M81.2,443.24 L436.1375,443.24" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M85.6,445.32 L440.5375,445.32" stroke="#b8b5aa" stroke-width=".7"/>
+<path d="M90.0,447.4 L444.9375,447.4" stroke="#b8b5aa" stroke-width=".7"/>
+<polygon points="429.150,477.880 439.050,482.560 439.050,601.360 429.150,596.680" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="102.900,477.880 429.150,477.880 439.050,482.560 112.800,482.560" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="102.900,448.180 429.150,448.180 429.150,477.880 102.900,477.880" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="439.050,512.260 448.950,516.940 448.950,606.040 439.050,601.360" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="112.800,512.260 439.050,512.260 448.950,516.940 122.700,516.940" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="112.800,482.560 439.050,482.560 439.050,512.260 112.800,512.260" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="448.950,546.640 458.850,551.320 458.850,610.720 448.950,606.040" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="122.700,546.640 448.950,546.640 458.850,551.320 132.600,551.320" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="122.700,516.940 448.950,516.940 448.950,546.640 122.700,546.640" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="458.850,581.020 468.750,585.700 468.750,615.400 458.850,610.720" fill="#999e95" stroke="#777c74" stroke-width="1"/>
+<polygon points="132.600,581.020 458.850,581.020 468.750,585.700 142.500,585.700" fill="#d2d4c9" stroke="#777c74" stroke-width="1"/>
+<polygon points="132.600,551.320 458.850,551.320 458.850,581.020 132.600,581.020" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<polygon points="142.500,585.700 468.750,585.700 468.750,615.400 142.500,615.400" fill="#b1b7ac" stroke="#777c74" stroke-width="1"/>
+<path d="M109.875,615.4 L510.375,615.4" stroke="#757a6e" stroke-width="2"/>
+<text x="500" y="415" font-size="12" fill="#292c30">Upper landing at +0″</text>
+<text x="500" y="456" font-size="12" fill="#292c30">Oblique stair view:</text>
+<text x="500" y="479" font-size="12" fill="#292c30">5 × 6.6″ risers</text>
+<text x="500" y="502" font-size="12" fill="#292c30">4 × 18″ treads</text>
+<text x="500" y="543" font-size="12" fill="#292c30">Tops and side shown</text>
+<text x="500" y="566" font-size="12" fill="#292c30">to reveal stair depth.</text>
+<text x="500" y="609" font-size="12" fill="#292c30">Walk at −33″</text>
+</g>
+<line x1="68.000" y1="649.000" x2="422.938" y2="649.000" stroke="#666" />
+<line x1="68.000" y1="644.000" x2="68.000" y2="654.000" stroke="#666" />
+<line x1="422.938" y1="644.000" x2="422.938" y2="654.000" stroke="#666" />
+<text x="158.0" y="669" font-size="13" fill="#292c30" >78⅞″ overall run</text>
 <text x="459" y="110" font-size="12" fill="#292c30" >Garage return →</text>
 <text x="459" y="129" font-size="12" fill="#292c30" >Door is perpendicular</text>
 <text x="459" y="148" font-size="12" fill="#292c30" >when closed.</text>
@@ -545,8 +661,10 @@
 <text x="459" y="302" font-size="12" fill="#292c30" >+48″ panel top</text>
 <text x="459" y="321" font-size="12" fill="#292c30" >+0″ deck datum</text>
 <text x="459" y="340" font-size="12" fill="#292c30" >−1″ backing bottom</text>
-<text x="18" y="486" font-size="13" fill="#292c30" >Same frame · diamonds and central medallions</text>
+<text x="18" y="686" font-size="13" fill="#292c30" >Same frame · diamonds and central medallions</text>
 </g>
+
+<g transform="translate(0,400)">
 <text x="38" y="1192" font-size="20" fill="#292c30" font-weight="700">REPRESENTATIVE ASSEMBLY SECTIONS</text>
 <text x="38" y="1217" font-size="13" fill="#292c30" >Exploded concept diagrams; thickness labels govern. No changes to west metal, structural sheathing, or brace connections.</text>
 <g transform="translate(38,1245)">
@@ -625,4 +743,30 @@
 <text x="385" y="1733" font-size="13" fill="#292c30" >Face depths include stand-offs; sections exaggerate thin components for legibility.</text>
 <text x="385" y="1756" font-size="13" fill="#292c30" >See companion Markdown for cap budgets, passage widths, quantities, sample builds, and acceptance gates.</text>
 <text x="38" y="1817" font-size="13" fill="#292c30" >Source: current Catlin model, resolved 2026-10-14. Drawings compare finishes only; existing structure is schematic.</text>
+</g>
+</g><g transform="translate(0,100)"><g font-family="Arial, Helvetica, sans-serif">
+<text x="38" y="2182" font-size="20" fill="#292c30" font-weight="700">APPROACH CONTEXT — PLAN AT THE ENTRY</text>
+<text x="38" y="2208" font-size="14" fill="#292c30">Stairs climb west toward the screen; the upper landing serves the house and garage. Diagram omits roof and rail for clarity.</text>
+<rect x="90" y="2260" width="94.60000000000001" height="173.525" fill="#d9d5c9" stroke="#85887e"/>
+<rect x="81" y="2260" width="9" height="173.525" fill="#1c1f24" stroke="#85887e"/>
+<rect x="184.60000000000002" y="2268.525" width="39.6" height="159.5" fill="#b9b7af" stroke="#85887e"/>
+<rect x="224.20000000000002" y="2268.525" width="39.6" height="159.5" fill="#c5c3ba" stroke="#85887e"/>
+<rect x="263.8" y="2268.525" width="39.6" height="159.5" fill="#b9b7af" stroke="#85887e"/>
+<rect x="303.4" y="2268.525" width="39.6" height="159.5" fill="#c5c3ba" stroke="#85887e"/>
+<rect x="343.0" y="2268.525" width="79.2" height="159.5" fill="#e5e4db" stroke="#85887e"/>
+<text x="97" y="2245" font-size="13" fill="#292c30">Garage / service door</text>
+<text x="97" y="2458" font-size="13" fill="#292c30">House / entry door</text>
+<text x="98" y="2337" font-size="12" fill="#292c30">Upper</text>
+<text x="98" y="2354" font-size="12" fill="#292c30">landing</text>
+<path d="M410 2347 H215 l12 -7 m-12 7 l12 7" fill="none" stroke="#3c7994" stroke-width="2"/>
+<text x="240" y="2373" font-size="12" fill="#292c30">UP / approach</text>
+<text x="500" y="2262" font-size="15" fill="#292c30">Screen / posts at x = 72″; deck edge at x = 115″.</text>
+<text x="500" y="2290" font-size="15" fill="#292c30">Landing: 43″ gross depth before screen finishes.</text>
+<text x="500" y="2318" font-size="15" fill="#292c30">Stair: 72″ run; 72½″ wide between the side clearances.</text>
+<text x="500" y="2346" font-size="15" fill="#292c30">Four broad treads + five equal risers = 33″ climb from the walk.</text>
+<text x="500" y="2388" font-size="15" fill="#292c30">BM-BW-RW: 8⅞″ tails beyond both post centres;</text>
+<text x="500" y="2416" font-size="15" fill="#292c30">south end extended 6⅛″; paired AC6Z at the south west post.</text>
+<text x="500" y="2458" font-size="13" fill="#292c30">Plan shows circulation geometry; see the door plan above for the swing and finish offsets.</text>
+<text x="38" y="2512" font-size="13" fill="#292c30">Stair finishes, rail, surrounding walls and canopy are simplified or omitted; these views compare massing and finish, not construction details.</text>
+</g>
 </g></svg>

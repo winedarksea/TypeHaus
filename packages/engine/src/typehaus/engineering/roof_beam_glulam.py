@@ -8,8 +8,8 @@ combination: ANSI/AWC NDS 2018 Supplement Table 5A. Wet service (Table 5.3.1), s
 
 The beam is graded on its own two BEARING POSTS with whatever runs past each, by statics under
 the eight load patterns ``overhang_beam.envelope`` walks — the roof's half-area spread uniformly
-over the header's length. Bearing is over the post's own width (the cap seats the beam on the
-post end), at Fc-perp wet.
+over the roof-bearing run, excluding unloaded decorative tails. Bearing is over the post's
+own width (the cap seats the beam on the post end), at Fc-perp wet.
 
 **Oracle.** ``houses/catlin/notes/canopy_west_band.md`` §7;
 ``tests/test_canopy_west_band_calcs.py``.
@@ -104,6 +104,20 @@ def glulam(ctx: Any, roof: Any, beam: Any, tributary_ft2: float,
             summary=f"{beam.tag}: a glulam roof beam that cannot be graded",
             missing=tuple(missing), element_tags=(roof.tag, beam.tag))
     a_ft, s_ft, b_ft, post_in = bearings  # type: ignore[misc]
+    if beam.roof_bearing_insets is not None:
+        start_inset, end_inset = (value.feet for value in beam.roof_bearing_insets)
+        # An unloaded tail cannot dilute the roof line load or shift it toward a post.
+        # This envelope requires the loaded run to reach both bearing posts.
+        if min(start_inset, end_inset) < 0 or start_inset > a_ft or end_inset > b_ft:
+            return EngineeringRecord(
+                item_id=item_id(KIND, beam.tag), kind=KIND, key=beam.tag,
+                basis_version=BASIS_VERSION, basis=BASIS, status=Status.INCOMPLETE,
+                summary=f"{beam.tag}: roof-bearing run does not cover both posts",
+                missing=("roof-bearing insets confined to the beam's tails beyond its posts",),
+                element_tags=(roof.tag, beam.tag))
+        a_ft -= start_inset
+        b_ft -= end_inset
+        length_ft -= start_inset + end_inset
     per_ft = tributary_ft2 / length_ft
     section_modulus = width_in * depth_in ** 2 / 6.0
     inertia = width_in * depth_in ** 3 / 12.0

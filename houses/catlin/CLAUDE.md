@@ -1,3 +1,8 @@
+> **West header, 2026-10-14:** BM-BW-RW now has equal 8⅞″ tails from both post centres
+> (6⅛″ south extension), paired AC6Z at both west heads, MAX nailing 14 beam + 14 post 16d
+> per assembly. Its roof-bearing inset keeps canopy/truss geometry fixed. East unchanged.
+> See `notes/canopy_west_band.md` §§5–7 amendment; earlier south-end statements below are historical.
+
 > **Current north entry, 2026-09-30:** `RF-BW-CANOPY` spans between two **5-1/2" x 11-7/8"
 > glulam** headers on four independent 6x6 KDAT gravity posts (`EAST_POST_SYSTEM = "kdat"`;
 > `"steel"`/`"cast"` remain graded alternatives). Every post has an `ACE6Z` (header end) or

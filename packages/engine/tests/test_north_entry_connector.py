@@ -147,3 +147,22 @@ def test_all_connector_floor_bearings_resolve(catlin_model_ro):
         assert all(catlin_model_ro.plan.by_tag(ref) is not None
                    for ref in system.joists.bearing_refs)
         assert any(f.tag == tag and f.members for f in catlin_model_ro.floors)
+
+
+def test_west_header_equal_tails_preserve_the_canopy_bearing_run(catlin_plan, catlin_model_ro):
+    from typehaus.resolve.roof_bearing import roof_bearing
+
+    beam = catlin_plan.by_tag("BM-BW-RW")
+    south = catlin_plan.by_tag(beam.start_node).position.y.meters
+    north = catlin_plan.by_tag(beam.end_node).position.y.meters
+    south_post = catlin_plan.by_tag("PT-BW-CW").position.y.meters
+    north_post = catlin_plan.by_tag("PT-BW-CNW").position.y.meters
+    assert south_post - south == pytest.approx(north - north_post)
+    assert south_post - south == pytest.approx(inch(8.875).meters)
+    assert south - inch(439.25).meters == pytest.approx(inch(1.875).meters)
+    assert catlin_plan.by_tag("CN-BW-CAP-W").size == "AC6Z"
+    assert catlin_plan.by_tag("CN-BW-CAP-NW").size == "AC6Z"
+    bearing = roof_bearing(catlin_model_ro, beam.tag)
+    assert bearing.axis[0][1] == pytest.approx(inch(447.25).meters)
+    assert bearing.axis[1][1] == pytest.approx(inch(518.625).meters)
+    assert north - south == pytest.approx(inch(77.5).meters)

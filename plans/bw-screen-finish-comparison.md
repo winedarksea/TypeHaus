@@ -1,6 +1,6 @@
 # W-BW-SCREEN — east-face finish comparison
 
-**Study date:** 2026-10-14. **Status:** design comparison; no house-model changes and no construction fastening schedule.
+**Study date:** 2026-10-14. **Status:** finish design comparison; west-header symmetry implemented in the house model on 2026-10-14. Decorative finishes remain unmodeled and have no construction fastening schedule.
 
 **Recommendation:** develop **A, natural black locust vertical slats over matte black MDO**, first. It adds a fine vertical rhythm below the much heavier diagonal brace band, uses narrow clear stock well, and makes individual pieces replaceable. Keep **C, ornamental panels**, as the stronger alternative if the sample feels too repetitive. Shiplap ranks third: it loses the black shadow contrast, consumes wider stock, and needs the deepest support assembly in this study.
 
@@ -10,11 +10,11 @@ Owner priorities: appearance and craftsmanship; own/local locust and own milling
 
 [Open the elevation, section, and door-plan sheet](assets/bw-screen-finish-comparison.svg).
 
-![Four matched elevations, assembly sections, and a dimensioned door plan](assets/bw-screen-finish-comparison.svg)
+![Four matched elevations with entry stairs, assembly sections, door plan, and approach plan](assets/bw-screen-finish-comparison.svg)
 
-The sheet shows three alternatives, with botanical and geometric versions of C. Existing brace members are schematic, not a fabrication drawing. The blue dashed door rectangle is a projection of the **90° open leaf in front of the screen**; the closed garage door lies on a perpendicular return and cannot be shown face-on in this elevation.
+The sheet shows three alternatives, with botanical and geometric versions of C. Each screen elevation now includes an oblique landing/stair view with visible tread tops and side faces: five equal 6.6″ risers down to the walk at −33″ and four 18″ treads. The screen remains in true elevation; the stairs project east/down and to the right so their depth reads clearly. The approach plan shows their 72″ run and 72½″ width. Roof and stair rail details are omitted for clarity. Existing brace members are schematic, not a fabrication drawing. The blue dashed door rectangle is a projection of the **90° open leaf in front of the screen**; the closed garage door lies on a perpendicular return and cannot be shown face-on in this elevation.
 
-Source geometry was checked by loading and resolving the current Catlin plan without modifying it; resolve returned zero error findings. Model datums, in inches:
+Source geometry was checked by loading and resolving the current Catlin plan after the header change; resolve returned zero error findings. Model datums, in inches:
 
 | Datum | Value / consequence |
 |---|---|
@@ -30,7 +30,17 @@ Source geometry was checked by loading and resolving the current Catlin plan wit
 
 Source of truth: [screen assembly](../houses/catlin/plan/assemblies/site_hardscape.py), [screen placement](../houses/catlin/params/breezeway.py), [entry datums](../houses/catlin/params/north_entry_frame.py), [brace band](../houses/catlin/params/entry_band_brace.py), and [service door](../houses/catlin/plan/storeys/garage.py). The [door note](../houses/catlin/notes/garage_service_door_outswing.md) requires an exterior hold-open closer but does not select its product or opening angle.
 
-All alternatives retain the west CDX and corrugated plane, structural connections, guard geometry, skirt drainage and access below the east face. Do not carry decorative work into the open band under the deck or attach it to the diagonal braces. Low-level decorative panels cover the lower post positions; the posts remain exposed above them, as in the drawing.
+All finish alternatives share the revised header and south west cap described below. They retain the west CDX and corrugated plane, structural connections, guard geometry, skirt drainage and access below the east face. Do not carry decorative work into the open band under the deck or attach it to the diagonal braces. Low-level decorative panels cover the lower post positions; the posts remain exposed above them, as in the drawing.
+
+### West-header symmetry implemented with this revision
+
+**BM-BW-RW extends 6⅛″ farther south**, from y = 447¼″ to **441⅛″**. Its north end remains y = 518⅝″. Both tails are **8⅞″ from the post centres**, or **6⅛″ beyond the 5½″ post faces**. Total beam length becomes **77½″**. The modeled house cladding is y = 439¼″, leaving **1⅞″ clear** to the new beam end. Keep that separation open and retain the beam's specified end treatment and top protection; the south tail now projects 5½″ beyond the unchanged canopy deck edge.
+
+**CN-BW-CAP-W changes from paired ACE6Z to paired AC6Z**, matching the through-beam condition at the north west post. Use the catalog's **MAX AC schedule: 14 × 16d into the beam and 14 × 16d into the post per two-piece assembly**, replacing the ACE schedule of 10 + 10. The east header and its end cap stay as modeled. AC caps install in pairs; the extension is continuous timber, with no splice over the post. [Simpson AC product information](https://www.strongtie.com/twopiecepostcaps_postcaps/ac_cap/p/ac), [ICC-ES ESR-2604 §3.1.3 and Table 3](https://icc-es.org/wp-content/uploads/report-directory/ESR-2604.pdf).
+
+This required a small engine change: a beam can now state start/end **roof-bearing insets** independently of its physical ends. The west beam excludes the new 6⅛″ tail from its roof-bearing run, preserving the roof footprint, truss stations, blocking and ties. Extending the physical beam alone otherwise shifted the derived canopy and broke several connection checks.
+
+The recalculated west beam, all four wood posts and canopy lateral record pass. The south west head's combined uplift/along-beam ratio drops from **0.530 to 0.399**. The beam's governing bearing ratio remains **0.355**: the added tail is excluded from the distributed roof load, so extending it cannot dilute the roof line load. The longer exposed header adds wind area: the E-W joint couple rises from **2,081.3 to 2,106.7 lb-ft**; the existing connections still pass. This is a checked model revision, not a claim that extending a structural member has no engineering consequences. Decorative finish weight and door/hardware release gates below remain open.
 
 ## 2. The three finishes
 

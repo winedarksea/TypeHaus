@@ -179,6 +179,10 @@ def _one(ctx: EngineeringContext, roof: Any, beam: Any,
             beam, roof, "published design values for the section as sold",
             f"{beam.tag} is a {beam.size!r}, which is not a sawn 2x section this rule "
             f"covers — an engineered member is sold against its own design values")
+    if beam.roof_bearing_insets is not None:
+        return _incomplete(
+            beam, roof, "an inset-load envelope for a sawn roof beam",
+            f"{beam.tag}: the simple-span sawn rule cannot grade unloaded beam tails")
     snow_psf, dead_psf = _design_load_psf(ctx)
     if snow_psf is None:
         return _incomplete(

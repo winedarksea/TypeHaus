@@ -32,11 +32,11 @@ _ROWS = {
     "W-BW-SCREEN chord hold-down, full height": (2227.6, 3060.0),
     "W-BW-SCREEN chord base shear, one base": (1038.35, 1270.0),
     "diaphragm unit shear at W-BW-SCREEN": (173.06, 190.0),
-    "LSTA24 end straps, chord force + across share": (259.78, 823.3333333333334),
-    "BM-BW-RW chord into CN-BW-JOINT-1's block": (216.42, 450.0),
-    "BM-BW-RE chord into CN-BW-JOINT-7's block": (86.72, 450.0),
-    "W-G-W joint couple, E-W case": (4.64, 182.5),
-    "W-G-E joint couple, E-W case": (4.13, 182.5),
+    "LSTA24 end straps, chord force + across share": (260.84, 823.3333333333334),
+    "BM-BW-RW chord into CN-BW-JOINT-1's block": (216.95, 450.0),
+    "BM-BW-RE chord into CN-BW-JOINT-7's block": (87.78, 450.0),
+    "W-G-W joint couple, E-W case": (4.70, 182.5),
+    "W-G-E joint couple, E-W case": (4.18, 182.5),
 }
 
 
@@ -60,8 +60,8 @@ def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
     values = {q.name: q.value for q in record.inputs}
     assert values["band_height_W-BW-SCREEN"] == pytest.approx(2.34375, abs=1e-4)
     assert values["overturning_height_W-BW-SCREEN"] == pytest.approx(8.625, abs=1e-3)
-    assert values["joint_couple_lb_ft"] == pytest.approx(2081.3, abs=1.0)
-    assert values["chord_force_open_front_lb"] == pytest.approx(86.7, abs=0.1)
+    assert values["joint_couple_lb_ft"] == pytest.approx(2106.7, abs=1.0)
+    assert values["chord_force_open_front_lb"] == pytest.approx(87.8, abs=0.1)
 
 
 def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
@@ -121,7 +121,7 @@ def test_an_unbridged_band_is_incomplete_by_name(catlin_ctx) -> None:
 
 #: §5c, ``post -> {row: ratio}``; a chord's along rows and its column carry the band push.
 _POSTS = {
-    "PT-BW-CW": {"ACE6Z head, uplift + lateral along the beam": 0.530,
+    "PT-BW-CW": {"AC6Z head, uplift + lateral along the beam": 0.399,
                  "A35Z head, across the beam": 0.163,
                  "A35Z panel top plate into the post": 0.175,
                  "CBSQ66-SDS2 base, uplift + lateral across the beam": 0.277,
@@ -160,6 +160,10 @@ def test_the_chord_heads_carry_the_band_couple(catlin_ctx) -> None:
 def test_the_glulam_header_reproduces_section_7(catlin_ctx) -> None:
     found = catlin_ctx.engineering["roof_beam/BM-BW-RW"]
     assert found.status is Status.OK
+    inputs = {q.name: q.value for q in found.inputs}
+    assert inputs["tributary_area"] == pytest.approx(80.0)
+    assert inputs["uniform_load"] == pytest.approx(1125.77, abs=0.1)
+    assert inputs["overhang_a"] == pytest.approx(2.75 / 12)
     states = {s.name: s for s in found.limit_states}
     assert states["bearing on the post"].demand == pytest.approx(122.2, abs=0.3)
     assert states["bearing on the post"].capacity == pytest.approx(344.5, abs=0.1)

@@ -1,3 +1,10 @@
+> **2026-10-14 west-tail amendment:** BM-BW-RW extends 6⅛″ south with an AC6Z at CW;
+> canopy footprint and roof gravity loads stay fixed through its roof-bearing inset.
+> E-W delivered shear is now 698.61 lb, joint couple 2,106.7 lb-ft, chord force 87.78 lb.
+> Joint nailing demand 29.36 plf; strap rotation demand 56.57 lb; nailer transfer 261.61 lb;
+> gable clips 99.80 lb; W-G-S shear increment 40.09 plf / overturning increment 285.15 lb.
+> Existing capacities still pass. See [west-band amendment](canopy_west_band.md#2026-10-14-west-tail-amendment-to-67).
+
 # The canopy braces off the garage — hand-worked basis
 
 **House:** catlin

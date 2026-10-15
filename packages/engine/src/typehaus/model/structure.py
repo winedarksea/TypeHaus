@@ -603,6 +603,9 @@ class Beam(Element):
     end_node: str
     size: str = "3.5x11.875 LVL"
     bearing_refs: tuple[str, ...] = ()
+    # Start/end portions projecting beyond the roof-bearing run. Physical beam geometry
+    # and its post bearings retain the full length; roof edges and trusses use this run.
+    roof_bearing_insets: tuple[Length, Length] | None = None
     # A LEDGER: the tag of the wall this beam is bolted flat against. It is continuously
     # supported, so beam span, post and tributary checks skip it and
     # ``structural.deck_ledger`` grades the attachment. Author ``top_elevation`` flush with

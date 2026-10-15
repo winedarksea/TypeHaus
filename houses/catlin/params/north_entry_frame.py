@@ -227,13 +227,14 @@ BEAMS = []
 
 
 def beam(number, tag, x0, y0, x1, y1, bearings, top=DECK_JOIST_TOP_FT, size="2-2x8",
-         assembly="BEAM_KDAT"):
+         assembly="BEAM_KDAT", roof_bearing_insets=None):
     for end, x, y in (("S", x0, y0), ("N", x1, y1)):
         NODES.append(Node(uid=f"BWNB{number:02d}{end}AAA", tag=f"N-{tag}-{end}",
                           position=pt(ft(x), ft(y))))
     result = Beam(uid=f"BWB{number:03d}AAAA", tag=tag,
                   start_node=f"N-{tag}-S", end_node=f"N-{tag}-N", size=size,
                   top_elevation=ft(top), bearing_refs=bearings, assembly=assembly,
+                  roof_bearing_insets=roof_bearing_insets,
                   top_protection="butyl-tape-beam")
     BEAMS.append(result)
     return result
@@ -309,14 +310,16 @@ beam(5, "BM-BW-FE", EDGE_BEAM_X_FT, FRAME_Y0_FT, EDGE_BEAM_X_FT, GARAGE_CLADDING
 # (24F-V4 DF, wet, snow C_D -- notes/canopy_west_band.md §7). The retired ply-seam argument
 # is moot: one member, no seam.
 #
-# ** EACH HEADER STARTS AT ITS SOUTH POST'S SOUTH FACE, NOT ITS CENTRE. ** An ACE6 end cap wants
-# the beam end over the whole post; the 2 3/4" comes out of the roof's south edge overhang,
-# so the rake does not move (plan/storeys/garage.py). The north end runs 8 7/8" past its post,
-# the AC6's continuous-beam condition with 4 5/8" to spare.
+# The east header and canopy/truss datum stay at the south post face. Only the west
+# header extends south for equal tails about its posts; moving the shared datum would
+# also move the trusses and roof edge (plan/storeys/garage.py).
 HEADER_SOUTH_Y_FT = PIER_LINE_Y_FT - COLUMN_HALF_FT
-beam(6, "BM-BW-RW", LANDING_WEST_FT, HEADER_SOUTH_Y_FT,
+WEST_HEADER_TAIL_FT = GARAGE_Y_SOUTH.feet - GARAGE_SEAT_Y_FT
+WEST_HEADER_SOUTH_Y_FT = PIER_LINE_Y_FT - WEST_HEADER_TAIL_FT
+beam(6, "BM-BW-RW", LANDING_WEST_FT, WEST_HEADER_SOUTH_Y_FT,
      LANDING_WEST_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
-     HEADER_SIZE, "BEAM_GLULAM_TREATED")
+     HEADER_SIZE, "BEAM_GLULAM_TREATED",
+     roof_bearing_insets=(ft(HEADER_SOUTH_Y_FT - WEST_HEADER_SOUTH_Y_FT), ft(0)))
 # ** WHAT THE EAST HEADER LANDS ON IS EAST_POST_SYSTEM (2026-09-29). ** Pinned 6x6 KDAT on
 # 3'-0" piers by default; steel HSS or the 2026-09-10 full-height cast columns are one word
 # away (params/east_posts.py). The tag and uid it names never change.

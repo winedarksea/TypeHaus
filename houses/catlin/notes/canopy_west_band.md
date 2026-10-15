@@ -327,11 +327,12 @@ It is the COMPRESSION chord, so no uplift combines with it.
 
 ## 5. Heads and bases, all four posts
 
-**5a. Parts.** The glulam ENDS on each south post and runs on past each north one: an ACE6Z at
-`PT-BW-CW`/`-RE`, an AC6Z at `-CNW`/`-RNE` (ESR-2604 §3.1.3; ACE6 MAX 1,950 / 1,760, AC6 MAX
+**5a. Parts (west revised 2026-10-14).** The west glulam runs past both posts with equal
+8⅞″ tails from their centres: AC6Z at `PT-BW-CW` and `-CNW`. The east header ends on its
+south post: ACE6Z at `PT-BW-RE`, AC6Z at `-RNE` (ESR-2604 §3.1.3; ACE6 MAX 1,950 / 1,760, AC6 MAX
 2,815 / 2,075 lb, lateral PARALLEL to the beam only, fn. 6). Across the beam, an A35Z on each post
-face with the soffit over it (ESR-3096 Table 5, F1 695 / F2 845, the lower taken): one at an end
-post, two at a through post. Bases: CBSQ66-SDS2, F2 along y. The plan's "2,920 / 2,125" for the
+face with the soffit over it (ESR-3096 Table 5, F1 695 / F2 845, the lower taken): one at each south
+post, two at each north post (the west-tail extension retains this rated schedule). Bases: CBSQ66-SDS2, F2 along y. The plan's "2,920 / 2,125" for the
 AC6 was not in the report; ESR-2604 Table 3 prints 2,815 / 2,075.
 
 **5b. Demands.** Own drag, 16.7232 psf on 5.5", half at each end:
@@ -377,7 +378,7 @@ a quarter of the moment.
 
 | post | cap | uplift + along | A35 across | base, across (uplift + F1) | base, along (+ F2) |
 |---|---|---|---|---|---|
-| CW | ACE6Z | 635.3/1,950 + 358.88/1,760 = **0.530** | 113.45/695 = 0.163 | 428.9/3,060 + 66.55/485 = 0.277 | + 89.02/1,270 = 0.210 |
+| CW | AC6Z | 635.3/2,815 + 358.88/2,075 = **0.399** | 113.45/695 = 0.163 | 428.9/3,060 + 66.55/485 = 0.277 | + 89.02/1,270 = 0.210 |
 | CNW | AC6Z | 635.3/2,815 + 358.88/2,075 = 0.399 | 56.73/695 = 0.082 | 0.277 | 0.210 |
 | RE | ACE6Z | 428.9/1,950 + 23.67/1,760 = 0.233 | 23.67/695 = 0.034 | 428.9/3,060 + 23.67/485 = 0.189 | 0.159 |
 | RNE | AC6Z | 428.9/2,815 + 23.67/2,075 = 0.164 | 0.017 | 0.189 | 0.159 |
@@ -457,6 +458,29 @@ M ~ 3,469 lb-ft,  S 129.3 in3 -> 322 psi vs 2,400 x 0.80 x 1.15 x C_V 1.0 = 2,20
 
 C_V (x = 10) is (21/4.979)^0.1 (12/11.875)^0.1 (5.125/5.5)^0.1 = 1.148, capped at 1.0. Bearing
 governs at 0.355; the 3-ply 2x12 read 0.71 in bending.
+
+### 2026-10-14 west-tail amendment to §§6–7
+
+The east-header arithmetic above remains current; the west header is now 77½″ long with
+8⅞″ tails from both post centres, a 6⅛″ south extension. The roof-bearing run excludes that
+extension, so the canopy deck, all three trusses and the roof's 80 sf per header stay fixed.
+The tail projects 5½″ beyond the deck edge and stops 1⅞″ short of the modeled house cladding.
+Use paired AC6Z at CW, MAX 14 × 16d into each member per assembly, rather than the ACE's
+10 + 10 schedule. Other head/base hardware stays as detailed.
+
+The gravity calculation excludes the unloaded extension: the 80 sf remains distributed over
+its original 5.9479′ roof-bearing run, so `w = 80 / 5.9479 × 83.7 = 1125.8 plf`. The loaded
+south tail remains 2¾″, even though the physical tail is 8⅞″. Extending the physical beam
+must not dilute the line load. Both headers retain **0.355 bearing / 0.146 bending** under
+the existing distributed roof-load model. This is not a discrete truss-reaction analysis.
+
+The extra exposed header side adds `6.125/12 × 11.875/12 × 16.7232 = 8.447 lb` to the E-W
+case. The frame/diaphragm load distribution recalculates the joint couple as
+**2,106.7 lb-ft**, delivered E-W
+shear **698.61 lb**, and chord force **87.78 lb**. The end-strap combined demand is
+`87.78 + 1038.35/6 = 260.84 lb`; west collector plates each take `87.78/2 + 173.06 = 216.95 lb`,
+the east plate 87.78 lb; all remain below their existing capacities. The west head ratio
+improves to **0.399**; all four post records and the canopy lateral record remain OK.
 
 ## 8. Alternatives, and why each is not the choice
 

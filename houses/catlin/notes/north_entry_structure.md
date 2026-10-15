@@ -1,3 +1,8 @@
+> **2026-10-14 west-header revision:** BM-BW-RW extends 6⅛″ south for equal 8⅞″ tails from
+> both post centres; paired AC6Z now at CW and CNW (MAX 14 beam + 14 post 16d per assembly).
+> The roof-bearing inset preserves canopy/truss geometry. East header unchanged. Updated
+> calculations: [west band §§5–7 amendment](canopy_west_band.md#2026-10-14-west-tail-amendment-to-67).
+
 # North entry — the bearing map, 2026-09-10
 
 Implements [the selected concept](../../../plans/north-gable-extension.md). **This note is

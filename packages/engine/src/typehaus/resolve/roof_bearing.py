@@ -25,6 +25,7 @@ still. A beam's geometry therefore has to come from the ``Beam`` element and its
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import hypot
 
 from typehaus.model.structure import Beam
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
@@ -68,6 +69,15 @@ def roof_bearing(model: ResolvedModel, tag: str) -> RoofBearing | None:
     axis = _beam_axis(model, beam)
     if axis is None:
         return None
+    if beam.roof_bearing_insets is not None:
+        start_inset, end_inset = (value.meters for value in beam.roof_bearing_insets)
+        (x0, y0), (x1, y1) = axis
+        length = hypot(x1 - x0, y1 - y0)
+        if min(start_inset, end_inset) < 0 or start_inset + end_inset >= length:
+            return None
+        ux, uy = (x1 - x0) / length, (y1 - y0) / length
+        axis = ((x0 + ux * start_inset, y0 + uy * start_inset),
+                (x1 - ux * end_inset, y1 - uy * end_inset))
     # ``Beam.top_elevation`` is ABSOLUTE, not storey-relative — ``_resolve_beam`` reads it
     # against the storey datum, not added to it. A beam carrying a roof has no joist field
     # to derive a drop from, so an unauthored top is not defaultable: say so instead.

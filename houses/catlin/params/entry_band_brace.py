@@ -71,8 +71,11 @@ EAVE_CLIPS.append(
 
 
 def _head_angles(x_ft, south_tag, north_tag, south_uid, north_uids, beam):
-    """A35Z on each post face that has the glulam's soffit over it: the across-beam path an
-    AC cap does not rate (ESR-2604 Table 3 fn. 6). The header ENDS on the south post."""
+    """The across-beam path an AC cap does not rate (ESR-2604 Table 3 fn. 6).
+
+    Retain one south / two north angles: the west tail extension does not increase
+    their graded transverse demand or require another angle at the south post.
+    """
     out = [Connector(uid=south_uid, tag=f"CN-BW-A35-{south_tag[6:]}N", kind=ConnectorKind.TENSION_TIE,
                      position=pt(ft(x_ft), ft(PIER_LINE_Y_FT + COLUMN_HALF_FT)),
                      elevation=ft(HEADER_SOFFIT_FT), size="A35Z", axis="x",

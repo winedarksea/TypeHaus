@@ -292,11 +292,11 @@ def test_the_kdat_canopy_delivers_both_axes_to_the_garage(catlin_ctx) -> None:
     inputs = _inputs(record)
     assert record.status is Status.OK, record.summary
     assert not record.missing
-    assert inputs["delivered_shear_x"] == pytest.approx(690.2, abs=0.2)
+    assert inputs["delivered_shear_x"] == pytest.approx(698.6, abs=0.2)
     assert inputs["delivered_shear_y"] == pytest.approx(1038.4, abs=0.2)
     assert states["open front, L'"].ratio == pytest.approx(0.24)
     assert states["open front, L'/W'"].ratio == pytest.approx(0.225)
-    assert states["joint boundary nailing, along"].demand == pytest.approx(29.01, abs=0.05)
+    assert states["joint boundary nailing, along"].demand == pytest.approx(29.36, abs=0.05)
     assert states["W-G-S delivered shear on the surplus"].ok
     assert states["RF-GARAGE unit-shear increment"].ok
     assert states["torsional stability, delivered"].ok
@@ -324,7 +324,7 @@ def test_the_kdat_collectors_and_open_front_chord_are_drawn(catlin_ctx) -> None:
                for tag in roof.diaphragm.collector_refs)
     record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
     states = _states(record)
-    assert _inputs(record)["chord_force_open_front_lb"] == pytest.approx(86.7, abs=0.2)
+    assert _inputs(record)["chord_force_open_front_lb"] == pytest.approx(87.8, abs=0.2)
     assert states["BM-BW-RW chord tension, open front"].ok
     assert states["BM-BW-RE chord tension, open front"].ok
     assert states["LSTA24 end straps, chord force + across share"].ok
