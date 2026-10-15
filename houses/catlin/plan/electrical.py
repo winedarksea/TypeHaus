@@ -1337,6 +1337,9 @@ CONDUIT_TRUNKS = [
                start_elevation=ft(-4), end_elevation=ft(-4),
                elevations=(ft(-4), ft(-4), inch(-27.5), inch(-27.5),
                            ft(-4), ft(-4), ft(-4)),
+               # Pull box at the south-west corner's vertical jog (2'-0", 1'-0"), outside the
+               # dry-fire lane's x 40.5"..68" band. Splits the 450 degrees of bends (NEC 358.26).
+               pull_points=(2,),
                from_ref="ED-B-PANEL", to_ref="ED-B-SPA-DISC"),
 ]
 

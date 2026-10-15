@@ -11,7 +11,8 @@ DRY_FIRE_LANE = [
                        pt(inch(68), inch(411.625)), pt(inch(40.5), inch(411.625))),
               bottom=inch(0), top=inch(80),
               purpose="10.25 m dry-fire lane through D-B-FURN; hold the door open during use",
-              policy="required", except_tags=("D-B-FURN",)),
+              # recommended until the basement ERV is re-laid (plans/dry-fire-lane.md Phase 4)
+              policy="recommended", except_tags=("D-B-FURN",)),
     Slice(uid="18XSSZCHEA", tag="SL-S-DRYFIRE", kind=SliceKind.SECTION,
           title="Dry-fire lane — 10.25 m usable",
           cut_origin=pt(inch(54), inch(0)), cut_direction="y",

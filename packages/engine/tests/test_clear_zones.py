@@ -223,14 +223,15 @@ def test_invalid_clear_zone_contracts_are_rejected(model, changes):
         ClearZone(**values)
 
 
-def test_catlin_full_lane_is_required_and_is_graded(catlin_model_ro):
+def test_catlin_full_lane_is_recommended_and_is_graded(catlin_model_ro):
     zone = next(z for z in catlin_model_ro.clear_zones if z.tag == "CZ-B-DRYFIRE")
     length_m = max(y for _, y in zone.outline) - min(y for _, y in zone.outline)
     assert length_m == pytest.approx(10.2504875)
     assert length_m >= 10.25
     assert zone.z1_m - zone.z0_m == pytest.approx(80 * 0.0254)
-    assert zone.policy == "required"
+    assert zone.policy == "recommended"
     findings = _findings(catlin_model_ro)
     assert findings and all(f.check_id == CHECK_ID for f in findings)
     assert all(f.element_tags[0] == zone.tag for f in findings)
-    assert {f.result for f in findings} == {Result.PASS}
+    # The basement ERV still stands in the lane, so each intrusion is an advisory, never a FAIL.
+    assert {f.result for f in findings} == {Result.ADVISORY}
