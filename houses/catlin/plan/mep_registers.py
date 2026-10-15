@@ -274,7 +274,7 @@ REGISTERS_HVAC_ATTIC = [
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # The west loft's supply: a floor boot straight up off DU-S-HP-SUITE through FS-ATTIC.
     # Shifted 6" west (2026-10-04), then 12" back east to x=17'-0" (2026-10-14), still rotated
-    # 90 degrees to terminate the branch. Its 6" x-face clears W-A-C2's west face by 6".
+    # 90 degrees to terminate the branch. Its 6" x-face clears W-A-C2's gypsum by 5 5/8".
     # The room gets conditioned air off System 1 like RM-A-STUDY/RM-A-EAST-UNFIN, returning
     # stale air at REG-A-RET1, so the ERV's attic side is extract-only.
     #
@@ -652,7 +652,7 @@ REGISTERS_ATTIC = [
     # boot has no use for.
     # (1'-0", 20'-8") is a floor boot in the studio's NW corner, on the existing x=1'-0" chase,
     # at a bay centre (248" = 8 + 15 x 16), diagonally opposite REG-A-HP-WEST's supply at
-    # (16'-6", 14'-1 7/8"). Fresh in at one corner, stale out at the other, which is the
+    # (17'-0", 14'-1 7/8"). Fresh in at one corner, stale out at the other, which is the
     # arrangement every other storey already has.
     Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-STUDIO",
             position=pt(ft(1), ft(20, 8)), duct_ref="DU-A-ERV-R-ATTIC",

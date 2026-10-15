@@ -9032,28 +9032,34 @@
 "d89fd0a9efa5"
 ],
 "geometry/CARL02AAAA-b01/body": [
+4.3161404,
+4.3923404,
+2,
+"f04a21a228c2"
+],
+"geometry/CARL02AAAA-b02/body": [
 4.4060305,
 4.4822305,
 2,
 "126466965b62"
 ],
-"geometry/CARL02AAAA-b02/body": [
+"geometry/CARL02AAAA-b03/body": [
 4.6584225,
 4.7346225,
 2,
 "50cc65c1a754"
 ],
-"geometry/CARL02AAAA-b03/body": [
+"geometry/CARL02AAAA-b04/body": [
 5.4113906,
 5.4875906,
 2,
 "0d451c955c34"
 ],
-"geometry/CARL02AAAA-b04/body": [
-6.2013703,
+"geometry/CARL02AAAA-b05/body": [
+5.7441703,
 6.2775703,
-2,
-"f3af5ddd3c17"
+16,
+"1741b40b7522"
 ],
 "geometry/CARL02AAAA-f01/body": [
 4.156,
@@ -9068,10 +9074,10 @@
 "a167d08af85b"
 ],
 "geometry/CARL02AAAA-r00/body": [
-4.1728325,
+4.17195,
 7.0643032,
-192,
-"932887ed12a7"
+208,
+"6d9b4c8d336f"
 ],
 "geometry/CARL02AAAA-t01/body": [
 4.17195,
@@ -36600,6 +36606,18 @@
 6.11505,
 8,
 "45f53c9f49e5"
+],
+"geometry/CSW103AAAA::framing/member:backing-0-000": [
+4.098925,
+4.283075,
+8,
+"07f42df7584d"
+],
+"geometry/CSW103AAAA::framing/member:backing-1-000": [
+4.264025,
+4.448175,
+8,
+"9e08b232824f"
 ],
 "geometry/CSW103AAAA::framing/member:block-2-000-00": [
 3.048,
@@ -77917,6 +77935,18 @@
 4,
 "3c1b0ca80ffb"
 ],
+"member/CSW103AAAA/backing-0-000": [
+4.098925,
+4.283075,
+2,
+"50754260c298"
+],
+"member/CSW103AAAA/backing-1-000": [
+4.264025,
+4.448175,
+2,
+"2b49b188481e"
+],
 "member/CSW103AAAA/block-2-000-00": [
 3.048,
 3.1369,
@@ -92579,19 +92609,21 @@
 "solids/RL-A-FLIGHT-SKIRT-POST2/z1_m": 6.1031438,
 "solids/RL-A-FLIGHT-SKIRT-RAIL1/z0_m": 5.69976,
 "solids/RL-A-FLIGHT-SKIRT-RAIL1/z1_m": 6.1183838,
-"solids/RL-A-HANDRAIL-BRACKET2/z0_m": 4.4060305,
-"solids/RL-A-HANDRAIL-BRACKET2/z1_m": 4.4822305,
-"solids/RL-A-HANDRAIL-BRACKET3/z0_m": 4.6584225,
-"solids/RL-A-HANDRAIL-BRACKET3/z1_m": 4.7346225,
-"solids/RL-A-HANDRAIL-BRACKET4/z0_m": 5.4113906,
-"solids/RL-A-HANDRAIL-BRACKET4/z1_m": 5.4875906,
-"solids/RL-A-HANDRAIL-BRACKET5/z0_m": 6.2013703,
-"solids/RL-A-HANDRAIL-BRACKET5/z1_m": 6.2775703,
+"solids/RL-A-HANDRAIL-BRACKET2/z0_m": 4.3161404,
+"solids/RL-A-HANDRAIL-BRACKET2/z1_m": 4.3923404,
+"solids/RL-A-HANDRAIL-BRACKET3/z0_m": 4.4060305,
+"solids/RL-A-HANDRAIL-BRACKET3/z1_m": 4.4822305,
+"solids/RL-A-HANDRAIL-BRACKET4/z0_m": 4.6584225,
+"solids/RL-A-HANDRAIL-BRACKET4/z1_m": 4.7346225,
+"solids/RL-A-HANDRAIL-BRACKET5/z0_m": 5.4113906,
+"solids/RL-A-HANDRAIL-BRACKET5/z1_m": 5.4875906,
+"solids/RL-A-HANDRAIL-BRACKET6/z0_m": 5.7441703,
+"solids/RL-A-HANDRAIL-BRACKET6/z1_m": 6.2775703,
 "solids/RL-A-HANDRAIL-ENDPLATE1/z0_m": 4.156,
 "solids/RL-A-HANDRAIL-ENDPLATE1/z1_m": 4.226,
 "solids/RL-A-HANDRAIL-ENDPLATE2/z0_m": 7.0135,
 "solids/RL-A-HANDRAIL-ENDPLATE2/z1_m": 7.0835,
-"solids/RL-A-HANDRAIL-RAIL1/z0_m": 4.1728325,
+"solids/RL-A-HANDRAIL-RAIL1/z0_m": 4.17195,
 "solids/RL-A-HANDRAIL-RAIL1/z1_m": 7.0643032,
 "solids/RL-A-HANDRAIL-RETURN1/z0_m": 4.17195,
 "solids/RL-A-HANDRAIL-RETURN1/z1_m": 4.21005,

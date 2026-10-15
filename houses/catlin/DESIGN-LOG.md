@@ -5196,3 +5196,10 @@ A reviewer's five points and two follow-ups; owner decisions marked.
   adds four packed girt-fastening stations, taking that hardware quantity 1134 -> 1138.
 - RC5 keeps its uid, circuit and 16" elevation, moving from behind the bookcase to
   W-S-E1's study face at y=3'-4", between the shelf and east window.
+
+## 2026-10-14 — REG-A-HP-WEST one foot east
+
+- The west loft boot `REG-A-HP-WEST` moves from x=16'-0" to x=17'-0", still rotated 90 degrees
+  and 5 5/8" clear of the centre wall W-A-C2's west gypsum face (axis x=18'-0").
+- `DU-S-HP-SUITE` ends at the boot's new station, so the branch shortens from 40" to 28" west
+  of its takeoff. Its authored 100 1/8" centreline, 175 cfm and the boot's 75 cfm are unchanged.

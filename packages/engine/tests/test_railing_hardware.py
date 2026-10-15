@@ -148,13 +148,14 @@ def test_bracket_rejects_its_full_vertical_footprint_at_window_head():
 def test_opening_sill_uses_wall_reference_elevation():
     from dataclasses import replace
 
-    wall = replace(wall_along_x("W-T", 0, z0_m=inch(120).meters,
+    wall = replace(wall_along_x("W-T", 0, z0_m=inch(108).meters,
                                 z1_m=inch(240).meters), plate_base_z_m=inch(120).meters)
-    rail = _handrail(base_elevation=inch(120),
+    rail = _handrail(base_elevation=inch(120), height=inch(20),
                      path=(pt(inch(60), inch(2.375)), pt(inch(120), inch(2.375))),
                      start_termination="wall_return")
     model = resolve_railings([rail], walls=[wall], openings=[_window()])
-    assert "RETURN1" not in _tags(model, "RL-H")
+    # The wall extends down over a rim; the sill is still measured from its floor.
+    assert "RETURN1" in _tags(model, "RL-H")
 
 
 def test_authored_angled_return_reaches_solid_jamb_without_moving_grip():
@@ -177,3 +178,28 @@ def test_authored_return_target_cannot_land_in_opening_or_exceed_reach(target_in
     model = resolve_railings([rail], walls=[wall_along_x("W-T", 0, z0_m=0)],
                              openings=[_window()])
     assert "RETURN1" not in _tags(model, "RL-H")
+
+
+def test_tall_bracket_anchors_below_the_rail_on_a_lower_wall():
+    rail = _handrail(bracket_drop_overrides=((2, inch(14)),))
+    wall = wall_along_x("W-T", 0, z0_m=0, z1_m=inch(24).meters)
+    model = resolve_railings([rail], walls=[wall])
+    bracket = next(s for s in solids_of(model, "RL-H") if s.tag == "RL-H-BRACKET2")
+    assert bracket.sweep is not None
+    anchor, elbow, rail_end = bracket.sweep.path
+    assert anchor == pytest.approx((inch(40).meters, 0, inch(22).meters))
+    assert elbow == pytest.approx((inch(40).meters, inch(2.375).meters, inch(22).meters))
+    assert rail_end == pytest.approx((inch(40).meters, inch(2.375).meters, inch(36).meters))
+    assert not any('bracket 2 ' in f.message for f in model.railing_findings)
+
+
+@pytest.mark.parametrize(("drop_in", "supported"), [(14, True), (10, False)])
+def test_tall_bracket_checks_the_wall_anchor_footprint_not_the_outboard_upright(drop_in, supported):
+    rail = _handrail(bracket_drop_overrides=((2, inch(drop_in)),))
+    wall = wall_along_x("W-T", 0, z0_m=0)
+    model = resolve_railings([rail], walls=[wall],
+                             openings=[_window(center_along_m=1 + inch(40).meters)])
+    assert ("BRACKET2" in _tags(model, "RL-H")) is supported
+    if not supported:
+        assert any('bracket 2 ' in f.message and f.element_tags == ('RL-H', 'WIN-T')
+                   for f in model.railing_findings)

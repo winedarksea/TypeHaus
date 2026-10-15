@@ -118,8 +118,11 @@ def test_a_wall_mounted_rail_stands_on_no_posts(catlin_model, tag):
     assert not _solids(catlin_model, tag, "POST"), f"{tag} is screwed to a wall"
     brackets = _solids(catlin_model, tag, "BRACKET")
     assert brackets, f"{tag} has to be held up by something"
+    element = next(e for e in catlin_model.plan.all_elements() if e.tag == tag)
+    tall_brackets = {f"{tag}-BRACKET{index}" for index, _drop in element.bracket_drop_overrides}
     for bracket in brackets:
-        assert bracket.z1_m - bracket.z0_m < inch(6).meters, "a bracket, not a post"
+        if bracket.tag not in tall_brackets:
+            assert bracket.z1_m - bracket.z0_m < inch(6).meters, "a bracket, not a post"
 
 
 def test_a_fascia_mounted_guard_keeps_its_posts(catlin_model):
@@ -286,6 +289,11 @@ def test_attic_handrail_supports_clear_the_window_and_door(catlin_model_ro):
     assert rail.sweep.path[-1][:2] == pytest.approx(
         tuple(inch(v).meters for v in (257.125, 103.25)))
     assert len(_solids(model, tag, 'RAIL')) == 1
+    for a, b in zip(rail.sweep.path, rail.sweep.path[1:], strict=False):
+        first_riser_y = inch(56.375).meters
+        if a[1] <= first_riser_y <= b[1] and a[1] != b[1]:
+            z = a[2] + (b[2] - a[2]) * (first_riser_y - a[1]) / (b[1] - a[1])
+            assert z == pytest.approx(inch(165).meters, abs=inch(1 / 16).meters)
     assert all(a[2] <= b[2] for a, b in zip(rail.sweep.path, rail.sweep.path[1:], strict=False))
     lower_plate = _solids(model, tag, 'ENDPLATE1')[0]
     assert max(y for _x, y in lower_plate.outline) < inch(48.5).meters
@@ -311,5 +319,31 @@ def test_attic_handrail_lower_supports_have_bearing_backing(catlin_model_ro):
     members = [m for m in wall.members if m.child_key.startswith('backing-')]
     for suffix, station in [('ENDPLATE1', 46), ('BRACKET2', 84)]:
         support = _solids(model, 'RL-A-HANDRAIL', suffix)[0]
-        assert any(min(m.p0[1], m.p1[1]) <= inch(station).meters <= max(m.p0[1], m.p1[1])
+        assert min(y for _x, y in support.outline) <= inch(station).meters
+        assert any(min(m.p0[1], m.p1[1]) <= min(y for _x, y in support.outline)
+                   and max(m.p0[1], m.p1[1]) >= max(y for _x, y in support.outline)
                    and m.z0_m <= support.z0_m and m.z1_m >= support.z1_m for m in members)
+
+
+def test_attic_recess_bracket_reaches_the_lower_walls_double_top_plate(catlin_model_ro):
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.resolve.geometry_members import member_box
+
+    model = catlin_model_ro
+    bracket = _solids(model, 'RL-A-HANDRAIL', 'BRACKET6')[0]
+    assert bracket.sweep is not None
+    anchor, elbow, rail_end = bracket.sweep.path
+    assert anchor[0] == pytest.approx(inch(298.59375).meters)
+    assert anchor[1] == pytest.approx(inch(105.625).meters)
+    assert rail_end[2] - anchor[2] == pytest.approx(inch(20.5).meters)
+    assert elbow[:2] == pytest.approx(rail_end[:2])
+    wall = next(w for w in model.walls if w.tag == 'W-S-SS2')
+    plates = [m for m in wall.members if m.category == 'plate' and 'top' in m.child_key]
+    assert min(m.z0_m for m in plates) < anchor[2] - inch(0.5).meters
+    assert max(m.z1_m for m in plates) > anchor[2] + inch(0.5).meters
+    wood_faces = [Polygon([(x, y) for x, y, _z in member_box(m).corners_top]) for m in plates]
+    # The anchor passes through the wall's 5/8" stair-side gypsum into the plate pack.
+    assert all(any(poly.buffer(1e-6).covers(Point(anchor[0] + offset,
+                                                  anchor[1] + inch(0.625).meters))
+                   for poly in wood_faces) for offset in (-inch(0.5).meters, inch(0.5).meters))

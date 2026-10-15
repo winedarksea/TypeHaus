@@ -953,6 +953,9 @@ STAIR_HANDRAIL = Railing(
     # Keep the grip over the top riser, but angle its return east to the fixed door
     # jamb. The whole 70 mm flange clears D-A-STUDY's x=261 1/2" rough jamb.
     end_return_target=pt(inch(263), inch(105.625)),
+    # Above the lower wall but below the recessed attic partition: a tall steel
+    # standoff lands on W-S-SS2's double top plate, not on the bookcase or empty air.
+    bracket_drop_overrides=((6, inch(20.5)),),
 )
 
 STAIRS = [

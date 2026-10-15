@@ -101,16 +101,19 @@ def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list
     """
     half = _BRACKET_SECTION_M / 2.0
     findings: list[Finding] = []
+    bracket_drops = dict(el.bracket_drop_overrides)
     last = len(stations) - 1
     for index, station in enumerate(stations):
         if (index == 0 and el.start_termination == "wall_return") or (
                 index == last and el.end_termination == "wall_return"):
             continue
         rail_z = surface.height_at(station) + rail_h
-        arm_z = rail_z - _BRACKET_DROP_M
+        custom_drop = bracket_drops.get(index + 1)
+        arm_z = rail_z - (_BRACKET_DROP_M if custom_drop is None else custom_drop.meters)
         contact, obstructing_tags = mounting_wall_face(
-            model, station, rail_z, along=_directions_at(stations, index),
-            half_width_m=half, z0_m=arm_z - half, z1_m=rail_z)
+            model, station, rail_z if custom_drop is None else arm_z,
+            along=_directions_at(stations, index), half_width_m=half,
+            z0_m=arm_z - half, z1_m=rail_z if custom_drop is None else arm_z + half)
         if contact is None or contact.distance_m < 1e-4:
             findings.append(Finding(
                 severity=Severity.WARN, check_id="geometry.railing_bracket_unanchored",
@@ -119,11 +122,21 @@ def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list
                 element_tags=(el.tag, *obstructing_tags), result=Result.FAIL))
             continue
         outline = rect_between(contact.face_point, station, -half, half)
+        sweep = None
+        z0, z1 = arm_z - half, rail_z
+        if custom_drop is not None:
+            # The wall carries only the lower horizontal arm. The upright is outboard,
+            # beside the rail, so it can pass the floor band without inventing wall there.
+            sweep = SolidSweep(
+                path=((*contact.face_point, arm_z), (*station, arm_z), (*station, rail_z)),
+                profile=rect_profile(_BRACKET_SECTION_M, _BRACKET_SECTION_M))
+            outline = sweep_plan_silhouette(sweep)
+            z0, z1 = sweep_z_extent(sweep)
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-b{index:02d}", tag=f"{el.tag}-BRACKET{index + 1}", storey=storey,
             category=RAILING_CATEGORY, outline=outline,
-            z0_m=arm_z - half, z1_m=rail_z, assembly=el.assembly,
-            material=parts.post_material,
+            z0_m=z0, z1_m=z1, assembly=el.assembly,
+            material=parts.post_material, sweep=sweep,
         ))
     return findings
 
