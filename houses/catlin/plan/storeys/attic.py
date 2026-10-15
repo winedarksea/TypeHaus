@@ -673,20 +673,17 @@ BEAMS = [
     # engineering result either — resolve/framing/roof.py's RIDGE_BEAM_DEFAULT recorded it
     # as "approximating the user's 6x12 ask".
     #
-    # What sets the depth: the resolver pins this beam's TOP to the roof plane at the peak
-    # (the ZIP deck bears across it) and trims each rafter back to its face, where the
-    # rafter is cut PLUMB and hung on an LSSR. RE-DERIVED AT 6:12: an
-    # 11 7/8" I-joist on a 6:12 plane has a 13.28" plumb face (11.875 x 1.1180), and the
-    # face sits 1.75" off the peak, another 0.875" down the plane — so the beam has to
-    # reach 14.15" below the ridge line. ** 14" FAILS THAT BY 0.15" **, which is exactly
-    # the sort of miss that reads as fine on a drawing and leaves the hanger seat hanging
-    # in air. LVL is made in 9.5/11.875/14/16/18", so 16" is the answer and it leaves
-    # 1.85". `structural.ridge_beam_depth` holds it and reports what is left.
+    # What sets the depth: the resolver trims each rafter back to this beam's face, where it
+    # is cut PLUMB and hung on an LSSR, and sets the beam's TOP flush with the rafter tops
+    # there — 0.875" under the peak at 6:12 — so the LSTA24 over each pair lies across it.
+    # An 11 7/8" I-joist on a 6:12 plane has a 13.28" plumb face (11.875 x 1.1180), and that
+    # is all the beam has to reach (R802.3's "cut end of the rafter"). 14" would clear by
+    # 0.72"; the 16" bought clears by 2.72". `structural.ridge_beam_depth` reports it.
+    # (Until 2026-10-14 the top was pinned to the peak, which stood the beam 0.875" proud of
+    # the rafters, put the straps through it, and made 14" read 0.15" short.)
     #
-    # The beam now hangs 16" into the room, so the clear height under the ridge reads
-    # ~9'-1 1/2" between beams and ~7'-9 1/2" directly under it. Backing the pitch off to
-    # 5.5:12 would hold the 14" beam and save a couple hundred dollars, at the cost of
-    # 5 1/2" of ridge, a nonstandard pitch and tighter R305 margins. Not worth it.
+    # The beam hangs ~16 7/8" under the ridge line, so the clear height reads ~9'-1 1/2"
+    # between beams and ~7'-8 5/8" directly under it.
     #
     # THREE THINGS A FRAMER HAS TO BE TOLD, all in notes/ridge_beam_detail.md:
     #  - 3.5" is only defensible because the demand is small. LSSR header fasteners are

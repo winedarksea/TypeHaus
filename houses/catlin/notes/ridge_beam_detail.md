@@ -13,6 +13,13 @@ to the sections below.
 **1,090 lb** with web stiffeners (re-sourced 2026-09-14; the 1,060 this note carried is the
 *skewed* row and this ridge is not skewed). Use that number, not this one.
 
+> **2026-10-14: the beam's top is no longer at the peak.** It sits flush with the rafter tops
+> at its faces, (width / 2) x pitch under the ridge line (0.875" at 3 1/2" and 6:12), so each
+> LSTA24 lies across the beam rather than through its corners. The beam then has to reach
+> only the plumb cut, **13.28"** at 6:12 — R802.3's "cut end of the rafter" exactly — so 14"
+> clears by 0.72" and the 16" bought clears by 2.72". The "beam must reach ... below the
+> ridge line" rows below add a half-width term that no longer exists.
+>
 > **SUPERSEDED IN PART, 2026-08-29 — the pitch and section below are one revision behind.**
 > The roof went from 4:12 to 6:12 and the ridge from `2-1.75x14 LVL` to **`2-1.75x16 LVL`**
 > (CLAUDE.md's "Structural ridge, not a rafter-tie roof" bullet is the current source of

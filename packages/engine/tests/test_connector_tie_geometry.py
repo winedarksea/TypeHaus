@@ -86,6 +86,19 @@ def test_ridge_strap_follows_both_slopes_preserving_developed_length():
     assert tie_mesh("LSTA24", slope_radians=-slope) == mesh
 
 
+def test_ridge_strap_lies_level_across_the_beam_top():
+    """Over a 3 1/2" beam the strap is flat for 3 1/2", then the legs fall from its edges."""
+    slope = math.atan(6.0 / 12.0)
+    mesh = tie_mesh("LSTA24", slope_radians=slope, member_width_in=3.5)
+    leg = 12.0 - 1.75
+    end_y, end_z = 1.75 + leg * math.cos(slope), -leg * math.sin(slope)
+    for side in (-1.0, 1.0):
+        assert any(point[1] / 0.0254 == pytest.approx(side * 1.75)
+                   and point[2] / 0.0254 == pytest.approx(0.0) for point in mesh.positions)
+        assert any(point[1] / 0.0254 == pytest.approx(side * end_y)
+                   and point[2] / 0.0254 == pytest.approx(end_z) for point in mesh.positions)
+
+
 def test_unsized_holdown_is_explicit_sthd14_display_representative():
     assert tie_mesh("STHD") == tie_mesh("STHD14")
     assert tie_mesh("STHD14RJ") != tie_mesh("STHD14")

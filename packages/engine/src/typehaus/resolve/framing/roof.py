@@ -51,7 +51,7 @@ from typehaus.resolve.model import (
     SeatCut,
 )
 from typehaus.resolve.roof_bearing import resolved_bearings
-from typehaus.resolve.roof_geometry import roof_structure_framing
+from typehaus.resolve.roof_geometry import ridge_beam_top_m, roof_structure_framing
 
 _RAFTER_CONNECTION = "ridge:adjustable-slope-hanger;eave:birdsmouth"
 # How much of a beam's run its declared bearing walls may miss and still read as
@@ -358,8 +358,9 @@ def _resolve_ridge_beam(
             element_tags=(roof.tag,), result=Result.UNKNOWN,
         )]
     beam, start, end = found
-    depth = cross_section(beam.size).depth_m
-    z1 = roof.ridge_z_m
+    section = cross_section(beam.size)
+    depth = section.depth_m
+    z1 = ridge_beam_top_m(roof, section.width_m)
     length = math.hypot(end[0] - start[0], end[1] - start[1])
     member = FramedMember(
         beam.uid, "ridge-beam", "ridge_beam", beam.size, start, end, z1 - depth, z1, length,

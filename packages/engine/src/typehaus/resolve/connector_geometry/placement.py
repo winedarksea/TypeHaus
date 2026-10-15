@@ -289,6 +289,8 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
             member_depth_m = beam.z1_m - beam.z0_m
     elif part.startswith("LSTA") and joint is not None and joint.role == ROLE_RIDGE_TIE_STRAP:
         slope = _roof_slope(index, references)
+        # Level across the beam top, which is flush with the rafter tops at its faces.
+        member_width_m = index.support_width(references[0], tangent) if references else None
     elif part.startswith("THD"):
         beam = _connected_beam(index, references)
         wall = next((index.model.wall(tag) for tag in references

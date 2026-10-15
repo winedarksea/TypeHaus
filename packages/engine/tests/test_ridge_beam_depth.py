@@ -51,10 +51,10 @@ def test_the_house_as_built_passes_with_the_margin_stated(catlin_model_ro) -> No
     assert len(found) == 1
     assert found[0].result is Result.PASS
     assert "RB-HOUSE" in found[0].element_tags
-    # At 6:12: 13.28" plumb cut + 1.75" of half-width down the plane (0.875") = 14.15"
-    # needed against the 16" bought. It was 13.10" against 14" at 4:12, and 14" FAILS the
-    # new number by 0.15" — which is why the beam went to 16" with the pitch.
-    assert "14.15\" needed" in found[0].message
+    # At 6:12 the 11 7/8" rafter cuts 13.28" plumb. The beam's top is flush with the rafter
+    # tops at its faces (0.875" under the peak), so 13.28" is all it has to reach, and the 16"
+    # bought has 2.72" to spare.
+    assert "13.28\" needed" in found[0].message
 
 
 @pytest.mark.parametrize("profile", ["3-1.75x11.875 LVL", "2-1.75x11.875 LVL"])
@@ -90,26 +90,21 @@ def test_the_shortfall_it_reports_is_the_hand_arithmetic(catlin_model_ro) -> Non
     plumb_m = cross_section(rafter.profile).depth_m * slope_factor
     shortfall_in = (beam.z0_m - (rafter.z1_end_m - plumb_m)) / M_PER_IN
 
-    assert shortfall_in == pytest.approx(2.277, abs=1e-3)
+    # The beam's top is flush with the rafter tops, so the miss is plumb cut less depth.
+    assert shortfall_in == pytest.approx(11.875 * slope_factor - 11.875, abs=1e-3)
+    assert shortfall_in == pytest.approx(1.402, abs=1e-3)
     assert f"{shortfall_in:.4g}\"" in _findings(model)[0].message
 
 
-@pytest.mark.parametrize("profile", ["2-1.75x14 LVL", "3-1.75x14 LVL"])
-def test_fourteen_inches_no_longer_reaches_at_six_twelve(catlin_model_ro,
-                                                         profile: str) -> None:
-    """14" was the answer at 4:12 and is 0.15" short at 6:12, at either width.
+@pytest.mark.parametrize("profile", ["2-1.75x14 LVL", "3-1.75x14 LVL", "2-1.75x16 LVL",
+                                     "2-1.75x18 LVL"])
+def test_fourteen_inches_reaches_once_the_beam_top_is_flush(catlin_model_ro,
+                                                           profile: str) -> None:
+    """14" covers the 13.28" plumb cut at 6:12 with 0.72" to spare.
 
-    This is the pitch change's one structural cost and it is worth pinning at both widths
-    for the same reason the 11 7/8" case is: the tempting response to a 0.15" miss is to add
-    a ply, and a ply buys 0.44".
+    It read 0.15" short while the beam's top was pinned to the PEAK, 0.875" above the rafter
+    tops at its faces. That was also why the LSTA24 over each pair ran through the beam.
     """
-    found = _findings(_reprofile(catlin_model_ro, profile))
-    assert found[0].result is Result.FAIL
-
-
-@pytest.mark.parametrize("profile", ["2-1.75x16 LVL", "3-1.75x16 LVL", "2-1.75x18 LVL"])
-def test_sixteen_inches_is_the_shallowest_stock_depth_that_works(catlin_model_ro,
-                                                                 profile: str) -> None:
     found = _findings(_reprofile(catlin_model_ro, profile))
     assert found[0].result is Result.PASS
 

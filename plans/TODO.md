@@ -247,6 +247,8 @@ the future.
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
 - Sconce ED-S-STUDY2-STAIR-SC1 is a bit close to the floor, perhaps it should go at the top of the stairs on the wall, still on the same circuit but in the room above?
 - Maybe replace D-M-PANTRY with a 36" pocket door
+- Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
+- ED-A-STUDIO-BAR-PEND should probably be replaced with a track light on the sloped ceiling
 
 # Project Management
 

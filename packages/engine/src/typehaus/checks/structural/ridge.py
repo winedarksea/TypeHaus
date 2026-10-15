@@ -8,9 +8,10 @@ all, and ``structural.member_interference`` explicitly excuses the ``ridge_beam`
 ridge could therefore be any depth at all and the report stayed clean.
 
 **The rule is geometric and it is about the hanger, not the beam's bending.** The resolver
-pins the beam's top to ``roof.ridge_z_m`` and trims each rafter back by half the beam width
-(``resolve/framing/roof.py``), so the rafter is cut PLUMB at the beam's face and hung there
-on a sloped face-mount hanger. The hanger's seat is at the bottom of that cut. If the beam's
+trims each rafter back by half the beam width and sets the beam's top flush with the rafter
+tops at its faces (``roof_geometry.ridge_beam_top_m``), so the rafter is cut PLUMB at the
+beam's face and hung there on a sloped face-mount hanger. The beam need only reach the plumb
+cut's depth below its own top. The hanger's seat is at the bottom of that cut. If the beam's
 soffit is above it, the seat and the hanger's lowest fasteners have no wood behind them —
 the connection is drawn, priced and unbuildable.
 
@@ -99,10 +100,10 @@ def _grade(ctx: CheckContext, roof: ResolvedRoof) -> list[Finding]:
     margin_in = (lowest - beam.z0_m) / M_PER_IN
     rafter_depth_in = cross_section(rafters[0].profile).depth_m / M_PER_IN
     plumb_in = rafter_depth_in * factor
-    needed_in = (roof.ridge_z_m - lowest) / M_PER_IN
+    needed_in = (beam.z1_m - lowest) / M_PER_IN
 
     detail = (f"{rafter_depth_in:g}\" rafters at {factor:.4g}x slope cut "
-              f"{plumb_in:.4g}\" plumb, {section.width_m / M_PER_IN:g}\" off the peak")
+              f"{plumb_in:.4g}\" plumb at a {section.width_m / M_PER_IN:g}\" beam's faces")
     if margin_in < -_TOL_IN:
         return [Finding(
             severity=Severity.ERROR, check_id=CHECK_ID,
@@ -111,12 +112,12 @@ def _grade(ctx: CheckContext, roof: ResolvedRoof) -> list[Finding]:
                      f"{lowest / M_PER_IN:.4g}\" at its face — {-margin_in:.4g}\" of hanger "
                      f"seat and bottom flange with no beam behind it ({detail})"),
             element_tags=tags, result=Result.FAIL,
-            fix_hint=(f"the beam has to be at least {needed_in:.4g}\" deep below the roof "
-                      f"plane; LVL is made in 9.5/11.875/14/16/18\", so take the next depth "
+            fix_hint=(f"the beam has to be at least {needed_in:.4g}\" deep; LVL is made in "
+                      f"9.5/11.875/14/16/18\", so take the next depth "
                       f"up rather than trying to hit the number"))]
     return [Finding(
         severity=Severity.WARN, check_id=CHECK_ID,
         message=(f"ridge beam {tag} ({beam.profile}) backs {roof.tag}'s rafters with "
-                 f"{margin_in:.4g}\" to spare — {needed_in:.4g}\" needed below the roof "
-                 f"plane, {section.depth_m / M_PER_IN:g}\" provided ({detail})"),
+                 f"{margin_in:.4g}\" to spare — {needed_in:.4g}\" needed below the beam "
+                 f"top, {section.depth_m / M_PER_IN:g}\" provided ({detail})"),
         element_tags=tags, result=Result.PASS)]

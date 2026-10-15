@@ -175,17 +175,26 @@ def _hurricane_tie(part: str) -> GMesh:
     return combine_meshes(backing, *returns)
 
 
-def _flat_or_ridge_strap(dimensions: StrapDimensions, slope_radians: float) -> GMesh:
+def _flat_or_ridge_strap(dimensions: StrapDimensions, slope_radians: float,
+                         crest_width_in: float = 0.0) -> GMesh:
+    """A flat strap, or one folded over a ridge: level across ``crest_width_in`` (the beam
+    top) and down both slopes, the developed length unchanged."""
     half_width, half_length = dimensions.width_in / 2.0, dimensions.length_in / 2.0
     thickness = STEEL_THICKNESS_IN[dimensions.gauge]
     slope = abs(slope_radians)
     cosine, sine = math.cos(slope), math.sin(slope)
+    half_crest = min(max(crest_width_in, 0.0), dimensions.length_in) / 2.0 if slope else 0.0
+    leg = half_length - half_crest
     leaves = []
+    if half_crest:
+        leaves.append(box_mesh((-half_width, -half_crest, 0.0),
+                               (half_width, half_crest, thickness)))
     for direction in (-1.0, 1.0):
-        transverse_end = direction * half_length * cosine
-        endpoint_z = -half_length * sine
-        leaves.append(plate_mesh(((-half_width, 0.0, 0.0),
-                                  (half_width, 0.0, 0.0),
+        start = direction * half_crest
+        transverse_end = start + direction * leg * cosine
+        endpoint_z = -leg * sine
+        leaves.append(plate_mesh(((-half_width, start, 0.0),
+                                  (half_width, start, 0.0),
                                   (half_width, transverse_end, endpoint_z),
                                   (-half_width, transverse_end, endpoint_z)),
                                  (0.0, direction * thickness * sine, thickness * cosine)))
@@ -382,7 +391,9 @@ def tie_mesh(part: str, *, member_width_in: float | None = None,
             if not math.isfinite(strap_length_in) or strap_length_in <= 0.0:
                 raise ValueError("CS16 cut length must be finite and positive")
             dimensions = StrapDimensions(dimensions.width_in, strap_length_in, dimensions.gauge)
-        return _flat_or_ridge_strap(dimensions, slope_radians if normalized == "LSTA24" else 0.0)
+        if normalized == "LSTA24":
+            return _flat_or_ridge_strap(dimensions, slope_radians, member_width_in or 0.0)
+        return _flat_or_ridge_strap(dimensions, 0.0)
     if normalized in ANGLES:
         return _angle_tie(normalized)
     if normalized == "LTP4":

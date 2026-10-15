@@ -296,12 +296,26 @@ def apply_to_roof_wall_tops(model: ResolvedModel) -> None:
     model.walls = resolved
 
 
+def ridge_beam_top_m(roof: ResolvedRoof, beam_width_m: float) -> float:
+    """A ridge beam's top: flush with the hung rafters' tops at its faces.
+
+    The rafters are trimmed back half the beam's width, so the roof plane meets each face
+    ``(width / 2) x pitch`` below the peak. A beam topped at the peak stands proud of them by
+    that much (7/8" for 3 1/2" at 6:12), and the LSTA24 over each pair runs through its
+    corners instead of across it.
+    """
+    if roof.form != "gable":
+        return roof.ridge_z_m
+    pitch = math.sqrt(max(roof_slope_factor(roof) ** 2 - 1.0, 0.0))
+    return roof.ridge_z_m - beam_width_m / 2.0 * pitch
+
+
 def ridge_beam_soffits(model: ResolvedModel) -> dict[tuple[str, str], float]:
     """``(roof tag, wall tag) -> ridge beam soffit`` for each wall a rafter roof's ridge
     beam names in its ``bearing_refs``.
 
-    The beam's top is pinned to the ridge (``framing/roof._resolve_ridge_beam``), so its
-    soffit is known here, before framing. A truss roof carries its own ridge and has none.
+    The beam's top is fixed by the roof plane (:func:`ridge_beam_top_m`), so its soffit is
+    known here, before framing. A truss roof carries its own ridge and has none.
     """
     from typehaus.resolve.framing.roof import _find_ridge_beam
 
@@ -314,7 +328,8 @@ def ridge_beam_soffits(model: ResolvedModel) -> dict[tuple[str, str], float]:
         if found is None:
             continue
         beam = found[0]
-        soffit = roof.ridge_z_m - cross_section(beam.size).depth_m
+        section = cross_section(beam.size)
+        soffit = ridge_beam_top_m(roof, section.width_m) - section.depth_m
         for ref in beam.bearing_refs:
             out[(roof.tag, ref)] = soffit
     return out

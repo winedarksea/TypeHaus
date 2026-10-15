@@ -352,13 +352,15 @@ def test_ridge_beam_member_and_condition(catlin_model):
     beams = [member for member in roof.members if member.category == "ridge_beam"]
     assert len(beams) == 1
     beam = beams[0]
-    # NOT RIDGE_BEAM_DEFAULT: the house authors its own section, and at 6:12 an 11 7/8"
-    # rafter needs 14.15" below the plane, which 14" misses by 0.15". See
+    # NOT RIDGE_BEAM_DEFAULT: the house authors its own section. See
     # test_ridge_beam_depth.py and plan/storeys/attic.py's derivation.
     assert beam.profile == "2-1.75x16 LVL"
-    assert beam.z1_m == pytest.approx(roof.ridge_z_m)
     section = cross_section(beam.profile)
-    assert beam.z0_m == pytest.approx(roof.ridge_z_m - section.depth_m)
+    # Its top is flush with the trimmed rafters' tops at its faces, so the LSTA24 over each
+    # pair crosses it rather than running through its corners.
+    top = roof.ridge_z_m - (6.0 / 12.0) * (section.width_m / 2.0)
+    assert beam.z1_m == pytest.approx(top)
+    assert beam.z0_m == pytest.approx(top - section.depth_m)
     assert any(c.kind.value == "roof_ridge" for c in catlin_model.conditions)
 
 

@@ -807,9 +807,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `W-A-C1/C1B/C2` bearing wall (unbroken to footings), keeping rafters simple spans and
   thrust off the eave line — a beamless center line dumps ~1.5 klf of thrust into a 1 1/2"
   rafter plate that can't take it.
-  - Section is `2-1.75x16 LVL`; depth is a HANGER dimension, not span-driven — the beam
-    must reach 14.15" below the ridge at the rafter's plumb cut (14" misses by 0.15", 16"
-    clears). LVL comes in 9.5/11.875/14/16/18", no 14 1/4". Beam hangs 16" into the room.
+  - Section is `2-1.75x16 LVL`; depth is a HANGER dimension, not span-driven. The beam's
+    top is flush with the rafter tops at its faces, 7/8" under the peak
+    (`roof_geometry.ridge_beam_top_m`), so each LSTA24 lies across it and the beam need
+    only reach the 13.28" plumb cut: 14" would clear by 0.72", 16" clears by 2.72". The
+    centreline walls stop at its soffit, 346 1/8" (derived, never authored).
     3 1/2" width only works because demand is small, and the 1-1/2" LSSR header nail that
     keeps mirrored patterns on 28 opposing rafter pairs from overlapping is a **published
     row**, not an ER-280 §3.2.2 derivation (C-C-2026 p. 178 sloped-only, DF/SP: 1,175 lbf).
