@@ -3089,7 +3089,7 @@
 # rough-in the whole detail reverts to lags through 2" of gypsum and 3/4" of walnut, which is
 # how a fold-down desk gets loose. See plan/furniture_types.py.
 "FT-STUDY-DESK-LEAF" = { material = { low = 260, high = 560 }, labour = { low = 250, high = 620 } }  # 1 ea
-"FT-CURTAIN-ROD-48" = { material = { low = 25, high = 90 }, labour = { low = 35, high = 90 } }  # 8 ea
+"FT-CURTAIN-ROD-48" = { material = { low = 25, high = 90 }, labour = { low = 35, high = 90 } }  # 6 ea
 "FT-CURTAIN-ROD-84" = { material = { low = 40, high = 140 }, labour = { low = 35, high = 90 } }  # 1 ea
 # --- the porch enclosure track (2026-09-03) ---------------------------------------------
 # ** THESE TWO ROWS REPLACE `FT-CURTAIN-ROD-OUTDOOR-114`/`-98`, WHICH ARE DELETED, NOT

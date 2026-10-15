@@ -13,6 +13,11 @@ _WALL = Mount(kind=MountKind.WALL)
 _ROD = ("Curtain rod on end brackets. Width is the rod, not the opening: a rod runs past the "
         "rough opening both sides so the stack sits on wall, not glass. Depth is the bracket "
         "projection, height the rod and finial.")
+_CELLULAR_BLIND = (
+    "Generic inside-mount cellular blind sized for a nominal 27 x 48-inch window opening. "
+    "The shade is modeled fully lowered with a headrail and bottom rail; the exact product, "
+    "fabric, opacity and field-measured deduction remain unselected."
+)
 _PANEL = ("Framed metal access panel in a finished wall face; size is the clear opening, "
           "depth the frame's projection.")
 _CLOSET = ("Ventilated epoxy-coated steel shelf on 12 ga. wall standards and brackets, with "
@@ -35,6 +40,12 @@ CURTAIN_ROD_84 = FurnitureType(
     footprint=(inch(84), inch(4)), height=inch(2),
     plan_symbol=None, model_representation=ModelRepresentation(symbol="curtain-rod"),
     mount=_WALL, source=_ROD,
+)
+CELLULAR_BLIND_2748 = FurnitureType(
+    tag="FT-CELLULAR-BLIND-2748", name='Cellular blind, nominal 27 x 48" opening',
+    footprint=(inch(27), inch(2)), height=inch(48),
+    plan_symbol=None, model_representation=ModelRepresentation(symbol="cellular-blind"),
+    mount=_WALL, source=_CELLULAR_BLIND,
 )
 # 14x14 is a tub waste-and-overflow size; 14x29 reaches the whole of a wall-hung WC carrier.
 ACCESS_PANEL_1414 = FurnitureType(
@@ -82,7 +93,8 @@ CLOSET_SHELF_36 = FurnitureType(
 )
 
 FIT_OUT_TYPES = (
-    CURTAIN_ROD_48, CURTAIN_ROD_84, ACCESS_PANEL_1414, ACCESS_PANEL_1429,
+    CURTAIN_ROD_48, CURTAIN_ROD_84, CELLULAR_BLIND_2748,
+    ACCESS_PANEL_1414, ACCESS_PANEL_1429,
     ACCESS_PANEL_CLG_3029, CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
     CLOSET_SHELF_36,
 )

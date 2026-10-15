@@ -240,9 +240,9 @@ the future.
 - Spec sand or gravel backfill around house
 - The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
 - MEP autorouter work seems to burn a lot of tokens, are there any parts we could modify to get the same functionality with less token usage?
-- Make the CDX side of the sheathing prettier. Paint it black and add milled black locust slats face nailed (perhaps upgrade to 3/4" cdx behind) to give a shadow gap vertical slat look. Alternatives: shiplap planks, or flat overlay plywood or sheet plus trim and onlays for decorative panels
+- Make the CDX side of the sheathing prettier. Paint it black and add milled black locust slats face nailed (perhaps upgrade to 3/4" cdx behind) to give a shadow gap vertical slat look. Alternatives: shiplap planks, or flat overlay plywood/sheet plus trim and onlays for decorative panels
 - Plan microwave placement
-- Maybe swap the two living room east side curtain rods with cellular blinds in the four larger east facing living room windows
+- Select the cellular blinds' product, opacity and color, then field-measure final inside-mount deductions
 - Review ED-M-PORCH-FLOOD. Update the 3d model for a proper flood light (or switch to a second mirrored downlight) and consider moving out to mounted on the edge of the balcony, more fully over the sunken garden.
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
 - Sconce ED-S-STUDY2-STAIR-SC1 is a bit close to the floor, perhaps it should go at the top of the stairs on the wall, still on the same circuit but in the room above?

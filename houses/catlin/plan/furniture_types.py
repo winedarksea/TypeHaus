@@ -11,6 +11,7 @@ from library.placeables.allowances import (
     ACCESS_PANEL_1414,
     ACCESS_PANEL_1429,
     ACCESS_PANEL_CLG_3029,
+    CELLULAR_BLIND_2748,
     CLOSET_SHELF_36,
     CLOSET_SHELF_ROD_60,
     CLOSET_SHELF_ROD_84,
@@ -55,8 +56,8 @@ STUDY_BUILT_IN_BOOKCASE = FurnitureType(
     source="Catlin study fixed casework: front y=105 5/8 in.; x=272..368 3/4 in.; three 31 1/4 in. clear bays with 60/42/30 in. tops and 5/4/3 horizontal boards; 2 5/8 in. west filler closes to W-A-SN-WR.",
 )
 
-# 48" covers every main-storey window in the house — the widest RO on a rod is 30"
-# (WT-3048), which leaves 9" of stackback each side. 84" is D-M-BALC's french pair (60"
+# 48" is the standard rod length for main-storey windows that use curtains — the widest RO
+# is 30" (WT-3048), leaving 9" of stackback each side. 84" is D-M-BALC's french pair (60"
 # RO, 12" each side). Depth is the bracket projection, height the rod and finial.
 # --- the porch enclosure track -------------------------------------------------------
 # NOT A CURTAIN ROD. 2026-09-03: the two 114" rods and the two 98" side rods were replaced
@@ -667,7 +668,7 @@ SPLASH_BASIN_GRANITE_24 = FurnitureType(
 )
 
 FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
-                   CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_176,
+                   CURTAIN_ROD_48, CURTAIN_ROD_84, CELLULAR_BLIND_2748, PORCH_TRACK_176,
                    PORCH_TRACK_102,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
                    BATH1_SHELF_2030,

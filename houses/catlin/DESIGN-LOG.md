@@ -5203,3 +5203,12 @@ A reviewer's five points and two follow-ups; owner decisions marked.
   and 5 5/8" clear of the centre wall W-A-C2's west gypsum face (axis x=18'-0").
 - `DU-S-HP-SUITE` ends at the boot's new station, so the branch shortens from 40" to 28" west
   of its takeoff. Its authored 100 1/8" centreline, 175 cfm and the boot's 75 cfm are unchanged.
+
+## 2026-10-14 — Cellular blinds on the east living-room window row
+
+- Replace the two east living-room curtain rods with four matching cellular blinds at
+  `WIN-M-LIV-E1`, `-E2`, `-E3` and `WIN-M-EAST-MID`. Each nominal 27x48 blind spans the 34" sill
+  to the 82" head; the generated `cellular-blind` model shows its headrail, lowered pleated
+  shade and bottom rail. The other living-room rods remain.
+- The shared type is generic geometry, not a product selection. Fabric, opacity, color, exact
+  inside-mount deduction and pricing remain open pending product choice and field measurement.

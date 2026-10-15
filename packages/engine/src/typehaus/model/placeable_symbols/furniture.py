@@ -8,6 +8,7 @@ needs no entry here at all: the same symbol renders at whatever W×D×H the type
 from __future__ import annotations
 
 from typehaus.model.placeable_symbols._cantilever_chair import cantilever_chair
+from typehaus.model.placeable_symbols._cellular_blind import cellular_blind
 from typehaus.model.placeable_symbols._chess_table import chess_table
 from typehaus.model.placeable_symbols._closet_wire import closet_corner_wire, closet_wire
 from typehaus.model.placeable_symbols._corner_bookcase import corner_bookcase
@@ -94,6 +95,7 @@ CABINET_SINGLE_DOOR_MAX_WIDTH_M = inch(24).meters
 
 FURNITURE_SYMBOLS: dict[str, Builder] = {
     "curtain-rod": curtain_rod,
+    "cellular-blind": cellular_blind,
     # Seating. Seat count is what separates a sofa from a loveseat from an armchair.
     "sofa": seating(arms=True, seats=3),
     "loveseat": seating(arms=True, seats=2),

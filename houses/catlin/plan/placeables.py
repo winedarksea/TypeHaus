@@ -346,11 +346,9 @@ MAIN_PLACEABLES = [
               rotation=deg(180)),
 
     # --- curtain rods -------------------------------------------
-    # One head line for the whole storey: 7'-0", 4" above the tallest main-floor head (6'-8",
-    # WT-3048 + exterior doors) so it reads as one line rather than stepping room to room —
-    # the facade discipline the elevations enforce. WIN-M-LIV-E1/E2 (5'-6" head) just get
-    # longer curtains. ** EXCEPT ROD-E1/-E2, AT 7'-2" (2026-10-02): ** the east row's heads
-    # rose 2" to 6'-10" when the sills went to the counter line, and the rods followed.
+    # The remaining main-floor curtain rods share a 7'-0" head line, 4" above the tallest
+    # main-floor head (6'-8", WT-3048 + exterior doors). The east living row now has cellular
+    # blinds sized to those openings instead of rods.
     # y=10" (or x, on side walls) centres the rod 10" off the wall line: 6 1/2" finish face
     # + ~3 1/2" bracket projection. Each rod centres on its opening's RO centre.
     # The south pair are 64" apart; S2 is the west opening, so its rod shares S1's 84" head
@@ -370,18 +368,31 @@ MAIN_PLACEABLES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-C1", face="right", distance_from_start=inch(10),
                   normal_gap=inch(0.625), rotation_offset=deg(90)))),
-    Furniture(uid="2M12W07AGB", tag="FURN-M-LIV-ROD-E1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7, 2)),
+    # Four cellular blinds cover WIN-M-LIV-E1/E2/E3 and WIN-M-EAST-MID, the matching 27x48
+    # east-facing living-room windows. Their 34" sill and 82" head match the rough openings.
+    # Mount elevations are AFF; the 15/16" finished-floor build-up means 33 1/16" AFF puts
+    # each 48" shade exactly between those storey-datum elevations.
+    Furniture(uid="CBLIV001EA", tag="FURN-M-LIV-BLIND-E1", type_ref="FT-CELLULAR-BLIND-2748", room="RM-M-LIVING",
+              mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(64),
-                  normal_gap=inch(1.375), rotation_offset=deg(-180)))),
-    Furniture(uid="94TRP24ZX6", tag="FURN-M-LIV-ROD-E2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7, 2)),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+    Furniture(uid="CBLIV002EA", tag="FURN-M-LIV-BLIND-E2", type_ref="FT-CELLULAR-BLIND-2748", room="RM-M-LIVING",
+              mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(144),
-                  normal_gap=inch(1.15625), rotation_offset=deg(-180)))),
-    # "Master bedroom" is read as RM-M-BED, the main-storey bedroom — not the second-storey
-    # suite. Flag if that was the wrong room: the four rods move, nothing else does.
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+    Furniture(uid="CBLIV003EA", tag="FURN-M-LIV-BLIND-E3", type_ref="FT-CELLULAR-BLIND-2748", room="RM-M-LIVING",
+              mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(192),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+    Furniture(uid="CBLIV004EA", tag="FURN-M-LIV-BLIND-EAST-MID", type_ref="FT-CELLULAR-BLIND-2748", room="RM-M-LIVING",
+              mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(240),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # RM-M-BED is the main-storey bedroom; the second-storey suite has its own rods.
     Furniture(uid="BYYY8GG7E6", tag="FURN-M-BED-ROD-W1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
               location=Location(attachment=WallAttachment(

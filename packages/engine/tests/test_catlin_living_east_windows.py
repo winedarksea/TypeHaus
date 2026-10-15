@@ -13,6 +13,12 @@ EAST_WINDOW_CENTRES_IN = {
     "WIN-M-LIV-E3": 192,
     "WIN-M-EAST-MID": 240,
 }
+EAST_BLINDS_BY_WINDOW = {
+    "WIN-M-LIV-E1": "FURN-M-LIV-BLIND-E1",
+    "WIN-M-LIV-E2": "FURN-M-LIV-BLIND-E2",
+    "WIN-M-LIV-E3": "FURN-M-LIV-BLIND-E3",
+    "WIN-M-EAST-MID": "FURN-M-LIV-BLIND-EAST-MID",
+}
 NORTH_COUNTER_RECEPTACLES = (
     "ED-M-LIVING-RC14", "ED-M-LIVING-RC3", "ED-M-LIVING-RC15", "ED-M-LIVING-RC16",
 )
@@ -50,8 +56,13 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
     brick_north = max(point[1] for point in model.wall("W-M-FIRE-JAMB-N").axis)
     south_pack_start = jamb_members[0].p0[1] - cross_section(jamb_members[0].profile).width_m / 2
     assert south_pack_start - brick_north == pytest.approx(0.75 * INCH)
-    assert objects["FURN-M-LIV-ROD-E2"].position[1] == pytest.approx(
-        openings["WIN-M-LIV-E2"].center_along_m)
+    for window_tag, blind_tag in EAST_BLINDS_BY_WINDOW.items():
+        blind = objects[blind_tag]
+        opening = openings[window_tag]
+        assert blind.type_ref == "FT-CELLULAR-BLIND-2748"
+        assert blind.position[1] == pytest.approx(opening.center_along_m)
+        assert blind.body_z0_m == pytest.approx(34 * INCH)
+        assert blind.body_z1_m == pytest.approx(82 * INCH)
 
 
 def test_each_east_stool_meets_the_continuous_counter(catlin_model_ro):

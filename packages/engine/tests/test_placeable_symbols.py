@@ -79,6 +79,28 @@ def test_generation_is_pure_and_deterministic(symbol: str) -> None:
     assert first == second
 
 
+def test_cellular_blind_has_a_pleated_lowered_shade_at_its_catalog_size() -> None:
+    from typehaus.library.placeables.allowances import CELLULAR_BLIND_2748
+    from typehaus.model.canvas import model_symbol_for
+
+    product = CELLULAR_BLIND_2748
+    symbol = model_symbol_for(product)
+    width, depth = (dimension.meters for dimension in product.footprint)
+    height = product.height.meters
+    strokes = plan_symbol_strokes(symbol, width, depth)
+    parts = model_parts(symbol, width, depth, height)
+
+    assert len(strokes) == 2
+    assert strokes[0]["closed"]
+    headrail, shade, bottom_rail, *pleats = parts
+    assert len(pleats) >= 20
+    assert headrail["center"][2] + headrail["size"][2] / 2 == pytest.approx(height)
+    assert bottom_rail["center"][2] - bottom_rail["size"][2] / 2 == pytest.approx(0)
+    assert shade["center"][2] + shade["size"][2] / 2 == pytest.approx(
+        headrail["center"][2] - headrail["size"][2] / 2)
+    assert all(pleat["color"] == "casework-shadow" for pleat in pleats)
+
+
 @pytest.mark.parametrize("symbol", sorted(_REGISTRY))
 def test_the_plan_glyph_does_not_depend_on_the_objects_height(symbol: str) -> None:
     """``plan_symbol_strokes`` passes a nominal height; that has to be a no-op for strokes."""
