@@ -99,17 +99,15 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
         gross - splash + sauna.area_m2 * _M2_TO_FT2, abs=0.05)
     assert basswood["species"] == "basswood"
     assert basswood["also_in_envelope_layers"] is True
-    # 5/4 shiplap: 1.375 bf per ordered square foot — 5/4 thickness x a 5-1/2" face over 5"
-    # of coverage. It was 1.25 while the liner was T&G, which was the bare stock thickness
-    # with no face allowance at all; the 2026-08-28 profile change re-derived it
-    # (plan/assemblies.py). A profile change must not alter the covered area.
+    # 4/4 shiplap (5/4 until 2026-10-16): 1.1 bf per ordered square foot — 4/4 thickness x
+    # a 5-1/2" face over 5" of coverage. A profile change must not alter the covered area.
     # The tolerance is 0.06, not 0.05: the
     # takeoff rounds board_feet to one decimal, so half a rounding step is 0.05 exactly and
     # a tolerance of 0.05 fails on float slop whenever the true value lands on the step —
     # which it did on 2026-08-15, when the sauna's north partition stopped being extended
     # to the deck and the liner area moved onto the boundary.
     assert float(basswood["board_feet"]) == pytest.approx(
-        float(basswood["order_area_sqft"]) * 1.375, abs=0.06)
+        float(basswood["order_area_sqft"]) * 1.1, abs=0.06)
 
     tile = next(row for row in rows if row["material"] == "tile")
     assert tile["kind"] == "override"
@@ -200,10 +198,8 @@ def test_the_study_wainscot_reconciles_with_the_rooms_bounding_walls(catlin_mode
     """Walnut = the shared runs of RM-M-STUDY's bounding walls x 36", minus D-M-STUDY's
     punch through the band; 4/4 shiplap orders 1.1 board feet per square foot.
 
-    2026-09-05: `walnut-shiplap` is no longer only the study. WP-S-SUITE-HEADBOARD carries the
-    same board on the same tag (one mill order, one row), so the row-vs-resolved
-    reconciliation stays HOUSE-WIDE while the perimeter sanity bound is scoped to the
-    study's own records — one `ResolvedPaneling` per wall, each naming its `room`."""
+    The suite band was on this tag 2026-09-05..10-16 and is `cherry-shiplap` now; the
+    perimeter bound stays scoped to the study's own records."""
     walnut = next(row for row in bom["wood_surfaces"] if row["material"] == "walnut-shiplap")
     assert walnut["kind"] == "paneling"
     assert walnut["species"] == "walnut"
@@ -223,15 +219,13 @@ def test_the_study_wainscot_reconciles_with_the_rooms_bounding_walls(catlin_mode
 
 
 def test_the_suite_headboard_band_is_the_sound_walls_full_run_to_six_feet(catlin_model):
-    """WP-S-SUITE-HEADBOARD: the walnut that used to be the suite FLOOR, stood up behind
-    the bed. Two walls only (`walls=` is not optional — `room=` alone would panel all eight
+    """WP-S-SUITE-HEADBOARD: black cherry shiplap behind the bed (walnut until 2026-10-16). Two walls only (`walls=` is not optional — `room=` alone would panel all eight
     bounding walls of the L, including the window wall and its two flush elm tudor posts),
     a band 0 to 6'-0", and no opening deductions: neither W-S-SN1 nor W-S-SN2 is punched
-    inside the band. Pinned separately from the study's so the two cannot cover for each
-    other in the shared `walnut-shiplap` row."""
+    inside the band."""
     band = [p for p in catlin_model.panelings if p.room == "RM-S-SUITE"]
     assert {p.wall_tag for p in band} == {"W-S-SN1", "W-S-SN2"}
-    assert all(p.material_ref == "walnut-shiplap" for p in band)
+    assert all(p.material_ref == "cherry-shiplap" for p in band)
     assert all(not p.replaces_wall_finish for p in band)
     for p in band:
         assert p.band_z0_m == pytest.approx(0.0, abs=1e-6)

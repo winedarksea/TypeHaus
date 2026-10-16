@@ -4069,7 +4069,7 @@
 # The sauna liner's board by name since 2026-09-24 (DuPont Thermax Sheathing, CCRR-0435 §5.5 —
 # R316.4 passes on the listing). Same band as generic foil polyiso until a quote says otherwise.
 "polyiso-foil-thermax" = { material = { low = 1.3, high = 2.4 }, labour = { low = 1.3, high = 2.3 } }  # 297.4 SF
-"catlin-sauna-shiplap" = { material = { low = 4.5, high = 9 }, labour = { low = 6, high = 11 } }  # 321.7 SF including 64.9 SF ceiling — retagged from `sauna-tg` 2026-08-28, then `sauna-shiplap` -> `catlin-sauna-shiplap` when it went house-local (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate
+"catlin-sauna-shiplap" = { material = { low = 3.6, high = 7.2 }, labour = { low = 6, high = 11 } }  # 321.7 SF including 64.9 SF ceiling — retagged from `sauna-tg` 2026-08-28, then `sauna-shiplap` -> `catlin-sauna-shiplap` when it went house-local (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate. 2026-10-16: 5/4 -> 4/4, material x0.8 for the board feet
 # ** THE BIGGEST LINE IN THE HOUSE, and as of 2026-08-20 it is FOUR lines. ** One
 # `standing-seam` row used to carry all 6,322 SF at one rate. That was wrong in a specific,
 # expensive way: it billed the whole house at the mechanically-seamed roof's labour, and
@@ -5139,7 +5139,11 @@
 # a bought rate over-states a stock band, and the stock ladder under-states a bought one.
 # 2026-10-07: T&G -> shiplap, owner-milled on a table saw rather than a moulder; the rate
 # question above stands.
-"walnut-shiplap" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # 115 SF ordered / 104.2 net — RM-M-STUDY wainscot (46.4 net) + WP-S-SUITE-HEADBOARD (57.8 net)
+# 2026-10-16: WP-S-SUITE-HEADBOARD left this row for `cherry-shiplap`; the study alone remains.
+"walnut-shiplap" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # RM-M-STUDY wainscot (46.4 net)
+# WP-S-SUITE-HEADBOARD (57.8 SF net). ESTIMATE, not researched: milled black cherry at $5-9/bf
+# rough x 1.1 bf/SF; labour as the walnut.
+"cherry-shiplap" = { material = { low = 5.5, high = 10 }, labour = { low = 6, high = 12 } }
 # 2026-10-07, WP-M-MUDROOM-SHIPLAP. ESTIMATE, not researched: owner-milled oak at the
 # ~$2/SF rough of `oak-stool` x 1.1 face factor, plus stain-blocking primer and enamel;
 # labour is install plus prime and two coats.
@@ -5249,7 +5253,12 @@
 # and ~770 LF of casing at 2026-10-10. Owner-milled oak is LABOUR ONLY, the shelf and tread
 # convention: the stock is the `haus millwork` cut list. Install is butt-jointed S4S, flush
 # base-to-leg, oiled before it goes up; the base goes in after the hard floors, so no shoe.
-"oak-trim" = { material = { low = 0, high = 0 }, labour = { low = 3.0, high = 5.5 } }
+# 2026-10-16: the base is cherry (sauna: locust, base and inside casing); casing stays oak.
+# ESTIMATE, not researched: milled rough stock at $5-9/bf (cherry) and $4-8/bf (locust), ~0.33
+# rough bf per LF of 3/4" x 3 1/2" with waste. Labour as the oak.
+"cherry-trim" = { material = { low = 1.6, high = 3.0 }, labour = { low = 3.0, high = 5.5 } }
+"locust-trim" = { material = { low = 1.3, high = 2.7 }, labour = { low = 3.0, high = 5.5 } }
+"locust-trim:door casing" = { material = { low = 1.3, high = 2.7 }, labour = { low = 4.0, high = 8.0 } }
 "oak-trim:door casing" = { material = { low = 0, high = 0 }, labour = { low = 4.0, high = 8.0 } }
 # The store-bought switch (`material_ref = "poplar-trim-paint"`), priced so the switch shows
 # its real cost on day one: 1x4 poplar S4S at the yard, primed and painted on site (the paint
@@ -6416,7 +6425,10 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "FURN-DINING-8" = { low = 500, high = 3000 }  # 0 ea
 # The identical 8' table with the shared open-corner clearance variant. Nothing about the
 # product differs, so its price matches the standard table.
-"FT-DINING-8-OPEN-CORNERS" = { low = 500, high = 3000 }  # 1 ea
+"FT-DINING-8-OPEN-CORNERS" = { low = 500, high = 3000 }  # 0 ea
+# FURN-M-DINING since 2026-10-16: owner-milled ash top (66 rough bf of 8/4 at $4-7) glued up and
+# oiled, on a bought metal base ($300-1,200). ESTIMATE, not researched.
+"FT-CATLIN-DINING-ASH" = { low = 600, high = 1800 }  # 1 ea
 "FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 8 ea
 # IKEA LYCKAN chair, birch veneer, item 005.691.91: $140 US list, checked 2026-10-14.
 # The two upstairs study chairs at the chess table; the frame layout is not priced.

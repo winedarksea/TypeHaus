@@ -217,12 +217,13 @@ MAIN_PLACEABLES = [
     # table corner. It misses the table and all six chairs; the corner square is outside the
     # bands, while the full 36" reach remains along each side where chairs actually stand.
     #
+    # Ash, owner-built (FT-CATLIN-DINING-ASH, 2026-10-16): FT-DINING-8-OPEN-CORNERS's size and zone.
     # The owner's call was to shrink the zone, and this is the shrink that costs nothing
     # real: FT-DINING-8-OPEN-CORNERS keeps 36" on all four sides and drops only the four
     # corner squares, where no chair goes. Retyping rather than reducing the reach is
     # deliberate — cutting 36" to 27" would have cleared the same 0.4 sf while quietly
     # unpolicing the two long sides, where the six chairs that actually exist stand.
-    Furniture(uid="QWCMN48QST", tag="FURN-M-DINING", type_ref="FT-DINING-8-OPEN-CORNERS",
+    Furniture(uid="QWCMN48QST", tag="FURN-M-DINING", type_ref="FT-CATLIN-DINING-ASH",
               room="RM-M-LIVING", position=pt(m(8.19198), ft(18))),
     Furniture(uid="60XVKZHFAS", tag="FURN-M-CHAIR-S1", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
               position=pt(ft(24, 3), ft(15, 2)), rotation=deg(180)),

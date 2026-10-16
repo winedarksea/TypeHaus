@@ -10,7 +10,14 @@ from __future__ import annotations
 import pytest
 from shapely.geometry import Polygon
 
-from typehaus.model import Furniture, FurnitureType, Material, TrimStandard, WallPaneling
+from typehaus.model import (
+    Furniture,
+    FurnitureType,
+    Material,
+    RoomTrim,
+    TrimStandard,
+    WallPaneling,
+)
 from typehaus.quantities import inch, m, pt
 from typehaus.resolve.pipeline import resolve
 from typehaus.source.loader import load_plan
@@ -262,6 +269,25 @@ def test_procurement_is_the_material(starter) -> None:
     assert base["pieces"] * base["finished_length_in"] >= total_ft * 12 - 1e-6
 
 
+def test_base_and_room_stock_override_the_casing_stock(starter) -> None:
+    """``base_material_ref`` takes the base; a ``RoomTrim`` takes base and casing in its room."""
+    stocks = [Material(tag=t, name=t, species="cherry") for t in ("t-base", "t-room")]
+    plan = _swap(_library(starter, materials=(*starter.library.materials, *stocks)),
+                 "TRIM-STANDARD", base_material_ref="t-base",
+                 room_trims=(RoomTrim(rooms=("RM-Upper-Hall",), material_ref="t-room"),))
+    model, findings = _resolved(plan)
+    assert not [f for f in findings if f.check_id == "integrity.trim_standard"]
+    casing = _standard(starter).material_ref
+    assert {(r.room, r.material_ref) for r in model.base_runs if r.kind == "trim"} == {
+        ("RM-Main", "t-base"), ("RM-Upper", "t-base"), ("RM-Upper-Hall", "t-room")}
+    assert {(c.room, c.material_ref) for c in model.door_casings} <= {
+        ("RM-Main", casing), ("RM-Upper", casing), ("RM-Upper-Hall", "t-room")}
+    bad = _swap(plan, "TRIM-STANDARD",
+                room_trims=(RoomTrim(rooms=("RM-Nowhere",), material_ref="t-room"),))
+    assert any(f.check_id == "integrity.trim_standard" and "RM-Nowhere" in f.message
+               for f in _resolved(bad)[1])
+
+
 def test_the_takeoff_reconciles_to_the_records(starter) -> None:
     from typehaus.takeoff.interior_trim import interior_trim_takeoff
 
@@ -291,8 +317,13 @@ def test_catlin_base_scope_follows_the_standard_and_the_floor(catlin_model_ro) -
     rooms = {r.room for r in catlin_model_ro.base_runs}
     assert "RM-B-STAIR" in rooms
     assert rooms.isdisjoint({"RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM",
-                             "RM-B-SAUNA", "RM-S-PLANT", "RM-GARAGE", "RM-A-POCKET",
+                             "RM-S-PLANT", "RM-GARAGE", "RM-A-POCKET",
                              "RM-A-EAST-UNFIN"})
+    # Cherry base, oak casing; the sauna is locust, base and inside casing.
+    stock = {r.room: r.material_ref for r in catlin_model_ro.base_runs if r.kind == "trim"}
+    assert stock["RM-S-HALL"] == "cherry-trim" and stock["RM-B-SAUNA"] == "locust-trim"
+    assert {c.material_ref for c in catlin_model_ro.door_casings
+            if c.room != "RM-B-SAUNA"} == {"oak-trim"}
     kinds = {r.room: r.kind for r in catlin_model_ro.base_runs}
     assert kinds["RM-M-BATH2"] == "tile" and kinds["RM-S-SUITEBATH"] == "tile"
     assert kinds["RM-B-BATH"] == "integral_cove" and kinds["RM-A-STUDIO"] == "integral_cove"

@@ -1033,7 +1033,7 @@ ROOMS = [
     #     boards — the most demanding cut off a log pile — for the one surface that lives
     #     under a bed and a rug.
     # None of that applies to a vertical surface at eye level, so the walnut moved to
-    # WP-S-SUITE-HEADBOARD (see PANELING below) and the floor is `oak`, matching RM-S-STUDY2
+    # WP-S-SUITE-HEADBOARD (see PANELING below; cherry since 2026-10-16) and the floor is `oak`, matching RM-S-STUDY2
     # and RM-A-STUDY. That also puts the second storey's oak on one sand-and-finish set-up
     # (~340 SF here) instead of a trip for a single room; prices.toml [floor_finishes] `oak`
     # carries the mobilisation arithmetic. The walk-in follows the suite for the same reason
@@ -1511,10 +1511,8 @@ STAIRS = [
 ]
 
 PANELING = [
-    # The suite's headboard band: the family's milled walnut, on the one surface in this
-    # room that earns it. `walnut-shiplap` is DELIBERATELY the study wainscot's own tag — same
-    # 4/4 shiplap board, one mill order, one [wood_surfaces] row. (Unlike the floor it replaces,
-    # there is no double-billing trap: both bands are wall area on the same table.)
+    # The suite's headboard band: milled black cherry (`cherry-shiplap`, 2026-10-16; it was
+    # the study's walnut). Same 4/4 shiplap board as the study wainscot, its own species.
     #
     # ** `walls=` IS NOT OPTIONAL. ** `room=` alone panels every bounding wall of the L —
     # all eight, ~50 lineal feet — including the window wall with its two elm tudor
@@ -1535,7 +1533,7 @@ PANELING = [
     # combustible finish means a box extender per NEC 314.20. Nothing grades that; it is an
     # ordering note. The cap is unmodelled trim, as the study wainscot's is.
     WallPaneling(uid="0D53MRPGKZ", tag="WP-S-SUITE-HEADBOARD", room="RM-S-SUITE",
-                 material_ref="walnut-shiplap", height=ft(6),
+                 material_ref="cherry-shiplap", height=ft(6),
                  walls=("W-S-SN1", "W-S-SN2")),
 ]
 

@@ -66,7 +66,7 @@ def test_trim_exports_as_ifc_skirting_and_moldings(catlin_model_ro, catlin_ifc_p
             round(p.z1_m - p.z0_m, 6) for p in casing.pieces}
         props = ifcopenshell.util.element.get_psets(product)[PSET_SOURCE]
         assert props["door_ref"] == casing.opening_ref
-        assert props["material_ref"] == "oak-trim"
+        assert props["material_ref"] == casing.material_ref
 
 
 def test_trim_is_not_a_solid_so_the_section_goldens_do_not_move(catlin_model_ro):

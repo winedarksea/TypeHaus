@@ -243,7 +243,8 @@ def _runs(room, kind, scope: TrimScope, ring, perimeter, pieces, arcs, breaks, f
         count[wall.tag] = index + 1
         touching = tuple(sorted({tag for a, b, tag in breaks
                                  if abs(a - s1) < 1e-6 or abs(b - s0) < 1e-6}))
-        material = scope.standard.material_ref if kind == "trim" else room.floor_finish
+        material = (scope.standard.base_material_for(room.tag) if kind == "trim"
+                    else room.floor_finish)
         out.append(ResolvedBaseRun(
             uid=f"{room.uid}-base-{wall.uid}-{index}",
             tag=f"BASE-{room.tag}-{wall.tag}-{index}",

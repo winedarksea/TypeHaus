@@ -237,13 +237,9 @@ MATERIALS = [
     # dries and moves more forgivingly in a room that cycles 60 F to 190 F; the board still
     # reads as a board.
     #
-    # `stock_bf_per_sqft` is RE-DERIVED, not carried over: it is thickness x (face width /
-    # coverage width), and the lap loses more face than the tongue did. 5/4 stock on a
-    # 5-1/2" face over a 5" coverage is 1.25 x 1.10 = 1.375 bf/sf, against 1.25 for the T&G
-    # (which was authored as bare thickness, with no face allowance at all). The order goes
-    # up; the wall area does not.
+    # `stock_bf_per_sqft` is thickness x (face width / coverage width): the lap loses face.
     # --- species wood finishes (plans/TODO.md §Hardwood) -----------------------
-    # RM-M-STUDY wainscot to 36" and the suite headboard band. Shiplap since 2026-10-07: a
+    # RM-M-STUDY wainscot to 36". Shiplap since 2026-10-07: a
     # rabbet is two passes on a table saw, a tongue and groove is a moulder job. 4/4 stock,
     # 5 1/2" face over 5" coverage: 1.1 bf per SF.
     Material(tag="walnut-shiplap", name="Black walnut shiplap wainscot (4/4)", r_per_inch=1.1,
@@ -265,7 +261,7 @@ MATERIALS = [
     # plan/storeys/second.py at RM-S-SUITE: walnut photo-LIGHTENS under the west windows'
     # UV, it is soft underfoot (~1010 Janka vs oak's ~1360), and flooring is the most
     # demanding cut off a family log pile for the least-seen surface. The floor is `oak`;
-    # the walnut is WP-S-SUITE-HEADBOARD, a 6'-0" band on W-S-SN1/SN2 under `walnut-shiplap`.
+    # the band is WP-S-SUITE-HEADBOARD, a 6'-0" band on W-S-SN1/SN2 (now `cherry-shiplap`).
     # If it ever comes back it needs its own tag again, `finish="strip-floor"`, and a
     # `STRIP_FLOOR_REFS` needle in ui/src/three/plankMaterial.ts.
     # The call booth's bench seat and desk top, the same walnut as the wainscot
@@ -349,11 +345,13 @@ MATERIALS = [
              stock_bf_per_sqft=1.0, nominal_quarters=4, milling_profile="T&G",
              finish_thickness_in=0.75, requires_custom_milling=True,
              source="Catlin owner-milled white oak floor; local rather than the factory library product so only this house enters the custom milling schedule."),
+    # 4/4 dressed to 3/4" (2026-10-16, was 5/4 to 1"): Finnish panel is 1/2"-5/8", the foil
+    # polyiso does the insulating, and less board is less heat store to warm. 1.0 x 1.1 bf/sf.
     Material(tag="catlin-sauna-shiplap",
-             name="Basswood/aspen shiplap sauna liner (5/4), site-milled",
+             name="Basswood/aspen shiplap sauna liner (4/4), site-milled",
              r_per_inch=1.3, perm_rating=20.0, hatch="lumber", color="#e6d4ae",
-             finish="shiplap", species="basswood", stock_bf_per_sqft=1.375,
-             nominal_quarters=5, milling_profile="shiplap", requires_custom_milling=True,
+             finish="shiplap", species="basswood", stock_bf_per_sqft=1.1,
+             nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
              source="Catlin site-milled sauna liner; local rather than the factory library product so this coverage reaches the custom milling schedule."),
     Material(tag="oak-stool", name="White oak window stool, 6/4 S4S", hatch="lumber",
              color="#c9b08c", finish="oak-board", species="oak",
@@ -391,6 +389,29 @@ MATERIALS = [
              color="#c9b08c", finish="oak-board", species="oak",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Owner-milled white oak, 4/4 dressed to 3/4\" and ripped to 3 1/2\". Base and casing are the same stock, butt-jointed and flush where they meet; hardwax oil, as the stools. Base goes in after the hard floors, so no shoe."),
+    # The base (TRIM-STANDARD.base_material_ref); casing stays `oak-trim`, so the flush
+    # base-to-leg butt joint is two species. Same 3/4" x 3 1/2" S4S off 4/4.
+    Material(tag="cherry-trim", name='Black cherry base, 3/4" x 3 1/2" S4S', hatch="lumber",
+             color="#a0644a", finish="oak-board", species="cherry",
+             nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
+             source="Milled black cherry, 4/4 dressed to 3/4\" and ripped to 3 1/2\"; hardwax oil. Cherry darkens with light: oil every face before install so the back and edges age with the front."),
+    # RM-B-SAUNA's base and inside casing (TRIM-STANDARD room_trims). Locust for rot
+    # resistance at a wet floor; left unfinished, as the liner is.
+    Material(tag="locust-trim", name='Black locust sauna trim, 3/4" x 3 1/2" S4S',
+             hatch="lumber", color="#b59a5c", finish="oak-board", species="locust",
+             nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
+             source="Milled black locust, 4/4 dressed to 3/4\" and ripped to 3 1/2\". Unfinished: no oil or film in a 190 F room. Stainless fasteners."),
+    # WP-S-SUITE-HEADBOARD. The study wainscot stays `walnut-shiplap`.
+    Material(tag="cherry-shiplap", name="Black cherry shiplap wainscot (4/4)", r_per_inch=1.1,
+             density=560.0, hatch="lumber", color="#a0644a",
+             finish="clear-satin-hardwax-oil", species="cherry", stock_bf_per_sqft=1.1,
+             nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
+             source="Milled black cherry shiplap, 5 1/2\" face over 5\" coverage; the suite headboard band"),
+    # FT-CATLIN-DINING-ASH's top (plan/dining_types.py); its legs are bought metal.
+    Material(tag="ash-8q", name="White ash, 8/4 S4S", hatch="lumber", color="#d8c49e",
+             finish="oak-board", species="ash", nominal_quarters=8, milling_profile="S4S",
+             requires_custom_milling=True,
+             source="Owner-milled white ash for the dining table top, glued up; hardwax oil"),
     *MATERIALS_METAL,
     *MATERIALS_ISHTAR,
     *MATERIALS_FLOORING,

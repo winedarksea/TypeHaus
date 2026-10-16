@@ -85,7 +85,7 @@ def test_lying_surface_and_finished_headroom(catlin_model_ro):
     floor = _floor(model)
     ceiling = next(c for c in model.ceilings if c.room_ref == "RM-B-SAUNA")
     assert (upper.body_z1_m - floor) / M_PER_IN == pytest.approx(42)
-    assert (ceiling.z0_m - upper.body_z1_m) / M_PER_IN == pytest.approx(40.8125)
+    assert (ceiling.z0_m - upper.body_z1_m) / M_PER_IN == pytest.approx(41.0625)
     assert _footprint(upper).covers(box(124.25, 43.1875, 150.25, 111.1875))  # 26 x 68
     for tag, height in (("LOWER", 24), ("READING", 24), ("STEP", 12)):
         assert (_object(model, tag).body_z1_m - floor) / M_PER_IN == pytest.approx(height)

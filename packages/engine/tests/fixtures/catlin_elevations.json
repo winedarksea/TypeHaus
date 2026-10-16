@@ -1978,7 +1978,7 @@
 "ceilings/CEIL-RM-B-GYM-SL-M-DECK/z1_m": -0.3413125,
 "ceilings/CEIL-RM-B-PLAY-N/z0_m": -0.3571875,
 "ceilings/CEIL-RM-B-PLAY-N/z1_m": -0.3413125,
-"ceilings/CEIL-RM-B-SAUNA/z0_m": -0.676275,
+"ceilings/CEIL-RM-B-SAUNA/z0_m": -0.669925,
 "ceilings/CEIL-RM-B-SAUNA/z1_m": -0.301625,
 "ceilings/CEIL-RM-B-STAIR-2/z0_m": -0.3175,
 "ceilings/CEIL-RM-B-STAIR-2/z1_m": -0.301625,
@@ -11980,6 +11980,12 @@
 2,
 "a5107f13f863"
 ],
+"geometry/CBD205AAAA-casing-r/body": [
+-2.7797125,
+-0.67945,
+6,
+"9e38c0a4dea2"
+],
 "geometry/CBD205AAAA/frame": [
 -2.7797125,
 -0.7477125,
@@ -12334,11 +12340,41 @@
 2,
 "288b44779ed5"
 ],
+"geometry/CBR403AAAA-base-CBW111AAAA-0/body": [
+-2.7797125,
+-2.6908125,
+2,
+"0dfdcd3627ad"
+],
+"geometry/CBR403AAAA-base-CBW111AAAA-1/body": [
+-2.7797125,
+-2.6908125,
+2,
+"0dfdcd3627ad"
+],
+"geometry/CBR403AAAA-base-CBW117AAAA-0/body": [
+-2.7797125,
+-2.6908125,
+2,
+"0dfdcd3627ad"
+],
+"geometry/CBR403AAAA-base-CBW118AAAA-0/body": [
+-2.7797125,
+-2.6908125,
+2,
+"0dfdcd3627ad"
+],
+"geometry/CBR403AAAA-base-CM3FCDT2ST-0/body": [
+-2.7797125,
+-2.6908125,
+2,
+"0dfdcd3627ad"
+],
 "geometry/CBR403AAAA-ceiling/body": [
--0.676275,
+-0.669925,
 -0.301625,
 2,
-"d44102d35edb"
+"d8bb42d9e287"
 ],
 "geometry/CBR404AAAA-base-CBW115AAAA-0/body": [
 -2.7670125,
@@ -90236,7 +90272,7 @@
 "solids/CEIL-RM-B-GYM-SL-M-DECK/z1_m": -0.3413125,
 "solids/CEIL-RM-B-PLAY-N/z0_m": -0.3571875,
 "solids/CEIL-RM-B-PLAY-N/z1_m": -0.3413125,
-"solids/CEIL-RM-B-SAUNA/z0_m": -0.676275,
+"solids/CEIL-RM-B-SAUNA/z0_m": -0.669925,
 "solids/CEIL-RM-B-SAUNA/z1_m": -0.301625,
 "solids/CEIL-RM-B-STAIR-2/z0_m": -0.3175,
 "solids/CEIL-RM-B-STAIR-2/z1_m": -0.301625,

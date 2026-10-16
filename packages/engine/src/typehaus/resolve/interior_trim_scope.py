@@ -157,15 +157,20 @@ def trim_scope(plan: PlanModel, model: ResolvedModel) -> tuple[TrimScope | None,
             element_tags=tags, result=Result.FAIL)]
     standard = found[0]
     materials = {material.tag: material for material in plan.library.materials}
-    if standard.material_ref not in materials:
+    missing = [ref for ref in standard.material_refs() if ref not in materials]
+    if missing:
         return None, [element_error(
             "integrity.trim_standard",
-            f"trim standard {standard.tag} names no material {standard.material_ref!r}",
+            f"trim standard {standard.tag} names no material {missing[0]!r}",
             standard.tag)]
+    room_tags = {r.tag for r in model.rooms}
     findings = [element_error(
         "integrity.trim_standard",
-        f"trim standard {standard.tag} excludes {tag!r}, which is not a room", standard.tag)
-        for tag in standard.excluded_rooms if tag not in {r.tag for r in model.rooms}]
+        f"trim standard {standard.tag} {verb} {tag!r}, which is not a room", standard.tag)
+        for verb, tags in (("excludes", standard.excluded_rooms),
+                           ("trims", tuple(
+                               t for o in standard.room_trims for t in o.rooms)))
+        for tag in tags if tag not in room_tags]
     excluded = set(standard.excluded_rooms)
     rooms = {room.tag: room for room in model.rooms
              if room.conditioned and room.floor_finish and room.tag not in excluded

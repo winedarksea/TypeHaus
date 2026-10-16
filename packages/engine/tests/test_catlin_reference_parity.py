@@ -37,6 +37,10 @@ def _layer(library, assembly_tag: str, layer_name: str):
 # Deliberate departures from the reference, each with the reason it is intentional. A test
 # failure here means the design moved without the decision being written down.
 DECLARED_DIVERGENCES = {
+    "finish/tg_in": (
+        "reference 1\" sauna board; Catlin mills 4/4 to 3/4\" (2026-10-16). Finnish panel is "
+        "1/2\"-5/8\" and the foil polyiso, not the board, insulates"
+    ),
     "wall/sheathing_in": (
         "reference 5/8\" Struct 1; Catlin uses 1/2\" Struct 1 — thinner sheathing over "
         "4\" of exterior CI, where the sheathing is a nailbase rather than the thermal layer"

@@ -879,6 +879,9 @@ WALLS = [
     # the added depth goes to the cold/workshop side and preserves the sauna's clear face.
     Wall(uid="CBW117AAAA", tag="W-B-SA-W", start_node="N-B-S1",
          end_node="N-B-SA-NW", assembly="SAUNA_2X6", top=ft(7, 6),
+         # 1/8" west of centre keeps the stud plane (and CD-B-SPA in its cavity) where it was
+         # before the liner went 1" -> 3/4" (2026-10-16).
+         alignment=face("center", offset=inch(-0.125)),
          interior_room="RM-B-SAUNA"),
     # The sauna's cold north face, x 8'-10"..18'-0" at y=10'-0" since 2026-09-05 round
     # three (9'-5" between the shrink and that; see the node block for what fixes 10'-0").
@@ -1336,7 +1339,7 @@ ROOMS = [
          occupancy=Occupancy.BATHROOM, humidity_class=HumidityClass.WET,
          floor_finish="sealed-concrete",
          ceiling_lining=(
-             Layer(name="shiplap-liner", material_ref="catlin-sauna-shiplap", thickness=inch(1.0),
+             Layer(name="shiplap-liner", material_ref="catlin-sauna-shiplap", thickness=inch(0.75),
                    function=LayerFunction.FINISH),
              Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
                    function=LayerFunction.FURRING,

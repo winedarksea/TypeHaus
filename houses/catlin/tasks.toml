@@ -565,12 +565,13 @@ depends_on = ["task/millwork/building/trim"]
 
 # The rows are keyed by STOCK: switching TRIM-STANDARD's material renames them here.
 [visits."task/millwork/building/trim"]
-label = "Oak base and door casing — butt-jointed S4S, on the finished floor"
-rows = ["interior_trim:oak-trim", "interior_trim:oak-trim:door casing"]
+# The sauna's locust (basement only) falls to task/millwork/basement.
+label = "Cherry base and oak door casing — butt-jointed S4S, on the finished floor"
+rows = ["interior_trim:cherry-trim", "interior_trim:oak-trim:door casing"]
 depends_on = ["task/flooring/building/hard"]
 constraints = [
   { label = "hard floors down and protected in every trimmed room" },
-  { label = "oak trim milled, acclimatised and oiled on all faces", owner = "owner" },
+  { label = "cherry and oak trim milled, acclimatised and oiled on all faces", owner = "owner" },
 ]
 
 [visits."task/millwork/building/casework"]
@@ -585,4 +586,4 @@ rows = ["allowances:cabinet-closet-shelving-and-rod",
         "countertops:live-edge-white-oak", "countertops:quartz-counter",
         "countertops:walnut-counter",
         "envelope_layers:cabinet-plywood", "envelope_layers:catlin-sauna-shiplap",
-        "envelope_layers:pvc-panel", "wood_surfaces:walnut-shiplap"]
+        "envelope_layers:pvc-panel"]

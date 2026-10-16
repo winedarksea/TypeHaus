@@ -237,7 +237,7 @@ _SAUNA_CEILING = LayerExtent(
     top=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(90.0)))
 
 _SAUNA_LINER = (
-    Layer(name="shiplap-liner", material_ref="catlin-sauna-shiplap", thickness=inch(1.0),
+    Layer(name="shiplap-liner", material_ref="catlin-sauna-shiplap", thickness=inch(0.75),
           function=LayerFunction.FINISH, extent=_SAUNA_CEILING),
     Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
           function=LayerFunction.FURRING,

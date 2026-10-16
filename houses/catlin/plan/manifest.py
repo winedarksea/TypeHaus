@@ -37,7 +37,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   bedroom_wardrobes, braced_walls,
                   circuits, closet, closet_types, countertops, court_daybed, panel_types,
                   dry_fire_lane, electrical, electrical_attic, electrical_floor_types, equipment_types,
-                  fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets,
+                  dining_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets,
                   landscape, lighting, living_east_run, living_east_run_types,
                   lighting_attic, lighting_types, masonry_joints, mep, millwork,
                   millwork_vanities, placeables,
@@ -78,6 +78,7 @@ _library = Library(
     # `integrity.duplicate_catalog_tag` now proves it rather than asserting it.
     furniture_types=(*STARTER_FURNITURE_TYPES, *STARTER_CASEWORK_TYPES,
                      *SEKTION_CASEWORK_TYPES, *furniture_types.FURNITURE_TYPES,
+                     *dining_types.DINING_TYPES,
                      *closet_types.CLOSET_FURNITURE_TYPES,
                      *bedroom_wardrobe_types.BEDROOM_WARDROBE_TYPES,
                      *bath1_storage_types.BATH1_STORAGE_TYPES,

@@ -15,6 +15,7 @@ from typehaus.model.enums import (
     Service,
     WindowOperation,
 )
+from typehaus.model.furniture_cut import FurnitureCut
 from typehaus.model.placeables import (
     ClearanceZone,
     Footprint2D,
@@ -291,6 +292,8 @@ class FurnitureType(HausModel):
     # board of a built-in). Colour and 3D texture then follow that material; the darker
     # ``wood-dark`` back keeps its shadow tone. ``None`` draws the generic furniture wood.
     wood_material_ref: str | None = None
+    # Owner-built: the parts a mill cuts per placed piece (model/furniture_cut.py).
+    cut_list: tuple[FurnitureCut, ...] = ()
 
 
 class RailingType(HausModel):

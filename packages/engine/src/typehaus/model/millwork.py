@@ -270,6 +270,14 @@ class MillworkStandard(Element):
     max_board_width: Length
 
 
+class RoomTrim(HausModel):
+    """A trim stock for named rooms — their base and the casing face inside them — that
+    differs from the house's (a sauna's rot-proof species, say). Sizes stay the standard's."""
+
+    rooms: tuple[str, ...]
+    material_ref: str
+
+
 @register_element
 class TrimStandard(Element):
     """The house's interior base and door casing, declared once and derived per room/door.
@@ -278,10 +286,11 @@ class TrimStandard(Element):
     ``MillworkStandard`` so a house can take trim without declaring stools.
 
     Procurement is the material: a ``requires_custom_milling`` stock sends the boards to
-    ``haus millwork``; a store-bought one is priced by the LF. Changing ``material_ref`` is
-    the whole switch. Casing legs sit ``jamb_allowance - reveal`` inside the rough opening
-    (``ResolvedOpening.width_m``), so the allowance is the shim plus the jamb: house-authored,
-    because it is the door supplier's fact and not the engine's.
+    ``haus millwork``; a store-bought one is priced by the LF. ``material_ref`` is the
+    casing; the base is ``base_material_ref`` when authored (else the casing's stock), and a
+    ``RoomTrim`` overrides both per room. Casing legs sit ``jamb_allowance - reveal`` inside
+    the rough opening (``ResolvedOpening.width_m``), so the allowance is the shim plus the
+    jamb: house-authored, because it is the door supplier's fact and not the engine's.
     """
 
     material_ref: str
@@ -296,6 +305,25 @@ class TrimStandard(Element):
     # Conditioned, floor-finished rooms that still take no base or casing (a mechanical
     # room, a workshop). Unconditioned and unfinished rooms are out already.
     excluded_rooms: tuple[str, ...] = ()
+    base_material_ref: str | None = None
+    room_trims: tuple[RoomTrim, ...] = ()
+
+    def _room_material(self, room: str) -> str | None:
+        return next((o.material_ref for o in self.room_trims if room in o.rooms), None)
+
+    def base_material_for(self, room: str) -> str:
+        """The base stock in ``room``: its ``RoomTrim``, else the house base."""
+        return self._room_material(room) or self.base_material_ref or self.material_ref
+
+    def casing_material_for(self, room: str) -> str:
+        """The casing stock on the face of a door in ``room``."""
+        return self._room_material(room) or self.material_ref
+
+    def material_refs(self) -> tuple[str, ...]:
+        """Every stock this standard names, casing first."""
+        refs = [self.material_ref, self.base_material_ref,
+                *(override.material_ref for override in self.room_trims)]
+        return tuple(dict.fromkeys(ref for ref in refs if ref))
 
     @model_validator(mode="after")
     def dimensions_are_positive(self) -> TrimStandard:
@@ -313,5 +341,6 @@ for _name, _obj in (
     ("StairLandingMillwork", StairLandingMillwork),
     ("MillworkStandard", MillworkStandard),
     ("TrimStandard", TrimStandard),
+    ("RoomTrim", RoomTrim),
 ):
     register_constructor(_name, _obj)

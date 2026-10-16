@@ -20,6 +20,7 @@
 from typehaus import ft, inch
 from typehaus.model import (
     MillworkStandard,
+    RoomTrim,
     ShelfBank,
     ShelfBay,
     ShelfProcurement,
@@ -81,11 +82,13 @@ MILLWORK = [
         board_furniture_refs=("FURN-A-STUDY-BRIDGE-FRONT",),
     ),
     # Base and door casing, derived per room and per door face (resolve/interior_trim.py).
-    # One board for both: 3/4" x 3 1/2" oak S4S, butt-jointed, flush where base meets leg.
+    # One size for both: 3/4" x 3 1/2" S4S, butt-jointed, flush where base meets leg. Casing
+    # is oak; the base is black cherry (2026-10-16). The sauna's base and inside casing are
+    # black locust: no oiled oak in a 190 F room.
     # The base goes in after the hard floors, so there is no shoe; carpet tucks under it.
-    # Swap `material_ref` to "poplar-trim-paint" and the oak leaves `haus millwork` and the
-    # takeoff prices bought stock instead. tasks.toml's trim visit names its rows by stock,
-    # so rename those two there too — `haus site validate` names them if you forget.
+    # A bought stock (e.g. "poplar-trim-paint") leaves `haus millwork` and is priced instead.
+    # tasks.toml's trim visit names its rows by stock, so rename those there too — `haus
+    # site validate` names them if you forget.
     #   * Tile rooms take a tile base and sheet-vinyl rooms a flash cove: that is the floor
     #     material's `base_detail`, not a list here.
     #   * Excluded: the utility rooms (RM-B-STAIR is the one that keeps its base) and the
@@ -94,6 +97,8 @@ MILLWORK = [
     TrimStandard(
         uid="KXZVF6Z652", tag="TRIM-STANDARD",
         material_ref="oak-trim",
+        base_material_ref="cherry-trim",
+        room_trims=(RoomTrim(rooms=("RM-B-SAUNA",), material_ref="locust-trim"),),
         thickness=inch(0.75),
         base_height=inch(3.5),
         casing_width=inch(3.5),
@@ -102,7 +107,7 @@ MILLWORK = [
         jamb_allowance=inch(1),
         min_leg_width=inch(1.5),
         excluded_rooms=("RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM",
-                        "RM-B-SAUNA", "RM-S-PLANT"),
+                        "RM-S-PLANT"),
     ),
 ]
 

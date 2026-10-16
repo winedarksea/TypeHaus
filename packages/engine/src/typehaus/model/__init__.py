@@ -80,6 +80,7 @@ from typehaus.model.floors import (
     Soffit,
     SoffitOpening,
 )
+from typehaus.model.furniture_cut import FurnitureCut
 from typehaus.model.landscape import (
     AccentRule,
     GridLayout,
@@ -109,6 +110,7 @@ from typehaus.model.mep import (
 from typehaus.model.millwork import (
     Countertop,
     MillworkStandard,
+    RoomTrim,
     ShelfBank,
     ShelfBay,
     StairLandingMillwork,
@@ -352,7 +354,7 @@ __all__ = [
     "Assembly", "Layer", "LayerBound", "LayerExtent", "CavityFill", "FramingSpec",
     "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material", "Product",
-    "DoorType", "BookcaseDoorSpec", "WindowType", "FurnitureType", "FixtureType",
+    "DoorType", "BookcaseDoorSpec", "WindowType", "FurnitureType", "FurnitureCut", "FixtureType",
     "ApplianceType", "EquipmentType",
     "BuiltInBookcaseBay", "BuiltInBookcaseSpec",
     "HeatPumpRating",
@@ -365,7 +367,7 @@ __all__ = [
     "FloorHeat", "FinishZone",
     "PanelingSpan", "WallPaneling", "WallBacking", "BracedWallPanel",
     "SuspensionAnchor", "HangingSeatType",
-    "Countertop", "MillworkStandard", "StairLandingMillwork", "ShelfBank", "ShelfBay",
+    "Countertop", "MillworkStandard", "RoomTrim", "StairLandingMillwork", "ShelfBank", "ShelfBay",
     "TrimStandard", "WindowStool",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",

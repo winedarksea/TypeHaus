@@ -393,3 +393,14 @@ def test_the_csv_and_the_markdown_carry_the_same_rows_and_the_species(rows, tmp_
     assert "sawn timber" in text and "edge-glued panel" in text
     assert "landing-lower" in text and "landing-upper" in text
     assert "rip to 1.00\" face" not in text
+
+
+def test_a_shop_built_table_is_cut_from_its_authored_list(rows):
+    """FT-CATLIN-DINING-ASH's ``cut_list``: only the ash top is milled; the legs are bought."""
+    (top,) = [row for row in _use(rows, "furniture") if row["location"] == "dining table top"]
+    assert top["material"] == "ash-8q" and top["species"] == "ash"
+    assert (top["finished_thickness_in"], top["finished_width_in"],
+            top["finished_length_in"]) == (1.5, 42.0, 96.0)
+    assert top["layup"] == "edge-glued panel" and top["boards_per_piece"] == 3
+    assert top["tags"] == ["FURN-M-DINING"] and top["also_in_placeables"]
+    assert not top["stock_note"] or "cannot come out" not in top["stock_note"]
