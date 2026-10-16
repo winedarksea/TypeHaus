@@ -10,7 +10,7 @@ from shapely.ops import unary_union
 
 from typehaus.cli.price_file import load_prices
 from typehaus.emit.gltf.canvas_objects import _add_canvas_objects
-from typehaus.emit.gltf.palette import _hex_rgba
+from typehaus.emit.gltf.palette import _authored_material_color
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.model.canvas import canvas_object_types
 from typehaus.model.ids import derive_guid
@@ -139,7 +139,7 @@ def test_viewer_and_gltf_keep_the_oak_infill_with_its_actual_bounds(catlin_model
         assert len(primitives) == 1
         primitive = primitives[0]
         color = gltf["materials"][primitive["material"]]["pbrMetallicRoughness"]["baseColorFactor"]
-        assert color == pytest.approx(_hex_rgba(oak.color))
+        assert color == pytest.approx(_authored_material_color(oak))
         accessor = gltf["accessors"][primitive["attributes"]["POSITION"]]
         view = gltf["bufferViews"][accessor["bufferView"]]
         offset = view.get("byteOffset", 0) + accessor.get("byteOffset", 0)

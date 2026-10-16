@@ -457,3 +457,17 @@ def test_every_wall_carries_its_authored_kind(catlin_payload):
     assert by_tag["W-B-S1"]["is_foundation"] is True
     # And a plain framed wall is still spelled "Wall" — the kind is the class, not a flag.
     assert any(w["kind"] == "Wall" for w in walls)
+
+
+def test_catalog_wood_appearance_preserves_species_and_finish_exceptions(catlin_payload):
+    from typehaus.library.wood_appearance import NATURAL_WOOD_COLORS
+
+    materials = {m["tag"]: m for m in catlin_payload["catalog"]["materials"]}
+    for tag in ("cherry-trim", "cherry-shiplap", "ash-8q", "elm-timber", "walnut-counter",
+                "oak-floor-custom", "oak-stool-12q", "catlin-sauna-shiplap", "locust-trim"):
+        material = materials[tag]
+        assert material["color"] == NATURAL_WOOD_COLORS[material["species"]]
+    assert materials["catlin-sauna-shiplap"]["wood_surface"] == "unfinished"
+    assert materials["locust-trim"]["wood_surface"] == "unfinished"
+    assert materials["oak-shiplap-painted"]["wood_surface"] == "painted"
+    assert materials["walnut-counter"]["finish"] == "clear-satin-hardwax-oil"

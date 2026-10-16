@@ -3,7 +3,7 @@
 // resolve/geometry_openings.py; split out of ./walls.
 import * as THREE from "three";
 import type { DoorOperation, DoorTypeSpec, Opening, Wall } from "../../model/types";
-import { materialColor, type MaterialAppearance } from "../../nordic/palette";
+import { authoredAppearance, materialColor, type MaterialAppearance } from "../../nordic/palette";
 import type { ResolvedNordicPalette } from "../../nordic/palette";
 import { categoryColor } from "../members";
 import { projectPointToScene, type PlanCenter } from "../planGeometry";
@@ -15,7 +15,7 @@ import { registerSelectable } from "./registry";
 import { baseRefZ } from "./wallFrame";
 import { buildBookcaseDoor } from "./bookcaseDoor";
 import { rakedTopAt } from "./walls";
-import { boardBoxGeometry, pieceSeed } from "../woodPiece";
+import { boardBoxGeometry, pieceSeed, woodMaterialsForGeometry } from "../woodPiece";
 import { boardStyleFor } from "./millwork";
 import { createPlankMaterial } from "../plankMaterial";
 
@@ -147,7 +147,8 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     const color = materialColor(materialRef, palette, materials);
     const boardStyle = boardStyleFor(materialRef, materials);
     const boardMaterial = boardStyle
-      ? createPlankMaterial(mode, boardStyle, color)
+      ? createPlankMaterial(mode, boardStyle, color, undefined,
+        authoredAppearance(materialRef, materials))
       : standardMaterial(new THREE.Color(color), mode);
     let boardIndex = 0;
     const addOakBox = (boxWidth: number, boxHeight: number, thickness: number, along: number,
@@ -165,7 +166,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
         new THREE.Vector3(boxWidth, boxHeight, thickness));
       const geometry = boardBoxGeometry(transform, boardStyle,
         pieceSeed(`${opening.uid}|bookcase-board-${boardIndex++}`));
-      parent.add(new THREE.Mesh(geometry, material));
+      parent.add(new THREE.Mesh(geometry, woodMaterialsForGeometry(material, geometry)));
     };
     const mountPlane = faces === null ? 0
       : bookcaseDoor.mounting_face === "negative_normal" ? faces[0] : faces[1];

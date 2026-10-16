@@ -57,7 +57,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "catlin-sauna-shiplap",
-      "fill": "#e6d4ae"
+      "fill": "#e5dcc4"
     },
     {
       "space": "model",
@@ -394,7 +394,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "catlin-sauna-shiplap",
-      "fill": "#e6d4ae"
+      "fill": "#e5dcc4"
     },
     {
       "space": "model",
@@ -1187,7 +1187,7 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "catlin-sauna-shiplap",
-      "fill": "#e6d4ae"
+      "fill": "#e5dcc4"
     },
     {
       "space": "model",

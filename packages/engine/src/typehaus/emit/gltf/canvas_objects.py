@@ -8,7 +8,7 @@ from pathlib import Path
 
 from typehaus.emit.gltf.geometry import _to_gltf
 from typehaus.emit.gltf.mesh import _MeshBuilder
-from typehaus.emit.gltf.palette import _color, _hex_rgba, _material_finish_color
+from typehaus.emit.gltf.palette import _authored_material_color, _color, _material_finish_color
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.model.built_in_bookcase import built_in_bookcase_parts
@@ -120,7 +120,7 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     # A type naming its wood takes that material's authored colour on its ``wood`` parts,
     # exactly as model/canvas._wood_part hands the viewer.
     wood = wood_material(product_type, materials)
-    wood_color = _hex_rgba(wood.color) if wood is not None else None
+    wood_color = _authored_material_color(wood) if wood is not None else None
     bookcase = getattr(product_type, "built_in_bookcase", None)
     if bookcase is not None:
         for part in built_in_bookcase_parts(bookcase):

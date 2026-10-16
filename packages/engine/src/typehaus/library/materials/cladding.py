@@ -251,9 +251,10 @@ _BASE_ROWS: tuple[Material, ...] = (
         r_per_inch=1.3,
         perm_rating=20.0,
         hatch="lumber",
-        color="#e6d4ae",
+        color="#e5dcc4",
         finish="shiplap",
         species="basswood",
+        wood_surface="unfinished",
         source="Factory sauna-liner product specification; a house that site-mills it "
         "declares a custom material locally.",
     ),

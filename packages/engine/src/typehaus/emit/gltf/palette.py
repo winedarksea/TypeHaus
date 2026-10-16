@@ -8,6 +8,7 @@ that changes here has to change there too, or the .glb and the live viewer disag
 from __future__ import annotations
 
 from typehaus.emit.draw.palette import family_of, material_color, material_family_color
+from typehaus.library.wood_appearance import NATURAL_WOOD_COLORS
 from typehaus.model.layer_functions import by_value
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.model import ResolvedModel
@@ -368,6 +369,21 @@ def _is_aluminum_deck_board(material_ref: str | None) -> bool:
     return "deck" in s and ("alum" in s or family_of(material_ref) == "metal")
 
 
+def _authored_material_color(material: object) -> tuple[float, float, float, float]:
+    """Wood hexes are sRGB; glTF baseColorFactor is linear, as THREE.Color already is.
+
+    Keep the legacy non-wood palette separate: converting it here would change unrelated
+    finishes. All wood paths (including furniture) must use this same conversion.
+    """
+    color = _hex_rgba(material_color(getattr(material, "hatch", None),
+                                     getattr(material, "color", None)))
+    if getattr(material, "species", None) not in NATURAL_WOOD_COLORS:
+        return color
+    def linear(channel: float) -> float:
+        return channel / 12.92 if channel <= 0.04045 else ((channel + 0.055) / 1.055) ** 2.4
+    return (linear(color[0]), linear(color[1]), linear(color[2]), color[3])
+
+
 def authored_colors(model: ResolvedModel) -> dict[str, object]:
     """The catalog materials that state their own colour, keyed by tag.
 
@@ -430,7 +446,7 @@ def _material_finish_color(material_ref: str | None,
     if declared_skin or (function == "cladding" and _is_standing_seam(material_ref)):
         return _hex_rgba(_FINISH_BASE.get(declared, _SEAM_BASE))
     if material is not None:
-        return _hex_rgba(material_color(material.hatch, material.color))
+        return _authored_material_color(material)
     if _is_aluminum_deck_board(material_ref):
         return _hex_rgba(_DECK_BOARD_BASE)
     if family_of(material_ref) == "masonry":
@@ -466,7 +482,7 @@ def _room_floor_color(model: ResolvedModel,
     material = next((m for m in model.plan.library.materials if m.tag == floor_finish), None)
     if material is None:
         return _color("floor")
-    return _hex_rgba(material_color(material.hatch, material.color))
+    return _authored_material_color(material)
 
 
 def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, float]:
@@ -486,7 +502,7 @@ def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, floa
         authored = next((m for m in model.plan.library.materials
                          if m.tag == solid.material and m.color), None)
         if authored is not None:
-            return _hex_rgba(material_color(authored.hatch, authored.color))
+            return _authored_material_color(authored)
     # Which layer speaks for an assembly is ``assembly_material``'s rule, not a second copy
     # of it here — the resolver reads the same one when it stamps ``GPart.catalog``.
     layer_ref = assembly_structure_material(model.plan, solid.assembly)
@@ -495,5 +511,5 @@ def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, floa
             return _hex_rgba(_DECK_BOARD_BASE)
         material = next((m for m in model.plan.library.materials if m.tag == layer_ref), None)
         if material is not None:
-            return _hex_rgba(material_color(material.hatch, material.color))
+            return _authored_material_color(material)
     return _color(solid.category)

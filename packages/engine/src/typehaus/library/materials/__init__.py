@@ -17,6 +17,7 @@ from typehaus.library.materials import cladding as _cladding
 from typehaus.library.materials import concrete_masonry as _concrete_masonry
 from typehaus.library.materials import finishes as _finishes
 from typehaus.library.materials import framing as _framing
+from typehaus.library.materials import hardwoods as _hardwoods
 from typehaus.library.materials import insulation as _insulation
 from typehaus.library.materials import membranes as _membranes
 from typehaus.library.materials import sheathing as _sheathing
@@ -35,6 +36,7 @@ _ALL = (
     + _finishes.MATERIALS
     + _concrete_masonry.MATERIALS
     + _site.MATERIALS
+    + _hardwoods.MATERIALS
     + (TREX_ENHANCE_BASICS,)
 )
 _ORDER = (

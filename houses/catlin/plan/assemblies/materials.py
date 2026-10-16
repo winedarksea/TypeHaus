@@ -58,14 +58,14 @@ MATERIALS = [
              source="Silestone Et Calacatta Gold, 3 cm, eased edge (owner selection 2026-09-06). Kitchen perimeter and sink run, the 48\" and 51\" vanity tops, and the peninsula's one-piece top, its 15\" seating overhang on hidden steel bars. ** NEVER CLEAN IT WITH ANYTHING HIGH-pH: ** bleach, ammonia, glass cleaner, degreasers, scouring powder and melamine sponges are the #1 cause of light quartz yellowing across every brand — not UV. #2 is heat scorch, which is irreversible; induction helps (no flame spill, no hot grate) but a 400 F pan is still a 400 F pan. Put that in the owner's manual."),
     # RM-M-BED reading nook: the two 12" SEKTION end-cabinet tops (CT-M-BED-NOOK-S/-N).
     Material(tag="walnut-counter", name='Black walnut top, 1", 6/4 S4S',
-             r_per_inch=1.0, density=610.0, hatch="lumber", color="#5d4433",
+             r_per_inch=1.0, density=610.0, hatch="lumber", color="#80634f",
              finish="clear-satin-hardwax-oil", species="walnut", nominal_quarters=6,
              milling_profile="S4S", requires_custom_milling=True,
              source="Two 12 1/2\" x 24 7/8\" x 1\" tops, each an edge-glued pair from one 6/4 board, oversailing 7/8\" to the seat fronts and capping the covers. Finish all six faces; fix on figure-8s."),
     # The east wall's living-room slabs; the window stools that meet them are oak-stool-12q. A 12/4 kiln-dried flitch flattened to 2"; the natural edge is specified at no
     # more than 1 1/2" past the fronts. Priced in [countertops], cut-listed by `haus millwork`.
     Material(tag="live-edge-white-oak", name='Live-edge white oak slab, 2"',
-             r_per_inch=1.0, density=750.0, hatch="lumber", color="#c4a272",
+             r_per_inch=1.0, density=750.0, hatch="lumber", color="#c4b18c",
              finish="oak-board",  # the 3D recipe; the coat is hardwax oil
              species="oak", nominal_quarters=12, milling_profile="live-edge",
              requires_custom_milling=True,
@@ -180,7 +180,7 @@ MATERIALS = [
     # why its R/inch is *lower* than spf's 1.24 — conductivity tracks density in wood.
     # The bays' flat courses (bench support, 6' shelf, 7' cap) and the bench board are oak.
     Material(tag="white-oak-8-4", name='White oak 8/4, custom-milled S4S to 1 1/2"',
-             hatch="lumber", color="#c9b08c", finish="oak-board", species="oak",
+             hatch="lumber", color="#c4b18c", finish="oak-board", species="oak",
              nominal_quarters=8, milling_profile="S4S", requires_custom_milling=True,
              source="Owner-milled white oak, 8/4 dressed to 1 1/2\" so a flat course sits flush with the 2x6 studs it spans between; hardwax oil, as the stools."),
     # The stair face. 3/4" rather than the 1/2" a plain panel finish would take, because
@@ -243,7 +243,7 @@ MATERIALS = [
     # rabbet is two passes on a table saw, a tongue and groove is a moulder job. 4/4 stock,
     # 5 1/2" face over 5" coverage: 1.1 bf per SF.
     Material(tag="walnut-shiplap", name="Black walnut shiplap wainscot (4/4)", r_per_inch=1.1,
-             density=610.0, hatch="lumber", color="#5d4433",
+             density=610.0, hatch="lumber", color="#80634f",
              finish="clear-satin-hardwax-oil", species="walnut", stock_bf_per_sqft=1.1,
              nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
              source="plans/TODO.md — first-floor study walnut paneling to 36\"; owner-milled shiplap"),
@@ -251,7 +251,7 @@ MATERIALS = [
     # shiplap, painted white. For wear and fasten-anywhere hooks, not looks.
     Material(tag="oak-shiplap-painted", name="White oak shiplap, 4/4, painted white",
              r_per_inch=1.1, density=750.0, hatch="lumber", color="#f2f0ea",
-             finish="shiplap", species="oak", stock_bf_per_sqft=1.1,
+             finish="shiplap", species="oak", wood_surface="painted", stock_bf_per_sqft=1.1,
              nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
              source="Owner-milled white oak, 5 1/2\" face over 5\" coverage, blind-nailed to studs and the gypsum behind. Prime all faces before install (oak tannin bleeds through latex), then two coats of white enamel."),
     # ** TOMBSTONE: `walnut-floor` (added and removed 2026-09-05). ** For a few hours the
@@ -275,14 +275,14 @@ MATERIALS = [
     # `[placeables]` rows for FT-STUDY-BENCH / FT-STUDY-DESK. See prices.toml; getting that
     # backwards puts the most expensive material in the room at $0.
     Material(tag="walnut-shelf-8q", name="Black walnut shelving, 8/4 S4S", hatch="lumber",
-             density=610.0, color="#5d4433", finish="clear-satin-hardwax-oil",
+             density=610.0, color="#80634f", finish="clear-satin-hardwax-oil",
              species="walnut", nominal_quarters=8, milling_profile="S4S",
              requires_custom_milling=True,
              source="plans/TODO.md — RM-M-STUDY call booth. 8/4 because the bench seat is structural millwork someone sits on, over a 45-5/8\" span with no stiffener"),
     # The desk top and its leaf: 6/4, dressing to 1 1/4". A 29" span someone leans on is a
     # normal desk at that thickness; the bench's 47" seat is what still wants 8/4.
     Material(tag="walnut-shelf-6q", name="Black walnut shelving, 6/4 S4S", hatch="lumber",
-             density=610.0, color="#5d4433", finish="clear-satin-hardwax-oil",
+             density=610.0, color="#80634f", finish="clear-satin-hardwax-oil",
              species="walnut", nominal_quarters=6, milling_profile="S4S",
              requires_custom_milling=True,
              source="RM-M-STUDY call booth desk top and fold-down leaf; 6/4 over a 30-5/8\" span, one flitch for both"),
@@ -300,7 +300,7 @@ MATERIALS = [
     # either — see `finish-fireplace-mantel-walnut` in prices.toml [allowances], and the
     # note on SB-M-FIRE-MANTEL for why a wall-hosted ShelfBank has no host row to carry them.
     Material(tag="walnut-mantel-12q", name="Black walnut mantel shelf, 12/4 S4S", hatch="lumber",
-             density=610.0, color="#5d4433", finish="clear-satin-hardwax-oil",
+             density=610.0, color="#80634f", finish="clear-satin-hardwax-oil",
              species="walnut", nominal_quarters=12, milling_profile="S4S",
              requires_custom_milling=True,
              source="RM-M-LIVING fireplace mantel (2026-09-06). 12/4 because the shelf finishes 2 1/4\" — one modular brick bed height, so it reads as a single course pulled proud of the wythe — and 8/4 dresses to 1 1/2\". Bought walnut, not the family's oak stock"),
@@ -323,7 +323,7 @@ MATERIALS = [
     # post and is not how these two are made.
     Material(tag="elm-timber", name="Elm timber 6-1/4\" square, S4S, sawn to section",
              r_per_inch=1.1,
-             density=560.0, hatch="lumber", color="#b08d5e",
+             density=560.0, hatch="lumber", color="#bd9975",
              finish="clear-satin-hardwax-oil", species="elm",
              milling_profile="S4S", requires_custom_milling=True,
              source="plans/TODO.md — suite bedroom tudor posts, 10' sections cut to fit"),
@@ -341,7 +341,7 @@ MATERIALS = [
     # appear in no assembly layer, no room finish and no paneling, so they enter no other
     # take-off section — `haus millwork` is where they are ordered from.
     Material(tag="oak-floor-custom", name='3/4" white-oak strip flooring, site-milled',
-             hatch="lumber", color="#c9b08c", species="oak", finish="plank-floor",
+             hatch="lumber", color="#c4b18c", species="oak", finish="plank-floor",
              stock_bf_per_sqft=1.0, nominal_quarters=4, milling_profile="T&G",
              finish_thickness_in=0.75, requires_custom_milling=True,
              source="Catlin owner-milled white oak floor; local rather than the factory library product so only this house enters the custom milling schedule."),
@@ -349,66 +349,66 @@ MATERIALS = [
     # polyiso does the insulating, and less board is less heat store to warm. 1.0 x 1.1 bf/sf.
     Material(tag="catlin-sauna-shiplap",
              name="Basswood/aspen shiplap sauna liner (4/4), site-milled",
-             r_per_inch=1.3, perm_rating=20.0, hatch="lumber", color="#e6d4ae",
-             finish="shiplap", species="basswood", stock_bf_per_sqft=1.1,
+             r_per_inch=1.3, perm_rating=20.0, hatch="lumber", color="#e5dcc4",
+             finish="shiplap", species="basswood", wood_surface="unfinished", stock_bf_per_sqft=1.1,
              nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
              source="Catlin site-milled sauna liner; local rather than the factory library product so this coverage reaches the custom milling schedule."),
     Material(tag="oak-stool", name="White oak window stool, 6/4 S4S", hatch="lumber",
-             color="#c9b08c", finish="oak-board", species="oak",
+             color="#c4b18c", finish="oak-board", species="oak",
              nominal_quarters=6, milling_profile="eased", requires_custom_milling=True,
              source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak, ~$2/sf rough. 6/4 because the interior return on an outie window runs most of a 13 7/8\" wall and a 3/4\" board that wide will cup; 1 1/4\" holds flat without the bulk of 8/4. The front edge is eased, not moulded (see the profile note above)"),
     # The east row's stools (WIN-M-LIV-E1/-E2/-E3, WIN-M-EAST-MID): plain oak, 2" to match
     # the live-edge slab they meet at its ripped back edge, colour-matched to it.
     Material(tag="oak-stool-12q", name='White oak window stool, 2", 12/4 S4S', hatch="lumber",
-             color="#c4a272", finish="oak-board", species="oak",
+             color="#c4b18c", finish="oak-board", species="oak",
              nominal_quarters=12, milling_profile="eased", requires_custom_milling=True,
              source="Owner-milled white oak, 2\" finished from 12/4 to match the live-edge slab's thickness; finish as that slab, hardwax oil all six faces."),
     Material(tag="oak-shelf-8q", name="White oak shelving, 8/4 S4S", hatch="lumber",
-             color="#c9b08c", finish="oak-board", species="oak",
+             color="#c4b18c", finish="oak-board", species="oak",
              nominal_quarters=8, milling_profile="S4S", requires_custom_milling=True,
              source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. 8/4 wherever the shelf is visible or LOADED: 1-1/2\" needs no stiffener and no edge banding at a 2'-6\" bay, and it is the thickness a climbable shelf wants (notes/pantry_climbable_shelving.md)"),
     Material(tag="oak-shelf-6q", name="White oak shelving, 6/4 S4S", hatch="lumber",
-             color="#c9b08c", finish="oak-board", species="oak",
+             color="#c4b18c", finish="oak-board", species="oak",
              nominal_quarters=6, milling_profile="S4S", requires_custom_milling=True,
              source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. 6/4 for a visible built-in that carries books: 1-1/4\" holds a ~31\" bay without the sag of 4/4 or the bulk of 8/4"),
     Material(tag="oak-shelf-4q", name="White oak shelving, 4/4 S4S", hatch="lumber",
-             color="#c9b08c", finish="oak-board", species="oak",
+             color="#c4b18c", finish="oak-board", species="oak",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. 4/4 for the light-duty cases — a 12\"-deep bookcase shelf and a bath alcove shelf carry books and towels, not people"),
     Material(tag="oak-tread", name="White oak stair tread, 5/4 bullnose", hatch="lumber",
-             color="#c9b08c", finish="oak-board", species="oak",
+             color="#c4b18c", finish="oak-board", species="oak",
              nominal_quarters=5, milling_profile="bullnose", requires_custom_milling=True,
              source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. 5/4 dressed to 1\", the stock tread thickness; the stringers are 22\" o.c. or closer. Tread and landing nosings share the bullnose setup; the landing nosing also gets a groove to meet the T&G field"),
     Material(tag="oak-riser", name="White oak stair riser, 4/4 S4S", hatch="lumber",
-             color="#c9b08c", finish="oak-board", species="oak",
+             color="#c4b18c", finish="oak-board", species="oak",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. 3/4\" dressed: a riser carries no load, and at ~6\" high it comes off one board and stays flat"),
     # Base and door casing (plan/millwork.py TRIM-STANDARD): one plain board for both, so
     # no knife and no molder — planer work off the 4/4 stack, ripped from the wide boards.
     Material(tag="oak-trim", name='White oak trim, 3/4" x 3 1/2" S4S', hatch="lumber",
-             color="#c9b08c", finish="oak-board", species="oak",
+             color="#c4b18c", finish="oak-board", species="oak",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Owner-milled white oak, 4/4 dressed to 3/4\" and ripped to 3 1/2\". Base and casing are the same stock, butt-jointed and flush where they meet; hardwax oil, as the stools. Base goes in after the hard floors, so no shoe."),
     # The base (TRIM-STANDARD.base_material_ref); casing stays `oak-trim`, so the flush
     # base-to-leg butt joint is two species. Same 3/4" x 3 1/2" S4S off 4/4.
     Material(tag="cherry-trim", name='Black cherry base, 3/4" x 3 1/2" S4S', hatch="lumber",
-             color="#a0644a", finish="oak-board", species="cherry",
+             color="#b77d60", finish="oak-board", species="cherry",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Milled black cherry, 4/4 dressed to 3/4\" and ripped to 3 1/2\"; hardwax oil. Cherry darkens with light: oil every face before install so the back and edges age with the front."),
     # RM-B-SAUNA's base and inside casing (TRIM-STANDARD room_trims). Locust for rot
     # resistance at a wet floor; left unfinished, as the liner is.
     Material(tag="locust-trim", name='Black locust sauna trim, 3/4" x 3 1/2" S4S',
-             hatch="lumber", color="#b59a5c", finish="oak-board", species="locust",
+             hatch="lumber", color="#b9aa68", finish="solid-board", species="locust", wood_surface="unfinished",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Milled black locust, 4/4 dressed to 3/4\" and ripped to 3 1/2\". Unfinished: no oil or film in a 190 F room. Stainless fasteners."),
     # WP-S-SUITE-HEADBOARD. The study wainscot stays `walnut-shiplap`.
     Material(tag="cherry-shiplap", name="Black cherry shiplap wainscot (4/4)", r_per_inch=1.1,
-             density=560.0, hatch="lumber", color="#a0644a",
+             density=560.0, hatch="lumber", color="#b77d60",
              finish="clear-satin-hardwax-oil", species="cherry", stock_bf_per_sqft=1.1,
              nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
              source="Milled black cherry shiplap, 5 1/2\" face over 5\" coverage; the suite headboard band"),
     # FT-CATLIN-DINING-ASH's top (plan/dining_types.py); its legs are bought metal.
-    Material(tag="ash-8q", name="White ash, 8/4 S4S", hatch="lumber", color="#d8c49e",
+    Material(tag="ash-8q", name="White ash, 8/4 S4S", hatch="lumber", color="#d9cbb0",
              finish="oak-board", species="ash", nominal_quarters=8, milling_profile="S4S",
              requires_custom_milling=True,
              source="Owner-milled white ash for the dining table top, glued up; hardwax oil"),

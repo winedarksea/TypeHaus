@@ -8,6 +8,7 @@ import pytest
 from shapely.geometry import Polygon
 
 from typehaus.emit.gltf.emitter import emit_gltf_dict
+from typehaus.emit.gltf.palette import _authored_material_color
 from typehaus.resolve.geometry import wall_frame
 from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.resolve.geometry_openings import opening_parts
@@ -69,15 +70,18 @@ def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     assert len(nodes) == 39
     assert {node["extras"]["uid"] for node in nodes} == {
         row["opening_uid"] for row in rows}
-    oak = [201 / 255, 176 / 255, 140 / 255, 1.0]
+    oak_material = next(m for m in catlin_model_ro.plan.library.materials if m.tag == "oak-stool")
+    oak = _authored_material_color(oak_material)
     for node in nodes:
         mesh = gltf["meshes"][node["mesh"]]
         material = gltf["materials"][mesh["primitives"][0]["material"]]
         color = material["pbrMetallicRoughness"]["baseColorFactor"]
         if material_of[node["extras"]["uid"]] == "oak-stool":
             assert color == pytest.approx(oak)
-        else:  # the stone draws in its own authored colour, never as oak
-            assert color != pytest.approx(oak)
+        else:
+            authored = next(m for m in catlin_model_ro.plan.library.materials
+                            if m.tag == material_of[node["extras"]["uid"]])
+            assert color == pytest.approx(_authored_material_color(authored))
 
 
 def test_stools_export_as_ifc_moldings(catlin_model_ro, catlin_ifc_path):

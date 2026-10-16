@@ -15,8 +15,7 @@ from __future__ import annotations
 import pytest
 from shapely.geometry import Polygon
 
-from typehaus.emit.draw.palette import material_color
-from typehaus.emit.gltf.palette import _color, _hex_rgba, _room_floor_color
+from typehaus.emit.gltf.palette import _authored_material_color, _color, _room_floor_color
 from typehaus.resolve.solid_categories import in_slab_family
 
 # Every finish string that reaches a floor anywhere in houses/catlin — the field finishes
@@ -80,7 +79,7 @@ def test_the_glb_paints_a_room_in_its_own_finish(catlin_model):
     for tag in sorted(_CATLIN_FINISHES):
         material = _material(catlin_model, tag)
         color = _room_floor_color(catlin_model, tag)
-        assert color == _hex_rgba(material_color(material.hatch, material.color))
+        assert color == _authored_material_color(material)
         seen[tag] = color
     assert len(set(seen.values())) == len(seen), "finishes must not export the same colour"
     assert _color("floor") not in seen.values()

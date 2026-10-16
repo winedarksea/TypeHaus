@@ -1421,6 +1421,8 @@ export interface MaterialSpec {
   // that authors neither falls back to the family inferred from its tag (nordic/palette.ts).
   color?: string | null;
   finish?: string | null;
+  species?: string | null;
+  wood_surface?: "natural-clear" | "unfinished" | "painted" | null;
   // A coating — sealer, stain, paint — rather than a covering: it bills by coverage area but
   // adds no thickness, so `buildRoomFloor` draws no finish plane for it. Without this a
   // sealed slab renders as two floors: the slab and a finish plane on the same face.

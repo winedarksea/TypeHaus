@@ -206,6 +206,8 @@ export interface MaterialAppearance {
   readonly tag: string;
   readonly color?: string | null;
   readonly finish?: string | null;
+  species?: string | null;
+  wood_surface?: "natural-clear" | "unfinished" | "painted" | null;
   // A sealer/stain rather than a covering: it colours what it is applied over and adds no
   // thickness, so nothing draws a plane for it (see `buildRoomFloor`).
   readonly coating?: boolean | null;

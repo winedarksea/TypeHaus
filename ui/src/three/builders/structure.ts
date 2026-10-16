@@ -35,8 +35,10 @@ import {
   aboveStructureLayers, applyStandingSeamRoofUv, boundaryEdges, layerInsetRect, roofOffsetter,
   roofPlaneTriangles,
 } from "../roofGeometry";
+import { assemblyFaceMaterial } from "../../model/solidLabels";
 import { createSolidMaterial } from "../solidMaterials";
 import { createSweepGeometry } from "../tubeGeometry";
+import { applyPieceGrainUv, pieceSeed, woodMaterialsForGeometry } from "../woodPiece";
 import { createSolidBodyMesh } from "../solidBodyMesh";
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import type { SelectionKind } from "../../state/vocabulary";
@@ -64,18 +66,28 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
   // straight on the solid, so the sauna's shiplap arrives here as `material: "sauna-shiplap"` with no
   // assembly to walk. Boards run along the room's long axis — a ceiling's furring is
   // authored "horizontal", which says nothing about which horizontal.
+  const woodRef = solid.material ?? assemblyFaceMaterial(catalog, solid.assembly);
+  const appearances = materials ?? catalog?.materials;
   const plankStyle = deckBoards ? null
-    : plankStyleOrNull(solid.material, authoredAppearance(solid.material, materials)?.finish);
+    : plankStyleOrNull(woodRef, authoredAppearance(woodRef, appearances)?.finish,
+      authoredAppearance(woodRef, appearances)?.species);
   if (plankStyle && !solid.sweep) {
-    applyPlankPlaneUv(geo, center, planLongAxis(solid.outline), plankTileSizeM(plankStyle));
+    if (plankStyle.key === "solid-board" || plankStyle.key === "oak-board") {
+      const [gx, gy] = planLongAxis(solid.outline);
+      const grain = solid.category === "column" || solid.category === "post"
+        ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(gx, 0, -gy);
+      applyPieceGrainUv(geo, grain, plankStyle, pieceSeed(solid.uid));
+    } else applyPlankPlaneUv(geo, center, planLongAxis(solid.outline), plankTileSizeM(plankStyle));
   }
   const firstChildIndex = parent.children.length;
-  const mesh = makeSurfaceMesh(geo,
+  const material =
     deckBoards ? createDeckBoardMaterial(mode)
       : plankStyle
         ? createPlankMaterial(mode, plankStyle,
-          materialColor(solid.material, palette, materials))
-        : createSolidMaterial(solid, catalog, mode, palette));
+          materialColor(woodRef, palette, appearances), undefined,
+          authoredAppearance(woodRef, appearances))
+        : createSolidMaterial(solid, catalog, mode, palette);
+  const mesh = makeSurfaceMesh(geo, woodMaterialsForGeometry(material, geo));
   parent.add(mesh);
   registerSelectable(parent, firstChildIndex, solid.uid, "solid", picks, byUid);
 }
@@ -291,7 +303,8 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
   const roughness = mode === "nordic" ? surface.roughness : 1;
   const mesh = new THREE.Mesh(geometry,
     plankStyle
-      ? createPlankMaterial(mode, plankStyle, materialColor(finish, palette, materials), roughness)
+      ? createPlankMaterial(mode, plankStyle, materialColor(finish, palette, materials), roughness,
+        authoredAppearance(finish, materials))
       : marble
       ? createMarbleMaterial(mode, materialColor(finish, palette, materials), roughness)
       : standardMaterial(new THREE.Color(materialColor(finish, palette, materials)), mode, {
@@ -329,9 +342,11 @@ export function buildPaneling(parent: THREE.Group, band: Paneling, center: PlanC
   // `pieces` is the band net of its openings — the gross outline runs across a door.
   const pieces = band.pieces ?? [{ outline: band.outline, z0_m: bandZ0, z1_m: band.z1_m }];
   const plankStyle = plankStyleOrNull(band.material_ref,
-    authoredAppearance(band.material_ref, materials)?.finish);
+    authoredAppearance(band.material_ref, materials)?.finish,
+    authoredAppearance(band.material_ref, materials)?.species);
   const material = plankStyle
-    ? createPlankMaterial(mode, plankStyle, materialColor(band.material_ref, palette, materials))
+    ? createPlankMaterial(mode, plankStyle, materialColor(band.material_ref, palette, materials),
+      undefined, authoredAppearance(band.material_ref, materials))
     : standardMaterial(
       new THREE.Color(materialColor(band.material_ref, palette, materials)), mode);
   // UVs off the GROSS band's axis and base, so the boards stay in phase across a door.

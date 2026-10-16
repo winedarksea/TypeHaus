@@ -21,8 +21,10 @@ const BOARD = WOOD_PLANK_STYLES["oak-board"];
 
 function uvRange(geometry: THREE.BufferGeometry) {
   const uv = geometry.getAttribute("uv");
-  const us = Array.from({ length: uv.count }, (_, i) => uv.getX(i));
-  const vs = Array.from({ length: uv.count }, (_, i) => uv.getY(i));
+  const ends = geometry.getAttribute("woodEnd");
+  const face = Array.from({ length: uv.count }, (_, i) => i).filter(i => !ends?.getX(i));
+  const us = face.map(i => uv.getX(i));
+  const vs = face.map(i => uv.getY(i));
   return { u: [Math.min(...us), Math.max(...us)], v: [Math.min(...vs), Math.max(...vs)] };
 }
 
@@ -90,7 +92,8 @@ export function runWoodPieceTests() {
   const positions = winderMesh.geometry.getAttribute("position");
   const uv = winderMesh.geometry.getAttribute("uv");
   const noseIndices = Array.from({ length: positions.count }, (_, i) => i)
-    .filter(i => Math.abs(positions.getZ(i)) < 1e-7);
+    .filter(i => Math.abs(positions.getZ(i)) < 1e-7
+      && winderMesh.geometry.getAttribute("normal").getY(i) > 0.9);
   assert(noseIndices.length >= 2, "the physical nosing is present in the viewer mesh");
   const across = noseIndices.map(i => uv.getX(i));
   assert(Math.max(...across) - Math.min(...across) < 1e-6,

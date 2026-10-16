@@ -178,7 +178,7 @@ function drawStreaks(ctx: CanvasRenderingContext2D, r: BoardRect, seed: number, 
 }
 
 // White oak: fine wavy long grain, cathedral arches on plainsawn boards, and the lighter ray
-// flecks of rift/quartersawn stock — white oak's signature, which red oak lacks.
+// flecks of rift/quartersawn stock. Legacy figure for unspecified wood and LVP prints.
 function drawOakFigure(ctx: CanvasRenderingContext2D, r: BoardRect, seed: number,
   style: PlankStyle) {
   const h = (k: number) => hashBoard(seed * 7 + 3, k);

@@ -19,15 +19,16 @@
 //     repeats every six boards: format, bevel and repeat are how LVP reads as LVP.
 //   • `oak-board` — solid oak millwork: one jointless board per piece, no seams.
 //
-// None carries a fixed unit colour. Every wood material authors its own `Material.color`
-// (basswood #e6d4ae, walnut #5d4433, white oak under a water-based clear #c9b08c), and that
-// is the colour a species *is* — a recipe that overrode it would make walnut and basswood
-// render identically.
+// Board format is independent of species and surface treatment.
 import * as THREE from "three";
 import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
 import {
   boardShade, drawBoardFigure, layoutPlankTile, type PlankStyle,
 } from "./plankLayout";
+
+import { buildSpeciesWoodMaps } from "./woodMaps";
+import { woodSpeciesProfile, woodSurfaceRoughness, WOOD_RENDER_SETTINGS,
+  type WoodAppearance } from "./woodSpecies";
 
 export type { PlankStyle } from "./plankLayout";
 
@@ -38,7 +39,7 @@ const INCH = 0.0254;
 // draw and no stagger, because these runs are short enough to be single boards.
 const TG_BOARD_STYLE: PlankStyle = {
   key: "tg-board", faceWidthM: 0.0889, boardsPerTile: 6, lengths: { kind: "continuous" },
-  tileAlongM: 0.0889 * 6, pxPerM: 960, jointFraction: 0.045, jointProfile: "vee",
+  tileAlongM: WOOD_RENDER_SETTINGS.continuousTileAlongM, pxPerM: 960, jointFraction: 0.045, jointProfile: "vee",
   jitter: 0.07, grain: 0.35, figure: "streak", printRepeat: 0, reliefScale: 0.6,
 };
 
@@ -48,7 +49,7 @@ const TG_BOARD_STYLE: PlankStyle = {
 // scale.
 const SHIPLAP_STYLE: PlankStyle = {
   key: "shiplap", faceWidthM: 0.1397, boardsPerTile: 4, lengths: { kind: "continuous" },
-  tileAlongM: 0.1397 * 4, pxPerM: 920, jointFraction: 0.045, jointProfile: "vee",
+  tileAlongM: WOOD_RENDER_SETTINGS.continuousTileAlongM, pxPerM: 920, jointFraction: 0.045, jointProfile: "vee",
   jitter: 0.07, grain: 0.35, figure: "streak", printRepeat: 0, reliefScale: 0.6,
 };
 
@@ -88,6 +89,11 @@ const OAK_BOARD_STYLE: PlankStyle = {
   grain: 0.5, figure: "oak", printRepeat: 0, reliefScale: 0.3,
 };
 
+const SOLID_BOARD_STYLE: PlankStyle = {
+  ...OAK_BOARD_STYLE, key: "solid-board", faceWidthM: WOOD_RENDER_SETTINGS.solidFaceWidthM,
+  tileAlongM: WOOD_RENDER_SETTINGS.solidTileAlongM, pxPerM: WOOD_RENDER_SETTINGS.solidPixelsPerM,
+};
+
 /**
  * The finish recipes a wood material can name via its authored `Material.finish`. Keys are the
  * engine's finish vocabulary (model/materials.py), the same contract MASONRY_STYLES follows.
@@ -98,7 +104,8 @@ export const WOOD_PLANK_STYLES: Readonly<Record<string, PlankStyle>> = {
   "strip-floor": STRIP_FLOOR_STYLE,
   "plank-floor": PLANK_FLOOR_STYLE,
   "lvp-plank": LVP_PLANK_STYLE,
-  "oak-board": OAK_BOARD_STYLE,
+  "oak-board": { ...SOLID_BOARD_STYLE, key: "oak-board" },
+  "solid-board": SOLID_BOARD_STYLE,
 };
 
 // Flooring refs inferred without an authored recipe. Deliberately explicit: the `familyOf`
@@ -151,10 +158,11 @@ export function plankStyleFor(
  * its name matches a needle. Without one, only a ref `isWoodPlank` recognises is boarded.
  */
 export function plankStyleOrNull(
-  materialRef: string | null | undefined, finish?: string | null,
+  materialRef: string | null | undefined, finish?: string | null, species?: string | null,
 ): PlankStyle | null {
   if (finish && WOOD_PLANK_STYLES[finish]) return WOOD_PLANK_STYLES[finish];
-  return isWoodPlank(materialRef) ? plankStyleFor(materialRef, finish) : null;
+  return isWoodPlank(materialRef) ? plankStyleFor(materialRef, finish)
+    : woodSpeciesProfile(species) ? SOLID_BOARD_STYLE : null;
 }
 
 /** World size (metres) of one repeat tile: [across the boards, along them]. */
@@ -270,22 +278,31 @@ function buildPlankMaps(
   return maps;
 }
 
-/**
- * Wood board finish. `style` selects the module + joint + jitter recipe (see plankStyleFor);
- * `color` is the board colour, which for wood is always the material's own — every wood
- * material in the library authors one, and a species IS its colour.
- *
- * `roughness` is passed through so a floor keeps the sheen `floorSurface()` already assigns
- * it (oak 0.55) while a sauna liner stays matte.
- */
+/** Board format plus optional authored species. Unsupported woods and LVP keep legacy maps. */
 export function createPlankMaterial(
   mode: "nordic" | "schematic", style: PlankStyle, color: THREE.ColorRepresentation,
-  roughness = 0.8,
-): THREE.Material {
+  roughness = 0.8, appearance?: WoodAppearance, endGrain = false,
+): THREE.MeshStandardMaterial {
   if (mode === "schematic") {
     return new THREE.MeshStandardMaterial({
       color, roughness: 1, metalness: 0, flatShading: true,
     });
+  }
+  const species = style.key === "lvp-plank" ? null : woodSpeciesProfile(appearance?.species);
+  if (species) {
+    const surface = appearance?.wood_surface ?? "natural-clear";
+    const sheen = woodSurfaceRoughness(surface);
+    const maps = buildSpeciesWoodMaps(style, species, color, surface, endGrain);
+    const material = new THREE.MeshStandardMaterial({
+      color: maps ? 0xffffff : color, roughness: sheen, metalness: 0,
+      map: maps?.colorMap, normalMap: maps?.normalMap, roughnessMap: maps?.roughnessMap,
+    });
+    material.userData.woodBaseColor = new THREE.Color(color).getHexString();
+    material.userData.woodSpecies = species.key;
+    material.userData.woodSurface = surface;
+    if (!endGrain) material.userData.endGrainMaterial =
+      createPlankMaterial(mode, style, color, roughness, appearance, true);
+    return material;
   }
   const maps = buildPlankMaps(style);
   // No 2D canvas (SSR, the headless geometry tests): a flat fill in the board's own colour.

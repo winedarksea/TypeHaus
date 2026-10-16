@@ -139,7 +139,7 @@ export function buildWall(
     // tan drywall. `ly.board_run` is derived by the engine from the furring behind the layer
     // (resolve/topology.py `_board_run`), so the boards land the way they are fastened.
     const plankStyle = !seam && !wash && !masonryStyle
-      ? plankStyleOrNull(ly.material, appearance?.finish) : null;
+      ? plankStyleOrNull(ly.material, appearance?.finish, appearance?.species) : null;
     // The coil white is the DEFAULT, not the only option. A metal panel that
     // declares a finish naming its own paint gets that paint; everything else keeps
     // 0xE8E8E2, which is what all five of the house's white skins author (their catalog
@@ -159,7 +159,7 @@ export function buildWall(
           materialColor(ly.material, palette, materials), appearance?.color)
         : plankStyle
           ? createPlankMaterial(mode, plankStyle,
-            materialColor(ly.material, palette, materials))
+            materialColor(ly.material, palette, materials), undefined, appearance)
           // Thin authored coatings (latex paint) sit just ahead of their host sheet. Give the
           // coating the same small depth-test lead as mineral washes so the substrate cannot
           // flicker through it as the camera moves.

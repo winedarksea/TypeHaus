@@ -119,6 +119,8 @@ try {
   runPlankMaterialTests();
   runPlankLayoutTests();
   runWoodPieceTests();
+  const { runWoodSpeciesTests } = await server.ssrLoadModule("/src/three/woodSpecies.test.ts");
+  runWoodSpeciesTests();
   runMarbleMaterialTests();
   runMemberColorTests();
   runSkinBandUvTests();

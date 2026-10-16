@@ -12,17 +12,18 @@ import { composeMemberBoxMatrix, isRakedMember } from "../memberBox";
 import { memberColor } from "../members";
 import { createPlanPrismGeometry, projectPointToScene, type PlanCenter } from "../planGeometry";
 import {
-  applyPlankPlaneUv, createPlankMaterial, planLongAxis, plankStyleOrNull, plankTileSizeM,
+  createPlankMaterial, planLongAxis, plankStyleOrNull,
   type PlankStyle,
 } from "../plankMaterial";
 import { makeSurfaceMesh, standardMaterial } from "../surfaces";
-import { boardBoxGeometry, pieceSeed, seatPieceUv } from "../woodPiece";
+import { applyPieceGrainUv, boardBoxGeometry, pieceSeed, woodMaterialsForGeometry } from "../woodPiece";
 import { registerSelectable } from "./registry";
 
 /** The board recipe a material declares (or infers), for a solid-wood piece; else null. */
 export function boardStyleFor(ref: string | null | undefined,
   materials: readonly MaterialAppearance[] | undefined): PlankStyle | null {
-  return ref ? plankStyleOrNull(ref, authoredAppearance(ref, materials)?.finish) : null;
+  const appearance = authoredAppearance(ref, materials);
+  return ref ? plankStyleOrNull(ref, appearance?.finish, appearance?.species) : null;
 }
 
 export function buildWindowStool(parent: THREE.Group, stool: WindowStool, center: PlanCenter,
@@ -38,11 +39,12 @@ export function buildWindowStool(parent: THREE.Group, stool: WindowStool, center
   if (style) {
     // The front edge (outline[0] → outline[1]) runs along the wall: that is the grain.
     const [[x0, y0], [x1, y1]] = stool.outline;
-    applyPlankPlaneUv(geometry, center, [x1 - x0, y1 - y0], plankTileSizeM(style));
-    seatPieceUv(geometry, style, pieceSeed(stool.uid));
+    applyPieceGrainUv(geometry, new THREE.Vector3(x1 - x0, 0, -(y1 - y0)),
+      style, pieceSeed(stool.uid));
   }
-  parent.add(makeSurfaceMesh(geometry, style
-    ? createPlankMaterial(mode, style, color) : standardMaterial(color, mode)));
+  const material = style ? createPlankMaterial(mode, style, color, undefined,
+    authoredAppearance(stool.material_ref, materials)) : standardMaterial(color, mode);
+  parent.add(makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry)));
   registerSelectable(parent, firstChildIndex, stool.opening_uid, "opening", picks, byUid);
 }
 
@@ -63,7 +65,10 @@ function trimBoardGeometry(outline: readonly Vec2[], z0: number, z1: number,
   if (matrix.determinant() < 0) matrix = new THREE.Matrix4().makeBasis(across, up, along);
   matrix.setPosition(origin.clone().addScaledVector(along, 0.5).addScaledVector(across, 0.5)
     .addScaledVector(up, 0.5));
-  return boardBoxGeometry(matrix, style, seed);
+  const axes = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+  matrix.extractBasis(axes[0], axes[1], axes[2]);
+  // A short offcut still runs along the trim, even when its height exceeds its length.
+  return boardBoxGeometry(matrix, style, seed, axes[0].length() >= axes[2].length() ? 0 : 2);
 }
 
 function buildTrimPieces(parent: THREE.Group, uid: string, materialRef: string,
@@ -72,12 +77,12 @@ function buildTrimPieces(parent: THREE.Group, uid: string, materialRef: string,
   materials: readonly MaterialAppearance[] | undefined) {
   const color = materialColor(materialRef, palette, materials);
   const style = boardStyleFor(materialRef, materials);
-  const material = style ? createPlankMaterial(mode, style, color) : standardMaterial(color, mode);
+  const material = style ? createPlankMaterial(mode, style, color, undefined, authoredAppearance(materialRef, materials)) : standardMaterial(color, mode);
   for (const [index, piece] of pieces.entries()) {
     if (piece.outline.length < 3 || piece.z1_m <= piece.z0_m) continue;
     const geometry = trimBoardGeometry(piece.outline, piece.z0_m, piece.z1_m, center, style,
       pieceSeed(`${uid}|${index}`));
-    if (geometry) parent.add(makeSurfaceMesh(geometry, material));
+    if (geometry) parent.add(makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry)));
   }
 }
 
@@ -114,16 +119,17 @@ export function buildCountertop(parent: THREE.Group, top: Countertop, center: Pl
   const firstChildIndex = parent.children.length;
   const color = materialColor(top.material_ref, palette, materials);
   const style = boardStyleFor(top.material_ref, materials);
-  const material = style ? createPlankMaterial(mode, style, color) : standardMaterial(color, mode);
+  const material = style ? createPlankMaterial(mode, style, color, undefined, authoredAppearance(top.material_ref, materials)) : standardMaterial(color, mode);
   for (const [index, part] of top.parts.entries()) {
     const geometry = createPlanPrismGeometry(part.outline, top.z0_m, top.z1_m, part.holes,
       center);
     if (!geometry) continue;
     if (style) {
-      applyPlankPlaneUv(geometry, center, planLongAxis(part.outline), plankTileSizeM(style));
-      seatPieceUv(geometry, style, pieceSeed(`${top.uid}|${index}`));
+      const [gx, gy] = planLongAxis(part.outline);
+      applyPieceGrainUv(geometry, new THREE.Vector3(gx, 0, -gy), style,
+        pieceSeed(`${top.uid}|${index}`));
     }
-    parent.add(makeSurfaceMesh(geometry, material));
+    parent.add(makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry)));
   }
   if (top.host_uid) {
     registerSelectable(parent, firstChildIndex, top.host_uid, "canvas_object", picks, byUid);
@@ -150,8 +156,7 @@ export function buildBoardMembers(parent: THREE.Group, members: readonly Member[
         const grainAxis: [number, number] = m.nosing_line
           ? [m.nosing_line[1][0] - m.nosing_line[0][0], m.nosing_line[1][1] - m.nosing_line[0][1]]
           : planLongAxis(m.plan_outline);
-        applyPlankPlaneUv(geometry, center, grainAxis, plankTileSizeM(style));
-        seatPieceUv(geometry, style, seed);
+        applyPieceGrainUv(geometry, new THREE.Vector3(grainAxis[0], 0, -grainAxis[1]), style, seed);
       }
     } else {
       geometry = boardBoxGeometry(composeMemberBoxMatrix(new THREE.Matrix4(), m, center),
@@ -159,13 +164,13 @@ export function buildBoardMembers(parent: THREE.Group, members: readonly Member[
     }
     if (!geometry) { rest.push(m); continue; }
     const color = memberColor(m, palette, materials);
-    const key = `${style.key}|${color}`;
+    const key = `${style.key}|${color}|${m.material}`;
     let material = cache.get(key);
     if (!material) {
-      material = createPlankMaterial(mode, style, color);
+      material = createPlankMaterial(mode, style, color, undefined, authoredAppearance(m.material, materials));
       cache.set(key, material);
     }
-    const mesh = makeSurfaceMesh(geometry, material);
+    const mesh = makeSurfaceMesh(geometry, woodMaterialsForGeometry(material, geometry));
     mesh.userData.memberKey = m.key;
     parent.add(mesh);
   }

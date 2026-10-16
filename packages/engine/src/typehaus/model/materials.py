@@ -192,6 +192,8 @@ class Material(HausModel):
     # the species-split ``wood_surfaces`` takeoff; a wood-ish tag without it stays out —
     # species by tag-substring guessing is exactly what this field retires.
     species: str | None = None
+    # Presentation only; independent of the board profile and the construction finish spec.
+    wood_surface: Literal["natural-clear", "unfinished", "painted"] | None = None
     # True only when this material is supplied as rough stock for a custom mill to run.
     # Species says what a wood product IS; it must not also imply how it is procured.  A
     # factory-made oak floor remains species="oak" while staying out of ``haus millwork``.

@@ -9,7 +9,7 @@ from typehaus.checks import build_context
 from typehaus.checks.integrity.catalog_tags import unknown_wood_material_ref
 from typehaus.emit.gltf.canvas_objects import _add_canvas_parts
 from typehaus.emit.gltf.mesh import _MeshBuilder
-from typehaus.emit.gltf.palette import _hex_rgba
+from typehaus.emit.gltf.palette import _authored_material_color
 from typehaus.model import (
     Building,
     BuiltInBookcaseBay,
@@ -27,7 +27,8 @@ from typehaus.model.placeable_symbols import PART_COLORS, part_hex
 from typehaus.model.plan import Library, PlanModel
 from typehaus.source import load_plan
 
-OAK = Material(tag="oak-shelf", name="White oak shelving", color="#c9b08c", finish="oak-board")
+OAK = Material(tag="oak-shelf", name="White oak shelving", color="#c9b08c",
+               finish="oak-board", species="oak")
 BOOKCASE = FurnitureType(tag="F-SHELF", name="Shelf", footprint=(inch(30), inch(12)),
                          height=ft(7), plan_symbol="bookcase", wood_material_ref="oak-shelf")
 BUILT_IN = FurnitureType(
@@ -75,7 +76,7 @@ def test_the_glb_colours_the_same_wood_the_viewer_does() -> None:
     for kind in (BOOKCASE, BUILT_IN):
         mb = _MeshBuilder()
         assert _add_canvas_parts(mb, item, kind, materials)
-        assert _hex_rgba("#c9b08c") in mb._buckets
+        assert _authored_material_color(OAK) in mb._buckets
         assert PART_COLORS["wood"] not in mb._buckets
 
 
