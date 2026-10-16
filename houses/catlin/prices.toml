@@ -5988,7 +5988,7 @@
 "fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC (sunken garden) and formed solid-colour PVDF (garage near-black since 2026-09-08, metal since 2026-08-26) over SPF
 "ridge_cap" = { material = { low = 4, high = 10 }, labour = { low = 4, high = 8 } }  # 63.5 LF — metal cap (a shingle ridge would be $1.50-3.50 to lay). Also commonly in the roofer's scope
 "soffit" = { material = { low = 3.5, high = 9 }, labour = { low = 3, high = 5.5 } }  # 101.1 LF — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x
-"wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # 21 LF — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate
+"wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # ~29 LF since 2026-10-16: the balcony's rear edge is TWO pieces either side of D-S-DECK-E, a deck-side base flashing and a house-side counterflashing (params/sunken_garden.py) — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate
 
 [member_protection]
 # RESEARCHED 2026-08-27 — [low, high] $/LF of MEMBER covered, by material tag. New section,
@@ -6018,7 +6018,7 @@
 # CONFIDENCE: HIGH on the narrow row, MEDIUM on the wide one (the 11" roll is unpriceable).
 # $/LF of member, by material tag
 "butyl-tape" = { material = { low = 0.40, high = 0.75 }, labour = { low = 0.30, high = 0.75 } }  # 420.8 LF — joists, rims and blocking on FS-SG-PORCH and FS-SG-DECK (+17.3 LF 2026-09-03: the porch enclosure's sixteen flank blocks, which inherit the deck's top_protection like every other stick), plus the four single-ply 2x12 girts. 1-5/8" roll
-"butyl-tape-beam" = { material = { low = 0.85, high = 1.75 }, labour = { low = 0.40, high = 1 } }  # 66.0 LF — the seven 3-ply 2x12 beams at 4 1/2" across: the porch's back and front pairs and the balcony's three. Wide roll, or two runs of the 3-1/8"
+"butyl-tape-beam" = { material = { low = 0.85, high = 1.75 }, labour = { low = 0.40, high = 1 } }  # 64.8 LF — the wide built-up beams, plus (2026-10-16) 15.5 LF on SB-BW-BAND's 2x6 sill under TR-BW-SCREEN-CAP: 4'-6" of sill and a 1" turn-up collar round each of the eight slats and the centre post that land on it. Wide roll, or two runs of the 3-1/8"
 
 [railings]
 # RESEARCHED 2026-08-08b — [low, high] $/LF of guard line, MATERIALS including posts, caps
@@ -6993,6 +6993,12 @@ envelope-opening-flashing-and-sill-pans = { low = 180, high = 262, unit = "ea", 
 # (`notes/opening_flashing_spec.md` §6). Filtered by TYPE, not `kind=door`: FRENCH60's own
 # row already carries its pan. ~$60-140 of preformed pan or membrane plus about an hour.
 envelope-door-sill-pans = { low = 150, high = 300, unit = "ea", driver = "openings.count[type=DT-EXT-SWING36]" }
+# D-G-OVERHEAD's perimeter membrane (2026-10-16, `notes/opening_flashing_spec.md` §7): head
+# band and both jambs on the CDX buck, lapped 2" onto the sheathing, from the stem top to the
+# head — ~30 LF on a 16'x7' opening, no pan. Neither row above buys it: one is driven by
+# windows and the other by DT-EXT-SWING36. Its metal head is in `corrugated-panel-24`'s trim
+# load, like every other garage opening. ~$8/LF of FastFlash-class material plus ~1.5 h.
+envelope-garage-door-flashing = { low = 250, high = 500, unit = "ea", driver = "openings.count[operation=overhead]" }
 # MN limits to 3.0 ACH50, so the second blower-door test is not optional.
 # DRIVEN 2026-08-27 off gross floor area — 6,098 SF, one of the two addressable scalars.
 # ** RE-RATED 2026-08-30. The published $/SF air-sealing guides this rate came from assume a

@@ -275,21 +275,14 @@ SAUNA_HANGER_FRACTIONS = (0.2, 0.5, 0.8)
 
 @dataclass(frozen=True)
 class OpeningDetailConfig:
-    """The opening-perimeter vocabulary: head flashing, sill pan, concrete bucks.
+    """The opening-perimeter vocabulary the 3D does not share: sealant, concrete bucks.
 
-    All drawing convention except the buck: flashing legs are drawn at schematic
-    proportions so their directions read, while the 2x (1.5") buck is the treated lumber
-    a frame actually fastens to in a concrete opening.
+    The head flashing and sill pan read ``resolve/flashing_config.FLASHING``, the numbers
+    the 3D opening flashing is built from, so the detail and the model cannot disagree.
+    The 2x (1.5") buck is the treated lumber a frame actually fastens to in a concrete
+    opening.
     """
 
-    #: Head flashing: how far it laps up the WRB face, past the cladding, and drips down.
-    head_flashing_rise_in: float = 3.0
-    head_flashing_lip_in: float = 0.5
-    head_flashing_drop_in: float = 1.6
-    #: Sill pan: up-turned back dam inboard, projected lip + drip outboard.
-    sill_pan_back_dam_in: float = 1.5
-    sill_pan_lip_in: float = 0.75
-    sill_pan_drop_in: float = 1.2
     #: Sealant bead at the cladding-to-frame joint under the head flashing.
     sealant_bead_in: float = 0.6
     #: Building fact: 2x treated buck lining a concrete opening (what the frame screws to).
@@ -309,15 +302,8 @@ class OpeningDetailConfig:
     #: 3-1/2" is the head/sill COURSE's face on the wall — a 2x4 laid flat — not the BLOCK
     #: behind it, whose depth the outie detail reads off the resolved stack instead.
     girt_blocking_in: float = 3.5
-    #: How far the head flashing laps UP the spray-foam face before it turns out. Shorter
-    #: than the innie head's 3" rise: it starts above the head blocking rather than behind a
-    #: WRB, and the foam it laps is the water plane, bonded and seamless.
-    outie_head_rise_in: float = 2.0
-    #: How far the sill pan's outboard leg turns DOWN past the truss plane. It stops inside
-    #: the rainscreen gap and discharges behind the cladding — an outie pan that ran out
-    #: past the panel face would be a visible metal lip under every window. The gap is 1" on
-    #: the Swinburne wall and 2" on the girt wall, and this clears either.
-    outie_pan_drop_in: float = 0.75
+    #: The humid-room liner's drained sill pan, drawn at this height over its membrane.
+    humid_sill_pan_in: float = 0.75
 
 
 OPENING_DETAIL = OpeningDetailConfig()

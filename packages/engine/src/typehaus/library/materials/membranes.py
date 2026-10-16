@@ -199,6 +199,22 @@ MATERIALS: tuple[Material, ...] = (
             "ASTM E96 value published."
         ),
     ),
+    # The opening perimeter membrane and sill pan (resolve/opening_flashing.py): one
+    # monolithic liquid application at every flashed rough opening.
+    Material(
+        tag="fluid-applied-flashing",
+        name="Fluid-applied opening flashing membrane (AC148)",
+        r_per_inch=0.0,
+        vapor_permeance_perms=12.0,
+        hatch="membrane",
+        color="#7a2e26",
+        source=(
+            "Product class: a fluid-applied flashing evaluated to ICC-ES AC148 (e.g. "
+            "PROSOCO R-Guard FastFlash, ESR-4363; Tremco ExoAir LF). 12 perms is the "
+            "FastFlash TDS (ASTM E96 B) at its 12-15 mil film; AC148 grades water "
+            "resistance only."
+        ),
+    ),
     # The annulus seal where a run passes a fireblock (IRC R302.11 item 4). Billed by the
     # lineal foot of penetration perimeter (``takeoff/fireblocking.py``).
     Material(

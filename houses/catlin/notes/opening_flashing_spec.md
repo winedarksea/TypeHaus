@@ -14,8 +14,8 @@ band on the plywood buck, and the lap onto the shaved ccSPF. It is the `[K5]` sc
 4" of exterior ccSPF is the air/water/vapour/thermal plane (`notes/ccspf_spec.md`), so at an
 opening there is nothing for a tape to lap *onto* — the water-plane tie is plywood buck to
 spray foam. And the sill is a shape both tape and formed metal do badly: back dam up the
-buck's inboard leg, out 6" to the mount plane, then **down into the vent gap with no visible
-drip** (`[K5]` rejects a visible drip explicitly). That is two inside corners and a turn-down,
+buck's inboard leg, out 6" to the mount plane, then **down over the buck's front edge with
+no visible drip** (`[K5]` rejects a visible drip explicitly). That is two inside corners and a turn-down,
 forty times over. A liquid makes it in one pass and removes the origami at the corners, which
 is where tape actually fails.
 
@@ -75,8 +75,8 @@ Two things about that result decide whether it reaches this detail:
   self-adhered products."* It is not a finding that liquids are worse than tapes; it is a
   finding about permeable membranes under standing water.
 - **Every one of those failures was a PONDING failure, and this pan does not pond.** The
-  `[K5]` pan runs out 6" to the mount plane and turns **down into the vent gap**, so water
-  that reaches it leaves it. A pan that drains has no puddle to sit under for 42 days. That
+  `[K5]` pan falls 1/4"/ft over 6" to the mount plane and turns **down over the buck's front
+  edge**, so water that reaches it leaves it. A pan that drains has no puddle to sit under for 42 days. That
   is the whole reason the finding does not govern here.
 
 **Where it does still bite:** during construction, before the cladding and its vent gap
@@ -136,9 +136,24 @@ Sequence at an opening:
 2. **Joint filler** at every inside corner and at the buck-to-foam junction — the
    fillet the membrane spans. Not optional; a liquid bridging a square cold joint cracks
    there first.
-3. **Sill first, and heavy** — §1 item 4. Back dam up the buck's inboard leg, across the
-   sill, out to the mount plane, and turn it **down into the vent gap**. No visible drip.
+3. **Sill first, and heavy** — §1 item 4. **Slope first:** a tapered KDAT shim on the buck,
+   or a preformed sloped pan, falling **1/4"/ft minimum** outward; a level pan is a ponding
+   pan. A **rigid back-dam strip** (1/2" x 1-1/2" KDAT) at the sheathing face, so the dam
+   stands on something. Back dam up the strip, across the sloped sill, out to the mount
+   plane, and turn it **down over the buck's front edge**. The buck spans the 1/2" vent gap,
+   so that is the outlet: water runs down past the sill course face and the cladding's back,
+   hidden behind the sill trim (owner, 2026-10-16). No visible drip.
 4. **Jambs and head, continuous into the sill's corners**, without stopping.
+4a. **Head: bed the course, then strip in after the metal.** Membrane on the KDAT head
+   course's top before `[K6]` goes on (§4). After it, a 4" strip of the same membrane over
+   the upstand's top edge, 2" down the metal and 2" up the foam. Without it, water on the
+   foam face runs **behind** the upstand: the head band stops at head + 2", and the upstand
+   starts at head + 3 1/2".
+4b. **Set the window on the pan, and leave its SILL FLANGE UNSEALED.** Seal the head and
+   jamb flanges to the membrane; the sill flange stays open so the pan drains. Sealing all
+   four, as many install sheets show, turns a draining pan into a ponding one. The interior
+   air seal is low-expansion foam or backer rod and sealant between the frame and the buck,
+   **inboard** of the back dam, all four sides.
 5. **Lap onto the shaved ccSPF**, the extent the maker's written substrate approval names
    (§1 item 3). Until that letter exists, this step is unevaluated.
 6. **Gauge the wet film** while it is wet. There is no second chance to measure it.
@@ -164,13 +179,23 @@ the foam was sprayed in (60-80 F, `ccspf_spec.md` §3) and set the windows behin
 - **The metal head flashing (`[K6]`)** and the **sealant at the cladding-to-frame joint
   (`[K7]`)**. Different parts, different trades, bought elsewhere: the brake-formed pieces
   ride inside the panel's $/SF rate under TRIM IS PARITY, and the sealant is
-  `[allowances] envelope-exterior-sealants-and-caulking`.
+  `[allowances] envelope-exterior-sealants-and-caulking`. What `[K6]` must be (owner,
+  2026-10-16; `Project.opening_flashing_material`):
+  - **Steel from the cladding maker's trim kit**, 24 ga PVDF in the house dark
+    (`metal-dark-exterior`), never aluminium: it bears on the KDAT head course, and
+    `notes/beam_water_protection.md` (AWC DCA6) forbids aluminium on treated wood.
+  - **Separated from the KDAT** even so: it is bedded on this note's membrane or a butyl tape
+    over the course top (§3 step 4a).
+  - **End dams**: each end of the shedding leg folded up 3/4", and the piece runs 1" past
+    each casing end, so water leaves at the drip, not off the ends behind the cladding.
+  - The upstand's top edge is stripped in (§3 step 4a).
 - **The two exterior swing doors.** Their pans are §6, billed on their own row.
+- **The garage openings and the court openings.** §7 and §8.
 - **Anything the engine grades.** No check in `haus check` reads a flashing membrane, its
-  thickness, its substrate or its lap. `OpeningDetailConfig` is deliberately untouched — the
-  outie recipe (`emit/draw/detail_components/opening.py::outie_window_truss`) already draws a
-  monolithic pan, `sill_pan_lip_in` is not in that path, and the constant is shared with
-  other houses' details. A 0-FAIL report says nothing about this note.
+  thickness, its substrate or its lap. The 3D and the 2D detail draw it from one set of
+  numbers (`resolve/flashing_config.FLASHING`), and `integrity.opening_flashing_coverage`
+  names an exterior opening that draws none (§8's two). A 0-FAIL report says nothing about
+  this note.
 
 ## 5. Open items
 
@@ -208,7 +233,51 @@ door stands on a framed rough sill (`W-G-S` `sill-0`, on one cripple). The top o
   that job instead.
 
 `D-M-ENTRY` sits at its storey's floor and has no rough sill. Its pan is the same part,
-lapped onto the house's fluid-applied system (§3).
+lapped onto the house's fluid-applied system (§3). **Unlike a window's, a door pan runs past
+the cladding** (the model draws it 1/2" past the cladding face): a threshold has no sill
+trim to hide behind, and stopping it at the mount plane would discharge behind the panel.
+
+## 7. Garage openings and the overhead door (2026-10-16)
+
+The garage wall is `GARAGE_WALL_2X6`: 2" ccSPF in the bays, 5/8" CDX and the corrugated panel,
+with **no WRB** and no exterior foam. So the CDX is the substrate and the plane the membrane
+laps onto, and the opening is an innie: no buck projection, no vent gap.
+
+- **Windows and `D-G-SERVICE`**: §3's sequence on CDX. The pan runs out past the panel to a
+  drip, 1/4"/ft on a tapered KDAT shim, back dam on a strip at the studs' inner face. The head
+  is §4's steel, over the casing with end dams, and its 3" upstand is stripped in to the CDX.
+  CDX is on every qualifying report's substrate list, so §1 item 3's open item does not arise.
+- **`D-G-OVERHEAD`**: head band and both jambs on the buck, lapped 2" onto the CDX. **No pan**:
+  the opening runs to the slab. The jamb membrane **stops at the framed wall's base** (-1'-0",
+  the ICF stem top), where the stem's Z flashing (`TR-G-STEMZ-*`, now with a 2" back leg up the
+  CDX) takes over. Below it is the stem end, not this wall. Bought by
+  `[allowances] envelope-garage-door-flashing`; the head metal is in the panel's trim.
+- **Aluminium never touches the steel panel.** The stem Z and band are aluminium; the opening
+  heads are steel. Where they meet, EPDM or sealant between.
+
+## 8. The court openings behind the brick veneer: `D-B-PATIO` and `WIN-B-SAUNA` (2026-10-16)
+
+Both sit in the garden's framed backup walls (`GARDEN_FRAMED_2X6`, `SAUNA_LINER_ON_GARDEN_FRAMED`):
+studs, sheathing, the **60-mil waterproofing** (the water plane), 4" XPS and 2" EPS, then a
+1 1/2" cavity and `W-B-BRICK`, a separate wall with its own arched reveals. The model draws
+**no flashing at either** and says so (`integrity.opening_flashing_coverage`), because the
+derived `[K6]` would be the wrong part: over a veneer opening the head piece is the veneer's
+own through-wall flashing. Specify by hand:
+
+- **Backup opening.** Buck through the foam to the waterproofing; the sill pan and the
+  jamb/head band on it, lapped onto the waterproofing (it is on every report's substrate list).
+  Pan per §3: sloped, back dam, end dams up the jambs 6".
+- **Veneer, IRC R703.8.5**: through-wall flashing at the arch head and at the base course,
+  lapped up the backup wall behind the waterproofing's face and turned out past the brick with
+  a drip; end dams at the head. **R703.8.6**: weeps immediately above each flashing, 33" o.c.
+  maximum, 3/16" minimum.
+- **`D-B-PATIO` floods to its threshold.** The court ponds to 7 1/4", exactly the riser, and the
+  brick's base course is 1/4" below that line, so its weeps flood too. Treat the cavity as
+  wet: the waterproofing runs continuous behind it, the pan's back and end dams stand 6" above
+  the threshold, the frame sets on sealant at the back dam only, and the unit is one rated for
+  water penetration at the threshold. The weeps drain the cavity back out when the court
+  drains; do not close them.
+- **`WIN-B-SAUNA`** sits 3'-8" above the court floor, clear of the flood line; §3 applies as written.
 
 ## Sources
 

@@ -1,4 +1,8 @@
-"""Physical flashing dimensions; display offsets never change these sections."""
+"""Physical flashing dimensions; display offsets never change these sections.
+
+The one set of numbers: the 3D opening flashing and the 2D opening-perimeter detail
+(``emit/draw/detail_components/opening.py``) both read ``FLASHING``.
+"""
 
 from dataclasses import dataclass
 
@@ -12,16 +16,26 @@ class FlashingConfig:
     perimeter_membrane_m: float = inch(0.020).meters
     head_rise_m: float = inch(3).meters
     outie_head_rise_m: float = inch(2).meters
+    #: The drip's throw past the face it protects: the casing face, or the cladding.
     head_projection_m: float = inch(0.5).meters
     head_drop_m: float = inch(1.6).meters
+    #: How far the head runs past each casing end (past the RO where there is no casing).
+    head_end_lap_m: float = inch(1).meters
+    #: Each end of the head's shedding leg turns up this far, so water leaves at the drip.
+    head_end_dam_m: float = inch(0.75).meters
+    #: Strip-in over the head's upstand: down the metal, and up the water plane above it.
+    head_strip_lap_m: float = inch(2).meters
     back_dam_m: float = inch(1.5).meters
+    #: The rigid strip the back dam is turned up against.
+    back_dam_strip_m: float = inch(0.5).meters
     end_dam_m: float = inch(6).meters
     pan_drop_m: float = inch(0.75).meters
     perimeter_lap_m: float = inch(2).meters
     hem_m: float = inch(0.25).meters
     drainage_slope: float = 0.25 / 12
     obstacle_clearance_m: float = inch(0.0625).meters
-    metal_material: str = "aluminum"
+    membrane_material: str = "fluid-applied-flashing"
+    sill_shim_material: str = "kdat"
 
 
 FLASHING = FlashingConfig()

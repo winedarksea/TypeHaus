@@ -51,7 +51,9 @@ def test_only_authored_members_are_taped(rows):
     assert taped == BUILT_UP_BEAMS | LEDGERS | {
         "FS-SG-PORCH", "FS-SG-DECK", "FS-BW-FLOOR",
         "BM-BW-SCSILL",
-        "BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT", "ST-G-SERVICE"}
+        "BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT", "ST-G-SERVICE",
+        # The slat brace's sill under TR-BW-SCREEN-CAP (2026-10-16).
+        "SB-BW-BAND"}
 
 
 def test_the_beams_take_the_wide_roll_at_their_own_widths(rows):

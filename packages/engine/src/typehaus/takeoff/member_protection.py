@@ -11,6 +11,8 @@ Two sources, both authored — this section derives nothing it was not told:
   member the deck resolved, matched back to its floor system by ``parent_uid``.
 * :attr:`~typehaus.model.structure.Beam.top_protection` — the beam's own axis length, taken
   off its two nodes exactly the way ``resolve/envelope.py::_resolve_beam`` takes it.
+* :attr:`~typehaus.model.braces.SlatBrace.top_protection` — the sill's length, plus a collar
+  round every slat and post standing on it (each footprint's perimeter).
 
 The row carries ``width_in`` because tape is sold in widths and the width is a decision, not
 a constant: a 3-ply 2x12 is 4 1/2" across and the common 3 1/8" "double joist" roll does not
@@ -22,6 +24,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.model.braces import SlatBrace
 from typehaus.model.floors import FloorSystem
 from typehaus.model.spatial import Stair
 from typehaus.model.structure import Beam
@@ -35,6 +38,22 @@ _M_TO_FT = 3.280839895013123
 #: and the blocking between them all present an up-facing top the deck sheet sits on. Posts
 #: and hangers do not, and a stud is not part of a floor system at all.
 _TAPED_CATEGORIES = frozenset({"joist", "rim", "blocking"})
+#: A member whose bottom is within this of the sill top stands on it.
+_SEATED_M = 0.003
+
+
+def _collar_m(member) -> float:
+    """Perimeter of a member's cut where it lands: the collar a tape turns up around it."""
+    try:
+        section = cross_section(member.profile)
+    except Exception:
+        return 0.0
+    plan = math.dist(member.p0, member.p1)
+    rise = math.sqrt(max(0.0, member.length_m ** 2 - plan ** 2))
+    sine = 1.0 if plan < 1e-9 else rise / member.length_m
+    if sine < 1e-3:
+        return 0.0
+    return 2.0 * (section.width_m + section.depth_m / sine)
 
 
 def _rounded_width_in(profile: str) -> float:
@@ -114,6 +133,20 @@ def member_protection_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 continue
             rows.add(element.top_protection, "beam", _rounded_width_in(element.size),
                      tag=element.tag, length_m=math.dist(p0, p1))
+    # A slat brace's sill: its run, plus a turned-up collar at every member landing on it.
+    for brace in model.braces:
+        authored = model.plan.by_tag(brace.tag)
+        if not isinstance(authored, SlatBrace) or not authored.top_protection:
+            continue
+        sill = next((m for m in brace.members if m.child_key == "plate-sill"), None)
+        if sill is None:
+            continue
+        collars = sum(_collar_m(m) for m in brace.members
+                      if m is not sill and abs(m.z0_m - sill.z1_m) < _SEATED_M)
+        # The sill is a plate laid FLAT, so the tape covers its wide face.
+        width_in = round(cross_section(sill.profile).depth_m / M_PER_IN, 3)
+        rows.add(authored.top_protection, "brace", width_in,
+                 tag=brace.tag, length_m=sill.length_m + collars)
     # A notched stringer's tape follows the sawtooth, rather than its shorter rake axis.
     # Count each tread bearing and its adjoining vertical cut, excluding the unnotched tail.
     for stair in model.stairs:

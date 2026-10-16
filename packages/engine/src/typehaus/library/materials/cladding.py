@@ -104,6 +104,20 @@ _BASE_ROWS: tuple[Material, ...] = (
         "satisfied by no sheathing thickness at all — the rule presumes penetration "
         "into framing, which is what these screws do",
     ),
+    # Brake-formed opening head flashing: the default metal for every derived head
+    # (``Project.opening_flashing_material`` names a house's own coil instead). Steel, not
+    # aluminium, so it may bear on treated wood across a membrane (AWC DCA6).
+    Material(
+        tag="formed-steel-flashing",
+        name="Brake-formed prefinished steel flashing (24 ga, G90)",
+        r_per_inch=0.0,
+        density=7850.0,
+        vapor_permeance_perms=0.0,
+        hatch="metal",
+        color="#1c1f24",
+        source=f"{_UAF}: sheet steel is vapour-impermeable. 24 ga G90 galvanized, PVDF "
+        "finish, from the cladding maker's flat trim stock",
+    ),
     # The vent strip that closes a rainscreen cavity's base: a corrugated polypropylene
     # section whose flutes run *across* the cavity, so the cavity keeps draining and
     # venting while nothing insect-sized gets in. It is a spaced section, not a skin — the

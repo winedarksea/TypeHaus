@@ -40,6 +40,9 @@ BAND = SlatBrace(
     base_elevation=ft(SCREEN_PANEL_TOP_FT), top_elevation=ft(HEADER_SOFFIT_FT),
     clear_gap=inch(2.25),  # KBS1Z leg clearance: 1-1/2" overlapped every pair (note §3a)
     plane_offset=inch(1.0), assembly="POST_KDAT", supported_by="W-BW-SCREEN",
+    # Under TR-BW-SCREEN-CAP: the dielectric between its steel and the KDAT, and the seal at
+    # every cut-out, turned up each slat and post 1" (the porch beams' wide roll).
+    top_protection="butyl-tape-beam",
     connects=("PT-BW-CW", "PT-BW-CNW", "BM-BW-RW", "W-BW-SCREEN"),
     source="notes/canopy_west_band.md §3 — 45° slats as knee braces, KBS1Z each end "
            "(IAPMO UES ER-280 Table 7, type 2); the bays share the push, one in tension, "

@@ -14,6 +14,31 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Flashing review: the 3D against the specs (2026-10-16)
+
+Measuring the 2026-10-15 flashing against `notes/opening_flashing_spec.md` and the outie
+detail found three kinds of problem. Some of the 3D was wrong, some of the model contradicted
+the spec, and some spec gaps only showed once the model drew them. Fixed:
+
+- **Geometry.** Outie membranes were drawn inside the plywood buck; they now lie on its face.
+  The pans now slope on a tapered shim and back-dam strip. The head used a course height as
+  its plan reach and was 1-1/2" short of WIN-G-N1's casing; it now runs 1" past each casing
+  end, with end dams. The stem Z was an L and now has its back leg. D-G-OVERHEAD's membrane
+  ran 22" below the wall. The 2D detail and the 3D now read one config.
+- **Model against spec.** The 2026-10-15 entry said door pans "discharge outward". The model
+  stopped them at the mount plane, behind the cladding, because it applied the window rule to
+  doors. Door pans now run past the cladding. The head metal was `aluminum`, which was not
+  even a catalog material. It is now `metal-dark-exterior` steel, as spec §4 always said
+  (owner). The vent-gap outlet is what's built, so the prose changed and the geometry did
+  not (owner). TR-SG-WRB-FLASH "tucked into the house WRB", but there is no WRB; it is now
+  two pieces across the movement gap.
+- **Spec gaps closed in the notes.** Strip-in over the head upstand, an unsealed sill flange,
+  1/4"/ft minimum, tape under TR-BW-SCREEN-CAP (billed), and the garage and court openings
+  (spec §7, §8). D-B-PATIO and WIN-B-SAUNA stay unmodelled and are named by
+  `integrity.opening_flashing_coverage`. The overhead door's membrane got a price row.
+
+Not done: `siding:flashing` still includes wall corners and roof corner trim (owner's call).
+
 ## Flashing geometry and the west-screen sill cap (2026-10-15)
 
 The exposed surface selected for capping is SB-BW-BAND's 2×6 sill above W-BW-SCREEN,

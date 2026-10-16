@@ -17,7 +17,9 @@ Everything self-gates on its subject genuinely being in the cut: the head vocabu
 draws when the head elevation is inside the crop, a windowless-weather-wall recipe on an
 interior partition draws nothing, and no function here mutates construction geometry.
 
-Dimensions come from :data:`~typehaus.emit.draw.detail_components.config.OPENING_DETAIL`.
+The head flashing and sill pan take their dimensions from
+:data:`~typehaus.resolve.flashing_config.FLASHING`, exactly as the 3D opening flashing does;
+the rest come from :data:`~typehaus.emit.draw.detail_components.config.OPENING_DETAIL`.
 Section coordinates: ``u`` is the in-section axis, ``z`` is world z, both in model inches.
 
 ``out_sign`` multiplies a length that does not already carry a direction. The difference
@@ -47,6 +49,39 @@ from typehaus.emit.draw.detail_components.geometry import (
 from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import IRNode
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.flashing_config import FLASHING
+from typehaus.resolve.framing.truss_common import BUCK_THICKNESS_IN
+from typehaus.resolve.geometry_openings import (
+    _WINDOW_TRIM_FACE_WIDTH_M,
+    _WINDOW_TRIM_PROUD_DEPTH_M,
+)
+from typehaus.resolve.opening_flashing import is_overhead
+
+
+def _in(meters: float) -> float:
+    return meters / M_PER_IN
+
+
+def _head_path(back_u, seat_z, run_u, rise_in):
+    """The head flashing: up the water plane, sloped out over the seat, down to a drip."""
+    fall = abs(run_u) * FLASHING.drainage_slope
+    return path_from_steps((back_u, seat_z + fall + rise_in), [
+        (0.0, -rise_in), (run_u, -fall), (0.0, -_in(FLASHING.head_drop_m))])
+
+
+def _pan_path(back_u, seat_z, outlet_u, out_sign):
+    """The sill pan: back dam on its strip, sloped across the seat, turned down at the outlet."""
+    dam_u = back_u + out_sign * _in(FLASHING.back_dam_strip_m)
+    fall = abs(outlet_u - dam_u) * FLASHING.drainage_slope
+    back_dam = _in(FLASHING.back_dam_m)
+    return path_from_steps((dam_u, seat_z + back_dam), [
+        (0.0, fall - back_dam), (outlet_u - dam_u, -fall), (0.0, -_in(FLASHING.pan_drop_m))])
+
+
+def _drip_throw_in(opening) -> float:
+    """How far the head drip stands past the cladding: clear of a window's casing face."""
+    proud = _WINDOW_TRIM_PROUD_DEPTH_M if opening.kind == "window" else 0.0
+    return _in(proud + FLASHING.head_projection_m)
 
 
 def opening_z_in(wall, opening) -> tuple[float, float]:
@@ -86,34 +121,30 @@ def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> lis
     clad_out = face_of(clad, is_outboard_high, outer=True)
     sill_z, head_z = opening_z_in(wall, opening)
     cfg = OPENING_DETAIL
+    throw = out_sign * _drip_throw_in(opening)
 
     nodes: list[IRNode] = []
     if _in_crop_z(head_z, crop):
-        path = path_from_steps((sheath_out, head_z + cfg.head_flashing_rise_in), [
-            (0.0, -cfg.head_flashing_rise_in),
-            ((clad_out - sheath_out) + out_sign * cfg.head_flashing_lip_in, 0.0),
-            (0.0, -cfg.head_flashing_drop_in),
-        ])
-        nodes += flashing_nodes(path, tag="opening-head-flashing")
+        casing = _in(_WINDOW_TRIM_FACE_WIDTH_M) if opening.kind == "window" else 0.0
+        nodes += flashing_nodes(_head_path(sheath_out, head_z + casing,
+                                           (clad_out - sheath_out) + throw,
+                                           _in(FLASHING.head_rise_m)),
+                                tag="opening-head-flashing")
         # Sealant at the cladding-to-frame joint, tucked under the flashing's drip.
         nodes += rect_region(clad_out - out_sign * cfg.sealant_bead_in,
                              head_z - cfg.sealant_bead_in, clad_out, head_z,
                              "opening-sealant", "sealant", "metal", lineweight=PROFILE)
-    if _in_crop_z(sill_z, crop):
+    if _in_crop_z(sill_z, crop) and not is_overhead(model, opening):
         stud = outermost_with_function(intervals, "structure")
         back = (face_of(stud, is_outboard_high, outer=False) if stud is not None
                 else sheath_out - out_sign * 4.0)
-        pan = path_from_steps((back, sill_z + cfg.sill_pan_back_dam_in), [
-            (0.0, -cfg.sill_pan_back_dam_in),
-            ((clad_out - back) + out_sign * cfg.sill_pan_lip_in, 0.0),
-            (0.0, -cfg.sill_pan_drop_in),
-        ])
-        nodes += flashing_nodes(pan, tag="opening-sill-pan")
+        nodes += flashing_nodes(_pan_path(back, sill_z, clad_out + throw, out_sign),
+                                tag="opening-sill-pan")
     return nodes
 
 
 def outie_window_truss(model, wall, opening, crop, direction, station) -> list[IRNode]:
-    """Head flashing + sill pan at an OUTIE window in a truss wall.
+    """Head flashing + sill pan at an OUTIE window or door in a truss wall.
 
     The innie recipe above measures both pieces from ``sheath_out``, because that is where an
     innie unit sits: in the stud plane, behind the insulation, with the flashing lapped onto
@@ -132,10 +163,13 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
       behind it: the foam is sprayed *after* the truss and *before* the flashing, so the
       band's back is 2-1/2" inside a cured solid at the moment this piece goes on and an
       upstand there would have to be cut into it;
-    * the **sill pan** lies on the sill buck with its back dam turned up against the buck's
-      inboard leg, runs out to the truss plane, and turns down into the rainscreen gap. It
-      discharges BEHIND the cladding, not past it: an outie pan that ran out to a visible
-      drip would put a metal lip under every window on the facade.
+    * the **sill pan** lies ON the sill buck (which lines the RO), its back dam turned up a
+      rigid strip at the sheathing face, falls 1/4"/ft out to the truss plane, and turns
+      down over the buck's front edge onto the sill course face and the cladding's back,
+      behind the sill trim. The buck spans the 1/2" vent gap, so that is the outlet, not
+      the gap. It discharges BEHIND the cladding: an outie pan that ran out to a visible
+      drip would put a metal lip under every window on the facade. A DOOR's pan does run
+      past the cladding, because a threshold has no sill trim to hide behind.
 
     The buck, the head/sill blocking and the standoff framing itself are not drawn here.
     They are real resolved members now (``resolve/framing/truss_wall.py``), so the cut
@@ -176,25 +210,24 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
         blocking_in = (cfg.girt_blocking_in
                        if truss_kind(model.plan, wall.assembly) == "girt"
                        else cfg.truss_blocking_in)
-        block_top = head_z + blocking_in
-        path = path_from_steps((foam_face, block_top + cfg.outie_head_rise_in), [
-            (0.0, -cfg.outie_head_rise_in),
-            ((clad_out - foam_face) + out_sign * cfg.head_flashing_lip_in, 0.0),
-            (0.0, -cfg.head_flashing_drop_in),
-        ])
-        nodes += flashing_nodes(path, tag="opening-head-flashing")
+        casing = _in(_WINDOW_TRIM_FACE_WIDTH_M) if opening.kind == "window" else 0.0
+        seat = head_z + max(blocking_in, casing)
+        nodes += flashing_nodes(_head_path(foam_face, seat, (clad_out - foam_face)
+                                           + out_sign * _drip_throw_in(opening),
+                                           _in(FLASHING.outie_head_rise_m)),
+                                tag="opening-head-flashing")
         # Sealant at the cladding-to-frame joint, tucked under the flashing's drip. The
         # joint is at the mount plane now, which is the cladding's own inner face.
         nodes += rect_region(clad_in - out_sign * cfg.sealant_bead_in,
                              head_z - cfg.sealant_bead_in, clad_in, head_z,
                              "opening-sealant", "sealant", "metal", lineweight=PROFILE)
     if _in_crop_z(sill_z, crop):
-        pan = path_from_steps((sheath_out, sill_z + cfg.sill_pan_back_dam_in), [
-            (0.0, -cfg.sill_pan_back_dam_in),
-            ((truss_plane - sheath_out), 0.0),
-            (0.0, -cfg.outie_pan_drop_in),
-        ])
-        nodes += flashing_nodes(pan, tag="opening-sill-pan")
+        # The pan lies on the buck. A window's discharges at the mount plane, behind the
+        # cladding; a door's runs past the cladding to a drip.
+        outlet = (clad_out + out_sign * _drip_throw_in(opening) if opening.is_door
+                  else truss_plane)
+        nodes += flashing_nodes(_pan_path(sheath_out, sill_z + BUCK_THICKNESS_IN, outlet,
+                                          out_sign), tag="opening-sill-pan")
     return nodes
 
 
@@ -300,7 +333,7 @@ def humid_liner_opening_return(model, wall, opening, crop, direction,
                              "humid-membrane-return", "air-barrier", "membrane",
                              lineweight=PROFILE)
         nodes += rect_region(lo, sill_z + SAUNA_MEMBRANE_IN, hi,
-                             sill_z + SAUNA_MEMBRANE_IN + OPENING_DETAIL.sill_pan_lip_in,
+                             sill_z + SAUNA_MEMBRANE_IN + OPENING_DETAIL.humid_sill_pan_in,
                              "humid-sill-pan", "metal-dark", "flashing",
                              lineweight=PROFILE)
     return nodes

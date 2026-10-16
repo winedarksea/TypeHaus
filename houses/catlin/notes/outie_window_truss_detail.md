@@ -40,8 +40,8 @@ source:
 - [K2] Head and sill courses: KDAT 2x4 flat, post inner face to post inner face.
 - [K3] Block each course the post crosses, at 24" max, and across the RO.
 - [K4] Field courses stop 3-1/2" clear of each RO.
-- [K5] Fluid-applied sill pan: back dam up the buck leg, out to mount plane, down vent.
-- [K6 @ host#layer:spray-foam:out] Head flashing on the foam face, out over the head course, past the cladding, drip.
+- [K5] Fluid-applied pan on the buck: dam on a strip, 1/4"/ft, down the buck edge.
+- [K6 @ host#layer:spray-foam:out] Steel head flashing on the foam face, over the course, past the casing, drip. Strip in.
 - [K7 @ host#layer:cladding:out] Sealant at the cladding-to-frame joint, at the mount plane, under the drip.
 
 ### Spec 06 10 00
@@ -285,10 +285,14 @@ Drawn by the `outie-window-truss` recipe
 innie `window-head-jamb-sill` rather than a variant of it — the innie measures both pieces
 from the sheathing face, and on this wall neither piece is anywhere near it.
 
-- **Sill pan.** Lies on the sill buck, back dam turned up against the buck's inboard leg,
-  running out to the mount plane and turning **down into the vent gap**. It discharges
-  *behind* the cladding. An outie pan carried out to a visible drip would put a metal lip
-  under every window on the facade, which is not what this house looks like.
+- **Sill pan.** Lies ON the sill buck (the buck lines the RO, 3/8" in), over a tapered shim
+  that falls 1/4"/ft outward, its back dam turned up a rigid strip at the sheathing face. It
+  runs out to the mount plane and turns **down over the buck's front edge**, at the outer girt
+  face: the buck spans the 1/2" vent gap, so the water runs down past the sill course face and
+  the cladding's back, hidden behind the sill trim (owner, 2026-10-16). It discharges *behind*
+  the cladding. An outie pan carried out to a visible drip would put a metal lip under every
+  window on the facade, which is not what this house looks like. **Leave the window's sill
+  flange unsealed** over the pan (spec §3).
 
   **Fluid-applied, and the ponding paper a reader will find does not govern it.** RDH's 2017
   study (Wilkinson/Tatara/Finch) ponded seven liquid membranes on wood sills for 42 days and
@@ -297,8 +301,8 @@ from the sheathing face, and on this wall neither piece is anywhere near it.
   identically at ~35-40%, so the paper's own conclusion is that there is "no discernable
   drying benefit to liquid applied membrane flashings over impermeable self-adhered
   products" — not that liquids are worse than tapes. And every one of those failures was a
-  **ponding** failure. This pan does not pond: it runs out 6" and turns down into the vent
-  gap, so what reaches it leaves it. A pan that drains has no puddle to sit under for 42
+  **ponding** failure. This pan does not pond: it falls 1/4"/ft over 6" and turns down over
+  the buck's front edge, so what reaches it leaves it. A pan that drains has no puddle to sit under for 42
   days. Where the finding still bites is DURING CONSTRUCTION, before the cladding and its
   vent gap exist — flash, then close in, and do not leave an opening standing full of
   meltwater. Build the sill heavy regardless (Tremco publishes 60 mils at sills against 20
@@ -307,7 +311,9 @@ from the sheathing face, and on this wall neither piece is anywhere near it.
   whitelist does not cover — are in `notes/opening_flashing_spec.md`.
 - **Head flashing.** Starts on the **foam face** above the head course — the foam is the water
   plane, so lapping onto it is what makes the head continuous — turns out over the head
-  course, laps past the cladding and drips. Sealant at the cladding-to-frame joint sits at the
+  course, laps past the casing and drips. Brake-formed steel in the house dark, bedded on the
+  membrane over the KDAT course, end dams folded up 3/4", 1" past each casing end, and its
+  upstand's top edge stripped in to the foam (spec §3-§4). Sealant at the cladding-to-frame joint sits at the
   mount plane, tucked under the drip.
 
 One number told the recipe which wall it is on: the head course is **3-1/2"** tall here (a 2x4
@@ -353,8 +359,9 @@ means four places:
 - **Jamb (HOLD POINT).** The 1/2" gap behind each jamb post is closed by the buck return. Walk
   every jamb before the cladding goes on: the return must meet the foam with no daylight, and
   any gap gets low-expansion foam.
-- **Sill.** The pan discharges into the vent gap, which is closed below by the base screen. Only
-  the J-receiver joint needs sealing; seal it at the mount plane.
+- **Sill.** The pan discharges over the buck's front edge onto the sill course face and the
+  cladding's back, behind the sill trim; whatever reaches the cavity drains to the base screen.
+  Only the J-receiver joint needs sealing; seal it at the mount plane.
 - **Penetrations.** Hose bibs, exterior lights and the ERV hoods sleeve through the cavity; seal
   each sleeve to the foam and to the panel (`[allowances] envelope-exterior-hoods-and-flashing`).
 

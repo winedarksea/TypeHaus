@@ -1163,12 +1163,13 @@
           0.0
         ]
       ],
-      "pattern": "aluminum",
+      "pattern": "aluminum-flat-pvdf",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "aluminum"
+      "material": "aluminum-flat-pvdf",
+      "fill": "#1c1f24"
     },
     {
       "space": "model",

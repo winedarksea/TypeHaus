@@ -2982,8 +2982,8 @@ for _row, _y, _rise in _PILLAR_ROWS:
 # ============================================================================
 # Balcony guard + edge trim. The metal fascia-mounted guardrail is a first-class Railing
 # (not a parapet). PVC fascia closes the joist ends; a front gutter catches the south-
-# draining deck via a front-edge drip flashing; the rear (house) edge gets a counter-
-# flashing tucked up into the house WRB. Deck drains SOUTH (rear pillars 2" taller).
+# draining deck via a front-edge drip flashing; the rear (house) edge gets a base flashing
+# and a separate house-side counterflashing (below). Deck drains SOUTH (rear pillars 2" taller).
 # ============================================================================
 _deck_top = ft(SPEC.balcony_level_ft)  # 9'-9" joist top at the south edge
 # Guard height is measured from the surface a person stands on, which is the top of the
@@ -3111,15 +3111,54 @@ BALCONY_RUNNEL = Gutter(
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
     top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(3),
-    material="aluminum", host_ref="FS-SG-DECK",
+    material="aluminum-flat-pvdf", host_ref="FS-SG-DECK",
     section=FormedFlashingSection(drip=inch(_drip_depth_in)))
-# Rear (north, house-side) counter-flashing tucked up into the house WRB.
-_REAR_PATH = (pt(ft(_deck_x_w), ft(_y_in_n)), pt(ft(_deck_x_e), ft(_y_in_n)))
-BALCONY_REAR_FLASH = Flashing(
-    uid="SGFF02AAAA", tag="TR-SG-WRB-FLASH", kind=TrimKind.WRB_COUNTERFLASHING,
-    path=_REAR_PATH, top_elevation=_deck_top, depth=inch(8), thickness=inch(2),
-    material="aluminum", host_ref="FS-SG-DECK",
-    section=FormedFlashingSection(profile="counter", upstand=inch(6), drip=inch(2)))
+# ** THE REAR EDGE IS TWO PIECES ACROSS A MOVEMENT GAP (2026-10-16). ** The deck's north edge
+# stands 2 3/4" off the house cladding, and the two are separately founded structures. The
+# house has no WRB to tuck into, so the old single run (uid SGFF02AAAA, retired) was a free
+# upstand in the gap. Now: a deck-side BASE flashing on the plank (aluminium, like the
+# deck), its 3 1/2" upstand at the deck edge; and a house-side COUNTERFLASHING (the house's
+# steel trim coil) screwed through the panel into the girts with the cladding's gasketed
+# screws, its top leg in butyl, lapping 2" down over the upstand with 1/2" of air beside it
+# and ~1" over the plank. Neither touches the other or crosses the gap fastened.
+# Both break at D-S-DECK-E (RO x 18'-10".. 23'-10", plus its head's 1" laps): the upstand
+# would be a step at the threshold and the counterflashing would cross the door. The
+# door's own sill pan discharges into the gap there. Hand-transcribed; a test pins it.
+_REAR_CLAD_Y_IN = -SPEC.house_ext_layers_in       # house cladding face
+_REAR_DECK_Y_IN = _y_in_n * 12.0                  # deck north edge
+_REAR_PLANK_TOP = _deck_walking_surface + _balcony_beam_rise
+_REAR_UPSTAND_IN = 3.5
+_REAR_BASE_W_IN = 4.0
+_REAR_COUNTER_W_IN = _REAR_CLAD_Y_IN - _REAR_DECK_Y_IN + 0.5
+_REAR_BREAKS_FT = ((_deck_x_w, 18.75), (23.0 + 11.0 / 12.0, _deck_x_e))
+
+
+def _rear_run(y_in, x0, x1):
+    return (pt(ft(x0), ft(y_in / 12.0)), pt(ft(x1), ft(y_in / 12.0)))
+
+
+BALCONY_REAR_FLASH = [
+    Flashing(uid=uid, tag=f"TR-SG-BASE-FLASH-{side}", kind=TrimKind.WRB_COUNTERFLASHING,
+             path=_rear_run(_REAR_DECK_Y_IN - _REAR_BASE_W_IN / 2.0, x0, x1),
+             top_elevation=_REAR_PLANK_TOP, depth=inch(_REAR_UPSTAND_IN),
+             thickness=inch(_REAR_BASE_W_IN), material="aluminum-flat-pvdf",
+             host_ref="FS-SG-DECK", back_side="left",
+             section=FormedFlashingSection(profile="counter", slope=0.25 / 12,
+                                           upstand=inch(_REAR_UPSTAND_IN), drip=inch(0),
+                                           hem=inch(0)))
+    for uid, side, (x0, x1) in (("NXN52KSTF7", "W", _REAR_BREAKS_FT[0]),
+                                ("8V0TSMCBW5", "E", _REAR_BREAKS_FT[1]))
+] + [
+    Flashing(uid=uid, tag=f"TR-SG-COUNTER-FLASH-{side}", kind=TrimKind.WRB_COUNTERFLASHING,
+             path=_rear_run(_REAR_CLAD_Y_IN - _REAR_COUNTER_W_IN / 2.0, x0, x1),
+             top_elevation=_REAR_PLANK_TOP + inch(_REAR_UPSTAND_IN + 0.75), depth=inch(3),
+             thickness=inch(_REAR_COUNTER_W_IN), material="metal-dark-exterior",
+             back_side="left",
+             section=FormedFlashingSection(profile="counter", slope=0.25 / 12,
+                                           upstand=inch(3), drip=inch(3)))
+    for uid, side, (x0, x1) in (("HPXC1Y5YE6", "W", _REAR_BREAKS_FT[0]),
+                                ("TM7XNG0XE4", "E", _REAR_BREAKS_FT[1]))
+]
 
 # ============================================================================
 # Per-storey exports (spliced into plan/manifest.py).
@@ -3206,7 +3245,7 @@ PORCH_SLOT_CLOSURE = Flashing(
     path=(pt(ft(_x_in_w), ft(_slot_closure_y)),
           pt(ft(_x_in_e), ft(_slot_closure_y))),
     top_elevation=_porch_top, depth=inch(2), thickness=inch(_SLOT_CLOSURE_REACH_IN),
-    material="aluminum", host_ref="FS-SG-PORCH",
+    material="aluminum-flat-pvdf", host_ref="FS-SG-PORCH",
     # West→east, so the left-hand normal points north — the house side, which is the end
     # carrying the lip rather than the fastener line.
     back_side="left")
@@ -3224,4 +3263,4 @@ MAIN_ELEMENTS = [*MAIN_NODES, *LEDGERS, *LEDGER_ANCHORS, *LEDGER_HANGERS, PORCH_
 SECOND_ELEMENTS = [*SECOND_NODES, *BALCONY_BEAMS, *PILLARS,
                    BALCONY_JOISTS, *BALCONY_TIES, BALCONY_GUARD, BALCONY_FASCIA,
                    BALCONY_GUTTER, BALCONY_LEADER, BALCONY_RUNNEL, BALCONY_DRIP,
-                   BALCONY_REAR_FLASH]
+                   *BALCONY_REAR_FLASH]

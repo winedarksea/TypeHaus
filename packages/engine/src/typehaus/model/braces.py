@@ -98,6 +98,9 @@ class SlatBrace(Element):
     assembly: str | None = None
     #: The wall whose top plate the sill stands on: its dead load joins that line's.
     supported_by: str | None = None
+    #: Self-adhered membrane over the sill's exposed top, under any cap, turned up each slat
+    #: and post that lands on it. A price-row tag, billed like ``Beam.top_protection``.
+    top_protection: str | None = None
     connects: tuple[str, ...] = ()
     source: str = ""
 

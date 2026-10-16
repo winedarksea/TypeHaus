@@ -225,6 +225,11 @@ _project = Project(
     preparer="Colin Catlin (owner-drawn, Type:Haus)",
     # The start position the model is reviewed from.
     default_view_pan=(1.0, 1.0),
+    # Every derived window/door head flashing is brake-formed from the cladding maker's
+    # trim kit in the house's one exterior dark, and bills inside the panel's $/SF
+    # (owner, 2026-10-16; notes/opening_flashing_spec.md §4). Steel, so it may bear on the
+    # KDAT head course across the membrane; aluminium may not (AWC DCA6).
+    opening_flashing_material="metal-dark-exterior",
     # Required: any ClearanceZone carrying a ``code_profile`` (in this catalog, only the
     # water-closet envelope) is silently dropped by
     # ``resolve/placeables.py::_resolved_clearance_zones`` without it, and every water closet
