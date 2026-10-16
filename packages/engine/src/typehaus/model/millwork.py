@@ -307,6 +307,10 @@ class TrimStandard(Element):
     excluded_rooms: tuple[str, ...] = ()
     base_material_ref: str | None = None
     room_trims: tuple[RoomTrim, ...] = ()
+    # The board length the supply sells (8', say): ``haus millwork`` packs the cut pieces
+    # into boards this long. An owner-supply fact like ``max_board_width``. None sizes each
+    # board to the longest piece, which is what a sawyer milling to order would cut.
+    stock_length: Length | None = None
 
     def _room_material(self, room: str) -> str | None:
         return next((o.material_ref for o in self.room_trims if room in o.rooms), None)
@@ -330,6 +334,8 @@ class TrimStandard(Element):
         if min(self.thickness.meters, self.base_height.meters,
                self.casing_width.meters) <= 0 or self.reveal.meters < 0:
             raise ValueError(f"{self.tag}: trim thickness, height and width must be positive")
+        if self.stock_length is not None and self.stock_length.meters <= 0:
+            raise ValueError(f"{self.tag}: stock_length must be positive")
         return self
 
 

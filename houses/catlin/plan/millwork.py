@@ -106,6 +106,8 @@ MILLWORK = [
         # 3/4" jamb + 1/4" shim: the leg's inside edge sits 13/16" inside the RO.
         jamb_allowance=inch(1),
         min_leg_width=inch(1.5),
+        # Boards come in 8' lengths: `haus millwork` packs base and casing cuts into them.
+        stock_length=ft(8),
         excluded_rooms=("RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM",
                         "RM-S-PLANT"),
     ),

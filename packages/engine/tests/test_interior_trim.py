@@ -344,3 +344,22 @@ def test_catlin_base_stops_at_the_bare_faces(catlin_model_ro) -> None:
     assert not {w for w in walls if w.startswith("W-M-FIRE-")}
     assert not [r for r in catlin_model_ro.base_runs
                 if r.wall_tag == "W-M-STRW" and r.room == "RM-M-MUDROOM"]
+
+
+def test_milled_trim_packs_into_declared_stock_lengths(starter) -> None:
+    """With ``stock_length`` the cut pieces pack into boards that long, one row per stock."""
+    from typehaus.takeoff.hardwood import hardwood_takeoff
+
+    milled = Material(tag="t-oak", name="oak trim", species="oak", nominal_quarters=4,
+                      milling_profile="S4S", requires_custom_milling=True)
+    plan = _swap(_library(starter, materials=(*starter.library.materials, milled)),
+                 "TRIM-STANDARD", material_ref="t-oak", stock_length=inch(96))
+    model, _ = _resolved(plan)
+    rows = [r for r in hardwood_takeoff(model) if r["use"] in ("baseboard", "door casing")]
+    assert sorted(r["use"] for r in rows) == ["baseboard", "door casing"]
+    casing_in = sum(p.length_m for c in model.door_casings for p in c.pieces) / 0.0254
+    for row in rows:
+        assert row["finished_length_in"] == pytest.approx(96)
+        assert row["pieces"] * 96 >= row["total_length_ft"] * 12 - 1e-6
+    casing = next(r for r in rows if r["use"] == "door casing")
+    assert casing["total_length_ft"] == pytest.approx(casing_in / 12, abs=0.1)
