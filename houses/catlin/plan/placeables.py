@@ -383,7 +383,8 @@ MAIN_PLACEABLES = [
     # Four cellular blinds cover WIN-M-LIV-E1/E2/E3 and WIN-M-EAST-MID, the matching 27x48
     # east-facing living-room windows. Their 34" sill and 82" head match the rough openings.
     # Mount elevations are AFF; the 15/16" finished-floor build-up means 33 1/16" AFF puts
-    # each 48" shade exactly between those storey-datum elevations.
+    # each 48" shade envelope exactly between those storey-datum elevations. The 3D symbol
+    # draws the shade raised into a compact stack beneath the 82" head.
     Furniture(uid="CBLIV001EA", tag="FURN-M-LIV-BLIND-E1", type_ref="FT-CELLULAR-BLIND-2748", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
               location=Location(attachment=WallAttachment(

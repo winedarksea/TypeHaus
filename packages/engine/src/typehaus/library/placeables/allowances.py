@@ -15,7 +15,8 @@ _ROD = ("Curtain rod on end brackets. Width is the rod, not the opening: a rod r
         "projection, height the rod and finial.")
 _CELLULAR_BLIND = (
     "Generic inside-mount cellular blind sized for a nominal 27 x 48-inch window opening. "
-    "The shade is modeled fully lowered with a headrail and bottom rail; the exact product, "
+    "The shade is modeled raised, with folded fabric and bottom rail beneath the headrail; "
+    "the declared height is the full window drop. The exact product, "
     "fabric, opacity and field-measured deduction remain unselected."
 )
 _PANEL = ("Framed metal access panel in a finished wall face; size is the clear opening, "

@@ -1,4 +1,4 @@
-"""Generated massing for a lowered, inside-mount cellular window blind."""
+"""Generated massing for a raised, inside-mount cellular window blind."""
 
 from __future__ import annotations
 
@@ -12,22 +12,24 @@ PLEAT_SPACING_M = inch(1.5).meters
 PLEAT_FACE_HEIGHT_M = inch(0.10).meters
 PLEAT_FACE_DEPTH_M = inch(0.08).meters
 SHADE_FABRIC_DEPTH_M = inch(0.04).meters
+RAISED_FABRIC_HEIGHT_M = inch(1.5).meters
 MIN_VISIBLE_PLEAT_COUNT = 1
 
 
 def cellular_blind(width: float, depth: float, height: float
                    ) -> tuple[tuple[Stroke, ...], tuple[Part, ...]]:
-    """A headrail, closed honeycomb shade and bottom rail at the type's declared size.
+    """A headrail, folded honeycomb shade and bottom rail at the top of the opening.
 
-    The pale fabric sheet keeps the fully lowered shade opaque in the viewer. Closely spaced
-    front ribs give the elevation the repeated cells of a cellular shade without a per-window
-    product mesh. All pieces stay inside the catalog type's envelope.
+    The catalog height remains the full window drop so the headrail stays at the window head.
+    Compress the fabric and its pleats beneath it, leaving the glass below the stack clear.
+    All pieces stay inside the catalog type's envelope.
     """
     headrail_height = min(HEADRAIL_HEIGHT_M, height * 0.15)
     bottom_rail_height = min(BOTTOM_RAIL_HEIGHT_M,
                              max(0.0, height - headrail_height) * 0.15)
-    shade_bottom = bottom_rail_height
     shade_top = height - headrail_height
+    extended_fabric_height = shade_top - bottom_rail_height
+    shade_bottom = shade_top - min(RAISED_FABRIC_HEIGHT_M, extended_fabric_height)
     shade_height = shade_top - shade_bottom
     side_clearance = min(SIDE_CLEARANCE_M, width * 0.08)
     shade_width = width - 2 * side_clearance
@@ -35,17 +37,17 @@ def cellular_blind(width: float, depth: float, height: float
     front_y = -depth / 2
     fabric_depth = min(SHADE_FABRIC_DEPTH_M, depth / 8)
     rib_depth = min(PLEAT_FACE_DEPTH_M, depth / 8)
-    rib_height = min(PLEAT_FACE_HEIGHT_M, PLEAT_SPACING_M / 4)
     parts: list[Part] = [
         box(0.0, 0.0, height - headrail_height, height,
             rail_width, depth, "appliance-white"),
         box(0.0, 0.0, shade_bottom, shade_top,
             shade_width, fabric_depth, "appliance-white"),
-        box(0.0, 0.0, 0.0, bottom_rail_height,
+        box(0.0, 0.0, shade_bottom - bottom_rail_height, shade_bottom,
             rail_width, depth, "appliance-white"),
     ]
-    rib_count = max(MIN_VISIBLE_PLEAT_COUNT, int(shade_height / PLEAT_SPACING_M))
+    rib_count = max(MIN_VISIBLE_PLEAT_COUNT, int(extended_fabric_height / PLEAT_SPACING_M))
     spacing = shade_height / rib_count
+    rib_height = min(PLEAT_FACE_HEIGHT_M, spacing / 2)
     for rib_index in range(rib_count):
         center_z = shade_bottom + (rib_index + 0.5) * spacing
         # Alternating shallow offsets suggest the folded cell profile in elevation and side view.

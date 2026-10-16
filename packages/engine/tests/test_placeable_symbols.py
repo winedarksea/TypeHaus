@@ -79,9 +79,10 @@ def test_generation_is_pure_and_deterministic(symbol: str) -> None:
     assert first == second
 
 
-def test_cellular_blind_has_a_pleated_lowered_shade_at_its_catalog_size() -> None:
+def test_cellular_blind_has_a_pleated_raised_shade_at_the_window_head() -> None:
     from typehaus.library.placeables.allowances import CELLULAR_BLIND_2748
     from typehaus.model.canvas import model_symbol_for
+    from typehaus.quantities import inch
 
     product = CELLULAR_BLIND_2748
     symbol = model_symbol_for(product)
@@ -95,7 +96,12 @@ def test_cellular_blind_has_a_pleated_lowered_shade_at_its_catalog_size() -> Non
     headrail, shade, bottom_rail, *pleats = parts
     assert len(pleats) >= 20
     assert headrail["center"][2] + headrail["size"][2] / 2 == pytest.approx(height)
-    assert bottom_rail["center"][2] - bottom_rail["size"][2] / 2 == pytest.approx(0)
+    stack_bottom = bottom_rail["center"][2] - bottom_rail["size"][2] / 2
+    assert stack_bottom == pytest.approx(height - inch(4).meters)
+    assert all(part["center"][2] - part["size"][2] / 2 >= stack_bottom - TOLERANCE
+               for part in parts)
+    assert bottom_rail["center"][2] + bottom_rail["size"][2] / 2 == pytest.approx(
+        shade["center"][2] - shade["size"][2] / 2)
     assert shade["center"][2] + shade["size"][2] / 2 == pytest.approx(
         headrail["center"][2] - headrail["size"][2] / 2)
     assert all(pleat["color"] == "casework-shadow" for pleat in pleats)

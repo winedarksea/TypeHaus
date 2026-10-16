@@ -5257,3 +5257,11 @@ A reviewer's five points and two follow-ups; owner decisions marked.
   shade and bottom rail. The other living-room rods remain.
 - The shared type is generic geometry, not a product selection. Fabric, opacity, color, exact
   inside-mount deduction and pricing remain open pending product choice and field measurement.
+
+## 2026-10-16 — Show the cellular blinds raised
+
+- The shared `cellular-blind` symbol now gathers the fabric and bottom rail under the
+  headrail in a 4" stack. The four east living-room blinds leave the glass below 78" clear,
+  with their headrails still at the 82" window heads.
+- The nominal 27x48 opening size and mounting elevations still describe the full window drop.
+  The stack is illustrative geometry pending product selection.
