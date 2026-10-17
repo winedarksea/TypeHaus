@@ -891,7 +891,7 @@ MAIN_EQUIPMENT = [
               mount=Mount(kind=MountKind.WALL, elevation=inch(24),
                           recessed_into_host_surface=True),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(104),
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(88),
                   normal_gap=inch(-4), rotation_offset=deg(-180)))),
     # The pocket's receptacle. ** THE HARDWIRE SIDE IS NOT A SECOND ELEMENT: ** the J-box is
     # EQ-M-FIREPLACE's own `circuit=` and its type's POWER_120 ServicePort, which is how every
@@ -906,7 +906,7 @@ MAIN_EQUIPMENT = [
     # IS FOR. ** Behind leaves 1 3/4" once the unit's 9 3/4" rough opening is in a 11 1/2"
     # pocket, which is not a box. AO-M-FIRE-NICHE is 34" wide against the appliance's 29 1/4",
     # so there is a 2 3/8" strip of clear cavity down each side; this box is in the SOUTH one,
-    # on the pocket's back face, at y=7'-4 1/4" and x=35'-11" (the recess's back, not the
+    # on the pocket's back face, at y=6'-0 1/4" (since the 2026-10-16 move) and x=35'-11" (the recess's back, not the
     # wall's room face — the pocket runs from the finish face at ~35'-5 3/8" east to
     # ~35'-11 3/8"). At 26" AFF, low in a pocket whose floor is 23 1/2" AFF, so the cord drops
     # to it rather than looping. ** The masonry aperture in front is 29 1/2", so the brick laps
@@ -925,7 +925,7 @@ MAIN_EQUIPMENT = [
                                  recessed_into_host_surface=True),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-E1", face="left",
-                         distance_from_start=inch(88.25), normal_gap=inch(-6.625),
+                         distance_from_start=inch(72.25), normal_gap=inch(-6.625),
                          rotation_offset=deg(-180)))),
 ]
 
@@ -1910,28 +1910,25 @@ NEC_FILL_MAIN = [
     # ** THE EAST WALL'S COUNTER RECEPTACLES (2026-10-03). ** The SEKTION line puts a 36"
     # counter under counter-height glass. Coverage is measured along each slab: no point
     # more than 24" from a receptacle (the registry still reports this UNKNOWN).
-    # Every device is 42" AFF, 6" over the slab:
-    #   south bank (living)  y 22", 44", 83 7/8"        6 5/8"..81 1/4"
-    #   north bank (dining) y 124 1/8", 168", 216", 258 1/8"; slab 126 3/4"..259 3/4".
-    # RC14/RC17 sit on the masonry jambs, mirrored about the brick's y=104": the 3/4" gap
-    # to each window's framing cannot hold a box. RC4 left 68" when E1 moved over it
-    # (2026-10-03) for the south pier's bay north of the 32" stud. RC3/15 centre in the
-    # two 15" framing-clear piers. RC16 uses a standard
-    # 2 3/4" single-gang plate in the last 3 1/4", with 1/4" to king and pantry.
-    # Uids and circuits stay with the devices; no holes or pop-ups in the live-edge slab.
+    # Every device is 42" AFF, 6" over the slab (stations since the 2026-10-16 move):
+    #   south bank (living)  y 22", 67 7/8"                slab 6 5/8"..65 1/4"
+    #   north bank (dining) y 108 1/8", 152", 179", 258 1/8"; slab 110 3/4"..271 1/4"
+    # RC14/RC17 sit on the masonry jambs and move with them, mirrored about the brick's
+    # y=88": the 3/4" gap to each window's framing cannot hold a box. RC4 (44") is RETIRED:
+    # E1's new RO landed on it, and RC13 + RC17 still cover the south slab within 24".
+    # RC15 left 216" for the same reason and RC3 left 168": both now sit in the 43" pier
+    # between E2 and the dining window, in the bays either side of the 176" stud, so every
+    # point of slab not under glass is within 24". RC16 uses a standard 2 3/4" single-gang
+    # plate north of the dining window's jamb pack.
+    # ** 179" -> 258 1/8" LEAVES ~31" OF SLAB UNDER THE DINING GLASS PAST 24". ** The glass
+    # takes the wall; a listed countertop pop-up in the ash slab is the open option.
+    # Uids and circuits stay with the devices.
     ElectricalDevice(uid="VHY1DXBHG2", tag="ED-M-LIVING-RC13", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-E1", face="left", distance_from_start=inch(22),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
-    ElectricalDevice(uid="NEC011AAAA", tag="ED-M-LIVING-RC4", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(44),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="8NYNJ818AX", tag="ED-M-LIVING-RC14", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
@@ -1952,14 +1949,14 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(168),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(152),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="HGFDJH852Y", tag="ED-M-LIVING-RC15", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(216),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(179),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="RB8M3Y2Q4N", tag="ED-M-LIVING-RC16", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE-SINGLE-GANG",
@@ -1969,7 +1966,7 @@ NEC_FILL_MAIN = [
                          wall_ref="W-M-E1", face="left", distance_from_start=inch(258.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RC5 is the only receptacle covering BOTH ends of the south run — D-M-BALC's east jamb
-    # at 23'-10" and the far end near the SE corner, where RC4's coverage comes round the
+    # at 23'-10" and the far end near the SE corner, where RC13's coverage comes round the
     # east wall to meet it — and the two ends together pin it to a ~5" window, about
     # 29'-5"..29'-10". 29'-7" splits it: 5'-9" to the jamb, 5'-9 3/4" to the far point. No
     # stud line falls in that window (28'-8" and 30'-0" are the neighbours), so unlike its

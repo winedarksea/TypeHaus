@@ -168,7 +168,7 @@ DETAIL_SLICES = [
     # bubbles out in open sheet before they were clipped to it.
     Slice(uid="CVD908AAAA", tag="SL-S-FIRE", kind=SliceKind.SECTION,
          title="Fireplace breast section",
-         cut_origin=pt(ft(0), ft(8, 8)), cut_direction="x",
+         cut_origin=pt(ft(0), ft(7, 4)), cut_direction="x",
          # ft(-10, 6) would be -10*12+6 = -9'-6", not -10'-6" — ft(f, i) is f*12+i and the
          # sign does not distribute. Written as a single negative foot value on purpose.
          crop=(pt(ft(30), ft(-10.5)), pt(ft(38), ft(10)))),

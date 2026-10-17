@@ -39,6 +39,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   dry_fire_lane, electrical, electrical_attic, electrical_floor_types, equipment_types,
                   dining_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets,
                   landscape, lighting, living_east_run, living_east_run_types,
+                  living_window_types,
                   lighting_attic, lighting_types, masonry_joints, mep, millwork,
                   millwork_vanities, placeables,
                   plant_room, plant_room_types, plant_types, plate_ties,
@@ -72,7 +73,7 @@ _library = Library(
     # notes/pocket_frame_eclisse.md.
     door_types=(DT_POCKET_INT_36.model_copy(update={"pocket_frame": "eclisse"}),
                 *STANDARD_DOOR_TYPES, *main.LOCAL_DOOR_TYPES),
-    window_types=WINDOW_TYPES_16_INCH_MODULE,
+    window_types=(*WINDOW_TYPES_16_INCH_MODULE, *living_window_types.WINDOW_TYPES),
     # The shared catalogs supply every plumbing fixture, appliance, and railing this house
     # uses; only the wall-fitted mudroom closets stay house-local. Tags are disjoint, and
     # `integrity.duplicate_catalog_tag` now proves it rather than asserting it.

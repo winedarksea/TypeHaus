@@ -502,6 +502,12 @@ suppress = [
   "structural.door_framing_module:D-S-BED1",
   "structural.door_framing_module:D-S-BED2",
 
+  # Owner accepts (2026-10-16): WIN-M-DINING-E is a 63" picture window centred on the
+  # dining table in BEARING W-M-E1, past the 27" `max_window_ro_bearing_in` cap that stays
+  # house-wide. Its header is a 2-ply 9 1/2" LVL read off Boise's published table
+  # (notes/dining_window_header.md), not R602.7, so the cap's reason does not reach it.
+  "structural.window_framing_module:WIN-M-DINING-E",
+
   # ** TWO ENTRIES WERE DELETED HERE ON 2026-09-20 BECAUSE THEY MATCHED NOTHING. **
   # `structural.door_framing_module:D-M-BATH2` and `:AO-M-FIRE-NICHE` both produced no
   # finding even under `--no-suppress`. A suppression that matches nothing is not free: a

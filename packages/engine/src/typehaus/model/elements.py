@@ -150,6 +150,11 @@ class Window(Element):
     position: OpeningPosition
     sill_height: Length
     arch: Arch | None = None
+    # Per-opening engineered-header override, as on ``Door.header_spec``; None lets the
+    # framing solver size the header from R602.7.
+    header_spec: str | None = None
+    # The published header-table row that sizes ``header_spec``; see ``Door.published_span``.
+    published_span: PublishedSpan | None = None
 
 
 @register_element

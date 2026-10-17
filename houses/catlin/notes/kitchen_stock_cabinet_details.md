@@ -152,35 +152,45 @@ intrusion; adjust hinges to preserve that opening. Maintain full manufacturer de
 
 ## K5 — Living paired-door banks and sealed joint
 
-All six living-room bases are 36 by 15 system by 30 frames, each with two nominal
-18 by 30 VOXTORP matte-white doors, UTRUSTA hinges and adjustable shelves. Use
+Re-banked 2026-10-16, when the fireplace and E1/E2 moved 16" south. The five living-room
+B36 are 36 by 15 system by 30 frames, each with two nominal 18 by 30 VOXTORP matte-white
+doors, UTRUSTA hinges and adjustable shelves. Use
 [SEKTION configuration 594.631.16](https://www.ikea.com/us/en/p/sektion-base-cabinet-with-shelves-2-doors-white-voxtorp-matte-white-s59463116/)
-(frame 702.653.89, two doors 802.733.22). Legs, plinth and suspension rail are separate.
+(frame 702.653.89, two doors 802.733.22). The B18 and B15 at the ends are the same frame,
+door and shelf family at their widths. Legs, plinth and suspension rail are separate.
 These are door-and-shelf bases; the former living-room MAXIMERA specification is superseded.
-Keep the 3 1/2 support + 30 frame + 1/2 subtop + 2 oak = 36-inch installed height,
+Keep the 3 1/2 support + 30 frame + 1/2 subtop + 2 ash = 36-inch installed height,
 15 1/2-inch model depth and existing wall/front line. Coordinate actual frame, rail and
 front dimensions when installing, preserving factory door reveals; 18 inches is nominal.
 
-The south bank retains its two B36, 2 1/8-inch scribe and fireplace end panel.
-The north bank is a 1/2-inch fireplace end panel followed by four consecutive B36:
+Each window's B36 centres 1 1/4 inch off its window, away from the brick.
 
 | Cabinet | South y | North y |
 |---|---:|---:|
-| B36-E2 | 127 1/4 | 163 1/4 |
-| B36-E3 | 163 1/4 | 199 1/4 |
-| B36-MID | 199 1/4 | 235 1/4 |
-| B36-PANTRY | 235 1/4 | 271 1/4 |
+| FILLER-S (4 1/8) | 6 5/8 | 10 3/4 |
+| B18-S | 10 3/4 | 28 3/4 |
+| B36-E1 | 28 3/4 | 64 3/4 |
+| END-S (1/2) | 64 3/4 | 65 1/4 |
+| *brick* | 65 1/4 | 110 3/4 |
+| END-N (1/2) | 110 3/4 | 111 1/4 |
+| B36-E2 | 111 1/4 | 147 1/4 |
+| B36-E3 | 147 1/4 | 183 1/4 |
+| B36-MID | 183 1/4 | 219 1/4 |
+| B36-PANTRY | 219 1/4 | 255 1/4 |
+| B15-N | 255 1/4 | 270 1/4 |
+| FILLER-N (1) | 270 1/4 | 271 1/4 |
 
-The former B30 + two B15 + B12 total 72 inches, exactly two B36. The retained
-B36-MID shifts south to close the run. This replaces the 12-inch wall-frame/plinth
-installation and sets a continuous nominal 18-inch door rhythm; the window centres
-stay fixed, so E3 and EAST-MID no longer centre on individual cabinets.
+The tags E3 and MID are kept from the earlier layout with their uids; they no longer name
+the window above. `WIN-M-DINING-E` centres at y=216, over B36-MID's north half.
 
-The gap to S2 remains exactly 1/8 inch, y=271 1/4–271 3/8. Continue the north living slab
-to y=271 3/8 (length 144 5/8 from y=126 3/4); finish its end cleanly at the tall cabinet.
+The gap to S2 remains exactly 1/8 inch, y=271 1/4–271 3/8. Continue the north ash slab
+to y=271 3/8 (length 160 5/8 from y=110 3/4); finish its end cleanly at the tall cabinet.
 Seal the cabinet-to-tall joint with flexible colour-matched sealant. This is an installation
 joint, not a 1/8-inch custom frame or a thick filler cut from a cover board.
 PANTRY-S2 and everything north of it retain their existing scope.
+
+The elm slat partition's counter piece stands on the north slab at y=13'-0", across its full
+16 1/2 depth, and screws up through the slab from below (`FT-LIV-SLAT-ELM-COUNTER`).
 
 ## K6 — Seating, backs and pantry door/rack clearance
 
@@ -259,5 +269,5 @@ The placeable rows in prices.toml buy the actual stock frames, coordinated front
 shelves, corner hinges, support plywood, finish boards and fitting labour. The pantry rack
 and garage pull-out/door allowances buy the preserved specialty hardware. The rear-finish
 allowance buys the exposed backs' paint and edge band. The existing floor-anchor allowance remains; the new bar-support allowance
-buys the ply sub-top and bar pockets; the five bars bill as `FT-KIT-CT-BRACKET-24`. Kitchen B12/B18/W12/corner and six living B36 rows are priced; removed
+buys the ply sub-top and bar pockets; the five bars bill as `FT-KIT-CT-BRACKET-24`. Kitchen B12/B18/W12/corner and the living B36/B18/B15 rows are priced; removed
 filler and custom top rows are deleted. These are material/labour budget bands, not live delivered quotations.

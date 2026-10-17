@@ -127,12 +127,32 @@ def header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
 
     A house that authors neither the row nor the beam gets UNKNOWN with the hint, exactly
     as before.
+
+    Within 8' R602.7 answers, so an opening there is graded only when it opts out of the
+    table by authoring BOTH an LVL ``header_spec`` and the ``published_span`` that sizes it.
+    Authoring one without the other leaves the opening to R602.7, as before.
     """
     from typehaus.checks.structural.published import graded_against_published
     from typehaus.quantities import m
+    from typehaus.resolve.framing.tables import flat_header_member, header_profile_from_spec
 
     out: list[Finding] = []
     for op in ctx.model.openings:
+        if op.width_m <= m(8.0 * 0.3048).meters:
+            source = ctx.plan.by_tag(op.tag) if ctx.plan is not None else None
+            spec = getattr(source, "header_spec", None)
+            published = getattr(source, "published_span", None)
+            if (spec is None or published is None or flat_header_member(spec) is not None
+                    or header_profile_from_spec(spec) is None):
+                continue
+            out.append(graded_against_published(
+                "structural.header_prescriptive",
+                f"opening {op.tag}, headed with {spec}",
+                (op.tag,), op.width_m / 0.3048, published, spec,
+                demand_psf=_wide_header_demand_psf(ctx),
+                fix="re-read the manufacturer's header-table row at the model's own "
+                    "condition, or drop header_spec and let R602.7 size the header"))
+            continue
         if op.width_m > m(8.0 * 0.3048).meters:  # > 8'
             # An authored Door/DoorType.header_spec is the beam that got put in. The
             # published row says which table row says it is big enough.

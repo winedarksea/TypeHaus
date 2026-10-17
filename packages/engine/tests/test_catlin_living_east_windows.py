@@ -1,4 +1,7 @@
-"""The added east window must leave buildable piers and accessible counter outlets."""
+"""The living east row (2026-10-16): E1/E2 flank the brick, one picture window on the table.
+
+Every window must leave buildable jamb packs, a stool on the counter and accessible outlets.
+"""
 
 import pytest
 from shapely.geometry import Polygon
@@ -7,17 +10,15 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_millwork import window_stool_prism
 
 INCH = 0.0254
-EAST_WINDOW_CENTRES_IN = {
-    "WIN-M-LIV-E1": 64,
-    "WIN-M-LIV-E2": 144,
-    "WIN-M-LIV-E3": 192,
-    "WIN-M-EAST-MID": 240,
-}
-EAST_BLINDS_BY_WINDOW = {
-    "WIN-M-LIV-E1": "FURN-M-LIV-BLIND-E1",
-    "WIN-M-LIV-E2": "FURN-M-LIV-BLIND-E2",
-    "WIN-M-LIV-E3": "FURN-M-LIV-BLIND-E3",
-    "WIN-M-EAST-MID": "FURN-M-LIV-BLIND-EAST-MID",
+# E2's two packs and the dining window's two, one jack and one king each.
+JAMB_MEMBERS_NORTH_OF_BRICK = 8
+PACK_TO_PANTRY_IN = 20.875
+# tag: (centre, width, type, blind, blind type)
+EAST_WINDOWS = {
+    "WIN-M-LIV-E1": (48, 27, "WT-2748", "FURN-M-LIV-BLIND-E1", "FT-CELLULAR-BLIND-2748"),
+    "WIN-M-LIV-E2": (128, 27, "WT-2748", "FURN-M-LIV-BLIND-E2", "FT-CELLULAR-BLIND-2748"),
+    "WIN-M-DINING-E": (216, 63, "WT-6348-FIX", "FURN-M-LIV-BLIND-DINING",
+                       "FT-CELLULAR-BLIND-6348"),
 }
 NORTH_COUNTER_RECEPTACLES = (
     "ED-M-LIVING-RC14", "ED-M-LIVING-RC3", "ED-M-LIVING-RC15", "ED-M-LIVING-RC16",
@@ -28,21 +29,21 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
     model = catlin_model_ro
     openings = {opening.tag: opening for opening in model.openings}
     wall = model.wall("W-M-E1")
-    for tag, centre in EAST_WINDOW_CENTRES_IN.items():
+    for tag, (centre, width, type_ref, _, _) in EAST_WINDOWS.items():
         opening = openings[tag]
         assert opening.host_wall == wall.tag
-        assert opening.type_ref == "WT-2748"
+        assert opening.type_ref == type_ref
         assert opening.center_along_m == pytest.approx(centre * INCH)
-        assert opening.width_m == pytest.approx(27 * INCH)
+        assert opening.width_m == pytest.approx(width * INCH)
         assert opening.height_m == pytest.approx(48 * INCH)
         assert opening.sill_m == pytest.approx(34 * INCH)
 
     jamb_members = sorted(
         (member for member in wall.members if member.category in {"king", "jack"}
-         and 127.5 * INCH < member.p0[1] < 260 * INCH),
+         and 110.75 * INCH < member.p0[1] < 260 * INCH),
         key=lambda member: member.p0[1],
     )
-    assert len(jamb_members) == 12
+    assert len(jamb_members) == JAMB_MEMBERS_NORTH_OF_BRICK
     for south, north in zip(jamb_members, jamb_members[1:], strict=False):
         required_separation = (cross_section(south.profile).width_m
                                + cross_section(north.profile).width_m) / 2
@@ -52,14 +53,14 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
     pantry_south = Polygon(objects["FURN-M-KIT-PANTRY-S2"].footprint).bounds[1]
     assert pantry_south == pytest.approx(271.375 * INCH)
     north_pack_end = jamb_members[-1].p0[1] + cross_section(jamb_members[-1].profile).width_m / 2
-    assert pantry_south - north_pack_end == pytest.approx(14.875 * INCH)
+    assert pantry_south - north_pack_end == pytest.approx(PACK_TO_PANTRY_IN * INCH)
     brick_north = max(point[1] for point in model.wall("W-M-FIRE-JAMB-N").axis)
     south_pack_start = jamb_members[0].p0[1] - cross_section(jamb_members[0].profile).width_m / 2
     assert south_pack_start - brick_north == pytest.approx(0.75 * INCH)
-    for window_tag, blind_tag in EAST_BLINDS_BY_WINDOW.items():
+    for window_tag, (_, _, _, blind_tag, blind_type) in EAST_WINDOWS.items():
         blind = objects[blind_tag]
         opening = openings[window_tag]
-        assert blind.type_ref == "FT-CELLULAR-BLIND-2748"
+        assert blind.type_ref == blind_type
         assert blind.position[1] == pytest.approx(opening.center_along_m)
         assert blind.body_z0_m == pytest.approx(34 * INCH)
         assert blind.body_z1_m == pytest.approx(82 * INCH)
@@ -72,12 +73,12 @@ def test_each_east_stool_meets_the_continuous_counter(catlin_model_ro):
     counter = next(top for top in model.countertops if top.tag == "CT-M-LIV-E-N")
     objects = {obj.tag: obj for obj in model.canvas_objects}
     counter_top = max(objects[tag].body_z1_m for tag in counter.hosts)
-    for tag in EAST_WINDOW_CENTRES_IN:
+    for tag in EAST_WINDOWS:
         stool = stools[tag]
         assert not stool.derived
-        # Plain 2" oak meeting the live-edge slab's ripped back edge.
-        assert stool.material_ref == "oak-stool-12q"
-        assert counter.material_ref == "live-edge-white-oak"
+        # 2" black cherry meeting the ash slab's back edge.
+        assert stool.material_ref == "cherry-stool-12q"
+        assert counter.material_ref == "ash-counter-12q"
         assert stool.thickness_m == pytest.approx(2 * INCH)
         assert stool.overhang_m == stool.horn_m == 0
         prism = window_stool_prism(model.wall(stool.wall_tag), openings[tag], stool)
@@ -89,7 +90,7 @@ def test_each_east_stool_meets_the_continuous_counter(catlin_model_ro):
 def test_counter_devices_clear_windows_framing_and_each_other(catlin_model_ro):
     model = catlin_model_ro
     objects = {obj.tag: obj for obj in model.canvas_objects}
-    windows = [opening for opening in model.openings if opening.tag in EAST_WINDOW_CENTRES_IN]
+    windows = [opening for opening in model.openings if opening.tag in EAST_WINDOWS]
     devices = [objects[tag] for tag in (*NORTH_COUNTER_RECEPTACLES, "ED-M-DINING-FH-STAT")]
     east_wall = model.wall("W-M-E1")
     for device in devices:
@@ -121,15 +122,20 @@ def test_counter_devices_clear_windows_framing_and_each_other(catlin_model_ro):
     assert Polygon(objects["ED-M-LIVING-RC16"].footprint).bounds[3] < pantry_south
 
 
-def test_receptacles_cover_the_whole_north_counter(catlin_model_ro):
+def test_receptacles_cover_the_north_counter_outside_the_dining_glass(catlin_model_ro):
+    """WIN-M-DINING-E's glass took RC15's old station (2026-10-16). The slab under the glass
+    is the one stretch past 24" of a receptacle, and it is an open decision, not an oversight."""
     objects = {obj.tag: obj for obj in catlin_model_ro.canvas_objects}
+    openings = {opening.tag: opening for opening in catlin_model_ro.openings}
     counter = next(top for top in catlin_model_ro.countertops if top.tag == "CT-M-LIV-E-N")
     west, south, east, north = Polygon(counter.outline).bounds
     receptacles = [objects[tag] for tag in NORTH_COUNTER_RECEPTACLES]
     assert all(west < obj.position[0] < east for obj in receptacles)
     stations = sorted(obj.position[1] for obj in receptacles)
-    midpoints = [(a + b) / 2 for a, b in zip(stations, stations[1:], strict=False)]
-    coverage_samples = [south, north, *midpoints]
-    for sample in coverage_samples:
-        if south <= sample <= north:
-            assert min(abs(sample - station) for station in stations) <= 24 * INCH + 1e-9
+    dining = openings["WIN-M-DINING-E"]
+    glass = (dining.center_along_m - dining.width_m / 2, dining.center_along_m + dining.width_m / 2)
+    samples = [south + i * INCH for i in range(int((north - south) / INCH) + 1)]
+    uncovered = [y for y in samples
+                 if min(abs(y - station) for station in stations) > 24 * INCH + 1e-9]
+    assert uncovered, "the dining-glass gap closed: drop this exemption"
+    assert all(glass[0] <= y <= glass[1] for y in uncovered)

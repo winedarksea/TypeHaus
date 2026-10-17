@@ -14,6 +14,47 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Living room east wall rework (2026-10-16)
+
+The owners asked for four things on the living room's east wall. The fireplace and its two
+flanking windows move south so the group sits on the LVP. The two windows north of it become
+one picture window on the dining table. Three woods change. And Oksana asked for a
+floor-to-ceiling elm slat partition at the north end of the LVP.
+
+- **Fireplace group, 16" south.** The brick centre went 8'-8" -> 7'-4"; E1 4'-0", E2 10'-8".
+  A whole module keeps every grid-locked station: the brick stays on a bay centre, the two
+  joist pockets stay on joists (005/006 at 80"/96"), and the niche kings stay on the module
+  (64"/112"). The trio's ROs span 2'-10 1/2"..11'-9 1/2", about 7" north of the LVP's
+  centre. **32" was rejected**: E1's RO would stand 18 1/2" off the SE corner and lose the
+  corner's bracing return. The sofa, coffee table, armchairs, floor box, mantel,
+  `ED-M-FIRE-RC` and `SL-S-FIRE` moved with it. The fig moved 13" east and 2" south off
+  the south armchair. RC4 was retired: E1's new RO took its station, and RC13 plus RC17
+  still cover the south slab within 24".
+- **`WIN-M-DINING-E`.** A 63"x48" fixed unit (`WT-6348-FIX`) at y=18'-0" replaces E3 and
+  EAST-MID. 63" is the width nearest the owner's ~60" that centres on the table at a bay
+  centre. Any RO from 62 1/2" to 78 1/2" there breaks 4 studs, and a 59" RO is only legal
+  8" off the table. The 27" bearing cap stays house-wide, so this window takes one named
+  suppression. The header is a **2-ply 9 1/2" LVL read off Boise's VERSA-LAM 1.7 2650 header
+  table** (`notes/dining_window_header.md`). That needed the engine to let a `Window` carry
+  `header_spec` + `published_span`, and `structural.header_prescriptive` to grade a <=8'
+  opening that authors both. RC15 landed in the new RO, so it and RC3 moved into the 43" pier
+  (152"/179") and everything but ~31" of slab under the glass stays within 24" of a
+  receptacle. That stretch is open; a listed countertop pop-up is the candidate. `BWL-W-A-E1` is re-measured to three panels, 19'-3" against 12.56'.
+- **Woods.** The counters are ash (`ash-counter-12q`, 2" off 12/4, straight eased edge),
+  to match the table. The stools on E1, E2 and the dining window are black cherry
+  (`cherry-stool-12q`). The mantel is American elm (`FT-MANTEL-ELM-46`, `elm-mantel-12q`).
+  `live-edge-white-oak`, `oak-stool-12q` and `walnut-mantel-12q` are deleted.
+- **Banks.** The banks were re-composed round the new brick: south is a 4 1/8" filler, a B18
+  and the E1 B36; north is the E2 B36, three B36, a B15 and a 1" filler.
+- **Slat partition.** At y=13'-0", over the flush LVP/coated-concrete movement joint, 60 1/2"
+  out from the gwb. A 16 1/2" piece stands on the counter's full depth and a 44" piece on the
+  floor, both whole 2 3/4" pitches so the rhythm runs on. Heights come off the resolved
+  ceiling underside, 8'-11 1/2" over the datum, less 1/4" to scribe; the plan's 9'-0 1/8"
+  was the top of the board. The resolved counter is 16 1/2" deep, not the 16 1/4" estimated.
+  New engine symbol `slat-partition`. The owner may split the cabinet run instead later.
+
+Upstairs is unchanged on the owner's call, and `WIN-S-STUDY3` stays at 5'-4".
+
 ## Flashing review: the 3D against the specs (2026-10-16)
 
 Measuring the 2026-10-15 flashing against `notes/opening_flashing_spec.md` and the outie

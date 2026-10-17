@@ -888,8 +888,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       Exception 1's electric-light substitute.
     - **WT-3048** (south glazing): the 30" family's committed 36" height would drop the
       south head off the house's 6'-8" door-head line.
-    - **WT-2748** (`WIN-M-EAST-MID`): bearing cap forced 30"→27"; 48" is a pure retype
-      (same 2'-8" sill, same 6'-8" head) — the cheapest of the six.
+    - **WT-2748** (`WIN-M-LIV-E1`/`-E2`; `WIN-M-EAST-MID` until 2026-10-16): bearing cap
+      forced 30"→27"; 48" is a pure retype — the cheapest of the six.
     - **WT-2754** (`WIN-S-BED1`/`BED2`): 27" cap, single-window bedrooms — 27x48 (9.00 sf)
       fails BED2's 9.945 sf R303.1 requirement; 27x54 (10.125 sf) passes. Code necessity.
     - **WT-2764→WT-2754** (`WIN-A-S-JUL-W`/`-E`, catalog-only, NONBEARING walls W-A-S2/S3):
@@ -988,25 +988,32 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   y=18'-0"; those two and STUDY3 are 27" wide on a 3'-0" sill with 7'-0" heads.
   STUDY3 columns with WIN-M-LIV-E1; BED3's 14" unit instead columns with WIN-M-KIT-E,
   on its own 4'-0" sill and 6'-0" head (→ DESIGN-LOG.md).
-  East main row: 5'-4"/12'-0"/16'-0"/20'-0"/34'-0" — the last gap deliberately ends a blank kitchen
-  stretch. First four: 27" units on one **2'-10" sill, 6'-10" head** (2026-10-02: the stool
-  top sits on the SEKTION slab top — sill + 2.953" frame rail = 36 15/16" above datum). `WIN-M-KIT-E` is a 14" unit
-  at a 3'-6" sill (bay centre, 408" off `N-M-SE`) — joins neither beat nor head line, closes
-  the row's north end as a service window (can never column with the 27"/30" family beside
-  it — the 8" rule). `WIN-M-LIV-E1` moved 16" north on 2026-10-03 to mirror E2 about the
-  brick; `WIN-S-STUDY3` followed it to 5'-4" on 2026-10-14, restoring their column and
-  clearing the southeast study bookshelf. The chess table/chairs moved 30" west; the
-  23.62" Frailey corner shelf keeps both south windows. Its catalog is
-  `plan/study_bookcase_types.py`; RC5 moved to the east-wall pier at y=3'-4". **Check
-  `out/render/elev_east.png` before touching this row.**
-  `WIN-M-LIV-E3` was added 2026-10-03: E2 moved one bay south and EAST-MID one north,
-  yielding 21" RO piers / 15" between jamb packs; E2 gave up its BED1 column. Pantry and
-  cabinets stayed put. RC14 is on the fireplace's north brick jamb; RC3/15 are at 14'/18',
-  RC16 at 21'-6 1/8" uses a standard 2 3/4" plate. The dining thermostat is at 14', 54" AFF.
+  East main row (2026-10-16): E1/E2 at 4'-0"/10'-8", `WIN-M-DINING-E` at 18'-0", `WIN-M-KIT-E`
+  at 34'-0". All but KIT-E sit on one **2'-10" sill, 6'-10" head** (the stool top sits on the
+  ash slab top: sill + 2.953" frame rail = 36 15/16" above datum). `WIN-M-KIT-E` is a 14"
+  unit at a 3'-6" sill (bay centre, 408" off `N-M-SE`) — a service window closing the row.
+  The fireplace and its flanking E1/E2 moved **16" south** onto the LVP, a whole module, so
+  every grid-locked station survives: brick centre on a bay centre, joist pockets on joists,
+  niche kings on the module. **32" was rejected**: E1's RO would stand 18 1/2" off the SE
+  corner and lose the corner's bracing return. E1 no longer columns with `WIN-S-STUDY3`
+  (5'-4", left there on the owner's call; it moved there 2026-10-14, clearing the southeast
+  study bookshelf). The study chess table/chairs moved 30" west; the 23.62" Frailey corner
+  shelf keeps both south windows. Its catalog is `plan/study_bookcase_types.py`; RC5 moved to
+  the east-wall pier at y=3'-4". **Check `out/render/elev_east.png` before touching this
+  row.**
+  `WIN-M-DINING-E` (`WT-6348-FIX`, plan/living_window_types.py) is a 63"x48" fixed picture
+  unit replacing `WIN-M-LIV-E3` and `WIN-M-EAST-MID` (uids retired), centred on the dining
+  table and on BED1/BED2's axis. 63" is the width nearest ~60" that centres there (4 studs
+  broken). Untempered (33" AFF sill). It carries the house's one named
+  `structural.window_framing_module` suppression (the 27" bearing cap stays house-wide) and a
+  **2-ply 9 1/2" LVL header read off Boise's VERSA-LAM table** as `header_spec` +
+  `published_span` (`notes/dining_window_header.md`). RC4 is retired (E1's RO took it); RC3 and RC15 moved into
+  the 43" pier at 152"/179", so only ~31" of slab under the dining glass is past 24" of a
+  receptacle (open: a listed countertop pop-up). The dining thermostat is at 14', 54" AFF.
   The fireplace pier sits between `WIN-M-LIV-E1`/`E2`: a 45 1/2" facebrick surround
-  centred y=8'-8", walnut mantel at 5'-4". The brick centre is a bay centre on `W-M-E1`'s
-  grid, and E1/E2 are mirrored about it at 5'-4"/12'-0", each RO 3 3/4" off the brick.
-  RC17/RC14 sit mirrored on the brick's south/north jambs, and RC4 at 44" in the south pier. **The firebox sill NO LONGER shares the east row's 2'-8" line**
+  centred y=7'-4", elm mantel at 5'-4". The brick centre is a bay centre on `W-M-E1`'s
+  grid, and E1/E2 are mirrored about it at 4'-0"/10'-8", each RO 3 3/4" off the brick.
+  RC17/RC14 sit mirrored on the brick's south/north jambs. **The firebox sill NO LONGER shares the east row's 2'-8" line**
   (2026-09-11): the owner reversed that morning's decision to raise it and it is back at
   **24" AFF**, so the one-datum-four-openings argument is retired and the fire does not
   column with `WIN-M-LIV-E1`/`-E2`. That is a preference call overruling a design argument,
@@ -1026,7 +1033,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     - **THE OPENING IS 24" HIGH AND THE POCKET BEHIND IT IS 11 1/2" DEEP, BOTH SINCE
       2026-09-20, AND THE DEPTH IS THE REASON FOR THE HEIGHT.** `AO-M-FIRE-NICHE` is a BLIND
       `RoughOpening` (the schema's first — `RoughOpening.depth` + `depth_from`) 34" x 25"
-      x 6" into `W-M-E1`, centred on y=8'-8"; 6" past the gwb face is 11 1/2" off the brick
+      x 6" into `W-M-E1`, centred on y=7'-4"; 6" past the gwb face is 11 1/2" off the brick
       face, which is the building's hard ceiling (3 5/8" brick + 1 7/8" tie gap + 1/2" gwb +
       5 1/2" cavity, stopping at the sheathing's inner face). **Deeper means moving the panel
       west off `W-B-E1`'s pour and onto the joists at 236 plf against a 50 plf limit —
@@ -1057,8 +1064,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       between them** — the same idiom one level down. `FO-M-FIRE` is RETIRED: the premise it
       was framed on ("the brick cuts the joists short of their bearing") was never true, the
       brick is 3 5/8" thick and stands 2 1/2" clear of a 5 1/2" mudsill, and `FS-M-EAST`'s
-      joists run CONTINUOUS through the panel. Piers at y 81 7/8"–94" / 98"–110" /
-      114"–126 1/8", two 4" pockets on joists 006 (y=96") and 007 (y=112"). Clearances
+      joists run CONTINUOUS through the panel. Piers at y 65 7/8"–78" / 82"–94" /
+      98"–110 1/8" (since the 2026-10-16 move), two 4" pockets on joists 005 (y=80") and 006 (y=96"). Clearances
       5/8" / 3/4" / 3/4" / 5/8", graded by `structural.through_deck_clearance` against a 1/2"
       threshold; the 5/8" pair is residue of a 44 1/4" panel on a 16" module, not a chosen
       margin. Gone with the opening: a 2-ply LVL header, four full-span 17'-11" trimmer plies,
@@ -1110,7 +1117,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       wash stops at the reveal returns and goes on **before the appliance is set**, or is
       masked. That used to be tight because the Amantii BI-30-XTRASLIM was **trimless** and the
       brick ran to its glass edge; the appliance now sits 1 7/8" BEHIND the aperture in an
-      11 1/2" pocket, so the wash line and the appliance no longer meet at all. The walnut mantel goes on **after the wash cures**; its hold-down
+      11 1/2" pocket, so the wash line and the appliance no longer meet at all. The mantel goes on **after the wash cures**; its hold-down
       blocking is still pre-brick. Mineral silicate on brick is non-combustible, so no clearance
       number moves.
     - Geometry: the stack totals 3 3/4" rather than 3 5/8", so the centred panel drifts 1/16"
@@ -1153,7 +1160,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     on `w_ft <= 4.0`**, so 48.0" arriving as `4.0000000000000009` after a metre round trip
     takes the wrong branch silently. (`haus check` grades floor-opening headers at EIGHT feet,
     gated on a sawn-joist profile, so an I-joist opening draws the same header at any span.)
-  - The mantel is `FURN-M-FIRE-MANTEL`/`FT-MANTEL-WALNUT-46`, a wall-mounted placeable
+  - The mantel is `FURN-M-FIRE-MANTEL`/`FT-MANTEL-ELM-46` (American elm, `elm-mantel-12q`,
+    since 2026-10-16; walnut before), a wall-mounted placeable
     (`FURN-B-PLAY-TV` idiom), 45 1/2"x11 1/2"x2 1/4", meant to sit 64"–66 1/4" AFF on
     `W-M-FIRE-HEAD`'s top (`depth` DELETED so `_carcass_depth_m` inherits from the type).
     **`Mount.elevation` IS OFF THE ROOM'S FINISHED FLOOR, and the guide said the opposite
@@ -1167,7 +1175,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     was always authored on the correct reading (`inch(24)` = 24" AFF, landing exactly on the
     plinth top), which is how the two were told apart. `work_surface` is UNSET, not False, to stay out of NEC 210.52(A)'s
     wall-space rule. `[allowances] finish-fireplace-mantel-walnut` is **deleted** (not
-    zeroed) and `[placeables] "FT-MANTEL-WALNUT-46"` carries the scope instead — an unpriced
+    zeroed) and `[placeables] "FT-MANTEL-ELM-46"` carries the scope instead — an unpriced
     type is silently dropped from the bill.
 
 - **Knee band — GONE.** East/west knee walls are 1 1/2" rafter plates now with no glazing,
@@ -2722,21 +2730,30 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Pantry S2/S1:** y=271 3/8–295 3/8–319 3/8, meeting the garage. Stock shallow
   24x15x20 tops at83 1/2 align with their fronts via supported rear bays (9 nominal,
   9 1/4 from actual matching frame/rail/front depths), closed at the exposed south end.
-- **Living east banks:** six B36-D15 with paired nominal18-inch VOXTORP doors and
-  shelves (594.631.16); two south of the fireplace, four north at y=127 1/4–271 1/4,
-  then1/8 sealed joint toS2. B30 + two B15 + B12 → two B36, retained MID shifts south.
-  Window centres and S2 stay fixed; joints follow the door rhythm. Total installed height36.
+- **Living east banks (2026-10-16):** south y=6 5/8–65 1/4: 4 1/8 filler, B18, B36 centred
+  1 1/4 south of E1, end panel to the brick. North y=110 3/4–271 1/4: end panel, B36 1 1/4
+  north of E2, three B36, B15, 1 filler, then the 1/8 sealed joint toS2. B36s are 594.631.16
+  (paired 18-inch VOXTORP doors and shelves). Slabs are 2 white ash (`ash-counter-12q`, to
+  match the table); stools on E1/E2/DINING-E are black cherry (`cherry-stool-12q`). Total
+  installed height36.
+- **Elm slat partition (2026-10-16):** `FURN-M-LIV-SLAT-COUNTER`/`-FULL` at y=13'-0", over the
+  LVP/coated-concrete joint, 60 1/2 west from the gwb: 16 1/2 on the counter (6 slats), 44 on
+  the floor (16 slats), 1 1/2 x 2 1/2 American elm on a 2 3/4 pitch, cleats top and bottom
+  (`slat-partition` symbol). Ceiling cleat needs blocking between FS-S-EAST joists 144/160;
+  floor cleat fixes south of the movement joint only. The owner may split the cabinet run
+  instead later.
 - **Bar and projecting back panel:**73 1/2 long, end x=376 3/8, leaving25 to the
   pantry nominal front. The remaining25 of cabinet backs are painted and edge-banded.
   Stools x=315 1/8,339 5/8,364 1/8 at their previous y. Preserve Rev-A-Shelf5374-24FL.
 - **Support height:**3 1/2, normal stock stacks finish103 1/2. Kitchen quartz at36
-  uses approximately1 5/16 substrate; living oak uses1/2 subtop and2 slab. Follow
+  uses approximately1 5/16 substrate; living ash uses1/2 subtop and2 slab. Follow
   published frame/rail/front measurements for shop cuts, not nominal module depths.
 - **Finish pieces and supports are detailed and priced.** Deleted custom east pantry tops,
-  custom garage upper, kitchen filler and living north filler must not re-enter quantities.
+  custom garage upper and kitchen filler must not re-enter quantities (the living north
+  filler returned deliberately as FT-LIV-E-FILLER-1 on 2026-10-16).
   MAXIMERA is the kitchen drawer product; kitchen B12 and living B36 use doors and shelves.
-- **East-wall receptacles stay at42 AFF:** living south22/44 plusRC17 at83 7/8;
-  north RC14 at124 1/8, then168/216/258 1/8. Garage KGF4/KMX1 at326/338 3/4;
+- **East-wall receptacles stay at42 AFF:** living south22 plusRC17 at67 7/8;
+  north RC14 at108 1/8, then152/179/258 1/8 (2026-10-16: RC4 retired, RC3/RC15 re-spaced). Garage KGF4/KMX1 at326/338 3/4;
   landing KGF3 at349 1/4. Recheck framing and coverage if those locations change.
 
 - **The range backsplash is two uncut titanium sheets** (`WP-M-KIT-BACKSPLASH`,

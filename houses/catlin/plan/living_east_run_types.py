@@ -10,7 +10,7 @@ live in prices.toml.
 
 from __future__ import annotations
 
-from typehaus.model import FurnitureType, Product, inch
+from typehaus.model import FurnitureCut, FurnitureType, Product, inch
 
 SEKTION_BASE_15_DEEP = Product(
     tag="PROD-IKEA-SEKTION-BASE-D15", brand="IKEA", model="SEKTION shelves/2 doors, VOXTORP matte white",
@@ -108,8 +108,50 @@ def _filler(tag: str, width_in: float, depth_in: float, label: str, where: str) 
 
 
 LIVING_SOUTH_FILLER = _filler(
-    "FT-LIV-E-FILLER-2125", 2.125, 15.5, "2 1/8",
+    "FT-LIV-E-FILLER-4125", 4.125, 15.5, "4 1/8",
     "Closes the living bank's south end against the SE corner.")
+LIVING_NORTH_FILLER = _filler(
+    "FT-LIV-E-FILLER-1", 1.0, 15.5, "1",
+    "Closes the living north bank's B15 to the 1/8-inch joint at the pantry.")
+
+# ** THE ELM SLAT PARTITION (2026-10-16). ** Vertical American elm slats, 1 1/2" face x
+# 2 1/2" deep on a 2 3/4" pitch (a 1 1/4" gap), between a floor and a ceiling cleat of the
+# same stock. A proposal the owner can adjust; the pitch lives in the `slat-partition`
+# symbol. Each piece is whole pitches wide, so the rhythm runs on across the joint.
+# Heights are the resolved ceiling underside (8'-11 1/2" over the datum) less the finished
+# floor (15/16") or the counter top (36 15/16" over the datum), less 1/4" to scribe.
+_SLAT_SOURCE = (
+    "Owner-built from American elm ripped from 12/4, hardwax oil. The ceiling cleat screws "
+    "to 2x blocking set between FS-S-EAST's joists at 144\" and 160\" before the board goes "
+    "up: y=13'-0\" falls between them and nothing else bills that blocking. The floor cleat "
+    "sits over the flush LVP/coated-concrete movement joint at y=13'-0\" and fixes to the "
+    "subfloor on the LVP (south) side only, never across the joint; the LVP stays floating "
+    "with its expansion gap round the cleat. The counter piece's cleat screws up through "
+    "the ash slab from below.")
+
+
+def _slats(tag: str, name: str, width_in: float, height_in: float, slats: int,
+           where: str) -> FurnitureType:
+    return FurnitureType(
+        tag=tag, name=name, footprint=(inch(width_in), inch(2.5)), height=inch(height_in),
+        plan_symbol="slat-partition", wood_material_ref="elm-slat-12q",
+        cut_list=(
+            # The 2 1/2" depth is the 12/4 board's dressed thickness; the 1 1/2" face is ripped.
+            FurnitureCut(part="slat", count=slats, thickness=inch(2.5), width=inch(1.5),
+                         length=inch(height_in - 1.5)),
+            FurnitureCut(part="cleat", count=2, thickness=inch(2.5), width=inch(0.75),
+                         length=inch(width_in)),
+        ),
+        source=f"{where} {_SLAT_SOURCE}",
+    )
+
+
+LIVING_SLATS_FULL = _slats(
+    "FT-LIV-SLAT-ELM-FULL", 'Elm slat partition, 44 x 2 1/2 x 106 5/16", floor to ceiling',
+    44.0, 106.3125, 16, "The floor-standing piece, west of the counter.")
+LIVING_SLATS_COUNTER = _slats(
+    "FT-LIV-SLAT-ELM-COUNTER", 'Elm slat partition, 16 1/2 x 2 1/2 x 70 5/16", counter to ceiling',
+    16.5, 70.3125, 6, "The piece standing on CT-M-LIV-E-N over its full depth.")
 # The seating cantilever's hidden support (notes/kitchen_stock_cabinet_details.md K6). The
 # section is the published hidden flat bar's: Original Granite Bracket and Iron Supports both
 # rate 1/2 x 2 1/2 steel at ~325 lb a bracket; a 1/4 x 3 bar yields near 95 lb on a 12" arm.
@@ -121,4 +163,5 @@ PENINSULA_BAR_BRACKET = FurnitureType(
             "the peninsula's 3/4 ply sub-top, routed flush; 12\" carries the stone."),
 )
 LIVING_EAST_RUN_TYPES = (LIVING_END_PANEL, PENINSULA_END_PANEL, PENINSULA_BACK_PANEL,
-                         LIVING_SOUTH_FILLER, PENINSULA_BAR_BRACKET)
+                         LIVING_SOUTH_FILLER, LIVING_NORTH_FILLER, PENINSULA_BAR_BRACKET,
+                         LIVING_SLATS_FULL, LIVING_SLATS_COUNTER)

@@ -67,29 +67,30 @@ MAIN_COUNTERTOPS = [
         cantilever_length=inch(73.5),
         support="brackets",
     ),
-    # The living room's two live-edge white oak slabs (plan/living_east_run.py), 2" over a
-    # 1/2" sub-top, 16 1/2" nominal: 1" over the fronts, the natural edge <= 1 1/2" at its
-    # widest. The south slab covers its 2 1/8" wall filler; the north ends at the tall
-    # bank across a 1/8" sealed joint. The window stools meet the back edge.
+    # The living room's two ash slabs (plan/living_east_run.py), 2" over a 1/2" sub-top,
+    # 16 1/2" deep: 1" over the fronts, a straight eased edge. Ash since 2026-10-16, to match
+    # the dining table. The south slab covers its 4 1/8" wall filler; the north ends at the
+    # pantry across a 1/8" sealed joint. The cherry window stools meet the back edge.
     Countertop(
         uid="N3E070DD41", tag="CT-M-LIV-E-S",
-        hosts=("FURN-M-LIV-E-END-S", "FURN-M-LIV-E-B36-E1", "FURN-M-LIV-E-B36-S",
+        hosts=("FURN-M-LIV-E-END-S", "FURN-M-LIV-E-B36-E1", "FURN-M-LIV-E-B18-S",
                "FURN-M-LIV-E-FILLER-S"),
-        material_ref="live-edge-white-oak",
+        material_ref="ash-counter-12q",
         thickness=inch(2),
         overhang=inch(1),
-        length=inch(74.625),
-        profile="live-edge",
+        length=inch(58.625),
+        profile="eased",
     ),
     Countertop(
         uid="TPTH3QMGAY", tag="CT-M-LIV-E-N",
         hosts=("FURN-M-LIV-E-END-N", "FURN-M-LIV-E-B36-E2", "FURN-M-LIV-E-B36-E3",
-               "FURN-M-LIV-E-B36-MID", "FURN-M-LIV-E-B36-PANTRY"),
-        material_ref="live-edge-white-oak",
+               "FURN-M-LIV-E-B36-MID", "FURN-M-LIV-E-B36-PANTRY", "FURN-M-LIV-E-B15-N",
+               "FURN-M-LIV-E-FILLER-N"),
+        material_ref="ash-counter-12q",
         thickness=inch(2),
         overhang=inch(1),
-        length=inch(144.625),
-        profile="live-edge",
+        length=inch(160.625),
+        profile="eased",
     ),
     # RM-M-BATH2's deck. One of the two vanity tops in the house that is FABRICATED rather
     # than moulded with its bowl, which is what puts it in this list and the other four in

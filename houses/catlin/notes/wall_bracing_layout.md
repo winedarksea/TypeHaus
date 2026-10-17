@@ -71,7 +71,7 @@ R602.10.3(2): exposure B ×1.00, eave-to-ridge per §3, story height 9'-0" ×0.9
 
 | Storey | Line | Base | Factors | **Required** | **Provided** | Margin |
 |---|---|---|---|---|---|---|
-| main | BWL-W-A-E1 | 11.5 | 1.15 × 0.95 | **12.56'** | 15.17' | 1.21× |
+| main | BWL-W-A-E1 | 11.5 | 1.15 × 0.95 | **12.56'** | 19.25' | 1.53× |
 | main | BWL-W-A-N1 | 11.5 | 1.15 × 0.95 | **12.56'** | 28.17' | 2.24× |
 | main | BWL-W-A-S1 | 11.5 | 1.15 × 0.95 | **12.56'** | 19.42' | 1.55× |
 | main | BWL-W-A-W1 | 11.5 | 1.15 × 0.95 | **12.56'** | 26.92' | 2.14× |
@@ -84,10 +84,11 @@ R602.10.3(2): exposure B ×1.00, eave-to-ridge per §3, story height 9'-0" ×0.9
 | garage | BWL-W-G-E | 4.5 | 1.00 × 0.95 | **4.28'** | 24.00' | 5.61× |
 | garage | BWL-W-G-W | 4.5 | 1.00 × 0.95 | **4.28'** | 21.67' | 5.07× |
 
-After `WIN-M-LIV-E3` was added on 2026-10-03, the smallest margin is main E1 at 1.21×.
-The fire niche and five windows leave two qualifying runs: 34 1/2" at the SE corner and
-147 1/2" from EAST-MID's north jamb to the kitchen window. The two 21" piers between the
-new 12'/16'/20' centres do not qualify. The NE hold-down stays in place.
+Since the 2026-10-16 rework (fireplace group 16" south, `WIN-M-DINING-E` replacing E3 and
+EAST-MID) main E1 has three qualifying runs: 34 1/2" from the SE corner to E1's RO, the 43"
+pier between E2 and the dining window, and 153 1/2" from the dining window's north jamb to
+the kitchen window. It is still the smallest margin, at 1.53×. The NE hold-down stays in
+place.
 
 **The ×1.40 on the second storey's south and west lines is real and is the one factor that
 bites.** Table R602.10.3(2) item 6 charges it where interior gypsum board is omitted from
@@ -146,8 +147,8 @@ and no run under Table R602.10.5's minimum is authored: it would contribute noth
 put a zero on the drawing. The minima here are 27"-35", read on the adjacent clear opening
 height (the taller of the two openings a panel stands between, R602.10.5).
 
-Not authored, and each is deliberate: main E1's 25-1/2" and 9-1/2" slivers beside the fire
-niche, and its two 21" piers between E2/E3/EAST-MID (after 2026-10-03); the two 17" ends
+Not authored, and each is deliberate: main E1's two 9-1/2" slivers beside the fire niche
+(since 2026-10-16); the two 17" ends
 beside WIN-M-KIT-E and WIN-M-KITCH-N;
 second S1's 19" beside the deck door; the garage's 7" beside D-G-SERVICE.
 

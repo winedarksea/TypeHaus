@@ -147,7 +147,7 @@ def test_hosted_cabinets_drop_their_symbol_counter_in_model_json(catlin_model_ro
     assert Polygon(peninsula["parts"][0]["outline"]).area == pytest.approx(
         (84.5 * 25 + 73.5 * 15) * INCH * INCH)
     assert {rows[tag]["material_ref"] for tag in ("CT-M-LIV-E-S", "CT-M-LIV-E-N")} == {
-        "live-edge-white-oak"}
+        "ash-counter-12q"}
 
 
 def test_countertops_reach_the_glb_in_their_own_material(catlin_model_ro):
@@ -167,7 +167,7 @@ def test_countertops_reach_the_glb_in_their_own_material(catlin_model_ro):
             colors.add(tuple(round(value, 4) for value in
                              material["pbrMetallicRoughness"]["baseColorFactor"]))
     authored = authored_colors(catlin_model_ro)
-    for ref in ("live-edge-white-oak", "quartz-counter"):
+    for ref in ("ash-counter-12q", "quartz-counter"):
         expected = _material_finish_color(ref, "millwork", authored)
         assert tuple(round(value, 4) for value in expected) in colors, ref
     # None is the symbol counter's grey: the slab replaced it.

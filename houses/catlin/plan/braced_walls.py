@@ -55,13 +55,15 @@ _SECOND_HD_Z = inch(121)            # the same, one floor up (second datum +10'-
 # MAIN — first story of two. Table R602.10.3(1) at <=115 mph / 40' spacing / CS-WSP reads
 # 11.5 ft, x1.15 (eave-to-ridge) x0.95 (9'-0" story) = 12.56 ft per line.
 MAIN_BRACED_WALLS = [
-    # BWL-W-A-E1 — 16'-6" provided after E3 and E1's move north (2026-10-03), above 12.56 ft.
-    # The two new 21" piers do not meet the 27" minimum; retire the former 37" panel.
-    # The 147 1/2" north run ends 2'-7" short of the NE corner and keeps its hold-down.
+    # BWL-W-A-E1 — 19'-3" provided since the 2026-10-16 rework, above 12.56 ft: the SE corner
+    # to E1's RO (34 1/2"), the 43" pier between E2 and WIN-M-DINING-E, and the dining
+    # window's north jamb to 2'-7" short of the NE corner, where it keeps its hold-down.
     BracedWallPanel(uid="0BK3XPH9EX", tag="BWP-M-E1-0000", wall_ref="W-M-E1", start=inch(0.0),
-                    width=inch(50.5), note="SE corner; return for BWL-W-A-S1's east end"),
-    BracedWallPanel(uid="KZ7TYRTJKY", tag="BWP-M-E1-0254", wall_ref="W-M-E1", start=inch(253.5),
-                    width=inch(147.5), hold_down_ref="CN-M-BWHD-NE-E",
+                    width=inch(34.5), note="SE corner; return for BWL-W-A-S1's east end"),
+    BracedWallPanel(uid="CHBX85XNZF", tag="BWP-M-E1-0142", wall_ref="W-M-E1", start=inch(141.5),
+                    width=inch(43.0), note="pier between WIN-M-LIV-E2 and WIN-M-DINING-E"),
+    BracedWallPanel(uid="KZ7TYRTJKY", tag="BWP-M-E1-0248", wall_ref="W-M-E1", start=inch(247.5),
+                    width=inch(153.5), hold_down_ref="CN-M-BWHD-NE-E",
                     note="R602.10.7 end condition 5 at the NE corner"),
     # BWL-W-A-N1 — 28'-2" provided. The 78" run crosses the W-M-N3/W-M-N3B butt. The
     # W-M-N1/N1B split moved 5/8" east with the pantry partition (2026-10-03).

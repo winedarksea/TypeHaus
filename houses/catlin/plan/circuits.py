@@ -277,6 +277,8 @@ CIRCUITS = (
             # holds a recessed receptacle as well as the hardwire J-box — both on this one
             # circuit, so neither the load nor the breaker moves and a future replacement of
             # either kind lands in a box that already exists.
+            # 2026-10-16: the surround moved 16" south (centre y=7'-4") onto the LVP; the
+            # run lengthens nothing material and the circuit is unchanged.
             description="Electric fireplace, living room east wall, in the brick "
                         "surround between WIN-M-LIV-E1 and WIN-M-LIV-E2 (EQ-M-FIREPLACE). "
                         "DEDICATED, #12 Cu (12/2 NM-B): NEC 422.10(A) puts the continuous "

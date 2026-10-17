@@ -635,11 +635,11 @@ STUDIO_KITCHENETTE_4422 = FurnitureType(
 # ** `work_surface` IS LEFT UNSET AND THAT IS LOAD-BEARING. ** `work_surface=False` is the
 # value NEC 210.52(A)'s wall-space rule keys on; `None` keeps a shelf 5'-4" in the air out
 # of that rule entirely rather than leaning on the 6" floor-contact gate to do it.
-MANTEL_WALNUT_46 = FurnitureType(
-    tag="FT-MANTEL-WALNUT-46", name='Fireplace mantel shelf, 45 1/2" x 11 1/2"',
+MANTEL_ELM_46 = FurnitureType(
+    tag="FT-MANTEL-ELM-46", name='Fireplace mantel shelf, 45 1/2" x 11 1/2"',
     footprint=(inch(45.5), inch(11.5)), height=inch(2.25),
     storage=False, plan_symbol=None,
-    source="Site-made solid walnut mantel in 12/4 stock, 45 1/2\" x 11 1/2\" x 2 1/4\", "
+    source="Site-made solid American elm mantel (walnut until 2026-10-16) in 12/4 stock, 45 1/2\" x 11 1/2\" x 2 1/4\", "
            "flush with the brick panel's ends and cantilevered off blocking let into "
            "W-M-FIRE-HEAD's back face. Its underside sits at 64\" AFF, on the head "
            "course — 24 modular courses of visible brick — and its top at 66 1/4\". "
@@ -680,8 +680,16 @@ STRW_BENCH = FurnitureType(
            "of the stud faces.",
 )
 
+# WIN-M-DINING-E's blind (2026-10-16): the library 27x48 blind at the picture window's width.
+CELLULAR_BLIND_6348 = CELLULAR_BLIND_2748.model_copy(update=dict(
+    tag="FT-CELLULAR-BLIND-6348", name='Cellular blind, nominal 63 x 48" opening',
+    footprint=(inch(63), inch(2)),
+    source="Generic inside-mount cellular blind for a nominal 63 x 48-inch opening, the "
+           "library 27 x 48 blind's construction at this width; product unselected."))
+
 FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
-                   CURTAIN_ROD_48, CURTAIN_ROD_84, CELLULAR_BLIND_2748, PORCH_TRACK_176,
+                   CURTAIN_ROD_48, CURTAIN_ROD_84, CELLULAR_BLIND_2748, CELLULAR_BLIND_6348,
+                   PORCH_TRACK_176,
                    PORCH_TRACK_102,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
                    BATH1_SHELF_2030,
@@ -691,4 +699,4 @@ FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
                    CLOSET_SHELF_36, BATH2_CAB_4506, STUDIO_KITCHENETTE_4422,
-                   MANTEL_WALNUT_46, SPLASH_BASIN_GRANITE_24, STRW_BENCH)
+                   MANTEL_ELM_46, SPLASH_BASIN_GRANITE_24, STRW_BENCH)

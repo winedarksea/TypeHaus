@@ -29,6 +29,7 @@ from typehaus import (
     Occupancy,
     PanelingSpan,
     Post,
+    PublishedSpan,
     RadiantSystem,
     Railing,
     RailingKind,
@@ -337,18 +338,20 @@ NODES = [
     # against them.
     #
     # ** THE PIER, MEASURED. ** W-M-E1's interior finish face is x=35'-5 3/8".
-    # The brick is centred on y=104" = 8'-8" (104 mod 16 = 8, a BAY CENTRE on this wall's own
-    # grid off N-M-SE), which was the centre of the original 4'-0"/13'-4" pier. Since
-    # 2026-10-03 the windows are mirrored about it instead: WIN-M-LIV-E1's RO is
-    # y 50 1/2"..77 1/2" (centre 5'-4"), WIN-M-LIV-E2's y 130 1/2"..157 1/2" (centre 12'-0").
+    # The brick is centred on y=88" = 7'-4" (88 mod 16 = 8, a BAY CENTRE on this wall's own
+    # grid off N-M-SE). 2026-10-16 the whole group moved one 16" module south, from 8'-8", so
+    # it sits on the LVP: WIN-M-LIV-E1's RO is y 34 1/2"..61 1/2" (centre 4'-0"),
+    # WIN-M-LIV-E2's y 114 1/2"..141 1/2" (centre 10'-8"), still mirrored about the brick.
     # Both are 27" because W-M-E1 is BEARING (preferences.toml `max_window_ro_bearing_in`),
-    # so each carries a 3" jack+king pack; the packs meet the niche kings at 80" and 128".
+    # so each carries a 3" jack+king pack; the packs meet the niche kings at 64" and 112".
+    # 32" south was rejected: E1's RO would stand 18 1/2" off the SE corner and lose the
+    # corner's bracing return.
     #
     # ** WIDTH IS SET BY THE BRICK MODULE AND COMES OUT EXACT. ** The Amantii
     # BI-30-XTRASLIM is trimless (its face is only 3/8" wider than its body), so the brick
     # runs to the glass edge, which is the whole point of a masonry surround: masonry opening
     # 29 1/2", plus one whole brick and one head joint each side (7 5/8" + 3/8" = 8"), gives
-    # 45 1/2" with ZERO CUT CLOSERS. Centred on y=104" the panel spans y 81 1/4"..126 3/4",
+    # 45 1/2" with ZERO CUT CLOSERS. Centred on y=88" the panel spans y 65 1/4"..110 3/4",
     # 3 3/4" off each RO and 3/4" off each king pack, symmetric to 0".
     # A 47 1/4" panel (two old BESTA modules) was considered and rejected: it leaves 8 7/8"
     # returns, i.e. a whole brick plus a 7/8" sliver on every course at the firebox edge
@@ -385,13 +388,13 @@ NODES = [
     # framed on ("the brick cuts them short of that bearing") was never true. The panel never
     # needed a joist-free strip; it needed two holes.
     #
-    # The ten y stations, all on the panel's own centre y=104":
-    #   81 1/4" / 126 3/4"   the 45 1/2" panel face (plinth, spandrel)
-    #   81 7/8" / 126 1/8"   the 44 1/4" stub line — now the OUTER piers' outer ends
-    #   94" / 98"            the south pocket: joist 006's axis is 96", 3/4" clear each side
+    # The ten y stations, all on the panel's own centre y=88":
+    #   65 1/4" / 110 3/4"   the 45 1/2" panel face (plinth, spandrel)
+    #   65 7/8" / 110 1/8"   the 44 1/4" stub line — now the OUTER piers' outer ends
+    #   78" / 82"            the south pocket: joist 005's axis is 80", 3/4" clear each side
     #                        of its 2 1/2" flange
-    #   110" / 114"          the north pocket: joist 007's axis is 112", same clearance
-    #   89 1/4" / 118 3/4"   the 29 1/2" masonry opening, i.e. the jamb piers' inner faces
+    #   94" / 98"            the north pocket: joist 006's axis is 96", same clearance
+    #   73 1/4" / 102 3/4"   the 29 1/2" masonry opening, i.e. the jamb piers' inner faces
     #
     # ** WATCH THE TMS 402 PIER/COLUMN LINE IF THESE SLOTS EVER WIDEN. ** A masonry member
     # becomes a COLUMN at a horizontal dimension <= 3t = 10 7/8", where an 8" minimum least
@@ -399,31 +402,31 @@ NODES = [
     # outright. The middle pier is 12" and has 1 1/8" of room. Do not widen the slots past
     # ~4 1/2" without re-checking that.
     Node(uid="8B5HVCT933", tag="N-M-FIRE-S",
-         position=pt(ft(35, 1.6875), ft(6, 9.25)), open_end=True),
+         position=pt(ft(35, 1.6875), ft(5, 5.25)), open_end=True),
     Node(uid="ZBDG33XN7Y", tag="N-M-FIRE-N",
-         position=pt(ft(35, 1.6875), ft(10, 6.75)), open_end=True),
+         position=pt(ft(35, 1.6875), ft(9, 2.75)), open_end=True),
     Node(uid="V4P9PHV0W4", tag="N-M-FIRE-STUB-S",
-         position=pt(ft(35, 1.6875), ft(6, 9.875)), open_end=True),
+         position=pt(ft(35, 1.6875), ft(5, 5.875)), open_end=True),
     Node(uid="97S4NK2GRX", tag="N-M-FIRE-STUB-N",
-         position=pt(ft(35, 1.6875), ft(10, 6.125)), open_end=True),
+         position=pt(ft(35, 1.6875), ft(9, 2.125)), open_end=True),
     # The four pocket jambs. `open_end=True` is NOT optional on any of them: a dry run
     # without it produced six `integrity.wall_loop_open` FAILs.
-    Node(uid="54QF6MV7B9", tag="N-M-FIRE-PIER-S2", position=pt(ft(35, 1.6875), ft(7, 10)), open_end=True),
-    Node(uid="GPPZEETR30", tag="N-M-FIRE-PIER-M1", position=pt(ft(35, 1.6875), ft(8, 2)), open_end=True),
-    Node(uid="7BKATS9ZS7", tag="N-M-FIRE-PIER-M2", position=pt(ft(35, 1.6875), ft(9, 2)), open_end=True),
-    Node(uid="0HTZA1YNJW", tag="N-M-FIRE-PIER-N1", position=pt(ft(35, 1.6875), ft(9, 6)), open_end=True),
+    Node(uid="54QF6MV7B9", tag="N-M-FIRE-PIER-S2", position=pt(ft(35, 1.6875), ft(6, 6)), open_end=True),
+    Node(uid="GPPZEETR30", tag="N-M-FIRE-PIER-M1", position=pt(ft(35, 1.6875), ft(6, 10)), open_end=True),
+    Node(uid="7BKATS9ZS7", tag="N-M-FIRE-PIER-M2", position=pt(ft(35, 1.6875), ft(7, 10)), open_end=True),
+    Node(uid="0HTZA1YNJW", tag="N-M-FIRE-PIER-N1", position=pt(ft(35, 1.6875), ft(8, 2)), open_end=True),
     Node(uid="D2CYZWEM2K", tag="N-M-FIRE-JS-S",
-         position=pt(ft(35, 1.6875), ft(6, 9.25)), open_end=True),
+         position=pt(ft(35, 1.6875), ft(5, 5.25)), open_end=True),
     Node(uid="5FH2RV57A3", tag="N-M-FIRE-JS-N",
-         position=pt(ft(35, 1.6875), ft(7, 5.25)), open_end=True),
+         position=pt(ft(35, 1.6875), ft(6, 1.25)), open_end=True),
     Node(uid="EN5H4QWC98", tag="N-M-FIRE-JN-S",
-         position=pt(ft(35, 1.6875), ft(9, 10.75)), open_end=True),
+         position=pt(ft(35, 1.6875), ft(8, 6.75)), open_end=True),
     Node(uid="21D53H2EMH", tag="N-M-FIRE-JN-N",
-         position=pt(ft(35, 1.6875), ft(10, 6.75)), open_end=True),
+         position=pt(ft(35, 1.6875), ft(9, 2.75)), open_end=True),
     Node(uid="PE5C0SVHZ7", tag="N-M-FIRE-HD-S",
-         position=pt(ft(35, 1.6875), ft(6, 9.25)), open_end=True),
+         position=pt(ft(35, 1.6875), ft(5, 5.25)), open_end=True),
     Node(uid="Y77DK1HWPJ", tag="N-M-FIRE-HD-N",
-         position=pt(ft(35, 1.6875), ft(10, 6.75)), open_end=True),
+         position=pt(ft(35, 1.6875), ft(9, 2.75)), open_end=True),
 ]
 
 # --- board & batten on the north and south elevations -----------------------
@@ -1036,13 +1039,14 @@ WALLS = [
     # I-joist web stiffeners; the joists run continuous to their mudsill seat and the mason
     # lays round them. Stations, off y=0 on the joists' own 16" module:
     #
-    #     pier S   81 7/8" -> 94"        12 1/8"
-    #     pocket   94"     -> 98"        4"      joist 006 on 96", 3/4" clear each side
-    #     pier M   98"     -> 110"       12"
-    #     pocket   110"    -> 114"       4"      joist 007 on 112", same
-    #     pier N   114"    -> 126 1/8"   12 1/8"
+    #     pier S   65 7/8" -> 78"        12 1/8"
+    #     pocket   78"     -> 82"        4"      joist 005 on 80", 3/4" clear each side
+    #     pier M   82"     -> 94"        12"
+    #     pocket   94"     -> 98"        4"      joist 006 on 96", same
+    #     pier N   98"     -> 110 1/8"   12 1/8"
     #
-    # Joists 005 (y=80) and 008 (y=128) need no pocket: they clear the stub line by 5/8" each
+    # (Stations since the 2026-10-16 move, 16" south of the 2026-09-19 originals.)
+    # Joists 004 (y=64) and 007 (y=112) need no pocket: they clear the stub line by 5/8" each
     # side already, which is the same 5/8" the 44 1/4" width was drawn for in the first place.
     # `structural.through_deck_clearance` grades all four gaps and governs on that 5/8".
     #
@@ -1369,53 +1373,39 @@ OPENINGS = [
     # The east wall became one SEKTION line under a 36" live-edge slab (plan/living_east_run.py),
     # and the owner wanted each STOOL TOP ON THE COUNTER TOP. The stool sits on the frame's
     # lower rail, which is the sill + 2.953", and the slab top is 36 15/16" above the storey
-    # datum (the finished floor is 15/16" up), so 34" lands the rail 1/64" proud. The three
-    # authored live-edge stools meet the slab's back edge in one plane. The plan estimated
+    # datum (the finished floor is 15/16" up), so 34" lands the rail 1/64" proud. The
+    # cherry stools meet the ash slab's back edge in one plane. The plan estimated
     # ~36" and a 4" lift; the model said 34". The second storey's row heads at 7'-0", 2" over.
     # Nothing grades stool-to-slab; re-measure if the leg, slab or window type changes.
-    # 2026-10-03 (take two): E1 moves 16" north to 5'-4", the mirror of E2 about the
-    # brick's y=104"; both ROs now stand 3 3/4" off the brick. It no longer columns with
-    # WIN-S-STUDY3.
+    # 2026-10-16: E1 and E2 moved one 16" module south with the fireplace, to 4'-0" and
+    # 10'-8", still mirrored about the brick's y=88" with each RO 3 3/4" off it. The trio
+    # (ROs 2'-10 1/2"..11'-9 1/2") now sits on the LVP. E1 no longer columns with WIN-S-STUDY3.
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
-           type_ref="WT-2748", position=from_node("N-M-SE", ft(4, 2.5)),
+           type_ref="WT-2748", position=from_node("N-M-SE", ft(2, 10.5)),
            sill_height=ft(2, 10)),
-    # 2026-10-03: E2 returns one stud bay south to 12'-0", trading its BED1 column
-    # for a new matching E3 at 16'-0". EAST-MID moves one bay north to 20'-0".
-    # The 4'-0" beat leaves 21" RO piers and 15" between independent jack+king packs;
-    # inserting E3 between the old stations would leave overlapping kings.
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
-           type_ref="WT-2748", position=from_node("N-M-SE", ft(10, 10.5)),
+           type_ref="WT-2748", position=from_node("N-M-SE", ft(9, 6.5)),
            sill_height=ft(2, 10)),
-    Window(uid="WMLVE3AAAA", tag="WIN-M-LIV-E3", host="W-M-E1",
-           type_ref="WT-2748", position=from_node("N-M-SE", ft(14, 10.5)),
-           sill_height=ft(2, 10)),
-    # WIN-M-LIV-E2 (old, 12'-0") and WIN-M-DIN-E2 (19'-4") retired 2026-08-24, replaced by
-    # one WT-3048 unit centred as close as the 16" module allows to y=18'-0" — the exact
-    # midpoint between WIN-S-BED1 (13'-0") and WIN-S-BED2 (23'-0") above. True centre falls
-    # on a bay centre (residue 8" off W-M-E1's own start-node grid), and a 30" RO needs a
-    # stud line, so the nearest legal station is 18'-8", 8" north of centre. W-M-E1/E2 were
-    # merged into one wall (above) so this RO wouldn't straddle the old tee at y=18'-0".
+    # ** ONE PICTURE WINDOW ON THE DINING TABLE (2026-10-16). ** Replaces WIN-M-LIV-E3 and
+    # WIN-M-EAST-MID (uids retired). Centre y=18'-0" (216", a bay centre), on the table and on
+    # the BED1/BED2 axis above; RO y 15'-4 1/2"..20'-7 1/2". 63" is the width nearest the
+    # owner's ~60" that centres there: it breaks 4 studs, the minimum for any RO between
+    # 62 1/2" and 78 1/2" at this station, and a 59" RO is only legal 8" off the table.
+    # Same 2'-10" sill and 6'-10" head as the row. Not tempered: the sill is 33" AFF.
     #
-    # ** THIS IS NO LONGER THE ROW'S NORTH END. ** The retirement note above
-    # left the kitchen stretch north of here blank on purpose, and CLAUDE.md's Rows bullet
-    # said so. WIN-M-KIT-E ends it at y=34'-0" — a 14" unit at a 3'-6" sill, joining neither
-    # this row's beat nor its head line, deliberately. See that window at the end of this
-    # list, and the rewritten Rows bullet, before reading the blank as still intended.
-    # NARROWED 30" -> 27": W-M-E1 is a BEARING wall, and the bearing rung of
-    # the RO ladder is 27" — a 30" RO there cannot take its jacks without pushing the kings
-    # off the module. Retype only: WT-2748 holds the row's sill and head line, so this
-    # window's place in the east row is untouched. The near-jamb offset moved +1 1/2"
-    # (17'-5" -> 17'-6 1/2") because ``from_node`` is the NEAR JAMB, not the centre: half
-    # of 3" of lost width, which keeps the CENTRE on y=18'-8", the same stud line the
-    # 2026-08-24 note picked. RM-M-LIVING passes R303.1 under Exception 1 already — it is
-    # artificially lit (15.7 fc) and mechanically ventilated — so the exactly 1 sf of glass
-    # this gives up (10.0 -> 9.0) changes no result: the room reads 44.9 -> 43.9 sf against
-    # a nominal 59.8 sf, short either way, and the exception is what carries it.
-    # 2026-10-03 overrides the historic station above: centre 20'-0", RO north jamb
-    # 21'-1 1/2", still 6 1/4" south of FURN-M-KIT-PANTRY-S2's unchanged end.
-    Window(uid="QPNDT7TF6G", tag="WIN-M-EAST-MID", host="W-M-E1",
-           type_ref="WT-2748", position=from_node("N-M-SE", ft(18, 10.5)),
-           sill_height=ft(2, 10)),
+    # W-M-E1 is BEARING and the house's 27" cap (`max_window_ro_bearing_in`) stays; this one
+    # window carries a named `structural.window_framing_module` suppression instead. The
+    # header is read off Boise's own table rather than R602.7, see notes/dining_window_header.md.
+    Window(uid="83YR1VW00D", tag="WIN-M-DINING-E", host="W-M-E1",
+           type_ref="WT-6348-FIX", position=from_node("N-M-SE", ft(15, 4.5)),
+           sill_height=ft(2, 10), header_spec='2-ply 9.5" LVL',
+           published_span=PublishedSpan(
+               source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.5, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
+               table="Door and window headers, Roof Only + 1 Floor (no mid support), roof load 50 psf snow (115%) + 15 psf dead, 32'-0\" structure width, 5'-8\" clear span: 8-5/8\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the next 1-3/4\" depth, 9-1/2\"",
+               member='2-ply 9.5" LVL',
+               span=ft(5, 8),
+               load_psf=65.0,
+               condition="the row is for trusses over a 32' width with a full-width floor (18' of roof and 16' of floor on the header); W-M-E1 carries a zero-overhang ridge-beam rafter roof (17'-9 3/4\" run, ~8'-11\" to this wall) and FS-S-EAST's 17'-9 1/2\" I-joists (~8'-11\"), so both tributaries are about half the row's; Ps is 35 psf against the row's 50; the row assumes 80 plf of wall above and the second storey's 10' wall is ~100-120 plf, but the total (~1,030 plf) is under half the row's (~2,080 plf); the 9-1/2\" substitute is deeper than the tabulated 8-5/8\" at the same width; deflection L/360 live and L/240 total; dry use; uniform load only; see notes/dining_window_header.md")),
     # Moved to the north wall 2026-07-30 with the sink (plan/placeables.py's kitchen header).
     # The north three-storey column moved 28'-0" -> 29'-4" so the window could
     # land dead-centre on FURN-M-KIT-SINKBASE: the counter run was exactly full and had no
@@ -1478,14 +1468,14 @@ OPENINGS = [
     # matters, which is why the width did not move.
     #
     # ** GEOMETRY, AND THE WIDTH IS WIDER THAN THE APPLIANCE ON PURPOSE. ** 34" x 25", centred
-    # on y=8'-8" like the panel, so `from_node` (the NEAR jamb) is 104" - 17" = 87" and the RO
-    # spans y 87"..121". The appliance's own rough opening is 29 1/4" wide, so the pocket
+    # on y=7'-4" like the panel, so `from_node` (the NEAR jamb) is 88" - 17" = 71" and the RO
+    # spans y 71"..105". The appliance's own rough opening is 29 1/4" wide, so the pocket
     # leaves a 2 3/8" strip of clear cavity down each side of it — which is where ED-M-FIRE-RC
     # goes (plan/electrical.py). At 30" there was 3/8" a side and nowhere to put a box; the
     # masonry aperture in front is 29 1/2" either way, so the brick reveal laps the framed
     # edge 2 1/4" a side and the extra width is invisible. ** IT COSTS NO EXTRA STUD: ** it
-    # breaks the studs at 96" and 112" at 30" and at 34" alike, and leaves the kings at 80" and
-    # 128" standing. `needs_jamb_pack` gives it a header and jamb packs automatically, spanning
+    # breaks the studs at 80" and 96" at 30" and at 34" alike, and leaves the kings at 64" and
+    # 112" standing. `needs_jamb_pack` gives it a header and jamb packs automatically, spanning
     # ~37" — still well under the `w_ft <= 4.0` float boundary FO-M-ERV-OA's note records, but
     # the resolved value is worth a look after any width change. `sill_height` is off the WALL BASE (W-M-E1's `base_ref_z` is 0"), NOT the
     # finished floor — the same two-datum trap the wall hydrants carry — so 24 7/16" puts the
@@ -1493,7 +1483,7 @@ OPENINGS = [
     # the 48 15/16" head. The brick reveal laps the framed edge all round, which is what a
     # 1/2" of margin per side is for.
     RoughOpening(uid="MGNV9YBS74", tag="AO-M-FIRE-NICHE", host="W-M-E1",
-                 position=from_node("N-M-SE", inch(87)),
+                 position=from_node("N-M-SE", inch(71)),
                  width=inch(34), height=inch(25), sill_height=inch(24.4375),
                  depth=inch(6)),
 ]

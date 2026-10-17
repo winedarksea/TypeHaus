@@ -20,8 +20,8 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
     openings = {opening.tag: opening for opening in catlin_model_ro.openings}
     stools = catlin_model_ro.window_stools
     # 33 derived oak + five authored quartz (plan/countertops.py).
-    assert len(stools) == 39
-    assert len({stool.uid for stool in stools}) == 39
+    assert len(stools) == 38
+    assert len({stool.uid for stool in stools}) == 38
     for stool in stools:
         opening = openings[stool.window_ref]
         wall = walls[stool.wall_tag]
@@ -52,10 +52,10 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
 def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     payload = model_to_dict(catlin_model_ro)
     rows = payload["window_stools"]
-    assert len(rows) == 39
+    assert len(rows) == 38
     assert {row["profile"] for row in rows} == {"eased"}
     assert {row["material_ref"] for row in rows} == {"oak-stool", "quartz-counter",
-                                                    "oak-stool-12q"}
+                                                    "cherry-stool-12q"}
     material_of = {row["opening_uid"]: row["material_ref"] for row in rows}
     openings = {opening.uid for opening in catlin_model_ro.openings}
     assert all(row["opening_uid"] in openings for row in rows)
@@ -67,7 +67,7 @@ def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
              if node["extras"].get("trade") == "millwork"
              and node["extras"].get("kind") == "opening"
              and node["extras"].get("uid") in windows]
-    assert len(nodes) == 39
+    assert len(nodes) == 38
     assert {node["extras"]["uid"] for node in nodes} == {
         row["opening_uid"] for row in rows}
     oak_material = next(m for m in catlin_model_ro.plan.library.materials if m.tag == "oak-stool")

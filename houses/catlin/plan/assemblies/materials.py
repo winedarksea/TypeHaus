@@ -62,14 +62,14 @@ MATERIALS = [
              finish="clear-satin-hardwax-oil", species="walnut", nominal_quarters=6,
              milling_profile="S4S", requires_custom_milling=True,
              source="Two 12 1/2\" x 24 7/8\" x 1\" tops, each an edge-glued pair from one 6/4 board, oversailing 7/8\" to the seat fronts and capping the covers. Finish all six faces; fix on figure-8s."),
-    # The east wall's living-room slabs; the window stools that meet them are oak-stool-12q. A 12/4 kiln-dried flitch flattened to 2"; the natural edge is specified at no
-    # more than 1 1/2" past the fronts. Priced in [countertops], cut-listed by `haus millwork`.
-    Material(tag="live-edge-white-oak", name='Live-edge white oak slab, 2"',
-             r_per_inch=1.0, density=750.0, hatch="lumber", color="#c4b18c",
+    # The east wall's living-room slabs (CT-M-LIV-E-S/-N, 2026-10-16), ash to match the
+    # dining table's ash-8q top. Priced in [countertops], cut-listed by `haus millwork`.
+    Material(tag="ash-counter-12q", name='White ash counter slab, 2", 12/4 S4S',
+             r_per_inch=1.0, density=670.0, hatch="lumber", color="#d9cbb0",
              finish="oak-board",  # the 3D recipe; the coat is hardwax oil
-             species="oak", nominal_quarters=12, milling_profile="live-edge",
+             species="ash", nominal_quarters=12, milling_profile="eased",
              requires_custom_milling=True,
-             source="Two slabs on the living-room SEKTION banks (CT-M-LIV-E-S/-N), 2\" finished, 16 1/2\" nominal depth. Back edge ripped straight and scribed to the gwb, where the oak-stool-12q stools meet it; live edge <= 1 1/2\" past the drawer fronts at its widest, so the dining chair zone still clears. Fix on slotted brackets and finish all six faces: 16\" of flat-sawn oak moves."),
+             source="Two edge-glued slabs on the living-room SEKTION banks, 2\" finished off 12/4, 16 1/2\" deep, straight eased front edge. Back edge scribed to the gwb, where the cherry-stool-12q stools meet it. Fix on slotted brackets and finish all six faces: 16\" of flat-sawn ash moves."),
     # ** THE FLOOR TILE, AND THE SELECTION IS ARITHMETIC BEFORE IT IS TASTE. ** Grout length
     # per square foot is 144 x (1/a + 1/b): a 24x24 gives 1.0 lineal ft/sf, a 3x12 subway
     # gives 5.0, a penny round gives 24+. Large-format is ~3x easier to keep clean than
@@ -299,11 +299,17 @@ MATERIALS = [
     # T x W x L, not a coverage good. Its dollars are NOT here and not in `haus millwork`
     # either — see `finish-fireplace-mantel-walnut` in prices.toml [allowances], and the
     # note on SB-M-FIRE-MANTEL for why a wall-hosted ShelfBank has no host row to carry them.
-    Material(tag="walnut-mantel-12q", name="Black walnut mantel shelf, 12/4 S4S", hatch="lumber",
-             density=610.0, color="#80634f", finish="clear-satin-hardwax-oil",
-             species="walnut", nominal_quarters=12, milling_profile="S4S",
+    Material(tag="elm-mantel-12q", name="American elm mantel shelf, 12/4 S4S", hatch="lumber",
+             density=560.0, color="#bd9975", finish="clear-satin-hardwax-oil",
+             species="elm", nominal_quarters=12, milling_profile="S4S",
              requires_custom_milling=True,
-             source="RM-M-LIVING fireplace mantel (2026-09-06). 12/4 because the shelf finishes 2 1/4\" — one modular brick bed height, so it reads as a single course pulled proud of the wythe — and 8/4 dresses to 1 1/2\". Bought walnut, not the family's oak stock"),
+             source="RM-M-LIVING fireplace mantel (elm since 2026-10-16, walnut before). 12/4 because the shelf finishes 2 1/4\" — one modular brick bed height, so it reads as a single course pulled proud of the wythe — and 8/4 dresses to 1 1/2\". Matches the elm slat partition."),
+    # The living room's slat partition (plan/living_east_run_types.py), ripped from 12/4.
+    Material(tag="elm-slat-12q", name='American elm slats, 1 1/2" x 2 1/2", 12/4 S4S',
+             hatch="lumber", density=560.0, color="#bd9975", finish="oak-board",
+             species="elm", nominal_quarters=12, milling_profile="S4S",
+             requires_custom_milling=True,
+             source="Ripped from 12/4 elm and dressed to 1 1/2\" x 2 1/2\"; hardwax oil all faces."),
     # The booth's acoustic felt, band 36" to 9'-0" on the south and north walls
     # of RM-M-STUDY. ** NO `species`. ** That one field is the gate on `haus millwork`
     # (takeoff/hardwood.py — "a milling schedule is only about wood"); set it and PET felt is
@@ -359,10 +365,10 @@ MATERIALS = [
              source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak, ~$2/sf rough. 6/4 because the interior return on an outie window runs most of a 13 7/8\" wall and a 3/4\" board that wide will cup; 1 1/4\" holds flat without the bulk of 8/4. The front edge is eased, not moulded (see the profile note above)"),
     # The east row's stools (WIN-M-LIV-E1/-E2/-E3, WIN-M-EAST-MID): plain oak, 2" to match
     # the live-edge slab they meet at its ripped back edge, colour-matched to it.
-    Material(tag="oak-stool-12q", name='White oak window stool, 2", 12/4 S4S', hatch="lumber",
-             color="#c4b18c", finish="oak-board", species="oak",
+    Material(tag="cherry-stool-12q", name='Black cherry window stool, 2", 12/4 S4S',
+             hatch="lumber", color="#b77d60", finish="oak-board", species="cherry",
              nominal_quarters=12, milling_profile="eased", requires_custom_milling=True,
-             source="Owner-milled white oak, 2\" finished from 12/4 to match the live-edge slab's thickness; finish as that slab, hardwax oil all six faces."),
+             source="Milled black cherry, 2\" finished from 12/4 to match the ash slab's thickness; hardwax oil all six faces, oiled before install so it darkens evenly."),
     Material(tag="oak-shelf-8q", name="White oak shelving, 8/4 S4S", hatch="lumber",
              color="#c4b18c", finish="oak-board", species="oak",
              nominal_quarters=8, milling_profile="S4S", requires_custom_milling=True,

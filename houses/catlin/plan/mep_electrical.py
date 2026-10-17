@@ -26,7 +26,7 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment, m
 
 ELECTRICAL_DEVICE_TYPES = (
-    # The 3 1/4" pier beside EAST-MID takes a standard single-gang plate; the shared
+    # RC16's narrow pier (beside EAST-MID until 2026-10-16) takes a standard single-gang plate; the shared
     # catalog's 4" schematic envelope would overlap its king or the pantry.
     ElectricalDeviceType(tag="ED-T-RECEPTACLE-SINGLE-GANG",
                           name="Duplex receptacle, standard 2 3/4 x 4 1/2 in. plate",

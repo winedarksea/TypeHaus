@@ -17,6 +17,11 @@ FS-M-EAST / SL-M-DECK boundary this opening sits south of.
 2026-09-19 this note asks nobody to open a manufacturer's book** — the floor opening that
 required one is gone, and with it the last Source line this note could not supply.
 
+> **Amendment 2026-10-16: the whole surround moved 16" south**, centre y=8'-8" -> 7'-4", one
+> joist module, so every clearance in §3 is unchanged and only the stations and joist numbers
+> below moved: pockets on joists 005/006 (y=80"/96"), piers 65 7/8"–78" / 82"–94" /
+> 98"–110 1/8". The mantel is American elm now (§5); the free body still overturns.
+
 > ⚠ **The brick does not bear on the floor, and the whole design depends on that.** It
 > starts on `W-B-E1`'s pour at −1'-1 7/16" and rises **through** `FS-M-EAST`. If anyone
 > "simplifies" this by starting the wythe on the subfloor, §3's 50 plf limit is exceeded
@@ -148,20 +153,20 @@ joists run through open air, not through a masonry layer no check can see.
 
 ### The stations
 
-Joist axes land on y = **96.000"** and **112.000"** exactly (16" o.c. off y = 0). The stub
-line runs y 81 7/8"–126 1/8" and the brick x 419 13/16"–423 7/16".
+Joist axes land on y = **80.000"** and **96.000"** exactly (16" o.c. off y = 0). The stub
+line runs y 65 7/8"–110 1/8" and the brick x 419 13/16"–423 7/16".
 
 | | y | length |
 |---|---|---|
-| `W-M-FIRE-STUB-S` | 81 7/8" → 94" | **12 1/8"** |
+| `W-M-FIRE-STUB-S` | 65 7/8" → 78" | **12 1/8"** |
+| pocket (joist 005) | 78" → 82" | 4" |
+| `W-M-FIRE-STUB-M` | 82" → 94" | **12"** |
 | pocket (joist 006) | 94" → 98" | 4" |
-| `W-M-FIRE-STUB-M` | 98" → 110" | **12"** |
-| pocket (joist 007) | 110" → 114" | 4" |
-| `W-M-FIRE-STUB-N` | 114" → 126 1/8" | **12 1/8"** |
+| `W-M-FIRE-STUB-N` | 98" → 110 1/8" | **12 1/8"** |
 
 Four clearances, and `structural.through_deck_clearance` measures every one of them off the
 resolved members: **5/8" / 3/4" / 3/4" / 5/8"**, against a 1/2" threshold. The 5/8" pair are
-joists **005** (y = 80") and **008** (y = 128"), which need no pocket at all — and that 5/8"
+joists **004** (y = 64") and **007** (y = 112"), which need no pocket at all — and that 5/8"
 is *residue*, a 44 1/4" panel laid out on a 16" module, not a margin anybody chose. Read a
 future FAIL there as information about whatever widened.
 
@@ -250,13 +255,14 @@ and cut to the wythe with the residue packed.
 **The mantel has a body as of 2026-09-06.** `SB-M-FIRE-MANTEL` used to be hosted on the wall
 itself, and a `ResolvedShelfBank` carries width, depth, thickness and a count and **no
 position** — no emitter reads `model.shelf_banks`, so the board existed in the cut list and
-nowhere else in the engine. It is hosted on `FURN-M-FIRE-MANTEL` (`FT-MANTEL-WALNUT-46`)
+nowhere else in the engine. It is hosted on `FURN-M-FIRE-MANTEL` (`FT-MANTEL-ELM-46`)
 now, which puts a real 45 1/2" × 11 1/2" × 2 1/4" solid at **64"–66 1/4" AFF**, sitting on
 `W-M-FIRE-HEAD`'s top. The free body below is unchanged, and **still nothing grades it** —
 no check tests a cantilevered placeable's tie-back — so this section and the note in
 `plan/millwork.py` remain the only record of the hold-down.
 
-`SB-M-FIRE-MANTEL` is a 45 1/2" × 11 1/2" × 2 1/4" walnut board. It bears on the 3 5/8"
+`SB-M-FIRE-MANTEL` is a 45 1/2" × 11 1/2" × 2 1/4" American elm board (walnut until
+2026-10-16). It bears on the 3 5/8"
 wythe, spans the 1 7/8" gap behind it and dies on `W-M-E1`'s gwb at x = 35'-5 3/8",
 projecting **6"** into the room. Take moments about the brick's front bearing edge,
 x = 34'-11 7/8":
@@ -264,7 +270,7 @@ x = 34'-11 7/8":
 | term | value |
 |---|---|
 | board volume | 45.5 × 11.5 × 2.25 = 1,177 in³ |
-| walnut at 610 kg/m³ | **25.9 lb** |
+| elm at 560 kg/m³ (walnut, 610, was 25.9 lb) | **23.8 lb** |
 | centroid, relative to the bearing edge | **0.25" in FRONT of it** |
 | net self-weight moment | **−6 in-lb, i.e. overturning** |
 
@@ -277,7 +283,7 @@ to exist **before** the brick goes up.
 The forces are trivial once that line exists. The lever from the bearing edge back to the
 gwb is 5 1/2", so 100 lb leaned on the front lip is **109 lb** of tension in the fasteners.
 And the board itself is never the question: S = 45.5 × 2.25²/6 = 38.4 in³, so the same 100 lb
-at 6" is 600 in-lb and **16 psi** against walnut's ~1,000 psi Fb — a factor of 60. All of the
+at 6" is 600 in-lb and **16 psi** against elm's ~1,000 psi Fb — a factor of 60. All of the
 margin is in the hold-down; none of it is in the wood.
 
 **Nothing in the engine can see any of this.** A `ResolvedShelfBank` carries width, depth,
@@ -298,8 +304,8 @@ record.
   foot of its AISC section). It is still **not sized here**: it carries 16" of brick to the
   mantel and nothing else, ~46 lb, and is the minimum stock piece rather than a designed one.
 - **The firebox pocket's framing.** `AO-M-FIRE-NICHE` is a blind `RoughOpening` 6" into
-  `W-M-E1`, so `needs_jamb_pack` gives it a header and jamb packs on the studs at 96" and
-  112" — ordinary work, graded by nothing that knows what is in front of it. And the pocket's
+  `W-M-E1`, so `needs_jamb_pack` gives it a header and jamb packs on the studs at 80" and
+  96" — ordinary work, graded by nothing that knows what is in front of it. And the pocket's
   thermal patch is ungraded too: the 4" exterior ccSPF runs continuous past the recess, which
   is why the loss is ~4 Btu/h at design and why it is worth stating rather than computing.
 - **The girt-block stations over the removed studs.** A blind recess stops short of the

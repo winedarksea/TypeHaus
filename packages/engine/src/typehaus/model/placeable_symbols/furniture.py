@@ -70,6 +70,7 @@ from typehaus.model.placeable_symbols._sektion_tall import (
                                                         sektion_tall,
 )
 from typehaus.model.placeable_symbols._sit_stand_desk import sit_stand_desk
+from typehaus.model.placeable_symbols._slat_partition import slat_partition
 from typehaus.model.placeable_symbols._wardrobe import (
                                                         DOUBLE_HANG_INTERIOR,
                                                         DRESS_INTERIOR,
@@ -139,6 +140,7 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "media-console": case(rows=2, cols=3, pulls=False),
     "bookcase": shelving(shelves=5),
     "corner-bookcase": corner_bookcase,
+    "slat-partition": slat_partition,
     # Five interior shelves plus base and cap; only the cap has the light-brown stain.
     "hemnes-bookcase": shelving(shelves=7, body_color="appliance-white",
                                back_color="casework-shadow", top_color="wood"),

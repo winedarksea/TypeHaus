@@ -134,7 +134,7 @@ MAIN_BACKING = [
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="APPL-M-HOOD (66 in.)"),
     WallBacking(uid="FFXNC9F05Z", tag="BK-M-E1-MANTEL", wall_ref="W-M-E1",
-                start=inch(80.5), length=inch(47),
+                start=inch(64.5), length=inch(47),
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="FURN-M-FIRE-MANTEL (64 in.)"),
     # FURN-M-KIT-MIXER-GARAGE-UP's bottom rail. The old one-piece 72" garage spanned 36" to

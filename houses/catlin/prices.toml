@@ -365,6 +365,9 @@
 # bearing in band-deep LVL since 2026-09-16. Half the 2-ply material; labour per ply a bit over half.
 "1.75x11.875 LVL" = { material = { low = 7, high = 13 }, labour = { low = 5, high = 10 } }  # 204 LF
 "2-1.75x11.875 LVL" = { material = { low = 14, high = 26 }, labour = { low = 8, high = 18 } }  # 8 LF
+# WIN-M-DINING-E's header (2026-10-16), read off Boise's header table: scaled from the
+# 11 7/8" row by depth.
+"2-1.75x9.5 LVL" = { material = { low = 12, high = 22 }, labour = { low = 7, high = 16 } }
 # 56 LF over TWO pieces since 2026-08-28: one 16.7' opening header, plus RB-HOUSE, which
 # moved onto this row when the ridge went 3-ply 11 7/8" -> 2-ply 14" (see attic.py). The
 # ridge is 36 LF of it and is bought as THREE 12s rather than one over-length stick — it
@@ -2531,14 +2534,24 @@
 # The east wall's six 36x15x30 living-room bases with paired 18x30 VOXTORP doors and
 # shelves. IKEA US 594.631.16, read 2026-10-04: $513 configured, legs/plinth/rail separate.
 # Material allowance includes those installation parts; the shared oak slabs bill separately.
-"SEKT-B36-D15" = { material = { low = 480, high = 620 }, labour = { low = 90, high = 220 } }  # 6 ea
+"SEKT-B36-D15" = { material = { low = 480, high = 620 }, labour = { low = 90, high = 220 } }
+# The re-banked ends (2026-10-16): the same frame and VOXTORP door family, one door each.
+"SEKT-B18-D15" = { material = { low = 250, high = 360 }, labour = { low = 70, high = 180 } }
+"SEKT-B15-D15" = { material = { low = 230, high = 330 }, labour = { low = 70, high = 180 } }
 # FÖRBÄTTRA-faced pieces (plan/living_east_run_types.py): site-cut 25x80 panels at $127.
 "FT-LIV-E-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 2 ea
 "FT-KIT-PEN-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 1 ea
 "FT-KIT-PEN-BACK-PANEL" = { material = { low = 260, high = 430 }, labour = { low = 120, high = 300 } }  # 1 ea, two panels and the connector rails
 "FT-KIT-CT-BRACKET-24" = { material = { low = 35, high = 70 }, labour = { low = 20, high = 45 } }  # 5 ea, powder-coated, #12 screws
 # Fillers: an offcut each, so the money is the scribe-and-fit labour.
-"FT-LIV-E-FILLER-2125" = { material = { low = 15, high = 40 }, labour = { low = 30, high = 80 } }  # 1 ea
+"FT-LIV-E-FILLER-4125" = { material = { low = 15, high = 40 }, labour = { low = 30, high = 80 } }
+"FT-LIV-E-FILLER-1" = { material = { low = 10, high = 30 }, labour = { low = 30, high = 80 } }
+# The elm slat partition (2026-10-16): 12/4 American elm at ~$7-12/bf, dressed to 2 1/2"
+# and ripped to 1 1/2" slats; `haus millwork` schedules ~92 bf (floor piece) and ~23 bf
+# (counter piece) with waste. Labour is ripping, dressing, oiling, cleats and the scribe,
+# plus the ceiling blocking between FS-S-EAST's joists, which bills nowhere else.
+"FT-LIV-SLAT-ELM-FULL" = { material = { low = 650, high = 1100 }, labour = { low = 300, high = 650 } }
+"FT-LIV-SLAT-ELM-COUNTER" = { material = { low = 160, high = 280 }, labour = { low = 120, high = 300 } }
 "SEKT-SINK-B36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 1 ea
 # Wall frames on the published SEKTION ladder. The 30" material bands scale from the 40"
 # references; the shorter carcasses keep the same per-box installation labour.
@@ -3077,7 +3090,7 @@
 # blocking laid in W-M-E1's stud bay behind the wythe and a line of screws through the gwb.
 # An hour of a carpenter at rough-in, but it has to exist BEFORE the brick goes up, so it is
 # priced with the mantel rather than in [framing] where the shelf's buyer would never see it.
-"FT-MANTEL-WALNUT-46" = { material = { low = 250, high = 550 }, labour = { low = 250, high = 600 } }  # 1 ea
+"FT-MANTEL-ELM-46" = { material = { low = 220, high = 500 }, labour = { low = 250, high = 600 } }  # 1 ea
 # W-M-STRW's notched oak bench: owner-stock 8/4 white oak milled to a 1 1/2" x 9 1/4" x 8'
 # blank (material = milling), then seven stud notches scribed to the as-built stations,
 # eased arris, oil, and screwing down through the fingers (labour).
@@ -4739,8 +4752,8 @@
 # break over each before the plinth goes up, is FUSSIER per SF than one 44 1/4" stub, not
 # cheaper. Re-rating this row down to match 18.9 SF would deduct twice.
 #
-# ** WHAT THIS ROW DOES NOT COVER: ** the walnut mantel and its hold-down ([placeables]
-# `FT-MANTEL-WALNUT-46` since 2026-09-06, an [allowances] lump before that); and the appliance
+# ** WHAT THIS ROW DOES NOT COVER: ** the mantel and its hold-down ([placeables]
+# `FT-MANTEL-ELM-46` since 2026-10-16, `FT-MANTEL-WALNUT-46` from 2026-09-06, an [allowances] lump before that); and the appliance
 # ([placeables] EQ-T-FIREPLACE-EL). ** IT NO LONGER HAS A FLOOR OPENING TO NOT COVER: **
 # FO-M-FIRE is retired (2026-09-19) with its 2-ply LVL header, four full-span trimmer plies,
 # two LUS, two HHUS410 and the I-joist web stiffeners. Measured off `haus takeoff`, that is
@@ -5238,11 +5251,11 @@
 # plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the showroom — silica
 # exposure control is the thing to buy here.
 "quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 80.62 SF
-# The living room's two live-edge slabs (2026-10-02); the east-row stools are owner-milled
-# oak-stool-12q since 2026-10-07. A 2" kiln-dried, flattened white oak flitch (12/4, cut-listed by `haus
-# millwork`) is ~2.3 bf/SF at $20-40/bf, and the labour is scribing the back edge, slotted
-# brackets and a six-face hardwax-oil finish.
-"live-edge-white-oak" = { material = { low = 45, high = 95 }, labour = { low = 30, high = 80 } }  # 25.12 SF
+# The living room's two ash slabs (2026-10-16, live-edge white oak before): 2" off 12/4
+# white ash, edge-glued and cut-listed by `haus millwork`, ~2.3 bf/SF at $8-15/bf with
+# waste; the labour is the glue-up, scribing the back edge, slotted brackets and a
+# six-face hardwax-oil finish.
+"ash-counter-12q" = { material = { low = 20, high = 40 }, labour = { low = 30, high = 75 } }
 # The reading nook's two end-cabinet tops (2026-10-03): bought 6/4 walnut at ~$12-20/bf, ~2 bf
 # per SF with waste; labour is a joiner's glue-up, flattening and a six-face hardwax oil.
 "walnut-counter" = { material = { low = 25, high = 45 }, labour = { low = 40, high = 110 } }  # ~4.3 SF
@@ -5386,6 +5399,10 @@
 "WT-2748-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 2 ea
 "WT-3048" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 7 ea — 78 UI, over the band; two-man set
 "WT-3048-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 2 ea — WIN-M-LIV-S2 and WIN-S-STUDY1
+# WIN-M-DINING-E (2026-10-16): a 63x48 fixed picture unit, 111 UI. Priced as the 27x48
+# casement's material per UI with the fixed-sash discount (75-80% of operable, the WT-1424-FIX
+# reading), and a two-man set like WT-3048.
+"WT-6348-FIX" = { material = { low = 1000, high = 1900 }, labour = { low = 235, high = 470 } }  # 1 ea
 # The plant room's U-0.14 units, FIXED sash. Same dimensions as their parents, a different
 # MANUFACTURER. Not an upgrade the owner may decline: `building_science.glazing_dew_point`
 # FAILs these at U-0.25 — the glass condenses below about +13 F outdoors. The fixed sash is
@@ -7314,7 +7331,7 @@ cabinet-closet-shelving-and-rod = { low = 600, high = 1500 }
 # other bought-walnut board in this house takes — its host FurnitureType's own `[placeables]`
 # row. ** DELETED, NOT ZEROED: ** leaving both rows in place would bill the mantel twice, and
 # the scope moved wholesale (12/4 stock, milling, finishing, and the anti-overturning blocking).
-# See `"FT-MANTEL-WALNUT-46"` in [placeables].
+# See `"FT-MANTEL-ELM-46"` in [placeables].
 # DRIVEN 2026-08-27 off CONDITIONED area — 5,113 SF, not gross: the garage slab is the finish
 # and takes no prep under one. $0.88-2.29/SF is the retired lump over that area.
 finish-floor-prep-and-self-levelling = { low = 0.88, high = 2.29, unit = "SF", driver = "space_summary.conditioned_sf" }

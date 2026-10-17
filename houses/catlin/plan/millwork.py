@@ -266,7 +266,7 @@ MAIN_SHELVES = [
     # (`resolve/millwork.py::_pocket_depth_m` gives a wall host its CASE POCKET depth — the
     # airgap plus stud bay — which is right for a bookcase wall and meaningless against a
     # 3 5/8" masonry wythe with no pocket at all). FURN-M-FIRE-MANTEL now carries the depth
-    # on FT-MANTEL-WALNUT-46's footprint, so `depth` is DELETED here and `_carcass_depth_m`
+    # on FT-MANTEL-ELM-46's footprint, so `depth` is DELETED here and `_carcass_depth_m`
     # inherits the 11 1/2" — the SB-M-STUDY-BENCH rule, that the board can never disagree
     # with the carcass it sits in, and one duplicated number fewer.
     #
@@ -287,7 +287,7 @@ MAIN_SHELVES = [
     # fasteners — nothing, once it exists.
     #
     # ** THE BOARD ITSELF IS NOT THE QUESTION. ** 45 1/2" x 2 1/4" gives S = 38.4 in3, so the
-    # same 100 lb at 6" is 600 in-lb and 16 psi against walnut's ~1,000 psi Fb — a factor of
+    # same 100 lb at 6" is 600 in-lb and 16 psi against elm's (or the walnut it replaced) ~1,000 psi Fb — a factor of
     # 60. Every bit of the margin here is in the hold-down and none of it is in the wood, so
     # sizing the shelf thicker would answer a question nobody asked.
     #
@@ -329,13 +329,13 @@ MAIN_SHELVES = [
     #
     # ** 12/4 STOCK, NOT THE STUDY'S 8/4, AND `haus millwork` IS WHAT SAID SO. ** Authored on
     # `walnut-shelf-8q` first, the schedule printed that 2 1/4" finished cannot come out of
-    # 8/4, which dresses to 1 1/2" — so the material is `walnut-mantel-12q`
-    # (plan/assemblies.py), which dresses to 2 1/2". Same species, same finish, same
-    # bought-not-owner-milled accounting; only the nominal stock differs, and it has to.
+    # 8/4, which dresses to 1 1/2" — so the stock is 12/4, which dresses to 2 1/2". Since
+    # 2026-10-16 it is `elm-mantel-12q`, American elm to match the slat partition, where it
+    # was `walnut-mantel-12q`; same 12/4 stock, same finish.
     #
     # ** ONE BOARD, GENUINELY. ** 45 1/2" x 10" is inside MW-STANDARD.max_board_width (18")
     # even after jointing loss, so this is a one-piece milled mantel and not an edge-glued
-    # panel — the only large walnut piece in the house that is. `takeoff/hardwood.py` runs the
+    # panel — the only large piece of its kind in the house. `takeoff/hardwood.py` runs the
     # grain along the LONGER plan dimension, which here is the 45 1/2" length, and that is
     # correct: a mantel's grain runs its length.
     #
@@ -345,12 +345,12 @@ MAIN_SHELVES = [
     # `[placeables]` row of their host FurnitureType — but a ShelfBank ON A WALL has no host
     # row anywhere, so this board was carried by `finish-fireplace-mantel-walnut` in
     # prices.toml [allowances] instead. Hosting it on FURN-M-FIRE-MANTEL gives it the normal
-    # path: `FT-MANTEL-WALNUT-46` is a `[placeables]` row carrying the same scope, and the
+    # path: `FT-MANTEL-ELM-46` is a `[placeables]` row carrying the same scope, and the
     # allowance is DELETED rather than zeroed — leaving both would bill the mantel twice.
     ShelfBank(
         uid="TPJ2J8VXZJ", tag="SB-M-FIRE-MANTEL",
         host="FURN-M-FIRE-MANTEL",
-        material_ref="walnut-mantel-12q",
+        material_ref="elm-mantel-12q",
         thickness=inch(2.25),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,

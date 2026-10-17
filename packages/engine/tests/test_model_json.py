@@ -464,7 +464,8 @@ def test_catalog_wood_appearance_preserves_species_and_finish_exceptions(catlin_
 
     materials = {m["tag"]: m for m in catlin_payload["catalog"]["materials"]}
     for tag in ("cherry-trim", "cherry-shiplap", "ash-8q", "elm-timber", "walnut-counter",
-                "oak-floor-custom", "oak-stool-12q", "catlin-sauna-shiplap", "locust-trim"):
+                "oak-floor-custom", "cherry-stool-12q", "ash-counter-12q", "elm-mantel-12q",
+                "elm-slat-12q", "catlin-sauna-shiplap", "locust-trim"):
         material = materials[tag]
         assert material["color"] == NATURAL_WOOD_COLORS[material["species"]]
     assert materials["catlin-sauna-shiplap"]["wood_surface"] == "unfinished"

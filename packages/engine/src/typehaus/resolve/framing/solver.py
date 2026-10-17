@@ -11,7 +11,7 @@ from dataclasses import replace
 from typing import Any
 
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.elements import Door, Wall
+from typehaus.model.elements import Door, Wall, Window
 from typehaus.model.enums import LayerFunction, PartitionLayout
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.backing import append_blocking_rows, append_tee_backing
@@ -704,15 +704,15 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # opening, so it is looked up once here rather than per wall.
     door_operations = {door_type.tag: door_type.operation
                        for door_type in plan.library.door_types}
-    # Engineered-header overrides: the Door instance's header_spec wins, then its
-    # DoorType's. Neither survives onto ResolvedOpening, so both are read off the plan.
+    # Engineered-header overrides: the Door or Window instance's header_spec wins, then a
+    # door's DoorType's. Neither survives onto ResolvedOpening, so both are read off the plan.
     type_header_specs = {door_type.tag: door_type.header_spec
                          for door_type in plan.library.door_types}
     exterior_door_types = {door_type.tag for door_type in plan.library.door_types
                            if door_type.exterior}
-    door_header_specs = {element.tag: element.header_spec
-                         for element in plan.all_elements()
-                         if isinstance(element, Door)}
+    opening_header_specs = {element.tag: element.header_spec
+                            for element in plan.all_elements()
+                            if isinstance(element, (Door, Window))}
     # A wall's layout line, so ``FramingSpec.layout_origin="line"`` can phase its module.
     lines_for_wall = lines_by_wall(model.layout_lines)
     by_host: dict[str, list[WallOpening]] = {}
@@ -723,9 +723,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             center_m=op.center_along_m, width_m=op.width_m, height_m=op.height_m,
             sill_m=op.sill_m, is_door=op.is_door, tag=op.tag,
             operation=door_operations.get(op.type_ref) if op.is_door else None,
-            header_spec=(door_header_specs.get(op.tag)
-                         or type_header_specs.get(op.type_ref))
-            if op.is_door else None,
+            header_spec=(opening_header_specs.get(op.tag)
+                         or (type_header_specs.get(op.type_ref) if op.is_door else None)),
             pocket_run_m=op.pocket_run_m,
             pocket_sign=op.pocket_sign,
             exterior=op.is_door and op.type_ref in exterior_door_types,

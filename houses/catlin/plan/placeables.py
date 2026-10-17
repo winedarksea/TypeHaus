@@ -132,30 +132,33 @@ MAIN_PLACEABLES = [
     #
     # `plans/pattern_language_review.md` C9 (The Fire) / C10 (Sitting circle): the electric
     # fireplace was a foot below the seated eye in the SE corner and NOTHING FACED IT. This
-    # turns the seats onto it. The fire is now W-M-FIRE-* at x=34'-11 7/8", centred on y=8'-8"
+    # turns the seats onto it. The fire is now W-M-FIRE-* at x=34'-11 7/8", centred on y=7'-4" since 2026-10-16
     # (plan/storeys/main.py), and the convention on this floor is rotation 0 = back at +y, so
     # deg(90) = back WEST / opens EAST. The sofa is west of the fire, so it takes deg(90);
-    # the two angled armchairs flank the sofa/fire axis at y=104".
+    # the two angled armchairs flank the sofa/fire axis at y=88". The whole group moved
+    # 16" south with the fire on 2026-10-16.
     #
     # 2026-10-05: move the sofa 12" west for a lift-top puzzle coffee table, its long
-    # edge parallel to the sofa. The table occupies x=316"..339.8", y=81.75"..126.25";
+    # edge parallel to the sofa. The table occupies x=316"..339.8", y=65.75"..110.25";
     # the sofa's front is x=298", leaving 18" for seated access. The angled chairs keep
     # their positions, with 15.1" north / 19.6" south to the table's nearest edge.
     # Circulation goes around the group; the gap is for seated table access
     # (library/placeables/furniture.py).
     Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FT-LIVING-SOFA-84-TABLE-GAP",
-              room="RM-M-LIVING", position=pt(ft(23, 4.5), ft(8, 8)), rotation=deg(90)),
+              room="RM-M-LIVING", position=pt(ft(23, 4.5), ft(7, 4)), rotation=deg(90)),
     Furniture(uid="PUZZLECF01", tag="FURN-M-PUZZLE-COFFEE-TABLE",
               type_ref="FT-LIVING-PUZZLE-COFFEE-TABLE", room="RM-M-LIVING",
-              position=pt(inch(327.9), ft(8, 8)), rotation=deg(90)),
+              position=pt(inch(327.9), ft(7, 4)), rotation=deg(90)),
     Furniture(uid="808W2W6TPA", tag="FURN-M-ARMCHAIR-N", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
-              position=pt(m(9.63082), m(3.29893)), rotation=deg(-45)),
+              position=pt(m(9.63082), m(2.89253)), rotation=deg(-45)),
     Furniture(uid="G5QQNW9448", tag="FURN-M-ARMCHAIR-S", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
-              position=pt(m(9.54846), m(1.77874)), rotation=deg(-120)),
-    # Aligned with WIN-M-LIV-S1, south of the armchair and west of the east-wall cabinets.
+              position=pt(m(9.54846), m(1.37234)), rotation=deg(-120)),
+    # South of the armchair and west of the east-wall cabinets. It was on WIN-M-LIV-S1's
+    # centre (x=32'-0") until 2026-10-16, when the armchair's 16" move south lapped its pot;
+    # 13" east and 2" south clears the chair by ~2" and the bank's fronts by 7/8".
     Furniture(uid="FIGMLIV001", tag="FURN-M-LIVING-FIDDLE-LEAF-FIG",
               type_ref="FURN-FIDDLE-LEAF-FIG-24", room="RM-M-LIVING",
-              position=pt(ft(32), ft(1, 9))),
+              position=pt(ft(33, 1), ft(1, 7))),
     # --- the mantel, which now has a body (2026-09-06) -----------------------------------
     #
     # SB-M-FIRE-MANTEL is a ShelfBank and a ResolvedShelfBank has NO POSITION — nothing
@@ -191,10 +194,10 @@ MAIN_PLACEABLES = [
     # overlaps its plan rectangle and no door sweeps it; the SEKTION end panels abut its y
     # range at exactly 0", which is tangency, not overlap.
     Furniture(uid="5RWQRV1P72", tag="FURN-M-FIRE-MANTEL",
-              type_ref="FT-MANTEL-WALNUT-46", room="RM-M-LIVING",
+              type_ref="FT-MANTEL-ELM-46", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(64)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(104),
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(88),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
     # FURN-M-MEDIA retired 2026-10-05; its hammock-chair replacement was removed 2026-10-14.
     # The east wall's storage is the SEKTION line in plan/living_east_run.py (2026-10-02),
@@ -380,30 +383,26 @@ MAIN_PLACEABLES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-C1", face="right", distance_from_start=inch(10),
                   normal_gap=inch(0.625), rotation_offset=deg(90)))),
-    # Four cellular blinds cover WIN-M-LIV-E1/E2/E3 and WIN-M-EAST-MID, the matching 27x48
+    # Three cellular blinds cover WIN-M-LIV-E1/E2 (27x48) and WIN-M-DINING-E (63x48), the
     # east-facing living-room windows. Their 34" sill and 82" head match the rough openings.
     # Mount elevations are AFF; the 15/16" finished-floor build-up means 33 1/16" AFF puts
     # each 48" shade envelope exactly between those storey-datum elevations. The 3D symbol
-    # draws the shade raised into a compact stack beneath the 82" head.
+    # draws the shade raised into a compact stack beneath the 82" head. Stations follow the
+    # window centres since 2026-10-16; the E3 and EAST-MID blinds are retired.
     Furniture(uid="CBLIV001EA", tag="FURN-M-LIV-BLIND-E1", type_ref="FT-CELLULAR-BLIND-2748", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(64),
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(48),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="CBLIV002EA", tag="FURN-M-LIV-BLIND-E2", type_ref="FT-CELLULAR-BLIND-2748", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(144),
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(128),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(uid="CBLIV003EA", tag="FURN-M-LIV-BLIND-E3", type_ref="FT-CELLULAR-BLIND-2748", room="RM-M-LIVING",
+    Furniture(uid="CZ7XEJYHBQ", tag="FURN-M-LIV-BLIND-DINING", type_ref="FT-CELLULAR-BLIND-6348", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(192),
-                  normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(uid="CBLIV004EA", tag="FURN-M-LIV-BLIND-EAST-MID", type_ref="FT-CELLULAR-BLIND-2748", room="RM-M-LIVING",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.0625)),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-E1", face="left", distance_from_start=inch(240),
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(216),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RM-M-BED is the main-storey bedroom; the second-storey suite has its own rods.
     Furniture(uid="BYYY8GG7E6", tag="FURN-M-BED-ROD-W1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
