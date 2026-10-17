@@ -1,12 +1,12 @@
-"""Every resolved elevation in the reference house, pinned — the zero-delta gate.
+"""Every resolved elevation in the reference house, pinned against a reviewed golden.
 
 Why this exists
 ---------------
 Giving storeys a ``building`` means re-filing elements onto newly minted storeys. The rule
 that makes that safe is *zero delta by construction*: a new storey takes its ``elevation``
-from the same constant object the old one read, so nothing moves. This harness is the
-mechanical proof of that rule, and it has to be mechanical, because the failure mode is
-silent.
+    from the same constant object the old one read. This harness makes all elevations and
+    solid extents reviewable. A storey-only refiling should produce no delta; an intentional
+    layout change updates the golden after the drawings have been reviewed.
 
 A ``PipeRun``'s inverts are **storey-relative** (``resolve/mep.py``) while a ``ConduitRun``'s
 are **absolute**. Re-filing a sleeve from a storey at ``0'-0"`` onto one at ``-1'-0"`` shifts
@@ -36,7 +36,8 @@ Regenerate deliberately, never reflexively::
 
     .venv/bin/python -m pytest packages/engine/tests/test_elevation_goldens.py --bless
 
-A blessed diff is a decision. During the building refactor the correct diff is **empty**.
+A blessed diff is a decision. For a storey-only refiling the correct diff is **empty**; a
+redesign should bless only the reviewed geometry changes.
 """
 
 from __future__ import annotations
@@ -219,7 +220,7 @@ def _differences(golden: dict[str, object], live: dict[str, object]) -> list[str
     return out
 
 
-def test_no_resolved_elevation_moves(catlin_model_ro, request) -> None:
+def test_resolved_elevations_match_the_reviewed_golden(catlin_model_ro, request) -> None:
     live = _collect(catlin_model_ro)
     # A harness that silently collected nothing would pass forever. The reference house has
     # thousands of elevations; the floor only has to be far enough above zero to prove the
@@ -235,9 +236,8 @@ def test_no_resolved_elevation_moves(catlin_model_ro, request) -> None:
     golden = json.loads(GOLDEN.read_text())
     differences = _differences(golden, live)
     assert not differences, (
-        f"{len(differences)} resolved elevation(s) changed. Under the zero-delta rule a "
-        f"building re-filing moves NONE of these — a new storey takes its elevation from "
-        f"the same constant object the old one read. Bless only reviewed geometry changes:"
+        f"{len(differences)} resolved elevation(s) differ from the reviewed golden. "
+        f"Bless only reviewed geometry changes:"
         f"\n  " + "\n  ".join(differences)
     )
 

@@ -46,8 +46,9 @@ _CATLIN = {
     # finish-face volume (both 2026-09-24; the note's second addendum).
     # The mudroom upper finish changes the resolved finish-face room volumes slightly.
     "EQ-M-HP1-OD": (15_135, 14_000, 5.0, 0.92, -7.1, _ADVISED),
-    # WIN-M-LIV-E3 adds 9 sf of glass to System 2's main-storey zone (2026-10-03).
-    "EQ-M-HP2-OD": (14_914, 8_800, 5.0, 0.59, 28.2, not _ADVISED),
+    # The living-east rework replaces two 27x48 windows with one 63x48 unit, adding 3 sf
+    # of glass to System 2's main-storey zone (2026-10-16).
+    "EQ-M-HP2-OD": (14_972, 8_800, 5.0, 0.59, 28.4, not _ADVISED),
     "EQ-M-HP3-OD": (1_015, 2_800, 17.0, 2.76, None, _ADVISED),
 }
 

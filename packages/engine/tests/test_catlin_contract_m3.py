@@ -1008,8 +1008,8 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(
     would let a retype break it silently.
 
     WIN-S-BED3 left the row for a three-storey 14" column with WIN-M-KIT-E below and
-    WIN-A-E-N above, so the outer pair is gone. WIN-S-STUDY3 at 5'-4" instead columns
-    with WIN-M-LIV-E1. This test asserts both halves of the trade: the
+    WIN-A-E-N above, so the outer pair is gone. WIN-S-STUDY3 remains at 5'-4" on the owner's
+    call while WIN-M-LIV-E1 moves to 4'-0". This test asserts both halves of the trade: the
     inner pair still mirrors, and BED3 really is in the column it left the row for.
 
     (The east wall is BEARING, so the inner pair takes the 27" rung of the RO ladder, and
@@ -1029,11 +1029,12 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(
     assert (south.sill_m + south.height_m
             == pytest.approx(north.sill_m + north.height_m, abs=1e-6))
 
-    # STUDY3 follows the living window and clears the southeast bookshelf.
+    # STUDY3 stays at 5'-4" and clears the southeast bookshelf; E1 moves south to 4'-0".
     study_y, study = _opening_plan_y(catlin_model, "WIN-S-STUDY3")
     living_y, _ = _opening_plan_y(catlin_model, "WIN-M-LIV-E1")
     assert study_y == pytest.approx(ft(5, 4).meters, abs=1e-6)
-    assert study_y == pytest.approx(living_y, abs=1e-6)
+    assert living_y == pytest.approx(ft(4).meters, abs=1e-6)
+    assert study_y - living_y == pytest.approx(inch(16).meters, abs=1e-6)
     assert study.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
 
     # --- and the column BED3 was traded for actually exists ----------------------------
@@ -1052,10 +1053,9 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(
     for tag, y in stations.items():
         assert y == pytest.approx(ft(34).meters, abs=1e-6), tag
 
-    # The row really is a row: all three units read 7'-0" at the head, on the one 3'-0"
-    # sill — STUDY3 keeps columning with WIN-M-LIV-E1 at that height, and BED1/BED2 hold the
-    # height that buys R303.1 without Exception 1. A level row is a stronger claim than a
-    # stepped one and a later retype must not undo it by accident.
+    # The upstairs east windows still read 7'-0" at the head, on the one 3'-0" sill.
+    # STUDY3 remains level with the row after E1 moves south; BED1/BED2 hold the height that
+    # buys R303.1 without Exception 1. A later retype must not step this row by accident.
     def head(tag):
         _, opening = _opening_plan_y(catlin_model, tag)
         return opening.sill_m + opening.height_m
@@ -1679,23 +1679,25 @@ def test_garage_base_skin_is_the_stem_band_alone_and_its_top_is_flashed(catlin_m
         assert layer.extent.bottom.offset.inches == pytest.approx(-2.0), \
             "2\" of bury seals the termination instead of leaving a lip water stands on"
 
-    # ** THE Z AT THE TOP, BROKEN AT BOTH DOORS. ** Each Flashing resolves to a "-DRIP" solid
-    # plus a "-LAP" seam solid, so count the "-DRIP" ones: one per authored run.
-    zs = [s for s in catlin_model.solids if str(s.tag).startswith("TR-G-STEMZ-")]
-    drips = [z for z in zs if str(z.tag).endswith("-DRIP")]
-    assert len(drips) == 5, \
+    # ** THE Z AT THE TOP, BROKEN AT BOTH DOORS. ** Each authored flashing resolves to one
+    # formed solid with its lap, upstand and drip carried in the body mesh.
+    flashings = [f for f in catlin_model.plan.elements_of_kind("Flashing")
+                 if str(getattr(f, "tag", "")).startswith("TR-G-STEMZ-")]
+    flashing_tags = {f.tag for f in flashings}
+    zs = [s for s in catlin_model.solids if s.host_ref in flashing_tags]
+    assert len(zs) == 5, \
         "north is broken by the overhead door's stem gap; south, east and west run whole"
-    # It sits ON the stem top, which is the garage storey datum: grade + GARAGE_STEM_REVEAL.
+    assert {z.host_ref for z in zs} == flashing_tags
+    assert all(z.body_mesh is not None for z in zs)
+    # The 2" counter-flashing upstand rises above the stem top datum.
     stem_top_m = grade_m + ft(1, 10).meters
-    assert max(z.z1_m for z in zs) == pytest.approx(stem_top_m)
+    assert max(z.z1_m for z in zs) == pytest.approx(stem_top_m + inch(2).meters)
 
     # ** ALUMINIUM OVER ALUMINIUM. ** The corrugated panel above is PVDF-coated STEEL and the
     # band below is aluminium; in a plowed, salted splash zone the metal-to-metal lap is
     # where this detail fails. Nothing in the engine grades dissimilar metals, so naming the
     # material is the whole enforcement — a Z that quietly took the envelope's
     # `metal-dark-exterior` steel trim coil would pass every other check in the suite.
-    flashings = [f for f in catlin_model.plan.elements_of_kind("Flashing")
-                 if str(getattr(f, "tag", "")).startswith("TR-G-STEMZ-")]
     assert len(flashings) == 5
     assert {f.tag for f in flashings} == {"TR-G-STEMZ-S1", "TR-G-STEMZ-E", "TR-G-STEMZ-N1",
                                           "TR-G-STEMZ-N2", "TR-G-STEMZ-W"}

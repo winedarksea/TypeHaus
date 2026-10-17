@@ -76,14 +76,14 @@ def test_floor_box_gltf_body_is_below_the_floor(catlin_model_ro):
 def test_floor_box_cannot_intersect_a_joist(catlin_model_ro):
     model = catlin_model_ro
     outlet = next(item for item in model.canvas_objects if item.tag == OUTLET)
-    offset = -inch(8).meters  # From bay center onto the joist at y=96".
+    offset = -inch(8).meters  # From bay center onto the joist at y=80".
     moved = replace(outlet, position=(outlet.position[0], outlet.position[1] + offset),
                     footprint=tuple(translate(Polygon(outlet.footprint), yoff=offset)
                                     .exterior.coords)[:-1])
     copy = replace(model, canvas_objects=[moved if item.tag == OUTLET else item
                                          for item in model.canvas_objects])
     findings = _findings(copy, FRAMING_CHECK)
-    assert any(f.result.value == "fail" and "joist-0-006" in f.message for f in findings)
+    assert any(f.result.value == "fail" and "joist-0-005" in f.message for f in findings)
 
 
 def test_floor_box_loses_afci_when_its_breaker_loses_protection(catlin_model_ro):

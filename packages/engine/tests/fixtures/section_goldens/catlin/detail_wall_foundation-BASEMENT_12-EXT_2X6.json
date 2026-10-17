@@ -834,8 +834,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "ZG0Q6KGNXB",
-      "tag": "W-M-FIRE-STUB-M/brick"
+      "uid": "XZPB2TEJ3P",
+      "tag": "W-M-FIRE-STUB-N/brick"
     },
     {
       "space": "model",
@@ -891,8 +891,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "ZG0Q6KGNXB",
-      "tag": "W-M-FIRE-STUB-M/wash"
+      "uid": "XZPB2TEJ3P",
+      "tag": "W-M-FIRE-STUB-N/wash"
     },
     {
       "space": "model",

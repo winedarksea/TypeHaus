@@ -70,6 +70,7 @@ crossing's tributary 32" x 24" and the screw count half what the two-tier scheme
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable
 from typing import cast
 
@@ -537,11 +538,31 @@ class GirtFrame(BandFrame):
             seams=(0.0, self.run))
         if not stations:
             return stations
-        if any(abs(seg_lo - butt) < 1e-6 for butt in butts):
+
+        # `_module_stations` leaves room for an off-module end block before its first
+        # module block. At a jamb that end block is then removed: the post carries the
+        # course end, so leaving the reserved module station empty can stretch the first
+        # bay by almost a full stud module. Restore that station when it fits in the
+        # course segment; `blocks()` still checks the opening void and snaps it to actual
+        # framing before emitting the block.
+        start_butts = any(abs(seg_lo - butt) < 1e-6 for butt in butts)
+        end_butts = any(abs(seg_hi - butt) < 1e-6 for butt in butts)
+        if start_butts:
+            first_module = phase + math.ceil((seg_lo + half - phase) / spacing) * spacing
+            if (first_module < seg_lo + half + self.stock_face - _TOL
+                    and first_module <= seg_hi - half + _TOL):
+                stations.append(first_module)
+        if end_butts:
+            last_module = phase + math.floor((seg_hi - half - phase) / spacing) * spacing
+            if (last_module > seg_hi - half - self.stock_face + _TOL
+                    and last_module >= seg_lo + half - _TOL):
+                stations.append(last_module)
+
+        if start_butts:
             stations = [s for s in stations if abs(s - (seg_lo + half)) > 1e-9]
-        if any(abs(seg_hi - butt) < 1e-6 for butt in butts):
+        if end_butts:
             stations = [s for s in stations if abs(s - (seg_hi - half)) > 1e-9]
-        return stations
+        return sorted(set(stations))
 
     def _segment_continuations(self, seg_lo: float,
                                seg_hi: float) -> tuple[str | None, str | None]:

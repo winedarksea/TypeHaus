@@ -95,7 +95,7 @@ def test_stools_export_as_ifc_moldings(catlin_model_ro, catlin_ifc_path):
     payload = {row["tag"]: row for row in model_to_dict(catlin_model_ro)["window_stools"]}
     stools = {item.Name: item for item in file.by_type("IfcCovering")
               if item.Name.startswith("STOOL-")}
-    assert len(stools) == 39
+    assert len(stools) == 38
     assert set(stools) == {stool.tag for stool in catlin_model_ro.window_stools}
     for stool in catlin_model_ro.window_stools:
         product = stools[stool.tag]

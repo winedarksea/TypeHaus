@@ -280,16 +280,17 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     # module already does. Asserted as the mirror, since that is the load-bearing claim.
     #
     # The mirror is the INNER pair only: BED3's move to the 14" column took the outer
-    # pair's north member with it. STUDY3 now follows the living-room window to 5'-4"
-    # for its own two-storey column (owner, 2026-10-14).
+    # pair's north member with it. STUDY3 remains at 5'-4" per the living-room rework;
+    # E1 returns to 4'-0", leaving the upstairs opening 16" north of it.
     for near, far in (("WIN-S-BED1", "WIN-S-BED2"),):
         assert centres[near][0] == pytest.approx(ft(36).meters, abs=ft(1).meters), near
         assert centres[far][0] == pytest.approx(ft(36).meters, abs=ft(1).meters), far
         assert centres[near][1] + centres[far][1] == pytest.approx(ft(36).meters,
                                                                   abs=TOL_M), far
     assert centres["WIN-S-STUDY3"][1] == pytest.approx(ft(5, 4).meters, abs=TOL_M)
-    assert centres["WIN-S-STUDY3"][1] == pytest.approx(
-        centres["WIN-M-LIV-E1"][1], abs=TOL_M)
+    assert centres["WIN-M-LIV-E1"][1] == pytest.approx(ft(4).meters, abs=TOL_M)
+    assert centres["WIN-S-STUDY3"][1] - centres["WIN-M-LIV-E1"][1] == pytest.approx(
+        ft(1, 4).meters, abs=TOL_M)
     # 13'-4", not 13'-0": the inner pair sits on the layout line's stud grid, which makes
     # the row evenly beaten (9'-4" x3) as well as mirrored. The mirror asserted just above
     # is the claim that outranks the survey; this station is the row's own rhythm.

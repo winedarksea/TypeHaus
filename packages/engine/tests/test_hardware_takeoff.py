@@ -210,8 +210,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # TLOK08, so the takeoff bills the screw `engineering/girt_screw.py` graded rather than
     # re-deriving one from the stack — a BOM ordering a different screw from the one the
     # record stamped would put the two in silent disagreement. The SDWS22800DB the ladder
-    # used to pick threads 3 in, as every SDWS22 of 5 in and longer does (ER-192 Table 1) and stands 1 in of that
-    # inside the 6.0 in clamped stack, which is why it left.
+    # used to pick threads 3 in, as every SDWS22 of 5 in and longer does (ER-192 Table 1),
+    # and leaves 1 in of that inside the 6.0 in clamped stack, which is why it left.
     row = next(r for r in girt_rows if r["scope"] == "girt wall blocks")
     assert row["size"] == "8 in" and row["part_number"] == "TLOK08"
     assert "2 in thread, all of it past the block" in row["basis"], row["basis"]
@@ -306,13 +306,14 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # ** 224 -> 198 ON 2026-09-23: W-GF-N-DR's 2" coil strip (grade to slab top) went with
     # the grade beam, and this row grids fasteners per wall run. **
     # WIN-M-LIV-S2 restores the west living-room window and its packed girt stations.
-    # E1's 16" move north adds four packed girt stations at its head and sill (2026-10-03).
+    # E1's 16" move north added four packed girt stations at its head and sill (2026-10-03).
     # ** 1142 -> 1134 ON 2026-10-04: WIN-M-BED-W1 / WIN-S-PLANT3 moved one 16" bay south. **
     # Their jambs now sit beside the 32" block module, so the jamb blocks take those
     # stations: W-M-W4 47 -> 43, W-S-W4 30 -> 26, max field gap 34.5" -> 32.8". The
     # mudroom's interior upper closure adds no exterior fastening.
-    # STUDY3 follows E1 north (2026-10-14): four more packed girt stations at head/sill.
-    assert row["count"] == 1138 and furring[0]["count"] == 198
+    # Final living-east layout (2026-10-16): E1 is at 4'-0", STUDY3 stays at 5'-4", and
+    # two field blocks support the girt courses beside the new 63" dining opening.
+    assert row["count"] == 1134 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------
