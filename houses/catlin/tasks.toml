@@ -555,7 +555,7 @@ rows = ["allowances:finish-floor-prep-and-self-levelling",
         "floor_finishes:oak-floor-custom", "floor_finishes:rubber",
         "floor_finishes:sealed-concrete", "floor_finishes:vinyl-sheet",
         "interior_trim:flash-cove",
-        "sheet_goods:aluminum-deck", "sheet_goods:composite-deck"]
+        "sheet_goods:aluminum-deck", "sheet_goods:trex-enhance-basics"]
 
 [visits."task/flooring/building/carpet"]
 label = "Carpet — BED, BED1-3, the main closet and PLAY-N, tucked under the base"
