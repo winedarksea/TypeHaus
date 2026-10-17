@@ -48,11 +48,11 @@ STUDY_BUILT_IN_BOOKCASE = FurnitureType(
             BuiltInBookcaseBay(clear_width=inch(31.25), height=inch(42), horizontal_board_count=4),
             BuiltInBookcaseBay(clear_width=inch(31.25), height=inch(30), horizontal_board_count=3),
         ),
-        shelf_depth=inch(9.875), horizontal_board_thickness=inch(1.5),
+        shelf_depth=inch(9.875), horizontal_board_thickness=inch(1),
         divider_thickness=inch(0.75), back_thickness=inch(0.75),
         west_filler_width=inch(2.625),
     ),
-    wood_material_ref="oak-shelf-6q",
+    wood_material_ref="oak-shelf-5q",
     source="Catlin study fixed casework: front y=105 5/8 in.; x=272..368 3/4 in.; three 31 1/4 in. clear bays with 60/42/30 in. tops and 5/4/3 horizontal boards; 2 5/8 in. west filler closes to W-A-SN-WR.",
 )
 
@@ -158,13 +158,13 @@ BATH1_SHELF_2030 = FurnitureType(
         shelf_depth=inch(29.25), horizontal_board_thickness=inch(0.75),
         divider_thickness=inch(0.75), back_thickness=inch(0.75),
     ),
-    wood_material_ref="oak-shelf-4q",
+    wood_material_ref="locust-shelf-4q",
     source="Site-built millwork, not a catalogue bookcase: a 3/4\" plywood carcass scribed "
            "to the east end of RM-S-BATH1's tub alcove, whose WEST panel carries "
            "FX-S-BATH1-SH's east flange over a framed 2x4 and is what makes that insert a "
            "legitimate three-wall install. Depth matches the tub (30\"), height matches the "
            "surround head (84\"); the 7/8\" of slack at the east wall is taken as scribe. "
-           "Wet-room oak: Type III glue-ups, film finish on all six faces before install, "
+           "Wet-room locust heartwood: Type III glue-ups, film finish on all six faces before install, "
            "stainless pins and fasteners only.",
 )
 
@@ -173,7 +173,7 @@ BATH1_SHELF_2030 = FurnitureType(
 # FX-S-SUITEBATH-TUBSH is a flanged insert with its SOUTH end open; this case's north
 # divider is that third side, over a framed 2x4 for the flange, and its back panel sits on
 # W-S-C2C. 11 1/4" wide is the leftover between the tub and W-S-SBS; 30" deep is the tub's
-# own width; 84" is the surround head. Open to the room, no closed base: eight oak boards
+# own width; 84" is the surround head. Open to the room, no closed base: eight locust boards
 # make seven openings of about 11".
 SUITEBATH_SHELF_1130 = FurnitureType(
     tag="FT-SUITEBATH-SHELF-1130", name='Suite bath alcove shelf, 11 1/4" x 30"',
@@ -185,11 +185,11 @@ SUITEBATH_SHELF_1130 = FurnitureType(
         shelf_depth=inch(29.25), horizontal_board_thickness=inch(0.75),
         divider_thickness=inch(0.75), back_thickness=inch(0.75),
     ),
-    wood_material_ref="oak-shelf-4q",
+    wood_material_ref="locust-shelf-4q",
     source="Site-built millwork: a 3/4\" plywood carcass scribed into the south end of "
            "RM-S-SUITEBATH's tub alcove, open to the west. Its north divider carries "
            "FX-S-SUITEBATH-TUBSH's south flange over a framed 2x4. "
-           "Wet-room oak: Type III glue-ups, film finish on all six faces before install, "
+           "Wet-room locust heartwood: Type III glue-ups, film finish on all six faces before install, "
            "stainless pins and fasteners only.",
 )
 
@@ -470,13 +470,11 @@ MEDIA_SECTIONAL_U = FurnitureType(
 # an unreviewed tag — to bill some 40 bf of 2x4. So the build lives on ``source`` (the
 # FT-BATH1-SHELF-2030 precedent) and in notes/pantry_climbable_shelving.md.
 #
-# ** THE MID-SPAN GABLE IS NOT OPTIONAL, AND STRENGTH IS NO LONGER THE ARGUMENT. ** Shelves
-# are 1 1/2" solid white oak (plan/millwork.py, owner stock); the full 73 1/4" span carries
-# 250 lb at midspan at only ~678 psi (S = 6.75 in^3), well under a 1,500-2,000 psi flatwise
-# allowable. Deflection still fails it: I = 5.06 in^4 gives ~0.253" full-span against this
-# shelf's L/360 = 0.203" floor criterion. Gabled to 36 1/4" it is ~336 psi and ~0.031", not
-# close to any limit. The gable also stays because the cleat/blocking layout is built around
-# it, and it makes the bottom bay a step rather than a plank.
+# ** THE MID-SPAN GABLE IS NOT OPTIONAL. ** Shelves are 1 1/4" solid red oak (6/4 since
+# 2026-10-16; plan/millwork.py, owner stock). Gabled to 36 1/4", 250 lb at midspan is
+# ~484 psi (S = 4.69 in^3) and ~0.053" (I = 2.93 in^4) against L/360 = 0.101". Ungabled the
+# full 73 1/4" span is ~977 psi and ~0.44" against 0.203", which fails badly. The gable also
+# carries the cleat/blocking layout, and it makes the bottom bay a step rather than a plank.
 #
 # No 1x3 hardwood nose: that stiffener existed to triple a PLY shelf's effective I and take
 # the spring out of gabled ply sag; solid oak needs none of it, and it also closes a
@@ -484,14 +482,14 @@ MEDIA_SECTIONAL_U = FurnitureType(
 #
 # ** SOLID WOOD ON CLEATS MOVES, AND THE FASTENING HAS TO LET IT. ** Boards run the 36 1/4"
 # bay (grain along it), so seasonal movement is FRONT TO BACK — along the side cleats,
-# across their screw line — roughly 1/4" of tangential movement across 18" of white oak over
+# across their screw line — roughly 1/4" of tangential movement across 18" of red oak over
 # a Minnesota RH swing. Screw tight at the FRONT only; elongate every side- and back-cleat
 # hole rearward. A solid shelf pinned hard on three sides splits, in year two, not on install.
 #
 # ** 18" DEEP, NOT 24". ** The room is 26" clear N-S, so 24" left 2" of floor and 18" leaves
-# 8". The milling supply drove it, not the ergonomics: the owner's white oak runs to 18"
-# wide (a finished 18" board needs ~18 3/4" in the rough once edge-jointed), so 18" is one
-# hand-picked board per shelf where 24" was two edge-glued. Published guidance favours 18"
+# 8". The milling supply drove it, not the ergonomics: the owner's red oak runs to 18"
+# wide (a finished 18" board needs ~18 3/4" in the rough once edge-jointed), so 18" is two
+# boards per shelf where 24" was two wider, scarcer ones. Published guidance favours 18"
 # anyway — 16" is the usual practical reach-in maximum, 20"+ reads too deep to see into.
 # ~25% of shelf area is given up for it. Two things still make an 18" reach-in good: the
 # shelves are STANDABLE (bottom bay a step, top shelf reachable), and ED-M-PANTRY-LT is a
@@ -504,9 +502,9 @@ PANTRY_SHELVES_70 = FurnitureType(
     tag="FT-KIT-PANTRY-SHELVES-70", name='Pantry shelf stack, 73 1/4" x 18"',
     footprint=(inch(73.25), inch(18)), height=ft(7),
     storage=True, work_surface=False, plan_symbol="bookcase",
-    wood_material_ref="oak-shelf-8q",
+    wood_material_ref="oak-shelf-6q",
     source="Site-built millwork, DESIGNED TO BE CLIMBED — see "
-           "notes/pantry_climbable_shelving.md. 1 1/2\" solid white oak shelves (owner "
+           "notes/pantry_climbable_shelving.md. 1 1/4\" (6/4) solid red oak shelves (owner "
            "stock, scheduled in plan/millwork.py as SB-M-PANTRY) on continuous 1x3 cleats "
            "on three sides, screwed DOWN onto the cleats (load path is cleat -> fastener "
            "-> stud, never shelf -> pin); NO adjustable standards and no shelf pins — a "
@@ -514,14 +512,14 @@ PANTRY_SHELVES_70 = FurnitureType(
            "side- and back-cleat hole elongated rearward so 18\" of solid oak can move "
            "without splitting. A full-height 3/4\" ply centre gable at mid-span, notched "
            "around the cleats, floor to top shelf, halves the span to 36 1/4\" and is not "
-           "optional — the full span deflects ~0.253\" under 250 lb, past the L/360 this "
+           "optional — the full span deflects ~0.44\" under 250 lb, past the L/360 this "
            "is graded to as a floor. Two #10 x 3\" structural screws per cleat into solid "
            "wood at EVERY bay, over flat 2x4 blocking laid in each bay BEFORE the gypsum. "
            "Design load: treat as floor, not shelf — 40 psf uniform PLUS a 250-300 lb "
            "concentrated load anywhere, which governs. Graduated spacing: ~20\" bottom bay "
            "(small appliances, bulk), 12\"-14\" middle (boxes, bottles), 8\"-10\" top (cans, "
            "jars). 18\" DEEP by owner's decision (2026-08-29, replacing 24\"), which leaves "
-           "8\" of floor in front of the stack and puts each shelf on one board.",
+           "8\" of floor in front of the stack.",
 )
 
 
@@ -673,8 +671,8 @@ SPLASH_BASIN_GRANITE_24 = FurnitureType(
 STRW_BENCH = FurnitureType(
     tag="FT-MUD-STRW-BENCH", name='Mudroom stud-bay bench, notched oak 2x10, 95 7/8"',
     footprint=(inch(95.875), inch(9.25)), height=inch(1.5),
-    storage=False, plan_symbol="wall-desk", wood_material_ref="white-oak-8-4",
-    source="8/4 white oak dressed to 1 1/2\" x 9 1/4\", notched 1 5/8\" x 5 9/16\" at each "
+    storage=False, plan_symbol="wall-desk", wood_material_ref="oak-8q",
+    source="8/4 red oak dressed to 1 1/2\" x 9 1/4\", notched 1 5/8\" x 5 9/16\" at each "
            "stud and scribed to the as-built stud stations. Bears on W-M-STRW's oak support "
            "course and is screwed down through the fingers; eased front arris, 3 3/4\" proud "
            "of the stud faces.",

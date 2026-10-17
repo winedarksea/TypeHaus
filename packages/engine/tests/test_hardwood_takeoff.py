@@ -22,6 +22,13 @@ def rows(catlin_model_ro):
     return hardwood_takeoff(catlin_model_ro)
 
 
+@pytest.fixture(scope="module")
+def supply(catlin_model_ro):
+    """The widest board a row was laid up against: its stock's own, else the house's 18"."""
+    widths = {m.tag: m.max_board_width_in for m in catlin_model_ro.plan.library.materials}
+    return lambda row: widths.get(row["material"]) or 18.0
+
+
 def _use(rows, name):
     return [row for row in rows if row["use"] == name]
 
@@ -114,18 +121,19 @@ def test_rough_stock_always_exceeds_the_finished_piece(rows):
         assert row["rough_board_feet"] > row["finished_board_feet"], row["use"]
 
 
-def test_a_stool_is_scheduled_at_its_rough_size_from_six_quarter_stock(rows):
+def test_a_stool_is_scheduled_at_its_rough_size_from_five_quarter_stock(rows):
     stools = [row for row in _use(rows, "window stool") if row["material"] == "oak-stool"]
-    # See test_millwork.py: plant-room and kitchen stools are quartz, the east row's three are
-    # 2" cherry-stool-12q (test below); sauna/garage get none.
-    assert stools and sum(row["pieces"] for row in stools) == 30
+    # See test_millwork.py: 17 derive bought white oak; plan/window_stools.py names a species
+    # for the rest, and the east row's three are 1 1/4" ash-stool-6q (test below).
+    assert stools and sum(row["pieces"] for row in stools) == 17
+    assert {row["species"] for row in stools} == {"oak"}
     for row in stools:
-        assert row["nominal_stock"] == "6/4"
-        assert row["nominal_quarters"] == 6
+        assert row["nominal_stock"] == "5/4"
+        assert row["nominal_quarters"] == 5
         assert row["milling_profile"] == "eased"
         assert row["layup"] == "one board"
         assert row["boards_per_piece"] == 1
-        assert row["finished_thickness_in"] == pytest.approx(1.25)
+        assert row["finished_thickness_in"] == pytest.approx(1.0)
         assert row["stock_note"] is None, "a 10\" stool comes off one 18\" board"
 
 
@@ -134,15 +142,18 @@ def test_ash_slabs_and_walnut_tops_are_cut_listed(rows):
     tops = {tag: row for row in _use(rows, "countertop") for tag in row["tags"]}
     assert set(tops) == {"CT-M-LIV-E-S", "CT-M-LIV-E-N",
                          "CT-M-BED-NOOK-S", "CT-M-BED-NOOK-N"}
-    slab = tops["CT-M-LIV-E-N"]
-    assert slab["nominal_stock"] == "12/4" and slab["layup"] == "one board"
-    assert slab["finished_thickness_in"] == pytest.approx(2.0)
-    assert slab["finished_length_in"] == pytest.approx(160.625, abs=0.01)
+    # The owner's ash runs to ~11" (Material.max_board_width_in), so each slab is two boards.
+    for tag in ("CT-M-LIV-E-S", "CT-M-LIV-E-N"):
+        slab = tops[tag]
+        assert slab["nominal_stock"] == "6/4"
+        assert slab["layup"] == "edge-glued panel" and slab["boards_per_piece"] == 2
+        assert slab["finished_thickness_in"] == pytest.approx(1.25)
+    assert tops["CT-M-LIV-E-N"]["finished_length_in"] == pytest.approx(160.625, abs=0.01)
     assert all(row["also_in_countertops"] for row in tops.values())
-    east = [row for row in _use(rows, "window stool") if row["material"] == "cherry-stool-12q"]
+    east = [row for row in _use(rows, "window stool") if row["material"] == "ash-stool-6q"]
     assert sum(row["pieces"] for row in east) == 3
     assert not any(row["also_in_countertops"] for row in east), "own stock, not slab remnant"
-    assert {row["nominal_stock"] for row in east} == {"12/4"}
+    assert {row["nominal_stock"] for row in east} == {"6/4"}
 
 
 def test_the_yield_arithmetic_is_the_documented_one(rows):
@@ -160,7 +171,7 @@ def test_the_yield_arithmetic_is_the_documented_one(rows):
 
 def test_a_tng_or_shiplap_face_exceeds_its_coverage(rows):
     """The tongue and the lap are face width the mill saws and the wall never sees."""
-    liner = next(row for row in _use(rows, "wall and ceiling liner"))
+    liner = next(row for row in _use(rows, "wall liner"))
     assert liner["milling_profile"] == "shiplap"
     assert liner["rough_surface_sqft"] > liner["coverage_sqft"]
     floor = next(row for row in _use(rows, "floor"))
@@ -176,7 +187,7 @@ def test_the_oak_floor_finally_carries_board_feet(rows):
 
 # --- the glue-up flag -------------------------------------------------------------------
 
-def test_a_panel_is_declared_only_when_no_ONE_BOARD_could_do_it(rows):
+def test_a_panel_is_declared_only_when_no_ONE_BOARD_could_do_it(rows, supply):
     """The width test is on the ROUGH face, and the distinction is the whole flag.
 
     A mill has to find a board it can straight-line and joint DOWN to the finished face, so
@@ -195,26 +206,27 @@ def test_a_panel_is_declared_only_when_no_ONE_BOARD_could_do_it(rows):
     assert pantry["rough_width_in"] == pytest.approx(9.0 + _WIDTH_LOSS_IN)
     # And the rule, over every piece row: a panel is declared when and only when one board
     # of the declared supply could not yield the finished face.
+    # The supply is the material's own `max_board_width_in` where it declares one.
     for row in rows:
         if row["layup"] not in ("one board", "edge-glued panel"):
             continue
-        too_wide = row["finished_width_in"] + _WIDTH_LOSS_IN > 18.0 + 1e-9
-        assert (row["layup"] == "edge-glued panel") == too_wide
+        too_wide = row["finished_width_in"] + _WIDTH_LOSS_IN > supply(row) + 1e-9
+        assert (row["layup"] == "edge-glued panel") == too_wide, row["material"]
 
 
-def test_a_panel_names_the_boards_it_is_actually_made_of(rows):
+def test_a_panel_names_the_boards_it_is_actually_made_of(rows, supply):
     """A bare "too wide" tells a sawyer nothing; the split is the actionable number."""
     panels = [row for row in rows if row["layup"] == "edge-glued panel"]
-    assert panels, "the reference house has two, both shelves"
+    assert panels, "the reference house lays up shelves, counters, stools and the table"
     for row in panels:
         assert row["boards_per_piece"] >= 2
         assert row["board_width_in"] * row["boards_per_piece"] == pytest.approx(
             row["finished_width_in"], abs=0.01)
         assert f'{row["boards_per_piece"]} boards' in row["stock_note"]
-        assert '18.00"' in row["stock_note"], "the note names the supply it is measured on"
+        assert f'{supply(row):.2f}"' in row["stock_note"], "the note names its supply"
 
 
-def test_a_shelf_inside_the_board_width_stays_one_board(rows):
+def test_a_shelf_inside_the_board_width_stays_one_board(rows, supply):
     """The complement, and the assertion that keeps the panel call from being vacuous.
 
     Note the filter is on the FINISHED face plus the jointing loss, not on
@@ -224,7 +236,7 @@ def test_a_shelf_inside_the_board_width_stays_one_board(rows):
     from typehaus.takeoff.hardwood import _WIDTH_LOSS_IN
 
     narrow = [row for row in _use(rows, "shelf")
-              if row["finished_width_in"] + _WIDTH_LOSS_IN <= 18.0]
+              if row["finished_width_in"] + _WIDTH_LOSS_IN <= supply(row)]
     assert narrow and all(row["layup"] == "one board" for row in narrow)
     assert all(row["boards_per_piece"] == 1 for row in narrow)
 
@@ -398,9 +410,42 @@ def test_the_csv_and_the_markdown_carry_the_same_rows_and_the_species(rows, tmp_
 def test_a_shop_built_table_is_cut_from_its_authored_list(rows):
     """FT-CATLIN-DINING-ASH's ``cut_list``: only the ash top is milled; the legs are bought."""
     (top,) = [row for row in _use(rows, "furniture") if row["location"] == "dining table top"]
-    assert top["material"] == "ash-8q" and top["species"] == "ash"
+    assert top["material"] == "ash-6q" and top["species"] == "ash"
+    assert top["nominal_stock"] == "6/4"
     assert (top["finished_thickness_in"], top["finished_width_in"],
-            top["finished_length_in"]) == (1.5, 42.0, 96.0)
-    assert top["layup"] == "edge-glued panel" and top["boards_per_piece"] == 3
+            top["finished_length_in"]) == (1.25, 42.0, 96.0)
+    # 42" off ~11" ash boards (the material's own width, not the house's 18").
+    assert top["layup"] == "edge-glued panel" and top["boards_per_piece"] == 5
     assert top["tags"] == ["FURN-M-DINING"] and top["also_in_placeables"]
     assert not top["stock_note"] or "cannot come out" not in top["stock_note"]
+
+
+def test_a_material_board_width_overrides_the_standard(rows):
+    """``Material.max_board_width_in`` is one species' logs and wins over the house's 18"."""
+    from typehaus.model import Material
+    from typehaus.takeoff.hardwood import _piece_row
+
+    narrow = {"m": Material(tag="m", name="m", species="ash", nominal_quarters=6,
+                            requires_custom_milling=True, max_board_width_in=6.0)}
+    wide = {"m": Material(tag="m", name="m", species="ash", nominal_quarters=6,
+                          requires_custom_milling=True)}
+    narrow_row = _piece_row("shelf", "m", narrow, 1, 1.25, 10.0, 30.0, 18.0, ["X"], {})
+    wide_row = _piece_row("shelf", "m", wide, 1, 1.25, 10.0, 30.0, 18.0, ["X"], {})
+    assert wide_row["layup"] == "one board" and wide_row["boards_per_piece"] == 1
+    assert narrow_row["layup"] == "edge-glued panel" and narrow_row["boards_per_piece"] == 2
+
+
+def test_a_stair_is_billed_once_by_its_own_rows(rows, catlin_model_ro):
+    """A stair's members are not framing: ``stair_rows`` owns its millwork, once."""
+    stairs = {stair.tag for stair in catlin_model_ro.stairs}
+    stair_uids = {stair.uid for stair in catlin_model_ro.stairs}
+    for row in rows:
+        if row["use"].startswith("stair"):
+            continue
+        assert not set(row["tags"]) & (stairs | stair_uids), (row["use"], row["tags"])
+    assert not {row["use"] for row in rows} & {"riser", "tread", "winder", "landing"}
+    treads = _use(rows, "stair tread")
+    risers = _use(rows, "stair riser")
+    assert {row["material"] for row in treads} == {"oak-tread"}
+    assert {row["material"] for row in risers} == {"oak-riser"}
+    assert sum(row["pieces"] for row in treads) == 26

@@ -45,7 +45,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   plant_room, plant_room_types, plant_types, plate_ties,
                   products,
                   sauna, sauna_types, site, study_bridge, titanium_types, transitions, views,
-                  wind_clamps)
+                  wind_clamps, window_stools)
 from plan.storeys import attic, attic_studio, basement, garage, main, second
 
 format_version = 1
@@ -361,6 +361,7 @@ PLAN = (
          *mep.BASEMENT_ELEMENTS, *electrical.BASEMENT_ELEMENTS,
          *lighting.BASEMENT_LIGHTING,
          *placeables.BASEMENT_PLACEABLES, *sauna.SAUNA_SEATING, *millwork.BASEMENT_SHELVES,
+         *window_stools.BASEMENT_WINDOW_STOOLS,
          *millwork_vanities.BASEMENT_VANITY_SHELVES,
          *backing.BASEMENT_BACKING],
     )
@@ -384,6 +385,7 @@ PLAN = (
          *countertops.MAIN_COUNTERTOPS,
          *countertops.KITCHEN_STOOLS,
          *living_east_run.LIVING_EAST_RUN, *living_east_run.LIVING_EAST_STOOLS,
+         *window_stools.MAIN_WINDOW_STOOLS,
          *backing.MAIN_BACKING, *backing_wet.MAIN_WET_BACKING,
          *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS,
          *plate_ties.MAIN_PLATE_TIES],
@@ -403,6 +405,7 @@ PLAN = (
                                 *millwork_vanities.SECOND_VANITY_SHELVES,
                                 *countertops.SECOND_COUNTERTOPS,
                                 *countertops.PLANT_STOOLS,
+                                *window_stools.SECOND_WINDOW_STOOLS,
                                 *backing.SECOND_BACKING,
                                 *backing_wet.SECOND_WET_BACKING,
                                 *braced_walls.SECOND_BRACED_WALLS,

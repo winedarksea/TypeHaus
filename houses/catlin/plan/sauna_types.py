@@ -1,6 +1,6 @@
 """Fitted sauna seating; dimensions are inches from the current finished liner faces."""
 
-from typehaus.model import FurnitureType, inch, pt
+from typehaus.model import FurnitureCut, FurnitureType, inch, pt
 from typehaus.model.placeable_symbols._sauna_recliner import (
     MATTRESS_FLAT_LENGTH_IN,
     MATTRESS_THICKNESS_IN,
@@ -39,7 +39,8 @@ READING_LIGHT_PATH = (pt(inch(LOWER_EAST_X_IN), inch(READING_NORTH_Y_IN)),
                       pt(inch(READING_EAST_X_IN), inch(READING_NORTH_Y_IN)),
                       pt(inch(READING_EAST_X_IN), inch(READING_SOUTH_Y_IN)))
 
-_JOINERY = ("Unfinished basswood/aspen, eased edges, open frame. Removable deck sections "
+_JOINERY = ("Unfinished owner basswood slats on aspen bearers, eased edges, open frame. "
+            "Removable deck sections "
             "for cleaning and service; support framing must leave the floor drain, "
             "condensate air gaps and west exhaust unobstructed. notes/sauna_seating.md.")
 
@@ -91,5 +92,31 @@ READING_MATTRESS = FurnitureType(
             "assembly REQUIRED before purchase/fabrication; supplier unselected. "
             "Lift and air after wet use. notes/sauna_seating.md."),
 )
+# The decks' cut lists (2026-10-16): owner stock, so it reaches `haus millwork`. Slats are
+# 1" x 3 1/2" basswood at 1/2" gaps, running the deck's long way; bearers are 1 1/2" x
+# 3 1/2" aspen across it at <= 24" o.c. (notes/sauna_seating.md). The step's 10" takes
+# three 3" slats. Posts, stretchers, the recliner and the heater fence are not designed yet:
+# an allowance in notes/wood_supply.md, not a cut.
+_SLAT = "basswood-bench-5q"
+_BEARER = "aspen-frame-8q"
+
+
+def _deck_cuts(slats: int, slat_width_in: float, long_in: float, short_in: float,
+               bearers: int) -> tuple[FurnitureCut, ...]:
+    return (FurnitureCut(part="sauna deck slat", count=slats, thickness=inch(1),
+                         width=inch(slat_width_in), length=inch(long_in), material_ref=_SLAT),
+            FurnitureCut(part="sauna deck bearer", count=bearers, thickness=inch(1.5),
+                         width=inch(3.5), length=inch(short_in), material_ref=_BEARER))
+
+
+UPPER_BENCH = UPPER_BENCH.model_copy(update=dict(
+    wood_material_ref=_SLAT, cut_list=_deck_cuts(7, 3.5, 78, 28, 5)))
+LOWER_PLATFORM = LOWER_PLATFORM.model_copy(update=dict(
+    wood_material_ref=_SLAT, cut_list=_deck_cuts(5, 3.5, 78.1875, 20, 5)))
+READING_PLATFORM = READING_PLATFORM.model_copy(update=dict(
+    wood_material_ref=_SLAT, cut_list=_deck_cuts(7, 3.5, 58.5, 28, 4)))
+ACCESS_STEP = ACCESS_STEP.model_copy(update=dict(
+    wood_material_ref=_SLAT, cut_list=_deck_cuts(3, 3.0, 14, 10, 2)))
+
 SAUNA_FURNITURE_TYPES = (UPPER_BENCH, LOWER_PLATFORM, READING_PLATFORM, ACCESS_STEP,
                         READING_RECLINER, READING_MATTRESS)

@@ -11,6 +11,7 @@ from .materials_ishtar import MATERIALS_ISHTAR
 from .materials_metal import MATERIALS_METAL
 from .materials_flooring import MATERIALS_FLOORING
 from .materials_titanium import MATERIALS_TITANIUM
+from .materials_hardwood import MATERIALS_HARDWOOD
 
 
 MATERIALS = [
@@ -57,19 +58,20 @@ MATERIALS = [
              product_ref="PROD-SILESTONE-ET-CALACATTA-GOLD", engineered_stone=True,
              source="Silestone Et Calacatta Gold, 3 cm, eased edge (owner selection 2026-09-06). Kitchen perimeter and sink run, the 48\" and 51\" vanity tops, and the peninsula's one-piece top, its 15\" seating overhang on hidden steel bars. ** NEVER CLEAN IT WITH ANYTHING HIGH-pH: ** bleach, ammonia, glass cleaner, degreasers, scouring powder and melamine sponges are the #1 cause of light quartz yellowing across every brand — not UV. #2 is heat scorch, which is irreversible; induction helps (no flame spill, no hot grate) but a 400 F pan is still a 400 F pan. Put that in the owner's manual."),
     # RM-M-BED reading nook: the two 12" SEKTION end-cabinet tops (CT-M-BED-NOOK-S/-N).
-    Material(tag="walnut-counter", name='Black walnut top, 1", 6/4 S4S',
+    Material(tag="walnut-counter", name='Black walnut top, 1", 5/4 S4S',
              r_per_inch=1.0, density=610.0, hatch="lumber", color="#80634f",
-             finish="clear-satin-hardwax-oil", species="walnut", nominal_quarters=6,
+             finish="clear-satin-hardwax-oil", species="walnut", nominal_quarters=5,
              milling_profile="S4S", requires_custom_milling=True,
-             source="Two 12 1/2\" x 24 7/8\" x 1\" tops, each an edge-glued pair from one 6/4 board, oversailing 7/8\" to the seat fronts and capping the covers. Finish all six faces; fix on figure-8s."),
+             source="Two 12 1/2\" x 24 7/8\" x 1\" tops, each an edge-glued pair from one 5/4 board, oversailing 7/8\" to the seat fronts and capping the covers. Finish all six faces; fix on figure-8s."),
     # The east wall's living-room slabs (CT-M-LIV-E-S/-N, 2026-10-16), ash to match the
-    # dining table's ash-8q top. Priced in [countertops], cut-listed by `haus millwork`.
-    Material(tag="ash-counter-12q", name='White ash counter slab, 2", 12/4 S4S',
+    # dining table's ash-6q top. Priced in [countertops], cut-listed by `haus millwork`.
+    # Same logs as the table, so the same ~11" widest board: each slab is two boards.
+    Material(tag="ash-counter-6q", name='White ash counter slab, 1 1/4", 6/4 S4S',
              r_per_inch=1.0, density=670.0, hatch="lumber", color="#d9cbb0",
-             finish="oak-board",  # the 3D recipe; the coat is hardwax oil
-             species="ash", nominal_quarters=12, milling_profile="eased",
-             requires_custom_milling=True,
-             source="Two edge-glued slabs on the living-room SEKTION banks, 2\" finished off 12/4, 16 1/2\" deep, straight eased front edge. Back edge scribed to the gwb, where the cherry-stool-12q stools meet it. Fix on slotted brackets and finish all six faces: 16\" of flat-sawn ash moves."),
+             finish="oak-board",  # the 3D recipe; the coat is waterborne urethane
+             species="ash", nominal_quarters=6, milling_profile="eased",
+             requires_custom_milling=True, max_board_width_in=11.0,
+             source="Two slabs on the living-room SEKTION banks, 1 1/4\" finished off 6/4, 16 1/2\" deep, straight eased front edge. Each is an edge-glued panel of two ~8 1/4\" boards (Type II PVA), the glue line straight on the front edge; the 160 5/8\" slab needs a 14'+ ash log. Back edge scribed to the gwb, where the ash stools meet it in one plane. Fix on slotted brackets; waterborne urethane on all six faces, matching the stools: flat-sawn ash still moves."),
     # ** THE FLOOR TILE, AND THE SELECTION IS ARITHMETIC BEFORE IT IS TASTE. ** Grout length
     # per square foot is 144 x (1/a + 1/b): a 24x24 gives 1.0 lineal ft/sf, a 3x12 subway
     # gives 5.0, a penny round gives 24+. Large-format is ~3x easier to keep clean than
@@ -93,7 +95,7 @@ MATERIALS = [
     Material(tag="tile-floor-24", name='Porcelain floor tile, 24x24 matte rectified',
              hatch="masonry", color="#e8e4dc",
              product_ref="PROD-MARAZZI-MF01",
-             source="Marazzi Modern Formation Peak White MF01, 24x24 matte rectified, DCOF >=0.42, absorption <0.5%, USA made (owner selection 2026-09-06). A warm limestone-look white sits right next to white oak where a cool 'pure white' porcelain fights it and reads clinical. The MUDROOM takes the same tile in TEXTURED for a higher wet DCOF against snowmelt, salt and grit. ** V3 HIGH SHADE VARIATION: lay out eight pieces from a full box before committing. ** Grout is PERMACOLOR Select in a warm light-to-mid grey, one to one-and-a-half shades darker than the tile -- NOT bright white (MN road salt blooms white over black grime, and a rectified arris micro-abrades and lays a PERMANENT grey shadow along every joint by year three) and NOT charcoal, which merely inverts the problem: hard water, soap film and dried cleaner all dry to a WHITE haze. Make a grouted sample board at the real joint width and look at it dry, at 72 hours, lying flat, under the actual fixtures."),
+             source="Marazzi Modern Formation Peak White MF01, 24x24 matte rectified, DCOF >=0.42, absorption <0.5%, USA made (owner selection 2026-09-06). A warm limestone-look white sits right next to the bleached red oak where a cool 'pure white' porcelain fights it and reads clinical. The MUDROOM takes the same tile in TEXTURED for a higher wet DCOF against snowmelt, salt and grit. ** V3 HIGH SHADE VARIATION: lay out eight pieces from a full box before committing. ** Grout is PERMACOLOR Select in a warm light-to-mid grey, one to one-and-a-half shades darker than the tile -- NOT bright white (MN road salt blooms white over black grime, and a rectified arris micro-abrades and lays a PERMANENT grey shadow along every joint by year three) and NOT charcoal, which merely inverts the problem: hard water, soap film and dried cleaner all dry to a WHITE haze. Make a grouted sample board at the real joint width and look at it dry, at 72 hours, lying flat, under the actual fixtures."),
     # The wall tile. A flat quiet white with NO veining, because the oak is the thing in the
     # room that should have figure. 12x24 rather than 24x24 on a wall: the same 1/8"
     # rectified joint, half the sheet weight to hang, and it modules better against a niche.
@@ -178,11 +180,12 @@ MATERIALS = [
     # eased arris keeps a hand running along an exposed edge off a sharp corner. Douglas
     # fir-larch rather than SPF: it is the denser species (~32 pcf vs SPF's ~29), which is
     # why its R/inch is *lower* than spf's 1.24 — conductivity tracks density in wood.
-    # The bays' flat courses (bench support, 6' shelf, 7' cap) and the bench board are oak.
-    Material(tag="white-oak-8-4", name='White oak 8/4, custom-milled S4S to 1 1/2"',
-             hatch="lumber", color="#c4b18c", finish="oak-board", species="oak",
+    # The bays' flat courses (bench support, 6' shelf, 7' cap) and the bench board are red
+    # oak (`oak-8q`; it was `white-oak-8-4` until the pile turned out to be red oak).
+    Material(tag="oak-8q", name='Red oak 8/4, custom-milled S4S to 1 1/2"',
+             hatch="lumber", color="#d6c9b3", finish="oak-board", species="red-oak",
              nominal_quarters=8, milling_profile="S4S", requires_custom_milling=True,
-             source="Owner-milled white oak, 8/4 dressed to 1 1/2\" so a flat course sits flush with the 2x6 studs it spans between; hardwax oil, as the stools."),
+             source="Owner-milled red oak, 8/4 dressed to 1 1/2\" so a flat course sits flush with the 2x6 studs it spans between. The house red-oak system: A/B bleach, Bona NordicSeal, waterborne topcoat."),
     # The stair face. 3/4" rather than the 1/2" a plain panel finish would take, because
     # this panel is structural backing: coat hooks and the closet rail screw straight into
     # it anywhere along the wall, with no blocking behind and no stud to hunt for.
@@ -247,13 +250,13 @@ MATERIALS = [
              finish="clear-satin-hardwax-oil", species="walnut", stock_bf_per_sqft=1.1,
              nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
              source="plans/TODO.md — first-floor study walnut paneling to 36\"; owner-milled shiplap"),
-    # RM-M-MUDROOM's three east-facing walls (WP-M-MUDROOM-SHIPLAP): owner-milled white oak
+    # RM-M-MUDROOM's three east-facing walls (WP-M-MUDROOM-SHIPLAP): owner-milled red oak
     # shiplap, painted white. For wear and fasten-anywhere hooks, not looks.
-    Material(tag="oak-shiplap-painted", name="White oak shiplap, 4/4, painted white",
-             r_per_inch=1.1, density=750.0, hatch="lumber", color="#f2f0ea",
-             finish="shiplap", species="oak", wood_surface="painted", stock_bf_per_sqft=1.1,
+    Material(tag="oak-shiplap-painted", name="Red oak shiplap, 4/4, painted white",
+             r_per_inch=1.1, density=700.0, hatch="lumber", color="#f2f0ea",
+             finish="shiplap", species="red-oak", wood_surface="painted", stock_bf_per_sqft=1.1,
              nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
-             source="Owner-milled white oak, 5 1/2\" face over 5\" coverage, blind-nailed to studs and the gypsum behind. Prime all faces before install (oak tannin bleeds through latex), then two coats of white enamel."),
+             source="Owner-milled red oak, 5 1/2\" face over 5\" coverage, blind-nailed to studs and the gypsum behind. Red oak's open grain telegraphs through enamel: grain-fill it or accept the texture. Prime all faces with a shellac-based primer (oak tannin bleeds through latex), then two coats of white enamel."),
     # ** TOMBSTONE: `walnut-floor` (added and removed 2026-09-05). ** For a few hours the
     # suite and its walk-in were a 181.7 SF field of site-milled walnut strip flooring under
     # its own tag (a separate tag from `walnut-shiplap` so 182 SF would not bill in both
@@ -266,11 +269,11 @@ MATERIALS = [
     # `STRIP_FLOOR_REFS` needle in ui/src/three/plankMaterial.ts.
     # The call booth's bench seat and desk top, the same walnut as the wainscot
     # they sit against. ** `nominal_quarters` IS REQUIRED, not decoration: ** the seat
-    # finishes 1-1/2" (8/4), the desk 1-1/4" (6/4), and `takeoff/hardwood.py` flags a
+    # finishes 1-1/2" (8/4), the desk 1" (5/4), and `takeoff/hardwood.py` flags a
     # finished piece that cannot come out of the stock it names.
     #
-    # Deliberately no `stock_bf_per_sqft`: like the oak below, these are PIECE goods cut to a
-    # finished T x W x L, not a coverage good. Unlike the oak below, this walnut is BOUGHT —
+    # Deliberately no `stock_bf_per_sqft`: like the oak stock, these are PIECE goods cut to a
+    # finished T x W x L, not a coverage good. Unlike the oak, this walnut is BOUGHT —
     # so it appears on `haus millwork` for the mill AND its dollars stay inside the
     # `[placeables]` rows for FT-STUDY-BENCH / FT-STUDY-DESK. See prices.toml; getting that
     # backwards puts the most expensive material in the room at $0.
@@ -279,13 +282,13 @@ MATERIALS = [
              species="walnut", nominal_quarters=8, milling_profile="S4S",
              requires_custom_milling=True,
              source="plans/TODO.md — RM-M-STUDY call booth. 8/4 because the bench seat is structural millwork someone sits on, over a 45-5/8\" span with no stiffener"),
-    # The desk top and its leaf: 6/4, dressing to 1 1/4". A 29" span someone leans on is a
-    # normal desk at that thickness; the bench's 47" seat is what still wants 8/4.
-    Material(tag="walnut-shelf-6q", name="Black walnut shelving, 6/4 S4S", hatch="lumber",
+    # The desk top and its leaf: 5/4, dressing to 1" (2026-10-16, was 6/4). Short spans, and
+    # 5/4 is the cheaper, easier bought thickness; the bench's 47" seat still wants 8/4.
+    Material(tag="walnut-shelf-5q", name="Black walnut shelving, 5/4 S4S", hatch="lumber",
              density=610.0, color="#80634f", finish="clear-satin-hardwax-oil",
-             species="walnut", nominal_quarters=6, milling_profile="S4S",
+             species="walnut", nominal_quarters=5, milling_profile="S4S",
              requires_custom_milling=True,
-             source="RM-M-STUDY call booth desk top and fold-down leaf; 6/4 over a 30-5/8\" span, one flitch for both"),
+             source="RM-M-STUDY call booth desk top and fold-down leaf; 5/4 dressed to 1\" over a 30-5/8\" span, one flitch for both"),
     # RM-M-LIVING's fireplace mantel, SB-M-FIRE-MANTEL. Same species, same finish and same
     # bought-not-milled accounting as the walnut above; ** 12/4 AND NOT 8/4, WHICH IS THE
     # WHOLE REASON IT IS A SEPARATE MATERIAL. ** The mantel finishes 2 1/4" — one brick bed
@@ -333,91 +336,7 @@ MATERIALS = [
              finish="clear-satin-hardwax-oil", species="elm",
              milling_profile="S4S", requires_custom_milling=True,
              source="plans/TODO.md — suite bedroom tudor posts, 10' sections cut to fit"),
-    # --- owner-milled white-oak stock -------------------------------------------------
-    #
-    # White oak off family land in southern Minnesota, rough-milled: boards commonly 12\"+
-    # wide and out to 18\", in 4/4 and 8/4. Owner-supplied stock wins on WIDTH and FLATNESS
-    # — a one-piece stool, shelf or tread — and loses on PROFILE, where a knife grind plus a
-    # molder setup cannot amortise over one house. Base and casing dodge that by having no
-    # profile: plain S4S, ripped and planed (`oak-trim`, the `TrimStandard`'s stock).
-    #
-    # These are PIECE goods, not coverage goods: each one is cut to a finished T x W x L, so
-    # they carry `nominal_quarters` (the stock a mill saws) and deliberately no
-    # `stock_bf_per_sqft` (a coverage factor, which would be meaningless on a stool). They
-    # appear in no assembly layer, no room finish and no paneling, so they enter no other
-    # take-off section — `haus millwork` is where they are ordered from.
-    Material(tag="oak-floor-custom", name='3/4" white-oak strip flooring, site-milled',
-             hatch="lumber", color="#c4b18c", species="oak", finish="plank-floor",
-             stock_bf_per_sqft=1.0, nominal_quarters=4, milling_profile="T&G",
-             finish_thickness_in=0.75, requires_custom_milling=True,
-             source="Catlin owner-milled white oak floor; local rather than the factory library product so only this house enters the custom milling schedule."),
-    # 4/4 dressed to 3/4" (2026-10-16, was 5/4 to 1"): Finnish panel is 1/2"-5/8", the foil
-    # polyiso does the insulating, and less board is less heat store to warm. 1.0 x 1.1 bf/sf.
-    Material(tag="catlin-sauna-shiplap",
-             name="Basswood/aspen shiplap sauna liner (4/4), site-milled",
-             r_per_inch=1.3, perm_rating=20.0, hatch="lumber", color="#e5dcc4",
-             finish="shiplap", species="basswood", wood_surface="unfinished", stock_bf_per_sqft=1.1,
-             nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
-             source="Catlin site-milled sauna liner; local rather than the factory library product so this coverage reaches the custom milling schedule."),
-    Material(tag="oak-stool", name="White oak window stool, 6/4 S4S", hatch="lumber",
-             color="#c4b18c", finish="oak-board", species="oak",
-             nominal_quarters=6, milling_profile="eased", requires_custom_milling=True,
-             source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak, ~$2/sf rough. 6/4 because the interior return on an outie window runs most of a 13 7/8\" wall and a 3/4\" board that wide will cup; 1 1/4\" holds flat without the bulk of 8/4. The front edge is eased, not moulded (see the profile note above)"),
-    # The east row's stools (WIN-M-LIV-E1/-E2/-E3, WIN-M-EAST-MID): plain oak, 2" to match
-    # the live-edge slab they meet at its ripped back edge, colour-matched to it.
-    Material(tag="cherry-stool-12q", name='Black cherry window stool, 2", 12/4 S4S',
-             hatch="lumber", color="#b77d60", finish="oak-board", species="cherry",
-             nominal_quarters=12, milling_profile="eased", requires_custom_milling=True,
-             source="Milled black cherry, 2\" finished from 12/4 to match the ash slab's thickness; hardwax oil all six faces, oiled before install so it darkens evenly."),
-    Material(tag="oak-shelf-8q", name="White oak shelving, 8/4 S4S", hatch="lumber",
-             color="#c4b18c", finish="oak-board", species="oak",
-             nominal_quarters=8, milling_profile="S4S", requires_custom_milling=True,
-             source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. 8/4 wherever the shelf is visible or LOADED: 1-1/2\" needs no stiffener and no edge banding at a 2'-6\" bay, and it is the thickness a climbable shelf wants (notes/pantry_climbable_shelving.md)"),
-    Material(tag="oak-shelf-6q", name="White oak shelving, 6/4 S4S", hatch="lumber",
-             color="#c4b18c", finish="oak-board", species="oak",
-             nominal_quarters=6, milling_profile="S4S", requires_custom_milling=True,
-             source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. 6/4 for a visible built-in that carries books: 1-1/4\" holds a ~31\" bay without the sag of 4/4 or the bulk of 8/4"),
-    Material(tag="oak-shelf-4q", name="White oak shelving, 4/4 S4S", hatch="lumber",
-             color="#c4b18c", finish="oak-board", species="oak",
-             nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
-             source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. 4/4 for the light-duty cases — a 12\"-deep bookcase shelf and a bath alcove shelf carry books and towels, not people"),
-    Material(tag="oak-tread", name="White oak stair tread, 5/4 bullnose", hatch="lumber",
-             color="#c4b18c", finish="oak-board", species="oak",
-             nominal_quarters=5, milling_profile="bullnose", requires_custom_milling=True,
-             source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. 5/4 dressed to 1\", the stock tread thickness; the stringers are 22\" o.c. or closer. Tread and landing nosings share the bullnose setup; the landing nosing also gets a groove to meet the T&G field"),
-    Material(tag="oak-riser", name="White oak stair riser, 4/4 S4S", hatch="lumber",
-             color="#c4b18c", finish="oak-board", species="oak",
-             nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
-             source="Clear satin hardwax oil (`finish` names the 3D oak-board recipe). owner-milled white oak. 3/4\" dressed: a riser carries no load, and at ~6\" high it comes off one board and stays flat"),
-    # Base and door casing (plan/millwork.py TRIM-STANDARD): one plain board for both, so
-    # no knife and no molder — planer work off the 4/4 stack, ripped from the wide boards.
-    Material(tag="oak-trim", name='White oak trim, 3/4" x 3 1/2" S4S', hatch="lumber",
-             color="#c4b18c", finish="oak-board", species="oak",
-             nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
-             source="Owner-milled white oak, 4/4 dressed to 3/4\" and ripped to 3 1/2\". Base and casing are the same stock, butt-jointed and flush where they meet; hardwax oil, as the stools. Base goes in after the hard floors, so no shoe."),
-    # The base (TRIM-STANDARD.base_material_ref); casing stays `oak-trim`, so the flush
-    # base-to-leg butt joint is two species. Same 3/4" x 3 1/2" S4S off 4/4.
-    Material(tag="cherry-trim", name='Black cherry base, 3/4" x 3 1/2" S4S', hatch="lumber",
-             color="#b77d60", finish="oak-board", species="cherry",
-             nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
-             source="Milled black cherry, 4/4 dressed to 3/4\" and ripped to 3 1/2\"; hardwax oil. Cherry darkens with light: oil every face before install so the back and edges age with the front."),
-    # RM-B-SAUNA's base and inside casing (TRIM-STANDARD room_trims). Locust for rot
-    # resistance at a wet floor; left unfinished, as the liner is.
-    Material(tag="locust-trim", name='Black locust sauna trim, 3/4" x 3 1/2" S4S',
-             hatch="lumber", color="#b9aa68", finish="solid-board", species="locust", wood_surface="unfinished",
-             nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
-             source="Milled black locust, 4/4 dressed to 3/4\" and ripped to 3 1/2\". Unfinished: no oil or film in a 190 F room. Stainless fasteners."),
-    # WP-S-SUITE-HEADBOARD. The study wainscot stays `walnut-shiplap`.
-    Material(tag="cherry-shiplap", name="Black cherry shiplap wainscot (4/4)", r_per_inch=1.1,
-             density=560.0, hatch="lumber", color="#b77d60",
-             finish="clear-satin-hardwax-oil", species="cherry", stock_bf_per_sqft=1.1,
-             nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
-             source="Milled black cherry shiplap, 5 1/2\" face over 5\" coverage; the suite headboard band"),
-    # FT-CATLIN-DINING-ASH's top (plan/dining_types.py); its legs are bought metal.
-    Material(tag="ash-8q", name="White ash, 8/4 S4S", hatch="lumber", color="#d9cbb0",
-             finish="oak-board", species="ash", nominal_quarters=8, milling_profile="S4S",
-             requires_custom_milling=True,
-             source="Owner-milled white ash for the dining table top, glued up; hardwax oil"),
+    *MATERIALS_HARDWOOD,
     *MATERIALS_METAL,
     *MATERIALS_ISHTAR,
     *MATERIALS_FLOORING,

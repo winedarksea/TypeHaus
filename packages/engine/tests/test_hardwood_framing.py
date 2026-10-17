@@ -24,7 +24,7 @@ def test_oak_blocks_are_cut_listed_and_ordinary_framing_is_not():
     members += [_member("blocking-1-000", "blocking", "oak", 2.75),
                 _member("plate-bottom", "plate", "kdat", 96.0),
                 _member("stud-000", "stud", None, 96.0)]
-    model = SimpleNamespace(walls=[SimpleNamespace(uid="W1", tag="W-TEST")],
+    model = SimpleNamespace(walls=[SimpleNamespace(uid="W1", tag="W-TEST")], stairs=[],
                             all_members=lambda: members)
     rows = framing_rows(model, materials, 9.0)
     assert {(r["use"], r["material"], r["pieces"]) for r in rows} == {

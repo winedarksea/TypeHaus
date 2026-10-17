@@ -463,11 +463,15 @@ def test_catalog_wood_appearance_preserves_species_and_finish_exceptions(catlin_
     from typehaus.library.wood_appearance import NATURAL_WOOD_COLORS
 
     materials = {m["tag"]: m for m in catlin_payload["catalog"]["materials"]}
-    for tag in ("cherry-trim", "cherry-shiplap", "ash-8q", "elm-timber", "walnut-counter",
-                "oak-floor-custom", "cherry-stool-12q", "ash-counter-12q", "elm-mantel-12q",
+    for tag in ("cherry-trim", "cherry-shiplap", "ash-6q", "elm-timber", "walnut-counter",
+                "ash-stool-6q", "ash-counter-6q", "elm-mantel-12q",
                 "elm-slat-12q", "catlin-sauna-shiplap", "locust-trim"):
         material = materials[tag]
         assert material["color"] == NATURAL_WOOD_COLORS[material["species"]]
+    # The owner's oak is red oak under one bleached Nordic finish, not its natural colour.
+    for tag in ("oak-floor-custom", "oak-trim", "oak-tread", "oak-riser", "oak-8q"):
+        assert materials[tag]["species"] == "red-oak"
+        assert materials[tag]["color"] == "#d6c9b3"
     assert materials["catlin-sauna-shiplap"]["wood_surface"] == "unfinished"
     assert materials["locust-trim"]["wood_surface"] == "unfinished"
     assert materials["oak-shiplap-painted"]["wood_surface"] == "painted"

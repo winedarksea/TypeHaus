@@ -2,7 +2,8 @@
 
 A view, like the rest of ``hardwood``: the member is billed in ``framing`` and these rows say
 so (``also_in_framing``). Only a ``FramedMember`` whose material ``requires_custom_milling``
-appears — an exposed bay's oak blocking course, say. Ordinary framing is the yard's.
+appears — an exposed bay's oak blocking course, say. Ordinary framing is the yard's. A
+stair's members are skipped: ``hardwood_stairs.stair_rows`` is the one owner of its millwork.
 
 Pieces are cut to length, so rows group by (use, material, profile, finished length).
 """
@@ -24,9 +25,12 @@ def framing_rows(model: ResolvedModel, materials: Mapping[str, object],
     from typehaus.takeoff.hardwood import _piece_row
 
     tag_of = {w.uid: w.tag for w in model.walls}
+    stair_uids = {stair.uid for stair in model.stairs}
     groups: dict[tuple[str, str, str, float], list[str]] = {}
     for member in model.all_members():
         ref = member.material
+        if member.parent_uid in stair_uids:
+            continue
         if ref is None or not getattr(materials.get(ref), "requires_custom_milling", False):
             continue
         use = _USE_BY_CATEGORY.get(member.category, member.category)

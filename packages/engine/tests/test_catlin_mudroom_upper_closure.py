@@ -65,7 +65,7 @@ def test_oak_courses_fill_the_clear_stud_bays_and_bill_as_oak(catlin_model_ro):
     assert spans == [pytest.approx(course) for course in _COURSES_IN]
     for block in blocks:
         assert block.profile == "2x6"
-        assert block.material == "white-oak-8-4"
+        assert block.material == "oak-8q"
         ring, _, _ = member_footprint(block)
         assert max(x for x, _ in ring) - min(x for x, _ in ring) == pytest.approx(
             inch(5.5).meters)
@@ -74,7 +74,7 @@ def test_oak_courses_fill_the_clear_stud_bays_and_bill_as_oak(catlin_model_ro):
             assert min(abs(math.dist(endpoint, stud.p0) - inch(0.75).meters)
                        for stud in studs) < 1e-9
     rows = [row for row in framing_takeoff(catlin_model_ro)
-            if row["category"] == "blocking" and row["material"] == "white-oak-8-4"]
+            if row["category"] == "blocking" and row["material"] == "oak-8q"]
     assert len(rows) == 1
     assert rows[0]["profile"] == "2x6"
     assert rows[0]["pieces"] == len(blocks)

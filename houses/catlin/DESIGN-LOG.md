@@ -14,6 +14,39 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Red oak, not white oak: the species reassignment (2026-10-16)
+
+The owner's large pile of "white oak" is red oak. Red oak is effectively unlimited and fine
+for dry interior work, but its open pores give it no moisture resistance, and the bath-shelf
+wet-room spec had leaned on white oak's closed ones.
+
+- **The `oak-*` tags stayed** and took `species="red-oak"`: a retag would have reached
+  prices, tasks and tests for no gain. `white-oak-8-4` was the exception and became `oak-8q`,
+  because a tag that says white oak on red oak is a trap.
+- **One look everywhere**: two-part A/B bleach, Bona NordicSeal, a waterborne topcoat
+  (`#d6c9b3`). It gets close to the white-oak look; it does not buy moisture resistance.
+  The painted mudroom shiplap takes a shellac primer and accepts (or grain-fills) the open
+  grain under enamel.
+- **Stools went to 5/4 (1"), mostly bought white oak.** Bought stock is no thicker than
+  5/4. Locust in the wet rooms, ash in the living room (all five, matching the counters),
+  cherry in the suite, red oak at two circulation windows, and owner cedar in the sauna,
+  where density decides how hot the stool feels at 190 F. `plan/window_stools.py`.
+- **Bath shelves are locust**, contingent on the owner's extra locust logs; cherry, then
+  bought white oak, are one-line fallbacks.
+- **Ash went to 6/4** (table and counters 1 1/4", the east stools 1 1/4" ash in place of 2"
+  cherry). The 36" counter line did not move: the slab top derives from the host top, and
+  the sub-top grew from 1/2" to 1 1/4". The counters take waterborne urethane to match the
+  stools they meet; the table keeps hardwax oil.
+- **Ash boards run to ~11"**, so `Material.max_board_width_in` was added: the counters are
+  two-board panels, the table five, the stools two (quartered ash at 4-6").
+- **The oak stairs were counted twice**: `framing_rows` billed the stair's own tread and
+  riser members as 1 1/2" framing. ~136 rough bf of phantom oak; `stair_rows` now owns them.
+- **Thickness by arithmetic, not eye.** Pantry shelves 6/4 (5/4 just misses L/360 gabled),
+  study shelves 5/4, the walnut desk and leaf 5/4. `notes/pantry_climbable_shelving.md`.
+- **The sauna is cut from the owner's basswood, aspen and willow**: basswood deck slats and
+  wall liner, aspen bearers, a willow ceiling. About 100 bf short after defects
+  (`notes/wood_supply.md`).
+
 ## Living room east wall rework (2026-10-16)
 
 The owners asked for four things on the living room's east wall. The fireplace and its two

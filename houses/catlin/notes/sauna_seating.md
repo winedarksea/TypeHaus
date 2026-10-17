@@ -62,7 +62,7 @@ outstanding and cannot be replaced by the geometric model.
 
 ## Framing, service and heater installation
 
-Use unfinished sauna-suitable basswood/aspen with eased edges, concealed suitable fasteners,
+Use unfinished owner basswood slats on aspen framing, eased edges, concealed suitable fasteners,
 open posts and removable deck panels. Transverse bearers carry the long deck slats;
 Deck-panel joints land on transverse bearers so the drain-side section can lift.
 Connected stretchers carry the low perimeter lighting rails. Inclined side stringers
@@ -70,6 +70,25 @@ carry the recliner back slats into its rear uprights and base rails. Design fram
 upper bench and one adult below; symbol members are coordination geometry, not a structural
 joinery certification. Secure the step against sliding/tipping. Mock up the 12/24/42-inch
 access sequence, including the final 18-inch rise, while the upper bench is occupied.
+
+### Slat check (2026-10-16): 1" basswood on bearers at 24" o.c. or closer
+
+The touched surfaces are the owner's clearest basswood, 5/4 dressed to **1" x 3 1/2"**, at
+1/2" gaps; the bearers are owner aspen, 1 1/2" x 3 1/2". **Bearers at 24" o.c. or closer is
+the rule** (the cut lists in `plan/sauna_types.py`: 5 / 5 / 4 / 2 bearers). Take one 250 lb
+adult as ~85 lb on each of three slats at midspan, L = 24":
+
+| | value |
+|---|---|
+| `S = b*d^2/6` (b 3.5", d 1") | 0.583 in^3 |
+| `I = b*d^3/12` | 0.292 in^4 |
+| `M = P*L/4` | 510 in-lb |
+| `f = M/S` | **≈ 875 psi**, against basswood's ~8,700 psi MOR (~10x) |
+| `d = P*L^3/(48*E*I)`, E ≈ 1.46 x 10^6 psi | **≈ 0.06"** |
+
+1" is thick enough to stay flat for decades without going to 6/4. Posts, stretchers, the
+recliner and the heater fence are not designed yet (coordination geometry, above), so they
+are carried as an aspen allowance in `notes/wood_supply.md`, not as cuts.
 
 The floor drain `FX-B-SAUNA-FD` lies under the lower foot platform. Removable deck panels
 must expose its grate, both condensate air-gap terminations and connections without cutting

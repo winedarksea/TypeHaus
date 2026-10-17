@@ -165,6 +165,10 @@ def _piece_row(use: str, material_ref: str, materials: Mapping[str, object], pie
     be, and that is the only case this function upgrades on its own, to a panel.
     """
     material = materials.get(material_ref)
+    # A stock that declares its own widest board (one species' logs) overrides the house's.
+    own_width_in = getattr(material, "max_board_width_in", None) if material else None
+    if own_width_in is not None:
+        max_board_width_in = own_width_in
     quarters = getattr(material, "nominal_quarters", None) if material else None
     milling = profile or (getattr(material, "milling_profile", None) if material else None)
     note: str | None = None

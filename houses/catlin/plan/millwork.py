@@ -1,8 +1,10 @@
 # haus: editable
-# Catlin house millwork — the owner-milled white oak.
+# Catlin house millwork — the owner-milled red oak, and the species placed around it.
 #
-# The owner has white oak off family land in southern Minnesota at roughly $2/sf rough
-# milled, in 4/4, 6/4 and 8/4, with boards commonly 12"+ wide and some to 18". That supply wins
+# The owner has red oak off family land in southern Minnesota (it was taken for white oak
+# until 2026-10-16), effectively unlimited, in 4/4 to 8/4, with boards commonly 12"+ wide and
+# some to 18". Its pores are open, so it does only dry interior work: wet-room stools and the
+# bath shelves are locust, and the stools are mostly bought white oak. That supply wins
 # on WIDTH and FLATNESS and loses on PROFILE: a one-piece stool, shelf or tread is worth
 # milling, and a knife grind plus a molder setup cannot amortise over one house. Base and
 # casing sidestep that by having no profile at all — plain S4S, butt-jointed — which is
@@ -29,12 +31,15 @@ from typehaus.model import (
 )
 
 # The one declaration. Scope is EXT_2X6 alone — 34 of the 41 windows are in scope:
-# 33 derive oak and WIN-M-KITCH is authored quartz (plan/countertops.py).
+# WIN-M-KITCH is authored quartz (plan/countertops.py), the three east living-room stools
+# ash (plan/living_east_run.py), and the rest derive bought white oak unless
+# plan/window_stools.py names a species for the room (locust, ash, cherry, red oak).
 #   * PLANT_EXT_2X6_HUMID (4) is the plant room, which runs at 70% RH by design. Oak in
 #     that room is a cupped stool and a black tannin stain, so those four are authored
 #     3 cm quartz remnants instead (PLANT_STOOLS, plan/countertops.py).
 #   * SAUNA_LINER_ON_GARDEN_FRAMED (1) is lined in basswood for a burn-safety reason
-#     (low-conductivity species, plan/assemblies.py) that a hardwood stool would defeat.
+#     (low-conductivity species, plan/assemblies.py) that a hardwood stool would defeat, so
+#     its stool is authored in clear cedar (`cedar-sauna-stool`, plan/window_stools.py).
 #   * GARAGE_WALL_2X6 (2) is a garage.
 #
 # `max_board_width` is an owner-supply fact, not an engine constant and not a price, so it
@@ -45,10 +50,10 @@ MILLWORK = [
     MillworkStandard(
         uid="8YE8Y9SRFP", tag="MW-STANDARD",
         stool_material_ref="oak-stool",
-        # 6/4 dressed. A 3/4" board this wide would cup: the interior return on an outie
-        # window runs 12 5/8" less the frame depth, which is most of a foot of board.
-        # 1 1/4" holds it flat; 8/4 was bulk the stool carries no load for.
-        stool_thickness=inch(1.25),
+        # 5/4 dressed to 1" (2026-10-16, was 1 1/4"): the stock stool thickness at ~10"
+        # deep, and bought stock is no thicker than 5/4. Ask for rift or quartered boards
+        # and finish all six faces, or a board this wide cups.
+        stool_thickness=inch(1),
         stool_overhang=inch(0.75),
         # 1" of horn each side. No apron (the window returns are drywall); the horn stands
         # past the return so the stool reads as a board, not a shelf.
@@ -57,7 +62,7 @@ MILLWORK = [
         stool_assemblies=("EXT_2X6",),
         # 29 oak treads: ST-M2S (14) and ST-S2A (15, three of them winders). ST-B2M is the
         # basement flight and is carpeted, ST-G-SERVICE is the garage's. This scope is also
-        # what stamps the resolved treads oak and the landings `oak-floor-custom` (the 3D and
+        # what stamps the resolved treads red oak and the landings `oak-floor-custom` (the 3D and
         # `haus takeoff`'s [stair_treads]); no Stair repeats it.
         tread_material_ref="oak-tread",
         tread_stairs=("ST-M2S", "ST-S2A"),
@@ -66,7 +71,7 @@ MILLWORK = [
         landing_deck=StairLandingMillwork(
             stair_refs=("ST-M2S",),
             field_material_ref="oak-floor-custom",
-            # 3/4" oak T&G on 3/4" subfloor, like the halls either end of the flight.
+            # 3/4" red oak T&G on 3/4" subfloor, like the halls either end of the flight.
             field_thickness=inch(0.75),
             subfloor_thickness=inch(0.75),
             board_face_width=inch(3.5),
@@ -77,14 +82,14 @@ MILLWORK = [
             nosing_depth=inch(3.5),
         ),
         max_board_width=inch(18),
-        # The study door's 4/4 oak casing infill. Its type in study_bridge.py owns the size;
+        # The study door's 4/4 red oak casing infill. Its type in study_bridge.py owns the size;
         # the sawyer view follows any later change to it.
         board_furniture_refs=("FURN-A-STUDY-BRIDGE-FRONT",),
     ),
     # Base and door casing, derived per room and per door face (resolve/interior_trim.py).
     # One size for both: 3/4" x 3 1/2" S4S, butt-jointed, flush where base meets leg. Casing
-    # is oak; the base is black cherry (2026-10-16). The sauna's base and inside casing are
-    # black locust: no oiled oak in a 190 F room.
+    # is red oak; the base is black cherry (2026-10-16). The sauna's base and inside casing
+    # are black locust: no finished oak in a 190 F room.
     # The base goes in after the hard floors, so there is no shoe; carpet tucks under it.
     # A bought stock (e.g. "poplar-trim-paint") leaves `haus millwork` and is priced instead.
     # tasks.toml's trim visit names its rows by stock, so rename those there too — `haus
@@ -115,13 +120,15 @@ MILLWORK = [
 
 # --- the attic study built-in -----------------------------------------------------------
 # The furniture specification is the physical carcass and the single source for geometry.
-# This ShelfBank retains the owner-stock fabrication takeoff: twelve 1 1/4 in. (6/4) oak
-# boards at the explicit 9 7/8 in. finished shelf depth — books, not people. The purchased door shelves are outside
-# this bank and therefore cannot enter the hardwood quantity.
+# This ShelfBank retains the owner-stock fabrication takeoff: twelve 1 in. (5/4) red oak
+# boards at the explicit 9 7/8 in. finished shelf depth — books, not people. 5/4 since
+# 2026-10-16 (was 6/4): over a 31 1/4" bay at 30 lb/ft, E = 1.6 Mpsi, sag is ~0.024" against
+# the 0.02"/ft bookshelf limit's 0.052"; 3/4" would be 0.056" and creep. The purchased door
+# shelves are outside this bank and therefore cannot enter the hardwood quantity.
 ATTIC_SHELVES = [
     ShelfBank(
         uid="ZSR38F5C8F", tag="SB-A-STUDY", host="FURN-A-STUDY-BUILTIN",
-        material_ref="oak-shelf-6q", thickness=inch(1.25), depth=inch(9.875), profile="S4S",
+        material_ref="oak-shelf-5q", thickness=inch(1), depth=inch(9.875), profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(
             ShelfBay(width=inch(31.25), clear_height=inch(60), shelf_count=5),
@@ -136,13 +143,11 @@ ATTIC_SHELVES = [
 # See notes/pantry_climbable_shelving.md and the FT-KIT-PANTRY-SHELVES-70 source.
 #
 # 1. THIS SHELF IS DESIGNED TO BE CLIMBED, so its thickness is a STRUCTURAL decision, not a
-#    finish one. It is 8/4 rather than the 4/4 the other light-duty cases get: a climbing
-#    250 lb point load over the gabled ~36 1/4" half-span is what governs, and 4/4 is the
-#    wrong answer to that question. What the 8/4 bought, beyond passing, is that STRENGTH
-#    stopped being the argument for the gable — 1 1/2" oak carries the full 73 1/4" span at
-#    ~678 psi. THE GABLE STAYS ANYWAY, on deflection: the full span is ~0.253" under
-#    250 lb and this shelf is graded as a FLOOR, so L/360 is 0.203" and it misses. Gabled
-#    it is ~0.031". THE CLEATS AND THE BLOCKING STAY EITHER WAY, and the bays below are the
+#    finish one. It is 6/4 red oak, 1 1/4" (2026-10-16; 8/4 before): a climbing 250 lb point
+#    at mid-span over the gabled 36 1/4" half-span governs, graded as a FLOOR at L/360.
+#    f ~484 psi, deflection ~0.054" against 0.101". At 5/4 (1") it is ~0.105" and just
+#    misses, so 6/4 is the floor. THE GABLE IS NOT OPTIONAL: ungabled at 1 1/4" the full
+#    span deflects ~0.44". THE CLEATS AND THE BLOCKING STAY, and the bays below are the
 #    two half-spans the gable creates, not one 70" shelf.
 # 2. THE CARCASS IS 18" DEEP, down from 24" — and the mill is what moved it. 24" was past
 #    the 18" the supply can produce, so every shelf was a two-board edge glue-up; 18" is one
@@ -155,8 +160,8 @@ ATTIC_SHELVES = [
 #    is normally a glued panel anyway, because one 18" board that wide cups — and it is a
 #    far smaller statement than the 24" it replaced, which was a two-board panel with a
 #    wider, scarcer board in it. ** THE ONE-NUMBER LEVER: ** if the family stack really does
-#    hold boards past 18 3/4", raise `max_board_width` above and both panels in this house
-#    (here and SB-S-BATH1) become single boards with no other edit.
+#    hold boards past 18 3/4", raise `max_board_width` above and these panels become
+#    single boards with no other edit.
 #
 # Six boards per bay, the case top included, on the graduated pitch the type specifies —
 # ~20" bottom bay, 12"-14" middle, 8"-10" top — over the 7'-0" carcass.
@@ -164,8 +169,8 @@ MAIN_SHELVES = [
     ShelfBank(
         uid="E97F8XSSZ5", tag="SB-M-PANTRY",
         host="FURN-M-PANTRY-SHELVES",
-        material_ref="oak-shelf-8q",
-        thickness=inch(1.5),
+        material_ref="oak-shelf-6q",
+        thickness=inch(1.25),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(
@@ -196,7 +201,7 @@ MAIN_SHELVES = [
     # 2 at 10" for the top. That is correct and is how a solid top this wide is actually made.
     #
     # `clear_height` is the void under each board: 18" of bench less the 1 1/2" seat, and
-    # 29 1/2" of desk less the 1 1/4" top — i.e. the knee space.
+    # 29 1/2" of desk less the 1" top (5/4 since 2026-10-16) — i.e. the knee space.
     ShelfBank(
         uid="MJ0P713ABN", tag="SB-M-STUDY-BENCH",
         host="FURN-M-STUDY-BENCH",
@@ -209,11 +214,11 @@ MAIN_SHELVES = [
     ShelfBank(
         uid="AFXM3DJGX4", tag="SB-M-STUDY-DESK",
         host="FURN-M-STUDY-DESK",
-        material_ref="walnut-shelf-6q",
-        thickness=inch(1.25),
+        material_ref="walnut-shelf-5q",
+        thickness=inch(1),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(29), clear_height=inch(28.25), shelf_count=1),),
+        bays=(ShelfBay(width=inch(29), clear_height=inch(28.5), shelf_count=1),),
     ),
     # The fold-down leaf's board. Same stock, same thickness, same lay-up as the
     # desk it butts, out of the SAME FLITCH as SB-M-STUDY-DESK's two boards: the two tops meet
@@ -238,9 +243,9 @@ MAIN_SHELVES = [
     # Board feet are unaffected (same area, same thickness), so nothing downstream is wrong —
     # only the cutting instruction is, and only for this one row.
     #
-    # `clear_height` is the void under the deployed leaf, the same 28 1/4" as the desk. That is
+    # `clear_height` is the void under the deployed leaf, the same 28 1/2" as the desk. That is
     # what the ADA 306 / OSHA knee envelope is measured against and it clears the 27" minimum
-    # with 1 1/4" to spare — but the number that actually decides it is the BRACKET, not the
+    # with 1 1/2" to spare — but the number that actually decides it is the BRACKET, not the
     # board. A Hebgo 287.43.419 is 7 1/16" tall; hung under the leaf at the wall it eats down
     # to ~21" of clear at the back, which is fine over a knee and NOT fine if the arm reaches
     # forward over one. Set the brackets tight to the wall and check the arm against a seated
@@ -248,11 +253,11 @@ MAIN_SHELVES = [
     ShelfBank(
         uid="T0BJ1M256G", tag="SB-M-STUDY-LEAF",
         host="FURN-M-STUDY-DESK-LEAF",
-        material_ref="walnut-shelf-6q",
-        thickness=inch(1.25),
+        material_ref="walnut-shelf-5q",
+        thickness=inch(1),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(18), clear_height=inch(28.25), shelf_count=1),),
+        bays=(ShelfBay(width=inch(18), clear_height=inch(28.5), shelf_count=1),),
     ),
     # --- RM-M-LIVING's fireplace mantel, on FURN-M-FIRE-MANTEL --------------------------
     #
@@ -370,11 +375,11 @@ MAIN_SHELVES = [
         procurement=ShelfProcurement.INCLUDED_IN_HOST,
         bays=(ShelfBay(width=inch(36), clear_height=inch(16.5), shelf_count=1),),
     ),
-    # --- W-M-STRW's notched oak bench, FURN-M-STRW-BENCH: milled from the family oak ----
+    # --- W-M-STRW's notched oak bench, FURN-M-STRW-BENCH: milled from the family red oak -
     ShelfBank(
         uid="CK2PDFB4JH", tag="SB-M-STRW-BENCH",
         host="FURN-M-STRW-BENCH",
-        material_ref="white-oak-8-4",
+        material_ref="oak-8q",
         thickness=inch(1.5),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
@@ -433,37 +438,38 @@ BASEMENT_SHELVES = [
 # carcass is scribed to the tub alcove and is 30" deep to match the tub, not 20" — the
 # footprint reads (20" wide, 30" deep), so this is the one shelf in the house that is
 # DEEPER THAN IT IS WIDE. The boards therefore run FRONT TO BACK: grain along the 29 1/4"
-# (30" less the 3/4" back), a glue-up 18 1/2" wide rather than a 30" panel, which is two
-# boards with one narrow rip instead of a full-width layup. `takeoff/hardwood.py` derives that orientation rather than
-# taking it on faith — it mills every shelf with the grain on the longer plan dimension —
-# so nothing here authors it. It still lays up as a panel — 18 1/2" finished wants a 19 1/4"
-# rough face and the supply is 18" — and that is a fact worth seeing on the schedule rather
-# than at the mill.
+# (30" less the 3/4" back), a glue-up 18 1/2" wide rather than a 30" panel.
+# `takeoff/hardwood.py` derives that orientation rather than taking it on faith — it mills
+# every shelf with the grain on the longer plan dimension — so nothing here authors it. In
+# locust, whose boards run to ~7", it lays up as a three-board panel, and that is a fact
+# worth seeing on the schedule rather than at the mill.
 #
-# ** WET-ROOM SPEC, FOR THIS SHELF AND SB-S-SUITEBATH ** (owner, 2026-10-07). Both stand at
-# a tub's end. White oak is the right species (closed pores), so the risk is the detail:
-# quartersawn where the stack allows; Type III PVA in the glue-ups; a wet-area film finish
-# (catalysed or water-borne poly, not oil alone) on all six faces, end grain included,
-# before install; stainless pins and fasteners only, since iron on oak tannin stains black;
+# ** WET-ROOM SPEC, FOR THIS SHELF AND SB-S-SUITEBATH ** (owner, 2026-10-16). Both stand at
+# a tub's end, and the house oak is RED oak, whose open pores take water. So: black locust
+# heartwood only, no sapwood (`locust-shelf-4q`, boards to ~7", so every shelf is a
+# glue-up); Type III PVA; a wet-area film finish (catalysed or waterborne poly, not oil
+# alone) on all six faces, end grain included, before install; stainless fasteners only;
 # no board end on the tub deck or the shower's wet line. Recoat when the film wears.
+# ** THIS NEEDS THE OWNER'S EXTRA 2-3 LOCUST LOGS. ** Without them, swap both refs to
+# `cherry-shelf-4q`, then to bought white oak 4/4: one line each.
 SECOND_SHELVES = [
     ShelfBank(
         uid="JBAEDPFV5Q", tag="SB-S-BATH1",
         # Closed below the vanity counter (2026-09-28): five boards over the 48 3/4" open
         # section, the lowest flush with the counter. Depth is the spec's 29 1/4".
         host="FURN-S-BATH1-SHELF",
-        material_ref="oak-shelf-4q",
+        material_ref="locust-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
         bays=(ShelfBay(width=inch(18.5), clear_height=inch(48.75), shelf_count=5),),
     ),
-    # The suite bath's alcove shelf, open to the west (2026-10-03): SB-S-BATH1's oak and
+    # The suite bath's alcove shelf, open to the west (2026-10-03): SB-S-BATH1's locust and
     # 3/4" stock, eight boards in a 9 3/4" bay. `depth` is left to the host's spec, as there.
     ShelfBank(
         uid="FE3PYXZY53", tag="SB-S-SUITEBATH",
         host="FURN-S-SUITEBATH-RETURN",
-        material_ref="oak-shelf-4q",
+        material_ref="locust-shelf-4q",
         thickness=inch(0.75),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,

@@ -44,32 +44,37 @@ stress and still a deflection failure. Plywood never worked at any depth this ro
 Published guidance caps 3/4" birch ply shelving at 36"–42" even at ordinary *storage*
 loads, and says to derate 30–50% for a point load.
 
-## What is built instead: 1 1/2" solid white oak
+## What is built instead: 1 1/4" solid red oak
 
-Owner stock, scheduled as `SB-M-PANTRY` in `plan/millwork.py` and milled 8/4. Same
-arithmetic, `b` = 18", `d` = 1.5", E ~ 1.6 x 10^6 psi:
+Owner stock, scheduled as `SB-M-PANTRY` in `plan/millwork.py` and milled **6/4** (8/4 at
+1 1/2" until 2026-10-16, when the pile turned out to be red oak and the thickness was cut
+back to the thinnest that still passes). Red oak's E is ~1.8 x 10^6 psi and its MOR is
+comparable to white oak's, so the conservative 1.6 x 10^6 psi stands. `b` = 18", `d` = 1.25":
 
 | | full 73 1/4" span | gabled to ~36 1/4" |
 |---|---|---|
-| `S = b*d^2/6` | 6.75 in^3 | 6.75 in^3 |
-| `I = b*d^3/12` | 5.06 in^4 | 5.06 in^4 |
+| `S = b*d^2/6` | 4.69 in^3 | 4.69 in^3 |
+| `I = b*d^3/12` | 2.93 in^4 | 2.93 in^4 |
 | `M = P*L/4` | 4,578 in-lb | 2,266 in-lb |
-| `f = M/S` | **≈ 678 psi** | **≈ 336 psi** |
-| `d = P*L^3/(48*E*I)` | **≈ 0.253"** | **≈ 0.031"** |
+| `f = M/S` | **≈ 977 psi** | **≈ 483 psi** |
+| `d = P*L^3/(48*E*I)` | **≈ 0.437"** | **≈ 0.053"** |
+| L/360 | 0.203" | 0.101" |
 
-**Strength is no longer the argument, and the gable stays anyway.** 678 psi is well inside
-any grade of white oak. But this shelf is graded as a *floor* (see *Design load* below), so
-the deflection criterion is **L/360 = 0.203"**, and the ungabled span misses it at 0.253".
-Uniform load lands in the same place: 40 psf over 18" x 73 1/4" is w = 5.0 lb/in and
-`5wL^4/384EI` ≈ 0.231". Both cases sit on or past the limit unsupported and nowhere near
-it gabled. (Recomputed for the final 73 1/4-inch span.)
+**The gable is the whole design now.** Gabled, the point load deflects 0.053" against the
+floor criterion's 0.101" (about L/685), and 483 psi is far inside any grade of red oak.
+Ungabled the same shelf deflects **0.44"**, more than twice L/360: it fails badly. Uniform
+load agrees: 40 psf over 18" is w = 5.0 lb/in, and `5wL^4/384EI` is ≈ 0.400" full-span and
+≈ 0.024" gabled.
+
+**Why not 5/4.** At 1" (`I` = 1.50 in^4) the gabled point load deflects ≈ 0.103" against
+0.101": it just misses, so 6/4 is the floor. 8/4 bought nothing a gabled shelf needs.
 
 ## What makes it standable
 
 ### 1. A full-height centre gable at mid-span — NOT OPTIONAL
 
 A 3/4" ply gable, floor to top shelf, notched around the cleats, splitting the run into two
-~36 1/4" bays. It is what takes the shelf from L/290 to L/1184, and it is the member the
+~36 1/4" bays. It is what takes the shelf from ~L/170 to ~L/685, and it is the member the
 cleat and blocking layout is built around. It is structure, not joinery, and it must not be
 "opened up" later for a wider shelf.
 
@@ -77,7 +82,7 @@ cleat and blocking layout is built around. It is structure, not joinery, and it 
 
 The ply design got a 3/4" x 2 1/2" hardwood edge glued and screwed on edge at every shelf
 front. It was a **stiffener**: it nearly tripled a ply shelf's effective I, and it was the
-cheapest way to take 0.20" of gabled sag out from underfoot. There is 0.031" to take out
+cheapest way to take 0.20" of gabled sag out from underfoot. There is 0.053" to take out
 now. Its second job — giving a plywood edge a hardwood face — is done by the shelf being
 hardwood. It is deleted, not deferred, and that closes a quantity gap: the nose was ~41 LF
 of hardwood that nothing in the model counted.
@@ -90,7 +95,7 @@ and never **shelf → pin**.
 **Not glued, and the side-cleat holes are slotted.** Boards run the 36 1/4" bay, so the
 grain is along the bay and the shelf's 18" of seasonal movement is **front to back** —
 along the side cleats, across their line of screws. That is roughly 1/4" of tangential
-movement in white oak over a Minnesota RH swing. Screw tight at the **front** only and
+movement in red oak over a Minnesota RH swing. Screw tight at the **front** only and
 elongate every side- and back-cleat hole rearward. A solid shelf pinned hard on three sides
 splits, and it splits in year two, not on the day it goes in. This is the one detail the
 switch from plywood introduced and the one most likely to be built the old way.
@@ -129,12 +134,11 @@ Drawn at 16", changed to **24"** at the owner's direction, and settled at **18"*
 move is the one worth explaining, because it looks like a retreat from the 24" decision and
 is not:
 
-- **18" is the widest shelf that comes off ONE board.** The owner's white oak runs to 18"
-  wide. A finished face needs about 3/4" more than that in the rough — one edge
-  straight-lined, the other jointed — so 18" finished asks for an 18 3/4" board and is the
-  edge of the supply; `haus millwork` flags it, and the flag means *hand-pick the widest
-  boards in the stack*, not *glue it up*. At 24" every shelf was a two-board edge glue-up
-  outright.
+- **18" is the edge of the supply.** The owner's red oak runs to 18" wide. A finished face
+  needs about 3/4" more than that in the rough — one edge straight-lined, the other jointed
+  — so 18" finished asks for an 18 3/4" board; `haus millwork` lays it up as two 9" boards,
+  which is how a solid 18" shelf is normally made anyway. At 24" every shelf was a glue-up
+  of two wider, scarcer boards.
 - **The published guidance was against 24" the whole time.** 16" is the usual practical
   maximum for a reach-in (14" is better) and 20"+ is normally called too deep to see into.
   The depth that made the stock work is also the depth that makes the pantry work, which is

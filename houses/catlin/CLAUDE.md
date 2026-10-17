@@ -605,8 +605,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `D-M-MUDC` needs one level field. The exterior `D-M-ENTRY` has a separate flashed
     weather sill; see `notes/floor_heights.md`.
   - **`W-M-STRW`'s mudroom face is open bays to 7'-0"** (2026-10-14): three flat
-    `white-oak-8-4` courses (bench support 15"-16 1/2", a 6' shelf, the 7' cap under the
-    gypsum) and `FURN-M-STRW-BENCH`, a notched oak 2x10 seated on the support course, 3 3/4"
+    `oak-8q` red-oak courses (bench support 15"-16 1/2", a 6' shelf, the 7' cap under the
+    gypsum) and `FURN-M-STRW-BENCH`, a notched red-oak 2x10 seated on the support course, 3 3/4"
     proud. Its sole plate is KDAT (`FramingSpec.sole_plate_material_ref`): boots drip on it,
     and LVP butts it, because R602.3.4 keeps a nominal 2x plate on a bearing wall. No device
     may go on that face below 7'; the mudroom switches are a 3-gang plate on `W-M-MECH-S`
@@ -2733,9 +2733,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Living east banks (2026-10-16):** south y=6 5/8–65 1/4: 4 1/8 filler, B18, B36 centred
   1 1/4 south of E1, end panel to the brick. North y=110 3/4–271 1/4: end panel, B36 1 1/4
   north of E2, three B36, B15, 1 filler, then the 1/8 sealed joint toS2. B36s are 594.631.16
-  (paired 18-inch VOXTORP doors and shelves). Slabs are 2 white ash (`ash-counter-12q`, to
-  match the table); stools on E1/E2/DINING-E are black cherry (`cherry-stool-12q`). Total
+  (paired 18-inch VOXTORP doors and shelves). Slabs are 1 1/4 white ash two-board glue-ups
+  (`ash-counter-6q`, boards to ~11", to match the table); stools on E1/E2/DINING-E are
+  1 1/4 ash (`ash-stool-6q`, quarter or rift, urethane), flush with the slab. Total
   installed height36.
+- **The owner's oak is RED oak (2026-10-16):** the `oak-*` tags keep their names, with
+  `species="red-oak"` and one finish (A/B bleach, Bona NordicSeal, waterborne topcoat).
+  Nothing wet gets it: stools are 5/4 at 1", bought white oak by default, with
+  `plan/window_stools.py` naming locust (wet rooms), ash (the living room), cherry (the
+  suite), red oak (two circulation windows) and cedar (the sauna); the tub-end shelves are
+  locust. A `Material.max_board_width_in` caps one species' boards (ash 11", locust 7").
+  Supply against demand: `notes/wood_supply.md`.
 - **Elm slat partition (2026-10-16):** `FURN-M-LIV-SLAT-COUNTER`/`-FULL` at y=13'-0", over the
   LVP/coated-concrete joint, 60 1/2 west from the gwb: 16 1/2 on the counter (6 slats), 44 on
   the floor (16 slats), 1 1/2 x 2 1/2 American elm on a 2 3/4 pitch, cleats top and bottom
@@ -2746,7 +2754,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   pantry nominal front. The remaining25 of cabinet backs are painted and edge-banded.
   Stools x=315 1/8,339 5/8,364 1/8 at their previous y. Preserve Rev-A-Shelf5374-24FL.
 - **Support height:**3 1/2, normal stock stacks finish103 1/2. Kitchen quartz at36
-  uses approximately1 5/16 substrate; living ash uses1/2 subtop and2 slab. Follow
+  uses approximately1 5/16 substrate; living ash is a 1 1/4 slab over a 1 1/4 subtop. Follow
   published frame/rail/front measurements for shop cuts, not nominal module depths.
 - **Finish pieces and supports are detailed and priced.** Deleted custom east pantry tops,
   custom garage upper and kitchen filler must not re-enter quantities (the living north

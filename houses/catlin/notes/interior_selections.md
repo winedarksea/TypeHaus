@@ -44,8 +44,9 @@ those into structured data the schedules, the 3D sidebar and the estimate can re
 
 The owner's criteria, in priority order and used that way throughout: **easy to clean**,
 then cost-effective ("good value, not cheap"), then popular / minimalist / "just works and
-just looks decent." Palette is white + black + white oak milled off family land in southern
-Minnesota. Metal finish is **brushed/satin nickel or stainless — matte black was explicitly
+just looks decent." Palette is white + black + oak milled off family land in southern
+Minnesota (red oak, bleached and sealed to a pale Nordic tone, since 2026-10-16: the pile was
+never white oak). Metal finish is **brushed/satin nickel or stainless — matte black was explicitly
 rejected on cleanability.** Mid tier with a few deliberate splurges.
 
 ## The five things this pass found that were wrong, not merely unspecified
@@ -146,7 +147,7 @@ $3–6k of ocean and drayage; **EU carcasses are 600 mm deep and 870 mm high** a
 and 34.5", and a 24" US dishwasher opening is not a 600 mm EU opening; no warranty recourse
 across an ocean; Nobilia is German rather than Polish and sells dealer-based semi-custom
 here, so there is no arbitrage; and the whole reason to import is a wood front at a low
-price, which **$2/sf white oak in 4/4 and 8/4 up to 18" wide beats outright, duty-free, with
+price, which **$2/sf owner oak (red oak, it turned out) in 4/4 and 8/4 up to 18" wide beats outright, duty-free, with
 no lead time.** If you want European engineering, buy the *hardware* — Blum/Hettich ship
 duty-cheap and are the part Europe is genuinely best at — and put it in domestic boxes.
 
@@ -195,7 +196,7 @@ Most of the choices in this pass fall out of four rules rather than out of taste
 
 **3000 K, fixed, house-wide.** The dining fixture was 2700 K and the kitchen cans 3000 K in
 an open plan where you see both at once, which reads as a defect rather than as warmth. 2700 K
-also pushes white paint yellow and makes white oak read orange, which is precisely this
+also pushes white paint yellow and makes oak read orange, which is precisely this
 palette's failure mode. **No install-time selectable modules:** a 5CCT DIP switch gets set
 wrong constantly, one can at 4000 K in a run of eight is a screaming defect, and a dedicated
 phosphor gives better R9 than a warm/cool blend. Since 2026-10-12 a **user-adjustable**

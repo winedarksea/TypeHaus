@@ -76,10 +76,11 @@ def test_each_east_stool_meets_the_continuous_counter(catlin_model_ro):
     for tag in EAST_WINDOWS:
         stool = stools[tag]
         assert not stool.derived
-        # 2" black cherry meeting the ash slab's back edge.
-        assert stool.material_ref == "cherry-stool-12q"
-        assert counter.material_ref == "ash-counter-12q"
-        assert stool.thickness_m == pytest.approx(2 * INCH)
+        # 1 1/4" ash meeting the 1 1/4" ash slab's back edge in one plane.
+        assert stool.material_ref == "ash-stool-6q"
+        assert counter.material_ref == "ash-counter-6q"
+        assert stool.thickness_m == pytest.approx(1.25 * INCH)
+        assert counter.thickness_m == pytest.approx(1.25 * INCH)
         assert stool.overhang_m == stool.horn_m == 0
         prism = window_stool_prism(model.wall(stool.wall_tag), openings[tag], stool)
         assert prism is not None

@@ -62,7 +62,7 @@ def _liner_net_ft2(catlin_model, wall, material_ref="catlin-sauna-shiplap") -> f
 # --- the sauna liner and its tile splash ---------------------------------------------------
 
 def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
-    """The combined basswood order covers the walls, less tile, and the ceiling."""
+    """The basswood order covers the walls, less tile; the ceiling is willow (below)."""
     rows = bom["wood_surfaces"]
     basswood = next(row for row in rows if row["material"] == "catlin-sauna-shiplap")
     liner_walls = [w for w in catlin_model.walls
@@ -95,8 +95,11 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
                  and p.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
     assert splash == pytest.approx(2 * 3.0 * 7.5, rel=1e-3)  # two 3' bands x 7'-6"
     sauna = next(room for room in catlin_model.rooms if room.tag == "RM-B-SAUNA")
-    assert float(basswood["net_area_sqft"]) == pytest.approx(
-        gross - splash + sauna.area_m2 * _M2_TO_FT2, abs=0.05)
+    assert float(basswood["net_area_sqft"]) == pytest.approx(gross - splash, abs=0.05)
+    willow = next(row for row in rows if row["material"] == "catlin-sauna-ceiling-shiplap")
+    assert float(willow["net_area_sqft"]) == pytest.approx(
+        sauna.area_m2 * _M2_TO_FT2, abs=0.05)
+    assert willow["species"] == "willow"
     assert basswood["species"] == "basswood"
     assert basswood["also_in_envelope_layers"] is True
     # 4/4 shiplap (5/4 until 2026-10-16): 1.1 bf per ordered square foot — 4/4 thickness x
@@ -162,34 +165,34 @@ def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):
         gross, abs=0.1)
 
 
-def test_sauna_ceiling_basswood_is_priced_and_on_the_mill_order(catlin_model, bom):
+def test_sauna_ceiling_willow_is_priced_and_on_the_mill_order(catlin_model, bom):
+    """Since 2026-10-16 the ceiling is its own material (willow), so walls and ceiling are
+    two mill rows and two priced rows; until then they were one basswood order."""
+    ceiling_ref = "catlin-sauna-ceiling-shiplap"
     sauna = next(room for room in catlin_model.rooms if room.tag == "RM-B-SAUNA")
     expected_area = sauna.area_m2 * _M2_TO_FT2
     priced = next(row for row in bom["envelope_layers"]
                   if row["scope"] == "ceiling"
                   and row["function"] == LayerFunction.FINISH.value
-                  and row["material"] == "catlin-sauna-shiplap")
+                  and row["material"] == ceiling_ref)
     assert float(priced["net_area_sqft"]) == pytest.approx(expected_area, abs=0.05)
-    assert cost_code("envelope_layers", "catlin-sauna-shiplap", row=priced).trade == "millwork"
+    assert cost_code("envelope_layers", ceiling_ref, row=priced).trade == "millwork"
 
-    surfaces = [row for row in bom["wood_surfaces"]
-                if row["material"] == "catlin-sauna-shiplap"]
-    assert len(surfaces) == 1
-    [surface] = surfaces
-    assert surface["kind"] == "wall-and-ceiling-assembly-finish"
-    assert "RM-B-SAUNA" in surface["tags"]
-    assert "W-B-CS" in surface["tags"]
-    assert surface["also_in_envelope_layers"] is True
+    surfaces = {row["material"]: row for row in bom["wood_surfaces"]
+                if row["material"] in (ceiling_ref, "catlin-sauna-shiplap")}
+    assert "RM-B-SAUNA" in surfaces[ceiling_ref]["tags"]
+    assert "W-B-CS" in surfaces["catlin-sauna-shiplap"]["tags"]
+    assert all(row["also_in_envelope_layers"] for row in surfaces.values())
 
-    mill_rows = [row for row in hardwood_takeoff(catlin_model)
-                 if row["material"] == "catlin-sauna-shiplap"]
-    assert len(mill_rows) == 1
-    [mill_row] = mill_rows
-    assert mill_row["use"] == "wall and ceiling liner"
-    assert mill_row["tags"] == surface["tags"]
-    assert mill_row["coverage_sqft"] == surface["order_area_sqft"]
-    assert mill_row["rough_board_feet"] == surface["board_feet"]
-    assert mill_row["also_in_envelope_layers"] is True
+    mill = {row["material"]: row for row in hardwood_takeoff(catlin_model)
+            if row["material"] in surfaces}
+    assert mill[ceiling_ref]["use"] == "ceiling liner"
+    assert mill["catlin-sauna-shiplap"]["use"] == "wall liner"
+    for ref, mill_row in mill.items():
+        assert mill_row["tags"] == surfaces[ref]["tags"]
+        assert mill_row["coverage_sqft"] == surfaces[ref]["order_area_sqft"]
+        assert mill_row["rough_board_feet"] == surfaces[ref]["board_feet"]
+        assert mill_row["also_in_envelope_layers"] is True
 
 
 # --- the walnut wainscot -------------------------------------------------------------------

@@ -5,7 +5,7 @@
 #
 # All on W-M-E1, rotation -90 (back on the gwb at x=35'-5 3/8"). 15"-deep SEKTION frames,
 # 15 1/2" with fronts, so fronts at x=34'-1 7/8". The kitchen's 3 1/2" leg + 30" frame +
-# 1/2" sub-top + 2" ash slab = 36", one toe-kick line down the whole wall.
+# 1 1/4" sub-top (3/4" + 1/2" ply) + 1 1/4" ash slab = 36", one toe-kick line down the wall.
 #
 # ** RE-BANKED ROUND THE BRICK AT y=88" (2026-10-16). ** The fireplace and E1/E2 moved 16"
 # south; each window's B36 centres 1 1/4" off it, away from the brick. Joints are 0":
@@ -17,7 +17,8 @@
 # Stools: E1, E2 and WIN-M-DINING-E share a 2'-10" sill so the frame rail, and so the stool
 # top, meets the slab top (36 15/16" above the storey datum; the rail lands 1/64" proud).
 # overhang=0 and horn=0, so each stool meets the slab's back edge in one plane.
-# Black cherry, 2" off 12/4 (cherry-stool-12q).
+# White ash, 1 1/4" off 6/4 (ash-stool-6q), quarter or rift, urethane: the slab's own
+# thickness and species, so stool and counter read as one board. Black cherry at 2" before.
 #
 # ** THE ELM SLAT PARTITION (2026-10-16, Oksana's request). ** Floor to ceiling at y=13'-0",
 # over the flush LVP/coated-concrete joint, running 60 1/2" west from the gwb: a 16 1/2"
@@ -62,12 +63,12 @@ LIVING_EAST_RUN = [
 
 LIVING_EAST_STOOLS = [
     WindowStool(uid="Y9025C8NTZ", tag="STOOL-WIN-M-LIV-E1", window_ref="WIN-M-LIV-E1",
-                material_ref="cherry-stool-12q", thickness=inch(2),
+                material_ref="ash-stool-6q", thickness=inch(1.25),
                 overhang=inch(0), horn=inch(0), profile="eased"),
     WindowStool(uid="7TK2C8BGBM", tag="STOOL-WIN-M-LIV-E2", window_ref="WIN-M-LIV-E2",
-                material_ref="cherry-stool-12q", thickness=inch(2),
+                material_ref="ash-stool-6q", thickness=inch(1.25),
                 overhang=inch(0), horn=inch(0), profile="eased"),
     WindowStool(uid="7209APS8G4", tag="STOOL-WIN-M-DINING-E", window_ref="WIN-M-DINING-E",
-                material_ref="cherry-stool-12q", thickness=inch(2),
+                material_ref="ash-stool-6q", thickness=inch(1.25),
                 overhang=inch(0), horn=inch(0), profile="eased"),
 ]

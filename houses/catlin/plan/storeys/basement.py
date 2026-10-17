@@ -1332,14 +1332,15 @@ ROOMS = [
     # tile bed. `integrity.concrete_finish_needs_concrete_deck` is satisfied by SL-B-FLOOR.
     # The tile that remains in this room is WP-B-SAUNA-SPLASH, the pan's two closed wall
     # sides; see the PANELING note below.
-    # Ceiling: the same T&G-over-foil-polyiso liner as the walls (assemblies.py's
+    # Ceiling: the same shiplap-over-foil-polyiso liner as the walls (assemblies.py's
     # `_SAUNA_LINER`), restated rather than imported — the editable dialect cannot import
-    # a sibling plan module. Keep the two in step by hand.
+    # a sibling plan module. Keep the two in step by hand. The ceiling's boards are WILLOW
+    # (`catlin-sauna-ceiling-shiplap`, 2026-10-16): the one surface nobody touches.
     Room(uid="CBR403AAAA", tag="RM-B-SAUNA", seed=pt(ft(11), ft(5)),
          occupancy=Occupancy.BATHROOM, humidity_class=HumidityClass.WET,
          floor_finish="sealed-concrete",
          ceiling_lining=(
-             Layer(name="shiplap-liner", material_ref="catlin-sauna-shiplap", thickness=inch(0.75),
+             Layer(name="shiplap-liner", material_ref="catlin-sauna-ceiling-shiplap", thickness=inch(0.75),
                    function=LayerFunction.FINISH),
              Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
                    function=LayerFunction.FURRING,

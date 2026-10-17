@@ -67,16 +67,18 @@ MAIN_COUNTERTOPS = [
         cantilever_length=inch(73.5),
         support="brackets",
     ),
-    # The living room's two ash slabs (plan/living_east_run.py), 2" over a 1/2" sub-top,
-    # 16 1/2" deep: 1" over the fronts, a straight eased edge. Ash since 2026-10-16, to match
-    # the dining table. The south slab covers its 4 1/8" wall filler; the north ends at the
-    # pantry across a 1/8" sealed joint. The cherry window stools meet the back edge.
+    # The living room's two ash slabs (plan/living_east_run.py), 1 1/4" over a 1 1/4" sub-top
+    # (3/4" + 1/2" ply), 16 1/2" deep: 1" over the fronts, a straight eased edge. Ash since
+    # 2026-10-16, to match the dining table; 6/4, and each a two-board glue-up. The slab top
+    # derives from the host top, so the 36" line did not move when it thinned from 2". The
+    # south slab covers its 4 1/8" wall filler; the north ends at the pantry across a 1/8"
+    # sealed joint. The ash window stools meet the back edge in one plane.
     Countertop(
         uid="N3E070DD41", tag="CT-M-LIV-E-S",
         hosts=("FURN-M-LIV-E-END-S", "FURN-M-LIV-E-B36-E1", "FURN-M-LIV-E-B18-S",
                "FURN-M-LIV-E-FILLER-S"),
-        material_ref="ash-counter-12q",
-        thickness=inch(2),
+        material_ref="ash-counter-6q",
+        thickness=inch(1.25),
         overhang=inch(1),
         length=inch(58.625),
         profile="eased",
@@ -86,8 +88,8 @@ MAIN_COUNTERTOPS = [
         hosts=("FURN-M-LIV-E-END-N", "FURN-M-LIV-E-B36-E2", "FURN-M-LIV-E-B36-E3",
                "FURN-M-LIV-E-B36-MID", "FURN-M-LIV-E-B36-PANTRY", "FURN-M-LIV-E-B15-N",
                "FURN-M-LIV-E-FILLER-N"),
-        material_ref="ash-counter-12q",
-        thickness=inch(2),
+        material_ref="ash-counter-6q",
+        thickness=inch(1.25),
         overhang=inch(1),
         length=inch(160.625),
         profile="eased",

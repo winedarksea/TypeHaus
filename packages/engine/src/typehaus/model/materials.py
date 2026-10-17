@@ -231,6 +231,10 @@ class Material(HausModel):
     # no plane of its own; readers must treat a coating as 0.0 without needing a number
     # here.
     finish_thickness_in: float | None = None
+    # The widest board this stock comes in, in inches: an owner-supply fact about one
+    # species' logs. ``takeoff/hardwood.py`` reads it ahead of
+    # ``MillworkStandard.max_board_width`` for the layup column. ``None`` is the standard's.
+    max_board_width_in: float | None = None
     # Extra materials ordered over the same floor area. The installed height above already
     # includes these layers; this tuple exists only for the priced takeoff.
     floor_companion_refs: tuple[str, ...] = ()

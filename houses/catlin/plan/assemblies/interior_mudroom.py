@@ -48,7 +48,7 @@ INT_2X6_BRG_MUDROOM_UPPER_GWB = Assembly(
                           blocking_heights=(inch(_BENCH_COURSE_ABOVE_SOLE_PLATE_IN),
                                             inch(_SHELF_COURSE_ABOVE_SOLE_PLATE_IN),
                                             inch(_CAP_COURSE_ABOVE_SOLE_PLATE_IN)),
-                          blocking_material_ref="white-oak-8-4",
+                          blocking_material_ref="oak-8q",
                           # Boots drip snowmelt on the plate exposed in every bay.
                           sole_plate_material_ref="kdat")),
             ),
@@ -64,5 +64,5 @@ INT_2X6_BRG_MUDROOM_UPPER_GWB = Assembly(
             ),
         ),
     ),
-    source="W-M-STRW mudroom coat nooks: exposed Douglas-fir Select Structural studs, open bays to 7 ft; 1/2 in. painted gypsum from 7 ft to the 9 ft ceiling. Three flat white-oak 8/4 courses dressed to 1 1/2 in. span each bay: the bench support course (top at 16 1/2 in.), the 6 ft shelf (top at 72 in.) and the 7 ft cap (underside at 84 in., closing the stud depth behind the gypsum's lower edge). The sole plate is KDAT southern pine, fastened with HDG or stainless (IRC R317.3), because boots drip snowmelt onto it; LVP butts the plate rather than running flush, since a bearing wall keeps a nominal 2x bottom plate (IRC R602.3.4).",
+    source="W-M-STRW mudroom coat nooks: exposed Douglas-fir Select Structural studs, open bays to 7 ft; 1/2 in. painted gypsum from 7 ft to the 9 ft ceiling. Three flat red-oak 8/4 courses dressed to 1 1/2 in. span each bay: the bench support course (top at 16 1/2 in.), the 6 ft shelf (top at 72 in.) and the 7 ft cap (underside at 84 in., closing the stud depth behind the gypsum's lower edge). The sole plate is KDAT southern pine, fastened with HDG or stainless (IRC R317.3), because boots drip snowmelt onto it; LVP butts the plate rather than running flush, since a bearing wall keeps a nominal 2x bottom plate (IRC R602.3.4).",
 )
