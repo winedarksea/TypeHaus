@@ -243,14 +243,16 @@ def test_a_shelf_inside_the_board_width_stays_one_board(rows, supply):
 
 
 def test_a_shelf_deeper_than_it_is_wide_is_milled_front_to_back(rows):
-    """RM-S-BATH1's alcove is 18-1/2" wide in a 30"-deep carcass (29-1/4" of shelf inside
-    its back) — the one shelf in the house whose depth is its LONGER plan dimension. Grain
-    runs the long way, so the board's width is 18-1/2" and the layup is two boards."""
-    bath = next(row for row in _use(rows, "shelf") if "SB-S-BATH1" in row["tags"])
-    assert bath["finished_width_in"] == pytest.approx(18.5)
-    assert bath["finished_length_in"] == pytest.approx(29.25)
-    # And the rule is derived, not authored for this one case: every shelf in the house
-    # has its width on the shorter of the two plan dimensions.
+    """Grain runs the longer plan dimension, so a board's width is the shorter one.
+
+    RM-S-BATH1's 18-1/2" x 29-1/4" alcove shelf was the case that proved it; since
+    2026-10-18 it is bought plywood behind a locust nosing, so it leaves the mill and only
+    its one-board nosings stay. The rule still holds for every shelf that remains."""
+    assert not any("SB-S-BATH1" in row["tags"] for row in _use(rows, "shelf"))
+    nosing = next(row for row in _use(rows, "furniture")
+                  if row["location"] == "shelf nosing" and row["material"] == "locust-shelf-4q"
+                  and row["finished_length_in"] == pytest.approx(18.5))
+    assert nosing["layup"] == "one board"
     for row in _use(rows, "shelf"):
         assert row["finished_width_in"] <= row["finished_length_in"]
 

@@ -4,7 +4,7 @@
 # The owner has red oak off family land in southern Minnesota (it was taken for white oak
 # until 2026-10-16), effectively unlimited, in 4/4 to 8/4, with boards commonly 12"+ wide and
 # some to 18". Its pores are open, so it does only dry interior work: wet-room stools and the
-# bath shelves are locust, and the stools are mostly bought white oak. That supply wins
+# bath shelves are nosed in locust, and the stools are mostly bought white oak. That supply wins
 # on WIDTH and FLATNESS and loses on PROFILE: a one-piece stool, shelf or tread is worth
 # milling, and a knife grind plus a molder setup cannot amortise over one house. Base and
 # casing sidestep that by having no profile at all — plain S4S, butt-jointed — which is
@@ -435,47 +435,39 @@ BASEMENT_SHELVES = [
     ),
 ]
 
-# --- the bath 1 alcove shelf, FT-BATH1-SHELF-2030 --------------------------------------
+# --- the tub-end alcove shelves, FT-BATH1-SHELF-2030 and FT-SUITEBATH-SHELF-1130 --------
 #
-# 4/4 like the bookcases, and for the same reason. Its DEPTH is the one surprise: the
-# carcass is scribed to the tub alcove and is 30" deep to match the tub, not 20" — the
-# footprint reads (20" wide, 30" deep), so this is the one shelf in the house that is
-# DEEPER THAN IT IS WIDE. The boards therefore run FRONT TO BACK: grain along the 29 1/4"
-# (30" less the 3/4" back), a glue-up 18 1/2" wide rather than a 30" panel.
-# `takeoff/hardwood.py` derives that orientation rather than taking it on faith — it mills
-# every shelf with the grain on the longer plan dimension — so nothing here authors it. In
-# locust, whose boards run to ~7", it lays up as a three-board panel, and that is a fact
-# worth seeing on the schedule rather than at the mill.
+# Both carcasses are 30" deep to match the tub. 29" deep shelves in locust (boards to ~7")
+# meant 13 glue-ups, so since 2026-10-18 (owner) the shelves are bought sheet:
+# `maple-ply-prefin-34` behind a 3/4" solid locust nosing, billed at the spec's 29 1/4" (the
+# shop rips the nosing's 3/4" off). The nosings and the carcass face strips are the only
+# locust; they bill as the furniture types' `cut_list`.
 #
-# ** WET-ROOM SPEC, FOR THIS SHELF AND SB-S-SUITEBATH ** (owner, 2026-10-16). Both stand at
-# a tub's end, and the house oak is RED oak, whose open pores take water. So: black locust
-# heartwood only, no sapwood (`locust-shelf-4q`, boards to ~7", so every shelf is a
-# glue-up); Type III PVA; a wet-area film finish (catalysed or waterborne poly, not oil
-# alone) on all six faces, end grain included, before install; stainless fasteners only;
-# no board end on the tub deck or the shower's wet line. Recoat when the film wears.
-# ** THIS NEEDS THE OWNER'S EXTRA 2-3 LOCUST LOGS. ** Without them, swap both refs to
-# `cherry-shelf-4q`, then to bought white oak 4/4: one line each.
+# ** WET-ROOM SPEC ** (owner, 2026-10-16). Plywood: veneer core, every cut edge sealed with
+# a wet-area poly before install. Locust: heartwood only, the same film on all six faces,
+# end grain included. Stainless pins and fasteners; recoat when the film wears.
 SECOND_SHELVES = [
     ShelfBank(
         uid="JBAEDPFV5Q", tag="SB-S-BATH1",
         # Closed below the vanity counter (2026-09-28): five boards over the 48 3/4" open
-        # section, the lowest flush with the counter. Depth is the spec's 29 1/4".
+        # section, the lowest flush with the counter.
         host="FURN-S-BATH1-SHELF",
-        material_ref="locust-shelf-4q",
+        material_ref="maple-ply-prefin-34",
         thickness=inch(0.75),
         profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
+        procurement=ShelfProcurement.PURCHASED_SEPARATELY,
         bays=(ShelfBay(width=inch(18.5), clear_height=inch(48.75), shelf_count=5),),
     ),
-    # The suite bath's alcove shelf, open to the west (2026-10-03): SB-S-BATH1's locust and
-    # 3/4" stock, eight boards in a 9 3/4" bay. `depth` is left to the host's spec, as there.
+    # The suite bath's alcove shelf, open to the west (2026-10-03): eight boards in a
+    # 9 3/4" bay, the same stock and nosing as SB-S-BATH1.
     ShelfBank(
         uid="FE3PYXZY53", tag="SB-S-SUITEBATH",
         host="FURN-S-SUITEBATH-RETURN",
-        material_ref="locust-shelf-4q",
+        material_ref="maple-ply-prefin-34",
         thickness=inch(0.75),
         profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
+        procurement=ShelfProcurement.PURCHASED_SEPARATELY,
         bays=(ShelfBay(width=inch(9.75), clear_height=inch(84), shelf_count=8),),
     ),
 ]
+

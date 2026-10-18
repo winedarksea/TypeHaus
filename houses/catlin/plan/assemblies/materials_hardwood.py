@@ -99,17 +99,22 @@ MATERIALS_HARDWOOD = [
              color="#d6c9b3", finish="oak-board", species="red-oak",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Red oak, 4/4 dressed to 3/4\": the bought theatre bookcases' shelf record. A/B bleach, Bona NordicSeal, waterborne topcoat."),
-    # The tub-end shelves (SB-S-BATH1, SB-S-SUITEBATH). Needs the owner's extra 2-3 locust
-    # logs; the fallbacks are `cherry-shelf-4q`, then bought white oak 4/4, one line each.
+    # The tub-end cases' exposed edges (FT-BATH1-SHELF-2030, FT-SUITEBATH-SHELF-1130): shelf
+    # nosings and face strips, a few bf. Fallbacks: `cherry-shelf-4q`, then bought white oak.
     Material(tag="locust-shelf-4q", name="Black locust shelving, 4/4 S4S", hatch="lumber",
              color="#b9aa68", finish="oak-board", species="locust",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              max_board_width_in=7.0,
-             source="Owner-milled black locust heartwood only, no sapwood, 4/4 dressed to 3/4\". Glue-ups in Type III PVA; a wet-area film (catalysed or waterborne poly) on all six faces, end grain included, before install; stainless fasteners."),
+             source="Owner-milled black locust heartwood only, no sapwood, 4/4 dressed to 3/4\". A wet-area film (catalysed or waterborne poly) on all six faces, end grain included, before install; stainless fasteners."),
+    # The tub-end shelves themselves (2026-10-18): bought sheet, not glue-ups. Veneer core
+    # because an MDF or particleboard core swells at a cut edge beside a tub.
+    Material(tag="maple-ply-prefin-34", name='Prefinished maple plywood, 3/4" veneer core',
+             hatch="lumber", color="#e3d3b4",
+             source="Bought sheet, e.g. Columbia PureBond prefinished maple or equal: 23/32\", veneer core, A-1 face, HPVA Type II glue, UV-cured clear both faces. Seal every cut edge with the wet-area poly before install; the locust nosing covers the front edge; stainless pins."),
     Material(tag="cherry-shelf-4q", name="Black cherry shelving, 4/4 S4S", hatch="lumber",
              color="#b77d60", finish="oak-board", species="cherry",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
-             source="The bath shelves' fallback if the extra locust logs do not come: milled black cherry, 4/4 dressed to 3/4\", film on all six faces, stainless fasteners."),
+             source="The bath shelf nosings' fallback if locust runs short: milled black cherry, 4/4 dressed to 3/4\", film on all six faces, stainless fasteners."),
     # --- stairs and trim -------------------------------------------------------------------
     Material(tag="oak-tread", name="Red oak stair tread, 5/4 bullnose", hatch="lumber",
              color="#d6c9b3", finish="oak-board", species="red-oak",

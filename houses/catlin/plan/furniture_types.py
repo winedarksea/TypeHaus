@@ -24,6 +24,7 @@ from typehaus.model import (
     BuiltInBookcaseBay,
     BuiltInBookcaseSpec,
     Footprint2D,
+    FurnitureCut,
     FurnitureType,
     Mount,
     MountKind,
@@ -142,7 +143,7 @@ PORCH_TRACK_102 = FurnitureType(
 # 0.12" in front of this case's whole open face, so nothing under the 36" counter line can be
 # reached. A fixed 3/4" plywood front panel (carcass, hidden behind the vanity end; no oak)
 # closes floor to 35 1/4"; the lowest open shelf's top is flush with the counter at 36", so
-# things slide across. Oak boards top at 36/48/60/72/84" — 11 1/4" clear each — and none
+# things slide across. Shelves top at 36/48/60/72/84" — 11 1/4" clear each — and none
 # stands in the closed base. SB-S-BATH1 bills those five.
 #
 # No ``clearances``: per the casework rule, a built-in's back is the wall and its ends are
@@ -159,13 +160,18 @@ BATH1_SHELF_2030 = FurnitureType(
         divider_thickness=inch(0.75), back_thickness=inch(0.75),
     ),
     wood_material_ref="locust-shelf-4q",
+    # Locust only where it shows (2026-10-18): one nosing per shelf, a strip per side.
+    cut_list=(FurnitureCut(part="shelf nosing", count=5, thickness=inch(0.75),
+                           width=inch(1.5), length=inch(18.5)),
+              FurnitureCut(part="face strip", count=2, thickness=inch(0.75),
+                           width=inch(1.5), length=inch(84))),
     source="Site-built millwork, not a catalogue bookcase: a 3/4\" plywood carcass scribed "
            "to the east end of RM-S-BATH1's tub alcove, whose WEST panel carries "
            "FX-S-BATH1-SH's east flange over a framed 2x4 and is what makes that insert a "
            "legitimate three-wall install. Depth matches the tub (30\"), height matches the "
            "surround head (84\"); the 7/8\" of slack at the east wall is taken as scribe. "
-           "Wet-room locust heartwood: Type III glue-ups, film finish on all six faces before install, "
-           "stainless pins and fasteners only.",
+           "Shelves are prefinished maple plywood (SB-S-BATH1); locust heartwood nosings and "
+           "face strips, film-finished on all six faces; stainless pins and fasteners only.",
 )
 
 
@@ -173,8 +179,8 @@ BATH1_SHELF_2030 = FurnitureType(
 # FX-S-SUITEBATH-TUBSH is a flanged insert with its SOUTH end open; this case's north
 # divider is that third side, over a framed 2x4 for the flange, and its back panel sits on
 # W-S-C2C. 11 1/4" wide is the leftover between the tub and W-S-SBS; 30" deep is the tub's
-# own width; 84" is the surround head. Open to the room, no closed base: eight locust boards
-# make seven openings of about 11".
+# own width; 84" is the surround head. Open to the room, no closed base: eight nosed plywood
+# boards make seven openings of about 11".
 SUITEBATH_SHELF_1130 = FurnitureType(
     tag="FT-SUITEBATH-SHELF-1130", name='Suite bath alcove shelf, 11 1/4" x 30"',
     footprint=(inch(11.25), inch(30)), height=inch(84),
@@ -186,11 +192,15 @@ SUITEBATH_SHELF_1130 = FurnitureType(
         divider_thickness=inch(0.75), back_thickness=inch(0.75),
     ),
     wood_material_ref="locust-shelf-4q",
+    cut_list=(FurnitureCut(part="shelf nosing", count=8, thickness=inch(0.75),
+                           width=inch(1.5), length=inch(9.75)),
+              FurnitureCut(part="face strip", count=2, thickness=inch(0.75),
+                           width=inch(1.5), length=inch(84))),
     source="Site-built millwork: a 3/4\" plywood carcass scribed into the south end of "
            "RM-S-SUITEBATH's tub alcove, open to the west. Its north divider carries "
            "FX-S-SUITEBATH-TUBSH's south flange over a framed 2x4. "
-           "Wet-room locust heartwood: Type III glue-ups, film finish on all six faces before install, "
-           "stainless pins and fasteners only.",
+           "Shelves are prefinished maple plywood (SB-S-SUITEBATH); locust heartwood nosings and "
+           "face strips, film-finished on all six faces; stainless pins and fasteners only.",
 )
 
 # RM-S-SUITEBATH's robe pegs, on W-S-DC2 north of the door leaf (2026-10-03). The closet
