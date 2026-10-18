@@ -27,19 +27,21 @@ the sauna.
 | cherry | unknown | — | — | ~246 (base 175, suite wainscot 65, suite stools 6) | confirm the stack |
 | white oak (bought) | — | — | — | ~48 (17 stools, 5/4) | order ~55 bf of 5/4, select widths of 11"+ |
 | cedar (owner) | "a little" | — | — | ~2 (the sauna stool) | clear heartwood, no knots |
-| basswood | 24", 17", 16" | ~304 | ~228 | ~315 (wall liner 257, deck slats 57) | see below |
-| aspen | 16", 12" | ~91 | ~68 | ~25 bearers + ~30 allowance (posts, stretchers, recliner, heater fence) + wall make-up | see below |
-| willow | 14.5" | ~48 | ~36 | ~79 (the ceiling liner) | aspen makes up the rest |
+| basswood | 24", 17", 16" | ~304 | ~228 | ~315 (wall liner 257, bench slats 57) | see below |
+| aspen | 16", 12" | ~91 | ~68 | ~79 (the ceiling liner) | see below |
+| willow | 14.5" | ~48 | ~36 | none since 2026-10-18 (was the ceiling) | not used in the sauna |
+| Douglas fir (bought) | — | — | — | ~25 bearers + ~30 allowance (legs, stretchers, recliner, heater fence) | bought KD 2x4/4x4; off `haus millwork` |
 | walnut (bought) | — | — | — | ~79 | bought, priced in `[placeables]` |
 
-## The sauna is about 100 bf short
+## The sauna is about 120 bf short
 
-Basswood, aspen and willow together: ~443 bf gross, ~332 usable, against ~471 of demand
-(liner 336, deck slats 57, bearers 25, the ~30 bf framing allowance, and a ~20 bf margin for
-picking the clearest slat stock). That is one more basswood or aspen log of about 18–20",
-which the owner says is available. Allocation by job puts the best wood where skin touches
-it: the clearest basswood (mostly off the 24" log) to the deck slats, the rest of the
-basswood and the aspen to the walls, the willow to the ceiling only.
+Since 2026-10-18 the frame is bought Douglas fir and the ceiling is aspen; willow is out.
+Basswood and aspen together: ~395 bf gross, ~296 usable, against ~414 of owner-stock demand
+(liner 336, bench slats 57, and a ~20 bf margin for picking the clearest slat stock). That
+is one more basswood or aspen log of about 24" (~169 gross, ~126 usable), or two of 18–20"
+(~63–82 usable each). Allocation by job puts the best wood where skin touches it: the
+clearest basswood (mostly off the 24" log) to the bench slats (clear aspen is equal), the
+aspen to the ceiling, the rest of the basswood and the new log to the walls.
 
 ## What to replace
 

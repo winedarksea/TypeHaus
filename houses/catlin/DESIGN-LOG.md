@@ -76,6 +76,10 @@ wet-room spec had leaned on white oak's closed ones.
 - **The sauna is cut from the owner's basswood, aspen and willow**: basswood deck slats and
   wall liner, aspen bearers, a willow ceiling. About 100 bf short after defects
   (`notes/wood_supply.md`).
+- **2026-10-18: the ceiling went to aspen and the bench frame to bought Douglas fir.** Willow
+  is weak and warp-prone, and aspen is a classic sauna board. The bearers are exactly a stock
+  2x4, and nothing touches the frame, so it is bought KD fir (pitch heat-set) and comes off
+  the mill order. Willow is out of the sauna. That leaves ~120 bf short of owner stock.
 
 ## Living room east wall rework (2026-10-16)
 

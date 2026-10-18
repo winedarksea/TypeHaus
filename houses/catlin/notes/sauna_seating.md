@@ -62,7 +62,7 @@ outstanding and cannot be replaced by the geometric model.
 
 ## Framing, service and heater installation
 
-Use unfinished owner basswood slats on aspen framing, eased edges, concealed suitable fasteners,
+Use unfinished owner basswood slats on bought kiln-dried Douglas fir framing, eased edges, concealed suitable fasteners,
 open posts and removable deck panels. Transverse bearers carry the long deck slats;
 Deck-panel joints land on transverse bearers so the drain-side section can lift.
 Connected stretchers carry the low perimeter lighting rails. Inclined side stringers
@@ -74,7 +74,8 @@ access sequence, including the final 18-inch rise, while the upper bench is occu
 ### Slat check (2026-10-16): 1" basswood on bearers at 24" o.c. or closer
 
 The touched surfaces are the owner's clearest basswood, 5/4 dressed to **1" x 3 1/2"**, at
-1/2" gaps; the bearers are owner aspen, 1 1/2" x 3 1/2". **Bearers at 24" o.c. or closer is
+1/2" gaps; the bearers are bought Douglas fir 2x4s, 1 1/2" x 3 1/2" (owner aspen until
+2026-10-18). **Bearers at 24" o.c. or closer is
 the rule** (the cut lists in `plan/sauna_types.py`: 5 / 5 / 4 / 2 bearers). Take one 250 lb
 adult as ~85 lb on each of three slats at midspan, L = 24":
 
@@ -88,7 +89,7 @@ adult as ~85 lb on each of three slats at midspan, L = 24":
 
 1" is thick enough to stay flat for decades without going to 6/4. Posts, stretchers, the
 recliner and the heater fence are not designed yet (coordination geometry, above), so they
-are carried as an aspen allowance in `notes/wood_supply.md`, not as cuts.
+are carried as a bought Douglas fir allowance in `notes/wood_supply.md`, not as cuts.
 
 The floor drain `FX-B-SAUNA-FD` lies under the lower foot platform. Removable deck panels
 must expose its grate, both condensate air-gap terminations and connections without cutting

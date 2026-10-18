@@ -1,5 +1,6 @@
 # haus: editable
-# Catlin assemblies — the owner-milled hardwood stock, plus the bought white-oak stools.
+# Catlin assemblies — the owner-milled hardwood stock, plus the bought white-oak stools
+# and the bought Douglas fir sauna bench frame.
 # Split out of materials.py 2026-10-16, when the oak pile turned out to be red oak.
 from typehaus import (
     Material,
@@ -30,22 +31,21 @@ MATERIALS_HARDWOOD = [
              source="Catlin owner-milled red oak floor. Two-part A/B bleach, Bona NordicSeal, then Bona Traffic HD (waterborne). Local rather than the factory library product so only this house enters the custom milling schedule."),
     # 4/4 dressed to 3/4" (2026-10-16, was 5/4 to 1"): Finnish panel is 1/2"-5/8", the foil
     # polyiso does the insulating, and less board is less heat store to warm. 1.0 x 1.1 bf/sf.
-    # The WALLS: basswood, made up with aspen. The ceiling is willow (below).
+    # The WALLS: basswood, made up from one more owner log. The ceiling is aspen (below).
     Material(tag="catlin-sauna-shiplap",
              name="Basswood/aspen shiplap sauna liner (4/4), site-milled",
              r_per_inch=1.3, perm_rating=20.0, hatch="lumber", color="#e5dcc4",
              finish="shiplap", species="basswood", wood_surface="unfinished", stock_bf_per_sqft=1.1,
              nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
-             source="Catlin site-milled sauna wall liner: owner basswood, with the owner's aspen to make up the walls (notes/wood_supply.md). Unfinished."),
-    # The ceiling: willow, the lightest and coolest of the three, on the one surface nobody
-    # touches and liquid water does not sit. Weak and prone to warp, so dry to 8-10% MC and
-    # hold it to the liner's 5 1/2" face.
+             source="Catlin site-milled sauna wall liner: owner basswood, made up from one more owner basswood or aspen log (notes/wood_supply.md). Unfinished."),
+    # The ceiling: aspen since 2026-10-18 (willow before; weak and warp-prone). Light, stable,
+    # resin-free and a classic sauna board; dry to 8-10% MC, 5 1/2" face.
     Material(tag="catlin-sauna-ceiling-shiplap",
-             name="Willow shiplap sauna ceiling liner (4/4), site-milled",
+             name="Aspen shiplap sauna ceiling liner (4/4), site-milled",
              r_per_inch=1.3, perm_rating=20.0, hatch="lumber", color="#e3d6bd",
-             finish="shiplap", species="willow", wood_surface="unfinished", stock_bf_per_sqft=1.1,
+             finish="shiplap", species="aspen", wood_surface="unfinished", stock_bf_per_sqft=1.1,
              nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
-             source="Catlin site-milled sauna ceiling liner: owner willow, aspen to make up. Dried to 8-10% MC, 5 1/2\" face over 5\" coverage, unfinished. Ceiling only: weak, warp-prone, not decay-resistant."),
+             source="Catlin site-milled sauna ceiling liner: owner aspen, made up from one more owner log (notes/wood_supply.md). Dried to 8-10% MC, 5 1/2\" face over 5\" coverage, unfinished."),
     # --- window stools (5/4, 1" dressed; plan/millwork.py MW-STANDARD and plan/window_stools.py)
     # The default: BOUGHT white oak, the one species here that really is white oak.
     Material(tag="oak-stool", name="White oak window stool, 5/4 S4S (bought)", hatch="lumber",
@@ -158,16 +158,16 @@ MATERIALS_HARDWOOD = [
              requires_custom_milling=True, max_board_width_in=11.0,
              source="Owner-milled white ash for the dining table top, 6/4 dressed to 1 1/4\", glued up; hardwax oil"),
     # --- the sauna seating (plan/sauna_types.py) -------------------------------------------
-    # Touched surfaces: the clearest basswood, mostly off the 24" log.
-    Material(tag="basswood-bench-5q", name="Basswood sauna bench slat, 5/4 S4S", hatch="lumber",
+    # Touched surfaces: the clearest basswood, mostly off the 24" log; clear aspen is equal.
+    Material(tag="basswood-bench-5q", name="Basswood/aspen sauna bench slat, 5/4 S4S", hatch="lumber",
              color="#e5dcc4", finish="solid-board", species="basswood",
              wood_surface="unfinished", nominal_quarters=5, milling_profile="eased",
              requires_custom_milling=True,
-             source="Owner basswood, the clearest boards, 5/4 dressed to 1\" x 3 1/2\", every edge eased, unfinished. On bearers at 24\" o.c. or closer (notes/sauna_seating.md)."),
-    # Concealed under the deck: bearers. Posts and stretchers are an allowance until designed.
-    Material(tag="aspen-frame-8q", name="Aspen sauna bench framing, 8/4 S4S", hatch="lumber",
-             color="#e8e0cc", finish="solid-board", species="aspen",
-             wood_surface="unfinished", nominal_quarters=8, milling_profile="S4S",
-             requires_custom_milling=True,
-             source="Owner aspen, 8/4 dressed to 1 1/2\" x 3 1/2\", unfinished: the bench bearers under the deck slats."),
+             source="Owner basswood (or clear aspen), the clearest boards, 5/4 dressed to 1\" x 3 1/2\", every edge eased, unfinished. On bearers at 24\" o.c. or closer (notes/sauna_seating.md)."),
+    # The frame nobody touches: bought Douglas fir since 2026-10-18 (owner aspen before), so
+    # it is off the mill order. Kiln-dried sets the pitch. Posts/stretchers not designed yet.
+    Material(tag="df-sauna-frame", name="Douglas fir sauna bench framing, KD S4S (bought)",
+             hatch="lumber", color="#d9b077", finish="solid-board", species="douglas-fir",
+             wood_surface="unfinished",
+             source="Bought kiln-dried Douglas fir, clear/VG or Select, S4S: 2x4 (1 1/2\" x 3 1/2\") bench bearers under the slats, and the legs, posts and stretchers once designed. Unfinished, never pressure-treated. Every edge eased."),
 ]

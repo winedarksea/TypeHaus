@@ -3171,9 +3171,10 @@
 # Custom sauna seating, 2026-10-11. Planning allowances, not supplier quotations;
 # joinery includes support posts, removable decks, 16" lighting rails, heater fence
 # and coordinated cleanout-cap access; drain piping stays in its trade takeoff.
-# ** THE LUMBER IS OWNER STOCK SINCE 2026-10-16 ** (basswood slats, aspen bearers; the four
-# decks' cut lists in plan/sauna_types.py reach `haus millwork`). The material bands below
-# still assume bought lumber: owner to revise them down.
+# ** THE SLATS ARE OWNER STOCK SINCE 2026-10-16 ** (basswood; the four benches' slat cuts in
+# plan/sauna_types.py reach `haus millwork`). The frame is bought Douglas fir since
+# 2026-10-18. The material bands below still assume all-bought lumber: owner to revise the
+# slat share down.
 "FT-CATLIN-SAUNA-UPPER-78" = { material = { low = 300, high = 1100 }, labour = { low = 250, high = 850 } }
 "FT-CATLIN-SAUNA-LOWER-78" = { material = { low = 250, high = 900 }, labour = { low = 200, high = 600 } }
 "FT-CATLIN-SAUNA-READING-58" = { material = { low = 220, high = 800 }, labour = { low = 180, high = 550 } }
@@ -4086,7 +4087,7 @@
 # The sauna liner's board by name since 2026-09-24 (DuPont Thermax Sheathing, CCRR-0435 §5.5 —
 # R316.4 passes on the listing). Same band as generic foil polyiso until a quote says otherwise.
 "polyiso-foil-thermax" = { material = { low = 1.3, high = 2.4 }, labour = { low = 1.3, high = 2.3 } }  # 297.4 SF
-# The sauna CEILING's boards since 2026-10-16: owner willow (aspen to make up), the wall
+# The sauna CEILING's boards since 2026-10-16: owner aspen (willow until 2026-10-18), the wall
 # liner's own rate below until the owner says otherwise.
 "catlin-sauna-ceiling-shiplap" = { material = { low = 3.6, high = 7.2 }, labour = { low = 6, high = 11 } }  # the ceiling, split out of the row below
 "catlin-sauna-shiplap" = { material = { low = 3.6, high = 7.2 }, labour = { low = 6, high = 11 } }  # walls only since 2026-10-16 (321.7 SF included 64.9 SF ceiling until then) — retagged from `sauna-tg` 2026-08-28, then `sauna-shiplap` -> `catlin-sauna-shiplap` when it went house-local (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate. 2026-10-16: 5/4 -> 4/4, material x0.8 for the board feet

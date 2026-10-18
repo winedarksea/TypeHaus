@@ -115,7 +115,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `titanium_handrail_backsplash.md` | the owner-furnished titanium: ST-B2M's two rails (stock ledger, 42.0 vs 42.4 mm fitting fit, backing, the R301.5 span hand-calc `tests/test_catlin_titanium_handrail.py` reproduces) and the range backsplash's datum and laps |
 | `system1_return_path.md` | the one return grille, and the six door undercuts that are the whole return path |
 | `wall_backing.md` | the in-wall backing schedule: every height and the authority behind it, what the code actually requires and what it does not, and the 2026-09-12 pass that replaced the wet walls' 3/4" plywood band with three 2x courses |
-| `wood_supply.md` | the owner's log pile against `haus millwork`'s demand after the red-oak reassignment: the International 1/4" rule estimate, the species flags (ash and locust short, the sauna ~100 bf short), and what the sawyer's tally replaces |
+| `wood_supply.md` | the owner's log pile against `haus millwork`'s demand after the red-oak reassignment: the International 1/4" rule estimate, the species flags (ash and locust short, the sauna ~120 bf short), and what the sawyer's tally replaces |
 
 ## Detail notes — drawing content, byte-pinned
 

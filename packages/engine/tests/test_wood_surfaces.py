@@ -62,7 +62,7 @@ def _liner_net_ft2(catlin_model, wall, material_ref="catlin-sauna-shiplap") -> f
 # --- the sauna liner and its tile splash ---------------------------------------------------
 
 def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
-    """The basswood order covers the walls, less tile; the ceiling is willow (below)."""
+    """The basswood order covers the walls, less tile; the ceiling is aspen (below)."""
     rows = bom["wood_surfaces"]
     basswood = next(row for row in rows if row["material"] == "catlin-sauna-shiplap")
     liner_walls = [w for w in catlin_model.walls
@@ -96,10 +96,10 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     assert splash == pytest.approx(2 * 3.0 * 7.5, rel=1e-3)  # two 3' bands x 7'-6"
     sauna = next(room for room in catlin_model.rooms if room.tag == "RM-B-SAUNA")
     assert float(basswood["net_area_sqft"]) == pytest.approx(gross - splash, abs=0.05)
-    willow = next(row for row in rows if row["material"] == "catlin-sauna-ceiling-shiplap")
-    assert float(willow["net_area_sqft"]) == pytest.approx(
+    ceiling = next(row for row in rows if row["material"] == "catlin-sauna-ceiling-shiplap")
+    assert float(ceiling["net_area_sqft"]) == pytest.approx(
         sauna.area_m2 * _M2_TO_FT2, abs=0.05)
-    assert willow["species"] == "willow"
+    assert ceiling["species"] == "aspen"  # willow 2026-10-16..18
     assert basswood["species"] == "basswood"
     assert basswood["also_in_envelope_layers"] is True
     # 4/4 shiplap (5/4 until 2026-10-16): 1.1 bf per ordered square foot — 4/4 thickness x
@@ -165,8 +165,8 @@ def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):
         gross, abs=0.1)
 
 
-def test_sauna_ceiling_willow_is_priced_and_on_the_mill_order(catlin_model, bom):
-    """Since 2026-10-16 the ceiling is its own material (willow), so walls and ceiling are
+def test_sauna_ceiling_is_priced_and_on_the_mill_order(catlin_model, bom):
+    """Since 2026-10-16 the ceiling is its own material (aspen), so walls and ceiling are
     two mill rows and two priced rows; until then they were one basswood order."""
     ceiling_ref = "catlin-sauna-ceiling-shiplap"
     sauna = next(room for room in catlin_model.rooms if room.tag == "RM-B-SAUNA")

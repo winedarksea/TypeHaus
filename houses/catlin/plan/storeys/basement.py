@@ -1334,8 +1334,8 @@ ROOMS = [
     # sides; see the PANELING note below.
     # Ceiling: the same shiplap-over-foil-polyiso liner as the walls (assemblies.py's
     # `_SAUNA_LINER`), restated rather than imported — the editable dialect cannot import
-    # a sibling plan module. Keep the two in step by hand. The ceiling's boards are WILLOW
-    # (`catlin-sauna-ceiling-shiplap`, 2026-10-16): the one surface nobody touches.
+    # a sibling plan module. Keep the two in step by hand. The ceiling's boards are ASPEN
+    # (`catlin-sauna-ceiling-shiplap`, 2026-10-18; willow from 2026-10-16).
     Room(uid="CBR403AAAA", tag="RM-B-SAUNA", seed=pt(ft(11), ft(5)),
          occupancy=Occupancy.BATHROOM, humidity_class=HumidityClass.WET,
          floor_finish="sealed-concrete",
