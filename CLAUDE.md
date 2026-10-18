@@ -245,126 +245,20 @@ haus site migrate houses/catlin --write           # fold the old spellings, in p
 - In the UI the site pages are a **second top-level surface** (`#/site/board`), not a reader:
   no canvas, no 3D, nothing of the design workbench is mounted.
 
-## Routing: the engine proposes, the person commits
+## Routing: proposals and independent checks
 
-`typehaus/routing/` searches for MEP routes and **proposes** them as dialect source to
-paste. It is a leaf like `engineering/`: it imports `model` / `resolve` / `quantities` and
-**never `checks`, `takeoff`, `emit`**, and nothing upstream imports it — `cli/cmd_route.py`
-is the one place it and `checks` meet, and it sits above both
-(`tests/test_package_leaves.py` walks the AST, function-local imports included).
+Read [docs/routing.md](docs/routing.md) for commands, diagnostic interpretation,
+acceptance, module responsibilities, tests, and oracle notes. Start with:
 
-```
-haus route houses/catlin --run PR-B-KITCH-DRAIN        # re-route one authored run
-haus route houses/catlin --fixture FX-S-SUITEBATH-WC   # a branch for one fixture
-haus route houses/catlin --tree PR-M-S-SUITE-DRAIN     # a main and every fixture on it
-haus route houses/catlin --unconnected                 # one per fixture_drain_reach FAIL
-haus route houses/catlin --run DU-M-ERV-R-KITCH --explain
-haus route houses/catlin --fixture FX-S-SUITEBATH-WC --sweep 8   # move the DRAIN POINT?
-haus route houses/catlin --run PR-B-KITCH-DRAIN --counterfactual # what if X moved?
-haus route houses/catlin --house --trades drain --storey basement --out out/route
-haus route houses/catlin --space PR-B-KITCH-DRAIN --json      # what is clear, priced, refused
+```bash
+.venv/bin/haus route houses/catlin --run PR-B-KITCH-DRAIN \
+    --json --summary --out out/route/kitchen
 ```
 
-- **`--alternatives N` offers more than one lane** (penalty re-search, oracled by the drain
-  note's §7), `--evaluate` runs the MEP checks against a candidate model *holding* each
-  proposal and prints the diff, `--json` emits both as data, and `--timing` says where the
-  milliseconds went. Ducts and raceways are routed too; `haus trial houses/catlin` scores
-  the working tree against a recorded baseline after you paste. The whole loop is
-  `houses/catlin/.claude/skills/route-run/SKILL.md`.
-- **A refusal names a cause, a class and a limit.** Every blocked terminal reports the tags
-  in the way with their conflict location and z, a **mobility class** on each (`fixed` for an
-  opening/void/concrete, `movable` for another run, `priced` for a soft prism, `unknown` for
-  `--avoid` or thin geometry — read off `HardPrism.kind`, never guessed from a tag), the
-  quantified shortage, what was attempted, and whether impossibility is *established* or only
-  "not within this search". `--counterfactual` then lifts one MOVABLE blocker at a time and
-  prices what opens — **a diagnosis, never a proposal**: the lifted run still has to go
-  somewhere and that is a search nobody has run. `--sweep N` asks the other half of the
-  two-way street, walking a fixture's drain point along its `wall_ref` and printing the best
-  station as a `Fixture(...)` to paste.
-- **A port may say how exact it is.** `ServicePort` carries `direction`, a section, and a
-  `PortCertainty` defaulting to `approximate` — because a datasheet gives a FACE ("all on
-  top, all 6" round"), which is why the catlin ERV authors four ports at one point. An
-  `exact` port is graded where it is and a router terminates on it; an approximate one stays
-  usable for a preliminary route and the report says the verdict is service-level.
-  `resolve/mep_ports.py` is the one placement both read.
-- **A channel's remaining width is a TIER, not a sum** (`resolve/mep_packing.py`). Runs that
-  share an elevation share a bay's or a soffit's clear width; runs that stack do not. Summing
-  made an 11 7/8" floor full of two 3" radials that never meet, and a full corridor is one the
-  router prices out of existence. An over-subscribed tier is a FAIL no arrangement can fix.
-- **A duct's size has a rule and it lives in `resolve/duct_sizing.py`** — Darcy-Weisbach with
-  Colebrook (moved out of `checks/mep/erv_static.py`, which now reads it) plus Manual D's
-  equal-friction method at `[mep.routing] duct_friction_in_wg_per_100ft`. **An authored size
-  always wins**; `--explain` prints what the air wants beside it, and only a real
-  `DuctProductType` row may ever be proposed.
-- **`--house` is a campaign, not a batch.** Every accepted proposal becomes an obstacle for
-  the next target — one occupancy ledger, the same `run_envelope` the checks read — laid in
-  a declared order (`routing/campaign.TRADE_ORDER`: drains deepest first, then vents, then
-  bulky rigid duct largest first, then supply and conduit, which bend). Rip-up is bounded by
-  a COUNT and never touches anything the campaign did not lay: a blocker that is a fact about
-  the building is a finding, not a scheduling problem. `--storey` scopes which runs are
-  targets; `--level` restricts the search's z band; they are two questions. `--orders N`
-  tries up to three conflict orders and ranks them — **fewest refusals outranks cheapest,
-  always**, because those are not two points on one scale — and `--evaluate` grades the
-  whole accepted SET against the MEP checks, which is the only question a campaign is for.
-- **`--space` classifies instead of searching**: green (clear), orange (priced, or a movable
-  run with the command that would re-lane it), red (framed, poured or cut), gray (insufficient
-  geometry). Green is derived by SUBTRACTION from the search bbox, so it cannot claim a lane
-  something else claimed. The classes are read off `HardPrism.kind` through the same
-  `diagnostics.mobility_of` the refusals use. `--out` writes one SVG overlay per level on the
-  `routing` review layer; `haus render --view plan` does **not** carry it, because a render
-  has no target and the routing space is only defined for one.
-- **A turn is a part, and the catalog says which.** `resolve/mep_fittings.py` is the one
-  reading both take-offs, `mep.fitting_pattern`, the IFC emitter and a proposal share; the
-  patterns and their standards are in `library/fittings.py`. What a turn is **billed** as
-  (the `prices.toml` row) and what **part** it is are two answers kept apart on purpose —
-  they disagree on catlin, and `elbow-22.5-1in` is a priced row for a fitting ASME B16.22 does
-  not make. Every laying length is `None` with its reason, which is why no fitting body is
-  drawn and why `IfcPipeFitting` is emitted placed and unrepresented.
-- **The lattice is built per z level** (`graph.candidate_lines_at`). An obstacle a plane does
-  not cut through has no corner on that plane to turn at, and deriving the lines once for the
-  whole band made a footing under the basement nominate turn points in the attic — 780,066
-  nodes for one duct, which is a refusal. Two things stay level-independent and both are
-  load-bearing: a corridor's plan line on a **plan** search (a gravity run's z is a derived
-  potential, not the plane it searches in) and nothing else.
-- **There is no `--write`.** The prose in a plan file *is* the design record; and accepting
-  a route is a judgement, exactly as `haus engineering --fingerprint` prints a value for a
-  person to paste. The reason once given first here — "`_content_hash` stales every pinned
-  engineering seal" — is **false** and is gone; see the seal bullet above for what a seal is
-  actually pinned against.
-- **A search result is not a `Finding`.** What is a fact about the building —
-  "this drain hangs 8" into the gym", "this fixture is 48" from every pipe in the house" —
-  belongs in `checks/`, and the router is aimed at it. A verdict that moved when a cost
-  weight moved would not be a verdict.
-- **A drain searches in PLAN, with its profile in the search state.** Its z is a derived
-  monotone potential (`routing/gravity.py`), so a 3-D search would optimise an elevation the
-  profile then overwrites — but the invert is a function of developed length alone, so
-  `routing/gravity_search.py` puts the developed length in the label and carries the BAND of
-  legal start elevations, testing every member window at the station it is met. The head
-  budget is the goal test, not a post-check (§8 of the drain note). `routing/tree.py` orders
-  terminals **deepest first** — least head slack, not cheapest — because route length is not
-  a proxy for slack.
-- **A vent RISES and ties into the VENT riser, never the radon one.** `search_for` runs a
-  `rises(system)` search with `shortest_route(..., rising=True)`, which refuses a falling
-  step (MN 905.1; `notes/vent_grade_basis.md` §5). `cli/route_roots._vent_siblings` offers
-  the VentRun's `-vent` leg and same-system siblings as goal lines carrying z — including a
-  parent whose leg this vent tees into mid-span; the `-radon` leg stays a hard prism. `--hold-upstream N` keeps a vent's wet-wall legs as authored.
-- **What a run may touch is `resolve/mep_envelopes.joinable`**, the same rule
-  `mep.run_interference` pardons joints by: ducts of one system (return/exhaust are one
-  family), drain with vent, radon with radon, a supply with its own system. Edges are blocked
-  by geometry (`RoutingSpace.edge_blocked`: exact for risers and oblique prisms, midpoint
-  for boxes), and a terminal step is pardoned only the prisms that terminal stands in.
-- **A floor hole inside one bay takes no framing** (`resolve/floor_openings.within_one_bay`):
-  the joists either side are its trimmers and the sheet still spans between them. Draw
-  riser holes to the duct, in a bay, and none cuts a joist.
-- **`resolve/mep_envelopes.py` and `resolve/mep_bores.py` are the shared readings.** What a
-  run occupies (real OD + insulation, one prism per segment over that segment's own z range)
-  and what a trade may cut out of a member (R502.8.1, R602.6, R602.6.1) live in `resolve`,
-  where a router and a check may both reach them. A check that measured a different solid
-  from the one the router plans against makes the loop impossible to close.
-- Both notes are oracles and are reproduced by `tests/test_routing_oracle.py`:
-  `notes/mep_drain_routing_basis.md` (§4 *is* the graph spec) and
-  `notes/mep_duct_routing_basis.md`. `routing/oracle.py` declares which module each verifies
-  and a lint fails on a module that names neither a note nor a reason.
+The compact report preserves actionable diagnostics; full geometry/source is saved for
+selective reading. Routing stays separate from checks. Accepting a route requires an
+explicit edit to its authored plan and design explanation. Pipe/duct elevations are
+storey-relative; conduit elevations are absolute. `--out` never applies a route.
 
 `haus serve` watches `houses/<name>/` only. After editing anything under
 `packages/engine/`, **restart the server** or the viewer shows stale geometry.

@@ -237,7 +237,7 @@ the future.
 - Choose bracket products for the four dark-steel handrails (RL-S-HANDRAIL-E/-W, RL-A-HANDRAIL, RL-G-SERVICE), including RL-A-HANDRAIL's bracket 6 with its 20 1/2" rise from W-S-SS2's top plate: `code.R301_5_handrail_support_spacing` is UNKNOWN until a `RailingType` states `bracket_spacing_max`
 - Spec sand or gravel backfill around house
 - The study light switch ED-A-STUDY-SW (x=260⅜", 48" up) now sits under the east casing leg, and haus check flags it as an advisory. It needs to move (perhaps to the bottom of the stairs and against the centerline wall)
-- MEP autorouter work seems to burn a lot of tokens, are there any parts we could modify to get the same functionality with less token usage?
+- [x] Reduce MEP autorouter context/output: reliable JSON, compact decision reports with full review artifacts, and consolidated [routing documentation](../docs/routing.md).
 - Make W-BW-SCREEN's east passage face prettier (currently 5/8" MDO, not the west structural CDX). [Finish comparison, elevations, quantities, and sample instructions](bw-screen-finish-comparison.md) completed 2026-10-14: natural black locust slats over matte black lead; visible stainless screws preferred. Shiplap and ornamental panels compared. West header symmetry implemented 2026-10-14 (6⅛″ south extension, paired AC6Z); comparison now shows the stairs and landing. Physical samples, actual door/closer clearance, and decorative finish construction/model implementation remain pending.
 - Plan microwave placement
 - [x] ED-M-PORCH-FLOOD: shielded adjustable 60° flood beneath the balcony front, aimed into the sunken garden; shared 3D geometry in viewer/GLB/IFC. Porch fan light and landing sconce share the separate porch control (2026-10-18).

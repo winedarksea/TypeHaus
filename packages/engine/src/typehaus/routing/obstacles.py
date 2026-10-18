@@ -1,31 +1,9 @@
-"""What a run may not pass through, and what it may pass through for a price.
+"""Hard obstacles and priced soft volumes, inflated once by radius + clearance.
 
-Two kinds, and the distinction is not a matter of degree:
-
-**Hard** — a rough opening, a deck void with no wall under it, unsleeved concrete, an
-existing run, anything ``--avoid`` names. A route through one of these is not expensive,
-it is wrong, and the search may not take it at any weight. (A door's *swing* is not among
-them — see :func:`~typehaus.resolve.mep_envelopes.opening_prisms` — and the buck it swings
-in is.)
-
-**Soft** — a room's open volume below its finished ceiling, priced by occupancy; in-wall
-travel past one stud bay. These are buildable and undesirable, which is exactly what a
-cost function is for. ``mep.run_in_finished_volume`` is the hard version of the first one
-*after the fact*; here it is a number.
-
-Everything is inflated by ``radius + clearance`` **once**, when the space is built, rather
-than re-derived per query. A check makes that correction on every call because it grades
-many runs against one geometry; a router grades one run against many geometries and the
-correction belongs in the world.
-
-**The geometry itself is not derived here any more.** Rough-opening bucks and existing-run
-envelopes both live in :mod:`typehaus.resolve.mep_envelopes`, which is the layer a router
-and a check may both reach. They used to be stated twice — once here and once in
-``checks/mep`` — and the two readings had drifted: this one put every opening at its wall's
-``z0_m`` rather than its ``base_ref_z_m``, 13 7/16" out on catlin's main-storey exterior
-walls, and banded a whole run over ``min(z)..max(z)`` so one riser blocked a wall along the
-run's entire length.
-"""
+Hard prisms include opening bucks (not door swings), voids, unsleeved concrete, existing
+runs, and --avoid elements. Soft prisms price finished room volume and in-wall travel.
+Shared opening/run geometry comes from resolve.mep_envelopes, also read by checks.
+Workflow and module map: docs/routing.md."""
 
 from __future__ import annotations
 
@@ -80,19 +58,10 @@ class SoftPrism:
 
 
 def _polygon(ring: Any) -> Any:
-    """A shapely polygon from a ring of either spelling, or None.
+    """Convert either a raw (x, y) ring or a Length-based Point2D ring to a polygon.
 
-    **Two spellings reach here and only one used to work.** A resolved outline is a list of
-    ``(x, y)`` metre pairs, which is what shapely wants; an AUTHORED outline is a tuple of
-    :class:`~typehaus.quantities.Point2D`, which is not iterable and raises inside
-    ``Polygon``. Nothing noticed because the resolved path is the one the run and opening
-    prisms take — until ``--avoid`` names an element by tag and reads ``.outline`` straight
-    off the authored element, which crashed the whole command with a shapely ``TypeError``
-    for every soffit, room and floor opening anybody tried to avoid.
-
-    A degenerate or self-intersecting ring is None rather than an exception, which is the
-    behaviour every caller here already relies on.
-    """
+    Room footprints are raw resolved tuples; floor voids retain authored Point2D values.
+    Return None for an absent/degenerate ring."""
     from shapely.geometry import Polygon
 
     if ring is None or len(ring) < 3:
@@ -110,22 +79,10 @@ def _polygon(ring: Any) -> Any:
 def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] = frozenset(),
                 touch: frozenset[str] = frozenset(),
                 clearance_m: float = CLEARANCE_M) -> list[HardPrism]:
-    """Every prism a run of this radius may not enter, inflated by radius + clearance.
+    """Forbidden prisms, inflated by radius + clearance.
 
-    ``avoid`` names extra element tags to treat as hard — the CLI's ``--avoid``, and the
-    mechanism by which a person overrules the router without editing a weight.
-
-    ``touch`` names existing runs the proposal is **allowed to occupy**: the run being
-    replaced, and the run being tied into. Without it the two runs a proposal is most
-    concerned with are the two it may not reach — a branch cannot land on the main it
-    discharges to, because the main is a hard prism sitting exactly where the tie is.
-
-    **Rough openings and run envelopes come from ``resolve/mep_envelopes``**, which is the
-    layer both this package and ``checks/mep`` may import. The leaf rule constrains
-    DIRECTION — routing reads resolve, nothing reads routing — not self-sufficiency, and
-    two hand-copied derivations that had already drifted apart is what it cost to read it
-    the other way.
-    """
+    ``avoid`` adds hard element tags. ``touch`` exempts runs being replaced or joined so a
+    branch can reach its parent. Shared envelopes come from resolve.mep_envelopes."""
     from typehaus.resolve.mep_envelopes import opening_prisms
 
     inflate = radius_m + clearance_m

@@ -1,23 +1,8 @@
-"""``--evaluate``: run the checks against a model that HOLDS the proposal, and diff.
+"""Grade in-memory candidate plans against the unsuppressed authored baseline.
 
-This is the second half of the loop and the half the router cannot do for itself. A search
-result is not a fact about the building — ``routing`` may not import ``checks``, for the
-reason ``cmd_route``'s docstring gives — so the only honest way to learn whether a proposed
-route is any good is to build a candidate model containing it and grade that model with the
-same checks that gate the build.
-
-**No source round-trip and no file written.** The candidate is built by constructing the
-``PipeRun``/``DuctRun``/``ConduitRun`` objects directly and handing them to
-``PlanModel.with_elements``, so the house on disk is untouched and the dialect printer is
-not in the loop. What is graded is the geometry, which is what the proposal is about.
-
-**The report is a DIFF, not a report card.** Catlin is not clean in the MEP set and is not
-required to be; what matters about a proposal is what it changes. A finding the house
-already carries is not this route's fault and printing it as though it were would bury the
-one line that is.
-
-Cost is one resolve + one check run per alternative, which is why this is opt-in.
-"""
+Reports show introduced/resolved findings and coverage gaps. Each alternative costs one
+candidate resolve/check run; campaigns grade the complete accepted network together.
+No plan source is written. Workflow and report contracts: docs/routing.md."""
 
 from __future__ import annotations
 
@@ -59,14 +44,9 @@ def graded(findings: list[Finding]) -> list[Finding]:
 
 
 def _findings(plan: Any, directory: Path) -> list[Finding]:
-    """The graded findings of ``plan``, with ``[checks] suppress`` LIFTED.
+    """Run graded checks with suppression lifted on both baseline and candidate.
 
-    A house working an open campaign blanket-suppresses exactly the checks a route can
-    break — catlin suppresses ``mep.run_interference`` and ``mep.riser_through_deck`` — and
-    ``run_checks`` drops a suppressed finding before this diff ever sees it. So a proposal
-    laned through a duct used to print "no new FAIL". Both sides of the diff are lifted,
-    so a clash the house already carries is still not this route's fault.
-    """
+    Otherwise a house suppressing an open MEP campaign could hide a new clash."""
     from dataclasses import replace
 
     from typehaus.checks import build_context, run_checks
@@ -219,15 +199,10 @@ def candidate_plan_for_all(model: ResolvedModel,
 
 def evaluate_network(directory: Path, model: ResolvedModel,
                      proposals: list[RouteProposal]) -> Evaluation:
-    """Contract 3 for a whole campaign: the MEP checks against ALL of it at once.
+    """Grade all accepted proposals together, including network and run/run checks.
 
-    The per-route evaluation answers "does this lane work"; this answers "does this SET
-    work", which is a different question and the one a campaign is for. Drain capacity and
-    slope, vent connectivity, bay packing, run-against-run interference and the ERV static
-    budget are all network properties, and every one of them is already a check — so this
-    runs the same registry over a candidate model holding the whole result rather than
-    restating any of it here.
-    """
+    An empty campaign is explicitly ungraded. Individual route evaluations cannot establish
+    that the combined network works."""
     result = Evaluation(tag="campaign")
     if not proposals:
         result.refused = "nothing was laid, so there is no network to grade"
@@ -354,30 +329,6 @@ def as_dict(item: Evaluation) -> dict:
         "introduced": [row(f) for f in item.introduced],
         "resolved": [row(f) for f in item.resolved],
         "coverage": list(item.coverage),
-    }
-
-
-def payload(directory: Path, storey: str, datum_for, proposals: list[RouteProposal],
-            evaluations: list[Evaluation], problems: list[str],
-            notices: list[str], refusals: list | None = None) -> dict:
-    """Contracts 2 and 3 of the roadmap, together and in one shape.
-
-    Together because a proposal and what it does to the house are one answer: shipping the
-    first without the second is what "the engine proposes" would mean with nobody judging
-    it. ``datum_for`` maps a proposal's storey to the elevation its source is written
-    against — zero for a raceway, whose elevations are project-frame absolute.
-    """
-    return {
-        "house": str(directory),
-        "storey": storey,
-        "proposals": [p.as_dict(storey_datum_m=datum_for(p)) for p in proposals],
-        "evaluations": [as_dict(e) for e in evaluations],
-        "problems": list(problems),
-        "notices": list(notices),
-        # Contract 3's blocked terminals, structured: the tag, where the conflict is, and
-        # the mobility class that says what could be done about it. ``problems`` carries
-        # the same facts as prose for a human reader; this is the half an agent reads.
-        "refusals": [r.payload() for r in (refusals or [])],
     }
 
 

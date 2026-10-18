@@ -1,29 +1,10 @@
-"""A proposal is text a person pastes. **There is no ``--write``, and there never will be.**
+"""Reviewable route source, structured geometry, and fitting disclosures.
 
-Two reasons, and the second is fatal on its own. **There used to be a third and it was
-false:** "``_content_hash`` hashes every ``plan/**/*.py``, so a machine edit stales every
-pinned engineering seal." It does not. A seal is pinned against
-``engineering/fingerprint.fingerprint(record)`` — scheme, kind, key, ``basis_version``, the
-record's rounded inputs and its ratio — and ``content_hash`` is not one of them;
-``fingerprint``'s own docstring says hashing the model was rejected for exactly this reason.
-``_content_hash`` reaches printed prose (``takeoff/handoff.py``, ``calc_package.py``,
-``calc_pdf.py``) and the UI's optimistic-concurrency revision (``source/coordinator.py``),
-and nothing else. What actually stales a seal is **moving geometry or elevations** — which a
-route proposal would do, so the concern was real and only the mechanism was wrong.
+Constructors use source.serialize.value_source for dialect legality. Coordinates snap to
+1/16 inch before evaluation so printed and graded geometry agree. Pipe/duct elevations
+are storey-relative; conduit elevations are absolute. See docs/routing.md for acceptance.
 
-1. The prose in a plan file **is the design record.** ``houses/catlin/plan/mep_drainage.py``
-   opens with thirty lines saying why the kitchen drain goes where it does; a write-back
-   would preserve those lines while making them false, which is worse than deleting them.
-2. **Accepting a route is a judgement.** ``haus engineering --fingerprint`` already prints
-   a value for a person to paste for exactly this reason, and this is the same shape of
-   act: the engine computes, the person commits.
-
-The literal is built through :func:`~typehaus.source.serialize.value_source`, which already
-handles ``Point2D`` and ``Length`` and is therefore **dialect-legal by construction** — a
-1-tuple gets its trailing comma, nothing emits a ``frozenset``, and no operator appears in
-a value. Coordinates are snapped to 1/16" **before** the feasibility re-check, so what is
-printed is what was verified rather than what was found and then rounded.
-"""
+Plan prose records design intent, so accepting a proposal requires an explicit edit."""
 
 from __future__ import annotations
 
@@ -130,21 +111,10 @@ class RouteProposal:
         return total / 0.3048
 
     def source(self, *, storey_datum_m: float = 0.0) -> str:
-        """The constructor a person pastes, in dialect source.
+        """Dialect constructor with pipe/duct elevations relative to ``storey_datum_m``.
 
-        ``storey_datum_m`` subtracts the storey the run will be **filed on**, because
-        ``PipeRun.elevations`` and ``DuctRun.elevations`` are storey-relative while a route
-        is solved in project coordinates. Getting that wrong is silent — memory's "pipe
-        elevations are storey-relative" — so it is a required decision at the call site
-        rather than a default that happens to be right for ``main``.
-
-        **A raceway ignores it.** ``ConduitRun``'s elevations are project-frame absolute
-        (``model/mep.py``), so subtracting a datum from them would move the run by a storey
-        and nothing would say so.
-
-        No ``uid=``. ``haus fmt`` mints one, and a hand-written uid is the one thing this
-        repo's own rules forbid outright.
-        """
+        The caller must supply the filing storey's datum. Conduit elevations remain absolute:
+        a panel-to-attic raceway has no single storey frame."""
         if self.kind == "conduit":
             return self._conduit_source()
         from typehaus.source.serialize import value_source
@@ -178,25 +148,10 @@ class RouteProposal:
         return "\n".join(lines)
 
     def _conduit_source(self) -> str:
-        """ONE ``ConduitRun``, with a z at every vertex.
+        """One ConduitRun with an absolute elevation at every vertex.
 
-        **This used to split the route into one element per flat plane**, because a raceway
-        was a plan polyline plus two end elevations and "it rises at its last vertex" was
-        the only profile the model could express. A route with two changes of height was
-        therefore not one element, and ``trades/conduit.legalize`` cut it into several.
-
-        ``ConduitRun.elevations`` retired that. A raceway now states a height at every
-        vertex, exactly as ``PipeRun`` and ``DuctRun`` do, so a route with five changes of
-        elevation is one run with five elevations — which is what it is on site, and what
-        makes ``mep.run_interference`` able to grade it at all rather than reporting it as
-        a schematic coverage gap.
-
-        **Project-frame absolute, and no datum subtraction.** The duct and pipe emitter
-        above subtracts the storey datum because those two author storey-relative
-        elevations; a ``ConduitRun``'s are absolute, because a trunk crosses storeys and a
-        panel-to-attic riser has no one storey to be relative to. Subtracting here was the
-        one thing that would have made a pasted proposal silently wrong.
-        """
+        Keep the entire multi-level route in one element so interference checks grade every leg;
+        subtracting a storey datum would move the printed raceway."""
         from typehaus.source.serialize import value_source
 
         path = tuple(Point2D(length_source(x), length_source(y))
@@ -212,13 +167,7 @@ class RouteProposal:
         return "\n".join(lines)
 
     def as_dict(self, *, storey_datum_m: float = 0.0) -> dict:
-        """Contract 2 of the roadmap: the network proposal, as JSON-able data.
-
-        Both the **structured** geometry and the **source** a person pastes, because the two
-        readers are different: an agent wants points and diameters it can reason about, and a
-        person wants the constructor. Emitting only one of them makes the other reader
-        re-derive it, and a re-derivation is a place for the two to drift.
-        """
+        """Full proposal: absolute geometry, storey-correct source, costs and fitting gaps."""
         return {
             "tag": self.tag, "kind": self.kind, "system": self.system,
             "points_m": [list(p) for p in self.points],
@@ -323,12 +272,7 @@ def _system_source(kind: str, system: str) -> str:
 
 def render(proposals: Sequence[RouteProposal], *, storey_datum_m: float = 0.0,
            explain: bool = False) -> str:
-    """The whole printout: a banner nobody can mistake for a file, then the constructors.
-
-    The banner is not decoration. A block of dialect source in a terminal looks exactly
-    like a file, and the one thing a reader must not conclude is that it has been written
-    anywhere.
-    """
+    """Review banner followed by constructors; source remains unapplied."""
     lines = [
         "# --- PROPOSED, NOT WRITTEN " + "-" * 50,
         "# Nothing on disk changed. Paste what you accept into the house's own "

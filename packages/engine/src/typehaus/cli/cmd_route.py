@@ -1,25 +1,7 @@
-"""``haus route`` — propose a route, and print it for a person to paste.
+"""Drive MEP proposals and independent evaluation; see docs/routing.md.
 
-**This is the only place ``checks`` and ``routing`` meet, and it sits above both.** That is
-what keeps the leaf rule true rather than merely stated: a check may not consult a router,
-because a search result is not a fact about the building; a router may not consult a check,
-because it would then be optimising against its own grader. The CLI reads both and shows
-you the two side by side, which is the honest arrangement.
-
-**Nothing is ever written.** ``--write`` does not exist and is not an omission — see
-:mod:`typehaus.routing.proposal` for the reasons. (The one that used to be printed here,
-"``_content_hash`` would stale every pinned engineering seal", is **false**: a seal is
-pinned against ``engineering/fingerprint.fingerprint(record)`` and ``_content_hash`` is not
-one of its inputs. What stales a seal is moving geometry, which a route proposal does — so
-the concern was real and only the mechanism was wrong.)
-
-    haus route houses/catlin --run PR-B-KITCH-DRAIN        # re-route one authored run
-    haus route houses/catlin --fixture FX-S-SUITEBATH-WC   # propose a branch for one
-    haus route houses/catlin --tree PR-M-S-SUITE-DRAIN     # a main and every fixture on it
-    haus route houses/catlin --unconnected                 # one per fixture_drain_reach FAIL
-    haus route houses/catlin --run DU-M-ERV-R-KITCH --explain --timing
-    haus route houses/catlin --fixture FX-S-SUITEBATH-WC --alternatives 3 --evaluate
-"""
+The CLI sits above routing and checks so the search never grades its own answer.
+--out saves review artifacts; accepting a route requires editing its authored plan."""
 
 from __future__ import annotations
 
@@ -40,7 +22,6 @@ from typehaus.cli.route_support import (
     _nearest,
     _points,
     _root_nodes,
-    _storey_datum,
 )
 from typehaus.model.spatial import Fixture
 
@@ -55,13 +36,7 @@ _LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
 def _unconnected_fixtures(directory: Path, model: ResolvedModel) -> list[str]:
-    """Every fixture ``mep.fixture_drain_reach`` reports a FAIL on.
-
-    Read from the CHECK rather than re-derived here, and that is the whole architecture in
-    one line: what is wrong with the house is a finding, and the router is aimed at
-    findings. A second reach derivation living in the CLI would be the same judgement
-    written twice and free to drift from the one that gates the build.
-    """
+    """Fixture tags with mep.fixture_drain_reach FAILs, read from the check."""
     from typehaus.checks import build_context, run_checks
 
     ctx, _ = build_context(model.plan, directory)
@@ -75,14 +50,9 @@ def _unconnected_fixtures(directory: Path, model: ResolvedModel) -> list[str]:
 
 
 def _route_cost(directory: Path) -> RouteCost:
-    """The weights this house routes at, from ``preferences.toml``'s ``[mep.routing]``.
+    """Load [mep.routing] weights through checks' plain preference dict.
 
-    ``cost_from_preferences`` existed and nothing called it, so every route in this repo
-    was priced at the module defaults and ``--explain`` printed a breakdown from a table
-    the house had never been asked about. The table is carried through ``checks`` as a
-    plain dict — see ``MepPreferences.routing`` — because ``checks`` may not import
-    ``routing``, and this is the one place the two are allowed to meet.
-    """
+    The CLI converts them to RouteCost because checks may not import routing."""
     from typehaus.checks import load_preferences
     from typehaus.routing.cost import cost_from_preferences
 
@@ -147,9 +117,8 @@ def route(
         4, "--rip-up", help="With --house: how many accepted proposals the campaign may "
                             "lift to make room for a refused one."),
     out_dir: Path | None = typer.Option(
-        None, "--out", help="With --house: write report.json and proposed.py here. With "
-                            "--space: write one SVG overlay per level. Nothing under plan/ "
-                            "is touched either way."),
+        None, "--out", help="Write report.json and proposed.py here. With --space: "
+                            "write one SVG overlay per level. House plan/ is untouched."),
     slope: float | None = typer.Option(
         None, "--slope", help="Inches per foot for a gravity run (default: the code "
                               "minimum for its diameter)."),
@@ -170,6 +139,9 @@ def route(
     as_json: bool = typer.Option(
         False, "--json", help="Emit the network proposal and its evaluation as JSON. "
                               "Implies --evaluate."),
+    summary: bool = typer.Option(
+        False, "--summary", help="Compact decision JSON; requires --json --out DIR. "
+                                 "Full details remain in report.json."),
     explain: bool = typer.Option(
         False, "--explain", help="Print the weights, the cost breakdown and the ordering."),
     sweep: float = typer.Option(
@@ -187,10 +159,14 @@ def route(
         0, "--hold-upstream", help="With --run: keep the first N legs as authored and "
                                    "route from vertex N (a vent's wet-wall legs)."),
 ) -> None:
-    """Propose MEP routes. Prints dialect source; writes nothing."""
-    from typehaus.routing.proposal import render
+    """Propose MEP routes for review; --out saves reports outside the house's plan/."""
+    from typehaus.cli.route_report import report_proposals, validate_output_directory
 
+    if summary and (not as_json or out_dir is None or space_of or sweep > 0):
+        raise typer.BadParameter("--summary requires --json --out DIR and a proposal mode; "
+                                 "it cannot be used with --space or --sweep")
     directory, model = _load(house)
+    validate_output_directory(out_dir, directory)
     selectors = [bool(run), bool(fixture), bool(tree), unconnected, whole_house,
                  bool(space_of)]
     if sum(selectors) != 1:
@@ -238,21 +214,18 @@ def route(
             locked=frozenset(locked), margin_ft=margin_ft, band=band,
             avoid=frozenset(avoid), cost=cost, slope=slope, alternatives=alternatives,
             rip_up_budget=rip_up_budget, out_dir=out_dir, as_json=as_json,
-            explain=explain, evaluate=evaluate or as_json, orders=orders)
+            explain=explain, evaluate=evaluate or as_json, orders=orders, summary=summary)
         raise typer.Exit(code)
 
     clock: list[str] = [] if timing else None  # type: ignore[assignment]
 
     targets: list[str]
+    notices: list[str] = []
     if unconnected:
         targets = _unconnected_fixtures(directory, model)
-        if not targets:
-            console.print("[green]mep.fixture_drain_reach reports no FAIL — every drained "
-                          "fixture is reached by a run that names it. Nothing to "
-                          "propose.[/green]")
-            return
-        console.print(f"[yellow]{len(targets)} fixture(s) reported by "
-                      "mep.fixture_drain_reach[/yellow]")
+        notices.append(f"{len(targets)} fixture(s) reported by mep.fixture_drain_reach"
+                       if targets else "mep.fixture_drain_reach reports no FAIL — every "
+                       "drained fixture is reached by a run that names it. Nothing to propose.")
     else:
         targets = [t for t in (run, fixture) if t]
 
@@ -268,74 +241,33 @@ def route(
                   search_for=_search_for)
         return
 
+    collect_details = explain or as_json or out_dir is not None
     if tree:
-        proposals, problems, notices, refusals = _propose_tree(
+        proposals, problems, route_notices, refusals = _propose_tree(
             model, tree, slope=slope, margin_ft=margin_ft, level=level,
-            avoid=frozenset(avoid), via=_points(via), explain=explain, cost=cost,
+            avoid=frozenset(avoid), via=_points(via), explain=collect_details, cost=cost,
             timing=clock)
     else:
-        proposals, problems, notices, refusals = _propose(
+        proposals, problems, route_notices, refusals = _propose(
             model, targets, mode=("run" if run else "fixture" if fixture
                                   else "unconnected"),
             slope=slope, margin_ft=margin_ft, band=band,
-            avoid=frozenset(avoid), via=_points(via), explain=explain, cost=cost,
+            avoid=frozenset(avoid), via=_points(via), explain=collect_details, cost=cost,
             alternatives=alternatives, timing=clock,
             counterfactual=counterfactual, hold=hold_upstream)
 
-    if explain:
-        for line in cost.table():
-            console.print(f"[dim]{line}[/dim]")
-    for line in notices:
-        console.print(f"[dim]{line}[/dim]")
-    for line in clock or ():
-        console.print(f"[dim]timing: {line}[/dim]")
-    for line in problems:
-        console.print(f"[yellow]{line}[/yellow]")
-    if not proposals:
-        console.print("[red]no proposal — see above. A route that cannot be found is "
-                      "reported, never approximated.[/red]")
-        raise typer.Exit(1)
-
+    notices.extend(route_notices)
     evaluations = []
-    if evaluate or as_json:
+    if proposals and (evaluate or as_json):
         from typehaus.cli.route_eval import evaluate_proposals
 
         evaluations = evaluate_proposals(directory, model, [p for p, _s in proposals])
-
-    if as_json:
-        import json
-
-        from typehaus.cli.route_eval import payload
-
-        by_tag = {p.tag: s for p, s in proposals}
-        console.print_json(json.dumps(payload(
-            directory, proposals[0][1],
-            lambda p: (0.0 if p.kind == "conduit"
-                       else _storey_datum(model, by_tag[p.tag])),
-            [p for p, _s in proposals], evaluations, problems, notices,
-            refusals), default=str))
-        return
-
-    if evaluations:
-        from typehaus.cli.route_eval import render_reports
-
-        for line in render_reports(evaluations):
-            console.print(line)
-
-    storey = proposals[0][1]
-    # A raceway's elevations are project-frame absolute, so it takes no datum. Mixing the
-    # two in one printout would be silent, so a mixed set is printed in two blocks.
-    for kind, datum in (("conduit", 0.0), (None, _storey_datum(model, storey))):
-        group = [p for p, _s in proposals
-                 if (p.kind == "conduit") == (kind == "conduit")]
-        if group:
-            console.print(render(group, storey_datum_m=datum, explain=explain))
-    console.print(f"[dim]elevations are relative to the `{storey}` storey — file the run "
-                  "there, or they are wrong and nothing will say so; a ConduitRun's are "
-                  "project-frame absolute and are printed as such[/dim]")
-    if len(proposals) > 1 and alternatives > 1:
-        console.print("[yellow]these are ALTERNATIVES to the same problem and they share "
-                      "a `serves` — paste exactly ONE[/yellow]")
+    report_proposals(
+        model, directory, proposals, evaluations=evaluations, problems=problems,
+        notices=notices, refusals=refusals, clock=clock, cost=cost, explain=explain,
+        as_json=as_json, summary=summary, out_dir=out_dir)
+    if not proposals and (tree or targets):
+        raise typer.Exit(1)
 
 
 def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
@@ -345,17 +277,10 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
              counterfactual: bool = False, extra_prisms: list | None = None,
              hold: int = 0
              ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str], list]:
-    """The one place the router is driven. ``(proposals, problems, notices, refusals)``.
+    """Return (proposal/storey pairs, problems, notices, structured refusals).
 
-    Every refusal comes back as a *line*, never as a silent omission: a fixture whose drain
-    point cannot be derived, a run whose root cannot be identified, a head budget that does
-    not close. ``routing`` says why it refused and this prints it.
-
-    ``extra_prisms`` are obstacles that are not in the model: a campaign's own accepted
-    proposals (→ :mod:`typehaus.routing.campaign`). They are appended to the space rather
-    than authored into a candidate model, because a proposal is not an element — inventing
-    one to make it an obstacle would mean the campaign routed against a house nobody has.
-    """
+    ``extra_prisms`` are already-inflated campaign occupancy, appended without further
+    inflation. Every target refusal is reported; it never becomes an approximate route."""
     from typehaus.routing.alternatives import alternative_routes
     from typehaus.routing.diagnostics import Refusal, refusal
     from typehaus.routing.graph import build_graph

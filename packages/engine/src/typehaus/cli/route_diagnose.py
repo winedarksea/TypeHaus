@@ -1,14 +1,6 @@
-"""``--counterfactual`` and ``--sweep``: the two-way street's CLI surface.
+"""Counterfactual and drain-point sweep adapters; see docs/routing.md.
 
-Both answer a question ``haus route`` proper does not: not "where does this run go" but
-**"why not, and what else could be tried"**. They are here rather than in ``cmd_route.py``
-because that file drives the proposal loop and was already at the 500-line mark before
-Phase 4 gave it two more jobs — and because the two really are one subject.
-
-Each takes ``search_for`` as a parameter rather than importing it. ``cmd_route`` owns the
-choice of which search a trade uses (a drain's is the gravity one), and a diagnostic priced
-by a different search would be an argument about the wrong router.
-"""
+search_for is injected so diagnostics use the same trade search as the original attempt."""
 
 from __future__ import annotations
 

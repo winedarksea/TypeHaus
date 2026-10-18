@@ -1,36 +1,10 @@
-"""Whole-house coordination: many targets, one occupancy, a stated order, bounded rip-up.
+"""Coordinate targets against shared occupancy in a declared order with bounded rip-up.
 
-Phase 6 of the routing roadmap, and the reason every phase before it was built. One run at
-a time is a question about a run; a house is a question about the *order* they are laid in
-and about what each one leaves for the next. Two runs that each route perfectly against the
-authored model can still be drawn through each other, because neither search ever saw the
-other's answer.
+Accepted proposals become run_envelope prisms for later searches. Only proposals this
+campaign accepted may be lifted; authored obstacles stay fixed. Every lift and refusal
+is recorded. The caller supplies the trade-specific search through ``propose``.
 
-**One occupancy ledger.** Every accepted proposal becomes hard prisms — its own envelope,
-the same :func:`~typehaus.resolve.mep_envelopes.run_envelope` reading the checks and the
-single-run router already share — and every later target searches against them. That is
-what makes a campaign a coordination rather than a batch.
-
-**The order is declared, not discovered** (:data:`TRADE_ORDER`), and it is an initial
-heuristic that says so. Gravity drains first and deepest first, because a drain is the only
-service with no freedom in z and the least of it goes first; then their vents, which must
-reach the same stacks; then bulky rigid duct largest first, because a 10" trunk fits in
-fewer places than a 4" branch; then supply and conduit, which bend, are small, and can be
-threaded around what is already there. A different order is a different answer and the
-result records which one it used.
-
-**Rip-up is bounded and never silent.** When a target is refused by a blocker that is itself
-a proposal this campaign accepted — never a locked run, never a fact about the building —
-the most recently accepted such blocker is lifted, the refused target is re-searched, and
-the lifted one is queued to route again at the end. The budget is a count, the result names
-every lift, and a target that cannot be served after the budget is spent is REFUSED with its
-reason rather than approximated.
-
-**This module runs no search of its own.** ``propose`` is a parameter, exactly as it is in
-:func:`~typehaus.routing.alternatives.alternatives`, for the same two reasons: the search a
-campaign should run depends on the trade (a drain's is the gravity label search, a duct's is
-the 3-D one), and ``routing`` is a leaf that may not reach for the CLI that binds them.
-"""
+TRADE_ORDER records ordering reasons. Workflow and report contracts: docs/routing.md."""
 
 from __future__ import annotations
 
@@ -121,17 +95,9 @@ class CampaignResult:
 def order_targets(model: ResolvedModel, *, trades: Sequence[str] | None = None,
                   storey: str | None = None,
                   locked: frozenset[str] = frozenset()) -> list[CampaignTarget]:
-    """Every run in scope, in the order :data:`TRADE_ORDER` states, ties broken per trade.
+    """Unlocked runs in scope, sorted by TRADE_ORDER and each trade's tie-break.
 
-    A locked run is not a target: it is left exactly where it is and reaches the search as
-    part of the authored model, which is what "locked" has to mean for the word to be worth
-    anything.
-
-    **Missing service assignments are reported, not inferred.** A run whose system this
-    module has no trade for comes back as a target with ``trade=""`` so the caller can name
-    it; guessing which trade an unrecognised system belongs to would put it somewhere in the
-    order on no evidence at all, and the order is the whole content of a campaign.
-    """
+    Unknown service assignments return trade="" for the caller to report rather than guess."""
     from typehaus.resolve.mep_fittings import SERVICE_BY_SYSTEM
 
     wanted = None if trades is None else set(trades)
@@ -164,13 +130,7 @@ def order_targets(model: ResolvedModel, *, trades: Sequence[str] | None = None,
 
 
 def _sort_key(target: CampaignTarget) -> tuple:
-    """Primary by trade, then each trade's own reason, then the tag so it is total.
-
-    A drain goes **deepest first** — least head slack, which is the same rule
-    ``tree.order_terminals`` applies inside one tree and for the same reason: route length is
-    not a proxy for slack. A duct goes **largest first**. Everything else goes by tag, which
-    is not a claim that size does not matter to it but a refusal to invent a rule for it.
-    """
+    """Trade first; drains deepest first, ducts largest first, then tag for determinism."""
     index = _TRADE_INDEX.get(target.trade, len(TRADE_ORDER))
     if target.trade == "drain":
         return (index, target.depth_m if target.depth_m is not None else 0.0, target.tag)
@@ -221,13 +181,7 @@ ORDER_STRATEGIES: tuple[tuple[str, str], ...] = (
 
 
 def reorder(targets: Sequence[CampaignTarget], strategy: str) -> list[CampaignTarget]:
-    """The same targets under one of :data:`ORDER_STRATEGIES`.
-
-    A different order is a different answer, and none of these is claimed to be better than
-    another — which is why the caller runs them and *ranks the results* rather than this
-    module picking one. The ranking is on the outcome (fewest refusals, then cost), because
-    that is the only evidence there is.
-    """
+    """Apply one named conflict ordering; rank outcomes by refusals before cost."""
     if strategy == "declared":
         return sorted(targets, key=_sort_key)
     if strategy == "biggest_first":

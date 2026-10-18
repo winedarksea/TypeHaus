@@ -1,35 +1,9 @@
-"""``haus route --fixture X --sweep N``: would this route if the drain point moved?
+"""Search legal drain-point stations along a fixture wall, without moving the fixture.
 
-The router's answer to a fixture it cannot serve is a refusal naming what is in the way. The
-next question belongs to the other side of the two-way street: **the fixture's own position
-is a design variable too**, and a WC that will not route at its drawn station may route four
-inches along the same wall. Nobody should have to discover that by editing the plan six
-times.
-
-So this walks the derived drain point along the fixture's ``wall_ref`` in fixed steps,
-searches at each, and prints what each station buys: feasible or not, the route's price, its
-bends, and — for a gravity run — the head it had left. The best station comes back as a
-``Fixture(...)`` constructor to paste, with ``drain_position`` set and everything else
-unchanged.
-
-**Three things it deliberately does not do.**
-
-* **It does not move anything.** Like every other proposal in this package it prints source
-  and writes nothing. Moving a fixture is a design decision with a room, a tile layout and a
-  person attached to it.
-* **It sweeps the DRAIN POINT, not the fixture.** ``Fixture.drain_position`` is the
-  contractor override the model already has for exactly this — where the waste actually
-  drops, which on a wall-hung WC or a vanity is not the fixture's centre and never was.
-  Moving ``position`` instead would move the china, which is a much larger claim.
-* **It does not grade the new position.** Whether the moved drain still clears its trap arm,
-  its clearance zone and the stud it now sits over is the checks' question, asked properly
-  by ``haus trial`` once the move is on a branch. A station this prints as feasible is
-  feasible *to route*, which is one of the several things it has to be.
-
-Stations are clamped to the wall's own extent and skipped where the point would land inside
-a stud, because a drain does not drop through framing — the same ``resolve/mep_bores``
-reading ``mep.run_through_stud`` grades against.
-"""
+Stations use fixed 2-inch steps, wall bounds, and the shared stud/bore reading. The best
+station is offered as a Fixture drain_position override. Feasibility concerns routing;
+trap-arm and clearance checks still require candidate evaluation after acceptance.
+Workflow: docs/routing.md."""
 
 from __future__ import annotations
 

@@ -1,11 +1,7 @@
-"""``--tree``: a main and every fixture it serves, as one directed Steiner tree.
+"""Route a drain main's fixtures as one directed Steiner tree.
 
-Split out of ``cmd_route.py`` unchanged but for the sizing: every branch used to be 2"
-because the CLI held a literal, and now each is sized from its own fixture's drainage load
-through :func:`~typehaus.cli.route_support.branch_diameter_m`. The space is inflated at the
-**largest** of them, which is the conservative direction and the only one a single search
-world can honestly take.
-"""
+Each branch uses its fixture load's diameter; the shared space uses the largest radius.
+Workflow: docs/routing.md."""
 
 from __future__ import annotations
 
@@ -32,23 +28,10 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
                   timing: list[str] | None = None
                   ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str],
                              list[Any]]:
-    """A main and every fixture it serves, routed as one directed Steiner tree.
+    """Return (proposal/storey pairs, problems, notices, structured refusals).
 
-    This is the mode :mod:`typehaus.routing.tree` exists for, and the one where the order
-    terminals are routed in decides the answer. Routing each fixture on its own — which is
-    what ``--fixture`` does, once per fixture — gives every one of them the direct lane and
-    proposes a bundle that cannot all be built; RSPH gives the lane to the fixture with the
-    least head and makes the rest join what is already there, which is what a wye is.
-
-    **The root is the whole main, not a point.** Goals are every lattice node lying on its
-    plan polyline, so a branch ties in where it arrives rather than at whichever end
-    happened to be nominated. ``search.shortest_route`` takes a set of goals for exactly
-    this.
-
-    Returns ``(proposals, problems, notices)``. The third channel is the tree's own
-    ordering and its cost: it is not a problem and it is not source, and printing it as
-    either would be a lie about what it is.
-    """
+    The whole main is the goal line, so branches may join at different stations. This is one
+    coordinated tree; independent fixture searches cannot share the resulting branches."""
     from typehaus.resolve.mep import _expected_drain_point  # type: ignore[attr-defined]
     from typehaus.routing.timing import Timer
 
@@ -342,24 +325,10 @@ def _invert_of(lines: list[tuple[list[tuple[float, float]], list[float]]],
 
 def _line_nodes(graph: Graph, path: Any, tolerance: float = 0.05,
                 z_tolerance: float | None = None) -> set[int]:
-    """Every lattice node lying on a run's plan polyline — the root of a tree.
+    """Nodes on a goal polyline, optionally gated by its interpolated vertex elevations.
 
-    A main is a line and a branch ties in where it meets it. Modelling the root as one
-    vertex is what makes a tree look like a manifold: every branch converges on the same
-    point, and the wyes stack where no fitting could.
-
-    **``z_tolerance`` is not optional for a pressurised run, and this is the one place the
-    supply change can produce a confidently WRONG route.** Plan-only is right for the two
-    callers it was written for: a drain searches in one plane, and a vent chase is vertical
-    so every elevation on its plan line really is on the pipe. A supply trunk is neither —
-    it runs level and rises at both ends, and `falls=False` means the search is fully
-    three-dimensional. Without a z gate a branch could "arrive" on the trunk's plan line
-    five feet below the trunk and the route would be reported as found; ``_root_nodes(...,
-    with_z=True)`` would never catch it, because this returned a non-empty set first.
-
-    Pass a per-vertex z on the polyline (3-tuples) together with a tolerance, and a node
-    qualifies only where the line's own interpolated elevation is within it.
-    """
+    A supply feeder requires per-vertex z and z_tolerance: plan-only arrival could land below
+    its horizontal leg. Gravity plan searches need no z gate."""
     out: set[int] = set()
     # A stack's reachable part is ONE vertex — its head — so the degenerate polyline is the
     # common case here rather than an edge case, and zipping it against its own tail would

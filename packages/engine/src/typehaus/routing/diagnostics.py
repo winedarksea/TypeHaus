@@ -1,28 +1,8 @@
-"""Why a search found nothing — named, classified, and priced where it can be.
+"""Classify search refusals: blocker tags, locations, mobility, shortages and limits.
 
-"No route in plan; every lane is blocked" is true and useless. A caller iterating on a
-proposal needs the tag of the thing in the way, where it stands, and — the part that decides
-what to do next — **whether it is the kind of thing that could move**. That is the difference
-between "re-route the vent" and "the stair is where the stair is".
-
-Phase 4's two-way street, and its three parts:
-
-* **Named blockers with a location.** :func:`blockers` probes the lanes out of a node and
-  returns the prisms standing on them with the point and elevation the probe met them at,
-  not merely their tags.
-* **A mobility class on every one.** :class:`Mobility` — ``fixed`` for an opening, a void or
-  concrete; ``movable`` for another service run; ``priced`` for a soft prism, which is not a
-  blocker at all but a cost; ``unknown`` where the geometry does not support a claim. The
-  class is read off what the prism IS (``HardPrism.kind``), never guessed from its tag.
-* **The distinction between a search that failed and a building that cannot be routed.**
-  :class:`Refusal` carries the reachability count, what was attempted, and which limits were
-  hit, and says "no route within this search" where that is what happened. Those are
-  different facts and one sentence was covering both.
-
-Nothing here searches or decides, which is why it oracles nothing. The counterfactual — "a
-route exists if PR-M-WC-VENT moved" — does search, and lives in
-:mod:`typehaus.routing.counterfactual` for exactly that reason.
-"""
+``established`` distinguishes geometric impossibility from failure within this search.
+Mobility comes from prism kind, never tag spelling. Counterfactual searches live in
+routing.counterfactual; this module only reads the searched space. See docs/routing.md."""
 
 from __future__ import annotations
 

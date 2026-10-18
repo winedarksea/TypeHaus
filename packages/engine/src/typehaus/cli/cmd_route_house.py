@@ -1,19 +1,10 @@
-"""``haus route --house``: the whole-house campaign, driven and printed.
+"""Bind the campaign policy to trade searches and print/save review reports.
 
-The CLI half of :mod:`typehaus.routing.campaign`. The leaf decides the ORDER and the rip-up
-policy and runs no search; this binds a search to it — the same ``_propose`` that serves
-``--run`` — and prints what came back.
-
-**It still writes nothing.** A campaign is a hundred proposals instead of one and that makes
-the rule more important rather than less: accepting a route is a judgement, and a hundred
-judgements taken by a flag is not a hundred judgements taken. ``--out`` writes the JSON
-report and the dialect source to a directory for a person to read and paste from; nothing
-under ``plan/`` is touched.
-"""
+Campaign occupancy and rip-up live in routing.campaign. Evaluation grades the complete
+accepted network. See docs/routing.md for reports and acceptance."""
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -28,13 +19,15 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
                        cost: Any, slope: float | None, alternatives: int,
                        rip_up_budget: int, out_dir: Path | None,
                        as_json: bool, explain: bool, evaluate: bool = False,
-                       orders: int = 1) -> int:
+                       orders: int = 1, summary: bool = False) -> int:
     """Lay every target in scope. Returns the process exit code.
 
     Exit 1 when anything was refused — a campaign that could not serve a terminal is a
     result somebody has to look at, and an exit code is how a script finds out.
     """
     from typehaus.cli.cmd_route import _propose
+    from typehaus.cli.route_eval import _storey_for, as_dict, evaluate_network, render_reports
+    from typehaus.cli.route_report import emit_report, proposal_rows
     from typehaus.routing.campaign import (
         ORDER_STRATEGIES,
         Outcome,
@@ -48,36 +41,40 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
     targets = order_targets(model, trades=trades, storey=storey, locked=locked)
     unassigned = [t.tag for t in targets if not t.trade]
     targets = [t for t in targets if t.trade]
-    if not targets:
+    if not targets and not as_json:
         console.print("[yellow]no target in scope — check --storey and --trades[/yellow]")
-        return 0
 
-    console.print(f"[bold]{len(targets)} target(s)[/bold] in campaign order")
+    if not as_json and targets:
+        console.print(f"[bold]{len(targets)} target(s)[/bold] in campaign order")
+
+    diagnostics: dict[str, tuple[list[str], list[str], list]] = {}
 
     def propose(target: Any, occupancy: list) -> Outcome:
-        proposals, problems, _notices, refusals = _propose(
+        proposals, problems, notices, refusals = _propose(
             model, [target.tag], mode="run", slope=slope, margin_ft=margin_ft, band=band,
-            avoid=avoid, via=[], explain=False, cost=cost, alternatives=alternatives,
+            avoid=avoid, via=[], explain=explain or as_json or out_dir is not None,
+            cost=cost, alternatives=alternatives,
             extra_prisms=occupancy)
+        diagnostics[target.tag] = (problems, notices, refusals)
         if proposals:
             return Outcome(proposal=proposals[0][0])
-        # **Back to the TARGET tag.** A blocker names the proposal that is in the way —
-        # ``PR-B-KITCH-DRAIN-PROPOSED`` — and the campaign's ledger is keyed on the run it
-        # is a proposal FOR. Without this the rip-up never matches anything and a campaign
-        # that is blocking itself reports fourteen refusals and no lifts, which is the one
-        # outcome that looks like a building problem and is not.
+        # The occupancy uses proposal tags; the rip-up ledger uses their authored targets.
         blockers = tuple(sorted({_target_of(b.tag) for r in refusals for b in r.blockers}))
         reason = (refusals[0].render() if refusals
                   else (problems[0] if problems else "no route, and no reason given"))
         return Outcome(reason=reason, blockers=blockers)
 
     strategies = [name for name, _why in ORDER_STRATEGIES][:max(1, orders)]
-    results = [run_campaign(reorder(targets, name), propose, inflate_m=CLEARANCE_M,
-                            rip_up_budget=rip_up_budget, strategy=name)
-               for name in strategies]
+    results = []
+    diagnostics_by_strategy = {}
+    for name in strategies:
+        diagnostics = {}
+        results.append(run_campaign(reorder(targets, name), propose, inflate_m=CLEARANCE_M,
+                                    rip_up_budget=rip_up_budget, strategy=name))
+        diagnostics_by_strategy[name] = diagnostics
     ranked = rank(results)
     result = ranked[0]
-    if len(ranked) > 1:
+    if len(ranked) > 1 and not as_json:
         console.print("[bold]orders tried, best first[/bold] — fewest refusals outranks "
                       "cheapest, always: those are not two points on one scale")
         for candidate in ranked:
@@ -90,28 +87,40 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
         "locked": sorted(locked), "alternatives": alternatives,
     })
     if unassigned:
-        # Reported, never inferred. A run whose system names no trade has no place in the
-        # order, and putting it somewhere would be the campaign deciding on no evidence.
         result.skipped.extend(
             (tag, "no trade for this run's system — a campaign's order is its whole "
                   "content, so an unassigned run is named rather than placed in it")
             for tag in unassigned)
 
-    if evaluate:
-        # **The network, not the routes.** Each lane was already graded as it was laid; this
-        # is the only question a campaign is actually for — does the SET work together.
-        from typehaus.cli.route_eval import evaluate_network, render_reports
-
+    evaluations = []
+    if evaluate or as_json:
         evaluation = evaluate_network(directory, model, result.accepted)
+        evaluations.append(evaluation)
         result.settings["evaluated"] = True
-        for line in render_reports([evaluation]):
-            console.print(line)
+        if not as_json:
+            for line in render_reports(evaluations):
+                console.print(line)
 
-    _print(result, explain=explain)
-    if as_json:
-        console.print_json(json.dumps(result.as_dict()))
-    if out_dir is not None:
-        _write(result, out_dir, directory)
+    if not as_json:
+        _print(result, explain=explain)
+    if as_json or out_dir is not None:
+        report = result.as_dict()
+        report["house"] = str(directory)
+        report["accepted"] = proposal_rows(
+            model, [(proposal, _storey_for(model, proposal)) for proposal in result.accepted])
+        report["evaluations"] = [as_dict(item) for item in evaluations]
+        diagnostics = diagnostics_by_strategy[result.settings["order_strategy"]]
+        report["problems"] = [line for problems, _, _ in diagnostics.values()
+                              for line in problems]
+        report["notices"] = [line for _, notices, _ in diagnostics.values()
+                             for line in notices]
+        report["refusals"] = [item.payload() for _, _, refusals in diagnostics.values()
+                              for item in refusals]
+        report["orders_tried"] = [
+            {"strategy": item.settings["order_strategy"], "accepted": len(item.accepted),
+             "refused": len(item.refused), "cost_in_equivalent": sum(p.cost for p in item.accepted)}
+            for item in ranked]
+        emit_report(report, as_json=as_json, summary=summary, out_dir=out_dir)
     return 1 if result.refused else 0
 
 
@@ -145,22 +154,3 @@ def _print(result: Any, *, explain: bool) -> None:
     for tag, reason in result.skipped:
         console.print(f"[yellow]skipped[/yellow] {tag}: {reason}")
     console.print(f"[bold]{result.termination}[/bold]")
-
-
-def _write(result: Any, out_dir: Path, house_dir: Path) -> None:
-    """``report.json`` and ``proposed.py`` — read, then paste what you accept.
-
-    Two files because they are for two readers, the same split
-    :meth:`RouteProposal.as_dict` makes: an agent wants the structured report, a person
-    wants the constructors. ``proposed.py`` carries the PROPOSED banner for the reason
-    ``proposal.render`` gives — a block of dialect source in a file looks exactly like a
-    plan, and the one thing a reader must not conclude is that it is one.
-    """
-    from typehaus.routing.proposal import render
-
-    out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "report.json").write_text(json.dumps(result.as_dict(), indent=2) + "\n")
-    (out_dir / "proposed.py").write_text(render(result.accepted) + "\n")
-    console.print(f"[dim]wrote {out_dir / 'report.json'} and "
-                  f"{out_dir / 'proposed.py'} — nothing under {house_dir / 'plan'} "
-                  "changed[/dim]")

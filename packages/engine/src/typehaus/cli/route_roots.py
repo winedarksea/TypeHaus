@@ -1,21 +1,7 @@
-"""Where a proposed run TIES IN — the root end of every route the CLI asks for.
+"""Tie-in derivation and trade-specific search selection for haus route.
 
-Four questions, one module, because they are the same question asked of four topologies:
-a drain lands at an invert on the run it discharges to (:func:`_discharge`); a branch lands
-on the nearest main passing its own floor (:func:`_nearest_main`); a branch vent lands on
-the chase it shares with its siblings, anywhere along any of them (:func:`_vent_siblings`);
-and a supply branch tees onto the trunk that feeds it, anywhere along THAT
-(:func:`_supply_trunk`). Split out of ``route_support`` when that file crossed the 500-line
-rule in ``AGENTS.md``.
-
-**Supply is the mirror of a vent and it arrived last for a reason.** Until 2026-09-19 a
-supply run fell through to ``_vent_siblings``, which takes ``path[-1]`` as the root and
-demands another run of the same system whose FIRST OR LAST vertex lands within 3". Both
-halves are wrong in mirror image: a supply branch is authored tie-first, so its ``path[0]``
-is the tee and its ``path[-1]`` is the riser at the fixture; and a tee sits on a SEGMENT,
-which no endpoint-to-endpoint tolerance can find. Every supply target got a refusal about a
-vent chase that is not true of a trunk.
-"""
+Drains target downstream inverts; vents target same-system stacks/siblings; supply
+branches target feeder segments with their own elevations. See docs/routing.md."""
 
 from __future__ import annotations
 
@@ -222,22 +208,11 @@ def _nearest_main(model: ResolvedModel, point: tuple[float, float], floor_m: flo
 def _supply_trunk(model: ResolvedModel, run: Any, problems: list[str]
                   ) -> tuple[tuple[float, float, float], list[str],
                              tuple[tuple[tuple[float, float, float], ...], ...]] | None:
-    """``(a point on the feeder, the whole chain to the source, its plan polyline with z)``,
-    or ``(the port, [], ())`` for a trunk that leaves an equipment port.
+    """Return (feeder point, upstream chain, feeder polyline with z), or (port, [], ()).
 
-    The chain rather than the parent alone, for ``_discharge``'s reason: a branch's tee sits
-    ON its parent and its parent's tee sits on the GRANDparent, so leaving the rest of the
-    chain hard walls the route off from the tie it is being routed to.
-
-    **The polyline carries a z per vertex, and a vent's does not.** A vent chase is vertical,
-    so one elevation describes the whole goal line; a supply trunk rises at both ends and
-    runs level between, and seeding one z along it would put goals on the trunk's plan line
-    at a height the trunk is nowhere near.
-
-    A refusal here names WHICH of the three real causes applies, out of the record
-    ``supply_tie_in_records`` already carries. Each is that record read back, which is the
-    point of making it a record rather than a dict.
-    """
+    The whole upstream chain may be touched because each tee lies on its parent. Per-vertex
+    z keeps goals on the feeder itself rather than its plan shadow. Refusals read the
+    specific missing-parent cause from supply_tie_in_records."""
     from typehaus.resolve.mep_ports import placed_ports
     from typehaus.resolve.mep_tie_ins import supply_tie_in_records
 
@@ -339,23 +314,11 @@ def hold_upstream(model: ResolvedModel, ends: Any, target: str, count: int,
 
 
 def search_for(model: ResolvedModel, graph: Any, ends: Any, slope: float | None):
-    """``(search, refusal report)`` — the plain A* for a pressurised run, the sloped one for
-    a drain.
+    """Return (search callable, refusal report) with shortest_route's signature.
 
-    **This is where "search flat, slope after" ends.** A drain's invert is a function of
-    developed length alone, so putting the developed length in the search state makes every
-    constraint on its height testable where it can steer the lane rather than only refuse it
-    afterwards. See ``routing/gravity_search.py`` and the drain note's §8, where the cheap
-    lane passes a head budget taken at the goal and is a quarter of an inch under a truss
-    web at its third bend.
-
-    The returned callable has ``shortest_route``'s exact signature so
-    ``alternatives.alternative_routes`` takes either without knowing which. A vent or a
-    radon pipe gets ``shortest_route(rising=True)``: it may never lose elevation on the way
-    to its root (``routing/trades/pipe.rises``).
-
-    Moved here from ``cmd_route`` when that file passed the 500-line rule.
-    """
+    Drains carry developed length and legal start-elevation bands in gravity_search's labels,
+    so constraints steer the lane at their crossing station (drain oracle §8). Pressurised
+    runs use plain A*; vent/radon searches use rising=True and may never lose elevation."""
     from typehaus.routing.gravity import minimum_slope
     from typehaus.routing.gravity_search import (
         GravityProblem,

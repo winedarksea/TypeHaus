@@ -1,23 +1,11 @@
-"""The escape graph: candidate lines, lattice nodes, and the edges between them.
+"""Escape graph over terminal lines, obstacle edges, and corridor centrelines.
 
-``houses/catlin/notes/mep_drain_routing_basis.md`` §4 is the spec, not a description of
-one — its 3x3 lattice, its blocked node, its bend penalty and its eight-row expansion
-table are what ``tests/test_routing_oracle.py`` asserts against this module and
-:mod:`typehaus.routing.search`.
+The intersections supply useful turn points without a uniform grid's spurious bends.
+Elevation is a level set of terminal heights and service corridors, with clear vertical
+edges between planes. Per-level candidate lines exclude obstacles outside that plane.
 
-**Candidate lines, and why not a uniform grid.** A uniform grid has nodes where nothing is
-and none where the route wants to turn. The escape-graph formulation instead nominates the
-lines a route could plausibly follow — every hard prism's edge offset outward by
-``radius + clearance``, every corridor centreline, and each terminal's own x and y — and
-builds the lattice at their intersections. That is what makes "round this obstacle costs
-two bends, not four" fall out of the graph rather than out of a tolerance.
-
-**z is a level set, not a continuum.** A house's services live in a handful of planes: bay
-centrelines, soffit interiors, wall cavities, the terminals' own elevations. The lattice
-is built at those levels with vertical edges wherever the drop between two of them is
-clear, which is both far smaller than a 3-D grid and closer to how the work is actually
-laid out.
-"""
+houses/catlin/notes/mep_drain_routing_basis.md §4 specifies the 3x3 lattice, bend cost,
+and expansion table reproduced by tests/test_routing_oracle.py. See docs/routing.md."""
 
 from __future__ import annotations
 

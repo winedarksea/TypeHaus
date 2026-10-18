@@ -1,16 +1,8 @@
-"""The world one route is searched in: obstacles, corridors, weights, and a bounding box.
+"""One run's routing world: obstacles inflated by its radius, corridors, and costs.
 
-A :class:`RoutingSpace` is built **once per run** and inflated by that run's own radius,
-which is the difference between this package and the checks it is aimed at: a check grades
-many runs against one geometry and corrects per query; a router grades one run against
-many geometries and the correction belongs in the world.
-
-It is also where the search is **bounded, explicitly**. The lattice is pruned to the
-terminals' bounding box plus a margin and to the storeys they touch, and past
-:data:`MAX_CANDIDATE_LINES` the build **raises** rather than coarsening quietly. A router
-that silently drops resolution to finish is a router that answers a different question
-from the one asked, and AGENTS.md §2.3 is explicit about which of the two is worse.
-"""
+The terminal bounds plus margin and storey band limit the lattice. Exceeding candidate
+line or node caps raises explicitly; silently coarsening would change the question.
+Workflow and module map: docs/routing.md."""
 
 from __future__ import annotations
 

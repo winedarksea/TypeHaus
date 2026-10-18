@@ -1,20 +1,8 @@
-"""Loading, terminals and the gravity profile — everything ``haus route`` needs to ask.
+"""Loading, endpoint derivation, and gravity profiles for haus route.
 
-Split out of ``cmd_route.py`` with no behaviour change but one addition: :func:`_endpoints`
-now answers for **ducts and raceways** as well as pipe. It used to index ``model.pipe_runs``
-alone, so ``--run DU-M-ERV-R-KITCH`` came back "not a run in this model" about a run that is
-plainly in the model — a true sentence about the wrong index.
-
-The three trades differ in what a terminal *is*, and the differences are not cosmetic:
-
-* a **pipe** branch starts at a fixture's derived drain point and ends at the nearest main's
-  deepest vertex on that fixture's own floor;
-* a **duct** re-route keeps its own two ends, because a duct is not a tree onto a main —
-  it leaves a machine and lands on a trunk or a boot, and both are authored;
-* a **raceway** likewise, and its elevations are project-frame absolute rather than
-  storey-relative (``model/mep.py::ConduitRun``), which is why :class:`Endpoints` carries
-  ``kind`` and the caller does not guess from the tag prefix.
-"""
+Pipes derive fixture/main ties; duct and raceway reroutes keep their authored ends.
+Endpoints carries kind because conduit elevations are absolute, unlike pipes and ducts.
+Workflow and module map: docs/routing.md."""
 
 from __future__ import annotations
 
@@ -34,12 +22,7 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 
 @dataclass(frozen=True)
 class Endpoints:
-    """What one target hands the search: two points, a section, and who may be touched.
-
-    A record rather than the seven-tuple that stood here, because the duct case needs a
-    rectangular section and the conduit case needs its own datum, and a tuple that grew two
-    more slots would have been unpacked wrongly somewhere within the week.
-    """
+    """Search terminals, section, permitted contacts, and source metadata."""
 
     origin: tuple[float, float, float]
     root: tuple[float, float, float]
@@ -126,16 +109,9 @@ def _points(via: list[str]) -> list[tuple[float, float]]:
 
 def branch_diameter_m(model: ResolvedModel, fixtures: tuple[str, ...],
                       problems: list[str], target: str) -> float | None:
-    """The branch size this fixture load actually wants, or None with a refusal line.
+    """Size the fixture load using the same plumbing_calc reading as mep.pipe_sizing.
 
-    A flat 2" literal stood here and was wrong for the one fixture that matters most: a
-    water closet's branch is 3" and always has been. The size comes from the **same**
-    derivation ``mep.pipe_sizing`` grades against — ``takeoff/plumbing_calc`` — so a
-    proposal cannot be sized against a table the check does not use.
-
-    A fixture the table has no row for is a **refusal line**, never a 2" guess: an unknown
-    load sized at the common case is exactly the confident nonsense this engine refuses.
-    """
+    Unknown fixture loads produce a refusal rather than an assumed branch diameter."""
     from typehaus.takeoff.plumbing_calc import (
         M_PER_IN,
         MINIMUM_DRAIN_IN_BY_SYMBOL,
@@ -283,19 +259,9 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
 
 def _duct_endpoints(model: ResolvedModel, duct: Any,
                     problems: list[str]) -> Endpoints | None:
-    """A duct keeps its own two ends, and may occupy whatever it is jointed to.
+    """Keep the duct's authored ends and allow contacts from the shared connectivity rule.
 
-    **Not a tree onto a main.** A duct leaves a machine and lands on a trunk, a boot or a
-    hood, and every one of those is authored — so re-routing one is the question "same two
-    ends, a better lane between them", which is a different question from a drain branch's
-    and is why this does not go near ``_nearest_main``.
-
-    What it may touch is what ``mep.duct_connectivity`` says it joins, read from
-    ``resolve/mep_soffit.ducts_are_joined`` — the same predicate, so the router cannot
-    propose a lane the connectivity check would then call an orphan — **and only where the
-    two systems can join** (``mep_envelopes.joinable``). Distance alone let a supply
-    proposal pass through an exhaust trunk it happened to end beside.
-    """
+    An authored duct size wins; equal-friction sizing is advice only."""
     from typehaus.resolve.mep_envelopes import insulation_thickness_m, joinable
     from typehaus.resolve.mep_soffit import ducts_are_joined
     from typehaus.routing.trades import duct as duct_trade
@@ -407,23 +373,10 @@ def _nearest(graph: Graph, point: tuple[float, float, float]) -> int | None:
 
 def _root_nodes(graph: Graph, root: tuple[float, float, float],
                 *, with_z: bool = False, exact: bool = False) -> set[int]:
-    """Every lattice node on the root's own plan point — a vertical, not a point.
+    """Nodes on the root's plan point; with_z also filters elevation for 3-D searches.
 
-    See :func:`~typehaus.routing.search.shortest_route`: a stack accepts arrivals over a
-    range of elevations, and modelling it as one node throws away exactly the margin the
-    oracle note's §5 turns on.
-
-    **Plan only by default, with no z filter**, and that is not a shortcut. A gravity route
-    searches in one plane and takes its elevations from the profile afterwards, so the
-    lattice has no node at the root's own invert to find. ``with_z`` is the duct and
-    raceway case: their search IS three-dimensional and their far end is one point at one
-    height, so accepting any elevation on that plan point would land the run a storey away
-    and call it arrival.
-
-    ``exact`` is a supply trunk rooted on an equipment port: the port is a point, so a node
-    standing ON it is the only goal, when the lattice has one — otherwise the search takes
-    whichever neighbour 1 1/2" off is cheaper.
-    """
+    Gravity searches one plane and derives its profile separately, so its root has no z gate.
+    ``exact`` requires the node on a supply equipment port rather than a cheaper neighbour."""
     tolerance = 0.05
     near = {node.index for node in graph.nodes
             if abs(node.x - root[0]) < tolerance and abs(node.y - root[1]) < tolerance
@@ -437,18 +390,10 @@ def _root_nodes(graph: Graph, root: tuple[float, float, float],
 
 
 def _port_terminal(model: ResolvedModel, duct: Any, index: int) -> tuple[float, float, float]:
-    """One end of a duct, snapped to the EXACT service port it lands on if there is one.
+    """Snap a duct end to its equipment's EXACT port; leave approximate ports unchanged.
 
-    An authored end inside a machine's case is a claim about which machine, not about which
-    spigot: the case is a couple of feet across and the ports are inches apart on it. Where
-    the type dimensions its port (``PortCertainty.EXACT``) the model knows the spigot's real
-    station, and terminating a foot away from it proposes a lane an installer then has to
-    re-aim. An APPROXIMATE port is left alone on purpose — see ``resolve/mep_ports.port_at``.
-
-    The tolerance is the CASE, not a joint: the whole point is to correct an end that landed
-    loosely inside one. Half a metre is wider than any residential air-handling case's half
-    diagonal and far narrower than the gap to the next machine.
-    """
+    The 0.5 m tolerance covers a case's half-diagonal, not merely a joint, so loose ends
+    inside a case reach the spigot without capturing the next machine."""
     from typehaus.resolve.mep_ports import port_at
 
     point = duct.path[index]
@@ -459,18 +404,10 @@ def _port_terminal(model: ResolvedModel, duct: Any, index: int) -> tuple[float, 
 
 
 def _duct_size_advice(model: ResolvedModel, duct: Any) -> tuple[str, ...]:
-    """What the equal-friction rule would size this duct at, beside what it is.
+    """Compare round-duct equal-friction sizing with the authored size without changing it.
 
-    **Advice, and deliberately not a change.** An authored size is a decision — a trunk run
-    up a size for the static budget, a branch held down to clear a bay — and a router that
-    silently re-sized it would be overruling the design to make its own arithmetic come out.
-    What the router can do is say the number, so a size nobody chose on purpose stops being
-    invisible. A campaign that CREATES a branch has no authored size to defer to and calls
-    ``resolve/duct_sizing.size_for_cfm`` for the real answer.
-
-    Round ducts only: the equal-friction rule is stated on a bore, and an equivalent
-    diameter for a rectangle is a second reading this does not hold.
-    """
+    Rectangular equivalent diameters are outside this reading. New branches use
+    resolve.duct_sizing.size_for_cfm rather than inheriting an authored size."""
     from typehaus.resolve.duct_sizing import friction_rate_in_wg_per_100ft, size_for_cfm
 
     cfm = getattr(duct, "design_cfm", None)
