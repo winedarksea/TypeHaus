@@ -14,6 +14,21 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Porch lighting and the sunken-garden flood (2026-10-18)
+
+`ED-M-PORCH-FLOOD` moved off the house wall to the underside of the balcony's first
+joist bay, centred at x=18'. Its weatherproof box uses the existing centre guard-post
+blocking, fastened from below. The framing-derived mount keeps the angled head below
+the fascia and gutter and beyond the porch floor and enclosure. The 60° flood is aimed
+66° below horizontal into the open court; the 20 W / 1,800 lm, black, wet-rated 3000 K
+specification remains a design allowance rather than a selected manufacturer SKU.
+
+The garden retains its own switch. `ED-M-STAIR-LT` now shares `ED-M-PORCH-SW` with the
+west-bay fan light, so the porch stays lit with the garden flood off. Fixture UIDs and
+circuit assignments stayed intact. The shared flood model carries its box, knuckle,
+head, lens and visor through the viewer, GLB and IFC. Instances live in
+`plan/porch_lighting.py`; mounting and beam regressions use the shared read-only fixtures.
+
 ## The dry-fire lane is required: ERV east, lane 6' high (2026-10-17)
 
 The owner set the lane's minimum at 10 m by 6', and secondary to cost and structure. At

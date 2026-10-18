@@ -23,6 +23,7 @@ object's back`` convention, so the wall side is ``+y`` and the light throws towa
 from __future__ import annotations
 
 from typehaus.model.placeable_symbols._families import Builder, Geometry
+from typehaus.model.placeable_symbols._flood_light import flood_light
 from typehaus.model.placeable_symbols._frame import (
     DETAIL_WEIGHT,
     OUTLINE_WEIGHT,
@@ -420,6 +421,7 @@ def suspended_linear_light() -> Builder:
 
 LIGHTING_SYMBOLS: dict[str, Builder] = {
     "track-light": track_light,
+    "flood-light": flood_light,
     "recessed-can": recessed_can(),
     "panel-light": panel_light(),
     "sconce": sconce(throw="down"),

@@ -4,9 +4,9 @@ The rule's whole text is "exterior stairways shall be provided with an artificia
 source located at the top landing of the stairway" — no illuminance, no switching, and no
 distance from the treads. It was being graded against R303.7's shape instead: a 4'-0"
 buffer of the flight outline. On this house those are different verdicts. ST-SG-PORCH
-arrives on FS-SG-PORCH, a 171 sf porch deck, and the two fixtures that light that deck —
-ED-M-PORCH-FAN over it and ED-M-PORCH-FLOOD on its north edge — stand ten feet from the
-top nosing, outside any ring drawn round the treads.
+arrives on FS-SG-PORCH. Its west-bay fan light stands outside the flight ring but still
+lights the landing; the east landing sconce provides the other porch light. The garden
+flood now hangs beyond the porch floor and is controlled separately.
 
 What is pinned here is that the landing does the work and that it did not cost the rule its
 teeth: the stair is lit by fixtures the ring cannot reach, and a landing with nothing over
@@ -21,7 +21,8 @@ import pytest
 
 PORCH_STAIR = "ST-SG-PORCH"
 PORCH_DECK = "FS-SG-PORCH"
-DECK_LIGHTS = ("ED-M-PORCH-FAN", "ED-M-PORCH-FLOOD")
+DECK_LIGHTS = ("ED-M-PORCH-FAN",)
+GARDEN_LIGHT = "ED-M-PORCH-FLOOD"
 STEP_LIGHT = "ED-M-STAIR-LT"
 
 
@@ -83,9 +84,9 @@ def test_the_porch_deck_is_the_stairs_arrival_surface(ctx):
 
 
 def test_the_deck_lights_are_out_of_reach_of_the_flight_ring(ctx):
-    """The premise: without the landing these two fixtures are not near this stair.
+    """The premise: without the landing the west-bay fan light is not near this stair.
 
-    If either ever falls inside the 4'-0" ring the test below stops proving anything, so
+    If it ever falls inside the 4'-0" ring the test below stops proving anything, so
     the distance is asserted rather than assumed.
     """
     from shapely.geometry import Point, Polygon
@@ -107,11 +108,11 @@ def test_the_porch_stair_is_lit_by_what_stands_over_its_landing(ctx):
 def test_a_landing_with_nothing_over_it_still_fails(ctx):
     """The correction is a widening, not an amnesty.
 
-    Every luminaire that reaches this stair is dropped from the authored plan — the two
-    over the deck and the fitting at the head of the flight — and the rule reports the stair
+    Every luminaire that reaches this stair is dropped from the authored plan, including
+    the garden flood which can still reach the buffered landing, and the rule reports the stair
     unlit.
     """
-    with _without_lights(ctx, {*DECK_LIGHTS, STEP_LIGHT}):
+    with _without_lights(ctx, {*DECK_LIGHTS, STEP_LIGHT, GARDEN_LIGHT}):
         finding = _porch_finding(ctx)
     assert "has no light at its top landing" in finding.message
 
@@ -137,7 +138,7 @@ def test_a_stair_with_no_modelled_landing_still_grades_on_the_ring(ctx):
 def test_the_step_light_is_not_what_carries_the_verdict(ctx):
     """ED-M-STAIR-LT moved back onto W-M-S2 and the stair is still lit without it.
 
-    The house's own record of why (``plan/lighting.py``): the fitting is at the head of the
+    The house's own record of why (``plan/porch_lighting.py``): the fitting is at the head of the
     flight for the person on it, not because R303.8 has nowhere else to look.
     """
     with _without_lights(ctx, {STEP_LIGHT}):

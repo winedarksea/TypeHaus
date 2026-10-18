@@ -99,7 +99,7 @@ SYMBOL_NAMES = frozenset({
     # a cove strip is a LightRun polyline, drawn by the lighting plan, not a placeable.
     # "linear-light" covers ordinary compact linear fixtures. The plant tube has the
     # same plan glyph but its own 3D cable-suspension massing.
-    "track-light", "recessed-can", "panel-light",
+    "track-light", "flood-light", "recessed-can", "panel-light",
     "sconce", "sconce-updown", "sconce-spot", "sconce-gothic",
     "mirror-light",
     "pendant", "chandelier", "cluster-pendant", "ceiling-fan-light", "linear-light",

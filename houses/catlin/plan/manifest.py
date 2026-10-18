@@ -42,7 +42,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, bath1_stora
                   living_window_types,
                   lighting_attic, lighting_types, masonry_joints, mep, millwork,
                   millwork_vanities, placeables,
-                  plant_room, plant_room_types, plant_types, plate_ties,
+                  plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
                   products,
                   sauna, sauna_types, site, study_bridge, titanium_types, transitions, views,
                   wind_clamps, window_stools)
@@ -377,7 +377,8 @@ PLAN = (
          # PBR. Filed on `main` (the run starts below the main datum) though the module
          # that derives them is the roof eave's — it owns the cladding-face constant.
          *roof_trim.MAIN_ELEMENTS,
-         *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING, *closet.MAIN_CLOSET,
+         *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING, *porch_lighting.PORCH_LIGHTING,
+         *closet.MAIN_CLOSET,
          *bed_reading_corner.BED_READING_CORNER,
          *placeables.MAIN_PLACEABLES, *kitchen_casework.MAIN_KITCHEN_CASEWORK, *views.DETAIL_SLICES,
          *millwork.MILLWORK, *millwork.MAIN_SHELVES,

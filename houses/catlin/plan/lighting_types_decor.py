@@ -17,6 +17,8 @@ from library.lighting import luminaire_class
 from typehaus import LuminaireForm, Service, ServicePort, ft, inch
 from typehaus.model import LuminaireType
 
+from .porch_lighting_types import GARDEN_FLOOD_TYPE
+
 _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
                           position=(ft(0), ft(0), ft(0))),)
 
@@ -332,18 +334,14 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # the housing emits nothing above the horizontal, which is what
     # `advisory.dark_sky_lighting` grades every exterior luminaire on, and both hold the
     # house's 3000K warm line — the other half of the same advisory. Wet rated outright:
-    # each hangs in the open (a garage face, a freestanding porch pillar), not under a
-    # soffit deep enough to argue damp.
+    # the garage face and open-sided balcony edge both see wind-driven weather.
     #
     # R is the garage-door light: a shielded down-only wall sconce beside D-G-OVERHEAD.
     # `form=SCONCE` rather than a new enum kind — the enum docstring discourages new
     # kinds, and a wall pack is a sconce that grew a cutoff hood.
     luminaire_class("ED-T-LT-SCONCE-EXT").model_copy(update={"type_mark": "R", "source": "WAC WS-W2506 full-cutoff outdoor wall light, black, 3000K"}),
-    # S is the porch flood: a narrow-throw spot aimed down off the balcony's centre
-    # pillar. Same reasoning on the form — an adjustable exterior spot is the sconce-spot
-    # family in a wet housing — and the cutoff is in the aiming shroud, which is why the
-    # narrow beam is the point: it lights the deck, not the neighbourhood.
-    luminaire_class("ED-T-LT-FLOOD-NARROW").model_copy(update={"type_mark": "S", "source": "RAB LFLED26 narrow flood + full-cutoff visor, black, 3000K"}),
+    # S is the independently switched garden flood, under the balcony's front edge.
+    GARDEN_FLOOD_TYPE,
 
     # --- P: mirror lighting -----------------------------------------------------------
     luminaire_class("ED-T-LT-MIRROR").model_copy(update={"type_mark": "P"}),

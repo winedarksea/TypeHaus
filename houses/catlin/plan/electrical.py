@@ -29,9 +29,9 @@
 # authored on the wall axis buries in the studs and one authored a few feet in floats in
 # mid-air. Enforced by
 # `test_catlin_contract_m3.py::integrity.wall_mount_on_face`,
-# except ED-M-LIVING-KGF4 (mounts on the island, not a Wall) and ED-M-PORCH-FLOOD (a
-# pillar). EXT_2X6's inside face is 6 5/8" in from the sheathing datum, cladding
-# face 6 1/2" outboard of that.
+# except ED-M-LIVING-KGF4 (mounts on the island, not a Wall). ED-M-PORCH-FLOOD is
+# ceiling-mounted beneath the balcony front (plan/porch_lighting.py). EXT_2X6's inside
+# face is 6 5/8" in from the sheathing datum, cladding face 6 1/2" outboard of that.
 #
 # Positions worth knowing (project-north frame, house sheathing SW corner at 0,0):
 # - Meter: exterior face of west wall (W-M-W1), outside ED-B-PANEL at (2', 29') in the

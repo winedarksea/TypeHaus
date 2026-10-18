@@ -2690,6 +2690,15 @@ _ENCLOSURE_FRONT_Y = _bal_y0 + 1.5 * _bal_oc_ft
 # joist field.
 _ENCLOSURE_BLOCK_LINES = [_ENCLOSURE_FRONT_Y] + [_bal_y0 + _k * _bal_oc_ft for _k in (3, 5, 7, 9)]
 
+# The garden flood hangs outside the porch floor/enclosure, in the first balcony bay.
+# The centre guard-post block already spans this bay: reuse it for the weatherproof
+# box, fastened from below without penetrating the waterproof balcony plank.
+GARDEN_FLOOD_POSITION = pt(ft((_x_in_w + _x_in_e) / 2), ft(_bal_y0 + _bal_oc_ft / 2))
+GARDEN_FLOOD_SUPPORT_ELEVATION = (
+    ft(SPEC.balcony_level_ft - _balcony_joist_depth_ft)
+    + _balcony_rise_at(GARDEN_FLOOD_POSITION.y.feet)
+    - _balcony_rise_at(_y_balcony_front))
+
 # Balcony: 2x12 @ 12" o.c. running E-W across the two N-S beams, 18'-0" apart.
 #
 # The aluminium plank is this deck's own `subfloor`, not a separate Slab standing in for
@@ -2723,8 +2732,8 @@ BALCONY_JOISTS = FloorSystem(
                      # and the fascia are on.
                      rim_material="post-paint-white",
                      bearing_refs=("BM-SG-BLW", "BM-SG-BLE")),
-    # RIM BLOCKING UNDER THE GUARD'S SOUTH LEG, and it is the only reinforcement on this
-    # deck. The two heat-pump hosts that used to be here went to grade on 2026-09-02
+    # BLOCKING UNDER THE GUARD AND PORCH TRACKS; the centre front block also carries
+    # the garden flood's underside box. The two heat-pump hosts that used to be here went to grade on 2026-09-02
     # (notes/heat_pump_ground_pad.md), which left this plank with ZERO penetrations — and
     # that is exactly why the balcony's guard stays FASCIA-mounted while the porch's goes
     # surface: FS-SG-DECK's aluminium plank is the porch roof, and ~36 surface baseplates

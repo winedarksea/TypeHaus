@@ -535,6 +535,14 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
 
         representation = track_representation(f, body, track, (x, y),
                                                float(_rotation_metadata(device, resolved)), z0)
+    elif getattr(product_type, "plan_symbol", None) == "flood-light":
+        from typehaus.emit.ifc.placeable_parts import parts_representation
+        from typehaus.model.placeable_symbols import model_parts
+
+        parts = model_parts(product_type.plan_symbol, product_type.footprint[0].meters,
+                            product_type.footprint[1].meters, product_type.height.meters)
+        representation = parts_representation(
+            f, body, parts, (x, y), float(_rotation_metadata(device, resolved)), z0)
     else:
         representation = ll.add_prism_from_profile(
             f, body, outline, product_type.height.meters if product_type is not None else 0.05, z0)
