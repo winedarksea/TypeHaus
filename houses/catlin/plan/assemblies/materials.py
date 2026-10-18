@@ -71,7 +71,7 @@ MATERIALS = [
              finish="oak-board",  # the 3D recipe; the coat is waterborne urethane
              species="ash", nominal_quarters=6, milling_profile="eased",
              requires_custom_milling=True, max_board_width_in=11.0,
-             source="Two slabs on the living-room SEKTION banks, 1 1/4\" finished off 6/4, 16 1/2\" deep, straight eased front edge. Each is an edge-glued panel of two ~8 1/4\" boards (Type II PVA), the glue line straight on the front edge; the 160 5/8\" slab needs a 14'+ ash log. Back edge scribed to the gwb, where the ash stools meet it in one plane. Fix on slotted brackets; waterborne urethane on all six faces, matching the stools: flat-sawn ash still moves."),
+             source="Two slabs on the living-room SEKTION banks, 1 1/4\" finished off 6/4 (sawn full, ~1 5/8\" green), 16 1/2\" deep, straight eased front edge. Each is an edge-glued panel of two ~8 1/4\" boards (Type II PVA), the glue line straight on the front edge; the 160 5/8\" slab needs a 14'+ ash log. Back edge scribed to the gwb, where the ash stools meet it in one plane. Fix on slotted brackets; waterborne urethane on all six faces, matching the stools: flat-sawn ash still moves."),
     # ** THE FLOOR TILE, AND THE SELECTION IS ARITHMETIC BEFORE IT IS TASTE. ** Grout length
     # per square foot is 144 x (1/a + 1/b): a 24x24 gives 1.0 lineal ft/sf, a 3x12 subway
     # gives 5.0, a penny round gives 24+. Large-format is ~3x easier to keep clean than

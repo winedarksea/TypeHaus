@@ -55,7 +55,7 @@ def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     assert len(rows) == 39
     assert {row["profile"] for row in rows} == {"eased"}
     assert {row["material_ref"] for row in rows} == {
-        "oak-stool", "quartz-counter", "ash-stool-6q", "ash-stool-5q", "locust-stool-5q",
+        "oak-stool", "quartz-counter", "ash-stool-6q", "locust-stool-5q",
         "cherry-stool-5q", "red-oak-stool", "cedar-sauna-stool"}
     material_of = {row["opening_uid"]: row["material_ref"] for row in rows}
     openings = {opening.uid for opening in catlin_model_ro.openings}

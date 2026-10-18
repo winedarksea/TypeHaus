@@ -17,8 +17,8 @@
 # Stools: E1, E2 and WIN-M-DINING-E share a 2'-10" sill so the frame rail, and so the stool
 # top, meets the slab top (36 15/16" above the storey datum; the rail lands 1/64" proud).
 # overhang=0 and horn=0, so each stool meets the slab's back edge in one plane.
-# White ash, 1 1/4" off 6/4 (ash-stool-6q), quarter or rift, urethane: the slab's own
-# thickness and species, so stool and counter read as one board. Black cherry at 2" before.
+# White ash, 1 1/4" off 6/4 (ash-stool-6q), quarter or rift (the slab is flat-sawn off the
+# same logs), urethane: the slab's own thickness and species, so stool and counter read as one board. Black cherry at 2" before.
 #
 # ** THE ELM SLAT PARTITION (2026-10-16, Oksana's request). ** Floor to ceiling at y=13'-0",
 # over the flush LVP/coated-concrete joint, running 60 1/2" west from the gwb: a 16 1/2"

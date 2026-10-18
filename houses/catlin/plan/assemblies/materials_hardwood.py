@@ -68,19 +68,13 @@ MATERIALS_HARDWOOD = [
              color="#d6c9b3", finish="oak-board", species="red-oak",
              nominal_quarters=5, milling_profile="eased", requires_custom_milling=True,
              source="Owner-milled red oak, dressed to 1\". The house red-oak system: A/B bleach, Bona NordicSeal, waterborne topcoat, all six faces. Dry rooms only: open pores."),
-    # The living room: all five stools are ash, matching the ash counters they border. The
-    # south pair (LIV-S1/-S2) are 5/4 like the other derived stools; the east three are 6/4,
-    # flush with the 1 1/4" slab (plan/living_east_run.py).
-    Material(tag="ash-stool-5q", name="White ash window stool, 5/4 S4S", hatch="lumber",
-             color="#d9cbb0", finish="oak-board", species="ash",
-             nominal_quarters=5, milling_profile="eased", requires_custom_milling=True,
-             max_board_width_in=6.0,
-             source="Owner's ash, quarter- or rift-sawn preferred, dressed to 1\". Quartered boards off 12-16\" logs run 4-6\" wide, so a ~9 3/8\"-deep stool is a two-board glue-up (Type II PVA). Waterborne urethane on all six faces, end grain included, before install; stainless fasteners. Ash is not rot-resistant: the film is what keeps condensation out."),
+    # The living room: all five stools are ash, matching the ash counters they border, and
+    # all 6/4 to 1 1/4" like the slab and the dining top: one ash thickness at the mill.
     Material(tag="ash-stool-6q", name='White ash window stool, 1 1/4", 6/4 S4S', hatch="lumber",
              color="#d9cbb0", finish="oak-board", species="ash",
              nominal_quarters=6, milling_profile="eased", requires_custom_milling=True,
              max_board_width_in=6.0,
-             source="Owner's ash, quarter- or rift-sawn preferred, 6/4 dressed to 1 1/4\" to meet the ash slab's back edge in one plane. A two-board glue-up (Type II PVA): quartered boards off 12-16\" logs run 4-6\" wide. Waterborne urethane on all six faces, end grain included, before install; stainless fasteners."),
+             source="Owner's ash, quarter- or rift-sawn preferred, 6/4 dressed to 1 1/4\": the east three meet the ash slab's back edge in one plane, the south pair match. Saw 6/4 full, ~1 5/8\" green: at a bare 1 1/2\" it will not dry and flatten to 1 1/4\". A two-board glue-up (Type II PVA): quartered boards off 12-16\" logs run 4-6\" wide. Waterborne urethane on all six faces, end grain included, before install; stainless fasteners. Ash is not rot-resistant: the film is what keeps condensation out."),
     # WIN-B-SAUNA. At 190 F what matters is how hot the wood feels, and that tracks density:
     # cedar at ~350-370 kg/m3 is as cool as the basswood liner; locust, oak and cherry read hot.
     Material(tag="cedar-sauna-stool", name="Cedar sauna window stool, 5/4 S4S, clear heartwood",
@@ -163,7 +157,7 @@ MATERIALS_HARDWOOD = [
     Material(tag="ash-6q", name="White ash, 6/4 S4S", hatch="lumber", color="#d9cbb0",
              finish="oak-board", species="ash", nominal_quarters=6, milling_profile="S4S",
              requires_custom_milling=True, max_board_width_in=11.0,
-             source="Owner-milled white ash for the dining table top, 6/4 dressed to 1 1/4\", glued up; hardwax oil"),
+             source="Owner-milled white ash for the dining table top, 6/4 dressed to 1 1/4\", glued up; hardwax oil. Saw 6/4 full, ~1 5/8\" green."),
     # --- the sauna seating (plan/sauna_types.py) -------------------------------------------
     # Touched surfaces: the clearest basswood, mostly off the 24" log; clear aspen is equal.
     Material(tag="basswood-bench-5q", name="Basswood/aspen sauna bench slat, 5/4 S4S", hatch="lumber",

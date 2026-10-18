@@ -4,6 +4,7 @@
 # derived one where the room's colour or its moisture calls for another species. Each copies
 # the standard's 1" thickness, 3/4" overhang and 1" horn, and leaves depth derived.
 # The living room's east three are in plan/living_east_run.py (ash, flush with the slab).
+# The living room's ash pair below is 6/4 at 1 1/4", not the standard's 1".
 
 from typehaus.model import WindowStool, inch
 
@@ -25,12 +26,13 @@ MAIN_WINDOW_STOOLS = [
     WindowStool(uid="G8JF6NTB0Q", tag="STOOL-WIN-M-MUD", window_ref="WIN-M-MUD",
                 material_ref="locust-stool-5q", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
-    # The living room's south pair: ash, like the east three and the counters.
+    # The living room's south pair: ash, like the east three and the counters, and 6/4 to
+    # 1 1/4" like them, so the ash comes off the mill in one thickness.
     WindowStool(uid="4ECA4GNDDF", tag="STOOL-WIN-M-LIV-S1", window_ref="WIN-M-LIV-S1",
-                material_ref="ash-stool-5q", thickness=inch(1),
+                material_ref="ash-stool-6q", thickness=inch(1.25),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
     WindowStool(uid="REW7HFTZ1B", tag="STOOL-WIN-M-LIV-S2", window_ref="WIN-M-LIV-S2",
-                material_ref="ash-stool-5q", thickness=inch(1),
+                material_ref="ash-stool-6q", thickness=inch(1.25),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
 ]
 

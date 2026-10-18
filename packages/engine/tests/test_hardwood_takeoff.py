@@ -150,10 +150,11 @@ def test_ash_slabs_and_walnut_tops_are_cut_listed(rows):
         assert slab["finished_thickness_in"] == pytest.approx(1.25)
     assert tops["CT-M-LIV-E-N"]["finished_length_in"] == pytest.approx(160.625, abs=0.01)
     assert all(row["also_in_countertops"] for row in tops.values())
-    east = [row for row in _use(rows, "window stool") if row["material"] == "ash-stool-6q"]
-    assert sum(row["pieces"] for row in east) == 3
-    assert not any(row["also_in_countertops"] for row in east), "own stock, not slab remnant"
-    assert {row["nominal_stock"] for row in east} == {"6/4"}
+    # All five living-room stools are 6/4 ash: one ash thickness at the mill.
+    ash = [row for row in _use(rows, "window stool") if row["material"].startswith("ash-")]
+    assert sum(row["pieces"] for row in ash) == 5
+    assert not any(row["also_in_countertops"] for row in ash), "own stock, not slab remnant"
+    assert {row["nominal_stock"] for row in ash} == {"6/4"}
 
 
 def test_the_yield_arithmetic_is_the_documented_one(rows):

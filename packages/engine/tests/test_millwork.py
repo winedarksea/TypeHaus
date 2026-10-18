@@ -76,7 +76,7 @@ def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catli
         **{ref: "locust-stool-5q" for ref in ("WIN-M-BATH1-W", "WIN-M-BATH2", "WIN-S-BATH-W",
                                                "WIN-S-VANITY-W", "WIN-M-KIT-E",
                                                "WIN-M-KITCH-N", "WIN-M-MUD")},
-        "WIN-M-LIV-S1": "ash-stool-5q", "WIN-M-LIV-S2": "ash-stool-5q",
+        "WIN-M-LIV-S1": "ash-stool-6q", "WIN-M-LIV-S2": "ash-stool-6q",
         "WIN-S-SUITE1": "cherry-stool-5q", "WIN-S-SUITE2": "cherry-stool-5q",
         "WIN-S-HALL-N": "red-oak-stool", "WIN-S-STAIR-N": "red-oak-stool",
         "WIN-B-SAUNA": "cedar-sauna-stool",
@@ -89,11 +89,11 @@ def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catli
         **{f"WIN-S-PLANT{n}": "PLANT_EXT_2X6_HUMID" for n in range(1, 5)},
         "WIN-M-KITCH": "EXT_2X6", **{ref: "EXT_2X6" for ref in east},
     }
-    # Every stool off the mill is 5/4 at 1", except the east three, flush with the 1 1/4" slab.
+    # Every stool off the mill is 5/4 at 1", except the living room's ash: 6/4 at 1 1/4".
     for stool in stools:
         if stool.material_ref == "quartz-counter":
             continue
-        expected = 1.25 if stool.window_ref in east else 1.0
+        expected = 1.25 if stool.material_ref == "ash-stool-6q" else 1.0
         assert stool.thickness_m == pytest.approx(inch(expected).meters), stool.window_ref
     sauna = authored["WIN-B-SAUNA"]
     assert sauna.depth_m is not None and sauna.depth_m > inch(10).meters

@@ -6452,7 +6452,7 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # The identical 8' table with the shared open-corner clearance variant. Nothing about the
 # product differs, so its price matches the standard table.
 "FT-DINING-8-OPEN-CORNERS" = { low = 500, high = 3000 }  # 0 ea
-# FURN-M-DINING since 2026-10-16: owner-milled ash top (66 rough bf of 8/4 at $4-7) glued up and
+# FURN-M-DINING since 2026-10-16: owner-milled ash top (~52 rough bf of 6/4 at $4-7) glued up and
 # oiled, on a bought metal base ($300-1,200). ESTIMATE, not researched.
 "FT-CATLIN-DINING-ASH" = { low = 600, high = 1800 }  # 1 ea
 "FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 8 ea
