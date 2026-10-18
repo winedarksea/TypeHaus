@@ -29,6 +29,20 @@ circuit assignments stayed intact. The shared flood model carries its box, knuck
 head, lens and visor through the viewer, GLB and IFC. Instances live in
 `plan/porch_lighting.py`; mounting and beam regressions use the shared read-only fixtures.
 
+## Elm slats on 8/4, one piece (2026-10-18)
+
+Research flagged that one-piece elm slats ripped from flat-sawn 12/4 may bow: elm's grain
+interlocks, a rip releases stress, and the 1 1/4" gap shows any bow. Veneered MDF and
+edge-banded ply were weighed and rejected. All four faces of a slat show, 2 1/2" means
+stacking three or four sheets, banded edges chip at hip height, and MDF swells at the floor
+joint and the counter. Red oak off 8/4 was considered and declined; the slats stay elm. The
+stock is now 8/4: its 1 1/2" dressed thickness is the slat face, and the 2 1/2" depth is a rip.
+Thinner stock dries faster and holds less stress. The straightness lever is milling:
+kiln-dry, take rift sticks off the board edges, leave out the pith, rip oversize, rest, dress,
+and mill ~25% extra to reject movers. The cleats are 1 1/2 x 2 1/2 off the same stock, so slats
+are 3" shorter than the piece. `elm-slat-12q` became `elm-slat-8q`; the mantel stays 12/4 elm.
+Elm is now one log short (`notes/wood_supply.md`).
+
 ## The dry-fire lane is required: ERV east, lane 6' high (2026-10-17)
 
 The owner set the lane's minimum at 10 m by 6', and secondary to cost and structure. At

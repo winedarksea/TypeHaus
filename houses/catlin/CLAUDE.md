@@ -2746,7 +2746,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Elm slat partition (2026-10-16):** `FURN-M-LIV-SLAT-COUNTER`/`-FULL` at y=13'-0", over the
   LVP/coated-concrete joint, 60 1/2 west from the gwb: 16 1/2 on the counter (6 slats), 44 on
   the floor (16 slats), 1 1/2 x 2 1/2 American elm on a 2 3/4 pitch, cleats top and bottom
-  (`slat-partition` symbol). Ceiling cleat needs blocking between FS-S-EAST joists 144/160;
+  (`slat-partition` symbol). **8/4 stock, one piece per slat (2026-10-18)**: kiln-dried, rift
+  sticks off the board edges, rip-rest-dress, ~25% overage to reject movers; veneered MDF/ply
+  rejected (`elm-slat-8q`). Ceiling cleat needs blocking between FS-S-EAST joists 144/160;
   floor cleat fixes south of the movement joint only. The owner may split the cabinet run
   instead later.
 - **Bar and projecting back panel:**73 1/2 long, end x=376 3/8, leaving25 to the

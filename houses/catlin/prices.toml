@@ -2547,9 +2547,9 @@
 # Fillers: an offcut each, so the money is the scribe-and-fit labour.
 "FT-LIV-E-FILLER-4125" = { material = { low = 15, high = 40 }, labour = { low = 30, high = 80 } }
 "FT-LIV-E-FILLER-1" = { material = { low = 10, high = 30 }, labour = { low = 30, high = 80 } }
-# The elm slat partition (2026-10-16): 12/4 American elm at ~$7-12/bf, dressed to 2 1/2"
-# and ripped to 1 1/2" slats; `haus millwork` schedules ~92 bf (floor piece) and ~23 bf
-# (counter piece) with waste. Labour is ripping, dressing, oiling, cleats and the scribe,
+# The elm slat partition (2026-10-16; 8/4 since 2026-10-18): American elm at ~$7-12/bf,
+# 8/4 dressed to 1 1/2" and ripped to 2 1/2" slats; `haus millwork` schedules ~88 bf (floor
+# piece) and ~22 bf (counter piece) with waste, before the ~25% straightness overage. Labour is ripping, dressing, oiling, cleats and the scribe,
 # plus the ceiling blocking between FS-S-EAST's joists, which bills nowhere else.
 "FT-LIV-SLAT-ELM-FULL" = { material = { low = 650, high = 1100 }, labour = { low = 300, high = 650 } }
 "FT-LIV-SLAT-ELM-COUNTER" = { material = { low = 160, high = 280 }, labour = { low = 120, high = 300 } }

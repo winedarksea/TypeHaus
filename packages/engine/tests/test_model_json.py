@@ -465,7 +465,7 @@ def test_catalog_wood_appearance_preserves_species_and_finish_exceptions(catlin_
     materials = {m["tag"]: m for m in catlin_payload["catalog"]["materials"]}
     for tag in ("cherry-trim", "cherry-shiplap", "ash-6q", "elm-timber", "walnut-counter",
                 "ash-stool-6q", "ash-counter-6q", "elm-mantel-12q",
-                "elm-slat-12q", "catlin-sauna-shiplap", "locust-trim"):
+                "elm-slat-8q", "catlin-sauna-shiplap", "locust-trim"):
         material = materials[tag]
         assert material["color"] == NATURAL_WOOD_COLORS[material["species"]]
     # The owner's oak is red oak under one bleached Nordic finish, not its natural colour.

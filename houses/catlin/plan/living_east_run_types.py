@@ -116,12 +116,14 @@ LIVING_NORTH_FILLER = _filler(
 
 # ** THE ELM SLAT PARTITION (2026-10-16). ** Vertical American elm slats, 1 1/2" face x
 # 2 1/2" deep on a 2 3/4" pitch (a 1 1/4" gap), between a floor and a ceiling cleat of the
-# same stock. A proposal the owner can adjust; the pitch lives in the `slat-partition`
-# symbol. Each piece is whole pitches wide, so the rhythm runs on across the joint.
+# same stock. 8/4 since 2026-10-18 (was 12/4): the face is the board's dressed thickness and
+# the depth a rip, which dries and stays straighter. Veneered MDF/ply was rejected: all four
+# faces show, banded edges chip, MDF swells at the floor joint. A proposal the owner can
+# adjust; the pitch lives in the `slat-partition` symbol. Each piece is whole pitches wide, so the rhythm runs on across the joint.
 # Heights are the resolved ceiling underside (8'-11 1/2" over the datum) less the finished
 # floor (15/16") or the counter top (36 15/16" over the datum), less 1/4" to scribe.
 _SLAT_SOURCE = (
-    "Owner-built from American elm ripped from 12/4, hardwax oil. The ceiling cleat screws "
+    "Owner-built from American elm 8/4, ripped, hardwax oil. The ceiling cleat screws "
     "to 2x blocking set between FS-S-EAST's joists at 144\" and 160\" before the board goes "
     "up: y=13'-0\" falls between them and nothing else bills that blocking. The floor cleat "
     "sits over the flush LVP/coated-concrete movement joint at y=13'-0\" and fixes to the "
@@ -134,12 +136,12 @@ def _slats(tag: str, name: str, width_in: float, height_in: float, slats: int,
            where: str) -> FurnitureType:
     return FurnitureType(
         tag=tag, name=name, footprint=(inch(width_in), inch(2.5)), height=inch(height_in),
-        plan_symbol="slat-partition", wood_material_ref="elm-slat-12q",
+        plan_symbol="slat-partition", wood_material_ref="elm-slat-8q",
         cut_list=(
-            # The 2 1/2" depth is the 12/4 board's dressed thickness; the 1 1/2" face is ripped.
-            FurnitureCut(part="slat", count=slats, thickness=inch(2.5), width=inch(1.5),
-                         length=inch(height_in - 1.5)),
-            FurnitureCut(part="cleat", count=2, thickness=inch(2.5), width=inch(0.75),
+            # The 1 1/2" face is the 8/4 board's dressed thickness; the 2 1/2" depth is ripped.
+            FurnitureCut(part="slat", count=slats, thickness=inch(1.5), width=inch(2.5),
+                         length=inch(height_in - 3.0)),
+            FurnitureCut(part="cleat", count=2, thickness=inch(1.5), width=inch(2.5),
                          length=inch(width_in)),
         ),
         source=f"{where} {_SLAT_SOURCE}",
