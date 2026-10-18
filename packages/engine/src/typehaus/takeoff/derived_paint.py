@@ -46,9 +46,10 @@ _MIN_Z_OVERLAP_M = 0.3
 def derived_paint_rows(model: ResolvedModel,
                        wall_net_m2: dict[str, float]) -> list[dict[str, object]]:
     """``envelope_layers``-shaped rows: derived paint by scope, plus authored ceiling coats."""
-    from typehaus.takeoff.envelope import wall_layer_net_area_m2
+    from typehaus.takeoff.envelope import replaced_finish_m2, wall_layer_net_area_m2
 
     rooms = _used_rooms(model)
+    replaced = replaced_finish_m2(model)
     areas: dict[tuple[str, str], float] = defaultdict(float)
     for wall in model.walls:
         layers = [layer for layer in wall.layers if not layer.is_cavity]
@@ -61,7 +62,8 @@ def derived_paint_rows(model: ResolvedModel,
                 continue
             net = wall_net_m2.get(wall.tag, 0.0)
             areas[("wall (derived)", PAINT)] += fraction * sum(
-                wall_layer_net_area_m2(model, wall, layer, net) for layer in gypsum)
+                max(0.0, wall_layer_net_area_m2(model, wall, layer, net)
+                    - replaced.get((wall.tag, layer.name), 0.0)) for layer in gypsum)
 
     by_tag = {room.tag: room for room in model.rooms}
     decked: dict[str, bool] = {}

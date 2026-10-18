@@ -288,6 +288,26 @@ def test_base_and_room_stock_override_the_casing_stock(starter) -> None:
                for f in _resolved(bad)[1])
 
 
+def test_a_room_trim_can_give_the_casing_its_own_stock(starter) -> None:
+    """``casing_material_ref`` splits a ``RoomTrim``: its base keeps ``material_ref``."""
+    stocks = [Material(tag=t, name=t, species="cherry") for t in ("t-room", "t-casing")]
+    plan = _swap(_library(starter, materials=(*starter.library.materials, *stocks)),
+                 "TRIM-STANDARD",
+                 room_trims=(RoomTrim(rooms=("RM-Upper-Hall",), material_ref="t-room",
+                                      casing_material_ref="t-casing"),))
+    model, findings = _resolved(plan)
+    assert not [f for f in findings if f.check_id == "integrity.trim_standard"]
+    assert {r.material_ref for r in model.base_runs
+            if r.kind == "trim" and r.room == "RM-Upper-Hall"} == {"t-room"}
+    assert {c.material_ref for c in model.door_casings if c.room == "RM-Upper-Hall"} <= {
+        "t-casing"}
+    bad = _swap(plan, "TRIM-STANDARD",
+                room_trims=(RoomTrim(rooms=("RM-Upper-Hall",), material_ref="t-room",
+                                     casing_material_ref="no-such-stock"),))
+    assert any(f.check_id == "integrity.trim_standard" and "no-such-stock" in f.message
+               for f in _resolved(bad)[1])
+
+
 def test_the_takeoff_reconciles_to_the_records(starter) -> None:
     from typehaus.takeoff.interior_trim import interior_trim_takeoff
 
@@ -319,11 +339,13 @@ def test_catlin_base_scope_follows_the_standard_and_the_floor(catlin_model_ro) -
     assert rooms.isdisjoint({"RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM",
                              "RM-S-PLANT", "RM-GARAGE", "RM-A-POCKET",
                              "RM-A-EAST-UNFIN"})
-    # Cherry base, oak casing; the sauna is locust, base and inside casing.
+    # Cherry base, oak casing; the sauna's base is locust and its inside casing cedar.
     stock = {r.room: r.material_ref for r in catlin_model_ro.base_runs if r.kind == "trim"}
     assert stock["RM-S-HALL"] == "cherry-trim" and stock["RM-B-SAUNA"] == "locust-trim"
     assert {c.material_ref for c in catlin_model_ro.door_casings
             if c.room != "RM-B-SAUNA"} == {"oak-trim"}
+    assert {c.material_ref for c in catlin_model_ro.door_casings
+            if c.room == "RM-B-SAUNA"} == {"cedar-sauna-trim"}
     kinds = {r.room: r.kind for r in catlin_model_ro.base_runs}
     assert kinds["RM-M-BATH2"] == "tile" and kinds["RM-S-SUITEBATH"] == "tile"
     assert kinds["RM-B-BATH"] == "integral_cove" and kinds["RM-A-STUDIO"] == "integral_cove"

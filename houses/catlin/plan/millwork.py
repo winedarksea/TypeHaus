@@ -88,8 +88,9 @@ MILLWORK = [
     ),
     # Base and door casing, derived per room and per door face (resolve/interior_trim.py).
     # One size for both: 3/4" x 3 1/2" S4S, butt-jointed, flush where base meets leg. Casing
-    # is red oak; the base is black cherry (2026-10-16). The sauna's base and inside casing
-    # are black locust: no finished oak in a 190 F room.
+    # is red oak; the base is black cherry (2026-10-16). The sauna's base is black locust
+    # and its inside casing cedar (2026-10-18): no finished oak in a 190 F room. The casing
+    # stays on a lined wall: it covers the liner's cut end at the jamb.
     # The base goes in after the hard floors, so there is no shoe; carpet tucks under it.
     # A bought stock (e.g. "poplar-trim-paint") leaves `haus millwork` and is priced instead.
     # tasks.toml's trim visit names its rows by stock, so rename those there too — `haus
@@ -103,7 +104,8 @@ MILLWORK = [
         uid="KXZVF6Z652", tag="TRIM-STANDARD",
         material_ref="oak-trim",
         base_material_ref="cherry-trim",
-        room_trims=(RoomTrim(rooms=("RM-B-SAUNA",), material_ref="locust-trim"),),
+        room_trims=(RoomTrim(rooms=("RM-B-SAUNA",), material_ref="locust-trim",
+                             casing_material_ref="cedar-sauna-trim"),),
         thickness=inch(0.75),
         base_height=inch(3.5),
         casing_width=inch(3.5),
@@ -355,6 +357,7 @@ MAIN_SHELVES = [
     ShelfBank(
         uid="TPJ2J8VXZJ", tag="SB-M-FIRE-MANTEL",
         host="FURN-M-FIRE-MANTEL",
+        part="mantel",
         material_ref="elm-mantel-12q",
         thickness=inch(2.25),
         profile="S4S",

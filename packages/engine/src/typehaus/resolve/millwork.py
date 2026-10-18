@@ -319,7 +319,7 @@ def _resolve_shelf_banks(plan: PlanModel, model: ResolvedModel) -> list[Finding]
                 uid=el.uid, tag=el.tag, storey=storey.tag, host=el.host,
                 host_kind=host_kind, material_ref=el.material_ref,
                 thickness_m=el.thickness.meters, depth_m=depth, profile=el.profile,
-                procurement=el.procurement.value,
+                procurement=el.procurement.value, part=el.part,
                 shelves=shelves))
     return findings
 

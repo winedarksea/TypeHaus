@@ -49,7 +49,7 @@ def _order_area(net_ft2: float, waste: float) -> float:
 
 def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """One row per (species, material, kind): the species-split wood order."""
-    from typehaus.takeoff.envelope import wall_layer_net_area_m2
+    from typehaus.takeoff.envelope import replaced_finish_m2, wall_layer_net_area_m2
     from typehaus.takeoff.framing import _board_feet_per_ft, _order_length_ft
 
     materials = {material.tag: material for material in model.plan.library.materials}
@@ -57,8 +57,8 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
     # --- assembly FINISH layers with a species (the sauna liner) --------------------
     # The same wall walk ``envelope_layer_takeoff`` makes — run x mean top, net of
-    # openings — filtered to species-bearing FINISH layers, then net of any
-    # ``replaces_wall_finish`` paneling band on the wall (the tile splash).
+    # openings — filtered to species-bearing FINISH layers, net of the
+    # ``replaces_wall_finish`` bands on their face (the tile splash), as it is.
     openings_by_wall: dict[str, float] = defaultdict(float)
     for opening in model.openings:
         # Blind recesses are deducted per LAYER by ``wall_layer_net_area_m2`` below, from
@@ -66,10 +66,7 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         if opening.is_blind:
             continue
         openings_by_wall[opening.host_wall] += opening.width_m * opening.height_m
-    override_by_wall: dict[str, float] = defaultdict(float)
-    for paneling in model.panelings:
-        if paneling.replaces_wall_finish:
-            override_by_wall[paneling.wall_tag] += paneling.area_m2
+    replaced = replaced_finish_m2(model)
 
     liner_area: dict[str, float] = defaultdict(float)
     liner_tags: dict[str, list[str]] = defaultdict(list)
@@ -86,7 +83,7 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 continue
             layer_net = wall_layer_net_area_m2(model, wall, layer, net)
             liner_area[layer.material_ref] += max(
-                0.0, layer_net - override_by_wall[wall.tag])
+                0.0, layer_net - replaced.get((wall.tag, layer.name), 0.0))
             liner_tags[layer.material_ref].append(wall.tag)
     ceiling_area: dict[str, float] = defaultdict(float)
     ceiling_rooms: dict[str, list[str]] = defaultdict(list)

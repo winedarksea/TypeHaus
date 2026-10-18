@@ -1036,6 +1036,7 @@ class ResolvedShelfBank:
     profile: str
     procurement: str
     shelves: tuple[ResolvedShelf, ...]
+    part: str = ""
 
 
 @dataclass(frozen=True)

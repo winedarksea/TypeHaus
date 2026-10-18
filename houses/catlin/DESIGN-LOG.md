@@ -80,6 +80,11 @@ wet-room spec had leaned on white oak's closed ones.
   is weak and warp-prone, and aspen is a classic sauna board. The bearers are exactly a stock
   2x4, and nothing touches the frame, so it is bought KD fir (pitch heat-set) and comes off
   the mill order. Willow is out of the sauna. That leaves ~120 bf short of owner stock.
+- **2026-10-18: no liner behind the shower tile, and the inside casing is cedar.** The splash
+  already came off the mill order; now the priced liner nets it too (45 SF), by an engine
+  rule that also drops the gypsum behind both bath surrounds (95 SF). The casing stays: it
+  covers the liner's end at the jamb. It is the stool's cool cedar now, not locust, because
+  hands touch it; the base stays locust at the wet floor. +10 bf cedar, -10 bf locust.
 
 ## Living room east wall rework (2026-10-16)
 

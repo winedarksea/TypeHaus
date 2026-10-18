@@ -17,6 +17,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, sub
 from typehaus.takeoff.bom import bill_of_materials
 from typehaus.takeoff.cost_codes import cost_code
+from typehaus.takeoff.envelope import replaced_finish_m2
 from typehaus.takeoff.hardwood import hardwood_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
@@ -149,10 +150,10 @@ def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
         assert not row.get("also_in_envelope_layers")
 
 
-def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):
-    """The overlap contract from the other side: ``envelope_layers`` keeps billing the
-    liner at the full assembly-truth area, and only ``wood_surfaces`` nets the splash —
-    the ``also_in_envelope_layers`` flag is what says the two rows overlap on purpose."""
+def test_envelope_layers_nets_the_splash(catlin_model, bom):
+    """The overlap contract from the other side: ``envelope_layers`` bills the liner net of
+    the tile splash too (2026-10-18; it billed the 45 SF behind the shower until then), so
+    the priced row and the mill order are the same area."""
     liner_rows = [row for row in bom["envelope_layers"]
                   if row["material"] == "catlin-sauna-shiplap"
                   and row["scope"] in ("wall", "foundation wall")]
@@ -161,8 +162,27 @@ def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):
                    if any(ly.function == LayerFunction.FINISH.value
                           and ly.material_ref == "catlin-sauna-shiplap" for ly in w.layers)]
     gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
-    assert sum(float(r["net_area_sqft"]) for r in liner_rows) == pytest.approx(
-        gross, abs=0.1)
+    billed = sum(float(r["net_area_sqft"]) for r in liner_rows)
+    assert billed == pytest.approx(gross - 45.0, abs=0.1)
+    basswood = next(row for row in bom["wood_surfaces"]
+                    if row["material"] == "catlin-sauna-shiplap")
+    assert billed == pytest.approx(float(basswood["net_area_sqft"]), abs=0.1)
+
+
+def test_a_replacing_band_nets_only_the_finish_on_its_own_face(catlin_model):
+    """The splash takes the shiplap off the sauna face and leaves the liner's furring and
+    foil, and the gym face's gypsum, alone; a bath surround takes its face's gypsum."""
+    replaced = replaced_finish_m2(catlin_model)
+    assert {layer for wall, layer in replaced if wall in ("W-B-CS", "W-B-SA-N2")} == {
+        "shiplap-liner"}
+    splash = sum(area for (wall, _), area in replaced.items()
+                 if wall in ("W-B-CS", "W-B-SA-N2")) * _M2_TO_FT2
+    assert splash == pytest.approx(45.0, abs=0.05)
+    surrounds = {p.wall_tag for p in catlin_model.panelings
+                 if p.tag in ("WP-M-BATH2-SURR", "WP-A-STUBATH-SURR")}
+    # The tub-deck knee wall's room face is plywood, not a finish: nothing comes off it.
+    assert {w for w, layer in replaced if layer.startswith("gwb") and w in surrounds} == (
+        surrounds - {"W-M-TUBDK-S"})
 
 
 def test_sauna_ceiling_is_priced_and_on_the_mill_order(catlin_model, bom):

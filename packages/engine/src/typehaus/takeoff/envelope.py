@@ -138,6 +138,34 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
     return max(0.0, area)
 
 
+def replaced_finish_m2(model: ResolvedModel) -> dict[tuple[str, str], float]:
+    """(wall tag, layer name) -> face area a ``replaces_wall_finish`` band takes off it.
+
+    The band replaces the FINISH layers on its own face: the contiguous FINISH run from the
+    end of the stack its outline lies against (shiplap alone over a sauna liner's furring;
+    paint and gypsum on a bath wall). The far face and the layers behind are still built.
+    A band with no outline could not be placed on a face and nets nothing.
+    """
+    walls = {wall.tag: wall for wall in model.walls}
+    replaced: dict[tuple[str, str], float] = defaultdict(float)
+    for band in model.panelings:
+        wall = walls.get(band.wall_tag)
+        if not band.replaces_wall_finish or not band.outline or wall is None:
+            continue
+        layers = [layer for layer in wall.layers if not layer.is_cavity and layer.polygon]
+        if not layers:
+            continue
+        outline = Polygon(band.outline)
+        if (Polygon(layers[-1].polygon).distance(outline)
+                < Polygon(layers[0].polygon).distance(outline)):
+            layers.reverse()
+        for layer in layers:
+            if layer.function != LayerFunction.FINISH.value:
+                break
+            replaced[(wall.tag, layer.name)] += band.area_m2
+    return replaced
+
+
 def _blind_deduction_m2(model: ResolvedModel, wall: ResolvedWall,
                         layer: ResolvedLayer) -> float:
     """Face area the blind openings that reach ``layer`` take out of it."""
@@ -157,12 +185,15 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """
     areas: dict[tuple[str, str, str, float], float] = defaultdict(float)
     net_areas = wall_net_areas_m2(model)
+    replaced = replaced_finish_m2(model)
 
     for wall in model.walls:
         net = net_areas[wall.tag]
         scope = "foundation wall" if wall.is_foundation else "wall"
         for layer in wall.layers:
-            covered = wall_layer_net_area_m2(model, wall, layer, net)
+            # A finish a paneling band replaces (the sauna's tile splash) is not bought.
+            covered = max(0.0, wall_layer_net_area_m2(model, wall, layer, net)
+                          - replaced.get((wall.tag, layer.name), 0.0))
             # A cavity layer shares the structure layer's polygon and adds no depth; billing
             # it as its own area would order insulation for a wall band twice.
             if getattr(layer, "is_cavity", False):

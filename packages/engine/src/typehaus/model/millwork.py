@@ -117,6 +117,8 @@ class ShelfBank(Element):
     # carcass footprint depth.
     depth: Length | None = None
     profile: str = "S4S"
+    # Optional part name in the milling schedule's location column, as on FurnitureCut.
+    part: str = ""
     # A factory shelf panel can be an independent material order or already included with
     # its host cabinet/system.  Only an explicit custom-milled bank is sent to the sawyer.
     procurement: ShelfProcurement = ShelfProcurement.PURCHASED_SEPARATELY
@@ -272,10 +274,12 @@ class MillworkStandard(Element):
 
 class RoomTrim(HausModel):
     """A trim stock for named rooms — their base and the casing face inside them — that
-    differs from the house's (a sauna's rot-proof species, say). Sizes stay the standard's."""
+    differs from the house's (a sauna's rot-proof species, say). Sizes stay the standard's.
+    ``casing_material_ref`` gives the casing a stock of its own; unset, it takes the base's."""
 
     rooms: tuple[str, ...]
     material_ref: str
+    casing_material_ref: str | None = None
 
 
 @register_element
@@ -288,9 +292,10 @@ class TrimStandard(Element):
     Procurement is the material: a ``requires_custom_milling`` stock sends the boards to
     ``haus millwork``; a store-bought one is priced by the LF. ``material_ref`` is the
     casing; the base is ``base_material_ref`` when authored (else the casing's stock), and a
-    ``RoomTrim`` overrides both per room. Casing legs sit ``jamb_allowance - reveal`` inside
-    the rough opening (``ResolvedOpening.width_m``), so the allowance is the shim plus the
-    jamb: house-authored, because it is the door supplier's fact and not the engine's.
+    ``RoomTrim`` overrides both per room (or each, with its ``casing_material_ref``).
+    Casing legs sit ``jamb_allowance - reveal`` inside the rough opening
+    (``ResolvedOpening.width_m``), so the allowance is the shim plus the jamb:
+    house-authored, because it is the door supplier's fact and not the engine's.
     """
 
     material_ref: str
@@ -312,21 +317,28 @@ class TrimStandard(Element):
     # board to the longest piece, which is what a sawyer milling to order would cut.
     stock_length: Length | None = None
 
-    def _room_material(self, room: str) -> str | None:
-        return next((o.material_ref for o in self.room_trims if room in o.rooms), None)
+    def _room_trim(self, room: str) -> RoomTrim | None:
+        return next((o for o in self.room_trims if room in o.rooms), None)
 
     def base_material_for(self, room: str) -> str:
         """The base stock in ``room``: its ``RoomTrim``, else the house base."""
-        return self._room_material(room) or self.base_material_ref or self.material_ref
+        override = self._room_trim(room)
+        if override is not None:
+            return override.material_ref
+        return self.base_material_ref or self.material_ref
 
     def casing_material_for(self, room: str) -> str:
         """The casing stock on the face of a door in ``room``."""
-        return self._room_material(room) or self.material_ref
+        override = self._room_trim(room)
+        if override is not None:
+            return override.casing_material_ref or override.material_ref
+        return self.material_ref
 
     def material_refs(self) -> tuple[str, ...]:
         """Every stock this standard names, casing first."""
         refs = [self.material_ref, self.base_material_ref,
-                *(override.material_ref for override in self.room_trims)]
+                *(ref for override in self.room_trims
+                  for ref in (override.material_ref, override.casing_material_ref))]
         return tuple(dict.fromkeys(ref for ref in refs if ref))
 
     @model_validator(mode="after")

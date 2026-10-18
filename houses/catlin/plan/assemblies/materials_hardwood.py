@@ -137,12 +137,19 @@ MATERIALS_HARDWOOD = [
              color="#b77d60", finish="oak-board", species="cherry",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Milled black cherry, 4/4 dressed to 3/4\" and ripped to 3 1/2\"; hardwax oil. Cherry darkens with light: oil every face before install so the back and edges age with the front."),
-    # RM-B-SAUNA's base and inside casing (TRIM-STANDARD room_trims). Locust for rot
-    # resistance at a wet floor; left unfinished, as the liner is.
+    # RM-B-SAUNA's base (TRIM-STANDARD room_trims). Locust for rot resistance at a wet
+    # floor; left unfinished, as the liner is.
     Material(tag="locust-trim", name='Black locust sauna trim, 3/4" x 3 1/2" S4S',
              hatch="lumber", color="#b9aa68", finish="solid-board", species="locust", wood_surface="unfinished",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Milled black locust, 4/4 dressed to 3/4\" and ripped to 3 1/2\". Unfinished: no oil or film in a 190 F room. Stainless fasteners."),
+    # RM-B-SAUNA's inside door casing (2026-10-18; locust before). Hands touch it at the door,
+    # so it wants the stool's cool cedar, not the dense locust the base needs at the floor.
+    Material(tag="cedar-sauna-trim", name='Cedar sauna door casing, 3/4" x 3 1/2" S4S',
+             hatch="lumber", color="#b98a63", finish="solid-board", species="cedar",
+             wood_surface="unfinished", density=360.0,
+             nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
+             source="Owner's western red or northern white cedar, clear heartwood only, 4/4 dressed to 3/4\" and ripped to 3 1/2\". Unfinished. Stainless fasteners only: cedar extractives stain black against iron. Ease every edge. Laps the liner at the jamb; butts the locust base."),
     # WP-S-SUITE-HEADBOARD. The study wainscot stays `walnut-shiplap`.
     Material(tag="cherry-shiplap", name="Black cherry shiplap wainscot (4/4)", r_per_inch=1.1,
              density=560.0, hatch="lumber", color="#b77d60",

@@ -4090,7 +4090,7 @@
 # The sauna CEILING's boards since 2026-10-16: owner aspen (willow until 2026-10-18), the wall
 # liner's own rate below until the owner says otherwise.
 "catlin-sauna-ceiling-shiplap" = { material = { low = 3.6, high = 7.2 }, labour = { low = 6, high = 11 } }  # the ceiling, split out of the row below
-"catlin-sauna-shiplap" = { material = { low = 3.6, high = 7.2 }, labour = { low = 6, high = 11 } }  # walls only since 2026-10-16 (321.7 SF included 64.9 SF ceiling until then) — retagged from `sauna-tg` 2026-08-28, then `sauna-shiplap` -> `catlin-sauna-shiplap` when it went house-local (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate. 2026-10-16: 5/4 -> 4/4, material x0.8 for the board feet
+"catlin-sauna-shiplap" = { material = { low = 3.6, high = 7.2 }, labour = { low = 6, high = 11 } }  # walls only since 2026-10-16, and net of the 45 SF tile splash behind the shower since 2026-10-18 (321.7 SF included 64.9 SF ceiling until then) — retagged from `sauna-tg` 2026-08-28, then `sauna-shiplap` -> `catlin-sauna-shiplap` when it went house-local (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate. 2026-10-16: 5/4 -> 4/4, material x0.8 for the board feet
 # ** THE BIGGEST LINE IN THE HOUSE, and as of 2026-08-20 it is FOUR lines. ** One
 # `standing-seam` row used to carry all 6,322 SF at one rate. That was wrong in a specific,
 # expensive way: it billed the whole house at the mechanically-seamed roof's labour, and
@@ -5275,12 +5275,12 @@
 # and ~770 LF of casing at 2026-10-10. Owner-milled oak is LABOUR ONLY, the shelf and tread
 # convention: the stock is the `haus millwork` cut list. Install is butt-jointed S4S, flush
 # base-to-leg, oiled before it goes up; the base goes in after the hard floors, so no shoe.
-# 2026-10-16: the base is cherry (sauna: locust, base and inside casing); casing stays oak.
-# ESTIMATE, not researched: milled rough stock at $5-9/bf (cherry) and $4-8/bf (locust), ~0.33
-# rough bf per LF of 3/4" x 3 1/2" with waste. Labour as the oak.
+# 2026-10-16: the base is cherry (sauna: locust base, cedar inside casing since 2026-10-18);
+# casing stays oak. ESTIMATE, not researched: milled rough stock at $5-9/bf (cherry), $4-8/bf
+# (locust) and $4-8/bf (cedar), ~0.33 rough bf per LF of 3/4" x 3 1/2" with waste. Labour as the oak.
 "cherry-trim" = { material = { low = 1.6, high = 3.0 }, labour = { low = 3.0, high = 5.5 } }
 "locust-trim" = { material = { low = 1.3, high = 2.7 }, labour = { low = 3.0, high = 5.5 } }
-"locust-trim:door casing" = { material = { low = 1.3, high = 2.7 }, labour = { low = 4.0, high = 8.0 } }
+"cedar-sauna-trim:door casing" = { material = { low = 1.3, high = 2.7 }, labour = { low = 4.0, high = 8.0 } }  # D-B-SAUNA's inside face; was "locust-trim:door casing" until 2026-10-18
 "oak-trim:door casing" = { material = { low = 0, high = 0 }, labour = { low = 4.0, high = 8.0 } }
 # The store-bought switch (`material_ref = "poplar-trim-paint"`), priced so the switch shows
 # its real cost on day one: 1x4 poplar S4S at the yard, primed and painted on site (the paint

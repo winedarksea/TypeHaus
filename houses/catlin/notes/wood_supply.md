@@ -22,11 +22,11 @@ the sauna.
 |---|---|---|---|---|---|
 | red oak | many | unlimited | — | ~1,496 | none |
 | ash | 15", 12", 16" | ~144 | ~108 | ~120 (table 52, counters 46, five living-room stools 22) | **short: source one more ash log.** Boards run to ~11" (quartered ~4–6"), so the counters, table and stools are all glue-ups; the 160 5/8" slab needs a 14'+ log |
-| locust | 12", 14" | ~73 | ~44 | ~78 (sauna trim 19, seven stools 14, bath shelves 44) | **needs the owner's extra 2–3 logs.** Without them the bath shelves go to `cherry-shelf-4q`, then bought white oak (one line each in `plan/millwork.py`) |
+| locust | 12", 14" | ~73 | ~44 | ~68 (sauna base 10, seven stools 14, bath shelves 44) | **needs the owner's extra 2–3 logs.** Without them the bath shelves go to `cherry-shelf-4q`, then bought white oak (one line each in `plan/millwork.py`) |
 | elm | 20", 20" | ~218 | ~164 | ~213 (slats 114, mantel 13, posts 85) | tight; the posts need 10'+ logs; more elm is easy to get |
 | cherry | unknown | — | — | ~246 (base 175, suite wainscot 65, suite stools 6) | confirm the stack |
 | white oak (bought) | — | — | — | ~48 (17 stools, 5/4) | order ~55 bf of 5/4, select widths of 11"+ |
-| cedar (owner) | "a little" | — | — | ~2 (the sauna stool) | clear heartwood, no knots |
+| cedar (owner) | "a little" | — | — | ~12 (sauna door casing 10, the stool 2) | clear heartwood, no knots; **confirm "a little" covers three 8' boards**, else the casing goes back to locust (one line in `plan/millwork.py`) |
 | basswood | 24", 17", 16" | ~304 | ~228 | ~315 (wall liner 257, bench slats 57) | see below |
 | aspen | 16", 12" | ~91 | ~68 | ~79 (the ceiling liner) | see below |
 | willow | 14.5" | ~48 | ~36 | none since 2026-10-18 (was the ceiling) | not used in the sauna |

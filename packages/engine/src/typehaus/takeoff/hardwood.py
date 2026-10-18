@@ -340,30 +340,33 @@ def _countertop_rows(model: ResolvedModel, materials: Mapping[str, object],
 
 def _shelf_rows(model: ResolvedModel, materials: Mapping[str, object],
                 max_board_width_in: float | None) -> list[dict[str, object]]:
-    # (material, profile, thickness, depth, length) -> (board count, bank tags)
-    groups: dict[tuple[str, str, float, float, float], tuple[int, list[str]]] = {}
+    # Keep named parts separate even when their stock and finished sizes match.
+    groups: dict[tuple[str, str, str, float, float, float], tuple[int, list[str]]] = {}
     for bank in model.shelf_banks:
         if bank.procurement != "custom_milled":
             continue
         for shelf in bank.shelves:
             if shelf.depth_m is None:
                 continue
-            key = (bank.material_ref, bank.profile,
+            key = (bank.part, bank.material_ref, bank.profile,
                    round(bank.thickness_m * _M_TO_IN, 3),
                    round(shelf.depth_m * _M_TO_IN, 3),
                    round(shelf.width_m * _M_TO_IN, 2))
             count, tags = groups.get(key, (0, []))
             groups[key] = (count + shelf.count, tags + [bank.tag])
     rows = []
-    for (material_ref, profile, thickness, depth, bay_width), (count, tags) in groups.items():
+    for (part, material_ref, profile, thickness, depth, bay_width), (count, tags) in groups.items():
         # Grain runs the LONGER of the two plan dimensions, so the board's width is the
         # shorter one. Usually that is the depth and this is a no-op; where a shelf is
         # deeper than it is wide (RM-S-BATH1's alcove: 18-1/2" wide in a 30" deep carcass)
         # it is the difference between gluing up an 18-1/2" panel and a 30" one.
         width, length = sorted((depth, bay_width))
-        rows.append(_piece_row(
+        row = _piece_row(
             "shelf", material_ref, materials, count, thickness, width, length,
-            max_board_width_in, tags, {}, profile=profile))
+            max_board_width_in, tags, {}, profile=profile)
+        if part:
+            row["location"] = part
+        rows.append(row)
     return rows
 
 
