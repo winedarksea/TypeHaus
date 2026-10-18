@@ -212,16 +212,19 @@ SUPPLY = [
     # the low jog reaches x83" before rising to 83 7/16" AFF; its jacket stays below
     # the extract plenum and east of its riser and BENCH collar. The y310" jog returns
     # to the former south approach, crossing the lane above 81 7/8" clear.
+    # Its first leg runs south of the ERV case (y 28'-10") at 5'-9 1/2", not west through
+    # it at y 29'-6" (2026-10-17): the case stands 4'-6" to 6'-3 5/8" in that corridor.
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
             path=(pt(ft(8, 5.125), ft(29, 6)), pt(ft(8, 5.125), ft(29, 6)),
-                  pt(inch(83), ft(29, 6)), pt(inch(83), ft(29, 6)),
+                  pt(ft(8, 5.125), inch(346)), pt(inch(83), inch(346)),
+                  pt(inch(83), inch(346)),
                   pt(inch(83), inch(310)), pt(ft(5, 4), inch(310)),
                   pt(ft(5, 4), ft(25, 6)), pt(ft(7, 6), ft(25, 6)),
                   pt(ft(7, 6), ft(22)), pt(ft(7, 6), ft(17)),
                   pt(ft(6, 6), ft(17)), pt(ft(6, 6), ft(17)),
                   pt(ft(6, 6), ft(15, 6))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(5, 8), ft(5, 9.5), ft(5, 9.5), inch(83.4375),
+            elevations=(ft(5, 8), ft(5, 9.5), ft(5, 9.5), ft(5, 9.5), inch(83.4375),
                         inch(83.4375), inch(83.4375), inch(83.4375), ft(7, 4),
                         ft(7, 0.4375), ft(7, 0.4375), ft(7, 0.4375),
                         ft(8, 1.4375), ft(8, 1.4375)),
@@ -239,9 +242,11 @@ SUPPLY = [
                     "APPL-M-DW")),
     # Cold feed to the water heater itself (equipment, not a fixture — no fixture units).
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(4, 9), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(19, 2.4)),
-                  pt(ft(7, 6), ft(30, 6)), pt(ft(7, 6), ft(30, 6)),
-                  pt(ft(9, 1.125), ft(30, 3)), pt(ft(9, 1.125), ft(29, 6))),
+            # The drop sits south of EQ-B-WH (y 27'-6") and east of the ERV case, at
+            # 7'-9 1/2" (2026-10-17); the tank end is still reached over the heater top.
+            path=(pt(ft(4, 9), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(27, 6)),
+                  pt(inch(93.5), inch(330)), pt(inch(93.5), inch(330)),
+                  pt(ft(9, 1.125), ft(29, 6))),
             diameter=inch(1), material="copper",
             # ** THE TANK-END CONNECTION IS THE RESOLVED COLD PORT. ** The heater is rotated so
             # that port sits east at (9'-1 1/8", 29'-6"); the hot port is 8" west. The ceiling
@@ -255,7 +260,7 @@ SUPPLY = [
             # inches up is the same 2" of separation in the half of the window that is
             # empty.
             elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375),
-                        ft(8, 6.6375), ft(5, 8), ft(5, 8), ft(5, 8))),
+                        ft(8, 6.6375), ft(5, 8), ft(5, 8))),
     # Main-storey groups.
     #
     # THE BATH1 PAIR ROUTES AROUND D-M-BATH1'S DOORWAY, WHICH IS THE ONE DEFECT

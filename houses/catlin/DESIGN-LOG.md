@@ -14,6 +14,21 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## The dry-fire lane is required: ERV east, lane 6' high (2026-10-17)
+
+The owner set the lane's minimum at 10 m by 6', and secondary to cost and structure. At
+72" only `EQ-B-ERV`, its outdoor pair and its condensate stood in the lane, so the machine
+slid east (to x=6'-8 5/8", y=29'-10"; `W-B-ESS-S` pushed it 8" south) and kept its 54"
+height. Its two trunks got shorter, `DU-ERV-OA`/`-EA` gained a lane crossing at 78 1/2" AFF,
+and `PR-B-CW-WH` and `PR-B-HW-TRUNK` stepped around the case. Static went 0.374 -> 0.369 in.
+(207 cfm; `notes/erv_static_budget.md`).
+
+The condensate no longer air-gaps over `FX-B-SAUNA-FD`: the owner wanted a sink, not the
+sump or the sauna. It falls ~1.8"/ft to `FX-B-BATH-LAV`'s trap, entering the bath inside
+`W-B-STR2`'s cavity. A west slot (x 15–40") was tried at length and abandoned: the NW
+chase's riser row (y 403–411") boxed in the exhaust, and the bath sink is east of the
+lane, so nothing west of it drains by gravity. Record: `plans/dry-fire-lane.md`.
+
 ## Red oak, not white oak: the species reassignment (2026-10-16)
 
 The owner's large pile of "white oak" is red oak. Red oak is effectively unlimited and fine

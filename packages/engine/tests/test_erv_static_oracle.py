@@ -248,10 +248,9 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     elbows, 0.1338 -> 0.1685 (§6). Delivered 206.6 cfm, which still reads as 207.
     """
     message = _machine_finding(catlin_model_ro).message
-    # Dry-fire revision: the hand-worked addendum adds two riser elbows and one
-    # return elbow; extract now governs at 0.3736, delivering 206.53 cfm.
+    # ERV east of the lane (note, 2026-10-17): extract governs at 0.3688, 206.62 cfm.
     assert "extract side" in message
-    assert "0.374 in. w.g." in message
+    assert "0.369 in. w.g." in message
     assert "delivering 207 cfm" in message
 
 

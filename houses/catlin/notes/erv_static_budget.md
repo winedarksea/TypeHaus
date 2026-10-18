@@ -410,6 +410,22 @@ unchanged 0.3713 supply column. The fan curve gives
 The engine rounds this to 0.374 in. w.g. and 207 cfm. This budget covers the
 retained machine arrangement, not the unqualified full-length relocation.
 
+### ERV east of the dry-fire lane, 2026-10-17
+
+`EQ-B-ERV` moved east to (80 5/8", 358") so the lane could be required (72" clear). Four
+runs changed; developed length and elbows taken off the new geometry, priced with §2:
+
+| run | before | after | Δp before -> after |
+|---|---|---|---|
+| `DU-B-ERV-RET-TRUNK` (6") | 5.83 ft + 3 x 4.5 | 1.74 ft + 2 x 4.5 | 0.0620 -> 0.0345 |
+| `DU-ERV-EA` (8", f 0.0234) | 28.10 ft + 3 x 6.5 | 30.83 ft + 7 x 6.5 | 0.0377 -> 0.0604 |
+| `DU-ERV-OA` (8") | 13.74 ft + 4 x 6.5 | 18.07 ft + 6 x 6.5 | 0.0315 -> 0.0452 |
+| `DU-B-ERV-SUP-TRUNK` (6") | 3.03 ft + 2 x 4.5 | 0.87 ft, no elbow | 0.0386 -> 0.0028 |
+
+Extract: 0.3736 - 0.0276 + 0.0227 = **0.3688 in. w.g.** Supply: 0.3713 - 0.0358 + 0.0137 =
+0.3492, so extract still governs. Delivered: 208 - (0.3688 - 0.3) x 20 = **206.62 cfm**. The
+engine reports 0.369 in. w.g. and 207 cfm.
+
 ## 7. Broan's own instruction, and what obeying it would cost
 
 The B210E75RT installation manual carries one distribution instruction: **above 200 cfm with

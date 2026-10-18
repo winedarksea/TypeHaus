@@ -203,11 +203,15 @@ def test_the_intake_riser_is_out_of_the_chase_and_in_the_closet(catlin_model) ->
     assert oa.diameter_m == pytest.approx(8 * M_PER_IN)
     radius = oa.diameter_m / M_PER_IN / 2.0
 
-    verticals = [a for a, b in zip(oa.path, oa.path[1:])
+    verticals = [(a, max(za, zb)) for a, b, za, zb in zip(oa.path, oa.path[1:], oa.z_m, oa.z_m[1:])
                  if abs(a[0] - b[0]) < 1e-9 and abs(a[1] - b[1]) < 1e-9]
-    # Two: the storey drop at x=3'-4" and the short fall onto the machine's port at x=3'-8".
-    assert len(verticals) == 2, [v[0] / M_PER_IN for v in verticals]
-    for vertex in verticals:
+    # Three: the storey drop at x=3'-4", the basement drop to the lane-crossing level beside
+    # it, and the fall onto the machine's port at x=6'-2" (east of the dry-fire lane since
+    # 2026-10-17). Only the first rises through the main storey, so only it is the riser.
+    assert len(verticals) == 3, [v[0][0] / M_PER_IN for v in verticals]
+    risers = [vertex for vertex, top in verticals if top > 0]
+    assert len(risers) == 1
+    for vertex in risers:
         x = vertex[0] / M_PER_IN
         lo, hi = x - radius, x + radius
         assert lo > _SHAFT_X[1], f"DU-ERV-OA spans x {lo:.3f}..{hi:.3f}, back inside the shaft"

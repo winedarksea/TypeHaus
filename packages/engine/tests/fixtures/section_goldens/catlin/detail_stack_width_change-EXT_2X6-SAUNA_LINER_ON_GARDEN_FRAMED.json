@@ -1276,13 +1276,13 @@
           -11.875
         ]
       ],
-      "pattern": "catlin-sauna-shiplap",
+      "pattern": "catlin-sauna-ceiling-shiplap",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "catlin-sauna-shiplap",
-      "fill": "#e5dcc4"
+      "material": "catlin-sauna-ceiling-shiplap",
+      "fill": "#e3d6bd"
     },
     {
       "space": "model",

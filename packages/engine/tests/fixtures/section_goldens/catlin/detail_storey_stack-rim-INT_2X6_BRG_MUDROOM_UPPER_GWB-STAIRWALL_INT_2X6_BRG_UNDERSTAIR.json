@@ -1380,8 +1380,8 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "white-oak-8-4",
-      "fill": "#c4b18c"
+      "material": "oak-8q",
+      "fill": "#d6c9b3"
     },
     {
       "space": "model",

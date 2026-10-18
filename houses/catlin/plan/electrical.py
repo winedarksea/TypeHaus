@@ -321,14 +321,13 @@ BASEMENT_EQUIPMENT = [
     # makes water into (plan/mep_drainage.py). The footprint on the element is
     # documentation; the TYPE's 24.8" x 21" is what resolves.
     #
-    # Position (3'-11 1/2", 30'-6"): the case's north-east corner is 1 1/2" clear of
-    # EQ-B-ESS-BATT's 36" REQUIRED separation zone (x 49 1/4"..145 1/4", y 378"..460"), which
-    # `advisory.ess_clearance` grades as a rectangle, not a radius, and clear of
-    # ED-B-BACKUP-ENCL's 36" NEC 110.26 working space. Every ERV branch is authored off the
-    # two manifolds (plan/mep_erv_l1.py), not off the machine, and PR-B-ERV-COND's drop at
-    # (3'-11", 30'-9") is still under the case.
+    # Position (6'-8 5/8", 29'-10"), east of the dry-fire lane (2026-10-17). Its north edge
+    # stops 1 1/8" short of W-B-ESS-S (y 369 5/8"), which is why it moved south from 30'-6".
+    # Clear of EQ-B-ESS-BATT's 36" REQUIRED separation zone (x 49 1/4"..145 1/4", y 378"..460")
+    # and of EQ-B-WH's west face. Every ERV branch is authored off the two manifolds
+    # (plan/mep_erv_l1.py), not off the machine.
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
-              position=pt(ft(3, 11.5), ft(30, 6)), footprint=(inch(24.8), inch(21)),
+              position=pt(ft(6, 8.625), ft(29, 10)), footprint=(inch(24.8), inch(21)),
               room="RM-B-FURNACE", type_ref="EQ-T-BROAN-B210E75RT", circuit="CKT-ERV",
               # HUNG, not floor-standing. Two reasons and the second is the binding one: a
               # Broan ships with hanging straps and this is how the unit installs, and a
@@ -343,8 +342,8 @@ BASEMENT_EQUIPMENT = [
               # (plan/mep_erv_l1.py) a 6'-10 7/16"
               # crossing band: 1 5/8" under the 7'-6" radial layer, 6 13/16" over this case,
               # and 6'-7 3/8" of headroom beneath — over R305.1.1's 6'-4" basement
-              # projection floor. PR-B-ERV-COND (plan/mep_drainage.py) falls 0.3"/ft from the
-              # pan to FX-B-SAUNA-FD.
+              # projection floor. PR-B-ERV-COND (plan/mep_drainage.py) falls by gravity from
+              # the pan to FX-B-BATH-LAV.
               mount=Mount(kind=MountKind.CEILING, elevation=ft(4, 6)),
               pan_drain_ref="PR-B-ERV-COND",
               # Its fresh air reaches the second storey through EQ-S-ERV-MIX and this AH's

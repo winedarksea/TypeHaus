@@ -201,25 +201,18 @@ DUCTS_ERV_BASEMENT = [
     # ** THE MACHINE'S OWN TWO TRUNKS. ** Both are 6", the machine's full 210 cfm, and both
     # leave its top.
     #
-    # THE SUPPLY TRUNK RUNS EAST FIRST AND RISES SECOND, which is the reverse of how it was
-    # drawn and is the whole of its fix. It used to stand straight up off the port at
-    # x=4'-9" — 3" from PR-B-KITCH-DRAIN's x=4'-6" fall line, where a 6" trunk and a 3"
-    # drain need 4 3/16" — and reported against it for 2 7/8" of elevation. Held at the
-    # machine's own port level for the first 2'-0", it passes ten inches under the drain
-    # instead and turns up into EQ-B-ERV-MAN-SUP's underside at x=6'-9", east of it.
+    # (2026-10-17) The ERV sits at x=6'-8 5/8", so both trunks leave its top inside the case.
+    # The supply turns up into EQ-B-ERV-MAN-SUP's underside at x=7'-0", clear of R-GYM.
     DuctRun(uid="225MZ1YDWB", tag="DU-B-ERV-SUP-TRUNK", system=DuctSystem.SUPPLY,
-            path=(pt(ft(4, 9), ft(30, 4)), pt(ft(6, 9), ft(30, 4)),
-                  pt(ft(6, 9), ft(30, 6)), pt(ft(6, 9), ft(30, 6))),
-            elevations=(inch(75.6), inch(75.6), inch(75.6), ft(7, 2)),
+            path=(pt(inch(84), ft(30, 6)), pt(inch(84), ft(30, 6))),
+            elevations=(inch(75.6), ft(7, 2)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
-    # Keep the return below the collars, but east of the clear lane until y357".
-    # Its westward leg clears the lane's north end by 2" at the duct envelope.
+    # (2026-10-17) Off the case's north-east top, under the collars. Nothing west of x=6'-0".
     DuctRun(uid="6BTCWW2S1V", tag="DU-B-ERV-RET-TRUNK", system=DuctSystem.RETURN,
-            path=(pt(ft(7, 4.5), ft(28, 6)), pt(ft(7, 4.5), ft(28, 6)),
-                  pt(inch(74), ft(28, 6)), pt(inch(74), inch(357)),
-                  pt(ft(3, 8), ft(29, 9))),
-            elevations=(ft(7, 2), inch(75.6), inch(75.6), inch(75.6), inch(75.6)),
+            path=(pt(inch(86), ft(29, 2)), pt(ft(7, 4.5), ft(29, 2)),
+                  pt(ft(7, 4.5), ft(28, 6)), pt(ft(7, 4.5), ft(28, 6))),
+            elevations=(inch(75.6), inch(75.6), inch(75.6), ft(7, 2)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
     # ** NEITHER RADIAL CROSSES ST-B2M ANY MORE (2026-09-22). ** Both used to ride the

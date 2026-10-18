@@ -69,10 +69,29 @@ def test_erv_condensate_stays_outside_the_dry_fire_lane(catlin_model_ro):
     from typehaus.quantities import M_PER_IN
     from typehaus.resolve.mep_envelopes import envelopes as run_envelopes
 
-    lane = box(40.5 * M_PER_IN, 13 * M_PER_IN, 68 * M_PER_IN, 352 * M_PER_IN)
+    lane = box(40.5 * M_PER_IN, 8.0625 * M_PER_IN, 68 * M_PER_IN, 411.625 * M_PER_IN)
     condensate = next(run for run in catlin_model_ro.pipe_runs if run.tag == "PR-B-ERV-COND")
     assert all(prism.footprint.intersection(lane).area == 0
                for prism in next(e for e in run_envelopes(catlin_model_ro) if e.tag == condensate.tag).prisms)
+
+
+def test_erv_condensate_falls_to_the_bath_lavatory(catlin_model_ro):
+    """No pump and no sump (owner, 2026-10-17): the line falls the whole way and ends over
+    FX-B-BATH-LAV's trap, above the weir."""
+    import math
+
+    from typehaus.quantities import M_PER_IN
+    from typehaus.resolve.room_floor import room_floor_elevation
+
+    run = next(r for r in catlin_model_ro.pipe_runs if r.tag == "PR-B-ERV-COND")
+    assert run.path[-1] == pytest.approx((144 * M_PER_IN, 224.375 * M_PER_IN))
+    bath = next(r for r in catlin_model_ro.rooms if r.tag == "RM-B-BATH")
+    assert (run.z_m[-1] - room_floor_elevation(catlin_model_ro, bath)) / M_PER_IN == pytest.approx(24)
+    for a, b, za, zb in zip(run.path, run.path[1:], run.z_m, run.z_m[1:]):
+        run_ft = math.dist(a, b) / M_PER_IN / 12
+        assert za - zb >= 0
+        if run_ft > 0:
+            assert (za - zb) / M_PER_IN / run_ft >= 0.125
 
 
 def test_confirmed_hydrant_backflow_station_sits_on_the_entry_riser(catlin_model_ro):
@@ -262,11 +281,8 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     # to be piped into a drain at all. A new run silently missing its tie-in would show up
     # here as an extra terminal, understating every load downstream of it.
     #
-    # PR-B-ERV-COND is an air gap for the same reason PR-B-COND beside it is: the ERV's
-    # core makes water, the condensate main it would otherwise tie into runs 10" above the
-    # highest a hung 21.6" case can put its spigot under an 8'-0 15/16" basement ceiling,
-    # and there is no gravity connection to be made (plan/mep_drainage.py). Both air-gap
-    # over FX-B-SAUNA-FD.
+    # PR-B-ERV-COND ends over FX-B-BATH-LAV's trap (since 2026-10-17), not on a drain run,
+    # so it stays a terminal. PR-B-COND still air-gaps over FX-B-SAUNA-FD.
     ties = drain_tie_ins(drains)
     terminals = {r.tag for r in drains} - set(ties)
     #

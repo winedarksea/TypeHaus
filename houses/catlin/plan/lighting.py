@@ -182,8 +182,8 @@ BASEMENT_LIGHTING = [
     # 60 VA part leaves +0.44 kWh; `test_backup_calc.py` is the assertion.
     #
     # ** ON THE WORKSHOP FACE OF W-B-SA-N (y=10'-3 13/16"), NOT IN THE SAUNA. ** x=10'-0"
-    # keeps the 8" box 6 3/16" clear of W-B-SA-W's corner and west of PR-B-ERV-COND's drop
-    # at x=13'. A device footprint is a plan rectangle CENTRED on `position` (the
+    # keeps the 8" box 6 3/16" clear of W-B-SA-W's corner and clear of the
+    # sauna's north service strip. A device footprint is a plan rectangle CENTRED on `position` (the
     # ED-B-WORKSHOP-SW block above works the same arithmetic), so the centre sits half the
     # box's plan depth off the face and the back lands flush. 48" AFF is reach height:
     # the OMNIDRIVE X wants a driver accessible and ventilated, which a ceiling box is not.

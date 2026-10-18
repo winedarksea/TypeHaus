@@ -644,7 +644,7 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     # The sauna's own ceiling — T&G over foil-polyiso, over furring — bills under its own
     # materials at its clear-face area, not under the blanket gwb row it carved itself out
     # of.
-    sauna_tg = ceiling[("catlin-sauna-shiplap", 0.75)]
+    sauna_tg = ceiling[("catlin-sauna-ceiling-shiplap", 0.75)]
     assert float(sauna_tg["net_area_sqft"]) == pytest.approx(sauna_net, abs=0.5)
 
 

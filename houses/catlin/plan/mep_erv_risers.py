@@ -267,13 +267,15 @@ DUCTS_ERV_RISERS = [
             # storey's floor zone. It never reaches the main deck or this riser's +5'-0".
             # y=34'-1" since 2026-09-23: with its 2" wrap the 33'-11" station stood 1/4"
             # inside W-M-MECH-S's face.
+            # (2026-10-17) The ERV moved east out of the lane. The last leg turns east at
+            # 78 1/2" AFF (its 2" wrap clears the lane's 72" line), under the sauna supply,
+            # to its port at x=6'-2".
             path=(pt(ft(3, 4), ft(36, 8)), pt(ft(3, 4), ft(34, 1)),
                   pt(ft(3, 4), ft(34, 1)), pt(ft(3, 4), ft(31, 1)),
-                  pt(ft(3, 8), ft(31, 1)), pt(ft(3, 8), ft(31, 1))),
-            # The basement leg is at -21" since 2026-09-23, so DU-ERV-EA's -33.8" leg west
-            # along y=34'-9.8" passes under this riser's elbow.
+                  pt(ft(3, 4), ft(31, 1)), pt(ft(3, 4), ft(29, 3)),
+                  pt(ft(6, 2), ft(29, 3)), pt(ft(6, 2), ft(29, 3))),
             elevations=(inch(60), inch(60), inch(-21), inch(-21),
-                        inch(-21), inch(-33.8375)),
+                        inch(-30.9375), inch(-30.9375), inch(-30.9375), inch(-33.8375)),
             # ** 8", AND THE MOVE IS WHAT PAID FOR IT. ** notes/erv_static_budget.md §7 had
             # priced this upsize for weeks as the one remaining lever on what was then the
             # governing supply column, and it was blocked not by money but by the chase: at
@@ -324,11 +326,14 @@ DUCTS_ERV_RISERS = [
             # 35'-0" its 12" wrapped section stood an inch inside W-B-N4.
             # Off the machine's port face at (4'-10 1/2", 31'-2 1/2") since 2026-09-24: at
             # (4'-7", 31'-1") its 2" wrap touched DU-ERV-OA's, 11" away.
-            path=(pt(inch(58.5), inch(374.5)), pt(inch(58.5), inch(417.5)),
-                  pt(inch(24.625), inch(417.5)),
-                  pt(inch(24.625), inch(417.5)), pt(inch(24.625), ft(36, 8))),
-            elevations=(inch(-33.8375), inch(-33.8375), inch(-33.8375),
-                        inch(204), inch(204)),
+            # (2026-10-17) Its port moved east with the ERV. It leaves the case's west edge at
+            # 78 1/2" AFF (its 2" wrap clears the lane's 72" line) and joins the north leg.
+            path=(pt(inch(74), inch(363)), pt(inch(74), inch(363)), pt(inch(58.5), inch(363)),
+                  pt(inch(58.5), inch(418.5)), pt(inch(52), inch(418.5)),
+                  pt(inch(52), inch(418.5)), pt(inch(24.625), inch(418.5)),
+                  pt(inch(24.625), inch(418.5)), pt(inch(24.625), ft(36, 8))),
+            elevations=(inch(-33.8375), inch(-30.9375), inch(-30.9375), inch(-30.9375),
+                        inch(-30.9375), inch(-33.8375), inch(-33.8375), inch(204), inch(204)),
             # ** 8", NOT 6" (owner, in the measured package). ** This is the single biggest
             # lever in the static budget and the note prices it: the discharge leg is the
             # long one on the extract chain's worst path, and area goes as d^2 while friction

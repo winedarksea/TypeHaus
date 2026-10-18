@@ -57,11 +57,12 @@ def _point_along_trunk(trunk, distance_in):
 
 
 def _pex_branch(model, tag, distance_in, plan_off_in=0.0):
-    """A PEX branch teeing ``distance_in`` along the real trunk and running 3' north."""
+    """A PEX branch teeing ``distance_in`` along the real trunk and running 3' south, away
+    from the heater (the trunk's first leg runs south off the tap since 2026-10-17)."""
     trunk = next(r for r in model.pipe_runs if r.tag == "PR-B-HW-TRUNK")
     x, y, z = _point_along_trunk(trunk, distance_in)
     x += plan_off_in * _IN
-    return replace(trunk, uid=tag, tag=tag, path=((x, y), (x, y + 0.9144)),
+    return replace(trunk, uid=tag, tag=tag, path=((x, y), (x, y - 0.9144)),
                    z_m=(z, z), z_start_m=z, z_end_m=z, length_m=0.9144, material="pex")
 
 

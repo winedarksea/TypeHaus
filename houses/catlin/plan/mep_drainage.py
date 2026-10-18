@@ -566,38 +566,21 @@ LAUNDRY_MAIN = [
 # foot deck. Both outlets are 9" AFF over the floor grate. Horizontal legs fall 0.3"/ft.
 # --- the ERV's condensate ---------------------------------------------------------------
 #
-# A cold-climate ERV core makes water — on the order of a gallon or two a day at this flow
-# against -15 F outdoor air — and EQ-B-ERV had no drain at all. `pan_drain_ref` on the unit
-# names this run.
+# A cold-climate ERV core makes water, on the order of a gallon or two a day at this flow
+# against -15 F outdoor air. `pan_drain_ref` on EQ-B-ERV names this run.
 #
-# **It shares FX-B-SAUNA-FD rather than tying into PR-B-COND, and the arithmetic is why.**
-# PR-B-COND's horizontal leg is at 85" and change where it passes x=13'-6", because it is
-# carrying the main storey's heads down from 7'-5 3/8". The basement's clear height is
-# 8'-0 15/16" and the Broan's case is 21.6" tall, so the highest its spigot can possibly sit
-# is about 75" — ten inches BELOW the tie-in. There is no gravity connection to be made, and
-# the alternative the plan floated (the mechanical-room sink) still has no drain of its own,
-# which is the same plans/TODO.md open item it predicted this would land on.
-#
-# So it runs its own line to the same receptor, dropping in the north wall 6" west of
-# PR-B-COND's drop: two air gaps over one trapped floor drain that sees
-# water in normal use, which is the whole reason that receptor was chosen in the first place.
-# 0.3"/ft across both horizontal legs, the same grade as its neighbour and above IRC
-# ch. 4714 (UPC) 708.0's 1/4"/ft minimum.
-#
-# The pan sits below the door head, so this gravity line crosses east north of the
-# dry-fire lane, then stays in the furnace room's east half. x=90" crosses W-B-CW3
-# between its 81" and 97" studs; y=207" is the workshop's north service strip.
-# Every horizontal holds 0.3"/ft. The final drop remains in W-B-SA-N's cavity,
-# ending 9" over FX-B-SAUNA-FD through the existing 23.59" indirect-waste leg.
+# ** GRAVITY TO THE BATH LAVATORY, NOT THE SUMP (owner, 2026-10-17). ** The run leaves the
+# pan, south out of the case to y 28'-4", east along EQ-B-WH's south face to x 9'-7 1/2",
+# then south there, west of W-B-STR3, to y 18'-8 3/8", and east through W-B-STR2's cavity to
+# the lavatory drain at 12'-0". It falls about 1.8"/ft (no pump; 1/8"/ft is the floor) and
+# ends 24" AFF, over the trap weir.
 ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(ft(3, 11), ft(30, 9)), pt(ft(7, 6), ft(30, 9)),
-                  pt(ft(7, 6), ft(17, 3)), pt(ft(13), ft(17, 3)),
-                  pt(ft(13), ft(10, 1.4375)), pt(ft(13), ft(10, 1.4375)),
-                  pt(inch(160), inch(98.1875))),
+            path=(pt(inch(80.6), inch(352)), pt(inch(80.6), inch(340)),
+                  pt(inch(115.5), inch(340)), pt(inch(115.5), inch(224.375)),
+                  pt(inch(144), inch(224.375))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(54), inch(52.925), inch(48.875), inch(47.225),
-                        inch(45.0859375), inch(9.589789422), inch(9))),
+            elevations=(inch(52.5), inch(50.71), inch(45.5), inch(28.26), inch(24))),
 ]
 
 # ** THE COLLECTOR MOVED ONTO THE SERVICE BAND, AND THE HEAD CAME UP 2 5/8" (2026-09-09). **

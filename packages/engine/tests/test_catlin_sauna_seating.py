@@ -147,8 +147,9 @@ def test_removable_decks_preserve_drain_and_exhaust(catlin_model_ro):
 def test_condensate_outlets_land_over_grate_and_clear_joinery(catlin_model_ro):
     model = catlin_model_ro
     drain = next(o for o in model.canvas_objects if o.tag == "FX-B-SAUNA-FD")
-    runs = [r for r in model.pipe_runs if r.tag in {"PR-B-COND", "PR-B-ERV-COND"}]
-    assert len(runs) == 2
+    # PR-B-ERV-COND drains to FX-B-BATH-LAV since 2026-10-17 (test_plumbing_pass.py).
+    runs = [r for r in model.pipe_runs if r.tag == "PR-B-COND"]
+    assert len(runs) == 1
     for run in runs:
         radius = run.diameter_m / 2
         assert Polygon(drain.footprint).covers(Point(run.path[-1]).buffer(radius))
