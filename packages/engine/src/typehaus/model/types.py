@@ -88,6 +88,9 @@ class DoorType(HausModel):
     # toward (EzyJamb-type); "push" is set at the far face of a full-depth jamb, behind a
     # rebated stop, so an in-swing door reads near-flush on the side it is pushed from.
     leaf_set: Literal["pull", "push"] = "pull"
+    # Surface appearance only; None inherits the type/product default.
+    frame_material_ref: str | None = None
+    leaf_material_ref: str | None = None
     # Type-level engineered-header default (e.g. '2-ply 14" LVL') for openings wide enough
     # that the solver's dimensional-lumber header tables don't apply; a Door instance's
     # own header_spec wins over this.

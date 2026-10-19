@@ -46,20 +46,24 @@ class _SceneBuilder:
         self._buffer_views: list[dict] = []
         self._accessors: list[dict] = []
         self._materials: list[dict] = []
-        self._material_index: dict[tuple[float, float, float, float], int] = {}
+        self._material_index: dict[tuple, int] = {}
         self._meshes: list[dict] = []
         self._nodes: list[dict] = []
         self._shared: dict[str, int] = {}
 
-    def _material(self, color: tuple[float, float, float, float]) -> int:
-        index = self._material_index.get(color)
+    def _material(self, color: tuple[float, float, float, float], surface=None) -> int:
+        key = (color, surface)
+        index = self._material_index.get(key)
         if index is None:
             index = len(self._materials)
-            self._material_index[color] = index
+            self._material_index[key] = index
             translucent = color[3] < 1.0
             # Generated parts are bucketed by palette colour throughout the exporter.
             # Preserve the mirror role's polished finish instead of the massing default.
             mirror = color == PART_COLORS["mirror"]
+            roughness, metalness = surface or (
+                (MIRROR_SURFACE_PROPERTIES["roughness"], MIRROR_SURFACE_PROPERTIES["metalness"])
+                if mirror else (0.9, 0.0))
             self._materials.append({
                 # A name gives Revit/SketchUp's material browser something other than an
                 # anonymous "Material_0" to show — cosmetic, but it is what a human continuing
@@ -70,8 +74,8 @@ class _SceneBuilder:
                 "name": _color_name(color),
                 "pbrMetallicRoughness": {
                     "baseColorFactor": list(color),
-                    "metallicFactor": MIRROR_SURFACE_PROPERTIES["metalness"] if mirror else 0.0,
-                    "roughnessFactor": MIRROR_SURFACE_PROPERTIES["roughness"] if mirror else 0.9,
+                    "metallicFactor": metalness,
+                    "roughnessFactor": roughness,
                 },
                 "alphaMode": "BLEND" if translucent else "OPAQUE",
                 # Opaque solids are single-sided with verified outward winding (what Revit/
@@ -83,7 +87,8 @@ class _SceneBuilder:
 
     def add_object(self, mb: _MeshBuilder, trades: tuple[str, ...] | str,
                    kind: str | None = None, uid: str | None = None,
-                   facet: str | None = None, category: str | None = None) -> None:
+                   facet: str | None = None, category: str | None = None,
+                   material_surfaces: dict | None = None) -> None:
         """Emit one node for ``mb``'s geometry, tagged so the UI can classify and select it.
 
         ``kind`` is one of ``_SELECTION_KINDS`` — the same vocabulary the live viewer's pick
@@ -119,7 +124,8 @@ class _SceneBuilder:
                                       tri_normals)
             primitives.append({
                 "attributes": {"POSITION": pos_acc, "NORMAL": nrm_acc},
-                "material": self._material(color),
+                "material": self._material(
+                    color, material_surfaces.get(color) if material_surfaces else None),
             })
         if not primitives:
             return

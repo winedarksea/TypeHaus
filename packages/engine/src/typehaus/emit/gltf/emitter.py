@@ -157,7 +157,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         mb = _MeshBuilder()
         door_type = door_types.get(op.type_ref)
         operation = door_type.operation if op.is_door and door_type is not None else None
-        _add_opening_filling(mb, host, op, operation,
+        surfaces = _add_opening_filling(mb, host, op, operation,
                              is_glazed=op.is_door and door_type is not None and door_type.glazed,
                              is_trimless=(op.is_door and door_type is not None
                                            and door_type.trimless),
@@ -165,7 +165,8 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                                             if door_type is not None else None),
                              authored=authored,
                              leaf_set=door_type.leaf_set if door_type is not None else "pull")
-        scene.add_object(mb, ("openings",), kind="opening", uid=op.uid)
+        scene.add_object(mb, ("openings",), kind="opening", uid=op.uid,
+                         material_surfaces=surfaces)
 
     openings_by_tag = {opening.tag: opening for opening in model.openings}
     for stool in sorted(model.window_stools, key=lambda item: item.uid):

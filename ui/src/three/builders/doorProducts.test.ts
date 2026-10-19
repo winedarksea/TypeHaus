@@ -26,8 +26,7 @@ export function runTrimlessGlazedDoorTests() {
       const picks: THREE.Mesh[] = [];
       const byUid = new Map<string, THREE.Material[]>();
       buildOpening(group, { ...opening, flip_swing: flipSwing }, wall, [0, 0], "nordic",
-        RESOLVED_NORDIC_PALETTE.light, "swing", picks, byUid, true, true,
-        undefined, undefined, leafSet);
+        RESOLVED_NORDIC_PALETTE.light, { operation: "swing", glazed: true, trimless: true, leafSet }, picks, byUid);
       const meshes = group.children as THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>[];
       const panes = meshes.filter((mesh) => mesh.material.transparent);
       assert(panes.length === 1 && panes[0].material.opacity === 0.48,

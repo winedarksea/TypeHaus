@@ -215,6 +215,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.rebar.build import resolve_rebar
 
         model.rebar = resolve_rebar(model)
+    from typehaus.resolve.door_product_spec import resolve_door_products
+
+    resolve_door_products(model)
     with _stage("geometry"):
         # Last: every earlier stage's records are inputs to it. The emitters read this
         # instead of re-deriving solids from the records themselves.

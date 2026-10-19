@@ -79,7 +79,9 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         if host is None:
             continue
         door_type = door_types.get(o.type_ref)
-        if o.is_door and door_type is not None and door_type.bookcase_door is not None:
+        if (o.is_door and door_type is not None
+                and (door_type.bookcase_door is not None or o.cased_product is not None
+                     or o.effective_frame_material_ref or o.effective_leaf_material_ref)):
             boards = [solid for part in opening_parts(
                 host, o, door_type.operation, bookcase_door=door_type.bookcase_door)
                 for solid in part.solids]

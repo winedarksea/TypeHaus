@@ -39,7 +39,8 @@ ELEMENT_KEYS = categories_where(finish_group="element") | frozenset({
 # frame's reveal and lever sets (resolve/geometry_door_products.py); and the white-oak face
 # on a purchased Murphy bookcase door (resolve/geometry_bookcase_door.py).
 ACCESSORY_KEYS = categories_where(finish_group="accessory") | frozenset({
-    "corner_trim", "drip_edge", "window_trim", "overhead_door", "door_leaf", "shadow_gap",
+    "corner_trim", "drip_edge", "window_trim", "overhead_door", "door_leaf", "door_frame",
+    "shadow_gap",
     "door_hardware", "oak_bookcase",
 })
 

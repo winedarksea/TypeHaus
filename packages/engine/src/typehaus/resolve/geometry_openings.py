@@ -1,24 +1,20 @@
-"""The door/window *product* in a wall's opening void: frame, mullion, leaf, glazing.
+"""Door/window products fitted inside their existing modeled opening voids.
 
-Moved out of ``emit/gltf/openings.py``, which was one half of a documented cross-language
-mirrored pair with ``ui/src/three/builders/walls.ts::buildOpening`` — two hand-maintained
-copies of the same eleven constants, which is exactly the drift this IR exists to end. The
-constants live here now; the glTF emitter re-exports them so the pair's Python side keeps its
-public names. The TS copy stays — the viewer's own render path is not being retired (see
-``WHOLE_HOUSE_GLB_PRIMARY``) — so `tests/test_gltf_opening_fillings.py` is what keeps the two
-in step, and a change here still has to be made there.
-
-The product is a stack of boxes laid out in the wall's own frame: a four-piece frame, then a
-single panel, French leaves, slider panels, bifold leaves, or glazing. Box order is preserved
-exactly as the emitter drew it, so the switch-over is a byte-for-byte diff rather than a
-re-blessing.
+Cased interior swing/pocket doors consume the resolved ``cased_product`` specification
+and delegate shapes to ``geometry_cased_doors``. Concealed and bookcase products keep
+separate builders; windows and other operations retain the schematic frame recipe here.
+Applied interior casing belongs to millwork, independently of these jamb/leaf finishes.
+The live viewer mirrors the shapes, with per-box parity fixtures for cased products.
 """
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from typehaus.model.enums import DoorOperation
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_bookcase_door import bookcase_door_parts
+from typehaus.resolve.geometry_cased_doors import cased_door_parts
 from typehaus.resolve.geometry_door_products import (
     concealed_frame_parts,
     concealed_leaf,
@@ -27,7 +23,7 @@ from typehaus.resolve.geometry_door_products import (
     hardware_part,
     lever_solids,
 )
-from typehaus.resolve.geometry_ir import GPart, GPrism
+from typehaus.resolve.geometry_ir import GPart, GPrism, PartCatalogRef
 from typehaus.resolve.geometry_walls import is_raked, wall_top_at
 from typehaus.resolve.model import ResolvedWall
 
@@ -104,7 +100,7 @@ def _exterior_face(wall: ResolvedWall) -> tuple[float, float] | None:
     return plane, sign
 
 
-def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
+def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                   is_glazed: bool = False, is_trimless: bool = False,
                   bookcase_door=None, leaf_set: str = "pull") -> tuple[GPart, ...]:
     """Every solid the product inside ``opening`` contributes, grouped into named parts.
@@ -171,6 +167,8 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     mid_elev = z0 + sill + available_height / 2.0
     hinge_sign, swing_sign = handing(opening)
     faces = finish_faces(wall)
+    if getattr(opening, "cased_product", None) is not None:
+        return cased_door_parts(box, opening.cased_product, hinge_sign, swing_sign)
     if (is_trimless and opening.kind == "door" and faces is not None
             and operation in (None, DoorOperation.SWING)):
         parts.extend(concealed_frame_parts(box, faces, swing_sign, width, z0 + sill,
@@ -331,3 +329,24 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     if hardware is not None:
         parts.append(hardware)
     return tuple(parts)
+
+
+def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
+                  is_glazed: bool = False, is_trimless: bool = False,
+                  bookcase_door=None, leaf_set: str = "pull") -> tuple[GPart, ...]:
+    """Product shapes with independent frame/leaf surface refs; casing stays separate."""
+    parts = _opening_parts(wall, opening, operation, is_glazed=is_glazed,
+                           is_trimless=is_trimless, bookcase_door=bookcase_door,
+                           leaf_set=leaf_set)
+    if opening.kind != "door" or bookcase_door is not None:
+        return parts
+    frame_keys = {"frame", "jamb_liner", "stop", "mullion", "sliding_stile"}
+    leaf_keys = {"leaf", "sliding_panel", "bifold_leaf"}
+    result = []
+    for part in parts:
+        field = ("effective_frame_material_ref" if part.key in frame_keys else
+                 "effective_leaf_material_ref" if part.key in leaf_keys else None)
+        ref = getattr(opening, field, None) if field else None
+        result.append(replace(part, catalog=PartCatalogRef(material_ref=ref, role=part.key))
+                      if ref else part)
+    return tuple(result)

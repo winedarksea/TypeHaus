@@ -279,7 +279,38 @@ export interface Wall {
   members: Member[];
 }
 
+export interface CasedDoorSpec {
+  frame_material_ref: string | null;
+  leaf_material_ref: string | null;
+  operation: "swing" | "pocket";
+  width_m: number;
+  base_z_m: number;
+  head_z_m: number;
+  finished_floor_z_m: [number, number];
+  finish_faces_m: [number, number];
+  jamb_allowance_m: number;
+  jamb_thickness_m: number;
+  casing_reveal_m: number;
+  leaf_gap_m: number;
+  leaf_thickness_m: number;
+  leaf_bottom_z_m: number;
+  leaf_top_z_m: number;
+  leaf_normal_m: number;
+  stop_projection_m: number;
+  stop_depth_m: number;
+  undercut_m: number;
+  pocket_slot_gap_m: number;
+  track_height_m: number;
+  track_depth_m: number;
+  pocket_sign: number;
+}
+
 export interface Opening {
+  cased_product?: CasedDoorSpec | null;
+  frame_material_ref?: string | null;
+  leaf_material_ref?: string | null;
+  effective_frame_material_ref?: string | null;
+  effective_leaf_material_ref?: string | null;
   uid: string;
   tag: string;
   // The engine serializes the authored host-wall tag (for example, "W-101"), not its
@@ -1387,6 +1418,8 @@ export interface DoorTypeSpec {
   trimless: boolean;
   // Where a trimless leaf sits in the jamb: flush with its swing face, or behind a push-side rebate.
   leaf_set?: "pull" | "push";
+  frame_material_ref?: string | null;
+  leaf_material_ref?: string | null;
   // The chosen product (`Catalog.products`), or null where this is still a specification
   // rather than a picked item. Resolve it with `productFor` (components/ProductRows.tsx).
   product_ref?: string | null;

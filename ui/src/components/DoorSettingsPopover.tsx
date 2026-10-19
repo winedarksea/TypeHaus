@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { PatchOp } from "../engine/EngineClient";
 import type { DoorOperation, DoorTypeSpec, Opening, Vec2 } from "../model/types";
+import type { MaterialAppearance } from "../nordic/palette";
 import { formatFtIn } from "../model/geometry";
 
 // Trade names for the operation vocabulary; the raw enum values read as jargon in a picker.
@@ -28,11 +29,12 @@ export function doorTypeLabel(dt: Pick<DoorTypeSpec, "operation" | "exterior" | 
 // the inline-commit pattern used elsewhere (PlacementPopover); position/sill-height stay
 // on the existing FtInKeypad flow since they need numeric ft-in entry, not a toggle.
 export function DoorSettingsPopover({
-  opening, screen, doorTypes, applyOps, onEditPosition, onEditSillHeight, toast, onClose,
+  opening, screen, doorTypes, materials = [], applyOps, onEditPosition, onEditSillHeight, toast, onClose,
 }: {
   opening: Opening;
   screen: Vec2;
   doorTypes: DoorTypeSpec[];
+  materials?: readonly MaterialAppearance[];
   applyOps: (ops: PatchOp[]) => Promise<boolean>;
   onEditPosition: () => void;
   onEditSillHeight: () => void;
@@ -78,6 +80,21 @@ export function DoorSettingsPopover({
           ))}
         </select>
       </label>
+      {!currentType?.bookcase_door && (["frame", "leaf"] as const).map((surface) => {
+        if (surface === "leaf" && currentType?.glazed && !currentType.trimless) return null;
+        const field = `${surface}_material_ref` as const;
+        const inherited = currentType?.[field];
+        return <label key={surface} style={{ display: "block", marginBottom: 6, fontSize: 12 }}>
+          {surface === "frame" ? "Jamb and stop" : "Leaf"}{" "}
+          <select value={opening[field] ?? ""} disabled={busy}
+            onChange={(e) => void update({ [field]: e.target.value || null }, `${surface} finish`)}>
+            <option value="">Inherited · {inherited ?? "product default"}</option>
+            {materials.map((material) => <option key={material.tag} value={material.tag}>
+              {material.tag}
+            </option>)}
+          </select>
+        </label>;
+      })}
       <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
         <button className="btn" disabled={busy} style={{ flex: 1 }}
           onClick={() => void update({ flip_hinge: !opening.flip_hinge }, "hinge side")}>

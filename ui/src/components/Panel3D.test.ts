@@ -668,14 +668,14 @@ export function runSelectionRegistrationTests() {
   const openingGroup = new THREE.Group();
   const openings = registry();
   buildOpening(openingGroup, opening(2), wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
-    undefined, openings.picks, openings.byUid);
+    {}, openings.picks, openings.byUid);
   registered(openingGroup, "opening", "opening", openings.picks, openings.byUid, "buildOpening");
 
   // A rough opening has no filling to click on, so it must register nothing at all.
   const roughGroup = new THREE.Group();
   const rough = registry();
   buildOpening(roughGroup, { ...opening(2), kind: "rough_opening" } as Opening,
-    wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE, undefined, rough.picks, rough.byUid);
+    wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE, {}, rough.picks, rough.byUid);
   assert(rough.picks.length === 0 && roughGroup.children.length === 0,
     "An unfilled rough opening builds nothing and registers nothing");
 
@@ -683,14 +683,14 @@ export function runSelectionRegistrationTests() {
   const bifoldGroup = new THREE.Group();
   const bifoldRegistry = registry();
   buildOpening(bifoldGroup, door, wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
-    "bifold", bifoldRegistry.picks, bifoldRegistry.byUid);
+    { operation: "bifold" }, bifoldRegistry.picks, bifoldRegistry.byUid);
   assert(bifoldGroup.children.length === 8,
     "A closed bifold renders four frame pieces and four coplanar leaves");
 
   const sliderGroup = new THREE.Group();
   const sliderRegistry = registry();
   buildOpening(sliderGroup, door, wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
-    "slide", sliderRegistry.picks, sliderRegistry.byUid, true);
+    { operation: "slide", glazed: true }, sliderRegistry.picks, sliderRegistry.byUid);
   assert(sliderGroup.children.length === 8,
     "A closed slider renders its frame, stile, track, and two panels");
   assert(new Set(sliderGroup.children.map((child) => child.position.z.toFixed(9))).size === 1,
@@ -700,10 +700,10 @@ export function runSelectionRegistrationTests() {
   const bookcaseRegistry = registry();
   buildOpening(bookcaseGroup, { ...door, width_m: 0.9652, height_m: 2.0828 },
     wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
-    "swing", bookcaseRegistry.picks, bookcaseRegistry.byUid, false, false, {
+    { operation: "swing", bookcaseDoor: {
       body_width_m: 0.88265, body_height_m: 1.9939, body_depth_m: 0.20955,
       casing_overall_width_m: 1.0795, mounting_face: "negative_normal",
-    });
+    } }, bookcaseRegistry.picks, bookcaseRegistry.byUid);
   assert(bookcaseGroup.children.length === 9,
     "Bookcase door renders two sides, two caps, four shelves, and a back; casing is trim");
   assert(bookcaseRegistry.picks.length === 9,

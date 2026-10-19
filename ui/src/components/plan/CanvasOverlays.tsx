@@ -101,9 +101,10 @@ export function CanvasOverlays(props: {
       )}
       {doorPopup && (
         <DoorSettingsPopover
-          opening={doorPopup.opening}
+          opening={model.openings.find((o) => o.uid === doorPopup.opening.uid) ?? doorPopup.opening}
           screen={doorPopup.screen}
           doorTypes={model.catalog?.door_types ?? []}
+          materials={model.catalog?.materials ?? []}
           applyOps={applyOps}
           toast={toast}
           onEditPosition={editPositionFor(doorPopup, () => setDoorPopup(null))}

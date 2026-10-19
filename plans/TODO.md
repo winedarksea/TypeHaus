@@ -10,6 +10,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   retypes through a centre-holding macro. Re-affirmed deferred 2026-08-07.
 ## Remaining Work
 
+- **Separate nominal door leaf sizes from modeled opening voids.** Ordinary door type
+  dimensions currently feed both `_opening_size` and swing clearance. The cased product
+  appearance fits inside that existing void; it does not guarantee the catalog's nominal
+  leaf width or clear passage. Define leaf/rough-opening sizing together with framing and
+  clearance before changing these envelopes (`plans/default-door-appearance.md`).
+
 - **Record the attic floor-box assemblies and their floor-use listings.** The new
   `code.E3905_7_floor_boxes` check verifies the living-room Arlington kit but reports
   UNKNOWN for the eight existing attic floor receptacles whose types still describe
@@ -249,6 +255,8 @@ the future.
 - Flashing geometry and visibility implemented 2026-10-15: west-draining fitted cap on SB-BW-BAND's exposed 2×6 sill above W-BW-SCREEN; metal heads and concealed perimeter/sill flashing at exterior windows and doors; one Flashing 3D hide/isolate control. [Modeling basis and limits](../houses/catlin/notes/flashing_model.md).
 - Possibly swap the concrete canopy stairway (SL-BW-TIER*) to pressure treated wood and composite treads.
 - Consider adding a gutter along the entryway canopy gable in the narrow space between canopy and house, the goal is for this to mostly fill the space, if it can do so in a way that is buildable and not causing any problems.
+- Make the countertop (and quartz window stools) a "ready to send to manufacturer" design and export. Include rounding corners
+- Switch to finger joint pine for the baseboards (bought, not milled cherry), painted the same white as the walls. This should just switch the cherry mainly: the sauna keeps the locust baseboard, sheet vinyl rooms keep the cove, concrete keeps no baseboard, and bathrooms keep either tile or PVC baseboard up. The current 3d viewer is also a little inconsistent in where it shows baseboards.
 
 # Project Management
 

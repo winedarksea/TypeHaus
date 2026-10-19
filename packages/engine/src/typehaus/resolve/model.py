@@ -15,6 +15,7 @@ from typehaus.model.assembly import Layer
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.layout_lines import ResolvedLayoutLine
+from typehaus.resolve.model_door_products import CasedDoorSpec
 from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing
 from typehaus.resolve.rebar.records import ResolvedRebarSet
 
@@ -447,6 +448,11 @@ class ResolvedOpening:
     # Unflipped: hinge on the END-node jamb, leaf sweeps toward the wall's left normal.
     flip_hinge: bool = False
     flip_swing: bool = False
+    cased_product: CasedDoorSpec | None = None
+    frame_material_ref: str | None = None
+    leaf_material_ref: str | None = None
+    effective_frame_material_ref: str | None = None
+    effective_leaf_material_ref: str | None = None
 
     @property
     def is_blind(self) -> bool:

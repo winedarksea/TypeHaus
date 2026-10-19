@@ -4,6 +4,7 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     catalog_tags,
     checks,
     clear_zones,
+    door_finishes,
     drip_flashing,
     edge_run_host,
     head_connector,

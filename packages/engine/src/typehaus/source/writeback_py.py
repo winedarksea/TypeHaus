@@ -193,6 +193,7 @@ def _apply_update(source: str, op: PatchOp) -> tuple[str, bool]:
 def _update_edits(off: _Offsets, call: ast.Call, op: PatchOp) -> list[tuple[int, int, str]]:
     edits: list[tuple[int, int, str]] = []
     by_name = {kw.arg: i for i, kw in enumerate(call.keywords) if kw.arg is not None}
+    appended = []
     for name, value in op.fields.items():
         if value == DELETE_FIELD:
             if name in by_name:
@@ -206,7 +207,9 @@ def _update_edits(off: _Offsets, call: ast.Call, op: PatchOp) -> list[tuple[int,
             # Append a new kwarg after the final existing argument.
             last = call.keywords[-1] if call.keywords else None
             anchor = off.end(last.value) if last is not None else off.end(call) - 1
-            edits.append((anchor, anchor, f", {name}={encoded}"))
+            appended.append(f", {name}={encoded}")
+    if appended:
+        edits.append((anchor, anchor, "".join(appended)))
     return edits
 
 

@@ -428,7 +428,12 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     door_type = next((item for item in model.plan.library.door_types
                       if item.tag == opening.type_ref), None) if opening.is_door else None
     product = door_type.bookcase_door if door_type is not None else None
-    if product is None:
+    if (opening.cased_product is not None or (product is None and
+            (opening.effective_frame_material_ref or opening.effective_leaf_material_ref))):
+        from typehaus.emit.ifc.door_fillings import cased_door_representation
+
+        filling_body = cased_door_representation(f, body, model, opening)
+    elif product is None:
         filling_body = ll.add_prism_from_profile(
             f, body, frame_profile, opening.height_m, z0)
     else:

@@ -129,7 +129,10 @@ class _ApplyTransformer(cst.CSTTransformer):
         for name, value in self.op.fields.items():
             if value == DELETE_FIELD:
                 if name in by_name:
-                    del args[by_name[name]]
+                    index = by_name[name]
+                    removed = args.pop(index)
+                    if index == len(args) and args:
+                        args[-1] = args[-1].with_changes(comma=removed.comma)
                     by_name = {a.keyword.value: i for i, a in enumerate(args)
                                if a.keyword is not None}
                 continue

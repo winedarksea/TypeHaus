@@ -124,6 +124,9 @@ class Door(Element):
     arch: Arch | None = None
     flip_hinge: bool = False
     flip_swing: bool = False
+    # Surface appearance only; None inherits the type/product default.
+    frame_material_ref: str | None = None
+    leaf_material_ref: str | None = None
     # Per-opening engineered-header override (e.g. '2-ply 14" LVL'); None lets the framing
     # solver size the header. Falls back to the DoorType's header_spec when unset there too.
     header_spec: str | None = None

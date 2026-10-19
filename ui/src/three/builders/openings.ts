@@ -11,6 +11,7 @@ import { NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import {
   type AddBox, type LeafSet, buildConcealedFrame, buildLeverSet, concealedLeaf, finishFaces, handing,
 } from "./doorProducts";
+import { buildCasedDoor } from "./casedDoors";
 import { registerSelectable } from "./registry";
 import { baseRefZ } from "./wallFrame";
 import { buildBookcaseDoor } from "./bookcaseDoor";
@@ -61,11 +62,20 @@ function pocketCenterlineOffset(wall: Wall, nx: number, ny: number): number {
   return (Math.min(...offsets) + Math.max(...offsets)) / 2;
 }
 
+export interface OpeningProductOptions {
+  operation?: DoorOperation;
+  glazed?: boolean;
+  trimless?: boolean;
+  bookcaseDoor?: DoorTypeSpec["bookcase_door"];
+  materials?: readonly MaterialAppearance[];
+  leafSet?: LeafSet;
+}
+
 export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, operation: DoorOperation | undefined,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, isGlazed = false, isTrimless = false,
-  bookcaseDoor?: DoorTypeSpec["bookcase_door"],
-  materials?: readonly MaterialAppearance[], leafSet: LeafSet = "pull") {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  options: OpeningProductOptions, picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  const { operation, glazed: isGlazed = false, trimless: isTrimless = false, bookcaseDoor,
+    materials, leafSet = "pull" } = options;
   if (opening.kind === "rough_opening") return;
   const firstChildIndex = parent.children.length;
   const [[x0, y0], [x1, y1]] = wall.axis;
@@ -91,13 +101,23 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   // interior face out to the casing's proud face so the reveal reads charcoal instead of
   // exposing the wall layers' cut foam. Mirrors resolve/geometry_openings.py.
   const exterior = exteriorFace(wall);
-  const frameMaterial = standardMaterial(
+  const defaultFrameMaterial = standardMaterial(
     exterior ? categoryColor("window_trim") : palette.member.wood, mode);
   // A solid leaf is white enamel indoors and the charcoal frame tone in a clad wall. Mirrors
   // resolve/geometry_openings.py::_DOOR_LEAF_KEY. Satin, not the walls' matte, so the leaf
   // catches a highlight the flat gypsum around it does not.
-  const solidLeafMaterial = exterior ? frameMaterial
+  const defaultLeafMaterial = exterior ? defaultFrameMaterial
     : standardMaterial(categoryColor("door_leaf"), mode, { roughness: 0.45 });
+  const frameMaterial = opening.effective_frame_material_ref
+    ? productMaterial(opening.effective_frame_material_ref) : defaultFrameMaterial;
+  const solidLeafMaterial = opening.effective_leaf_material_ref
+    ? productMaterial(opening.effective_leaf_material_ref) : defaultLeafMaterial;
+  function productMaterial(ref: string) {
+    const color = materialColor(ref, palette, materials);
+    const style = boardStyleFor(ref, materials);
+    return style ? createPlankMaterial(mode, style, color, undefined, authoredAppearance(ref, materials))
+      : standardMaterial(color, mode, { roughness: 0.45 });
+  }
   let frameDepth = depth, frameOffset = 0;
   if (exterior) {
     const outerEdge = exterior.plane + exterior.sign * WINDOW_TRIM_PROUD_DEPTH_M;
@@ -106,11 +126,25 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     frameOffset = (outerEdge + innerEdge) / 2;
   }
   const addBox = (width: number, height: number, thickness: number, along: number, elevation: number, material: THREE.Material, normalOffset = 0) => {
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, thickness), material);
+    const ref = material === frameMaterial ? opening.effective_frame_material_ref
+      : material === solidLeafMaterial ? opening.effective_leaf_material_ref : undefined;
+    const style = ref ? boardStyleFor(ref, materials) : null;
+    const mesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>(
+      new THREE.BoxGeometry(width, height, thickness), material);
     mesh.position.copy(projectPointToScene([
       position[0] + direction[0] * along - direction[1] * normalOffset,
       position[1] + direction[1] * along + direction[0] * normalOffset], elevation, center));
     mesh.rotation.y = rotation;
+    if (style) {
+      mesh.updateMatrix();
+      mesh.geometry.dispose();
+      const boardMatrix = new THREE.Matrix4().compose(mesh.position, mesh.quaternion,
+        new THREE.Vector3(width, height, thickness));
+      mesh.geometry = boardBoxGeometry(boardMatrix, style,
+        pieceSeed(`${opening.uid}|${parent.children.length - firstChildIndex}`));
+      mesh.position.set(0, 0, 0); mesh.rotation.set(0, 0, 0); mesh.updateMatrix();
+      mesh.material = woodMaterialsForGeometry(material, mesh.geometry);
+    }
     parent.add(mesh);
   };
   const midElevation = baseRefZ(wall) + opening.sill_m + availableHeight / 2;
@@ -123,10 +157,23 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   const glassMaterial = standardMaterial(0x8fb7c9, mode, { transparent: true, opacity: 0.48,
     roughness: 0.2, metalness: 0.05, depthWrite: false });
   const faces = finishFaces(wall);
+  if (opening.cased_product) {
+    const paintedFrame = opening.effective_frame_material_ref ? frameMaterial
+      : standardMaterial(categoryColor("door_frame"), mode, { roughness: 0.45 });
+    const withMaterial = (material: THREE.Material): AddBox =>
+      (w, h, t, a, e, n) => addBox(w, h, t, a, e, material, n);
+    buildCasedDoor(opening.cased_product, hingeSign, swingSign, {
+      liner: withMaterial(paintedFrame), stop: withMaterial(paintedFrame),
+      leaf: withMaterial(solidLeafMaterial), hardware: addHardware,
+    });
+    registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
+    return;
+  }
   if (isTrimless && opening.kind === "door" && faces && swingLeaf) {
     // A concealed frame: no casing, a 1/8" reveal, the leaf set at the face `leafSet` names.
     // Mirrors resolve/geometry_door_products.py.
-    const linerMaterial = standardMaterial(categoryColor("door_leaf"), mode);
+    const linerMaterial = opening.effective_frame_material_ref ? frameMaterial
+      : standardMaterial(categoryColor("door_leaf"), mode);
     const shadowMaterial = standardMaterial(categoryColor("shadow_gap"), mode,
       { roughness: NORDIC_ROUGHNESS.matte });
     const withMaterial = (material: THREE.Material): AddBox =>
@@ -242,7 +289,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     // colour rides the generated vocabulary ("overhead_door"), mirroring
     // resolve/geometry_openings.py::_OVERHEAD_KEY.
     const leafMaterial = isGlazed ? glassMaterial
-      : operation === "overhead"
+      : operation === "overhead" && !opening.effective_leaf_material_ref
         ? standardMaterial(categoryColor("overhead_door"), mode,
           { roughness: NORDIC_ROUGHNESS.matte })
         : solidLeafMaterial;

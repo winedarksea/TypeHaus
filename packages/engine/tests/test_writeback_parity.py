@@ -34,6 +34,10 @@ def main_src(starter_dir: Path) -> str:
 
 # Representative edits: field update (single + multi), add (uid-bearing + not), delete.
 _CASES: list[list[PatchOp]] = [
+    [PatchOp("update", "Door", "D-101", {"frame_material_ref": "oak",
+                                        "leaf_material_ref": "paint"})],
+    [PatchOp("update", "Door", "D-101", {"frame_material_ref": None,
+                                        "leaf_material_ref": None})],
     [PatchOp("update", "Wall", "W-101", {"top": "10'"})],
     [PatchOp("update", "Wall", "W-102", {"top": "9'", "assembly": "OTHER"})],
     [PatchOp("update", "Window", "WIN-101", {"sill_height": "3'"})],

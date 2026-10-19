@@ -162,3 +162,23 @@ def test_op_inverse_op_identity_property(coord, house):
     coord.apply_patch([PatchOp("update", "Wall", "W-101", {"top": "8'"})], coord.revision())
     coord.undo()
     assert _main(house) == snapshot
+
+
+def test_door_surface_overrides_save_reload_undo_redo_and_reset(coord, house):
+    before = _main(house)
+    coord.apply_patch([PatchOp("update", "Door", "D-101", {
+        "frame_material_ref": "oak-floor-custom", "leaf_material_ref": "oak-floor-custom"})],
+        coord.revision())
+    authored = load_plan(house).plan.by_tag("D-101")
+    assert authored.frame_material_ref == authored.leaf_material_ref == "oak-floor-custom"
+    coord.undo()
+    assert _main(house) == before
+    coord.redo()
+    assert load_plan(house).plan.by_tag("D-101").frame_material_ref == "oak-floor-custom"
+    coord.apply_patch([PatchOp("update", "Door", "D-101", {"frame_material_ref": None})],
+                      coord.revision())
+    authored = load_plan(house).plan.by_tag("D-101")
+    assert authored.frame_material_ref is None
+    assert authored.leaf_material_ref == "oak-floor-custom"
+    coord.undo()
+    assert load_plan(house).plan.by_tag("D-101").frame_material_ref == "oak-floor-custom"
