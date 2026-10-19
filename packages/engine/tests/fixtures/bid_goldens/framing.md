@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 8fcd373b08c48eef
+**Model hash:** 5a83410fa9d60f0c
 **Lines:** 173
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -50,8 +50,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | 90 | LF ordered | 9 pcs, 77.6 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | 130 | LF ordered | 14 pcs, 93.9 LF cut | building |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | 1,644 | LF ordered | 199 pcs, 1397.7 LF cut | building |
+| 2x6 Red oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:oak-8q) | 32 | LF ordered | 21 pcs, 24.3 LF cut | building |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | 26 | LF ordered | 2 pcs, 24.7 LF cut | building |
-| 2x6 White oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:white-oak-8-4) | 32 | LF ordered | 21 pcs, 24.3 LF cut | building |
 | 2x8 — header, joist, landing framing (2x8) | 240 | LF ordered | 63 pcs, 194.5 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 356 | LF ordered | 80 pcs, 298.0 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
@@ -65,7 +65,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Basswood/aspen shiplap sauna liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-shiplap:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 65.0 SF net | building |
+| Aspen shiplap sauna ceiling liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-ceiling-shiplap:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 65.0 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.8 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 661.6 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
@@ -288,8 +288,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Douglas fir Select Structural S4S, eased corners — corner stud, stud (2x6:df-select-s4s) | — |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — cripple stud, plate, sill, girt strapping (2x6:kdat) | — |
 | 2x6 Laminated strand lumber — corner stud, cripple stud, jack stud, king stud, stud (2x6:lsl) | — |
+| 2x6 Red oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:oak-8q) | — |
 | 2x6 SPF framing lumber — blocking (2x6:spf) | — |
-| 2x6 White oak 8/4, custom-milled S4S to 1 1/2" — blocking (2x6:white-oak-8-4) | — |
 | 2x8 — header, joist, landing framing (2x8) | — |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | — |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | — |
@@ -298,7 +298,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | — |
 | 6x6 KDAT southern yellow pine (treated exterior framing) — stud (6x6:kdat) | — |
 | hanger — hanger board (hanger) | — |
-| Basswood/aspen shiplap sauna liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-shiplap:ceiling) | — |
+| Aspen shiplap sauna ceiling liner (4/4), site-milled, 3/4" ceiling (catlin-sauna-ceiling-shiplap:ceiling) | — |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | — |

@@ -149,7 +149,8 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         body_z0 = item.body_z0_m if recessed_device else item.z_m
         body_z1 = item.body_z1_m if recessed_device else body_z0 + height
         centroid, bbox = _bounds(item.footprint, body_z0, body_z1)
-        track = getattr(device_types.get(item.type_ref or ""), "track_lighting", None)
+        product_type = device_types.get(item.type_ref or "")
+        track = getattr(product_type, "track_lighting", None)
         if track is not None:
             from typehaus.model.placeable_symbols import place_local
             from typehaus.model.placeable_symbols._track_lighting import track_geometry
@@ -158,6 +159,12 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
             points = [point for stroke in strokes for point in stroke["points"]]
             centroid, bbox = _bounds(place_local(points, item.position, item.rotation_degrees),
                                      body_z0, body_z1)
+        elif getattr(product_type, "plan_symbol", None) == "flood-light":
+            width_m, depth_m = (dimension.meters for dimension in product_type.footprint)
+            centroid, bbox = _placeable_symbol_bounds(
+                product_type.plan_symbol, width_m, depth_m, product_type.height.meters,
+                item.position, item.rotation_degrees, body_z0,
+            )
         attrs = {"type": item.type_ref or ""}
         attrs["rotation_degrees"] = f"{item.rotation_degrees:.6f}"
         ports = _type_ports(model, item.type_ref)
@@ -278,6 +285,40 @@ def _bounds(
     minimum, maximum = (min(xs), min(ys), z0), (max(xs), max(ys), z1)
     return (tuple((minimum[index] + maximum[index]) / 2 for index in range(3)),
             tuple(maximum[index] - minimum[index] for index in range(3)))  # type: ignore[return-value]
+
+
+def _placeable_symbol_bounds(
+    symbol: str,
+    width_m: float,
+    depth_m: float,
+    height_m: float,
+    position: tuple[float, float],
+    rotation_degrees: float,
+    base_z_m: float,
+) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
+    """Project the generated parts onto the same bounds the IFC tessellation carries."""
+    from typehaus.model.placeable_symbols import model_parts, place_local
+
+    local_vertices: list[tuple[float, float, float]] = []
+    for part in model_parts(symbol, width_m, depth_m, height_m):
+        mesh = part.get("mesh")
+        if mesh is not None:
+            local_vertices.extend(mesh["positions"])
+            continue
+        center_x, center_y, center_z = part["center"]
+        size_x, size_y, size_z = part["size"]
+        local_vertices.extend(
+            (center_x + x * size_x / 2, center_y + y * size_y / 2,
+             center_z + z * size_z / 2)
+            for x, y, z in ((-1, -1, -1), (1, -1, -1), (1, 1, -1), (-1, 1, -1),
+                            (-1, -1, 1), (1, -1, 1), (1, 1, 1), (-1, 1, 1))
+        )
+    if not local_vertices:
+        return _bounds([], base_z_m, base_z_m)
+    world_xy = place_local([(x, y) for x, y, _z in local_vertices], position,
+                           rotation_degrees)
+    z_values = [base_z_m + z for _x, _y, z in local_vertices]
+    return _bounds(world_xy, min(z_values), max(z_values))
 
 
 def _opening_frame_bounds(wall: ResolvedWall, opening: object) -> list[tuple[float, float]]:

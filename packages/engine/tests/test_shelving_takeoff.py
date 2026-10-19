@@ -27,10 +27,12 @@ def _model(procurement: str):
                         species="oak", product_ref="PROD-SHELF")
     return SimpleNamespace(
         shelf_banks=[_bank(procurement)],
-        window_stools=(), countertops=(), stairs=(), openings=(), panelings=(), walls=(), solids=(), rooms=(),
+        window_stools=(), countertops=(), stairs=(), openings=(), panelings=(), walls=(),
+        solids=(), rooms=(),
+        canvas_objects=(),
         all_members=lambda: (),
         plan=SimpleNamespace(
-            library=SimpleNamespace(materials=(material,)),
+            library=SimpleNamespace(materials=(material,), furniture_types=()),
             storeys=(),
             all_elements=lambda: (),
             storey_elements=lambda _storey: (),
@@ -55,7 +57,8 @@ def test_purchased_shelves_make_one_order_with_waste_cuts_and_product_label() ->
                               "tags": ["SB-TEST"]}]
 
     estimate = estimate_costs(
-        {"shelving": rows}, Prices(Path("prices.toml"), shelving={"factory-oak-shelf": PriceRange(8, 8)}),
+        {"shelving": rows},
+        Prices(Path("prices.toml"), shelving={"factory-oak-shelf": PriceRange(8, 8)}),
         products={("shelving", "factory-oak-shelf"): "Acme Oak Panel OP-12"},
     )
     priced = estimate["sections"]["shelving"]["rows"][0]
