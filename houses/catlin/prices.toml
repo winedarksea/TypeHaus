@@ -5245,9 +5245,9 @@
 #   CT-S-BATH1-VANITY      7.33 SF  48 x 22
 #   STOOL-WIN-S-PLANT1..4  9.26 SF  the plant room's four 3 cm window stools (2026-09-28),
 #   STOOL-WIN-M-KITCH      2.04 SF  the kitchen sink window's 3 cm quartz stool,
-#                                   matching the plant-room spec. Both are stone, not oak,
-#                                   so absent from `haus millwork` (takeoff/countertops.py).
-#                                   Total: 72.63 SF.
+#   STOOL-WIN-M-KITCH-N,
+#   STOOL-WIN-M-KIT-E      2.25 SF  the kitchen corner pair, matching the sink (2026-10-18).
+#                                   All seven stools bill as stone, outside `haus millwork`.
 # The other four vanity tops are one-piece solid surface moulded with their bowls and bought
 # boxed with the cabinet: they bill in [placeables] and must never appear here.
 #
@@ -5263,10 +5263,11 @@
 # 61.34 SF, or $3,067-5,827 against that lump's $3,200-6,000. Five quartz window stools
 # add 11.30 SF (the plant room's four, then WIN-M-KITCH). CT-M-CLOSET's 5.50 SF went with
 # the closet SEKTIONs on 2026-10-03: 78.47 SF before, 72.97 SF after. The peninsula's
-# 15" bracketed knee went to quartz on 2026-10-04 and added 7.65 SF: 80.62 SF. See
+# 15" bracketed knee went to quartz on 2026-10-04 and added 7.65 SF: 80.62 SF. The two
+# kitchen corner stools add another 2.25 SF since 2026-10-18. See
 # plan/assemblies.py's `quartz-counter` note on vetting the SHOP, not the showroom — silica
 # exposure control is the thing to buy here.
-"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 80.62 SF
+"quartz-counter" = { material = { low = 28, high = 52 }, labour = { low = 22, high = 43 } }  # 82.88 SF
 # The living room's two ash slabs (2026-10-16, live-edge white oak before): 1 1/4" off 6/4
 # owner ash (2" off 12/4 until the same day), each a two-board glue-up, cut-listed by
 # `haus millwork`; the labour is the glue-up, scribing the back edge, slotted brackets and a
@@ -7513,18 +7514,18 @@ finish-door-closer-hold-open = { low = 500, high = 1000 }
 # $73-164 per window covering stool
 # STOCK, apron, jamb extension and the carpenter's hour.
 # ** REDUCED TO ITS LABOUR/FABRICATION SHARE, 2026-08-28. ** The stool stock is modelled now:
-# `MillworkStandard` (plan/millwork.py) derives one `WindowStool` per EXT_2X6 window —
-# 33 of the 41 — and `haus millwork` orders the 5/4 board they are cut from. Leaving this
-# row whole would bill that board twice. The same split the vent-mat row above documents:
-#   stool board, 34 windows, ~10 1/8" x 5/4          -> modelled, ordered by `haus millwork`
+# `MillworkStandard` (plan/millwork.py) derives the default stools; room overrides select
+# other stock. `haus millwork` orders their boards. Leaving this row whole would bill that
+# board twice. The same split the vent-mat row above documents:
+#   stool board, 32 windows (27 at 5/4, five ash at 6/4) -> ordered by `haus millwork`
 #   apron, jamb extension, mitres, scribe, install   -> here, and still real
 #   the 2 out-of-scope garage stools                 -> here, bought not milled; their board
 #                                                       is the residual at the top of the band
-# ** SINCE 2026-10-16 MOST STOOLS ARE BOUGHT WHITE OAK ** (17, ~48 bf of 5/4, select >= 11"
-# wide), and that board is NOT priced anywhere: it is the owner's quote, and stays unpriced
-# until one exists. Locust, ash, cherry and red oak stools are owner stock; the sauna's is
-# the owner's cedar (plan/window_stools.py).
-#   the 5 quartz stools, 3 cm remnants                -> [countertops] "quartz-counter", as
+# ** ALL OAK STOOLS ARE BOUGHT WHITE OAK SINCE 2026-10-18 ** (19, ~54 bf of 5/4, select
+# heartwood >= 11" wide), and that board is NOT priced anywhere: it is the owner's quote,
+# and stays unpriced until one exists. Locust, ash and cherry stools are owner stock;
+# the sauna's is the owner's cedar (plan/window_stools.py).
+#   the 7 quartz stools, 3 cm remnants                -> [countertops] "quartz-counter", as
 #                                                       area (takeoff/countertops.py); their
 #                                                       apron/jamb/casing work stays here
 # ~$18-45 of the old band was stool stock, so the row goes to $55-125. It stays PER WINDOW

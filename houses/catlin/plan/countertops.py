@@ -123,8 +123,8 @@ SECOND_COUNTERTOPS = [
 #
 # The four plant-room windows sit in PLANT_EXT_2X6_HUMID, which MW-STANDARD leaves out: oak
 # cups and tannin-stains at 70% RH (plan/millwork.py). So each gets a 3 cm remnant of the
-# vanity stone instead, cut by the same yard. WIN-M-KITCH gets the same stone stool at the
-# kitchen sink. They bill as quartz in [countertops]; `haus millwork` skips them (not
+# vanity stone instead, cut by the same yard. All three kitchen windows get matching stone
+# stools. They bill as quartz in [countertops]; `haus millwork` skips them (not
 # custom-milled).
 #
 # `depth` is derived from the wall, as the oak ones are. Same 3/4" overhang and 1" horn.
@@ -146,10 +146,16 @@ PLANT_STOOLS = [
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
 ]
 
-# The sink window's sill is directly over the kitchen counter. Match the plant-room stool's
-# 3 cm stone, overhang, horn and eased edge; its depth still follows its own host wall.
+# The sink and corner pair share the countertop's quartz for one continuous kitchen palette.
+# Match the plant-room stools' 3 cm stone and eased edge; depth follows each host wall.
 KITCHEN_STOOLS = [
     WindowStool(uid="N7C4V2M8QK", tag="STOOL-WIN-M-KITCH", window_ref="WIN-M-KITCH",
+                material_ref="quartz-counter", thickness=inch(1.181),
+                overhang=inch(0.75), horn=inch(1), profile="eased"),
+    WindowStool(uid="Z9XJDD5SWM", tag="STOOL-WIN-M-KIT-E", window_ref="WIN-M-KIT-E",
+                material_ref="quartz-counter", thickness=inch(1.181),
+                overhang=inch(0.75), horn=inch(1), profile="eased"),
+    WindowStool(uid="GZZ0Y78PY1", tag="STOOL-WIN-M-KITCH-N", window_ref="WIN-M-KITCH-N",
                 material_ref="quartz-counter", thickness=inch(1.181),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
 ]

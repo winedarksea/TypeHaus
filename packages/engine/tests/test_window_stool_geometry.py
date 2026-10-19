@@ -19,7 +19,7 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
     walls = {wall.tag: wall for wall in catlin_model_ro.walls}
     openings = {opening.tag: opening for opening in catlin_model_ro.openings}
     stools = catlin_model_ro.window_stools
-    # 33 derived oak + five authored quartz (plan/countertops.py).
+    # 32 wood stools and seven quartz stools (plan/countertops.py).
     assert len(stools) == 39
     assert len({stool.uid for stool in stools}) == 39
     for stool in stools:
@@ -56,7 +56,7 @@ def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     assert {row["profile"] for row in rows} == {"eased"}
     assert {row["material_ref"] for row in rows} == {
         "oak-stool", "quartz-counter", "ash-stool-6q", "locust-stool-5q",
-        "cherry-stool-5q", "red-oak-stool", "cedar-sauna-stool"}
+        "cherry-stool-5q", "cedar-sauna-stool"}
     material_of = {row["opening_uid"]: row["material_ref"] for row in rows}
     openings = {opening.uid for opening in catlin_model_ro.openings}
     assert all(row["opening_uid"] in openings for row in rows)

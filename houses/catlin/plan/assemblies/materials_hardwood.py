@@ -47,12 +47,12 @@ MATERIALS_HARDWOOD = [
              nominal_quarters=4, milling_profile="shiplap", requires_custom_milling=True,
              source="Catlin site-milled sauna ceiling liner: owner aspen, made up from one more owner log (notes/wood_supply.md). Dried to 8-10% MC, 5 1/2\" face over 5\" coverage, unfinished."),
     # --- window stools (5/4, 1" dressed; plan/millwork.py MW-STANDARD and plan/window_stools.py)
-    # The default: BOUGHT white oak, the one species here that really is white oak.
+    # All oak stools use BOUGHT white oak heartwood for lower liquid-water permeability.
     Material(tag="oak-stool", name="White oak window stool, 5/4 S4S (bought)", hatch="lumber",
              color="#d6c9b3", finish="oak-board", species="oak",
              nominal_quarters=5, milling_profile="eased", requires_custom_milling=True,
-             source="Bought white oak, rough 5/4, select widths of 11\" and up; rift or quartered stock. Dressed to 1\", front edge eased. Same finish system as the red oak (A/B bleach, Bona NordicSeal, waterborne topcoat) on all six faces, so the two sit together."),
-    # Wet rooms, splash and snowmelt: the baths, the kitchen pair and the mudroom.
+             source="Bought white oak heartwood, no sapwood, rough 5/4, select widths of 11\" and up; rift or quartered stock. Dressed to 1\", front edge eased. Same finish system as the red oak (A/B bleach, Bona NordicSeal, waterborne topcoat) on all six faces, so the two sit together."),
+    # Wet rooms, splash and snowmelt: the baths and the mudroom. Kitchen stools are quartz.
     Material(tag="locust-stool-5q", name="Black locust window stool, 5/4 S4S", hatch="lumber",
              color="#b9aa68", finish="oak-board", species="locust",
              nominal_quarters=5, milling_profile="eased", requires_custom_milling=True,
@@ -63,11 +63,6 @@ MATERIALS_HARDWOOD = [
              color="#b77d60", finish="oak-board", species="cherry",
              nominal_quarters=5, milling_profile="eased", requires_custom_milling=True,
              source="Milled black cherry, dressed to 1\". Oil every face before install so it darkens evenly, as the cherry base."),
-    # The two circulation windows, beside the red-oak treads and floor.
-    Material(tag="red-oak-stool", name="Red oak window stool, 5/4 S4S", hatch="lumber",
-             color="#d6c9b3", finish="oak-board", species="red-oak",
-             nominal_quarters=5, milling_profile="eased", requires_custom_milling=True,
-             source="Owner-milled red oak, dressed to 1\". The house red-oak system: A/B bleach, Bona NordicSeal, waterborne topcoat, all six faces. Dry rooms only: open pores."),
     # The living room: all five stools are ash, matching the ash counters they border, and
     # all 6/4 to 1 1/4" like the slab and the dining top: one ash thickness at the mill.
     Material(tag="ash-stool-6q", name='White ash window stool, 1 1/4", 6/4 S4S', hatch="lumber",

@@ -17,12 +17,6 @@ MAIN_WINDOW_STOOLS = [
     WindowStool(uid="YMJS812EK0", tag="STOOL-WIN-M-BATH2", window_ref="WIN-M-BATH2",
                 material_ref="locust-stool-5q", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
-    WindowStool(uid="Z9XJDD5SWM", tag="STOOL-WIN-M-KIT-E", window_ref="WIN-M-KIT-E",
-                material_ref="locust-stool-5q", thickness=inch(1),
-                overhang=inch(0.75), horn=inch(1), profile="eased"),
-    WindowStool(uid="GZZ0Y78PY1", tag="STOOL-WIN-M-KITCH-N", window_ref="WIN-M-KITCH-N",
-                material_ref="locust-stool-5q", thickness=inch(1),
-                overhang=inch(0.75), horn=inch(1), profile="eased"),
     WindowStool(uid="G8JF6NTB0Q", tag="STOOL-WIN-M-MUD", window_ref="WIN-M-MUD",
                 material_ref="locust-stool-5q", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
@@ -51,12 +45,12 @@ SECOND_WINDOW_STOOLS = [
     WindowStool(uid="5YJ6CA2KGS", tag="STOOL-WIN-S-SUITE2", window_ref="WIN-S-SUITE2",
                 material_ref="cherry-stool-5q", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
-    # Circulation, beside the red-oak treads and floor.
+    # Circulation uses bought white oak too, for condensation resistance beside the red-oak floor.
     WindowStool(uid="BM3PZ9E8YP", tag="STOOL-WIN-S-HALL-N", window_ref="WIN-S-HALL-N",
-                material_ref="red-oak-stool", thickness=inch(1),
+                material_ref="oak-stool", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
     WindowStool(uid="V36FYER5MV", tag="STOOL-WIN-S-STAIR-N", window_ref="WIN-S-STAIR-N",
-                material_ref="red-oak-stool", thickness=inch(1),
+                material_ref="oak-stool", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
 ]
 
