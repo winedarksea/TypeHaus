@@ -10,11 +10,25 @@ from typehaus.model import WindowStool, inch
 
 
 MAIN_WINDOW_STOOLS = [
-    # Wet rooms, splash and snowmelt: black locust.
-    WindowStool(uid="5STRZYV0G0", tag="STOOL-WIN-M-BATH1-W", window_ref="WIN-M-BATH1-W",
-                material_ref="locust-stool-5q", thickness=inch(1),
+    # RM-M-BED: black walnut beside the reading corner's walnut tops.
+    WindowStool(uid="WNBEDW1001", tag="STOOL-WIN-M-BED-W1", window_ref="WIN-M-BED-W1",
+                material_ref="walnut-stool-5q", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
+    WindowStool(uid="WNBEDW2001", tag="STOOL-WIN-M-BED-W2", window_ref="WIN-M-BED-W2",
+                material_ref="walnut-stool-5q", thickness=inch(1),
+                overhang=inch(0.75), horn=inch(1), profile="eased"),
+    WindowStool(uid="WNBEDS1001", tag="STOOL-WIN-M-BED-S1", window_ref="WIN-M-BED-S1",
+                material_ref="walnut-stool-5q", thickness=inch(1),
+                overhang=inch(0.75), horn=inch(1), profile="eased"),
+    WindowStool(uid="WNBEDS2001", tag="STOOL-WIN-M-BED-S2", window_ref="WIN-M-BED-S2",
+                material_ref="walnut-stool-5q", thickness=inch(1),
+                overhang=inch(0.75), horn=inch(1), profile="eased"),
+    # The en suite matches its 3 cm quartz vanity top.
     WindowStool(uid="YMJS812EK0", tag="STOOL-WIN-M-BATH2", window_ref="WIN-M-BATH2",
+                material_ref="quartz-counter", thickness=inch(1.181),
+                overhang=inch(0.75), horn=inch(1), profile="eased"),
+    # Other wet rooms, splash and snowmelt: black locust.
+    WindowStool(uid="5STRZYV0G0", tag="STOOL-WIN-M-BATH1-W", window_ref="WIN-M-BATH1-W",
                 material_ref="locust-stool-5q", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
     WindowStool(uid="G8JF6NTB0Q", tag="STOOL-WIN-M-MUD", window_ref="WIN-M-MUD",

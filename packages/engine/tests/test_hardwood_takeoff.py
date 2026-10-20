@@ -123,9 +123,9 @@ def test_rough_stock_always_exceeds_the_finished_piece(rows):
 
 def test_a_stool_is_scheduled_at_its_rough_size_from_five_quarter_stock(rows):
     stools = [row for row in _use(rows, "window stool") if row["material"] == "oak-stool"]
-    # See test_millwork.py: 17 derive bought white oak and two circulation stools use it too.
+    # See test_millwork.py: 13 derive bought white oak and two circulation stools use it too.
     # The east row's three are 1 1/4" ash-stool-6q (test below).
-    assert stools and sum(row["pieces"] for row in stools) == 19
+    assert stools and sum(row["pieces"] for row in stools) == 15
     assert {row["species"] for row in stools} == {"oak"}
     for row in stools:
         assert row["nominal_stock"] == "5/4"

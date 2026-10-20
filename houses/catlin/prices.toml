@@ -7491,15 +7491,16 @@ finish-door-closer-hold-open = { low = 500, high = 1000 }
 # `MillworkStandard` (plan/millwork.py) derives the default stools; room overrides select
 # other stock. `haus millwork` orders their boards. Leaving this row whole would bill that
 # board twice. The same split the vent-mat row above documents:
-#   stool board, 32 windows (27 at 5/4, five ash at 6/4) -> ordered by `haus millwork`
+#   stool board, 31 windows (26 at 5/4, five ash at 6/4) -> ordered by `haus millwork`
 #   apron, jamb extension, mitres, scribe, install   -> here, and still real
 #   the 2 out-of-scope garage stools                 -> here, bought not milled; their board
 #                                                       is the residual at the top of the band
-# ** ALL OAK STOOLS ARE BOUGHT WHITE OAK SINCE 2026-10-18 ** (19, ~54 bf of 5/4, select
+# ** ALL OAK STOOLS ARE BOUGHT WHITE OAK SINCE 2026-10-18 ** (15, select
 # heartwood >= 11" wide), and that board is NOT priced anywhere: it is the owner's quote,
-# and stays unpriced until one exists. Locust, ash and cherry stools are owner stock;
+# and stays unpriced until one exists. The four bedroom walnut stools are also bought,
+# pending a stock quote. Locust, ash and cherry stools are owner stock;
 # the sauna's is the owner's cedar (plan/window_stools.py).
-#   the 7 quartz stools, 3 cm remnants                -> [countertops] "quartz-counter", as
+#   the 8 quartz stools, 3 cm remnants                -> [countertops] "quartz-counter", as
 #                                                       area (takeoff/countertops.py); their
 #                                                       apron/jamb/casing work stays here
 # ~$18-45 of the old band was stool stock, so the row goes to $55-125. It stays PER WINDOW

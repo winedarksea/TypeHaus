@@ -58,25 +58,26 @@ def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
 # --- the derivation ------------------------------------------------------------------------
 
 def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catlin_model_ro):
-    """17 windows derive white oak; two authored circulation stools use the same stock.
+    """13 windows derive white oak; two authored circulation stools use the same stock.
 
     The plant room's four and kitchen's three are quartz; the other room overrides
-    select ash, locust, cherry and cedar.
+    select walnut, ash, locust, cherry and cedar.
     """
     derived = [stool for stool in stools if stool.derived]
     assert {stool.assembly for stool in derived} == {"EXT_2X6"}
     # Seven of the 41 are out of scope because of their host wall: the four plant-room
     # windows, sauna, and two garage windows. The sauna's is authored anyway.
-    assert len(derived) == 17
+    assert len(derived) == 13
     windows = [o for o in catlin_model_ro.openings if o.kind == "window"]
     assert len(windows) == 41, "the six out-of-scope windows still exist; they get no oak"
     assert all(stool.material_ref == "oak-stool" for stool in derived)
     authored = {stool.window_ref: stool for stool in stools if not stool.derived}
     east = {"WIN-M-LIV-E1", "WIN-M-LIV-E2", "WIN-M-DINING-E"}
     kitchen = {"WIN-M-KITCH", "WIN-M-KITCH-N", "WIN-M-KIT-E"}
-    quartz = {*(f"WIN-S-PLANT{n}" for n in range(1, 5)), *kitchen}
+    quartz = {*(f"WIN-S-PLANT{n}" for n in range(1, 5)), *kitchen, "WIN-M-BATH2"}
     species = {
-        **{ref: "locust-stool-5q" for ref in ("WIN-M-BATH1-W", "WIN-M-BATH2", "WIN-S-BATH-W",
+        **{f"WIN-M-BED-{suffix}": "walnut-stool-5q" for suffix in ("W1", "W2", "S1", "S2")},
+        **{ref: "locust-stool-5q" for ref in ("WIN-M-BATH1-W", "WIN-S-BATH-W",
                                                "WIN-S-VANITY-W", "WIN-M-MUD")},
         "WIN-M-LIV-S1": "ash-stool-6q", "WIN-M-LIV-S2": "ash-stool-6q",
         "WIN-S-SUITE1": "cherry-stool-5q", "WIN-S-SUITE2": "cherry-stool-5q",
@@ -89,7 +90,7 @@ def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catli
     assert {stool.window_ref: stool.assembly for stool in authored.values()
             if stool.window_ref in quartz | east} == {
         **{f"WIN-S-PLANT{n}": "PLANT_EXT_2X6_HUMID" for n in range(1, 5)},
-        **{ref: "EXT_2X6" for ref in kitchen | east},
+        **{ref: "EXT_2X6" for ref in kitchen | east | {"WIN-M-BATH2"}},
     }
     # Every stool off the mill is 5/4 at 1", except the living room's ash: 6/4 at 1 1/4".
     for stool in stools:
@@ -181,12 +182,12 @@ def test_a_stools_length_is_the_opening_plus_two_horns(stools, catlin_model_ro):
 
 
 def test_the_stool_cut_list_collapses_to_the_three_window_widths(stools):
-    """19 bought white-oak stools, three sizes — few setups at the mill."""
+    """15 bought white-oak stools, three sizes — few setups at the mill."""
     oak = [stool for stool in stools if stool.material_ref == "oak-stool"]
     sizes = {round(stool.length_m * M_TO_IN, 2) for stool in oak}
     assert len(sizes) == 3
     counts = _by_assembly(oak)
-    assert sum(len(v) for v in counts.values()) == 19
+    assert sum(len(v) for v in counts.values()) == 15
 
 
 # --- shelf banks --------------------------------------------------------------------------

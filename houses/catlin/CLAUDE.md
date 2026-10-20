@@ -2739,8 +2739,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **The owner's oak is RED oak (2026-10-16):** the `oak-*` tags keep their names, with
   `species="red-oak"` and one finish (A/B bleach, Bona NordicSeal, waterborne topcoat).
   Nothing wet gets it: stools are 5/4 at 1", bought white oak by default, with
-  `plan/window_stools.py` naming locust (wet rooms), ash (the living room), cherry (the
-  suite), red oak (two circulation windows) and cedar (the sauna); the tub-end shelves are
+  `plan/window_stools.py` naming walnut (RM-M-BED), quartz (RM-M-BATH2), locust
+  (other wet rooms), ash (the living room), cherry (the suite), white oak (two circulation
+  windows) and cedar (the sauna); the tub-end shelves are
   locust. A `Material.max_board_width_in` caps one species' boards (ash 11", locust 7").
   Supply against demand: `notes/wood_supply.md`.
 - **Elm slat partition (2026-10-16):** `FURN-M-LIV-SLAT-COUNTER`/`-FULL` at y=13'-0", over the

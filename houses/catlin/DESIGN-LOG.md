@@ -14,6 +14,13 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Master bedroom and en suite window stools (2026-10-19)
+
+RM-M-BED's four windows use bought black walnut, 5/4 dressed to 1 inch, eased and
+finished with clear satin hardwax oil to match the reading corner tops. WIN-M-BATH2
+uses 3 cm quartz matching the vanity. Overhangs, horns and derived depths stay as before;
+the bedroom boards enter the milling schedule and the bathroom stone bills with quartz.
+
 ## Porch lighting and the sunken-garden flood (2026-10-18)
 
 `ED-M-PORCH-FLOOD` moved off the house wall to the underside of the balcony's first
