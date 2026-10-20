@@ -22,9 +22,12 @@ behind it, building its face out to the same 1" projection as the battens. Batte
 bottoms butt its top. Scribe end stiles at adjoining finishes and coordinate the
 1/4" base offset where the treatment ends; do not add a second base order.
 
-Prime MDF faces and cut edges, fill fastener holes, and use white satin enamel
-matching the existing painted trim (#f0ede6 in the model). MDF field preparation
-and painting are in the backing rate; poplar preparation/painting in its LF rates.
+Prime MDF faces and cut edges and fill fastener holes. The MDF field and existing
+base retain the standard white (#f0ede6 in the model). Poplar rails and battens use
+a slightly warmer, deeper white satin enamel (#e7e2d8), giving the painted wood a
+subtle contrast against the field and drywall (2026-10-20 appearance refinement).
+MDF field preparation and painting are in the backing rate; poplar preparation/painting
+in its LF rates.
 These are provisional estimates, not supplier quotes.
 
 Attach only within the bedroom-side framing system. Do not connect opposite stud
