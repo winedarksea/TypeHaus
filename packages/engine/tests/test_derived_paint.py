@@ -90,3 +90,13 @@ def test_an_unconditioned_room_takes_no_paint(catlin_model) -> None:
         assert sorted(_fractions(catlin_model, "W-M-PAN-E")) == [0.0, 1.0]
     finally:
         catlin_model.rooms = rooms
+
+
+def test_painted_headboard_deducts_only_covered_bedroom_gypsum(catlin_model_ro) -> None:
+    """The vanity/bath face still takes latex; the MDF field has its own enamel rate."""
+    bands = [b for b in catlin_model_ro.panelings if b.tag == "WP-S-SUITE-HEADBOARD"]
+    for band in bands:
+        wall = catlin_model_ro.wall(band.wall_tag)
+        ends = dp._end_rows([layer for layer in wall.layers if not layer.is_cavity])
+        deductions = sorted(dp._covered_paneling_m2(catlin_model_ro, wall, row) for row in ends)
+        assert deductions == pytest.approx([0.0, band.area_m2])

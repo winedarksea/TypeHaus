@@ -1579,6 +1579,11 @@ export interface Paneling {
   thickness_m: number;
   // Absent on older model.json; the builder falls back to the gross outline.
   pieces?: { outline: Vec2[]; z0_m: number; z1_m: number }[];
+  retains_baseboard?: boolean;
+  trim_pieces?: {
+    kind: string; material_ref: string; outline: Vec2[];
+    z0_m: number; z1_m: number; length_m: number; width_m: number; thickness_m: number;
+  }[];
   provenance?: Provenance | null;
 }
 

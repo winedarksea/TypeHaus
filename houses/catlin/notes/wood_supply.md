@@ -24,7 +24,7 @@ the sauna.
 | ash | 15", 12", 16" | ~144 | ~108 | ~120 (table 52, counters 46, five living-room stools 22) | **short: source one more ash log.** Boards run to ~11" (quartered ~4–6"), so the counters, table and stools are all glue-ups; the 160 5/8" slab needs a 14'+ log |
 | locust | 12", 14" | ~73 | ~44 | ~29 (sauna base 10, five stools 11, bath shelf nosings and face strips 9) | covered without the extra logs: bath shelves use plywood with locust nosings, and all kitchen stools are quartz (2026-10-18). Fallback for the nosings: `cherry-shelf-4q`, then bought white oak |
 | elm | 20", 20" | ~218 | ~164 | ~209 (slats 111 on 8/4, mantel 13, posts 85), plus ~28 slat overage | **short: one more elm log.** The slats mill ~25% extra to reject movers; the posts need 10'+ logs; more elm is easy to get |
-| cherry | unknown | — | — | ~246 (base 175, suite wainscot 65, suite stools 6) | confirm the stack |
+| cherry | unknown | — | — | suite stools and bedroom-face door casing only | Confirm the stack against the current millwork schedule. Base is bought painted pine (2026-10-19); headboard is bought MDF and S4S poplar (2026-10-20), removing the former ~65 bf wainscot demand. |
 | white oak (bought) | — | — | — | ~54 (19 stools, 5/4) | order ~60 bf of 5/4, select heartwood widths of 11"+; includes hall/stair stools since 2026-10-18 for condensation resistance |
 | cedar (owner) | "a little" | — | — | ~12 (sauna door casing 10, the stool 2) | clear heartwood, no knots; **confirm "a little" covers three 8' boards**, else the casing goes back to locust (one line in `plan/millwork.py`) |
 | basswood | 24", 17", 16" | ~304 | ~228 | ~315 (wall liner 257, bench slats 57) | see below |

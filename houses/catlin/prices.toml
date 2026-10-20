@@ -3052,7 +3052,7 @@
 "FURN-S-PAX-SHELF-40" = { material = { low = 290, high = 350 }, labour = { low = 80, high = 200 } }  # 1 ea
 "FURN-S-PAX-DOUBLE-40" = { material = { low = 235, high = 280 }, labour = { low = 80, high = 200 } }  # 1 ea
 "FURN-S-PAX-SLIDE-79" = { material = { low = 470, high = 520 }, labour = { low = 120, high = 300 } }  # 1 ea
-# RM-M-STUDY: plywood carcass with A-1 walnut veneer front, solid walnut edging/cap,
+# RM-M-STUDY: plywood carcass with one edge-glued solid walnut front, solid walnut edging/cap,
 # independent reclined back and two internal partitions. Bench materials/labor include
 # carcass, front and trim; bench shop cuts are an unpriced mirror, never billed again.
 # Desk remains solid walnut. Upholstery/adjustable footrest stay in the allowance below.
@@ -5149,9 +5149,10 @@
 # question above stands.
 # 2026-10-16: WP-S-SUITE-HEADBOARD left this row for `cherry-shiplap`; the study alone remains.
 "walnut-shiplap" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # RM-M-STUDY wainscot (46.4 net)
-# WP-S-SUITE-HEADBOARD (57.8 SF net). ESTIMATE, not researched: milled black cherry at $5-9/bf
-# rough x 1.1 bf/SF; labour as the walnut.
-"cherry-shiplap" = { material = { low = 5.5, high = 10 }, labour = { low = 6, high = 12 } }
+# 2026-10-20: suite cherry shiplap retired. Bought 1/4" MDF over intact gypsum,
+# ~53 SF net. ESTIMATE, not a supplier quote: sheet stock/consumables plus installation,
+# edge priming and white enamel on the field. Rails/battens price separately by LF below.
+"mdf-panel-painted" = { material = { low = 1.2, high = 2.2 }, labour = { low = 3.5, high = 7 } }
 # 2026-10-07, WP-M-MUDROOM-SHIPLAP. ESTIMATE, not researched: owner-milled oak at the
 # ~$2/SF rough of `oak-stool` x 1.1 face factor, plus stain-blocking primer and enamel;
 # labour is install plus prime and two coats.
@@ -5281,6 +5282,10 @@
 "oak-trim:door casing" = { material = { low = 0, high = 0 }, labour = { low = 4.0, high = 8.0 } }  # D-A-STUDY
 "locust-trim" = { material = { low = 1.3, high = 2.7 }, labour = { low = 3.0, high = 5.5 } }
 "cedar-sauna-trim:door casing" = { material = { low = 1.3, high = 2.7 }, labour = { low = 4.0, high = 8.0 } }  # D-B-SAUNA's inside face
+# Suite board-and-batten, bought S4S poplar. ESTIMATE: stock, cutting/fastening,
+# primer and white enamel included; existing base remains in its original LF row.
+"poplar-batten-painted:paneling batten" = { material = { low = 1.4, high = 2.5 }, labour = { low = 4, high = 7 } }
+"poplar-batten-painted:paneling top rail" = { material = { low = 1.8, high = 3.2 }, labour = { low = 4, high = 7 } }
 # A poplar alternate to the painted pine and MDF, kept priced.
 "poplar-trim-paint" = { material = { low = 1.6, high = 2.75 }, labour = { low = 3.0, high = 5.5 } }
 "poplar-trim-paint:door casing" = { material = { low = 1.6, high = 2.75 }, labour = { low = 4.0, high = 8.0 } }

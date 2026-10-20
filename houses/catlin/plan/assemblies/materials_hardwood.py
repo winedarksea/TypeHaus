@@ -64,7 +64,7 @@ MATERIALS_HARDWOOD = [
              finish="clear-satin-hardwax-oil", nominal_quarters=5,
              milling_profile="eased", requires_custom_milling=True,
              source='Bought black walnut heartwood, 5/4 dressed to 1 inch; eased front edge. Clear satin hardwax oil on all six faces before install, matching the reading corner tops.'),
-    # The suite, beside its cherry headboard band and cherry door casing.
+    # The suite, beside its white painted headboard band and cherry door casing.
     Material(tag="cherry-stool-5q", name="Black cherry window stool, 5/4 S4S", hatch="lumber",
              color="#b77d60", finish="oak-board", species="cherry",
              nominal_quarters=5, milling_profile="eased", requires_custom_milling=True,
@@ -148,7 +148,7 @@ MATERIALS_HARDWOOD = [
              wood_surface="unfinished", density=360.0,
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Owner's western red or northern white cedar, clear heartwood only, 4/4 dressed to 3/4\" and ripped to 3 1/2\". Unfinished. Stainless fasteners only: cedar extractives stain black against iron. Ease every edge. Laps the liner at the jamb; butts the locust base."),
-    # WP-S-SUITE-HEADBOARD. The study wainscot stays `walnut-shiplap`.
+    # Retired suite finish since 2026-10-20; retained as an available stock, no live demand.
     Material(tag="cherry-shiplap", name="Black cherry shiplap wainscot (4/4)", r_per_inch=1.1,
              density=560.0, hatch="lumber", color="#b77d60",
              finish="clear-satin-hardwax-oil", species="cherry", stock_bf_per_sqft=1.1,

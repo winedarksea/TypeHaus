@@ -119,7 +119,7 @@ from typehaus.model.millwork import (
     TrimStandard,
     WindowStool,
 )
-from typehaus.model.paneling import PanelingSpan, WallPaneling
+from typehaus.model.paneling import BoardAndBatten, PanelingSpan, WallPaneling
 from typehaus.model.placeables import (
     ClearancePolicy,
     ClearanceZone,
@@ -368,7 +368,7 @@ __all__ = [
     "Slab", "SlabThermalBreak",
     "Soffit", "SoffitOpening",
     "FloorHeat", "FinishZone",
-    "PanelingSpan", "WallPaneling", "WallBacking", "BracedWallPanel",
+    "BoardAndBatten", "PanelingSpan", "WallPaneling", "WallBacking", "BracedWallPanel",
     "SuspensionAnchor", "HangingSeatType",
     "Countertop", "MillworkStandard", "RoomTrim", "StairLandingMillwork", "ShelfBank", "ShelfBay",
     "DoorTrim", "TrimStandard", "WindowStool",

@@ -221,7 +221,7 @@ def test_the_study_wainscot_reconciles_with_the_rooms_bounding_walls(catlin_mode
     """Walnut = the exposed study walls x 36", less the door; the upholstered north
     wall is omitted. 4/4 shiplap orders 1.1 board feet per square foot.
 
-    The suite band was on this tag 2026-09-05..10-16 and is `cherry-shiplap` now; the
+    The suite band was on this tag 2026-09-05..10-16 and is painted MDF/poplar now; the
     perimeter bound stays scoped to the study's own records."""
     walnut = next(row for row in bom["wood_surfaces"] if row["material"] == "walnut-shiplap")
     assert walnut["kind"] == "paneling"
@@ -244,13 +244,15 @@ def test_the_study_wainscot_reconciles_with_the_rooms_bounding_walls(catlin_mode
 
 
 def test_the_suite_headboard_band_is_the_sound_walls_full_run_to_six_feet(catlin_model):
-    """WP-S-SUITE-HEADBOARD: black cherry shiplap behind the bed (walnut until 2026-10-16). Two walls only (`walls=` is not optional — `room=` alone would panel all eight
-    bounding walls of the L, including the window wall and its two flush elm tudor posts),
+    """Painted MDF/poplar over gypsum behind the bed, on two walls only.
+
+    `walls=` is required: room-only scope would panel all eight bounding walls of the L,
+    including the window wall and its two flush elm tudor posts. The finish is
     a band 0 to 6'-0", and no opening deductions: neither W-S-SN1 nor W-S-SN2 is punched
     inside the band."""
     band = [p for p in catlin_model.panelings if p.room == "RM-S-SUITE"]
     assert {p.wall_tag for p in band} == {"W-S-SN1", "W-S-SN2"}
-    assert all(p.material_ref == "cherry-shiplap" for p in band)
+    assert all(p.material_ref == "mdf-panel-painted" for p in band)
     assert all(not p.replaces_wall_finish for p in band)
     for p in band:
         assert p.band_z0_m == pytest.approx(0.0, abs=1e-6)
@@ -335,3 +337,23 @@ def test_an_unresolvable_paneling_material_reports_unknown(catlin_model) -> None
     unknown = next(row for row in rows if row["material"] == "UNKNOWN")
     assert unknown["known"] is False
     assert float(unknown["net_area_sqft"]) > 0.0
+
+
+def test_suite_purchased_paneling_and_trim_are_separately_priced(bom):
+    from pathlib import Path
+
+    from typehaus.cli.prices import estimate_costs, load_prices
+
+    sheets = [r for r in bom["wood_surfaces"] if r["material"] == "mdf-panel-painted"]
+    assert len(sheets) == 1
+    assert sheets[0]["net_area_sqft"] == pytest.approx(52.7, abs=0.1)
+    assert sheets[0]["order_area_sqft"] == 59
+    assert sheets[0]["board_feet"] is None
+    rows = [r for r in bom["interior_trim"] if r["material"] == "poplar-batten-painted"]
+    assert {r["kind"] for r in rows} == {"paneling batten", "paneling top rail"}
+    assert not any(r["material"] == "cherry-shiplap" for r in bom["wood_surfaces"])
+    # Use only the changed procurement sections so this check does not depend on any
+    # unrelated trade's incomplete pricing or recompute the whole building estimate.
+    prices = dataclasses.replace(load_prices(Path("houses/catlin")), allowances={})
+    priced = estimate_costs({"wood_surfaces": sheets, "interior_trim": rows}, prices, {})
+    assert not priced["unpriced"]

@@ -266,6 +266,9 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         color = _material_finish_color(band.material_ref, "finish", authored)
         for ring, z0, z1 in pieces:
             mb.add_prism(ring, z0, z1, color)
+        for piece in band.trim_pieces:
+            mb.add_prism(piece.outline, piece.z0_m, piece.z1_m,
+                         _material_finish_color(piece.material_ref, "finish", authored))
         scene.add_object(mb, ("millwork",), kind="paneling", uid=band.uid)
 
     for bedding in sorted(model.footing_beddings, key=lambda item: item.uid):

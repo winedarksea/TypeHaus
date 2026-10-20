@@ -3,7 +3,7 @@
 from typehaus import BuiltInBenchSpec, FurnitureType, inch
 
 STUDY_BENCH = FurnitureType(
-    tag="FT-STUDY-BENCH", name="Study upholstered booth bench, walnut-faced plywood",
+    tag="FT-STUDY-BENCH", name="Study upholstered booth bench, solid walnut front",
     footprint=(inch(48.625), inch(20.819858)), height=inch(36),
     storage=False, work_surface=False,
     built_in_bench=BuiltInBenchSpec(
@@ -13,12 +13,12 @@ STUDY_BENCH = FurnitureType(
         lumbar_height_above_seat=inch(7), occupied_seat_height=inch(19.5),
         back_angle_degrees=100, toe_height=inch(2), toe_recess=inch(2),
         cap_thickness=inch(.75), carcass_material_ref="study-birch-ply",
-        front_material_ref="study-walnut-ply", trim_material_ref="walnut-trim-4q",
+        front_material_ref="study-walnut-front-4q", front_stock_kind="solid wood", trim_material_ref="walnut-trim-4q",
         upholstery_material_ref="study-upholstery", internal_partition_count=2,
         seat_foam_density_lb_ft3=2.5, seat_foam_ifd_min_lbf=35, seat_foam_ifd_max_lbf=45,
         lumbar_adjustment_min=inch(6), lumbar_adjustment_max=inch(9),
         front_roundover_radius=inch(.25), cushion_front_radius=inch(1)),
-    source="Floor-standing A-1 veneer-core plywood bench with walnut A-1 front and solid walnut trim. Two internal seat partitions; four triangular back gussets support 100-degree back without fasteners into W-M-HS4's pocket-door cavity. 17.5 inch deck plus 3 inch HR seat; occupied target 19-20 inch requires mock-up. Matching warm gray seat/back, removable lumbar insert 6-9 inch above occupied seat, nominal 7 inch. No storage. See notes/study_booth.md for cut/fit and fabrication acceptance.",
+    source="Floor-standing A-1 veneer-core plywood bench with one edge-glued solid walnut front and solid walnut trim. Front uses slotted fixings and edge clearance for seasonal height movement, without rigid glue joints to the carcass. Two internal seat partitions; four triangular back gussets support 100-degree back without fasteners into W-M-HS4's pocket-door cavity. 17.5 inch deck plus 3 inch HR seat; occupied target 19-20 inch requires mock-up. Matching warm gray seat/back, removable lumbar insert 6-9 inch above occupied seat, nominal 7 inch. No storage. See notes/study_booth.md for cut/fit and fabrication acceptance.",
 )
 
 STUDY_DESK = FurnitureType(

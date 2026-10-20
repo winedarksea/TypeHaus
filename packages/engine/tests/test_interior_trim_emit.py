@@ -23,6 +23,11 @@ def test_trim_reaches_the_viewer_as_drawable_boards(catlin_model_ro):
         (r.uid, r.kind) for r in runs}
     rooms = {room.uid for room in catlin_model_ro.rooms}
     assert all(row["room_uid"] in rooms for row in payload["base_runs"])
+    suite = [row for row in payload["panelings"] if row["tag"] == "WP-S-SUITE-HEADBOARD"]
+    assert all(row["retains_baseboard"] for row in suite)
+    assert sum(len(row["trim_pieces"]) for row in suite) == 9
+    assert all(p["material_ref"] == "poplar-batten-painted"
+               for row in suite for p in row["trim_pieces"])
     assert len(payload["door_casings"]) == len(catlin_model_ro.door_casings)
     for row, casing in zip(sorted(payload["door_casings"], key=lambda r: r["uid"]),
                            sorted(catlin_model_ro.door_casings, key=lambda c: c.uid),
@@ -34,6 +39,16 @@ def test_trim_reaches_the_viewer_as_drawable_boards(catlin_model_ro):
 def test_glb_draws_the_same_boards_selecting_as_room_and_door(catlin_model_ro):
     gltf, _blob = emit_gltf_dict(catlin_model_ro)
     millwork = [node for node in gltf["nodes"] if node["extras"].get("trade") == "millwork"]
+    suite = [band for band in catlin_model_ro.panelings if band.tag == "WP-S-SUITE-HEADBOARD"]
+    panel_nodes = [node for node in millwork if node["extras"].get("kind") == "paneling"
+                   and node["extras"]["uid"] == suite[0].uid]
+    assert len(panel_nodes) == 2
+    # Twelve triangles per rectangular prism, with flat normals:
+    # the two backing records plus all nine trim boards.
+    vertices = sum(gltf["accessors"][primitive["attributes"]["POSITION"]]["count"]
+                   for node in panel_nodes
+                   for primitive in gltf["meshes"][node["mesh"]]["primitives"])
+    assert vertices == 36 * (sum(len(band.pieces) for band in suite) + 9)
     rooms = {room.tag: room.uid for room in catlin_model_ro.rooms}
     # A base lands on its kind's trade: a board on millwork, tile on tile, a cove on flooring.
     # Room floors are flooring|room nodes too, so count against an emit without the base.
@@ -66,6 +81,13 @@ def test_trim_exports_as_ifc_skirting_and_moldings(catlin_model_ro, catlin_ifc_p
 
     file = ifcopenshell.open(str(catlin_ifc_path))
     coverings = {item.Name: item for item in file.by_type("IfcCovering")}
+    suite_products = [product for name, product in coverings.items()
+                      if name.startswith("WP-S-SUITE-HEADBOARD:")]
+    assert len(suite_products) == 11  # two backing records, one rail, eight battens
+    assert sum(p.PredefinedType == "CLADDING" for p in suite_products) == 2
+    assert sum(p.PredefinedType == "MOLDING" for p in suite_products) == 9
+    for product in suite_products:
+        assert product.Representation.Representations[0].Items
     project = catlin_model_ro.plan.project.project_uuid
     drawn = [r for r in catlin_model_ro.base_runs if base_run_prisms(r)]
     for run in drawn:

@@ -34,7 +34,8 @@ def bench_cut_rows(model, stock_kind: str, max_board_width_in=None) -> list[dict
                        "panel_grade": material.panel_face_grade, "panel_core": material.panel_core,
                        "nominal_stock": f'{material.panel_nominal_thickness_in:g} in panel',
                        "panel_area_sqft": round(width * length / 144, 4),
-                       "finish": material.finish, "also_in_placeables": True}
+                       "finish": material.finish, "material_source": material.source,
+                       "also_in_placeables": True}
             row.update(location=part.name, stock_kind=stock_kind,
                        grain_direction=part.grain_direction, shape_note=part.shape_note)
             row["stock_note"] = "; ".join(filter(None, (row.get("stock_note"),

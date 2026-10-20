@@ -59,7 +59,7 @@ from typehaus.emit.ifc.mep import (
     _emit_sump_pumps,
 )
 from typehaus.emit.ifc.mep_fittings import emit_fittings
-from typehaus.emit.ifc.millwork import emit_interior_trim, emit_window_stools
+from typehaus.emit.ifc.millwork import emit_board_and_batten, emit_interior_trim, emit_window_stools
 from typehaus.emit.ifc.profiles import ProfileCollector, attach_profiles
 from typehaus.emit.ifc.reinforcement import emit_reinforcement
 from typehaus.emit.ifc.roof import emit_roof
@@ -175,6 +175,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     element_entities: dict[str, Any] = dict(wall_entities)
     element_entities.update(emit_window_stools(f, body, model, storeys, project_uuid))
     element_entities.update(emit_interior_trim(f, body, model, storeys, project_uuid))
+    element_entities.update(emit_board_and_batten(f, body, model, storeys, project_uuid))
 
     drainage_elements = []
     cleanout_entities = []

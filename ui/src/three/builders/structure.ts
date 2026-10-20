@@ -366,6 +366,13 @@ export function buildPaneling(parent: THREE.Group, band: Paneling, center: PlanC
     }
     parent.add(makeSurfaceMesh(geometry, material));
   }
+  for (const piece of band.trim_pieces ?? []) {
+    const geometry = createPlanPrismGeometry(piece.outline, piece.z0_m, piece.z1_m, [], center);
+    if (!geometry) continue;
+    const trimMaterial = standardMaterial(
+      new THREE.Color(materialColor(piece.material_ref, palette, materials)), mode);
+    parent.add(makeSurfaceMesh(geometry, trimMaterial));
+  }
   registerSelectable(parent, firstChildIndex, band.uid, "paneling", picks, byUid);
 }
 

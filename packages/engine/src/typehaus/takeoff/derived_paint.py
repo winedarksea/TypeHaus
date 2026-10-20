@@ -60,6 +60,9 @@ def derived_paint_rows(model: ResolvedModel,
             areas[("wall (derived)", PAINT)] += fraction * sum(
                 max(0.0, wall_layer_net_area_m2(model, wall, layer, net)
                     - replaced.get((wall.tag, layer.name), 0.0)) for layer in gypsum)
+            # The sheet field and trim include their own enamel in installation rates.
+            # Deduct only covered gypsum on this face, preserving the opposite face's paint.
+            areas[("wall (derived)", PAINT)] -= _covered_paneling_m2(model, wall, row)
 
     by_tag = {room.tag: room for room in model.rooms}
     decked: dict[str, bool] = {}
@@ -88,6 +91,18 @@ def derived_paint_rows(model: ResolvedModel,
          "also_in_sheet_goods": False}
         for (scope, material), area in sorted(areas.items()) if area > 0.0
     ]
+
+
+def _covered_paneling_m2(model, wall, row) -> float:
+    (x0, y0), (x1, y1) = wall.axis
+    def side(points):
+        return sum((x - x0) * (y1 - y0) - (y - y0) * (x1 - x0)
+                   for x, y in points)
+
+    face_side = side([point for layer in row for point in layer.polygon])
+    return sum(band.area_m2 for band in model.panelings
+               if band.retains_baseboard and band.wall_tag == wall.tag
+               and face_side * side(band.outline) > 0)
 
 
 def _material(model: ResolvedModel, ref: str) -> Any:

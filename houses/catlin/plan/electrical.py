@@ -2546,14 +2546,15 @@ NEC_FILL_SECOND = [
                          wall_ref="W-S-W3", face="left", distance_from_start=inch(112.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # y follows W-S-SN1's south face: the suite's north wall is the 8" staggered sound wall,
-    # not the 4 3/4" INT_2X4_PARTITION.
+    # not the 4 3/4" INT_2X4_PARTITION. The receptacle sits in a clear MDF bay:
+    # extend the box/plate 1/4" to the new finished face, without moving its station.
     ElectricalDevice(uid="NEC045AAAA", tag="ED-S-SUITE-RC5", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SN1", face="right", distance_from_start=inch(12.75),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         normal_gap=inch(0.25), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC046AAAA", tag="ED-S-SUITE-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND",

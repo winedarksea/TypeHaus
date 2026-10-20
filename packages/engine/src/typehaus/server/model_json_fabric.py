@@ -250,6 +250,13 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "z0_m": band.z0_m, "z1_m": band.z1_m, "thickness_m": band.thickness_m,
              "pieces": [{"outline": [list(point) for point in ring], "z0_m": z0, "z1_m": z1}
                         for ring, z0, z1 in band.pieces],
+             "retains_baseboard": band.retains_baseboard,
+             "trim_pieces": [
+                 {"kind": piece.kind, "material_ref": piece.material_ref,
+                  "outline": [list(point) for point in piece.outline],
+                  "z0_m": piece.z0_m, "z1_m": piece.z1_m,
+                  "length_m": piece.length_m, "width_m": piece.width_m,
+                  "thickness_m": piece.thickness_m} for piece in band.trim_pieces],
              "provenance": _provenance(provenance, band.tag)}
             for band in sorted(model.panelings, key=lambda item: (item.uid, item.wall_tag))
         ],

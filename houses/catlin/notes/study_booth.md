@@ -8,21 +8,26 @@ screen and keyboard positions remain coupled. It is not a universal ergonomic wo
 
 The bench is an independent floor-standing carcass, not a solid-walnut slab or wall-hung
 seat. Its immutable occurrence is FURN-M-STUDY-BENCH. Do not fasten into W-M-HS4:
-that north wall contains the laundry pocket door. Glue and screw the carcass together;
+that north wall contains the laundry pocket door. Glue and screw the plywood carcass together;
 two internal partitions plus the two ends support the deck. Four triangular plywood
 gussets transfer the reclined back load into those supports. Install on a level floor,
 with protected shim pads as necessary; conceal rather than bridge the rear wall gap.
 
-- Front: nominal ¾″ **A-1 black-walnut veneer-core plywood**, matched heartwood,
-  horizontal grain, without conspicuous face repairs. A is the face grade, 1 the back.
+- Front: one **¾″ finished edge-glued black-walnut panel**, horizontal grain,
+  matched heartwood coordinated with the desk. Mill from 4/4 stock; plan around
+  rough boards up to 10″ wide, rather than requiring a single wide slab.
+  Attach with slotted fixings and clearance for seasonal movement across its height;
+  do not rigidly glue it to the plywood supports or trap it between fixed trim.
+  The glued plywood carcass and gussets provide support independently of this face.
 - Carcass, seat deck and back: nominal ¾″ **A-1 birch veneer-core plywood**;
   maple is acceptable at the same face/back grade and core specification.
+  A is the face grade, 1 the back.
 - Require sound cores without significant voids at fasteners or joints. Veneer face grade
   does not establish core quality. No MDF or particleboard substitution.
 - Measure actual supplied thickness before cutting joinery. The model uses nominal ¾″;
   update the spec and regenerate the parts if changing thickness, rather than cutting
   nominal dadoes into thinner stock.
-- Sand and seal all faces/edges beneath removable cushions. Match visible walnut veneer,
+- Sand and seal all faces/edges beneath removable cushions. Match the solid walnut front,
   solid walnut edging and cap to the desktop's clear satin hardwax-oil finish. Conceal
   plywood edges with walnut edging; ease exposed arrises. The deck's supporting front
   edge gets a ¼″ roundover, including the solid seat-edge strip.
@@ -30,12 +35,16 @@ with protected shim pads as necessary; conceal rather than bridge the rear wall 
 
 `BuiltInBenchSpec` owns dimensions and materials. `bench_parts()` generates the actual
 notched supports, triangular gussets, angled substrate, seat/front/cap and upholstery.
-Its geometry feeds viewer, GLB and IFC; its blanks feed panel/solid-wood shop schedules.
+Its geometry feeds viewer, GLB and IFC; its blanks feed solid-wood shop schedules
+and the plywood sheet order.
 Gusset and notch notes are cutting instructions, not rectangular finished shapes.
 The 2″ high toe recess is 2″ behind the finished front, so each support's notch is
 1¼″ deep from its own front edge. The back substrate blank includes the additional
 length needed for its beveled ends, rather than only the rear-face slope length.
-Panel square footage is blank area, not an optimized 4×8-sheet order. Upholstery is not
+The millwork schedule orders whole 4×8 sheets by material, preserving grain with
+⅛″ saw kerf and ¼″ edge trim per side. Its conservative rectangular-blank layout
+includes no spare sheets. `haus millwork --json` retains individual `panel_cuts`
+for fabrication reference; sheet quantities appear under `panels`. Upholstery is not
 rough lumber and does not acquire board-foot quantities.
 
 ## Fit and upholstery
@@ -84,7 +93,7 @@ connections to study-face let-in blocking and the seated knee envelope before fa
 No through bolts may bridge the staggered wall leaves. The folded panel is approximately
 12½″..28½″ AFF; keep outlets and the return grille clear of its full sweep and footprint.
 
-Bench construction, plywood and solid trim costs remain in FT-STUDY-BENCH. Seat/back
+Bench construction, plywood, solid front and trim costs remain in FT-STUDY-BENCH. Seat/back
 upholstery, fit inserts and purchased footrest remain in cabinet-study-booth-cushions.
 The existing estimate ranges are provisional pending revised fabrication/upholstery quotes.
 The shop schedule is an unpriced mirror, never another cost.

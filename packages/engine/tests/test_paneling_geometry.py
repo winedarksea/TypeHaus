@@ -237,8 +237,8 @@ def test_the_catlin_bands_are_the_eight_authored_ones(bands, catlin_model):
         assert band.z1_m - band.z0_m == pytest.approx(72 * _IN, abs=1e-6)
         assert band.z0_m == pytest.approx(120 * _IN, abs=1e-3)
         assert not band.replaces_wall_finish
-        # 4/4 walnut T&G dresses to 3/4", which the material's own stock states.
-        assert band.thickness_m == pytest.approx(0.75 * _IN, abs=1e-6)
+        assert band.material_ref == "mdf-panel-painted"
+        assert band.thickness_m == pytest.approx(0.25 * _IN, abs=1e-6)
 
 
 def test_the_bands_still_bill_what_they_billed(bands):
@@ -301,3 +301,59 @@ def test_a_span_on_a_wall_inside_its_room_needs_a_face(catlin_plan):
     model, findings = resolve(plan)
     assert not [b for b in model.panelings if b.tag == "WP-TEST-KNEE"]
     assert any("WP-TEST-KNEE" in f.message and "W-M-TUBDK-S" in f.message for f in findings)
+
+
+def test_suite_board_and_batten_is_continuous_and_matches_procurement(bands, catlin_model):
+    from typehaus.resolve.geometry_millwork import base_run_prisms
+    from typehaus.takeoff.hardwood import hardwood_takeoff
+    from typehaus.takeoff.interior_trim import interior_trim_takeoff
+
+    suite = [b for b in bands if b.tag == "WP-S-SUITE-HEADBOARD"]
+    boards = [piece for band in suite for piece in band.trim_pieces]
+    rails = [piece for piece in boards if piece.kind == "paneling top rail"]
+    battens = [piece for piece in boards if piece.kind == "paneling batten"]
+    assert len(rails) == 1, "the model wall split must not split the top rail"
+    assert len(battens) == 8
+    assert rails[0].length_m == pytest.approx(sum(b.run_m for b in suite))
+    assert rails[0].width_m == pytest.approx(3.5 * _IN)
+    assert rails[0].z1_m == pytest.approx(suite[0].z1_m)
+    assert all(p.length_m == pytest.approx(65 * _IN) for p in battens)
+    assert all(p.width_m == pytest.approx(2.5 * _IN) for p in battens)
+    assert all(p.thickness_m == pytest.approx(0.75 * _IN) for p in boards)
+    centers = sorted(Polygon(p.outline).centroid.x for p in battens)
+    spacing = [b - a for a, b in zip(centers, centers[1:], strict=False)]
+    assert max(spacing) <= 16 * _IN
+    assert max(spacing) - min(spacing) < 1e-8
+    # The MDF's room-facing edge and the trim's back are the same plane.
+    back_y = suite[0].outline[3][1]
+    assert all(max(y for _, y in p.outline) == pytest.approx(back_y) for p in boards)
+    base = [r for r in catlin_model.base_runs if r.room == "RM-S-SUITE"
+            and r.wall_tag in {"W-S-SN1", "W-S-SN2"}]
+    assert base, "sheet backing must retain the existing base"
+    for run in base:
+        for prism in base_run_prisms(run):
+            assert min(y for _, y in prism.ring) == pytest.approx(
+                back_y - 0.75 * _IN, abs=1e-6)
+    rows = [r for r in interior_trim_takeoff(catlin_model)
+            if r["material"] == "poplar-batten-painted"]
+    assert sum(r["pieces"] for r in rows) == len(boards)
+    assert sum(r["length_ft"] for r in rows) == pytest.approx(
+        sum(p.length_m for p in boards) / 0.3048, abs=0.02)
+    milling = hardwood_takeoff(catlin_model)
+    assert not any(r["material"] in {"cherry-shiplap", "poplar-batten-painted",
+                                     "mdf-panel-painted"} for r in milling)
+    assert any(r["material"] == "cherry-trim" for r in milling)
+    assert any(r["material"] == "cherry-stool-5q" for r in milling)
+
+
+def test_suite_receptacle_remains_in_a_clear_panel_bay(bands, catlin_model):
+    from shapely.geometry import Point
+
+    device = next(o for o in catlin_model.canvas_objects if o.tag == "ED-S-SUITE-RC5")
+    suite = [b for b in bands if b.tag == "WP-S-SUITE-HEADBOARD"]
+    # A faceplate must clear the stile beside it; its unchanged station is in the field.
+    assert all(Polygon(p.outline).distance(Point(device.position)) > 1.5 * _IN
+               for band in suite for p in band.trim_pieces if p.kind == "paneling batten")
+    attachment = catlin_model.plan.by_tag(device.tag).location.attachment
+    assert attachment.normal_gap.meters == pytest.approx(0.25 * _IN)
+    assert attachment.distance_from_start.meters == pytest.approx(12.75 * _IN)

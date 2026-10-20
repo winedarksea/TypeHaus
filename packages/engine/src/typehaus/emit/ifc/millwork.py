@@ -80,3 +80,35 @@ def emit_interior_trim(f: Any, body: Any, model: ResolvedModel,
         ll.assign_container(f, element, storeys[record.storey])
         entities[record.tag] = element
     return entities
+
+
+def emit_board_and_batten(f: Any, body: Any, model: ResolvedModel,
+                          storeys: dict[str, Any], project_uuid: Any) -> dict[str, Any]:
+    """Sheet backing and purchased trim, using the same net prisms as the viewer/GLB."""
+    entities = {}
+    for band in model.panelings:
+        if not band.retains_baseboard or band.storey not in storeys:
+            continue
+        records = [("backing", band.material_ref, band.pieces)]
+        records.extend((f"trim-{index}", piece.material_ref,
+                        ((piece.outline, piece.z0_m, piece.z1_m),))
+                       for index, piece in enumerate(band.trim_pieces))
+        for suffix, ref, prisms in records:
+            if not prisms:
+                continue
+            name = f"{band.tag}:{band.wall_tag}:{suffix}"
+            entity = ll.create_entity(f, "IfcCovering", name=name)
+            entity.GlobalId = derive_guid(project_uuid, f"{band.uid}:{band.wall_tag}:{suffix}")
+            entity.PredefinedType = "CLADDING" if suffix == "backing" else "MOLDING"
+            ll.assign_representation(f, entity, ll.add_prisms_at_elevations(
+                f, body, [(list(ring), z0, z1) for ring, z0, z1 in prisms]))
+            material = f.create_entity("IfcMaterial", Name=ref)
+            f.create_entity("IfcRelAssociatesMaterial", RelatedObjects=[entity],
+                            RelatingMaterial=material)
+            ll.ensure_pset(f, entity, PSET_SOURCE, {
+                "uid": band.uid, "tag": band.tag, "room": band.room,
+                "host_wall": band.wall_tag, "material_ref": ref,
+            })
+            ll.assign_container(f, entity, storeys[band.storey])
+            entities[name] = entity
+    return entities

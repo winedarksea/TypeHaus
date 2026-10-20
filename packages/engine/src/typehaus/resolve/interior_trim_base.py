@@ -95,7 +95,7 @@ def _room_runs(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
             continue
         material = scope.materials.get(band.material_ref)
         spans = rp.fronting_intervals(ring, [Polygon(band.outline)], _TOUCH_M)
-        if getattr(material, "species", None):
+        if band.retains_baseboard or getattr(material, "species", None):
             offset = 0.0 if band.replaces_wall_finish else band.thickness_m
             wood.extend((a, b, offset) for a, b in spans)
         else:

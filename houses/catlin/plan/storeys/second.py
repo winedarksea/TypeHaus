@@ -24,6 +24,7 @@ from typehaus import (
     Alarm,
     AlarmKind,
     Beam,
+    BoardAndBatten,
     Connector,
     ConnectorKind,
     ControlLayer,
@@ -1033,7 +1034,7 @@ ROOMS = [
     #     boards — the most demanding cut off a log pile — for the one surface that lives
     #     under a bed and a rug.
     # None of that applies to a vertical surface at eye level, so the walnut moved to
-    # WP-S-SUITE-HEADBOARD (see PANELING below; cherry since 2026-10-16) and the floor is `oak`, matching RM-S-STUDY2
+    # WP-S-SUITE-HEADBOARD (see PANELING below; white painted MDF/poplar since 2026-10-20) and the floor is `oak`, matching RM-S-STUDY2
     # and RM-A-STUDY. That also puts the second storey's oak on one sand-and-finish set-up
     # (~340 SF here) instead of a trip for a single room; prices.toml [floor_finishes] `oak`
     # carries the mobilisation arithmetic. The walk-in follows the suite for the same reason
@@ -1511,30 +1512,20 @@ STAIRS = [
 ]
 
 PANELING = [
-    # The suite's headboard band: milled black cherry (`cherry-shiplap`, 2026-10-16; it was
-    # the study's walnut). Same 4/4 shiplap board as the study wainscot, its own species.
-    #
-    # ** `walls=` IS NOT OPTIONAL. ** `room=` alone panels every bounding wall of the L —
-    # all eight, ~50 lineal feet — including the window wall with its two elm tudor
-    # posts (P-S-TUDOR1/2, `within_wall="W-S-W3"`), which the model cannot scribe around.
-    #
-    # ** `height` IS A BAND HEIGHT ADDED TO `offset`, NOT A TOP ELEVATION ** — see
-    # resolve/paneling.py, which computes `offset + height` and clamps to the wall top.
-    # `offset` defaults to 0, so ft(6) is a band 0 -> 6'-0". WP-M-STUDY-FELT in main.py
-    # shouts the same thing for the same reason.
-    #
-    # `replaces_wall_finish` stays False: W-S-SN1/SN2 are INT_2X4_STAGGERED_GWB, which
-    # carries its gypsum in `layers` and not in `default_lining`, so there is nothing to
-    # replace — the reasoning main.py already records for WP-M-STUDY-FELT on this assembly.
-    # Those two are also the staggered-stud SOUND wall between the suite and the vanity, so
-    # 3/4" of solid wood on them adds a little mass to a wall built for exactly that.
-    #
-    # ED-S-SUITE-RC5 (16" AFF on W-S-SN1) sits inside the band: ordinary, but 3/4" of
-    # combustible finish means a box extender per NEC 314.20. Nothing grades that; it is an
-    # ordering note. The cap is unmodelled trim, as the study wainscot's is.
+    # White painted headboard band over intact 5/8" gypsum on the staggered sound wall.
+    # Restrict to the two north runs; room-only scope would panel all eight suite walls.
+    # The 1/4" MDF continues behind the existing base, building it out flush with the
+    # 3/4" poplar battens. The top of the 1x4 rail is 6'-0" AFF; no projecting cap.
+    # Attach only to bedroom-side framing. Prime MDF edges, then matching white enamel.
+    # ED-S-SUITE-RC5 needs a box extension to the finished field/trim face; do not bridge
+    # the staggered studs with backing or fasteners. No added STC rating is claimed.
     WallPaneling(uid="0D53MRPGKZ", tag="WP-S-SUITE-HEADBOARD", room="RM-S-SUITE",
-                 material_ref="cherry-shiplap", height=ft(6),
-                 walls=("W-S-SN1", "W-S-SN2")),
+                 material_ref="mdf-panel-painted", height=ft(6), thickness=inch(0.25),
+                 walls=("W-S-SN1", "W-S-SN2"),
+                 board_and_batten=BoardAndBatten(
+                     material_ref="poplar-batten-painted", thickness=inch(0.75),
+                     batten_width=inch(2.5), rail_width=inch(3.5),
+                     target_spacing=inch(16), base_height=inch(3.5))),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SOFFITS,

@@ -2744,6 +2744,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   windows) and cedar (the sauna); the tub-end shelves are
   locust. A `Material.max_board_width_in` caps one species' boards (ash 11", locust 7").
   Supply against demand: `notes/wood_supply.md`.
+- **Suite headboard finish (2026-10-20):** `WP-S-SUITE-HEADBOARD` is white painted
+  1/4" MDF with bought S4S tulip poplar 1x3 battens and 1x4 top rail, 6'-0" overall,
+  only on W-S-SN1/SN2. Gypsum and the staggered sound wall remain continuous beneath it;
+  no extra STC credit. Existing base builds out over the MDF; no separate bottom rail.
+  Purchased stock stays out of the owner mill order. See `notes/suite_headboard.md`.
 - **Elm slat partition (2026-10-16):** `FURN-M-LIV-SLAT-COUNTER`/`-FULL` at y=13'-0", over the
   LVP/coated-concrete joint, 60 1/2 west from the gwb: 16 1/2 on the counter (6 slats), 44 on
   the floor (16 slats), 1 1/2 x 2 1/2 American elm on a 2 3/4 pitch, cleats top and bottom

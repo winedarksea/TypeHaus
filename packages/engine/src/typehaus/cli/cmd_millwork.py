@@ -23,7 +23,7 @@ MILLWORK_COLUMNS = ("use", "location", "species", "material", "pieces", "finishe
                     "boards_per_piece", "board_width_in", "rough_width_in",
                     "rough_board_feet", "rough_surface_sqft", "stock_note", "element_tags",
                     "stock_kind", "panel_grade", "panel_core", "finish", "grain_direction",
-                    "panel_area_sqft", "shape_note")
+                    "panel_area_sqft", "shape_note", "sheets_to_order", "sheet_size")
 
 
 def _as_tags(value: object) -> list[str]:
@@ -66,14 +66,16 @@ def _markdown(rows: list[dict[str, object]]) -> str:
     from typehaus.emit.md_writer import document, heading, table
 
     flat = _flat_rows(rows)
-    header = [column.replace("_", " ") for column in MILLWORK_COLUMNS]
-    def section(kind):
-        return table(header, [[row[column] if row[column] != "" else None
-                               for column in MILLWORK_COLUMNS]
-                              for row in flat if row["stock_kind"] == kind])
+
+    def section(kind, columns=MILLWORK_COLUMNS):
+        return table([column.replace("_", " ") for column in columns],
+                     [[row[column] if row[column] != "" else None for column in columns]
+                      for row in flat if row["stock_kind"] == kind])
 
     schedule = section("solid wood")
-    panel_schedule = section("panel")
+    panel_schedule = section("panel", ("material", "species", "sheets_to_order",
+                                       "sheet_size", "nominal_stock", "panel_grade",
+                                       "panel_core", "finish", "stock_note", "element_tags"))
     totals: dict[str, float] = {}
     for row in rows:
         rough = row.get("rough_board_feet")
@@ -86,9 +88,10 @@ def _markdown(rows: list[dict[str, object]]) -> str:
         "in another section of the takeoff — this is a *view* for the mill, not an "
         "addition to the estimate.",
         heading("Solid wood", 2), schedule,
-        heading("Purchased appearance-grade panels", 2), panel_schedule,
-        "Panel areas are cutting blanks, not an optimized sheet layout. Verify actual "
-        "supplied panel thickness before joinery. Upholstery is specified in the bench notes.",
+        heading("Plywood sheets to order", 2), panel_schedule,
+        "Order whole stock sheets. Counts allow for grain, saw kerf and edge trimming; "
+        "the conservative layout includes no spare sheets. Verify supplied thickness before "
+        "joinery. Part blanks remain available in --json; see bench construction notes.",
         heading("Rough board feet by species", 2),
         table(["species", "rough bf"],
               [[species, f"{totals[species]:.1f}"] for species in sorted(totals)]),
@@ -130,9 +133,12 @@ def millwork(
         _print_findings(findings)
         raise typer.Exit(1)
     from typehaus.takeoff.bench_millwork import bench_cut_rows
+    from typehaus.takeoff.panel_stock import panel_order_rows
 
     hardwood = hardwood_takeoff(model)
-    panels = bench_cut_rows(model, "panel")
+
+    panel_cuts = bench_cut_rows(model, "panel")
+    panels = panel_order_rows(panel_cuts)
     rows = hardwood + panels
 
     if csv is not None:
@@ -155,7 +161,8 @@ def millwork(
                            bench_specs)
         console.print(f"wrote {pdf}")
     if as_json:
-        console.print_json(json.dumps({"hardwood": hardwood, "panels": panels}))
+        console.print_json(json.dumps({"hardwood": hardwood, "panels": panels,
+                                       "panel_cuts": panel_cuts}))
         return
 
     if not rows:
@@ -194,8 +201,10 @@ def millwork(
                   "allowance. --csv and --md export the same rows.[/dim]", soft_wrap=True)
 
     if panels:
-        console.print("[bold]Purchased panel cut list[/bold] (no rough board feet)")
+        console.print("[bold]Plywood sheets to order[/bold] (whole stock sheets)")
         for row in panels:
-            console.print(f"  {row['location']}: {row['pieces']} x {_finished_size(row)} "
+            console.print(f"  {row['sheets_to_order']} sheets x {row['sheet_size']} "
+                          f"{row['nominal_stock']} "
                           f"{row['material']} {row['panel_grade']} {row['panel_core']} "
                           f"grain: {row['grain_direction']}", soft_wrap=True)
+            console.print(f"      [dim]{row['stock_note']}[/dim]", soft_wrap=True)

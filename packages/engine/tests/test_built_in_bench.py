@@ -17,6 +17,7 @@ from typehaus.model.placeable_symbols import place_local
 from typehaus.takeoff.bench_millwork import bench_cut_rows
 from typehaus.takeoff.hardwood import hardwood_takeoff
 from typehaus.takeoff.millwork_pdf import write_millwork_pdf
+from typehaus.takeoff.panel_stock import panel_order_rows
 
 INCH = .0254
 BENCH_TAG = "FURN-M-STUDY-BENCH"
@@ -156,15 +157,36 @@ def test_ifc_preserves_every_shared_mesh(catlin_ifc_path, catlin_model_ro, bench
 def test_panel_exports_preserve_purchasing_grade_and_do_not_add_board_feet(
         catlin_model_ro, tmp_path):
     hardwood = hardwood_takeoff(catlin_model_ro)
-    panels = bench_cut_rows(catlin_model_ro, "panel")
+    panels = panel_order_rows(bench_cut_rows(catlin_model_ro, "panel"))
+    assert {row["material"]: row["sheets_to_order"] for row in panels} == {
+        "study-birch-ply": 2}
+    assert all("pieces" not in row and "finished_width_in" not in row for row in panels)
     flattened = _flat_rows(panels)
     assert all(r["panel_grade"] == "A-1" and r["rough_board_feet"] == "" for r in flattened)
     markdown = _markdown(hardwood + panels)
-    assert "Purchased appearance-grade panels" in markdown and "horizontal across bench" in markdown
+    assert "Plywood sheets to order" in markdown and "sheets to order" in markdown
+    assert "furniture panel" not in markdown
     pdf = tmp_path / "millwork.pdf"
     write_millwork_pdf(pdf, "catlin", _flat_rows(hardwood), flattened)
     assert pdf.read_bytes().startswith(b"%PDF-")
     assert pdf.stat().st_size > 1000
+
+
+def test_bench_orders_one_glued_front_and_two_single_board_trim_pieces(catlin_model_ro):
+    rows = [row for row in hardwood_takeoff(catlin_model_ro) if BENCH_TAG in row["tags"]]
+    assert len(rows) == 3
+    front = next(row for row in rows if row["location"] == "walnut front")
+    assert front["pieces"] == 1 and front["layup"] == "edge-glued panel"
+    assert front["boards_per_piece"] == 2
+    assert (front["finished_thickness_in"], front["finished_width_in"],
+            front["finished_length_in"]) == pytest.approx((.75, 14.75, 48.625))
+    assert "slotted fixings" in front["stock_note"]
+    assert "do not glue to plywood supports" in front["stock_note"]
+    trim = [row for row in rows if row is not front]
+    assert {row["location"] for row in trim} == {"seat edge", "back cap"}
+    assert all(row["pieces"] == 1 and row["layup"] == "one board" for row in trim)
+    assert not any(row["material"] == front["material"]
+                   for row in bench_cut_rows(catlin_model_ro, "panel"))
 
 
 @pytest.mark.parametrize("update", [

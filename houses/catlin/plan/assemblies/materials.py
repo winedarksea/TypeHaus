@@ -265,7 +265,7 @@ MATERIALS = [
     # plan/storeys/second.py at RM-S-SUITE: walnut photo-LIGHTENS under the west windows'
     # UV, it is soft underfoot (~1010 Janka vs oak's ~1360), and flooring is the most
     # demanding cut off a family log pile for the least-seen surface. The floor is `oak`;
-    # the band is WP-S-SUITE-HEADBOARD, a 6'-0" band on W-S-SN1/SN2 (now `cherry-shiplap`).
+    # the band is WP-S-SUITE-HEADBOARD, a 6'-0" band on W-S-SN1/SN2 (now painted MDF and poplar).
     # If it ever comes back it needs its own tag again, `finish="strip-floor"`, and a
     # `STRIP_FLOOR_REFS` needle in ui/src/three/plankMaterial.ts.
     # The desk and leaf remain bought solid walnut; the upholstered bench is now
@@ -336,6 +336,13 @@ MATERIALS = [
     Material(tag="pvc-trim", name='Cellular PVC trim, 3/4" x 3 1/2" S4S',
              hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
              source="White cellular PVC 1x4 (Azek/Versatex class), painted with the walls. The bathrooms and the 70% RH plant room."),
+    Material(tag="mdf-panel-painted", name='Paint-grade MDF backing, 1/4", white enamel',
+             color="#f0ede6", finish="satin-enamel",
+             source="Bought 1/4 inch MDF sheets over continuous gypsum. Prime faces and cut edges; white enamel matching trim. Includes field painting in the paneling rate."),
+    Material(tag="poplar-batten-painted", name="Tulip poplar S4S rails and battens, white enamel",
+             hatch="lumber", color="#f0ede6", finish="satin-enamel", species="poplar",
+             wood_surface="painted", milling_profile="S4S", requires_custom_milling=False,
+             source="Bought S4S tulip poplar: 1x3 battens and 1x4 top rail, actual 3/4 inch thick. Prime and white enamel; installation/painting priced by LF, not owner milling."),
     *MATERIALS_HARDWOOD,
     *MATERIALS_STUDY_BOOTH,
     *MATERIALS_METAL,

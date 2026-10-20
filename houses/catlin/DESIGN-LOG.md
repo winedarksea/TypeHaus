@@ -14,6 +14,16 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## White painted suite headboard (2026-10-20)
+
+The suite's cherry shiplap is replaced with 1/4" painted MDF and bought S4S tulip
+poplar board-and-batten. W-S-SN1/SN2 retain the single 5/8" gypsum faces, staggered
+studs and fiberglass. The finish is decorative; no additional STC rating is claimed.
+The existing base builds out over the backing, the top rail finishes at 6'-0", and
+one balanced layout crosses the model wall split. Cherry stools and door casing stay.
+The former headboard mill order (~65 bf in the old supply allowance) leaves owner
+stock demand; MDF and poplar are purchased materials. Details: `notes/suite_headboard.md`.
+
 ## Master bedroom and en suite window stools (2026-10-19)
 
 RM-M-BED's four windows use bought black walnut, 5/4 dressed to 1 inch, eased and

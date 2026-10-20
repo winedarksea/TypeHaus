@@ -152,6 +152,9 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                         thickness_m=thickness_m,
                         pieces=pieces,
                     ))
+    from typehaus.resolve.paneling_trim import resolve_paneling_trim
+
+    findings.extend(resolve_paneling_trim(plan, model))
     return findings
 
 

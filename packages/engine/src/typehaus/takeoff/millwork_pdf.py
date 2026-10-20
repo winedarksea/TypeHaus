@@ -19,6 +19,9 @@ PAGE_MARGIN_PT = 30
 CELL_FONT_PT = 7
 COLUMNS = ("use", "location", "material", "pieces", "finished_size", "nominal_stock",
            "grain_direction", "stock_note")
+PANEL_COLUMNS = ("material", "sheets_to_order", "sheet_size", "nominal_stock",
+                 "panel_grade", "panel_core", "stock_note")
+PANEL_COLUMN_WIDTHS_PT = (90, 45, 65, 60, 40, 65, 298)
 COLUMN_WIDTHS_PT = (54, 55, 78, 36, 85, 58, 65, 232)
 
 
@@ -32,28 +35,30 @@ def write_millwork_pdf(path: Path, house: str, hardwood: list[dict], panels: lis
     def paragraph(value):
         return Paragraph(escape(str(value)), styles["BodyText"])
 
-    story = [Paragraph(f"{escape(house.title())} — Millwork and panel cut list", styles["Title"]),
+    story = [Paragraph(f"{escape(house.title())} — Millwork and plywood order", styles["Title"]),
              paragraph("Unpriced shop view: costs remain in their original estimate sections. "
-                       "Dimensions are finished inches; panels show cutting blanks, not optimized "
-                       "sheet purchases. Confirm actual panel thickness before cutting joinery."),
+                       "Solid wood dimensions are finished inches. Plywood quantities are whole "
+                       "stock sheets from a conservative grain-aligned blank layout, including "
+                       "kerf and "
+                       "edge trim, with no spare sheets. Confirm actual thickness before joinery."),
              Spacer(1, 12)]
-    for title, rows in (("Solid wood", hardwood), ("Purchased appearance-grade panels", panels)):
+    for title, rows in (("Solid wood", hardwood), ("Plywood sheets to order", panels)):
         story.append(Paragraph(title, styles["Heading2"]))
         if not rows:
             story.append(paragraph("None scheduled."))
             continue
-        data = [[paragraph(column.replace("_", " ")) for column in COLUMNS]]
+        columns = PANEL_COLUMNS if title == "Plywood sheets to order" else COLUMNS
+        widths = PANEL_COLUMN_WIDTHS_PT if columns == PANEL_COLUMNS else COLUMN_WIDTHS_PT
+        data = [[paragraph(column.replace("_", " ")) for column in columns]]
         for row in rows:
             record = dict(row)
             if row.get("stock_kind") == "panel":
-                record["nominal_stock"] = f"{row['panel_grade']} {row['panel_core']}"
-                record["stock_note"] = (f"{row['panel_area_sqft']} sq ft blank; "
-                                        f"finish: {row['finish']}; {row['stock_note']}")
+                record["stock_note"] = f"Finish: {row['finish']}; {row['stock_note']}"
             else:
                 record["stock_note"] = (f"{row.get('rough_board_feet', '')} rough bf; "
                                         f"{row.get('layup', '')}; {row.get('stock_note', '')}")
-            data.append([paragraph(record.get(column, "")) for column in COLUMNS])
-        table = LongTable(data, colWidths=COLUMN_WIDTHS_PT, repeatRows=1, hAlign="LEFT")
+            data.append([paragraph(record.get(column, "")) for column in columns])
+        table = LongTable(data, colWidths=widths, repeatRows=1, hAlign="LEFT")
         table.setStyle(TableStyle([
             ("VALIGN", (0, 0), (-1, -1), "TOP"),
             ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e9e4dc")),

@@ -43,6 +43,21 @@ class PanelingSpan(HausModel):
     face: Literal["left", "right"] | None = None
 
 
+class BoardAndBatten(HausModel):
+    """Applied trim over sheet backing; dimensions are actual dressed sizes.
+
+    Base height is the existing baseboard's top above the band's bottom. Backing runs
+    behind that base; the base resolver moves it forward by the backing thickness.
+    """
+
+    material_ref: str
+    thickness: Length
+    batten_width: Length
+    rail_width: Length
+    target_spacing: Length
+    base_height: Length
+
+
 @register_element
 class WallPaneling(Element):
     """A finish band on a room's bounding walls, or on a layout line's.
@@ -74,9 +89,11 @@ class WallPaneling(Element):
     # Drawn thickness for a sheet good (a 0.8 mm metal sheet); None derives it from the
     # material's board stock.
     thickness: Length | None = None
+    board_and_batten: BoardAndBatten | None = None
 
 
 for _name, _obj in (
+    ("BoardAndBatten", BoardAndBatten),
     ("PanelingSpan", PanelingSpan),
     ("WallPaneling", WallPaneling),
 ):

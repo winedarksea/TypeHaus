@@ -902,6 +902,20 @@ class ResolvedFinishZone:
 
 
 @dataclass(frozen=True)
+class ResolvedPanelingTrim:
+    """One cut board, shared by renderers and the purchased trim takeoff."""
+
+    kind: str
+    material_ref: str
+    outline: Ring
+    z0_m: float
+    z1_m: float
+    length_m: float
+    width_m: float
+    thickness_m: float
+
+
+@dataclass(frozen=True)
 class ResolvedPaneling:
     """One wall's share of a ``WallPaneling`` band (→ model/paneling.py).
 
@@ -947,6 +961,9 @@ class ResolvedPaneling:
     # elevations. A band stands proud of the wall, so drawing the gross rectangle laid the
     # study's walnut straight across D-M-STUDY.
     pieces: tuple[tuple[Ring, float, float], ...] = ()
+    trim_pieces: tuple[ResolvedPanelingTrim, ...] = ()
+    # A sheet-backed treatment retains the existing base, built out over its backing.
+    retains_baseboard: bool = False
 
 
 @dataclass(frozen=True)

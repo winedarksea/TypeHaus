@@ -40,7 +40,7 @@ if (room) {
   camera.left = -4; camera.right = 4; camera.top = 3; camera.bottom = -3;
   camera.position.set(5, 6, 8); camera.lookAt(0, 0, 0);
   document.querySelector("h1")!.textContent = "Catlin suite · wood at room scale";
-  document.querySelector("p")!.textContent = "Actual oak floor, cherry headboard and base, elm posts · full-size geometry";
+  document.querySelector("p")!.textContent = "Actual red oak floor, white painted headboard and base, cherry casing, elm posts · full-size geometry";
 }
 const house = params.has("house") ? await (await import("./woodHouseReview")).houseWoodSamples() : null;
 if (house) {

@@ -77,8 +77,8 @@ red oak and maple use placeholder colors because neither previously had a specie
 The initial before screenshots were captured before the renderer changes. The recreated
 comparison shares the corrected solid-piece geometry, rather than restoring old UV bugs.
 
-The Catlin card uses actual resolved cherry base/headboard, ash table, elm post, walnut
+The Catlin card uses actual resolved cherry casing, ash table, elm post, walnut
 countertop, oak tread, basswood ceiling, locust base, and painted oak shiplap through the
-production builders. A separate suite cutaway shows the oak floor, cherry headboard/base,
+production builders. A separate suite cutaway shows the oak floor, painted MDF/poplar headboard, painted base, cherry door casing,
 and elm posts at their full-size relative positions. Card objects are uniformly fitted, so their on-screen sizes differ
 from room-scale use. Browser checks verify species, finish, selection, and solid atlas lanes.

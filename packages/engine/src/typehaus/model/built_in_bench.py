@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+from typing import Literal
 
 from pydantic import model_validator
 
@@ -31,6 +32,7 @@ class BuiltInBenchSpec(HausModel):
     front_material_ref: str
     trim_material_ref: str
     upholstery_material_ref: str
+    front_stock_kind: Literal["panel", "solid wood"] = "panel"
     internal_partition_count: int = 2
     seat_foam_density_lb_ft3: float = 2.5
     seat_foam_ifd_min_lbf: float = 35

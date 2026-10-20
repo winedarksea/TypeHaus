@@ -39,9 +39,6 @@ export async function houseWoodSamples() {
   const cherry = model.door_casings!.find(c => isSpecies(c.material_ref, "cherry"))!;
   add("Cherry · casing", "cherry", "natural-clear", (g, p, s) =>
     buildDoorCasing(g, cherry, [0, 0], "nordic", palette, materials, p, s));
-  const headboard = model.panelings!.find(r => isSpecies(r.material_ref, "cherry"))!;
-  add("Cherry · headboard", "cherry", "natural-clear", (g, p, s) =>
-    buildPaneling(g, headboard, [0, 0], "nordic", palette, materials, p, s));
   const tableType = model.catalog!.canvas_object_types!.find(t => t.model_parts?.some(p => isSpecies(p.material_ref, "ash")))!;
   const table = model.canvas_objects!.find(o => o.type === tableType.tag)!;
   add("Ash · dining table", "ash", "natural-clear", (g, p, s) =>
@@ -77,7 +74,7 @@ export async function houseWoodRoom() {
   const model: Model = await (await fetch("/__wood-review-house")).json();
   const materials = model.catalog!.materials;
   const materialSpecies = (ref?: string | null) => materials.find(m => m.tag === ref)?.species;
-  const band = model.panelings!.find(p => materialSpecies(p.material_ref) === "cherry")!;
+  const band = model.panelings!.find(p => p.tag === "WP-S-SUITE-HEADBOARD")!;
   const room = model.rooms.find(r => r.tag === band.room)!;
   const storey = model.storeys.find(s => s.tag === room.storey)!;
   const group = new THREE.Group(), picks: THREE.Mesh[] = [], selected = new Map<string, THREE.Material[]>();
@@ -89,6 +86,8 @@ export async function houseWoodRoom() {
     buildPaneling(group, panel, [0, 0], "nordic", palette, materials, picks, selected);
   for (const base of model.base_runs!.filter(r => r.room === room.tag))
     buildBaseRun(group, base, [0, 0], "nordic", palette, materials, picks, selected);
+  for (const casing of model.door_casings!.filter(c => c.room === room.tag))
+    buildDoorCasing(group, casing, [0, 0], "nordic", palette, materials, picks, selected);
   for (const post of model.solids!.filter(s => s.storey === room.storey
     && materialSpecies(s.material ?? assemblyFaceMaterial(model.catalog, s.assembly)) === "elm"))
     buildSolid(group, post, [0, 0], "nordic", palette, model.catalog, picks, selected, materials);
@@ -98,6 +97,6 @@ export async function houseWoodRoom() {
     for (const material of Array.isArray(object.material) ? object.material : [object.material])
       if (material.userData.woodSpecies) species.add(material.userData.woodSpecies);
   });
-  return { group, checks: { failures: ["cherry", "oak", "elm"].filter(s => !species.has(s))
+  return { group, checks: { failures: ["cherry", materialSpecies(room.floor_finish) ?? "oak", "elm"].filter(s => !species.has(s))
     .map(s => `Room context missing ${s}`), room: room.tag, species: [...species] } };
 }

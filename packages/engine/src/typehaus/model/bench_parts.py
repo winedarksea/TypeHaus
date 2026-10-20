@@ -80,9 +80,13 @@ def bench_parts(spec: BuiltInBenchSpec) -> tuple[BenchPart, ...]:
         rectangle(front + panel, deck_back, deck - panel, deck),
         panel, deck_back - front - panel, width,
         note=f"front edge R{spec.front_roundover_radius.inches:g} in; seal all faces")
-    add("walnut front", "panel", spec.front_material_ref, -width / 2, width / 2,
+    front_note = ("horizontal-grain solid front; allow cross-grain movement in height; "
+                  "slotted fixings and edge clearance; do not glue to plywood supports"
+                  if spec.front_stock_kind == "solid wood"
+                  else "solid walnut edging on exposed edges")
+    add("walnut front", spec.front_stock_kind, spec.front_material_ref, -width / 2, width / 2,
         rectangle(front, front + panel, toe, deck - panel), panel, deck - panel - toe, width,
-        "horizontal across bench", "solid walnut edging on exposed edges")
+        "horizontal across bench", front_note)
     add("toe closure", "panel", spec.carcass_material_ref, -width / 2 + panel, width / 2 - panel,
         rectangle(front + spec.toe_recess.meters, front + spec.toe_recess.meters + panel, 0, toe),
         panel, toe, width - 2 * panel)
