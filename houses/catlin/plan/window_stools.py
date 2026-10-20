@@ -38,7 +38,7 @@ SECOND_WINDOW_STOOLS = [
     WindowStool(uid="0XZM97P9X9", tag="STOOL-WIN-S-VANITY-W", window_ref="WIN-S-VANITY-W",
                 material_ref="locust-stool-5q", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
-    # The suite, beside its cherry headboard band and cherry base.
+    # The suite, beside its cherry headboard band and cherry door casing.
     WindowStool(uid="0P47Q0SJ09", tag="STOOL-WIN-S-SUITE1", window_ref="WIN-S-SUITE1",
                 material_ref="cherry-stool-5q", thickness=inch(1),
                 overhang=inch(0.75), horn=inch(1), profile="eased"),

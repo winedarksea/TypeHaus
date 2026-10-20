@@ -11,6 +11,7 @@ import pytest
 from shapely.geometry import Polygon
 
 from typehaus.model import (
+    DoorTrim,
     Furniture,
     FurnitureType,
     Material,
@@ -189,7 +190,12 @@ def test_the_floor_material_decides_the_base_kind(starter) -> None:
     upper = [r for r in model.base_runs if r.room == "RM-Upper"]
     assert upper and {r.kind for r in upper} == {"tile"}
     assert {r.material_ref for r in upper} == {"t-tile"}
-    assert all(base_run_prisms(r) == [] for r in upper)  # a tile base is not a board
+    # Drawn at the tile's skin, not the board's thickness, on the tile trade.
+    for run in upper:
+        (prism,) = base_run_prisms(run)
+        assert run.thickness_m == pytest.approx(0.375 * IN)
+        edge = Polygon(prism.ring)
+        assert edge.area == pytest.approx(run.length_m * 0.375 * IN, rel=1e-6)
     rows = [r for r in interior_trim_takeoff(model) if r["room"] == "RM-Upper"
             and r["kind"] == "tile base"]
     assert rows and rows[0]["item"] == "tile-base"
@@ -308,6 +314,38 @@ def test_a_room_trim_can_give_the_casing_its_own_stock(starter) -> None:
                for f in _resolved(bad)[1])
 
 
+def test_a_door_trim_cases_one_face_ahead_of_its_room_trim(starter) -> None:
+    """A ``DoorTrim`` with a ``room`` takes that face only; the other keeps its room's stock."""
+    stocks = [Material(tag=t, name=t, species="cherry") for t in ("t-room", "t-accent")]
+    plan = _swap(_library(starter, materials=(*starter.library.materials, *stocks)),
+                 "TRIM-STANDARD",
+                 room_trims=(RoomTrim(rooms=("RM-Upper", "RM-Upper-Hall"),
+                                      material_ref="t-room"),),
+                 door_trims=(DoorTrim(doors=("D-201",), room="RM-Upper",
+                                      material_ref="t-accent"),))
+    model, findings = _resolved(plan)
+    assert not [f for f in findings if f.check_id == "integrity.trim_standard"]
+    assert {(c.room, c.material_ref) for c in model.door_casings
+            if c.opening_ref == "D-201"} == {("RM-Upper", "t-accent"),
+                                             ("RM-Upper-Hall", "t-room")}
+    # The base never reads a DoorTrim.
+    assert {r.material_ref for r in model.base_runs if r.room == "RM-Upper"} == {"t-room"}
+    both = _swap(plan, "TRIM-STANDARD",
+                 door_trims=(DoorTrim(doors=("D-201",), material_ref="t-accent"),))
+    assert {c.material_ref for c in _resolved(both)[0].door_casings
+            if c.opening_ref == "D-201"} == {"t-accent"}
+
+
+def test_a_door_trim_naming_no_door_or_room_is_an_error(starter) -> None:
+    for accent, name in ((DoorTrim(doors=("D-NOWHERE",), material_ref="poplar-trim-paint"),
+                          "D-NOWHERE"),
+                         (DoorTrim(doors=("D-201",), room="RM-Nowhere",
+                                   material_ref="poplar-trim-paint"), "RM-Nowhere")):
+        plan = _swap(starter, "TRIM-STANDARD", door_trims=(accent,))
+        assert any(f.check_id == "integrity.trim_standard" and name in f.message
+                   for f in _resolved(plan)[1])
+
+
 def test_the_takeoff_reconciles_to_the_records(starter) -> None:
     from typehaus.takeoff.interior_trim import interior_trim_takeoff
 
@@ -335,21 +373,29 @@ def test_catlin_trimless_and_overhead_doors_take_no_casing(catlin_model_ro) -> N
 
 def test_catlin_base_scope_follows_the_standard_and_the_floor(catlin_model_ro) -> None:
     rooms = {r.room for r in catlin_model_ro.base_runs}
-    assert "RM-B-STAIR" in rooms
+    assert {"RM-B-STAIR", "RM-S-PLANT"} <= rooms
     assert rooms.isdisjoint({"RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM",
-                             "RM-S-PLANT", "RM-GARAGE", "RM-A-POCKET",
-                             "RM-A-EAST-UNFIN"})
-    # Cherry base, oak casing; the sauna's base is locust and its inside casing cedar.
+                             "RM-GARAGE", "RM-A-POCKET", "RM-A-EAST-UNFIN"})
+    # Painted pine base; PVC where a bath's floor takes a board; the sauna's locust.
     stock = {r.room: r.material_ref for r in catlin_model_ro.base_runs if r.kind == "trim"}
-    assert stock["RM-S-HALL"] == "cherry-trim" and stock["RM-B-SAUNA"] == "locust-trim"
-    assert {c.material_ref for c in catlin_model_ro.door_casings
-            if c.room != "RM-B-SAUNA"} == {"oak-trim"}
-    assert {c.material_ref for c in catlin_model_ro.door_casings
-            if c.room == "RM-B-SAUNA"} == {"cedar-sauna-trim"}
+    assert stock["RM-S-HALL"] == stock["RM-B-STAIR"] == "pine-fj-base"
+    assert stock["RM-M-BATH1"] == "pvc-trim" and stock["RM-B-SAUNA"] == "locust-trim"
     kinds = {r.room: r.kind for r in catlin_model_ro.base_runs}
     assert kinds["RM-M-BATH2"] == "tile" and kinds["RM-S-SUITEBATH"] == "tile"
     assert kinds["RM-B-BATH"] == "integral_cove" and kinds["RM-A-STUDIO"] == "integral_cove"
-    assert kinds["RM-S-HALL"] == "trim"
+    assert kinds["RM-S-PLANT"] == "integral_cove" and kinds["RM-S-HALL"] == "trim"
+    # MDF casing; PVC on the wet faces; cedar in the sauna; two hardwood accent faces.
+    casing = {(c.opening_ref, c.room): c.material_ref for c in catlin_model_ro.door_casings}
+    wet = {"RM-M-BATH1", "RM-M-BATH2", "RM-S-BATH1", "RM-S-SUITEBATH", "RM-S-VANITY",
+           "RM-B-BATH", "RM-A-STUBATH", "RM-S-PLANT"}
+    accents = {("D-S-SUITE", "RM-S-SUITE"): "cherry-trim",
+               ("D-A-STUDY", "RM-A-STUDY"): "oak-trim",
+               ("D-B-SAUNA", "RM-B-SAUNA"): "cedar-sauna-trim"}
+    for face, stock in casing.items():
+        expected = accents.get(face, "pvc-trim" if face[1] in wet else "mdf-casing")
+        assert stock == expected, face
+    assert casing[("D-S-PLANT", "RM-S-PLANT")] == "pvc-trim"
+    assert casing[("D-S-SUITE", "RM-S-HALL")] == "mdf-casing"
 
 
 def test_catlin_expected_clips(catlin_model_ro) -> None:

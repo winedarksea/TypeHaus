@@ -22,7 +22,7 @@ import {
 } from "../planGeometry";
 import { ALL_TRADES, type EarthTone, type Trade } from "../../state/vocabulary";
 import { buildLightRun } from "./lightRun";
-import { buildBaseRun, buildCountertop, buildDoorCasing, buildWindowStool } from "./millwork";
+import { baseRunTrade, buildBaseRun, buildCountertop, buildDoorCasing, buildWindowStool } from "./millwork";
 import { buildPlants, instancedPlantUids } from "./plants";
 import type { RebarLayer } from "./rebar";
 import { tagStorey as tagStoreyChildren, tagTrades } from "./registry";
@@ -200,8 +200,9 @@ export function populateScene(options: PopulateSceneOptions) {
       registry.picks, registry.byUid));
   }
   for (const run of model.base_runs ?? []) {
-    build(["millwork"], run.storey, () => buildBaseRun(
-      tradeGroups.millwork, run, center, mode, palette, model.catalog?.materials,
+    const trade = baseRunTrade(run);
+    build([trade], run.storey, () => buildBaseRun(
+      tradeGroups[trade], run, center, mode, palette, model.catalog?.materials,
       registry.picks, registry.byUid));
   }
   for (const casing of model.door_casings ?? []) {

@@ -256,7 +256,8 @@ the future.
 - Possibly swap the concrete canopy stairway (SL-BW-TIER*) to pressure treated wood and composite treads.
 - Consider adding a gutter along the entryway canopy gable in the narrow space between canopy and house, the goal is for this to mostly fill the space, if it can do so in a way that is buildable and not causing any problems.
 - Make the countertop (and quartz window stools) a "ready to send to manufacturer" design and export. Include rounding corners
-- Switch to finger joint pine for the baseboards (bought, not milled cherry), painted the same white as the walls. This should just switch the cherry mainly: the sauna keeps the locust baseboard, sheet vinyl rooms keep the cove, concrete keeps no baseboard, and bathrooms keep either tile or PVC baseboard up. The current 3d viewer is also a little inconsistent in where it shows baseboards.
+- Black walnut window stools for the master bedroom RM-M-BED, and quartz window stool for it's bathroom window. Switch D-M-BATH2 and D-M-BED to walnut door casings. Then switch the desk there to walnut top on IKEA SEKTION cabinets
+- Review the black walnut design of the study RM-M-STUDY
 
 # Project Management
 

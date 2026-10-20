@@ -58,11 +58,11 @@ MATERIALS_HARDWOOD = [
              nominal_quarters=5, milling_profile="eased", requires_custom_milling=True,
              max_board_width_in=7.0,
              source="Owner-milled black locust heartwood, no sapwood, dressed to 1\"; a glue-up (Type III PVA) where the stool is wider than a board. Waterborne film on all six faces before install; stainless fasteners."),
-    # The suite, beside its cherry headboard band and cherry base.
+    # The suite, beside its cherry headboard band and cherry door casing.
     Material(tag="cherry-stool-5q", name="Black cherry window stool, 5/4 S4S", hatch="lumber",
              color="#b77d60", finish="oak-board", species="cherry",
              nominal_quarters=5, milling_profile="eased", requires_custom_milling=True,
-             source="Milled black cherry, dressed to 1\". Oil every face before install so it darkens evenly, as the cherry base."),
+             source="Milled black cherry, dressed to 1\". Oil every face before install so it darkens evenly, as the cherry casing."),
     # The living room: all five stools are ash, matching the ash counters they border, and
     # all 6/4 to 1 1/4" like the slab and the dining top: one ash thickness at the mill.
     Material(tag="ash-stool-6q", name='White ash window stool, 1 1/4", 6/4 S4S', hatch="lumber",
@@ -119,18 +119,16 @@ MATERIALS_HARDWOOD = [
              color="#d6c9b3", finish="oak-board", species="red-oak",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
              source="Owner-milled red oak, 3/4\" dressed: a riser carries no load, and at ~6\" high it comes off one board and stays flat. A/B bleach, Bona NordicSeal, waterborne topcoat."),
-    # Door casing (plan/millwork.py TRIM-STANDARD): plain S4S, so no knife and no molder —
-    # planer work off the 4/4 stack, ripped from the wide boards.
+    # D-A-STUDY's casing (TRIM-STANDARD door_trims): plain S4S, planer work off the 4/4 stack.
     Material(tag="oak-trim", name='Red oak trim, 3/4" x 3 1/2" S4S', hatch="lumber",
              color="#d6c9b3", finish="oak-board", species="red-oak",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
-             source="Owner-milled red oak, 4/4 dressed to 3/4\" and ripped to 3 1/2\". Butt-jointed, flush with the cherry base where they meet. A/B bleach, Bona NordicSeal, waterborne topcoat."),
-    # The base (TRIM-STANDARD.base_material_ref); casing stays `oak-trim`, so the flush
-    # base-to-leg butt joint is two species. Same 3/4" x 3 1/2" S4S off 4/4.
-    Material(tag="cherry-trim", name='Black cherry base, 3/4" x 3 1/2" S4S', hatch="lumber",
+             source="Owner-milled red oak, 4/4 dressed to 3/4\" and ripped to 3 1/2\". D-A-STUDY's casing only, matching the study bridge infill. A/B bleach, Bona NordicSeal, waterborne topcoat."),
+    # D-S-SUITE's bedroom-face casing (TRIM-STANDARD door_trims), the suite's cherry accent.
+    Material(tag="cherry-trim", name='Black cherry trim, 3/4" x 3 1/2" S4S', hatch="lumber",
              color="#b77d60", finish="oak-board", species="cherry",
              nominal_quarters=4, milling_profile="S4S", requires_custom_milling=True,
-             source="Milled black cherry, 4/4 dressed to 3/4\" and ripped to 3 1/2\"; hardwax oil. Cherry darkens with light: oil every face before install so the back and edges age with the front."),
+             source="Milled black cherry, 4/4 dressed to 3/4\" and ripped to 3 1/2\"; hardwax oil. D-S-SUITE's bedroom-face casing accent. Cherry darkens with light: oil every face before install so the back and edges age with the front."),
     # RM-B-SAUNA's base (TRIM-STANDARD room_trims). Locust for rot resistance at a wet
     # floor; left unfinished, as the liner is.
     Material(tag="locust-trim", name='Black locust sauna trim, 3/4" x 3 1/2" S4S',

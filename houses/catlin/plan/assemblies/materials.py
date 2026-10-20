@@ -337,6 +337,17 @@ MATERIALS = [
              finish="clear-satin-hardwax-oil", species="elm",
              milling_profile="S4S", requires_custom_milling=True,
              source="plans/TODO.md — suite bedroom tudor posts, 10' sections cut to fit"),
+    # Bought interior trim (plan/millwork.py TRIM-STANDARD), painted the walls' latex-paint
+    # white. No species: none of it reaches `haus millwork`; prices.toml bills it by the LF.
+    Material(tag="pine-fj-base", name='Finger-jointed pine base, 3/4" x 3 1/2" S4S',
+             hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
+             source="Primed finger-jointed pine 1x4 from the yard, painted in the wall colour."),
+    Material(tag="mdf-casing", name='MDF door casing, 3/4" x 3 1/2" S4S',
+             hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
+             source="Primed MDF 1x4, painted in the wall colour. Kept out of the wet rooms: MDF swells at a cut edge."),
+    Material(tag="pvc-trim", name='Cellular PVC trim, 3/4" x 3 1/2" S4S',
+             hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
+             source="White cellular PVC 1x4 (Azek/Versatex class), painted with the walls. The bathrooms and the 70% RH plant room."),
     *MATERIALS_HARDWOOD,
     *MATERIALS_METAL,
     *MATERIALS_ISHTAR,

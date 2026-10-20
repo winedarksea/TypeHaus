@@ -17,6 +17,7 @@ import {
 } from "../plankMaterial";
 import { makeSurfaceMesh, standardMaterial } from "../surfaces";
 import { applyPieceGrainUv, boardBoxGeometry, pieceSeed, woodMaterialsForGeometry } from "../woodPiece";
+import type { Trade } from "../../state/vocabulary";
 import { registerSelectable } from "./registry";
 
 /** The board recipe a material declares (or infers), for a solid-wood piece; else null. */
@@ -86,7 +87,12 @@ function buildTrimPieces(parent: THREE.Group, uid: string, materialRef: string,
   }
 }
 
-/** A derived base run: one board on the room's finish face. It selects as its room. */
+/** The trade a base run sets: a board, a tile base, a flash cove (geometry_millwork.py). */
+export function baseRunTrade(run: BaseRun): Trade {
+  return run.kind === "tile" ? "tile" : run.kind === "integral_cove" ? "flooring" : "millwork";
+}
+
+/** A derived base run on the room's finish face: a board, a tile base or a cove. It selects as its room. */
 export function buildBaseRun(parent: THREE.Group, run: BaseRun, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
   materials: readonly MaterialAppearance[] | undefined,

@@ -351,8 +351,8 @@ export interface WindowStool {
 }
 
 /**
- * One straight piece of derived base board (→ resolve/interior_trim_base.py). It selects as
- * its room. A tile base or a flash cove is not a board and is never sent.
+ * One straight piece of derived base (→ resolve/interior_trim_base.py). It selects as its
+ * room. `kind` is a board (`trim`), a tile base (`tile`) or a flash cove (`integral_cove`).
  */
 export interface BaseRun {
   uid: string;
@@ -361,6 +361,7 @@ export interface BaseRun {
   room: string;
   room_uid: string;
   material_ref: string;
+  kind: "trim" | "tile" | "integral_cove";
   profile: string;
   outline: Vec2[];
   z0_m: number;

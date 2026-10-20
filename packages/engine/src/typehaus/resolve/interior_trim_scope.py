@@ -171,6 +171,19 @@ def trim_scope(plan: PlanModel, model: ResolvedModel) -> tuple[TrimScope | None,
                            ("trims", tuple(
                                t for o in standard.room_trims for t in o.rooms)))
         for tag in tags if tag not in room_tags]
+    opening_tags = {o.tag for o in model.openings}
+    findings += [element_error(
+        "integrity.trim_standard",
+        f"trim standard {standard.tag} cases door {door!r}, which is not an opening",
+        standard.tag)
+        for accent in standard.door_trims for door in accent.doors
+        if door not in opening_tags]
+    findings += [element_error(
+        "integrity.trim_standard",
+        f"trim standard {standard.tag} cases a face in {accent.room!r}, which is not a room",
+        standard.tag)
+        for accent in standard.door_trims
+        if accent.room is not None and accent.room not in room_tags]
     excluded = set(standard.excluded_rooms)
     rooms = {room.tag: room for room in model.rooms
              if room.conditioned and room.floor_finish and room.tag not in excluded

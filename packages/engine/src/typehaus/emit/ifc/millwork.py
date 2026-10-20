@@ -51,8 +51,8 @@ def emit_interior_trim(f: Any, body: Any, model: ResolvedModel,
                        storeys: dict[str, Any], project_uuid: Any) -> dict[str, Any]:
     """One ``IfcCovering`` per base run (SKIRTINGBOARD) and per door casing (MOLDING).
 
-    The same prisms model.json and the GLB draw. A tile base or a flash cove is not a board
-    and carries no prism; it stays in the takeoff only.
+    The same prisms model.json and the GLB draw; a tile base or a flash cove is a
+    SKIRTINGBOARD too, its ``kind`` in the pset.
     """
     entities: dict[str, Any] = {}
     records = ([(run, "SKIRTINGBOARD", base_run_prisms(run),

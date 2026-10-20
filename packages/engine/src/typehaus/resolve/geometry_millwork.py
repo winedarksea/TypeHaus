@@ -67,10 +67,18 @@ def window_stool_prism(wall: ResolvedWall, opening,
     return GPrism(ring=ring, z0_m=top - stool.thickness_m, z1_m=top)
 
 
+# The trade that sets each base kind: a board, a tile base, a flash cove.
+_BASE_TRADE = {"trim": "millwork", "tile": "tile", "integral_cove": "flooring"}
+
+
+def base_run_trade(run: ResolvedBaseRun) -> str:
+    return _BASE_TRADE.get(run.kind, "millwork")
+
+
 def base_run_prisms(run: ResolvedBaseRun) -> list[GPrism]:
-    """The board of one base run; nothing for a tile base or a flash cove (not millwork)."""
+    """The band of one base run: a board, a tile base or a flash cove."""
     piece = run.piece
-    if run.kind != "trim" or len(piece.outline) < 3 or piece.z1_m <= piece.z0_m:
+    if len(piece.outline) < 3 or piece.z1_m <= piece.z0_m:
         return []
     return [GPrism(ring=piece.outline, z0_m=piece.z0_m, z1_m=piece.z1_m)]
 

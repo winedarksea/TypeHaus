@@ -3193,7 +3193,7 @@
 # fitting to the east casing leg and scribing to the bookcase filler.
 # This row owns the infill's cost; FT-A-STUDY-BUILTIN excludes it and [hardwood]
 # re-presents it as an unpriced milling schedule, never a second cost. Its casing legs bill
-# in interior trim with the rest of the house's oak casing.
+# in interior trim as `oak-trim:door casing`.
 "FT-A-STUDY-BRIDGE-FRONT" = { material = { low = 0, high = 20 }, labour = { low = 60, high = 140 } }  # 1 ea
 # --- FX-*, REPRICED 2026-08-21 -------------------------------------------------------
 # The whole family was re-researched after FX-TUBSHOWER-60 was found priced BELOW FX-TUB-60
@@ -5279,20 +5279,23 @@
 
 [interior_trim]
 # Base and door casing by the LF, off the derived runs (resolve/interior_trim.py), keyed on the
-# stock tag; `:door casing` prices the casing apart (more cuts per foot). ~446 LF of oak base
-# and ~770 LF of casing at 2026-10-10. Owner-milled oak is LABOUR ONLY, the shelf and tread
-# convention: the stock is the `haus millwork` cut list. Install is butt-jointed S4S, flush
-# base-to-leg, oiled before it goes up; the base goes in after the hard floors, so no shoe.
-# 2026-10-16: the base is cherry (sauna: locust base, cedar inside casing since 2026-10-18);
-# casing stays oak. ESTIMATE, not researched: milled rough stock at $5-9/bf (cherry), $4-8/bf
-# (locust) and $4-8/bf (cedar), ~0.33 rough bf per LF of 3/4" x 3 1/2" with waste. Labour as the oak.
-"cherry-trim" = { material = { low = 1.6, high = 3.0 }, labour = { low = 3.0, high = 5.5 } }
+# stock tag; `:door casing` prices the casing apart (more cuts per foot). Install is
+# butt-jointed S4S, flush base-to-leg; the base goes in after the hard floors, so no shoe.
+# 2026-10-19: bought and painted — finger-jointed pine base, MDF casing, PVC in the baths and
+# plant room; paint stays in [allowances] paint-trim-and-doors. Hardwood is left on the sauna
+# (locust base, cedar casing) and two accent faces (cherry D-S-SUITE, oak D-A-STUDY).
+# ESTIMATE, not researched: primed 1x4 at the yard ($/LF below); milled rough stock at
+# $5-9/bf (cherry), $4-8/bf (locust, cedar), ~0.33 rough bf per LF with waste. Owner-milled
+# oak is LABOUR ONLY (the stock is the `haus millwork` cut list).
+"pine-fj-base" = { material = { low = 1.0, high = 1.8 }, labour = { low = 3.0, high = 5.5 } }
+"mdf-casing:door casing" = { material = { low = 0.8, high = 1.5 }, labour = { low = 4.0, high = 8.0 } }
+"pvc-trim" = { material = { low = 2.5, high = 4.5 }, labour = { low = 3.0, high = 5.5 } }  # RM-M-BATH1's LVP base
+"pvc-trim:door casing" = { material = { low = 2.5, high = 4.5 }, labour = { low = 4.0, high = 8.0 } }
+"cherry-trim:door casing" = { material = { low = 1.6, high = 3.0 }, labour = { low = 4.0, high = 8.0 } }  # D-S-SUITE's bedroom face
+"oak-trim:door casing" = { material = { low = 0, high = 0 }, labour = { low = 4.0, high = 8.0 } }  # D-A-STUDY
 "locust-trim" = { material = { low = 1.3, high = 2.7 }, labour = { low = 3.0, high = 5.5 } }
-"cedar-sauna-trim:door casing" = { material = { low = 1.3, high = 2.7 }, labour = { low = 4.0, high = 8.0 } }  # D-B-SAUNA's inside face; was "locust-trim:door casing" until 2026-10-18
-"oak-trim:door casing" = { material = { low = 0, high = 0 }, labour = { low = 4.0, high = 8.0 } }
-# The store-bought switch (`material_ref = "poplar-trim-paint"`), priced so the switch shows
-# its real cost on day one: 1x4 poplar S4S at the yard, primed and painted on site (the paint
-# stays in [allowances] paint-trim-and-doors).
+"cedar-sauna-trim:door casing" = { material = { low = 1.3, high = 2.7 }, labour = { low = 4.0, high = 8.0 } }  # D-B-SAUNA's inside face
+# A poplar alternate to the painted pine and MDF, kept priced.
 "poplar-trim-paint" = { material = { low = 1.6, high = 2.75 }, labour = { low = 3.0, high = 5.5 } }
 "poplar-trim-paint:door casing" = { material = { low = 1.6, high = 2.75 }, labour = { low = 4.0, high = 8.0 } }
 # Tile rooms take a cut-tile base off the field tile; the setter's labour is most of it.
@@ -5503,7 +5506,7 @@
 # its factory cabinet shelves, jamb/face-frame/casing hardware and concealed pivot system;
 # those shelves are deliberately outside the owner-stock hardwood takeoff. Installation
 # includes setting the supplied jamb and threshold, subject to delivered-unit fastening
-# verification. The factory casing ships but is not installed: the house's oak casing is
+# verification. The factory casing ships but is not installed: its oak casing is
 # derived and billed in interior trim (notes/study_bookcase_bridge.md). It does not include unsupported three-ply-jamb or assumed leaf-weight scope.
 "DT-INT-BOOKCASE36" = { material = { low = 1400, high = 3500 }, labour = { low = 500, high = 1150 } }  # 1 ea
 

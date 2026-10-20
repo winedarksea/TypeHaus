@@ -141,7 +141,7 @@ def _casing(plan, model, scope: TrimScope, wall: ResolvedWall, opening, side: in
         uid=f"{opening.uid}-casing-{label.lower()}", tag=f"CASING-{opening.tag}-{label}",
         storey=wall.storey, opening_ref=opening.tag, opening_uid=opening.uid,
         wall_tag=wall.tag, room=room.tag, side=side,
-        material_ref=s.casing_material_for(room.tag),
+        material_ref=s.casing_material_for(room.tag, opening.tag),
         thickness_m=t, casing_width_m=width, pieces=tuple(pieces), clips=tuple(clips),
         profile=s.profile)
 

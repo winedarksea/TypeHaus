@@ -2,7 +2,7 @@ import * as THREE from "three";
 import type { Model } from "../model/types";
 import { assemblyFaceMaterial } from "../model/solidLabels";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
-import { buildBaseRun, buildBoardMembers, buildCountertop } from "../three/builders/millwork";
+import { buildBaseRun, buildBoardMembers, buildCountertop, buildDoorCasing } from "../three/builders/millwork";
 import { buildPaneling, buildSolid } from "../three/builders/structure";
 import { buildCanvasObjectParts } from "../three/builders/site";
 
@@ -36,10 +36,9 @@ export async function houseWoodSamples() {
   const runLength = (run: NonNullable<Model["base_runs"]>[number]) => Math.max(...run.outline.map((p, i) => {
     const next = run.outline[(i + 1) % run.outline.length]; return Math.hypot(next[0] - p[0], next[1] - p[1]);
   }));
-  const cherry = model.base_runs!.filter(r => isSpecies(r.material_ref, "cherry"))
-    .sort((a, b) => runLength(b) - runLength(a))[0];
-  add("Cherry · base", "cherry", "natural-clear", (g, p, s) =>
-    buildBaseRun(g, cherry, [0, 0], "nordic", palette, materials, p, s));
+  const cherry = model.door_casings!.find(c => isSpecies(c.material_ref, "cherry"))!;
+  add("Cherry · casing", "cherry", "natural-clear", (g, p, s) =>
+    buildDoorCasing(g, cherry, [0, 0], "nordic", palette, materials, p, s));
   const headboard = model.panelings!.find(r => isSpecies(r.material_ref, "cherry"))!;
   add("Cherry · headboard", "cherry", "natural-clear", (g, p, s) =>
     buildPaneling(g, headboard, [0, 0], "nordic", palette, materials, p, s));

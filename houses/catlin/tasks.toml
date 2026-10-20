@@ -203,6 +203,12 @@ constraints = [
   { label = "drywall finished to the agreed level" },
   { label = "colours confirmed per room", owner = "owner" },
 ]
+# The base and casing are bought and painted with the walls (2026-10-19): walls first, then the
+# finish coats on the trim once it is up.
+checkpoints = [
+  { id = "walls", label = "Walls and ceilings — primer and two coats" },
+  { id = "trim", label = "Trim and doors — fill, caulk and finish coats on the set base and casing", after = ["task/millwork/building/trim"] },
+]
 
 [visits."task/paint/building/foundation-coating"]
 label = "Foundation coating — the above-grade XPS band, all four sides"
@@ -565,13 +571,17 @@ depends_on = ["task/millwork/building/trim"]
 
 # The rows are keyed by STOCK: switching TRIM-STANDARD's material renames them here.
 [visits."task/millwork/building/trim"]
-# The sauna's locust (basement only) falls to task/millwork/basement.
-label = "Cherry base and red oak door casing — butt-jointed S4S, on the finished floor"
-rows = ["interior_trim:cherry-trim", "interior_trim:oak-trim:door casing"]
+# The sauna's locust base falls to task/millwork/basement; its cedar casing is billed here.
+label = "Painted pine base, MDF and PVC casing, hardwood accents — butt-jointed S4S, on the finished floor"
+rows = ["interior_trim:pine-fj-base", "interior_trim:mdf-casing:door casing",
+        "interior_trim:pvc-trim", "interior_trim:pvc-trim:door casing",
+        "interior_trim:cherry-trim:door casing", "interior_trim:oak-trim:door casing",
+        "interior_trim:cedar-sauna-trim:door casing"]
 depends_on = ["task/flooring/building/hard"]
 constraints = [
   { label = "hard floors down and protected in every trimmed room" },
-  { label = "cherry trim oiled and red oak casing bleached and sealed, all faces, acclimatised", owner = "owner" },
+  { label = "pine and MDF primed, back-primed and acclimatised; painted with the walls (task/paint/building/interior#trim)" },
+  { label = "cherry and oak accent casings oiled or sealed, all faces, before they go up; the sauna's cedar left bare", owner = "owner" },
 ]
 
 [visits."task/millwork/building/casework"]

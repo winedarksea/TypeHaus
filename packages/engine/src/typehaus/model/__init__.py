@@ -109,6 +109,7 @@ from typehaus.model.mep import (
 )
 from typehaus.model.millwork import (
     Countertop,
+    DoorTrim,
     MillworkStandard,
     RoomTrim,
     ShelfBank,
@@ -368,7 +369,7 @@ __all__ = [
     "PanelingSpan", "WallPaneling", "WallBacking", "BracedWallPanel",
     "SuspensionAnchor", "HangingSeatType",
     "Countertop", "MillworkStandard", "RoomTrim", "StairLandingMillwork", "ShelfBank", "ShelfBay",
-    "TrimStandard", "WindowStool",
+    "DoorTrim", "TrimStandard", "WindowStool",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",

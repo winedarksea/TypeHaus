@@ -11,7 +11,7 @@ MATERIALS_FLOORING = [
     Material(tag="catlin-plant-vinyl-raised", name="Plant-room sheet vinyl over SurePly",
              hatch="membrane", color="#f2ede6", finish="veined-marble",
              finish_thickness_in=0.370, floor_waste_fraction=0.12,
-             floor_companion_refs=("catlin-plant-sureply",),
+             floor_companion_refs=("catlin-plant-sureply",), base_detail="integral_cove",
              source='Tarkett First Class 0.120" fully adhered sheet over one nominal '
                     '1/4" SurePly resilient-flooring underlayment panel. The combined '
                     'height is provisional until the installed stack is measured; '

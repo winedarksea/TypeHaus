@@ -414,8 +414,7 @@ def framing_json(model: ResolvedModel, provenance: Provenance | None) -> dict[st
 def _interior_trim_json(model: ResolvedModel) -> dict[str, Any]:
     """Drawable base runs and door casings (→ resolve/interior_trim.py).
 
-    A base selects as its room and a casing as its door. A tile base or a flash cove is
-    not a board, so it has no prism and is not sent.
+    A base selects as its room and a casing as its door; ``kind`` picks a base's trade.
     """
     room_uids = {room.tag: room.uid for room in model.rooms}
     base_runs = []
@@ -426,7 +425,7 @@ def _interior_trim_json(model: ResolvedModel) -> dict[str, Any]:
         base_runs.append({
             "uid": run.uid, "tag": run.tag, "storey": run.storey, "room": run.room,
             "room_uid": room_uids[run.room], "material_ref": run.material_ref,
-            "profile": run.profile,
+            "kind": run.kind, "profile": run.profile,
             "outline": [list(point) for point in prisms[0].ring],
             "z0_m": prisms[0].z0_m, "z1_m": prisms[0].z1_m,
         })

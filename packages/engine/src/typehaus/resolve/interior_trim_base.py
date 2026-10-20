@@ -34,6 +34,8 @@ _WELL_LEDGE_M = 4 * 0.0254
 _FROM_FLOOR_M = 0.01
 # A finished piece shorter than this is corner noise, not a board anyone would cut.
 _MIN_PIECE_M = 2 * 0.0254
+# How far a non-board base stands off the face: porcelain + thinset; a 120-mil sheet.
+_SKIN_M = {"tile": 0.375 * 0.0254, "integral_cove": 0.125 * 0.0254}
 
 
 def resolve_base_runs(plan, model: ResolvedModel, scope: TrimScope) -> None:
@@ -205,7 +207,7 @@ def _runs(room, kind, scope: TrimScope, ring, perimeter, pieces, arcs, breaks, f
     def at_vertex(s: float) -> bool:
         return any(abs(s - v) < 1e-6 for v in vertices)
 
-    t = scope.thickness_m
+    t = _SKIN_M.get(kind, scope.thickness_m)
     out: list[ResolvedBaseRun] = []
     count: dict[str, int] = {}
     n = len(pieces)

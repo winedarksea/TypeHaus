@@ -282,6 +282,15 @@ class RoomTrim(HausModel):
     casing_material_ref: str | None = None
 
 
+class DoorTrim(HausModel):
+    """A casing stock for named doors, beating any ``RoomTrim``: an accent on one face.
+    ``room`` picks the face by the room it looks into; None cases both faces."""
+
+    doors: tuple[str, ...]
+    room: str | None = None
+    material_ref: str
+
+
 @register_element
 class TrimStandard(Element):
     """The house's interior base and door casing, declared once and derived per room/door.
@@ -292,7 +301,8 @@ class TrimStandard(Element):
     Procurement is the material: a ``requires_custom_milling`` stock sends the boards to
     ``haus millwork``; a store-bought one is priced by the LF. ``material_ref`` is the
     casing; the base is ``base_material_ref`` when authored (else the casing's stock), and a
-    ``RoomTrim`` overrides both per room (or each, with its ``casing_material_ref``).
+    ``RoomTrim`` overrides both per room (or each, with its ``casing_material_ref``); a
+    ``DoorTrim`` overrides one door's casing, per face, ahead of both.
     Casing legs sit ``jamb_allowance - reveal`` inside the rough opening
     (``ResolvedOpening.width_m``), so the allowance is the shim plus the jamb:
     house-authored, because it is the door supplier's fact and not the engine's.
@@ -312,6 +322,7 @@ class TrimStandard(Element):
     excluded_rooms: tuple[str, ...] = ()
     base_material_ref: str | None = None
     room_trims: tuple[RoomTrim, ...] = ()
+    door_trims: tuple[DoorTrim, ...] = ()
     # The board length the supply sells (8', say): ``haus millwork`` packs the cut pieces
     # into boards this long. An owner-supply fact like ``max_board_width``. None sizes each
     # board to the longest piece, which is what a sawyer milling to order would cut.
@@ -327,8 +338,13 @@ class TrimStandard(Element):
             return override.material_ref
         return self.base_material_ref or self.material_ref
 
-    def casing_material_for(self, room: str) -> str:
-        """The casing stock on the face of a door in ``room``."""
+    def casing_material_for(self, room: str, door: str | None = None) -> str:
+        """The casing stock on ``door``'s face in ``room``: DoorTrim, RoomTrim, house."""
+        if door is not None:
+            accent = next((d for d in self.door_trims if door in d.doors
+                           and d.room in (None, room)), None)
+            if accent is not None:
+                return accent.material_ref
         override = self._room_trim(room)
         if override is not None:
             return override.casing_material_ref or override.material_ref
@@ -338,7 +354,8 @@ class TrimStandard(Element):
         """Every stock this standard names, casing first."""
         refs = [self.material_ref, self.base_material_ref,
                 *(ref for override in self.room_trims
-                  for ref in (override.material_ref, override.casing_material_ref))]
+                  for ref in (override.material_ref, override.casing_material_ref)),
+                *(accent.material_ref for accent in self.door_trims)]
         return tuple(dict.fromkeys(ref for ref in refs if ref))
 
     @model_validator(mode="after")
@@ -360,5 +377,6 @@ for _name, _obj in (
     ("MillworkStandard", MillworkStandard),
     ("TrimStandard", TrimStandard),
     ("RoomTrim", RoomTrim),
+    ("DoorTrim", DoorTrim),
 ):
     register_constructor(_name, _obj)

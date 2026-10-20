@@ -7,8 +7,7 @@
 # bath shelves are nosed in locust, and the stools are mostly bought white oak. That supply wins
 # on WIDTH and FLATNESS and loses on PROFILE: a one-piece stool, shelf or tread is worth
 # milling, and a knife grind plus a molder setup cannot amortise over one house. Base and
-# casing sidestep that by having no profile at all — plain S4S, butt-jointed — which is
-# planer work, so TRIM-STANDARD below takes them off too.
+# casing are bought and painted (TRIM-STANDARD below), bar a few hardwood accents.
 #
 # The bath vanities' sink-base shelves are in plan/millwork_vanities.py; the plant room's
 # quartz stools are in plan/countertops.py (stone, the slab yard's, not the sawyer's).
@@ -21,6 +20,7 @@
 
 from typehaus import ft, inch
 from typehaus.model import (
+    DoorTrim,
     MillworkStandard,
     RoomTrim,
     ShelfBank,
@@ -86,26 +86,33 @@ MILLWORK = [
         # the sawyer view follows any later change to it.
         board_furniture_refs=("FURN-A-STUDY-BRIDGE-FRONT",),
     ),
-    # Base and door casing, derived per room and per door face (resolve/interior_trim.py).
-    # One size for both: 3/4" x 3 1/2" S4S, butt-jointed, flush where base meets leg. Casing
-    # is red oak; the base is black cherry (2026-10-16). The sauna's base is black locust
-    # and its inside casing cedar (2026-10-18): no finished oak in a 190 F room. The casing
-    # stays on a lined wall: it covers the liner's cut end at the jamb.
+    # Base and door casing, derived per room and per door face (resolve/interior_trim.py),
+    # 3/4" x 3 1/2" S4S, butt-jointed, flush where base meets leg (2026-10-19). Bought and
+    # painted the wall white: finger-jointed pine base, MDF casing. The baths and the plant
+    # room take PVC casing (and PVC base where the floor is not tile or vinyl). The sauna keeps
+    # locust base and cedar casing. Two hardwood accents: cherry on D-S-SUITE's bedroom face,
+    # red oak on D-A-STUDY (it matches the study bridge infill).
     # The base goes in after the hard floors, so there is no shoe; carpet tucks under it.
-    # A bought stock (e.g. "poplar-trim-paint") leaves `haus millwork` and is priced instead.
-    # tasks.toml's trim visit names its rows by stock, so rename those there too — `haus
-    # site validate` names them if you forget.
-    #   * Tile rooms take a tile base and sheet-vinyl rooms a flash cove: that is the floor
-    #     material's `base_detail`, not a list here.
-    #   * Excluded: the utility rooms (RM-B-STAIR is the one that keeps its base) and the
-    #     plant room, whose 70% RH would cup oak. The garage and the unfinished attic fall
-    #     out on their own (unconditioned / no floor finish).
+    # tasks.toml's trim visit names its rows by stock: rename them with the stock.
+    #   * Tile rooms take a tile base and vinyl rooms a flash cove: the floor material's
+    #     `base_detail`, not a list here.
+    #   * Excluded: the basement utility rooms. The garage and the unfinished attic fall out
+    #     on their own (unconditioned / no floor finish).
     TrimStandard(
         uid="KXZVF6Z652", tag="TRIM-STANDARD",
-        material_ref="oak-trim",
-        base_material_ref="cherry-trim",
-        room_trims=(RoomTrim(rooms=("RM-B-SAUNA",), material_ref="locust-trim",
-                             casing_material_ref="cedar-sauna-trim"),),
+        material_ref="mdf-casing",
+        base_material_ref="pine-fj-base",
+        room_trims=(
+            RoomTrim(rooms=("RM-B-SAUNA",), material_ref="locust-trim",
+                     casing_material_ref="cedar-sauna-trim"),
+            RoomTrim(rooms=("RM-M-BATH1", "RM-M-BATH2", "RM-S-BATH1", "RM-S-SUITEBATH",
+                            "RM-S-VANITY", "RM-B-BATH", "RM-A-STUBATH", "RM-S-PLANT"),
+                     material_ref="pvc-trim"),
+        ),
+        door_trims=(
+            DoorTrim(doors=("D-S-SUITE",), room="RM-S-SUITE", material_ref="cherry-trim"),
+            DoorTrim(doors=("D-A-STUDY",), material_ref="oak-trim"),
+        ),
         thickness=inch(0.75),
         base_height=inch(3.5),
         casing_width=inch(3.5),
@@ -113,10 +120,9 @@ MILLWORK = [
         # 3/4" jamb + 1/4" shim: the leg's inside edge sits 13/16" inside the RO.
         jamb_allowance=inch(1),
         min_leg_width=inch(1.5),
-        # Boards come in 8' lengths: `haus millwork` packs base and casing cuts into them.
+        # Boards come in 8' lengths: `haus millwork` packs the hardwood cuts into them.
         stock_length=ft(8),
-        excluded_rooms=("RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM",
-                        "RM-S-PLANT"),
+        excluded_rooms=("RM-B-FURNACE", "RM-B-ESS", "RM-B-WORKSHOP", "RM-B-GYM"),
     ),
 ]
 

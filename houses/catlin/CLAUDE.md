@@ -774,7 +774,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   it and keeps the 9 7/8" owner-stock oak shelf depth. A 2 5/8" filler closes the west end.
 - **`D-A-STUDY` is a Murphy flush mount sitting in its framing** (2026-10-14): face frame on
   W-A-SN's study finish (y=8'-9 5/8"), body through the 38x82 RO, back 3 1/2" proud on the
-  loft (swing) side, nothing over `FO-A-STAIR`. House oak casing (TRIM-STANDARD, derived) on
+  loft (swing) side, nothing over `FO-A-STAIR`. Red oak casing (TRIM-STANDARD's `DoorTrim`, derived) on
   the study face only, lapping the face frame 1/2" (`BookcaseDoorSpec.casing_lap`); the
   factory casing ships unused. The 4 9/16" jamb is 3/16" short of the 4 3/4" wall: flush it to
   the study face, scribe the loft side.

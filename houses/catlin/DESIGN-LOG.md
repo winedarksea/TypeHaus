@@ -5417,3 +5417,22 @@ A reviewer's five points and two follow-ups; owner decisions marked.
   with their headrails still at the 82" window heads.
 - The nominal 27x48 opening size and mounting elevations still describe the full window drop.
   The stack is illustrative geometry pending product selection.
+
+## 2026-10-19 — Bought, painted trim; hardwood kept as accents
+
+- `TRIM-STANDARD` switches from milled cherry base and red oak casing to bought stock painted
+  the walls' white: finger-jointed pine base (`pine-fj-base`) and MDF casing (`mdf-casing`).
+  The milled trim was a lot of the owner's stock and sawyer time for boards that read as one
+  line against the wall anyway.
+- The seven baths and RM-S-PLANT take cellular PVC casing (`pvc-trim`), and a PVC base where
+  the floor is a board kind (RM-M-BATH1's LVP); MDF swells at a cut edge. Tile and vinyl rooms
+  keep the floor's own base. The plant room leaves `excluded_rooms`: its sheet vinyl now
+  declares a flash cove (`base_detail="integral_cove"`), the waterproofing the room already
+  relied on.
+- RM-B-STAIR keeps a base, now pine. The sauna is unchanged (locust base, cedar casing).
+- Two accents stay hardwood through the new per-door `DoorTrim`: cherry on D-S-SUITE's bedroom
+  face (its hall, bath and closet faces are MDF), and red oak on D-A-STUDY, matching the study
+  bridge infill.
+- The viewer now draws the tile bases and flash coves, so the baths no longer read
+  baseboard-less. Paint for the trim stays in `allowances:paint-trim-and-doors`; the interior
+  paint visit gains a `trim` checkpoint after the trim visit.

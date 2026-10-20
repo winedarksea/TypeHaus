@@ -59,7 +59,7 @@ board feet**. The size comes from the furniture type, not a second declaration.
 
 The `[placeables]` row `FT-A-STUDY-BRIDGE-FRONT` is a **planning allowance, not a quote**:
 $0-20 for glue, fasteners and finish, plus $60-140 to mill, fit and scribe. Owner-stock wood
-costs $0. The casing legs and head are priced with the rest of the house's oak casing.
+costs $0. The casing legs and head are priced in interior trim as `oak-trim:door casing`.
 
 ## Open
 
