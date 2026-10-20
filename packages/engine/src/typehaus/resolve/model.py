@@ -17,6 +17,7 @@ from typehaus.model.plan import PlanModel
 from typehaus.resolve.layout_lines import ResolvedLayoutLine
 from typehaus.resolve.model_door_products import CasedDoorSpec
 from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing
+from typehaus.resolve.model_window_returns import ResolvedWindowReturn
 from typehaus.resolve.rebar.records import ResolvedRebarSet
 
 if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-only
@@ -1511,6 +1512,7 @@ class ResolvedModel:
     panelings: list[ResolvedPaneling] = field(default_factory=list)
     # Interior millwork: derived stools and shelf banks (→ resolve/millwork.py).
     window_stools: list[ResolvedWindowStool] = field(default_factory=list)
+    window_returns: list[ResolvedWindowReturn] = field(default_factory=list)
     shelf_banks: list[ResolvedShelfBank] = field(default_factory=list)
     countertops: list[ResolvedCountertop] = field(default_factory=list)
     # Derived base and door casing off the house's ``TrimStandard`` (→ resolve/interior_trim.py).

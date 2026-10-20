@@ -23,24 +23,20 @@ from collections import defaultdict
 from typing import Any
 
 from shapely.geometry import Point, Polygon
-from shapely.prepared import prep
 
 from typehaus.model.enums import LayerFunction, Occupancy
 from typehaus.model.spatial import Room
 from typehaus.resolve.ceiling_over import ceiling_decks_over
+from typehaus.resolve.finish_exposure import FACE_PROBE_M as _PROBE_M
+from typehaus.resolve.finish_exposure import MIN_ROOM_Z_OVERLAP_M as _MIN_Z_OVERLAP_M
+from typehaus.resolve.finish_exposure import used_rooms as _used_rooms
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
-from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 _M2_TO_FT2 = 10.7639104
 #: What derived paint bills as — the library's interior latex, priced by the house's row.
 PAINT = "latex-paint"
-#: A sample stands this far off the gypsum face, into whatever it faces.
-_PROBE_M = 0.0254
 #: Sample spacing along a face; a short wall still takes three.
 _STATION_M = 0.15
-#: A wall and a room share a storey band only if they overlap by more than this, so a
-#: basement wall does not paint the room over it.
-_MIN_Z_OVERLAP_M = 0.3
 
 
 def derived_paint_rows(model: ResolvedModel,
@@ -118,20 +114,6 @@ def _sheet_billed(model: ResolvedModel, room: Any, decked: dict[str, bool]) -> b
             (isinstance(plan_room, Room) and plan_room.ceiling_lining)
             or ceiling_decks_over(model.plan, room.storey, Polygon(room.clear_face)))
     return decked[room.tag]
-
-
-def _used_rooms(model: ResolvedModel) -> list[tuple[Polygon, Any, float, float]]:
-    """``(face, prepared face, z0, z1)`` per used room, over its storey's ceiling height."""
-    storeys = {storey.tag: storey for storey in model.plan.storeys}
-    out = []
-    for room in model.rooms:
-        storey = storeys.get(room.storey)
-        if storey is None or not _used(room) or len(axis_ring(room)) < 3:
-            continue
-        face = axis_polygon(room)  # which room a face looks into is an ownership question
-        z0 = storey.elevation.meters
-        out.append((face, prep(face), z0, z0 + storey.default_ceiling_height.meters))
-    return out
 
 
 def _end_rows(layers: list[Any]) -> list[list[Any]]:

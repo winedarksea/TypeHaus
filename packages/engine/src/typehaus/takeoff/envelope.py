@@ -321,7 +321,9 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         for (scope, function, material, thickness), area in sorted(areas.items())
     ]
     # The paint no assembly authors, on exposed gypsum facing a used room.
-    return rows + derived_paint_rows(model, net_areas)
+    from typehaus.takeoff.window_returns import window_return_finish_rows
+
+    return rows + derived_paint_rows(model, net_areas) + window_return_finish_rows(model)
 
 
 def bug_screen_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

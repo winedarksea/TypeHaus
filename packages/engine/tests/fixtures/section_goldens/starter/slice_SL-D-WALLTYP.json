@@ -1247,6 +1247,176 @@
       "node": "polyline",
       "points": [
         [
+          1.5748031496062993,
+          197.365
+        ],
+        [
+          4.22375,
+          197.365
+        ],
+        [
+          4.22375,
+          197.375
+        ],
+        [
+          1.5748031496062993,
+          197.375
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "WN20AAAAAA-RETURN-0-head",
+      "tag": "WIN-201-return-0-head"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          1.5748031496062993,
+          197.365
+        ],
+        [
+          4.22375,
+          197.365
+        ],
+        [
+          4.22375,
+          197.375
+        ],
+        [
+          1.5748031496062993,
+          197.375
+        ]
+      ],
+      "pattern": "latex-paint",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "latex-paint",
+      "fill": "#f0ede6"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          4.21375,
+          197.375
+        ],
+        [
+          4.22375,
+          197.375
+        ],
+        [
+          4.22375,
+          198.00000000000003
+        ],
+        [
+          4.21375,
+          198.00000000000003
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "WN20AAAAAA-RETURN-0-head-front",
+      "tag": "WIN-201-return-0-head-front"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          4.21375,
+          197.375
+        ],
+        [
+          4.22375,
+          197.375
+        ],
+        [
+          4.22375,
+          198.00000000000003
+        ],
+        [
+          4.21375,
+          198.00000000000003
+        ]
+      ],
+      "pattern": "latex-paint",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "latex-paint",
+      "fill": "#f0ede6"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          1.5748031496062993,
+          197.375
+        ],
+        [
+          4.21375,
+          197.375
+        ],
+        [
+          4.21375,
+          198.00000000000003
+        ],
+        [
+          1.5748031496062993,
+          198.00000000000003
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "WN20AAAAAA-RETURN-1-head",
+      "tag": "WIN-201-return-1-head"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          1.5748031496062993,
+          197.375
+        ],
+        [
+          4.21375,
+          197.375
+        ],
+        [
+          4.21375,
+          198.00000000000003
+        ],
+        [
+          1.5748031496062993,
+          198.00000000000003
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -0.6612500000000001,
           -11.875
         ],

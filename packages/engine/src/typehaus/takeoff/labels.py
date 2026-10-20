@@ -37,6 +37,7 @@ SECTION_LABELS: dict[str, str] = {
     "pipe_insulation": "Pipe insulation", "freeze_protection": "Freeze protection",
     "edge_trim": "Edge trim and flashing", "member_protection": "Member protection tape",
     "fireblock_sealant": "Firestop sealant",
+    "window_return_beads": "Window return beads",
     "wall_structure": "Wall structure by the yard", "reinforcement": "Reinforcing steel",
     "timber": "Timber", "steel_members": "Rolled steel members",
     "railings": "Guards and handrails",
@@ -310,6 +311,8 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
     if section == "construction_returns":
         kind = KEY_GLOSSARY.get((section, bare), bare.replace("-", " ").capitalize())
         return f"{kind}, {labels.material(g('material'))}"
+    if section == "window_return_beads":
+        return labels.material(bare)
     if section == "sill_gaskets":
         return KEY_GLOSSARY.get((section, bare)) or labels.material(bare)
     if section == "drainage":

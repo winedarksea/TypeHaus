@@ -180,7 +180,7 @@ def test_structural_solids_account_for_every_resolved_solid(catlin_model) -> Non
     # A chase fireblock bills by area in ``sheet_goods``, off ``model.fireblocks``.
     measured = [solid for solid in catlin_model.solids
                 if not solid.derived and solid.tag not in steel_tags
-                and solid.category != "fireblock"]
+                and solid.category not in {"fireblock", "window_return"}]
     assert measured, "every solid is derived — the fixture is wrong, not the rule"
     assert sum(int(row["count"]) for row in rows) == len(measured)
     assert {tag for row in rows for tag in row["tags"]} == {
@@ -266,7 +266,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # `structural_solids` (beams by the yard) both cannot address.
                         "member_protection",
                         # Firestop sealant by the foot of fireblock penetration.
-                        "fireblock_sealant",
+                        "fireblock_sealant", "window_return_beads",
                         # Heater cable by the foot, the electrical twin of
                         # `pipe_insulation` — a traced AND lagged run is the outdoor norm.
                         "freeze_protection",
@@ -380,6 +380,7 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # the section that says how much oak the mill has to saw.
     # A stone stool is the slab yard's, so the stools reach both (→ takeoff/countertops.py).
     "window_stools": ("hardwood", "countertops"),
+    "window_returns": ("envelope_layers", "window_return_beads"),
     "shelf_banks": ("hardwood",),
     # The work surfaces, by the square foot a slab yard quotes. Not "hardwood": a
     # countertop is a purchased fabricated top, not stock the owner's mill saws.

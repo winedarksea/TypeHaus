@@ -75,6 +75,7 @@ from typehaus.takeoff.stairs import stair_finish_takeoff, stair_tread_takeoff
 from typehaus.takeoff.steel import steel_members_takeoff
 from typehaus.takeoff.track_lighting import track_lighting_materials
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
+from typehaus.takeoff.window_returns import window_return_bead_rows
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
 
@@ -138,6 +139,7 @@ def bill_of_materials(
         "floor_heat": floor_heat_takeoff(model),
         "floor_finishes": floor_finish_rows(model),
         "envelope_layers": envelope_layer_takeoff(model),
+        "window_return_beads": window_return_bead_rows(model),
         # The other half of the wall stack: a STRUCTURE layer that does not frame — a pour,
         # an ICF core, a CMU/SRW course, a brick wythe — produces no members and is not a
         # solid, so no other section can bill it. 43 of catlin's 154 walls, ~131 cy.

@@ -412,7 +412,8 @@ def _emit_solid_cut(b, model, solid, plane: CutPlane, crop) -> None:
     element = model.geometry.by_uid(solid.uid)
     if element is None:
         return
-    layer = "S-FNDN" if not in_slab_family(solid.category) else "A-SLAB"
+    layer = ("A-WALL-FINI" if solid.category == "window_return" else
+             "A-SLAB" if in_slab_family(solid.category) else "S-FNDN")
     for part in element.parts:
         material = part.catalog.material_ref if part.catalog is not None else None
         for profile in slice_part(part, plane):

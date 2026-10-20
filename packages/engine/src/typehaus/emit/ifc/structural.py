@@ -166,8 +166,12 @@ def _solid_body(f: Any, body: Any, solid: Any) -> Any:
 
 
 def _assign_solid_material(f: Any, element: Any, solid: Any, model: Any) -> None:
-    """Attach an IfcMaterialLayerSet to a slab that carries an authored assembly (e.g. the
-    composite / aluminum deck surfaces) so Revit reads its material, like walls do."""
+    """Preserve a solid's explicit material, or the stack of its authored assembly."""
+    if solid.material:
+        material = f.create_entity("IfcMaterial", Name=solid.material)
+        f.create_entity("IfcRelAssociatesMaterial", GlobalId=ll.new_guid(),
+                        RelatedObjects=[element], RelatingMaterial=material)
+        return
     if not solid.assembly:
         return
     assembly = model.plan.library.resolve_assembly(solid.assembly)

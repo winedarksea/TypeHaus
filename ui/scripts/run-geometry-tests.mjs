@@ -11,6 +11,8 @@ const server = await createServer({
 });
 
 try {
+  const { runWindowReturnTests } = await server.ssrLoadModule("/src/three/builders/windowReturns.test.ts");
+  runWindowReturnTests();
   const { runPlanGeometryTests } = await server.ssrLoadModule("/src/three/planGeometry.test.ts");
   const { runArchGeometryTests, runCanvasObjectGeometryTests, runCanvasObjectPartsTests, runOpeningGeometryTests, runEarthGeometryTests, runFootingBeddingGeometryTests, runWholeHouseGlbTests, runSolidMaterialTests, runSelectionRegistrationTests, runViewFramingTests } = await server.ssrLoadModule("/src/components/Panel3D.test.ts");
   const { runModelGeometryTests } = await server.ssrLoadModule("/src/model/geometry.test.ts");

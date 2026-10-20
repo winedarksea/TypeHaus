@@ -57,7 +57,10 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
     ? createSweepGeometry(solid, center)
     : (solid.outline.length < 3 ? null
       : createPlanPrismGeometry(solid.outline, solid.z0_m,
-        Math.max(solid.z1_m, solid.z0_m + 0.01), solid.voids ?? [], center));
+        // Return coatings carry their real film thickness; inflating the head's film
+        // would overlap the board and disagree with the engine and exported solids.
+        solid.category === "window_return" ? solid.z1_m
+          : Math.max(solid.z1_m, solid.z0_m + 0.01), solid.voids ?? [], center));
   if (!geo) return;
   const deckBoards = catalog?.assemblies.find((a) => a.tag === solid.assembly)?.layers
     .some((layer) => isAluminumDeckBoard(layer.material));

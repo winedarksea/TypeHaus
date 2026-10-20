@@ -236,6 +236,7 @@ the future.
 - PR-A-STUBATH-VENT_RUN goes right through the middle of the bathroom RM-A-STUBATH
 - PR-B-ERV-COND-RUN runs right though blocking D-B-SHOP door
 - Extra light switches by beds
+- [x] Window drywall returns inherit resolved board and paint, preserve stools, and reach 3D/GLB/IFC plus board, paint, and bead takeoff (2026-10-20). [Behavior and quantities](../houses/catlin/notes/window_drywall_returns.md).
 - Review where we want 5/8" drywall versus high impact resistant (1/2" or 5/8") drywall versus 1/2" drywall versus moisture resistant drywall.
 - Check whether `RF-BW-CANOPY`'s 190 plf and `RF-GARAGE`'s 167.5 plf diaphragm rows already carry SDPWS-2015 Table 4.2A's specific-gravity factor (0.92) for their SPF trusses; neither source string says so
 - D-M-STUDY for the small study booth might make more sense as a bifold glass door, or some sort of tracked panel door. A simpler option is probably to just make sure the hinge can open to close to 180 degrees so the door can be flat against the wall, out of the way of the walking space.

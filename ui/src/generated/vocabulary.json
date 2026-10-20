@@ -188,6 +188,7 @@
     "wall_corner": 12567756,
     "water_hammer_arrestor": 10396584,
     "winder": 11699540,
+    "window_return": 15592419,
     "window_trim": 1842980
   },
   "recordFamilyTrades": {
@@ -380,6 +381,7 @@
     "wall_corner": 12567756,
     "water_hammer_arrestor": 10396584,
     "winder": 11699540,
+    "window_return": 15592419,
     "window_trim": 1842980
   },
   "solidTradeFallback": "concrete",
@@ -626,6 +628,9 @@
     ],
     "water_hammer_arrestor": [
       "plumbing"
+    ],
+    "window_return": [
+      "drywall"
     ]
   },
   "solidTrades": {
@@ -709,7 +714,8 @@
     "vacuum_breaker": "plumbing",
     "vent": "mechanical",
     "wall_corner": "siding",
-    "water_hammer_arrestor": "plumbing"
+    "water_hammer_arrestor": "plumbing",
+    "window_return": "drywall"
   },
   "tradeGroups": [
     {

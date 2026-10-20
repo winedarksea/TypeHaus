@@ -237,6 +237,7 @@ SECTION_CODES: dict[str, CostCode] = {
     "member_protection": CostCode("2000", "07 26 00", "framing"),
     # Fireblock penetration seal: the framer's, at the framing inspection.
     "fireblock_sealant": CostCode("2000", "07 84 00", "framing"),
+    "window_return_beads": CostCode("4300", "09 29 00", "drywall"),
     "wall_structure": CostCode("1200", "03 30 00", "concrete"),
     # Structural wood solids, reached only when ``_solid_code`` declines.
     "timber": CostCode("2000", "06 11 00", "framing"),

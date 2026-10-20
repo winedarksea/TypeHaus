@@ -153,6 +153,8 @@ class Window(Element):
     position: OpeningPosition
     sill_height: Length
     arch: Arch | None = None
+    # Automatic only where the resolved interior finish is exposed gypsum.
+    drywall_returns: bool = True
     # Per-opening engineered-header override, as on ``Door.header_spec``; None lets the
     # framing solver size the header from R602.7.
     header_spec: str | None = None
