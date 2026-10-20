@@ -150,47 +150,34 @@ Keep the two Rev-A-Shelf 5374-24FL swing-out inserts and their door brackets. Ch
 22 1/4 minimum clear opening against the 22 1/2 nominal inside width and actual hinge
 intrusion; adjust hinges to preserve that opening. Maintain full manufacturer deployment.
 
-## K5 — Living paired-door banks and sealed joint
+## K5 — Living north run and sealed joint
 
-Re-banked 2026-10-16, when the fireplace and E1/E2 moved 16" south. The five living-room
-B36 are 36 by 15 system by 30 frames, each with two nominal 18 by 30 VOXTORP matte-white
-doors, UTRUSTA hinges and adjustable shelves. Use
-[SEKTION configuration 594.631.16](https://www.ikea.com/us/en/p/sektion-base-cabinet-with-shelves-2-doors-white-voxtorp-matte-white-s59463116/)
-(frame 702.653.89, two doors 802.733.22). The B18 and B15 at the ends are the same frame,
-door and shelf family at their widths. Legs, plinth and suspension rail are separate.
-These are door-and-shelf bases; the former living-room MAXIMERA specification is superseded.
-Keep the 3 1/2 support + 30 frame + 1/2 subtop + 2 ash = 36-inch installed height,
-15 1/2-inch model depth and existing wall/front line. Coordinate actual frame, rail and
-front dimensions when installing, preserving factory door reveals; 18 inches is nominal.
-
-Each window's B36 centres 1 1/4 inch off its window, away from the brick.
+Since 2026-10-20 the living room's storage is on the dining side only: south of the elm slat
+partition is open wall. The north run is 24-inch stock SEKTION (`SEKT-B24/B36/B18`), body
+centres x=413 3/8, fronts flush with PANTRY-S2, with no fillers. Bases use doors and shelves
+in the VOXTORP matte-white family; legs, plinth and suspension rail are separate. Hang the
+B24's door on its north edge so it opens away from the slats. Keep 3 1/2 support + 30 frame
++ 1 1/4 subtop + 1 1/4 ash = 36-inch installed height.
 
 | Cabinet | South y | North y |
 |---|---:|---:|
-| FILLER-S (4 1/8) | 6 5/8 | 10 3/4 |
-| B18-S | 10 3/4 | 28 3/4 |
-| B36-E1 | 28 3/4 | 64 3/4 |
-| END-S (1/2) | 64 3/4 | 65 1/4 |
-| *brick* | 65 1/4 | 110 3/4 |
-| END-N (1/2) | 110 3/4 | 111 1/4 |
-| B36-E2 | 111 1/4 | 147 1/4 |
-| B36-E3 | 147 1/4 | 183 1/4 |
-| B36-MID | 183 1/4 | 219 1/4 |
-| B36-PANTRY | 219 1/4 | 255 1/4 |
-| B15-N | 255 1/4 | 270 1/4 |
-| FILLER-N (1) | 270 1/4 | 271 1/4 |
+| *slat partition* | 154 1/4 | 156 3/4 |
+| END-N (1/2) | 156 3/4 | 157 1/4 |
+| B24 | 157 1/4 | 181 1/4 |
+| B36-MID | 181 1/4 | 217 1/4 |
+| B36-PANTRY | 217 1/4 | 253 1/4 |
+| B18-N | 253 1/4 | 271 1/4 |
 
-The tags E3 and MID are kept from the earlier layout with their uids; they no longer name
-the window above. `WIN-M-DINING-E` centres at y=216, over B36-MID's north half.
+`WIN-M-DINING-E` centres at y=216, over the B36-MID/B36-PANTRY joint.
 
-The gap to S2 remains exactly 1/8 inch, y=271 1/4–271 3/8. Continue the north ash slab
-to y=271 3/8 (length 160 5/8 from y=110 3/4); finish its end cleanly at the tall cabinet.
-Seal the cabinet-to-tall joint with flexible colour-matched sealant. This is an installation
-joint, not a 1/8-inch custom frame or a thick filler cut from a cover board.
+The gap to S2 remains exactly 1/8 inch, y=271 1/4–271 3/8. The ash slab runs y=156 3/4 to
+271 3/8 (114 5/8) at 25 deep, a three-board glue-up; its front stands 1" proud of S2's, which
+is a straight-out pull-out, so check only at fabrication. Seal the cabinet-to-tall joint
+with flexible colour-matched sealant; this is an installation joint, not a custom frame.
 PANTRY-S2 and everything north of it retain their existing scope.
 
-The elm slat partition's counter piece stands on the north slab at y=13'-0", across its full
-16 1/2 depth, and screws up through the slab from below (`FT-LIV-SLAT-ELM-COUNTER`).
+The elm slat partition is one floor-to-ceiling piece, 60 1/2 west from the gwb, south of
+END-N; it no longer stands on the counter.
 
 ## K6 — Seating, backs and pantry door/rack clearance
 

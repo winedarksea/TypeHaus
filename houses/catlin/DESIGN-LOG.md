@@ -14,6 +14,20 @@ Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing*
 bottom has no constraint-index section of its own — the constraints live in
 `notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
+## Living east run: dining side only, 24" deep (2026-10-20)
+
+The owner wanted storage only on the dining side. The south bank, END-N's old station,
+B36-E2 and the counter half of E3 went, and with them the slat partition's counter piece:
+the partition is one floor-to-ceiling piece, moved 1/2" south to centre 12'-11 1/2" so it
+still covers the flooring joint. The north run deepened from 15" to stock 24" SEKTION,
+flush with PANTRY-S2, and packs without fillers (end panel, B24, B36, B36, B18). The
+dining table stayed put; its east chair band now laps the fronts ~5", leaving ~30" of end
+clearance, accepted. RC13/RC3 dropped to 16" as wall-space outlets; RC14/RC17 came off the
+brick jambs (3/4" of gwb beside each window's jamb pack cannot hold a box). The armchairs
+now flank the brick, mirrored about y=88" and turned on the coffee table. The SE corner had
+no 24" square left for the fig beside the S chair and RC13, so it went back to the south
+wall west of the chair.
+
 ## White painted suite headboard (2026-10-20)
 
 The suite's cherry shiplap is replaced with 1/4" painted MDF and bought S4S tulip

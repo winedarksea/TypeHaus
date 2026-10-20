@@ -21,7 +21,7 @@ the sauna.
 | species | logs (DBH) | gross bf | usable bf | demand bf | flag |
 |---|---|---|---|---|---|
 | red oak | many | unlimited | — | ~1,490 | none; all oak window stools use bought white oak since 2026-10-18 |
-| ash | 15", 12", 16" | ~144 | ~108 | ~120 (table 52, counters 46, five living-room stools 22) | **short: source one more ash log.** Boards run to ~11" (quartered ~4–6"), so the counters, table and stools are all glue-ups; the 160 5/8" slab needs a 14'+ log |
+| ash | 15", 12", 16" | ~144 | ~108 | ~113 (table 52, counter 37, five living-room stools 25) | **short by ~5 bf: one more ash log still advised.** Boards run to ~11" (quartered ~4–6"), so the counter (three boards since 2026-10-20), table and stools are all glue-ups; the one 114 5/8" slab needs a 10'+ log, not 14' |
 | locust | 12", 14" | ~73 | ~44 | ~29 (sauna base 10, five stools 11, bath shelf nosings and face strips 9) | covered without the extra logs: bath shelves use plywood with locust nosings, and all kitchen stools are quartz (2026-10-18). Fallback for the nosings: `cherry-shelf-4q`, then bought white oak |
 | elm | 20", 20" | ~218 | ~164 | ~175 (slats and plates 77 on 5/4, mantel 13, posts 85), plus ~19 slat overage | **short: ~30 bf including straightness overage; source one more elm log.** The one-piece floor-to-ceiling screen uses 5/4 rough dressed to 1" (2026-10-20); mill ~25% extra slats to reject movers. The posts need 10'+ logs |
 | cherry | unknown | — | — | suite stools and bedroom-face door casing only | Confirm the stack against the current millwork schedule. Base is bought painted pine (2026-10-19); headboard is bought MDF and S4S poplar (2026-10-20), removing the former ~65 bf wainscot demand. |

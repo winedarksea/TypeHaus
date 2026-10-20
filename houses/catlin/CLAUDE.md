@@ -1007,13 +1007,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   broken). Untempered (33" AFF sill). It carries the house's one named
   `structural.window_framing_module` suppression (the 27" bearing cap stays house-wide) and a
   **2-ply 9 1/2" LVL header read off Boise's VERSA-LAM table** as `header_spec` +
-  `published_span` (`notes/dining_window_header.md`). RC4 is retired (E1's RO took it); RC3 and RC15 moved into
-  the 43" pier at 152"/179", so only ~31" of slab under the dining glass is past 24" of a
-  receptacle (open: a listed countertop pop-up). The dining thermostat is at 14', 54" AFF.
+  `published_span` (`notes/dining_window_header.md`). RC4 is retired (E1's RO took it). RC15 (179")
+  and RC16 cover the counter, leaving ~31" of slab under the dining glass past 24" of a
+  receptacle (open: a listed countertop pop-up). RC13/RC3 (22"/152", 16" AFF) cover the open
+  wall south of the slat partition. The dining thermostat is at 14', 54" AFF.
   The fireplace pier sits between `WIN-M-LIV-E1`/`E2`: a 45 1/2" facebrick surround
   centred y=7'-4", elm mantel at 5'-4". The brick centre is a bay centre on `W-M-E1`'s
   grid, and E1/E2 are mirrored about it at 4'-0"/10'-8", each RO 3 3/4" off the brick.
-  RC17/RC14 sit mirrored on the brick's south/north jambs. **The firebox sill NO LONGER shares the east row's 2'-8" line**
+  No device sits on the brick (RC14/RC17 retired 2026-10-20). **The firebox sill NO LONGER shares the east row's 2'-8" line**
   (2026-09-11): the owner reversed that morning's decision to raise it and it is back at
   **24" AFF**, so the one-datum-four-openings argument is retired and the fire does not
   column with `WIN-M-LIV-E1`/`-E2`. That is a preference call overruling a design argument,
@@ -1078,8 +1079,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     **The 8" the plinth lost went into the HEAD, not into the panel** — `W-M-FIRE-HEAD` went
     11 3/8" -> 19 3/8", and **back to 16" on 2026-09-20** when the opening took 3 3/8" of it.
     The rule is the same both times and it is the one to hold: the panel TOP never moves. It
-    is 64 15/16" absolute, so the mantel stays on the brick and the hand-measured 0" gaps
-    to the SEKTION end panels stay true. Brick 20.4 -> 19.6 SF (the pier split, 8" of width out of the buried
+    is 64 15/16" absolute, so the mantel stays on the brick. Brick 20.4 -> 19.6 SF (the pier split, 8" of width out of the buried
     course) -> **18.9 SF** (the taller opening). Sill is 9 modular courses exactly; zero cut
     closers on the visible 45 1/2" opening; the head is **18 courses exactly** at 48" AFF.
     Steel angle lintel, not a rowlock, and since 2026-09-20 it bills by the foot of its
@@ -2729,13 +2729,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Pantry S2/S1:** y=271 3/8–295 3/8–319 3/8, meeting the garage. Stock shallow
   24x15x20 tops at83 1/2 align with their fronts via supported rear bays (9 nominal,
   9 1/4 from actual matching frame/rail/front depths), closed at the exposed south end.
-- **Living east banks (2026-10-16):** south y=6 5/8–65 1/4: 4 1/8 filler, B18, B36 centred
-  1 1/4 south of E1, end panel to the brick. North y=110 3/4–271 1/4: end panel, B36 1 1/4
-  north of E2, three B36, B15, 1 filler, then the 1/8 sealed joint toS2. B36s are 594.631.16
-  (paired 18-inch VOXTORP doors and shelves). Slabs are 1 1/4 white ash two-board glue-ups
-  (`ash-counter-6q`, boards to ~11", to match the table); stools on E1/E2/DINING-E are
-  1 1/4 ash (`ash-stool-6q`, quarter or rift, urethane), flush with the slab. Total
-  installed height36.
+- **Living east run (2026-10-20):** storage on the dining side only; south of the slat
+  partition is open wall. North y=156 3/4–271 1/4, 24" stock SEKTION flush with S2, no
+  fillers: 1/2 end panel, B24 (door hinged north), B36, B36, B18, then the 1/8 sealed joint
+  to S2. One 25"-deep 1 1/4 white ash slab (`ash-counter-6q`, three-board glue-up), 1" proud
+  of S2's front. Stools are 1 1/4 ash (`ash-stool-6q`): DINING-E flush with the slab, E1/E2
+  the house standard 3/4 overhang and 1 horn. Total installed height 36. The dining table's
+  east chair band laps the fronts ~5" (an expected advisory; owner's call).
 - **The owner's oak is RED oak (2026-10-16):** the `oak-*` tags keep their names, with
   `species="red-oak"` and one finish (A/B bleach, Bona NordicSeal, waterborne topcoat).
   Nothing wet gets it: stools are 5/4 at 1", bought white oak by default, with
@@ -2764,11 +2764,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   uses approximately1 5/16 substrate; living ash is a 1 1/4 slab over a 1 1/4 subtop. Follow
   published frame/rail/front measurements for shop cuts, not nominal module depths.
 - **Finish pieces and supports are detailed and priced.** Deleted custom east pantry tops,
-  custom garage upper and kitchen filler must not re-enter quantities (the living north
-  filler returned deliberately as FT-LIV-E-FILLER-1 on 2026-10-16).
-  MAXIMERA is the kitchen drawer product; kitchen B12 and living B36 use doors and shelves.
-- **East-wall receptacles stay at42 AFF:** living south22 plusRC17 at67 7/8;
-  north RC14 at108 1/8, then152/179/258 1/8 (2026-10-16: RC4 retired, RC3/RC15 re-spaced). Garage KGF4/KMX1 at326/338 3/4;
+  custom garage upper and kitchen filler must not re-enter quantities, nor the living
+  room's 15"-deep bases and fillers (retired 2026-10-20).
+  MAXIMERA is the kitchen drawer product; kitchen B12 and the living bases use doors and shelves.
+- **East-wall receptacles:** living RC13/RC3 at 22/152, 16 AFF (wall space either side of
+  the fireplace); counter RC15/RC16 at 179/258 1/8, 42 AFF. RC14/RC17 retired (2026-10-20):
+  nothing goes on the brick. Garage KGF4/KMX1 at326/338 3/4;
   landing KGF3 at349 1/4. Recheck framing and coverage if those locations change.
 
 - **The range backsplash is two uncut titanium sheets** (`WP-M-KIT-BACKSPLASH`,

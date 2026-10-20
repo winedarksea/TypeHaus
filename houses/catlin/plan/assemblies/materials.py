@@ -64,9 +64,9 @@ MATERIALS = [
              finish="clear-satin-hardwax-oil", species="walnut", nominal_quarters=5,
              milling_profile="S4S", requires_custom_milling=True,
              source="Two 12 1/2\" x 24 7/8\" x 1\" tops, each an edge-glued pair from one 5/4 board, oversailing 7/8\" to the seat fronts and capping the covers. Finish all six faces; fix on figure-8s."),
-    # The east wall's living-room slabs (CT-M-LIV-E-S/-N, 2026-10-16), ash to match the
+    # The east wall's living-room slab (CT-M-LIV-E-N; one since 2026-10-20), ash to match the
     # dining table's ash-6q top. Priced in [countertops], cut-listed by `haus millwork`.
-    # Same logs as the table, so the same ~11" widest board: each slab is two boards.
+    # Same logs as the table, so the same ~11" widest board: the 25" slab is three boards.
     Material(tag="ash-counter-6q", name='White ash counter slab, 1 1/4", 6/4 S4S',
              r_per_inch=1.0, density=670.0, hatch="lumber", color="#d9cbb0",
              finish="oak-board",  # the 3D recipe; the coat is waterborne urethane
