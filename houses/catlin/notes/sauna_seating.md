@@ -71,24 +71,27 @@ upper bench and one adult below; symbol members are coordination geometry, not a
 joinery certification. Secure the step against sliding/tipping. Mock up the 12/24/42-inch
 access sequence, including the final 18-inch rise, while the upper bench is occupied.
 
-### Slat check (2026-10-16): 1" basswood on bearers at 24" o.c. or closer
+### Slat check (2026-10-20): 3/4" basswood on bearers at 16" o.c. or closer
 
-The touched surfaces are the owner's clearest basswood, 5/4 dressed to **1" x 3 1/2"**, at
-1/2" gaps; the bearers are bought Douglas fir 2x4s, 1 1/2" x 3 1/2" (owner aspen until
-2026-10-18). **Bearers at 24" o.c. or closer is
-the rule** (the cut lists in `plan/sauna_types.py`: 5 / 5 / 4 / 2 bearers). Take one 250 lb
-adult as ~85 lb on each of three slats at midspan, L = 24":
+The touched surfaces are the owner's clearest basswood, 4/4 dressed to **3/4" x 3 1/2"** (the
+wall liner's stock, so the mill runs one basswood thickness), at 1/2" gaps; the bearers are
+bought Douglas fir 2x4s, 1 1/2" x 3 1/2". **Bearers at 16" o.c. or closer is the rule** (the
+cut lists in `plan/sauna_types.py`: 6 / 6 / 5 / 2 bearers; was 5/4 to 1" at 24" until
+2026-10-20). Take one 250 lb adult as ~85 lb on each of three slats at midspan:
 
-| | value |
-|---|---|
-| `S = b*d^2/6` (b 3.5", d 1") | 0.583 in^3 |
-| `I = b*d^3/12` | 0.292 in^4 |
-| `M = P*L/4` | 510 in-lb |
-| `f = M/S` | **≈ 875 psi**, against basswood's ~8,700 psi MOR (~10x) |
-| `d = P*L^3/(48*E*I)`, E ≈ 1.46 x 10^6 psi | **≈ 0.06"** |
+| | L = 16" (the rule) | L = 24" (too far) |
+|---|---|---|
+| `S = b*d^2/6` (b 3.5", d 0.75") | 0.328 in^3 | 0.328 in^3 |
+| `I = b*d^3/12` | 0.123 in^4 | 0.123 in^4 |
+| `M = P*L/4` | 340 in-lb | 510 in-lb |
+| `f = M/S` | **≈ 1,040 psi** (~8x on ~8,700 psi MOR) | ≈ 1,550 psi (~5.6x) |
+| `d = P*L^3/(48*E*I)`, E ≈ 1.46 x 10^6 psi | **≈ 0.04"** | ≈ 0.14", springy |
 
-1" is thick enough to stay flat for decades without going to 6/4. Posts, stretchers, the
-recliner and the heater fence are not designed yet (coordination geometry, above), so they
+At 16" the 3/4" slat is stiffer than the old 1" slat at 24" (0.06", 875 psi), at a still
+ample ~8x on strength. Do not open the bearers back up to 24": basswood is soft, and a knee
+or a foot stepping to the upper bench loads one or two slats, not three.
+
+Posts, stretchers, the recliner and the heater fence are not designed yet (coordination geometry, above), so they
 are carried as a bought Douglas fir allowance in `notes/wood_supply.md`, not as cuts.
 
 The floor drain `FX-B-SAUNA-FD` lies under the lower foot platform. Removable deck panels

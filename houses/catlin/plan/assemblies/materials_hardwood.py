@@ -164,11 +164,11 @@ MATERIALS_HARDWOOD = [
              source="Owner-milled white ash for the dining table top, 6/4 dressed to 1 1/4\", glued up; hardwax oil. Saw 6/4 full, ~1 5/8\" green."),
     # --- the sauna seating (plan/sauna_types.py) -------------------------------------------
     # Touched surfaces: the clearest basswood, mostly off the 24" log; clear aspen is equal.
-    Material(tag="basswood-bench-5q", name="Basswood/aspen sauna bench slat, 5/4 S4S", hatch="lumber",
+    Material(tag="basswood-bench-4q", name="Basswood/aspen sauna bench slat, 4/4 S4S", hatch="lumber",
              color="#e5dcc4", finish="solid-board", species="basswood",
-             wood_surface="unfinished", nominal_quarters=5, milling_profile="eased",
+             wood_surface="unfinished", nominal_quarters=4, milling_profile="eased",
              requires_custom_milling=True,
-             source="Owner basswood (or clear aspen), the clearest boards, 5/4 dressed to 1\" x 3 1/2\", every edge eased, unfinished. On bearers at 24\" o.c. or closer (notes/sauna_seating.md)."),
+             source="Owner basswood (or clear aspen), the clearest boards, 4/4 dressed to 3/4\" x 3 1/2\", every edge eased, unfinished. On bearers at 16\" o.c. or closer (notes/sauna_seating.md)."),
     # The frame nobody touches: bought Douglas fir since 2026-10-18 (owner aspen before), so
     # it is off the mill order. Kiln-dried sets the pitch. Posts/stretchers not designed yet.
     Material(tag="df-sauna-frame", name="Douglas fir sauna bench framing, KD S4S (bought)",

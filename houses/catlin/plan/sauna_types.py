@@ -93,28 +93,29 @@ READING_MATTRESS = FurnitureType(
             "Lift and air after wet use. notes/sauna_seating.md."),
 )
 # The benches' cut lists (2026-10-16). Slats are owner stock, so they reach `haus millwork`:
-# 1" x 3 1/2" basswood at 1/2" gaps, running the bench's long way. Bearers are bought Douglas
-# fir 2x4s across it at <= 24" o.c. (2026-10-18; notes/sauna_seating.md), so they stay off
+# 3/4" x 3 1/2" basswood (4/4, the liner's stock, since 2026-10-20) at 1/2" gaps, running the
+# bench's long way. Bearers are bought Douglas fir 2x4s across it at <= 16" o.c.
+# (notes/sauna_seating.md), so they stay off
 # the mill order. The step's 10" takes three 3" slats. Legs, stretchers, the recliner and the
 # heater fence are not designed yet: an allowance in notes/wood_supply.md, not a cut.
-_SLAT = "basswood-bench-5q"
+_SLAT = "basswood-bench-4q"
 _BEARER = "df-sauna-frame"
 
 
 def _deck_cuts(slats: int, slat_width_in: float, long_in: float, short_in: float,
                bearers: int) -> tuple[FurnitureCut, ...]:
-    return (FurnitureCut(part="sauna bench slat", count=slats, thickness=inch(1),
+    return (FurnitureCut(part="sauna bench slat", count=slats, thickness=inch(0.75),
                          width=inch(slat_width_in), length=inch(long_in), material_ref=_SLAT),
             FurnitureCut(part="sauna bench bearer", count=bearers, thickness=inch(1.5),
                          width=inch(3.5), length=inch(short_in), material_ref=_BEARER))
 
 
 UPPER_BENCH = UPPER_BENCH.model_copy(update=dict(
-    wood_material_ref=_SLAT, cut_list=_deck_cuts(7, 3.5, 78, 28, 5)))
+    wood_material_ref=_SLAT, cut_list=_deck_cuts(7, 3.5, 78, 28, 6)))
 LOWER_PLATFORM = LOWER_PLATFORM.model_copy(update=dict(
-    wood_material_ref=_SLAT, cut_list=_deck_cuts(5, 3.5, 78.1875, 20, 5)))
+    wood_material_ref=_SLAT, cut_list=_deck_cuts(5, 3.5, 78.1875, 20, 6)))
 READING_PLATFORM = READING_PLATFORM.model_copy(update=dict(
-    wood_material_ref=_SLAT, cut_list=_deck_cuts(7, 3.5, 58.5, 28, 4)))
+    wood_material_ref=_SLAT, cut_list=_deck_cuts(7, 3.5, 58.5, 28, 5)))
 ACCESS_STEP = ACCESS_STEP.model_copy(update=dict(
     wood_material_ref=_SLAT, cut_list=_deck_cuts(3, 3.0, 14, 10, 2)))
 

@@ -24,9 +24,9 @@ flush with PANTRY-S2, and packs without fillers (end panel, B24, B36, B36, B18).
 dining table stayed put; its east chair band now laps the fronts ~5", leaving ~30" of end
 clearance, accepted. RC13/RC3 dropped to 16" as wall-space outlets; RC14/RC17 came off the
 brick jambs (3/4" of gwb beside each window's jamb pack cannot hold a box). The armchairs
-now flank the brick, mirrored about y=88" and turned on the coffee table. The SE corner had
-no 24" square left for the fig beside the S chair and RC13, so it went back to the south
-wall west of the chair.
+now flank the brick, mirrored about y=88", turned on the coffee table, outside the
+insert's 36" front clearance; they stand 15" off the wall (not the 3" first tried) so the
+fig fits in the SE corner clear of the chair and RC13.
 
 ## White painted suite headboard (2026-10-20)
 

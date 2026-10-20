@@ -143,23 +143,24 @@ MAIN_PLACEABLES = [
     # the sofa's front is x=298", leaving 18" for seated access.
     # 2026-10-20: with the south bank gone the armchairs flank the brick, mirrored about the
     # fire axis y=88" and each turned onto the coffee table's centre (N -60, S -120). Both
-    # stay clear of the brick, of the band in front of the firebox opening (y 73 1/4"..
-    # 102 3/4") and of the E1/E2 blinds, with a 30"+ walk to the table.
+    # stay out of the ClassicFlame's 36" front clearance to combustibles (its manual: keep
+    # furniture 3 ft from the front; y 73 1/4"..102 3/4", 36" out from the brick), off the
+    # brick and the E1/E2 blinds, with ~31" to the table. x=32'-2" leaves the SE corner
+    # for the fig; the starting target, 3" off the wall, left it no room.
     Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FT-LIVING-SOFA-84-TABLE-GAP",
               room="RM-M-LIVING", position=pt(ft(23, 4.5), ft(7, 4)), rotation=deg(90)),
     Furniture(uid="PUZZLECF01", tag="FURN-M-PUZZLE-COFFEE-TABLE",
               type_ref="FT-LIVING-PUZZLE-COFFEE-TABLE", room="RM-M-LIVING",
               position=pt(inch(327.9), ft(7, 4)), rotation=deg(90)),
     Furniture(uid="808W2W6TPA", tag="FURN-M-ARMCHAIR-N", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
-              position=pt(inch(398.5), inch(128)), rotation=deg(-60)),
+              position=pt(inch(386), inch(128)), rotation=deg(-60)),
     Furniture(uid="G5QQNW9448", tag="FURN-M-ARMCHAIR-S", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
-              position=pt(inch(398.5), inch(48)), rotation=deg(-120)),
-    # On the south wall, west of the S armchair: ~4" to the chair, ~5" east of RC5. The SE
-    # corner was tried (2026-10-20) and has no 24" square left: the chair's back corner
-    # reaches it, and RC13 holds the east wall.
+              position=pt(inch(386), inch(48)), rotation=deg(-120)),
+    # In the SE corner, behind the S armchair: 1" off the south wall, 3" off the east wall
+    # so RC13 stays reachable, ~1 3/8" to the chair.
     Furniture(uid="FIGMLIV001", tag="FURN-M-LIVING-FIDDLE-LEAF-FIG",
               type_ref="FURN-FIDDLE-LEAF-FIG-24", room="RM-M-LIVING",
-              position=pt(ft(31), ft(1, 7))),
+              position=pt(inch(410.375), inch(19.625))),
     # --- the mantel, which now has a body (2026-09-06) -----------------------------------
     #
     # SB-M-FIRE-MANTEL is a ShelfBank and a ResolvedShelfBank has NO POSITION — nothing
