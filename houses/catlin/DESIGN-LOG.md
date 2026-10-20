@@ -46,6 +46,20 @@ circuit assignments stayed intact. The shared flood model carries its box, knuck
 head, lens and visor through the viewer, GLB and IFC. Instances live in
 `plan/porch_lighting.py`; mounting and beam regressions use the shared read-only fixtures.
 
+## Elm screen on 5/4 rough (2026-10-20)
+
+The owner changed the slat stock to 5/4 rough American elm. Slats and the visible top
+and bottom plates finish 1" x 2 1/2"; keeping one stock avoids a separate milling run
+for the plates. Ceiling backing remains 2x framing. The 60 1/2" floor-to-ceiling screen
+has 22 slats on its existing 2 3/4" pitch, now with 1 3/4" clear gaps. Its 106 5/16"
+overall height leaves 104 5/16" slats between the two 1" plates. The symbol and cut
+list now agree on plate thickness.
+
+`elm-slat-5q` replaces `elm-slat-8q`. The milling schedule calls for 76.6 rough bf
+(72.8 slats + 3.8 plates), before ~18.2 bf of extra slats to reject movers. Retain the
+kiln-dry/rip/rest/dress sequence and hardwax oil on all faces. The mantel stays 12/4;
+the floor plate still fixes only south of the flooring movement joint.
+
 ## Elm slats on 8/4, one piece (2026-10-18)
 
 Research flagged that one-piece elm slats ripped from flat-sawn 12/4 may bow: elm's grain

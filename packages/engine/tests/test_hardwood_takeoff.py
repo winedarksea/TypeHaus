@@ -140,15 +140,13 @@ def test_a_stool_is_scheduled_at_its_rough_size_from_five_quarter_stock(rows):
 def test_ash_slabs_and_walnut_tops_are_cut_listed(rows):
     """Custom-milled countertops reach the mill; the stone stays the slab yard's."""
     tops = {tag: row for row in _use(rows, "countertop") for tag in row["tags"]}
-    assert set(tops) == {"CT-M-LIV-E-S", "CT-M-LIV-E-N",
-                         "CT-M-BED-NOOK-S", "CT-M-BED-NOOK-N"}
-    # The owner's ash runs to ~11" (Material.max_board_width_in), so each slab is two boards.
-    for tag in ("CT-M-LIV-E-S", "CT-M-LIV-E-N"):
-        slab = tops[tag]
-        assert slab["nominal_stock"] == "6/4"
-        assert slab["layup"] == "edge-glued panel" and slab["boards_per_piece"] == 2
-        assert slab["finished_thickness_in"] == pytest.approx(1.25)
-    assert tops["CT-M-LIV-E-N"]["finished_length_in"] == pytest.approx(160.625, abs=0.01)
+    assert set(tops) == {"CT-M-LIV-E-N", "CT-M-BED-NOOK-S", "CT-M-BED-NOOK-N"}
+    # The owner's ash runs to ~11" (Material.max_board_width_in), so the 25" slab is three.
+    slab = tops["CT-M-LIV-E-N"]
+    assert slab["nominal_stock"] == "6/4"
+    assert slab["layup"] == "edge-glued panel" and slab["boards_per_piece"] == 3
+    assert slab["finished_thickness_in"] == pytest.approx(1.25)
+    assert slab["finished_length_in"] == pytest.approx(114.625, abs=0.01)
     assert all(row["also_in_countertops"] for row in tops.values())
     # All five living-room stools are 6/4 ash: one ash thickness at the mill.
     ash = [row for row in _use(rows, "window stool") if row["material"].startswith("ash-")]
@@ -452,3 +450,32 @@ def test_a_stair_is_billed_once_by_its_own_rows(rows, catlin_model_ro):
     assert {row["material"] for row in treads} == {"oak-tread"}
     assert {row["material"] for row in risers} == {"oak-riser"}
     assert sum(row["pieces"] for row in treads) == 26
+
+
+def test_elm_screen_rough_stock_and_rendered_parts_agree(rows, catlin_model_ro):
+    from typehaus.model.placeable_symbols import model_parts
+
+    screen = next(t for t in catlin_model_ro.plan.library.furniture_types
+                  if t.tag == "FT-LIV-SLAT-ELM-FULL")
+    cuts = {cut.part: cut for cut in screen.cut_list}
+    screen_rows = [row for row in rows if row["material"] == "elm-slat-5q"]
+    assert {row["location"]: row["pieces"] for row in screen_rows} == {"slat": 22, "cleat": 2}
+    for row in screen_rows:
+        assert row["nominal_stock"] == "5/4"
+        assert row["finished_thickness_in"] == 1.0
+        assert row["finished_width_in"] == 2.5
+        assert row["layup"] == "one board"
+        assert row["stock_note"] is None
+    assert cuts["slat"].length.inches == pytest.approx(104.3125)
+    parts = model_parts(screen.plan_symbol, *(d.meters for d in screen.footprint),
+                        screen.height.meters)
+    slats = [part for part in parts if part["size"][0] < 0.1]
+    plates = [part for part in parts if part not in slats]
+    assert len(slats) == cuts["slat"].count
+    assert len(plates) == cuts["cleat"].count
+    for part in slats:
+        assert part["size"][0] == pytest.approx(cuts["slat"].thickness.meters)
+        assert part["size"][2] == pytest.approx(cuts["slat"].length.meters)
+    for part in plates:
+        assert part["size"][0] == pytest.approx(cuts["cleat"].length.meters)
+        assert part["size"][2] == pytest.approx(cuts["cleat"].thickness.meters)

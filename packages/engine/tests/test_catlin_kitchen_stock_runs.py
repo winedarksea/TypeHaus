@@ -208,23 +208,26 @@ def test_pantry_joins_and_supported_full_depth_tops(catlin_plan, catlin_model_ro
     )
     assert shelf_type.footprint[0].inches == 73.25
     assert catlin_plan.by_tag("FURN-M-PANTRY-SHELVES").position.x.inches == 256
-    living_modules = [
-        kitchen_objects[f"FURN-M-LIV-E-B36-{suffix}"]
-        for suffix in ("E2", "E3", "MID", "PANTRY")
+    # The 24"-deep north run (2026-10-20): end panel, B24, B36, B36, B18, flush with S2.
+    living_run = [
+        ("FURN-M-LIV-E-END-N", "FT-LIV-E-END-PANEL", 156.75, 157.25),
+        ("FURN-M-LIV-E-B24", "SEKT-B24", 157.25, 181.25),
+        ("FURN-M-LIV-E-B36-MID", "SEKT-B36", 181.25, 217.25),
+        ("FURN-M-LIV-E-B36-PANTRY", "SEKT-B36", 217.25, 253.25),
+        ("FURN-M-LIV-E-B18-N", "SEKT-B18", 253.25, 271.25),
     ]
-    assert [_bounds(item)[1] for item in living_modules] == pytest.approx(
-        (111.25, 147.25, 183.25, 219.25)
+    for tag, type_ref, y0, y1 in living_run:
+        item = kitchen_objects[tag]
+        assert item.type_ref == type_ref
+        assert (_bounds(item)[1], _bounds(item)[3]) == pytest.approx((y0, y1))
+        assert (_bounds(item)[0], _bounds(item)[2]) == pytest.approx(
+            (_bounds(s2)[0], _bounds(s2)[2])
+        )
+    assert _bounds(kitchen_objects["FURN-M-LIV-E-B18-N"])[3] + 0.125 == pytest.approx(
+        _bounds(s2)[1]
     )
-    assert [_bounds(item)[3] for item in living_modules] == pytest.approx(
-        (147.25, 183.25, 219.25, 255.25)
-    )
-    assert all(item.type_ref == "SEKT-B36-D15" for item in living_modules)
-    living_end = living_modules[-1]
-    b15 = kitchen_objects["FURN-M-LIV-E-B15-N"]
-    north_filler = kitchen_objects["FURN-M-LIV-E-FILLER-N"]
-    assert _bounds(living_end)[3] == pytest.approx(_bounds(b15)[1])
-    assert _bounds(b15)[3] == pytest.approx(_bounds(north_filler)[1])
-    assert _bounds(north_filler)[3] + 0.125 == pytest.approx(_bounds(s2)[1])
+    partition = kitchen_objects["FURN-M-LIV-SLAT-FULL"]
+    assert (_bounds(partition)[1], _bounds(partition)[3]) == pytest.approx((154.25, 156.75))
     living_top = next(top for top in catlin_model_ro.countertops if top.tag == "CT-M-LIV-E-N")
     assert Polygon(living_top.outline).bounds[3] / INCH == pytest.approx(271.375)
     bank = catlin_plan.by_tag("SB-M-PANTRY")
@@ -336,14 +339,15 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
     prices = load_prices(Path(catlin_plan.source_root))
     expected = {
         "SEKT-B12": 1,
-        "SEKT-B18": 1,
+        "SEKT-B18": 2,
+        "SEKT-B24": 3,
+        "SEKT-B36": 3,
         "SEKT-W12-30": 1,
         "SEKT-CORNER-W26-30": 1,
-        "SEKT-B15-D15": 1,
         "SEKT-TS24-15": 2,
         "SEKT-TS30-20": 2,
         "FT-KIT-STOCK24-30-HUNG": 1,
-        "SEKT-B36-D15": 5,
+        "FT-LIV-E-END-PANEL": 1,
     }
     for type_ref, count in expected.items():
         assert quantities[type_ref] == count
@@ -359,6 +363,12 @@ def test_stock_replacements_and_supports_are_counted_and_priced(catlin_plan, cat
         "FT-KIT-DEEP24-30",
         "FT-LIV-E-STOCK12-PLINTH",
         "SEKT-B30-D15",
+        "SEKT-B15-D15",
+        "SEKT-B18-D15",
+        "SEKT-B36-D15",
+        "FT-LIV-E-FILLER-4125",
+        "FT-LIV-E-FILLER-1",
+        "FT-LIV-SLAT-ELM-COUNTER",
     ):
         assert removed not in quantities
         assert removed not in prices.placeables

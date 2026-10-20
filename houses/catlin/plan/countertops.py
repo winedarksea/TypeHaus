@@ -67,31 +67,20 @@ MAIN_COUNTERTOPS = [
         cantilever_length=inch(73.5),
         support="brackets",
     ),
-    # The living room's two ash slabs (plan/living_east_run.py), 1 1/4" over a 1 1/4" sub-top
-    # (3/4" + 1/2" ply), 16 1/2" deep: 1" over the fronts, a straight eased edge. Ash since
-    # 2026-10-16, to match the dining table; 6/4, and each a two-board glue-up. The slab top
-    # derives from the host top, so the 36" line did not move when it thinned from 2". The
-    # south slab covers its 4 1/8" wall filler; the north ends at the pantry across a 1/8"
-    # sealed joint. The ash window stools meet the back edge in one plane.
-    Countertop(
-        uid="N3E070DD41", tag="CT-M-LIV-E-S",
-        hosts=("FURN-M-LIV-E-END-S", "FURN-M-LIV-E-B36-E1", "FURN-M-LIV-E-B18-S",
-               "FURN-M-LIV-E-FILLER-S"),
-        material_ref="ash-counter-6q",
-        thickness=inch(1.25),
-        overhang=inch(1),
-        length=inch(58.625),
-        profile="eased",
-    ),
+    # The living room's ash slab (plan/living_east_run.py), 1 1/4" over a 1 1/4" sub-top
+    # (3/4" + 1/2" ply), 25" deep: 1" over the 24" run's fronts, a straight eased edge. 6/4,
+    # and at ash's 11" board cap a three-board glue-up. It runs from the end panel at the
+    # slat partition to the pantry across a 1/8" sealed joint, its front 1" proud of S2's
+    # (a straight-out Rev-A-Shelf pull-out, so a fabrication check only). The slab top
+    # derives from the host top; WIN-M-DINING-E's ash stool meets its back edge in one plane.
     Countertop(
         uid="TPTH3QMGAY", tag="CT-M-LIV-E-N",
-        hosts=("FURN-M-LIV-E-END-N", "FURN-M-LIV-E-B36-E2", "FURN-M-LIV-E-B36-E3",
-               "FURN-M-LIV-E-B36-MID", "FURN-M-LIV-E-B36-PANTRY", "FURN-M-LIV-E-B15-N",
-               "FURN-M-LIV-E-FILLER-N"),
+        hosts=("FURN-M-LIV-E-END-N", "FURN-M-LIV-E-B24", "FURN-M-LIV-E-B36-MID",
+               "FURN-M-LIV-E-B36-PANTRY", "FURN-M-LIV-E-B18-N"),
         material_ref="ash-counter-6q",
         thickness=inch(1.25),
         overhang=inch(1),
-        length=inch(160.625),
+        length=inch(114.625),
         profile="eased",
     ),
     # RM-M-BATH2's deck. One of the two vanity tops in the house that is FABRICATED rather

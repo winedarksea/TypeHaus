@@ -784,10 +784,9 @@ MAIN_EQUIPMENT = [
     # 45 1/2" facebrick surround, laid in the court's brown blend and WASHED WHITE since
     # 2026-09-13 (it was a white face brick until then) — W-M-FIRE-* in
     # plan/storeys/main.py carries the pier arithmetic and the whole elevation ladder, and
-    # SB-M-FIRE-MANTEL in plan/millwork.py is the shelf. The east wall's SEKTION line
-    # (plan/living_east_run.py) dies into it with 1/2" end panels, and the seating turned onto
-    # it (plan/placeables.py). ** CHECK THE INSERT'S SIDE-CLEARANCE SPEC ** against those
-    # panels, 8" off the masonry opening each side.
+    # SB-M-FIRE-MANTEL in plan/millwork.py is the shelf. Since 2026-10-20 no casework meets
+    # it (the SEKTION line stops at the slat partition, plan/living_east_run.py); the two
+    # armchairs flank it (plan/placeables.py).
     #
     # ** POSITION. ** x=35'-1 7/8" stands the 4 1/2"-deep body's FACE 1/4" PROUD of the brick
     # at x=34'-11 5/8", with its back at 35'-4 1/8" — 5/8" through the wythe's back face and
@@ -1906,47 +1905,27 @@ NEC_FILL_MAIN = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C2", face="right", distance_from_start=inch(34.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # ** THE EAST WALL'S COUNTER RECEPTACLES (2026-10-03). ** The SEKTION line puts a 36"
-    # counter under counter-height glass. Coverage is measured along each slab: no point
-    # more than 24" from a receptacle (the registry still reports this UNKNOWN).
-    # Every device is 42" AFF, 6" over the slab (stations since the 2026-10-16 move):
-    #   south bank (living)  y 22", 67 7/8"                slab 6 5/8"..65 1/4"
-    #   north bank (dining) y 108 1/8", 152", 179", 258 1/8"; slab 110 3/4"..271 1/4"
-    # RC14/RC17 sit on the masonry jambs and move with them, mirrored about the brick's
-    # y=88": the 3/4" gap to each window's framing cannot hold a box. RC4 (44") is RETIRED:
-    # E1's new RO landed on it, and RC13 + RC17 still cover the south slab within 24".
-    # RC15 left 216" for the same reason and RC3 left 168": both now sit in the 43" pier
-    # between E2 and the dining window, in the bays either side of the 176" stud, so every
-    # point of slab not under glass is within 24". RC16 uses a standard 2 3/4" single-gang
-    # plate north of the dining window's jamb pack.
+    # ** THE EAST WALL'S RECEPTACLES (2026-10-20). ** South of the slat partition (y 154 1/4")
+    # is open wall space, split by the fireplace brick (65 1/4"..110 3/4"); RC13 (22") and RC3
+    # (152") cover its two segments at the room's 16". A box on the brick jambs is gone (RC14,
+    # RC17; uids retired): 3/4" of gwb between each window's jamb pack and the brick cannot
+    # hold one. RC3 sits in the 144"-160" bay, south of the partition.
+    # North of it the 36" counter (slab 156 3/4"..271 3/8") is covered by RC15 (179") and RC16
+    # (258 1/8") at 42", 6" over the slab. RC16 uses a 2 3/4" single-gang plate north of the
+    # dining window's jamb pack.
     # ** 179" -> 258 1/8" LEAVES ~31" OF SLAB UNDER THE DINING GLASS PAST 24". ** The glass
     # takes the wall; a listed countertop pop-up in the ash slab is the open option.
-    # Uids and circuits stay with the devices.
     ElectricalDevice(uid="VHY1DXBHG2", tag="ED-M-LIVING-RC13", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-E1", face="left", distance_from_start=inch(22),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
-    ElectricalDevice(uid="8NYNJ818AX", tag="ED-M-LIVING-RC14", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-FIRE-JAMB-N", face="left", distance_from_start=inch(5.375),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
-    ElectricalDevice(uid="7T29M8ZWWC", tag="ED-M-LIVING-RC17", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-FIRE-JAMB-S", face="left", distance_from_start=inch(2.625),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC010AAAA", tag="ED-M-LIVING-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-E1", face="left", distance_from_start=inch(152),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),

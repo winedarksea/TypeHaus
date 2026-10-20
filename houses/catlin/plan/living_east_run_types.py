@@ -1,10 +1,10 @@
 """The east-wall SEKTION line: products and house types (2026-10-02).
 
-The living-room bases are the library's 15"-deep SEKTION frames (`SEKT-B*-D15`), the two
-carousel corners are `SEKT-CORNER-B38`, both shared catalog. What is here is what the house
-orders round them: the carousel corner as a product, the peninsula's floor anchoring frame
-and connector rails, and the FÖRBÄTTRA-faced end panels, seating face and fillers the shared
-catalog has no reason to carry. NOT editable, in the `study_nook_types.py` idiom. Prices
+The living-room bases are the library's 24"-deep SEKTION frames (`SEKT-B*`, since
+2026-10-20), the two carousel corners are `SEKT-CORNER-B38`, both shared catalog. What is
+here is what the house orders round them: the carousel corner as a product, the peninsula's
+floor anchoring frame and connector rails, the FÖRBÄTTRA-faced end panels and seating face,
+and the elm slat partition. NOT editable, in the `study_nook_types.py` idiom. Prices
 live in prices.toml.
 """
 
@@ -12,15 +12,6 @@ from __future__ import annotations
 
 from typehaus.model import FurnitureCut, FurnitureType, Product, inch
 
-SEKTION_BASE_15_DEEP = Product(
-    tag="PROD-IKEA-SEKTION-BASE-D15", brand="IKEA", model="SEKTION shelves/2 doors, VOXTORP matte white",
-    name='SEKTION white base cabinet, 36 x 15 x 30", paired 18" doors', sku="594.631.16",
-    url="https://www.ikea.com/us/en/p/sektion-base-cabinet-with-shelves-2-doors-white-voxtorp-matte-white-s59463116/",
-    source=("IKEA US, read 2026-10-04: frame 702.653.89 with two nominal 18x30 VOXTORP "
-            "doors 802.733.22, UTRUSTA hinges and adjustable shelves. Six living-room "
-            "bases share this configuration; legs, plinth and suspension rail separate. "
-            "15-inch system depth, 15 3/8-inch configured depth; model envelope 15 1/2."),
-)
 SEKTION_CORNER_CAROUSEL = Product(
     tag="PROD-IKEA-SEKTION-CORNER-CAROUSEL", brand="IKEA",
     model="SEKTION corner base cabinet with carousel",
@@ -63,8 +54,7 @@ SEKTION_DEEP24_TOP_FRAME = Product(
     url="https://www.ikea.com/us/en/p/sektion-top-cabinet-with-ventilation-white-90499735/",
     source='IKEA US, read 2026-10-03: 23 5/8-inch bare depth, 24 with rail; east pantry tops.',
 )
-LIVING_EAST_RUN_PRODUCTS = (SEKTION_BASE_15_DEEP, SEKTION_CORNER_CAROUSEL,
-                          SEKTION_FLOOR_ANCHOR, SEKTION_CONNECTOR_RAIL,
+LIVING_EAST_RUN_PRODUCTS = (SEKTION_CORNER_CAROUSEL, SEKTION_FLOOR_ANCHOR, SEKTION_CONNECTOR_RAIL,
                           SEKTION_BASE24_FRAME, SEKTION_WALL12_FRAME,
                           SEKTION_CORNER_WALL_FRAME, SEKTION_DEEP24_TOP_FRAME)
 
@@ -72,11 +62,11 @@ LIVING_EAST_RUN_PRODUCTS = (SEKTION_BASE_15_DEEP, SEKTION_CORNER_CAROUSEL,
 _PANEL = "PROD-IKEA-FORBATTRA-MATTE-25-80"
 
 LIVING_END_PANEL = FurnitureType(
-    tag="FT-LIV-E-END-PANEL", name='FÖRBÄTTRA end panel, 1/2 x 15 1/2 x 34"',
-    footprint=(inch(0.5), inch(15.5)), height=inch(34), plan_symbol="sektion-cover-panel",
+    tag="FT-LIV-E-END-PANEL", name='FÖRBÄTTRA end panel, 1/2 x 24 x 34"',
+    footprint=(inch(0.5), inch(24)), height=inch(34), plan_symbol="sektion-cover-panel",
     product_ref=_PANEL,
-    source=("Closes a living-room bank against the fireplace brick, floor to slab. Two cut "
-            "from one 25x80 panel. Check the insert's side clearance against it."),
+    source=("Closes the north run against the slat partition, floor to slab; seen through "
+            "the slats. Cut from one 25x80 panel."),
 )
 PENINSULA_END_PANEL = FurnitureType(
     tag="FT-KIT-PEN-END-PANEL", name='FÖRBÄTTRA end panel, 1/2 x 24 x 34"',
@@ -95,53 +85,35 @@ PENINSULA_BACK_PANEL = FurnitureType(
 )
 
 
-def _filler(tag: str, width_in: float, depth_in: float, label: str, where: str) -> FurnitureType:
-    depth = "15 1/2" if depth_in == 15.5 else f"{depth_in:g}"
-    return FurnitureType(
-        tag=tag, name=f'FÖRBÄTTRA filler, {label} x {depth} x 34"',
-        footprint=(inch(width_in), inch(depth_in)), height=inch(34),
-        plan_symbol="sektion-cover-panel", product_ref=_PANEL,
-        source=(f"{where} Site-cut from a 25x80 panel and faced to match the fronts, floor "
-                "to slab. IKEA ships a filler piece with its corner bases for exactly this "
-                "job; a FÖRBÄTTRA strip is the same piece in the run's finish."),
-    )
-
-
-LIVING_SOUTH_FILLER = _filler(
-    "FT-LIV-E-FILLER-4125", 4.125, 15.5, "4 1/8",
-    "Closes the living bank's south end against the SE corner.")
-LIVING_NORTH_FILLER = _filler(
-    "FT-LIV-E-FILLER-1", 1.0, 15.5, "1",
-    "Closes the living north bank's B15 to the 1/8-inch joint at the pantry.")
-
-# ** THE ELM SLAT PARTITION (2026-10-16). ** Vertical American elm slats, 1 1/2" face x
-# 2 1/2" deep on a 2 3/4" pitch (a 1 1/4" gap), between a floor and a ceiling cleat of the
-# same stock. 8/4 since 2026-10-18 (was 12/4): the face is the board's dressed thickness and
-# the depth a rip, which dries and stays straighter. Veneered MDF/ply was rejected: all four
-# faces show, banded edges chip, MDF swells at the floor joint. A proposal the owner can
-# adjust; the pitch lives in the `slat-partition` symbol. Each piece is whole pitches wide, so the rhythm runs on across the joint.
-# Heights are the resolved ceiling underside (8'-11 1/2" over the datum) less the finished
-# floor (15/16") or the counter top (36 15/16" over the datum), less 1/4" to scribe.
+# Vertical American elm slats: 5/4 rough dresses to a 1" face; the 2 1/2" depth is
+# ripped. Keep 22 slats on the existing 2 3/4" pitch (1 3/4" clear gaps). Visible top
+# and bottom plates use the same stock. Heights allow 1/4" for scribing below the
+# resolved ceiling underside, measured from the finished floor.
+_SLAT_FINISHED_THICKNESS_IN = 1.0
+_SLAT_DEPTH_IN = 2.5
+_PLATE_FINISHED_THICKNESS_IN = 1.0
 _SLAT_SOURCE = (
-    "Owner-built from American elm 8/4, ripped, hardwax oil. The ceiling cleat screws "
+    "Owner-built from American elm 5/4 rough, dressed to 1 inch and ripped to 2 1/2 inches, "
+    "hardwax oil. The ceiling cleat screws "
     "to 2x blocking set between FS-S-EAST's joists at 144\" and 160\" before the board goes "
     "up: y=13'-0\" falls between them and nothing else bills that blocking. The floor cleat "
     "sits over the flush LVP/coated-concrete movement joint at y=13'-0\" and fixes to the "
     "subfloor on the LVP (south) side only, never across the joint; the LVP stays floating "
-    "with its expansion gap round the cleat. The counter piece's cleat screws up through "
-    "the ash slab from below.")
+    "with its expansion gap round the cleat.")
 
 
 def _slats(tag: str, name: str, width_in: float, height_in: float, slats: int,
            where: str) -> FurnitureType:
     return FurnitureType(
-        tag=tag, name=name, footprint=(inch(width_in), inch(2.5)), height=inch(height_in),
-        plan_symbol="slat-partition", wood_material_ref="elm-slat-8q",
+        tag=tag, name=name, footprint=(inch(width_in), inch(_SLAT_DEPTH_IN)),
+        height=inch(height_in),
+        plan_symbol="slat-partition", wood_material_ref="elm-slat-5q",
         cut_list=(
-            # The 1 1/2" face is the 8/4 board's dressed thickness; the 2 1/2" depth is ripped.
-            FurnitureCut(part="slat", count=slats, thickness=inch(1.5), width=inch(2.5),
-                         length=inch(height_in - 3.0)),
-            FurnitureCut(part="cleat", count=2, thickness=inch(1.5), width=inch(2.5),
+            FurnitureCut(part="slat", count=slats, thickness=inch(_SLAT_FINISHED_THICKNESS_IN),
+                         width=inch(_SLAT_DEPTH_IN),
+                         length=inch(height_in - 2 * _PLATE_FINISHED_THICKNESS_IN)),
+            FurnitureCut(part="cleat", count=2, thickness=inch(_PLATE_FINISHED_THICKNESS_IN),
+                         width=inch(_SLAT_DEPTH_IN),
                          length=inch(width_in)),
         ),
         source=f"{where} {_SLAT_SOURCE}",
@@ -149,11 +121,8 @@ def _slats(tag: str, name: str, width_in: float, height_in: float, slats: int,
 
 
 LIVING_SLATS_FULL = _slats(
-    "FT-LIV-SLAT-ELM-FULL", 'Elm slat partition, 44 x 2 1/2 x 106 5/16", floor to ceiling',
-    44.0, 106.3125, 16, "The floor-standing piece, west of the counter.")
-LIVING_SLATS_COUNTER = _slats(
-    "FT-LIV-SLAT-ELM-COUNTER", 'Elm slat partition, 16 1/2 x 2 1/2 x 70 5/16", counter to ceiling',
-    16.5, 70.3125, 6, "The piece standing on CT-M-LIV-E-N over its full depth.")
+    "FT-LIV-SLAT-ELM-FULL", 'Elm slat partition, 60 1/2 x 2 1/2 x 106 5/16", floor to ceiling',
+    60.5, 106.3125, 22, "One piece, gwb to its west end, south of the north run's end panel.")
 # The seating cantilever's hidden support (notes/kitchen_stock_cabinet_details.md K6). The
 # section is the published hidden flat bar's: Original Granite Bracket and Iron Supports both
 # rate 1/2 x 2 1/2 steel at ~325 lb a bracket; a 1/4 x 3 bar yields near 95 lb on a 12" arm.
@@ -165,5 +134,4 @@ PENINSULA_BAR_BRACKET = FurnitureType(
             "the peninsula's 3/4 ply sub-top, routed flush; 12\" carries the stone."),
 )
 LIVING_EAST_RUN_TYPES = (LIVING_END_PANEL, PENINSULA_END_PANEL, PENINSULA_BACK_PANEL,
-                         LIVING_SOUTH_FILLER, LIVING_NORTH_FILLER, PENINSULA_BAR_BRACKET,
-                         LIVING_SLATS_FULL, LIVING_SLATS_COUNTER)
+                         PENINSULA_BAR_BRACKET, LIVING_SLATS_FULL)

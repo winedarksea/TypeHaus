@@ -140,25 +140,26 @@ MAIN_PLACEABLES = [
     #
     # 2026-10-05: move the sofa 12" west for a lift-top puzzle coffee table, its long
     # edge parallel to the sofa. The table occupies x=316"..339.8", y=65.75"..110.25";
-    # the sofa's front is x=298", leaving 18" for seated access. The angled chairs keep
-    # their positions, with 15.1" north / 19.6" south to the table's nearest edge.
-    # Circulation goes around the group; the gap is for seated table access
-    # (library/placeables/furniture.py).
+    # the sofa's front is x=298", leaving 18" for seated access.
+    # 2026-10-20: with the south bank gone the armchairs flank the brick, mirrored about the
+    # fire axis y=88" and each turned onto the coffee table's centre (N -60, S -120). Both
+    # stay clear of the brick, of the band in front of the firebox opening (y 73 1/4"..
+    # 102 3/4") and of the E1/E2 blinds, with a 30"+ walk to the table.
     Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FT-LIVING-SOFA-84-TABLE-GAP",
               room="RM-M-LIVING", position=pt(ft(23, 4.5), ft(7, 4)), rotation=deg(90)),
     Furniture(uid="PUZZLECF01", tag="FURN-M-PUZZLE-COFFEE-TABLE",
               type_ref="FT-LIVING-PUZZLE-COFFEE-TABLE", room="RM-M-LIVING",
               position=pt(inch(327.9), ft(7, 4)), rotation=deg(90)),
     Furniture(uid="808W2W6TPA", tag="FURN-M-ARMCHAIR-N", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
-              position=pt(m(9.63082), m(2.89253)), rotation=deg(-45)),
+              position=pt(inch(398.5), inch(128)), rotation=deg(-60)),
     Furniture(uid="G5QQNW9448", tag="FURN-M-ARMCHAIR-S", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
-              position=pt(m(9.54846), m(1.37234)), rotation=deg(-120)),
-    # South of the armchair and west of the east-wall cabinets. It was on WIN-M-LIV-S1's
-    # centre (x=32'-0") until 2026-10-16, when the armchair's 16" move south lapped its pot;
-    # 13" east and 2" south clears the chair by ~2" and the bank's fronts by 7/8".
+              position=pt(inch(398.5), inch(48)), rotation=deg(-120)),
+    # On the south wall, west of the S armchair: ~4" to the chair, ~5" east of RC5. The SE
+    # corner was tried (2026-10-20) and has no 24" square left: the chair's back corner
+    # reaches it, and RC13 holds the east wall.
     Furniture(uid="FIGMLIV001", tag="FURN-M-LIVING-FIDDLE-LEAF-FIG",
               type_ref="FURN-FIDDLE-LEAF-FIG-24", room="RM-M-LIVING",
-              position=pt(ft(33, 1), ft(1, 7))),
+              position=pt(ft(31), ft(1, 7))),
     # --- the mantel, which now has a body (2026-09-06) -----------------------------------
     #
     # SB-M-FIRE-MANTEL is a ShelfBank and a ResolvedShelfBank has NO POSITION — nothing
@@ -191,8 +192,8 @@ MAIN_PLACEABLES = [
     # OBJECT. ** A base at 64" is under the 80" headroom exemption and 11 1/2" is past
     # A117.1 307.2's 4" allowance, so the verdict is CORRECT — a 6" hard edge at 5'-4" is a
     # protruding object — and unenforced in a dwelling. No clearance zone in RM-M-LIVING
-    # overlaps its plan rectangle and no door sweeps it; the SEKTION end panels abut its y
-    # range at exactly 0", which is tangency, not overlap.
+    # overlaps its plan rectangle and no door sweeps it; no casework meets it since
+    # 2026-10-20.
     Furniture(uid="5RWQRV1P72", tag="FURN-M-FIRE-MANTEL",
               type_ref="FT-MANTEL-ELM-46", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(64)),
@@ -208,8 +209,9 @@ MAIN_PLACEABLES = [
     # bands span y=13'-3"..22'-9", clear of the sofa and with circulation to the peninsula.
     #
     # ** NUDGED 2" WEST WITH ITS SIX CHAIRS (2026-10-02). ** The east chair zone reaches
-    # x 406 1/2"; the live-edge slab's nominal front is x 408 7/8" and a natural edge wanders,
-    # so the edge is specified at <= 1 1/2" past the fronts and the table gave 2".
+    # x 406 1/2". Since 2026-10-20 the 24" run's fronts stand at ~401 3/8" (slab ~400 3/8"),
+    # so the zone overlaps them by ~5" and ~30" of end clearance is left: the owner's call
+    # (2026-10-20), and the expected recommended-zone WARN.
     #
     # Only the six side chairs are drawn on this 8-place table — end chairs would block the
     # hall-to-east-windows walk, so those two places stay unset, brought in when needed.

@@ -10,9 +10,9 @@ from __future__ import annotations
 from typehaus.model.placeable_symbols._families import Geometry
 from typehaus.model.placeable_symbols._frame import box, rect
 
-SLAT_FACE_M = 1.5 * 0.0254
+SLAT_FACE_M = 1.0 * 0.0254
 SLAT_PITCH_M = 2.75 * 0.0254
-CLEAT_HEIGHT_M = 0.75 * 0.0254
+CLEAT_HEIGHT_M = 1.0 * 0.0254
 
 
 def slat_count(width: float) -> int:

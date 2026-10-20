@@ -146,8 +146,8 @@ def test_hosted_cabinets_drop_their_symbol_counter_in_model_json(catlin_model_ro
     assert peninsula["z1_m"] - peninsula["z0_m"] == pytest.approx(1.181 * INCH)
     assert Polygon(peninsula["parts"][0]["outline"]).area == pytest.approx(
         (84.5 * 25 + 73.5 * 15) * INCH * INCH)
-    assert {rows[tag]["material_ref"] for tag in ("CT-M-LIV-E-S", "CT-M-LIV-E-N")} == {
-        "ash-counter-6q"}
+    assert "CT-M-LIV-E-S" not in rows
+    assert rows["CT-M-LIV-E-N"]["material_ref"] == "ash-counter-6q"
 
 
 def test_countertops_reach_the_glb_in_their_own_material(catlin_model_ro):

@@ -2525,34 +2525,23 @@
 # Bases. Same box at the same size as the CASE-B* rows, so the same material.
 "SEKT-B12" = { material = { low = 200, high = 360 }, labour = { low = 120, high = 300 } }
 "SEKT-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 0 ea
-"SEKT-B18" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }
-"SEKT-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-B18" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 3 ea
 "SEKT-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 0 ea
-"SEKT-B36" = { material = { low = 220, high = 550 }, labour = { low = 90, high = 220 } }  # 1 ea
+"SEKT-B36" = { material = { low = 220, high = 550 }, labour = { low = 90, high = 220 } }  # 3 ea
 # The carousel corner (IKEA s79582533, carousel and 13"+13" bifold in the number). Labour
 # is a base and a half: two legs to level and the bifold to hang off the range side.
 "SEKT-CORNER-B38" = { material = { low = 380, high = 750 }, labour = { low = 130, high = 320 } }  # 2 ea
-# The east wall's six 36x15x30 living-room bases with paired 18x30 VOXTORP doors and
-# shelves. IKEA US 594.631.16, read 2026-10-04: $513 configured, legs/plinth/rail separate.
-# Material allowance includes those installation parts; the shared oak slabs bill separately.
-"SEKT-B36-D15" = { material = { low = 480, high = 620 }, labour = { low = 90, high = 220 } }
-# The re-banked ends (2026-10-16): the same frame and VOXTORP door family, one door each.
-"SEKT-B18-D15" = { material = { low = 250, high = 360 }, labour = { low = 70, high = 180 } }
-"SEKT-B15-D15" = { material = { low = 230, high = 330 }, labour = { low = 70, high = 180 } }
 # FÖRBÄTTRA-faced pieces (plan/living_east_run_types.py): site-cut 25x80 panels at $127.
-"FT-LIV-E-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 2 ea
+"FT-LIV-E-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 1 ea
 "FT-KIT-PEN-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 1 ea
 "FT-KIT-PEN-BACK-PANEL" = { material = { low = 260, high = 430 }, labour = { low = 120, high = 300 } }  # 1 ea, two panels and the connector rails
 "FT-KIT-CT-BRACKET-24" = { material = { low = 35, high = 70 }, labour = { low = 20, high = 45 } }  # 5 ea, powder-coated, #12 screws
-# Fillers: an offcut each, so the money is the scribe-and-fit labour.
-"FT-LIV-E-FILLER-4125" = { material = { low = 15, high = 40 }, labour = { low = 30, high = 80 } }
-"FT-LIV-E-FILLER-1" = { material = { low = 10, high = 30 }, labour = { low = 30, high = 80 } }
-# The elm slat partition (2026-10-16; 8/4 since 2026-10-18): American elm at ~$7-12/bf,
-# 8/4 dressed to 1 1/2" and ripped to 2 1/2" slats; `haus millwork` schedules ~88 bf (floor
-# piece) and ~22 bf (counter piece) with waste, before the ~25% straightness overage. Labour is ripping, dressing, oiling, cleats and the scribe,
-# plus the ceiling blocking between FS-S-EAST's joists, which bills nowhere else.
-"FT-LIV-SLAT-ELM-FULL" = { material = { low = 650, high = 1100 }, labour = { low = 300, high = 650 } }
-"FT-LIV-SLAT-ELM-COUNTER" = { material = { low = 160, high = 280 }, labour = { low = 120, high = 300 } }
+# The elm slat partition (5/4 rough since 2026-10-20): slats and plates finish
+# 1 x 2 1/2". The one-piece screen schedules 76.6 rough bf plus ~18.2 bf of slats
+# for straightness selection. Retain the ~$7-12/bf design allowance; labour covers
+# ripping, dressing, oiling, plates, scribing and ceiling blocking between FS-S-EAST joists.
+"FT-LIV-SLAT-ELM-FULL" = { material = { low = 665, high = 1140 }, labour = { low = 300, high = 650 } }
 "SEKT-SINK-B36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 1 ea
 # Wall frames on the published SEKTION ladder. The 30" material bands scale from the 40"
 # references; the shorter carcasses keep the same per-box installation labour.

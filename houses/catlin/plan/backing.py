@@ -61,7 +61,7 @@ from typehaus import WallBacking, ft, inch
 # living room. The 82" course is two runs — BK-M-E1-ROD behind the living-room rods and
 # BK-M-E1-STACKER behind the pantry stackers — and the 64" course is the hood's three bays
 # plus BK-M-E1-MANTEL; 8 ft and 19 ft of open wall separate the two pairs.
-# BK-M-E1-MIXER stays full length: the SEKTION base rail runs the whole wall.
+# BK-M-E1-MIXER stays full length: the SEKTION base rail runs from the slat partition north.
 
 # --- closet rods and shelves ------------------------------------------------------------
 #

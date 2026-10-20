@@ -295,13 +295,12 @@ MATERIALS = [
              species="elm", nominal_quarters=12, milling_profile="S4S",
              requires_custom_milling=True,
              source="RM-M-LIVING fireplace mantel (elm since 2026-10-16, walnut before). 12/4 because the shelf finishes 2 1/4\" — one modular brick bed height, so it reads as a single course pulled proud of the wythe — and 8/4 dresses to 1 1/2\". Matches the elm slat partition."),
-    # The living room's slat partition (plan/living_east_run_types.py). 8/4, not 12/4, since
-    # 2026-10-18: thinner stock dries faster and carries less stress to release on the rip.
-    Material(tag="elm-slat-8q", name='American elm slats, 1 1/2" x 2 1/2", 8/4 S4S',
+    # Slats and visible plates share 5/4 rough stock, dressed to 1" (2026-10-20).
+    Material(tag="elm-slat-5q", name='American elm slats and plates, 1" x 2 1/2", from 5/4 rough',
              hatch="lumber", density=560.0, color="#bd9975", finish="oak-board",
-             species="elm", nominal_quarters=8, milling_profile="S4S",
+             species="elm", nominal_quarters=5, milling_profile="S4S",
              requires_custom_milling=True,
-             source="8/4 elm dressed to 1 1/2\" and ripped to 2 1/2\", one piece. Kiln-dried to 6-8% MC; rift sticks off the board edges, no pith; rip oversize, rest indoors a week or two, then dress; mill ~25% extra and reject any stick that moves. Hardwax oil all faces."),
+             source="5/4 rough elm dressed to 1\" and ripped to 2 1/2\", one piece per slat or plate. Kiln-dried to 6-8% MC; rift sticks off the board edges, no pith; rip oversize, rest indoors a week or two, then dress; mill ~25% extra and reject any stick that moves. Hardwax oil all faces."),
     # The booth's acoustic felt, band 36" to 9'-0" on the south and north walls
     # of RM-M-STUDY. ** NO `species`. ** That one field is the gate on `haus millwork`
     # (takeoff/hardwood.py — "a milling schedule is only about wood"); set it and PET felt is
