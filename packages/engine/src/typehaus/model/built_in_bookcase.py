@@ -7,7 +7,7 @@ transform, keeping a wall-attached run consistent in every output.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from typehaus.model.types import BuiltInBookcaseSpec
 
@@ -20,6 +20,7 @@ class BuiltInBookcasePart:
     bay_index: int | None
     center: tuple[float, float, float]
     size: tuple[float, float, float]
+    material_ref: str | None = None
 
     @property
     def outline(self) -> list[tuple[float, float]]:
@@ -110,4 +111,60 @@ def built_in_bookcase_parts(spec: BuiltInBookcaseSpec) -> tuple[BuiltInBookcaseP
         parts.append(BuiltInBookcasePart(
             "divider", None, (x, shelf_center_y, height / 2), (divider, shelf_depth, height),
         ))
-    return tuple(parts)
+    return _apply_bookcase_fronts(spec, parts, depth)
+
+
+def _apply_bookcase_fronts(
+    spec: BuiltInBookcaseSpec, parts: list[BuiltInBookcasePart], depth: float,
+) -> tuple[BuiltInBookcasePart, ...]:
+    """Replace the front of sheet panels with solid nosings, within the same envelope."""
+    nosing_depth = spec.shelf_nosing_depth.meters
+    result = []
+    dividers = [part for part in parts if part.role == "divider"]
+    strips = []
+    if nosing_depth:
+        for index, divider in enumerate(dividers):
+            x, _, z = divider.center
+            width, _, height = divider.size
+            strip_width = spec.face_strip_width.meters
+            if index == 0:
+                x += (strip_width - width) / 2
+            elif index == len(dividers) - 1:
+                x -= (strip_width - width) / 2
+            strips.append(BuiltInBookcasePart(
+                "face_strip", None, (x, -depth / 2 + nosing_depth / 2, z),
+                (strip_width, nosing_depth, height)))
+    for part in parts:
+        panel = replace(part, material_ref=spec.panel_material_ref)
+        if nosing_depth and part.role == "front_panel":
+            index = part.bay_index
+            assert index is not None
+            left = strips[index].center[0] + strips[index].size[0] / 2
+            right = strips[index + 1].center[0] - strips[index + 1].size[0] / 2
+            panel_height = part.size[2] - (
+                spec.shelf_nosing_height.meters - spec.horizontal_board_thickness.meters)
+            if panel_height <= 0:
+                continue
+            panel = replace(panel, center=((left + right) / 2, part.center[1], panel_height / 2),
+                            size=(right - left, part.size[1], panel_height))
+        if nosing_depth and part.role in {"horizontal_board", "divider"}:
+            x, y, z = part.center
+            width, panel_depth, height = part.size
+            panel = replace(panel, center=(x, y + nosing_depth / 2, z),
+                            size=(width, panel_depth - nosing_depth, height))
+            if part.role == "horizontal_board":
+                # Face strips lap the panel edges; butt the nosing between them so the
+                # solid pieces never overlap, and keep its top flush with the plywood.
+                index = part.bay_index
+                assert index is not None
+                left = strips[index].center[0] + strips[index].size[0] / 2
+                right = strips[index + 1].center[0] - strips[index + 1].size[0] / 2
+                # Rip the floor-level nosing rather than extending it below the case.
+                nosing_height = min(spec.shelf_nosing_height.meters, part.z1_m)
+                result.append(BuiltInBookcasePart(
+                    "shelf_nosing", index,
+                    ((left + right) / 2, -depth / 2 + nosing_depth / 2,
+                     part.z1_m - nosing_height / 2),
+                    (right - left, nosing_depth, nosing_height)))
+        result.append(panel)
+    return tuple([*result, *strips])

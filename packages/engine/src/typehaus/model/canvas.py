@@ -131,7 +131,8 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
             ],
             "model_parts": [
                 {"center": list(part.center), "size": list(part.size),
-                 **_wood_part("wood", wood),
+                 **_wood_part("wood", (materials or {})[part.material_ref]
+                              if part.material_ref else wood),
                  "role": part.role, "bay_index": part.bay_index}
                 for part in parts
             ],

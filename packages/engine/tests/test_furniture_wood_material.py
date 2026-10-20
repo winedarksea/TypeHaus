@@ -85,10 +85,37 @@ def test_the_glb_colours_the_same_wood_the_viewer_does() -> None:
         assert PART_COLORS["wood"] not in mb._buckets
 
 
-def test_a_dangling_wood_material_ref_is_an_error(starter_dir: Path) -> None:
+def test_mixed_bookcase_materials_agree_in_viewer_and_glb() -> None:
+    plywood = Material(tag="plywood", name="Maple plywood", color="#e3d3b4")
+    spec = BUILT_IN.built_in_bookcase.model_copy(update={
+        "panel_material_ref": plywood.tag, "shelf_nosing_depth": inch(.75),
+        "shelf_nosing_height": inch(1.5), "face_strip_width": inch(1.5),
+    })
+    furniture = BUILT_IN.model_copy(update={"built_in_bookcase": spec})
+    plan = _plan(furniture)
+    plan = plan.model_copy(update={"library": plan.library.model_copy(
+        update={"materials": (OAK, plywood)})})
+    parts = canvas_object_types(plan)[0]["model_parts"]
+    assert {part["material_ref"] for part in parts} == {OAK.tag, plywood.tag}
+    assert all(part["color"] == (OAK.color if part["material_ref"] == OAK.tag else plywood.color)
+               for part in parts)
+    mb = _MeshBuilder()
+    item = SimpleNamespace(position=(0.0, 0.0), rotation_degrees=0.0, z_m=0.0)
+    assert _add_canvas_parts(mb, item, furniture, {OAK.tag: OAK, plywood.tag: plywood})
+    assert set(mb._buckets) == {_authored_material_color(OAK), _authored_material_color(plywood)}
+
+
+@pytest.mark.parametrize("panel_reference", [False, True])
+def test_a_dangling_wood_material_ref_is_an_error(starter_dir: Path, panel_reference) -> None:
     result = load_plan(starter_dir)
     assert result.plan is not None
     broken = BOOKCASE.model_copy(update={"wood_material_ref": "no-such-oak"})
+    if panel_reference:
+        broken = BUILT_IN.model_copy(update={
+            "tag": BOOKCASE.tag, "wood_material_ref": None,
+            "built_in_bookcase": BUILT_IN.built_in_bookcase.model_copy(
+                update={"panel_material_ref": "no-such-oak"}),
+        })
     plan = result.plan.model_copy(update={"library": result.plan.library.model_copy(
         update={"furniture_types": (*result.plan.library.furniture_types, broken)})})
     ctx, _ = build_context(plan, starter_dir)

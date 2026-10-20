@@ -226,6 +226,12 @@ class BuiltInBookcaseSpec(HausModel):
     # Fixed closure between the first end divider and an adjacent return wall. It belongs
     # to the one fabricated Furniture occurrence but is not a shelf bay or shared divider.
     west_filler_width: Length = m(0)
+    # Sheet goods behind the furniture's named wood fronts. Zero trim dimensions keep
+    # the original solid-board construction for bookcases without applied fronts.
+    panel_material_ref: str | None = None
+    shelf_nosing_depth: Length = m(0)
+    shelf_nosing_height: Length = m(0)
+    face_strip_width: Length = m(0)
 
     @model_validator(mode="after")
     def _has_usable_geometry(self) -> BuiltInBookcaseSpec:
@@ -238,6 +244,19 @@ class BuiltInBookcaseSpec(HausModel):
             raise ValueError("built-in bookcase thicknesses and shelf depth must be positive")
         if self.west_filler_width.meters < 0:
             raise ValueError("built-in bookcase west filler width cannot be negative")
+        trim = (self.shelf_nosing_depth.meters, self.shelf_nosing_height.meters,
+                self.face_strip_width.meters)
+        if any(value < 0 for value in trim) or (any(trim) and not all(trim)):
+            raise ValueError("bookcase front dimensions must all be positive or all zero")
+        if all(trim):
+            depth, height, width = trim
+            if depth >= self.shelf_depth.meters or height < self.horizontal_board_thickness.meters:
+                raise ValueError("bookcase nosing must fit its shelf depth and cover its thickness")
+            if width < self.divider_thickness.meters or any(
+                bay.clear_width.meters <= 2 * (width - self.divider_thickness.meters)
+                for bay in self.bays
+            ):
+                raise ValueError("bookcase face strips must cover dividers and leave open bays")
         if any(bay.height.meters - bay.closed_base_height.meters
                < self.horizontal_board_thickness.meters for bay in self.bays):
             raise ValueError("built-in bookcase bay is shorter than its boards")

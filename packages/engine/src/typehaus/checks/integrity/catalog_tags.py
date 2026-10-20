@@ -127,6 +127,8 @@ def unknown_wood_material_ref(ctx: CheckContext) -> list[Finding]:
     findings = []
     for entry in library.furniture_types:
         refs = ([entry.wood_material_ref] if entry.wood_material_ref else [])
+        if entry.built_in_bookcase is not None and entry.built_in_bookcase.panel_material_ref:
+            refs.append(entry.built_in_bookcase.panel_material_ref)
         if entry.built_in_bench is not None:
             refs.extend(entry.built_in_bench.material_refs)
         for ref in sorted(set(refs) - known):

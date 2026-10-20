@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+from itertools import combinations
+
 import pytest
 from shapely.geometry import Polygon
 
+from typehaus.model.built_in_bookcase import built_in_bookcase_parts
+from typehaus.model.canvas import canvas_object_types
 from typehaus.quantities import ft, inch
 from typehaus.takeoff.placeables import placeables_takeoff
 
@@ -25,6 +29,38 @@ SECOND_STORY_UI_PLACEMENTS = (
     ("ED-S-PLANT-TUBE1", "ED-T-LT-TUBE6", "RM-S-PLANT", (1.62004, 0.594343), 0),
     ("ED-S-PLANT-TUBE2", "ED-T-LT-TUBE6", "RM-S-PLANT", (3.7205, 0.609677), 0),
 )
+
+
+@pytest.mark.parametrize("type_ref,shelf_count", [
+    ("FT-BATH1-SHELF-2030", 5), ("FT-SUITEBATH-SHELF-1130", 8),
+])
+def test_bath_alcove_models_keep_locust_on_the_fronts(catlin_plan, type_ref, shelf_count):
+    furniture = next(item for item in catlin_plan.library.furniture_types if item.tag == type_ref)
+    spec = furniture.built_in_bookcase
+    parts = built_in_bookcase_parts(spec)
+    record = next(item for item in canvas_object_types(catlin_plan) if item["tag"] == type_ref)
+    fronts = {"shelf_nosing", "face_strip"}
+    for part in record["model_parts"]:
+        assert part["material_ref"] == (
+            "locust-shelf-4q" if part["role"] in fronts else "maple-ply-prefin-34")
+    assert sum(part.role == "shelf_nosing" for part in parts) == shelf_count
+    assert sum(part.role == "face_strip" for part in parts) == 2
+    shelves = [part for part in parts if part.role == "horizontal_board"]
+    nosings = [part for part in parts if part.role == "shelf_nosing"]
+    for shelf, nosing in zip(shelves, nosings, strict=True):
+        assert shelf.size[1] == pytest.approx(inch(28.5).meters)
+        assert nosing.size[1] == pytest.approx(inch(.75).meters)
+        assert shelf.z1_m == pytest.approx(nosing.z1_m)
+        assert shelf.center[1] - shelf.size[1] / 2 == pytest.approx(
+            nosing.center[1] + nosing.size[1] / 2)
+    assert min(part.z0_m for part in parts) >= -1e-12
+    for first, second in combinations(parts, 2):
+        overlap = [
+            min(a + size_a / 2, b + size_b / 2) - max(a - size_a / 2, b - size_b / 2)
+            for a, b, size_a, size_b in zip(
+                first.center, second.center, first.size, second.size, strict=True)
+        ]
+        assert min(overlap) <= 1e-12, (first.role, second.role)
 
 
 @pytest.mark.parametrize(

@@ -149,9 +149,11 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     bookcase = getattr(product_type, "built_in_bookcase", None)
     if bookcase is not None:
         for part in built_in_bookcase_parts(bookcase):
+            color = (_authored_material_color(materials[part.material_ref])
+                     if part.material_ref else wood_color or _color("furniture"))
             mb.add_prism(place_local(part.outline, item.position, item.rotation_degrees),
                          item.z_m + part.z0_m, item.z_m + part.z1_m,
-                         wood_color or _color("furniture"))
+                         color)
         return True
     symbol = model_symbol_for(product_type)
     footprint = getattr(product_type, "footprint", None)
