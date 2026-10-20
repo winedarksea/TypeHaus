@@ -12,6 +12,7 @@ from .materials_metal import MATERIALS_METAL
 from .materials_flooring import MATERIALS_FLOORING
 from .materials_titanium import MATERIALS_TITANIUM
 from .materials_hardwood import MATERIALS_HARDWOOD
+from .materials_study_booth import MATERIALS_STUDY_BOOTH
 
 
 MATERIALS = [
@@ -267,21 +268,8 @@ MATERIALS = [
     # the band is WP-S-SUITE-HEADBOARD, a 6'-0" band on W-S-SN1/SN2 (now `cherry-shiplap`).
     # If it ever comes back it needs its own tag again, `finish="strip-floor"`, and a
     # `STRIP_FLOOR_REFS` needle in ui/src/three/plankMaterial.ts.
-    # The call booth's bench seat and desk top, the same walnut as the wainscot
-    # they sit against. ** `nominal_quarters` IS REQUIRED, not decoration: ** the seat
-    # finishes 1-1/2" (8/4), the desk 1" (5/4), and `takeoff/hardwood.py` flags a
-    # finished piece that cannot come out of the stock it names.
-    #
-    # Deliberately no `stock_bf_per_sqft`: like the oak stock, these are PIECE goods cut to a
-    # finished T x W x L, not a coverage good. Unlike the oak, this walnut is BOUGHT —
-    # so it appears on `haus millwork` for the mill AND its dollars stay inside the
-    # `[placeables]` rows for FT-STUDY-BENCH / FT-STUDY-DESK. See prices.toml; getting that
-    # backwards puts the most expensive material in the room at $0.
-    Material(tag="walnut-shelf-8q", name="Black walnut shelving, 8/4 S4S", hatch="lumber",
-             density=610.0, color="#80634f", finish="clear-satin-hardwax-oil",
-             species="walnut", nominal_quarters=8, milling_profile="S4S",
-             requires_custom_milling=True,
-             source="plans/TODO.md — RM-M-STUDY call booth. 8/4 because the bench seat is structural millwork someone sits on, over a 45-5/8\" span with no stiffener"),
+    # The desk and leaf remain bought solid walnut; the upholstered bench is now
+    # appearance-grade plywood with walnut facing/trim (materials_study_booth.py).
     # The desk top and its leaf: 5/4, dressing to 1" (2026-10-16, was 6/4). Short spans, and
     # 5/4 is the cheaper, easier bought thickness; the bench's 47" seat still wants 8/4.
     Material(tag="walnut-shelf-5q", name="Black walnut shelving, 5/4 S4S", hatch="lumber",
@@ -349,6 +337,7 @@ MATERIALS = [
              hatch="lumber", color="#f0ede6", finish="satin-enamel", milling_profile="S4S",
              source="White cellular PVC 1x4 (Azek/Versatex class), painted with the walls. The bathrooms and the 70% RH plant room."),
     *MATERIALS_HARDWOOD,
+    *MATERIALS_STUDY_BOOTH,
     *MATERIALS_METAL,
     *MATERIALS_ISHTAR,
     *MATERIALS_FLOORING,

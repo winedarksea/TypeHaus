@@ -2123,12 +2123,12 @@ BEAMS = [
          engineering_note="L3-1/2x3-1/2x1/4 A36 hot-dip galvanised steel angle lintel over the 29 1/2 in firebox opening, 8 in bearing each end on the brick jamb piers. Minimum stock section, not a designed one: the spandrel it carries is ~56 lb. SIZE IS THE REAL SECTION SINCE 2026-09-15: it read 3.5x3.5 until then, which parses as a milled 3 1/2 in square and drew, clashed and billed 7.26x the steel (12.25 in2 of box against 1.69 in2 of angle). The AISC fraction spelling is deliberately not accepted by the parser, so this is the decimal form of the same part."),
 ]
 
-# The first-floor study's walnut wainscot (plans/TODO.md §Hardwood): every bounding wall
-# to 36" above the floor, D-M-STUDY's punch subtracted by the resolver. Board feet come
-# off the walnut-shiplap material's 4/4 stock (1.1 bf/sf) in the wood_surfaces takeoff.
+# Study walnut remains on west/south and the east doorway returns. The north wall
+# has a self-supporting upholstered bench below the felt, retaining its gypsum.
 PANELING = [
     WallPaneling(uid="CMK901AAAA", tag="WP-M-STUDY-WAINSCOT", room="RM-M-STUDY",
-                 material_ref="walnut-shiplap", height=ft(3)),
+                 material_ref="walnut-shiplap", height=ft(3),
+                 walls=("W-M-LS", "W-M-CLN2", "W-M-C3")),
     # The mudroom's three east-facing walls (W-M-W1 between the closets, and the closets'
     # east returns), white-painted oak shiplap to 6'-0" — the underside of the coat-nook caps
     # across the room. The closets' door walls (W-M-MECH-S, W-M-MUDC-N) are left: less the
@@ -2151,7 +2151,7 @@ PANELING = [
     #   * W-M-HS4 (north) is what the camera sees, and what reads through D-M-STUDY's glazing
     #     from the hall.
     #   * together they break the N-S parallel pair, which is the flutter path.
-    # The west wall stays walnut with FURN-M-STUDY-BENCH against it; the east wall is door.
+    # The west wall stays walnut; the north bench/back is upholstered below 36 inches.
     #
     # `replaces_wall_finish=False`: INT_2X4_STAGGERED_GWB and INT_2X4_PARTITION both
     # carry their gypsum in `layers`, not in `default_lining`, so there is no lining to

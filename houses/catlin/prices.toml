@@ -3052,26 +3052,12 @@
 "FURN-S-PAX-SHELF-40" = { material = { low = 290, high = 350 }, labour = { low = 80, high = 200 } }  # 1 ea
 "FURN-S-PAX-DOUBLE-40" = { material = { low = 235, high = 280 }, labour = { low = 80, high = 200 } }  # 1 ea
 "FURN-S-PAX-SLIDE-79" = { material = { low = 470, high = 520 }, labour = { low = 120, high = 300 } }  # 1 ea
-# RM-M-STUDY'S CALL BOOTH, 2026-08-29 — two built articles, priced the way the bath alcove
-# shelf and the sauna benches are: what the piece costs in materials and shop time.
-# [placeables] and not [furnishings] because neither can be carried out of the room; both are
-# screwed through W-M-LS and W-M-CLN2, which were retyped to staggered stud FOR that.
-#
-# ** THE WALNUT IS IN THESE TWO ROWS AND NOWHERE ELSE — THIS IS THE INVERSE OF
-# `FT-KIT-PANTRY-SHELVES-70` ABOVE. ** SB-M-STUDY-BENCH and SB-M-STUDY-DESK put the seat and
-# the top on `haus millwork` (13.4 bf of 8/4 and ~7.3 bf of 6/4 walnut, each an edge-glued panel of two
-# boards), and that section is an UNPRICED VIEW. The pantry's oak may carry $0 because it
-# comes off the owner's own ~$2/sf stock; ** THIS WALNUT IS BOUGHT ** at roughly $12-20/bf
-# S4S, so the boards are inside the material low/high here — about $160-270 of the bench and
-# $115-195 of the desk. Strip them out to "avoid double counting the millwork" and the most
-# expensive material in the room bills at $0.
-#
-# The rest of each row: the bench's ply carcass, its cleats and the blocking laid into the
-# staggered bays, the desk's apron and modesty panel, edge treatment, hardwax-oil finish and
-# the fit — every piece is scribed to a 4-foot box with no square corner in it. High end is a
-# cabinetmaker; low end is a good carpenter building it in place. The CUSHION AND PILLOWS are
-# NOT here — see `allowances.cabinet-study-booth-cushions`.
-"FT-STUDY-BENCH" = { material = { low = 350, high = 850 }, labour = { low = 300, high = 750 } }  # 1 ea
+# RM-M-STUDY: plywood carcass with A-1 walnut veneer front, solid walnut edging/cap,
+# independent reclined back and two internal partitions. Bench materials/labor include
+# carcass, front and trim; bench shop cuts are an unpriced mirror, never billed again.
+# Desk remains solid walnut. Upholstery/adjustable footrest stay in the allowance below.
+"FT-STUDY-BENCH" = { material = { low = 350, high = 850 }, labour = { low = 300, high = 750 } }  # provisional range retained for revised construction
+"FT-STUDY-FOOTREST" = { low = 0, high = 0 }  # included in cabinet-study-booth-cushions
 "FT-STUDY-DESK" = { material = { low = 300, high = 700 }, labour = { low = 250, high = 650 } }  # 1 ea
 # RM-M-LIVING'S WALNUT MANTEL, moved here from [allowances] on 2026-09-06 when
 # SB-M-FIRE-MANTEL stopped being hosted on a wall and started being hosted on
@@ -3081,7 +3067,7 @@
 #
 # 45 1/2" x 11 1/2" x 2 1/4", one piece, of BOUGHT 12/4 walnut. `haus millwork` schedules it
 # at 11.5 bf rough at $12-20/bf = $140-230 of stock (2 1/4" finished cannot come out of the
-# study's 8/4, which dresses to 1 1/2"); the rest of material is the finish and the blocking.
+# former study seat's 8/4); the rest is finish and hold-down blocking.
 # Labour is a joiner's day: one-piece milled, sanded and hardwax-oiled, then fitted.
 #
 # ** THE ANTI-OVERTURNING HOLD-DOWN IS IN THIS ROW AND IT IS NOT OPTIONAL. ** The board bears
@@ -3100,10 +3086,10 @@
 # set on 4" of compacted stone, plus the 2' x 6' river-rock apron on fabric beyond its notch.
 # Placement is two people and a dolly for a ~250-400 lb stone — the rate, not a machine.
 "FT-SPLASH-BASIN-GRANITE-24" = { material = { low = 250, high = 800 }, labour = { low = 150, high = 400 } }  # 1 ea
-# The fold-down leaf (2026-08-30). Only 18" of board against the desk's 29", and yet the row
+# The fold-down leaf is now 19 5/8" x 16" against the fixed desk's 29"; its allowance
 # is nearly the desk's, because on a leaf the BOARD is the cheap half. Material carries a pair
-# of Hafele/Hebgo 287.43.419 folding table brackets (~$100 the pair at street), a full-length
-# piano hinge, the let-in ledger and blocking, and two bullet catches. Labour carries the part
+# of Sugatsune EB-303/EP-BL folding table brackets (revised quote pending), a full-length
+# piano hinge, the let-in ledger, and two bullet catches. Rough-in blocking is below. Labour carries the part
 # that is actually expensive and that no bracket price shows: a leaf has to land coplanar with
 # a fixed top it butts, on a wall that is out of plumb like every wall in this house, and it
 # has to still be coplanar after a hundred cycles. That is fitting time, not joinery time.
@@ -6873,29 +6859,14 @@ porch-enclosure-panels-mesh = { material = { low = 850, high = 1450 }, labour = 
 # already bought and located — this is a seasonal swap, not a second installation.
 porch-enclosure-panels-vinyl = { material = { low = 1700, high = 3300 }, labour = { low = 150, high = 400 } }
 # --- millwork -------------------------------------------------------------------------------
-# RM-M-STUDY'S BOOTH CUSHION AND PILLOWS (2026-08-29). ** THERE IS NO ELEMENT BEHIND THIS
-# ROW. ** FT-STUDY-BENCH is the seat BOARD; a 44" x 18" foam cushion and three pillows are
-# soft goods the model has no vocabulary for, and inventing a placeable for a cushion would
-# put a 4"-tall box in the collision geometry for nothing.
-# ** THE `cabinet-` PREFIX IS LOAD-BEARING, not decoration. ** An allowance key declares its
-# own trade by being named for it (`takeoff/cost_codes.py::KEY_PATTERNS`); a key matching no
-# prefix falls to the section default and gets SCHEDULED AS EARTHWORK. Upholstered casework
-# is 12 30 00, the same trade as the row above.
-# ** THE FOAM IS 3", NOT "3-4 INCHES", SINCE 2026-08-30, AND IT IS NOW A DIMENSION. ** This
-# row used to offer a range because a cushion feels like an owner selection. It is not: the
-# bench deck was framed at 16" *on the arithmetic that 3" of HR foam settles ~1 1/2" under an
-# adult*, which seats you at 17 1/2" and 12" under FT-STUDY-DESK's top. 4" foam seats you at
-# ~18 1/2" and takes that to 11"; a soft 4" takes it further. The thickness is structural to
-# the ergonomics of a room that is built, so a thicker cushion is not a free upgrade — it is a
-# request to re-frame the bench. Say so before agreeing to one.
-# ** AND THE BACK PILLOWS ARE FOR LOUNGING, NOT FOR WORKING. ** The bench is 17" deep, which
-# is right for a fixed seat with no depth adjustment (BIFMA wants 2"-3" between the front edge
-# and the back of the knee). A 5" back pillow takes the effective depth to ~12" and turns the
-# bench into a perch. Three LOOSE pillows is the correct article precisely because they come
-# off before a call; do not let this become an upholstered back rail. The wainscot is the back.
-# Basis: 3" high-resilience foam wrapped and covered, made to size, plus three cushions —
-# $200-450 for a made-to-measure bench cushion this size in a mid-weight fabric, $50-350 for
-# the pillows. Owner selection sets where in the band it lands; nothing in the plan does.
+# RM-M-STUDY upholstery and fitting, separate from the plywood bench construction.
+# Modeled seat/back: 3 inch HR seat, >=2.5 lb/ft3, supplier 25% IFD 35-45 lbf with
+# test conditions; 1 inch contoured back and removable 1/2 inch lumbar insert,
+# concealed adjustment 6-9 inch above occupied seat. Warm gray zipped seat cover,
+# thin wrap and non-slip retention. Includes purchased adjustable footrest and
+# removable fit inserts. Target occupied seat 19-20 inch, not assumed foam compression.
+# Existing allowance range retained pending upholstery quote; no separate footrest price.
+# Fabrication release requires a >=60 minute user mock-up; notes/study_booth.md.
 cabinet-study-booth-cushions = { low = 250, high = 800 }
 # THE GUEST STUDIO'S WET BAR CABINET (2026-08-29). A single 24" base with a counter over it,
 # against W-A-BATH-S: the sink drops into the west half and APPL-BAR-FRIDGE-24 stands under

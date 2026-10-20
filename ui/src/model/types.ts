@@ -646,6 +646,8 @@ export interface ModelPart {
   radial_segments?: number;
   /** The catalog material a `wood` part is made of (`FurnitureType.wood_material_ref`). */
   material_ref?: string;
+  /** Optional grain direction in the part's local plan frame. */
+  grain_axis?: [number, number, number];
   /** `counter` marks a symbol's own counter, which a drawn countertop slab replaces. */
   role?: string;
   /**
@@ -1457,6 +1459,11 @@ export interface MaterialSpec {
   finish?: string | null;
   species?: string | null;
   wood_surface?: "natural-clear" | "unfinished" | "painted" | null;
+  /** Purchasing grade/core for appearance plywood, separate from sawn stock. */
+  panel_face_grade?: string | null;
+  panel_core?: string | null;
+  panel_veneer_species?: string | null;
+  panel_nominal_thickness_in?: number | null;
   // A coating — sealer, stain, paint — rather than a covering: it bills by coverage area but
   // adds no thickness, so `buildRoomFloor` draws no finish plane for it. Without this a
   // sealed slab renders as two floors: the slab and a finish plane on the same face.

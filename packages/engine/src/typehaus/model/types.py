@@ -8,6 +8,7 @@ from typing import Literal
 from pydantic import model_validator
 
 from typehaus.model.base import HausModel
+from typehaus.model.built_in_bench import BENCH_ENVELOPE_TOLERANCE_M, BuiltInBenchSpec
 from typehaus.model.enums import (
     DoorOperation,
     LuminaireForm,
@@ -291,12 +292,26 @@ class FurnitureType(HausModel):
     # ``None`` is ordinary catalog furniture.  A value makes this a fitted, generated
     # assembly: exact board geometry is shared by drawings, browser, GLB, and IFC.
     built_in_bookcase: BuiltInBookcaseSpec | None = None
+    built_in_bench: BuiltInBenchSpec | None = None
     # The catalog ``Material`` its generic ``wood`` parts are made of (a shelf, a side, every
-    # board of a built-in). Colour and 3D texture then follow that material; the darker
-    # ``wood-dark`` back keeps its shadow tone. ``None`` draws the generic furniture wood.
+    # board of a built-in, or a sauna symbol's seat/supports). Colour and 3D texture follow
+    # that material; ``wood-dark`` backs keep their shadow tone. ``None`` draws generic wood.
     wood_material_ref: str | None = None
     # Owner-built: the parts a mill cuts per placed piece (model/furniture_cut.py).
     cut_list: tuple[FurnitureCut, ...] = ()
+
+    @model_validator(mode="after")
+    def _bench_envelope_matches(self) -> FurnitureType:
+        bench = self.built_in_bench
+        if bench is not None:
+            if self.built_in_bookcase is not None or self.mesh is not None or self.cut_list:
+                raise ValueError("bench owns its geometry and cut list; no other fabrication")
+            expected = (bench.width.meters, bench.overall_depth_m, bench.back_height.meters)
+            actual = (*(v.meters for v in self.footprint), self.height.meters)
+            if any(abs(a - b) > BENCH_ENVELOPE_TOLERANCE_M
+                   for a, b in zip(actual, expected, strict=True)):
+                raise ValueError("bench footprint/height must match its fabrication envelope")
+        return self
 
 
 class RailingType(HausModel):

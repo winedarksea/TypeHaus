@@ -522,7 +522,15 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
             element = ll.create_entity(f, "IfcFurniture", name=furniture.tag)
             element.GlobalId = derive_guid(project_uuid, furniture.uid)
             bookcase = getattr(furniture_type, "built_in_bookcase", None)
-            if bookcase is None:
+            bench = getattr(furniture_type, "built_in_bench", None)
+            if bench is not None:
+                from typehaus.emit.ifc.placeable_parts import parts_representation
+                from typehaus.model.bench_parts import bench_parts
+
+                representation = parts_representation(
+                    f, body, [part.geometry for part in bench_parts(bench)],
+                    resolved.position, resolved.rotation_degrees, resolved.z_m)
+            elif bookcase is None:
                 representation = ll.add_prism_from_profile(
                     f, body, resolved.footprint, furniture_type.height.meters, resolved.z_m
                 )

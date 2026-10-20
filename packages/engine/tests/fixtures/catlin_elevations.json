@@ -1533,7 +1533,7 @@
 "canvas_objects/FURN-M-STRW-BENCH/body_z1_m": 0.4572,
 "canvas_objects/FURN-M-STRW-BENCH/z_m": 0.4191,
 "canvas_objects/FURN-M-STUDY-BENCH/body_z0_m": 0.0250495,
-"canvas_objects/FURN-M-STUDY-BENCH/body_z1_m": 0.4314495,
+"canvas_objects/FURN-M-STUDY-BENCH/body_z1_m": 0.9394495,
 "canvas_objects/FURN-M-STUDY-BENCH/z_m": 0.0250495,
 "canvas_objects/FURN-M-STUDY-DESK-LEAF/body_z0_m": 0.0250495,
 "canvas_objects/FURN-M-STUDY-DESK-LEAF/body_z1_m": 0.7743495,
@@ -1541,6 +1541,9 @@
 "canvas_objects/FURN-M-STUDY-DESK/body_z0_m": 0.0250495,
 "canvas_objects/FURN-M-STUDY-DESK/body_z1_m": 0.7743495,
 "canvas_objects/FURN-M-STUDY-DESK/z_m": 0.0250495,
+"canvas_objects/FURN-M-STUDY-FOOTREST/body_z0_m": 0.0250495,
+"canvas_objects/FURN-M-STUDY-FOOTREST/body_z1_m": 0.1012495,
+"canvas_objects/FURN-M-STUDY-FOOTREST/z_m": 0.0250495,
 "canvas_objects/FURN-S-BATH1-CH-AP/body_z0_m": 3.6957,
 "canvas_objects/FURN-S-BATH1-CH-AP/body_z1_m": 4.4323,
 "canvas_objects/FURN-S-BATH1-CH-AP/z_m": 3.6957,
@@ -7301,12 +7304,6 @@
 "ff271848e48f"
 ],
 "geometry/CAR404AAAA-base-CAW109AAAA-0/body": [
-6.1341,
-6.223,
-2,
-"ff271848e48f"
-],
-"geometry/CAR404AAAA-base-CAW113AAAA-0/body": [
 6.1341,
 6.223,
 2,

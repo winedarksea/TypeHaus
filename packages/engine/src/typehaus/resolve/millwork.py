@@ -100,6 +100,7 @@ def _validate_board_furniture_scope(plan: PlanModel, model: ResolvedModel,
                   if product is not None else None)
         if (product is None or symbol != "closet-board" or product.mesh is not None
                 or product.footprint_shape is not None or product.built_in_bookcase is not None
+                or product.built_in_bench is not None
                 or min(*(size.meters for size in product.footprint), product.height.meters) <= 0):
             findings.append(element_error(
                 "integrity.millwork_board_ref",

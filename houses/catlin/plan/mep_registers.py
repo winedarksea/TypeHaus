@@ -424,13 +424,13 @@ REGISTERS_MAIN = [
     #   * W-M-C3's study face runs y 18'-0"..22'-1 5/8" — 4'-1 5/8" of wall;
     #   * D-M-STUDY's RO takes y 18'-2 3/8"..21'-0 11/16" of it, leaving one 12 15/16"
     #     sliver at the north end (the sliver ED-M-STUDY-SPOT and ED-M-STUDY-SW share);
-    #   * FURN-M-STUDY-BENCH is 47" wide and runs wall to wall, y 20'-7 7/8"..22'-0 7/8".
+    #   * The refitted bench is 48 5/8" wide, y ~245.743"..266.563"; north remains bench.
     # The bench covers the sliver to within 3/4". There is no low east wall to cut a grille
     # into, and freeing one means shortening the bench by 7" and opening a dead pocket in
     # the corner — a worse trade than moving the grille one wall.
     #
     # So it is the SOUTH wall's east end, which is the only low wall this room has left:
-    # FURN-M-STUDY-DESK holds x 13'-8 3/4"..16'-1 3/4", the east wall is door, the north
+    # FURN-M-STUDY-DESK holds x 165 3/16"..194 3/16", the east wall is door, the north
     # wall is bench, and the west wall's one gap between desk and bench is 7 1/8" wide. That
     # leaves x 16'-1 3/4"..17'-8 5/8" — the 18 7/8" pocket you step into — and this sits in
     # it at 16'-6", 3/4" east of the desk's end.
@@ -449,13 +449,13 @@ REGISTERS_MAIN = [
     # joinery, and the same plate ED-M-STUDY-DATA1 already asks that wainscot for.
     #
     # It sits at 14'-6", not the entry pocket at 16'-6": FURN-M-STUDY-DESK-LEAF STOWS by
-    # hanging down the wall it is hinged to — 8" to 28" across the whole pocket, straight
+    # hanging down the wall it is hinged to — now 12 1/2" to 28 1/2" across the pocket, straight
     # over a grille whose face is 8 1/2"..15 1/2". Folding it up instead would have buried
     # ED-M-STUDY-RC1 at 32" and cut 12" above the wainscot cap; the grille was the cheaper
     # thing to move. **THE GENERAL LESSON: a placeable's STOWED envelope is load-bearing on
     # the MEP, and the model holds no geometry for it at all.** FT-STUDY-DESK-LEAF is drawn
     # deployed (18" x 20" on the floor); the 18" x 20" of SOUTH WALL it covers when folded
-    # exists only in prose. Re-read plan/furniture_types.py before putting anything back on
+    # is specified in notes/study_booth.md. Re-read it before putting anything back on
     # that wall below 28".
     #
     # 14'-6" is not a retreat to a worse spot, and the reason is the diagonal. The supply is

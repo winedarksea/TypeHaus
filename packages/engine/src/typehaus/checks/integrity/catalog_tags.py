@@ -124,16 +124,18 @@ def unknown_wood_material_ref(ctx: CheckContext) -> list[Finding]:
     """
     library = ctx.plan.library
     known = {m.tag for m in library.materials}
-    return [Finding(
-        severity=Severity.ERROR,
-        check_id="integrity.unknown_wood_material_ref",
-        message=(f"furniture type {entry.tag!r} names wood_material_ref "
-                 f"{entry.wood_material_ref!r}, which no entry in library.materials defines"),
-        element_tags=(entry.tag,),
-        fix_hint="correct the reference, or add the Material to the house catalog",
-        result=Result.FAIL,
-    ) for entry in library.furniture_types
-        if entry.wood_material_ref is not None and entry.wood_material_ref not in known]
+    findings = []
+    for entry in library.furniture_types:
+        refs = ([entry.wood_material_ref] if entry.wood_material_ref else [])
+        if entry.built_in_bench is not None:
+            refs.extend(entry.built_in_bench.material_refs)
+        for ref in sorted(set(refs) - known):
+            findings.append(Finding(
+                severity=Severity.ERROR, check_id="integrity.unknown_wood_material_ref",
+                message=f"furniture type {entry.tag!r} names material {ref!r}, absent from catalog",
+                element_tags=(entry.tag,), result=Result.FAIL,
+                fix_hint="correct the reference, or add the Material to the house catalog"))
+    return findings
 
 
 @check(Tier.INTEGRITY, "integrity.register_duct_ref")

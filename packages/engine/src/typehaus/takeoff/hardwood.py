@@ -110,6 +110,9 @@ def hardwood_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     from typehaus.takeoff.hardwood_furniture import furniture_cut_rows
 
     rows.extend(furniture_cut_rows(model, materials, max_board_width_in))
+    from typehaus.takeoff.bench_millwork import bench_cut_rows
+
+    rows.extend(bench_cut_rows(model, "solid wood", max_board_width_in))
     from typehaus.takeoff.hardwood_stairs import stair_rows
 
     rows.extend(stair_rows(model, materials, standard, max_board_width_in))

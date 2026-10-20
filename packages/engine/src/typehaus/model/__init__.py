@@ -24,6 +24,7 @@ from typehaus.model.backing import WallBacking
 from typehaus.model.base import Element, HausModel
 from typehaus.model.braced_wall import BracedWallPanel
 from typehaus.model.braces import SlatBrace, StrapBrace
+from typehaus.model.built_in_bench import BuiltInBenchSpec
 from typehaus.model.clear_zones import ClearZone
 from typehaus.model.concrete_materials import AsrSpec, CementSpec, ScmFractions
 from typehaus.model.diaphragm_attachment import (
@@ -355,7 +356,8 @@ __all__ = [
     "Assembly", "Layer", "LayerBound", "LayerExtent", "CavityFill", "FramingSpec",
     "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material", "Product",
-    "DoorType", "BookcaseDoorSpec", "WindowType", "FurnitureType", "FurnitureCut", "FixtureType",
+    "DoorType", "BookcaseDoorSpec", "WindowType", "FurnitureType", "FurnitureCut",
+    "BuiltInBenchSpec", "FixtureType",
     "ApplianceType", "EquipmentType",
     "BuiltInBookcaseBay", "BuiltInBookcaseSpec",
     "HeatPumpRating",

@@ -76,8 +76,8 @@ STUDY_NOOK_SEAT_END = FurnitureType(
     product_ref=FORBATTRA_MATTE_WHITE_30.tag,
     source="Site-cut from a 25x30 panel; covers the east seat frame and the top's end grain.",
 )
-# The FT-STUDY-BENCH spec: 3" HR foam settles ~1 1/2" under an adult, so the 19 1/2" top
-# seats you at ~21" and lies at 22 1/2". Held 1/2" back so the lift-up fronts clear it.
+# This nook's 3" cushion assumes ~1 1/2" compression; verify its occupied fit separately
+# from RM-M-STUDY's refitted booth. Held 1/2" back so the lift-up fronts clear it.
 STUDY_NOOK_CUSHION = FurnitureType(
     tag="FT-S-STUDY-NOOK-CUSHION", name='Window-seat cushion, 72 x 24 3/8 x 3"',
     footprint=(inch(72), inch(24.375)), height=inch(3), plan_symbol="seat-cushion",

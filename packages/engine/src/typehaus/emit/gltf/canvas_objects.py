@@ -8,11 +8,21 @@ from pathlib import Path
 
 from typehaus.emit.gltf.geometry import _to_gltf
 from typehaus.emit.gltf.mesh import _MeshBuilder
-from typehaus.emit.gltf.palette import _authored_material_color, _color, _material_finish_color
+from typehaus.emit.gltf.palette import (
+    _authored_material_color,
+    _color,
+    _material_finish_color,
+    srgb_material_color,
+)
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.model.built_in_bookcase import built_in_bookcase_parts
-from typehaus.model.canvas import canvas_object_types, model_symbol_for, wood_material
+from typehaus.model.canvas import (
+    MATERIAL_WOOD_ROLES,
+    canvas_object_types,
+    model_symbol_for,
+    wood_material,
+)
 from typehaus.model.placeable_symbols import PART_COLORS, lamp_role, model_parts, place_local
 from typehaus.resolve.geometry_countertops import countertop_prisms, slab_hosts
 from typehaus.resolve.geometry_ir import GMesh
@@ -119,6 +129,21 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     """
     # A type naming its wood takes that material's authored colour on its ``wood`` parts,
     # exactly as model/canvas._wood_part hands the viewer.
+    bench = getattr(product_type, "built_in_bench", None)
+    if bench is not None:
+        from typehaus.model.bench_parts import bench_parts
+        from typehaus.resolve.connector_geometry.mesh import transform_mesh
+
+        angle = math.radians(item.rotation_degrees)
+        for part in bench_parts(bench):
+            source = part.geometry["mesh"]
+            mesh = GMesh(positions=source["positions"], triangles=source["triangles"],
+                         normals=source["normals"])
+            placed = transform_mesh(mesh, (*item.position, item.z_m),
+                                    (math.cos(angle), math.sin(angle), 0),
+                                    (-math.sin(angle), math.cos(angle), 0))
+            mb.add_mesh(placed, srgb_material_color(materials[part.material_ref]))
+        return True
     wood = wood_material(product_type, materials)
     wood_color = _authored_material_color(wood) if wood is not None else None
     bookcase = getattr(product_type, "built_in_bookcase", None)
@@ -147,7 +172,7 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
         if skip_counter and part["color"] == "counter":
             continue  # the countertop slab draws it (→ _add_countertops)
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
-        color = (wood_color if wood_color and part["color"] == "wood"
+        color = (wood_color if wood_color and part["color"] in MATERIAL_WOOD_ROLES
                  else PART_COLORS[lamp if part["color"] == "lamp" else part["color"]])
         if "mesh" in part:
             mesh = part["mesh"]

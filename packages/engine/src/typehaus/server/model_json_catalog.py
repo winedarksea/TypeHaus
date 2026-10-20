@@ -134,6 +134,9 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
              "density": mat.density, "source": mat.source,
              "color": mat.color, "finish": mat.finish, "coating": mat.coating,
              "species": mat.species, "wood_surface": mat.wood_surface,
+             "panel_face_grade": mat.panel_face_grade, "panel_core": mat.panel_core,
+             "panel_veneer_species": mat.panel_veneer_species,
+             "panel_nominal_thickness_in": mat.panel_nominal_thickness_in,
              "finish_thickness_in": mat.finish_thickness_in,
              "product_ref": mat.product_ref}
             for mat in lib.materials

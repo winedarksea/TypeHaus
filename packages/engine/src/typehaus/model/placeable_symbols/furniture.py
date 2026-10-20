@@ -35,6 +35,7 @@ from typehaus.model.placeable_symbols._families import (
                                                         slab,
 )
 from typehaus.model.placeable_symbols._fiddle_leaf_fig import fiddle_leaf_fig
+from typehaus.model.placeable_symbols._footrest import footrest
 from typehaus.model.placeable_symbols._frame import box, rect
 from typehaus.model.placeable_symbols._hammock_chair import hammock_chair
 from typehaus.model.placeable_symbols._hanging_daybed import hanging_daybed
@@ -95,6 +96,7 @@ CABINET_SHADE = "cabinet-cream-dark"
 CABINET_SINGLE_DOOR_MAX_WIDTH_M = inch(24).meters
 
 FURNITURE_SYMBOLS: dict[str, Builder] = {
+    "footrest": footrest,
     "curtain-rod": curtain_rod,
     "cellular-blind": cellular_blind,
     # Seating. Seat count is what separates a sofa from a loveseat from an armchair.

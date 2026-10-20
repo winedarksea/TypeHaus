@@ -414,6 +414,19 @@ def test_catlin_base_stops_at_the_bare_faces(catlin_model_ro) -> None:
                 if r.wall_tag == "W-M-STRW" and r.room == "RM-M-MUDROOM"]
 
 
+def test_catlin_base_never_runs_into_a_casing(catlin_model_ro) -> None:
+    """A base butts a door casing's outer edge at a corner, never through it (the suite's
+    cherry door's south leg was entered 0.56" by the bedroom base)."""
+    legs = [(c.storey, p) for c in catlin_model_ro.door_casings for p in c.pieces
+            if len(p.outline) >= 3]
+    for run in catlin_model_ro.base_runs:
+        board = Polygon(run.piece.outline)
+        for storey, leg in legs:
+            if storey != run.storey or leg.z0_m >= run.piece.z1_m or leg.z1_m <= run.piece.z0_m:
+                continue
+            assert board.intersection(Polygon(leg.outline)).area < 1e-9, run.tag
+
+
 def test_milled_trim_packs_into_declared_stock_lengths(starter) -> None:
     """With ``stock_length`` the cut pieces pack into boards that long, one row per stock."""
     from typehaus.takeoff.hardwood import hardwood_takeoff

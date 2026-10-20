@@ -30,6 +30,9 @@ from typehaus.resolve.room_walls import _TOUCH_M, bounding_wall_arcs
 _AGAINST_M = 2 * 0.0254
 # A stair-well ledge narrower than this is not floor a base could sit on.
 _WELL_LEDGE_M = 4 * 0.0254
+# Float slop between a casing's face and the room ring it lands on: a nanometre, so the
+# shared face is found and the base still stops at the casing.
+_MEETS_M = 1e-9
 # A band starting this close to the floor is "from the floor".
 _FROM_FLOOR_M = 0.01
 # A finished piece shorter than this is corner noise, not a board anyone would cut.
@@ -82,6 +85,10 @@ def _room_runs(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
     for tag, polygon in _obstacles(plan, model, scope, room, floor_z):
         for a, b in rp.fronting_intervals(ring, [polygon], _AGAINST_M):
             breaks.append((a, b, tag))
+    # A casing leg stands proud of the face at a door corner: the base butts its outer edge.
+    for tag, polygon in _casing_footprints(model, room, floor_z, height):
+        for a, b in rp.fronting_intervals(ring, [polygon], _MEETS_M):
+            breaks.append((a, b, tag))
     wood: list[tuple[float, float, float]] = []
     for band in model.panelings:
         if band.room != room.tag or band.band_z0_m > _FROM_FLOOR_M or not band.outline:
@@ -122,6 +129,23 @@ def _obstacles(plan, model: ResolvedModel, scope: TrimScope, room: ResolvedRoom,
     for stair in model.stairs:
         if stair.storey == room.storey and len(stair.outline) >= 3:
             yield stair.tag, Polygon(stair.outline)
+
+
+def _casing_footprints(model: ResolvedModel, room: ResolvedRoom, floor_z: float, height: float):
+    """``(tag, footprint)`` for each casing piece on this storey that stands in the base band.
+
+    Any room's casing, not only this room's: a closet's base butts the mud room's casing
+    on the far side of the shared door.
+    """
+    from shapely.geometry import Polygon
+
+    top = floor_z + height
+    for casing in model.door_casings:
+        if casing.storey != room.storey:
+            continue
+        for piece in casing.pieces:
+            if len(piece.outline) >= 3 and piece.z0_m < top and piece.z1_m > floor_z:
+                yield casing.opening_ref, Polygon(piece.outline)
 
 
 def _subtract(keep, cut):

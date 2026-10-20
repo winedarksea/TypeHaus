@@ -47,4 +47,15 @@ export function runCurvedPlaceableTests(): void {
     "Continuous ribbons retain picking and selection highlighting");
   assert(!(mesh.material as THREE.MeshStandardMaterial).flatShading,
     "Curved strips use the supplied smooth shading in the viewer");
+  const veneer: ModelPart = { ...part, color: "#80634f", material_ref: "walnut",
+    grain_axis: [1, 0, 0] };
+  const walnut = [{ tag: "walnut", color: "#80634f", species: "walnut",
+    finish: "clear-satin-hardwax-oil" }];
+  const woodGroup = buildCanvasObjectParts(new THREE.Group(), item, [veneer], [1, 2],
+    "nordic", 1.7, [], new Map(), walnut);
+  const woodGeometry = (woodGroup.children[0] as THREE.Mesh).geometry;
+  const uv = woodGeometry.getAttribute("uv");
+  assert(Boolean(uv) && uv.count === positions.count && !near(uv.getY(0), uv.getY(4)),
+    "Authored horizontal veneer grain receives varying UVs on an angled mesh");
+
 }

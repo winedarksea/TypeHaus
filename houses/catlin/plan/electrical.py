@@ -1560,7 +1560,7 @@ BASEMENT_DATA_DEVICES = [
 MAIN_DATA_DEVICES_STUDY = [
     # RM-M-STUDY's east wall is nearly all door, so the south wall is where anything goes —
     # beside ED-M-STUDY-RC1, the pairing a desk actually wants. 1'-0" west of it, at 32" AFF
-    # — 2 1/2" over FURN-M-STUDY-DESK's top (20" deep, top at 29 1/2"), in the last course of
+    # — 2 1/2" over FURN-M-STUDY-DESK's top (16" deep, top at 29 1/2"), in the last course of
     # WP-M-STUDY-WAINSCOT, at hand height beside the laptop. A plate cut into a wainscot is
     # ordinary joinery.
     ElectricalDevice(uid="V51Z24K1AA", tag="ED-M-STUDY-DATA1", kind=DeviceKind.DATA_OUTLET,

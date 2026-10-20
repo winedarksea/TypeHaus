@@ -1,0 +1,23 @@
+# haus: editable
+# Purchased appearance-grade plywood and coordinated booth upholstery.
+from typehaus import Material
+
+MATERIALS_STUDY_BOOTH = [
+    Material(tag="study-walnut-ply", name='Black walnut veneer-core plywood, 3/4", A-1',
+             color="#80634f", finish="clear-satin-hardwax-oil", species="walnut",
+             panel_face_grade="A-1", panel_core="veneer core", panel_veneer_species="black walnut",
+             panel_nominal_thickness_in=0.75,
+             source="A-1 face/back; matched heartwood, horizontal grain, no conspicuous face repairs. Sound core at joints. Clear satin hardwax oil to match desk. Solid walnut edge exposed edges; verify supplied thickness before joinery."),
+    Material(tag="study-birch-ply", name='Birch veneer-core plywood, 3/4", A-1',
+             color="#dfcba7", finish="clear-satin-sealer",
+             panel_face_grade="A-1", panel_core="veneer core", panel_veneer_species="birch",
+             panel_nominal_thickness_in=0.75,
+             source="A-1 birch, maple substitution permitted with same grade/core. No significant core voids at joints or fasteners. Sand and seal all faces/edges beneath cushions. Measure supplied thickness before cutting joinery; no MDF or particleboard substitution."),
+    Material(tag="walnut-trim-4q", name='Black walnut booth edging and cap, 4/4 S4S',
+             color="#80634f", finish="clear-satin-hardwax-oil", species="walnut",
+             nominal_quarters=4, milling_profile="eased", requires_custom_milling=True,
+             source="3/4 inch finished edging and cap; same heartwood tone as desktop and veneer. Eased edges; cap attached through slots for movement."),
+    Material(tag="study-upholstery", name="Warm gray performance fabric, booth seat and back",
+             color="#a39a90", finish="woven-fabric",
+             source="Removable zippered seat cover, thin polyester wrap, concealed non-slip retention. Back pad with removable contoured lumbar insert and concealed height adjustment. Seat HR foam 3 inch, >=2.5 lb/ft3, supplier 25% IFD 35-45 lbf with test conditions. Occupied height verified by mock-up, not inferred from density."),
+]

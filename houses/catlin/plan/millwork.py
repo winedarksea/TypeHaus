@@ -186,87 +186,16 @@ MAIN_SHELVES = [
             ShelfBay(width=inch(36.25), clear_height=ft(7), shelf_count=6),
         ),
     ),
-    # --- RM-M-STUDY's call booth, FT-STUDY-BENCH and FT-STUDY-DESK -----------------------
-    #
-    # The bench seat and the desk top. Neither is a shelf in the cabinet sense and both are
-    # here for the same reason the pantry's are: a ShelfBank is how a BOARD reaches
-    # `haus millwork`, and these two are the biggest single pieces of hardwood in the house
-    # after the treads. `shelf_count=1` is right and is not an omission — ShelfBay counts
-    # horizontal boards INCLUDING the case top, and on a bench the seat IS the top.
-    #
-    # ** THE WALNUT IS BOUGHT, NOT OWNER-MILLED, WHICH INVERTS THE ACCOUNTING. ** Everything
-    # else in this file comes off the family stock at ~$2/sf and therefore carries no dollar
-    # anywhere in prices.toml (`haus millwork` is an UNPRICED VIEW and a "shelf" row may
-    # reference no other section — a test enforces it). These two boards still carry no
-    # dollar HERE; their money lives in the `[placeables]` rows for FT-STUDY-BENCH and
-    # FT-STUDY-DESK, which are written to include their walnut. Getting that backwards puts
-    # the most expensive material in the room at $0 — see the note on those rows.
-    #
-    # `depth` is deliberately NOT authored on either: both hosts are FurnitureTypes, so
-    # `_carcass_depth_m` inherits the footprint depth (17" and 20") and the board can never
-    # disagree with the carcass. Both are past `MW-STANDARD.max_board_width` once jointing
-    # loss is taken, so both lay up as edge-glued panels — 2 boards at 8 1/2" for the seat,
-    # 2 at 10" for the top. That is correct and is how a solid top this wide is actually made.
-    #
-    # `clear_height` is the void under each board: 18" of bench less the 1 1/2" seat, and
-    # 29 1/2" of desk less the 1" top (5/4 since 2026-10-16) — i.e. the knee space.
-    ShelfBank(
-        uid="MJ0P713ABN", tag="SB-M-STUDY-BENCH",
-        host="FURN-M-STUDY-BENCH",
-        material_ref="walnut-shelf-8q",
-        thickness=inch(1.5),
-        profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(47), clear_height=inch(14.5), shelf_count=1),),
-    ),
-    ShelfBank(
-        uid="AFXM3DJGX4", tag="SB-M-STUDY-DESK",
-        host="FURN-M-STUDY-DESK",
-        material_ref="walnut-shelf-5q",
-        thickness=inch(1),
-        profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(29), clear_height=inch(28.5), shelf_count=1),),
-    ),
-    # The fold-down leaf's board. Same stock, same thickness, same lay-up as the
-    # desk it butts, out of the SAME FLITCH as SB-M-STUDY-DESK's two boards: the two tops meet
-    # in a 20" butt joint at eye level, and a colour jump there is the one defect nobody can
-    # unsee. Free to avoid at the rack, impossible to fix afterwards.
-    #
-    # ** READ THIS BEFORE ORDERING: `haus millwork` PRINTS THIS BOARD'S GRAIN THE WRONG WAY,
-    # AND THE MODEL HAS NO FIELD TO CORRECT IT. ** `takeoff/hardwood.py` runs grain along the
-    # LONGER plan dimension, which is right for every other shelf in the house and is wrong
-    # for the only piece here that is deeper (20") than it is wide (18"). It therefore bills a
-    # 2-board lay-up at 9" with the grain running front to back, and what has to be built is a
-    # 2-board lay-up at 10" — a 20 3/4" rough face, the desk's own lay-up — with the grain
-    # running EAST-WEST, continuous with the desk's.
-    #
-    # It is not an aesthetic preference. Walnut moves across the grain and not along it, so
-    # with the grain running east-west BOTH tops swell and shrink in DEPTH, together, and the
-    # butt joint between them stays the width it was cut. Turn the leaf's grain 90 degrees and
-    # the whole seasonal movement of an 18" board — call it 3/16" over a heating season — lands
-    # in that joint, opening and closing it all year. The end grain showing at the joint is the
-    # smaller half of the objection.
-    #
-    # Board feet are unaffected (same area, same thickness), so nothing downstream is wrong —
-    # only the cutting instruction is, and only for this one row.
-    #
-    # `clear_height` is the void under the deployed leaf, the same 28 1/2" as the desk. That is
-    # what the ADA 306 / OSHA knee envelope is measured against and it clears the 27" minimum
-    # with 1 1/2" to spare — but the number that actually decides it is the BRACKET, not the
-    # board. A Hebgo 287.43.419 is 7 1/16" tall; hung under the leaf at the wall it eats down
-    # to ~21" of clear at the back, which is fine over a knee and NOT fine if the arm reaches
-    # forward over one. Set the brackets tight to the wall and check the arm against a seated
-    # knee on the bench before the blocking goes in — it cannot be moved after.
-    ShelfBank(
-        uid="T0BJ1M256G", tag="SB-M-STUDY-LEAF",
-        host="FURN-M-STUDY-DESK-LEAF",
-        material_ref="walnut-shelf-5q",
-        thickness=inch(1),
-        profile="S4S",
-        procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(ShelfBay(width=inch(18), clear_height=inch(28.5), shelf_count=1),),
-    ),
+    # Booth bench cuts come from BuiltInBenchSpec, including its purchased plywood.
+    # Only the fixed desk/leaf remain ShelfBanks; their dollars stay in placeables.
+    ShelfBank(uid="AFXM3DJGX4", tag="SB-M-STUDY-DESK", host="FURN-M-STUDY-DESK",
+              material_ref="walnut-shelf-5q", thickness=inch(1), profile="S4S",
+              procurement=ShelfProcurement.CUSTOM_MILLED,
+              bays=(ShelfBay(width=inch(29), clear_height=inch(28.5), shelf_count=1),)),
+    ShelfBank(uid="T0BJ1M256G", tag="SB-M-STUDY-LEAF", host="FURN-M-STUDY-DESK-LEAF",
+              material_ref="walnut-shelf-5q", thickness=inch(1), profile="S4S",
+              procurement=ShelfProcurement.CUSTOM_MILLED,
+              bays=(ShelfBay(width=inch(19.625), clear_height=inch(28.5), shelf_count=1),)),
     # --- RM-M-LIVING's fireplace mantel, on FURN-M-FIRE-MANTEL --------------------------
     #
     # A custom-milled walnut shelf, 2 1/4" thick — one brick bed height, so it reads as a
@@ -280,7 +209,7 @@ MAIN_SHELVES = [
     # airgap plus stud bay — which is right for a bookcase wall and meaningless against a
     # 3 5/8" masonry wythe with no pocket at all). FURN-M-FIRE-MANTEL now carries the depth
     # on FT-MANTEL-ELM-46's footprint, so `depth` is DELETED here and `_carcass_depth_m`
-    # inherits the 11 1/2" — the SB-M-STUDY-BENCH rule, that the board can never disagree
+    # inherits the 11 1/2" — the SB-M-STUDY-DESK rule, that the board can never disagree
     # with the carcass it sits in, and one duplicated number fewer.
     #
     # That 11 1/2" is still the measured number: from W-M-E1's gwb at x=35'-5 3/8" out to
@@ -312,7 +241,7 @@ MAIN_SHELVES = [
     # check grades a cantilevered placeable's tie-back. This comment and
     # notes/east_breast_bearing.md remain the ONLY record of it, so they have to be right.
     #
-    # `shelf_count=1` for SB-M-STUDY-BENCH's reason: a ShelfBay counts horizontal boards
+    # `shelf_count=1` for SB-M-STUDY-DESK's reason: a ShelfBay counts horizontal boards
     # INCLUDING the case top, and here the mantel IS the top. `clear_height` is the void under
     # it, and the number that matters is the appliance clearance: 64" less the firebox opening
     # top is the whole of it.
@@ -354,7 +283,7 @@ MAIN_SHELVES = [
     #
     # ** THE MONEY IS NOT HERE AND MUST NOT BE, AND THE HOST MOVE IS WHAT CLOSED THAT GAP. **
     # `haus millwork` is an UNPRICED VIEW and a "shelf" row may reference no other priced
-    # section (a test enforces it). SB-M-STUDY-BENCH/-DESK put the walnut's dollars in the
+    # section (a test enforces it). SB-M-STUDY-DESK/-LEAF put the walnut's dollars in the
     # `[placeables]` row of their host FurnitureType — but a ShelfBank ON A WALL has no host
     # row anywhere, so this board was carried by `finish-fireplace-mantel-walnut` in
     # prices.toml [allowances] instead. Hosting it on FURN-M-FIRE-MANTEL gives it the normal

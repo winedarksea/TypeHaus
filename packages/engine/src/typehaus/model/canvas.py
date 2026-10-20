@@ -32,6 +32,10 @@ _TYPE_COLLECTIONS = (
     ("electrical_device_types", "electrical", "ElectricalDevice", PlacementStrategy.FREE_PLACED),
 )
 
+# Sauna symbols also serve non-sauna benches: their seat and supports are actual wood,
+# while generic furniture's ``wood-dark`` remains an intentional shadow approximation.
+MATERIAL_WOOD_ROLES = frozenset({"wood", "sauna-wood", "sauna-wood-dark"})
+
 
 def wood_material(item: Any, materials: dict[str, Any]) -> Any | None:
     """The catalog material a type's ``wood`` parts are built from, when it names one with a
@@ -73,14 +77,14 @@ def canvas_object_types(plan: PlanModel) -> list[dict[str, Any]]:
                 "model_primitive": (
                     item.model_representation.primitive
                     if getattr(item, "model_representation", None) is not None else None),
-                **_symbol_geometry(item, footprint, wood_material(item, materials)),
+                **_symbol_geometry(item, footprint, wood_material(item, materials), materials),
             })
     return result
 
 
 def _wood_part(role: str, wood: Any | None) -> dict[str, Any]:
     """A part's colour, and the material it is made of when it is the type's named wood."""
-    if role == "wood" and wood is not None:
+    if role in MATERIAL_WOOD_ROLES and wood is not None:
         return {"color": wood.color[:7], "material_ref": wood.tag}
     opacity = PART_COLORS[role][3]
     return {"color": part_hex(role), **({"opacity": opacity} if opacity < 1 else {}),
@@ -93,7 +97,8 @@ def model_symbol_for(item: Any) -> str | None:
     return getattr(representation, "symbol", None) or getattr(item, "plan_symbol", None)
 
 
-def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict[str, Any]:
+def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
+                     materials: dict | None = None) -> dict[str, Any]:
     """Project a type's generated plan glyph and 3D massing into the wire contract.
 
     Colours resolve to hex *here*, so the UI needs no palette table of its own — the viewer
@@ -101,6 +106,17 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None) -> dict
     in the symbol's local frame (origin at the footprint centre); every consumer already owns
     the rotate-and-translate, and ``placeable_symbols.place_local`` is that one transform.
     """
+    bench = getattr(item, "built_in_bench", None)
+    if bench is not None:
+        from typehaus.model.bench_parts import bench_canvas_parts
+
+        width, depth = bench.width.meters, bench.overall_depth_m
+        return {"plan_strokes": [{"points": [[-width / 2, -depth / 2],
+                                             [width / 2, -depth / 2],
+                                             [width / 2, depth / 2],
+                                             [-width / 2, depth / 2]],
+                                  "closed": True, "weight": .18, "fill": None}],
+                "model_parts": bench_canvas_parts(bench, materials or {})}
     bookcase = getattr(item, "built_in_bookcase", None)
     if bookcase is not None:
         parts = built_in_bookcase_parts(bookcase)

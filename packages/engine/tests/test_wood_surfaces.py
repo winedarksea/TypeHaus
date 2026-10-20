@@ -218,8 +218,8 @@ def test_sauna_ceiling_is_priced_and_on_the_mill_order(catlin_model, bom):
 # --- the walnut wainscot -------------------------------------------------------------------
 
 def test_the_study_wainscot_reconciles_with_the_rooms_bounding_walls(catlin_model, bom):
-    """Walnut = the shared runs of RM-M-STUDY's bounding walls x 36", minus D-M-STUDY's
-    punch through the band; 4/4 shiplap orders 1.1 board feet per square foot.
+    """Walnut = the exposed study walls x 36", less the door; the upholstered north
+    wall is omitted. 4/4 shiplap orders 1.1 board feet per square foot.
 
     The suite band was on this tag 2026-09-05..10-16 and is `cherry-shiplap` now; the
     perimeter bound stays scoped to the study's own records."""
@@ -231,11 +231,13 @@ def test_the_study_wainscot_reconciles_with_the_rooms_bounding_walls(catlin_mode
     assert float(walnut["net_area_sqft"]) == pytest.approx(resolved, abs=0.05)
     study = sum(p.area_m2 for p in records if p.room == "RM-M-STUDY") * _M2_TO_FT2
     # Sanity-bound against the room's own clear face: perimeter x 3' is the ceiling
-    # (nothing subtracted), and the door punch (2'-6" x 3') is the only deduction.
+    # before subtracting the upholstered north wall and the door punch.
     room = next(r for r in catlin_model.rooms if r.tag == "RM-M-STUDY")
     ring = list(room.clear_face)
     perimeter = sum(length(sub(ring[i], ring[i - 1])) for i in range(len(ring)))
-    ceiling = perimeter * _M_TO_FT * 3.0
+    north_width = max(x for x, y in ring) - min(x for x, y in ring)
+    ceiling = (perimeter - north_width) * _M_TO_FT * 3.0
+    assert all(p.wall_tag != "W-M-HS4" for p in records)
     assert ceiling - 7.5 - 3.0 < study < ceiling - 7.5 + 3.0
     assert float(walnut["board_feet"]) == pytest.approx(
         1.1 * float(walnut["order_area_sqft"]), abs=0.05)

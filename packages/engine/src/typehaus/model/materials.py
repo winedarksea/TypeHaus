@@ -61,6 +61,11 @@ class Material(HausModel):
     # from substrings in the tag, which cannot tell white brick from red. Recipes are defined
     # once per surface (ui/src/three/materials.ts MASONRY_STYLES, emit/gltf/emitter.py).
     finish: str | None = None
+    # Purchasing metadata for decorative sheet goods; veneer species is not sawn stock.
+    panel_face_grade: str | None = None
+    panel_core: str | None = None
+    panel_veneer_species: str | None = None
+    panel_nominal_thickness_in: float | None = None
     # Wood that carries a chemical preservative — KDAT, ACQ/CA-treated stock, treated
     # glulam. **Not decoration, and not the same question as "is it outdoors".** Modern
     # copper-based preservatives corrode plain G90 zinc, so IRC R317.3.1 requires every

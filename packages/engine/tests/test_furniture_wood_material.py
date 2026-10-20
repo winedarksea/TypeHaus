@@ -5,6 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from typehaus.checks import build_context
 from typehaus.checks.integrity.catalog_tags import unknown_wood_material_ref
 from typehaus.emit.gltf.canvas_objects import _add_canvas_parts
@@ -63,11 +65,14 @@ def test_every_built_in_board_is_the_named_wood() -> None:
         ("#c9b08c", "oak-shelf")}
 
 
-def test_no_ref_keeps_the_generic_furniture_wood() -> None:
-    plain = BOOKCASE.model_copy(update={"wood_material_ref": None})
+@pytest.mark.parametrize("symbol,wood_role", [
+    ("bookcase", "wood"), ("sauna-bench", "sauna-wood"),
+])
+def test_no_ref_keeps_the_generic_furniture_wood(symbol, wood_role) -> None:
+    plain = BOOKCASE.model_copy(update={"wood_material_ref": None, "plan_symbol": symbol})
     record = canvas_object_types(_plan(plain))[0]
     assert not any("material_ref" in part for part in record["model_parts"])
-    assert part_hex("wood") in {part["color"] for part in record["model_parts"]}
+    assert part_hex(wood_role) in {part["color"] for part in record["model_parts"]}
 
 
 def test_the_glb_colours_the_same_wood_the_viewer_does() -> None:

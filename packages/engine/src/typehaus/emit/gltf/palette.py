@@ -370,6 +370,17 @@ def _is_aluminum_deck_board(material_ref: str | None) -> bool:
     return "deck" in s and ("alum" in s or family_of(material_ref) == "metal")
 
 
+def srgb_material_color(material: object) -> tuple[float, float, float, float]:
+    """Linear glTF factors for explicitly sRGB material-driven assemblies."""
+    color = _hex_rgba(material_color(getattr(material, "hatch", None),
+                                     getattr(material, "color", None)))
+
+    def linear(channel: float) -> float:
+        return channel / 12.92 if channel <= 0.04045 else ((channel + 0.055) / 1.055) ** 2.4
+
+    return (linear(color[0]), linear(color[1]), linear(color[2]), color[3])
+
+
 def _authored_material_color(material: object) -> tuple[float, float, float, float]:
     """Wood hexes are sRGB; glTF baseColorFactor is linear, as THREE.Color already is.
 
@@ -380,9 +391,7 @@ def _authored_material_color(material: object) -> tuple[float, float, float, flo
                                      getattr(material, "color", None)))
     if getattr(material, "species", None) not in NATURAL_WOOD_COLORS:
         return color
-    def linear(channel: float) -> float:
-        return channel / 12.92 if channel <= 0.04045 else ((channel + 0.055) / 1.055) ** 2.4
-    return (linear(color[0]), linear(color[1]), linear(color[2]), color[3])
+    return srgb_material_color(material)
 
 
 def authored_colors(model: ResolvedModel) -> dict[str, object]:

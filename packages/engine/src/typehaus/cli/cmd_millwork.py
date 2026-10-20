@@ -21,7 +21,9 @@ from typehaus.findings import Severity
 MILLWORK_COLUMNS = ("use", "location", "species", "material", "pieces", "finished_size",
                     "coverage_sqft", "nominal_stock", "milling_profile", "layup",
                     "boards_per_piece", "board_width_in", "rough_width_in",
-                    "rough_board_feet", "rough_surface_sqft", "stock_note", "element_tags")
+                    "rough_board_feet", "rough_surface_sqft", "stock_note", "element_tags",
+                    "stock_kind", "panel_grade", "panel_core", "finish", "grain_direction",
+                    "panel_area_sqft", "shape_note")
 
 
 def _as_tags(value: object) -> list[str]:
@@ -46,6 +48,7 @@ def _flat_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
     return [{**{column: "" for column in MILLWORK_COLUMNS},
              **{key: value for key, value in row.items() if key in MILLWORK_COLUMNS},
              "finished_size": _finished_size(row),
+             "stock_kind": row.get("stock_kind", "solid wood"),
              "element_tags": ", ".join(_as_tags(row.get("tags")))}
             for row in rows]
 
@@ -64,8 +67,13 @@ def _markdown(rows: list[dict[str, object]]) -> str:
 
     flat = _flat_rows(rows)
     header = [column.replace("_", " ") for column in MILLWORK_COLUMNS]
-    schedule = table(header, [[row[column] if row[column] != "" else None
-                               for column in MILLWORK_COLUMNS] for row in flat])
+    def section(kind):
+        return table(header, [[row[column] if row[column] != "" else None
+                               for column in MILLWORK_COLUMNS]
+                              for row in flat if row["stock_kind"] == kind])
+
+    schedule = section("solid wood")
+    panel_schedule = section("panel")
     totals: dict[str, float] = {}
     for row in rows:
         rough = row.get("rough_board_feet")
@@ -77,7 +85,10 @@ def _markdown(rows: list[dict[str, object]]) -> str:
         "Sorted by use, then stock, then profile. Every quantity here is also billed "
         "in another section of the takeoff — this is a *view* for the mill, not an "
         "addition to the estimate.",
-        schedule,
+        heading("Solid wood", 2), schedule,
+        heading("Purchased appearance-grade panels", 2), panel_schedule,
+        "Panel areas are cutting blanks, not an optimized sheet layout. Verify actual "
+        "supplied panel thickness before joinery. Upholstery is specified in the bench notes.",
         heading("Rough board feet by species", 2),
         table(["species", "rough bf"],
               [[species, f"{totals[species]:.1f}"] for species in sorted(totals)]),
@@ -91,6 +102,7 @@ def _markdown(rows: list[dict[str, object]]) -> str:
 def millwork(
     house: Path | None = typer.Argument(None),
     csv: Path | None = typer.Option(None, "--csv", help="Write the schedule as CSV."),
+    pdf: Path | None = typer.Option(None, "--pdf", help="Write the shop schedule as PDF."),
     md: Path | None = typer.Option(
         None, "--md", help="Write the schedule as a Markdown table (emailable)."),
     as_json: bool = typer.Option(False, "--json"),
@@ -117,7 +129,11 @@ def millwork(
     if any(finding.severity is Severity.ERROR for finding in findings):
         _print_findings(findings)
         raise typer.Exit(1)
-    rows = hardwood_takeoff(model)
+    from typehaus.takeoff.bench_millwork import bench_cut_rows
+
+    hardwood = hardwood_takeoff(model)
+    panels = bench_cut_rows(model, "panel")
+    rows = hardwood + panels
 
     if csv is not None:
         from typehaus.emit.csv_writer import write_csv
@@ -129,8 +145,17 @@ def millwork(
         md.parent.mkdir(parents=True, exist_ok=True)
         md.write_text(_markdown(rows), encoding="utf-8")
         console.print(f"wrote {md} ({len(rows)} schedule rows)", soft_wrap=True)
+    if pdf is not None:
+        from typehaus.takeoff.millwork_pdf import write_millwork_pdf
+
+        placed_types = {obj.type_ref for obj in model.canvas_objects}
+        bench_specs = [t.built_in_bench for t in model.plan.library.furniture_types
+                       if t.built_in_bench is not None and t.tag in placed_types]
+        write_millwork_pdf(pdf, directory.name, _flat_rows(hardwood), _flat_rows(panels),
+                           bench_specs)
+        console.print(f"wrote {pdf}")
     if as_json:
-        console.print_json(json.dumps({"hardwood": rows}))
+        console.print_json(json.dumps({"hardwood": hardwood, "panels": panels}))
         return
 
     if not rows:
@@ -141,7 +166,7 @@ def millwork(
 
     console.print("[bold]Milling schedule[/bold]  (by use, then stock, then profile)")
     totals: dict[str, float] = {}
-    for row in rows:
+    for row in hardwood:
         size = _finished_size(row) or f"{row.get('coverage_sqft', 0)} SF coverage"
         pieces = f"{row['pieces']:>4} x " if row.get("pieces") is not None else "       "
         species = str(row.get("species") or "?")
@@ -167,3 +192,10 @@ def millwork(
                   "also_in_* flags in --json). Rough figures include a "
                   "straight-line/joint width loss and a defect-and-trim length "
                   "allowance. --csv and --md export the same rows.[/dim]", soft_wrap=True)
+
+    if panels:
+        console.print("[bold]Purchased panel cut list[/bold] (no rough board feet)")
+        for row in panels:
+            console.print(f"  {row['location']}: {row['pieces']} x {_finished_size(row)} "
+                          f"{row['material']} {row['panel_grade']} {row['panel_core']} "
+                          f"grain: {row['grain_direction']}", soft_wrap=True)

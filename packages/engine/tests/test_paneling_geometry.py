@@ -180,7 +180,9 @@ def test_the_catlin_bands_are_the_eight_authored_ones(bands, catlin_model):
     for band in by_tag["WP-B-SAUNA-SPLASH"]:
         assert band.run_m == pytest.approx(3 * 12 * _IN, abs=1e-6)
         assert band.z1_m - band.z0_m == pytest.approx(90 * _IN, abs=1e-3)
-    # Every bounding wall of the study, to 36".
+    # North walnut is replaced by the upholstered bench; exposed returns remain.
+    assert {b.wall_tag for b in by_tag["WP-M-STUDY-WAINSCOT"]} == {
+        "W-M-C3", "W-M-LS", "W-M-CLN2"}
     for band in by_tag["WP-M-STUDY-WAINSCOT"]:
         assert band.z1_m - band.z0_m == pytest.approx(36 * _IN, abs=1e-6)
     # The call booth's felt: south and north walls only, and the band runs 3'-0" to 9'-0".
@@ -240,16 +242,10 @@ def test_the_catlin_bands_are_the_eight_authored_ones(bands, catlin_model):
 
 
 def test_the_bands_still_bill_what_they_billed(bands):
-    """Geometry is additive: the areas this pass draws are the areas it already ordered.
-
-    51 SF of walnut and 45 SF of tile were the numbers before the polygon existed. If adding
-    geometry moved either, the band being drawn is not the band being bought. After the
-    2026-09-30 study-wall edits, the walnut reads 40.75 SF: the wainscoted runs stop at each
-    corner's finish face, not at the wall centrelines, with the current clear-face lengths.
-    """
+    """Removing the north walnut reduces both its drawn and ordered area."""
     walnut = sum(b.area_m2 for b in bands if b.tag == "WP-M-STUDY-WAINSCOT") * _M2_TO_FT2
     tile = sum(b.area_m2 for b in bands if b.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
-    assert walnut == pytest.approx(40.75, abs=0.05)
+    assert walnut == pytest.approx(28.185, abs=0.005)
     assert tile == pytest.approx(45.0, abs=0.5)
 
 

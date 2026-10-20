@@ -252,6 +252,10 @@ export function buildCanvasObjectParts(
       ? new THREE.CylinderGeometry(sx / 2, sx / 2, sy, part.radial_segments ?? 16)
         .rotateX(Math.PI / 2) : null;
     const seed = pieceSeed(`${item.uid}|${index}`);
+    if (curvedMesh && board && part.grain_axis) {
+      const [gx, gy, gz] = part.grain_axis;
+      applyPieceGrainUv(curvedMesh, new THREE.Vector3(gx, gz, -gy), board, seed);
+    }
     if (ring && board) {
       const [gx, gy] = planLongAxis(part.points!);
       applyPieceGrainUv(ring, new THREE.Vector3(gx, 0, -gy), board, seed);

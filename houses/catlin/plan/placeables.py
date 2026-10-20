@@ -312,53 +312,16 @@ MAIN_PLACEABLES = [
                   wall_ref="W-M-CLN", face="left", distance_from_start=inch(53.53125),
                   normal_gap=inch(0), rotation_offset=deg(90)))),
 
-    # --- RM-M-STUDY, the call booth -----------------------------------------------------
-    #
-    # ** A FACING PAIR, NOT AN L. ** The first fit-out was an L — bench down the west wall,
-    # desk across the south, sit in the corner and turn right — and the owner turned it 90
-    # degrees the same day: the bench now runs east-west along the NORTH wall and the desk
-    # sits in the SOUTH-WEST corner facing it. You do not walk into this room and turn
-    # around in it; you step into the 18 7/8" pocket east of the desk, sit, and slide west.
-    #
-    # Both are dimensioned to the WAINSCOT faces (the joiner's box), not to node lines and
-    # NOT to `Room.clear_face` (the gypsum face, 3/4" behind the wainscot) — see
-    # the derivation on FT-STUDY-BENCH in
-    # plan/furniture_types.py. The lined box is x 164 3/4"..211 7/8", y 220 3/4"..264 7/8".
-    #
-    # Rotation, the thing that goes wrong: the `sauna-bench` and `desk` glyphs both put the
-    # back band at LOCAL +y (plan/furniture_types.py's FURN-B-PLAY-SECTIONAL note is the
-    # cautionary tale). deg(0) leaves +y as +y, so the bench's back lands on the NORTH
-    # wall; deg(180) turns +y to -y, so the desk's back lands on the SOUTH wall.
-    #
-    # Centres, both off the lined box:
-    #   bench  x 164 3/4 + 47/2 = 188 1/4";  y 264 7/8 - 17/2 = 256 3/8"
-    #   desk   x 164 3/4 + 29/2 = 179 1/4";  y 220 3/4 + 20/2 = 230 3/4"
-    # Which leaves the two front faces at y 247 7/8" (bench) and y 240 3/4" (desk):
-    # 7 1/8" of clear floor, and feet pass under the desk's cantilevered top.
-    #
-    # No `room=` mismatch and no clearance zone: neither type declares one, per the casework
-    # rule. The desk clears D-M-STUDY's opening entirely now (its east end is 18 7/8" west
-    # of the east wall), which is the one thing the turn fixed for free.
+    # Fitted to current RM-M-STUDY gypsum/wainscot faces. See notes/study_booth.md.
+    # North has no walnut behind the upholstered back; retain 1/16 inch rear/end scribes.
     Furniture(uid="AZ3GY4JQFH", tag="FURN-M-STUDY-BENCH", type_ref="FT-STUDY-BENCH",
-              room="RM-M-STUDY", position=pt(inch(188.25), inch(256.375)),
-              rotation=deg(0)),
+              room="RM-M-STUDY", position=pt(inch(189.5), inch(256.152571)), rotation=deg(0)),
     Furniture(uid="90JCARB5PG", tag="FURN-M-STUDY-DESK", type_ref="FT-STUDY-DESK",
-              room="RM-M-STUDY", position=pt(inch(179.25), inch(230.75)),
-              rotation=deg(180)),
-    # The fold-down leaf fills the 18 1/8" entry pocket the desk deliberately
-    # stops short of, so 29" + 18" = the full 47" lined box when two people are in here.
-    # ** IT IS DRAWN DEPLOYED AND IT IS NORMALLY STOWED ** — the long argument is on
-    # FT-STUDY-DESK-LEAF in plan/furniture_types.py. Read it before moving this: the leaf's
-    # STOWED envelope (the south wall of the pocket, 8" to 28") is what evicted
-    # REG-M-RET-STUDY from that wall, and nothing in this file records that dependency.
-    #
-    # Centre off the same lined box the other two use: x 164 3/4 + 29 + 18/2 = 202 3/4";
-    # y 220 3/4 + 20/2 = 230 3/4", i.e. the desk's own y, because the two tops are coplanar
-    # and butt. deg(180) matches the desk so both backs land on the SOUTH wall. Its east end
-    # is at 211 3/4", 1/8" off the lined face and flush with FURN-M-STUDY-BENCH's east end.
+              room="RM-M-STUDY", position=pt(inch(179.6875), inch(228.1875)), rotation=deg(180)),
     Furniture(uid="SBR4CFX5EH", tag="FURN-M-STUDY-DESK-LEAF", type_ref="FT-STUDY-DESK-LEAF",
-              room="RM-M-STUDY", position=pt(inch(202.75), inch(230.75)),
-              rotation=deg(180)),
+              room="RM-M-STUDY", position=pt(inch(204), inch(228.1875)), rotation=deg(180)),
+    Furniture(uid="SBF00TREST", tag="FURN-M-STUDY-FOOTREST", type_ref="FT-STUDY-FOOTREST",
+              room="RM-M-STUDY", position=pt(inch(180), inch(232.5)), rotation=deg(180)),
 
     # --- curtain rods -------------------------------------------
     # The remaining main-floor curtain rods share a 7'-0" head line, 4" above the tallest
